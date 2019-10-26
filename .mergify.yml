@@ -1,0 +1,24 @@
+pull_request_rules:
+  - name: Automatic Merge for gitHub-actions[bot] Pull Requests
+    conditions:
+      - author=github-actions[bot]
+      - status-success=WIP
+    actions:
+      merge:
+        method: merge
+
+  - name: Automatic Merge for dependabot[bot] Pull Requests
+    conditions:
+      - author=dependabot[bot]
+      - status-success=WIP
+    actions:
+      merge:
+        method: merge
+
+  - name: Automatic Merge for dependabot-preview[bot] Pull Requests
+    conditions:
+      - author=dependabot-preview[bot]
+      - status-success=WIP
+    actions:
+      merge:
+        method: merge
