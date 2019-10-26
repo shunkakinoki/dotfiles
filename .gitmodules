@@ -1,3 +1,0 @@
-[submodule "gitalias"]
-	path = src/git/gitalias
-	url = https://github.com/GitAlias/gitalias
