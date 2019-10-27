@@ -1,12 +1,78 @@
+add_newline = true
+
+prompt_order = [
+    "username",
+    "hostname",
+    "line_break",
+    "kubernetes",
+    "git_branch",
+    "git_state",
+    "git_status",
+    "package",
+    "dotnet",
+    "golang",
+    "java",
+    "nodejs",
+    "python",
+    "ruby",
+    "rust",
+    "nix_shell",
+    "conda",
+    "aws",
+    "env_var",
+    "cmd_duration",
+    "jobs",
+    "line_break",
+    "time",
+    "battery",
+    "memory_usage",
+    "line_break",
+    "directory",
+    "character",
+]
+
+[[battery.display]]
+threshold = 10
+style = "bold red"
+
+[[battery.display]]
+threshold = 30
+style = "bold yellow"
+
+[[battery.display]]
+threshold = 100
+style = "bold green"
+
+[character]
+use_symbol_for_status = true
+
+[directory]
+style = "bold red"
+
+[hostname]
+ssh_only = false
+prefix = "⟪"
+suffix = "⟫ | Obliterate the Galaxy"
+style = "bold blue"
+disabled = false
+
+[jobs]
+threshold = 1
+
 [kubernetes]
 disabled = false
 
 [line_break]
-disabled = true
+disabled = false
 
 [memory_usage]
+disabled = false
 show_percentage = true
 show_swap = true
+
+[time]
+disabled = false
+format = "%Y/%m/%d/%a | %T |"
 
 [username]
 show_always = true
