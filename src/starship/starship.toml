@@ -4,6 +4,10 @@ prompt_order = [
     "username",
     "hostname",
     "line_break",
+    "time",
+    "battery",
+    "memory_usage",
+    "line_break",
     "git_branch",
     "git_state",
     "git_status",
@@ -22,10 +26,6 @@ prompt_order = [
     "env_var",
     "cmd_duration",
     "jobs",
-    "line_break",
-    "time",
-    "battery",
-    "memory_usage",
     "line_break",
     "directory",
     "character",
@@ -73,6 +73,7 @@ show_swap = true
 [time]
 disabled = false
 format = "%Y/%m/%d/%a | %T |"
+style = "bold green"
 
 [username]
 show_always = true
