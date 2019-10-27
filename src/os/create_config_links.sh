@@ -7,6 +7,7 @@ create_configlinks() {
     declare -a FILES_TO_SYMLINK=(
         "git/gitalias/gitalias.txt"
         "starship/starship.toml"
+        "vim/amix/vimrcs/basic.vim"
     )
 
     local i=""

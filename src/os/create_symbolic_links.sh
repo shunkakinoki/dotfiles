@@ -14,7 +14,6 @@ create_symlinks() {
         "hyper/.hyper.js"
 
         "git/.gitconfig"
-        "git/gitalias/gitalias.txt"
 
         "tmux/.tmux.conf"
 
