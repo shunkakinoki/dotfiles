@@ -1,6 +1,3 @@
 [submodule "src/git/gitalias"]
 	path = src/git/gitalias
 	url = https://github.com/GitAlias/gitalias
-[submodule "src/vim/amix"]
-	path = src/vim/amix
-	url = https://github.com/amix/vimrc
