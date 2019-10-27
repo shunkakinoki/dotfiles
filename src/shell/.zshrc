@@ -37,10 +37,10 @@ char
 autoload -U promptinit; promptinit
 prompt spaceship
 
-### PYENV COMMANDS
+### EVAL COMMANDS
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
-export PIPENV_VENV_IN_PROJECT=true
+eval "$(direnv hook zsh)"
 
 ### ZSH COMMANDS
 unset zle_bracketed_paste
@@ -52,9 +52,9 @@ export __CF_USER_TEXT_ENCODING
 autoload -Uz compinit
 typeset -i updated_at=$(date +'%j' -r ~/.zcompdump 2>/dev/null || stat -f '%Sm' -t '%j' ~/.zcompdump 2>/dev/null)
 if [ $(date +'%j') != $updated_at ]; then
-  compinit -i
+    compinit -i
 else
-  compinit -C -i
+    compinit -C -i
 fi
 zmodload -i zsh/complist
 
@@ -116,9 +116,6 @@ zstyle ':completion:::::' completer _expand _complete _ignored _approximate
 
 # LOAD ANTIBODY PLUGIN MANAGER
 source <(antibody init)
-
-# LOAD DIRENV
-eval "$(direnv hook zsh)"
 
 # INSTALL PLUGINS
 antibody bundle zdharma/fast-syntax-highlighting
