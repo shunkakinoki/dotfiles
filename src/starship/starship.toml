@@ -1,0 +1,12 @@
+[kubernetes]
+disabled = false
+
+[line_break]
+disabled = true
+
+[memory_usage]
+show_percentage = true
+show_swap = true
+
+[username]
+show_always = true
