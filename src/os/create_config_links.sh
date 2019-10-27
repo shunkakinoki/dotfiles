@@ -3,21 +3,9 @@
 cd "$(dirname "${BASH_SOURCE[0]}")" \
     && . "utils.sh"
 
-create_symlinks() {
+create_configlinks() {
     declare -a FILES_TO_SYMLINK=(
-        "shell/alias/.shell_alias"
-        "shell/.bash_profile"
-        "shell/.shell_export"
-        "shell/.shell_path"
-        "shell/.zshrc"
-
-        "hyper/.hyper.js"
-
-        "git/.gitconfig"
-
-        "tmux/.tmux.conf"
-
-        "vim/.vimrc"
+        "starship/starship.toml"
     )
 
     local i=""
@@ -30,7 +18,7 @@ create_symlinks() {
 
     for i in "${FILES_TO_SYMLINK[@]}"; do
         sourceFile="$(cd .. && pwd)/$i"
-        targetFile="$HOME/$(printf "%s" "$i" | sed "s/.*\/\(.*\)/\1/g")"
+        targetFile="$HOME/.config/$(printf "%s" "$i" | sed "s/.*\/\(.*\)/\1/g")"
 
         if [ ! -e "$targetFile" ] || $skipQuestions; then
             execute \
@@ -58,8 +46,8 @@ create_symlinks() {
 }
 
 main() {
-    print_in_purple "\n   Create symbolic links\n\n"
-    create_symlinks "$@"
+    print_in_purple "\n   Create config links\n\n"
+    create_configlinks "$@"
 }
 
 main "$@"
