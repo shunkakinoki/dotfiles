@@ -149,8 +149,6 @@ main() {
     ./create_symbolic_links.sh "$@"
     ./create_config_links.sh "$@"
     ./create_local_config_files.sh
-    ./install/main.sh
-    ./preferences/main.sh
 
     if cmd_exists "git"; then
         if [ "$(git config --get remote.origin.url)" != "$DOTFILES_ORIGIN" ]; then
@@ -160,6 +158,9 @@ main() {
             ./update_content.sh
         fi
     fi
+
+    ./install/main.sh
+    ./preferences/main.sh
 
     if ! $skipQuestions; then
         ./restart.sh
