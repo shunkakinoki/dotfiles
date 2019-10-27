@@ -6,6 +6,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")" \
 create_symlinks() {
     declare -a FILES_TO_SYMLINK=(
         "shell/.bash_profile"
+        "shell/.shell_path"
         "shell/.zshrc"
 
         "hyper/.hyper.js"
