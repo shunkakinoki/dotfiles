@@ -7,6 +7,7 @@ create_symlinks() {
     declare -a FILES_TO_SYMLINK=(
         "shell/alias/.shell_alias"
         "shell/.bash_profile"
+        "shell/.os_zsh"
         "shell/.shell_export"
         "shell/.shell_path"
         "shell/.zshrc"
