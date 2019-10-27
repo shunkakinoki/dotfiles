@@ -1,5 +1,3 @@
-source ~/.os_zsh
-
 for file in ~/.shell_*; do
     source "$file"
 done
