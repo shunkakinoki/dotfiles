@@ -5,7 +5,6 @@ prompt_order = [
     "hostname",
     "line_break",
     "kubernetes",
-    "directory",
     "git_branch",
     "git_state",
     "git_status",
@@ -28,6 +27,7 @@ prompt_order = [
     "battery",
     "memory_usage",
     "line_break",
+    "directory",
     "character",
 ]
 
@@ -46,10 +46,13 @@ style = "bold green"
 [character]
 use_symbol_for_status = true
 
+[directory]
+style = "bold red"
+
 [hostname]
 ssh_only = false
 prefix = "⟪"
-suffix = "⟫ | Obliterate the Galaxy |"
+suffix = "⟫ | Obliterate the Galaxy"
 style = "bold blue"
 disabled = false
 
