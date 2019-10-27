@@ -1,4 +1,7 @@
-### SOURCE SHELL FILES
+for file in ~/.zsh_*; do
+    source "$file"
+done
+
 for file in ~/.shell_*; do
     source "$file"
 done
