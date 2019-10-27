@@ -5,20 +5,20 @@ cd "$(dirname "${BASH_SOURCE[0]}")" \
 
 create_symlinks() {
     declare -a FILES_TO_SYMLINK=(
-        "shell/alias/.shell_alias"
-        "shell/.bash_profile"
-        "shell/.shell_export"
-        "shell/.shell_path"
-        "shell/.zshrc"
+        "shell/alias/shell_alias"
+        "shell/bash_profile"
+        "shell/shell_export"
+        "shell/shell_path"
+        "shell/zshrc"
 
-        "hyper/.hyper.js"
+        "hyper/hyper.js"
 
-        "git/.gitconfig"
+        "git/gitconfig"
         "git/gitalias/gitalias.txt"
 
-        "tmux/.tmux.conf"
+        "tmux/tmux.conf"
 
-        "vim/.vimrc"
+        "vim/vimrc"
     )
 
     local i=""
@@ -31,7 +31,7 @@ create_symlinks() {
 
     for i in "${FILES_TO_SYMLINK[@]}"; do
         sourceFile="$(cd .. && pwd)/$i"
-        targetFile="$HOME/$(printf "%s" "$i" | sed "s/.*\/\(.*\)/\1/g")"
+        targetFile="$HOME/.$(printf "%s" "$i" | sed "s/.*\/\(.*\)/\1/g")"
 
         if [ ! -e "$targetFile" ] || $skipQuestions; then
             execute \
