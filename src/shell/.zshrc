@@ -1,6 +1,4 @@
-for file in ~/.os_zsh_*; do
-    source "$file"
-done
+source ~/.os_zsh
 
 for file in ~/.shell_*; do
     source "$file"
