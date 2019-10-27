@@ -17,6 +17,8 @@ create_symlinks() {
 
         "tmux/.tmux.conf"
 
+        "vim/.plugin_config.vim"
+        "vim/.plugin_install.vim"
         "vim/.vimrc"
     )
 
