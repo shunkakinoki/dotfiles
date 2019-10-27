@@ -146,17 +146,20 @@ main() {
     printf "%s" "${BASH_SOURCE[0]}" | grep "setup.sh" &> /dev/null \
         || download_dotfiles
 
-    ./create_symbolic_links.sh "$@"
-    ./create_config_links.sh "$@"
-    ./create_local_config_files.sh
-
     if cmd_exists "git"; then
         if [ "$(git config --get remote.origin.url)" != "$DOTFILES_ORIGIN" ]; then
             ./initialize_git_repository.sh "$DOTFILES_ORIGIN"
         fi
         if ! $skipQuestions; then
             ./update_content.sh
+            ./create_symbolic_links.sh "$@"
+            ./create_config_links.sh "$@"
+            ./create_local_config_files.sh
         fi
+    else
+        ./create_symbolic_links.sh "$@"
+        ./create_config_links.sh "$@"
+        ./create_local_config_files.sh
     fi
 
     ./install/main.sh
