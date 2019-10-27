@@ -8,6 +8,8 @@ create_symlinks() {
         "shell/.bash_profile"
         "shell/.zshrc"
 
+        "hyper/.hyper.js"
+
         "git/.gitconfig"
 
         "tmux/.tmux.conf"
