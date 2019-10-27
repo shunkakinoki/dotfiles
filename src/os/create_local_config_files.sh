@@ -30,18 +30,12 @@ create_gitconfig_local() {
 
         printf "%s\n" \
 "[commit]
-
-    # Sign commits using GPG.
-    # https://help.github.com/articles/signing-commits-using-gpg/
-
-    # gpgsign = true
-
+    gpgsign = true
 
 [user]
-
-    name =
-    email =
-    # signingkey =" \
+    name = Shun Kakinoki
+    email = shunkakinoki@gmail.com
+    signingkey =" \
         >> "$FILE_PATH"
     fi
 
