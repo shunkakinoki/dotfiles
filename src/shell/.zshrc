@@ -1,28 +1,7 @@
-### UNIQUE PATHS
-export GOPATH=$HOME/.go
-export GOBIN=$GOPATH/bin
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-export PATH="$/Library/TeX/texbin"
-
-### PATHS
-export HOME="$HOME"
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-PATH+=:$HOME/n/bin
-PATH+=:$HOME/flutter/bin
-PATH+=:$HOME/.fastlane/bin
-PATH+=:$HOME/.rvm/bin
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/shunkakinoki/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/shunkakinoki/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/shunkakinoki/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/shunkakinoki/google-cloud-sdk/completion.zsh.inc'; fi
-
-### MAC SETUP SCRIPTS
-chmod +x ~/.mac_setup/scripts/*.sh
-for script in ~/.mac_setup/scripts/20-*.sh; do source $script; done
-for script in ~/.mac_setup/scripts/30-*.sh; do screen -dm -S Shared $script; done
+### SOURCE SHELL FILES
+for file in ~/.shell_*; do
+    source "$file"
+done
 
 ### SPACESHIP PROMPT
 export SPACESHIP_PROMPT_ADD_NEWLINE=false
@@ -94,10 +73,13 @@ unsetopt PROMPT_SP
 # FROM: https://github.com/zeit/hyper/issues/1188#issuecomment-332606903
 # Override auto-title when static titles are desired ($ title My new title)
 title() { export TITLE_OVERRIDDEN=1; echo -en "\e]0;$*\a"}
+
 # Turn off static titles ($ autotitle)
 autotitle() { export TITLE_OVERRIDDEN=0 }; autotitle
+
 # Condition checking if title is overridden
 overridden() { [[ $TITLE_OVERRIDDEN == 1 ]]; }
+
 # Echo asterisk if git state is dirty
 gitDirty() { [[ $(git status 2> /dev/null | grep -o '\w\+' | tail -n1) != ("clean"|"") ]] && echo "*" }
 
