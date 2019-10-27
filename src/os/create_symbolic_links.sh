@@ -9,7 +9,6 @@ create_symlinks() {
         "shell/zshrc"
 
         "git/gitconfig"
-        "git/gitalias/gitalias.txt"
 
         "tmux/tmux.conf"
 
