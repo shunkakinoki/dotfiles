@@ -5,11 +5,14 @@ cd "$(dirname "${BASH_SOURCE[0]}")" \
 
 create_symlinks() {
     declare -a FILES_TO_SYMLINK=(
-        "git/gitalias.txt"
+        "shell/bash_profile"
+        "shell/zshrc"
+
+        "git/gitconfig"
+        "git/gitalias/gitalias.txt"
 
         "tmux/tmux.conf"
 
-        "vim/vim"
         "vim/vimrc"
     )
 

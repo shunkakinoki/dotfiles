@@ -13,6 +13,16 @@ create_bash_local() {
     print_result $? "$FILE_PATH"
 }
 
+create_zsh_local() {
+    declare -r FILE_PATH="$HOME/.zshrc.local"
+
+    if [ ! -e "$FILE_PATH" ] || [ -z "$FILE_PATH" ]; then
+        printf "%s\n\n" "#!/bin/zsh" >> "$FILE_PATH"
+    fi
+
+    print_result $? "$FILE_PATH"
+}
+
 create_gitconfig_local() {
     declare -r FILE_PATH="$HOME/.gitconfig.local"
 
@@ -52,6 +62,7 @@ main() {
     print_in_purple "\n   Create local config files\n\n"
 
     create_bash_local
+    create_zsh_local
     create_gitconfig_local
     create_vimrc_local
 }
