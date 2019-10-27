@@ -2,45 +2,6 @@ for file in ~/.shell_*; do
     source "$file"
 done
 
-### SPACESHIP PROMPT
-export SPACESHIP_PROMPT_ADD_NEWLINE=false
-export SPACESHIP_TIME_PREFIX='| '
-export SPACESHIP_TIME_SHOW=true
-export SPACESHIP_DIR_SHOW=true
-export SPACESHIP_TIME_FORMAT=%D{%Y'/'%m'/'%d'/'%a' | '}%*
-export SPACESHIP_CHAR_SYMBOL=$
-export SPACESHIP_USER_SHOW=always
-export SPACESHIP_USER_PREFIX='| OBLITERATE THE GALAXY | '
-export SPACESHIP_USER_COLOR=blue
-export SPACESHIP_DIR_PREFIX=
-export SPACESHIP_BATTERY_SHOW=always
-export SPACESHIP_PROMPT_ORDER=(
-battery
-time
-user
-line_sep
-dir
-host
-git
-package
-docker
-aws
-conda
-exec_time
-vi_mode
-jobs
-exit_code
-char
-)
-
-autoload -U promptinit; promptinit
-prompt spaceship
-
-### EVAL COMMANDS
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-eval "$(direnv hook zsh)"
-
 ### ZSH COMMANDS
 unset zle_bracketed_paste
 setopt autocd
@@ -124,3 +85,7 @@ antibody bundle zsh-users/zsh-completions
 antibody bundle marzocchi/zsh-notify
 antibody bundle MichaelAquilina/zsh-you-should-use
 antibody bundle paulirish/git-open
+
+### EVAL COMMANDS
+eval "$(direnv hook zsh)"
+eval "$(starship init zsh)"
