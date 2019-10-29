@@ -1,14 +1,4 @@
-for file in ~/.shell_*; do
-    source "$file"
-done
-
-### ZSH COMMANDS
-unset zle_bracketed_paste
-setopt autocd
-__CF_USER_TEXT_ENCODING=0x1F5:0x8000100:0x8000100
-export __CF_USER_TEXT_ENCODING
-
-## ADDITIONAL CONFIG
+# Autoload Zsh Comp
 autoload -Uz compinit
 typeset -i updated_at=$(date +'%j' -r ~/.zcompdump 2>/dev/null || stat -f '%Sm' -t '%j' ~/.zcompdump 2>/dev/null)
 if [ $(date +'%j') != $updated_at ]; then
@@ -18,19 +8,16 @@ else
 fi
 zmodload -i zsh/complist
 
-# HISTORY OPTIONS
+# History Options
 HISTFILE=$HOME/.zsh_history
 HISTSIZE=100000
 SAVEHIST=$HISTSIZE
 
-# FIX FOR `%` SIGN SHOWING UP ON FIRST LINE
-unsetopt PROMPT_SP
-
-# AUTOJUMP CONFIG
+# Autojump Configuration
 [[ -s `brew --prefix`/etc/autojump.sh ]] && . `brew --prefix`/etc/autojump.sh
 
-# HYPER TAB TITLE SETTINGS
-# FROM: https://github.com/zeit/hyper/issues/1188#issuecomment-332606903
+# Hyper Tab Title Settings
+# From: https://github.com/zeit/hyper/issues/1188#issuecomment-332606903
 # Override auto-title when static titles are desired ($ title My new title)
 title() { export TITLE_OVERRIDDEN=1; echo -en "\e]0;$*\a"}
 
@@ -57,7 +44,7 @@ preexec() {
     printf "\033]0;%s\a" "${1%% *} | $cwd$(gitDirty)" # Omit construct from $1 to show args
 }
 
-# SETOPT OPTIONS
+# Setopt Zsh Options
 setopt auto_cd
 setopt auto_list
 setopt auto_menu
@@ -69,15 +56,21 @@ setopt share_history
 setopt correct_all
 setopt interactive_comments
 
-# IMPROVE AUTOCOMPLETION STYLE
+# Fix for `%` Sign Showing up on First Line
+unsetopt PROMPT_SP
+
+# Unset Zsh Commands
+unset zle_bracketed_paste
+
+# Improve Autocompletion Style
 zstyle ':completion:*' menu select
 zstyle ':completion:*' group-name ''
 zstyle ':completion:::::' completer _expand _complete _ignored _approximate
 
-# LOAD ANTIBODY PLUGIN MANAGER
+# Load Antibody Plugin Manager
 source <(antibody init)
 
-# INSTALL PLUGINS
+# Install Antibody Plugins
 antibody bundle zdharma/fast-syntax-highlighting
 antibody bundle zsh-users/zsh-autosuggestions
 antibody bundle zsh-users/zsh-history-substring-search
@@ -85,7 +78,13 @@ antibody bundle zsh-users/zsh-completions
 antibody bundle marzocchi/zsh-notify
 antibody bundle MichaelAquilina/zsh-you-should-use
 antibody bundle paulirish/git-open
+antibody bundle owenstranathan/pipenv.zsh
 
-### EVAL COMMANDS
+# Source Shell Files
+for file in ~/.shell_*; do
+    source "$file"
+done
+
+# Eval Zsh Packages
 eval "$(direnv hook zsh)"
 eval "$(starship init zsh)"
