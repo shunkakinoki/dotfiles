@@ -14,11 +14,10 @@ create_symlinks() {
         "hyper/.hyper.js"
 
         "git/.gitconfig"
+        "git/.gitalias"
 
         "tmux/.tmux.conf"
 
-        "vim/.plugin_config.vim"
-        "vim/.plugin_install.vim"
         "vim/.vimrc"
     )
 
