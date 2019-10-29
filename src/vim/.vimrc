@@ -24,6 +24,9 @@ call plug#begin('~/.vim/plugged')
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
+" Gruvbox
+Plug 'morhetz/gruvbox'
+
 " End Plugin Install
 call plug#end()
 
@@ -384,3 +387,10 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let g:airline_theme='angr'
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Gruvbox
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+colorscheme gruvbox
+set bg=dark
