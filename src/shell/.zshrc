@@ -16,8 +16,8 @@ SAVEHIST=$HISTSIZE
 # Autojump Configuration
 [[ -s `brew --prefix`/etc/autojump.sh ]] && . `brew --prefix`/etc/autojump.sh
 
-# HYPER TAB TITLE SETTINGS
-# FROM: https://github.com/zeit/hyper/issues/1188#issuecomment-332606903
+# Hyper Tab Title Settings
+# From: https://github.com/zeit/hyper/issues/1188#issuecomment-332606903
 # Override auto-title when static titles are desired ($ title My new title)
 title() { export TITLE_OVERRIDDEN=1; echo -en "\e]0;$*\a"}
 
@@ -78,6 +78,7 @@ antibody bundle zsh-users/zsh-completions
 antibody bundle marzocchi/zsh-notify
 antibody bundle MichaelAquilina/zsh-you-should-use
 antibody bundle paulirish/git-open
+antibody bundle owenstranathan/pipenv.zsh
 
 # Source Shell Files
 for file in ~/.shell_*; do
