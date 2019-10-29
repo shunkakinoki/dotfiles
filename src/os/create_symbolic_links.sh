@@ -1,7 +1,7 @@
 #!/bin/bash
 
-cd "$(dirname "${BASH_SOURCE[0]}")" \
-    && . "utils.sh"
+cd "$(dirname "${BASH_SOURCE[0]}")" &&
+    . "utils.sh"
 
 create_symlinks() {
     declare -a FILES_TO_SYMLINK=(
@@ -10,14 +10,9 @@ create_symlinks() {
         "shell/.shell_export"
         "shell/.shell_path"
         "shell/.zshrc"
-
         "hyper/.hyper.js"
-
         "git/.gitconfig"
-        "git/.gitalias"
-
         "tmux/.tmux.conf"
-
         "vim/.vimrc"
     )
 
@@ -26,8 +21,8 @@ create_symlinks() {
     local targetFile=""
     local skipQuestions=false
 
-    skip_questions "$@" \
-        && skipQuestions=true
+    skip_questions "$@" &&
+        skipQuestions=true
 
     for i in "${FILES_TO_SYMLINK[@]}"; do
         sourceFile="$(cd .. && pwd)/$i"

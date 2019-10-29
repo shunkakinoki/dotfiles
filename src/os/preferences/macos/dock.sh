@@ -1,7 +1,7 @@
 #!/bin/bash
 
-cd "$(dirname "${BASH_SOURCE[0]}")" \
-    && . "../../utils.sh"
+cd "$(dirname "${BASH_SOURCE[0]}")" &&
+    . "../../utils.sh"
 
 print_in_purple "\n   Dock\n\n"
 
@@ -48,4 +48,4 @@ execute "defaults write com.apple.dock showhidden -bool true" \
 execute "defaults write com.apple.dock tilesize -int 60" \
     "Set icon size"
 
-killall "Dock" &> /dev/null
+killall "Dock" &>/dev/null

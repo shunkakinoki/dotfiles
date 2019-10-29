@@ -1,13 +1,13 @@
 #!/bin/bash
 
-cd "$(dirname "${BASH_SOURCE[0]}")" \
-    && . "utils.sh"
+cd "$(dirname "${BASH_SOURCE[0]}")" &&
+    . "utils.sh"
 
 create_bash_local() {
     declare -r FILE_PATH="$HOME/.bash.local"
 
     if [ ! -e "$FILE_PATH" ] || [ -z "$FILE_PATH" ]; then
-        printf "%s\n\n" "#!/bin/bash" >> "$FILE_PATH"
+        printf "%s\n\n" "#!/bin/bash" >>"$FILE_PATH"
     fi
 
     print_result $? "$FILE_PATH"
@@ -17,7 +17,7 @@ create_zsh_local() {
     declare -r FILE_PATH="$HOME/.zshrc.local"
 
     if [ ! -e "$FILE_PATH" ] || [ -z "$FILE_PATH" ]; then
-        printf "%s\n\n" "#!/bin/zsh" >> "$FILE_PATH"
+        printf "%s\n\n" "#!/bin/zsh" >>"$FILE_PATH"
     fi
 
     print_result $? "$FILE_PATH"
@@ -29,7 +29,7 @@ create_gitconfig_local() {
     if [ ! -e "$FILE_PATH" ] || [ -z "$FILE_PATH" ]; then
 
         printf "%s\n" \
-"[commit]
+            "[commit]
 
     # Sign commits using GPG.
     # https://help.github.com/articles/signing-commits-using-gpg/
@@ -42,7 +42,7 @@ create_gitconfig_local() {
     name =
     email =
     # signingkey =" \
-        >> "$FILE_PATH"
+            >>"$FILE_PATH"
     fi
 
     print_result $? "$FILE_PATH"
@@ -52,7 +52,7 @@ create_vimrc_local() {
     declare -r FILE_PATH="$HOME/.vimrc.local"
 
     if [ ! -e "$FILE_PATH" ]; then
-        printf "" >> "$FILE_PATH"
+        printf "" >>"$FILE_PATH"
     fi
 
     print_result $? "$FILE_PATH"

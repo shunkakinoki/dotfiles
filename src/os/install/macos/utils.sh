@@ -1,7 +1,7 @@
 #!/bin/bash
 
-cd "$(dirname "${BASH_SOURCE[0]}")" \
-    && . "../../utils.sh"
+cd "$(dirname "${BASH_SOURCE[0]}")" &&
+    . "../../utils.sh"
 
 brew_install() {
     declare -r CMD="$4"
@@ -22,7 +22,7 @@ brew_install() {
         fi
     fi
 
-    if brew $CMD list "$FORMULA" &> /dev/null; then
+    if brew $CMD list "$FORMULA" &>/dev/null; then
         print_success "$FORMULA_READABLE_NAME"
     else
         execute \
@@ -34,7 +34,7 @@ brew_install() {
 brew_prefix() {
     local path=""
 
-    if path="$(brew --prefix 2> /dev/null)"; then
+    if path="$(brew --prefix 2>/dev/null)"; then
         printf "%s" "$path"
         return 0
     else
@@ -44,7 +44,7 @@ brew_prefix() {
 }
 
 brew_tap() {
-    brew tap "$1" &> /dev/null
+    brew tap "$1" &>/dev/null
 }
 
 brew_update() {

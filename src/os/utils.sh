@@ -1,9 +1,9 @@
 #!/bin/bash
 
 answer_is_yes() {
-    [[ "$REPLY" =~ ^[Yy]$ ]] \
-        && return 0 \
-        || return 1
+    [[ "$REPLY" =~ ^[Yy]$ ]] &&
+        return 0 ||
+        return 1
 }
 
 ask() {
@@ -18,17 +18,17 @@ ask_for_confirmation() {
 }
 
 ask_for_sudo() {
-    sudo -v &> /dev/null
+    sudo -v &>/dev/null
 
     while true; do
         sudo -n true
         sleep 60
         kill -0 "$$" || exit
-    done &> /dev/null &
+    done &>/dev/null &
 }
 
 cmd_exists() {
-    command -v "$1" &> /dev/null
+    command -v "$1" &>/dev/null
 }
 
 kill_all_subprocesses() {
@@ -36,7 +36,7 @@ kill_all_subprocesses() {
 
     for i in $(jobs -p); do
         kill "$i"
-        wait "$i" &> /dev/null
+        wait "$i" &>/dev/null
     done
 }
 
@@ -51,19 +51,19 @@ execute() {
     set_trap "EXIT" "kill_all_subprocesses"
 
     eval "$CMDS" \
-        &> /dev/null \
-        2> "$TMP_FILE" &
+        &>/dev/null \
+        2>"$TMP_FILE" &
 
     cmdsPID=$!
     show_spinner "$cmdsPID" "$CMDS" "$MSG"
 
-    wait "$cmdsPID" &> /dev/null
+    wait "$cmdsPID" &>/dev/null
     exitCode=$?
 
     print_result $exitCode "$MSG"
 
     if [ $exitCode -ne 0 ]; then
-        print_error_stream < "$TMP_FILE"
+        print_error_stream <"$TMP_FILE"
     fi
 
     rm -rf "$TMP_FILE"
@@ -83,9 +83,12 @@ get_os() {
 
     if [ "$kernelName" == "Darwin" ]; then
         os="macos"
-    elif [ "$kernelName" == "Linux" ] && \
+    elif [ "$kernelName" == "Linux" ] &&
         [ -e "/etc/os-release" ]; then
-        os="$(. /etc/os-release; printf "%s" "$ID")"
+        os="$(
+            . /etc/os-release
+            printf "%s" "$ID"
+        )"
     else
         os="$kernelName"
     fi
@@ -102,14 +105,17 @@ get_os_version() {
     if [ "$os" == "macos" ]; then
         version="$(sw_vers -productVersion)"
     elif [ -e "/etc/os-release" ]; then
-        version="$(. /etc/os-release; printf "%s" "$VERSION_ID")"
+        version="$(
+            . /etc/os-release
+            printf "%s" "$VERSION_ID"
+        )"
     fi
 
     printf "%s" "$version"
 }
 
 is_git_repository() {
-    git rev-parse &> /dev/null
+    git rev-parse &>/dev/null
 }
 
 is_supported_version() {
@@ -120,19 +126,19 @@ is_supported_version() {
     local i=""
 
     # Fill empty positions in v1 with zeros.
-    for (( i=${#v1[@]}; i<${#v2[@]}; i++ )); do
+    for ((i = ${#v1[@]}; i < ${#v2[@]}; i++)); do
         v1[i]=0
     done
 
-    for (( i=0; i<${#v1[@]}; i++ )); do
+    for ((i = 0; i < ${#v1[@]}; i++)); do
         # Fill empty positions in v2 with zeros.
         if [[ -z ${v2[i]} ]]; then
             v2[i]=0
         fi
 
-        if (( 10#${v1[i]} < 10#${v2[i]} )); then
+        if ((10#${v1[i]} < 10#${v2[i]})); then
             return 1
-        elif (( 10#${v1[i]} > 10#${v2[i]} )); then
+        elif ((10#${v1[i]} > 10#${v2[i]})); then
             return 0
         fi
 
@@ -165,9 +171,9 @@ print_error_stream() {
 
 print_in_color() {
     printf "%b" \
-        "$(tput setaf "$2" 2> /dev/null)" \
+        "$(tput setaf "$2" 2>/dev/null)" \
         "$1" \
-        "$(tput sgr0 2> /dev/null)"
+        "$(tput sgr0 2>/dev/null)"
 }
 
 print_in_green() {
@@ -209,15 +215,15 @@ print_warning() {
 }
 
 set_trap() {
-    trap -p "$1" | grep "$2" &> /dev/null \
-        || trap '$2' "$1"
+    trap -p "$1" | grep "$2" &>/dev/null ||
+        trap '$2' "$1"
 }
 
 skip_questions() {
     while :; do
         case $1 in
-            -y|--yes) return 0;;
-                   *) break;;
+        -y | --yes) return 0 ;;
+        *) break ;;
         esac
         shift 1
     done
