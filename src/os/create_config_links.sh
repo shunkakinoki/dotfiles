@@ -1,7 +1,7 @@
 #!/bin/bash
 
-cd "$(dirname "${BASH_SOURCE[0]}")" \
-    && . "utils.sh"
+cd "$(dirname "${BASH_SOURCE[0]}")" &&
+    . "utils.sh"
 
 create_configlinks() {
     declare -a FILES_TO_SYMLINK=(
@@ -14,8 +14,8 @@ create_configlinks() {
     local targetFile=""
     local skipQuestions=false
 
-    skip_questions "$@" \
-        && skipQuestions=true
+    skip_questions "$@" &&
+        skipQuestions=true
 
     for i in "${FILES_TO_SYMLINK[@]}"; do
         sourceFile="$(cd .. && pwd)/$i"

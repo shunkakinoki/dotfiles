@@ -2,21 +2,37 @@ if has('vim_starting')
     set nocompatible
 endif
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Install Vim Plug
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
-source ~/.plugin_config.vim
-source ~/.plugin_install.vim
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Plugin
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Begin Plugin Install
+call plug#begin('~/.vim/plugged')
+
+" Airline
+
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+
+" End Plugin Install
+call plug#end()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Sets how many lines of history VIM has to remember
-set history=500
+set history=300
 
 " Enable filetype plugins
 filetype plugin on
@@ -27,7 +43,10 @@ set autoread
 
 " With a map leader it's possible to do extra key combinations
 " like <leader>w saves the current file
-let mapleader = ","
+let mapleader = "\<Space>"
+
+" Map jj to escape
+:imap jj <Esc>
 
 " Fast saving
 nmap <leader>w :w!<cr>
@@ -81,6 +100,15 @@ set noswapfile
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Text, tab and indent related
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Set the title of the terminal
+set title
+
+" Always show current position
+set ruler
+
+" Set the number lines
+set number
 
 " Use spaces instead of tabs
 set expandtab
@@ -290,3 +318,9 @@ function! VisualSelection(direction, extra_filter) range
     let @/ = l:pattern
     let @" = l:saved_reg
 endfunction
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Airline
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+let g:airline_theme='angr'

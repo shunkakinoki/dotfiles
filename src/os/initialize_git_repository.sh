@@ -1,7 +1,7 @@
 #!/bin/bash
 
-cd "$(dirname "${BASH_SOURCE[0]}")" \
-    && . "utils.sh"
+cd "$(dirname "${BASH_SOURCE[0]}")" &&
+    . "utils.sh"
 
 initialize_git_repository() {
     declare -r GIT_ORIGIN="$1"
@@ -13,8 +13,8 @@ initialize_git_repository() {
 
     if ! is_git_repository; then
 
-        cd ../../ \
-            || print_error "Failed to 'cd ../../'"
+        cd ../../ ||
+            print_error "Failed to 'cd ../../'"
 
         execute \
             "git init && git remote add origin $GIT_ORIGIN" \

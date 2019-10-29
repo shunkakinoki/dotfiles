@@ -10,12 +10,12 @@ declare skipQuestions=false
 download() {
     local url="$1"
     local output="$2"
-    if command -v "curl" &> /dev/null; then
-        curl -LsSo "$output" "$url" &> /dev/null
+    if command -v "curl" &>/dev/null; then
+        curl -LsSo "$output" "$url" &>/dev/null
         return $?
 
-    elif command -v "wget" &> /dev/null; then
-        wget -qO "$output" "$url" &> /dev/null
+    elif command -v "wget" &>/dev/null; then
+        wget -qO "$output" "$url" &>/dev/null
         return $?
     fi
 
@@ -58,7 +58,7 @@ download_dotfiles() {
         printf "\n"
 
     else
-        rm -rf "$dotfilesDirectory" &> /dev/null
+        rm -rf "$dotfilesDirectory" &>/dev/null
     fi
 
     mkdir -p "$dotfilesDirectory"
@@ -70,17 +70,17 @@ download_dotfiles() {
     rm -rf "$tmpFile"
     print_result $? "Remove archive"
 
-    cd "$dotfilesDirectory/src/os" \
-        || return 1
+    cd "$dotfilesDirectory/src/os" ||
+        return 1
 }
 
 download_utils() {
     local tmpFile=""
     tmpFile="$(mktemp /tmp/XXXXX)"
-    download "$DOTFILES_UTILS_URL" "$tmpFile" \
-        && . "$tmpFile" \
-        && rm -rf "$tmpFile" \
-        && return 0
+    download "$DOTFILES_UTILS_URL" "$tmpFile" &&
+        . "$tmpFile" &&
+        rm -rf "$tmpFile" &&
+        return 0
 
     return 1
 }
@@ -89,7 +89,7 @@ extract() {
     local archive="$1"
     local outputDir="$2"
 
-    if command -v "tar" &> /dev/null; then
+    if command -v "tar" &>/dev/null; then
         tar -zxf "$archive" --strip-components 1 -C "$outputDir"
         return $?
     fi
@@ -126,8 +126,8 @@ verify_os() {
 }
 
 main() {
-    cd "$(dirname "${BASH_SOURCE[0]}")" \
-        || exit 1
+    cd "$(dirname "${BASH_SOURCE[0]}")" ||
+        exit 1
 
     if [ -x "utils.sh" ]; then
         . "utils.sh" || exit 1
@@ -135,16 +135,16 @@ main() {
         download_utils || exit 1
     fi
 
-    verify_os \
-        || exit 1
+    verify_os ||
+        exit 1
 
-    skip_questions "$@" \
-        && skipQuestions=true
+    skip_questions "$@" &&
+        skipQuestions=true
 
     ask_for_sudo
 
-    printf "%s" "${BASH_SOURCE[0]}" | grep "setup.sh" &> /dev/null \
-        || download_dotfiles
+    printf "%s" "${BASH_SOURCE[0]}" | grep "setup.sh" &>/dev/null ||
+        download_dotfiles
 
     if cmd_exists "git"; then
         if [ "$(git config --get remote.origin.url)" != "$DOTFILES_ORIGIN" ]; then
