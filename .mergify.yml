@@ -4,21 +4,30 @@ pull_request_rules:
       - author=github-actions[bot]
       - status-success=WIP
     actions:
+      delete_head_branch:
+        force: true
       merge:
         method: merge
+        strict: true
 
   - name: Automatic Merge for dependabot[bot] Pull Requests
     conditions:
       - author=dependabot[bot]
       - status-success=WIP
     actions:
+      delete_head_branch:
+        force: true
       merge:
         method: merge
+        strict: true
 
   - name: Automatic Merge for dependabot-preview[bot] Pull Requests
     conditions:
       - author=dependabot-preview[bot]
       - status-success=WIP
     actions:
+      delete_head_branch:
+        force: true
       merge:
         method: merge
+        strict: true
