@@ -79,6 +79,8 @@ antibody bundle marzocchi/zsh-notify
 antibody bundle MichaelAquilina/zsh-you-should-use
 antibody bundle paulirish/git-open
 antibody bundle owenstranathan/pipenv.zsh
+antibody bundle peterhurford/git-it-on.zsh
+antibody bundle b4b4r07/enhancd
 
 # Source Shell Files
 for file in ~/.shell_*; do
@@ -88,3 +90,4 @@ done
 # Eval Zsh Packages
 eval "$(direnv hook zsh)"
 eval "$(starship init zsh)"
+source "$(navi widget zsh)"
