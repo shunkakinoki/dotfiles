@@ -1,0 +1,24 @@
+name: Run Lint Shellcheck
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "**.sh"
+  pull_request:
+    paths:
+      - "**.sh"
+jobs:
+  shellcheck:
+    name: Run Lint Shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: shellcheck
+        uses: reviewdog/action-shellcheck@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-pr-review
+          path: "."
+          pattern: "*.sh"
+          exclude: "./.git/*"
