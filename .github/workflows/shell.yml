@@ -9,7 +9,7 @@ on:
     paths:
       - "**.sh"
 jobs:
-  shellcheck:
+  shell:
     name: Run Lint Shellcheck
     runs-on: ubuntu-latest
     steps:
@@ -22,3 +22,8 @@ jobs:
           path: "."
           pattern: "*.sh"
           exclude: "./.git/*"
+      - name: Label on PR
+        uses: awact/label-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ADD_LABEL: "gha-shell"
