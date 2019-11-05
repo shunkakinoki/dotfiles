@@ -2,6 +2,7 @@ pull_request_rules:
   - name: Automatic Merge for gitHub-actions[bot] Pull Requests
     conditions:
       - author=github-actions[bot]
+      - label=gha-shell
       - status-success=WIP
     actions:
       delete_head_branch:
@@ -13,6 +14,7 @@ pull_request_rules:
   - name: Automatic Merge for dependabot[bot] Pull Requests
     conditions:
       - author=dependabot[bot]
+      - label=gha-shell
       - status-success=WIP
     actions:
       delete_head_branch:
@@ -24,6 +26,7 @@ pull_request_rules:
   - name: Automatic Merge for dependabot-preview[bot] Pull Requests
     conditions:
       - author=dependabot-preview[bot]
+      - label=gha-shell
       - status-success=WIP
     actions:
       delete_head_branch:
