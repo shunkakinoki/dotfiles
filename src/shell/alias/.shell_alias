@@ -6,7 +6,6 @@ alias ....="cd ../../.."
 alias cd..="cd .."
 
 alias :q="exit"
-alias c="clear"
 alias ch="history -c && > ~/.bash_history"
 alias e="vim --"
 alias g="git"
