@@ -80,10 +80,14 @@ antibody bundle mollifier/cd-gitroot
 antibody bundle owenstranathan/pipenv.zsh
 antibody bundle paulirish/git-open
 antibody bundle peterhurford/git-it-on.zsh
+antibody bundle wfxr/forgit
 antibody bundle zdharma/fast-syntax-highlighting
 antibody bundle zsh-users/zsh-autosuggestions
 antibody bundle zsh-users/zsh-completions
 antibody bundle zsh-users/zsh-history-substring-search
+
+fpath+=~/dotfiles/src/shell/zsh_functions
+autoload b c da drm ds fd fda fdr fkill gbr gbrm gobt gobtp goc tm tmk tp ts
 
 # Source Shell Files
 for file in ~/.shell_*; do
