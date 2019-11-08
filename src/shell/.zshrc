@@ -73,6 +73,7 @@ source <(antibody init)
 # Install Antibody Plugins
 antibody bundle b4b4r07/emoji-cli
 antibody bundle b4b4r07/enhancd
+antibody bundle caarlos0/zsh-git-sync kind:path
 antibody bundle chrissicool/zsh-256color
 antibody bundle MichaelAquilina/zsh-auto-notify
 antibody bundle MichaelAquilina/zsh-you-should-use
@@ -80,11 +81,14 @@ antibody bundle mollifier/cd-gitroot
 antibody bundle owenstranathan/pipenv.zsh
 antibody bundle paulirish/git-open
 antibody bundle peterhurford/git-it-on.zsh
+antibody bundle peterhurford/up.zsh
+antibody bundle urbainvaes/fzf-marks
 antibody bundle wfxr/forgit
 antibody bundle zdharma/fast-syntax-highlighting
 antibody bundle zsh-users/zsh-autosuggestions
 antibody bundle zsh-users/zsh-completions
 antibody bundle zsh-users/zsh-history-substring-search
+antibody bundle zuxfoucault/colored-man-pages_mod
 
 fpath+=~/dotfiles/src/shell/zsh_functions
 autoload b c da drm ds fd fda fdr fkill gbr gbrm gobt gobtp goc tm tmk tp ts
