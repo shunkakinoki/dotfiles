@@ -14,7 +14,7 @@ download() {
         curl -LsSo "$output" "$url" &>/dev/null
         return $?
 
-    elif command -v "wget" &>/dev/null; then
+        elif command -v "wget" &>/dev/null; then
         wget -qO "$output" "$url" &>/dev/null
         return $?
     fi
@@ -71,16 +71,16 @@ download_dotfiles() {
     print_result $? "Remove archive"
 
     cd "$dotfilesDirectory/src/os" ||
-        return 1
+    return 1
 }
 
 download_utils() {
     local tmpFile=""
     tmpFile="$(mktemp /tmp/XXXXX)"
     download "$DOTFILES_UTILS_URL" "$tmpFile" &&
-        . "$tmpFile" &&
-        rm -rf "$tmpFile" &&
-        return 0
+    . "$tmpFile" &&
+    rm -rf "$tmpFile" &&
+    return 0
 
     return 1
 }
@@ -111,7 +111,7 @@ verify_os() {
             printf "Sorry, this script is intended only for macOS %s+" "$MINIMUM_MACOS_VERSION"
         fi
 
-    elif [ "$os_name" == "ubuntu" ]; then
+        elif [ "$os_name" == "ubuntu" ]; then
         if is_supported_version "$os_version" "$MINIMUM_UBUNTU_VERSION"; then
             return 0
         else
@@ -127,7 +127,7 @@ verify_os() {
 
 main() {
     cd "$(dirname "${BASH_SOURCE[0]}")" ||
-        exit 1
+    exit 1
 
     if [ -x "utils.sh" ]; then
         . "utils.sh" || exit 1
@@ -136,15 +136,12 @@ main() {
     fi
 
     verify_os ||
-        exit 1
+    exit 1
 
     skip_questions "$@" &&
-        skipQuestions=true
+    skipQuestions=true
 
     ask_for_sudo
-
-    printf "%s" "${BASH_SOURCE[0]}" | grep "setup.sh" &>/dev/null ||
-        download_dotfiles
 
     if cmd_exists "git"; then
         if [ "$(git config --get remote.origin.url)" != "$DOTFILES_ORIGIN" ]; then
@@ -155,11 +152,15 @@ main() {
             ./create_symbolic_links.sh "$@"
             ./create_config_links.sh "$@"
             ./create_local_config_files.sh
+            ./create_tmuxinator_links.sh
         fi
     else
+        printf "%s" "${BASH_SOURCE[0]}" | grep "setup.sh" &>/dev/null ||
+        download_dotfiles
         ./create_symbolic_links.sh "$@"
         ./create_config_links.sh "$@"
         ./create_local_config_files.sh
+        ./create_tmuxinator_links.sh
     fi
 
     ./install/main.sh
