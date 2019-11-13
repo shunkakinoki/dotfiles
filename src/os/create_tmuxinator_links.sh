@@ -19,15 +19,13 @@ create_symlinks() {
     for i in "${FILES_TO_SYMLINK[@]}"; do
         sourceFile="$(cd .. && pwd)/$i"
         targetDir="$HOME/.tmuxinator"
-        targetFile="$targetDir/(printf "%s" "$i" | sed "s/.*\/\(.*\)/\1/g")"
+        targetFile="$targetDir/$(printf "%s" "$i" | sed "s/.*\/\(.*\)/\1/g")"
 
         if [ ! -d "$targetDir" ]
         then
-            echo "Dir doesn't exist. Creating now"
-            mkdir ./$targetDir
-            echo "Dir created"
-        else
-            echo "Dir exists"
+            echo "Dir $targetDir doesn't exist. Creating now"
+            mkdir "$targetDir"
+            echo "Dir $targetDir created"
         fi
 
         if [ ! -e "$targetFile" ] || $skipQuestions; then
