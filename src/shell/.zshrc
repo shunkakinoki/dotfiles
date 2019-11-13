@@ -113,7 +113,11 @@ antibody bundle zsh-users/zsh-history-substring-search
 antibody bundle zuxfoucault/colored-man-pages_mod
 
 fpath+=~/dotfiles/src/shell/zsh_functions
-autoload b c da drm ds fd fda fdr fkill gbr gbrm gobt gobtp goc tm tmk tp ts
+autoload b c da drm ds emoji::cli fd fda fdr fkill gbr gbrm gobt gobtp goc tm tmk tp ts
+
+# Source Emoji CLI
+zle -N emoji::cli
+bindkey "^E" emoji::cli
 
 # Source Shell Files
 for file in ~/.shell_*; do
