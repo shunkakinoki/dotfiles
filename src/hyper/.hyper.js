@@ -55,6 +55,7 @@ module.exports = {
             borderWidth: '3px'
         },
 
+        /// DEPRECATED
         hyperline: {
             plugins: [
                 "hostname",
@@ -90,21 +91,23 @@ module.exports = {
 
     plugins: [
         "git-falcon9",
-        "hyperalfred",
-        "hyperborder",
-        "hypercwd",
-        "hyperline",
-        "hyperpower",
-        "hyperterm-tabs",
         "hyper-broadcast",
         "hyper-custom-touchbar",
+        "hyper-dracula",
         "hyper-pane",
         "hyper-search",
         "hyper-tabs-enhanced",
+        "hyperalfred",
+        "hyperborder",
+        "hypercwd",
+        "hyperminimal",
+        "hyperpower",
+        "hyperterm-tabs",
 
         /// DEPRECATED
+        // "hyperline",
         // "hyper-opacity",
-        //  "hyper-star-wars",
+        // "hyper-star-wars",
         // "hyper-pokemon",
         // "verminal"
     ],

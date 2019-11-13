@@ -24,6 +24,10 @@ call plug#begin('~/.vim/plugged')
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
+" Auto-save
+
+Plug 'vim-scripts/vim-auto-save'
+
 " Gruvbox
 Plug 'morhetz/gruvbox'
 
@@ -387,6 +391,20 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let g:airline_theme='angr'
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => AutoSave
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" enable AutoSave on Vim startup
+let g:auto_save = 1
+
+" do not save while in insert mode
+let g:auto_save_in_insert_mode = 0
+
+" do not change the 'updatetime' option
+let g:auto_save_no_updatetime = 1
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Gruvbox
