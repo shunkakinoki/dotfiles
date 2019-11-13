@@ -24,7 +24,7 @@ create_symlinks() {
         if [ ! -d "$targetDir" ]
         then
             echo "Dir $targetDir doesn't exist. Creating now"
-            mkdir $targetDir
+            mkdir "$targetDir"
             echo "Dir $targetDir created"
         fi
 
