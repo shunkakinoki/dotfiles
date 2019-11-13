@@ -28,8 +28,8 @@ Plug 'vim-airline/vim-airline-themes'
 
 Plug 'vim-scripts/vim-auto-save'
 
-" Gruvbox
-Plug 'morhetz/gruvbox'
+" Dracula
+Plug 'dracula/vim', { 'as': 'dracula' }
 
 " End Plugin Install
 call plug#end()
@@ -407,8 +407,8 @@ let g:auto_save_no_updatetime = 1
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Gruvbox
+" => Dracula
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-colorscheme gruvbox
+colorscheme dracula
 set bg=dark
