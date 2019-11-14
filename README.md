@@ -1,4 +1,6 @@
-# dotfiles
+<p align="center">
+  <img src="assets/dotfiles.png">
+</p>
 
 Heavily inspired by [here](https://github.com/alrra/dotfiles)
 
