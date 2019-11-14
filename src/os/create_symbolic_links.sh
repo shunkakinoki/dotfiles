@@ -14,6 +14,7 @@ create_symlinks() {
         "git/.gitconfig"
         "tmux/.tmux.conf"
         "vim/.vimrc"
+        "vnstat/.vnstatrc"
     )
 
     local i=""
