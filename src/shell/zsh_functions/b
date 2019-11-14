@@ -48,7 +48,7 @@ end
 EORUBY
 )
   echo -e "$output"                                            |
-  fzf-tmux -u 30% --ansi --multi --no-hscroll --tiebreak=begin |
+  fzf --ansi --multi --no-hscroll --tiebreak=begin             |
   awk 'BEGIN { FS = "\t" } { print $2 }'                       |
   xargs open &>/dev/null
 }
