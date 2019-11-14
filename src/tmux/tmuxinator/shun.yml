@@ -11,5 +11,5 @@ windows:
   - chrome:
       layout: even-vertical
       panes:
-        - b
-        - c
+        - while true; do b; done
+        - while true; do c; done
