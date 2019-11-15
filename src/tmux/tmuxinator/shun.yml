@@ -2,14 +2,14 @@ name: shun
 root: ~/
 windows:
   - zsh: neofetch
-  - gotop: gotop
-  - gitbatch: gitbatch
+  - gotop: while true; do gotop; done
+  - gitbatch: while true; do gitbatch; done
   - chrome:
       layout: even-vertical
       panes:
         - while true; do b; done
         - while true; do c; done
-  - iftop: sudo iftop -i en0
+  - iftop: while true; do sudo iftop -i en0; done
   - vnstat:
       layout: tiled
       panes:
@@ -17,4 +17,4 @@ windows:
         - watch -n 3 vnstat -h -i en0
         - watch -n 3 vnstat -d -i en0
         - watch -n 3 vnstat -m -i en0
-  - behind: vnstatd -n
+  - behind: while true; do vnstatd -n; done

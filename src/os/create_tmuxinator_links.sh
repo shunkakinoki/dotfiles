@@ -5,6 +5,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")" &&
 
 create_symlinks() {
     declare -a FILES_TO_SYMLINK=(
+        "tmux/tmuxinator/shell.yml"
         "tmux/tmuxinator/shun.yml"
     )
 

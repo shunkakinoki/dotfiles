@@ -1,0 +1,6 @@
+name: shell
+root: ~/
+windows:
+  - zsh: neofetch
+  - zsh: neofetch
+  - zsh: neofetch
