@@ -125,6 +125,7 @@ for file in ~/.shell_*; do
 done
 
 # Eval Zsh Packages
+eval $(thefuck --alias)
 eval "$(direnv hook zsh)"
 eval "$(starship init zsh)"
 source "$(navi widget zsh)"
