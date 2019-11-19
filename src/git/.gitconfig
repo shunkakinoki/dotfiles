@@ -1,3 +1,11 @@
 [include]
-  path = ~/.gitconfig.local
-  path = ~/.config/gitalias.txt
+path = ~/.gitconfig.local
+path = ~/.config/gitalias.txt
+
+[color]
+diff = auto
+status = auto
+branch = auto
+interactive = auto
+ui = true
+pager = true
