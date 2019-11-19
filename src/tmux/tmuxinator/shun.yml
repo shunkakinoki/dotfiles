@@ -3,12 +3,13 @@ root: ~/
 windows:
   - zsh: neofetch
   - gotop: while true; do gotop; done
-  - gitbatch: while true; do gitbatch; done
+  - spt: while true; do spt; done
   - chrome:
       layout: even-vertical
       panes:
         - while true; do b; done
         - while true; do c; done
+  - gitbatch: while true; do gitbatch; done
   - iftop: while true; do sudo iftop -i en0; done
   - vnstat:
       layout: tiled

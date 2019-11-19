@@ -411,4 +411,3 @@ let g:auto_save_no_updatetime = 1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 colorscheme dracula
-set bg=dark
