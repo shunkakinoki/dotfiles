@@ -126,6 +126,8 @@ for file in ~/.shell_*; do
     source "$file"
 done
 
+source ~/.zshrc.local
+
 # Eval Zsh Packages
 eval $(thefuck --alias)
 eval "$(direnv hook zsh)"
