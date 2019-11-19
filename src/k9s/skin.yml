@@ -1,50 +1,50 @@
 k9s:
   body:
     fgColor: dodgerblue
-    bgColor: white
-    logoColor: blue
+    bgColor: black
+    logoColor: orange
   info:
-    fgColor: lightskyblue
-    sectionColor: steelblue
+    fgColor: white
+    sectionColor: dodgerblue
   frame:
     border:
       fgColor: dodgerblue
-      focusColor: aliceblue
+      focusColor: aqua
     menu:
-      fgColor: darkblue
-      keyColor: cornflowerblue
-      numKeyColor: cadetblue
-    crumbs:
       fgColor: white
+      keyColor: dodgerblue
+      numKeyColor: fuchsia
+    crumbs:
+      fgColor: black
       bgColor: steelblue
-      activeColor: skyblue
+      activeColor: orange
     status:
-      newColor: blue
-      modifyColor: powderblue
-      addColor: lightskyblue
-      errorColor: indianred
-      highlightcolor: royalblue
-      killColor: slategray
+      newColor: lightskyblue
+      modifyColor: greenyellow
+      addColor: white
+      errorColor: orangered
+      highlightcolor: aqua
+      killColor: mediumpurple
       completedColor: gray
     title:
       fgColor: aqua
-      bgColor: white
-      highlightColor: skyblue
-      counterColor: slateblue
-      filterColor: slategray
+      highlightColor: fuchsia
+      counterColor: papayawhip
+      filterColor: steelblue
   table:
     fgColor: blue
-    bgColor: darkblue
+    bgColor: black
     cursorColor: aqua
+    markColor: darkgoldenrod
     header:
       fgColor: white
-      bgColor: darkblue
+      bgColor: black
       sorterColor: orange
   views:
     yaml:
       keyColor: steelblue
-      colonColor: blue
-      valueColor: royalblue
+      colonColor: white
+      valueColor: papayawhip
     logs:
       fgColor: white
       bgColor: black
