@@ -62,17 +62,18 @@ _tmuxinator() {
 compdef _tmuxinator tmuxinator mux
 
 # Setopt Zsh Options
+setopt always_to_end
 setopt auto_cd
 setopt auto_list
 setopt auto_menu
-setopt always_to_end
+setopt auto_pushd
+setopt correct_all
 setopt hist_ignore_all_dups
 setopt hist_reduce_blanks
 setopt inc_append_history
+setopt interactive_comments
 setopt list_packed
 setopt share_history
-setopt correct_all
-setopt interactive_comments
 
 # Fix for `%` Sign Showing up on First Line
 unsetopt PROMPT_SP
@@ -91,6 +92,8 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*' recent-dirs-insert both
 zstyle ':completion:*' use-cache yes
 zstyle ':completion:*' verbose no
+zstyle ':completion:*:cd:*' ignore-parents parent pwd
+zstyle ':completion:*:descriptions' format '%BCompleting%b %U%d%u'
 
 # Load Antibody Plugin Manager
 source <(antibody init)
