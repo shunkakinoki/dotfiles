@@ -8,11 +8,6 @@ else
 fi
 zmodload -i zsh/complist
 
-# History Options
-HISTFILE=$HOME/.zsh_history
-HISTSIZE=100000
-SAVEHIST=$HISTSIZE
-
 # Autojump Configuration
 [[ -s `brew --prefix`/etc/autojump.sh ]] && . `brew --prefix`/etc/autojump.sh
 
@@ -74,6 +69,7 @@ setopt always_to_end
 setopt hist_ignore_all_dups
 setopt hist_reduce_blanks
 setopt inc_append_history
+setopt list_packed
 setopt share_history
 setopt correct_all
 setopt interactive_comments
@@ -88,6 +84,13 @@ unset zle_bracketed_paste
 zstyle ':completion:*' menu select
 zstyle ':completion:*' group-name ''
 zstyle ':completion:::::' completer _expand _complete _ignored _approximate
+zstyle ':completion:*' cache-path ~/.zsh/cache
+zstyle ':completion:*' keep-prefix
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+zstyle ':completion:*' recent-dirs-insert both
+zstyle ':completion:*' use-cache yes
+zstyle ':completion:*' verbose no
 
 # Load Antibody Plugin Manager
 source <(antibody init)
@@ -115,7 +118,7 @@ antibody bundle zsh-users/zsh-history-substring-search
 antibody bundle zuxfoucault/colored-man-pages_mod
 
 fpath+=~/dotfiles/src/shell/zsh_functions
-autoload b c da drm ds emoji::cli fd fda fdr fkill gbr gbrm gobt gobtp goc tm tmk tp ts
+autoload b c da drm ds emoji::cli fd fda fdr fe fkill gbr gbrm gobt gobtp goc tm tmk tp ts
 
 # Source Emoji CLI
 zle -N emoji::cli
