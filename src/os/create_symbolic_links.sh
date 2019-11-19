@@ -25,7 +25,7 @@ create_symlinks() {
     local skipQuestions=false
 
     skip_questions "$@" &&
-        skipQuestions=true
+    skipQuestions=true
 
     for i in "${FILES_TO_SYMLINK[@]}"; do
         sourceFile="$(cd .. && pwd)/$i"
@@ -33,10 +33,10 @@ create_symlinks() {
 
         if [ ! -e "$targetFile" ] || $skipQuestions; then
             execute \
-                "ln -fs $sourceFile $targetFile" \
-                "$targetFile → $sourceFile"
+            "ln -fs $sourceFile $targetFile" \
+            "$targetFile → $sourceFile"
 
-        elif [ "$(readlink "$targetFile")" == "$sourceFile" ]; then
+            elif [ "$(readlink "$targetFile")" == "$sourceFile" ]; then
             print_success "$targetFile → $sourceFile"
 
         else
@@ -45,8 +45,8 @@ create_symlinks() {
                 if answer_is_yes; then
                     rm -rf "$targetFile"
                     execute \
-                        "ln -fs $sourceFile $targetFile" \
-                        "$targetFile → $sourceFile"
+                    "ln -fs $sourceFile $targetFile" \
+                    "$targetFile → $sourceFile"
                 else
                     print_error "$targetFile → $sourceFile"
                 fi
