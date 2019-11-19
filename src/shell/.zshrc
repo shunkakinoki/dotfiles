@@ -102,10 +102,12 @@ antibody bundle MichaelAquilina/zsh-you-should-use
 antibody bundle mollifier/cd-gitroot
 antibody bundle owenstranathan/pipenv.zsh
 antibody bundle paulirish/git-open
+antibody bundle paulirish/git-recent
 antibody bundle peterhurford/git-it-on.zsh
 antibody bundle peterhurford/up.zsh
 antibody bundle urbainvaes/fzf-marks
 antibody bundle wfxr/forgit
+antibody bundle zdharma/zsh-diff-so-fancy
 antibody bundle zdharma/fast-syntax-highlighting
 antibody bundle zsh-users/zsh-autosuggestions
 antibody bundle zsh-users/zsh-completions
@@ -125,6 +127,7 @@ for file in ~/.shell_*; do
 done
 
 # Eval Zsh Packages
+eval $(thefuck --alias)
 eval "$(direnv hook zsh)"
 eval "$(starship init zsh)"
 source "$(navi widget zsh)"
