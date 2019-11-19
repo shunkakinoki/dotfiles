@@ -4,7 +4,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")" &&
     . "utils.sh"
 
 create_bash_local() {
-    declare -r FILE_PATH="$HOME/.bash.local"
+    declare -r FILE_PATH="$HOME/.bashrc.local"
 
     if [ ! -e "$FILE_PATH" ] || [ -z "$FILE_PATH" ]; then
         printf "%s\n\n" "#!/bin/bash" >>"$FILE_PATH"
