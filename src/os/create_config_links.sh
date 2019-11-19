@@ -7,6 +7,19 @@ create_configlinks() {
     declare -a FILES_TO_SYMLINK=(
         "git/gitalias/gitalias.txt"
         "starship/starship.toml"
+        "spotify/config.yml"
+        "wtf/config.yml"
+        "tmux/tmuxinator/shell.yml"
+        "tmux/tmuxinator/shun.yml"
+    )
+
+    declare -a DIRS_TO_SYMLINK=(
+        ".config"
+        ".config"
+        ".config/spotify-tui"
+        ".config/wtf"
+        ".tmuxinator"
+        ".tmuxinator"
     )
 
     local i=""
@@ -17,9 +30,14 @@ create_configlinks() {
     skip_questions "$@" &&
         skipQuestions=true
 
-    for i in "${FILES_TO_SYMLINK[@]}"; do
-        sourceFile="$(cd .. && pwd)/$i"
-        targetFile="$HOME/.config/$(printf "%s" "$i" | sed "s/.*\/\(.*\)/\1/g")"
+    for index in ${!FILES_TO_SYMLINK[*]}; do
+        sourceFile="$(cd .. && pwd)/${FILES_TO_SYMLINK[$index]}"
+        targetDir="$HOME/${DIRS_TO_SYMLINK[$index]}"
+        targetFile="$targetDir/$(printf "%s" "$sourceFile" | sed "s/.*\/\(.*\)/\1/g")"
+
+        if [ ! -d "$targetDir" ]; then
+            mkdir "$targetDir"
+        fi
 
         if [ ! -e "$targetFile" ] || $skipQuestions; then
             execute \
