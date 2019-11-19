@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cd "$(dirname "${BASH_SOURCE[0]}")" &&
-. "utils.sh"
+    . "utils.sh"
 
 create_configlinks() {
     declare -a FILES_TO_SYMLINK=(
@@ -28,24 +28,23 @@ create_configlinks() {
     local skipQuestions=false
 
     skip_questions "$@" &&
-    skipQuestions=true
+        skipQuestions=true
 
     for index in ${!FILES_TO_SYMLINK[*]}; do
         sourceFile="$(cd .. && pwd)/${FILES_TO_SYMLINK[$index]}"
         targetDir="$HOME/${DIRS_TO_SYMLINK[$index]}"
         targetFile="$targetDir/$(printf "%s" "$sourceFile" | sed "s/.*\/\(.*\)/\1/g")"
 
-        if [ ! -d $targetDir ]
-        then
-            mkdir $targetDir
+        if [ ! -d "$targetDir" ]; then
+            mkdir "$targetDir"
         fi
 
         if [ ! -e "$targetFile" ] || $skipQuestions; then
             execute \
-            "ln -fs $sourceFile $targetFile" \
-            "$targetFile → $sourceFile"
+                "ln -fs $sourceFile $targetFile" \
+                "$targetFile → $sourceFile"
 
-            elif [ "$(readlink "$targetFile")" == "$sourceFile" ]; then
+        elif [ "$(readlink "$targetFile")" == "$sourceFile" ]; then
             print_success "$targetFile → $sourceFile"
 
         else
@@ -54,8 +53,8 @@ create_configlinks() {
                 if answer_is_yes; then
                     rm -rf "$targetFile"
                     execute \
-                    "ln -fs $sourceFile $targetFile" \
-                    "$targetFile → $sourceFile"
+                        "ln -fs $sourceFile $targetFile" \
+                        "$targetFile → $sourceFile"
                 else
                     print_error "$targetFile → $sourceFile"
                 fi
