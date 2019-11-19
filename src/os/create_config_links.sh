@@ -6,6 +6,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")" &&
 create_configlinks() {
     declare -a FILES_TO_SYMLINK=(
         "git/gitalias/gitalias.txt"
+        "k9s/skin.yml"
         "starship/starship.toml"
         "spotify/config.yml"
         "wtf/config.yml"
@@ -15,6 +16,7 @@ create_configlinks() {
 
     declare -a DIRS_TO_SYMLINK=(
         ".config"
+        ".k9s"
         ".config"
         ".config/spotify-tui"
         ".config/wtf"
