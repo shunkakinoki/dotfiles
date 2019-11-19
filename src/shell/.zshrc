@@ -8,11 +8,6 @@ else
 fi
 zmodload -i zsh/complist
 
-# History Options
-HISTFILE=$HOME/.zsh_history
-HISTSIZE=100000
-SAVEHIST=$HISTSIZE
-
 # Autojump Configuration
 [[ -s `brew --prefix`/etc/autojump.sh ]] && . `brew --prefix`/etc/autojump.sh
 
