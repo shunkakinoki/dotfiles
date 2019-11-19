@@ -1,4 +1,16 @@
 pull_request_rules:
+  - name: Automatic Merge for shunkakinoki Pull Requests
+    conditions:
+      - author=shunkakinoki
+      - label=gha-shell
+      - status-success=WIP
+    actions:
+      delete_head_branch:
+        force: true
+      merge:
+        method: merge
+        strict: true
+
   - name: Automatic Merge for gitHub-actions[bot] Pull Requests
     conditions:
       - author=github-actions[bot]
