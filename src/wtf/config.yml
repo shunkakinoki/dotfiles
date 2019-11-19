@@ -10,7 +10,6 @@ wtf:
   refreshInterval: 1
   mods:
     github:
-      apiKey: "122ecbbfbe39fd7a11f11499747132145e02c76e"
       baseURL: ""
       customQueries:
         openIssues:
