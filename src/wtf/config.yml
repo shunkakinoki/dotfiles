@@ -149,7 +149,7 @@ wtf:
       title: "Uptime"
       type: cmdrunner
     fast:
-      args: [""]
+      args: ["--upload"]
       cmd: "fast"
       enabled: true
       position:
