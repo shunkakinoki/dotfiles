@@ -1,6 +1,12 @@
 version: 1
 
 update_configs:
+  - package_manager: "python"
+    directory: "src/pipenv"
+    update_schedule: "live"
+    default_reviewers:
+      - shunkakinoki
+
   - package_manager: "javascript"
     directory: "src/npm"
     update_schedule: "live"

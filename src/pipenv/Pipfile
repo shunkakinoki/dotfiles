@@ -6,6 +6,14 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
+black = "==19.10b0"
+flake8 = "*"
+invoke = "*"
+isort = "*"
+mypy = "*"
+pep8 = "*"
+rustenv = "*"
+tox = "*"
 ueberzug = "*"
 
 [pipenv]
