@@ -2,9 +2,9 @@ brew update
 brew upgrade
 brew cask upgrade
 
-# cd ~/dotfiles/src/brew
+cd ~/dotfiles/src/brew
 
-# brew bundle dump --force
+brew bundle dump --force
 
 # if git status | grep -q Brewfile; then
 #     git add Brewfile
@@ -12,4 +12,4 @@ brew cask upgrade
 #     2>&1 > /dev/null
 # fi
 
-# cd ~
+cd ~
