@@ -1,5 +1,5 @@
-# fdr - cd to selected parent directory
-fdr() {
+# cdp - cd to selected parent directory
+cdp() {
   local declare dirs=()
   get_parent_dirs() {
     if [[ -d "${1}" ]]; then dirs+=("$1"); else return; fi
