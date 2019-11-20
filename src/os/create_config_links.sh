@@ -1,13 +1,15 @@
 #!/bin/bash
 
 cd "$(dirname "${BASH_SOURCE[0]}")" &&
-    . "utils.sh"
+. "utils.sh"
 
 create_configlinks() {
     declare -a FILES_TO_SYMLINK=(
         "brew/Brewfile"
         "git/gitalias/gitalias.txt"
         "k9s/skin.yml"
+        "ranger/rc.conf"
+        "ranger/rifle.conf"
         "starship/starship.toml"
         "spotify/config.yml"
         "wtf/config.yml"
@@ -19,6 +21,8 @@ create_configlinks() {
         ""
         ".config"
         ".k9s"
+        ".config/ranger"
+        ".config/ranger"
         ".config"
         ".config/spotify-tui"
         ".config/wtf"
