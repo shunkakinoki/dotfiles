@@ -1,7 +1,7 @@
 # tp - switch pane (@george-b)
 tp() {
   local panes current_window current_pane target target_window target_pane
-  panes=$(tmux list-panes -s -F '#I:#P - #{pane_current_path} #{pane_current_command}')
+  panes=$(tmux list-panes -s -F '#I:#P - #{pane_index} #{pane_title}')
   current_pane=$(tmux display-message -p '#I:#P')
   current_window=$(tmux display-message -p '#I')
 

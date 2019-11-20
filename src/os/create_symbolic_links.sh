@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cd "$(dirname "${BASH_SOURCE[0]}")" &&
-    . "utils.sh"
+. "utils.sh"
 
 create_symlinks() {
     declare -a FILES_TO_SYMLINK=(
@@ -10,9 +10,11 @@ create_symlinks() {
         "shell/.shell_export"
         "shell/.shell_path"
         "shell/.zshrc"
+        "brew/.auto_sync_brew.sh"
         "hyper/.hyper.js"
         "git/.gitconfig"
         "mackup/.mackup.cfg"
+        "npm/.auto_sync_npm.sh"
         "npm/.npmrc"
         "tmux/.tmux.conf"
         "vim/.vimrc"

@@ -7,8 +7,8 @@ windows:
   - chrome:
       layout: even-vertical
       panes:
-        - while true; do b; done
-        - while true; do c; done
+        - chrome_b: while true; do b; done
+        - chrome_c: while true; do c; done
   - gotop: while true; do gotop  --averagecpu --percpu; done
   - gitbatch: while true; do gitbatch; done
   - lazydocker: while true; do lazydocker; done
@@ -17,12 +17,14 @@ windows:
   - vnstat:
       layout: tiled
       panes:
-        - watch -n 300 vnstat -t -i en0
-        - watch -n 300 vnstat -h -i en0
-        - watch -n 300 vnstat -d -i en0
-        - watch -n 300 vnstat -m -i en0
+        vnstat_top: watch -n 300 vnstat -t -i en0
+        vnstat_hour: watch -n 300 vnstat -h -i en0
+        vnstat_day: watch -n 300 vnstat -d -i en0
+        vnstat_month: watch -n 300 vnstat -m -i en0
   - behind:
       layout: tiled
       panes:
-        - while true; do vnstatd -n; done
-        - watch -n 300 mackup backup
+        vnstat_bg: while true; do vnstatd -n; done
+        mackup: watch -n 300 mackup backup
+        brew: watch -n 300 ~/.auto_sync_brew.sh
+        npm: watch -n 300 ~/.auto_sync_npm.sh

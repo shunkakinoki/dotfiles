@@ -1,0 +1,12 @@
+{
+  "name": "dotfiles",
+  "description": "npm package manager",
+  "license": "MIT",
+  "repository": "https://github.com/shunkakinoki/dotfiles",
+  "version": "1.0.0",
+  "dependencies": {
+    "fast-cli": "^2.3.0",
+    "speed-test": "^2.1.0",
+    "spoof": "^2.0.1"
+  }
+}

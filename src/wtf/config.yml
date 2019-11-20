@@ -6,7 +6,7 @@ wtf:
       normal: gray
   grid:
     columns: [27, 30, 30, 30, 30, 30]
-    rows: [10, 10, 10, 3]
+    rows: [9, 9, 9, 9]
   refreshInterval: 1
   mods:
     github:
@@ -73,7 +73,7 @@ wtf:
       enabled: true
       labelColor: lightblue
       position:
-        top:  1
+        top: 1
         left: 2
         height: 1
         width: 1
@@ -83,9 +83,9 @@ wtf:
       enabled: true
       kubeconfig: "/Users/shunkakinoki/.kube/config"
       objects:
-      - deployments
-      - nodes
-      - pods
+        - deployments
+        - nodes
+        - pods
       position:
         top: 1
         left: 3
@@ -144,7 +144,43 @@ wtf:
         top: 3
         left: 0
         height: 1
-        width: 4
-      refreshInterval: 30
+        width: 1
+      refreshInterval: 300
       title: "Uptime"
+      type: cmdrunner
+    fast:
+      args: [""]
+      cmd: "fast"
+      enabled: true
+      position:
+        top: 3
+        left: 1
+        height: 1
+        width: 1
+      refreshInterval: 300
+      title: "Fast"
+      type: cmdrunner
+    speed-test:
+      args: [""]
+      cmd: "speed-test"
+      enabled: true
+      position:
+        top: 3
+        left: 2
+        height: 1
+        width: 1
+      refreshInterval: 300
+      title: "Speed Test"
+      type: cmdrunner
+    spoof:
+      args: ["list"]
+      cmd: "spoof"
+      enabled: true
+      position:
+        top: 3
+        left: 3
+        height: 1
+        width: 1
+      refreshInterval: 300
+      title: "Spoof"
       type: cmdrunner
