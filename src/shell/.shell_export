@@ -8,6 +8,7 @@ export LANG="en_US"
 export LC_ALL="en_US.UTF-8"
 export MANPAGER="less -X"
 export PIPENV_VENV_IN_PROJECT=true
+export PUPPETEER_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 export PYTHONIOENCODING="UTF-8"
 export SAVEHIST=$HISTSIZE
 export __CF_USER_TEXT_ENCODING=0x1F5:0x8000100:0x8000100

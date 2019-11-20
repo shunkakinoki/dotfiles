@@ -16,6 +16,7 @@ create_symlinks() {
         "mackup/.mackup.cfg"
         "npm/.auto_sync_npm.sh"
         "npm/.npmrc"
+        "pipenv/.pydistutils.cfg"
         "tmux/.tmux.conf"
         "vim/.vimrc"
         "vnstat/.vnstatrc"
