@@ -1,5 +1,5 @@
 #!/bin/bash
 
-n install -g fast-cli
-n install -g speed-test
-n install -g spoof
+npm install -g fast-cli
+npm install -g speed-test
+npm install -g spoof
