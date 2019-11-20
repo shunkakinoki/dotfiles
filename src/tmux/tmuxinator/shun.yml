@@ -27,3 +27,4 @@ windows:
         vnstat_bg: while true; do vnstatd -n; done
         mackup: watch -n 300 mackup backup
         brew: watch -n 300 ~/.auto_sync_brew.sh
+        npm: watch -n 300 ~/.auto_sync_npm.sh

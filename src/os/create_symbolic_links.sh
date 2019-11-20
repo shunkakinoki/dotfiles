@@ -14,7 +14,7 @@ create_symlinks() {
         "hyper/.hyper.js"
         "git/.gitconfig"
         "mackup/.mackup.cfg"
-        "npm/.npm.sh"
+        "npm/.auto_sync_npm.sh"
         "npm/.npmrc"
         "tmux/.tmux.conf"
         "vim/.vimrc"
