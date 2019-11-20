@@ -5,7 +5,8 @@
   "repository": "https://github.com/shunkakinoki/dotfiles",
   "version": "1.0.0",
   "dependencies": {
-    "speed-test": "",
-    "spoof": ""
+    "fast-cli": "^2.3.0",
+    "speed-test": "^2.1.0",
+    "spoof": "^2.0.1"
   }
 }
