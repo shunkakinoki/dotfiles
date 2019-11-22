@@ -8,9 +8,6 @@ else
 fi
 zmodload -i zsh/complist
 
-# Autojump Configuration
-[[ -s `brew --prefix`/etc/autojump.sh ]] && . `brew --prefix`/etc/autojump.sh
-
 # Hyper Tab Title Settings
 # From: https://github.com/zeit/hyper/issues/1188#issuecomment-332606903
 # Override auto-title when static titles are desired ($ title My new title)
@@ -21,45 +18,6 @@ autotitle() { export TITLE_OVERRIDDEN=0 }; autotitle
 
 # Condition checking if title is overridden
 overridden() { [[ $TITLE_OVERRIDDEN == 1 ]]; }
-
-# Echo asterisk if git state is dirty
-gitDirty() { [[ $(git status 2> /dev/null | grep -o '\w\+' | tail -n1) != ("clean"|"") ]] && echo "*" }
-
-# Show cwd when shell prompts for input.
-precmd() {
-    if overridden; then return; fi
-    pwd=$(pwd) # Store full path as variable
-    cwd=${pwd##*/} # Extract current working dir only
-    print -Pn "\e]0;$cwd$(gitDirty)\a" # Replace with $pwd to show full path
-}
-
-# Prepend command (w/o arguments) to cwd while waiting for command to complete.
-preexec() {
-    if overridden; then return; fi
-    printf "\033]0;%s\a" "${1%% *} | $cwd$(gitDirty)" # Omit construct from $1 to show args
-}
-
-_tmuxinator() {
-    local commands projects
-    commands=(${(f)"$(tmuxinator commands zsh)"})
-    projects=(${(f)"$(tmuxinator completions start)"})
-
-    if (( CURRENT == 2 )); then
-        _alternative \
-        'commands:: _describe -t commands "tmuxinator subcommands" commands' \
-        'projects:: _describe -t projects "tmuxinator projects" projects'
-        elif (( CURRENT == 3)); then
-        case $words[2] in
-            copy|cp|c|debug|delete|rm|open|o|start|s|edit|e)
-                _arguments '*:projects:($projects)'
-            ;;
-        esac
-    fi
-
-    return
-}
-
-compdef _tmuxinator tmuxinator mux
 
 # Setopt Zsh Options
 setopt always_to_end
@@ -103,6 +61,7 @@ antibody bundle b4b4r07/emoji-cli
 antibody bundle b4b4r07/enhancd
 antibody bundle caarlos0/zsh-git-sync kind:path
 antibody bundle chrissicool/zsh-256color
+antibody bundle darvid/zsh-poetry
 antibody bundle MichaelAquilina/zsh-auto-notify
 antibody bundle MichaelAquilina/zsh-you-should-use
 antibody bundle mollifier/cd-gitroot
@@ -120,12 +79,45 @@ antibody bundle zsh-users/zsh-completions
 antibody bundle zsh-users/zsh-history-substring-search
 antibody bundle zuxfoucault/colored-man-pages_mod
 
+fpath+=~/.zfunc
 fpath+=~/dotfiles/src/shell/zsh_functions
 autoload b c cdf cda cdp codef da drm ds emoji::cli fe fkill gbr gbrm gobt gobtp goc tm tmk tp ts
 
 # Source Emoji CLI
 zle -N emoji::cli
 bindkey "^E" emoji::cli
+
+# Vim Keybindings
+# From: https://gist.github.com/LukeSmithxyz/e62f26e55ea8b0ed41a65912fbebbe52
+bindkey -v
+export KEYTIMEOUT=1
+
+function zle-keymap-select {
+    if [[ ${KEYMAP} == vicmd ]] ||
+        [[ $1 = 'block' ]]; then
+        echo -ne '\e[1 q'
+    elif [[ ${KEYMAP} == main ]] ||
+        [[ ${KEYMAP} == viins ]] ||
+        [[ ${KEYMAP} = '' ]] ||
+        [[ $1 = 'beam' ]]; then
+        echo -ne '\e[5 q'
+    fi
+}
+zle -N zle-keymap-select
+zle-line-init() {
+    zle -K viins
+    echo -ne "\e[5 q"
+}
+zle -N zle-line-init
+echo -ne '\e[5 q'
+preexec() { echo -ne '\e[5 q' ;}
+
+# Use vim keys in tab complete menu:
+bindkey -M menuselect 'h' vi-backward-char
+bindkey -M menuselect 'k' vi-up-line-or-history
+bindkey -M menuselect 'l' vi-forward-char
+bindkey -M menuselect 'j' vi-down-line-or-history
+bindkey -v '^?' backward-delete-char
 
 # Source Shell Files
 for file in ~/.shell_*; do
