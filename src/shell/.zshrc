@@ -81,11 +81,8 @@ antibody bundle zuxfoucault/colored-man-pages_mod
 
 fpath+=~/.zfunc
 fpath+=~/dotfiles/src/shell/zsh_functions
-autoload b c cdf cda cdp codef da drm ds emoji::cli fe fkill gbr gbrm gobt gobtp goc tm tmk tp ts
+autoload b c cdf cda cdp codef da drm ds ef emoji::cli fe fkill gbr gbrm gobt gobtp goc tm tmk tp ts
 
-# Source Emoji CLI
-zle -N emoji::cli
-bindkey "^E" emoji::cli
 
 # Vim Keybindings
 # From: https://gist.github.com/LukeSmithxyz/e62f26e55ea8b0ed41a65912fbebbe52
@@ -94,12 +91,12 @@ export KEYTIMEOUT=1
 
 function zle-keymap-select {
     if [[ ${KEYMAP} == vicmd ]] ||
-        [[ $1 = 'block' ]]; then
+    [[ $1 = 'block' ]]; then
         echo -ne '\e[1 q'
     elif [[ ${KEYMAP} == main ]] ||
-        [[ ${KEYMAP} == viins ]] ||
-        [[ ${KEYMAP} = '' ]] ||
-        [[ $1 = 'beam' ]]; then
+    [[ ${KEYMAP} == viins ]] ||
+    [[ ${KEYMAP} = '' ]] ||
+    [[ $1 = 'beam' ]]; then
         echo -ne '\e[5 q'
     fi
 }
@@ -118,6 +115,10 @@ bindkey -M menuselect 'k' vi-up-line-or-history
 bindkey -M menuselect 'l' vi-forward-char
 bindkey -M menuselect 'j' vi-down-line-or-history
 bindkey -v '^?' backward-delete-char
+
+# Source Emoji CLI
+zle -N emoji::cli
+bindkey "^E" emoji::cli
 
 # Source Shell Files
 for file in ~/.shell_*; do
