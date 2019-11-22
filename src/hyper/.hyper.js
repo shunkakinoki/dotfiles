@@ -41,6 +41,9 @@ module.exports = {
         letterSpacing: 0,
         lineHeight: 1,
         macOptionSelectionMode: 'vertical',
+        modifierKeys: {
+            altIsMeta: true
+        },
         padding: '12px 14px',
         quickEdit: false,
         selectionColor: '#0095FF',
