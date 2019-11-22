@@ -17,6 +17,7 @@ alias map="xargs -n1"
 alias mux="tmuxinator"
 alias n="npm"
 alias path='printf "%b\n" "${PATH//:/\\n}"'
+alias reload="source ~/.zshrc"
 alias q="exit"
 alias rm="rm -rf --"
 alias t="tmux"
