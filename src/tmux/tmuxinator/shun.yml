@@ -9,8 +9,8 @@ windows:
       panes:
         - chrome_b: while true; do b; done
         - chrome_c: while true; do c; done
-  - gotop: while true; do gotop  --averagecpu --percpu; done
   - ranger: while true; do ranger; done
+  - gotop: while true; do gotop  --averagecpu --percpu; done
   - gitbatch: while true; do gitbatch; done
   - lazydocker: while true; do lazydocker; done
   - k9s: while true; do k9s; done
