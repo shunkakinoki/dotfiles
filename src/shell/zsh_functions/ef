@@ -1,0 +1,7 @@
+# ef - cd to selected directory
+ef() {
+  local dir
+  dir=$(find ${1:-.} -path '*/\.*' -prune \
+                  -o -type d -print 2> /dev/null | fzf +m) &&
+  e "$dir"
+}
