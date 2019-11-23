@@ -20,20 +20,23 @@ endif
 call plug#begin('~/.vim/plugged')
 
 " Airline
-
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
 " Auto-save
-
 Plug 'vim-scripts/vim-auto-save'
 
-" Coc
+" Better-whitespace
+Plug 'ntpeters/vim-better-whitespace'
 
+" Coc
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Dracula
 Plug 'dracula/vim', { 'as': 'dracula' }
+
+" Fugitive
+Plug 'tpope/vim-fugitive'
 
 " Fzf
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -45,6 +48,12 @@ Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plug 'Xuyuanp/nerdtree-git-plugin'
+
+" Prettier
+Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
+
+" Ultisnips
+Plug 'SirVer/ultisnips'
 
 " End Plugin Install
 call plug#end()
@@ -428,11 +437,23 @@ au TabLeave * let g:lasttab = tabpagenr()
 nnoremap <silent> <c-l> :exe "tabn ".g:lasttab<cr>
 vnoremap <silent> <c-l> :exe "tabn ".g:lasttab<cr>
 
+" Reload vim config
+nnoremap <leader>z :so $MYVIMRC<CR>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Airline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let g:airline_theme='angr'
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Better-whitespace
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+let g:better_whitespace_enabled=1
+let g:strip_whitespace_on_save=1
+
+highlight ExtraWhitespace ctermbg=LightBlue
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => AutoSave
@@ -592,6 +613,63 @@ nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
 syntax on
 colorscheme dracula
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Fzf
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+map <leader>ag :Ag<CR>
+map <leader>b :Buffers<CR>
+map <leader>c :Commands<CR>
+map <leader>f :Files<CR>
+map <leader>gc :Commits<CR>
+map <leader>gf :GFiles?<CR>
+map <leader>rg :Rg<CR>
+map <leader>s :Snippets<CR>
+
+command! -bang -nargs=* Ag
+  \ call fzf#vim#ag(<q-args>,
+  \                 <bang>0 ? fzf#vim#with_preview('up:60%')
+  \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
+  \                 <bang>0)
+
+command! -bang -nargs=? -complete=dir Files
+  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always '.shellescape(<q-args>), 1,
+  \   <bang>0 ? fzf#vim#with_preview('up:60%')
+  \           : fzf#vim#with_preview('right:50%:hidden', '?'),
+  \   <bang>0)
+
+" Mapping selecting mappings
+nmap <leader><tab> <plug>(fzf-maps-n)
+xmap <leader><tab> <plug>(fzf-maps-x)
+omap <leader><tab> <plug>(fzf-maps-o)
+
+" Insert mode completion
+imap <c-x><c-k> <plug>(fzf-complete-word)
+imap <c-x><c-f> <plug>(fzf-complete-path)
+imap <c-x><c-j> <plug>(fzf-complete-file-ag)
+imap <c-x><c-l> <plug>(fzf-complete-line)
+
+" Advanced customization using autoload functions
+inoremap <expr> <c-x><c-k> fzf#vim#complete#word({'left': '15%'})
+
+autocmd! FileType fzf
+autocmd  FileType fzf set laststatus=0 noshowmode noruler
+  \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
+
+function! s:fzf_statusline()
+  " Override statusline as you like
+  highlight fzf1 ctermfg=161 ctermbg=251
+  highlight fzf2 ctermfg=23 ctermbg=251
+  highlight fzf3 ctermfg=237 ctermbg=251
+  setlocal statusline=%#fzf1#\ >\ %#fzf2#fz%#fzf3#f
+endfunction
+
+autocmd! User FzfStatusLine call <SID>fzf_statusline()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Nerdtree
