@@ -1,16 +1,7 @@
 name: Shell
-on:
-  push:
-    branches:
-      - master
-    paths:
-      - "**.sh"
-  pull_request:
-    paths:
-      - "**.sh"
+on: push
 jobs:
   shell:
-    name: Run Lint Shellcheck
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -22,8 +13,3 @@ jobs:
           path: "."
           pattern: "*.sh"
           exclude: "./.git/*"
-      - name: Label on PR
-        uses: awact/label-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ADD_LABEL: "gha-shell"
