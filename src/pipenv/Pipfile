@@ -15,6 +15,7 @@ pep8 = "*"
 rustenv = "*"
 tox = "*"
 ueberzug = "*"
+spotdl = "*"
 
 [pipenv]
 allow_prereleases = true

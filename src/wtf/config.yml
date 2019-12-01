@@ -35,7 +35,7 @@ wtf:
         left: 1
         height: 1
         width: 1
-      refreshInterval: 15
+      refreshInterval: 300
       title: "Battery"
     ipinfo:
       colors:
@@ -77,7 +77,7 @@ wtf:
         left: 2
         height: 1
         width: 1
-      refreshInterval: 1
+      refreshInterval: 300
       title: "Docker"
     kubernetes:
       enabled: true
@@ -126,7 +126,7 @@ wtf:
         left: 2
         height: 1
         width: 1
-      refreshInterval: 15
+      refreshInterval: 60
       sort: "chronological"
     nbascore:
       enabled: true
