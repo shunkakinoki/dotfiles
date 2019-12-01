@@ -2,7 +2,6 @@ name: Shell
 on: push
 jobs:
   shell:
-    name: Run Lint Shellcheck
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
