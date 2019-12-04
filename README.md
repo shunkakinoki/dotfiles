@@ -4,9 +4,9 @@
 
 <div align="center">
 
-[![forthebadge](https://forthebadge.com/images/badges/kinda-sfw.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/powered-by-electricity.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/fo-real.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/fo-shizzle.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/fo-sho.svg)](https://forthebadge.com)
 
 </div>
 
