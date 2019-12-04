@@ -52,6 +52,12 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 " Prettier
 Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
 
+" Shell-utils
+Plug 'b4b4r07/vim-shellutils'
+
+" Startify
+Plug 'mhinz/vim-startify'
+
 " Ultisnips
 Plug 'SirVer/ultisnips'
 
