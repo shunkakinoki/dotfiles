@@ -1,5 +1,5 @@
-# gbr - checkout git branch
-gbr() {
+# gbo - checkout git branch
+gbo() {
   local branches branch
   branches=$(git --no-pager branch -vv) &&
   branch=$(echo "$branches" | fzf +m) &&
