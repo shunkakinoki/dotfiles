@@ -1,5 +1,5 @@
-# gbrm - checkout git branch (including remote branches), sorted by most recent commit, limit 30 last branches
-gbrm() {
+# gbor - checkout git branch (including remote branches), sorted by most recent commit, limit 30 last branches
+gbor() {
   local branches branch
   branches=$(git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format="%(refname:short)") &&
   branch=$(echo "$branches" |
