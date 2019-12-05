@@ -1,7 +1,6 @@
-# codef - cd to selected directory
+# codef - code to selected directory
 codef() {
   local dir
-  dir=$(find ${1:-.} -path '*/\.*' -prune \
-                  -o -type d -print 2> /dev/null | fzf +m) &&
-  code "$dir"
+  dir=$(ghq list > /dev/null | fzf-tmux --reverse +m) &&
+    code $(ghq root)/$dir
 }
