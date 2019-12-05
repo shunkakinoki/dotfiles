@@ -7,8 +7,14 @@ update_configs:
     default_reviewers:
       - shunkakinoki
 
+  - package_manager: "ruby:bundler"
+    directory: "src/bundle"
+    update_schedule: "live"
+    default_reviewers:
+      - shunkakinoki
+
   - package_manager: "javascript"
-    directory: "src/npm"
+    directory: "src/yarn"
     update_schedule: "live"
     default_reviewers:
       - shunkakinoki
