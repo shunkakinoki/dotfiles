@@ -81,7 +81,7 @@ antibody bundle zuxfoucault/colored-man-pages_mod
 
 fpath+=~/.zfunc
 fpath+=~/dotfiles/src/shell/zsh_functions
-autoload b c cdf cda cdp codef da drm ds ef emoji::cli fe fkill gbr gbrm gobt gobtp goc tm tmk tp ts
+autoload b c cdf cda cdp codef da drm ds ef emoji::cli fe fkill gbr gbrm ghl gobt gobtp goc tm tmk tp ts
 
 
 # Vim Keybindings
