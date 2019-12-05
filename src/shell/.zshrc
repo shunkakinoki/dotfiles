@@ -31,10 +31,9 @@ setopt hist_reduce_blanks
 setopt inc_append_history
 setopt interactive_comments
 setopt list_packed
+setopt prompt_cr
+setopt prompt_sp
 setopt share_history
-
-# Fix for `%` Sign Showing up on First Line
-unsetopt PROMPT_SP
 
 # Unset Zsh Commands
 unset zle_bracketed_paste
