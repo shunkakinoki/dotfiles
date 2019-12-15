@@ -16,6 +16,7 @@ rustenv = "*"
 tox = "*"
 ueberzug = "*"
 spotdl = "*"
+wakatime = "*"
 
 [pipenv]
 allow_prereleases = true

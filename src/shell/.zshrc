@@ -70,6 +70,7 @@ antibody bundle paulirish/git-recent
 antibody bundle peterhurford/git-it-on.zsh
 antibody bundle peterhurford/up.zsh
 antibody bundle urbainvaes/fzf-marks
+antibody bundle wbingli/zsh-wakatime
 antibody bundle wfxr/forgit
 antibody bundle zdharma/zsh-diff-so-fancy
 antibody bundle zdharma/fast-syntax-highlighting
