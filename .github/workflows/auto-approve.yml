@@ -7,7 +7,6 @@ jobs:
       - uses: hmarr/auto-approve-action@v2.0.0
         if: |
           github.actor == 'shunkakinoki' ||
-          github.actor == 'github-actions[bot]' ||
           github.actor == 'dependabot[bot]' ||
           github.actor == 'dependabot-preview[bot]'
         with:
