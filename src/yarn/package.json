@@ -8,7 +8,10 @@
     "@rafaelrinaldi/whereami": "^2.2.1",
     "fanyi": "^4.1.0",
     "fast-cli": "^2.3.0",
+    "gatsby": "^2.18.14",
+    "gh-home": "^2.0.1",
     "jshint": "^2.10.3",
+    "now": "^16.7.0",
     "speed-test": "^2.1.0",
     "spoof": "^2.0.1"
   }
