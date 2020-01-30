@@ -56,6 +56,7 @@ zstyle ':completion:*:descriptions' format '%BCompleting%b %U%d%u'
 source <(antibody init)
 
 # Install Antibody Plugins
+antibody bundle Aloxaf/fzf-tab
 antibody bundle b4b4r07/emoji-cli
 antibody bundle b4b4r07/enhancd
 antibody bundle caarlos0/zsh-git-sync kind:path
