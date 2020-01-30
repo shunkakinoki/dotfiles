@@ -4914,6 +4914,11 @@ gh-home@^2.0.1:
     meow "^5.0.0"
     open "^6.3.0"
 
+git-open@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/git-open/-/git-open-2.1.0.tgz#f8061f4dd69a5124b5db2763750132625f1a3256"
+  integrity sha512-2KhLG+PTvILNnUvS1DyOaH+JLypSSAAGnZm9Uvnar1MlaTqu35TJdlFazbAhlsBStB3mwp+qmkFZJzNhnUCW2w==
+
 git-remote-origin-url@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/git-remote-origin-url/-/git-remote-origin-url-3.0.0.tgz#7561ea24bc16e89b39f96d4302fffb0cd990a1d8"
