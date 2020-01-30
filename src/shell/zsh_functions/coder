@@ -1,0 +1,6 @@
+# coder - code to selected directory
+coder() {
+  local dir
+  dir=$(ghq list > /dev/null | fzf-tmux --reverse +m) &&
+    code -r $(ghq root)/$dir
+}
