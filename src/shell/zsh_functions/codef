@@ -1,6 +1,0 @@
-# codef - code to selected directory
-codef() {
-  local dir
-  dir=$(ghq list > /dev/null | fzf-tmux --reverse +m) &&
-    code $(ghq root)/$dir
-}
