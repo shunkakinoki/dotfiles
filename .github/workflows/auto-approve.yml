@@ -8,6 +8,7 @@ jobs:
         if: |
           github.actor == 'shunkakinoki' ||
           github.actor == 'dependabot[bot]' ||
-          github.actor == 'dependabot-preview[bot]'
+          github.actor == 'dependabot-preview[bot]' ||
+          github.actor == 'imgbot'
         with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
