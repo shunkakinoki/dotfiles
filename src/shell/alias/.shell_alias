@@ -6,6 +6,7 @@ alias ....="cd ../../.."
 
 alias :q="exit"
 alias ch="history -c && > ~/.bash_history"
+alias dot="code ~/dotfiles"
 alias e="vim --"
 alias g="git"
 alias ghqp="ghq list | ghq get --update --parallel"
