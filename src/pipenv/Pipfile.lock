@@ -472,17 +472,17 @@
         },
         "virtualenv": {
             "hashes": [
-                "sha256:916497082376027a387c49af092a4316c0e9db753f95ea1af22eba569f107cfe",
-                "sha256:9a87270123622593ad454a81055b771a8898590ff3d6f3abbe48c4111ff49e79"
+                "sha256:a7a7f272882815c2f84b9a5bfd75ab4e32eea257bc3169a9c139310c064ebbeb",
+                "sha256:d98aa9ae72aa2f892e697e38c0314cd835c8f44d7f38b2fe27d11a6aa084dd2c"
             ],
-            "version": "==20.0.0b1"
+            "version": "==20.0.0b2"
         },
         "wakatime": {
             "hashes": [
-                "sha256:2816447bad75d5d77a4105f5bed6bc53add2fa5797273820f29434db36675af4"
+                "sha256:b11fdfbe4672bc2953acb3e9429119b9096c91bcebbd97e9754ab3267e7eb547"
             ],
             "index": "pypi",
-            "version": "==13.0.3"
+            "version": "==13.0.4"
         },
         "youtube-dl": {
             "hashes": [
