@@ -486,10 +486,10 @@
         },
         "wakatime": {
             "hashes": [
-                "sha256:c36cda78bc7e85812e5bf93eee9825203a23e1f943d84700de7ba1f8c4ffa551"
+                "sha256:07a6d07e1227e3bd45242a2a4861d105bddc6220174a9b739c551bd2d45ce0fd"
             ],
             "index": "pypi",
-            "version": "==13.0.6"
+            "version": "==13.0.7"
         },
         "youtube-dl": {
             "hashes": [
