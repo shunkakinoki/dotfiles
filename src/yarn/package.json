@@ -16,5 +16,8 @@
     "serverless": "^1.63.0",
     "speed-test": "^2.1.0",
     "spoof": "^2.0.1"
+  },
+  "devDependencies": {
+    "commitizen": "^4.0.3"
   }
 }
