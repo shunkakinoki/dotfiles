@@ -8,16 +8,13 @@
     "@rafaelrinaldi/whereami": "^2.2.1",
     "fanyi": "^4.1.0",
     "fast-cli": "^2.3.0",
-    "gatsby": "^2.19.19",
+    "gatsby": "^2.19.18",
     "gh-home": "^2.0.1",
     "git-open": "^2.1.0",
     "jshint": "^2.11.0",
-    "now": "^17.0.4",
-    "serverless": "^1.64.0",
+    "now": "^17.0.3",
+    "serverless": "^1.63.0",
     "speed-test": "^2.1.0",
     "spoof": "^2.0.1"
-  },
-  "devDependencies": {
-    "commitizen": "^4.0.3"
   }
 }
