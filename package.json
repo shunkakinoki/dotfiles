@@ -1,12 +1,12 @@
 {
-  "name": "notebook",
+  "name": "dotfiles",
   "author": "Shun Kakinoki",
   "license": "MIT",
   "version": "1.0.0",
-  "homepage": "https://github.com/shunkakinoki/notebook",
+  "homepage": "https://github.com/shunkakinoki/dotfiles",
   "repository": {
     "type": "git",
-    "url": "https://github.com/shunkakinoki/notebook.git"
+    "url": "https://github.com/shunkakinoki/dotfiles.git"
   },
   "scripts": {
     "test": "yarn run lint && yarn run release-test",
