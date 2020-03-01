@@ -29,6 +29,9 @@ jobs:
           yarn run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Restore yarn.lock
+        run: |
+          git restore yarn.lock
       - name: Create a pull request if updated
         uses: peter-evans/create-pull-request@v2
         with:
