@@ -36,5 +36,6 @@ jobs:
         uses: peter-evans/create-pull-request@v2
         with:
           token: ${{ secrets.ACCESS_TOKEN }}
+          branch-suffix: short-commit-hash
         env:
           HUSKY_SKIP_HOOKS: 1
