@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/shunkakinoki/dotfiles/compare/v2.0.0...v2.0.1) (2020-03-01)
+
+
+### Performance Improvements
+
+* ⚡️ util ([cec2db8](https://github.com/shunkakinoki/dotfiles/commit/cec2db8f4da126b21adc94a7f3cb060ef03d14e4))
+
 # [2.0.0](https://github.com/shunkakinoki/dotfiles/compare/v1.0.0...v2.0.0) (2020-03-01)
 
 
