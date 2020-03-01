@@ -1,0 +1,37 @@
+name: Release
+on:
+  push:
+    branches:
+      - master
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
+      - name: Cache node modules
+        id: cache
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: node-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            node-
+      - name: Install dependencies with yarn
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          yarn install
+      - name: Release
+        run: |
+          yarn run release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create a pull request if updated
+        uses: peter-evans/create-pull-request@v2
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+        env:
+          HUSKY_SKIP_HOOKS: 1
