@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/shunkakinoki/dotfiles/compare/v1.0.0...v2.0.0) (2020-03-01)
+
+
+### Features
+
+* 🎸 reini ([7a56ebe](https://github.com/shunkakinoki/dotfiles/commit/7a56ebec81f1f6e9217fd2738d37ca8043283902))
+
+
+### BREAKING CHANGES
+
+* 🧨 yes
+
 # 1.0.0 (2020-03-01)
 
 
