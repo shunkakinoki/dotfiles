@@ -5,21 +5,24 @@ cd "$(dirname "${BASH_SOURCE[0]}")" &&
 
 create_symlinks() {
     declare -a FILES_TO_SYMLINK=(
-        "shell/alias/.shell_alias"
+        "brew/.auto_sync_brew.sh"
+        "bundle/.auto_sync_bundle.sh"
+        "git/.gitconfig"
+        "hyper/.hyper.js"
+        "mackup/.mackup.cfg"
+        "pipenv/.auto_sync_pipenv.sh"
+        "pipenv/.pydistutils.cfg"
         "shell/.bashrc"
         "shell/.shell_export"
         "shell/.shell_path"
         "shell/.zshrc"
-        "brew/.auto_sync_brew.sh"
-        "hyper/.hyper.js"
-        "git/.gitconfig"
-        "mackup/.mackup.cfg"
-        "npm/.auto_sync_npm.sh"
-        "npm/.npmrc"
-        "pipenv/.pydistutils.cfg"
+        "shell/alias/.shell_alias"
+        "sync/.auto_sync.sh"
+        "sync/.auto_sync_gpr.sh"
         "tmux/.tmux.conf"
         "vim/.vimrc"
         "vnstat/.vnstatrc"
+        "yarn/.auto_sync_yarn.sh"
     )
 
     local i=""
