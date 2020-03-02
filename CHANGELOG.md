@@ -1,3 +1,11 @@
+# [2.1.0](https://github.com/shunkakinoki/dotfiles/compare/v2.0.9...v2.1.0) (2020-03-02)
+
+
+### Features
+
+* 🎸 prettier ([511b4fb](https://github.com/shunkakinoki/dotfiles/commit/511b4fbf6bc64f88c57bdfa29bd52d9ce2fc32c4))
+* 🎸 style ([252b37d](https://github.com/shunkakinoki/dotfiles/commit/252b37d53da78343e255f919e48d0df40e389edf))
+
 ## [2.0.9](https://github.com/shunkakinoki/dotfiles/compare/v2.0.8...v2.0.9) (2020-03-02)
 
 
