@@ -1,3 +1,10 @@
+## [2.1.4](https://github.com/shunkakinoki/dotfiles/compare/v2.1.3...v2.1.4) (2020-03-02)
+
+
+### Bug Fixes
+
+* 🐛 delta ([1583d73](https://github.com/shunkakinoki/dotfiles/commit/1583d73825f549aaf6737bcfa52546f05931e561))
+
 ## [2.1.3](https://github.com/shunkakinoki/dotfiles/compare/v2.1.2...v2.1.3) (2020-03-02)
 
 
