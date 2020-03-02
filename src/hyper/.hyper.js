@@ -34,7 +34,7 @@ module.exports = {
         defaultSSHApp: true,
         env: {},
         fontFamily: 'Hack Nerd Font',
-        fontSize: 17,
+        fontSize: 13,
         fontWeight: 'normal',
         fontWeightBold: 'bold',
         foregroundColor: '#fff',
