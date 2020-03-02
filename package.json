@@ -14,8 +14,8 @@
     "release-test": "semantic-release -d",
     "lint": "yarn eclint-check && yarn prettier-check",
     "fix": "yarn eclint-fix && yarn prettier-fix",
-    "eclint-check": "eclint check $(git ls-files)",
-    "eclint-fix": "eclint fix $(git ls-files)",
+    "eclint-check": "eclint check $(git grep --cached -l '')",
+    "eclint-fix": "eclint fix $(git grep --cached -l '')",
     "prettier-check": "prettier --check \"**/*.{js,jsx,json,ts,tsx,css,html,yml,yaml,scss,sass}\"",
     "prettier-fix": "prettier --write \"**/*.{js,jsx,json,ts,tsx,css,html,yml,yaml,scss,sass}\""
   },
