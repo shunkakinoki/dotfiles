@@ -1,6 +1,6 @@
 cd ~/dotfiles
 git aa
 HUSKY_SKIP_HOOKS=1 git cm "perf(auto-update): auto-sync-gpr"
-g o -b auto-sync-gpr
-gpn
+git checkout -b auto-sync-gpr
+git publish && hub pull-request --no-edit
 cd ~
