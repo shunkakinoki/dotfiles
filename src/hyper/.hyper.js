@@ -32,7 +32,9 @@ module.exports = {
         cursorColor: '#0095FF',
         cursorShape: 'BEAM',
         defaultSSHApp: true,
-        env: {},
+        env: {
+            'ZSH_INIT_COMMAND': 'mux start shell'
+        },
         fontFamily: 'Hack Nerd Font',
         fontSize: 13,
         fontWeight: 'normal',
