@@ -55,11 +55,7 @@ done
 source ~/.zshrc.local
 
 # Eval Zsh Packages
-eval $(thefuck --alias)
-eval "$(direnv hook zsh)"
 eval "$(starship init zsh)"
-source "$(navi widget zsh)"
-source <(npm completion)
 
 if [[ -n $ZSH_INIT_COMMAND ]]; then
     echo "Running: $ZSH_INIT_COMMAND"
