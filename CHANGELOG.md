@@ -1,3 +1,11 @@
+## [2.0.3](https://github.com/shunkakinoki/dotfiles/compare/v2.0.2...v2.0.3) (2020-03-02)
+
+
+### Performance Improvements
+
+* **auto-update:** auto-sync-gpr ([8c02ae7](https://github.com/shunkakinoki/dotfiles/commit/8c02ae73ef7673536222c82b29cf64b9a7784151))
+* **auto-update:** auto-sync-gpr ([00bfdc2](https://github.com/shunkakinoki/dotfiles/commit/00bfdc2acce97a466efb072dfa1a433c951ea495))
+
 ## [2.0.2](https://github.com/shunkakinoki/dotfiles/compare/v2.0.1...v2.0.2) (2020-03-02)
 
 
