@@ -19,6 +19,7 @@ create_symlinks() {
         "shell/alias/.shell_alias"
         "sync/.auto_sync.sh"
         "sync/.auto_sync_gpr.sh"
+        "sync/.auto_sync_hub.sh"
         "tmux/.tmux.conf"
         "vim/.vimrc"
         "vnstat/.vnstatrc"
