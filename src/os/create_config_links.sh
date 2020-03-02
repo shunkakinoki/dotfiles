@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cd "$(dirname "${BASH_SOURCE[0]}")" &&
-    . "utils.sh"
+. "utils.sh"
 
 create_configlinks() {
     declare -a FILES_TO_SYMLINK=(
@@ -13,6 +13,7 @@ create_configlinks() {
         "starship/starship.toml"
         "spotify/config.yml"
         "wtf/config.yml"
+        "tmux/tmuxinator/code.yml"
         "tmux/tmuxinator/shell.yml"
         "tmux/tmuxinator/shun.yml"
     )
@@ -26,6 +27,7 @@ create_configlinks() {
         ".config"
         ".config/spotify-tui"
         ".config/wtf"
+        ".tmuxinator"
         ".tmuxinator"
         ".tmuxinator"
     )
