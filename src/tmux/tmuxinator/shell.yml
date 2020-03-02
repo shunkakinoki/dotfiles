@@ -1,5 +1,6 @@
 name: shell
 root: ~/
+attach: true
 windows:
   - zsh: neofetch
   - zsh: neofetch
