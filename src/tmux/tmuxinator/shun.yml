@@ -1,6 +1,6 @@
 name: shun
 root: ~/
-attach: true
+attach: false
 windows:
   - zsh: neofetch
   - wtfutil: while true; do wtfutil; done
