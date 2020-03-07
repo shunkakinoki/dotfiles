@@ -6,6 +6,7 @@
   "version": "1.0.0",
   "dependencies": {
     "@rafaelrinaldi/whereami": "^2.2.1",
+    "awsp": "^0.2.0",
     "fanyi": "^4.1.0",
     "fast-cli": "^2.3.0",
     "gatsby": "^2.19.28",

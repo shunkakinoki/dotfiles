@@ -2,5 +2,4 @@
 ~/.auto_sync_brew.sh
 ~/.auto_sync_pipenv.sh
 ~/.auto_sync_yarn.sh
-
-mackup backup
+~/.auto_sync_mackup.sh
