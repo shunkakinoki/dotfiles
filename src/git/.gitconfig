@@ -18,3 +18,8 @@ process = git-lfs filter-process
 required = true
 [alias]
 ce = commit --allow-empty
+[credential]
+	helper = osxkeychain
+[user]
+	name = Shun Kakinoki
+	email = shunkakinoki@gmail.com
