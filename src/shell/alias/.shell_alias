@@ -5,6 +5,7 @@ alias ...="cd ../.."
 alias ....="cd ../../.."
 
 alias :q="exit"
+alias awsp="source _awsp"
 alias ch="history -c && > ~/.bash_history"
 alias dot="code ~/dotfiles"
 alias dotsync="~/.auto_sync.sh"

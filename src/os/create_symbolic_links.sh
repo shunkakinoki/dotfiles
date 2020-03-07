@@ -20,6 +20,7 @@ create_symlinks() {
         "sync/.auto_sync.sh"
         "sync/.auto_sync_gpr.sh"
         "sync/.auto_sync_hub.sh"
+        "sync/.auto_sync_mackup.sh"
         "tmux/.tmux.conf"
         "vim/.vimrc"
         "vnstat/.vnstatrc"

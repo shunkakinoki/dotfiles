@@ -34,7 +34,7 @@ brew "python"
 brew "buku"
 brew "cmake"
 brew "cmatrix"
-brew "cocoapods"
+brew "cocoapods", link: false
 brew "coreutils"
 brew "cowsay"
 brew "ctop"
@@ -206,4 +206,5 @@ mas "Magnet", id: 441258766
 mas "Motion", id: 434290957
 mas "Pixelmator Pro", id: 1289583905
 mas "Plash", id: 1494023538
+mas "Streaks", id: 1493327990
 mas "Xcode", id: 497799835

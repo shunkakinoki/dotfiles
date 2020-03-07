@@ -2,6 +2,7 @@
 
 export EDITOR="vim"
 export GIT_COMPLETION_CHECKOUT_NO_GUESS=1
+export HISTFILE=~/.zsh_history
 export HISTSIZE=100000
 export LANG="en_US"
 export LC_ALL="en_US.UTF-8"
