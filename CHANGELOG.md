@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/shunkakinoki/dotfiles/compare/v2.1.16...v2.2.0) (2020-03-07)
+
+
+### Features
+
+* 🎸 update ([b4234d2](https://github.com/shunkakinoki/dotfiles/commit/b4234d2afcc868ff7596b220eebdbefbe97fa814))
+
 ## [2.1.10](https://github.com/shunkakinoki/dotfiles/compare/v2.1.9...v2.1.10) (2020-03-04)
 
 
