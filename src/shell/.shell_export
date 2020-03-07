@@ -1,8 +1,7 @@
 #!/bin/bash
 
 export EDITOR="vim"
-export HISTCONTROL=ignoreboth
-export HISTIGNORE="&:[bf]g:c:clear:history:exit:q:pwd:* --help"
+export GIT_COMPLETION_CHECKOUT_NO_GUESS=1
 export HISTSIZE=100000
 export LANG="en_US"
 export LC_ALL="en_US.UTF-8"
