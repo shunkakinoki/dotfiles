@@ -119,8 +119,6 @@ initialize_git_repository() {
         exit 1
     fi
     if ! is_git_repository; then
-        cd ../../ ||
-        print_error "Failed to 'cd ../../'"
         execute \
         "git init && git remote add origin $GIT_ORIGIN" \
         "Initialize the Git repository"
