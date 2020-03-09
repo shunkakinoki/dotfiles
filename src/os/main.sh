@@ -115,10 +115,6 @@ verify_os() {
 initialize_git_repository() {
     declare -r GIT_ORIGIN="$1"
 
-    execute \
-    "mkdir -p dotfiles && cd '$_'" \
-    "Mkdircd into dotfiles"
-
     if [ -z "$GIT_ORIGIN" ]; then
         print_error "Please provide a URL for the Git origin"
         exit 1
