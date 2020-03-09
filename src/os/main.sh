@@ -13,7 +13,6 @@ download() {
     if command -v "curl" &>/dev/null; then
         curl -LsSo "$output" "$url" &>/dev/null
         return $?
-
         elif command -v "wget" &>/dev/null; then
         wget -qO "$output" "$url" &>/dev/null
         return $?
@@ -28,7 +27,6 @@ download_dotfiles() {
     download "$DOTFILES_TARBALL_URL" "$tmpFile"
     print_result $? "Download archive" "true"
     printf "\n"
-
     if ! $skipQuestions; then
         ask_for_confirmation "Do you want to store the dotfiles in '$dotfilesDirectory'?"
 
@@ -39,7 +37,6 @@ download_dotfiles() {
                 dotfilesDirectory="$(get_answer)"
             done
         fi
-
         while [ -e "$dotfilesDirectory" ]; do
             ask_for_confirmation "'$dotfilesDirectory' already exists, do you want to overwrite it?"
             if answer_is_yes; then
@@ -53,9 +50,7 @@ download_dotfiles() {
                 done
             fi
         done
-
         printf "\n"
-
     else
         rm -rf "$dotfilesDirectory" &>/dev/null
     fi
@@ -114,7 +109,6 @@ verify_os() {
 
 initialize_git_repository() {
     declare -r GIT_ORIGIN="$1"
-
     if [ -z "$GIT_ORIGIN" ]; then
         print_error "Please provide a URL for the Git origin"
         exit 1
@@ -129,24 +123,21 @@ initialize_git_repository() {
 main() {
     cd "$(dirname "${BASH_SOURCE[0]}")" \
     || exit 1
-
     if [ -x "utils.sh" ]; then
         . "utils.sh" || exit 1
     else
         download_utils || exit 1
+        echo "done"
     fi
-
     verify_os \
     || exit 1
-
     skip_questions "$@" \
     && skipQuestions=true
     ask_for_sudo
-
     if cmd_exists "git"; then
         if [ "$(git config --get remote.origin.url)" != "$DOTFILES_ORIGIN" ]; then
             print_in_purple "\n   Initialize Git repository\n\n"
-
+            echo "done"
             initialize_git_repository "$DOTFILES_ORIGIN"
         fi
         if ! $skipQuestions; then
