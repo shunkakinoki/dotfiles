@@ -59,18 +59,14 @@ download_dotfiles() {
     else
         rm -rf "$dotfilesDirectory" &>/dev/null
     fi
-
     mkdir -p "$dotfilesDirectory"
     print_result $? "Create '$dotfilesDirectory'" "true"
-
     extract "$tmpFile" "$dotfilesDirectory"
     print_result $? "Extract archive" "true"
-
     rm -rf "$tmpFile"
     print_result $? "Remove archive"
-
-    cd "$dotfilesDirectory/src/os" ||
-    return 1
+    cd "$dotfilesDirectory/src/os" \
+    || return 1
 }
 
 download_utils() {
@@ -134,21 +130,16 @@ initialize_git_repository() {
 main() {
     cd "$(dirname "${BASH_SOURCE[0]}")" \
     || exit 1
-
     if [ -x "utils.sh" ]; then
         . "utils.sh" || exit 1
     else
         download_utils || exit 1
     fi
-
     verify_os \
     || exit 1
-
     skip_questions "$@" \
     && skipQuestions=true
-
     ask_for_sudo
-
     if cmd_exists "git"; then
         if [ "$(git config --get remote.origin.url)" != "$DOTFILES_ORIGIN" ]; then
             print_in_purple "\n   Initialize Git repository\n\n"
@@ -169,10 +160,8 @@ main() {
         ./create_local_config_files.sh
         ./create_tmuxinator_links.sh
     fi
-
     ./install/main.sh
     ./preferences/main.sh
-
     if ! $skipQuestions; then
         ./restart.sh
     fi
