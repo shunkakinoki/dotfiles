@@ -126,8 +126,8 @@ verify_os() {
 }
 
 main() {
-    cd "$(dirname "${BASH_SOURCE[0]}")" ||
-    exit 1
+    cd "$(dirname "${BASH_SOURCE[0]}")" \
+    || exit 1
 
     if [ -x "utils.sh" ]; then
         . "utils.sh" || exit 1
@@ -135,11 +135,11 @@ main() {
         download_utils || exit 1
     fi
 
-    verify_os ||
-    exit 1
+    verify_os \
+    || exit 1
 
-    skip_questions "$@" &&
-    skipQuestions=true
+    skip_questions "$@" \
+    && skipQuestions=true
 
     ask_for_sudo
 
@@ -155,8 +155,8 @@ main() {
             ./create_tmuxinator_links.sh
         fi
     else
-        printf "%s" "${BASH_SOURCE[0]}" | grep "setup.sh" &>/dev/null ||
-        download_dotfiles
+        printf "%s" "${BASH_SOURCE[0]}" | grep "setup.sh" &> /dev/null \
+        || download_dotfiles
         ./create_symbolic_links.sh "$@"
         ./create_config_links.sh "$@"
         ./create_local_config_files.sh
