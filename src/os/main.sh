@@ -18,7 +18,6 @@ download() {
         wget -qO "$output" "$url" &>/dev/null
         return $?
     fi
-
     return 1
 }
 
@@ -117,11 +116,6 @@ verify_os() {
     return 1
 }
 
-utils(){
-    cd "$(dirname "${BASH_SOURCE[0]}")" &&
-    . "utils.sh"
-}
-
 initialize_git_repository() {
     declare -r GIT_ORIGIN="$1"
     if [ -z "$GIT_ORIGIN" ]; then
@@ -158,7 +152,6 @@ main() {
     if cmd_exists "git"; then
         if [ "$(git config --get remote.origin.url)" != "$DOTFILES_ORIGIN" ]; then
             print_in_purple "\n   Initialize Git repository\n\n"
-            utils
             initialize_git_repository "$DOTFILES_ORIGIN"
         fi
         if ! $skipQuestions; then
