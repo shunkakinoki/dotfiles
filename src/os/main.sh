@@ -77,23 +77,20 @@ download_dotfiles() {
 download_utils() {
     local tmpFile=""
     tmpFile="$(mktemp /tmp/XXXXX)"
-    download "$DOTFILES_UTILS_URL" "$tmpFile" &&
-    . "$tmpFile" &&
-    rm -rf "$tmpFile" &&
-    return 0
-
+    download "$DOTFILES_UTILS_URL" "$tmpFile" \
+    && . "$tmpFile" \
+    && rm -rf "$tmpFile" \
+    && return 0
     return 1
 }
 
 extract() {
     local archive="$1"
     local outputDir="$2"
-
     if command -v "tar" &>/dev/null; then
         tar -zxf "$archive" --strip-components 1 -C "$outputDir"
         return $?
     fi
-
     return 1
 }
 
@@ -102,26 +99,21 @@ verify_os() {
     declare -r MINIMUM_UBUNTU_VERSION="18.04"
     local os_name="$(get_os)"
     local os_version="$(get_os_version)"
-
     if [ "$os_name" == "macos" ]; then
-
         if is_supported_version "$os_version" "$MINIMUM_MACOS_VERSION"; then
             return 0
         else
             printf "Sorry, this script is intended only for macOS %s+" "$MINIMUM_MACOS_VERSION"
         fi
-
         elif [ "$os_name" == "ubuntu" ]; then
         if is_supported_version "$os_version" "$MINIMUM_UBUNTU_VERSION"; then
             return 0
         else
             printf "Sorry, this script is intended only for Ubuntu %s+" "$MINIMUM_UBUNTU_VERSION"
         fi
-
     else
         printf "Sorry, this script is intended only for macOS and Ubuntu!"
     fi
-
     return 1
 }
 
@@ -132,17 +124,13 @@ utils(){
 
 initialize_git_repository() {
     declare -r GIT_ORIGIN="$1"
-
     if [ -z "$GIT_ORIGIN" ]; then
         print_error "Please provide a URL for the Git origin"
         exit 1
     fi
-
     if ! is_git_repository; then
-
         cd ../../ ||
         print_error "Failed to 'cd ../../'"
-
         execute \
         "git init && git remote add origin $GIT_ORIGIN" \
         "Initialize the Git repository"
@@ -169,6 +157,7 @@ main() {
 
     if cmd_exists "git"; then
         if [ "$(git config --get remote.origin.url)" != "$DOTFILES_ORIGIN" ]; then
+            print_in_purple "\n   Initialize Git repository\n\n"
             utils
             initialize_git_repository "$DOTFILES_ORIGIN"
         fi
