@@ -1,3 +1,17 @@
+## [2.2.3](https://github.com/shunkakinoki/dotfiles/compare/v2.2.2...v2.2.3) (2020-03-09)
+
+
+### Performance Improvements
+
+* **auto-update:** auto-sync-gpr ([2b7c973](https://github.com/shunkakinoki/dotfiles/commit/2b7c9734e4ee795c40591cdc60ccf8531bc7af8e))
+
+## [2.2.2](https://github.com/shunkakinoki/dotfiles/compare/v2.2.1...v2.2.2) (2020-03-09)
+
+
+### Bug Fixes
+
+* **deps:** bump serverless from 1.65.0 to 1.66.0 in /src/yarn ([2dd3380](https://github.com/shunkakinoki/dotfiles/commit/2dd338026f61ac20205cdff6b0ae884e00cea9fb))
+
 ## [2.2.1](https://github.com/shunkakinoki/dotfiles/compare/v2.2.0...v2.2.1) (2020-03-07)
 
 
