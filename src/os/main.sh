@@ -125,6 +125,30 @@ verify_os() {
     return 1
 }
 
+utils(){
+    cd "$(dirname "${BASH_SOURCE[0]}")" &&
+    . "utils.sh"
+}
+
+initialize_git_repository() {
+    declare -r GIT_ORIGIN="$1"
+
+    if [ -z "$GIT_ORIGIN" ]; then
+        print_error "Please provide a URL for the Git origin"
+        exit 1
+    fi
+
+    if ! is_git_repository; then
+
+        cd ../../ ||
+        print_error "Failed to 'cd ../../'"
+
+        execute \
+        "git init && git remote add origin $GIT_ORIGIN" \
+        "Initialize the Git repository"
+    fi
+}
+
 main() {
     cd "$(dirname "${BASH_SOURCE[0]}")" \
     || exit 1
@@ -145,7 +169,8 @@ main() {
 
     if cmd_exists "git"; then
         if [ "$(git config --get remote.origin.url)" != "$DOTFILES_ORIGIN" ]; then
-            ./initialize_git_repository.sh "$DOTFILES_ORIGIN"
+            utils
+            initialize_git_repository "$DOTFILES_ORIGIN"
         fi
         if ! $skipQuestions; then
             ./update_content.sh
