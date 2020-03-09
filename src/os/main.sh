@@ -119,8 +119,9 @@ initialize_git_repository() {
         exit 1
     fi
     if ! is_git_repository; then
-        mkdir -p -- dotfiles \
-        && cd -P -- dotfiles
+        execute \
+        "eval {mkdir,cd}\ dotfiles\;" \
+        "Mkdircd into dotfiles"
         execute \
         "git init && git remote add origin $GIT_ORIGIN" \
         "Initialize the Git repository"
