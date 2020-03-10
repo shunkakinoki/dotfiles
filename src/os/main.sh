@@ -129,8 +129,6 @@ main() {
         download_utils || exit 1
     fi
     print_in_purple "\n   Starting shunkakinoki dotfiles\n\n"
-    print_in_purple "\n   Starting shunkakinoki dotfiles\n\n"
-    print_in_purple "\n   Starting shunkakinoki dotfiles\n\n"
     verify_os \
     || exit 1
     skip_questions "$@" \
@@ -142,6 +140,7 @@ main() {
             initialize_git_repository "$DOTFILES_ORIGIN"
         fi
         if ! $skipQuestions; then
+            print_in_purple "\n   Initialize Git repository\n\n"
             ./update_content.sh
             ./create_symbolic_links.sh "$@"
             ./create_config_links.sh "$@"
