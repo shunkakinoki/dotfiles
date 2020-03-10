@@ -121,9 +121,6 @@ initialize_git_repository() {
 }
 
 main() {
-    print_in_purple "\n   Starting shunkakinoki dotfiles\n\n"
-    print_in_purple "\n   Starting shunkakinoki dotfiles\n\n"
-    print_in_purple "\n   Starting shunkakinoki dotfiles\n\n"
     cd "$(dirname "${BASH_SOURCE[0]}")" \
     || exit 1
     if [ -x "utils.sh" ]; then
@@ -131,6 +128,9 @@ main() {
     else
         download_utils || exit 1
     fi
+    print_in_purple "\n   Starting shunkakinoki dotfiles\n\n"
+    print_in_purple "\n   Starting shunkakinoki dotfiles\n\n"
+    print_in_purple "\n   Starting shunkakinoki dotfiles\n\n"
     verify_os \
     || exit 1
     skip_questions "$@" \
