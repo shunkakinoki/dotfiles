@@ -121,13 +121,15 @@ initialize_git_repository() {
 }
 
 main() {
+    print_in_purple "\n   Starting shunkakinoki dotfiles\n\n"
+    print_in_purple "\n   Starting shunkakinoki dotfiles\n\n"
+    print_in_purple "\n   Starting shunkakinoki dotfiles\n\n"
     cd "$(dirname "${BASH_SOURCE[0]}")" \
     || exit 1
     if [ -x "utils.sh" ]; then
         . "utils.sh" || exit 1
     else
         download_utils || exit 1
-        echo "done"
     fi
     verify_os \
     || exit 1
@@ -137,7 +139,6 @@ main() {
     if cmd_exists "git"; then
         if [ "$(git config --get remote.origin.url)" != "$DOTFILES_ORIGIN" ]; then
             print_in_purple "\n   Initialize Git repository\n\n"
-            echo "done"
             initialize_git_repository "$DOTFILES_ORIGIN"
         fi
         if ! $skipQuestions; then
