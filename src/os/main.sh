@@ -68,6 +68,7 @@ download_utils() {
     local tmpFile=""
     tmpFile="$(mktemp /tmp/XXXXX)"
     download "$DOTFILES_UTILS_URL" "$tmpFile" \
+    && cat "$tmpFile" \
     && . "$tmpFile" \
     && rm -rf "$tmpFile" \
     && return 0
