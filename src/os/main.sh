@@ -153,7 +153,6 @@ main() {
         ./create_symbolic_links.sh "$@"
         ./create_config_links.sh "$@"
         ./create_local_config_files.sh
-        ./create_tmuxinator_links.sh
     fi
     ./install/main.sh
     ./preferences/main.sh
