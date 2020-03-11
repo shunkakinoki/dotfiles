@@ -1,3 +1,24 @@
+## [2.2.29](https://github.com/shunkakinoki/dotfiles/compare/v2.2.28...v2.2.29) (2020-03-11)
+
+
+### Bug Fixes
+
+* **deps:** bump src/git/gitalias from `48b72bf` to `6e7ce65` ([2f4a72a](https://github.com/shunkakinoki/dotfiles/commit/2f4a72a3edffc0a03fd3c8aba226a9508c7dbf08))
+
+## [2.2.28](https://github.com/shunkakinoki/dotfiles/compare/v2.2.27...v2.2.28) (2020-03-10)
+
+
+### Bug Fixes
+
+* **deps:** bump gatsby from 2.19.35 to 2.19.36 in /src/yarn ([dde94a4](https://github.com/shunkakinoki/dotfiles/commit/dde94a4021204a231602a0198628bd884eee9c30))
+
+## [2.2.27](https://github.com/shunkakinoki/dotfiles/compare/v2.2.26...v2.2.27) (2020-03-10)
+
+
+### Bug Fixes
+
+* **deps:** bump gatsby from 2.19.34 to 2.19.35 in /src/yarn ([545d4ca](https://github.com/shunkakinoki/dotfiles/commit/545d4ca49a5ff3895646a339017d6bc9e413075b))
+
 ## [2.2.26](https://github.com/shunkakinoki/dotfiles/compare/v2.2.25...v2.2.26) (2020-03-10)
 
 
