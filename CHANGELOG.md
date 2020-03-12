@@ -1,3 +1,31 @@
+## [2.2.33](https://github.com/shunkakinoki/dotfiles/compare/v2.2.32...v2.2.33) (2020-03-11)
+
+
+### Bug Fixes
+
+* **deps:** bump gatsby from 2.19.38 to 2.19.39 in /src/yarn ([ae12302](https://github.com/shunkakinoki/dotfiles/commit/ae12302e0dd54ca00b721e583419051565b4f989))
+
+## [2.2.32](https://github.com/shunkakinoki/dotfiles/compare/v2.2.31...v2.2.32) (2020-03-11)
+
+
+### Bug Fixes
+
+* **deps:** bump gatsby from 2.19.37 to 2.19.38 in /src/yarn ([54497d9](https://github.com/shunkakinoki/dotfiles/commit/54497d9d5c1d019138d4da4b7b4a52a42fc74e5b))
+
+## [2.2.31](https://github.com/shunkakinoki/dotfiles/compare/v2.2.30...v2.2.31) (2020-03-11)
+
+
+### Bug Fixes
+
+* **deps:** bump gatsby from 2.19.36 to 2.19.37 in /src/yarn ([29ac309](https://github.com/shunkakinoki/dotfiles/commit/29ac3093a87645e75af02637449ee0b617df95c3))
+
+## [2.2.30](https://github.com/shunkakinoki/dotfiles/compare/v2.2.29...v2.2.30) (2020-03-11)
+
+
+### Bug Fixes
+
+* **deps:** bump mypy from 0.761 to 0.770 in /src/pipenv ([eaffd0a](https://github.com/shunkakinoki/dotfiles/commit/eaffd0afef73e382eb120563872667e4edc3610f))
+
 ## [2.2.29](https://github.com/shunkakinoki/dotfiles/compare/v2.2.28...v2.2.29) (2020-03-11)
 
 
