@@ -11951,10 +11951,10 @@ trim-repeated@^1.0.0:
   resolved "https://registry.yarnpkg.com/true-case-path/-/true-case-path-2.2.1.tgz#c5bf04a5bbec3fd118be4084461b3a27c4d796bf"
   integrity sha512-0z3j8R7MCjy10kc/g+qg7Ln3alJTodw9aDuVWZa3uiWqfuBMKeAeP2ocWcxoyM3D73yz3Jt/Pu4qPr4wHSdB/Q==
 
-truffle@^5.1.15:
-  version "5.1.16"
-  resolved "https://registry.yarnpkg.com/truffle/-/truffle-5.1.16.tgz#19c5bc6b3e21cdc41266aed30b5650b9665952b8"
-  integrity sha512-McY2AKicKIdIclpclIXluWtCf1yj2cTJGS0ghStHkklw7XYk3ZL4MoftNyfqiYCjIjGs24qoEF9o/JlRp5qnmQ==
+truffle@^5.1.17:
+  version "5.1.17"
+  resolved "https://registry.yarnpkg.com/truffle/-/truffle-5.1.17.tgz#9c821274afee807b64a04e680a89e8688981cdb4"
+  integrity sha512-x8CNCjtsX3B34Q6TI467+kgxqzjCRMvLsGIqf/MHo1NpntP1tIOySGJ+idEg857X0hJz8zfOVz9QKbvrrsKUGQ==
   dependencies:
     app-module-path "^2.2.0"
     mocha "5.2.0"
