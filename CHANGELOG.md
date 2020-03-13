@@ -1,3 +1,10 @@
+## [2.2.40](https://github.com/shunkakinoki/dotfiles/compare/v2.2.39...v2.2.40) (2020-03-13)
+
+
+### Bug Fixes
+
+* **deps:** [security] bump acorn from 6.4.0 to 6.4.1 in /src/yarn ([f3d4fb5](https://github.com/shunkakinoki/dotfiles/commit/f3d4fb5659412c2fabf421bdabbe34e09fdf73c9))
+
 ## [2.2.39](https://github.com/shunkakinoki/dotfiles/compare/v2.2.38...v2.2.39) (2020-03-13)
 
 
