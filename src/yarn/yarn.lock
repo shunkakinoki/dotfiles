@@ -5384,10 +5384,10 @@ functional-red-black-tree@^1.0.1:
   resolved "https://registry.yarnpkg.com/functional-red-black-tree/-/functional-red-black-tree-1.0.1.tgz#1b0ab3bd553b2a0d6399d29c0e3ea0b252078327"
   integrity sha1-GwqzvVU7Kg1jmdKcDj6gslIHgyc=
 
-gatsby-cli@^2.10.12:
-  version "2.10.12"
-  resolved "https://registry.yarnpkg.com/gatsby-cli/-/gatsby-cli-2.10.12.tgz#0500a27d7f5da111d4693166908bae0f11de85c6"
-  integrity sha512-NJI/xIoFs+erWIiSiNIAysDgMPQwjgR9HpgGqZx7mGwQtpowaQkmr8fLhwLp+wNMXXUAZoQX1Xu0bQcAIeHe9g==
+gatsby-cli@^2.10.13:
+  version "2.10.13"
+  resolved "https://registry.yarnpkg.com/gatsby-cli/-/gatsby-cli-2.10.13.tgz#f9b47ee318a7b3ddabdb4212185bfb7cf359acb7"
+  integrity sha512-sha55CAV5LULuYkESvQvVSC91qnkx8uM8OkTup1zwIvS7IL/WjUJKXekHEMmqY01A9EzbR5bRbs+uGydxN56CA==
   dependencies:
     "@babel/code-frame" "^7.8.3"
     "@babel/runtime" "^7.8.7"
@@ -5516,10 +5516,10 @@ gatsby-telemetry@^1.1.56:
     stack-utils "1.0.2"
     uuid "3.4.0"
 
-gatsby@^2.19.46:
-  version "2.19.46"
-  resolved "https://registry.yarnpkg.com/gatsby/-/gatsby-2.19.46.tgz#83c2edfed0d2394398f3746946c35b43075d62c2"
-  integrity sha512-dAMFbClUxqzNEZXZ3RBrNc3SsrjTl/QyYE9QQHG1nQ0q0jCzOrSg+iGrPNh3dSNFupd1OzOTm1zZmH4JHQgkKA==
+gatsby@^2.19.47:
+  version "2.19.47"
+  resolved "https://registry.yarnpkg.com/gatsby/-/gatsby-2.19.47.tgz#db1a4561c7d44c5da4fbd3cc7416e25e231336d2"
+  integrity sha512-lT99OB1fJywHLfFbMOMkTC8OUzr/W0h5u8q8TF3vvQCOgo8Ae0D3USFqQIKnAlqqa/wg3KZxBKCO7hhZ0sUC4Q==
   dependencies:
     "@babel/code-frame" "^7.8.3"
     "@babel/core" "^7.8.7"
@@ -5582,7 +5582,7 @@ gatsby@^2.19.46:
     flat "^4.1.0"
     fs-exists-cached "1.0.0"
     fs-extra "^8.1.0"
-    gatsby-cli "^2.10.12"
+    gatsby-cli "^2.10.13"
     gatsby-core-utils "^1.0.34"
     gatsby-graphiql-explorer "^0.2.37"
     gatsby-link "^2.2.31"
