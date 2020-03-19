@@ -1,3 +1,10 @@
+## [2.2.48](https://github.com/shunkakinoki/dotfiles/compare/v2.2.47...v2.2.48) (2020-03-19)
+
+
+### Bug Fixes
+
+* **deps:** bump rails from 6.0.2.1 to 6.0.2.2 in /src/bundle ([e5e5510](https://github.com/shunkakinoki/dotfiles/commit/e5e5510e59e454430bc212a6ef811b9edf457866))
+
 ## [2.2.47](https://github.com/shunkakinoki/dotfiles/compare/v2.2.46...v2.2.47) (2020-03-19)
 
 
