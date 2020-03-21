@@ -1,3 +1,66 @@
+## [2.2.52](https://github.com/shunkakinoki/dotfiles/compare/v2.2.51...v2.2.52) (2020-03-20)
+
+
+### Bug Fixes
+
+* **deps:** bump gatsby from 2.20.0 to 2.20.2 in /src/yarn ([d30a650](https://github.com/shunkakinoki/dotfiles/commit/d30a65061b3988516dd3bc83f5824667bc0a44de))
+
+## [2.2.51](https://github.com/shunkakinoki/dotfiles/compare/v2.2.50...v2.2.51) (2020-03-20)
+
+
+### Bug Fixes
+
+* **deps:** bump gatsby from 2.19.49 to 2.20.0 in /src/yarn ([c4ad418](https://github.com/shunkakinoki/dotfiles/commit/c4ad4185b0dabec95581f7c68195796afc0c9d1f))
+
+## [2.2.50](https://github.com/shunkakinoki/dotfiles/compare/v2.2.49...v2.2.50) (2020-03-20)
+
+
+### Bug Fixes
+
+* **deps:** bump truffle from 5.1.17 to 5.1.18 in /src/yarn ([cf1af6a](https://github.com/shunkakinoki/dotfiles/commit/cf1af6a9464771b433c166799e14e9ac9224fb71))
+
+## [2.2.49](https://github.com/shunkakinoki/dotfiles/compare/v2.2.48...v2.2.49) (2020-03-19)
+
+
+### Bug Fixes
+
+* **deps:** bump serverless from 1.66.0 to 1.67.0 in /src/yarn ([6a6554c](https://github.com/shunkakinoki/dotfiles/commit/6a6554c04aec2c078d3e886f84cb6cdcc597a98a))
+
+## [2.2.48](https://github.com/shunkakinoki/dotfiles/compare/v2.2.47...v2.2.48) (2020-03-19)
+
+
+### Bug Fixes
+
+* **deps:** bump rails from 6.0.2.1 to 6.0.2.2 in /src/bundle ([e5e5510](https://github.com/shunkakinoki/dotfiles/commit/e5e5510e59e454430bc212a6ef811b9edf457866))
+
+## [2.2.47](https://github.com/shunkakinoki/dotfiles/compare/v2.2.46...v2.2.47) (2020-03-19)
+
+
+### Bug Fixes
+
+* **deps:** bump gatsby from 2.19.48 to 2.19.49 in /src/yarn ([65324aa](https://github.com/shunkakinoki/dotfiles/commit/65324aab8411dff711fc8b053122b1d975b4f5bf))
+
+## [2.2.46](https://github.com/shunkakinoki/dotfiles/compare/v2.2.45...v2.2.46) (2020-03-18)
+
+
+### Bug Fixes
+
+* **deps:** bump gatsby from 2.19.47 to 2.19.48 in /src/yarn ([eb3e110](https://github.com/shunkakinoki/dotfiles/commit/eb3e1106f2b9eeadba1483493187f5e537373592))
+
+## [2.2.45](https://github.com/shunkakinoki/dotfiles/compare/v2.2.44...v2.2.45) (2020-03-18)
+
+
+### Bug Fixes
+
+* **deps:** bump gatsby from 2.19.46 to 2.19.47 in /src/yarn ([9f67e46](https://github.com/shunkakinoki/dotfiles/commit/9f67e464fa3d959d7fb57707a92dd21d48abb717))
+
+## [2.2.44](https://github.com/shunkakinoki/dotfiles/compare/v2.2.43...v2.2.44) (2020-03-18)
+
+
+### Bug Fixes
+
+* **deps:** bump gatsby from 2.19.45 to 2.19.46 in /src/yarn ([90fa189](https://github.com/shunkakinoki/dotfiles/commit/90fa189afff297b4abca4c0018added63e827c40))
+
 ## [2.2.43](https://github.com/shunkakinoki/dotfiles/compare/v2.2.42...v2.2.43) (2020-03-16)
 
 

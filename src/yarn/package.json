@@ -9,16 +9,16 @@
     "awsp": "^0.2.0",
     "fanyi": "^4.1.0",
     "fast-cli": "^2.3.0",
-    "gatsby": "^2.19.45",
+    "gatsby": "^2.20.2",
     "gh-home": "^2.0.1",
     "git-open": "^2.1.0",
     "jshint": "^2.11.0",
     "lerna-update-wizard": "^0.17.7",
     "now": "^17.0.4",
-    "serverless": "^1.66.0",
+    "serverless": "^1.67.0",
     "speed-test": "^2.1.0",
     "spoof": "^2.0.1",
     "syncpack": "^5.0.1",
-    "truffle": "^5.1.17"
+    "truffle": "^5.1.18"
   }
 }
