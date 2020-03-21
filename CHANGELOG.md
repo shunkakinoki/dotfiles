@@ -1,3 +1,16 @@
+## [2.2.53](https://github.com/shunkakinoki/dotfiles/compare/v2.2.52...v2.2.53) (2020-03-21)
+
+
+### Bug Fixes
+
+* 🐛 revert .zshrc ([45eba8e](https://github.com/shunkakinoki/dotfiles/commit/45eba8e5febb963a2e6d9126f539c17e89c95706))
+
+
+### Performance Improvements
+
+* **auto-update:** auto-sync-gpr ([da7379b](https://github.com/shunkakinoki/dotfiles/commit/da7379bfd8d0e575107b8a76530b739c2e9bd3ef))
+* **auto-update:** auto-sync-gpr ([a239bb7](https://github.com/shunkakinoki/dotfiles/commit/a239bb70b09614402ac0df1f4ac23c1c06a001fb))
+
 ## [2.2.52](https://github.com/shunkakinoki/dotfiles/compare/v2.2.51...v2.2.52) (2020-03-20)
 
 
