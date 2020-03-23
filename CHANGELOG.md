@@ -1,3 +1,10 @@
+## [2.2.57](https://github.com/shunkakinoki/dotfiles/compare/v2.2.56...v2.2.57) (2020-03-23)
+
+
+### Bug Fixes
+
+* **deps:** bump now from 17.1.0 to 17.1.1 in /src/yarn ([3f90599](https://github.com/shunkakinoki/dotfiles/commit/3f90599e33a1dfca10aa51c8d420bad39f34f565))
+
 ## [2.2.56](https://github.com/shunkakinoki/dotfiles/compare/v2.2.55...v2.2.56) (2020-03-23)
 
 
