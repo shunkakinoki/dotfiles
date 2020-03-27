@@ -1,3 +1,10 @@
+## [2.2.63](https://github.com/shunkakinoki/dotfiles/compare/v2.2.62...v2.2.63) (2020-03-27)
+
+
+### Bug Fixes
+
+* **deps:** bump truffle from 5.1.18 to 5.1.19 in /src/yarn ([303aac8](https://github.com/shunkakinoki/dotfiles/commit/303aac882af8eec31a94ffd515927927eed3cb6f))
+
 ## [2.2.62](https://github.com/shunkakinoki/dotfiles/compare/v2.2.61...v2.2.62) (2020-03-26)
 
 
