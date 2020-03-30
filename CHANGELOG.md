@@ -1,3 +1,10 @@
+## [2.2.65](https://github.com/shunkakinoki/dotfiles/compare/v2.2.64...v2.2.65) (2020-03-30)
+
+
+### Bug Fixes
+
+* **deps:** bump fanyi from 4.1.0 to 4.2.0 in /src/yarn ([f04bff5](https://github.com/shunkakinoki/dotfiles/commit/f04bff53e264b264c97d219ecb29d67e274c2b40))
+
 ## [2.2.64](https://github.com/shunkakinoki/dotfiles/compare/v2.2.63...v2.2.64) (2020-03-27)
 
 
