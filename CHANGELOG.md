@@ -1,3 +1,10 @@
+## [2.2.70](https://github.com/shunkakinoki/dotfiles/compare/v2.2.69...v2.2.70) (2020-04-03)
+
+
+### Bug Fixes
+
+* **deps:** bump gatsby from 2.20.11 to 2.20.12 in /src/yarn ([9d1a667](https://github.com/shunkakinoki/dotfiles/commit/9d1a667e1a679f4a938525388640a7bf4a4f4e9f))
+
 ## [2.2.69](https://github.com/shunkakinoki/dotfiles/compare/v2.2.68...v2.2.69) (2020-04-03)
 
 
