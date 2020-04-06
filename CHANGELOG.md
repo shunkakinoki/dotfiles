@@ -1,3 +1,10 @@
+## [2.2.71](https://github.com/shunkakinoki/dotfiles/compare/v2.2.70...v2.2.71) (2020-04-06)
+
+
+### Bug Fixes
+
+* **deps:** bump lerna-update-wizard from 0.17.7 to 0.17.8 in /src/yarn ([ac06b6a](https://github.com/shunkakinoki/dotfiles/commit/ac06b6af94181763a8a581e61463ca1cd647ee27))
+
 ## [2.2.70](https://github.com/shunkakinoki/dotfiles/compare/v2.2.69...v2.2.70) (2020-04-03)
 
 
