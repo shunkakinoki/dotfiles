@@ -15,7 +15,7 @@
     "jshint": "^2.11.0",
     "lerna-update-wizard": "^0.17.8",
     "now": "^17.1.1",
-    "serverless": "^1.67.0",
+    "serverless": "^1.67.1",
     "speed-test": "^2.1.0",
     "spoof": "^2.0.1",
     "syncpack": "^5.0.1",
