@@ -1,3 +1,10 @@
+## [2.2.76](https://github.com/shunkakinoki/dotfiles/compare/v2.2.75...v2.2.76) (2020-04-08)
+
+
+### Bug Fixes
+
+* **deps:** bump serverless from 1.67.2 to 1.67.3 in /src/yarn ([e723ae9](https://github.com/shunkakinoki/dotfiles/commit/e723ae96c76ebcda31343c038d5109db5732c1aa))
+
 ## [2.2.75](https://github.com/shunkakinoki/dotfiles/compare/v2.2.74...v2.2.75) (2020-04-07)
 
 
