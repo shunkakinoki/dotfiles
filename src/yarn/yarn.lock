@@ -6278,10 +6278,10 @@ gatsby-plugin-typescript@^2.4.2:
     "@babel/runtime" "^7.9.6"
     babel-plugin-remove-graphql-queries "^2.9.1"
 
-gatsby-react-router-scroll@^2.3.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/gatsby-react-router-scroll/-/gatsby-react-router-scroll-2.3.1.tgz#4cf59e3eaf5dc1721256f47b6aa40b2636b8af89"
-  integrity sha512-l1yTR43T05k+7rhiE2O/S4kNsjacveyLzai7BGGo1N7qIvd/E3p2bWNEtr4BUbzel76aZJRQ3BXENbHyDDAuJw==
+gatsby-react-router-scroll@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/gatsby-react-router-scroll/-/gatsby-react-router-scroll-3.0.0.tgz#ad2afdfa6052d9e1b5add053fec1b545fc369474"
+  integrity sha512-vaXYQgGkBrrUHy+uyyxy2aj5TZOuuO4U8mHgVKKSFyLIZPk35wknifFsPYVyyYqi2zxdKiFkYKfHDWlQHxMlzA==
   dependencies:
     "@babel/runtime" "^7.9.6"
     scroll-behavior "^0.9.12"
@@ -6378,10 +6378,10 @@ gatsby-telemetry@^1.3.2:
     stack-utils "1.0.2"
     uuid "3.4.0"
 
-gatsby@^2.21.14:
-  version "2.21.14"
-  resolved "https://registry.yarnpkg.com/gatsby/-/gatsby-2.21.14.tgz#ebba2b0b12d90c650745028d6bf3e415b155bb45"
-  integrity sha512-vg3bm1gEASujXhWWhdGXV3+SpDzj5HXHff2uMT6OXm9/QSrm1hsnspqF7go4c+tPHJr5GI6MHMdr9vrXeBMzag==
+gatsby@^2.21.15:
+  version "2.21.15"
+  resolved "https://registry.yarnpkg.com/gatsby/-/gatsby-2.21.15.tgz#eb7edaa8b9c451a1ff0e92eb2128d170c88b8981"
+  integrity sha512-cFvL1FRkhnXIUN9+6Txza6Y0ThwYnYcWeW67Ovtc18faOK/qUx0gFTgCC5DXYFjVyYi+lN/eNHiKvqERAGpgwA==
   dependencies:
     "@babel/code-frame" "^7.8.3"
     "@babel/core" "^7.9.6"
@@ -6450,7 +6450,7 @@ gatsby@^2.21.14:
     gatsby-link "^2.4.1"
     gatsby-plugin-page-creator "^2.3.1"
     gatsby-plugin-typescript "^2.4.2"
-    gatsby-react-router-scroll "^2.3.1"
+    gatsby-react-router-scroll "^3.0.0"
     gatsby-telemetry "^1.3.2"
     glob "^7.1.6"
     got "8.3.2"
