@@ -1,3 +1,10 @@
+## [2.2.101](https://github.com/shunkakinoki/dotfiles/compare/v2.2.100...v2.2.101) (2020-05-07)
+
+
+### Bug Fixes
+
+* **deps:** bump now from 18.0.0 to 19.0.0 in /src/yarn ([ec2f2eb](https://github.com/shunkakinoki/dotfiles/commit/ec2f2ebb7e86bef5b16680b2e1886e7ad9248257))
+
 ## [2.2.100](https://github.com/shunkakinoki/dotfiles/compare/v2.2.99...v2.2.100) (2020-05-07)
 
 
