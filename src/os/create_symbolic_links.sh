@@ -5,6 +5,9 @@ cd "$(dirname "${BASH_SOURCE[0]}")" &&
 
 create_symlinks() {
     declare -a FILES_TO_SYMLINK=(
+        "auto/.auto_sync.sh"
+        "auto/.auto_sync_gpr.sh"
+        "auto/.auto_sync_hub.sh"
         "brew/.auto_sync_brew.sh"
         "bundle/.auto_sync_bundle.sh"
         "git/.gitconfig"
@@ -17,10 +20,6 @@ create_symlinks() {
         "shell/.shell_path"
         "shell/.zshrc"
         "shell/alias/.shell_alias"
-        "sync/.auto_sync.sh"
-        "sync/.auto_sync_gpr.sh"
-        "sync/.auto_sync_hub.sh"
-        "sync/.auto_sync_mackup.sh"
         "tmux/.tmux.conf"
         "vim/.vimrc"
         "vnstat/.vnstatrc"
