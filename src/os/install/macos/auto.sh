@@ -7,7 +7,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")" &&
 main() {
     print_in_purple "\n   Homebrew\n\n"
 
-    ~/.auto_sync.sh
+    ~/.auto_sync.sh || ../../../auto/.auto_sync.sh
 }
 
 main
