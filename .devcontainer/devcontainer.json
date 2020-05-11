@@ -1,0 +1,10 @@
+{
+  "name": "dotfiles",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "dotfiles",
+  "workspaceFolder": "/workspace",
+  "settings": {
+    "terminal.integrated.shell.linux": null
+  },
+  "extensions": ["ms-azuretools.vscode-docker"]
+}

@@ -1,0 +1,10 @@
+version: "3"
+services:
+  docker-in-docker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/workspace:cached
+      - /var/run/docker.sock:/var/run/docker-host.sock
+    command: sleep infinity

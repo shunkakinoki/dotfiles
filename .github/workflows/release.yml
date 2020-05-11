@@ -2,40 +2,34 @@ name: Release
 on:
   push:
     branches:
+      - alpha
+      - beta
       - master
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: "12.x"
-      - name: Cache node modules
-        id: cache
+      - id: cache
         uses: actions/cache@v1
         with:
           path: node_modules
           key: node-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             node-
-      - name: Install dependencies with yarn
-        if: steps.cache.outputs.cache-hit != 'true'
+      - if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          yarn install
-      - name: Release
-        run: |
+          yarn install --frozen-lockfile
+      - run: |
           yarn run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Restore yarn.lock
-        run: |
-          git restore yarn.lock
-      - name: Create a pull request if updated
-        uses: peter-evans/create-pull-request@v2
+      - uses: peter-evans/create-pull-request@v2
         with:
           token: ${{ secrets.ACCESS_TOKEN }}
-          branch-suffix: short-commit-hash
+          branch: create-pull-request/${GITHUB_REF##*/}
         env:
           HUSKY_SKIP_HOOKS: 1
