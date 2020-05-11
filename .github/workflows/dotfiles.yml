@@ -1,0 +1,16 @@
+name: Dotfiles
+on: pull_request
+jobs:
+  dotfiles:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest", "macos-latest"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          ./install.sh
+      - if: failure()
+        timeout-minutes: 3
+        uses: mxschmitt/action-tmate@v2

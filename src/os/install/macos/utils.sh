@@ -22,7 +22,7 @@ brew_install() {
         fi
     fi
 
-    if brew $CMD list "$FORMULA" &>/dev/null; then
+    if brew "$CMD" list "$FORMULA" &>/dev/null; then
         print_success "$FORMULA_READABLE_NAME"
     else
         execute \

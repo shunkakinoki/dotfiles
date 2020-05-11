@@ -2,13 +2,28 @@ root = true
 
 [*]
 indent_style = space
+indent_size = 2
 end_of_line = lf
 charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
 
-[*.json]
-indent_size = 2
+[*.sh]
+indent_style = space
+indent_size = 4
 
-[*.yml]
-indent_size = 2
+shell_variant = posix
+binary_next_line = true
+switch_case_indent = true
+space_redirects = true
+keep_padding = true
+function_next_line = true
+
+[node_modules/**]
+ignore = true
+
+[src/pipenv/.venv/**]
+ignore = true
+
+[src/yarn/node_modules/**]
+ignore = true

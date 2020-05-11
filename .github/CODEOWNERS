@@ -1,18 +1,1 @@
 * @shunkakinoki
-
-Cargo.toml @shunkakinoki @dependabot[bot] @dependabot-preview[bot]
-Cargo.lock @shunkakinoki @dependabot[bot] @dependabot-preview[bot]
-Dockerfile @shunkakinoki @dependabot[bot] @dependabot-preview[bot]
-Gemfile @shunkakinoki @dependabot[bot] @dependabot-preview[bot]
-Gemfile.lock @shunkakinoki @dependabot[bot] @dependabot-preview[bot]
-Pipfile @shunkakinoki @dependabot[bot] @dependabot-preview[bot]
-Pipfile.lock @shunkakinoki @dependabot[bot] @dependabot-preview[bot]
-package.json @shunkakinoki @dependabot[bot] @dependabot-preview[bot]
-yarn.lock @shunkakinoki @dependabot[bot] @dependabot-preview[bot]
-/.github/workflows/ @shunkakinoki @dependabot[bot] @dependabot-preview[bot]
-/src/bundle/Gemfile @shunkakinoki @dependabot[bot] @dependabot-preview[bot]
-/src/bundle/Gemfile.lock @shunkakinoki @dependabot[bot] @dependabot-preview[bot]
-/src/pipenv/Pipfile @shunkakinoki @dependabot[bot] @dependabot-preview[bot]
-/src/pipenv/Pipfile.lock @shunkakinoki @dependabot[bot] @dependabot-preview[bot]
-/src/yarn/package.json @shunkakinoki @dependabot[bot] @dependabot-preview[bot]
-/src/yarn/yarn.lock @shunkakinoki @dependabot[bot] @dependabot-preview[bot]

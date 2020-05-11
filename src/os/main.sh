@@ -13,7 +13,7 @@ download() {
     if command -v "curl" &>/dev/null; then
         curl -LsSo "$output" "$url" &>/dev/null
         return $?
-        elif command -v "wget" &>/dev/null; then
+    elif command -v "wget" &>/dev/null; then
         wget -qO "$output" "$url" &>/dev/null
         return $?
     fi
@@ -60,17 +60,17 @@ download_dotfiles() {
     print_result $? "Extract archive" "true"
     rm -rf "$tmpFile"
     print_result $? "Remove archive"
-    cd "$dotfilesDirectory/src/os" \
-    || return 1
+    cd "$dotfilesDirectory/src/os" ||
+        return 1
 }
 
 download_utils() {
     local tmpFile=""
     tmpFile="$(mktemp /tmp/XXXXX)"
-    download "$DOTFILES_UTILS_URL" "$tmpFile" \
-    && . "$tmpFile" \
-    && rm -rf "$tmpFile" \
-    && return 0
+    download "$DOTFILES_UTILS_URL" "$tmpFile" &&
+        . "$tmpFile" &&
+        rm -rf "$tmpFile" &&
+        return 0
     return 1
 }
 
@@ -87,15 +87,17 @@ extract() {
 verify_os() {
     declare -r MINIMUM_MACOS_VERSION="10.10"
     declare -r MINIMUM_UBUNTU_VERSION="18.04"
-    local os_name="$(get_os)"
-    local os_version="$(get_os_version)"
+    local os_name
+    local os_version
+    os_name="$(get_os)"
+    os_version="$(get_os_version)"
     if [ "$os_name" == "macos" ]; then
         if is_supported_version "$os_version" "$MINIMUM_MACOS_VERSION"; then
             return 0
         else
             printf "Sorry, this script is intended only for macOS %s+" "$MINIMUM_MACOS_VERSION"
         fi
-        elif [ "$os_name" == "ubuntu" ]; then
+    elif [ "$os_name" == "ubuntu" ]; then
         if is_supported_version "$os_version" "$MINIMUM_UBUNTU_VERSION"; then
             return 0
         else
@@ -115,41 +117,34 @@ initialize_git_repository() {
     fi
     if ! is_git_repository; then
         execute \
-        "git init && git remote add origin $GIT_ORIGIN" \
-        "Initialize the Git repository"
+            "git init && git remote add origin $GIT_ORIGIN" \
+            "Initialize the Git repository"
     fi
 }
 
 main() {
-    cd "$(dirname "${BASH_SOURCE[0]}")" \
-    || exit 1
+    cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
     if [ -x "utils.sh" ]; then
         . "utils.sh" || exit 1
     else
         download_utils || exit 1
     fi
     print_in_purple "\n   Starting shunkakinoki dotfiles\n\n"
-    verify_os \
-    || exit 1
-    skip_questions "$@" \
-    && skipQuestions=true
+    verify_os || exit 1
+    skip_questions "$@" && skipQuestions=true
     ask_for_sudo
     if cmd_exists "git"; then
+        print_in_purple "\n   Initialize Git repository\n\n"
         if [ "$(git config --get remote.origin.url)" != "$DOTFILES_ORIGIN" ]; then
-            print_in_purple "\n   Initialize Git repository\n\n"
             initialize_git_repository "$DOTFILES_ORIGIN"
         fi
-        if ! $skipQuestions; then
-            print_in_purple "\n   Initialize Git repository\n\n"
-            ./update_content.sh
-            ./create_symbolic_links.sh "$@"
-            ./create_config_links.sh "$@"
-            ./create_local_config_files.sh
-            ./create_tmuxinator_links.sh
-        fi
+        ./update_content.sh
+        ./create_symbolic_links.sh "$@"
+        ./create_config_links.sh "$@"
+        ./create_local_config_files.sh
+        ./create_tmuxinator_links.sh
     else
-        printf "%s" "${BASH_SOURCE[0]}" | grep "setup.sh" &> /dev/null \
-        || download_dotfiles
+        printf "%s" "${BASH_SOURCE[0]}" | grep "setup.sh" &>/dev/null || download_dotfiles
         ./create_symbolic_links.sh "$@"
         ./create_config_links.sh "$@"
         ./create_local_config_files.sh
