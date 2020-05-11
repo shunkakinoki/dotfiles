@@ -1,3 +1,10 @@
+# [3.1.0](https://github.com/shunkakinoki/dotfiles/compare/v3.0.4...v3.1.0) (2020-05-11)
+
+
+### Features
+
+* 🎸 sync ([4c24710](https://github.com/shunkakinoki/dotfiles/commit/4c24710a2c639d259574c99540898c7239ca1ebc))
+
 ## [3.0.4](https://github.com/shunkakinoki/dotfiles/compare/v3.0.3...v3.0.4) (2020-05-11)
 
 
