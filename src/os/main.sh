@@ -142,7 +142,6 @@ main() {
         ./create_symbolic_links.sh "$@"
         ./create_config_links.sh "$@"
         ./create_local_config_files.sh
-        ./create_tmuxinator_links.sh
     else
         printf "%s" "${BASH_SOURCE[0]}" | grep "setup.sh" &>/dev/null || download_dotfiles
         ./create_symbolic_links.sh "$@"
