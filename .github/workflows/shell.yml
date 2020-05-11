@@ -1,0 +1,13 @@
+name: Shell
+on: pull_request
+jobs:
+  shell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: luizm/action-sh-checker@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SHELLCHECK_OPTS: -e SC1090 SC1091
+        with:
+          sh_checker_comment: true
