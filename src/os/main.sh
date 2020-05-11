@@ -121,26 +121,21 @@ initialize_git_repository() {
 }
 
 main() {
-    cd "$(dirname "${BASH_SOURCE[0]}")" \
-    || exit 1
+    cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
     if [ -x "utils.sh" ]; then
         . "utils.sh" || exit 1
     else
         download_utils || exit 1
     fi
     print_in_purple "\n   Starting shunkakinoki dotfiles\n\n"
-    verify_os \
-    || exit 1
-    skip_questions "$@" \
-    && skipQuestions=true
+    verify_os || exit 1
+    skip_questions "$@" && skipQuestions=true
     ask_for_sudo
     if cmd_exists "git"; then
+        print_in_purple "\n   Initialize Git repository\n\n"
         if [ "$(git config --get remote.origin.url)" != "$DOTFILES_ORIGIN" ]; then
-            print_in_purple "\n   Initialize Git repository\n\n"
             initialize_git_repository "$DOTFILES_ORIGIN"
-        fi
-        if ! $skipQuestions; then
-            print_in_purple "\n   Initialize Git repository\n\n"
+        else
             ./update_content.sh
             ./create_symbolic_links.sh "$@"
             ./create_config_links.sh "$@"
@@ -148,8 +143,7 @@ main() {
             ./create_tmuxinator_links.sh
         fi
     else
-        printf "%s" "${BASH_SOURCE[0]}" | grep "setup.sh" &> /dev/null \
-        || download_dotfiles
+        printf "%s" "${BASH_SOURCE[0]}" | grep "setup.sh" &> /dev/null || download_dotfiles
         ./create_symbolic_links.sh "$@"
         ./create_config_links.sh "$@"
         ./create_local_config_files.sh
