@@ -32,7 +32,6 @@ create_configlinks() {
         ".tmuxinator"
     )
 
-    local i=""
     local sourceFile=""
     local targetFile=""
     local skipQuestions=false
