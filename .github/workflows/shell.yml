@@ -8,6 +8,6 @@ jobs:
       - uses: luizm/action-sh-checker@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SHELLCHECK_OPTS: -e SC1090,SC1091
+          SHELLCHECK_OPTS: -e SC1090,SC1091,SC2164
         with:
           sh_checker_comment: true
