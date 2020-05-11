@@ -135,13 +135,12 @@ main() {
         print_in_purple "\n   Initialize Git repository\n\n"
         if [ "$(git config --get remote.origin.url)" != "$DOTFILES_ORIGIN" ]; then
             initialize_git_repository "$DOTFILES_ORIGIN"
-        else
-            ./update_content.sh
-            ./create_symbolic_links.sh "$@"
-            ./create_config_links.sh "$@"
-            ./create_local_config_files.sh
-            ./create_tmuxinator_links.sh
         fi
+        ./update_content.sh
+        ./create_symbolic_links.sh "$@"
+        ./create_config_links.sh "$@"
+        ./create_local_config_files.sh
+        ./create_tmuxinator_links.sh
     else
         printf "%s" "${BASH_SOURCE[0]}" | grep "setup.sh" &> /dev/null || download_dotfiles
         ./create_symbolic_links.sh "$@"
