@@ -6,6 +6,19 @@ on:
       - beta
       - master
 jobs:
+  context:
+    runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.branch.outputs.branch }}
+    steps:
+      - run: |
+          echo $GITHUB_CONTEXT
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+      - id: branch
+        shell: bash
+        run: |
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})
   release:
     runs-on: ubuntu-latest
     steps:
@@ -30,6 +43,6 @@ jobs:
       - uses: peter-evans/create-pull-request@v2
         with:
           token: ${{ secrets.ACCESS_TOKEN }}
-          branch: create-pull-request/${GITHUB_REF##*/}
+          branch: create-pull-request/${{ needs.context.outputs.branch }}
         env:
           HUSKY_SKIP_HOOKS: 1
