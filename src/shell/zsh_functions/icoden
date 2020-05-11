@@ -1,0 +1,6 @@
+# coden - code to selected directory
+coden() {
+  local dir
+  dir=$(ghq list > /dev/null | fzf-tmux --reverse +m) &&
+    code-insiders -n $(ghq root)/$dir
+}
