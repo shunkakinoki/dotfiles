@@ -1,3 +1,10 @@
+## [3.2.6](https://github.com/shunkakinoki/dotfiles/compare/v3.2.5...v3.2.6) (2020-05-11)
+
+
+### Performance Improvements
+
+* **auto-update:** auto-sync-gpr ([a36b166](https://github.com/shunkakinoki/dotfiles/commit/a36b166757c65484625b379b5b52cbda3cb7931b))
+
 ## [3.2.5](https://github.com/shunkakinoki/dotfiles/compare/v3.2.4...v3.2.5) (2020-05-11)
 
 
