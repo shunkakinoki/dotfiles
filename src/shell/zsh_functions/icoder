@@ -1,5 +1,5 @@
-# coder - code to selected directory
-coder() {
+# icoder - code to selected directory
+icoder() {
   local dir
   dir=$(ghq list > /dev/null | fzf-tmux --reverse +m) &&
     code-insiders -r $(ghq root)/$dir
