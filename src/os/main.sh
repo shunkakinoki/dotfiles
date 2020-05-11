@@ -153,6 +153,7 @@ main() {
     if ! $skipQuestions; then
         ./restart.sh
     fi
+    
 }
 
 main "$@"

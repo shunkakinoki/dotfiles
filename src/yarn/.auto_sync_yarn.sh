@@ -1,3 +1,6 @@
-cd ~/dotfiles/src/yarn
-yarn upgrade
-cd ~
+#!/bin/bash
+
+cd ~/dotfiles/src/yarn &&
+    yarn upgrade &&
+    cd ~ ||
+    return
