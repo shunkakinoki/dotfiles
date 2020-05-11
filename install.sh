@@ -1,1 +1,1 @@
-./os/main.sh
+./src/os/main.sh
