@@ -3,6 +3,7 @@ on: pull_request
 jobs:
   dotfiles:
     strategy:
+      fail-fast: true
       matrix:
         os: ["ubuntu-latest", "macos-latest"]
     runs-on: ${{ matrix.os }}
