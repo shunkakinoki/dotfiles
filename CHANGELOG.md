@@ -1,3 +1,10 @@
+# [3.2.0](https://github.com/shunkakinoki/dotfiles/compare/v3.1.0...v3.2.0) (2020-05-11)
+
+
+### Features
+
+* 🎸 ewe ([2434951](https://github.com/shunkakinoki/dotfiles/commit/2434951230ffefd601697538290716d251a033f1))
+
 # [3.1.0](https://github.com/shunkakinoki/dotfiles/compare/v3.0.4...v3.1.0) (2020-05-11)
 
 
