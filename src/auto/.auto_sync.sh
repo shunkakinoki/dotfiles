@@ -1,7 +1,6 @@
 #!/bin/bash
 
-cd "$(dirname "${BASH_SOURCE[0]}")" &&
-    . "utils.sh"
+cd "$(dirname "${BASH_SOURCE[0]}")" && return
 
 ~/.auto_sync_bundle.sh || ../bundle/.auto_sync_bundle.sh
 ~/.auto_sync_brew.sh || ../brew/.auto_sync_brew.sh
