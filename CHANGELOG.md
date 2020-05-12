@@ -1,3 +1,10 @@
+## [3.2.10](https://github.com/shunkakinoki/dotfiles/compare/v3.2.9...v3.2.10) (2020-05-12)
+
+
+### Bug Fixes
+
+* **deps:** bump flake8 from 3.8.0 to 3.8.1 in /src/pipenv ([9467e8b](https://github.com/shunkakinoki/dotfiles/commit/9467e8bfab5715ba7ce5a0bfa03f34f5c495c375))
+
 ## [3.2.9](https://github.com/shunkakinoki/dotfiles/compare/v3.2.8...v3.2.9) (2020-05-12)
 
 
