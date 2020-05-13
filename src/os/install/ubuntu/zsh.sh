@@ -2,18 +2,12 @@
 
 cd "$(dirname "${BASH_SOURCE[0]}")" &&
     . "../../utils.sh" &&
-    . "utils.sh"
+    . "./utils.sh"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-./build-essentials.sh
+print_in_purple "\n   zsh\n\n"
 
-./git.sh
-./image_tools.sh
-./tmux.sh
-./zsh.sh
+install_package "zsh" "zsh"
 
-./cleanup.sh
-
-update
-upgrade
+chsh -s "$(which zsh)"
