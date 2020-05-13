@@ -1,3 +1,10 @@
+## [3.4.2](https://github.com/shunkakinoki/dotfiles/compare/v3.4.1...v3.4.2) (2020-05-13)
+
+
+### Bug Fixes
+
+* 🐛 simplify docker env ([354fea5](https://github.com/shunkakinoki/dotfiles/commit/354fea5a2abbb1721a223b1c90c42d1d9b242aa6))
+
 ## [3.4.1](https://github.com/shunkakinoki/dotfiles/compare/v3.4.0...v3.4.1) (2020-05-13)
 
 
