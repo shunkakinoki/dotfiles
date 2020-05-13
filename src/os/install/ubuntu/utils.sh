@@ -19,7 +19,6 @@ autoremove() {
     execute \
         "sudo apt-get autoremove -qqy" \
         "APT (autoremove)"
-
 }
 
 install_package() {
