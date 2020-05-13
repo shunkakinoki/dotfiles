@@ -1,3 +1,31 @@
+## [3.2.13](https://github.com/shunkakinoki/dotfiles/compare/v3.2.12...v3.2.13) (2020-05-13)
+
+
+### Bug Fixes
+
+* **deps:** bump src/git/gitalias from `48b72bf` to `29a4f82` ([9dbfcd3](https://github.com/shunkakinoki/dotfiles/commit/9dbfcd3a66e2812c1d32737d09008741e8f8840c))
+
+## [3.2.12](https://github.com/shunkakinoki/dotfiles/compare/v3.2.11...v3.2.12) (2020-05-12)
+
+
+### Bug Fixes
+
+* **deps:** bump gatsby from 2.21.23 to 2.21.24 in /src/yarn ([609b72d](https://github.com/shunkakinoki/dotfiles/commit/609b72da9096ffc18f909fd607048773f76c2945))
+
+## [3.2.11](https://github.com/shunkakinoki/dotfiles/compare/v3.2.10...v3.2.11) (2020-05-12)
+
+
+### Bug Fixes
+
+* **deps:** bump gatsby from 2.21.22 to 2.21.23 in /src/yarn ([2f5db00](https://github.com/shunkakinoki/dotfiles/commit/2f5db00b42d113387571067968c7c20bba61e28f))
+
+## [3.2.10](https://github.com/shunkakinoki/dotfiles/compare/v3.2.9...v3.2.10) (2020-05-12)
+
+
+### Bug Fixes
+
+* **deps:** bump flake8 from 3.8.0 to 3.8.1 in /src/pipenv ([9467e8b](https://github.com/shunkakinoki/dotfiles/commit/9467e8bfab5715ba7ce5a0bfa03f34f5c495c375))
+
 ## [3.2.9](https://github.com/shunkakinoki/dotfiles/compare/v3.2.8...v3.2.9) (2020-05-12)
 
 
