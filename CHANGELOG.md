@@ -1,3 +1,11 @@
+# [3.3.0](https://github.com/shunkakinoki/dotfiles/compare/v3.2.13...v3.3.0) (2020-05-13)
+
+
+### Features
+
+* 🎸 add ubuntu settings ([c682585](https://github.com/shunkakinoki/dotfiles/commit/c682585114da42d49d5dd2d3e350c06efa930c87))
+* 🎸 gitalias ([4cdc591](https://github.com/shunkakinoki/dotfiles/commit/4cdc5910d6bb5e564e70e2d3450812771ca90786))
+
 ## [3.2.13](https://github.com/shunkakinoki/dotfiles/compare/v3.2.12...v3.2.13) (2020-05-13)
 
 
