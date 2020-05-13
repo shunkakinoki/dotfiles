@@ -1,3 +1,10 @@
+## [3.4.1](https://github.com/shunkakinoki/dotfiles/compare/v3.4.0...v3.4.1) (2020-05-13)
+
+
+### Bug Fixes
+
+* 🐛 add proper user ([bcfe3b4](https://github.com/shunkakinoki/dotfiles/commit/bcfe3b4c2fc6efc203da3c5364cae307a22912b5))
+
 # [3.4.0](https://github.com/shunkakinoki/dotfiles/compare/v3.3.0...v3.4.0) (2020-05-13)
 
 
