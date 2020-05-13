@@ -1,3 +1,10 @@
+## [3.4.8](https://github.com/shunkakinoki/dotfiles/compare/v3.4.7...v3.4.8) (2020-05-13)
+
+
+### Bug Fixes
+
+* 🐛 add zsh config ([126bba6](https://github.com/shunkakinoki/dotfiles/commit/126bba62f22263b0a81ba6a8c62a6f8dcd999122))
+
 ## [3.4.7](https://github.com/shunkakinoki/dotfiles/compare/v3.4.6...v3.4.7) (2020-05-13)
 
 
