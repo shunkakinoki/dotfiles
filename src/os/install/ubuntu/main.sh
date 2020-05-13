@@ -4,8 +4,6 @@ cd "$(dirname "${BASH_SOURCE[0]}")" &&
     . "../../utils.sh" &&
     . "utils.sh"
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 ./git.sh
 ./image_tools.sh
 ./tmux.sh

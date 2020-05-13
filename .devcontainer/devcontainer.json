@@ -1,10 +1,25 @@
 {
   "name": "dotfiles",
-  "dockerComposeFile": "docker-compose.yml",
-  "service": "dotfiles",
-  "workspaceFolder": "/workspace",
+  "dockerFile": "Dockerfile",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/home/codespace/workspace,type=bind,consistency=cached",
+  "workspaceFolder": "/home/codespace/workspace",
+  "runArgs": [
+    "--cap-add=SYS_PTRACE",
+    "--security-opt",
+    "seccomp=unconfined"
+  ],
+  "forwardPorts": [
+    3000
+  ],
   "settings": {
-    "terminal.integrated.shell.linux": null
+    "terminal.integrated.shell.linux": null,
   },
-  "extensions": ["ms-azuretools.vscode-docker"]
+  "extensions": [
+    "ms-vsonline.vsonline",
+    "GitHub.vscode-pull-request-github",
+    "MS-vsliveshare.vsliveshare",
+    "VisualStudioExptTeam.vscodeintellicode",
+    "ms-azuretools.vscode-docker"
+  ],
+  "postCreateCommand": "uname -a"
 }
