@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd "$(dirname "${BASH_SOURCE[0]}")" && return
+cd "$(dirname "${BASH_SOURCE[0]}")" && exit
 
 ~/.auto_sync_bundle.sh || ../bundle/.auto_sync_bundle.sh
 ~/.auto_sync_brew.sh || ../brew/.auto_sync_brew.sh

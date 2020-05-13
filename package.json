@@ -1,5 +1,5 @@
 {
-  "name": "dotfiles",
+  "name": "@shunkakinoki/dotfiles",
   "author": "Shun Kakinoki",
   "license": "MIT",
   "version": "3.2.9",
@@ -25,7 +25,7 @@
     "commitizen": "^4.0.3",
     "eclint": "^2.8.1",
     "git-cz": "^4.3.1",
-    "husky": "^4.2.3",
+    "husky": "^4.2.5",
     "prettier": "^1.19.1",
     "semantic-release": "^17.0.4"
   },
