@@ -1,3 +1,10 @@
+# [3.4.0](https://github.com/shunkakinoki/dotfiles/compare/v3.3.0...v3.4.0) (2020-05-13)
+
+
+### Features
+
+* 🎸 add zsh plugin ([b917f70](https://github.com/shunkakinoki/dotfiles/commit/b917f70d03118bdbc5c2e75cb7c458b9d93b4c17))
+
 ## [3.2.13](https://github.com/shunkakinoki/dotfiles/compare/v3.2.12...v3.2.13) (2020-05-13)
 
 
