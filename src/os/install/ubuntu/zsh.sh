@@ -10,4 +10,4 @@ print_in_purple "\n   zsh\n\n"
 
 install_package "zsh" "zsh"
 
-chsh -s "$(which zsh)"
+chsh -s "$USER" "$(which zsh)"

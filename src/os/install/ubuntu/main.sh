@@ -6,8 +6,6 @@ cd "$(dirname "${BASH_SOURCE[0]}")" &&
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-./build-essentials.sh
-
 ./git.sh
 ./image_tools.sh
 ./tmux.sh
