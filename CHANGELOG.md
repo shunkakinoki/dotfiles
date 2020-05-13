@@ -1,3 +1,10 @@
+## [3.4.4](https://github.com/shunkakinoki/dotfiles/compare/v3.4.3...v3.4.4) (2020-05-13)
+
+
+### Bug Fixes
+
+* add codespaces ([9f6cb61](https://github.com/shunkakinoki/dotfiles/commit/9f6cb61859fa11d191c3cb62795fe18538c1a3e6))
+
 ## [3.4.3](https://github.com/shunkakinoki/dotfiles/compare/v3.4.2...v3.4.3) (2020-05-13)
 
 
