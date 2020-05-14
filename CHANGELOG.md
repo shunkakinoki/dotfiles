@@ -1,3 +1,10 @@
+# [3.8.0](https://github.com/shunkakinoki/dotfiles/compare/v3.7.1...v3.8.0) (2020-05-14)
+
+
+### Features
+
+* 🎸 add deb sh ([a19840f](https://github.com/shunkakinoki/dotfiles/commit/a19840fa36e4680124a51091d9db7ccf664b2848))
+
 ## [3.7.1](https://github.com/shunkakinoki/dotfiles/compare/v3.7.0...v3.7.1) (2020-05-14)
 
 
