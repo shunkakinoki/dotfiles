@@ -22,6 +22,7 @@ create_symlinks() {
         "shell/alias/.shell_alias"
         "shell/alias/$(get_os)/.shell_os_alias"
         "tmux/.tmux.conf"
+        "tmux/$(get_os)/.tmux.$(get_os).conf"
         "vim/.vimrc"
         "vnstat/.vnstatrc"
         "yarn/.auto_sync_yarn.sh"
