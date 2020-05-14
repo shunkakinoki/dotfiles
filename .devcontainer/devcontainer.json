@@ -10,7 +10,9 @@
     "MS-vsliveshare.vsliveshare",
     "VisualStudioExptTeam.vscodeintellicode",
     "foxundermoon.shell-format",
-    "timonwong.shellcheck"
+    "timonwong.shellcheck",
+    "ms-azuretools.vscode-docker",
+    "oderwat.indent-rainbow"
   ],
   "postCreateCommand": "source ~/.zshrc",
   "mounts": [
