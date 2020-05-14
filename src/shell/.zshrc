@@ -31,10 +31,8 @@ antibody bundle caarlos0/zsh-git-sync kind:path
 antibody bundle chrissicool/zsh-256color
 antibody bundle darvid/zsh-poetry
 antibody bundle lukechilds/zsh-better-npm-completion
-antibody bundle MichaelAquilina/zsh-auto-notify
 antibody bundle MichaelAquilina/zsh-you-should-use
 antibody bundle mollifier/cd-gitroot
-antibody bundle owenstranathan/pipenv.zsh
 antibody bundle paulirish/git-open
 antibody bundle paulirish/git-recent
 antibody bundle peterhurford/git-it-on.zsh
@@ -47,6 +45,14 @@ antibody bundle zsh-users/zsh-autosuggestions
 antibody bundle zsh-users/zsh-completions
 antibody bundle zsh-users/zsh-history-substring-search
 antibody bundle zuxfoucault/colored-man-pages_mod
+
+if [ -x notify-send ]; then
+  antibody bundle MichaelAquilina/zsh-auto-notify
+fi
+
+if [ -x pipenv ]; then
+  antibody bundle owenstranathan/pipenv.zsh
+fi
 
 if [ -x wakatime ]; then
   antibody bundle sobolevn/wakatime-zsh-plugin
