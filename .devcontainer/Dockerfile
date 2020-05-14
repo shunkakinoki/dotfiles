@@ -60,8 +60,8 @@ RUN if id -u $USERNAME > /dev/null 2>&1; then \
   fi;
 
 RUN apt-get install -y sudo; \
-  && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME; \
-  && chmod 0440 /etc/sudoers.d/$USERNAME;
+  echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME; \
+  chmod 0440 /etc/sudoers.d/$USERNAME;
 
 RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment \
   && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
