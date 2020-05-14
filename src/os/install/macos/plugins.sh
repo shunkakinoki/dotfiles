@@ -13,6 +13,7 @@ install_vim_plugins() {
 }
 
 main() {
+    print_in_purple "\n   Plugins\n\n"
     install_tmux_plugins
     install_vim_plugins
 }
