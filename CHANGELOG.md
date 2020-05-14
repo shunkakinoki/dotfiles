@@ -1,3 +1,10 @@
+## [3.7.1](https://github.com/shunkakinoki/dotfiles/compare/v3.7.0...v3.7.1) (2020-05-14)
+
+
+### Bug Fixes
+
+* 🐛 add proper extensions ([2dfe9b5](https://github.com/shunkakinoki/dotfiles/commit/2dfe9b563a3e967fcfdd79b058d726fea2830670))
+
 # [3.7.0](https://github.com/shunkakinoki/dotfiles/compare/v3.6.0...v3.7.0) (2020-05-14)
 
 
