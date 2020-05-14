@@ -1,3 +1,12 @@
+# [3.9.0](https://github.com/shunkakinoki/dotfiles/compare/v3.8.1...v3.9.0) (2020-05-14)
+
+
+### Features
+
+* 🎸 add code2spaces feat ([bcf0bf2](https://github.com/shunkakinoki/dotfiles/commit/bcf0bf26d88e26cce4f696af418f49c1ba1a1560))
+* 🎸 add pti pvi ([9c8a9e9](https://github.com/shunkakinoki/dotfiles/commit/9c8a9e9be0953c3abf715bcf09f8a37c366e09bc))
+* 🎸 add tmux and vim plugins ([94d8c40](https://github.com/shunkakinoki/dotfiles/commit/94d8c40223698be6dc1dcd3f3eaed3fc625b10f7))
+
 ## [3.8.1](https://github.com/shunkakinoki/dotfiles/compare/v3.8.0...v3.8.1) (2020-05-14)
 
 
