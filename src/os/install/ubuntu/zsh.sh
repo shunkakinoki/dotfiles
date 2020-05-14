@@ -9,7 +9,7 @@ install_antibody() {
 }
 
 install_starship() {
-    curl -fsSL https://starship.rs/install.sh | bash
+    curl -fsSL https://starship.rs/install.sh | bash -s -- -y
 }
 
 print_in_purple "\n   zsh\n\n"
