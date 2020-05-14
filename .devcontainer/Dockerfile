@@ -1,40 +1,62 @@
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT License. See https://go.microsoft.com/fwlink/?linkid=2090316 for license information.
-#-------------------------------------------------------------------------------------------------------------
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
-# This Dockerfile adds a non-root user with sudo access. Use the "remoteUser"
-# property in devcontainer.json to use it. On Linux, the container user's GID/UIDs
-# will be updated to match your local UID/GID (when using the dockerFile property).
-# See https://aka.ms/vscode-remote/containers/non-root-user for details.
-ARG USERNAME=vscode
+ARG USERNAME=shun
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
-# Set to false to skip installing zsh and Oh My ZSH!
-ARG INSTALL_ZSH="true"
-
-# Location and expected SHA for common setup script - SHA generated on release
-ARG COMMON_SCRIPT_SOURCE="https://raw.githubusercontent.com/microsoft/vscode-dev-containers/master/script-library/common-debian.sh"
-ARG COMMON_SCRIPT_SHA="dev-mode"
-
-# Avoid warnings by switching to noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Configure apt and install packages
-RUN apt-get update \
-    && apt-get -y install --no-install-recommends apt-utils dialog wget ca-certificates 2>&1 \
-    #
-    # Verify git, common tools / libs installed, add/modify non-root user, optionally install zsh
-    && wget -q -O /tmp/common-setup.sh $COMMON_SCRIPT_SOURCE \
-    && if [ "$COMMON_SCRIPT_SHA" != "dev-mode" ]; then echo "$COMMON_SCRIPT_SHA /tmp/common-setup.sh" | sha256sum -c - ; fi \
-    && /bin/bash /tmp/common-setup.sh "$INSTALL_ZSH" "$USERNAME" "$USER_UID" "$USER_GID" \
-    && rm /tmp/common-setup.sh \
-    #
-    # Clean up
-    && apt-get autoremove -y \
-    && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/*
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# Switch back to dialog for any ad-hoc use of apt-get
+RUN apt-get update \
+  && apt-get -y install --no-install-recommends \
+  apt-transport-https \
+  apt-utils \
+  build-essential \
+  ca-certificates \
+  curl \
+  dialog \
+  git \
+  gnupg \
+  iproute2 \
+  jq \
+  less \
+  libc6 \
+  libgcc1 \
+  libgssapi-krb5-2 \
+  libicu[0-9][0-9] \
+  liblttng-ust0 \
+  libstdc++6 \
+  locales \
+  lsb-release \
+  npm \
+  nano \
+  openssh-client \
+  procps \
+  software-properties-common \
+  sudo \
+  unzip \
+  wget \
+  zlib1g \
+  zsh \
+  && apt-get autoremove -y \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN if id -u $USERNAME > /dev/null 2>&1; then \
+  if [ "$USER_GID" != "$(id -G $USERNAME)" ]; then \
+  groupmod --gid $USER_GID $USERNAME; \
+  usermod --gid $USER_GID $USERNAME; \
+  fi; \
+  if [ "$USER_UID" != "$(id -u $USERNAME)" ]; then \
+  usermod --uid $USER_UID $USERNAME; \
+  fi; \
+  else \
+  groupadd --gid $USER_GID $USERNAME; \
+  useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME; \
+  fi;
+
+RUN apt-get install -y sudo; \
+  echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME; \
+  chmod 0440 /etc/sudoers.d/$USERNAME;
+
 ENV DEBIAN_FRONTEND=dialog

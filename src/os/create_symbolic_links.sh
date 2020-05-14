@@ -20,6 +20,7 @@ create_symlinks() {
         "shell/.shell_path"
         "shell/.zshrc"
         "shell/alias/.shell_alias"
+        "shell/alias/$(get_os)/.shell_os_alias"
         "tmux/.tmux.conf"
         "vim/.vimrc"
         "vnstat/.vnstatrc"
