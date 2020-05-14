@@ -1,6 +1,7 @@
 {
   "name": "dotfiles",
-  "dockerFile": "Dockerfile",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "dotfiles",
   "settings": {
     "terminal.integrated.shell.linux": "/bin/zsh"
   },
@@ -13,10 +14,11 @@
     "ms-vsonline.vsonline",
     "oderwat.indent-rainbow",
     "timonwong.shellcheck",
-    "VisualStudioExptTeam.vscodeintellicode",
+    "VisualStudioExptTeam.vscodeintellicode"
   ],
-  "postCreateCommand": "source ~/.zshrc",
-  "mounts": [
-    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
-  ]
+  "postCreateCommand": "uname -a",
+  "remoteUser": "shunkakinoki",
+  "runServices": [],
+  "shutdownAction": "none",
+  "workspaceFolder": "/workspace"
 }
