@@ -3,8 +3,8 @@ FROM ubuntu:20.04
 ARG USERNAME=user
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
-
 ENV DEBIAN_FRONTEND=noninteractive
+
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -79,7 +79,7 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - \
   snapd \
   yarn
 
-ENV DEBIAN_FRONTEND=dialog
 ENV USERNAME=$USERNAME
 ENV USER_UID=$USER_UID
 ENV USER_GID=$USER_GID
+ENV DEBIAN_FRONTEND=dialog
