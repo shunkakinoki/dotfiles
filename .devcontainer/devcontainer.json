@@ -8,7 +8,9 @@
     "ms-vsonline.vsonline",
     "GitHub.vscode-pull-request-github",
     "MS-vsliveshare.vsliveshare",
-    "VisualStudioExptTeam.vscodeintellicode"
+    "VisualStudioExptTeam.vscodeintellicode",
+    "foxundermoon.shell-format",
+    "timonwong.shellcheck"
   ],
   "postCreateCommand": "source ~/.zshrc",
   "mounts": [
