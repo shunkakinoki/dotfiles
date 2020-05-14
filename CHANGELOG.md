@@ -1,3 +1,10 @@
+# [3.5.0](https://github.com/shunkakinoki/dotfiles/compare/v3.4.10...v3.5.0) (2020-05-14)
+
+
+### Features
+
+* add ubuntu alias ([433f47b](https://github.com/shunkakinoki/dotfiles/commit/433f47b22b4a2e7453a5391382273f4027894b75))
+
 ## [3.4.10](https://github.com/shunkakinoki/dotfiles/compare/v3.4.9...v3.4.10) (2020-05-14)
 
 
