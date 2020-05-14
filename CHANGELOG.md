@@ -1,3 +1,10 @@
+# [3.7.0](https://github.com/shunkakinoki/dotfiles/compare/v3.6.0...v3.7.0) (2020-05-14)
+
+
+### Features
+
+* 🎸 add code2spaces module ([acaf4d6](https://github.com/shunkakinoki/dotfiles/commit/acaf4d6031b233ef25e5bb7338509d998f637958))
+
 # [3.6.0](https://github.com/shunkakinoki/dotfiles/compare/v3.5.1...v3.6.0) (2020-05-14)
 
 
