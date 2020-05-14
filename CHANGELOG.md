@@ -1,3 +1,10 @@
+## [3.4.10](https://github.com/shunkakinoki/dotfiles/compare/v3.4.9...v3.4.10) (2020-05-14)
+
+
+### Bug Fixes
+
+* **deps:** bump src/git/gitalias from `48b72bf` to `29a4f82` ([c9ed8d5](https://github.com/shunkakinoki/dotfiles/commit/c9ed8d5513fe65cac8d1bf4d5dd1d4016c01a55d))
+
 ## [3.4.9](https://github.com/shunkakinoki/dotfiles/compare/v3.4.8...v3.4.9) (2020-05-13)
 
 
