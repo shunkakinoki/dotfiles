@@ -1,3 +1,5 @@
+# shellcheck disable=SC2148
+
 # Autoload Zsh Completion
 autoload -U compinit
 compinit
@@ -5,10 +7,14 @@ compinit
 # Hyper Tab Title Settings
 # From: https://github.com/zeit/hyper/issues/1188#issuecomment-332606903
 # Override auto-title when static titles are desired ($ title My new title)
-title() { export TITLE_OVERRIDDEN=1; echo -en "\e]0;$*\a"}
+title() {
+  export TITLE_OVERRIDDEN=1
+  echo -en "\e]0;$*\a"
+}
 
 # Turn off static titles ($ autotitle)
-autotitle() { export TITLE_OVERRIDDEN=0 }; autotitle
+autotitle() { export TITLE_OVERRIDDEN=0; }
+autotitle
 
 # Condition checking if title is overridden
 overridden() { [[ $TITLE_OVERRIDDEN == 1 ]]; }
@@ -33,7 +39,6 @@ antibody bundle paulirish/git-open
 antibody bundle paulirish/git-recent
 antibody bundle peterhurford/git-it-on.zsh
 antibody bundle peterhurford/up.zsh
-antibody bundle sobolevn/wakatime-zsh-plugin
 antibody bundle urbainvaes/fzf-marks
 antibody bundle wfxr/forgit
 antibody bundle zdharma/fast-syntax-highlighting
@@ -43,13 +48,17 @@ antibody bundle zsh-users/zsh-completions
 antibody bundle zsh-users/zsh-history-substring-search
 antibody bundle zuxfoucault/colored-man-pages_mod
 
+if [ -x wakatime ]; then
+  antibody bundle sobolevn/wakatime-zsh-plugin
+fi
+
 fpath+=~/.zfunc
 fpath+=~/dotfiles/src/shell/zsh_functions
 autoload b c cdf cda cdp coden coder da drm ds ef emoji::cli fe fh fkill gbo gbor ghl gobt gobtp goc icoden icoder tm tmk tp ts
 
 # Source Shell Files
 for file in ~/.shell_*; do
-    source "$file"
+  source "$file"
 done
 
 source ~/.zshrc.local
@@ -58,6 +67,6 @@ source ~/.zshrc.local
 eval "$(starship init zsh)"
 
 if [[ -n $ZSH_INIT_COMMAND ]]; then
-    echo "Running: $ZSH_INIT_COMMAND"
-    eval "$ZSH_INIT_COMMAND"
+  echo "Running: $ZSH_INIT_COMMAND"
+  eval "$ZSH_INIT_COMMAND"
 fi

@@ -10,10 +10,7 @@
     "MS-vsliveshare.vsliveshare",
     "VisualStudioExptTeam.vscodeintellicode"
   ],
-  "forwardPorts": [
-    3000
-  ],
-  "postCreateCommand": "uname -a",
+  "postCreateCommand": "source ~/.zshrc",
   "mounts": [
     "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
   ]
