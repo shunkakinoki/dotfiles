@@ -1,0 +1,13 @@
+name: Code2Spaces
+on: pull_request
+jobs:
+  code2spaces:
+    runs-on: ubuntu-latest
+    container: code2spaces/code2spaces:latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          ./install.sh
+      - if: failure()
+        timeout-minutes: 3
+        uses: mxschmitt/action-tmate@v2
