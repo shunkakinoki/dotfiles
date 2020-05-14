@@ -73,9 +73,6 @@ RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - \
   && echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list \
-  && apt install -y \
-  software-properties-common \ 
-  python-software-properties \
   && add-apt-repository ppa:pypa/ppa \
   && apt update \
   && apt install -y \
