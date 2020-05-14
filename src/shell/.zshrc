@@ -76,5 +76,3 @@ if [[ -n $ZSH_INIT_COMMAND ]]; then
   echo "Running: $ZSH_INIT_COMMAND"
   eval "$ZSH_INIT_COMMAND"
 fi
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
