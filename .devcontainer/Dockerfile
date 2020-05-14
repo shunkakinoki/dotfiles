@@ -14,9 +14,12 @@ RUN apt-get update \
   apt-utils \
   build-essential \
   ca-certificates \
+  cargo \
   curl \
   dialog \
+  fzf \
   git \
+  hub \
   gnupg \
   iproute2 \
   jq \
@@ -36,6 +39,7 @@ RUN apt-get update \
   software-properties-common \
   sudo \
   unzip \
+  vim \
   wget \
   zlib1g \
   zsh \
@@ -58,5 +62,20 @@ RUN if id -u $USERNAME > /dev/null 2>&1; then \
 RUN apt-get install -y sudo; \
   echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME; \
   chmod 0440 /etc/sudoers.d/$USERNAME;
+
+RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment \
+  echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
+  echo "LANG=en_US.UTF-8" > /etc/locale.conf \
+  locale-gen en_US.UTF-8
+
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - \
+  echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list \
+  add-apt-repository ppa:pypa/ppa \
+  apt update \
+  apt install -y \
+  pipenv \
+  nodejs \
+  snapd \
+  yarn
 
 ENV DEBIAN_FRONTEND=dialog
