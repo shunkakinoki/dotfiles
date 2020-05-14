@@ -1,3 +1,10 @@
+# [3.6.0](https://github.com/shunkakinoki/dotfiles/compare/v3.5.1...v3.6.0) (2020-05-14)
+
+
+### Features
+
+* add tmux platform specific ([70e8dfa](https://github.com/shunkakinoki/dotfiles/commit/70e8dfaa0477df45ddee08b21bb90ee60c8c7199))
+
 ## [3.5.1](https://github.com/shunkakinoki/dotfiles/compare/v3.5.0...v3.5.1) (2020-05-14)
 
 
