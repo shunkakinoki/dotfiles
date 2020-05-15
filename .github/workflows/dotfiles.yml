@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
-          ./install.sh
+          exec bash install.sh
       - if: failure()
         timeout-minutes: 3
         uses: mxschmitt/action-tmate@v2
