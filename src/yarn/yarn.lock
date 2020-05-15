@@ -12109,10 +12109,10 @@ serve-static@1.14.1:
     parseurl "~1.3.3"
     send "0.17.1"
 
-serverless@^1.71.0:
-  version "1.71.0"
-  resolved "https://registry.yarnpkg.com/serverless/-/serverless-1.71.0.tgz#2cc993d8ecdf099c8779c06cd12bf5069a1e5040"
-  integrity sha512-FdyKtXW92j+SB4v+KhwmNK3EyMi92emnDqBYz6rGSgPowZgB4V44aQABzDU5y/7D2QNfOhQsiFuwasQWjywXwQ==
+serverless@^1.71.1:
+  version "1.71.1"
+  resolved "https://registry.yarnpkg.com/serverless/-/serverless-1.71.1.tgz#0e88754f6904aeecab4fa0d01747796b251ad65c"
+  integrity sha512-Yphpk34C7KGS4eXAcaLks3oNgjFZ2k9p+B3Q4Q7UGECoNLyZWUVdItVAWKDht6F6+9hZt7/522vbR9u7QbwK3A==
   dependencies:
     "@serverless/cli" "^1.4.0"
     "@serverless/components" "^2.30.10"
