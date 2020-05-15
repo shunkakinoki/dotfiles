@@ -2,4 +2,4 @@
 
 export TERM=xterm-256color
 
-yes | sh ./src/os/main.sh
+. ./src/os/main.sh
