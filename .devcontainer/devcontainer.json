@@ -16,9 +16,8 @@
     "timonwong.shellcheck",
     "VisualStudioExptTeam.vscodeintellicode"
   ],
-  "postCreateCommand": "uname -a",
-  "remoteUser": "shunkakinoki",
   "runServices": [],
+  "postCreateCommand": "uname -a",
   "shutdownAction": "none",
   "workspaceFolder": "/workspace"
 }

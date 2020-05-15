@@ -1,7 +1,6 @@
 version: "3"
 services:
   dotfiles:
-    user: shunkakinoki
     build:
       context: .
       dockerfile: Dockerfile
