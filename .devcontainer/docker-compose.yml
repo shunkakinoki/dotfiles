@@ -13,3 +13,4 @@ services:
       - SYS_PTRACE
     security_opt:
       - seccomp:unconfined
+    command: sleep infinity
