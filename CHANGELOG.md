@@ -1,3 +1,10 @@
+# [3.10.0](https://github.com/shunkakinoki/dotfiles/compare/v3.9.0...v3.10.0) (2020-05-15)
+
+
+### Features
+
+* 🎸 add docker compose dev container ([cf5747d](https://github.com/shunkakinoki/dotfiles/commit/cf5747d40c452645932c9d3b6c6cbd70de4d5931))
+
 # [3.9.0](https://github.com/shunkakinoki/dotfiles/compare/v3.8.1...v3.9.0) (2020-05-14)
 
 
