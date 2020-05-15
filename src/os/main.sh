@@ -152,7 +152,7 @@ main() {
     ./preferences/main.sh
     if ! $skipQuestions; then
         ./restart.sh
-        exit 1
+        exit
     fi
 }
 
