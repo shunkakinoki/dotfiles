@@ -17,7 +17,6 @@
     "VisualStudioExptTeam.vscodeintellicode"
   ],
   "postCreateCommand": "uname -a",
-  "remoteUser": "shunkakinoki",
   "runServices": [],
   "shutdownAction": "none",
   "workspaceFolder": "/workspace"
