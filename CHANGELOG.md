@@ -1,3 +1,10 @@
+# [3.12.0](https://github.com/shunkakinoki/dotfiles/compare/v3.11.1...v3.12.0) (2020-05-15)
+
+
+### Features
+
+* 🎸 remove user name ([6ca1659](https://github.com/shunkakinoki/dotfiles/commit/6ca1659f2654b11466402a68a5a93ca41086f772))
+
 ## [3.11.1](https://github.com/shunkakinoki/dotfiles/compare/v3.11.0...v3.11.1) (2020-05-15)
 
 
