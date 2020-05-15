@@ -24,6 +24,10 @@ print_in_purple "\n   bat\n\n"
 
 installdeb $(ghrelease sharkdp bat "bat_.*_amd64.deb")
 
+print_in_purple "\n   gh\n\n"
+
+installdeb $(ghrelease cli cli "gh_.*_linux_amd64.deb")
+
 print_in_purple "\n   lsd\n\n"
 
 installdeb $(ghrelease Peltoche lsd "lsd_.*_amd64.deb")
