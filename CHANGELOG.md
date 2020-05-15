@@ -1,3 +1,10 @@
+# [3.11.0](https://github.com/shunkakinoki/dotfiles/compare/v3.10.1...v3.11.0) (2020-05-15)
+
+
+### Features
+
+* 🎸 add dev container ([0af73f1](https://github.com/shunkakinoki/dotfiles/commit/0af73f105eb2143762af6cbce569e07724150efa))
+
 # [3.10.0](https://github.com/shunkakinoki/dotfiles/compare/v3.9.0...v3.10.0) (2020-05-15)
 
 
