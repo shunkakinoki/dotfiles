@@ -1,3 +1,10 @@
+## [3.12.8](https://github.com/shunkakinoki/dotfiles/compare/v3.12.7...v3.12.8) (2020-05-18)
+
+
+### Bug Fixes
+
+* **deps:** bump spotdl from 2.0.2 to 2.0.3 in /src/pipenv ([d49dccb](https://github.com/shunkakinoki/dotfiles/commit/d49dccb99c3eee599816875e2cc5822063e12e89))
+
 ## [3.12.7](https://github.com/shunkakinoki/dotfiles/compare/v3.12.6...v3.12.7) (2020-05-18)
 
 
