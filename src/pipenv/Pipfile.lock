@@ -380,11 +380,11 @@
         },
         "spotdl": {
             "hashes": [
-                "sha256:02acc77b177c1bb1a8610c14fb34b7fe248528da8276aedd5db21cb7121d3459",
-                "sha256:a932af038ef536eb28c48fe88e4ed5c87cbde974d2f7fa77a3c88e751a280d41"
+                "sha256:4f7a04ee97709082ea861082db847c29ff8672167f7c1a6a578cb6228b82d0ba",
+                "sha256:ca556e45c68575a6865031dab706f88b4b2a18145c2667d5a962aeb9191d0067"
             ],
             "index": "pypi",
-            "version": "==2.0.2"
+            "version": "==2.0.3"
         },
         "spotipy": {
             "hashes": [
