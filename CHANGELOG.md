@@ -1,3 +1,10 @@
+# [3.13.0](https://github.com/shunkakinoki/dotfiles/compare/v3.12.12...v3.13.0) (2020-05-19)
+
+
+### Features
+
+* 🎸 update tmux conf ([61b3647](https://github.com/shunkakinoki/dotfiles/commit/61b3647547381e5d550269d802d8d196e110fb8c))
+
 ## [3.12.12](https://github.com/shunkakinoki/dotfiles/compare/v3.12.11...v3.12.12) (2020-05-18)
 
 
