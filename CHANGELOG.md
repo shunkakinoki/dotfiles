@@ -1,3 +1,11 @@
+## [3.13.16](https://github.com/shunkakinoki/dotfiles/compare/v3.13.15...v3.13.16) (2020-05-23)
+
+
+### Bug Fixes
+
+* **deps:** bump flake8 from 3.8.1 to 3.8.2 in /src/pipenv ([da4189b](https://github.com/shunkakinoki/dotfiles/commit/da4189bea9e5d78e3b7c9a97cf089da636ade7a4))
+* **deps:** bump truffle from 5.1.26 to 5.1.27 in /src/yarn ([aa02136](https://github.com/shunkakinoki/dotfiles/commit/aa02136084a7b050587fa007d2085f25d8bf7f8e))
+
 ## [3.13.15](https://github.com/shunkakinoki/dotfiles/compare/v3.13.14...v3.13.15) (2020-05-22)
 
 
