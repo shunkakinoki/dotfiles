@@ -26,7 +26,7 @@ installdeb "$(ghrelease sharkdp bat "bat_.*_amd64.deb")"
 
 print_in_purple "\n   delta\n\n"
 
-installdeb "$(ghrelease davidavison delta "git-delta_.*_amd64.deb")"
+installdeb "$(ghrelease dandavison delta "git-delta_.*_amd64.deb")"
 
 print_in_purple "\n   gh\n\n"
 
