@@ -380,11 +380,11 @@
         },
         "spotdl": {
             "hashes": [
-                "sha256:159dbbb5564a219ff378d2116b9f7380e61dd13fb2599b111ce74ae723ff0f04",
-                "sha256:4a9f86a6a48d2732379f9b9ad6e5a58243f450adc9cc9e7b56b1a1062b714a37"
+                "sha256:055e1700669d29868ab0dda4a80d28aaddfda955b706a174a642337212694eeb",
+                "sha256:47bad9934896d74121a9ce1cdb78bb79d605673aebdb4c6ba00cf3e6eb33805a"
             ],
             "index": "pypi",
-            "version": "==2.0.6"
+            "version": "==2.0.8"
         },
         "spotipy": {
             "hashes": [
@@ -493,10 +493,10 @@
         },
         "youtube-dl": {
             "hashes": [
-                "sha256:0b5d3280522469968eb62eecb1f966f422b2be22f000a801bf87cb2172d8ea39",
-                "sha256:22da6788b55b7b267c6d59bcdfaf10e67a9ac980976d50d29a670473ad2a05bb"
+                "sha256:1a3d84afa851dce2fccc2dfc0f9ffa0e22314ffba6d528b34b4a7fe3e0cf2264",
+                "sha256:2d45840772ecc57e151b0be78dd89e9772b6aa29295746be38abb9c30dad5bb3"
             ],
-            "version": "==2020.5.8"
+            "version": "==2020.5.29"
         },
         "zipp": {
             "hashes": [
