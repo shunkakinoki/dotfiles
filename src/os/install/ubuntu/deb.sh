@@ -24,6 +24,10 @@ print_in_purple "\n   bat\n\n"
 
 installdeb "$(ghrelease sharkdp bat "bat_.*_amd64.deb")"
 
+print_in_purple "\n   delta\n\n"
+
+installdeb "$(ghrelease davidavison delta "git-delta_.*_amd64.deb")"
+
 print_in_purple "\n   gh\n\n"
 
 installdeb "$(ghrelease cli cli "gh_.*_linux_amd64.deb")"
