@@ -1,3 +1,10 @@
+## [3.13.35](https://github.com/shunkakinoki/dotfiles/compare/v3.13.34...v3.13.35) (2020-06-05)
+
+
+### Bug Fixes
+
+* **deps:** [security] bump websocket-extensions in /src/yarn ([f8039d9](https://github.com/shunkakinoki/dotfiles/commit/f8039d939b7fa11866ab4a777d26327eea4af2aa))
+
 ## [3.13.34](https://github.com/shunkakinoki/dotfiles/compare/v3.13.33...v3.13.34) (2020-06-05)
 
 
