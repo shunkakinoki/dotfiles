@@ -1,3 +1,10 @@
+## [3.13.34](https://github.com/shunkakinoki/dotfiles/compare/v3.13.33...v3.13.34) (2020-06-05)
+
+
+### Bug Fixes
+
+* **deps:** [security] bump websocket-extensions in /src/bundle ([33d8167](https://github.com/shunkakinoki/dotfiles/commit/33d816738d96077381d425c63eec397996b0ef4a))
+
 ## [3.13.33](https://github.com/shunkakinoki/dotfiles/compare/v3.13.32...v3.13.33) (2020-06-04)
 
 
