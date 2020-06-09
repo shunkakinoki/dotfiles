@@ -1,3 +1,10 @@
+## [3.13.40](https://github.com/shunkakinoki/dotfiles/compare/v3.13.39...v3.13.40) (2020-06-09)
+
+
+### Bug Fixes
+
+* **deps:** [security] bump graphql-playground-html in /src/yarn ([1468e0a](https://github.com/shunkakinoki/dotfiles/commit/1468e0a95d603d4abc38b5724d996241336f465a))
+
 ## [3.13.39](https://github.com/shunkakinoki/dotfiles/compare/v3.13.38...v3.13.39) (2020-06-08)
 
 
