@@ -380,11 +380,11 @@
         },
         "spotdl": {
             "hashes": [
-                "sha256:4bee489031d3dc7ad2c1cad1709d5b7885635868c92ea7f847a5ea835315ce81",
-                "sha256:60d3f6353c4c4d2b1285413eba0230b41359882d6e95032e0a1f3a9537e05cb7"
+                "sha256:4551bd6550aab5a681dc6e5aae19fd1b344679474f8d5949f6fd6113a5e8ac56",
+                "sha256:665386b8436e982414025c164d6a903c70b71e7c314accf5c504057e1196bc46"
             ],
             "index": "pypi",
-            "version": "==2.0.9"
+            "version": "==2.1.0"
         },
         "spotipy": {
             "hashes": [
@@ -479,10 +479,10 @@
         },
         "virtualenv": {
             "hashes": [
-                "sha256:a116629d4e7f4d03433b8afa27f43deba09d48bc48f5ecefa4f015a178efb6cf",
-                "sha256:a730548b27366c5e6cbdf6f97406d861cccece2e22275e8e1a757aeff5e00c70"
+                "sha256:5102fbf1ec57e80671ef40ed98a84e980a71194cedf30c87c2b25c3a9e0b0107",
+                "sha256:ccfb8e1e05a1174f7bd4c163700277ba730496094fe1a58bea9d4ac140a207c8"
             ],
-            "version": "==20.0.21"
+            "version": "==20.0.23"
         },
         "wakatime": {
             "hashes": [
