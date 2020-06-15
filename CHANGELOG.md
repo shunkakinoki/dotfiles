@@ -1,3 +1,10 @@
+## [3.13.45](https://github.com/shunkakinoki/dotfiles/compare/v3.13.44...v3.13.45) (2020-06-15)
+
+
+### Bug Fixes
+
+* **deps:** [security] bump rack from 2.2.2 to 2.2.3 in /src/bundle ([23c9484](https://github.com/shunkakinoki/dotfiles/commit/23c948427dac1e84521c3b0cfd68f3e4bae25545))
+
 ## [3.13.44](https://github.com/shunkakinoki/dotfiles/compare/v3.13.43...v3.13.44) (2020-06-15)
 
 
