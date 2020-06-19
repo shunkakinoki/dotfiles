@@ -1,3 +1,10 @@
+## [3.13.52](https://github.com/shunkakinoki/dotfiles/compare/v3.13.51...v3.13.52) (2020-06-19)
+
+
+### Bug Fixes
+
+* **deps:** bump mypy from 0.780 to 0.781 in /src/pipenv ([cf3ce10](https://github.com/shunkakinoki/dotfiles/commit/cf3ce10474d78899bd5b35a5fc0f965b1861bfbc))
+
 ## [3.13.51](https://github.com/shunkakinoki/dotfiles/compare/v3.13.50...v3.13.51) (2020-06-19)
 
 
