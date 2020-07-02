@@ -1,3 +1,10 @@
+## [3.13.68](https://github.com/shunkakinoki/dotfiles/compare/v3.13.67...v3.13.68) (2020-07-02)
+
+
+### Bug Fixes
+
+* **deps:** bump ueberzug from 18.1.5 to 18.1.6 in /src/pipenv ([286da71](https://github.com/shunkakinoki/dotfiles/commit/286da71648b812770c58d365192ce02626a5f946))
+
 ## [3.13.67](https://github.com/shunkakinoki/dotfiles/compare/v3.13.66...v3.13.67) (2020-07-01)
 
 
