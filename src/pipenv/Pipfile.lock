@@ -457,10 +457,10 @@
         },
         "ueberzug": {
             "hashes": [
-                "sha256:7e3d7f55520dacc84f454b7c809982215a98946343a298ca2e2705db343148e6"
+                "sha256:cbdf1006f7c2c6872c9d68a2b883dc278ceea155c207966da95eafb973c2498d"
             ],
             "index": "pypi",
-            "version": "==18.1.5"
+            "version": "==18.1.6"
         },
         "unicode-slugify": {
             "hashes": [
