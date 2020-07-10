@@ -14,7 +14,7 @@
     "git-open": "^2.1.0",
     "jshint": "^2.11.0",
     "lerna-update-wizard": "^0.17.8",
-    "now": "^19.1.1",
+    "now": "^19.1.2",
     "prettier": "^2.0.5",
     "serverless": "^1.74.1",
     "speed-test": "^2.1.0",
