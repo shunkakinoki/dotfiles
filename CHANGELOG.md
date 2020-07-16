@@ -1,3 +1,10 @@
+## [3.13.98](https://github.com/shunkakinoki/dotfiles/compare/v3.13.97...v3.13.98) (2020-07-16)
+
+
+### Bug Fixes
+
+* **deps:** bump tox from 3.17.0 to 3.17.1 in /src/pipenv ([ac3593b](https://github.com/shunkakinoki/dotfiles/commit/ac3593bd2cb5f5c55849cbfbcdfa8cc9dd75b654))
+
 ## [3.13.97](https://github.com/shunkakinoki/dotfiles/compare/v3.13.96...v3.13.97) (2020-07-15)
 
 
