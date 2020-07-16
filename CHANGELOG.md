@@ -1,3 +1,10 @@
+## [3.13.100](https://github.com/shunkakinoki/dotfiles/compare/v3.13.99...v3.13.100) (2020-07-16)
+
+
+### Bug Fixes
+
+* **deps:** bump isort from 5.1.0 to 5.1.1 in /src/pipenv ([5e912db](https://github.com/shunkakinoki/dotfiles/commit/5e912dbcf304c150550a115f2fca98f5ddc91781))
+
 ## [3.13.99](https://github.com/shunkakinoki/dotfiles/compare/v3.13.98...v3.13.99) (2020-07-16)
 
 
