@@ -1,3 +1,10 @@
+# [3.14.0](https://github.com/shunkakinoki/dotfiles/compare/v3.13.103...v3.14.0) (2020-07-19)
+
+
+### Features
+
+* 🎸 refactor master main ([46a3b17](https://github.com/shunkakinoki/dotfiles/commit/46a3b17788352d7dbe87a0e7b7604e53bf30ce12))
+
 ## [3.13.103](https://github.com/shunkakinoki/dotfiles/compare/v3.13.102...v3.13.103) (2020-07-18)
 
 
