@@ -135,11 +135,11 @@
         },
         "isort": {
             "hashes": [
-                "sha256:408e4d75d84f51b64d0824894afee44469eba34a4caee621dc53799f80d71ccc",
-                "sha256:64022dea6a06badfa09b300b4dfe8ba968114a737919e8ed50aea1c288f078aa"
+                "sha256:001ab55382453892ddb6956f65c6331f610041eed7ddc9c6bdf7975cb504f66f",
+                "sha256:9be41d107294ddf25ef6af83979cb3dfa1b5752311b6d50611c8f8d321d4a4eb"
             ],
             "index": "pypi",
-            "version": "==5.1.2"
+            "version": "==5.1.3"
         },
         "lyricwikia": {
             "hashes": [
