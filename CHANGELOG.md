@@ -1,3 +1,10 @@
+# [3.15.0](https://github.com/shunkakinoki/dotfiles/compare/v3.14.1...v3.15.0) (2020-07-19)
+
+
+### Features
+
+* 🎸 main ([2c2f3e5](https://github.com/shunkakinoki/dotfiles/commit/2c2f3e517449c5118bcf2dcc2996627f93f72edb))
+
 ## [3.14.1](https://github.com/shunkakinoki/dotfiles/compare/v3.14.0...v3.14.1) (2020-07-19)
 
 
