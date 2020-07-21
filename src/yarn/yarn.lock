@@ -2031,25 +2031,25 @@
   dependencies:
     wonka "^4.0.14"
 
-"@vercel/build-utils@2.4.1":
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/@vercel/build-utils/-/build-utils-2.4.1.tgz#e49de196807321e60d6616ec412c033c0b9a0a87"
-  integrity sha512-DgRvs0u5ZLQyeVztZWEbEtGeq1PsquJ4BfGQ9pu3w3vPuk1Znbxhrha55Kqc8Zo5YTWBEudQh5OlxA7ZYCjqPQ==
+"@vercel/build-utils@2.4.2":
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/@vercel/build-utils/-/build-utils-2.4.2.tgz#38604af38faa7d94e39ef98c9e579ad34579b0e9"
+  integrity sha512-9KymcPgUYkPxt4VK7HepM7yWN1ZUt3XzNKn5ECkGhHAHF31rmr9gEGlZZlq5KcXPsBps4A/BOuSBwK8EFOXP/w==
 
-"@vercel/go@1.1.3":
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/@vercel/go/-/go-1.1.3.tgz#2ef813f1a7e15a9593b5dd183f574f82df08569a"
-  integrity sha512-ydW8jA4wtx781BbaCB/BDuC+NO6aqUVbkqFhltVVFeUjYRxL3Uyh35dWwSbT/d9Kgw3xorLTb3m/gAyFwjoHVw==
+"@vercel/go@1.1.4":
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@vercel/go/-/go-1.1.4.tgz#7d5b0d5914d099d988f1b8f44248ca8e27e08e53"
+  integrity sha512-HAUFjs+K/MkPrRuUwK3/2TIDAJP582b1pBNHrq1DGp8mOft/xKYIiOVh6h9PHxOeFRPCdwB3bPaAovj6jSVCZw==
 
-"@vercel/next@2.6.11":
-  version "2.6.11"
-  resolved "https://registry.yarnpkg.com/@vercel/next/-/next-2.6.11.tgz#485e896d3cd29546e64694ca3e30e5d0d3cb7ee4"
-  integrity sha512-bUHhQoR72iG0RUwGUEuQZVVDI09+wLL5ADBbRFudQq9xg1kCYBlQ/6l3MyFif2IuZq5b/OPQ++XX0qtUzeLlJQ==
+"@vercel/next@2.6.13":
+  version "2.6.13"
+  resolved "https://registry.yarnpkg.com/@vercel/next/-/next-2.6.13.tgz#f0456abdc876bc7120ee348a16644a25486b0edd"
+  integrity sha512-ZF2+wy7J1okgF984AR3nBV/u0DqsDK+TFe2U5ucPUrM9pFlVdWi88FZY2OTrH0ke5dgGXanJQlfW28PvlOAUbA==
 
-"@vercel/node@1.7.2":
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/@vercel/node/-/node-1.7.2.tgz#85cb8aac661c02dfef6fe752740f5b162e90767b"
-  integrity sha512-XV5lrLC+K/cxsaFj8H2OoGu1zliOqnxcrOnPInI8HmQjR/Tztt+0nzgpt+7sx8wXcrib0Nu7lK303jP7VjSETw==
+"@vercel/node@1.7.3":
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/@vercel/node/-/node-1.7.3.tgz#55338b04b8f5559c45ba125966e3f46f38830bb9"
+  integrity sha512-bENPZRdmOSlHn4eZpfps1nZtwVuQbZj5vgt2FKa1gT/Uiy3zo5BPB+ANINNC+qcCXHxUdS50XKB2m4VvtVLY1w==
   dependencies:
     "@types/node" "*"
     ts-node "8.9.1"
@@ -2065,10 +2065,10 @@
   resolved "https://registry.yarnpkg.com/@vercel/ruby/-/ruby-1.2.3.tgz#008163246fa1191a05eca2065cab2b89619a36ff"
   integrity sha512-WvtImWLdIo4bB0f2Pgc+P7KdgVVsPSMEVEtk4ZJnKkhU7IsCn/UnlovOsZeP6Qw/Bwqv84KrNm+nNRte648aew==
 
-"@vercel/static-build@0.17.5":
-  version "0.17.5"
-  resolved "https://registry.yarnpkg.com/@vercel/static-build/-/static-build-0.17.5.tgz#e52e6b73ea0362b6bc05b45d4b0396da562e8e7d"
-  integrity sha512-pZpIgm22BbscfH3qJUBgTZf0RNQO/sh2AORsu9aF70QXeU2B2n9wvpz+K8oiTTXjdNdFSidfMUX+PZZc1OPx+Q==
+"@vercel/static-build@0.17.6":
+  version "0.17.6"
+  resolved "https://registry.yarnpkg.com/@vercel/static-build/-/static-build-0.17.6.tgz#c3a84973ee22b5914e3a2a97f46a2e1d78b94a59"
+  integrity sha512-zSyNyXwH3RPd0owiwaS2yv+js3Rwi/0y6BOiWLr6mkqkDe7YRIYsYrX7GD08Hx5Na6f1RnmnHCneTyzBXpuuBg==
 
 "@webassemblyjs/ast@1.9.0":
   version "1.9.0"
@@ -10379,18 +10379,19 @@ normalize-url@^4.1.0:
   resolved "https://registry.yarnpkg.com/normalize-url/-/normalize-url-4.5.0.tgz#453354087e6ca96957bd8f5baf753f5982142129"
   integrity sha512-2s47yzUxdexf1OhyRi4Em83iQk0aPvwTddtFz4hnSSw9dCEsLEGf6SwIO8ss/19S9iBb5sJaOuTvTGDeZI00BQ==
 
-now@^19.1.2:
-  version "19.1.2"
-  resolved "https://registry.yarnpkg.com/now/-/now-19.1.2.tgz#1be93f99d45b68c9981017310bd752ac075022cf"
-  integrity sha512-S6lGmpPVkHZLKrCUDXfMjpgYfxZUYbjqUsDVRi1g9dejS4/PtO0KbTuSgw/9QtThg8W1EoF7q82U7uBBUsxf6Q==
+now@^19.2.0:
+  version "19.2.0"
+  resolved "https://registry.yarnpkg.com/now/-/now-19.2.0.tgz#7b3eea1355cbd90cd68b097c918486d893670520"
+  integrity sha512-YNdDQ7MEaRAiwPtdNFk1ACu0gnbnZFLoWX7f4fpwhp/Zsups64vncFpLWkXihKJpNnofQiviruJbv0AVZYJuuA==
   dependencies:
-    "@vercel/build-utils" "2.4.1"
-    "@vercel/go" "1.1.3"
-    "@vercel/next" "2.6.11"
-    "@vercel/node" "1.7.2"
+    "@vercel/build-utils" "2.4.2"
+    "@vercel/go" "1.1.4"
+    "@vercel/next" "2.6.13"
+    "@vercel/node" "1.7.3"
     "@vercel/python" "1.2.2"
     "@vercel/ruby" "1.2.3"
-    "@vercel/static-build" "0.17.5"
+    "@vercel/static-build" "0.17.6"
+    update-notifier "4.1.0"
 
 npm-conf@^1.1.0:
   version "1.1.3"
@@ -14654,6 +14655,25 @@ upath@^1.1.1:
   resolved "https://registry.yarnpkg.com/upath/-/upath-1.2.0.tgz#8f66dbcd55a883acdae4408af8b035a5044c1894"
   integrity sha512-aZwGpamFO61g3OlfT7OQCHqhGnW43ieH9WZeP7QxN/G/jS4jfqUkZxoryvJgVPEcrl5NL/ggHsSmLMHuH64Lhg==
 
+update-notifier@4.1.0, update-notifier@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/update-notifier/-/update-notifier-4.1.0.tgz#4866b98c3bc5b5473c020b1250583628f9a328f3"
+  integrity sha512-w3doE1qtI0/ZmgeoDoARmI5fjDoT93IfKgEGqm26dGUOh8oNpaSTsGNdYRN/SjOuo10jcJGwkEL3mroKzktkew==
+  dependencies:
+    boxen "^4.2.0"
+    chalk "^3.0.0"
+    configstore "^5.0.1"
+    has-yarn "^2.1.0"
+    import-lazy "^2.1.0"
+    is-ci "^2.0.0"
+    is-installed-globally "^0.3.1"
+    is-npm "^4.0.0"
+    is-yarn-global "^0.3.0"
+    latest-version "^5.0.0"
+    pupa "^2.0.1"
+    semver-diff "^3.1.1"
+    xdg-basedir "^4.0.0"
+
 update-notifier@^2.3.0, update-notifier@^2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/update-notifier/-/update-notifier-2.5.0.tgz#d0744593e13f161e406acb1d9408b72cad08aff6"
@@ -14687,25 +14707,6 @@ update-notifier@^3.0.1:
     latest-version "^5.0.0"
     semver-diff "^2.0.0"
     xdg-basedir "^3.0.0"
-
-update-notifier@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/update-notifier/-/update-notifier-4.1.0.tgz#4866b98c3bc5b5473c020b1250583628f9a328f3"
-  integrity sha512-w3doE1qtI0/ZmgeoDoARmI5fjDoT93IfKgEGqm26dGUOh8oNpaSTsGNdYRN/SjOuo10jcJGwkEL3mroKzktkew==
-  dependencies:
-    boxen "^4.2.0"
-    chalk "^3.0.0"
-    configstore "^5.0.1"
-    has-yarn "^2.1.0"
-    import-lazy "^2.1.0"
-    is-ci "^2.0.0"
-    is-installed-globally "^0.3.1"
-    is-npm "^4.0.0"
-    is-yarn-global "^0.3.0"
-    latest-version "^5.0.0"
-    pupa "^2.0.1"
-    semver-diff "^3.1.1"
-    xdg-basedir "^4.0.0"
 
 uri-js@^4.2.2:
   version "4.2.2"
