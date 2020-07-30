@@ -1,3 +1,10 @@
+## [3.15.23](https://github.com/shunkakinoki/dotfiles/compare/v3.15.22...v3.15.23) (2020-07-30)
+
+
+### Bug Fixes
+
+* **deps:** bump jshint from 2.11.0 to 2.11.2 in /src/yarn ([8a1c569](https://github.com/shunkakinoki/dotfiles/commit/8a1c56986fc2bea9e26f96231215758b5b665269))
+
 ## [3.15.22](https://github.com/shunkakinoki/dotfiles/compare/v3.15.21...v3.15.22) (2020-07-29)
 
 
