@@ -1,3 +1,10 @@
+## [3.15.24](https://github.com/shunkakinoki/dotfiles/compare/v3.15.23...v3.15.24) (2020-07-30)
+
+
+### Bug Fixes
+
+* **deps:** [security] bump elliptic from 6.5.2 to 6.5.3 in /src/yarn ([e953382](https://github.com/shunkakinoki/dotfiles/commit/e953382dc8eebc2ea30b3d3e1622e49df606ea5d))
+
 ## [3.15.23](https://github.com/shunkakinoki/dotfiles/compare/v3.15.22...v3.15.23) (2020-07-30)
 
 
