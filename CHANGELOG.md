@@ -1,3 +1,13 @@
+## [3.15.33](https://github.com/shunkakinoki/dotfiles/compare/v3.15.32...v3.15.33) (2020-08-04)
+
+
+### Bug Fixes
+
+* **deps:** bump gatsby from 2.24.24 to 2.24.25 in /src/yarn ([97a201d](https://github.com/shunkakinoki/dotfiles/commit/97a201d5031a335f9a63bf5c87d3080341761ed1))
+* **deps:** bump gatsby from 2.24.25 to 2.24.26 in /src/yarn ([f3336a7](https://github.com/shunkakinoki/dotfiles/commit/f3336a76a29c3975b6643d7c393e3d952a745112))
+* **deps:** bump gatsby from 2.24.26 to 2.24.27 in /src/yarn ([a506950](https://github.com/shunkakinoki/dotfiles/commit/a506950c4c49627ba2add81688b6c62087106a88))
+* **deps:** bump serverless from 1.78.0 to 1.78.1 in /src/yarn ([e5f1075](https://github.com/shunkakinoki/dotfiles/commit/e5f1075d2a7074759e5defcc7587c565f541c968))
+
 ## [3.15.32](https://github.com/shunkakinoki/dotfiles/compare/v3.15.31...v3.15.32) (2020-08-03)
 
 
