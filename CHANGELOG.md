@@ -1,3 +1,10 @@
+## [3.15.46](https://github.com/shunkakinoki/dotfiles/compare/v3.15.45...v3.15.46) (2020-08-07)
+
+
+### Bug Fixes
+
+* **deps:** [security] bump kramdown from 2.1.0 to 2.3.0 in /src/bundle ([eaec3e2](https://github.com/shunkakinoki/dotfiles/commit/eaec3e235bba71f755feac81382dcce816727b11))
+
 ## [3.15.45](https://github.com/shunkakinoki/dotfiles/compare/v3.15.44...v3.15.45) (2020-08-07)
 
 
