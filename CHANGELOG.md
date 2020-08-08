@@ -1,3 +1,10 @@
+## [3.15.49](https://github.com/shunkakinoki/dotfiles/compare/v3.15.48...v3.15.49) (2020-08-08)
+
+
+### Bug Fixes
+
+* **deps:** bump mdl from 0.9.0 to 0.10.0 in /src/bundle ([b522b87](https://github.com/shunkakinoki/dotfiles/commit/b522b872c6dd34f0505644cc2a9bb29f01cf82f8))
+
 ## [3.15.48](https://github.com/shunkakinoki/dotfiles/compare/v3.15.47...v3.15.48) (2020-08-08)
 
 
