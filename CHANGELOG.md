@@ -1,3 +1,10 @@
+## [3.15.58](https://github.com/shunkakinoki/dotfiles/compare/v3.15.57...v3.15.58) (2020-08-12)
+
+
+### Bug Fixes
+
+* **deps:** bump gatsby from 2.24.45 to 2.24.46 in /src/yarn ([d72cbc8](https://github.com/shunkakinoki/dotfiles/commit/d72cbc82c13ca3144d5bc9ea2b580b939cc056c7))
+
 ## [3.15.57](https://github.com/shunkakinoki/dotfiles/compare/v3.15.56...v3.15.57) (2020-08-12)
 
 
