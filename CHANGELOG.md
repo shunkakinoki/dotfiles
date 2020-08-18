@@ -1,3 +1,10 @@
+## [3.15.64](https://github.com/shunkakinoki/dotfiles/compare/v3.15.63...v3.15.64) (2020-08-18)
+
+
+### Bug Fixes
+
+* **deps:** [security] bump dot-prop from 4.2.0 to 4.2.1 in /src/yarn ([03d234d](https://github.com/shunkakinoki/dotfiles/commit/03d234dec6c60e9b807926f8dd24c511e10234be))
+
 ## [3.15.63](https://github.com/shunkakinoki/dotfiles/compare/v3.15.62...v3.15.63) (2020-08-15)
 
 
