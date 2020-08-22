@@ -1,3 +1,10 @@
+## [3.15.67](https://github.com/shunkakinoki/dotfiles/compare/v3.15.66...v3.15.67) (2020-08-22)
+
+
+### Bug Fixes
+
+* **deps:** bump syncpack from 5.1.4 to 5.2.5 in /src/yarn ([b68d484](https://github.com/shunkakinoki/dotfiles/commit/b68d484f3d7119a23c3886f843a7e147be07a2e7))
+
 ## [3.15.66](https://github.com/shunkakinoki/dotfiles/compare/v3.15.65...v3.15.66) (2020-08-19)
 
 
