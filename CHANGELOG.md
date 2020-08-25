@@ -1,3 +1,10 @@
+## [3.15.71](https://github.com/shunkakinoki/dotfiles/compare/v3.15.70...v3.15.71) (2020-08-25)
+
+
+### Bug Fixes
+
+* **deps:** bump prettier from 2.0.5 to 2.1.0 in /src/yarn ([2324722](https://github.com/shunkakinoki/dotfiles/commit/23247227a077ae73b31f386942071fa1c3dcda01))
+
 ## [3.15.70](https://github.com/shunkakinoki/dotfiles/compare/v3.15.69...v3.15.70) (2020-08-25)
 
 
