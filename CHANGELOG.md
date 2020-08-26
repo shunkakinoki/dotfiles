@@ -1,3 +1,10 @@
+## [3.15.77](https://github.com/shunkakinoki/dotfiles/compare/v3.15.76...v3.15.77) (2020-08-26)
+
+
+### Bug Fixes
+
+* **deps:** bump black from 19.10b0 to 20.8b1 in /src/pipenv ([d175cc4](https://github.com/shunkakinoki/dotfiles/commit/d175cc4bce7dcafe40fb31e5b776e99699dfb4c2))
+
 ## [3.15.76](https://github.com/shunkakinoki/dotfiles/compare/v3.15.75...v3.15.76) (2020-08-26)
 
 
