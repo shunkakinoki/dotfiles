@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-black = "==19.10b0"
+black = "==20.8b1"
 flake8 = "*"
 invoke = "*"
 isort = "*"
