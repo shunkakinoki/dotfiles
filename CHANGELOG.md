@@ -1,3 +1,10 @@
+## [3.15.79](https://github.com/shunkakinoki/dotfiles/compare/v3.15.78...v3.15.79) (2020-08-28)
+
+
+### Bug Fixes
+
+* **deps:** bump now from 20.0.0 to 20.1.0 in /src/yarn ([d6a7923](https://github.com/shunkakinoki/dotfiles/commit/d6a7923f66a86aaafda0aed239e5584d2e36d3b9))
+
 ## [3.15.78](https://github.com/shunkakinoki/dotfiles/compare/v3.15.77...v3.15.78) (2020-08-27)
 
 
