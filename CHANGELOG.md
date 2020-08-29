@@ -1,3 +1,10 @@
+## [3.15.81](https://github.com/shunkakinoki/dotfiles/compare/v3.15.80...v3.15.81) (2020-08-29)
+
+
+### Bug Fixes
+
+* **deps:** bump fast-cli from 2.3.0 to 2.4.0 in /src/yarn ([9112e0c](https://github.com/shunkakinoki/dotfiles/commit/9112e0cffd8f7acda220e3eb0a4cb14521475a15))
+
 ## [3.15.80](https://github.com/shunkakinoki/dotfiles/compare/v3.15.79...v3.15.80) (2020-08-28)
 
 
