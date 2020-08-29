@@ -6474,10 +6474,10 @@ fanyi@^4.2.0:
   optionalDependencies:
     say "^0.16.0"
 
-fast-cli@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/fast-cli/-/fast-cli-2.3.0.tgz#b912fbe8787931b6af94cf283d0223448f51e9fa"
-  integrity sha512-C5DMDS3cRgbb+K8TC36HpSMLqrMey2sfeazc23ze/2DLbCUmEvM5HvR3hjr1vX4q9UmsrHJjtQgSiAKTVFi0RQ==
+fast-cli@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/fast-cli/-/fast-cli-2.4.0.tgz#8745c1483169c33570cca5880bebd1eaef8e8736"
+  integrity sha512-qWs4U666hJGbt5x4YSuNsYBkX/7wlf6744DabS6Wtq+NPPLrMuXptjA8ywQ30Pp1oQO4prAb5pybruCcc7LxRQ==
   dependencies:
     chalk "^2.4.2"
     deep-equal "^1.0.1"
