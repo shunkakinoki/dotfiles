@@ -4284,10 +4284,10 @@ commander@2.19.x:
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.19.0.tgz#f6198aa84e5b83c46054b94ddedbfed5ee9ff12a"
   integrity sha512-6tvAOO+D6OENvRAh524Dh9jcfKTYDQAqvqezbCW82xj5X0pSrcpxtvRKHLG0yBY6SD7PSDrJaj+0AiOcKVd1Xg==
 
-commander@6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-6.0.0.tgz#2b270da94f8fb9014455312f829a1129dbf8887e"
-  integrity sha512-s7EA+hDtTYNhuXkTlhqew4txMZVdszBmKWSPEMxGr8ru8JXR7bLUFIAtPhcSuFdJQ0ILMxnJi8GkQL0yvDy/YA==
+commander@6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-6.1.0.tgz#f8d722b78103141006b66f4c7ba1e97315ba75bc"
+  integrity sha512-wl7PNrYWd2y5mp1OK/LhTlv8Ff4kQJQRXXAvF+uU/TPNiVJUxZLRYGj/B0y/lPGAVcSbJqH2Za/cvHmrPMC8mA==
 
 commander@^2.11.0, commander@^2.20.0, commander@^2.20.3:
   version "2.20.3"
@@ -14390,13 +14390,13 @@ synchronous-promise@^2.0.6:
   resolved "https://registry.yarnpkg.com/synchronous-promise/-/synchronous-promise-2.0.13.tgz#9d8c165ddee69c5a6542862b405bc50095926702"
   integrity sha512-R9N6uDkVsghHePKh1TEqbnLddO2IY25OcsksyFp/qBe7XYd0PVbKEWxhcdMhpLzE1I6skj5l4aEZ3CRxcbArlA==
 
-syncpack@^5.5.6:
-  version "5.5.6"
-  resolved "https://registry.yarnpkg.com/syncpack/-/syncpack-5.5.6.tgz#196fe0e8154efa7c74effb0c3a2d89f240412b18"
-  integrity sha512-rTUbzX6iuKz7saOsj8dDMxgApaZ8Y4S6nudW59ikAALIGa1RNMKaVAIi9P5HMjx94y686UkXp6CmsuxNjNXG8Q==
+syncpack@^5.6.7:
+  version "5.6.7"
+  resolved "https://registry.yarnpkg.com/syncpack/-/syncpack-5.6.7.tgz#4602460064dbfd92da7d2689b4b28a5b4d6a365b"
+  integrity sha512-6EGW6kURlABuHiBKaRj2uuMIvFKMnWv6ocBjvNyCpvCP+fe+AtDhcat6yGzavUpLrtE01ou5sHsqtbbsIIlpng==
   dependencies:
     chalk "4.1.0"
-    commander "6.0.0"
+    commander "6.1.0"
     cosmiconfig "7.0.0"
     expect-more "0.8.0"
     fs-extra "9.0.1"
