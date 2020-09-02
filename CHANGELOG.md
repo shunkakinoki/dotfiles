@@ -1,3 +1,10 @@
+## [3.15.85](https://github.com/shunkakinoki/dotfiles/compare/v3.15.84...v3.15.85) (2020-09-02)
+
+
+### Bug Fixes
+
+* **deps:** bump serverless from 1.80.0 to 1.81.1 in /src/yarn ([89d995c](https://github.com/shunkakinoki/dotfiles/commit/89d995c4fff94c2141c2eb3936d08ed54c139a3a))
+
 ## [3.15.84](https://github.com/shunkakinoki/dotfiles/compare/v3.15.83...v3.15.84) (2020-09-01)
 
 
