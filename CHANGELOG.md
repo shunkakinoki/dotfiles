@@ -1,3 +1,10 @@
+## [3.15.89](https://github.com/shunkakinoki/dotfiles/compare/v3.15.88...v3.15.89) (2020-09-04)
+
+
+### Bug Fixes
+
+* **deps:** bump truffle from 5.1.42 to 5.1.43 in /src/yarn ([75e978e](https://github.com/shunkakinoki/dotfiles/commit/75e978ec160c065f9a3f1714ce3f4189ea074e09))
+
 ## [3.15.86](https://github.com/shunkakinoki/dotfiles/compare/v3.15.85...v3.15.86) (2020-09-03)
 
 
