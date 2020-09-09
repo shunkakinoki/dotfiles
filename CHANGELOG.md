@@ -1,3 +1,10 @@
+## [3.15.93](https://github.com/shunkakinoki/dotfiles/compare/v3.15.92...v3.15.93) (2020-09-09)
+
+
+### Bug Fixes
+
+* **deps:** [security] bump bl from 1.2.2 to 1.2.3 in /src/yarn ([5795f28](https://github.com/shunkakinoki/dotfiles/commit/5795f2879329dd697c8694a2565673c66e8a2250))
+
 ## [3.15.92](https://github.com/shunkakinoki/dotfiles/compare/v3.15.91...v3.15.92) (2020-09-09)
 
 
