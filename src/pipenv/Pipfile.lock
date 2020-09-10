@@ -25,10 +25,10 @@
         },
         "attrs": {
             "hashes": [
-                "sha256:0ef97238856430dcf9228e07f316aefc17e8939fc8507e18c6501b761ef1a42a",
-                "sha256:2867b7b9f8326499ab5b0e2d12801fa5c98842d2cbd22b35112ae04bf85b4dff"
+                "sha256:26b54ddbbb9ee1d34d5d3668dd37d6cf74990ab23c828c2888dccdceee395594",
+                "sha256:fce7fc47dfc976152e82d53ff92fa0407700c21acd20886a13777a0d20e655dc"
             ],
-            "version": "==20.1.0"
+            "version": "==20.2.0"
         },
         "beautifulsoup4": {
             "hashes": [
@@ -135,11 +135,11 @@
         },
         "isort": {
             "hashes": [
-                "sha256:92533892058de0306e51c88f22ece002a209dc8e80288aa3cec6d443060d584f",
-                "sha256:a200d47b7ee8b7f7d0a9646650160c4a51b6a91a9413fd31b1da2c4de789f5d3"
+                "sha256:171c5f365791073426b5ed3a156c2081a47f88c329161fd28228ff2da4c97ddb",
+                "sha256:ba91218eee31f1e300ecc079ef0c524cea3fc41bfbb979cbdf5fd3a889e3cfed"
             ],
             "index": "pypi",
-            "version": "==5.5.1"
+            "version": "==5.5.2"
         },
         "lyricwikia": {
             "hashes": [
@@ -395,11 +395,11 @@
         },
         "spotipy": {
             "hashes": [
-                "sha256:ab10d6525b7f85267c19f0eb5d31b7f15ae7c32d052bc62e21d9e24273d53f3a",
-                "sha256:ba8413d16297df46246a3153299ad8e5f38e1d583e90ea0fc3e4638c0974d67c",
-                "sha256:c8d735b0507f88e45316d40965e1d3afbf387aa0e0a56a43d0a329ab10370f77"
+                "sha256:6ccbf3f99e2ecefa67b4a6b19b1e8f66c3562bd22a4a1ed350b674de8b1b3c4b",
+                "sha256:713082ec298b478722e4bb8b42d1c1a6a9dcb46a21e12b7e5fe1d3c5013dae9e",
+                "sha256:f972e4a92cbe06584ab092b1198d082ee666264819a07b6742abbca6fb4722b6"
             ],
-            "version": "==2.14.0"
+            "version": "==2.15.0"
         },
         "toml": {
             "hashes": [
@@ -500,10 +500,10 @@
         },
         "youtube-dl": {
             "hashes": [
-                "sha256:4af90dac41dba8b2c8bdce3903177c4ecbc27d75e03a3f08070f9d9decbae829",
-                "sha256:c1bf9a20b0bc8cf6489930b96b9830156e2a7e865fc96ef628e97fa37aad8de9"
+                "sha256:ddfbc48793a24f58aba94e61b969003506ab259757b6cb7cb64eb37c1ca8415c",
+                "sha256:eced5195e3264c36d2d62610bf235f75b592d5bb2f8ac424fd8da54ee426cd75"
             ],
-            "version": "==2020.7.28"
+            "version": "==2020.9.6"
         },
         "zipp": {
             "hashes": [
