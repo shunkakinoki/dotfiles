@@ -14273,10 +14273,10 @@ synchronous-promise@^2.0.6:
   resolved "https://registry.yarnpkg.com/synchronous-promise/-/synchronous-promise-2.0.13.tgz#9d8c165ddee69c5a6542862b405bc50095926702"
   integrity sha512-R9N6uDkVsghHePKh1TEqbnLddO2IY25OcsksyFp/qBe7XYd0PVbKEWxhcdMhpLzE1I6skj5l4aEZ3CRxcbArlA==
 
-syncpack@^5.6.7:
-  version "5.6.7"
-  resolved "https://registry.yarnpkg.com/syncpack/-/syncpack-5.6.7.tgz#4602460064dbfd92da7d2689b4b28a5b4d6a365b"
-  integrity sha512-6EGW6kURlABuHiBKaRj2uuMIvFKMnWv6ocBjvNyCpvCP+fe+AtDhcat6yGzavUpLrtE01ou5sHsqtbbsIIlpng==
+syncpack@^5.6.10:
+  version "5.6.10"
+  resolved "https://registry.yarnpkg.com/syncpack/-/syncpack-5.6.10.tgz#9abad3def4ee925c5f55ecfa04564f0f762b5d67"
+  integrity sha512-7YjOACc9syvQVZfNSIhgZoZ2foqzQJ/r8tUPDKdfRgnBYNkDbbcjzYz1XH35oOm2vAllNhZYK2R8N5sAITMbqA==
   dependencies:
     chalk "4.1.0"
     commander "6.1.0"
