@@ -40,8 +40,7 @@
         },
         "black": {
             "hashes": [
-                "sha256:1c02557aa099101b9d21496f8a914e9ed2222ef70336404eeeac8edba836fbea",
-                "sha256:70b62ef1527c950db59062cda342ea224d772abdf6adc58b86a45421bab20a6b"
+                "sha256:1c02557aa099101b9d21496f8a914e9ed2222ef70336404eeeac8edba836fbea"
             ],
             "index": "pypi",
             "version": "==20.8b1"
@@ -135,11 +134,11 @@
         },
         "isort": {
             "hashes": [
-                "sha256:171c5f365791073426b5ed3a156c2081a47f88c329161fd28228ff2da4c97ddb",
-                "sha256:ba91218eee31f1e300ecc079ef0c524cea3fc41bfbb979cbdf5fd3a889e3cfed"
+                "sha256:6187a9f1ce8784cbc6d1b88790a43e6083a6302f03e9ae482acc0f232a98c843",
+                "sha256:c16eaa7432a1c004c585d79b12ad080c6c421dd18fe27982ca11f95e6898e432"
             ],
             "index": "pypi",
-            "version": "==5.5.2"
+            "version": "==5.5.3"
         },
         "lyricwikia": {
             "hashes": [
@@ -302,10 +301,10 @@
         },
         "python-xlib": {
             "hashes": [
-                "sha256:a90667c70905c6ef0754c8a09fa61acbc1e1b7ddb946d527831800d7cbfe9348",
-                "sha256:b251d6679796af4ddabc02b170a5c38eda41f92a83d08fdcfeef5841c6467ac7"
+                "sha256:425f766173cdb30d0d61b416342ebecf312a1bf16c4d72ecd26b04667496067f",
+                "sha256:c0e9878ef936d9b8e331976f24bdcc0b1a03eb957401c7cd48047ba7c69dc922"
             ],
-            "version": "==0.27"
+            "version": "==0.28"
         },
         "pytube3": {
             "hashes": [
@@ -395,11 +394,11 @@
         },
         "spotipy": {
             "hashes": [
-                "sha256:6ccbf3f99e2ecefa67b4a6b19b1e8f66c3562bd22a4a1ed350b674de8b1b3c4b",
-                "sha256:713082ec298b478722e4bb8b42d1c1a6a9dcb46a21e12b7e5fe1d3c5013dae9e",
-                "sha256:f972e4a92cbe06584ab092b1198d082ee666264819a07b6742abbca6fb4722b6"
+                "sha256:315eadd1248053ed336b4d3adbf2e3c32895fdbb0cfcd170542c848c8fd45649",
+                "sha256:800330badc1b953417dace1532a586220d35b2240eb2e538e883e19e6bf1b53d",
+                "sha256:9d07b8948c30d8a338805440797263749ccad07c22009f9b3112aa2bcb2ebcea"
             ],
-            "version": "==2.15.0"
+            "version": "==2.16.0"
         },
         "toml": {
             "hashes": [
@@ -418,10 +417,10 @@
         },
         "tqdm": {
             "hashes": [
-                "sha256:1a336d2b829be50e46b84668691e0a2719f26c97c62846298dd5ae2937e4d5cf",
-                "sha256:564d632ea2b9cb52979f7956e093e831c28d441c11751682f84c86fc46e4fd21"
+                "sha256:8f3c5815e3b5e20bc40463fa6b42a352178859692a68ffaa469706e6d38342a5",
+                "sha256:faf9c671bd3fad5ebaeee366949d969dca2b2be32c872a7092a1e1a9048d105b"
             ],
-            "version": "==4.48.2"
+            "version": "==4.49.0"
         },
         "typed-ast": {
             "hashes": [
@@ -500,10 +499,10 @@
         },
         "youtube-dl": {
             "hashes": [
-                "sha256:ddfbc48793a24f58aba94e61b969003506ab259757b6cb7cb64eb37c1ca8415c",
-                "sha256:eced5195e3264c36d2d62610bf235f75b592d5bb2f8ac424fd8da54ee426cd75"
+                "sha256:012de159061570a6107e2da9a24d9ce628f045604471192f4b66236a6915a1f8",
+                "sha256:67fb9bfa30f5b8f06227c478a8a6ed04af1f97ad4e81dd7e2ce518df3e275391"
             ],
-            "version": "==2020.9.6"
+            "version": "==2020.9.20"
         },
         "zipp": {
             "hashes": [
