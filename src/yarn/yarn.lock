@@ -14697,10 +14697,10 @@ trough@^1.0.0:
   resolved "https://registry.yarnpkg.com/true-case-path/-/true-case-path-2.2.1.tgz#c5bf04a5bbec3fd118be4084461b3a27c4d796bf"
   integrity sha512-0z3j8R7MCjy10kc/g+qg7Ln3alJTodw9aDuVWZa3uiWqfuBMKeAeP2ocWcxoyM3D73yz3Jt/Pu4qPr4wHSdB/Q==
 
-truffle@^5.1.45:
-  version "5.1.45"
-  resolved "https://registry.yarnpkg.com/truffle/-/truffle-5.1.45.tgz#a21c093dfcfb6e0a7dd039f626c2f831663f0780"
-  integrity sha512-0CZ2XXW4sgSGqIU7sIcU9O3dIJAAOaVZEhb/tWs6TfjLGzfSp4jBFJ398IHWaiQqY1eJaDK/rtX2Y1gQnlELOA==
+truffle@^5.1.46:
+  version "5.1.46"
+  resolved "https://registry.yarnpkg.com/truffle/-/truffle-5.1.46.tgz#85a9d71d791433539e556a539a17d18b8ee5aa1b"
+  integrity sha512-lhd8pfO5bOIwmiZf0+RyLcdWtrmeoA9JkdH9o0uQxZabisa6IxfoACRBpBez3r3w+LGPnl9/K1stE3Z9aBNK0A==
   dependencies:
     app-module-path "^2.2.0"
     mocha "8.1.2"
