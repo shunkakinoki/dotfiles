@@ -1,7 +1,7 @@
 # shellcheck disable=SC2148
 
 # Autoload Zsh Completion
-autoload -U compinit
+autoload -Uz compinit
 compinit
 
 # Hyper Tab Title Settings
