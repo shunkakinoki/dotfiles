@@ -1,3 +1,16 @@
+# [3.16.0](https://github.com/shunkakinoki/dotfiles/compare/v3.15.118...v3.16.0) (2020-10-02)
+
+
+### Features
+
+* 🎸 upgrade starship toml ([adf23a6](https://github.com/shunkakinoki/dotfiles/commit/adf23a6165889990c5e4a9af713c7c4b7f51dec4))
+
+
+### Performance Improvements
+
+* ⚡️ remove shell gha ([4ce624f](https://github.com/shunkakinoki/dotfiles/commit/4ce624f9f2e0fa4f0eb88da577015315e016a5b7))
+* ⚡️ upgrade git config ([57fe379](https://github.com/shunkakinoki/dotfiles/commit/57fe379fe031acdf6673b20a18e6e90c1ab070d5))
+
 ## [3.15.118](https://github.com/shunkakinoki/dotfiles/compare/v3.15.117...v3.15.118) (2020-10-01)
 
 
