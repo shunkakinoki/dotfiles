@@ -23,3 +23,7 @@ ce = commit --allow-empty
 [user]
 	name = Shun Kakinoki
 	email = shunkakinoki@gmail.com
+[gpg]
+	program = gpg
+[commit]
+	gpgsign = true
