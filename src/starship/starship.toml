@@ -1,35 +1,35 @@
 add_newline = true
 
-prompt_order = [
-    "username",
-    "hostname",
-    "line_break",
-    "time",
-    "battery",
-    "memory_usage",
-    "line_break",
-    "git_branch",
-    "git_state",
-    "git_status",
-    "kubernetes",
-    "package",
-    "dotnet",
-    "golang",
-    "java",
-    "nodejs",
-    "python",
-    "ruby",
-    "rust",
-    "nix_shell",
-    "conda",
-    "aws",
-    "env_var",
-    "cmd_duration",
-    "jobs",
-    "line_break",
-    "directory",
-    "character",
-]
+format = """\
+  $username\
+  $hostname\
+  $line_break\
+  $time\
+  $battery\
+  $memory_usage\
+  $line_break\
+  $git_branch\
+  $git_state\
+  $git_status\
+  $kubernetes\
+  $package\
+  $dotnet\
+  $golang\
+  $java\
+  $nodejs\
+  $python\
+  $ruby\
+  $rust\
+  $nix_shell\
+  $conda\
+  $aws\
+  $env_var\
+  $cmd_duration\
+  $jobs\
+  $line_break\
+  $directory\
+  $character\
+  """
 
 [[battery.display]]
 threshold = 10
@@ -51,8 +51,7 @@ style = "bold red"
 
 [hostname]
 ssh_only = false
-prefix = "⟪"
-suffix = "⟫ | Obliterate the Galaxy"
+format = "⟪[$hostname]($style)⟫ | [Obliterate the Galaxy]($style)"
 style = "bold blue"
 disabled = false
 
@@ -72,7 +71,8 @@ show_swap = true
 
 [time]
 disabled = false
-format = "%Y/%m/%d/%a | %T |"
+time_format = "%Y/%m/%d/%a | %T |"
+format = "[$time]($style)"
 style = "bold green"
 
 [username]
