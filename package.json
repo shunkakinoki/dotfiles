@@ -9,25 +9,33 @@
     "url": "https://github.com/shunkakinoki/dotfiles.git"
   },
   "scripts": {
-    "test": "yarn lint && yarn release-test",
+    "check": "yarn run depcheck && yarn run lint && yarn run release:check",
+    "fix": "yarn run jsonsort:fix && yarn run sort-package-json:fix && yarn run prettier:fix",
+    "jsonsort:check": "jsonsort .devcontainer .vscode locales -a -c",
+    "jsonsort:fix": "jsonsort .devcontainer .vscode locales -a",
+    "lint": "yarn run jsonsort:check && yarn run sort-package-json:check && yarn run prettier:check",
+    "ncu:check": "ncu -p yarn",
+    "ncu:upgrade": "ncu -u -p yarn",
+    "prettier:check": "prettier --check .",
+    "prettier:fix": "prettier --write .",
     "release": "semantic-release",
-    "release-test": "semantic-release -d",
-    "lint": "yarn eclint-check && yarn prettier-check",
-    "fix": "yarn eclint-fix && yarn prettier-fix",
-    "eclint-check": "eclint check $(git grep --cached -l '')",
-    "eclint-fix": "eclint fix $(git grep --cached -l '')",
-    "prettier-check": "prettier --check \"**/*.{js,jsx,json,ts,tsx,css,html,yml,yaml,scss,sass}\"",
-    "prettier-fix": "prettier --write \"**/*.{js,jsx,json,ts,tsx,css,html,yml,yaml,scss,sass}\""
+    "release:check": "semantic-release -d",
+    "sort-package-json:check": "sort-package-json 'package.json' 'packages/*/package.json' --check",
+    "sort-package-json:fix": "sort-package-json 'package.json' 'packages/*/package.json'"
   },
   "devDependencies": {
-    "@semantic-release/changelog": "^5.0.0",
+    "@semantic-release/changelog": "^5.0.1",
     "@semantic-release/exec": "^5.0.0",
-    "commitizen": "^4.0.3",
-    "eclint": "^2.8.1",
-    "git-cz": "^4.3.1",
-    "husky": "^4.2.5",
-    "prettier": "^1.19.1",
-    "semantic-release": "^17.0.4"
+    "@semantic-release/git": "^9.0.0",
+    "commitizen": "^4.2.1",
+    "depcheck": "^1.2.0",
+    "git-cz": "^4.7.1",
+    "husky": "^4.3.0",
+    "json-sort-cli": "^1.15.27",
+    "npm-check-updates": "^9.0.2",
+    "prettier": "^2.1.1",
+    "semantic-release": "^17.1.1",
+    "sort-package-json": "^1.44.0"
   },
   "husky": {
     "hooks": {
