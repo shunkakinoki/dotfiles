@@ -1,10 +1,5 @@
 {
-  "name": "dotfiles",
   "dockerComposeFile": "docker-compose.yml",
-  "service": "dotfiles",
-  "settings": {
-    "terminal.integrated.shell.linux": "/bin/zsh"
-  },
   "extensions": [
     "eamodio.gitlens",
     "foxundermoon.shell-format",
@@ -16,8 +11,13 @@
     "timonwong.shellcheck",
     "VisualStudioExptTeam.vscodeintellicode"
   ],
-  "runServices": [],
+  "name": "dotfiles",
   "postCreateCommand": "uname -a",
+  "runServices": [],
+  "service": "dotfiles",
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/zsh"
+  },
   "shutdownAction": "none",
   "workspaceFolder": "/workspace"
 }

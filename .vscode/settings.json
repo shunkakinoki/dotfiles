@@ -1,7 +1,7 @@
 {
+  "dotfiles.installCommand": "~/dotfiles/install.sh",
   "dotfiles.repository": "shunkakinoki/dotfiles",
   "dotfiles.targetPath": "~/dotfiles",
-  "dotfiles.installCommand": "~/dotfiles/install.sh",
   "peacock.color": "#42b883",
   "remote.containers.dotfiles.installCommand": "~/dotfiles/install.sh",
   "remote.containers.dotfiles.repository": "https://github.com/shunkakinoki/dotfiles.git",
