@@ -1,3 +1,13 @@
+# [3.17.0](https://github.com/shunkakinoki/dotfiles/compare/v3.16.0...v3.17.0) (2020-10-03)
+
+### Features
+
+- 🎸 upgrade ([17ef2ea](https://github.com/shunkakinoki/dotfiles/commit/17ef2ea45009387c7bf427ec94a1ebf98a2e067e))
+
+### Performance Improvements
+
+- ⚡️ fix ([67204c0](https://github.com/shunkakinoki/dotfiles/commit/67204c0c295f47f1b7c168b10aa036844191935e))
+
 ## [3.15.118](https://github.com/shunkakinoki/dotfiles/compare/v3.15.117...v3.15.118) (2020-10-01)
 
 ### Bug Fixes
