@@ -1,3 +1,9 @@
+## [3.17.1](https://github.com/shunkakinoki/dotfiles/compare/v3.17.0...v3.17.1) (2020-10-03)
+
+### Performance Improvements
+
+- ⚡️ remove ([fe7988b](https://github.com/shunkakinoki/dotfiles/commit/fe7988b02a68a903f799747772de398c01d38c32))
+
 # [3.17.0](https://github.com/shunkakinoki/dotfiles/compare/v3.16.0...v3.17.0) (2020-10-03)
 
 ### Features
