@@ -1,12 +1,7 @@
-name: Release
-on:
-  push:
-    branches:
-      - alpha
-      - beta
-      - main
+name: Yarn
+on: pull_request
 jobs:
-  release:
+  yarn:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -24,6 +19,4 @@ jobs:
       - run: |
           yarn install --frozen-lockfile
       - run: |
-          yarn run release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          yarn run check
