@@ -1,4 +1,4 @@
-name: shell
+name: home
 root: ~/
 attach: false
 windows:
