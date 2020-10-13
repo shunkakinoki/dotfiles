@@ -6,6 +6,12 @@
   "remote.containers.dotfiles.installCommand": "~/dotfiles/install.sh",
   "remote.containers.dotfiles.repository": "https://github.com/shunkakinoki/dotfiles.git",
   "remote.containers.dotfiles.targetPath": "~/dotfiles",
+  "terminal.integrated.env.linux": {
+    "ZSH_INIT_COMMAND": "mux start dotfiles"
+  },
+  "terminal.integrated.env.osx": {
+    "ZSH_INIT_COMMAND": "mux start dotfiles"
+  },
   "workbench.colorCustomizations": {
     "activityBar.activeBackground": "#65c89b",
     "activityBar.activeBorder": "#945bc4",
