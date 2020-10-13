@@ -1,3 +1,13 @@
+# [3.18.0](https://github.com/shunkakinoki/dotfiles/compare/v3.17.1...v3.18.0) (2020-10-13)
+
+### Features
+
+- 🎸 ini main & tmuxinator ([f2dd5c6](https://github.com/shunkakinoki/dotfiles/commit/f2dd5c6a2afb69ebc9544a10178709982c3c68ba))
+
+### Performance Improvements
+
+- ⚡️ brew ([cf69374](https://github.com/shunkakinoki/dotfiles/commit/cf693744a32802b43ac6aafbc2ba0fd91a5a3497))
+
 ## [3.17.1](https://github.com/shunkakinoki/dotfiles/compare/v3.17.0...v3.17.1) (2020-10-03)
 
 ### Performance Improvements
