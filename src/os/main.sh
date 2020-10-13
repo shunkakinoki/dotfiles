@@ -7,83 +7,6 @@ declare -r DOTFILES_UTILS_URL="https://raw.githubusercontent.com/$GITHUB_REPOSIT
 declare dotfilesDirectory="$HOME/dotfiles"
 declare skipQuestions=false
 
-download() {
-    local url="$1"
-    local output="$2"
-    if command -v "curl" &>/dev/null; then
-        curl -LsSo "$output" "$url" &>/dev/null
-        return $?
-    elif command -v "wget" &>/dev/null; then
-        wget -qO "$output" "$url" &>/dev/null
-        return $?
-    fi
-    return 1
-}
-
-download_dotfiles() {
-    local tmpFile=""
-    print_in_purple "\n   Download and extract archive\n\n"
-    tmpFile="$(mktemp /tmp/XXXXX)"
-    download "$DOTFILES_TARBALL_URL" "$tmpFile"
-    print_result $? "Download archive" "true"
-    printf "\n"
-    if ! $skipQuestions; then
-        ask_for_confirmation "Do you want to store the dotfiles in '$dotfilesDirectory'?"
-
-        if ! answer_is_yes; then
-            dotfilesDirectory=""
-            while [ -z "$dotfilesDirectory" ]; do
-                ask "Please specify another location for the dotfiles (path): "
-                dotfilesDirectory="$(get_answer)"
-            done
-        fi
-        while [ -e "$dotfilesDirectory" ]; do
-            ask_for_confirmation "'$dotfilesDirectory' already exists, do you want to overwrite it?"
-            if answer_is_yes; then
-                rm -rf "$dotfilesDirectory"
-                break
-            else
-                dotfilesDirectory=""
-                while [ -z "$dotfilesDirectory" ]; do
-                    ask "Please specify another location for the dotfiles (path): "
-                    dotfilesDirectory="$(get_answer)"
-                done
-            fi
-        done
-        printf "\n"
-    else
-        rm -rf "$dotfilesDirectory" &>/dev/null
-    fi
-    mkdir -p "$dotfilesDirectory"
-    print_result $? "Create '$dotfilesDirectory'" "true"
-    extract "$tmpFile" "$dotfilesDirectory"
-    print_result $? "Extract archive" "true"
-    rm -rf "$tmpFile"
-    print_result $? "Remove archive"
-    cd "$dotfilesDirectory/src/os" ||
-        return 1
-}
-
-download_utils() {
-    local tmpFile=""
-    tmpFile="$(mktemp /tmp/XXXXX)"
-    download "$DOTFILES_UTILS_URL" "$tmpFile" &&
-        . "$tmpFile" &&
-        rm -rf "$tmpFile" &&
-        return 0
-    return 1
-}
-
-extract() {
-    local archive="$1"
-    local outputDir="$2"
-    if command -v "tar" &>/dev/null; then
-        tar -zxf "$archive" --strip-components 1 -C "$outputDir"
-        return $?
-    fi
-    return 1
-}
-
 verify_os() {
     declare -r MINIMUM_MACOS_VERSION="10.10"
     declare -r MINIMUM_UBUNTU_VERSION="18.04"
@@ -109,19 +32,6 @@ verify_os() {
     return 1
 }
 
-initialize_git_repository() {
-    declare -r GIT_ORIGIN="$1"
-    if [ -z "$GIT_ORIGIN" ]; then
-        print_error "Please provide a URL for the Git origin"
-        exit 1
-    fi
-    if ! is_git_repository; then
-        execute \
-            "git init && git remote add origin $GIT_ORIGIN" \
-            "Initialize the Git repository"
-    fi
-}
-
 main() {
     cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
     if [ -x "utils.sh" ]; then
@@ -133,23 +43,14 @@ main() {
     verify_os || exit 1
     skip_questions "$@" && skipQuestions=true
     ask_for_sudo
-    if cmd_exists "git"; then
-        print_in_purple "\n   Initialize Git repository\n\n"
-        if [ "$(git config --get remote.origin.url)" != "$DOTFILES_ORIGIN" ]; then
-            initialize_git_repository "$DOTFILES_ORIGIN"
-        fi
-        ./update_content.sh
-        ./create_symbolic_links.sh "$@"
-        ./create_config_links.sh "$@"
-        ./create_local_config_files.sh
-    else
-        printf "%s" "${BASH_SOURCE[0]}" | grep "setup.sh" &>/dev/null || download_dotfiles
-        ./create_symbolic_links.sh "$@"
-        ./create_config_links.sh "$@"
-        ./create_local_config_files.sh
-    fi
+
+    ./update_content.sh
+    ./create_symbolic_links.sh "$@"
+    ./create_config_links.sh "$@"
+    ./create_local_config_files.sh
     ./install/main.sh
     ./preferences/main.sh
+
     if ! $skipQuestions; then
         ./restart.sh
         exit
