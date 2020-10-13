@@ -1,3 +1,9 @@
+## [3.19.4](https://github.com/shunkakinoki/dotfiles/compare/v3.19.3...v3.19.4) (2020-10-13)
+
+### Performance Improvements
+
+- ⚡️ refactor ([45d848d](https://github.com/shunkakinoki/dotfiles/commit/45d848da6831270bae645ed99732c93c55004a0c))
+
 ## [3.19.3](https://github.com/shunkakinoki/dotfiles/compare/v3.19.2...v3.19.3) (2020-10-13)
 
 ### Performance Improvements
