@@ -8,8 +8,6 @@
 
 </div>
 
-Heavily inspired by [here](https://github.com/alrra/dotfiles)
-
 | OS       | Snippet                                                                                                |
 | :------- | :----------------------------------------------------------------------------------------------------- |
 | `macOS`  | `bash -c "$(curl -LsS https://raw.github.com/shunkakinoki/dotfiles/main/src/os/main.sh?$(date +%s))"`  |
