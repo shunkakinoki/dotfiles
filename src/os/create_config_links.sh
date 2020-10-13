@@ -57,17 +57,10 @@ create_configlinks() {
             print_success "$targetFile → $sourceFile"
 
         else
-            if ! $skipQuestions; then
-                ask_for_confirmation "'$targetFile' already exists, do you want to overwrite it?"
-                if answer_is_yes; then
-                    rm -rf "$targetFile"
-                    execute \
-                        "ln -fs $sourceFile $targetFile" \
-                        "$targetFile → $sourceFile"
-                else
-                    print_error "$targetFile → $sourceFile"
-                fi
-            fi
+            rm -rf "$targetFile"
+            execute \
+                "ln -fs $sourceFile $targetFile" \
+                "$targetFile → $sourceFile"
         fi
 
     done
