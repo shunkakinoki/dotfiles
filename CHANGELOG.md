@@ -1,3 +1,9 @@
+## [3.19.5](https://github.com/shunkakinoki/dotfiles/compare/v3.19.4...v3.19.5) (2020-10-13)
+
+### Performance Improvements
+
+- ⚡️ ref ([df0fc74](https://github.com/shunkakinoki/dotfiles/commit/df0fc74c0f3afd5c306e8957cf7e6cb24e72665e))
+
 ## [3.19.4](https://github.com/shunkakinoki/dotfiles/compare/v3.19.3...v3.19.4) (2020-10-13)
 
 ### Performance Improvements
