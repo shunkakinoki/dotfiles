@@ -1,3 +1,9 @@
+## [3.19.2](https://github.com/shunkakinoki/dotfiles/compare/v3.19.1...v3.19.2) (2020-10-13)
+
+### Performance Improvements
+
+- ⚡️ remove refactor restart ([f7a2ea5](https://github.com/shunkakinoki/dotfiles/commit/f7a2ea5eafaf08b26bc804be1495110d5a3f2210))
+
 ## [3.19.1](https://github.com/shunkakinoki/dotfiles/compare/v3.19.0...v3.19.1) (2020-10-13)
 
 ### Performance Improvements
