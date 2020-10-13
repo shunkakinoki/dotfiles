@@ -1,3 +1,9 @@
+## [3.19.1](https://github.com/shunkakinoki/dotfiles/compare/v3.19.0...v3.19.1) (2020-10-13)
+
+### Performance Improvements
+
+- ⚡️ ini main sh ([a073d26](https://github.com/shunkakinoki/dotfiles/commit/a073d266772fd82c17f259469eea82560d9892f7))
+
 # [3.19.0](https://github.com/shunkakinoki/dotfiles/compare/v3.18.2...v3.19.0) (2020-10-13)
 
 ### Features
