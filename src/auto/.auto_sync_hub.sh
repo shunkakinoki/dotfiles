@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cd ~/dotfiles &&
-    git checkout master &&
+    git checkout main &&
     git pull &&
     cd ~ ||
     exit

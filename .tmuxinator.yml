@@ -1,0 +1,7 @@
+name: sentrei
+root: ~/ghq/github.com/shunkakinoki/dotfiles
+attach: true
+windows:
+  - zsh: neofetch
+  - zsh: neofetch
+  - zsh: neofetch
