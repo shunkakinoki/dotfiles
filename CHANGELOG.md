@@ -1,3 +1,10 @@
+## [3.18.2](https://github.com/shunkakinoki/dotfiles/compare/v3.18.1...v3.18.2) (2020-10-13)
+
+### Performance Improvements
+
+- ⚡️ ini dev container ([4a76bbc](https://github.com/shunkakinoki/dotfiles/commit/4a76bbcc2a0789a38e4f2502edcb43fec9517289))
+- ⚡️ refactor dotfiles tmuxinator ([8464316](https://github.com/shunkakinoki/dotfiles/commit/8464316e54fffd43bef4e6ec58310a534ea20ef5))
+
 ## [3.18.1](https://github.com/shunkakinoki/dotfiles/compare/v3.18.0...v3.18.1) (2020-10-13)
 
 ### Performance Improvements
