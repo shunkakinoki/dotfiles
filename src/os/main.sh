@@ -52,11 +52,6 @@ main() {
     ./create_local_config_files.sh
     ./install/main.sh
     ./preferences/main.sh
-
-    if ! $skipQuestions; then
-        ./restart.sh
-        exit
-    fi
 }
 
 main "$@"
