@@ -14,7 +14,7 @@ create_configlinks() {
         "spotify/config.yml"
         "wtf/config.yml"
         "tmux/tmuxinator/code.yml"
-        "tmux/tmuxinator/shell.yml"
+        "tmux/tmuxinator/home.yml"
         "tmux/tmuxinator/shun.yml"
     )
 
