@@ -1,4 +1,4 @@
-name: sentrei
+name: dotfiles
 root: ~/ghq/github.com/shunkakinoki/dotfiles
 attach: true
 windows:

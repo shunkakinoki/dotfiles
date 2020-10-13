@@ -22,5 +22,11 @@
     "titleBar.activeForeground": "#15202b",
     "titleBar.inactiveBackground": "#42b88399",
     "titleBar.inactiveForeground": "#15202b99"
+  },
+  "terminal.integrated.env.linux": {
+    "ZSH_INIT_COMMAND": "mux start dotfiles"
+  },
+  "terminal.integrated.env.osx": {
+    "ZSH_INIT_COMMAND": "mux start dotfiles"
   }
 }
