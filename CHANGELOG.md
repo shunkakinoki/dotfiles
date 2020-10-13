@@ -1,3 +1,9 @@
+# [3.19.0](https://github.com/shunkakinoki/dotfiles/compare/v3.18.2...v3.19.0) (2020-10-13)
+
+### Features
+
+- 🎸 refactor main sh ([ce698ba](https://github.com/shunkakinoki/dotfiles/commit/ce698ba2a05ac933f9da45ce95aff23d05d62c17))
+
 ## [3.18.2](https://github.com/shunkakinoki/dotfiles/compare/v3.18.1...v3.18.2) (2020-10-13)
 
 ### Performance Improvements
