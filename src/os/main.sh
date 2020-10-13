@@ -39,8 +39,10 @@ main() {
     else
         download_utils || exit 1
     fi
+
     print_in_purple "\n   Starting shunkakinoki dotfiles\n\n"
     verify_os || exit 1
+
     skip_questions "$@" && skipQuestions=true
     ask_for_sudo
 
