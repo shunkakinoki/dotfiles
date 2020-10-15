@@ -1,3 +1,9 @@
+# [3.20.0](https://github.com/shunkakinoki/dotfiles/compare/v3.19.5...v3.20.0) (2020-10-15)
+
+### Features
+
+- 🎸 ini brew obs ([edcdf54](https://github.com/shunkakinoki/dotfiles/commit/edcdf54e06715fee1499bcd9577caa9dcd038bad))
+
 ## [3.19.5](https://github.com/shunkakinoki/dotfiles/compare/v3.19.4...v3.19.5) (2020-10-13)
 
 ### Performance Improvements
