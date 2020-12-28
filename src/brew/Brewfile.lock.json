@@ -1522,18 +1522,14 @@
         "version": "HEAD-73cb5c1",
         "bottle": false,
         "options": {
-          "args": [
-            "HEAD"
-          ]
+          "args": ["HEAD"]
         }
       },
       "libimobiledevice": {
         "version": "HEAD-bfaf1a1",
         "bottle": false,
         "options": {
-          "args": [
-            "HEAD"
-          ],
+          "args": ["HEAD"],
           "link": false
         }
       },
@@ -2989,9 +2985,7 @@
         "version": "HEAD-4537bcc",
         "bottle": false,
         "options": {
-          "args": [
-            "HEAD"
-          ],
+          "args": ["HEAD"],
           "link": false
         }
       },
