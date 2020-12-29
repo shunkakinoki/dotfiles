@@ -192,6 +192,7 @@ cask "java6"
 cask "kap"
 cask "kitty"
 cask "macsvg"
+cask "messenger"
 cask "miniconda"
 cask "notion"
 cask "obs"
@@ -211,6 +212,7 @@ cask "vlc"
 cask "xquartz"
 cask "zeronet"
 cask "zoom"
+cask "zoomus"
 mas "Compressor", id: 424390742
 mas "Final Cut Pro", id: 424389933
 mas "Keynote", id: 409183694
@@ -220,4 +222,4 @@ mas "Motion", id: 434290957
 mas "Pixelmator Pro", id: 1289583905
 mas "Plash", id: 1494023538
 mas "Streaks", id: 1493327990
-mas "Tweetdeck", id: 485812721
+mas "TweetDeck", id: 485812721
