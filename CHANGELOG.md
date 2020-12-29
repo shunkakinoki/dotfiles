@@ -1,3 +1,15 @@
+# [3.21.0](https://github.com/shunkakinoki/dotfiles/compare/v3.20.0...v3.21.0) (2020-12-29)
+
+### Features
+
+- 🎸 complete remove preferences ([ebaa1db](https://github.com/shunkakinoki/dotfiles/commit/ebaa1db97987fcae4048ec2656ea354a6094a3b0))
+- 🎸 upgrade brew file ([6f9117d](https://github.com/shunkakinoki/dotfiles/commit/6f9117dfae8a1f06f1ad76c94418592a641220cd))
+
+### Performance Improvements
+
+- ⚡️ chmod executable plugins for macos ([6e0ee0b](https://github.com/shunkakinoki/dotfiles/commit/6e0ee0b015c46e79757839ec01cc44fe439fdc1f))
+- ⚡️ upgrade shell alias ([cb2dd8e](https://github.com/shunkakinoki/dotfiles/commit/cb2dd8efb40dcbdaee1832611ac7e731f150e544))
+
 # [3.20.0](https://github.com/shunkakinoki/dotfiles/compare/v3.19.5...v3.20.0) (2020-10-15)
 
 ### Features
