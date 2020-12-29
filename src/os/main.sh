@@ -51,7 +51,6 @@ main() {
     ./create_config_links.sh "$@"
     ./create_local_config_files.sh
     ./install/main.sh
-    ./preferences/main.sh
 }
 
 main "$@"
