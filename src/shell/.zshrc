@@ -22,6 +22,9 @@ overridden() { [[ $TITLE_OVERRIDDEN == 1 ]]; }
 # Load Antibody Plugin Manager
 source <(antibody init)
 
+# Load Auto Nvm
+export NVM_AUTO_USE=true
+
 # Install Antibody Plugins
 antibody bundle Aloxaf/fzf-tab
 antibody bundle b4b4r07/emoji-cli
@@ -29,7 +32,7 @@ antibody bundle b4b4r07/enhancd
 antibody bundle buonomo/yarn-completion
 antibody bundle caarlos0/zsh-git-sync kind:path
 antibody bundle chrissicool/zsh-256color
-antibody bundle darvid/zsh-poetry
+antibody bundle lukechilds/zsh-nvm
 antibody bundle lukechilds/zsh-better-npm-completion
 antibody bundle MichaelAquilina/zsh-you-should-use
 antibody bundle mollifier/cd-gitroot
