@@ -9,24 +9,28 @@
   "license": "MIT",
   "author": "Shun Kakinoki",
   "scripts": {
-    "check": "yarn run depcheck && yarn run lint && yarn run release:check",
-    "fix": "yarn run jsonsort:fix && yarn run sort-package-json:fix && yarn run prettier:fix",
-    "jsonsort:check": "jsonsort .devcontainer .vscode locales -a -c",
-    "jsonsort:fix": "jsonsort .devcontainer .vscode locales -a",
-    "lint": "yarn run jsonsort:check && yarn run sort-package-json:check && yarn run prettier:check",
-    "ncu:check": "ncu -p yarn",
-    "ncu:upgrade": "ncu -u -p yarn",
-    "prettier:check": "prettier --check .",
-    "prettier:fix": "prettier --write .",
-    "release": "semantic-release",
-    "release:check": "semantic-release -d",
-    "sort-package-json:check": "sort-package-json 'package.json' 'packages/*/package.json' --check",
-    "sort-package-json:fix": "sort-package-json 'package.json' 'packages/*/package.json'"
-  },
-  "husky": {
-    "hooks": {
-      "prepare-commit-msg": "exec < /dev/tty && git-cz --hook || true"
-    }
+    "check": "yarn run lint && yarn run depcheck:check && yarn run release:check",
+    "depcheck:check": "yarn run depcheck:exec && yarn run depcheck:root",
+    "depcheck:exec": "yarn workspaces run depcheck .",
+    "depcheck:root": "depcheck . --skip-missing=true",
+    "eslint:lint": "",
+    "eslint:fix": "",
+    "fix": "concurrently 'yarn:*:fix'",
+    "lint": "concurrently 'yarn:*:lint'",
+    "ncu:check": "ncu --deep -p yarn",
+    "ncu:upgrade": "ncu --deep -u -p yarn",
+    "npm-package-json:lint": "npmPkgJsonLint .",
+    "postpublish": "pinst --enable",
+    "prepublishOnly": "pinst --disable",
+    "prettier:lint": "prettier --check . --ignore-unknown",
+    "prettier:fix": "prettier --write . --ignore-unknown",
+    "prepare": "husky install",
+    "release": "yarn run semantic-release",
+    "release:check": "yarn run semantic-release:check",
+    "semantic-release": "semantic-release",
+    "semantic-release:check": "semantic-release --dry-run",
+    "sort-package-json:lint": "sort-package-json 'package.json'",
+    "sort-package-json:fix": "sort-package-json 'package.json'"
   },
   "devDependencies": {
     "@semantic-release/changelog": "^5.0.1",
