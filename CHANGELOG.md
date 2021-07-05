@@ -1,3 +1,13 @@
+## [3.21.1](https://github.com/shunkakinoki/dotfiles/compare/v3.21.0...v3.21.1) (2021-07-05)
+
+### Bug Fixes
+
+- **deps:** update dependency fanyi to v5 ([4f152eb](https://github.com/shunkakinoki/dotfiles/commit/4f152ebf3bce69680641622d8decafc52815cbe1))
+- **deps:** update dependency gh-home to v3 ([08d8ff7](https://github.com/shunkakinoki/dotfiles/commit/08d8ff7ac52e1bf643f2aa9dee4055a3ecaa81d5))
+- **deps:** update dependency jshint to ^2.13.0 ([7590f9d](https://github.com/shunkakinoki/dotfiles/commit/7590f9d0c9788c972c2b77f5b7d65812848e4686))
+- **deps:** update dependency now to v21 ([f243ea3](https://github.com/shunkakinoki/dotfiles/commit/f243ea3f8ff825204b72d41e150b775d9d264b20))
+- **deps:** update dependency spoof to ^2.0.4 ([5dd3aa1](https://github.com/shunkakinoki/dotfiles/commit/5dd3aa18e1fe92f3875880c3dca5df8be5bb4c07))
+
 # [3.21.0](https://github.com/shunkakinoki/dotfiles/compare/v3.20.0...v3.21.0) (2020-12-29)
 
 ### Features
