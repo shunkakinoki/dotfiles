@@ -39,7 +39,7 @@
     "json-sort-cli": "^1.19.0",
     "npm-check-updates": "^11.8.1",
     "prettier": "^2.3.2",
-    "semantic-release": "^17.1.1",
+    "semantic-release": "^17.4.4",
     "sort-package-json": "^1.50.0"
   }
 }
