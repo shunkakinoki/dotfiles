@@ -3848,7 +3848,7 @@ chalk@4.1.0, chalk@^4.0.0, chalk@^4.1.0:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
 
-chalk@^2.0.0, chalk@^2.0.1, chalk@^2.1.0, chalk@^2.3.0, chalk@^2.3.1, chalk@^2.4.1, chalk@^2.4.2:
+chalk@^2.0.0, chalk@^2.0.1, chalk@^2.1.0, chalk@^2.3.0, chalk@^2.4.1, chalk@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
   integrity sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==
@@ -4260,7 +4260,7 @@ commander@~4.1.1:
   resolved "https://registry.yarnpkg.com/commander/-/commander-4.1.1.tgz#9fd602bd936294e9e9ef46a3f4d6964044b18068"
   integrity sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==
 
-common-tags@^1.7.2, common-tags@^1.8.0:
+common-tags@^1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/common-tags/-/common-tags-1.8.0.tgz#8e3153e542d4a39e9b10554434afaaf98956a937"
   integrity sha512-6P6g0uetGpW/sdyUy/iQQCbFF0kWVMSIVSyYz7Zgjcgh8mgw8PQzDNZeyZ5DQ2gM7LBoZPHmnjz8rUthkBG5tw==
@@ -13550,7 +13550,7 @@ shell-quote@1.6.1:
     array-reduce "~0.0.0"
     jsonify "~0.0.0"
 
-shell-quote@^1.4.1:
+shell-quote@^1.7.2:
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/shell-quote/-/shell-quote-1.7.2.tgz#67a7d02c76c9da24f99d20808fcaded0e0e04be2"
   integrity sha512-mRz/m/JVscCrkMyPqHc/bczi3OQHkLTqXHEFu0zDhK/qfv3UcOA4SVmRCLmos4bhjr9ekVQubj/R7waKapmiQg==
@@ -13940,17 +13940,17 @@ split2@^3.1.1:
   dependencies:
     readable-stream "^3.0.0"
 
-spoof@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/spoof/-/spoof-2.0.1.tgz#842abf654e46ac891f9af15ccaab38fd33051e86"
-  integrity sha512-6MpL7FX5PY1OXKduIH2oegIorMDvXlCQbj5fkzgFc3NfRjSNME8lp4NRkaWgG/debMIcensYXbOTzRFKffVPAQ==
+spoof@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/spoof/-/spoof-2.0.4.tgz#0737e5b744db672d998ffc3eb03759ebc71cf724"
+  integrity sha512-ACFyEr7sGTX4glKO3nqv65dkcbPWbq4zl0Q9wL24oFG6kKDuSUgsrFKpu0tZksmO6wXOimHHuewoYXyWLV3G7g==
   dependencies:
-    chalk "^2.3.1"
-    common-tags "^1.7.2"
-    minimist "^1.1.0"
-    shell-quote "^1.4.1"
-    winreg "^1.1.1"
-    zero-fill "^2.1.0"
+    chalk "^4.1.0"
+    common-tags "^1.8.0"
+    minimist "^1.2.5"
+    shell-quote "^1.7.2"
+    winreg "^1.2.4"
+    zero-fill "^2.2.4"
 
 sprintf-js@~1.0.2:
   version "1.0.3"
@@ -15698,7 +15698,7 @@ widest-line@^3.1.0:
   dependencies:
     string-width "^4.0.0"
 
-winreg@^1.1.1:
+winreg@^1.2.4:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/winreg/-/winreg-1.2.4.tgz#ba065629b7a925130e15779108cf540990e98d1b"
   integrity sha1-ugZWKbepJRMOFXeRCM9UCZDpjRs=
@@ -16153,10 +16153,10 @@ zen-observable@^0.8.13:
   resolved "https://registry.yarnpkg.com/zen-observable/-/zen-observable-0.8.15.tgz#96415c512d8e3ffd920afd3889604e30b9eaac15"
   integrity sha512-PQ2PC7R9rslx84ndNBZB/Dkv8V8fZEpk83RLgXtYd0fwUgEjseMn1Dgajh2x6S8QbZAFa9p2qVCEuYZNgve0dQ==
 
-zero-fill@^2.1.0:
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/zero-fill/-/zero-fill-2.2.3.tgz#a3def06ba5e39ae644850bb4ca2ad4112b4855e9"
-  integrity sha1-o97wa6XjmuZEhQu0yirUEStIVek=
+zero-fill@^2.2.4:
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/zero-fill/-/zero-fill-2.2.4.tgz#b041320973dbcb03cd90193270ac8d4a3da05fc1"
+  integrity sha512-/N5GEDauLHz2uGnuJXWO1Wfib4EC+q4yp9C1jojM7RubwEKADqIqMcYpETMm1lRop403fi3v1qTOdgDE8DIOdw==
 
 zip-stream@^4.0.0:
   version "4.0.2"
