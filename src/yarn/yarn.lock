@@ -6436,12 +6436,12 @@ extsprintf@^1.2.0:
   resolved "https://registry.yarnpkg.com/extsprintf/-/extsprintf-1.4.0.tgz#e2689f8f356fad62cca65a3a91c5df5f9551692f"
   integrity sha1-4mifjzVvrWLMplo6kcXfX5VRaS8=
 
-fanyi@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/fanyi/-/fanyi-4.2.0.tgz#1f3543bcede91dc264af81be81b1e83f2d6425f3"
-  integrity sha512-Zd95ry262gnCX2OzrMkPmpMfv/UjjOwPV7E6WTHUzNsSsswhPA2EhG31cGT9wserGM17bXQ98DmEkl7iSHSXkQ==
+fanyi@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/fanyi/-/fanyi-5.0.1.tgz#b6d06f234dbe12554a7b30e6a0988a028d15b7ea"
+  integrity sha512-ZU4hCrVmeHXoaT/lZ2qji11EFIjMMQF0Ux4gwQXY5EQFYob3YHwzH1n2l6gEdxGT7RUEtv7tPdcUfdq2+woazg==
   dependencies:
-    chalk "^3.0.0"
+    chalk "^4.0.0"
     commander "^5.0.0"
     html-entities "^1.1.2"
     is-chinese "^1.2.5"
