@@ -40,6 +40,6 @@
     "npm-check-updates": "^11.8.1",
     "prettier": "^2.1.1",
     "semantic-release": "^17.1.1",
-    "sort-package-json": "^1.44.0"
+    "sort-package-json": "^1.50.0"
   }
 }
