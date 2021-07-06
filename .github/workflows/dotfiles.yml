@@ -13,4 +13,4 @@ jobs:
           exec bash install.sh
       - if: failure()
         timeout-minutes: 3
-        uses: mxschmitt/action-tmate@v2
+        uses: mxschmitt/action-tmate@v3
