@@ -35,7 +35,7 @@
     "commitizen": "^4.2.4",
     "depcheck": "^1.4.2",
     "git-cz": "^4.7.6",
-    "husky": "^7.0.0",
+    "husky": "^7.0.1",
     "json-sort-cli": "^1.19.0",
     "npm-check-updates": "^11.8.1",
     "prettier": "^2.3.2",
