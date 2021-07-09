@@ -1,3 +1,11 @@
+## [3.21.5](https://github.com/shunkakinoki/dotfiles/compare/v3.21.4...v3.21.5) (2021-07-09)
+
+### Bug Fixes
+
+- **deps:** update dependency jshint to ^2.13.0 ([7654b5b](https://github.com/shunkakinoki/dotfiles/commit/7654b5bb44e84b59b416419761c29608155a48a5))
+- **deps:** update dependency now to ^20.1.4 ([23fe74c](https://github.com/shunkakinoki/dotfiles/commit/23fe74c68763437ecc747ae703573e7ee064e3f1))
+- **deps:** update dependency spoof to ^2.0.4 ([790c18e](https://github.com/shunkakinoki/dotfiles/commit/790c18e6587a9deb0b9a424777f527a4ef21d433))
+
 ## [3.21.4](https://github.com/shunkakinoki/dotfiles/compare/v3.21.3...v3.21.4) (2021-07-08)
 
 ### Bug Fixes
