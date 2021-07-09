@@ -1,9 +1,17 @@
 {
   "name": "dotfiles",
-  "description": "npm package manager",
-  "license": "MIT",
-  "repository": "https://github.com/shunkakinoki/dotfiles",
   "version": "1.0.0",
+  "description": "npm package manager",
+  "homepage": "https://github.com/shunkakinoki/dotfiles",
+  "bugs": {
+    "url": "https://github.com/shunkakinoki/dotfiles/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shunkakinoki/dotfiles.git"
+  },
+  "license": "MIT",
+  "author": "Shun Kakinoki",
   "dependencies": {
     "@rafaelrinaldi/whereami": "^2.2.1",
     "awsp": "^0.2.0",
