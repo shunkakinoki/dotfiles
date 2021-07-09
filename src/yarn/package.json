@@ -1,25 +1,34 @@
 {
   "name": "dotfiles",
-  "description": "npm package manager",
-  "license": "MIT",
-  "repository": "https://github.com/shunkakinoki/dotfiles",
   "version": "1.0.0",
+  "description": "npm package manager",
+  "homepage": "https://github.com/shunkakinoki/dotfiles",
+  "bugs": {
+    "url": "https://github.com/shunkakinoki/dotfiles/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shunkakinoki/dotfiles.git"
+  },
+  "license": "MIT",
+  "author": "Shun Kakinoki",
   "dependencies": {
     "@rafaelrinaldi/whereami": "^2.2.1",
     "awsp": "^0.2.0",
-    "fanyi": "^5.0.1",
-    "fast-cli": "^3.0.1",
-    "gatsby": "^3.9.0",
-    "gh-home": "^3.1.0",
+    "fanyi": "^4.2.0",
+    "fast-cli": "^2.4.0",
+    "gatsby": "^2.24.67",
+    "gh-home": "^2.0.1",
     "git-open": "^2.1.0",
-    "jshint": "^2.13.0",
+    "jshint": "^2.12.0",
     "lerna-update-wizard": "^0.17.8",
-    "now": "^21.0.1",
-    "prettier": "^2.3.2",
-    "serverless": "^2.51.2",
+    "now": "^20.1.1",
+    "prettier": "^2.1.2",
+    "serverless": "^2.4.0",
     "speed-test": "^2.1.0",
-    "spoof": "^2.0.4",
-    "syncpack": "^5.7.11",
-    "truffle": "^5.3.14"
+    "spoof": "^2.0.1",
+    "syncpack": "^5.6.10",
+    "truffle": "^5.1.46",
+    "wrangler": "^0.0.2"
   }
 }

@@ -1,7 +1,10 @@
 {
   "name": "@shunkakinoki/dotfiles",
-  "version": "3.21.4",
+  "version": "3.21.0",
   "homepage": "https://github.com/shunkakinoki/dotfiles",
+  "bugs": {
+    "url": "https://github.com/shunkakinoki/dotfiles/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/shunkakinoki/dotfiles.git"
@@ -9,37 +12,57 @@
   "license": "MIT",
   "author": "Shun Kakinoki",
   "scripts": {
-    "check": "yarn run depcheck && yarn run lint && yarn run release:check",
-    "fix": "yarn run jsonsort:fix && yarn run sort-package-json:fix && yarn run prettier:fix",
-    "jsonsort:check": "jsonsort .devcontainer .vscode locales -a -c",
-    "jsonsort:fix": "jsonsort .devcontainer .vscode locales -a",
-    "lint": "yarn run jsonsort:check && yarn run sort-package-json:check && yarn run prettier:check",
-    "ncu:check": "ncu -p yarn",
-    "ncu:upgrade": "ncu -u -p yarn",
-    "prettier:check": "prettier --check .",
-    "prettier:fix": "prettier --write .",
-    "release": "semantic-release",
-    "release:check": "semantic-release -d",
-    "sort-package-json:check": "sort-package-json 'package.json' 'packages/*/package.json' --check",
-    "sort-package-json:fix": "sort-package-json 'package.json' 'packages/*/package.json'"
-  },
-  "husky": {
-    "hooks": {
-      "prepare-commit-msg": "exec < /dev/tty && git-cz --hook || true"
-    }
+    "check": "scripty",
+    "cmd:eslint": "scripty",
+    "cmd:prettier": "scripty",
+    "depcheck": "scripty",
+    "depcheck:exec": "scripty",
+    "depcheck:root": "scripty",
+    "fix": "scripty",
+    "fix:eslint": "scripty",
+    "fix:prettier": "scripty",
+    "fix:sort-package-json": "scripty",
+    "lint": "scripty",
+    "lint:eslint": "scripty",
+    "lint:npm-package-json": "scripty",
+    "lint:prettier": "scripty",
+    "ncu": "scripty",
+    "ncu:check": "scripty",
+    "ncu:upgrade": "scripty",
+    "postpublish": "scripty",
+    "prepublishOnly": "scripty",
+    "prettier:lint": "scripty",
+    "prettier:fix": "scripty",
+    "prepare": "scripty",
+    "release": "scripty",
+    "release:multi-semantic-release": "scripty",
+    "release:semantic-release": "scripty"
   },
   "devDependencies": {
     "@semantic-release/changelog": "^5.0.1",
     "@semantic-release/exec": "^5.0.0",
     "@semantic-release/git": "^9.0.0",
-    "commitizen": "^4.2.4",
-    "depcheck": "^1.4.2",
-    "git-cz": "^4.7.6",
-    "husky": "^7.0.1",
-    "json-sort-cli": "^1.19.0",
-    "npm-check-updates": "^11.8.2",
-    "prettier": "^2.3.2",
-    "semantic-release": "^17.4.4",
-    "sort-package-json": "^1.50.0"
+    "@shunkakinoki/commitlint": "^1.0.1",
+    "@shunkakinoki/depcheck": "^1.0.1",
+    "@shunkakinoki/dev": "^1.1.1",
+    "@shunkakinoki/eslint-config": "^1.0.3",
+    "@shunkakinoki/husky": "^1.0.2",
+    "@shunkakinoki/lint-staged": "^1.1.0",
+    "@shunkakinoki/npm-check-updates": "^1.0.1",
+    "@shunkakinoki/npm-package-json-lint-config": "^1.0.0",
+    "@shunkakinoki/prettier": "^1.0.0",
+    "@shunkakinoki/semantic-release": "^1.2.0",
+    "@shunkakinoki/stylelint": "^1.0.1",
+    "@shunkakinoki/tsconfig": "^1.1.0"
+  },
+  "npmpackagejsonlint": {
+    "extends": "@shunkakinoki/npm-package-json-lint-config"
+  },
+  "scripty": {
+    "logLevel": "warn",
+    "modules": [
+      "@shunkakinoki/dev"
+    ],
+    "parallel": true
   }
 }
