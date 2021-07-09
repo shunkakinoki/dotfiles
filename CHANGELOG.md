@@ -1,3 +1,10 @@
+## [3.21.6](https://github.com/shunkakinoki/dotfiles/compare/v3.21.5...v3.21.6) (2021-07-09)
+
+### Bug Fixes
+
+- **deps:** update dependency gatsby to ^2.32.13 ([930401f](https://github.com/shunkakinoki/dotfiles/commit/930401f602449ee0c51251264d8f36d2968d8432))
+- **deps:** update dependency prettier to ^2.3.2 ([00af24f](https://github.com/shunkakinoki/dotfiles/commit/00af24f9b30bd8b981cf7eae68d4279dc50ad30c))
+
 ## [3.21.5](https://github.com/shunkakinoki/dotfiles/compare/v3.21.4...v3.21.5) (2021-07-09)
 
 ### Bug Fixes
