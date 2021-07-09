@@ -2241,20 +2241,20 @@
   dependencies:
     wonka "^4.0.14"
 
-"@vercel/build-utils@2.5.3":
-  version "2.5.3"
-  resolved "https://registry.yarnpkg.com/@vercel/build-utils/-/build-utils-2.5.3.tgz#2f935105c1b9378df4408dc7b638879b06e7442e"
-  integrity sha512-jsvfTLbduwVuexC8LPO58z2qByEhlb8469s2mZQUkCjLxkX1DzW66QB7N68ymzd8rBPAg5n2hi4Zc5NxLHDXLw==
+"@vercel/build-utils@2.6.0":
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/@vercel/build-utils/-/build-utils-2.6.0.tgz#47230acdc2f6a976932707ba423c7245d2e13166"
+  integrity sha512-fxvPrFfPQR7e77QrH2xJfkza3EyFtOa5AdtbWom73Zs5+eyrpetvHHqnzKCfRQFhdTVqOuSDwVoN/uLhMS7tQw==
 
 "@vercel/go@1.1.6":
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/@vercel/go/-/go-1.1.6.tgz#45ac3a6bd98a15b8bf1028b8c141a51fd971ac15"
   integrity sha512-swA2crS08fkPmw4UkR9yjmoL8FOCzuNHLFDqj8oM1V9ni610ibJ7Xk57jI8uyS7bTecQVh8VUxihb+SF0GT+aw==
 
-"@vercel/node@1.8.3":
-  version "1.8.3"
-  resolved "https://registry.yarnpkg.com/@vercel/node/-/node-1.8.3.tgz#3fcf06d8405a8e1f08987578888eabba9f34c48b"
-  integrity sha512-NTRoQJBQTCT1erz9+hg/juHI9Yz5UpwBuR+O9qNZMFjlqU2913BkeZSNb9FAGcNKks/wK9usktRReys3cATLzg==
+"@vercel/node@1.8.5":
+  version "1.8.5"
+  resolved "https://registry.yarnpkg.com/@vercel/node/-/node-1.8.5.tgz#2c8b9532f1bb25734a9964c52973386ed78022d4"
+  integrity sha512-1iw7FSR8Oau6vZB1MWfBnA5q2a/IqRHiSZSbt8lz0dyTF599q8pc5GcSv/TvmrYaEGzh3+N0S4cbmuMCqVlwJg==
   dependencies:
     "@types/node" "*"
     ts-node "8.9.1"
@@ -10768,14 +10768,14 @@ normalize.css@^8.0.1:
   resolved "https://registry.yarnpkg.com/normalize.css/-/normalize.css-8.0.1.tgz#9b98a208738b9cc2634caacbc42d131c97487bf3"
   integrity sha512-qizSNPO93t1YUuUhP22btGOo3chcvDFqFaj2TRybP0DMxkHOCTYwp3n34fel4a31ORXy4m1Xq0Gyqpb5m33qIg==
 
-now@^20.1.1:
-  version "20.1.1"
-  resolved "https://registry.yarnpkg.com/now/-/now-20.1.1.tgz#77def01d798269c617be34f6616922508278456b"
-  integrity sha512-49prz00NH0xGj/dfp1Kk9Eomdq3au9kdfHOqUnI4Dfq3XaN8p113G2n6Jvf0ZVhtFki3dIlmO+avWCoNYXR2xQ==
+now@^20.1.4:
+  version "20.1.4"
+  resolved "https://registry.yarnpkg.com/now/-/now-20.1.4.tgz#1c771feb2c42d636ae7e7171895ce927b1f4f06b"
+  integrity sha512-EiTJv2DvPlaZk26PxRHi8mtzzqsReuY62uFFEkYLoDLzJbebre0AkRndy3tfQKCLF74nHY1JCF7OsGcngc242Q==
   dependencies:
-    "@vercel/build-utils" "2.5.3"
+    "@vercel/build-utils" "2.6.0"
     "@vercel/go" "1.1.6"
-    "@vercel/node" "1.8.3"
+    "@vercel/node" "1.8.5"
     "@vercel/python" "1.2.3"
     "@vercel/ruby" "1.2.4"
     update-notifier "4.1.0"
