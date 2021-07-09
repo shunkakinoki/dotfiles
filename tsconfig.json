@@ -1,0 +1,5 @@
+{
+  "exclude": ["node_modules"],
+  "extends": "@shunkakinoki/tsconfig",
+  "include": ["tsconfig.json"]
+}
