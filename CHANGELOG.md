@@ -1,3 +1,32 @@
+## [3.21.4](https://github.com/shunkakinoki/dotfiles/compare/v3.21.3...v3.21.4) (2021-07-08)
+
+### Bug Fixes
+
+- **deps:** update dependency serverless to ^2.51.2 ([bd96c84](https://github.com/shunkakinoki/dotfiles/commit/bd96c84cf32c458fc3cfc038fa19a4566134ce61))
+
+## [3.21.3](https://github.com/shunkakinoki/dotfiles/compare/v3.21.2...v3.21.3) (2021-07-08)
+
+### Bug Fixes
+
+- **deps:** update dependency serverless to ^2.51.1 ([871f084](https://github.com/shunkakinoki/dotfiles/commit/871f084f39c74edcaf897b75c6073b562e14d55d))
+
+## [3.21.2](https://github.com/shunkakinoki/dotfiles/compare/v3.21.1...v3.21.2) (2021-07-07)
+
+### Bug Fixes
+
+- **deps:** update dependency gatsby to ^3.9.0 ([8fa4a12](https://github.com/shunkakinoki/dotfiles/commit/8fa4a1264744aedf745fdb57f64219ac8cf1aef9))
+- **deps:** update dependency serverless to ^2.51.0 ([418c784](https://github.com/shunkakinoki/dotfiles/commit/418c7842e2f4dc13a49b8db983e892bb0988ff4c))
+
+## [3.21.1](https://github.com/shunkakinoki/dotfiles/compare/v3.21.0...v3.21.1) (2021-07-05)
+
+### Bug Fixes
+
+- **deps:** update dependency fanyi to v5 ([4f152eb](https://github.com/shunkakinoki/dotfiles/commit/4f152ebf3bce69680641622d8decafc52815cbe1))
+- **deps:** update dependency gh-home to v3 ([08d8ff7](https://github.com/shunkakinoki/dotfiles/commit/08d8ff7ac52e1bf643f2aa9dee4055a3ecaa81d5))
+- **deps:** update dependency jshint to ^2.13.0 ([7590f9d](https://github.com/shunkakinoki/dotfiles/commit/7590f9d0c9788c972c2b77f5b7d65812848e4686))
+- **deps:** update dependency now to v21 ([f243ea3](https://github.com/shunkakinoki/dotfiles/commit/f243ea3f8ff825204b72d41e150b775d9d264b20))
+- **deps:** update dependency spoof to ^2.0.4 ([5dd3aa1](https://github.com/shunkakinoki/dotfiles/commit/5dd3aa18e1fe92f3875880c3dca5df8be5bb4c07))
+
 # [3.21.0](https://github.com/shunkakinoki/dotfiles/compare/v3.20.0...v3.21.0) (2020-12-29)
 
 ### Features
