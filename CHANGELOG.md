@@ -1,3 +1,10 @@
+## [3.21.7](https://github.com/shunkakinoki/dotfiles/compare/v3.21.6...v3.21.7) (2021-07-10)
+
+### Bug Fixes
+
+- **deps:** update dependency fast-cli to v3 ([aac8d48](https://github.com/shunkakinoki/dotfiles/commit/aac8d48a35894d6f51931bdd7da3036acea2b698))
+- **deps:** update dependency syncpack to ^5.7.11 ([61761a1](https://github.com/shunkakinoki/dotfiles/commit/61761a1fe3d7cbc01679310d5db77a55b23f5439))
+
 ## [3.21.6](https://github.com/shunkakinoki/dotfiles/compare/v3.21.5...v3.21.6) (2021-07-09)
 
 ### Bug Fixes
