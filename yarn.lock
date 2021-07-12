@@ -892,10 +892,10 @@
     scripty "^2.0.0"
     sort-package-json "^1.50.0"
 
-"@shunkakinoki/eslint-config@^1.0.11":
-  version "1.0.11"
-  resolved "https://registry.yarnpkg.com/@shunkakinoki/eslint-config/-/eslint-config-1.0.11.tgz#51c17df3eedc5fd297451cdaa79aa1980f378b5a"
-  integrity sha512-jPRQ9CqtMHzJPb00tsw7XzAa4QIy3DQbs9DrE03mK1QHKkWLlDAdbavk7bw1TlR/yNPST7BqrmxBzmbQ4rwcNQ==
+"@shunkakinoki/eslint-config@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@shunkakinoki/eslint-config/-/eslint-config-1.1.0.tgz#b703ebfbca63b1c035b2bfaadfebe7b2dee0d2b8"
+  integrity sha512-VEWiVnV/qsoV97Sm6h97v32dvgJ0OoSWMy8FSLElbF8xCkfCbddBSHqjBK5gqIu/3aWLWEqwvd6d/QRg3sYt/g==
   dependencies:
     "@next/eslint-plugin-next" "^11.0.1"
     "@typescript-eslint/eslint-plugin" "^4.28.2"
@@ -909,7 +909,7 @@
     eslint-plugin-prettier "^3.4.0"
     eslint-plugin-react "^7.24.0"
     eslint-plugin-react-hooks "^4.2.0"
-    eslint-plugin-tailwindcss "^1.13.4"
+    eslint-plugin-tailwindcss "git+https://github.com/will-stone/eslint-plugin-tailwindcss.git#patch-1"
 
 "@shunkakinoki/husky@^1.0.2":
   version "1.0.2"
@@ -3464,10 +3464,10 @@ eslint-plugin-react@^7.24.0:
     resolve "^2.0.0-next.3"
     string.prototype.matchall "^4.0.5"
 
-eslint-plugin-tailwindcss@^1.13.4:
+"eslint-plugin-tailwindcss@git+https://github.com/will-stone/eslint-plugin-tailwindcss.git#patch-1":
   version "1.14.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-tailwindcss/-/eslint-plugin-tailwindcss-1.14.0.tgz#4f5c3cfdc24bc3cca12d3a09121eb3491c7edf04"
-  integrity sha512-z5wOgm/5idGNkHCAhRvn/s+I1XSXODpwXA0IlHF+9Y372RHZsfwTqJwTLFdHLj7nJk/9FspWSbbGM8QN+Vu1Dg==
+  uid a2fd44f612e711da93c5e4268a343adb28b9a2fe
+  resolved "git+https://github.com/will-stone/eslint-plugin-tailwindcss.git#a2fd44f612e711da93c5e4268a343adb28b9a2fe"
   dependencies:
     fast-glob "^3.2.5"
     postcss "^8.3.0"
