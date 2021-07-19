@@ -967,10 +967,10 @@
     prettier-plugin-packagejson "^2.2.10"
     prettier-plugin-sort-json "^0.0.2"
 
-"@shunkakinoki/semantic-release@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@shunkakinoki/semantic-release/-/semantic-release-1.2.0.tgz#6de7309637a0b1ffa4f414feffd78d19a5c56d8e"
-  integrity sha512-iWCY/WE9Us8l0TCBV4hXUd4JLPPoknuDcmVnmD1zm4uwDpk1M76IoipFp4/BjQwlKWICxpzTlI/WAgkrqENmIQ==
+"@shunkakinoki/semantic-release@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@shunkakinoki/semantic-release/-/semantic-release-1.2.1.tgz#bae701e4665d20b8faa8d4a1e6caa12f93c491eb"
+  integrity sha512-+Epi/fd21HacKexutGGgrq0BIGJl9fNoPEr0iVxQBXXVAxA8IUwQW7ok5a9hd+RJumvmCmfRrHwcLul0sFVs4w==
   dependencies:
     "@semantic-release/changelog" "^5.0.1"
     "@semantic-release/exec" "^5.0.0"
