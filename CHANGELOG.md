@@ -1,3 +1,44 @@
+## [3.21.10](https://github.com/shunkakinoki/dotfiles/compare/v3.21.9...v3.21.10) (2021-07-16)
+
+### Bug Fixes
+
+- **deps:** update dependency serverless to ^2.52.0 ([949bf29](https://github.com/shunkakinoki/dotfiles/commit/949bf295bb8e43523e501ff51d5689e81774dd6f))
+- **deps:** update dependency truffle to ^5.4.1 ([982b124](https://github.com/shunkakinoki/dotfiles/commit/982b12460d4013920e0339b5b48903a4000f5399))
+
+## [3.21.9](https://github.com/shunkakinoki/dotfiles/compare/v3.21.8...v3.21.9) (2021-07-10)
+
+### Bug Fixes
+
+- **deps:** update dependency gatsby to v3 ([a28280f](https://github.com/shunkakinoki/dotfiles/commit/a28280f1b51999494c74f95740e1f23a2333ead4))
+
+## [3.21.8](https://github.com/shunkakinoki/dotfiles/compare/v3.21.7...v3.21.8) (2021-07-10)
+
+### Bug Fixes
+
+- **deps:** update dependency truffle to ^5.4.0 ([10fd91a](https://github.com/shunkakinoki/dotfiles/commit/10fd91aca82e840c896a4f1a73ed7a8ac016c118))
+
+## [3.21.7](https://github.com/shunkakinoki/dotfiles/compare/v3.21.6...v3.21.7) (2021-07-10)
+
+### Bug Fixes
+
+- **deps:** update dependency fast-cli to v3 ([aac8d48](https://github.com/shunkakinoki/dotfiles/commit/aac8d48a35894d6f51931bdd7da3036acea2b698))
+- **deps:** update dependency syncpack to ^5.7.11 ([61761a1](https://github.com/shunkakinoki/dotfiles/commit/61761a1fe3d7cbc01679310d5db77a55b23f5439))
+
+## [3.21.6](https://github.com/shunkakinoki/dotfiles/compare/v3.21.5...v3.21.6) (2021-07-09)
+
+### Bug Fixes
+
+- **deps:** update dependency gatsby to ^2.32.13 ([930401f](https://github.com/shunkakinoki/dotfiles/commit/930401f602449ee0c51251264d8f36d2968d8432))
+- **deps:** update dependency prettier to ^2.3.2 ([00af24f](https://github.com/shunkakinoki/dotfiles/commit/00af24f9b30bd8b981cf7eae68d4279dc50ad30c))
+
+## [3.21.5](https://github.com/shunkakinoki/dotfiles/compare/v3.21.4...v3.21.5) (2021-07-09)
+
+### Bug Fixes
+
+- **deps:** update dependency jshint to ^2.13.0 ([7654b5b](https://github.com/shunkakinoki/dotfiles/commit/7654b5bb44e84b59b416419761c29608155a48a5))
+- **deps:** update dependency now to ^20.1.4 ([23fe74c](https://github.com/shunkakinoki/dotfiles/commit/23fe74c68763437ecc747ae703573e7ee064e3f1))
+- **deps:** update dependency spoof to ^2.0.4 ([790c18e](https://github.com/shunkakinoki/dotfiles/commit/790c18e6587a9deb0b9a424777f527a4ef21d433))
+
 ## [3.21.4](https://github.com/shunkakinoki/dotfiles/compare/v3.21.3...v3.21.4) (2021-07-08)
 
 ### Bug Fixes
