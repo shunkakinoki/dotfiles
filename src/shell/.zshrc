@@ -31,6 +31,7 @@ antibody bundle caarlos0/zsh-git-sync kind:path
 antibody bundle chrissicool/zsh-256color
 antibody bundle darvid/zsh-poetry
 antibody bundle lukechilds/zsh-better-npm-completion
+antibody bundle lukechilds/zsh-nvm
 antibody bundle MichaelAquilina/zsh-you-should-use
 antibody bundle mollifier/cd-gitroot
 antibody bundle paulirish/git-open
