@@ -22,6 +22,8 @@ overridden() { [[ $TITLE_OVERRIDDEN == 1 ]]; }
 # Load Antibody Plugin Manager
 source <(antibody init)
 
+export NVM_AUTO_USE=true
+
 # Install Antibody Plugins
 antibody bundle Aloxaf/fzf-tab
 antibody bundle b4b4r07/emoji-cli
