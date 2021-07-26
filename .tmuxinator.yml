@@ -1,5 +1,5 @@
 name: dotfiles
-root: ~/ghq/github.com/shunkakinoki/dotfiles
+root: ~/dotfiles
 attach: true
 windows:
   - zsh: neofetch

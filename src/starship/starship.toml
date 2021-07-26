@@ -43,9 +43,6 @@ style = "bold yellow"
 threshold = 100
 style = "bold green"
 
-[character]
-use_symbol_for_status = true
-
 [directory]
 style = "bold red"
 
@@ -66,8 +63,6 @@ disabled = false
 
 [memory_usage]
 disabled = false
-show_percentage = true
-show_swap = true
 
 [time]
 disabled = false
