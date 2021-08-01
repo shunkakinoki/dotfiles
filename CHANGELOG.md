@@ -1,3 +1,9 @@
+## [3.21.16](https://github.com/shunkakinoki/dotfiles/compare/v3.21.15...v3.21.16) (2021-08-01)
+
+### Bug Fixes
+
+- **deps:** update dependency syncpack to ^5.8.12 ([596ea80](https://github.com/shunkakinoki/dotfiles/commit/596ea80ec8b8f56588089490ad67e66da4286f4b))
+
 ## [3.21.15](https://github.com/shunkakinoki/dotfiles/compare/v3.21.14...v3.21.15) (2021-07-31)
 
 ### Bug Fixes
