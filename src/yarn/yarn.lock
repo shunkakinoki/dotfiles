@@ -19933,10 +19933,10 @@ sync-fetch@0.3.0:
     buffer "^5.7.0"
     node-fetch "^2.6.1"
 
-syncpack@^5.8.12:
-  version "5.8.12"
-  resolved "https://registry.yarnpkg.com/syncpack/-/syncpack-5.8.12.tgz#3a0f6dd844dfd2494bf15d11811fdacd8b0b9961"
-  integrity sha512-/bfXMcbBQ3ZATCnqBNq2AsUR6sraSPWR2015tiC+vNIup7uce5IhLQashLuchaLfzO80s4waoN01WzGnprwyrA==
+syncpack@^5.8.14:
+  version "5.8.14"
+  resolved "https://registry.yarnpkg.com/syncpack/-/syncpack-5.8.14.tgz#ab8d65d3b2eff0be4d6d9489c924d7965e2659b3"
+  integrity sha512-FWXakGzT5ZnrrBSilaIGAJihcA6lWIV8wUFXHBiEboEZGHtF7kyubf8YsZsUE2NHM+9Qx84Y5G0H+xKo6E6AnA==
   dependencies:
     chalk "4.1.2"
     commander "8.1.0"
