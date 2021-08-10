@@ -20,7 +20,7 @@
     "gatsby": "^3.11.1",
     "gh-home": "^2.0.1",
     "git-open": "^2.1.0",
-    "jshint": "^2.13.0",
+    "jshint": "^2.13.1",
     "lerna-update-wizard": "^0.17.8",
     "now": "^20.1.4",
     "prettier": "^2.3.2",
