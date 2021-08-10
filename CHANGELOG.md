@@ -1,3 +1,10 @@
+## [3.21.22](https://github.com/shunkakinoki/dotfiles/compare/v3.21.21...v3.21.22) (2021-08-10)
+
+### Bug Fixes
+
+- **deps:** update dependency gatsby to ^3.11.1 ([381da10](https://github.com/shunkakinoki/dotfiles/commit/381da10fccbe329f5ad5847515cfd1158b5ee7e2))
+- **deps:** update dependency syncpack to ^5.8.15 ([d791200](https://github.com/shunkakinoki/dotfiles/commit/d79120093874bc2ba18016d54c92fd6e2a8b3e62))
+
 ## [3.21.21](https://github.com/shunkakinoki/dotfiles/compare/v3.21.20...v3.21.21) (2021-08-07)
 
 ### Bug Fixes
