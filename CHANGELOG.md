@@ -1,3 +1,9 @@
+## [3.21.23](https://github.com/shunkakinoki/dotfiles/compare/v3.21.22...v3.21.23) (2021-08-10)
+
+### Bug Fixes
+
+- **deps:** update dependency jshint to ^2.13.1 ([8dcc0c4](https://github.com/shunkakinoki/dotfiles/commit/8dcc0c4b0812a812c5299059d7a1f81c42c67543))
+
 ## [3.21.22](https://github.com/shunkakinoki/dotfiles/compare/v3.21.21...v3.21.22) (2021-08-10)
 
 ### Bug Fixes
