@@ -1,3 +1,10 @@
+## [3.21.24](https://github.com/shunkakinoki/dotfiles/compare/v3.21.23...v3.21.24) (2021-08-13)
+
+### Bug Fixes
+
+- **deps:** update dependency serverless to ^2.54.0 ([dc01c24](https://github.com/shunkakinoki/dotfiles/commit/dc01c242d067b5bd9744d2ad96f9bed1356fe042))
+- **deps:** update dependency truffle to ^5.4.6 ([7bd8b43](https://github.com/shunkakinoki/dotfiles/commit/7bd8b432373c8495ea05b7c0e0e070a99d697795))
+
 ## [3.21.23](https://github.com/shunkakinoki/dotfiles/compare/v3.21.22...v3.21.23) (2021-08-10)
 
 ### Bug Fixes
