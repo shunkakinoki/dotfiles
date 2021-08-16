@@ -970,16 +970,16 @@
     prettier-plugin-packagejson "^2.2.10"
     prettier-plugin-sort-json "^0.0.2"
 
-"@shunkakinoki/semantic-release@^1.2.3":
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/@shunkakinoki/semantic-release/-/semantic-release-1.2.3.tgz#000f1c41270f5a49e01fca63327e8edaff3ac44e"
-  integrity sha512-prmyK1oYRfOZRIIcN6PDOJeQcQZxHuCL3eCcNfE5NvATbRLOh5hOHm9VNaW03LIYd/ctVPppCLNwLIvjcHAsWA==
+"@shunkakinoki/semantic-release@^1.2.4":
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/@shunkakinoki/semantic-release/-/semantic-release-1.2.4.tgz#9c944e0644478aef68a64b4129c904dae31ebcd0"
+  integrity sha512-md6SWGGH+7yRDrNtysS7/gXrnJt26+F1yi0qUmAkvxWlgzyigt77dl0DmiR5fjSyg6v0ZaH4E/PYeP4ypxk2xA==
   dependencies:
     "@semantic-release/changelog" "^5.0.1"
     "@semantic-release/exec" "^5.0.0"
     "@semantic-release/git" "^9.0.0"
     multi-semantic-release "^2.8.4"
-    semantic-release "^17.4.4"
+    semantic-release "^17.4.5"
 
 "@shunkakinoki/stylelint@^1.0.1":
   version "1.0.1"
@@ -6398,6 +6398,11 @@ marked@^2.0.0:
   resolved "https://registry.yarnpkg.com/marked/-/marked-2.0.1.tgz#5e7ed7009bfa5c95182e4eb696f85e948cefcee3"
   integrity sha512-5+/fKgMv2hARmMW7DOpykr2iLhl0NgjyELk5yn92iE7z8Se1IS9n3UsFm86hFXIkvMBmVxki8+ckcpjBeyo/hw==
 
+marked@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-3.0.0.tgz#ac8369b7ddeef15fbbce870d14f321bdb20ca4e2"
+  integrity sha512-IF2MYfFafPsLIhzLTu63secRBwOmIY+vwS+ei6qg8F+bTS+MxH6ONYRmuseGdZqF44qvoi3nP/rlpClBdgLbiQ==
+
 mathml-tag-names@^2.1.3:
   version "2.1.3"
   resolved "https://registry.yarnpkg.com/mathml-tag-names/-/mathml-tag-names-2.1.3.tgz#4ddadd67308e780cf16a47685878ee27b736a0a3"
@@ -9079,10 +9084,10 @@ semantic-release@^17.3.0:
     signale "^1.2.1"
     yargs "^16.2.0"
 
-semantic-release@^17.4.4:
-  version "17.4.4"
-  resolved "https://registry.yarnpkg.com/semantic-release/-/semantic-release-17.4.4.tgz#650dd50ecb520a5a2bc6811305bc9d4d5c3128b1"
-  integrity sha512-fQIA0lw2Sy/9+TcoM/BxyzKCSwdUd8EPRwGoOuBLgxKigPCY6kaKs8TOsgUVy6QrlTYwni2yzbMb5Q2107P9eA==
+semantic-release@^17.4.5:
+  version "17.4.5"
+  resolved "https://registry.yarnpkg.com/semantic-release/-/semantic-release-17.4.5.tgz#b636065f3fdc8392e2fdfeac0e99d9c3805f8a3a"
+  integrity sha512-s9JqU46nK1TQla37+kA7aSoNWDCkQq9/T5K2QX/z7bfI+zW3o1Pg/2nlZuZffnnROnt5sT0ysE49yhedINTtTw==
   dependencies:
     "@semantic-release/commit-analyzer" "^8.0.0"
     "@semantic-release/error" "^2.2.0"
@@ -9101,7 +9106,7 @@ semantic-release@^17.4.4:
     hook-std "^2.0.0"
     hosted-git-info "^4.0.0"
     lodash "^4.17.21"
-    marked "^2.0.0"
+    marked "^3.0.0"
     marked-terminal "^4.1.1"
     micromatch "^4.0.2"
     p-each-series "^2.1.0"
