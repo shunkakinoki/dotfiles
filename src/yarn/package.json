@@ -28,7 +28,7 @@
     "speed-test": "^2.1.0",
     "spoof": "^2.0.4",
     "syncpack": "^5.8.15",
-    "truffle": "^5.4.7",
+    "truffle": "^5.4.8",
     "wrangler": "^0.0.2"
   }
 }
