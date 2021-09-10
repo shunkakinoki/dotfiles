@@ -1,3 +1,9 @@
+## [3.21.32](https://github.com/shunkakinoki/dotfiles/compare/v3.21.31...v3.21.32) (2021-09-10)
+
+### Bug Fixes
+
+- **deps:** update dependency prettier to ^2.4.0 ([857f9ce](https://github.com/shunkakinoki/dotfiles/commit/857f9ced28170b98034cd06e697e0820c96f88d7))
+
 ## [3.21.31](https://github.com/shunkakinoki/dotfiles/compare/v3.21.30...v3.21.31) (2021-09-04)
 
 ### Bug Fixes
