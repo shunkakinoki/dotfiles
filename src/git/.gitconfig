@@ -23,7 +23,8 @@ ce = commit --allow-empty
 [user]
 	name = Shun Kakinoki
 	email = shunkakinoki@gmail.com
+	signingKey = 6AF2C7F7D56DDA1E3E5A3B97D4C6000717F20BBC
 [gpg]
-	program = gpg
+	program = /usr/local/bin/gpg
 [commit]
 	gpgsign = true
