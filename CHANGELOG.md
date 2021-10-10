@@ -1,3 +1,9 @@
+## [3.21.47](https://github.com/shunkakinoki/dotfiles/compare/v3.21.46...v3.21.47) (2021-10-10)
+
+### Bug Fixes
+
+- **deps:** update dependency serverless to ^2.62.0 ([1e7007f](https://github.com/shunkakinoki/dotfiles/commit/1e7007fca388e8e44ffa18151b962e0afe51e7f1))
+
 ## [3.21.46](https://github.com/shunkakinoki/dotfiles/compare/v3.21.45...v3.21.46) (2021-10-07)
 
 ### Bug Fixes
