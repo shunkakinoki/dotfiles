@@ -272,13 +272,6 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.6.3":
-  version "7.8.4"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.8.4.tgz#d79f5a2040f7caa24d53e563aad49cbc05581308"
-  integrity sha512-neAp3zt80trRVBI1x0azq6c57aNBqYZH8KhMm3TaB7wEI5Q4A2SHfBHE8w9gOhI/lrqxtEbXZgQIrHP+wvSGwQ==
-  dependencies:
-    regenerator-runtime "^0.13.2"
-
 "@babel/template@^7.12.13":
   version "7.12.13"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.12.13.tgz#530265be8a2589dbb37523844c5bcb55947fb327"
@@ -1281,12 +1274,12 @@
   dependencies:
     npm-check-updates "^11.8.5"
 
-"@shunkakinoki/npm-package-json-lint-config@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@shunkakinoki/npm-package-json-lint-config/-/npm-package-json-lint-config-1.0.3.tgz#58573b173d14959b9f96a1d8e263408ce1da1c69"
-  integrity sha512-pr6/EcGQAYqJtA+M8kCqwq01NKbog2M9n9iLK/VSP1DJl1wLU02Au9t+nbSh20ADEpx885oSikYcRTLp+FrKUg==
+"@shunkakinoki/npm-package-json-lint-config@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@shunkakinoki/npm-package-json-lint-config/-/npm-package-json-lint-config-1.0.5.tgz#2a3e1cd246aed5db65d809907e709296bc0fdad6"
+  integrity sha512-ZTmjgGbO+U5IDwXfvOWvG3ALds3T+Onlqr045SwY1ks5lNH7c1R80yNQWeWN8u59Fns5gD/WhgibV/wnoCqPBA==
   dependencies:
-    npm-package-json-lint "^5.2.4"
+    npm-package-json-lint "^5.4.0"
 
 "@shunkakinoki/prettier@^1.0.0":
   version "1.0.0"
@@ -3223,17 +3216,6 @@ cosmiconfig@^5.2.0:
     is-directory "^0.3.1"
     js-yaml "^3.13.1"
     parse-json "^4.0.0"
-
-cosmiconfig@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/cosmiconfig/-/cosmiconfig-6.0.0.tgz#da4fee853c52f6b1e6935f41c1a2fc50bd4a9982"
-  integrity sha512-xb3ZL6+L8b9JLLCx3ZdoZy4+2ECphCMo2PwqgP1tlfVq6M6YReyzBJtvWWtbDSpNr9hn96pkCiZqUcFEc+54Qg==
-  dependencies:
-    "@types/parse-json" "^4.0.0"
-    import-fresh "^3.1.0"
-    parse-json "^5.0.0"
-    path-type "^4.0.0"
-    yaml "^1.7.2"
 
 cosmiconfig@^7.0.0:
   version "7.0.0"
@@ -5583,7 +5565,7 @@ import-fresh@^2.0.0:
     caller-path "^2.0.0"
     resolve-from "^3.0.0"
 
-import-fresh@^3.0.0, import-fresh@^3.1.0, import-fresh@^3.2.1:
+import-fresh@^3.0.0, import-fresh@^3.2.1:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/import-fresh/-/import-fresh-3.2.1.tgz#633ff618506e793af5ac91bf48b72677e15cbe66"
   integrity sha512-6e1q1cnWP2RXD9/keSkxHScg508CdXqXWgWBaETNhyuBFz+kUZlKboh+ISK+bU++DmbHimVBrOz/zzPe0sZ3sQ==
@@ -6456,10 +6438,10 @@ json5@^2.1.3:
   dependencies:
     minimist "^1.2.5"
 
-jsonc-parser@^2.3.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/jsonc-parser/-/jsonc-parser-2.3.1.tgz#59549150b133f2efacca48fe9ce1ec0659af2342"
-  integrity sha512-H8jvkz1O50L3dMZCsLqiuB2tA7muqbSg1AtGEkN0leAqGjsUzDJir3Zwr02BhqdcITPg3ei3mZ+HjMocAknhhg==
+jsonc-parser@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/jsonc-parser/-/jsonc-parser-3.0.0.tgz#abdd785701c7e7eaca8a9ec8cf070ca51a745a22"
+  integrity sha512-fQzRfAbIBnR0IQvftw9FJveWiHp72Fg20giDrHz6TdfB12UH/uue0D3hm57UB5KgAVuniLMCaS8P1IMj9NR7cA==
 
 jsonfile@^4.0.0:
   version "4.0.0"
@@ -8174,20 +8156,20 @@ npm-package-arg@^8.0.0, npm-package-arg@^8.0.1:
     semver "^7.0.0"
     validate-npm-package-name "^3.0.0"
 
-npm-package-json-lint@^5.2.4:
-  version "5.2.4"
-  resolved "https://registry.yarnpkg.com/npm-package-json-lint/-/npm-package-json-lint-5.2.4.tgz#6c567df65dc7ebb17ddf4c77c872140ac26e5264"
-  integrity sha512-ziN7r4qJg8+hwpUd8gMA0Xj5IHhawBQmNXizB5bYISc/YaidYqmghGI9ZApzr4Csrbi1o4aHNrSwTL5YJT8c8g==
+npm-package-json-lint@^5.4.0:
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/npm-package-json-lint/-/npm-package-json-lint-5.4.0.tgz#325ccde8429fb5d1b3819411f85189d42aab0956"
+  integrity sha512-0wNPI2+hiB8CA7gxOS2hXhupmmwEwjRITC9WCMV5Tn3sAsTDEXL+UwnVEFZNLmuxt6km0cbj9h2e8h6dRSZukw==
   dependencies:
     ajv "^6.12.6"
     ajv-errors "^1.0.1"
     chalk "^4.1.2"
-    cosmiconfig "^6.0.0"
+    cosmiconfig "^7.0.1"
     debug "^4.3.2"
     globby "^11.0.4"
     ignore "^5.1.8"
     is-plain-obj "^3.0.0"
-    jsonc-parser "^2.3.1"
+    jsonc-parser "^3.0.0"
     log-symbols "^4.1.0"
     meow "^6.1.1"
     plur "^4.0.0"
@@ -9858,11 +9840,6 @@ regenerator-runtime@^0.11.0:
   version "0.11.1"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.11.1.tgz#be05ad7f9bf7d22e056f9726cee5017fbf19e2e9"
   integrity sha512-MguG95oij0fC3QV3URf4V2SDYGJhJnJGqvIIgdECeODCT98wSWDAJ94SSuVpYQUoTcGUIL6L4yNB7j1DFFHSBg==
-
-regenerator-runtime@^0.13.2:
-  version "0.13.3"
-  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.3.tgz#7cf6a77d8f5c6f60eb73c5fc1955b2ceb01e6bf5"
-  integrity sha512-naKIZz2GQ8JWh///G7L3X6LaQUAMp2lvb1rvwwsURe/VXwD6VMfr+/1NuNw3ag8v2kY1aQ/go5SNn79O9JU7yw==
 
 regenerator-runtime@^0.13.4:
   version "0.13.7"
@@ -12074,13 +12051,6 @@ yaml@^1.10.2:
   version "1.10.2"
   resolved "https://registry.yarnpkg.com/yaml/-/yaml-1.10.2.tgz#2301c5ffbf12b467de8da2333a459e29e7920e4b"
   integrity sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==
-
-yaml@^1.7.2:
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/yaml/-/yaml-1.7.2.tgz#f26aabf738590ab61efaca502358e48dc9f348b2"
-  integrity sha512-qXROVp90sb83XtAoqE8bP9RwAkTTZbugRUTm5YeFCBfNRPEp2YzTeqWiz7m5OORHzEvrA/qcGS8hp/E+MMROYw==
-  dependencies:
-    "@babel/runtime" "^7.6.3"
 
 yargs-parser@^10.0.0:
   version "10.1.0"
