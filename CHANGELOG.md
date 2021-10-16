@@ -1,3 +1,12 @@
+## [3.21.48](https://github.com/shunkakinoki/dotfiles/compare/v3.21.47...v3.21.48) (2021-10-16)
+
+### Bug Fixes
+
+- **deps:** update dependency gatsby to ^3.14.3 ([af22d19](https://github.com/shunkakinoki/dotfiles/commit/af22d19c0f436f6dc7278670814e86e3885f38ee))
+- **deps:** update dependency lerna-update-wizard to v1 ([7e6bc16](https://github.com/shunkakinoki/dotfiles/commit/7e6bc16ea6f3c21d54a25922ec82e93f52f38884))
+- **deps:** update dependency serverless to ^2.63.0 ([9097a92](https://github.com/shunkakinoki/dotfiles/commit/9097a92034e1fdd921ee39232080434a12c64b74))
+- **deps:** update dependency truffle to ^5.4.15 ([9b219d4](https://github.com/shunkakinoki/dotfiles/commit/9b219d45d5872fa2ee2cbba0cfa613bf202e7fc0))
+
 ## [3.21.47](https://github.com/shunkakinoki/dotfiles/compare/v3.21.46...v3.21.47) (2021-10-10)
 
 ### Bug Fixes
