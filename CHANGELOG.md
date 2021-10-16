@@ -1,3 +1,9 @@
+## [3.21.49](https://github.com/shunkakinoki/dotfiles/compare/v3.21.48...v3.21.49) (2021-10-16)
+
+### Bug Fixes
+
+- **deps:** update dependency gh-home to v4 ([91dba46](https://github.com/shunkakinoki/dotfiles/commit/91dba468268398e57741db5b7574da39fd03ab9e))
+
 ## [3.21.48](https://github.com/shunkakinoki/dotfiles/compare/v3.21.47...v3.21.48) (2021-10-16)
 
 ### Bug Fixes
