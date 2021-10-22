@@ -1299,15 +1299,15 @@
     prettier-plugin-packagejson "^2.2.10"
     prettier-plugin-sort-json "^0.0.2"
 
-"@shunkakinoki/semantic-release@^1.2.6":
-  version "1.2.6"
-  resolved "https://registry.yarnpkg.com/@shunkakinoki/semantic-release/-/semantic-release-1.2.6.tgz#4eda312554dfcab9c70093004c8550e4fb4cdc95"
-  integrity sha512-H0nzOpk0dbsThkNrwBdW2Zt+FJNJcY+c9vtQ4wiCa8NDcTYSt/9YRM40GXNiOMi/spWmrC5yo02RKBQ4ZUw5Iw==
+"@shunkakinoki/semantic-release@^1.2.7":
+  version "1.2.7"
+  resolved "https://registry.yarnpkg.com/@shunkakinoki/semantic-release/-/semantic-release-1.2.7.tgz#3304d78af7949552e75c6556dedecbe8afc520d4"
+  integrity sha512-A1AkriZitKoadq/63Ib0vx7bjnt9YGIIuZb1ScXCOubpikFLp7O8E05ws+KLPeIO7fN/q8CEz5QGYkGJlX7kVg==
   dependencies:
     "@semantic-release/changelog" "^6.0.0"
     "@semantic-release/exec" "^6.0.1"
     "@semantic-release/git" "^10.0.0"
-    multi-semantic-release "^2.9.0"
+    multi-semantic-release "^2.9.1"
     semantic-release "^18.0.0"
 
 "@shunkakinoki/stylelint@^1.0.1":
@@ -2201,7 +2201,7 @@ binary-extensions@^2.2.0:
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
   integrity sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==
 
-blork@^9.2.2:
+blork@^9.3.0:
   version "9.3.0"
   resolved "https://registry.yarnpkg.com/blork/-/blork-9.3.0.tgz#6c0b4fbb6b754998ae5460c26463d95c635e4a35"
   integrity sha512-9naBrHS2bwCQeGqGR9ptcoll6utsox9jtk1E0SwOAFa4RCV/IQHoBJARdi8AhHQTPPoWkjixMrzHvQKAV5Fx2A==
@@ -3633,6 +3633,11 @@ detect-indent@6.0.0, detect-indent@^6.0.0:
   resolved "https://registry.yarnpkg.com/detect-indent/-/detect-indent-6.0.0.tgz#0abd0f549f69fc6659a254fe96786186b6f528fd"
   integrity sha512-oSyFlqaTHCItVRGK5RmrmjB+CmaMOW7IaNA/kdxqhoa6d17j/5ce9O9eWXmV/KEdRwqpQA+Vqe8a8Bsybu4YnA==
 
+detect-indent@^6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/detect-indent/-/detect-indent-6.1.0.tgz#592485ebbbf6b3b1ab2be175c8393d04ca0d57e6"
+  integrity sha512-reYkTUJAZb9gUuZ2RvVCNhVHdg62RHnJ7WJl8ftMi4diZ6NWlciOzQN88pUhSELEwflJht4oQDv0F0BMlwaYtA==
+
 detect-indent@~5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/detect-indent/-/detect-indent-5.0.0.tgz#3871cc0a6a002e8c3e5b3cf7f336264675f06b9d"
@@ -4979,6 +4984,11 @@ get-stream@^6.0.0:
   resolved "https://registry.yarnpkg.com/get-stream/-/get-stream-6.0.0.tgz#3e0012cb6827319da2706e601a1583e8629a6718"
   integrity sha512-A1B3Bh1UmL0bidM/YX2NsCOTnGJePL9rO/M+Mw3m9f2gUpfokS0hi5Eah0WSUEWZdZhIZtMjkIYS7mDfOqNHbg==
 
+get-stream@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/get-stream/-/get-stream-6.0.1.tgz#a262d8eef67aced57c2852ad6167526a43cbf7b7"
+  integrity sha512-ts6Wi+2j3jQjqi70w5AlN8DFnkSwC+MqmxEzdEALB2qXZYV3X/b1CTfgPLGJNMeAWxdPfU8FO1ms3NUfaHCPYg==
+
 get-symbol-description@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/get-symbol-description/-/get-symbol-description-1.0.0.tgz#7fdb81c900101fbd564dd5f1a30af5aadc1e58d6"
@@ -5191,10 +5201,10 @@ globby@10.0.0:
     merge2 "^1.2.3"
     slash "^3.0.0"
 
-globby@11.0.2:
-  version "11.0.2"
-  resolved "https://registry.yarnpkg.com/globby/-/globby-11.0.2.tgz#1af538b766a3b540ebfb58a32b2e2d5897321d83"
-  integrity sha512-2ZThXDvvV8fYFRVIxnrMQBipZQDr7MxKAmQK1vujaj9/7eF0efG7BPUKJ7jP7G5SLF37xKDXvO4S/KKLj/Z0og==
+globby@11.0.4, globby@^11.0.1, globby@^11.0.3, globby@^11.0.4:
+  version "11.0.4"
+  resolved "https://registry.yarnpkg.com/globby/-/globby-11.0.4.tgz#2cbaff77c2f2a62e71e9b2813a67b97a3a3001a5"
+  integrity sha512-9O4MVG9ioZJ08ffbcyVYyLOJLk5JQ688pJ4eMGLpdWLHq/Wr1D9BlriLQyL0E+jbkuePVZXYFj47QM/v093wHg==
   dependencies:
     array-union "^2.1.0"
     dir-glob "^3.0.1"
@@ -5207,18 +5217,6 @@ globby@^11.0.0:
   version "11.0.0"
   resolved "https://registry.yarnpkg.com/globby/-/globby-11.0.0.tgz#56fd0e9f0d4f8fb0c456f1ab0dee96e1380bc154"
   integrity sha512-iuehFnR3xu5wBBtm4xi0dMe92Ob87ufyu/dHwpDYfbcpYpIbrO5OnS8M1vWvrBhSGEJ3/Ecj7gnX76P8YxpPEg==
-  dependencies:
-    array-union "^2.1.0"
-    dir-glob "^3.0.1"
-    fast-glob "^3.1.1"
-    ignore "^5.1.4"
-    merge2 "^1.3.0"
-    slash "^3.0.0"
-
-globby@^11.0.1, globby@^11.0.3, globby@^11.0.4:
-  version "11.0.4"
-  resolved "https://registry.yarnpkg.com/globby/-/globby-11.0.4.tgz#2cbaff77c2f2a62e71e9b2813a67b97a3a3001a5"
-  integrity sha512-9O4MVG9ioZJ08ffbcyVYyLOJLk5JQ688pJ4eMGLpdWLHq/Wr1D9BlriLQyL0E+jbkuePVZXYFj47QM/v093wHg==
   dependencies:
     array-union "^2.1.0"
     dir-glob "^3.0.1"
@@ -7459,7 +7457,7 @@ meow@^6.1.1:
     type-fest "^0.13.1"
     yargs-parser "^18.1.3"
 
-meow@^8.0.0:
+meow@^8.0.0, meow@^8.1.2:
   version "8.1.2"
   resolved "https://registry.yarnpkg.com/meow/-/meow-8.1.2.tgz#bcbe45bda0ee1729d350c03cffc8395a36c4e897"
   integrity sha512-r85E3NdZ+mpYk1C6RjPFEMSE+s1iZMuHtsHAqY0DT3jZczl0diWUZ8g6oU7h0M9cD2EL+PzaYghhCLzR0ZNn5Q==
@@ -7827,28 +7825,29 @@ ms@2.1.2, ms@^2.0.0, ms@^2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
-multi-semantic-release@^2.9.0:
-  version "2.9.0"
-  resolved "https://registry.yarnpkg.com/multi-semantic-release/-/multi-semantic-release-2.9.0.tgz#0681629bbc271029e4c62ab991a6c3ff19230149"
-  integrity sha512-W4cRrtYIF0XcNP7MndbNbGWO2HmZs8hskYf8Z/iQUtB275I39/zRe319ymQyzl9MHRySwIqcQVilGCrySwd45g==
+multi-semantic-release@^2.9.1:
+  version "2.9.1"
+  resolved "https://registry.yarnpkg.com/multi-semantic-release/-/multi-semantic-release-2.9.1.tgz#cca6dffdcccd0249b012b905a8a93be3fe629a31"
+  integrity sha512-9auvnTcenWwKYbZOoWrbVyIjPD9aHRsZvKbK8RaL83FxY/SOKStgkgheH80brfwsOBEBinJoLFRZ57yHQ8t7JQ==
   dependencies:
     "@manypkg/get-packages" "^1.1.1"
-    blork "^9.2.2"
-    cosmiconfig "^7.0.0"
-    debug "^4.3.1"
-    detect-indent "^6.0.0"
+    blork "^9.3.0"
+    cosmiconfig "^7.0.1"
+    debug "^4.3.2"
+    detect-indent "^6.1.0"
     detect-newline "^3.1.0"
     execa "^4.1.0"
-    get-stream "^6.0.0"
+    get-stream "^6.0.1"
     git-log-parser "^1.2.0"
-    globby "11.0.2"
+    globby "11.0.4"
     lodash "^4.17.21"
-    meow "^8.0.0"
-    promise-events "^0.2.1"
-    semantic-release "^17.3.0"
-    semver "^7.3.2"
+    meow "^8.1.2"
+    promise-events "^0.2.4"
+    semantic-release "^17.4.7"
+    semver "^7.3.5"
     signale "^1.4.0"
     stream-buffers "^3.0.2"
+    unixify "^1.0.0"
 
 multimatch@^5.0.0:
   version "5.0.0"
@@ -8057,6 +8056,13 @@ normalize-package-data@^3.0.2:
     is-core-module "^2.5.0"
     semver "^7.3.4"
     validate-npm-package-license "^3.0.1"
+
+normalize-path@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/normalize-path/-/normalize-path-2.1.1.tgz#1ab28b556e198363a8c1a6f7e6fa20137fe6aed9"
+  integrity sha1-GrKLVW4Zg2Oowab35vogE3/mrtk=
+  dependencies:
+    remove-trailing-separator "^1.0.1"
 
 normalize-path@^3.0.0, normalize-path@~3.0.0:
   version "3.0.0"
@@ -9458,10 +9464,10 @@ promise-call-limit@^1.0.1:
   resolved "https://registry.yarnpkg.com/promise-call-limit/-/promise-call-limit-1.0.1.tgz#4bdee03aeb85674385ca934da7114e9bcd3c6e24"
   integrity sha512-3+hgaa19jzCGLuSCbieeRsu5C2joKfYn8pY6JAuXFRVfF4IO+L7UPpFWNTeWT9pM7uhskvbPPd/oEOktCn317Q==
 
-promise-events@^0.2.1:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/promise-events/-/promise-events-0.2.2.tgz#56cc12152d09eba8f1502863071e5bd0ccd96c42"
-  integrity sha512-3eaRBMlofa/uWqb/brQREAJrbrGF+UoEYRJgDUBiE9ZaqVwhAWMU6t0wZBc3pIwzmT023ITNFaGR4PQ+wg1TAw==
+promise-events@^0.2.4:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/promise-events/-/promise-events-0.2.4.tgz#3b46508b2dfbd0b0fd349a404f65bf279fc483eb"
+  integrity sha512-GCM6DmJcSCC8XboZIzYJAlADwkIS1P54XFUJQYhB7dpE7rtXPzPrT13dsV4Qm0FMCKptwMTyF8ZCir803RfKzA==
 
 promise-inflight@^1.0.1, promise-inflight@~1.0.1:
   version "1.0.1"
@@ -9984,6 +9990,11 @@ remote-git-tags@^3.0.0:
   resolved "https://registry.yarnpkg.com/remote-git-tags/-/remote-git-tags-3.0.0.tgz#424f8ec2cdea00bb5af1784a49190f25e16983c3"
   integrity sha512-C9hAO4eoEsX+OXA4rla66pXZQ+TLQ8T9dttgQj18yuKlPMTVkIkdYXvlMC55IuUsIkV6DpmQYi10JKFLaU+l7w==
 
+remove-trailing-separator@^1.0.1:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/remove-trailing-separator/-/remove-trailing-separator-1.1.0.tgz#c24bce2a283adad5bc3f58e0d48249b92379d8ef"
+  integrity sha1-wkvOKig62tW8P1jg1IJJuSN52O8=
+
 repeat-element@^1.1.2:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/repeat-element/-/repeat-element-1.1.3.tgz#782e0d825c0c5a3bb39731f84efee6b742e6b1ce"
@@ -10252,10 +10263,10 @@ scss-parser@^1.0.4:
     invariant "2.2.4"
     lodash "^4.17.4"
 
-semantic-release@^17.3.0:
-  version "17.4.2"
-  resolved "https://registry.yarnpkg.com/semantic-release/-/semantic-release-17.4.2.tgz#b5147b5a629c227b7074ad4cc89920a14cb08c96"
-  integrity sha512-TPLWuoe2L2DmgnQEh+OLWW5V1T+ZAa1xWuHXsuPAWEko0BqSdLPl+5+BlQ+D5Bp27S5gDJ1//Y1tgbmvUhnOCw==
+semantic-release@^17.4.7:
+  version "17.4.7"
+  resolved "https://registry.yarnpkg.com/semantic-release/-/semantic-release-17.4.7.tgz#88e1dce7294cc43acc54c4e0a83f582264567206"
+  integrity sha512-3Ghu8mKCJgCG3QzE5xphkYWM19lGE3XjFdOXQIKBM2PBpBvgFQ/lXv31oX0+fuN/UjNFO/dqhNs8ATLBhg6zBg==
   dependencies:
     "@semantic-release/commit-analyzer" "^8.0.0"
     "@semantic-release/error" "^2.2.0"
@@ -10273,7 +10284,7 @@ semantic-release@^17.3.0:
     git-log-parser "^1.2.0"
     hook-std "^2.0.0"
     hosted-git-info "^4.0.0"
-    lodash "^4.17.15"
+    lodash "^4.17.21"
     marked "^2.0.0"
     marked-terminal "^4.1.1"
     micromatch "^4.0.2"
@@ -11747,6 +11758,13 @@ universalify@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/universalify/-/universalify-2.0.0.tgz#75a4984efedc4b08975c5aeb73f530d02df25717"
   integrity sha512-hAZsKq7Yy11Zu1DE0OzWjw7nnLZmJZYTDZZyEFHZdUhV8FkH5MCfoU1XMaxXovpyW5nq5scPqq0ZDP9Zyl04oQ==
+
+unixify@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/unixify/-/unixify-1.0.0.tgz#3a641c8c2ffbce4da683a5c70f03a462940c2090"
+  integrity sha1-OmQcjC/7zk2mg6XHDwOkYpQMIJA=
+  dependencies:
+    normalize-path "^2.1.1"
 
 unpipe@~1.0.0:
   version "1.0.0"
