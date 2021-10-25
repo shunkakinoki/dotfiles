@@ -1069,15 +1069,15 @@
     prettier-plugin-packagejson "^2.2.10"
     prettier-plugin-sort-json "^0.0.2"
 
-"@shunkakinoki/semantic-release@^1.2.7":
-  version "1.2.7"
-  resolved "https://registry.yarnpkg.com/@shunkakinoki/semantic-release/-/semantic-release-1.2.7.tgz#3304d78af7949552e75c6556dedecbe8afc520d4"
-  integrity sha512-A1AkriZitKoadq/63Ib0vx7bjnt9YGIIuZb1ScXCOubpikFLp7O8E05ws+KLPeIO7fN/q8CEz5QGYkGJlX7kVg==
+"@shunkakinoki/semantic-release@^1.2.8":
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/@shunkakinoki/semantic-release/-/semantic-release-1.2.8.tgz#46600b1dd33f8b7ccb2620838ab226f5de6ebc73"
+  integrity sha512-FRa0dRv/xoTHdyEZaPTVaggFM3fUFbGTTupqTC6VUKyh9seaS5tCD6ZOF4goP52SBLxshc4aDejMG1R4WrDZLw==
   dependencies:
     "@semantic-release/changelog" "^6.0.0"
     "@semantic-release/exec" "^6.0.1"
     "@semantic-release/git" "^10.0.0"
-    multi-semantic-release "^2.9.1"
+    multi-semantic-release "^2.9.2"
     semantic-release "^18.0.0"
 
 "@shunkakinoki/stylelint@^1.0.3":
@@ -7355,10 +7355,10 @@ ms@2.1.2, ms@^2.0.0, ms@^2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
-multi-semantic-release@^2.9.1:
-  version "2.9.1"
-  resolved "https://registry.yarnpkg.com/multi-semantic-release/-/multi-semantic-release-2.9.1.tgz#cca6dffdcccd0249b012b905a8a93be3fe629a31"
-  integrity sha512-9auvnTcenWwKYbZOoWrbVyIjPD9aHRsZvKbK8RaL83FxY/SOKStgkgheH80brfwsOBEBinJoLFRZ57yHQ8t7JQ==
+multi-semantic-release@^2.9.2:
+  version "2.9.2"
+  resolved "https://registry.yarnpkg.com/multi-semantic-release/-/multi-semantic-release-2.9.2.tgz#76494637550310be853bb4f3fba766280445d849"
+  integrity sha512-K1IbzAAO9S9trUYQt4r+3W5JEvgP0BgE1rGmKF1yKsprE4j3xkVSPy8gaPfRiLLLYAvnU+YWOaDj2FI2LASc7Q==
   dependencies:
     "@manypkg/get-packages" "^1.1.1"
     blork "^9.3.0"
