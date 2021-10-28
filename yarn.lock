@@ -1039,12 +1039,12 @@
     is-ci "^3.0.0"
     pinst "^2.1.6"
 
-"@shunkakinoki/lint-staged@^1.1.8":
-  version "1.1.8"
-  resolved "https://registry.yarnpkg.com/@shunkakinoki/lint-staged/-/lint-staged-1.1.8.tgz#5bf63175d92a06f23378f576c4f3d72529bbca8a"
-  integrity sha512-n4TjQlaJoPqp9zGdUioKiHiCZe72nk8z5bnkgj+lrniiAKxfJAkgBr1FHr/GQ2fEfBvlS7lyhwDyyxLwLpgm2A==
+"@shunkakinoki/lint-staged@^1.1.9":
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/@shunkakinoki/lint-staged/-/lint-staged-1.1.9.tgz#8013a75304aee985de22d31d224ed8557fda93ce"
+  integrity sha512-NVKSRpRrjoOcZLpCplU4U8I2hDHJWZseeq6oityja0fIOi/dhBDhysckUUG2gDoDzUBe+OHl+20B/s+rLVAPng==
   dependencies:
-    lint-staged "^11.2.4"
+    lint-staged "^11.2.6"
 
 "@shunkakinoki/npm-check-updates@^1.0.3":
   version "1.0.3"
@@ -6476,19 +6476,18 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.1.6.tgz#1c00c743b433cd0a4e80758f7b64a57440d9ff00"
   integrity sha1-HADHQ7QzzQpOgHWPe2SldEDZ/wA=
 
-lint-staged@^11.2.4:
-  version "11.2.4"
-  resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-11.2.4.tgz#29bc84e0318e6e9d4a7a043513236d066e39ee1d"
-  integrity sha512-aTUqcPDSV05EyKlMT4N5h7tmnevKfAxI3xZkRb+DHfmcFaoCxfxVvpqlLMCVGy3EYle9JYER2nA5zc4eNTkZVQ==
+lint-staged@^11.2.6:
+  version "11.2.6"
+  resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-11.2.6.tgz#f477b1af0294db054e5937f171679df63baa4c43"
+  integrity sha512-Vti55pUnpvPE0J9936lKl0ngVeTdSZpEdTNhASbkaWX7J5R9OEifo1INBGQuGW4zmy6OG+TcWPJ3m5yuy5Q8Tg==
   dependencies:
     cli-truncate "2.1.0"
     colorette "^1.4.0"
     commander "^8.2.0"
+    cosmiconfig "^7.0.1"
     debug "^4.3.2"
     enquirer "^2.3.6"
     execa "^5.1.1"
-    js-yaml "^4.1.0"
-    lilconfig "^2.0.3"
     listr2 "^3.12.2"
     micromatch "^4.0.4"
     normalize-path "^3.0.0"
