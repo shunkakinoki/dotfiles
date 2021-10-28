@@ -1,3 +1,9 @@
+## [3.21.52](https://github.com/shunkakinoki/dotfiles/compare/v3.21.51...v3.21.52) (2021-10-28)
+
+### Bug Fixes
+
+- **deps:** update dependency gatsby to ^4.0.2 ([b90d0ba](https://github.com/shunkakinoki/dotfiles/commit/b90d0ba23bc20f1241a9de6b13db3bcf1e567f7c))
+
 ## [3.21.51](https://github.com/shunkakinoki/dotfiles/compare/v3.21.50...v3.21.51) (2021-10-25)
 
 ### Bug Fixes
