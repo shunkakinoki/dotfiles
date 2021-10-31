@@ -40,9 +40,9 @@
     "release:semantic-release": "scripty"
   },
   "devDependencies": {
-    "@semantic-release/changelog": "^6.0.0",
-    "@semantic-release/exec": "^6.0.1",
-    "@semantic-release/git": "^10.0.0",
+    "@semantic-release/changelog": "^6.0.1",
+    "@semantic-release/exec": "^6.0.2",
+    "@semantic-release/git": "^10.0.1",
     "@shunkakinoki/commitlint": "^1.0.4",
     "@shunkakinoki/depcheck": "^1.0.1",
     "@shunkakinoki/dev": "^1.2.7",
