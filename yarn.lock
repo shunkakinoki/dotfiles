@@ -1105,14 +1105,14 @@
     prettier-plugin-packagejson "^2.2.10"
     prettier-plugin-sort-json "^0.0.2"
 
-"@shunkakinoki/semantic-release@^1.2.8":
-  version "1.2.8"
-  resolved "https://registry.yarnpkg.com/@shunkakinoki/semantic-release/-/semantic-release-1.2.8.tgz#46600b1dd33f8b7ccb2620838ab226f5de6ebc73"
-  integrity sha512-FRa0dRv/xoTHdyEZaPTVaggFM3fUFbGTTupqTC6VUKyh9seaS5tCD6ZOF4goP52SBLxshc4aDejMG1R4WrDZLw==
+"@shunkakinoki/semantic-release@^1.2.9":
+  version "1.2.9"
+  resolved "https://registry.yarnpkg.com/@shunkakinoki/semantic-release/-/semantic-release-1.2.9.tgz#996ffcc2648732191f7dda5c90ca67d6c78e1af6"
+  integrity sha512-y7C5YSuPA8IAy3urp5bCl8ShJjpf8BP6cTAqzD+p1T8S6dvKaTlR+ZFTInmpqKOCIHKzDf1FRP8UCwqM9q3/Kw==
   dependencies:
-    "@semantic-release/changelog" "^6.0.0"
-    "@semantic-release/exec" "^6.0.1"
-    "@semantic-release/git" "^10.0.0"
+    "@semantic-release/changelog" "^6.0.1"
+    "@semantic-release/exec" "^6.0.2"
+    "@semantic-release/git" "^10.0.1"
     multi-semantic-release "^2.9.2"
     semantic-release "^18.0.0"
 
