@@ -384,10 +384,10 @@
     globby "^11.0.0"
     read-yaml-file "^1.1.0"
 
-"@next/eslint-plugin-next@^12.0.1":
-  version "12.0.1"
-  resolved "https://registry.yarnpkg.com/@next/eslint-plugin-next/-/eslint-plugin-next-12.0.1.tgz#6e1c39143bdc79252e5601b4e5abfbd2cc8c26ad"
-  integrity sha512-E6xd3xvOp6Mfs2p1GcdCN5AYIbgCC6Z3LV31NaNEMACATu9GpQhMig3+Wp7b70gXbUeNUGizuGWTJNP+o9FT0g==
+"@next/eslint-plugin-next@^12.0.2":
+  version "12.0.2"
+  resolved "https://registry.yarnpkg.com/@next/eslint-plugin-next/-/eslint-plugin-next-12.0.2.tgz#9dd96fbae043cf967572d805f3054b9f0aaf5b3a"
+  integrity sha512-mmMlik6cuTkcHFi6CTdLeX0aPUceBi6gP3/k9dxjMjpiTBL5qXO+zwsGmGyg01MeeSC3tJpUEqOZVnxaFvKccA==
   dependencies:
     glob "7.1.7"
 
@@ -797,16 +797,6 @@
   dependencies:
     "@octokit/openapi-types" "^10.6.4"
 
-"@semantic-release/changelog@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/@semantic-release/changelog/-/changelog-6.0.0.tgz#b16636009bfbde9c09c6c1b89463af257d4a7142"
-  integrity sha512-X01Me+QVMykvILockNGlXXl3dgr1QqpbRQsknQoOJQCXQGXoqY3DNQ3rBQuI8/SUK7RZwYLctg0NbPNArlo6eQ==
-  dependencies:
-    "@semantic-release/error" "^2.1.0"
-    aggregate-error "^3.0.0"
-    fs-extra "^9.0.0"
-    lodash "^4.17.4"
-
 "@semantic-release/changelog@^6.0.1":
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/@semantic-release/changelog/-/changelog-6.0.1.tgz#8dd0334fd8c7d50cda747d2591e4f18f816b3c9c"
@@ -843,7 +833,7 @@
     lodash "^4.17.4"
     micromatch "^4.0.2"
 
-"@semantic-release/error@^2.1.0", "@semantic-release/error@^2.2.0":
+"@semantic-release/error@^2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@semantic-release/error/-/error-2.2.0.tgz#ee9d5a09c9969eade1ec864776aeda5c5cddbbf0"
   integrity sha512-9Tj/qn+y2j+sjCI3Jd+qseGtHjOAeg7dU2/lVcqIQ9TV3QDaDXDYXcoOHU+7o2Hwh8L8ymL4gfuO7KxDs3q2zg==
@@ -852,18 +842,6 @@
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@semantic-release/error/-/error-3.0.0.tgz#30a3b97bbb5844d695eb22f9d3aa40f6a92770c2"
   integrity sha512-5hiM4Un+tpl4cKw3lV4UgzJj+SmfNIDCLLw0TepzQxz9ZGV5ixnqkzIVF+3tp0ZHgcMKE+VNGHJjEeyFG2dcSw==
-
-"@semantic-release/exec@^6.0.1":
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/@semantic-release/exec/-/exec-6.0.1.tgz#6316f52ad786c7fafff5e1cbcfeeb7608501db78"
-  integrity sha512-RlMoxuhQ7QujrykIG5uw0NU6x82BR4E7ssKsl+ISCFhFHnvxxH+w4h4klWOs/cT/XEPJdoPFbBOVoruKtAwfDg==
-  dependencies:
-    "@semantic-release/error" "^2.1.0"
-    aggregate-error "^3.0.0"
-    debug "^4.0.0"
-    execa "^5.0.0"
-    lodash "^4.17.4"
-    parse-json "^5.0.0"
 
 "@semantic-release/exec@^6.0.2":
   version "6.0.2"
@@ -876,20 +854,6 @@
     execa "^5.0.0"
     lodash "^4.17.4"
     parse-json "^5.0.0"
-
-"@semantic-release/git@^10.0.0":
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/@semantic-release/git/-/git-10.0.0.tgz#41dda434e9c2fe222d030f12060e6f5a8696e7ba"
-  integrity sha512-/BljvngXJzwbFFJouxHHvSzAhi5iaucF7l0kQPszD4m7Y79+FHyvQl5Q/HK7T/e8MIwU9hz321KjOZn9yfSpPg==
-  dependencies:
-    "@semantic-release/error" "^2.1.0"
-    aggregate-error "^3.0.0"
-    debug "^4.0.0"
-    dir-glob "^3.0.0"
-    execa "^5.0.0"
-    lodash "^4.17.4"
-    micromatch "^4.0.0"
-    p-reduce "^2.0.0"
 
 "@semantic-release/git@^10.0.1":
   version "10.0.1"
@@ -1045,12 +1009,12 @@
     scripty "^2.0.0"
     sort-package-json "^1.52.0"
 
-"@shunkakinoki/eslint-config@^1.1.31":
-  version "1.1.31"
-  resolved "https://registry.yarnpkg.com/@shunkakinoki/eslint-config/-/eslint-config-1.1.31.tgz#a14252ecbf2f5b09534a09bdb7d260c7e5cbc35e"
-  integrity sha512-AXUHax4LU2h6oQdCnfFGuyKS7Wdi5ZfkzgWCgEO6Jtj+7kG+qGWHEqk5y8dV3sGVt9jJaHksShHYbAU7kFH9uA==
+"@shunkakinoki/eslint-config@^1.1.32":
+  version "1.1.32"
+  resolved "https://registry.yarnpkg.com/@shunkakinoki/eslint-config/-/eslint-config-1.1.32.tgz#f8d3d3333a99c6ed86a6b1f2a76612347165f623"
+  integrity sha512-P+Vux4PkBYHkYq0CIMMLnXHVGP8J5KZMJ8LhV0Ce6+IJijPSkumD7o8k9OghCahUNObCx4T2UBLwkCmTQfHaGg==
   dependencies:
-    "@next/eslint-plugin-next" "^12.0.1"
+    "@next/eslint-plugin-next" "^12.0.2"
     "@typescript-eslint/eslint-plugin" "^5.2.0"
     "@typescript-eslint/parser" "^5.2.0"
     eslint "^8.1.0"
