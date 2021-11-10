@@ -583,7 +583,7 @@
   dependencies:
     infer-owner "^1.0.4"
 
-"@npmcli/run-script@*":
+"@npmcli/run-script@*", "@npmcli/run-script@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@npmcli/run-script/-/run-script-2.0.0.tgz#9949c0cab415b17aaac279646db4f027d6f1e743"
   integrity sha512-fSan/Pu11xS/TdaTpTB0MRn9guwGU8dye+x56mEVgBEd/QsybBbYcAL0phPXi8SGWFEChkQd6M9qL4y6VOpFig==
@@ -1061,12 +1061,12 @@
   dependencies:
     lint-staged "^11.2.6"
 
-"@shunkakinoki/npm-check-updates@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@shunkakinoki/npm-check-updates/-/npm-check-updates-1.0.4.tgz#90c10362f7193e16497f80e9266ab82ba4785074"
-  integrity sha512-t1XVzZSLDnswrMJyqxFRmYRcn8gSX2eYe6A91qQPt2H7KLho2ekBgdBmnzVjtWD+TT8iqM1gX6+jS7GaIj/dyw==
+"@shunkakinoki/npm-check-updates@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@shunkakinoki/npm-check-updates/-/npm-check-updates-1.0.5.tgz#aa38454f82433ad61d036b3c6c34029fdf51ca5f"
+  integrity sha512-gm1kWcRr/7VyXTkl2AdLtQIZMu7cl2+O4X5SFqU+COzsZok0+FWDHW3ScBrs5WMCmYNG/YfrXQPLr0Mk04R/XQ==
   dependencies:
-    npm-check-updates "^12.0.0"
+    npm-check-updates "^12.0.2"
 
 "@shunkakinoki/npm-package-json-lint-config@^1.0.6":
   version "1.0.6"
@@ -5197,6 +5197,13 @@ ignore-walk@^3.0.1, ignore-walk@^3.0.3:
   dependencies:
     minimatch "^3.0.4"
 
+ignore-walk@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/ignore-walk/-/ignore-walk-4.0.1.tgz#fc840e8346cf88a3a9380c5b17933cd8f4d39fa3"
+  integrity sha512-rzDQLaW4jQbh2YrOFlJdCtX8qgJTehFRYiUB2r1osqTeDzV/3+Jh8fz1oAPzUThf3iku8Ds4IDqawI5d8mUiQw==
+  dependencies:
+    minimatch "^3.0.4"
+
 ignore@^4.0.6:
   version "4.0.6"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-4.0.6.tgz#750e3db5862087b4737ebac8207ffd1ef27b25fc"
@@ -7660,10 +7667,10 @@ npm-cache-filename@~1.0.2:
   resolved "https://registry.yarnpkg.com/npm-cache-filename/-/npm-cache-filename-1.0.2.tgz#ded306c5b0bfc870a9e9faf823bc5f283e05ae11"
   integrity sha1-3tMGxbC/yHCp6fr4I7xfKD4FrhE=
 
-npm-check-updates@^12.0.0:
-  version "12.0.0"
-  resolved "https://registry.yarnpkg.com/npm-check-updates/-/npm-check-updates-12.0.0.tgz#b4aac8de411dcc8a4584fcfda1a52e11a2433710"
-  integrity sha512-KkUu9W5BWE4JmNeuPEwDz5a5yBOoWSrWl4DbT1/jBm+ytpVzjO9NN2jAD0GydhHZV/Brgh4xgWtBiMZJi5dUxQ==
+npm-check-updates@^12.0.2:
+  version "12.0.2"
+  resolved "https://registry.yarnpkg.com/npm-check-updates/-/npm-check-updates-12.0.2.tgz#ab7d5a2415e35c44af3a751b3028d201d53e1790"
+  integrity sha512-VzMNuUXqRta1qpBkFiE0hKfpOGP2FbYwpBBTcJXoJWppOPBSi/paWFVhPVWf7PgRoDWegK+PDAWKhIvhyrBrIg==
   dependencies:
     chalk "^4.1.2"
     cint "^8.2.1"
@@ -7681,7 +7688,7 @@ npm-check-updates@^12.0.0:
     lodash "^4.17.21"
     minimatch "^3.0.4"
     p-map "^4.0.0"
-    pacote "^11.3.5"
+    pacote "^12.0.2"
     parse-github-url "^1.0.2"
     progress "^2.0.3"
     prompts "^2.4.2"
@@ -7690,7 +7697,7 @@ npm-check-updates@^12.0.0:
     rimraf "^3.0.2"
     semver "^7.3.5"
     semver-utils "^1.1.4"
-    source-map-support "^0.5.19"
+    source-map-support "^0.5.20"
     spawn-please "^1.0.0"
     update-notifier "^5.1.0"
 
@@ -7797,6 +7804,16 @@ npm-packlist@^2.1.4:
   dependencies:
     glob "^7.1.6"
     ignore-walk "^3.0.3"
+    npm-bundled "^1.1.1"
+    npm-normalize-package-bin "^1.0.1"
+
+npm-packlist@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/npm-packlist/-/npm-packlist-3.0.0.tgz#0370df5cfc2fcc8f79b8f42b37798dd9ee32c2a9"
+  integrity sha512-L/cbzmutAwII5glUcf2DBRNY/d0TFd4e/FnaZigJV6JD85RHZXJFGwCndjMWiiViiWSsWt3tiOLpI3ByTnIdFQ==
+  dependencies:
+    glob "^7.1.6"
+    ignore-walk "^4.0.1"
     npm-bundled "^1.1.1"
     npm-normalize-package-bin "^1.0.1"
 
@@ -8505,6 +8522,31 @@ pacote@*, pacote@^11.1.11, pacote@^11.2.6, pacote@^11.3.0, pacote@^11.3.1, pacot
     mkdirp "^1.0.3"
     npm-package-arg "^8.0.1"
     npm-packlist "^2.1.4"
+    npm-pick-manifest "^6.0.0"
+    npm-registry-fetch "^11.0.0"
+    promise-retry "^2.0.1"
+    read-package-json-fast "^2.0.1"
+    rimraf "^3.0.2"
+    ssri "^8.0.1"
+    tar "^6.1.0"
+
+pacote@^12.0.2:
+  version "12.0.2"
+  resolved "https://registry.yarnpkg.com/pacote/-/pacote-12.0.2.tgz#14ae30a81fe62ec4fc18c071150e6763e932527c"
+  integrity sha512-Ar3mhjcxhMzk+OVZ8pbnXdb0l8+pimvlsqBGRNkble2NVgyqOGE3yrCGi/lAYq7E7NRDMz89R1Wx5HIMCGgeYg==
+  dependencies:
+    "@npmcli/git" "^2.1.0"
+    "@npmcli/installed-package-contents" "^1.0.6"
+    "@npmcli/promise-spawn" "^1.2.0"
+    "@npmcli/run-script" "^2.0.0"
+    cacache "^15.0.5"
+    chownr "^2.0.0"
+    fs-minipass "^2.1.0"
+    infer-owner "^1.0.4"
+    minipass "^3.1.3"
+    mkdirp "^1.0.3"
+    npm-package-arg "^8.0.1"
+    npm-packlist "^3.0.0"
     npm-pick-manifest "^6.0.0"
     npm-registry-fetch "^11.0.0"
     promise-retry "^2.0.1"
@@ -10127,7 +10169,7 @@ source-map-resolve@^0.5.0:
     source-map-url "^0.4.0"
     urix "^0.1.0"
 
-source-map-support@^0.5.17, source-map-support@^0.5.19:
+source-map-support@^0.5.17, source-map-support@^0.5.20:
   version "0.5.20"
   resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.20.tgz#12166089f8f5e5e8c56926b377633392dd2cb6c9"
   integrity sha512-n1lZZ8Ve4ksRqizaBQgxXDgKwttHDhyfQjA6YZZn8+AroHbsIz+JjwxQDxbp+7y5OYCI8t1Yk7etjD9CRd2hIw==
