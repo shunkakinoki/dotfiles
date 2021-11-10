@@ -1,3 +1,10 @@
+## [3.21.57](https://github.com/shunkakinoki/dotfiles/compare/v3.21.56...v3.21.57) (2021-11-10)
+
+### Bug Fixes
+
+- **deps:** update dependency gatsby to ^4.1.2 ([2e2c6fe](https://github.com/shunkakinoki/dotfiles/commit/2e2c6fe82b7b7478bcfbd3713cdfd0c88e011e15))
+- **deps:** update dependency serverless to ^2.66.0 ([2438fc5](https://github.com/shunkakinoki/dotfiles/commit/2438fc50211655fa66bbd1b61f0afc5b22700ecd))
+
 ## [3.21.56](https://github.com/shunkakinoki/dotfiles/compare/v3.21.55...v3.21.56) (2021-11-07)
 
 ### Bug Fixes
