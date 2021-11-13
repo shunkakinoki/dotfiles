@@ -48,7 +48,7 @@
     "@shunkakinoki/dev": "^1.2.8",
     "@shunkakinoki/eslint-config": "^1.1.40",
     "@shunkakinoki/husky": "^1.0.6",
-    "@shunkakinoki/lint-staged": "^1.1.10",
+    "@shunkakinoki/lint-staged": "^1.1.11",
     "@shunkakinoki/npm-check-updates": "^1.0.5",
     "@shunkakinoki/npm-package-json-lint-config": "^1.0.6",
     "@shunkakinoki/prettier": "^1.0.0",
