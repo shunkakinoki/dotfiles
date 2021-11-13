@@ -1021,15 +1021,15 @@
   dependencies:
     depcheck "^1.4.2"
 
-"@shunkakinoki/dev@^1.2.7":
-  version "1.2.7"
-  resolved "https://registry.yarnpkg.com/@shunkakinoki/dev/-/dev-1.2.7.tgz#fdab9a0e1e8e73441729335e478afcc088a4f149"
-  integrity sha512-lm/bE6Tivi/eVR34uaiCTmeei/e1w5uvIo0AfXzCTxX5trNU8SMO6NmiN41EELYcyGgu1H9q2eST6N87nRxrXg==
+"@shunkakinoki/dev@^1.2.8":
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/@shunkakinoki/dev/-/dev-1.2.8.tgz#4f5c28238d15532efaab7a2eeb039ce174cdabc3"
+  integrity sha512-xMM/FxajdS4zTLrD7DwqwD0NQTlwmSSPbIzLjd9khB6tMMAKPOmxy7ZoffxEgjQpklDXKb2iWfsqaTGVwlLtAQ==
   dependencies:
-    concurrently "^6.3.0"
+    concurrently "^6.4.0"
     cross-env "^7.0.3"
     scripty "^2.0.0"
-    sort-package-json "^1.52.0"
+    sort-package-json "^1.53.1"
 
 "@shunkakinoki/eslint-config@^1.1.40":
   version "1.1.40"
@@ -2749,10 +2749,10 @@ concat-stream@^1.5.0:
     readable-stream "^2.2.2"
     typedarray "^0.0.6"
 
-concurrently@^6.3.0:
-  version "6.3.0"
-  resolved "https://registry.yarnpkg.com/concurrently/-/concurrently-6.3.0.tgz#63128cb4a6ed54d3c0ed8528728590a5fe54582a"
-  integrity sha512-k4k1jQGHHKsfbqzkUszVf29qECBrkvBKkcPJEUDTyVR7tZd1G/JOfnst4g1sYbFvJ4UjHZisj1aWQR8yLKpGPw==
+concurrently@^6.4.0:
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/concurrently/-/concurrently-6.4.0.tgz#5387ee86be435a0eb51c292ade8a00acf479f170"
+  integrity sha512-HZ3D0RTQMH3oS4gvtYj1P+NBc6PzE2McEra6yEFcQKrUQ9HvtTGU4Dbne083F034p+LRb7kWU0tPRNvSGs1UCQ==
   dependencies:
     chalk "^4.1.0"
     date-fns "^2.16.1"
@@ -10145,10 +10145,10 @@ sort-package-json@1.49.0:
     is-plain-obj "2.1.0"
     sort-object-keys "^1.1.3"
 
-sort-package-json@^1.52.0:
-  version "1.52.0"
-  resolved "https://registry.yarnpkg.com/sort-package-json/-/sort-package-json-1.52.0.tgz#f960fe7cfae3120a4ce1b9eed7e010ac4bec998e"
-  integrity sha512-TsKDXgH3kPsaSrjAszQgg+n2/FDYdPrBrXD4YxMxExpogsi8LCek0YzK/jZ70i5Gi53WcpV+mVzvb5CHB5LpZw==
+sort-package-json@^1.53.1:
+  version "1.53.1"
+  resolved "https://registry.yarnpkg.com/sort-package-json/-/sort-package-json-1.53.1.tgz#8f2672b06314cf04d9a6bcefc75a5f38d600b811"
+  integrity sha512-ltLORrQuuPMpy23YkWCA8fO7zBOxM4P1j9LcGxci4K2Fk8jmSyCA/ATU6CFyy8qR2HQRx4RBYWzoi78FU/Anuw==
   dependencies:
     detect-indent "^6.0.0"
     detect-newline "3.1.0"
