@@ -1,3 +1,10 @@
+## [3.21.60](https://github.com/shunkakinoki/dotfiles/compare/v3.21.59...v3.21.60) (2021-11-13)
+
+### Bug Fixes
+
+- **deps:** update dependency gatsby to ^4.1.4 ([5032abf](https://github.com/shunkakinoki/dotfiles/commit/5032abf2f1dd8a38f2f8a71fb848205cb61f970b))
+- **deps:** update dependency truffle to ^5.4.19 ([d7c9ac2](https://github.com/shunkakinoki/dotfiles/commit/d7c9ac25ca87fc25a3b30083d6f02461fd8c64e9))
+
 ## [3.21.59](https://github.com/shunkakinoki/dotfiles/compare/v3.21.58...v3.21.59) (2021-11-10)
 
 ### Bug Fixes
