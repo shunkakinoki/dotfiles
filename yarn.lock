@@ -137,6 +137,11 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
+"@changesets/types@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@changesets/types/-/types-4.0.1.tgz#85cf3cc32baff0691112d9d15fc21fbe022c9f0a"
+  integrity sha512-zVfv752D8K2tjyFmxU/vnntQ+dPu+9NupOSguA/2Zuym4tVxRh0ylArgKZ1bOAi2eXfGlZMxJU/kj7uCSI15RQ==
+
 "@commitlint/cli@^15.0.0":
   version "15.0.0"
   resolved "https://registry.yarnpkg.com/@commitlint/cli/-/cli-15.0.0.tgz#8e78e86ee2b6955c1a5d140e734a6c171ce367ee"
@@ -395,12 +400,13 @@
     find-up "^4.1.0"
     fs-extra "^8.1.0"
 
-"@manypkg/get-packages@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@manypkg/get-packages/-/get-packages-1.1.1.tgz#7c7e72d0061ab2e61d2ce4da58ce91290a60ac8d"
-  integrity sha512-J6VClfQSVgR6958eIDTGjfdCrELy1eT+SHeoSMomnvRQVktZMnEA5edIr5ovRFNw5y+Bk/jyoevPzGYod96mhw==
+"@manypkg/get-packages@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@manypkg/get-packages/-/get-packages-1.1.3.tgz#e184db9bba792fa4693de4658cfb1463ac2c9c47"
+  integrity sha512-fo+QhuU3qE/2TQMQmbVMqaQ6EWbMhi4ABWP+O4AM1NqPBuy0OrApV5LO6BrrgnhtAHS2NH6RrVk9OL181tTi8A==
   dependencies:
     "@babel/runtime" "^7.5.5"
+    "@changesets/types" "^4.0.1"
     "@manypkg/find-root" "^1.1.0"
     fs-extra "^8.1.0"
     globby "^11.0.0"
@@ -1091,15 +1097,15 @@
     prettier-plugin-packagejson "^2.2.10"
     prettier-plugin-sort-json "^0.0.2"
 
-"@shunkakinoki/semantic-release@^1.2.10":
-  version "1.2.10"
-  resolved "https://registry.yarnpkg.com/@shunkakinoki/semantic-release/-/semantic-release-1.2.10.tgz#d06ee6079f24b448331e9c0687038d4c1f6086c5"
-  integrity sha512-AFtRwjYlVRhvaNnsuDnc6R+ZPkI8JU89IVn6ZeFAjfDcU33H6gU9YEjh6pwMF526xZRk8l9viuqtURxHZeGFjw==
+"@shunkakinoki/semantic-release@^1.2.11":
+  version "1.2.11"
+  resolved "https://registry.yarnpkg.com/@shunkakinoki/semantic-release/-/semantic-release-1.2.11.tgz#d8b4af1ecb2f862f24771f590201aa3b59ff0a17"
+  integrity sha512-lE6hE1/x/7+7UKDbeuASDirsR9OlyTvD5zUdjCZJPd0qf2J5y18diJ7W5eLVnUAJ+hi4x+8Kvsu+9eruXTycUg==
   dependencies:
     "@semantic-release/changelog" "^6.0.1"
     "@semantic-release/exec" "^6.0.2"
     "@semantic-release/git" "^10.0.1"
-    multi-semantic-release "^2.10.0"
+    multi-semantic-release "^2.11.0"
     semantic-release "^18.0.0"
 
 "@shunkakinoki/stylelint@^1.0.6":
@@ -7426,12 +7432,12 @@ ms@2.1.2, ms@^2.0.0, ms@^2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
-multi-semantic-release@^2.10.0:
-  version "2.10.0"
-  resolved "https://registry.yarnpkg.com/multi-semantic-release/-/multi-semantic-release-2.10.0.tgz#a12708a35e04e1d48963d1c64a609150f3a0248f"
-  integrity sha512-ecpfH/7wHWPdWfhsKXQiEsNCGbfAFyEFPYX3uptUqfDtpR1tNB/XwHHJiOKmXpnSfR2z9Ney3eUcazl49s9qSw==
+multi-semantic-release@^2.11.0:
+  version "2.11.0"
+  resolved "https://registry.yarnpkg.com/multi-semantic-release/-/multi-semantic-release-2.11.0.tgz#7d03a31356a78fb5122ac95fd94d11e159814815"
+  integrity sha512-HJsoye+fVMX5CIfhjHiBtq2vQ0BkzkVxliyQPxUl2L8nIPcwHOHwZ04BPgCsbvcfUQ/C03VULmcozE81CJZnFQ==
   dependencies:
-    "@manypkg/get-packages" "^1.1.1"
+    "@manypkg/get-packages" "^1.1.3"
     blork "^9.3.0"
     cosmiconfig "^7.0.1"
     debug "^4.3.2"
