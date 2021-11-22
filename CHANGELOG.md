@@ -1,3 +1,9 @@
+## [3.21.65](https://github.com/shunkakinoki/dotfiles/compare/v3.21.64...v3.21.65) (2021-11-22)
+
+### Bug Fixes
+
+- **deps:** update dependency speed-test to v3 ([64fcb87](https://github.com/shunkakinoki/dotfiles/commit/64fcb87c5a912d5d41fceb9009702e463bbfd3d4))
+
 ## [3.21.64](https://github.com/shunkakinoki/dotfiles/compare/v3.21.63...v3.21.64) (2021-11-19)
 
 ### Bug Fixes
