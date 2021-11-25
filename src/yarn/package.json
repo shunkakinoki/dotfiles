@@ -24,7 +24,7 @@
     "jshint": "^2.13.1",
     "lerna-update-wizard": "^1.1.0",
     "now": "^20.1.4",
-    "prettier": "^2.4.1",
+    "prettier": "^2.5.0",
     "serverless": "^2.66.2",
     "speed-test": "^3.0.0",
     "spoof": "^2.0.4",
