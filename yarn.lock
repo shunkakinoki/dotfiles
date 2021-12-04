@@ -426,10 +426,10 @@
     globby "^11.0.0"
     read-yaml-file "^1.1.0"
 
-"@next/eslint-plugin-next@^12.0.5":
-  version "12.0.5"
-  resolved "https://registry.yarnpkg.com/@next/eslint-plugin-next/-/eslint-plugin-next-12.0.5.tgz#e947bfefb2fdbc7dc4ef8999f045e76a3952e083"
-  integrity sha512-QtVItE57yBLzcPZ7lWWV3VVzUduVPmKfmro+3a7tAqV0aHRAw3GiZaUy/NlVyLmMHsyPfF6C+fVqcQ1d/tGnIg==
+"@next/eslint-plugin-next@^12.0.6":
+  version "12.0.6"
+  resolved "https://registry.yarnpkg.com/@next/eslint-plugin-next/-/eslint-plugin-next-12.0.6.tgz#46a9fd780ac85e0de190b73532f06e1e8e7bb987"
+  integrity sha512-MIBjPTlql+l9LTTse5HHhxAiFFpQG6FsQ46wQ2WDJFKjg7adE7DcbzUOpKPdkvgoK+RT/kJS23M3axSSEzKNYw==
   dependencies:
     glob "7.1.7"
 
@@ -1051,12 +1051,12 @@
     scripty "^2.0.0"
     sort-package-json "^1.53.1"
 
-"@shunkakinoki/eslint-config@^1.1.48":
-  version "1.1.48"
-  resolved "https://registry.yarnpkg.com/@shunkakinoki/eslint-config/-/eslint-config-1.1.48.tgz#aaf7a68e4dc559d21e5b7e5fd21f2b232c47d81f"
-  integrity sha512-8xojJfEtebBcPvQhZwNLDU73Fyrl+tttkn3hxjLvI5S+z65qrK3ONx15OaNS2yWNvVzGvRkcyDpKZPaBwph6Lg==
+"@shunkakinoki/eslint-config@^1.1.49":
+  version "1.1.49"
+  resolved "https://registry.yarnpkg.com/@shunkakinoki/eslint-config/-/eslint-config-1.1.49.tgz#8c7febfd0556217513367a9aeac9e8f8a03cf9f5"
+  integrity sha512-u42xfN8g+UI/7V+JsLsK/9cm8ZZixLTKQNEHwAWpQEw2RvUmsIYpCklyo1cHaUFVy5yDxSawsOV+SG9yFRmbjw==
   dependencies:
-    "@next/eslint-plugin-next" "^12.0.5"
+    "@next/eslint-plugin-next" "^12.0.6"
     "@typescript-eslint/eslint-plugin" "^5.5.0"
     "@typescript-eslint/parser" "^5.5.0"
     eslint "^8.4.0"
