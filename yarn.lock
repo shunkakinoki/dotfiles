@@ -1088,12 +1088,12 @@
   dependencies:
     lint-staged "^12.1.2"
 
-"@shunkakinoki/npm-check-updates@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@shunkakinoki/npm-check-updates/-/npm-check-updates-1.0.5.tgz#aa38454f82433ad61d036b3c6c34029fdf51ca5f"
-  integrity sha512-gm1kWcRr/7VyXTkl2AdLtQIZMu7cl2+O4X5SFqU+COzsZok0+FWDHW3ScBrs5WMCmYNG/YfrXQPLr0Mk04R/XQ==
+"@shunkakinoki/npm-check-updates@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@shunkakinoki/npm-check-updates/-/npm-check-updates-1.0.6.tgz#95330b6e92afd46098c1a23b84153b49a087b9a3"
+  integrity sha512-DR0M6kNUiWItcbI8TLqWzniXx0RvnSA6LUAmaOZERlqAxqPGkR4jIwcDszeBlL8XwoQBN/CUyyWAKXSrmrsJqA==
   dependencies:
-    npm-check-updates "^12.0.2"
+    npm-check-updates "^12.0.3"
 
 "@shunkakinoki/npm-package-json-lint-config@^1.0.7":
   version "1.0.7"
@@ -2505,10 +2505,10 @@ cli-table@^0.3.1:
   dependencies:
     colors "1.0.3"
 
-cli-table@^0.3.6:
-  version "0.3.6"
-  resolved "https://registry.yarnpkg.com/cli-table/-/cli-table-0.3.6.tgz#e9d6aa859c7fe636981fd3787378c2a20bce92fc"
-  integrity sha512-ZkNZbnZjKERTY5NwC2SeMeLeifSPq/pubeRoTpdr3WchLlnZg6hEgvHkK5zL7KNFdd9PmHN8lxrENUwI3cE8vQ==
+cli-table@^0.3.11:
+  version "0.3.11"
+  resolved "https://registry.yarnpkg.com/cli-table/-/cli-table-0.3.11.tgz#ac69cdecbe81dccdba4889b9a18b7da312a9d3ee"
+  integrity sha512-IqLQi4lO0nIB4tcdTpN4LCB9FI3uqrJZK7RC515EnhZ6qBaglkIgICb1wjeAqpdoOabm1+SuQtkXIPdYC93jhQ==
   dependencies:
     colors "1.0.3"
 
@@ -2697,7 +2697,7 @@ commander@^2.19.0, commander@~2.20.3:
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
   integrity sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
 
-commander@^6.0.0, commander@^6.2.1:
+commander@^6.0.0:
   version "6.2.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-6.2.1.tgz#0792eb682dfbc325999bb2b84fddddba110ac73c"
   integrity sha512-U7VdrJFnJgo4xjrHpTzu0yrHPGImdsmD95ZlgYSEajAn2JKzDhDTPG9kBTefmObL2w/ngeZnilk+OV9CG3d7UA==
@@ -7782,15 +7782,15 @@ npm-cache-filename@~1.0.2:
   resolved "https://registry.yarnpkg.com/npm-cache-filename/-/npm-cache-filename-1.0.2.tgz#ded306c5b0bfc870a9e9faf823bc5f283e05ae11"
   integrity sha1-3tMGxbC/yHCp6fr4I7xfKD4FrhE=
 
-npm-check-updates@^12.0.2:
-  version "12.0.2"
-  resolved "https://registry.yarnpkg.com/npm-check-updates/-/npm-check-updates-12.0.2.tgz#ab7d5a2415e35c44af3a751b3028d201d53e1790"
-  integrity sha512-VzMNuUXqRta1qpBkFiE0hKfpOGP2FbYwpBBTcJXoJWppOPBSi/paWFVhPVWf7PgRoDWegK+PDAWKhIvhyrBrIg==
+npm-check-updates@^12.0.3:
+  version "12.0.3"
+  resolved "https://registry.yarnpkg.com/npm-check-updates/-/npm-check-updates-12.0.3.tgz#860f8c20e4d05780929a0daa8ac52e006b878440"
+  integrity sha512-MTHzkDZY1ebhPaDvzWOU9bt4UYdHmY4tIcMCaZjgguGKUgwqokH/aB0Nrc4WcZ4rD491Spuj5DILo/RvKAefvw==
   dependencies:
     chalk "^4.1.2"
     cint "^8.2.1"
-    cli-table "^0.3.6"
-    commander "^6.2.1"
+    cli-table "^0.3.11"
+    commander "^8.3.0"
     fast-memoize "^2.5.2"
     find-up "5.0.0"
     fp-and-or "^0.1.3"
@@ -7812,7 +7812,7 @@ npm-check-updates@^12.0.2:
     rimraf "^3.0.2"
     semver "^7.3.5"
     semver-utils "^1.1.4"
-    source-map-support "^0.5.20"
+    source-map-support "^0.5.21"
     spawn-please "^1.0.0"
     update-notifier "^5.1.0"
 
@@ -10289,10 +10289,18 @@ source-map-resolve@^0.5.0:
     source-map-url "^0.4.0"
     urix "^0.1.0"
 
-source-map-support@^0.5.17, source-map-support@^0.5.20:
+source-map-support@^0.5.17:
   version "0.5.20"
   resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.20.tgz#12166089f8f5e5e8c56926b377633392dd2cb6c9"
   integrity sha512-n1lZZ8Ve4ksRqizaBQgxXDgKwttHDhyfQjA6YZZn8+AroHbsIz+JjwxQDxbp+7y5OYCI8t1Yk7etjD9CRd2hIw==
+  dependencies:
+    buffer-from "^1.0.0"
+    source-map "^0.6.0"
+
+source-map-support@^0.5.21:
+  version "0.5.21"
+  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.21.tgz#04fe7c7f9e1ed2d662233c28cb2b35b9f63f6e4f"
+  integrity sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w==
   dependencies:
     buffer-from "^1.0.0"
     source-map "^0.6.0"
