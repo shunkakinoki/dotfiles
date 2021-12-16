@@ -1100,12 +1100,12 @@
   dependencies:
     lint-staged "^12.1.2"
 
-"@shunkakinoki/npm-check-updates@^1.0.6":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@shunkakinoki/npm-check-updates/-/npm-check-updates-1.0.6.tgz#95330b6e92afd46098c1a23b84153b49a087b9a3"
-  integrity sha512-DR0M6kNUiWItcbI8TLqWzniXx0RvnSA6LUAmaOZERlqAxqPGkR4jIwcDszeBlL8XwoQBN/CUyyWAKXSrmrsJqA==
+"@shunkakinoki/npm-check-updates@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@shunkakinoki/npm-check-updates/-/npm-check-updates-1.0.7.tgz#00fd8d3e53d2188569cf586fd877b07f8d0b90b7"
+  integrity sha512-p6CwObnWbgXl1wlq1yihFpPiuM6/5orTc6GVtt07HPB6xIXdSrV9V/ZQ9CIrIDJjqaXrp1z4pIZKXoRKrjQRQg==
   dependencies:
-    npm-check-updates "^12.0.3"
+    npm-check-updates "^12.0.5"
 
 "@shunkakinoki/npm-package-json-lint-config@^1.0.7":
   version "1.0.7"
@@ -7794,10 +7794,10 @@ npm-cache-filename@~1.0.2:
   resolved "https://registry.yarnpkg.com/npm-cache-filename/-/npm-cache-filename-1.0.2.tgz#ded306c5b0bfc870a9e9faf823bc5f283e05ae11"
   integrity sha1-3tMGxbC/yHCp6fr4I7xfKD4FrhE=
 
-npm-check-updates@^12.0.3:
-  version "12.0.3"
-  resolved "https://registry.yarnpkg.com/npm-check-updates/-/npm-check-updates-12.0.3.tgz#860f8c20e4d05780929a0daa8ac52e006b878440"
-  integrity sha512-MTHzkDZY1ebhPaDvzWOU9bt4UYdHmY4tIcMCaZjgguGKUgwqokH/aB0Nrc4WcZ4rD491Spuj5DILo/RvKAefvw==
+npm-check-updates@^12.0.5:
+  version "12.0.5"
+  resolved "https://registry.yarnpkg.com/npm-check-updates/-/npm-check-updates-12.0.5.tgz#bd5606b4a645e5edfc31cc7a1c93e60dd3e14b9a"
+  integrity sha512-ns1liBBogwjmOVZY/PYgeIoarItwdOSBxccJDZKKkxsMkXges/Bp5CAnQIvYwlsz6fByQJFvqXSOqwIUBY6gpQ==
   dependencies:
     chalk "^4.1.2"
     cint "^8.2.1"
