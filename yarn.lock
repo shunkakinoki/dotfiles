@@ -897,6 +897,18 @@
     lodash "^4.17.4"
     parse-json "^5.0.0"
 
+"@semantic-release/exec@^6.0.3":
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/@semantic-release/exec/-/exec-6.0.3.tgz#d212fdf19633bdfb553de6cb6c7f8781933224db"
+  integrity sha512-bxAq8vLOw76aV89vxxICecEa8jfaWwYITw6X74zzlO0mc/Bgieqx9kBRz9z96pHectiTAtsCwsQcUyLYWnp3VQ==
+  dependencies:
+    "@semantic-release/error" "^3.0.0"
+    aggregate-error "^3.0.0"
+    debug "^4.0.0"
+    execa "^5.0.0"
+    lodash "^4.17.4"
+    parse-json "^5.0.0"
+
 "@semantic-release/git@^10.0.1":
   version "10.0.1"
   resolved "https://registry.yarnpkg.com/@semantic-release/git/-/git-10.0.1.tgz#c646e55d67fae623875bf3a06a634dd434904498"
@@ -1111,13 +1123,13 @@
     prettier-plugin-packagejson "^2.2.10"
     prettier-plugin-sort-json "^0.0.2"
 
-"@shunkakinoki/semantic-release@^1.2.12":
-  version "1.2.12"
-  resolved "https://registry.yarnpkg.com/@shunkakinoki/semantic-release/-/semantic-release-1.2.12.tgz#47ab281d5e1815b7c4dab50d53c7e37619401c20"
-  integrity sha512-U4SFcUJQBUJwAXfJiZ/+wV509+hv1I9PL/SHDcIyeNuxwhPpgCNxh3ptNZAPQndO/YtqVQxrpnx4j8jEq41wuA==
+"@shunkakinoki/semantic-release@^1.2.13":
+  version "1.2.13"
+  resolved "https://registry.yarnpkg.com/@shunkakinoki/semantic-release/-/semantic-release-1.2.13.tgz#f4d9424a1ca08eebc00501f1f2091b76e55b8cfe"
+  integrity sha512-ipaMJk2tAaPYAoa5jWUF1MRZk/MCXnwO668qOCxJPMGqgMgV2Jjk7mL8GWm1oIszcSMsOMVKKebKlGIbLz8uNg==
   dependencies:
     "@semantic-release/changelog" "^6.0.1"
-    "@semantic-release/exec" "^6.0.2"
+    "@semantic-release/exec" "^6.0.3"
     "@semantic-release/git" "^10.0.1"
     multi-semantic-release "^2.11.0"
     semantic-release "^18.0.1"
