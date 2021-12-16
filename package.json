@@ -54,7 +54,7 @@
     "@shunkakinoki/prettier": "^1.0.0",
     "@shunkakinoki/semantic-release": "^1.2.12",
     "@shunkakinoki/stylelint": "^1.0.6",
-    "@shunkakinoki/tsconfig": "^1.1.5"
+    "@shunkakinoki/tsconfig": "^1.1.6"
   },
   "npmpackagejsonlint": {
     "extends": "@shunkakinoki/npm-package-json-lint-config"
