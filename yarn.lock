@@ -1051,10 +1051,10 @@
     scripty "^2.0.0"
     sort-package-json "^1.53.1"
 
-"@shunkakinoki/eslint-config@^1.1.55":
-  version "1.1.55"
-  resolved "https://registry.yarnpkg.com/@shunkakinoki/eslint-config/-/eslint-config-1.1.55.tgz#e6111c5853420329b7d6a84b9c2345286c2bedeb"
-  integrity sha512-tAd36WDwtZktNaCoOJxnCxxd8A93IoPIoUqLnx8xRpBZpJ0xWNlvwhj09ZetLzYVI2jQpCinLLLQB7G+XFtezg==
+"@shunkakinoki/eslint-config@^1.1.56":
+  version "1.1.56"
+  resolved "https://registry.yarnpkg.com/@shunkakinoki/eslint-config/-/eslint-config-1.1.56.tgz#0c7760625a03c449e1baed6e88e84a6cb5ea7c6b"
+  integrity sha512-Ie7+FFplcre7Bi6Lf0XRCKlmctZPremo0HM78WEhGvbYs6qf6fAbe44vRiijG+IUEfkjA6sjUlrrcy8WGyv3vg==
   dependencies:
     "@next/eslint-plugin-next" "^12.0.7"
     "@typescript-eslint/eslint-plugin" "^5.8.0"
@@ -1066,7 +1066,7 @@
     eslint-plugin-import "^2.25.3"
     eslint-plugin-jsx-a11y "^6.5.1"
     eslint-plugin-prettier "^4.0.0"
-    eslint-plugin-react "^7.27.1"
+    eslint-plugin-react "^7.28.0"
     eslint-plugin-react-hooks "^4.3.0"
     eslint-plugin-tailwindcss "^1.17.2"
 
@@ -3846,10 +3846,10 @@ eslint-plugin-react-hooks@^4.3.0:
   resolved "https://registry.yarnpkg.com/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-4.3.0.tgz#318dbf312e06fab1c835a4abef00121751ac1172"
   integrity sha512-XslZy0LnMn+84NEG9jSGR6eGqaZB3133L8xewQo3fQagbQuGt7a63gf+P1NGKZavEYEC3UXaWEAA/AqDkuN6xA==
 
-eslint-plugin-react@^7.27.1:
-  version "7.27.1"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-7.27.1.tgz#469202442506616f77a854d91babaae1ec174b45"
-  integrity sha512-meyunDjMMYeWr/4EBLTV1op3iSG3mjT/pz5gti38UzfM4OPpNc2m0t2xvKCOMU5D6FSdd34BIMFOvQbW+i8GAA==
+eslint-plugin-react@^7.28.0:
+  version "7.28.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-7.28.0.tgz#8f3ff450677571a659ce76efc6d80b6a525adbdf"
+  integrity sha512-IOlFIRHzWfEQQKcAD4iyYDndHwTQiCMcJVJjxempf203jnNLUnW34AXLrV33+nEXoifJE2ZEGmcjKPL8957eSw==
   dependencies:
     array-includes "^3.1.4"
     array.prototype.flatmap "^1.2.5"
