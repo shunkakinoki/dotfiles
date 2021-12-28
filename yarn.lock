@@ -1057,10 +1057,10 @@
     scripty "^2.0.0"
     sort-package-json "^1.53.1"
 
-"@shunkakinoki/eslint-config@^1.1.57":
-  version "1.1.57"
-  resolved "https://registry.yarnpkg.com/@shunkakinoki/eslint-config/-/eslint-config-1.1.57.tgz#46221e29653343da67bcd35875f584f52d13c6ee"
-  integrity sha512-UXF4rwqTcRtDn6aqebTaOE/S1hBtMfwQRyzngNq5Y00Ai3yD80IUC2qO0W7cEpzeiwVwh9rPfdIk7jFqSSMxkg==
+"@shunkakinoki/eslint-config@^1.1.58":
+  version "1.1.58"
+  resolved "https://registry.yarnpkg.com/@shunkakinoki/eslint-config/-/eslint-config-1.1.58.tgz#05d1885928a3c05ba1a8a6967da4b7d171e92349"
+  integrity sha512-f9HHsQ8c03l4dvydbUlLNijCouLle0l/Ghrs9y/t3YWhrV+84rhnTsihHBWIH98hNI9adUobDD1RJE5YYL20oA==
   dependencies:
     "@next/eslint-plugin-next" "^12.0.7"
     "@typescript-eslint/eslint-plugin" "^5.8.1"
@@ -1074,7 +1074,7 @@
     eslint-plugin-prettier "^4.0.0"
     eslint-plugin-react "^7.28.0"
     eslint-plugin-react-hooks "^4.3.0"
-    eslint-plugin-tailwindcss "^3.0.0"
+    eslint-plugin-tailwindcss "^3.0.1"
 
 "@shunkakinoki/husky@^1.0.6":
   version "1.0.6"
@@ -3871,14 +3871,14 @@ eslint-plugin-react@^7.28.0:
     semver "^6.3.0"
     string.prototype.matchall "^4.0.6"
 
-eslint-plugin-tailwindcss@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-tailwindcss/-/eslint-plugin-tailwindcss-3.0.0.tgz#68211298921ddbae52e6472c1d08343a2fe1cda5"
-  integrity sha512-GJgFgLV/41QPQqiiqymsiQHy4zVdS1tzMrH2YKxdavFlBGm9uLrHoiOb0ulFCw2Fd+9jTzlL2EtHbdGUMarKDg==
+eslint-plugin-tailwindcss@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-tailwindcss/-/eslint-plugin-tailwindcss-3.0.1.tgz#c0e8750e6d2a1f753d37d0d24dcedeb6cc57bac3"
+  integrity sha512-ddzqWKf8WkfwKIT/6GX5lwgx9Y7rJ5hdiknp0UYYG3s3WFnBUCZl7IEBjeuSfIuIANNYwZs8kOTjw31gML7AoA==
   dependencies:
     fast-glob "^3.2.5"
     postcss "^8.4.4"
-    tailwindcss "^3.0.0"
+    tailwindcss "^3.0.7"
 
 eslint-scope@^5.1.1:
   version "5.1.1"
@@ -10816,7 +10816,7 @@ table@^6.7.5:
     string-width "^4.2.3"
     strip-ansi "^6.0.1"
 
-tailwindcss@^3.0.0:
+tailwindcss@^3.0.7:
   version "3.0.7"
   resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-3.0.7.tgz#15936881f042a7eb8d6f2b6a454bac9f51181bbd"
   integrity sha512-rZdKNHtC64jcQncLoWOuCzj4lQDTAgLtgK3WmQS88tTdpHh9OwLqULTQxI3tw9AMJsqSpCKlmcjW/8CSnni6zQ==
