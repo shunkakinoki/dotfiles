@@ -1,3 +1,10 @@
+## [3.21.79](https://github.com/shunkakinoki/dotfiles/compare/v3.21.78...v3.21.79) (2021-12-28)
+
+### Bug Fixes
+
+- **deps:** update dependency jshint to ^2.13.2 ([f3c2526](https://github.com/shunkakinoki/dotfiles/commit/f3c2526e0da77d30422678ffc279877445f9af9c))
+- **deps:** update dependency serverless to ^2.70.0 ([68beec1](https://github.com/shunkakinoki/dotfiles/commit/68beec10ffc2de2afc12782180e5492a9bc8ec3b))
+
 ## [3.21.78](https://github.com/shunkakinoki/dotfiles/compare/v3.21.77...v3.21.78) (2021-12-25)
 
 ### Bug Fixes
