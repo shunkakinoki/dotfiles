@@ -46,7 +46,7 @@
     "@shunkakinoki/commitlint": "^1.0.8",
     "@shunkakinoki/depcheck": "^1.0.1",
     "@shunkakinoki/dev": "^1.2.10",
-    "@shunkakinoki/eslint-config": "^1.1.59",
+    "@shunkakinoki/eslint-config": "^1.1.60",
     "@shunkakinoki/husky": "^1.0.6",
     "@shunkakinoki/lint-staged": "^1.1.17",
     "@shunkakinoki/npm-check-updates": "^1.0.7",
