@@ -1,3 +1,9 @@
+## [3.21.81](https://github.com/shunkakinoki/dotfiles/compare/v3.21.80...v3.21.81) (2022-01-04)
+
+### Bug Fixes
+
+- **deps:** update dependency syncpack to ^6.2.0 ([eabe93c](https://github.com/shunkakinoki/dotfiles/commit/eabe93c0cac7d5a71a914163c913788f1b4d418e))
+
 ## [3.21.80](https://github.com/shunkakinoki/dotfiles/compare/v3.21.79...v3.21.80) (2022-01-01)
 
 ### Bug Fixes
