@@ -1,3 +1,10 @@
+## [3.21.82](https://github.com/shunkakinoki/dotfiles/compare/v3.21.81...v3.21.82) (2022-01-07)
+
+### Bug Fixes
+
+- **deps:** update dependency jshint to ^2.13.3 ([dc3245a](https://github.com/shunkakinoki/dotfiles/commit/dc3245aea73291420a2a14933b49621879344c75))
+- **deps:** update dependency truffle to ^5.4.27 ([7395665](https://github.com/shunkakinoki/dotfiles/commit/73956658059aae251a6d8a9957122a88f82b04c4))
+
 ## [3.21.81](https://github.com/shunkakinoki/dotfiles/compare/v3.21.80...v3.21.81) (2022-01-04)
 
 ### Bug Fixes
