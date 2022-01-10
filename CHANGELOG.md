@@ -1,3 +1,10 @@
+## [3.21.85](https://github.com/shunkakinoki/dotfiles/compare/v3.21.84...v3.21.85) (2022-01-10)
+
+### Bug Fixes
+
+- **deps:** update dependency fanyi to v5 ([abc04a9](https://github.com/shunkakinoki/dotfiles/commit/abc04a97e0407a5785aed713aecfbae42b0e5eec))
+- **deps:** update dependency now to v21 ([22e7e79](https://github.com/shunkakinoki/dotfiles/commit/22e7e796e78e271a9f85fd72319a4aa564fac672))
+
 ## [3.21.84](https://github.com/shunkakinoki/dotfiles/compare/v3.21.83...v3.21.84) (2022-01-10)
 
 ### Bug Fixes
