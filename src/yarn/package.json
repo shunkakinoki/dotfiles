@@ -29,7 +29,7 @@
     "speed-test": "^3.0.0",
     "spoof": "^2.0.4",
     "syncpack": "^6.2.0",
-    "truffle": "^5.4.28",
+    "truffle": "^5.4.29",
     "wrangler": "^0.0.2"
   }
 }
