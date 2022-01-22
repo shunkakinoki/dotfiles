@@ -1,3 +1,10 @@
+## [3.21.90](https://github.com/shunkakinoki/dotfiles/compare/v3.21.89...v3.21.90) (2022-01-22)
+
+### Bug Fixes
+
+- **deps:** update dependency serverless to ^2.72.1 ([3a51c1e](https://github.com/shunkakinoki/dotfiles/commit/3a51c1ee444a2a2dee4e0dda0b44feed347968b9))
+- **deps:** update dependency truffle to ^5.4.30 ([f904f6f](https://github.com/shunkakinoki/dotfiles/commit/f904f6f5af895aaad2adbae7f06d012b554424d2))
+
 ## [3.21.89](https://github.com/shunkakinoki/dotfiles/compare/v3.21.88...v3.21.89) (2022-01-19)
 
 ### Bug Fixes
