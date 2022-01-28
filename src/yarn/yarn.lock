@@ -4385,7 +4385,7 @@ available-typed-arrays@^1.0.2:
   resolved "https://registry.yarnpkg.com/available-typed-arrays/-/available-typed-arrays-1.0.4.tgz#9e0ae84ecff20caae6a94a1c3bc39b955649b7a9"
   integrity sha512-SA5mXJWrId1TaQjfxUYghbqQ/hYioKmLJvPJyDuYRtXXenFNMjj4hSSt1Cf1xsuXSXrtxrVC5Ot4eU6cOtBDdA==
 
-aws-sdk@^2.1064.0:
+aws-sdk@^2.1065.0:
   version "2.1065.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1065.0.tgz#82b6e4e2a6fbccb1767339e309edd4f0daa958e6"
   integrity sha512-OFvpXoL104dTFKpU14ILcLDPAlDbkJNIKXnnG2pK+2x++CvzIRJeNyERtUuEo7QMUOwq5U4nIQJKSPt5fBC/HA==
@@ -17048,10 +17048,10 @@ serve-static@1.14.1:
     parseurl "~1.3.3"
     send "0.17.1"
 
-serverless@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/serverless/-/serverless-3.0.0.tgz#688021f003ba5eab54877727ea34b27711975117"
-  integrity sha512-IFvRnPR25ubx/e8QbN54eTozxqrU/1ZQMjyacz4mEAfTpovL3tGWXaeogVyf/Mp7jIIr2PT3mMkfycPSiRX8eA==
+serverless@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/serverless/-/serverless-3.0.1.tgz#c859d4fc2e960d7901a95f25738c60e23330507e"
+  integrity sha512-GztUBWbbT5IqTfxbg3vnWYpytGUJbAJLPORHjjKcrYtnUQN/0i4CRPralJN3jndLXxzR2XByhrhhulqrfQPFMg==
   dependencies:
     "@serverless/dashboard-plugin" "^6.0.0"
     "@serverless/platform-client" "^4.3.0"
@@ -17059,7 +17059,7 @@ serverless@^3.0.0:
     ajv "^8.9.0"
     ajv-formats "^2.1.1"
     archiver "^5.3.0"
-    aws-sdk "^2.1064.0"
+    aws-sdk "^2.1065.0"
     bluebird "^3.7.2"
     cachedir "^2.3.0"
     chalk "^4.1.2"
