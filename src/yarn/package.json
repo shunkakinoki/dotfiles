@@ -22,7 +22,7 @@
     "gh-home": "^4.0.0",
     "git-open": "^2.1.0",
     "jshint": "^2.13.4",
-    "lerna-update-wizard": "^1.1.0",
+    "lerna-update-wizard": "^1.1.1",
     "now": "^21.0.1",
     "prettier": "^2.5.1",
     "serverless": "^3.0.1",
