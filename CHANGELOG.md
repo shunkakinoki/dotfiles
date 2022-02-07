@@ -1,3 +1,9 @@
+## [3.21.101](https://github.com/shunkakinoki/dotfiles/compare/v3.21.100...v3.21.101) (2022-02-07)
+
+### Bug Fixes
+
+- **deps:** update dependency fast-cli to ^3.2.0 ([582c1bc](https://github.com/shunkakinoki/dotfiles/commit/582c1bcedaf5e9e7e923fa187871f3fd1120baf7))
+
 ## [3.21.100](https://github.com/shunkakinoki/dotfiles/compare/v3.21.99...v3.21.100) (2022-02-04)
 
 ### Bug Fixes
