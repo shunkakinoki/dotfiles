@@ -1,3 +1,9 @@
+## [3.21.108](https://github.com/shunkakinoki/dotfiles/compare/v3.21.107...v3.21.108) (2022-02-22)
+
+### Bug Fixes
+
+- **deps:** update dependency truffle to ^5.5.1 ([3b09d11](https://github.com/shunkakinoki/dotfiles/commit/3b09d1161535e05d05d03049daa8f63fc4878490))
+
 ## [3.21.107](https://github.com/shunkakinoki/dotfiles/compare/v3.21.106...v3.21.107) (2022-02-22)
 
 ### Bug Fixes
