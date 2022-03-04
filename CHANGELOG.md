@@ -1,3 +1,11 @@
+## [3.21.119](https://github.com/shunkakinoki/dotfiles/compare/v3.21.118...v3.21.119) (2022-03-04)
+
+### Bug Fixes
+
+- **deps:** update dependency gatsby to ^4.9.1 ([403f257](https://github.com/shunkakinoki/dotfiles/commit/403f257fef6558918bce317c5e4831595e7c5202))
+- **deps:** update dependency serverless to ^3.7.1 ([8bfdcee](https://github.com/shunkakinoki/dotfiles/commit/8bfdcee4f730d80b3a30745213249d5958e64fab))
+- **deps:** update dependency truffle to ^5.5.3 ([a955c51](https://github.com/shunkakinoki/dotfiles/commit/a955c5117bf0aa1f63d7b5e8c53d1f9e69870352))
+
 ## [3.21.118](https://github.com/shunkakinoki/dotfiles/compare/v3.21.117...v3.21.118) (2022-03-01)
 
 ### Bug Fixes
