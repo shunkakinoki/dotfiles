@@ -1,3 +1,9 @@
+## [3.21.122](https://github.com/shunkakinoki/dotfiles/compare/v3.21.121...v3.21.122) (2022-03-10)
+
+### Bug Fixes
+
+- **deps:** update dependency lerna-update-wizard to ^1.1.2 ([377e17d](https://github.com/shunkakinoki/dotfiles/commit/377e17d7b267aee311b582aef8073f0493b5243f))
+
 ## [3.21.121](https://github.com/shunkakinoki/dotfiles/compare/v3.21.120...v3.21.121) (2022-03-10)
 
 ### Bug Fixes
