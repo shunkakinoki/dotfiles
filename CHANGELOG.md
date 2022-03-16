@@ -1,3 +1,9 @@
+## [3.21.126](https://github.com/shunkakinoki/dotfiles/compare/v3.21.125...v3.21.126) (2022-03-16)
+
+### Bug Fixes
+
+- **deps:** update dependency prettier to ^2.6.0 ([2084d12](https://github.com/shunkakinoki/dotfiles/commit/2084d1219093ce8da7fa6ebbf89f0c341215922d))
+
 ## [3.21.125](https://github.com/shunkakinoki/dotfiles/compare/v3.21.124...v3.21.125) (2022-03-16)
 
 ### Bug Fixes
