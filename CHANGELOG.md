@@ -1,3 +1,9 @@
+## [3.21.129](https://github.com/shunkakinoki/dotfiles/compare/v3.21.128...v3.21.129) (2022-03-22)
+
+### Bug Fixes
+
+- **deps:** update dependency serverless to ^3.8.0 ([13d1ec2](https://github.com/shunkakinoki/dotfiles/commit/13d1ec2346e2e54b37bc003a7d3e43ed9d4cec74))
+
 ## [3.21.128](https://github.com/shunkakinoki/dotfiles/compare/v3.21.127...v3.21.128) (2022-03-19)
 
 ### Bug Fixes
