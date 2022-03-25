@@ -25,7 +25,7 @@
     "lerna-update-wizard": "^1.1.2",
     "now": "^21.0.1",
     "prettier": "^2.6.0",
-    "serverless": "^3.8.0",
+    "serverless": "^3.9.0",
     "speed-test": "^3.0.0",
     "spoof": "^2.0.4",
     "syncpack": "^6.2.0",
