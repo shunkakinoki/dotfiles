@@ -28,7 +28,7 @@
     "serverless": "^3.12.0",
     "speed-test": "^3.0.0",
     "spoof": "^2.0.4",
-    "syncpack": "^6.2.0",
+    "syncpack": "^6.2.1",
     "truffle": "^5.5.9",
     "wrangler": "^0.0.2"
   }
