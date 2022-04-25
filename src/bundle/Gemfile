@@ -8,4 +8,4 @@ gem "mdl"
 gem "rails"
 gem 'terraforming'
 
-ruby '= 2.7.6'
+ruby '= 3.1.2'
