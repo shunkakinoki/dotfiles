@@ -20470,10 +20470,10 @@ workerpool@6.2.0:
   resolved "https://registry.yarnpkg.com/workerpool/-/workerpool-6.2.0.tgz#827d93c9ba23ee2019c3ffaff5c27fccea289e8b"
   integrity sha512-Rsk5qQHJ9eowMH28Jwhe8HEbmdYDX4lwoMWshiCXugjtHqMD9ZbiqSDLxcsfdqsETPzVUtX5s1Z5kStiIM6l4A==
 
-wrangler@^0.0.28:
-  version "0.0.28"
-  resolved "https://registry.yarnpkg.com/wrangler/-/wrangler-0.0.28.tgz#ee4b9cfc17f938d44e2b225c04f87705503d9e71"
-  integrity sha512-MiqBgIZPq+zJTpg5ML9HvtlFeFY6fBcUOWigoTyO4vjZgcSwXtDRYWjThTMhi75CeepdAT2c52TMysdMY415QA==
+wrangler@^0.0.29:
+  version "0.0.29"
+  resolved "https://registry.yarnpkg.com/wrangler/-/wrangler-0.0.29.tgz#b92f7be1b42c849bdcc17485db74f56fe5480809"
+  integrity sha512-HZxjsombH0182R3xfEDBszpTK8RwTAc/gmNcLYyi11UStpsk59ht1WmWA55D/RDch5gfatZ3dfYfmtJ9capbrA==
   dependencies:
     "@esbuild-plugins/node-globals-polyfill" "^0.1.1"
     "@esbuild-plugins/node-modules-polyfill" "^0.1.4"
