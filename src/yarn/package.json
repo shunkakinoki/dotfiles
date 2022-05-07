@@ -30,6 +30,6 @@
     "spoof": "^2.0.4",
     "syncpack": "^7.2.1",
     "truffle": "^5.5.13",
-    "wrangler": "^0.0.29"
+    "wrangler": "^0.0.30"
   }
 }
