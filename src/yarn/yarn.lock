@@ -14225,6 +14225,11 @@ nanoid@^3.1.30:
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.1.30.tgz#63f93cc548d2a113dc5dfbc63bfa09e2b9b64362"
   integrity sha512-zJpuPDwOv8D2zq2WRoMe1HsfZthVewpel9CAvTfc/2mBD1uUT/agc5f7GHGWXlYkFvi1mVxe4IjvP2HNrop7nQ==
 
+nanoid@^3.3.3:
+  version "3.3.4"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.4.tgz#730b67e3cd09e2deacf03c027c81c9d9dbc5e8ab"
+  integrity sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==
+
 nanomatch@^1.2.9:
   version "1.2.13"
   resolved "https://registry.yarnpkg.com/nanomatch/-/nanomatch-1.2.13.tgz#b87a8aa4fc0de8fe6be88895b38983ff265bd119"
@@ -20044,16 +20049,17 @@ workerpool@6.2.0:
   resolved "https://registry.yarnpkg.com/workerpool/-/workerpool-6.2.0.tgz#827d93c9ba23ee2019c3ffaff5c27fccea289e8b"
   integrity sha512-Rsk5qQHJ9eowMH28Jwhe8HEbmdYDX4lwoMWshiCXugjtHqMD9ZbiqSDLxcsfdqsETPzVUtX5s1Z5kStiIM6l4A==
 
-wrangler@^0.0.29:
-  version "0.0.29"
-  resolved "https://registry.yarnpkg.com/wrangler/-/wrangler-0.0.29.tgz#b92f7be1b42c849bdcc17485db74f56fe5480809"
-  integrity sha512-HZxjsombH0182R3xfEDBszpTK8RwTAc/gmNcLYyi11UStpsk59ht1WmWA55D/RDch5gfatZ3dfYfmtJ9capbrA==
+wrangler@^0.0.30:
+  version "0.0.30"
+  resolved "https://registry.yarnpkg.com/wrangler/-/wrangler-0.0.30.tgz#b9a41ef51ed3058a059a47154670a3c93d8a0264"
+  integrity sha512-4PtclfGWY5RoDljqOeosHKRm1X4DiSK4SfEAf7cp9IS426CjIpkhKFEo1Fv90e1R2Cgm9CIEPphzb6T1dyjwKw==
   dependencies:
     "@esbuild-plugins/node-globals-polyfill" "^0.1.1"
     "@esbuild-plugins/node-modules-polyfill" "^0.1.4"
     blake3-wasm "^2.1.5"
     esbuild "0.14.34"
     miniflare "2.4.0"
+    nanoid "^3.3.3"
     path-to-regexp "^6.2.0"
     selfsigned "^2.0.1"
     semiver "^1.1.0"
