@@ -3,6 +3,7 @@
 Cross-platform dotfiles with macOS & Linux support
 
 ## Features
+- ✅ GitHub Codespaces compatible
 - 🖥️ OS-aware configuration
 - 🔄 Safe symlinking with backups
 - 📦 Package manager bootstrap
@@ -10,14 +11,23 @@ Cross-platform dotfiles with macOS & Linux support
 
 ## Installation
 ```bash
-git clone https://github.com/yourusername/dotfiles.git ~/.dotfiles
-cd ~/.dotfiles
+# Local installation
 make install
+
+# Codespaces will auto-install during creation
 ```
+
+## GitHub Codespaces Setup
+1. Add this repository in your [GitHub Codespaces settings](https://github.com/settings/codespaces)
+2. Codespaces will automatically:
+   - Clone your dotfiles
+   - Run `install.sh` to set up symlinks
+   - Use platform-specific configurations
 
 ## Structure
 ```
 .dotfiles/
+├── install.sh       # Codespaces entry point
 ├── dotfiles/
 │   ├── common/       # Shared configs (e.g., .bashrc, .vimrc)
 │   ├── osx/          # macOS-specific (e.g., .macos)
