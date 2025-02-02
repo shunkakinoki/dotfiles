@@ -1,2 +1,13 @@
 .aider*
 .env
+# System files
+.DS_Store
+*.swp
+*.bak
+
+# Backups
+*.tar.gz
+
+# Sensitive files (customize these)
+scripts/brew.sh
+scripts/apt.sh
