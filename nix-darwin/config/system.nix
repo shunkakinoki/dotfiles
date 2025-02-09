@@ -25,7 +25,7 @@
         NSNavPanelExpandedStateForSaveMode2 = true;
         PMPrintingExpandedStateForPrint = true;
         PMPrintingExpandedStateForPrint2 = true;
-        "com.apple.swipescrolldirection" = false;
+        "com.apple.swipescrolldirection" = true;
         "com.apple.keyboard.fnState" = true;
       };
       finder = {
