@@ -189,7 +189,6 @@
       lockfiles = true;
     };
     taps = [
-      "homebrew/cask-fonts"
       "homebrew/services"
     ];
     brews = [
