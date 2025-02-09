@@ -29,11 +29,13 @@ let
   };
 
   # services
-  # services = import ./services;
+  services = import ./services {
+    inherit pkgs;
+  };
 
 in
 {
-  imports = misc ++ modules ++ programs;
+  imports = misc ++ modules ++ programs ++ services;
 
   home.stateVersion = "24.11";
   home.packages = packages;
