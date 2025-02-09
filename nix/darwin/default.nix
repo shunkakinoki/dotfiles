@@ -64,14 +64,14 @@
     nix-index.enable = true;
     
     # Git configuration
-    git = {
-      enable = true;
-      config = {
-        init.defaultBranch = "main";
-        pull.rebase = true;
-        push.autoSetupRemote = true;
-      };
-    };
+    # git = {
+    #   enable = true;
+    #   config = {
+    #     init.defaultBranch = "main";
+    #     pull.rebase = true;
+    #     push.autoSetupRemote = true;
+    #   };
+    # };
   };
 
   # Set Git to use SSH
