@@ -1,7 +1,7 @@
 { pkgs }:
 with pkgs;
 [
+  gh
   ollama
-  discord
-  slack
+  starship
 ]

@@ -7,6 +7,7 @@
       cleanup = "uninstall";
     };
     taps = [
+      "homebrew/cask"
       "homebrew/services"
     ];
     brews = [
@@ -16,6 +17,7 @@
       "pinentry-mac"
     ];
     casks = [
+      "cursor"
       "discord"
       "docker"
       "google-chrome"
