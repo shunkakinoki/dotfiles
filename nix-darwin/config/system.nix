@@ -51,11 +51,13 @@
       };
       trackpad = {
         Clicking = true;
+        Dragging = true;
         TrackpadRightClick = true;
-        TrackpadThreeFingerDrag = true;
-        ActuationStrength = 1;
-        FirstClickThreshold = 1;
-        SecondClickThreshold = 1;
+        TrackpadThreeFingerDrag = false;
+        ActuationStrength = 0;
+        FirstClickThreshold = 0;
+        SecondClickThreshold = 0;
+        TrackpadThreeFingerTapGesture = 2;
       };
     };
     activationScripts.extraActivation.text = ''
