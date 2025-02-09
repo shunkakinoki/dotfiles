@@ -11,8 +11,12 @@ jobs:
         uses: actions/checkout@v4
       - name: Install Nix
         uses: cachix/install-nix-action@v25
-      - name: Setup Cachix
-        uses: cachix/cachix-action@v12
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
       - name: Run Home Manager
         run: make nix-home-manager
   nix-darwin:
@@ -22,8 +26,12 @@ jobs:
         uses: actions/checkout@v4
       - name: Install Nix
         uses: cachix/install-nix-action@v25
-      - name: Setup Cachix 
-        uses: cachix/cachix-action@v12
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
       - name: Run Nix Darwin
         run: make nix-darwin
   nix-format:
@@ -33,6 +41,9 @@ jobs:
         uses: actions/checkout@v4
       - name: Install Nix
         uses: cachix/install-nix-action@v25
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          nix_path: nixpkgs=channel:nixos-unstable
       - name: Install nixpkgs-fmt
         run: nix-env -i nixpkgs-fmt
       - name: Check formatting
