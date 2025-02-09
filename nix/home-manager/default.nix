@@ -32,20 +32,20 @@
       # zoxide # Smarter cd
       
       # Development environments
-      # nodejs
-      # python3
-      # rustup
-      # go
+      nodejs
+      python3
+      rustup
+      go
       
       # Cloud & Infrastructure
-      # awscli2
-      # docker
-      # kubectl
+      awscli2
+      docker
+      kubectl
       
       # System tools
-      # htop
-      # bat
-      # starship # Modern shell prompt
+      htop
+      bat
+      starship # Modern shell prompt
     ];
 
     sessionVariables = {
