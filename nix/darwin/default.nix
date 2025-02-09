@@ -220,14 +220,4 @@
 
   # Used for backwards compatibility, please read the changelog before changing.
   system.stateVersion = 4;
-
-  # Fully declarative dock using the latest from Nix Store
-  local = {
-    dock.enable = true;
-    dock.entries = [
-      { path = "/Applications/Slack.app/"; }
-      { path = "/System/Applications/Messages.app/"; }
-      { path = "/System/Applications/Music.app/"; }
-    ];
-  };
 }
