@@ -5,12 +5,8 @@
   # Home Manager needs a bit of information about you and the paths it should manage.
   home = {
     username = "shunkakinoki";
-    homeDirectory =
-      if pkgs.stdenv.hostPlatform.isDarwin then
-        "/Users/shunkakinoki"
-      else
-        "/home/shunkakinoki";
-
+    homeDirectory = "/Users/shunkakinoki";
+    
     # This value determines the Home Manager release that your configuration is
     # compatible with.
     stateVersion = "23.11";
