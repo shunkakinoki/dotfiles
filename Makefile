@@ -32,7 +32,7 @@ help:
 ##@ General
 
 .PHONY: install
-install: config-install nix-install darwin-install nix-switch darwin-switch
+install: nix-install 
 
 .PHONY: check
 check: nix-check
@@ -43,20 +43,8 @@ clean: nix-clean
 .PHONY: format
 format: nix-format
 
-.PHONY: switch
-switch: nix-switch darwin-switch
-
 .PHONY: update
 update: nix-update
-
-##@ Configuration
-
-.PHONY: config-install
-config-install:
-	@echo "🔄 Syncing configuration files..."
-	@chmod +x sync.sh
-	@mkdir -p $(CONFIG_DIR)
-	@./sync.sh
 
 ##@ Nix
 .PHONY: nix-check
@@ -68,7 +56,7 @@ nix-check:
 	fi
 
 .PHONY: nix-install
-nix-install: nix-check nix-backup nix-switch
+nix-install: nix-check nix-update
 	@echo "✨ Installation complete for ${OS}!"
 
 .PHONY: nix-update
@@ -85,7 +73,7 @@ nix-clean:
 .PHONY: nix-format
 nix-format:
 	@if ! command -v nixpkgs-fmt >/dev/null 2>&1; then \
-		echo "❌ nixpkgs-fmt not found. Please run 'make switch' to install it."; \
+		echo "❌ nixpkgs-fmt not found. Please run 'make install' to install it."; \
 		exit 1; \
 	fi
 	@echo "Formatting Nix files..."
@@ -95,7 +83,7 @@ nix-format:
 .PHONY: nix-format-check
 nix-format-check:
 	@if ! command -v nixpkgs-fmt >/dev/null 2>&1; then \
-		echo "❌ nixpkgs-fmt not found. Please run 'make switch' to install it."; \
+		echo "❌ nixpkgs-fmt not found. Please run 'make install' to install it."; \
 		exit 1; \
 	fi
 	@echo "Checking Nix formatting..."
@@ -105,7 +93,7 @@ nix-format-check:
 ##@ Nix Darwin
 
 .PHONY: nix-darwin
-nix-darwin: nix-darwin-install nix-darwin-switch nix-darwin-update
+nix-darwin: nix-darwin-install nix-darwin-update
 
 .PHONY: nix-darwin-install
 nix-darwin-install: .config
@@ -114,13 +102,6 @@ nix-darwin-install: .config
 			echo "📦 Installing nix-darwin..."; \
 			nix run nix-darwin -- switch --flake .#shunkakinoki; \
 		fi \
-	fi
-
-.PHONY: nix-darwin-switch
-nix-darwin-switch:
-	@if [ "$(OS)" = "Darwin" ]; then \
-		echo "Applying nix-darwin configuration..."; \
-		nix run nix-darwin -- switch --flake .#shunkakinoki; \
 	fi
 
 .PHONY: nix-darwin-update
@@ -139,24 +120,20 @@ nix-home-manager: nix-home-manager-install nix-home-manager-switch nix-home-mana
 .PHONY: nix-home-manager-install
 nix-home-manager-install:
 	@echo "Installing nix-home-manager..."
-	@nix run home-manager -- build --flake .#shunkakinoki
-
-.PHONY: nix-home-manager-switch
-nix-home-manager-switch:
-	@echo "Switching nix-home-manager..."
 	@nix run home-manager -- switch --flake .#shunkakinoki
 
 .PHONY: nix-home-manager-update
 nix-home-manager-update:
 	@echo "Updating nix-home-manager..."
-	@nix run home-manager/release-23.11 -- switch --flake .#shunkakinoki
+	@nix flake update
+	@nix run home-manager -- switch --flake .#shunkakinoki
 
 ##@ GitHub
 
 .PHONY: update
 update:
 	@if ! command -v gh &> /dev/null; then \
-		echo "❌ GitHub CLI not found. Please run 'home-manager switch' to install it."; \
+		echo "❌ GitHub CLI not found. Please run 'make install' to install it."; \
 		exit 1; \
 	fi
 	@if [ -z "$(b)" ]; then \

@@ -42,6 +42,9 @@
       docker
       kubectl
       
+      # GitHub CLI
+      gh
+      
       # System tools
       htop
       bat
