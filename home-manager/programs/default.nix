@@ -5,7 +5,7 @@
 }:
 let
   gh = import ./gh;
-  starship = import ./starship { inherit lib pkgs; };
+  starship = import ./starship;
   zsh = import ./zsh { inherit lib pkgs; };
 in
 [
