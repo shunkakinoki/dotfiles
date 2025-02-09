@@ -21,7 +21,4 @@ if ! command -v nix &>/dev/null; then
   else
     sh <(curl -L https://nixos.org/nix/install) --daemon
   fi
-
-  # Source nix
-  . ~/.nix-profile/etc/profile.d/nix.sh
 fi
