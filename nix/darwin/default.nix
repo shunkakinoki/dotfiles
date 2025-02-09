@@ -228,8 +228,6 @@
       { path = "/Applications/Slack.app/"; }
       { path = "/System/Applications/Messages.app/"; }
       { path = "/System/Applications/Music.app/"; }
-      { path = "/Applications/Drafts.app/"; }
-      { path = "/System/Applications/Home.app/"; }
     ];
   };
 }
