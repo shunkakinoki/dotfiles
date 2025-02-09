@@ -52,7 +52,7 @@ nix-check:
 	fi
 	@if ! command -v home-manager >/dev/null 2>&1; then \
 		echo "📦 Home Manager not found. Installing..."; \
-		. ~/.nix-profile/etc/profile.d/nix.sh && nix profile install github:nix-community/home-manager && \
+		sudo -E nix --extra-experimental-features flakes --extra-experimental-features nix-command profile install github:nix-community/home-manager && \
 		echo "✨ Home Manager installed successfully!"; \
 	fi
 
