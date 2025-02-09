@@ -55,4 +55,6 @@ tags
 .nix-store
 .nix-channels
 
+# Ignore 
 result
+ref
