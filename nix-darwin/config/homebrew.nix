@@ -1,6 +1,6 @@
 {
   homebrew = {
-    enable = builtins.getEnv "CI" != "true";
+    enable = builtins.getEnv "CI" == "";
     onActivation = {
       autoUpdate = true;
       upgrade = true;
