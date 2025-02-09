@@ -91,6 +91,14 @@
         specialArgs = { inherit inputs; };
       };
 
+      homeConfigurations."shunkakinoki" = home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
+        modules = [ 
+          ./nix/home-manager/default.nix
+        ];
+        extraSpecialArgs = { inherit inputs; };
+      };
+
       # Development shell for working on this configuration
       devShells = forAllSystems (system:
         let 
