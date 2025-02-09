@@ -48,3 +48,11 @@ tags
 
 # AI
 .aider*
+
+# Nix
+.nix-defexpr
+.nix-profile
+.nix-store
+.nix-channels
+
+result
