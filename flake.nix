@@ -37,8 +37,32 @@
         allowUnfree = true;
         allowUnsupportedSystem = true;
       };
+
+      system = "aarch64-darwin";
+      pkgs = import nixpkgs {
+        inherit system;
+        config = nixpkgsConfig;
+        overlays = builtins.attrValues overlays;
+      };
     in
     {
+      # Apps for running common commands
+      apps.${system} = {
+        update = {
+          type = "app";
+          program = toString (pkgs.writeShellScript "update-script" ''
+            set -e
+            echo "Updating flake..."
+            nix flake update
+            echo "Updating home-manager..."
+            nix run home-manager -- switch --flake .#shunkakinoki
+            echo "Updating nix-darwin..."
+            nix run nix-darwin -- switch --flake .#shunkakinoki
+            echo "Update complete!"
+          '');
+        };
+      };
+
       darwinConfigurations."shunkakinoki" = nix-darwin.lib.darwinSystem {
         system = "aarch64-darwin";
         modules = [ 
