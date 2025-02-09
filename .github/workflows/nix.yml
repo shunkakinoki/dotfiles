@@ -1,0 +1,36 @@
+name: Nix
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  nix-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Nix
+        uses: cachix/install-nix-action@v25
+      - name: Install home-manager
+        run: |
+          nix-channel --add https://github.com/nix-community/home-manager/archive/release-23.11.tar.gz home-manager
+          nix-channel --update
+      - name: Validate home-manager configuration
+        run: |
+          nix run home-manager/release-23.11 -- build --flake .#shunkakinoki 
+  nix-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Nix
+        uses: cachix/install-nix-action@v25
+      - name: Install nixpkgs-fmt
+        run: nix-env -i nixpkgs-fmt
+      - name: Check formatting
+        run: |
+          find . -name "*.nix" -type f | while read -r file; do
+            if ! nixpkgs-fmt --check "$file"; then
+              echo "❌ $file is not formatted correctly"
+              echo "Run 'nixpkgs-fmt $file' to fix"
+              exit 1
+            fi
+          done 
