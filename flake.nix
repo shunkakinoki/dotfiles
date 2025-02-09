@@ -61,13 +61,6 @@
           '');
         };
         update-darwin = {
-          type = "app";
-          program = toString (pkgs.writeShellScript "update-darwin-script" ''
-            set -e
-            echo "Updating nix-darwin..."
-            nix run nix-darwin -- switch --flake .#shunkakinoki
-          '');
-        };
         update-home-manager = {
           type = "app";
           program = toString (pkgs.writeShellScript "update-home-manager-script" ''
