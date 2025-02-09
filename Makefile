@@ -63,7 +63,11 @@ nix-update: nix-flake-update nix-switch
 .PHONY: nix-flake-update
 nix-flake-update:
 	@echo "🔄 Updating flake.lock..."
-	@nix flake update $(NIX_FLAGS)
+	@if [ "$$CI" = "true" ]; then \
+		echo "Bypassing flake update in CI"; \
+	else \
+		nix flake update $(NIX_FLAGS); \
+	fi
 	@echo "✨ flake.lock updated!"
 
 .PHONY: nix-format
