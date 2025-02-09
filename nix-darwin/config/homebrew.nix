@@ -4,7 +4,8 @@
     onActivation = {
       autoUpdate = true;
       upgrade = true;
-      cleanup = "uninstall";
+      cleanup = "zap";
+      extraFlags = ["--force"];
     };
     taps = [
       "homebrew/cask"
@@ -21,14 +22,19 @@
       "cursor"
       "discord"
       "docker"
+      "ghostty"
       "google-chrome"
       "google-drive"
+      "linear-linear"
+      "notion"
       "raycast"
+      "screen-studio"
       "slack"
       "visual-studio-code"
       "zoom"
     ];
     masApps = {
+      "Notability" = 360593530;
       "Xcode" = 497799835;
     };
   };
