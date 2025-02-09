@@ -40,6 +40,13 @@
       };
       dock = {
         autohide = true;
+        persistent-apps = [
+          "/Applications/Safari.app"
+          "/Applications/Google Chrome.app"
+          "/Applications/Slack.app"
+          "/Applications/Cursor.app"
+          "/Applications/ChatGPT.app"
+        ];
         orientation = "bottom";
         showhidden = true;
         mru-spaces = false;

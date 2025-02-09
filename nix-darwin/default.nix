@@ -6,7 +6,6 @@
 }:
 let
   services = import ./config/services;
-  dock = import ./config/dock { inherit pkgs lib; };
   fonts = import ./config/fonts.nix { inherit pkgs; };
   launchd = import ./config/launchd.nix { inherit pkgs; };
   homebrew = import ./config/homebrew.nix;
