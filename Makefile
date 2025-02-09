@@ -51,7 +51,6 @@ update: nix-update
 nix-check:
 	@if [ "$(NIX_ENV)" = "not_found" ]; then \
 		echo "❌ Nix environment not found. Please ensure Nix is installed and run:"; \
-		echo "   source ~/.nix-profile/etc/profile.d/nix.sh"; \
 		exit 1; \
 	fi
 
@@ -115,7 +114,7 @@ nix-darwin-update:
 ##@ Nix Home Manager
 
 .PHONY: nix-home-manager
-nix-home-manager: nix-home-manager-install nix-home-manager-switch nix-home-manager-update
+nix-home-manager: nix-home-manager-install nix-home-manager-update
 
 .PHONY: nix-home-manager-install
 nix-home-manager-install:
@@ -156,4 +155,3 @@ pr:
 		gh pr create --title "$(t)" --body "$(m)"; \
 	fi
 	@echo "✨ PR created successfully!"
-
