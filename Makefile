@@ -68,22 +68,14 @@ nix-flake-update:
 
 .PHONY: nix-format
 nix-format:
-	@if ! command -v nixpkgs-fmt >/dev/null 2>&1; then \
-		echo "❌ nixpkgs-fmt not found. Please run 'make install' to install it."; \
-		exit 1; \
-	fi
 	@echo "Formatting Nix files..."
-	@find . -name "*.nix" -type f -exec nixpkgs-fmt {} +
+	@nix fmt
 	@echo "✨ Formatting complete"
 
 .PHONY: nix-format-check
 nix-format-check:
-	@if ! command -v nixpkgs-fmt >/dev/null 2>&1; then \
-		echo "❌ nixpkgs-fmt not found. Please run 'make install' to install it."; \
-		exit 1; \
-	fi
 	@echo "Checking Nix formatting..."
-	@find . -name "*.nix" -type f -exec nixpkgs-fmt --check {} +
+	@nix fmt -- --fail-on-change
 	@echo "✅ All Nix files are properly formatted"
 
 .PHONY: nix-switch
