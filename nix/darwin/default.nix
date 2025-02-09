@@ -38,7 +38,7 @@
 
   # Necessary for using flakes on this system.
   nix = {
-    package = pkgs.nixFlakes.stable;
+    package = pkgs.nixVersions.stable;
     settings = {
       experimental-features = [ "nix-command" "flakes" ];
       auto-optimise-store = true;
@@ -139,7 +139,6 @@
         SecondClickThreshold = 1;
       };
 
-
       # Security settings
       CustomSystemPreferences = {
         "com.apple.screensaver" = {
@@ -188,7 +187,6 @@ auth       sufficient     pam_tid.so
       upgrade = true;
       # Note: cleanup = "zap" is commented out to prevent accidental removal of non-Nix managed apps
       # cleanup = "zap";
-
     };
     taps = [
       "homebrew/cask-fonts"
@@ -215,4 +213,4 @@ auth       sufficient     pam_tid.so
 
   # Used for backwards compatibility, please read the changelog before changing.
   system.stateVersion = 4;
-} 
+}
