@@ -164,11 +164,13 @@ auth       sufficient     pam_tid.so
   # Fonts (remove fonts.fontDir.enable)
   fonts = {
     packages = with pkgs; [
-      (nerdfonts.override { fonts = [ "FiraCode" "JetBrainsMono" "Hack" ]; })
+      pkgs.nerd-fonts.fira-code
+      pkgs.nerd-fonts.jetbrains-mono
+      pkgs.nerd-fonts.hack
       font-awesome
       hackgen-nf-font
-    ];
-  };
+  ];
+};
 
   # Homebrew
   homebrew = {
