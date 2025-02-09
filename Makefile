@@ -95,7 +95,7 @@ nix-format-check:
 nix-darwin: nix-darwin-install nix-darwin-update
 
 .PHONY: nix-darwin-install
-nix-darwin-install: .config
+nix-darwin-install:
 	@if [ "$(OS)" = "Darwin" ]; then \
 		if ! command -v darwin-rebuild >/dev/null 2>&1; then \
 			echo "📦 Installing nix-darwin..."; \
