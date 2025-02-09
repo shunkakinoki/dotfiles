@@ -13,8 +13,6 @@ jobs:
         uses: cachix/install-nix-action@v25
       - name: Setup Cachix
         uses: cachix/cachix-action@v12
-        with:
-          name: nix-home-manager
       - name: Run Home Manager
         run: make nix-home-manager
   nix-darwin:
@@ -26,8 +24,6 @@ jobs:
         uses: cachix/install-nix-action@v25
       - name: Setup Cachix 
         uses: cachix/cachix-action@v12
-        with:
-          name: nix-darwin
       - name: Run Nix Darwin
         run: make nix-darwin
   nix-format:
