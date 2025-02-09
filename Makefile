@@ -59,15 +59,18 @@ nix-install: nix-check nix-update
 	@echo "✨ Installation complete for ${OS}!"
 
 .PHONY: nix-update
-nix-update:
-	@echo "🔄 Updating all configurations (this may take a while)..."
-	@nix run .#update
-	@echo "✨ All updates completed!"
+nix-update: nix-flake-update nix-run-update
 
 .PHONY: nix-clean
 nix-clean:
 	@echo "Cleaning up..."
 	@echo "✨ Cleanup complete"
+
+.PHONY: nix-flake-update
+nix-flake-update:
+	@echo "🔄 Updating flake.lock..."
+	@nix flake update
+	@echo "✨ flake.lock updated!"
 
 .PHONY: nix-format
 nix-format:
@@ -88,6 +91,12 @@ nix-format-check:
 	@echo "Checking Nix formatting..."
 	@find . -name "*.nix" -type f -exec nixpkgs-fmt --check {} +
 	@echo "✅ All Nix files are properly formatted"
+
+.PHONY: nix-run-update
+nix-run-update:
+	@echo "🔄 Running update..."
+	@nix run .#update
+	@echo "✨ Update complete!"
 
 ##@ Nix Darwin
 
