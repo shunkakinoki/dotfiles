@@ -104,20 +104,14 @@ nix-run-update:
 nix-darwin: nix-darwin-install nix-darwin-update
 
 .PHONY: nix-darwin-install
-nix-darwin-install:
-	@if [ "$(OS)" = "Darwin" ]; then \
-		if ! command -v darwin-rebuild >/dev/null 2>&1; then \
-			echo "📦 Installing nix-darwin..."; \
-			nix run nix-darwin -- switch --flake .#shunkakinoki; \
-		fi \
-	fi
+nix-darwin-install: nix-darwin-update
+	@echo "Installing nix-darwin..."
 
 .PHONY: nix-darwin-update
 nix-darwin-update:
 	@if [ "$(OS)" = "Darwin" ]; then \
 		echo "Updating nix-darwin..."; \
-		nix flake update && \
-		nix run nix-darwin -- switch --flake .#shunkakinoki; \
+		nix run --extra-experimental-features "nix-command flakes" nix-darwin -- switch --flake .#shunkakinoki; \
 	fi
 
 ##@ Nix Home Manager
@@ -126,17 +120,15 @@ nix-darwin-update:
 nix-home-manager: nix-home-manager-install nix-home-manager-update
 
 .PHONY: nix-home-manager-install
-nix-home-manager-install:
+nix-home-manager-install: nix-home-manager-update
 	@echo "Installing nix-home-manager..."
-	@nix run home-manager -- switch --flake .#shunkakinoki
 
 .PHONY: nix-home-manager-update
-nix-home-manager-update:
+nix-home-manager-update: nix-home-manager-install
 	@echo "Updating nix-home-manager..."
-	@nix flake update
-	@nix run home-manager -- switch --flake .#shunkakinoki
+	@nix run --extra-experimental-features "nix-command flakes" home-manager -- switch --flake .#shunkakinoki
 
-##@ GitHub
+#@ GitHub
 
 .PHONY: pr
 pr:
