@@ -1,4 +1,9 @@
-{ pkgs, lib, username, ... }:
+{
+  pkgs,
+  lib,
+  username,
+  ...
+}:
 let
   services = import ./config/services;
   dock = import ./config/dock { inherit pkgs lib; };

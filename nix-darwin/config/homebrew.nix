@@ -5,7 +5,7 @@
       autoUpdate = true;
       upgrade = true;
       cleanup = "zap";
-      extraFlags = ["--force"];
+      extraFlags = [ "--force" ];
     };
     taps = [
       "homebrew/cask"

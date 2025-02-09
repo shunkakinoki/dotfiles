@@ -1,4 +1,8 @@
-{ inputs, username ? "shunkakinoki", hostname ? "aarch64-darwin" }:
+{
+  inputs,
+  username ? "shunkakinoki",
+  hostname ? "aarch64-darwin",
+}:
 let
   inherit (inputs) nix-darwin home-manager;
   system = "aarch64-darwin";
