@@ -189,7 +189,6 @@ auth       sufficient     pam_tid.so
     global = {
       brewfile = true;
       noLock = true;
-      noAutoUpdate = true; # Prevent auto-updates during installation
     };
     taps = [
       "homebrew/cask-fonts"
