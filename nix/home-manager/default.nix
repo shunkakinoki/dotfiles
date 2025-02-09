@@ -5,8 +5,7 @@
   # Home Manager needs a bit of information about you and the paths it should manage.
   home = {
     username = "shunkakinoki";
-    homeDirectory = "/Users/shunkakinoki";
-    
+
     # This value determines the Home Manager release that your configuration is
     # compatible with.
     stateVersion = "23.11";
@@ -214,8 +213,7 @@
   };
 
   # Additional XDG configurations
-  xdg = {
-    enable = true;
-    configHome = "${config.home.homeDirectory}/.config";
-  };
+  # xdg = {
+  #   enable = true;
+  # };
 }
