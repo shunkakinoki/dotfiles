@@ -43,7 +43,7 @@
         system = "aarch64-darwin";
         modules = [ 
           # Base darwin configuration
-          ./nix/darwin-configuration.nix
+          ./nix/darwin
           
           # Home-manager configuration
           home-manager.darwinModules.home-manager
@@ -51,7 +51,7 @@
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
-              users.shunkakinoki = import ./nix/home.nix;
+              users.shunkakinoki = import ./nix/home-manager/default.nix;
               extraSpecialArgs = { inherit inputs; };
             };
           }

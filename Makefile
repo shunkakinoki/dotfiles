@@ -92,7 +92,6 @@ nix-update: nix-check
 .PHONY: nix-clean
 nix-clean:
 	@echo "Cleaning up..."
-	@rm -rf ~/.config/nixpkgs/home.nix.backup
 	@echo "✨ Cleanup complete"
 
 .PHONY: nix-format
@@ -114,15 +113,6 @@ nix-format-check:
 	@echo "Checking Nix formatting..."
 	@find . -name "*.nix" -type f -exec nixpkgs-fmt --check {} +
 	@echo "✅ All Nix files are properly formatted"
-
-.PHONY: nix-backup
-nix-backup:
-	@echo "Backing up existing configurations..."
-	@if [ -f ~/.config/nixpkgs/home.nix ]; then \
-		mv ~/.config/nixpkgs/home.nix ~/.config/nixpkgs/home.nix.backup; \
-		echo "✓ Backed up existing home.nix"; \
-	fi
-	@echo "✨ Backup complete"
 
 ##@ GitHub
 

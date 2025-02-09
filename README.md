@@ -58,42 +58,6 @@ source ~/.nix-profile/etc/profile.d/nix.sh
 make switch
 ```
 
-## Structure
-
-```
-.
-├── nix/
-│   └── home-manager/
-│       ├── home.nix           # Main Home Manager configuration
-│       └── dotfiles/          # Dotfiles managed by Home Manager
-│           ├── zsh/          # Zsh configuration
-│           ├── nvim/         # Neovim configuration
-│           └── git/          # Git configuration
-├── install.sh                # Installation script
-└── README.md                # This file
-```
-
-## Configuration
-
-The main configuration is in `nix/home-manager/home.nix`. This file defines:
-
-- Common packages and tools
-- Program-specific configurations (Git, Zsh, Neovim, etc.)
-- OS-specific settings for macOS and Ubuntu
-- Environment variables and system preferences
-
-### Customization
-
-1. Edit `nix/home-manager/home.nix` to modify:
-   - Installed packages
-   - Program configurations
-   - OS-specific settings
-
-2. After making changes, apply them with:
-```bash
-home-manager switch
-```
-
 ## Synchronization
 
 To sync changes across machines:

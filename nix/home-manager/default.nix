@@ -1,4 +1,4 @@
-# home.nix
+# default.nix
 { config, pkgs, lib, inputs, ... }:
 
 {
