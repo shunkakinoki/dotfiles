@@ -145,14 +145,14 @@
     };
 
     # Add ability to use TouchID for sudo authentication
-    activationScripts.postActivation.text = ''
-      # Enable Touch ID for sudo
-      if ! grep -q "pam_tid.so" /etc/pam.d/sudo; then
-        sudo sed -i "" '2i\
-auth       sufficient     pam_tid.so
-        ' /etc/pam.d/sudo
-      fi
-    '';
+#     activationScripts.postActivation.text = ''
+#       # Enable Touch ID for sudo
+#       if ! grep -q "pam_tid.so" /etc/pam.d/sudo; then
+#         sudo sed -i "" '2i\
+# auth       sufficient     pam_tid.so
+#         ' /etc/pam.d/sudo
+#       fi
+#     '';
 
     # Keyboard (commented out)
     # keyboard = {
@@ -178,7 +178,7 @@ auth       sufficient     pam_tid.so
     onActivation = {
       autoUpdate = true;
       upgrade = true;
-      cleanup = "uninstall"; # Less aggressive than "zap"
+      cleanup = "zap";
       extraFlags = [
         "--verbose"
         "--force"
@@ -193,11 +193,18 @@ auth       sufficient     pam_tid.so
       "homebrew/services"
     ];
     brews = [
+      "direnv"
+      "gpg"
+      "lazygit"
+      "pinentry-mac"
       "mas"
+      "sheldon"
     ];
     casks = [
+      "cursor"
       "discord"
       "docker"
+      "ghostty"
       "google-chrome"
       "google-drive"
       "raycast"
