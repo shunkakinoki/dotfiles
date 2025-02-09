@@ -94,7 +94,7 @@ nix-switch:
 	else \
 		nix build .#darwinConfigurations.aarch64-darwin.system $(NIX_FLAGS) --show-trace; \
 	fi
-	@./result/sw/bin/darwin-rebuild switch --flake .#
+	@./result/sw/bin/darwin-rebuild switch --flake .#aarch64-darwin
 	@echo "✨ Configuration applied successfully!"
 
 ##@ GitHub

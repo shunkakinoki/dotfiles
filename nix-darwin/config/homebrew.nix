@@ -7,10 +7,13 @@
       cleanup = "uninstall";
     };
     taps = [
-      "dracula/install"
+      "homebrew/services"
     ];
     brews = [
+      "direnv"
+      "gnupg"
       "mas"
+      "pinentry-mac"
     ];
     casks = [
       "discord"
