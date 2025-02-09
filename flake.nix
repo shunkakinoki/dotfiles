@@ -82,12 +82,12 @@
           }
           
           # System-wide configuration
-          {
-            nixpkgs = { 
-              inherit overlays;
-              config = nixpkgsConfig;
-            };
-          }
+          # {
+          #   nixpkgs = { 
+          #     inherit overlays;
+          #     config = nixpkgsConfig;
+          #   };
+          # }
         ];
         specialArgs = { inherit inputs; };
       };
