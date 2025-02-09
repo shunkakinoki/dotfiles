@@ -1,18 +1,38 @@
 { pkgs, ... }: {
   # List packages installed in system profile
-  environment.systemPackages = with pkgs; [
-    vim
-    git
-    curl
-    wget
-    coreutils
-  ];
+  environment = {
+    systemPackages = with pkgs; [
+      vim
+      git
+      curl
+      wget
+      coreutils
+      gnused
+      gnutar
+      gzip
+      unzip
+    ];
+    
+    # Set default shell to zsh
+    shells = with pkgs; [ zsh ];
+    loginShell = pkgs.zsh;
+    
+    # Add paths to PATH
+    systemPath = [ "/opt/homebrew/bin" ];
+    
+    # Set environment variables
+    variables = {
+      LANG = "en_US.UTF-8";
+      EDITOR = "vim";
+    };
+  };
 
   # Auto upgrade nix package and the daemon service.
   services.nix-daemon.enable = true;
 
   # Necessary for using flakes on this system.
   nix = {
+    package = pkgs.nixFlakes;
     settings = {
       experimental-features = [ "nix-command" "flakes" ];
       auto-optimise-store = true;
@@ -25,13 +45,32 @@
       interval = { Hour = 24; };
       options = "--delete-older-than 7d";
     };
+    extraOptions = ''
+      keep-outputs = true
+      keep-derivations = true
+    '';
   };
 
   # Create /etc/zshrc that loads the nix-darwin environment.
-  programs.zsh = {
-    enable = true;
-    enableCompletion = true;
-    promptInit = "";
+  programs = {
+    zsh = {
+      enable = true;
+      enableCompletion = true;
+      promptInit = "";
+    };
+    
+    # Enable nix-index
+    nix-index.enable = true;
+    
+    # Git configuration
+    git = {
+      enable = true;
+      config = {
+        init.defaultBranch = "main";
+        pull.rebase = true;
+        push.autoSetupRemote = true;
+      };
+    };
   };
 
   # Set Git to use SSH
@@ -44,73 +83,128 @@
   nixpkgs.config.allowUnfree = true;
 
   # macOS System Settings
-  system.defaults = {
-    dock = {
-      autohide = true;
-      orientation = "bottom";
-      showhidden = true;
-      mru-spaces = false;
-      minimize-to-application = true;
-      show-recents = false;
-      static-only = true;
-    };
-    
-    finder = {
-      AppleShowAllExtensions = true;
-      FXEnableExtensionChangeWarning = false;
-      _FXShowPosixPathInTitle = true;
-      CreateDesktop = false;
-      QuitMenuItem = true;
-    };
+  system = {
+    # Enable Touch ID for sudo
+    defaults = {
+      dock = {
+        autohide = true;
+        orientation = "bottom";
+        showhidden = true;
+        mru-spaces = false;
+        minimize-to-application = true;
+        show-recents = false;
+        static-only = true;
+        tilesize = 48;
+        magnification = false;
+      };
+      
+      finder = {
+        AppleShowAllExtensions = true;
+        FXEnableExtensionChangeWarning = false;
+        _FXShowPosixPathInTitle = true;
+        CreateDesktop = false;
+        QuitMenuItem = true;
+        ShowPathbar = true;
+        ShowStatusBar = true;
+      };
 
-    NSGlobalDomain = {
-      AppleShowAllExtensions = true;
-      InitialKeyRepeat = 15;
-      KeyRepeat = 2;
-      NSAutomaticCapitalizationEnabled = false;
-      NSAutomaticSpellingCorrectionEnabled = false;
-      NSNavPanelExpandedStateForSaveMode = true;
-      NSNavPanelExpandedStateForSaveMode2 = true;
-      PMPrintingExpandedStateForPrint = true;
-      PMPrintingExpandedStateForPrint2 = true;
-    };
+      NSGlobalDomain = {
+        AppleShowAllExtensions = true;
+        InitialKeyRepeat = 15;
+        KeyRepeat = 2;
+        NSAutomaticCapitalizationEnabled = false;
+        NSAutomaticSpellingCorrectionEnabled = false;
+        NSNavPanelExpandedStateForSaveMode = true;
+        NSNavPanelExpandedStateForSaveMode2 = true;
+        PMPrintingExpandedStateForPrint = true;
+        PMPrintingExpandedStateForPrint2 = true;
+        "com.apple.swipescrolldirection" = false;
+        "com.apple.keyboard.fnState" = true;
+      };
 
-    # Trackpad settings
-    trackpad = {
-      Clicking = true;
-      TrackpadRightClick = true;
-      TrackpadThreeFingerDrag = true;
-    };
+      # Trackpad settings
+      trackpad = {
+        Clicking = true;
+        TrackpadRightClick = true;
+        TrackpadThreeFingerDrag = true;
+        ActuationStrength = 1;
+        FirstClickThreshold = 1;
+        SecondClickThreshold = 1;
+      };
 
-    # Keyboard settings
-    keyboard = {
-      enableKeyMapping = true;
-    };
+      # Keyboard settings
+      keyboard = {
+        enableKeyMapping = true;
+      };
 
-    # Security settings
-    CustomSystemPreferences = {
-      "com.apple.screensaver" = {
-        askForPassword = true;
-        askForPasswordDelay = 0;
+      # Security settings
+      CustomSystemPreferences = {
+        "com.apple.screensaver" = {
+          askForPassword = true;
+          askForPasswordDelay = 0;
+        };
+        "com.apple.screencapture" = {
+          location = "~/Desktop";
+          type = "png";
+        };
       };
     };
-  };
 
-  # Add ability to used TouchID for sudo authentication
-  security.pam.enableSudoTouchIdAuth = true;
+    # Add ability to used TouchID for sudo authentication
+    activationScripts.postActivation.text = ''
+      # Enable Touch ID for sudo
+      if ! grep -q "pam_tid.so" /etc/pam.d/sudo; then
+        sudo sed -i "" '2i\
+auth       sufficient     pam_tid.so
+        ' /etc/pam.d/sudo
+      fi
+    '';
 
-  # Keyboard
-  system.keyboard = {
-    enableKeyMapping = true;
-    remapCapsLockToEscape = true;
+    # Keyboard
+    keyboard = {
+      enableKeyMapping = true;
+      remapCapsLockToEscape = true;
+    };
   };
 
   # Fonts
   fonts = {
     fontDir.enable = true;
     fonts = with pkgs; [
-      (nerdfonts.override { fonts = [ "FiraCode" "JetBrainsMono" ]; })
+      (nerdfonts.override { fonts = [ "FiraCode" "JetBrainsMono" "Hack" ]; })
+      font-awesome
     ];
+  };
+
+  # Homebrew
+  homebrew = {
+    enable = true;
+    onActivation = {
+      autoUpdate = true;
+      cleanup = "zap";
+      upgrade = true;
+    };
+    taps = [
+      "homebrew/cask-fonts"
+      "homebrew/cask-versions"
+      "homebrew/services"
+    ];
+    brews = [
+      "mas"
+    ];
+    casks = [
+      "discord"
+      "docker"
+      "google-chrome"
+      "google-drive"
+      "raycast"
+      "slack"
+      "visual-studio-code"
+      "zoom"
+    ];
+    masApps = {
+      "Xcode" = 497799835;
+    };
   };
 
   # Used for backwards compatibility, please read the changelog before changing.
