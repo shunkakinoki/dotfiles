@@ -4,7 +4,7 @@
   sources,
 }:
 let
-  gh = import ./gh { inherit lib pkgs; };
+  gh = import ./gh;
   starship = import ./starship { inherit lib pkgs; };
   zsh = import ./zsh { inherit lib pkgs; };
 in
