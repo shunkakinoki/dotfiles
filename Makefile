@@ -130,8 +130,8 @@ nix-home-manager-update:
 
 ##@ GitHub
 
-.PHONY: update
-update:
+.PHONY: pr
+pr:
 	@if ! command -v gh &> /dev/null; then \
 		echo "❌ GitHub CLI not found. Please run 'make install' to install it."; \
 		exit 1; \
