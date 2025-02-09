@@ -75,10 +75,10 @@
   };
 
   # Set Git to use SSH
-  programs.ssh = {
-    enable = true;
-    knownHosts = {};
-  };
+  # programs.ssh = {
+  #   enable = true;
+  #   knownHosts = {};
+  # };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
