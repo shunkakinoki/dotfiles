@@ -1,11 +1,11 @@
-{ inputs }:
+{ inputs, username ? "shunkakinoki", hostname ? "aarch64-darwin" }:
 let
   inherit (inputs) nix-darwin home-manager;
   system = "aarch64-darwin";
-  username = "shunkakinoki";
   configuration =
     { ... }:
     {
+      networking.hostName = hostname;
       users.users.${username}.home = "/Users/${username}";
     };
 in
@@ -24,7 +24,7 @@ nix-darwin.lib.darwinSystem {
       home-manager.users."${username}" = import ../../home-manager {
         inherit system;
         nixpkgs = inputs.nixpkgs;
-        inherit (inputs) ;
+        inherit inputs;
       };
     }
   ];
