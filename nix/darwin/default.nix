@@ -181,7 +181,7 @@ auth       sufficient     pam_tid.so
       cleanup = "uninstall"; # Less aggressive than "zap"
       extraFlags = [
         "--verbose"
-        "--force" # Force install even if there are conflicts
+        "--force"
       ];
     };
     global = {
@@ -190,7 +190,6 @@ auth       sufficient     pam_tid.so
     };
     taps = [
       "homebrew/cask-fonts"
-      "homebrew/cask-versions"
       "homebrew/services"
     ];
     brews = [
