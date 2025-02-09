@@ -49,11 +49,6 @@ switch: nix-switch darwin-switch
 .PHONY: update
 update: nix-update darwin-update
 
-.PHONY: update-all
-update-all:
-	@echo "🔄 Updating all configurations (this may take a while)..."
-	@nix run .#update
-	@echo "✨ All updates completed!"
 
 ##@ Configuration
 
@@ -72,28 +67,16 @@ nix-check:
 		echo "   source ~/.nix-profile/etc/profile.d/nix.sh"; \
 		exit 1; \
 	fi
-	@if ! command -v home-manager >/dev/null 2>&1; then \
-		echo "📦 Home Manager not found. Installing..."; \
-		export NIX_PATH=${NIX_PATH:+$NIX_PATH:}$HOME/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/root/channels && \
-		nix-shell '<home-manager>' -A install && \
-		echo "✨ Home Manager installed successfully!"; \
-	fi
 
 .PHONY: nix-install
-nix-install: nix-check nix-backup # nix-switch
+nix-install: nix-check nix-backup nix-switch
 	@echo "✨ Installation complete for ${OS}!"
 
-.PHONY: nix-switch
-nix-switch: nix-check
-	@echo "Applying Home Manager configuration..."
-	@. ~/.nix-profile/etc/profile.d/nix.sh && home-manager switch
-
 .PHONY: nix-update
-nix-update: nix-check
-	@echo "Updating Nix channels..."
-	@. ~/.nix-profile/etc/profile.d/nix.sh && nix-channel --update
-	@echo "Updating Home Manager..."
-	@. ~/.nix-profile/etc/profile.d/nix.sh && home-manager switch
+nix-update:
+	@echo "🔄 Updating all configurations (this may take a while)..."
+	@nix run .#update
+	@echo "✨ All updates completed!"
 
 .PHONY: nix-clean
 nix-clean:
@@ -119,6 +102,55 @@ nix-format-check:
 	@echo "Checking Nix formatting..."
 	@find . -name "*.nix" -type f -exec nixpkgs-fmt --check {} +
 	@echo "✅ All Nix files are properly formatted"
+
+##@ Nix Darwin
+
+.PHONY: nix-darwin
+nix-darwin: nix-darwin-install nix-darwin-switch nix-darwin-update
+
+.PHONY: nix-darwin-install
+nix-darwin-install: .config
+	@if [ "$(OS)" = "Darwin" ]; then \
+		if ! command -v darwin-rebuild >/dev/null 2>&1; then \
+			echo "📦 Installing nix-darwin..."; \
+			nix run nix-darwin -- switch --flake .#shunkakinoki; \
+		fi \
+	fi
+
+.PHONY: nix-darwin-switch
+nix-darwin-switch:
+	@if [ "$(OS)" = "Darwin" ]; then \
+		echo "Applying nix-darwin configuration..."; \
+		nix run nix-darwin -- switch --flake .#shunkakinoki; \
+	fi
+
+.PHONY: nix-darwin-update
+nix-darwin-update:
+	@if [ "$(OS)" = "Darwin" ]; then \
+		echo "Updating nix-darwin..."; \
+		nix flake update && \
+		nix run nix-darwin -- switch --flake .#shunkakinoki; \
+	fi
+
+##@ Nix Home Manager
+
+.PHONY: nix-home-manager
+nix-home-manager: nix-home-manager-install nix-home-manager-switch nix-home-manager-update
+
+.PHONY: nix-home-manager-install
+nix-home-manager-install:
+	@echo "Installing nix-home-manager..."
+	@nix run home-manager -- build --flake .#shunkakinoki
+
+.PHONY: nix-home-manager-switch
+nix-home-manager-switch:
+	@echo "Switching nix-home-manager..."
+	@nix run home-manager -- switch --flake .#shunkakinoki
+
+.PHONY: nix-home-manager-update
+nix-home-manager-update:
+	@echo "Updating nix-home-manager..."
+	@nix run home-manager/release-23.11 -- switch --flake .#shunkakinoki
 
 ##@ GitHub
 
@@ -149,27 +181,3 @@ update:
 	fi
 	@echo "✨ PR created successfully!"
 
-##@ Darwin
-.PHONY: darwin-install
-darwin-install: .config
-	@if [ "$(OS)" = "Darwin" ]; then \
-		if ! command -v darwin-rebuild >/dev/null 2>&1; then \
-			echo "📦 Installing nix-darwin..."; \
-			nix run nix-darwin -- switch --flake .#shunkakinoki; \
-		fi \
-	fi
-
-.PHONY: darwin-switch
-darwin-switch:
-	@if [ "$(OS)" = "Darwin" ]; then \
-		echo "Applying nix-darwin configuration..."; \
-		nix run nix-darwin -- switch --flake .#shunkakinoki; \
-	fi
-
-.PHONY: darwin-update
-darwin-update:
-	@if [ "$(OS)" = "Darwin" ]; then \
-		echo "Updating nix-darwin..."; \
-		nix flake update && \
-		nix run nix-darwin -- switch --flake .#shunkakinoki; \
-	fi
