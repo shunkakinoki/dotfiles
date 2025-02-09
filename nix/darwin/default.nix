@@ -204,6 +204,7 @@
       "cursor"
       "discord"
       "docker"
+      "figma"
       "ghostty"
       "google-chrome"
       "google-drive"
