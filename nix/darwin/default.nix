@@ -46,7 +46,7 @@
     };
     gc = {
       automatic = true;
-      interval = { Hour = 24; };
+      interval = { Hour = 23; };
       options = "--delete-older-than 7d";
     };
     extraOptions = ''
