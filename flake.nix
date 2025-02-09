@@ -47,6 +47,7 @@
     in
     {
       # Apps for running common commands
+      apps.${system} = {
         update = {
           type = "app";
           program = toString (pkgs.writeShellScript "update-script" ''
@@ -58,15 +59,6 @@
             echo "Updating nix-darwin..."
             nix run nix-darwin -- switch --flake .#shunkakinoki
             echo "Update complete!"
-          '');
-        };
-        update-darwin = {
-        update-home-manager = {
-          type = "app";
-          program = toString (pkgs.writeShellScript "update-home-manager-script" ''
-            set -e
-            echo "Updating home-manager..."
-            nix run home-manager -- switch --flake .#shunkakinoki
           '');
         };
       };
