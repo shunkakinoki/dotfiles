@@ -49,6 +49,7 @@
       keep-outputs = true
       keep-derivations = true
     '';
+    optimise.automatic = true;
   };
 
   # Create /etc/zshrc that loads the nix-darwin environment.
@@ -84,8 +85,21 @@
 
   # macOS System Settings
   system = {
-    # Enable Touch ID for sudo
     defaults = {
+      NSGlobalDomain = {
+        AppleShowAllExtensions = true;
+        InitialKeyRepeat = 15;
+        KeyRepeat = 2;
+        NSAutomaticCapitalizationEnabled = false;
+        NSAutomaticSpellingCorrectionEnabled = false;
+        NSNavPanelExpandedStateForSaveMode = true;
+        NSNavPanelExpandedStateForSaveMode2 = true;
+        PMPrintingExpandedStateForPrint = true;
+        PMPrintingExpandedStateForPrint2 = true;
+        "com.apple.swipescrolldirection" = false;
+        "com.apple.keyboard.fnState" = true;
+      };
+
       dock = {
         autohide = true;
         orientation = "bottom";
@@ -100,26 +114,13 @@
       
       finder = {
         AppleShowAllExtensions = true;
+        AppleShowAllFiles = true;
         FXEnableExtensionChangeWarning = false;
         _FXShowPosixPathInTitle = true;
         CreateDesktop = false;
         QuitMenuItem = true;
         ShowPathbar = true;
         ShowStatusBar = true;
-      };
-
-      NSGlobalDomain = {
-        AppleShowAllExtensions = true;
-        InitialKeyRepeat = 15;
-        KeyRepeat = 2;
-        NSAutomaticCapitalizationEnabled = false;
-        NSAutomaticSpellingCorrectionEnabled = false;
-        NSNavPanelExpandedStateForSaveMode = true;
-        NSNavPanelExpandedStateForSaveMode2 = true;
-        PMPrintingExpandedStateForPrint = true;
-        PMPrintingExpandedStateForPrint2 = true;
-        "com.apple.swipescrolldirection" = false;
-        "com.apple.keyboard.fnState" = true;
       };
 
       # Trackpad settings
@@ -170,9 +171,10 @@ auth       sufficient     pam_tid.so
   # Fonts
   fonts = {
     fontDir.enable = true;
-    fonts = with pkgs; [
+    packages = with pkgs; [
       (nerdfonts.override { fonts = [ "FiraCode" "JetBrainsMono" "Hack" ]; })
       font-awesome
+      hackgen-nf-font
     ];
   };
 
@@ -181,8 +183,10 @@ auth       sufficient     pam_tid.so
     enable = true;
     onActivation = {
       autoUpdate = true;
-      cleanup = "zap";
       upgrade = true;
+      # Note: cleanup = "zap" is commented out to prevent accidental removal of non-Nix managed apps
+      # cleanup = "zap";
+
     };
     taps = [
       "homebrew/cask-fonts"
