@@ -5,5 +5,6 @@ with pkgs;
   gh
   ghq
   go
+  neofetch
   ollama
 ]
