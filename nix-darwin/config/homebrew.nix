@@ -19,6 +19,7 @@
       "sheldon"
     ];
     casks = [
+      "chatgpt"
       "cursor"
       "discord"
       "docker"
