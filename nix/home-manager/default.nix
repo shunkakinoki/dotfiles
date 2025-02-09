@@ -44,6 +44,7 @@
       
       # GitHub CLI
       gh
+      ghq
       
       # System tools
       htop
