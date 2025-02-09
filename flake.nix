@@ -77,6 +77,7 @@
               useUserPackages = true;
               users.shunkakinoki = import ./nix/home-manager/default.nix;
               extraSpecialArgs = { inherit inputs; };
+              backupFileExtension = "backup";
             };
           }
           

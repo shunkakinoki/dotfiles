@@ -28,30 +28,28 @@
       tree
 
       # Modern CLI tools
-      bottom # System monitor
-      du-dust # Disk usage analyzer
-      procs # Process viewer
-      sd # Find & replace
-      tealdeer # tldr pages
-      zoxide # Smarter cd
+      # bottom # System monitor
+      # du-dust # Disk usage analyzer
+      # procs # Process viewer
+      # sd # Find & replace
+      # tealdeer # tldr pages
+      # zoxide # Smarter cd
       
       # Development environments
-      nodejs
-      python3
-      rustup
-      go
+      # nodejs
+      # python3
+      # rustup
+      # go
       
       # Cloud & Infrastructure
-      awscli2
-      docker
-      kubectl
+      # awscli2
+      # docker
+      # kubectl
       
       # System tools
-      htop
-      bat
-      eza # Modern ls replacement (formerly exa)
-      git-delta
-      starship # Modern shell prompt
+      # htop
+      # bat
+      # starship # Modern shell prompt
     ];
 
     sessionVariables = {
@@ -63,9 +61,9 @@
 
     # File associations
     file = {
-      ".zshrc".source = ../zsh/.zshrc;
-      ".gitconfig".source = ../git/.gitconfig;
-      ".config/nvim/init.vim".source = ../neovim/init.vim;
+      # ".zshrc".source = ../zsh/.zshrc;
+      # ".gitconfig".source = ../git/.gitconfig;
+      # ".config/nvim/init.vim".source = ../neovim/init.vim;
     };
   };
 
@@ -130,89 +128,79 @@
     };
 
     # Zsh configuration
-    zsh = {
-      enable = true;
-      enableAutosuggestions = true;
-      enableCompletion = true;
-      syntaxHighlighting.enable = true;
-      initExtra = ''
-        # Additional zsh configurations
-        bindkey '^[[A' history-substring-search-up
-        bindkey '^[[B' history-substring-search-down
-      '';
-      oh-my-zsh = {
-        enable = true;
-        plugins = [ 
-          "git"
-          "docker"
-          "node"
-          "python"
-          "rust"
-          "golang"
-          "aws"
-          "kubectl"
-          "history-substring-search"
-        ];
-      };
-    };
+    # zsh = {
+    #   enable = true;
+    #   autosuggestion.enable = true;
+    #   enableCompletion = true;
+    #   syntaxHighlighting.enable = true;
+    #   initExtra = ''
+    #     # Additional zsh configurations
+    #     bindkey '^[[A' history-substring-search-up
+    #     bindkey '^[[B' history-substring-search-down
+    #   '';
+    #   oh-my-zsh = {
+    #     enable = true;
+    #     plugins = [ 
+    #       "git"
+    #       "docker"
+    #       "node"
+    #       "python"
+    #       "rust"
+    #       "golang"
+    #       "aws"
+    #       "kubectl"
+    #       "history-substring-search"
+    #     ];
+    #   };
+    # };
 
-    # Neovim configuration
-    neovim = {
-      enable = true;
-      viAlias = true;
-      vimAlias = true;
-      plugins = with pkgs.vimPlugins; [
-        vim-nix
-        vim-surround
-        vim-commentary
-        vim-fugitive
-        nerdtree
-        telescope-nvim
-        nvim-treesitter
-        lualine-nvim
-        nvim-lspconfig
-      ];
-    };
+    # # Neovim configuration
+    # neovim = {
+    #   enable = true;
+    #   viAlias = true;
+    #   vimAlias = true;
+    #   plugins = with pkgs.vimPlugins; [
+    #     vim-nix
+    #     vim-surround
+    #     vim-commentary
+    #     vim-fugitive
+    #     nerdtree
+    #     telescope-nvim
+    #     nvim-treesitter
+    #     lualine-nvim
+    #     nvim-lspconfig
+    #   ];
+    # };
 
-    # Tmux configuration
-    tmux = {
-      enable = true;
-      shortcut = "a";
-      keyMode = "vi";
-      customPaneNavigationAndResize = true;
-      plugins = with pkgs.tmuxPlugins; [
-        sensible
-        yank
-        resurrect
-        continuum
-        {
-          plugin = power-theme;
-          extraConfig = "set -g @tmux_power_theme 'snow'";
-        }
-      ];
-      extraConfig = ''
-        # Enable mouse support
-        set -g mouse on
+    # # Tmux configuration
+    # tmux = {
+    #   enable = true;
+    #   shortcut = "a";
+    #   keyMode = "vi";
+    #   customPaneNavigationAndResize = true;
+    #   plugins = with pkgs.tmuxPlugins; [
+    #     sensible
+    #     yank
+    #     resurrect
+    #     continuum
+    #     {
+    #       plugin = power-theme;
+    #       extraConfig = "set -g @tmux_power_theme 'snow'";
+    #     }
+    #   ];
+    #   extraConfig = ''
+    #     # Enable mouse support
+    #     set -g mouse on
         
-        # Start windows and panes at 1, not 0
-        set -g base-index 1
-        setw -g pane-base-index 1
+    #     # Start windows and panes at 1, not 0
+    #     set -g base-index 1
+    #     setw -g pane-base-index 1
         
-        # Automatically renumber windows
-        set -g renumber-windows on
-      '';
-    };
+    #     # Automatically renumber windows
+    #     set -g renumber-windows on
+    #   '';
+    # };
 
-    # Modern alternatives to classic Unix commands
-    eza = {
-      enable = true;
-      enableAliases = true;
-      extraOptions = [
-        "--group-directories-first"
-        "--header"
-      ];
-    };
-    
     bat = {
       enable = true;
       config = {
