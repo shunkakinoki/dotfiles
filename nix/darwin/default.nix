@@ -178,8 +178,21 @@ auth       sufficient     pam_tid.so
     onActivation = {
       autoUpdate = true;
       upgrade = true;
-      # cleanup = "zap";  # commented out to prevent accidental removal of non-Nix managed apps
+      cleanup = "uninstall"; # Less aggressive than "zap"
+      extraFlags = [
+        "--verbose"
+        "--no-quarantine"
+        "--force-bottle"
+        "--force" # Force install even if there are conflicts
+      ];
     };
+    global = {
+      brewfile = true;
+      noLock = true;
+      noAutoUpdate = true; # Prevent auto-updates during installation
+    };
+    # Set installation retries
+    installationMode = "sequential"; # Install one at a time
     taps = [
       "homebrew/cask-fonts"
       "homebrew/cask-versions"
