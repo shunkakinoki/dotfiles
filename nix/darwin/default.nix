@@ -19,9 +19,8 @@
       unzip
     ];
     
-    # Set default shell to zsh
+    # Set default shell to zsh (removed environment.loginShell)
     shells = with pkgs; [ zsh ];
-    loginShell = pkgs.zsh;
     
     # Add paths to PATH
     systemPath = [ "/opt/homebrew/bin" ];
@@ -41,7 +40,6 @@
     package = pkgs.nixVersions.stable;
     settings = {
       experimental-features = [ "nix-command" "flakes" ];
-      auto-optimise-store = true;
       warn-dirty = false;
       max-jobs = "auto";
       trusted-users = [ "@admin" ];
@@ -69,7 +67,7 @@
     # Enable nix-index
     nix-index.enable = true;
     
-    # Git configuration
+    # Git configuration (commented out)
     # git = {
     #   enable = true;
     #   config = {
@@ -79,12 +77,6 @@
     #   };
     # };
   };
-
-  # Set Git to use SSH
-  # programs.ssh = {
-  #   enable = true;
-  #   knownHosts = {};
-  # };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -152,7 +144,7 @@
       };
     };
 
-    # Add ability to used TouchID for sudo authentication
+    # Add ability to use TouchID for sudo authentication
     activationScripts.postActivation.text = ''
       # Enable Touch ID for sudo
       if ! grep -q "pam_tid.so" /etc/pam.d/sudo; then
@@ -162,16 +154,15 @@ auth       sufficient     pam_tid.so
       fi
     '';
 
-    # Keyboard
+    # Keyboard (commented out)
     # keyboard = {
     #   enableKeyMapping = true;
     #   remapCapsLockToEscape = true;
     # };
   };
 
-  # Fonts
+  # Fonts (remove fonts.fontDir.enable)
   fonts = {
-    fontDir.enable = true;
     packages = with pkgs; [
       (nerdfonts.override { fonts = [ "FiraCode" "JetBrainsMono" "Hack" ]; })
       font-awesome
@@ -185,8 +176,7 @@ auth       sufficient     pam_tid.so
     onActivation = {
       autoUpdate = true;
       upgrade = true;
-      # Note: cleanup = "zap" is commented out to prevent accidental removal of non-Nix managed apps
-      # cleanup = "zap";
+      # cleanup = "zap";  # commented out to prevent accidental removal of non-Nix managed apps
     };
     taps = [
       "homebrew/cask-fonts"
