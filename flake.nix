@@ -3,12 +3,12 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    
+
     nix-darwin = {
       url = "github:LnL7/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -23,15 +23,15 @@
     let
       # System types to support
       supportedSystems = [ "aarch64-darwin" "x86_64-darwin" ];
-      
+
       # Helper function to generate system-specific outputs
       forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-      
+
       # Overlays
       overlays = {
         # Add your custom overlays here
       };
-      
+
       # Nixpkgs configuration
       nixpkgsConfig = {
         allowUnfree = true;
@@ -65,10 +65,10 @@
 
       darwinConfigurations."shunkakinoki" = nix-darwin.lib.darwinSystem {
         system = "aarch64-darwin";
-        modules = [ 
+        modules = [
           # Base darwin configuration
           ./nix/darwin
-          
+
           # Home-manager configuration
           home-manager.darwinModules.home-manager
           {
@@ -81,7 +81,7 @@
               backupFileExtension = "backup";
             };
           }
-          
+
           # System-wide configuration
           # {
           #   nixpkgs = { 
@@ -95,7 +95,7 @@
 
       homeConfigurations."shunkakinoki" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
-        modules = [ 
+        modules = [
           ./nix/home-manager/default.nix
         ];
         extraSpecialArgs = { inherit inputs; };
@@ -103,7 +103,7 @@
 
       # Development shell for working on this configuration
       devShells = forAllSystems (system:
-        let 
+        let
           pkgs = import nixpkgs {
             inherit system;
             config = nixpkgsConfig;

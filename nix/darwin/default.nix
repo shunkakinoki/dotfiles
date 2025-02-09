@@ -18,13 +18,13 @@
       gzip
       unzip
     ];
-    
+
     # Set default shell to zsh (removed environment.loginShell)
     shells = with pkgs; [ zsh ];
-    
+
     # Add paths to PATH
     systemPath = [ "/opt/homebrew/bin" ];
-    
+
     # Set environment variables
     variables = {
       LANG = "en_US.UTF-8";
@@ -63,10 +63,10 @@
       enableCompletion = true;
       promptInit = "";
     };
-    
+
     # Enable nix-index
     nix-index.enable = true;
-    
+
     # Git configuration (commented out)
     # git = {
     #   enable = true;
@@ -109,7 +109,7 @@
         tilesize = 48;
         magnification = false;
       };
-      
+
       finder = {
         AppleShowAllExtensions = true;
         AppleShowAllFiles = true;
@@ -145,14 +145,14 @@
     };
 
     # Add ability to use TouchID for sudo authentication
-#     activationScripts.postActivation.text = ''
-#       # Enable Touch ID for sudo
-#       if ! grep -q "pam_tid.so" /etc/pam.d/sudo; then
-#         sudo sed -i "" '2i\
-# auth       sufficient     pam_tid.so
-#         ' /etc/pam.d/sudo
-#       fi
-#     '';
+    #     activationScripts.postActivation.text = ''
+    #       # Enable Touch ID for sudo
+    #       if ! grep -q "pam_tid.so" /etc/pam.d/sudo; then
+    #         sudo sed -i "" '2i\
+    # auth       sufficient     pam_tid.so
+    #         ' /etc/pam.d/sudo
+    #       fi
+    #     '';
 
     # Keyboard (commented out)
     # keyboard = {
@@ -169,8 +169,8 @@
       pkgs.nerd-fonts.hack
       font-awesome
       hackgen-nf-font
-  ];
-};
+    ];
+  };
 
   # Homebrew
   homebrew = {

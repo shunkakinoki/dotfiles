@@ -30,22 +30,22 @@
       # sd # Find & replace
       # tealdeer # tldr pages
       # zoxide # Smarter cd
-      
+
       # Development environments
       nodejs
       python3
       rustup
       go
-      
+
       # Cloud & Infrastructure
       awscli2
       docker
       kubectl
-      
+
       # GitHub CLI
       gh
       ghq
-      
+
       # System tools
       htop
       bat
@@ -191,11 +191,11 @@
     #   extraConfig = ''
     #     # Enable mouse support
     #     set -g mouse on
-        
+
     #     # Start windows and panes at 1, not 0
     #     set -g base-index 1
     #     setw -g pane-base-index 1
-        
+
     #     # Automatically renumber windows
     #     set -g renumber-windows on
     #   '';
@@ -208,12 +208,12 @@
         italic-text = "always";
       };
     };
-    
+
     fzf = {
       enable = true;
       enableZshIntegration = true;
       defaultCommand = "fd --type f --hidden --follow --exclude .git";
-      defaultOptions = ["--height 40%" "--layout=reverse" "--border"];
+      defaultOptions = [ "--height 40%" "--layout=reverse" "--border" ];
     };
   };
 

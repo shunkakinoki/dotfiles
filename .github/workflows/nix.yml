@@ -45,6 +45,6 @@ jobs:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
           nix_path: nixpkgs=channel:nixos-unstable
       - name: Install nixpkgs-fmt
-        run: nix-env -i nixpkgs-fmt
+        run: nix-env -iA nixpkgs.nixpkgs-fmt
       - name: Check formatting
         run: make nix-format-check
