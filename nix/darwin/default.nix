@@ -133,10 +133,6 @@
         SecondClickThreshold = 1;
       };
 
-      # Keyboard settings
-      keyboard = {
-        enableKeyMapping = true;
-      };
 
       # Security settings
       CustomSystemPreferences = {
@@ -162,10 +158,10 @@ auth       sufficient     pam_tid.so
     '';
 
     # Keyboard
-    keyboard = {
-      enableKeyMapping = true;
-      remapCapsLockToEscape = true;
-    };
+    # keyboard = {
+    #   enableKeyMapping = true;
+    #   remapCapsLockToEscape = true;
+    # };
   };
 
   # Fonts
