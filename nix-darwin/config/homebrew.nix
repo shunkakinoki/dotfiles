@@ -15,6 +15,7 @@
       "gnupg"
       "mas"
       "pinentry-mac"
+      "sheldon"
     ];
     casks = [
       "cursor"
