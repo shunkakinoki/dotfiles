@@ -49,6 +49,12 @@ switch: nix-switch darwin-switch
 .PHONY: update
 update: nix-update darwin-update
 
+.PHONY: update-all
+update-all:
+	@echo "🔄 Updating all configurations (this may take a while)..."
+	@nix run .#update
+	@echo "✨ All updates completed!"
+
 ##@ Configuration
 
 .PHONY: config-install
@@ -149,9 +155,7 @@ darwin-install: .config
 	@if [ "$(OS)" = "Darwin" ]; then \
 		if ! command -v darwin-rebuild >/dev/null 2>&1; then \
 			echo "📦 Installing nix-darwin..."; \
-			cd $(CONFIG_DIR)/nix && \
-			nix build .#darwinConfigurations.shunkakinoki.system; \
-			./result/sw/bin/darwin-rebuild switch --flake .#shunkakinoki; \
+			nix run nix-darwin -- switch --flake .#shunkakinoki; \
 		fi \
 	fi
 
@@ -159,14 +163,13 @@ darwin-install: .config
 darwin-switch:
 	@if [ "$(OS)" = "Darwin" ]; then \
 		echo "Applying nix-darwin configuration..."; \
-		cd $(CONFIG_DIR)/nix && darwin-rebuild switch --flake .#shunkakinoki; \
+		nix run nix-darwin -- switch --flake .#shunkakinoki; \
 	fi
 
 .PHONY: darwin-update
 darwin-update:
 	@if [ "$(OS)" = "Darwin" ]; then \
 		echo "Updating nix-darwin..."; \
-		cd $(CONFIG_DIR)/nix && \
 		nix flake update && \
-		darwin-rebuild switch --flake .#shunkakinoki; \
+		nix run nix-darwin -- switch --flake .#shunkakinoki; \
 	fi
