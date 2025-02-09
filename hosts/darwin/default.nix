@@ -24,7 +24,7 @@ nix-darwin.lib.darwinSystem {
       home-manager.users."${username}" = import ../../home-manager {
         inherit system;
         nixpkgs = inputs.nixpkgs;
-        inherit (inputs);
+        inherit (inputs) ;
       };
     }
   ];

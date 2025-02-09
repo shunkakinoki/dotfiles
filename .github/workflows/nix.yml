@@ -4,40 +4,32 @@ on:
     branches:
       - main
 jobs:
-  nix-home-manager:
+  nix-check:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout 
+      - name: Checkout
         uses: actions/checkout@v4
       - name: Install Nix
         uses: cachix/install-nix-action@v30
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
-          nix_path: nixpkgs=channel:nixos-unstable
-          extra_nix_config: |
-            experimental-features = nix-command flakes
-            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-      - name: Run Home Manager
-        run: make nix-home-manager
+      - name: Run Flake Check
+        run: nix flake check --all-systems
   nix-darwin:
     runs-on: macos-latest
     steps:
-      - name: Checkout 
+      - name: Checkout
         uses: actions/checkout@v4
       - name: Install Nix
         uses: cachix/install-nix-action@v30
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
-          nix_path: nixpkgs=channel:nixos-unstable
-          extra_nix_config: |
-            experimental-features = nix-command flakes
-            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
       - name: Prepare system files
         run: |
           sudo mv /etc/nix/nix.conf /etc/nix/nix.conf.before-nix-darwin || true
           sudo mv /etc/shells /etc/shells.before-nix-darwin || true
       - name: Run Nix Darwin
-        run: make nix-darwin
+        run: make update
   nix-format:
     runs-on: ubuntu-latest
     steps:

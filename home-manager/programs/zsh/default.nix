@@ -20,7 +20,7 @@
     initExtra = ''
       # Initialize Starship
       eval "$(starship init zsh)"
-      
+
       eval "$(sheldon source)"
       eval "$(direnv hook zsh)"
       eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -39,4 +39,4 @@
       export OPENROUTER_API_KEY_AVANTE=$(security find-generic-password -a "avante" -s "shunkakinoki" -w)
     '';
   };
-} 
+}

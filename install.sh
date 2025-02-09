@@ -4,24 +4,24 @@
 set -e
 
 # Detect OS
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    OS="macos"
-elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    OS="linux"
+if [[ $OSTYPE == "darwin"* ]]; then
+  OS="macos"
+elif [[ $OSTYPE == "linux-gnu"* ]]; then
+  OS="linux"
 else
-    echo "Unsupported operating system: $OSTYPE"
-    exit 1
+  echo "Unsupported operating system: $OSTYPE"
+  exit 1
 fi
 
 # Install Nix if not already installed
-if ! command -v nix &> /dev/null; then
-    echo "Installing Nix..."
-    if [[ "$OS" == "macos" ]]; then
-        sh <(curl -L https://nixos.org/nix/install) --daemon
-    else
-        sh <(curl -L https://nixos.org/nix/install) --daemon
-    fi
-    
-    # Source nix
-    . ~/.nix-profile/etc/profile.d/nix.sh
+if ! command -v nix &>/dev/null; then
+  echo "Installing Nix..."
+  if [[ $OS == "macos" ]]; then
+    sh <(curl -L https://nixos.org/nix/install) --daemon
+  else
+    sh <(curl -L https://nixos.org/nix/install) --daemon
+  fi
+
+  # Source nix
+  . ~/.nix-profile/etc/profile.d/nix.sh
 fi
