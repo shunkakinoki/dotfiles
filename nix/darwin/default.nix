@@ -181,8 +181,6 @@ auth       sufficient     pam_tid.so
       cleanup = "uninstall"; # Less aggressive than "zap"
       extraFlags = [
         "--verbose"
-        "--no-quarantine"
-        "--force-bottle"
         "--force" # Force install even if there are conflicts
       ];
     };
