@@ -1,4 +1,10 @@
 { pkgs, ... }: {
+  # User configuration
+  users.users.shunkakinoki = {
+    home = "/Users/shunkakinoki";
+    name = "shunkakinoki";
+  };
+
   # List packages installed in system profile
   environment = {
     systemPackages = with pkgs; [

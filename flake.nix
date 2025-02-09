@@ -73,6 +73,7 @@
           home-manager.darwinModules.home-manager
           {
             home-manager = {
+              # users.users.shunkakinoki.home = "/Users/shunkakinoki";
               useGlobalPkgs = true;
               useUserPackages = true;
               users.shunkakinoki = import ./nix/home-manager/default.nix;
