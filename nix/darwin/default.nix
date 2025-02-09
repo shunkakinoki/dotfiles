@@ -38,7 +38,7 @@
 
   # Necessary for using flakes on this system.
   nix = {
-    package = pkgs.nixFlakes;
+    package = pkgs.nixFlakes.stable;
     settings = {
       experimental-features = [ "nix-command" "flakes" ];
       auto-optimise-store = true;
