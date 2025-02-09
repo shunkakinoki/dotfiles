@@ -191,8 +191,6 @@ auth       sufficient     pam_tid.so
       noLock = true;
       noAutoUpdate = true; # Prevent auto-updates during installation
     };
-    # Set installation retries
-    installationMode = "sequential"; # Install one at a time
     taps = [
       "homebrew/cask-fonts"
       "homebrew/cask-versions"

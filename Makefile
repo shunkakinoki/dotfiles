@@ -47,8 +47,7 @@ format: nix-format
 switch: nix-switch darwin-switch
 
 .PHONY: update
-update: nix-update darwin-update
-
+update: nix-update
 
 ##@ Configuration
 
