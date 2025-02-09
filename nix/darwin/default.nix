@@ -1,8 +1,25 @@
-{ pkgs, ... }: {
+{ pkgs, config, ... }: 
+let
+  users = {
+    default = {
+      name = "shunkakinoki";
+      home = "/Users/shunkakinoki";
+    };
+    ci = {
+      name = "runner";
+      home = "/Users/runner";
+    };
+  };
+  isCI = builtins.getEnv "CI" == "true";
+  activeUser = if isCI then users.ci else users.default;
+  username = activeUser.name;
+  homeDirectory = activeUser.home;
+in
+{
   # User configuration
-  users.users.shunkakinoki = {
-    home = "/Users/shunkakinoki";
-    name = "shunkakinoki";
+  users.users.${username} = {
+    home = homeDirectory;
+    name = username;
   };
 
   # List packages installed in system profile
@@ -42,7 +59,7 @@
       experimental-features = [ "nix-command" "flakes" ];
       warn-dirty = false;
       max-jobs = "auto";
-      trusted-users = [ "@admin" ];
+      trusted-users = [ "@admin" username ];
     };
     gc = {
       automatic = true;
@@ -172,8 +189,10 @@
     ];
   };
 
-  # Homebrew
-  homebrew = {
+  # Conditionally include homebrew configuration only for non-CI environments
+  homebrew = if (builtins.getEnv "CI") == "true" then {
+    enable = false;
+  } else {
     enable = true;
     onActivation = {
       autoUpdate = true;

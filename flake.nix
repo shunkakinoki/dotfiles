@@ -115,6 +115,25 @@
             }
           ];
         };
+
+        # New configuration for CI runner
+        runner = nix-darwin.lib.darwinSystem {
+          system = "aarch64-darwin";
+          specialArgs = { inherit inputs; };
+          modules = [
+            ./nix/darwin
+            home-manager.darwinModules.home-manager
+            {
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                users.runner = import ./nix/home-manager/default.nix;
+                extraSpecialArgs = { inherit inputs; };
+                backupFileExtension = "backup";
+              };
+            }
+          ];
+        };
       };
 
       # Home Manager configuration
