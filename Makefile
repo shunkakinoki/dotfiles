@@ -10,6 +10,9 @@ NIX_ENV := $(shell . ~/.nix-profile/etc/profile.d/nix.sh 2>/dev/null || echo "no
 HOME_DIR := $(shell echo $$HOME)
 CONFIG_DIR := $(HOME_DIR)/.config
 
+# Nix experimental features
+NIX_FLAGS := --extra-experimental-features 'flakes nix-command'
+
 ##@ Help
 
 # Default target
@@ -20,25 +23,20 @@ default: help
 .PHONY: help
 help:
 	@echo "Available targets:"
-	@echo "  install       - Set up full environment"
-	@echo "  switch       - Apply Home Manager and Darwin configuration"
-	@echo "  update       - Update Nix channels and configurations"
-	@echo "  clean        - Clean up temporary files"
+	@echo "  install      - Set up full environment"
+	@echo "  switch       - Apply Nix configuration"
+	@echo "  update       - Update Nix flake and configurations"
 	@echo "  format       - Format Nix files"
 	@echo "  format-check - Check Nix formatting"
-	@echo "  backup       - Backup existing configurations"
 	@echo "  pr           - Create and push a PR (usage: make pr m='commit message' b='branch-name' t='PR title')"
 
 ##@ General
 
 .PHONY: install
-install: nix-install 
+install: nix-install
 
 .PHONY: check
 check: nix-check
-
-.PHONY: clean
-clean: nix-clean
 
 .PHONY: format
 format: nix-format
@@ -47,6 +45,7 @@ format: nix-format
 update: nix-update
 
 ##@ Nix
+
 .PHONY: nix-check
 nix-check:
 	@if [ "$(NIX_ENV)" = "not_found" ]; then \
@@ -59,17 +58,12 @@ nix-install: nix-check nix-update
 	@echo "✨ Installation complete for ${OS}!"
 
 .PHONY: nix-update
-nix-update: nix-flake-update nix-run-update
-
-.PHONY: nix-clean
-nix-clean:
-	@echo "Cleaning up..."
-	@echo "✨ Cleanup complete"
+nix-update: nix-flake-update nix-switch
 
 .PHONY: nix-flake-update
 nix-flake-update:
 	@echo "🔄 Updating flake.lock..."
-	@nix flake update
+	@nix flake update $(NIX_FLAGS)
 	@echo "✨ flake.lock updated!"
 
 .PHONY: nix-format
@@ -92,55 +86,18 @@ nix-format-check:
 	@find . -name "*.nix" -type f -exec nixpkgs-fmt --check {} +
 	@echo "✅ All Nix files are properly formatted"
 
-.PHONY: nix-run-update
-nix-run-update:
-	@echo "🔄 Running update..."
-	@nix run .#update
-	@echo "✨ Update complete!"
-
-##@ Nix Darwin
-
-.PHONY: nix-darwin
-nix-darwin: nix-darwin-install nix-darwin-update
-
-.PHONY: nix-darwin-install
-nix-darwin-install: nix-darwin-update
-	@echo "Installing nix-darwin..."
-	@echo "Installed nix-darwin"
-
-.PHONY: nix-darwin-update
-nix-darwin-update:
-	@if [ "$(OS)" = "Darwin" ]; then \
-		echo "Updating nix-darwin..."; \
-		if [ "$$CI" = "true" ]; then \
-			nix run --extra-experimental-features "nix-command flakes" nix-darwin -- switch --flake .#runner; \
-		else \
-			nix run --extra-experimental-features "nix-command flakes" nix-darwin -- switch --flake .#shunkakinoki; \
-		fi; \
-	fi
-	@echo "Updated nix-darwin"
-
-##@ Nix Home Manager
-
-.PHONY: nix-home-manager
-nix-home-manager: nix-home-manager-install nix-home-manager-update
-
-.PHONY: nix-home-manager-install
-nix-home-manager-install: nix-home-manager-update
-	@echo "Installing nix-home-manager..."
-	@echo "Installed nix-home-manager"
-
-.PHONY: nix-home-manager-update
-nix-home-manager-update: nix-home-manager-install
-	@echo "Updating nix-home-manager..."
+.PHONY: nix-switch
+nix-switch:
+	@echo "🔄 Applying Nix configuration..."
 	@if [ "$$CI" = "true" ]; then \
-		nix run --extra-experimental-features "nix-command flakes" home-manager -- switch --flake .#runner; \
+		nix build .#darwinConfigurations.runner.system $(NIX_FLAGS) --show-trace; \
 	else \
-		nix run --extra-experimental-features "nix-command flakes" home-manager -- switch --flake .#shunkakinoki; \
+		nix build .#darwinConfigurations.aarch64-darwin.system $(NIX_FLAGS) --show-trace; \
 	fi
-	@echo "Updated nix-home-manager"
+	@./result/sw/bin/darwin-rebuild switch --flake .#
+	@echo "✨ Configuration applied successfully!"
 
-#@ GitHub
+##@ GitHub
 
 .PHONY: pr
 pr:
