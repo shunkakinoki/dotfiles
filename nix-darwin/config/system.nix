@@ -26,7 +26,7 @@
         PMPrintingExpandedStateForPrint = true;
         PMPrintingExpandedStateForPrint2 = true;
         "com.apple.swipescrolldirection" = true;
-        "com.apple.keyboard.fnState" = true;
+        "com.apple.keyboard.fnState" = false;
       };
       finder = {
         AppleShowAllExtensions = true;
@@ -41,11 +41,15 @@
       dock = {
         autohide = true;
         persistent-apps = [
-          "/Applications/Safari.app"
-          "/Applications/Google Chrome.app"
-          "/Applications/Slack.app"
-          "/Applications/Cursor.app"
-          "/Applications/ChatGPT.app"
+          "/System/Applications/Reminders.app"
+          "/System/Applications/Notes.app"
+          "/System/Applications/Calendar.app"
+          "/Applications/Chrome.app"
+          "/Applications/Ghostty.app"
+          "/System/Applications/Mail.app"
+          "/System/Applications/Messages.app"
+          "/Applications/Discord.app"
+          "/System/Applications/Music.app"
         ];
         orientation = "bottom";
         showhidden = true;
