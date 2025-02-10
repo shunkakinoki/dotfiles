@@ -1,6 +1,7 @@
+{ username }:
 {
   homebrew = {
-    enable = builtins.getEnv "CI" == "";
+    enable = username != "runner";
     onActivation = {
       autoUpdate = true;
       upgrade = true;

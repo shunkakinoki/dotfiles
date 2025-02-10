@@ -8,7 +8,7 @@ let
   services = import ./config/services;
   fonts = import ./config/fonts.nix { inherit pkgs; };
   launchd = import ./config/launchd.nix { inherit pkgs; };
-  homebrew = import ./config/homebrew.nix;
+  homebrew = import ./config/homebrew.nix { inherit username; };
   networking = import ./config/networking.nix;
   nix = import ./config/nix.nix;
   security = import ./config/security.nix { inherit username; };
