@@ -15,7 +15,7 @@ let
   system = import ./config/system.nix { inherit pkgs; };
   time = import ./config/time.nix;
 
-  homebrew = if username != "runner" then (import ./config/homebrew.nix).homebrew else {};
+  homebrew = if username != "runner" then (import ./config/homebrew.nix).homebrew else { };
 in
 {
   imports = [
