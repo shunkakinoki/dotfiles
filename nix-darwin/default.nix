@@ -27,6 +27,8 @@ in
     time
   ];
 
-  # Conditionally include
-  homebrew = lib.mkIf (username != "runner") ((import ./config/homebrew.nix).homebrew);
+  # Conditionally include homebrew based on username
+  homebrew = lib.mkMerge [
+    (lib.mkIf (username != "runner") (import ./config/homebrew.nix).homebrew)
+  ];
 }
