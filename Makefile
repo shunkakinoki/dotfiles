@@ -3,15 +3,33 @@
 # Detect OS
 OS := $(shell uname -s)
 
+# Detect architecture
+ARCH := $(shell uname -m)
+NIX_SYSTEM := $(shell if [ "$(OS)" = "Darwin" ] && [ "$(ARCH)" = "arm64" ]; then \
+		echo "aarch64-darwin"; \
+	elif [ "$(OS)" = "Darwin" ] && [ "$(ARCH)" = "x86_64" ]; then \
+		echo "x86_64-darwin"; \
+	elif [ "$(OS)" = "Linux" ] && [ "$(ARCH)" = "x86_64" ]; then \
+		echo "x86_64-linux"; \
+	elif [ "$(OS)" = "Linux" ] && [ "$(ARCH)" = "aarch64" ]; then \
+		echo "aarch64-linux"; \
+	else \
+		echo "unsupported"; \
+	fi)
+# Determine configuration type based on OS
+NIX_CONFIG_TYPE := $(shell if [ "$(OS)" = "Darwin" ]; then \
+		echo "darwinConfigurations"; \
+	else \
+		echo "nixosConfigurations"; \
+	fi)
 # Ensure Nix environment is sourced
 NIX_ENV := $(shell . ~/.nix-profile/etc/profile.d/nix.sh 2>/dev/null || echo "not_found")
+# Nix experimental features
+NIX_FLAGS := --extra-experimental-features 'flakes nix-command'
 
 # User's home directory
 HOME_DIR := $(shell echo $$HOME)
 CONFIG_DIR := $(HOME_DIR)/.config
-
-# Nix experimental features
-NIX_FLAGS := --extra-experimental-features 'flakes nix-command'
 
 ##@ Help
 
@@ -86,11 +104,20 @@ nix-format-check:
 nix-switch:
 	@echo "🔄 Applying Nix configuration..."
 	@if [ "$$CI" = "true" ]; then \
-		nix build .#darwinConfigurations.runner.system $(NIX_FLAGS) --show-trace; \
+		echo "Running in CI"; \
+		nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --show-trace; \
 	else \
-		nix build .#darwinConfigurations.aarch64-darwin.system $(NIX_FLAGS) --show-trace; \
+		if [ "$(NIX_SYSTEM)" = "unsupported" ]; then \
+			echo "❌ Unsupported system architecture: $(OS) $(ARCH)"; \
+			exit 1; \
+		fi; \
+		nix build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --show-trace; \
 	fi
-	@./result/sw/bin/darwin-rebuild switch --flake .#aarch64-darwin
+	@if [ "$(OS)" = "Darwin" ]; then \
+		darwin-rebuild switch --flake .#$(NIX_SYSTEM); \
+	else \
+		sudo nixos-rebuild switch --flake .#$(NIX_SYSTEM); \
+	fi
 	@echo "✨ Configuration applied successfully!"
 
 ##@ GitHub
