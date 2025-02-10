@@ -16,7 +16,7 @@ let
   time = import ./config/time.nix;
 
   # Only import homebrew config for non-runner
-  homebrewConfig = if username != "runner" then [ ./config/homebrew.nix ] else [];
+  homebrewConfig = if username != "runner" then [ ./config/homebrew.nix ] else [ ];
 in
 {
   imports = [
