@@ -14,8 +14,6 @@ let
   security = import ./config/security.nix { inherit username; };
   system = import ./config/system.nix { inherit pkgs; };
   time = import ./config/time.nix;
-
-  homebrew = if username != "runner" then (import ./config/homebrew.nix).homebrew else { };
 in
 {
   imports = [
@@ -29,6 +27,6 @@ in
     time
   ];
 
-  # Conditionally include homebrew configuration
-  inherit homebrew;
+  # Conditionally include
+  homebrew = lib.mkIf (username != "runner") ((import ./config/homebrew.nix).homebrew);
 }
