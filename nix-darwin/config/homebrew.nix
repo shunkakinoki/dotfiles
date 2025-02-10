@@ -1,7 +1,6 @@
-{ username }:
 {
   homebrew = {
-    enable = username != "runner";
+    enable = true;
     onActivation = {
       autoUpdate = true;
       upgrade = true;

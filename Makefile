@@ -1,10 +1,10 @@
 ##@ Variables
 
-# Detect OS
+# Detect architecture and OS
+ARCH := $(shell uname -m)
 OS := $(shell uname -s)
 
-# Detect architecture
-ARCH := $(shell uname -m)
+# Nix configuration system
 NIX_SYSTEM := $(shell if [ "$(OS)" = "Darwin" ] && [ "$(ARCH)" = "arm64" ]; then \
 		echo "aarch64-darwin"; \
 	elif [ "$(OS)" = "Darwin" ] && [ "$(ARCH)" = "x86_64" ]; then \
@@ -16,15 +16,12 @@ NIX_SYSTEM := $(shell if [ "$(OS)" = "Darwin" ] && [ "$(ARCH)" = "arm64" ]; then
 	else \
 		echo "unsupported"; \
 	fi)
-# Determine configuration type based on OS
 NIX_CONFIG_TYPE := $(shell if [ "$(OS)" = "Darwin" ]; then \
 		echo "darwinConfigurations"; \
 	else \
 		echo "nixosConfigurations"; \
 	fi)
-# Ensure Nix environment is sourced
 NIX_ENV := $(shell . ~/.nix-profile/etc/profile.d/nix.sh 2>/dev/null || echo "not_found")
-# Nix experimental features
 NIX_FLAGS := --extra-experimental-features 'flakes nix-command'
 
 # User's home directory
@@ -78,7 +75,12 @@ nix-check:
 	@echo "✅ Nix environment found!"
 
 .PHONY: nix-install
-nix-install: nix-check nix-update
+nix-install:
+	@if [ "$(NIX_ENV)" = "not_found" ]; then \
+		echo "Installing Nix environment..."; \
+		curl -L https://nixos.org/nix/install | sh; \
+	fi
+	@echo "✅ Nix environment installed!"
 
 .PHONY: nix-update
 nix-update: nix-flake-update nix-switch
