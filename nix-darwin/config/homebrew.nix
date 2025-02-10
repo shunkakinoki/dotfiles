@@ -31,6 +31,7 @@
       "notion"
       "raycast"
       "screen-studio"
+      "sf-symbols"
       "slack"
       "visual-studio-code"
       "zoom"

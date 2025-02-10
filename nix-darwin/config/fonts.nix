@@ -1,6 +1,11 @@
 { pkgs }:
 {
-  fonts.packages = with pkgs; [
-    nerd-fonts.fira-code
-  ];
+  fonts = {
+    fontDir.enable = true;
+
+    packages = [
+      pkgs.fira-code
+      pkgs.jetbrains-mono
+    ];
+  };
 }
