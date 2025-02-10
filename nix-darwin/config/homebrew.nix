@@ -27,6 +27,7 @@
       "ghostty"
       "google-chrome"
       "google-drive"
+      "hammerspoon"
       "linear-linear"
       "notion"
       "raycast"
