@@ -42,6 +42,7 @@ default: help
 help:
 	@echo "Available targets:"
 	@echo "  install      - Set up full environment"
+	@echo "  build        - Build Nix configuration"
 	@echo "  switch       - Apply Nix configuration"
 	@echo "  update       - Update Nix flake and configurations"
 	@echo "  format       - Format Nix files"
@@ -52,6 +53,9 @@ help:
 
 .PHONY: install
 install: nix-install
+
+.PHONY: build
+build: nix-build
 
 .PHONY: check
 check: nix-check
@@ -66,14 +70,15 @@ update: nix-update
 
 .PHONY: nix-check
 nix-check:
+	@echo "Checking Nix environment..."
 	@if [ "$(NIX_ENV)" = "not_found" ]; then \
 		echo "❌ Nix environment not found. Please ensure Nix is installed and run:"; \
 		exit 1; \
 	fi
+	@echo "✅ Nix environment found!"
 
 .PHONY: nix-install
 nix-install: nix-check nix-update
-	@echo "✨ Installation complete for ${OS}!"
 
 .PHONY: nix-update
 nix-update: nix-flake-update nix-switch
@@ -100,9 +105,9 @@ nix-format-check:
 	@nix fmt -- --fail-on-change
 	@echo "✅ All Nix files are properly formatted"
 
-.PHONY: nix-switch
-nix-switch:
-	@echo "🔄 Applying Nix configuration..."
+.PHONY: nix-build
+nix-build:
+	@echo "🔄 Building Nix configuration..."
 	@if [ "$$CI" = "true" ]; then \
 		echo "Running in CI"; \
 		nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --show-trace; \
@@ -113,8 +118,13 @@ nix-switch:
 		fi; \
 		nix build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --show-trace; \
 	fi
+	@echo "✅ Nix configuration built successfully!"
+
+.PHONY: nix-switch
+nix-switch: nix-build
+	@echo "🔄 Applying Nix configuration..."
 	@if [ "$(OS)" = "Darwin" ]; then \
-		darwin-rebuild switch --flake .#$(NIX_SYSTEM); \
+		./result/sw/bin/darwin-rebuild switch --flake .#$(NIX_SYSTEM); \
 	else \
 		sudo nixos-rebuild switch --flake .#$(NIX_SYSTEM); \
 	fi
