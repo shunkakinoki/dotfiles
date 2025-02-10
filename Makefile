@@ -60,6 +60,9 @@ check: nix-check
 .PHONY: format
 format: nix-format
 
+.PHONY: switch
+switch: nix-switch
+
 .PHONY: update
 update: nix-update
 
