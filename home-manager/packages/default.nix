@@ -7,4 +7,5 @@ with pkgs;
   go
   neofetch
   ollama
+  rustup
 ]
