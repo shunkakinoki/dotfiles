@@ -6,7 +6,7 @@
 }:
 let
   fonts = import ./config/fonts.nix { inherit pkgs; };
-  homebrew = import ./config/homebrew.nix;
+  # homebrew = import ./config/homebrew.nix;
   launchd = import ./config/launchd.nix { inherit pkgs; };
   networking = import ./config/networking.nix;
   nix = import ./config/nix.nix;
@@ -18,7 +18,7 @@ in
 {
   imports = [
     fonts
-    homebrew
+    # homebrew
     launchd
     networking
     nix
