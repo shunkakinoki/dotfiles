@@ -72,8 +72,8 @@
         TrackpadThreeFingerTapGesture = 2;
       };
     };
-    activationScripts.extraActivation.text = ''
-      softwareupdate --all --install
-    '';
+    # activationScripts.extraActivation.text = ''
+    #   softwareupdate --all --install
+    # '';
   };
 }
