@@ -29,6 +29,7 @@
       "google-chrome"
       "google-drive"
       "hammerspoon"
+      "karabiner-elements"
       "linear-linear"
       "notion"
       "raycast"

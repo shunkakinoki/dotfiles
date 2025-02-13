@@ -129,9 +129,9 @@ nix-build:
 nix-switch: nix-build
 	@echo "🔄 Applying Nix configuration..."
 	@if [ "$$CI" = "true" ]; then \
-		./result/sw/bin/darwin-rebuild switch --flake .#runner; \
+		darwin-rebuild switch --flake .#runner; \
 	elif [ "$(OS)" = "Darwin" ]; then \
-		./result/sw/bin/darwin-rebuild switch --flake .#$(NIX_SYSTEM); \
+		darwin-rebuild switch --flake .#$(NIX_SYSTEM); \
 	else \
 		sudo nixos-rebuild switch --flake .#$(NIX_SYSTEM); \
 	fi
