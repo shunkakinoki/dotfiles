@@ -1,0 +1,43 @@
+name: Nix
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  nix-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Nix
+        uses: cachix/install-nix-action@v30
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run Flake Check
+        run: nix flake check --all-systems
+  nix-darwin:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Nix
+        uses: cachix/install-nix-action@v30
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Prepare system files
+        run: |
+          sudo mv /etc/nix/nix.conf /etc/nix/nix.conf.before-nix-darwin || true
+          sudo mv /etc/shells /etc/shells.before-nix-darwin || true
+      - name: Run Nix Darwin
+        run: make update
+  nix-format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Nix
+        uses: cachix/install-nix-action@v30
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check formatting
+        run: make nix-format-check
