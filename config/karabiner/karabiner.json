@@ -1,42 +1,36 @@
 {
-  "global": {
-    "show_in_menu_bar": false
-  },
-  "profiles": [
-    {
-      "complex_modifications": {
-        "rules": [
-          {
-            "manipulators": [
-              {
-                "description": "Right Command to Hyper Key",
-                "from": {
-                  "key_code": "right_command",
-                  "modifiers": {
-                    "optional": [
-                      "any"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "left_shift",
-                    "modifiers": [
-                      "left_control",
-                      "left_option",
-                      "left_command"
-                    ]
-                  }
-                ],
-                "type": "basic"
-              }
-            ]
-          }
-        ]
-      },
-      "virtual_hid_keyboard": {
-        "keyboard_type_v2": "ansi"
-      }
-    }
-  ]
+	"global": {
+		"show_in_menu_bar": false
+	},
+	"profiles": [
+		{
+			"complex_modifications": {
+				"rules": [
+					{
+						"manipulators": [
+							{
+								"description": "Right Command to Hyper Key",
+								"from": {
+									"key_code": "right_command",
+									"modifiers": {
+										"optional": ["any"]
+									}
+								},
+								"to": [
+									{
+										"key_code": "left_shift",
+										"modifiers": ["left_control", "left_option", "left_command"]
+									}
+								],
+								"type": "basic"
+							}
+						]
+					}
+				]
+			},
+			"virtual_hid_keyboard": {
+				"keyboard_type_v2": "ansi"
+			}
+		}
+	]
 }
