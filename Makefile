@@ -89,7 +89,7 @@ nix-install:
 	@echo "✅ Nix environment installed!"
 
 .PHONY: nix-update
-nix-update: nix-flake-update nix-switch
+nix-update: nix-flake-update nix-build nix-switch
 
 .PHONY: nix-flake-update
 nix-flake-update:
