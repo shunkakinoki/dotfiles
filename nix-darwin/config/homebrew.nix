@@ -1,7 +1,4 @@
-{ username }:
-let
-  isRunner = username == "runner";
-in
+{ isRunner }:
 {
   homebrew = {
     enable = !isRunner;
