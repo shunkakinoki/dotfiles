@@ -7,7 +7,7 @@ local hyper = { "alt", "ctrl", "cmd", "shift" }
 hs.window.animationDuration = 0
 
 hotkey.bind(hyper, "\\", function()
-  hs.reload()
+	hs.reload()
 end)
 
 -- reload config
