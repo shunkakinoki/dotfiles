@@ -132,6 +132,16 @@ nix-build:
 	fi
 	@echo "✅ Nix configuration built successfully!"
 
+.PHONY: nix-backup
+nix-backup:
+	@echo "📦 Creating backup of config files..."
+	@backup_dir="$$HOME/.config/backups/$(shell date +%Y%m%d_%H%M%S)"; \
+	mkdir -p "$$backup_dir"; \
+	if [ -d "$$HOME/.config" ]; then \
+		cp -R "$$HOME/.config" "$$backup_dir/" 2>/dev/null || true; \
+		echo "✅ Backup created at $$backup_dir"; \
+	fi
+
 .PHONY: nix-switch
 nix-switch: nix-build
 	@echo "🔄 Applying Nix configuration..."
@@ -139,6 +149,7 @@ nix-switch: nix-build
 		$(DARWIN_REBUILD) switch --flake .#runner; \
 	elif [ "$(OS)" = "Darwin" ]; then \
 		nix build .#darwinConfigurations.$(NIX_SYSTEM).system; \
+		$(MAKE) nix-backup; \
 		$(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM); \
 	else \
 		sudo nixos-rebuild switch --flake .#$(NIX_SYSTEM); \
