@@ -7,6 +7,9 @@ let
   # nvfetcher
   # sources = pkgs.callPackage ../_sources/generated.nix { };
 
+  # config
+  config = import ../config;
+
   # packages
   overlay = import ./overlay;
   pkgs = import nixpkgs {
@@ -35,7 +38,7 @@ let
 
 in
 {
-  imports = misc ++ modules ++ programs ++ services;
+  imports = config ++ misc ++ modules ++ programs ++ services;
 
   home.stateVersion = "24.11";
   home.packages = packages;
