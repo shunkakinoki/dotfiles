@@ -139,13 +139,12 @@ nix-backup:
 	fi
 
 .PHONY: nix-switch
-nix-switch: nix-build
+nix-switch:
 	@echo "🔄 Applying Nix configuration..."
 	@if [ "$$CI" = "true" ]; then \
 		$(DARWIN_REBUILD) switch --flake .#runner; \
 	elif [ "$(OS)" = "Darwin" ]; then \
 		nix build .#darwinConfigurations.$(NIX_SYSTEM).system; \
-		$(MAKE) nix-backup; \
 		$(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM); \
 	else \
 		sudo nixos-rebuild switch --flake .#$(NIX_SYSTEM); \
