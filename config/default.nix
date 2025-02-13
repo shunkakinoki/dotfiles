@@ -1,3 +1,4 @@
 [
   ./hammerspoon
+  ./karabiner
 ]
