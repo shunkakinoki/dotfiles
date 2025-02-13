@@ -1,4 +1,5 @@
 [
   ./hammerspoon
   ./karabiner
+  ./starship
 ]
