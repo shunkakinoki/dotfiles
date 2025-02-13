@@ -1,4 +1,7 @@
-{ pkgs }:
+{ pkgs, username }:
+let
+  isRunner = username == "runner";
+in
 {
   ids.gids.nixbld = 350;
   system = {
@@ -72,8 +75,14 @@
         TrackpadThreeFingerTapGesture = 2;
       };
     };
-    # activationScripts.extraActivation.text = ''
-    #   softwareupdate --all --install
-    # '';
+    activationScripts.extraActivation.text =
+      if !isRunner then
+        ''
+          softwareupdate --all --install
+        ''
+      else
+        ''
+          echo "Skipping activation scripts for runner"
+        '';
   };
 }
