@@ -25,6 +25,7 @@ nix-darwin.lib.darwinSystem {
     ../../nix-darwin
     home-manager.darwinModules.home-manager
     {
+      home-manager.backupFileExtension = "backup";
       home-manager.useUserPackages = true;
       home-manager.users."${username}" = import ../../home-manager {
         inherit system;

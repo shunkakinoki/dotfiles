@@ -1,0 +1,5 @@
+[
+  ./hammerspoon
+  ./karabiner
+  ./starship
+]

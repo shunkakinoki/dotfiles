@@ -1,0 +1,13 @@
+[formatter.nix]
+command = "nixfmt"
+includes = ["*.nix"]
+
+[formatter.biome]
+command = "biome"
+options = ["format", "--write"]
+includes = ["*.js", "*.jsx", "*.ts", "*.tsx", "*.json"]
+
+[formatter.shell]
+command = "shfmt"
+options = ["-i", "2", "-s", "-w"]
+includes = ["*.sh"]

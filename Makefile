@@ -28,6 +28,9 @@ NIX_FLAGS := --extra-experimental-features 'flakes nix-command'
 HOME_DIR := $(shell echo $$HOME)
 CONFIG_DIR := $(HOME_DIR)/.config
 
+# Darwin-rebuild path
+DARWIN_REBUILD := $(shell command -v darwin-rebuild 2>/dev/null || echo "./result/sw/bin/darwin-rebuild")
+
 ##@ Help
 
 # Default target
@@ -125,13 +128,25 @@ nix-build:
 	fi
 	@echo "✅ Nix configuration built successfully!"
 
+.PHONY: nix-backup
+nix-backup:
+	@echo "📦 Creating backup of config files..."
+	@backup_dir="$$HOME/.config/backups/$(shell date +%Y%m%d_%H%M%S)"; \
+	mkdir -p "$$backup_dir"; \
+	if [ -d "$$HOME/.config" ]; then \
+		cp -R "$$HOME/.config" "$$backup_dir/" 2>/dev/null || true; \
+		echo "✅ Backup created at $$backup_dir"; \
+	fi
+
 .PHONY: nix-switch
 nix-switch: nix-build
 	@echo "🔄 Applying Nix configuration..."
 	@if [ "$$CI" = "true" ]; then \
-		./result/sw/bin/darwin-rebuild switch --flake .#runner; \
+		$(DARWIN_REBUILD) switch --flake .#runner; \
 	elif [ "$(OS)" = "Darwin" ]; then \
-		./result/sw/bin/darwin-rebuild switch --flake .#$(NIX_SYSTEM); \
+		nix build .#darwinConfigurations.$(NIX_SYSTEM).system; \
+		$(MAKE) nix-backup; \
+		$(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM); \
 	else \
 		sudo nixos-rebuild switch --flake .#$(NIX_SYSTEM); \
 	fi

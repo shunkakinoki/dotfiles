@@ -1,4 +1,3 @@
 [
   ./dust
-  ./hammerspoon
 ]
