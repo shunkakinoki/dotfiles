@@ -110,11 +110,7 @@ nix-format:
 .PHONY: nix-format-check
 nix-format-check:
 	@echo "Checking Nix formatting..."
-	@nix fmt -- --fail-on-change || ( \
-		echo "\n❌ Formatting issues found in:"; \
-		nix fmt -- --check | grep -v "^ok" | sed 's/^/  - /'; \
-		exit 1 \
-	)
+	@nix fmt -- --fail-on-change
 	@echo "✅ All Nix files are properly formatted"
 
 .PHONY: nix-build
