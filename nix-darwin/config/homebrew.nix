@@ -1,6 +1,10 @@
+{ username }:
+let
+  isRunner = username == "runner";
+in
 {
   homebrew = {
-    enable = true;
+    enable = !isRunner;
     onActivation = {
       autoUpdate = true;
       upgrade = true;
