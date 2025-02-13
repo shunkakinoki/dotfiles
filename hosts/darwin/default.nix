@@ -1,7 +1,8 @@
 {
   inputs,
-  username ? "shunkakinoki",
+  username,
   hostname ? "aarch64-darwin",
+  isRunner ? false,
 }:
 let
   inherit (inputs) nix-darwin home-manager;
@@ -17,7 +18,7 @@ nix-darwin.lib.darwinSystem {
   inherit system;
   inherit (inputs.nixpkgs) lib;
   specialArgs = {
-    inherit username;
+    inherit username isRunner;
   };
   modules = [
     configuration

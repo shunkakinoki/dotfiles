@@ -37,10 +37,13 @@
 
       flake = {
         darwinConfigurations = {
-          aarch64-darwin = import ./hosts/darwin { inherit inputs; };
+          aarch64-darwin = import ./hosts/darwin {
+            inherit inputs;
+            username = "shunkakinoki";
+          };
           runner = import ./hosts/darwin {
             inherit inputs;
-            hostname = "runner";
+            isRunner = true;
             username = "runner";
           };
         };

@@ -1,7 +1,4 @@
-{ pkgs, username }:
-let
-  isRunner = username == "runner";
-in
+{ pkgs, isRunner }:
 {
   ids.gids.nixbld = 350;
   system = {
