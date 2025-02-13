@@ -131,9 +131,9 @@ nix-switch: nix-build
 	@if [ "$$CI" = "true" ]; then \
 		darwin-rebuild switch --flake .#runner; \
 	elif [ "$(OS)" = "Darwin" ]; then \
-		darwin-rebuild switch --flake .#$(NIX_SYSTEM) --backup; \
+		darwin-rebuild switch --flake .#$(NIX_SYSTEM); \
 	else \
-		sudo nixos-rebuild switch --flake .#$(NIX_SYSTEM) --backup; \
+		sudo nixos-rebuild switch --flake .#$(NIX_SYSTEM); \
 	fi
 	@echo "✨ Configuration applied successfully!"
 
