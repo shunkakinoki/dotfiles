@@ -26,6 +26,10 @@
       eval "$(/opt/homebrew/bin/brew shellenv)"
       source "$HOME/.rye/env"
 
+      # Go configuration
+      export GOPATH="$HOME/go"
+      export PATH="$PATH:$GOPATH/bin"
+
       # FNM (Fast Node Manager) configuration
       export FNM_DIR="$HOME/Library/Application Support/fnm"
       export FNM_COREPACK_ENABLED="false"
