@@ -28,6 +28,9 @@ NIX_FLAGS := --extra-experimental-features 'flakes nix-command'
 HOME_DIR := $(shell echo $$HOME)
 CONFIG_DIR := $(HOME_DIR)/.config
 
+# Darwin-rebuild path
+DARWIN_REBUILD := $(shell command -v darwin-rebuild 2>/dev/null || echo "./result/sw/bin/darwin-rebuild")
+
 ##@ Help
 
 # Default target
@@ -133,9 +136,10 @@ nix-build:
 nix-switch: nix-build
 	@echo "🔄 Applying Nix configuration..."
 	@if [ "$$CI" = "true" ]; then \
-		darwin-rebuild switch --flake .#runner; \
+		$(DARWIN_REBUILD) switch --flake .#runner; \
 	elif [ "$(OS)" = "Darwin" ]; then \
-		darwin-rebuild switch --flake .#$(NIX_SYSTEM); \
+		nix build .#darwinConfigurations.$(NIX_SYSTEM).system; \
+		$(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM); \
 	else \
 		sudo nixos-rebuild switch --flake .#$(NIX_SYSTEM); \
 	fi
