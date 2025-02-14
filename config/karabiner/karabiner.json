@@ -29,9 +29,13 @@
                 ],
                 "type": "basic",
                 "parameters": {
-                  "hold_down_milliseconds": 200
+                  "hold_down_milliseconds": 300
                 }
-              },
+              }
+            ]
+          },
+          {
+            "manipulators": [
               {
                 "description": "Right Command to Hyper Key",
                 "from": {
