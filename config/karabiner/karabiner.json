@@ -7,94 +7,96 @@
       "complex_modifications": {
         "rules": [
           {
+            "description": "Caps Lock to Hyper Key",
             "manipulators": [
               {
-                "description": "Caps Lock to Hyper Key",
-                "manipulators": [
-                  {
-                    "from": {
-                      "key_code": "caps_lock",
-                      "modifiers": {
-                        "optional": ["any"]
-                      }
-                    },
-                    "to": [
-                      {
-                        "key_code": "left_shift",
-                        "modifiers": [
-                          "left_command",
-                          "left_control",
-                          "left_option"
-                        ]
-                      }
-                    ],
-                    "type": "basic"
+                "from": {
+                  "key_code": "caps_lock",
+                  "modifiers": {
+                    "optional": [
+                      "any"
+                    ]
                   }
-                ]
+                },
+                "to": [
+                  {
+                    "key_code": "left_shift",
+                    "modifiers": [
+                      "left_command",
+                      "left_control",
+                      "left_option"
+                    ]
+                  }
+                ],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Double Tap Right Shift to Caps Lock",
+            "manipulators": [
+              {
+                "conditions": [
+                  {
+                    "name": "right_shift pressed",
+                    "type": "variable_if",
+                    "value": 1
+                  }
+                ],
+                "from": {
+                  "key_code": "right_shift",
+                  "modifiers": {
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "caps_lock"
+                  }
+                ],
+                "type": "basic"
               },
               {
-                "description": "Double Tap Right Shift to Caps Lock",
-                "manipulators": [
+                "from": {
+                  "key_code": "right_shift",
+                  "modifiers": {
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
                   {
-                    "conditions": [
-                      {
-                        "name": "right_shift pressed",
-                        "type": "variable_if",
-                        "value": 1
-                      }
-                    ],
-                    "from": {
-                      "key_code": "right_shift",
-                      "modifiers": {
-                        "optional": ["any"]
-                      }
-                    },
-                    "to": [
-                      {
-                        "key_code": "caps_lock"
-                      }
-                    ],
-                    "type": "basic"
+                    "set_variable": {
+                      "name": "right_shift pressed",
+                      "value": 1
+                    }
                   },
                   {
-                    "from": {
-                      "key_code": "right_shift",
-                      "modifiers": {
-                        "optional": ["any"]
-                      }
-                    },
-                    "to": [
-                      {
-                        "set_variable": {
-                          "name": "right_shift pressed",
-                          "value": 1
-                        }
-                      },
-                      {
-                        "key_code": "right_shift"
-                      }
-                    ],
-                    "to_delayed_action": {
-                      "to_if_canceled": [
-                        {
-                          "set_variable": {
-                            "name": "right_shift pressed",
-                            "value": 0
-                          }
-                        }
-                      ],
-                      "to_if_invoked": [
-                        {
-                          "set_variable": {
-                            "name": "right_shift pressed",
-                            "value": 0
-                          }
-                        }
-                      ]
-                    },
-                    "type": "basic"
+                    "key_code": "right_shift"
                   }
-                ]
+                ],
+                "to_delayed_action": {
+                  "to_if_canceled": [
+                    {
+                      "set_variable": {
+                        "name": "right_shift pressed",
+                        "value": 0
+                      }
+                    }
+                  ],
+                  "to_if_invoked": [
+                    {
+                      "set_variable": {
+                        "name": "right_shift pressed",
+                        "value": 0
+                      }
+                    }
+                  ]
+                },
+                "type": "basic"
               }
             ]
           },
@@ -102,19 +104,25 @@
             "manipulators": [
               {
                 "description": "Right Command to Hyper Key",
-                "type": "basic",
                 "from": {
                   "key_code": "right_command",
                   "modifiers": {
-                    "optional": ["any"]
+                    "optional": [
+                      "any"
+                    ]
                   }
                 },
                 "to": [
                   {
                     "key_code": "left_shift",
-                    "modifiers": ["left_control", "left_option", "left_command"]
+                    "modifiers": [
+                      "left_control",
+                      "left_option",
+                      "left_command"
+                    ]
                   }
-                ]
+                ],
+                "type": "basic"
               }
             ]
           }
