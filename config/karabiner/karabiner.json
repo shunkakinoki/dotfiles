@@ -9,6 +9,30 @@
           {
             "manipulators": [
               {
+                "description": "Caps Lock to Hyper (hold) / Caps Lock (tap)",
+                "from": {
+                  "key_code": "caps_lock",
+                  "modifiers": {
+                    "optional": ["any"]
+                  }
+                },
+                "to_if_alone": [
+                  {
+                    "key_code": "caps_lock"
+                  }
+                ],
+                "to_if_held_down": [
+                  {
+                    "key_code": "left_shift",
+                    "modifiers": ["left_control", "left_option", "left_command"]
+                  }
+                ],
+                "type": "basic",
+                "parameters": {
+                  "hold_down_milliseconds": 200
+                }
+              },
+              {
                 "description": "Right Command to Hyper Key",
                 "from": {
                   "key_code": "right_command",
