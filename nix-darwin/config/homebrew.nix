@@ -21,6 +21,7 @@
     ];
     casks = [
       "chatgpt"
+      "copilot"
       "cursor"
       "discord"
       "docker"
@@ -35,6 +36,7 @@
       "raycast"
       "screen-studio"
       "sf-symbols"
+      "signal"
       "slack"
       "visual-studio-code"
       "zoom"
@@ -42,6 +44,7 @@
     masApps = {
       "Notability" = 360593530;
       "Xcode" = 497799835;
+      "Zerion" = 1456732565;
     };
   };
 }
