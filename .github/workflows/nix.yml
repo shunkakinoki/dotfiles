@@ -33,17 +33,6 @@ jobs:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run Flake Check
         run: nix flake check --all-systems
-  nix-ubuntu:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Install Nix
-        uses: cachix/install-nix-action@v30
-        with:
-          github_access_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Run Nix Linux
-        run: make update
   nix-format:
     runs-on: ubuntu-latest
     steps:
@@ -55,13 +44,24 @@ jobs:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Check formatting
         run: make nix-format-check
+  nix-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Nix
+        uses: cachix/install-nix-action@v30
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run Nix Linux
+        run: make update
   nix-check:
     if: always()
     needs:
       - nix-darwin
       - nix-flake
-      - nix-ubuntu
       - nix-format
+      - nix-linux
     runs-on: ubuntu-latest
     steps:
       - name: Alls Green
