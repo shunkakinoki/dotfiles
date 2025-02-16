@@ -55,7 +55,7 @@ jobs:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - run: |
           nix flake show
-          nix build .#nixosConfigurations.x86_64-linux.runner.system
+          nix build .#nixosConfigurations.runner.system
       - name: Run Nix Linux
         run: make update
   nix-check:
