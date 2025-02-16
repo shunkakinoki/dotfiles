@@ -128,7 +128,7 @@ nix-build:
 	@echo "🔄 Building Nix configuration..."
 	@if [ "$$CI" = "true" ]; then \
 		echo "Running in CI"; \
-		nix build .#darwinConfigurations.runner.system $(NIX_FLAGS) --show-trace; \
+		nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --show-trace; \
 	else \
 		if [ "$(NIX_SYSTEM)" = "unsupported" ]; then \
 			echo "❌ Unsupported system architecture: $(OS) $(ARCH)"; \

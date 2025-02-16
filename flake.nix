@@ -52,6 +52,11 @@
             inherit inputs;
             username = "shunkakinoki";
           };
+          runner = import ./hosts/linux {
+            inherit inputs;
+            isRunner = true;
+            username = "runner";
+          };
         };
       };
 
