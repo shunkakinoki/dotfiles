@@ -6,16 +6,16 @@ set -e
 # Detect OS using uname
 OS_NAME=$(uname)
 case "$OS_NAME" in
-  Darwin)
-    OS="macos"
-    ;;
-  Linux)
-    OS="linux"
-    ;;
-  *)
-    echo "Unsupported operating system: $OS_NAME"
-    exit 1
-    ;;
+Darwin)
+  OS="macos"
+  ;;
+Linux)
+  OS="linux"
+  ;;
+*)
+  echo "Unsupported operating system: $OS_NAME"
+  exit 1
+  ;;
 esac
 
 # Install Nix if not already installed
@@ -42,7 +42,7 @@ if [ -d "$DOTFILES_DIR" ]; then
   git fetch origin
   git checkout "$COMMIT_REF"
   git pull
-  cd - > /dev/null
+  cd - >/dev/null
 else
   echo "Cloning dotfiles repository into $DOTFILES_DIR..."
   git clone https://github.com/shunkakinoki/dotfiles.git "$DOTFILES_DIR"
