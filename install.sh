@@ -36,18 +36,45 @@ echo "Using commit reference: $COMMIT_REF"
 DOTFILES_DIR="$HOME/dotfiles"
 echo "Fetching the dotfiles repository..."
 
-if [ -d "$DOTFILES_DIR" ]; then
-  echo "Dotfiles repository already exists. Fetching latest changes and checking out $COMMIT_REF..."
-  cd "$DOTFILES_DIR"
-  git fetch origin
-  git checkout "$COMMIT_REF"
-  git pull
-  cd - >/dev/null
+# If GITHUB_PR is set, handle checkout for the PR branch
+if [ -n "$GITHUB_PR" ]; then
+  echo "Detected PR environment variable GITHUB_PR=$GITHUB_PR"
+  PR_REF="refs/pull/${GITHUB_PR}/head"
+  echo "Fetching pull request ref: $PR_REF"
+
+  if [ -d "$DOTFILES_DIR" ]; then
+    echo "Dotfiles repository already exists. Using git fetch to retrieve PR ref..."
+    cd "$DOTFILES_DIR"
+    git fetch origin "$PR_REF":pr-"$GITHUB_PR"
+    git checkout pr-"$GITHUB_PR"
+    git pull
+    cd - >/dev/null
+  else
+    echo "Cloning dotfiles repository..."
+    git clone https://github.com/shunkakinoki/dotfiles.git "$DOTFILES_DIR"
+    cd "$DOTFILES_DIR"
+    git fetch origin "$PR_REF":pr-"$GITHUB_PR"
+    git checkout pr-"$GITHUB_PR"
+    cd - >/dev/null
+  fi
 else
-  echo "Cloning dotfiles repository into $DOTFILES_DIR..."
-  git clone https://github.com/shunkakinoki/dotfiles.git "$DOTFILES_DIR"
-  cd "$DOTFILES_DIR"
-  git checkout "$COMMIT_REF"
+  COMMIT_REF="${GITHUB_SHA:-main}"
+  echo "Using commit reference: $COMMIT_REF"
+
+  if [ -d "$DOTFILES_DIR" ]; then
+    echo "Dotfiles repository already exists. Fetching latest changes..."
+    cd "$DOTFILES_DIR"
+    git fetch origin
+    git checkout "$COMMIT_REF"
+    git pull
+    cd - >/dev/null
+  else
+    echo "Cloning dotfiles repository into $DOTFILES_DIR..."
+    git clone https://github.com/shunkakinoki/dotfiles.git "$DOTFILES_DIR"
+    cd "$DOTFILES_DIR"
+    git checkout "$COMMIT_REF"
+    cd - >/dev/null
+  fi
 fi
 
 # Install Nix packages
