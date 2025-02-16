@@ -53,8 +53,8 @@ jobs:
         uses: cachix/install-nix-action@v30
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
-      - run: |
-          nix run nixpkgs#nixos-rebuild -- switch --flake .#runner --use-remote-sudo
+      # - run: |
+      #     nix run nixpkgs#nixos-rebuild -- switch --flake .#runner --use-remote-sudo
       - name: Run Nix Linux
         run: make update
   nix-check:
