@@ -128,13 +128,21 @@ nix-build:
 	@echo "🔄 Building Nix configuration..."
 	@if [ "$$CI" = "true" ]; then \
 		echo "Running in CI"; \
-		nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --show-trace; \
+		if [ "$(OS)" = "Darwin" ]; then \
+			nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --show-trace; \
+		else \
+			nix run nixpkgs#nixos-rebuild -- build --flake .#runner; \
+		fi; \
 	else \
 		if [ "$(NIX_SYSTEM)" = "unsupported" ]; then \
 			echo "❌ Unsupported system architecture: $(OS) $(ARCH)"; \
 			exit 1; \
 		fi; \
-		nix build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --show-trace; \
+		if [ "$(OS)" = "Darwin" ]; then \
+			nix build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --show-trace; \
+		else \
+			nix run nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM); \
+		fi; \
 	fi
 	@echo "✅ Nix configuration built successfully!"
 
@@ -164,12 +172,18 @@ nix-format-check:
 nix-switch:
 	@echo "🔄 Applying Nix configuration..."
 	@if [ "$$CI" = "true" ]; then \
-		$(DARWIN_REBUILD) switch --flake .#runner; \
-	elif [ "$(OS)" = "Darwin" ]; then \
-		nix build .#darwinConfigurations.$(NIX_SYSTEM).system; \
-		$(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM); \
-	else \
-		sudo nixos-rebuild switch --flake .#$(NIX_SYSTEM); \
+		if [ "$(OS)" = "Darwin" ]; then \
+			$(DARWIN_REBUILD) switch --flake .#runner; \
+		else \
+			nix run nixpkgs#nixos-rebuild -- switch --flake .#runner; \
+		fi; \
+	else
+		if [ "$(OS)" = "Darwin" ]; then \
+			nix build .#darwinConfigurations.$(NIX_SYSTEM).system; \
+			$(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM); \
+		else \
+			sudo nixos-rebuild switch --flake .#$(NIX_SYSTEM); \
+		fi; \
 	fi
 	@echo "✨ Configuration applied successfully!"
 
