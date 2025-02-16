@@ -52,7 +52,7 @@ help:
 ##@ General
 
 .PHONY: install
-install: nix-install
+install: setup update
 
 .PHONY: build
 build: nix-build
@@ -63,6 +63,9 @@ check: nix-check
 .PHONY: format
 format: nix-format
 
+.PHONY: setup
+setup: nix-setup
+
 .PHONY: switch
 switch: nix-switch
 
@@ -70,6 +73,9 @@ switch: nix-switch
 update: nix-update
 
 ##@ Nix Setup
+
+.PHONY: nix-setup
+nix-setup: nix-install nix-check nix-connect 
 
 .PHONY: nix-connect
 nix-connect:
@@ -111,7 +117,7 @@ nix-install:
 ##@ Nix
 
 .PHONY: nix-update
-nix-update: nix-flake-update nix-build nix-switch
+nix-update: nix-build nix-switch
 
 .PHONY: nix-backup
 nix-backup:
@@ -215,12 +221,3 @@ pr:
 		gh pr create --title "$(t)" --body "$(m)"; \
 	fi
 	@echo "✨ PR created successfully!"
-
-.PHONY: update-linux
-update-linux: nix-flake-update nix-build-linux nix-switch
-
-.PHONY: nix-build-linux
-nix-build-linux:
-	@echo "🔄 Building NixOS configuration for Linux..."
-	@nix build .#nixosConfigurations.linux-machine.system $(NIX_FLAGS) --show-trace
-	@echo "✅ NixOS configuration for Linux built successfully!"
