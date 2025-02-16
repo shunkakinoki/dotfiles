@@ -48,14 +48,12 @@ if [ -n "$GITHUB_PR" ]; then
     git fetch origin "$PR_REF":pr-"$GITHUB_PR"
     git checkout pr-"$GITHUB_PR"
     git pull
-    cd - >/dev/null
   else
     echo "Cloning dotfiles repository..."
     git clone https://github.com/shunkakinoki/dotfiles.git "$DOTFILES_DIR"
     cd "$DOTFILES_DIR"
     git fetch origin "$PR_REF":pr-"$GITHUB_PR"
     git checkout pr-"$GITHUB_PR"
-    cd - >/dev/null
   fi
 else
   COMMIT_REF="${GITHUB_SHA:-main}"
@@ -67,13 +65,11 @@ else
     git fetch origin
     git checkout "$COMMIT_REF"
     git pull
-    cd - >/dev/null
   else
     echo "Cloning dotfiles repository into $DOTFILES_DIR..."
     git clone https://github.com/shunkakinoki/dotfiles.git "$DOTFILES_DIR"
     cd "$DOTFILES_DIR"
     git checkout "$COMMIT_REF"
-    cd - >/dev/null
   fi
 fi
 
