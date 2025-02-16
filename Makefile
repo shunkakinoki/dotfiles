@@ -177,7 +177,7 @@ nix-switch:
 		else \
 			nix run nixpkgs#nixos-rebuild -- switch --flake .#runner; \
 		fi; \
-	else
+	else \
 		if [ "$(OS)" = "Darwin" ]; then \
 			nix build .#darwinConfigurations.$(NIX_SYSTEM).system; \
 			$(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM); \
