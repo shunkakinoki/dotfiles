@@ -54,7 +54,7 @@ jobs:
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - run: |
-          nix build .#x86_64-linux.nixosConfigurations.runner.system
+          nix build .#nixosConfigurations.x86_64-linux.runner.system
       - name: Run Nix Linux
         run: make update
   nix-check:
