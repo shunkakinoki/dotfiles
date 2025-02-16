@@ -137,7 +137,7 @@ nix-build:
 		if [ "$(OS)" = "Darwin" ]; then \
 			nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --show-trace; \
 		else \
-			nix run nixpkgs#nixos-rebuild -- build --flake .#runner; \
+			nix run nixpkgs#nixos-rebuild -- build $(NIX_FLAGS) --flake .#runner; \
 		fi; \
 	else \
 		if [ "$(NIX_SYSTEM)" = "unsupported" ]; then \
