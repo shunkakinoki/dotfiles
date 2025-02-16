@@ -92,7 +92,7 @@ nix-install:
 nix-update: nix-flake-update nix-build nix-switch
 
 .PHONY: nix-flake-update
-nix-flake-update:
+nix-flake-update: nix-connect
 	@echo "🔄 Updating flake.lock..."
 	@if [ "$$CI" = "true" ]; then \
 		echo "Bypassing flake update in CI"; \
@@ -150,6 +150,26 @@ nix-switch:
 		sudo nixos-rebuild switch --flake .#$(NIX_SYSTEM); \
 	fi
 	@echo "✨ Configuration applied successfully!"
+
+.PHONY: nix-connect
+nix-connect:
+	@echo "🔄 Checking Nix daemon connection..."
+	@if [ -S /nix/var/nix/daemon-socket/socket ]; then \
+		echo "✨ Nix daemon already connected!"; \
+	else \
+		if [ "$(OS)" = "Darwin" ]; then \
+			echo "Nix daemon not connected. Connecting on macOS..."; \
+			sudo launchctl load -w /Library/LaunchDaemons/org.nixos.nix-daemon.plist; \
+		elif [ "$(OS)" = "Linux" ]; then \
+			echo "Nix daemon not connected. Connecting on Linux..."; \
+			sudo systemctl start nix-daemon.service; \
+		else \
+			echo "Unsupported OS: $(OS)"; \
+			exit 1; \
+		fi; \
+		sleep 3; \
+		echo "✨ Nix daemon connected successfully!"; \
+	fi
 
 ##@ GitHub
 
