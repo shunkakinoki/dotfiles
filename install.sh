@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/bin/sh
 
 # Exit on error
 set -e
 
-# Detect OS using uname
+# Determine OS using uname
 OS_NAME=$(uname)
 case "$OS_NAME" in
 Darwin)
@@ -23,8 +23,12 @@ if ! command -v nix >/dev/null 2>&1; then
   echo "Installing Nix..."
   if [ "$OS" = "macos" ]; then
     curl -L https://nixos.org/nix/install | bash
+    # For macOS, source the Nix profile immediately to update PATH in CI.
+    . "$HOME/.nix-profile/etc/profile.d/nix.sh"
   else
     curl -L https://nixos.org/nix/install | bash -s -- --daemon
+    # For Linux multi-user installations, add the default Nix path.
+    export PATH=/nix/var/nix/profiles/default/bin:$PATH
   fi
 fi
 
@@ -74,4 +78,5 @@ else
 fi
 
 # Install Nix packages
+echo "Running installation commands..."
 make install
