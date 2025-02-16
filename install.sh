@@ -68,6 +68,14 @@ else
   fi
 fi
 
+# Handle `make` installation
+if ! command -v make >/dev/null 2>&1; then
+  echo "Installing make..."
+  if [ "$OS" = "macos" ]; then
+    brew install make
+  else
+    sudo apt-get install make
+
 # Install Nix packages
 echo "Running installation commands..."
 make install
