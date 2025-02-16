@@ -79,27 +79,27 @@ nix-setup: nix-install nix-check nix-connect
 
 .PHONY: nix-connect
 nix-connect:
-	@echo "🔄 Checking Nix daemon connection..."
+	@echo "🔌 Verifying Nix daemon socket..."
 	@if [ -S /nix/var/nix/daemon-socket/socket ]; then \
-		echo "✨ Nix daemon already connected!"; \
+		echo "✅ Nix daemon is already active!"; \
 	else \
 		if [ "$(OS)" = "Darwin" ]; then \
-			echo "Nix daemon not connected. Connecting on macOS..."; \
+			echo "🍎 Launching Nix daemon on macOS..."; \
 			sudo launchctl load -w /Library/LaunchDaemons/org.nixos.nix-daemon.plist; \
 		elif [ "$(OS)" = "Linux" ]; then \
-			echo "Nix daemon not connected. Connecting on Linux..."; \
+			echo "🐧 Launching Nix daemon on Linux..."; \
 			sudo systemctl start nix-daemon.service; \
 		else \
 			echo "Unsupported OS: $(OS)"; \
 			exit 1; \
 		fi; \
 		sleep 3; \
-		echo "✨ Nix daemon connected successfully!"; \
+		echo "✅ Nix daemon connection established!"; \
 	fi
 
 .PHONY: nix-check
 nix-check:
-	@echo "Checking Nix environment..."
+	@echo "🔍 Verifying Nix environment setup..."
 	@if [ "$(NIX_ENV)" = "not_found" ]; then \
 		echo "❌ Nix environment not found. Please ensure Nix is installed and run:"; \
 		exit 1; \
@@ -109,7 +109,7 @@ nix-check:
 .PHONY: nix-install
 nix-install:
 	@if [ "$(NIX_ENV)" = "not_found" ]; then \
-		echo "Installing Nix environment..."; \
+		echo "🚀 Installing Nix environment..."; \
 		curl -L https://nixos.org/nix/install | sh; \
 	fi
 	@echo "✅ Nix environment installed!"
@@ -121,7 +121,7 @@ nix-update: nix-build nix-switch
 
 .PHONY: nix-backup
 nix-backup:
-	@echo "📦 Creating backup of config files..."
+	@echo "🗄️ Backing up configuration files..."
 	@backup_dir="$$HOME/.config/backups/$(shell date +%Y%m%d_%H%M%S)"; \
 	mkdir -p "$$backup_dir"; \
 	if [ -d "$$HOME/.config" ]; then \
@@ -131,7 +131,7 @@ nix-backup:
 
 .PHONY: nix-build
 nix-build:
-	@echo "🔄 Building Nix configuration..."
+	@echo "🏗️ Building Nix configuration..."
 	@if [ "$$CI" = "true" ]; then \
 		echo "Running in CI"; \
 		if [ "$(OS)" = "Darwin" ]; then \
@@ -154,29 +154,29 @@ nix-build:
 
 .PHONY: nix-flake-update
 nix-flake-update: nix-connect
-	@echo "🔄 Updating flake.lock..."
+	@echo "♻️ Refreshing flake.lock file..."
 	@if [ "$$CI" = "true" ]; then \
 		echo "Bypassing flake update in CI"; \
 	else \
 		nix flake update $(NIX_FLAGS); \
 	fi
-	@echo "✨ flake.lock updated!"
+	@echo "✅ flake.lock updated!"
 
 .PHONY: nix-format
 nix-format:
-	@echo "Formatting Nix files..."
+	@echo "🧹 Formatting Nix files..."
 	@nix fmt
-	@echo "✨ Formatting complete"
+	@echo "✅ Formatting complete"
 
 .PHONY: nix-format-check
 nix-format-check:
-	@echo "Checking Nix formatting..."
+	@echo "🔍 Checking Nix file formatting..."
 	@nix fmt -- --fail-on-change
 	@echo "✅ All Nix files are properly formatted"
 
 .PHONY: nix-switch
 nix-switch:
-	@echo "🔄 Applying Nix configuration..."
+	@echo "🔧 Activating Nix configuration..."
 	@if [ "$$CI" = "true" ]; then \
 		if [ "$(OS)" = "Darwin" ]; then \
 			$(DARWIN_REBUILD) switch --flake .#runner; \
@@ -192,7 +192,7 @@ nix-switch:
 			sudo nixos-rebuild switch --flake .#$(NIX_SYSTEM); \
 		fi; \
 	fi
-	@echo "✨ Configuration applied successfully!"
+	@echo "✅ Configuration applied successfully!"
 
 ##@ GitHub
 
@@ -210,15 +210,15 @@ pr:
 		echo "❌ Commit message required. Usage: make pr m='commit message' b='branch-name' t='PR title'"; \
 		exit 1; \
 	fi
-	@echo "Creating PR branch and pushing changes..."
+	@echo "🚀 Creating PR branch and pushing changes..."
 	@git checkout -b feature/$(b)
 	@git add .
 	@git commit -m "$(m)"
 	@git push -u origin feature/$(b)
-	@echo "Creating PR..."
+	@echo "📬 Initiating pull request creation..."
 	@if [ -z "$(t)" ]; then \
 		gh pr create --fill; \
 	else \
 		gh pr create --title "$(t)" --body "$(m)"; \
 	fi
-	@echo "✨ PR created successfully!"
+	@echo "✅ PR created successfully!"
