@@ -30,6 +30,13 @@ nixpkgs.lib.nixosSystem {
   };
   modules = [
     configuration
+    {
+      # Define the root file system
+      fileSystems."/" = {
+        device = "/dev/sda1";
+        fsType = "ext4";
+      };
+    }
     home-manager.nixosModules.home-manager
     {
       home-manager.backupFileExtension = "backup";
