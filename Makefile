@@ -92,7 +92,7 @@ nix-install:
 nix-update: nix-flake-update nix-build nix-switch
 
 .PHONY: nix-flake-update
-nix-flake-update:
+nix-flake-update: nix-connect
 	@echo "🔄 Updating flake.lock..."
 	@if [ "$$CI" = "true" ]; then \
 		echo "Bypassing flake update in CI"; \
