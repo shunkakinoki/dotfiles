@@ -5,7 +5,7 @@
   isRunner ? false,
 }:
 let
-  inherit (inputs) home-manager;
+  inherit (inputs) nixpkgs home-manager;
   system = "x86_64-linux";
   configuration =
     { ... }:
@@ -16,7 +16,7 @@ let
 in
 nixpkgs.lib.nixosSystem {
   inherit system;
-  inherit (inputs.nixpkgs) lib;
+  lib = nixpkgs.lib;
   specialArgs = {
     inherit username isRunner;
   };
@@ -28,7 +28,7 @@ nixpkgs.lib.nixosSystem {
       home-manager.useUserPackages = true;
       home-manager.users."${username}" = import ../../home-manager {
         inherit system;
-        nixpkgs = inputs.nixpkgs;
+        nixpkgs = nixpkgs;
       };
     }
   ];
