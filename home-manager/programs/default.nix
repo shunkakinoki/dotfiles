@@ -5,6 +5,7 @@
 }:
 let
   dust = import ./dust;
+  fish = import ./fish;
   gh = import ./gh;
   go = import ./go;
   starship = import ./starship;
@@ -12,6 +13,7 @@ let
 in
 [
   dust
+  fish
   gh
   go
   starship
