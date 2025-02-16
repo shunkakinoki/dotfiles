@@ -23,8 +23,8 @@
         src = pkgs.fishPlugins.hydro.src;
       }
     ];
-    xdg.configFile."fish/themes/dracula.theme" = {
-      source = ./dracula.theme;
-    };
+  };
+  xdg.configFile."fish/themes/dracula.theme" = {
+    source = ./dracula.theme;
   };
 }
