@@ -47,6 +47,12 @@
             username = "runner";
           };
         };
+        nixosConfigurations = {
+          linux-machine = import ./hosts/linux {
+            inherit inputs;
+            username = "shunkakinoki";
+          };
+        };
       };
 
       perSystem =
