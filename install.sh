@@ -32,11 +32,7 @@ if ! command -v nix >/dev/null 2>&1; then
   fi
 fi
 
-# Determine the commit reference:
-# If GITHUB_SHA is set then use it; otherwise, default to "main"
-COMMIT_REF="${GITHUB_SHA:-main}"
-echo "Using commit reference: $COMMIT_REF"
-
+# Clone the dotfiles repository
 DOTFILES_DIR="$HOME/dotfiles"
 echo "Fetching the dotfiles repository..."
 
@@ -60,20 +56,15 @@ if [ -n "$GITHUB_PR" ]; then
     git checkout pr-"$GITHUB_PR"
   fi
 else
-  COMMIT_REF="${GITHUB_SHA:-main}"
-  echo "Using commit reference: $COMMIT_REF"
-
   if [ -d "$DOTFILES_DIR" ]; then
     echo "Dotfiles repository already exists. Fetching latest changes..."
     cd "$DOTFILES_DIR"
     git fetch origin
-    git checkout "$COMMIT_REF"
     git pull
   else
     echo "Cloning dotfiles repository into $DOTFILES_DIR..."
     git clone https://github.com/shunkakinoki/dotfiles.git "$DOTFILES_DIR"
     cd "$DOTFILES_DIR"
-    git checkout "$COMMIT_REF"
   fi
 fi
 

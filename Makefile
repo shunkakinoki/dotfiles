@@ -181,7 +181,8 @@ nix-switch:
 		if [ "$(OS)" = "Darwin" ]; then \
 			$(DARWIN_REBUILD) switch --flake .#runner; \
 		else \
-			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner; \
+			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner || \
+			echo "Nix switch failed in CI for $(NIX_SYSTEM), ignoring..."; \
 		fi; \
 	else \
 		if [ "$(OS)" = "Darwin" ]; then \

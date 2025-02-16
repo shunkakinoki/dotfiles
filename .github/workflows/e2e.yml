@@ -16,7 +16,6 @@ jobs:
         run: |
           curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/${{ github.sha }}/install.sh | sh
         env:
-          GITHUB_SHA: ${{ github.sha }}
           GITHUB_PR: ${{ github.event.pull_request.number }}
   e2e-check:
     if: always()
