@@ -75,6 +75,8 @@ if ! command -v make >/dev/null 2>&1; then
     brew install make
   else
     sudo apt-get install make
+  fi
+fi
 
 # Install Nix packages
 echo "Running installation commands..."
