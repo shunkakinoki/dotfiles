@@ -24,7 +24,7 @@ if ! command -v nix >/dev/null 2>&1; then
   if [ "$OS" = "macos" ]; then
     curl -L https://nixos.org/nix/install | bash
     # For macOS, source the Nix profile immediately to update PATH in CI.
-    . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+    . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
   else
     curl -L https://nixos.org/nix/install | bash -s -- --daemon
     # For Linux multi-user installations, add the default Nix path.
