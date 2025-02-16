@@ -69,7 +69,27 @@ switch: nix-switch
 .PHONY: update
 update: nix-update
 
-##@ Nix
+##@ Nix Setup
+
+.PHONY: nix-connect
+nix-connect:
+	@echo "🔄 Checking Nix daemon connection..."
+	@if [ -S /nix/var/nix/daemon-socket/socket ]; then \
+		echo "✨ Nix daemon already connected!"; \
+	else \
+		if [ "$(OS)" = "Darwin" ]; then \
+			echo "Nix daemon not connected. Connecting on macOS..."; \
+			sudo launchctl load -w /Library/LaunchDaemons/org.nixos.nix-daemon.plist; \
+		elif [ "$(OS)" = "Linux" ]; then \
+			echo "Nix daemon not connected. Connecting on Linux..."; \
+			sudo systemctl start nix-daemon.service; \
+		else \
+			echo "Unsupported OS: $(OS)"; \
+			exit 1; \
+		fi; \
+		sleep 3; \
+		echo "✨ Nix daemon connected successfully!"; \
+	fi
 
 .PHONY: nix-check
 nix-check:
@@ -88,8 +108,43 @@ nix-install:
 	fi
 	@echo "✅ Nix environment installed!"
 
+##@ Nix
+
 .PHONY: nix-update
 nix-update: nix-flake-update nix-build nix-switch
+
+.PHONY: nix-backup
+nix-backup:
+	@echo "📦 Creating backup of config files..."
+	@backup_dir="$$HOME/.config/backups/$(shell date +%Y%m%d_%H%M%S)"; \
+	mkdir -p "$$backup_dir"; \
+	if [ -d "$$HOME/.config" ]; then \
+		cp -R "$$HOME/.config" "$$backup_dir/" 2>/dev/null || true; \
+		echo "✅ Backup created at $$backup_dir"; \
+	fi
+
+.PHONY: nix-build
+nix-build:
+	@echo "🔄 Building Nix configuration..."
+	@if [ "$$CI" = "true" ]; then \
+		echo "Running in CI"; \
+		if [ "$(OS)" = "Darwin" ]; then \
+			nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --show-trace; \
+		else \
+			nix run nixpkgs#nixos-rebuild -- build --flake .#runner; \
+		fi; \
+	else \
+		if [ "$(NIX_SYSTEM)" = "unsupported" ]; then \
+			echo "❌ Unsupported system architecture: $(OS) $(ARCH)"; \
+			exit 1; \
+		fi; \
+		if [ "$(OS)" = "Darwin" ]; then \
+			nix build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --show-trace; \
+		else \
+			nix run nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM); \
+		fi; \
+	fi
+	@echo "✅ Nix configuration built successfully!"
 
 .PHONY: nix-flake-update
 nix-flake-update: nix-connect
@@ -113,63 +168,24 @@ nix-format-check:
 	@nix fmt -- --fail-on-change
 	@echo "✅ All Nix files are properly formatted"
 
-.PHONY: nix-build
-nix-build:
-	@echo "🔄 Building Nix configuration..."
-	@if [ "$$CI" = "true" ]; then \
-		echo "Running in CI"; \
-		nix build .#darwinConfigurations.runner.system $(NIX_FLAGS) --show-trace; \
-	else \
-		if [ "$(NIX_SYSTEM)" = "unsupported" ]; then \
-			echo "❌ Unsupported system architecture: $(OS) $(ARCH)"; \
-			exit 1; \
-		fi; \
-		nix build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --show-trace; \
-	fi
-	@echo "✅ Nix configuration built successfully!"
-
-.PHONY: nix-backup
-nix-backup:
-	@echo "📦 Creating backup of config files..."
-	@backup_dir="$$HOME/.config/backups/$(shell date +%Y%m%d_%H%M%S)"; \
-	mkdir -p "$$backup_dir"; \
-	if [ -d "$$HOME/.config" ]; then \
-		cp -R "$$HOME/.config" "$$backup_dir/" 2>/dev/null || true; \
-		echo "✅ Backup created at $$backup_dir"; \
-	fi
-
 .PHONY: nix-switch
 nix-switch:
 	@echo "🔄 Applying Nix configuration..."
 	@if [ "$$CI" = "true" ]; then \
-		$(DARWIN_REBUILD) switch --flake .#runner; \
-	elif [ "$(OS)" = "Darwin" ]; then \
-		nix build .#darwinConfigurations.$(NIX_SYSTEM).system; \
-		$(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM); \
-	else \
-		sudo nixos-rebuild switch --flake .#$(NIX_SYSTEM); \
-	fi
-	@echo "✨ Configuration applied successfully!"
-
-.PHONY: nix-connect
-nix-connect:
-	@echo "🔄 Checking Nix daemon connection..."
-	@if [ -S /nix/var/nix/daemon-socket/socket ]; then \
-		echo "✨ Nix daemon already connected!"; \
+		if [ "$(OS)" = "Darwin" ]; then \
+			$(DARWIN_REBUILD) switch --flake .#runner; \
+		else \
+			nix run nixpkgs#nixos-rebuild -- switch --flake .#runner; \
+		fi; \
 	else \
 		if [ "$(OS)" = "Darwin" ]; then \
-			echo "Nix daemon not connected. Connecting on macOS..."; \
-			sudo launchctl load -w /Library/LaunchDaemons/org.nixos.nix-daemon.plist; \
-		elif [ "$(OS)" = "Linux" ]; then \
-			echo "Nix daemon not connected. Connecting on Linux..."; \
-			sudo systemctl start nix-daemon.service; \
+			nix build .#darwinConfigurations.$(NIX_SYSTEM).system; \
+			$(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM); \
 		else \
-			echo "Unsupported OS: $(OS)"; \
-			exit 1; \
+			sudo nixos-rebuild switch --flake .#$(NIX_SYSTEM); \
 		fi; \
-		sleep 3; \
-		echo "✨ Nix daemon connected successfully!"; \
 	fi
+	@echo "✨ Configuration applied successfully!"
 
 ##@ GitHub
 
@@ -199,3 +215,12 @@ pr:
 		gh pr create --title "$(t)" --body "$(m)"; \
 	fi
 	@echo "✨ PR created successfully!"
+
+.PHONY: update-linux
+update-linux: nix-flake-update nix-build-linux nix-switch
+
+.PHONY: nix-build-linux
+nix-build-linux:
+	@echo "🔄 Building NixOS configuration for Linux..."
+	@nix build .#nixosConfigurations.linux-machine.system $(NIX_FLAGS) --show-trace
+	@echo "✅ NixOS configuration for Linux built successfully!"

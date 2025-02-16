@@ -5,3 +5,4 @@
 - takeokunn's [nix-configuration](https://github.com/takeokunn/nixos-configuration) 
 - Carlos's [dotfiles](https://github.com/caarlos0/dotfiles)
 - minkaki's [dotfiles](https://github.com/mingaki/dotfiles)
+- bzh-social's [bzsh-systems](https://github.com/bzh-social/bzh-systems)

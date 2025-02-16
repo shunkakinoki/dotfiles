@@ -7,7 +7,24 @@ on:
     branches:
       - main
 jobs:
-  nix-check:
+  nix-darwin:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Nix
+        uses: cachix/install-nix-action@v30
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Prepare System Files For Update
+        run: |
+          sudo mv /etc/nix/nix.conf /etc/nix/nix.conf.before-nix-darwin || true
+          sudo mv /etc/shells /etc/shells.before-nix-darwin || true
+      - name: Run Nix Darwin
+        run: |
+          make build
+          make update
+  nix-flake:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -18,21 +35,6 @@ jobs:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run Flake Check
         run: nix flake check --all-systems
-  nix-darwin:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Install Nix
-        uses: cachix/install-nix-action@v30
-        with:
-          github_access_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Prepare system files
-        run: |
-          sudo mv /etc/nix/nix.conf /etc/nix/nix.conf.before-nix-darwin || true
-          sudo mv /etc/shells /etc/shells.before-nix-darwin || true
-      - name: Run Nix Darwin
-        run: make update
   nix-format:
     runs-on: ubuntu-latest
     steps:
@@ -42,5 +44,29 @@ jobs:
         uses: cachix/install-nix-action@v30
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Check formatting
+      - name: Check Formatting
         run: make nix-format-check
+  nix-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Nix
+        uses: cachix/install-nix-action@v30
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Nix Linux
+        run: make build
+  nix-check:
+    if: always()
+    needs:
+      - nix-darwin
+      - nix-flake
+      - nix-format
+      - nix-linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Alls Green
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
