@@ -21,6 +21,7 @@
     ];
     casks = [
       "chatgpt"
+      "claude"
       "copilot"
       "cursor"
       "discord"
