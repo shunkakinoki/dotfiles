@@ -1,0 +1,29 @@
+name: E2E
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  e2e-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run Install Command
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/${{ github.sha }}/install.sh | sh
+        env:
+          GITHUB_PR: ${{ github.event.pull_request.number }}
+  e2e-check:
+    if: always()
+    needs:
+      - e2e-run
+    runs-on: ubuntu-latest
+    steps:
+      - name: Alls Green
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}

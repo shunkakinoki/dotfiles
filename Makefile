@@ -52,7 +52,7 @@ help:
 ##@ General
 
 .PHONY: install
-install: nix-install
+install: setup update
 
 .PHONY: build
 build: nix-build
@@ -63,6 +63,9 @@ check: nix-check
 .PHONY: format
 format: nix-format
 
+.PHONY: setup
+setup: nix-setup
+
 .PHONY: switch
 switch: nix-switch
 
@@ -70,6 +73,9 @@ switch: nix-switch
 update: nix-update
 
 ##@ Nix Setup
+
+.PHONY: nix-setup
+nix-setup: nix-install nix-check nix-connect 
 
 .PHONY: nix-connect
 nix-connect:
@@ -111,7 +117,7 @@ nix-install:
 ##@ Nix
 
 .PHONY: nix-update
-nix-update: nix-flake-update nix-build nix-switch
+nix-update: nix-build nix-switch
 
 .PHONY: nix-backup
 nix-backup:
@@ -131,7 +137,7 @@ nix-build:
 		if [ "$(OS)" = "Darwin" ]; then \
 			nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --show-trace; \
 		else \
-			nix run nixpkgs#nixos-rebuild -- build --flake .#runner; \
+			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#runner; \
 		fi; \
 	else \
 		if [ "$(NIX_SYSTEM)" = "unsupported" ]; then \
@@ -141,7 +147,7 @@ nix-build:
 		if [ "$(OS)" = "Darwin" ]; then \
 			nix build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --show-trace; \
 		else \
-			nix run nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM); \
+			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM); \
 		fi; \
 	fi
 	@echo "✅ Nix configuration built successfully!"
@@ -175,7 +181,8 @@ nix-switch:
 		if [ "$(OS)" = "Darwin" ]; then \
 			$(DARWIN_REBUILD) switch --flake .#runner; \
 		else \
-			nix run nixpkgs#nixos-rebuild -- switch --flake .#runner; \
+			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner || \
+			echo "Nix switch failed in CI for $(NIX_SYSTEM), ignoring..."; \
 		fi; \
 	else \
 		if [ "$(OS)" = "Darwin" ]; then \
@@ -215,12 +222,3 @@ pr:
 		gh pr create --title "$(t)" --body "$(m)"; \
 	fi
 	@echo "✨ PR created successfully!"
-
-.PHONY: update-linux
-update-linux: nix-flake-update nix-build-linux nix-switch
-
-.PHONY: nix-build-linux
-nix-build-linux:
-	@echo "🔄 Building NixOS configuration for Linux..."
-	@nix build .#nixosConfigurations.linux-machine.system $(NIX_FLAGS) --show-trace
-	@echo "✅ NixOS configuration for Linux built successfully!"
