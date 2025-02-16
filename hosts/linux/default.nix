@@ -5,7 +5,7 @@
   isRunner ? false,
 }:
 let
-  inherit (inputs) nix-darwin home-manager;
+  inherit (inputs) home-manager;
   system = "x86_64-linux";
   configuration =
     { ... }:
@@ -14,7 +14,7 @@ let
       users.users.${username}.home = "/Users/${username}";
     };
 in
-nix-darwin.lib.nixosSystem {
+nixpkgs.lib.nixosSystem {
   inherit system;
   inherit (inputs.nixpkgs) lib;
   specialArgs = {
@@ -22,8 +22,7 @@ nix-darwin.lib.nixosSystem {
   };
   modules = [
     configuration
-    ../../nix-darwin
-    home-manager.darwinModules.home-manager
+    home-manager.nixosModules.home-manager
     {
       home-manager.backupFileExtension = "backup";
       home-manager.useUserPackages = true;
