@@ -6,6 +6,9 @@ on:
   pull_request:
     branches:
       - main
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.sha }}
+  cancel-in-progress: true
 jobs:
   nix-darwin:
     runs-on: macos-latest
@@ -21,9 +24,7 @@ jobs:
           sudo mv /etc/nix/nix.conf /etc/nix/nix.conf.before-nix-darwin || true
           sudo mv /etc/shells /etc/shells.before-nix-darwin || true
       - name: Run Nix Darwin
-        run: |
-          make build
-          make update
+        run: make build
   nix-flake:
     runs-on: ubuntu-latest
     steps:
