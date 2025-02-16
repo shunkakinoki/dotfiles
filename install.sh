@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Exit on error
 set -e
@@ -17,7 +17,6 @@ case "$OS_NAME" in
     exit 1
     ;;
 esac
-
 
 # Install Nix if not already installed
 if ! command -v nix >/dev/null 2>&1; then
