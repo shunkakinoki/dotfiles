@@ -137,7 +137,7 @@ nix-build:
 		if [ "$(OS)" = "Darwin" ]; then \
 			nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --show-trace; \
 		else \
-			nix run nixpkgs#nixos-rebuild -- build $(NIX_FLAGS) --flake .#runner; \
+			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#runner; \
 		fi; \
 	else \
 		if [ "$(NIX_SYSTEM)" = "unsupported" ]; then \
@@ -147,7 +147,7 @@ nix-build:
 		if [ "$(OS)" = "Darwin" ]; then \
 			nix build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --show-trace; \
 		else \
-			nix run nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM); \
+			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM); \
 		fi; \
 	fi
 	@echo "✅ Nix configuration built successfully!"
@@ -181,7 +181,7 @@ nix-switch:
 		if [ "$(OS)" = "Darwin" ]; then \
 			$(DARWIN_REBUILD) switch --flake .#runner; \
 		else \
-			nix run nixpkgs#nixos-rebuild -- switch --flake .#runner; \
+			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner; \
 		fi; \
 	else \
 		if [ "$(OS)" = "Darwin" ]; then \
