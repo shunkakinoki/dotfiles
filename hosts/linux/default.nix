@@ -11,7 +11,10 @@ let
     { ... }:
     {
       networking.hostName = hostname;
-      users.users.${username}.home = "/Users/${username}";
+      users.users.${username} = {
+        isNormalUser = true;
+        home = "/Users/${username}";
+      };
     };
 in
 nixpkgs.lib.nixosSystem {
