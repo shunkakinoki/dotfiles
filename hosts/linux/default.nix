@@ -12,6 +12,8 @@ let
     {
       networking.hostName = hostname;
       users.users.${username}.home = "/Users/${username}";
+      users.users.runner.group = "runner";
+      users.users.runner = {};
     };
 in
 nixpkgs.lib.nixosSystem {
