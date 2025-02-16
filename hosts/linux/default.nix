@@ -10,6 +10,11 @@ let
   configuration =
     { ... }:
     {
+      boot.loader.grub.enable = true;
+      boot.loader.grub.device = "/dev/sda";
+      boot.loader.grub.useOSProber = true;
+      boot.loader.systemd-boot.configurationLimit = 10;
+
       networking.hostName = hostname;
       users.users.${username} = {
         isNormalUser = true;
