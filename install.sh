@@ -22,9 +22,9 @@ esac
 if ! command -v nix >/dev/null 2>&1; then
   echo "Installing Nix..."
   if [ "$OS" = "macos" ]; then
-    sh <(curl -L https://nixos.org/nix/install)
+    curl -L https://nixos.org/nix/install | sh
   else
-    sh <(curl -L https://nixos.org/nix/install) --daemon
+    curl -L https://nixos.org/nix/install | sh --daemon
   fi
 fi
 
