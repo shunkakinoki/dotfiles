@@ -189,36 +189,7 @@ nix-switch:
 			nix build .#darwinConfigurations.$(NIX_SYSTEM).system; \
 			$(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM); \
 		else \
-			sudo nixos-rebuild switch --flake .#$(NIX_SYSTEM); \
+			sudo nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM); \
 		fi; \
 	fi
 	@echo "✅ Configuration applied successfully!"
-
-##@ GitHub
-
-.PHONY: pr
-pr:
-	@if ! command -v gh &> /dev/null; then \
-		echo "❌ GitHub CLI not found. Please run 'make install' to install it."; \
-		exit 1; \
-	fi
-	@if [ -z "$(b)" ]; then \
-		echo "❌ Branch name required. Usage: make pr m='commit message' b='branch-name' t='PR title'"; \
-		exit 1; \
-	fi
-	@if [ -z "$(m)" ]; then \
-		echo "❌ Commit message required. Usage: make pr m='commit message' b='branch-name' t='PR title'"; \
-		exit 1; \
-	fi
-	@echo "🚀 Creating PR branch and pushing changes..."
-	@git checkout -b feature/$(b)
-	@git add .
-	@git commit -m "$(m)"
-	@git push -u origin feature/$(b)
-	@echo "📬 Initiating pull request creation..."
-	@if [ -z "$(t)" ]; then \
-		gh pr create --fill; \
-	else \
-		gh pr create --title "$(t)" --body "$(m)"; \
-	fi
-	@echo "✅ PR created successfully!"
