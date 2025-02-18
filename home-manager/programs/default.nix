@@ -9,11 +9,13 @@ let
   fzf = import ./fzf;
   gh = import ./gh;
   go = import ./go;
+  lsd = import ./lsd;
   neovim = import ./neovim;
   rust = import ./rust;
   ssh = import ./ssh;
   starship = import ./starship;
   tmux = import ./tmux;
+  zoxide = import ./zoxide;
   zsh = import ./zsh { inherit lib pkgs; };
 in
 [
@@ -22,10 +24,12 @@ in
   fzf
   gh
   go
+  lsd
   neovim
   rust
   ssh
   starship
   tmux
+  zoxide
   zsh
 ]

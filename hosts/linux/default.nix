@@ -1,4 +1,5 @@
 {
+  pkgs,
   inputs,
   username,
   hostname ? "x86_64-linux",
@@ -31,11 +32,14 @@ nixpkgs.lib.nixosSystem {
   modules = [
     configuration
     {
-      # Define the root file system
       fileSystems."/" = {
         device = "/dev/sda1";
         fsType = "ext4";
       };
+
+      font.packages = with pkgs [
+        nerd-fonts.jetbrains-mono
+      ];
     }
     home-manager.nixosModules.home-manager
     {

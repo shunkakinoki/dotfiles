@@ -10,8 +10,10 @@
       fish_add_path -p ~/.nix-profile/bin /nix/var/nix/profiles/default/bin
       set -a fish_complete_path ~/.nix-profile/share/fish/completions/ ~/.nix-profile/share/fish/vendor_completions.d/
     '';
-    shellAliases = {
-      ls = "ls -G";
+    shellAbbrs = {
+      g = "git";
+      ga = "git add";
+      gaa = "git add -A";
     };
     plugins = [
       {
