@@ -21,6 +21,10 @@
         src = pkgs.fishPlugins.autopair-fish.src;
       }
       {
+        name = "fzf-fish";
+        src = pkgs.fishPlugins.fzf-fish.src;
+      }
+      {
         name = "hydro";
         src = pkgs.fishPlugins.hydro.src;
       }
