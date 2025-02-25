@@ -79,23 +79,19 @@ nix-setup: nix-install nix-check nix-connect
 
 .PHONY: nix-connect
 nix-connect:
-	@echo "🔌 Verifying Nix daemon socket..."
-	@if [ -S /nix/var/nix/daemon-socket/socket ]; then \
-		echo "✅ Nix daemon is already active!"; \
+	@echo "🔌 Ensuring Nix daemon is running..."
+	@if [ "$(OS)" = "Darwin" ]; then \
+		sudo launchctl unload /Library/LaunchDaemons/org.nixos.nix-daemon.plist 2>/dev/null || true; \
+		sudo launchctl load -w /Library/LaunchDaemons/org.nixos.nix-daemon.plist; \
+	elif [ "$(OS)" = "Linux" ]; then \
+		sudo systemctl restart nix-daemon.service; \
 	else \
-		if [ "$(OS)" = "Darwin" ]; then \
-			echo "🍎 Launching Nix daemon on macOS..."; \
-			sudo launchctl load -w /Library/LaunchDaemons/org.nixos.nix-daemon.plist; \
-		elif [ "$(OS)" = "Linux" ]; then \
-			echo "🐧 Launching Nix daemon on Linux..."; \
-			sudo systemctl start nix-daemon.service; \
-		else \
-			echo "Unsupported OS: $(OS)"; \
-			exit 1; \
-		fi; \
-		sleep 3; \
-		echo "✅ Nix daemon connection established!"; \
+		echo "❌ Unsupported OS: $(OS)"; \
+		exit 1; \
 	fi
+	@echo "⏳ Waiting for daemon to initialize..."
+	@sleep 3
+	@echo "✅ Nix daemon should now be active!"
 
 .PHONY: nix-check
 nix-check:

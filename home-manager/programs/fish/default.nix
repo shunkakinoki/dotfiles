@@ -14,6 +14,9 @@
       g = "git";
       ga = "git add";
       gaa = "git add -A";
+      lg = "lazygit";
+      ta = "tmux new -A -s default";
+      v = "neovim";
     };
     plugins = [
       {
