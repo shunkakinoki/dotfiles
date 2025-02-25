@@ -126,7 +126,7 @@ nix-backup:
 	fi
 
 .PHONY: nix-build
-nix-build:
+nix-build: nix-connect
 	@echo "🏗️ Building Nix configuration..."
 	@if [ "$$CI" = "true" ]; then \
 		echo "Running in CI"; \
