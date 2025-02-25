@@ -9,6 +9,7 @@ let
   fzf = import ./fzf;
   gh = import ./gh;
   go = import ./go;
+  lazygit = import ./lazygit;
   lsd = import ./lsd;
   neovim = import ./neovim;
   rust = import ./rust;
@@ -24,6 +25,7 @@ in
   fzf
   gh
   go
+  lazygit
   lsd
   neovim
   rust
