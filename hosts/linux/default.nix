@@ -1,5 +1,4 @@
 {
-  pkgs,
   inputs,
   username,
   hostname ? "x86_64-linux",
@@ -8,6 +7,7 @@
 let
   inherit (inputs) nixpkgs home-manager;
   system = "x86_64-linux";
+  pkgs = nixpkgs.legacyPackages.${system};
   configuration =
     { ... }:
     {
@@ -27,7 +27,7 @@ nixpkgs.lib.nixosSystem {
   inherit system;
   lib = nixpkgs.lib;
   specialArgs = {
-    inherit username isRunner;
+    inherit username isRunner pkgs;
   };
   modules = [
     configuration
