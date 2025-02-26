@@ -23,6 +23,7 @@
     {
       flake-parts,
       treefmt-nix,
+      nixpkgs,
       ...
     }@inputs:
 
@@ -48,14 +49,19 @@
           };
         };
         nixosConfigurations = {
-          x86_64-linux = import ./hosts/linux {
+          "x86_64-linux" = import ./hosts/linux {
             inherit inputs;
             username = "shunkakinoki";
           };
-          runner = import ./hosts/linux {
-            inherit inputs;
-            isRunner = true;
-            username = "runner";
+          runner = nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            modules = [
+              (import ./hosts/linux {
+                inherit inputs;
+                isRunner = true;
+                username = "runner";
+              })
+            ];
           };
         };
       };
