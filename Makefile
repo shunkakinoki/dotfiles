@@ -133,8 +133,7 @@ nix-build: nix-connect
 		if [ "$(OS)" = "Darwin" ]; then \
 			nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
 		else \
-			echo "Building NixOS VM for runner..."; \
-			nix build .#nixosConfigurations.runner.config.system.build.vm $(NIX_FLAGS) --no-update-lock-file --show-trace; \
+			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#runner --no-update-lock-file; \
 		fi; \
 	else \
 		if [ "$(NIX_SYSTEM)" = "unsupported" ]; then \
