@@ -131,10 +131,9 @@ nix-build: nix-connect
 	@if [ "$$CI" = "true" ]; then \
 		echo "Running in CI"; \
 		if [ "$(OS)" = "Darwin" ]; then \
-			nix build .#darwinConfigurations.runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
+			nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
 		else \
-			echo "Building NixOS configuration for runner..."; \
-			nix build .#nixosConfigurations.runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
+			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#runner --no-update-lock-file; \
 		fi; \
 	else \
 		if [ "$(NIX_SYSTEM)" = "unsupported" ]; then \
