@@ -7,6 +7,7 @@ let
   bat = import ./bat;
   fd = import ./fd;
   fish = import ./fish;
+  fnm = import ./fnm { inherit pkgs; };
   fzf = import ./fzf;
   gh = import ./gh;
   git = import ./git;
@@ -25,6 +26,7 @@ in
   bat
   fd
   fish
+  fnm
   fzf
   gh
   git
