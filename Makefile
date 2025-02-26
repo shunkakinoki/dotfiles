@@ -133,7 +133,8 @@ nix-build: nix-connect
 		if [ "$(OS)" = "Darwin" ]; then \
 			nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
 		else \
-			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#runner --no-update-lock-file; \
+			echo "Building NixOS VM for runner..."; \
+			nix build .#nixosConfigurations.runner.config.system.build.vm $(NIX_FLAGS) --no-update-lock-file --show-trace; \
 		fi; \
 	else \
 		if [ "$(NIX_SYSTEM)" = "unsupported" ]; then \
@@ -179,6 +180,7 @@ nix-switch:
 		else \
 			echo "Building NixOS configuration for runner..."; \
 			nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
+			$(MAKE) nix-list-result; \
 			$(MAKE) nix-switch-vm; \
 		fi; \
 	else \
@@ -191,13 +193,28 @@ nix-switch:
 	fi
 	@echo "✅ Configuration applied successfully!"
 
+.PHONY: nix-list-result
+nix-list-result:
+	@echo "📋 Listing contents of result directory..."
+	@ls -la ./result || echo "No result directory found"
+	@echo "📋 Listing contents of result store path..."
+	@ls -la $$(readlink -f ./result) || echo "Could not resolve result symlink"
+	@echo "📋 Checking for bin directory..."
+	@ls -la $$(readlink -f ./result)/bin || echo "No bin directory found"
+	@echo "📋 Recursively finding all executable files in result..."
+	@find $$(readlink -f ./result) -type f -executable -not -path "*/\.*" | grep -v "\.so" || echo "No executable files found"
+
 .PHONY: nix-switch-vm
 nix-switch-vm:
-	@if [ ! -f "./result/bin/run-nixos-vm" ]; then \
-		echo "❌ VM binary not found at ./result/bin/run-nixos-vm"; \
+	@echo "🔍 Looking for VM binary..."
+	@VM_BINARY=$$(find $$(readlink -f ./result) -name "run-*-vm" -type f -executable 2>/dev/null | head -n 1); \
+	if [ -z "$$VM_BINARY" ]; then \
+		echo "❌ VM binary not found in result"; \
 		exit 0; \
-	fi; \
-	export QEMU_OPTS="-m 4096 -smp 2"; \
-	printf "sleep 5\nmkdir -p /tmp/test && cd /tmp/test\ncp -r /mnt/shared/* .\nnix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file\npoweroff\n" > vm_commands.txt; \
-	timeout 600 ./result/bin/run-nixos-vm -nographic < vm_commands.txt || exit 1; \
-	rm -f vm_commands.txt
+	else \
+		echo "✅ Found VM binary at $$VM_BINARY"; \
+		export QEMU_OPTS="-m 4096 -smp 2"; \
+		printf "sleep 5\nmkdir -p /tmp/test && cd /tmp/test\ncp -r /mnt/shared/* .\nnix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file\npoweroff\n" > vm_commands.txt; \
+		timeout 600 $$VM_BINARY -nographic < vm_commands.txt || exit 1; \
+		rm -f vm_commands.txt; \
+	fi
