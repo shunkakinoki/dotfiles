@@ -178,21 +178,21 @@ nix-switch:
 			$(DARWIN_REBUILD) switch --flake .#runner --no-update-lock-file; \
 		else \
 			nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
-			export QEMU_OPTS="-m 4096 -smp 2"; \
-			timeout 600 ./result/bin/run-nixos-vm -nographic << 'EOF' || exit 1; \
-			sleep 5; \
-			mkdir -p /tmp/test && cd /tmp/test; \
-			cp -r /mnt/shared/* .; \
-			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file; \
-			poweroff; \
-			EOF \
-		fi \
+			$(MAKE) nix-switch-vm; \
+		fi; \
 	else \
 		if [ "$(OS)" = "Darwin" ]; then \
 			nix build .#darwinConfigurations.$(NIX_SYSTEM).system; \
 			$(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM); \
 		else \
 			sudo nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM); \
-		fi \
+		fi; \
 	fi
 	@echo "✅ Configuration applied successfully!"
+
+.PHONY: nix-switch-vm
+nix-switch-vm:
+	@export QEMU_OPTS="-m 4096 -smp 2"; \
+	printf "sleep 5\nmkdir -p /tmp/test && cd /tmp/test\ncp -r /mnt/shared/* .\nnix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file\npoweroff\n" > vm_commands.txt; \
+	timeout 600 ./result/bin/run-nixos-vm -nographic < vm_commands.txt || exit 1; \
+	rm -f vm_commands.txt
