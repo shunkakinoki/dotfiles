@@ -177,8 +177,15 @@ nix-switch:
 		if [ "$(OS)" = "Darwin" ]; then \
 			$(DARWIN_REBUILD) switch --flake .#runner; \
 		else \
-			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner || \
-			echo "Nix switch failed in CI for $(NIX_SYSTEM), ignoring..."; \
+			nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --show-trace; \
+			export QEMU_OPTS="-m 4096 -smp 2"; \
+			timeout 600 ./result/bin/run-nixos-vm -nographic << 'EOF' || exit 1; \
+			sleep 5; \
+			mkdir -p /tmp/test && cd /tmp/test; \
+			cp -r /mnt/shared/* .; \
+			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner; \
+			poweroff; \
+			EOF \
 		fi; \
 	else \
 		if [ "$(OS)" = "Darwin" ]; then \
