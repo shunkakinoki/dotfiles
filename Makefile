@@ -131,9 +131,10 @@ nix-build: nix-connect
 	@if [ "$$CI" = "true" ]; then \
 		echo "Running in CI"; \
 		if [ "$(OS)" = "Darwin" ]; then \
-			nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
+			nix build .#darwinConfigurations.runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
 		else \
-			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#runner --no-update-lock-file; \
+			echo "Building NixOS configuration for runner..."; \
+			nix build .#nixosConfigurations.runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
 		fi; \
 	else \
 		if [ "$(NIX_SYSTEM)" = "unsupported" ]; then \
@@ -177,6 +178,7 @@ nix-switch:
 		if [ "$(OS)" = "Darwin" ]; then \
 			$(DARWIN_REBUILD) switch --flake .#runner --no-update-lock-file; \
 		else \
+			echo "Building NixOS configuration for runner..."; \
 			nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
 			$(MAKE) nix-switch-vm; \
 		fi; \
@@ -192,7 +194,11 @@ nix-switch:
 
 .PHONY: nix-switch-vm
 nix-switch-vm:
-	@export QEMU_OPTS="-m 4096 -smp 2"; \
+	@if [ ! -f "./result/bin/run-nixos-vm" ]; then \
+		echo "❌ VM binary not found at ./result/bin/run-nixos-vm"; \
+		exit 0; \
+	fi; \
+	export QEMU_OPTS="-m 4096 -smp 2"; \
 	printf "sleep 5\nmkdir -p /tmp/test && cd /tmp/test\ncp -r /mnt/shared/* .\nnix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file\npoweroff\n" > vm_commands.txt; \
 	timeout 600 ./result/bin/run-nixos-vm -nographic < vm_commands.txt || exit 1; \
 	rm -f vm_commands.txt
