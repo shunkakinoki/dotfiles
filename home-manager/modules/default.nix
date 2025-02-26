@@ -1,3 +1,4 @@
 [
   ./dust
+  ./ghostty
 ]

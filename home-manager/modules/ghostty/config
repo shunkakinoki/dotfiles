@@ -1,0 +1,18 @@
+#
+# https://ghostty.org/docs/config/reference
+#
+
+auto-update-channel = tip
+window-decoration = true
+window-theme = "dark"
+window-save-state = always
+window-padding-balance = true
+confirm-close-surface = true
+macos-option-as-alt = true
+macos-titlebar-style = "tabs"
+shell-integration = none
+cursor-style = bar
+cursor-style-blink = true
+mouse-hide-while-typing = true
+clipboard-read = "allow"
+clipboard-paste-protection = false

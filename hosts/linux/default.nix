@@ -7,6 +7,7 @@
 let
   inherit (inputs) nixpkgs home-manager;
   system = "x86_64-linux";
+  pkgs = nixpkgs.legacyPackages.${system};
   configuration =
     { ... }:
     {
@@ -31,11 +32,16 @@ nixpkgs.lib.nixosSystem {
   modules = [
     configuration
     {
-      # Define the root file system
       fileSystems."/" = {
         device = "/dev/sda1";
         fsType = "ext4";
       };
+
+      nixpkgs.pkgs = pkgs;
+
+      fonts.packages = with pkgs; [
+        nerd-fonts.jetbrains-mono
+      ];
     }
     home-manager.nixosModules.home-manager
     {
