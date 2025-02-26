@@ -9,6 +9,7 @@ let
   fish = import ./fish;
   fzf = import ./fzf;
   gh = import ./gh;
+  git = import ./git;
   go = import ./go;
   lazygit = import ./lazygit;
   lsd = import ./lsd;
@@ -26,6 +27,7 @@ in
   fish
   fzf
   gh
+  git
   go
   lazygit
   lsd
