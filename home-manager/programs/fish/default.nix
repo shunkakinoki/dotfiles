@@ -1,13 +1,19 @@
-{ pkgs, ... }:
-
+{ config, pkgs, ... }:
 {
   programs.fish = {
     enable = true;
+    loginShellInit = ''
+      fish_add_path -p ~/.nix-profile/bin
+      fish_add_path -p /nix/var/nix/profiles/default/bin
+      fish_add_path -p /etc/profiles/per-user/${config.home.username}/bin
+    '';
     interactiveShellInit = ''
       # disable fish greeting
       set fish_greeting
       set fish_theme dracula
-      fish_add_path -p ~/.nix-profile/bin /nix/var/nix/profiles/default/bin
+      fish_add_path -p ~/.nix-profile/bin
+      fish_add_path -p /nix/var/nix/profiles/default/bin
+      fish_add_path -p /etc/profiles/per-user/${config.home.username}/bin
       set -a fish_complete_path ~/.nix-profile/share/fish/completions/ ~/.nix-profile/share/fish/vendor_completions.d/
     '';
     shellAbbrs = {
@@ -16,7 +22,12 @@
       gaa = "git add -A";
       lg = "lazygit";
       ta = "tmux new -A -s default";
-      v = "neovim";
+      v = "nvim";
+
+      fpc = "_fzf_cmd_history --allow-execute";
+      fpf = "_fzf_file_picker --allow-open-in-editor --prompt-name Files";
+      fpfh = "_fzf_file_picker --allow-open-in-editor --show-hidden-files --prompt-name Files+";
+      fpp = "_fzf_directory_picker --allow-cd --prompt-name Projects ~/";
     };
     plugins = [
       {
@@ -24,15 +35,36 @@
         src = pkgs.fishPlugins.autopair-fish.src;
       }
       {
+        name = "colored-man-pages";
+        src = pkgs.fishPlugins.colored-man-pages.src;
+      }
+      {
+        name = "done";
+        src = pkgs.fishPlugins.done.src;
+      }
+      {
+        name = "fzf";
+        src = pkgs.fishPlugins.fzf.src;
+      }
+      {
         name = "fzf-fish";
         src = pkgs.fishPlugins.fzf-fish.src;
       }
       {
-        name = "hydro";
-        src = pkgs.fishPlugins.hydro.src;
+        name = "grc";
+        src = pkgs.fishPlugins.grc.src;
+      }
+      {
+        name = "puffer";
+        src = pkgs.fishPlugins.puffer.src;
+      }
+      {
+        name = "sponge";
+        src = pkgs.fishPlugins.sponge.src;
       }
     ];
   };
+
   xdg.configFile."fish/themes/dracula.theme" = {
     source = ./dracula.theme;
   };

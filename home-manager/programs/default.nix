@@ -4,6 +4,7 @@
   sources,
 }:
 let
+  bat = import ./bat;
   fd = import ./fd;
   fish = import ./fish;
   fzf = import ./fzf;
@@ -20,6 +21,7 @@ let
   zsh = import ./zsh { inherit lib pkgs; };
 in
 [
+  bat
   fd
   fish
   fzf
