@@ -27,7 +27,7 @@ nixpkgs.lib.nixosSystem {
   inherit system;
   lib = nixpkgs.lib;
   specialArgs = {
-    inherit username isRunner pkgs;
+    inherit username isRunner;
   };
   modules = [
     configuration
@@ -37,7 +37,9 @@ nixpkgs.lib.nixosSystem {
         fsType = "ext4";
       };
 
-      font.packages = with pkgs; [
+      nixpkgs.pkgs = pkgs;
+      
+      fonts.packages = with pkgs; [
         nerd-fonts.jetbrains-mono
       ];
     }
