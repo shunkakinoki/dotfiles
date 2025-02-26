@@ -47,7 +47,7 @@ let
           virtualisation.graphics = false;
           virtualisation.sharedDirectories = {
             shared = {
-              source = "$PWD";
+              source = lib.mkForce "$PWD";
               target = lib.mkForce "/mnt/shared";
             };
           };
