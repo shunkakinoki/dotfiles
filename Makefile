@@ -177,10 +177,7 @@ nix-switch:
 		if [ "$(OS)" = "Darwin" ]; then \
 			$(DARWIN_REBUILD) switch --flake .#runner --no-update-lock-file; \
 		else \
-			echo "Building NixOS configuration for runner..."; \
-			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#runner --no-update-lock-file; \
-			$(MAKE) nix-list-result; \
-			$(MAKE) nix-switch-vm; \
+			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file; \
 		fi; \
 	else \
 		if [ "$(OS)" = "Darwin" ]; then \
@@ -191,29 +188,3 @@ nix-switch:
 		fi; \
 	fi
 	@echo "✅ Configuration applied successfully!"
-
-.PHONY: nix-list-result
-nix-list-result:
-	@echo "📋 Listing contents of result directory..."
-	@ls -la ./result || echo "No result directory found"
-	@echo "📋 Listing contents of result store path..."
-	@ls -la $$(readlink -f ./result) || echo "Could not resolve result symlink"
-	@echo "📋 Checking for bin directory..."
-	@ls -la $$(readlink -f ./result)/bin || echo "No bin directory found"
-	@echo "📋 Recursively finding all executable files in result..."
-	@find $$(readlink -f ./result) -type f -executable -not -path "*/\.*" | grep -v "\.so" || echo "No executable files found"
-
-.PHONY: nix-switch-vm
-nix-switch-vm:
-	@echo "🔍 Looking for VM binary..."
-	@VM_BINARY=$$(find $$(readlink -f ./result) -name "run-*-vm" -type f -executable 2>/dev/null | head -n 1); \
-	if [ -z "$$VM_BINARY" ]; then \
-		echo "❌ VM binary not found in result"; \
-		exit 0; \
-	else \
-		echo "✅ Found VM binary at $$VM_BINARY"; \
-		export QEMU_OPTS="-m 4096 -smp 2"; \
-		printf "sleep 5\nmkdir -p /tmp/test && cd /tmp/test\ncp -r /mnt/shared/* .\nnix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file\npoweroff\n" > vm_commands.txt; \
-		timeout 600 $$VM_BINARY -nographic < vm_commands.txt || exit 1; \
-		rm -f vm_commands.txt; \
-	fi
