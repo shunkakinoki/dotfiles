@@ -6,6 +6,7 @@ with pkgs;
   gh
   ghq
   go
+  grc
   kubectl
   kubectx
   neofetch

@@ -68,4 +68,12 @@
   xdg.configFile."fish/themes/dracula.theme" = {
     source = ./dracula.theme;
   };
+
+  xdg.configFile."fish/completions" = {
+    source = config.lib.file.mkOutOfStoreSymlink ./completions;
+  };
+
+  xdg.configFile."fish/functions" = {
+    source = config.lib.file.mkOutOfStoreSymlink ./functions;
+  };
 }
