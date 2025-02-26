@@ -37,8 +37,9 @@ nixpkgs.lib.nixosSystem {
         fsType = "ext4";
       };
 
-      font.packages = with pkgs [
+      font.packages = with pkgs; [
         nerd-fonts.jetbrains-mono
+        nerd-fonts.jetbrains-mono-nerd
       ];
     }
     home-manager.nixosModules.home-manager

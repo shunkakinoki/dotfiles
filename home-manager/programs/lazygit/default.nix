@@ -5,11 +5,14 @@
       gui = {
         theme = {
           lightTheme = false;
-          activeBorderColor = ["green" "bold"];
-          inactiveBorderColor = ["white"];
-          selectedLineBgColor = ["default"];
+          activeBorderColor = [
+            "green"
+            "bold"
+          ];
+          inactiveBorderColor = [ "white" ];
+          selectedLineBgColor = [ "default" ];
         };
       };
     };
   };
-} 
+}

@@ -3,7 +3,7 @@
   programs.git = {
     enable = true;
     delta = {
-        enable = true;
+      enable = true;
     };
     userName = "Shun Kakinoki";
     userEmail = "shunkakinoki@gmail.com";
