@@ -177,7 +177,7 @@ nix-switch:
 		if [ "$(OS)" = "Darwin" ]; then \
 			$(DARWIN_REBUILD) switch --flake .#runner --no-update-lock-file; \
 		else \
-			nix build .#nixosConfigurations.runner.config.system.build.vm && timeout 300 QEMU_OPTS="-m 4096 -smp 2" ./result/bin/run-nixos-vm -nographic; \
+			nix build .#nixosConfigurations.runner.config.system.build.vm $(NIX_FLAGS) && timeout 300 QEMU_OPTS="-m 4096 -smp 2" ./result/bin/run-nixos-vm -nographic; \
 		fi; \
 	else \
 		if [ "$(OS)" = "Darwin" ]; then \
