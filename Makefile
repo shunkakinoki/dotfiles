@@ -186,13 +186,13 @@ nix-switch:
 			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file; \
 			poweroff; \
 			EOF \
-		fi; \
+		fi \
 	else \
 		if [ "$(OS)" = "Darwin" ]; then \
 			nix build .#darwinConfigurations.$(NIX_SYSTEM).system; \
 			$(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM); \
 		else \
 			sudo nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM); \
-		fi; \
+		fi \
 	fi
 	@echo "✅ Configuration applied successfully!"
