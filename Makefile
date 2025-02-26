@@ -178,7 +178,7 @@ nix-switch:
 			$(DARWIN_REBUILD) switch --flake .#runner --no-update-lock-file; \
 		else \
 			echo "Building NixOS configuration for runner..."; \
-			nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
+			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#runner --no-update-lock-file; \
 			$(MAKE) nix-list-result; \
 			$(MAKE) nix-switch-vm; \
 		fi; \
