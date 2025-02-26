@@ -21,6 +21,7 @@
       g = "git";
       ga = "git add";
       gaa = "git add -A";
+      gcu = "git commit -m \"chore: update\"";
       lg = "lazygit";
       ta = "tmux new -A -s default";
       v = "nvim";
