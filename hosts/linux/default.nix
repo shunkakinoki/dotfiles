@@ -39,7 +39,6 @@ nixpkgs.lib.nixosSystem {
 
       font.packages = with pkgs; [
         nerd-fonts.jetbrains-mono
-        nerd-fonts.jetbrains-mono-nerd
       ];
     }
     home-manager.nixosModules.home-manager
