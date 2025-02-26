@@ -177,7 +177,7 @@ nix-switch:
 		if [ "$(OS)" = "Darwin" ]; then \
 			$(DARWIN_REBUILD) switch --flake .#runner --no-update-lock-file; \
 		else \
-			sudo nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file; \
+			sudo -E env "PATH=$PATH" nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file; \
 		fi; \
 	else \
 		if [ "$(OS)" = "Darwin" ]; then \
