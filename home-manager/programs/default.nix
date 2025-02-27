@@ -18,6 +18,7 @@ let
   rust = import ./rust;
   ssh = import ./ssh;
   starship = import ./starship;
+  tms = import ./tms;
   tmux = import ./tmux;
   zoxide = import ./zoxide;
   zsh = import ./zsh { inherit lib pkgs; };
@@ -37,6 +38,7 @@ in
   rust
   ssh
   starship
+  tms
   tmux
   zoxide
   zsh

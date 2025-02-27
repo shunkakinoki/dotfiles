@@ -6,3 +6,4 @@
 - Carlos's [dotfiles](https://github.com/caarlos0/dotfiles)
 - minkaki's [dotfiles](https://github.com/mingaki/dotfiles)
 - bzh-social's [bzsh-systems](https://github.com/bzh-social/bzh-systems)
+- fplaotouer's [dotfiles](https://github.com/fplaotouer/dotfiles)
