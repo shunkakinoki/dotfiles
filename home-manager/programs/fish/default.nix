@@ -17,6 +17,7 @@
       set -a fish_complete_path ~/.nix-profile/share/fish/completions/ ~/.nix-profile/share/fish/vendor_completions.d/
     '';
     shellAbbrs = {
+      c = "clear";
       e = "nvim";
       g = "git";
       ga = "git add";

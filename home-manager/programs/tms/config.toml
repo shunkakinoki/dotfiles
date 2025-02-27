@@ -1,0 +1,11 @@
+# Search directories configuration
+[[search_dirs]]
+path = "~/ghq"
+depth = 2
+
+# Global settings
+search_submodules = false
+recursive_submodules = false
+default_session = "default"
+full_path = true
+session_sort_order = "LastAttached"
