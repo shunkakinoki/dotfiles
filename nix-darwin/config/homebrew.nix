@@ -15,6 +15,7 @@
       "direnv"
       "gnupg"
       "mas"
+      "pnpm"
       "pinentry-mac"
       "sheldon"
     ];
@@ -36,7 +37,6 @@
       "hammerspoon"
       "karabiner-elements"
       "linear-linear"
-      "pnpm"
       "notion"
       "raycast"
       "screen-studio"
