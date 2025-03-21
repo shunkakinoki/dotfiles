@@ -10,7 +10,6 @@
     };
     taps = [
       "homebrew/cask"
-      "homebrew/services"
     ];
     brews = [
       "direnv"
