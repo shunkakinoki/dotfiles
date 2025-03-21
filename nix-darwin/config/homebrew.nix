@@ -36,6 +36,7 @@
       "hammerspoon"
       "karabiner-elements"
       "linear-linear"
+      "pnpm"
       "notion"
       "raycast"
       "screen-studio"
