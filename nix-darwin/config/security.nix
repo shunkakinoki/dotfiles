@@ -4,6 +4,6 @@
     sudo.extraConfig = ''
       ${username} ALL=NOPASSWD: ALL
     '';
-    pam.services.sudo_local.touchIdAuth= true;
+    pam.services.sudo_local.touchIdAuth = true;
   };
 }
