@@ -50,7 +50,6 @@
       "Final Cut Pro" = 424389933;
       "Notability" = 360593530;
       "Xcode" = 497799835;
-      "Zerion" = 1456732565;
     };
   };
 }
