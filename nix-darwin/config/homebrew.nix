@@ -14,6 +14,7 @@
     brews = [
       "direnv"
       "gnupg"
+      "libpq"
       "mas"
       "pnpm"
       "pinentry-mac"
