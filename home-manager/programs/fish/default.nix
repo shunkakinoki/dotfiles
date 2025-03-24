@@ -5,6 +5,7 @@
     loginShellInit = ''
       fish_add_path -p ~/.nix-profile/bin
       fish_add_path -p /nix/var/nix/profiles/default/bin
+      fish_add_path -p /opt/homebrew/bin
       fish_add_path -p /etc/profiles/per-user/${config.home.username}/bin
     '';
     interactiveShellInit = ''
@@ -13,6 +14,7 @@
       set fish_theme dracula
       fish_add_path -p ~/.nix-profile/bin
       fish_add_path -p /nix/var/nix/profiles/default/bin
+      fish_add_path -p /opt/homebrew/bin
       fish_add_path -p /etc/profiles/per-user/${config.home.username}/bin
       set -a fish_complete_path ~/.nix-profile/share/fish/completions/ ~/.nix-profile/share/fish/vendor_completions.d/
     '';
