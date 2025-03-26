@@ -15,8 +15,9 @@
       "direnv"
       "gnupg"
       "mas"
-      "pnpm"
       "pinentry-mac"
+      "pnpm"
+      "postgresql"
       "sheldon"
     ];
     casks = [
