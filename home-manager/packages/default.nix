@@ -2,7 +2,6 @@
 with pkgs;
 [
   argocd
-  direnv
   dust
   gh
   ghq
