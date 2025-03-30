@@ -12,7 +12,6 @@
       "homebrew/cask"
     ];
     brews = [
-      "direnv"
       "gnupg"
       "mas"
       "pinentry-mac"
