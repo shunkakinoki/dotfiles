@@ -5,6 +5,7 @@
 }:
 let
   bat = import ./bat;
+  direnv = import ./direnv;
   fd = import ./fd;
   fish = import ./fish;
   fnm = import ./fnm { inherit pkgs; };
@@ -25,6 +26,7 @@ let
 in
 [
   bat
+  direnv
   fd
   fish
   fnm
