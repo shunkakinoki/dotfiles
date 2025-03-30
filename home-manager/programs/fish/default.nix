@@ -2,6 +2,9 @@
 {
   programs.fish = {
     enable = true;
+    shellInit = ''
+      direnv hook fish | source
+    '';
     loginShellInit = ''
       fish_add_path -p ~/.nix-profile/bin
       fish_add_path -p /nix/var/nix/profiles/default/bin
