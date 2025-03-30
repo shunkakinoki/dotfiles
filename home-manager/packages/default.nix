@@ -2,6 +2,7 @@
 with pkgs;
 [
   argocd
+  direnv
   dust
   gh
   ghq
@@ -10,6 +11,7 @@ with pkgs;
   kubectl
   kubectx
   neofetch
+  pulumi-bin
   ollama
   rustup
   stern
