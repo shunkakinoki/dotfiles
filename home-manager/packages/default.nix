@@ -11,6 +11,7 @@ with pkgs;
   kubectl
   kubectx
   neofetch
+  pulumi-bin
   ollama
   rustup
   stern
