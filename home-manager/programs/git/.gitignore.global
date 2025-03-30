@@ -25,3 +25,8 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Env files
+.env.*
+.env.local
+.envrc
