@@ -4,6 +4,9 @@
 ARCH := $(shell uname -m)
 OS := $(shell uname -s)
 
+# Nix executable path
+NIX_EXEC := $(shell which nix)
+
 # Nix configuration system
 NIX_SYSTEM := $(shell if [ "$(OS)" = "Darwin" ] && [ "$(ARCH)" = "arm64" ]; then \
 		echo "aarch64-darwin"; \
@@ -186,7 +189,7 @@ nix-switch:
 			nix build .#darwinConfigurations.$(NIX_SYSTEM).system; \
 			$(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM); \
 		else \
-			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM); \
+			sudo $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM); \
 		fi; \
 	fi
 	@echo "✅ Configuration applied successfully!"
