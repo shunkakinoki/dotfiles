@@ -22,7 +22,7 @@ NIX_SYSTEM := $(shell if [ "$(OS)" = "Darwin" ] && [ "$(ARCH)" = "arm64" ]; then
 NIX_CONFIG_TYPE := $(shell if [ "$(OS)" = "Darwin" ]; then \
 		echo "darwinConfigurations"; \
 	else \
-		echo "linuxConfigurations"; \
+		echo "homeConfigurations"; \
 	fi)
 NIX_ENV := $(shell . ~/.nix-profile/etc/profile.d/nix.sh 2>/dev/null || echo "not_found")
 NIX_FLAGS := --extra-experimental-features 'flakes nix-command'
