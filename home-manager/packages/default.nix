@@ -16,4 +16,3 @@ with pkgs;
   rustup
   stern
 ]
-++ (if pkgs.stdenv.isLinux then [ k3s ] else [ ])
