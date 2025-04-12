@@ -58,6 +58,13 @@
             username = "runner";
           };
         };
+        nixosConfigurations = {
+          runner = import ./hosts/linux {
+            inherit inputs;
+            isRunner = true;
+            username = "runner";
+          };
+        };
       };
 
       perSystem =
