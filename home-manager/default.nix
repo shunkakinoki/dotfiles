@@ -40,6 +40,7 @@ in
 {
   imports = config ++ misc ++ modules ++ programs ++ services;
 
+  home.stateVersion = "24.11";
   home.packages = packages;
 
   accounts.email.accounts = {
