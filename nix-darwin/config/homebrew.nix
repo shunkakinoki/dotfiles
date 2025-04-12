@@ -13,6 +13,7 @@
     ];
     brews = [
       "gnupg"
+      "k3d"
       "mas"
       "pinentry-mac"
       "pnpm"
@@ -20,6 +21,8 @@
       "sheldon"
     ];
     casks = [
+      # TODO: Wait for v4: https://formulae.brew.sh/cask/beeper
+      # "beeper"
       "chatgpt"
       "claude"
       "copilot"
@@ -27,6 +30,7 @@
       "discord"
       "docker"
       "figma"
+      "firefox"
       "font-hack-nerd-font"
       "font-jetbrains-mono"
       "font-jetbrains-mono-nerd-font"
@@ -41,7 +45,6 @@
       "raycast"
       "screen-studio"
       "sf-symbols"
-      "signal"
       "slack"
       "visual-studio-code"
       "zoom"
