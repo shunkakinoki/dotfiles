@@ -145,7 +145,7 @@ nix-build: nix-connect
 		fi; \
 		if [ "$(OS)" = "Darwin" ]; then \
 			nix build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --show-trace; \
-		else if [ "$(OS)" = "Linux" ]; then \
+		elif [ "$(OS)" = "Linux" ]; then \
 			nix build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --show-trace; \
 		else \
 			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM); \
@@ -190,7 +190,7 @@ nix-switch:
 		if [ "$(OS)" = "Darwin" ]; then \
 			nix build .#darwinConfigurations.$(NIX_SYSTEM).system; \
 			$(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM); \
-		else if [ "$(OS)" = "Linux" ]; then \
+		elif [ "$(OS)" = "Linux" ]; then \
 			./result/activate; \
 		else \
 			sudo $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM); \
