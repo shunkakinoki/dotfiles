@@ -13,7 +13,6 @@
     ];
     brews = [
       "gnupg"
-      "k3d"
       "mas"
       "pinentry-mac"
       "pnpm"
