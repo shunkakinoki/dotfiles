@@ -20,8 +20,7 @@
       "sheldon"
     ];
     casks = [
-      # TODO: Wait for v4: https://formulae.brew.sh/cask/beeper
-      # "beeper"
+      "beeper"
       "chatgpt"
       "claude"
       "copilot"
@@ -46,6 +45,7 @@
       "sf-symbols"
       "slack"
       "visual-studio-code"
+      "windsurf"
       "zoom"
     ];
     masApps = {
