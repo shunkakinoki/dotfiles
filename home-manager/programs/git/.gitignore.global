@@ -30,3 +30,6 @@ Temporary Items
 .env.*
 .env.local
 .envrc
+
+# Tmp files
+tmp
