@@ -33,3 +33,5 @@ Temporary Items
 
 # Tmp files
 tmp
+.tmp*
+tmp*
