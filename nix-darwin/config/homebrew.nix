@@ -40,6 +40,7 @@
       "karabiner-elements"
       "linear-linear"
       "notion"
+      "protobuf"
       "raycast"
       "screen-studio"
       "sf-symbols"
