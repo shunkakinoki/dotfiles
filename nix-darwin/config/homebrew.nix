@@ -17,6 +17,7 @@
       "pinentry-mac"
       "pnpm"
       "postgresql"
+      "protobuf"
       "sheldon"
     ];
     casks = [
@@ -40,7 +41,6 @@
       "karabiner-elements"
       "linear-linear"
       "notion"
-      "protobuf"
       "raycast"
       "screen-studio"
       "sf-symbols"
