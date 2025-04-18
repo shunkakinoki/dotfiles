@@ -22,7 +22,7 @@ NIX_SYSTEM := $(shell if [ "$(OS)" = "Darwin" ] && [ "$(ARCH)" = "arm64" ]; then
 NIX_CONFIG_TYPE := $(shell if [ "$(OS)" = "Darwin" ]; then \
 		echo "darwinConfigurations"; \
 	else \
-		echo "nixosConfigurations"; \
+		echo "homeConfigurations"; \
 	fi)
 NIX_ENV := $(shell . ~/.nix-profile/etc/profile.d/nix.sh 2>/dev/null || echo "not_found")
 NIX_FLAGS := --extra-experimental-features 'flakes nix-command'
@@ -145,6 +145,8 @@ nix-build: nix-connect
 		fi; \
 		if [ "$(OS)" = "Darwin" ]; then \
 			nix build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --show-trace; \
+		elif [ "$(OS)" = "Linux" ]; then \
+			nix build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --show-trace; \
 		else \
 			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM); \
 		fi; \
@@ -188,6 +190,8 @@ nix-switch:
 		if [ "$(OS)" = "Darwin" ]; then \
 			nix build .#darwinConfigurations.$(NIX_SYSTEM).system; \
 			$(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM); \
+		elif [ "$(OS)" = "Linux" ]; then \
+			./result/activate; \
 		else \
 			sudo $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM); \
 		fi; \
