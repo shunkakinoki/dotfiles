@@ -22,8 +22,18 @@ NIX_SYSTEM := $(shell if [ "$(OS)" = "Darwin" ] && [ "$(ARCH)" = "arm64" ]; then
 NIX_CONFIG_TYPE := $(shell \
 	if [ "$(OS)" = "Darwin" ]; then \
 		echo "darwinConfigurations"; \
-	elif [ "$(OS)" = "Linux" ] && [ -f /etc/NIXOS ]; then \
-		echo "nixosConfigurations"; \
+	elif [ "$(OS)" = "Linux" ]; then \
+		if [ "$$CI" = "true" ] && [ -n "$(NIX_CONFIG_TARGET)" ]; then \
+			if [ "$(NIX_CONFIG_TARGET)" = "nixos" ]; then \
+				echo "nixosConfigurations"; \
+			else \
+				echo "homeConfigurations"; \
+			fi; \
+		elif [ -f /etc/NIXOS ]; then \
+			echo "nixosConfigurations"; \
+		else \
+			echo "homeConfigurations"; \
+		fi; \
 	else \
 		echo "homeConfigurations"; \
 	fi)

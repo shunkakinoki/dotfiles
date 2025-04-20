@@ -53,6 +53,7 @@ jobs:
           curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/${{ github.sha }}/install.sh | sh
         env:
           GITHUB_PR: ${{ github.event.pull_request.number }}
+          NIX_CONFIG_TARGET: ${{ matrix.name == 'NixOS' && 'nixos' || '' }}
   e2e-check:
     if: always()
     needs:

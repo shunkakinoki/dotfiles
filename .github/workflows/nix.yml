@@ -57,6 +57,21 @@ jobs:
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Nix Linux
+        env:
+          NIX_CONFIG_TARGET: home
+        run: make build
+  nix-nixos:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Nix
+        uses: cachix/install-nix-action@v30
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Nix NixOS
+        env:
+          NIX_CONFIG_TARGET: nixos
         run: make build
   nix-check:
     if: always()
