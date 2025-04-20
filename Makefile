@@ -19,8 +19,11 @@ NIX_SYSTEM := $(shell if [ "$(OS)" = "Darwin" ] && [ "$(ARCH)" = "arm64" ]; then
 	else \
 		echo "unsupported"; \
 	fi)
-NIX_CONFIG_TYPE := $(shell if [ "$(OS)" = "Darwin" ]; then \
+NIX_CONFIG_TYPE := $(shell \
+	if [ "$(OS)" = "Darwin" ]; then \
 		echo "darwinConfigurations"; \
+	elif [ "$(OS)" = "Linux" ] && [ -f /etc/NIXOS ]; then \
+		echo "nixosConfigurations"; \
 	else \
 		echo "homeConfigurations"; \
 	fi)
@@ -134,17 +137,24 @@ nix-build: nix-connect
 	@if [ "$$CI" = "true" ]; then \
 		echo "Running in CI"; \
 		if [ "$(OS)" = "Darwin" ]; then \
-			nix build .#darwinConfigurations.runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
+			nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
+		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
+			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#runner --no-update-lock-file; \
+		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
+			nix build .#$(NIX_CONFIG_TYPE).runner $(NIX_FLAGS) --no-update-lock-file --show-trace; \
 		else \
-			nix build .#homeConfigurations.runner $(NIX_FLAGS) --no-update-lock-file --show-trace; \
+			echo "Unsupported OS $(OS) for non-CI build"; \
+			exit 1; \
 		fi; \
 	else \
 		if [ "$(NIX_SYSTEM)" = "unsupported" ]; then \
 			echo "❌ Unsupported system architecture: $(OS) $(ARCH)"; \
 			exit 1; \
 		elif [ "$(OS)" = "Darwin" ]; then \
-			nix build .#darwinConfigurations.$(NIX_SYSTEM).system $(NIX_FLAGS) --show-trace; \
-		elif [ "$(OS)" = "Linux" ]; then \
+			nix build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --show-trace; \
+		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
+			sudo $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM); \
+		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
 			nix build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).activationPackage $(NIX_FLAGS) --show-trace; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI build"; \
@@ -181,13 +191,21 @@ nix-switch:
 	@if [ "$$CI" = "true" ]; then \
 		if [ "$(OS)" = "Darwin" ]; then \
 			$(DARWIN_REBUILD) switch --flake .#runner --no-update-lock-file; \
-		else \
+		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
+			nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
+		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
 			./result/activate; \
+		else \
+			echo "Unsupported OS $(OS) for non-CI switch"; \
+			exit 1; \
 		fi; \
 	else \
 		if [ "$(OS)" = "Darwin" ]; then \
+			nix build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system; \
 			$(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM); \
-		elif [ "$(OS)" = "Linux" ]; then \
+		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
+			sudo $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM); \
+		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
 			./result/activate; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI switch"; \
@@ -198,7 +216,6 @@ nix-switch:
 
 .PHONY: nix-switch-vm
 nix-switch-vm:
-	@echo "NOTE: nix-switch-vm might need adjustment for home-manager CI workflow."
 	@if [ ! -f "./result/bin/run-nixos-vm" ]; then \
 		echo "❌ VM binary not found at ./result/bin/run-nixos-vm"; \
 		exit 0; \
