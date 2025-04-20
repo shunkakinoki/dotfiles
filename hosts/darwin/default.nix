@@ -12,6 +12,7 @@ let
     {
       networking.hostName = hostname;
       users.users.${username}.home = "/Users/${username}";
+      system.stateVersion = 4;
     };
 in
 nix-darwin.lib.darwinSystem {

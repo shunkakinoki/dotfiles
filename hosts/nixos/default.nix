@@ -85,6 +85,8 @@ let
 
       boot.consoleLogLevel = 7;
       services.journald.extraConfig = "Storage=volatile";
+
+      system.stateVersion = "24.05";
     };
 in
 nixpkgs.lib.nixosSystem {
