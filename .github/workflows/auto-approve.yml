@@ -10,6 +10,8 @@ jobs:
   auto-approve-renovate:
     if: github.actor == 'renovate[bot]'
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: Auto-approve Renovate PR
         uses: hmarr/auto-approve-action@v3
