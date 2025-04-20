@@ -58,12 +58,12 @@
             username = "runner";
           };
         };
-        linuxConfigurations = {
-          x86_64-linux = import ./hosts/linux {
+        homeConfigurations = {
+          "ubuntu@x86_64-linux" = import ./hosts/linux {
             inherit inputs;
             username = "ubuntu";
           };
-          runner = import ./hosts/linux {
+          "runner@x86_64-linux" = import ./hosts/linux {
             inherit inputs;
             isRunner = true;
             username = "runner";
