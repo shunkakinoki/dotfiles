@@ -15,4 +15,4 @@ git fetch origin main
 git reset --hard origin/main
 
 # Run the install script
-./install.sh 
+./install.sh

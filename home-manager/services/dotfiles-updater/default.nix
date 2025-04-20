@@ -6,7 +6,15 @@
     };
     Service = {
       Type = "oneshot";
-      Environment = "PATH=${pkgs.lib.makeBinPath (with pkgs; [git bash])}";
+      Environment = "PATH=${
+        pkgs.lib.makeBinPath (
+          with pkgs;
+          [
+            git
+            bash
+          ]
+        )
+      }";
       ExecStart = "${./update.sh}";
     };
   };
@@ -20,7 +28,7 @@
       Persistent = true;
     };
     Install = {
-      WantedBy = ["timers.target"];
+      WantedBy = [ "timers.target" ];
     };
   };
 }
