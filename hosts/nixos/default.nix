@@ -113,7 +113,8 @@ nixpkgs.lib.nixosSystem {
       home-manager.useUserPackages = true;
       home-manager.users."${username}" = import ../../home-manager {
         inherit system inputs username;
-        nixpkgs = nixpkgs;
+        lib = nixpkgs.lib;
+        pkgs = nixpkgs.legacyPackages.${system};
       };
     }
   ];
