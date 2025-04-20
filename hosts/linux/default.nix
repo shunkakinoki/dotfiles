@@ -23,4 +23,4 @@ home-manager.lib.homeManagerConfiguration {
       programs.home-manager.enable = true;
     }
   ];
-} 
+}
