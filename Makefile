@@ -229,3 +229,6 @@ shell-install:
 	else \
 		echo "⚠️ Fish shell not found. Skipping Fish setup."; \
 	fi
+
+.PHONY: shell-update
+shell-update: shell-install
