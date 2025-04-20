@@ -47,7 +47,7 @@
             username = "runner";
           };
         };
-        linuxConfigurations = {
+        nixosConfigurations = {
           x86_64-linux = import ./hosts/linux {
             inherit inputs;
             username = "shunkakinoki";
