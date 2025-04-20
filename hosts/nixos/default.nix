@@ -112,7 +112,7 @@ nixpkgs.lib.nixosSystem {
       home-manager.backupFileExtension = "backup";
       home-manager.useUserPackages = true;
       home-manager.users."${username}" = import ../../home-manager {
-        inherit system;
+        inherit system inputs username;
         nixpkgs = nixpkgs;
       };
     }

@@ -48,11 +48,11 @@
           };
         };
         nixosConfigurations = {
-          x86_64-linux = import ./hosts/linux {
+          x86_64-linux = import ./hosts/nixos {
             inherit inputs;
             username = "shunkakinoki";
           };
-          runner = import ./hosts/linux {
+          runner = import ./hosts/nixos {
             inherit inputs;
             isRunner = true;
             username = "runner";
