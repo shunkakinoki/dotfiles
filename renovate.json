@@ -30,18 +30,25 @@
       "schedule": ["before 3am"],
       "automerge": true,
       "platformAutomerge": true,
-      "groupName": "Nix dependencies"
+      "groupName": "Nix Dependencies"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "GitHub Actions Dependencies",
+      "automerge": true,
+      "platformAutomerge": true
     },
     {
       "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "All non-major dependencies",
+      "groupName": "All Non-Major Dependencies",
       "groupSlug": "all-minor-patch",
       "automerge": true,
       "platformAutomerge": true
     },
     {
       "matchUpdateTypes": ["major"],
-      "groupName": "All major dependencies",
+      "groupName": "All Major Dependencies",
       "groupSlug": "all-major"
     }
   ]
