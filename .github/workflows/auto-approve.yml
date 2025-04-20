@@ -25,5 +25,4 @@ jobs:
         uses: re-actors/alls-green@release/v1
         with:
           jobs: ${{ toJSON(needs) }}
-          allowed-skips:
-            - auto-approve-renovate
+          allowed-skips: auto-approve-renovate
