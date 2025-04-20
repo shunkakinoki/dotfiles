@@ -2,7 +2,7 @@
 
 {
   services.docker.enable = true;
-#   services.docker.enableNvidia = false;
+  #   services.docker.enableNvidia = false;
 
   services.docker.containers.openwebui = {
     image = "ghcr.io/open-webui/open-webui:main";
