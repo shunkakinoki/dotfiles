@@ -55,7 +55,7 @@ help:
 ##@ General
 
 .PHONY: install
-install: setup update
+install: setup update shell-install
 
 .PHONY: build
 build: nix-build
@@ -207,3 +207,25 @@ nix-switch-vm:
 	printf "sleep 5\nmkdir -p /tmp/test && cd /tmp/test\ncp -r /mnt/shared/* .\nnix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file\npoweroff\n" > vm_commands.txt; \
 	timeout 600 ./result/bin/run-nixos-vm -nographic < vm_commands.txt || exit 1; \
 	rm -f vm_commands.txt
+
+##@ Shell Installation
+
+.PHONY: shell-install
+shell-install:
+	@echo "🐠 Setting up Fish shell..."
+	@if command -v fish > /dev/null; then \
+		fish_path=$$(command -v fish); \
+		if ! grep -q "$$fish_path" /etc/shells; then \
+			echo "Adding $$fish_path to /etc/shells..."; \
+			echo $$fish_path | sudo tee -a /etc/shells; \
+		fi; \
+		if [ "$$(basename "$$SHELL")" != "fish" ]; then \
+			echo "Changing default shell to Fish shell..."; \
+			chsh -s $$fish_path; \
+			echo "✅ Default shell changed to Fish. Please log out and back in for changes to take effect."; \
+		else \
+			echo "✅ Fish is already the default shell."; \
+		fi; \
+	else \
+		echo "⚠️ Fish shell not found. Skipping Fish setup."; \
+	fi
