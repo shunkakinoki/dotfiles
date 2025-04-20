@@ -1,5 +1,11 @@
 name: Auto Approve
 on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   pull_request_target:
     branches:
       - main
@@ -8,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   auto-approve-renovate:
-    if: github.actor == 'renovate[bot]'
+    if: github.event_name == 'pull_request_target' && github.actor == 'renovate[bot]'
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
