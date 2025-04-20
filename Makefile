@@ -85,7 +85,7 @@ nix-setup: nix-install nix-check nix-connect
 
 .PHONY: nix-connect
 nix-connect:
-	@echo "🔌 Ensuring Nix daemon is running..."
+	@echo "🔌 Ensuring Nix daemon is running for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH)"
 	@if [ "$(OS)" = "Darwin" ]; then \
 		sudo launchctl unload /Library/LaunchDaemons/org.nixos.nix-daemon.plist 2>/dev/null || true; \
 		sudo launchctl load -w /Library/LaunchDaemons/org.nixos.nix-daemon.plist; \
@@ -101,7 +101,7 @@ nix-connect:
 
 .PHONY: nix-check
 nix-check:
-	@echo "🔍 Verifying Nix environment setup..."
+	@echo "🔍 Verifying Nix environment setup for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH)"
 	@if [ "$(NIX_ENV)" = "not_found" ]; then \
 		echo "❌ Nix environment not found. Please ensure Nix is installed and run:"; \
 		exit 1; \
@@ -111,7 +111,7 @@ nix-check:
 .PHONY: nix-install
 nix-install:
 	@if [ "$(NIX_ENV)" = "not_found" ]; then \
-		echo "🚀 Installing Nix environment..."; \
+		echo "🚀 Installing Nix environment for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH)"; \
 		curl -L https://nixos.org/nix/install | sh; \
 	fi
 	@echo "✅ Nix environment installed!"
@@ -123,7 +123,7 @@ nix-update: nix-build nix-switch
 
 .PHONY: nix-backup
 nix-backup:
-	@echo "🗄️ Backing up configuration files..."
+	@echo "🗄️ Backing up configuration files for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH)"
 	@backup_dir="$$HOME/.config/backups/$(shell date +%Y%m%d_%H%M%S)"; \
 	mkdir -p "$$backup_dir"; \
 	if [ -d "$$HOME/.config" ]; then \
@@ -133,7 +133,7 @@ nix-backup:
 
 .PHONY: nix-build
 nix-build: nix-connect
-	@echo "🏗️ Building Nix configuration..."
+	@echo "🏗️ Building Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH)"
 	@if [ "$$CI" = "true" ]; then \
 		echo "Running in CI"; \
 		if [ "$(OS)" = "Darwin" ]; then \
@@ -187,7 +187,7 @@ nix-format-check:
 
 .PHONY: nix-switch
 nix-switch:
-	@echo "🔧 Activating Nix configuration..."
+	@echo "🔧 Activating Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH)"
 	@if [ "$$CI" = "true" ]; then \
 		if [ "$(OS)" = "Darwin" ]; then \
 			$(DARWIN_REBUILD) switch --flake .#runner --no-update-lock-file; \
