@@ -1,0 +1,32 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommits",
+    ":automergePatch",
+    ":automergeMinor",
+    ":enableVulnerabilityAlerts"
+  ],
+  "schedule": ["before 3am"],
+  "timezone": "UTC",
+  "dependencyDashboard": true,
+  "platformAutomerge": true,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 3am"],
+    "automerge": true,
+    "platformAutomerge": true
+  },
+  "nix": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "matchManagers": ["nix"],
+      "matchDepTypes": ["flake-inputs"],
+      "schedule": ["before 3am"],
+      "automerge": true,
+      "platformAutomerge": true
+    }
+  ]
+}

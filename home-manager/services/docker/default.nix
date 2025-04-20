@@ -1,5 +1,4 @@
 { pkgs, ... }:
-
 {
   services.docker.enable = true;
   #   services.docker.enableNvidia = false;

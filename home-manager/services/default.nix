@@ -1,7 +1,10 @@
 { pkgs }:
 let
-  ollamaModule = import ./ollama { inherit pkgs; };
+  docker = import ./docker { inherit pkgs; };
+  ollama = import ./ollama { inherit pkgs; };
+  dotfilesUpdater = import ./dotfiles-updater;
 in
 [
-  ollamaModule
+  ollama
+  dotfilesUpdater
 ]
