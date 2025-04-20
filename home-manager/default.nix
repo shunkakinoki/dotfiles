@@ -1,47 +1,51 @@
 {
-  system,
-  nixpkgs,
-  lib ? nixpkgs.lib,
+  # Accept standard Home Manager arguments + inputs from extraSpecialArgs
+  config, pkgs, lib, inputs, username, ...
 }:
 let
   # nvfetcher
   # sources = pkgs.callPackage ../_sources/generated.nix { };
 
-  # config
-  config = import ../config;
+  # config - Assuming ../config contains a list of module paths or attribute sets
+  hmConfig = import ../config;
 
-  # packages
-  overlay = import ./overlay;
-  pkgs = import nixpkgs {
-    inherit system;
-    config.allowUnfree = true;
-    overlays = overlay;
-  };
+  # Define packages using the provided pkgs
+  overlay = import ./overlay; # Ensure overlay is compatible if needed, or adjust pkgs in flake.nix
   packages = import ./packages { inherit pkgs; };
 
   # misc
-  misc = import ./misc;
+  misc = import ./misc; # Ensure these expect pkgs, lib if necessary
 
   # modules
-  modules = import ./modules;
+  modules = import ./modules; # Ensure these expect pkgs, lib if necessary
 
-  # Import programs
+  # Import programs, pass necessary args
   programs = import ./programs {
     inherit lib pkgs;
-    sources = { };
+    sources = { }; # Pass actual sources if needed, potentially from inputs
   };
 
   # services
   services = import ./services {
-    inherit pkgs;
+    inherit pkgs; # Ensure these expect pkgs, lib if necessary
   };
 
 in
 {
-  imports = config ++ misc ++ modules ++ programs ++ services;
+  # Import the collected modules
+  imports = hmConfig ++ misc ++ modules ++ programs ++ services;
 
-  home.stateVersion = "24.11";
+  # Set the username from extraSpecialArgs
+  home.username = username;
+
+  # Set the home directory based on the username
+  home.homeDirectory = "/home/${username}";
+
+  # Use packages defined above
   home.packages = packages;
+
+  # Keep existing configurations
+  home.stateVersion = "24.11";
 
   accounts.email.accounts = {
     Gmail = {
