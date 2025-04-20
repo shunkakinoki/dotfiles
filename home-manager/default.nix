@@ -1,31 +1,24 @@
 {
-  system,
-  nixpkgs,
-  lib ? nixpkgs.lib,
+  config,
+  pkgs,
+  lib,
+  inputs,
+  username,
+  ...
 }:
 let
   # nvfetcher
   # sources = pkgs.callPackage ../_sources/generated.nix { };
 
-  # config
-  config = import ../config;
+  hmConfig = import ../config;
 
-  # packages
   overlay = import ./overlay;
-  pkgs = import nixpkgs {
-    inherit system;
-    config.allowUnfree = true;
-    overlays = overlay;
-  };
   packages = import ./packages { inherit pkgs; };
 
-  # misc
   misc = import ./misc;
 
-  # modules
   modules = import ./modules;
 
-  # Import programs
   programs = import ./programs {
     inherit lib pkgs;
     sources = { };
@@ -38,10 +31,15 @@ let
 
 in
 {
-  imports = config ++ misc ++ modules ++ programs ++ services;
+  imports = hmConfig ++ misc ++ modules ++ programs ++ services;
+
+  home.username = username;
+
+  home.homeDirectory = lib.mkIf pkgs.stdenv.isLinux "/home/${username}";
+
+  home.packages = packages;
 
   home.stateVersion = "24.11";
-  home.packages = packages;
 
   accounts.email.accounts = {
     Gmail = {

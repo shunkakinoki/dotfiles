@@ -47,23 +47,23 @@
             username = "runner";
           };
         };
-        homeConfigurations = {
-          x86_64-linux = import ./hosts/linux {
+        nixosConfigurations = {
+          x86_64-linux = import ./hosts/nixos {
             inherit inputs;
             username = "shunkakinoki";
           };
-          runner = import ./hosts/linux {
+          runner = import ./hosts/nixos {
             inherit inputs;
             isRunner = true;
             username = "runner";
           };
         };
-        nixosConfigurations = {
-          x86_64-linux = import ./hosts/linux {
+        homeConfigurations = {
+          "ubuntu@x86_64-linux" = import ./hosts/linux {
             inherit inputs;
-            username = "shunkakinoki";
+            username = "ubuntu";
           };
-          runner = import ./hosts/linux {
+          "runner@x86_64-linux" = import ./hosts/linux {
             inherit inputs;
             isRunner = true;
             username = "runner";

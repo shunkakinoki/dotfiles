@@ -12,6 +12,7 @@ let
     {
       networking.hostName = hostname;
       users.users.${username}.home = "/Users/${username}";
+      system.stateVersion = 4;
     };
 in
 nix-darwin.lib.darwinSystem {
@@ -28,8 +29,10 @@ nix-darwin.lib.darwinSystem {
       home-manager.backupFileExtension = "backup";
       home-manager.useUserPackages = true;
       home-manager.users."${username}" = import ../../home-manager {
-        inherit system;
-        nixpkgs = inputs.nixpkgs;
+        inherit inputs username;
+        lib = inputs.nixpkgs.lib;
+        pkgs = inputs.nixpkgs.legacyPackages.${system};
+        config = { };
       };
     }
   ];
