@@ -15,6 +15,7 @@ concurrency:
 jobs:
   auto-approve-bot:
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request_target'
     permissions:
       pull-requests: write
     steps:
