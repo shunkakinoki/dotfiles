@@ -1,6 +1,12 @@
 name: Auto Approve
 on:
+  push:
+    branches:
+      - main
   pull_request:
+    branches:
+      - main
+  pull_request_target:
     branches:
       - main
 concurrency:
@@ -13,7 +19,7 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - name: Auto-approve Renovate PR
+      - name: Auto Approve Renovate PR
         uses: hmarr/auto-approve-action@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
