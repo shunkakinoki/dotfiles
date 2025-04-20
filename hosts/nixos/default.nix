@@ -115,6 +115,7 @@ nixpkgs.lib.nixosSystem {
         inherit system inputs username;
         lib = nixpkgs.lib;
         pkgs = nixpkgs.legacyPackages.${system};
+        config = { };
       };
     }
   ];
