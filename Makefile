@@ -73,7 +73,7 @@ setup: nix-setup
 switch: nix-switch
 
 .PHONY: update
-update: nix-update
+update: nix-update shell-update
 
 ##@ Nix Setup
 
