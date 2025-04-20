@@ -1,0 +1,17 @@
+name: Auto Approve
+on:
+  pull_request:
+    branches:
+      - main
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.sha }}
+  cancel-in-progress: true
+jobs:
+  auto-approve:
+    if: github.actor == 'renovate[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto-approve Renovate PR
+        uses: hmarr/auto-approve-action@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
