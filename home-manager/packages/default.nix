@@ -4,6 +4,7 @@ with pkgs;
   argocd
   direnv
   dust
+  fswatch
   gh
   ghq
   go
