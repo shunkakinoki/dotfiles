@@ -25,31 +25,35 @@
   },
   "packageRules": [
     {
+      "groupName": "Nix Dependencies",
+      "groupSlug": "nix",
       "matchManagers": ["nix"],
       "matchDepTypes": ["flake-inputs"],
-      "schedule": ["before 3am"],
       "automerge": true,
       "platformAutomerge": true,
-      "groupName": "Nix Dependencies"
+      "schedule": ["before 3am"]
     },
     {
+      "groupName": "GitHub Actions Dependencies",
+      "groupSlug": "github-actions",
       "matchManagers": ["github-actions"],
       "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "GitHub Actions Dependencies",
       "automerge": true,
-      "platformAutomerge": true
+      "platformAutomerge": true,
+      "schedule": ["before 3am"]
     },
     {
-      "matchUpdateTypes": ["minor", "patch"],
       "groupName": "All Non-Major Dependencies",
       "groupSlug": "all-minor-patch",
+      "matchUpdateTypes": ["minor", "patch"],
       "automerge": true,
-      "platformAutomerge": true
+      "platformAutomerge": true,
+      "schedule": ["before 3am"]
     },
     {
-      "matchUpdateTypes": ["major"],
       "groupName": "All Major Dependencies",
-      "groupSlug": "all-major"
+      "groupSlug": "all-major",
+      "matchUpdateTypes": ["major"]
     }
   ]
 }
