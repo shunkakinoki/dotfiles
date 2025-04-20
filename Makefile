@@ -149,7 +149,7 @@ nix-build: nix-connect
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#runner --no-update-lock-file; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			nix build .#$(NIX_CONFIG_TYPE)."runner@$(NIX_SYSTEM)" $(NIX_FLAGS) --no-update-lock-file --show-trace; \
+			nix build .#$(NIX_CONFIG_TYPE)."runner@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --no-update-lock-file --show-trace; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI build"; \
 			exit 1; \
@@ -163,7 +163,7 @@ nix-build: nix-connect
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			sudo $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM); \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			nix build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)" $(NIX_FLAGS) --show-trace; \
+			nix build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --show-trace; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI build"; \
 			exit 1; \
