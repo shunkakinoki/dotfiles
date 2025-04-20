@@ -1,6 +1,11 @@
 {
   # Accept standard Home Manager arguments + inputs from extraSpecialArgs
-  config, pkgs, lib, inputs, username, ...
+  config,
+  pkgs,
+  lib,
+  inputs,
+  username,
+  ...
 }:
 let
   # nvfetcher

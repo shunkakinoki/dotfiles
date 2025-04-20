@@ -61,12 +61,18 @@
         homeConfigurations = {
           x86_64-linux = inputs.home-manager.lib.homeManagerConfiguration {
             pkgs = inputs.nixpkgs.legacyPackages.x86_64-linux;
-            extraSpecialArgs = { inherit inputs; username = "ubuntu"; };
+            extraSpecialArgs = {
+              inherit inputs;
+              username = "ubuntu";
+            };
             modules = [ ./home-manager/default.nix ];
           };
           runner = inputs.home-manager.lib.homeManagerConfiguration {
             pkgs = inputs.nixpkgs.legacyPackages.x86_64-linux;
-            extraSpecialArgs = { inherit inputs; username = "runner"; };
+            extraSpecialArgs = {
+              inherit inputs;
+              username = "runner";
+            };
             modules = [ ./home-manager/default.nix ];
           };
         };
