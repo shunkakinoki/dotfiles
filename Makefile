@@ -25,7 +25,7 @@ NIX_CONFIG_TYPE := $(shell \
 	elif [ "$(OS)" = "Linux" ] && [ -f /etc/NIXOS ]; then \
 		echo "nixosConfigurations"; \
 	else \
-		echo "homeConfigurations"; \
+		echo "linuxConfigurations"; \
 	fi)
 NIX_ENV := $(shell . ~/.nix-profile/etc/profile.d/nix.sh 2>/dev/null || echo "not_found")
 NIX_FLAGS := --extra-experimental-features 'flakes nix-command'
@@ -140,7 +140,7 @@ nix-build: nix-connect
 			nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#runner --no-update-lock-file; \
-		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
+		elif [ "$(NIX_CONFIG_TYPE)" = "linuxConfigurations" ]; then \
 			nix build .#$(NIX_CONFIG_TYPE).runner.activationPackage $(NIX_FLAGS) --no-update-lock-file --show-trace; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI build"; \
@@ -154,7 +154,7 @@ nix-build: nix-connect
 			nix build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --show-trace; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			sudo $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM); \
-		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
+		elif [ "$(NIX_CONFIG_TYPE)" = "linuxConfigurations" ]; then \
 			nix build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).activationPackage $(NIX_FLAGS) --show-trace; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI build"; \
@@ -193,7 +193,7 @@ nix-switch:
 			$(DARWIN_REBUILD) switch --flake .#runner --no-update-lock-file; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
-		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
+		elif [ "$(NIX_CONFIG_TYPE)" = "linuxConfigurations" ]; then \
 			./result/activate; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI switch"; \
@@ -205,7 +205,7 @@ nix-switch:
 			$(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM); \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			sudo $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM); \
-		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
+		elif [ "$(NIX_CONFIG_TYPE)" = "linuxConfigurations" ]; then \
 			./result/activate; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI switch"; \

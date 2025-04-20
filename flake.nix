@@ -58,22 +58,15 @@
             username = "runner";
           };
         };
-        homeConfigurations = {
-          x86_64-linux = inputs.home-manager.lib.homeManagerConfiguration {
-            pkgs = inputs.nixpkgs.legacyPackages.x86_64-linux;
-            extraSpecialArgs = {
-              inherit inputs;
-              username = "ubuntu";
-            };
-            modules = [ ./home-manager/default.nix ];
+        linuxConfigurations = {
+          x86_64-linux = import ./hosts/linux {
+            inherit inputs;
+            username = "ubuntu";
           };
-          runner = inputs.home-manager.lib.homeManagerConfiguration {
-            pkgs = inputs.nixpkgs.legacyPackages.x86_64-linux;
-            extraSpecialArgs = {
-              inherit inputs;
-              username = "runner";
-            };
-            modules = [ ./home-manager/default.nix ];
+          runner = import ./hosts/linux {
+            inherit inputs;
+            isRunner = true;
+            username = "runner";
           };
         };
       };
