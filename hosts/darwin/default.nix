@@ -31,7 +31,7 @@ nix-darwin.lib.darwinSystem {
         inherit inputs username;
         lib = inputs.nixpkgs.lib;
         pkgs = inputs.nixpkgs.legacyPackages.${system};
-        config = {};
+        config = { };
       };
     }
   ];
