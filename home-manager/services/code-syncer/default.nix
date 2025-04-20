@@ -1,6 +1,6 @@
 { pkgs, ... }:
 {
-  launchd.agents.code-syncer = {
+  launchd.agents.code-syncer = pkgs.lib.mkIf pkgs.stdenv.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [
@@ -18,4 +18,4 @@
       StandardErrorPath = "/tmp/code-syncer.error.log";
     };
   };
-} 
+}
