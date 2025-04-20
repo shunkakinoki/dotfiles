@@ -2,11 +2,12 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
-    ":semanticCommits",
+    "group:allNonMajor",
     ":automergePatch",
     ":automergeMinor",
     ":enableVulnerabilityAlerts",
-    "group:allNonMajor"
+    ":gitSignOff",
+    ":semanticCommits"
   ],
   "schedule": ["before 3am"],
   "timezone": "UTC",
