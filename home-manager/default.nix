@@ -35,7 +35,7 @@ in
 
   home.username = username;
 
-  home.homeDirectory = "/home/${username}";
+  home.homeDirectory = lib.mkIf pkgs.stdenv.isLinux "/home/${username}";
 
   home.packages = packages;
 
