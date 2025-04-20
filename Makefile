@@ -212,7 +212,7 @@ nix-switch:
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			nix run .#$(NIX_CONFIG_TYPE)."runner@$(NIX_SYSTEM)".activationPackage; \
+			nix run $(NIX_FLAGS) .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI switch"; \
 			exit 1; \
@@ -226,7 +226,7 @@ nix-switch:
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			sudo $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM); \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			nix run .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
+			nix run $(NIX_FLAGS) .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI switch"; \
 			exit 1; \
