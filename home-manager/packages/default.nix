@@ -16,4 +16,7 @@ with pkgs;
   ollama
   rustup
   stern
+] ++ lib.optionals stdenv.isLinux [
+  docker
+  docker-compose
 ]
