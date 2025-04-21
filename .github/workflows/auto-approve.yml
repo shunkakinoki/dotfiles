@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request_target'
     permissions:
+      contents: read
       pull-requests: write
     steps:
       - name: Auto Approve Renovate PR
@@ -28,7 +29,7 @@ jobs:
           github.actor == 'renovate[bot]' ||
           github.actor == 'renovate' ||
           github.actor == 'github-actions[bot]'
-        uses: hmarr/auto-approve-action@v3
+        uses: hmarr/auto-approve-action@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
   auto-approve-check:
