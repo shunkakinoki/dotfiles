@@ -27,9 +27,46 @@ sync_files() {
   fi
 }
 
+# Function to sync extensions
+sync_extensions() {
+  echo "Starting extension sync..."
+  local vscode_extensions
+  local cursor_extensions
+  local windsurf_extensions
+
+  # Get installed extensions, handle potential errors if command fails
+  vscode_extensions=$(code --list-extensions 2>/dev/null) || { echo "Failed to get VSCode extensions."; return 1; }
+  cursor_extensions=$(cursor --list-extensions 2>/dev/null) || { echo "Failed to get Cursor extensions. Assuming none installed."; cursor_extensions=""; }
+  windsurf_extensions=$(windsurf --list-extensions 2>/dev/null) || { echo "Failed to get Windsurf extensions. Assuming none installed."; windsurf_extensions=""; }
+
+  # Sync to Cursor
+  echo "Syncing extensions to Cursor..."
+  for ext in $vscode_extensions; do
+    # Check if the extension ID exists exactly in the list
+    if ! echo "$cursor_extensions" | grep -Fxq "$ext"; then
+      echo "Installing $ext in Cursor..."
+      cursor --install-extension "$ext" --force || echo "Failed to install $ext in Cursor."
+    fi
+  done
+
+  # Sync to Windsurf
+  echo "Syncing extensions to Windsurf..."
+  for ext in $vscode_extensions; do
+    # Check if the extension ID exists exactly in the list
+    if ! echo "$windsurf_extensions" | grep -Fxq "$ext"; then
+      echo "Installing $ext in Windsurf..."
+      windsurf --install-extension "$ext" --force || echo "Failed to install $ext in Windsurf."
+    fi
+  done
+  echo "Extension sync finished at $(date)"
+}
+
 # Initial sync for both files
 sync_files "$SETTINGS_FILE"
 sync_files "$KEYBINDINGS_FILE"
+
+# Initial sync for extensions
+sync_extensions
 
 # Watch for changes in both files
 fswatch -o "$VSCODE_USER_DIR/$SETTINGS_FILE" "$VSCODE_USER_DIR/$KEYBINDINGS_FILE" | while read -r changed_file; do

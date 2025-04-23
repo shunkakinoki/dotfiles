@@ -16,10 +16,12 @@
       unshallow = "fetch --prune --tags --unshallow";
     };
     extraConfig = {
-      # commit.gpgSign = true;
-      # gpg.format = "ssh";
-      # gpg.ssh.allowedSignersFile = "~/.ssh/allowed_signers";
-      # user.signingKey = "~/.ssh/id_ed25519";
+      commit = lib.mkIf pkgs.stdenv.isDarwin {
+        gpgSign = true;
+      };
+      gpg.format = "ssh";
+      gpg.ssh.allowedSignersFile = "~/.ssh/allowed_signers";
+      user.signingKey = "~/.ssh/id_rsa";
       core = {
         editor = "nvim";
         compression = -1;
