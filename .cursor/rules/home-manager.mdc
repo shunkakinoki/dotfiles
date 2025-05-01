@@ -1,0 +1,110 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Home Manager Rules
+
+## Directory Structure
+
+```
+home-manager/
+├── modules/      # Custom modules
+├── programs/     # Program configurations
+├── services/     # Service configurations
+└── overlay/      # Nix overlays
+```
+
+## Module Guidelines
+
+### Custom Modules
+- Located in `modules/<name>/`
+- Must have a `default.nix`
+- Should include proper option types
+- Document all options
+
+### Program Configurations
+- Located in `programs/<name>/`
+- Use home-manager's built-in modules when available
+- Follow program-specific best practices
+- Include all necessary dependencies
+
+### Service Configurations
+- Located in `services/<name>/`
+- Include proper service definitions
+- Handle dependencies correctly
+- Document service parameters
+
+## Configuration Patterns
+
+### Program Configuration Template
+```nix
+{ config, lib, pkgs, ... }:
+
+{
+  programs.<name> = {
+    enable = true;
+    package = pkgs.<name>;
+    
+    # Program-specific settings
+    settings = {
+      # Configuration here
+    };
+  };
+}
+```
+
+### Custom Module Template
+```nix
+{ config, lib, pkgs, ... }:
+
+with lib;
+
+let
+  cfg = config.modules.<name>;
+in {
+  options.modules.<name> = {
+    enable = mkEnableOption "<name>";
+    
+    # Module-specific options
+    settings = mkOption {
+      type = types.attrs;
+      default = {};
+      description = "Configuration settings for <name>";
+    };
+  };
+
+  config = mkIf cfg.enable {
+    # Implementation
+  };
+}
+```
+
+## Best Practices
+
+1. Use typed options whenever possible
+2. Document all configuration options
+3. Follow home-manager's module structure
+4. Keep configurations modular
+5. Test changes before committing
+6. Use proper indentation and formatting
+
+## Common Tasks
+
+### Adding a New Program
+1. Create directory in `programs/<name>/`
+2. Add configuration in `default.nix`
+3. Include in `home.nix` or relevant profile
+4. Test configuration
+5. Document any special requirements
+
+### Modifying Existing Configurations
+1. Locate configuration in appropriate directory
+2. Make changes following established patterns
+3. Test changes locally
+4. Update documentation if needed
+
+## Related Files
+- home-manager/default.nix
+- flake.nix
+- hosts/*/home.nix
