@@ -42,6 +42,7 @@
       "linear-linear"
       "notion"
       "raycast"
+      "rescuetime"
       "screen-studio"
       "sf-symbols"
       "slack"

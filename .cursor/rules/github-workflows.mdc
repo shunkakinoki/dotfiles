@@ -1,0 +1,132 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# GitHub Workflows Rules
+
+## Overview
+
+This repository uses GitHub Actions for automated CI/CD pipelines, including:
+- Code formatting and linting
+- Nix configuration validation
+- Automated dependency updates
+- System build testing
+
+## Workflow Structure
+
+```
+.github/workflows/
+├── ci.yml        # Main CI pipeline
+├── lint.yml      # Code formatting and linting
+└── renovate.yml  # Dependency updates
+```
+
+## Workflow Guidelines
+
+### CI Pipeline
+- Must run on all pull requests and main branch pushes
+- Should validate:
+  1. Nix flake checks
+  2. home-manager builds
+  3. nix-darwin builds
+  4. System configurations
+
+### Code Quality Checks
+- Run Biome for code formatting
+- Validate Nix expressions
+- Check commit message format
+- Ensure documentation is up to date
+
+### Dependency Updates
+- Use Renovate for automated updates
+- Configure update schedule in `renovate.json`
+- Group related updates together
+- Auto-merge minor and patch updates
+
+## Best Practices
+
+### Workflow Configuration
+1. Use specific action versions (not `@main` or `@master`)
+2. Cache Nix store and build artifacts
+3. Set appropriate timeout limits
+4. Use concise job and step names
+5. Add helpful annotations and comments
+
+### Job Structure
+```yaml
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v9
+      
+      - name: Setup Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@v2
+      
+      # Additional steps...
+```
+
+### Security Considerations
+1. Use GITHUB_TOKEN when possible
+2. Secure sensitive data in repository secrets
+3. Limit permissions to minimum required
+4. Review third-party actions before use
+
+## Common Patterns
+
+### Matrix Testing
+```yaml
+strategy:
+  matrix:
+    os: [ubuntu-latest, macos-latest]
+    system: [x86_64-linux, aarch64-darwin]
+    exclude:
+      - os: ubuntu-latest
+        system: aarch64-darwin
+      - os: macos-latest
+        system: x86_64-linux
+```
+
+### Caching
+```yaml
+- uses: actions/cache@v4
+  with:
+    path: |
+      ~/.cache/nix
+      /nix/store
+    key: ${{ runner.os }}-nix-${{ hashFiles('**/flake.lock') }}
+```
+
+### Conditional Jobs
+```yaml
+if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+```
+
+## Error Handling
+
+1. Set appropriate failure conditions
+2. Add helpful error messages
+3. Configure notifications for failures
+4. Archive build artifacts for debugging
+
+## Related Files
+- .github/workflows/*.yml
+- renovate.json
+- flake.nix
+- biome.json
