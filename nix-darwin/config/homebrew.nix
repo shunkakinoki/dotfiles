@@ -28,6 +28,7 @@
       "cursor"
       "discord"
       "docker"
+      "dropbox"
       "figma"
       "firefox"
       "font-hack-nerd-font"
