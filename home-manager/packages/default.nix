@@ -9,6 +9,7 @@ with pkgs;
   ghq
   go
   grc
+  jq
   kubectl
   kubectx
   neofetch
@@ -16,6 +17,7 @@ with pkgs;
   ollama
   rustup
   stern
+  uv
 ]
 ++ lib.optionals stdenv.isLinux [
   docker
