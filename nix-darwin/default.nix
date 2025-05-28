@@ -12,7 +12,7 @@ let
   networking = import ./config/networking.nix;
   nix = import ./config/nix.nix;
   security = import ./config/security.nix { inherit username; };
-  system = import ./config/system.nix { inherit isRunner pkgs; };
+  system = import ./config/system.nix { inherit isRunner pkgs username; };
   time = import ./config/time.nix;
 in
 {
