@@ -46,6 +46,17 @@
       };
       dock = {
         autohide = true;
+        autohide-delay = 0.0;
+        orientation = "bottom";
+        tilesize = 42;
+        showhidden = true;
+        show-recents = true;
+        show-process-indicators = true;
+        expose-animation-duration = 0.1;
+        expose-group-apps = true;
+        launchanim = false;
+        mineffect = "scale";
+        mru-spaces = false;
         persistent-apps = [
           "/System/Applications/Reminders.app"
           "/System/Applications/Notes.app"
@@ -57,14 +68,6 @@
           "/Applications/Discord.app"
           "/System/Applications/Music.app"
         ];
-        orientation = "bottom";
-        showhidden = true;
-        mru-spaces = false;
-        minimize-to-application = true;
-        show-recents = false;
-        static-only = true;
-        tilesize = 48;
-        magnification = false;
       };
       trackpad = {
         Clicking = true;
@@ -80,7 +83,7 @@
     activationScripts.extraActivation.text =
       if !isRunner then
         ''
-          softwareupdate --all --install
+          softwareupdate --all --install;
         ''
       else
         ''
