@@ -14,6 +14,7 @@
     ];
     brews = [
       "gnupg"
+      "helm"
       "kurtosis-cli"
       "mas"
       "pinentry-mac"
