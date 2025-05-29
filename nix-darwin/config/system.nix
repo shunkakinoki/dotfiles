@@ -61,7 +61,7 @@
           "/System/Applications/Reminders.app"
           "/System/Applications/Notes.app"
           "/System/Applications/Calendar.app"
-          "/Applications/Chrome.app"
+          "/Applications/Google Chrome.app"
           "/Applications/Ghostty.app"
           "/System/Applications/Mail.app"
           "/System/Applications/Messages.app"
