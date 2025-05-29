@@ -6,6 +6,7 @@
   ...
 }:
 let
+  dock = import ./config/dock.nix;
   fonts = import ./config/fonts.nix { inherit pkgs; };
   homebrew = import ./config/homebrew.nix { inherit isRunner; };
   launchd = import ./config/launchd.nix { inherit pkgs; };
@@ -17,6 +18,7 @@ let
 in
 {
   imports = [
+    dock
     fonts
     homebrew
     launchd

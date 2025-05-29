@@ -44,28 +44,6 @@
         ShowPathbar = true;
         ShowStatusBar = true;
       };
-      dock = {
-        autohide = true;
-        persistent-apps = [
-          "/System/Applications/Reminders.app"
-          "/System/Applications/Notes.app"
-          "/System/Applications/Calendar.app"
-          "/Applications/Chrome.app"
-          "/Applications/Ghostty.app"
-          "/System/Applications/Mail.app"
-          "/System/Applications/Messages.app"
-          "/Applications/Discord.app"
-          "/System/Applications/Music.app"
-        ];
-        orientation = "bottom";
-        showhidden = true;
-        mru-spaces = false;
-        minimize-to-application = true;
-        show-recents = false;
-        static-only = true;
-        tilesize = 48;
-        magnification = false;
-      };
       trackpad = {
         Clicking = true;
         Dragging = true;
@@ -80,11 +58,11 @@
     activationScripts.extraActivation.text =
       if !isRunner then
         ''
-          softwareupdate --all --install
+          softwareupdate --all --install;
         ''
       else
         ''
-          echo "Skipping activation scripts for runner"
+          echo "Skipping activation scripts for runner";
         '';
   };
 }

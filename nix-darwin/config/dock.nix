@@ -1,31 +1,35 @@
 {
-  imports = [
-    ./dock
-  ];
-
-  local = {
-    dock.enable = true;
-    dock.entries = [
-      { path = "/Applications/Slack.app/"; }
-      { path = "/System/Applications/Messages.app/"; }
-      { path = "/System/Applications/Facetime.app/"; }
-      { path = "/Applications/Telegram.app/"; }
-      { path = "/System/Applications/Music.app/"; }
-      { path = "/System/Applications/News.app/"; }
-      { path = "/System/Applications/Photos.app/"; }
-      { path = "/System/Applications/Photo Booth.app/"; }
-      { path = "/System/Applications/TV.app/"; }
-      { path = "/System/Applications/Home.app/"; }
-      {
-        path = "${config.users.users.${user}.home}/.local/share/";
-        section = "others";
-        options = "--sort name --view grid --display folder";
-      }
-      {
-        path = "${config.users.users.${user}.home}/.local/share/downloads";
-        section = "others";
-        options = "--sort name --view grid --display stack";
-      }
+  system.defaults.dock = {
+    autohide = true;
+    autohide-delay = 0.0;
+    orientation = "bottom";
+    tilesize = 42;
+    showhidden = true;
+    show-recents = true;
+    show-process-indicators = true;
+    expose-animation-duration = 0.1;
+    expose-group-apps = true;
+    launchanim = false;
+    mineffect = "scale";
+    mru-spaces = false;
+    persistent-apps = [
+      "/System/Applications/Reminders.app"
+      "/System/Applications/Notes.app"
+      "/Applications/ChatGPT.app"
+      "/Applications/Google Chrome.app"
+      "/Applications/Docker.app"
+      "/Applications/Ghostty.app"
+      "/Applications/Linear.app"
+      "/Applications/Notion.app"
+      "/Applications/Cursor.app"
+      "/Applications/Visual Studio Code.app"
+      "/System/Applications/Messages.app"
+      "/Applications/Beeper Desktop.app"
+      "/Applications/Slack.app"
+      "/Applications/Discord.app"
+      "/System/Applications/Music.app"
+      "/System/Applications/Podcasts.app"
+      "/System/Applications/System Settings.app"
     ];
   };
 }
