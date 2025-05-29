@@ -208,7 +208,7 @@ nix-switch:
 	@echo "🔧 Activating Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH)"
 	@if [ "$$CI" = "true" ]; then \
 		if [ "$(OS)" = "Darwin" ]; then \
-			$(DARWIN_REBUILD) switch --flake .#runner --no-update-lock-file; \
+			sudo $(DARWIN_REBUILD) switch --flake .#runner --no-update-lock-file; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			echo "⏭️ NixOS switch skipped in CI as the runner is not a NixOS system"; \
 			sudo $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file || exit 0; \
@@ -223,7 +223,7 @@ nix-switch:
 			echo "❌ Unsupported system architecture: $(OS) $(ARCH)"; \
 			exit 1; \
 		elif [ "$(OS)" = "Darwin" ]; then \
-			$(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM); \
+			sudo $(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM); \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			sudo $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM); \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
