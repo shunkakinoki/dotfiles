@@ -60,13 +60,16 @@
         persistent-apps = [
           "/System/Applications/Reminders.app"
           "/System/Applications/Notes.app"
-          "/System/Applications/Calendar.app"
           "/Applications/Google Chrome.app"
+          "/Applications/Docker.app"
           "/Applications/Ghostty.app"
-          "/System/Applications/Mail.app"
+          "/Applications/Cursor.app"
           "/System/Applications/Messages.app"
           "/Applications/Discord.app"
+          "/Applications/Slack.app"
           "/System/Applications/Music.app"
+          "/System/Applications/Podcasts.app"
+          "/System/Applications/System Settings.app"
         ];
       };
       trackpad = {
