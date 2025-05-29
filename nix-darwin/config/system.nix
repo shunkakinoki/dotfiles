@@ -87,7 +87,7 @@
         ''
       else
         ''
-          echo "Skipping activation scripts for runner"
+          echo "Skipping activation scripts for runner";
         '';
   };
 }
