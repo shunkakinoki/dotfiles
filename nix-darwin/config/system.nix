@@ -64,6 +64,7 @@
           "/Applications/Docker.app"
           "/Applications/Ghostty.app"
           "/Applications/Cursor.app"
+          "/Applications/Visual Studio Code.app"
           "/System/Applications/Messages.app"
           "/Applications/Discord.app"
           "/Applications/Slack.app"
