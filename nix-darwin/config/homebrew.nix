@@ -10,9 +10,11 @@
     };
     taps = [
       "homebrew/cask"
+      "kurtosis-tech/tap"
     ];
     brews = [
       "gnupg"
+      "kurtosis-cli"
       "mas"
       "pinentry-mac"
       "pnpm"
