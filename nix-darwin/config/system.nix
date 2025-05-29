@@ -1,4 +1,8 @@
-{ pkgs, isRunner, username }:
+{
+  pkgs,
+  isRunner,
+  username,
+}:
 {
   ids.gids.nixbld = 350;
   system = {
