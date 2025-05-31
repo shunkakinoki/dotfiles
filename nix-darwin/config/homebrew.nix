@@ -14,6 +14,7 @@
     ];
     brews = [
       "gnupg"
+      "helm"
       "kurtosis-cli"
       "mas"
       "pinentry-mac"
@@ -21,6 +22,7 @@
       "postgresql"
       "protobuf"
       "sheldon"
+      "temporal"
     ];
     casks = [
       "beeper"

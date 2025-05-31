@@ -12,6 +12,7 @@ with pkgs;
   jq
   kubectl
   kubectx
+  kustomize
   neofetch
   pulumi-bin
   ollama
@@ -22,4 +23,5 @@ with pkgs;
 ++ lib.optionals stdenv.isLinux [
   docker
   docker-compose
+  helm
 ]
