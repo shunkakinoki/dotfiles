@@ -12,6 +12,7 @@ with pkgs;
   jq
   kubectl
   kubectx
+  kustomize
   neofetch
   pulumi-bin
   ollama

@@ -22,6 +22,7 @@
       "postgresql"
       "protobuf"
       "sheldon"
+      "temporal"
     ];
     casks = [
       "beeper"
