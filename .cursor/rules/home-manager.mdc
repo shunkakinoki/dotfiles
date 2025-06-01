@@ -1,5 +1,5 @@
 ---
-description: 
+description: Home manager related files inside `home-manager/`
 globs: 
 alwaysApply: false
 ---
