@@ -29,6 +29,7 @@
       g = "git";
       ga = "git add";
       gaa = "git add -A";
+      gco = "git checkout (git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@') && git pull";
       lg = "lazygit";
       ta = "tmux new -A -s default";
       v = "nvim";
