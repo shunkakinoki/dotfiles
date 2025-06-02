@@ -29,6 +29,7 @@
       g = "git";
       ga = "git add";
       gaa = "git add -A";
+      gco = "_gco_function";
       lg = "lazygit";
       ta = "tmux new -A -s default";
       v = "nvim";
