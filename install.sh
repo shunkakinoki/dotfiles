@@ -29,23 +29,13 @@ if ! command -v nix >/dev/null 2>&1; then
     if [ "$IN_DOCKER" = "true" ]; then
       echo "Performing single-user Nix installation (Docker environment)..."
       curl -L https://nixos.org/nix/install | bash -s -- --no-daemon
-      # Source the Nix profile for single-user installation
-      # shellcheck disable=SC1090 disable=SC1091
-      . "$HOME/.nix-profile/etc/profile.d/nix.sh"
     else
       echo "Performing multi-user Nix installation..."
       curl -L https://nixos.org/nix/install | bash -s -- --daemon
-      # For Linux multi-user installations, source the Nix profile script
-      # This makes 'nix' command available in the current script execution.
-      NIX_DAEMON_PROFILE="/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
-      if [ -f "$NIX_DAEMON_PROFILE" ]; then
-        # shellcheck disable=SC1090 disable=SC1091
-        . "$NIX_DAEMON_PROFILE"
-      fi
     fi
-    # The sourcing above handles PATH and other environment variables.
-    # The old line below is removed:
-    # export PATH=/nix/var/nix/profiles/default/bin:$PATH
+    # For Linux multi-user installations, add the default Nix path.
+    # For single-user, the installer handles PATH or prompts the user.
+    export PATH=/nix/var/nix/profiles/default/bin:$PATH
   fi
 fi
 
