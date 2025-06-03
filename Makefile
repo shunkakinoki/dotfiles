@@ -120,8 +120,11 @@ nix-connect:
 		sudo launchctl unload /Library/LaunchDaemons/org.nixos.nix-daemon.plist 2>/dev/null || true; \
 		sudo launchctl load -w /Library/LaunchDaemons/org.nixos.nix-daemon.plist; \
 	elif [ "$(OS)" = "Linux" ]; then \
-		if [ "$$CI" = "true" ] || [ -f /.dockerenv ]; then \
-			echo "🏃‍♂️ Skipping systemctl for Nix daemon in CI/Docker environment as it should already be configured."; \
+		if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
+			echo "🏃‍♂️ Nix daemon management (e.g., systemctl) is skipped in CI/Docker environments."; \
+			if [ "$$IN_DOCKER" = "true" ]; then \
+				echo "ℹ️ Docker environment is using a single-user Nix installation (no separate daemon)."; \
+			fi; \
 		else \
 			sudo systemctl restart nix-daemon.service; \
 		fi; \
