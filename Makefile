@@ -4,6 +4,18 @@
 ARCH := $(shell uname -m)
 OS := $(shell uname -s)
 
+# Git variables
+GIT_REMOTE_ORIGIN_URL := $(shell git config --get remote.origin.url)
+GITHUB_REPO_PATH := $(shell echo $(GIT_REMOTE_ORIGIN_URL) | sed -n 's/.*github.com[:/]\(.*\)\.git/\1/p')
+GITHUB_REPO_OWNER := $(shell echo $(GITHUB_REPO_PATH) | cut -d'/' -f1)
+GITHUB_REPO_NAME := $(shell echo $(GITHUB_REPO_PATH) | cut -d'/' -f2)
+GIT_COMMIT_SHA := $(shell git rev-parse --short HEAD)
+
+# Docker image names
+DOCKER_IMAGE_NAME_BASE := ghcr.io/$(GITHUB_REPO_OWNER)/$(GITHUB_REPO_NAME)
+DOCKER_IMAGE_LATEST := $(DOCKER_IMAGE_NAME_BASE):latest
+DOCKER_IMAGE_TAGGED := $(DOCKER_IMAGE_NAME_BASE):$(GIT_COMMIT_SHA)
+
 # Nix executable path
 NIX_EXEC := $(shell which nix)
 
@@ -71,7 +83,7 @@ help:
 	@echo "  update       - Update Nix flake and configurations"
 	@echo "  format       - Format Nix files"
 	@echo "  format-check - Check Nix formatting"
-	@echo "  pr           - Create and push a PR (usage: make pr m='commit message' b='branch-name' t='PR title')"
+	@echo "  docker-build - Build the Docker image"
 
 ##@ General
 
@@ -270,3 +282,11 @@ shell-install:
 
 .PHONY: shell-update
 shell-update: shell-install
+
+##@ Docker
+
+.PHONY: docker-build
+docker-build:
+	@echo "🐳 Building Docker image: $(DOCKER_IMAGE_LATEST) and $(DOCKER_IMAGE_TAGGED)..."
+	@docker build -t $(DOCKER_IMAGE_LATEST) -t $(DOCKER_IMAGE_TAGGED) -f Dockerfile .
+	@echo "✅ Docker image built: $(DOCKER_IMAGE_LATEST) and $(DOCKER_IMAGE_TAGGED)"
