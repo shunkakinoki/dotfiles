@@ -16,7 +16,6 @@ RUN apt-get update && apt-get install -y \
     xz-utils \
     make \
     daemon \
-    systemd \
     # Add any other system-level dependencies your script needs here
     && rm -rf /var/lib/apt/lists/*
 
@@ -38,7 +37,7 @@ RUN mkdir -p /etc/nix && \
     echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
 
 ENV NIX_BUILD_GROUP_ID=1001
-ENV NIX_REMOTE=daemon
+ENV IN_DOCKER=true
 
 # Switch to the non-root user
 USER $USERNAME

@@ -26,8 +26,15 @@ if ! command -v nix >/dev/null 2>&1; then
     # For macOS, source the Nix profile immediately to update PATH in CI.
     . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
   else
-    curl -L https://nixos.org/nix/install | bash -s -- --daemon
+    if [ "$IN_DOCKER" = "true" ]; then
+      echo "Performing single-user Nix installation (Docker environment)..."
+      curl -L https://nixos.org/nix/install | bash -s -- --no-daemon
+    else
+      echo "Performing multi-user Nix installation..."
+      curl -L https://nixos.org/nix/install | bash -s -- --daemon
+    fi
     # For Linux multi-user installations, add the default Nix path.
+    # For single-user, the installer handles PATH or prompts the user.
     export PATH=/nix/var/nix/profiles/default/bin:$PATH
   fi
 fi
