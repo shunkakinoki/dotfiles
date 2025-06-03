@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
     xz-utils \
     make \
     daemon \
+    systemd \
     # Add any other system-level dependencies your script needs here
     && rm -rf /var/lib/apt/lists/*
 
