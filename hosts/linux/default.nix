@@ -10,7 +10,12 @@ in
 home-manager.lib.homeManagerConfiguration {
   pkgs = inputs.nixpkgs.legacyPackages.${system};
   extraSpecialArgs = {
-    inherit inputs username isRunner system;
+    inherit
+      inputs
+      username
+      isRunner
+      system
+      ;
   };
   modules = [
     ../../home-manager/default.nix
