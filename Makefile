@@ -52,8 +52,6 @@ NIX_CONFIG_TYPE := $(shell \
 NIX_USERNAME := $(shell \
 	if [ "$$CI" = "true" ]; then \
 		echo "runner"; \
-	elif [ "$(OS)" = "Linux" ] && [ ! -f /etc/NIXOS ]; then \
-		echo "ubuntu"; \
 	else \
 		echo "$(shell whoami)"; \
 	fi)
