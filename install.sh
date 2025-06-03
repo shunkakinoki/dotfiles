@@ -19,7 +19,24 @@ Linux)
 esac
 
 # Initialize
-NIX_EFFECTIVE_BIN_PATH="" 
+NIX_EFFECTIVE_BIN_PATH=""
+
+# Ensure USER variable is set and exported
+if [ -z "$USER" ]; then
+  CURRENT_USER=$(id -un)
+  if [ -z "$CURRENT_USER" ]; then
+    echo "Warning: Could not determine current user using 'id -un'. Defaulting USER to OS_NAME."
+    USER="$OS_NAME"
+  else
+    USER="$CURRENT_USER"
+  fi
+  export USER
+  echo "USER variable was not set or could not be determined. Setting and exporting USER to: $USER"
+else
+  # Ensure USER is exported if it was already set
+  export USER
+  echo "USER variable is already set to: $USER. Ensuring it is exported."
+fi
 
 # Install Nix if not already installed
 if ! command -v nix >/dev/null 2>&1; then
@@ -122,10 +139,12 @@ fi
 echo "Running installation commands..."
 if [ -n "$NIX_EFFECTIVE_BIN_PATH" ] && [ -d "$NIX_EFFECTIVE_BIN_PATH" ]; then
   echo "Prepending $NIX_EFFECTIVE_BIN_PATH to PATH for 'make install' command."
-  env PATH="$NIX_EFFECTIVE_BIN_PATH:$PATH" make install
+  echo "Ensuring USER=$USER is passed to make install."
+  env PATH="$NIX_EFFECTIVE_BIN_PATH:$PATH" USER="$USER" make install
 else
   echo "Warning: NIX_EFFECTIVE_BIN_PATH ('$NIX_EFFECTIVE_BIN_PATH') is not set or not a directory."
   echo "Running 'make install' with potentially incomplete PATH. Current PATH: $PATH"
   echo "Attempting to find nix via 'command -v nix': $(command -v nix || echo 'nix not found in current PATH')"
+  echo "USER=$USER will be available to make install (exported)."
   make install
 fi
