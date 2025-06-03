@@ -124,7 +124,13 @@ nix-connect:
 				echo "ℹ️ Docker environment is using a single-user Nix installation (no separate daemon)."; \
 			fi; \
 		else \
-			sudo systemctl restart nix-daemon.service; \
+			if [ -d /run/systemd/system ] && [ -S /run/systemd/private ]; then \
+				echo "🐧 systemd detected as PID 1. Attempting to restart nix-daemon.service..."; \
+				sudo systemctl restart nix-daemon.service; \
+			else \
+				echo "🏃‍♂️ systemd not detected as PID 1 or not fully operational. Nix daemon management via systemctl is skipped."; \
+				echo "ℹ️ This environment might be using a single-user Nix installation, require manual daemon setup, or be inside a container without full systemd."; \
+			fi; \
 		fi; \
 	else \
 		echo "❌ Unsupported OS: $(OS)"; \
