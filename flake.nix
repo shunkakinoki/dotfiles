@@ -62,11 +62,19 @@
           "ubuntu@x86_64-linux" = import ./hosts/linux {
             inherit inputs;
             username = "ubuntu";
+            system = "x86_64-linux";
           };
           "runner@x86_64-linux" = import ./hosts/linux {
             inherit inputs;
             isRunner = true;
             username = "runner";
+            system = "x86_64-linux";
+          };
+          "runner@aarch64-linux" = import ./hosts/linux {
+            inherit inputs;
+            isRunner = true;
+            username = "runner";
+            system = "aarch64-linux";
           };
         };
       };

@@ -1,17 +1,21 @@
 {
   inputs,
   username,
-  hostname ? "x86_64-linux",
+  system,
   isRunner ? false,
 }:
 let
   inherit (inputs) home-manager;
-  system = "x86_64-linux";
 in
 home-manager.lib.homeManagerConfiguration {
   pkgs = inputs.nixpkgs.legacyPackages.${system};
   extraSpecialArgs = {
-    inherit inputs username isRunner;
+    inherit
+      inputs
+      username
+      isRunner
+      system
+      ;
   };
   modules = [
     ../../home-manager/default.nix
@@ -22,5 +26,6 @@ home-manager.lib.homeManagerConfiguration {
       };
       programs.home-manager.enable = true;
     }
+    { nixpkgs.system = system; }
   ];
 }

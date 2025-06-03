@@ -49,6 +49,7 @@ jobs:
           labels: ${{ steps.metadata.outputs.labels }}
           build-args: |
             COMMIT_SHA=${{ github.sha }}
+            USERNAME=runner
           cache-from: type=gha
           cache-to: type=gha,mode=max
   docker-check:
