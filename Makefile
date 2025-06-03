@@ -120,7 +120,11 @@ nix-connect:
 		sudo launchctl unload /Library/LaunchDaemons/org.nixos.nix-daemon.plist 2>/dev/null || true; \
 		sudo launchctl load -w /Library/LaunchDaemons/org.nixos.nix-daemon.plist; \
 	elif [ "$(OS)" = "Linux" ]; then \
-		sudo systemctl restart nix-daemon.service; \
+		if [ "$$CI" = "true" ] || [ -f /.dockerenv ]; then \
+			echo "🏃‍♂️ Skipping systemctl for Nix daemon in CI/Docker environment as it should already be configured."; \
+		else \
+			sudo systemctl restart nix-daemon.service; \
+		fi; \
 	else \
 		echo "❌ Unsupported OS: $(OS)"; \
 		exit 1; \
