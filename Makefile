@@ -50,9 +50,7 @@ NIX_CONFIG_TYPE := $(shell \
 		echo "homeConfigurations"; \
 	fi)
 NIX_USERNAME := $(shell \
-	if [ "$$IN_DOCKER" = "true" ]; then \
-		echo "runner"; \
-	elif [ "$$CI" = "true" ]; then \
+	if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		echo "runner"; \
 	else \
 		echo "$(shell whoami)"; \
