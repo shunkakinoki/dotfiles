@@ -2,19 +2,23 @@
   inputs,
   username,
   system,
+  pkgs,
+  lib,
   isRunner ? false,
 }:
 let
   inherit (inputs) home-manager;
 in
 home-manager.lib.homeManagerConfiguration {
-  pkgs = inputs.nixpkgs.legacyPackages.${system};
+  inherit pkgs lib;
   extraSpecialArgs = {
     inherit
       inputs
       username
       isRunner
       system
+      pkgs
+      lib
       ;
   };
   modules = [
@@ -26,6 +30,5 @@ home-manager.lib.homeManagerConfiguration {
       };
       programs.home-manager.enable = true;
     }
-    { nixpkgs.system = system; }
   ];
 }
