@@ -48,3 +48,13 @@ jobs:
             COMMIT_SHA=${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+  docker-check:
+    if: always()
+    needs:
+      - build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Alls Green
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
