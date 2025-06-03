@@ -169,7 +169,7 @@ nix-backup:
 .PHONY: nix-build
 nix-build: nix-connect
 	@echo "🏗️ Building Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH)"
-	@if [ "$$CI" = "true" ]; then \
+	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		echo "Running in CI"; \
 		if [ "$(OS)" = "Darwin" ]; then \
 			$(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
@@ -223,7 +223,7 @@ nix-format-check:
 .PHONY: nix-switch
 nix-switch:
 	@echo "🔧 Activating Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH)"
-	@if [ "$$CI" = "true" ]; then \
+	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		if [ "$(OS)" = "Darwin" ]; then \
 			sudo $(DARWIN_REBUILD) switch --flake .#runner --no-update-lock-file; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
