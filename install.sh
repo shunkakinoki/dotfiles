@@ -18,7 +18,8 @@ Linux)
   ;;
 esac
 
-NIX_EFFECTIVE_BIN_PATH="" # Initialize
+# Initialize
+NIX_EFFECTIVE_BIN_PATH="" 
 
 # Install Nix if not already installed
 if ! command -v nix >/dev/null 2>&1; then
@@ -67,7 +68,7 @@ else
     else
       NIX_EFFECTIVE_BIN_PATH="/nix/var/nix/profiles/default/bin"
     fi
-     echo "Using fallback NIX_EFFECTIVE_BIN_PATH: $NIX_EFFECTIVE_BIN_PATH"
+    echo "Using fallback NIX_EFFECTIVE_BIN_PATH: $NIX_EFFECTIVE_BIN_PATH"
   fi
 fi
 
