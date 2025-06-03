@@ -1,0 +1,56 @@
+FROM ubuntu:22.04
+
+# Set DEBIAN_FRONTEND to noninteractive to avoid prompts during package installations
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install basic dependencies that are often required for setup scripts.
+# Your specific install.sh script might need others.
+# ca-certificates is important for curl/git over https.
+# sudo is needed if the script uses it internally without installing it.
+# git is likely used by your dotfiles script.
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    sudo \
+    ca-certificates \
+    xz-utils \
+    make \
+    daemon \
+    systemd \
+    # Add any other system-level dependencies your script needs here
+    && rm -rf /var/lib/apt/lists/*
+
+# Create a non-root user for running the setup and for the agent.
+# The agent will run as this user.
+ARG USERNAME=shunkakinoki
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+ARG COMMIT_SHA=main
+
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID --shell /bin/bash --create-home $USERNAME
+RUN echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME \
+    && chmod 0440 /etc/sudoers.d/$USERNAME
+
+# Prepare Nix trusted users configuration
+RUN mkdir -p /etc/nix && \
+    echo "trusted-users = root $USERNAME" > /etc/nix/nix.conf && \
+    echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
+
+ENV NIX_BUILD_GROUP_ID=1001
+ENV NIX_REMOTE=daemon
+
+# Switch to the non-root user
+USER $USERNAME
+WORKDIR /home/$USERNAME
+
+# Run your dotfiles installation script
+# This script is expected to install fish and other tools.
+# Make sure this script is idempotent or handles being run in a fresh environment.
+RUN curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_SHA/install.sh | /bin/bash
+
+# Your install.sh script should ideally set up fish as the default shell if desired.
+# If it doesn't, you might need to add a line here like:
+# RUN sudo chsh -s $(which fish) $USERNAME
+# Or, to set fish as the default shell for subsequent Dockerfile commands and for the agent's shell:
+SHELL ["/usr/bin/fish", "-l", "-c"]
