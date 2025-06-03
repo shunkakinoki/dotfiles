@@ -50,10 +50,8 @@ NIX_CONFIG_TYPE := $(shell \
 		echo "homeConfigurations"; \
 	fi)
 NIX_USERNAME := $(shell \
-	if [ "$$CI" = "true" ]; then \
+	if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		echo "runner"; \
-	elif [ "$(OS)" = "Linux" ] && [ ! -f /etc/NIXOS ]; then \
-		echo "ubuntu"; \
 	else \
 		echo "$(shell whoami)"; \
 	fi)
@@ -170,15 +168,15 @@ nix-backup:
 
 .PHONY: nix-build
 nix-build: nix-connect
-	@echo "🏗️ Building Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH)"
-	@if [ "$$CI" = "true" ]; then \
+	@echo "🏗️ Building Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) by USER=$(NIX_USERNAME)"
+	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		echo "Running in CI"; \
 		if [ "$(OS)" = "Darwin" ]; then \
-			nix build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
+			$(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
-			nix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#runner --no-update-lock-file; \
+			$(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#runner --no-update-lock-file; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			nix build .#$(NIX_CONFIG_TYPE)."runner@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --no-update-lock-file --show-trace; \
+			$(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."runner@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --no-update-lock-file --show-trace; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI build"; \
 			exit 1; \
@@ -188,11 +186,11 @@ nix-build: nix-connect
 			echo "❌ Unsupported system architecture: $(OS) $(ARCH)"; \
 			exit 1; \
 		elif [ "$(OS)" = "Darwin" ]; then \
-			nix build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --show-trace; \
+			$(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --show-trace; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			sudo $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM); \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			nix build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --show-trace; \
+			$(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --show-trace; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI build"; \
 			exit 1; \
@@ -206,33 +204,33 @@ nix-flake-update: nix-connect
 	@if [ "$$CI" = "true" ]; then \
 		echo "Bypassing flake update in CI"; \
 	else \
-		nix flake update $(NIX_FLAGS); \
+		$(NIX_EXEC) flake update $(NIX_FLAGS); \
 	fi
 	@echo "✅ flake.lock updated!"
 
 .PHONY: nix-format
 nix-format:
 	@echo "🧹 Formatting Nix files..."
-	@nix fmt
+	@$(NIX_EXEC) fmt
 	@echo "✅ Formatting complete"
 
 .PHONY: nix-format-check
 nix-format-check:
 	@echo "🔍 Checking Nix file formatting..."
-	@nix fmt -- --fail-on-change
+	@$(NIX_EXEC) fmt -- --fail-on-change
 	@echo "✅ All Nix files are properly formatted"
 
 .PHONY: nix-switch
 nix-switch:
-	@echo "🔧 Activating Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH)"
-	@if [ "$$CI" = "true" ]; then \
+	@echo "🔧 Activating Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) by USER=$(NIX_USERNAME)"
+	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		if [ "$(OS)" = "Darwin" ]; then \
 			sudo $(DARWIN_REBUILD) switch --flake .#runner --no-update-lock-file; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			echo "⏭️ NixOS switch skipped in CI as the runner is not a NixOS system"; \
 			sudo $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file || exit 0; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			nix run $(NIX_FLAGS) .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
+			USER=$(NIX_USERNAME) $(NIX_EXEC) run $(NIX_FLAGS) .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI switch"; \
 			exit 1; \
@@ -246,7 +244,7 @@ nix-switch:
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			sudo $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM); \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			nix run $(NIX_FLAGS) .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
+			USER=$(NIX_USERNAME) $(NIX_EXEC) run $(NIX_FLAGS) .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI switch"; \
 			exit 1; \
@@ -261,7 +259,7 @@ nix-switch-vm:
 		exit 0; \
 	fi; \
 	export QEMU_OPTS="-m 4096 -smp 2"; \
-	printf "sleep 5\nmkdir -p /tmp/test && cd /tmp/test\ncp -r /mnt/shared/* .\nnix run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file\npoweroff\n" > vm_commands.txt; \
+	printf "sleep 5\nmkdir -p /tmp/test && cd /tmp/test\ncp -r /mnt/shared/* .\n$(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file\npoweroff\n" > vm_commands.txt; \
 	timeout 600 ./result/bin/run-nixos-vm -nographic < vm_commands.txt || exit 1; \
 	rm -f vm_commands.txt
 
