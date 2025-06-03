@@ -2,6 +2,7 @@
 
 # Exit on error
 set -e
+NIX_PROFILE_TO_SOURCE=""
 
 # Determine OS using uname
 OS_NAME=$(uname)
@@ -24,28 +25,30 @@ if ! command -v nix >/dev/null 2>&1; then
   if [ "$OS" = "macos" ]; then
     curl -L https://nixos.org/nix/install | bash
     # For macOS, source the Nix profile immediately to update PATH in CI.
+    # shellcheck disable=SC1090 disable=SC1091
     . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
-  else
+    NIX_PROFILE_TO_SOURCE="/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
+  else # Linux
     if [ "$IN_DOCKER" = "true" ]; then
       echo "Performing single-user Nix installation (Docker environment)..."
       curl -L https://nixos.org/nix/install | bash -s -- --no-daemon
       # Source the Nix profile for single-user installation
       # shellcheck disable=SC1090 disable=SC1091
       . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+      NIX_PROFILE_TO_SOURCE="$HOME/.nix-profile/etc/profile.d/nix.sh"
     else
       echo "Performing multi-user Nix installation..."
       curl -L https://nixos.org/nix/install | bash -s -- --daemon
       # For Linux multi-user installations, source the Nix profile script
       # This makes 'nix' command available in the current script execution.
-      NIX_DAEMON_PROFILE="/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
-      if [ -f "$NIX_DAEMON_PROFILE" ]; then
+      _NIX_DAEMON_PROFILE="/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
+      if [ -f "$_NIX_DAEMON_PROFILE" ]; then
         # shellcheck disable=SC1090 disable=SC1091
-        . "$NIX_DAEMON_PROFILE"
+        . "$_NIX_DAEMON_PROFILE"
+        NIX_PROFILE_TO_SOURCE="$_NIX_DAEMON_PROFILE"
       fi
     fi
     # The sourcing above handles PATH and other environment variables.
-    # The old line below is removed:
-    # export PATH=/nix/var/nix/profiles/default/bin:$PATH
   fi
 fi
 
@@ -97,4 +100,10 @@ fi
 
 # Install Nix packages
 echo "Running installation commands..."
-make install
+if [ -n "$NIX_PROFILE_TO_SOURCE" ] && [ -f "$NIX_PROFILE_TO_SOURCE" ]; then
+  echo "Running make install within a bash subshell with Nix profile $NIX_PROFILE_TO_SOURCE sourced..."
+  bash -c ". "$NIX_PROFILE_TO_SOURCE" && make install"
+else
+  echo "Running make install directly (Nix presumed to be in PATH or not needed by make)..."
+  make install
+fi
