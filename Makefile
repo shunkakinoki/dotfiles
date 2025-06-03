@@ -50,7 +50,9 @@ NIX_CONFIG_TYPE := $(shell \
 		echo "homeConfigurations"; \
 	fi)
 NIX_USERNAME := $(shell \
-	if [ "$$IN_DOCKER" = "true" ] || [ "$$CI" = "true" ]; then \
+	if [ "$$IN_DOCKER" = "true" ]; then \
+		echo "runner"; \
+	elif [ "$$CI" = "true" ]; then \
 		echo "runner"; \
 	else \
 		echo "$(shell whoami)"; \
@@ -168,7 +170,7 @@ nix-backup:
 
 .PHONY: nix-build
 nix-build: nix-connect
-	@echo "🏗️ Building Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH)"
+	@echo "🏗️ Building Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) by USER=$(NIX_USERNAME)"
 	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		echo "Running in CI"; \
 		if [ "$(OS)" = "Darwin" ]; then \
@@ -222,7 +224,7 @@ nix-format-check:
 
 .PHONY: nix-switch
 nix-switch:
-	@echo "🔧 Activating Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH)"
+	@echo "🔧 Activating Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) by USER=$(NIX_USERNAME)"
 	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		if [ "$(OS)" = "Darwin" ]; then \
 			sudo $(DARWIN_REBUILD) switch --flake .#runner --no-update-lock-file; \
