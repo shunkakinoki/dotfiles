@@ -39,7 +39,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{raw}}
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
-      - name: Build and push Docker
+      - name: Build and Push Docker
         uses: docker/build-push-action@v5
         with:
           context: .
