@@ -29,13 +29,23 @@ if ! command -v nix >/dev/null 2>&1; then
     if [ "$IN_DOCKER" = "true" ]; then
       echo "Performing single-user Nix installation (Docker environment)..."
       curl -L https://nixos.org/nix/install | bash -s -- --no-daemon
+      # Source the Nix profile script to add Nix to PATH for the current session
+      # This is crucial for the subsequent 'make install' to find 'nix'
+      if [ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+        . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+        echo "Sourced Nix profile for single-user (Docker) setup."
+      else
+        echo "Warning: Nix profile script ($HOME/.nix-profile/etc/profile.d/nix.sh) not found after installation."
+        # As an additional fallback, try adding the common single-user bin path
+        export PATH="$HOME/.nix-profile/bin:$PATH"
+      fi
     else
       echo "Performing multi-user Nix installation..."
       curl -L https://nixos.org/nix/install | bash -s -- --daemon
+      # For Linux multi-user installations, add the default Nix path.
+      # For single-user, the installer handles PATH or prompts the user.
+      export PATH=/nix/var/nix/profiles/default/bin:$PATH
     fi
-    # For Linux multi-user installations, add the default Nix path.
-    # For single-user, the installer handles PATH or prompts the user.
-    export PATH=/nix/var/nix/profiles/default/bin:$PATH
   fi
 fi
 
