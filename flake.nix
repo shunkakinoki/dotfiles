@@ -68,6 +68,12 @@
             isRunner = true;
             username = "runner";
           };
+          "runner@aarch64-linux" = import ./hosts/linux {
+            inherit inputs;
+            isRunner = true;
+            username = "runner";
+            hostname = "aarch64-linux";
+          };
         };
       };
 
