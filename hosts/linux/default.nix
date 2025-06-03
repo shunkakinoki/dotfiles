@@ -10,7 +10,7 @@ let
   inherit (inputs) home-manager;
 in
 home-manager.lib.homeManagerConfiguration {
-  inherit pkgs lib;
+  inherit pkgs;
   extraSpecialArgs = {
     inherit
       inputs
@@ -18,7 +18,6 @@ home-manager.lib.homeManagerConfiguration {
       isRunner
       system
       pkgs
-      lib
       ;
   };
   modules = [
