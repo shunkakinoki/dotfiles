@@ -77,7 +77,7 @@ sync_all
 # Watch for changes in configuration files
 echo "Starting to watch for changes in configuration files..."
 
-fswatch -o "$VSCODE_USER_DIR/$SETTINGS_FILE" "$VSCODE_USER_DIR/$KEYBINDINGS_FILE" | while read -r changed_file; do
+fswatch "$VSCODE_USER_DIR/$SETTINGS_FILE" "$VSCODE_USER_DIR/$KEYBINDINGS_FILE" | while read -r changed_file; do
   if [[ $changed_file == *"$SETTINGS_FILE" ]]; then
     echo "Settings file changed, syncing..."
     sync_files "$SETTINGS_FILE"
