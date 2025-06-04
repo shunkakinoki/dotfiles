@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM ubuntu:22.04
 
 # Set DEBIAN_FRONTEND to noninteractive to avoid prompts during package installations
 ENV DEBIAN_FRONTEND=noninteractive
@@ -26,8 +26,8 @@ ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 ARG COMMIT_SHA=main
 
-RUN groupadd --gid $USER_GID $USERNAME \
-    && useradd --uid $USER_UID --gid $USER_GID --shell /bin/bash --create-home $USERNAME
+RUN (getent group $USER_GID || groupadd --gid $USER_GID $USERNAME) \
+    && (id -u $USERNAME &>/dev/null || useradd --uid $USER_UID --gid $USER_GID --shell /bin/bash --create-home $USERNAME)
 RUN echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME
 
