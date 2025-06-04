@@ -1,4 +1,5 @@
 [
   ./dust
   ./ghostty
+  ./secops
 ]

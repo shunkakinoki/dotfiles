@@ -109,6 +109,7 @@ nixpkgs.lib.nixosSystem {
         nerd-fonts.jetbrains-mono
       ];
     }
+    inputs.agenix.nixosModules.default
     home-manager.nixosModules.home-manager
     {
       home-manager.backupFileExtension = "backup";
@@ -117,7 +118,9 @@ nixpkgs.lib.nixosSystem {
         inherit system inputs username;
         lib = nixpkgs.lib;
         pkgs = nixpkgs.legacyPackages.${system};
-        config = { };
+        config = {
+          programs.secops.enable = true;
+        };
       };
     }
   ];

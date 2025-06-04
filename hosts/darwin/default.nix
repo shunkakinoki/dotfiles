@@ -24,6 +24,7 @@ nix-darwin.lib.darwinSystem {
   modules = [
     configuration
     ../../nix-darwin
+    inputs.agenix.darwinModules.default
     home-manager.darwinModules.home-manager
     {
       home-manager.backupFileExtension = "backup";
@@ -32,7 +33,9 @@ nix-darwin.lib.darwinSystem {
         inherit inputs username;
         lib = inputs.nixpkgs.lib;
         pkgs = inputs.nixpkgs.legacyPackages.${system};
-        config = { };
+        config = {
+          programs.secops.enable = true;
+        };
       };
     }
   ];
