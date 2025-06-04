@@ -16,10 +16,6 @@
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    secrets = {
-      url = "github:alyraffauf/secrets";
-      flake = false;
-    };
     flake-parts.url = "github:hercules-ci/flake-parts";
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";

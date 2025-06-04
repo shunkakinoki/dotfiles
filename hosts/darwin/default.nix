@@ -30,12 +30,10 @@ nix-darwin.lib.darwinSystem {
       home-manager.backupFileExtension = "backup";
       home-manager.useUserPackages = true;
       home-manager.users."${username}" = import ../../home-manager {
-        inherit inputs username;
+        inherit inputs username system;
         lib = inputs.nixpkgs.lib;
         pkgs = inputs.nixpkgs.legacyPackages.${system};
-        config = {
-          programs.secops.enable = true;
-        };
+        config = { };
       };
     }
   ];
