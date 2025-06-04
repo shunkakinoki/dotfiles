@@ -17,12 +17,7 @@ DOCKER_IMAGE_LATEST := $(DOCKER_IMAGE_NAME_BASE):latest
 DOCKER_IMAGE_TAGGED := $(DOCKER_IMAGE_NAME_BASE):$(GIT_COMMIT_SHA)
 
 # Nix executable path
-NIX_EXEC := $(shell \
-	if [ "$(OS)" = "Darwin" ]; then \
-		echo "/nix/var/nix/profiles/default/bin/nix"; \
-	else \
-		echo "$(HOME)/.nix-profile/bin/nix"; \
-	fi)
+NIX_EXEC := $(shell which nix)
 
 # Nix configuration system
 NIX_SYSTEM := $(shell if [ "$(OS)" = "Darwin" ] && [ "$(ARCH)" = "arm64" ]; then \
