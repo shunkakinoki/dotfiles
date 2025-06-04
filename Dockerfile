@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 # Set DEBIAN_FRONTEND to noninteractive to avoid prompts during package installations
 ENV DEBIAN_FRONTEND=noninteractive
