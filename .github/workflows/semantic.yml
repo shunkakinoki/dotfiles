@@ -8,6 +8,7 @@ on:
 jobs:
   semantic-pr:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     permissions:
       pull-requests: read
     steps:
@@ -20,6 +21,7 @@ jobs:
     needs:
       - semantic-pr
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     steps:
       - name: Alls Green
         uses: re-actors/alls-green@release/v1
