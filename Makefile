@@ -26,12 +26,20 @@ NIX_EXEC := $(shell \
 		else \
 			which nix; \
 		fi; \
-	else if [ "$(OS)" = "Linux" ]; then \
+	elif [ "$(OS)" = "Linux" ]; then \
 		if [ "$$CI" = "true" ]; then \
 			echo "nix"; \
-		else if [ -x "$(HOME)/.nix-profile/bin/nix" ]; then \
-			echo "$(HOME)/.nix-profile/bin/nix"; \
-		elif command -v nix 2>/dev/null; then \
+		else \
+			if [ -x "$(HOME)/.nix-profile/bin/nix" ]; then \
+				echo "$(HOME)/.nix-profile/bin/nix"; \
+			elif command -v nix 2>/dev/null; then \
+				command -v nix; \
+			else \
+				which nix; \
+			fi; \
+		fi; \
+	else \
+		if command -v nix 2>/dev/null; then \
 			command -v nix; \
 		else \
 			which nix; \
