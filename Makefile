@@ -24,7 +24,7 @@ NIX_EXEC := $(shell \
 		elif command -v nix 2>/dev/null; then \
 			command -v nix; \
 		else \
-			$(shell which nix); \
+			which nix; \
 		fi; \
 	else \
 		if [ -x "$(HOME)/.nix-profile/bin/nix" ]; then \
@@ -32,7 +32,7 @@ NIX_EXEC := $(shell \
 		elif command -v nix 2>/dev/null; then \
 			command -v nix; \
 		else \
-			$(shell which nix); \
+			which nix; \
 		fi; \
 	fi)
 
