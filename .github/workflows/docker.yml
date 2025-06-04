@@ -52,7 +52,7 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.pr-number=${{ github.event_name == 'pull_request' && github.event.pull_request.number || '' }}
       - name: Build and Push Docker
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
@@ -62,7 +62,6 @@ jobs:
           labels: ${{ steps.metadata.outputs.labels }}
           build-args: |
             COMMIT_SHA=${{ github.sha }}
-            USERNAME=runner
           cache-from: type=gha
           cache-to: type=gha,mode=max
   docker-check:
