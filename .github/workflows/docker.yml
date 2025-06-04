@@ -55,7 +55,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: .cursor/Dockerfile
+          file: ./Dockerfile
           platforms: ${{ matrix.platform }}
           push: true
           tags: ${{ steps.metadata.outputs.tags }}
