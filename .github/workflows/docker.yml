@@ -22,6 +22,7 @@ jobs:
           - linux/amd64
           - linux/arm64
     runs-on: ubuntu-latest
+    timeout-minutes: 300
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -64,6 +65,7 @@ jobs:
     needs:
       - build-and-push
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     steps:
       - name: Alls Green
         uses: re-actors/alls-green@release/v1

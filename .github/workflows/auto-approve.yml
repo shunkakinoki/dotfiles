@@ -15,6 +15,7 @@ concurrency:
 jobs:
   auto-approve-bot:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     if: github.event_name == 'pull_request_target'
     permissions:
       contents: read
@@ -37,6 +38,7 @@ jobs:
     needs:
       - auto-approve-bot
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     steps:
       - name: Alls Green
         uses: re-actors/alls-green@release/v1

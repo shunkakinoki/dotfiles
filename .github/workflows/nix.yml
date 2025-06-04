@@ -12,6 +12,7 @@ concurrency:
 jobs:
   nix-darwin:
     runs-on: macos-latest
+    timeout-minutes: 300
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,6 +28,7 @@ jobs:
         run: make build
   nix-flake:
     runs-on: ubuntu-latest
+    timeout-minutes: 300
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,6 +40,7 @@ jobs:
         run: nix flake check --all-systems
   nix-format:
     runs-on: ubuntu-latest
+    timeout-minutes: 300
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,6 +52,7 @@ jobs:
         run: make nix-format-check
   nix-linux:
     runs-on: ubuntu-latest
+    timeout-minutes: 300
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -62,6 +66,7 @@ jobs:
         run: make build
   nix-nixos:
     runs-on: ubuntu-latest
+    timeout-minutes: 300
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -81,6 +86,7 @@ jobs:
       - nix-format
       - nix-linux
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     steps:
       - name: Alls Green
         uses: re-actors/alls-green@release/v1
