@@ -45,6 +45,11 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{raw}}
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+          labels: |
+            org.opencontainers.image.url=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.source=${{ github.event.pull_request.html_url || github.event.repository.html_url }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.pr-number=${{ github.event_name == 'pull_request' && github.event.pull_request.number || '' }}
       - name: Build and Push Docker
         uses: docker/build-push-action@v5
         with:
