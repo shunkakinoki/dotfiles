@@ -178,39 +178,11 @@ nix-check:
 
 .PHONY: nix-install
 nix-install:
-	@echo "NIX_ENV current value: $(NIX_ENV)" # Debugging
 	@if [ "$(NIX_ENV)" = "not_found" ]; then \
-		echo "🚀 Attempting to install Nix..."; \
-		# Using a subshell with pipefail to ensure the pipeline's success is checked
-		# Pass --no-daemon for typical single-user installs in ephemeral environments like Docker
-		if (set -o pipefail; curl -fSL https://nixos.org/nix/install | sh -s -- --no-daemon); then \
-			echo "✅ Nix installation script executed successfully."; \
-			echo "Attempting to source Nix profile to update PATH for this session..."; \
-			if [ -f "$${HOME}/.nix-profile/etc/profile.d/nix.sh" ]; then \
-				. "$${HOME}/.nix-profile/etc/profile.d/nix.sh"; \
-				echo "Nix profile sourced."; \
-				# Update NIX_ENV Makefile variable for the current make execution if possible
-				$(eval NIX_ENV := $(shell . $${HOME}/.nix-profile/etc/profile.d/nix.sh 2>/dev/null && echo "found" || echo "not_found")) \
-				echo "NIX_ENV re-evaluated to: $(NIX_ENV)"; \
-			else \
-				echo "⚠️ Nix profile script not found at $${HOME}/.nix-profile/etc/profile.d/nix.sh after install attempt."; \
-			fi; \
-			# Verify Nix installation by checking for the command
-			if command -v nix >/dev/null 2>&1; then \
-				echo "✅ Nix command is now available in PATH."; \
-			else \
-				echo "❌ ERROR: Nix installation script ran, but 'nix' command is not available in PATH."; \
-				echo "Current NIX_EXEC is: '$(NIX_EXEC)'"; \
-				echo "Current PATH: $$PATH"; \
-				exit 1; \
-			fi; \
-		else \
-			echo "❌ ERROR: Nix installation script failed (curl or sh error). Exit code: $$?"; \
-			exit 1; \
-		fi; \
-	else \
-		echo "✅ Nix environment previously detected (NIX_ENV='$(NIX_ENV)'). Skipping installation."; \
+		echo "🚀 Installing Nix environment for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"; \
+		curl -L https://nixos.org/nix/install | sh; \
 	fi
+	@echo "✅ Nix environment installed!"
 
 ##@ Nix
 
