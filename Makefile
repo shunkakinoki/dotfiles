@@ -17,26 +17,18 @@ DOCKER_IMAGE_LATEST := $(DOCKER_IMAGE_NAME_BASE):latest
 DOCKER_IMAGE_TAGGED := $(DOCKER_IMAGE_NAME_BASE):$(GIT_COMMIT_SHA)
 
 # Nix executable path
-NIX_EXEC := $(shell \\
-	path_to_nix=""; \\
-	if [ "$(OS)" = "Darwin" ]; then \\
-		if [ -x "/nix/var/nix/profiles/default/bin/nix" ]; then \\
-			path_to_nix="/nix/var/nix/profiles/default/bin/nix"; \\
-		elif command -v nix 2>/dev/null; then \\
-			path_to_nix=$$(command -v nix); \\
-		else \\
-			path_to_nix="nix"; \\
-		fi; \\
-	elif [ "$(OS)" = "Linux" ]; then \\
-		if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \\
-			if [ -x "$${HOME}/.nix-profile/bin/nix" ]; then \\
-				path_to_nix="$${HOME}/.nix-profile/bin/nix"; \\
-			elif command -v nix 2>/dev/null; then \\
-				path_to_nix=$$(command -v nix); \\
-			else \\
-				path_to_nix="nix"; \\
-			fi; \\
+NIX_EXEC := $(shell \
+	path_to_nix=""; \
+	if [ "$(OS)" = "Darwin" ]; then \
+		if [ -x "/nix/var/nix/profiles/default/bin/nix" ]; then \
+			path_to_nix="/nix/var/nix/profiles/default/bin/nix"; \
+		elif command -v nix 2>/dev/null; then \
+			path_to_nix=$$(command -v nix); \
 		else \
+			path_to_nix="nix"; \
+		fi; \
+	elif [ "$(OS)" = "Linux" ]; then \
+		if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 			if [ -x "$${HOME}/.nix-profile/bin/nix" ]; then \
 				path_to_nix="$${HOME}/.nix-profile/bin/nix"; \
 			elif command -v nix 2>/dev/null; then \
@@ -44,14 +36,22 @@ NIX_EXEC := $(shell \\
 			else \
 				path_to_nix="nix"; \
 			fi; \
+		else \
+			if [ -x "$${HOME}/.nix-profile/bin/nix" ]; then \
+				path_to_nix="$${HOME}/.nix-profile/bin/nix"; \
+			elif command -v nix 2>/dev/null; then \
+				path_to_nix=$$(command -v nix); \
+			else \
+				path_to_nix=$$(command -v nix 2>/dev/null || echo "nix"); \
+			fi; \
 		fi; \
 	else \
 		if command -v nix 2>/dev/null; then \
 			path_to_nix=$$(command -v nix); \
 		else \
-			path_to_nix="nix"; \
+			path_to_nix=$$(command -v nix 2>/dev/null || echo "nix"); \
 		fi; \
-	fi; \\
+	fi; \
 	echo "$$path_to_nix")
 
 # Nix configuration system
