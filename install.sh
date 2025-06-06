@@ -42,7 +42,7 @@ fi
 if ! command -v nix >/dev/null 2>&1; then
   echo "Installing Nix..."
   if [ "$OS" = "macos" ]; then
-    curl -L https://nixos.org/nix/install | bash
+    curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
     # For macOS, source the Nix profile immediately to update PATH in CI.
     . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
     NIX_EFFECTIVE_BIN_PATH="/nix/var/nix/profiles/default/bin"
@@ -62,7 +62,7 @@ if ! command -v nix >/dev/null 2>&1; then
       NIX_EFFECTIVE_BIN_PATH="$HOME/.nix-profile/bin"
     else # Linux multi-user
       echo "Performing multi-user Nix installation..."
-      curl -L https://nixos.org/nix/install | bash -s -- --daemon
+      curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
       # For Linux multi-user installations, add the default Nix path for the current shell.
       export PATH=/nix/var/nix/profiles/default/bin:$PATH
       NIX_EFFECTIVE_BIN_PATH="/nix/var/nix/profiles/default/bin"
