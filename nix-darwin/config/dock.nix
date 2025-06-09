@@ -18,6 +18,7 @@
       "/Applications/ChatGPT.app"
       "/Applications/Google Chrome.app"
       "/Applications/Docker.app"
+      "/Applications/Docker.app/Contents/MacOS/Docker Desktop.app"
       "/Applications/Ghostty.app"
       "/Applications/Linear.app"
       "/Applications/Notion.app"
