@@ -25,6 +25,9 @@ ARG USER=runner
 ARG USER_UID=1001
 ARG USER_GID=$USER_UID
 ARG COMMIT_SHA=main
+ARG CACHE_BUSTER
+
+LABEL commit-sha-cache-buster=$CACHE_BUSTER
 
 RUN set -e; \
     groupadd --gid $USER_GID $USER; \
