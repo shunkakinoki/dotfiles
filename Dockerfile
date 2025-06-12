@@ -49,7 +49,7 @@ USER $USER
 WORKDIR /home/$USER
 
 # Install Nix using the Determinate Systems installer
-RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm
+RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --init none --no-confirm
 
 ENV PATH="/home/${USER}/.nix-profile/bin:${PATH}"
 
