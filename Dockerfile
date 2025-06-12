@@ -57,7 +57,10 @@ ENV PATH="/nix/var/nix/profiles/default/bin:/home/${USER}/.nix-profile/bin:${PAT
 # Run your dotfiles installation script
 # This script is expected to install fish and other tools.
 # Make sure this script is idempotent or handles being run in a fresh environment.
-RUN daemon sudo nix-daemon && sleep 3 && curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_SHA/install.sh | /bin/bash
+RUN daemon sudo /nix/var/nix/profiles/default/bin/nix-daemon && \
+    sleep 3 && \
+    . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh && \
+    curl -fsSL "https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_SHA/install.sh" | /bin/bash
 
 # Your install.sh script should ideally set up fish as the default shell if desired.
 # If it doesn't, you might need to add a line here like:
