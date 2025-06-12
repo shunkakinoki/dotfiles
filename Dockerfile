@@ -48,6 +48,11 @@ ENV IN_DOCKER=true
 USER $USER
 WORKDIR /home/$USER
 
+# Install Nix using the Determinate Systems installer
+RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm
+
+ENV PATH="/home/${USER}/.nix-profile/bin:${PATH}"
+
 # Run your dotfiles installation script
 # This script is expected to install fish and other tools.
 # Make sure this script is idempotent or handles being run in a fresh environment.
