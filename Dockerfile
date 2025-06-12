@@ -51,6 +51,7 @@ WORKDIR /home/$USER
 # Install Nix using the Determinate Systems installer
 RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --init none --no-confirm
 
+# Add nix to the path for subsequent commands
 ENV PATH="/home/${USER}/.nix-profile/bin:${PATH}"
 
 # Run your dotfiles installation script
