@@ -41,6 +41,9 @@ RUN mkdir -p /etc/nix && \
     echo "trusted-users = root $USER" > /etc/nix/nix.conf && \
     echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
 
+# Install Nix using the Determinate Systems installer, run as root
+RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --init none --no-confirm
+
 ENV NIX_BUILD_GROUP_ID=1001
 ENV IN_DOCKER=true
 
@@ -48,11 +51,8 @@ ENV IN_DOCKER=true
 USER $USER
 WORKDIR /home/$USER
 
-# Install Nix using the Determinate Systems installer
-RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --init none --no-confirm
-
 # Add nix to the path for subsequent commands
-ENV PATH="/home/${USER}/.nix-profile/bin:${PATH}"
+ENV PATH="/nix/var/nix/profiles/default/bin:/home/${USER}/.nix-profile/bin:${PATH}"
 
 # Run your dotfiles installation script
 # This script is expected to install fish and other tools.
