@@ -25,9 +25,6 @@ ARG USER=runner
 ARG USER_UID=1001
 ARG USER_GID=$USER_UID
 ARG COMMIT_SHA=main
-ARG CACHE_BUSTER
-
-LABEL commit-sha-cache-buster=$CACHE_BUSTER
 
 RUN set -e; \
     groupadd --gid $USER_GID $USER; \
@@ -41,9 +38,6 @@ RUN mkdir -p /etc/nix && \
     echo "trusted-users = root $USER" > /etc/nix/nix.conf && \
     echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
 
-# Install Nix using the Determinate Systems installer, run as root
-RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --init none --no-confirm
-
 ENV NIX_BUILD_GROUP_ID=1001
 ENV IN_DOCKER=true
 
@@ -51,16 +45,10 @@ ENV IN_DOCKER=true
 USER $USER
 WORKDIR /home/$USER
 
-# Add nix to the path for subsequent commands
-ENV PATH="/nix/var/nix/profiles/default/bin:/home/${USER}/.nix-profile/bin:${PATH}"
-
 # Run your dotfiles installation script
 # This script is expected to install fish and other tools.
 # Make sure this script is idempotent or handles being run in a fresh environment.
-RUN daemon sudo /nix/var/nix/profiles/default/bin/nix-daemon && \
-    sleep 3 && \
-    . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh && \
-    curl -fsSL "https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_SHA/install.sh" | /bin/bash
+RUN curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_SHA/install.sh | /bin/bash
 
 # Your install.sh script should ideally set up fish as the default shell if desired.
 # If it doesn't, you might need to add a line here like:
