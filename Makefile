@@ -17,34 +17,7 @@ DOCKER_IMAGE_LATEST := $(DOCKER_IMAGE_NAME_BASE):latest
 DOCKER_IMAGE_TAGGED := $(DOCKER_IMAGE_NAME_BASE):$(GIT_COMMIT_SHA)
 
 # Nix executable path
-NIX_EXEC := $(shell \
-	if [ "$(OS)" = "Darwin" ]; then \
-		if [ -x "/nix/var/nix/profiles/default/bin/nix" ]; then \
-			echo "/nix/var/nix/profiles/default/bin/nix"; \
-		elif command -v nix 2>/dev/null; then \
-			command -v nix; \
-		else \
-			which nix; \
-		fi; \
-	elif [ "$(OS)" = "Linux" ]; then \
-		if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
-			echo "nix"; \
-		else \
-			if [ -x "$(HOME)/.nix-profile/bin/nix" ]; then \
-				echo "$(HOME)/.nix-profile/bin/nix"; \
-			elif command -v nix 2>/dev/null; then \
-				command -v nix; \
-			else \
-				which nix; \
-			fi; \
-		fi; \
-	else \
-		if command -v nix 2>/dev/null; then \
-			command -v nix; \
-		else \
-			which nix; \
-		fi; \
-	fi)
+NIX_EXEC := $(shell which nix)
 
 # Nix configuration system
 NIX_SYSTEM := $(shell if [ "$(OS)" = "Darwin" ] && [ "$(ARCH)" = "arm64" ]; then \
@@ -203,24 +176,18 @@ nix-backup:
 nix-build: nix-connect
 	@echo "🏗️ Building Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"
 	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
-		echo "🤖 Running in CI/Docker environment"; \
-		echo "DEBUG: NIX_EXEC is [$(NIX_EXEC)]"; \
-		echo "DEBUG: PATH is [$$PATH]"; \
-		command -v $(NIX_EXEC) >/dev/null 2>&1 || { echo "DEBUG: $(NIX_EXEC) not found in PATH via command -v"; $(NIX_EXEC) --version || echo "DEBUG: Attempt to run $(NIX_EXEC) --version failed"; }; \
+		echo "Running in CI"; \
 		if [ "$(OS)" = "Darwin" ]; then \
 			$(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			$(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#runner --no-update-lock-file; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			echo "DEBUG: Executing: $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).\"$(NIX_USERNAME)@$(NIX_SYSTEM)\".activationPackage $(NIX_FLAGS) --no-update-lock-file --show-trace"; \
 			$(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --no-update-lock-file --show-trace; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI build"; \
 			exit 1; \
 		fi; \
 	else \
-		echo "DEBUG: NIX_EXEC is [$(NIX_EXEC)]"; \
-		echo "DEBUG: PATH is [$$PATH]"; \
 		if [ "$(NIX_SYSTEM)" = "unsupported" ]; then \
 			echo "❌ Unsupported system architecture: $(OS) $(ARCH)"; \
 			exit 1; \
