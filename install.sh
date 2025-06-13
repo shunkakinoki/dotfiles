@@ -49,7 +49,7 @@ if ! command -v nix >/dev/null 2>&1; then
   else # Linux
     if [ "$IN_DOCKER" = "true" ]; then
       echo "Performing single-user Nix installation (Docker environment)..."
-      curl -L https://nixos.org/nix/install | sh -s -- --no-daemon --init none
+      curl -L https://nixos.org/nix/install | sh -s -- --yes --no-daemon
       # Source the Nix profile script to add Nix to PATH for the current shell
       if [ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
         . "$HOME/.nix-profile/etc/profile.d/nix.sh"
