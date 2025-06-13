@@ -13,6 +13,7 @@
       "kurtosis-tech/tap"
     ];
     brews = [
+      "ffmpeg"
       "gnupg"
       "helm"
       "kurtosis-cli"
