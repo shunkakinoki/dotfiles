@@ -176,7 +176,7 @@ nix-backup:
 nix-build: nix-connect
 	@echo "🏗️ Building Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"
 	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
-		echo "Running in CI"; \
+		echo "🤖 Running in CI/Docker environment"; \
 		if [ "$(OS)" = "Darwin" ]; then \
 			$(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
