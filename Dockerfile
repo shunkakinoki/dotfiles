@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 # Set DEBIAN_FRONTEND to noninteractive to avoid prompts during package installations
 ENV DEBIAN_FRONTEND=noninteractive
@@ -21,27 +21,29 @@ RUN apt-get update && apt-get install -y \
 
 # Create a non-root user for running the setup and for the agent.
 # The agent will run as this user.
-ARG USERNAME=shunkakinoki
-ARG USER_UID=1000
+ARG USER=runner
+ARG USER_UID=1001
 ARG USER_GID=$USER_UID
 ARG COMMIT_SHA=main
 
-RUN groupadd --gid $USER_GID $USERNAME \
-    && useradd --uid $USER_UID --gid $USER_GID --shell /bin/bash --create-home $USERNAME
-RUN echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME \
-    && chmod 0440 /etc/sudoers.d/$USERNAME
+RUN set -e; \
+    groupadd --gid $USER_GID $USER; \
+    useradd --uid $USER_UID --gid $USER_GID --shell /bin/bash --create-home $USER; \
+    id $USER
+RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER \
+    && chmod 0440 /etc/sudoers.d/$USER
 
 # Prepare Nix trusted users configuration
 RUN mkdir -p /etc/nix && \
-    echo "trusted-users = root $USERNAME" > /etc/nix/nix.conf && \
+    echo "trusted-users = root $USER" > /etc/nix/nix.conf && \
     echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
 
 ENV NIX_BUILD_GROUP_ID=1001
 ENV IN_DOCKER=true
 
 # Switch to the non-root user
-USER $USERNAME
-WORKDIR /home/$USERNAME
+USER $USER
+WORKDIR /home/$USER
 
 # Run your dotfiles installation script
 # This script is expected to install fish and other tools.
@@ -50,6 +52,6 @@ RUN curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_S
 
 # Your install.sh script should ideally set up fish as the default shell if desired.
 # If it doesn't, you might need to add a line here like:
-# RUN sudo chsh -s $(which fish) $USERNAME
+# RUN sudo chsh -s $(which fish) $USER
 # Or, to set fish as the default shell for subsequent Dockerfile commands and for the agent's shell:
 SHELL ["/usr/bin/fish", "-l", "-c"]

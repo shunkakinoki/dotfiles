@@ -12,6 +12,7 @@ concurrency:
 jobs:
   e2e-run:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 300
     strategy:
       matrix:
         include:
@@ -59,6 +60,7 @@ jobs:
     needs:
       - e2e-run
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     steps:
       - name: Alls Green
         uses: re-actors/alls-green@release/v1
