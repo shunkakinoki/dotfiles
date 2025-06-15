@@ -19,4 +19,5 @@ in
     system1
   ];
   "secret2.age".publicKeys = users ++ systems;
+  "ssh/id_ed25519.age".publicKeys = users ++ systems;
 }
