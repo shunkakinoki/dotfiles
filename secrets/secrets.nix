@@ -1,9 +1,11 @@
 let
   user1 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL0idNvgGiucWgup/mP78zyC23uFjYq0evcWdjGQUaBH";
   user2 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILI6jSq53F/3hEmSs+oq9L4TwOo1PrDMAgcA1uo1CCV/";
+  test = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKrXclLkVeGA9eWr+GJQqs6DVHji+Z09XQQvzwwbhauI";
   users = [
     user1
     user2
+    test
   ];
 
   system1 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPJDyIr/FSz1cJdcoW69R+NrWzwGK/+3gJpqD1t8L2zE";
@@ -17,7 +19,8 @@ in
   "secret1.age".publicKeys = [
     user1
     system1
+    test
   ];
   "secret2.age".publicKeys = users ++ systems;
-  "ssh/id_ed25519.age".publicKeys = users ++ systems;
+  "ssh/id_ed25519.age".publicKeys = users ++ systems
 }
