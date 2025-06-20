@@ -13,6 +13,7 @@
       "kurtosis-tech/tap"
     ];
     brews = [
+      "claude-squad"
       "ffmpeg"
       "gnupg"
       "helm"
