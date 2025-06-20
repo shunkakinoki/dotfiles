@@ -24,12 +24,13 @@ nix-darwin.lib.darwinSystem {
   modules = [
     configuration
     ../../nix-darwin
+    inputs.agenix.darwinModules.default
     home-manager.darwinModules.home-manager
     {
       home-manager.backupFileExtension = "backup";
       home-manager.useUserPackages = true;
       home-manager.users."${username}" = import ../../home-manager {
-        inherit inputs username;
+        inherit inputs username system;
         lib = inputs.nixpkgs.lib;
         pkgs = inputs.nixpkgs.legacyPackages.${system};
         config = { };
