@@ -24,6 +24,9 @@ in
 {
   imports = hmConfig ++ misc ++ modules ++ programs ++ services;
 
+  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "claude-code" ];
+
   home.username = username;
   home.homeDirectory = lib.mkIf pkgs.stdenv.isLinux "/home/${username}";
   home.packages = packages;
