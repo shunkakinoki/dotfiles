@@ -33,6 +33,7 @@
       "copilot-money"
       "cursor"
       "discord"
+      "docker"
       "docker-desktop"
       "dropbox"
       "figma"
