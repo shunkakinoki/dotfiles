@@ -24,7 +24,6 @@ in
 {
   imports = hmConfig ++ misc ++ modules ++ programs ++ services;
 
-  nixpkgs.config.allowUnfree = true;
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "claude-code" ];
 
   home.username = username;

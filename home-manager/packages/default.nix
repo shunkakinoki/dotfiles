@@ -2,7 +2,7 @@
 with pkgs;
 [
   argocd
-  # claude-code
+  claude-code
   direnv
   dust
   fswatch
