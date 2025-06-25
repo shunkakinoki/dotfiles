@@ -3,6 +3,7 @@ with pkgs;
 [
   argocd
   claude-code
+  codex
   direnv
   dust
   fswatch
