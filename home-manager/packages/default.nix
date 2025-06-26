@@ -1,6 +1,7 @@
 { pkgs }:
 with pkgs;
 [
+  aider-chat
   argocd
   claude-code
   codex
