@@ -183,7 +183,7 @@ nix-build: nix-connect
 		if [ "$(OS)" = "Darwin" ]; then \
 			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
-			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- build --flake .#runner --no-update-lock-file; \
+			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#runner --impure --no-update-lock-file; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
 			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 		else \
@@ -197,7 +197,7 @@ nix-build: nix-connect
 		elif [ "$(OS)" = "Darwin" ]; then \
 			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --impure --show-trace; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
-			sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM); \
+			sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM) --impure; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
 			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --impure --show-trace; \
 		else \
