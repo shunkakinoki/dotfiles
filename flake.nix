@@ -36,7 +36,6 @@
       imports = [ treefmt-nix.flakeModule ];
 
       flake = {
-
         darwinConfigurations = {
           aarch64-darwin = import ./hosts/darwin {
             inherit inputs;
