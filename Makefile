@@ -11,6 +11,9 @@ GITHUB_REPO_OWNER := $(shell echo $(GITHUB_REPO_PATH) | cut -d'/' -f1)
 GITHUB_REPO_NAME := $(shell echo $(GITHUB_REPO_PATH) | cut -d'/' -f2)
 GIT_COMMIT_SHA := $(shell git rev-parse --short HEAD)
 
+# Env ironment variables
+NIX_ALLOW_UNFREE := NIXPKGS_ALLOW_UNFREE=1
+
 # Docker image names
 DOCKER_IMAGE_NAME_BASE := ghcr.io/$(GITHUB_REPO_OWNER)/$(GITHUB_REPO_NAME)
 DOCKER_IMAGE_LATEST := $(DOCKER_IMAGE_NAME_BASE):latest
@@ -93,6 +96,9 @@ build: nix-build
 
 .PHONY: check
 check: nix-check
+
+.PHONY: flake-check
+flake-check: nix-flake-check
 
 .PHONY: format
 format: nix-format
@@ -178,11 +184,11 @@ nix-build: nix-connect
 	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		echo "🤖 Running in CI/Docker environment"; \
 		if [ "$(OS)" = "Darwin" ]; then \
-			$(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --no-update-lock-file --show-trace; \
+			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
-			$(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#runner --no-update-lock-file; \
+			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#runner --impure --no-update-lock-file; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			$(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --no-update-lock-file --show-trace; \
+			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI build"; \
 			exit 1; \
@@ -192,17 +198,23 @@ nix-build: nix-connect
 			echo "❌ Unsupported system architecture: $(OS) $(ARCH)"; \
 			exit 1; \
 		elif [ "$(OS)" = "Darwin" ]; then \
-			$(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --show-trace; \
+			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --impure --show-trace; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
-			sudo $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM); \
+			sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM) --impure; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			$(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --show-trace; \
+			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --impure --show-trace; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI build"; \
 			exit 1; \
 		fi; \
 	fi
 	@echo "✅ Nix configuration built successfully!"
+
+.PHONY: nix-flake-check
+nix-flake-check:
+	@echo "🔍 Checking Nix flake configuration..."
+	@$(NIX_ALLOW_UNFREE) $(NIX_EXEC) flake check --all-systems --impure $(NIX_FLAGS)
+	@echo "✅ Nix flake check completed successfully"
 
 .PHONY: nix-flake-update
 nix-flake-update: nix-connect
@@ -231,12 +243,12 @@ nix-switch:
 	@echo "🔧 Activating Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"
 	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		if [ "$(OS)" = "Darwin" ]; then \
-			sudo $(DARWIN_REBUILD) switch --flake .#runner --no-update-lock-file; \
+			sudo $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#runner --impure --no-update-lock-file; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			echo "⏭️ NixOS switch skipped in CI as the runner is not a NixOS system"; \
-			sudo $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file || exit 0; \
+			sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file || exit 0; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			USER=$(NIX_USERNAME) $(NIX_EXEC) run $(NIX_FLAGS) .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
+			USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI switch"; \
 			exit 1; \
@@ -246,11 +258,11 @@ nix-switch:
 			echo "❌ Unsupported system architecture: $(OS) $(ARCH)"; \
 			exit 1; \
 		elif [ "$(OS)" = "Darwin" ]; then \
-			sudo $(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM); \
+			sudo $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM) --impure; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
-			sudo $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM); \
+			sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM); \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			USER=$(NIX_USERNAME) $(NIX_EXEC) run $(NIX_FLAGS) .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
+			USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI switch"; \
 			exit 1; \

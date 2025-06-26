@@ -13,6 +13,7 @@
       "kurtosis-tech/tap"
     ];
     brews = [
+      "claude-squad"
       "ffmpeg"
       "gnupg"
       "helm"
@@ -29,10 +30,10 @@
       "beeper"
       "chatgpt"
       "claude"
-      "copilot"
+      "copilot-money"
       "cursor"
       "discord"
-      "docker"
+      "docker-desktop"
       "dropbox"
       "figma"
       "firefox"
