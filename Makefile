@@ -97,6 +97,9 @@ build: nix-build
 .PHONY: check
 check: nix-check
 
+.PHONY: flake-check
+flake-check: nix-flake-check
+
 .PHONY: format
 format: nix-format
 
@@ -206,6 +209,12 @@ nix-build: nix-connect
 		fi; \
 	fi
 	@echo "✅ Nix configuration built successfully!"
+
+.PHONY: nix-flake-check
+nix-flake-check:
+	@echo "🔍 Checking Nix flake configuration..."
+	@$(NIX_ALLOW_UNFREE) $(NIX_EXEC) flake check --all-systems --impure $(NIX_FLAGS)
+	@echo "✅ Nix flake check completed successfully"
 
 .PHONY: nix-flake-update
 nix-flake-update: nix-connect

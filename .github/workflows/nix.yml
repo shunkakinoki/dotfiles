@@ -37,7 +37,7 @@ jobs:
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run Flake Check
-        run: nix flake check --all-systems
+        run: make flake-check
   nix-format:
     runs-on: ubuntu-latest
     timeout-minutes: 300
