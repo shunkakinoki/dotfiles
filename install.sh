@@ -56,6 +56,7 @@ if ! command -v nix >/dev/null 2>&1; then
         echo "Sourced Nix profile for single-user (Docker) setup."
       else
         echo "Warning: Nix profile script ($HOME/.nix-profile/etc/profile.d/nix.sh) not found after installation."
+        . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
         # Fallback PATH export for the current shell
         export PATH="$HOME/.nix-profile/bin:$PATH"
       fi
