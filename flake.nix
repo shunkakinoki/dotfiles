@@ -17,6 +17,10 @@
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -45,6 +49,10 @@
             inherit inputs;
             isRunner = true;
             username = "runner";
+          };
+          galactica = import ./named-hosts/galactica {
+            inherit inputs;
+            username = "shunkakinoki";
           };
         };
         nixosConfigurations = {
