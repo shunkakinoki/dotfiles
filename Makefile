@@ -85,6 +85,10 @@ help:
 	@echo "  format       - Format Nix files"
 	@echo "  format-check - Check Nix formatting"
 	@echo "  docker-build - Build the Docker image"
+	@echo "  switch-HOST      - Switch to a named host configuration (e.g., make switch-galactica)"
+	@echo "  encrypt-key-HOST - Encrypt a key for a named host (e.g., make encrypt-key-galactica KEY_FILE=~/.ssh/id_ed25519)"
+	@echo "  decrypt-key-HOST - Decrypt a key for a named host (e.g., make decrypt-key-galactica KEY_FILE=id_ed25519)"
+	@echo "  rekey-HOST       - Rekey all secrets for a named host (e.g., make rekey-galactica)"
 
 ##@ General
 
@@ -258,7 +262,12 @@ nix-switch:
 			echo "❌ Unsupported system architecture: $(OS) $(ARCH)"; \
 			exit 1; \
 		elif [ "$(OS)" = "Darwin" ]; then \
-			sudo $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM) --impure; \
+			if [ -n "$(HOST)" ]; then \
+				echo "Switching named host: $(HOST)"; \
+				sudo $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(HOST) --impure; \
+			else \
+				sudo $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM) --impure; \
+			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM); \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
@@ -280,6 +289,62 @@ nix-switch-vm:
 	printf "sleep 5\nmkdir -p /tmp/test && cd /tmp/test\ncp -r /mnt/shared/* .\n$(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file\npoweroff\n" > vm_commands.txt; \
 	timeout 600 ./result/bin/run-nixos-vm -nographic < vm_commands.txt || exit 1; \
 	rm -f vm_commands.txt
+
+##@ Named Hosts Specific Targets
+
+.PHONY: switch-%
+switch-%:
+	@$(MAKE) nix-switch HOST=$*
+
+.PHONY: encrypt-key-%
+encrypt-key-%:
+	@$(MAKE) encrypt-key HOST=$* KEY_FILE=$(KEY_FILE)
+
+.PHONY: decrypt-key-%
+decrypt-key-%:
+	@$(MAKE) decrypt-key HOST=$* KEY_FILE=$(KEY_FILE)
+
+.PHONY: rekey-%
+rekey-%:
+	@$(MAKE) rekey HOST=$*
+
+##@ Agenix Secrets Management
+
+.PHONY: encrypt-key
+encrypt-key:
+	@if [ -z "$(HOST)" ]; then \
+		echo "❌ HOST variable is not set. Usage: make encrypt-key HOST=<hostname> KEY_FILE=<path_to_key>"; \
+		exit 1; \
+	fi
+	@if [ -z "$(KEY_FILE)" ]; then \
+		echo "❌ KEY_FILE variable is not set. Usage: make encrypt-key HOST=<hostname> KEY_FILE=<path_to_key>"; \
+		exit 1; \
+	fi
+	@echo "🔐 Encrypting $(KEY_FILE) for host $(HOST)..."
+	@cd named-hosts/$(HOST) && mkdir -p keys && cat $(KEY_FILE) | agenix -e keys/$(shell basename $(KEY_FILE)).age
+	@echo "✅ Key encrypted to named-hosts/$(HOST)/keys/$(shell basename $(KEY_FILE)).age"
+
+.PHONY: decrypt-key
+decrypt-key:
+	@if [ -z "$(HOST)" ]; then \
+		echo "❌ HOST variable is not set. Usage: make decrypt-key HOST=<hostname> KEY_FILE=<path_to_key>"; \
+		exit 1; \
+	fi
+	@if [ -z "$(KEY_FILE)" ]; then \
+		KEY_FILE="id_ed25519"; \
+	fi
+	@echo "🔓 Decrypting keys/$(KEY_FILE).age for host $(HOST)..."
+	@cd named-hosts/$(HOST) && agenix -d keys/$(KEY_FILE).age
+
+.PHONY: rekey
+rekey:
+	@if [ -z "$(HOST)" ]; then \
+		echo "❌ HOST variable is not set. Usage: make rekey HOST=<hostname>"; \
+		exit 1; \
+	fi
+	@echo "🔑 Rekeying all secrets for host $(HOST)..."
+	@cd named-hosts/$(HOST) && agenix --rekey
+	@echo "✅ Rekeying complete for $(HOST)."
 
 ##@ Shell Installation
 
