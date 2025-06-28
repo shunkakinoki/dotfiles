@@ -57,6 +57,11 @@ RUN mkdir -p /etc/nix && \
 USER $USER
 WORKDIR /home/$USER
 
+# Run your dotfiles installation script
+# This script is expected to install fish and other tools.
+# Make sure this script is idempotent or handles being run in a fresh environment.
+# RUN curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_SHA/install.sh | /bin/bash
+
 # Your install.sh script should ideally set up fish as the default shell if desired.
 # If it doesn't, you might need to add a line here like:
 # RUN sudo chsh -s $(which fish) $USER
