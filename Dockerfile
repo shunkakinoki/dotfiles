@@ -35,15 +35,18 @@ RUN set -e; \
 RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER \
     && chmod 0440 /etc/sudoers.d/$USER
 
+# Disable the Nix sandbox, which can cause issues in some container environments.
+RUN mkdir -p /etc/nix && echo "sandbox = false" > /etc/nix/nix.conf
+
 # Install Nix using the Determinate Systems installer.
 RUN curl -fL https://install.determinate.systems/nix | sh -s -- install linux --init none --no-confirm
 
 # Take ownership of the /nix directory for the non-root user.
+# This is necessary because we are not running the nix-daemon.
 RUN sudo chown -R $USER:$USER /nix
 
 # Prepare Nix trusted users configuration.
-RUN mkdir -p /etc/nix && \
-    echo "trusted-users = root $USER" >> /etc/nix/nix.conf && \
+RUN echo "trusted-users = root $USER" >> /etc/nix/nix.conf && \
     echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
 
 ENV NIX_BUILD_GROUP_ID=1001
