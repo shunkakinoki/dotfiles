@@ -10,7 +10,6 @@ inputs.nix-darwin.lib.darwinSystem {
     (import ../../hosts/darwin { inherit inputs username; })
     inputs.agenix.nixosModules.default
 
-    # Add custom configurations for galactica here
     {
       age.secrets = import ./secrets.nix;
       age.secrets."id_ed25519" = {
@@ -30,8 +29,6 @@ inputs.nix-darwin.lib.darwinSystem {
             };
           };
         };
-
-      networking.hostName = "galactica";
     }
   ];
 }
