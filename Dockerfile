@@ -37,22 +37,25 @@ RUN set -e; \
 RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER \
     && chmod 0440 /etc/sudoers.d/$USER
 
-# Prepare Nix trusted users configuration
-RUN mkdir -p /etc/nix && \
-    echo "trusted-users = root $USER" > /etc/nix/nix.conf && \
-    echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
-
 ENV NIX_BUILD_GROUP_ID=1001
 ENV IN_DOCKER=true
 
-# Switch to the non-root user
+# Prepare Nix config, start daemon, and run install script in one go.
+# We must start the daemon, give it a moment to initialize, then run the installation as the non-root user.
+# All within a single RUN command so the daemon process persists for the duration of the command.
+RUN mkdir -p /etc/nix && \
+    echo "trusted-users = root $USER" > /etc/nix/nix.conf && \
+    echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf && \
+    /usr/bin/nix-daemon & \
+    sleep 5 && \
+    # Run your dotfiles installation script.
+    # This script is expected to install fish and other tools.
+    # Make sure this script is idempotent or handles being run in a fresh environment.
+    sudo -u $USER -E -H bash -c "curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_SHA/install.sh | bash"
+
+# Switch to the non-root user for subsequent commands
 USER $USER
 WORKDIR /home/$USER
-
-# Run your dotfiles installation script
-# This script is expected to install fish and other tools.
-# Make sure this script is idempotent or handles being run in a fresh environment.
-RUN curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_SHA/install.sh | /bin/bash
 
 # Your install.sh script should ideally set up fish as the default shell if desired.
 # If it doesn't, you might need to add a line here like:
