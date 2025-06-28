@@ -68,6 +68,9 @@ CONFIG_DIR := $(HOME_DIR)/.config
 # Darwin-rebuild path
 DARWIN_REBUILD := $(shell command -v darwin-rebuild 2>/dev/null || echo "./result/sw/bin/darwin-rebuild")
 
+# Agenix identity file
+AGE_IDENTITY_FILE ?= ~/.ssh/test
+
 ##@ Help
 
 # Default target
@@ -85,6 +88,9 @@ help:
 	@echo "  format       - Format Nix files"
 	@echo "  format-check - Check Nix formatting"
 	@echo "  docker-build - Build the Docker image"
+	@echo "  agenix-rekey - Rekey agenix secrets"
+	@echo "  agenix-edit  - Edit an agenix secret"
+	@echo "  agenix-decrypt - Decrypt an agenix secret"
 
 ##@ General
 
@@ -313,3 +319,28 @@ docker-build:
 	@echo "🐳 Building Docker image: $(DOCKER_IMAGE_LATEST) and $(DOCKER_IMAGE_TAGGED)..."
 	@docker build -t $(DOCKER_IMAGE_LATEST) -t $(DOCKER_IMAGE_TAGGED) -f Dockerfile .
 	@echo "✅ Docker image built: $(DOCKER_IMAGE_LATEST) and $(DOCKER_IMAGE_TAGGED)"
+
+##@ Agenix
+
+.PHONY: agenix-rekey
+agenix-rekey:
+	@echo "🔑 Rekeying agenix secrets..."
+	@cd secrets && agenix -r -i $(AGE_IDENTITY_FILE)
+
+.PHONY: agenix-edit
+agenix-edit:
+	@echo "📝 Editing agenix secret: $(file)"
+	@if [ -z "$(file)" ]; then \
+		echo "❌ Please specify a file to edit with 'make agenix-edit file=path/to/secret.age'"; \
+		exit 1; \
+	fi
+	@cd secrets && agenix -e $(file) -i $(AGE_IDENTITY_FILE)
+
+.PHONY: agenix-decrypt
+agenix-decrypt:
+	@echo "🔓 Decrypting agenix secret: $(file)"
+	@if [ -z "$(file)" ]; then \
+		echo "❌ Please specify a file to decrypt with 'make agenix-decrypt file=path/to/secret.age'"; \
+		exit 1; \
+	fi
+	@cd secrets && agenix -d $(file) -i $(AGE_IDENTITY_FILE)
