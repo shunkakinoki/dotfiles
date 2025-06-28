@@ -38,6 +38,9 @@ RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER \
 # Install Nix using the Determinate Systems installer.
 RUN curl -fL https://install.determinate.systems/nix | sh -s -- install linux --init none --no-confirm
 
+# Take ownership of the /nix directory for the non-root user.
+RUN sudo chown -R $USER:$USER /nix
+
 # Prepare Nix trusted users configuration.
 RUN mkdir -p /etc/nix && \
     echo "trusted-users = root $USER" >> /etc/nix/nix.conf && \
