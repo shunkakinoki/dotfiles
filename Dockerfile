@@ -36,7 +36,7 @@ RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER \
     && chmod 0440 /etc/sudoers.d/$USER
 
 # Install Nix using the Determinate Systems installer.
-RUN curl -fL https://install.determinate.systems/nix | sh -s -- install linux --init none
+RUN curl -fL https://install.determinate.systems/nix | sh -s -- install linux --init none --no-confirm
 
 # Prepare Nix trusted users configuration.
 RUN mkdir -p /etc/nix && \
