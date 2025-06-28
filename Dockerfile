@@ -32,7 +32,6 @@ ARG COMMIT_SHA=main
 RUN set -e; \
     groupadd --gid $USER_GID $USER; \
     useradd --uid $USER_UID --gid $USER_GID --shell /bin/bash --create-home $USER; \
-    groupadd --system nix-users; \
     usermod -aG nix-users $USER; \
     id $USER
 RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER \
