@@ -39,6 +39,7 @@
       fpf = "_fzf_file_picker --allow-open-in-editor --prompt-name Files";
       fpfh = "_fzf_file_picker --allow-open-in-editor --show-hidden-files --prompt-name Files+";
       fpp = "_fzf_directory_picker --allow-cd --prompt-name Projects ~/";
+      fpr = "_fzf_ghq_picker";
     };
     plugins = [
       {
