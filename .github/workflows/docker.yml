@@ -53,7 +53,7 @@ jobs:
             org.opencontainers.image.pr-number=${{ github.event_name == 'pull_request' && github.event.pull_request.number || '' }}
       - name: Build and Push Docker
         uses: docker/build-push-action@v6
-        continue-on-error: matrix.platform == 'linux/arm64'
+        continue-on-error: ${{ matrix.platform == 'linux/arm64' }}
         with:
           context: .
           file: ./Dockerfile
