@@ -35,14 +35,12 @@ RUN set -e; \
 RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER \
     && chmod 0440 /etc/sudoers.d/$USER
 
-# Create a Nix directory and set permissions for the runner user.
-RUN mkdir /nix && \
-    chown runner:runner /nix && \
-    chmod 755 /nix
+# Install Nix using the Determinate Systems installer.
+RUN curl -fL https://install.determinate.systems/nix | sh -s -- install linux --init none
 
-# Prepare Nix trusted users configuration
+# Prepare Nix trusted users configuration.
 RUN mkdir -p /etc/nix && \
-    echo "trusted-users = root $USER" > /etc/nix/nix.conf && \
+    echo "trusted-users = root $USER" >> /etc/nix/nix.conf && \
     echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
 
 ENV NIX_BUILD_GROUP_ID=1001
