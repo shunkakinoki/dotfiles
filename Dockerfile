@@ -41,6 +41,18 @@ RUN mkdir -p /etc/nix && \
 ENV NIX_BUILD_GROUP_ID=1001
 ENV IN_DOCKER=true
 
+# Install Nix
+RUN mkdir /nix && chown ${USER}:${USER} /nix
+RUN curl --proto '=https' --tlsv1.2 --http1.1 \
+         --retry 5 --retry-delay 2 -L \
+         -o /tmp/nix-installer.sh \
+         https://install.determinate.systems/nix && \
+    chmod +x /tmp/nix-installer.sh && \
+    /tmp/nix-installer.sh install linux --init none --no-confirm \
+        --extra-conf "sandbox = false"
+
+ENV PATH="$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:$PATH"
+
 # Switch to the non-root user
 USER $USER
 WORKDIR /home/$USER
