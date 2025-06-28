@@ -18,18 +18,20 @@ inputs.nix-darwin.lib.darwinSystem {
         owner = username;
       };
 
-      home-manager.users.${username} = { pkgs, ... }: {
-        programs.ssh = {
-          enable = true;
-          identities = {
-            "id_ed25519" = {
-              keyFile = config.age.secrets."id_ed25519".path;
+      home-manager.users.${username} =
+        { pkgs, ... }:
+        {
+          programs.ssh = {
+            enable = true;
+            identities = {
+              "id_ed25519" = {
+                keyFile = config.age.secrets."id_ed25519".path;
+              };
             };
           };
         };
-      };
 
       networking.hostName = "galactica";
     }
   ];
-} 
+}
