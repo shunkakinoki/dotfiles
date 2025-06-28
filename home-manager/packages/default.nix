@@ -8,6 +8,7 @@ with pkgs;
   direnv
   dust
   fswatch
+  gemini-cli
   gh
   ghq
   go

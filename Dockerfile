@@ -9,13 +9,15 @@ ENV DEBIAN_FRONTEND=noninteractive
 # sudo is needed if the script uses it internally without installing it.
 # git is likely used by your dotfiles script.
 RUN apt-get update && apt-get install -y \
-    curl \
-    git \
-    sudo \
+    build-essential \
+    bzip2 \
     ca-certificates \
-    xz-utils \
-    make \
+    curl \
     daemon \
+    git \
+    make \
+    sudo \
+    xz-utils \
     # Add any other system-level dependencies your script needs here
     && rm -rf /var/lib/apt/lists/*
 
