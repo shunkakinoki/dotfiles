@@ -26,6 +26,10 @@ ARG USER_UID=1001
 ARG USER_GID=$USER_UID
 ARG COMMIT_SHA=main
 
+RUN mkdir /nix && \
+    chown runner:runner /nix && \
+    chmod 755 /nix
+
 RUN set -e; \
     groupadd --gid $USER_GID $USER; \
     useradd --uid $USER_UID --gid $USER_GID --shell /bin/bash --create-home $USER; \
@@ -40,6 +44,7 @@ RUN mkdir -p /etc/nix && \
 
 ENV NIX_BUILD_GROUP_ID=1001
 ENV IN_DOCKER=true
+ENV PATH="/nix/var/nix/profiles/default/bin:$PATH"
 
 # Switch to the non-root user
 USER $USER
