@@ -20,7 +20,7 @@ jobs:
       matrix:
         platform:
           - linux/amd64
-          # - linux/arm64
+          - linux/arm64
     runs-on: ubuntu-latest
     timeout-minutes: 300
     steps:
@@ -53,6 +53,7 @@ jobs:
             org.opencontainers.image.pr-number=${{ github.event_name == 'pull_request' && github.event.pull_request.number || '' }}
       - name: Build and Push Docker
         uses: docker/build-push-action@v6
+        continue-on-error: ${{ matrix.platform == 'linux/arm64' }}
         with:
           context: .
           file: ./Dockerfile
