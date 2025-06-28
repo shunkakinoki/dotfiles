@@ -13,7 +13,7 @@ inputs.nix-darwin.lib.darwinSystem {
     {
       age.secrets = import ./secrets.nix;
       age.secrets."id_ed25519" = {
-        file = ./id_ed25519.age;
+        file = ./keys/id_ed25519.age;
         owner = username;
       };
 
