@@ -9,13 +9,15 @@ ENV DEBIAN_FRONTEND=noninteractive
 # sudo is needed if the script uses it internally without installing it.
 # git is likely used by your dotfiles script.
 RUN apt-get update && apt-get install -y \
-    curl \
-    git \
-    sudo \
+    build-essential \
+    bzip2 \
     ca-certificates \
-    xz-utils \
-    make \
+    curl \
     daemon \
+    git \
+    make \
+    nix-setup-systemd \
+    sudo \
     # Add any other system-level dependencies your script needs here
     && rm -rf /var/lib/apt/lists/*
 
@@ -29,6 +31,7 @@ ARG COMMIT_SHA=main
 RUN set -e; \
     groupadd --gid $USER_GID $USER; \
     useradd --uid $USER_UID --gid $USER_GID --shell /bin/bash --create-home $USER; \
+    usermod -aG nix-users $USER; \
     id $USER
 RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER \
     && chmod 0440 /etc/sudoers.d/$USER
