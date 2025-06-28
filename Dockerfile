@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
     daemon \
     git \
     make \
+    nix-setup-systemd \
     sudo \
     xz-utils \
     # Add any other system-level dependencies your script needs here
@@ -35,23 +36,13 @@ RUN set -e; \
 RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER \
     && chmod 0440 /etc/sudoers.d/$USER
 
-# Install Nix using the Determinate Systems installer.
-# We pass NIX_INSTALLER_NIX_CONF_EXTRA_OPTS to disable the sandbox,
-# which prevents errors in some containerized environments.
-RUN export NIX_INSTALLER_NIX_CONF_EXTRA_OPTS="sandbox = false" && \
-    curl -fL https://install.determinate.systems/nix | sh -s -- install linux --init none --no-confirm
-
-# Take ownership of the /nix directory for the non-root user.
-# This is necessary because we are not running the nix-daemon.
-RUN sudo chown -R $USER:$USER /nix
-
-# Prepare Nix trusted users configuration.
-RUN echo "trusted-users = root $USER" >> /etc/nix/nix.conf && \
+# Prepare Nix trusted users configuration
+RUN mkdir -p /etc/nix && \
+    echo "trusted-users = root $USER" > /etc/nix/nix.conf && \
     echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
 
 ENV NIX_BUILD_GROUP_ID=1001
 ENV IN_DOCKER=true
-ENV PATH="/nix/var/nix/profiles/default/bin:$PATH"
 
 # Switch to the non-root user
 USER $USER
