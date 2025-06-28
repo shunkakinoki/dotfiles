@@ -26,16 +26,17 @@ ARG USER_UID=1001
 ARG USER_GID=$USER_UID
 ARG COMMIT_SHA=main
 
-RUN mkdir /nix && \
-    chown runner:runner /nix && \
-    chmod 755 /nix
-
 RUN set -e; \
     groupadd --gid $USER_GID $USER; \
     useradd --uid $USER_UID --gid $USER_GID --shell /bin/bash --create-home $USER; \
     id $USER
 RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER \
     && chmod 0440 /etc/sudoers.d/$USER
+
+# Create a Nix directory and set permissions for the runner user.
+RUN mkdir /nix && \
+    chown runner:runner /nix && \
+    chmod 755 /nix
 
 # Prepare Nix trusted users configuration
 RUN mkdir -p /etc/nix && \
