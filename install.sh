@@ -48,7 +48,18 @@ if ! command -v nix >/dev/null 2>&1; then
     NIX_EFFECTIVE_BIN_PATH="/nix/var/nix/profiles/default/bin"
   else # Linux
     if [ "$IN_DOCKER" = "true" ]; then
-      echo "Nix is expected to be pre-installed in the Docker environment. Skipping installation."
+      echo "Performing single-user Nix installation (Docker environment)..."
+      curl -L https://nixos.org/nix/install | bash -s -- --no-daemon
+      # Source the Nix profile script to add Nix to PATH for the current shell
+      if [ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+        . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+        echo "Sourced Nix profile for single-user (Docker) setup."
+      else
+        echo "Warning: Nix profile script ($HOME/.nix-profile/etc/profile.d/nix.sh) not found after installation."
+        # Fallback PATH export for the current shell
+        export PATH="$HOME/.nix-profile/bin:$PATH"
+      fi
+      NIX_EFFECTIVE_BIN_PATH="$HOME/.nix-profile/bin"
     else # Linux multi-user
       echo "Performing multi-user Nix installation..."
       curl -L https://nixos.org/nix/install | bash -s -- --daemon
