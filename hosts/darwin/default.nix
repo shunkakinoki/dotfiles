@@ -5,7 +5,7 @@
   isRunner ? false,
 }:
 let
-  inherit (inputs) nix-darwin home-manager;
+  inherit (inputs) nix-darwin home-manager agenix;
   system = "aarch64-darwin";
   configuration =
     { ... }:
@@ -15,22 +15,21 @@ let
       system.stateVersion = 4;
     };
 in
-nix-darwin.lib.darwinSystem {
-  inherit system;
-  inherit (inputs.nixpkgs) lib;
+{
   specialArgs = {
-    inherit username isRunner;
+    inherit inputs username isRunner;
   };
   modules = [
     configuration
     ../../nix-darwin
     home-manager.darwinModules.home-manager
+    agenix.darwinModules.default
     {
       home-manager.backupFileExtension = "backup";
       home-manager.useUserPackages = true;
       home-manager.users."${username}" = import ../../home-manager {
-        inherit inputs username;
-        lib = inputs.nixpkgs.lib;
+        inherit inputs username system;
+        lib = inputs.nixpkgs.legacyPackages.${system}.lib;
         pkgs = inputs.nixpkgs.legacyPackages.${system};
         config = { };
       };

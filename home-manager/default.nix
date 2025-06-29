@@ -4,12 +4,13 @@
   lib,
   inputs,
   username,
+  system,
   ...
 }:
 let
   hmConfig = import ../config;
   overlay = import ./overlay;
-  packages = import ./packages { inherit pkgs; };
+  packages = import ./packages { inherit pkgs inputs system; };
   misc = import ./misc;
   modules = import ./modules;
   programs = import ./programs {
@@ -19,10 +20,17 @@ let
   services = import ./services {
     inherit pkgs;
   };
-
 in
 {
-  imports = hmConfig ++ misc ++ modules ++ programs ++ services;
+  imports =
+    hmConfig
+    ++ misc
+    ++ modules
+    ++ programs
+    ++ services
+    ++ [
+      inputs.agenix.homeManagerModules.default
+    ];
 
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "claude-code" ];
 
