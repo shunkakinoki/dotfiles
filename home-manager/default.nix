@@ -22,7 +22,9 @@ let
   };
 in
 {
-  imports = hmConfig ++ misc ++ modules ++ programs ++ services;
+  imports = hmConfig ++ misc ++ modules ++ programs ++ services ++ [
+    inputs.agenix.homeManagerModules.default
+  ];
 
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "claude-code" ];
 
