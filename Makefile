@@ -34,14 +34,6 @@ NIX_SYSTEM := $(shell if [ "$(OS)" = "Darwin" ] && [ "$(ARCH)" = "arm64" ]; then
 	else \
 		echo "unsupported"; \
 	fi)
-
-# Machine detection for automatic host mapping
-DETECTED_HOST := $(shell \
-	if [ "$(OS)" = "Darwin" ] && [ "$(shell whoami)" = "shunkakinoki" ] && [ "$(ARCH)" = "arm64" ]; then \
-		echo "galactica"; \
-	else \
-		echo ""; \
-	fi)
 NIX_CONFIG_TYPE := $(shell \
 	if [ "$(OS)" = "Darwin" ]; then \
 		echo "darwinConfigurations"; \
@@ -68,6 +60,19 @@ NIX_USERNAME := $(shell \
 	fi)
 NIX_ENV := $(shell . ~/.nix-profile/etc/profile.d/nix.sh 2>/dev/null || echo "not_found")
 NIX_FLAGS := --extra-experimental-features 'flakes nix-command'
+
+# Machine detection for automatic host mapping
+DETECTED_HOST := $(shell \
+	if [ "$(OS)" = "Darwin" ] && [ "$(shell whoami)" = "shunkakinoki" ] && [ "$(ARCH)" = "arm64" ]; then \
+		computer_name=$$(scutil --get ComputerName 2>/dev/null || echo ""); \
+		if echo "$$computer_name" | grep -q "Shun's MacBook M4"; then \
+			echo "galactica"; \
+		else \
+			echo ""; \
+		fi; \
+	else \
+		echo ""; \
+	fi)
 
 # User's home directory
 HOME_DIR := $(shell echo $$HOME)
