@@ -39,73 +39,77 @@
 
       imports = [ treefmt-nix.flakeModule ];
 
-      flake = {
-        darwinConfigurations = {
-          aarch64-darwin = import ./hosts/darwin {
-            inherit inputs;
-            username = "shunkakinoki";
+      flake =
+        let
+          mkDarwin = args: (import ./hosts/darwin ({ inherit inputs; } // args)).let (darwin-modules:
+            inputs.nix-darwin.lib.darwinSystem {
+              system = "aarch64-darwin";
+              inherit (darwin-modules) specialArgs modules;
+            });
+        in
+        {
+          darwinConfigurations = {
+            aarch64-darwin = mkDarwin { username = "shunkakinoki"; };
+            runner = mkDarwin {
+              isRunner = true;
+              username = "runner";
+            };
+            galactica = import ./named-hosts/galactica {
+              inherit inputs;
+              username = "shunkakinoki";
+            };
           };
-          runner = import ./hosts/darwin {
-            inherit inputs;
-            isRunner = true;
-            username = "runner";
+          nixosConfigurations = {
+            x86_64-linux = import ./hosts/nixos {
+              inherit inputs;
+              username = "shunkakinoki";
+            };
+            runner = import ./hosts/nixos {
+              inherit inputs;
+              isRunner = true;
+              username = "runner";
+            };
           };
-          galactica = import ./named-hosts/galactica {
-            inherit inputs;
-            username = "shunkakinoki";
+          homeConfigurations = {
+            "ubuntu@x86_64-linux" = import ./hosts/linux {
+              inherit inputs;
+              username = "ubuntu";
+              system = "x86_64-linux";
+              pkgs = inputs.nixpkgs.legacyPackages."x86_64-linux";
+              lib = inputs.nixpkgs.legacyPackages."x86_64-linux".lib;
+            };
+            "root@x86_64-linux" = import ./hosts/linux {
+              inherit inputs;
+              username = "root";
+              system = "x86_64-linux";
+              pkgs = inputs.nixpkgs.legacyPackages."x86_64-linux";
+              lib = inputs.nixpkgs.legacyPackages."x86_64-linux".lib;
+            };
+            "root@aarch64-linux" = import ./hosts/linux {
+              inherit inputs;
+              username = "root";
+              system = "aarch64-linux";
+              pkgs = inputs.nixpkgs.legacyPackages."aarch64-linux";
+              lib = inputs.nixpkgs.legacyPackages."aarch64-linux".lib;
+            };
+            "runner@x86_64-linux" = import ./hosts/linux {
+              inherit inputs;
+              isRunner = true;
+              username = "runner";
+              system = "x86_64-linux";
+              pkgs = inputs.nixpkgs.legacyPackages."x86_64-linux";
+              lib = inputs.nixpkgs.legacyPackages."x86_64-linux".lib;
+            };
+            "runner@aarch64-linux" = import ./hosts/linux {
+              inherit inputs;
+              isRunner = true;
+              username = "runner";
+              system = "aarch64-linux";
+              pkgs = inputs.nixpkgs.legacyPackages."aarch64-linux";
+              lib = inputs.nixpkgs.legacyPackages."aarch64-linux".lib;
+            };
           };
         };
-        nixosConfigurations = {
-          x86_64-linux = import ./hosts/nixos {
-            inherit inputs;
-            username = "shunkakinoki";
-          };
-          runner = import ./hosts/nixos {
-            inherit inputs;
-            isRunner = true;
-            username = "runner";
-          };
-        };
-        homeConfigurations = {
-          "ubuntu@x86_64-linux" = import ./hosts/linux {
-            inherit inputs;
-            username = "ubuntu";
-            system = "x86_64-linux";
-            pkgs = inputs.nixpkgs.legacyPackages."x86_64-linux";
-            lib = inputs.nixpkgs.legacyPackages."x86_64-linux".lib;
-          };
-          "root@x86_64-linux" = import ./hosts/linux {
-            inherit inputs;
-            username = "root";
-            system = "x86_64-linux";
-            pkgs = inputs.nixpkgs.legacyPackages."x86_64-linux";
-            lib = inputs.nixpkgs.legacyPackages."x86_64-linux".lib;
-          };
-          "root@aarch64-linux" = import ./hosts/linux {
-            inherit inputs;
-            username = "root";
-            system = "aarch64-linux";
-            pkgs = inputs.nixpkgs.legacyPackages."aarch64-linux";
-            lib = inputs.nixpkgs.legacyPackages."aarch64-linux".lib;
-          };
-          "runner@x86_64-linux" = import ./hosts/linux {
-            inherit inputs;
-            isRunner = true;
-            username = "runner";
-            system = "x86_64-linux";
-            pkgs = inputs.nixpkgs.legacyPackages."x86_64-linux";
-            lib = inputs.nixpkgs.legacyPackages."x86_64-linux".lib;
-          };
-          "runner@aarch64-linux" = import ./hosts/linux {
-            inherit inputs;
-            isRunner = true;
-            username = "runner";
-            system = "aarch64-linux";
-            pkgs = inputs.nixpkgs.legacyPackages."aarch64-linux";
-            lib = inputs.nixpkgs.legacyPackages."aarch64-linux".lib;
-          };
-        };
-      };
 
       perSystem =
         { ... }:
