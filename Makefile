@@ -61,6 +61,19 @@ NIX_USERNAME := $(shell \
 NIX_ENV := $(shell . ~/.nix-profile/etc/profile.d/nix.sh 2>/dev/null || echo "not_found")
 NIX_FLAGS := --extra-experimental-features 'flakes nix-command'
 
+# Machine detection for automatic host mapping
+DETECTED_HOST := $(shell \
+	if [ "$(OS)" = "Darwin" ] && [ "$(shell whoami)" = "shunkakinoki" ] && [ "$(ARCH)" = "arm64" ]; then \
+		computer_name=$$(scutil --get ComputerName 2>/dev/null || echo ""); \
+		if echo "$$computer_name" | grep -q "Shun's MacBook M4"; then \
+			echo "galactica"; \
+		else \
+			echo ""; \
+		fi; \
+	else \
+		echo ""; \
+	fi)
+
 # User's home directory
 HOME_DIR := $(shell echo $$HOME)
 CONFIG_DIR := $(HOME_DIR)/.config
@@ -265,6 +278,9 @@ nix-switch:
 			if [ -n "$(HOST)" ]; then \
 				echo "Switching named host: $(HOST)"; \
 				sudo $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(HOST) --impure; \
+			elif [ -n "$(DETECTED_HOST)" ]; then \
+				echo "Auto-detected host: $(DETECTED_HOST)"; \
+				sudo $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(DETECTED_HOST) --impure; \
 			else \
 				sudo $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM) --impure; \
 			fi; \
