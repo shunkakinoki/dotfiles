@@ -1,6 +1,11 @@
-{ pkgs }:
+{
+  pkgs,
+  inputs,
+  system,
+}:
 with pkgs;
 [
+  inputs.agenix.packages.${system}.default
   aider-chat
   argocd
   claude-code
