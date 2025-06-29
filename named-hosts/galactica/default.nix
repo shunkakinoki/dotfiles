@@ -13,51 +13,53 @@ inputs.nix-darwin.lib.darwinSystem {
     {
       age.identityPaths = [ "/Users/${username}/.ssh/id_ed25519" ];
       age.secrets = builtins.mapAttrs (name: value: { file = value.file; }) (import ./secrets.nix);
-      home-manager.users.${username} = { pkgs, config, ... }: {
-        programs.ssh = {
-          enable = true;
-          matchBlocks = {
-            "*" = {
-              identityFile = inputs.nixpkgs.lib.mkForce "/run/agenix/keys/id_ed25519.age";
-              extraOptions = {
-                AddKeysToAgent = "yes";
-                UseKeychain = "yes";
+      home-manager.users.${username} =
+        { pkgs, config, ... }:
+        {
+          programs.ssh = {
+            enable = true;
+            matchBlocks = {
+              "*" = {
+                identityFile = inputs.nixpkgs.lib.mkForce "/run/agenix/keys/id_ed25519.age";
+                extraOptions = {
+                  AddKeysToAgent = "yes";
+                  UseKeychain = "yes";
+                };
               };
             };
           };
-        };
-        programs.gpg = {
-          enable = true;
-          settings = {
-            default-key = "shunkakinoki@gmail.com";
+          programs.gpg = {
+            enable = true;
+            settings = {
+              default-key = "shunkakinoki@gmail.com";
+            };
+          };
+
+          programs.git = {
+            signing = {
+              signByDefault = true;
+              key = "shunkakinoki@gmail.com";
+            };
+            extraConfig = {
+              commit.gpgSign = true;
+              tag.gpgSign = true;
+            };
+          };
+
+          # GPG agent configuration with pinentry
+          services.gpg-agent = {
+            enable = true;
+            enableSshSupport = false;
+            pinentry.package = pkgs.pinentry_mac;
+            defaultCacheTtl = 1800;
+            maxCacheTtl = 7200;
+          };
+
+          # Environment variables for GPG
+          home.sessionVariables = {
+            GPG_TTY = "$(tty)";
           };
         };
-        
-        programs.git = {
-          signing = {
-            signByDefault = true;
-            key = "shunkakinoki@gmail.com";
-          };
-          extraConfig = {
-            commit.gpgSign = true;
-            tag.gpgSign = true;
-          };
-        };
-        
-        # GPG agent configuration with pinentry
-        services.gpg-agent = {
-          enable = true;
-          enableSshSupport = false;
-          pinentry.package = pkgs.pinentry_mac;
-          defaultCacheTtl = 1800;
-          maxCacheTtl = 7200;
-        };
-        
-        # Environment variables for GPG
-        home.sessionVariables = {
-          GPG_TTY = "$(tty)";
-        };
-      };
     }
   ];
 }
