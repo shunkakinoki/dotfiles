@@ -25,7 +25,8 @@
     '';
     shellAbbrs = {
       c = "clear";
-      cs = "claude squad";
+      cc = "claude";
+      cs = "claude-squad";
       e = "nvim";
       g = "git";
       ga = "git add";
