@@ -41,7 +41,8 @@
 
       flake =
         let
-          mkDarwin = args:
+          mkDarwin =
+            args:
             let
               darwin-modules = import ./hosts/darwin ({ inherit inputs; } // args);
             in
