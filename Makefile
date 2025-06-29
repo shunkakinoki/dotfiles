@@ -34,6 +34,14 @@ NIX_SYSTEM := $(shell if [ "$(OS)" = "Darwin" ] && [ "$(ARCH)" = "arm64" ]; then
 	else \
 		echo "unsupported"; \
 	fi)
+
+# Machine detection for automatic host mapping
+DETECTED_HOST := $(shell \
+	if [ "$(OS)" = "Darwin" ] && [ "$(shell whoami)" = "shunkakinoki" ] && [ "$(ARCH)" = "arm64" ]; then \
+		echo "galactica"; \
+	else \
+		echo ""; \
+	fi)
 NIX_CONFIG_TYPE := $(shell \
 	if [ "$(OS)" = "Darwin" ]; then \
 		echo "darwinConfigurations"; \
@@ -80,7 +88,7 @@ help:
 	@echo "Available targets:"
 	@echo "  install      - Set up full environment"
 	@echo "  build        - Build Nix configuration"
-	@echo "  switch       - Apply Nix configuration"
+	@echo "  switch       - Apply Nix configuration (auto-detects galactica for shunkakinoki@macOS)"
 	@echo "  update       - Update Nix flake and configurations"
 	@echo "  format       - Format Nix files"
 	@echo "  format-check - Check Nix formatting"
@@ -265,6 +273,9 @@ nix-switch:
 			if [ -n "$(HOST)" ]; then \
 				echo "Switching named host: $(HOST)"; \
 				sudo $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(HOST) --impure; \
+			elif [ -n "$(DETECTED_HOST)" ]; then \
+				echo "Auto-detected host: $(DETECTED_HOST)"; \
+				sudo $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(DETECTED_HOST) --impure; \
 			else \
 				sudo $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM) --impure; \
 			fi; \
