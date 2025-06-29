@@ -41,11 +41,14 @@
 
       flake =
         let
-          mkDarwin = args: (import ./hosts/darwin ({ inherit inputs; } // args)).let (darwin-modules:
+          mkDarwin = args:
+            let
+              darwin-modules = import ./hosts/darwin ({ inherit inputs; } // args);
+            in
             inputs.nix-darwin.lib.darwinSystem {
               system = "aarch64-darwin";
               inherit (darwin-modules) specialArgs modules;
-            });
+            };
         in
         {
           darwinConfigurations = {
