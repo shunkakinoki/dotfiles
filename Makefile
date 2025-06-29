@@ -88,7 +88,7 @@ help:
 	@echo "Available targets:"
 	@echo "  install      - Set up full environment"
 	@echo "  build        - Build Nix configuration"
-	@echo "  switch       - Apply Nix configuration (auto-detects galactica for shunkakinoki@macOS)"
+	@echo "  switch       - Apply Nix configuration"
 	@echo "  update       - Update Nix flake and configurations"
 	@echo "  format       - Format Nix files"
 	@echo "  format-check - Check Nix formatting"
