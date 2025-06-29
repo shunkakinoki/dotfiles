@@ -9,13 +9,15 @@ ENV DEBIAN_FRONTEND=noninteractive
 # sudo is needed if the script uses it internally without installing it.
 # git is likely used by your dotfiles script.
 RUN apt-get update && apt-get install -y \
-    curl \
-    git \
-    sudo \
+    build-essential \
+    bzip2 \
     ca-certificates \
-    xz-utils \
-    make \
+    curl \
     daemon \
+    git \
+    make \
+    nix-setup-systemd \
+    sudo \
     # Add any other system-level dependencies your script needs here
     && rm -rf /var/lib/apt/lists/*
 
@@ -29,17 +31,28 @@ ARG COMMIT_SHA=main
 RUN set -e; \
     groupadd --gid $USER_GID $USER; \
     useradd --uid $USER_UID --gid $USER_GID --shell /bin/bash --create-home $USER; \
+    usermod -aG nix-users $USER; \
     id $USER
 RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER \
     && chmod 0440 /etc/sudoers.d/$USER
 
-# Prepare Nix trusted users configuration
-RUN mkdir -p /etc/nix && \
-    echo "trusted-users = root $USER" > /etc/nix/nix.conf && \
-    echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
-
 ENV NIX_BUILD_GROUP_ID=1001
 ENV IN_DOCKER=true
+
+# We must start the daemon and run the installation in the same RUN command
+# so that the daemon is available for the Nix commands in the script.
+RUN mkdir -p /etc/nix && \
+    echo "trusted-users = root $USER" > /etc/nix/nix.conf && \
+    echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf && \
+    echo "filter-syscalls = false" >> /etc/nix/nix.conf && \
+    echo "sandbox = false" >> /etc/nix/nix.conf
+
+RUN /usr/bin/nix-daemon & \
+    sleep 5 && \
+    # Run your dotfiles installation script.
+    # This script is expected to install fish and other tools.
+    # Make sure this script is idempotent or handles being run in a fresh environment.
+    sudo -u $USER -E -H bash -c "curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_SHA/install.sh | bash"
 
 # Switch to the non-root user
 USER $USER
@@ -48,7 +61,7 @@ WORKDIR /home/$USER
 # Run your dotfiles installation script
 # This script is expected to install fish and other tools.
 # Make sure this script is idempotent or handles being run in a fresh environment.
-RUN curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_SHA/install.sh | /bin/bash
+# RUN curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_SHA/install.sh | /bin/bash
 
 # Your install.sh script should ideally set up fish as the default shell if desired.
 # If it doesn't, you might need to add a line here like:
