@@ -26,43 +26,36 @@ inputs.nix-darwin.lib.darwinSystem {
             };
           };
         };
-        programs.git = {
-          signing = {
-            signByDefault = true;
-            key = "~/.ssh/id_ed25519";
-          };
-          extraConfig = {
-            commit.gpgSign = true;
-            gpg.format = "ssh";
-            gpg.ssh.allowedSignersFile = "~/.ssh/allowed_signers";
-            user.signingKey = "~/.ssh/id_ed25519";
-          };
-        };
-        home.file.".ssh/allowed_signers" = {
-          text = "shunkakinoki@gmail.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEKze2jlpV7SyTKA2ezqbumpCiDn+5Sj4z5SxrqfzesX shunkakinoki@gmail.com";
-        };
-        
-        # Environment variables for SSH agent
-        home.sessionVariables = {
-          GPG_TTY = "$(tty)";
-        };
-        
-        # Configure pinentry for macOS
         programs.gpg = {
           enable = true;
           settings = {
-            pinentry-program = "${pkgs.pinentry_mac}/bin/pinentry-mac";
+            default-key = "shunkakinoki@gmail.com";
           };
         };
         
-        # SSH configuration for macOS keychain integration
-        home.file.".ssh/config" = {
-          text = ''
-            Host *
-              AddKeysToAgent yes
-              UseKeychain yes
-              IdentitiesOnly yes
-          '';
+        programs.git = {
+          signing = {
+            signByDefault = true;
+            key = "shunkakinoki@gmail.com";
+          };
+          extraConfig = {
+            commit.gpgSign = true;
+            tag.gpgSign = true;
+          };
+        };
+        
+        # GPG agent configuration with pinentry
+        services.gpg-agent = {
+          enable = true;
+          enableSshSupport = false;
+          pinentry.package = pkgs.pinentry_mac;
+          defaultCacheTtl = 1800;
+          maxCacheTtl = 7200;
+        };
+        
+        # Environment variables for GPG
+        home.sessionVariables = {
+          GPG_TTY = "$(tty)";
         };
       };
     }

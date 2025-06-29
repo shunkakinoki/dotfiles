@@ -4,6 +4,13 @@ This document outlines how to manage the Nix configuration and secrets for the `
 
 ---
 
+### GPG Configuration
+
+1.  Generate or import your GPG key for `shunkakinoki@gmail.com`.
+2.  Run `make switch-galactica` to apply the configuration.
+
+---
+
 ### Building and Activating
 
 To build the complete system configuration for this host and activate it, run the following command:
