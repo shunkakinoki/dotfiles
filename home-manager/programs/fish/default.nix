@@ -25,16 +25,17 @@
     '';
     shellAbbrs = {
       c = "clear";
-      cs = "claude squad";
+      cc = "claude";
+      cs = "claude-squad";
       e = "nvim";
       g = "git";
       ga = "git add";
       gaa = "git add -A";
-      gco = "_gco_function";
       lg = "lazygit";
       ta = "tmux new -A -s default";
       v = "nvim";
 
+      gco = "_gco_function";
       fch = "_fzf_cmd_history --allow-execute";
       fdp = "_fzf_directory_picker --allow-cd --prompt-name Projects ~/";
       ffp = "_fzf_file_picker --allow-open-in-editor --prompt-name Files";
