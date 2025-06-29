@@ -11,24 +11,23 @@ inputs.nix-darwin.lib.darwinSystem {
     inputs.agenix.nixosModules.default
 
     {
-      age.secrets = import ./secrets.nix;
-      age.secrets."id_ed25519" = {
-        file = ./keys/id_ed25519.age;
-        owner = username;
+      age.secrets = (import ./secrets.nix) // {
+        "id_ed25519" = {
+          file = ./keys/id_ed25519.age;
+          owner = username;
+        };
       };
 
-      home-manager.users.${username} =
-        { pkgs, ... }:
-        {
-          programs.ssh = {
-            enable = true;
-            identities = {
-              "id_ed25519" = {
-                keyFile = config.age.secrets."id_ed25519".path;
-              };
+      home-manager.users.${username} = { pkgs, config, ... }: {
+        programs.ssh = {
+          enable = true;
+          identities = {
+            "id_ed25519" = {
+              keyFile = config.age.secrets."id_ed25519".path;
             };
           };
         };
+      };
     }
   ];
 }
