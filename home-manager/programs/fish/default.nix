@@ -35,11 +35,11 @@
       ta = "tmux new -A -s default";
       v = "nvim";
 
-      fpc = "_fzf_cmd_history --allow-execute";
-      fpf = "_fzf_file_picker --allow-open-in-editor --prompt-name Files";
-      fpfh = "_fzf_file_picker --allow-open-in-editor --show-hidden-files --prompt-name Files+";
-      fpp = "_fzf_directory_picker --allow-cd --prompt-name Projects ~/";
-      fpr = "_fzf_ghq_picker";
+      fch = "_fzf_cmd_history --allow-execute";
+      fdp = "_fzf_directory_picker --allow-cd --prompt-name Projects ~/";
+      ffp = "_fzf_file_picker --allow-open-in-editor --prompt-name Files";
+      ffpf = "_fzf_file_picker --allow-open-in-editor --show-hidden-files --prompt-name Files+";
+      fhq = "_fzf_ghq_picker";
     };
     plugins = [
       {
