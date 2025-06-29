@@ -1,4 +1,3 @@
-# yamlfmt-disable-file
 name: Docker
 on:
   push:
