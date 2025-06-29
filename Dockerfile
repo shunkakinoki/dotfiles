@@ -43,7 +43,9 @@ ENV IN_DOCKER=true
 # so that the daemon is available for the Nix commands in the script.
 RUN mkdir -p /etc/nix && \
     echo "trusted-users = root $USER" > /etc/nix/nix.conf && \
-    echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
+    echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf && \
+    echo "filter-syscalls = false" >> /etc/nix/nix.conf && \
+    echo "sandbox = false" >> /etc/nix/nix.conf
 
 RUN /usr/bin/nix-daemon & \
     sleep 5 && \
