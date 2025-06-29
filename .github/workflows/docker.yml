@@ -18,9 +18,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform:
-          - linux/amd64
-          - linux/arm64
+        platform: >-
+          ${{
+            github.ref == 'refs/heads/main' && github.event_name == 'push'
+            && fromJSON('["linux/amd64", "linux/arm64"]')
+            || fromJSON('["linux/amd64"]')
+          }}
     runs-on: ubuntu-latest
     timeout-minutes: 300
     steps:
