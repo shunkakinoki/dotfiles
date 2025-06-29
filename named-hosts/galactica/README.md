@@ -34,12 +34,18 @@ To encrypt a new secret (like an SSH key) for this host, use the `encrypt-key-ga
 ```bash
 # Example: Encrypting your primary SSH key
 make encrypt-key-galactica KEY_FILE=~/.ssh/id_ed25519
+
+# Example: Encrypting your GPG private key
+gpg --export-secret-keys --armor shunkakinoki@gmail.com > /tmp/gpg
+make encrypt-key-galactica KEY_FILE=/tmp/gpg
 ```
 
 This command will:
-1. Read the contents of `~/.ssh/id_ed25519`.
-2. Encrypt it for the public keys defined in `secrets.nix`.
-3. Save the result to `named-hosts/galactica/keys/id_ed25519.age`.
+1. Read the contents of the specified key file.
+2. Encrypt it for the SSH public keys defined in `secrets.nix`.
+3. Save the result to `named-hosts/galactica/keys/<filename>.age`.
+
+**Note**: The `publicKeys` in `secrets.nix` are SSH public keys, not GPG public keys. Agenix uses SSH keys for age encryption/decryption - your SSH private key decrypts the age-encrypted file containing your GPG private key.
 
 #### Verifying a Secret
 
