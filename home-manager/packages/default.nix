@@ -19,6 +19,8 @@ with pkgs;
   go
   grc
   jq
+  k9s
+  kind
   kubectl
   kubectx
   kustomize
