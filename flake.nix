@@ -123,6 +123,7 @@
             programs = {
               actionlint.enable = true;
               biome.enable = true;
+              jsonfmt.enable = true;
               nixfmt.enable = true;
               shfmt.enable = true;
               stylua.enable = true;
