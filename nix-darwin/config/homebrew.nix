@@ -47,6 +47,7 @@
       "hammerspoon"
       "karabiner-elements"
       "linear-linear"
+      "ollama-app"
       "notion"
       "raycast"
       "rescuetime"
