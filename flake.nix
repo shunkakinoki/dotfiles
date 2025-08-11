@@ -127,7 +127,7 @@
               shfmt.enable = true;
               stylua.enable = true;
               taplo.enable = true;
-              jq.enable = true;
+              # jsonfmt disabled - using custom jq formatter in treefmt.toml
               yamlfmt.enable = true;
             };
           };
