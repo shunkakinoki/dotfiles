@@ -1,4 +1,24 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(cp:*)",
+      "Bash(git add:*)",
+      "Bash(git checkout:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git worktree:*)",
+      "Bash(gh pr checkout:*)",
+      "Bash(gh pr create:*)",
+      "Bash(grep:*)",
+      "Bash(make:*)",
+      "Bash(mkdir:*)",
+      "Bash(osascript:*)",
+      "Bash(scutil:*)",
+      "WebFetch(domain:docs.anthropic.com)"
+    ],
+    "deny": []
+  },
   "statusLine": {
     "type": "command",
     "command": "node -e \"const fs=require('fs'),path=require('path'),rl=require('readline');let i='';process.stdin.on('data',c=>i+=c);process.stdin.on('end',async()=>{try{const d=JSON.parse(i);const m=d.model?.display_name||'claude-sonnet-4';const dir=d.workspace?.current_dir?.replace(process.env.HOME,'~')||path.basename(process.cwd());const sid=d.session_id;let t=0;if(sid){const pdir=path.join(process.env.HOME,'.claude','projects');if(fs.existsSync(pdir)){for(const pd of fs.readdirSync(pdir).map(d=>path.join(pdir,d)).filter(d=>fs.statSync(d).isDirectory())){const tf=path.join(pd,sid+'.jsonl');if(fs.existsSync(tf)){const rs=fs.createReadStream(tf);const r=rl.createInterface({input:rs});let lu=null;r.on('line',l=>{try{const e=JSON.parse(l);if(e.type==='assistant'&&e.message?.usage)lu=e.message.usage}catch{}});await new Promise(res=>{r.on('close',()=>{if(lu)t=(lu.input_tokens||0)+(lu.output_tokens||0)+(lu.cache_creation_input_tokens||0)+(lu.cache_read_input_tokens||0);res()})});break}}}}const getContextLimit=m=>{if(m.includes('sonnet-4'))return 500000;if(m.includes('3-5-sonnet')||m.includes('sonnet-3.5'))return 200000;if(m.includes('haiku'))return 200000;if(m.includes('opus'))return 200000;return 200000};const cl=getContextLimit(m);const p=Math.min(100,Math.round(t/cl*100));const td=t>=1000000?(t/1000000).toFixed(1)+'M':t>=1000?(t/1000).toFixed(1)+'K':t.toString();const ld=cl>=1000000?(cl/1000000).toFixed(0)+'M':cl>=1000?(cl/1000).toFixed(0)+'K':cl.toString();const c=p>=90?'\\x1b[31m':p>=70?'\\x1b[33m':'\\x1b[32m';console.log('\\x1b[34m'+process.env.USER+'@'+require('os').hostname().split('.')[0]+'\\x1b[0m:\\x1b[34m'+dir+'\\x1b[0m ['+m+'] 🪙 '+td+'/'+ld+' '+c+p+'%\\x1b[0m '+new Date().toLocaleTimeString('en-US',{hour12:false}))}catch{console.log('\\x1b[34m'+process.env.USER+'@'+require('os').hostname().split('.')[0]+'\\x1b[0m:\\x1b[34m'+(process.cwd().replace(process.env.HOME,'~'))+'\\x1b[0m [claude-sonnet-4] 🪙 0 \\x1b[31m❌\\x1b[0m '+new Date().toLocaleTimeString('en-US',{hour12:false}))}});\""
