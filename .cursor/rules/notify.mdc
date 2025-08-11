@@ -1,4 +1,15 @@
 ---
 alwaysApply: true
 ---
-At the end of any task run the command `osascript -e display notification "{message}" with title "{title}"`. Fill in message and title based on the task you just completed
+At the end of any task run the command `osascript -e display notification "{message}" with title "{title}"`.
+
+Include workspace context in the notification:
+- Title: `{title} — {repo}:{branch}`
+- Message: `{message}\nPath: {workspacePath}`
+
+Where:
+- `{repo}` is the git repository name (fallback: basename of `{workspacePath}`)
+- `{branch}` is the current git branch (fallback: `no-vcs`)
+- `{workspacePath}` is the absolute path to the workspace
+
+If a PR is created as part of the task, append `PR: {prUrl}` to the message when available.
