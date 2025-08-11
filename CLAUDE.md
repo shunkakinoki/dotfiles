@@ -7,11 +7,13 @@ This is a comprehensive Nix-based dotfiles repository that manages system config
 ## Architecture
 
 ### Core Structure
+
 - **Nix Flakes**: Modern Nix configuration using `flake.nix` as the entry point
 - **Multi-Platform Support**: Supports macOS (nix-darwin), NixOS, and Linux (home-manager)
 - **Modular Configuration**: Organized into logical modules for different system components
 
 ### Key Directories
+
 - `home-manager/`: User-level configurations (programs, services, dotfiles)
 - `nix-darwin/`: macOS-specific system configuration
 - `hosts/`: Platform-specific host configurations
@@ -22,6 +24,7 @@ This is a comprehensive Nix-based dotfiles repository that manages system config
 ## Build System & Commands
 
 ### Primary Commands
+
 ```bash
 # Full installation (recommended for new setups)
 make install
@@ -43,11 +46,13 @@ make format-check
 ```
 
 ### Quick Installation
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/main/install.sh | sh
 ```
 
 ### Development Workflow
+
 1. **Setup**: Run `make install` for initial setup
 2. **Development**: Make changes to Nix files
 3. **Test**: Run `make build` to verify configuration builds
@@ -57,11 +62,13 @@ curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/main/install.
 ## Key Configuration Files
 
 ### System Configuration
+
 - `flake.nix`: Main Nix flake configuration with inputs and outputs
 - `Makefile`: Build system with cross-platform support
 - `install.sh`: Automated installation script
 
 ### Code Quality & Formatting
+
 - `biome.json`: JavaScript/TypeScript/JSON formatting rules
   - 2-space indentation
   - 80-character line width
@@ -70,6 +77,7 @@ curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/main/install.
 - `renovate.json`: Automated dependency management
 
 ### Development Tools
+
 - **Terminal**: Fish shell with extensive customizations
 - **Editor**: Neovim with Lua configuration
 - **Version Control**: Git with enhanced configuration
@@ -79,6 +87,7 @@ curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/main/install.
 ## Platform-Specific Features
 
 ### macOS (nix-darwin)
+
 - **Homebrew Integration**: Managed through Nix configuration
 - **System Preferences**: Dock, fonts, security, networking
 - **Applications**: Both Nix packages and Homebrew casks
@@ -86,6 +95,7 @@ curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/main/install.
 - **Keyboard**: Karabiner Elements for key remapping
 
 ### Linux/NixOS
+
 - **Home Manager**: User environment management
 - **Minimal Dependencies**: Core tools without GUI applications
 - **Container Support**: Docker-friendly configurations
@@ -93,18 +103,21 @@ curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/main/install.
 ## Development Guidelines
 
 ### Code Style
+
 - **Nix Files**: Use nixfmt for formatting (automated via `make format`)
 - **Shell Scripts**: Use shfmt with 2-space indentation
 - **JSON/JS/TS**: Use Biome with project-specific rules
 - **Commit Messages**: Follow semantic commit conventions
 
 ### File Organization
+
 - Keep configurations modular and platform-specific
 - Use `default.nix` files for module exports
 - Organize by function rather than file type
 - Document complex configurations with comments
 
 ### Dependencies
+
 - Prefer Nix packages over external package managers
 - Use Homebrew only for macOS-specific applications
 - Pin important dependencies in flake.lock
@@ -113,12 +126,14 @@ curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/main/install.
 ## Automation & CI/CD
 
 ### GitHub Actions
+
 - **Nix Builds**: Test configurations on macOS, Linux, and NixOS
 - **Formatting**: Enforce code formatting standards
 - **E2E Testing**: Full installation testing across platforms
 - **Dependency Updates**: Automated via Renovate
 
 ### Services
+
 - **Code Syncer**: Automated code synchronization
 - **Dotfiles Updater**: Regular configuration updates
 - **Ollama**: Local AI model management
@@ -126,11 +141,13 @@ curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/main/install.
 ## Troubleshooting
 
 ### Common Issues
+
 - **Dock Items Lost (macOS)**: See FAQ.md for resolution steps
 - **Nix Daemon Issues**: Run `make nix-connect` to restart daemon
 - **Build Failures**: Check system compatibility and dependencies
 
 ### Debug Commands
+
 ```bash
 # Check Nix environment
 make nix-check
@@ -148,6 +165,7 @@ nix build --show-trace
 ## Key Applications & Tools
 
 ### Development
+
 - **Claude Code**: AI-powered development assistant
 - **Cursor**: AI-enhanced code editor
 - **Visual Studio Code**: Primary editor
@@ -155,6 +173,7 @@ nix build --show-trace
 - **Docker Desktop**: Container development
 
 ### Communication & Productivity
+
 - **Claude**: AI assistant application
 - **ChatGPT**: AI chat interface
 - **Discord/Slack**: Team communication
@@ -162,6 +181,7 @@ nix build --show-trace
 - **Linear**: Project management
 
 ### System Utilities
+
 - **Raycast**: Launcher and productivity tool
 - **Hammerspoon**: macOS automation
 - **RescueTime**: Time tracking
@@ -170,6 +190,7 @@ nix build --show-trace
 ## References & Inspiration
 
 This configuration draws inspiration from several notable dotfiles repositories:
+
 - Mitchell Hashimoto's nixos-config
 - Dustin Lyons' nixos-config
 - takeokunn's nix-configuration
@@ -184,4 +205,4 @@ This configuration draws inspiration from several notable dotfiles repositories:
 
 ---
 
-*This configuration is designed to be both powerful and maintainable, with emphasis on reproducibility across different systems and environments.*
+_This configuration is designed to be both powerful and maintainable, with emphasis on reproducibility across different systems and environments._

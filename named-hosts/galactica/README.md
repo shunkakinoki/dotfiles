@@ -41,6 +41,7 @@ make encrypt-key-galactica KEY_FILE=/tmp/gpg
 ```
 
 This command will:
+
 1. Read the contents of the specified key file.
 2. Encrypt it for the SSH public keys defined in `secrets.nix`.
 3. Save the result to `named-hosts/galactica/keys/<filename>.age`.
@@ -55,7 +56,8 @@ To decrypt a file and view its contents for verification, use the `decrypt-key-g
 # Decrypts keys/id_ed25519.age and prints to terminal
 make decrypt-key-galactica KEY_FILE=id_ed25519
 ```
-*Note: You only need to provide the base name of the key file, not the full path or `.age` extension.*
+
+_Note: You only need to provide the base name of the key file, not the full path or `.age` extension._
 
 #### Rekeying Secrets
 
@@ -64,4 +66,5 @@ If you ever change `secrets.nix` to add a new person or machine, you must "rekey
 ```bash
 make rekey-galactica
 ```
+
 This will re-encrypt all secrets in this directory according to the latest rules in `secrets.nix`.

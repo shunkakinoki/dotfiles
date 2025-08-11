@@ -1,60 +1,84 @@
 {
-	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
-	"extends": [
-		"config:recommended",
-		"group:allNonMajor",
-		":automergePatch",
-		":automergeMinor",
-		":enableVulnerabilityAlerts",
-		":gitSignOff",
-		":semanticCommits"
-	],
-	"schedule": ["before 3am"],
-	"timezone": "UTC",
-	"dependencyDashboard": true,
-	"platformAutomerge": true,
-	"prConcurrentLimit": 10,
-	"prHourlyLimit": 3,
-	"lockFileMaintenance": {
-		"enabled": true,
-		"schedule": ["before 3am"],
-		"automerge": true,
-		"platformAutomerge": true
-	},
-	"nix": {
-		"enabled": true
-	},
-	"packageRules": [
-		{
-			"groupName": "Nix Dependencies",
-			"groupSlug": "nix",
-			"matchManagers": ["nix"],
-			"matchDepTypes": ["flake-inputs"],
-			"automerge": true,
-			"platformAutomerge": true,
-			"schedule": ["before 3am"]
-		},
-		{
-			"groupName": "GitHub Actions Dependencies",
-			"groupSlug": "github-actions",
-			"matchManagers": ["github-actions"],
-			"matchUpdateTypes": ["minor", "patch"],
-			"automerge": true,
-			"platformAutomerge": true,
-			"schedule": ["before 3am"]
-		},
-		{
-			"groupName": "All Non-Major Dependencies",
-			"groupSlug": "all-minor-patch",
-			"matchUpdateTypes": ["minor", "patch"],
-			"automerge": true,
-			"platformAutomerge": true,
-			"schedule": ["before 3am"]
-		},
-		{
-			"groupName": "All Major Dependencies",
-			"groupSlug": "all-major",
-			"matchUpdateTypes": ["major"]
-		}
-	]
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "group:allNonMajor",
+    ":automergePatch",
+    ":automergeMinor",
+    ":enableVulnerabilityAlerts",
+    ":gitSignOff",
+    ":semanticCommits"
+  ],
+  "schedule": [
+    "before 3am"
+  ],
+  "timezone": "UTC",
+  "dependencyDashboard": true,
+  "platformAutomerge": true,
+  "prConcurrentLimit": 10,
+  "prHourlyLimit": 3,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": [
+      "before 3am"
+    ],
+    "automerge": true,
+    "platformAutomerge": true
+  },
+  "nix": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "groupName": "Nix Dependencies",
+      "groupSlug": "nix",
+      "matchManagers": [
+        "nix"
+      ],
+      "matchDepTypes": [
+        "flake-inputs"
+      ],
+      "automerge": true,
+      "platformAutomerge": true,
+      "schedule": [
+        "before 3am"
+      ]
+    },
+    {
+      "groupName": "GitHub Actions Dependencies",
+      "groupSlug": "github-actions",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "automerge": true,
+      "platformAutomerge": true,
+      "schedule": [
+        "before 3am"
+      ]
+    },
+    {
+      "groupName": "All Non-Major Dependencies",
+      "groupSlug": "all-minor-patch",
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "automerge": true,
+      "platformAutomerge": true,
+      "schedule": [
+        "before 3am"
+      ]
+    },
+    {
+      "groupName": "All Major Dependencies",
+      "groupSlug": "all-major",
+      "matchUpdateTypes": [
+        "major"
+      ]
+    }
+  ]
 }

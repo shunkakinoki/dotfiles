@@ -127,6 +127,7 @@
               shfmt.enable = true;
               stylua.enable = true;
               taplo.enable = true;
+              jsonfmt.enable = true;
               yamlfmt.enable = true;
             };
           };
