@@ -1,25 +1,4 @@
 {
-  "permissions": {
-    "allow": [
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(make:*)",
-      "Bash(grep:*)",
-      "Bash(gpg:*)",
-      "Bash(git checkout:*)",
-      "Bash(git push:*)",
-      "Bash(gh pr create:*)",
-      "Bash(git worktree:*)",
-      "Bash(gh pr checkout:*)",
-      "Bash(scutil:*)",
-      "WebFetch(domain:docs.anthropic.com)",
-      "Bash(mkdir:*)",
-      "Bash(cp:*)",
-      "Bash(osascript:*)",
-      "Bash(cat:*)"
-    ],
-    "deny": []
-  },
   "hooks": {
     "Notification": [
       {
