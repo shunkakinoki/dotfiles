@@ -8,7 +8,14 @@ options = ["format", "--write"]
 includes = ["*.js", "*.jsx", "*.ts", "*.tsx"]
 
 [formatter.json]
-command = "jsonfmt"
+command = "jq"
+options = [
+  "--sort-keys",
+  "--indent",
+  "2",
+  "--compact-output",
+  "--monochrome-output",
+]
 includes = ["*.json"]
 
 [formatter.shell]

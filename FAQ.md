@@ -1,6 +1,7 @@
 # FAQ
 
 ## Dock items lost on reboot (macOS)
+
 If you experience your Dock items being lost on every reboot, you might be encountering an issue related to `com.apple.dock.plist` becoming read-only or corrupted. This can sometimes be resolved by running the following commands in your terminal:
 
 ```bash
