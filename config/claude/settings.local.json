@@ -38,7 +38,7 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "osascript -e 'display notification \"Work has been completed.\" with title \"Claude Code\" sound name \"Sonar\"'"
+						"command": "cat | jq -r '\"Work completed in \" + .cwd + \" (Session: \" + .session_id[0:8] + \")\"' | xargs -I {} osascript -e 'display notification \"{}\" with title \"Claude Code\" sound name \"Sonar\"'"
 					}
 				]
 			}
