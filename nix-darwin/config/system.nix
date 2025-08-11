@@ -55,7 +55,7 @@
         TrackpadThreeFingerTapGesture = 2;
       };
     };
-    activationScripts.extraActivation.text =
+    activationScripts.extraActivation.text = builtins.toString (
       if !isRunner then
         ''
           softwareupdate --all --install;
@@ -63,6 +63,7 @@
       else
         ''
           echo "Skipping activation scripts for runner";
-        '';
+        ''
+    );
   };
 }
