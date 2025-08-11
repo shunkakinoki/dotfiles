@@ -14,7 +14,9 @@
 			"Bash(scutil:*)",
 			"WebFetch(domain:docs.anthropic.com)",
 			"Bash(mkdir:*)",
-			"Bash(cp:*)"
+			"Bash(cp:*)",
+			"Bash(osascript:*)",
+			"Bash(cat:*)"
 		],
 		"deny": []
 	},
@@ -25,7 +27,7 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "cat | jq -r '\"display notification \\\"\" + .message + \"\\\" with title \\\"\" + .title + \"\\\" sound name \\\"Glass\\\"\"' | xargs -I {} osascript -e '{}'"
+						"command": "cat | jq -r '\"display notification \\\"\" + .message + \"\\\" with title \\\"\" + .title + \"\\\" sound name \\\"Sonar\\\"\"' | xargs -I {} osascript -e '{}'"
 					}
 				]
 			}
@@ -36,7 +38,7 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "osascript -e 'display notification \"Work has been completed.\" with title \"Claude Code\" sound name \"Glass\"'"
+						"command": "osascript -e 'display notification \"Work has been completed.\" with title \"Claude Code\" sound name \"Sonar\"'"
 					}
 				]
 			}
