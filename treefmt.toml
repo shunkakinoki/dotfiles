@@ -5,7 +5,7 @@ includes = ["*.nix"]
 [formatter.biome]
 command = "biome"
 options = ["format", "--write"]
-includes = ["*.js", "*.jsx", "*.ts", "*.tsx"]
+includes = ["*.js", "*.jsx", "*.ts", "*.tsx", "*.json"]
 
 [formatter.shell]
 command = "shfmt"
