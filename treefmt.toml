@@ -6,6 +6,7 @@ includes = ["*.nix"]
 command = "biome"
 options = ["format", "--write"]
 includes = ["*.js", "*.jsx", "*.ts", "*.tsx"]
+excludes = ["*.json"]
 
 [formatter.json]
 command = "jsonfmt"
