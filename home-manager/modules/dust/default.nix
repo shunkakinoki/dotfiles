@@ -20,6 +20,6 @@ with lib;
 
   config = mkIf cfg.enable {
     home.packages = [ cfg.package ];
-    xdg.configFile."dust/config.toml".text = cfg.config;
+    xdg.configFile."dust/config.toml".text = builtins.toString cfg.config;
   };
 }

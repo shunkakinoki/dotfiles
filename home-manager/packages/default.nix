@@ -26,7 +26,6 @@ with pkgs;
   kustomize
   neofetch
   pulumi-bin
-  ollama
   rustup
   stern
   uv
