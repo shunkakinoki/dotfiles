@@ -9,13 +9,7 @@ includes = ["*.js", "*.jsx", "*.ts", "*.tsx"]
 
 [formatter.json]
 command = "jq"
-options = [
-  "--sort-keys",
-  "--indent",
-  "2",
-  "--compact-output",
-  "--monochrome-output",
-]
+options = ["--sort-keys", "--indent", "2"]
 includes = ["*.json"]
 
 [formatter.shell]
