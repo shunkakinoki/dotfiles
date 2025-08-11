@@ -244,13 +244,19 @@ nix-flake-update: nix-connect
 	@echo "✅ flake.lock updated!"
 
 .PHONY: nix-format
-nix-format:
+nix-format: nix-format-clear-cache
 	@echo "🧹 Formatting Nix files..."
-	@$(NIX_EXEC) fmt
+	@$(NIX_EXEC) fmt -- --clear-cache
 	@echo "✅ Formatting complete"
 
+.PHONY: nix-format-clear-cache
+nix-format-clear-cache:
+	@echo "🧹 Clearing Nix cache..."
+	@$(NIX_EXEC) fmt -- --clear-cache
+	@echo "✅ Cache cleared"
+
 .PHONY: nix-format-check
-nix-format-check:
+nix-format-check: nix-format-clear-cache
 	@echo "🔍 Checking Nix file formatting..."
 	@$(NIX_EXEC) fmt -- --fail-on-change
 	@echo "✅ All Nix files are properly formatted"
