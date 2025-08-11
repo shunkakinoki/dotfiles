@@ -5,11 +5,10 @@ includes = ["*.nix"]
 [formatter.biome]
 command = "biome"
 options = ["format", "--write"]
-includes = ["*.js", "*.jsx", "*.ts", "*.tsx", ".json"]
+includes = ["*.js", "*.jsx", "*.ts", "*.tsx"]
 
 [formatter.json]
-command = "jq"
-options = ["--sort-keys", "--indent", "2"]
+command = "jsonfmt"
 includes = ["*.json"]
 
 [formatter.shell]
