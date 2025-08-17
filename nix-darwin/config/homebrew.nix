@@ -14,6 +14,7 @@
     ];
     brews = [
       "claude-squad"
+      "cmake"
       "ffmpeg"
       "gnupg"
       "helm"
