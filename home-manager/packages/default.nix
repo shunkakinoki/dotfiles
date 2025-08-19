@@ -26,6 +26,7 @@ with pkgs;
   kustomize
   neofetch
   pulumi-bin
+  ripgrep
   rustup
   stern
   uv
