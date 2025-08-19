@@ -13,6 +13,7 @@
       "kurtosis-tech/tap"
     ];
     brews = [
+      "bun"
       "claude-squad"
       "cmake"
       "ffmpeg"
