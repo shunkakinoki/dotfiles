@@ -50,11 +50,11 @@
   "files": {
     "includes": [
       "**",
-      "!**/node_modules/**",
-      "!**/dist/**",
-      "!**/build/**",
-      "!**/.git/**",
-      "!**/result/**"
+      "!**/node_modules",
+      "!**/dist",
+      "!**/build",
+      "!**/.git",
+      "!**/result"
     ]
   }
 }
