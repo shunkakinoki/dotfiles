@@ -11,8 +11,10 @@
     taps = [
       "homebrew/cask"
       "kurtosis-tech/tap"
+      "oven-sh/bun"
     ];
     brews = [
+      "bun"
       "claude-squad"
       "cmake"
       "ffmpeg"

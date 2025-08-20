@@ -16,3 +16,10 @@ cursor-style-blink = true
 mouse-hide-while-typing = true
 clipboard-read = "allow"
 clipboard-paste-protection = false
+
+key-bindings = [
+  { key = "left",  mods = "cmd|opt", action = "previous_tab" },
+  { key = "right", mods = "cmd|opt", action = "next_tab" },
+  { key = "up",    mods = "cmd|opt", action = "move_tab_left" },
+  { key = "down",  mods = "cmd|opt", action = "move_tab_right" },
+]
