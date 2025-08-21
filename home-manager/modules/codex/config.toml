@@ -1,7 +1,6 @@
 notify = [
-    "bash",
-    "-lc",
-    "JSON=\"$1\"; LAST_MESSAGE=$(echo \"$JSON\" | jq -r '.\"last-assistant-message\" // \"Codex task completed\"'); osascript -e \"display notification \\\"$LAST_MESSAGE\\\" with title \\\"Codex\\\"\"",
-    "notify",
+  "bash",
+  "-lc",
+  "JSON=\"$1\"; LAST_MESSAGE=$(echo \"$JSON\" | jq -r '.\"last-assistant-message\" // \"Codex task completed\"'); osascript -e \"display notification \\\"$LAST_MESSAGE\\\" with title \\\"Codex\\\"\"",
+  "notify",
 ]
-
