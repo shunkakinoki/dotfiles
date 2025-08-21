@@ -1,4 +1,5 @@
 [
+  ./codex
   ./dust
   ./ghostty
 ]
