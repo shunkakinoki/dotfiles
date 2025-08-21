@@ -19,5 +19,7 @@ clipboard-paste-protection = false
 
 keybind = super+alt+left=previous_tab
 keybind = super+alt+right=next_tab
-keybind = super+alt+up=move_tab:-1
-keybind = super+alt+down=move_tab:1
+keybind = super+shift+left=move_tab:-1
+keybind = super+shift+up=move_tab:-1
+keybind = super+shift+right=move_tab:1
+keybind = super+shift+down=move_tab:1
