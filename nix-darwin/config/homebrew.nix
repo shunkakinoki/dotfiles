@@ -59,6 +59,7 @@
       "slack"
       "visual-studio-code"
       "windsurf"
+      "zed"
       "zoom"
     ];
     masApps = {
