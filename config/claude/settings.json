@@ -39,7 +39,8 @@
       "Bash(osascript:*)",
       "Bash(scutil:*)",
       "Bash(timeout:*)",
-      "WebFetch(domain:docs.anthropic.com)"
+      "WebFetch(domain:docs.anthropic.com)",
+      "mcp__serena"
     ],
     "deny": [
       "Bash(sudo:*)"
