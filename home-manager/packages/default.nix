@@ -12,6 +12,7 @@ with pkgs;
   codex
   direnv
   dust
+  fastfetch
   fswatch
   gemini-cli
   gh
@@ -24,7 +25,6 @@ with pkgs;
   kubectl
   kubectx
   kustomize
-  fastfetch
   pulumi-bin
   ripgrep
   rustup
