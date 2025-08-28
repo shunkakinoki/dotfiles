@@ -24,7 +24,6 @@ with pkgs;
   kubectl
   kubectx
   kustomize
-  neofetch
   pulumi-bin
   ripgrep
   rustup
@@ -32,6 +31,7 @@ with pkgs;
   uv
 ]
 ++ lib.optionals stdenv.isLinux [
+  neofetch
   docker
   docker-compose
   helm
