@@ -24,7 +24,7 @@ with pkgs;
   kubectl
   kubectx
   kustomize
-  neofetch
+  fastfetch
   pulumi-bin
   ripgrep
   rustup
