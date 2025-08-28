@@ -25,6 +25,7 @@ with pkgs;
   kubectl
   kubectx
   kustomize
+  opencode
   pulumi-bin
   ripgrep
   rustup

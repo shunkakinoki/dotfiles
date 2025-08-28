@@ -23,6 +23,9 @@
       fish_add_path -p /etc/profiles/per-user/${config.home.username}/bin
       set -a fish_complete_path ~/.nix-profile/share/fish/completions/ ~/.nix-profile/share/fish/vendor_completions.d/
     '';
+    shellAliases = {
+      neofetch = "fastfetch";
+    };
     shellAbbrs = {
       c = "clear";
       cc = "claude";
