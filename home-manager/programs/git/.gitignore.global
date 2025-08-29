@@ -35,3 +35,6 @@ Temporary Items
 tmp
 .tmp*
 tmp*
+ 
+# Ignore deprecated files
+*.deprecated
