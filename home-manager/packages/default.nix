@@ -10,6 +10,7 @@ with pkgs;
   argocd
   claude-code
   codex
+  cursor-cli
   direnv
   dust
   fastfetch
