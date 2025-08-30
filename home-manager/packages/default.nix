@@ -23,6 +23,7 @@ with pkgs;
   jq
   k9s
   kind
+  kubeconform
   kubectl
   kubectx
   kustomize
