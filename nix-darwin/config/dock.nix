@@ -21,6 +21,7 @@
       "/Applications/Docker.app/Contents/MacOS/Docker Desktop.app"
       "/Applications/Ghostty.app"
       "/Applications/Linear.app"
+      "/Applications/Figma.app"
       "/Applications/Notion.app"
       "/Applications/Cursor.app"
       "/Applications/Visual Studio Code.app"
