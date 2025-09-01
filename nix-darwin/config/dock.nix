@@ -16,6 +16,7 @@
       "/System/Applications/Reminders.app"
       "/System/Applications/Notes.app"
       "/Applications/ChatGPT.app"
+      "/Applications/Claude.app"
       "/Applications/Google Chrome.app"
       "/Applications/Docker.app"
       "/Applications/Docker.app/Contents/MacOS/Docker Desktop.app"
