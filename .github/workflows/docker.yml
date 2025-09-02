@@ -18,8 +18,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' && fromJSON('["linux/amd64", "linux/arm64"]') || fromJSON('["linux/amd64"]') }}
-    runs-on: ${{ matrix.platform == 'linux/arm64' && 'ubuntu-22.04-arm64' || 'ubuntu-latest' }}
+        platform: 
+          - linux/amd64
+          - linux/arm64
+    runs-on: ${{ matrix.platform == 'linux/arm64' && 'macos-latest' || 'ubuntu-latest' }}
     timeout-minutes: 300
     steps:
       - name: Checkout
