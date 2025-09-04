@@ -18,10 +18,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: 
+        platform:
           - linux/amd64
           - linux/arm64
-    runs-on: ${{ matrix.platform == 'linux/arm64' && 'ubuntu-24.04-arm64-4core' || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     timeout-minutes: 300
     steps:
       - name: Checkout
