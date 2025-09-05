@@ -20,7 +20,7 @@ inputs.nix-darwin.lib.darwinSystem {
             enable = true;
             matchBlocks = {
               "*" = {
-                identityFile = inputs.nixpkgs.lib.mkForce "/run/agenix/keys/id_ed25519.age";
+                identityFile = inputs.nixpkgs.lib.mkForce " ~/.ssh/id_rsa";
                 extraOptions = {
                   AddKeysToAgent = "yes";
                   UseKeychain = "yes";
