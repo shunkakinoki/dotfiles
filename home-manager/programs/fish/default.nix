@@ -34,6 +34,9 @@
       g = "git";
       ga = "git add";
       gaa = "git add -A";
+      gp = "git push";
+      gpl = "git pull";
+      gpn = "git push --no-verify";
       lg = "lazygit";
       ta = "tmux new -A -s default";
       v = "nvim";
