@@ -40,5 +40,5 @@ with pkgs;
 ++ lib.optionals stdenv.isLinux [
   docker
   docker-compose
-  helm
+  kubernetes-helm
 ]
