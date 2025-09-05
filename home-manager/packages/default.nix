@@ -10,16 +10,19 @@ with pkgs;
   argocd
   claude-code
   codex
+  curlie
   cursor-cli
   direnv
   dust
   fastfetch
+  fd
   fswatch
   gemini-cli
   gh
   ghq
   go
   grc
+  httpie
   jq
   k9s
   kind
