@@ -111,7 +111,7 @@ nixpkgs.lib.nixosSystem {
     }
     home-manager.nixosModules.home-manager
     {
-      home-manager.backupFileExtension = "backup";
+      home-manager.backupFileExtension = "hm-backup";
       home-manager.useUserPackages = true;
       home-manager.users."${username}" = import ../../home-manager {
         inherit inputs username system;
