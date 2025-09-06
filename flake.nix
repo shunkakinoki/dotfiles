@@ -2,7 +2,8 @@
   description = "Shun Kakinoki's Nix Configuration";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    # Track nixpkgs master; lockfile + Renovate keep it fresh nightly
+    nixpkgs.url = "github:NixOS/nixpkgs";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
