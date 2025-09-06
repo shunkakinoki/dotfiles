@@ -25,7 +25,7 @@ in
     home-manager.darwinModules.home-manager
     agenix.darwinModules.default
     {
-      home-manager.backupFileExtension = "backup";
+      home-manager.backupFileExtension = "hm-backup";
       home-manager.useUserPackages = true;
       home-manager.users."${username}" = import ../../home-manager {
         inherit inputs username system;
