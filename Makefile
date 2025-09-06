@@ -183,7 +183,7 @@ nix-install:
 ##@ Nix
 
 .PHONY: nix-update
-nix-update: nix-build nix-switch
+nix-update: nix-flake-update nix-build nix-switch
 
 .PHONY: nix-backup
 nix-backup:
