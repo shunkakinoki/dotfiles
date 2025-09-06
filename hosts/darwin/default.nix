@@ -26,6 +26,18 @@ in
     agenix.darwinModules.default
     {
       home-manager.backupFileExtension = "hm-backup";
+      home-manager.extraSpecialArgs = { inherit inputs; };
+      home-manager.sharedModules = [
+        {
+          home.activation.removeBackups = {
+            before = [ "checkLinkTargets" ];
+            after = [ ];
+            data = ''
+              find ~/.codex -name "*.hm-backup*" -delete 2>/dev/null || true
+            '';
+          };
+        }
+      ];
       home-manager.useUserPackages = true;
       home-manager.users."${username}" = import ../../home-manager {
         inherit inputs username system;

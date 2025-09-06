@@ -26,6 +26,7 @@
       "/Applications/Notion.app"
       "/Applications/Cursor.app"
       "/Applications/Visual Studio Code.app"
+      "/Applications/Zed.app"
       "/System/Applications/Messages.app"
       "/Applications/Beeper Desktop.app"
       "/Applications/Slack.app"
