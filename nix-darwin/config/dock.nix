@@ -32,6 +32,7 @@
       "/Applications/Discord.app"
       "/System/Applications/Music.app"
       "/System/Applications/Podcasts.app"
+      "/System/Applications/iPhone Mirroring.app"
       "/System/Applications/System Settings.app"
     ];
   };

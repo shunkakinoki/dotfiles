@@ -2,7 +2,7 @@
   "folders": [
     {
       "name": "rules",
-      "path": "../ghq/github.com/shunkakinoki/rules"
+      "path": "~/ghq/github.com/shunkakinoki/rules"
     },
     {
       "name": "dotfiles",
