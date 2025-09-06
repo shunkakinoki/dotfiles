@@ -8,6 +8,7 @@ with pkgs;
   inputs.agenix.packages.${system}.default
   aider-chat
   argocd
+  cloudflared
   claude-code
   codex
   curlie
