@@ -17,6 +17,7 @@
       "bun"
       "claude-squad"
       "cmake"
+      "coreutils"
       "ffmpeg"
       "gnupg"
       "helm"
