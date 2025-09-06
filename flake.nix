@@ -2,7 +2,6 @@
   description = "Shun Kakinoki's Nix Configuration";
 
   inputs = {
-    # Track nixpkgs master; lockfile + Renovate keep it fresh nightly
     nixpkgs.url = "github:NixOS/nixpkgs";
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -19,7 +18,6 @@
     };
     agenix = {
       url = "github:ryantm/agenix";
-      # Keep agenix on the same nixpkgs and home-manager as the root
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
