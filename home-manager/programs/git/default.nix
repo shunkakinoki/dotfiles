@@ -68,9 +68,6 @@
       init = {
         defaultBranch = "main";
       };
-      interactive = {
-        diffFilter = "delta --color-only";
-      };
       delta = {
         navigate = true;
         dark = true;
