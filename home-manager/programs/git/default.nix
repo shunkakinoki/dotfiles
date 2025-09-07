@@ -68,6 +68,13 @@
       init = {
         defaultBranch = "main";
       };
+      delta = {
+        navigate = true;
+        dark = true;
+      };
+      merge = {
+        conflictStyle = "zdiff3";
+      };
     };
     ignores = lib.splitString "\n" (builtins.readFile ./.gitignore.global);
   };
