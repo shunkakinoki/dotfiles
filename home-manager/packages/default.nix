@@ -6,25 +6,35 @@
 with pkgs;
 [
   inputs.agenix.packages.${system}.default
+  age
   aider-chat
   argocd
+  bat
+  bun
   cloudflared
   claude-code
   codex
+  curl
   curlie
   cursor-cli
+  delta
   direnv
+  duf
   dust
+  eza
   fastfetch
   fd
   fswatch
   gemini-cli
   gh
   ghq
+  git
   go
   grc
   httpie
+  hyperfine
   jq
+  just
   k9s
   kind
   kubeconform
@@ -32,11 +42,19 @@ with pkgs;
   kubectx
   kustomize
   opencode
+  procs
   pulumi-bin
+  python3
   ripgrep
   rustup
+  sccache
   stern
+  tokei
+  tree
   uv
+  wget
+  yq
+  zoxide
 ]
 ++ lib.optionals stdenv.isLinux [
   docker

@@ -28,6 +28,7 @@
     };
     shellAbbrs = {
       c = "clear";
+      cat = "bat";
       cc = "claude";
       cs = "claude-squad";
       e = "nvim";

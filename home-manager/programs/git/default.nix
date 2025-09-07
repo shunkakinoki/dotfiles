@@ -26,6 +26,7 @@
         autocrlf = "input";
         whitespace = "trailing-space,space-before-tab";
         precomposeunicode = true;
+        pager = "delta";
       };
       color = {
         diff = "auto";
@@ -67,6 +68,16 @@
       };
       init = {
         defaultBranch = "main";
+      };
+      interactive = {
+        diffFilter = "delta --color-only";
+      };
+      delta = {
+        navigate = true;
+        dark = true;
+      };
+      merge = {
+        conflictStyle = "zdiff3";
       };
     };
     ignores = lib.splitString "\n" (builtins.readFile ./.gitignore.global);
