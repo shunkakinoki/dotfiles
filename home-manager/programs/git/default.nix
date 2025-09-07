@@ -26,7 +26,6 @@
         autocrlf = "input";
         whitespace = "trailing-space,space-before-tab";
         precomposeunicode = true;
-        pager = "delta";
       };
       color = {
         diff = "auto";
