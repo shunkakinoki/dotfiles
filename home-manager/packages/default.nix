@@ -9,15 +9,17 @@ with pkgs;
   age
   aider-chat
   argocd
+  ast-grep
   bat
   bun
   cloudflared
   claude-code
-  codex
+  codex-latest
   curl
   curlie
   cursor-cli
   delta
+  difftastic
   direnv
   duf
   dust
