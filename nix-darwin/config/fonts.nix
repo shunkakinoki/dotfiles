@@ -3,7 +3,8 @@
   fonts = {
     packages = [
       pkgs.fira-code
-      pkgs.jetbrains-mono
+      # Temporarily commented out due to build issues
+      # pkgs.jetbrains-mono
     ];
   };
 }
