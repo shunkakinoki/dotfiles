@@ -14,7 +14,7 @@ with pkgs;
   bun
   cloudflared
   claude-code
-  codex-latest
+  codex
   curl
   curlie
   cursor-cli

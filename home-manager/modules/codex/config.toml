@@ -5,5 +5,5 @@ notify = [
   "notify",
 ]
 
-[tools] 
+[tools]
 web_search = true
