@@ -31,6 +31,7 @@
       cat = "bat";
       cc = "claude";
       cs = "claude-squad";
+      cx = "codex exec";
       e = "nvim";
       g = "git";
       ga = "git add";

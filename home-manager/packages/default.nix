@@ -9,6 +9,7 @@ with pkgs;
   age
   aider-chat
   argocd
+  ast-grep
   bat
   bun
   cloudflared
@@ -18,6 +19,7 @@ with pkgs;
   curlie
   cursor-cli
   delta
+  difftastic
   direnv
   duf
   dust
