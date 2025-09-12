@@ -3,7 +3,7 @@
   home.packages = [
     (pkgs.ghq.override {
       buildGoModule = pkgs.buildGoModule.override {
-        go = pkgs.go_1_24;
+        go = pkgs.go_1_25;
       };
     })
   ];
