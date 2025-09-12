@@ -11,6 +11,7 @@ let
   fnm = import ./fnm { inherit pkgs; };
   fzf = import ./fzf;
   gh = import ./gh;
+  ghq = import ./ghq;
   git = import ./git;
   go = import ./go;
   lazygit = import ./lazygit;
@@ -33,6 +34,7 @@ in
   fnm
   fzf
   gh
+  ghq
   git
   go
   lazygit

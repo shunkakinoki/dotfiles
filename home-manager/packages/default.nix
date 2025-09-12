@@ -29,7 +29,6 @@ with pkgs;
   fswatch
   gemini-cli
   gh
-  ghq
   git
   grc
   httpie
