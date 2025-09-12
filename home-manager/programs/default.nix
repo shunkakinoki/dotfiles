@@ -16,6 +16,7 @@ let
   lazygit = import ./lazygit;
   lsd = import ./lsd;
   neovim = import ./neovim;
+  python = import ./python;
   rust = import ./rust;
   ssh = import ./ssh;
   starship = import ./starship;
@@ -37,6 +38,7 @@ in
   lazygit
   lsd
   neovim
+  python
   rust
   ssh
   starship

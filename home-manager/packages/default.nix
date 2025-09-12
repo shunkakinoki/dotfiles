@@ -31,7 +31,6 @@ with pkgs;
   gh
   ghq
   git
-  go
   grc
   httpie
   hyperfine
