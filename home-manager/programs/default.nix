@@ -11,11 +11,13 @@ let
   fnm = import ./fnm { inherit pkgs; };
   fzf = import ./fzf;
   gh = import ./gh;
+  ghq = import ./ghq;
   git = import ./git;
   go = import ./go;
   lazygit = import ./lazygit;
   lsd = import ./lsd;
   neovim = import ./neovim;
+  python = import ./python;
   rust = import ./rust;
   ssh = import ./ssh;
   starship = import ./starship;
@@ -32,11 +34,12 @@ in
   fnm
   fzf
   gh
+  ghq
   git
-  go
   lazygit
   lsd
   neovim
+  python
   rust
   ssh
   starship

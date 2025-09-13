@@ -29,9 +29,7 @@ with pkgs;
   fswatch
   gemini-cli
   gh
-  ghq
   git
-  go
   grc
   httpie
   hyperfine
@@ -46,7 +44,6 @@ with pkgs;
   opencode
   procs
   pulumi-bin
-  python3
   ripgrep
   rustup
   sccache
