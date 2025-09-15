@@ -36,6 +36,7 @@ in
   gh
   ghq
   git
+  go
   lazygit
   lsd
   neovim
