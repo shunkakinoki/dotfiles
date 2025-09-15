@@ -1,18 +1,9 @@
-# Override Go packages to avoid version conflicts
+# Override Go packages to use consistent version
 [
   (final: prev: {
-    # Use the latest Go version as default
+    # Force all Go versions to use the latest version to avoid conflicts
     go = prev.go_1_25;
-
-    # Wrap go_1_24 to remove conflicting documentation file
-    # This allows both versions to coexist without path conflicts
-    go_1_24 = prev.symlinkJoin {
-      name = "go-1.24-no-conflict";
-      paths = [ prev.go_1_24 ];
-      postBuild = ''
-        # Remove the conflicting documentation file
-        rm -f $out/share/go/doc/go_spec.html
-      '';
-    };
+    go_1_24 = prev.go_1_25;
+    go_1_25 = prev.go_1_25;
   })
 ]
