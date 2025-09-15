@@ -9,7 +9,6 @@
 }:
 let
   hmConfig = import ../config;
-  overlay = import ./overlay;
   packages = import ./packages { inherit pkgs inputs system; };
   misc = import ./misc;
   modules = import ./modules;
@@ -33,7 +32,6 @@ in
     ];
 
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "claude-code" ];
-  nixpkgs.overlays = overlay;
 
   home.username = username;
   home.homeDirectory = lib.mkIf pkgs.stdenv.isLinux "/home/${username}";
