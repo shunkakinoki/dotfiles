@@ -1,5 +1,3 @@
-[
-  (final: prev: {
-    buildEnv = args: prev.buildEnv (args // { ignoreCollisions = true; });
-  })
-]
+self: super: {
+  buildEnv = args: super.buildEnv (args // { ignoreCollisions = true; });
+}
