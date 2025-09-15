@@ -117,6 +117,9 @@
               lib = inputs.nixpkgs.legacyPackages."aarch64-linux".lib;
             };
           };
+          overlays = {
+            default = import ./overlays;
+          };
         };
 
       perSystem =
