@@ -123,8 +123,15 @@
         };
 
       perSystem =
-        { ... }:
+        { self, inputs, system, ... }:
         {
+          _module.args = {
+            # Ensure pkgs used in perSystem includes our overlays
+            pkgs = import inputs.nixpkgs {
+              inherit system;
+              overlays = [ self.overlays.default ];
+            };
+          };
           treefmt = {
             projectRootFile = "flake.nix";
             programs = {
