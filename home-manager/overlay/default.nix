@@ -1,10 +1,8 @@
-# Overlay disabled to avoid Go version conflicts
-# See: https://github.com/shunkakinoki/dotfiles/issues/392
-# [
-#   (final: prev: {
-#     # Override the default go package to use go_1_25 to avoid version conflicts
-#     go = prev.go_1_25;
-#   })
-# ]
-
-[ ]
+# Override Go packages to use consistent version
+[
+  (final: prev: {
+    # Force all Go packages to use the same version
+    go = prev.go_1_24;
+    go_1_25 = prev.go_1_24;
+  })
+]
