@@ -9,7 +9,6 @@
 }:
 let
   hmConfig = import ../config;
-  overlay = import ./overlay;
   packages = import ./packages { inherit pkgs inputs system; };
   misc = import ./misc;
   modules = import ./modules;
