@@ -22,6 +22,7 @@
       fish_add_path -p /opt/homebrew/bin
       fish_add_path -p /etc/profiles/per-user/${config.home.username}/bin
       set -a fish_complete_path ~/.nix-profile/share/fish/completions/ ~/.nix-profile/share/fish/vendor_completions.d/
+      set -x FISH_HISTFILE fish
     '';
     shellAliases = {
       neofetch = "fastfetch";
@@ -32,6 +33,7 @@
       cc = "claude";
       cs = "claude-squad";
       cx = "codex exec";
+      cxe = "codex --model 'gpt-5-codex' --full-auto --model_reasoning_summary_format=experimental";
       e = "nvim";
       g = "git";
       ga = "git add";
