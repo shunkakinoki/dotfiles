@@ -33,6 +33,7 @@
       cc = "claude";
       cs = "claude-squad";
       cx = "codex exec";
+      cxe = "codex --model 'gpt-5-codex' --full-auto --model_reasoning_summary_format=experimental";
       e = "nvim";
       g = "git";
       ga = "git add";
