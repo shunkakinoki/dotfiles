@@ -17,6 +17,7 @@
       "bun"
       "claude-squad"
       "cmake"
+      "codex"
       "coreutils"
       "ffmpeg"
       "gnupg"
