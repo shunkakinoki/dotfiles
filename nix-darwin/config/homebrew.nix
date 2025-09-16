@@ -32,6 +32,7 @@
       "temporal"
     ];
     casks = [
+      "authy"
       "beeper"
       "chatgpt"
       "claude"
