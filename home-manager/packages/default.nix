@@ -6,6 +6,7 @@
 with pkgs;
 [
   inputs.agenix.packages.${system}.default
+  inputs.nur.legacyPackages.${system}.repos.charmbracelet.crush
   age
   aider-chat
   argocd
