@@ -47,7 +47,7 @@
 
       gco = "_gco_function";
       grco = "_grco_function";
-      grct = "_grct_function";
+      grcr = "_grcr_function";
       fch = "_fzf_cmd_history --allow-execute";
       fdp = "_fzf_directory_picker --allow-cd --prompt-name Projects ~/";
       ffp = "_fzf_file_picker --allow-open-in-editor --prompt-name Files";

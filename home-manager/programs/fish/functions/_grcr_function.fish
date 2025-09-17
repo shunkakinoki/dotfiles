@@ -1,4 +1,4 @@
-function _grct_function
+function _grcr_function
   # Determine the current branch; abort if detached HEAD
   set -l current_branch (git branch --show-current)
   if test -z "$current_branch"
