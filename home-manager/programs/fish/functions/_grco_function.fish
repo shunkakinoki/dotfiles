@@ -7,4 +7,3 @@ function _grco_function
   git checkout $default_branch
   git reset --hard origin/$default_branch
 end
-
