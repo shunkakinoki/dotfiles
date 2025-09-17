@@ -14,7 +14,6 @@ with pkgs;
   bun
   cloudflared
   claude-code
-  # codex
   curl
   curlie
   cursor-cli
@@ -41,6 +40,7 @@ with pkgs;
   kubectl
   kubectx
   kustomize
+  llama-cpp
   opencode
   procs
   pulumi-bin
@@ -56,6 +56,7 @@ with pkgs;
   zoxide
 ]
 ++ lib.optionals stdenv.isLinux [
+  codex
   docker
   docker-compose
   kubernetes-helm
