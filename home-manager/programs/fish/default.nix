@@ -33,7 +33,6 @@
       cc = "claude";
       cs = "claude-squad";
       cx = "codex exec";
-      cxe = "codex --model 'gpt-5-codex' --full-auto -c model_reasoning_summary_format=experimental";
       e = "nvim";
       g = "git";
       ga = "git add";
@@ -45,6 +44,7 @@
       ta = "tmux new -A -s default";
       v = "nvim";
 
+      cxe = "_cxe_function";
       gco = "_gco_function";
       grco = "_grco_function";
       grcr = "_grcr_function";
