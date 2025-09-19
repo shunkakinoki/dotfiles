@@ -14,7 +14,7 @@ permissions:
   contents: read
   packages: write
 jobs:
-  build-and-push:
+  docker-build-push:
     strategy:
       fail-fast: false
       matrix:
@@ -64,10 +64,10 @@ jobs:
             COMMIT_SHA=${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-  merge-manifests:
+  docker-merge-manifests:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs:
-      - build-and-push
+      - docker-build-push
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -108,12 +108,13 @@ jobs:
   docker-check:
     if: always()
     needs:
-      - build-and-push
-      - merge-manifests
+      - docker-build-and-push
+      - docker-merge-manifests
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
       - name: Alls Green
         uses: re-actors/alls-green@release/v1
         with:
+          allowed-skips: docker-merge-manifests
           jobs: ${{ toJSON(needs) }}
