@@ -35,6 +35,7 @@
     ];
     casks = [
       "beeper"
+      "block-goose"
       "chatgpt"
       "claude"
       "copilot-money"
