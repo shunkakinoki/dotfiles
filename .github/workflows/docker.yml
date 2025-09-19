@@ -108,7 +108,7 @@ jobs:
   docker-check:
     if: always()
     needs:
-      - docker-build-and-push
+      - docker-build-push
       - docker-merge-manifests
     runs-on: ubuntu-latest
     timeout-minutes: 3
