@@ -40,6 +40,7 @@
       gp = "git push";
       gpl = "git pull";
       gpn = "git push --no-verify";
+      gpu = "git push -u";
       lg = "lazygit";
       ta = "tmux new -A -s default";
       v = "nvim";
