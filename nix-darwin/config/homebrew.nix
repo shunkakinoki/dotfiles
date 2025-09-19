@@ -31,7 +31,7 @@
       "protobuf"
       "sheldon"
       "temporal"
-      "sst/tap/opencode" # macOS and Linux
+      "sst/tap/opencode"
     ];
     casks = [
       "beeper"
