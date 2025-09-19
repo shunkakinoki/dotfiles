@@ -1,5 +1,6 @@
 [
   ./codex
+  ./crush
   ./dust
   ./ghostty
 ]
