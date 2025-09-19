@@ -12,6 +12,7 @@
       "homebrew/cask"
       "kurtosis-tech/tap"
       "oven-sh/bun"
+      "sst/tap"
     ];
     brews = [
       "bun"
@@ -30,6 +31,7 @@
       "protobuf"
       "sheldon"
       "temporal"
+      "sst/tap/opencode" # macOS and Linux
     ];
     casks = [
       "beeper"
