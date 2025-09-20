@@ -28,6 +28,9 @@
   "nix": {
     "enabled": true
   },
+  "git-submodules": {
+    "enabled": true
+  },
   "packageRules": [
     {
       "groupName": "Nix Dependencies",
@@ -66,6 +69,18 @@
       "matchUpdateTypes": [
         "minor",
         "patch"
+      ],
+      "automerge": true,
+      "platformAutomerge": true,
+      "schedule": [
+        "before 3am"
+      ]
+    },
+    {
+      "groupName": "Git Submodules",
+      "groupSlug": "git-submodules",
+      "matchManagers": [
+        "git-submodules"
       ],
       "automerge": true,
       "platformAutomerge": true,

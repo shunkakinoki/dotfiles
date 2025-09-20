@@ -3,4 +3,5 @@
   ./crush
   ./dust
   ./ghostty
+  ./opencode
 ]

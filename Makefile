@@ -1,5 +1,8 @@
 ##@ Variables
 
+# Include rules from submodule
+-include rules/Makefile
+
 # Detect architecture and OS
 ARCH := $(shell uname -m)
 OS := $(shell uname -s)
