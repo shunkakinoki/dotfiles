@@ -2,7 +2,7 @@
   "terminal.integrated.defaultProfile.linux": "fish",
   "terminal.integrated.defaultProfile.osx": "fish",
   "workbench.colorCustomizations": {
-    "activityBar.activeBackground": "#42b883",
+    "activityBar.activeBackground": "#65c89b",
     "activityBar.background": "#65c89b",
     "activityBar.foreground": "#15202b",
     "activityBar.inactiveForeground": "#15202b99",
@@ -18,7 +18,18 @@
     "titleBar.activeBackground": "#42b883",
     "titleBar.activeForeground": "#15202b",
     "titleBar.inactiveBackground": "#42b88399",
-    "titleBar.inactiveForeground": "#15202b99"
+    "titleBar.inactiveForeground": "#15202b99",
+    "statusBar.debuggingBackground": "#b84277",
+    "statusBar.debuggingForeground": "#e7e7e7",
+    "editorGroup.border": "#65c89b",
+    "panel.border": "#65c89b",
+    "sideBar.border": "#65c89b",
+    "statusBar.border": "#42b883",
+    "statusBar.debuggingBorder": "#b84277",
+    "titleBar.border": "#42b883",
+    "editorError.foreground": "#000000ff",
+    "editorInfo.foreground": "#000000ff",
+    "editorWarning.foreground": "#000000ff"
   },
   "peacock.color": "#42b883"
 }
