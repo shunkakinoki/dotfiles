@@ -29,7 +29,7 @@
     "titleBar.border": "#42b883",
     "editorError.foreground": "#000000ff",
     "editorInfo.foreground": "#000000ff",
-    "editorWarning.foreground": "#000000ff"
-  },
-  "peacock.color": "#42b883"
+    "editorWarning.foreground": "#000000ff",
+    "tab.activeBorder": "#65c89b"
+  }
 }
