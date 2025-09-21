@@ -403,3 +403,12 @@ docker-build:
 	@echo "🐳 Building Docker image: $(DOCKER_IMAGE_LATEST) and $(DOCKER_IMAGE_TAGGED)..."
 	@docker build -t $(DOCKER_IMAGE_LATEST) -t $(DOCKER_IMAGE_TAGGED) -f Dockerfile .
 	@echo "✅ Docker image built: $(DOCKER_IMAGE_LATEST) and $(DOCKER_IMAGE_TAGGED)"
+
+##@ Git Submodule
+
+.PHONY: git-submodule-sync
+git-submodule-sync:
+	@echo "🔁 Syncing and updating git submodules..."
+	@git submodule sync
+	@git submodule update --init --recursive
+	@echo "✅ Submodules synced and updated"
