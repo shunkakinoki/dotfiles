@@ -101,6 +101,7 @@ help:
 	@echo "  format       - Format Nix files"
 	@echo "  format-check - Check Nix formatting"
 	@echo "  docker-build - Build the Docker image"
+	@echo "  submodules   - Sync and update git submodules"
 	@echo "  switch-HOST      - Switch to a named host configuration (e.g., make switch-galactica)"
 	@echo "  encrypt-key-HOST - Encrypt a key for a named host (e.g., make encrypt-key-galactica KEY_FILE=~/.ssh/id_ed25519)"
 	@echo "  decrypt-key-HOST - Decrypt a key for a named host (e.g., make decrypt-key-galactica KEY_FILE=id_ed25519)"
@@ -403,3 +404,12 @@ docker-build:
 	@echo "🐳 Building Docker image: $(DOCKER_IMAGE_LATEST) and $(DOCKER_IMAGE_TAGGED)..."
 	@docker build -t $(DOCKER_IMAGE_LATEST) -t $(DOCKER_IMAGE_TAGGED) -f Dockerfile .
 	@echo "✅ Docker image built: $(DOCKER_IMAGE_LATEST) and $(DOCKER_IMAGE_TAGGED)"
+
+##@ Git Submodule
+
+.PHONY: git-submodule-sync
+git-submodule-sync:
+	@echo "🔁 Syncing and updating git submodules..."
+	@git submodule sync
+	@git submodule update --init --recursive
+	@echo "✅ Submodules synced and updated"
