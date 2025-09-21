@@ -2,7 +2,7 @@
   "terminal.integrated.defaultProfile.linux": "fish",
   "terminal.integrated.defaultProfile.osx": "fish",
   "workbench.colorCustomizations": {
-    "activityBar.activeBackground": "#65c89b",
+    "activityBar.activeBackground": "#42b883",
     "activityBar.background": "#65c89b",
     "activityBar.foreground": "#15202b",
     "activityBar.inactiveForeground": "#15202b99",
