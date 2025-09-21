@@ -101,7 +101,6 @@ help:
 	@echo "  format       - Format Nix files"
 	@echo "  format-check - Check Nix formatting"
 	@echo "  docker-build - Build the Docker image"
-	@echo "  submodules   - Sync and update git submodules"
 	@echo "  switch-HOST      - Switch to a named host configuration (e.g., make switch-galactica)"
 	@echo "  encrypt-key-HOST - Encrypt a key for a named host (e.g., make encrypt-key-galactica KEY_FILE=~/.ssh/id_ed25519)"
 	@echo "  decrypt-key-HOST - Decrypt a key for a named host (e.g., make decrypt-key-galactica KEY_FILE=id_ed25519)"
