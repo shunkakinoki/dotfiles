@@ -63,6 +63,7 @@
       "sf-symbols"
       "slack"
       "visual-studio-code"
+      "warp-dev"
       "windsurf"
       "zed"
       "zoom"
