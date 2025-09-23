@@ -30,8 +30,8 @@
       "postgresql"
       "protobuf"
       "sheldon"
-      "temporal"
       "sst/tap/opencode"
+      "temporal"
     ];
     casks = [
       "beeper"
@@ -63,6 +63,7 @@
       "sf-symbols"
       "slack"
       "visual-studio-code"
+      "warp"
       "windsurf"
       "zed"
       "zoom"
