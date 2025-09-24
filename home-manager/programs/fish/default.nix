@@ -45,6 +45,7 @@
       v = "nvim";
 
       cxe = "_cxe_function";
+      clxe = "_clxe_function";
       gco = "_gco_function";
       grco = "_grco_function";
       grcr = "_grcr_function";
