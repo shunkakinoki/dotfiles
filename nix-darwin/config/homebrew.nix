@@ -62,6 +62,7 @@
       "screen-studio"
       "sf-symbols"
       "slack"
+      "superhuman"
       "visual-studio-code"
       "warp"
       "windsurf"

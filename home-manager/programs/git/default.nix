@@ -26,6 +26,7 @@
         autocrlf = "input";
         whitespace = "trailing-space,space-before-tab";
         precomposeunicode = true;
+        ignorecase = false;
       };
       color = {
         diff = "auto";
