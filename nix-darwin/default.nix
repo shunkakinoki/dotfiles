@@ -9,7 +9,6 @@ let
   dock = import ./config/dock.nix;
   fonts = import ./config/fonts.nix { inherit pkgs; };
   homebrew = import ./config/homebrew.nix { inherit isRunner; };
-  launchd = import ./config/launchd.nix;
   networking = import ./config/networking.nix;
   nix = import ./config/nix.nix;
   security = import ./config/security.nix { inherit username; };
@@ -21,7 +20,6 @@ in
     dock
     fonts
     homebrew
-    launchd
     networking
     nix
     security
