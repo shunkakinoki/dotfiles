@@ -49,6 +49,7 @@
       "font-jetbrains-mono"
       "font-jetbrains-mono-nerd-font"
       "ghostty"
+      "granola"
       "github"
       "google-chrome"
       "google-drive"
