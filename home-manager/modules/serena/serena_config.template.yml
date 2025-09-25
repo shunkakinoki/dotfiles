@@ -14,7 +14,6 @@ gui_log_window: False
 # previous instances. This can lead to multiple log windows being opened, and only the last
 # window being updated. Since we can't control how agno or Claude Desktop start Serena,
 # we have to live with this limitation for now.
-
 web_dashboard: True
 # whether to open the Serena web dashboard (which will be accessible through your web browser) that
 # shows Serena's current session logs - as an alternative to the GUI log window which
@@ -55,13 +54,12 @@ jetbrains: False
 # instead of language server-based tools
 # NOTE: The plugin is yet unreleased. This is for Serena developers only.
 
-
 default_max_tool_answer_chars: 150000
 # Used as default for tools where the apply method has a default maximal answer length.
 # Even though the value of the max_answer_chars can be changed when calling the tool, it may make sense to adjust this default
 # through the global configuration.
 
-record_tool_usage_stats:  False
+record_tool_usage_stats: False
 # whether to record tool usage statistics, they will be shown in the web dashboard if recording is active.
 
 token_count_estimator: TIKTOKEN_GPT4O
@@ -71,7 +69,6 @@ token_count_estimator: TIKTOKEN_GPT4O
 # Note: some token estimators (like tiktoken) may require downloading data files
 # on the first run, which can take some time and require internet access. Others, like the Anthropic ones, may require an API key
 # and rate limits may apply.
-
 
 # MANAGED BY SERENA, KEEP AT THE BOTTOM OF THE YAML AND DON'T EDIT WITHOUT NEED
 # The list of registered projects.
