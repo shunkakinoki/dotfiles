@@ -13,8 +13,8 @@ with pkgs;
   ast-grep
   bat
   bun
-  cloudflared
   claude-code
+  cloudflared
   curl
   curlie
   cursor-cli
