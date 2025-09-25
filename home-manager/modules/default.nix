@@ -4,4 +4,5 @@
   ./dust
   ./ghostty
   ./opencode
+  ./serena
 ]
