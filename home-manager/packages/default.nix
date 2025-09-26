@@ -54,6 +54,7 @@ with pkgs;
   tree
   uv
   wget
+  wrangler
   yq
   zoxide
 ]
