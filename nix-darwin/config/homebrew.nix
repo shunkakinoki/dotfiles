@@ -56,6 +56,7 @@
       "hammerspoon"
       "karabiner-elements"
       "linear-linear"
+      "lmstudio"
       "ollama-app"
       "notion"
       "raycast"
