@@ -52,7 +52,6 @@
       "github"
       "google-chrome"
       "google-drive"
-      "granola"
       "hammerspoon"
       "karabiner-elements"
       "linear-linear"
