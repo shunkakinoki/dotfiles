@@ -46,6 +46,7 @@ with pkgs;
   opencode
   procs
   pulumi-bin
+  qwen-code
   ripgrep
   rustup
   sccache
