@@ -1,0 +1,134 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      open-composer:
+        specifier: 0.4.0
+        version: 0.4.0
+
+packages:
+
+  '@open-composer/cli-darwin-arm64@0.4.0':
+    resolution: {integrity: sha512-87e3TbCZ/8lhIF9BWXcCc9m3e6f/O23qwIKxTcSBD0fk96YDqJDWVQYWmlYWJms8+zT/2NWSUkfgu6b9jnba7A==}
+    cpu: [arm64]
+    os: [darwin]
+    hasBin: true
+
+  '@open-composer/cli-darwin-x64-baseline@0.4.0':
+    resolution: {integrity: sha512-GHJKbNL/AyHV2WVdEvitKVONitomOcAS+szcOqdV9tiWydQt0EeXAxUawhORP4tRtfiweFfw2SV0DMJcvh3Z/Q==}
+    cpu: [x64-baseline]
+    os: [darwin]
+    hasBin: true
+
+  '@open-composer/cli-darwin-x64@0.4.0':
+    resolution: {integrity: sha512-cIMUya3b3jkMBqCPmfBmggqVO1Wln4GIqgnAQRebkUPSOU7ZDYIw+AlQJ4doee4yGqGi0QLRj4f+Gw6/GElA4A==}
+    cpu: [x64]
+    os: [darwin]
+    hasBin: true
+
+  '@open-composer/cli-linux-aarch64-musl@0.4.0':
+    resolution: {integrity: sha512-f/HQ8LmWMfOymjd5FN4SPzdSM9HEQ/VUY3vj6PKd/JuhqwEMKUa0lMpZz0Js1dK9O0F45A69xdI35V+UNvllYw==}
+    cpu: [aarch64-musl]
+    os: [linux]
+    hasBin: true
+
+  '@open-composer/cli-linux-arm64@0.4.0':
+    resolution: {integrity: sha512-/gOAe7XKqG6kUPLR10pLBNAJsYq7zwfJ8apjXx3p7tmlKdP9CU+HGUrhQLvfnml2gPzSxGoXNwOyfQa4xABPbw==}
+    cpu: [arm64]
+    os: [linux]
+    hasBin: true
+
+  '@open-composer/cli-linux-x64-baseline@0.4.0':
+    resolution: {integrity: sha512-dZJTFCTPluoyGX/6BXU+YYbOTHIOdTsY4ymHehmrjyd8WtSmERo99RDnuHeQ4zG1HqLaZlaLiS/IyuGVHzjlZQ==}
+    cpu: [x64-baseline]
+    os: [linux]
+    hasBin: true
+
+  '@open-composer/cli-linux-x64-musl-baseline@0.4.0':
+    resolution: {integrity: sha512-a+g2U9gEE6/C0frdcO7h453ws/sYgZ7QdKr7DqqiAuustlXXeWtIkO8B+t7mc0orLC9j2dGBvLuawaCrkTfXKg==}
+    cpu: [x64-musl-baseline]
+    os: [linux]
+    hasBin: true
+
+  '@open-composer/cli-linux-x64-musl@0.4.0':
+    resolution: {integrity: sha512-si4KVisO29rRSPG3p8+DtTWz/zl6rdvY0d04zBGOUOebFVukH0KvhuXTGJ1ztxeMbXzmrAdMdOWZo9NzXaZ9+w==}
+    cpu: [x64-musl]
+    os: [linux]
+    hasBin: true
+
+  '@open-composer/cli-linux-x64@0.4.0':
+    resolution: {integrity: sha512-+XlP82WuKi60QSu3WbwY+PscASavLla4KmWsWiXhg0gKFV1DNNIfTpdXt1eXkG2jR4RHzThxvc0EYHuM77gYrw==}
+    cpu: [x64]
+    os: [linux]
+    hasBin: true
+
+  '@open-composer/cli-win32-x64-baseline@0.4.0':
+    resolution: {integrity: sha512-w6nQwcYp0HEfViZ3dNAVKv1IyEMaYvX8z/QLR0aPy1TVCaVbZlWZVxRFlTKXgJF4WbRW3Zf9kPNWJsALeQcgwQ==}
+    cpu: [x64-baseline]
+    os: [win32]
+    hasBin: true
+
+  '@open-composer/cli-win32-x64@0.4.0':
+    resolution: {integrity: sha512-BnXhvKJ9E9mS/PtWUS7TT5AggFxauCEqRlsEPwsFzbRmmR7oyEvyOMMXKVscyI2iw5Uy3v2qMXFgZ15KQLDxtw==}
+    cpu: [x64]
+    os: [win32]
+    hasBin: true
+
+  open-composer@0.4.0:
+    resolution: {integrity: sha512-swav/97deqQjinPvIpNrsLEyP0Y0JTuaooqdXudFdspMdLwlUGCCvJhs65i4inHWuNwM8LrApXVzBlwYmnEiPw==}
+    hasBin: true
+
+snapshots:
+
+  '@open-composer/cli-darwin-arm64@0.4.0':
+    optional: true
+
+  '@open-composer/cli-darwin-x64-baseline@0.4.0':
+    optional: true
+
+  '@open-composer/cli-darwin-x64@0.4.0':
+    optional: true
+
+  '@open-composer/cli-linux-aarch64-musl@0.4.0':
+    optional: true
+
+  '@open-composer/cli-linux-arm64@0.4.0':
+    optional: true
+
+  '@open-composer/cli-linux-x64-baseline@0.4.0':
+    optional: true
+
+  '@open-composer/cli-linux-x64-musl-baseline@0.4.0':
+    optional: true
+
+  '@open-composer/cli-linux-x64-musl@0.4.0':
+    optional: true
+
+  '@open-composer/cli-linux-x64@0.4.0':
+    optional: true
+
+  '@open-composer/cli-win32-x64-baseline@0.4.0':
+    optional: true
+
+  '@open-composer/cli-win32-x64@0.4.0':
+    optional: true
+
+  open-composer@0.4.0:
+    optionalDependencies:
+      '@open-composer/cli-darwin-arm64': 0.4.0
+      '@open-composer/cli-darwin-x64': 0.4.0
+      '@open-composer/cli-darwin-x64-baseline': 0.4.0
+      '@open-composer/cli-linux-aarch64-musl': 0.4.0
+      '@open-composer/cli-linux-arm64': 0.4.0
+      '@open-composer/cli-linux-x64': 0.4.0
+      '@open-composer/cli-linux-x64-baseline': 0.4.0
+      '@open-composer/cli-linux-x64-musl': 0.4.0
+      '@open-composer/cli-linux-x64-musl-baseline': 0.4.0
+      '@open-composer/cli-win32-x64': 0.4.0
+      '@open-composer/cli-win32-x64-baseline': 0.4.0
