@@ -8,11 +8,22 @@ importers:
 
   .:
     dependencies:
+      '@github/copilot':
+        specifier: ^0.0.328
+        version: 0.0.328
       open-composer:
         specifier: 0.4.0
         version: 0.4.0
 
 packages:
+
+  '@devm33/node-pty@1.0.9':
+    resolution: {integrity: sha512-5yzbTTywkaFk1iRwte2aWEpyDfcpDjCofVD1BiOUQI+fsCvp/+RdJnB4jgnULrdlWOEWuBf+bg4/NZKVApPhoQ==}
+
+  '@github/copilot@0.0.328':
+    resolution: {integrity: sha512-w3rYYiakmp0Ff8gYiZevTPYDJDtxm733Av5IVBDlctOwKI7M5EevcT35IATvEsyrvtUXOnKD6qVuLA4THTvdPg==}
+    engines: {node: '>=22'}
+    hasBin: true
 
   '@open-composer/cli-darwin-arm64@0.4.0':
     resolution: {integrity: sha512-87e3TbCZ/8lhIF9BWXcCc9m3e6f/O23qwIKxTcSBD0fk96YDqJDWVQYWmlYWJms8+zT/2NWSUkfgu6b9jnba7A==}
@@ -80,11 +91,30 @@ packages:
     os: [win32]
     hasBin: true
 
+  keytar-forked-forked@7.10.3:
+    resolution: {integrity: sha512-ipErTUO1NPXmngYhnMrda0yOIOPSNbVJ2BRjk3kNozLx3UmGICnzCfEDemuLY6HgP+rV0c9F+Opt+89+Ydbw6w==}
+
+  node-addon-api@7.1.1:
+    resolution: {integrity: sha512-5m3bsyrjFWE1xf7nz7YXdN4udnVtXK6/Yfgn5qnahL6bCkf2yKt4k3nuTKAtT4r3IG8JNR2ncsIMdZuAzJjHQQ==}
+
+  node-addon-api@8.5.0:
+    resolution: {integrity: sha512-/bRZty2mXUIFY/xU5HLvveNHlswNJej+RnxBjOMkidWfwZzgTbPG1E3K5TOxRLOR+5hX7bSofy8yf1hZevMS8A==}
+    engines: {node: ^18 || ^20 || >= 21}
+
   open-composer@0.4.0:
     resolution: {integrity: sha512-swav/97deqQjinPvIpNrsLEyP0Y0JTuaooqdXudFdspMdLwlUGCCvJhs65i4inHWuNwM8LrApXVzBlwYmnEiPw==}
     hasBin: true
 
 snapshots:
+
+  '@devm33/node-pty@1.0.9':
+    dependencies:
+      node-addon-api: 7.1.1
+
+  '@github/copilot@0.0.328':
+    dependencies:
+      keytar-forked-forked: 7.10.3
+      node-pty: '@devm33/node-pty@1.0.9'
 
   '@open-composer/cli-darwin-arm64@0.4.0':
     optional: true
@@ -118,6 +148,14 @@ snapshots:
 
   '@open-composer/cli-win32-x64@0.4.0':
     optional: true
+
+  keytar-forked-forked@7.10.3:
+    dependencies:
+      node-addon-api: 8.5.0
+
+  node-addon-api@7.1.1: {}
+
+  node-addon-api@8.5.0: {}
 
   open-composer@0.4.0:
     optionalDependencies:
