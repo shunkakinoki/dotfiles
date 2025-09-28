@@ -60,6 +60,7 @@ let
         home-manager
         vim
         wget
+        zellij
       ];
 
       services.getty.autologinUser = lib.mkIf isRunner "root";
