@@ -27,7 +27,7 @@
     shellAliases = {
       neofetch = "fastfetch";
 
-      ocd = "bun run ~/ghq/github.com/shunkakinoki/open-composer/apps/cli/src/index.ts";
+      ocd = "bun run ${config.home.homeDirectory}/ghq/github.com/shunkakinoki/open-composer/apps/cli/src/index.ts";
     };
     shellAbbrs = {
       c = "clear";
