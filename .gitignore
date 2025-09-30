@@ -61,3 +61,5 @@ tags
 # Ignore 
 result
 ref
+.env
+.env.local
