@@ -25,29 +25,6 @@ function _fish_shortcuts --description "List fish abbreviations and aliases with
             return 0
         end
 
-        # Fallback: first non-empty leading comment line after the header
-        set -l lines (functions $fname | string split \n)
-        set -l got_header 0
-        for line in $lines
-            if test $got_header -eq 0
-                # Skip the header line: it starts with "function "
-                if string match -rq '^\s*function\s' -- $line
-                    set got_header 1
-                end
-                continue
-            end
-            if string match -rq '^\s*#' -- $line
-                set -l cleaned (string replace -r -- '^\s*#\s*' '' -- $line)
-                if test -n "$cleaned"
-                    echo $cleaned
-                    return 0
-                end
-            else
-                # Stop scanning once non-comment code begins
-                break
-            end
-        end
-
         return 1
     end
 
@@ -66,32 +43,96 @@ function _fish_shortcuts --description "List fish abbreviations and aliases with
     if type -q abbr
         set -l abbr_list (abbr --list 2>/dev/null)
 
+        set -l abbr_lines (abbr --show 2>/dev/null | string split "\n")
+        set -l abbr_names
+        set -l abbr_expansions
+
+        for line in $abbr_lines
+            set line (string trim -- $line)
+            if test -z "$line"
+                continue
+            end
+
+            set -l parsed_name ""
+            set -l parsed_expansion ""
+
+            if type -q python3
+                set -lx __FISH_SHORTCUT_LINE "$line"
+                set -l parsed (python3 -c "
+import os, shlex
+
+line = os.environ['__FISH_SHORTCUT_LINE']
+tokens = shlex.split(line)
+name = ''
+expansion = ''
+
+try:
+    idx = tokens.index('--')
+except ValueError:
+    pass
+else:
+    if idx + 1 < len(tokens):
+        name = tokens[idx + 1]
+        rest = tokens[idx + 2:]
+        if '--function' in tokens:
+            try:
+                pos = tokens.index('--function')
+            except ValueError:
+                pos = -1
+            if pos != -1 and pos + 1 < len(tokens):
+                expansion = tokens[pos + 1]
+        if not expansion and rest:
+            expansion = ' '.join(rest)
+
+print(name)
+print(expansion)
+")
+                set -e __FISH_SHORTCUT_LINE
+                if test (count $parsed) -ge 1
+                    set parsed_name $parsed[1]
+                end
+                if test (count $parsed) -ge 2
+                    set parsed_expansion $parsed[2]
+                end
+            end
+
+            if test -z "$parsed_name"
+                set parsed_name (string match -r --groups-only '^abbr\b.* -- (\S+)' -- "$line")
+            end
+
+            if test -z "$parsed_name"
+                continue
+            end
+
+            if test -z "$parsed_expansion"
+                set parsed_expansion (string match -r --groups-only "'([^']*)'" -- "$line")
+            end
+            if test -z "$parsed_expansion"
+                set parsed_expansion (string match -r --groups-only "\"([^\"]*)\"" -- "$line")
+            end
+            if test -z "$parsed_expansion"
+                set -l fallback (string replace -r -- '^abbr\b.* -- \S+\s*' '' -- "$line")
+                set fallback (string trim -- $fallback)
+                if test -n "$fallback"
+                    set parsed_expansion $fallback
+                end
+            end
+
+            set -a abbr_names $parsed_name
+            set -a abbr_expansions $parsed_expansion
+        end
+
         for a in $abbr_list
             set -l expansion ""
-            set -l show_line (abbr --show $a 2>/dev/null | string collect)
-            if test -n "$show_line"
-                if type -q python3
-                    set -lx __FISH_SHORTCUT_LINE "$show_line"
-                    set expansion (python3 -c "import os, shlex, sys; line = os.environ['__FISH_SHORTCUT_LINE']; tokens = shlex.split(line); rest = tokens[tokens.index('--') + 2:]; pos = rest.index('--function') if '--function' in rest else -1; exp = rest[pos + 1] if pos != -1 and pos + 1 < len(rest) else (' '.join(rest) if rest else ''); sys.stdout.write(exp)")
-                    set -e __FISH_SHORTCUT_LINE
+            for idx in (seq (count $abbr_names))
+                if test "$abbr_names[$idx]" = "$a"
+                    set expansion $abbr_expansions[$idx]
+                    break
                 end
+            end
 
-                if test -z "$expansion"
-                    set expansion (string match -r --groups-only ".*'([^']*)'" -- "$show_line")
-                end
-                if test -z "$expansion"
-                    set expansion (string match -r --groups-only '.*"([^"]*)"' -- "$show_line")
-                end
-                if test -z "$expansion"
-                    set -l fallback (string replace -r -- '^abbr\b.* -- \S+\s+' '' -- "$show_line")
-                    set fallback (string trim -- $fallback)
-                    if test -n "$fallback"
-                        set expansion $fallback
-                    end
-                end
-                if test -n "$expansion"
-                    set expansion (string trim --chars="'\"" -- $expansion)
-                end
+            if test -n "$expansion"
+                set expansion (string trim --chars="'\"" -- $expansion)
             end
 
             set -l desc ""
