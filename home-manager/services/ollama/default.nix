@@ -3,7 +3,6 @@ let
   inherit (pkgs) lib;
 in
 lib.mkIf pkgs.stdenv.isDarwin {
-{
   launchd.agents.ollama = {
     enable = true;
     config = {
