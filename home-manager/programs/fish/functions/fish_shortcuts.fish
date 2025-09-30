@@ -13,7 +13,7 @@ function fish_shortcuts --description "List fish abbreviations and aliases with 
         set -l def (functions $fname | string collect)
 
         # Try to extract --description from the function header
-        set -l desc_line (string match -r -- 'function\s+\S+.*--description(=| )[\"\'].*' -- $def)
+        set -l desc_line (string match -r -- 'function\s+\S+.*--description(=| )([\"\'][^\"\']*[\"\'])' -- $def)
         if test -n "$desc_line"
             # Try double-quoted first
             set -l d (string replace -r -- '.*--description(=| )\"([^\"]+)\".*' '$2' -- $desc_line)
