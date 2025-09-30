@@ -12,7 +12,7 @@
 			},
 			"models": {
 				"qwen/qwen3-coder-30b": {
-					"name": "Qwen: Qwen3 Coder 30B"
+					"name": "Qwen: Qwen3 Coder 30B A3B Instruct"
 				}
 			}
 		},
