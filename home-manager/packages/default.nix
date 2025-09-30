@@ -9,12 +9,13 @@ with pkgs;
   inputs.nur.legacyPackages.${system}.repos.charmbracelet.crush
   age
   aider-chat
+  amp-cli
   argocd
   ast-grep
   bat
   bun
-  cloudflared
   claude-code
+  cloudflared
   curl
   curlie
   cursor-cli
