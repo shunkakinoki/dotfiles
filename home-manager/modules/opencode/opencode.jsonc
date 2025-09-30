@@ -30,7 +30,39 @@
 		},
 		"openrouter": {
 			"models": {
+				"deepseek/deepseek-chat-v3.1:free": {
+					"options": {
+						"provider": {
+							"order": ["baseten"],
+							"allow_fallbacks": false
+						}
+					}
+				},
 				"moonshotai/kimi-k2": {
+					"options": {
+						"provider": {
+							"order": ["baseten"],
+							"allow_fallbacks": false
+						}
+					}
+				},
+				"moonshotai/kimi-k2:free": {
+					"options": {
+						"provider": {
+							"order": ["baseten"],
+							"allow_fallbacks": false
+						}
+					}
+				},
+				"openai/gpt-oss-120b:free": {
+					"options": {
+						"provider": {
+							"order": ["baseten"],
+							"allow_fallbacks": false
+						}
+					}
+				},
+				"qwen/qwen3-coder:free": {
 					"options": {
 						"provider": {
 							"order": ["baseten"],
