@@ -1,4 +1,4 @@
-function __hm_load_env_file --description 'Load environment variables from .env'
+function _hm_load_env_file --description 'Load environment variables from .env'
   set -l candidate_paths
   if set -q DOTFILES_ENV_FILE
     set -a candidate_paths $DOTFILES_ENV_FILE
