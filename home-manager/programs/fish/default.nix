@@ -56,6 +56,7 @@
       ffp = "_fzf_file_picker --allow-open-in-editor --prompt-name Files";
       ffpf = "_fzf_file_picker --allow-open-in-editor --show-hidden-files --prompt-name Files+";
       fhq = "_fzf_ghq_picker";
+      shortcuts = "_fish_shortcuts";
     };
     plugins = [
       {
