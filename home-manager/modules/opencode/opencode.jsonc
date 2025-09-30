@@ -33,9 +33,7 @@
 				"moonshotai/kimi-k2": {
 					"options": {
 						"provider": {
-							"order": [
-								"baseten"
-							],
+							"order": ["baseten"],
 							"allow_fallbacks": false
 						}
 					}
