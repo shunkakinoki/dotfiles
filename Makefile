@@ -95,6 +95,8 @@ default: help
 help:
 	@echo "Available targets:"
 	@echo "  install      - Set up full environment"
+	@echo "  setup        - Basic Nix setup"
+	@echo "  setup-dev    - Set up local development environment (Nix + submodules + shell)"
 	@echo "  build        - Build Nix configuration"
 	@echo "  switch       - Apply Nix configuration"
 	@echo "  update       - Update Nix flake and configurations"
@@ -125,6 +127,9 @@ format: nix-format
 
 .PHONY: setup
 setup: nix-setup
+
+.PHONY: setup-dev
+setup-dev: nix-setup git-submodule-sync shell-install
 
 .PHONY: switch
 switch: nix-switch
