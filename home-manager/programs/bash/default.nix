@@ -41,7 +41,9 @@
       eval "$(/opt/homebrew/bin/brew shellenv)"
 
       # Initialize Rye
-      source "$HOME/.rye/env"
+      if [ -f "$HOME/.rye/env" ]; then
+        source "$HOME/.rye/env"
+      fi
 
       # Add Go bin to PATH
       export PATH="$PATH:$GOPATH/bin"
