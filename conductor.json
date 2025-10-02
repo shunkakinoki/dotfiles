@@ -1,5 +1,5 @@
 {
   "scripts": {
-    "setup": "bash -c 'make setup'"
+    "setup": "make setup"
   }
 }

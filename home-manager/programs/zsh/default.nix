@@ -9,8 +9,8 @@
     historySubstringSearch.enable = true;
 
     history = {
-      size = 50000;
-      save = 50000;
+      size = -1;
+      save = -1;
       path = "$HOME/.zsh_history";
       ignoreDups = true;
       share = true;
@@ -38,9 +38,6 @@
       export FNM_LOGLEVEL="info"
       export FNM_NODE_DIST_MIRROR="https://nodejs.org/dist"
       export FNM_VERSION_FILE_STRATEGY="local"
-
-      # OpenRouter API Key
-      export OPENROUTER_API_KEY_AVANTE=$(security find-generic-password -a "avante" -s "shunkakinoki" -w)
     '';
   };
 }

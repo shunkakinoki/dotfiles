@@ -4,6 +4,7 @@
   sources,
 }:
 let
+  bash = import ./bash { inherit lib pkgs; };
   bat = import ./bat;
   direnv = import ./direnv;
   fd = import ./fd;
@@ -27,6 +28,7 @@ let
   zsh = import ./zsh { inherit lib pkgs; };
 in
 [
+  bash
   bat
   direnv
   fd
