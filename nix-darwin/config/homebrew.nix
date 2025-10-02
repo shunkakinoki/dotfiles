@@ -38,6 +38,7 @@
       "block-goose"
       "chatgpt"
       "claude"
+      "conductor"
       "copilot-money"
       "cursor"
       "discord"
