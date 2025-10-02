@@ -1,4 +1,3 @@
-
 { lib, pkgs, ... }:
 {
   programs.bash = {
@@ -7,8 +6,15 @@
 
     historySize = -1;
     historyFileSize = -1;
-    historyControl = [ "ignoredups" "ignorespace" ];
-    historyIgnore = [ "ls" "cd" "exit" ];
+    historyControl = [
+      "ignoredups"
+      "ignorespace"
+    ];
+    historyIgnore = [
+      "ls"
+      "cd"
+      "exit"
+    ];
 
     sessionVariables = {
       # Go configuration
