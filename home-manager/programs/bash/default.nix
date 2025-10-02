@@ -21,7 +21,8 @@
       GOPATH = "$HOME/go";
 
       # FNM (Fast Node Manager) configuration
-      FNM_DIR = if pkgs.stdenv.isDarwin then "$HOME/Library/Application Support/fnm" else "$HOME/.local/share/fnm";
+      FNM_DIR =
+        if pkgs.stdenv.isDarwin then "$HOME/Library/Application Support/fnm" else "$HOME/.local/share/fnm";
       FNM_COREPACK_ENABLED = "false";
       FNM_ARCH = if pkgs.stdenv.hostPlatform.isAarch64 then "arm64" else "x64";
       FNM_RESOLVE_ENGINES = "false";
