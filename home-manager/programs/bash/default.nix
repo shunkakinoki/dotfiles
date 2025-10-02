@@ -23,7 +23,7 @@
       # FNM (Fast Node Manager) configuration
       FNM_DIR = "$HOME/Library/Application Support/fnm";
       FNM_COREPACK_ENABLED = "false";
-      FNM_ARCH = "arm64";
+      FNM_ARCH = if pkgs.stdenv.hostPlatform.isAarch64 then "arm64" else "x64";
       FNM_RESOLVE_ENGINES = "false";
       FNM_LOGLEVEL = "info";
       FNM_NODE_DIST_MIRROR = "https://nodejs.org/dist";
