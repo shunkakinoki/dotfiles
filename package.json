@@ -9,7 +9,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.15.1",
+  "packageManager": "bun@1.2.23",
   "dependencies": {
     "@github/copilot": "^0.0.333",
     "open-composer": "^0.8.5"
