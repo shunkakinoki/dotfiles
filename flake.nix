@@ -124,7 +124,7 @@
         };
 
       perSystem =
-        { ... }:
+        { system, pkgs, ... }:
         {
           treefmt = {
             projectRootFile = "flake.nix";
@@ -138,6 +138,16 @@
               jsonfmt.enable = true;
               yamlfmt.enable = true;
             };
+          };
+
+          devShells.default = pkgs.mkShell {
+            packages = [
+              pkgs.nodejs_20
+              pkgs.bun
+            ];
+            shellHook = ''
+              echo "Dev shell ready: Node.js + bun available."
+            '';
           };
         };
     };

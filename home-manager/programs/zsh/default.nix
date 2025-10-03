@@ -30,6 +30,9 @@
       export GOPATH="$HOME/go"
       export PATH="$PATH:$GOPATH/bin"
 
+      # Bun configuration
+      export PATH="$HOME/.bun/bin:$PATH"
+
       # FNM (Fast Node Manager) configuration
       export FNM_DIR="$HOME/Library/Application Support/fnm"
       export FNM_COREPACK_ENABLED="false"

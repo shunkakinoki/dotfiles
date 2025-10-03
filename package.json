@@ -1,0 +1,17 @@
+{
+  "name": "dotfiles",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "bun@1.2.23",
+  "dependencies": {
+    "@github/copilot": "^0.0.333",
+    "open-composer": "^0.8.5"
+  }
+}
