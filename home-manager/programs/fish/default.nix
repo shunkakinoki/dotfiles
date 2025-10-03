@@ -13,7 +13,7 @@
       fish_add_path -p /etc/profiles/per-user/${config.home.username}/bin
     '';
     interactiveShellInit = ''
-      # disable fish greeting
+      _hm_load_env_file
       set fish_greeting
       set fish_theme dracula
       fish_add_path -p ~/.nix-profile/bin
@@ -26,6 +26,8 @@
     '';
     shellAliases = {
       neofetch = "fastfetch";
+
+      ocd = "bun run ${config.home.homeDirectory}/ghq/github.com/shunkakinoki/open-composer/apps/cli/src/index.ts";
     };
     shellAbbrs = {
       c = "clear";
@@ -54,6 +56,7 @@
       ffp = "_fzf_file_picker --allow-open-in-editor --prompt-name Files";
       ffpf = "_fzf_file_picker --allow-open-in-editor --show-hidden-files --prompt-name Files+";
       fhq = "_fzf_ghq_picker";
+      shortcuts = "_fish_shortcuts";
     };
     plugins = [
       {

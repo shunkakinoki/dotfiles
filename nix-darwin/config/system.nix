@@ -5,6 +5,12 @@
 }:
 {
   ids.gids.nixbld = 350;
+
+  # Set SHELL environment variable for GUI applications
+  launchd.user.envVariables = {
+    SHELL = "${pkgs.bash}/bin/bash";
+  };
+
   system = {
     stateVersion = 4;
     primaryUser = username;

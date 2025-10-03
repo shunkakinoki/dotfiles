@@ -1,4 +1,4 @@
-function _grco_function
+function _grco_function --description "Hard reset default branch to remote state"
   # Determine the default branch (e.g., main or master) from origin/HEAD
   set -l default_branch (git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
 

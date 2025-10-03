@@ -2,5 +2,75 @@
 	"$schema": "https://opencode.ai/config.json",
 	"theme": "opencode",
 	"model": "kimi-k2",
-	"autoupdate": true
+	"autoupdate": true,
+	"provider": {
+		"lmstudio": {
+			"npm": "@ai-sdk/openai-compatible",
+			"name": "LM Studio (local)",
+			"options": {
+				"baseURL": "http://127.0.0.1:1234/v1"
+			},
+			"models": {
+				"qwen/qwen3-coder-30b": {
+					"name": "Qwen: Qwen3 Coder 30B A3B Instruct"
+				}
+			}
+		},
+		"ollama": {
+			"npm": "@ai-sdk/openai-compatible",
+			"name": "Ollama (local)",
+			"options": {
+				"baseURL": "http://localhost:11434/v1"
+			},
+			"models": {
+				"openai/gpt-oss-20b": {
+					"name": "OpenAI: gpt-oss-20b"
+				}
+			}
+		},
+		"openrouter": {
+			"models": {
+				"deepseek/deepseek-chat-v3.1:free": {
+					"options": {
+						"provider": {
+							"order": ["baseten"],
+							"allow_fallbacks": false
+						}
+					}
+				},
+				"moonshotai/kimi-k2": {
+					"options": {
+						"provider": {
+							"order": ["baseten"],
+							"allow_fallbacks": false
+						}
+					}
+				},
+				"moonshotai/kimi-k2:free": {
+					"options": {
+						"provider": {
+							"order": ["baseten"],
+							"allow_fallbacks": false
+						}
+					}
+				},
+				"openai/gpt-oss-120b:free": {
+					"options": {
+						"provider": {
+							"order": ["baseten"],
+							"allow_fallbacks": false
+						}
+					}
+				},
+				"qwen/qwen3-coder:free": {
+					"options": {
+						"provider": {
+							"order": ["baseten"],
+							"allow_fallbacks": false
+						}
+					}
+				}
+			}
+		}
+	}
 }

@@ -1,4 +1,4 @@
-function _grcr_function
+function _grcr_function --description "Hard reset current branch to remote state"
   # Determine the current branch; abort if detached HEAD
   set -l current_branch (git branch --show-current)
   if test -z "$current_branch"
