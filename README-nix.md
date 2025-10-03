@@ -38,13 +38,13 @@ Use in Home Manager (example):
 
 ## Notes
 
-* Versions are pinned by the lockfile (`package-lock.json`, `yarn.lock`, or `pnpm-lock.yaml`).
+* Versions are pinned by the lockfile (`bun.lockb`).
 * If you change dependencies, update the lockfile, then rebuild.
 * If your package has native deps, dream2nix will build them; ensure required system libs are available in nixpkgs.
 
 ## Troubleshooting
 
-* **Missing lockfile**: generate one (`npm i`, `pnpm i`, or `yarn install`) before running `nix build`.
+* **Missing lockfile**: generate one (`bun install`) before running `nix build`.
 * **Postinstall script fails**: check logs from `nix build`; you may need to add system libraries or patch scripts.
 * **Bins missing**: ensure the dependency actually exposes a `bin` entry in its `package.json`.
 
