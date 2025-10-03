@@ -12,6 +12,6 @@
   "packageManager": "pnpm@10.15.1",
   "dependencies": {
     "@github/copilot": "^0.0.333",
-    "open-composer": "0.8.5"
+    "open-composer": "^0.8.5"
   }
 }
