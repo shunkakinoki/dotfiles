@@ -141,11 +141,12 @@
           };
 
           devShells.default = pkgs.mkShell {
-            packages = [ pkgs.nodejs_20 ];
+            packages = [
+              pkgs.nodejs_20
+              pkgs.bun
+            ];
             shellHook = ''
-              # Enable Corepack so Yarn/PNPM versions follow packageManager field
-              corepack enable || true
-              echo "Dev shell ready: Node.js + pnpm available via corepack."
+              echo "Dev shell ready: Node.js + bun available."
             '';
           };
         };
