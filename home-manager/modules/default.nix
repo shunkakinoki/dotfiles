@@ -3,6 +3,7 @@
   ./crush
   ./dust
   ./ghostty
+  ./npm-globals
   ./opencode
   ./serena
 ]
