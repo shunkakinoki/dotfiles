@@ -24,10 +24,6 @@
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    dream2nix = {
-      url = "github:nix-community/dream2nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     agenix = {
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -129,17 +125,6 @@
 
       perSystem =
         { system, pkgs, ... }:
-        let
-          # Build the workspace's Node tools using dream2nix. This reads package.json +
-          # lockfile from the repo root and exposes any dependency bins.
-          dream2nixOutputs = inputs.dream2nix.lib.makeFlakeOutputs {
-            systems = [ system ];
-            config.projectRoot = ./.;
-            source = ./.;
-            packageOverrides = { };
-          };
-          nodeTools = dream2nixOutputs.packages.${system}.default;
-        in
         {
           treefmt = {
             projectRootFile = "flake.nix";
@@ -155,20 +140,12 @@
             };
           };
 
-          packages = {
-            node-tools = nodeTools;
-            default = nodeTools;
-          };
-
           devShells.default = pkgs.mkShell {
-            packages = [
-              pkgs.nodejs_20
-              nodeTools
-            ];
+            packages = [ pkgs.nodejs_20 ];
             shellHook = ''
               # Enable Corepack so Yarn/PNPM versions follow packageManager field
               corepack enable || true
-              echo "Dev shell ready: Node + tools from package.json/lockfile are on PATH."
+              echo "Dev shell ready: Node.js + pnpm available via corepack."
             '';
           };
         };
