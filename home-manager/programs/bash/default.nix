@@ -48,6 +48,9 @@
 
       # Add Go bin to PATH
       export PATH="$PATH:$GOPATH/bin"
+
+      # Add Bun bin to PATH
+      export PATH="$HOME/.bun/bin:$PATH"
     '';
 
     profileExtra = ''

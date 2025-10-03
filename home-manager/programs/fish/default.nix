@@ -6,6 +6,7 @@
       direnv hook fish | source
     '';
     loginShellInit = ''
+      fish_add_path -p ~/.bun/bin
       fish_add_path -p ~/.nix-profile/bin
       fish_add_path -p /nix/var/nix/profiles/default/bin
       fish_add_path -p ~/.foundry/bin
@@ -16,6 +17,7 @@
       _hm_load_env_file
       set fish_greeting
       set fish_theme dracula
+      fish_add_path -p ~/.bun/bin
       fish_add_path -p ~/.nix-profile/bin
       fish_add_path -p /nix/var/nix/profiles/default/bin
       fish_add_path -p ~/.foundry/bin
