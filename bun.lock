@@ -6,7 +6,7 @@
       "dependencies": {
         "@github/copilot": "^0.0.334",
         "@google/jules": "^0.1.30",
-        "open-composer": "^0.8.5",
+        "open-composer": "^0.8.6",
       },
     },
   },
@@ -65,27 +65,27 @@
 
     "@isaacs/fs-minipass": ["@isaacs/fs-minipass@4.0.1", "", { "dependencies": { "minipass": "^7.0.4" } }, "sha512-wgm9Ehl2jpeqP3zw/7mo3kRHFp5MEDhqAdwy1fTGkHAwnkGOVsgpvQhL8B5n1qlb01jV3n/bI0ZfZp5lWA1k4w=="],
 
-    "@open-composer/cli-darwin-arm64": ["@open-composer/cli-darwin-arm64@0.8.5", "", { "os": "darwin", "cpu": "arm64", "bin": { "opencomposer": "bin/open-composer" } }, "sha512-Yxyl2QMsWT+tWUPsj8l8vO2YjK6JInN84xnO2swh2Av9LAsW5q+JCRC7ysTLiQLYPMVY2etysUstxCjsoOk5aQ=="],
+    "@open-composer/cli-darwin-arm64": ["@open-composer/cli-darwin-arm64@0.8.6", "", { "os": "darwin", "cpu": "arm64", "bin": { "oc": "bin/open-composer", "opencomposer": "bin/open-composer", "open-composer": "bin/open-composer" } }, "sha512-17rCpWcM1QMIdxSRfG5mciym4tAJtKHbWrTruDcJLRfNa9ZEYABBw5fBVJb6grMEN/WtmZqMRdNyYp9jx4aXtA=="],
 
-    "@open-composer/cli-darwin-x64": ["@open-composer/cli-darwin-x64@0.8.5", "", { "os": "darwin", "cpu": "x64", "bin": { "opencomposer": "bin/open-composer" } }, "sha512-bD/jvR0YaCQDwy1tOnECjOGQJvv77Yc9C0WYi8FUL1lyGYXLaO9oDR+q+x/0bm8TkeePBDfZYzVdF/XQ5RMgpQ=="],
+    "@open-composer/cli-darwin-x64": ["@open-composer/cli-darwin-x64@0.8.6", "", { "os": "darwin", "cpu": "x64", "bin": { "oc": "bin/open-composer", "opencomposer": "bin/open-composer", "open-composer": "bin/open-composer" } }, "sha512-zqxjplYe/m6u6A6GI2EV9wC3qNhXtuFM5eHzyI4IMhZ6eWupNfHoRkwTvvRK5xBleYGSkQEJHYm/JL73Lc5aYA=="],
 
-    "@open-composer/cli-darwin-x64-baseline": ["@open-composer/cli-darwin-x64-baseline@0.8.5", "", { "os": "darwin", "cpu": "none", "bin": { "opencomposer": "bin/open-composer" } }, "sha512-alMnOeM9UvkutSDVUXWETeACgRc3ELHLpUVFiGv2+ACcYCa04iRa492TDRrQT2Jr8iPPpfleUBevaHKk9CdENQ=="],
+    "@open-composer/cli-darwin-x64-baseline": ["@open-composer/cli-darwin-x64-baseline@0.8.6", "", { "os": "darwin", "cpu": "none", "bin": { "oc": "bin/open-composer", "opencomposer": "bin/open-composer", "open-composer": "bin/open-composer" } }, "sha512-qZFcIsV5rRP1Nu/6HdVhaWOALNmbs3fc5wxvqSATfjziao3WcN6FmfIQscTSJUoKu09mFaLbcImCZOz57AJhHg=="],
 
-    "@open-composer/cli-linux-aarch64-musl": ["@open-composer/cli-linux-aarch64-musl@0.8.5", "", { "os": "linux", "cpu": "none", "bin": { "opencomposer": "bin/open-composer" } }, "sha512-GoTxKDzxuDU8Jzl5HWuWU4RGz8sTBpnUDdgXBv3fBGohBHtTtkdr/2HaNvbG01k2Vr98d6QksFyoJ6i9poogvw=="],
+    "@open-composer/cli-linux-aarch64-musl": ["@open-composer/cli-linux-aarch64-musl@0.8.6", "", { "os": "linux", "cpu": "none", "bin": { "oc": "bin/open-composer", "opencomposer": "bin/open-composer", "open-composer": "bin/open-composer" } }, "sha512-gaktjlvtGOw1FdB9NwqaJSKlIFcEK+CnfJxWwzgue3y8bD36ZHmNavT8lUd4s9Mj2IqqDakToyBC9iqRIMEi0g=="],
 
-    "@open-composer/cli-linux-arm64": ["@open-composer/cli-linux-arm64@0.8.5", "", { "os": "linux", "cpu": "arm64", "bin": { "opencomposer": "bin/open-composer" } }, "sha512-vnTomU9NG82qd9/VhO3akXtw/AEQG6fcCCJVV9WiOPh7SUxgBjCwnYeC2b12L7lngOesZU99q09C3W19HUvTTA=="],
+    "@open-composer/cli-linux-arm64": ["@open-composer/cli-linux-arm64@0.8.6", "", { "os": "linux", "cpu": "arm64", "bin": { "oc": "bin/open-composer", "opencomposer": "bin/open-composer", "open-composer": "bin/open-composer" } }, "sha512-uNdk56/R8xVvBecSQWE5+OjueBOplzKdc71C+5wPxUgU7xSVaiKs1ydukZo+cq6LA1B7R+CR3be3xR599XxeWg=="],
 
-    "@open-composer/cli-linux-x64": ["@open-composer/cli-linux-x64@0.8.5", "", { "os": "linux", "cpu": "x64", "bin": { "opencomposer": "bin/open-composer" } }, "sha512-H4aOaFAbm7k/3ftNnM2D4AQZHRwc4Y0SLXiq3Ff44hRvBNICxgOigLt659/ExAFl4SgEMQ5ZqMt9eacuTYKDrA=="],
+    "@open-composer/cli-linux-x64": ["@open-composer/cli-linux-x64@0.8.6", "", { "os": "linux", "cpu": "x64", "bin": { "oc": "bin/open-composer", "opencomposer": "bin/open-composer", "open-composer": "bin/open-composer" } }, "sha512-/v9sehNYYntIL+2P3tHBlv3mHI383GW2RBI67JBs7k/aXBXlsXPPWSRHGYNWgHOSnvCA3Y8tHSmJYEeWP7BO9w=="],
 
-    "@open-composer/cli-linux-x64-baseline": ["@open-composer/cli-linux-x64-baseline@0.8.5", "", { "os": "linux", "cpu": "none", "bin": { "opencomposer": "bin/open-composer" } }, "sha512-cNDGcokEOgQe0nMOF9WDephGU2x7FFZuc9GJ/jHmbRnm8ERJPNq3l1aWhLL+iKK2CtRPeR3Urka6ONvyp0BtgQ=="],
+    "@open-composer/cli-linux-x64-baseline": ["@open-composer/cli-linux-x64-baseline@0.8.6", "", { "os": "linux", "cpu": "none", "bin": { "oc": "bin/open-composer", "opencomposer": "bin/open-composer", "open-composer": "bin/open-composer" } }, "sha512-dMhij77cZjgZ1p5cPETB1FCL1ZptMALAblO4L51LhTquw/XDLWhdGVFyDV/O67xjJmaONYP64ZTWZJbjeOmBzw=="],
 
-    "@open-composer/cli-linux-x64-musl": ["@open-composer/cli-linux-x64-musl@0.8.5", "", { "os": "linux", "cpu": "none", "bin": { "opencomposer": "bin/open-composer" } }, "sha512-LkE5Ix2qjmbSFVlkqjkM8QMXoXMZBWtsUZ+nlE/6gkmphZx9hlQ2yVeycewjzBzdp7tHRXo+yjuYgRgw9UkcAQ=="],
+    "@open-composer/cli-linux-x64-musl": ["@open-composer/cli-linux-x64-musl@0.8.6", "", { "os": "linux", "cpu": "none", "bin": { "oc": "bin/open-composer", "opencomposer": "bin/open-composer", "open-composer": "bin/open-composer" } }, "sha512-Ov1+kEiYeqnwwnXuEA3mxZjSG1cg7P5J6OMl6AbhpuGXkCCR8m8tnHFtr+Sk5vAeX2EnsW83bubNcPEr521aBg=="],
 
-    "@open-composer/cli-linux-x64-musl-baseline": ["@open-composer/cli-linux-x64-musl-baseline@0.8.5", "", { "os": "linux", "cpu": "none", "bin": { "opencomposer": "bin/open-composer" } }, "sha512-AVFX5PLPtGKsoVH3UTN10+GlrQ38qowk0lFyZk8VRo+CL4JVW3EIo/R8HNN6jUOvtoCd7rFhkpI8WbN8Ng5uwQ=="],
+    "@open-composer/cli-linux-x64-musl-baseline": ["@open-composer/cli-linux-x64-musl-baseline@0.8.6", "", { "os": "linux", "cpu": "none", "bin": { "oc": "bin/open-composer", "opencomposer": "bin/open-composer", "open-composer": "bin/open-composer" } }, "sha512-pw3Ol15XWQAjawtkA/hZ5eEvtEi5RD1oWCtRvLlasNAHuTfM8ZSkxVj7cIgsblS5ujhnYIywHtEZXpPVmnsMxA=="],
 
-    "@open-composer/cli-win32-x64": ["@open-composer/cli-win32-x64@0.8.5", "", { "os": "win32", "cpu": "x64", "bin": { "opencomposer": "bin/open-composer" } }, "sha512-+Nl8vztpSE9l4WyqXf2l8DjayyM94hzLzmMtIA/DYnjUeTogEUjZiwJ7vuJu0+g7tdwpTuF6yNZLURs8pt911A=="],
+    "@open-composer/cli-win32-x64": ["@open-composer/cli-win32-x64@0.8.6", "", { "os": "win32", "cpu": "x64", "bin": { "oc": "bin/open-composer", "opencomposer": "bin/open-composer", "open-composer": "bin/open-composer" } }, "sha512-GtsNJUZ1kvBzUtE5xI/MWlPTJLeLyjVDrfCHWZ6FlUuzCoMXhS3ZcawI0pHGl3iFEYd12e8tbAR2N+xyt8JV1A=="],
 
-    "@open-composer/cli-win32-x64-baseline": ["@open-composer/cli-win32-x64-baseline@0.8.5", "", { "os": "win32", "cpu": "none", "bin": { "opencomposer": "bin/open-composer" } }, "sha512-PLT8q4Az3kyq9yrPNu4GyfpDMRUI5J3IBtuFrJcvSFU4wHx39bm/dp/tJBhmUZLQvwVSQSqTq3/tbtVonXQzVw=="],
+    "@open-composer/cli-win32-x64-baseline": ["@open-composer/cli-win32-x64-baseline@0.8.6", "", { "os": "win32", "cpu": "none", "bin": { "oc": "bin/open-composer", "opencomposer": "bin/open-composer", "open-composer": "bin/open-composer" } }, "sha512-zjHYFP9k499Lhciz2xWkZjHg160N/QZl9rwT4QvG5lfVj/bfkHlE2XXEOKxxSk/k7a8oDArZo4SH5X/JMyAa1g=="],
 
     "chownr": ["chownr@3.0.0", "", {}, "sha512-+IxzY9BZOQd/XuYPRmrvEVjF/nqj5kgT4kEq7VofrDoM1MxoRjEWkrCC3EtLi59TVawxTAn+orJwFQcrqEN1+g=="],
 
@@ -101,7 +101,7 @@
 
     "node-pty": ["@devm33/node-pty@1.0.9", "", { "dependencies": { "node-addon-api": "^7.1.0" } }, "sha512-5yzbTTywkaFk1iRwte2aWEpyDfcpDjCofVD1BiOUQI+fsCvp/+RdJnB4jgnULrdlWOEWuBf+bg4/NZKVApPhoQ=="],
 
-    "open-composer": ["open-composer@0.8.5", "", { "optionalDependencies": { "@open-composer/cli-darwin-arm64": "0.8.5", "@open-composer/cli-darwin-x64": "0.8.5", "@open-composer/cli-darwin-x64-baseline": "0.8.5", "@open-composer/cli-linux-aarch64-musl": "0.8.5", "@open-composer/cli-linux-arm64": "0.8.5", "@open-composer/cli-linux-x64": "0.8.5", "@open-composer/cli-linux-x64-baseline": "0.8.5", "@open-composer/cli-linux-x64-musl": "0.8.5", "@open-composer/cli-linux-x64-musl-baseline": "0.8.5", "@open-composer/cli-win32-x64": "0.8.5", "@open-composer/cli-win32-x64-baseline": "0.8.5" }, "bin": { "open-composer": "bin/open-composer", "opencomposer": "bin/open-composer", "oc": "bin/open-composer" } }, "sha512-KSVXe/Xi2C8tmLJyp2url8Jr29dhA2dqCVBJORH1LT0d4lj0JIcDJdUqFTMHliIevBACTi+f78lL11+gqbMLEg=="],
+    "open-composer": ["open-composer@0.8.6", "", { "optionalDependencies": { "@open-composer/cli-darwin-arm64": "0.8.6", "@open-composer/cli-darwin-x64": "0.8.6", "@open-composer/cli-darwin-x64-baseline": "0.8.6", "@open-composer/cli-linux-aarch64-musl": "0.8.6", "@open-composer/cli-linux-arm64": "0.8.6", "@open-composer/cli-linux-x64": "0.8.6", "@open-composer/cli-linux-x64-baseline": "0.8.6", "@open-composer/cli-linux-x64-musl": "0.8.6", "@open-composer/cli-linux-x64-musl-baseline": "0.8.6", "@open-composer/cli-win32-x64": "0.8.6", "@open-composer/cli-win32-x64-baseline": "0.8.6" }, "bin": { "open-composer": "bin/open-composer", "opencomposer": "bin/open-composer", "oc": "bin/open-composer" } }, "sha512-VJ9M4nwQpeMFt2TESTRdVnjtJhkKXU4Zxco7+OnKH/KJSIoG29fgw13HcZjX2tDP7VDzRCEQnqpt+6xwVH14AQ=="],
 
     "semver": ["semver@7.7.2", "", { "bin": { "semver": "bin/semver.js" } }, "sha512-RF0Fw+rO5AMf9MAyaRXI4AV0Ulj5lMHqVxxdSgiVbixSCXoEmmX/jk0CuJw4+3SqroYO9VoUh+HcuJivvtJemA=="],
 

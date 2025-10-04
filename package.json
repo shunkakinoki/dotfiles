@@ -13,6 +13,6 @@
   "dependencies": {
     "@github/copilot": "^0.0.334",
     "@google/jules": "^0.1.30",
-    "open-composer": "^0.8.5"
+    "open-composer": "^0.8.6"
   }
 }
