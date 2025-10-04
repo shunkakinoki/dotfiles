@@ -48,6 +48,21 @@
       ]
     },
     {
+      "groupName": "Npm Dependencies",
+      "groupSlug": "npm",
+      "matchManagers": [
+        "npm"
+      ],
+      "matchDepTypes": [
+        "flake-inputs"
+      ],
+      "automerge": true,
+      "platformAutomerge": true,
+      "schedule": [
+        "before 3am"
+      ]
+    },
+    {
       "groupName": "GitHub Actions Dependencies",
       "groupSlug": "github-actions",
       "matchManagers": [
@@ -93,6 +108,11 @@
       "groupSlug": "all-major",
       "matchUpdateTypes": [
         "major"
+      ],
+      "automerge": true,
+      "platformAutomerge": true,
+      "schedule": [
+        "before 3am"
       ]
     }
   ]
