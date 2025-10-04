@@ -4,15 +4,15 @@
     "": {
       "name": "dotfiles",
       "dependencies": {
-        "@github/copilot": "^0.0.333",
-        "open-composer": "0.8.5",
+        "@github/copilot": "^0.0.334",
+        "open-composer": "^0.8.5",
       },
     },
   },
   "packages": {
     "@emnapi/runtime": ["@emnapi/runtime@1.5.0", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-97/BJ3iXHww3djw6hYIfErCZFee7qCtrneuLa20UXFCOTCfBM2cvQHjWJ2EG0s0MtdNwInarqCTz35i4wWXHsQ=="],
 
-    "@github/copilot": ["@github/copilot@0.0.333", "", { "dependencies": { "keytar-forked-forked": "^7.10.2", "node-pty": "npm:@devm33/node-pty@^1.0.8", "sharp": "^0.34.3" }, "bin": { "copilot": "index.js" } }, "sha512-YzhFpmyTJa6LjmKlI2TaZ5mvjPFDVbjY5P7VlMNtJ+Q0h1eBbsnxqp9k9E5V+njJsK8UkfckV3CIOl6DycPPeg=="],
+    "@github/copilot": ["@github/copilot@0.0.334", "", { "dependencies": { "keytar-forked-forked": "^7.10.2", "node-pty": "npm:@devm33/node-pty@^1.0.8", "sharp": "^0.34.3" }, "bin": { "copilot": "index.js" } }, "sha512-urqXH+YXrBZJV36gMci2mxsc4LQsaC3wxfP7qBTIseaj5xGWHJfgdNhW3kPPJCa9ECvfM8HHfML9s7EhPuX3eQ=="],
 
     "@img/colour": ["@img/colour@1.0.0", "", {}, "sha512-A5P/LfWGFSl6nsckYtjw9da+19jB8hkJ6ACTGcDfEJ0aE+l2n2El7dsVM7UVHZQ9s2lmYMWlrS21YLy2IR1LUw=="],
 
