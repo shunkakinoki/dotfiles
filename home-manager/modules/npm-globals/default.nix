@@ -20,7 +20,7 @@
     fi
   '';
 
-  # Add local and bun bins to PATH (local bin prioritized)
+  # Add local and bun bins to PATH
   home.sessionPath = [
     "$HOME/.local/bin"
     "$HOME/.bun/bin"
