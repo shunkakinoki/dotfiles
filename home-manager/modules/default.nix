@@ -6,4 +6,5 @@
   ./npm-globals
   ./opencode
   ./serena
+  ./yek
 ]

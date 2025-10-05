@@ -43,6 +43,8 @@ in
   home.packages = packages;
   home.stateVersion = "24.11";
 
+  programs.yek.enable = true;
+
   accounts.email.accounts = {
     Gmail = {
       primary = true;
