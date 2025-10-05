@@ -47,7 +47,7 @@ let
     ${pkgs.curl}/bin/curl -L -o "''${ASSET_NAME}" "''${LATEST_URL}"
 
     echo "Extracting archive..."
-    ${pkgs.gnutar}/bin/tar xzf "''${ASSET_NAME}"
+    PATH="${pkgs.gzip}/bin:$PATH" ${pkgs.gnutar}/bin/tar xzf "''${ASSET_NAME}"
 
     echo "Installing binary to ''${INSTALL_DIR}..."
     ${pkgs.coreutils}/bin/install -Dm755 yek-''${TARGET}/yek "''${INSTALL_DIR}/yek"
