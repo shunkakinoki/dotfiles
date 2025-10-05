@@ -55,6 +55,7 @@ with pkgs;
   tree
   uv
   wget
+  yarn
   yq
   zoxide
 ]
