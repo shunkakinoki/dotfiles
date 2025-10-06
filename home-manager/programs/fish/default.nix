@@ -1,9 +1,15 @@
 { config, pkgs, ... }:
+let
+  gitalias = import ../gitalias { inherit pkgs; };
+in
 {
   programs.fish = {
     enable = true;
     shellInit = ''
       direnv hook fish | source
+
+      # GitAlias - generated at build time
+      ${gitalias.fish}
     '';
     loginShellInit = ''
       fish_add_path -p ~/.local/bin
@@ -41,6 +47,8 @@
       cx = "codex exec";
       e = "nvim";
       g = "git";
+      # Note: GitAlias provides many git abbreviations starting with 'g'
+      # The following are kept for compatibility or because they override GitAlias defaults
       ga = "git add";
       gaa = "git add -A";
       gp = "git push";

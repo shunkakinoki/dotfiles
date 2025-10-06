@@ -1,4 +1,7 @@
 { lib, pkgs, ... }:
+let
+  gitalias = import ../gitalias { inherit pkgs; };
+in
 {
   programs.bash = {
     enable = true;
@@ -51,6 +54,9 @@
 
       # Add Bun bin to PATH
       export PATH="$HOME/.bun/bin:$PATH"
+
+      # GitAlias - generated at build time
+      ${gitalias.bash}
     '';
 
     profileExtra = ''
