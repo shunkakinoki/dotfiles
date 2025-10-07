@@ -57,6 +57,7 @@ with pkgs;
   wget
   yarn
   yq
+  zellij
   zoxide
 ]
 ++ lib.optionals stdenv.isLinux [
