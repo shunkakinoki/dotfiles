@@ -10,6 +10,11 @@
   "author": "",
   "license": "ISC",
   "packageManager": "bun@1.2.23",
+  "trustedDependencies": [
+      "@github/copilot",
+      "@google/jules",
+      "open-composer"
+  ],
   "dependencies": {
     "@github/copilot": "^0.0.335",
     "@google/jules": "^0.1.30",
