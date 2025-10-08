@@ -17,6 +17,10 @@
       cd "${config.home.homeDirectory}/dotfiles"
       ${pkgs.bun}/bin/bun install --global \
         $(${pkgs.jq}/bin/jq -r '.dependencies | keys[]' "$PACKAGE_JSON") 2>/dev/null || true
+
+      # Trust and run postinstall scripts for global packages
+      echo "Running postinstall scripts for trusted global packages..."
+      ${pkgs.bun}/bin/bun pm -g trust 2>/dev/null || true
     fi
   '';
 
