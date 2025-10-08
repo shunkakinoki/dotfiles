@@ -11,9 +11,9 @@
   "license": "ISC",
   "packageManager": "bun@1.2.23",
   "trustedDependencies": [
-      "@github/copilot",
-      "@google/jules",
-      "open-composer"
+    "@github/copilot",
+    "@google/jules",
+    "open-composer"
   ],
   "dependencies": {
     "@github/copilot": "^0.0.335",
