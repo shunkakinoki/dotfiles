@@ -56,6 +56,7 @@ with pkgs;
   uv
   wget
   yarn
+  yazi
   yq
   zellij
   zoxide
