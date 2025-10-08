@@ -40,24 +40,22 @@ in
       ocd = "bun run ${config.home.homeDirectory}/ghq/github.com/shunkakinoki/open-composer/apps/cli/src/index.ts";
     };
     shellAbbrs = {
+      # Non-git abbreviations
       c = "clear";
       cat = "bat";
       cc = "claude";
       cs = "claude-squad";
       cx = "codex exec";
       e = "nvim";
-      g = "git";
-      # Note: GitAlias provides many git abbreviations starting with 'g'
-      # The following are kept for compatibility or because they override GitAlias defaults
-      ga = "git add";
-      gaa = "git add -A";
-      gp = "git push";
-      gpl = "git pull";
-      gpn = "git push --no-verify";
       lg = "lazygit";
       ta = "tmux new -A -s default";
       v = "nvim";
 
+      # Git abbreviations - provided by GitAlias (see shellInit)
+      # Only keeping custom ones that differ from GitAlias or have special behavior
+      gpn = "git push --no-verify"; # Custom: not in GitAlias
+
+      # Function-based abbreviations
       cxe = "_cxe_function";
       clxe = "_clxe_function";
       gco = "_gco_function";
