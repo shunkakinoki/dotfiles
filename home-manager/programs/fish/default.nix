@@ -1,15 +1,9 @@
 { config, pkgs, ... }:
-let
-  gitalias = import ../gitalias { inherit pkgs; };
-in
 {
   programs.fish = {
     enable = true;
     shellInit = ''
       direnv hook fish | source
-
-      # GitAlias - generated at build time
-      ${gitalias.fish}
     '';
     loginShellInit = ''
       fish_add_path -p ~/.local/bin

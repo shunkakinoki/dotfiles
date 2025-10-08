@@ -1,8 +1,5 @@
 # From: https://github.com/nix-community/home-manager/blob/master/modules/programs/zsh.nix
 { lib, pkgs, ... }:
-let
-  gitalias = import ../gitalias { inherit pkgs; };
-in
 {
   programs.zsh = {
     enable = false;
@@ -44,9 +41,6 @@ in
       export FNM_LOGLEVEL="info"
       export FNM_NODE_DIST_MIRROR="https://nodejs.org/dist"
       export FNM_VERSION_FILE_STRATEGY="local"
-
-      # GitAlias - generated at build time
-      ${gitalias.zsh}
     '';
   };
 }
