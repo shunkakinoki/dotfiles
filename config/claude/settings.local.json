@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cat | jq -r '\"display notification \\\"\" + .message + \"\\\" with title \\\"\" + .title + \"\\\" sound name \\\"Sonar\\\"\"' | xargs -I {} osascript -e '{}'"
+            "command": "jq -r '.message' | xargs -I {} osascript -e 'display notification \"{}\" with title \"Claude Code\" sound name \"Sonar\"'"
           }
         ]
       }

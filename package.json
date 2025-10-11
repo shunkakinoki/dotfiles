@@ -14,5 +14,10 @@
     "@github/copilot": "^0.0.335",
     "@google/jules": "^0.1.30",
     "open-composer": "^0.8.14"
-  }
+  },
+  "trustedDependencies": [
+    "@github/copilot",
+    "@google/jules",
+    "open-composer"
+  ]
 }

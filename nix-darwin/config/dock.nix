@@ -15,9 +15,11 @@
     persistent-apps = [
       "/System/Applications/Reminders.app"
       "/System/Applications/Notes.app"
+      "/System/Applications/Mail.app"
       "/Applications/ChatGPT.app"
       "/Applications/Claude.app"
       "/Applications/Google Chrome.app"
+      "/Applications/Wispr Flow.app"
       "/Applications/Docker.app"
       "/Applications/Docker.app/Contents/MacOS/Docker Desktop.app"
       "/Applications/LM Studio.app"
