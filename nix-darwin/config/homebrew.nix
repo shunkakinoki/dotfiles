@@ -16,6 +16,7 @@
     ];
     brews = [
       "bun"
+      "claude-code"
       "claude-squad"
       "cmake"
       "codex"
