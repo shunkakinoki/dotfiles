@@ -4,7 +4,7 @@
     "": {
       "name": "dotfiles",
       "dependencies": {
-        "@github/copilot": "^0.0.335",
+        "@github/copilot": "^0.0.339",
         "@google/jules": "^0.1.30",
         "open-composer": "^0.8.14",
       },
@@ -18,7 +18,7 @@
   "packages": {
     "@emnapi/runtime": ["@emnapi/runtime@1.5.0", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-97/BJ3iXHww3djw6hYIfErCZFee7qCtrneuLa20UXFCOTCfBM2cvQHjWJ2EG0s0MtdNwInarqCTz35i4wWXHsQ=="],
 
-    "@github/copilot": ["@github/copilot@0.0.335", "", { "dependencies": { "keytar-forked-forked": "^7.10.2", "node-pty": "npm:@devm33/node-pty@^1.0.8", "sharp": "^0.34.3" }, "bin": { "copilot": "index.js" } }, "sha512-FAH7m1hyifXK+9KSQMFhc3nP6bLnHVriibcZV7lDEXcN0WH8mcywE5+VsN94eCsXJllWBzLNM39Ks/eHJwayJA=="],
+    "@github/copilot": ["@github/copilot@0.0.339", "", { "dependencies": { "keytar-forked-forked": "^7.10.2", "node-pty": "npm:@devm33/node-pty@^1.0.8", "sharp": "^0.34.3" }, "bin": { "copilot": "index.js" } }, "sha512-72fLB7oYZkR43vnewr0BnAbO5QhJ7qE5mYbfhSNJqpvEIihULGLyvZX/K5dIoBtwJn6D4xEB2EuC6yT8ok5K7g=="],
 
     "@google/jules": ["@google/jules@0.1.30", "", { "dependencies": { "tar": "^7.4.3" }, "bin": { "jules": "run.cjs" } }, "sha512-lnqntgbLiULxIRNtPHx8Mj6OU7mhrl+Q4M2CmmLyYjXfZQ5mb+hCfBz75Ba3CEYSw2lDT1+7URIXaAiSJjRbHw=="],
 
