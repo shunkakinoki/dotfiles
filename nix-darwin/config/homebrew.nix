@@ -16,7 +16,6 @@
     ];
     brews = [
       "bun"
-      "claude-code"
       "claude-squad"
       "cmake"
       "codex"
@@ -39,6 +38,7 @@
       "block-goose"
       "chatgpt"
       "claude"
+      "claude-code"
       "conductor"
       "copilot-money"
       "cursor"
