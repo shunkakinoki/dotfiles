@@ -1,4 +1,12 @@
 { pkgs, lib, ... }:
+let
+  # Fetch GitAlias file directly from GitHub
+  gitaliasFile = pkgs.fetchurl {
+    url = "https://raw.githubusercontent.com/GitAlias/gitalias/main/gitalias.txt";
+    # Update this hash after first build - Nix will tell you the correct one
+    sha256 = "0000000000000000000000000000000000000000000000000000";
+  };
+in
 {
   programs.git = {
     enable = true;
@@ -10,6 +18,10 @@
     lfs = {
       enable = true;
     };
+    includes = [
+      # Include GitAlias as a git config file
+      { path = "${gitaliasFile}"; }
+    ];
     aliases = {
       co = "checkout";
       lt = "log --tags --decorate --simplify-by-decoration --oneline";
