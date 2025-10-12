@@ -27,6 +27,7 @@
       fish_add_path -p /etc/profiles/per-user/${config.home.username}/bin
       set -a fish_complete_path ~/.nix-profile/share/fish/completions/ ~/.nix-profile/share/fish/vendor_completions.d/
       set -x FISH_HISTFILE fish
+      fish_vi_key_bindings
     '';
     shellAliases = {
       neofetch = "fastfetch";
@@ -45,10 +46,6 @@
       lg = "lazygit";
       ta = "tmux new -A -s default";
       v = "nvim";
-
-      # Git abbreviations - provided by GitAlias (see shellInit)
-      # Only keeping custom ones that differ from GitAlias or have special behavior
-      gpn = "git push --no-verify"; # Custom: not in GitAlias
 
       # Function-based abbreviations
       cxe = "_cxe_function";
