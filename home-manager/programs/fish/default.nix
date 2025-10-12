@@ -42,6 +42,7 @@
       cs = "claude-squad";
       cx = "codex exec";
       e = "nvim";
+      g = "git";
       ld = "lazydocker";
       lg = "lazygit";
       ta = "tmux new -A -s default";
