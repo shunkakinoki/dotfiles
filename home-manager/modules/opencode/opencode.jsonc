@@ -1,8 +1,21 @@
 {
 	"$schema": "https://opencode.ai/config.json",
 	"theme": "opencode",
-	"model": "kimi-k2",
+	"model": "grok-code",
+	"small_model": "kimi-k2",
 	"autoupdate": true,
+	"agent": {
+		"code-reviewer": {
+			"description": "Reviews code for best practices and potential issues",
+			"model": "anthropic/claude-sonnet-4-20250514",
+			"prompt": "You are a code reviewer. Focus on security, performance, and maintainability.",
+			"tools": {
+				// Disable file modification tools for review-only agent
+				"write": false,
+				"edit": false
+			}
+		}
+	},
 	"provider": {
 		"lmstudio": {
 			"npm": "@ai-sdk/openai-compatible",
@@ -139,5 +152,8 @@
 			}
 		}
 	},
-	"plugin": ["opencode-openai-codex-auth"]
+	"plugin": ["opencode-openai-codex-auth"],
+	"tui": {
+		"scroll_speed": 3
+	}
 }
