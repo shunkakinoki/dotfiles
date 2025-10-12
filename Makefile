@@ -107,9 +107,6 @@ help:
 	@echo "  encrypt-key-HOST - Encrypt a key for a named host (e.g., make encrypt-key-galactica KEY_FILE=~/.ssh/id_ed25519)"
 	@echo "  decrypt-key-HOST - Decrypt a key for a named host (e.g., make decrypt-key-galactica KEY_FILE=id_ed25519)"
 	@echo "  rekey-HOST       - Rekey all secrets for a named host (e.g., make rekey-galactica)"
-	@echo "  gitalias-generate - Generate GitAlias shell aliases at build time"
-	@echo "  gitalias-test     - Test generated GitAlias aliases"
-	@echo "  gitalias-clean    - Clean generated GitAlias files"
 
 ##@ General
 
@@ -421,33 +418,3 @@ git-submodule-sync:
 	@git submodule update --init --recursive
 	@echo "✅ Submodules synced and updated"
 
-##@ GitAlias Integration
-
-.PHONY: gitalias-generate
-gitalias-generate: gitalias-static.bash gitalias-static.zsh gitalias-static.fish
-
-gitalias-static.bash: scripts/gitalias-to-bash.sh
-	@echo "🔨 Generating bash aliases..."
-	@bash scripts/gitalias-to-bash.sh > gitalias-static.bash
-
-gitalias-static.zsh: scripts/gitalias-to-zsh.sh
-	@echo "🔨 Generating zsh aliases..."
-	@zsh scripts/gitalias-to-zsh.sh > gitalias-static.zsh
-
-gitalias-static.fish: scripts/gitalias-to-fish.fish
-	@echo "🔨 Generating fish abbreviations..."
-	@fish scripts/gitalias-to-fish.fish 2>/dev/null > gitalias-static.fish || true
-
-.PHONY: gitalias-clean
-gitalias-clean:
-	@echo "🧹 Cleaning generated GitAlias files..."
-	@rm -f gitalias-static.bash gitalias-static.zsh gitalias-static.fish
-
-.PHONY: gitalias-test
-gitalias-test: gitalias-generate
-	@echo "🧪 Testing bash aliases..."
-	@bash -c 'source gitalias-static.bash && echo "✅ Bash: $$(alias | grep \"^alias g\" | wc -l | tr -d \" \") aliases"'
-	@echo "🧪 Testing zsh aliases..."
-	@zsh -c 'source gitalias-static.zsh && echo "✅ Zsh: $$(alias | grep \"^g\" | wc -l | tr -d \" \") aliases"'
-	@echo "🧪 Testing fish abbreviations..."
-	@fish -c 'source gitalias-static.fish 2>&1 && echo "✅ Fish: $$(abbr | grep \"^abbr -a g\" | wc -l | tr -d \" \") abbreviations"' || echo "⚠️  Fish: Some errors (WIP)"

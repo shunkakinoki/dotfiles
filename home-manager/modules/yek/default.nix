@@ -90,7 +90,7 @@ in
     # Install yek on activation
     home.activation.installYek = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       if [ ! -f "$HOME/.local/bin/yek" ]; then
-        $DRY_RUN_CMD ${installScript}/bin/install-yek
+        $DRY_RUN_CMD ${installScript}/bin/install-yek || true
       fi
     '';
   };
