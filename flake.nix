@@ -129,7 +129,7 @@
           treefmt = {
             projectRootFile = "flake.nix";
             programs = {
-              actionlint.enable = true;
+              actionlint.enable = false;
               biome.enable = true;
               nixfmt.enable = true;
               shfmt.enable = true;
