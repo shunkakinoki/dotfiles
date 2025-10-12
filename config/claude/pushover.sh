@@ -2,7 +2,7 @@
 
 # Claude Code Pushover Notification Script
 # Sends notifications to your smartwatch/phone when Claude needs attention
-# Supports: Notification, Stop, SessionStart, SessionEnd hooks
+# Supports: Notification, Stop, SessionEnd, PreCompact, SubagentStop hooks
 
 # Exit early if Pushover is not configured
 if [ -z "$PUSHOVER_API_TOKEN" ] || [ -z "$PUSHOVER_USER_KEY" ]; then
@@ -53,11 +53,10 @@ if echo "$input" | jq -e '.message' >/dev/null 2>&1; then
   exit 0
 fi
 
-# Handle Stop hook (session completion)
-if echo "$input" | jq -e '.session_id' >/dev/null 2>&1; then
-  SESSION_ID=$(echo "$input" | jq -r '.session_id[0:8]')
-  CWD=$(echo "$input" | jq -r '.cwd // "unknown"' | sed "s|$HOME|~|")
-  send_notification "✅ Work completed in ${CWD}" -1
+# Handle SessionEnd hook
+if echo "$input" | jq -e '.reason' >/dev/null 2>&1; then
+  REASON=$(echo "$input" | jq -r '.reason')
+  send_notification "👋 Session ended: ${REASON}" -1
   exit 0
 fi
 
@@ -79,13 +78,30 @@ fi
 #     exit 0
 # fi
 
-# Handle SessionEnd hook
-# Uncomment if you want session end notifications
-# if echo "$input" | jq -e '.reason' >/dev/null 2>&1; then
-#     REASON=$(echo "$input" | jq -r '.reason')
-#     send_notification "👋 Session ended: ${REASON}" -1
-#     exit 0
-# fi
+# Handle PreCompact hook
+if echo "$input" | jq -e '.trigger' >/dev/null 2>&1; then
+  TRIGGER=$(echo "$input" | jq -r '.trigger')
+  if [ "$TRIGGER" = "auto" ]; then
+    send_notification "🗜️ Auto-compacting context" -1
+  else
+    send_notification "🗜️ Manual compact triggered" -1
+  fi
+  exit 0
+fi
+
+# Handle SubagentStop hook
+if echo "$input" | jq -e '.stop_hook_active' >/dev/null 2>&1; then
+  send_notification "🤖 Subagent task completed" -1
+  exit 0
+fi
+
+# Handle Stop hook (main session completion)
+if echo "$input" | jq -e '.session_id' >/dev/null 2>&1; then
+  SESSION_ID=$(echo "$input" | jq -r '.session_id[0:8]')
+  CWD=$(echo "$input" | jq -r '.cwd // "unknown"' | sed "s|$HOME|~|")
+  send_notification "✅ Work completed in ${CWD}" -1
+  exit 0
+fi
 
 # Handle PreToolUse hook (disabled by default - too noisy)
 # if echo "$input" | jq -e '.tool.name' >/dev/null 2>&1; then

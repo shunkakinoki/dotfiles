@@ -88,12 +88,35 @@ Triggers when Claude completes work:
 - **Work Completion** - Notifies when a session finishes
   - Sends: "✅ Work completed in {directory}" (low priority)
 
+#### SessionEnd Hook (Low Priority)
+
+Triggers when a Claude Code session ends:
+
+- **Session End** - Notifies when session terminates
+  - Sends: "👋 Session ended: {reason}" (low priority)
+  - Reasons include: "clear", "logout", "prompt_input_exit"
+
+#### PreCompact Hook (Low Priority)
+
+Triggers before context compaction:
+
+- **Auto Compact** - When context window is full
+  - Sends: "🗜️ Auto-compacting context" (low priority)
+- **Manual Compact** - When `/compact` is invoked
+  - Sends: "🗜️ Manual compact triggered" (low priority)
+
+#### SubagentStop Hook (Low Priority)
+
+Triggers when a subagent (Task tool) completes:
+
+- **Subagent Completion** - When a Task tool finishes
+  - Sends: "🤖 Subagent task completed" (low priority)
+
 ### Optional Notifications (Commented Out)
 
-The following notifications are disabled by default to reduce noise. To enable them, uncomment the relevant sections in `notification.sh`:
+The following notifications are disabled by default to reduce noise. To enable them, uncomment the relevant sections in `pushover.sh`:
 
 - **SessionStart** - Session start/resume/clear events
-- **SessionEnd** - When a session ends
 - **PreToolUse** - Before each tool is used (very noisy)
 - **PostToolUse** - After each tool completes (very noisy)
 
@@ -115,7 +138,7 @@ The Pushover notification script that handles Claude Code hooks. Features:
 
 Location: `config/claude/settings.local.json`
 
-The hooks configuration (local settings override global settings). Only essential hooks are enabled:
+The hooks configuration (local settings override global settings):
 
 ```json
 {
@@ -149,14 +172,45 @@ The hooks configuration (local settings override global settings). Only essentia
           }
         ]
       }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh"
+          }
+        ]
+      }
     ]
   }
 }
 ```
 
-Each hook runs both:
-1. **macOS notification** - Shows on your Mac's notification center
-2. **Pushover notification** - Sends to your phone/smartwatch (if configured)
+**Note**: The `Notification` and `Stop` hooks run both macOS notifications and Pushover. The other hooks (`SessionEnd`, `PreCompact`, `SubagentStop`) only run Pushover to reduce notification noise on macOS.
 
 ## Customization
 

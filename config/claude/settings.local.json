@@ -29,6 +29,39 @@
           }
         ]
       }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh"
+          }
+        ]
+      }
     ]
   }
 }
