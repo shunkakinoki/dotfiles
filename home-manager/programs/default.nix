@@ -15,6 +15,7 @@ let
   ghq = import ./ghq;
   git = import ./git;
   go = import ./go;
+  lazydocker = import ./lazydocker;
   lazygit = import ./lazygit;
   lsd = import ./lsd;
   neovim = import ./neovim;
@@ -40,6 +41,7 @@ in
   ghq
   git
   go
+  lazydocker
   lazygit
   lsd
   neovim

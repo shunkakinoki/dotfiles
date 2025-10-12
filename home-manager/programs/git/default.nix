@@ -10,6 +10,10 @@
     lfs = {
       enable = true;
     };
+    includes = [
+      # Include GitAlias - update with: scripts/update-gitalias.sh
+      { path = "${./gitalias.txt}"; }
+    ];
     aliases = {
       co = "checkout";
       lt = "log --tags --decorate --simplify-by-decoration --oneline";
