@@ -3,6 +3,7 @@
 #
 
 auto-update-channel = tip
+background-opacity = 0.8
 window-decoration = true
 window-theme = "dark"
 window-save-state = always

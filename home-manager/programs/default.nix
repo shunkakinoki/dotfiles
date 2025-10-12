@@ -25,6 +25,7 @@ let
   starship = import ./starship;
   tms = import ./tms;
   tmux = import ./tmux;
+  zig = import ./zig;
   zoxide = import ./zoxide;
   zsh = import ./zsh { inherit lib pkgs; };
 in
@@ -47,6 +48,7 @@ in
   python
   rust
   ssh
+  zig
   starship
   tms
   tmux

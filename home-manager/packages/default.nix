@@ -14,7 +14,6 @@ with pkgs;
   ast-grep
   bat
   bun
-  claude-code
   cloudflared
   curl
   curlie
@@ -56,10 +55,13 @@ with pkgs;
   uv
   wget
   yarn
+  yazi
   yq
+  zellij
   zoxide
 ]
 ++ lib.optionals stdenv.isLinux [
+  claude-code
   codex
   docker
   docker-compose
