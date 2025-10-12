@@ -1,6 +1,7 @@
 [
   ./codex
   ./crush
+  ./droid
   ./dust
   ./ghostty
   ./npm-globals

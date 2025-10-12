@@ -8,6 +8,7 @@ with pkgs;
   inputs.agenix.packages.${system}.default
   inputs.nur.legacyPackages.${system}.repos.charmbracelet.crush
   age
+  aichat
   aider-chat
   amp-cli
   argocd
@@ -30,6 +31,7 @@ with pkgs;
   gemini-cli
   gh
   git
+  goose-cli
   grc
   httpie
   hyperfine

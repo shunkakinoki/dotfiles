@@ -44,6 +44,7 @@ in
   home.stateVersion = "24.11";
 
   programs.yek.enable = true;
+  programs.droid.enable = true;
 
   accounts.email.accounts = {
     Gmail = {
