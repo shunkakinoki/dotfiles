@@ -4,7 +4,7 @@
     "": {
       "name": "dotfiles",
       "dependencies": {
-        "@github/copilot": "^0.0.339",
+        "@github/copilot": "^0.0.341",
         "@google/jules": "^0.1.30",
         "@nanocollective/nanocoder": "^1.13.3",
         "open-composer": "^0.8.14",
@@ -12,9 +12,10 @@
     },
   },
   "trustedDependencies": [
+    "open-composer",
     "@google/jules",
     "@github/copilot",
-    "open-composer",
+    "@nanocollective/nanocoder",
   ],
   "packages": {
     "@alcalzone/ansi-tokenize": ["@alcalzone/ansi-tokenize@0.2.0", "", { "dependencies": { "ansi-styles": "^6.2.1", "is-fullwidth-code-point": "^5.0.0" } }, "sha512-qI/5TaaaCZE4yeSZ83lu0+xi1r88JSxUjnH4OP/iZF7+KKZ75u3ee5isd0LxX+6N8U0npL61YrpbthILHB6BnA=="],
@@ -29,7 +30,7 @@
 
     "@emnapi/runtime": ["@emnapi/runtime@1.5.0", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-97/BJ3iXHww3djw6hYIfErCZFee7qCtrneuLa20UXFCOTCfBM2cvQHjWJ2EG0s0MtdNwInarqCTz35i4wWXHsQ=="],
 
-    "@github/copilot": ["@github/copilot@0.0.339", "", { "dependencies": { "keytar-forked-forked": "^7.10.2", "node-pty": "npm:@devm33/node-pty@^1.0.8", "sharp": "^0.34.3" }, "bin": { "copilot": "index.js" } }, "sha512-72fLB7oYZkR43vnewr0BnAbO5QhJ7qE5mYbfhSNJqpvEIihULGLyvZX/K5dIoBtwJn6D4xEB2EuC6yT8ok5K7g=="],
+    "@github/copilot": ["@github/copilot@0.0.341", "", { "dependencies": { "keytar-forked-forked": "^7.10.2", "node-pty": "npm:@devm33/node-pty@^1.0.8", "sharp": "^0.34.3" }, "bin": { "copilot": "index.js" } }, "sha512-Ti/aenIMkHP9H171AOlH0aHoQGBTIKCEE+Vk4STaKNcWrnNe9Nuevbc91935nuHki4YRhBW+3lY4WZF6h9oqXQ=="],
 
     "@google/jules": ["@google/jules@0.1.30", "", { "dependencies": { "tar": "^7.4.3" }, "bin": { "jules": "run.cjs" } }, "sha512-lnqntgbLiULxIRNtPHx8Mj6OU7mhrl+Q4M2CmmLyYjXfZQ5mb+hCfBz75Ba3CEYSw2lDT1+7URIXaAiSJjRbHw=="],
 
