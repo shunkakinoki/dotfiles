@@ -44,16 +44,20 @@ with pkgs;
   kubectx
   kustomize
   llama-cpp
+  mariadb
   opencode
+  postgresql
   procs
   pulumi-bin
   qwen-code
   ripgrep
   rustup
   sccache
+  sqlite
   stern
   tokei
   tree
+  turso-cli
   uv
   wget
   yarn
