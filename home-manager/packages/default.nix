@@ -28,7 +28,6 @@ with pkgs;
   fastfetch
   fd
   fswatch
-  gemini-cli
   gh
   git
   goose-cli
