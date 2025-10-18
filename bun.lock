@@ -15,6 +15,7 @@
   "trustedDependencies": [
     "open-composer",
     "@google/jules",
+    "cline",
     "@github/copilot",
     "@nanocollective/nanocoder",
   ],

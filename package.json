@@ -21,6 +21,7 @@
     "@github/copilot",
     "@google/jules",
     "@nanocollective/nanocoder",
+    "cline",
     "open-composer"
   ]
 }
