@@ -11,10 +11,11 @@
   "license": "ISC",
   "packageManager": "bun@1.2.23",
   "dependencies": {
-    "@github/copilot": "^0.0.343",
-    "@google/jules": "^0.1.30",
-    "@nanocollective/nanocoder": "^1.13.3",
-    "open-composer": "^0.8.14"
+    "@github/copilot": "^0.0.344",
+    "@google/jules": "^0.1.35",
+    "@nanocollective/nanocoder": "^1.13.7",
+    "cline": "^1.0.1",
+    "open-composer": "^0.8.21"
   },
   "trustedDependencies": [
     "@github/copilot",
