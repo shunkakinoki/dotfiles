@@ -28,3 +28,7 @@ model_provider = "ollama"
 [profiles.gpt-oss-120b]
 model = "openai/gpt-oss-120b"
 model_provider = "lmstudio"
+
+[profiles.qwen3-coder-30b]
+model = "qwen/qwen3-coder-30b"
+model_provider = "lmstudio"
