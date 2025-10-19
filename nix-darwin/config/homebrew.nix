@@ -12,6 +12,7 @@
       "homebrew/cask"
       "kurtosis-tech/tap"
       "oven-sh/bun"
+      "sst/tap"
     ];
     brews = [
       "bun"
@@ -30,6 +31,7 @@
       "postgresql"
       "protobuf"
       "sheldon"
+      "sst/tap/opencode"
       "temporal"
     ];
     casks = [
@@ -61,7 +63,6 @@
       "lm-studio"
       "notion"
       "ollama-app"
-      "opencode"
       "raycast"
       "rescuetime"
       "screen-studio"
