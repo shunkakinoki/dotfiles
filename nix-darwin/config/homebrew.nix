@@ -12,6 +12,7 @@
       "homebrew/cask"
       "kurtosis-tech/tap"
       "oven-sh/bun"
+      "paradigmxyz/brew"
       "sst/tap"
     ];
     brews = [
@@ -22,16 +23,18 @@
       "coreutils"
       "ffmpeg"
       "gemini-cli"
+      "geth"
       "gnupg"
       "helm"
       "kurtosis-cli"
       "mas"
+      "opencode"
       "pinentry-mac"
       "pnpm"
       "postgresql"
       "protobuf"
+      "reth"
       "sheldon"
-      "sst/tap/opencode"
       "temporal"
     ];
     casks = [
