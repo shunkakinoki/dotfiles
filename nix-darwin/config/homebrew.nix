@@ -12,7 +12,6 @@
       "homebrew/cask"
       "kurtosis-tech/tap"
       "oven-sh/bun"
-      "sst/tap"
     ];
     brews = [
       "bun"
