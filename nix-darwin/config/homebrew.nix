@@ -31,11 +31,11 @@
       "postgresql"
       "protobuf"
       "sheldon"
-      "sst/tap/opencode"
       "temporal"
     ];
     casks = [
       "beeper"
+      "blender"
       "block-goose"
       "chatgpt"
       "claude"
@@ -62,6 +62,7 @@
       "lm-studio"
       "notion"
       "ollama-app"
+      "opencode"
       "raycast"
       "rescuetime"
       "screen-studio"
