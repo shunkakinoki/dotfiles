@@ -44,7 +44,6 @@ with pkgs;
   kustomize
   llama-cpp
   mariadb
-  opencode
   postgresql
   procs
   pulumi-bin
@@ -70,5 +69,7 @@ with pkgs;
   codex
   docker
   docker-compose
+  gemini-cli
   kubernetes-helm
+  opencode
 ]

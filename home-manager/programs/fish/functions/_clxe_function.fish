@@ -1,11 +1,11 @@
-function _clxe_function --description "Run Codex with a free-form prompt using the local gpt-oss:120b model"
-  # Run Codex with a free-form prompt (spaces allowed) using the local gpt-oss:120b model
+function _clxe_function --description "Run Claude Code with a free-form prompt while skipping permissions"
+  # Run Claude Code with a free-form prompt (spaces allowed) and bypass permission checks
   # Usage: clxe [<prompt words...>]
 
   if test (count $argv) -eq 0
-    codex --profile 'gpt-oss-120b' --full-auto -c model_reasoning_summary_format=experimental
+    claude code --dangerously-skip-permissions
   else
     set -l prompt (string join " " -- $argv)
-    codex --profile 'gpt-oss-120b' --full-auto -c model_reasoning_summary_format=experimental -- "$prompt"
+    claude code --dangerously-skip-permissions --print -- "$prompt"
   end
 end
