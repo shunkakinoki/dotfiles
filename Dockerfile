@@ -13,11 +13,10 @@ RUN apt-get update && apt-get install -y \
     bzip2 \
     ca-certificates \
     curl \
-    daemon \
     git \
     make \
-    nix-setup-systemd \
     sudo \
+    xz-utils \
     # Add any other system-level dependencies your script needs here
     && rm -rf /var/lib/apt/lists/*
 
@@ -31,40 +30,34 @@ ARG COMMIT_SHA=main
 RUN set -e; \
     groupadd --gid $USER_GID $USER; \
     useradd --uid $USER_UID --gid $USER_GID --shell /bin/bash --create-home $USER; \
-    usermod -aG nix-users $USER; \
     id $USER
 RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER \
     && chmod 0440 /etc/sudoers.d/$USER
 
-ENV NIX_BUILD_GROUP_ID=1001
 ENV IN_DOCKER=true
 
-# We must start the daemon and run the installation in the same RUN command
-# so that the daemon is available for the Nix commands in the script.
+# Install Nix in multi-user mode
+RUN sh <(curl -L https://nixos.org/nix/install) --daemon --yes
+
+# Configure Nix
 RUN mkdir -p /etc/nix && \
     echo "trusted-users = root $USER" > /etc/nix/nix.conf && \
     echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf && \
     echo "filter-syscalls = false" >> /etc/nix/nix.conf && \
     echo "sandbox = false" >> /etc/nix/nix.conf
 
-RUN /usr/bin/nix-daemon & \
-    sleep 5 && \
-    # Run your dotfiles installation script.
-    # This script is expected to install fish and other tools.
-    # Make sure this script is idempotent or handles being run in a fresh environment.
+# Run the dotfiles installation script
+# This script is expected to install fish and other tools.
+RUN . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh && \
     sudo -u $USER -E -H bash -c "curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_SHA/install.sh | bash"
 
 # Switch to the non-root user
 USER $USER
 WORKDIR /home/$USER
 
-# Run your dotfiles installation script
-# This script is expected to install fish and other tools.
-# Make sure this script is idempotent or handles being run in a fresh environment.
-# RUN curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_SHA/install.sh | /bin/bash
+# Set up environment for Nix
+ENV PATH="/nix/var/nix/profiles/default/bin:$PATH"
 
-# Your install.sh script should ideally set up fish as the default shell if desired.
-# If it doesn't, you might need to add a line here like:
-# RUN sudo chsh -s $(which fish) $USER
-# Or, to set fish as the default shell for subsequent Dockerfile commands and for the agent's shell:
-SHELL ["/usr/bin/fish", "-l", "-c"]
+# The default shell remains bash as fish is installed via Nix and its path
+# varies based on the installation. Users can change their shell preference
+# in their dotfiles configuration.
