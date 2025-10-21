@@ -38,6 +38,7 @@
       "temporal"
     ];
     casks = [
+      "atuin-desktop"
       "beeper"
       "blender"
       "block-goose"
@@ -73,6 +74,7 @@
       "slack"
       "visual-studio-code"
       "warp"
+      "wezterm"
       "windsurf"
       "zed"
       "zoom"
