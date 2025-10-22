@@ -40,9 +40,13 @@ inputs.nix-darwin.lib.darwinSystem {
               signByDefault = true;
               key = "shunkakinoki@gmail.com";
             };
-            extraConfig = {
-              commit.gpgSign = true;
-              tag.gpgSign = true;
+            settings = {
+              commit = {
+                gpgSign = true;
+              };
+              tag = {
+                gpgSign = true;
+              };
             };
           };
 
