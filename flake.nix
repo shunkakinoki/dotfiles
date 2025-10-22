@@ -2,8 +2,11 @@
   description = "Shun Kakinoki's Nix Configuration";
 
   inputs = {
-    nixpkgs = {
+    nixpkgs-unstable = {
       url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    };
+    nixpkgs = {
+      url = "github:NixOS/nixpkgs"; # HEAD to resolve nokogiri issue https://github.com/NixOS/nixpkgs/issues/449970
     };
     home-manager = {
       url = "github:nix-community/home-manager";
