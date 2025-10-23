@@ -40,6 +40,7 @@
     casks = [
       "atuin-desktop"
       "beeper"
+      "beekeeper-studio"
       "blender"
       "block-goose"
       "chatgpt"

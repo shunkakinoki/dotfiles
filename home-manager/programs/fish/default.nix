@@ -28,6 +28,7 @@
       set -a fish_complete_path ~/.nix-profile/share/fish/completions/ ~/.nix-profile/share/fish/vendor_completions.d/
       set -x FISH_HISTFILE fish
       fish_vi_key_bindings
+
     '';
     shellAliases = {
       neofetch = "fastfetch";
@@ -75,10 +76,11 @@
         name = "done";
         src = pkgs.fishPlugins.done.src;
       }
-      {
-        name = "fzf";
-        src = pkgs.fishPlugins.fzf.src;
-      }
+      # Temporarily disabled due to bind -k syntax incompatibility with fish 4.x
+      # {
+      #   name = "fzf";
+      #   src = pkgs.fishPlugins.fzf.src;
+      # }
       {
         name = "fzf-fish";
         src = pkgs.fishPlugins.fzf-fish.src;
