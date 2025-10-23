@@ -4,6 +4,7 @@
   sources,
 }:
 let
+  atuin = import ./atuin;
   bash = import ./bash { inherit lib pkgs; };
   bat = import ./bat;
   direnv = import ./direnv;
@@ -30,6 +31,7 @@ let
   zsh = import ./zsh { inherit lib pkgs; };
 in
 [
+  atuin
   bash
   bat
   direnv

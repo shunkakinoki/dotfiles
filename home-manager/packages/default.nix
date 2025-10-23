@@ -28,6 +28,7 @@ with pkgs;
   fastfetch
   fd
   fswatch
+  fzf-make
   gh
   git
   goose-cli

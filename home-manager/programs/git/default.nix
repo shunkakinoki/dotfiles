@@ -2,11 +2,6 @@
 {
   programs.git = {
     enable = true;
-    delta = {
-      enable = true;
-    };
-    userName = "Shun Kakinoki";
-    userEmail = "shunkakinoki@gmail.com";
     lfs = {
       enable = true;
     };
@@ -14,12 +9,16 @@
       # Include GitAlias - update with: scripts/update-gitalias.sh
       { path = "${./gitalias.txt}"; }
     ];
-    aliases = {
-      co = "checkout";
-      lt = "log --tags --decorate --simplify-by-decoration --oneline";
-      unshallow = "fetch --prune --tags --unshallow";
-    };
-    extraConfig = {
+    settings = {
+      user = {
+        name = "Shun Kakinoki";
+        email = "shunkakinoki@gmail.com";
+      };
+      alias = {
+        co = "checkout";
+        lt = "log --tags --decorate --simplify-by-decoration --oneline";
+        unshallow = "fetch --prune --tags --unshallow";
+      };
       # commit.gpgSign = true;
       # gpg.format = "ssh";
       # gpg.ssh.allowedSignersFile = "~/.ssh/allowed_signers";
@@ -82,5 +81,9 @@
       };
     };
     ignores = lib.splitString "\n" (builtins.readFile ./.gitignore.global);
+  };
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
   };
 }
