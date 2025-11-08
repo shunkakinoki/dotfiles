@@ -20,11 +20,9 @@ jobs:
       matrix:
         build:
           - platform: linux/amd64
-            suffix: -amd64
             arch: amd64
             runner: ubuntu-latest
           - platform: linux/arm64
-            suffix: -arm64
             arch: arm64
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.build.runner }}
@@ -46,11 +44,11 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
           flavor: |
-            suffix=${{ matrix.build.suffix }}
+            suffix=-${{ matrix.build.arch }}
             latest=${{ github.ref == 'refs/heads/main' && github.event_name == 'push' && 'false' || 'auto' }}
           tags: |
-            type=sha,format=short,suffix=${{ matrix.build.suffix }},enable=${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
-            type=raw,value=latest,suffix=${{ matrix.build.suffix }},enable=${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+            type=sha,format=short,suffix=-${{ matrix.build.arch }},enable=${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+            type=raw,value=latest,suffix=-${{ matrix.build.arch }},enable=${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
             type=sha,format=short,enable=${{ !(github.ref == 'refs/heads/main' && github.event_name == 'push') }}
             type=semver,pattern={{version}},enable=${{ !(github.ref == 'refs/heads/main' && github.event_name == 'push') }}
             type=semver,pattern={{raw}},enable=${{ !(github.ref == 'refs/heads/main' && github.event_name == 'push') }}
