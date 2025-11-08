@@ -4,8 +4,10 @@
   sources,
 }:
 let
+  atuin = import ./atuin;
   bash = import ./bash { inherit lib pkgs; };
   bat = import ./bat;
+  delta = import ./delta;
   direnv = import ./direnv;
   fd = import ./fd;
   fish = import ./fish;
@@ -30,8 +32,10 @@ let
   zsh = import ./zsh { inherit lib pkgs; };
 in
 [
+  atuin
   bash
   bat
+  delta
   direnv
   fd
   fish

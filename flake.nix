@@ -130,7 +130,7 @@
             projectRootFile = "flake.nix";
             programs = {
               actionlint.enable = false;
-              biome.enable = true;
+              biome.enable = false; # Temporarily disabled due to schema hash mismatch
               nixfmt.enable = true;
               shfmt.enable = true;
               stylua.enable = true;

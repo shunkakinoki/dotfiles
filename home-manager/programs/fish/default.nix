@@ -15,6 +15,7 @@
       fish_add_path -p /etc/profiles/per-user/${config.home.username}/bin
     '';
     interactiveShellInit = ''
+      source ${config.home.homeDirectory}/.config/fish/functions/_hm_load_env_file.fish
       _hm_load_env_file
       set fish_greeting
       set fish_theme dracula
@@ -75,10 +76,10 @@
         name = "done";
         src = pkgs.fishPlugins.done.src;
       }
-      {
-        name = "fzf";
-        src = pkgs.fishPlugins.fzf.src;
-      }
+      # {
+      #   name = "fzf";
+      #   src = pkgs.fishPlugins.fzf.src;
+      # }
       {
         name = "fzf-fish";
         src = pkgs.fishPlugins.fzf-fish.src;
