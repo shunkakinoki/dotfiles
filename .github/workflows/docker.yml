@@ -32,9 +32,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-      - name: Start Docker daemon
-        if: runner.os == 'macOS'
-        run: sudo launchctl start com.docker.docker
+      - name: Setup Docker on macOS
+        if: matrix.build.runner == 'macos-latest'
+        id: setup-docker
+        uses: douglascamata/setup-docker-macos-action@v1.0.1
+        with:
+          colima: latest
+          colima-network-address: false
+          colima-additional-options: --cpu 4 --memory 8 --vm-type vz --vz-rosetta --mount-type virtiofs --headless
       - name: Set up QEMU
         if: matrix.build.runner == 'ubuntu-latest'
         uses: docker/setup-qemu-action@v3
@@ -80,7 +85,6 @@ jobs:
             GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          qemu-version: ${{ matrix.build.arch == 'amd64' && '7' || '' }}
   docker-merge-manifests:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs:
