@@ -6,4 +6,6 @@
       max-jobs = 8;
     };
   };
+
+  nixpkgs.config.allowUnfree = true;
 }

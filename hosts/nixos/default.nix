@@ -104,6 +104,7 @@ nixpkgs.lib.nixosSystem {
         fsType = "ext4";
       };
 
+      nixpkgs.config.allowUnfree = true;
       nixpkgs.pkgs = pkgs;
 
       fonts.packages = with pkgs; [
