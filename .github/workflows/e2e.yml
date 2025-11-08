@@ -26,6 +26,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+      - name: Free Disk Space (Ubuntu)
+        if: runner.os == 'Linux'
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
       - name: KVM Linux Virtualization
         if: runner.os == 'Linux'
         run: |
