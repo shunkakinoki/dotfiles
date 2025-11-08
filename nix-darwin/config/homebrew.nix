@@ -20,6 +20,7 @@
       "claude-squad"
       "cmake"
       "codex"
+      "colima"
       "coreutils"
       "ffmpeg"
       "gemini-cli"
