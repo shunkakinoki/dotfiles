@@ -44,7 +44,7 @@
       cx = "codex exec";
       e = "nvim";
       g = "git";
-      ld = "lazydocker";
+      lzd = "lazydocker";
       lzg = "lazygit";
       ta = "tmux new -A -s default";
       v = "nvim";
