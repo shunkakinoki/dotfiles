@@ -4,8 +4,8 @@
 }:
 with pkgs;
 [
-  inputs.agenix.packages.aarch64-darwin.default
-  inputs.nur.legacyPackages.aarch64-darwin.repos.charmbracelet.crush
+  inputs.agenix.packages.${pkgs.system}.default
+  inputs.nur.legacyPackages.${pkgs.system}.repos.charmbracelet.crush
   age
   aichat
   aider-chat
