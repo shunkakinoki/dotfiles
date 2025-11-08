@@ -72,6 +72,7 @@ jobs:
           labels: ${{ steps.metadata.outputs.labels }}
           build-args: |
             COMMIT_SHA=${{ github.sha }}
+            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           qemu-version: ${{ matrix.build.arch == 'amd64' && '7' || '' }}
@@ -128,5 +129,5 @@ jobs:
       - name: Alls Green
         uses: re-actors/alls-green@release/v1
         with:
-          allowed-skips: docker-merge-manifests
+          allowed-skips: docker-build-push,docker-merge-manifests
           jobs: ${{ toJSON(needs) }}

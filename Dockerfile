@@ -27,6 +27,7 @@ ARG USER=runner
 ARG USER_UID=1001
 ARG USER_GID=$USER_UID
 ARG COMMIT_SHA=main
+ARG GITHUB_TOKEN
 
 RUN set -e; \
     groupadd --gid $USER_GID $USER; \
@@ -49,6 +50,10 @@ RUN mkdir -p /etc/nix && \
 
 RUN /usr/bin/nix-daemon & \
     sleep 5 && \
+    if [ -n "$GITHUB_TOKEN" ]; then \
+      export GITHUB_TOKEN="$GITHUB_TOKEN" && \
+      git config --global url."https://$GITHUB_TOKEN@github.com/".insteadOf "https://github.com/" ; \
+    fi && \
     # Run your dotfiles installation script.
     # This script is expected to install fish and other tools.
     # Make sure this script is idempotent or handles being run in a fresh environment.
