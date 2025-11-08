@@ -31,12 +31,16 @@ in
       inputs.agenix.homeManagerModules.default
     ];
 
-  nixpkgs.config.allowUnfreePredicate =
-    pkg:
-    builtins.elem (lib.getName pkg) [
-      "claude-code"
-      "qwen-code"
-    ];
+  nixpkgs.config = {
+    allowUnfree = true;
+    allowUnfreePredicate =
+      pkg:
+      builtins.elem (lib.getName pkg) [
+        "claude-code"
+        "qwen-code"
+        "crush"
+      ];
+  };
 
   home.username = username;
   home.homeDirectory = lib.mkIf pkgs.stdenv.isLinux "/home/${username}";

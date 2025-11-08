@@ -7,7 +7,10 @@
 let
   inherit (inputs) nixpkgs home-manager;
   system = "x86_64-linux";
-  pkgs = nixpkgs.legacyPackages.${system};
+  pkgs = import nixpkgs {
+    inherit system;
+    config.allowUnfree = true;
+  };
   configuration =
     { config, lib, ... }:
     {
@@ -104,7 +107,6 @@ nixpkgs.lib.nixosSystem {
         fsType = "ext4";
       };
 
-      nixpkgs.config.allowUnfree = true;
       nixpkgs.pkgs = pkgs;
 
       fonts.packages = with pkgs; [
@@ -118,7 +120,7 @@ nixpkgs.lib.nixosSystem {
       home-manager.users."${username}" = import ../../home-manager {
         inherit inputs username system;
         lib = nixpkgs.lib;
-        pkgs = nixpkgs.legacyPackages.${system};
+        pkgs = pkgs;
         config = { };
       };
     }
