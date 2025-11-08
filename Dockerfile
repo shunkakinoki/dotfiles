@@ -46,14 +46,13 @@ RUN mkdir -p /etc/nix && \
     echo "trusted-users = root $USER" > /etc/nix/nix.conf && \
     echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf && \
     echo "filter-syscalls = false" >> /etc/nix/nix.conf && \
-    echo "sandbox = false" >> /etc/nix/nix.conf
+    echo "sandbox = false" >> /etc/nix/nix.conf && \
+    if [ -n "$GITHUB_TOKEN" ]; then \
+      echo "access-tokens = github.com=https://$GITHUB_TOKEN" >> /etc/nix/nix.conf ; \
+    fi
 
 RUN /usr/bin/nix-daemon & \
     sleep 5 && \
-    if [ -n "$GITHUB_TOKEN" ]; then \
-      export GITHUB_TOKEN="$GITHUB_TOKEN" && \
-      git config --global url."https://$GITHUB_TOKEN@github.com/".insteadOf "https://github.com/" ; \
-    fi && \
     # Run your dotfiles installation script.
     # This script is expected to install fish and other tools.
     # Make sure this script is idempotent or handles being run in a fresh environment.
