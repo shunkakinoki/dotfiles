@@ -1,12 +1,11 @@
 {
   pkgs,
   inputs,
-  system,
 }:
 with pkgs;
 [
-  inputs.agenix.packages.${system}.default
-  inputs.nur.legacyPackages.${system}.repos.charmbracelet.crush
+  inputs.agenix.packages.aarch64-darwin.default
+  inputs.nur.legacyPackages.aarch64-darwin.repos.charmbracelet.crush
   age
   aichat
   aider-chat

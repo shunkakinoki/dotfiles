@@ -107,7 +107,50 @@
     source = config.lib.file.mkOutOfStoreSymlink ./completions;
   };
 
-  xdg.configFile."fish/functions" = {
-    source = config.lib.file.mkOutOfStoreSymlink ./functions;
+  # Individual function files
+  xdg.configFile."fish/functions/_clxe_function.fish" = {
+    source = ./functions/_clxe_function.fish;
+  };
+  xdg.configFile."fish/functions/_coxe_function.fish" = {
+    source = ./functions/_coxe_function.fish;
+  };
+  xdg.configFile."fish/functions/_coxel_function.fish" = {
+    source = ./functions/_coxel_function.fish;
+  };
+  xdg.configFile."fish/functions/_fish_shortcuts.fish" = {
+    source = ./functions/_fish_shortcuts.fish;
+  };
+  xdg.configFile."fish/functions/_fzf_cmd_history.fish" = {
+    source = ./functions/_fzf_cmd_history.fish;
+  };
+  xdg.configFile."fish/functions/_fzf_directory_picker.fish" = {
+    source = ./functions/_fzf_directory_picker.fish;
+  };
+  xdg.configFile."fish/functions/_fzf_file_picker.fish" = {
+    source = ./functions/_fzf_file_picker.fish;
+  };
+  xdg.configFile."fish/functions/_fzf_ghq_picker.fish" = {
+    source = ./functions/_fzf_ghq_picker.fish;
+  };
+  xdg.configFile."fish/functions/_fzf_preview_cmd.fish" = {
+    source = ./functions/_fzf_preview_cmd.fish;
+  };
+  xdg.configFile."fish/functions/_fzf_preview_name.fish" = {
+    source = ./functions/_fzf_preview_name.fish;
+  };
+  xdg.configFile."fish/functions/_gco_function.fish" = {
+    source = ./functions/_gco_function.fish;
+  };
+  xdg.configFile."fish/functions/_grco_function.fish" = {
+    source = ./functions/_grco_function.fish;
+  };
+  xdg.configFile."fish/functions/_grcr_function.fish" = {
+    source = ./functions/_grcr_function.fish;
+  };
+  xdg.configFile."fish/functions/_hm_load_env_file.fish" = {
+    source = ./functions/_hm_load_env_file.fish;
+  };
+  xdg.configFile."fish/functions/fish_user_key_bindings.fish" = {
+    source = ./functions/fish_user_key_bindings.fish;
   };
 }

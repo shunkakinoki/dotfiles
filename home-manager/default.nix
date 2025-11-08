@@ -9,7 +9,7 @@
 }:
 let
   hmConfig = import ../config;
-  packages = import ./packages { inherit pkgs inputs system; };
+  packages = import ./packages { inherit pkgs inputs; };
   misc = import ./misc;
   modules = import ./modules;
   programs = import ./programs {
