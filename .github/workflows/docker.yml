@@ -18,14 +18,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' && fromJSON('[{"platform":"linux/amd64","suffix":"-amd64","arch":"amd64"},{"platform":"linux/arm64","suffix":"-arm64","arch":"arm64"}]') || fromJSON('[{"platform":"linux/amd64","suffix":"-amd64","arch":"amd64"}]') }}
-    runs-on: ubuntu-latest
+        build:
+          - platform: linux/amd64
+            arch: amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.build.runner }}
     timeout-minutes: 300
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to GHCR
@@ -40,11 +44,11 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
           flavor: |
-            suffix=${{ matrix.build.suffix }}
+            suffix=-${{ matrix.build.arch }}
             latest=${{ github.ref == 'refs/heads/main' && github.event_name == 'push' && 'false' || 'auto' }}
           tags: |
-            type=sha,format=short,suffix=${{ matrix.build.suffix }},enable=${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
-            type=raw,value=latest,suffix=${{ matrix.build.suffix }},enable=${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+            type=sha,format=short,suffix=-${{ matrix.build.arch }},enable=${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+            type=raw,value=latest,suffix=-${{ matrix.build.arch }},enable=${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
             type=sha,format=short,enable=${{ !(github.ref == 'refs/heads/main' && github.event_name == 'push') }}
             type=semver,pattern={{version}},enable=${{ !(github.ref == 'refs/heads/main' && github.event_name == 'push') }}
             type=semver,pattern={{raw}},enable=${{ !(github.ref == 'refs/heads/main' && github.event_name == 'push') }}
@@ -65,6 +69,7 @@ jobs:
           labels: ${{ steps.metadata.outputs.labels }}
           build-args: |
             COMMIT_SHA=${{ github.sha }}
+            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
   docker-merge-manifests:
@@ -120,5 +125,5 @@ jobs:
       - name: Alls Green
         uses: re-actors/alls-green@release/v1
         with:
-          allowed-skips: docker-merge-manifests
+          allowed-skips: docker-build-push,docker-merge-manifests
           jobs: ${{ toJSON(needs) }}

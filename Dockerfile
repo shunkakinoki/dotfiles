@@ -27,6 +27,7 @@ ARG USER=runner
 ARG USER_UID=1001
 ARG USER_GID=$USER_UID
 ARG COMMIT_SHA=main
+ARG GITHUB_TOKEN
 
 RUN set -e; \
     groupadd --gid $USER_GID $USER; \
@@ -45,7 +46,10 @@ RUN mkdir -p /etc/nix && \
     echo "trusted-users = root $USER" > /etc/nix/nix.conf && \
     echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf && \
     echo "filter-syscalls = false" >> /etc/nix/nix.conf && \
-    echo "sandbox = false" >> /etc/nix/nix.conf
+    echo "sandbox = false" >> /etc/nix/nix.conf && \
+    if [ -n "$GITHUB_TOKEN" ]; then \
+      echo "access-tokens = github.com=https://$GITHUB_TOKEN" >> /etc/nix/nix.conf ; \
+    fi
 
 RUN /usr/bin/nix-daemon & \
     sleep 5 && \

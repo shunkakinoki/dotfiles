@@ -244,8 +244,8 @@ nix-flake-check:
 .PHONY: nix-flake-update
 nix-flake-update: nix-connect
 	@echo "♻️ Refreshing flake.lock file..."
-	@if [ "$$CI" = "true" ]; then \
-		echo "Bypassing flake update in CI"; \
+	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
+		echo "Bypassing flake update in CI/Docker"; \
 	else \
 		$(NIX_EXEC) flake update $(NIX_FLAGS); \
 	fi
