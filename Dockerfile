@@ -48,7 +48,7 @@ RUN mkdir -p /etc/nix && \
     echo "filter-syscalls = false" >> /etc/nix/nix.conf && \
     echo "sandbox = false" >> /etc/nix/nix.conf && \
     if [ -n "$GITHUB_TOKEN" ]; then \
-      echo "access-tokens = github.com=https://$GITHUB_TOKEN" >> /etc/nix/nix.conf ; \
+      echo "access-tokens = github.com=$GITHUB_TOKEN" >> /etc/nix/nix.conf ; \
     fi
 
 RUN /usr/bin/nix-daemon & \
