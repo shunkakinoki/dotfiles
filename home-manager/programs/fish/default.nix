@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 {
   programs.fish = {
     enable = true;
@@ -44,8 +49,8 @@
       cx = "codex exec";
       e = "nvim";
       g = "git";
-      ld = "lazydocker";
-      lg = "lazygit";
+      lzd = "lazydocker";
+      lzg = "lazygit";
       ta = "tmux new -A -s default";
       v = "nvim";
 
@@ -99,15 +104,32 @@
     ];
   };
 
-  xdg.configFile."fish/themes/dracula.theme" = {
-    source = ./dracula.theme;
-  };
-
-  xdg.configFile."fish/completions" = {
-    source = config.lib.file.mkOutOfStoreSymlink ./completions;
-  };
-
-  xdg.configFile."fish/functions" = {
-    source = config.lib.file.mkOutOfStoreSymlink ./functions;
-  };
+  xdg.configFile = {
+    "fish/themes/dracula.theme".source = ./dracula.theme;
+    "fish/completions".source = config.lib.file.mkOutOfStoreSymlink ./completions;
+  }
+  // lib.listToAttrs (
+    map
+      (name: {
+        name = "fish/functions/${name}.fish";
+        value.source = ./functions/${name}.fish;
+      })
+      [
+        "_clxe_function"
+        "_coxe_function"
+        "_coxel_function"
+        "_fish_shortcuts"
+        "_fzf_cmd_history"
+        "_fzf_directory_picker"
+        "_fzf_file_picker"
+        "_fzf_ghq_picker"
+        "_fzf_preview_cmd"
+        "_fzf_preview_name"
+        "_gco_function"
+        "_grco_function"
+        "_grcr_function"
+        "_hm_load_env_file"
+        "fish_user_key_bindings"
+      ]
+  );
 }
