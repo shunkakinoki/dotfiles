@@ -45,7 +45,7 @@
       e = "nvim";
       g = "git";
       ld = "lazydocker";
-      # lg = "lazygit"; # Temporarily commented out to debug build issue
+      lzg = "lazygit";
       ta = "tmux new -A -s default";
       v = "nvim";
 
