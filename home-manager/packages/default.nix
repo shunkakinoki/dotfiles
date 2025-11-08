@@ -60,7 +60,7 @@ with pkgs;
   uv
   wget
   yarn
-  # yazi
+  yazi
   yq
   zellij
   zoxide
