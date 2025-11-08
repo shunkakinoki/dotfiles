@@ -38,7 +38,9 @@
       "temporal"
     ];
     casks = [
+      "atuin-desktop"
       "beeper"
+      "beekeeper-studio"
       "blender"
       "block-goose"
       "chatgpt"
@@ -73,6 +75,7 @@
       "slack"
       "visual-studio-code"
       "warp"
+      "wezterm"
       "windsurf"
       "zed"
       "zoom"
