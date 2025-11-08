@@ -22,16 +22,21 @@ jobs:
           - platform: linux/amd64
             suffix: -amd64
             arch: amd64
+            runner: macos-latest
           - platform: linux/arm64
             suffix: -arm64
             arch: arm64
-    runs-on: ${{ matrix.build.arch == 'arm64' && 'macos-latest' || 'ubuntu-latest' }}
-    timeout-minutes: ${{ matrix.build.arch == 'arm64' && 120 || 300 }}
+            runner: ubuntu-latest
+    runs-on: ${{ matrix.build.runner }}
+    timeout-minutes: ${{ matrix.build.arch == 'arm64' && 300 || 120 }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+      - name: Start Docker daemon
+        if: runner.os == 'macOS'
+        run: sudo launchctl start com.docker.docker
       - name: Set up QEMU
-        if: matrix.build.arch == 'amd64'
+        if: matrix.build.runner == 'ubuntu-latest'
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
