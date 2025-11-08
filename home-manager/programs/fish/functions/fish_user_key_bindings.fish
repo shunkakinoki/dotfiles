@@ -4,5 +4,5 @@
 # Fish automatically calls this function after fish_vi_key_bindings is set.
 function fish_user_key_bindings
   # Exit vim insert mode with jj (like in Vim)
-  bind -M insert -m default jj backward-char force-repaint
+  bind -M insert jj 'set fish_bind_mode default; commandline -f repaint-mode'
 end
