@@ -22,27 +22,16 @@ jobs:
           - platform: linux/amd64
             suffix: -amd64
             arch: amd64
-            runner: macos-latest
+            runner: ubuntu-latest
           - platform: linux/arm64
             suffix: -arm64
             arch: arm64
-            runner: ubuntu-latest
+            runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.build.runner }}
-    timeout-minutes: ${{ matrix.build.arch == 'arm64' && 300 || 120 }}
+    timeout-minutes: 180
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-      - name: Setup Docker on macOS
-        if: matrix.build.runner == 'macos-latest'
-        id: setup-docker
-        uses: douglascamata/setup-docker-macos-action@v1.0.1
-        with:
-          colima: latest
-          colima-network-address: false
-          colima-additional-options: --cpu 4 --memory 8 --vm-type vz --vz-rosetta --mount-type virtiofs --headless
-      - name: Set up QEMU
-        if: matrix.build.runner == 'ubuntu-latest'
-        uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to GHCR
