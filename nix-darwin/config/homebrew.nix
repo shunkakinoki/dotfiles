@@ -16,7 +16,6 @@
       "sst/tap"
     ];
     brews = [
-      "atuin"
       "bun"
       "claude-squad"
       "cmake"
