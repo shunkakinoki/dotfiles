@@ -17,14 +17,21 @@ jobs:
   docker-build-push:
     strategy:
       fail-fast: false
-      matrix:
-        build: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' && fromJSON('[{"platform":"linux/amd64","suffix":"-amd64","arch":"amd64"},{"platform":"linux/arm64","suffix":"-arm64","arch":"arm64"}]') || fromJSON('[{"platform":"linux/amd64","suffix":"-amd64","arch":"amd64"}]') }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 300
+    matrix:
+      build:
+        - platform: linux/amd64
+          suffix: -amd64
+          arch: amd64
+        - platform: linux/arm64
+          suffix: -arm64
+          arch: arm64
+    runs-on: ${{ matrix.build.arch == 'arm64' && 'macos-latest' || 'ubuntu-latest' }}
+    timeout-minutes: ${{ matrix.build.arch == 'arm64' && 120 || 300 }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
       - name: Set up QEMU
+        if: matrix.build.arch == 'amd64'
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -67,6 +74,7 @@ jobs:
             COMMIT_SHA=${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          qemu-version: ${{ matrix.build.arch == 'amd64' && '7' || '' }}
   docker-merge-manifests:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs:
