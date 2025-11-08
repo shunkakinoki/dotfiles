@@ -17,14 +17,14 @@ jobs:
   docker-build-push:
     strategy:
       fail-fast: false
-    matrix:
-      build:
-        - platform: linux/amd64
-          suffix: -amd64
-          arch: amd64
-        - platform: linux/arm64
-          suffix: -arm64
-          arch: arm64
+      matrix:
+        build:
+          - platform: linux/amd64
+            suffix: -amd64
+            arch: amd64
+          - platform: linux/arm64
+            suffix: -arm64
+            arch: arm64
     runs-on: ${{ matrix.build.arch == 'arm64' && 'macos-latest' || 'ubuntu-latest' }}
     timeout-minutes: ${{ matrix.build.arch == 'arm64' && 120 || 300 }}
     steps:
