@@ -28,6 +28,7 @@ with pkgs;
   fastfetch
   fd
   fswatch
+  fzf-make
   gh
   git
   goose-cli
@@ -59,7 +60,7 @@ with pkgs;
   uv
   wget
   yarn
-  yazi
+  # yazi
   yq
   zellij
   zoxide
