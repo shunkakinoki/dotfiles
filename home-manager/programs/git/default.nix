@@ -1,30 +1,26 @@
 { pkgs, lib, ... }:
 {
-  programs.git = {
-    enable = true;
-    delta = {
+  programs = {
+    git = {
       enable = true;
-    };
-    userName = "Shun Kakinoki";
-    userEmail = "shunkakinoki@gmail.com";
-    lfs = {
-      enable = true;
-    };
-    includes = [
-      # Include GitAlias - update with: scripts/update-gitalias.sh
-      { path = "${./gitalias.txt}"; }
-    ];
-    aliases = {
-      co = "checkout";
-      lt = "log --tags --decorate --simplify-by-decoration --oneline";
-      unshallow = "fetch --prune --tags --unshallow";
-    };
-    extraConfig = {
-      # commit.gpgSign = true;
-      # gpg.format = "ssh";
-      # gpg.ssh.allowedSignersFile = "~/.ssh/allowed_signers";
-      # user.signingKey = "~/.ssh/id_ed25519";
-      core = {
+      lfs = {
+        enable = true;
+      };
+      includes = [
+        # Include GitAlias - update with: scripts/update-gitalias.sh
+        { path = "${./gitalias.txt}"; }
+      ];
+      settings = {
+        user = {
+          name = "Shun Kakinoki";
+          email = "shunkakinoki@gmail.com";
+        };
+        alias = {
+          co = "checkout";
+          lt = "log --tags --decorate --simplify-by-decoration --oneline";
+          unshallow = "fetch --prune --tags --unshallow";
+        };
+        core = {
         editor = "nvim";
         compression = -1;
         autocrlf = "input";
@@ -80,7 +76,12 @@
       merge = {
         conflictStyle = "zdiff3";
       };
+      };
+      ignores = lib.splitString "\n" (builtins.readFile ./.gitignore.global);
     };
-    ignores = lib.splitString "\n" (builtins.readFile ./.gitignore.global);
+    delta = {
+      enable = true;
+      enableGitIntegration = true;
+    };
   };
 }
