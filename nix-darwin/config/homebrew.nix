@@ -30,6 +30,7 @@
       "kurtosis-cli"
       "mas"
       "opencode"
+      "pandoc"
       "pinentry-mac"
       "pnpm"
       "postgresql"
