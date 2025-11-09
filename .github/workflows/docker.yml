@@ -100,7 +100,6 @@ jobs:
           if-no-files-found: error
           retention-days: 1
   docker-merge-manifests:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs:
       - docker-build-push
     runs-on: ubuntu-latest
