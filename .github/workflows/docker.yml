@@ -86,6 +86,7 @@ jobs:
             GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          outputs: type=image,push-by-digest=true,name-canonical=true,push=true
       - name: Export digest
         run: |
           mkdir -p ${{ runner.temp }}/digests
@@ -125,36 +126,21 @@ jobs:
         with:
           images: ${{ env.REGISTRY_IMAGE }}
           tags: |
+            type=ref,event=branch
+            type=ref,event=pr
             type=sha,format=short
             type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{raw}}
             type=raw,value=latest
       - name: Create manifest list and push
-        env:
-          DOCKER_METADATA_OUTPUT_JSON: ${{ steps.metadata.outputs.json }}
         working-directory: ${{ runner.temp }}/digests
         run: |
-          set -euo pipefail
-          shopt -s nullglob
-          tag_args=()
-          while IFS= read -r tag; do
-            tag_args+=("-t" "$tag")
-          done < <(jq -cr '.tags[]' <<< "$DOCKER_METADATA_OUTPUT_JSON")
-          refs=()
-          for digest_file in *; do
-            refs+=("${REGISTRY_IMAGE}@sha256:${digest_file}")
-          done
-          if [ ${#refs[@]} -eq 0 ]; then
-            echo "No digests found" >&2
-            exit 1
-          fi
-          docker buildx imagetools create "${tag_args[@]}" "${refs[@]}"
+          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' *)
       - name: Inspect image
-        env:
-          DOCKER_METADATA_OUTPUT_JSON: ${{ steps.metadata.outputs.json }}
         run: |
-          ref=$(jq -r '.tags[0]' <<< "$DOCKER_METADATA_OUTPUT_JSON")
-          docker buildx imagetools inspect "$ref"
+          docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:${{ steps.meta.outputs.version }}
   docker-check:
     if: always()
     needs:
