@@ -129,8 +129,7 @@
           treefmt = {
             projectRootFile = "flake.nix";
             programs = {
-              actionlint.enable = false;
-              biome.enable = false; # Temporarily disabled due to schema hash mismatch
+              biome.enable = true;
               nixfmt.enable = true;
               shfmt.enable = true;
               stylua.enable = true;
