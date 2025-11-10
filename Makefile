@@ -97,6 +97,7 @@ help:
 	@echo "  install      - Set up full environment"
 	@echo "  setup        - Basic Nix setup"
 	@echo "  setup-dev    - Set up local development environment (Nix + submodules + shell)"
+	@echo "  dev          - Enter the Nix dev shell"
 	@echo "  build        - Build Nix configuration"
 	@echo "  switch       - Apply Nix configuration"
 	@echo "  update       - Update Nix flake and configurations"
@@ -136,6 +137,9 @@ switch: nix-switch
 
 .PHONY: update
 update: nix-update shell-update
+
+.PHONY: dev
+dev: nix-develop
 
 ##@ Nix Setup
 
@@ -179,6 +183,10 @@ nix-check:
 		exit 1; \
 	fi
 	@echo "✅ Nix environment found!"
+
+.PHONY: nix-develop
+nix-develop:
+	nix develop
 
 .PHONY: nix-install
 nix-install:
