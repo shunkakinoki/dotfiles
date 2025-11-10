@@ -186,7 +186,7 @@ nix-check:
 
 .PHONY: nix-develop
 nix-develop:
-	nix develop
+	$(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS)
 
 .PHONY: nix-install
 nix-install:
