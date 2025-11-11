@@ -26,6 +26,7 @@
       "gemini-cli"
       "geth"
       "gnupg"
+      "graphviz"
       "helm"
       "kurtosis-cli"
       "mas"
