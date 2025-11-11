@@ -76,10 +76,10 @@
         name = "done";
         src = pkgs.fishPlugins.done.src;
       }
-      # {
-      #   name = "fzf";
-      #   src = pkgs.fishPlugins.fzf.src;
-      # }
+      {
+        name = "fzf";
+        src = pkgs.fishPlugins.fzf.src;
+      }
       {
         name = "fzf-fish";
         src = pkgs.fishPlugins.fzf-fish.src;
