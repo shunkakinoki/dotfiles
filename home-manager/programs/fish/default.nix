@@ -41,12 +41,7 @@
       ocd = "bun run ${config.home.homeDirectory}/ghq/github.com/shunkakinoki/open-composer/apps/cli/src/index.ts";
     };
     shellAbbrs = {
-      # Non-git abbreviations
-      c = "clear";
       cat = "bat";
-      cc = "claude";
-      cs = "claude-squad";
-      cx = "codex exec";
       e = "nvim";
       g = "git";
       lzd = "lazydocker";
@@ -81,10 +76,10 @@
         name = "done";
         src = pkgs.fishPlugins.done.src;
       }
-      # {
-      #   name = "fzf";
-      #   src = pkgs.fishPlugins.fzf.src;
-      # }
+      {
+        name = "fzf";
+        src = pkgs.fishPlugins.fzf.src;
+      }
       {
         name = "fzf-fish";
         src = pkgs.fishPlugins.fzf-fish.src;
