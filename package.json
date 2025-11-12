@@ -13,6 +13,7 @@
   "dependencies": {
     "@github/copilot": "^0.0.354",
     "@google/jules": "^0.1.40",
+    "@getgrit/cli": "^0.1.0-alpha.1743007075",
     "@nanocollective/nanocoder": "^1.16.3",
     "cline": "^1.0.5",
     "open-composer": "^0.8.23"
@@ -20,6 +21,7 @@
   "trustedDependencies": [
     "@github/copilot",
     "@google/jules",
+    "@getgrit/cli",
     "@nanocollective/nanocoder",
     "cline",
     "open-composer"
