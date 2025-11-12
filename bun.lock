@@ -1,13 +1,12 @@
 {
   "lockfileVersion": 1,
-  "configVersion": 1,
   "workspaces": {
     "": {
       "name": "dotfiles",
       "dependencies": {
         "@github/copilot": "^0.0.354",
         "@google/jules": "^0.1.40",
-        "@nanocollective/nanocoder": "^1.15.0",
+        "@nanocollective/nanocoder": "^1.16.3",
         "cline": "^1.0.5",
         "open-composer": "^0.8.23",
       },
