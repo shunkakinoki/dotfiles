@@ -14,7 +14,6 @@ with pkgs;
   argocd
   ast-grep
   bat
-  below
   bun
   cloudflared
   collectd
@@ -69,6 +68,7 @@ with pkgs;
   zoxide
 ]
 ++ lib.optionals stdenv.isLinux [
+  below
   claude-code
   codex
   docker
