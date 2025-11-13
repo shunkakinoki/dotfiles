@@ -15,7 +15,6 @@ with pkgs;
   bat
   bun
   cloudflared
-  collectd
   curl
   curlie
   cursor-cli
@@ -71,6 +70,7 @@ with pkgs;
   below
   claude-code
   codex
+  collectd
   docker
   docker-compose
   gemini-cli
