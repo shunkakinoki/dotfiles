@@ -10,11 +10,14 @@ with pkgs;
   aichat
   aider-chat
   amp-cli
+  atop
   argocd
   ast-grep
   bat
+  below
   bun
   cloudflared
+  collectd
   curl
   curlie
   cursor-cli
@@ -32,6 +35,7 @@ with pkgs;
   git
   goose-cli
   grc
+  htop
   httpie
   hyperfine
   jq
