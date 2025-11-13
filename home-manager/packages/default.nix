@@ -13,6 +13,7 @@ with pkgs;
   argocd
   ast-grep
   bat
+  btop
   bun
   cloudflared
   curl
