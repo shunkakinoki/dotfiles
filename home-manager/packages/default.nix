@@ -10,7 +10,6 @@ with pkgs;
   aichat
   aider-chat
   amp-cli
-  atop
   argocd
   ast-grep
   bat
@@ -68,6 +67,7 @@ with pkgs;
   zoxide
 ]
 ++ lib.optionals stdenv.isLinux [
+  atop
   below
   claude-code
   codex
