@@ -14,7 +14,6 @@ with pkgs;
   ast-grep
   bat
   bun
-  chromium
   clipse
   cloudflared
   curl
