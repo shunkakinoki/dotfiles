@@ -13,7 +13,6 @@ with pkgs;
   argocd
   ast-grep
   bat
-  blueberry
   bun
   chromium
   clipse
@@ -74,6 +73,7 @@ with pkgs;
 ++ lib.optionals stdenv.isLinux [
   atop
   below
+  blueberry
   chromium
   claude-code
   codex
