@@ -48,7 +48,6 @@ with pkgs;
   llama-cpp
   mariadb
   postgresql
-  powertop
   procs
   pulumi-bin
   qwen-code
@@ -83,6 +82,7 @@ with pkgs;
   gemini-cli
   github-desktop
   kubernetes-helm
+  powertop
   opencode
   signal-desktop
   vlc
