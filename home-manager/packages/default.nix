@@ -13,6 +13,7 @@ with pkgs;
   argocd
   ast-grep
   bat
+  btop
   bun
   cloudflared
   curl
@@ -32,6 +33,7 @@ with pkgs;
   git
   goose-cli
   grc
+  htop
   httpie
   hyperfine
   jq
@@ -65,8 +67,11 @@ with pkgs;
   zoxide
 ]
 ++ lib.optionals stdenv.isLinux [
+  atop
+  below
   claude-code
   codex
+  collectd
   docker
   docker-compose
   gemini-cli
