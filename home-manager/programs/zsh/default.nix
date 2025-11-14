@@ -17,7 +17,7 @@
       extended = true;
     };
 
-    initExtra = ''
+    initContent = ''
       # Initialize Starship
       eval "$(starship init zsh)"
 
