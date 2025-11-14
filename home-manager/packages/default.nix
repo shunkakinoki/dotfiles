@@ -60,7 +60,6 @@ with pkgs;
   tree
   turso-cli
   uv
-  vlc
   wget
   yarn
   yazi
