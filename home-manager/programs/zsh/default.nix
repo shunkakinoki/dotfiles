@@ -2,7 +2,7 @@
 { lib, pkgs, ... }:
 {
   programs.zsh = {
-    enable = false;
+    enable = enable;
     enableCompletion = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;

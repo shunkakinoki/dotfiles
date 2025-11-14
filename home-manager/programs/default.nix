@@ -7,6 +7,7 @@ let
   atuin = import ./atuin;
   bash = import ./bash { inherit lib pkgs; };
   bat = import ./bat;
+  btop = import ./btop;
   delta = import ./delta;
   direnv = import ./direnv;
   fd = import ./fd;

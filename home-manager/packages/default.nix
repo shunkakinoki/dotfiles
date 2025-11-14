@@ -13,8 +13,10 @@ with pkgs;
   argocd
   ast-grep
   bat
-  btop
+  blueberry
   bun
+  chromium
+  clipse
   cloudflared
   curl
   curlie
@@ -31,6 +33,7 @@ with pkgs;
   fzf-make
   gh
   git
+  gnumake
   goose-cli
   grc
   htop
@@ -47,6 +50,7 @@ with pkgs;
   llama-cpp
   mariadb
   postgresql
+  powertop
   procs
   pulumi-bin
   qwen-code
@@ -59,6 +63,7 @@ with pkgs;
   tree
   turso-cli
   uv
+  vlc
   wget
   yarn
   yazi
@@ -69,12 +74,17 @@ with pkgs;
 ++ lib.optionals stdenv.isLinux [
   atop
   below
+  chromium
   claude-code
   codex
   collectd
   docker
   docker-compose
+  ffmpeg
   gemini-cli
+  github-desktop
   kubernetes-helm
   opencode
+  signal-desktop
+  vlc
 ]
