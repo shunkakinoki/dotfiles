@@ -36,6 +36,7 @@ in
   atuin
   bash
   bat
+  btop
   delta
   direnv
   fd
