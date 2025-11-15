@@ -4,7 +4,6 @@
   lib,
   inputs,
   username,
-  system,
   ...
 }:
 let

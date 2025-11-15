@@ -86,21 +86,18 @@
             "ubuntu@x86_64-linux" = import ./hosts/linux {
               inherit inputs;
               username = "ubuntu";
-              system = "x86_64-linux";
               pkgs = inputs.nixpkgs.legacyPackages."x86_64-linux";
               lib = inputs.nixpkgs.legacyPackages."x86_64-linux".lib;
             };
             "root@x86_64-linux" = import ./hosts/linux {
               inherit inputs;
               username = "root";
-              system = "x86_64-linux";
               pkgs = inputs.nixpkgs.legacyPackages."x86_64-linux";
               lib = inputs.nixpkgs.legacyPackages."x86_64-linux".lib;
             };
             "root@aarch64-linux" = import ./hosts/linux {
               inherit inputs;
               username = "root";
-              system = "aarch64-linux";
               pkgs = inputs.nixpkgs.legacyPackages."aarch64-linux";
               lib = inputs.nixpkgs.legacyPackages."aarch64-linux".lib;
             };
@@ -108,7 +105,6 @@
               inherit inputs;
               isRunner = true;
               username = "runner";
-              system = "x86_64-linux";
               pkgs = inputs.nixpkgs.legacyPackages."x86_64-linux";
               lib = inputs.nixpkgs.legacyPackages."x86_64-linux".lib;
             };
@@ -116,7 +112,6 @@
               inherit inputs;
               isRunner = true;
               username = "runner";
-              system = "aarch64-linux";
               pkgs = inputs.nixpkgs.legacyPackages."aarch64-linux";
               lib = inputs.nixpkgs.legacyPackages."aarch64-linux".lib;
             };
