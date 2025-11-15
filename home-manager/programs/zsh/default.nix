@@ -2,7 +2,7 @@
 { lib, pkgs, ... }:
 {
   programs.zsh = {
-    enable = false;
+    enable = true;
     enableCompletion = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
@@ -17,7 +17,7 @@
       extended = true;
     };
 
-    initExtra = ''
+    initContent = ''
       # Initialize Starship
       eval "$(starship init zsh)"
 

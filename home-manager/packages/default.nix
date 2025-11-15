@@ -2,6 +2,9 @@
   pkgs,
   inputs,
 }:
+let
+  isCI = builtins.getEnv "CI" != "";
+in
 with pkgs;
 [
   inputs.agenix.packages.${stdenv.hostPlatform.system}.default
@@ -13,8 +16,8 @@ with pkgs;
   argocd
   ast-grep
   bat
-  btop
   bun
+  clipse
   cloudflared
   curl
   curlie
@@ -31,6 +34,7 @@ with pkgs;
   fzf-make
   gh
   git
+  gnumake
   goose-cli
   grc
   htop
@@ -69,12 +73,21 @@ with pkgs;
 ++ lib.optionals stdenv.isLinux [
   atop
   below
-  claude-code
-  codex
   collectd
   docker
   docker-compose
+  ffmpeg
   gemini-cli
   kubernetes-helm
+  powertop
+]
+++ lib.optionals (stdenv.isLinux && !isCI) [
+  blueberry
+  chromium
+  claude-code
+  codex
+  github-desktop
   opencode
+  signal-desktop
+  vlc
 ]
