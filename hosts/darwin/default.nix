@@ -40,7 +40,7 @@ in
       ];
       home-manager.useUserPackages = true;
       home-manager.users."${username}" = import ../../home-manager {
-        inherit inputs username system;
+        inherit inputs username;
         lib = inputs.nixpkgs.legacyPackages.${system}.lib;
         pkgs = inputs.nixpkgs.legacyPackages.${system};
         config = { };
