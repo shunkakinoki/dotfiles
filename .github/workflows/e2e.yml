@@ -31,12 +31,6 @@ jobs:
         uses: jlumbroso/free-disk-space@v1.3.1
         with:
           tool-cache: false
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          docker-images: true
-          swap-storage: true
       - name: KVM Linux Virtualization
         if: runner.os == 'Linux'
         run: |
