@@ -1,7 +1,6 @@
 {
   inputs,
   username,
-  system,
   pkgs,
   lib,
   isRunner ? false,
@@ -16,7 +15,6 @@ home-manager.lib.homeManagerConfiguration {
       inputs
       username
       isRunner
-      system
       pkgs
       ;
   };

@@ -31,6 +31,7 @@
       "/Applications/Cursor.app"
       "/Applications/Visual Studio Code.app"
       "/Applications/Xcode.app"
+      "/Applications/Antigravity.app"
       "/Applications/Conductor.app"
       "/Applications/Zed.app"
       "/System/Applications/Messages.app"

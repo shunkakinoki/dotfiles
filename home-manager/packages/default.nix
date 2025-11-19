@@ -3,7 +3,7 @@
   inputs,
 }:
 let
-  isCI = builtins.getEnv "CI" != "";
+  isCI = builtins.getEnv "CI" != "" || builtins.getEnv "IN_DOCKER" == "true";
 in
 with pkgs;
 [
@@ -11,10 +11,12 @@ with pkgs;
   inputs.nur.legacyPackages.${stdenv.hostPlatform.system}.repos.charmbracelet.crush
   age
   aichat
-  aider-chat
+  # aider-chat  # FIXME: pyarrow 20.0.0 has malloc issues on macOS, uncomment when fixed
   amp-cli
   argocd
   ast-grep
+  awscli
+  azure-cli
   bat
   bun
   clipse
@@ -33,6 +35,7 @@ with pkgs;
   fswatch
   fzf-make
   gh
+  google-cloud-sdk
   git
   gnumake
   goose-cli
@@ -47,6 +50,7 @@ with pkgs;
   kubeconform
   kubectl
   kubectx
+  kubernetes-helm
   kustomize
   llama-cpp
   mariadb
@@ -73,21 +77,20 @@ with pkgs;
 ++ lib.optionals stdenv.isLinux [
   atop
   below
+  blueberry
+  claude-code
+  codex
   collectd
   docker
   docker-compose
-  ffmpeg
   gemini-cli
-  kubernetes-helm
+  opencode
   powertop
 ]
 ++ lib.optionals (stdenv.isLinux && !isCI) [
-  blueberry
   chromium
-  claude-code
-  codex
+  ffmpeg
   github-desktop
-  opencode
   signal-desktop
   vlc
 ]
