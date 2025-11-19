@@ -78,6 +78,7 @@ with pkgs;
   atop
   below
   blueberry
+  claude-code
   codex
   collectd
   docker
@@ -88,7 +89,6 @@ with pkgs;
 ]
 ++ lib.optionals (stdenv.isLinux && !isCI) [
   chromium
-  claude-code
   ffmpeg
   github-desktop
   signal-desktop
