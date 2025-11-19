@@ -71,7 +71,7 @@
       "linear-linear"
       "lm-studio"
       "notion"
-      "ollama-app"
+      # "ollama-app"  # FIXME: conflicts_with formula is disabled, uncomment when Homebrew fixes conflict
       "raycast"
       "rescuetime"
       "screen-studio"
