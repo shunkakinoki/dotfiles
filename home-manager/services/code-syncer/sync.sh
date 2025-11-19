@@ -2,6 +2,7 @@
 
 # Base directories
 VSCODE_USER_DIR="/Users/shunkakinoki/Library/Application Support/Code/User"
+ANTIGRAVITY_USER_DIR="/Users/shunkakinoki/Library/Application Support/Antigravity/User"
 CURSOR_USER_DIR="/Users/shunkakinoki/Library/Application Support/Cursor/User"
 WINDSURF_USER_DIR="/Users/shunkakinoki/Library/Application Support/Windsurf/User"
 
@@ -11,6 +12,7 @@ KEYBINDINGS_FILE="keybindings.json"
 EXTENSIONS_FILE="extensions.list"
 
 # Ensure target directories exist
+mkdir -p "$ANTIGRAVITY_USER_DIR"
 mkdir -p "$CURSOR_USER_DIR"
 mkdir -p "$WINDSURF_USER_DIR"
 
@@ -25,6 +27,9 @@ install_extensions() {
   local cli_command
 
   case $target_editor in
+  # "antigravity")
+  #   cli_command="antigravity"
+  #   ;;
   "cursor")
     cli_command="cursor"
     ;;
@@ -53,6 +58,7 @@ sync_files() {
   local source_path="$VSCODE_USER_DIR/$file"
 
   if [ -f "$source_path" ]; then
+    cp "$source_path" "$ANTIGRAVITY_USER_DIR/$file"
     cp "$source_path" "$CURSOR_USER_DIR/$file"
     cp "$source_path" "$WINDSURF_USER_DIR/$file"
     echo "$file synced at $(date)"
