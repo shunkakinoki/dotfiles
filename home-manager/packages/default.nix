@@ -50,6 +50,7 @@ with pkgs;
   kubeconform
   kubectl
   kubectx
+  kubernetes-helm
   kustomize
   llama-cpp
   mariadb
@@ -76,21 +77,20 @@ with pkgs;
 ++ lib.optionals stdenv.isLinux [
   atop
   below
+  blueberry
+  codex
   collectd
   docker
   docker-compose
-  ffmpeg
   gemini-cli
-  kubernetes-helm
+  opencode
   powertop
 ]
 ++ lib.optionals (stdenv.isLinux && !isCI) [
-  blueberry
   chromium
   claude-code
-  codex
+  ffmpeg
   github-desktop
-  opencode
   signal-desktop
   vlc
 ]
