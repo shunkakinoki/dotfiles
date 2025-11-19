@@ -11,7 +11,7 @@ with pkgs;
   inputs.nur.legacyPackages.${stdenv.hostPlatform.system}.repos.charmbracelet.crush
   age
   aichat
-  aider-chat
+  # aider-chat  # FIXME: pyarrow 20.0.0 has malloc issues on macOS, uncomment when fixed
   amp-cli
   argocd
   ast-grep
