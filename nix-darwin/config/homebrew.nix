@@ -41,6 +41,7 @@
       "temporal"
     ];
     casks = [
+      "antigravity"
       "atuin-desktop"
       "beeper"
       "beekeeper-studio"

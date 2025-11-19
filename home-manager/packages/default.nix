@@ -15,6 +15,8 @@ with pkgs;
   amp-cli
   argocd
   ast-grep
+  awscli
+  azure-cli
   bat
   bun
   clipse
@@ -33,6 +35,7 @@ with pkgs;
   fswatch
   fzf-make
   gh
+  google-cloud-sdk
   git
   gnumake
   goose-cli
