@@ -112,8 +112,20 @@ remove_unnecessary_extensions() {
     return
   fi
 
+  # Check if source file exists and has content
+  if [ ! -f "$source_list" ] || [ ! -s "$source_list" ]; then
+    echo "⚠️  VS Code extensions list not found or empty. Skipping removal check for $target_name."
+    return
+  fi
+
   # Create clean list of what should be synced
   clean_extension_list "$source_list" "$clean_list"
+
+  # Check if clean list has content
+  if [ ! -s "$clean_list" ]; then
+    echo "⚠️  No extensions to sync from VS Code. Skipping removal check for $target_name."
+    return
+  fi
 
   # Find extensions to remove (skip PROPRIETARY_EXTENSIONS)
   local to_remove=()
@@ -135,6 +147,18 @@ remove_unnecessary_extensions() {
       continue
     fi
 
+    # Check if extension is in VS Code's original list (before filtering)
+    # If it's in VS Code, we should keep it (it will be synced)
+    local in_vscode=false
+    if grep -Fxq "$installed_ext" "$source_list" 2>/dev/null; then
+      in_vscode=true
+    fi
+
+    # If extension is in VS Code, keep it (don't remove)
+    if [ "$in_vscode" = true ]; then
+      continue
+    fi
+
     # Check if extension is in AI_EXTENSIONS (should be removed)
     local is_ai=false
     for ai_ext in "${AI_EXTENSIONS[@]}"; do
@@ -144,14 +168,8 @@ remove_unnecessary_extensions() {
       fi
     done
 
-    # Check if extension is in clean list (should be synced)
-    local should_keep=false
-    if grep -Fxq "$installed_ext" "$clean_list" 2>/dev/null; then
-      should_keep=true
-    fi
-
-    # Remove if AI extension or not in clean list
-    if [ "$is_ai" = true ] || [ "$should_keep" = false ]; then
+    # Remove if it's an AI extension (not in VS Code but installed)
+    if [ "$is_ai" = true ]; then
       to_remove+=("$installed_ext")
     fi
   done <"$installed_list"
@@ -195,27 +213,35 @@ install_extensions() {
   clean_extension_list "$source_list" "$clean_list"
 
   # Log extensions that will be synced
-  local extension_count=$(wc -l <"$clean_list" | tr -d ' ')
+  local extension_count=$(wc -l <"$clean_list" 2>/dev/null | tr -d ' ' || echo "0")
+  extension_count=${extension_count:-0}
+  
   echo "📦 Found $extension_count extension(s) to sync:"
-  while IFS= read -r extension; do
-    if [ -n "$extension" ]; then
-      echo "   • $extension"
-    fi
-  done <"$clean_list"
-  echo ""
-
-  while IFS= read -r extension; do
-    if [ -n "$extension" ]; then
-      # Try to install, log failures but don't stop
-      $cli_cmd --install-extension "$extension" >/dev/null 2>&1
-      if [ $? -ne 0 ]; then
-        echo "   ❌ Failed: $extension (Likely missing from Open VSX)"
-      else
-        # Optional: verify it's actually installed
-        echo "   ✅ Synced: $extension"
+  
+  if [ "$extension_count" -gt 0 ]; then
+    while IFS= read -r extension; do
+      if [ -n "$extension" ]; then
+        echo "   • $extension"
       fi
-    fi
-  done <"$clean_list"
+    done <"$clean_list"
+    echo ""
+
+    while IFS= read -r extension; do
+      if [ -n "$extension" ]; then
+        # Try to install, log failures but don't stop
+        $cli_cmd --install-extension "$extension" >/dev/null 2>&1
+        if [ $? -ne 0 ]; then
+          echo "   ❌ Failed: $extension (Likely missing from Open VSX)"
+        else
+          # Optional: verify it's actually installed
+          echo "   ✅ Synced: $extension"
+        fi
+      fi
+    done <"$clean_list"
+  else
+    echo "   (No extensions to sync)"
+    echo ""
+  fi
 }
 
 sync_config_file() {
