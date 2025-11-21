@@ -77,11 +77,17 @@ ensure_dirs() {
 }
 
 # Filter out proprietary and AI extensions from the list
+# Input can be from stdin (pipe) or a file
 clean_extension_list() {
-  local input_file="$1"
+  local input_source="$1"  # Can be a file path or "-" for stdin
   local clean_file="$2"
 
-  cp "$input_file" "$clean_file"
+  # Read from stdin if input_source is "-", otherwise from file
+  if [ "$input_source" = "-" ]; then
+    cat >"$clean_file"
+  else
+    cp "$input_source" "$clean_file"
+  fi
 
   for bad_ext in "${PROPRIETARY_EXTENSIONS[@]}"; do
     # Remove the line containing the bad extension
@@ -98,9 +104,9 @@ clean_extension_list() {
 remove_unnecessary_extensions() {
   local target_name=$1
   local cli_cmd=$(resolve_cli "$target_name")
-  local source_list="$VSCODE_USER_DIR/$EXTENSIONS_FILE"
   local clean_list="/tmp/${target_name}_extensions_clean.list"
   local installed_list="/tmp/${target_name}_extensions_installed.list"
+  local vscode_list="/tmp/vscode_extensions.list"
 
   if [ -z "$cli_cmd" ] || [ ! -f "$cli_cmd" ]; then
     return
@@ -112,18 +118,28 @@ remove_unnecessary_extensions() {
     return
   fi
 
-  # Check if source file exists and has content
-  if [ ! -f "$source_list" ] || [ ! -s "$source_list" ]; then
-    echo "⚠️  VS Code extensions list not found or empty. Skipping removal check for $target_name."
+  # Get VS Code extensions directly from CLI
+  if ! command -v code >/dev/null 2>&1; then
+    echo "⚠️  VS Code CLI not found. Skipping removal check for $target_name."
+    return
+  fi
+
+  if ! code --list-extensions >"$vscode_list" 2>/dev/null; then
+    echo "⚠️  Failed to get VS Code extensions. Skipping removal check for $target_name."
+    return
+  fi
+
+  if [ ! -s "$vscode_list" ]; then
+    # VS Code has no extensions, so nothing to sync/remove
     return
   fi
 
   # Create clean list of what should be synced
-  clean_extension_list "$source_list" "$clean_list"
+  clean_extension_list "$vscode_list" "$clean_list"
 
   # Check if clean list has content
   if [ ! -s "$clean_list" ]; then
-    echo "⚠️  No extensions to sync from VS Code. Skipping removal check for $target_name."
+    # No extensions to sync after filtering
     return
   fi
 
@@ -150,7 +166,7 @@ remove_unnecessary_extensions() {
     # Check if extension is in VS Code's original list (before filtering)
     # If it's in VS Code, we should keep it (it will be synced)
     local in_vscode=false
-    if grep -Fxq "$installed_ext" "$source_list" 2>/dev/null; then
+    if grep -Fxq "$installed_ext" "$vscode_list" 2>/dev/null; then
       in_vscode=true
     fi
 
@@ -196,8 +212,8 @@ remove_unnecessary_extensions() {
 install_extensions() {
   local target_name=$1
   local cli_cmd=$(resolve_cli "$target_name")
-  local source_list="$VSCODE_USER_DIR/$EXTENSIONS_FILE"
   local clean_list="/tmp/${target_name}_extensions_clean.list"
+  local vscode_list="/tmp/vscode_extensions.list"
 
   if [ -z "$cli_cmd" ] || [ ! -f "$cli_cmd" ]; then
     echo "⚠️  CLI for $target_name not found. Skipping extension sync."
@@ -209,8 +225,24 @@ install_extensions() {
   # Remove unnecessary extensions first
   remove_unnecessary_extensions "$target_name"
 
+  # Get VS Code extensions directly from CLI
+  if ! command -v code >/dev/null 2>&1; then
+    echo "⚠️  VS Code CLI not found. Skipping extension sync for $target_name."
+    return
+  fi
+
+  if ! code --list-extensions >"$vscode_list" 2>/dev/null; then
+    echo "⚠️  Failed to get VS Code extensions. Skipping extension sync for $target_name."
+    return
+  fi
+
+  if [ ! -s "$vscode_list" ]; then
+    echo "⚠️  VS Code has no extensions. Nothing to sync for $target_name."
+    return
+  fi
+
   # create a clean list without proprietary MS extensions
-  clean_extension_list "$source_list" "$clean_list"
+  clean_extension_list "$vscode_list" "$clean_list"
 
   # Log extensions that will be synced
   local extension_count=$(wc -l <"$clean_list" 2>/dev/null | tr -d ' ' || echo "0")
@@ -266,12 +298,18 @@ sync_config_file() {
 echo "Starting Sync..."
 ensure_dirs
 
-# 1. Export VS Code Extensions
-if command -v code >/dev/null; then
-  code --list-extensions >"$VSCODE_USER_DIR/$EXTENSIONS_FILE"
-else
+# 1. Check VS Code CLI availability
+if ! command -v code >/dev/null 2>&1; then
   echo "VS Code CLI not found in path!"
   exit 1
+fi
+
+# Get VS Code extension count for info
+vscode_ext_count=$(code --list-extensions 2>/dev/null | wc -l | tr -d ' ')
+if [ "$vscode_ext_count" -gt 0 ]; then
+  echo "📋 Found $vscode_ext_count extension(s) in VS Code"
+else
+  echo "⚠️  VS Code has no extensions installed"
 fi
 
 # 2. Sync Config Files
