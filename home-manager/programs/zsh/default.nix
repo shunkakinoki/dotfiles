@@ -18,14 +18,6 @@
     };
 
     initContent = ''
-      # Initialize Starship
-      eval "$(starship init zsh)"
-
-      eval "$(sheldon source)"
-      eval "$(direnv hook zsh)"
-      eval "$(/opt/homebrew/bin/brew shellenv)"
-      source "$HOME/.rye/env"
-
       # Go configuration
       export GOPATH="$HOME/go"
       export PATH="$PATH:$GOPATH/bin"
