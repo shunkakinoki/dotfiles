@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# Global direnv settings
+export DIRENV_LOG_FORMAT="-"
+export DIRENV_LOG_FILTER="^$"
+export DIRENV_HIDE_ENV_DIFF=0
+
+# Whitelist exact directories
+export DIRENV_DIR="$HOME/dotfiles:$HOME/ghq/github.com/shunkakinoki"
