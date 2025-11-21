@@ -32,20 +32,6 @@
     };
 
     bashrcExtra = ''
-      # Initialize Starship
-      eval "$(starship init bash)"
-
-      # Initialize direnv
-      eval "$(direnv hook bash)"
-
-      # Initialize Homebrew
-      eval "$(/opt/homebrew/bin/brew shellenv)"
-
-      # Initialize Rye
-      if [ -f "$HOME/.rye/env" ]; then
-        source "$HOME/.rye/env"
-      fi
-
       # Add Go bin to PATH
       export PATH="$PATH:$GOPATH/bin"
 
