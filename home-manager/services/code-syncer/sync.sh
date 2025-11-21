@@ -91,6 +91,87 @@ clean_extension_list() {
   done
 }
 
+# Remove unnecessary extensions that shouldn't be synced
+remove_unnecessary_extensions() {
+  local target_name=$1
+  local cli_cmd=$(resolve_cli "$target_name")
+  local source_list="$VSCODE_USER_DIR/$EXTENSIONS_FILE"
+  local clean_list="/tmp/${target_name}_extensions_clean.list"
+  local installed_list="/tmp/${target_name}_extensions_installed.list"
+
+  if [ -z "$cli_cmd" ] || [ ! -f "$cli_cmd" ]; then
+    return
+  fi
+
+  # Get list of installed extensions in target editor
+  $cli_cmd --list-extensions >"$installed_list" 2>/dev/null
+  if [ $? -ne 0 ]; then
+    return
+  fi
+
+  # Create clean list of what should be synced
+  clean_extension_list "$source_list" "$clean_list"
+
+  # Find extensions to remove (skip PROPRIETARY_EXTENSIONS)
+  local to_remove=()
+  while IFS= read -r installed_ext; do
+    if [ -z "$installed_ext" ]; then
+      continue
+    fi
+
+    # Skip PROPRIETARY_EXTENSIONS - don't attempt to remove them
+    local is_proprietary=false
+    for prop_ext in "${PROPRIETARY_EXTENSIONS[@]}"; do
+      if [ "$installed_ext" = "$prop_ext" ]; then
+        is_proprietary=true
+        break
+      fi
+    done
+
+    if [ "$is_proprietary" = true ]; then
+      continue
+    fi
+
+    # Check if extension is in AI_EXTENSIONS (should be removed)
+    local is_ai=false
+    for ai_ext in "${AI_EXTENSIONS[@]}"; do
+      if [ "$installed_ext" = "$ai_ext" ]; then
+        is_ai=true
+        break
+      fi
+    done
+
+    # Check if extension is in clean list (should be synced)
+    local should_keep=false
+    if grep -Fxq "$installed_ext" "$clean_list" 2>/dev/null; then
+      should_keep=true
+    fi
+
+    # Remove if AI extension or not in clean list
+    if [ "$is_ai" = true ] || [ "$should_keep" = false ]; then
+      to_remove+=("$installed_ext")
+    fi
+  done <"$installed_list"
+
+  # Remove unnecessary extensions
+  if [ ${#to_remove[@]} -gt 0 ]; then
+    echo "🗑️  Removing ${#to_remove[@]} unnecessary extension(s) from $target_name:"
+    for ext in "${to_remove[@]}"; do
+      echo "   🗑️  Removing: $ext"
+      $cli_cmd --uninstall-extension "$ext" >/dev/null 2>&1
+      if [ $? -eq 0 ]; then
+        echo "      ✅ Removed: $ext"
+      else
+        echo "      ⚠️  Failed to remove: $ext"
+      fi
+    done
+    echo ""
+  else
+    echo "✅ No unnecessary extensions to remove from $target_name"
+    echo ""
+  fi
+}
+
 install_extensions() {
   local target_name=$1
   local cli_cmd=$(resolve_cli "$target_name")
@@ -103,6 +184,9 @@ install_extensions() {
   fi
 
   echo "--- Syncing Extensions for $target_name ---"
+
+  # Remove unnecessary extensions first
+  remove_unnecessary_extensions "$target_name"
 
   # create a clean list without proprietary MS extensions
   clean_extension_list "$source_list" "$clean_list"
