@@ -60,8 +60,8 @@ resolve_cli() {
     # Fallback paths for Mac apps if not in PATH
     case $cmd in
     "antigravity") echo "/Applications/Antigravity.app/Contents/Resources/app/bin/antigravity" ;;
-    "windsurf") echo "/Applications/Windsurf.app/Contents/Resources/app/bin/windsurf" ;;
-    "cursor") echo "/Applications/Cursor.app/Contents/Resources/app/bin/cursor" ;;
+    "windsurf") echo "/opt/homebrew/bin/windsurf" ;;
+    "cursor") echo "/opt/homebrew/bin/cursor" ;;
     *) echo "" ;;
     esac
   fi
