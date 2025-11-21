@@ -7,7 +7,7 @@ let
   brewUpgrader = import ./brew-upgrader { inherit pkgs; };
 in
 [
-  brewUpgrade
+  brewUpgrader
   codeSyncer
   dotfilesUpdater
   neversslKeepalive
