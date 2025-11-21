@@ -17,6 +17,8 @@ EXTENSIONS_FILE="extensions.list"
 # These are MS proprietary extensions that typically fail on forks or crash them.
 # We filter these out to prevent errors.
 PROPRIETARY_EXTENSIONS=(
+  "anysphere.pyright"
+  "anysphere.cursorpyright"
   "github.codespaces"
   "github.copilot"
   "github.copilot-chat"
@@ -54,8 +56,9 @@ AI_EXTENSIONS=(
 # Check if a command exists, if not, try to find it in Applications
 resolve_cli() {
   local cmd=$1
-  if command -v "$cmd" >/dev/null 2>&1; then
-    echo "$cmd"
+  local resolved_path=$(command -v "$cmd" 2>/dev/null)
+  if [ -n "$resolved_path" ]; then
+    echo "$resolved_path"
   else
     # Fallback paths for Mac apps if not in PATH
     case $cmd in
