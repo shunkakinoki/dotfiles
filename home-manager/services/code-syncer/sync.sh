@@ -79,7 +79,7 @@ ensure_dirs() {
 # Filter out proprietary and AI extensions from the list
 # Input can be from stdin (pipe) or a file
 clean_extension_list() {
-  local input_source="$1"  # Can be a file path or "-" for stdin
+  local input_source="$1" # Can be a file path or "-" for stdin
   local clean_file="$2"
 
   # Read from stdin if input_source is "-", otherwise from file
@@ -247,9 +247,9 @@ install_extensions() {
   # Log extensions that will be synced
   local extension_count=$(wc -l <"$clean_list" 2>/dev/null | tr -d ' ' || echo "0")
   extension_count=${extension_count:-0}
-  
+
   echo "📦 Found $extension_count extension(s) to sync:"
-  
+
   if [ "$extension_count" -gt 0 ]; then
     while IFS= read -r extension; do
       if [ -n "$extension" ]; then
