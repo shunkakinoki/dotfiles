@@ -3,5 +3,6 @@
   ./direnv
   ./hammerspoon
   ./karabiner
+  ./nvim
   ./starship
 ]
