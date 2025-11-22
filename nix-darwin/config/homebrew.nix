@@ -1,7 +1,7 @@
 { isRunner }:
 {
   homebrew = {
-    enable = !isRunner;
+    enable = !isRunner && (builtins.getEnv "NIX_OFFLINE" != "1");
     onActivation = {
       autoUpdate = true;
       upgrade = true;

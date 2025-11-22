@@ -328,6 +328,45 @@ nix-switch-vm:
 	timeout 600 ./result/bin/run-nixos-vm -nographic < vm_commands.txt || exit 1; \
 	rm -f vm_commands.txt
 
+##@ Nix Offline Mode
+
+.PHONY: nix-build-offline 
+nix-build-offline:
+	@echo "🏗️ Building Nix configuration in offline mode"
+	@if [ "$(OS)" = "Darwin" ]; then \
+		NIX_OFFLINE=1 $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#darwinConfigurations.galactica.system $(NIX_FLAGS) --impure --no-update-lock-file --offline --show-trace; \
+	elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
+		NIX_OFFLINE=1 $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.runner.config.system.build.toplevel $(NIX_FLAGS) --impure --no-update-lock-file --offline --show-trace; \
+	elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
+		NIX_OFFLINE=1 $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --impure --no-update-lock-file --offline --show-trace; \
+	else \
+		echo "Unsupported OS $(OS) for offline build"; \
+		exit 1; \
+	fi
+	@echo "✅ Nix configuration built successfully in offline mode!"
+
+.PHONY: nix-switch-offline
+nix-switch-offline:
+	@echo "🔧 Activating Nix configuration in offline mode"
+	@if [ "$(OS)" = "Darwin" ]; then \
+		NIX_OFFLINE=1 sudo $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#galactica --impure --offline; \
+	elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
+		NIX_OFFLINE=1 sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file --offline || exit 0; \
+	elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
+		NIX_OFFLINE=1 USER=$(NIX_USERNAME) sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage --offline; \
+	else \
+		echo "Unsupported OS $(OS) for offline switch"; \
+		exit 1; \
+	fi
+	@echo "✅ Nix configuration activated successfully in offline mode!"
+
+nix-setup-offline:
+	@echo "🔧 Setting up offline environment"
+	@mkdir -p ~/.cache/nix
+	@echo "✅ Offline environment setup complete"
+
+##@ Offline Mode
+
 ##@ Named Hosts Specific Targets
 
 .PHONY: switch-%
