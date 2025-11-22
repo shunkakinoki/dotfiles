@@ -734,7 +734,7 @@ require("nvim-treesitter.configs").setup({
 			scope_incremental = "<noop>",
 		},
 	},
-	auto_install = false,
+	auto_install = true,
 	textobjects = {
 		enable = true,
 		lookahead = true,
