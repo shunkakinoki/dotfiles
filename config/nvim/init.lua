@@ -73,6 +73,7 @@ vim.pack.add({
 	{ src = "https://github.com/nvim-tree/nvim-web-devicons" },
 	{ src = "https://github.com/Mofiqul/dracula.nvim" },
 	{ src = "https://github.com/folke/sidekick.nvim" },
+	{ src = "https://github.com/nvim-tree/nvim-tree.lua" },
 	{ src = "https://github.com/nvim-lualine/lualine.nvim" },
 	{ src = "https://github.com/stevearc/dressing.nvim" },
 	{ src = "https://github.com/rcarriga/nvim-notify" },
@@ -1188,3 +1189,10 @@ lspconfig.lua_ls.setup({
 		},
 	},
 })
+
+require("nvim-tree").setup({
+  view = {
+    width = 30,
+  },
+})
+keymap("n", "<C-n>", ":NvimTreeToggle<CR>", opts)
