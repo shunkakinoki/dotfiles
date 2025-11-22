@@ -25,6 +25,10 @@
       "rev": "4383e05a47493d7ff77b058c0548129eb38ec7fb",
       "src": "https://github.com/zbirenbaum/copilot.lua"
     },
+    "dracula.nvim": {
+      "rev": "ae752c13e95fb7c5f58da4b5123cb804ea7568ee",
+      "src": "https://github.com/Mofiqul/dracula.nvim"
+    },
     "dressing.nvim": {
       "rev": "2d7c2db2507fa3c4956142ee607431ddb2828639",
       "src": "https://github.com/stevearc/dressing.nvim"
