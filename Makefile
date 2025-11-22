@@ -108,6 +108,8 @@ help:
 	@echo "  encrypt-key-HOST - Encrypt a key for a named host (e.g., make encrypt-key-galactica KEY_FILE=~/.ssh/id_ed25519)"
 	@echo "  decrypt-key-HOST - Decrypt a key for a named host (e.g., make decrypt-key-galactica KEY_FILE=id_ed25519)"
 	@echo "  rekey-HOST       - Rekey all secrets for a named host (e.g., make rekey-galactica)"
+	@echo "  nvim-update      - Update neovim plugins and lock file"
+	@echo "  nvim-sync        - Sync neovim plugins (install missing, remove unused)"
 
 ##@ General
 
@@ -416,6 +418,20 @@ docker-build:
 	@echo "🐳 Building Docker image: $(DOCKER_IMAGE_LATEST) and $(DOCKER_IMAGE_TAGGED)..."
 	@docker build -t $(DOCKER_IMAGE_LATEST) -t $(DOCKER_IMAGE_TAGGED) -f Dockerfile .
 	@echo "✅ Docker image built: $(DOCKER_IMAGE_LATEST) and $(DOCKER_IMAGE_TAGGED)"
+
+##@ Neovim
+
+.PHONY: nvim-update
+nvim-update:
+	@echo "📦 Updating neovim plugins..."
+	@nvim --headless +"lua vim.pack.update()" +qa
+	@echo "✅ Neovim plugins updated"
+
+.PHONY: nvim-sync
+nvim-sync:
+	@echo "🔄 Syncing neovim plugins..."
+	@nvim --headless +"lua vim.pack.sync()" +qa
+	@echo "✅ Neovim plugins synced"
 
 ##@ Git Submodule
 
