@@ -470,6 +470,27 @@ neovim-sync:
 	@nvim --headless +"lua vim.pack.sync()" +qa
 	@echo "✅ Neovim plugins synced"
 
+##@ Neovim Local Development
+
+.PHONY: neovim-local-dev
+neovim-local-dev:
+	@echo "🔧 Setting up local Neovim development environment..."
+	@if [ ! -d "$(HOME)/.config/nvim" ]; then \
+		echo "Creating local Neovim config directory..."; \
+		mkdir -p "$(HOME)/.config/nvim"; \
+	fi
+	@if [ ! -L "$(HOME)/.config/nvim/init.lua" ]; then \
+		if [ -f "$(HOME)/.config/nvim/init.lua" ]; then \
+			echo "Backing up existing local config..."; \
+			cp "$(HOME)/.config/nvim/init.lua" "$(HOME)/.config/nvim/init.lua.backup.$(shell date +%s)"; \
+		fi; \
+		echo "Creating symlink to local Neovim config..."; \
+		ln -sf "$(HOME)/.config/nvim/init.lua" "$(HOME)/.config/nvim/init.lua"; \
+	else \
+		echo "Local Neovim config is already a symlink"; \
+	fi
+	@echo "✅ Local Neovim development environment ready"
+
 ##@ Git Submodule
 
 .PHONY: git-submodule-sync
