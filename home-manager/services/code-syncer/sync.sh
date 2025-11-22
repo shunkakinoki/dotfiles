@@ -22,6 +22,7 @@ PROPRIETARY_EXTENSIONS=(
   "github.codespaces"
   "github.copilot"
   "github.copilot-chat"
+  "github.vscode-github-actions"
   "ms-python.debugpy"
   "ms-python.python"
   "ms-python.vscode-pylance"
