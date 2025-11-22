@@ -41,6 +41,8 @@ in
       ];
   };
 
+  nixpkgs.overlays = [ inputs.neovim-nightly-overlay.overlays.default ];
+
   home.username = username;
   home.homeDirectory = lib.mkIf pkgs.stdenv.isLinux "/home/${username}";
   home.packages = packages;

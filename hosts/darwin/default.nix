@@ -5,8 +5,18 @@
   isRunner ? false,
 }:
 let
-  inherit (inputs) nix-darwin home-manager agenix;
+  inherit (inputs)
+    nix-darwin
+    home-manager
+    agenix
+    neovim-nightly-overlay
+    ;
   system = "aarch64-darwin";
+  pkgs = import inputs.nixpkgs {
+    inherit system;
+    overlays = [ neovim-nightly-overlay.overlays.default ];
+    config.allowUnfree = true;
+  };
   configuration =
     { ... }:
     {
@@ -40,9 +50,8 @@ in
       ];
       home-manager.useUserPackages = true;
       home-manager.users."${username}" = import ../../home-manager {
-        inherit inputs username;
-        lib = inputs.nixpkgs.legacyPackages.${system}.lib;
-        pkgs = inputs.nixpkgs.legacyPackages.${system};
+        inherit inputs username pkgs;
+        lib = pkgs.lib;
         config = { };
       };
     }
