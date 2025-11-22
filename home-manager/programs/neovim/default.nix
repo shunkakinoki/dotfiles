@@ -9,11 +9,8 @@
     defaultEditor = true;
     vimAlias = true;
     vimdiffAlias = true;
-    plugins = with pkgs.vimPlugins; [
-      nvim-colorizer-lua
-    ];
   };
   xdg.configFile."nvim" = {
-    source = config.lib.file.mkOutOfStoreSymlink ./config;
+    source = config.lib.file.mkOutOfStoreSymlink ../../config/nvim;
   };
 }
