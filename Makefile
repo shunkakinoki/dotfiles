@@ -136,7 +136,7 @@ setup-dev: nix-setup git-submodule-sync shell-install
 switch: nix-switch
 
 .PHONY: update
-update: nix-update shell-update nvim-update
+update: nix-update shell-update neovim-update
 
 .PHONY: dev
 dev: nix-develop
@@ -419,14 +419,14 @@ docker-build:
 
 ##@ Neovim
 
-.PHONY: nvim-update
-nvim-update:
+.PHONY: neovim-update
+neovim-update:
 	@echo "📦 Updating neovim plugins..."
 	@nvim --headless +"lua vim.pack.update()" +qa
 	@echo "✅ Neovim plugins updated"
 
-.PHONY: nvim-sync
-nvim-sync:
+.PHONY: neovim-sync
+neovim-sync:
 	@echo "🔄 Syncing neovim plugins..."
 	@nvim --headless +"lua vim.pack.sync()" +qa
 	@echo "✅ Neovim plugins synced"
