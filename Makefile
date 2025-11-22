@@ -108,8 +108,6 @@ help:
 	@echo "  encrypt-key-HOST - Encrypt a key for a named host (e.g., make encrypt-key-galactica KEY_FILE=~/.ssh/id_ed25519)"
 	@echo "  decrypt-key-HOST - Decrypt a key for a named host (e.g., make decrypt-key-galactica KEY_FILE=id_ed25519)"
 	@echo "  rekey-HOST       - Rekey all secrets for a named host (e.g., make rekey-galactica)"
-	@echo "  nvim-update      - Update neovim plugins and lock file"
-	@echo "  nvim-sync        - Sync neovim plugins (install missing, remove unused)"
 
 ##@ General
 
@@ -138,7 +136,7 @@ setup-dev: nix-setup git-submodule-sync shell-install
 switch: nix-switch
 
 .PHONY: update
-update: nix-update shell-update
+update: nix-update shell-update nvim-update
 
 .PHONY: dev
 dev: nix-develop
