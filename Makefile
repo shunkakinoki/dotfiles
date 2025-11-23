@@ -458,6 +458,17 @@ docker-build:
 
 ##@ Neovim
 
+.PHONY: neovim-dev
+neovim-dev:
+	@echo "🔧 Setting up local Neovim development environment..."
+	@if [ -L "$(HOME)/.config/nvim" ]; then \
+		rm "$(HOME)/.config/nvim"; \
+	fi
+	@mkdir -p "$(HOME)/.config/nvim"
+	@ln -sf "$(PWD)/config/nvim/init.lua" "$(HOME)/.config/nvim/init.lua"
+	@ln -sf "$(PWD)/config/nvim/nvim-pack-lock.json" "$(HOME)/.config/nvim/nvim-pack-lock.json"
+	@echo "✅ Local Neovim development environment ready"
+
 .PHONY: neovim-update
 neovim-update:
 	@echo "📦 Updating neovim plugins..."
@@ -470,18 +481,6 @@ neovim-sync:
 	@nvim --headless +"lua vim.pack.sync()" +qa
 	@echo "✅ Neovim plugins synced"
 
-##@ Neovim Local Development
-
-.PHONY: neovim-local-dev
-neovim-local-dev:
-	@echo "🔧 Setting up local Neovim development environment..."
-	@if [ -L "$(HOME)/.config/nvim" ]; then \
-		rm "$(HOME)/.config/nvim"; \
-	fi
-	@mkdir -p "$(HOME)/.config/nvim"
-	@ln -sf "$(PWD)/config/nvim/init.lua" "$(HOME)/.config/nvim/init.lua"
-	@ln -sf "$(PWD)/config/nvim/nvim-pack-lock.json" "$(HOME)/.config/nvim/nvim-pack-lock.json"
-	@echo "✅ Local Neovim development environment ready"
 
 ##@ Git Submodule
 
