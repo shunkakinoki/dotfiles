@@ -1171,4 +1171,4 @@ require("nvim-tree").setup({
     width = 30,
   },
 })
-keymap("n", "<C-n>", ":NvimTreeToggle<CR>", opts)
+keymap("b", "<C-b>", ":NvimTreeToggle<CR>", opts)
