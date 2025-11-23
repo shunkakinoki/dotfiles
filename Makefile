@@ -475,21 +475,54 @@ neovim-sync:
 .PHONY: neovim-local-dev
 neovim-local-dev:
 	@echo "🔧 Setting up local Neovim development environment..."
+	@echo '{"timestamp":'$$(date +%s000)',"location":"Makefile:neovim-local-dev","message":"Starting neovim-local-dev","data":{"pwd":"$(PWD)","home":"$(HOME)","source_file":"$(PWD)/config/nvim/init.lua","target_file":"$(HOME)/.config/nvim/init.lua"},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}' >> /Users/shunkakinoki/dotfiles/.cursor/debug.log || true
+	@if [ -L "$(PWD)/config/nvim/init.lua" ]; then \
+		echo "⚠️  WARNING: Source file $(PWD)/config/nvim/init.lua is a symlink! This should be a regular file."; \
+		echo "Restoring from backup..."; \
+		if [ -f "$(PWD)/config/nvim/init.lua.backup.1763882146" ]; then \
+			rm -f "$(PWD)/config/nvim/init.lua"; \
+			cp "$(PWD)/config/nvim/init.lua.backup.1763882146" "$(PWD)/config/nvim/init.lua"; \
+			echo "✅ Source file restored from backup"; \
+			echo '{"timestamp":'$$(date +%s000)',"location":"Makefile:neovim-local-dev","message":"Restored source file from backup","data":{"backup":"init.lua.backup.1763882146"},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}' >> /Users/shunkakinoki/dotfiles/.cursor/debug.log || true; \
+		else \
+			echo "❌ No backup found! Cannot restore."; \
+			exit 1; \
+		fi; \
+	fi
 	@if [ ! -d "$(HOME)/.config/nvim" ]; then \
 		echo "Creating local Neovim config directory..."; \
 		mkdir -p "$(HOME)/.config/nvim"; \
+		echo '{"timestamp":'$$(date +%s000)',"location":"Makefile:neovim-local-dev","message":"Created nvim config directory","data":{"dir":"$(HOME)/.config/nvim"},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}' >> /Users/shunkakinoki/dotfiles/.cursor/debug.log || true; \
 	fi
-	@if [ ! -L "$(PWD)/config/nvim/init.lua" ]; then \
-		if [ -f "$(PWD)/config/nvim/init.lua" ]; then \
-			echo "Backing up existing local config..."; \
-			cp "$(HOME)/.config/nvim/init.lua" "$(HOME)/.config/nvim/init.lua.backup.$(shell date +%s)"; \
-		fi; \
-		echo "Creating symlink to local Neovim config..."; \
-		ln -sf "$(PWD)/config/nvim/init.lua" "$(HOME)/.config/nvim/init.lua"; \
-	else \
-		echo "Local Neovim config is already a symlink"; \
+	@if [ -e "$(HOME)/.config/nvim/init.lua" ]; then \
+		echo "Removing existing Nix-managed config..."; \
+		rm -f "$(HOME)/.config/nvim/init.lua"; \
+		echo '{"timestamp":'$$(date +%s000)',"location":"Makefile:neovim-local-dev","message":"Removed existing target file","data":{"target":"$(HOME)/.config/nvim/init.lua"},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}' >> /Users/shunkakinoki/dotfiles/.cursor/debug.log || true; \
+	fi
+	@echo "Creating symlink to local Neovim config at $(PWD)/config/nvim/init.lua..."; \
+	@echo '{"timestamp":'$$(date +%s000)',"location":"Makefile:neovim-local-dev","message":"Before ln command","data":{"source":"$(PWD)/config/nvim/init.lua","target":"$(HOME)/.config/nvim/init.lua","pwd":"$(PWD)"},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}' >> /Users/shunkakinoki/dotfiles/.cursor/debug.log || true; \
+	ln -sf "$(PWD)/config/nvim/init.lua" "$(HOME)/.config/nvim/init.lua"; \
+	echo '{"timestamp":'$$(date +%s000)',"location":"Makefile:neovim-local-dev","message":"After ln command","data":{"source":"$(PWD)/config/nvim/init.lua","target":"$(HOME)/.config/nvim/init.lua"},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}' >> /Users/shunkakinoki/dotfiles/.cursor/debug.log || true
+	@if [ -L "$(PWD)/config/nvim/init.lua" ]; then \
+		echo "❌ ERROR: Source file became a symlink after ln command!"; \
+		echo '{"timestamp":'$$(date +%s000)',"location":"Makefile:neovim-local-dev","message":"ERROR: Source file is symlink after ln","data":{},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}' >> /Users/shunkakinoki/dotfiles/.cursor/debug.log || true; \
+		exit 1; \
 	fi
 	@echo "✅ Local Neovim development environment ready"
+	@echo "Run 'make neovim-local-dev-restore' to restore the Nix-managed version."
+
+.PHONY: neovim-local-dev-restore
+neovim-local-dev-restore:
+	@echo "🔄 Restoring Nix-managed Neovim configuration..."
+	@if [ -L "$(HOME)/.config/nvim/init.lua" ]; then \
+		echo "Removing local development symlink..."; \
+		rm -f "$(HOME)/.config/nvim/init.lua"; \
+	else \
+		echo "No local symlink found at $(HOME)/.config/nvim/init.lua"; \
+	fi
+	@echo "Restoring Nix-managed version via 'make switch'..."
+	@$(MAKE) switch
+	@echo "✅ Nix-managed Neovim configuration restored"
 
 ##@ Git Submodule
 
