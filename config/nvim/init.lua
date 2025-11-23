@@ -556,65 +556,6 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
-local get_gopls = function(bufnr)
-	local clients = vim.lsp.get_clients({ bufnr = bufnr })
-	for _, c in ipairs(clients) do
-		if c.name == "gopls" then
-			return c
-		end
-	end
-	return nil
-end
-
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "go",
-	callback = function()
-		local bufnr = vim.api.nvim_get_current_buf()
-
-		vim.opt_local.formatoptions:append("jo")
-		vim.opt_local.makeprg = "go build ./..."
-		vim.opt_local.errorformat = "%A%f:%l:%c: %m,%-G%.%#"
-
-		vim.api.nvim_buf_create_user_command(bufnr, "GoModTidy", function()
-			local gopls = get_gopls(bufnr)
-			if gopls == nil then
-				return
-			end
-
-			vim.cmd([[ noautocmd wall ]])
-
-			local uri = vim.uri_from_bufnr(bufnr)
-			local arguments = { { URIs = { uri } } }
-
-			local err = gopls:request_sync("workspace/executeCommand", {
-				command = "gopls.tidy",
-				arguments = arguments,
-			}, 30000, bufnr)
-
-			if err ~= nil and type(err[1]) == "table" then
-				vim.notify("go mod tidy: " .. vim.inspect(err), vim.log.levels.ERROR)
-				return
-			end
-		end, { desc = "go mod tidy" })
-
-		local buf_opts = { noremap = true, silent = true, buffer = bufnr }
-		keymap("n", "<F6>", vim.cmd.GoModTidy, buf_opts)
-		keymap("n", "<F7>", function()
-			cclear()
-			vim.fn.jobstart("golangci-lint run --max-issues-per-linter=0 --max-same-issues=0 --new", {
-				stdout_buffered = true,
-				on_stdout = function(_, data)
-					if data and #data > 1 then
-						vim.schedule(function()
-							vim.fn.setqflist({}, " ", { lines = data })
-							copen()
-						end)
-					end
-				end,
-			})
-		end, buf_opts)
-	end,
-})
 
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "markdown",
@@ -1045,46 +986,6 @@ end
 
 local lspconfig = require("lspconfig")
 require("lspconfig.ui.windows").default_options.border = "none"
-lspconfig.gopls.setup({
-	capabilities = capabilities,
-	on_attach = on_attach,
-	settings = {
-		gopls = {
-			gofumpt = true,
-			codelenses = {
-				gc_details = true,
-				generate = true,
-				run_govulncheck = true,
-				test = true,
-				tidy = true,
-				upgrade_dependency = true,
-			},
-			hints = {
-				assignVariableTypes = true,
-				compositeLiteralFields = true,
-				compositeLiteralTypes = true,
-				constantValues = true,
-				functionTypeParameters = true,
-				parameterNames = true,
-				rangeVariableTypes = true,
-			},
-			analyses = {
-				nilness = true,
-				unusedparams = true,
-				unusedvariable = true,
-				unusedwrite = true,
-				useany = true,
-			},
-			staticcheck = true,
-			directoryFilters = { "-.git", "-node_modules" },
-			semanticTokens = true,
-		},
-	},
-	flags = {
-		debounce_text_changes = 150,
-	},
-})
-
 lspconfig.ts_ls.setup({
 	capabilities = capabilities,
 	on_attach = on_attach,
