@@ -489,6 +489,14 @@ neovim-local-dev:
 			exit 1; \
 		fi; \
 	fi
+	@if [ -L "$(HOME)/.config/nvim" ]; then \
+		nvim_resolved=$$(readlink -f "$(HOME)/.config/nvim" 2>/dev/null || echo ""); \
+		if [ "$$nvim_resolved" = "$(PWD)/config/nvim" ]; then \
+			echo "⚠️  WARNING: $(HOME)/.config/nvim is a symlink pointing to source directory. Removing it..."; \
+			rm -f "$(HOME)/.config/nvim"; \
+			echo '{"timestamp":'$$(date +%s000)',"location":"Makefile:neovim-local-dev","message":"Removed nvim symlink directory pointing to source","data":{"dir":"$(HOME)/.config/nvim","resolved":"$$nvim_resolved"},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}' >> /Users/shunkakinoki/dotfiles/.cursor/debug.log || true; \
+		fi; \
+	fi
 	@if [ ! -d "$(HOME)/.config/nvim" ]; then \
 		echo "Creating local Neovim config directory..."; \
 		mkdir -p "$(HOME)/.config/nvim"; \
@@ -499,10 +507,10 @@ neovim-local-dev:
 		rm -f "$(HOME)/.config/nvim/init.lua"; \
 		echo '{"timestamp":'$$(date +%s000)',"location":"Makefile:neovim-local-dev","message":"Removed existing target file","data":{"target":"$(HOME)/.config/nvim/init.lua"},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}' >> /Users/shunkakinoki/dotfiles/.cursor/debug.log || true; \
 	fi
-	@echo "Creating symlink to local Neovim config at $(PWD)/config/nvim/init.lua..."; \
-	@echo '{"timestamp":'$$(date +%s000)',"location":"Makefile:neovim-local-dev","message":"Before ln command","data":{"source":"$(PWD)/config/nvim/init.lua","target":"$(HOME)/.config/nvim/init.lua","pwd":"$(PWD)"},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}' >> /Users/shunkakinoki/dotfiles/.cursor/debug.log || true; \
-	ln -sf "$(PWD)/config/nvim/init.lua" "$(HOME)/.config/nvim/init.lua"; \
-	echo '{"timestamp":'$$(date +%s000)',"location":"Makefile:neovim-local-dev","message":"After ln command","data":{"source":"$(PWD)/config/nvim/init.lua","target":"$(HOME)/.config/nvim/init.lua"},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}' >> /Users/shunkakinoki/dotfiles/.cursor/debug.log || true
+	@echo "Creating symlink to local Neovim config at $(PWD)/config/nvim/init.lua..."
+	@echo '{"timestamp":'$$(date +%s000)',"location":"Makefile:neovim-local-dev","message":"Before ln command","data":{"source":"$(PWD)/config/nvim/init.lua","target":"$(HOME)/.config/nvim/init.lua","pwd":"$(PWD)","nvim_dir_is_link":"'$$([ -L "$(HOME)/.config/nvim" ] && echo true || echo false)'","nvim_dir_resolved":"'$$(readlink -f "$(HOME)/.config/nvim" 2>/dev/null || echo "N/A")'"},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}' >> /Users/shunkakinoki/dotfiles/.cursor/debug.log || true
+	@ln -sf "$(PWD)/config/nvim/init.lua" "$(HOME)/.config/nvim/init.lua"
+	@echo '{"timestamp":'$$(date +%s000)',"location":"Makefile:neovim-local-dev","message":"After ln command","data":{"source":"$(PWD)/config/nvim/init.lua","target":"$(HOME)/.config/nvim/init.lua","source_is_link":"'$$([ -L "$(PWD)/config/nvim/init.lua" ] && echo true || echo false)'","target_is_link":"'$$([ -L "$(HOME)/.config/nvim/init.lua" ] && echo true || echo false)'","target_readlink":"'$$(readlink "$(HOME)/.config/nvim/init.lua" 2>/dev/null || echo "N/A")'"},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}' >> /Users/shunkakinoki/dotfiles/.cursor/debug.log || true
 	@if [ -L "$(PWD)/config/nvim/init.lua" ]; then \
 		echo "❌ ERROR: Source file became a symlink after ln command!"; \
 		echo '{"timestamp":'$$(date +%s000)',"location":"Makefile:neovim-local-dev","message":"ERROR: Source file is symlink after ln","data":{},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}' >> /Users/shunkakinoki/dotfiles/.cursor/debug.log || true; \

@@ -1,6 +1,9 @@
 # AI
 .claude
 
+# Nix
+*.hm-backup
+
 # General
 .DS_Store
 .AppleDouble
