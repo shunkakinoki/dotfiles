@@ -790,9 +790,6 @@ keymap("n", "<leader>ghi", function()
 	telescope.extensions.gh.issues(ivy())
 end, opts)
 
-
-
-
 require("nvim-tree").setup({
   view = {
     width = 30,
