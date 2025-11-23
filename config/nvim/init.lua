@@ -6,7 +6,7 @@ vim.opt.mouse = ""
 vim.opt.inccommand = "nosplit"
 vim.opt.splitbelow = true
 vim.opt.splitright = true
-vim.opt.wrap = false
+vim.opt.wrap = true
 vim.opt.textwidth = 0
 vim.opt.expandtab = true
 vim.opt.smartindent = true
@@ -1149,4 +1149,4 @@ require("nvim-tree").setup({
     width = 30,
   },
 })
-keymap("b", "<C-b>", ":NvimTreeToggle<CR>", opts)
+keymap("n", "<leader>b", ":NvimTreeToggle<CR>", opts)
