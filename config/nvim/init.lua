@@ -159,6 +159,9 @@ for _, lhs in ipairs({ "-", "_", ",", ".", ";", ":", "/", "!", "?" }) do
 	keymap("i", lhs, lhs .. "<c-g>u", opts)
 end
 
+-- exit insert mode with jj
+keymap("i", "jj", "<Esc>", opts)
+
 ---
 --- UI
 ---
@@ -262,7 +265,8 @@ require("copilot").setup({
 
 ---@module 'blink.cmp'
 ---@type blink.cmp.Config
-require("blink.cmp").setup({
+local cmp = require("blink.cmp")
+cmp.setup({
 	keymap = { preset = "default" },
 	appearance = {
 		nerd_font_variant = "mono",
@@ -396,6 +400,24 @@ require("blink.cmp").setup({
 		},
 	},
 })
+
+-- Use Tab to accept copilot/completions
+keymap("i", "<Tab>", function()
+	if vim.fn.pumvisible() == 1 then
+		return vim.api.nvim_replace_termcodes("<C-y>", true, false, true)
+	else
+		return vim.api.nvim_replace_termcodes("<Tab>", true, false, true)
+	end
+end, { expr = true, noremap = true })
+
+-- Shift+Tab to navigate up in completion menu
+keymap("i", "<S-Tab>", function()
+	if vim.fn.pumvisible() == 1 then
+		return vim.api.nvim_replace_termcodes("<C-p>", true, false, true)
+	else
+		return vim.api.nvim_replace_termcodes("<S-Tab>", true, false, true)
+	end
+end, { expr = true, noremap = true })
 
 local function copen()
 	if vim.fn.getqflist({ size = 0 }).size > 1 then
