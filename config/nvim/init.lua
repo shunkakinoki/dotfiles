@@ -119,7 +119,7 @@ keymap("n", "<leader>w", ":write<CR>", opts)
 keymap("n", "<leader>r", ":source $MYVIMRC<CR>", opts)
 
 -- terminal
-keymap("n", "<leader>j", ":terminal<CR>", opts)
+keymap("n", "<leader>j", ":10split | terminal<CR>", opts)
 
 -- zz
 keymap("n", "n", "nzzzv", opts)
