@@ -479,8 +479,8 @@ neovim-local-dev:
 		echo "Creating local Neovim config directory..."; \
 		mkdir -p "$(HOME)/.config/nvim"; \
 	fi
-	@if [ ! -L "$(HOME)/.config/nvim/init.lua" ]; then \
-		if [ -f "$(HOME)/.config/nvim/init.lua" ]; then \
+	@if [ ! -L "$(PWD)/config/nvim/init.lua" ]; then \
+		if [ -f "$(PWD)/config/nvim/init.lua" ]; then \
 			echo "Backing up existing local config..."; \
 			cp "$(HOME)/.config/nvim/init.lua" "$(HOME)/.config/nvim/init.lua.backup.$(shell date +%s)"; \
 		fi; \
