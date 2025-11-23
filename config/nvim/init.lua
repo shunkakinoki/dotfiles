@@ -534,6 +534,16 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
+vim.api.nvim_create_autocmd("TermOpen", {
+	callback = function()
+		keymap("t", "<leader>j", [[<C-\><C-n>:bdelete!<CR>]], {
+			buffer = vim.api.nvim_get_current_buf(),
+			noremap = true,
+			silent = true,
+		})
+	end,
+})
+
 
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "markdown",
