@@ -79,7 +79,7 @@ vim.pack.add({
 		version = vim.version.range("1.*"),
 	},
 
-	-- tpope gang
+	-- TPOPE
 	{ src = "https://github.com/tpope/vim-fugitive" },
 	{ src = "https://github.com/tpope/vim-rhubarb" },
 	{ src = "https://github.com/tpope/vim-abolish" },
@@ -1139,28 +1139,6 @@ lspconfig.yamlls.setup({
 			schemaStore = {
 				url = "https://www.schemastore.org/api/json/catalog.json",
 				enable = true,
-			},
-		},
-	},
-})
-
-local runtime_path = vim.split(package.path, ";", {})
-table.insert(runtime_path, "lua/?.lua")
-table.insert(runtime_path, "lua/?/init.lua")
-lspconfig.lua_ls.setup({
-	capabilities = capabilities,
-	on_attach = on_attach,
-	settings = {
-		Lua = {
-			completion = {
-				callSnippet = "Replace",
-			},
-			telemetry = { enable = false },
-			hint = {
-				enable = true,
-			},
-			workspace = {
-				library = vim.api.nvim_get_runtime_file("", true),
 			},
 		},
 	},
