@@ -468,6 +468,7 @@ neovim-dev:
 	@ln -sf "$(PWD)/config/nvim/init.lua" "$(HOME)/.config/nvim/init.lua"
 	@ln -sf "$(PWD)/config/nvim/nvim-pack-lock.json" "$(HOME)/.config/nvim/nvim-pack-lock.json"
 	@echo "✅ Local Neovim development environment ready"
+	@echo "🚧 To restore the Nix-managed version, run 'make switch'"
 
 .PHONY: neovim-update
 neovim-update:
