@@ -489,6 +489,24 @@ neovim-local-dev:
 			exit 1; \
 		fi; \
 	fi
+	@if [ -L "$(PWD)/config/nvim/nvim-pack-lock.json" ]; then \
+		echo "⚠️  WARNING: Source file $(PWD)/config/nvim/nvim-pack-lock.json is a symlink! This should be a regular file."; \
+		echo "Restoring from backup..."; \
+		if [ -f "$(PWD)/config/nvim/nvim-pack-lock.json.hm-backup" ]; then \
+			rm -f "$(PWD)/config/nvim/nvim-pack-lock.json"; \
+			cp "$(PWD)/config/nvim/nvim-pack-lock.json.hm-backup" "$(PWD)/config/nvim/nvim-pack-lock.json"; \
+			echo "✅ nvim-pack-lock.json restored from backup"; \
+			echo '{"timestamp":'$$(date +%s000)',"location":"Makefile:neovim-local-dev","message":"Restored nvim-pack-lock.json from backup","data":{"backup":"nvim-pack-lock.json.hm-backup"},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}' >> /Users/shunkakinoki/dotfiles/.cursor/debug.log || true; \
+		elif [ -f "$(PWD)/config/nvim/nvim-pack-lock.json" ]; then \
+			echo "⚠️  Backup not found, but file exists. Checking if it's a valid JSON file..."; \
+			if ! file "$(PWD)/config/nvim/nvim-pack-lock.json" | grep -q "JSON"; then \
+				echo "❌ File is not valid JSON. Cannot proceed."; \
+				exit 1; \
+			fi; \
+		else \
+			echo "⚠️  No backup found and file doesn't exist. This is okay - it will be created by Neovim."; \
+		fi; \
+	fi
 	@if [ -L "$(HOME)/.config/nvim" ]; then \
 		nvim_resolved=$$(readlink -f "$(HOME)/.config/nvim" 2>/dev/null || echo ""); \
 		if [ "$$nvim_resolved" = "$(PWD)/config/nvim" ]; then \
