@@ -536,7 +536,7 @@ vim.api.nvim_create_autocmd("FileType", {
 
 vim.api.nvim_create_autocmd("TermOpen", {
 	callback = function()
-		keymap("t", "<leader>j", [[<C-\><C-n>:bdelete!<CR>]], {
+		keymap("t", "<leader>j", [[<C-\><C-n><C-w>p]], {
 			buffer = vim.api.nvim_get_current_buf(),
 			noremap = true,
 			silent = true,
