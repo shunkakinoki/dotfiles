@@ -118,6 +118,9 @@ keymap("n", "<leader>bad", ":%bwipeout!<cr>:intro<cr>", opts)
 keymap("n", "<leader>w", ":write<CR>", opts)
 keymap("n", "<leader>r", ":source $MYVIMRC<CR>", opts)
 
+-- terminal
+keymap("n", "<leader>j", ":terminal<CR>", opts)
+
 -- zz
 keymap("n", "n", "nzzzv", opts)
 keymap("n", "N", "Nzzzv", opts)
