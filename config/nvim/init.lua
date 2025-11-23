@@ -117,6 +117,7 @@ keymap("n", "<leader>cc", ":cclose<CR>", opts)
 keymap("n", "<leader>q", ":Bdelete<CR>", opts)
 keymap("n", "<leader>bad", ":%bwipeout!<cr>:intro<cr>", opts)
 keymap("n", "<leader>w", ":write<CR>", opts)
+keymap("n", "<leader>r", ":source $MYVIMRC<CR>", opts)
 
 -- zz
 keymap("n", "n", "nzzzv", opts)
