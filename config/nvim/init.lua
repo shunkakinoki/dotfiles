@@ -352,7 +352,7 @@ cmp.setup({
 			copilot = {
 				name = "copilot",
 				module = "blink-cmp-copilot",
-				score_offset = -10000,
+				score_offset = 1000,
 				min_keyword_length = 0,
 				async = true,
 				override = {
@@ -403,21 +403,22 @@ cmp.setup({
 
 -- Use Tab to accept copilot/completions
 keymap("i", "<Tab>", function()
+	-- Check if completion menu is visible (works for blink.cmp and built-in)
 	if vim.fn.pumvisible() == 1 then
-		return vim.api.nvim_replace_termcodes("<C-y>", true, false, true)
-	else
-		return vim.api.nvim_replace_termcodes("<Tab>", true, false, true)
+		-- Since noselect is enabled, first select the first item, then accept
+		-- This ensures we accept the top suggestion (or navigate to copilot if needed)
+		local current_selection = vim.fn.complete_info({ "selected" }).selected
+		if current_selection == -1 then
+			-- Nothing selected, select first item
+			return vim.api.nvim_replace_termcodes("<C-n><C-y>", true, false, true)
+		else
+			-- Something is selected, just accept it
+			return vim.api.nvim_replace_termcodes("<C-y>", true, false, true)
+		end
 	end
-end, { expr = true, noremap = true })
-
--- Shift+Tab to navigate up in completion menu
-keymap("i", "<S-Tab>", function()
-	if vim.fn.pumvisible() == 1 then
-		return vim.api.nvim_replace_termcodes("<C-p>", true, false, true)
-	else
-		return vim.api.nvim_replace_termcodes("<S-Tab>", true, false, true)
-	end
-end, { expr = true, noremap = true })
+	-- No completion menu visible, insert tab normally
+	return vim.api.nvim_replace_termcodes("<Tab>", true, false, true)
+end, { expr = true, noremap = true, silent = true })
 
 local function copen()
 	if vim.fn.getqflist({ size = 0 }).size > 1 then
