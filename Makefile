@@ -485,7 +485,7 @@ neovim-local-dev:
 			cp "$(HOME)/.config/nvim/init.lua" "$(HOME)/.config/nvim/init.lua.backup.$(shell date +%s)"; \
 		fi; \
 		echo "Creating symlink to local Neovim config..."; \
-		ln -sf "$(HOME)/.config/nvim/init.lua" "$(HOME)/.config/nvim/init.lua"; \
+		ln -sf "$(PWD)/config/nvim/init.lua" "$(HOME)/.config/nvim/init.lua"; \
 	else \
 		echo "Local Neovim config is already a symlink"; \
 	fi
