@@ -3,8 +3,8 @@
   homebrew = {
     enable = !isRunner || (builtins.getEnv "NIX_OFFLINE" != "1");
     onActivation = {
-      autoUpdate = true;
-      upgrade = true;
+      autoUpdate = builtins.getEnv "NIX_OFFLINE" != "1";
+      upgrade = builtins.getEnv "NIX_OFFLINE" != "1";
       cleanup = "zap";
       extraFlags = [ "--force" ];
     };
