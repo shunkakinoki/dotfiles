@@ -39,7 +39,7 @@ vim.opt.spelllang = { "en_us" }
 vim.opt.laststatus = 2
 vim.opt.cursorline = true
 vim.opt.grepprg = "rg --vimgrep --smart-case --follow"
-vim.opt.background = "dark"
+-- Background will be set automatically based on system theme
 vim.opt.termguicolors = true
 vim.opt.shortmess:append("c")
 vim.opt.timeoutlen = 300
@@ -136,7 +136,10 @@ keymap("n", "<leader>bad", ":%bwipeout!<cr>:intro<cr>", opts)
 -- @keymap <leader>w: Write file
 keymap("n", "<leader>w", ":write<CR>", opts)
 -- @keymap <leader>r: Reload Neovim configuration
-keymap("n", "<leader>r", ":source $MYVIMRC<CR>", opts)
+keymap("n", "<leader>r", function()
+	vim.cmd("source $MYVIMRC")
+	set_theme() -- Refresh theme on reload
+end, opts)
 -- @keymap <leader>h: Show help (all keymaps and commands)
 keymap("n", "<leader>h", ":Help<CR>", opts)
 -- @keymap ZZ: Save all buffers and quit
@@ -226,8 +229,72 @@ keymap("i", "jj", "<Esc>", opts)
 -- UI CONFIGURATION
 -- ====================================================================================
 
-local bg0 = "#1b1b1b"
-vim.cmd("colorscheme dracula")
+-- Detect system theme and set colorscheme accordingly
+local function detect_system_theme()
+	local is_dark = false
+	if vim.fn.has("mac") == 1 then
+		-- macOS: Check AppleInterfaceStyle
+		local handle = io.popen("defaults read -g AppleInterfaceStyle 2>/dev/null")
+		if handle then
+			local result = handle:read("*a")
+			handle:close()
+			is_dark = result:match("Dark") ~= nil
+		else
+			-- Default to dark if detection fails
+			is_dark = true
+		end
+	elseif vim.fn.has("unix") == 1 then
+		-- Linux: Check gsettings or environment variable
+		local handle = io.popen("gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null | grep -q dark || echo ''")
+		if handle then
+			local result = handle:read("*a")
+			handle:close()
+			is_dark = result:match("dark") ~= nil
+		else
+			-- Fallback: Check GTK_THEME or default to dark
+			local gtk_theme = os.getenv("GTK_THEME") or ""
+			is_dark = gtk_theme:match("dark") ~= nil or true
+		end
+	else
+		-- Default to dark for other systems
+		is_dark = true
+	end
+	return is_dark
+end
+
+local function set_theme()
+	local is_dark = detect_system_theme()
+	if is_dark then
+		vim.opt.background = "dark"
+		vim.cmd("colorscheme dracula")
+	else
+		vim.opt.background = "light"
+		-- Use a light theme - you can change this to your preferred light theme
+		vim.cmd("colorscheme default")
+	end
+	-- Refresh lualine theme if it's already loaded
+	if package.loaded["lualine"] then
+		require("lualine").setup({
+			options = {
+				theme = vim.o.background == "dark" and "dracula" or "auto",
+				component_separators = "",
+				section_separators = "",
+			},
+			sections = {
+				lualine_b = section_b,
+				lualine_c = section_c,
+			},
+			inactive_sections = {
+				lualine_c = section_c,
+				lualine_x = { "location" },
+			},
+		})
+	end
+end
+
+-- Set initial theme
+set_theme()
+
 vim.api.nvim_set_hl(0, "StatusLine", { reverse = false })
 vim.api.nvim_set_hl(0, "StatusLineNC", { reverse = false })
 
@@ -244,7 +311,7 @@ local section_b = { "branch", "diff", { "diagnostics", sources = { "nvim_workspa
 local section_c = { "%=", { "filename", file_status = false, path = 1 } }
 require("lualine").setup({
 	options = {
-		theme = "dracula",
+		theme = vim.o.background == "dark" and "dracula" or "auto",
 		component_separators = "",
 		section_separators = "",
 	},
@@ -475,6 +542,10 @@ end
 -- @command Finder: Open current file directory in Finder/file explorer
 -- Opens the directory of the current file in Finder/file explorer.
 vim.api.nvim_create_user_command("Finder", "!open %:h", {})
+
+-- @command ThemeRefresh: Refresh theme based on system appearance
+-- Refreshes the colorscheme based on current system theme (dark/light).
+vim.api.nvim_create_user_command("ThemeRefresh", set_theme, { desc = "Refresh theme based on system appearance" })
 
 -- ====================================================================================
 -- AUTOCMDS
