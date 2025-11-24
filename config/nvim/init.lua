@@ -133,10 +133,102 @@ keymap("n", "<leader>cc", ":cclose<CR>", opts)
 -- ====================================================================================
 -- BUFFER AND FILE OPERATIONS
 -- ====================================================================================
+-- Helper function to cycle buffers (includes unlisted buffers like nvim-tree)
+local function cycle_buffer(direction)
+	local current_buf = vim.api.nvim_get_current_buf()
+
+	-- Get buffers from all windows (includes nvim-tree and other unlisted buffers)
+	local buffer_set = {}
+	local buffers = {}
+
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		local buf = vim.api.nvim_win_get_buf(win)
+		if vim.api.nvim_buf_is_valid(buf) and not buffer_set[buf] then
+			buffer_set[buf] = true
+			table.insert(buffers, buf)
+		end
+	end
+
+	-- Also include all loaded buffers (in case some aren't in windows)
+	for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+		if vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_is_loaded(buf) and not buffer_set[buf] then
+			buffer_set[buf] = true
+			table.insert(buffers, buf)
+		end
+	end
+
+	if #buffers <= 1 then
+		return
+	end
+
+	-- Find current buffer index
+	local current_idx = nil
+	for i, buf in ipairs(buffers) do
+		if buf == current_buf then
+			current_idx = i
+			break
+		end
+	end
+
+	if not current_idx then
+		return
+	end
+
+	-- Calculate next/previous index
+	local next_idx
+	if direction == "next" then
+		next_idx = current_idx + 1
+		if next_idx > #buffers then
+			next_idx = 1
+		end
+	else
+		next_idx = current_idx - 1
+		if next_idx < 1 then
+			next_idx = #buffers
+		end
+	end
+
+	-- Find or create a window for the target buffer
+	local target_buf = buffers[next_idx]
+	local target_win = nil
+
+	-- Check if buffer is already in a window
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		if vim.api.nvim_win_get_buf(win) == target_buf then
+			target_win = win
+			break
+		end
+	end
+
+	if target_win then
+		-- Buffer is in a window, switch to it
+		vim.api.nvim_set_current_win(target_win)
+	else
+		-- Buffer not in any window, switch to it in current window
+		vim.api.nvim_set_current_buf(target_buf)
+	end
+end
+
 -- @keymap <leader><Tab>: Cycle to next buffer
-keymap("n", "<leader><Tab>", ":bnext<CR>", opts)
+vim.keymap.set("n", "<leader><tab>", function()
+	cycle_buffer("next")
+end, { noremap = true, silent = true })
+
 -- @keymap <leader><S-Tab>: Cycle to previous buffer
-keymap("n", "<leader><S-Tab>", ":bprevious<CR>", opts)
+vim.keymap.set("n", "<leader><s-tab>", function()
+	cycle_buffer("prev")
+end, { noremap = true, silent = true })
+
+-- Alternative: ]b and [b for buffer navigation (vim convention)
+-- @keymap ]b: Cycle to next buffer
+keymap("n", "]b", function()
+	cycle_buffer("next")
+end, opts)
+
+-- @keymap [b: Cycle to previous buffer
+keymap("n", "[b", function()
+	cycle_buffer("prev")
+end, opts)
 -- @keymap <leader>q: Close current buffer
 keymap("n", "<leader>q", ":Bdelete<CR>", opts)
 -- @keymap <leader>bad: Wipe all buffers
@@ -456,8 +548,6 @@ cmp.setup({
 	},
 	sources = {
 		default = { "lsp", "path", "snippets", "buffer", "copilot" },
-		-- Terminal buffers: path and buffer (command history) completions
-		terminal = { "path", "buffer" },
 		providers = {
 			lsp = {
 				min_keyword_length = 0,
@@ -702,13 +792,13 @@ vim.api.nvim_create_autocmd("TermOpen", {
 	callback = function()
 		local bufnr = vim.api.nvim_get_current_buf()
 		local winid = vim.api.nvim_get_current_win()
-		
+
 		-- Update terminal tracking if this is our managed terminal
 		if terminal_bufnr == nil or terminal_bufnr == bufnr then
 			terminal_bufnr = bufnr
 			terminal_winid = winid
 		end
-		
+
 		-- @keymap <leader>j: Exit terminal mode and hide terminal
 		keymap("t", "<leader>j", function()
 			-- Exit terminal mode properly
@@ -725,7 +815,7 @@ vim.api.nvim_create_autocmd("TermOpen", {
 			noremap = true,
 			silent = true,
 		})
-		
+
 		-- @keymap <Esc>: Exit terminal mode (keeps terminal visible)
 		-- Standard Neovim way: <C-\><C-n> also works
 		keymap("t", "<Esc>", vim.api.nvim_replace_termcodes("<C-\\><C-N>", true, false, true), {
@@ -733,7 +823,7 @@ vim.api.nvim_create_autocmd("TermOpen", {
 			noremap = true,
 			silent = true,
 		})
-		
+
 		-- @keymap <Tab>: Trigger completion in terminal mode
 		-- Note: Terminal completion works differently - you may need to use <C-x><C-f> for file completion
 		-- or configure your shell's completion (e.g., fish, zsh with completion plugins)
