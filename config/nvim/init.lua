@@ -452,6 +452,8 @@ cmp.setup({
 	},
 	sources = {
 		default = { "lsp", "path", "snippets", "buffer", "copilot" },
+		-- Terminal buffers: path and buffer (command history) completions
+		terminal = { "path", "buffer" },
 		providers = {
 			lsp = {
 				min_keyword_length = 0,
@@ -727,6 +729,10 @@ vim.api.nvim_create_autocmd("TermOpen", {
 			noremap = true,
 			silent = true,
 		})
+		
+		-- @keymap <Tab>: Trigger completion in terminal mode
+		-- Note: Terminal completion works differently - you may need to use <C-x><C-f> for file completion
+		-- or configure your shell's completion (e.g., fish, zsh with completion plugins)
 	end,
 })
 
