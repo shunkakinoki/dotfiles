@@ -9,12 +9,10 @@ let
     nix-darwin
     home-manager
     agenix
-    neovim-nightly-overlay
     ;
   system = "aarch64-darwin";
   pkgs = import inputs.nixpkgs {
     inherit system;
-    overlays = [ neovim-nightly-overlay.overlays.default ];
     config.allowUnfree = true;
   };
   configuration =
