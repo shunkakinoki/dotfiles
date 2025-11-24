@@ -134,12 +134,14 @@ keymap("n", "<leader>cc", ":cclose<CR>", opts)
 -- @keymap <leader>w: Write file
 -- @keymap <leader>r: Reload Neovim configuration
 -- @keymap <leader>h: Show help (all keymaps and commands)
+-- @keymap ZZ: Save all buffers and quit
 -- write, buffer killing
 keymap("n", "<leader>q", ":Bdelete<CR>", opts)
 keymap("n", "<leader>bad", ":%bwipeout!<cr>:intro<cr>", opts)
 keymap("n", "<leader>w", ":write<CR>", opts)
 keymap("n", "<leader>r", ":source $MYVIMRC<CR>", opts)
 keymap("n", "<leader>h", ":Help<CR>", opts)
+keymap("n", "ZZ", ":wa<CR>:q<CR>", opts)
 
 -- ====================================================================================
 -- TERMINAL
