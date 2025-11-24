@@ -66,7 +66,8 @@ vim.pack.add({
 	{ src = "https://github.com/norcalli/nvim-colorizer.lua" },
 	{ src = "https://github.com/lewis6991/gitsigns.nvim" },
 	{ src = "https://github.com/akinsho/git-conflict.nvim" },
-	-- telescope
+
+	-- TELESCOPE
 	{ src = "https://github.com/nvim-lua/plenary.nvim" },
 	{ src = "https://github.com/nvim-telescope/telescope-github.nvim" },
 	{ src = "https://github.com/nvim-telescope/telescope.nvim" },
@@ -92,7 +93,7 @@ vim.pack.add({
 	{ src = "https://github.com/tpope/vim-sleuth" },
 	{ src = "https://github.com/tpope/vim-speeddating" },
 
-	-- treesitter and friends
+	-- TREESITTER
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter" },
 	{ src = "https://github.com/lukas-reineke/indent-blankline.nvim" },
 	{ src = "https://github.com/wansmer/treesj" },
