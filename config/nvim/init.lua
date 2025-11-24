@@ -133,6 +133,10 @@ keymap("n", "<leader>cc", ":cclose<CR>", opts)
 -- ====================================================================================
 -- BUFFER AND FILE OPERATIONS
 -- ====================================================================================
+-- @keymap <leader><Tab>: Cycle to next buffer
+keymap("n", "<leader><Tab>", ":bnext<CR>", opts)
+-- @keymap <leader><S-Tab>: Cycle to previous buffer
+keymap("n", "<leader><S-Tab>", ":bprevious<CR>", opts)
 -- @keymap <leader>q: Close current buffer
 keymap("n", "<leader>q", ":Bdelete<CR>", opts)
 -- @keymap <leader>bad: Wipe all buffers
