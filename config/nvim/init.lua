@@ -137,24 +137,31 @@ keymap("n", "<leader>cc", ":cclose<CR>", opts)
 local function cycle_buffer(direction)
 	local current_buf = vim.api.nvim_get_current_buf()
 	
-	-- Get buffers from all windows (includes nvim-tree and other unlisted buffers)
+	-- Get all loaded buffers (this includes buffers in windows and loaded but not visible)
 	local buffer_set = {}
 	local buffers = {}
 	
+	-- First, get buffers from windows (includes nvim-tree)
 	for _, win in ipairs(vim.api.nvim_list_wins()) do
 		local buf = vim.api.nvim_win_get_buf(win)
-		if vim.api.nvim_buf_is_valid(buf) and not buffer_set[buf] then
+		if vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_is_loaded(buf) and not buffer_set[buf] then
 			buffer_set[buf] = true
 			table.insert(buffers, buf)
 		end
 	end
 	
-	-- Also include all loaded buffers (in case some aren't in windows)
+	-- Then add all other loaded buffers (files that aren't in windows)
 	for _, buf in ipairs(vim.api.nvim_list_bufs()) do
 		if vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_is_loaded(buf) and not buffer_set[buf] then
 			buffer_set[buf] = true
 			table.insert(buffers, buf)
 		end
+	end
+	
+	-- Ensure current buffer is in the list
+	if not buffer_set[current_buf] then
+		table.insert(buffers, current_buf)
+		buffer_set[current_buf] = true
 	end
 	
 	-- Need at least 2 buffers to cycle
@@ -171,7 +178,7 @@ local function cycle_buffer(direction)
 		end
 	end
 	
-	-- If current buffer not found, use first buffer as fallback
+	-- This should never happen now, but safety check
 	if not current_idx then
 		current_idx = 1
 	end
@@ -179,8 +186,11 @@ local function cycle_buffer(direction)
 	-- Calculate next/previous index with wrapping
 	local next_idx
 	if direction == "next" then
-		next_idx = (current_idx % #buffers) + 1
-	else
+		next_idx = current_idx + 1
+		if next_idx > #buffers then
+			next_idx = 1
+		end
+	else -- prev
 		next_idx = current_idx - 1
 		if next_idx < 1 then
 			next_idx = #buffers
@@ -190,10 +200,15 @@ local function cycle_buffer(direction)
 	-- Get target buffer
 	local target_buf = buffers[next_idx]
 	
+	-- Safety check
+	if not vim.api.nvim_buf_is_valid(target_buf) then
+		return
+	end
+	
 	-- Find window containing target buffer
 	local target_win = nil
 	for _, win in ipairs(vim.api.nvim_list_wins()) do
-		if vim.api.nvim_win_get_buf(win) == target_buf then
+		if vim.api.nvim_win_is_valid(win) and vim.api.nvim_win_get_buf(win) == target_buf then
 			target_win = win
 			break
 		end
