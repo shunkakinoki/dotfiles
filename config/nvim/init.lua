@@ -151,9 +151,52 @@ keymap("n", "ZZ", ":wa<CR>:q<CR>", opts)
 -- ====================================================================================
 -- TERMINAL
 -- ====================================================================================
--- @keymap <leader>j: Open terminal in split
--- terminal
-keymap("n", "<leader>j", ":10split | terminal<CR>", opts)
+-- Terminal toggle state
+local terminal_bufnr = nil
+local terminal_winid = nil
+
+-- Toggle terminal function
+local function toggle_terminal()
+	-- Check if terminal window is currently visible
+	if terminal_winid and vim.api.nvim_win_is_valid(terminal_winid) then
+		-- Terminal is visible, hide it (but keep the buffer)
+		vim.api.nvim_win_hide(terminal_winid)
+		terminal_winid = nil
+		return
+	end
+
+	-- Check if terminal buffer exists
+	if terminal_bufnr and vim.api.nvim_buf_is_valid(terminal_bufnr) then
+		-- Check if buffer is already displayed in any window
+		local existing_winid = nil
+		for _, winid in ipairs(vim.api.nvim_list_wins()) do
+			if vim.api.nvim_win_get_buf(winid) == terminal_bufnr then
+				existing_winid = winid
+				break
+			end
+		end
+
+		if existing_winid then
+			-- Buffer is already displayed, focus that window
+			vim.api.nvim_set_current_win(existing_winid)
+			terminal_winid = existing_winid
+		else
+			-- Terminal buffer exists but window is hidden, show it
+			vim.cmd("10split")
+			vim.api.nvim_set_current_buf(terminal_bufnr)
+			terminal_winid = vim.api.nvim_get_current_win()
+		end
+		return
+	end
+
+	-- Terminal doesn't exist, create it
+	vim.cmd("10split | terminal")
+	terminal_bufnr = vim.api.nvim_get_current_buf()
+	terminal_winid = vim.api.nvim_get_current_win()
+end
+
+-- @keymap <leader>j: Toggle terminal (show/hide)
+keymap("n", "<leader>j", toggle_terminal, opts)
 
 -- ====================================================================================
 -- NAVIGATION
@@ -648,15 +691,52 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
--- Add keymap to exit terminal mode and switch to previous window
+-- Track terminal buffer and window, and set up terminal mode keymap
 vim.api.nvim_create_autocmd("TermOpen", {
 	callback = function()
-		-- @keymap <leader>j: Exit terminal and switch to previous window
-		keymap("t", "<leader>j", [[<C-\><C-n><C-w>p]], {
-			buffer = vim.api.nvim_get_current_buf(),
+		local bufnr = vim.api.nvim_get_current_buf()
+		local winid = vim.api.nvim_get_current_win()
+		
+		-- Update terminal tracking if this is our managed terminal
+		if terminal_bufnr == nil or terminal_bufnr == bufnr then
+			terminal_bufnr = bufnr
+			terminal_winid = winid
+		end
+		
+		-- @keymap <leader>j: Exit terminal mode and hide terminal
+		keymap("t", "<leader>j", function()
+			-- Exit terminal mode properly
+			vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-\\><C-N>", true, false, true), "n", false)
+			-- Hide the terminal window but keep the buffer
+			vim.schedule(function()
+				if vim.api.nvim_win_is_valid(terminal_winid) then
+					vim.api.nvim_win_hide(terminal_winid)
+					terminal_winid = nil
+				end
+			end)
+		end, {
+			buffer = bufnr,
 			noremap = true,
 			silent = true,
 		})
+		
+		-- @keymap <Esc>: Exit terminal mode (keeps terminal visible)
+		-- Standard Neovim way: <C-\><C-n> also works
+		keymap("t", "<Esc>", vim.api.nvim_replace_termcodes("<C-\\><C-N>", true, false, true), {
+			buffer = bufnr,
+			noremap = true,
+			silent = true,
+		})
+	end,
+})
+
+-- Clean up terminal tracking when terminal buffer is closed
+vim.api.nvim_create_autocmd("BufDelete", {
+	callback = function(args)
+		if args.buf == terminal_bufnr then
+			terminal_bufnr = nil
+			terminal_winid = nil
+		end
 	end,
 })
 
