@@ -136,11 +136,11 @@ keymap("n", "<leader>cc", ":cclose<CR>", opts)
 -- Helper function to cycle buffers (includes unlisted buffers like nvim-tree)
 local function cycle_buffer(direction)
 	local current_buf = vim.api.nvim_get_current_buf()
-
+	
 	-- Get buffers from all windows (includes nvim-tree and other unlisted buffers)
 	local buffer_set = {}
 	local buffers = {}
-
+	
 	for _, win in ipairs(vim.api.nvim_list_wins()) do
 		local buf = vim.api.nvim_win_get_buf(win)
 		if vim.api.nvim_buf_is_valid(buf) and not buffer_set[buf] then
@@ -148,7 +148,7 @@ local function cycle_buffer(direction)
 			table.insert(buffers, buf)
 		end
 	end
-
+	
 	-- Also include all loaded buffers (in case some aren't in windows)
 	for _, buf in ipairs(vim.api.nvim_list_bufs()) do
 		if vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_is_loaded(buf) and not buffer_set[buf] then
@@ -156,11 +156,12 @@ local function cycle_buffer(direction)
 			table.insert(buffers, buf)
 		end
 	end
-
-	if #buffers <= 1 then
+	
+	-- Need at least 2 buffers to cycle
+	if #buffers < 2 then
 		return
 	end
-
+	
 	-- Find current buffer index
 	local current_idx = nil
 	for i, buf in ipairs(buffers) do
@@ -169,39 +170,37 @@ local function cycle_buffer(direction)
 			break
 		end
 	end
-
+	
+	-- If current buffer not found, use first buffer as fallback
 	if not current_idx then
-		return
+		current_idx = 1
 	end
-
-	-- Calculate next/previous index
+	
+	-- Calculate next/previous index with wrapping
 	local next_idx
 	if direction == "next" then
-		next_idx = current_idx + 1
-		if next_idx > #buffers then
-			next_idx = 1
-		end
+		next_idx = (current_idx % #buffers) + 1
 	else
 		next_idx = current_idx - 1
 		if next_idx < 1 then
 			next_idx = #buffers
 		end
 	end
-
-	-- Find or create a window for the target buffer
+	
+	-- Get target buffer
 	local target_buf = buffers[next_idx]
+	
+	-- Find window containing target buffer
 	local target_win = nil
-
-	-- Check if buffer is already in a window
 	for _, win in ipairs(vim.api.nvim_list_wins()) do
 		if vim.api.nvim_win_get_buf(win) == target_buf then
 			target_win = win
 			break
 		end
 	end
-
+	
 	if target_win then
-		-- Buffer is in a window, switch to it
+		-- Buffer is in a window, switch to that window
 		vim.api.nvim_set_current_win(target_win)
 	else
 		-- Buffer not in any window, switch to it in current window
