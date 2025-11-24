@@ -1,3 +1,6 @@
+-- ====================================================================================
+-- VIM OPTIONS
+-- ====================================================================================
 vim.opt.compatible = false
 vim.opt.termsync = true
 vim.opt.hidden = true
@@ -45,6 +48,9 @@ vim.opt.winborder = "none"
 vim.hl.priorities.semantic_tokens = 10
 vim.g.fugitive_legacy_commands = 0
 
+-- ====================================================================================
+-- PLUGIN INSTALLATION
+-- ====================================================================================
 vim.pack.add({
 	-- UI
 	{ src = "https://github.com/nvim-tree/nvim-web-devicons" },
@@ -99,27 +105,52 @@ vim.pack.add({
 	{ src = "https://github.com/RRethy/nvim-treesitter-endwise" },
 })
 
+-- ====================================================================================
+-- KEYMAPS
+-- ====================================================================================
 local opts = { noremap = true, silent = true }
 local keymap = vim.keymap.set
 
+-- @keymap <Space>: Set as leader key
 --Remap space as leader key
 keymap("", "<Space>", "<Nop>", opts)
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
+-- ====================================================================================
+-- QUICKFIX LISTS
+-- ====================================================================================
+-- @keymap <leader>co: Open quickfix list
+-- @keymap <leader>cc: Close quickfix list
 -- quicklists
 keymap("n", "<leader>co", ":copen<CR>", opts)
 keymap("n", "<leader>cc", ":cclose<CR>", opts)
 
+-- ====================================================================================
+-- BUFFER AND FILE OPERATIONS
+-- ====================================================================================
+-- @keymap <leader>q: Close current buffer
+-- @keymap <leader>bad: Wipe all buffers
+-- @keymap <leader>w: Write file
+-- @keymap <leader>r: Reload Neovim configuration
+-- @keymap <leader>h: Show help (all keymaps and commands)
 -- write, buffer killing
 keymap("n", "<leader>q", ":Bdelete<CR>", opts)
 keymap("n", "<leader>bad", ":%bwipeout!<cr>:intro<cr>", opts)
 keymap("n", "<leader>w", ":write<CR>", opts)
 keymap("n", "<leader>r", ":source $MYVIMRC<CR>", opts)
+keymap("n", "<leader>h", ":Help<CR>", opts)
 
+-- ====================================================================================
+-- TERMINAL
+-- ====================================================================================
+-- @keymap <leader>j: Open terminal in split
 -- terminal
 keymap("n", "<leader>j", ":10split | terminal<CR>", opts)
 
+-- ====================================================================================
+-- NAVIGATION
+-- ====================================================================================
 -- zz
 keymap("n", "n", "nzzzv", opts)
 keymap("n", "N", "Nzzzv", opts)
@@ -128,20 +159,35 @@ keymap("n", "<C-d>", "<C-d>zz", opts)
 keymap("n", "<C-o>", "<C-o>zz", opts)
 keymap("n", "<C-i>", "<C-i>zz", opts)
 
+-- ====================================================================================
+-- CLIPBOARD OPERATIONS
+-- ====================================================================================
+-- @keymap <leader>y: Yank to system clipboard
 -- system clipboard integration
 keymap({ "n", "v" }, "<leader>y", '"+y', opts)
 
+-- @keymap <leader>py: Copy current file path to clipboard
 -- copy the current file path
 keymap("n", "<leader>py", ':let @" = expand("%:p")<CR>', opts)
 
+-- @keymap <leader>d: Delete to blackhole register
 -- delete to blackhole
 keymap({ "n", "v" }, "<leader>d", '"_d', opts)
 
+-- ====================================================================================
+-- GIT OPERATIONS
+-- ====================================================================================
+-- @keymap <leader>gs: Open Git status in new tab
+-- @keymap <F9>: Open Git mergetool in new tab
+-- @keymap <leader>gd: Preview hunk inline
 -- git
 keymap("n", "<leader>gs", ":tab Git<cr>", opts)
 keymap("n", "<F9>", ":tab Git mergetool<cr>", opts)
 keymap("n", "<leader>gd", ":Gitsign preview_hunk_inline<cr>", opts)
 
+-- ====================================================================================
+-- VISUAL MODE OPERATIONS
+-- ====================================================================================
 -- indent
 keymap("v", "<", "<gv", opts)
 keymap("v", ">", ">gv", opts)
@@ -155,17 +201,21 @@ keymap("v", "p", '"_dP', opts)
 keymap("x", "K", ":move '<-2<CR>gv-gv", opts)
 keymap("x", "J", ":move '>+1<CR>gv-gv", opts)
 
+-- ====================================================================================
+-- INSERT MODE OPERATIONS
+-- ====================================================================================
 -- in insert mode, adds new undo points after more some chars:
 for _, lhs in ipairs({ "-", "_", ",", ".", ";", ":", "/", "!", "?" }) do
 	keymap("i", lhs, lhs .. "<c-g>u", opts)
 end
 
+-- @keymap jj: Exit insert mode
 -- exit insert mode with jj
 keymap("i", "jj", "<Esc>", opts)
 
----
---- UI
----
+-- ====================================================================================
+-- UI CONFIGURATION
+-- ====================================================================================
 
 local bg0 = "#1b1b1b"
 vim.cmd("colorscheme dracula")
@@ -203,6 +253,9 @@ require("auto-hlsearch").setup({})
 require("gitsigns").setup({})
 require("git-conflict").setup({})
 
+-- ====================================================================================
+-- DIAGNOSTICS
+-- ====================================================================================
 -- setup diagnostics
 vim.diagnostic.config({
 	underline = true,
@@ -210,6 +263,7 @@ vim.diagnostic.config({
 	severity_sort = true,
 })
 
+-- @keymap <leader>xx: Open diagnostics in quickfix
 keymap("n", "<leader>xx", vim.diagnostic.setqflist, opts)
 
 -- set up diagnostic signs
@@ -226,14 +280,24 @@ vim.diagnostic.config({
 	},
 })
 
+-- ====================================================================================
+-- CODE NAVIGATION
+-- ====================================================================================
+-- @keymap <leader>oo: Navigate to related file (other.nvim)
+-- @keymap <leader>ov: Navigate to related file in vertical split
+-- @keymap <leader>os: Navigate to related file in horizontal split
 require("other-nvim").setup({ mappings = { "golang" } })
 keymap("n", "<leader>oo", ":Other<cr>", opts)
 keymap("n", "<leader>ov", ":OtherVSplit<cr>", opts)
 keymap("n", "<leader>os", ":OtherSplit<cr>", opts)
 
+-- @keymap gco: Generate code annotation (neogen)
 require("neogen").setup({ snippet_engine = "nvim" })
 keymap("n", "gco", ":Neogen<cr>", opts)
 
+-- ====================================================================================
+-- COMPLETION AND COPILOT
+-- ====================================================================================
 require("copilot").setup({
 	suggestion = { enabled = false },
 	panel = { enabled = false },
@@ -377,6 +441,7 @@ cmp.setup({
 	},
 })
 
+-- @keymap <Tab>: Accept copilot/completion (selects first if none selected)
 -- Use Tab to accept copilot/completions
 keymap("i", "<Tab>", function()
 	-- Check if completion menu is visible (works for blink.cmp and built-in)
@@ -396,6 +461,9 @@ keymap("i", "<Tab>", function()
 	return vim.api.nvim_replace_termcodes("<Tab>", true, false, true)
 end, { expr = true, noremap = true, silent = true })
 
+-- ====================================================================================
+-- UTILITY FUNCTIONS
+-- ====================================================================================
 local function copen()
 	if vim.fn.getqflist({ size = 0 }).size > 1 then
 		vim.cmd("copen")
@@ -408,9 +476,14 @@ local function cclear()
 	vim.fn.setqflist({}, "r")
 end
 
+-- @command Finder: Open current file directory in Finder/file explorer
 -- Opens the directory of the current file in Finder/file explorer.
 vim.api.nvim_create_user_command("Finder", "!open %:h", {})
 
+-- ====================================================================================
+-- AUTOCMDS
+-- ====================================================================================
+-- Check for file changes on BufEnter, CursorHold, CursorHoldI, and FocusGained
 vim.api.nvim_create_autocmd({
 	"BufEnter",
 	"CursorHold",
@@ -421,20 +494,20 @@ vim.api.nvim_create_autocmd({
 	command = "if mode() != 'c' | checktime | endif",
 })
 
--- resize splits if window got resized
+-- Resize splits if window got resized
 vim.api.nvim_create_autocmd({ "VimResized" }, {
 	callback = function()
 		vim.cmd("tabdo wincmd =")
 	end,
 })
 
+-- Start in insert mode when opening git commit messages
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "gitcommit",
 	command = "startinsert",
 })
 
--- ensure the parent folder exists, so it gets properly added to the lsp
--- context and everything just works.
+-- Ensure the parent folder exists when creating new files (for LSP context)
 vim.api.nvim_create_autocmd("BufNewFile", {
 	pattern = "*",
 	callback = function()
@@ -446,7 +519,7 @@ vim.api.nvim_create_autocmd("BufNewFile", {
 	end,
 })
 
--- Highlight on yank
+-- Highlight on yank (briefly highlight yanked text)
 -- See `:help vim.highlight.on_yank()`
 vim.api.nvim_create_autocmd("TextYankPost", {
 	pattern = "*",
@@ -455,7 +528,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
--- Open help window in a vertical split to the right.
+-- Open help window in a vertical split to the right
 vim.api.nvim_create_autocmd("BufWinEnter", {
 	pattern = { "*.txt" },
 	callback = function()
@@ -465,6 +538,7 @@ vim.api.nvim_create_autocmd("BufWinEnter", {
 	end,
 })
 
+-- Add keymaps for git filetype buffers
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "git",
 	callback = function()
@@ -474,6 +548,7 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
+-- Configure fugitive buffers with git keymaps (push, pull, commit, etc.)
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "fugitive",
 	callback = function()
@@ -514,6 +589,7 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
+-- Enable spell check and set textwidth for git commit messages
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "gitcommit",
 	callback = function()
@@ -522,6 +598,7 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
+-- Add <leader>q keymap to close quickfix and help buffers
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = { "qf", "help" },
 	callback = function()
@@ -533,6 +610,7 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
+-- Add keymap to exit terminal mode and switch to previous window
 vim.api.nvim_create_autocmd("TermOpen", {
 	callback = function()
 		keymap("t", "<leader>j", [[<C-\><C-n><C-w>p]], {
@@ -543,6 +621,7 @@ vim.api.nvim_create_autocmd("TermOpen", {
 	end,
 })
 
+-- Enable spell check and set textwidth for markdown files
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "markdown",
 	callback = function()
@@ -552,6 +631,9 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
+-- ====================================================================================
+-- TREESITTER AND SYNTAX
+-- ====================================================================================
 -- syntax, indentation, treesitter, etc.
 require("ibl").setup({
 	indent = { char = "│" },
@@ -571,6 +653,9 @@ require("treesitter-context").setup({
 	multiline_threshold = 1,
 })
 
+-- ====================================================================================
+-- TREESITTER CONFIGURATION
+-- ====================================================================================
 ---@diagnostic disable-next-line: missing-fields
 require("nvim-treesitter.configs").setup({
 	ensure_installed = {
@@ -654,9 +739,11 @@ require("nvim-treesitter.configs").setup({
 		swap = {
 			enable = true,
 			swap_next = {
+				-- @keymap <leader>a: Swap next parameter (treesitter)
 				["<leader>a"] = "@parameter.inner",
 			},
 			swap_previous = {
+				-- @keymap <leader>A: Swap previous parameter (treesitter)
 				["<leader>A"] = "@parameter.inner",
 			},
 		},
@@ -664,21 +751,33 @@ require("nvim-treesitter.configs").setup({
 			enable = true,
 			set_jumps = true,
 			goto_next_start = {
+				-- @keymap ]f: Go to next function start (treesitter)
+				-- @keymap ]c: Go to next class start (treesitter)
+				-- @keymap ]a: Go to next parameter start (treesitter)
 				["]f"] = "@function.inner",
 				["]c"] = "@class.inner",
 				["]a"] = "@parameter.inner",
 			},
 			goto_next_end = {
+				-- @keymap ]F: Go to next function end (treesitter)
+				-- @keymap ]C: Go to next class end (treesitter)
+				-- @keymap ]A: Go to next parameter end (treesitter)
 				["]F"] = "@function.inner",
 				["]C"] = "@class.inner",
 				["]A"] = "@parameter.inner",
 			},
 			goto_previous_start = {
+				-- @keymap [f: Go to previous function start (treesitter)
+				-- @keymap [c: Go to previous class start (treesitter)
+				-- @keymap [a: Go to previous parameter start (treesitter)
 				["[f"] = "@function.inner",
 				["[c"] = "@class.inner",
 				["[a"] = "@parameter.inner",
 			},
 			goto_previous_end = {
+				-- @keymap [F: Go to previous function end (treesitter)
+				-- @keymap [C: Go to previous class end (treesitter)
+				-- @keymap [A: Go to previous parameter end (treesitter)
 				["[F"] = "@function.inner",
 				["[C"] = "@class.inner",
 				["[A"] = "@parameter.inner",
@@ -687,6 +786,14 @@ require("nvim-treesitter.configs").setup({
 		select = {
 			enable = true,
 			keymaps = {
+				-- @keymap af: Select function outer (treesitter)
+				-- @keymap if: Select function inner (treesitter)
+				-- @keymap ac: Select conditional outer (treesitter)
+				-- @keymap ic: Select conditional inner (treesitter)
+				-- @keymap aa: Select parameter outer (treesitter)
+				-- @keymap ia: Select parameter inner (treesitter)
+				-- @keymap av: Select variable outer (treesitter)
+				-- @keymap iv: Select variable inner (treesitter)
 				["af"] = "@function.outer",
 				["if"] = "@function.inner",
 
@@ -703,10 +810,14 @@ require("nvim-treesitter.configs").setup({
 	},
 })
 
+-- @keymap <leader>st: Toggle treesitter split/join
 local treesj = require("treesj")
 treesj.setup({ use_default_keymaps = false })
 keymap("n", "<leader>st", treesj.toggle, opts)
 
+-- ====================================================================================
+-- TELESCOPE CONFIGURATION
+-- ====================================================================================
 local telescope = require("telescope")
 telescope.setup({
 	defaults = {
@@ -739,6 +850,7 @@ local function ivy(iopts)
 end
 
 local builtin = require("telescope.builtin")
+-- @keymap <C-p>: Find files (Telescope)
 vim.keymap.set("n", "<C-p>", function()
 	builtin.find_files(ivy({
 		find_command = {
@@ -751,47 +863,164 @@ vim.keymap.set("n", "<C-p>", function()
 	}))
 end, opts)
 
+-- @keymap <leader>of: Open old files (Telescope)
 keymap("n", "<leader>of", function()
 	builtin.oldfiles(ivy({
 		only_cwd = true,
 	}))
 end, opts)
 
+-- @keymap <leader>lg: Live grep (Telescope)
 keymap("n", "<leader>lg", function()
 	builtin.live_grep(ivy())
 end, opts)
 
+-- @keymap <leader>fb: Find buffers (Telescope)
 keymap("n", "<leader>fb", function()
 	builtin.buffers(ivy())
 end, opts)
 
+-- @keymap <leader>fh: Find help tags (Telescope)
 keymap("n", "<leader>fh", function()
 	builtin.help_tags(ivy())
 end, opts)
 
+-- @keymap <leader>fc: Find commands (Telescope)
 keymap("n", "<leader>fc", function()
 	builtin.commands(ivy())
 end, opts)
 
+-- @keymap <leader>fr: Resume last Telescope search
 keymap("n", "<leader>fr", function()
 	builtin.resume(ivy())
 end, opts)
 
+-- @keymap <leader>fq: Find in quickfix (Telescope)
 keymap("n", "<leader>fq", function()
 	builtin.quickfix(ivy())
 end, opts)
 
+-- @keymap <leader>/: Fuzzy find in current buffer (Telescope)
 keymap("n", "<leader>/", function()
 	builtin.current_buffer_fuzzy_find(ivy())
 end, opts)
 
+-- @keymap <leader>ghi: Find GitHub issues (Telescope)
 keymap("n", "<leader>ghi", function()
 	telescope.extensions.gh.issues(ivy())
 end, opts)
 
+-- ====================================================================================
+-- FILE TREE
+-- ====================================================================================
+-- @keymap <leader>b: Toggle file tree (nvim-tree)
 require("nvim-tree").setup({
 	view = {
 		width = 30,
 	},
 })
 keymap("n", "<leader>b", ":NvimTreeToggle<CR>", opts)
+
+-- ====================================================================================
+-- HELP COMMAND
+-- ====================================================================================
+-- @command Help: Show all keymaps and commands from init.lua
+vim.api.nvim_create_user_command("Help", function()
+	local config_file = vim.fn.stdpath("config") .. "/init.lua"
+	local file = io.open(config_file, "r")
+	if not file then
+		vim.notify("Could not read config file: " .. config_file, vim.log.levels.ERROR)
+		return
+	end
+
+	local keymaps = {}
+	local commands = {}
+	local plugins = {}
+	local current_section = "General"
+
+	for line in file:lines() do
+		-- Parse @keymap comments
+		local key, desc = line:match("^%s*%-%-%s*@keymap%s+(.+):%s*(.+)$")
+		if key and desc then
+			table.insert(keymaps, { key = key, desc = desc, section = current_section })
+		end
+
+		-- Parse @command comments
+		local cmd, cmd_desc = line:match("^%s*%-%-%s*@command%s+(.+):%s*(.+)$")
+		if cmd and cmd_desc then
+			table.insert(commands, { cmd = cmd, desc = cmd_desc })
+		end
+
+		-- Parse @plugin comments
+		local plugin, plugin_desc = line:match("^%s*%-%-%s*@plugin%s+(.+):%s*(.+)$")
+		if plugin and plugin_desc then
+			table.insert(plugins, { plugin = plugin, desc = plugin_desc })
+		end
+
+		-- Track sections
+		if line:match("^%-%-%s*@section") or line:match("^%-%-%s*%-%-%-") then
+			current_section = line:match("UI") and "UI"
+				or line:match("CODING") and "Coding"
+				or line:match("TPOPE") and "Plugins"
+				or line:match("treesitter") and "Treesitter"
+				or "General"
+		end
+	end
+
+	file:close()
+
+	-- Create help buffer
+	local buf = vim.api.nvim_create_buf(false, true)
+	local lines = {}
+
+	table.insert(lines, "Neovim Configuration Help")
+	table.insert(lines, "=" .. string.rep("=", 50))
+	table.insert(lines, "")
+
+	-- Keymaps section
+	table.insert(lines, "KEYMAPS")
+	table.insert(lines, string.rep("-", 50))
+	table.insert(lines, "")
+	for _, km in ipairs(keymaps) do
+		local key = km.key:gsub("<leader>", "<Space>")
+		table.insert(lines, string.format("  %-25s %s", key, km.desc))
+	end
+	table.insert(lines, "")
+
+	-- Commands section
+	if #commands > 0 then
+		table.insert(lines, "COMMANDS")
+		table.insert(lines, string.rep("-", 50))
+		table.insert(lines, "")
+		for _, cmd in ipairs(commands) do
+			table.insert(lines, string.format("  :%-24s %s", cmd.cmd, cmd.desc))
+		end
+		table.insert(lines, "")
+	end
+
+	-- Plugins section
+	if #plugins > 0 then
+		table.insert(lines, "PLUGINS")
+		table.insert(lines, string.rep("-", 50))
+		table.insert(lines, "")
+		for _, plugin in ipairs(plugins) do
+			table.insert(lines, string.format("  %-25s %s", plugin.plugin, plugin.desc))
+		end
+		table.insert(lines, "")
+	end
+
+	table.insert(lines, "=" .. string.rep("=", 50))
+	table.insert(lines, "Press 'q' to close")
+
+	vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+	vim.api.nvim_buf_set_option(buf, "filetype", "help")
+	vim.api.nvim_buf_set_option(buf, "modifiable", false)
+	vim.api.nvim_buf_set_name(buf, "neovim-config-help")
+
+	-- Open in split
+	vim.cmd("split")
+	vim.api.nvim_set_current_buf(buf)
+
+	-- Map q to close
+	vim.keymap.set("n", "q", ":close<CR>", { buffer = buf, silent = true })
+end, { desc = "Show all keymaps and commands from init.lua" })
