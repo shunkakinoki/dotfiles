@@ -272,24 +272,6 @@ local function set_theme()
 		-- Use a light theme - you can change this to your preferred light theme
 		vim.cmd("colorscheme default")
 	end
-	-- Refresh lualine theme if it's already loaded
-	if package.loaded["lualine"] then
-		require("lualine").setup({
-			options = {
-				theme = vim.o.background == "dark" and "dracula" or "auto",
-				component_separators = "",
-				section_separators = "",
-			},
-			sections = {
-				lualine_b = section_b,
-				lualine_c = section_c,
-			},
-			inactive_sections = {
-				lualine_c = section_c,
-				lualine_x = { "location" },
-			},
-		})
-	end
 end
 
 -- Set initial theme
