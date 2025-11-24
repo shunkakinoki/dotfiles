@@ -7,7 +7,7 @@
   # Copy nvim-pack-lock.json instead of symlinking so Neovim can write to it
   # Use make neovim-sync to sync changes back to the repo
   home.file.".config/nvim/nvim-pack-lock.json" = {
-    source = ./nvim-pack-lock.json;
+    text = builtins.readFile ./nvim-pack-lock.json;
     force = true;
   };
 }
