@@ -88,66 +88,61 @@ DARWIN_REBUILD := $(shell command -v darwin-rebuild 2>/dev/null || echo "./resul
 
 # Default target
 .PHONY: default
-default: help
+default: help ## Default target (shows help).
 
-# Help target
+# ====================================================================================
+# HELP
+# ====================================================================================
 .PHONY: help
-help:
-	@echo "Available targets:"
-	@echo "  install      - Set up full environment"
-	@echo "  setup        - Basic Nix setup"
-	@echo "  setup-dev    - Set up local development environment (Nix + submodules + shell)"
-	@echo "  dev          - Enter the Nix dev shell"
-	@echo "  build        - Build Nix configuration"
-	@echo "  switch       - Apply Nix configuration"
-	@echo "  update       - Update Nix flake and configurations"
-	@echo "  format       - Format Nix files"
-	@echo "  format-check - Check Nix formatting"
-	@echo "  docker-build - Build the Docker image"
-	@echo "  switch-HOST      - Switch to a named host configuration (e.g., make switch-galactica)"
-	@echo "  encrypt-key-HOST - Encrypt a key for a named host (e.g., make encrypt-key-galactica KEY_FILE=~/.ssh/id_ed25519)"
-	@echo "  decrypt-key-HOST - Decrypt a key for a named host (e.g., make decrypt-key-galactica KEY_FILE=id_ed25519)"
-	@echo "  rekey-HOST       - Rekey all secrets for a named host (e.g., make rekey-galactica)"
+help: ## Show this help message.
+	@echo "Usage: make <target>"
+	@echo
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9_-]+:.*?## / {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 ##@ General
 
 .PHONY: install
-install: setup update shell-install
+install: setup update shell-install ## Set up full environment (setup, update, shell-install).
 
 .PHONY: build
-build: nix-build
+build: nix-build ## Build Nix configuration.
 
 .PHONY: check
-check: nix-check
+check: ## Run all validation checks (nix, format, lua).
+	@echo "🔍 Running all validation checks..."
+	@$(MAKE) nix-flake-check
+	@$(MAKE) nix-format-check
+	@$(MAKE) lua-check
+	@echo "✅ All checks passed"
 
 .PHONY: flake-check
-flake-check: nix-flake-check
+flake-check: nix-flake-check ## Check Nix flake configuration (alias for nix-flake-check).
 
 .PHONY: format
-format: nix-format
+format: nix-format ## Format Nix files (alias for nix-format).
 
 .PHONY: setup
-setup: nix-setup
+setup: nix-setup ## Basic Nix setup (alias for nix-setup).
 
 .PHONY: setup-dev
-setup-dev: nix-setup git-submodule-sync shell-install
+setup-dev: nix-setup git-submodule-sync shell-install ## Set up local development environment (Nix + submodules + shell).
 
 .PHONY: switch
-switch: nix-switch
+switch: nix-switch ## Apply Nix configuration (alias for nix-switch).
 
 .PHONY: update
-update: nix-update shell-update neovim-update
+update: nix-update shell-update neovim-update ## Update Nix flake and configurations.
 
 .PHONY: dev
-dev: nix-develop
+dev: nix-develop ## Enter the Nix dev shell (alias for nix-develop).
 
 ##@ Nix Setup
 
 .PHONY: nix-setup
-nix-setup: nix-install nix-check nix-connect 
+nix-setup: nix-install nix-check nix-connect ## Set up Nix environment (install, check, connect). 
 
 .PHONY: nix-connect
-nix-connect:
+nix-connect: ## Ensure Nix daemon is running.
 	@echo "🔌 Ensuring Nix daemon is running for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"
 	@if [ "$(OS)" = "Darwin" ]; then \
 		sudo launchctl unload /Library/LaunchDaemons/org.nixos.nix-daemon.plist 2>/dev/null || true; \
@@ -176,7 +171,7 @@ nix-connect:
 	@echo "✅ Nix daemon should now be active!"
 
 .PHONY: nix-check
-nix-check:
+nix-check: ## Verify Nix environment setup.
 	@echo "🔍 Verifying Nix environment setup for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"
 	@if [ "$(NIX_ENV)" = "not_found" ]; then \
 		echo "❌ Nix environment not found. Please ensure Nix is installed and run:"; \
@@ -185,11 +180,11 @@ nix-check:
 	@echo "✅ Nix environment found!"
 
 .PHONY: nix-develop
-nix-develop:
+nix-develop: ## Enter the Nix development shell.
 	$(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS)
 
 .PHONY: nix-install
-nix-install:
+nix-install: ## Install Nix if not already installed.
 	@if [ "$(NIX_ENV)" = "not_found" ]; then \
 		echo "🚀 Installing Nix environment for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"; \
 		curl -L https://nixos.org/nix/install | sh; \
@@ -199,10 +194,10 @@ nix-install:
 ##@ Nix
 
 .PHONY: nix-update
-nix-update: nix-flake-update nix-build nix-switch
+nix-update: nix-flake-update nix-build nix-switch ## Update Nix flake, build, and switch.
 
 .PHONY: nix-backup
-nix-backup:
+nix-backup: ## Backup configuration files.
 	@echo "🗄️ Backing up configuration files for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"
 	@backup_dir="$$HOME/.config/backups/$(shell date +%Y%m%d_%H%M%S)"; \
 	mkdir -p "$$backup_dir"; \
@@ -212,7 +207,7 @@ nix-backup:
 	fi
 
 .PHONY: nix-build
-nix-build: nix-connect
+nix-build: nix-connect ## Build Nix configuration.
 	@echo "🏗️ Building Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"
 	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		echo "🤖 Running in CI/Docker environment"; \
@@ -244,13 +239,13 @@ nix-build: nix-connect
 	@echo "✅ Nix configuration built successfully!"
 
 .PHONY: nix-flake-check
-nix-flake-check:
+nix-flake-check: ## Check Nix flake configuration.
 	@echo "🔍 Checking Nix flake configuration..."
 	@$(NIX_ALLOW_UNFREE) $(NIX_EXEC) flake check --all-systems --impure $(NIX_FLAGS)
 	@echo "✅ Nix flake check completed successfully"
 
 .PHONY: nix-flake-update
-nix-flake-update: nix-connect
+nix-flake-update: nix-connect ## Update flake.lock file.
 	@echo "♻️ Refreshing flake.lock file..."
 	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		echo "Bypassing flake update in CI/Docker"; \
@@ -260,25 +255,25 @@ nix-flake-update: nix-connect
 	@echo "✅ flake.lock updated!"
 
 .PHONY: nix-format
-nix-format: nix-format-clear-cache
+nix-format: nix-format-clear-cache ## Format Nix files.
 	@echo "🧹 Formatting Nix files..."
 	@$(NIX_EXEC) fmt -- --clear-cache
 	@echo "✅ Formatting complete"
 
 .PHONY: nix-format-clear-cache
-nix-format-clear-cache:
+nix-format-clear-cache: ## Clear Nix format cache.
 	@echo "🧹 Clearing Nix cache..."
 	@$(NIX_EXEC) fmt -- --clear-cache
 	@echo "✅ Cache cleared"
 
 .PHONY: nix-format-check
-nix-format-check: nix-format-clear-cache
+nix-format-check: nix-format-clear-cache ## Check Nix file formatting.
 	@echo "🔍 Checking Nix file formatting..."
 	@$(NIX_EXEC) fmt -- --fail-on-change
 	@echo "✅ All Nix files are properly formatted"
 
 .PHONY: nix-switch
-nix-switch:
+nix-switch: ## Activate Nix configuration.
 	@echo "🔧 Activating Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"
 	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		if [ "$(OS)" = "Darwin" ]; then \
@@ -318,7 +313,7 @@ nix-switch:
 	@echo "✅ Nix configuration activated successfully!"
 
 .PHONY: nix-switch-vm
-nix-switch-vm:
+nix-switch-vm: ## Switch NixOS configuration in VM.
 	@if [ ! -f "./result/bin/run-nixos-vm" ]; then \
 		echo "❌ VM binary not found at ./result/bin/run-nixos-vm"; \
 		exit 0; \
@@ -331,7 +326,7 @@ nix-switch-vm:
 ##@ Nix Offline Mode
 
 .PHONY: nix-build-offline 
-nix-build-offline:
+nix-build-offline: ## Build Nix configuration in offline mode.
 	@echo "🏗️ Building Nix configuration in offline mode"
 	@if [ "$(OS)" = "Darwin" ]; then \
 		NIX_OFFLINE=1 $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#darwinConfigurations.galactica.system $(NIX_FLAGS) --impure --no-update-lock-file --offline --show-trace; \
@@ -346,7 +341,7 @@ nix-build-offline:
 	@echo "✅ Nix configuration built successfully in offline mode!"
 
 .PHONY: nix-switch-offline
-nix-switch-offline:
+nix-switch-offline: ## Activate Nix configuration in offline mode.
 	@echo "🔧 Activating Nix configuration in offline mode"
 	@if [ "$(OS)" = "Darwin" ]; then \
 		NIX_OFFLINE=1 sudo $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#galactica --impure --offline; \
@@ -360,7 +355,8 @@ nix-switch-offline:
 	fi
 	@echo "✅ Nix configuration activated successfully in offline mode!"
 
-nix-setup-offline:
+.PHONY: nix-setup-offline
+nix-setup-offline: ## Set up offline environment.
 	@echo "🔧 Setting up offline environment"
 	@mkdir -p ~/.cache/nix
 	@echo "✅ Offline environment setup complete"
@@ -370,25 +366,25 @@ nix-setup-offline:
 ##@ Named Hosts Specific Targets
 
 .PHONY: switch-%
-switch-%:
+switch-%: ## Switch to a named host configuration (e.g., make switch-galactica).
 	@$(MAKE) nix-switch HOST=$*
 
 .PHONY: encrypt-key-%
-encrypt-key-%:
+encrypt-key-%: ## Encrypt a key for a named host (e.g., make encrypt-key-galactica KEY_FILE=~/.ssh/id_ed25519).
 	@$(MAKE) encrypt-key HOST=$* KEY_FILE=$(KEY_FILE)
 
 .PHONY: decrypt-key-%
-decrypt-key-%:
+decrypt-key-%: ## Decrypt a key for a named host (e.g., make decrypt-key-galactica KEY_FILE=id_ed25519).
 	@$(MAKE) decrypt-key HOST=$* KEY_FILE=$(KEY_FILE)
 
 .PHONY: rekey-%
-rekey-%:
+rekey-%: ## Rekey all secrets for a named host (e.g., make rekey-galactica).
 	@$(MAKE) rekey HOST=$*
 
 ##@ Agenix Secrets Management
 
 .PHONY: encrypt-key
-encrypt-key:
+encrypt-key: ## Encrypt a key file for a host (requires HOST and KEY_FILE variables).
 	@if [ -z "$(HOST)" ]; then \
 		echo "❌ HOST variable is not set. Usage: make encrypt-key HOST=<hostname> KEY_FILE=<path_to_key>"; \
 		exit 1; \
@@ -402,7 +398,7 @@ encrypt-key:
 	@echo "✅ Key encrypted to named-hosts/$(HOST)/keys/$(shell basename $(KEY_FILE)).age"
 
 .PHONY: decrypt-key
-decrypt-key:
+decrypt-key: ## Decrypt a key file for a host (requires HOST variable, optional KEY_FILE).
 	@if [ -z "$(HOST)" ]; then \
 		echo "❌ HOST variable is not set. Usage: make decrypt-key HOST=<hostname> KEY_FILE=<path_to_key>"; \
 		exit 1; \
@@ -414,7 +410,7 @@ decrypt-key:
 	@cd named-hosts/$(HOST) && agenix -d keys/$(KEY_FILE).age
 
 .PHONY: rekey
-rekey:
+rekey: ## Rekey all secrets for a host (requires HOST variable).
 	@if [ -z "$(HOST)" ]; then \
 		echo "❌ HOST variable is not set. Usage: make rekey HOST=<hostname>"; \
 		exit 1; \
@@ -426,7 +422,7 @@ rekey:
 ##@ Shell Installation
 
 .PHONY: shell-install
-shell-install:
+shell-install: ## Set up Fish shell as default shell.
 	@echo "🐠 Setting up Fish shell..."
 	@if command -v fish > /dev/null; then \
 		fish_path=$$(command -v fish); \
@@ -446,12 +442,12 @@ shell-install:
 	fi
 
 .PHONY: shell-update
-shell-update: shell-install
+shell-update: shell-install ## Update Fish shell setup (alias for shell-install).
 
 ##@ Docker
 
 .PHONY: docker-build
-docker-build:
+docker-build: ## Build Docker image.
 	@echo "🐳 Building Docker image: $(DOCKER_IMAGE_LATEST) and $(DOCKER_IMAGE_TAGGED)..."
 	@docker build -t $(DOCKER_IMAGE_LATEST) -t $(DOCKER_IMAGE_TAGGED) -f Dockerfile .
 	@echo "✅ Docker image built: $(DOCKER_IMAGE_LATEST) and $(DOCKER_IMAGE_TAGGED)"
@@ -459,7 +455,7 @@ docker-build:
 ##@ Neovim
 
 .PHONY: neovim-dev
-neovim-dev:
+neovim-dev: ## Set up local Neovim development environment.
 	@echo "🔧 Setting up local Neovim development environment..."
 	@if [ -L "$(HOME)/.config/nvim" ]; then \
 		rm "$(HOME)/.config/nvim"; \
@@ -471,22 +467,76 @@ neovim-dev:
 	@echo "🚧 To restore the Nix-managed version, run 'make switch'"
 
 .PHONY: neovim-update
-neovim-update:
+neovim-update: ## Update Neovim plugins.
 	@echo "📦 Updating neovim plugins..."
 	@nvim --headless +"lua vim.pack.update()" +qa
 	@echo "✅ Neovim plugins updated"
 
 .PHONY: neovim-sync
-neovim-sync:
+neovim-sync: ## Sync Neovim plugins.
 	@echo "🔄 Syncing neovim plugins..."
 	@nvim --headless +"lua vim.pack.sync()" +qa
 	@echo "✅ Neovim plugins synced"
 
+##@ Lua
+
+.PHONY: lua-check
+lua-check: lua-check-neovim lua-check-hammerspoon ## Check all Lua configurations (Neovim and Hammerspoon).
+	@echo "✅ All Lua configurations validated"
+
+.PHONY: lua-check-neovim
+lua-check-neovim: ## Check Neovim configuration.
+	@echo "🔍 Checking Neovim configuration..."
+	@if ! command -v nvim >/dev/null 2>&1; then \
+		echo "⚠️  Neovim is not installed or not in PATH"; \
+		exit 1; \
+	fi
+	@NVIM_CONFIG="$(PWD)/config/nvim/init.lua"; \
+	if [ ! -f "$$NVIM_CONFIG" ]; then \
+		echo "⚠️  Could not find Neovim configuration at $$NVIM_CONFIG"; \
+		exit 1; \
+	fi
+	@echo "📝 Validating Neovim configuration syntax..."
+	@mkdir -p ~/.config/nvim
+	@ln -sf "$(PWD)/config/nvim/init.lua" ~/.config/nvim/init.lua
+	@if [ -f "$(PWD)/config/nvim/nvim-pack-lock.json" ]; then \
+		ln -sf "$(PWD)/config/nvim/nvim-pack-lock.json" ~/.config/nvim/nvim-pack-lock.json; \
+	fi
+	@nvim --headless -c "lua dofile('$(PWD)/config/nvim/init.lua')" -c "qa" 2>&1; \
+	EXIT_CODE=$$?; \
+	if [ $$EXIT_CODE -eq 0 ]; then \
+		echo "✅ Neovim configuration is valid"; \
+	else \
+		echo "❌ Neovim configuration has errors (exit code: $$EXIT_CODE)"; \
+		exit $$EXIT_CODE; \
+	fi
+
+.PHONY: lua-check-hammerspoon
+lua-check-hammerspoon: ## Check Hammerspoon configuration.
+	@echo "🔍 Checking Hammerspoon configuration..."
+	@HAMMERSPOON_CONFIG="$(PWD)/config/hammerspoon/init.lua"; \
+	if [ ! -f "$$HAMMERSPOON_CONFIG" ]; then \
+		echo "⚠️  Could not find Hammerspoon configuration at $$HAMMERSPOON_CONFIG"; \
+		exit 1; \
+	fi
+	@echo "📝 Validating Hammerspoon configuration syntax..."
+	@if command -v lua >/dev/null 2>&1; then \
+		lua -e "assert(loadfile('$(PWD)/config/hammerspoon/init.lua'))" && \
+		echo "✅ Hammerspoon configuration is valid" || \
+		(echo "❌ Hammerspoon configuration has syntax errors" && exit 1); \
+	elif command -v nix >/dev/null 2>&1; then \
+		nix run nixpkgs#lua -- -e "assert(loadfile('$(PWD)/config/hammerspoon/init.lua'))" && \
+		echo "✅ Hammerspoon configuration is valid" || \
+		(echo "❌ Hammerspoon configuration has syntax errors" && exit 1); \
+	else \
+		echo "⚠️  Neither lua nor nix is available for syntax checking"; \
+		exit 1; \
+	fi
 
 ##@ Git Submodule
 
 .PHONY: git-submodule-sync
-git-submodule-sync:
+git-submodule-sync: ## Sync and update git submodules.
 	@echo "🔁 Syncing and updating git submodules..."
 	@git submodule sync
 	@git submodule update --init --recursive
