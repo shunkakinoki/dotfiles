@@ -475,7 +475,7 @@ neovim-update: ## Update Neovim plugins.
 .PHONY: neovim-sync
 neovim-sync: ## Sync Neovim plugins.
 	@echo "🔄 Syncing neovim plugins..."
-	@nvim --headless +"lua vim.pack.sync()" +qa
+	@nvim --headless +"lua vim.cmd('source ' .. vim.fn.stdpath('config') .. '/init.lua')" +qa
 	@echo "✅ Neovim plugins synced"
 
 ##@ Lua
