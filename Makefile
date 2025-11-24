@@ -477,7 +477,12 @@ neovim-sync: ## Sync Neovim plugins.
 	@echo "🔄 Syncing neovim plugins..."
 	@nvim --headless +"lua vim.cmd('source ' .. vim.fn.stdpath('config') .. '/init.lua')" +qa
 	@if [ -f "$(PWD)/config/nvim/nvim-pack-lock.json" ]; then \
-		sed -i '' -e '$ { /^$$/d; }' "$(PWD)/config/nvim/nvim-pack-lock.json" && printf '\n' >> "$(PWD)/config/nvim/nvim-pack-lock.json"; \
+		if [ "$$(uname)" = "Darwin" ]; then \
+			sed -i '' -e '$$ { /^$$/d; }' "$(PWD)/config/nvim/nvim-pack-lock.json"; \
+		else \
+			sed -i -e '$$ { /^$$/d; }' "$(PWD)/config/nvim/nvim-pack-lock.json"; \
+		fi && \
+		printf '\n' >> "$(PWD)/config/nvim/nvim-pack-lock.json"; \
 	fi
 	@echo "✅ Neovim plugins synced"
 
