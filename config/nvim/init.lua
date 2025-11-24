@@ -121,26 +121,24 @@ vim.g.maplocalleader = " "
 -- QUICKFIX LISTS
 -- ====================================================================================
 -- @keymap <leader>co: Open quickfix list
--- @keymap <leader>cc: Close quickfix list
--- quicklists
 keymap("n", "<leader>co", ":copen<CR>", opts)
+-- @keymap <leader>cc: Close quickfix list
 keymap("n", "<leader>cc", ":cclose<CR>", opts)
 
 -- ====================================================================================
 -- BUFFER AND FILE OPERATIONS
 -- ====================================================================================
 -- @keymap <leader>q: Close current buffer
--- @keymap <leader>bad: Wipe all buffers
--- @keymap <leader>w: Write file
--- @keymap <leader>r: Reload Neovim configuration
--- @keymap <leader>h: Show help (all keymaps and commands)
--- @keymap ZZ: Save all buffers and quit
--- write, buffer killing
 keymap("n", "<leader>q", ":Bdelete<CR>", opts)
+-- @keymap <leader>bad: Wipe all buffers
 keymap("n", "<leader>bad", ":%bwipeout!<cr>:intro<cr>", opts)
+-- @keymap <leader>w: Write file
 keymap("n", "<leader>w", ":write<CR>", opts)
+-- @keymap <leader>r: Reload Neovim configuration
 keymap("n", "<leader>r", ":source $MYVIMRC<CR>", opts)
+-- @keymap <leader>h: Show help (all keymaps and commands)
 keymap("n", "<leader>h", ":Help<CR>", opts)
+-- @keymap ZZ: Save all buffers and quit
 keymap("n", "ZZ", ":wa<CR>:q<CR>", opts)
 
 -- ====================================================================================
@@ -154,16 +152,16 @@ keymap("n", "<leader>j", ":10split | terminal<CR>", opts)
 -- NAVIGATION
 -- ====================================================================================
 -- @keymap n: Next search result and center screen
--- @keymap N: Previous search result and center screen
--- @keymap <C-u>: Scroll up and center screen
--- @keymap <C-d>: Scroll down and center screen
--- @keymap <C-o>: Jump to older position and center screen
--- @keymap <C-i>: Jump to newer position and center screen
 keymap("n", "n", "nzzzv", opts)
+-- @keymap N: Previous search result and center screen
 keymap("n", "N", "Nzzzv", opts)
+-- @keymap <C-u>: Scroll up and center screen
 keymap("n", "<C-u>", "<C-u>zz", opts)
+-- @keymap <C-d>: Scroll down and center screen
 keymap("n", "<C-d>", "<C-d>zz", opts)
+-- @keymap <C-o>: Jump to older position and center screen
 keymap("n", "<C-o>", "<C-o>zz", opts)
+-- @keymap <C-i>: Jump to newer position and center screen
 keymap("n", "<C-i>", "<C-i>zz", opts)
 
 -- ====================================================================================
@@ -185,19 +183,18 @@ keymap({ "n", "v" }, "<leader>d", '"_d', opts)
 -- GIT OPERATIONS
 -- ====================================================================================
 -- @keymap <leader>gs: Open Git status in new tab
--- @keymap <F9>: Open Git mergetool in new tab
--- @keymap <leader>gd: Preview hunk inline
--- git
 keymap("n", "<leader>gs", ":tab Git<cr>", opts)
+-- @keymap <F9>: Open Git mergetool in new tab
 keymap("n", "<F9>", ":tab Git mergetool<cr>", opts)
+-- @keymap <leader>gd: Preview hunk inline
 keymap("n", "<leader>gd", ":Gitsign preview_hunk_inline<cr>", opts)
 
 -- ====================================================================================
 -- VISUAL MODE OPERATIONS
 -- ====================================================================================
 -- @keymap <: Decrease indent (visual mode)
--- @keymap >: Increase indent (visual mode)
 keymap("v", "<", "<gv", opts)
+-- @keymap >: Increase indent (visual mode)
 keymap("v", ">", ">gv", opts)
 
 -- @keymap p: Paste without replacing clipboard (visual mode)
@@ -207,9 +204,8 @@ keymap("v", ">", ">gv", opts)
 keymap("v", "p", '"_dP', opts)
 
 -- @keymap K: Move selected text up (visual mode)
--- @keymap J: Move selected text down (visual mode)
--- Move text up and down
 keymap("x", "K", ":move '<-2<CR>gv-gv", opts)
+-- @keymap J: Move selected text down (visual mode)
 keymap("x", "J", ":move '>+1<CR>gv-gv", opts)
 
 -- ====================================================================================
@@ -295,12 +291,12 @@ vim.diagnostic.config({
 -- ====================================================================================
 -- CODE NAVIGATION
 -- ====================================================================================
--- @keymap <leader>oo: Navigate to related file (other.nvim)
--- @keymap <leader>ov: Navigate to related file in vertical split
--- @keymap <leader>os: Navigate to related file in horizontal split
 require("other-nvim").setup({ mappings = { "golang" } })
+-- @keymap <leader>oo: Navigate to related file (other.nvim)
 keymap("n", "<leader>oo", ":Other<cr>", opts)
+-- @keymap <leader>ov: Navigate to related file in vertical split
 keymap("n", "<leader>ov", ":OtherVSplit<cr>", opts)
+-- @keymap <leader>os: Navigate to related file in horizontal split
 keymap("n", "<leader>os", ":OtherSplit<cr>", opts)
 
 -- @keymap gco: Generate code annotation (neogen)
@@ -950,7 +946,7 @@ vim.api.nvim_create_user_command("Help", function()
 	local file = io.open(config_file, "r")
 	if not file then
 		vim.notify("Could not read config file: " .. config_file, vim.log.levels.ERROR)
-		return
+				return
 	end
 
 	local keymaps = {}
@@ -984,8 +980,8 @@ vim.api.nvim_create_user_command("Help", function()
 				or line:match("TPOPE") and "Plugins"
 				or line:match("treesitter") and "Treesitter"
 				or "General"
-		end
-	end
+				end
+			end
 
 	file:close()
 
