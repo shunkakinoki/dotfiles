@@ -948,7 +948,7 @@ vim.api.nvim_create_user_command("Help", function()
 	local file = io.open(config_file, "r")
 	if not file then
 		vim.notify("Could not read config file: " .. config_file, vim.log.levels.ERROR)
-				return
+		return
 	end
 
 	local keymaps = {}
@@ -982,8 +982,8 @@ vim.api.nvim_create_user_command("Help", function()
 				or line:match("TPOPE") and "Plugins"
 				or line:match("treesitter") and "Treesitter"
 				or "General"
-				end
-			end
+		end
+	end
 
 	file:close()
 
