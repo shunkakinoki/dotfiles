@@ -543,7 +543,6 @@ vim.api.nvim_create_autocmd("TermOpen", {
 	end,
 })
 
-
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "markdown",
 	callback = function()
@@ -791,8 +790,8 @@ keymap("n", "<leader>ghi", function()
 end, opts)
 
 require("nvim-tree").setup({
-  view = {
-    width = 30,
-  },
+	view = {
+		width = 30,
+	},
 })
 keymap("n", "<leader>b", ":NvimTreeToggle<CR>", opts)
