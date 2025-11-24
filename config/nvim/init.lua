@@ -151,7 +151,12 @@ keymap("n", "<leader>j", ":10split | terminal<CR>", opts)
 -- ====================================================================================
 -- NAVIGATION
 -- ====================================================================================
--- zz
+-- @keymap n: Next search result and center screen
+-- @keymap N: Previous search result and center screen
+-- @keymap <C-u>: Scroll up and center screen
+-- @keymap <C-d>: Scroll down and center screen
+-- @keymap <C-o>: Jump to older position and center screen
+-- @keymap <C-i>: Jump to newer position and center screen
 keymap("n", "n", "nzzzv", opts)
 keymap("n", "N", "Nzzzv", opts)
 keymap("n", "<C-u>", "<C-u>zz", opts)
@@ -188,15 +193,19 @@ keymap("n", "<leader>gd", ":Gitsign preview_hunk_inline<cr>", opts)
 -- ====================================================================================
 -- VISUAL MODE OPERATIONS
 -- ====================================================================================
--- indent
+-- @keymap <: Decrease indent (visual mode)
+-- @keymap >: Increase indent (visual mode)
 keymap("v", "<", "<gv", opts)
 keymap("v", ">", ">gv", opts)
 
+-- @keymap p: Paste without replacing clipboard (visual mode)
 -- If I visually select words and paste from clipboard, don't replace my
 -- clipboard with the selected word, instead keep my old word in the
 -- clipboard
 keymap("v", "p", '"_dP', opts)
 
+-- @keymap K: Move selected text up (visual mode)
+-- @keymap J: Move selected text down (visual mode)
 -- Move text up and down
 keymap("x", "K", ":move '<-2<CR>gv-gv", opts)
 keymap("x", "J", ":move '>+1<CR>gv-gv", opts)
@@ -204,6 +213,7 @@ keymap("x", "J", ":move '>+1<CR>gv-gv", opts)
 -- ====================================================================================
 -- INSERT MODE OPERATIONS
 -- ====================================================================================
+-- @keymap -/_/,/./;/:/!/?: Add undo breakpoints after punctuation
 -- in insert mode, adds new undo points after more some chars:
 for _, lhs in ipairs({ "-", "_", ",", ".", ";", ":", "/", "!", "?" }) do
 	keymap("i", lhs, lhs .. "<c-g>u", opts)
@@ -544,6 +554,7 @@ vim.api.nvim_create_autocmd("FileType", {
 	callback = function()
 		local bufnr = vim.api.nvim_get_current_buf()
 		local buf_opts = { noremap = true, silent = true, buffer = bufnr }
+		-- @keymap gq: Close git buffer
 		keymap("n", "gq", ":silent! close<cr>", buf_opts)
 	end,
 })
@@ -569,21 +580,26 @@ vim.api.nvim_create_autocmd("FileType", {
 		vim.cmd("normal )k=")
 
 		local buf_opts = { noremap = true, silent = true, buffer = bufnr }
+		-- @keymap gp: Git push (fugitive buffer)
 		keymap("n", "gp", function()
 			async_git({ "push", "--quiet" }, "Pushed!", "Push failed!")
 			vim.cmd("silent! close")
 		end, buf_opts)
 
+		-- @keymap gP: Git pull with rebase (fugitive buffer)
 		keymap("n", "gP", function()
 			async_git({ "pull", "--rebase" }, "Pulled!", "Pull failed!")
 			vim.cmd("silent! close")
 		end, buf_opts)
 
+		-- @keymap go: Git push and open PR (fugitive buffer)
 		keymap("n", "go", function()
 			async_git({ "ppr" }, "Pushed and opened PR URL!", "Failed to push or open PR")
 			vim.cmd("silent! close")
 		end, buf_opts)
 
+		-- @keymap cc: Git commit with sign-off (fugitive buffer)
+		-- @keymap gq: Close fugitive buffer
 		keymap("n", "cc", ":silent! Git commit -s<cr>", buf_opts)
 		keymap("n", "gq", ":silent! close<cr>", buf_opts)
 	end,
@@ -602,6 +618,7 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = { "qf", "help" },
 	callback = function()
+		-- @keymap <leader>q: Close quickfix/help buffer
 		keymap("n", "<leader>q", ":bdelete<CR>", {
 			buffer = vim.api.nvim_get_current_buf(),
 			noremap = true,
@@ -613,6 +630,7 @@ vim.api.nvim_create_autocmd("FileType", {
 -- Add keymap to exit terminal mode and switch to previous window
 vim.api.nvim_create_autocmd("TermOpen", {
 	callback = function()
+		-- @keymap <leader>j: Exit terminal and switch to previous window
 		keymap("t", "<leader>j", [[<C-\><C-n><C-w>p]], {
 			buffer = vim.api.nvim_get_current_buf(),
 			noremap = true,
@@ -930,7 +948,7 @@ vim.api.nvim_create_user_command("Help", function()
 	local file = io.open(config_file, "r")
 	if not file then
 		vim.notify("Could not read config file: " .. config_file, vim.log.levels.ERROR)
-		return
+				return
 	end
 
 	local keymaps = {}
@@ -964,8 +982,8 @@ vim.api.nvim_create_user_command("Help", function()
 				or line:match("TPOPE") and "Plugins"
 				or line:match("treesitter") and "Treesitter"
 				or "General"
-		end
-	end
+				end
+			end
 
 	file:close()
 
@@ -1021,6 +1039,7 @@ vim.api.nvim_create_user_command("Help", function()
 	vim.cmd("split")
 	vim.api.nvim_set_current_buf(buf)
 
+	-- @keymap q: Close help buffer
 	-- Map q to close
 	vim.keymap.set("n", "q", ":close<CR>", { buffer = buf, silent = true })
 end, { desc = "Show all keymaps and commands from init.lua" })
