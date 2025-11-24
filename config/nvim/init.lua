@@ -301,7 +301,7 @@ keymap("n", "<leader>ov", ":OtherVSplit<cr>", opts)
 keymap("n", "<leader>os", ":OtherSplit<cr>", opts)
 
 -- @keymap gco: Generate code annotation (neogen)
-require("neogen").setup({ snippet_engine = "nvim" })
+require("neogen").setup()
 keymap("n", "gco", ":Neogen<cr>", opts)
 
 -- ====================================================================================
@@ -316,7 +316,6 @@ require("copilot").setup({
 ---@type blink.cmp.Config
 local cmp = require("blink.cmp")
 cmp.setup({
-	keymap = { preset = "default" },
 	appearance = {
 		nerd_font_variant = "mono",
 		kind_icons = {
@@ -357,9 +356,7 @@ cmp.setup({
 			Variable = "",
 		},
 	},
-	signature = { enabled = true },
 	cmdline = {
-		enabled = true,
 		sources = function()
 			local type = vim.fn.getcmdtype()
 			if type == "/" or type == "?" then
@@ -428,16 +425,6 @@ cmp.setup({
 		accept = { auto_brackets = { enabled = true } },
 		keyword = {
 			range = "full",
-		},
-		trigger = {
-			show_on_insert_on_trigger_character = true,
-			show_on_trigger_character = true,
-			show_on_keyword = true,
-		},
-		documentation = {
-			auto_show = true,
-			auto_show_delay_ms = 250,
-			treesitter_highlighting = false,
 		},
 		menu = {
 			draw = {
@@ -658,17 +645,13 @@ require("ibl").setup({
 	scope = { enabled = false },
 })
 
-require("nvim-autopairs").setup({
-	check_ts = true,
-})
+require("nvim-autopairs").setup()
 
 require("nvim-ts-autotag").setup()
 require("nvim-surround").setup()
 require("todo-comments").setup()
 
-require("treesitter-context").setup({
-	multiline_threshold = 1,
-})
+require("treesitter-context").setup()
 
 -- ====================================================================================
 -- TREESITTER CONFIGURATION
