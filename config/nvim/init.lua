@@ -55,6 +55,10 @@ vim.pack.add({
 	-- UI
 	{ src = "https://github.com/nvim-tree/nvim-web-devicons" },
 	{ src = "https://github.com/Mofiqul/dracula.nvim" },
+	{
+		src = "https://github.com/f-person/auto-dark-mode.nvim",
+		priority = 1000,
+	},
 	{ src = "https://github.com/folke/sidekick.nvim" },
 	{ src = "https://github.com/nvim-tree/nvim-tree.lua" },
 	{ src = "https://github.com/nvim-lualine/lualine.nvim" },
@@ -138,7 +142,6 @@ keymap("n", "<leader>w", ":write<CR>", opts)
 -- @keymap <leader>r: Reload Neovim configuration
 keymap("n", "<leader>r", function()
 	vim.cmd("source $MYVIMRC")
-	set_theme() -- Refresh theme on reload
 end, opts)
 -- @keymap <leader>h: Show help (all keymaps and commands)
 keymap("n", "<leader>h", ":Help<CR>", opts)
@@ -229,54 +232,6 @@ keymap("i", "jj", "<Esc>", opts)
 -- UI CONFIGURATION
 -- ====================================================================================
 
--- Detect system theme and set colorscheme accordingly
-local function detect_system_theme()
-	local is_dark = false
-	if vim.fn.has("mac") == 1 then
-		-- macOS: Check AppleInterfaceStyle
-		local handle = io.popen("defaults read -g AppleInterfaceStyle 2>/dev/null")
-		if handle then
-			local result = handle:read("*a")
-			handle:close()
-			is_dark = result:match("Dark") ~= nil
-		else
-			-- Default to dark if detection fails
-			is_dark = true
-		end
-	elseif vim.fn.has("unix") == 1 then
-		-- Linux: Check gsettings or environment variable
-		local handle = io.popen("gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null | grep -q dark || echo ''")
-		if handle then
-			local result = handle:read("*a")
-			handle:close()
-			is_dark = result:match("dark") ~= nil
-		else
-			-- Fallback: Check GTK_THEME or default to dark
-			local gtk_theme = os.getenv("GTK_THEME") or ""
-			is_dark = gtk_theme:match("dark") ~= nil or true
-		end
-	else
-		-- Default to dark for other systems
-		is_dark = true
-	end
-	return is_dark
-end
-
-local function set_theme()
-	local is_dark = detect_system_theme()
-	if is_dark then
-		vim.opt.background = "dark"
-		vim.cmd("colorscheme dracula")
-	else
-		vim.opt.background = "light"
-		-- Use a light theme - you can change this to your preferred light theme
-		vim.cmd("colorscheme default")
-	end
-end
-
--- Set initial theme
-set_theme()
-
 vim.api.nvim_set_hl(0, "StatusLine", { reverse = false })
 vim.api.nvim_set_hl(0, "StatusLineNC", { reverse = false })
 
@@ -291,9 +246,12 @@ vim.notify = notify
 
 local section_b = { "branch", "diff", { "diagnostics", sources = { "nvim_workspace_diagnostic" } } }
 local section_c = { "%=", { "filename", file_status = false, path = 1 } }
-require("lualine").setup({
+local lualine_config = {
 	options = {
-		theme = vim.o.background == "dark" and "dracula" or "auto",
+		theme = function()
+			-- Dynamically determine theme based on background
+			return vim.o.background == "dark" and "dracula" or "auto"
+		end,
 		component_separators = "",
 		section_separators = "",
 	},
@@ -305,6 +263,28 @@ require("lualine").setup({
 		lualine_c = section_c,
 		lualine_x = { "location" },
 	},
+}
+require("lualine").setup(lualine_config)
+
+-- Auto theme switching based on system appearance
+require("auto-dark-mode").setup({
+	update_interval = 1000, -- Check for theme changes every second
+	set_dark_mode = function()
+		vim.api.nvim_set_option_value("background", "dark", {})
+		vim.cmd("colorscheme dracula")
+		-- Refresh lualine to update theme
+		if package.loaded["lualine"] then
+			require("lualine").setup(lualine_config)
+		end
+	end,
+	set_light_mode = function()
+		vim.api.nvim_set_option_value("background", "light", {})
+		vim.cmd("colorscheme default")
+		-- Refresh lualine to update theme
+		if package.loaded["lualine"] then
+			require("lualine").setup(lualine_config)
+		end
+	end,
 })
 
 require("auto-hlsearch").setup({})
@@ -527,7 +507,9 @@ vim.api.nvim_create_user_command("Finder", "!open %:h", {})
 
 -- @command ThemeRefresh: Refresh theme based on system appearance
 -- Refreshes the colorscheme based on current system theme (dark/light).
-vim.api.nvim_create_user_command("ThemeRefresh", set_theme, { desc = "Refresh theme based on system appearance" })
+vim.api.nvim_create_user_command("ThemeRefresh", function()
+	require("auto-dark-mode").update()
+end, { desc = "Refresh theme based on system appearance" })
 
 -- ====================================================================================
 -- AUTOCMDS
