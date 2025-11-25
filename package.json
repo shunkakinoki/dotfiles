@@ -19,6 +19,7 @@
     "open-composer": "^0.8.23"
   },
   "trustedDependencies": [
+    "@biomejs/biome",
     "@github/copilot",
     "@google/jules",
     "@getgrit/cli",

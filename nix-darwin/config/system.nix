@@ -62,7 +62,7 @@
       };
     };
     activationScripts.extraActivation.text = builtins.toString (
-      if !isRunner then
+      if !isRunner && (builtins.getEnv "NIX_OFFLINE" != "1") then
         ''
           softwareupdate --all --install;
         ''

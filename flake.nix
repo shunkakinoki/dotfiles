@@ -29,6 +29,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
+    neovim-nightly-overlay = {
+      url = "github:nix-community/neovim-nightly-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -86,34 +90,29 @@
             "ubuntu@x86_64-linux" = import ./hosts/linux {
               inherit inputs;
               username = "ubuntu";
-              pkgs = inputs.nixpkgs.legacyPackages."x86_64-linux";
-              lib = inputs.nixpkgs.legacyPackages."x86_64-linux".lib;
+              system = "x86_64-linux";
             };
             "root@x86_64-linux" = import ./hosts/linux {
               inherit inputs;
               username = "root";
-              pkgs = inputs.nixpkgs.legacyPackages."x86_64-linux";
-              lib = inputs.nixpkgs.legacyPackages."x86_64-linux".lib;
+              system = "x86_64-linux";
             };
             "root@aarch64-linux" = import ./hosts/linux {
               inherit inputs;
               username = "root";
-              pkgs = inputs.nixpkgs.legacyPackages."aarch64-linux";
-              lib = inputs.nixpkgs.legacyPackages."aarch64-linux".lib;
+              system = "aarch64-linux";
             };
             "runner@x86_64-linux" = import ./hosts/linux {
               inherit inputs;
               isRunner = true;
               username = "runner";
-              pkgs = inputs.nixpkgs.legacyPackages."x86_64-linux";
-              lib = inputs.nixpkgs.legacyPackages."x86_64-linux".lib;
+              system = "x86_64-linux";
             };
             "runner@aarch64-linux" = import ./hosts/linux {
               inherit inputs;
               isRunner = true;
               username = "runner";
-              pkgs = inputs.nixpkgs.legacyPackages."aarch64-linux";
-              lib = inputs.nixpkgs.legacyPackages."aarch64-linux".lib;
+              system = "aarch64-linux";
             };
           };
         };

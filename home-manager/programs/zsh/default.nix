@@ -20,10 +20,15 @@
     initContent = ''
       # Go configuration
       export GOPATH="$HOME/go"
-      export PATH="$PATH:$GOPATH/bin"
 
-      # Bun configuration
+      # Additional bin paths
+      export PATH="$PATH:$GOPATH/bin"
       export PATH="$HOME/.bun/bin:$PATH"
+      export PATH="$HOME/.foundry/bin:$PATH"
+      export PATH="$HOME/.local/bin:$PATH"
+      export PATH="$HOME/.nix-profile/bin:$PATH"
+      export PATH="/nix/var/nix/profiles/default/bin:$PATH"
+      export PATH="/opt/homebrew/bin:$PATH"
 
       # FNM (Fast Node Manager) configuration
       export FNM_DIR="$HOME/Library/Application Support/fnm"

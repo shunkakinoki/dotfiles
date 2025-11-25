@@ -1,12 +1,20 @@
 {
   inputs,
   username,
-  pkgs,
-  lib,
+  system ? "x86_64-linux",
   isRunner ? false,
 }:
 let
   inherit (inputs) home-manager;
+  overlays = import ../../overlays { inherit inputs; };
+  nixpkgsConfig = import ../../lib/nixpkgs-config.nix {
+    nixpkgsLib = inputs.nixpkgs.lib;
+  };
+  pkgs = import inputs.nixpkgs {
+    inherit system overlays;
+    config = nixpkgsConfig;
+  };
+  lib = pkgs.lib;
 in
 home-manager.lib.homeManagerConfiguration {
   inherit pkgs;

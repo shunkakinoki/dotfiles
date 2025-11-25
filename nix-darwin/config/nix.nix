@@ -7,5 +7,4 @@
     };
   };
 
-  nixpkgs.config.allowUnfree = true;
 }

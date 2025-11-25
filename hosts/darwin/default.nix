@@ -5,8 +5,20 @@
   isRunner ? false,
 }:
 let
-  inherit (inputs) nix-darwin home-manager agenix;
+  inherit (inputs)
+    nix-darwin
+    home-manager
+    agenix
+    ;
   system = "aarch64-darwin";
+  overlays = import ../../overlays { inherit inputs; };
+  nixpkgsConfig = import ../../lib/nixpkgs-config.nix {
+    nixpkgsLib = inputs.nixpkgs.lib;
+  };
+  pkgs = import inputs.nixpkgs {
+    inherit system overlays;
+    config = nixpkgsConfig;
+  };
   configuration =
     { ... }:
     {
@@ -25,8 +37,10 @@ in
     home-manager.darwinModules.home-manager
     agenix.darwinModules.default
     {
+      nixpkgs.pkgs = pkgs;
       home-manager.backupFileExtension = "hm-backup";
       home-manager.extraSpecialArgs = { inherit inputs; };
+      home-manager.useGlobalPkgs = true;
       home-manager.sharedModules = [
         {
           home.activation.removeBackups = {
@@ -40,9 +54,8 @@ in
       ];
       home-manager.useUserPackages = true;
       home-manager.users."${username}" = import ../../home-manager {
-        inherit inputs username;
-        lib = inputs.nixpkgs.legacyPackages.${system}.lib;
-        pkgs = inputs.nixpkgs.legacyPackages.${system};
+        inherit inputs username pkgs;
+        lib = pkgs.lib;
         config = { };
       };
     }
