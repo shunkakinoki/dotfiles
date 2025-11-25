@@ -8,7 +8,7 @@ in
 with pkgs;
 [
   inputs.agenix.packages.${stdenv.hostPlatform.system}.default
-  inputs.nur.legacyPackages.${stdenv.hostPlatform.system}.repos.charmbracelet.crush
+  pkgs.nur.repos.charmbracelet.crush
   age
   aichat
   # aider-chat  # FIXME: pyarrow 20.0.0 has malloc issues on macOS, uncomment when fixed

@@ -1,5 +1,6 @@
 { inputs }:
 [
+  inputs.nur.overlay
   inputs.neovim-nightly-overlay.overlays.default
   (final: prev: {
     # Ensure neovim-unwrapped exposes a lua attribute for wrapper consumers (e.g., home-manager)
