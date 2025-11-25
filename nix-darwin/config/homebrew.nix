@@ -78,6 +78,7 @@
       "sf-symbols"
       "slack"
       "visual-studio-code"
+      "vscodium"
       "warp"
       "wezterm"
       "windsurf"
