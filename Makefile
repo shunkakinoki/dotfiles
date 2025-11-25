@@ -102,7 +102,7 @@ help: ## Show this help message.
 ##@ General
 
 .PHONY: install
-install: setup update shell-install ## Set up full environment (setup, update, shell-install).
+install: setup nix-flake-update nix-build nix-switch shell-install ## Set up full environment (setup, flake-update, build, switch, shell-install).
 
 .PHONY: build
 build: nix-build ## Build Nix configuration.
