@@ -14,4 +14,8 @@
         lua = prev.lua5_4;
       };
   })
+  (final: prev: {
+    # Provide non-deprecated alias so upstream modules using pkgs.system don't emit warnings.
+    system = prev.stdenv.hostPlatform.system;
+  })
 ]
