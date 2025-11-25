@@ -11,8 +11,9 @@ let
     agenix
     ;
   system = "aarch64-darwin";
+  overlays = import ../../overlays { inherit inputs; };
   pkgs = import inputs.nixpkgs {
-    inherit system;
+    inherit system overlays;
     config.allowUnfree = true;
   };
   configuration =
@@ -33,6 +34,7 @@ in
     home-manager.darwinModules.home-manager
     agenix.darwinModules.default
     {
+      nixpkgs.pkgs = pkgs;
       home-manager.backupFileExtension = "hm-backup";
       home-manager.extraSpecialArgs = { inherit inputs; };
       home-manager.sharedModules = [

@@ -7,8 +7,9 @@
 let
   inherit (inputs) nixpkgs home-manager;
   system = "x86_64-linux";
+  overlays = import ../../overlays { inherit inputs; };
   pkgs = import nixpkgs {
-    inherit system;
+    inherit system overlays;
     config.allowUnfree = true;
   };
   configuration =

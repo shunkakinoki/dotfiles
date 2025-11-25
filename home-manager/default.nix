@@ -41,24 +41,6 @@ in
       ];
   };
 
-  # Apply nightly overlay first, then fix the lua attribute issue for the wrapper
-  nixpkgs.overlays = [
-    inputs.neovim-nightly-overlay.overlays.default
-    (final: prev: {
-      # Fix neovim-unwrapped to add lua attribute (required by home-manager wrapper)
-      # Always add lua attribute to ensure compatibility with home-manager's wrapper
-      neovim-unwrapped =
-        (prev.neovim-unwrapped.overrideAttrs (oldAttrs: {
-          passthru = (oldAttrs.passthru or { }) // {
-            lua = prev.lua5_4;
-          };
-        }))
-        // {
-          lua = prev.lua5_4;
-        };
-    })
-  ];
-
   home.username = username;
   home.homeDirectory = lib.mkIf pkgs.stdenv.isLinux "/home/${username}";
   home.packages = packages;
