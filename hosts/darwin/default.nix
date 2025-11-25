@@ -12,9 +12,12 @@ let
     ;
   system = "aarch64-darwin";
   overlays = import ../../overlays { inherit inputs; };
+  nixpkgsConfig = import ../../lib/nixpkgs-config.nix {
+    nixpkgsLib = inputs.nixpkgs.lib;
+  };
   pkgs = import inputs.nixpkgs {
     inherit system overlays;
-    config.allowUnfree = true;
+    config = nixpkgsConfig;
   };
   configuration =
     { ... }:
@@ -37,6 +40,7 @@ in
       nixpkgs.pkgs = pkgs;
       home-manager.backupFileExtension = "hm-backup";
       home-manager.extraSpecialArgs = { inherit inputs; };
+      home-manager.useGlobalPkgs = true;
       home-manager.sharedModules = [
         {
           home.activation.removeBackups = {

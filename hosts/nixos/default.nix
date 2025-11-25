@@ -7,10 +7,13 @@
 let
   inherit (inputs) nixpkgs home-manager;
   system = "x86_64-linux";
+  nixpkgsConfig = import ../../lib/nixpkgs-config.nix {
+    nixpkgsLib = nixpkgs.lib;
+  };
   overlays = import ../../overlays { inherit inputs; };
   pkgs = import nixpkgs {
     inherit system overlays;
-    config.allowUnfree = true;
+    config = nixpkgsConfig;
   };
   configuration =
     { config, lib, ... }:
@@ -117,6 +120,7 @@ nixpkgs.lib.nixosSystem {
     home-manager.nixosModules.home-manager
     {
       home-manager.backupFileExtension = "hm-backup";
+      home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
       home-manager.users."${username}" = import ../../home-manager {
         inherit inputs username;

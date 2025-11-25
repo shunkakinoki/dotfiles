@@ -7,9 +7,12 @@
 let
   inherit (inputs) home-manager;
   overlays = import ../../overlays { inherit inputs; };
+  nixpkgsConfig = import ../../lib/nixpkgs-config.nix {
+    nixpkgsLib = inputs.nixpkgs.lib;
+  };
   pkgs = import inputs.nixpkgs {
     inherit system overlays;
-    config.allowUnfree = true;
+    config = nixpkgsConfig;
   };
   lib = pkgs.lib;
 in
