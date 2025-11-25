@@ -4,7 +4,6 @@
 
 auto-update-channel = tip
 theme = dark:Dracula,light:Catppuccin Latte
-background-opacity = 0.8
 window-decoration = true
 window-save-state = always
 window-padding-balance = true
