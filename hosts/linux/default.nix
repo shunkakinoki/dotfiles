@@ -1,4 +1,9 @@
-{ inputs, username, system ? "x86_64-linux", isRunner ? false }:
+{
+  inputs,
+  username,
+  system ? "x86_64-linux",
+  isRunner ? false,
+}:
 let
   inherit (inputs) home-manager;
   overlays = import ../../overlays { inherit inputs; };
