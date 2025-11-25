@@ -3,4 +3,4 @@
 #
 
 auto-update-channel = tip
-theme = dark:Catppuccin Frappe,light:Catppuccin Latte
+theme = dark:Dracula,light:Catppuccin Latte
