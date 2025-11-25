@@ -5,6 +5,10 @@
 auto-update-channel = tip
 theme = dark:Dracula,light:Catppuccin Latte
 background-opacity = 0.8
+macos-option-as-alt = true
+macos-titlebar-style = "tabs"
+command = /etc/profiles/per-user/shunkakinoki/bin/fish
+shell-integration = fish
 cursor-style = bar
 cursor-style-blink = true
 mouse-hide-while-typing = true
