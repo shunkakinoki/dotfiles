@@ -25,6 +25,10 @@ DOCKER_IMAGE_TAGGED := $(DOCKER_IMAGE_NAME_BASE):$(GIT_COMMIT_SHA)
 # Nix executable path
 NIX_EXEC := $(shell which nix)
 
+# Common cache settings (apply even before switch)
+NIX_SUBSTITUTERS := https://cache.nixos.org https://devenv.cachix.org https://cachix.cachix.org
+NIX_TRUSTED_KEYS := cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw= cachix.cachix.org-1:eWNHQldwUO7G2VkjpnjDbWwy4KQ/HNxht7H4SSoMckM=
+
 # Nix configuration system
 NIX_SYSTEM := $(shell if [ "$(OS)" = "Darwin" ] && [ "$(ARCH)" = "arm64" ]; then \
 		echo "aarch64-darwin"; \
@@ -63,6 +67,7 @@ NIX_USERNAME := $(shell \
 	fi)
 NIX_ENV := $(shell . ~/.nix-profile/etc/profile.d/nix.sh 2>/dev/null || echo "not_found")
 NIX_FLAGS := --extra-experimental-features 'flakes nix-command' --no-pure-eval
+NIX_FLAGS += --option substituters "$(NIX_SUBSTITUTERS)" --option trusted-public-keys "$(NIX_TRUSTED_KEYS)"
 
 # Machine detection for automatic host mapping
 DETECTED_HOST := $(shell \
