@@ -143,7 +143,6 @@
         {
           devenv.shells.default = (import ./devenv.nix) {
             inherit pkgs;
-            devenv-pkg = inputs.devenv.packages.${system}.devenv;
           };
 
           treefmt = {

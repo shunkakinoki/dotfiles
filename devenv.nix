@@ -1,11 +1,10 @@
-{ pkgs, devenv-pkg }:
+{ pkgs }:
 
 {
   packages = [
     pkgs.nodejs
     pkgs.bun
     pkgs.neovim
-    devenv-pkg
   ];
 
   enterShell = ''
