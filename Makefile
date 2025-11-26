@@ -145,7 +145,7 @@ dev: nix-develop ## Enter the Nix dev shell (alias for nix-develop).
 ##@ Nix Setup
 
 .PHONY: nix-setup
-nix-setup: nix-install nix-check nix-connect nix-configure-cachix ## Set up Nix environment (install, check, connect, trust caches). 
+nix-setup: nix-install nix-check nix-connect ## Set up Nix environment (install, check, connect, trust caches). 
 
 .PHONY: nix-connect
 nix-connect: ## Ensure Nix daemon is running.
@@ -184,27 +184,6 @@ nix-check: ## Verify Nix environment setup.
 		exit 1; \
 	fi
 	@echo "✅ Nix environment found!"
-
-.PHONY: nix-configure-cachix
-nix-configure-cachix: ## Ensure the Nix daemon trusts Cachix/devenv caches.
-	@echo "🔐 Ensuring system Nix trusts Cachix substituters..."
-	@sudo mkdir -p /etc/nix
-	@printf "%s\n%s\n%s\n" \
-		"substituters = $(NIX_SUBSTITUTERS)" \
-		"trusted-public-keys = $(NIX_TRUSTED_KEYS)" \
-		"trusted-users = root $(NIX_USERNAME)" | sudo tee $(NIX_CACHIX_CONF) >/dev/null
-	@if ! grep -q '^include /etc/nix/cachix.conf' /etc/nix/nix.conf 2>/dev/null; then \
-		echo "include /etc/nix/cachix.conf" | sudo tee -a /etc/nix/nix.conf >/dev/null; \
-	fi
-	@if [ "$(OS)" = "Darwin" ]; then \
-		sudo launchctl unload /Library/LaunchDaemons/org.nixos.nix-daemon.plist 2>/dev/null || true; \
-		sudo launchctl load -w /Library/LaunchDaemons/org.nixos.nix-daemon.plist; \
-	elif [ "$(OS)" = "Linux" ]; then \
-		if [ -d /run/systemd/system ]; then \
-			sudo systemctl restart nix-daemon.service || true; \
-		fi; \
-	fi
-	@echo "✅ Cachix substituters trusted by the daemon."
 
 .PHONY: nix-develop
 nix-develop: ## Enter the Nix development shell.
@@ -259,7 +238,7 @@ nix-build: nix-connect ## Build Nix configuration.
 			echo "❌ Unsupported system architecture: $(OS) $(ARCH)"; \
 			exit 1; \
 		elif [ "$(OS)" = "Darwin" ]; then \
-			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --impure --show-trace -L; \
+			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --impure --show-trace; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM) --impure; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
