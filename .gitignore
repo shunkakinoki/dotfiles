@@ -1,5 +1,6 @@
 # AI
 .claude
+.devenv.nix
 
 # Nix
 *.hm-backup
