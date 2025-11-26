@@ -145,9 +145,11 @@
             devenv-cli = inputs.devenv.packages.${system}.default;
           };
 
-          devenv.shells.default = (import ./devenv.nix) {
-            inherit pkgs;
-          };
+          devenv.shells.default =
+            (import ./devenv.nix) { inherit pkgs; }
+            // {
+              devenv.root = builtins.toString ./.;
+            };
 
           treefmt = {
             projectRootFile = "flake.nix";
