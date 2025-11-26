@@ -11,7 +11,7 @@
   "license": "ISC",
   "packageManager": "bun@1.3.0",
   "dependencies": {
-    "@github/copilot": "^0.0.363",
+    "@github/copilot": "^0.0.365",
     "@google/jules": "^0.1.40",
     "@getgrit/cli": "^0.1.0-alpha.1743007075",
     "@nanocollective/nanocoder": "^1.16.3",
