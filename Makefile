@@ -1,6 +1,7 @@
 ##@ Variables
 
-# Include rules from submodule
+# Include rules from submodule but keep the local help target authoritative.
+RULES_SKIP_HELP := 1
 -include rules/Makefile
 
 # Detect architecture and OS

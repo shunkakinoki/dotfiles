@@ -153,7 +153,8 @@
           };
         in
         {
-          packages = {
+          # Force this attribute so devenv's deprecated helper packages don't surface during flake checks.
+          packages = inputs.nixpkgs.lib.mkForce {
             # Use nixpkgs-provided binary to avoid rebuilding cachi.
             devenv-cli = pkgs.devenv;
           };
