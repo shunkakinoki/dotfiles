@@ -11,6 +11,7 @@ excludes = ["*.json"]
 [formatter.json]
 command = "jsonfmt"
 includes = ["*.json"]
+excludes = ["home-manager/programs/neovim/nvim-pack-lock.json"]
 
 [formatter.shell]
 command = "shfmt"
