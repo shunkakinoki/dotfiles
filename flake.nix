@@ -142,7 +142,8 @@
         in
         {
           packages = {
-            devenv-cli = inputs.devenv.packages.${system}.default;
+            # Use nixpkgs-provided binary to avoid rebuilding cachi.
+            devenv-cli = pkgs.devenv;
           };
 
           devenv.shells.default =
