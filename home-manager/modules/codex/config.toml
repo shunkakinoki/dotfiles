@@ -5,6 +5,7 @@ notify = [
   "notify",
 ]
 
+[features]
 web_search_request = true
 
 [model_providers.lmstudio]
