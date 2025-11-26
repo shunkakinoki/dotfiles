@@ -183,6 +183,12 @@ nix-check: ## Verify Nix environment setup.
 nix-develop: ## Enter the Nix development shell.
 	$(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS)
 
+.PHONY: devenv-cli
+devenv-cli: ## Build the packaged devenv CLI binary.
+	@echo "📦 Building packaged devenv CLI..."
+	@$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#devenv-cli $(NIX_FLAGS) --show-trace
+	@echo "✅ devenv CLI available in ./result/bin/devenv"
+
 .PHONY: nix-install
 nix-install: ## Install Nix if not already installed.
 	@if [ "$(NIX_ENV)" = "not_found" ]; then \
@@ -226,7 +232,7 @@ nix-build: nix-connect ## Build Nix configuration.
 			echo "❌ Unsupported system architecture: $(OS) $(ARCH)"; \
 			exit 1; \
 		elif [ "$(OS)" = "Darwin" ]; then \
-			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --impure --show-trace; \
+			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --impure --show-trace -L; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM) --impure; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
@@ -549,4 +555,3 @@ git-submodule-sync: ## Sync and update git submodules.
 	@git submodule sync
 	@git submodule update --init --recursive
 	@echo "✅ Submodules synced and updated"
-

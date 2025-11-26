@@ -141,6 +141,10 @@
           };
         in
         {
+          packages = {
+            devenv-cli = inputs.devenv.packages.${system}.default;
+          };
+
           devenv.shells.default = (import ./devenv.nix) {
             inherit pkgs;
           };
