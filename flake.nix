@@ -146,7 +146,7 @@
 
           devShells.default = devPkgs.mkShell {
             packages = [
-              devPkgs.nodejs_20
+              devPkgs.nodejs
               devPkgs.bun
               devPkgs.neovim
             ];
