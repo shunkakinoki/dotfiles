@@ -85,6 +85,7 @@
       "windsurf"
       "zed"
       "zoom"
+      "tailscale"
     ];
     masApps = {
       "Apollo" = 6448019325;

@@ -94,6 +94,9 @@ let
       boot.consoleLogLevel = 7;
       services.journald.extraConfig = "Storage=volatile";
 
+      # Tailscale VPN for secure network access and SSH
+      services.tailscale.enable = true;
+
       system.stateVersion = "24.05";
     };
 in
