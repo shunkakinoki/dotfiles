@@ -31,6 +31,7 @@
       "kurtosis-cli"
       "mas"
       "opencode"
+      "ollama"
       "pandoc"
       "pinentry-mac"
       "pnpm"
@@ -71,7 +72,6 @@
       "linear-linear"
       "lm-studio"
       "notion"
-      # "ollama-app"  # FIXME: conflicts_with formula is disabled, uncomment when Homebrew fixes conflict
       "raycast"
       "rescuetime"
       "screen-studio"
