@@ -24,10 +24,8 @@ jobs:
         uses: cachix/install-nix-action@v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Install Neovim
-        run: nix profile install nixpkgs#neovim
-      - name: Validate Neovim Configuration
-        run: make lua-check-neovim
+      - name: Validate Neovim Configuration (Dev Shell)
+        run: nix develop .# --command make lua-check-neovim
   lua-hammerspoon:
     runs-on: macos-latest
     timeout-minutes: 300
@@ -38,8 +36,8 @@ jobs:
         uses: cachix/install-nix-action@v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Validate Hammerspoon Configuration
-        run: make lua-check-hammerspoon
+      - name: Validate Hammerspoon Configuration (Dev Shell)
+        run: nix develop .# --command make lua-check-hammerspoon
   lua-check:
     if: always()
     needs:

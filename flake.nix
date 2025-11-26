@@ -118,8 +118,19 @@
         };
 
       perSystem =
-        { system, pkgs, ... }:
+        { system, ... }:
+        let
+          overlays = import ./overlays { inherit inputs; };
+          nixpkgsConfig = import ./lib/nixpkgs-config.nix {
+            nixpkgsLib = inputs.nixpkgs.lib;
+          };
+          devPkgs = import inputs.nixpkgs {
+            inherit system overlays;
+            config = nixpkgsConfig;
+          };
+        in
         {
+          _module.args.pkgs = devPkgs;
           treefmt = {
             projectRootFile = "flake.nix";
             programs = {
@@ -133,13 +144,14 @@
             };
           };
 
-          devShells.default = pkgs.mkShell {
+          devShells.default = devPkgs.mkShell {
             packages = [
-              pkgs.nodejs_20
-              pkgs.bun
+              devPkgs.nodejs
+              devPkgs.bun
+              devPkgs.neovim
             ];
             shellHook = ''
-              echo "Dev shell ready: Node.js + bun available."
+              echo "Dev shell ready: Node.js, bun, and Neovim available."
             '';
           };
         };
