@@ -174,6 +174,15 @@
               jsonfmt.enable = true;
               yamlfmt.enable = true;
             };
+            settings = {
+              formatter = {
+                jsonfmt = {
+                  excludes = [
+                    "home-manager/programs/neovim/nvim-pack-lock.json"
+                  ];
+                };
+              };
+            };
           };
         };
     };
