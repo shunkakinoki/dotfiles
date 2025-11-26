@@ -189,11 +189,10 @@ nix-check: ## Verify Nix environment setup.
 nix-configure-cachix: ## Ensure the Nix daemon trusts Cachix/devenv caches.
 	@echo "🔐 Ensuring system Nix trusts Cachix substituters..."
 	@sudo mkdir -p /etc/nix
-	@sudo tee $(NIX_CACHIX_CONF) >/dev/null <<EOF
-substituters = https://cache.nixos.org https://devenv.cachix.org https://cachix.cachix.org
-trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw= cachix.cachix.org-1:eWNHQldwUO7G2VkjpnjDbWwy4KQ/HNxht7H4SSoMckM=
-trusted-users = root $(NIX_USERNAME)
-EOF
+	@printf "%s\n%s\n%s\n" \
+		"substituters = $(NIX_SUBSTITUTERS)" \
+		"trusted-public-keys = $(NIX_TRUSTED_KEYS)" \
+		"trusted-users = root $(NIX_USERNAME)" | sudo tee $(NIX_CACHIX_CONF) >/dev/null
 	@if ! grep -q '^include /etc/nix/cachix.conf' /etc/nix/nix.conf 2>/dev/null; then \
 		echo "include /etc/nix/cachix.conf" | sudo tee -a /etc/nix/nix.conf >/dev/null; \
 	fi
