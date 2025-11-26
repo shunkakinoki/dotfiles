@@ -132,6 +132,11 @@
           ...
         }:
         let
+          devenvRoot =
+            let
+              envRoot = builtins.getEnv "DEVENV_ROOT";
+            in
+            if envRoot != "" then envRoot else builtins.toString ./.;
           pkgs = import inputs.nixpkgs {
             inherit system;
             config = import ./lib/nixpkgs-config.nix {
@@ -146,7 +151,11 @@
             devenv-cli = pkgs.devenv;
           };
 
-          devenv.shells.default = (import ./devenv.nix) { inherit pkgs; };
+          devenv.shells.default =
+            (import ./devenv.nix) { inherit pkgs; }
+            // {
+              devenv.root = devenvRoot;
+            };
 
           treefmt = {
             projectRootFile = "flake.nix";

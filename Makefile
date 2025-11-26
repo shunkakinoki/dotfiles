@@ -67,7 +67,7 @@ NIX_USERNAME := $(shell \
 		echo "$(shell whoami)"; \
 	fi)
 NIX_ENV := $(shell . ~/.nix-profile/etc/profile.d/nix.sh 2>/dev/null || echo "not_found")
-NIX_FLAGS := --extra-experimental-features 'flakes nix-command' --no-pure-eval
+NIX_FLAGS := --extra-experimental-features 'flakes nix-command' --no-pure-eval --impure
 NIX_FLAGS += --option substituters "$(NIX_SUBSTITUTERS)" --option trusted-public-keys "$(NIX_TRUSTED_KEYS)"
 
 # Machine detection for automatic host mapping
@@ -187,7 +187,7 @@ nix-check: ## Verify Nix environment setup.
 
 .PHONY: nix-develop
 nix-develop: ## Enter the Nix development shell.
-	$(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS)
+	DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS)
 
 .PHONY: devenv-cli
 devenv-cli: ## Build the packaged devenv CLI binary.
