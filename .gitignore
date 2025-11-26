@@ -3,6 +3,7 @@
 .devenv.nix
 
 # Nix
+.devenv
 *.hm-backup
 
 # General

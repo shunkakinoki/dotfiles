@@ -62,7 +62,7 @@ NIX_USERNAME := $(shell \
 		echo "$(shell whoami)"; \
 	fi)
 NIX_ENV := $(shell . ~/.nix-profile/etc/profile.d/nix.sh 2>/dev/null || echo "not_found")
-NIX_FLAGS := --extra-experimental-features 'flakes nix-command'
+NIX_FLAGS := --extra-experimental-features 'flakes nix-command' --no-pure-eval
 
 # Machine detection for automatic host mapping
 DETECTED_HOST := $(shell \

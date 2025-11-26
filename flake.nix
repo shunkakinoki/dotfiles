@@ -137,14 +137,14 @@
             config = import ./lib/nixpkgs-config.nix {
               nixpkgsLib = inputs.nixpkgs.lib;
             };
-            overlays = [
-              (import ./overlays)
-              inputs.neovim-nightly-overlay.overlays.default
-            ];
+            overlays = (import ./overlays) { inherit inputs; };
           };
         in
         {
-          devenv.shells.default = (import ./devenv.nix) pkgs;
+          devenv.shells.default = (import ./devenv.nix) {
+            inherit pkgs;
+            devenv-pkg = inputs.devenv.packages.${system}.devenv;
+          };
 
           treefmt = {
             projectRootFile = "flake.nix";
