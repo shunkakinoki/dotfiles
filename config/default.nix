@@ -1,8 +1,13 @@
 [
+  ./codex
+  ./crush
   ./claude
   ./direnv
+  ./ghostty
   ./hammerspoon
   ./karabiner
   ./nvim
+  ./opencode
+  ./serena
   ./starship
 ]

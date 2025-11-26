@@ -1,6 +1,7 @@
 ##@ Variables
 
-# Include rules from submodule
+# Include rules from submodule but keep the local help target authoritative.
+RULES_SKIP_HELP := 1
 -include rules/Makefile
 
 # Detect architecture and OS
@@ -24,6 +25,11 @@ DOCKER_IMAGE_TAGGED := $(DOCKER_IMAGE_NAME_BASE):$(GIT_COMMIT_SHA)
 
 # Nix executable path
 NIX_EXEC := $(shell which nix)
+
+# Common cache settings (apply even before switch)
+NIX_SUBSTITUTERS := https://cache.nixos.org https://devenv.cachix.org https://cachix.cachix.org
+NIX_TRUSTED_KEYS := cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw= cachix.cachix.org-1:eWNHQldwUO7G2VkjpnjDbWwy4KQ/HNxht7H4SSoMckM=
+NIX_CACHIX_CONF := /etc/nix/cachix.conf
 
 # Nix configuration system
 NIX_SYSTEM := $(shell if [ "$(OS)" = "Darwin" ] && [ "$(ARCH)" = "arm64" ]; then \
@@ -62,7 +68,8 @@ NIX_USERNAME := $(shell \
 		echo "$(shell whoami)"; \
 	fi)
 NIX_ENV := $(shell . ~/.nix-profile/etc/profile.d/nix.sh 2>/dev/null || echo "not_found")
-NIX_FLAGS := --extra-experimental-features 'flakes nix-command'
+NIX_FLAGS := --extra-experimental-features 'flakes nix-command' --no-pure-eval --impure
+NIX_FLAGS += --option substituters "$(NIX_SUBSTITUTERS)" --option trusted-public-keys "$(NIX_TRUSTED_KEYS)"
 
 # Machine detection for automatic host mapping
 DETECTED_HOST := $(shell \
@@ -139,7 +146,7 @@ dev: nix-develop ## Enter the Nix dev shell (alias for nix-develop).
 ##@ Nix Setup
 
 .PHONY: nix-setup
-nix-setup: nix-install nix-check nix-connect ## Set up Nix environment (install, check, connect). 
+nix-setup: nix-install nix-check nix-connect ## Set up Nix environment (install, check, connect, trust caches). 
 
 .PHONY: nix-connect
 nix-connect: ## Ensure Nix daemon is running.
@@ -181,7 +188,13 @@ nix-check: ## Verify Nix environment setup.
 
 .PHONY: nix-develop
 nix-develop: ## Enter the Nix development shell.
-	$(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS)
+	DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS)
+
+.PHONY: devenv-cli
+devenv-cli: ## Build the packaged devenv CLI binary.
+	@echo "📦 Building packaged devenv CLI..."
+	@$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#devenv-cli $(NIX_FLAGS) --show-trace
+	@echo "✅ devenv CLI available in ./result/bin/devenv"
 
 .PHONY: nix-install
 nix-install: ## Install Nix if not already installed.
@@ -549,4 +562,3 @@ git-submodule-sync: ## Sync and update git submodules.
 	@git submodule sync
 	@git submodule update --init --recursive
 	@echo "✅ Submodules synced and updated"
-

@@ -33,12 +33,24 @@
       url = "github:nix-community/neovim-nightly-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    devenv = {
+      url = "github:cachix/devenv";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    mk-shell-bin = {
+      url = "github:rrbutani/nix-mk-shell-bin";
+    };
+    nix2container = {
+      url = "github:nlewo/nix2container";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
     {
       flake-parts,
       treefmt-nix,
+      devenv,
       ...
     }@inputs:
 
@@ -49,7 +61,10 @@
         "x86_64-linux"
       ];
 
-      imports = [ treefmt-nix.flakeModule ];
+      imports = [
+        treefmt-nix.flakeModule
+        devenv.flakeModule
+      ];
 
       flake =
         let
@@ -118,19 +133,36 @@
         };
 
       perSystem =
-        { system, ... }:
+        {
+          config,
+          system,
+          ...
+        }:
         let
-          overlays = import ./overlays { inherit inputs; };
-          nixpkgsConfig = import ./lib/nixpkgs-config.nix {
-            nixpkgsLib = inputs.nixpkgs.lib;
-          };
-          devPkgs = import inputs.nixpkgs {
-            inherit system overlays;
-            config = nixpkgsConfig;
+          devenvRoot =
+            let
+              envRoot = builtins.getEnv "DEVENV_ROOT";
+            in
+            if envRoot != "" then envRoot else builtins.toString ./.;
+          pkgs = import inputs.nixpkgs {
+            inherit system;
+            config = import ./lib/nixpkgs-config.nix {
+              nixpkgsLib = inputs.nixpkgs.lib;
+            };
+            overlays = (import ./overlays) { inherit inputs; };
           };
         in
         {
-          _module.args.pkgs = devPkgs;
+          # Force this attribute so devenv's deprecated helper packages don't surface during flake checks.
+          packages = inputs.nixpkgs.lib.mkForce {
+            # Use nixpkgs-provided binary to avoid rebuilding cachi.
+            devenv-cli = pkgs.devenv;
+          };
+
+          devenv.shells.default = (import ./devenv.nix) { inherit pkgs; } // {
+            devenv.root = devenvRoot;
+          };
+
           treefmt = {
             projectRootFile = "flake.nix";
             programs = {
@@ -142,17 +174,6 @@
               jsonfmt.enable = true;
               yamlfmt.enable = true;
             };
-          };
-
-          devShells.default = devPkgs.mkShell {
-            packages = [
-              devPkgs.nodejs
-              devPkgs.bun
-              devPkgs.neovim
-            ];
-            shellHook = ''
-              echo "Dev shell ready: Node.js, bun, and Neovim available."
-            '';
           };
         };
     };

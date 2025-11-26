@@ -13,13 +13,11 @@ jobs:
   lua-neovim:
     runs-on: ubuntu-latest
     timeout-minutes: 300
+    env:
+      DEVENV_ROOT: ${{ github.workspace }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@v1.3.1
-        with:
-          tool-cache: false
       - name: Install Nix
         uses: cachix/install-nix-action@v31
         with:
@@ -29,6 +27,8 @@ jobs:
   lua-hammerspoon:
     runs-on: macos-latest
     timeout-minutes: 300
+    env:
+      DEVENV_ROOT: ${{ github.workspace }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6

@@ -1,10 +1,4 @@
 [
-  ./codex
-  ./crush
-  ./dust
-  ./ghostty
   ./npm-globals
-  ./opencode
-  ./serena
   ./yek
 ]

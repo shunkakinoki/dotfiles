@@ -5,8 +5,8 @@ notify = [
   "notify",
 ]
 
-[tools]
-web_search = true
+[features]
+web_search_request = true
 
 [model_providers.lmstudio]
 name = "LMStudio"
