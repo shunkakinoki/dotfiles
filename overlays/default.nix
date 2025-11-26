@@ -1,5 +1,11 @@
 { inputs }:
 [
+  # The cachix test suite is currently failing to build from source with a symbol lookup error. This overlay disables the tests to work around the issue.
+  (final: prev: {
+    cachix = prev.cachix.overrideAttrs (oldAttrs: {
+      doCheck = false;
+    });
+  })
   inputs.nur.overlays.default
   inputs.neovim-nightly-overlay.overlays.default
   (final: prev: {
