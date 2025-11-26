@@ -72,6 +72,7 @@
       "linear-linear"
       "lm-studio"
       "notion"
+      "ollama-app"
       "raycast"
       "rescuetime"
       "screen-studio"
