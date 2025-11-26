@@ -532,6 +532,11 @@ lua-check-neovim: ## Check Neovim configuration.
 		exit $$EXIT_CODE; \
 	fi
 
+.PHONY: lua-check-neovim-dev
+lua-check-neovim-dev: ## Run the Neovim Lua check inside the Nix dev shell (mirrors CI).
+	@echo "🧪 Running Neovim Lua check inside the Nix dev shell..."
+	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) lua-check-neovim
+
 .PHONY: lua-check-hammerspoon
 lua-check-hammerspoon: ## Check Hammerspoon configuration.
 	@echo "🔍 Checking Hammerspoon configuration..."
@@ -553,6 +558,11 @@ lua-check-hammerspoon: ## Check Hammerspoon configuration.
 		echo "⚠️  Neither lua nor nix is available for syntax checking"; \
 		exit 1; \
 	fi
+
+.PHONY: lua-check-hammerspoon-dev
+lua-check-hammerspoon-dev: ## Run the Hammerspoon Lua check inside the Nix dev shell (mirrors CI).
+	@echo "🧪 Running Hammerspoon Lua check inside the Nix dev shell..."
+	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) lua-check-hammerspoon
 
 ##@ Git Submodule
 

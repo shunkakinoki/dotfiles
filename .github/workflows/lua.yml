@@ -13,8 +13,6 @@ jobs:
   lua-neovim:
     runs-on: ubuntu-latest
     timeout-minutes: 300
-    env:
-      DEVENV_ROOT: ${{ github.workspace }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -23,12 +21,10 @@ jobs:
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Validate Neovim Configuration (Dev Shell)
-        run: nix develop .# --command make lua-check-neovim
+        run: make lua-check-neovim-dev
   lua-hammerspoon:
     runs-on: macos-latest
     timeout-minutes: 300
-    env:
-      DEVENV_ROOT: ${{ github.workspace }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -37,7 +33,7 @@ jobs:
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Validate Hammerspoon Configuration (Dev Shell)
-        run: nix develop .# --command make lua-check-hammerspoon
+        run: make lua-check-hammerspoon-dev
   lua-check:
     if: always()
     needs:
