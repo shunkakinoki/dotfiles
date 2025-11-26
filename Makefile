@@ -489,14 +489,6 @@ neovim-update: ## Update Neovim plugins.
 neovim-sync: ## Sync Neovim plugins.
 	@echo "🔄 Syncing neovim plugins..."
 	@nvim --headless +"lua vim.cmd('source ' .. vim.fn.stdpath('config') .. '/init.lua')" +qa
-	@if [ -f "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json" ]; then \
-		if [ "$$(uname)" = "Darwin" ]; then \
-			sed -i '' -e '$$ { /^$$/d; }' "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json"; \
-		else \
-			sed -i -e '$$ { /^$$/d; }' "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json"; \
-		fi && \
-		printf '\n' >> "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json"; \
-	fi
 	@echo "✅ Neovim plugins synced"
 
 ##@ Lua
