@@ -6,7 +6,6 @@
   ./ghostty
   ./hammerspoon
   ./karabiner
-  ./nvim
   ./opencode
   ./serena
   ./starship

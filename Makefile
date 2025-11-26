@@ -474,8 +474,8 @@ neovim-dev: ## Set up local Neovim development environment.
 		rm "$(HOME)/.config/nvim"; \
 	fi
 	@mkdir -p "$(HOME)/.config/nvim"
-	@ln -sf "$(PWD)/config/nvim/init.lua" "$(HOME)/.config/nvim/init.lua"
-	@ln -sf "$(PWD)/config/nvim/nvim-pack-lock.json" "$(HOME)/.config/nvim/nvim-pack-lock.json"
+	@ln -sf "$(PWD)/home-manager/programs/neovim/init.lua" "$(HOME)/.config/nvim/init.lua"
+	@ln -sf "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json" "$(HOME)/.config/nvim/nvim-pack-lock.json"
 	@echo "✅ Local Neovim development environment ready"
 	@echo "🚧 To restore the Nix-managed version, run 'make switch'"
 
@@ -489,13 +489,13 @@ neovim-update: ## Update Neovim plugins.
 neovim-sync: ## Sync Neovim plugins.
 	@echo "🔄 Syncing neovim plugins..."
 	@nvim --headless +"lua vim.cmd('source ' .. vim.fn.stdpath('config') .. '/init.lua')" +qa
-	@if [ -f "$(PWD)/config/nvim/nvim-pack-lock.json" ]; then \
+	@if [ -f "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json" ]; then \
 		if [ "$$(uname)" = "Darwin" ]; then \
-			sed -i '' -e '$$ { /^$$/d; }' "$(PWD)/config/nvim/nvim-pack-lock.json"; \
+			sed -i '' -e '$$ { /^$$/d; }' "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json"; \
 		else \
-			sed -i -e '$$ { /^$$/d; }' "$(PWD)/config/nvim/nvim-pack-lock.json"; \
+			sed -i -e '$$ { /^$$/d; }' "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json"; \
 		fi && \
-		printf '\n' >> "$(PWD)/config/nvim/nvim-pack-lock.json"; \
+		printf '\n' >> "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json"; \
 	fi
 	@echo "✅ Neovim plugins synced"
 
@@ -512,18 +512,18 @@ lua-check-neovim: ## Check Neovim configuration.
 		echo "⚠️  Neovim is not installed or not in PATH"; \
 		exit 1; \
 	fi
-	@NVIM_CONFIG="$(PWD)/config/nvim/init.lua"; \
+	@NVIM_CONFIG="$(PWD)/home-manager/programs/neovim/init.lua"; \
 	if [ ! -f "$$NVIM_CONFIG" ]; then \
 		echo "⚠️  Could not find Neovim configuration at $$NVIM_CONFIG"; \
 		exit 1; \
 	fi
 	@echo "📝 Validating Neovim configuration syntax..."
 	@mkdir -p ~/.config/nvim
-	@ln -sf "$(PWD)/config/nvim/init.lua" ~/.config/nvim/init.lua
-	@if [ -f "$(PWD)/config/nvim/nvim-pack-lock.json" ]; then \
-		ln -sf "$(PWD)/config/nvim/nvim-pack-lock.json" ~/.config/nvim/nvim-pack-lock.json; \
+	@ln -sf "$(PWD)/home-manager/programs/neovim/init.lua" ~/.config/nvim/init.lua
+	@if [ -f "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json" ]; then \
+		ln -sf "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json" ~/.config/nvim/nvim-pack-lock.json; \
 	fi
-	@nvim --headless -c "lua dofile('$(PWD)/config/nvim/init.lua')" -c "qa" 2>&1; \
+	@nvim --headless -c "lua dofile('$(PWD)/home-manager/programs/neovim/init.lua')" -c "qa" 2>&1; \
 	EXIT_CODE=$$?; \
 	if [ $$EXIT_CODE -eq 0 ]; then \
 		echo "✅ Neovim configuration is valid"; \
