@@ -139,6 +139,7 @@
           ...
         }:
         let
+          inherit (inputs.nixpkgs) lib;
           devenvRoot =
             let
               envRoot = builtins.getEnv "DEVENV_ROOT";
@@ -150,6 +151,23 @@
               nixpkgsLib = inputs.nixpkgs.lib;
             };
             overlays = (import ./overlays) { inherit inputs; };
+          };
+          treefmtToml = builtins.fromTOML (builtins.readFile ./treefmt.toml);
+          treefmtSettings = lib.recursiveUpdate treefmtToml {
+            formatter = {
+              nix = (treefmtToml.formatter.nix or { }) // {
+                command = lib.getExe pkgs.nixfmt-rfc-style;
+              };
+              biome = (treefmtToml.formatter.biome or { }) // {
+                command = lib.getExe pkgs.biome;
+              };
+              json = (treefmtToml.formatter.json or { }) // {
+                command = lib.getExe pkgs.jsonfmt;
+              };
+              shell = (treefmtToml.formatter.shell or { }) // {
+                command = lib.getExe pkgs.shfmt;
+              };
+            };
           };
         in
         {
@@ -166,15 +184,11 @@
           treefmt = {
             projectRootFile = "flake.nix";
             programs = {
-              biome.enable = true;
-              nixfmt.enable = true;
-              shfmt.enable = true;
               stylua.enable = true;
               taplo.enable = true;
-              jsonfmt.enable = true;
               yamlfmt.enable = true;
             };
-            settings = builtins.fromTOML (builtins.readFile ./treefmt.toml);
+            settings = treefmtSettings;
           };
         };
     };
