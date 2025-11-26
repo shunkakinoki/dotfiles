@@ -1,3 +1,4 @@
+{ username, ... }:
 {
   nix = {
     optimise.automatic = true;
