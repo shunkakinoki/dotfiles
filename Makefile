@@ -28,6 +28,7 @@ NIX_EXEC := $(shell which nix)
 # Common cache settings (apply even before switch)
 NIX_SUBSTITUTERS := https://cache.nixos.org https://devenv.cachix.org https://cachix.cachix.org
 NIX_TRUSTED_KEYS := cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw= cachix.cachix.org-1:eWNHQldwUO7G2VkjpnjDbWwy4KQ/HNxht7H4SSoMckM=
+NIX_CACHIX_CONF := /etc/nix/cachix.conf
 
 # Nix configuration system
 NIX_SYSTEM := $(shell if [ "$(OS)" = "Darwin" ] && [ "$(ARCH)" = "arm64" ]; then \
@@ -144,7 +145,7 @@ dev: nix-develop ## Enter the Nix dev shell (alias for nix-develop).
 ##@ Nix Setup
 
 .PHONY: nix-setup
-nix-setup: nix-install nix-check nix-connect ## Set up Nix environment (install, check, connect). 
+nix-setup: nix-install nix-check nix-connect nix-configure-cachix ## Set up Nix environment (install, check, connect, trust caches). 
 
 .PHONY: nix-connect
 nix-connect: ## Ensure Nix daemon is running.
@@ -183,6 +184,28 @@ nix-check: ## Verify Nix environment setup.
 		exit 1; \
 	fi
 	@echo "✅ Nix environment found!"
+
+.PHONY: nix-configure-cachix
+nix-configure-cachix: ## Ensure the Nix daemon trusts Cachix/devenv caches.
+	@echo "🔐 Ensuring system Nix trusts Cachix substituters..."
+	@sudo mkdir -p /etc/nix
+	@sudo tee $(NIX_CACHIX_CONF) >/dev/null <<EOF
+substituters = https://cache.nixos.org https://devenv.cachix.org https://cachix.cachix.org
+trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw= cachix.cachix.org-1:eWNHQldwUO7G2VkjpnjDbWwy4KQ/HNxht7H4SSoMckM=
+trusted-users = root $(NIX_USERNAME)
+EOF
+	@if ! grep -q '^include /etc/nix/cachix.conf' /etc/nix/nix.conf 2>/dev/null; then \
+		echo "include /etc/nix/cachix.conf" | sudo tee -a /etc/nix/nix.conf >/dev/null; \
+	fi
+	@if [ "$(OS)" = "Darwin" ]; then \
+		sudo launchctl unload /Library/LaunchDaemons/org.nixos.nix-daemon.plist 2>/dev/null || true; \
+		sudo launchctl load -w /Library/LaunchDaemons/org.nixos.nix-daemon.plist; \
+	elif [ "$(OS)" = "Linux" ]; then \
+		if [ -d /run/systemd/system ]; then \
+			sudo systemctl restart nix-daemon.service || true; \
+		fi; \
+	fi
+	@echo "✅ Cachix substituters trusted by the daemon."
 
 .PHONY: nix-develop
 nix-develop: ## Enter the Nix development shell.
