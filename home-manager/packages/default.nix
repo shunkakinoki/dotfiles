@@ -8,7 +8,6 @@ in
 with pkgs;
 [
   inputs.agenix.packages.${stdenv.hostPlatform.system}.default
-  inputs.devenv.packages.${stdenv.hostPlatform.system}.devenv
   pkgs.nur.repos.charmbracelet.crush
   age
   aichat
