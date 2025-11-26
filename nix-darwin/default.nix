@@ -10,7 +10,7 @@ let
   fonts = import ./config/fonts.nix { inherit pkgs; };
   homebrew = import ./config/homebrew.nix { inherit isRunner; };
   networking = import ./config/networking.nix;
-  nix = import ./config/nix.nix { inherit username; };
+  nix = import ./config/nix.nix;
   security = import ./config/security.nix { inherit username; };
   system = import ./config/system.nix { inherit isRunner pkgs username; };
   time = import ./config/time.nix;
