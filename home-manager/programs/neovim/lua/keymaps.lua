@@ -53,7 +53,7 @@ keymap("n", "ZZ", ":wa<CR>:q<CR>", opts)
 -- TERMINAL
 -- ====================================================================================
 -- @keymap <leader>j: Toggle terminal (show/hide)
-keymap("n", "<leader>j", "<cmd>ToggleTerm<cr>", opts)
+keymap({ "n", "t" }, "<leader>j", "<cmd>ToggleTerm<cr>", opts)
 
 -- ====================================================================================
 -- NAVIGATION
