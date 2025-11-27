@@ -86,6 +86,7 @@ with pkgs;
   gemini-cli
   opencode
   powertop
+  tailscale
 ]
 ++ lib.optionals (stdenv.isLinux && !isCI) [
   chromium
