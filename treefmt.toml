@@ -17,3 +17,7 @@ excludes = ["home-manager/programs/neovim/nvim-pack-lock.json"]
 command = "shfmt"
 options = ["-i", "2", "-s", "-w"]
 includes = ["*.sh"]
+
+[formatter.lua]
+command = "stylua"
+includes = ["*.lua"]

@@ -61,6 +61,7 @@ with pkgs;
   ripgrep
   rustup
   sccache
+  speedtest-cli
   sqlite
   stern
   tokei
