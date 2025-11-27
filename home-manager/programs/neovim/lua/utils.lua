@@ -101,5 +101,4 @@ function M.cclear()
 	vim.fn.setqflist({}, "r")
 end
 
-
 return M

@@ -21,23 +21,22 @@ telescope.setup({
 			"--smart-case",
 			"--sort=path",
 		},
-        extensions = {
-            fzf = {
-                fuzzy = true,
-                override_generic_sorter = true,
-                override_file_sorter = true,
-                case_mode = "smart_case",
-            },
-            ["ui-select"] = {
-                require("telescope.themes").get_dropdown(),
-            },
-        },
+		extensions = {
+			fzf = {
+				fuzzy = true,
+				override_generic_sorter = true,
+				override_file_sorter = true,
+				case_mode = "smart_case",
+			},
+			["ui-select"] = {
+				require("telescope.themes").get_dropdown(),
+			},
+		},
 	},
 })
 telescope.load_extension("gh")
 telescope.load_extension("fzf")
 telescope.load_extension("ui-select")
-
 
 local function ivy(iopts)
 	return require("telescope.themes").get_ivy(iopts)

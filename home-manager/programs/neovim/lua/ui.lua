@@ -50,7 +50,6 @@ require("auto-dark-mode").setup({
 	end,
 })
 
-
 require("nvim-tree").setup({
 	view = {
 		width = 30,

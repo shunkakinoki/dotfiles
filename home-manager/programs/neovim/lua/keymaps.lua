@@ -6,7 +6,6 @@ local utils = require("utils")
 --Remap space as leader key
 keymap("", "<Space>", "<Nop>", opts)
 
-
 -- ====================================================================================
 -- QUICKFIX LISTS
 -- ====================================================================================
@@ -127,12 +126,11 @@ keymap("i", "jj", "<Esc>", opts)
 -- @keymap <leader>xx: Open diagnostics in quickfix
 keymap("n", "<leader>xx", vim.diagnostic.setqflist, opts)
 -- @keymap ]d: Go to next diagnostic
-keymap('n', ']d', vim.diagnostic.goto_next, { desc = 'Next Diagnostic' })
+keymap("n", "]d", vim.diagnostic.goto_next, { desc = "Next Diagnostic" })
 -- @keymap [d: Go to previous diagnostic
-keymap('n', '[d', vim.diagnostic.goto_prev, { desc = 'Previous Diagnostic' })
+keymap("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous Diagnostic" })
 -- @keymap <leader>dl: Show line diagnostics
-keymap('n', '<leader>dl', vim.diagnostic.open_float, { desc = 'Line Diagnostics' })
-
+keymap("n", "<leader>dl", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
 
 -- ====================================================================================
 -- CODE NAVIGATION
