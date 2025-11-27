@@ -79,6 +79,7 @@
       "sf-symbols"
       "slack"
       "visual-studio-code"
+      "visual-studio-code@insiders"
       "vscodium"
       "warp"
       "wezterm"

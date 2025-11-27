@@ -27,7 +27,7 @@ vim.pack.add({
 	{ src = "https://github.com/nvim-lua/plenary.nvim" },
 	{ src = "https://github.com/nvim-telescope/telescope-github.nvim" },
 	{ src = "https://github.com/nvim-telescope/telescope.nvim" },
-	{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+	{ src = "https://github.com/nvim-telescope/telescope-fzf-native.nvim", build = "make" },
 	{ src = "https://github.com/nvim-telescope/telescope-ui-select.nvim" },
 
 	-- CODING
