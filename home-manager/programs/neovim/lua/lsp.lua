@@ -1,5 +1,3 @@
-local lspconfig = require("lspconfig")
-
 -- Keymaps for LSP actions in on_attach
 local on_attach = function(client, bufnr)
 	local opts = { buffer = bufnr, noremap = true, silent = true }
@@ -11,26 +9,36 @@ local on_attach = function(client, bufnr)
 end
 
 -- Set up capabilities for nvim-cmp
-local capabilities = require("cmp_nvim_lsp").default_capabilities()
-
--- Setup servers
-lspconfig.gopls.setup({ on_attach = on_attach, capabilities = capabilities })
-lspconfig.vtsls.setup({ on_attach = on_attach, capabilities = capabilities })
-lspconfig.lua_ls.setup({
-	on_attach = on_attach,
-	capabilities = capabilities,
-	settings = {
-		Lua = {
-			diagnostics = {
-				globals = { "vim" },
+	local capabilities = require("cmp_nvim_lsp").default_capabilities()
+	
+	local function configure_servers()
+		local servers = {
+			gopls = {},
+		vtsls = {},
+		lua_ls = {
+			settings = {
+				Lua = {
+					diagnostics = {
+						globals = { "vim" },
+					},
+				},
 			},
 		},
-	},
-})
-lspconfig.jsonls.setup({ on_attach = on_attach, capabilities = capabilities })
-lspconfig.bashls.setup({ on_attach = on_attach, capabilities = capabilities })
-lspconfig.dockerls.setup({ on_attach = on_attach, capabilities = capabilities })
-lspconfig.yamlls.setup({ on_attach = on_attach, capabilities = capabilities })
+		jsonls = {},
+		bashls = {},
+		dockerls = {},
+			yamlls = {},
+		}
+	
+		for name, config in pairs(servers) do
+			config.on_attach = on_attach
+			config.capabilities = capabilities
+			vim.lsp.config(name, config)
+		end
+		vim.lsp.enable(vim.tbl_keys(servers))
+	end
+
+configure_servers()
 
 -- setup diagnostics
 vim.diagnostic.config({
