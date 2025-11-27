@@ -53,10 +53,20 @@ keymap("n", "ZZ", ":wa<CR>:q<CR>", opts)
 -- TERMINAL
 -- ====================================================================================
 -- @keymap <leader>j: Toggle terminal (show/hide)
-keymap({ "n", "t" }, "<leader>j", "<cmd>ToggleTerm<cr>", opts)
+keymap({ "n", "t" }, "<leader>j", function()
+	TogglePrimaryTerm()
+end, opts)
 -- @keymap <leader>h: Toggle secondary terminal (show/hide)
 keymap({ "n", "t" }, "<leader>h", function()
 	ToggleSecondaryTerm()
+end, opts)
+-- @keymap <leader><space>]: Cycle to next managed terminal
+keymap({ "n", "t" }, "<leader><space>]", function()
+	CycleNextTerm()
+end, opts)
+-- @keymap <leader><space>[: Cycle to previous managed terminal
+keymap({ "n", "t" }, "<leader><space>[", function()
+	CyclePreviousTerm()
 end, opts)
 
 -- ====================================================================================
