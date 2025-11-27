@@ -6,7 +6,7 @@ vim.pack.add({
 		src = "https://github.com/f-person/auto-dark-mode.nvim",
 		priority = 1000,
 	},
-	{ src = "https://github.com/folke/sidekick.nvim" },
+	-- { src = "https://github.com/folke/sidekick.nvim" }, -- Moved to AI category
 	{ src = "https://github.com/nvim-tree/nvim-tree.lua" },
 	{ src = "https://github.com/nvim-lualine/lualine.nvim" },
 	{ src = "https://github.com/stevearc/dressing.nvim" },
@@ -18,6 +18,10 @@ vim.pack.add({
 	{ src = "https://github.com/lewis6991/gitsigns.nvim" },
 	{ src = "https://github.com/akinsho/git-conflict.nvim" },
 	{ src = "https://github.com/folke/which-key.nvim" },
+	{ src = "https://github.com/folke/trouble.nvim" },
+	{ src = "https://github.com/j-hui/fidget.nvim" },
+	{ src = "https://github.com/stevearc/oil.nvim" },
+	{ src = "https://github.com/folke/flash.nvim" },
 
 	-- TELESCOPE
 	{ src = "https://github.com/nvim-lua/plenary.nvim" },
@@ -33,6 +37,7 @@ vim.pack.add({
 	{ src = "https://github.com/zbirenbaum/copilot.lua" },
 	{ src = "https://github.com/rafamadriz/friendly-snippets" },
 	{ src = "https://github.com/mfussenegger/nvim-lint" },
+	{ src = "https://github.com/MagicDuck/grug-far.nvim" },
 
 	-- COMPLETION (nvim-cmp)
 	{ src = "https://github.com/hrsh7th/nvim-cmp" },
@@ -67,6 +72,11 @@ vim.pack.add({
 
 	-- LSP
 	{ src = "https://github.com/neovim/nvim-lspconfig" },
+	{ src = "https://github.com/RRethy/vim-illuminate" },
+	{ src = "https://github.com/yioneko/nvim-vtsls" },
+
+	-- AI
+	{ src = "https://github.com/folke/sidekick.nvim" },
 
 	-- TERMINAL
 	{ src = "https://github.com/akinsho/toggleterm.nvim" },
@@ -77,6 +87,9 @@ require("neogen").setup()
 require("gitsigns").setup({})
 require("git-conflict").setup({})
 require("auto-hlsearch").setup({})
+require("grug-far").setup({})
+require("flash").setup({})
+require("illuminate").configure({})
 
 require("conform").setup({
 	formatters_by_ft = {

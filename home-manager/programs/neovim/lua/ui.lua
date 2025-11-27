@@ -130,3 +130,7 @@ require("nvim-tree").setup({
 })
 
 require("which-key").setup({})
+require("fidget").setup({})
+require("oil").setup({})
+require("trouble").setup({})
+require("sidekick").setup({})

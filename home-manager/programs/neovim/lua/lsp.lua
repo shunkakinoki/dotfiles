@@ -10,11 +10,15 @@ local on_attach = function(client, bufnr)
 	vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
 end
 
+-- Set up capabilities for nvim-cmp
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
 -- Setup servers
-lspconfig.gopls.setup({ on_attach = on_attach })
-lspconfig.tsserver.setup({ on_attach = on_attach })
+lspconfig.gopls.setup({ on_attach = on_attach, capabilities = capabilities })
+lspconfig.vtsls.setup({ on_attach = on_attach, capabilities = capabilities })
 lspconfig.lua_ls.setup({
 	on_attach = on_attach,
+	capabilities = capabilities,
 	settings = {
 		Lua = {
 			diagnostics = {
@@ -23,10 +27,10 @@ lspconfig.lua_ls.setup({
 		},
 	},
 })
-lspconfig.jsonls.setup({ on_attach = on_attach })
-lspconfig.bashls.setup({ on_attach = on_attach })
-lspconfig.dockerls.setup({ on_attach = on_attach })
-lspconfig.yamlls.setup({ on_attach = on_attach })
+lspconfig.jsonls.setup({ on_attach = on_attach, capabilities = capabilities })
+lspconfig.bashls.setup({ on_attach = on_attach, capabilities = capabilities })
+lspconfig.dockerls.setup({ on_attach = on_attach, capabilities = capabilities })
+lspconfig.yamlls.setup({ on_attach = on_attach, capabilities = capabilities })
 
 -- setup diagnostics
 vim.diagnostic.config({

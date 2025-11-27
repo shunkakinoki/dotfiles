@@ -71,6 +71,11 @@ keymap("n", "<C-o>", "<C-o>zz", opts)
 -- @keymap <C-i>: Jump to newer position and center screen
 keymap("n", "<C-i>", "<C-i>zz", opts)
 
+-- @keymap s: Flash jump
+keymap({ "n", "x", "o" }, "s", function()
+	require("flash").jump()
+end, opts)
+
 -- ====================================================================================
 -- CLIPBOARD OPERATIONS
 -- ====================================================================================
@@ -91,7 +96,15 @@ keymap("n", "<leader>gs", ":tab Git<cr>", opts)
 -- @keymap <F9>: Open Git mergetool in new tab
 keymap("n", "<F9>", ":tab Git mergetool<cr>", opts)
 -- @keymap <leader>gd: Preview hunk inline
-keymap("n", "<leader>gd", ":Gitsign preview_hunk_inline<cr>", opts)
+keymap("n", "<leader>gd", ":Gitsigns preview_hunk_inline<cr>", opts)
+-- @keymap <leader>hs: Stage hunk (Gitsigns)
+keymap("n", "<leader>hs", ":Gitsigns stage_hunk<cr>", opts)
+-- @keymap <leader>hr: Reset hunk (Gitsigns)
+keymap("n", "<leader>hr", ":Gitsigns reset_hunk<cr>", opts)
+-- @keymap <leader>hp: Preview hunk (Gitsigns)
+keymap("n", "<leader>hp", ":Gitsigns preview_hunk<cr>", opts)
+-- @keymap <leader>hb: Blame line (Gitsigns)
+keymap("n", "<leader>hb", ":Gitsigns blame_line<cr>", opts)
 
 -- ====================================================================================
 -- VISUAL MODE OPERATIONS
@@ -123,8 +136,18 @@ keymap("i", "jj", "<Esc>", opts)
 -- ====================================================================================
 -- DIAGNOSTICS
 -- ====================================================================================
--- @keymap <leader>xx: Open diagnostics in quickfix
-keymap("n", "<leader>xx", vim.diagnostic.setqflist, opts)
+-- @keymap <leader>xx: Open diagnostics (Trouble)
+keymap("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", opts)
+-- @keymap <leader>xX: Toggle Trouble
+keymap("n", "<leader>xX", "<cmd>Trouble toggle<cr>", opts)
+-- @keymap <leader>cs: Open symbols (Trouble)
+keymap("n", "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>", opts)
+-- @keymap <leader>cl: Open LSP references/defs (Trouble)
+keymap("n", "<leader>cl", "<cmd>Trouble lsp toggle focus=false win.position=right<cr>", opts)
+-- @keymap <leader>xq: Open quickfix (Trouble)
+keymap("n", "<leader>xq", "<cmd>Trouble qflist toggle<cr>", opts)
+-- @keymap <leader>xl: Open loclist (Trouble)
+keymap("n", "<leader>xl", "<cmd>Trouble loclist toggle<cr>", opts)
 -- @keymap ]d: Go to next diagnostic
 keymap("n", "]d", vim.diagnostic.goto_next, { desc = "Next Diagnostic" })
 -- @keymap [d: Go to previous diagnostic
@@ -133,8 +156,14 @@ keymap("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous Diagnostic" })
 keymap("n", "<leader>dl", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
 
 -- ====================================================================================
--- CODE NAVIGATION
+-- CODE NAVIGATION & EDITING
 -- ====================================================================================
+-- @keymap -: Open parent directory (Oil)
+keymap("n", "-", "<CMD>Oil<CR>", { desc = "Open Parent Directory" })
+
+-- @keymap <leader>S: Open Search/Replace (GrugFar)
+keymap("n", "<leader>S", ":GrugFar<cr>", opts)
+
 -- @keymap <leader>oo: Navigate to related file (other.nvim)
 keymap("n", "<leader>oo", ":Other<cr>", opts)
 -- @keymap <leader>ov: Navigate to related file in vertical split
@@ -154,3 +183,19 @@ keymap("n", "<leader>st", require("treesj").toggle, opts)
 -- ====================================================================================
 -- @keymap <leader>b: Toggle file tree (nvim-tree)
 keymap("n", "<leader>b", ":NvimTreeToggle<CR>", opts)
+
+-- @keymap <leader>sk: Toggle sidekick (symbols sidebar)
+keymap("n", "<leader>sk", ":SidekickToggle<CR>", opts)
+
+-- ====================================================================================
+-- WHICH-KEY GROUPS
+-- ====================================================================================
+local wk = require("which-key")
+wk.add({
+	{ "<leader>g", group = "Git" },
+	{ "<leader>l", group = "LSP" },
+	{ "<leader>f", group = "Find/Telescope" },
+	{ "<leader>x", group = "Trouble/Diagnostics" },
+	{ "<leader>c", group = "Code" },
+	{ "<leader>h", group = "Hunk (Git)" },
+})
