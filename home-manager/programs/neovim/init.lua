@@ -12,14 +12,15 @@ package.path = package.path .. ";" .. vim.fn.stdpath("config") .. "/lua/?.lua"
 -- ====================================================================================
 -- MODULES
 -- ====================================================================================
-require("settings")
-require("plugins")
-require("ui")
-require("keymaps")
+require("ai")
 require("autocmds")
-require("lsp")
 require("completion")
+require("keymaps")
+require("lsp")
+require("plugins")
+require("settings")
 require("telescope")
-require("treesitter")
 require("terminal")
+require("treesitter")
+require("ui")
 require("utils")
