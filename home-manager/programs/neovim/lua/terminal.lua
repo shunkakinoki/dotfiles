@@ -1,4 +1,7 @@
-require("toggleterm").setup({
+local toggleterm = require("toggleterm")
+local Terminal = require("toggleterm.terminal").Terminal
+
+toggleterm.setup({
 	direction = "horizontal",
 	size = function(term)
 		if term.direction == "horizontal" then
@@ -10,3 +13,16 @@ require("toggleterm").setup({
 	shade_terminals = true,
 	persist_size = true,
 })
+
+local secondary_term = Terminal:new({
+	direction = "tab",
+	count = 2,
+	hidden = true,
+	on_open = function(term)
+		vim.cmd("startinsert!")
+	end,
+})
+
+function ToggleSecondaryTerm()
+	secondary_term:toggle()
+end
