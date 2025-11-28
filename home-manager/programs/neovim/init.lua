@@ -29,8 +29,8 @@ append_package_path(init_dir .. "/lua/?/init.lua")
 -- ====================================================================================
 -- MODULES
 -- ====================================================================================
-require("plugins")
 require("settings")
+require("plugins")
 require("autocmds")
 require("keymaps")
 require("lsp")
