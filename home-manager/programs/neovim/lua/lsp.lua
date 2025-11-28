@@ -9,11 +9,11 @@ local on_attach = function(client, bufnr)
 end
 
 -- Set up capabilities for nvim-cmp
-	local capabilities = require("cmp_nvim_lsp").default_capabilities()
-	
-	local function configure_servers()
-		local servers = {
-			gopls = {},
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+local function configure_servers()
+	local servers = {
+		gopls = {},
 		vtsls = {},
 		lua_ls = {
 			settings = {
@@ -27,16 +27,16 @@ end
 		jsonls = {},
 		bashls = {},
 		dockerls = {},
-			yamlls = {},
-		}
-	
-		for name, config in pairs(servers) do
-			config.on_attach = on_attach
-			config.capabilities = capabilities
-			vim.lsp.config(name, config)
-		end
-		vim.lsp.enable(vim.tbl_keys(servers))
+		yamlls = {},
+	}
+
+	for name, config in pairs(servers) do
+		config.on_attach = on_attach
+		config.capabilities = capabilities
+		vim.lsp.config(name, config)
 	end
+	vim.lsp.enable(vim.tbl_keys(servers))
+end
 
 configure_servers()
 
