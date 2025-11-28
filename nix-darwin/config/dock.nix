@@ -28,6 +28,7 @@
       "/Applications/Notion.app"
       "/Applications/Ghostty.app"
       "/Applications/Linear.app"
+      "/Applications/Tailscale.app"
       "/Applications/Cursor.app"
       "/Applications/Visual Studio Code.app"
       "/Applications/Xcode.app"
