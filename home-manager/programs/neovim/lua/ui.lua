@@ -1,5 +1,9 @@
+-- Improves vim.ui.select and vim.ui.input prompts with a modern UI.
+-- From: https://github.com/stevearc/dressing.nvim
 require("dressing").setup({ input = { insert_only = true } })
 
+-- Provides a sleek notification popup with history and customization.
+-- From: https://github.com/rcarriga/nvim-notify
 local notify = require("notify")
 notify.setup({
 	render = "compact",
@@ -27,9 +31,14 @@ local lualine_config = {
 		lualine_x = { "location" },
 	},
 }
-require("lualine").setup(lualine_config)
+-- Highly configurable statusline with mode, git, diagnostics, and LSP info.
+-- From: https://github.com/nvim-lualine/lualine.nvim
+local lualine = require("lualine")
+lualine.setup(lualine_config)
 
 -- Auto theme switching based on system appearance
+-- Automatically toggles Neovim dark/light themes with the OS appearance.
+-- From: https://github.com/f-person/auto-dark-mode.nvim
 require("auto-dark-mode").setup({
 	update_interval = 1000, -- Check for theme changes every second
 	set_dark_mode = function()
@@ -37,7 +46,7 @@ require("auto-dark-mode").setup({
 		vim.cmd("colorscheme dracula")
 		-- Refresh lualine to update theme
 		if package.loaded["lualine"] then
-			require("lualine").setup(lualine_config)
+			lualine.setup(lualine_config)
 		end
 	end,
 	set_light_mode = function()
@@ -45,11 +54,13 @@ require("auto-dark-mode").setup({
 		vim.cmd("colorscheme default")
 		-- Refresh lualine to update theme
 		if package.loaded["lualine"] then
-			require("lualine").setup(lualine_config)
+			lualine.setup(lualine_config)
 		end
 	end,
 })
 
+-- Sidebar file explorer built in Lua for quick navigation.
+-- From: https://github.com/nvim-tree/nvim-tree.lua
 require("nvim-tree").setup({
 	view = {
 		width = 30,
@@ -60,6 +71,8 @@ require("nvim-tree").setup({
 		},
 	},
 	on_attach = function(bufnr)
+		-- API for configuring nvim-tree keymaps and actions.
+		-- From: https://github.com/nvim-tree/nvim-tree.lua
 		local api = require("nvim-tree.api")
 
 		local function opts(desc)
@@ -129,7 +142,18 @@ require("nvim-tree").setup({
 	end,
 })
 
+-- Displays keybinding hints grouped by prefix as you type.
+-- From: https://github.com/folke/which-key.nvim
 require("which-key").setup({})
+
+-- Shows non-blocking LSP progress spinners in the corner.
+-- From: https://github.com/j-hui/fidget.nvim
 require("fidget").setup({})
+
+-- Makes directories editable as buffers for quick navigation.
+-- From: https://github.com/stevearc/oil.nvim
 require("oil").setup({})
+
+-- Diagnostics quicklist UI with filters and navigation helpers.
+-- From: https://github.com/folke/trouble.nvim
 require("trouble").setup({})

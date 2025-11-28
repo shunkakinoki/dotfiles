@@ -1,17 +1,33 @@
+-- Renders indent guides with optional scopes and excludes help buffers.
+-- From: https://github.com/lukas-reineke/indent-blankline.nvim
 require("ibl").setup({
 	indent = { char = "│" },
 	exclude = { filetypes = { "help" } },
 	scope = { enabled = false },
 })
 
+-- Automatically inserts and removes paired characters while typing.
+-- From: https://github.com/windwp/nvim-autopairs
 require("nvim-autopairs").setup()
 
+-- Autocloses and renames HTML/XML tags via Treesitter context.
+-- From: https://github.com/windwp/nvim-ts-autotag
 require("nvim-ts-autotag").setup()
+
+-- Modern surround manipulation for parentheses, brackets, tags, etc.
+-- From: https://github.com/kylechui/nvim-surround
 require("nvim-surround").setup()
+
+-- Highlights and lists TODO/FIXME/NOTE-style comments across projects.
+-- From: https://github.com/folke/todo-comments.nvim
 require("todo-comments").setup()
 
+-- Shows the current function or class context at the top of the buffer.
+-- From: https://github.com/nvim-treesitter/nvim-treesitter-context
 require("treesitter-context").setup()
 
+-- Configures Treesitter language parsers, highlighting, and textobjects.
+-- From: https://github.com/nvim-treesitter/nvim-treesitter
 ---@diagnostic disable-next-line: missing-fields
 require("nvim-treesitter.configs").setup({
 	ensure_installed = {

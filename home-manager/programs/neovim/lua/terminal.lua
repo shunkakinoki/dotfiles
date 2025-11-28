@@ -1,4 +1,8 @@
+-- Manage Neovim-hosted terminals with floating/split layouts.
+-- From: https://github.com/akinsho/toggleterm.nvim
 local toggleterm = require("toggleterm")
+-- Expose the toggleterm terminal constructor for custom instances.
+-- From: https://github.com/akinsho/toggleterm.nvim
 local Terminal = require("toggleterm.terminal").Terminal
 
 toggleterm.setup({

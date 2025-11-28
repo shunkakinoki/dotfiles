@@ -1,9 +1,15 @@
+-- Completion engine that aggregates LSP, buffer, path, and snippet sources.
+-- From: https://github.com/hrsh7th/nvim-cmp
 local cmp = require("cmp")
+-- Surfaces Copilot suggestions through the nvim-cmp menu.
+-- From: https://github.com/zbirenbaum/copilot-cmp
 require("copilot_cmp").setup()
 
 cmp.setup({
 	snippet = {
 		expand = function(args)
+			-- LuaSnip powers snippet expansion used by cmp.
+			-- From: https://github.com/L3MON4D3/LuaSnip
 			require("luasnip").lsp_expand(args.body)
 		end,
 	},
@@ -64,6 +70,8 @@ cmp.setup.cmdline(":", {
 	}),
 })
 
+-- GitHub Copilot helper with inline suggestions disabled by default.
+-- From: https://github.com/zbirenbaum/copilot.lua
 require("copilot").setup({
 	suggestion = { enabled = false },
 	panel = { enabled = false },

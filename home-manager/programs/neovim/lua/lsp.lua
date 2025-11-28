@@ -9,6 +9,8 @@ local on_attach = function(client, bufnr)
 end
 
 -- Set up capabilities for nvim-cmp
+-- Bridges the cmp completion capabilities to the Neovim LSP client.
+-- From: https://github.com/hrsh7th/cmp-nvim-lsp
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 local function configure_servers()

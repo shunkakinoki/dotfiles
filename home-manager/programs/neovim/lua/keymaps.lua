@@ -2,6 +2,10 @@ local opts = { noremap = true, silent = true }
 local keymap = vim.keymap.set
 local utils = require("utils")
 
+-- Enhanced navigation with label-based motion jump targets.
+-- From: https://github.com/folke/flash.nvim
+local flash = require("flash")
+
 -- @keymap <Space>: Set as leader key
 --Remap space as leader key
 keymap("", "<Space>", "<Nop>", opts)
@@ -87,7 +91,7 @@ keymap("n", "<C-i>", "<C-i>zz", opts)
 
 -- @keymap s: Flash jump
 keymap({ "n", "x", "o" }, "s", function()
-	require("flash").jump()
+	flash.jump()
 end, opts)
 
 -- ====================================================================================
@@ -189,8 +193,11 @@ keymap("n", "<leader>os", ":OtherSplit<cr>", opts)
 keymap("n", "gco", ":Neogen<cr>", opts)
 
 -- @keymap <leader>st: Toggle treesitter split/join
-require("treesj").setup({ use_default_keymaps = false })
-keymap("n", "<leader>st", require("treesj").toggle, opts)
+-- Treesitter-based split/join helper for code structures.
+-- From: https://github.com/wansmer/treesj
+local treesj = require("treesj")
+treesj.setup({ use_default_keymaps = false })
+keymap("n", "<leader>st", treesj.toggle, opts)
 
 -- ====================================================================================
 -- NvimTree
@@ -204,6 +211,8 @@ keymap("n", "<leader>sk", ":SidekickToggle<CR>", opts)
 -- ====================================================================================
 -- WHICH-KEY GROUPS
 -- ====================================================================================
+-- Popup helper that groups and hints keybindings as you start a mapping.
+-- From: https://github.com/folke/which-key.nvim
 local wk = require("which-key")
 wk.add({
 	{ "<leader>g", group = "Git" },

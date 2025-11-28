@@ -1,4 +1,9 @@
+-- Fuzzy finder with extensible pickers for files, buffers, and more.
+-- From: https://github.com/nvim-telescope/telescope.nvim
 local telescope = require("telescope")
+-- Theme helpers used by the dropdown/ivy pickers.
+-- From: https://github.com/nvim-telescope/telescope.nvim
+local telescope_themes = require("telescope.themes")
 telescope.setup({
 	defaults = {
 		pickers = {
@@ -29,7 +34,7 @@ telescope.setup({
 				case_mode = "smart_case",
 			},
 			["ui-select"] = {
-				require("telescope.themes").get_dropdown(),
+				telescope_themes.get_dropdown(),
 			},
 		},
 	},
@@ -39,9 +44,11 @@ telescope.load_extension("fzf")
 telescope.load_extension("ui-select")
 
 local function ivy(iopts)
-	return require("telescope.themes").get_ivy(iopts)
+	return telescope_themes.get_ivy(iopts)
 end
 
+-- Telescope builtin pickers used in the keymaps below.
+-- From: https://github.com/nvim-telescope/telescope.nvim
 local builtin = require("telescope.builtin")
 local keymap = vim.keymap.set
 local opts = { noremap = true, silent = true }
