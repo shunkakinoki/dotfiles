@@ -206,7 +206,9 @@ keymap("n", "<leader>st", treesj.toggle, opts)
 keymap("n", "<leader>b", ":NvimTreeToggle<CR>", opts)
 
 -- @keymap <leader>sk: Toggle sidekick (symbols sidebar)
-keymap("n", "<leader>sk", ":SidekickToggle<CR>", opts)
+keymap("n", "<leader>sk", function()
+	require("sidekick.cli").toggle()
+end, opts)
 
 -- ====================================================================================
 -- WHICH-KEY GROUPS
