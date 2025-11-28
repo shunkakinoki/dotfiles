@@ -47,6 +47,7 @@ vim.opt.termguicolors = true
 vim.opt.shortmess:append("c")
 vim.opt.timeoutlen = 300
 vim.opt.winborder = "none"
-
+-- Suppress deprecation warnings (temporary until plugins update)
+vim.deprecate = function() end
 vim.hl.priorities.semantic_tokens = 10
 vim.g.fugitive_legacy_commands = 0
