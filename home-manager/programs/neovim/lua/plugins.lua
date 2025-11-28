@@ -95,15 +95,26 @@ require("conform").setup({
 	formatters_by_ft = {
 		lua = { "stylua" },
 		python = { "black" },
-		javascript = { "prettier" },
-		typescript = { "prettier" },
+		javascript = { "biome" },
+		typescript = { "biome" },
+		javascriptreact = { "biome" },
+		typescriptreact = { "biome" },
+		json = { "biome" },
+		yaml = { "biome" },
+		markdown = { "biome" },
+		html = { "biome" },
+		css = { "biome" },
 		go = { "gofmt", "goimports" },
+		nix = { "nixfmt" },
 	},
 	format_on_save = {
 		timeout_ms = 500,
 		lsp_fallback = true,
 	},
 })
+
+-- Highlights color codes inline with their actual color
+require("colorizer").setup()
 
 local lint = require("lint")
 lint.linters_by_ft = {

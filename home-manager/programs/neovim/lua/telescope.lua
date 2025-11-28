@@ -6,12 +6,7 @@ local telescope = require("telescope")
 local telescope_themes = require("telescope.themes")
 telescope.setup({
 	defaults = {
-		pickers = {
-			find_files = {
-				theme = "ivy",
-			},
-		},
-		prompt_prefix = "   ",
+		prompt_prefix = "   ",
 		selection_caret = " ❯ ",
 		entry_prefix = "   ",
 		multi_icon = "+ ",
@@ -26,16 +21,21 @@ telescope.setup({
 			"--smart-case",
 			"--sort=path",
 		},
-		extensions = {
-			fzf = {
-				fuzzy = true,
-				override_generic_sorter = true,
-				override_file_sorter = true,
-				case_mode = "smart_case",
-			},
-			["ui-select"] = {
-				telescope_themes.get_dropdown(),
-			},
+	},
+	pickers = {
+		find_files = {
+			theme = "ivy",
+		},
+	},
+	extensions = {
+		fzf = {
+			fuzzy = true,
+			override_generic_sorter = true,
+			override_file_sorter = true,
+			case_mode = "smart_case",
+		},
+		["ui-select"] = {
+			telescope_themes.get_dropdown(),
 		},
 	},
 })

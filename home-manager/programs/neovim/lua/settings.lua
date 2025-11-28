@@ -24,8 +24,11 @@ vim.opt.relativenumber = true
 vim.opt.smoothscroll = true
 vim.opt.swapfile = false
 vim.opt.backup = true
+vim.opt.backupdir = vim.fn.stdpath("data") .. "/backup//"
+vim.fn.mkdir(vim.fn.stdpath("data") .. "/backup", "p")
 vim.opt.undofile = true
-vim.opt.undodir = vim.fn.stdpath("data") .. "undodir"
+vim.opt.undodir = vim.fn.stdpath("data") .. "/undodir"
+vim.fn.mkdir(vim.fn.stdpath("data") .. "/undodir", "p")
 vim.opt.hlsearch = false
 vim.opt.ignorecase = true
 vim.opt.incsearch = true

@@ -12,7 +12,7 @@ notify.setup({
 vim.notify = notify
 
 local section_b = { "branch", "diff", { "diagnostics", sources = { "nvim_workspace_diagnostic" } } }
-local section_c = { "%=", { "filename", file_status = false, path = 1 } }
+local section_c = { "%=", { "filename", file_status = true, path = 1 } }
 local lualine_config = {
 	options = {
 		theme = function()
@@ -23,8 +23,12 @@ local lualine_config = {
 		section_separators = "",
 	},
 	sections = {
+		lualine_a = { "mode" },
 		lualine_b = section_b,
 		lualine_c = section_c,
+		lualine_x = { "encoding", "fileformat", "filetype" },
+		lualine_y = { "progress" },
+		lualine_z = { "location" },
 	},
 	inactive_sections = {
 		lualine_c = section_c,

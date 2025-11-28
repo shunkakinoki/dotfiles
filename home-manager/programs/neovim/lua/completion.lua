@@ -76,3 +76,7 @@ require("copilot").setup({
 	suggestion = { enabled = false },
 	panel = { enabled = false },
 })
+
+-- Load VSCode-style snippets from friendly-snippets
+-- From: https://github.com/rafamadriz/friendly-snippets
+require("luasnip.loaders.from_vscode").lazy_load()
