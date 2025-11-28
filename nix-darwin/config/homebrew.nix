@@ -78,14 +78,16 @@
       "screen-studio"
       "sf-symbols"
       "slack"
+      "trae"
       "visual-studio-code"
+      "visual-studio-code@insiders"
       "vscodium"
       "warp"
       "wezterm"
       "windsurf"
       "zed"
       "zoom"
-      "tailscale"
+      "tailscale-app"
     ];
     masApps = {
       "Apollo" = 6448019325;

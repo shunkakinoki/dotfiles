@@ -11,20 +11,25 @@
   "license": "ISC",
   "packageManager": "bun@1.3.0",
   "dependencies": {
+    "@biomejs/biome": "^2.3.8",
+    "@getgrit/cli": "^0.1.0-alpha.1743007075",
     "@github/copilot": "^0.0.365",
     "@google/jules": "^0.1.40",
-    "@getgrit/cli": "^0.1.0-alpha.1743007075",
     "@nanocollective/nanocoder": "^1.16.3",
+    "@typescript/native-preview": "^7.0.0-dev.20251127.1",
     "cline": "^1.0.5",
-    "open-composer": "^0.8.23"
+    "open-composer": "^0.8.23",
+    "typescript": "^5.9.3"
   },
   "trustedDependencies": [
     "@biomejs/biome",
+    "@getgrit/cli",
     "@github/copilot",
     "@google/jules",
-    "@getgrit/cli",
     "@nanocollective/nanocoder",
+    "@typescript/native-preview",
     "cline",
-    "open-composer"
+    "open-composer",
+    "typescript"
   ]
 }

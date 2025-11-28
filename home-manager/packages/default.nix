@@ -1,10 +1,10 @@
+let
+  inherit (import ../../lib/env.nix) isCI;
+in
 {
   pkgs,
   inputs,
 }:
-let
-  isCI = builtins.getEnv "CI" != "" || builtins.getEnv "IN_DOCKER" == "true";
-in
 with pkgs;
 [
   inputs.agenix.packages.${stdenv.hostPlatform.system}.default
@@ -61,6 +61,7 @@ with pkgs;
   ripgrep
   rustup
   sccache
+  speedtest-cli
   sqlite
   stern
   tokei
