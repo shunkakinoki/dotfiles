@@ -56,20 +56,24 @@ keymap("n", "ZZ", ":wa<CR>:q<CR>", opts)
 -- ====================================================================================
 -- TERMINAL
 -- ====================================================================================
--- @keymap <leader>j: Toggle terminal (show/hide)
-keymap({ "n", "t" }, "<leader>j", function()
-	TogglePrimaryTerm()
+-- @keymap <leader>u: Spawn a new managed terminal
+keymap({ "n", "t" }, "<leader>u", function()
+	SpawnTerminal()
 end, opts)
--- @keymap <leader>h: Toggle secondary terminal (show/hide)
+-- @keymap <leader>h: Close the current managed terminal
 keymap({ "n", "t" }, "<leader>h", function()
-	ToggleSecondaryTerm()
+	KillCurrentTerminal()
 end, opts)
--- @keymap <leader><space>]: Cycle to next managed terminal
-keymap({ "n", "t" }, "<leader><space>]", function()
+-- @keymap <leader>j: Toggle the focused managed terminal
+keymap({ "n", "t" }, "<leader>j", function()
+	ToggleTerminal()
+end, opts)
+-- @keymap <leader><S-]>: Jump to next managed terminal
+keymap({ "n", "t" }, "<leader><S-]>", function()
 	CycleNextTerm()
 end, opts)
--- @keymap <leader><space>[: Cycle to previous managed terminal
-keymap({ "n", "t" }, "<leader><space>[", function()
+-- @keymap <leader><S-[>: Jump to previous managed terminal
+keymap({ "n", "t" }, "<leader><S-[>", function()
 	CyclePreviousTerm()
 end, opts)
 

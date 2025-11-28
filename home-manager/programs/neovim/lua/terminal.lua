@@ -18,8 +18,15 @@ toggleterm.setup({
 	persist_size = true,
 })
 
-local function create_term(count)
-	return Terminal:new({
+local term_counter = 0
+local term_sequence = {}
+local terms = {}
+local current_index = 0
+
+local function create_term()
+	term_counter = term_counter + 1
+	local count = term_counter
+	local term = Terminal:new({
 		direction = "horizontal",
 		count = count,
 		hidden = true,
@@ -27,14 +34,10 @@ local function create_term(count)
 			vim.cmd("startinsert!")
 		end,
 	})
+	terms[count] = term
+	table.insert(term_sequence, count)
+	return count
 end
-
-local term_sequence = { 1, 2 }
-local terms = {
-	[1] = create_term(1),
-	[2] = create_term(2),
-}
-local current_index = 1
 
 local function index_of(count)
 	for idx, value in ipairs(term_sequence) do
@@ -42,47 +45,87 @@ local function index_of(count)
 			return idx
 		end
 	end
-	return 1
+	return nil
 end
 
-local function toggle_term(count)
-	for other_count, term in pairs(terms) do
-		if other_count ~= count and term:is_open() then
+local function close_other_terms(except_id)
+	for id, term in pairs(terms) do
+		if id ~= except_id and term:is_open() then
 			term:close()
 		end
 	end
+end
 
-	local term = terms[count]
-	term:toggle()
-	if term:is_open() then
-		current_index = index_of(count)
+local function show_term(id)
+	local term = terms[id]
+	if not term then
+		return
 	end
+	close_other_terms(id)
+	if not term:is_open() then
+		term:open()
+	end
+	current_index = index_of(id) or 0
 end
 
-function TogglePrimaryTerm()
-	toggle_term(1)
+local function ensure_current_term_id()
+	if current_index == 0 then
+		if #term_sequence == 0 then
+			local first = create_term()
+			current_index = index_of(first)
+			return first
+		end
+		current_index = 1
+	end
+	return term_sequence[current_index]
 end
 
-function ToggleSecondaryTerm()
-	toggle_term(2)
+function SpawnTerminal()
+	local id = create_term()
+	show_term(id)
+end
+
+function KillCurrentTerminal()
+	if #term_sequence == 0 or current_index == 0 then
+		return
+	end
+
+	local id = term_sequence[current_index]
+	local term = terms[id]
+	if term and term:is_open() then
+		term:close()
+	end
+	terms[id] = nil
+
+	local was_index = current_index
+	table.remove(term_sequence, was_index)
+	if #term_sequence == 0 then
+		current_index = 0
+		return
+	end
+
+	local next_index = was_index
+	if next_index > #term_sequence then
+		next_index = #term_sequence
+	end
+	current_index = next_index
+	show_term(term_sequence[current_index])
 end
 
 local function cycle(step)
 	local len = #term_sequence
-	current_index = ((current_index - 1 + step) % len) + 1
-	local next_count = term_sequence[current_index]
-	local term = terms[next_count]
-	if not term:is_open() then
-		toggle_term(next_count)
-	else
-		for _, t in pairs(terms) do
-			if t ~= term and t:is_open() then
-				t:close()
-			end
-		end
-		term:close()
-		term:open()
+	if len == 0 then
+		local first = create_term()
+		show_term(first)
+		return
 	end
+
+	if current_index == 0 then
+		current_index = 1
+	else
+		current_index = ((current_index - 1 + step) % len) + 1
+	end
+	show_term(term_sequence[current_index])
 end
 
 function CycleNextTerm()
@@ -91,4 +134,15 @@ end
 
 function CyclePreviousTerm()
 	cycle(-1)
+end
+
+function ToggleTerminal()
+	local id = ensure_current_term_id()
+	local term = terms[id]
+	if term and term:is_open() then
+		term:close()
+		current_index = 0
+		return
+	end
+	show_term(id)
 end
