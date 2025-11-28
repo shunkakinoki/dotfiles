@@ -23,9 +23,9 @@
   },
   "trustedDependencies": [
     "@biomejs/biome",
+    "@getgrit/cli",
     "@github/copilot",
     "@google/jules",
-    "@getgrit/cli",
     "@nanocollective/nanocoder",
     "@typescript/native-preview",
     "cline",
