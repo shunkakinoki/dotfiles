@@ -31,7 +31,7 @@
       "/Applications/Tailscale.app"
       "/Applications/Cursor.app"
       "/Applications/Visual Studio Code.app"
-      "/Applications/Visual Studio Code Insiders.app"
+      "/Applications/Visual Studio Code - Insiders.app"
       "/Applications/Xcode.app"
       "/Applications/Antigravity.app"
       "/Applications/Conductor.app"

@@ -78,6 +78,7 @@
       "screen-studio"
       "sf-symbols"
       "slack"
+      "trae"
       "visual-studio-code"
       "visual-studio-code@insiders"
       "vscodium"
