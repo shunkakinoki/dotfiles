@@ -4,6 +4,7 @@
 
 # Base directories
 VSCODE_USER_DIR="$HOME/Library/Application Support/Code/User"
+VSCODE_INSIDERS_USER_DIR="$HOME/Library/Application Support/Code - Insiders/User"
 ANTIGRAVITY_USER_DIR="$HOME/Library/Application Support/Antigravity/User"
 CURSOR_USER_DIR="$HOME/Library/Application Support/Cursor/User"
 WINDSURF_USER_DIR="$HOME/Library/Application Support/Windsurf/User"
@@ -66,6 +67,7 @@ resolve_cli() {
     "antigravity") echo "/Applications/Antigravity.app/Contents/Resources/app/bin/antigravity" ;;
     "windsurf") echo "/opt/homebrew/bin/windsurf" ;;
     "cursor") echo "/opt/homebrew/bin/cursor" ;;
+    "code-insiders") echo "/Applications/Visual Studio Code - Insiders.app/Contents/Resources/app/bin/code" ;;
     *) echo "" ;;
     esac
   fi
@@ -75,6 +77,7 @@ ensure_dirs() {
   mkdir -p "$ANTIGRAVITY_USER_DIR"
   mkdir -p "$CURSOR_USER_DIR"
   mkdir -p "$WINDSURF_USER_DIR"
+  mkdir -p "$VSCODE_INSIDERS_USER_DIR"
 }
 
 # Filter out proprietary and AI extensions from the list
@@ -285,6 +288,8 @@ sync_config_file() {
     echo "Copying $filename to all editors..."
     echo "   📋 Source: $source"
     echo "   📤 Destinations:"
+    echo "      → $VSCODE_INSIDERS_USER_DIR/$filename"
+    cp "$source" "$VSCODE_INSIDERS_USER_DIR/$filename"
     echo "      → $ANTIGRAVITY_USER_DIR/$filename"
     cp "$source" "$ANTIGRAVITY_USER_DIR/$filename"
     echo "      → $CURSOR_USER_DIR/$filename"
@@ -318,6 +323,7 @@ sync_config_file "$SETTINGS_FILE"
 sync_config_file "$KEYBINDINGS_FILE"
 
 # 3. Sync Extensions (with filtering)
+install_extensions "code-insiders"
 install_extensions "antigravity"
 install_extensions "cursor"
 install_extensions "windsurf"
