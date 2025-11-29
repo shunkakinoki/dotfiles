@@ -5,7 +5,7 @@ let
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
   ollama = import ./ollama { inherit pkgs; };
   brewUpgrader = import ./brew-upgrader { inherit pkgs; };
-  tailscale = import ./tailscale/default.nix;
+  tailscale = import ./tailscale;
 in
 [
   brewUpgrader
