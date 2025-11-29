@@ -280,6 +280,67 @@ install_extensions() {
   fi
 }
 
+# Special function to sync ALL extensions to VS Code Insiders without any filtering
+install_all_extensions_insiders() {
+  local target_name="code-insiders"
+  local cli_cmd=$(resolve_cli "$target_name")
+  local vscode_list="/tmp/vscode_extensions_all.list"
+
+  if [ -z "$cli_cmd" ] || [ ! -f "$cli_cmd" ]; then
+    echo "⚠️  CLI for $target_name not found. Skipping extension sync."
+    return
+  fi
+
+  echo "--- Syncing ALL Extensions for VS Code Insiders (No Filtering) ---"
+
+  # Get VS Code extensions directly from CLI
+  if ! command -v code >/dev/null 2>&1; then
+    echo "⚠️  VS Code CLI not found. Skipping extension sync for $target_name."
+    return
+  fi
+
+  if ! code --list-extensions >"$vscode_list" 2>/dev/null; then
+    echo "⚠️  Failed to get VS Code extensions. Skipping extension sync for $target_name."
+    return
+  fi
+
+  if [ ! -s "$vscode_list" ]; then
+    echo "⚠️  VS Code has no extensions. Nothing to sync for $target_name."
+    return
+  fi
+
+  # Log extensions that will be synced
+  local extension_count=$(wc -l <"$vscode_list" 2>/dev/null | tr -d ' ' || echo "0")
+  extension_count=${extension_count:-0}
+
+  echo "📦 Found $extension_count extension(s) to sync:"
+
+  if [ "$extension_count" -gt 0 ]; then
+    while IFS= read -r extension; do
+      if [ -n "$extension" ]; then
+        echo "   • $extension"
+      fi
+    done <"$vscode_list"
+    echo ""
+
+    while IFS= read -r extension; do
+      if [ -n "$extension" ]; then
+        # Try to install, log failures but don't stop
+        $cli_cmd --install-extension "$extension" >/dev/null 2>&1
+        if [ $? -ne 0 ]; then
+          echo "   ❌ Failed: $extension"
+        else
+          # Optional: verify it's actually installed
+          echo "   ✅ Synced: $extension"
+        fi
+      fi
+    done <"$vscode_list"
+  else
+    echo "   (No extensions to sync)"
+    echo ""
+  fi
+}
+
 sync_config_file() {
   local filename=$1
   local source="$VSCODE_USER_DIR/$filename"
@@ -322,8 +383,10 @@ fi
 sync_config_file "$SETTINGS_FILE"
 sync_config_file "$KEYBINDINGS_FILE"
 
-# 3. Sync Extensions (with filtering)
-install_extensions "code-insiders"
+# 3. Sync Extensions
+# Use special all-extension sync for VS Code Insiders (no filtering)
+install_all_extensions_insiders
+# Keep filtered sync for other editors
 install_extensions "antigravity"
 install_extensions "cursor"
 install_extensions "windsurf"
