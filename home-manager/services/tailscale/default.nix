@@ -1,7 +1,12 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 {
-  home.activation.tailscaleStateDir = lib.hm.dag.entryAfter ["writeBoundary"] ''
+  home.activation.tailscaleStateDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p $HOME/.local/share/tailscale
     chmod 755 $HOME/.local/share/tailscale
   '';
@@ -38,7 +43,7 @@ with lib;
             fi
             sleep 1
           done
-          
+
           # Configure Tailscale with basic connectivity
           ${pkgs.tailscale}/bin/tailscale up
         ''
