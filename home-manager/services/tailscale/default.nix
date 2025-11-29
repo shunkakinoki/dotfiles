@@ -1,13 +1,62 @@
 { config, pkgs, lib, ... }:
 with lib;
 {
+  home.packages = [ pkgs.tailscale ];
+
   # Create directory for Tailscale state
   home.activation.tailscaleStateDir = lib.hm.dag.entryAfter ["writeBoundary"] ''
     mkdir -p $HOME/.local/share/tailscale
     chmod 755 $HOME/.local/share/tailscale
   '';
+}
+// lib.mkIf pkgs.stdenv.isDarwin {
+  # macOS launchd service for tailscaled
+  launchd.agents.tailscaled = {
+    enable = true;
+    config = {
+      ProgramArguments = [
+        "${pkgs.tailscale}/bin/tailscaled"
+        "--state=$HOME/.local/share/tailscale/tailscaled.state"
+        "--socket=$HOME/.local/share/tailscale/tailscaled.sock"
+      ];
+      KeepAlive = true;
+      RunAtLoad = true;
+      StandardOutPath = "$HOME/.local/share/tailscale/tailscaled.log";
+      StandardErrorPath = "$HOME/.local/share/tailscale/tailscaled.error.log";
+    };
+  };
 
-  # User-level systemd service for tailscaled
+  # macOS launchd service for tailscale up
+  launchd.agents.tailscale-up = {
+    enable = true;
+    config = {
+      ProgramArguments = [
+        "${pkgs.bash}/bin/bash"
+        "-c"
+        ''
+          # Wait for tailscaled to be ready
+          for i in {1..30}; do
+            if ${pkgs.tailscale}/bin/tailscale status >/dev/null 2>&1; then
+              break
+            fi
+            sleep 1
+          done
+          
+          # Configure Tailscale with basic connectivity
+          ${pkgs.tailscale}/bin/tailscale up
+        ''
+      ];
+      RunAtLoad = true;
+      KeepAlive = {
+        SuccessfulExit = false;
+      };
+      StandardOutPath = "$HOME/.local/share/tailscale/tailscale-up.log";
+      StandardErrorPath = "$HOME/.local/share/tailscale/tailscale-up.error.log";
+    };
+  };
+}
+// lib.mkIf pkgs.stdenv.isLinux {
+  # Linux systemd service for tailscaled
   systemd.user.services.tailscaled = {
     Unit = {
       Description = "Tailscale client daemon";
@@ -26,7 +75,7 @@ with lib;
     };
   };
 
-  # User-level systemd service for tailscale up
+  # Linux systemd service for tailscale up
   systemd.user.services.tailscale-up = {
     Unit = {
       Description = "Configure Tailscale connection";
