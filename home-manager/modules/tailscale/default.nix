@@ -1,17 +1,48 @@
-{
-  config,
-  pkgs,
-  lib,
-  ...
-}:
+{ config, pkgs, lib, ... }:
 with lib;
+let
+  cfg = config.services.tailscale;
+in
 {
-  home.activation.tailscaleStateDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    mkdir -p $HOME/.local/share/tailscale
-    chmod 755 $HOME/.local/share/tailscale
-  '';
+  options.services.tailscale = {
+    enable = mkEnableOption "Tailscale VPN service";
+
+    acceptRoutes = mkOption {
+      type = types.bool;
+      default = false;
+      description = "Whether to accept advertised routes from the Tailscale network.";
+    };
+
+    advertiseExitNode = mkOption {
+      type = types.bool;
+      default = false;
+      description = "Whether to advertise this node as an exit node.";
+    };
+
+    useExitNode = mkOption {
+      type = types.str;
+      default = "";
+      description = "Exit node to use (leave empty to not use any exit node).";
+    };
+
+    extraUpArgs = mkOption {
+      type = types.listOf types.str;
+      default = [];
+      description = "Extra arguments to pass to tailscale up.";
+    };
+  };
+
+  config = mkIf cfg.enable {
+    home.packages = [ pkgs.tailscale ];
+
+    # Create directory for Tailscale state
+    home.activation.tailscaleStateDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      mkdir -p $HOME/.local/share/tailscale
+      chmod 755 $HOME/.local/share/tailscale
+    '';
+  };
 }
-// lib.mkIf pkgs.stdenv.isDarwin {
+// lib.mkIf (pkgs.stdenv.isDarwin && config.services.tailscale.enable) {
   # macOS launchd service for tailscaled
   launchd.agents.tailscaled = {
     enable = true;
@@ -44,8 +75,12 @@ with lib;
             sleep 1
           done
 
-          # Configure Tailscale with explicit settings
-          ${pkgs.tailscale}/bin/tailscale up --accept-routes=false --advertise-exit-node=false
+          # Configure Tailscale with specified options
+          ${pkgs.tailscale}/bin/tailscale up \
+            ${optionalString config.services.tailscale.acceptRoutes "--accept-routes"} \
+            ${optionalString config.services.tailscale.advertiseExitNode "--advertise-exit-node"} \
+            ${optionalString (config.services.tailscale.useExitNode != "") "--exit-node=${config.services.tailscale.useExitNode}"} \
+            ${concatStringsSep " " config.services.tailscale.extraUpArgs}
         ''
       ];
       RunAtLoad = true;
@@ -57,7 +92,7 @@ with lib;
     };
   };
 }
-// lib.mkIf pkgs.stdenv.isLinux {
+// lib.mkIf (pkgs.stdenv.isLinux && config.services.tailscale.enable) {
   # Linux systemd service for tailscaled
   systemd.user.services.tailscaled = {
     Unit = {
@@ -88,7 +123,11 @@ with lib;
     Service = {
       Type = "oneshot";
       RemainAfterExit = true;
-      ExecStart = "${pkgs.bash}/bin/bash -c 'tailscale up --accept-routes=false --advertise-exit-node=false'";
+      ExecStart = "${pkgs.bash}/bin/bash -c 'tailscale up \
+        ${optionalString config.services.tailscale.acceptRoutes "--accept-routes"} \
+        ${optionalString config.services.tailscale.advertiseExitNode "--advertise-exit-node"} \
+        ${optionalString (config.services.tailscale.useExitNode != "") "--exit-node=${config.services.tailscale.useExitNode}"} \
+        ${concatStringsSep " " config.services.tailscale.extraUpArgs}'";
       ExecStop = "${pkgs.tailscale}/bin/tailscale down";
     };
 
