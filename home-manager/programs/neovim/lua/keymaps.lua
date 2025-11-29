@@ -217,8 +217,8 @@ keymap("n", "<leader>sk", ":Sidekick cli toggle<CR>", opts)
 -- ====================================================================================
 -- @keymap <tab> (insert): jump/apply Sidekick NES or insert literal <Tab>
 local function nes_tab_fallback()
- 	if not require("sidekick").nes_jump_or_apply() then
- 		return "<Tab>"
+	if not require("sidekick").nes_jump_or_apply() then
+		return "<Tab>"
 	end
 end
 keymap("i", "<tab>", nes_tab_fallback, { expr = true, desc = "Sidekick NES jump/apply" })
