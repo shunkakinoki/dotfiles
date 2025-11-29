@@ -59,6 +59,19 @@ inputs.nix-darwin.lib.darwinSystem {
           home.sessionVariables = {
             GPG_TTY = "$(tty)";
           };
+
+          # Tailscale configuration with auth key support
+          services.tailscale = {
+            enable = true;
+            acceptRoutes = false;
+            advertiseExitNode = false;
+            useExitNode = "";
+            authKeyFile = config.age.secrets."keys/tailscale-auth.age".path;
+            extraUpArgs = [
+              "--reset"
+              "--accept-dns=false"
+            ];
+          };
         };
     }
   ];
