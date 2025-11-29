@@ -4,7 +4,19 @@
 # Sends notifications to your smartwatch/phone when Claude needs attention
 # Supports: Notification, Stop, SessionEnd, PreCompact, SubagentStop hooks
 
-# Exit early if Pushover is not configured
+# Source credentials from dotfiles/.env if environment variables aren't set
+# This is needed because Claude Code hooks run in a subprocess that may not
+# inherit shell environment variables
+if [ -z "$PUSHOVER_API_TOKEN" ] || [ -z "$PUSHOVER_USER_KEY" ]; then
+  if [ -f "$HOME/dotfiles/.env" ]; then
+    # shellcheck source=/dev/null
+    set -a
+    source "$HOME/dotfiles/.env" 2>/dev/null
+    set +a
+  fi
+fi
+
+# Exit if still not configured
 if [ -z "$PUSHOVER_API_TOKEN" ] || [ -z "$PUSHOVER_USER_KEY" ]; then
   exit 0
 fi
