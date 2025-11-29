@@ -44,8 +44,8 @@ with lib;
             sleep 1
           done
 
-          # Configure Tailscale with basic connectivity
-          ${pkgs.tailscale}/bin/tailscale up
+          # Configure Tailscale with explicit settings
+          ${pkgs.tailscale}/bin/tailscale up --accept-routes=false --advertise-exit-node=false
         ''
       ];
       RunAtLoad = true;
@@ -88,7 +88,7 @@ with lib;
     Service = {
       Type = "oneshot";
       RemainAfterExit = true;
-      ExecStart = "${pkgs.bash}/bin/bash -c 'tailscale up'";
+      ExecStart = "${pkgs.bash}/bin/bash -c 'tailscale up --accept-routes=false --advertise-exit-node=false'";
       ExecStop = "${pkgs.tailscale}/bin/tailscale down";
     };
 
