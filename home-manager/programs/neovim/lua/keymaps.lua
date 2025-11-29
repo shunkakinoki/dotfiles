@@ -56,20 +56,24 @@ keymap("n", "ZZ", ":wa<CR>:q<CR>", opts)
 -- ====================================================================================
 -- TERMINAL
 -- ====================================================================================
--- @keymap <leader>j: Toggle terminal (show/hide)
-keymap({ "n", "t" }, "<leader>j", function()
-	TogglePrimaryTerm()
+-- @keymap <leader>u: Spawn a new managed terminal
+keymap({ "n", "t" }, "<leader>u", function()
+	SpawnTerminal()
 end, opts)
--- @keymap <leader>h: Toggle secondary terminal (show/hide)
+-- @keymap <leader>h: Close the current managed terminal
 keymap({ "n", "t" }, "<leader>h", function()
-	ToggleSecondaryTerm()
+	KillCurrentTerminal()
 end, opts)
--- @keymap <leader><space>]: Cycle to next managed terminal
-keymap({ "n", "t" }, "<leader><space>]", function()
+-- @keymap <leader>j: Toggle the focused managed terminal
+keymap({ "n", "t" }, "<leader>j", function()
+	ToggleTerminal()
+end, opts)
+-- @keymap <leader><S-]>: Jump to next managed terminal
+keymap({ "n", "t" }, "<leader><S-]>", function()
 	CycleNextTerm()
 end, opts)
--- @keymap <leader><space>[: Cycle to previous managed terminal
-keymap({ "n", "t" }, "<leader><space>[", function()
+-- @keymap <leader><S-[>: Jump to previous managed terminal
+keymap({ "n", "t" }, "<leader><S-[>", function()
 	CyclePreviousTerm()
 end, opts)
 
@@ -200,13 +204,60 @@ treesj.setup({ use_default_keymaps = false })
 keymap("n", "<leader>st", treesj.toggle, opts)
 
 -- ====================================================================================
--- NvimTree
+-- NVIMTREE
 -- ====================================================================================
 -- @keymap <leader>b: Toggle file tree (nvim-tree)
 keymap("n", "<leader>b", ":NvimTreeToggle<CR>", opts)
 
--- @keymap <leader>sk: Toggle sidekick (symbols sidebar)
-keymap("n", "<leader>sk", ":SidekickToggle<CR>", opts)
+-- @keymap <leader>sk: Toggle Sidekick CLI (per docs)
+keymap("n", "<leader>sk", ":Sidekick cli toggle<CR>", opts)
+
+-- ====================================================================================
+-- SIDEKICK
+-- ====================================================================================
+-- @keymap <tab> (insert): jump/apply Sidekick NES or insert literal <Tab>
+local function nes_tab_fallback()
+	if not require("sidekick").nes_jump_or_apply() then
+		return "<Tab>"
+	end
+end
+keymap("i", "<tab>", nes_tab_fallback, { expr = true, desc = "Sidekick NES jump/apply" })
+-- @keymap <c-.>: Toggle Sidekick CLI in any mode
+keymap({ "n", "t", "i", "x" }, "<c-.>", function()
+	require("sidekick.cli").toggle()
+end, { desc = "Sidekick Toggle" })
+-- @keymap <leader>aa: Toggle Sidekick CLI window (alternate)
+keymap("n", "<leader>aa", function()
+	require("sidekick.cli").toggle()
+end, opts)
+-- @keymap <leader>as: Select a CLI tool
+keymap("n", "<leader>as", function()
+	require("sidekick.cli").select()
+end, opts)
+-- @keymap <leader>ad: Close detached CLI
+keymap("n", "<leader>ad", function()
+	require("sidekick.cli").close()
+end, opts)
+-- @keymap <leader>at: Send current context, per docs
+keymap({ "n", "x" }, "<leader>at", function()
+	require("sidekick.cli").send({ msg = "{this}" })
+end, opts)
+-- @keymap <leader>af: Send entire buffer
+keymap("n", "<leader>af", function()
+	require("sidekick.cli").send({ msg = "{file}" })
+end, opts)
+-- @keymap <leader>av: Send selection
+keymap("x", "<leader>av", function()
+	require("sidekick.cli").send({ msg = "{selection}" })
+end, opts)
+-- @keymap <leader>ap: Open Sidekick prompt/command picker
+keymap({ "n", "x" }, "<leader>ap", function()
+	require("sidekick.cli").prompt()
+end, opts)
+-- @keymap <leader>ac: Toggle Claude session and focus it
+keymap("n", "<leader>ac", function()
+	require("sidekick.cli").toggle({ name = "claude", focus = true })
+end, opts)
 
 -- ====================================================================================
 -- WHICH-KEY GROUPS
