@@ -1,9 +1,4 @@
-{
-  config,
-  pkgs,
-  lib,
-  ...
-}:
+{ config, pkgs, lib, ... }:
 with lib;
 let
   cfg = config.services.tailscale;
@@ -32,7 +27,7 @@ in
 
     extraUpArgs = mkOption {
       type = types.listOf types.str;
-      default = [ ];
+      default = [];
       description = "Extra arguments to pass to tailscale up.";
     };
   };
@@ -41,7 +36,7 @@ in
     home.packages = [ pkgs.tailscale ];
 
     # Create directory for Tailscale state
-    home.activation.tailscaleStateDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    home.activation.tailscaleStateDir = lib.hm.dag.entryAfter ["writeBoundary"] ''
       mkdir -p $HOME/.local/share/tailscale
       chmod 755 $HOME/.local/share/tailscale
     '';
@@ -76,9 +71,7 @@ in
       Service = {
         Type = "oneshot";
         RemainAfterExit = true;
-        ExecStart = "${pkgs.bash}/bin/bash -c 'tailscale up ${optionalString cfg.acceptRoutes "--accept-routes"} ${optionalString cfg.advertiseExitNode "--advertise-exit-node"} ${
-          optionalString (cfg.useExitNode != "") "--exit-node=${cfg.useExitNode}"
-        } ${concatStringsSep " " cfg.extraUpArgs}'";
+        ExecStart = "${pkgs.bash}/bin/bash -c 'tailscale up ${optionalString cfg.acceptRoutes "--accept-routes"} ${optionalString cfg.advertiseExitNode "--advertise-exit-node"} ${optionalString (cfg.useExitNode != "") "--exit-node=${cfg.useExitNode}"} ${concatStringsSep " " cfg.extraUpArgs}'";
         ExecStop = "${pkgs.tailscale}/bin/tailscale down";
       };
 

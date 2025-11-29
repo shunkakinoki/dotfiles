@@ -52,6 +52,6 @@ in
     acceptRoutes = false;
     advertiseExitNode = false;
     useExitNode = "";
-    extraUpArgs = [ ];
+    extraUpArgs = [];
   };
 }
