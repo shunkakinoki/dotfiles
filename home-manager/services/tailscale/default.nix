@@ -1,9 +1,6 @@
 { config, pkgs, lib, ... }:
 with lib;
 {
-  home.packages = [ pkgs.tailscale ];
-
-  # Create directory for Tailscale state
   home.activation.tailscaleStateDir = lib.hm.dag.entryAfter ["writeBoundary"] ''
     mkdir -p $HOME/.local/share/tailscale
     chmod 755 $HOME/.local/share/tailscale
