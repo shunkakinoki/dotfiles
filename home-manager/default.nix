@@ -45,13 +45,4 @@ in
       address = "shunkakinoki@gmail.com";
     };
   };
-
-  # Enable Tailscale by default with basic connectivity
-  services.tailscale = {
-    enable = true;
-    acceptRoutes = false;
-    advertiseExitNode = false;
-    useExitNode = "";
-    extraUpArgs = [];
-  };
 }
