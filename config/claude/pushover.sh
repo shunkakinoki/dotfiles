@@ -37,7 +37,6 @@ send_notification() {
     --form-string "user=${PUSHOVER_USER_KEY}" \
     --form-string "message=${message}" \
     --form-string "priority=${priority}" \
-    --form-string "device=iphone15" \
     --form-string "title=Claude Code" \
     https://api.pushover.net/1/messages.json >/dev/null 2>&1
 }
@@ -65,10 +64,10 @@ if echo "$input" | jq -e '.message' >/dev/null 2>&1; then
   exit 0
 fi
 
-# Handle SessionEnd hook
+# Handle SessionEnd hook (priority 0 = normal)
 if echo "$input" | jq -e '.reason' >/dev/null 2>&1; then
   REASON=$(echo "$input" | jq -r '.reason')
-  send_notification "👋 Session ended: ${REASON}" -1
+  send_notification "👋 Session ended: ${REASON}" 0
   exit 0
 fi
 
@@ -101,17 +100,17 @@ if echo "$input" | jq -e '.trigger' >/dev/null 2>&1; then
   exit 0
 fi
 
-# Handle SubagentStop hook
+# Handle SubagentStop hook (priority 0 = normal)
 if echo "$input" | jq -e '.stop_hook_active' >/dev/null 2>&1; then
-  send_notification "🤖 Subagent task completed" -1
+  send_notification "🤖 Subagent task completed" 0
   exit 0
 fi
 
-# Handle Stop hook (main session completion)
+# Handle Stop hook (priority 1 = high - Claude finished, needs attention)
 if echo "$input" | jq -e '.session_id' >/dev/null 2>&1; then
   SESSION_ID=$(echo "$input" | jq -r '.session_id[0:8]')
   CWD=$(echo "$input" | jq -r '.cwd // "unknown"' | sed "s|$HOME|~|")
-  send_notification "✅ Work completed in ${CWD}" -1
+  send_notification "✅ Work completed in ${CWD}" 1
   exit 0
 fi
 
