@@ -145,7 +145,6 @@ The hooks configuration (local settings override global settings):
   "hooks": {
     "Notification": [
       {
-        "matcher": "",
         "hooks": [
           {
             "type": "command",
@@ -160,7 +159,6 @@ The hooks configuration (local settings override global settings):
     ],
     "Stop": [
       {
-        "matcher": "",
         "hooks": [
           {
             "type": "command",
@@ -175,7 +173,6 @@ The hooks configuration (local settings override global settings):
     ],
     "SessionEnd": [
       {
-        "matcher": "",
         "hooks": [
           {
             "type": "command",
@@ -186,7 +183,6 @@ The hooks configuration (local settings override global settings):
     ],
     "PreCompact": [
       {
-        "matcher": "",
         "hooks": [
           {
             "type": "command",
@@ -197,7 +193,6 @@ The hooks configuration (local settings override global settings):
     ],
     "SubagentStop": [
       {
-        "matcher": "",
         "hooks": [
           {
             "type": "command",
