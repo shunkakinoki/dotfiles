@@ -1,4 +1,5 @@
 [
   ./npm-globals
+  ./tailscale
   ./yek
 ]
