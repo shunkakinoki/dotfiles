@@ -1,15 +1,51 @@
 {
   "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -c '{timestamp: (now | todate), prompt: .prompt[0:500]}' >> ~/.claude/prompt-history.jsonl",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r 'if (.tool.input | test(\"rm -rf|drop database|truncate|DELETE FROM|format\"; \"i\")) then \"⚠️ Risky: \" + .tool.input[0:100] else empty end' | xargs -I {} osascript -e 'display notification \"{}\" with title \"Claude Code Warning\" sound name \"Basso\"'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
     "Notification": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.message' | xargs -I {} osascript -e 'display notification \"{}\" with title \"Claude Code\" sound name \"Sonar\"'"
+            "command": "jq -r '.message' | xargs -I {} osascript -e 'display notification \"{}\" with title \"Claude Code\" sound name \"Sonar\"'",
+            "timeout": 5
           },
           {
             "type": "command",
-            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh"
+            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh",
+            "timeout": 10
           }
         ]
       }
@@ -19,11 +55,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cat | jq -r '\"Work completed in \" + .cwd + \" (Session: \" + .session_id[0:8] + \")\"' | xargs -I {} osascript -e 'display notification \"{}\" with title \"Claude Code\" sound name \"Sonar\"'"
+            "command": "cat | jq -r '\"Work completed in \" + .cwd + \" (Session: \" + .session_id[0:8] + \")\"' | xargs -I {} osascript -e 'display notification \"{}\" with title \"Claude Code\" sound name \"Sonar\"'",
+            "timeout": 5
           },
           {
             "type": "command",
-            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh"
+            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh",
+            "timeout": 10
           }
         ]
       }
@@ -33,7 +71,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh"
+            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh",
+            "timeout": 10
           }
         ]
       }
@@ -43,7 +82,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh"
+            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh",
+            "timeout": 10
           }
         ]
       }
@@ -53,7 +93,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh"
+            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh",
+            "timeout": 10
           }
         ]
       }
