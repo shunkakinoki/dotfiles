@@ -37,7 +37,6 @@ send_notification() {
     --form-string "user=${PUSHOVER_USER_KEY}" \
     --form-string "message=${message}" \
     --form-string "priority=${priority}" \
-    --form-string "device=iphone15" \
     --form-string "title=Claude Code" \
     https://api.pushover.net/1/messages.json >/dev/null 2>&1
 }
