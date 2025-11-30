@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh",
+            "command": "$HOME/.claude/pushover.sh",
             "timeout": 10
           }
         ]
@@ -44,7 +44,7 @@
           },
           {
             "type": "command",
-            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh",
+            "command": "$HOME/.claude/pushover.sh",
             "timeout": 10
           }
         ]
@@ -60,7 +60,7 @@
           },
           {
             "type": "command",
-            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh",
+            "command": "$HOME/.claude/pushover.sh",
             "timeout": 10
           }
         ]
@@ -71,7 +71,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh",
+            "command": "$HOME/.claude/pushover.sh",
             "timeout": 10
           }
         ]
@@ -82,7 +82,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh",
+            "command": "$HOME/.claude/pushover.sh",
             "timeout": 10
           }
         ]
@@ -93,7 +93,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh",
+            "command": "$HOME/.claude/pushover.sh",
             "timeout": 10
           }
         ]
