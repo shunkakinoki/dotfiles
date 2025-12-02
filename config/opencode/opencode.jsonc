@@ -24,7 +24,7 @@
 				"baseURL": "http://localhost:8317/v1"
 			},
 			"models": {
-				"glm-4.6": {
+				"z-ai/glm-4.6": {
 					"name": "GLM-4.6 (via OpenRouter)"
 				}
 			}
