@@ -27,7 +27,7 @@ auth-dir: "~/.cli-proxy-api"
 debug: true
 
 # When true, write application logs to rotating files instead of stdout
-logging-to-file: false
+logging-to-file: true
 
 # When false, disable in-memory usage statistics aggregation
 usage-statistics-enabled: true

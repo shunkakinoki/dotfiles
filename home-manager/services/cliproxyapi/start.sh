@@ -20,6 +20,9 @@ if [ -f "$TEMPLATE" ]; then
   sed "s|__OPENROUTER_API_KEY__|${OPENROUTER_API_KEY:-}|g" "$TEMPLATE" >"$CONFIG"
 fi
 
+# Change to config dir so logs are created there
+cd "$CONFIG_DIR"
+
 # Find and exec cliproxyapi with config file
 if [ -x /opt/homebrew/bin/cliproxyapi ]; then
   exec /opt/homebrew/bin/cliproxyapi -config "$CONFIG" "$@"
