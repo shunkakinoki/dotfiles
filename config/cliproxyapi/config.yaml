@@ -1,23 +1,18 @@
 # Server port
 port: 8317
-
 # Management API settings
 remote-management:
   # Whether to allow remote (non-localhost) management access.
   # When false, only localhost can access management endpoints (a key is still required).
   allow-remote: false
-
   # Management key. If a plaintext value is provided here, it will be hashed on startup.
   # All management requests (even from localhost) require this key.
   # Leave empty to disable the Management API entirely (404 for all /v0/management routes).
   secret-key: ""
-
   # Disable the bundled management control panel asset download and HTTP route when true.
   disable-control-panel: false
-
 # Authentication directory (supports ~ for home directory). If you use Windows, please set the directory like this: `C:/cli-proxy-api/`
 auth-dir: "~/.cli-proxy-api"
-
 # API keys for authentication
 # api-keys:
 #   - "your-api-key-1"
@@ -25,27 +20,20 @@ auth-dir: "~/.cli-proxy-api"
 
 # Enable debug logging
 debug: true
-
 # When true, write application logs to rotating files instead of stdout
 logging-to-file: true
-
 # When false, disable in-memory usage statistics aggregation
 usage-statistics-enabled: true
-
 # Proxy URL. Supports socks5/http/https protocols. Example: socks5://user:pass@192.168.1.1:1080/
 proxy-url: ""
-
 # Number of times to retry a request. Retries will occur if the HTTP response code is 403, 408, 500, 502, 503, or 504.
 request-retry: 3
-
 # Quota exceeded behavior
 quota-exceeded:
   switch-project: true # Whether to automatically switch to another project when a quota is exceeded
   switch-preview-model: true # Whether to automatically switch to a preview model when a quota is exceeded
-
 # When true, enable authentication for the WebSocket API (/v1/ws).
 ws-auth: false
-
 # Gemini API keys (preferred)
 # gemini-api-key:
 #   - api-key: "AIzaSy...01"
