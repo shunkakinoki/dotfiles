@@ -26,6 +26,9 @@
 			"models": {
 				"kimi-k2": {
 					"name": "Kimi K2 (via OpenRouter)"
+				},
+				"glm4": {
+					"name": "GLM-4 (via OpenRouter)"
 				}
 			}
 		},
