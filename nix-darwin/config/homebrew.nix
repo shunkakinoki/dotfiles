@@ -19,6 +19,7 @@
       "bun"
       "claude-squad"
       "cmake"
+      "coder"
       "colima"
       "coreutils"
       "ffmpeg"
