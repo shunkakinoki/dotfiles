@@ -25,7 +25,10 @@
 			},
 			"models": {
 				"z-ai/glm-4.6": {
-					"name": "GLM-4.6 (via OpenRouter)"
+					"name": "GLM-4.6 (via OpenRouter)",
+					"options": {
+						"stream": false
+					}
 				}
 			}
 		},
