@@ -18,6 +18,7 @@
     brews = [
       "bun"
       "claude-squad"
+      "cliproxyapi"
       "cmake"
       "coder"
       "colima"
