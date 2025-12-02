@@ -23,6 +23,12 @@ fi
 # Change to config dir so logs are created there
 cd "$CONFIG_DIR"
 
+# Export S3-compatible object storage env vars (for R2 or any S3-compatible storage)
+export OBJECTSTORE_ENDPOINT="${OBJECTSTORE_ENDPOINT:-${AWS_S3_ENDPOINT:-}}"
+export OBJECTSTORE_BUCKET="${OBJECTSTORE_BUCKET:-${AWS_S3_BUCKET:-}}"
+export OBJECTSTORE_ACCESS_KEY="${OBJECTSTORE_ACCESS_KEY:-${AWS_ACCESS_KEY_ID:-}}"
+export OBJECTSTORE_SECRET_KEY="${OBJECTSTORE_SECRET_KEY:-${AWS_SECRET_ACCESS_KEY:-}}"
+
 # Find and exec cliproxyapi with config file
 if [ -x /opt/homebrew/bin/cliproxyapi ]; then
   exec /opt/homebrew/bin/cliproxyapi -config "$CONFIG" "$@"
