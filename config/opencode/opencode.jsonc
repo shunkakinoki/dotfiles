@@ -24,10 +24,7 @@
 				"baseURL": "http://localhost:8317/v1"
 			},
 			"models": {
-				"kimi-k2": {
-					"name": "Kimi K2 (via OpenRouter)"
-				},
-				"z-ai/glm-4.6": {
+				"glm-4.6": {
 					"name": "GLM-4.6 (via OpenRouter)"
 				}
 			}

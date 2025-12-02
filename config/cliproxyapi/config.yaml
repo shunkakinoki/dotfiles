@@ -70,8 +70,6 @@ openai-compatibility:
     api-keys:
       - "__OPENROUTER_API_KEY__"
     models:
-      - name: "moonshotai/kimi-k2:free"
-        alias: "kimi-k2"
       - name: "z-ai/glm-4.6"
         alias: "glm-4.6"
 
