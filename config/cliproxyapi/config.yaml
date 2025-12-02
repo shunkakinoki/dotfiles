@@ -72,8 +72,8 @@ openai-compatibility:
     models:
       - name: "moonshotai/kimi-k2:free"
         alias: "kimi-k2"
-      - name: "zhipu/glm-4"
-        alias: "glm4"
+      - name: "z-ai/glm-4.6"
+        alias: "glm-4.6"
 
 # payload: # Optional payload configuration
 #   default: # Default rules only set parameters when they are missing in the payload.
