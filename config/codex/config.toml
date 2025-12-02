@@ -10,7 +10,7 @@ web_search_request = true
 
 [model_providers.cliproxyapi]
 name = "CLIProxyAPI"
-base_url = "http://localhost:8317/v0"
+base_url = "http://localhost:8317/v1"
 
 [model_providers.lmstudio]
 name = "LMStudio"
