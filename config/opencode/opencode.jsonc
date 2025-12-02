@@ -17,6 +17,18 @@
 		}
 	},
 	"provider": {
+		"cliproxyapi": {
+			"npm": "@ai-sdk/openai-compatible",
+			"name": "CLIProxyAPI (local)",
+			"options": {
+				"baseURL": "http://localhost:8317/v0"
+			},
+			"models": {
+				"kimi-k2": {
+					"name": "Kimi K2 (via OpenRouter)"
+				}
+			}
+		},
 		"lmstudio": {
 			"npm": "@ai-sdk/openai-compatible",
 			"name": "LM Studio (local)",
