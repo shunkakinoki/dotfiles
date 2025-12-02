@@ -1,4 +1,5 @@
 [
+  ./cliproxyapi
   ./codex
   ./crush
   ./claude

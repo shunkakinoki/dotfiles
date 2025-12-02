@@ -1,30 +1,15 @@
-{ pkgs }:
-let
-  inherit (pkgs) lib writeShellApplication;
-
-  cliproxyapiHomebrew = writeShellApplication {
-    name = "cliproxyapi-homebrew";
-    text = ''
-      set -euo pipefail
-
-      if [ -x /opt/homebrew/bin/cliproxyapi ]; then
-        exec /opt/homebrew/bin/cliproxyapi "$@"
-      elif [ -x /usr/local/bin/cliproxyapi ]; then
-        exec /usr/local/bin/cliproxyapi "$@"
-      else
-        echo "cliproxyapi binary not found; install it with \"brew install cliproxyapi\"" >&2
-        exit 1
-      fi
-    '';
-  };
-in
-lib.mkIf pkgs.stdenv.isDarwin {
-  launchd.agents.cliproxyapi = {
+{ pkgs, ... }:
+{
+  launchd.agents.cliproxyapi = pkgs.lib.mkIf pkgs.stdenv.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [
-        (lib.getExe cliproxyapiHomebrew)
+        "${pkgs.bash}/bin/bash"
+        "${./start.sh}"
       ];
+      Environment = {
+        PATH = "${pkgs.lib.makeBinPath [ pkgs.gnused ]}:/opt/homebrew/bin:/usr/local/bin";
+      };
       KeepAlive = true;
       RunAtLoad = true;
       StandardOutPath = "/tmp/cliproxyapi.log";
