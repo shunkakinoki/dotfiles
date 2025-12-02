@@ -1,5 +1,6 @@
 { pkgs }:
 let
+  cliproxyapi = import ./cliproxyapi { inherit pkgs; };
   codeSyncer = import ./code-syncer { inherit pkgs; };
   dotfilesUpdater = import ./dotfiles-updater { inherit pkgs; };
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
@@ -8,6 +9,7 @@ let
 in
 [
   brewUpgrader
+  cliproxyapi
   codeSyncer
   dotfilesUpdater
   neversslKeepalive
