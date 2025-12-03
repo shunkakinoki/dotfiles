@@ -24,8 +24,17 @@
 				"baseURL": "http://localhost:8317/v1"
 			},
 			"models": {
-				"o3": {
-					"name": "OpenAI o3 (via CLIProxyAPI)"
+				"gemini-3.0-pro": {
+					"name": "Gemini 3.0 Pro (via CLIProxyAPI)"
+				},
+				"gpt-5.1": {
+					"name": "GPT-5.1 (via CLIProxyAPI)"
+				},
+				"claude-opus-4-5-20250929": {
+					"name": "Claude Opus 4.5 (via CLIProxyAPI)"
+				},
+				"claude-haiku-3-5-20250929": {
+					"name": "Claude Haiku 3.5 (via CLIProxyAPI)"
 				},
 				"z-ai/glm-4.6": {
 					"name": "GLM-4.6 (via OpenRouter)",
