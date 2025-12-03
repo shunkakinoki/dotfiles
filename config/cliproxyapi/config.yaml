@@ -30,7 +30,7 @@ proxy-url: ""
 request-retry: 3
 # AMP upstream settings
 amp-upstream-url: "https://ampcode.com"
-amp-restrict-management-to-localhost: true
+amp-restrict-management-to-localhost: false
 # amp-upstream-api-key: "" # Optional - use AMP_API_KEY env var or ~/.local/share/amp/secrets.json
 # Quota exceeded behavior
 quota-exceeded:
