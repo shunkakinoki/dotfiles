@@ -1,22 +1,16 @@
 {
   "custom_models": [
     {
-      "model": "gemini-2.5-pro",
+      "model": "gemini-3.0-pro",
       "base_url": "http://127.0.0.1:8317/v1",
       "api_key": "sk-dummy",
       "provider": "openai"
     },
     {
-      "model": "gemini-2.5-flash",
+      "model": "gpt-5.1",
       "base_url": "http://127.0.0.1:8317/v1",
       "api_key": "sk-dummy",
       "provider": "openai"
-    },
-    {
-      "model": "claude-sonnet-4-5-20250929",
-      "base_url": "http://127.0.0.1:8317/v1",
-      "api_key": "sk-dummy",
-      "provider": "anthropic"
     },
     {
       "model": "claude-opus-4-5-20250929",
@@ -25,16 +19,10 @@
       "provider": "anthropic"
     },
     {
-      "model": "gpt-4o",
+      "model": "claude-haiku-3-5-20250929",
       "base_url": "http://127.0.0.1:8317/v1",
       "api_key": "sk-dummy",
-      "provider": "openai"
-    },
-    {
-      "model": "o3",
-      "base_url": "http://127.0.0.1:8317/v1",
-      "api_key": "sk-dummy",
-      "provider": "openai"
+      "provider": "anthropic"
     }
   ]
 }
