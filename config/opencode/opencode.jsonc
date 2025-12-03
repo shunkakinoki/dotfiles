@@ -185,7 +185,6 @@
 			}
 		}
 	},
-	"plugin": ["opencode-openai-codex-auth"],
 	"tui": {
 		"scroll_speed": 3
 	}
