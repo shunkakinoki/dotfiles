@@ -24,7 +24,7 @@
 				"baseURL": "http://localhost:8317/v1"
 			},
 			"models": {
-				"gemini-3.0-pro": {
+				"gemini-3-pro-preview": {
 					"name": "Gemini 3.0 Pro (via CLIProxyAPI)"
 				},
 				"gpt-5.1": {
