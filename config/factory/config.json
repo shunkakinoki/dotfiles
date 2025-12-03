@@ -13,13 +13,13 @@
       "provider": "openai"
     },
     {
-      "model": "claude-opus-4-5-20250929",
+      "model": "claude-opus-4.5",
       "base_url": "http://127.0.0.1:8317/v1",
       "api_key": "sk-dummy",
       "provider": "anthropic"
     },
     {
-      "model": "claude-haiku-3-5-20250929",
+      "model": "claude-haiku-4.5",
       "base_url": "http://127.0.0.1:8317/v1",
       "api_key": "sk-dummy",
       "provider": "anthropic"
