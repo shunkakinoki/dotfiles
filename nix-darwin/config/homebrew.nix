@@ -37,6 +37,7 @@
       "pinentry-mac"
       "pnpm"
       "postgresql"
+      "postgresql@18"
       "protobuf"
       "reth"
       "sheldon"
