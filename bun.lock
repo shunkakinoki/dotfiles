@@ -7,7 +7,7 @@
       "dependencies": {
         "@biomejs/biome": "^2.3.8",
         "@getgrit/cli": "^0.1.0-alpha.1743007075",
-        "@github/copilot": "^0.0.365",
+        "@github/copilot": "^0.0.366",
         "@google/jules": "^0.1.40",
         "@nanocollective/nanocoder": "^1.16.3",
         "@typescript/native-preview": "^7.0.0-dev.20251127.1",
@@ -75,7 +75,7 @@
 
     "@getgrit/cli": ["@getgrit/cli@0.1.0-alpha.1743007075", "", { "dependencies": { "axios": "^1.7.5", "axios-proxy-builder": "^0.1.2", "console.table": "^0.10.0", "detect-libc": "^2.0.3", "rimraf": "^5.0.8", "tar": "^7.4.3" }, "bin": { "grit": "run-grit.js" } }, "sha512-IvAa0QPrgiEQCjtWPpNucvnLUW7l6uR5P55tBC/NlIl36vZzoffLsEcQSIHR9gJmyURbCFcvb+Oaq33Z8WlOWA=="],
 
-    "@github/copilot": ["@github/copilot@0.0.365", "", { "bin": { "copilot": "index.js" } }, "sha512-VXW+FHQkjTA5TGcVzvfUbmUr9AilBPDYU89iPFc5mZlZqDMaOpN4X2twYn9qJBO9y0Vhmorzwxaa4aQdsUYZ9w=="],
+    "@github/copilot": ["@github/copilot@0.0.366", "", { "bin": { "copilot": "index.js" } }, "sha512-mJ3wAvn4/yCrQBG5kcn2SOvWQSlrftkbpaAUBXX4l42y6Xsi4d9teuEdcwKOsUWLNDavpt3ecoCDnZUaCb/81A=="],
 
     "@google/jules": ["@google/jules@0.1.40", "", { "dependencies": { "tar": "^7.4.3" }, "bin": { "jules": "run.cjs" } }, "sha512-LIsUEMdufCXht62DUOm2m8Ufn/Kf1+Gc5RQ5T0W1LwszW0vubCtwg2x9tEL5QqrJ0AFq4SK8+RJHAL3U+bfRDw=="],
 
