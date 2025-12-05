@@ -28,14 +28,12 @@ usage-statistics-enabled: true
 proxy-url: ""
 # Number of times to retry a request. Retries will occur if the HTTP response code is 403, 408, 500, 502, 503, or 504.
 request-retry: 3
-
 # Quota exceeded behavior
 quota-exceeded:
   switch-project: true # Whether to automatically switch to another project when a quota is exceeded
   switch-preview-model: true # Whether to automatically switch to a preview model when a quota is exceeded
 # When true, enable authentication for the WebSocket API (/v1/ws).
 ws-auth: false
-
 # AMP
 ampcode:
   upstream-url: "https://ampcode.com"
