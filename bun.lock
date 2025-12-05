@@ -10,13 +10,11 @@
         "@github/copilot": "^0.0.366",
         "@google/jules": "^0.1.40",
         "@nanocollective/nanocoder": "^1.16.3",
+        "@sourcegraph/amp": "^0.0.1764893126-gb1ffc3",
         "@typescript/native-preview": "^7.0.0-dev.20251127.1",
         "cline": "^1.0.5",
         "open-composer": "^0.8.23",
         "typescript": "^5.9.3",
-      },
-      "devDependencies": {
-        "@sourcegraph/amp": "^0.0.1764893126-gb1ffc3",
       },
     },
   },
@@ -30,6 +28,7 @@
     "@typescript/native-preview",
     "@getgrit/cli",
     "@google/jules",
+    "@sourcegraph/amp",
   ],
   "packages": {
     "@ai-sdk/gateway": ["@ai-sdk/gateway@2.0.18", "", { "dependencies": { "@ai-sdk/provider": "2.0.0", "@ai-sdk/provider-utils": "3.0.18", "@vercel/oidc": "3.0.5" }, "peerDependencies": { "zod": "^3.25.76 || ^4.1.8" } }, "sha512-sDQcW+6ck2m0pTIHW6BPHD7S125WD3qNkx/B8sEzJp/hurocmJ5Cni0ybExg6sQMGo+fr/GWOwpHF1cmCdg5rQ=="],
