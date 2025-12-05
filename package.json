@@ -31,5 +31,8 @@
     "cline",
     "open-composer",
     "typescript"
-  ]
+  ],
+  "devDependencies": {
+    "@sourcegraph/amp": "^0.0.1764893126-gb1ffc3"
+  }
 }
