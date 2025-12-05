@@ -17,6 +17,39 @@
 		}
 	},
 	"provider": {
+		"cliproxyapi": {
+			"npm": "@ai-sdk/openai-compatible",
+			"name": "CLIProxyAPI (local)",
+			"options": {
+				"baseURL": "http://localhost:8317/v1"
+			},
+			"models": {
+				"gemini-3-pro-preview": {
+					"name": "Gemini 3.0 Pro (via CLIProxyAPI)"
+				},
+				"gpt-5.1": {
+					"name": "GPT-5.1 (via CLIProxyAPI)"
+				},
+				"gpt-5.1-codex": {
+					"name": "GPT-5.1 Codex (via CLIProxyAPI)"
+				},
+				"gpt-5.1-codex-max": {
+					"name": "GPT-5.1 Codex Max (via CLIProxyAPI)"
+				},
+				"claude-opus-4-5-20251101": {
+					"name": "Claude Opus 4.5 (via CLIProxyAPI)"
+				},
+				"claude-haiku-4-5-20251001": {
+					"name": "Claude Haiku 4.5 (via CLIProxyAPI)"
+				},
+				"z-ai/glm-4.6": {
+					"name": "GLM-4.6 (via OpenRouter)",
+					"options": {
+						"stream": false
+					}
+				}
+			}
+		},
 		"lmstudio": {
 			"npm": "@ai-sdk/openai-compatible",
 			"name": "LM Studio (local)",
@@ -158,7 +191,6 @@
 			}
 		}
 	},
-	"plugin": ["opencode-openai-codex-auth"],
 	"tui": {
 		"scroll_speed": 3
 	}

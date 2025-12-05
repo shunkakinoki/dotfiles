@@ -17,6 +17,7 @@
       fish_add_path -p /nix/var/nix/profiles/default/bin
       fish_add_path -p ~/.foundry/bin
       fish_add_path -p /opt/homebrew/bin
+      fish_add_path -p /opt/homebrew/opt/postgresql@18/bin
       fish_add_path -p /etc/profiles/per-user/${config.home.username}/bin
     '';
     interactiveShellInit = ''
@@ -30,6 +31,7 @@
       fish_add_path -p /nix/var/nix/profiles/default/bin
       fish_add_path -p ~/.foundry/bin
       fish_add_path -p /opt/homebrew/bin
+      fish_add_path -p /opt/homebrew/opt/postgresql@18/bin
       fish_add_path -p /etc/profiles/per-user/${config.home.username}/bin
       set -a fish_complete_path ~/.nix-profile/share/fish/completions/ ~/.nix-profile/share/fish/vendor_completions.d/
       set -x FISH_HISTFILE fish

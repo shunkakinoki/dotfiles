@@ -1,8 +1,11 @@
 [
+  ./amp
+  ./cliproxyapi
   ./codex
   ./crush
   ./claude
   ./direnv
+  ./factory
   ./ghostty
   ./hammerspoon
   ./karabiner

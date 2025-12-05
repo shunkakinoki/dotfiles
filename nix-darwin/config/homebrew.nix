@@ -18,7 +18,9 @@
     brews = [
       "bun"
       "claude-squad"
+      "cliproxyapi"
       "cmake"
+      "coder"
       "colima"
       "coreutils"
       "ffmpeg"
@@ -35,6 +37,7 @@
       "pinentry-mac"
       "pnpm"
       "postgresql"
+      "postgresql@18"
       "protobuf"
       "reth"
       "sheldon"
