@@ -1,10 +1,22 @@
 {
   "custom_models": [
     {
+      "model": "claude-opus-4-5-20251101",
+      "base_url": "http://127.0.0.1:8317/v1",
+      "api_key": "sk-dummy",
+      "provider": "anthropic"
+    },
+    {
+      "model": "claude-haiku-4-5-20251001",
+      "base_url": "http://127.0.0.1:8317/v1",
+      "api_key": "sk-dummy",
+      "provider": "anthropic"
+    },
+    {
       "model": "gemini-3-pro-preview",
       "base_url": "http://127.0.0.1:8317/v1",
       "api_key": "sk-dummy",
-      "provider": "openai"
+      "provider": "antigravity"
     },
     {
       "model": "gpt-5.1",
@@ -23,18 +35,6 @@
       "base_url": "http://127.0.0.1:8317/v1",
       "api_key": "sk-dummy",
       "provider": "openai"
-    },
-    {
-      "model": "claude-opus-4-5-20251101",
-      "base_url": "http://127.0.0.1:8317/v1",
-      "api_key": "sk-dummy",
-      "provider": "anthropic"
-    },
-    {
-      "model": "claude-haiku-4-5-20251001",
-      "base_url": "http://127.0.0.1:8317/v1",
-      "api_key": "sk-dummy",
-      "provider": "anthropic"
     }
   ]
 }
