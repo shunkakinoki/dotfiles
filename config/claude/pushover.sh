@@ -74,7 +74,7 @@ if echo "$input" | jq -e '.message' >/dev/null 2>&1; then
     # No need to notify on login - user is already active
     exit 0
     ;;
-  *'permission'*|*'Permission'*)
+  *'permission'* | *'Permission'*)
     if [ -n "$TASK" ]; then
       send_notification "🔐 Permission required: ${STATS}
 📂 ${CWD}
@@ -84,7 +84,7 @@ if echo "$input" | jq -e '.message' >/dev/null 2>&1; then
 📂 ${CWD}" 1
     fi
     ;;
-  *'plan'*|*'Plan'*|*'approval'*|*'Approval'*)
+  *'plan'* | *'Plan'* | *'approval'* | *'Approval'*)
     if [ -n "$TASK" ]; then
       send_notification "📋 Plan ready: ${STATS}
 📂 ${CWD}
@@ -94,7 +94,7 @@ if echo "$input" | jq -e '.message' >/dev/null 2>&1; then
 📂 ${CWD}" 1
     fi
     ;;
-  *'waiting'*|*'Waiting'*)
+  *'waiting'* | *'Waiting'*)
     if [ -n "$TASK" ]; then
       send_notification "⏸️ Waiting: ${STATS}
 📂 ${CWD}
