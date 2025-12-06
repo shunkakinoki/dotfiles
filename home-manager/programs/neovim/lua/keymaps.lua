@@ -118,7 +118,7 @@ keymap("n", "<leader>gs", ":tab Git<cr>", opts)
 -- @keymap <F9>: Open Git mergetool in new tab
 keymap("n", "<F9>", ":tab Git mergetool<cr>", opts)
 -- @keymap <leader>gg: Open LazyGit
-keymap("n", "<leader>gg", ":LazyGit<cr>", opts)
+keymap("n", "<leader>lg", ":LazyGit<cr>", opts)
 -- @keymap <leader>gD: Open VS Code style diff
 keymap("n", "<leader>gD", function()
 	require("vscode-diff").diff()
