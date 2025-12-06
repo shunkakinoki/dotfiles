@@ -173,9 +173,10 @@ if echo "$input" | jq -e '.hook_event_name == "Stop"' >/dev/null 2>&1; then
       | first // empty
     ' "$TRANSCRIPT_PATH" 2>/dev/null | head -c 50)
 
-    # Check if this is a plan approval request (ExitPlanMode was called)
-    IS_PLAN_MODE=$(jq -s '[.[] | select(.type=="assistant") | .message.content[]? | select(.type=="tool_use" and .name=="ExitPlanMode")] | length > 0' "$TRANSCRIPT_PATH" 2>/dev/null)
-    if [ "$IS_PLAN_MODE" = "true" ]; then
+    # Check if still in plan mode (plan waiting for approval)
+    # Use permission_mode from hook input - much more reliable than transcript parsing
+    PERMISSION_MODE=$(echo "$input" | jq -r '.permission_mode // "unknown"')
+    if [ "$PERMISSION_MODE" = "plan" ]; then
       send_notification "📋 Plan ready for approval
 📂 ${CWD}
 💬 ${TASK}" 1
