@@ -42,6 +42,7 @@
       "reth"
       "sheldon"
       "temporal"
+      "watchexec"
     ];
     casks = [
       "antigravity"
