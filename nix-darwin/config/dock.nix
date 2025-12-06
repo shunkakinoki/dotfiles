@@ -40,6 +40,7 @@
       "/Applications/Beeper Desktop.app"
       "/Applications/Slack.app"
       "/Applications/Discord.app"
+      "/Applications/Pushover.app"
       "/System/Applications/Music.app"
       "/System/Applications/Podcasts.app"
       "/System/Applications/iPhone Mirroring.app"

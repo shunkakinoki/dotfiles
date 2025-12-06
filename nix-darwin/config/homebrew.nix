@@ -97,6 +97,7 @@
       "Apollo" = 6448019325;
       "Final Cut Pro" = 424389933;
       "Line" = 539883307;
+      "Pushover" = 506088175;
       "Notability" = 360593530;
       "Xcode" = 497799835;
     };
