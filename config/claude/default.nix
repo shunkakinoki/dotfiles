@@ -8,4 +8,9 @@
     source = ./pushover.sh;
     executable = true;
   };
+
+  home.file.".claude/notify.sh" = {
+    source = ./notify.sh;
+    executable = true;
+  };
 }

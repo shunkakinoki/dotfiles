@@ -114,12 +114,18 @@ if echo "$input" | jq -e '.session_id' >/dev/null 2>&1; then
   exit 0
 fi
 
-# Handle PreToolUse hook (disabled by default - too noisy)
-# if echo "$input" | jq -e '.tool.name' >/dev/null 2>&1; then
-#     TOOL_NAME=$(echo "$input" | jq -r '.tool.name')
-#     send_notification "🔧 Using tool: ${TOOL_NAME}" -1
-#     exit 0
-# fi
+# Handle PreToolUse hook (risky command warning only)
+if echo "$input" | jq -e '.tool.name' >/dev/null 2>&1; then
+  TOOL_NAME=$(echo "$input" | jq -r '.tool.name')
+  if [ "$TOOL_NAME" = "Bash" ]; then
+    TOOL_INPUT=$(echo "$input" | jq -r '.tool.input // ""')
+    if echo "$TOOL_INPUT" | grep -qiE 'rm -rf|drop database|truncate|DELETE FROM|format'; then
+      RISKY_MSG=$(echo "$TOOL_INPUT" | head -c 100)
+      send_notification "⚠️ Risky: ${RISKY_MSG}" 1
+    fi
+  fi
+  exit 0
+fi
 
 # Handle PostToolUse hook (disabled by default - too noisy)
 # if echo "$input" | jq -e '.response' >/dev/null 2>&1; then

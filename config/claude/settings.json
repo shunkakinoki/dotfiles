@@ -87,6 +87,11 @@
         "hooks": [
           {
             "type": "command",
+            "command": "$HOME/.claude/notify.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
             "command": "$HOME/.claude/pushover.sh",
             "timeout": 10
           }
@@ -99,8 +104,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r 'if (.tool.input | test(\"rm -rf|drop database|truncate|DELETE FROM|format\"; \"i\")) then \"⚠️ Risky: \" + .tool.input[0:100] else empty end' | xargs -I {} osascript -e 'display notification \"{}\" with title \"Claude Code Warning\" sound name \"Basso\"'",
-            "timeout": 5
+            "command": "$HOME/.claude/notify.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/pushover.sh",
+            "timeout": 10
           }
         ]
       }
@@ -110,8 +120,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.message' | xargs -I {} osascript -e 'display notification \"{}\" with title \"Claude Code\" sound name \"Sonar\"'",
-            "timeout": 5
+            "command": "$HOME/.claude/notify.sh",
+            "timeout": 10
           },
           {
             "type": "command",
@@ -126,8 +136,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cat | jq -r '\"Work completed in \" + .cwd + \" (Session: \" + .session_id[0:8] + \")\"' | xargs -I {} osascript -e 'display notification \"{}\" with title \"Claude Code\" sound name \"Sonar\"'",
-            "timeout": 5
+            "command": "$HOME/.claude/notify.sh",
+            "timeout": 10
           },
           {
             "type": "command",
@@ -142,6 +152,11 @@
         "hooks": [
           {
             "type": "command",
+            "command": "$HOME/.claude/notify.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
             "command": "$HOME/.claude/pushover.sh",
             "timeout": 10
           }
@@ -153,6 +168,11 @@
         "hooks": [
           {
             "type": "command",
+            "command": "$HOME/.claude/notify.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
             "command": "$HOME/.claude/pushover.sh",
             "timeout": 10
           }
@@ -162,6 +182,11 @@
     "SubagentStop": [
       {
         "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/notify.sh",
+            "timeout": 10
+          },
           {
             "type": "command",
             "command": "$HOME/.claude/pushover.sh",
