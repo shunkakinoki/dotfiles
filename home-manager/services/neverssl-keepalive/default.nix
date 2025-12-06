@@ -1,18 +1,30 @@
-{ pkgs }:
+{ pkgs, ... }:
 let
+  inherit (pkgs) lib;
+
   keepaliveScript = pkgs.writeShellApplication {
     name = "neverssl-keepalive";
     runtimeInputs = [ pkgs.curl ];
     text = ''
       set -euo pipefail
-      if ! curl -fsS --max-time 10 http://neverssl.com > /dev/null 2>&1; then
-        exit 0
-      fi
+      curl -fsS --max-time 10 http://neverssl.com > /dev/null 2>&1 || true
     '';
   };
 in
 {
-  systemd.user.services.neverssl-keepalive = {
+  launchd.agents.neverssl-keepalive = lib.mkIf pkgs.stdenv.isDarwin {
+    enable = true;
+    config = {
+      ProgramArguments = [
+        "${keepaliveScript}/bin/neverssl-keepalive"
+      ];
+      StartInterval = 3;
+      StandardOutPath = "/tmp/neverssl-keepalive.log";
+      StandardErrorPath = "/tmp/neverssl-keepalive.error.log";
+    };
+  };
+
+  systemd.user.services.neverssl-keepalive = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {
       Description = "Keep captive portal alive via neverssl.com";
       Wants = [ "network-online.target" ];
@@ -24,7 +36,7 @@ in
     };
   };
 
-  systemd.user.timers.neverssl-keepalive = {
+  systemd.user.timers.neverssl-keepalive = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {
       Description = "Timer for neverssl captive portal keepalive";
     };

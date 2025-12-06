@@ -1,30 +1,13 @@
-{ pkgs }:
+{ pkgs, ... }:
 let
-  inherit (pkgs) lib writeShellApplication;
-
-  # launchd wrapper so we can reuse the Homebrew-installed ollama binary
-  ollamaHomebrew = writeShellApplication {
-    name = "ollama-homebrew";
-    text = ''
-      set -euo pipefail
-
-      if [ -x /opt/homebrew/bin/ollama ]; then
-        exec /opt/homebrew/bin/ollama "$@"
-      elif [ -x /usr/local/bin/ollama ]; then
-        exec /usr/local/bin/ollama "$@"
-      else
-        echo "ollama binary not found; install it with \"brew install ollama\"" >&2
-        exit 1
-      fi
-    '';
-  };
+  inherit (pkgs) lib;
 in
-lib.mkIf pkgs.stdenv.isDarwin {
-  launchd.agents.ollama = {
+{
+  launchd.agents.ollama = lib.mkIf pkgs.stdenv.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [
-        (lib.getExe ollamaHomebrew)
+        "/opt/homebrew/bin/ollama"
         "serve"
       ];
       KeepAlive = true;
@@ -32,6 +15,23 @@ lib.mkIf pkgs.stdenv.isDarwin {
       EnvironmentVariables.OLLAMA_HOST = "0.0.0.0";
       StandardOutPath = "/tmp/ollama.log";
       StandardErrorPath = "/tmp/ollama.error.log";
+    };
+  };
+
+  systemd.user.services.ollama = lib.mkIf pkgs.stdenv.isLinux {
+    Unit = {
+      Description = "Ollama AI model server";
+      After = [ "network.target" ];
+    };
+    Service = {
+      Type = "simple";
+      ExecStart = "${pkgs.ollama}/bin/ollama serve";
+      Environment = "OLLAMA_HOST=0.0.0.0";
+      Restart = "always";
+      RestartSec = 3;
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
     };
   };
 }
