@@ -19,7 +19,9 @@ vim.opt.runtimepath:append(".")
 vim.opt.runtimepath:append(nvim_dir)
 
 -- Add plenary to runtimepath if installed via vim.pack or available
+local plenary_dir = os.getenv("PLENARY_DIR")
 local plenary_paths = {
+	plenary_dir, -- Environment variable takes precedence
 	vim.fn.stdpath("data") .. "/site/pack/plugins/start/plenary.nvim",
 	vim.fn.stdpath("data") .. "/site/pack/plugins/opt/plenary.nvim",
 	vim.fn.expand("~/.local/share/nvim/site/pack/plugins/start/plenary.nvim"),
