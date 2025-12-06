@@ -106,11 +106,24 @@ if echo "$input" | jq -e '.stop_hook_active' >/dev/null 2>&1; then
   exit 0
 fi
 
-# Handle Stop hook (priority 1 = high - Claude finished, needs attention)
-if echo "$input" | jq -e '.session_id' >/dev/null 2>&1; then
-  SESSION_ID=$(echo "$input" | jq -r '.session_id[0:8]')
-  CWD=$(echo "$input" | jq -r '.cwd // "unknown"' | sed "s|$HOME|~|")
-  send_notification "✅ Work completed in ${CWD}" -1
+# Handle Stop hook (priority 0 = normal - Claude finished)
+if echo "$input" | jq -e '.hook_event_name == "Stop"' >/dev/null 2>&1; then
+  TRANSCRIPT_PATH=$(echo "$input" | jq -r '.transcript_path')
+  TRANSCRIPT_SHORT=$(echo "$TRANSCRIPT_PATH" | sed "s|$HOME|~|")
+
+  if [ -f "$TRANSCRIPT_PATH" ]; then
+    # Extract stats from transcript
+    TOOL_COUNT=$(jq -s '[.[] | select(.type=="tool_use")] | length' "$TRANSCRIPT_PATH" 2>/dev/null || echo "0")
+    WRITE_COUNT=$(jq -s '[.[] | select(.type=="tool_use" and .tool_use.name=="Write")] | length' "$TRANSCRIPT_PATH" 2>/dev/null || echo "0")
+    EDIT_COUNT=$(jq -s '[.[] | select(.type=="tool_use" and .tool_use.name=="Edit")] | length' "$TRANSCRIPT_PATH" 2>/dev/null || echo "0")
+    FILES_CHANGED=$((WRITE_COUNT + EDIT_COUNT))
+
+    send_notification "✅ Work completed: ${TOOL_COUNT} tools, ${FILES_CHANGED} files
+📄 ${TRANSCRIPT_SHORT}" 0
+  else
+    send_notification "✅ Work completed
+📄 ${TRANSCRIPT_SHORT}" 0
+  fi
   exit 0
 fi
 
