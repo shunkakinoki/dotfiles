@@ -65,21 +65,21 @@ The notification system uses Claude Code hooks to keep you informed of important
 
 ### Active Notifications
 
-#### Notification Hook (High Priority)
+#### Notification Hook
 
 Triggers when Claude needs your attention:
 
 1. **"Claude is waiting for your input"** - Claude finished a task and is waiting for you
-   - Sends: "⏸️ Waiting for your input" (high priority)
+   - Sends: "⏸️ Waiting for your input" (low priority, quiet)
 
 2. **"Claude needs your permission to use {tool}"** - Claude needs permission to use a specific tool
-   - Sends: "🔐 {tool} permission required" (high priority)
+   - Sends: "🔐 {tool} permission required" (high priority, with sound)
 
 3. **"Claude Code login successful"** - Login confirmation
    - No notification sent (you're already active)
 
 4. **Other messages** - Any unexpected notification messages
-   - Sends: "ℹ️ {message}" (normal priority)
+   - Sends: "ℹ️ {message}" (low priority, quiet)
 
 #### Stop Hook (Low Priority)
 
@@ -129,10 +129,10 @@ Location: `config/claude/pushover.sh`
 The Pushover notification script that handles Claude Code hooks. Features:
 - **Early exit if Pushover not configured** - Fails gracefully without errors
 - Detects hook type from JSON structure
-- Smart priority levels (high for permissions, low for info)
+- Smart priority levels (high for permission requests only, quiet for everything else)
 - Emoji indicators for quick visual recognition
 - Only essential notifications enabled by default
-- Optional hooks commented out (SessionStart, SessionEnd, tool tracking)
+- Optional hooks commented out (SessionStart, tool tracking)
 
 ### settings.local.json
 
@@ -239,9 +239,8 @@ esac
 
 The script automatically sets priority based on importance:
 
-- **High Priority (1)**: Permission requests, waiting for input - plays sound
-- **Normal Priority (0)**: General information messages
-- **Low Priority (-1)**: Session events, completion notifications - no sound
+- **High Priority (1)**: Permission requests only - plays sound
+- **Low Priority (-1)**: All other notifications (waiting for input, session events, completion) - quiet, no sound
 
 You can customize these in `pushover.sh` by changing the priority parameter:
 
