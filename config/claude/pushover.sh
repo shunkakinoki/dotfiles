@@ -57,6 +57,14 @@ if echo "$input" | jq -e '.message' >/dev/null 2>&1; then
     # Catch any permission-related message
     send_notification "🔐 ${MESSAGE}" 1
     ;;
+  *'plan'*|*'Plan'*|*'approval'*|*'Approval'*)
+    # Catch plan approval requests
+    send_notification "📋 ${MESSAGE}" 1
+    ;;
+  *'waiting'*|*'Waiting'*)
+    # Catch any waiting-related message
+    send_notification "⏸️ ${MESSAGE}" 1
+    ;;
   *)
     send_notification "ℹ️ ${MESSAGE}" -1
     ;;
