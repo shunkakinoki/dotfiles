@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-brew upgrade
+/opt/homebrew/bin/brew upgrade

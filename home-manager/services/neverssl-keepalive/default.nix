@@ -1,18 +1,27 @@
-{ pkgs }:
+{ pkgs, ... }:
 let
-  keepaliveScript = pkgs.writeShellApplication {
-    name = "neverssl-keepalive";
-    runtimeInputs = [ pkgs.curl ];
-    text = ''
-      set -euo pipefail
-      if ! curl -fsS --max-time 10 http://neverssl.com > /dev/null 2>&1; then
-        exit 0
-      fi
-    '';
-  };
+  inherit (pkgs) lib;
 in
 {
-  systemd.user.services.neverssl-keepalive = {
+  # macOS (launchd)
+  launchd.agents.neverssl-keepalive = lib.mkIf pkgs.stdenv.isDarwin {
+    enable = true;
+    config = {
+      ProgramArguments = [
+        "${pkgs.bash}/bin/bash"
+        "${./keepalive.sh}"
+      ];
+      Environment = {
+        PATH = lib.makeBinPath [ pkgs.curl ];
+      };
+      StartInterval = 3;
+      StandardOutPath = "/tmp/neverssl-keepalive.log";
+      StandardErrorPath = "/tmp/neverssl-keepalive.error.log";
+    };
+  };
+
+  # Linux (systemd)
+  systemd.user.services.neverssl-keepalive = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {
       Description = "Keep captive portal alive via neverssl.com";
       Wants = [ "network-online.target" ];
@@ -20,11 +29,12 @@ in
     };
     Service = {
       Type = "oneshot";
-      ExecStart = "${keepaliveScript}/bin/neverssl-keepalive";
+      Environment = "PATH=${lib.makeBinPath [ pkgs.curl pkgs.bash ]}";
+      ExecStart = "${pkgs.bash}/bin/bash ${./keepalive.sh}";
     };
   };
 
-  systemd.user.timers.neverssl-keepalive = {
+  systemd.user.timers.neverssl-keepalive = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {
       Description = "Timer for neverssl captive portal keepalive";
     };
