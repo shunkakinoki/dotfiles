@@ -135,7 +135,7 @@ setup: nix-setup ## Basic Nix setup (alias for nix-setup).
 setup-dev: nix-setup git-submodule-sync shell-install ## Set up local development environment (Nix + submodules + shell).
 
 .PHONY: switch
-switch: nix-switch ## Apply Nix configuration (alias for nix-switch).
+switch: nix-switch launchctl ## Apply Nix configuration and restart launchd agents.
 
 .PHONY: update
 update: nix-update shell-update neovim-update ## Update Nix flake and configurations.
@@ -566,6 +566,47 @@ lua-check-hammerspoon: ## Check Hammerspoon configuration.
 lua-check-hammerspoon-dev: ## Run the Hammerspoon Lua check inside the Nix dev shell (mirrors CI).
 	@echo "🧪 Running Hammerspoon Lua check inside the Nix dev shell..."
 	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) lua-check-hammerspoon
+
+##@ Launchd Services
+
+.PHONY: launchctl
+launchctl: launchctl-brew-upgrader launchctl-cliproxyapi launchctl-code-syncer launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama ## Restart all launchd agents.
+
+.PHONY: launchctl-brew-upgrader
+launchctl-brew-upgrader: ## Restart brew-upgrader launchd agent.
+	@echo "🔄 Restarting brew-upgrader..."
+	@launchctl kickstart -k gui/$$(id -u)/org.nix-community.home.brew-upgrader || true
+	@echo "✅ brew-upgrader restarted"
+
+.PHONY: launchctl-cliproxyapi
+launchctl-cliproxyapi: ## Restart cliproxyapi launchd agent.
+	@echo "🔄 Restarting cliproxyapi..."
+	@launchctl kickstart -k gui/$$(id -u)/org.nix-community.home.cliproxyapi || true
+	@echo "✅ cliproxyapi restarted"
+
+.PHONY: launchctl-code-syncer
+launchctl-code-syncer: ## Restart code-syncer launchd agent.
+	@echo "🔄 Restarting code-syncer..."
+	@launchctl kickstart -k gui/$$(id -u)/org.nix-community.home.code-syncer || true
+	@echo "✅ code-syncer restarted"
+
+.PHONY: launchctl-dotfiles-updater
+launchctl-dotfiles-updater: ## Restart dotfiles-updater launchd agent.
+	@echo "🔄 Restarting dotfiles-updater..."
+	@launchctl kickstart -k gui/$$(id -u)/org.nix-community.home.dotfiles-updater || true
+	@echo "✅ dotfiles-updater restarted"
+
+.PHONY: launchctl-neverssl-keepalive
+launchctl-neverssl-keepalive: ## Restart neverssl-keepalive launchd agent.
+	@echo "🔄 Restarting neverssl-keepalive..."
+	@launchctl kickstart -k gui/$$(id -u)/org.nix-community.home.neverssl-keepalive || true
+	@echo "✅ neverssl-keepalive restarted"
+
+.PHONY: launchctl-ollama
+launchctl-ollama: ## Restart ollama launchd agent.
+	@echo "🔄 Restarting ollama..."
+	@launchctl kickstart -k gui/$$(id -u)/org.nix-community.home.ollama || true
+	@echo "✅ ollama restarted"
 
 ##@ Git Submodule
 
