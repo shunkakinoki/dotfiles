@@ -44,26 +44,65 @@ send_notification() {
 # Handle Notification hook
 if echo "$input" | jq -e '.message' >/dev/null 2>&1; then
   MESSAGE=$(echo "$input" | jq -r '.message')
+  TRANSCRIPT_PATH=$(echo "$input" | jq -r '.transcript_path // empty')
+
+  # Extract stats from transcript if available
+  if [ -n "$TRANSCRIPT_PATH" ] && [ -f "$TRANSCRIPT_PATH" ]; then
+    TOOL_COUNT=$(jq -s '[.[] | select(.type=="tool_use")] | length' "$TRANSCRIPT_PATH" 2>/dev/null || echo "0")
+    FILE_COUNT=$(jq -rs '[.[] | select(.type=="tool_use" and (.tool_use.name=="Write" or .tool_use.name=="Edit")) | .tool_use.input.file_path // empty] | unique | length' "$TRANSCRIPT_PATH" 2>/dev/null || echo "0")
+    CWD=$(jq -rs '[.[] | select(.cwd) | .cwd] | first // empty' "$TRANSCRIPT_PATH" 2>/dev/null | sed "s|$HOME|~|")
+    TASK=$(jq -rs '[.[] | select(.type=="user") | .message.content[]? | select(.type=="text") | .text] | map(select(startswith("<") | not)) | first // empty' "$TRANSCRIPT_PATH" 2>/dev/null | head -c 50)
+    STATS="${TOOL_COUNT} tools, ${FILE_COUNT} files"
+  else
+    CWD=$(echo "$input" | jq -r '.cwd // empty' | sed "s|$HOME|~|")
+    STATS=""
+    TASK=""
+  fi
 
   case "$MESSAGE" in
   'Claude is waiting for your input')
-    send_notification "⏸️ Waiting for your input" 1
+    if [ -n "$TASK" ]; then
+      send_notification "⏸️ Waiting for input: ${STATS}
+📂 ${CWD}
+💬 ${TASK}" 1
+    else
+      send_notification "⏸️ Waiting for input
+📂 ${CWD}" 1
+    fi
     ;;
   'Claude Code login successful')
     # No need to notify on login - user is already active
     exit 0
     ;;
   *'permission'*|*'Permission'*)
-    # Catch any permission-related message
-    send_notification "🔐 ${MESSAGE}" 1
+    if [ -n "$TASK" ]; then
+      send_notification "🔐 Permission required: ${STATS}
+📂 ${CWD}
+💬 ${TASK}" 1
+    else
+      send_notification "🔐 Permission required
+📂 ${CWD}" 1
+    fi
     ;;
   *'plan'*|*'Plan'*|*'approval'*|*'Approval'*)
-    # Catch plan approval requests
-    send_notification "📋 ${MESSAGE}" 1
+    if [ -n "$TASK" ]; then
+      send_notification "📋 Plan ready: ${STATS}
+📂 ${CWD}
+💬 ${TASK}" 1
+    else
+      send_notification "📋 Plan ready for review
+📂 ${CWD}" 1
+    fi
     ;;
   *'waiting'*|*'Waiting'*)
-    # Catch any waiting-related message
-    send_notification "⏸️ ${MESSAGE}" 1
+    if [ -n "$TASK" ]; then
+      send_notification "⏸️ Waiting: ${STATS}
+📂 ${CWD}
+💬 ${TASK}" 1
+    else
+      send_notification "⏸️ Waiting for input
+📂 ${CWD}" 1
+    fi
     ;;
   *)
     send_notification "ℹ️ ${MESSAGE}" -1
