@@ -6,6 +6,30 @@ vim.opt.termsync = true
 vim.opt.hidden = true
 vim.opt.updatetime = 300
 vim.opt.mouse = "a"
+
+-- ====================================================================================
+-- SSH / OSC52 CLIPBOARD HANDLING
+-- From: https://github.com/dmtrKovalenko/dotfiles
+-- Uses OSC 52 protocol for clipboard when running over SSH
+-- ====================================================================================
+local function is_ssh()
+	return os.getenv("SSH_CLIENT") ~= nil or os.getenv("SSH_TTY") ~= nil
+end
+
+if is_ssh() then
+	-- Use OSC 52 for clipboard when in SSH session
+	vim.g.clipboard = {
+		name = "OSC 52",
+		copy = {
+			["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+			["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+		},
+		paste = {
+			["+"] = require("vim.ui.clipboard.osc52").paste("+"),
+			["*"] = require("vim.ui.clipboard.osc52").paste("*"),
+		},
+	}
+end
 vim.opt.inccommand = "nosplit"
 vim.opt.splitbelow = true
 vim.opt.splitright = true
@@ -44,6 +68,38 @@ vim.opt.cursorline = true
 vim.opt.grepprg = "rg --vimgrep --smart-case --follow"
 -- Background will be set automatically based on system theme
 vim.opt.termguicolors = true
+
+-- ====================================================================================
+-- VISIBLE WHITESPACE
+-- From: https://github.com/dmtrKovalenko/dotfiles
+-- ====================================================================================
+vim.opt.list = true
+vim.opt.listchars = {
+	tab = "→ ",
+	trail = "·",
+	extends = "»",
+	precedes = "«",
+	nbsp = "␣",
+}
+
+-- ====================================================================================
+-- DIAGNOSTIC DISPLAY SETTINGS
+-- From: https://github.com/dmtrKovalenko/dotfiles
+-- ====================================================================================
+vim.diagnostic.config({
+	virtual_text = {
+		prefix = "●",
+		spacing = 2,
+	},
+	signs = true,
+	underline = true,
+	update_in_insert = false,
+	severity_sort = true,
+	float = {
+		border = "rounded",
+		source = true,
+	},
+})
 vim.opt.shortmess:append("c")
 vim.opt.timeoutlen = 300
 vim.opt.winborder = "none"
