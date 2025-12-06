@@ -109,20 +109,29 @@ fi
 # Handle Stop hook (priority 0 = normal - Claude finished)
 if echo "$input" | jq -e '.hook_event_name == "Stop"' >/dev/null 2>&1; then
   TRANSCRIPT_PATH=$(echo "$input" | jq -r '.transcript_path')
-  TRANSCRIPT_SHORT=$(echo "$TRANSCRIPT_PATH" | sed "s|$HOME|~|")
 
   if [ -f "$TRANSCRIPT_PATH" ]; then
-    # Extract stats from transcript
-    TOOL_COUNT=$(jq -s '[.[] | select(.type=="tool_use")] | length' "$TRANSCRIPT_PATH" 2>/dev/null || echo "0")
-    WRITE_COUNT=$(jq -s '[.[] | select(.type=="tool_use" and .tool_use.name=="Write")] | length' "$TRANSCRIPT_PATH" 2>/dev/null || echo "0")
-    EDIT_COUNT=$(jq -s '[.[] | select(.type=="tool_use" and .tool_use.name=="Edit")] | length' "$TRANSCRIPT_PATH" 2>/dev/null || echo "0")
-    FILES_CHANGED=$((WRITE_COUNT + EDIT_COUNT))
+    # Extract first user message as title (truncated to 50 chars)
+    TITLE=$(jq -rs '[.[] | select(.type=="user")] | first | .message.content[0].text // empty' "$TRANSCRIPT_PATH" 2>/dev/null | head -c 50)
+    [ -z "$TITLE" ] && TITLE="Work completed"
 
-    send_notification "✅ Work completed: ${TOOL_COUNT} tools, ${FILES_CHANGED} files
-📄 ${TRANSCRIPT_SHORT}" 0
+    # Get unique files modified (Write and Edit tools)
+    FILES_MODIFIED=$(jq -rs '
+      [.[] | select(.type=="tool_use" and (.tool_use.name=="Write" or .tool_use.name=="Edit"))
+       | .tool_use.input.file_path // empty]
+      | unique
+      | map(split("/") | last)
+      | join(", ")
+    ' "$TRANSCRIPT_PATH" 2>/dev/null)
+
+    if [ -n "$FILES_MODIFIED" ]; then
+      send_notification "✅ ${TITLE}
+📝 ${FILES_MODIFIED}" 0
+    else
+      send_notification "✅ ${TITLE}" 0
+    fi
   else
-    send_notification "✅ Work completed
-📄 ${TRANSCRIPT_SHORT}" 0
+    send_notification "✅ Work completed" 0
   fi
   exit 0
 fi
