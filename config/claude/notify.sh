@@ -36,19 +36,19 @@ if echo "$input" | jq -e '.message' >/dev/null 2>&1; then
   MESSAGE=$(echo "$input" | jq -r '.message')
 
   case "$MESSAGE" in
-    'Claude is waiting for your input')
-      notify "Waiting for your input"
-      ;;
-    'Claude Code login successful')
-      exit 0
-      ;;
-    'Claude needs your permission to use '*)
-      TOOL="${MESSAGE#Claude needs your permission to use }"
-      notify "${TOOL} permission required" "Basso"
-      ;;
-    *)
-      notify "${MESSAGE}"
-      ;;
+  'Claude is waiting for your input')
+    notify "Waiting for your input"
+    ;;
+  'Claude Code login successful')
+    exit 0
+    ;;
+  'Claude needs your permission to use '*)
+    TOOL="${MESSAGE#Claude needs your permission to use }"
+    notify "${TOOL} permission required" "Basso"
+    ;;
+  *)
+    notify "${MESSAGE}"
+    ;;
   esac
   exit 0
 fi
