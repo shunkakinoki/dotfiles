@@ -23,6 +23,14 @@ vim.pack.add({
 	{ src = "https://github.com/stevearc/oil.nvim" },
 	{ src = "https://github.com/folke/flash.nvim" },
 
+	-- FILE PICKER
+	{
+		src = "https://github.com/dmtrKovalenko/fff.nvim",
+		build = function()
+			require("fff.download").download_or_build_binary()
+		end,
+	},
+
 	-- TELESCOPE
 	{ src = "https://github.com/nvim-lua/plenary.nvim" },
 	{ src = "https://github.com/nvim-telescope/telescope-github.nvim" },
@@ -90,6 +98,12 @@ require("auto-hlsearch").setup({})
 require("grug-far").setup({})
 require("flash").setup({})
 require("illuminate").configure({})
+
+-- fff.nvim setup - fast fuzzy file finder with Rust backend
+require("fff").setup({
+	max_results = 100,
+	lazy_sync = true,
+})
 
 require("conform").setup({
 	formatters_by_ft = {

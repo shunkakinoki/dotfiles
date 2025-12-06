@@ -178,6 +178,19 @@ keymap("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous Diagnostic" })
 keymap("n", "<leader>dl", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
 
 -- ====================================================================================
+-- FFF.NVIM (Fast Fuzzy File Finder)
+-- ====================================================================================
+-- @keymap <leader>ff: Open fff file picker
+keymap("n", "<leader>ff", function()
+	require("fff").open()
+end, { desc = "FFF File Picker" })
+
+-- @keymap <leader>fp: Open fff file picker (alternate)
+keymap("n", "<leader>fp", function()
+	require("fff").open()
+end, { desc = "FFF File Picker" })
+
+-- ====================================================================================
 -- CODE NAVIGATION & EDITING
 -- ====================================================================================
 -- @keymap -: Open parent directory (Oil)
@@ -268,7 +281,7 @@ local wk = require("which-key")
 wk.add({
 	{ "<leader>g", group = "Git" },
 	{ "<leader>l", group = "LSP" },
-	{ "<leader>f", group = "Find/Telescope" },
+	{ "<leader>f", group = "Find/Files" },
 	{ "<leader>x", group = "Trouble/Diagnostics" },
 	{ "<leader>c", group = "Code" },
 	{ "<leader>h", group = "Hunk (Git)" },
