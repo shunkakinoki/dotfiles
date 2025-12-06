@@ -173,10 +173,21 @@ if echo "$input" | jq -e '.hook_event_name == "Stop"' >/dev/null 2>&1; then
       | first // empty
     ' "$TRANSCRIPT_PATH" 2>/dev/null | head -c 50)
 
-    # Check if still in plan mode (plan waiting for approval)
-    # Use permission_mode from hook input - much more reliable than transcript parsing
-    PERMISSION_MODE=$(echo "$input" | jq -r '.permission_mode // "unknown"')
-    if [ "$PERMISSION_MODE" = "plan" ]; then
+    # Check if this is plan approval waiting vs work completed
+    # Plan approval = ExitPlanMode was the last tool AND no files were modified
+    # Work completed = Files were changed OR last tool was not ExitPlanMode
+    LAST_TOOL=$(jq -rs '
+      [.[] | select(.type=="assistant") | .message.content[]? | select(.type=="tool_use") | .name]
+      | last // ""
+    ' "$TRANSCRIPT_PATH" 2>/dev/null)
+
+    PERMISSION_MODE=$(echo "$input" | jq -r '.permission_mode // "default"')
+
+    # Only show "Plan ready for approval" if:
+    # 1. permission_mode is "plan" AND
+    # 2. ExitPlanMode was the last tool AND
+    # 3. No files were modified (FILE_COUNT == 0)
+    if [ "$PERMISSION_MODE" = "plan" ] && [ "$LAST_TOOL" = "ExitPlanMode" ] && [ "$FILE_COUNT" = "0" ]; then
       send_notification "📋 Plan ready for approval
 📂 ${CWD}
 💬 ${TASK}" 1
