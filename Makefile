@@ -137,6 +137,9 @@ setup-dev: nix-setup git-submodule-sync shell-install ## Set up local developmen
 .PHONY: switch
 switch: nix-switch launchctl ## Apply Nix configuration and restart launchd agents.
 
+.PHONY: test
+test: neovim-test
+
 .PHONY: update
 update: nix-update shell-update neovim-update ## Update Nix flake and configurations.
 
@@ -494,7 +497,7 @@ neovim-sync: ## Sync Neovim plugins.
 .PHONY: neovim-test
 neovim-test: ## Run Neovim tests using plenary.nvim.
 	@echo "🧪 Running Neovim tests..."
-	@$(PWD)/home-manager/programs/neovim/tests/run_tests.sh
+	@$(PWD)/home-manager/programs/neovim/run_tests.sh
 	@echo "✅ Neovim tests completed"
 
 .PHONY: neovim-test-dev

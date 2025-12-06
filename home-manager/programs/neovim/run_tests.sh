@@ -5,7 +5,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-NVIM_DIR="$(dirname "$SCRIPT_DIR")"
+NVIM_DIR="$SCRIPT_DIR"
 PLENARY_DIR="${PLENARY_DIR:-/tmp/plenary.nvim}"
 
 # Colors for output
