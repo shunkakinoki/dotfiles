@@ -58,7 +58,7 @@ if echo "$input" | jq -e '.message' >/dev/null 2>&1; then
     send_notification "🔐 ${TOOL} permission required" 1
     ;;
   *)
-    send_notification "ℹ️ ${MESSAGE}" 0
+    send_notification "ℹ️ ${MESSAGE}" -1
     ;;
   esac
   exit 0
@@ -102,7 +102,7 @@ fi
 
 # Handle SubagentStop hook (priority 0 = normal)
 if echo "$input" | jq -e '.stop_hook_active' >/dev/null 2>&1; then
-  send_notification "🤖 Subagent task completed" 0
+  send_notification "🤖 Subagent task completed" -1
   exit 0
 fi
 
@@ -110,7 +110,7 @@ fi
 if echo "$input" | jq -e '.session_id' >/dev/null 2>&1; then
   SESSION_ID=$(echo "$input" | jq -r '.session_id[0:8]')
   CWD=$(echo "$input" | jq -r '.cwd // "unknown"' | sed "s|$HOME|~|")
-  send_notification "✅ Work completed in ${CWD}" 1
+  send_notification "✅ Work completed in ${CWD}" -1
   exit 0
 fi
 
