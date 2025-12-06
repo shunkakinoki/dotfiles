@@ -1,0 +1,17 @@
+function _fzf_git_worktree --description="fzf git worktree picker"
+    # Get all worktrees with their paths
+    set -l worktrees (git worktree list 2>/dev/null | awk '{print $1}')
+
+    if test -z "$worktrees"
+        echo "No worktrees found (not a git repository?)"
+        return 1
+    end
+
+    set -l selected_worktree (printf '%s\n' $worktrees | fzf --prompt=(_fzf_preview_name "Worktree") --preview='git -C {} log --oneline --color=always -n 10; echo ""; git -C {} status --short' --preview-window right:50%)
+
+    if test -n "$selected_worktree"
+        cd $selected_worktree
+    end
+
+    commandline --function repaint
+end
