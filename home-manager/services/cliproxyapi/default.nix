@@ -27,7 +27,12 @@ in
     };
     Service = {
       Type = "simple";
-      Environment = "PATH=${lib.makeBinPath [ pkgs.gnused pkgs.bash ]}";
+      Environment = "PATH=${
+        lib.makeBinPath [
+          pkgs.gnused
+          pkgs.bash
+        ]
+      }";
       ExecStart = "${pkgs.bash}/bin/bash ${./start.sh}";
       Restart = "always";
       RestartSec = 3;
