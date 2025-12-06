@@ -1,0 +1,9 @@
+# This is a placeholder for the encrypted Tailscale auth key
+# To encrypt your actual auth key, use:
+# make encrypt-key-galactica KEY_FILE=/path/to/your/tailscale-auth-key.txt
+# 
+# To get a Tailscale auth key:
+# 1. Log in to https://login.tailscale.com/admin
+# 2. Go to Settings -> Keys
+# 3. Generate a new auth key (recommended: non-ephemeral, reusable)
+# 4. Save the key to a file and encrypt it using the command above

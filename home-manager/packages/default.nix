@@ -63,6 +63,7 @@ with pkgs;
   speedtest-cli
   sqlite
   stern
+  tailscale
   tokei
   tree
   turso-cli
@@ -86,7 +87,6 @@ with pkgs;
   gemini-cli
   opencode
   powertop
-  tailscale
 ]
 ++ lib.optionals (stdenv.isLinux && !isCI) [
   chromium

@@ -122,6 +122,7 @@ check: ## Run all validation checks (nix, format, lua).
 	@$(MAKE) lua-check
 	@echo "✅ All checks passed"
 
+
 .PHONY: flake-check
 flake-check: nix-flake-check ## Check Nix flake configuration (alias for nix-flake-check).
 
