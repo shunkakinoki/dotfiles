@@ -491,6 +491,17 @@ neovim-sync: ## Sync Neovim plugins.
 	@nvim --headless +"lua vim.cmd('source ' .. vim.fn.stdpath('config') .. '/init.lua')" +qa
 	@echo "✅ Neovim plugins synced"
 
+.PHONY: neovim-test
+neovim-test: ## Run Neovim tests using plenary.nvim.
+	@echo "🧪 Running Neovim tests..."
+	@$(PWD)/home-manager/programs/neovim/tests/run_tests.sh
+	@echo "✅ Neovim tests completed"
+
+.PHONY: neovim-test-dev
+neovim-test-dev: ## Run Neovim tests inside the Nix dev shell (mirrors CI).
+	@echo "🧪 Running Neovim tests inside the Nix dev shell..."
+	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) neovim-test
+
 ##@ Lua
 
 .PHONY: lua-check
