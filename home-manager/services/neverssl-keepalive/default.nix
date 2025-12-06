@@ -29,7 +29,12 @@ in
     };
     Service = {
       Type = "oneshot";
-      Environment = "PATH=${lib.makeBinPath [ pkgs.curl pkgs.bash ]}";
+      Environment = "PATH=${
+        lib.makeBinPath [
+          pkgs.curl
+          pkgs.bash
+        ]
+      }";
       ExecStart = "${pkgs.bash}/bin/bash ${./keepalive.sh}";
     };
   };
