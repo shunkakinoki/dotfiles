@@ -115,12 +115,16 @@ if echo "$input" | jq -e '.hook_event_name == "Stop"' >/dev/null 2>&1; then
     TOOL_COUNT=$(jq -s '[.[] | select(.type=="tool_use")] | length' "$TRANSCRIPT_PATH" 2>/dev/null || echo "0")
     FILE_COUNT=$(jq -rs '[.[] | select(.type=="tool_use" and (.tool_use.name=="Write" or .tool_use.name=="Edit")) | .tool_use.input.file_path // empty] | unique | length' "$TRANSCRIPT_PATH" 2>/dev/null || echo "0")
 
-    # Extract working directory from transcript
-    CWD=$(jq -rs 'first | .cwd // empty' "$TRANSCRIPT_PATH" 2>/dev/null | sed "s|$HOME|~|")
+    # Extract working directory from first entry with cwd
+    CWD=$(jq -rs '[.[] | select(.cwd) | .cwd] | first // empty' "$TRANSCRIPT_PATH" 2>/dev/null | sed "s|$HOME|~|")
     [ -z "$CWD" ] && CWD="unknown"
 
-    # Extract first user message as task description (truncated to 50 chars)
-    TASK=$(jq -rs '[.[] | select(.type=="user")] | first | .message.content[0].text // empty' "$TRANSCRIPT_PATH" 2>/dev/null | head -c 50)
+    # Extract first actual user prompt (skip <ide_*> and <system-*> tags)
+    TASK=$(jq -rs '
+      [.[] | select(.type=="user") | .message.content[]? | select(.type=="text") | .text]
+      | map(select(startswith("<") | not))
+      | first // empty
+    ' "$TRANSCRIPT_PATH" 2>/dev/null | head -c 50)
 
     if [ -n "$TASK" ]; then
       send_notification "✅ Work completed: ${TOOL_COUNT} tools, ${FILE_COUNT} files
