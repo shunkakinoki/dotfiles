@@ -111,24 +111,24 @@ if echo "$input" | jq -e '.hook_event_name == "Stop"' >/dev/null 2>&1; then
   TRANSCRIPT_PATH=$(echo "$input" | jq -r '.transcript_path')
 
   if [ -f "$TRANSCRIPT_PATH" ]; then
-    # Extract first user message as title (truncated to 50 chars)
-    TITLE=$(jq -rs '[.[] | select(.type=="user")] | first | .message.content[0].text // empty' "$TRANSCRIPT_PATH" 2>/dev/null | head -c 50)
-    [ -z "$TITLE" ] && TITLE="Work completed"
+    # Extract stats from transcript
+    TOOL_COUNT=$(jq -s '[.[] | select(.type=="tool_use")] | length' "$TRANSCRIPT_PATH" 2>/dev/null || echo "0")
+    FILE_COUNT=$(jq -rs '[.[] | select(.type=="tool_use" and (.tool_use.name=="Write" or .tool_use.name=="Edit")) | .tool_use.input.file_path // empty] | unique | length' "$TRANSCRIPT_PATH" 2>/dev/null || echo "0")
 
-    # Get unique files modified (Write and Edit tools)
-    FILES_MODIFIED=$(jq -rs '
-      [.[] | select(.type=="tool_use" and (.tool_use.name=="Write" or .tool_use.name=="Edit"))
-       | .tool_use.input.file_path // empty]
-      | unique
-      | map(split("/") | last)
-      | join(", ")
-    ' "$TRANSCRIPT_PATH" 2>/dev/null)
+    # Extract working directory from transcript
+    CWD=$(jq -rs 'first | .cwd // empty' "$TRANSCRIPT_PATH" 2>/dev/null | sed "s|$HOME|~|")
+    [ -z "$CWD" ] && CWD="unknown"
 
-    if [ -n "$FILES_MODIFIED" ]; then
-      send_notification "✅ ${TITLE}
-📝 ${FILES_MODIFIED}" 0
+    # Extract first user message as task description (truncated to 50 chars)
+    TASK=$(jq -rs '[.[] | select(.type=="user")] | first | .message.content[0].text // empty' "$TRANSCRIPT_PATH" 2>/dev/null | head -c 50)
+
+    if [ -n "$TASK" ]; then
+      send_notification "✅ Work completed: ${TOOL_COUNT} tools, ${FILE_COUNT} files
+📂 ${CWD}
+💬 ${TASK}" 0
     else
-      send_notification "✅ ${TITLE}" 0
+      send_notification "✅ Work completed: ${TOOL_COUNT} tools, ${FILE_COUNT} files
+📂 ${CWD}" 0
     fi
   else
     send_notification "✅ Work completed" 0
