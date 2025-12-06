@@ -88,6 +88,10 @@ vim.pack.add({
 
 	-- TERMINAL
 	{ src = "https://github.com/akinsho/toggleterm.nvim" },
+
+	-- GIT
+	{ src = "https://github.com/kdheepak/lazygit.nvim" },
+	{ src = "https://github.com/esmuellert/vscode-diff.nvim" },
 })
 
 require("other-nvim").setup({ mappings = { "golang" } })

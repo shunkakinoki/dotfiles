@@ -117,6 +117,12 @@ keymap({ "n", "v" }, "<leader>d", '"_d', opts)
 keymap("n", "<leader>gs", ":tab Git<cr>", opts)
 -- @keymap <F9>: Open Git mergetool in new tab
 keymap("n", "<F9>", ":tab Git mergetool<cr>", opts)
+-- @keymap <leader>gg: Open LazyGit
+keymap("n", "<leader>gg", ":LazyGit<cr>", opts)
+-- @keymap <leader>gD: Open VS Code style diff
+keymap("n", "<leader>gD", function()
+	require("vscode-diff").diff()
+end, opts)
 -- @keymap <leader>gd: Preview hunk inline
 keymap("n", "<leader>gd", ":Gitsigns preview_hunk_inline<cr>", opts)
 -- @keymap <leader>hs: Stage hunk (Gitsigns)
