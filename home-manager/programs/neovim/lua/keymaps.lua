@@ -110,6 +110,18 @@ keymap("n", "<leader>py", ':let @" = expand("%:p")<CR>', opts)
 -- @keymap <leader>d: Delete to blackhole register
 keymap({ "n", "v" }, "<leader>d", '"_d', opts)
 
+-- @keymap dd: Smart delete (uses blackhole register for empty lines)
+-- From: https://github.com/dmtrKovalenko/dotfiles
+keymap("n", "dd", function()
+	return utils.smart_delete("dd")
+end, { noremap = true, expr = true })
+
+-- @keymap <Esc>: Close floating windows
+keymap("n", "<Esc>", function()
+	utils.close_floating_wins()
+	vim.cmd("nohlsearch")
+end, opts)
+
 -- ====================================================================================
 -- GIT OPERATIONS
 -- ====================================================================================

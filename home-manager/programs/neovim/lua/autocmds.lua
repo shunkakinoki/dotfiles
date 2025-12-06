@@ -1,13 +1,113 @@
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
+local utils = require("utils")
 
--- Highlight on yank
+-- ====================================================================================
+-- HIGHLIGHT ON YANK WITH REGISTER ROTATION
+-- From: https://github.com/dmtrKovalenko/dotfiles
+-- ====================================================================================
 local highlight_yank_group = augroup("HighlightYank", { clear = true })
 autocmd("TextYankPost", {
 	group = highlight_yank_group,
 	pattern = "*",
 	callback = function()
 		vim.highlight.on_yank()
+		-- Rotate registers on yank to preserve yank history
+		if vim.v.event.operator == "y" then
+			utils.yank_shift()
+		end
+	end,
+})
+
+-- ====================================================================================
+-- AUTO-SAVE ON BUFFER LEAVE / FOCUS LOSS
+-- From: https://github.com/dmtrKovalenko/dotfiles
+-- ====================================================================================
+local autosave_group = augroup("AutoSave", { clear = true })
+autocmd({ "BufLeave", "FocusLost" }, {
+	group = autosave_group,
+	pattern = "*",
+	callback = function()
+		-- Only save if buffer is modified and has a filename
+		if vim.bo.modified and vim.fn.expand("%") ~= "" and vim.bo.buftype == "" then
+			vim.cmd("silent! update")
+		end
+	end,
+})
+
+-- ====================================================================================
+-- CUSTOM TERMINAL TITLE WITH FILE ICONS
+-- From: https://github.com/dmtrKovalenko/dotfiles
+-- ====================================================================================
+local title_group = augroup("TerminalTitle", { clear = true })
+autocmd({ "BufEnter", "BufFilePost" }, {
+	group = title_group,
+	pattern = "*",
+	callback = function()
+		local filename = vim.fn.expand("%:t")
+		local dir = vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
+		local icon = utils.get_file_icon(filename)
+		if filename ~= "" then
+			vim.opt.titlestring = icon .. " " .. filename .. " - " .. dir
+		else
+			vim.opt.titlestring = dir
+		end
+	end,
+})
+vim.opt.title = true
+
+-- ====================================================================================
+-- FILETYPE-SPECIFIC KEYWORD EXTENSIONS
+-- From: https://github.com/dmtrKovalenko/dotfiles
+-- ====================================================================================
+local keyword_group = augroup("KeywordExtensions", { clear = true })
+autocmd("FileType", {
+	group = keyword_group,
+	pattern = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
+	callback = function()
+		-- Add @ and - to keyword characters for better word navigation
+		vim.opt_local.iskeyword:append("@-@")
+		vim.opt_local.iskeyword:append("-")
+	end,
+})
+autocmd("FileType", {
+	group = keyword_group,
+	pattern = { "css", "scss", "sass", "less" },
+	callback = function()
+		vim.opt_local.iskeyword:append("-")
+		vim.opt_local.iskeyword:append("#")
+	end,
+})
+autocmd("FileType", {
+	group = keyword_group,
+	pattern = { "html", "xml", "vue", "svelte" },
+	callback = function()
+		vim.opt_local.iskeyword:append("-")
+		vim.opt_local.iskeyword:append(":")
+	end,
+})
+autocmd("FileType", {
+	group = keyword_group,
+	pattern = { "json", "jsonc" },
+	callback = function()
+		vim.opt_local.iskeyword:append("-")
+		vim.opt_local.iskeyword:append("$")
+	end,
+})
+autocmd("FileType", {
+	group = keyword_group,
+	pattern = { "yaml", "toml" },
+	callback = function()
+		vim.opt_local.iskeyword:append("-")
+		vim.opt_local.iskeyword:append(".")
+	end,
+})
+autocmd("FileType", {
+	group = keyword_group,
+	pattern = "markdown",
+	callback = function()
+		vim.opt_local.iskeyword:append("-")
+		vim.opt_local.iskeyword:append("#")
 	end,
 })
 
