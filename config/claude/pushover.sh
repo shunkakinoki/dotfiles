@@ -53,9 +53,9 @@ if echo "$input" | jq -e '.message' >/dev/null 2>&1; then
     # No need to notify on login - user is already active
     exit 0
     ;;
-  'Claude needs your permission to use '*)
-    TOOL="${MESSAGE#Claude needs your permission to use }"
-    send_notification "🔐 ${TOOL} permission required" 1
+  *'permission'*|*'Permission'*)
+    # Catch any permission-related message
+    send_notification "🔐 ${MESSAGE}" 1
     ;;
   *)
     send_notification "ℹ️ ${MESSAGE}" -1
