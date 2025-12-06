@@ -12,7 +12,7 @@ in
         "${./keepalive.sh}"
       ];
       Environment = {
-        PATH = "${lib.makeBinPath [ pkgs.curl ]}:/opt/homebrew/bin:/usr/local/bin";
+        PATH = lib.makeBinPath [ pkgs.curl ];
       };
       StartInterval = 3;
       StandardOutPath = "/tmp/neverssl-keepalive.log";
