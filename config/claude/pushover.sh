@@ -174,7 +174,7 @@ if echo "$input" | jq -e '.hook_event_name == "Stop"' >/dev/null 2>&1; then
     ' "$TRANSCRIPT_PATH" 2>/dev/null | head -c 50)
 
     # Check if this is a plan approval request (ExitPlanMode was called)
-    IS_PLAN_MODE=$(jq -rs '[.[] | select(.type=="tool_use") | .tool_use.name] | any(. == "ExitPlanMode")' "$TRANSCRIPT_PATH" 2>/dev/null)
+    IS_PLAN_MODE=$(jq -s '[.[] | select(.type=="assistant") | .message.content[]? | select(.type=="tool_use" and .name=="ExitPlanMode")] | length > 0' "$TRANSCRIPT_PATH" 2>/dev/null)
     if [ "$IS_PLAN_MODE" = "true" ]; then
       send_notification "📋 Plan ready for approval
 📂 ${CWD}
