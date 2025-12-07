@@ -135,7 +135,7 @@ setup: nix-setup ## Basic Nix setup (alias for nix-setup).
 setup-dev: nix-setup git-submodule-sync shell-install ## Set up local development environment (Nix + submodules + shell).
 
 .PHONY: switch
-switch: nix-switch launchctl ## Apply Nix configuration and restart launchd agents.
+switch: nix-switch ## Apply Nix configuration and restart launchd agents.
 
 .PHONY: test
 test: neovim-test
