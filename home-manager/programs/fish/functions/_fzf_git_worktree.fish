@@ -1,6 +1,6 @@
 function _fzf_git_worktree --description="fzf git worktree picker"
-    # Get all worktrees with their paths
-    set -l worktrees (git worktree list 2>/dev/null | awk '{print $1}')
+    # Get all worktrees sorted by most recent commit
+    set -l worktrees (for wt in (git worktree list 2>/dev/null | awk '{print $1}'); echo (git -C $wt log -1 --format=%ct 2>/dev/null; or echo 0)" $wt"; end | sort -rn | awk '{print $2}')
 
     if test -z "$worktrees"
         echo "No worktrees found (not a git repository?)"
