@@ -44,18 +44,65 @@ send_notification() {
 # Handle Notification hook
 if echo "$input" | jq -e '.message' >/dev/null 2>&1; then
   MESSAGE=$(echo "$input" | jq -r '.message')
+  TRANSCRIPT_PATH=$(echo "$input" | jq -r '.transcript_path // empty')
+
+  # Extract stats from transcript if available
+  if [ -n "$TRANSCRIPT_PATH" ] && [ -f "$TRANSCRIPT_PATH" ]; then
+    TOOL_COUNT=$(jq -s '[.[] | select(.type=="tool_use")] | length' "$TRANSCRIPT_PATH" 2>/dev/null || echo "0")
+    FILE_COUNT=$(jq -rs '[.[] | select(.type=="tool_use" and (.tool_use.name=="Write" or .tool_use.name=="Edit")) | .tool_use.input.file_path // empty] | unique | length' "$TRANSCRIPT_PATH" 2>/dev/null || echo "0")
+    CWD=$(jq -rs '[.[] | select(.cwd) | .cwd] | first // empty' "$TRANSCRIPT_PATH" 2>/dev/null | sed "s|$HOME|~|")
+    TASK=$(jq -rs '[.[] | select(.type=="user") | .message.content[]? | select(.type=="text") | .text] | map(select(startswith("<") | not)) | first // empty' "$TRANSCRIPT_PATH" 2>/dev/null | head -c 50)
+    STATS="${TOOL_COUNT} tools, ${FILE_COUNT} files"
+  else
+    CWD=$(echo "$input" | jq -r '.cwd // empty' | sed "s|$HOME|~|")
+    STATS=""
+    TASK=""
+  fi
 
   case "$MESSAGE" in
   'Claude is waiting for your input')
-    send_notification "⏸️ Waiting for your input" 1
+    if [ -n "$TASK" ]; then
+      send_notification "⏸️ Waiting for input: ${STATS}
+📂 ${CWD}
+💬 ${TASK}" 1
+    else
+      send_notification "⏸️ Waiting for input
+📂 ${CWD}" 1
+    fi
     ;;
   'Claude Code login successful')
     # No need to notify on login - user is already active
     exit 0
     ;;
-  'Claude needs your permission to use '*)
-    TOOL="${MESSAGE#Claude needs your permission to use }"
-    send_notification "🔐 ${TOOL} permission required" 1
+  *'permission'* | *'Permission'*)
+    if [ -n "$TASK" ]; then
+      send_notification "🔐 Permission required: ${STATS}
+📂 ${CWD}
+💬 ${TASK}" 1
+    else
+      send_notification "🔐 Permission required
+📂 ${CWD}" 1
+    fi
+    ;;
+  *'plan'* | *'Plan'* | *'approval'* | *'Approval'*)
+    if [ -n "$TASK" ]; then
+      send_notification "📋 Plan ready: ${STATS}
+📂 ${CWD}
+💬 ${TASK}" 1
+    else
+      send_notification "📋 Plan ready for review
+📂 ${CWD}" 1
+    fi
+    ;;
+  *'waiting'* | *'Waiting'*)
+    if [ -n "$TASK" ]; then
+      send_notification "⏸️ Waiting: ${STATS}
+📂 ${CWD}
+💬 ${TASK}" 1
+    else
+      send_notification "⏸️ Waiting for input
+📂 ${CWD}" 1
+    fi
     ;;
   *)
     send_notification "ℹ️ ${MESSAGE}" -1
@@ -106,11 +153,58 @@ if echo "$input" | jq -e '.stop_hook_active' >/dev/null 2>&1; then
   exit 0
 fi
 
-# Handle Stop hook (priority 1 = high - Claude finished, needs attention)
-if echo "$input" | jq -e '.session_id' >/dev/null 2>&1; then
-  SESSION_ID=$(echo "$input" | jq -r '.session_id[0:8]')
-  CWD=$(echo "$input" | jq -r '.cwd // "unknown"' | sed "s|$HOME|~|")
-  send_notification "✅ Work completed in ${CWD}" -1
+# Handle Stop hook (priority 0 = normal - Claude finished)
+if echo "$input" | jq -e '.hook_event_name == "Stop"' >/dev/null 2>&1; then
+  TRANSCRIPT_PATH=$(echo "$input" | jq -r '.transcript_path')
+
+  if [ -f "$TRANSCRIPT_PATH" ]; then
+    # Extract stats from transcript
+    TOOL_COUNT=$(jq -s '[.[] | select(.type=="tool_use")] | length' "$TRANSCRIPT_PATH" 2>/dev/null || echo "0")
+    FILE_COUNT=$(jq -rs '[.[] | select(.type=="tool_use" and (.tool_use.name=="Write" or .tool_use.name=="Edit")) | .tool_use.input.file_path // empty] | unique | length' "$TRANSCRIPT_PATH" 2>/dev/null || echo "0")
+
+    # Extract working directory from first entry with cwd
+    CWD=$(jq -rs '[.[] | select(.cwd) | .cwd] | first // empty' "$TRANSCRIPT_PATH" 2>/dev/null | sed "s|$HOME|~|")
+    [ -z "$CWD" ] && CWD="unknown"
+
+    # Extract first actual user prompt (skip <ide_*> and <system-*> tags)
+    TASK=$(jq -rs '
+      [.[] | select(.type=="user") | .message.content[]? | select(.type=="text") | .text]
+      | map(select(startswith("<") | not))
+      | first // empty
+    ' "$TRANSCRIPT_PATH" 2>/dev/null | head -c 50)
+
+    # Check if this is plan approval waiting vs work completed
+    # Plan approval = ExitPlanMode was the last tool AND no files were modified
+    # Work completed = Files were changed OR last tool was not ExitPlanMode
+    LAST_TOOL=$(jq -rs '
+      [.[] | select(.type=="assistant") | .message.content[]? | select(.type=="tool_use") | .name]
+      | last // ""
+    ' "$TRANSCRIPT_PATH" 2>/dev/null)
+
+    PERMISSION_MODE=$(echo "$input" | jq -r '.permission_mode // "default"')
+
+    # Only show "Plan ready for approval" if:
+    # 1. permission_mode is "plan" AND
+    # 2. ExitPlanMode was the last tool AND
+    # 3. No files were modified (FILE_COUNT == 0)
+    if [ "$PERMISSION_MODE" = "plan" ] && [ "$LAST_TOOL" = "ExitPlanMode" ] && [ "$FILE_COUNT" = "0" ]; then
+      send_notification "📋 Plan ready for approval
+📂 ${CWD}
+💬 ${TASK}" 1
+      exit 0
+    fi
+
+    if [ -n "$TASK" ]; then
+      send_notification "✅ Work completed: ${TOOL_COUNT} tools, ${FILE_COUNT} files
+📂 ${CWD}
+💬 ${TASK}" 0
+    else
+      send_notification "✅ Work completed: ${TOOL_COUNT} tools, ${FILE_COUNT} files
+📂 ${CWD}" 0
+    fi
+  else
+    send_notification "✅ Work completed" 0
+  fi
   exit 0
 fi
 

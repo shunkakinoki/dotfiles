@@ -62,6 +62,8 @@
       fdp = "_fzf_directory_picker --allow-cd --prompt-name Projects ~/";
       ffp = "_fzf_file_picker --allow-open-in-editor --prompt-name Files";
       ffpf = "_fzf_file_picker --allow-open-in-editor --show-hidden-files --prompt-name Files+";
+      fgb = "_fzf_git_branch";
+      fgw = "_fzf_git_worktree";
       fhq = "_fzf_ghq_picker";
       shortcuts = "_fish_shortcuts";
     };
@@ -119,6 +121,8 @@
         "_fzf_cmd_history"
         "_fzf_directory_picker"
         "_fzf_file_picker"
+        "_fzf_git_branch"
+        "_fzf_git_worktree"
         "_fzf_ghq_picker"
         "_fzf_preview_cmd"
         "_fzf_preview_name"
