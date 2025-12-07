@@ -1,5 +1,77 @@
 local M = {}
 
+-- ====================================================================================
+-- SMART DELETE FUNCTION
+-- Avoids polluting registers with whitespace-only lines
+-- From: https://github.com/dmtrKovalenko/dotfiles
+-- ====================================================================================
+function M.smart_delete(key)
+	local line = vim.api.nvim_get_current_line()
+	-- If the line is empty or contains only whitespace, delete to blackhole register
+	if line:match("^%s*$") then
+		return '"_' .. key
+	end
+	return key
+end
+
+-- ====================================================================================
+-- YANK REGISTER ROTATION
+-- Rotates registers 1-9 when yanking to preserve yank history
+-- From: https://github.com/dmtrKovalenko/dotfiles
+-- ====================================================================================
+function M.yank_shift()
+	-- Rotate registers 9 <- 8 <- ... <- 2 <- 1 <- "
+	for i = 9, 2, -1 do
+		local prev_content = vim.fn.getreg(tostring(i - 1))
+		local prev_type = vim.fn.getregtype(tostring(i - 1))
+		vim.fn.setreg(tostring(i), prev_content, prev_type)
+	end
+	-- Move unnamed register to register 1
+	local unnamed_content = vim.fn.getreg('"')
+	local unnamed_type = vim.fn.getregtype('"')
+	vim.fn.setreg("1", unnamed_content, unnamed_type)
+end
+
+-- ====================================================================================
+-- CLOSE FLOATING WINDOWS
+-- Utility to close all floating windows
+-- From: https://github.com/dmtrKovalenko/dotfiles
+-- ====================================================================================
+function M.close_floating_wins()
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		if vim.api.nvim_win_is_valid(win) then
+			local config = vim.api.nvim_win_get_config(win)
+			if config.relative ~= "" then
+				vim.api.nvim_win_close(win, false)
+			end
+		end
+	end
+end
+
+-- ====================================================================================
+-- SSH DETECTION
+-- Detect if running in SSH session for clipboard handling
+-- ====================================================================================
+function M.is_ssh()
+	return os.getenv("SSH_CLIENT") ~= nil or os.getenv("SSH_TTY") ~= nil
+end
+
+-- ====================================================================================
+-- FILE ICON RETRIEVAL
+-- Get file icon using nvim-web-devicons if available
+-- ====================================================================================
+function M.get_file_icon(filename)
+	local ok, devicons = pcall(require, "nvim-web-devicons")
+	if ok then
+		local icon, _ = devicons.get_icon(filename, vim.fn.fnamemodify(filename, ":e"), { default = true })
+		return icon or ""
+	end
+	return ""
+end
+
+-- ====================================================================================
+-- BUFFER CYCLING
+-- ====================================================================================
 function M.cycle_buffer(direction)
 	local current_buf = vim.api.nvim_get_current_buf()
 
