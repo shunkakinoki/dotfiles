@@ -7,7 +7,7 @@ function _fzf_git_branch --description="fzf git branch picker"
         return 1
     end
 
-    set -l selected_branch (printf '%s\n' $branches | fzf --prompt=(_fzf_preview_name "Branch") --preview='git log --oneline --color=always -n 10 {}' --preview-window right:50%)
+    set -l selected_branch (printf '%s\n' $branches | fzf --prompt=(_fzf_preview_name "Branch") --preview='echo "Last commit: $(git log -1 --format="%cr" {} 2>/dev/null)"; echo ""; git log --oneline --color=always -n 10 {}' --preview-window right:50%)
 
     if test -n "$selected_branch"
         git checkout $selected_branch
