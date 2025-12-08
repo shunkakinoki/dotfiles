@@ -129,6 +129,11 @@
               username = "runner";
               system = "aarch64-linux";
             };
+            kyber = import ./named-hosts/kyber {
+              inherit inputs;
+              username = "ubuntu";
+              system = "x86_64-linux";
+            };
           };
         };
 
