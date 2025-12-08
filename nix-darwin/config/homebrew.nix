@@ -41,6 +41,7 @@
       "protobuf"
       "reth"
       "sheldon"
+      "sshpass"
       "temporal"
       "watchexec"
     ];
