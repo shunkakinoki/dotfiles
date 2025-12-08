@@ -24,6 +24,7 @@ with pkgs;
   curlie
   cursor-cli
   delta
+  doppler
   difftastic
   direnv
   duf
