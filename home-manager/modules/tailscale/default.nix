@@ -9,8 +9,9 @@ with lib;
 let
   cfg = config.modules.tailscale;
 
-  # Check if configuration is enabled
-  configEnabled = (cfg.serviceConfig != { } && cfg.serviceConfig != null);
+  # Check if user-level services should be enabled
+  # Only enable if serviceConfig is explicitly set (not for system-level service only)
+  configEnabled = cfg.serviceConfig != { } && cfg.serviceConfig != null;
 
   # System service unit file (for non-NixOS Linux)
   tailscaledServiceFile = pkgs.writeText "tailscaled.service" ''
@@ -57,7 +58,7 @@ in
 
       socketPath = mkOption {
         type = types.str;
-        default = "${config.xdg.runtimeDir}/tailscale/tailscaled.sock";
+        default = "${config.home.homeDirectory}/.local/run/tailscale/tailscaled.sock";
         description = "Socket path for Tailscale daemon";
       };
     };
@@ -71,7 +72,7 @@ in
 
     # Optional auth key file (better for secrets)
     authKeyFile = mkOption {
-      type = types.path;
+      type = types.str;
       default = "";
       description = "Path to file containing Tailscale auth key (better for secrets)";
     };
@@ -150,7 +151,7 @@ in
       };
 
       Service = {
-        ExecStart = "${pkgs.tailscale}/bin/tailscaled --state=${config.xdg.dataHome}/tailscale/tailscaled.state --socket=${config.xdg.runtimeDir}/tailscale/tailscaled.sock";
+        ExecStart = "${pkgs.tailscale}/bin/tailscaled --state=${config.xdg.dataHome}/tailscale/tailscaled.state --socket=${cfg.tailscaled.socketPath}";
         Restart = "on-failure";
         RestartSec = 5;
       }
@@ -167,41 +168,38 @@ in
         Requires = [ "tailscaled.service" ];
       };
 
-      Service = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-        ExecStart = "${pkgs.bash}/bin/bash -c '
-          # Determine auth key
-          AUTH_KEY=" "
-          if [ -n \"${cfg.authKey}\" ]; then
-            AUTH_KEY=\"${cfg.authKey}\"
-          elif [ -n \"${cfg.authKeyFile}\" ] && [ -f \"${cfg.authKeyFile}\" ]; then
-            AUTH_KEY=$(cat \"${cfg.authKeyFile}\")
-          fi
+      Service =
+        let
+          authKeyArg =
+            if cfg.authKey != "" then
+              "--authkey=${cfg.authKey}"
+            else if cfg.authKeyFile != "" then
+              "--authkey-file=${cfg.authKeyFile}"
+            else
+              "";
 
-          # Configure Tailscale with specified options
-          tailscale up \
-            ${
-                      optionalString (cfg.authKey != "") "--authkey=${cfg.authKey}"
-                    } \
-            ${
-                      optionalString (cfg.authKeyFile != "") "--authkey=$AUTH_KEY"
-                    } \
-            ${optionalString cfg.acceptRoutes "--accept-routes"} \
-            ${optionalString cfg.advertiseExitNode "--advertise-exit-node"} \
-            ${
-                      optionalString (cfg.useExitNode != "") "--exit-node=${cfg.useExitNode}"
-                    } \
-            ${concatStringsSep " " cfg.extraUpArgs}'";
-        ExecStop = "${pkgs.tailscale}/bin/tailscale down";
-      };
+          upArgs = lib.filter (x: x != "") [
+            authKeyArg
+            (optionalString cfg.acceptRoutes "--accept-routes")
+            (optionalString cfg.advertiseExitNode "--advertise-exit-node")
+            (optionalString (cfg.useExitNode != "") "--exit-node=${cfg.useExitNode}")
+          ] ++ cfg.extraUpArgs;
+
+          upCommand = "${pkgs.tailscale}/bin/tailscale up ${concatStringsSep " " upArgs}";
+        in
+        {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStart = upCommand;
+          ExecStop = "${pkgs.tailscale}/bin/tailscale down";
+        };
 
       Install.WantedBy = [ "default.target" ];
     };
 
     home.activation.createTailscaleDirs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       TAILSCALE_STATE_DIR="${config.xdg.dataHome}/tailscale"
-      TAILSCALE_RUN_DIR="${config.xdg.runtimeDir}/tailscale"
+      TAILSCALE_RUN_DIR="$(dirname "${cfg.tailscaled.socketPath}")"
 
       # Create directories
       $DRY_RUN_CMD mkdir -p "$TAILSCALE_STATE_DIR"
@@ -218,13 +216,18 @@ in
       lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         SERVICE_FILE="/etc/systemd/system/tailscaled.service"
         NIX_SERVICE="${tailscaledServiceFile}"
+        SUDOERS_FILE="/etc/sudoers.d/nix-tailscale"
 
         # Resolve an elevated command helper
         SUDO_CMD=""
         if command -v sudo >/dev/null 2>&1; then
           SUDO_CMD="sudo"
+        elif [ -x /usr/bin/sudo ]; then
+          SUDO_CMD="/usr/bin/sudo"
         elif command -v doas >/dev/null 2>&1; then
           SUDO_CMD="doas"
+        elif [ -x /usr/bin/doas ]; then
+          SUDO_CMD="/usr/bin/doas"
         elif [ "$(id -u)" -ne 0 ]; then
           echo "Tailscale system service installation requires root privileges, but sudo/doas is not available." >&2
           echo "Either install sudo, configure doas, or run home-manager as root." >&2
@@ -245,8 +248,27 @@ in
           run_root_cmd cp "$NIX_SERVICE" "$SERVICE_FILE"
           run_root_cmd systemctl daemon-reload
           run_root_cmd systemctl enable tailscaled
-          echo "Tailscaled service installed. Run: sudo systemctl start tailscaled && tailscale up"
+          echo "Tailscaled service installed."
         fi
+
+        # Configure sudo to include Nix profile paths
+        echo "Configuring sudo PATH for Nix packages..."
+        SUDOERS_CONTENT="# Added by home-manager for Nix Tailscale
+Defaults secure_path=\"${config.home.homeDirectory}/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\"
+"
+
+        # Create temporary file with correct content
+        TEMP_SUDOERS=$(mktemp)
+        echo "$SUDOERS_CONTENT" > "$TEMP_SUDOERS"
+
+        # Only update if different or doesn't exist
+        if ! cmp -s "$TEMP_SUDOERS" "$SUDOERS_FILE" 2>/dev/null; then
+          run_root_cmd cp "$TEMP_SUDOERS" "$SUDOERS_FILE"
+          run_root_cmd chmod 0440 "$SUDOERS_FILE"
+          echo "Sudo PATH configured. You can now use: sudo tailscale login"
+        fi
+
+        rm -f "$TEMP_SUDOERS"
       ''
     );
   };
