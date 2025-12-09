@@ -222,9 +222,9 @@ in
         # Only install if service file differs from nix-generated one
         if ! cmp -s "$NIX_SERVICE" "$SERVICE_FILE" 2>/dev/null; then
           echo "Installing tailscaled systemd service (requires sudo)..."
-          $DRY_RUN_CMD sudo cp "$NIX_SERVICE" "$SERVICE_FILE"
-          $DRY_RUN_CMD sudo systemctl daemon-reload
-          $DRY_RUN_CMD sudo systemctl enable tailscaled
+          $DRY_RUN_CMD /usr/bin/sudo cp "$NIX_SERVICE" "$SERVICE_FILE"
+          $DRY_RUN_CMD /usr/bin/sudo systemctl daemon-reload
+          $DRY_RUN_CMD /usr/bin/sudo systemctl enable tailscaled
           echo "Tailscaled service installed. Run: sudo systemctl start tailscaled && tailscale up"
         fi
       ''
