@@ -26,6 +26,7 @@
       "Bash(git cherry-pick:*)",
       "Bash(git commit:*)",
       "Bash(git diff:*)",
+      "Bash(git fetch:*)",
       "Bash(git log:*)",
       "Bash(git merge:*)",
       "Bash(git pull:*)",
