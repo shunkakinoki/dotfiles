@@ -233,9 +233,9 @@ in
 
         run_root_cmd() {
           if [ -n "$SUDO_CMD" ]; then
-            ${DRY_RUN_CMD:-} "$SUDO_CMD" "$@"
+            ''${DRY_RUN_CMD:-} "$SUDO_CMD" "$@"
           else
-            ${DRY_RUN_CMD:-} "$@"
+            ''${DRY_RUN_CMD:-} "$@"
           fi
         }
 
