@@ -40,6 +40,7 @@
     shellAliases = {
       neofetch = "fastfetch";
 
+      cliproxyapi = "cd ~/.cli-proxy-api && /opt/homebrew/bin/cliproxyapi -config config.yaml";
       ocd = "bun run ${config.home.homeDirectory}/ghq/github.com/shunkakinoki/open-composer/apps/cli/src/index.ts";
     };
     shellAbbrs = {
