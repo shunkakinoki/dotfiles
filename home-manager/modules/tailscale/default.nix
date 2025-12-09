@@ -219,12 +219,32 @@ in
         SERVICE_FILE="/etc/systemd/system/tailscaled.service"
         NIX_SERVICE="${tailscaledServiceFile}"
 
+        # Resolve an elevated command helper
+        SUDO_CMD=""
+        if command -v sudo >/dev/null 2>&1; then
+          SUDO_CMD="sudo"
+        elif command -v doas >/dev/null 2>&1; then
+          SUDO_CMD="doas"
+        elif [ "$(id -u)" -ne 0 ]; then
+          echo "Tailscale system service installation requires root privileges, but sudo/doas is not available." >&2
+          echo "Either install sudo, configure doas, or run home-manager as root." >&2
+          exit 1
+        fi
+
+        run_root_cmd() {
+          if [ -n "$SUDO_CMD" ]; then
+            ${DRY_RUN_CMD:-} "$SUDO_CMD" "$@"
+          else
+            ${DRY_RUN_CMD:-} "$@"
+          fi
+        }
+
         # Only install if service file differs from nix-generated one
         if ! cmp -s "$NIX_SERVICE" "$SERVICE_FILE" 2>/dev/null; then
-          echo "Installing tailscaled systemd service (requires sudo)..."
-          $DRY_RUN_CMD sudo cp "$NIX_SERVICE" "$SERVICE_FILE"
-          $DRY_RUN_CMD sudo systemctl daemon-reload
-          $DRY_RUN_CMD sudo systemctl enable tailscaled
+          echo "Installing tailscaled systemd service (requires root)..."
+          run_root_cmd cp "$NIX_SERVICE" "$SERVICE_FILE"
+          run_root_cmd systemctl daemon-reload
+          run_root_cmd systemctl enable tailscaled
           echo "Tailscaled service installed. Run: sudo systemctl start tailscaled && tailscale up"
         fi
       ''
