@@ -9,8 +9,8 @@ echo "🚀 Setting up Kyber server..."
 
 # 1. Install Tailscale
 echo "📦 Installing Tailscale..."
-if ! command -v tailscale &> /dev/null; then
-    curl -fsSL https://tailscale.com/install.sh | sh
+if ! command -v tailscale &>/dev/null; then
+  curl -fsSL https://tailscale.com/install.sh | sh
 fi
 
 # 2. Enable and start Tailscale daemon
