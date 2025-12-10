@@ -40,6 +40,7 @@
     shellAliases = {
       neofetch = "fastfetch";
 
+      cliproxyapi = "cd ~/.cli-proxy-api && /opt/homebrew/bin/cliproxyapi -config config.yaml";
       ocd = "bun run ${config.home.homeDirectory}/ghq/github.com/shunkakinoki/open-composer/apps/cli/src/index.ts";
     };
     shellAbbrs = {
@@ -58,6 +59,7 @@
       gco = "_gco_function";
       grco = "_grco_function";
       grcr = "_grcr_function";
+      kyber = "_kyber_function";
       fch = "_fzf_cmd_history --allow-execute";
       fdp = "_fzf_directory_picker --allow-cd --prompt-name Projects ~/";
       ffp = "_fzf_file_picker --allow-open-in-editor --prompt-name Files";
@@ -130,6 +132,7 @@
         "_grco_function"
         "_grcr_function"
         "_hm_load_env_file"
+        "_kyber_function"
         "fish_user_key_bindings"
       ]
   );
