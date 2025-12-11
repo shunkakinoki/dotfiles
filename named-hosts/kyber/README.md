@@ -13,7 +13,7 @@ sudo systemctl enable --now tailscaled
 sudo tailscale up
 
 # 2. Install Nix
-curl -L https://nixos.org/nix/install | sh -s -- --daemon
+curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux
 
 # 3. Clone dotfiles
 git clone https://github.com/shunkakinoki/dotfiles ~/dotfiles

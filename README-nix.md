@@ -3,8 +3,8 @@
 This repo can build and expose all CLI tools declared in `package.json` using the exact versions from the lockfile, via [dream2nix].
 
 ## Prerequisites
-- Nix installed
-- Flakes enabled (see Nix docs)
+- Nix installed (recommended: [Determinate Nix](https://determinate.systems/nix-installer/))
+- Flakes enabled (automatically enabled with Determinate Nix)
 
 ## Typical usage
 
