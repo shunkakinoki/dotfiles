@@ -37,7 +37,6 @@
       "Bash(git status:*)",
       "Bash(git tag:*)",
       "Bash(git worktree:*)",
-      "Bash(go:*)",
       "Bash(grep:*)",
       "Bash(kubectl:*)",
       "Bash(lsof:*)",
@@ -52,8 +51,6 @@
       "Bash(pip:*)",
       "Bash(pip3:*)",
       "Bash(pnpm:*)",
-      "Bash(python:*)",
-      "Bash(python3:*)",
       "Bash(scutil:*)",
       "Bash(timeout:*)",
       "Bash(uv:*)",
@@ -69,7 +66,30 @@
       "Bash(chmod -R 777:*)",
       "Bash(mkfs:*)",
       "Bash(dd if=:*)"
-    ]
+    ],
+    "read": {
+      "deny": [
+        "**/.env",
+        "**/.env.local",
+        "**/*.pem",
+        "**/*.key",
+        "**/secrets/**",
+        "**/credentials/**",
+        "**/.aws/**",
+        "**/.ssh/**",
+        "**/docker-compose*.yml",
+        "**/config/database.yml"
+      ]
+    },
+    "write": {
+      "deny": [
+        "**/secrets/**",
+        "**/credentials/**",
+        "**/.ssh/**",
+        "**/config/database.yml",
+        "**/docker-compose*.yml"
+      ]
+    }
   },
   "hooks": {
     "UserPromptSubmit": [
