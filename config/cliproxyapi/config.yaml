@@ -37,7 +37,7 @@ ws-auth: false
 # AMP
 ampcode:
   upstream-url: "https://ampcode.com"
-  restrict-management-to-localhost: true
+  restrict-management-to-localhost: false
 # amp-upstream-api-key: "" # Optional - use AMP_API_KEY env var or ~/.local/share/amp/secrets.json
 
 # Gemini API keys (preferred)
