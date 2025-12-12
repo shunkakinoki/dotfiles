@@ -24,7 +24,11 @@ setup() {
   chmod +x "$MOCK_BIN/curl"
   export PATH="$MOCK_BIN:$PATH"
 }
+cleanup() {
+  rm -rf "$MOCK_BIN"
+}
 Before 'setup'
+After 'cleanup'
 
 It 'skips notification for "other" reason'
 When run bash "$SCRIPT" <<<'{"reason": "other"}'
@@ -48,7 +52,11 @@ setup() {
   chmod +x "$MOCK_BIN/curl"
   export PATH="$MOCK_BIN:$PATH"
 }
+cleanup() {
+  rm -rf "$MOCK_BIN"
+}
 Before 'setup'
+After 'cleanup'
 
 It 'skips login notification'
 When run bash "$SCRIPT" <<<'{"message": "Claude Code login successful"}'
