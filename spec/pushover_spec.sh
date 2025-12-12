@@ -18,12 +18,13 @@ Describe 'SessionEnd hook'
 setup() {
   export PUSHOVER_API_TOKEN="test_token"
   export PUSHOVER_USER_KEY="test_user"
+  # Create a mock curl that does nothing
+  MOCK_BIN=$(mktemp -d)
+  printf '#!/bin/sh\nexit 0\n' > "$MOCK_BIN/curl"
+  chmod +x "$MOCK_BIN/curl"
+  export PATH="$MOCK_BIN:$PATH"
 }
 Before 'setup'
-
-mock_curl() {
-  echo "CURL_CALLED"
-}
 
 It 'skips notification for "other" reason'
 When run bash "$SCRIPT" <<<'{"reason": "other"}'
@@ -41,6 +42,11 @@ Describe 'Notification hook'
 setup() {
   export PUSHOVER_API_TOKEN="test_token"
   export PUSHOVER_USER_KEY="test_user"
+  # Create a mock curl that does nothing
+  MOCK_BIN=$(mktemp -d)
+  printf '#!/bin/sh\nexit 0\n' > "$MOCK_BIN/curl"
+  chmod +x "$MOCK_BIN/curl"
+  export PATH="$MOCK_BIN:$PATH"
 }
 Before 'setup'
 
