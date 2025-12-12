@@ -22,10 +22,23 @@ jobs:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run ShellSpec Tests (Dev Shell)
         run: make shell-test-dev
+  shellcheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run ShellCheck (Dev Shell)
+        run: make shell-check-dev
   shell-check:
     if: always()
     needs:
       - shellspec
+      - shellcheck
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:

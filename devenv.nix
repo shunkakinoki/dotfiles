@@ -5,6 +5,7 @@
     pkgs.nodejs
     pkgs.bun
     pkgs.neovim
+    pkgs.shellcheck
     pkgs.shellspec
   ];
 
