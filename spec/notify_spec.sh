@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2329
 
 Describe 'notify.sh'
   SCRIPT="$PWD/config/claude/notify.sh"
