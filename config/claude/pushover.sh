@@ -112,8 +112,12 @@ if echo "$input" | jq -e '.message' >/dev/null 2>&1; then
 fi
 
 # Handle SessionEnd hook (priority 0 = normal)
+# Skip "other" reason - it's a generic/unknown reason that's noisy
 if echo "$input" | jq -e '.reason' >/dev/null 2>&1; then
   REASON=$(echo "$input" | jq -r '.reason')
+  if [ "$REASON" = "other" ]; then
+    exit 0
+  fi
   send_notification "👋 Session ended: ${REASON}" 0
   exit 0
 fi
