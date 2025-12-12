@@ -15,8 +15,6 @@ End
 
 Describe 'SessionEnd hook'
 setup() {
-  export PUSHOVER_API_TOKEN="test_token"
-  export PUSHOVER_USER_KEY="test_user"
   # Create a mock curl that does nothing
   MOCK_BIN=$(mktemp -d)
   printf '#!/bin/sh\nexit 0\n' >"$MOCK_BIN/curl"
@@ -30,21 +28,20 @@ Before 'setup'
 After 'cleanup'
 
 It 'skips notification for "other" reason'
-When run bash "$SCRIPT" <<<'{"reason": "other"}'
+# Clear any inherited credentials, set test ones
+When run bash -c "unset PUSHOVER_API_TOKEN PUSHOVER_USER_KEY; export PUSHOVER_API_TOKEN=test_token PUSHOVER_USER_KEY=test_user; bash '$SCRIPT'" <<<'{"reason": "other"}'
 The status should be success
 The output should eq ''
 End
 
 It 'processes notification for "user_exit" reason'
-When run bash "$SCRIPT" <<<'{"reason": "user_exit"}'
+When run bash -c "unset PUSHOVER_API_TOKEN PUSHOVER_USER_KEY; export PUSHOVER_API_TOKEN=test_token PUSHOVER_USER_KEY=test_user; bash '$SCRIPT'" <<<'{"reason": "user_exit"}'
 The status should be success
 End
 End
 
 Describe 'Notification hook'
 setup() {
-  export PUSHOVER_API_TOKEN="test_token"
-  export PUSHOVER_USER_KEY="test_user"
   # Create a mock curl that does nothing
   MOCK_BIN=$(mktemp -d)
   printf '#!/bin/sh\nexit 0\n' >"$MOCK_BIN/curl"
@@ -58,12 +55,12 @@ Before 'setup'
 After 'cleanup'
 
 It 'skips login notification'
-When run bash "$SCRIPT" <<<'{"message": "Claude Code login successful"}'
+When run bash -c "unset PUSHOVER_API_TOKEN PUSHOVER_USER_KEY; export PUSHOVER_API_TOKEN=test_token PUSHOVER_USER_KEY=test_user; bash '$SCRIPT'" <<<'{"message": "Claude Code login successful"}'
 The status should be success
 End
 
 It 'processes waiting notification'
-When run bash "$SCRIPT" <<<'{"message": "Claude is waiting for your input"}'
+When run bash -c "unset PUSHOVER_API_TOKEN PUSHOVER_USER_KEY; export PUSHOVER_API_TOKEN=test_token PUSHOVER_USER_KEY=test_user; bash '$SCRIPT'" <<<'{"message": "Claude is waiting for your input"}'
 The status should be success
 End
 End
