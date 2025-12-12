@@ -6,7 +6,8 @@ SCRIPT="$PWD/config/claude/pushover.sh"
 
 Describe 'credential handling'
 It 'exits 0 when no credentials are set'
-When run bash -c "unset PUSHOVER_API_TOKEN PUSHOVER_USER_KEY; bash '$SCRIPT'" <<<'{}'
+# Use fake HOME so script cannot source real .env file
+When run bash -c "HOME=/nonexistent bash '$SCRIPT'" <<<'{}'
 The status should be success
 The output should eq ''
 End
