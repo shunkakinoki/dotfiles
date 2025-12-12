@@ -15,15 +15,15 @@ input=$(cat)
 
 # Extract tool name - only process Bash commands
 tool_name=$(echo "$input" | jq -r '.tool.name // empty' 2>/dev/null)
-[[ "$tool_name" != "Bash" ]] && exit 0
+[[ $tool_name != "Bash" ]] && exit 0
 
 # Extract the command to be executed
 command=$(echo "$input" | jq -r '.tool.input.command // empty' 2>/dev/null)
-[[ -z "$command" ]] && exit 0
+[[ -z $command ]] && exit 0
 
 # Path to settings file with deny patterns
 settings="$HOME/.claude/settings.json"
-[[ ! -f "$settings" ]] && exit 0
+[[ ! -f $settings ]] && exit 0
 
 # Read deny patterns from settings
 mapfile -t deny_patterns < <(jq -r '.permissions.deny[]?' "$settings" 2>/dev/null)
@@ -35,7 +35,7 @@ matches_pattern() {
   local pattern="$2"
 
   # Extract pattern from Bash(...) format
-  if [[ "$pattern" =~ ^Bash\((.+)\)$ ]]; then
+  if [[ $pattern =~ ^Bash\((.+)\)$ ]]; then
     local check_pattern="${BASH_REMATCH[1]}"
     # Remove trailing :* if present (legacy format)
     check_pattern="${check_pattern%:*}"
@@ -43,7 +43,7 @@ matches_pattern() {
     # Use bash glob matching (extended globbing)
     shopt -s extglob
     # shellcheck disable=SC2053
-    if [[ "$cmd" == $check_pattern ]]; then
+    if [[ $cmd == $check_pattern ]]; then
       return 0
     fi
     shopt -u extglob
@@ -59,7 +59,7 @@ IFS=$'\n' read -r -d '' -a segments < <(echo "$command" | sed 's/[;&|]\+/\n/g' &
 for segment in "${segments[@]}"; do
   # Trim leading/trailing whitespace
   segment=$(echo "$segment" | xargs 2>/dev/null) || continue
-  [[ -z "$segment" ]] && continue
+  [[ -z $segment ]] && continue
 
   for pattern in "${deny_patterns[@]}"; do
     if matches_pattern "$segment" "$pattern"; then

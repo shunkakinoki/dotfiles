@@ -21,8 +21,8 @@ export MANAGEMENT_PASSWORD="${CLIPROXY_MANAGEMENT_PASSWORD:-}"
 # Generate config from template with secrets injected
 if [ -f "$TEMPLATE" ]; then
   sed -e "s|__OPENROUTER_API_KEY__|${OPENROUTER_API_KEY:-}|g" \
-      -e "s|__CLIPROXY_MANAGEMENT_PASSWORD__|${CLIPROXY_MANAGEMENT_PASSWORD:-}|g" \
-      "$TEMPLATE" >"$CONFIG"
+    -e "s|__CLIPROXY_MANAGEMENT_PASSWORD__|${CLIPROXY_MANAGEMENT_PASSWORD:-}|g" \
+    "$TEMPLATE" >"$CONFIG"
 fi
 
 # Change to config dir so logs are created there
