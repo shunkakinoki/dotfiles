@@ -33,12 +33,14 @@ Before 'setup'
 After 'cleanup'
 
 It 'exits 0 for login notification'
-When run bash -c "unset PUSHOVER_API_TOKEN PUSHOVER_USER_KEY; bash '$SCRIPT'" <<<'{"message": "Claude Code login successful"}'
+# Use fake HOME so script cannot source real .env file
+When run bash -c "HOME=/nonexistent bash '$SCRIPT'" <<<'{"message": "Claude Code login successful"}'
 The status should be success
 End
 
 It 'exits 0 for waiting notification'
-When run bash -c "unset PUSHOVER_API_TOKEN PUSHOVER_USER_KEY; bash '$SCRIPT'" <<<'{"message": "Claude is waiting for your input"}'
+# Use fake HOME so script cannot source real .env file
+When run bash -c "HOME=/nonexistent bash '$SCRIPT'" <<<'{"message": "Claude is waiting for your input"}'
 The status should be success
 End
 End
@@ -58,7 +60,8 @@ Before 'setup'
 After 'cleanup'
 
 It 'exits 0 for session end'
-When run bash -c "unset PUSHOVER_API_TOKEN PUSHOVER_USER_KEY; bash '$SCRIPT'" <<<'{"reason": "user_exit"}'
+# Use fake HOME so script cannot source real .env file
+When run bash -c "HOME=/nonexistent bash '$SCRIPT'" <<<'{"reason": "user_exit"}'
 The status should be success
 End
 End
