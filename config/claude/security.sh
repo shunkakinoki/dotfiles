@@ -53,6 +53,7 @@ matches_pattern() {
 
 # Split command at logical operators to catch hidden dangerous commands
 # This handles: cmd1 ; cmd2, cmd1 && cmd2, cmd1 || cmd2, cmd1 | cmd2
+# shellcheck disable=SC2001
 IFS=$'\n' read -r -d '' -a segments < <(echo "$command" | sed 's/[;&|]\+/\n/g' && printf '\0') || true
 
 for segment in "${segments[@]}"; do
