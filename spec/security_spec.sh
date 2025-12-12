@@ -5,7 +5,6 @@ Describe 'security.sh'
 
   setup() {
     TEMP_HOME=$(mktemp -d)
-    ORIGINAL_HOME="$HOME"
     mkdir -p "$TEMP_HOME/.claude"
     cat > "$TEMP_HOME/.claude/settings.json" << 'SETTINGS'
 {

@@ -44,6 +44,7 @@ if ! command -v nix >/dev/null 2>&1; then
   if [ "$OS" = "macos" ]; then
     curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
     # For macOS, source the Nix profile immediately to update PATH in CI.
+    # shellcheck source=/dev/null
     . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
     NIX_EFFECTIVE_BIN_PATH="/nix/var/nix/profiles/default/bin"
   else # Linux
@@ -52,6 +53,7 @@ if ! command -v nix >/dev/null 2>&1; then
       curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --init none --no-confirm
       # Source the Nix profile script to add Nix to PATH for the current shell
       if [ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+        # shellcheck source=/dev/null
         . "$HOME/.nix-profile/etc/profile.d/nix.sh"
         echo "Sourced Nix profile for Determinate Nix (Docker) setup."
       else
@@ -64,7 +66,7 @@ if ! command -v nix >/dev/null 2>&1; then
       echo "Performing Determinate Nix multi-user installation..."
       curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux
       # For Linux multi-user installations, add the default Nix path for the current shell.
-      export PATH=/nix/var/nix/profiles/default/bin:$PATH
+      export PATH="/nix/var/nix/profiles/default/bin:$PATH"
       NIX_EFFECTIVE_BIN_PATH="/nix/var/nix/profiles/default/bin"
     fi
   fi

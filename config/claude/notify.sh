@@ -8,6 +8,7 @@
 if [ -z "$PUSHOVER_API_TOKEN" ] || [ -z "$PUSHOVER_USER_KEY" ]; then
   if [ -f "$HOME/dotfiles/.env" ]; then
     set -a
+    # shellcheck source=/dev/null
     source "$HOME/dotfiles/.env" 2>/dev/null
     set +a
   fi
