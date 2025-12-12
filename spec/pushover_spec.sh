@@ -20,7 +20,7 @@ setup() {
   export PUSHOVER_USER_KEY="test_user"
   # Create a mock curl that does nothing
   MOCK_BIN=$(mktemp -d)
-  printf '#!/bin/sh\nexit 0\n' > "$MOCK_BIN/curl"
+  printf '#!/bin/sh\nexit 0\n' >"$MOCK_BIN/curl"
   chmod +x "$MOCK_BIN/curl"
   export PATH="$MOCK_BIN:$PATH"
 }
@@ -44,7 +44,7 @@ setup() {
   export PUSHOVER_USER_KEY="test_user"
   # Create a mock curl that does nothing
   MOCK_BIN=$(mktemp -d)
-  printf '#!/bin/sh\nexit 0\n' > "$MOCK_BIN/curl"
+  printf '#!/bin/sh\nexit 0\n' >"$MOCK_BIN/curl"
   chmod +x "$MOCK_BIN/curl"
   export PATH="$MOCK_BIN:$PATH"
 }

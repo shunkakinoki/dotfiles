@@ -21,16 +21,14 @@
   (final: prev: {
     # Fix shellspec wrapper script that breaks when called via symlinks
     shellspec = prev.shellspec.overrideAttrs (oldAttrs: {
-      postInstall =
-        (oldAttrs.postInstall or "")
-        + ''
-          # Replace the wrapper with one that uses an absolute path
-          cat > $out/bin/shellspec << EOF
-          #!${prev.bash}/bin/sh
-          exec "$out/lib/shellspec/shellspec" "\$@"
-          EOF
-          chmod +x $out/bin/shellspec
-        '';
+      postInstall = (oldAttrs.postInstall or "") + ''
+        # Replace the wrapper with one that uses an absolute path
+        cat > $out/bin/shellspec << EOF
+        #!${prev.bash}/bin/sh
+        exec "$out/lib/shellspec/shellspec" "\$@"
+        EOF
+        chmod +x $out/bin/shellspec
+      '';
     });
   })
 ]
