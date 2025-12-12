@@ -1,5 +1,5 @@
 {
-  "cleanupPeriodDays": 300,
+  "cleanupPeriodDays": -1,
   "permissions": {
     "allow": [
       "Bash(bun:*)",
