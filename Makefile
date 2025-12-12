@@ -631,3 +631,8 @@ git-submodule-sync: ## Sync and update git submodules.
 shell-test: ## Run shell script tests using ShellSpec.
 	@echo "🧪 Running shell tests..."
 	@shellspec
+
+.PHONY: shell-test-dev
+shell-test-dev: ## Run shell tests inside the Nix dev shell (mirrors CI).
+	@echo "🧪 Running shell tests inside the Nix dev shell..."
+	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) shell-test
