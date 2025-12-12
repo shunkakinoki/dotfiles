@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2329
 
 Describe 'security.sh'
   SCRIPT="$PWD/config/claude/security.sh"
