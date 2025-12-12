@@ -20,31 +20,45 @@ End
 
 Describe 'Notification hook (no Pushover)'
 setup() {
-  unset PUSHOVER_API_TOKEN 2>/dev/null || true
-  unset PUSHOVER_USER_KEY 2>/dev/null || true
+  # Create mock osascript that does nothing
+  MOCK_BIN=$(mktemp -d)
+  printf '#!/bin/sh\nexit 0\n' >"$MOCK_BIN/osascript"
+  chmod +x "$MOCK_BIN/osascript"
+  export PATH="$MOCK_BIN:$PATH"
+}
+cleanup() {
+  rm -rf "$MOCK_BIN"
 }
 Before 'setup'
+After 'cleanup'
 
 It 'exits 0 for login notification'
-When run bash "$SCRIPT" <<<'{"message": "Claude Code login successful"}'
+When run bash -c "unset PUSHOVER_API_TOKEN PUSHOVER_USER_KEY; bash '$SCRIPT'" <<<'{"message": "Claude Code login successful"}'
 The status should be success
 End
 
 It 'exits 0 for waiting notification'
-When run bash "$SCRIPT" <<<'{"message": "Claude is waiting for your input"}'
+When run bash -c "unset PUSHOVER_API_TOKEN PUSHOVER_USER_KEY; bash '$SCRIPT'" <<<'{"message": "Claude is waiting for your input"}'
 The status should be success
 End
 End
 
 Describe 'SessionEnd hook (no Pushover)'
 setup() {
-  unset PUSHOVER_API_TOKEN 2>/dev/null || true
-  unset PUSHOVER_USER_KEY 2>/dev/null || true
+  # Create mock osascript that does nothing
+  MOCK_BIN=$(mktemp -d)
+  printf '#!/bin/sh\nexit 0\n' >"$MOCK_BIN/osascript"
+  chmod +x "$MOCK_BIN/osascript"
+  export PATH="$MOCK_BIN:$PATH"
+}
+cleanup() {
+  rm -rf "$MOCK_BIN"
 }
 Before 'setup'
+After 'cleanup'
 
 It 'exits 0 for session end'
-When run bash "$SCRIPT" <<<'{"reason": "user_exit"}'
+When run bash -c "unset PUSHOVER_API_TOKEN PUSHOVER_USER_KEY; bash '$SCRIPT'" <<<'{"reason": "user_exit"}'
 The status should be success
 End
 End

@@ -6,9 +6,7 @@ SCRIPT="$PWD/config/claude/pushover.sh"
 
 Describe 'credential handling'
 It 'exits 0 when no credentials are set'
-unset PUSHOVER_API_TOKEN 2>/dev/null || true
-unset PUSHOVER_USER_KEY 2>/dev/null || true
-When run bash "$SCRIPT" <<<'{}'
+When run bash -c "unset PUSHOVER_API_TOKEN PUSHOVER_USER_KEY; bash '$SCRIPT'" <<<'{}'
 The status should be success
 The output should eq ''
 End
