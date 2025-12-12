@@ -13,4 +13,9 @@
     source = ./notify.sh;
     executable = true;
   };
+
+  home.file.".claude/security.sh" = {
+    source = ./security.sh;
+    executable = true;
+  };
 }

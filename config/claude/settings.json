@@ -126,6 +126,11 @@
         "hooks": [
           {
             "type": "command",
+            "command": "$HOME/.claude/security.sh",
+            "timeout": 5
+          },
+          {
+            "type": "command",
             "command": "$HOME/.claude/notify.sh",
             "timeout": 10
           },
