@@ -1,0 +1,47 @@
+name: Shell Tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**/*.sh"
+      - "spec/**"
+      - ".shellspec"
+      - ".github/workflows/shell.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "**/*.sh"
+      - "spec/**"
+      - ".shellspec"
+      - ".github/workflows/shell.yml"
+
+jobs:
+  shellspec:
+    name: ShellSpec Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install ShellSpec
+        run: |
+          curl -fsSL https://git.io/shellspec | sh -s -- --yes
+
+      - name: Run ShellSpec
+        run: |
+          export PATH="$HOME/.local/lib/shellspec:$PATH"
+          shellspec
+
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "./config/claude"
+          ignore_paths: "node_modules"

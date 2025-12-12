@@ -61,6 +61,7 @@ with pkgs;
   ripgrep
   rustup
   sccache
+  shellspec
   speedtest-cli
   sqlite
   stern

@@ -138,7 +138,7 @@ setup-dev: nix-setup git-submodule-sync shell-install ## Set up local developmen
 switch: nix-switch launchctl ## Apply Nix configuration and restart launchd agents.
 
 .PHONY: test
-test: neovim-test
+test: neovim-test shell-test ## Run all tests (neovim + shell).
 
 .PHONY: update
 update: nix-update shell-update neovim-update ## Update Nix flake and configurations.
@@ -624,3 +624,10 @@ git-submodule-sync: ## Sync and update git submodules.
 	@git submodule sync
 	@git submodule update --init --recursive
 	@echo "✅ Submodules synced and updated"
+
+##@ Shell
+
+.PHONY: shell-test
+shell-test: ## Run shell script tests using ShellSpec.
+	@echo "🧪 Running shell tests..."
+	@shellspec
