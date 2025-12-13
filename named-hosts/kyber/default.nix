@@ -68,6 +68,12 @@ home-manager.lib.homeManagerConfiguration {
         $DRY_RUN_CMD chmod $VERBOSE_ARG 700 ${config.home.homeDirectory}/.ssh
       '';
 
+      # Ensure agenix config directory exists
+      home.activation.ensureAgenixDirectory = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
+        $DRY_RUN_CMD mkdir -p $VERBOSE_ARG ${config.home.homeDirectory}/.config/agenix
+        $DRY_RUN_CMD chmod $VERBOSE_ARG 700 ${config.home.homeDirectory}/.config/agenix
+      '';
+
       # Manually deploy agenix secrets during activation
       # This ensures secrets are deployed even if the agenix activation hook doesn't run properly
       home.activation.deployAgenixSecrets = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
@@ -83,14 +89,25 @@ home-manager.lib.homeManagerConfiguration {
             echo "⚠️  Warning: Secret file not found at $SECRET_FILE"
           fi
         fi
+      '';
 
-        # Decrypt and import GPG key for commit signing
-        GPG_SECRET_FILE="${builtins.toString ../galactica/keys/gpg.age}"
+      # Import GPG key from agenix-encrypted file
+      home.activation.importGpgKey = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+        $VERBOSE_ECHO "🔑 Starting GPG key import process..."
+        # Import GPG key from agenix
+        GPG_SECRET_FILE="${config.home.homeDirectory}/dotfiles/named-hosts/galactica/keys/gpg.age"
+        GPG_TEMP_FILE="${config.home.homeDirectory}/.config/agenix/gpg.key"
+
         if [[ -f "$GPG_SECRET_FILE" ]]; then
-          echo "Importing GPG key from agenix..."
+          echo "Checking GPG key import status..."
           # Check if key is already imported
           if ! ${pkgs.gnupg}/bin/gpg --list-secret-keys | grep -q "C2E97FCFF482925D"; then
-            $DRY_RUN_CMD ${pkgs.rage}/bin/rage -d -i ${config.home.homeDirectory}/.ssh/id_ed25519 "$GPG_SECRET_FILE" | ${pkgs.gnupg}/bin/gpg --batch --import
+            echo "Importing GPG key from agenix..."
+            # Decrypt to temp location and import
+            $DRY_RUN_CMD ${pkgs.rage}/bin/rage -d -i ${config.home.homeDirectory}/.ssh/id_ed25519 -o "$GPG_TEMP_FILE" "$GPG_SECRET_FILE"
+            $DRY_RUN_CMD ${pkgs.gnupg}/bin/gpg --batch --import "$GPG_TEMP_FILE"
+            # Clean up temp file
+            $DRY_RUN_CMD rm -f "$GPG_TEMP_FILE"
             echo "✅ GPG key imported successfully"
           else
             echo "ℹ️  GPG key already imported"
