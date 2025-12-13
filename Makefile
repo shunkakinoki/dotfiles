@@ -630,7 +630,7 @@ git-submodule-sync: ## Sync and update git submodules.
 .PHONY: shell-test
 shell-test: ## Run shell script tests using ShellSpec.
 	@echo "🧪 Running shell tests..."
-	@shellspec
+	@bash -c "shellspec"
 
 .PHONY: shell-test-dev
 shell-test-dev: ## Run shell tests inside the Nix dev shell (mirrors CI).
