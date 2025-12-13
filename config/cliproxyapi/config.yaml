@@ -4,11 +4,11 @@ port: 8317
 remote-management:
   # Whether to allow remote (non-localhost) management access.
   # When false, only localhost can access management endpoints (a key is still required).
-  allow-remote: true
+  allow-remote: false
   # Management key. If a plaintext value is provided here, it will be hashed on startup.
   # All management requests (even from localhost) require this key.
   # Leave empty to disable the Management API entirely (404 for all /v0/management routes).
-  secret-key: ""
+  secret-key: "__CLIPROXY_MANAGEMENT_PASSWORD__"
   # Disable the bundled management control panel asset download and HTTP route when true.
   disable-control-panel: false
 # Authentication directory (supports ~ for home directory). If you use Windows, please set the directory like this: `C:/cli-proxy-api/`

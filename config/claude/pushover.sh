@@ -9,8 +9,8 @@
 # inherit shell environment variables
 if [ -z "$PUSHOVER_API_TOKEN" ] || [ -z "$PUSHOVER_USER_KEY" ]; then
   if [ -f "$HOME/dotfiles/.env" ]; then
-    # shellcheck source=/dev/null
     set -a
+    # shellcheck source=/dev/null
     source "$HOME/dotfiles/.env" 2>/dev/null
     set +a
   fi
@@ -112,8 +112,12 @@ if echo "$input" | jq -e '.message' >/dev/null 2>&1; then
 fi
 
 # Handle SessionEnd hook (priority 0 = normal)
+# Skip "other" reason - it's a generic/unknown reason that's noisy
 if echo "$input" | jq -e '.reason' >/dev/null 2>&1; then
   REASON=$(echo "$input" | jq -r '.reason')
+  if [ "$REASON" = "other" ]; then
+    exit 0
+  fi
   send_notification "👋 Session ended: ${REASON}" 0
   exit 0
 fi

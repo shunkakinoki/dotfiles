@@ -60,6 +60,7 @@
       grco = "_grco_function";
       grcr = "_grcr_function";
       kyber = "_kyber_function";
+      kybers = "_kybers_function";
       fch = "_fzf_cmd_history --allow-execute";
       fdp = "_fzf_directory_picker --allow-cd --prompt-name Projects ~/";
       ffp = "_fzf_file_picker --allow-open-in-editor --prompt-name Files";
@@ -133,6 +134,7 @@
         "_grcr_function"
         "_hm_load_env_file"
         "_kyber_function"
+        "_kybers_function"
         "fish_user_key_bindings"
       ]
   );

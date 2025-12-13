@@ -1,0 +1,3 @@
+function _kybers_function --description "SSH to Kyber server via Tailscale with zellij"
+  tailscale ssh -t ubuntu@kyber zellij attach -c
+end

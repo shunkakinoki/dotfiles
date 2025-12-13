@@ -135,10 +135,10 @@ setup: nix-setup ## Basic Nix setup (alias for nix-setup).
 setup-dev: nix-setup git-submodule-sync shell-install ## Set up local development environment (Nix + submodules + shell).
 
 .PHONY: switch
-switch: nix-switch ## Apply Nix configuration and restart launchd agents.
+switch: nix-switch launchctl ## Apply Nix configuration and restart launchd agents.
 
 .PHONY: test
-test: neovim-test
+test: neovim-test shell-test ## Run all tests (neovim + shell).
 
 .PHONY: update
 update: nix-update shell-update neovim-update ## Update Nix flake and configurations.
@@ -202,8 +202,8 @@ devenv-cli: ## Build the packaged devenv CLI binary.
 .PHONY: nix-install
 nix-install: ## Install Nix if not already installed.
 	@if [ "$(NIX_ENV)" = "not_found" ]; then \
-		echo "🚀 Installing Nix environment for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"; \
-		curl -L https://nixos.org/nix/install | sh; \
+		echo "🚀 Installing Determinate Nix environment for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"; \
+		curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install; \
 	fi
 	@echo "✅ Nix environment installed!"
 
@@ -624,3 +624,25 @@ git-submodule-sync: ## Sync and update git submodules.
 	@git submodule sync
 	@git submodule update --init --recursive
 	@echo "✅ Submodules synced and updated"
+
+##@ Shell
+
+.PHONY: shell-test
+shell-test: ## Run shell script tests using ShellSpec.
+	@echo "🧪 Running shell tests..."
+	@bash -c "shellspec"
+
+.PHONY: shell-test-dev
+shell-test-dev: ## Run shell tests inside the Nix dev shell (mirrors CI).
+	@echo "🧪 Running shell tests inside the Nix dev shell..."
+	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) shell-test
+
+.PHONY: shell-check
+shell-check: ## Run ShellCheck on shell scripts.
+	@echo "🔍 Running ShellCheck..."
+	@find . -name '*.sh' -not -path './node_modules/*' -not -path './.git/*' -not -path './result/*' | xargs shellcheck
+
+.PHONY: shell-check-dev
+shell-check-dev: ## Run ShellCheck inside the Nix dev shell (mirrors CI).
+	@echo "🔍 Running ShellCheck inside the Nix dev shell..."
+	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) shell-check

@@ -5,6 +5,8 @@
     pkgs.nodejs
     pkgs.bun
     pkgs.neovim
+    pkgs.shellcheck
+    pkgs.shellspec
   ];
 
   containers = pkgs.lib.mkIf (!pkgs.stdenv.hostPlatform.isLinux) (pkgs.lib.mkForce { });
