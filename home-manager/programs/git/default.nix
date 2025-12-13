@@ -78,10 +78,8 @@
         };
       };
       # GPG signing configuration
-      # Note: Disabled by default due to GPG agent issues in some environments
-      # Enable with: git config --global commit.gpgsign true
       signing = {
-        signByDefault = false;
+        signByDefault = true;
         key = "shunkakinoki@gmail.com";
       };
       ignores = lib.splitString "\n" (builtins.readFile ./.gitignore.global);
