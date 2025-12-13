@@ -77,6 +77,20 @@ When run bash -c "HOME='$TEMP_HOME' bash '$SCRIPT'"
 The status should eq 2
 The stderr should include 'BLOCKED'
 End
+
+It 'blocks sudo with arguments (legacy sudo:* pattern)'
+Data '{"tool": {"name": "Bash", "input": {"command": "sudo rm -rf /"}}}'
+When run bash -c "HOME='$TEMP_HOME' bash '$SCRIPT'"
+The status should eq 2
+The stderr should include 'BLOCKED'
+End
+
+It 'blocks hidden dangerous command after semicolon'
+Data '{"tool": {"name": "Bash", "input": {"command": "echo ok; rm -rf /*"}}}'
+When run bash -c "HOME='$TEMP_HOME' bash '$SCRIPT'"
+The status should eq 2
+The stderr should include 'BLOCKED'
+End
 End
 
 Describe 'edge cases'

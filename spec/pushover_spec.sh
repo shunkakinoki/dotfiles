@@ -6,18 +6,14 @@ SCRIPT="$PWD/config/claude/pushover.sh"
 
 Describe 'credential handling'
 setup() {
-  # Create a mock curl in case credentials leak through
-  MOCK_BIN=$(mktemp -d)
-  printf '#!/bin/sh\nexit 0\n' >"$MOCK_BIN/curl"
-  chmod +x "$MOCK_BIN/curl"
-  export PATH="$MOCK_BIN:$PATH"
+  mock_bin_setup curl
 
   # Unset credentials to ensure clean test environment
   unset PUSHOVER_API_TOKEN
   unset PUSHOVER_USER_KEY
 }
 cleanup() {
-  rm -rf "$MOCK_BIN"
+  mock_bin_cleanup
 }
 Before 'setup'
 After 'cleanup'
@@ -32,60 +28,106 @@ End
 
 Describe 'SessionEnd hook'
 setup() {
-  # Create a mock curl that does nothing
-  MOCK_BIN=$(mktemp -d)
-  printf '#!/bin/sh\nexit 0\n' >"$MOCK_BIN/curl"
-  chmod +x "$MOCK_BIN/curl"
-  export PATH="$MOCK_BIN:$PATH"
+  mock_bin_setup curl
 
   # Set test credentials
   export PUSHOVER_API_TOKEN="test_token"
   export PUSHOVER_USER_KEY="test_user"
 }
 cleanup() {
-  rm -rf "$MOCK_BIN"
+  mock_bin_cleanup
 }
 Before 'setup'
 After 'cleanup'
 
 It 'skips notification for "other" reason'
-When run bash -c 'echo "{\"reason\": \"other\"}" | bash '"$SCRIPT"
+When run bash -c 'echo "{\"reason\": \"other\"}" | bash '"$SCRIPT"'; cat "$MOCK_LOG"'
 The status should be success
 The output should eq ''
 End
 
 It 'processes notification for "user_exit" reason'
-When run bash -c 'echo "{\"reason\": \"user_exit\"}" | bash '"$SCRIPT"
+When run bash -c 'echo "{\"reason\": \"user_exit\"}" | bash '"$SCRIPT"'; cat "$MOCK_LOG"'
 The status should be success
+The output should include 'priority=0'
+The output should include 'https://api.pushover.net/1/messages.json'
 End
 End
 
 Describe 'Notification hook'
 setup() {
-  # Create a mock curl that does nothing
-  MOCK_BIN=$(mktemp -d)
-  printf '#!/bin/sh\nexit 0\n' >"$MOCK_BIN/curl"
-  chmod +x "$MOCK_BIN/curl"
-  export PATH="$MOCK_BIN:$PATH"
+  mock_bin_setup curl
 
   # Set test credentials
   export PUSHOVER_API_TOKEN="test_token"
   export PUSHOVER_USER_KEY="test_user"
 }
 cleanup() {
-  rm -rf "$MOCK_BIN"
+  mock_bin_cleanup
 }
 Before 'setup'
 After 'cleanup'
 
 It 'skips login notification'
-When run bash -c 'echo "{\"message\": \"Claude Code login successful\"}" | bash '"$SCRIPT"
+When run bash -c 'echo "{\"message\": \"Claude Code login successful\"}" | bash '"$SCRIPT"'; cat "$MOCK_LOG"'
 The status should be success
+The output should eq ''
 End
 
 It 'processes waiting notification'
-When run bash -c 'echo "{\"message\": \"Claude is waiting for your input\"}" | bash '"$SCRIPT"
+When run bash -c 'echo "{\"message\": \"Claude is waiting for your input\", \"cwd\": \"/tmp\"}" | bash '"$SCRIPT"'; cat "$MOCK_LOG"'
 The status should be success
+The output should include 'priority=1'
+The output should include 'Waiting'
+End
+
+It 'processes permission notification at high priority'
+When run bash -c 'echo "{\"message\": \"Claude needs your permission to use Bash\", \"cwd\": \"/tmp\"}" | bash '"$SCRIPT"'; cat "$MOCK_LOG"'
+The status should be success
+The output should include 'priority=1'
+The output should include 'Permission required'
+End
+End
+
+Describe 'Stop hook'
+setup() {
+  mock_bin_setup curl
+
+  export PUSHOVER_API_TOKEN="test_token"
+  export PUSHOVER_USER_KEY="test_user"
+
+  TRANSCRIPT=$(mktemp)
+}
+cleanup() {
+  rm -f "$TRANSCRIPT"
+  mock_bin_cleanup
+}
+Before 'setup'
+After 'cleanup'
+
+It 'notifies plan ready for approval (plan mode + ExitPlanMode + no files)'
+cat >"$TRANSCRIPT" <<'JSON'
+{"type":"user","message":{"content":[{"type":"text","text":"Do the thing"}]}}
+{"cwd":"/tmp/project"}
+{"type":"assistant","message":{"content":[{"type":"tool_use","name":"ExitPlanMode"}]}}
+JSON
+When run bash -c 'echo "{\"hook_event_name\": \"Stop\", \"transcript_path\": \"'"$TRANSCRIPT"'\", \"permission_mode\": \"plan\"}" | bash '"$SCRIPT"'; cat "$MOCK_LOG"'
+The status should be success
+The output should include 'Plan ready for approval'
+The output should include 'priority=1'
+End
+
+It 'notifies work completed when files were modified'
+cat >"$TRANSCRIPT" <<'JSON'
+{"type":"user","message":{"content":[{"type":"text","text":"Update config"}]}}
+{"cwd":"/tmp/project"}
+{"type":"tool_use","tool_use":{"name":"Write","input":{"file_path":"config/foo"}}}
+{"type":"assistant","message":{"content":[{"type":"tool_use","name":"Bash"}]}}
+JSON
+When run bash -c 'echo "{\"hook_event_name\": \"Stop\", \"transcript_path\": \"'"$TRANSCRIPT"'\", \"permission_mode\": \"plan\"}" | bash '"$SCRIPT"'; cat "$MOCK_LOG"'
+The status should be success
+The output should include 'Work completed'
+The output should include 'priority=0'
 End
 End
 End

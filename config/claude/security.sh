@@ -37,8 +37,10 @@ matches_pattern() {
   # Extract pattern from Bash(...) format
   if [[ $pattern =~ ^Bash\((.+)\)$ ]]; then
     local check_pattern="${BASH_REMATCH[1]}"
-    # Remove trailing :* if present (legacy format)
-    check_pattern="${check_pattern%:*}"
+    # Convert legacy trailing :* into a prefix glob (e.g. sudo:* -> sudo*)
+    if [[ $check_pattern == *':*' ]]; then
+      check_pattern="${check_pattern%:*}*"
+    fi
 
     # Use bash glob matching (extended globbing)
     shopt -s extglob
@@ -53,8 +55,7 @@ matches_pattern() {
 
 # Split command at logical operators to catch hidden dangerous commands
 # This handles: cmd1 ; cmd2, cmd1 && cmd2, cmd1 || cmd2, cmd1 | cmd2
-# shellcheck disable=SC2001
-IFS=$'\n' read -r -d '' -a segments < <(echo "$command" | sed 's/[;&|]\+/\n/g' && printf '\0') || true
+IFS=$'\n' read -r -d '' -a segments < <(echo "$command" | sed -E 's/[;&|]+/\n/g' && printf '\0') || true
 
 for segment in "${segments[@]}"; do
   # Trim leading/trailing whitespace
