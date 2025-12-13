@@ -110,23 +110,6 @@ home-manager.lib.homeManagerConfiguration {
         };
       };
 
-      # Git GPG signing configuration
-      programs.git = {
-        enable = true;
-        signing = {
-          signByDefault = true;
-          key = "shunkakinoki@gmail.com";
-        };
-        extraConfig = {
-          commit = {
-            gpgSign = true;
-          };
-          tag = {
-            gpgSign = true;
-          };
-        };
-      };
-
       # GPG agent configuration
       services.gpg-agent = {
         enable = true;

@@ -76,6 +76,16 @@
         merge = {
           conflictStyle = "zdiff3";
         };
+        commit = {
+          gpgSign = true;
+        };
+        tag = {
+          gpgSign = true;
+        };
+      };
+      signing = {
+        signByDefault = true;
+        key = "shunkakinoki@gmail.com";
       };
       ignores = lib.splitString "\n" (builtins.readFile ./.gitignore.global);
     };
