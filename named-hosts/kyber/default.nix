@@ -49,11 +49,11 @@ home-manager.lib.homeManagerConfiguration {
         name: value:
         {
           file = value.file;
-          # Deploy GitHub SSH key to ~/.ssh/ with correct permissions
         }
         // (
           if name == "keys/id_ed25519.age" then
             {
+              # Deploy GitHub SSH key to ~/.ssh/ with correct permissions
               path = "/home/${username}/.ssh/id_ed25519_github";
               mode = "0600";
             }
@@ -61,6 +61,29 @@ home-manager.lib.homeManagerConfiguration {
             { }
         )
       ) (import ./secrets.nix);
+
+      # Ensure SSH directory exists before agenix tries to deploy secrets
+      home.activation.ensureSshDirectory = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
+        $DRY_RUN_CMD mkdir -p $VERBOSE_ARG ${config.home.homeDirectory}/.ssh
+        $DRY_RUN_CMD chmod $VERBOSE_ARG 700 ${config.home.homeDirectory}/.ssh
+      '';
+
+      # Manually deploy agenix secrets during activation
+      # This ensures secrets are deployed even if the agenix activation hook doesn't run properly
+      home.activation.deployAgenixSecrets = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        # Decrypt and deploy GitHub SSH key if it doesn't exist
+        if [[ ! -f "${config.home.homeDirectory}/.ssh/id_ed25519_github" ]]; then
+          echo "Deploying GitHub SSH key from agenix..."
+          SECRET_FILE="${builtins.toString ../galactica/keys/id_ed25519.age}"
+          if [[ -f "$SECRET_FILE" ]]; then
+            $DRY_RUN_CMD ${pkgs.rage}/bin/rage -d -i ${config.home.homeDirectory}/.ssh/id_ed25519 "$SECRET_FILE" -o ${config.home.homeDirectory}/.ssh/id_ed25519_github
+            $DRY_RUN_CMD chmod $VERBOSE_ARG 0600 ${config.home.homeDirectory}/.ssh/id_ed25519_github
+            echo "✅ GitHub SSH key deployed successfully"
+          else
+            echo "⚠️  Warning: Secret file not found at $SECRET_FILE"
+          fi
+        fi
+      '';
 
       programs.home-manager.enable = true;
 
