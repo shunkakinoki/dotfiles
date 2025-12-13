@@ -13,7 +13,17 @@ function _ssh_add_github --description "Add GitHub SSH key to ssh-agent"
 
     # Initialize keychain and add the GitHub key
     echo "🔑 Adding GitHub SSH key to keychain..."
-    eval (keychain --eval --quiet --confirm ~/.ssh/id_ed25519_github)
+    # Use bash to evaluate keychain output, then use ssh-add
+    bash -c 'eval $(keychain --eval --quiet --confirm ~/.ssh/id_ed25519_github 2>/dev/null); ssh-add -l' >/dev/null 2>&1
+
+    # Alternative: directly use ssh-add if keychain already initialized ssh-agent
+    if not ssh-add -l >/dev/null 2>&1
+        # Start ssh-agent if not running
+        eval (ssh-agent -c)
+    end
+
+    # Add the key directly
+    ssh-add ~/.ssh/id_ed25519_github
 
     # Verify the key was added
     if ssh-add -l | grep -q "id_ed25519_github"
