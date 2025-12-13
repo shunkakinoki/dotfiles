@@ -4,7 +4,10 @@ let
   # Kyber's SSH public key
   kyber = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO0IZtP3KSzY6GVSZ+R+VQYYfu3sEOVaQGDblQxAtwNM ubuntu@kyber";
   # All machines that can decrypt shared secrets
-  allMachines = [ galactica kyber ];
+  allMachines = [
+    galactica
+    kyber
+  ];
 in
 {
   # Shared SSH key for GitHub authentication (accessible on all machines)
