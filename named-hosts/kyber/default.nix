@@ -114,7 +114,7 @@ home-manager.lib.homeManagerConfiguration {
       services.gpg-agent = {
         enable = true;
         enableSshSupport = false;
-        pinentryPackage = pkgs.pinentry-curses;
+        pinentryPackage = pkgs.pinentry-tty;
         defaultCacheTtl = 1800;
         maxCacheTtl = 7200;
       };

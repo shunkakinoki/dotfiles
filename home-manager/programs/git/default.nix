@@ -1,8 +1,8 @@
 { pkgs, lib, ... }:
 let
   # Determine if we're on a system where GPG signing should be enabled
-  # Enable on macOS (galactica), disable on Linux servers (kyber) by default
-  enableGpgSigning = pkgs.stdenv.isDarwin;
+  # Enable on all systems
+  enableGpgSigning = true;
 in
 {
   programs = {
