@@ -51,7 +51,7 @@ home-manager.lib.homeManagerConfiguration {
           file = value.file;
         }
         // (
-          if name == "keys/id_ed25519.age" then
+          if name == "keys/id_github.age" then
             {
               # Deploy GitHub SSH key to ~/.ssh/ with correct permissions
               path = "/home/${username}/.ssh/id_ed25519_github";
@@ -74,7 +74,7 @@ home-manager.lib.homeManagerConfiguration {
         # Decrypt and deploy GitHub SSH key if it doesn't exist
         if [[ ! -f "${config.home.homeDirectory}/.ssh/id_ed25519_github" ]]; then
           echo "Deploying GitHub SSH key from agenix..."
-          SECRET_FILE="${builtins.toString ../galactica/keys/id_ed25519.age}"
+          SECRET_FILE="${builtins.toString ../galactica/keys/id_github.age}"
           if [[ -f "$SECRET_FILE" ]]; then
             $DRY_RUN_CMD ${pkgs.rage}/bin/rage -d -i ${config.home.homeDirectory}/.ssh/id_ed25519 "$SECRET_FILE" -o ${config.home.homeDirectory}/.ssh/id_ed25519_github
             $DRY_RUN_CMD chmod $VERBOSE_ARG 0600 ${config.home.homeDirectory}/.ssh/id_ed25519_github
