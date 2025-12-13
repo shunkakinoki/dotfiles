@@ -25,13 +25,16 @@ function _ssh_add_github --description "Add GitHub SSH key to ssh-agent"
     # Add the key directly
     ssh-add ~/.ssh/id_ed25519_github
 
-    # Verify the key was added
-    if ssh-add -l | grep -q "id_ed25519_github"
+    # Verify the key was added (check for either the filename or email)
+    if ssh-add -l | grep -qE "(id_ed25519_github|shunkakinoki@gmail.com)"
         echo "✅ GitHub SSH key added successfully"
         echo "🧪 Testing GitHub connection..."
         ssh -T git@github.com
+        return 0
     else
-        echo "❌ Failed to add GitHub SSH key"
-        return 1
+        echo "⚠️  Could not verify key was added, but ssh-add may have succeeded"
+        echo "🧪 Testing GitHub connection anyway..."
+        ssh -T git@github.com
+        return $status
     end
 end
