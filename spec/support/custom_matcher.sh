@@ -25,10 +25,10 @@ EOF
 }
 
 mock_bin_cleanup() {
-  if [[ -n "${MOCK_ORIGINAL_PATH:-}" ]]; then
+  if [[ -n ${MOCK_ORIGINAL_PATH:-} ]]; then
     export PATH="$MOCK_ORIGINAL_PATH"
   fi
-  if [[ -n "${MOCK_BIN:-}" ]]; then
+  if [[ -n ${MOCK_BIN:-} ]]; then
     rm -rf "$MOCK_BIN"
   fi
   unset MOCK_BIN MOCK_LOG MOCK_ORIGINAL_PATH
