@@ -112,6 +112,7 @@ home-manager.lib.homeManagerConfiguration {
 
       # Git GPG signing configuration
       programs.git = {
+        enable = true;
         signing = {
           signByDefault = true;
           key = "shunkakinoki@gmail.com";
