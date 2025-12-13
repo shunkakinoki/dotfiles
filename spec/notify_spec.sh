@@ -12,7 +12,7 @@ setup() {
 Before 'setup'
 
 It 'exits early and skips local notification'
-When run bash "$SCRIPT" <<<'{"message": "Test message"}'
+When run bash -c 'echo "{\"message\": \"Test message\"}" | bash '"$SCRIPT"
 The status should be success
 The output should eq ''
 End
@@ -25,6 +25,10 @@ setup() {
   printf '#!/bin/sh\nexit 0\n' >"$MOCK_BIN/osascript"
   chmod +x "$MOCK_BIN/osascript"
   export PATH="$MOCK_BIN:$PATH"
+
+  # Unset Pushover credentials to ensure clean test environment
+  unset PUSHOVER_API_TOKEN
+  unset PUSHOVER_USER_KEY
 }
 cleanup() {
   rm -rf "$MOCK_BIN"
@@ -34,13 +38,13 @@ After 'cleanup'
 
 It 'exits 0 for login notification'
 # Use fake HOME so script cannot source real .env file
-When run bash -c "HOME=/nonexistent bash '$SCRIPT'" <<<'{"message": "Claude Code login successful"}'
+When run bash -c 'echo "{\"message\": \"Claude Code login successful\"}" | env HOME=/nonexistent bash '"$SCRIPT"
 The status should be success
 End
 
 It 'exits 0 for waiting notification'
 # Use fake HOME so script cannot source real .env file
-When run bash -c "HOME=/nonexistent bash '$SCRIPT'" <<<'{"message": "Claude is waiting for your input"}'
+When run bash -c 'echo "{\"message\": \"Claude is waiting for your input\"}" | env HOME=/nonexistent bash '"$SCRIPT"
 The status should be success
 End
 End
@@ -52,6 +56,10 @@ setup() {
   printf '#!/bin/sh\nexit 0\n' >"$MOCK_BIN/osascript"
   chmod +x "$MOCK_BIN/osascript"
   export PATH="$MOCK_BIN:$PATH"
+
+  # Unset Pushover credentials to ensure clean test environment
+  unset PUSHOVER_API_TOKEN
+  unset PUSHOVER_USER_KEY
 }
 cleanup() {
   rm -rf "$MOCK_BIN"
@@ -61,7 +69,7 @@ After 'cleanup'
 
 It 'exits 0 for session end'
 # Use fake HOME so script cannot source real .env file
-When run bash -c "HOME=/nonexistent bash '$SCRIPT'" <<<'{"reason": "user_exit"}'
+When run bash -c 'echo "{\"reason\": \"user_exit\"}" | env HOME=/nonexistent bash '"$SCRIPT"
 The status should be success
 End
 End
