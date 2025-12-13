@@ -121,7 +121,7 @@ home-manager.lib.homeManagerConfiguration {
 
       # GPG_TTY is set in fish shell init instead of sessionVariables
       # because it needs to be evaluated dynamically per shell session
-      programs.fish.loginShellInit = lib.mkAfter ''
+      programs.fish.interactiveShellInit = lib.mkAfter ''
         set -gx GPG_TTY (tty)
       '';
 
