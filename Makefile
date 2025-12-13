@@ -264,7 +264,11 @@ nix-build: nix-connect ## Build Nix configuration.
 .PHONY: nix-flake-check
 nix-flake-check: ## Check Nix flake configuration.
 	@echo "🔍 Checking Nix flake configuration..."
-	@$(NIX_ALLOW_UNFREE) $(NIX_EXEC) flake check --all-systems --impure $(NIX_FLAGS)
+	@if [ "$(OS)" = "Darwin" ]; then \
+		$(NIX_ALLOW_UNFREE) $(NIX_EXEC) flake check --all-systems --impure $(NIX_FLAGS); \
+	else \
+		$(NIX_ALLOW_UNFREE) $(NIX_EXEC) flake check --system $(NIX_SYSTEM) --impure $(NIX_FLAGS); \
+	fi
 	@echo "✅ Nix flake check completed successfully"
 
 .PHONY: nix-flake-update

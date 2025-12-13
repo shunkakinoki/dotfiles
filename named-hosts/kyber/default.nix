@@ -65,20 +65,20 @@ home-manager.lib.homeManagerConfiguration {
         ) (import ./secrets.nix);
 
         # Ensure SSH directory exists before agenix tries to deploy secrets
-        home.activation.ensureSshDirectory = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
+        home.activation.ensureSshDirectory = config.lib.dag.entryBefore [ "writeBoundary" ] ''
           $DRY_RUN_CMD mkdir -p $VERBOSE_ARG ${config.home.homeDirectory}/.ssh
           $DRY_RUN_CMD chmod $VERBOSE_ARG 700 ${config.home.homeDirectory}/.ssh
         '';
 
         # Ensure agenix config directory exists
-        home.activation.ensureAgenixDirectory = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
+        home.activation.ensureAgenixDirectory = config.lib.dag.entryBefore [ "writeBoundary" ] ''
           $DRY_RUN_CMD mkdir -p $VERBOSE_ARG ${config.home.homeDirectory}/.config/agenix
           $DRY_RUN_CMD chmod $VERBOSE_ARG 700 ${config.home.homeDirectory}/.config/agenix
         '';
 
         # Manually deploy agenix secrets during activation
         # This ensures secrets are deployed even if the agenix activation hook doesn't run properly
-        home.activation.deployAgenixSecrets = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        home.activation.deployAgenixSecrets = config.lib.dag.entryAfter [ "writeBoundary" ] ''
           # Decrypt and deploy GitHub SSH key if it doesn't exist
           if [[ ! -f "${config.home.homeDirectory}/.ssh/id_ed25519_github" ]]; then
             echo "Deploying GitHub SSH key from agenix..."
@@ -89,6 +89,32 @@ home-manager.lib.homeManagerConfiguration {
               echo "✅ GitHub SSH key deployed successfully"
             else
               echo "⚠️  Warning: Secret file not found at $SECRET_FILE"
+            fi
+          fi
+        '';
+
+        # Import GPG key from agenix (all systems with dotfiles)
+        # Fails silently if SSH key isn't authorized to decrypt
+        home.activation.importGpgKey = config.lib.dag.entryAfter [ "linkGeneration" ] ''
+          $VERBOSE_ECHO "🔑 Starting GPG key import process..."
+          GPG_SECRET_FILE="${config.home.homeDirectory}/dotfiles/named-hosts/galactica/keys/gpg.age"
+          GPG_TEMP_FILE="${config.home.homeDirectory}/.config/agenix/gpg.key"
+
+          # Create agenix directory if it doesn't exist
+          mkdir -p "${config.home.homeDirectory}/.config/agenix"
+
+          if [[ -f "$GPG_SECRET_FILE" ]]; then
+            # Check if key is already imported
+            if ! ${pkgs.gnupg}/bin/gpg --list-secret-keys 2>/dev/null | grep -q "C2E97FCFF482925D"; then
+              echo "Importing GPG key from agenix..."
+              # Try to decrypt - will fail silently if SSH key isn't authorized
+              if ${pkgs.rage}/bin/rage -d -i ${config.home.homeDirectory}/.ssh/id_ed25519 -o "$GPG_TEMP_FILE" "$GPG_SECRET_FILE" 2>/dev/null; then
+                ${pkgs.gnupg}/bin/gpg --batch --import "$GPG_TEMP_FILE" 2>/dev/null
+                rm -f "$GPG_TEMP_FILE"
+                echo "✅ GPG key imported successfully"
+              fi
+            else
+              $VERBOSE_ECHO "ℹ️  GPG key already imported"
             fi
           fi
         '';
