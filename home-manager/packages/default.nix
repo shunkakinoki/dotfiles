@@ -86,6 +86,7 @@ with pkgs;
   docker
   docker-compose
   gemini-cli
+  keychain
   opencode
   powertop
   tailscale

@@ -49,6 +49,7 @@
       g = "git";
       lzd = "lazydocker";
       lzg = "lazygit";
+      sag = "_ssh_add_github";
       ta = "tmux new -A -s default";
       v = "nvim";
 
@@ -135,6 +136,7 @@
         "_hm_load_env_file"
         "_kyber_function"
         "_kybers_function"
+        "_ssh_add_github"
         "fish_user_key_bindings"
       ]
   );

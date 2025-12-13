@@ -49,11 +49,19 @@ Once Tailscale is set up:
 kyber  # Fish abbreviation that runs: ssh ubuntu@kyber
 ```
 
-## Syncing SSH Keys from Galactica
+## SSH Key Management
 
-To sync the GitHub SSH key from galactica to kyber:
+### Automated Setup
 
-### On Galactica
+This configuration uses:
+
+- **agenix**: Encrypts and syncs the GitHub SSH key from galactica
+- **keychain**: Manages ssh-agent and automatically loads SSH keys
+- **Declarative deployment**: SSH keys are deployed during `make switch`
+
+### Syncing SSH Keys from Galactica
+
+#### On Galactica (one-time setup)
 
 ```bash
 cd ~/dotfiles
@@ -64,15 +72,58 @@ git commit -m "chore(agenix): rekey secrets for kyber access"
 git push
 ```
 
-### On Kyber
+#### On Kyber
 
 ```bash
 cd ~/dotfiles
 git pull
 make switch
-
-# Test GitHub access
-ssh -T git@github.com
 ```
 
-The SSH key will be automatically decrypted and deployed to `~/.ssh/id_ed25519_github`.
+The GitHub SSH key will be automatically:
+
+1. Decrypted from `named-hosts/galactica/keys/id_ed25519.age`
+2. Deployed to `~/.ssh/id_ed25519_github`
+3. Loaded into ssh-agent via keychain (if no passphrase)
+
+### Adding Passphrase-Protected Keys
+
+If the GitHub SSH key has a passphrase, add it manually:
+
+```bash
+sag  # Abbreviation for _ssh_add_github function
+
+# Or manually
+keychain --eval --quiet --confirm ~/.ssh/id_ed25519_github
+```
+
+### Verify GitHub Access
+
+```bash
+ssh -T git@github.com
+# Expected: Hi username! You've successfully authenticated...
+```
+
+### Troubleshooting
+
+**Key not deployed after `make switch`:**
+
+```bash
+# Check if key exists
+ls -la ~/.ssh/id_ed25519_github
+
+# Manually deploy if needed
+age -d -i ~/.ssh/id_ed25519 -o ~/.ssh/id_ed25519_github \
+  named-hosts/galactica/keys/id_ed25519.age
+chmod 0600 ~/.ssh/id_ed25519_github
+```
+
+**GitHub authentication fails:**
+
+```bash
+# Check if key is in ssh-agent
+ssh-add -l | grep github
+
+# Add the key
+sag
+```
