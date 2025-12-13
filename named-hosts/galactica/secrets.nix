@@ -16,9 +16,9 @@ in
     file = ./keys/id_github.age;
     publicKeys = allMachines;
   };
-  # GPG key (galactica only)
+  # GPG key (shared with all machines for commit signing)
   "keys/gpg.age" = {
     file = ./keys/gpg.age;
-    publicKeys = [ galactica ];
+    publicKeys = allMachines;
   };
 }

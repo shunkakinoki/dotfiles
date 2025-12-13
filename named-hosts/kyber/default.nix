@@ -83,9 +83,57 @@ home-manager.lib.homeManagerConfiguration {
             echo "⚠️  Warning: Secret file not found at $SECRET_FILE"
           fi
         fi
+
+        # Decrypt and import GPG key for commit signing
+        GPG_SECRET_FILE="${builtins.toString ../galactica/keys/gpg.age}"
+        if [[ -f "$GPG_SECRET_FILE" ]]; then
+          echo "Importing GPG key from agenix..."
+          # Check if key is already imported
+          if ! ${pkgs.gnupg}/bin/gpg --list-secret-keys | grep -q "C2E97FCFF482925D"; then
+            $DRY_RUN_CMD ${pkgs.rage}/bin/rage -d -i ${config.home.homeDirectory}/.ssh/id_ed25519 "$GPG_SECRET_FILE" | ${pkgs.gnupg}/bin/gpg --batch --import
+            echo "✅ GPG key imported successfully"
+          else
+            echo "ℹ️  GPG key already imported"
+          fi
+        else
+          echo "⚠️  Warning: GPG secret file not found at $GPG_SECRET_FILE"
+        fi
       '';
 
       programs.home-manager.enable = true;
+
+      # GPG configuration for commit signing
+      programs.gpg = {
+        enable = true;
+        settings = {
+          default-key = "shunkakinoki@gmail.com";
+        };
+      };
+
+      # Git GPG signing configuration
+      programs.git = {
+        signing = {
+          signByDefault = true;
+          key = "shunkakinoki@gmail.com";
+        };
+        extraConfig = {
+          commit.gpgSign = true;
+          tag.gpgSign = true;
+        };
+      };
+
+      # GPG agent configuration
+      services.gpg-agent = {
+        enable = true;
+        enableSshSupport = false;
+        defaultCacheTtl = 1800;
+        maxCacheTtl = 7200;
+      };
+
+      # Environment variables for GPG
+      home.sessionVariables = {
+        GPG_TTY = "$(tty)";
+      };
 
       # Enable XDG directories
       xdg.enable = true;
