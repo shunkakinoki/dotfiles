@@ -56,7 +56,6 @@ with pkgs;
   mariadb
   postgresql
   procs
-  pulumi-bin
   qwen-code
   ripgrep
   rustup
