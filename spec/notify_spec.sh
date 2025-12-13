@@ -52,6 +52,33 @@ The output should include 'sound name "Basso"'
 End
 End
 
+Describe 'when credentials come from HOME/dotfiles/.env'
+setup() {
+  mock_bin_setup osascript
+  TEMP_HOME=$(mktemp -d)
+  mkdir -p "$TEMP_HOME/dotfiles"
+  cat >"$TEMP_HOME/dotfiles/.env" <<'ENV'
+PUSHOVER_API_TOKEN=test_token
+PUSHOVER_USER_KEY=test_user
+ENV
+
+  unset PUSHOVER_API_TOKEN
+  unset PUSHOVER_USER_KEY
+}
+cleanup() {
+  rm -rf "$TEMP_HOME"
+  mock_bin_cleanup
+}
+Before 'setup'
+After 'cleanup'
+
+It 'exits early and does not send local notification'
+When run bash -c 'echo "{\"message\": \"Test message\"}" | env HOME="'"$TEMP_HOME"'" bash '"$SCRIPT"'; cat "$MOCK_LOG"'
+The status should be success
+The output should eq ''
+End
+End
+
 Describe 'SessionEnd hook (no Pushover)'
 setup() {
   mock_bin_setup osascript
@@ -111,6 +138,12 @@ When run bash -c 'echo "{\"tool\": {\"name\": \"Bash\", \"input\": \"rm -rf /\"}
 The status should be success
 The output should include 'Risky: rm -rf /'
 The output should include 'sound name "Basso"'
+End
+
+It 'does not warn on PreToolUse non-Bash tool'
+When run bash -c 'echo "{\"tool\": {\"name\": \"Read\", \"input\": {}}}" | env HOME=/nonexistent bash '"$SCRIPT"'; cat "$MOCK_LOG"'
+The status should be success
+The output should eq ''
 End
 End
 End

@@ -61,8 +61,11 @@ setup() {
   # Set test credentials
   export PUSHOVER_API_TOKEN="test_token"
   export PUSHOVER_USER_KEY="test_user"
+
+  TRANSCRIPT=$(mktemp)
 }
 cleanup() {
+  rm -f "$TRANSCRIPT"
   mock_bin_cleanup
 }
 Before 'setup'
@@ -86,6 +89,19 @@ When run bash -c 'echo "{\"message\": \"Claude needs your permission to use Bash
 The status should be success
 The output should include 'priority=1'
 The output should include 'Permission required'
+End
+
+It 'includes transcript stats when transcript_path is present'
+cat >"$TRANSCRIPT" <<'JSON'
+{"type":"user","message":{"content":[{"type":"text","text":"Fix tests"}]}}
+{"cwd":"/tmp/project"}
+{"type":"tool_use","tool_use":{"name":"Bash","input":{"command":"echo ok"}}}
+{"type":"tool_use","tool_use":{"name":"Write","input":{"file_path":"spec/foo_spec.sh"}}}
+JSON
+When run bash -c 'echo "{\"message\": \"Claude is waiting for your input\", \"transcript_path\": \"'"$TRANSCRIPT"'\"}" | bash '"$SCRIPT"'; cat "$MOCK_LOG"'
+The status should be success
+The output should include 'tools,'
+The output should include 'files'
 End
 End
 
