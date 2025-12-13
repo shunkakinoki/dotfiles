@@ -50,7 +50,7 @@ for file in $(git ls-files); do
 
   IFS= read -r first_line <"$file" || first_line=""
   case "$first_line" in
-  '#!'*bash* | '#!'*sh* | '#!'*zsh* | '#!'*ksh* | '#!'*fish*)
+  '#!'*bash* | '#!'*zsh* | '#!'*ksh* | '#!'*fish* | '#!'*sh*)
     %data "$(detect_shell_type "$file")" "$file"
     ;;
   esac

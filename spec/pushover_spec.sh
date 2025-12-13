@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329
+# shellcheck disable=SC2329,SC2016
 
 Describe 'pushover.sh'
 SCRIPT="$PWD/config/claude/pushover.sh"
