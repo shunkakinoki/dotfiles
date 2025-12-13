@@ -118,8 +118,12 @@ home-manager.lib.homeManagerConfiguration {
           key = "shunkakinoki@gmail.com";
         };
         extraConfig = {
-          commit.gpgSign = true;
-          tag.gpgSign = true;
+          commit = {
+            gpgSign = true;
+          };
+          tag = {
+            gpgSign = true;
+          };
         };
       };
 
