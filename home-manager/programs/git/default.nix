@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ lib, ... }:
 {
   programs = {
     git = {
@@ -76,6 +76,10 @@
         merge = {
           conflictStyle = "zdiff3";
         };
+      };
+      signing = {
+        signByDefault = true;
+        key = "shunkakinoki@gmail.com";
       };
       ignores = lib.splitString "\n" (builtins.readFile ./.gitignore.global);
     };

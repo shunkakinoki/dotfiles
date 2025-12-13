@@ -199,7 +199,7 @@ in
       Install.WantedBy = [ "default.target" ];
     };
 
-    home.activation.createTailscaleDirs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    home.activation.createTailscaleDirs = config.lib.dag.entryAfter [ "writeBoundary" ] ''
       TAILSCALE_STATE_DIR="${config.xdg.dataHome}/tailscale"
       TAILSCALE_RUN_DIR="$(dirname "${cfg.tailscaled.socketPath}")"
 
@@ -215,7 +215,7 @@ in
     # Install system-level tailscaled service (requires sudo)
     # Uses nix-generated service file for full declarative config
     home.activation.installTailscaleService = mkIf cfg.installSystemService (
-      lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      config.lib.dag.entryAfter [ "writeBoundary" ] ''
                 SERVICE_FILE="/etc/systemd/system/tailscaled.service"
                 NIX_SERVICE="${tailscaledServiceFile}"
                 SUDOERS_FILE="/etc/sudoers.d/nix-tailscale"

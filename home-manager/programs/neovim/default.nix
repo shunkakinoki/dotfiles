@@ -22,7 +22,7 @@ in
     force = true;
   };
 
-  home.activation.copyNvimPackLock = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.copyNvimPackLock = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD mkdir -p "$HOME/.config/nvim"
     $DRY_RUN_CMD cp -f ${nvimPackLockJson} "$HOME/.config/nvim/nvim-pack-lock.json"
     $DRY_RUN_CMD chmod 644 "$HOME/.config/nvim/nvim-pack-lock.json"

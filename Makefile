@@ -80,6 +80,13 @@ DETECTED_HOST := $(shell \
 		else \
 			echo ""; \
 		fi; \
+	elif [ "$(OS)" = "Linux" ]; then \
+		hostname=$$(hostname 2>/dev/null || echo ""); \
+		if [ "$$hostname" = "kyber" ]; then \
+			echo "kyber"; \
+		else \
+			echo ""; \
+		fi; \
 	else \
 		echo ""; \
 	fi)
@@ -257,7 +264,11 @@ nix-build: nix-connect ## Build Nix configuration.
 .PHONY: nix-flake-check
 nix-flake-check: ## Check Nix flake configuration.
 	@echo "🔍 Checking Nix flake configuration..."
-	@$(NIX_ALLOW_UNFREE) $(NIX_EXEC) flake check --all-systems --impure $(NIX_FLAGS)
+	@if [ "$(OS)" = "Darwin" ]; then \
+		$(NIX_ALLOW_UNFREE) $(NIX_EXEC) flake check --all-systems --impure $(NIX_FLAGS); \
+	else \
+		$(NIX_ALLOW_UNFREE) $(NIX_EXEC) flake check --system $(NIX_SYSTEM) --impure $(NIX_FLAGS); \
+	fi
 	@echo "✅ Nix flake check completed successfully"
 
 .PHONY: nix-flake-update
@@ -323,6 +334,9 @@ nix-switch: ## Activate Nix configuration.
 			if [ -n "$(HOST)" ]; then \
 				echo "Switching named home config: $(HOST)"; \
 				USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#homeConfigurations.$(HOST).activationPackage; \
+			elif [ -n "$(DETECTED_HOST)" ]; then \
+				echo "Auto-detected host: $(DETECTED_HOST)"; \
+				USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#homeConfigurations.$(DETECTED_HOST).activationPackage; \
 			else \
 				USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
 			fi; \

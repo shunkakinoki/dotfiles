@@ -88,7 +88,7 @@ in
     ];
 
     # Install yek on activation
-    home.activation.installYek = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    home.activation.installYek = config.lib.dag.entryAfter [ "writeBoundary" ] ''
       if [ ! -f "$HOME/.local/bin/yek" ]; then
         $DRY_RUN_CMD ${installScript}/bin/install-yek || echo "⚠️ Failed to install yek. You can install it later by running: install-yek"
       fi

@@ -6,7 +6,7 @@
 }:
 {
   # Install npm global packages from package.json using home-manager activation
-  home.activation.installNpmGlobals = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.installNpmGlobals = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     export PATH=${pkgs.bun}/bin:$PATH
     export BUN_INSTALL="$HOME/.bun"
 

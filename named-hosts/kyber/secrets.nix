@@ -14,15 +14,16 @@ let
   ];
 in
 {
-  # Tailscale auth key - generate from https://login.tailscale.com/admin/settings/keys
-  "keys/tailscale-auth.age" = {
-    file = ./keys/tailscale-auth.age;
-    publicKeys = [ kyber ];
+  # Shared SSH key for GitHub authentication (synced from galactica)
+  # This is the id_github key from galactica, which is the GitHub-authorized key
+  "keys/id_github.age" = {
+    file = ../galactica/keys/id_ed25519.age;
+    publicKeys = allMachines;
   };
 
-  # Shared SSH key for GitHub authentication (synced from galactica)
-  "keys/id_ed25519.age" = {
-    file = ../galactica/keys/id_ed25519.age;
+  # GPG key for commit signing (synced from galactica)
+  "keys/gpg.age" = {
+    file = ../galactica/keys/gpg.age;
     publicKeys = allMachines;
   };
 }

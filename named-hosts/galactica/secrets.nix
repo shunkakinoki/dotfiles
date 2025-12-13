@@ -11,13 +11,14 @@ let
 in
 {
   # Shared SSH key for GitHub authentication (accessible on all machines)
-  "keys/id_ed25519.age" = {
-    file = ./keys/id_ed25519.age;
+  # This is ~/.ssh/id_github on galactica, the GitHub CLI-authorized key
+  "keys/id_github.age" = {
+    file = ./keys/id_github.age;
     publicKeys = allMachines;
   };
-  # GPG key (galactica only)
+  # GPG key (shared with all machines for commit signing)
   "keys/gpg.age" = {
     file = ./keys/gpg.age;
-    publicKeys = [ galactica ];
+    publicKeys = allMachines;
   };
 }
