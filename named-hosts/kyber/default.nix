@@ -114,14 +114,16 @@ home-manager.lib.homeManagerConfiguration {
       services.gpg-agent = {
         enable = true;
         enableSshSupport = false;
+        pinentryPackage = pkgs.pinentry-curses;
         defaultCacheTtl = 1800;
         maxCacheTtl = 7200;
       };
 
-      # Environment variables for GPG
-      home.sessionVariables = {
-        GPG_TTY = "$(tty)";
-      };
+      # GPG_TTY is set in fish shell init instead of sessionVariables
+      # because it needs to be evaluated dynamically per shell session
+      programs.fish.loginShellInit = lib.mkAfter ''
+        set -gx GPG_TTY (tty)
+      '';
 
       # Enable XDG directories
       xdg.enable = true;
