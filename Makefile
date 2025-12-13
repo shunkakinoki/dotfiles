@@ -646,3 +646,17 @@ shell-check: ## Run ShellCheck on shell scripts.
 shell-check-dev: ## Run ShellCheck inside the Nix dev shell (mirrors CI).
 	@echo "🔍 Running ShellCheck inside the Nix dev shell..."
 	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) shell-check
+
+##@ Doppler
+
+.PHONY: doppler-sync
+doppler-sync: ## Sync Doppler secrets (dotfiles/prd) to .env file.
+	@echo "🔐 Syncing Doppler secrets to .env..."
+	@doppler secrets download --project dotfiles --config prd --format env --no-file > .env
+	@echo "✅ .env file updated from Doppler (dotfiles/prd)"
+
+.PHONY: doppler-upload
+doppler-upload: ## Upload .env file to Doppler (dotfiles/prd).
+	@echo "🔐 Uploading .env to Doppler..."
+	@doppler secrets upload --project dotfiles --config prd .env
+	@echo "✅ .env uploaded to Doppler (dotfiles/prd)"
