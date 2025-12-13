@@ -26,6 +26,43 @@ The output should eq ''
 End
 End
 
+Describe 'credential handling via HOME/dotfiles/.env'
+setup() {
+  mock_bin_setup curl
+  TEMP_HOME=$(mktemp -d)
+  mkdir -p "$TEMP_HOME/dotfiles"
+
+  unset PUSHOVER_API_TOKEN
+  unset PUSHOVER_USER_KEY
+}
+cleanup() {
+  rm -rf "$TEMP_HOME"
+  mock_bin_cleanup
+}
+Before 'setup'
+After 'cleanup'
+
+It 'sources .env when credentials are missing'
+cat >"$TEMP_HOME/dotfiles/.env" <<'ENV'
+PUSHOVER_API_TOKEN=from_env_token
+PUSHOVER_USER_KEY=from_env_user
+ENV
+When run bash -c 'echo "{\"message\": \"Claude is waiting for your input\"}" | env HOME="'"$TEMP_HOME"'" bash '"$SCRIPT"'; cat "$MOCK_LOG"'
+The status should be success
+The output should include 'token=from_env_token'
+The output should include 'user=from_env_user'
+End
+
+It 'does not call curl when .env is incomplete'
+cat >"$TEMP_HOME/dotfiles/.env" <<'ENV'
+PUSHOVER_API_TOKEN=from_env_token
+ENV
+When run bash -c 'echo "{\"message\": \"Claude is waiting for your input\"}" | env HOME="'"$TEMP_HOME"'" bash '"$SCRIPT"'; cat "$MOCK_LOG"'
+The status should be success
+The output should eq ''
+End
+End
+
 Describe 'SessionEnd hook'
 setup() {
   mock_bin_setup curl
@@ -102,6 +139,22 @@ When run bash -c 'echo "{\"message\": \"Claude is waiting for your input\", \"tr
 The status should be success
 The output should include 'tools,'
 The output should include 'files'
+End
+
+It 'prefers environment variables over HOME/dotfiles/.env'
+cat >"$TRANSCRIPT" <<'JSON'
+{"type":"user","message":{"content":[{"type":"text","text":"Do not source"}]}}
+JSON
+TEMP_HOME=$(mktemp -d)
+mkdir -p "$TEMP_HOME/dotfiles"
+cat >"$TEMP_HOME/dotfiles/.env" <<'ENV'
+PUSHOVER_API_TOKEN=bad_token
+PUSHOVER_USER_KEY=bad_user
+ENV
+When run bash -c 'echo "{\"message\": \"Claude is waiting for your input\", \"transcript_path\": \"'"$TRANSCRIPT"'\"}" | env HOME="'"$TEMP_HOME"'" PUSHOVER_API_TOKEN="test_token" PUSHOVER_USER_KEY="test_user" bash '"$SCRIPT"'; rm -rf "'"$TEMP_HOME"'"; cat "$MOCK_LOG"'
+The status should be success
+The output should include 'token=test_token'
+The output should include 'user=test_user'
 End
 End
 

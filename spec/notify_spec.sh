@@ -18,6 +18,31 @@ The output should eq ''
 End
 End
 
+Describe 'Pushover configured with .env present'
+setup() {
+  mock_bin_setup osascript
+  TEMP_HOME=$(mktemp -d)
+  mkdir -p "$TEMP_HOME/dotfiles"
+  cat >"$TEMP_HOME/dotfiles/.env" <<'ENV'
+touch "$HOME/notify_sourced_marker"
+PUSHOVER_API_TOKEN=bad_token
+PUSHOVER_USER_KEY=bad_user
+ENV
+}
+cleanup() {
+  rm -rf "$TEMP_HOME"
+  mock_bin_cleanup
+}
+Before 'setup'
+After 'cleanup'
+
+It 'does not source HOME/dotfiles/.env when credentials already set'
+When run bash -c 'echo "{\"message\": \"Test message\"}" | env HOME="'"$TEMP_HOME"'" PUSHOVER_API_TOKEN="test_token" PUSHOVER_USER_KEY="test_user" bash '"$SCRIPT"'; test ! -f "'"$TEMP_HOME"'/notify_sourced_marker"; cat "$MOCK_LOG"'
+The status should be success
+The output should eq ''
+End
+End
+
 Describe 'Notification hook (no Pushover)'
 setup() {
   mock_bin_setup osascript
@@ -76,6 +101,50 @@ It 'exits early and does not send local notification'
 When run bash -c 'echo "{\"message\": \"Test message\"}" | env HOME="'"$TEMP_HOME"'" bash '"$SCRIPT"'; cat "$MOCK_LOG"'
 The status should be success
 The output should eq ''
+End
+End
+
+Describe 'credential sourcing edge cases'
+setup() {
+  mock_bin_setup osascript
+  TEMP_HOME=$(mktemp -d)
+  mkdir -p "$TEMP_HOME/dotfiles"
+
+  unset PUSHOVER_API_TOKEN
+  unset PUSHOVER_USER_KEY
+}
+cleanup() {
+  rm -rf "$TEMP_HOME"
+  mock_bin_cleanup
+}
+Before 'setup'
+After 'cleanup'
+
+It 'sources .env when only one credential is set'
+cat >"$TEMP_HOME/dotfiles/.env" <<'ENV'
+PUSHOVER_USER_KEY=from_env
+ENV
+When run bash -c 'echo "{\"message\": \"Test message\"}" | env HOME="'"$TEMP_HOME"'" PUSHOVER_API_TOKEN="present" bash '"$SCRIPT"'; cat "$MOCK_LOG"'
+The status should be success
+The output should eq ''
+End
+
+It 'sends local notification when .env is incomplete'
+cat >"$TEMP_HOME/dotfiles/.env" <<'ENV'
+PUSHOVER_API_TOKEN=only_token
+ENV
+When run bash -c 'echo "{\"message\": \"Hello\"}" | env HOME="'"$TEMP_HOME"'" bash '"$SCRIPT"'; cat "$MOCK_LOG"'
+The status should be success
+The output should include 'display notification'
+End
+
+It 'ignores .env stderr and still sends local notification on source error'
+cat >"$TEMP_HOME/dotfiles/.env" <<'ENV'
+this is not valid bash
+ENV
+When run bash -c 'echo "{\"message\": \"Hello\"}" | env HOME="'"$TEMP_HOME"'" bash '"$SCRIPT"'; cat "$MOCK_LOG"'
+The status should be success
+The output should include 'display notification'
 End
 End
 
