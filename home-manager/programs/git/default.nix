@@ -76,15 +76,12 @@
         merge = {
           conflictStyle = "zdiff3";
         };
-        commit = {
-          gpgSign = true;
-        };
-        tag = {
-          gpgSign = true;
-        };
       };
+      # GPG signing configuration
+      # Note: Disabled by default due to GPG agent issues in some environments
+      # Enable with: git config --global commit.gpgsign true
       signing = {
-        signByDefault = true;
+        signByDefault = false;
         key = "shunkakinoki@gmail.com";
       };
       ignores = lib.splitString "\n" (builtins.readFile ./.gitignore.global);
