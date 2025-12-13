@@ -40,6 +40,10 @@ in
         lib.makeBinPath [
           pkgs.git
           pkgs.bash
+          pkgs.coreutils
+          pkgs.gnumake
+          pkgs.curl
+          pkgs.nix
         ]
       }";
       ExecStart = "${./update.sh}";
