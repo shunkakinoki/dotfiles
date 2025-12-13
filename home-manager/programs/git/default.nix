@@ -1,9 +1,3 @@
-{ pkgs, lib, ... }:
-let
-  # Determine if we're on a system where GPG signing should be enabled
-  # Enable on all systems
-  enableGpgSigning = true;
-in
 {
   programs = {
     git = {
@@ -82,10 +76,8 @@ in
           conflictStyle = "zdiff3";
         };
       };
-      # GPG signing configuration
-      # Enabled by default on macOS, disabled on Linux servers
       signing = {
-        signByDefault = enableGpgSigning;
+        signByDefault = true;
         key = "shunkakinoki@gmail.com";
       };
       ignores = lib.splitString "\n" (builtins.readFile ./.gitignore.global);
