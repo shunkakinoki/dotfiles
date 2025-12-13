@@ -48,3 +48,31 @@ Once Tailscale is set up:
 ```bash
 kyber  # Fish abbreviation that runs: ssh ubuntu@kyber
 ```
+
+## Syncing SSH Keys from Galactica
+
+To sync the GitHub SSH key from galactica to kyber:
+
+### On Galactica
+
+```bash
+cd ~/dotfiles
+git pull
+make rekey-galactica
+git add named-hosts/galactica/keys/
+git commit -m "chore(agenix): rekey secrets for kyber access"
+git push
+```
+
+### On Kyber
+
+```bash
+cd ~/dotfiles
+git pull
+make switch
+
+# Test GitHub access
+ssh -T git@github.com
+```
+
+The SSH key will be automatically decrypted and deployed to `~/.ssh/id_ed25519_github`.

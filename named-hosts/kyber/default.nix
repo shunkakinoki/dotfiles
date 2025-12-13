@@ -45,7 +45,22 @@ home-manager.lib.homeManagerConfiguration {
 
       # Agenix configuration
       age.identityPaths = [ "/home/${username}/.ssh/id_ed25519" ];
-      age.secrets = builtins.mapAttrs (name: value: { file = value.file; }) (import ./secrets.nix);
+      age.secrets = builtins.mapAttrs (
+        name: value:
+        {
+          file = value.file;
+          # Deploy GitHub SSH key to ~/.ssh/ with correct permissions
+        }
+        // (
+          if name == "keys/id_ed25519.age" then
+            {
+              path = "/home/${username}/.ssh/id_ed25519_github";
+              mode = "0600";
+            }
+          else
+            { }
+        )
+      ) (import ./secrets.nix);
 
       programs.home-manager.enable = true;
 
