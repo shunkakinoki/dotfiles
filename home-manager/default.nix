@@ -35,32 +35,31 @@ in
   home.packages = packages;
   home.stateVersion = "24.11";
 
-  # Import GPG key from agenix on Linux systems
-  home.activation.importGpgKey = lib.mkIf pkgs.stdenv.isLinux (
-    lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-      $VERBOSE_ECHO "🔑 Starting GPG key import process..."
-      GPG_SECRET_FILE="${config.home.homeDirectory}/dotfiles/named-hosts/galactica/keys/gpg.age"
-      GPG_TEMP_FILE="${config.home.homeDirectory}/.config/agenix/gpg.key"
+  # Import GPG key from agenix (all systems)
+  # Fails silently if SSH key isn't authorized to decrypt
+  home.activation.importGpgKey = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    $VERBOSE_ECHO "🔑 Starting GPG key import process..."
+    GPG_SECRET_FILE="${config.home.homeDirectory}/dotfiles/named-hosts/galactica/keys/gpg.age"
+    GPG_TEMP_FILE="${config.home.homeDirectory}/.config/agenix/gpg.key"
 
-      # Create agenix directory if it doesn't exist
-      mkdir -p "${config.home.homeDirectory}/.config/agenix"
+    # Create agenix directory if it doesn't exist
+    mkdir -p "${config.home.homeDirectory}/.config/agenix"
 
-      if [[ -f "$GPG_SECRET_FILE" ]]; then
-        echo "Checking GPG key import status..."
-        if ! ${pkgs.gnupg}/bin/gpg --list-secret-keys | grep -q "C2E97FCFF482925D"; then
-          echo "Importing GPG key from agenix..."
-          ${pkgs.rage}/bin/rage -d -i ${config.home.homeDirectory}/.ssh/id_ed25519 -o "$GPG_TEMP_FILE" "$GPG_SECRET_FILE"
-          ${pkgs.gnupg}/bin/gpg --batch --import "$GPG_TEMP_FILE"
+    if [[ -f "$GPG_SECRET_FILE" ]]; then
+      # Check if key is already imported
+      if ! ${pkgs.gnupg}/bin/gpg --list-secret-keys 2>/dev/null | grep -q "C2E97FCFF482925D"; then
+        echo "Importing GPG key from agenix..."
+        # Try to decrypt - will fail silently if SSH key isn't authorized
+        if ${pkgs.rage}/bin/rage -d -i ${config.home.homeDirectory}/.ssh/id_ed25519 -o "$GPG_TEMP_FILE" "$GPG_SECRET_FILE" 2>/dev/null; then
+          ${pkgs.gnupg}/bin/gpg --batch --import "$GPG_TEMP_FILE" 2>/dev/null
           rm -f "$GPG_TEMP_FILE"
           echo "✅ GPG key imported successfully"
-        else
-          echo "ℹ️  GPG key already imported"
         fi
       else
-        echo "⚠️  Warning: GPG secret file not found at $GPG_SECRET_FILE"
+        $VERBOSE_ECHO "ℹ️  GPG key already imported"
       fi
-    ''
-  );
+    fi
+  '';
 
   programs.yek.enable = true;
 
