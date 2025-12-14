@@ -134,8 +134,8 @@ home-manager.lib.homeManagerConfiguration {
           enable = true;
           enableSshSupport = false;
           pinentry.package = pkgs.pinentry-tty;
-          defaultCacheTtl = 1800;
-          maxCacheTtl = 7200;
+          defaultCacheTtl = 94608000;  # 3 years
+          maxCacheTtl = 94608000;      # 3 years
         };
 
         # GPG_TTY is set in fish shell init instead of sessionVariables
