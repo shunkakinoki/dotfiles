@@ -38,12 +38,16 @@ in
       Type = "oneshot";
       Environment = "PATH=${
         lib.makeBinPath [
-          pkgs.git
           pkgs.bash
           pkgs.coreutils
-          pkgs.gnumake
           pkgs.curl
+          pkgs.gawk
+          pkgs.git
+          pkgs.gnumake
+          pkgs.gnused
           pkgs.nix
+          pkgs.sudo
+          pkgs.which
         ]
       }";
       ExecStart = "${./update.sh}";
