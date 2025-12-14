@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329
+# shellcheck disable=SC2329,SC2016
 
 Describe 'install.sh'
 SCRIPT="$PWD/install.sh"
@@ -108,7 +108,7 @@ The output should include 'IN_DOCKER'
 End
 
 It 'uses --init none for Docker installations'
-When run bash -c "grep '\-\-init none' '$SCRIPT'"
+When run bash -c "grep -- '--init none' '$SCRIPT' 2>&1"
 The output should include '--init none'
 End
 End

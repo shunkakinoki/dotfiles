@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329
+# shellcheck disable=SC2329,SC2016
 
 Describe 'neovim/run_tests.sh'
 SCRIPT="$PWD/home-manager/programs/neovim/run_tests.sh"
@@ -40,14 +40,14 @@ The output should include 'plenary.nvim'
 End
 
 It 'uses depth 1 for shallow clone'
-When run bash -c "grep '\-\-depth 1' '$SCRIPT'"
+When run bash -c "grep -- '--depth 1' '$SCRIPT' 2>&1"
 The output should include '--depth 1'
 End
 End
 
 Describe 'test execution'
 It 'runs nvim in headless mode'
-When run bash -c "grep '\-\-headless' '$SCRIPT'"
+When run bash -c "grep -- '--headless' '$SCRIPT' 2>&1"
 The output should include '--headless'
 End
 

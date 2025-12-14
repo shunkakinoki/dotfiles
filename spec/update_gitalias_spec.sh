@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329
+# shellcheck disable=SC2329,SC2034
 
 Describe 'update-gitalias.sh'
 SCRIPT="$PWD/scripts/update-gitalias.sh"
