@@ -3,12 +3,24 @@
 
 # --- CONFIGURATION ---
 
-# Base directories
-VSCODE_USER_DIR="$HOME/Library/Application Support/Code/User"
-VSCODE_INSIDERS_USER_DIR="$HOME/Library/Application Support/Code - Insiders/User"
-ANTIGRAVITY_USER_DIR="$HOME/Library/Application Support/Antigravity/User"
-CURSOR_USER_DIR="$HOME/Library/Application Support/Cursor/User"
-WINDSURF_USER_DIR="$HOME/Library/Application Support/Windsurf/User"
+# Detect OS
+OS_TYPE="$(uname -s)"
+
+# Base directories (OS-specific)
+if [ "$OS_TYPE" = "Darwin" ]; then
+  VSCODE_USER_DIR="$HOME/Library/Application Support/Code/User"
+  VSCODE_INSIDERS_USER_DIR="$HOME/Library/Application Support/Code - Insiders/User"
+  ANTIGRAVITY_USER_DIR="$HOME/Library/Application Support/Antigravity/User"
+  CURSOR_USER_DIR="$HOME/Library/Application Support/Cursor/User"
+  WINDSURF_USER_DIR="$HOME/Library/Application Support/Windsurf/User"
+else
+  # Linux/Other
+  VSCODE_USER_DIR="$HOME/.config/Code/User"
+  VSCODE_INSIDERS_USER_DIR="$HOME/.config/Code - Insiders/User"
+  ANTIGRAVITY_USER_DIR="$HOME/.config/Antigravity/User"
+  CURSOR_USER_DIR="$HOME/.config/Cursor/User"
+  WINDSURF_USER_DIR="$HOME/.config/Windsurf/User"
+fi
 
 # Files
 SETTINGS_FILE="settings.json"
@@ -94,14 +106,21 @@ clean_extension_list() {
     cp "$input_source" "$clean_file"
   fi
 
+  # Use appropriate sed syntax for OS
+  if [ "$OS_TYPE" = "Darwin" ]; then
+    SED_INPLACE="sed -i ''"
+  else
+    SED_INPLACE="sed -i"
+  fi
+
   for bad_ext in "${PROPRIETARY_EXTENSIONS[@]}"; do
     # Remove the line containing the bad extension
-    sed -i '' "/$bad_ext/d" "$clean_file"
+    $SED_INPLACE "/$bad_ext/d" "$clean_file"
   done
 
   for ai_ext in "${AI_EXTENSIONS[@]}"; do
     # Remove the line containing the AI extension
-    sed -i '' "/$ai_ext/d" "$clean_file"
+    $SED_INPLACE "/$ai_ext/d" "$clean_file"
   done
 }
 
@@ -394,14 +413,29 @@ install_extensions "windsurf"
 
 echo "Initial Sync Complete."
 
-# 4. Watcher (Mac only)
-if command -v fswatch >/dev/null; then
-  echo "Watching for changes in VS Code settings..."
-  fswatch -o "$VSCODE_USER_DIR/$SETTINGS_FILE" "$VSCODE_USER_DIR/$KEYBINDINGS_FILE" | while read num; do
-    sync_config_file "$SETTINGS_FILE"
-    sync_config_file "$KEYBINDINGS_FILE"
-    echo "Updated at $(date)"
-  done
+# 4. Watcher (OS-specific)
+if [ "$OS_TYPE" = "Darwin" ]; then
+  # macOS: use fswatch
+  if command -v fswatch >/dev/null; then
+    echo "Watching for changes in VS Code settings (macOS)..."
+    fswatch -o "$VSCODE_USER_DIR/$SETTINGS_FILE" "$VSCODE_USER_DIR/$KEYBINDINGS_FILE" | while read num; do
+      sync_config_file "$SETTINGS_FILE"
+      sync_config_file "$KEYBINDINGS_FILE"
+      echo "Updated at $(date)"
+    done
+  else
+    echo "fswatch not found. Auto-sync disabled."
+  fi
 else
-  echo "fswatch not found. Auto-sync disabled."
+  # Linux: use inotifywait
+  if command -v inotifywait >/dev/null; then
+    echo "Watching for changes in VS Code settings (Linux)..."
+    inotifywait -m -e modify,create "$VSCODE_USER_DIR/$SETTINGS_FILE" "$VSCODE_USER_DIR/$KEYBINDINGS_FILE" 2>/dev/null | while read -r directory events filename; do
+      sync_config_file "$SETTINGS_FILE"
+      sync_config_file "$KEYBINDINGS_FILE"
+      echo "Updated at $(date)"
+    done
+  else
+    echo "inotifywait not found. Auto-sync disabled."
+  fi
 fi
