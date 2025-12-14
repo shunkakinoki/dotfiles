@@ -7,11 +7,20 @@ SCRIPT="$PWD/home-manager/services/code-syncer/sync.sh"
 Describe 'VS Code CLI detection'
 setup() {
   TEMP_HOME=$(mktemp -d)
-  mkdir -p "$TEMP_HOME/Library/Application Support/Code/User"
-  mkdir -p "$TEMP_HOME/Library/Application Support/Cursor/User"
-  mkdir -p "$TEMP_HOME/Library/Application Support/Windsurf/User"
-  mkdir -p "$TEMP_HOME/Library/Application Support/Antigravity/User"
-  mkdir -p "$TEMP_HOME/Library/Application Support/Code - Insiders/User"
+  OS_TYPE="$(uname -s)"
+  if [ "$OS_TYPE" = "Darwin" ]; then
+    mkdir -p "$TEMP_HOME/Library/Application Support/Code/User"
+    mkdir -p "$TEMP_HOME/Library/Application Support/Cursor/User"
+    mkdir -p "$TEMP_HOME/Library/Application Support/Windsurf/User"
+    mkdir -p "$TEMP_HOME/Library/Application Support/Antigravity/User"
+    mkdir -p "$TEMP_HOME/Library/Application Support/Code - Insiders/User"
+  else
+    mkdir -p "$TEMP_HOME/.config/Code/User"
+    mkdir -p "$TEMP_HOME/.config/Cursor/User"
+    mkdir -p "$TEMP_HOME/.config/Windsurf/User"
+    mkdir -p "$TEMP_HOME/.config/Antigravity/User"
+    mkdir -p "$TEMP_HOME/.config/Code - Insiders/User"
+  fi
 }
 
 cleanup() {
@@ -30,15 +39,24 @@ End
 
 Describe 'extension filtering'
 setup() {
-  mock_bin_setup code fswatch
+  mock_bin_setup code fswatch inotifywait
   TEMP_HOME=$(mktemp -d)
 
   # Create required directories
-  mkdir -p "$TEMP_HOME/Library/Application Support/Code/User"
-  mkdir -p "$TEMP_HOME/Library/Application Support/Cursor/User"
-  mkdir -p "$TEMP_HOME/Library/Application Support/Windsurf/User"
-  mkdir -p "$TEMP_HOME/Library/Application Support/Antigravity/User"
-  mkdir -p "$TEMP_HOME/Library/Application Support/Code - Insiders/User"
+  OS_TYPE="$(uname -s)"
+  if [ "$OS_TYPE" = "Darwin" ]; then
+    mkdir -p "$TEMP_HOME/Library/Application Support/Code/User"
+    mkdir -p "$TEMP_HOME/Library/Application Support/Cursor/User"
+    mkdir -p "$TEMP_HOME/Library/Application Support/Windsurf/User"
+    mkdir -p "$TEMP_HOME/Library/Application Support/Antigravity/User"
+    mkdir -p "$TEMP_HOME/Library/Application Support/Code - Insiders/User"
+  else
+    mkdir -p "$TEMP_HOME/.config/Code/User"
+    mkdir -p "$TEMP_HOME/.config/Cursor/User"
+    mkdir -p "$TEMP_HOME/.config/Windsurf/User"
+    mkdir -p "$TEMP_HOME/.config/Antigravity/User"
+    mkdir -p "$TEMP_HOME/.config/Code - Insiders/User"
+  fi
 
   # Create mock VS Code CLI that lists extensions
   cat >"$MOCK_BIN/code" <<'EOF'
@@ -88,20 +106,35 @@ End
 
 Describe 'config file syncing'
 setup() {
-  mock_bin_setup code fswatch cp
+  mock_bin_setup code fswatch cp inotifywait
   TEMP_HOME=$(mktemp -d)
 
+  # Detect OS and create appropriate directories
+  OS_TYPE="$(uname -s)"
+  if [ "$OS_TYPE" = "Darwin" ]; then
+    VSCODE_DIR="$TEMP_HOME/Library/Application Support/Code/User"
+    VSCODE_INSIDERS_DIR="$TEMP_HOME/Library/Application Support/Code - Insiders/User"
+    CURSOR_DIR="$TEMP_HOME/Library/Application Support/Cursor/User"
+    WINDSURF_DIR="$TEMP_HOME/Library/Application Support/Windsurf/User"
+    ANTIGRAVITY_DIR="$TEMP_HOME/Library/Application Support/Antigravity/User"
+  else
+    VSCODE_DIR="$TEMP_HOME/.config/Code/User"
+    VSCODE_INSIDERS_DIR="$TEMP_HOME/.config/Code - Insiders/User"
+    CURSOR_DIR="$TEMP_HOME/.config/Cursor/User"
+    WINDSURF_DIR="$TEMP_HOME/.config/Windsurf/User"
+    ANTIGRAVITY_DIR="$TEMP_HOME/.config/Antigravity/User"
+  fi
+
   # Create VS Code user directory with config files
-  VSCODE_DIR="$TEMP_HOME/Library/Application Support/Code/User"
   mkdir -p "$VSCODE_DIR"
   echo '{"editor.fontSize": 14}' >"$VSCODE_DIR/settings.json"
   echo '[]' >"$VSCODE_DIR/keybindings.json"
 
   # Create target directories
-  mkdir -p "$TEMP_HOME/Library/Application Support/Cursor/User"
-  mkdir -p "$TEMP_HOME/Library/Application Support/Windsurf/User"
-  mkdir -p "$TEMP_HOME/Library/Application Support/Antigravity/User"
-  mkdir -p "$TEMP_HOME/Library/Application Support/Code - Insiders/User"
+  mkdir -p "$CURSOR_DIR"
+  mkdir -p "$WINDSURF_DIR"
+  mkdir -p "$ANTIGRAVITY_DIR"
+  mkdir -p "$VSCODE_INSIDERS_DIR"
 
   # Create code mock
   cat >"$MOCK_BIN/code" <<'EOF'
