@@ -142,7 +142,15 @@ setup: nix-setup ## Basic Nix setup (alias for nix-setup).
 setup-dev: nix-setup git-submodule-sync shell-install ## Set up local development environment (Nix + submodules + shell).
 
 .PHONY: switch
-switch: nix-switch launchctl ## Apply Nix configuration and restart launchd agents.
+switch: nix-switch services ## Apply Nix configuration and restart services.
+
+.PHONY: services
+services: ## Restart platform-specific services (launchd on macOS, systemd on Linux).
+	@if [ "$(OS)" = "Darwin" ]; then \
+		$(MAKE) launchctl; \
+	elif [ "$(OS)" = "Linux" ]; then \
+		$(MAKE) systemctl; \
+	fi
 
 .PHONY: test
 test: neovim-test shell-test ## Run all tests (neovim + shell).
@@ -628,6 +636,29 @@ launchctl-neverssl-keepalive: ## Restart neverssl-keepalive launchd agent.
 launchctl-ollama: ## Restart ollama launchd agent.
 	@echo "🔄 Restarting ollama..."
 	@launchctl kickstart -k gui/$$(id -u)/org.nix-community.home.ollama || true
+	@echo "✅ ollama restarted"
+
+##@ Systemd Services (Linux)
+
+.PHONY: systemctl
+systemctl: systemctl-code-syncer systemctl-dotfiles-updater systemctl-ollama ## Restart all systemd user services.
+
+.PHONY: systemctl-code-syncer
+systemctl-code-syncer: ## Restart code-syncer systemd user service.
+	@echo "🔄 Restarting code-syncer..."
+	@systemctl --user restart code-syncer.service || true
+	@echo "✅ code-syncer restarted"
+
+.PHONY: systemctl-dotfiles-updater
+systemctl-dotfiles-updater: ## Restart dotfiles-updater systemd user service.
+	@echo "🔄 Restarting dotfiles-updater..."
+	@systemctl --user restart dotfiles-updater.service || true
+	@echo "✅ dotfiles-updater restarted"
+
+.PHONY: systemctl-ollama
+systemctl-ollama: ## Restart ollama systemd user service.
+	@echo "🔄 Restarting ollama..."
+	@systemctl --user restart ollama.service || true
 	@echo "✅ ollama restarted"
 
 ##@ Git Submodule
