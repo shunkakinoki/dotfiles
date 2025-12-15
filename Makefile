@@ -173,10 +173,13 @@ nix-connect: ## Ensure Nix daemon is running.
 		sudo launchctl unload /Library/LaunchDaemons/org.nixos.nix-daemon.plist 2>/dev/null || true; \
 		sudo launchctl load -w /Library/LaunchDaemons/org.nixos.nix-daemon.plist; \
 	elif [ "$(OS)" = "Linux" ]; then \
-		if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
-			echo "🏃‍♂️ Nix daemon management (e.g., systemctl) is skipped in CI/Docker environments."; \
+		if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ] || [ "$$AUTOMATED_UPDATE" = "true" ]; then \
+			echo "🏃‍♂️ Nix daemon management (e.g., systemctl) is skipped in CI/Docker/automated environments."; \
 			if [ "$$IN_DOCKER" = "true" ]; then \
 				echo "ℹ️ Docker environment is using a single-user Nix installation (no separate daemon)."; \
+			fi; \
+			if [ "$$AUTOMATED_UPDATE" = "true" ]; then \
+				echo "ℹ️ Running in automated update mode - assuming nix-daemon is already running."; \
 			fi; \
 		else \
 			if [ -d /run/systemd/system ] && [ -S /run/systemd/private ]; then \
