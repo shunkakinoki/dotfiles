@@ -36,20 +36,23 @@ in
     };
     Service = {
       Type = "oneshot";
-      Environment = "PATH=${
-        lib.makeBinPath [
-          pkgs.bash
-          pkgs.coreutils
-          pkgs.curl
-          pkgs.gawk
-          pkgs.git
-          pkgs.gnumake
-          pkgs.gnused
-          pkgs.nix
-          pkgs.sudo
-          pkgs.which
-        ]
-      }";
+      Environment = [
+        "PATH=${
+          lib.makeBinPath [
+            pkgs.bash
+            pkgs.coreutils
+            pkgs.curl
+            pkgs.gawk
+            pkgs.git
+            pkgs.gnumake
+            pkgs.gnused
+            pkgs.nix
+            pkgs.sudo
+            pkgs.which
+          ]
+        }"
+        "AUTOMATED_UPDATE=true"
+      ];
       ExecStart = "${./update.sh}";
     };
   };
