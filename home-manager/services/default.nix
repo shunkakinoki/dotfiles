@@ -6,7 +6,7 @@ let
   dotfilesUpdater = import ./dotfiles-updater { inherit pkgs; };
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
   ollama = import ./ollama { inherit pkgs; };
-  sshAgent = import ./ssh-agent.nix;
+  sshAgent = import ./ssh-agent { inherit pkgs; };
 in
 [
   brewUpgrader
