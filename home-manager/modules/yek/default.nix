@@ -8,7 +8,7 @@
 with lib;
 
 let
-  cfg = config.programs.yek;
+  cfg = config.modules.yek;
 
   # Determine the target platform string
   target =
@@ -71,7 +71,7 @@ let
   '';
 in
 {
-  options.programs.yek = {
+  options.modules.yek = {
     enable = mkEnableOption "yek - serialize text files for LLM consumption";
 
     package = mkOption {
