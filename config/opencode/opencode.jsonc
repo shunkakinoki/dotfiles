@@ -188,6 +188,19 @@
 						}
 					}
 				}
+			},
+			"options": {
+				"apiKey": "{env:OPENROUTER_API_KEY}"
+			}
+		},
+		"z-ai": {
+			"models": {
+				"glm-4.6": {
+					"name": "GLM-4.6 (via Z-AI)",
+				}
+			},
+			"options": {
+				"apiKey": "{env:ZAI_API_KEY}",
 			}
 		}
 	},
