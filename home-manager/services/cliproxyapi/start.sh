@@ -20,8 +20,10 @@ export MANAGEMENT_PASSWORD="${CLIPROXY_MANAGEMENT_PASSWORD:-}"
 
 # Generate config from template with secrets injected
 if [ -f "$TEMPLATE" ]; then
-  sed -e "s|__OPENROUTER_API_KEY__|${OPENROUTER_API_KEY:-}|g" \
+  sed \
+    -e "s|__OPENROUTER_API_KEY__|${OPENROUTER_API_KEY:-}|g" \
     -e "s|__CLIPROXY_MANAGEMENT_PASSWORD__|${CLIPROXY_MANAGEMENT_PASSWORD:-}|g" \
+    -e "s|__ZAI_API_KEY__|${ZAI_API_KEY:-}|g" \
     "$TEMPLATE" >"$CONFIG"
 fi
 
