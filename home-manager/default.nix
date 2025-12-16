@@ -16,7 +16,7 @@ let
     sources = { };
   };
   services = import ./services {
-    inherit pkgs;
+    inherit config lib pkgs;
   };
 in
 {
