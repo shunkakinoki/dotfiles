@@ -24,6 +24,9 @@ fi
 # Read JSON input from stdin
 input=$(cat)
 
+# Get hostname for notifications
+HOSTNAME=$(hostname -s)
+
 # Function to send Pushover notification
 send_notification() {
   local message="$1"
@@ -62,11 +65,11 @@ if echo "$input" | jq -e '.message' >/dev/null 2>&1; then
   case "$MESSAGE" in
   'Claude is waiting for your input')
     if [ -n "$TASK" ]; then
-      send_notification "⏸️ Waiting for input: ${STATS}
+      send_notification "⏸️ [${HOSTNAME}] Waiting for input: ${STATS}
 📂 ${CWD}
 💬 ${TASK}" 1
     else
-      send_notification "⏸️ Waiting for input
+      send_notification "⏸️ [${HOSTNAME}] Waiting for input
 📂 ${CWD}" 1
     fi
     ;;
@@ -76,31 +79,31 @@ if echo "$input" | jq -e '.message' >/dev/null 2>&1; then
     ;;
   *'permission'* | *'Permission'*)
     if [ -n "$TASK" ]; then
-      send_notification "🔐 Permission required: ${STATS}
+      send_notification "🔐 [${HOSTNAME}] Permission required: ${STATS}
 📂 ${CWD}
 💬 ${TASK}" 1
     else
-      send_notification "🔐 Permission required
+      send_notification "🔐 [${HOSTNAME}] Permission required
 📂 ${CWD}" 1
     fi
     ;;
   *'plan'* | *'Plan'* | *'approval'* | *'Approval'*)
     if [ -n "$TASK" ]; then
-      send_notification "📋 Plan ready: ${STATS}
+      send_notification "📋 [${HOSTNAME}] Plan ready: ${STATS}
 📂 ${CWD}
 💬 ${TASK}" 1
     else
-      send_notification "📋 Plan ready for review
+      send_notification "📋 [${HOSTNAME}] Plan ready for review
 📂 ${CWD}" 1
     fi
     ;;
   *'waiting'* | *'Waiting'*)
     if [ -n "$TASK" ]; then
-      send_notification "⏸️ Waiting: ${STATS}
+      send_notification "⏸️ [${HOSTNAME}] Waiting: ${STATS}
 📂 ${CWD}
 💬 ${TASK}" 1
     else
-      send_notification "⏸️ Waiting for input
+      send_notification "⏸️ [${HOSTNAME}] Waiting for input
 📂 ${CWD}" 1
     fi
     ;;
@@ -192,22 +195,22 @@ if echo "$input" | jq -e '.hook_event_name == "Stop"' >/dev/null 2>&1; then
     # 2. ExitPlanMode was the last tool AND
     # 3. No files were modified (FILE_COUNT == 0)
     if [ "$PERMISSION_MODE" = "plan" ] && [ "$LAST_TOOL" = "ExitPlanMode" ] && [ "$FILE_COUNT" = "0" ]; then
-      send_notification "📋 Plan ready for approval
+      send_notification "📋 [${HOSTNAME}] Plan ready for approval
 📂 ${CWD}
 💬 ${TASK}" 1
       exit 0
     fi
 
     if [ -n "$TASK" ]; then
-      send_notification "✅ Work completed: ${TOOL_COUNT} tools, ${FILE_COUNT} files
+      send_notification "✅ [${HOSTNAME}] Work completed: ${TOOL_COUNT} tools, ${FILE_COUNT} files
 📂 ${CWD}
 💬 ${TASK}" 0
     else
-      send_notification "✅ Work completed: ${TOOL_COUNT} tools, ${FILE_COUNT} files
+      send_notification "✅ [${HOSTNAME}] Work completed: ${TOOL_COUNT} tools, ${FILE_COUNT} files
 📂 ${CWD}" 0
     fi
   else
-    send_notification "✅ Work completed" 0
+    send_notification "✅ [${HOSTNAME}] Work completed" 0
   fi
   exit 0
 fi
