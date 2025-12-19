@@ -30,7 +30,10 @@
       inputs.home-manager.follows = "home-manager";
     };
     neovim-nightly-overlay = {
-      url = "github:nix-community/neovim-nightly-overlay";
+      # TEMPORARY: Use PR #1115 branch that fixes tree-sitter buildRustPackage issue
+      # See: https://github.com/nix-community/neovim-nightly-overlay/pull/1115
+      # TODO: Switch back to "github:nix-community/neovim-nightly-overlay" once PR is merged
+      url = "github:Bot-wxt1221/neovim-nightly-overlay/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     devenv = {
