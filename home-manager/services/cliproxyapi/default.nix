@@ -3,6 +3,7 @@ let
   inherit (pkgs) lib;
 in
 {
+  # Main cliproxyapi service
   launchd.agents.cliproxyapi = lib.mkIf pkgs.stdenv.isDarwin {
     enable = true;
     config = {
@@ -39,6 +40,45 @@ in
     };
     Install = {
       WantedBy = [ "default.target" ];
+    };
+  };
+
+  # Backup/recovery service
+  launchd.agents.cliproxyapi-backup = lib.mkIf pkgs.stdenv.isDarwin {
+    enable = true;
+    config = {
+      ProgramArguments = [
+        "${pkgs.bash}/bin/bash"
+        "${./scripts/backup-and-recover.sh}"
+      ];
+      StartInterval = 300; # Run every 5 minutes
+      RunAtLoad = true;
+      StandardOutPath = "/tmp/cliproxyapi-backup.log";
+      StandardErrorPath = "/tmp/cliproxyapi-backup.error.log";
+    };
+  };
+
+  systemd.user.timers.cliproxyapi-backup = lib.mkIf pkgs.stdenv.isLinux {
+    Unit = {
+      Description = "CLIProxyAPI auth backup and recovery timer";
+    };
+    Timer = {
+      OnBootSec = "1min";
+      OnUnitActiveSec = "5min";
+      Unit = "cliproxyapi-backup.service";
+    };
+    Install = {
+      WantedBy = [ "timers.target" ];
+    };
+  };
+
+  systemd.user.services.cliproxyapi-backup = lib.mkIf pkgs.stdenv.isLinux {
+    Unit = {
+      Description = "CLIProxyAPI auth backup and recovery";
+    };
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.bash}/bin/bash ${./scripts/backup-and-recover.sh}";
     };
   };
 }

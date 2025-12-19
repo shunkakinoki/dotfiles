@@ -18,6 +18,19 @@ fi
 # Export management password for Management API (CLIProxyAPI requires MANAGEMENT_PASSWORD env var)
 export MANAGEMENT_PASSWORD="${CLIPROXY_MANAGEMENT_PASSWORD:-}"
 
+# Export S3-compatible object storage env vars (needed for backup/recovery)
+export OBJECTSTORE_ENDPOINT="${OBJECTSTORE_ENDPOINT:-${AWS_S3_ENDPOINT:-}}"
+export OBJECTSTORE_BUCKET="${OBJECTSTORE_BUCKET:-${AWS_S3_BUCKET:-}}"
+export OBJECTSTORE_ACCESS_KEY="${OBJECTSTORE_ACCESS_KEY:-${AWS_ACCESS_KEY_ID:-}}"
+export OBJECTSTORE_SECRET_KEY="${OBJECTSTORE_SECRET_KEY:-${AWS_SECRET_ACCESS_KEY:-}}"
+
+# Backup auth files to R2 before starting service
+# This protects against race condition deletions
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -x "$SCRIPT_DIR/scripts/backup-auth.sh" ]; then
+  bash "$SCRIPT_DIR/scripts/backup-auth.sh"
+fi
+
 # Generate config from template with secrets injected
 if [ -f "$TEMPLATE" ]; then
   sed \
@@ -27,14 +40,14 @@ if [ -f "$TEMPLATE" ]; then
     "$TEMPLATE" >"$CONFIG"
 fi
 
+# Recover auth files from backup if they're missing
+# This handles race condition where files get deleted during config reload
+if [ -x "$SCRIPT_DIR/scripts/recover-auth.sh" ]; then
+  bash "$SCRIPT_DIR/scripts/recover-auth.sh"
+fi
+
 # Change to config dir so logs are created there
 cd "$CONFIG_DIR"
-
-# Export S3-compatible object storage env vars (for R2 or any S3-compatible storage)
-export OBJECTSTORE_ENDPOINT="${OBJECTSTORE_ENDPOINT:-${AWS_S3_ENDPOINT:-}}"
-export OBJECTSTORE_BUCKET="${OBJECTSTORE_BUCKET:-${AWS_S3_BUCKET:-}}"
-export OBJECTSTORE_ACCESS_KEY="${OBJECTSTORE_ACCESS_KEY:-${AWS_ACCESS_KEY_ID:-}}"
-export OBJECTSTORE_SECRET_KEY="${OBJECTSTORE_SECRET_KEY:-${AWS_SECRET_ACCESS_KEY:-}}"
 
 # Find and exec cliproxyapi with config file
 if [ -x /opt/homebrew/bin/cliproxyapi ]; then
