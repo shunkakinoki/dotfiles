@@ -14,7 +14,7 @@
     "@beads/bd": "^0.30.0",
     "@biomejs/biome": "^2.3.8",
     "@getgrit/cli": "^0.1.0-alpha.1743007075",
-    "@github/copilot": "^0.0.369",
+    "@github/copilot": "^0.0.372",
     "@google/jules": "^0.1.40",
     "@nanocollective/nanocoder": "^1.16.3",
     "@pulumi/pulumi": "^3.212.0",
