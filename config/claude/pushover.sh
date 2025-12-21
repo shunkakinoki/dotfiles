@@ -24,8 +24,11 @@ fi
 # Read JSON input from stdin
 input=$(cat)
 
-# Get hostname for notifications
-HOSTNAME=$(hostname -s)
+# Get hostname for notifications (with fallback)
+HOSTNAME=$(hostname -s 2>/dev/null || echo "unknown")
+if [ -z "$HOSTNAME" ]; then
+  HOSTNAME="unknown"
+fi
 
 # Function to send Pushover notification
 send_notification() {
