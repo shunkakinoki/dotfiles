@@ -7,6 +7,8 @@ SCRIPT="$PWD/home-manager/services/code-syncer/sync.sh"
 Describe 'VS Code CLI detection'
 setup() {
   TEMP_HOME=$(mktemp -d)
+  # Create empty bin dir to use as PATH, hiding real 'code' command
+  EMPTY_BIN=$(mktemp -d)
   OS_TYPE="$(uname -s)"
   if [ "$OS_TYPE" = "Darwin" ]; then
     mkdir -p "$TEMP_HOME/Library/Application Support/Code/User"
@@ -24,14 +26,15 @@ setup() {
 }
 
 cleanup() {
-  rm -rf "$TEMP_HOME"
+  rm -rf "$TEMP_HOME" "$EMPTY_BIN"
 }
 
 Before 'setup'
 After 'cleanup'
 
 It 'exits with error when VS Code CLI not found'
-When run bash -c "HOME='$TEMP_HOME' bash '$SCRIPT' 2>&1"
+# Use restricted PATH with only essential commands, hiding 'code'
+When run bash -c "HOME='$TEMP_HOME' PATH='$EMPTY_BIN:/usr/bin:/bin' bash '$SCRIPT' 2>&1"
 The output should include 'VS Code CLI not found'
 The status should be failure
 End
@@ -83,7 +86,7 @@ Before 'setup'
 After 'cleanup'
 
 It 'lists VS Code extensions'
-When run bash -c "HOME='$TEMP_HOME' bash '$SCRIPT' 2>&1 | head -20"
+When run bash -c "HOME='$TEMP_HOME' PATH='$PATH' bash '$SCRIPT' 2>&1 | head -20"
 The output should include 'extension'
 The status should be success
 End
@@ -158,13 +161,13 @@ Before 'setup'
 After 'cleanup'
 
 It 'copies settings.json to target editors'
-When run bash -c "HOME='$TEMP_HOME' bash '$SCRIPT' 2>&1 | head -30"
+When run bash -c "HOME='$TEMP_HOME' PATH='$PATH' bash '$SCRIPT' 2>&1 | head -30"
 The output should include 'settings.json'
 The status should be success
 End
 
 It 'copies keybindings.json to target editors'
-When run bash -c "HOME='$TEMP_HOME' bash '$SCRIPT' 2>&1 | head -30"
+When run bash -c "HOME='$TEMP_HOME' PATH='$PATH' bash '$SCRIPT' 2>&1 | head -30"
 The output should include 'keybindings.json'
 The status should be success
 End
