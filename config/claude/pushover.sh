@@ -24,8 +24,8 @@ fi
 # Read JSON input from stdin
 input=$(cat)
 
-# Get hostname for notifications (with fallback)
-HOSTNAME=$(hostname -s 2>/dev/null || echo "unknown")
+# Get Computer Name for notifications (macOS friendly name, fallback to hostname)
+HOSTNAME=$(scutil --get ComputerName 2>/dev/null || hostname -s 2>/dev/null || echo "unknown")
 if [ -z "$HOSTNAME" ]; then
   HOSTNAME="unknown"
 fi
