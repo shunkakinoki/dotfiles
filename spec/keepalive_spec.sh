@@ -83,4 +83,27 @@ The output should include 'captive portal'
 End
 End
 
+Describe 'Starbucks WiFi detection (macOS)'
+It 'checks for macOS via OSTYPE'
+When run bash -c "cat '$SCRIPT'"
+The output should include 'OSTYPE'
+The output should include 'darwin'
+End
+
+It 'uses networksetup to get SSID'
+When run bash -c "cat '$SCRIPT'"
+The output should include 'networksetup -getairportnetwork'
+End
+
+It 'checks for STARBUCKS SSID pattern'
+When run bash -c "cat '$SCRIPT'"
+The output should include '*"STARBUCKS"*'
+End
+
+It 'opens captive portal when connectivity fails'
+When run bash -c "cat '$SCRIPT'"
+The output should include 'captive.apple.com'
+End
+End
+
 End
