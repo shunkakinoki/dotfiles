@@ -9,7 +9,7 @@ BACKUP_DIR="s3://cliproxyapi/backup/auths/"
 AUTH_DIR="$CONFIG_DIR/objectstore/auths"
 
 # Check if auth directory has files
-if [ -d "$AUTH_DIR" ] && [ -n "$(ls -A $AUTH_DIR 2>/dev/null)" ]; then
+if [ -d "$AUTH_DIR" ] && [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
   echo "Backing up auth files to R2 backup directory..." >&2
   AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
     AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \

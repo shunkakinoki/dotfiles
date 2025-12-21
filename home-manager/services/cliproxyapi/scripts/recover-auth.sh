@@ -9,7 +9,7 @@ BACKUP_DIR="s3://cliproxyapi/backup/auths/"
 AUTH_DIR="$CONFIG_DIR/objectstore/auths"
 
 # Check if auth directory is missing or empty
-if [ ! -d "$AUTH_DIR" ] || [ -z "$(ls -A $AUTH_DIR 2>/dev/null)" ]; then
+if [ ! -d "$AUTH_DIR" ] || [ -z "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
   echo "Auth files missing, attempting recovery from R2 backup..." >&2
   mkdir -p "$AUTH_DIR"
   AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
