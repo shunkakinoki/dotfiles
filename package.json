@@ -13,6 +13,8 @@
   "dependencies": {
     "@beads/bd": "^0.30.0",
     "@biomejs/biome": "^2.3.8",
+    "@ccusage/codex": "^17.2.0",
+    "@ccusage/mcp": "^17.2.0",
     "@getgrit/cli": "^0.1.0-alpha.1743007075",
     "@github/copilot": "^0.0.372",
     "@google/jules": "^0.1.40",
@@ -20,6 +22,7 @@
     "@pulumi/pulumi": "^3.212.0",
     "@sourcegraph/amp": "^0.0.1764893126-gb1ffc3",
     "@typescript/native-preview": "^7.0.0-dev.20251127.1",
+    "ccusage": "^17.2.0",
     "cline": "^1.0.5",
     "open-composer": "^0.8.23",
     "typescript": "^5.9.3"
