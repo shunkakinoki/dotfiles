@@ -12,8 +12,8 @@ AUTH_DIR="$CONFIG_DIR/objectstore/auths"
 if [ -d "$AUTH_DIR" ] && [ -n "$(ls -A $AUTH_DIR 2>/dev/null)" ]; then
   echo "Backing up auth files to R2 backup directory..." >&2
   AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
-  AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
-  aws s3 sync \
+    AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
+    aws s3 sync \
     --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
     --no-progress \
     "$AUTH_DIR/" \

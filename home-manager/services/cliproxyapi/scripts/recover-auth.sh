@@ -13,8 +13,8 @@ if [ ! -d "$AUTH_DIR" ] || [ -z "$(ls -A $AUTH_DIR 2>/dev/null)" ]; then
   echo "Auth files missing, attempting recovery from R2 backup..." >&2
   mkdir -p "$AUTH_DIR"
   AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
-  AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
-  aws s3 sync \
+    AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
+    aws s3 sync \
     --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
     --no-progress \
     "$BACKUP_DIR" \
