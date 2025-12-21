@@ -18,14 +18,9 @@ in
         # Load keys that exist
         set -l keys
 
-        # Always try to load the default key (no passphrase)
+        # Always try to load the default key
         if test -f ~/.ssh/id_ed25519
           set -a keys ~/.ssh/id_ed25519
-        end
-
-        # Load GitHub key if it exists (may have passphrase)
-        if test -f ~/.ssh/id_ed25519_github
-          set -a keys ~/.ssh/id_ed25519_github
         end
 
         # Initialize keychain with found keys

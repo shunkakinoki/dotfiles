@@ -16,7 +16,7 @@ let
     sources = { };
   };
   services = import ./services {
-    inherit pkgs;
+    inherit config lib pkgs;
   };
 in
 {
@@ -35,7 +35,7 @@ in
   home.packages = packages;
   home.stateVersion = "24.11";
 
-  programs.yek.enable = true;
+  modules.yek.enable = true;
 
   accounts.email.accounts = {
     Gmail = {
