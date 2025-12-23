@@ -34,6 +34,7 @@
       "/Applications/Visual Studio Code - Insiders.app"
       "/Applications/Antigravity.app"
       "/Applications/Conductor.app"
+      "/Applications/OpenCode.app"
       "/Applications/Xcode.app"
       "/Applications/Zed.app"
       "/System/Applications/Messages.app"

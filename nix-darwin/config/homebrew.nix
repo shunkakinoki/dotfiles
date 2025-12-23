@@ -78,6 +78,7 @@
       "lm-studio"
       "notion"
       "ollama-app"
+      "opencode-desktop"
       "raycast"
       "rescuetime"
       "screen-studio"
