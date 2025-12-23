@@ -73,7 +73,7 @@ The output should match pattern '*master*|*main*'
 End
 
 It 'shows file count when there are changes'
-echo "test content" > "$TEMP_DIR/testfile.txt"
+echo "test content" >"$TEMP_DIR/testfile.txt"
 When run bash -c 'echo "{\"model\": {\"display_name\": \"claude-sonnet-4\"}, \"workspace\": {\"current_dir\": \"'"$TEMP_DIR"'\"}}" | bash '"$SCRIPT"
 The status should be success
 The output should include '1 files'
