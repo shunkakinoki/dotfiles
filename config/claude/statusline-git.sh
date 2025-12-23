@@ -63,8 +63,8 @@ if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     total_files=$(echo "$status_output" | wc -l | xargs)
     line_stats=$(git diff --numstat HEAD 2>/dev/null | awk '{added+=$1; removed+=$2} END {print added+0, removed+0}')
 
-    added=$(echo $line_stats | cut -d' ' -f1)
-    removed=$(echo $line_stats | cut -d' ' -f2)
+    added=$(echo "$line_stats" | cut -d' ' -f1)
+    removed=$(echo "$line_stats" | cut -d' ' -f2)
 
     # Build status display
     git_info=" ${YELLOW}($branch${NC} ${YELLOW}|${NC} ${GRAY}${total_files} files${NC}"

@@ -110,6 +110,7 @@ After 'cleanup'
 It 'shows cost when provided'
 When run bash -c 'echo "{\"model\": {\"display_name\": \"claude-sonnet-4\"}, \"workspace\": {\"current_dir\": \"'"$TEMP_DIR"'\"}, \"cost\": {\"total_cost_usd\": 0.0123}}" | bash '"$SCRIPT"
 The status should be success
+# shellcheck disable=SC2016
 The output should include '$0.0123'
 End
 
