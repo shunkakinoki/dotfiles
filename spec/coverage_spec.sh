@@ -17,6 +17,10 @@ It 'has spec file for config/claude/security.sh'
 The path "spec/security_spec.sh" should be exist
 End
 
+It 'has spec file for config/claude/statusline-git.sh'
+The path "spec/statusline_git_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/programs/neovim/run_tests.sh'
 The path "spec/neovim_tests_spec.sh" should be exist
 End
@@ -80,6 +84,7 @@ It 'covers all non-spec shell scripts in the repository'
 covered_scripts="config/claude/notify.sh
 config/claude/pushover.sh
 config/claude/security.sh
+config/claude/statusline-git.sh
 home-manager/programs/neovim/run_tests.sh
 home-manager/services/brew-upgrader/upgrade.sh
 home-manager/services/cliproxyapi/scripts/backup-and-recover.sh

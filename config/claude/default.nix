@@ -18,4 +18,9 @@
     source = ./security.sh;
     executable = true;
   };
+
+  home.file.".claude/statusline-git.sh" = {
+    source = ./statusline-git.sh;
+    executable = true;
+  };
 }
