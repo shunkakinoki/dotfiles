@@ -12,7 +12,12 @@ in
         "${./start.sh}"
       ];
       Environment = {
-        PATH = "${lib.makeBinPath [ pkgs.gnused ]}:/opt/homebrew/bin:/usr/local/bin";
+        PATH = "${
+          lib.makeBinPath [
+            pkgs.gnused
+            pkgs.coreutils
+          ]
+        }:/opt/homebrew/bin:/usr/local/bin:/usr/bin";
       };
       KeepAlive = true;
       RunAtLoad = true;
