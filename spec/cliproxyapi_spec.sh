@@ -2,7 +2,7 @@
 # shellcheck disable=SC2329
 
 Describe 'cliproxyapi/start.sh'
-SCRIPT="$PWD/home-manager/services/cliproxyapi/start.sh"
+SCRIPT="$PWD/home-manager/services/cliproxyapi/scripts/start.sh"
 
 Describe 'configuration handling'
 setup() {

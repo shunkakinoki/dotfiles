@@ -29,7 +29,7 @@ It 'has spec file for home-manager/services/brew-upgrader/upgrade.sh'
 The path "spec/brew_upgrader_spec.sh" should be exist
 End
 
-It 'has spec file for home-manager/services/cliproxyapi/start.sh'
+It 'has spec file for home-manager/services/cliproxyapi/scripts/start.sh'
 The path "spec/cliproxyapi_spec.sh" should be exist
 End
 
@@ -90,7 +90,7 @@ home-manager/services/brew-upgrader/upgrade.sh
 home-manager/services/cliproxyapi/scripts/backup-and-recover.sh
 home-manager/services/cliproxyapi/scripts/backup-auth.sh
 home-manager/services/cliproxyapi/scripts/recover-auth.sh
-home-manager/services/cliproxyapi/start.sh
+home-manager/services/cliproxyapi/scripts/start.sh
 home-manager/services/code-syncer/sync.sh
 home-manager/services/dotfiles-updater/update.sh
 home-manager/services/neverssl-keepalive/keepalive.sh

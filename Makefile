@@ -608,37 +608,37 @@ launchctl: launchctl-brew-upgrader launchctl-cliproxyapi launchctl-code-syncer l
 .PHONY: launchctl-brew-upgrader
 launchctl-brew-upgrader: ## Restart brew-upgrader launchd agent.
 	@echo "🔄 Restarting brew-upgrader..."
-	@launchctl kickstart -k gui/$$(id -u)/org.nix-community.home.brew-upgrader || true
+	@timeout 5 launchctl kickstart -k gui/$$(id -u)/org.nix-community.home.brew-upgrader || true
 	@echo "✅ brew-upgrader restarted"
 
 .PHONY: launchctl-cliproxyapi
 launchctl-cliproxyapi: ## Restart cliproxyapi launchd agent.
 	@echo "🔄 Restarting cliproxyapi..."
-	@launchctl kickstart -k gui/$$(id -u)/org.nix-community.home.cliproxyapi || true
+	@timeout 5 launchctl kickstart -k gui/$$(id -u)/org.nix-community.home.cliproxyapi || true
 	@echo "✅ cliproxyapi restarted"
 
 .PHONY: launchctl-code-syncer
 launchctl-code-syncer: ## Restart code-syncer launchd agent.
 	@echo "🔄 Restarting code-syncer..."
-	@launchctl kickstart -k gui/$$(id -u)/org.nix-community.home.code-syncer || true
+	@timeout 5 launchctl kickstart -k gui/$$(id -u)/org.nix-community.home.code-syncer || true
 	@echo "✅ code-syncer restarted"
 
 .PHONY: launchctl-dotfiles-updater
 launchctl-dotfiles-updater: ## Restart dotfiles-updater launchd agent.
 	@echo "🔄 Restarting dotfiles-updater..."
-	@launchctl kickstart -k gui/$$(id -u)/org.nix-community.home.dotfiles-updater || true
+	@timeout 5 launchctl kickstart -k gui/$$(id -u)/org.nix-community.home.dotfiles-updater || true
 	@echo "✅ dotfiles-updater restarted"
 
 .PHONY: launchctl-neverssl-keepalive
 launchctl-neverssl-keepalive: ## Restart neverssl-keepalive launchd agent.
 	@echo "🔄 Restarting neverssl-keepalive..."
-	@launchctl kickstart -k gui/$$(id -u)/org.nix-community.home.neverssl-keepalive || true
+	@timeout 5 launchctl kickstart -k gui/$$(id -u)/org.nix-community.home.neverssl-keepalive || true
 	@echo "✅ neverssl-keepalive restarted"
 
 .PHONY: launchctl-ollama
 launchctl-ollama: ## Restart ollama launchd agent.
 	@echo "🔄 Restarting ollama..."
-	@launchctl kickstart -k gui/$$(id -u)/org.nix-community.home.ollama || true
+	@timeout 5 launchctl kickstart -k gui/$$(id -u)/org.nix-community.home.ollama || true
 	@echo "✅ ollama restarted"
 
 ##@ Systemd Services (Linux)

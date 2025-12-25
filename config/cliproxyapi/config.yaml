@@ -75,7 +75,6 @@ openai-compatibility:
       - "__OPENROUTER_API_KEY__"
     models:
       - name: "z-ai/glm-4.6"
-      - name: "z-ai/glm-4.7"
   - name: "z-ai"
     base-url: "https://api.z.ai/api/coding/paas/v4"
     api-keys:
