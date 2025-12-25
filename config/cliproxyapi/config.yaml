@@ -13,9 +13,9 @@ remote-management:
   disable-control-panel: false
 # Authentication directory (supports ~ for home directory). If you use Windows, please set the directory like this: `C:/cli-proxy-api/`
 auth-dir: "~/.cli-proxy-api"
-# API keys for client authentication (e.g., Amp CLI)
-api-keys:
-  - "__AMP_API_KEY__"
+# API keys for client authentication (optional - leave commented for open access)
+# api-keys:
+#   - "your-api-key"
 
 # Enable debug logging
 debug: true
