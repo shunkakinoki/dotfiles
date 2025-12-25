@@ -5,7 +5,8 @@ set -euo pipefail
 CONFIG_DIR="$HOME/.cli-proxy-api"
 TEMPLATE="$CONFIG_DIR/config.template.yaml"
 CONFIG="$CONFIG_DIR/config.yaml"
-ENV_FILE="$HOME/dotfiles/.env"
+# Use explicit path since $HOME may not be set correctly in launchd context
+ENV_FILE="${HOME:-/Users/shunkakinoki}/dotfiles/.env"
 
 # Source .env file to get API keys
 if [ -f "$ENV_FILE" ]; then
@@ -26,14 +27,34 @@ export OBJECTSTORE_SECRET_KEY="${OBJECTSTORE_SECRET_KEY:-${AWS_SECRET_ACCESS_KEY
 
 # Generate config from template with secrets injected
 if [ -f "$TEMPLATE" ]; then
-  sed \
+  @sed@ \
     -e "s|__OPENROUTER_API_KEY__|${OPENROUTER_API_KEY:-}|g" \
     -e "s|__CLIPROXY_MANAGEMENT_PASSWORD__|${CLIPROXY_MANAGEMENT_PASSWORD:-}|g" \
     -e "s|__ZAI_API_KEY__|${ZAI_API_KEY:-}|g" \
+    -e "s|__AMP_UPSTREAM_API_KEY__|${AMP_UPSTREAM_API_KEY:-}|g" \
     "$TEMPLATE" >"$CONFIG"
   # Also copy to objectstore config location (cliproxyapi uses this for persistence)
   mkdir -p "$CONFIG_DIR/objectstore/config"
   cp "$CONFIG" "$CONFIG_DIR/objectstore/config/config.yaml"
+
+  # Upload config to S3 to ensure backup is always correct
+  # This prevents corrupted configs from persisting across restarts
+  if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; then
+    echo "Uploading config to S3 backup..." >&2
+    if AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
+      AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
+      @aws@ s3 cp \
+      --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
+      --no-progress \
+      "$CONFIG" \
+      "s3://cliproxyapi/config/config.yaml" 2>&1; then
+      echo "✅ Config backup uploaded" >&2
+    else
+      echo "⚠️  Config backup failed (continuing anyway)" >&2
+    fi
+  else
+    echo "⚠️  S3 config backup skipped: missing credentials" >&2
+  fi
 fi
 
 # Change to config dir so logs are created there

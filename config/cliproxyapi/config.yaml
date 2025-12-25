@@ -13,10 +13,9 @@ remote-management:
   disable-control-panel: false
 # Authentication directory (supports ~ for home directory). If you use Windows, please set the directory like this: `C:/cli-proxy-api/`
 auth-dir: "~/.cli-proxy-api"
-# API keys for authentication
+# API keys for client authentication (optional - leave commented for open access)
 # api-keys:
-#   - "your-api-key-1"
-#   - "your-api-key-2"
+#   - "your-api-key"
 
 # Enable debug logging
 debug: true
@@ -34,12 +33,11 @@ quota-exceeded:
   switch-preview-model: true # Whether to automatically switch to a preview model when a quota is exceeded
 # When true, enable authentication for the WebSocket API (/v1/ws).
 ws-auth: false
-# AMP
+# AMP integration
 ampcode:
   upstream-url: "https://ampcode.com"
-  restrict-management-to-localhost: true
-# amp-upstream-api-key: "" # Optional - use AMP_API_KEY env var or ~/.local/share/amp/secrets.json
-
+  upstream-api-key: "__AMP_UPSTREAM_API_KEY__"
+  restrict-management-to-localhost: false
 # Gemini API keys (preferred)
 # gemini-api-key:
 #   - api-key: "AIzaSy...01"
@@ -77,12 +75,14 @@ openai-compatibility:
       - "__OPENROUTER_API_KEY__"
     models:
       - name: "z-ai/glm-4.6"
+      - name: "z-ai/glm-4.7"
   - name: "z-ai"
     base-url: "https://api.z.ai/api/coding/paas/v4"
     api-keys:
       - "__ZAI_API_KEY__"
     models:
       - name: "glm-4.6"
+      - name: "glm-4.7"
 
 # payload: # Optional payload configuration
 #   default: # Default rules only set parameters when they are missing in the payload.

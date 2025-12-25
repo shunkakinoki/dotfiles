@@ -1,6 +1,12 @@
 { pkgs, ... }:
 let
   inherit (pkgs) lib;
+
+  # Create start script with paths substituted at build time
+  startScript = pkgs.replaceVars ./scripts/start.sh {
+    aws = "${pkgs.awscli2}/bin/aws";
+    sed = "${pkgs.gnused}/bin/sed";
+  };
 in
 {
   # Main cliproxyapi service
@@ -9,7 +15,7 @@ in
     config = {
       ProgramArguments = [
         "${pkgs.bash}/bin/bash"
-        "${./scripts/start.sh}"
+        "${startScript}"
       ];
       Environment = {
         HOME = "/Users/shunkakinoki";
@@ -17,6 +23,7 @@ in
           lib.makeBinPath [
             pkgs.gnused
             pkgs.coreutils
+            pkgs.awscli2
           ]
         }:/opt/homebrew/bin:/usr/local/bin:/usr/bin";
       };
@@ -38,9 +45,11 @@ in
         lib.makeBinPath [
           pkgs.gnused
           pkgs.bash
+          pkgs.coreutils
+          pkgs.awscli2
         ]
       }";
-      ExecStart = "${pkgs.bash}/bin/bash ${./scripts/start.sh}";
+      ExecStart = "${pkgs.bash}/bin/bash ${startScript}";
       Restart = "always";
       RestartSec = 3;
     };
