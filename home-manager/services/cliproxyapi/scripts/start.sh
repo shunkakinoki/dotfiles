@@ -27,7 +27,7 @@ export OBJECTSTORE_SECRET_KEY="${OBJECTSTORE_SECRET_KEY:-${AWS_SECRET_ACCESS_KEY
 
 # Generate config from template with secrets injected
 if [ -f "$TEMPLATE" ]; then
-  sed \
+  @sed@ \
     -e "s|__OPENROUTER_API_KEY__|${OPENROUTER_API_KEY:-}|g" \
     -e "s|__CLIPROXY_MANAGEMENT_PASSWORD__|${CLIPROXY_MANAGEMENT_PASSWORD:-}|g" \
     -e "s|__ZAI_API_KEY__|${ZAI_API_KEY:-}|g" \
@@ -40,13 +40,19 @@ if [ -f "$TEMPLATE" ]; then
   # This prevents corrupted configs from persisting across restarts
   if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; then
     echo "Uploading config to S3 backup..." >&2
-    AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
+    if AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
       AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
-      aws s3 cp \
+      @aws@ s3 cp \
       --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
       --no-progress \
       "$CONFIG" \
-      "s3://cliproxyapi/config/config.yaml" 2>/dev/null || echo "⚠️  Config backup failed (continuing anyway)" >&2
+      "s3://cliproxyapi/config/config.yaml" 2>&1; then
+      echo "✅ Config backup uploaded" >&2
+    else
+      echo "⚠️  Config backup failed (continuing anyway)" >&2
+    fi
+  else
+    echo "⚠️  S3 config backup skipped: missing credentials" >&2
   fi
 fi
 
