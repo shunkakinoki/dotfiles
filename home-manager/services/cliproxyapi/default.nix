@@ -12,6 +12,7 @@ in
         "${./scripts/start.sh}"
       ];
       Environment = {
+        HOME = "/Users/shunkakinoki";
         PATH = "${
           lib.makeBinPath [
             pkgs.gnused
