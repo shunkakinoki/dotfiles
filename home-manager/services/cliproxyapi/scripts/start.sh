@@ -5,7 +5,8 @@ set -euo pipefail
 CONFIG_DIR="$HOME/.cli-proxy-api"
 TEMPLATE="$CONFIG_DIR/config.template.yaml"
 CONFIG="$CONFIG_DIR/config.yaml"
-ENV_FILE="$HOME/dotfiles/.env"
+# Use explicit path since $HOME may not be set correctly in launchd context
+ENV_FILE="${HOME:-/Users/shunkakinoki}/dotfiles/.env"
 
 # Source .env file to get API keys
 if [ -f "$ENV_FILE" ]; then
