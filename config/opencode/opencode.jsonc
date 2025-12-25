@@ -43,10 +43,13 @@
 					"name": "Claude Haiku 4.5 (via CLIProxyAPI)"
 				},
 				"z-ai/glm-4.6": {
-					"name": "GLM-4.6 (via OpenRouter)",
-					"options": {
-						"stream": false
-					}
+					"name": "GLM-4.6 (via OpenRouter)"
+				},
+				"zai-coding-plan/glm-4.6": {
+					"name": "GLM-4.6 Coding Plan (via OpenRouter)"
+				},
+				"zai-coding-plan/glm-4.7": {
+					"name": "GLM-4.7 Coding Plan (via OpenRouter)"
 				}
 			}
 		},
