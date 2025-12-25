@@ -8,7 +8,6 @@
         "${./upgrade.sh}"
       ];
       RunAtLoad = true;
-      KeepAlive = true;
       StartInterval = 10800;
       StandardOutPath = "/tmp/brew-upgrader.log";
       StandardErrorPath = "/tmp/brew-upgrader.error.log";
