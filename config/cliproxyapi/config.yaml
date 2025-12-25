@@ -13,10 +13,9 @@ remote-management:
   disable-control-panel: false
 # Authentication directory (supports ~ for home directory). If you use Windows, please set the directory like this: `C:/cli-proxy-api/`
 auth-dir: "~/.cli-proxy-api"
-# API keys for authentication
-# api-keys:
-#   - "your-api-key-1"
-#   - "your-api-key-2"
+# API keys for client authentication (e.g., Amp CLI)
+api-keys:
+  - "__AMP_API_KEY__"
 
 # Enable debug logging
 debug: true
@@ -34,11 +33,11 @@ quota-exceeded:
   switch-preview-model: true # Whether to automatically switch to a preview model when a quota is exceeded
 # When true, enable authentication for the WebSocket API (/v1/ws).
 ws-auth: false
-# AMP
+# AMP integration
 ampcode:
   upstream-url: "https://ampcode.com"
-  restrict-management-to-localhost: true
-# amp-upstream-api-key: "" # Optional - use AMP_API_KEY env var or ~/.local/share/amp/secrets.json
+  upstream-api-key: "__AMP_UPSTREAM_API_KEY__"
+  restrict-management-to-localhost: false
 
 # Gemini API keys (preferred)
 # gemini-api-key:

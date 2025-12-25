@@ -31,6 +31,8 @@ if [ -f "$TEMPLATE" ]; then
     -e "s|__OPENROUTER_API_KEY__|${OPENROUTER_API_KEY:-}|g" \
     -e "s|__CLIPROXY_MANAGEMENT_PASSWORD__|${CLIPROXY_MANAGEMENT_PASSWORD:-}|g" \
     -e "s|__ZAI_API_KEY__|${ZAI_API_KEY:-}|g" \
+    -e "s|__AMP_API_KEY__|${AMP_API_KEY:-}|g" \
+    -e "s|__AMP_UPSTREAM_API_KEY__|${AMP_UPSTREAM_API_KEY:-}|g" \
     "$TEMPLATE" >"$CONFIG"
   # Also copy to objectstore config location (cliproxyapi uses this for persistence)
   mkdir -p "$CONFIG_DIR/objectstore/config"
