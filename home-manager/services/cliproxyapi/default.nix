@@ -7,6 +7,15 @@ let
     aws = "${pkgs.awscli2}/bin/aws";
     sed = "${pkgs.gnused}/bin/sed";
   };
+
+  # Bundle all backup scripts together
+  backupScripts = pkgs.runCommand "backup-scripts" { } ''
+    mkdir -p $out
+    cp ${./scripts/backup-and-recover.sh} $out/backup-and-recover.sh
+    cp ${./scripts/backup-auth.sh} $out/backup-auth.sh
+    cp ${./scripts/recover-auth.sh} $out/recover-auth.sh
+    chmod +x $out/*.sh
+  '';
 in
 {
   # Main cliproxyapi service
@@ -64,7 +73,7 @@ in
     config = {
       ProgramArguments = [
         "${pkgs.bash}/bin/bash"
-        "${./scripts/backup-and-recover.sh}"
+        "${backupScripts}/backup-and-recover.sh"
       ];
       StartInterval = 300; # Run every 5 minutes
       RunAtLoad = true;
@@ -93,7 +102,13 @@ in
     };
     Service = {
       Type = "oneshot";
-      ExecStart = "${pkgs.bash}/bin/bash ${./scripts/backup-and-recover.sh}";
+      ExecStart = "${pkgs.bash}/bin/bash ${backupScripts}/backup-and-recover.sh";
+      Environment = "PATH=${
+        lib.makeBinPath [
+          pkgs.awscli2
+          pkgs.coreutils
+        ]
+      }";
     };
   };
 }
