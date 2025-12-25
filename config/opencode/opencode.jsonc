@@ -197,6 +197,9 @@
 			"models": {
 				"glm-4.6": {
 					"name": "GLM-4.6 (via Z-AI)",
+				},
+				"zai-coding-plan/glm-4.7": {
+					"name": "GLM-4.7 Coding Plan (via Z-AI)"
 				}
 			},
 			"options": {
