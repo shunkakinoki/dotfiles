@@ -1,6 +1,7 @@
 # AI
 .claude
 .devenv.nix
+objectstore
 
 # Nix
 .devenv

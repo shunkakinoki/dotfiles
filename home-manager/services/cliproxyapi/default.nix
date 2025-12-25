@@ -9,10 +9,16 @@ in
     config = {
       ProgramArguments = [
         "${pkgs.bash}/bin/bash"
-        "${./start.sh}"
+        "${./scripts/start.sh}"
       ];
       Environment = {
-        PATH = "${lib.makeBinPath [ pkgs.gnused ]}:/opt/homebrew/bin:/usr/local/bin";
+        HOME = "/Users/shunkakinoki";
+        PATH = "${
+          lib.makeBinPath [
+            pkgs.gnused
+            pkgs.coreutils
+          ]
+        }:/opt/homebrew/bin:/usr/local/bin:/usr/bin";
       };
       KeepAlive = true;
       RunAtLoad = true;
@@ -34,7 +40,7 @@ in
           pkgs.bash
         ]
       }";
-      ExecStart = "${pkgs.bash}/bin/bash ${./start.sh}";
+      ExecStart = "${pkgs.bash}/bin/bash ${./scripts/start.sh}";
       Restart = "always";
       RestartSec = 3;
     };
