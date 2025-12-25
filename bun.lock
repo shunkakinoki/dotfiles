@@ -5,7 +5,7 @@
     "": {
       "name": "dotfiles",
       "dependencies": {
-        "@beads/bd": "^0.35.0",
+        "@beads/bd": "^0.36.0",
         "@biomejs/biome": "^2.3.8",
         "@ccusage/codex": "^17.2.0",
         "@ccusage/mcp": "^17.2.0",
@@ -49,7 +49,7 @@
 
     "@anthropic-ai/tokenizer": ["@anthropic-ai/tokenizer@0.0.4", "", { "dependencies": { "@types/node": "^18.11.18", "tiktoken": "^1.0.10" } }, "sha512-EHRKbxlxlc8W4KCBEseByJ7YwyYCmgu9OyN59H9+IYIGPoKv8tXyQXinkeGDI+cI8Tiuz9wk2jZb/kK7AyvL7g=="],
 
-    "@beads/bd": ["@beads/bd@0.35.0", "", { "os": [ "linux", "win32", "darwin", ], "cpu": [ "x64", "arm64", ], "bin": { "bd": "bin/bd.js" } }, "sha512-42t8kvADW5iKEmWCuTb8Zb9o80aWBLakY2JY++FrrIiswPxIgHYeOb9/X0eaHpTp6inw37bf7cx50+OCgmnWAw=="],
+    "@beads/bd": ["@beads/bd@0.36.0", "", { "os": [ "linux", "win32", "darwin", ], "cpu": [ "x64", "arm64", ], "bin": { "bd": "bin/bd.js" } }, "sha512-nJWNpvxzsMPu4VXBiClBlMUnydbRS7k6GQrPRE3C7LvjDXrP3SPk+Ma5lLHDgrimtu5jxS3zhC35mkGockVDNw=="],
 
     "@biomejs/biome": ["@biomejs/biome@2.3.10", "", { "optionalDependencies": { "@biomejs/cli-darwin-arm64": "2.3.10", "@biomejs/cli-darwin-x64": "2.3.10", "@biomejs/cli-linux-arm64": "2.3.10", "@biomejs/cli-linux-arm64-musl": "2.3.10", "@biomejs/cli-linux-x64": "2.3.10", "@biomejs/cli-linux-x64-musl": "2.3.10", "@biomejs/cli-win32-arm64": "2.3.10", "@biomejs/cli-win32-x64": "2.3.10" }, "bin": { "biome": "bin/biome" } }, "sha512-/uWSUd1MHX2fjqNLHNL6zLYWBbrJeG412/8H7ESuK8ewoRoMPUgHDebqKrPTx/5n6f17Xzqc9hdg3MEqA5hXnQ=="],
 
