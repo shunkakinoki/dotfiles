@@ -105,6 +105,7 @@ in
       ExecStart = "${pkgs.bash}/bin/bash ${backupScripts}/backup-and-recover.sh";
       Environment = "PATH=${
         lib.makeBinPath [
+          pkgs.bash
           pkgs.awscli2
           pkgs.coreutils
         ]
