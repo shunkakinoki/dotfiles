@@ -9,7 +9,7 @@ in
     config = {
       ProgramArguments = [
         "${pkgs.bash}/bin/bash"
-        "${./start.sh}"
+        "${./scripts/start.sh}"
       ];
       Environment = {
         PATH = "${
@@ -39,7 +39,7 @@ in
           pkgs.bash
         ]
       }";
-      ExecStart = "${pkgs.bash}/bin/bash ${./start.sh}";
+      ExecStart = "${pkgs.bash}/bin/bash ${./scripts/start.sh}";
       Restart = "always";
       RestartSec = 3;
     };
