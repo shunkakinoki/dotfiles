@@ -31,6 +31,9 @@ if [ -f "$TEMPLATE" ]; then
     -e "s|__CLIPROXY_MANAGEMENT_PASSWORD__|${CLIPROXY_MANAGEMENT_PASSWORD:-}|g" \
     -e "s|__ZAI_API_KEY__|${ZAI_API_KEY:-}|g" \
     "$TEMPLATE" >"$CONFIG"
+  # Also copy to objectstore config location (cliproxyapi uses this for persistence)
+  mkdir -p "$CONFIG_DIR/objectstore/config"
+  cp "$CONFIG" "$CONFIG_DIR/objectstore/config/config.yaml"
 fi
 
 # Change to config dir so logs are created there
