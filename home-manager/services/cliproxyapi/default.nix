@@ -17,6 +17,7 @@ in
           lib.makeBinPath [
             pkgs.gnused
             pkgs.coreutils
+            pkgs.awscli2
           ]
         }:/opt/homebrew/bin:/usr/local/bin:/usr/bin";
       };
@@ -38,6 +39,8 @@ in
         lib.makeBinPath [
           pkgs.gnused
           pkgs.bash
+          pkgs.coreutils
+          pkgs.awscli2
         ]
       }";
       ExecStart = "${pkgs.bash}/bin/bash ${./scripts/start.sh}";

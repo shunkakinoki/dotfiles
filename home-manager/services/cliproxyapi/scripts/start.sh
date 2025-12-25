@@ -34,6 +34,19 @@ if [ -f "$TEMPLATE" ]; then
   # Also copy to objectstore config location (cliproxyapi uses this for persistence)
   mkdir -p "$CONFIG_DIR/objectstore/config"
   cp "$CONFIG" "$CONFIG_DIR/objectstore/config/config.yaml"
+
+  # Upload config to S3 to ensure backup is always correct
+  # This prevents corrupted configs from persisting across restarts
+  if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; then
+    echo "Uploading config to S3 backup..." >&2
+    AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
+      AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
+      aws s3 cp \
+      --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
+      --no-progress \
+      "$CONFIG" \
+      "s3://cliproxyapi/config/config.yaml" 2>/dev/null || echo "⚠️  Config backup failed (continuing anyway)" >&2
+  fi
 fi
 
 # Change to config dir so logs are created there
