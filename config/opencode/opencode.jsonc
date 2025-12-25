@@ -45,11 +45,8 @@
 				"z-ai/glm-4.6": {
 					"name": "GLM-4.6 (via OpenRouter)"
 				},
-				"zai-coding-plan/glm-4.6": {
-					"name": "GLM-4.6 Coding Plan (via OpenRouter)"
-				},
-				"zai-coding-plan/glm-4.7": {
-					"name": "GLM-4.7 Coding Plan (via OpenRouter)"
+				"zai/glm-4.7": {
+					"name": "GLM-4.7 (via OpenRouter)"
 				}
 			}
 		},
