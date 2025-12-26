@@ -19,12 +19,7 @@ in
           ]
         }:/opt/homebrew/bin:/usr/local/bin";
       };
-      StartCalendarInterval = [
-        {
-          Hour = 0;
-          Minute = 0;
-        }
-      ];
+      StartInterval = 10800;
       StandardOutPath = "/tmp/dotfiles-updater.log";
       StandardErrorPath = "/tmp/dotfiles-updater.error.log";
     };
@@ -62,7 +57,7 @@ in
       Description = "Timer for dotfiles auto-updater";
     };
     Timer = {
-      OnCalendar = "*-*-* 00:00:00";
+      OnCalendar = "*-*-* 00/3:00:00";
       Persistent = true;
     };
     Install = {
