@@ -9,6 +9,7 @@ BACKUP_DIR="s3://cliproxyapi/backup/auths/"
 MAIN_DIR="s3://cliproxyapi/auths/"
 AUTH_DIR="$CONFIG_DIR/objectstore/auths"
 DOTFILES_AUTH_DIR="$HOME/dotfiles/objectstore/auths"
+CCS_AUTH_DIR="$HOME/.ccs/cliproxy/auth"
 
 # STEP 1: Pull from R2 to local (captures files created by cliproxyapi directly in R2)
 mkdir -p "$AUTH_DIR"
@@ -35,6 +36,12 @@ if [ -d "$DOTFILES_AUTH_DIR" ] && [ -n "$(ls -A "$DOTFILES_AUTH_DIR" 2>/dev/null
   echo "✅ Synced from dotfiles repo to local cache" >&2
 fi
 
+# STEP 2b: Sync from ccs auth dir (picks up files created by ccs's internal cliproxy)
+if [ -d "$CCS_AUTH_DIR" ] && [ -n "$(ls -A "$CCS_AUTH_DIR" 2>/dev/null)" ]; then
+  rsync -a "$CCS_AUTH_DIR/" "$AUTH_DIR/"
+  echo "✅ Synced from ccs auth dir to local cache" >&2
+fi
+
 # Check if auth directory has files
 if [ -d "$AUTH_DIR" ] && [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
   echo "Syncing auth files to R2..." >&2
@@ -56,4 +63,14 @@ if [ -d "$AUTH_DIR" ] && [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
     --no-progress \
     "$AUTH_DIR/" \
     "$BACKUP_DIR" 2>/dev/null && echo "✅ Synced to backup/auths/" >&2 || echo "⚠️  Backup sync failed" >&2
+
+  # Sync to ccs auth dir (so ccs can find the tokens)
+  mkdir -p "$CCS_AUTH_DIR"
+  rsync -a "$AUTH_DIR/" "$CCS_AUTH_DIR/"
+  echo "✅ Synced to ccs auth dir" >&2
+
+  # Also sync back to dotfiles repo for git tracking
+  mkdir -p "$DOTFILES_AUTH_DIR"
+  rsync -a "$AUTH_DIR/" "$DOTFILES_AUTH_DIR/"
+  echo "✅ Synced to dotfiles repo" >&2
 fi

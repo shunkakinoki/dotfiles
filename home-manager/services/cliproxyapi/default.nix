@@ -79,6 +79,7 @@ in
       WatchPaths = [
         "/Users/shunkakinoki/.cli-proxy-api/objectstore/auths"
         "/Users/shunkakinoki/dotfiles/objectstore/auths"
+        "/Users/shunkakinoki/.ccs/cliproxy/auth"
       ];
       RunAtLoad = true;
       StandardOutPath = "/tmp/cliproxyapi-backup.log";
