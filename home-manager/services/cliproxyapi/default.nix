@@ -67,7 +67,7 @@ in
     };
   };
 
-  # Backup/recovery service
+  # Backup/recovery service with file watching for real-time sync
   launchd.agents.cliproxyapi-backup = lib.mkIf pkgs.stdenv.isDarwin {
     enable = true;
     config = {
@@ -75,7 +75,11 @@ in
         "${pkgs.bash}/bin/bash"
         "${backupScripts}/backup-and-recover.sh"
       ];
-      StartInterval = 180; # Run every 3 minutes
+      # Watch auth directories for changes - triggers sync immediately
+      WatchPaths = [
+        "/Users/shunkakinoki/.cli-proxy-api/objectstore/auths"
+        "/Users/shunkakinoki/dotfiles/objectstore/auths"
+      ];
       RunAtLoad = true;
       StandardOutPath = "/tmp/cliproxyapi-backup.log";
       StandardErrorPath = "/tmp/cliproxyapi-backup.error.log";
