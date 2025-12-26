@@ -75,7 +75,7 @@ in
         "${pkgs.bash}/bin/bash"
         "${backupScripts}/backup-and-recover.sh"
       ];
-      StartInterval = 300; # Run every 5 minutes
+      StartInterval = 180; # Run every 3 minutes
       RunAtLoad = true;
       StandardOutPath = "/tmp/cliproxyapi-backup.log";
       StandardErrorPath = "/tmp/cliproxyapi-backup.error.log";
@@ -88,7 +88,7 @@ in
     };
     Timer = {
       OnBootSec = "1min";
-      OnUnitActiveSec = "5min";
+      OnUnitActiveSec = "3min";
       Unit = "cliproxyapi-backup.service";
     };
     Install = {
