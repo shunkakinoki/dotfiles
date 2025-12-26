@@ -8,6 +8,14 @@ CONFIG_DIR="$HOME/.cli-proxy-api"
 BACKUP_DIR="s3://cliproxyapi/backup/auths/"
 MAIN_DIR="s3://cliproxyapi/auths/"
 AUTH_DIR="$CONFIG_DIR/objectstore/auths"
+DOTFILES_AUTH_DIR="$HOME/dotfiles/objectstore/auths"
+
+# First, sync from dotfiles repo to local cache (picks up new auth files from ccs auth)
+if [ -d "$DOTFILES_AUTH_DIR" ] && [ -n "$(ls -A "$DOTFILES_AUTH_DIR" 2>/dev/null)" ]; then
+  mkdir -p "$AUTH_DIR"
+  rsync -a "$DOTFILES_AUTH_DIR/" "$AUTH_DIR/"
+  echo "✅ Synced from dotfiles repo to local cache" >&2
+fi
 
 # Check if auth directory has files
 if [ -d "$AUTH_DIR" ] && [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
