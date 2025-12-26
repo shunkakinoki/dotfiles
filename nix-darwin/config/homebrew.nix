@@ -14,6 +14,7 @@
       "oven-sh/bun"
       "paradigmxyz/brew"
       "sst/tap"
+      "steipete/tap"
     ];
     brews = [
       "bun"
@@ -55,6 +56,7 @@
       "chatgpt"
       "claude"
       "codex"
+      "codexbar"
       "claude-code"
       "conductor"
       "copilot-money"
