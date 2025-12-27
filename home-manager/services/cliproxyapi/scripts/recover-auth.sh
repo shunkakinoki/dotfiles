@@ -14,24 +14,28 @@ if [ ! -d "$AUTH_DIR" ] || [ -z "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
   echo "Auth files missing locally, attempting recovery from R2..." >&2
   mkdir -p "$AUTH_DIR"
 
-  # Try main auths/ location first
-  if AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
-    AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
-    aws s3 sync \
-    --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
-    --no-progress \
-    "$MAIN_DIR" \
-    "$AUTH_DIR/" 2>/dev/null; then
-    echo "✅ Recovered auth files from auths/" >&2
+  if [ -z "${OBJECTSTORE_ENDPOINT:-}" ]; then
+    echo "⚠️  OBJECTSTORE_ENDPOINT not set, skipping recovery" >&2
   else
-    # Fall back to backup location
-    echo "Main location empty, trying backup..." >&2
-    AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
+    # Try main auths/ location first
+    if AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
       AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
-      aws s3 sync \
+      @aws@ s3 sync \
       --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
       --no-progress \
-      "$BACKUP_DIR" \
-      "$AUTH_DIR/" 2>/dev/null && echo "✅ Recovered from backup/auths/" >&2 || echo "⚠️  Recovery failed" >&2
+      "$MAIN_DIR" \
+      "$AUTH_DIR/" 2>/dev/null; then
+      echo "✅ Recovered auth files from auths/" >&2
+    else
+      # Fall back to backup location
+      echo "Main location empty, trying backup..." >&2
+      AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
+        AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
+        @aws@ s3 sync \
+        --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
+        --no-progress \
+        "$BACKUP_DIR" \
+        "$AUTH_DIR/" 2>/dev/null && echo "✅ Recovered from backup/auths/" >&2 || echo "⚠️  Recovery failed" >&2
+    fi
   fi
 fi

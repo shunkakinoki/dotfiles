@@ -8,14 +8,18 @@ let
     sed = "${pkgs.gnused}/bin/sed";
   };
 
-  # Bundle all backup scripts together
-  backupScripts = pkgs.runCommand "backup-scripts" { } ''
-    mkdir -p $out
-    cp ${./scripts/backup-and-recover.sh} $out/backup-and-recover.sh
-    cp ${./scripts/backup-auth.sh} $out/backup-auth.sh
-    cp ${./scripts/recover-auth.sh} $out/recover-auth.sh
-    chmod +x $out/*.sh
-  '';
+  # Create backup scripts with paths substituted at build time
+  backupAuthScript = pkgs.replaceVars ./scripts/backup-auth.sh {
+    aws = "${pkgs.awscli2}/bin/aws";
+    rsync = "${pkgs.rsync}/bin/rsync";
+  };
+  recoverAuthScript = pkgs.replaceVars ./scripts/recover-auth.sh {
+    aws = "${pkgs.awscli2}/bin/aws";
+  };
+  backupAndRecoverScript = pkgs.replaceVars ./scripts/backup-and-recover.sh {
+    backupAuthScript = backupAuthScript;
+    recoverAuthScript = recoverAuthScript;
+  };
 in
 {
   # Main cliproxyapi service
@@ -73,7 +77,7 @@ in
     config = {
       ProgramArguments = [
         "${pkgs.bash}/bin/bash"
-        "${backupScripts}/backup-and-recover.sh"
+        "${backupAndRecoverScript}"
       ];
       Environment = {
         HOME = "/Users/shunkakinoki";
@@ -118,7 +122,7 @@ in
     };
     Service = {
       Type = "oneshot";
-      ExecStart = "${pkgs.bash}/bin/bash ${backupScripts}/backup-and-recover.sh";
+      ExecStart = "${pkgs.bash}/bin/bash ${backupAndRecoverScript}";
       Environment = "PATH=${
         lib.makeBinPath [
           pkgs.bash
