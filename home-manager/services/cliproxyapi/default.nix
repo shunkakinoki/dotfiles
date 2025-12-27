@@ -75,6 +75,17 @@ in
         "${pkgs.bash}/bin/bash"
         "${backupScripts}/backup-and-recover.sh"
       ];
+      Environment = {
+        HOME = "/Users/shunkakinoki";
+        PATH = "${
+          lib.makeBinPath [
+            pkgs.bash
+            pkgs.coreutils
+            pkgs.awscli2
+            pkgs.rsync
+          ]
+        }:/opt/homebrew/bin:/usr/local/bin:/usr/bin";
+      };
       # Watch auth directories for changes - triggers sync immediately
       WatchPaths = [
         "/Users/shunkakinoki/.cli-proxy-api/objectstore/auths"
