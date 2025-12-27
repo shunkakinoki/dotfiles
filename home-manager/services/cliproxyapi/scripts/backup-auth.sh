@@ -47,13 +47,17 @@ if [ -d "$AUTH_DIR" ] && [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
   echo "Syncing auth files to R2..." >&2
 
   # Sync to main auths/ location (what cliproxyapi reads from)
-  AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
-    AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
-    aws s3 sync \
-    --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
-    --no-progress \
-    "$AUTH_DIR/" \
-    "$MAIN_DIR" 2>/dev/null && echo "✅ Synced to auths/" >&2 || echo "⚠️  Sync to auths/ failed" >&2
+  if [ -z "${OBJECTSTORE_ENDPOINT:-}" ]; then
+    echo "⚠️  OBJECTSTORE_ENDPOINT not set, skipping R2 sync" >&2
+  else
+    AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
+      AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
+      aws s3 sync \
+      --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
+      --no-progress \
+      "$AUTH_DIR/" \
+      "$MAIN_DIR" && echo "✅ Synced to auths/" >&2 || echo "⚠️  Sync to auths/ failed: $?" >&2
+  fi
 
   # Also sync to backup location for redundancy
   AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
