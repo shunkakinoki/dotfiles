@@ -5,12 +5,13 @@ Describe 'cliproxyapi backup scripts'
 SCRIPTS_DIR="$PWD/home-manager/services/cliproxyapi/scripts"
 
 Describe 'backup-auth.sh'
-SCRIPT="$SCRIPTS_DIR/backup-auth.sh"
 
 setup() {
-  mock_bin_setup aws
+  mock_bin_setup aws rsync
   TEMP_HOME=$(mktemp -d)
   mkdir -p "$TEMP_HOME/.cli-proxy-api/objectstore/auths"
+  # Preprocess script to replace @aws@ and @rsync@ placeholders
+  SCRIPT=$(nix_script_preprocess "$SCRIPTS_DIR/backup-auth.sh")
 
   # Unset objectstore credentials to ensure clean test environment
   unset OBJECTSTORE_ACCESS_KEY
@@ -21,15 +22,20 @@ setup() {
 cleanup() {
   rm -rf "$TEMP_HOME"
   mock_bin_cleanup
+  nix_script_cleanup
 }
 
 Before 'setup'
 After 'cleanup'
 
-It 'skips backup when auth directory is empty'
-When run bash -c 'env HOME="'"$TEMP_HOME"'" OBJECTSTORE_ACCESS_KEY=key OBJECTSTORE_SECRET_KEY=secret OBJECTSTORE_ENDPOINT=https://example.com bash '"$SCRIPT"'; cat "$MOCK_LOG" 2>/dev/null || true'
+It 'pulls from R2 but skips push when auth directory is empty'
+When run bash -c 'env HOME="'"$TEMP_HOME"'" OBJECTSTORE_ACCESS_KEY=key OBJECTSTORE_SECRET_KEY=secret OBJECTSTORE_ENDPOINT=https://example.com bash '"$SCRIPT"' 2>&1; cat "$MOCK_LOG" 2>/dev/null || true'
 The status should be success
-The output should eq ''
+# Should pull from R2 auths/ and backup/auths/
+The output should include 's3://cliproxyapi/auths/'
+The output should include 's3://cliproxyapi/backup/auths/'
+# Should NOT push to R2 since local is empty after pull
+The output should not include 'Syncing auth files to R2'
 End
 
 It 'calls aws s3 sync when auth files exist'
@@ -42,11 +48,12 @@ End
 End
 
 Describe 'recover-auth.sh'
-SCRIPT="$SCRIPTS_DIR/recover-auth.sh"
 
 setup() {
   mock_bin_setup aws
   TEMP_HOME=$(mktemp -d)
+  # Preprocess script to replace @aws@ placeholder
+  SCRIPT=$(nix_script_preprocess "$SCRIPTS_DIR/recover-auth.sh")
 
   unset OBJECTSTORE_ACCESS_KEY
   unset OBJECTSTORE_SECRET_KEY
@@ -56,6 +63,7 @@ setup() {
 cleanup() {
   rm -rf "$TEMP_HOME"
   mock_bin_cleanup
+  nix_script_cleanup
 }
 
 Before 'setup'
@@ -78,13 +86,15 @@ End
 End
 
 Describe 'backup-and-recover.sh'
-SCRIPT="$SCRIPTS_DIR/backup-and-recover.sh"
 
 setup() {
-  mock_bin_setup aws
+  mock_bin_setup aws rsync
   TEMP_HOME=$(mktemp -d)
   mkdir -p "$TEMP_HOME/.cli-proxy-api/objectstore/auths"
   mkdir -p "$TEMP_HOME/dotfiles"
+
+  # Preprocess script with its dependencies
+  SCRIPT=$(nix_script_preprocess_with_deps "$SCRIPTS_DIR/backup-and-recover.sh" backup-auth.sh recover-auth.sh)
 
   # Create .env with test credentials
   cat >"$TEMP_HOME/dotfiles/.env" <<'ENV'
@@ -101,6 +111,7 @@ ENV
 cleanup() {
   rm -rf "$TEMP_HOME"
   mock_bin_cleanup
+  nix_script_cleanup
 }
 
 Before 'setup'
