@@ -8,6 +8,7 @@ let
   startScript = pkgs.replaceVars ./scripts/start.sh {
     aws = "${pkgs.awscli2}/bin/aws";
     sed = "${pkgs.gnused}/bin/sed";
+    rsync = "${pkgs.rsync}/bin/rsync";
   };
 
   # Create backup scripts with paths substituted at build time
