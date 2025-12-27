@@ -18,18 +18,14 @@ The cliproxyapi service provides a unified proxy for multiple AI providers (Clau
 ```
 ~/.cli-proxy-api/
 ├── config.yaml                    # Generated config (from template)
-├── config.template.yaml           # Template with placeholders
-├── auths/                         # OAuth tokens (what cliproxyapi reads)
-│   ├── claude-*.json
-│   ├── codex-*.json
-│   └── antigravity-*.json
+├── config.template.yaml           # Template with placeholders (symlink)
 └── objectstore/
     ├── config/
     │   └── config.yaml            # Cloud-synced config
-    └── auths/                     # Primary auth storage (watched)
-        ├── claude-*.json
-        ├── codex-*.json
-        └── antigravity-*.json
+    └── auths/                     # Auth files (cliproxyapi reads from here)
+        ├── claude-*.json          # OAuth tokens for Claude
+        ├── codex-*.json           # OAuth tokens for Codex
+        └── antigravity-*.json     # OAuth tokens for other services
 
 ~/dotfiles/objectstore/auths/      # Git-tracked backup (write-only)
 ~/.ccs/cliproxy/auth/              # CCS auth directory (two-way sync)
@@ -40,6 +36,8 @@ R2 Storage (Cloudflare):
 └── s3://cliproxyapi/config/       # Config backup
 ```
 
+**Important:** When object storage is enabled (via `OBJECTSTORE_ENDPOINT`), cliproxyapi reads auth files directly from `objectstore/auths/`. There is no separate `auths/` directory at the root level.
+
 ## Auth File Management
 
 ### On Service Start (`start.sh`)
@@ -47,7 +45,8 @@ R2 Storage (Cloudflare):
 1. Pull auth files from R2 `auths/` → `objectstore/auths/`
 2. Pull from R2 `backup/auths/` → `objectstore/auths/` (merge)
 3. **Bootstrap:** If objectstore is empty, copy from `dotfiles/objectstore/auths/`
-4. **OAuth Support:** Sync `objectstore/auths/` → `auths/` (root directory)
+
+cliproxyapi then reads directly from `objectstore/auths/` (no additional sync needed).
 
 ### On File Changes (`backup-auth.sh`)
 
@@ -61,9 +60,8 @@ Triggered by launchd WatchPaths when files change in:
 3. Sync CCS auth files → `objectstore/auths/` (if exists)
 4. Push `objectstore/auths/` → R2 `auths/`
 5. Push `objectstore/auths/` → R2 `backup/auths/`
-6. **OAuth Support:** Sync `objectstore/auths/` → `auths/`
-7. Sync `objectstore/auths/` → CCS auth dir
-8. Sync `objectstore/auths/` → dotfiles (git tracking)
+6. Sync `objectstore/auths/` → CCS auth dir
+7. Sync `objectstore/auths/` → dotfiles (git tracking)
 
 ### Data Flow
 
@@ -71,13 +69,16 @@ Triggered by launchd WatchPaths when files change in:
 ┌──────────────────┐
 │   R2 Storage     │
 │  ┌────────────┐  │      ┌──────────────────────────────┐
-│  │ auths/     │◄─┼──────┤                              │
-│  └────────────┘  │      │   objectstore/auths/         │
-│  ┌────────────┐  │      │   (Primary Source of Truth)  │
-│  │ backup/    │◄─┼──────┤                              │
-│  └────────────┘  │      └──────────────────────────────┘
-└──────────────────┘                   │
-                                       ├─────► auths/ (OAuth tokens)
+│  │ auths/     │◄─┼──────┤  objectstore/auths/          │
+│  └────────────┘  │      │  (cliproxyapi reads here)    │
+│  ┌────────────┐  │      │  ┌────────────────────────┐  │
+│  │ backup/    │◄─┼──────┤  │ OAuth tokens stored    │  │
+│  └────────────┘  │      │  │ - claude-*.json        │  │
+└──────────────────┘      │  │ - codex-*.json         │  │
+                          │  │ - antigravity-*.json   │  │
+                          │  └────────────────────────┘  │
+                          └──────────────────────────────┘
+                                       │
                                        ├─────► ccs/auth/
                                        └─────► dotfiles/ (git backup)
                                                    │
@@ -88,10 +89,11 @@ Triggered by launchd WatchPaths when files change in:
 
 ### 1. OAuth Token Support
 
-Auth files in `~/.cli-proxy-api/auths/` are automatically used for OAuth-based API calls. This enables:
+Auth files in `~/.cli-proxy-api/objectstore/auths/` are automatically used for OAuth-based API calls. This enables:
 - `cliproxyapi --claude-login` for web-based authentication
-- OAuth tokens work with Claude API requests
-- No need for manual API keys
+- OAuth tokens (starting with `sk-ant-oat01-`) work with Claude API requests
+- No need for manual API keys (starting with `sk-ant-api03-`)
+- cliproxyapi reads directly from `objectstore/auths/` when object storage is enabled
 
 ### 2. Multi-Location Backup
 
@@ -114,8 +116,16 @@ If auth files are lost locally, they are automatically recovered from:
 
 **Solution:**
 - Removed dotfiles from WatchPaths
-- Dotfiles is now **write-only** (except for bootstrap)
+- Dotfiles is now **write-only** (except for bootstrap on service start)
 - Only `objectstore/auths` and `ccs/auth` trigger sync events
+
+### 5. Object Storage Integration
+
+When `OBJECTSTORE_ENDPOINT` is configured, cliproxyapi uses object-backed storage:
+- Auth files stored in `objectstore/auths/` subdirectory
+- cliproxyapi reads directly from this location (no separate `auths/` directory)
+- Files are automatically synced to/from R2 on startup and file changes
+- Local `objectstore/` acts as a cache for cloud storage
 
 ## Environment Variables
 
@@ -165,7 +175,7 @@ cliproxyapi --claude-login
 # 1. Open browser for OAuth
 # 2. Save token to objectstore/auths/
 # 3. Trigger backup to R2 and dotfiles
-# 4. Sync to auths/ for immediate use
+# 4. Token is immediately usable (cliproxyapi reads from objectstore/auths/)
 ```
 
 ### Testing
@@ -184,8 +194,7 @@ curl -X POST http://localhost:8317/v1/messages \
 # Restart service
 make restart-cliproxyapi
 
-# Check auth files
-ls -la ~/.cli-proxy-api/auths/
+# Check auth files (with object storage)
 ls -la ~/.cli-proxy-api/objectstore/auths/
 
 # Verify R2 sync
@@ -220,7 +229,7 @@ launchctl start org.nix-community.home.cliproxyapi-backup
 
 1. Check git history: `git log -- objectstore/auths/`
 2. Restore old version from git
-3. Remove `~/.cli-proxy-api/auths/` and `objectstore/auths/`
+3. Remove `~/.cli-proxy-api/objectstore/auths/`
 4. Restart service to bootstrap from dotfiles
 
 ## Configuration Files
@@ -256,6 +265,7 @@ launchctl start org.nix-community.home.cliproxyapi-backup
 - **File watchers:** Changes in watched directories trigger within ~1 second
 - **Sync is idempotent:** Running multiple times is safe
 - **Bootstrap runs once:** Only when objectstore is empty
+- **Legacy files:** If you see `.json` files in `~/.cli-proxy-api/` (at root level), these are from before object storage was configured. They can be safely deleted - cliproxyapi only reads from `objectstore/auths/` when object storage is enabled.
 
 ## References
 

@@ -8,7 +8,6 @@ CONFIG_DIR="$HOME/.cli-proxy-api"
 BACKUP_DIR="s3://cliproxyapi/backup/auths/"
 MAIN_DIR="s3://cliproxyapi/auths/"
 AUTH_DIR="$CONFIG_DIR/objectstore/auths"
-AUTH_DIR_ROOT="$CONFIG_DIR/auths"
 DOTFILES_AUTH_DIR="$HOME/dotfiles/objectstore/auths"
 CCS_AUTH_DIR="$HOME/.ccs/cliproxy/auth"
 
@@ -71,11 +70,6 @@ if [ -d "$AUTH_DIR" ] && [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
       "$AUTH_DIR/" \
       "$BACKUP_DIR" && echo "✅ Synced to backup/auths/" >&2 || echo "⚠️  Backup sync failed" >&2
   fi
-
-  # CRITICAL: Sync to root auths/ directory for cliproxyapi OAuth token usage
-  mkdir -p "$AUTH_DIR_ROOT"
-  @rsync@ -a "$AUTH_DIR/" "$AUTH_DIR_ROOT/"
-  echo "✅ Synced to root auths dir (for OAuth)" >&2
 
   # Sync to ccs auth dir (so ccs can find the tokens)
   mkdir -p "$CCS_AUTH_DIR"

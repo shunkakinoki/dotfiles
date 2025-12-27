@@ -31,7 +31,6 @@ export OBJECTSTORE_SECRET_KEY="${OBJECTSTORE_SECRET_KEY:-${AWS_SECRET_ACCESS_KEY
 if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; then
   echo "Syncing auth files from R2..." >&2
   mkdir -p "$AUTH_DIR"
-  mkdir -p "$CONFIG_DIR/auths"
 
   # Pull from both active and backup locations to ensure we have all files
   AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
@@ -57,10 +56,6 @@ if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; t
       echo "✅ Bootstrapped from dotfiles (objectstore was empty)" >&2
     fi
   fi
-
-  # CRITICAL: Copy to root auths/ directory for OAuth token usage
-  @rsync@ -a "$AUTH_DIR/" "$CONFIG_DIR/auths/"
-  echo "✅ Synced to root auths dir (for OAuth)" >&2
 else
   echo "⚠️  Skipping auth sync: OBJECTSTORE credentials not set" >&2
 fi
