@@ -1,7 +1,8 @@
-{ pkgs, config, ... }:
+{ pkgs, ... }:
 let
   inherit (pkgs) lib;
-  homeDir = config.home.homeDirectory;
+  # Use build-time HOME for paths that need it at plist generation
+  homeDir = builtins.getEnv "HOME";
 
   # Create start script with paths substituted at build time
   startScript = pkgs.replaceVars ./scripts/start.sh {
