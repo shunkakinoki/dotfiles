@@ -1,6 +1,7 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 let
   inherit (pkgs) lib;
+  homeDir = config.home.homeDirectory;
 
   # Create start script with paths substituted at build time
   startScript = pkgs.replaceVars ./scripts/start.sh {
@@ -13,13 +14,9 @@ let
     aws = "${pkgs.awscli2}/bin/aws";
     rsync = "${pkgs.rsync}/bin/rsync";
   };
-  recoverAuthScript = pkgs.replaceVars ./scripts/recover-auth.sh {
-    aws = "${pkgs.awscli2}/bin/aws";
-  };
   backupAndRecoverScript = pkgs.replaceVars ./scripts/backup-and-recover.sh {
     bash = "${pkgs.bash}/bin/bash";
     backupAuthScript = backupAuthScript;
-    recoverAuthScript = recoverAuthScript;
   };
 in
 {
@@ -32,7 +29,7 @@ in
         "${startScript}"
       ];
       Environment = {
-        HOME = "/Users/shunkakinoki";
+        HOME = homeDir;
         PATH = "${
           lib.makeBinPath [
             pkgs.gnused
@@ -72,7 +69,7 @@ in
     };
   };
 
-  # Backup/recovery service with file watching for real-time sync
+  # Backup service with file watching for real-time sync
   launchd.agents.cliproxyapi-backup = lib.mkIf pkgs.stdenv.isDarwin {
     enable = true;
     config = {
@@ -81,7 +78,7 @@ in
         "${backupAndRecoverScript}"
       ];
       Environment = {
-        HOME = "/Users/shunkakinoki";
+        HOME = homeDir;
         PATH = "${
           lib.makeBinPath [
             pkgs.bash
@@ -93,9 +90,9 @@ in
       };
       # Watch auth directories for changes - triggers sync immediately
       WatchPaths = [
-        "/Users/shunkakinoki/.cli-proxy-api/objectstore/auths"
-        "/Users/shunkakinoki/dotfiles/objectstore/auths"
-        "/Users/shunkakinoki/.ccs/cliproxy/auth"
+        "${homeDir}/.cli-proxy-api/objectstore/auths"
+        "${homeDir}/dotfiles/objectstore/auths"
+        "${homeDir}/.ccs/cliproxy/auth"
       ];
       RunAtLoad = true;
       StandardOutPath = "/tmp/cliproxyapi-backup.log";
@@ -103,23 +100,22 @@ in
     };
   };
 
-  systemd.user.timers.cliproxyapi-backup = lib.mkIf pkgs.stdenv.isLinux {
-    Unit = {
-      Description = "CLIProxyAPI auth backup and recovery timer";
-    };
-    Timer = {
-      OnBootSec = "1min";
-      OnUnitActiveSec = "3min";
+  systemd.user.paths.cliproxyapi-backup = lib.mkIf pkgs.stdenv.isLinux {
+    Unit.Description = "Watch auth directories for changes";
+    Path = {
+      PathChanged = [
+        "%h/.cli-proxy-api/objectstore/auths"
+        "%h/dotfiles/objectstore/auths"
+        "%h/.ccs/cliproxy/auth"
+      ];
       Unit = "cliproxyapi-backup.service";
     };
-    Install = {
-      WantedBy = [ "timers.target" ];
-    };
+    Install.WantedBy = [ "paths.target" ];
   };
 
   systemd.user.services.cliproxyapi-backup = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {
-      Description = "CLIProxyAPI auth backup and recovery";
+      Description = "CLIProxyAPI auth backup";
     };
     Service = {
       Type = "oneshot";
@@ -129,6 +125,7 @@ in
           pkgs.bash
           pkgs.awscli2
           pkgs.coreutils
+          pkgs.rsync
         ]
       }";
     };
