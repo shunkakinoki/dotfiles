@@ -38,6 +38,9 @@ ampcode:
   upstream-url: "https://ampcode.com"
   upstream-api-key: "__AMP_UPSTREAM_API_KEY__"
   restrict-management-to-localhost: false
+  # model-mappings:
+  #   - from: "requested-model-name"
+  #     to: "local-model-name"
 # Gemini API keys (preferred)
 # gemini-api-key:
 #   - api-key: "AIzaSy...01"
@@ -71,14 +74,14 @@ ampcode:
 openai-compatibility:
   - name: "openrouter"
     base-url: "https://openrouter.ai/api/v1"
-    api-keys:
-      - "__OPENROUTER_API_KEY__"
+    api-key-entries:
+      - api-key: "__OPENROUTER_API_KEY__"
     models:
       - name: "z-ai/glm-4.6"
   - name: "z-ai"
     base-url: "https://api.z.ai/api/coding/paas/v4"
-    api-keys:
-      - "__ZAI_API_KEY__"
+    api-key-entries:
+      - api-key: "__ZAI_API_KEY__"
     models:
       - name: "glm-4.6"
       - name: "glm-4.7"
