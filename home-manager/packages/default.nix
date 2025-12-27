@@ -17,6 +17,7 @@ with pkgs;
   awscli
   azure-cli
   bat
+  broot
   bun
   clipse
   cloudflared
@@ -27,8 +28,10 @@ with pkgs;
   doppler
   difftastic
   direnv
+  doggo
   duf
   dust
+  entr
   eza
   fastfetch
   fd
@@ -37,7 +40,9 @@ with pkgs;
   gh
   google-cloud-sdk
   git
+  glow
   gnumake
+  gping
   goose-cli
   grc
   htop
@@ -54,21 +59,26 @@ with pkgs;
   kustomize
   llama-cpp
   mariadb
+  mkcert
+  navi
   postgresql
   procs
   qwen-code
   ripgrep
   rustup
   sccache
+  sd
   shellcheck
   shellspec
   speedtest-cli
   sqlite
   stern
+  tealdeer
   tokei
   tree
   turso-cli
   uv
+  watchexec
   wget
   yarn
   yazi
@@ -90,6 +100,7 @@ with pkgs;
   opencode
   powertop
   tailscale
+  trashy
 ]
 ++ lib.optionals (stdenv.isLinux && !isCI) [
   chromium

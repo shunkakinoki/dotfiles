@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
-# Combined backup and recovery script
-# Backs up auth files to R2, then recovers if missing
+# Backup auth files to R2 (pull-first ensures recovery is handled)
 
 set -euo pipefail
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Source .env for credentials
 if [ -f "$HOME/dotfiles/.env" ]; then
@@ -14,12 +11,8 @@ if [ -f "$HOME/dotfiles/.env" ]; then
   set +a
 fi
 
-# Run backup
+# Run backup (handles recovery via pull-first)
 echo "[$(date)] Starting backup..."
-"$SCRIPT_DIR/backup-auth.sh"
+@bash@ @backupAuthScript@
 
-# Run recovery if needed
-echo "[$(date)] Checking for recovery..."
-"$SCRIPT_DIR/recover-auth.sh"
-
-echo "[$(date)] Backup/recovery cycle complete"
+echo "[$(date)] Backup complete"

@@ -40,6 +40,7 @@
       "postgresql"
       "postgresql@18"
       "protobuf"
+      "pulumi"
       "reth"
       "sheldon"
       "sshpass"
