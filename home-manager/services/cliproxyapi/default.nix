@@ -17,6 +17,7 @@ let
     aws = "${pkgs.awscli2}/bin/aws";
   };
   backupAndRecoverScript = pkgs.replaceVars ./scripts/backup-and-recover.sh {
+    bash = "${pkgs.bash}/bin/bash";
     backupAuthScript = backupAuthScript;
     recoverAuthScript = recoverAuthScript;
   };

@@ -14,10 +14,10 @@ fi
 
 # Run backup
 echo "[$(date)] Starting backup..."
-@backupAuthScript@
+@bash@ @backupAuthScript@
 
 # Run recovery if needed
 echo "[$(date)] Checking for recovery..."
-@recoverAuthScript@
+@bash@ @recoverAuthScript@
 
 echo "[$(date)] Backup/recovery cycle complete"
