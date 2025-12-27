@@ -90,9 +90,9 @@ in
         }:/opt/homebrew/bin:/usr/local/bin:/usr/bin";
       };
       # Watch auth directories for changes - triggers sync immediately
+      # NOTE: dotfiles is excluded to prevent circular sync loops
       WatchPaths = [
         "${homeDir}/.cli-proxy-api/objectstore/auths"
-        "${homeDir}/dotfiles/objectstore/auths"
         "${homeDir}/.ccs/cliproxy/auth"
       ];
       RunAtLoad = true;

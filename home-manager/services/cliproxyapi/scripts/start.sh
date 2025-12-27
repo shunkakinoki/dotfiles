@@ -50,6 +50,14 @@ if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; t
     "s3://cliproxyapi/backup/auths/" \
     "$AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 backup/auths/" >&2 || true
 
+  # Bootstrap from git-tracked dotfiles if objectstore is empty
+  if [ ! -d "$AUTH_DIR" ] || [ -z "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
+    if [ -d "$HOME/dotfiles/objectstore/auths" ] && [ -n "$(ls -A "$HOME/dotfiles/objectstore/auths" 2>/dev/null)" ]; then
+      @rsync@ -a "$HOME/dotfiles/objectstore/auths/" "$AUTH_DIR/"
+      echo "✅ Bootstrapped from dotfiles (objectstore was empty)" >&2
+    fi
+  fi
+
   # CRITICAL: Copy to root auths/ directory for OAuth token usage
   @rsync@ -a "$AUTH_DIR/" "$CONFIG_DIR/auths/"
   echo "✅ Synced to root auths dir (for OAuth)" >&2
