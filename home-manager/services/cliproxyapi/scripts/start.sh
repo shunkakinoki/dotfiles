@@ -5,6 +5,7 @@ set -euo pipefail
 CONFIG_DIR="$HOME/.cli-proxy-api"
 TEMPLATE="$CONFIG_DIR/config.template.yaml"
 CONFIG="$CONFIG_DIR/config.yaml"
+AUTH_DIR="$CONFIG_DIR/objectstore/auths"
 # Use explicit path since $HOME may not be set correctly in launchd context
 ENV_FILE="${HOME:-/Users/shunkakinoki}/dotfiles/.env"
 
@@ -24,6 +25,40 @@ export OBJECTSTORE_ENDPOINT="${OBJECTSTORE_ENDPOINT:-${AWS_S3_ENDPOINT:-}}"
 export OBJECTSTORE_BUCKET="${OBJECTSTORE_BUCKET:-${AWS_S3_BUCKET:-}}"
 export OBJECTSTORE_ACCESS_KEY="${OBJECTSTORE_ACCESS_KEY:-${AWS_ACCESS_KEY_ID:-}}"
 export OBJECTSTORE_SECRET_KEY="${OBJECTSTORE_SECRET_KEY:-${AWS_SECRET_ACCESS_KEY:-}}"
+
+# CRITICAL: Pull auth files from R2 before starting cliproxyapi
+# This ensures all auth files (including codex-*) are available when the service starts
+if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; then
+  echo "Syncing auth files from R2..." >&2
+  mkdir -p "$AUTH_DIR"
+
+  # Pull from both active and backup locations to ensure we have all files
+  AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
+    AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
+    @aws@ s3 sync \
+    --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
+    --no-progress \
+    "s3://cliproxyapi/auths/" \
+    "$AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 auths/" >&2 || true
+
+  AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
+    AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
+    @aws@ s3 sync \
+    --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
+    --no-progress \
+    "s3://cliproxyapi/backup/auths/" \
+    "$AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 backup/auths/" >&2 || true
+
+  # Bootstrap from git-tracked dotfiles if objectstore is empty
+  if [ ! -d "$AUTH_DIR" ] || [ -z "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
+    if [ -d "$HOME/dotfiles/objectstore/auths" ] && [ -n "$(ls -A "$HOME/dotfiles/objectstore/auths" 2>/dev/null)" ]; then
+      @rsync@ -a "$HOME/dotfiles/objectstore/auths/" "$AUTH_DIR/"
+      echo "✅ Bootstrapped from dotfiles (objectstore was empty)" >&2
+    fi
+  fi
+else
+  echo "⚠️  Skipping auth sync: OBJECTSTORE credentials not set" >&2
+fi
 
 # Generate config from template with secrets injected
 if [ -f "$TEMPLATE" ]; then

@@ -8,6 +8,7 @@ let
   startScript = pkgs.replaceVars ./scripts/start.sh {
     aws = "${pkgs.awscli2}/bin/aws";
     sed = "${pkgs.gnused}/bin/sed";
+    rsync = "${pkgs.rsync}/bin/rsync";
   };
 
   # Create backup scripts with paths substituted at build time
@@ -90,9 +91,9 @@ in
         }:/opt/homebrew/bin:/usr/local/bin:/usr/bin";
       };
       # Watch auth directories for changes - triggers sync immediately
+      # NOTE: dotfiles is excluded to prevent circular sync loops
       WatchPaths = [
         "${homeDir}/.cli-proxy-api/objectstore/auths"
-        "${homeDir}/dotfiles/objectstore/auths"
         "${homeDir}/.ccs/cliproxy/auth"
       ];
       RunAtLoad = true;

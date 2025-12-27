@@ -32,11 +32,12 @@ if [ -n "${OBJECTSTORE_ENDPOINT:-}" ]; then
     "$AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 backup/auths/" >&2 || true
 fi
 
-# STEP 2: Sync from dotfiles repo to local cache (picks up new auth files from ccs auth)
-if [ -d "$DOTFILES_AUTH_DIR" ] && [ -n "$(ls -A "$DOTFILES_AUTH_DIR" 2>/dev/null)" ]; then
-  @rsync@ -a "$DOTFILES_AUTH_DIR/" "$AUTH_DIR/"
-  echo "✅ Synced from dotfiles repo to local cache" >&2
-fi
+# STEP 2: Sync from dotfiles repo to local cache ONLY on initial bootstrap
+# (This step is commented out to prevent circular sync loops - dotfiles is write-only)
+# if [ -d "$DOTFILES_AUTH_DIR" ] && [ -n "$(ls -A "$DOTFILES_AUTH_DIR" 2>/dev/null)" ]; then
+#   @rsync@ -a "$DOTFILES_AUTH_DIR/" "$AUTH_DIR/"
+#   echo "✅ Synced from dotfiles repo to local cache" >&2
+# fi
 
 # STEP 2b: Sync from ccs auth dir (picks up files created by ccs's internal cliproxy)
 if [ -d "$CCS_AUTH_DIR" ] && [ -n "$(ls -A "$CCS_AUTH_DIR" 2>/dev/null)" ]; then
