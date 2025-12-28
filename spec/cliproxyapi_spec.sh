@@ -78,6 +78,90 @@ The status should be success
 End
 End
 
+Describe 'platform-specific api-keys handling'
+setup_apikeys() {
+  TEMP_HOME=$(mktemp -d)
+  mkdir -p "$TEMP_HOME/.cli-proxy-api"
+
+  # Create template config with commented api-keys
+  cat >"$TEMP_HOME/.cli-proxy-api/config.template.yaml" <<'YAML'
+port: 8317
+# API keys for client authentication (optional - leave commented for open access)
+# api-keys:
+#   - "__CLIPROXY_API_KEY__"
+debug: true
+YAML
+}
+
+cleanup_apikeys() {
+  rm -rf "$TEMP_HOME"
+}
+
+Before 'setup_apikeys'
+After 'cleanup_apikeys'
+
+It 'uncomments api-keys section on Linux'
+# Create test script that simulates Linux behavior
+cat >"$TEMP_HOME/test_linux_apikeys.sh" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+CONFIG_DIR="$HOME/.cli-proxy-api"
+TEMPLATE="$CONFIG_DIR/config.template.yaml"
+CONFIG="$CONFIG_DIR/config.yaml"
+CLIPROXY_API_KEY="my_secret_key"
+
+# Copy template to config
+cp "$TEMPLATE" "$CONFIG"
+
+# Simulate Linux behavior (uname = Linux)
+# Use temp file approach for cross-platform sed -i compatibility
+sed \
+  -e "s|^# api-keys:|api-keys:|" \
+  -e "s|^#   - \"__CLIPROXY_API_KEY__\"|  - \"${CLIPROXY_API_KEY:-}\"|" \
+  "$CONFIG" > "$CONFIG.tmp" && mv "$CONFIG.tmp" "$CONFIG"
+
+cat "$CONFIG"
+EOF
+chmod +x "$TEMP_HOME/test_linux_apikeys.sh"
+
+When run bash -c "HOME='$TEMP_HOME' bash '$TEMP_HOME/test_linux_apikeys.sh'"
+The output should include 'api-keys:'
+The output should include '  - "my_secret_key"'
+The output should not include '# api-keys:'
+The status should be success
+End
+
+It 'keeps api-keys commented on macOS'
+# Create test script that simulates macOS behavior (no uncommenting)
+cat >"$TEMP_HOME/test_macos_apikeys.sh" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+CONFIG_DIR="$HOME/.cli-proxy-api"
+TEMPLATE="$CONFIG_DIR/config.template.yaml"
+CONFIG="$CONFIG_DIR/config.yaml"
+
+# Copy template to config (macOS behavior - no api-keys uncommenting)
+cp "$TEMPLATE" "$CONFIG"
+
+cat "$CONFIG"
+EOF
+chmod +x "$TEMP_HOME/test_macos_apikeys.sh"
+
+When run bash -c "HOME='$TEMP_HOME' bash '$TEMP_HOME/test_macos_apikeys.sh'"
+The output should include '# api-keys:'
+The output should include '#   - "__CLIPROXY_API_KEY__"'
+The status should be success
+End
+
+It 'script has Linux-specific api-keys uncommenting logic'
+When run bash -c "grep -A 6 'Linux: uncomment and enable api-keys' '$SCRIPT'"
+# shellcheck disable=SC2016
+The output should include 'if [ "$(uname)" = "Linux" ]'
+The output should include 's|^# api-keys:|api-keys:|'
+The output should include 'CLIPROXY_API_KEY'
+End
+End
+
 Describe 'binary detection logic'
 It 'checks /opt/homebrew/bin/cliproxyapi first'
 When run bash -c "grep -A 2 'if.*-x.*/opt/homebrew/bin/cliproxyapi' '$SCRIPT'"
