@@ -28,9 +28,11 @@ export OBJECTSTORE_SECRET_KEY="${OBJECTSTORE_SECRET_KEY:-${AWS_SECRET_ACCESS_KEY
 
 # CRITICAL: Pull auth files from R2 before starting cliproxyapi
 # This ensures all auth files (including codex-*) are available when the service starts
+# CLIProxyAPI expects auth files in {auth-dir}/auths/ so we sync directly there
+CLIPROXY_AUTH_DIR="$CONFIG_DIR/auths"
 if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; then
   echo "Syncing auth files from R2..." >&2
-  mkdir -p "$AUTH_DIR"
+  mkdir -p "$CLIPROXY_AUTH_DIR"
 
   # Pull from both active and backup locations to ensure we have all files
   AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
@@ -39,7 +41,7 @@ if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; t
     --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
     --no-progress \
     "s3://cliproxyapi/auths/" \
-    "$AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 auths/" >&2 || true
+    "$CLIPROXY_AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 auths/" >&2 || true
 
   AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
     AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
@@ -47,15 +49,19 @@ if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; t
     --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
     --no-progress \
     "s3://cliproxyapi/backup/auths/" \
-    "$AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 backup/auths/" >&2 || true
+    "$CLIPROXY_AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 backup/auths/" >&2 || true
 
-  # Bootstrap from git-tracked dotfiles if objectstore is empty
-  if [ ! -d "$AUTH_DIR" ] || [ -z "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
+  # Bootstrap from git-tracked dotfiles if empty
+  if [ ! -d "$CLIPROXY_AUTH_DIR" ] || [ -z "$(ls -A "$CLIPROXY_AUTH_DIR" 2>/dev/null)" ]; then
     if [ -d "$HOME/dotfiles/objectstore/auths" ] && [ -n "$(ls -A "$HOME/dotfiles/objectstore/auths" 2>/dev/null)" ]; then
-      @rsync@ -a "$HOME/dotfiles/objectstore/auths/" "$AUTH_DIR/"
+      @rsync@ -a "$HOME/dotfiles/objectstore/auths/" "$CLIPROXY_AUTH_DIR/"
       echo "✅ Bootstrapped from dotfiles (objectstore was empty)" >&2
     fi
   fi
+
+  # Also keep objectstore/auths/ in sync for legacy compatibility
+  mkdir -p "$AUTH_DIR"
+  @rsync@ -a "$CLIPROXY_AUTH_DIR/" "$AUTH_DIR/"
 else
   echo "⚠️  Skipping auth sync: OBJECTSTORE credentials not set" >&2
 fi
