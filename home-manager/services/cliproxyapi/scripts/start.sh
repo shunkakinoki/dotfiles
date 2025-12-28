@@ -95,12 +95,33 @@ fi
 # Change to config dir so logs are created there
 cd "$CONFIG_DIR"
 
-# Find and exec cliproxyapi with config file
+# On Linux, prefer Docker for easy upgrades
+if [ "$(uname)" = "Linux" ] && command -v docker >/dev/null 2>&1; then
+  # Stop any existing container
+  docker rm -f cliproxyapi 2>/dev/null || true
+
+  # Create logs directory if it doesn't exist
+  mkdir -p "$CONFIG_DIR/logs"
+
+  exec docker run --rm \
+    --name cliproxyapi \
+    --network host \
+    --ulimit nofile=65536:65536 \
+    -v "$CONFIG:/CLIProxyAPI/config.yaml:ro" \
+    -v "$CONFIG_DIR:/root/.cli-proxy-api" \
+    -v "$CONFIG_DIR/logs:/CLIProxyAPI/logs" \
+    -e MANAGEMENT_PASSWORD="${MANAGEMENT_PASSWORD:-}" \
+    eceasy/cli-proxy-api:latest
+fi
+
+# macOS: use Homebrew binary
 if [ -x /opt/homebrew/bin/cliproxyapi ]; then
   exec /opt/homebrew/bin/cliproxyapi -config "$CONFIG" "$@"
 elif [ -x /usr/local/bin/cliproxyapi ]; then
   exec /usr/local/bin/cliproxyapi -config "$CONFIG" "$@"
 else
-  echo 'cliproxyapi binary not found; install it with "brew install cliproxyapi"' >&2
+  echo 'cliproxyapi not found' >&2
+  echo 'Linux: Docker should be available' >&2
+  echo 'macOS: brew install cliproxyapi' >&2
   exit 1
 fi
