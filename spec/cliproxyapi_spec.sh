@@ -90,8 +90,8 @@ The output should include '/usr/local/bin/cliproxyapi'
 End
 
 It 'shows error message when binary not found'
-When run bash -c "grep 'cliproxyapi binary not found' '$SCRIPT'"
-The output should include 'cliproxyapi binary not found'
+When run bash -c "grep 'cliproxyapi not found' '$SCRIPT'"
+The output should include 'cliproxyapi not found'
 End
 
 It 'suggests installation command in error message'

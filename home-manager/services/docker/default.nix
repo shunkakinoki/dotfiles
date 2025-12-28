@@ -1,7 +1,5 @@
-{ config, pkgs, ... }:
+{ pkgs, lib, ... }:
 let
-  inherit (pkgs) lib;
-
   # Systemd service file for Docker daemon
   dockerServiceFile = pkgs.writeText "docker.service" ''
     [Unit]
@@ -63,18 +61,4 @@ in
       exec ${setupDockerScript}
     '')
   ];
-
-  # Check docker availability on activation
-  home.activation.checkDocker = lib.mkIf pkgs.stdenv.isLinux (
-    config.lib.dag.entryAfter [ "writeBoundary" ] ''
-      if ! ${pkgs.systemd}/bin/systemctl is-active --quiet docker 2>/dev/null; then
-        if [ -t 0 ]; then
-          echo ""
-          echo "⚠️  Docker daemon is not running."
-          echo "   Run 'docker-setup' to configure system Docker."
-          echo ""
-        fi
-      fi
-    ''
-  );
 }

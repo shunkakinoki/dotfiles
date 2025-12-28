@@ -5,7 +5,7 @@ set -euo pipefail
 CONFIG_DIR="$HOME/.cli-proxy-api"
 TEMPLATE="$CONFIG_DIR/config.template.yaml"
 CONFIG="$CONFIG_DIR/config.yaml"
-AUTH_DIR="$CONFIG_DIR/auths"
+AUTH_DIR="$CONFIG_DIR/objectstore/auths"
 # Use explicit path since $HOME may not be set correctly in launchd context
 ENV_FILE="${HOME:-/Users/shunkakinoki}/dotfiles/.env"
 
