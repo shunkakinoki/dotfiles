@@ -5,7 +5,6 @@ set -euo pipefail
 CONFIG_DIR="$HOME/.cli-proxy-api"
 TEMPLATE="$CONFIG_DIR/config.template.yaml"
 CONFIG="$CONFIG_DIR/config.yaml"
-AUTH_DIR="$CONFIG_DIR/objectstore/auths"
 # Use explicit path since $HOME may not be set correctly in launchd context
 ENV_FILE="${HOME:-/Users/shunkakinoki}/dotfiles/.env"
 
@@ -58,10 +57,6 @@ if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; t
       echo "✅ Bootstrapped from dotfiles (objectstore was empty)" >&2
     fi
   fi
-
-  # Also keep objectstore/auths/ in sync for legacy compatibility
-  mkdir -p "$AUTH_DIR"
-  @rsync@ -a "$CLIPROXY_AUTH_DIR/" "$AUTH_DIR/"
 else
   echo "⚠️  Skipping auth sync: OBJECTSTORE credentials not set" >&2
 fi
