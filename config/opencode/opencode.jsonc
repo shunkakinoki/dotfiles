@@ -17,6 +17,40 @@
 		}
 	},
 	"provider": {
+		"shunkakinoki": {
+			"npm": "@ai-sdk/openai-compatible",
+			"name": "CLIProxyAPI (remote)",
+			"options": {
+				"baseURL": "https://cliproxy.shunkakinoki.com/v1",
+				"apiKey": "{env:CLIPROXY_API_KEY}"
+			},
+			"models": {
+				"gemini-3-pro-preview": {
+					"name": "Gemini 3.0 Pro (via CLIProxy)"
+				},
+				"gpt-5.1": {
+					"name": "GPT-5.1 (via CLIProxy)"
+				},
+				"gpt-5.1-codex": {
+					"name": "GPT-5.1 Codex (via CLIProxy)"
+				},
+				"gpt-5.1-codex-max": {
+					"name": "GPT-5.1 Codex Max (via CLIProxy)"
+				},
+				"claude-opus-4-5-20251101": {
+					"name": "Claude Opus 4.5 (via CLIProxy)"
+				},
+				"claude-haiku-4-5-20251001": {
+					"name": "Claude Haiku 4.5 (via CLIProxy)"
+				},
+				"z-ai/glm-4.6": {
+					"name": "GLM-4.6 (via CLIProxy)"
+				},
+				"z-ai/glm-4.7": {
+					"name": "GLM-4.7 (via CLIProxy)"
+				}
+			}
+		},
 		"cliproxyapi": {
 			"npm": "@ai-sdk/openai-compatible",
 			"name": "CLIProxyAPI (local)",
