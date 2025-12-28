@@ -163,9 +163,6 @@
 					"name": "DeepSeek Chat V3.1 (via OpenRouter)",
 					"options": {
 						"provider": {
-							"order": [
-								"baseten"
-							],
 							"allow_fallbacks": false
 						}
 					}
@@ -175,7 +172,7 @@
 					"options": {
 						"provider": {
 							"order": [
-								"baseten"
+								"open-inference"
 							],
 							"allow_fallbacks": false
 						}
@@ -186,7 +183,7 @@
 					"options": {
 						"provider": {
 							"order": [
-								"baseten"
+								"open-inference"
 							],
 							"allow_fallbacks": false
 						}
@@ -197,7 +194,7 @@
 					"options": {
 						"provider": {
 							"order": [
-								"baseten"
+								"open-inference"
 							],
 							"allow_fallbacks": false
 						}
@@ -208,7 +205,7 @@
 					"options": {
 						"provider": {
 							"order": [
-								"baseten"
+								"open-inference"
 							],
 							"allow_fallbacks": false
 						}
