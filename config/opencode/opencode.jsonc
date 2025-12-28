@@ -154,11 +154,22 @@
 				}
 			}
 		},
+		"openrouter-preset": {
+			"npm": "@ai-sdk/openai-compatible",
+			"name": "OpenRouter Presets",
+			"options": {
+				"baseURL": "https://openrouter.ai/api/v1",
+				"apiKey": "{env:OPENROUTER_API_KEY}"
+			},
+			"models": {
+				"glm-4-6": {
+					"id": "@preset/glm-4-6",
+					"name": "Preset GLM-4.6 (via OpenRouter)"
+				}
+			}
+		},
 		"openrouter": {
 			"models": {
-				"@preset/glm-4-6": {
-					"name": "Preset GLM-4.6 (via OpenRouter)"
-				},
 				"deepseek/deepseek-chat-v3.1:free": {
 					"name": "DeepSeek Chat V3.1 (via OpenRouter)",
 					"options": {
