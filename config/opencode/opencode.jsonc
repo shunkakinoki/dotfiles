@@ -156,7 +156,11 @@
 		},
 		"openrouter": {
 			"models": {
+				"@preset/glm-4-6": {
+					"name": "GLM-4.6 (via OpenRouter)"
+				},
 				"deepseek/deepseek-chat-v3.1:free": {
+					"name": "DeepSeek Chat V3.1 (via OpenRouter)",
 					"options": {
 						"provider": {
 							"order": [
@@ -167,6 +171,7 @@
 					}
 				},
 				"moonshotai/kimi-k2": {
+					"name": "Kimi K2 (via OpenRouter)",
 					"options": {
 						"provider": {
 							"order": [
@@ -177,6 +182,7 @@
 					}
 				},
 				"moonshotai/kimi-k2:free": {
+					"name": "Kimi K2 Free (via OpenRouter)",
 					"options": {
 						"provider": {
 							"order": [
@@ -187,6 +193,7 @@
 					}
 				},
 				"openai/gpt-oss-120b:free": {
+					"name": "GPT-OSS 120B Free (via OpenRouter)",
 					"options": {
 						"provider": {
 							"order": [
@@ -197,6 +204,7 @@
 					}
 				},
 				"qwen/qwen3-coder:free": {
+					"name": "Qwen3 Coder Free (via OpenRouter)",
 					"options": {
 						"provider": {
 							"order": [
