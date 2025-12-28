@@ -11,6 +11,12 @@ let
     rsync = "${pkgs.rsync}/bin/rsync";
   };
 
+  # Wrapper script that runs start.sh with docker group permissions
+  # Note: sg is from shadow package, available as system binary /usr/bin/sg
+  dockerStartScript = pkgs.writeShellScript "cliproxyapi-docker-start" ''
+    exec /usr/bin/sg docker -c "${pkgs.bash}/bin/bash ${startScript}"
+  '';
+
   # Create backup scripts with paths substituted at build time
   backupAuthScript = pkgs.replaceVars ./scripts/backup-auth.sh {
     aws = "${pkgs.awscli2}/bin/aws";
@@ -50,7 +56,8 @@ in
   systemd.user.services.cliproxyapi = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {
       Description = "CLI Proxy API server";
-      After = [ "network.target" ];
+      After = [ "network.target" "docker.service" ];
+      Wants = [ "docker.service" ];
     };
     Service = {
       Type = "simple";
@@ -60,9 +67,10 @@ in
           pkgs.bash
           pkgs.coreutils
           pkgs.awscli2
+          pkgs.docker
         ]
       }";
-      ExecStart = "${pkgs.bash}/bin/bash ${startScript}";
+      ExecStart = "${dockerStartScript}";
       Restart = "always";
       RestartSec = 3;
     };
