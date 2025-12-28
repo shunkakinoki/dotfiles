@@ -56,7 +56,10 @@ in
   systemd.user.services.cliproxyapi = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {
       Description = "CLI Proxy API server";
-      After = [ "network.target" "docker.service" ];
+      After = [
+        "network.target"
+        "docker.service"
+      ];
       Wants = [ "docker.service" ];
     };
     Service = {
