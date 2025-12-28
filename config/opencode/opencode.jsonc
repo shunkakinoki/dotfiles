@@ -157,7 +157,7 @@
 		"openrouter": {
 			"models": {
 				"@preset/glm-4-6": {
-					"name": "GLM-4.6 (via OpenRouter)"
+					"name": "Preset GLM-4.6 (via OpenRouter)"
 				},
 				"deepseek/deepseek-chat-v3.1:free": {
 					"name": "DeepSeek Chat V3.1 (via OpenRouter)",
