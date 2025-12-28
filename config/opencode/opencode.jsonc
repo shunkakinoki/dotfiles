@@ -77,10 +77,16 @@
 					"name": "Claude Haiku 4.5 (via CLIProxyAPI)"
 				},
 				"z-ai/glm-4.6": {
-					"name": "GLM-4.6 (via OpenRouter and Z.AI Coding Plan)"
+					"name": "GLM-4.6 (via CLIProxyAPI)",
+					"options": {
+						"stream": false
+					}
 				},
 				"z-ai/glm-4.7": {
-					"name": "GLM-4.7 (via OpenRouter and Z.AI Coding Plan)"
+					"name": "GLM-4.7 (via CLIProxyAPI)",
+					"options": {
+						"stream": false
+					}
 				}
 			}
 		},
@@ -182,53 +188,72 @@
 				}
 			}
 		},
+		"openrouter-preset": {
+			"npm": "@ai-sdk/openai-compatible",
+			"name": "OpenRouter Presets",
+			"options": {
+				"baseURL": "https://openrouter.ai/api/v1",
+				"apiKey": "{env:OPENROUTER_API_KEY}"
+			},
+			"models": {
+				"glm-4-6": {
+					"id": "@preset/glm-4-6",
+					"name": "Preset GLM-4.6 (via OpenRouter)"
+				}
+			}
+		},
 		"openrouter": {
 			"models": {
 				"deepseek/deepseek-chat-v3.1:free": {
+					"name": "DeepSeek Chat V3.1 (via OpenRouter)",
 					"options": {
 						"provider": {
 							"order": [
-								"baseten"
+								"open-inference"
 							],
 							"allow_fallbacks": false
 						}
 					}
 				},
 				"moonshotai/kimi-k2": {
+					"name": "Kimi K2 (via OpenRouter)",
 					"options": {
 						"provider": {
 							"order": [
-								"baseten"
+								"open-inference"
 							],
 							"allow_fallbacks": false
 						}
 					}
 				},
 				"moonshotai/kimi-k2:free": {
+					"name": "Kimi K2 Free (via OpenRouter)",
 					"options": {
 						"provider": {
 							"order": [
-								"baseten"
+								"open-inference"
 							],
 							"allow_fallbacks": false
 						}
 					}
 				},
 				"openai/gpt-oss-120b:free": {
+					"name": "GPT-OSS 120B Free (via OpenRouter)",
 					"options": {
 						"provider": {
 							"order": [
-								"baseten"
+								"open-inference"
 							],
 							"allow_fallbacks": false
 						}
 					}
 				},
 				"qwen/qwen3-coder:free": {
+					"name": "Qwen3 Coder Free (via OpenRouter)",
 					"options": {
 						"provider": {
 							"order": [
-								"baseten"
+								"open-inference"
 							],
 							"allow_fallbacks": false
 						}
