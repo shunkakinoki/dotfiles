@@ -69,12 +69,12 @@ if [ -f "$TEMPLATE" ]; then
     -e "s|__AMP_UPSTREAM_API_KEY__|${AMP_UPSTREAM_API_KEY:-}|g" \
     "$TEMPLATE" >"$CONFIG"
 
-  # Linux: uncomment and enable api-keys for client authentication
+  # Linux: uncomment and enable api-keys for client authentication (only if key is set)
   # macOS: leave api-keys commented for open access
-  if [ "$(uname)" = "Linux" ]; then
+  if [ "$(uname)" = "Linux" ] && [ -n "${CLIPROXY_API_KEY:-}" ]; then
     @sed@ -i \
       -e "s|^# api-keys:|api-keys:|" \
-      -e "s|^#   - \"__CLIPROXY_API_KEY__\"|  - \"${CLIPROXY_API_KEY:-}\"|" \
+      -e "s|^#   - \"__CLIPROXY_API_KEY__\"|  - \"${CLIPROXY_API_KEY}\"|" \
       "$CONFIG"
   fi
   # Also copy to objectstore config location (cliproxyapi uses this for persistence)
