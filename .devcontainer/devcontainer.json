@@ -1,0 +1,20 @@
+{
+  "name": "Dotfiles Development",
+  "image": "ghcr.io/shunkakinoki/dotfiles:latest",
+  "remoteUser": "runner",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "jnoortheen.nix-ide",
+        "mkhl.direnv",
+        "bmalehorn.shell-syntax",
+        "sumneko.lua",
+        "ms-azuretools.vscode-docker",
+        "tamasfe.even-better-toml"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "fish"
+      }
+    }
+  }
+}
