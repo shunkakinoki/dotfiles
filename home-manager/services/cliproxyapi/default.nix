@@ -118,7 +118,6 @@ in
     Path = {
       PathChanged = [
         "%h/.cli-proxy-api/objectstore/auths"
-        "%h/dotfiles/objectstore/auths"
         "%h/.ccs/cliproxy/auth"
       ];
       Unit = "cliproxyapi-backup.service";

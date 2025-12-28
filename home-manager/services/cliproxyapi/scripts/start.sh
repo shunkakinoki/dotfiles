@@ -49,11 +49,14 @@ if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; t
     "s3://cliproxyapi/backup/auths/" \
     "$AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 backup/auths/" >&2 || true
 
-  # Bootstrap from git-tracked dotfiles if objectstore is empty
-  if [ ! -d "$AUTH_DIR" ] || [ -z "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
-    if [ -d "$HOME/dotfiles/objectstore/auths" ] && [ -n "$(ls -A "$HOME/dotfiles/objectstore/auths" 2>/dev/null)" ]; then
-      @rsync@ -a "$HOME/dotfiles/objectstore/auths/" "$AUTH_DIR/"
-      echo "✅ Bootstrapped from dotfiles (objectstore was empty)" >&2
+  # macOS only: Bootstrap from git-tracked dotfiles if objectstore is empty
+  # (Skipped on Linux to avoid redundant auth file copies)
+  if [ "$(uname)" = "Darwin" ]; then
+    if [ ! -d "$AUTH_DIR" ] || [ -z "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
+      if [ -d "$HOME/dotfiles/objectstore/auths" ] && [ -n "$(ls -A "$HOME/dotfiles/objectstore/auths" 2>/dev/null)" ]; then
+        @rsync@ -a "$HOME/dotfiles/objectstore/auths/" "$AUTH_DIR/"
+        echo "✅ Bootstrapped from dotfiles (objectstore was empty)" >&2
+      fi
     fi
   fi
 else
@@ -69,12 +72,12 @@ if [ -f "$TEMPLATE" ]; then
     -e "s|__AMP_UPSTREAM_API_KEY__|${AMP_UPSTREAM_API_KEY:-}|g" \
     "$TEMPLATE" >"$CONFIG"
 
-  # Linux: uncomment and enable api-keys for client authentication
+  # Linux: uncomment and enable api-keys for client authentication (only if key is set)
   # macOS: leave api-keys commented for open access
-  if [ "$(uname)" = "Linux" ]; then
+  if [ "$(uname)" = "Linux" ] && [ -n "${CLIPROXY_API_KEY:-}" ]; then
     @sed@ -i \
       -e "s|^# api-keys:|api-keys:|" \
-      -e "s|^#   - \"__CLIPROXY_API_KEY__\"|  - \"${CLIPROXY_API_KEY:-}\"|" \
+      -e "s|^#   - \"__CLIPROXY_API_KEY__\"|  - \"${CLIPROXY_API_KEY}\"|" \
       "$CONFIG"
   fi
   # Also copy to objectstore config location (cliproxyapi uses this for persistence)

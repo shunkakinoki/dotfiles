@@ -156,9 +156,40 @@ End
 It 'script has Linux-specific api-keys uncommenting logic'
 When run bash -c "grep -A 6 'Linux: uncomment and enable api-keys' '$SCRIPT'"
 # shellcheck disable=SC2016
-The output should include 'if [ "$(uname)" = "Linux" ]'
+The output should include 'if [ "$(uname)" = "Linux" ] && [ -n "${CLIPROXY_API_KEY:-}" ]'
 The output should include 's|^# api-keys:|api-keys:|'
 The output should include 'CLIPROXY_API_KEY'
+End
+
+It 'keeps api-keys commented on Linux when CLIPROXY_API_KEY is empty'
+# Create test script that simulates Linux behavior with empty key
+cat >"$TEMP_HOME/test_linux_empty_apikey.sh" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+CONFIG_DIR="$HOME/.cli-proxy-api"
+TEMPLATE="$CONFIG_DIR/config.template.yaml"
+CONFIG="$CONFIG_DIR/config.yaml"
+CLIPROXY_API_KEY=""
+
+# Copy template to config
+cp "$TEMPLATE" "$CONFIG"
+
+# Simulate Linux behavior with empty key (should NOT uncomment)
+if [ -n "${CLIPROXY_API_KEY:-}" ]; then
+  sed \
+    -e "s|^# api-keys:|api-keys:|" \
+    -e "s|^#   - \"__CLIPROXY_API_KEY__\"|  - \"${CLIPROXY_API_KEY}\"|" \
+    "$CONFIG" > "$CONFIG.tmp" && mv "$CONFIG.tmp" "$CONFIG"
+fi
+
+cat "$CONFIG"
+EOF
+chmod +x "$TEMP_HOME/test_linux_empty_apikey.sh"
+
+When run bash -c "HOME='$TEMP_HOME' bash '$TEMP_HOME/test_linux_empty_apikey.sh'"
+The output should include '# api-keys:'
+The output should include '#   - "__CLIPROXY_API_KEY__"'
+The status should be success
 End
 End
 

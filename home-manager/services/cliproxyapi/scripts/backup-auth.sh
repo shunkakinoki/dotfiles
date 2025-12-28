@@ -76,8 +76,11 @@ if [ -d "$AUTH_DIR" ] && [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
   @rsync@ -a "$AUTH_DIR/" "$CCS_AUTH_DIR/"
   echo "✅ Synced to ccs auth dir" >&2
 
-  # Also sync back to dotfiles repo for git tracking
-  mkdir -p "$DOTFILES_AUTH_DIR"
-  @rsync@ -a "$AUTH_DIR/" "$DOTFILES_AUTH_DIR/"
-  echo "✅ Synced to dotfiles repo" >&2
+  # macOS only: Sync back to dotfiles repo for git tracking
+  # (Skipped on Linux to avoid redundant auth file copies)
+  if [ "$(uname)" = "Darwin" ]; then
+    mkdir -p "$DOTFILES_AUTH_DIR"
+    @rsync@ -a "$AUTH_DIR/" "$DOTFILES_AUTH_DIR/"
+    echo "✅ Synced to dotfiles repo" >&2
+  fi
 fi
