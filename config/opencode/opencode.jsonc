@@ -163,6 +163,9 @@
 					"name": "DeepSeek Chat V3.1 (via OpenRouter)",
 					"options": {
 						"provider": {
+							"order": [
+								"open-inference"
+							],
 							"allow_fallbacks": false
 						}
 					}
