@@ -68,6 +68,15 @@ if [ -f "$TEMPLATE" ]; then
     -e "s|__ZAI_API_KEY__|${ZAI_API_KEY:-}|g" \
     -e "s|__AMP_UPSTREAM_API_KEY__|${AMP_UPSTREAM_API_KEY:-}|g" \
     "$TEMPLATE" >"$CONFIG"
+
+  # Linux: uncomment and enable api-keys for client authentication
+  # macOS: leave api-keys commented for open access
+  if [ "$(uname)" = "Linux" ]; then
+    @sed@ -i \
+      -e "s|^# api-keys:|api-keys:|" \
+      -e "s|^#   - \"__CLIPROXY_API_KEY__\"|  - \"${CLIPROXY_API_KEY:-}\"|" \
+      "$CONFIG"
+  fi
   # Also copy to objectstore config location (cliproxyapi uses this for persistence)
   mkdir -p "$CONFIG_DIR/objectstore/config"
   cp "$CONFIG" "$CONFIG_DIR/objectstore/config/config.yaml"
