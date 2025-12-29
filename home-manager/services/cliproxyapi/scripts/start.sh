@@ -70,6 +70,29 @@ if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; t
       fi
     fi
   fi
+
+  # CRITICAL: Always sync local auth files to R2 after merge
+  # This ensures any files that exist locally but not in R2 get uploaded,
+  # preventing "key does not exist" errors when cliproxyapi reads from object storage
+  if [ -d "$AUTH_DIR" ] && [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
+    echo "Syncing local auth files to R2..." >&2
+    AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
+      AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
+      @aws@ s3 sync \
+      --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
+      --no-progress \
+      "$AUTH_DIR/" \
+      "s3://cliproxyapi/auths/" 2>&1 && echo "✅ Auth files synced to R2 auths/" >&2 || echo "⚠️  Failed to sync auth files to R2" >&2
+
+    # Also sync to backup location for redundancy
+    AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
+      AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
+      @aws@ s3 sync \
+      --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
+      --no-progress \
+      "$AUTH_DIR/" \
+      "s3://cliproxyapi/backup/auths/" 2>&1 && echo "✅ Auth files synced to R2 backup/" >&2 || true
+  fi
 else
   echo "⚠️  Skipping auth sync: OBJECTSTORE credentials not set" >&2
 fi
