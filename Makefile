@@ -285,8 +285,8 @@ nix-flake-check: ## Check Nix flake configuration.
 .PHONY: nix-flake-update
 nix-flake-update: nix-connect ## Update flake.lock file.
 	@echo "♻️ Refreshing flake.lock file..."
-	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
-		echo "Bypassing flake update in CI/Docker"; \
+	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ] || [ "$$AUTOMATED_UPDATE" = "true" ]; then \
+		echo "Bypassing flake update in CI/Docker/automated update"; \
 	else \
 		$(NIX_EXEC) flake update $(NIX_FLAGS); \
 	fi
