@@ -8,7 +8,6 @@ let
   startScript = pkgs.replaceVars ./scripts/start.sh {
     aws = "${pkgs.awscli2}/bin/aws";
     sed = "${pkgs.gnused}/bin/sed";
-    rsync = "${pkgs.rsync}/bin/rsync";
   };
 
   # Wrapper script that runs start.sh with docker group permissions

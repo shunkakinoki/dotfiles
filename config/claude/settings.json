@@ -227,6 +227,6 @@
     "type": "command",
     "command": "$HOME/.claude/statusline-git.sh"
   },
-  "model": "sonnet",
+  "model": "default",
   "defaultMode": "bypassPermissions"
 }
