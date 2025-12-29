@@ -614,7 +614,9 @@ launchctl-brew-upgrader: ## Restart brew-upgrader launchd agent.
 .PHONY: launchctl-cliproxyapi
 launchctl-cliproxyapi: ## Restart cliproxyapi launchd agent.
 	@echo "🔄 Restarting cliproxyapi..."
-	@timeout 5 launchctl kickstart -k gui/$$(id -u)/org.nix-community.home.cliproxyapi || true
+	@launchctl unload ~/Library/LaunchAgents/org.nix-community.home.cliproxyapi.plist 2>/dev/null || true
+	@sleep 1
+	@launchctl load ~/Library/LaunchAgents/org.nix-community.home.cliproxyapi.plist
 	@echo "✅ cliproxyapi restarted"
 
 .PHONY: launchctl-code-syncer
