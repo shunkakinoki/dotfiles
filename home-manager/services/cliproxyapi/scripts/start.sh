@@ -49,29 +49,7 @@ if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; t
     "s3://cliproxyapi/backup/auths/" \
     "$AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 backup/auths/" >&2 || true
 
-  # macOS only: Always merge missing files from git-tracked dotfiles
-  # Uses --ignore-existing to never overwrite newer files from R2
-  # This ensures files deleted from R2 are recovered from git backup
-  # (Skipped on Linux to avoid redundant auth file copies)
-  if [ "$(uname)" = "Darwin" ]; then
-    DOTFILES_AUTH_DIR="$HOME/dotfiles/objectstore/auths"
-    if [ -d "$DOTFILES_AUTH_DIR" ] && [ -n "$(ls -A "$DOTFILES_AUTH_DIR" 2>/dev/null)" ]; then
-      # Count files before merge
-      before_count=$(find "$AUTH_DIR" -maxdepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')
-
-      # Merge missing files from dotfiles (never overwrite existing)
-      @rsync@ -a --ignore-existing "$DOTFILES_AUTH_DIR/" "$AUTH_DIR/"
-
-      # Count files after merge
-      after_count=$(find "$AUTH_DIR" -maxdepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')
-
-      if [ "$after_count" -gt "$before_count" ]; then
-        echo "✅ Restored $((after_count - before_count)) missing auth file(s) from dotfiles" >&2
-      fi
-    fi
-  fi
-
-  # CRITICAL: Always sync local auth files to R2 after merge
+  # CRITICAL: Always sync local auth files back to R2 after pulling
   # This ensures any files that exist locally but not in R2 get uploaded,
   # preventing "key does not exist" errors when cliproxyapi reads from object storage
   if [ -d "$AUTH_DIR" ] && [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
