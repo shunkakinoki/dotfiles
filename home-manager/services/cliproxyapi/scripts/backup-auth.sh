@@ -8,7 +8,6 @@ CONFIG_DIR="$HOME/.cli-proxy-api"
 BACKUP_DIR="s3://cliproxyapi/backup/auths/"
 MAIN_DIR="s3://cliproxyapi/auths/"
 AUTH_DIR="$CONFIG_DIR/objectstore/auths"
-DOTFILES_AUTH_DIR="$HOME/dotfiles/objectstore/auths"
 CCS_AUTH_DIR="$HOME/.ccs/cliproxy/auth"
 
 # STEP 1: Pull from R2 to local (captures files created by cliproxyapi directly in R2)
@@ -32,22 +31,7 @@ if [ -n "${OBJECTSTORE_ENDPOINT:-}" ]; then
     "$AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 backup/auths/" >&2 || true
 fi
 
-# STEP 2: Merge missing files from dotfiles (macOS only)
-# Uses --ignore-existing to never overwrite files from R2, only fill gaps
-# This recovers files that may have been deleted from R2 but exist in git
-# No circular loop risk since dotfiles is not in WatchPaths
-if [ "$(uname)" = "Darwin" ]; then
-  if [ -d "$DOTFILES_AUTH_DIR" ] && [ -n "$(ls -A "$DOTFILES_AUTH_DIR" 2>/dev/null)" ]; then
-    before_count=$(find "$AUTH_DIR" -maxdepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')
-    @rsync@ -a --ignore-existing "$DOTFILES_AUTH_DIR/" "$AUTH_DIR/"
-    after_count=$(find "$AUTH_DIR" -maxdepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')
-    if [ "$after_count" -gt "$before_count" ]; then
-      echo "✅ Recovered $((after_count - before_count)) missing file(s) from dotfiles" >&2
-    fi
-  fi
-fi
-
-# STEP 3: Sync from ccs auth dir (picks up files created by ccs's internal cliproxy)
+# STEP 2: Sync from ccs auth dir (picks up files created by ccs's internal cliproxy)
 if [ -d "$CCS_AUTH_DIR" ] && [ -n "$(ls -A "$CCS_AUTH_DIR" 2>/dev/null)" ]; then
   @rsync@ -a "$CCS_AUTH_DIR/" "$AUTH_DIR/"
   echo "✅ Synced from ccs auth dir to local cache" >&2
@@ -83,12 +67,4 @@ if [ -d "$AUTH_DIR" ] && [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
   mkdir -p "$CCS_AUTH_DIR"
   @rsync@ -a "$AUTH_DIR/" "$CCS_AUTH_DIR/"
   echo "✅ Synced to ccs auth dir" >&2
-
-  # macOS only: Sync back to dotfiles repo for git tracking
-  # (Skipped on Linux to avoid redundant auth file copies)
-  if [ "$(uname)" = "Darwin" ]; then
-    mkdir -p "$DOTFILES_AUTH_DIR"
-    @rsync@ -a "$AUTH_DIR/" "$DOTFILES_AUTH_DIR/"
-    echo "✅ Synced to dotfiles repo" >&2
-  fi
 fi
