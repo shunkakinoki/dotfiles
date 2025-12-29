@@ -116,10 +116,20 @@ If auth files are lost locally, they are automatically recovered from:
 
 **Solution:**
 - Removed dotfiles from WatchPaths
-- Dotfiles is now **write-only** (except for bootstrap on service start)
+- Dotfiles is now **write-only** for output, but used as **read-only recovery source**
 - Only `objectstore/auths` and `ccs/auth` trigger sync events
 
-### 5. Object Storage Integration
+### 5. Automatic Recovery from Git
+
+**Problem Solved:** Files could be lost if deleted from R2 (e.g., by cliproxyapi internals or manual deletion).
+
+**Solution:**
+- Both `start.sh` and `backup-auth.sh` merge missing files from dotfiles
+- Uses `rsync --ignore-existing` to never overwrite newer files from R2
+- Git-tracked dotfiles acts as a third backup location that survives R2 deletions
+- Recovery is automatic and logged when files are restored
+
+### 6. Object Storage Integration
 
 When `OBJECTSTORE_ENDPOINT` is configured, cliproxyapi uses object-backed storage:
 - Auth files stored in `objectstore/auths/` subdirectory
