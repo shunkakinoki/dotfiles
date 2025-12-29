@@ -32,14 +32,22 @@ if [ -n "${OBJECTSTORE_ENDPOINT:-}" ]; then
     "$AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 backup/auths/" >&2 || true
 fi
 
-# STEP 2: Sync from dotfiles repo to local cache ONLY on initial bootstrap
-# (This step is commented out to prevent circular sync loops - dotfiles is write-only)
-# if [ -d "$DOTFILES_AUTH_DIR" ] && [ -n "$(ls -A "$DOTFILES_AUTH_DIR" 2>/dev/null)" ]; then
-#   @rsync@ -a "$DOTFILES_AUTH_DIR/" "$AUTH_DIR/"
-#   echo "✅ Synced from dotfiles repo to local cache" >&2
-# fi
+# STEP 2: Merge missing files from dotfiles (macOS only)
+# Uses --ignore-existing to never overwrite files from R2, only fill gaps
+# This recovers files that may have been deleted from R2 but exist in git
+# No circular loop risk since dotfiles is not in WatchPaths
+if [ "$(uname)" = "Darwin" ]; then
+  if [ -d "$DOTFILES_AUTH_DIR" ] && [ -n "$(ls -A "$DOTFILES_AUTH_DIR" 2>/dev/null)" ]; then
+    before_count=$(find "$AUTH_DIR" -maxdepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')
+    @rsync@ -a --ignore-existing "$DOTFILES_AUTH_DIR/" "$AUTH_DIR/"
+    after_count=$(find "$AUTH_DIR" -maxdepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')
+    if [ "$after_count" -gt "$before_count" ]; then
+      echo "✅ Recovered $((after_count - before_count)) missing file(s) from dotfiles" >&2
+    fi
+  fi
+fi
 
-# STEP 2b: Sync from ccs auth dir (picks up files created by ccs's internal cliproxy)
+# STEP 3: Sync from ccs auth dir (picks up files created by ccs's internal cliproxy)
 if [ -d "$CCS_AUTH_DIR" ] && [ -n "$(ls -A "$CCS_AUTH_DIR" 2>/dev/null)" ]; then
   @rsync@ -a "$CCS_AUTH_DIR/" "$AUTH_DIR/"
   echo "✅ Synced from ccs auth dir to local cache" >&2
