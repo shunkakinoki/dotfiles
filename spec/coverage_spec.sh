@@ -68,6 +68,10 @@ End
 It 'has spec file for scripts/update-gitalias.sh'
 The path "spec/update_gitalias_spec.sh" should be exist
 End
+
+It 'has spec file for home-manager/modules/local-binaries/sync-local-binaries.sh'
+The path "spec/local_binaries_spec.sh" should be exist
+End
 End
 
 Describe 'no shell scripts are missing from coverage list'
@@ -81,6 +85,7 @@ covered_scripts="config/claude/notify.sh
 config/claude/pushover.sh
 config/claude/security.sh
 config/claude/statusline-git.sh
+home-manager/modules/local-binaries/sync-local-binaries.sh
 home-manager/programs/neovim/run_tests.sh
 home-manager/services/brew-upgrader/upgrade.sh
 home-manager/services/cliproxyapi/scripts/backup-and-recover.sh

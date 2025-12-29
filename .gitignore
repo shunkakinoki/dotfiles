@@ -1,5 +1,8 @@
 # AI
 .claude
+
+# Local binaries list (machine-specific)
+.local-binaries.txt
 .devenv.nix
 objectstore
 
