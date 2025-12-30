@@ -5,20 +5,20 @@
     "": {
       "name": "dotfiles",
       "dependencies": {
-        "@biomejs/biome": "^2.3.8",
+        "@biomejs/biome": "^2.3.10",
         "@ccusage/codex": "^17.2.0",
         "@ccusage/mcp": "^17.2.0",
         "@getgrit/cli": "^0.1.0-alpha.1743007075",
         "@github/copilot": "^0.0.372",
-        "@google/jules": "^0.1.40",
-        "@kaitranntt/ccs": "^7.7.0",
-        "@nanocollective/nanocoder": "^1.16.3",
-        "@pulumi/pulumi": "^3.212.0",
-        "@sourcegraph/amp": "^0.0.1764893126-gb1ffc3",
-        "@typescript/native-preview": "^7.0.0-dev.20251127.1",
+        "@google/jules": "^0.1.42",
+        "@kaitranntt/ccs": "^7.11.1",
+        "@nanocollective/nanocoder": "^1.19.2",
+        "@pulumi/pulumi": "^3.214.0",
+        "@sourcegraph/amp": "^0.0.1767068037-gb2caa3",
+        "@typescript/native-preview": "^7.0.0-dev.20251229.1",
         "@vibe-kit/grok-cli": "^0.0.34",
         "ccusage": "^17.2.0",
-        "cline": "^1.0.5",
+        "cline": "^1.0.8",
         "open-composer": "^0.8.23",
         "typescript": "^5.9.3",
       },
@@ -253,7 +253,7 @@
 
     "@protobufjs/utf8": ["@protobufjs/utf8@1.1.0", "", {}, "sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw=="],
 
-    "@pulumi/pulumi": ["@pulumi/pulumi@3.213.0", "", { "dependencies": { "@grpc/grpc-js": "^1.10.1", "@logdna/tail-file": "^2.0.6", "@npmcli/arborist": "^7.3.1", "@opentelemetry/api": "^1.9", "@opentelemetry/exporter-zipkin": "^1.28", "@opentelemetry/instrumentation": "^0.55", "@opentelemetry/instrumentation-grpc": "^0.55", "@opentelemetry/resources": "^1.28", "@opentelemetry/sdk-trace-base": "^1.28", "@opentelemetry/sdk-trace-node": "^1.28", "@types/google-protobuf": "^3.15.5", "@types/semver": "^7.5.6", "@types/tmp": "^0.2.6", "execa": "^5.1.0", "fdir": "^6.1.1", "google-protobuf": "^3.21.4", "got": "^11.8.6", "ini": "^2.0.0", "js-yaml": "^3.14.2", "minimist": "^1.2.6", "normalize-package-data": "^6.0.0", "package-directory": "^8.1.0", "picomatch": "^3.0.1", "require-from-string": "^2.0.1", "semver": "^7.5.2", "source-map-support": "^0.5.6", "tmp": "^0.2.4", "upath": "^1.1.0" }, "peerDependencies": { "ts-node": ">= 7.0.1 < 12", "typescript": ">= 3.8.3 < 6" }, "optionalPeers": ["ts-node", "typescript"] }, "sha512-qTAOJXQYjMse2oAwht4iuYA4TiSgUgDfGmlySf2xa4n34+eF1/ytCbF3UJdfOx9+yDD5mYBAi37t0OY/VyVzyQ=="],
+    "@pulumi/pulumi": ["@pulumi/pulumi@3.214.0", "", { "dependencies": { "@grpc/grpc-js": "^1.10.1", "@logdna/tail-file": "^2.0.6", "@npmcli/arborist": "^7.3.1", "@opentelemetry/api": "^1.9", "@opentelemetry/exporter-zipkin": "^1.28", "@opentelemetry/instrumentation": "^0.55", "@opentelemetry/instrumentation-grpc": "^0.55", "@opentelemetry/resources": "^1.28", "@opentelemetry/sdk-trace-base": "^1.28", "@opentelemetry/sdk-trace-node": "^1.28", "@types/google-protobuf": "^3.15.5", "@types/semver": "^7.5.6", "@types/tmp": "^0.2.6", "execa": "^5.1.0", "fdir": "^6.1.1", "google-protobuf": "^3.21.4", "got": "^11.8.6", "ini": "^2.0.0", "js-yaml": "^3.14.2", "minimist": "^1.2.6", "normalize-package-data": "^6.0.0", "package-directory": "^8.1.0", "picomatch": "^3.0.1", "require-from-string": "^2.0.1", "semver": "^7.5.2", "source-map-support": "^0.5.6", "tmp": "^0.2.4", "upath": "^1.1.0" }, "peerDependencies": { "ts-node": ">= 7.0.1 < 12", "typescript": ">= 3.8.3 < 6" }, "optionalPeers": ["ts-node", "typescript"] }, "sha512-5QJnpv8O8dgryzSV6XoWHCYnxADs8EMllwJoRF4AV/TS0YJdaantNSdz+8yie7YdkePfKLfPULoM2BdYllk6Fw=="],
 
     "@sigstore/bundle": ["@sigstore/bundle@2.3.2", "", { "dependencies": { "@sigstore/protobuf-specs": "^0.3.2" } }, "sha512-wueKWDk70QixNLB363yHc2D2ItTgYiMTdPwK8D9dKQMR3ZQ0c35IxP5xnwQ8cNLoCgCRcHf14kE+CLIvNX1zmA=="],
 
@@ -269,7 +269,7 @@
 
     "@sindresorhus/is": ["@sindresorhus/is@4.6.0", "", {}, "sha512-t09vSN3MdfsyCHoFcTRCH/iUtG7OJ0CsjzB8cjAmKc/va/kIgeDI/TxsigdncE/4be734m0cvIYwNaV4i2XqAw=="],
 
-    "@sourcegraph/amp": ["@sourcegraph/amp@0.0.1764893126-gb1ffc3", "", { "dependencies": { "@napi-rs/keyring": "1.1.9" }, "bin": { "amp": "dist/main.js" } }, "sha512-t6FFCmhPjbD+L6JHHszU7UWMGOq5IgeAqBPWeEaD59kVM+qMQwi+Cv3AlxQ6SjMrhSTsN3u3gZYrPGOyK06Gkw=="],
+    "@sourcegraph/amp": ["@sourcegraph/amp@0.0.1767068037-gb2caa3", "", { "dependencies": { "@napi-rs/keyring": "1.1.9" }, "bin": { "amp": "dist/main.js" } }, "sha512-1RsyAje1gVxuMx5rrIuvdks6PwcmlokOgsVaeu1qwUaE3viZ4rGIPLXAh6LTMBBjwSI3BBWkrKvC2Tye3mONzg=="],
 
     "@standard-schema/spec": ["@standard-schema/spec@1.1.0", "", {}, "sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w=="],
 
