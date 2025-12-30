@@ -8,6 +8,7 @@
   ./factory
   ./ghostty
   ./hammerspoon
+  ./jj
   ./k3s
   ./karabiner
   ./opencode
