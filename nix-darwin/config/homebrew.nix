@@ -30,6 +30,7 @@
       "gnupg"
       "graphviz"
       "helm"
+      "jjui"
       "kurtosis-cli"
       "mas"
       "opencode"
