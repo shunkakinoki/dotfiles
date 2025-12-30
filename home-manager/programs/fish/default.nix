@@ -47,6 +47,7 @@
       cat = "bat";
       e = "nvim";
       g = "git";
+      j = "jj";
       lzd = "lazydocker";
       lzg = "lazygit";
       sag = "_ssh_add_github";
