@@ -48,6 +48,7 @@ with pkgs;
   htop
   httpie
   hyperfine
+  jujutsu
   jq
   just
   k9s
