@@ -15,7 +15,7 @@
     "@ccusage/codex": "^17.2.0",
     "@ccusage/mcp": "^17.2.0",
     "@getgrit/cli": "^0.1.0-alpha.1743007075",
-    "@github/copilot": "^0.0.372",
+    "@github/copilot": "^0.0.373",
     "@google/jules": "^0.1.42",
     "@kaitranntt/ccs": "^7.11.1",
     "@nanocollective/nanocoder": "^1.19.2",
