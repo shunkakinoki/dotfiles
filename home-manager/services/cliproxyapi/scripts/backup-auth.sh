@@ -9,6 +9,7 @@ BACKUP_DIR="s3://cliproxyapi/backup/auths/"
 MAIN_DIR="s3://cliproxyapi/auths/"
 AUTH_DIR="$CONFIG_DIR/objectstore/auths"
 CCS_AUTH_DIR="$HOME/.ccs/cliproxy/auth"
+DOTFILES_AUTH_DIR="$HOME/dotfiles/objectstore/auths"
 
 # STEP 1: Pull from R2 to local (captures files created by cliproxyapi directly in R2)
 mkdir -p "$AUTH_DIR"
@@ -35,6 +36,12 @@ fi
 if [ -d "$CCS_AUTH_DIR" ] && [ -n "$(ls -A "$CCS_AUTH_DIR" 2>/dev/null)" ]; then
   @rsync@ -a "$CCS_AUTH_DIR/" "$AUTH_DIR/"
   echo "✅ Synced from ccs auth dir to local cache" >&2
+fi
+
+# STEP 3: Recover missing files from git-tracked dotfiles backup (macOS only; Linux relies on R2)
+if [ "$(uname)" = "Darwin" ] && [ -d "$DOTFILES_AUTH_DIR" ] && [ -n "$(ls -A "$DOTFILES_AUTH_DIR" 2>/dev/null)" ]; then
+  @rsync@ -a --ignore-existing "$DOTFILES_AUTH_DIR/" "$AUTH_DIR/"
+  echo "✅ Recovered missing auths from dotfiles backup (macOS)" >&2
 fi
 
 # Check if auth directory has files

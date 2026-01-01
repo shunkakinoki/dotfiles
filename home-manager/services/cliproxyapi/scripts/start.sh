@@ -6,6 +6,7 @@ CONFIG_DIR="$HOME/.cli-proxy-api"
 TEMPLATE="$CONFIG_DIR/config.template.yaml"
 CONFIG="$CONFIG_DIR/config.yaml"
 AUTH_DIR="$CONFIG_DIR/objectstore/auths"
+DOTFILES_AUTH_DIR="$HOME/dotfiles/objectstore/auths"
 # Use explicit path since $HOME may not be set correctly in launchd context
 ENV_FILE="${HOME:-/Users/shunkakinoki}/dotfiles/.env"
 
@@ -48,6 +49,12 @@ if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; t
     --no-progress \
     "s3://cliproxyapi/backup/auths/" \
     "$AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 backup/auths/" >&2 || true
+
+  # Recover missing files from git-tracked dotfiles backup (macOS only; Linux Docker uses R2)
+  if [ "$(uname)" = "Darwin" ] && [ -d "$DOTFILES_AUTH_DIR" ] && [ -n "$(ls -A "$DOTFILES_AUTH_DIR" 2>/dev/null)" ]; then
+    @rsync@ -a --ignore-existing "$DOTFILES_AUTH_DIR/" "$AUTH_DIR/"
+    echo "✅ Bootstrapped auth files from dotfiles backup (macOS)" >&2
+  fi
 
   # CRITICAL: Always sync local auth files back to R2 after pulling
   # This ensures any files that exist locally but not in R2 get uploaded,
