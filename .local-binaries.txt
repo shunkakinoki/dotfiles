@@ -1,0 +1,9 @@
+# Local development binaries
+# Add one binary path per line
+# Lines starting with # are comments
+
+~/ghq/github.com/Dicklesworthstone/ultimate_bug_scanner/ubs
+~/ghq/github.com/nwiizo/ccswarm/target/release/ccswarm
+~/ghq/github.com/Dicklesworthstone/coding_agent_session_search/target/release/cass
+~/ghq/github.com/Dicklesworthstone/beads_viewer/bv
+~/ghq/github.com/steveyegge/beads/bd
