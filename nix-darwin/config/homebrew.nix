@@ -42,6 +42,7 @@
       "postgresql@18"
       "protobuf"
       "pulumi"
+      "qwen-code"
       "reth"
       "sheldon"
       "sshpass"

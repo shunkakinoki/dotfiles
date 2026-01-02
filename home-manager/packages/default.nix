@@ -64,7 +64,7 @@ with pkgs;
   navi
   postgresql
   procs
-  qwen-code
+  # qwen-code  # FIXME: npmDepsHash is stale in nixpkgs, uncomment when fixed
   ripgrep
   rustup
   sccache
