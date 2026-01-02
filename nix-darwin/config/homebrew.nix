@@ -84,6 +84,7 @@
       "ollama-app"
       "opencode-desktop"
       "raycast"
+      "repobar"
       "rescuetime"
       "screen-studio"
       "sf-symbols"
