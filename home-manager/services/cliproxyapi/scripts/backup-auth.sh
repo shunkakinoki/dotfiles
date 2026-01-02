@@ -10,6 +10,7 @@ MAIN_DIR="s3://cliproxyapi/auths/"
 AUTH_DIR="$CONFIG_DIR/objectstore/auths"
 CCS_AUTH_DIR="$HOME/.ccs/cliproxy/auth"
 DOTFILES_AUTH_DIR="$HOME/dotfiles/objectstore/auths"
+REQUIRED_FILES=("shunkakinoki@gmail.com-shunkakinoki.json")
 
 # STEP 1: Pull from R2 to local (captures files created by cliproxyapi directly in R2)
 mkdir -p "$AUTH_DIR"
@@ -43,6 +44,22 @@ if [ "$(uname)" = "Darwin" ] && [ -d "$DOTFILES_AUTH_DIR" ] && [ -n "$(ls -A "$D
   @rsync@ -a --ignore-existing "$DOTFILES_AUTH_DIR/" "$AUTH_DIR/"
   echo "✅ Recovered missing auths from dotfiles backup (macOS)" >&2
 fi
+
+# STEP 4: Ensure required auth files exist to avoid bootstrap failures
+for fname in "${REQUIRED_FILES[@]}"; do
+  target="$AUTH_DIR/$fname"
+  if [ ! -f "$target" ]; then
+    # Prefer dotfiles copy if present
+    if [ -f "$DOTFILES_AUTH_DIR/$fname" ]; then
+      @rsync@ -a "$DOTFILES_AUTH_DIR/$fname" "$target"
+      echo "✅ Restored missing $fname from dotfiles backup" >&2
+    else
+      echo "{}" >"$target"
+      chmod 600 "$target"
+      echo "⚠️  Created empty placeholder for $fname (no backup found)" >&2
+    fi
+  fi
+done
 
 # Check if auth directory has files
 if [ -d "$AUTH_DIR" ] && [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
