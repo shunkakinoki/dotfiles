@@ -33,6 +33,7 @@ export OBJECTSTORE_SECRET_KEY="${OBJECTSTORE_SECRET_KEY:-${AWS_SECRET_ACCESS_KEY
 # We stage into a temp dir and atomically swap into AUTH_DIR to avoid partial reads.
 if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; then
   echo "Syncing auth files from R2..." >&2
+  rm -rf "$TMP_AUTH_DIR"
   mkdir -p "$TMP_AUTH_DIR"
 
   # Pull from both active and backup locations to ensure we have all files
@@ -42,7 +43,7 @@ if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; t
     --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
     --no-progress \
     "s3://cliproxyapi/auths/" \
-    "$TMP_AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 auths/" >&2 || true
+    "$TMP_AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 auths/" >&2 || echo "⚠️  Failed to pull from R2 auths/" >&2
 
   AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
     AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
@@ -50,7 +51,7 @@ if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; t
     --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
     --no-progress \
     "s3://cliproxyapi/backup/auths/" \
-    "$TMP_AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 backup/auths/" >&2 || true
+    "$TMP_AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 backup/auths/" >&2 || echo "⚠️  Failed to pull from R2 backup/auths/" >&2
 
   # Recover missing files from git-tracked dotfiles backup (macOS only; Linux Docker uses R2)
   if [ "$(uname)" = "Darwin" ] && [ -d "$DOTFILES_AUTH_DIR" ] && [ -n "$(ls -A "$DOTFILES_AUTH_DIR" 2>/dev/null)" ]; then
@@ -58,7 +59,7 @@ if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; t
     echo "✅ Bootstrapped auth files from dotfiles backup (macOS)" >&2
   fi
 
-  # Pull from CCS auth dir (if present) to pick up locally-created tokens (overwrite with newer)
+  # Pull from CCS auth dir (if present) to pick up locally-created tokens (CCS takes precedence)
   if [ -d "$CCS_AUTH_DIR" ] && [ -n "$(ls -A "$CCS_AUTH_DIR" 2>/dev/null)" ]; then
     @rsync@ -a "$CCS_AUTH_DIR/" "$TMP_AUTH_DIR/"
     echo "✅ Synced auths from CCS directory" >&2
@@ -66,12 +67,26 @@ if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; t
 
   # Atomically replace AUTH_DIR with merged TMP_AUTH_DIR to avoid partial reads,
   # but only if TMP has files; otherwise keep existing cache to avoid wiping auths.
+  # Use two-phase swap to ensure AUTH_DIR always exists (never a window where it's missing).
   if [ -n "$(ls -A "$TMP_AUTH_DIR" 2>/dev/null)" ]; then
-    rm -rf "$AUTH_DIR"
-    mv "$TMP_AUTH_DIR" "$AUTH_DIR"
+    mv "$TMP_AUTH_DIR" "$AUTH_DIR.new"
+    rm -rf "$AUTH_DIR.old" 2>/dev/null || true
+    mv "$AUTH_DIR" "$AUTH_DIR.old" 2>/dev/null || true
+    mv "$AUTH_DIR.new" "$AUTH_DIR"
+    rm -rf "$AUTH_DIR.old"
   else
     echo "⚠️  Temp auth dir empty; preserving existing auth cache" >&2
     rm -rf "$TMP_AUTH_DIR"
+  fi
+
+  # Bootstrap fallback: if AUTH_DIR is still empty after all syncs, copy from dotfiles
+  if [ ! -d "$AUTH_DIR" ] || [ -z "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
+    if [ -d "$DOTFILES_AUTH_DIR" ] && [ -n "$(ls -A "$DOTFILES_AUTH_DIR" 2>/dev/null)" ]; then
+      echo "Bootstrapping auth files from dotfiles backup..." >&2
+      mkdir -p "$AUTH_DIR"
+      @rsync@ -a "$DOTFILES_AUTH_DIR/" "$AUTH_DIR/"
+      echo "✅ Bootstrapped from dotfiles" >&2
+    fi
   fi
 
   # CRITICAL: Always sync local auth files back to R2 after pulling
