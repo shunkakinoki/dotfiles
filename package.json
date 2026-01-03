@@ -26,6 +26,7 @@
     "ccusage": "^17.2.0",
     "cline": "^1.0.8",
     "open-composer": "^0.8.23",
+    "turbo": "^2.7.2",
     "typescript": "^5.9.3"
   },
   "trustedDependencies": [
