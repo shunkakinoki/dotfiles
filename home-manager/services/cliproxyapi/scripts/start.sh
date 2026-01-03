@@ -8,6 +8,7 @@ CONFIG="$CONFIG_DIR/config.yaml"
 AUTH_DIR="$CONFIG_DIR/objectstore/auths"
 DOTFILES_AUTH_DIR="$HOME/dotfiles/objectstore/auths"
 CCS_AUTH_DIR="$HOME/.ccs/cliproxy/auth"
+TMP_AUTH_DIR="$CONFIG_DIR/objectstore/auths.tmp"
 # Use explicit path since $HOME may not be set correctly in launchd context
 ENV_FILE="${HOME:-/Users/shunkakinoki}/dotfiles/.env"
 
@@ -28,11 +29,11 @@ export OBJECTSTORE_BUCKET="${OBJECTSTORE_BUCKET:-${AWS_S3_BUCKET:-}}"
 export OBJECTSTORE_ACCESS_KEY="${OBJECTSTORE_ACCESS_KEY:-${AWS_ACCESS_KEY_ID:-}}"
 export OBJECTSTORE_SECRET_KEY="${OBJECTSTORE_SECRET_KEY:-${AWS_SECRET_ACCESS_KEY:-}}"
 
-# CRITICAL: Pull auth files from R2 before starting cliproxyapi
-# This ensures all auth files (including codex-*) are available when the service starts
+# CRITICAL: Pull auth files from R2 before starting cliproxyapi.
+# We stage into a temp dir and atomically swap into AUTH_DIR to avoid partial reads.
 if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; then
   echo "Syncing auth files from R2..." >&2
-  mkdir -p "$AUTH_DIR"
+  mkdir -p "$TMP_AUTH_DIR"
 
   # Pull from both active and backup locations to ensure we have all files
   AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
@@ -41,7 +42,7 @@ if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; t
     --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
     --no-progress \
     "s3://cliproxyapi/auths/" \
-    "$AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 auths/" >&2 || true
+    "$TMP_AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 auths/" >&2 || true
 
   AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
     AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
@@ -49,19 +50,23 @@ if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; t
     --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
     --no-progress \
     "s3://cliproxyapi/backup/auths/" \
-    "$AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 backup/auths/" >&2 || true
+    "$TMP_AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 backup/auths/" >&2 || true
 
   # Recover missing files from git-tracked dotfiles backup (macOS only; Linux Docker uses R2)
   if [ "$(uname)" = "Darwin" ] && [ -d "$DOTFILES_AUTH_DIR" ] && [ -n "$(ls -A "$DOTFILES_AUTH_DIR" 2>/dev/null)" ]; then
-    @rsync@ -a --ignore-existing "$DOTFILES_AUTH_DIR/" "$AUTH_DIR/"
+    @rsync@ -a --ignore-existing "$DOTFILES_AUTH_DIR/" "$TMP_AUTH_DIR/"
     echo "✅ Bootstrapped auth files from dotfiles backup (macOS)" >&2
   fi
 
-  # Pull from CCS auth dir (if present) to pick up locally-created tokens
+  # Pull from CCS auth dir (if present) to pick up locally-created tokens (overwrite with newer)
   if [ -d "$CCS_AUTH_DIR" ] && [ -n "$(ls -A "$CCS_AUTH_DIR" 2>/dev/null)" ]; then
-    @rsync@ -a "$CCS_AUTH_DIR/" "$AUTH_DIR/"
+    @rsync@ -a "$CCS_AUTH_DIR/" "$TMP_AUTH_DIR/"
     echo "✅ Synced auths from CCS directory" >&2
   fi
+
+  # Atomically replace AUTH_DIR with merged TMP_AUTH_DIR to avoid partial reads
+  rm -rf "$AUTH_DIR"
+  mv "$TMP_AUTH_DIR" "$AUTH_DIR"
 
   # CRITICAL: Always sync local auth files back to R2 after pulling
   # This ensures any files that exist locally but not in R2 get uploaded,
