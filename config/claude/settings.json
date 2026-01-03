@@ -1,5 +1,16 @@
 {
   "cleanupPeriodDays": 99999,
+  "enabledPlugins": {
+    "commit-commands@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "pr-review-toolkit@claude-plugins-official": true,
+    "ralph-wiggum@claude-plugins-official": true,
+    "serena@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true
+  },
   "permissions": {
     "allow": [
       "Bash(bun:*)",
@@ -227,6 +238,5 @@
     "type": "command",
     "command": "$HOME/.claude/statusline-git.sh"
   },
-  "model": "default",
   "defaultMode": "bypassPermissions"
 }
