@@ -9,6 +9,7 @@
     ":gitSignOff",
     ":semanticCommits"
   ],
+  "rangeStrategy": "bump",
   "schedule": [
     "before 3am"
   ],
