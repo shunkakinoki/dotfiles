@@ -64,9 +64,15 @@ if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; t
     echo "✅ Synced auths from CCS directory" >&2
   fi
 
-  # Atomically replace AUTH_DIR with merged TMP_AUTH_DIR to avoid partial reads
-  rm -rf "$AUTH_DIR"
-  mv "$TMP_AUTH_DIR" "$AUTH_DIR"
+  # Atomically replace AUTH_DIR with merged TMP_AUTH_DIR to avoid partial reads,
+  # but only if TMP has files; otherwise keep existing cache to avoid wiping auths.
+  if [ -n "$(ls -A "$TMP_AUTH_DIR" 2>/dev/null)" ]; then
+    rm -rf "$AUTH_DIR"
+    mv "$TMP_AUTH_DIR" "$AUTH_DIR"
+  else
+    echo "⚠️  Temp auth dir empty; preserving existing auth cache" >&2
+    rm -rf "$TMP_AUTH_DIR"
+  fi
 
   # CRITICAL: Always sync local auth files back to R2 after pulling
   # This ensures any files that exist locally but not in R2 get uploaded,

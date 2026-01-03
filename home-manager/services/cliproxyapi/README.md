@@ -46,7 +46,7 @@ R2 Storage (Cloudflare):
 2. Pull from R2 `backup/auths/` → staged temp dir (merge)
 3. Merge CCS auth dir (if present) → staged temp dir (union/overwrite newer)
 4. On macOS, merge `dotfiles/objectstore/auths/` (ignore-existing) → staged temp dir
-5. **Atomic swap:** replace `objectstore/auths/` with the staged dir to avoid partial reads
+5. **Atomic swap (non-empty only):** replace `objectstore/auths/` with the staged dir to avoid partial reads; if the staged dir is empty, keep the existing cache.
 6. If objectstore ends up empty, copy from `dotfiles/objectstore/auths/` (bootstrapping)
 
 cliproxyapi then reads directly from `objectstore/auths/` (no additional sync needed).
