@@ -227,6 +227,5 @@
     "type": "command",
     "command": "$HOME/.claude/statusline-git.sh"
   },
-  "model": "default",
   "defaultMode": "bypassPermissions"
 }
