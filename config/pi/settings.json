@@ -1,0 +1,38 @@
+{
+  "theme": "dark",
+  "defaultProvider": "cli-proxy-api",
+  "defaultModel": "gpt-5.2-codex",
+  "defaultThinkingLevel": "medium",
+  "enabledModels": [
+    "cli-proxy-api/*",
+    "*gpt-5*",
+    "*gemini*",
+    "*claude*",
+    "*glm*",
+    "*kimi*"
+  ],
+  "steeringMode": "one-at-a-time",
+  "followUpMode": "one-at-a-time",
+  "hideThinkingBlock": false,
+  "collapseChangelog": false,
+  "compaction": {
+    "enabled": true,
+    "reserveTokens": 16384,
+    "keepRecentTokens": 20000
+  },
+  "skills": {
+    "enabled": true
+  },
+  "retry": {
+    "enabled": true,
+    "maxRetries": 3,
+    "baseDelayMs": 2000
+  },
+  "terminal": {
+    "showImages": true
+  },
+  "images": {
+    "autoResize": true
+  },
+  "doubleEscapeAction": "tree"
+}

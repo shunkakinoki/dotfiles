@@ -12,6 +12,7 @@
   ./k3s
   ./karabiner
   ./opencode
+  ./pi
   ./serena
   ./starship
 ]
