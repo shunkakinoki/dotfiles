@@ -9,7 +9,12 @@
           "name": "GPT-5.2 Codex [ChatGPT Pro]",
           "reasoning": true,
           "input": ["text", "image"],
-          "cost": { "input": 1.75, "output": 14, "cacheRead": 0.175, "cacheWrite": 0 },
+          "cost": {
+            "input": 1.75,
+            "output": 14,
+            "cacheRead": 0.175,
+            "cacheWrite": 0
+          },
           "contextWindow": 400000,
           "maxTokens": 128000
         },
@@ -18,7 +23,12 @@
           "name": "GPT-5.2 [ChatGPT Pro]",
           "reasoning": true,
           "input": ["text", "image"],
-          "cost": { "input": 1.75, "output": 14, "cacheRead": 0.175, "cacheWrite": 0 },
+          "cost": {
+            "input": 1.75,
+            "output": 14,
+            "cacheRead": 0.175,
+            "cacheWrite": 0
+          },
           "contextWindow": 400000,
           "maxTokens": 128000
         },
@@ -27,7 +37,12 @@
           "name": "GPT-5.1 Codex Max [ChatGPT Pro]",
           "reasoning": true,
           "input": ["text", "image"],
-          "cost": { "input": 1.75, "output": 14, "cacheRead": 0.175, "cacheWrite": 0 },
+          "cost": {
+            "input": 1.75,
+            "output": 14,
+            "cacheRead": 0.175,
+            "cacheWrite": 0
+          },
           "contextWindow": 400000,
           "maxTokens": 128000
         },
@@ -36,7 +51,12 @@
           "name": "GPT-5.1 Codex [ChatGPT Pro]",
           "reasoning": true,
           "input": ["text", "image"],
-          "cost": { "input": 1.75, "output": 14, "cacheRead": 0.175, "cacheWrite": 0 },
+          "cost": {
+            "input": 1.75,
+            "output": 14,
+            "cacheRead": 0.175,
+            "cacheWrite": 0
+          },
           "contextWindow": 400000,
           "maxTokens": 128000
         },
@@ -45,7 +65,12 @@
           "name": "GPT-5.1 [ChatGPT Pro]",
           "reasoning": true,
           "input": ["text", "image"],
-          "cost": { "input": 1.75, "output": 14, "cacheRead": 0.175, "cacheWrite": 0 },
+          "cost": {
+            "input": 1.75,
+            "output": 14,
+            "cacheRead": 0.175,
+            "cacheWrite": 0
+          },
           "contextWindow": 400000,
           "maxTokens": 128000
         },
@@ -63,7 +88,12 @@
           "name": "Claude Opus 4.5",
           "reasoning": true,
           "input": ["text", "image"],
-          "cost": { "input": 15, "output": 75, "cacheRead": 1.5, "cacheWrite": 18.75 },
+          "cost": {
+            "input": 15,
+            "output": 75,
+            "cacheRead": 1.5,
+            "cacheWrite": 18.75
+          },
           "contextWindow": 200000,
           "maxTokens": 32000
         },
@@ -72,7 +102,12 @@
           "name": "Claude Haiku 4.5",
           "reasoning": false,
           "input": ["text", "image"],
-          "cost": { "input": 1, "output": 5, "cacheRead": 0.1, "cacheWrite": 1.25 },
+          "cost": {
+            "input": 1,
+            "output": 5,
+            "cacheRead": 0.1,
+            "cacheWrite": 1.25
+          },
           "contextWindow": 200000,
           "maxTokens": 8192
         },
