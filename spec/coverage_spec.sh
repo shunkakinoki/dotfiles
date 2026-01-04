@@ -88,9 +88,10 @@ config/claude/statusline-git.sh
 home-manager/modules/local-binaries/sync-local-binaries.sh
 home-manager/programs/neovim/run_tests.sh
 home-manager/services/brew-upgrader/upgrade.sh
-home-manager/services/cliproxyapi/scripts/backup-and-recover.sh
-home-manager/services/cliproxyapi/scripts/backup-auth.sh
+home-manager/services/cliproxyapi/scripts/backup.sh
+home-manager/services/cliproxyapi/scripts/hydrate.sh
 home-manager/services/cliproxyapi/scripts/start.sh
+home-manager/services/cliproxyapi/scripts/wrapper.sh
 home-manager/services/code-syncer/sync.sh
 home-manager/services/dotfiles-updater/update.sh
 home-manager/services/neverssl-keepalive/keepalive.sh

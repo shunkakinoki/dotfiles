@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Push auth files from local cache to S3
+# shellcheck source=/dev/null
 set -euo pipefail
 
 AUTH_DIR="${HOME}/.cli-proxy-api/objectstore/auths"
@@ -12,7 +13,12 @@ if [ -f "$ENV_FILE" ]; then
   set +a
 fi
 
-strip_quotes() { local v="$1"; v="${v%\"}"; v="${v#\"}"; printf '%s' "$v"; }
+strip_quotes() {
+  local v="$1"
+  v="${v%\"}"
+  v="${v#\"}"
+  printf '%s' "$v"
+}
 ENDPOINT="$(strip_quotes "${OBJECTSTORE_ENDPOINT:-}")"
 ACCESS_KEY="$(strip_quotes "${OBJECTSTORE_ACCESS_KEY:-}")"
 SECRET_KEY="$(strip_quotes "${OBJECTSTORE_SECRET_KEY:-}")"
@@ -30,16 +36,16 @@ fi
 echo "[$(date)] Backing up auth files..." >&2
 
 AWS_ACCESS_KEY_ID="$ACCESS_KEY" \
-AWS_SECRET_ACCESS_KEY="$SECRET_KEY" \
-@aws@ s3 sync \
+  AWS_SECRET_ACCESS_KEY="$SECRET_KEY" \
+  @aws@ s3 sync \
   --endpoint-url="$ENDPOINT" \
   --no-progress \
   "$AUTH_DIR/" \
   "s3://cliproxyapi/auths/" && echo "✅ Backed up to S3 auths/" >&2
 
 AWS_ACCESS_KEY_ID="$ACCESS_KEY" \
-AWS_SECRET_ACCESS_KEY="$SECRET_KEY" \
-@aws@ s3 sync \
+  AWS_SECRET_ACCESS_KEY="$SECRET_KEY" \
+  @aws@ s3 sync \
   --endpoint-url="$ENDPOINT" \
   --no-progress \
   "$AUTH_DIR/" \

@@ -35,10 +35,19 @@ in
   launchd.agents.cliproxyapi = lib.mkIf pkgs.stdenv.isDarwin {
     enable = true;
     config = {
-      ProgramArguments = [ "${pkgs.bash}/bin/bash" "${startScript}" ];
+      ProgramArguments = [
+        "${pkgs.bash}/bin/bash"
+        "${startScript}"
+      ];
       Environment = {
         HOME = homeDir;
-        PATH = "${lib.makeBinPath [ pkgs.gnused pkgs.coreutils pkgs.awscli2 ]}:/opt/homebrew/bin:/usr/local/bin:/usr/bin";
+        PATH = "${
+          lib.makeBinPath [
+            pkgs.gnused
+            pkgs.coreutils
+            pkgs.awscli2
+          ]
+        }:/opt/homebrew/bin:/usr/local/bin:/usr/bin";
       };
       KeepAlive = true;
       RunAtLoad = true;
@@ -51,10 +60,19 @@ in
   launchd.agents.cliproxyapi-backup = lib.mkIf pkgs.stdenv.isDarwin {
     enable = true;
     config = {
-      ProgramArguments = [ "${pkgs.bash}/bin/bash" "${backupScript}" ];
+      ProgramArguments = [
+        "${pkgs.bash}/bin/bash"
+        "${backupScript}"
+      ];
       Environment = {
         HOME = homeDir;
-        PATH = "${lib.makeBinPath [ pkgs.bash pkgs.coreutils pkgs.awscli2 ]}:/opt/homebrew/bin:/usr/local/bin:/usr/bin";
+        PATH = "${
+          lib.makeBinPath [
+            pkgs.bash
+            pkgs.coreutils
+            pkgs.awscli2
+          ]
+        }:/opt/homebrew/bin:/usr/local/bin:/usr/bin";
       };
       WatchPaths = [
         "${homeDir}/.cli-proxy-api/objectstore/auths"
@@ -70,12 +88,23 @@ in
   systemd.user.services.cliproxyapi = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {
       Description = "CLI Proxy API server";
-      After = [ "network.target" "docker.service" ];
+      After = [
+        "network.target"
+        "docker.service"
+      ];
       Wants = [ "docker.service" ];
     };
     Service = {
       Type = "simple";
-      Environment = "PATH=${lib.makeBinPath [ pkgs.gnused pkgs.bash pkgs.coreutils pkgs.awscli2 pkgs.docker ]}";
+      Environment = "PATH=${
+        lib.makeBinPath [
+          pkgs.gnused
+          pkgs.bash
+          pkgs.coreutils
+          pkgs.awscli2
+          pkgs.docker
+        ]
+      }";
       ExecStart = "${dockerStartScript}";
       Restart = "always";
       RestartSec = 3;
@@ -100,7 +129,13 @@ in
     Service = {
       Type = "oneshot";
       ExecStart = "${pkgs.bash}/bin/bash ${backupScript}";
-      Environment = "PATH=${lib.makeBinPath [ pkgs.bash pkgs.awscli2 pkgs.coreutils ]}";
+      Environment = "PATH=${
+        lib.makeBinPath [
+          pkgs.bash
+          pkgs.awscli2
+          pkgs.coreutils
+        ]
+      }";
     };
   };
 }
