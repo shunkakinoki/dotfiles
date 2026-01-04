@@ -65,9 +65,30 @@ if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; t
     echo "✅ Synced auths from CCS directory" >&2
   fi
 
-  # Atomically replace AUTH_DIR with merged TMP_AUTH_DIR to avoid partial reads,
-  # but only if TMP has files; otherwise keep existing cache to avoid wiping auths.
-  # Use two-phase swap to ensure AUTH_DIR always exists (never a window where it's missing).
+  # Atomically replace AUTH_DIR with merged TMP_AUTH_DIR to avoid partial reads.
+  # If TMP is empty, attempt recovery from CCS/dotfiles/R2 backup; otherwise keep cache.
+  if [ -z "$(ls -A "$TMP_AUTH_DIR" 2>/dev/null)" ]; then
+    echo "⚠️  Temp auth dir empty; attempting recovery from CCS/dotfiles/R2 backup" >&2
+    # CCS -> TMP
+    if [ -d "$CCS_AUTH_DIR" ] && [ -n "$(ls -A "$CCS_AUTH_DIR" 2>/dev/null)" ]; then
+      @rsync@ -a "$CCS_AUTH_DIR/" "$TMP_AUTH_DIR/"
+    fi
+    # dotfiles (macOS) -> TMP
+    if [ "$(uname)" = "Darwin" ] && [ -d "$DOTFILES_AUTH_DIR" ] && [ -n "$(ls -A "$DOTFILES_AUTH_DIR" 2>/dev/null)" ]; then
+      @rsync@ -a --ignore-existing "$DOTFILES_AUTH_DIR/" "$TMP_AUTH_DIR/"
+    fi
+    # R2 backup -> TMP
+    if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; then
+      AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
+        AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
+        @aws@ s3 sync \
+        --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
+        --no-progress \
+        "s3://cliproxyapi/backup/auths/" \
+        "$TMP_AUTH_DIR/" 2>/dev/null || true
+    fi
+  fi
+
   if [ -n "$(ls -A "$TMP_AUTH_DIR" 2>/dev/null)" ]; then
     mv "$TMP_AUTH_DIR" "$AUTH_DIR.new"
     rm -rf "$AUTH_DIR.old" 2>/dev/null || true
@@ -75,7 +96,7 @@ if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; t
     mv "$AUTH_DIR.new" "$AUTH_DIR"
     rm -rf "$AUTH_DIR.old"
   else
-    echo "⚠️  Temp auth dir empty; preserving existing auth cache" >&2
+    echo "⚠️  No auth files recovered; preserving existing auth cache" >&2
     rm -rf "$TMP_AUTH_DIR"
   fi
 

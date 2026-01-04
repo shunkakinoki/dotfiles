@@ -28,6 +28,14 @@ let
   };
 in
 {
+  # Ensure auth cache is hydrated immediately after home-manager switch,
+  # so first CLI invocation after a rebuild doesn't hit missing auth files.
+  home.activation = lib.optionalAttrs (lib ? hm && lib.hm ? dag) {
+    hydrateCliproxyAuths = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      ${pkgs.bash}/bin/bash ${backupAuthScript} || true
+    '';
+  };
+
   # Main cliproxyapi service
   launchd.agents.cliproxyapi = lib.mkIf pkgs.stdenv.isDarwin {
     enable = true;
