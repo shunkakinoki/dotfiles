@@ -22,7 +22,7 @@
     "@nanocollective/nanocoder": "^1.19.2",
     "@pulumi/pulumi": "^3.214.1",
     "@sourcegraph/amp": "^0.0.1767254483-g812f6b",
-    "@typescript/native-preview": "^7.0.0-dev.20260103.1",
+    "@typescript/native-preview": "^7.0.0-dev.20260104.1",
     "@vibe-kit/grok-cli": "^0.0.34",
     "ccusage": "^17.2.1",
     "cline": "^1.0.8",
