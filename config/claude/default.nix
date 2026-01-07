@@ -23,4 +23,8 @@
     source = ./statusline-git.sh;
     executable = true;
   };
+
+  home.file.".claude/plugins/known_marketplaces.json" = {
+    source = ./known_marketplaces.json;
+  };
 }

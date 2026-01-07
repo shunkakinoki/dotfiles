@@ -9,7 +9,8 @@
     "pr-review-toolkit@claude-plugins-official": true,
     "ralph-wiggum@claude-plugins-official": true,
     "serena@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true
+    "typescript-lsp@claude-plugins-official": true,
+    "safety-net@cc-marketplace": true
   },
   "permissions": {
     "allow": [
