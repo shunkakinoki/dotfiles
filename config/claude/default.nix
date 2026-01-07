@@ -24,7 +24,6 @@
     executable = true;
   };
 
-  # Custom plugin marketplaces (Claude Code will merge with built-in ones)
   home.file.".claude/plugins/known_marketplaces.json" = {
     source = ./known_marketplaces.json;
   };
