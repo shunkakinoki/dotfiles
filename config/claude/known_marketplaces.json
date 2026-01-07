@@ -1,0 +1,26 @@
+{
+  "claude-code-plugins": {
+    "source": {
+      "source": "git",
+      "url": "https://github.com/anthropics/claude-code.git"
+    }
+  },
+  "claude-plugins-official": {
+    "source": {
+      "source": "github",
+      "repo": "anthropics/claude-plugins-official"
+    }
+  },
+  "anthropic-agent-skills": {
+    "source": {
+      "source": "github",
+      "repo": "anthropics/skills"
+    }
+  },
+  "cc-marketplace": {
+    "source": {
+      "source": "git",
+      "url": "https://github.com/kenryu42/cc-marketplace.git"
+    }
+  }
+}
