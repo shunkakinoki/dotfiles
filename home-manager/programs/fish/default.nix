@@ -11,6 +11,10 @@
       direnv hook fish | source
     '';
     loginShellInit = ''
+      # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
+      if test (uname) = "Linux"
+          set -gx XDG_RUNTIME_DIR /run/user/(id -u)
+      end
       fish_add_path -p ~/.local/bin
       fish_add_path -p ~/.bun/bin
       fish_add_path -p ~/.nix-profile/bin
