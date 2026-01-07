@@ -18,6 +18,11 @@
     };
 
     initContent = ''
+      # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
+      if [ "$(uname)" = "Linux" ]; then
+          export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+      fi
+
       # Go configuration
       export GOPATH="$HOME/go"
 
