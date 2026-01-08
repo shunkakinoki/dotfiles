@@ -66,7 +66,10 @@
       grco = "_grco_function";
       grcr = "_grcr_function";
       kyber = "_kyber_function";
-      kybers = "_kybers_function";
+      kyberd = "_kyberd_function";
+      kyberm = "_kyberm_function";
+      zdo = "_zdo_function";
+      zmo = "_zmo_function";
       fch = "_fzf_cmd_history --allow-execute";
       fdp = "_fzf_directory_picker --allow-cd --prompt-name Projects ~/";
       ffp = "_fzf_file_picker --allow-open-in-editor --prompt-name Files";
@@ -140,7 +143,10 @@
         "_grcr_function"
         "_hm_load_env_file"
         "_kyber_function"
-        "_kybers_function"
+        "_kyberd_function"
+        "_kyberm_function"
+        "_zdo_function"
+        "_zmo_function"
         "_ssh_add_github"
         "fish_user_key_bindings"
       ]
