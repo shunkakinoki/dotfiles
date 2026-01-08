@@ -32,6 +32,11 @@
     };
 
     bashrcExtra = ''
+      # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
+      if [ "$(uname)" = "Linux" ]; then
+          export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+      fi
+
       # Go configuration
       export GOPATH="$HOME/go"
 
@@ -47,11 +52,6 @@
     '';
 
     profileExtra = ''
-      # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
-      if [ "$(uname)" = "Linux" ]; then
-          export XDG_RUNTIME_DIR="/run/user/$(id -u)"
-      fi
-
       # Nix
       if [ -e ~/.nix-profile/etc/profile.d/nix.sh ]; then
         . ~/.nix-profile/etc/profile.d/nix.sh
