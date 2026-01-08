@@ -33,7 +33,6 @@
 
     bashrcExtra = ''
       # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
-      # Must be in bashrcExtra (not just profileExtra) so it runs for non-login shells too
       if [ "$(uname)" = "Linux" ]; then
           export XDG_RUNTIME_DIR="/run/user/$(id -u)"
       fi
