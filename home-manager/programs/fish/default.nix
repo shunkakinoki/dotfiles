@@ -9,7 +9,6 @@
     enable = true;
     shellInit = ''
       # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
-      # Must be in shellInit (not loginShellInit) so it runs for `fish -c` commands too
       if test (uname) = "Linux"
           set -gx XDG_RUNTIME_DIR /run/user/(id -u)
       end
