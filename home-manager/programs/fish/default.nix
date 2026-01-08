@@ -145,7 +145,6 @@
         "_kyber_function"
         "_kyberd_function"
         "_kyberm_function"
-        "_kybers_function"
         "_zdo_function"
         "_zmo_function"
         "_ssh_add_github"
