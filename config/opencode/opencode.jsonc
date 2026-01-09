@@ -197,8 +197,8 @@
 			},
 			"models": {
 				"glm-4-6": {
-					"id": "@preset/glm-4-6",
-					"name": "Preset GLM-4.6 (via OpenRouter)"
+					"id": "@preset/glm-4-7",
+					"name": "Preset GLM-4.7 (via OpenRouter)"
 				}
 			}
 		},
