@@ -1,8 +1,8 @@
 ##@ Variables
 
-# Include rules from submodule but keep the local help target authoritative.
-RULES_SKIP_HELP := 1
--include rules/Makefile
+# Include dotagents from submodule but keep the local help target authoritative.
+DOTAGENTS_SKIP_HELP := 1
+-include dotagents/Makefile
 
 # Detect architecture and OS
 ARCH := $(shell uname -m)
