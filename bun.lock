@@ -6,8 +6,8 @@
       "name": "dotfiles",
       "dependencies": {
         "@biomejs/biome": "^2.3.11",
-        "@ccusage/codex": "^17.2.1",
-        "@ccusage/mcp": "^17.2.1",
+        "@ccusage/codex": "^18.0.5",
+        "@ccusage/mcp": "^18.0.5",
         "@getgrit/cli": "^0.1.0-alpha.1743007075",
         "@github/copilot": "^0.0.377",
         "@google/jules": "^0.1.42",
@@ -18,7 +18,7 @@
         "@sourcegraph/amp": "^0.0.1767254483-g812f6b",
         "@typescript/native-preview": "^7.0.0-dev.20260108.1",
         "@vibe-kit/grok-cli": "^0.0.34",
-        "ccusage": "^17.2.1",
+        "ccusage": "^18.0.5",
         "cline": "^1.0.9",
         "open-composer": "^0.8.23",
         "turbo": "^2.7.3",
@@ -82,9 +82,9 @@
 
     "@borewit/text-codec": ["@borewit/text-codec@0.2.1", "", {}, "sha512-k7vvKPbf7J2fZ5klGRD9AeKfUvojuZIQ3BT5u7Jfv+puwXkUBUT5PVyMDfJZpy30CBDXGMgw7fguK/lpOMBvgw=="],
 
-    "@ccusage/codex": ["@ccusage/codex@17.2.1", "", { "bin": { "ccusage-codex": "dist/index.js" } }, "sha512-czkux1pMhojrV7vZ4wih9F9OCtZkdSgfWr/AIEvfUt9KgNkpRZpWHG2VK1TSZppXdHnVNJjYLSqGK9kLEA5tCQ=="],
+    "@ccusage/codex": ["@ccusage/codex@18.0.5", "", { "bin": { "ccusage-codex": "dist/index.js" } }, "sha512-QSGPQPQr/jba/NacO+YfS0ZCYCTwB+BfdglionnEU9d3+DBykq0GkjyFf9t6CcSDKs2h4GseOtYMX9h004SIwA=="],
 
-    "@ccusage/mcp": ["@ccusage/mcp@17.2.1", "", { "dependencies": { "@ccusage/codex": "17.2.1", "@hono/mcp": "^0.1.5", "@hono/node-server": "^1.19.7", "@modelcontextprotocol/sdk": "^1.24.3", "ccusage": "17.2.1", "gunshi": "^0.26.3", "hono": "^4.9.2", "nano-spawn": "^1.0.3", "zod": "^4.1.13" }, "bin": { "ccusage-mcp": "dist/index.js" } }, "sha512-r3ABzDJHxbyQ/4wkwn/PQOFkjnvhKxHksjclo94T2i7o8wbM28bLq+TKQgj7p3GJ4CLGUn7MBZHYOBU9QW6nBA=="],
+    "@ccusage/mcp": ["@ccusage/mcp@18.0.5", "", { "dependencies": { "@ccusage/codex": "18.0.5", "@hono/mcp": "^0.1.5", "@hono/node-server": "^1.19.7", "@modelcontextprotocol/sdk": "^1.24.3", "ccusage": "18.0.5", "gunshi": "^0.26.3", "hono": "^4.9.2", "nano-spawn": "^1.0.3", "zod": "^4.1.13" }, "bin": { "ccusage-mcp": "dist/index.js" } }, "sha512-eyOCtcQkYpHCsD4VA8KiY+5yUQD28WE0Q1ou5iLXKm5Ax0Z4oZsL6KBQU1vrJ5natGXEsFOeHrVJY/ADEX1u1w=="],
 
     "@colors/colors": ["@colors/colors@1.5.0", "", {}, "sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ=="],
 
@@ -518,7 +518,7 @@
 
     "camelcase": ["camelcase@6.3.0", "", {}, "sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA=="],
 
-    "ccusage": ["ccusage@17.2.1", "", { "bin": { "ccusage": "dist/index.js" } }, "sha512-++F9rwk7EHsNyuCfs0D2vHyT/G0kaS3GVHhyh4BJ+dVKm0W4a/Mkld9lXGesgQzMnI6uE0V5RgmB/2Jf8zR7yg=="],
+    "ccusage": ["ccusage@18.0.5", "", { "bin": { "ccusage": "dist/index.js" } }, "sha512-bnZrVbGm5h7hIIOH3FZFaDxKgJLLHhWDWIv7/9M6/O373YM6RAwsG9hxZXA1ep+C2ISiNEX6MYVoXgkoSuFf9Q=="],
 
     "cfonts": ["cfonts@3.3.1", "", { "dependencies": { "supports-color": "^8", "window-size": "^1" }, "bin": { "cfonts": "bin/index.js" } }, "sha512-ZGEmN3W9mViWEDjsuPo4nK4h39sfh6YtoneFYp9WLPI/rw8BaSSrfQC6jkrGW3JMvV3ZnExJB/AEqXc/nHYxkw=="],
 
