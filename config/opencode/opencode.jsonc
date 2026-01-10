@@ -196,7 +196,7 @@
 				"apiKey": "{env:OPENROUTER_API_KEY}"
 			},
 			"models": {
-				"glm-4-6": {
+				"glm-4-7": {
 					"id": "@preset/glm-4-7",
 					"name": "Preset GLM-4.7 (via OpenRouter)"
 				}
@@ -288,6 +288,9 @@
 			}
 		}
 	},
+	"plugin": [
+		"cc-safety-net"
+	],
 	"tui": {
 		"scroll_speed": 3
 	}
