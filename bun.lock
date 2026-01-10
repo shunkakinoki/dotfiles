@@ -12,7 +12,7 @@
         "@github/copilot": "^0.0.377",
         "@google/jules": "^0.1.42",
         "@kaitranntt/ccs": "^7.18.0",
-        "@mariozechner/pi-coding-agent": "^0.40.0",
+        "@mariozechner/pi-coding-agent": "^0.42.2",
         "@nanocollective/nanocoder": "^1.20.4",
         "@pulumi/pulumi": "^3.215.0",
         "@sourcegraph/amp": "^0.0.1767254483-g812f6b",
@@ -204,13 +204,13 @@
 
     "@mariozechner/clipboard-win32-x64-msvc": ["@mariozechner/clipboard-win32-x64-msvc@0.3.0", "", { "os": "win32", "cpu": "x64" }, "sha512-dfpHrUpKHl7ad3xVGE1+gIN3cEnjjPZa4I0BIYMuj2OKq07Gf1FKTXMypB41rDFv6XNzcfhYQnY+ZNgIu9FB8A=="],
 
-    "@mariozechner/pi-agent-core": ["@mariozechner/pi-agent-core@0.40.0", "", { "dependencies": { "@mariozechner/pi-ai": "^0.40.0", "@mariozechner/pi-tui": "^0.40.0" } }, "sha512-l43rJlKJVTaKPIIMTKe6AHYLSN/6FU/zZ//uUK6BCp4CNJlcAN2iX4wdXC9t+QoAnpshJFheBP6kXS2ynFhxuw=="],
+    "@mariozechner/pi-agent-core": ["@mariozechner/pi-agent-core@0.42.2", "", { "dependencies": { "@mariozechner/pi-ai": "^0.42.2", "@mariozechner/pi-tui": "^0.42.2" } }, "sha512-j81u9v6FhNgYXTTcgM5FB7f2hLQPc/73oTM0LuRDlybJakDRM3z/BBGkRk5csCfjYN1OeEGMjqj61pR30WqOZg=="],
 
-    "@mariozechner/pi-ai": ["@mariozechner/pi-ai@0.40.0", "", { "dependencies": { "@anthropic-ai/sdk": "0.71.2", "@google/genai": "1.34.0", "@mistralai/mistralai": "1.10.0", "@sinclair/typebox": "^0.34.41", "ajv": "^8.17.1", "ajv-formats": "^3.0.1", "chalk": "^5.6.2", "openai": "6.10.0", "partial-json": "^0.1.7", "zod-to-json-schema": "^3.24.6" }, "bin": { "pi-ai": "dist/cli.js" } }, "sha512-OiE6ir7bVEFVnXY/Jd4uIDMTOTdXpDlMpmJ8qXhlp5SlVzjiZkuPEJS3Hki8j4DnwdkPGMWyOX4kZi8FCrtBUA=="],
+    "@mariozechner/pi-ai": ["@mariozechner/pi-ai@0.42.2", "", { "dependencies": { "@anthropic-ai/sdk": "0.71.2", "@google/genai": "1.34.0", "@mistralai/mistralai": "1.10.0", "@sinclair/typebox": "^0.34.41", "ajv": "^8.17.1", "ajv-formats": "^3.0.1", "chalk": "^5.6.2", "openai": "6.10.0", "partial-json": "^0.1.7", "zod-to-json-schema": "^3.24.6" }, "bin": { "pi-ai": "dist/cli.js" } }, "sha512-uIPfOCGSWm8Uo4kJ0nWKClJlIhBFxDasBbbAzzEgR9NrsyZMHuFYn4Y2XsbNKHmc4KnoS6DZvaO6IP+/+IS9rw=="],
 
-    "@mariozechner/pi-coding-agent": ["@mariozechner/pi-coding-agent@0.40.0", "", { "dependencies": { "@mariozechner/clipboard": "^0.3.0", "@mariozechner/pi-agent-core": "^0.40.0", "@mariozechner/pi-ai": "^0.40.0", "@mariozechner/pi-tui": "^0.40.0", "chalk": "^5.5.0", "cli-highlight": "^2.1.11", "diff": "^8.0.2", "file-type": "^21.1.1", "glob": "^11.0.3", "jiti": "^2.6.1", "marked": "^15.0.12", "minimatch": "^10.1.1", "proper-lockfile": "^4.1.2", "sharp": "^0.34.2" }, "bin": { "pi": "dist/cli.js" } }, "sha512-IUTZxZkNjnzoZmpjPODmAkM9K2Eoq8LBDqYB1LZwr/f3JQXWxQNCIKfEnhMnkBmjijQ/0kba1mS2G45tlMDMPA=="],
+    "@mariozechner/pi-coding-agent": ["@mariozechner/pi-coding-agent@0.42.2", "", { "dependencies": { "@mariozechner/clipboard": "^0.3.0", "@mariozechner/pi-agent-core": "^0.42.2", "@mariozechner/pi-ai": "^0.42.2", "@mariozechner/pi-tui": "^0.42.2", "chalk": "^5.5.0", "cli-highlight": "^2.1.11", "diff": "^8.0.2", "file-type": "^21.1.1", "glob": "^11.0.3", "jiti": "^2.6.1", "marked": "^15.0.12", "minimatch": "^10.1.1", "proper-lockfile": "^4.1.2", "sharp": "^0.34.2" }, "bin": { "pi": "dist/cli.js" } }, "sha512-Rlxo2rWU4RjwBe4jr/CnqqknbDF3fnb3RzCe9u1mMm4nb2T9qLP3QGDo2c5DhWEpcRZ54hrR6HTennlEazfXvA=="],
 
-    "@mariozechner/pi-tui": ["@mariozechner/pi-tui@0.40.0", "", { "dependencies": { "@types/mime-types": "^2.1.4", "chalk": "^5.5.0", "get-east-asian-width": "^1.3.0", "marked": "^15.0.12", "mime-types": "^3.0.1" } }, "sha512-fWp8hxpQq7PB2GxQN3dOCfy40e2kk3y0oPw9gSVsDxCjCeIZ1y9TYGHU8k2yrdz5I5B2TVpkvsjE6Z6Q5FdU1w=="],
+    "@mariozechner/pi-tui": ["@mariozechner/pi-tui@0.42.2", "", { "dependencies": { "@types/mime-types": "^2.1.4", "chalk": "^5.5.0", "get-east-asian-width": "^1.3.0", "marked": "^15.0.12", "mime-types": "^3.0.1" } }, "sha512-im3HwwKvSlh+N1hJpKVoZYW1JrXz0N3eN/PfpWX8DJYYTTG4RDaT0Mbbf0vUbkKSqCfeJQZCN5bfCocTXlU8wA=="],
 
     "@mistralai/mistralai": ["@mistralai/mistralai@1.10.0", "", { "dependencies": { "zod": "^3.20.0", "zod-to-json-schema": "^3.24.1" } }, "sha512-tdIgWs4Le8vpvPiUEWne6tK0qbVc+jMenujnvTqOjogrJUsCSQhus0tHTU1avDDh5//Rq2dFgP9mWRAdIEoBqg=="],
 
