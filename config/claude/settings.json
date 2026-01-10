@@ -15,7 +15,7 @@
     "safety-net@cc-marketplace": true
   },
   "extraKnownMarketplaces": {
-    "acme-tools": {
+    "cc-marketplace": {
       "source": {
         "source": "github",
         "repo": "kenryu42/cc-marketplace"
