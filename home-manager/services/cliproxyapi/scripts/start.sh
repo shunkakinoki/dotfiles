@@ -1,142 +1,32 @@
 #!/usr/bin/env bash
-
+# shellcheck source=/dev/null
 set -euo pipefail
 
-CONFIG_DIR="$HOME/.cli-proxy-api"
+CONFIG_DIR="${HOME}/.cli-proxy-api"
 TEMPLATE="$CONFIG_DIR/config.template.yaml"
 CONFIG="$CONFIG_DIR/config.yaml"
-AUTH_DIR="$CONFIG_DIR/objectstore/auths"
-DOTFILES_AUTH_DIR="$HOME/dotfiles/objectstore/auths"
-CCS_AUTH_DIR="$HOME/.ccs/cliproxy/auth"
-TMP_AUTH_DIR="$CONFIG_DIR/objectstore/auths.tmp"
-# Use explicit path since $HOME may not be set correctly in launchd context
-ENV_FILE="${HOME:-/Users/shunkakinoki}/dotfiles/.env"
+ENV_FILE="${HOME}/dotfiles/.env"
 
-# Source .env file to get API keys
 if [ -f "$ENV_FILE" ]; then
   set -a
-  # shellcheck source=/dev/null
-  source "$ENV_FILE"
+  . "$ENV_FILE"
   set +a
 fi
 
-# Export management password for Management API (CLIProxyAPI requires MANAGEMENT_PASSWORD env var)
-export MANAGEMENT_PASSWORD="${CLIPROXY_MANAGEMENT_PASSWORD:-}"
+strip_quotes() {
+  local v="$1"
+  v="${v%\"}"
+  v="${v#\"}"
+  printf '%s' "$v"
+}
+OBJECTSTORE_ENDPOINT="$(strip_quotes "${OBJECTSTORE_ENDPOINT:-}")"
+OBJECTSTORE_BUCKET="$(strip_quotes "${OBJECTSTORE_BUCKET:-cliproxyapi}")"
+OBJECTSTORE_ACCESS_KEY="$(strip_quotes "${OBJECTSTORE_ACCESS_KEY:-}")"
+OBJECTSTORE_SECRET_KEY="$(strip_quotes "${OBJECTSTORE_SECRET_KEY:-}")"
+MANAGEMENT_PASSWORD="${CLIPROXY_MANAGEMENT_PASSWORD:-}"
+export OBJECTSTORE_ENDPOINT OBJECTSTORE_BUCKET OBJECTSTORE_ACCESS_KEY OBJECTSTORE_SECRET_KEY MANAGEMENT_PASSWORD
 
-# Export S3-compatible object storage env vars (needed for backup/recovery)
-export OBJECTSTORE_ENDPOINT="${OBJECTSTORE_ENDPOINT:-${AWS_S3_ENDPOINT:-}}"
-export OBJECTSTORE_BUCKET="${OBJECTSTORE_BUCKET:-${AWS_S3_BUCKET:-}}"
-export OBJECTSTORE_ACCESS_KEY="${OBJECTSTORE_ACCESS_KEY:-${AWS_ACCESS_KEY_ID:-}}"
-export OBJECTSTORE_SECRET_KEY="${OBJECTSTORE_SECRET_KEY:-${AWS_SECRET_ACCESS_KEY:-}}"
-
-# CRITICAL: Pull auth files from R2 before starting cliproxyapi.
-# We stage into a temp dir and atomically swap into AUTH_DIR to avoid partial reads.
-if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; then
-  echo "Syncing auth files from R2..." >&2
-  rm -rf "$TMP_AUTH_DIR"
-  mkdir -p "$TMP_AUTH_DIR"
-
-  # Pull from both active and backup locations to ensure we have all files
-  AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
-    AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
-    @aws@ s3 sync \
-    --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
-    --no-progress \
-    "s3://cliproxyapi/auths/" \
-    "$TMP_AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 auths/" >&2 || echo "⚠️  Failed to pull from R2 auths/" >&2
-
-  AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
-    AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
-    @aws@ s3 sync \
-    --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
-    --no-progress \
-    "s3://cliproxyapi/backup/auths/" \
-    "$TMP_AUTH_DIR/" 2>/dev/null && echo "✅ Pulled from R2 backup/auths/" >&2 || echo "⚠️  Failed to pull from R2 backup/auths/" >&2
-
-  # Recover missing files from git-tracked dotfiles backup (macOS only; Linux Docker uses R2)
-  if [ "$(uname)" = "Darwin" ] && [ -d "$DOTFILES_AUTH_DIR" ] && [ -n "$(ls -A "$DOTFILES_AUTH_DIR" 2>/dev/null)" ]; then
-    @rsync@ -a --ignore-existing "$DOTFILES_AUTH_DIR/" "$TMP_AUTH_DIR/"
-    echo "✅ Bootstrapped auth files from dotfiles backup (macOS)" >&2
-  fi
-
-  # Pull from CCS auth dir (if present) to pick up locally-created tokens (CCS takes precedence)
-  if [ -d "$CCS_AUTH_DIR" ] && [ -n "$(ls -A "$CCS_AUTH_DIR" 2>/dev/null)" ]; then
-    @rsync@ -a "$CCS_AUTH_DIR/" "$TMP_AUTH_DIR/"
-    echo "✅ Synced auths from CCS directory" >&2
-  fi
-
-  # Atomically replace AUTH_DIR with merged TMP_AUTH_DIR to avoid partial reads.
-  # If TMP is empty, attempt recovery from CCS/dotfiles/R2 backup; otherwise keep cache.
-  if [ -z "$(ls -A "$TMP_AUTH_DIR" 2>/dev/null)" ]; then
-    echo "⚠️  Temp auth dir empty; attempting recovery from CCS/dotfiles/R2 backup" >&2
-    # CCS -> TMP
-    if [ -d "$CCS_AUTH_DIR" ] && [ -n "$(ls -A "$CCS_AUTH_DIR" 2>/dev/null)" ]; then
-      @rsync@ -a "$CCS_AUTH_DIR/" "$TMP_AUTH_DIR/"
-    fi
-    # dotfiles (macOS) -> TMP
-    if [ "$(uname)" = "Darwin" ] && [ -d "$DOTFILES_AUTH_DIR" ] && [ -n "$(ls -A "$DOTFILES_AUTH_DIR" 2>/dev/null)" ]; then
-      @rsync@ -a --ignore-existing "$DOTFILES_AUTH_DIR/" "$TMP_AUTH_DIR/"
-    fi
-    # R2 backup -> TMP
-    if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; then
-      AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
-        AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
-        @aws@ s3 sync \
-        --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
-        --no-progress \
-        "s3://cliproxyapi/backup/auths/" \
-        "$TMP_AUTH_DIR/" 2>/dev/null || true
-    fi
-  fi
-
-  if [ -n "$(ls -A "$TMP_AUTH_DIR" 2>/dev/null)" ]; then
-    mv "$TMP_AUTH_DIR" "$AUTH_DIR.new"
-    rm -rf "$AUTH_DIR.old" 2>/dev/null || true
-    mv "$AUTH_DIR" "$AUTH_DIR.old" 2>/dev/null || true
-    mv "$AUTH_DIR.new" "$AUTH_DIR"
-    rm -rf "$AUTH_DIR.old"
-  else
-    echo "⚠️  No auth files recovered; preserving existing auth cache" >&2
-    rm -rf "$TMP_AUTH_DIR"
-  fi
-
-  # Bootstrap fallback: if AUTH_DIR is still empty after all syncs, copy from dotfiles
-  if [ ! -d "$AUTH_DIR" ] || [ -z "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
-    if [ -d "$DOTFILES_AUTH_DIR" ] && [ -n "$(ls -A "$DOTFILES_AUTH_DIR" 2>/dev/null)" ]; then
-      echo "Bootstrapping auth files from dotfiles backup..." >&2
-      mkdir -p "$AUTH_DIR"
-      @rsync@ -a "$DOTFILES_AUTH_DIR/" "$AUTH_DIR/"
-      echo "✅ Bootstrapped from dotfiles" >&2
-    fi
-  fi
-
-  # CRITICAL: Always sync local auth files back to R2 after pulling
-  # This ensures any files that exist locally but not in R2 get uploaded,
-  # preventing "key does not exist" errors when cliproxyapi reads from object storage
-  if [ -d "$AUTH_DIR" ] && [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
-    echo "Syncing local auth files to R2..." >&2
-    AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
-      AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
-      @aws@ s3 sync \
-      --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
-      --no-progress \
-      "$AUTH_DIR/" \
-      "s3://cliproxyapi/auths/" 2>&1 && echo "✅ Auth files synced to R2 auths/" >&2 || echo "⚠️  Failed to sync auth files to R2" >&2
-
-    # Also sync to backup location for redundancy
-    AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
-      AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
-      @aws@ s3 sync \
-      --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
-      --no-progress \
-      "$AUTH_DIR/" \
-      "s3://cliproxyapi/backup/auths/" 2>&1 && echo "✅ Auth files synced to R2 backup/" >&2 || true
-  fi
-else
-  echo "⚠️  Skipping auth sync: OBJECTSTORE credentials not set" >&2
-fi
-
-# Generate config from template with secrets injected
+# Generate config from template
 if [ -f "$TEMPLATE" ]; then
   @sed@ \
     -e "s|__OPENROUTER_API_KEY__|${OPENROUTER_API_KEY:-}|g" \
@@ -145,49 +35,20 @@ if [ -f "$TEMPLATE" ]; then
     -e "s|__AMP_UPSTREAM_API_KEY__|${AMP_UPSTREAM_API_KEY:-}|g" \
     "$TEMPLATE" >"$CONFIG"
 
-  # Linux: uncomment and enable api-keys for client authentication (only if key is set)
-  # macOS: leave api-keys commented for open access
   if [ "$(uname)" = "Linux" ] && [ -n "${CLIPROXY_API_KEY:-}" ]; then
     @sed@ -i \
       -e "s|^# api-keys:|api-keys:|" \
       -e "s|^#   - \"__CLIPROXY_API_KEY__\"|  - \"${CLIPROXY_API_KEY}\"|" \
       "$CONFIG"
   fi
-  # Also copy to objectstore config location (cliproxyapi uses this for persistence)
-  mkdir -p "$CONFIG_DIR/objectstore/config"
-  cp "$CONFIG" "$CONFIG_DIR/objectstore/config/config.yaml"
-
-  # Upload config to S3 to ensure backup is always correct
-  # This prevents corrupted configs from persisting across restarts
-  if [ -n "${OBJECTSTORE_ENDPOINT:-}" ] && [ -n "${OBJECTSTORE_ACCESS_KEY:-}" ]; then
-    echo "Uploading config to S3 backup..." >&2
-    if AWS_ACCESS_KEY_ID="${OBJECTSTORE_ACCESS_KEY}" \
-      AWS_SECRET_ACCESS_KEY="${OBJECTSTORE_SECRET_KEY}" \
-      @aws@ s3 cp \
-      --endpoint-url="${OBJECTSTORE_ENDPOINT}" \
-      --no-progress \
-      "$CONFIG" \
-      "s3://cliproxyapi/config/config.yaml" 2>&1; then
-      echo "✅ Config backup uploaded" >&2
-    else
-      echo "⚠️  Config backup failed (continuing anyway)" >&2
-    fi
-  else
-    echo "⚠️  S3 config backup skipped: missing credentials" >&2
-  fi
 fi
 
-# Change to config dir so logs are created there
 cd "$CONFIG_DIR"
 
-# On Linux, prefer Docker for easy upgrades
+# Linux: Docker
 if [ "$(uname)" = "Linux" ] && command -v docker >/dev/null 2>&1; then
-  # Stop any existing container
   docker rm -f cliproxyapi 2>/dev/null || true
-
-  # Create logs directory if it doesn't exist
   mkdir -p "$CONFIG_DIR/logs"
-
   exec docker run --rm \
     --name cliproxyapi \
     --network host \
@@ -199,14 +60,12 @@ if [ "$(uname)" = "Linux" ] && command -v docker >/dev/null 2>&1; then
     eceasy/cli-proxy-api:latest
 fi
 
-# macOS: use Homebrew binary
+# macOS: Homebrew binary
 if [ -x /opt/homebrew/bin/cliproxyapi ]; then
   exec /opt/homebrew/bin/cliproxyapi -config "$CONFIG" "$@"
 elif [ -x /usr/local/bin/cliproxyapi ]; then
   exec /usr/local/bin/cliproxyapi -config "$CONFIG" "$@"
 else
-  echo 'cliproxyapi not found' >&2
-  echo 'Linux: Docker should be available' >&2
-  echo 'macOS: brew install cliproxyapi' >&2
+  echo "cliproxyapi not found" >&2
   exit 1
 fi

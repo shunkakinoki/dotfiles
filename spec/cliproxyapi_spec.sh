@@ -154,7 +154,7 @@ The status should be success
 End
 
 It 'script has Linux-specific api-keys uncommenting logic'
-When run bash -c "grep -A 6 'Linux: uncomment and enable api-keys' '$SCRIPT'"
+When run bash -c "grep -A 5 'uname.*Linux.*CLIPROXY_API_KEY' '$SCRIPT'"
 # shellcheck disable=SC2016
 The output should include 'if [ "$(uname)" = "Linux" ] && [ -n "${CLIPROXY_API_KEY:-}" ]'
 The output should include 's|^# api-keys:|api-keys:|'
@@ -209,9 +209,9 @@ When run bash -c "grep 'cliproxyapi not found' '$SCRIPT'"
 The output should include 'cliproxyapi not found'
 End
 
-It 'suggests installation command in error message'
-When run bash -c "grep 'brew install cliproxyapi' '$SCRIPT'"
-The output should include 'brew install cliproxyapi'
+It 'exits with error when binary not found'
+When run bash -c "grep 'exit 1' '$SCRIPT'"
+The output should include 'exit 1'
 End
 End
 
