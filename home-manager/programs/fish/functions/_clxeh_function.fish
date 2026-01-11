@@ -4,7 +4,7 @@ function _clxeh_function --description "Run Claude Code headlessly with a prompt
 
   read -P "Prompt: " prompt
   if test -z "$prompt"
-    echo "No prompt provided, aborting."
+    echo "No prompt provided, aborting." >&2
     return 1
   end
 

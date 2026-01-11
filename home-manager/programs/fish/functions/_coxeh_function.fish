@@ -4,7 +4,7 @@ function _coxeh_function --description "Run Codex headlessly with a prompted inp
 
   read -P "Prompt: " prompt
   if test -z "$prompt"
-    echo "No prompt provided, aborting."
+    echo "No prompt provided, aborting." >&2
     return 1
   end
 

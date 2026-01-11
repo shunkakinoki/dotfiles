@@ -4,7 +4,7 @@ function _coxelh_function --description "Run Codex headlessly with local gpt-oss
 
   read -P "Prompt: " prompt
   if test -z "$prompt"
-    echo "No prompt provided, aborting."
+    echo "No prompt provided, aborting." >&2
     return 1
   end
 
