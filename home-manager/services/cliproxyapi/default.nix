@@ -1,10 +1,13 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
-  homeDir = config.home.homeDirectory or (
-    if pkgs.stdenv.isDarwin
-    then builtins.getEnv "HOME"
-    else "/home/${config.home.username}"
-  );
+  homeDir =
+    config.home.homeDirectory
+      or (if pkgs.stdenv.isDarwin then builtins.getEnv "HOME" else "/home/${config.home.username}");
 
   hydrateScript = pkgs.replaceVars ./scripts/hydrate.sh {
     aws = "${pkgs.awscli2}/bin/aws";
