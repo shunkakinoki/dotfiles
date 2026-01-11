@@ -61,9 +61,9 @@ in
         apiKeyFile = "${clawdbotDir}/anthropic-key";
       };
 
-      # Telegram provider (reads from ~/.config/clawdbot/telegram-token)
+      # Telegram provider - Linux only (reads from ~/.config/clawdbot/telegram-token)
       providers.telegram = {
-        enable = true;
+        enable = pkgs.stdenv.isLinux;
         botTokenFile = "${clawdbotDir}/telegram-token";
         allowFrom = [ 983653361 ];
         groups = {
