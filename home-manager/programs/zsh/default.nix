@@ -8,7 +8,7 @@
 {
   programs.zsh = {
     enable = true;
-    dotDir = ".config/zsh"; # XDG-compliant (relative to $HOME)
+    dotDir = "${config.xdg.configHome}/zsh";
     enableCompletion = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;

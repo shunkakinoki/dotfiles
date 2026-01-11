@@ -31,7 +31,7 @@ let
   tmux = import ./tmux;
   zig = import ./zig;
   zoxide = import ./zoxide;
-  zsh = import ./zsh { inherit config lib pkgs; };
+  zsh = import ./zsh;
 in
 [
   atuin

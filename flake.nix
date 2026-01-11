@@ -196,7 +196,6 @@
           treefmt = {
             projectRootFile = "flake.nix";
             programs = {
-              stylua.enable = true;
               taplo.enable = true;
               yamlfmt.enable = true;
             };
