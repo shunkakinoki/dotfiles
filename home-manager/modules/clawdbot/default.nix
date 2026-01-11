@@ -36,7 +36,7 @@ in
       poltergeist.enable = true; # File watcher with auto-rebuild
       sag.enable = true; # ElevenLabs TTS
       camsnap.enable = pkgs.stdenv.isDarwin; # RTSP/ONVIF camera snapshots (macOS only)
-      gogcli.enable = true; # Google CLI (Gmail, Calendar, Drive)
+      gogcli.enable = pkgs.stdenv.isDarwin; # Google CLI (Gmail, Calendar, Drive) (macOS only)
       bird.enable = pkgs.stdenv.isDarwin; # X/Twitter CLI (macOS only)
       sonoscli.enable = true; # Sonos speaker control
       imsg.enable = pkgs.stdenv.isDarwin; # iMessage/SMS CLI (macOS only)
