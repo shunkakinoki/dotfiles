@@ -141,8 +141,8 @@ fi
 echo "Running installation commands..."
 if [ -n "$NIX_EFFECTIVE_BIN_PATH" ] && [ -d "$NIX_EFFECTIVE_BIN_PATH" ]; then
   echo "Prepending $NIX_EFFECTIVE_BIN_PATH to PATH for 'make install' command."
-  echo "Ensuring USER=$USER is passed to make install."
-  env PATH="$NIX_EFFECTIVE_BIN_PATH:$PATH" USER="$USER" make install
+  echo "Ensuring USER=$USER and CI=$CI are passed to make install."
+  env PATH="$NIX_EFFECTIVE_BIN_PATH:$PATH" USER="$USER" CI="$CI" make install
 else
   echo "Warning: NIX_EFFECTIVE_BIN_PATH ('$NIX_EFFECTIVE_BIN_PATH') is not set or not a directory."
   echo "Running 'make install' with potentially incomplete PATH. Current PATH: $PATH"
