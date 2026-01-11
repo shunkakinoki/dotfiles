@@ -13,6 +13,7 @@ let
 
   startScript = pkgs.replaceVars ./scripts/start.sh {
     sed = "${pkgs.gnused}/bin/sed";
+    aws = "${pkgs.awscli2}/bin/aws";
   };
 
   dockerStartScript = pkgs.writeShellScript "cliproxyapi-docker-start" ''
