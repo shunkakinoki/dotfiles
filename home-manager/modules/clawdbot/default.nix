@@ -59,10 +59,14 @@ lib.mkIf (!env.isCI) {
       systemd.enable = pkgs.stdenv.isLinux;
 
       # Browser configuration (headless on Linux, GUI on macOS)
+      # Gateway binds to LAN on Linux for k8s ingress access
       config = {
         browser = {
           enabled = true;
           headless = pkgs.stdenv.isLinux;
+        };
+        gateway = lib.mkIf pkgs.stdenv.isLinux {
+          bind = "lan";
         };
       };
 
