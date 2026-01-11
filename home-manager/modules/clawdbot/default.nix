@@ -28,9 +28,9 @@ in
   );
 
   programs.clawdbot = {
-    # Enable ALL first-party plugins (some are macOS-only)
+    # First-party plugins (all macOS-only)
     firstParty = {
-      summarize.enable = true; # Link -> clean text -> summary
+      summarize.enable = pkgs.stdenv.isDarwin; # Link -> clean text -> summary (macOS only)
       peekaboo.enable = pkgs.stdenv.isDarwin; # macOS screenshots with AI vision (macOS only)
       oracle.enable = pkgs.stdenv.isDarwin; # Bundle prompts/files for AI queries (macOS only)
       poltergeist.enable = pkgs.stdenv.isDarwin; # File watcher with auto-rebuild (macOS only)
