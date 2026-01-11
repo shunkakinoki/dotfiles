@@ -78,6 +78,7 @@ jobs:
           build-args: |
             COMMIT_SHA=${{ github.sha }}
             GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+            GITHUB_PR=${{ github.event.pull_request.number }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Export digest
