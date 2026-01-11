@@ -12,7 +12,7 @@ let
   misc = import ./misc;
   modules = import ./modules;
   programs = import ./programs {
-    inherit lib pkgs;
+    inherit config lib pkgs;
     sources = { };
   };
   services = import ./services {
@@ -35,8 +35,6 @@ in
   home.homeDirectory = lib.mkIf pkgs.stdenv.isLinux "/home/${username}";
   home.packages = packages;
   home.stateVersion = "24.11";
-
-  modules.yek.enable = true;
 
   accounts.email.accounts = {
     Gmail = {

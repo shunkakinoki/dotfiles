@@ -1,15 +1,10 @@
 {
   pkgs,
-  lib,
   config,
   ...
 }:
 
-with lib;
-
 let
-  cfg = config.modules.yek;
-
   # Determine the target platform string
   target =
     if pkgs.stdenv.isDarwin then
@@ -71,27 +66,15 @@ let
   '';
 in
 {
-  options.modules.yek = {
-    enable = mkEnableOption "yek - serialize text files for LLM consumption";
+  home.packages = [
+    yekWrapper
+    installScript
+  ];
 
-    package = mkOption {
-      type = types.package;
-      default = yekWrapper;
-      description = "The yek wrapper package";
-    };
-  };
-
-  config = mkIf cfg.enable {
-    home.packages = [
-      cfg.package
-      installScript
-    ];
-
-    # Install yek on activation
-    home.activation.installYek = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-      if [ ! -f "$HOME/.local/bin/yek" ]; then
-        $DRY_RUN_CMD ${installScript}/bin/install-yek || echo "⚠️ Failed to install yek. You can install it later by running: install-yek"
-      fi
-    '';
-  };
+  # Install yek on activation
+  home.activation.installYek = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    if [ ! -f "$HOME/.local/bin/yek" ]; then
+      $DRY_RUN_CMD ${installScript}/bin/install-yek || echo "⚠️ Failed to install yek. You can install it later by running: install-yek"
+    fi
+  '';
 }
