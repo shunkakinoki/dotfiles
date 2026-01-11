@@ -11,7 +11,7 @@ chmod 700 "$CLAWDBOT_DIR"
 
 # Extract Telegram token from .env
 if [[ -f $DOTFILES_ENV ]]; then
-  @grep@ -E "^CLAWDBOT_TELEGRAM_TOKEN=" "$DOTFILES_ENV" 2>/dev/null | @cut@ -d= -f2- >"$CLAWDBOT_DIR/telegram-token" || true
+  @grep@ -E "^CLAWDBOT_TELEGRAM_TOKEN=" "$DOTFILES_ENV" 2>/dev/null | @cut@ -d= -f2- | @tr@ -d '"' >"$CLAWDBOT_DIR/telegram-token" || true
 fi
 
 # Read Claude OAuth access_token from cliproxyapi's synced auth (primary source)
@@ -25,7 +25,7 @@ fi
 
 # Fallback: if no cliproxyapi auth, try .env
 if [[ ! -s "$CLAWDBOT_DIR/anthropic-key" ]] && [[ -f $DOTFILES_ENV ]]; then
-  @grep@ -E "^CLAWDBOT_ANTHROPIC_KEY=" "$DOTFILES_ENV" 2>/dev/null | @cut@ -d= -f2- >"$CLAWDBOT_DIR/anthropic-key" || true
+  @grep@ -E "^CLAWDBOT_ANTHROPIC_KEY=" "$DOTFILES_ENV" 2>/dev/null | @cut@ -d= -f2- | @tr@ -d '"' >"$CLAWDBOT_DIR/anthropic-key" || true
 fi
 
 # Set secure permissions

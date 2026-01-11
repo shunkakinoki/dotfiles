@@ -16,6 +16,7 @@ let
     find = "${pkgs.findutils}/bin/find";
     head = "${pkgs.coreutils}/bin/head";
     jq = "${pkgs.jq}/bin/jq";
+    tr = "${pkgs.coreutils}/bin/tr";
   };
 in
 {
