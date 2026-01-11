@@ -64,12 +64,15 @@ lib.mkIf (!env.isCI) {
 
       # Browser configuration (headless on Linux, GUI on macOS)
       # Gateway binds to LAN on Linux for k8s ingress access
-      config = {
+      # NOTE: uses configOverrides because upstream nix-clawdbot doesn't merge `config` into output
+      configOverrides = {
         browser = {
           enabled = true;
           headless = pkgs.stdenv.isLinux;
+          executablePath = "${pkgs.chromium}/bin/chromium";
         };
-        gateway = lib.mkIf pkgs.stdenv.isLinux {
+      } // lib.optionalAttrs pkgs.stdenv.isLinux {
+        gateway = {
           bind = "lan";
         };
       };
