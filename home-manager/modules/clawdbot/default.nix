@@ -22,6 +22,10 @@ let
 in
 # Disable clawdbot entirely in CI builds
 lib.mkIf (!env.isCI) {
+  # Force overwrite clawdbot.json to prevent home-manager switch failures
+  # when the file already exists (e.g., modified by clawdbot at runtime)
+  home.file.".clawdbot/clawdbot.json".force = true;
+
   # Extract secrets from cliproxyapi auth and .env on home-manager activation
   home.activation.clawdbotSecrets = lib.mkIf (lib ? hm && lib.hm ? dag) (
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
