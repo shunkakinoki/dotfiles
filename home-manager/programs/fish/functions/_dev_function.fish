@@ -17,7 +17,7 @@ function _dev_function --description "Enter Nix development shell"
         set target_dir "$HOME/dotfiles"
     end
 
-    # Enter the devshell
+    # Enter the devshell (cd first since nix develop needs to run from the directory)
     echo "Entering devshell in $target_dir"
-    DEVENV_ROOT=$target_dir nix develop $target_dir $argv
+    cd $target_dir && DEVENV_ROOT=$target_dir nix develop $argv
 end
