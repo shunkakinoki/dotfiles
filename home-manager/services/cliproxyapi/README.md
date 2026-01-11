@@ -15,8 +15,8 @@ This directory contains the Nix-based configuration for the cliproxyapi service 
 |--------|---------|
 | `hydrate.sh` | Pull S3 → local → CCS (runs at activation) |
 | `backup.sh` | Push local → S3 → CCS (triggered by WatchPaths) |
-| `start.sh` | Load .env, generate config, start binary |
-| `wrapper.sh` | Load .env, exec binary (for CLI usage) |
+| `start.sh` | Load .env, hydrate auth cache if needed, generate config, start binary |
+| `wrapper.sh` | Load .env, sync auth cache, exec binary (for CLI usage) |
 
 ### Directory Structure
 
@@ -56,6 +56,18 @@ S3 Storage:
 │                    (CCS compatibility)                  │
 └─────────────────────────────────────────────────────────┘
 ```
+
+### Pre-start guard (service)
+
+`start.sh` hydrates the local auth cache from S3 when it is empty, then re-syncs
+back to S3. This avoids the upstream race where a fresh start can delete remote
+auth objects if the local cache is empty.
+
+### CLI guard (manual usage)
+
+`wrapper.sh` mirrors the service guard by syncing the local auth cache before
+invoking the CLI, so `cliproxyapi --claude-login` can bootstrap without a missing
+key error when S3 already has auths.
 
 ### Hydrate (on activation/switch)
 
@@ -126,10 +138,9 @@ cliproxyapi --claude-login
 
 ## Dependencies
 
-This configuration depends on an upstream fix for a race condition in CLIProxyAPI:
+This configuration includes a local guard to mitigate the upstream race condition
+in CLIProxyAPI until the fix in:
 https://github.com/router-for-me/CLIProxyAPI/pull/859
-
-Without this fix, auth files may be deleted from S3 on service restart.
 
 ## References
 

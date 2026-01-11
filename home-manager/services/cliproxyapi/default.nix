@@ -20,7 +20,11 @@ let
     exec /usr/bin/sg docker -c "${pkgs.bash}/bin/bash ${startScript}"
   '';
 
-  cliWrapper = pkgs.writeShellScriptBin "cliproxyapi" (builtins.readFile ./scripts/wrapper.sh);
+  wrapperScript = pkgs.replaceVars ./scripts/wrapper.sh {
+    aws = "${pkgs.awscli2}/bin/aws";
+  };
+
+  cliWrapper = pkgs.writeShellScriptBin "cliproxyapi" (builtins.readFile wrapperScript);
 in
 {
   # Hydrate auth cache after home-manager switch
