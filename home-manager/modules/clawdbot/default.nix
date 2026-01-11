@@ -32,13 +32,13 @@ in
     firstParty = {
       summarize.enable = true; # Link -> clean text -> summary
       peekaboo.enable = pkgs.stdenv.isDarwin; # macOS screenshots with AI vision (macOS only)
-      oracle.enable = true; # Bundle prompts/files for AI queries
-      poltergeist.enable = true; # File watcher with auto-rebuild
-      sag.enable = true; # ElevenLabs TTS
+      oracle.enable = pkgs.stdenv.isDarwin; # Bundle prompts/files for AI queries (macOS only)
+      poltergeist.enable = pkgs.stdenv.isDarwin; # File watcher with auto-rebuild (macOS only)
+      sag.enable = pkgs.stdenv.isDarwin; # ElevenLabs TTS (macOS only)
       camsnap.enable = pkgs.stdenv.isDarwin; # RTSP/ONVIF camera snapshots (macOS only)
       gogcli.enable = pkgs.stdenv.isDarwin; # Google CLI (Gmail, Calendar, Drive) (macOS only)
       bird.enable = pkgs.stdenv.isDarwin; # X/Twitter CLI (macOS only)
-      sonoscli.enable = true; # Sonos speaker control
+      sonoscli.enable = pkgs.stdenv.isDarwin; # Sonos speaker control (macOS only)
       imsg.enable = pkgs.stdenv.isDarwin; # iMessage/SMS CLI (macOS only)
     };
 
