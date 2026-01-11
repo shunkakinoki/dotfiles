@@ -35,7 +35,7 @@ in
       oracle.enable = true; # Bundle prompts/files for AI queries
       poltergeist.enable = true; # File watcher with auto-rebuild
       sag.enable = true; # ElevenLabs TTS
-      camsnap.enable = true; # RTSP/ONVIF camera snapshots
+      camsnap.enable = pkgs.stdenv.isDarwin; # RTSP/ONVIF camera snapshots (macOS only)
       gogcli.enable = true; # Google CLI (Gmail, Calendar, Drive)
       bird.enable = pkgs.stdenv.isDarwin; # X/Twitter CLI (macOS only)
       sonoscli.enable = true; # Sonos speaker control
