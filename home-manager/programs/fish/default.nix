@@ -60,8 +60,13 @@
 
       # Function-based abbreviations
       clxe = "_clxe_function";
+      clxeh = "_clxeh_function";
       coxe = "_coxe_function";
+      coxeh = "_coxeh_function";
       coxel = "_coxel_function";
+      coxelh = "_coxelh_function";
+      ocxe = "_ocxe_function";
+      ocxeh = "_ocxeh_function";
       gco = "_gco_function";
       grco = "_grco_function";
       grcr = "_grcr_function";
@@ -127,8 +132,13 @@
       })
       [
         "_clxe_function"
+        "_clxeh_function"
         "_coxe_function"
+        "_coxeh_function"
         "_coxel_function"
+        "_coxelh_function"
+        "_ocxe_function"
+        "_ocxeh_function"
         "_fish_shortcuts"
         "_fzf_cmd_history"
         "_fzf_directory_picker"
