@@ -37,7 +37,7 @@ in
       sag.enable = true; # ElevenLabs TTS
       camsnap.enable = true; # RTSP/ONVIF camera snapshots
       gogcli.enable = true; # Google CLI (Gmail, Calendar, Drive)
-      bird.enable = true; # X/Twitter CLI
+      bird.enable = pkgs.stdenv.isDarwin; # X/Twitter CLI (macOS only)
       sonoscli.enable = true; # Sonos speaker control
       imsg.enable = pkgs.stdenv.isDarwin; # iMessage/SMS CLI (macOS only)
     };
