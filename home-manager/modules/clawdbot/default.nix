@@ -58,6 +58,14 @@ lib.mkIf (!env.isCI) {
       launchd.enable = pkgs.stdenv.isDarwin;
       systemd.enable = pkgs.stdenv.isLinux;
 
+      # Browser configuration - Linux only (headless Chromium)
+      config = lib.mkIf pkgs.stdenv.isLinux {
+        browser = {
+          enabled = true;
+          headless = true;
+        };
+      };
+
       # Anthropic API provider (reads from ~/.config/clawdbot/anthropic-key)
       providers.anthropic = {
         apiKeyFile = "${clawdbotDir}/anthropic-key";
