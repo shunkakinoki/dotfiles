@@ -76,6 +76,14 @@ End
 It 'has spec file for home-manager/modules/clawdbot/extract-secrets.sh'
 The path "spec/clawdbot_spec.sh" should be exist
 End
+
+It 'has spec file for home-manager/modules/yek/install-yek.sh'
+The path "spec/yek_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/modules/yek/yek.sh'
+The path "spec/yek_spec.sh" should be exist
+End
 End
 
 Describe 'no shell scripts are missing from coverage list'
@@ -91,6 +99,8 @@ config/claude/security.sh
 config/claude/statusline-git.sh
 home-manager/modules/clawdbot/extract-secrets.sh
 home-manager/modules/local-binaries/sync-local-binaries.sh
+home-manager/modules/yek/install-yek.sh
+home-manager/modules/yek/yek.sh
 home-manager/programs/neovim/run_tests.sh
 home-manager/services/brew-upgrader/upgrade.sh
 home-manager/services/cliproxyapi/scripts/backup-and-recover.sh

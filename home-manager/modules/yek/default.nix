@@ -12,57 +12,32 @@ let
     else
       (if pkgs.stdenv.isAarch64 then "aarch64-unknown-linux-gnu" else "x86_64-unknown-linux-gnu");
 
-  # Install script that downloads the latest release
-  installScript = pkgs.writeShellScriptBin "install-yek" ''
-    set -euo pipefail
+  # Install script with tool paths substituted
+  installYekScript = pkgs.replaceVars ./install-yek.sh {
+    target = target;
+    curl = "${pkgs.curl}/bin/curl";
+    grep = "${pkgs.gnugrep}/bin/grep";
+    cut = "${pkgs.coreutils}/bin/cut";
+    mktemp = "${pkgs.coreutils}/bin/mktemp";
+    tar = "${pkgs.gnutar}/bin/tar";
+    install = "${pkgs.coreutils}/bin/install";
+  };
 
-    REPO_OWNER="bodo-run"
-    REPO_NAME="yek"
-    TARGET="${target}"
-    ASSET_NAME="yek-''${TARGET}.tar.gz"
-    INSTALL_DIR="$HOME/.local/bin"
-
-    mkdir -p "$INSTALL_DIR"
-
-    echo "Fetching latest release info from GitHub..."
-    LATEST_URL=$(
-        ${pkgs.curl}/bin/curl -s "https://api.github.com/repos/''${REPO_OWNER}/''${REPO_NAME}/releases/latest" |
-            ${pkgs.gnugrep}/bin/grep "browser_download_url" |
-            ${pkgs.gnugrep}/bin/grep "''${ASSET_NAME}" |
-            ${pkgs.coreutils}/bin/cut -d '"' -f 4
-    )
-
-    if [ -z "''${LATEST_URL}" ]; then
-        echo "Failed to find a release asset named ''${ASSET_NAME} in the latest release."
-        exit 1
-    fi
-
-    echo "Downloading from: ''${LATEST_URL}"
-    cd "$(${pkgs.coreutils}/bin/mktemp -d)"
-    ${pkgs.curl}/bin/curl -L -o "''${ASSET_NAME}" "''${LATEST_URL}"
-
-    echo "Extracting archive..."
-    PATH="${pkgs.gzip}/bin:$PATH" ${pkgs.gnutar}/bin/tar xzf "''${ASSET_NAME}"
-
-    echo "Installing binary to ''${INSTALL_DIR}..."
-    ${pkgs.coreutils}/bin/install -Dm755 yek-''${TARGET}/yek "''${INSTALL_DIR}/yek"
-
-    echo "✅ yek installed successfully to ''${INSTALL_DIR}/yek"
-    echo "Version: $(''${INSTALL_DIR}/yek --version)"
+  # Create install-yek as a standalone script
+  installScript = pkgs.writeScriptBin "install-yek" ''
+    #!${pkgs.bash}/bin/bash
+    exec ${pkgs.bash}/bin/bash ${installYekScript} "$@"
   '';
 
-  yekWrapper = pkgs.writeShellScriptBin "yek" ''
-    INSTALL_DIR="$HOME/.local/bin"
-    YEK_BIN="''${INSTALL_DIR}/yek"
+  # Wrapper script with install-yek path substituted
+  yekWrapperScript = pkgs.replaceVars ./yek.sh {
+    install_yek = "${installScript}/bin/install-yek";
+  };
 
-    # Install yek if not present
-    if [ ! -f "''${YEK_BIN}" ]; then
-      echo "yek not found. Installing latest version..."
-      ${installScript}/bin/install-yek
-    fi
-
-    # Execute yek with all arguments
-    exec "''${YEK_BIN}" "$@"
+  # Create yek wrapper as a standalone script
+  yekWrapper = pkgs.writeScriptBin "yek" ''
+    #!${pkgs.bash}/bin/bash
+    exec ${pkgs.bash}/bin/bash ${yekWrapperScript} "$@"
   '';
 in
 {
