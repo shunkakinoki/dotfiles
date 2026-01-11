@@ -44,6 +44,12 @@ home-manager.lib.homeManagerConfiguration {
               fi
             done
 
+            # Backup existing clawdbot configuration
+            if [ -f "$HOME/.clawdbot/clawdbot.json" ] && [ ! -L "$HOME/.clawdbot/clawdbot.json" ]; then
+              echo "Backing up existing .clawdbot/clawdbot.json to .clawdbot/clawdbot.json.hm-backup"
+              mv "$HOME/.clawdbot/clawdbot.json" "$HOME/.clawdbot/clawdbot.json.hm-backup"
+            fi
+
             # Clean up old backups in .codex
             find ~/.codex -name "*.hm-backup*" -delete 2>/dev/null || true
           '';
