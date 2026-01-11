@@ -25,7 +25,9 @@
     "@typescript/native-preview": "^7.0.0-dev.20260109.1",
     "@vibe-kit/grok-cli": "^0.0.34",
     "ccusage": "^18.0.5",
+    "clawdhub": "^0.1.0",
     "cline": "^1.0.9",
+    "mcporter": "^0.7.3",
     "open-composer": "^0.8.23",
     "turbo": "^2.7.3",
     "typescript": "^5.9.3"
@@ -45,7 +47,9 @@
     "@typescript/native-preview",
     "@vibe-kit/grok-cli",
     "ccusage",
+    "clawdhub",
     "cline",
+    "mcporter",
     "open-composer",
     "typescript"
   ]
