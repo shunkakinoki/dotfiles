@@ -5,6 +5,7 @@
   ...
 }:
 let
+  env = import ../../../lib/env.nix;
   homeDir = config.home.homeDirectory;
   clawdbotDir = "${homeDir}/.config/clawdbot";
 
@@ -19,7 +20,8 @@ let
     tr = "${pkgs.coreutils}/bin/tr";
   };
 in
-{
+# Disable clawdbot entirely in CI builds
+lib.mkIf (!env.isCI) {
   # Extract secrets from cliproxyapi auth and .env on home-manager activation
   home.activation.clawdbotSecrets = lib.mkIf (lib ? hm && lib.hm ? dag) (
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
