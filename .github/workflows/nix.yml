@@ -93,6 +93,7 @@ jobs:
       - nix-flake
       - nix-format
       - nix-linux
+      - nix-nixos
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
