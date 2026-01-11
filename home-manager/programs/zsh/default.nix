@@ -1,5 +1,10 @@
 # From: https://github.com/nix-community/home-manager/blob/master/modules/programs/zsh.nix
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   programs.zsh = {
     enable = true;
