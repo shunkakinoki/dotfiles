@@ -12,15 +12,15 @@ mkdir -p "$INSTALL_DIR"
 
 echo "Fetching latest release info from GitHub..."
 LATEST_URL=$(
-    @curl@ -s "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases/latest" |
-        @grep@ "browser_download_url" |
-        @grep@ "${ASSET_NAME}" |
-        @cut@ -d '"' -f 4
+  @curl@ -s "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases/latest" |
+    @grep@ "browser_download_url" |
+    @grep@ "${ASSET_NAME}" |
+    @cut@ -d '"' -f 4
 )
 
 if [ -z "${LATEST_URL}" ]; then
-    echo "Failed to find a release asset named ${ASSET_NAME} in the latest release."
-    exit 1
+  echo "Failed to find a release asset named ${ASSET_NAME} in the latest release."
+  exit 1
 fi
 
 echo "Downloading from: ${LATEST_URL}"
