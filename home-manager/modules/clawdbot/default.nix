@@ -79,10 +79,13 @@ lib.mkIf (!env.isCI) {
       providers.telegram = {
         enable = pkgs.stdenv.isLinux;
         botTokenFile = "${clawdbotDir}/telegram-token";
-        allowFrom = [ 983653361 ];
+        allowFrom = [
+          983653361
+          2104262990
+        ];
         groups = {
           "*" = {
-            requireMention = true;
+            requireMention = false;
           };
         };
       };
