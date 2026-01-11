@@ -603,7 +603,7 @@ lua-check-hammerspoon-dev: ## Run the Hammerspoon Lua check inside the Nix dev s
 ##@ Launchd Services
 
 .PHONY: launchctl
-launchctl: launchctl-brew-upgrader launchctl-cliproxyapi launchctl-cliproxyapi-backup launchctl-code-syncer launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama ## Restart all launchd agents.
+launchctl: launchctl-brew-upgrader launchctl-clawdbot launchctl-cliproxyapi launchctl-cliproxyapi-backup launchctl-code-syncer launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama ## Restart all launchd agents.
 
 .PHONY: launchctl-brew-upgrader
 launchctl-brew-upgrader: ## Restart brew-upgrader launchd agent.
@@ -612,6 +612,14 @@ launchctl-brew-upgrader: ## Restart brew-upgrader launchd agent.
 	@sleep 3
 	@launchctl load ~/Library/LaunchAgents/org.nix-community.home.brew-upgrader.plist
 	@echo "✅ brew-upgrader restarted"
+
+.PHONY: launchctl-clawdbot
+launchctl-clawdbot: ## Restart clawdbot gateway launchd agent.
+	@echo "🔄 Restarting clawdbot..."
+	@launchctl unload ~/Library/LaunchAgents/com.steipete.clawdbot.gateway.plist 2>/dev/null || true
+	@sleep 3
+	@launchctl load ~/Library/LaunchAgents/com.steipete.clawdbot.gateway.plist
+	@echo "✅ clawdbot restarted"
 
 .PHONY: launchctl-cliproxyapi
 launchctl-cliproxyapi: ## Restart cliproxyapi launchd agent.
@@ -664,7 +672,13 @@ launchctl-ollama: ## Restart ollama launchd agent.
 ##@ Systemd Services (Linux)
 
 .PHONY: systemctl
-systemctl: systemctl-code-syncer systemctl-dotfiles-updater systemctl-ollama ## Restart all systemd user services.
+systemctl: systemctl-clawdbot systemctl-code-syncer systemctl-dotfiles-updater systemctl-ollama ## Restart all systemd user services.
+
+.PHONY: systemctl-clawdbot
+systemctl-clawdbot: ## Restart clawdbot gateway systemd user service.
+	@echo "🔄 Restarting clawdbot..."
+	@systemctl --user restart clawdbot-gateway.service || true
+	@echo "✅ clawdbot restarted"
 
 .PHONY: systemctl-code-syncer
 systemctl-code-syncer: ## Restart code-syncer systemd user service.
