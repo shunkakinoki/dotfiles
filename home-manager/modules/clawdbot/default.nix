@@ -58,11 +58,11 @@ lib.mkIf (!env.isCI) {
       launchd.enable = pkgs.stdenv.isDarwin;
       systemd.enable = pkgs.stdenv.isLinux;
 
-      # Browser configuration - Linux only (headless Chromium)
-      config = lib.mkIf pkgs.stdenv.isLinux {
+      # Browser configuration (headless on Linux, GUI on macOS)
+      config = {
         browser = {
           enabled = true;
-          headless = true;
+          headless = pkgs.stdenv.isLinux;
         };
       };
 
