@@ -21,6 +21,7 @@ with pkgs;
   bun
   clipse
   cloudflared
+  copybara
   curl
   curlie
   cursor-cli
