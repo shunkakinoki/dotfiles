@@ -6,7 +6,9 @@
 }:
 let
   brewUpgrader = import ./brew-upgrader { inherit pkgs; };
-  cliproxyapi = import ./cliproxyapi { inherit pkgs; };
+  cliproxyapi = import ./cliproxyapi {
+    inherit config lib pkgs;
+  };
   codeSyncer = import ./code-syncer { inherit pkgs; };
   docker = import ./docker { inherit lib pkgs; };
   dotfilesUpdater = import ./dotfiles-updater { inherit pkgs; };

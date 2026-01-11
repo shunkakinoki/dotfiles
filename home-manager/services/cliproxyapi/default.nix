@@ -1,7 +1,10 @@
-{ pkgs, ... }:
+{ config, lib, pkgs, ... }:
 let
-  inherit (pkgs) lib;
-  homeDir = builtins.getEnv "HOME";
+  homeDir = config.home.homeDirectory or (
+    if pkgs.stdenv.isDarwin
+    then builtins.getEnv "HOME"
+    else "/home/${config.home.username}"
+  );
 
   hydrateScript = pkgs.replaceVars ./scripts/hydrate.sh {
     aws = "${pkgs.awscli2}/bin/aws";
@@ -45,7 +48,6 @@ in
         "${startScript}"
       ];
       Environment = {
-        HOME = homeDir;
         PATH = "${
           lib.makeBinPath [
             pkgs.gnused
@@ -70,7 +72,6 @@ in
         "${backupScript}"
       ];
       Environment = {
-        HOME = homeDir;
         PATH = "${
           lib.makeBinPath [
             pkgs.bash

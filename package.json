@@ -30,8 +30,11 @@
     "cline": "^1.0.9",
     "mcporter": "^0.7.3",
     "open-composer": "^0.8.23",
+    "oxfmt": "^0.23.0",
+    "oxlint": "^1.38.0",
     "turbo": "^2.7.3",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
   },
   "trustedDependencies": [
     "@biomejs/biome",
@@ -53,6 +56,9 @@
     "cline",
     "mcporter",
     "open-composer",
-    "typescript"
+    "oxfmt",
+    "oxlint",
+    "typescript",
+    "vite"
   ]
 }
