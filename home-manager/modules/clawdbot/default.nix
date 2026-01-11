@@ -82,6 +82,11 @@ lib.mkIf (!env.isCI) {
           };
         };
       };
+
+      # # iMessage provider - macOS only (reads messages from anyone)
+      # providers.imessage = {
+      #   enable = pkgs.stdenv.isDarwin;
+      # };
     };
   };
 }

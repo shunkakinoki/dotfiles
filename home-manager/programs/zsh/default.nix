@@ -1,8 +1,14 @@
 # From: https://github.com/nix-community/home-manager/blob/master/modules/programs/zsh.nix
-{ lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   programs.zsh = {
     enable = true;
+    dotDir = ".config/zsh"; # XDG-compliant (relative to $HOME)
     enableCompletion = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;

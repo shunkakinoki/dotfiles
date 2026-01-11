@@ -107,6 +107,7 @@ with pkgs;
   chromium
   ffmpeg
   github-desktop
+  google-chrome
   signal-desktop
   vlc
 ]
