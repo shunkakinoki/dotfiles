@@ -50,6 +50,34 @@ The output should include 'git reset --hard origin/main'
 End
 End
 
+Describe 'change detection'
+It 'stores current commit before fetching'
+When run bash -c "grep 'CURRENT_COMMIT=\$(git rev-parse HEAD)' '$SCRIPT'"
+The output should include 'CURRENT_COMMIT=$(git rev-parse HEAD)'
+End
+
+It 'gets remote commit after fetching'
+When run bash -c "grep 'REMOTE_COMMIT=\$(git rev-parse origin/main)' '$SCRIPT'"
+The output should include 'REMOTE_COMMIT=$(git rev-parse origin/main)'
+End
+
+It 'compares commits to detect changes'
+When run bash -c "grep 'CURRENT_COMMIT.*=.*REMOTE_COMMIT' '$SCRIPT'"
+The output should include 'CURRENT_COMMIT'
+The output should include 'REMOTE_COMMIT'
+End
+
+It 'skips build when no changes detected'
+When run bash -c "grep 'No changes detected' '$SCRIPT'"
+The output should include 'No changes detected'
+End
+
+It 'logs when changes are detected'
+When run bash -c "grep 'Changes detected' '$SCRIPT'"
+The output should include 'Changes detected'
+End
+End
+
 Describe 'installation'
 It 'runs install.sh after update'
 When run bash -c "grep './install.sh' '$SCRIPT'"
