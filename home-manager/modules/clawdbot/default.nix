@@ -69,9 +69,12 @@ lib.mkIf (!env.isCI) {
         browser = {
           enabled = true;
           headless = pkgs.stdenv.isLinux;
+        }
+        // lib.optionalAttrs pkgs.stdenv.isLinux {
           executablePath = "${pkgs.chromium}/bin/chromium";
         };
-      } // lib.optionalAttrs pkgs.stdenv.isLinux {
+      }
+      // lib.optionalAttrs pkgs.stdenv.isLinux {
         gateway = {
           bind = "lan";
         };
