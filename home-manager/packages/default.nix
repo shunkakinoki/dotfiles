@@ -41,6 +41,7 @@ with pkgs;
   gh
   google-cloud-sdk
   git
+  glance
   glow
   gnumake
   gping
@@ -67,7 +68,6 @@ with pkgs;
   procs
   # qwen-code  # FIXME: npmDepsHash is stale in nixpkgs, uncomment when fixed
   ripgrep
-  rustup
   sccache
   sd
   shellcheck
