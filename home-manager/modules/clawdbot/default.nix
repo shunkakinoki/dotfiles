@@ -72,6 +72,7 @@ lib.mkIf (!env.isCI) {
         }
         // lib.optionalAttrs pkgs.stdenv.isLinux {
           executablePath = "${pkgs.chromium}/bin/chromium";
+          noSandbox = true; # SUID sandbox requires root-owned binary with mode 4755
         };
       }
       // lib.optionalAttrs pkgs.stdenv.isLinux {
