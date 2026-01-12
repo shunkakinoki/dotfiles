@@ -315,7 +315,7 @@ nix-switch: ## Activate Nix configuration.
 	@echo "🔧 Activating Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"
 	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		if [ "$(OS)" = "Darwin" ]; then \
-			sudo $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#runner --impure --no-update-lock-file; \
+			sudo env CI="$$CI" IN_DOCKER="$$IN_DOCKER" $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#runner --impure --no-update-lock-file; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			echo "⏭️ NixOS switch skipped in CI as the runner is not a NixOS system"; \
 			sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file || exit 0; \
