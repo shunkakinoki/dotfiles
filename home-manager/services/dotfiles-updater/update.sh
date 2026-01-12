@@ -10,8 +10,24 @@ if [ "$(git rev-parse --abbrev-ref HEAD)" != "main" ]; then
   exit 0
 fi
 
-# Fetch and pull latest changes
+# Store current commit hash before fetching
+CURRENT_COMMIT=$(git rev-parse HEAD)
+
+# Fetch latest changes
 git fetch origin main
+
+# Get the latest remote commit
+REMOTE_COMMIT=$(git rev-parse origin/main)
+
+# Check if there are any changes
+if [ "$CURRENT_COMMIT" = "$REMOTE_COMMIT" ]; then
+  echo "No changes detected (current: ${CURRENT_COMMIT:0:8}). Skipping build and switch."
+  exit 0
+fi
+
+echo "Changes detected: ${CURRENT_COMMIT:0:8} -> ${REMOTE_COMMIT:0:8}"
+
+# Reset to latest
 git reset --hard origin/main
 
 # Run the install script
