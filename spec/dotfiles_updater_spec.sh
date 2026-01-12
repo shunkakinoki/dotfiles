@@ -53,11 +53,13 @@ End
 Describe 'change detection'
 It 'stores current commit before fetching'
 When run bash -c "grep 'CURRENT_COMMIT=\$(git rev-parse HEAD)' '$SCRIPT'"
+# shellcheck disable=SC2016
 The output should include 'CURRENT_COMMIT=$(git rev-parse HEAD)'
 End
 
 It 'gets remote commit after fetching'
 When run bash -c "grep 'REMOTE_COMMIT=\$(git rev-parse origin/main)' '$SCRIPT'"
+# shellcheck disable=SC2016
 The output should include 'REMOTE_COMMIT=$(git rev-parse origin/main)'
 End
 
