@@ -12,14 +12,20 @@
       if test (uname) = "Linux"
           set -gx XDG_RUNTIME_DIR /run/user/(id -u)
       end
+
+      # Go configuration
+      set -gx GOPATH $HOME/go
+
       direnv hook fish | source
     '';
     loginShellInit = ''
       fish_add_path -p ~/.local/bin
       fish_add_path -p ~/.bun/bin
-      fish_add_path -p ~/.nix-profile/bin
-      fish_add_path -p /nix/var/nix/profiles/default/bin
+      fish_add_path -p ~/.cargo/bin
       fish_add_path -p ~/.foundry/bin
+      fish_add_path -p ~/.nix-profile/bin
+      fish_add_path -p ~/go/bin
+      fish_add_path -p /nix/var/nix/profiles/default/bin
       fish_add_path -p /opt/homebrew/bin
       fish_add_path -p /opt/homebrew/opt/postgresql@18/bin
       fish_add_path -p /etc/profiles/per-user/${config.home.username}/bin
@@ -31,9 +37,11 @@
       set fish_theme dracula
       fish_add_path -p ~/.local/bin
       fish_add_path -p ~/.bun/bin
-      fish_add_path -p ~/.nix-profile/bin
-      fish_add_path -p /nix/var/nix/profiles/default/bin
+      fish_add_path -p ~/.cargo/bin
       fish_add_path -p ~/.foundry/bin
+      fish_add_path -p ~/.nix-profile/bin
+      fish_add_path -p ~/go/bin
+      fish_add_path -p /nix/var/nix/profiles/default/bin
       fish_add_path -p /opt/homebrew/bin
       fish_add_path -p /opt/homebrew/opt/postgresql@18/bin
       fish_add_path -p /etc/profiles/per-user/${config.home.username}/bin
@@ -54,7 +62,6 @@
       j = "jj";
       lzd = "lazydocker";
       lzg = "lazygit";
-      sag = "_ssh_add_github";
       ta = "tmux new -A -s default";
       v = "nvim";
 
@@ -66,16 +73,6 @@
       coxel = "_coxel_function";
       coxelh = "_coxelh_function";
       dev = "_dev_function";
-      ocxe = "_ocxe_function";
-      ocxeh = "_ocxeh_function";
-      gco = "_gco_function";
-      grco = "_grco_function";
-      grcr = "_grcr_function";
-      kyber = "_kyber_function";
-      kyberd = "_kyberd_function";
-      kyberm = "_kyberm_function";
-      zdo = "_zdo_function";
-      zmo = "_zmo_function";
       fch = "_fzf_cmd_history --allow-execute";
       fdp = "_fzf_directory_picker --allow-cd --prompt-name Projects ~/";
       ffp = "_fzf_file_picker --allow-open-in-editor --prompt-name Files";
@@ -83,7 +80,18 @@
       fgb = "_fzf_git_branch";
       fgw = "_fzf_git_worktree";
       fhq = "_fzf_ghq_picker";
+      gco = "_gco_function";
+      grco = "_grco_function";
+      grcr = "_grcr_function";
+      kyber = "_kyber_function";
+      kyberd = "_kyberd_function";
+      kyberm = "_kyberm_function";
+      ocxe = "_ocxe_function";
+      ocxeh = "_ocxeh_function";
+      sag = "_ssh_add_github";
       shortcuts = "_fish_shortcuts";
+      zdo = "_zdo_function";
+      zmo = "_zmo_function";
     };
     plugins = [
       {
