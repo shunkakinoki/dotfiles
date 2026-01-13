@@ -26,6 +26,12 @@ lib.mkIf (!env.isCI) {
   # when the file already exists (e.g., modified by clawdbot at runtime)
   home.file.".clawdbot/clawdbot.json".force = true;
 
+  # Prevent clawdbot from auto-restarting on home-manager switch
+  # Service will only restart on reboot or explicit `systemctl restart`
+  systemd.user.services.clawdbot-gateway = lib.mkIf pkgs.stdenv.isLinux {
+    Unit.X-RestartIfChanged = "false";
+  };
+
   # Extract secrets from cliproxyapi auth and .env on home-manager activation
   home.activation.clawdbotSecrets = lib.mkIf (lib ? hm && lib.hm ? dag) (
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
