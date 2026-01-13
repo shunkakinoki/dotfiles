@@ -31,6 +31,7 @@
       "graphviz"
       "helm"
       "jjui"
+      "kimi-cli"
       "kurtosis-cli"
       "mas"
       "opencode"
