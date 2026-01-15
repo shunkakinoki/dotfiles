@@ -177,6 +177,10 @@
       "rev": "01cb3a8ad7d5e8707041edc775af83dbf33838f4",
       "src": "https://github.com/stevearc/oil.nvim"
     },
+    "opencode.nvim": {
+      "rev": "990c062d4036877a047cb3f5372e2f261a889f0a",
+      "src": "https://github.com/NickvanDyke/opencode.nvim"
+    },
     "other.nvim": {
       "rev": "1d48e090f6d1d53dda9fb5094af3f2006ebbb858",
       "src": "https://github.com/rgroli/other.nvim"
@@ -188,6 +192,10 @@
     "sidekick.nvim": {
       "rev": "c2bdf8cfcd87a6be5f8b84322c1b5052e78e302e",
       "src": "https://github.com/folke/sidekick.nvim"
+    },
+    "snacks.nvim": {
+      "rev": "fe7cfe9800a182274d0f868a74b7263b8c0c020b",
+      "src": "https://github.com/folke/snacks.nvim"
     },
     "telescope-fzf-native.nvim": {
       "rev": "6fea601bd2b694c6f2ae08a6c6fab14930c60e2c",
