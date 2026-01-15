@@ -23,4 +23,9 @@
     source = ./statusline-git.sh;
     executable = true;
   };
+
+  home.file.".claude/install-skills.sh" = {
+    source = ./install-skills.sh;
+    executable = true;
+  };
 }
