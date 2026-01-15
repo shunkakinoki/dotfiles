@@ -84,7 +84,9 @@ vim.pack.add({
 	{ src = "https://github.com/yioneko/nvim-vtsls" },
 
 	-- AI
+	{ src = "https://github.com/folke/snacks.nvim" }, -- Required for opencode.nvim
 	{ src = "https://github.com/folke/sidekick.nvim" },
+	{ src = "https://github.com/NickvanDyke/opencode.nvim" },
 
 	-- TERMINAL
 	{ src = "https://github.com/akinsho/toggleterm.nvim" },
