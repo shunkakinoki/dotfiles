@@ -151,8 +151,6 @@
         "_dev_function"
         "_ocxe_function"
         "_ocxeh_function"
-        "_pilxe_function"
-        "_pilxeh_function"
         "_pixe_function"
         "_pixeh_function"
         "_fish_shortcuts"
