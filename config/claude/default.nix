@@ -23,4 +23,10 @@
     source = ./statusline-git.sh;
     executable = true;
   };
+
+  # Vercel agent skills (https://github.com/vercel-labs/agent-skills)
+  home.file.".claude/skills" = {
+    source = ./skills;
+    recursive = true;
+  };
 }
