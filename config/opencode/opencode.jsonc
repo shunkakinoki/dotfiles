@@ -1,8 +1,8 @@
 {
 	"$schema": "https://opencode.ai/config.json",
 	"theme": "opencode",
-	"model": "grok-code",
-	"small_model": "kimi-k2",
+	"model": "openrouter-preset/glm-4.7",
+	"small_model": "openrouter-preset/glm-4.7",
 	"autoupdate": true,
 	"agent": {
 		"code-reviewer": {
@@ -262,16 +262,6 @@
 			},
 			"options": {
 				"apiKey": "{env:OPENROUTER_API_KEY}"
-			}
-		},
-		"z-ai": {
-			"models": {
-				"glm-4.6": {
-					"name": "GLM-4.6 (via Z-AI)",
-				},
-			},
-			"options": {
-				"apiKey": "{env:ZAI_API_KEY}",
 			}
 		},
 		"zai-coding-plan": {

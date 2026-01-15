@@ -2,6 +2,7 @@
   "providers": {
     "cli-proxy-api": {
       "baseUrl": "http://localhost:8317/v1",
+      "apiKey": "dummy",
       "api": "openai-responses",
       "models": [
         {
@@ -124,7 +125,7 @@
           "maxTokens": 32000
         },
         {
-          "id": "claude-haiku-4-5-20251001",
+          "id": "claude-haiku-4-5-20251101",
           "name": "Claude Haiku 4.5",
           "reasoning": false,
           "input": [
@@ -138,22 +139,6 @@
             "cacheWrite": 1.25
           },
           "contextWindow": 200000,
-          "maxTokens": 8192
-        },
-        {
-          "id": "kimi-k2",
-          "name": "Kimi K2",
-          "reasoning": false,
-          "input": [
-            "text"
-          ],
-          "cost": {
-            "input": 0,
-            "output": 0,
-            "cacheRead": 0,
-            "cacheWrite": 0
-          },
-          "contextWindow": 131072,
           "maxTokens": 8192
         },
         {
