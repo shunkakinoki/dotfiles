@@ -178,7 +178,7 @@
     "openrouter-preset": {
       "baseUrl": "https://openrouter.ai/api/v1",
       "apiKeyEnvVar": "OPENROUTER_API_KEY",
-      "api": "openai",
+      "api": "openai-responses",
       "models": [
         {
           "id": "@preset/glm-4-7",
