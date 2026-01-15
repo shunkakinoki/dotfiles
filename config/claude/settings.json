@@ -1,5 +1,8 @@
 {
   "cleanupPeriodDays": 99999,
+  "skills": [
+    "vercel-labs/agent-skills"
+  ],
   "enabledPlugins": {
     "commit-commands@claude-plugins-official": true,
     "context7@claude-plugins-official": true,
