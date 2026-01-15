@@ -152,6 +152,11 @@
         "hooks": [
           {
             "type": "command",
+            "command": "command -v dcg >/dev/null 2>&1 && dcg",
+            "timeout": 5
+          },
+          {
+            "type": "command",
             "command": "$HOME/.claude/security.sh",
             "timeout": 5
           },

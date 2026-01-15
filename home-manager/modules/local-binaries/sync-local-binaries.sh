@@ -32,6 +32,9 @@ while IFS= read -r line || [ -n "$line" ]; do
   \#*) continue ;;
   esac
 
+  # Expand ~ to $HOME
+  line="${line/#\~/$HOME}"
+
   # Check if binary exists and is executable
   if [ ! -f "$line" ] || [ ! -x "$line" ]; then
     echo "Skipping (not found or not executable): $line"
