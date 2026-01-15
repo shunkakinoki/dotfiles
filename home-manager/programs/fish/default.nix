@@ -88,6 +88,8 @@
       kyberm = "_kyberm_function";
       ocxe = "_ocxe_function";
       ocxeh = "_ocxeh_function";
+      pixe = "_pixe_function";
+      pixeh = "_pixeh_function";
       sag = "_ssh_add_github";
       shortcuts = "_fish_shortcuts";
       zdo = "_zdo_function";
@@ -149,6 +151,8 @@
         "_dev_function"
         "_ocxe_function"
         "_ocxeh_function"
+        "_pixe_function"
+        "_pixeh_function"
         "_fish_shortcuts"
         "_fzf_cmd_history"
         "_fzf_directory_picker"

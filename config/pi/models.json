@@ -142,8 +142,8 @@
           "maxTokens": 8192
         },
         {
-          "id": "z-ai/glm-4.7",
-          "name": "GLM-4.7 (Z-AI)",
+          "id": "z-ai/glm-4-7",
+          "name": "glm-4-7 (Z-AI)",
           "reasoning": false,
           "input": [
             "text"
@@ -160,6 +160,29 @@
         {
           "id": "z-ai/glm-4.6",
           "name": "GLM-4.6 (Z-AI)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        }
+      ]
+    },
+    "openrouter-preset": {
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "apiKey": "OPENROUTER_API_KEY",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "@preset/glm-4-7",
+          "name": "GLM-4.7 (Z-AI)",
           "reasoning": false,
           "input": [
             "text"
