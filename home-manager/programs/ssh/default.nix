@@ -2,6 +2,7 @@
 {
   home.file.".ssh/rc" = {
     source = config.lib.file.mkOutOfStoreSymlink ./rc;
+    force = true;
   };
   programs.ssh = {
     enable = true;

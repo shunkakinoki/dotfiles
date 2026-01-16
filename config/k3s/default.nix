@@ -8,6 +8,7 @@
   # k3s config file stored in home directory
   home.file.".config/k3s/config.yaml" = lib.mkIf pkgs.stdenv.isLinux {
     source = config.lib.file.mkOutOfStoreSymlink ./config.yaml;
+    force = true;
   };
 
   # Activation script to sync config to /etc/rancher/k3s/
