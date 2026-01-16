@@ -9,6 +9,10 @@ let
   homeDir = config.home.homeDirectory;
   clawdbotDir = "${homeDir}/.config/clawdbot";
 
+  # Remote gateway URL for non-kyber machines (macOS nodes connect here)
+  # Using Tailscale MagicDNS for direct connectivity (bridge is TCP, not HTTP)
+  remoteGatewayUrl = "ws://kyber.tail950b36.ts.net:18789";
+
   # Script to extract secrets from cliproxyapi auth and .env
   # Uses pkgs.replaceVars to substitute tool paths at build time
   extractSecretsScript = pkgs.replaceVars ./extract-secrets.sh {
@@ -64,35 +68,53 @@ lib.mkIf (!env.isCI) {
     instances.default = {
       enable = true;
 
-      # Service configuration (launchd for macOS, systemd for Linux)
-      launchd.enable = pkgs.stdenv.isDarwin;
+      # Service configuration:
+      # - Linux (kyber): systemd runs the gateway daemon
+      # - macOS: launchd disabled (remote mode - no local gateway)
+      launchd.enable = false; # macOS uses remote mode, no local gateway
       systemd.enable = pkgs.stdenv.isLinux;
 
-      # Browser configuration (headless on Linux, GUI on macOS)
-      # Gateway binds to LAN on Linux for k8s ingress access
+      # Platform-specific config overrides
       # NOTE: uses configOverrides because upstream nix-clawdbot doesn't merge `config` into output
-      configOverrides = {
-        browser = {
-          enabled = true;
-          headless = pkgs.stdenv.isLinux;
+      configOverrides =
+        # Linux (kyber): Local gateway mode with browser + bridge for nodes
+        lib.optionalAttrs pkgs.stdenv.isLinux {
+          gateway = {
+            mode = "local";
+            bind = "lan";
+          };
+          bridge = {
+            enabled = true;
+            bind = "lan"; # Allow nodes to connect from LAN/ingress
+          };
+          browser = {
+            enabled = true;
+            headless = true;
+            executablePath = "${pkgs.chromium}/bin/chromium";
+            noSandbox = true; # SUID sandbox requires root-owned binary with mode 4755
+          };
         }
-        // lib.optionalAttrs pkgs.stdenv.isLinux {
-          executablePath = "${pkgs.chromium}/bin/chromium";
-          noSandbox = true; # SUID sandbox requires root-owned binary with mode 4755
+        # macOS: Remote mode - connect to Linux gateway as a node
+        // lib.optionalAttrs pkgs.stdenv.isDarwin {
+          gateway = {
+            mode = "remote";
+            url = remoteGatewayUrl;
+            # Auth token read from file (set via extract-secrets or manually)
+            tokenFile = "${clawdbotDir}/gateway-token";
+          };
+          browser = {
+            enabled = true;
+            headless = false;
+          };
         };
-      }
-      // lib.optionalAttrs pkgs.stdenv.isLinux {
-        gateway = {
-          bind = "lan";
-        };
-      };
 
       # Anthropic API provider (reads from ~/.config/clawdbot/anthropic-key)
+      # Only needed on the gateway (Linux), but harmless to keep on nodes
       providers.anthropic = {
         apiKeyFile = "${clawdbotDir}/anthropic-key";
       };
 
-      # Telegram provider - Linux only (reads from ~/.config/clawdbot/telegram-token)
+      # Telegram provider - Linux gateway only (reads from ~/.config/clawdbot/telegram-token)
       providers.telegram = {
         enable = pkgs.stdenv.isLinux;
         botTokenFile = "${clawdbotDir}/telegram-token";
