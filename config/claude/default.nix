@@ -28,10 +28,4 @@
     source = ./install-skills.sh;
     executable = true;
   };
-
-  # Global skills
-  home.file.".claude/skills/add-skill" = {
-    source = ./skills/add-skill;
-    recursive = true;
-  };
 }

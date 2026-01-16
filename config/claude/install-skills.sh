@@ -10,6 +10,7 @@ echo "Installing agent skills..."
 # Install Vercel agent-skills (React best practices + Web design guidelines)
 # https://github.com/vercel-labs/agent-skills
 npx add-skill vercel-labs/agent-skills \
+  --global \
   --agent claude-code \
   --skill vercel-react-best-practices \
   --skill web-design-guidelines \
