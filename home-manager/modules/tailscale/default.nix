@@ -139,8 +139,10 @@ in
     home.packages = [ cfg.tailscaled.package ];
 
     # Declare directories and files for home-manager
-    home.file.".local/share/tailscale/tailscaled.state".source =
-      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.local/state/tailscale/tailscaled.state";
+    home.file.".local/share/tailscale/tailscaled.state" = {
+      source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.local/state/tailscale/tailscaled.state";
+      force = true;
+    };
 
     # Tailscaled service
     systemd.user.services.tailscaled = mkIf configEnabled {
