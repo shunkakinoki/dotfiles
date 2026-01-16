@@ -9,9 +9,13 @@ echo "Installing agent skills..."
 
 # Install Vercel agent-skills (React best practices + Web design guidelines)
 # https://github.com/vercel-labs/agent-skills
+# Targets all supported agents: opencode, claude-code, codex, cursor
 npx add-skill vercel-labs/agent-skills \
   --global \
+  --agent opencode \
   --agent claude-code \
+  --agent codex \
+  --agent cursor \
   --skill vercel-react-best-practices \
   --skill web-design-guidelines \
   --yes
