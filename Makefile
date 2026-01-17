@@ -332,12 +332,12 @@ nix-switch: ## Activate Nix configuration.
 		elif [ "$(OS)" = "Darwin" ]; then \
 			if [ -n "$(HOST)" ]; then \
 				echo "Switching named host: $(HOST)"; \
-				sudo $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(HOST) --impure; \
+				sudo HOST=$(HOST) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(HOST) --impure; \
 			elif [ -n "$(DETECTED_HOST)" ]; then \
 				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				sudo $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(DETECTED_HOST) --impure; \
+				sudo HOST=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(DETECTED_HOST) --impure; \
 			else \
-				sudo $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM) --impure; \
+				sudo HOST=$(NIX_SYSTEM) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM) --impure; \
 			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM); \
