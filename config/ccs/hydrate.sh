@@ -22,6 +22,11 @@ if [ -z "${CLIPROXY_API_KEY:-}" ]; then
   exit 0
 fi
 
+# Optional API keys (warn if not set but continue)
+if [ -z "${ZAI_API_KEY:-}" ]; then
+  echo "Warning: ZAI_API_KEY not set in .env, GLM provider may not work" >&2
+fi
+
 mkdir -p "$CCS_DIR"
 
 # Hydrate config.yaml
@@ -29,6 +34,7 @@ CONFIG_TEMPLATE="${TEMPLATE_DIR}/config.template.yaml"
 if [ -f "$CONFIG_TEMPLATE" ]; then
   @sed@ \
     -e "s|__CLIPROXY_API_KEY__|${CLIPROXY_API_KEY}|g" \
+    -e "s|__ZAI_API_KEY__|${ZAI_API_KEY:-}|g" \
     "$CONFIG_TEMPLATE" >"${CCS_DIR}/config.yaml"
   echo "Hydrated CCS config.yaml" >&2
 fi
@@ -42,9 +48,10 @@ for template in "$TEMPLATE_DIR"/*.settings.template.json; do
   provider="${filename%.settings.template.json}"
   output="${CCS_DIR}/${provider}.settings.json"
 
-  # Substitute placeholder and write output
+  # Substitute placeholders and write output
   @sed@ \
     -e "s|__CLIPROXY_API_KEY__|${CLIPROXY_API_KEY}|g" \
+    -e "s|__ZAI_API_KEY__|${ZAI_API_KEY:-}|g" \
     "$template" >"$output"
 
   echo "Hydrated CCS ${provider}.settings.json" >&2
