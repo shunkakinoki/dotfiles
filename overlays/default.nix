@@ -19,7 +19,8 @@ in
   inputs.nur.overlays.default
   inputs.neovim-nightly-overlay.overlays.default
   # Custom clawdbot overlay with version override (replaces inputs.nix-clawdbot.overlays.default)
-  (final: prev:
+  (
+    final: prev:
     let
       clawdbotVersion = "2026.1.16-2";
       basePkgs = import "${inputs.nix-clawdbot}/nix/packages" {
@@ -33,31 +34,35 @@ in
         __intentionallyOverridingVersion = true;
       });
       # Build clawdbot-app with fixed version (upstream has broken app package)
-      clawdbot-app = if prev.stdenv.isDarwin then prev.stdenvNoCC.mkDerivation {
-        pname = "clawdbot-app";
-        version = clawdbotAppOverride.version;
-        src = prev.fetchzip {
-          url = clawdbotAppOverride.url;
-          hash = clawdbotAppOverride.hash;
-          stripRoot = false;
-        };
-        dontUnpack = true;
-        installPhase = ''
-          mkdir -p "$out/Applications"
-          app_path="$(find "$src" -maxdepth 2 -name '*.app' -print -quit)"
-          if [ -z "$app_path" ]; then
-            echo "Clawdbot.app not found in $src" >&2
-            exit 1
-          fi
-          cp -R "$app_path" "$out/Applications/Clawdbot.app"
-        '';
-        meta = with prev.lib; {
-          description = "Clawdbot macOS app bundle";
-          homepage = "https://github.com/clawdbot/clawdbot";
-          license = licenses.mit;
-          platforms = platforms.darwin;
-        };
-      } else null;
+      clawdbot-app =
+        if prev.stdenv.isDarwin then
+          prev.stdenvNoCC.mkDerivation {
+            pname = "clawdbot-app";
+            version = clawdbotAppOverride.version;
+            src = prev.fetchzip {
+              url = clawdbotAppOverride.url;
+              hash = clawdbotAppOverride.hash;
+              stripRoot = false;
+            };
+            dontUnpack = true;
+            installPhase = ''
+              mkdir -p "$out/Applications"
+              app_path="$(find "$src" -maxdepth 2 -name '*.app' -print -quit)"
+              if [ -z "$app_path" ]; then
+                echo "Clawdbot.app not found in $src" >&2
+                exit 1
+              fi
+              cp -R "$app_path" "$out/Applications/Clawdbot.app"
+            '';
+            meta = with prev.lib; {
+              description = "Clawdbot macOS app bundle";
+              homepage = "https://github.com/clawdbot/clawdbot";
+              license = licenses.mit;
+              platforms = platforms.darwin;
+            };
+          }
+        else
+          null;
       # Rebuild batteries bundle with the overridden gateway and app
       clawdbot = prev.callPackage "${inputs.nix-clawdbot}/nix/packages/clawdbot-batteries.nix" {
         clawdbot-gateway = clawdbot-gateway;
@@ -65,7 +70,11 @@ in
         extendedTools = (import "${inputs.nix-clawdbot}/nix/tools/extended.nix" { pkgs = prev; }).tools;
       };
       toolNames = (import "${inputs.nix-clawdbot}/nix/tools/extended.nix" { pkgs = prev; }).toolNames;
-      withTools = { toolNamesOverride ? null, excludeToolNames ? [] }:
+      withTools =
+        {
+          toolNamesOverride ? null,
+          excludeToolNames ? [ ],
+        }:
         let
           toolSets = import "${inputs.nix-clawdbot}/nix/tools/extended.nix" {
             pkgs = prev;
@@ -81,7 +90,8 @@ in
             __intentionallyOverridingVersion = true;
           });
         in
-        innerPkgs // {
+        innerPkgs
+        // {
           clawdbot-gateway = innerGateway;
           clawdbot = prev.callPackage "${inputs.nix-clawdbot}/nix/packages/clawdbot-batteries.nix" {
             clawdbot-gateway = innerGateway;
@@ -93,9 +103,15 @@ in
     {
       inherit clawdbot clawdbot-gateway;
       clawdbotPackages = {
-        inherit clawdbot clawdbot-gateway toolNames withTools;
+        inherit
+          clawdbot
+          clawdbot-gateway
+          toolNames
+          withTools
+          ;
       };
-    } // (if prev.stdenv.isDarwin then { inherit clawdbot-app; } else {})
+    }
+    // (if prev.stdenv.isDarwin then { inherit clawdbot-app; } else { })
   )
   (final: prev: {
     # Ensure neovim-unwrapped exposes a lua attribute for wrapper consumers (e.g., home-manager)
