@@ -109,8 +109,7 @@ lib.mkIf (!env.isCI) {
             # Remote gateway config - url and name must be nested under 'remote' key
             remote = {
               url = remoteGatewayUrl;
-              # Node name for identification at the gateway (from host.nix or fallback to galactica for Darwin)
-              name = if host.nodeName != "unknown" then host.nodeName else if pkgs.stdenv.isDarwin then "galactica" else "unknown";
+              name = host.nodeName; # Node name for identification at the gateway
             };
             # Auth token read from file (set via extract-secrets or manually)
             tokenFile = "${clawdbotDir}/gateway-token";
