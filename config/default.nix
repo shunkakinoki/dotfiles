@@ -15,4 +15,5 @@
   ./pi
   ./serena
   ./starship
+  ./zellij
 ]
