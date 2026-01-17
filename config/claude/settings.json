@@ -13,7 +13,24 @@
     "typescript-lsp@claude-plugins-official": true,
     "plan-export@cc-marketplace": true,
     "safety-net@cc-marketplace": true,
-    "worktrunk@worktrunk": true
+    "worktrunk@worktrunk": true,
+    "building-secure-contracts@trailofbits": true,
+    "entry-point-analyzer@trailofbits": true,
+    "audit-context-building@trailofbits": true,
+    "burpsuite-project-parser@trailofbits": true,
+    "differential-review@trailofbits": true,
+    "semgrep-rule-creator@trailofbits": true,
+    "sharp-edges@trailofbits": true,
+    "static-analysis@trailofbits": true,
+    "testing-handbook-skills@trailofbits": true,
+    "variant-analysis@trailofbits": true,
+    "constant-time-analysis@trailofbits": true,
+    "property-based-testing@trailofbits": true,
+    "spec-to-code-compliance@trailofbits": true,
+    "fix-review@trailofbits": true,
+    "dwarf-expert@trailofbits": true,
+    "ask-questions-if-underspecified@trailofbits": true,
+    "culture-index@trailofbits": true
   },
   "extraKnownMarketplaces": {
     "cc-marketplace": {
@@ -26,6 +43,12 @@
       "source": {
         "source": "github",
         "repo": "max-sixty/worktrunk"
+      }
+    },
+    "trailofbits": {
+      "source": {
+        "source": "github",
+        "repo": "trailofbits/skills"
       }
     }
   },
