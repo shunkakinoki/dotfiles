@@ -142,7 +142,7 @@ setup: nix-setup ## Basic Nix setup (alias for nix-setup).
 setup-dev: nix-setup git-submodule-sync shell-install ## Set up local development environment (Nix + submodules + shell).
 
 .PHONY: switch
-switch: nix-switch services ## Apply Nix configuration and restart services.
+switch: nix-switch services sync ## Apply Nix configuration, restart services, and sync plugins.
 
 .PHONY: services
 services: ## Restart platform-specific services (launchd on macOS, systemd on Linux).
