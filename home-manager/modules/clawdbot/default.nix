@@ -45,12 +45,28 @@ lib.mkIf (!env.isCI) {
     ''
   );
 
+  # Inject gateway token into clawdbot.json for remote mode (tokenFile not supported upstream)
+  home.activation.clawdbotRemoteToken = lib.mkIf (lib ? hm && lib.hm ? dag && !host.isKyber) (
+    lib.hm.dag.entryAfter [ "clawdbotSecrets" "clawdbotConfigFiles" ] ''
+      TOKEN_FILE="${clawdbotDir}/gateway-token"
+      CONFIG_FILE="${homeDir}/.clawdbot/clawdbot.json"
+      if [ -f "$TOKEN_FILE" ] && [ -f "$CONFIG_FILE" ]; then
+        TOKEN=$(${pkgs.coreutils}/bin/cat "$TOKEN_FILE" | ${pkgs.coreutils}/bin/tr -d '\n')
+        # Inject token into gateway.remote.token and remove tokenFile
+        ${pkgs.jq}/bin/jq --arg token "$TOKEN" \
+          '.gateway.remote.token = $token | del(.gateway.remote.tokenFile)' \
+          "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && \
+          ${pkgs.coreutils}/bin/mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+        echo "Injected gateway token into clawdbot config"
+      fi
+    ''
+  );
+
   programs.clawdbot = {
-    # FIXME: Upstream nix-clawdbot app package is broken - it only contains AppleDouble
-    # metadata files (._*) without the actual app content. Info.plist and binaries are missing.
-    # Disable app installation until upstream fixes this issue.
-    # Bug: The macOS app bundle was not correctly preserved when creating the nix package.
-    installApp = false;
+    # App installation enabled - overlay provides fixed v2026.1.16-2 package
+    installApp = pkgs.stdenv.isDarwin;
+    # Use the fixed app package from overlay (not the bundled one)
+    appPackage = if pkgs.stdenv.isDarwin then pkgs.clawdbot-app else null;
 
     # First-party plugins (all macOS-only)
     firstParty = {
@@ -90,6 +106,9 @@ lib.mkIf (!env.isCI) {
           gateway = {
             mode = "local";
             bind = "lan";
+            auth = {
+              tokenFile = "${clawdbotDir}/gateway-token";
+            };
           };
           bridge = {
             enabled = true;
@@ -106,15 +125,14 @@ lib.mkIf (!env.isCI) {
         // lib.optionalAttrs (!host.isKyber) {
           gateway = {
             mode = "remote";
-            # Remote gateway config with client identity
+            # Remote gateway config with client identity and auth token
             remote = {
               url = remoteGatewayUrl;
+              tokenFile = "${clawdbotDir}/gateway-token";
               client = {
                 name = host.nodeName;
               };
             };
-            # Auth token read from file (set via extract-secrets or manually)
-            tokenFile = "${clawdbotDir}/gateway-token";
           };
           browser = {
             enabled = true;
