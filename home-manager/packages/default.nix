@@ -62,6 +62,7 @@ with pkgs;
   kubernetes-helm
   kustomize
   llama-cpp
+  llm
   mariadb
   mkcert
   navi
