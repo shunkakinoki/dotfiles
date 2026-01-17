@@ -62,10 +62,24 @@ lib.mkIf (!env.isCI) {
     ''
   );
 
+  # Auto-start Clawdbot.app on login (macOS only, galactica)
+  launchd.agents.clawdbot-app = lib.mkIf (pkgs.stdenv.isDarwin && host.isGalactica ) {
+    enable = true;
+    config = {
+      Label = "com.clawdbot.app";
+      ProgramArguments = [
+        "${homeDir}/Applications/Clawdbot.app/Contents/MacOS/Clawdbot"
+      ];
+      RunAtLoad = true;
+      KeepAlive = false;
+      StandardOutPath = "/tmp/clawdbot-app.log";
+      StandardErrorPath = "/tmp/clawdbot-app.error.log";
+    };
+  };
+
   programs.clawdbot = {
-    # App installation enabled - overlay provides fixed v2026.1.16-2 package
+    # App installation to ~/Applications/
     installApp = pkgs.stdenv.isDarwin;
-    # Use the fixed app package from overlay (not the bundled one)
     appPackage = if pkgs.stdenv.isDarwin then pkgs.clawdbot-app else null;
 
     # First-party plugins (all macOS-only)
