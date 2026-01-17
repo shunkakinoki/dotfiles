@@ -1,6 +1,11 @@
 { config, lib, pkgs, ... }:
 let
   dotfilesDir = "${config.home.homeDirectory}/dotfiles";
+
+  # Hydration script for CCS provider settings
+  hydrateScript = pkgs.replaceVars ./hydrate.sh {
+    sed = "${pkgs.gnused}/bin/sed";
+  };
 in
 {
   # CCS (Claude Code Switcher) account registry
@@ -14,26 +19,8 @@ in
 
   # Hydrate CCS settings templates with secrets from .env
   # ANTHROPIC_AUTH_TOKEN is substituted from CLIPROXY_API_KEY at activation time
+  # Processes all *.settings.template.json files in config/ccs/
   home.activation.hydrateCcsSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    ENV_FILE="${dotfilesDir}/.env"
-    TEMPLATE="${dotfilesDir}/config/ccs/agy.settings.template.json"
-    OUTPUT="${config.home.homeDirectory}/.ccs/agy.settings.json"
-
-    if [ -f "$ENV_FILE" ] && [ -f "$TEMPLATE" ]; then
-      # Source .env to get CLIPROXY_API_KEY
-      set -a
-      . "$ENV_FILE"
-      set +a
-
-      # Substitute placeholder and write output
-      if [ -n "$CLIPROXY_API_KEY" ]; then
-        ${pkgs.gnused}/bin/sed \
-          -e "s|__CLIPROXY_API_KEY__|$CLIPROXY_API_KEY|g" \
-          "$TEMPLATE" > "$OUTPUT"
-        $VERBOSE_ECHO "Hydrated CCS agy.settings.json with CLIPROXY_API_KEY"
-      else
-        $VERBOSE_ECHO "Warning: CLIPROXY_API_KEY not set in .env, skipping agy.settings.json hydration"
-      fi
-    fi
+    ${pkgs.bash}/bin/bash ${hydrateScript} || true
   '';
 }
