@@ -94,15 +94,21 @@ with pkgs;
 ++ lib.optionals stdenv.isLinux [
   atop
   below
+  binutils
   blueberry
   claude-code
+  cmake
   codex
   collectd
   docker
   docker-compose
+  gcc
   gemini-cli
   keychain
   opencode
+  openssl
+  openssl.dev
+  pkg-config
   powertop
   tailscale
   trashy
