@@ -13,9 +13,9 @@
         "@github/copilot": "^0.0.383",
         "@google/jules": "^0.1.42",
         "@kaitranntt/ccs": "^7.22.0",
-        "@mariozechner/pi-coding-agent": "^0.47.0",
+        "@mariozechner/pi-coding-agent": "^0.48.0",
         "@nanocollective/nanocoder": "^1.20.4",
-        "@pulumi/pulumi": "^3.215.0",
+        "@pulumi/pulumi": "^3.216.0",
         "@sourcegraph/amp": "^0.0.1767254483-g812f6b",
         "@typescript/native-preview": "^7.0.0-dev.20260115.1",
         "@vibe-kit/grok-cli": "^0.0.34",
@@ -366,13 +366,13 @@
 
     "@mariozechner/jiti": ["@mariozechner/jiti@2.6.5", "", { "dependencies": { "std-env": "^3.10.0", "yoctocolors": "^2.1.2" }, "bin": { "jiti": "lib/jiti-cli.mjs" } }, "sha512-faGUlTcXka5l7rv0lP3K3vGW/ejRuOS24RR2aSFWREUQqzjgdsuWNo/IiPqL3kWRGt6Ahl2+qcDAwtdeWeuGUw=="],
 
-    "@mariozechner/pi-agent-core": ["@mariozechner/pi-agent-core@0.47.0", "", { "dependencies": { "@mariozechner/pi-ai": "^0.47.0", "@mariozechner/pi-tui": "^0.47.0" } }, "sha512-XYqaNe/39H2g4Z+9bxXrJxt+fpvNzYtmDhpYRlUmUuiqIjgpXsovTGln12Fl/bsBJDS1IRLnASbUOU+AsGCV2Q=="],
+    "@mariozechner/pi-agent-core": ["@mariozechner/pi-agent-core@0.48.0", "", { "dependencies": { "@mariozechner/pi-ai": "^0.48.0", "@mariozechner/pi-tui": "^0.48.0" } }, "sha512-GRVVNySZTjOWkptZISP21jhtSZFFQeMv22Bye1ZNeO1IxaJbQ9plP9kXIK9MumELXnFxIYuuHIOwQN9PYcgGyg=="],
 
-    "@mariozechner/pi-ai": ["@mariozechner/pi-ai@0.47.0", "", { "dependencies": { "@anthropic-ai/sdk": "0.71.2", "@aws-sdk/client-bedrock-runtime": "^3.966.0", "@google/genai": "1.34.0", "@mistralai/mistralai": "1.10.0", "@sinclair/typebox": "^0.34.41", "ajv": "^8.17.1", "ajv-formats": "^3.0.1", "chalk": "^5.6.2", "openai": "6.10.0", "partial-json": "^0.1.7", "zod-to-json-schema": "^3.24.6" }, "bin": { "pi-ai": "dist/cli.js" } }, "sha512-SbAQDhuE3brX28q4eoKClB4FsauKgCbCb9lFTg14uMGZ5U60TO4zVMPO60V2Z9Jx1gtuc+Zj9Czbpd3SuTtpAA=="],
+    "@mariozechner/pi-ai": ["@mariozechner/pi-ai@0.48.0", "", { "dependencies": { "@anthropic-ai/sdk": "0.71.2", "@aws-sdk/client-bedrock-runtime": "^3.966.0", "@google/genai": "1.34.0", "@mistralai/mistralai": "1.10.0", "@sinclair/typebox": "^0.34.41", "ajv": "^8.17.1", "ajv-formats": "^3.0.1", "chalk": "^5.6.2", "openai": "6.10.0", "partial-json": "^0.1.7", "zod-to-json-schema": "^3.24.6" }, "bin": { "pi-ai": "dist/cli.js" } }, "sha512-M1eRoYdBV3eyVBPtvDB30vEhau1SAcrgbcsmnjumqQTTGCeiIGWMVSCxRPR8YU2PywPXTLewrEY20Cs6FZhQSw=="],
 
-    "@mariozechner/pi-coding-agent": ["@mariozechner/pi-coding-agent@0.47.0", "", { "dependencies": { "@mariozechner/clipboard": "^0.3.0", "@mariozechner/jiti": "^2.6.2", "@mariozechner/pi-agent-core": "^0.47.0", "@mariozechner/pi-ai": "^0.47.0", "@mariozechner/pi-tui": "^0.47.0", "@silvia-odwyer/photon-node": "^0.3.4", "chalk": "^5.5.0", "cli-highlight": "^2.1.11", "diff": "^8.0.2", "file-type": "^21.1.1", "glob": "^11.0.3", "marked": "^15.0.12", "minimatch": "^10.1.1", "proper-lockfile": "^4.1.2", "yaml": "^2.8.2" }, "bin": { "pi": "dist/cli.js" } }, "sha512-f7YzkjZKI0VCEYK9gyWLb8JZnr0/32Oan3uvy9bNbK/obzfWpht6sshqkHoKSr0lnV3oVgstRXZ3H/dUMFHwaA=="],
+    "@mariozechner/pi-coding-agent": ["@mariozechner/pi-coding-agent@0.48.0", "", { "dependencies": { "@mariozechner/clipboard": "^0.3.0", "@mariozechner/jiti": "^2.6.2", "@mariozechner/pi-agent-core": "^0.48.0", "@mariozechner/pi-ai": "^0.48.0", "@mariozechner/pi-tui": "^0.48.0", "@silvia-odwyer/photon-node": "^0.3.4", "chalk": "^5.5.0", "cli-highlight": "^2.1.11", "diff": "^8.0.2", "file-type": "^21.1.1", "glob": "^11.0.3", "marked": "^15.0.12", "minimatch": "^10.1.1", "proper-lockfile": "^4.1.2", "yaml": "^2.8.2" }, "bin": { "pi": "dist/cli.js" } }, "sha512-QcJ9manzK4IwhjL0H8fkHNvLGsE4ZWNMMLQV6FPOdi0whSdKa6lD6mQZ7wUIY0yWaiPmVN4gM/WCnYXpViQZ3A=="],
 
-    "@mariozechner/pi-tui": ["@mariozechner/pi-tui@0.47.0", "", { "dependencies": { "@types/mime-types": "^2.1.4", "chalk": "^5.5.0", "get-east-asian-width": "^1.3.0", "marked": "^15.0.12", "mime-types": "^3.0.1" } }, "sha512-3ysNAm805bRTfC/5C/rfR6ugqzKa4MC6wlGMYS+IgfNvS5YzQEFEtTWz/6iNmBXU3Qo9LjpRsQgpx5Sj78K7dQ=="],
+    "@mariozechner/pi-tui": ["@mariozechner/pi-tui@0.48.0", "", { "dependencies": { "@types/mime-types": "^2.1.4", "chalk": "^5.5.0", "get-east-asian-width": "^1.3.0", "marked": "^15.0.12", "mime-types": "^3.0.1" } }, "sha512-xNQTwPU4IyerTutxenqptbumIkt70iYrNIR7+ndUBcDHwL5u64JNAHHnFF3hNjwy/iHAb+yDveKSnZ5AFzHvvg=="],
 
     "@mistralai/mistralai": ["@mistralai/mistralai@1.10.0", "", { "dependencies": { "zod": "^3.20.0", "zod-to-json-schema": "^3.24.1" } }, "sha512-tdIgWs4Le8vpvPiUEWne6tK0qbVc+jMenujnvTqOjogrJUsCSQhus0tHTU1avDDh5//Rq2dFgP9mWRAdIEoBqg=="],
 
@@ -564,7 +564,7 @@
 
     "@protobufjs/utf8": ["@protobufjs/utf8@1.1.0", "", {}, "sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw=="],
 
-    "@pulumi/pulumi": ["@pulumi/pulumi@3.215.0", "", { "dependencies": { "@grpc/grpc-js": "^1.10.1", "@logdna/tail-file": "^2.0.6", "@npmcli/arborist": "^7.3.1", "@opentelemetry/api": "^1.9", "@opentelemetry/exporter-zipkin": "^1.28", "@opentelemetry/instrumentation": "^0.55", "@opentelemetry/instrumentation-grpc": "^0.55", "@opentelemetry/resources": "^1.28", "@opentelemetry/sdk-trace-base": "^1.28", "@opentelemetry/sdk-trace-node": "^1.28", "@types/google-protobuf": "^3.15.5", "@types/semver": "^7.5.6", "@types/tmp": "^0.2.6", "execa": "^5.1.0", "fdir": "^6.1.1", "google-protobuf": "^3.21.4", "got": "^11.8.6", "ini": "^2.0.0", "js-yaml": "^3.14.2", "minimist": "^1.2.6", "normalize-package-data": "^6.0.0", "package-directory": "^8.1.0", "picomatch": "^3.0.1", "require-from-string": "^2.0.1", "semver": "^7.5.2", "source-map-support": "^0.5.6", "tmp": "^0.2.4", "upath": "^1.1.0" }, "peerDependencies": { "ts-node": ">= 7.0.1 < 12", "typescript": ">= 3.8.3 < 6" }, "optionalPeers": ["ts-node", "typescript"] }, "sha512-Q4yx/CUyyX8iHRGS4OpUNdS8ZxRnGRADsh6XrqBfqXzrWOd2K3SIivVPDwCKgcIFpHm/WgN6UTSYba0m7aLmjw=="],
+    "@pulumi/pulumi": ["@pulumi/pulumi@3.216.0", "", { "dependencies": { "@grpc/grpc-js": "^1.10.1", "@logdna/tail-file": "^2.0.6", "@npmcli/arborist": "^7.3.1", "@opentelemetry/api": "^1.9", "@opentelemetry/exporter-zipkin": "^1.28", "@opentelemetry/instrumentation": "^0.55", "@opentelemetry/instrumentation-grpc": "^0.55", "@opentelemetry/resources": "^1.28", "@opentelemetry/sdk-trace-base": "^1.28", "@opentelemetry/sdk-trace-node": "^1.28", "@types/google-protobuf": "^3.15.5", "@types/semver": "^7.5.6", "@types/tmp": "^0.2.6", "execa": "^5.1.0", "fdir": "^6.1.1", "google-protobuf": "^3.21.4", "got": "^11.8.6", "ini": "^2.0.0", "js-yaml": "^3.14.2", "minimist": "^1.2.6", "normalize-package-data": "^6.0.0", "package-directory": "^8.1.0", "picomatch": "^3.0.1", "require-from-string": "^2.0.1", "semver": "^7.5.2", "source-map-support": "^0.5.6", "tmp": "^0.2.4", "upath": "^1.1.0" }, "peerDependencies": { "ts-node": ">= 7.0.1 < 12", "typescript": ">= 3.8.3 < 6" }, "optionalPeers": ["ts-node", "typescript"] }, "sha512-trrYuGE76HirIpA8McuomXNSkkccQyQajP9ZNLd0WHqnxXstTjRR+Zxizwo/0NJ3/HTUsA7wJE1Qt5auf7jL2g=="],
 
     "@rolldown/binding-android-arm64": ["@rolldown/binding-android-arm64@1.0.0-beta.57", "", { "os": "android", "cpu": "arm64" }, "sha512-GoOVDy8bjw9z1K30Oo803nSzXJS/vWhFijFsW3kzvZCO8IZwFnNa6pGctmbbJstKl3Fv6UBwyjJQN6msejW0IQ=="],
 
