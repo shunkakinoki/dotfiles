@@ -62,13 +62,14 @@ lib.mkIf (!env.isCI) {
     ''
   );
 
-  # Auto-start Clawdbot.app on login (macOS only, galactica)
-  launchd.agents.clawdbot-app = lib.mkIf (pkgs.stdenv.isDarwin && host.isGalactica ) {
+  # Auto-start Clawdbot.app on login (galactica only)
+  # App is installed to /Applications/Nix Apps/ via nix-darwin
+  launchd.agents.clawdbot-app = lib.mkIf (pkgs.stdenv.isDarwin && host.isGalactica) {
     enable = true;
     config = {
       Label = "com.clawdbot.app";
       ProgramArguments = [
-        "${homeDir}/Applications/Clawdbot.app/Contents/MacOS/Clawdbot"
+        "/Applications/Clawdbot.app/Contents/MacOS/Clawdbot"
       ];
       RunAtLoad = true;
       KeepAlive = false;
@@ -78,9 +79,9 @@ lib.mkIf (!env.isCI) {
   };
 
   programs.clawdbot = {
-    # App installation to ~/Applications/
-    installApp = pkgs.stdenv.isDarwin;
-    appPackage = if pkgs.stdenv.isDarwin then pkgs.clawdbot-app else null;
+    # App installed via nix-darwin to /Applications/Nix Apps/
+    installApp = false;
+    appPackage = null;
 
     # First-party plugins (all macOS-only)
     firstParty = {

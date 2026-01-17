@@ -6,6 +6,8 @@
   ...
 }:
 let
+  env = import ../lib/env.nix;
+  host = import ../lib/host.nix;
   dock = import ./config/dock.nix;
   fonts = import ./config/fonts.nix { inherit pkgs; };
   homebrew = import ./config/homebrew.nix { inherit isRunner; };
@@ -26,4 +28,11 @@ in
     system
     time
   ];
+
+  # Clawdbot.app: Symlink to /Applications/ (galactica only)
+  system.activationScripts.postActivation.text = lib.mkIf (!env.isCI && host.isGalactica) ''
+    echo "Installing Clawdbot.app to /Applications..."
+    rm -rf /Applications/Clawdbot.app
+    cp -R ${pkgs.clawdbot-app}/Applications/Clawdbot.app /Applications/
+  '';
 }
