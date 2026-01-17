@@ -1,0 +1,10 @@
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:8317/api/provider/codex",
+    "ANTHROPIC_AUTH_TOKEN": "__CLIPROXY_API_KEY__",
+    "ANTHROPIC_MODEL": "gpt-5.1-codex-max",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "gpt-5.1-codex-max-high",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "gpt-5.1-codex-max",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "gpt-5.1-codex-mini-high"
+  }
+}

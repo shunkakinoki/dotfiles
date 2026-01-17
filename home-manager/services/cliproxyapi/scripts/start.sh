@@ -84,6 +84,16 @@ if [ -f "$TEMPLATE" ]; then
       -e "s|^#   - \"__CLIPROXY_API_KEY__\"|  - \"${CLIPROXY_API_KEY}\"|" \
       "$CONFIG"
   fi
+
+  # Disable AMP on Linux (causes routing issues with antigravity provider)
+  if [ "$(uname)" = "Linux" ]; then
+    @sed@ -i \
+      -e "s|^ampcode:|# ampcode:|" \
+      -e "s|^  upstream-url:|#   upstream-url:|" \
+      -e "s|^  upstream-api-key:|#   upstream-api-key:|" \
+      -e "s|^  restrict-management-to-localhost:|#   restrict-management-to-localhost:|" \
+      "$CONFIG"
+  fi
 fi
 
 cd "$CONFIG_DIR"

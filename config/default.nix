@@ -1,5 +1,6 @@
 [
   ./amp
+  ./ccs
   ./cliproxyapi
   ./codex
   ./crush
