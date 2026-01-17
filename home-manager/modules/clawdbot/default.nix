@@ -109,7 +109,9 @@ lib.mkIf (!env.isCI) {
             # Remote gateway config - url and name must be nested under 'remote' key
             remote = {
               url = remoteGatewayUrl;
-              name = host.nodeName; # Node name for identification at the gateway
+              client = {
+                name = host.nodeName; # Node name for identification at the gateway
+              };
             };
             # Auth token read from file (set via extract-secrets or manually)
             tokenFile = "${clawdbotDir}/gateway-token";
