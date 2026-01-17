@@ -1,6 +1,9 @@
 # AI
 .claude
 
+# CCS runtime state (lastUsedAt timestamps change frequently)
+config/ccs/accounts.json
+
 # Local binaries list (machine-specific)
 .devenv.nix
 objectstore
