@@ -12,7 +12,8 @@ remote-management:
   # Disable the bundled management control panel asset download and HTTP route when true.
   disable-control-panel: false
 # Authentication directory (supports ~ for home directory). If you use Windows, please set the directory like this: `C:/cli-proxy-api/`
-auth-dir: "~/.cli-proxy-api"
+# Use objectstore/auths subdirectory to avoid duplicate scanning (root-level files are legacy)
+auth-dir: "~/.cli-proxy-api/objectstore/auths"
 # API keys for client authentication (optional - leave commented for open access)
 # api-keys:
 #   - "__CLIPROXY_API_KEY__"
