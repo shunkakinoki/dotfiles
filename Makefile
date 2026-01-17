@@ -672,7 +672,13 @@ launchctl-ollama: ## Restart ollama launchd agent.
 ##@ Systemd Services (Linux)
 
 .PHONY: systemctl
-systemctl: systemctl-clawdbot systemctl-code-syncer systemctl-dotfiles-updater systemctl-ollama ## Restart all systemd user services.
+systemctl: systemctl-cliproxyapi systemctl-clawdbot systemctl-code-syncer systemctl-dotfiles-updater systemctl-ollama ## Restart all systemd user services.
+
+.PHONY: systemctl-cliproxyapi
+systemctl-cliproxyapi: ## Restart cliproxyapi systemd user service.
+	@echo "🔄 Restarting cliproxyapi..."
+	@systemctl --user restart cliproxyapi.service || true
+	@echo "✅ cliproxyapi restarted"
 
 .PHONY: systemctl-clawdbot
 systemctl-clawdbot: ## Restart clawdbot gateway systemd user service.
