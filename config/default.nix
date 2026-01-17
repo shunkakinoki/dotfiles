@@ -11,6 +11,7 @@
   ./jj
   ./k3s
   ./karabiner
+  ./llm
   ./opencode
   ./pi
   ./serena

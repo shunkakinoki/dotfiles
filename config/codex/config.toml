@@ -36,7 +36,3 @@ model_provider = "lmstudio"
 [profiles.qwen3-coder-30b]
 model = "qwen/qwen3-coder-30b"
 model_provider = "lmstudio"
-
-[profiles.kimi-k2]
-model = "kimi-k2"
-model_provider = "cliproxyapi"
