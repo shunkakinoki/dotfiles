@@ -49,3 +49,12 @@ for template in "$TEMPLATE_DIR"/*.settings.template.json; do
 
   echo "Hydrated CCS ${provider}.settings.json" >&2
 done
+
+# Hydrate accounts.json only if it doesn't exist (preserves runtime state like lastUsedAt)
+ACCOUNTS_TEMPLATE="${TEMPLATE_DIR}/accounts.template.json"
+ACCOUNTS_OUTPUT="${CCS_DIR}/cliproxy/accounts.json"
+if [ -f "$ACCOUNTS_TEMPLATE" ] && [ ! -f "$ACCOUNTS_OUTPUT" ]; then
+  mkdir -p "${CCS_DIR}/cliproxy"
+  cp "$ACCOUNTS_TEMPLATE" "$ACCOUNTS_OUTPUT"
+  echo "Hydrated CCS accounts.json (initial)" >&2
+fi

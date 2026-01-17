@@ -9,7 +9,6 @@
           "nickname": "shunkakinoki",
           "tokenFile": "antigravity-shunkakinoki_gmail_com.json",
           "createdAt": "2026-01-17T00:00:00.000Z",
-          "lastUsedAt": "2026-01-17T20:19:49.880Z",
           "tier": "paid"
         }
       }
@@ -21,8 +20,7 @@
           "email": "shunkakinoki@gmail.com",
           "nickname": "shunkakinoki",
           "tokenFile": "gemini-shunkakinoki@gmail.com-gen-lang-client-0359793614.json",
-          "createdAt": "2026-01-12T00:00:00.000Z",
-          "lastUsedAt": "2026-01-12T00:00:00.000Z"
+          "createdAt": "2026-01-12T00:00:00.000Z"
         }
       }
     },
@@ -33,8 +31,7 @@
           "email": "shunkakinoki@gmail.com",
           "nickname": "shunkakinoki",
           "tokenFile": "codex-shunkakinoki@gmail.com.json",
-          "createdAt": "2025-12-18T00:00:00.000Z",
-          "lastUsedAt": "2025-12-18T00:00:00.000Z"
+          "createdAt": "2025-12-18T00:00:00.000Z"
         }
       }
     }
