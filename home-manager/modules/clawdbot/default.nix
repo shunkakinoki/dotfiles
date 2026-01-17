@@ -173,6 +173,10 @@ lib.mkIf (!env.isCI) {
           "*" = {
             requireMention = false;
           };
+          "-1003612372477" = {
+            enabled = true;
+            requireMention = false;
+          };
         };
       };
 
