@@ -6,6 +6,7 @@
 }:
 let
   env = import ../../../lib/env.nix;
+  host = import ../../../lib/host.nix;
   homeDir = config.home.homeDirectory;
   clawdbotDir = "${homeDir}/.config/clawdbot";
 
@@ -32,7 +33,8 @@ lib.mkIf (!env.isCI) {
 
   # Prevent home-manager from auto-restarting clawdbot during activation
   # Restart only happens via explicit `make switch` (which runs systemctl-clawdbot)
-  systemd.user.services.clawdbot-gateway = lib.mkIf pkgs.stdenv.isLinux {
+  # Only applies on kyber where the gateway runs
+  systemd.user.services.clawdbot-gateway = lib.mkIf host.isKyber {
     Unit.X-RestartIfChanged = "false";
   };
 
@@ -44,6 +46,12 @@ lib.mkIf (!env.isCI) {
   );
 
   programs.clawdbot = {
+    # FIXME: Upstream nix-clawdbot app package is broken - it only contains AppleDouble
+    # metadata files (._*) without the actual app content. Info.plist and binaries are missing.
+    # Disable app installation until upstream fixes this issue.
+    # Bug: The macOS app bundle was not correctly preserved when creating the nix package.
+    installApp = false;
+
     # First-party plugins (all macOS-only)
     firstParty = {
       summarize.enable = pkgs.stdenv.isDarwin; # Link -> clean text -> summary (macOS only)
@@ -69,16 +77,16 @@ lib.mkIf (!env.isCI) {
       enable = true;
 
       # Service configuration:
-      # - Linux (kyber): systemd runs the gateway daemon
-      # - macOS: launchd disabled (remote mode - no local gateway)
-      launchd.enable = false; # macOS uses remote mode, no local gateway
-      systemd.enable = pkgs.stdenv.isLinux;
+      # - Kyber only: systemd runs the gateway daemon
+      # - All other hosts (macOS + non-kyber Linux): no local gateway
+      launchd.enable = false; # Remote mode, no local gateway
+      systemd.enable = host.isKyber; # Only kyber runs the gateway
 
       # Platform-specific config overrides
       # NOTE: uses configOverrides because upstream nix-clawdbot doesn't merge `config` into output
       configOverrides =
-        # Linux (kyber): Local gateway mode with browser + bridge for nodes
-        lib.optionalAttrs pkgs.stdenv.isLinux {
+        # Kyber only: Local gateway mode with browser + bridge for nodes
+        lib.optionalAttrs host.isKyber {
           gateway = {
             mode = "local";
             bind = "lan";
@@ -94,8 +102,8 @@ lib.mkIf (!env.isCI) {
             noSandbox = true; # SUID sandbox requires root-owned binary with mode 4755
           };
         }
-        # macOS: Remote mode - connect to Linux gateway as a node
-        // lib.optionalAttrs pkgs.stdenv.isDarwin {
+        # All other hosts (macOS + non-kyber Linux): Remote mode - connect to kyber gateway
+        // lib.optionalAttrs (!host.isKyber) {
           gateway = {
             mode = "remote";
             url = remoteGatewayUrl;
@@ -104,7 +112,7 @@ lib.mkIf (!env.isCI) {
           };
           browser = {
             enabled = true;
-            headless = false;
+            headless = pkgs.stdenv.isLinux; # Headless on Linux, GUI on macOS
           };
         };
 
@@ -114,9 +122,9 @@ lib.mkIf (!env.isCI) {
         apiKeyFile = "${clawdbotDir}/anthropic-key";
       };
 
-      # Telegram provider - Linux gateway only (reads from ~/.config/clawdbot/telegram-token)
+      # Telegram provider - kyber gateway only (reads from ~/.config/clawdbot/telegram-token)
       providers.telegram = {
-        enable = pkgs.stdenv.isLinux;
+        enable = host.isKyber;
         botTokenFile = "${clawdbotDir}/telegram-token";
         allowFrom = [
           983653361
