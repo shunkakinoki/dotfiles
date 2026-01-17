@@ -675,7 +675,9 @@ launchctl-ollama: ## Restart ollama launchd agent.
 systemctl: systemctl-cliproxyapi systemctl-clawdbot systemctl-code-syncer systemctl-dotfiles-updater systemctl-ollama ## Restart all systemd user services.
 
 .PHONY: systemctl-cliproxyapi
-systemctl-cliproxyapi: ## Restart cliproxyapi systemd user service.
+systemctl-cliproxyapi: ## Pull latest image and restart cliproxyapi systemd user service.
+	@echo "🔄 Pulling latest cliproxyapi image..."
+	@docker pull eceasy/cli-proxy-api:latest || true
 	@echo "🔄 Restarting cliproxyapi..."
 	@systemctl --user restart cliproxyapi.service || true
 	@echo "✅ cliproxyapi restarted"
