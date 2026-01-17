@@ -92,6 +92,10 @@ if [ -f "$TEMPLATE" ]; then
       -e "s|^  upstream-url:|#   upstream-url:|" \
       -e "s|^  upstream-api-key:|#   upstream-api-key:|" \
       -e "s|^  restrict-management-to-localhost:|#   restrict-management-to-localhost:|" \
+      -e "s|^  # Map non-prefixed|#   # Map non-prefixed|" \
+      -e "s|^  model-mappings:|#   model-mappings:|" \
+      -e "s|^    - from:|#     - from:|" \
+      -e "s|^      to:|#       to:|" \
       "$CONFIG"
   fi
 fi
