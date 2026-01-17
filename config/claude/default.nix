@@ -28,10 +28,4 @@
     executable = true;
     force = true;
   };
-
-  home.file.".claude/install-skills.sh" = {
-    source = ./install-skills.sh;
-    executable = true;
-    force = true;
-  };
 }

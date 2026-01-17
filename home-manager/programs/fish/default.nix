@@ -51,8 +51,6 @@
     '';
     shellAliases = {
       neofetch = "fastfetch";
-
-      cliproxyapi = "cd ~/.cli-proxy-api && /opt/homebrew/bin/cliproxyapi -config config.yaml";
       ocd = "bun run ${config.home.homeDirectory}/ghq/github.com/shunkakinoki/open-composer/apps/cli/src/index.ts";
     };
     shellAbbrs = {
@@ -66,6 +64,7 @@
       v = "nvim";
 
       # Function-based abbreviations
+      cliproxyapi = "_cliproxyapi_function";
       clxe = "_clxe_function";
       clxeh = "_clxeh_function";
       coxe = "_coxe_function";
@@ -142,6 +141,7 @@
         value.source = ./functions/${name}.fish;
       })
       [
+        "_cliproxyapi_function"
         "_clxe_function"
         "_clxeh_function"
         "_coxe_function"

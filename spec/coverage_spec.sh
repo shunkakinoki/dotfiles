@@ -21,10 +21,6 @@ It 'has spec file for config/claude/statusline-git.sh'
 The path "spec/statusline_git_spec.sh" should be exist
 End
 
-It 'has spec file for config/claude/install-skills.sh'
-The path "spec/install_skills_spec.sh" should be exist
-End
-
 It 'has spec file for home-manager/programs/neovim/run_tests.sh'
 The path "spec/neovim_tests_spec.sh" should be exist
 End
@@ -97,8 +93,7 @@ Describe 'no shell scripts are missing from coverage list'
 It 'covers all non-spec shell scripts in the repository'
 # List of all shell scripts that should have tests
 # Update this list when adding new shell scripts
-covered_scripts="config/claude/install-skills.sh
-config/claude/notify.sh
+covered_scripts="config/claude/notify.sh
 config/claude/pushover.sh
 config/claude/security.sh
 config/claude/statusline-git.sh

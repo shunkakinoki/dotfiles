@@ -6,8 +6,13 @@
 }:
 let
   env = import ../../../lib/env.nix;
+  host = import ../../../lib/host.nix;
   homeDir = config.home.homeDirectory;
   clawdbotDir = "${homeDir}/.config/clawdbot";
+
+  # Remote gateway URL for non-kyber machines (macOS nodes connect here)
+  # Using Tailscale MagicDNS for direct connectivity (bridge is TCP, not HTTP)
+  remoteGatewayUrl = "ws://kyber.tail950b36.ts.net:18789";
 
   # Script to extract secrets from cliproxyapi auth and .env
   # Uses pkgs.replaceVars to substitute tool paths at build time
@@ -28,7 +33,8 @@ lib.mkIf (!env.isCI) {
 
   # Prevent home-manager from auto-restarting clawdbot during activation
   # Restart only happens via explicit `make switch` (which runs systemctl-clawdbot)
-  systemd.user.services.clawdbot-gateway = lib.mkIf pkgs.stdenv.isLinux {
+  # Only applies on kyber where the gateway runs
+  systemd.user.services.clawdbot-gateway = lib.mkIf host.isKyber {
     Unit.X-RestartIfChanged = "false";
   };
 
@@ -39,7 +45,44 @@ lib.mkIf (!env.isCI) {
     ''
   );
 
+  # Inject gateway token into clawdbot.json for remote mode (tokenFile not supported upstream)
+  home.activation.clawdbotRemoteToken = lib.mkIf (lib ? hm && lib.hm ? dag && !host.isKyber) (
+    lib.hm.dag.entryAfter [ "clawdbotSecrets" "clawdbotConfigFiles" ] ''
+      TOKEN_FILE="${clawdbotDir}/gateway-token"
+      CONFIG_FILE="${homeDir}/.clawdbot/clawdbot.json"
+      if [ -f "$TOKEN_FILE" ] && [ -f "$CONFIG_FILE" ]; then
+        TOKEN=$(${pkgs.coreutils}/bin/cat "$TOKEN_FILE" | ${pkgs.coreutils}/bin/tr -d '\n')
+        # Inject token into gateway.remote.token and remove tokenFile
+        ${pkgs.jq}/bin/jq --arg token "$TOKEN" \
+          '.gateway.remote.token = $token | del(.gateway.remote.tokenFile)' \
+          "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && \
+          ${pkgs.coreutils}/bin/mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+        echo "Injected gateway token into clawdbot config"
+      fi
+    ''
+  );
+
+  # Auto-start Clawdbot.app on login (galactica only)
+  # App is installed to /Applications/Nix Apps/ via nix-darwin
+  launchd.agents.clawdbot-app = lib.mkIf (pkgs.stdenv.isDarwin && host.isGalactica) {
+    enable = true;
+    config = {
+      Label = "com.clawdbot.app";
+      ProgramArguments = [
+        "/Applications/Clawdbot.app/Contents/MacOS/Clawdbot"
+      ];
+      RunAtLoad = true;
+      KeepAlive = false;
+      StandardOutPath = "/tmp/clawdbot-app.log";
+      StandardErrorPath = "/tmp/clawdbot-app.error.log";
+    };
+  };
+
   programs.clawdbot = {
+    # App installed via nix-darwin to /Applications/Nix Apps/
+    installApp = false;
+    appPackage = null;
+
     # First-party plugins (all macOS-only)
     firstParty = {
       summarize.enable = pkgs.stdenv.isDarwin; # Link -> clean text -> summary (macOS only)
@@ -64,37 +107,63 @@ lib.mkIf (!env.isCI) {
     instances.default = {
       enable = true;
 
-      # Service configuration (launchd for macOS, systemd for Linux)
-      launchd.enable = pkgs.stdenv.isDarwin;
-      systemd.enable = pkgs.stdenv.isLinux;
+      # Service configuration:
+      # - Kyber only: systemd runs the gateway daemon
+      # - All other hosts (macOS + non-kyber Linux): no local gateway
+      launchd.enable = false; # Remote mode, no local gateway
+      systemd.enable = host.isKyber; # Only kyber runs the gateway
 
-      # Browser configuration (headless on Linux, GUI on macOS)
-      # Gateway binds to LAN on Linux for k8s ingress access
+      # Platform-specific config overrides
       # NOTE: uses configOverrides because upstream nix-clawdbot doesn't merge `config` into output
-      configOverrides = {
-        browser = {
-          enabled = true;
-          headless = pkgs.stdenv.isLinux;
+      configOverrides =
+        # Kyber only: Local gateway mode with browser + bridge for nodes
+        lib.optionalAttrs host.isKyber {
+          gateway = {
+            mode = "local";
+            bind = "lan";
+            auth = {
+              tokenFile = "${clawdbotDir}/gateway-token";
+            };
+          };
+          bridge = {
+            enabled = true;
+            bind = "lan"; # Allow nodes to connect from LAN/ingress
+          };
+          browser = {
+            enabled = true;
+            headless = true;
+            executablePath = "${pkgs.chromium}/bin/chromium";
+            noSandbox = true; # SUID sandbox requires root-owned binary with mode 4755
+          };
         }
-        // lib.optionalAttrs pkgs.stdenv.isLinux {
-          executablePath = "${pkgs.chromium}/bin/chromium";
-          noSandbox = true; # SUID sandbox requires root-owned binary with mode 4755
+        # All other hosts (macOS + non-kyber Linux): Remote mode - connect to kyber gateway
+        // lib.optionalAttrs (!host.isKyber) {
+          gateway = {
+            mode = "remote";
+            # Remote gateway config with client identity and auth token
+            remote = {
+              url = remoteGatewayUrl;
+              tokenFile = "${clawdbotDir}/gateway-token";
+              client = {
+                name = host.nodeName;
+              };
+            };
+          };
+          browser = {
+            enabled = true;
+            headless = pkgs.stdenv.isLinux; # Headless on Linux, GUI on macOS
+          };
         };
-      }
-      // lib.optionalAttrs pkgs.stdenv.isLinux {
-        gateway = {
-          bind = "lan";
-        };
-      };
 
       # Anthropic API provider (reads from ~/.config/clawdbot/anthropic-key)
+      # Only needed on the gateway (Linux), but harmless to keep on nodes
       providers.anthropic = {
         apiKeyFile = "${clawdbotDir}/anthropic-key";
       };
 
-      # Telegram provider - Linux only (reads from ~/.config/clawdbot/telegram-token)
+      # Telegram provider - kyber gateway only (reads from ~/.config/clawdbot/telegram-token)
       providers.telegram = {
-        enable = pkgs.stdenv.isLinux;
+        enable = host.isKyber;
         botTokenFile = "${clawdbotDir}/telegram-token";
         allowFrom = [
           983653361

@@ -9,9 +9,13 @@ DOTFILES_ENV="$HOME/dotfiles/.env"
 mkdir -p "$CLAWDBOT_DIR"
 chmod 700 "$CLAWDBOT_DIR"
 
-# Extract Telegram token from .env
+# Extract secrets from .env
 if [[ -f $DOTFILES_ENV ]]; then
+  # Telegram token (Linux gateway only)
   @grep@ -E "^CLAWDBOT_TELEGRAM_TOKEN=" "$DOTFILES_ENV" 2>/dev/null | @cut@ -d= -f2- | @tr@ -d '"' >"$CLAWDBOT_DIR/telegram-token" || true
+
+  # Gateway token (for remote mode clients / nodes)
+  @grep@ -E "^CLAWDBOT_GATEWAY_TOKEN=" "$DOTFILES_ENV" 2>/dev/null | @cut@ -d= -f2- | @tr@ -d '"' >"$CLAWDBOT_DIR/gateway-token" || true
 fi
 
 # Read Claude OAuth access_token from cliproxyapi's synced auth (primary source)

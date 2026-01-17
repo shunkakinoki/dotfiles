@@ -250,7 +250,7 @@ nix-build: nix-connect ## Build Nix configuration.
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.runner.config.system.build.toplevel $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
+			HOST=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI build"; \
 			exit 1; \
@@ -264,7 +264,7 @@ nix-build: nix-connect ## Build Nix configuration.
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM) --impure; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --impure --show-trace; \
+			HOST=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --impure --show-trace; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI build"; \
 			exit 1; \
@@ -332,22 +332,22 @@ nix-switch: ## Activate Nix configuration.
 		elif [ "$(OS)" = "Darwin" ]; then \
 			if [ -n "$(HOST)" ]; then \
 				echo "Switching named host: $(HOST)"; \
-				sudo $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(HOST) --impure; \
+				sudo HOST=$(HOST) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(HOST) --impure; \
 			elif [ -n "$(DETECTED_HOST)" ]; then \
 				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				sudo $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(DETECTED_HOST) --impure; \
+				sudo HOST=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(DETECTED_HOST) --impure; \
 			else \
-				sudo $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM) --impure; \
+				sudo HOST=$(NIX_SYSTEM) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM) --impure; \
 			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM); \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
 			if [ -n "$(HOST)" ]; then \
 				echo "Switching named home config: $(HOST)"; \
-				USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#homeConfigurations.$(HOST).activationPackage; \
+				HOST=$(HOST) USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#homeConfigurations.$(HOST).activationPackage; \
 			elif [ -n "$(DETECTED_HOST)" ]; then \
 				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#homeConfigurations.$(DETECTED_HOST).activationPackage; \
+				HOST=$(DETECTED_HOST) USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#homeConfigurations.$(DETECTED_HOST).activationPackage; \
 			else \
 				USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
 			fi; \

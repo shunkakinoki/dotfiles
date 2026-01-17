@@ -26,10 +26,10 @@ with pkgs;
   curlie
   cursor-cli
   delta
-  doppler
   difftastic
   direnv
   doggo
+  doppler
   duf
   dust
   entr
@@ -39,19 +39,20 @@ with pkgs;
   fswatch
   fzf-make
   gh
-  google-cloud-sdk
   git
   glance
   glow
   gnumake
-  gping
+  go-task
+  google-cloud-sdk
   goose-cli
+  gping
   grc
   htop
   httpie
   hyperfine
-  jujutsu
   jq
+  jujutsu
   just
   k9s
   kind
@@ -61,6 +62,7 @@ with pkgs;
   kubernetes-helm
   kustomize
   llama-cpp
+  llm
   mariadb
   mkcert
   navi
