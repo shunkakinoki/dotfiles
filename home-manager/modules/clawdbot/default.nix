@@ -106,10 +106,12 @@ lib.mkIf (!env.isCI) {
         // lib.optionalAttrs (!host.isKyber) {
           gateway = {
             mode = "remote";
-            # Remote gateway config - url and name must be nested under 'remote' key
+            # Remote gateway config with client identity
             remote = {
               url = remoteGatewayUrl;
-              name = host.nodeName; # Node name for identification at the gateway
+              client = {
+                name = host.nodeName;
+              };
             };
             # Auth token read from file (set via extract-secrets or manually)
             tokenFile = "${clawdbotDir}/gateway-token";
