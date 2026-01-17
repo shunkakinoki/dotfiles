@@ -105,7 +105,8 @@ Describe 'no shell scripts are missing from coverage list'
 It 'covers all non-spec shell scripts in the repository'
 # List of all shell scripts that should have tests
 # Update this list when adding new shell scripts
-covered_scripts="config/claude/notify.sh
+covered_scripts="config/ccs/hydrate.sh
+config/claude/notify.sh
 config/claude/pushover.sh
 config/claude/security.sh
 config/claude/statusline-git.sh
