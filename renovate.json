@@ -29,6 +29,12 @@
   "nix": {
     "enabled": true
   },
+  "cargo": {
+    "enabled": true
+  },
+  "pep621": {
+    "enabled": true
+  },
   "git-submodules": {
     "enabled": true
   },
@@ -97,6 +103,30 @@
       "groupSlug": "git-submodules",
       "matchManagers": [
         "git-submodules"
+      ],
+      "automerge": true,
+      "platformAutomerge": true,
+      "schedule": [
+        "before 3am"
+      ]
+    },
+    {
+      "groupName": "Cargo Dependencies",
+      "groupSlug": "cargo",
+      "matchManagers": [
+        "cargo"
+      ],
+      "automerge": true,
+      "platformAutomerge": true,
+      "schedule": [
+        "before 3am"
+      ]
+    },
+    {
+      "groupName": "Python Dependencies",
+      "groupSlug": "python",
+      "matchManagers": [
+        "pep621"
       ],
       "automerge": true,
       "platformAutomerge": true,

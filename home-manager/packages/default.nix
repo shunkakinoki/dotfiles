@@ -25,6 +25,7 @@ with pkgs;
   curl
   curlie
   cursor-cli
+  dasel
   delta
   difftastic
   direnv

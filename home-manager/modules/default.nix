@@ -1,7 +1,9 @@
 [
+  ./cargo-globals
   ./clawdbot
   ./local-binaries
   ./npm-globals
   ./tailscale
+  ./uv-globals
   ./yek
 ]

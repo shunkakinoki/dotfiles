@@ -73,8 +73,20 @@ It 'has spec file for home-manager/modules/local-binaries/sync-local-binaries.sh
 The path "spec/local_binaries_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/modules/cargo-globals/install-cargo-globals.sh'
+The path "spec/cargo_globals_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/modules/clawdbot/extract-secrets.sh'
 The path "spec/clawdbot_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/modules/npm-globals/install-npm-globals.sh'
+The path "spec/npm_globals_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/modules/uv-globals/install-uv-globals.sh'
+The path "spec/uv_globals_spec.sh" should be exist
 End
 
 It 'has spec file for home-manager/modules/yek/install-yek.sh'
@@ -97,8 +109,11 @@ covered_scripts="config/claude/notify.sh
 config/claude/pushover.sh
 config/claude/security.sh
 config/claude/statusline-git.sh
+home-manager/modules/cargo-globals/install-cargo-globals.sh
 home-manager/modules/clawdbot/extract-secrets.sh
 home-manager/modules/local-binaries/sync-local-binaries.sh
+home-manager/modules/npm-globals/install-npm-globals.sh
+home-manager/modules/uv-globals/install-uv-globals.sh
 home-manager/modules/yek/install-yek.sh
 home-manager/modules/yek/yek.sh
 home-manager/programs/neovim/run_tests.sh
