@@ -32,5 +32,15 @@ if [[ ! -s "$CLAWDBOT_DIR/anthropic-key" ]] && [[ -f $DOTFILES_ENV ]]; then
   @grep@ -E "^CLAWDBOT_ANTHROPIC_KEY=" "$DOTFILES_ENV" 2>/dev/null | @cut@ -d= -f2- | @tr@ -d '"' >"$CLAWDBOT_DIR/anthropic-key" || true
 fi
 
+# Extract cliproxyapi API key from config.yaml
+CLIPROXY_CONFIG="$HOME/.cli-proxy-api/config.yaml"
+if [[ -f $CLIPROXY_CONFIG ]]; then
+  # Extract first api-key from api-keys list in config.yaml
+  @grep@ -E '^\s*-\s*"[^"]+"\s*$' "$CLIPROXY_CONFIG" 2>/dev/null | @head@ -1 | @tr@ -d '"-' | @tr@ -d ' ' >"$CLAWDBOT_DIR/cliproxy-key" || true
+  if [[ -s "$CLAWDBOT_DIR/cliproxy-key" ]]; then
+    echo "Extracted cliproxyapi key from config" >&2
+  fi
+fi
+
 # Set secure permissions
 chmod 600 "$CLAWDBOT_DIR"/* 2>/dev/null || true
