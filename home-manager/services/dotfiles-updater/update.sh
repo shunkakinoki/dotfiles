@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+# Export HOST for Nix impure builds (used by lib/host.nix to detect kyber/galactica)
+# This is needed because systemd doesn't inherit the shell environment
+export HOST="${HOST:-$(/usr/bin/hostname 2>/dev/null || hostname 2>/dev/null || echo '')}"
+
 cd ~/dotfiles
 
 # Skip if the current branch is not main
