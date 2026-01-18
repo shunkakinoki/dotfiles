@@ -152,6 +152,10 @@ services: ## Restart platform-specific services (launchd on macOS, systemd on Li
 		$(MAKE) systemctl; \
 	fi
 
+.PHONY: sync
+sync: ## Sync dotagents (commands, skills, MCP configuration).
+	@$(MAKE) -C dotagents sync
+
 .PHONY: test
 test: neovim-test shell-test ## Run all tests (neovim + shell).
 
