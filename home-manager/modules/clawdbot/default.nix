@@ -45,6 +45,23 @@ lib.mkIf (!env.isCI) {
     ''
   );
 
+  # Inject cliproxy API key into clawdbot.json (apiKeyFile not supported upstream)
+  home.activation.clawdbotCliproxyKey = lib.mkIf (lib ? hm && lib.hm ? dag && host.isKyber) (
+    lib.hm.dag.entryAfter [ "clawdbotSecrets" "clawdbotConfigFiles" ] ''
+      KEY_FILE="${clawdbotDir}/cliproxy-key"
+      CONFIG_FILE="${homeDir}/.clawdbot/clawdbot.json"
+      if [ -f "$KEY_FILE" ] && [ -f "$CONFIG_FILE" ]; then
+        KEY=$(${pkgs.coreutils}/bin/cat "$KEY_FILE" | ${pkgs.coreutils}/bin/tr -d '\n')
+        # Inject apiKey into models.providers.cliproxy
+        ${pkgs.jq}/bin/jq --arg key "$KEY" \
+          '.models.providers.cliproxy.apiKey = $key' \
+          "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && \
+          ${pkgs.coreutils}/bin/mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+        echo "Injected cliproxy API key into clawdbot config"
+      fi
+    ''
+  );
+
   # Inject gateway token into clawdbot.json for remote mode (tokenFile not supported upstream)
   home.activation.clawdbotRemoteToken = lib.mkIf (lib ? hm && lib.hm ? dag && !host.isKyber) (
     lib.hm.dag.entryAfter [ "clawdbotSecrets" "clawdbotConfigFiles" ] ''
