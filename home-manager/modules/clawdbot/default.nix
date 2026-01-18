@@ -144,84 +144,114 @@ lib.mkIf (!env.isCI) {
                 baseUrl = "http://localhost:8317/v1";
                 apiKeyFile = "${clawdbotDir}/cliproxy-key";
                 api = "openai-completions";
-                models = [
-                  # Anthropic models
-                  {
-                    id = "claude-opus-4-5-20251101";
-                    name = "Claude Opus 4.5";
-                  }
-                  {
-                    id = "claude-opus-4-5-thinking";
-                    name = "Claude Opus 4.5 Thinking";
-                  }
-                  {
-                    id = "claude-sonnet-4-5-20250929";
-                    name = "Claude Sonnet 4.5";
-                  }
-                  {
-                    id = "claude-sonnet-4-5-thinking";
-                    name = "Claude Sonnet 4.5 Thinking";
-                  }
-                  {
-                    id = "claude-sonnet-4-20250514";
-                    name = "Claude Sonnet 4";
-                  }
-                  {
-                    id = "claude-opus-4-20250514";
-                    name = "Claude Opus 4";
-                  }
-                  {
-                    id = "claude-haiku-4-5-20251001";
-                    name = "Claude Haiku 4.5";
-                  }
-                  # OpenAI models
-                  {
-                    id = "gpt-5.2";
-                    name = "GPT-5.2";
-                  }
-                  {
-                    id = "gpt-5.2-codex";
-                    name = "GPT-5.2 Codex";
-                  }
-                  {
-                    id = "gpt-5.1";
-                    name = "GPT-5.1";
-                  }
-                  {
-                    id = "gpt-5";
-                    name = "GPT-5";
-                  }
-                  {
-                    id = "gpt-5-codex";
-                    name = "GPT-5 Codex";
-                  }
-                  # Google Gemini models
-                  {
-                    id = "gemini-3-pro-preview";
-                    name = "Gemini 3 Pro";
-                  }
-                  {
-                    id = "gemini-3-flash-preview";
-                    name = "Gemini 3 Flash";
-                  }
-                  {
-                    id = "gemini-2.5-pro";
-                    name = "Gemini 2.5 Pro";
-                  }
-                  {
-                    id = "gemini-2.5-flash";
-                    name = "Gemini 2.5 Flash";
-                  }
-                  # Z-AI GLM models
-                  {
-                    id = "glm-4.7";
-                    name = "GLM 4.7";
-                  }
-                  {
-                    id = "glm-4.6";
-                    name = "GLM 4.6";
-                  }
-                ];
+                models =
+                  let
+                    # Helper to create model entries with required fields
+                    mkModel =
+                      {
+                        id,
+                        name,
+                        reasoning ? false,
+                        contextWindow ? 200000,
+                        maxTokens ? 32000,
+                      }:
+                      {
+                        inherit
+                          id
+                          name
+                          reasoning
+                          contextWindow
+                          maxTokens
+                          ;
+                        input = [ "text" ];
+                        cost = {
+                          input = 0;
+                          output = 0;
+                          cacheRead = 0;
+                          cacheWrite = 0;
+                        };
+                      };
+                  in
+                  [
+                    # Anthropic models
+                    (mkModel {
+                      id = "claude-opus-4-5-20251101";
+                      name = "Claude Opus 4.5";
+                    })
+                    (mkModel {
+                      id = "claude-opus-4-5-thinking";
+                      name = "Claude Opus 4.5 Thinking";
+                      reasoning = true;
+                    })
+                    (mkModel {
+                      id = "claude-sonnet-4-5-20250929";
+                      name = "Claude Sonnet 4.5";
+                    })
+                    (mkModel {
+                      id = "claude-sonnet-4-5-thinking";
+                      name = "Claude Sonnet 4.5 Thinking";
+                      reasoning = true;
+                    })
+                    (mkModel {
+                      id = "claude-sonnet-4-20250514";
+                      name = "Claude Sonnet 4";
+                    })
+                    (mkModel {
+                      id = "claude-opus-4-20250514";
+                      name = "Claude Opus 4";
+                    })
+                    (mkModel {
+                      id = "claude-haiku-4-5-20251001";
+                      name = "Claude Haiku 4.5";
+                    })
+                    # OpenAI models
+                    (mkModel {
+                      id = "gpt-5.2";
+                      name = "GPT-5.2";
+                    })
+                    (mkModel {
+                      id = "gpt-5.2-codex";
+                      name = "GPT-5.2 Codex";
+                    })
+                    (mkModel {
+                      id = "gpt-5.1";
+                      name = "GPT-5.1";
+                    })
+                    (mkModel {
+                      id = "gpt-5";
+                      name = "GPT-5";
+                    })
+                    (mkModel {
+                      id = "gpt-5-codex";
+                      name = "GPT-5 Codex";
+                    })
+                    # Google Gemini models
+                    (mkModel {
+                      id = "gemini-3-pro-preview";
+                      name = "Gemini 3 Pro";
+                    })
+                    (mkModel {
+                      id = "gemini-3-flash-preview";
+                      name = "Gemini 3 Flash";
+                    })
+                    (mkModel {
+                      id = "gemini-2.5-pro";
+                      name = "Gemini 2.5 Pro";
+                    })
+                    (mkModel {
+                      id = "gemini-2.5-flash";
+                      name = "Gemini 2.5 Flash";
+                    })
+                    # Z-AI GLM models
+                    (mkModel {
+                      id = "glm-4.7";
+                      name = "GLM 4.7";
+                    })
+                    (mkModel {
+                      id = "glm-4.6";
+                      name = "GLM 4.6";
+                    })
+                  ];
               };
             };
           };
