@@ -1,0 +1,58 @@
+name: Upgrade
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.sha }}
+  cancel-in-progress: true
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  upgrade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run Upgrade Overlays
+        run: ./scripts/upgrade-overlays.sh all
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check for Changes
+        id: changes
+        run: |
+          if git diff --quiet overlays/default.nix; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+      - name: Create Pull Request
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          BRANCH="chore/upgrade-overlays-$(date +%Y%m%d)"
+          git checkout -b "$BRANCH"
+          git add overlays/default.nix
+          git commit -m "chore: upgrade overlays"
+          git push origin "$BRANCH"
+          gh pr create --title "chore: upgrade overlays" --body "Automated overlay upgrade" --base main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  upgrade-check:
+    if: always()
+    needs:
+      - upgrade
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Alls Green
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
