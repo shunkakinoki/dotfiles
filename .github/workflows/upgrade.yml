@@ -24,27 +24,15 @@ jobs:
         run: ./scripts/upgrade-overlays.sh all
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Check for Changes
-        id: changes
-        run: |
-          if git diff --quiet overlays/default.nix; then
-            echo "changed=false" >> $GITHUB_OUTPUT
-          else
-            echo "changed=true" >> $GITHUB_OUTPUT
-          fi
       - name: Create Pull Request
-        if: steps.changes.outputs.changed == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          BRANCH="chore/upgrade-overlays-$(date +%Y%m%d)"
-          git checkout -b "$BRANCH"
-          git add overlays/default.nix
-          git commit -m "chore: upgrade overlays"
-          git push origin "$BRANCH"
-          gh pr create --title "chore: upgrade overlays" --body "Automated overlay upgrade" --base main
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: upgrade overlays'
+          title: 'chore: upgrade overlays'
+          body: Automated overlay upgrade
+          branch: chore/upgrade-overlays
+          delete-branch: true
   upgrade-check:
     if: always()
     needs:
