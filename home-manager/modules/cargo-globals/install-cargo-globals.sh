@@ -29,8 +29,6 @@ if ! command -v jq &>/dev/null; then
   exit 0
 fi
 
-echo "Installing cargo global packages from Cargo.toml..."
-
 # Parse dependencies from standard Cargo.toml format
 DEPS=$(dasel -f "$CARGO_TOML" -r toml -w json 'dependencies' 2>/dev/null | jq -r 'to_entries[] | "\(.key)@\(.value)"' 2>/dev/null || true)
 
@@ -39,10 +37,18 @@ if [ -z "$DEPS" ]; then
   exit 0
 fi
 
+# Get currently installed packages (cargo's native cache)
+INSTALLED=$(cargo install --list 2>/dev/null || true)
+
 echo "$DEPS" | while read -r pkg; do
   CRATE=$(echo "$pkg" | cut -d'@' -f1)
   VERSION=$(echo "$pkg" | cut -d'@' -f2)
   if [ -n "$CRATE" ]; then
+    # Check if already installed at this version (format: "crate_name v1.2.3:")
+    if echo "$INSTALLED" | grep -q "^${CRATE} v${VERSION}:"; then
+      echo "$CRATE@$VERSION already installed, skipping"
+      continue
+    fi
     echo "Installing $CRATE@$VERSION..."
     cargo install "$CRATE" --version "$VERSION" --locked 2>/dev/null ||
       cargo install "$CRATE" --version "$VERSION" 2>/dev/null ||
@@ -50,4 +56,4 @@ echo "$DEPS" | while read -r pkg; do
   fi
 done
 
-echo "cargo globals installation complete"
+echo "cargo globals check complete"

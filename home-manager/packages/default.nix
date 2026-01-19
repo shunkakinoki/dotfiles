@@ -1,17 +1,17 @@
-let
-  inherit (import ../../lib/env.nix) isCI;
-in
 {
   pkgs,
   inputs,
 }:
+let
+  inherit (inputs.env) isCI;
+in
 with pkgs;
 [
   inputs.agenix.packages.${stdenv.hostPlatform.system}.default
   pkgs.nur.repos.charmbracelet.crush
   age
   aichat
-  # aider-chat  # FIXME: pyarrow 20.0.0 has malloc issues on macOS, uncomment when fixed
+  aider-chat
   argocd
   ast-grep
   awscli
@@ -69,7 +69,7 @@ with pkgs;
   navi
   postgresql
   procs
-  # qwen-code  # FIXME: npmDepsHash is stale in nixpkgs, uncomment when fixed
+  qwen-code
   ripgrep
   sccache
   sd
