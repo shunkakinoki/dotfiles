@@ -59,14 +59,16 @@
     }@inputs:
 
     let
-      localLib = import ./lib;
-      inputs = inputs // {
-        lib = localLib;
-        env = localLib.env;
-        host = localLib.host;
+      inputsWithLib = inputs // {
+        env = import ./lib/env.nix;
+        host = import ./lib/host.nix;
       };
     in
-    flake-parts.lib.mkFlake { inherit inputs; } {
+    flake-parts.lib.mkFlake { inputs = inputsWithLib; } (
+      let
+        inputs = inputsWithLib;
+      in
+      {
       systems = [
         "aarch64-darwin"
         "aarch64-linux"
@@ -210,5 +212,6 @@
             settings = treefmtSettings;
           };
         };
-    };
+      }
+    );
 }

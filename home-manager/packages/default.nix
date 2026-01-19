@@ -3,7 +3,7 @@
   inputs,
 }:
 let
-  inherit (inputs.lib.env) isCI;
+  inherit (inputs.env) isCI;
 in
 with pkgs;
 [

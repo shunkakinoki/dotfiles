@@ -6,7 +6,7 @@
   ...
 }:
 let
-  inherit (inputs.lib) env host;
+  inherit (inputs) env host;
   homeDir = config.home.homeDirectory;
   clawdbotDir = "${homeDir}/.config/clawdbot";
 
