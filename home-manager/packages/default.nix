@@ -1,10 +1,10 @@
-let
-  inherit (import ../../lib/env.nix) isCI;
-in
 {
   pkgs,
   inputs,
 }:
+let
+  inherit (inputs.lib.env) isCI;
+in
 with pkgs;
 [
   inputs.agenix.packages.${stdenv.hostPlatform.system}.default

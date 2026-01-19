@@ -58,6 +58,14 @@
       ...
     }@inputs:
 
+    let
+      localLib = import ./lib;
+      inputs = inputs // {
+        lib = localLib;
+        env = localLib.env;
+        host = localLib.host;
+      };
+    in
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "aarch64-darwin"

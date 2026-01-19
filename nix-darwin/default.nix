@@ -1,13 +1,13 @@
 {
   pkgs,
   lib,
+  inputs,
   isRunner,
   username,
   ...
 }:
 let
-  env = import ../lib/env.nix;
-  host = import ../lib/host.nix;
+  inherit (inputs.lib) env host;
   dock = import ./config/dock.nix;
   fonts = import ./config/fonts.nix { inherit pkgs; };
   homebrew = import ./config/homebrew.nix { inherit isRunner; };

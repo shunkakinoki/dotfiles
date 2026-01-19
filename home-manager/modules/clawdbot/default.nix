@@ -1,12 +1,12 @@
 {
   config,
   lib,
+  inputs,
   pkgs,
   ...
 }:
 let
-  env = import ../../../lib/env.nix;
-  host = import ../../../lib/host.nix;
+  inherit (inputs.lib) env host;
   homeDir = config.home.homeDirectory;
   clawdbotDir = "${homeDir}/.config/clawdbot";
 

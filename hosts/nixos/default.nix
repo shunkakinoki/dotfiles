@@ -120,6 +120,7 @@ nixpkgs.lib.nixosSystem {
     home-manager.nixosModules.home-manager
     {
       home-manager.backupFileExtension = "hm-backup";
+      home-manager.extraSpecialArgs = { inherit inputs; };
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
       home-manager.users."${username}" = import ../../home-manager {
