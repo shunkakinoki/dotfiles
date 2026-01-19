@@ -79,6 +79,21 @@ lib.mkIf (!env.isCI) {
     ''
   );
 
+  # Clean stale port-guard entries on activation (macOS remote mode only)
+  # The Clawdbot.app has a bug where dead SSH tunnel PIDs remain in port-guard.json,
+  # preventing new tunnels from being created. This cleans up stale entries.
+  home.activation.clawdbotCleanPortGuard = lib.mkIf (lib ? hm && lib.hm ? dag && pkgs.stdenv.isDarwin && !host.isKyber) (
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      PORT_GUARD="${homeDir}/Library/Application Support/Clawdbot/port-guard.json"
+      if [ -f "$PORT_GUARD" ]; then
+        # Filter out entries for port 18789 (gateway) - our launchd tunnel handles this
+        ${pkgs.jq}/bin/jq '[.[] | select(.port != 18789)]' "$PORT_GUARD" > "$PORT_GUARD.tmp" && \
+          ${pkgs.coreutils}/bin/mv "$PORT_GUARD.tmp" "$PORT_GUARD"
+        echo "Cleaned stale gateway entries from port-guard.json"
+      fi
+    ''
+  );
+
   # Auto-start Clawdbot.app on login (galactica only)
   # App is installed to /Applications/Nix Apps/ via nix-darwin
   launchd.agents.clawdbot-app = lib.mkIf (pkgs.stdenv.isDarwin && host.isGalactica) {
@@ -92,6 +107,36 @@ lib.mkIf (!env.isCI) {
       KeepAlive = false;
       StandardOutPath = "/tmp/clawdbot-app.log";
       StandardErrorPath = "/tmp/clawdbot-app.error.log";
+    };
+  };
+
+  # SSH tunnel to kyber gateway for remote mode (non-kyber macOS only)
+  # The Clawdbot.app has a bug where it doesn't reliably create the gateway tunnel,
+  # so we maintain a persistent SSH tunnel via launchd as a workaround.
+  launchd.agents.clawdbot-tunnel = lib.mkIf (pkgs.stdenv.isDarwin && !host.isKyber) {
+    enable = true;
+    config = {
+      Label = "com.clawdbot.tunnel";
+      ProgramArguments = [
+        "/usr/bin/ssh"
+        "-N"
+        "-o"
+        "BatchMode=yes"
+        "-o"
+        "ExitOnForwardFailure=yes"
+        "-o"
+        "ServerAliveInterval=15"
+        "-o"
+        "ServerAliveCountMax=3"
+        "-L"
+        "18789:127.0.0.1:18789"
+        "-i"
+        "${homeDir}/.ssh/id_ed25519"
+        "ubuntu@kyber.tail950b36.ts.net"
+      ];
+      RunAtLoad = true;
+      KeepAlive = true;
+      StandardErrorPath = "/tmp/clawdbot-tunnel.err.log";
     };
   };
 
