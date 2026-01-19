@@ -162,6 +162,24 @@ test: neovim-test shell-test ## Run all tests (neovim + shell).
 .PHONY: update
 update: nix-update shell-update neovim-update ## Update Nix flake and configurations.
 
+##@ Upgrade
+
+.PHONY: upgrade
+upgrade: upgrade-overlays neovim-upgrade ## Upgrade overlays and Nix flake, then rebuild.
+
+.PHONY: upgrade-overlays
+upgrade-overlays: ## Upgrade all custom overlays to latest versions.
+	@echo "🔄 Upgrading custom overlays..."
+	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
+		echo "⏭️ Skipping overlay upgrade in CI/Docker"; \
+	else \
+		./scripts/upgrade-overlays.sh all; \
+	fi
+
+.PHONY: upgrade-clawdbot
+upgrade-clawdbot: ## Upgrade clawdbot overlay to latest release.
+	@./scripts/upgrade-overlays.sh clawdbot
+
 .PHONY: dev
 dev: nix-develop ## Enter the Nix dev shell (alias for nix-develop).
 
@@ -516,14 +534,14 @@ neovim-dev: ## Set up local Neovim development environment.
 	@echo "✅ Local Neovim development environment ready"
 	@echo "🚧 To restore the Nix-managed version, run 'make switch'"
 
-.PHONY: neovim-update
-neovim-update: ## Update Neovim plugins.
+.PHONY: neovim-upgrade
+neovim-upgrade: ## Update Neovim plugins.
 	@echo "📦 Updating neovim plugins..."
 	@nvim --headless +"lua vim.pack.update()" +qa
 	@echo "✅ Neovim plugins updated"
 
 .PHONY: neovim-sync
-neovim-sync: ## Sync Neovim plugins.
+neovim-sync: neovim-upgrade ## Sync Neovim plugins.
 	@echo "🔄 Syncing neovim plugins..."
 	@nvim --headless +"lua vim.cmd('source ' .. vim.fn.stdpath('config') .. '/init.lua')" +qa
 	@echo "✅ Neovim plugins synced"
@@ -744,6 +762,9 @@ shell-check: ## Run ShellCheck on shell scripts.
 shell-check-dev: ## Run ShellCheck inside the Nix dev shell (mirrors CI).
 	@echo "🔍 Running ShellCheck inside the Nix dev shell..."
 	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) shell-check
+
+.PHONY: shell-lint
+shell-lint: shell-check ## Lint shell scripts (alias for shell-check).
 
 ##@ Doppler
 
