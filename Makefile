@@ -756,7 +756,7 @@ shell-test-dev: ## Run shell tests inside the Nix dev shell (mirrors CI).
 .PHONY: shell-check
 shell-check: ## Run ShellCheck on shell scripts.
 	@echo "🔍 Running ShellCheck..."
-	@find . -name '*.sh' -not -path './node_modules/*' -not -path './.git/*' -not -path './result/*' | xargs shellcheck
+	@find . -name '*.sh' -not -path './node_modules/*' -not -path './.git/*' -not -path './result/*' -not -path './.venv/*' | xargs shellcheck
 
 .PHONY: shell-check-dev
 shell-check-dev: ## Run ShellCheck inside the Nix dev shell (mirrors CI).

@@ -69,6 +69,10 @@ It 'has spec file for scripts/update-gitalias.sh'
 The path "spec/update_gitalias_spec.sh" should be exist
 End
 
+It 'has spec file for scripts/upgrade-overlays.sh'
+The path "spec/upgrade_overlays_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/modules/local-binaries/sync-local-binaries.sh'
 The path "spec/local_binaries_spec.sh" should be exist
 End
@@ -129,7 +133,8 @@ home-manager/services/neverssl-keepalive/keepalive.sh
 install.sh
 named-hosts/kyber/rekey-galactica.sh
 named-hosts/kyber/setup.sh
-scripts/update-gitalias.sh"
+scripts/update-gitalias.sh
+scripts/upgrade-overlays.sh"
 
 # Get actual scripts from git (excluding spec directory)
 actual_scripts=$(git ls-files '*.sh' 2>/dev/null | grep -v '^spec/' | sort)
