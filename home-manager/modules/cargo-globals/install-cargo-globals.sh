@@ -40,9 +40,6 @@ fi
 # Get currently installed packages (cargo's native cache)
 INSTALLED=$(cargo install --list 2>/dev/null || true)
 
-INSTALLED_COUNT=0
-INSTALL_COUNT=0
-
 echo "$DEPS" | while read -r pkg; do
   CRATE=$(echo "$pkg" | cut -d'@' -f1)
   VERSION=$(echo "$pkg" | cut -d'@' -f2)
