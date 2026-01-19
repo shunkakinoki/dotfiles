@@ -33,6 +33,6 @@ model_provider = "ollama"
 model = "openai/gpt-oss-120b"
 model_provider = "lmstudio"
 
-[profiles.qwen3-coder-30b]
-model = "qwen/qwen3-coder-30b"
+[profiles.glm-4.7-flash]
+model = "zai-org/glm-4.7-flash"
 model_provider = "lmstudio"
