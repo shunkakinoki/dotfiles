@@ -2,58 +2,58 @@
 # shellcheck disable=SC2329,SC2034
 
 Describe 'upgrade-overlays.sh'
-  SCRIPT="$PWD/scripts/upgrade-overlays.sh"
+SCRIPT="$PWD/scripts/upgrade-overlays.sh"
 
-  Describe 'usage and help'
-    It 'shows usage when called without arguments'
-      When run bash "$SCRIPT"
-      The output should include 'Usage:'
-      The output should include 'upgrade-overlays.sh'
-      The output should include 'clawdbot'
-      The output should include 'all'
-      The status should be failure
-    End
+Describe 'usage and help'
+It 'shows usage when called without arguments'
+When run bash "$SCRIPT"
+The output should include 'Usage:'
+The output should include 'upgrade-overlays.sh'
+The output should include 'clawdbot'
+The output should include 'all'
+The status should be failure
+End
 
-    It 'shows usage with --help flag'
-      When run bash "$SCRIPT" --help
-      The output should include 'Usage:'
-      The output should include 'Available overlays:'
-      The status should be success
-    End
+It 'shows usage with --help flag'
+When run bash "$SCRIPT" --help
+The output should include 'Usage:'
+The output should include 'Available overlays:'
+The status should be success
+End
 
-    It 'shows usage with -h flag'
-      When run bash "$SCRIPT" -h
-      The output should include 'Usage:'
-      The status should be success
-    End
-  End
+It 'shows usage with -h flag'
+When run bash "$SCRIPT" -h
+The output should include 'Usage:'
+The status should be success
+End
+End
 
-  Describe 'unknown overlay handling'
-    setup() {
-      mock_bin_setup gh nix-prefetch-url nix jq
-    }
+Describe 'unknown overlay handling'
+setup() {
+  mock_bin_setup gh nix-prefetch-url nix jq
+}
 
-    cleanup() {
-      mock_bin_cleanup
-    }
+cleanup() {
+  mock_bin_cleanup
+}
 
-    Before 'setup'
-    After 'cleanup'
+Before 'setup'
+After 'cleanup'
 
-    It 'fails for unknown overlay'
-      When run bash "$SCRIPT" unknown-overlay
-      The output should include 'Unknown overlay: unknown-overlay'
-      The output should include 'Available overlays'
-      The status should be failure
-    End
-  End
+It 'fails for unknown overlay'
+When run bash "$SCRIPT" unknown-overlay
+The output should include 'Unknown overlay: unknown-overlay'
+The output should include 'Available overlays'
+The status should be failure
+End
+End
 
-  Describe 'dependency checking'
-    setup() {
-      TEMP_DIR=$(mktemp -d)
-      # Create a script that only has partial PATH
-      TEMP_SCRIPT="$TEMP_DIR/test-deps.sh"
-      cat >"$TEMP_SCRIPT" <<'SCRIPT'
+Describe 'dependency checking'
+setup() {
+  TEMP_DIR=$(mktemp -d)
+  # Create a script that only has partial PATH
+  TEMP_SCRIPT="$TEMP_DIR/test-deps.sh"
+  cat >"$TEMP_SCRIPT" <<'SCRIPT'
 #!/usr/bin/env bash
 set -euo pipefail
 # Override PATH to exclude tools
@@ -73,32 +73,32 @@ check_dependencies() {
 }
 check_dependencies
 SCRIPT
-      chmod +x "$TEMP_SCRIPT"
-    }
+  chmod +x "$TEMP_SCRIPT"
+}
 
-    cleanup() {
-      rm -rf "$TEMP_DIR"
-    }
+cleanup() {
+  rm -rf "$TEMP_DIR"
+}
 
-    Before 'setup'
-    After 'cleanup'
+Before 'setup'
+After 'cleanup'
 
-    It 'reports missing dependencies'
-      When run bash "$TEMP_SCRIPT"
-      The output should include 'Missing required dependencies'
-      The status should be failure
-    End
-  End
+It 'reports missing dependencies'
+When run bash "$TEMP_SCRIPT"
+The output should include 'Missing required dependencies'
+The status should be failure
+End
+End
 
-  Describe 'clawdbot upgrade'
-    setup() {
-      mock_bin_setup gh nix-prefetch-url nix jq
-      TEMP_DIR=$(mktemp -d)
-      OVERLAY_FILE="$TEMP_DIR/overlays/default.nix"
-      mkdir -p "$TEMP_DIR/overlays"
+Describe 'clawdbot upgrade'
+setup() {
+  mock_bin_setup gh nix-prefetch-url nix jq
+  TEMP_DIR=$(mktemp -d)
+  OVERLAY_FILE="$TEMP_DIR/overlays/default.nix"
+  mkdir -p "$TEMP_DIR/overlays"
 
-      # Create a minimal overlay file with the expected structure
-      cat >"$OVERLAY_FILE" <<'NIX'
+  # Create a minimal overlay file with the expected structure
+  cat >"$OVERLAY_FILE" <<'NIX'
 { inputs }:
 let
   # Override clawdbot source to v2026.1.15
@@ -127,9 +127,9 @@ in
 ]
 NIX
 
-      # Create a test script that uses our temp overlay file
-      TEMP_SCRIPT="$TEMP_DIR/upgrade-test.sh"
-      cat >"$TEMP_SCRIPT" <<SCRIPT
+  # Create a test script that uses our temp overlay file
+  TEMP_SCRIPT="$TEMP_DIR/upgrade-test.sh"
+  cat >"$TEMP_SCRIPT" <<SCRIPT
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -187,57 +187,57 @@ upgrade_clawdbot() {
 
 upgrade_clawdbot
 SCRIPT
-      chmod +x "$TEMP_SCRIPT"
-    }
+  chmod +x "$TEMP_SCRIPT"
+}
 
-    cleanup() {
-      rm -rf "$TEMP_DIR"
-      mock_bin_cleanup
-    }
+cleanup() {
+  rm -rf "$TEMP_DIR"
+  mock_bin_cleanup
+}
 
-    Before 'setup'
-    After 'cleanup'
+Before 'setup'
+After 'cleanup'
 
-    It 'detects current version from overlay file'
-      When run bash "$TEMP_SCRIPT"
-      The output should include 'Current version: 2026.1.15'
-      The status should be success
-    End
+It 'detects current version from overlay file'
+When run bash "$TEMP_SCRIPT"
+The output should include 'Current version: 2026.1.15'
+The status should be success
+End
 
-    It 'fetches latest release version'
-      When run bash "$TEMP_SCRIPT"
-      The output should include 'Latest version: 2026.1.16'
-      The status should be success
-    End
+It 'fetches latest release version'
+When run bash "$TEMP_SCRIPT"
+The output should include 'Latest version: 2026.1.16'
+The status should be success
+End
 
-    It 'updates the overlay file'
-      When run bash "$TEMP_SCRIPT"
-      The output should include 'Updating overlay file'
-      The output should include 'clawdbot upgraded from 2026.1.15 to 2026.1.16'
-      The status should be success
-    End
+It 'updates the overlay file'
+When run bash "$TEMP_SCRIPT"
+The output should include 'Updating overlay file'
+The output should include 'clawdbot upgraded from 2026.1.15 to 2026.1.16'
+The status should be success
+End
 
-    It 'updates rev in overlay file'
-      bash "$TEMP_SCRIPT" >/dev/null 2>&1
-      When run cat "$OVERLAY_FILE"
-      The output should include 'rev = "newcommit456"'
-    End
+It 'updates rev in overlay file'
+bash "$TEMP_SCRIPT" >/dev/null 2>&1
+When run cat "$OVERLAY_FILE"
+The output should include 'rev = "newcommit456"'
+End
 
-    It 'updates clawdbotVersion in overlay file'
-      bash "$TEMP_SCRIPT" >/dev/null 2>&1
-      When run cat "$OVERLAY_FILE"
-      The output should include 'clawdbotVersion = "2026.1.16"'
-    End
-  End
+It 'updates clawdbotVersion in overlay file'
+bash "$TEMP_SCRIPT" >/dev/null 2>&1
+When run cat "$OVERLAY_FILE"
+The output should include 'clawdbotVersion = "2026.1.16"'
+End
+End
 
-  Describe 'already on latest version'
-    setup() {
-      mock_bin_setup gh nix-prefetch-url nix jq
-      TEMP_DIR=$(mktemp -d)
+Describe 'already on latest version'
+setup() {
+  mock_bin_setup gh nix-prefetch-url nix jq
+  TEMP_DIR=$(mktemp -d)
 
-      # Create a test script that simulates already on latest
-      TEMP_SCRIPT="$TEMP_DIR/upgrade-latest.sh"
-      cat >"$TEMP_SCRIPT" <<'SCRIPT'
+  # Create a test script that simulates already on latest
+  TEMP_SCRIPT="$TEMP_DIR/upgrade-latest.sh"
+  cat >"$TEMP_SCRIPT" <<'SCRIPT'
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -252,32 +252,32 @@ if [ "$current_version" = "$latest_version" ]; then
     exit 0
 fi
 SCRIPT
-      chmod +x "$TEMP_SCRIPT"
-    }
+  chmod +x "$TEMP_SCRIPT"
+}
 
-    cleanup() {
-      rm -rf "$TEMP_DIR"
-      mock_bin_cleanup
-    }
+cleanup() {
+  rm -rf "$TEMP_DIR"
+  mock_bin_cleanup
+}
 
-    Before 'setup'
-    After 'cleanup'
+Before 'setup'
+After 'cleanup'
 
-    It 'skips upgrade when already on latest'
-      When run bash "$TEMP_SCRIPT"
-      The output should include 'Already on latest version'
-      The status should be success
-    End
-  End
+It 'skips upgrade when already on latest'
+When run bash "$TEMP_SCRIPT"
+The output should include 'Already on latest version'
+The status should be success
+End
+End
 
-  Describe 'all overlay target'
-    setup() {
-      mock_bin_setup gh nix-prefetch-url nix jq
-      TEMP_DIR=$(mktemp -d)
+Describe 'all overlay target'
+setup() {
+  mock_bin_setup gh nix-prefetch-url nix jq
+  TEMP_DIR=$(mktemp -d)
 
-      # Create a minimal test script for 'all' target
-      TEMP_SCRIPT="$TEMP_DIR/upgrade-all.sh"
-      cat >"$TEMP_SCRIPT" <<'SCRIPT'
+  # Create a minimal test script for 'all' target
+  TEMP_SCRIPT="$TEMP_DIR/upgrade-all.sh"
+  cat >"$TEMP_SCRIPT" <<'SCRIPT'
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -301,22 +301,22 @@ main() {
 
 main "$@"
 SCRIPT
-      chmod +x "$TEMP_SCRIPT"
-    }
+  chmod +x "$TEMP_SCRIPT"
+}
 
-    cleanup() {
-      rm -rf "$TEMP_DIR"
-      mock_bin_cleanup
-    }
+cleanup() {
+  rm -rf "$TEMP_DIR"
+  mock_bin_cleanup
+}
 
-    Before 'setup'
-    After 'cleanup'
+Before 'setup'
+After 'cleanup'
 
-    It 'upgrades all overlays when target is all'
-      When run bash "$TEMP_SCRIPT" all
-      The output should include 'Upgrading clawdbot'
-      The output should include 'All overlays upgraded'
-      The status should be success
-    End
-  End
+It 'upgrades all overlays when target is all'
+When run bash "$TEMP_SCRIPT" all
+The output should include 'Upgrading clawdbot'
+The output should include 'All overlays upgraded'
+The status should be success
+End
+End
 End

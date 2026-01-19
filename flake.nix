@@ -69,149 +69,149 @@
         inputs = inputsWithLib;
       in
       {
-      systems = [
-        "aarch64-darwin"
-        "aarch64-linux"
-        "x86_64-linux"
-      ];
+        systems = [
+          "aarch64-darwin"
+          "aarch64-linux"
+          "x86_64-linux"
+        ];
 
-      imports = [
-        treefmt-nix.flakeModule
-        devenv.flakeModule
-      ];
+        imports = [
+          treefmt-nix.flakeModule
+          devenv.flakeModule
+        ];
 
-      flake =
-        let
-          mkDarwin =
-            args:
-            let
-              darwin-modules = import ./hosts/darwin ({ inherit inputs; } // args);
-            in
-            inputs.nix-darwin.lib.darwinSystem {
-              system = "aarch64-darwin";
-              inherit (darwin-modules) specialArgs modules;
-            };
-        in
-        {
-          darwinConfigurations = {
-            aarch64-darwin = mkDarwin { username = "shunkakinoki"; };
-            runner = mkDarwin {
-              isRunner = true;
-              username = "runner";
-            };
-            galactica = import ./named-hosts/galactica {
-              inherit inputs;
-              username = "shunkakinoki";
-            };
-          };
-          nixosConfigurations = {
-            x86_64-linux = import ./hosts/nixos {
-              inherit inputs;
-              username = "shunkakinoki";
-            };
-            runner = import ./hosts/nixos {
-              inherit inputs;
-              isRunner = true;
-              username = "runner";
-            };
-          };
-          homeConfigurations = {
-            "ubuntu@x86_64-linux" = import ./hosts/linux {
-              inherit inputs;
-              username = "ubuntu";
-              system = "x86_64-linux";
-            };
-            "root@x86_64-linux" = import ./hosts/linux {
-              inherit inputs;
-              username = "root";
-              system = "x86_64-linux";
-            };
-            "root@aarch64-linux" = import ./hosts/linux {
-              inherit inputs;
-              username = "root";
-              system = "aarch64-linux";
-            };
-            "runner@x86_64-linux" = import ./hosts/linux {
-              inherit inputs;
-              isRunner = true;
-              username = "runner";
-              system = "x86_64-linux";
-            };
-            "runner@aarch64-linux" = import ./hosts/linux {
-              inherit inputs;
-              isRunner = true;
-              username = "runner";
-              system = "aarch64-linux";
-            };
-            kyber = import ./named-hosts/kyber {
-              inherit inputs;
-              username = "ubuntu";
-              system = "x86_64-linux";
-            };
-          };
-        };
-
-      perSystem =
-        {
-          config,
-          system,
-          ...
-        }:
-        let
-          inherit (inputs.nixpkgs) lib;
-          devenvRoot =
-            let
-              envRoot = builtins.getEnv "DEVENV_ROOT";
-            in
-            if envRoot != "" then envRoot else builtins.toString ./.;
-          pkgs = import inputs.nixpkgs {
-            inherit system;
-            config = import ./lib/nixpkgs-config.nix {
-              nixpkgsLib = inputs.nixpkgs.lib;
-            };
-            overlays = (import ./overlays) { inherit inputs; };
-          };
-          treefmtToml = builtins.fromTOML (builtins.readFile ./treefmt.toml);
-          treefmtSettings = lib.recursiveUpdate treefmtToml {
-            formatter = {
-              nix = (treefmtToml.formatter.nix or { }) // {
-                command = lib.getExe pkgs.nixfmt-rfc-style;
+        flake =
+          let
+            mkDarwin =
+              args:
+              let
+                darwin-modules = import ./hosts/darwin ({ inherit inputs; } // args);
+              in
+              inputs.nix-darwin.lib.darwinSystem {
+                system = "aarch64-darwin";
+                inherit (darwin-modules) specialArgs modules;
               };
-              biome = (treefmtToml.formatter.biome or { }) // {
-                command = lib.getExe pkgs.biome;
+          in
+          {
+            darwinConfigurations = {
+              aarch64-darwin = mkDarwin { username = "shunkakinoki"; };
+              runner = mkDarwin {
+                isRunner = true;
+                username = "runner";
               };
-              json = (treefmtToml.formatter.json or { }) // {
-                command = lib.getExe pkgs.jsonfmt;
+              galactica = import ./named-hosts/galactica {
+                inherit inputs;
+                username = "shunkakinoki";
               };
-              shell = (treefmtToml.formatter.shell or { }) // {
-                command = lib.getExe pkgs.shfmt;
+            };
+            nixosConfigurations = {
+              x86_64-linux = import ./hosts/nixos {
+                inherit inputs;
+                username = "shunkakinoki";
               };
-              lua = (treefmtToml.formatter.lua or { }) // {
-                command = lib.getExe pkgs.stylua;
+              runner = import ./hosts/nixos {
+                inherit inputs;
+                isRunner = true;
+                username = "runner";
+              };
+            };
+            homeConfigurations = {
+              "ubuntu@x86_64-linux" = import ./hosts/linux {
+                inherit inputs;
+                username = "ubuntu";
+                system = "x86_64-linux";
+              };
+              "root@x86_64-linux" = import ./hosts/linux {
+                inherit inputs;
+                username = "root";
+                system = "x86_64-linux";
+              };
+              "root@aarch64-linux" = import ./hosts/linux {
+                inherit inputs;
+                username = "root";
+                system = "aarch64-linux";
+              };
+              "runner@x86_64-linux" = import ./hosts/linux {
+                inherit inputs;
+                isRunner = true;
+                username = "runner";
+                system = "x86_64-linux";
+              };
+              "runner@aarch64-linux" = import ./hosts/linux {
+                inherit inputs;
+                isRunner = true;
+                username = "runner";
+                system = "aarch64-linux";
+              };
+              kyber = import ./named-hosts/kyber {
+                inherit inputs;
+                username = "ubuntu";
+                system = "x86_64-linux";
               };
             };
           };
-        in
-        {
-          # Force this attribute so devenv's deprecated helper packages don't surface during flake checks.
-          packages = inputs.nixpkgs.lib.mkForce {
-            # Use nixpkgs-provided binary to avoid rebuilding cachi.
-            devenv-cli = pkgs.devenv;
-          };
 
-          devenv.shells.default = (import ./devenv.nix) { inherit pkgs; } // {
-            devenv.root = devenvRoot;
-          };
-
-          treefmt = {
-            projectRootFile = "flake.nix";
-            programs = {
-              taplo.enable = true;
-              yamlfmt.enable = true;
+        perSystem =
+          {
+            config,
+            system,
+            ...
+          }:
+          let
+            inherit (inputs.nixpkgs) lib;
+            devenvRoot =
+              let
+                envRoot = builtins.getEnv "DEVENV_ROOT";
+              in
+              if envRoot != "" then envRoot else builtins.toString ./.;
+            pkgs = import inputs.nixpkgs {
+              inherit system;
+              config = import ./lib/nixpkgs-config.nix {
+                nixpkgsLib = inputs.nixpkgs.lib;
+              };
+              overlays = (import ./overlays) { inherit inputs; };
             };
-            settings = treefmtSettings;
+            treefmtToml = builtins.fromTOML (builtins.readFile ./treefmt.toml);
+            treefmtSettings = lib.recursiveUpdate treefmtToml {
+              formatter = {
+                nix = (treefmtToml.formatter.nix or { }) // {
+                  command = lib.getExe pkgs.nixfmt-rfc-style;
+                };
+                biome = (treefmtToml.formatter.biome or { }) // {
+                  command = lib.getExe pkgs.biome;
+                };
+                json = (treefmtToml.formatter.json or { }) // {
+                  command = lib.getExe pkgs.jsonfmt;
+                };
+                shell = (treefmtToml.formatter.shell or { }) // {
+                  command = lib.getExe pkgs.shfmt;
+                };
+                lua = (treefmtToml.formatter.lua or { }) // {
+                  command = lib.getExe pkgs.stylua;
+                };
+              };
+            };
+          in
+          {
+            # Force this attribute so devenv's deprecated helper packages don't surface during flake checks.
+            packages = inputs.nixpkgs.lib.mkForce {
+              # Use nixpkgs-provided binary to avoid rebuilding cachi.
+              devenv-cli = pkgs.devenv;
+            };
+
+            devenv.shells.default = (import ./devenv.nix) { inherit pkgs; } // {
+              devenv.root = devenvRoot;
+            };
+
+            treefmt = {
+              projectRootFile = "flake.nix";
+              programs = {
+                taplo.enable = true;
+                yamlfmt.enable = true;
+              };
+              settings = treefmtSettings;
+            };
           };
-        };
       }
     );
 }

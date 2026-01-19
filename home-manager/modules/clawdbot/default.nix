@@ -82,17 +82,19 @@ lib.mkIf (!env.isCI) {
   # Clean stale port-guard entries on activation (macOS remote mode only)
   # The Clawdbot.app has a bug where dead SSH tunnel PIDs remain in port-guard.json,
   # preventing new tunnels from being created. This cleans up stale entries.
-  home.activation.clawdbotCleanPortGuard = lib.mkIf (lib ? hm && lib.hm ? dag && pkgs.stdenv.isDarwin && !host.isKyber) (
-    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      PORT_GUARD="${homeDir}/Library/Application Support/Clawdbot/port-guard.json"
-      if [ -f "$PORT_GUARD" ]; then
-        # Filter out entries for port 18789 (gateway) - our launchd tunnel handles this
-        ${pkgs.jq}/bin/jq '[.[] | select(.port != 18789)]' "$PORT_GUARD" > "$PORT_GUARD.tmp" && \
-          ${pkgs.coreutils}/bin/mv "$PORT_GUARD.tmp" "$PORT_GUARD"
-        echo "Cleaned stale gateway entries from port-guard.json"
-      fi
-    ''
-  );
+  home.activation.clawdbotCleanPortGuard =
+    lib.mkIf (lib ? hm && lib.hm ? dag && pkgs.stdenv.isDarwin && !host.isKyber)
+      (
+        lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          PORT_GUARD="${homeDir}/Library/Application Support/Clawdbot/port-guard.json"
+          if [ -f "$PORT_GUARD" ]; then
+            # Filter out entries for port 18789 (gateway) - our launchd tunnel handles this
+            ${pkgs.jq}/bin/jq '[.[] | select(.port != 18789)]' "$PORT_GUARD" > "$PORT_GUARD.tmp" && \
+              ${pkgs.coreutils}/bin/mv "$PORT_GUARD.tmp" "$PORT_GUARD"
+            echo "Cleaned stale gateway entries from port-guard.json"
+          fi
+        ''
+      );
 
   # Auto-start Clawdbot.app on login (galactica only)
   # App is installed to /Applications/Nix Apps/ via nix-darwin
