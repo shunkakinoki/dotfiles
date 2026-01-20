@@ -7,5 +7,5 @@ spec_helper_precheck() {
 }
 
 spec_helper_configure() {
-  import 'support/custom_matcher'
+  import 'test_helpers'
 }
