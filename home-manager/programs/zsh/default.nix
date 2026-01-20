@@ -23,12 +23,21 @@
       extended = true;
     };
 
-    initContent = ''
+    # envExtra goes to .zshenv (always sourced, even for scripts)
+    envExtra = ''
       # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
       if [ "$(uname)" = "Linux" ]; then
           export XDG_RUNTIME_DIR="/run/user/$(id -u)"
-      fi
 
+          # OpenSSL for cargo builds (rust crates like openssl-sys)
+          export PKG_CONFIG_PATH="${pkgs.openssl.dev}/lib/pkgconfig''${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+          export OPENSSL_DIR="${pkgs.openssl.dev}"
+          export OPENSSL_LIB_DIR="${pkgs.openssl.out}/lib"
+          export OPENSSL_INCLUDE_DIR="${pkgs.openssl.dev}/include"
+      fi
+    '';
+
+    initContent = ''
       # Go configuration
       export GOPATH="$HOME/go"
 
