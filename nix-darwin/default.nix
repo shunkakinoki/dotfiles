@@ -29,10 +29,12 @@ in
     time
   ];
 
-  # Clawdbot.app: Symlink to /Applications/ (galactica only)
+  # Clawdbot.app: Install to /Applications/ (galactica only)
+  # Use ditto instead of cp -R to preserve all macOS bundle attributes,
+  # extended attributes, and resource forks required for Bundle.module lookups
   system.activationScripts.postActivation.text = lib.mkIf (!env.isCI && host.isGalactica) ''
     echo "Installing Clawdbot.app to /Applications..."
     rm -rf /Applications/Clawdbot.app
-    cp -R ${pkgs.clawdbot-app}/Applications/Clawdbot.app /Applications/
+    ditto "${pkgs.clawdbot-app}/Applications/Clawdbot.app" /Applications/Clawdbot.app
   '';
 }

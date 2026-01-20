@@ -52,7 +52,7 @@ in
                 echo "Clawdbot.app not found in $src" >&2
                 exit 1
               fi
-              cp -R "$app_path" "$out/Applications/Clawdbot.app"
+              cp -pR "$app_path" "$out/Applications/Clawdbot.app"
             '';
             meta = with prev.lib; {
               description = "Clawdbot macOS app bundle";

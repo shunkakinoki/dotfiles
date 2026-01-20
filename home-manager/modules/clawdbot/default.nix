@@ -97,13 +97,18 @@ lib.mkIf (!env.isCI) {
       );
 
   # Auto-start Clawdbot.app on login (galactica only)
-  # App is installed to /Applications/Nix Apps/ via nix-darwin
+  # Use /usr/bin/open to launch the app properly with full bundle context,
+  # rather than running the binary directly which breaks Bundle.module lookups
   launchd.agents.clawdbot-app = lib.mkIf (pkgs.stdenv.isDarwin && host.isGalactica) {
     enable = true;
     config = {
       Label = "com.clawdbot.app";
       ProgramArguments = [
-        "/Applications/Clawdbot.app/Contents/MacOS/Clawdbot"
+        "open"
+        "-a"
+        "/Applications/Clawdbot.app"
+        "--args"
+        "--launched-from-launchd"
       ];
       RunAtLoad = true;
       KeepAlive = false;
