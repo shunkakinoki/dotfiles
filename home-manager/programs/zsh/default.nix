@@ -23,7 +23,7 @@
       extended = true;
     };
 
-    # envExtra goes to .zshenv (always sourced, even for scripts)
+    # envExtra goes to .zshenv (always sourced)
     envExtra = ''
       # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
       if [ "$(uname)" = "Linux" ]; then
