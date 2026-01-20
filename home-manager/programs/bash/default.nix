@@ -68,6 +68,20 @@
       if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
         . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
       fi
+
+      # OpenSSL for cargo builds on Linux (available in login shells)
+      if [ "$(uname)" = "Linux" ]; then
+          export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+          export PKG_CONFIG_PATH="${pkgs.openssl.dev}/lib/pkgconfig''${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+          export OPENSSL_DIR="${pkgs.openssl.dev}"
+          export OPENSSL_LIB_DIR="${pkgs.openssl.out}/lib"
+          export OPENSSL_INCLUDE_DIR="${pkgs.openssl.dev}/include"
+      fi
+
+      # Source .bashrc for login shells to get PATH and other settings
+      if [ -f ~/.bashrc ]; then
+        . ~/.bashrc
+      fi
     '';
   };
 }
