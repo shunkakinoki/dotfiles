@@ -11,6 +11,12 @@
       # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
       if test (uname) = "Linux"
           set -gx XDG_RUNTIME_DIR /run/user/(id -u)
+
+          # OpenSSL for cargo builds (rust crates like openssl-sys)
+          set -gx PKG_CONFIG_PATH "${pkgs.openssl.dev}/lib/pkgconfig" $PKG_CONFIG_PATH
+          set -gx OPENSSL_DIR "${pkgs.openssl.dev}"
+          set -gx OPENSSL_LIB_DIR "${pkgs.openssl.out}/lib"
+          set -gx OPENSSL_INCLUDE_DIR "${pkgs.openssl.dev}/include"
       end
 
       # Go configuration
