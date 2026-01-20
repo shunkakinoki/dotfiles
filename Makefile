@@ -116,7 +116,7 @@ help: ## Show this help message.
 ##@ General
 
 .PHONY: install
-install: setup nix-flake-update nix-build nix-switch shell-install ## Set up full environment (setup, flake-update, build, switch, shell-install).
+install: setup nix-build nix-switch shell-install ## Set up full environment (setup, flake-update, build, switch, shell-install).
 
 .PHONY: build
 build: nix-build ## Build Nix configuration.
@@ -159,26 +159,25 @@ sync: ## Sync dotagents (commands, skills, MCP configuration).
 .PHONY: test
 test: neovim-test shell-test ## Run all tests (neovim + shell).
 
+##@ Update
+
 .PHONY: update
-update: nix-update shell-update neovim-update ## Update Nix flake and configurations.
+update: update-local-binaries ## Update local binaries
+
+.PHONY: update-local-binaries
+update-local-binaries: ## Update and rebuild local binaries from .local-binaries.txt.
+	@echo "🔄 Updating local binaries..."
+	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
+		echo "⏭️ Skipping local binaries update in CI/Docker"; \
+	else \
+		./scripts/update-local-binaries.sh; \
+	fi
+
 
 ##@ Upgrade
 
 .PHONY: upgrade
-upgrade: upgrade-overlays neovim-upgrade ## Upgrade overlays and Nix flake, then rebuild.
-
-.PHONY: upgrade-overlays
-upgrade-overlays: ## Upgrade all custom overlays to latest versions.
-	@echo "🔄 Upgrading custom overlays..."
-	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
-		echo "⏭️ Skipping overlay upgrade in CI/Docker"; \
-	else \
-		./scripts/upgrade-overlays.sh all; \
-	fi
-
-.PHONY: upgrade-clawdbot
-upgrade-clawdbot: ## Upgrade clawdbot overlay to latest release.
-	@./scripts/upgrade-overlays.sh clawdbot
+upgrade: nix-upgrade overlays-upgrade neovim-upgrade ## Upgrade Nix flake, overlays, Neovim plugins
 
 .PHONY: dev
 dev: nix-develop ## Enter the Nix dev shell (alias for nix-develop).
@@ -249,8 +248,8 @@ nix-install: ## Install Nix if not already installed.
 
 ##@ Nix
 
-.PHONY: nix-update
-nix-update: nix-flake-update nix-build nix-switch ## Update Nix flake, build, and switch.
+.PHONY: nix-upgrade
+nix-upgrade: nix-flake-upgrade nix-build nix-switch ## Upgrade Nix flake, build, and switch.
 
 .PHONY: nix-backup
 nix-backup: ## Backup configuration files.
@@ -304,8 +303,8 @@ nix-flake-check: ## Check Nix flake configuration.
 	fi
 	@echo "✅ Nix flake check completed successfully"
 
-.PHONY: nix-flake-update
-nix-flake-update: nix-connect ## Update flake.lock file.
+.PHONY: nix-flake-upgrade
+nix-flake-upgrade: nix-connect ## Update flake.lock file.
 	@echo "♻️ Refreshing flake.lock file..."
 	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ] || [ "$$AUTOMATED_UPDATE" = "true" ]; then \
 		echo "Bypassing flake update in CI/Docker/automated update"; \
@@ -509,8 +508,6 @@ shell-install: ## Set up Fish shell as default shell.
 		echo "⚠️ Fish shell not found. Skipping Fish setup."; \
 	fi
 
-.PHONY: shell-update
-shell-update: shell-install ## Update Fish shell setup (alias for shell-install).
 
 ##@ Docker
 
@@ -756,7 +753,7 @@ shell-test-dev: ## Run shell tests inside the Nix dev shell (mirrors CI).
 .PHONY: shell-check
 shell-check: ## Run ShellCheck on shell scripts.
 	@echo "🔍 Running ShellCheck..."
-	@find . -name '*.sh' -not -path './node_modules/*' -not -path './.git/*' -not -path './result/*' -not -path './.venv/*' | xargs shellcheck
+	@find . -name '*.sh' -not -path './node_modules/*' -not -path './.git/*' -not -path './result/*' -not -path './.venv/*' -not -path './.claude/*' -not -path './dotagents/.claude/*' -not -path './dotagents/.codex/*' -print0 | xargs -0 shellcheck
 
 .PHONY: shell-check-dev
 shell-check-dev: ## Run ShellCheck inside the Nix dev shell (mirrors CI).
@@ -779,3 +776,14 @@ doppler-upload: ## Upload .env file to Doppler (dotfiles/prd).
 	@echo "🔐 Uploading .env to Doppler..."
 	@doppler secrets upload --project dotfiles --config prd .env
 	@echo "✅ .env uploaded to Doppler (dotfiles/prd)"
+
+##@ Overlays
+
+.PHONY: overlays-upgrade
+overlays-upgrade: ## Upgrade all custom overlays to latest versions.
+	@echo "🔄 Upgrading custom overlays..."
+	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
+		echo "⏭️ Skipping overlay upgrade in CI/Docker"; \
+	else \
+		./scripts/upgrade-overlays.sh all; \
+	fi

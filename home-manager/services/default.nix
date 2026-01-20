@@ -12,6 +12,7 @@ let
   codeSyncer = import ./code-syncer { inherit pkgs; };
   docker = import ./docker { inherit lib pkgs; };
   dotfilesUpdater = import ./dotfiles-updater { inherit pkgs; };
+  makeUpdater = import ./make-updater { inherit pkgs; };
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
   ollama = import ./ollama { inherit pkgs; };
   sshAgent = import ./ssh-agent {
@@ -24,6 +25,7 @@ in
   codeSyncer
   docker
   dotfilesUpdater
+  makeUpdater
   neversslKeepalive
   ollama
   sshAgent

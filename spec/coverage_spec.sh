@@ -49,6 +49,10 @@ It 'has spec file for home-manager/services/dotfiles-updater/update.sh'
 The path "spec/dotfiles_updater_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/make-updater/update.sh'
+The path "spec/make_updater_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/neverssl-keepalive/keepalive.sh'
 The path "spec/keepalive_spec.sh" should be exist
 End
@@ -67,6 +71,10 @@ End
 
 It 'has spec file for scripts/update-gitalias.sh'
 The path "spec/update_gitalias_spec.sh" should be exist
+End
+
+It 'has spec file for scripts/update-local-binaries.sh'
+The path "spec/update_local_binaries_spec.sh" should be exist
 End
 
 It 'has spec file for scripts/upgrade-overlays.sh'
@@ -129,11 +137,13 @@ home-manager/services/cliproxyapi/scripts/start.sh
 home-manager/services/cliproxyapi/scripts/wrapper.sh
 home-manager/services/code-syncer/sync.sh
 home-manager/services/dotfiles-updater/update.sh
+home-manager/services/make-updater/update.sh
 home-manager/services/neverssl-keepalive/keepalive.sh
 install.sh
 named-hosts/kyber/rekey-galactica.sh
 named-hosts/kyber/setup.sh
 scripts/update-gitalias.sh
+scripts/update-local-binaries.sh
 scripts/upgrade-overlays.sh"
 
 # Get actual scripts from git (excluding spec directory)
