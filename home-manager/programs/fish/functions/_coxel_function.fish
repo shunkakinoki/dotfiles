@@ -6,6 +6,6 @@ function _coxel_function --description "Run Codex with a free-form prompt using 
     codex --profile 'glm-4.7-flash' --full-auto -c model_reasoning_summary_format=experimental
   else
     set -l prompt (string join " " -- $argv)
-    codex --profile 'glm-4.7-flash' --full-auto -c model_reasoning_summary_format=experimental -- "$prompt"
+    codex exec --profile 'glm-4.7-flash' --full-auto -c model_reasoning_summary_format=experimental -- "$prompt"
   end
 end
