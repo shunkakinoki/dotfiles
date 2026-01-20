@@ -49,10 +49,10 @@ get_ghq_repo() {
   ghq_root="$(get_ghq_root)"
 
   case "$repo_dir" in
-    "$ghq_root"/*)
-      echo "${repo_dir#"$ghq_root/"}"
-      return 0
-      ;;
+  "$ghq_root"/*)
+    echo "${repo_dir#"$ghq_root/"}"
+    return 0
+    ;;
   esac
 
   return 1
