@@ -5,9 +5,6 @@ notify = [
   "notify",
 ]
 
-[features]
-web_search_request = true
-
 [model_providers.cliproxyapi]
 name = "CLIProxyAPI"
 base_url = "http://localhost:8317/v1"
