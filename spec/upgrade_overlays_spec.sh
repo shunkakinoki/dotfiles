@@ -17,7 +17,7 @@ End
 It 'shows usage with --help flag'
 When run bash "$SCRIPT" --help
 The output should include 'Usage:'
-The output should include 'Available overlays:'
+The output should include 'Available commands:'
 The status should be success
 End
 
@@ -42,8 +42,8 @@ After 'cleanup'
 
 It 'fails for unknown overlay'
 When run bash "$SCRIPT" unknown-overlay
-The output should include 'Unknown overlay: unknown-overlay'
-The output should include 'Available overlays'
+The output should include 'Unknown command: unknown-overlay'
+The output should include 'Available commands'
 The status should be failure
 End
 End
