@@ -1,4 +1,4 @@
-function _coxelh_function --description "Run Codex headlessly with local glm-4.7-flash model"
+function _coxelh_function --description "Run Codex headlessly with local glm-4-7-flash model"
   # Prompt for input and run Codex with local model
   # Usage: coxelh
 
@@ -8,5 +8,5 @@ function _coxelh_function --description "Run Codex headlessly with local glm-4.7
     return 1
   end
 
-  codex --profile 'glm-4.7-flash' --full-auto -c model_reasoning_summary_format=experimental -- "$prompt"
+  codex exec --profile 'glm-4-7-flash' --full-auto -c model_reasoning_summary_format=experimental -- "$prompt"
 end

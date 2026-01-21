@@ -166,6 +166,23 @@ It 'runs cargo build --release for Rust projects'
 When run bash -c "grep 'cargo build --release' '$SCRIPT'"
 The output should include 'cargo build --release'
 End
+
+It 'detects go.mod for go build'
+When run bash -c "grep 'go.mod' '$SCRIPT'"
+The output should include 'go.mod'
+End
+
+It 'runs go build for Go projects'
+When run bash -c "grep 'go build' '$SCRIPT'"
+The output should include 'go build'
+End
+
+It 'supports go build ./cmd/{repo_name} pattern'
+# shellcheck disable=SC2016
+When run bash -c 'grep "cmd/\$repo_name" '"'$SCRIPT'"
+# shellcheck disable=SC2016
+The output should include 'cmd/$repo_name'
+End
 End
 
 Describe 'git operations'
@@ -297,7 +314,8 @@ get_repo_dir() {
   done
 
   # Fallback: assume 4 levels deep from ghq root (github.com/owner/repo)
-  echo "$binary_path" | sed -E 's|(~/ghq/[^/]+/[^/]+/[^/]+)/.*|\1|' | sed "s|~|$HOME|"
+  # Note: binary_path is already expanded, so match against the full path
+  echo "$binary_path" | sed -E 's|(.*/ghq/[^/]+/[^/]+/[^/]+)/.*|\1|'
 }
 
 # Test with actual path
@@ -362,8 +380,15 @@ build_repo() {
   elif [ -f "$repo_dir/Cargo.toml" ]; then
     echo "Would run: cargo build --release"
     return 0
+  elif [ -f "$repo_dir/go.mod" ]; then
+    if [ -d "$repo_dir/cmd/$repo_name" ]; then
+      echo "Would run: go build ./cmd/$repo_name"
+    else
+      echo "Would run: go build"
+    fi
+    return 0
   else
-    log_warn "  No Makefile or Cargo.toml found, skipping build"
+    log_warn "  No Makefile, Cargo.toml, or go.mod found, skipping build"
     return 0
   fi
 }
@@ -396,10 +421,26 @@ The output should include 'Building rust-repo'
 The output should include 'cargo build --release'
 End
 
+It 'detects go.mod and uses go build'
+mkdir -p "$TEMP_DIR/go-repo"
+touch "$TEMP_DIR/go-repo/go.mod"
+When run bash "$TEMP_SCRIPT" "$TEMP_DIR/go-repo"
+The output should include 'Building go-repo'
+The output should include 'go build'
+End
+
+It 'uses go build ./cmd/{repo_name} when cmd dir exists'
+mkdir -p "$TEMP_DIR/multiclaude/cmd/multiclaude"
+touch "$TEMP_DIR/multiclaude/go.mod"
+When run bash "$TEMP_SCRIPT" "$TEMP_DIR/multiclaude"
+The output should include 'Building multiclaude'
+The output should include 'go build ./cmd/multiclaude'
+End
+
 It 'warns when no build system found'
 mkdir -p "$TEMP_DIR/unknown-repo"
 When run bash "$TEMP_SCRIPT" "$TEMP_DIR/unknown-repo"
-The output should include 'No Makefile or Cargo.toml found'
+The output should include 'No Makefile, Cargo.toml, or go.mod found'
 End
 End
 

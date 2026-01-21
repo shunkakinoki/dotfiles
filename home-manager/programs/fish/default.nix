@@ -25,6 +25,10 @@
       direnv hook fish | source
     '';
     loginShellInit = ''
+      if test -f /opt/homebrew/bin/brew
+          eval "$(/opt/homebrew/bin/brew shellenv)"
+      end
+
       fish_add_path -p ~/.local/bin
       fish_add_path -p ~/.bun/bin
       fish_add_path -p ~/.cargo/bin
@@ -41,6 +45,11 @@
       _hm_load_env_file
       set fish_greeting
       set fish_theme dracula
+
+      if test -f /opt/homebrew/bin/brew
+          eval "$(/opt/homebrew/bin/brew shellenv)"
+      end
+
       fish_add_path -p ~/.local/bin
       fish_add_path -p ~/.bun/bin
       fish_add_path -p ~/.cargo/bin

@@ -30,7 +30,7 @@ if ! command -v jq &>/dev/null; then
 fi
 
 # Parse dependencies from standard Cargo.toml format
-DEPS=$(dasel -f "$CARGO_TOML" -r toml -w json 'dependencies' 2>/dev/null | jq -r 'to_entries[] | "\(.key)@\(.value)"' 2>/dev/null || true)
+DEPS=$(dasel -f "$CARGO_TOML" -r toml -w json 'dependencies' 2>/dev/null | jq -r 'to_entries[] | "\(.key)@\(.value.version // .value)"' 2>/dev/null || true)
 
 if [ -z "$DEPS" ]; then
   echo "No dependencies found in Cargo.toml"
@@ -39,13 +39,25 @@ fi
 
 # Get currently installed packages (cargo's native cache)
 INSTALLED=$(cargo install --list 2>/dev/null || true)
+declare -A INSTALLED_MAP=()
 
-echo "$DEPS" | while read -r pkg; do
+while read -r line; do
+  case "$line" in
+  "" | " "*) continue ;;
+  *)
+    if [[ $line =~ ^([^[:space:]]+)[[:space:]]v([^:]+): ]]; then
+      INSTALLED_MAP["${BASH_REMATCH[1]}"]="${BASH_REMATCH[2]}"
+    fi
+    ;;
+  esac
+done <<<"$INSTALLED"
+
+while read -r pkg; do
   CRATE=$(echo "$pkg" | cut -d'@' -f1)
   VERSION=$(echo "$pkg" | cut -d'@' -f2)
   if [ -n "$CRATE" ]; then
     # Check if already installed at this version (format: "crate_name v1.2.3:")
-    if echo "$INSTALLED" | grep -q "^${CRATE} v${VERSION}:"; then
+    if [ "${INSTALLED_MAP[$CRATE]:-}" = "$VERSION" ]; then
       echo "$CRATE@$VERSION already installed, skipping"
       continue
     fi
@@ -54,6 +66,6 @@ echo "$DEPS" | while read -r pkg; do
       cargo install "$CRATE" --version "$VERSION" 2>/dev/null ||
       echo "Failed to install $CRATE@$VERSION, skipping..."
   fi
-done
+done <<<"$DEPS"
 
 echo "cargo globals check complete"

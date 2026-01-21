@@ -25,6 +25,11 @@
 
     # envExtra goes to .zshenv (always sourced)
     envExtra = ''
+      # Load Homebrew environment
+      if [ -f /opt/homebrew/bin/brew ]; then
+          eval "$(/opt/homebrew/bin/brew shellenv)"
+      fi
+
       # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
       if [ "$(uname)" = "Linux" ]; then
           export XDG_RUNTIME_DIR="/run/user/$(id -u)"

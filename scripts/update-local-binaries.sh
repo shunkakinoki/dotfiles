@@ -78,7 +78,8 @@ get_repo_dir() {
   done
 
   # Fallback: assume 4 levels deep from ghq root (github.com/owner/repo)
-  echo "$binary_path" | sed -E 's|(~/ghq/[^/]+/[^/]+/[^/]+)/.*|\1|' | sed "s|~|$HOME|"
+  # Note: binary_path is already expanded, so match against the full path
+  echo "$binary_path" | sed -E 's|(.*/ghq/[^/]+/[^/]+/[^/]+)/.*|\1|'
 }
 
 # Get repo name for display
@@ -107,8 +108,23 @@ build_repo() {
     else
       return 1
     fi
+  elif [ -f "$repo_dir/go.mod" ]; then
+    # Go project: build ./cmd/{repo_name} if it exists, otherwise build root
+    if [ -d "$repo_dir/cmd/$repo_name" ]; then
+      if (cd "$repo_dir" && go build "./cmd/$repo_name" 2>&1); then
+        return 0
+      else
+        return 1
+      fi
+    else
+      if (cd "$repo_dir" && go build 2>&1); then
+        return 0
+      else
+        return 1
+      fi
+    fi
   else
-    log_warn "  No Makefile or Cargo.toml found, skipping build"
+    log_warn "  No Makefile, Cargo.toml, or go.mod found, skipping build"
     return 0
   fi
 }

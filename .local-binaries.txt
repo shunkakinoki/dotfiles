@@ -6,6 +6,7 @@
 ~/ghq/github.com/Dicklesworthstone/coding_agent_session_search/target/release/cass
 ~/ghq/github.com/Dicklesworthstone/destructive_command_guard/target/release/dcg
 ~/ghq/github.com/Dicklesworthstone/ultimate_bug_scanner/ubs
+~/ghq/github.com/dlorenc/multiclaude/multiclaude
 ~/ghq/github.com/nwiizo/ccswarm/target/release/ccswarm
 ~/ghq/github.com/steveyegge/beads/bd
 ~/ghq/github.com/steveyegge/gastown/gt

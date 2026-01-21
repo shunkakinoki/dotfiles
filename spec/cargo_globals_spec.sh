@@ -53,6 +53,11 @@ When run bash -c "grep 'dasel' '$SCRIPT'"
 The output should include 'dasel'
 End
 
+It 'supports table-style dependency versions'
+When run bash -c "grep 'version // .value' '$SCRIPT'"
+The output should include 'version // .value'
+End
+
 It 'uses cargo install with version'
 When run bash -c "grep 'cargo install' '$SCRIPT'"
 The output should include '--version'
@@ -66,6 +71,11 @@ End
 It 'parses dependencies section'
 When run bash -c "grep 'dependencies' '$SCRIPT'"
 The output should include 'dependencies'
+End
+
+It 'builds an installed version map'
+When run bash -c "grep 'INSTALLED_MAP' '$SCRIPT'"
+The output should include 'INSTALLED_MAP'
 End
 End
 End

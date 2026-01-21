@@ -30,6 +30,6 @@ model_provider = "ollama"
 model = "openai/gpt-oss-120b"
 model_provider = "lmstudio"
 
-[profiles.glm-4.7-flash]
+[profiles.glm-4-7-flash]
 model = "zai-org/glm-4.7-flash"
 model_provider = "lmstudio"
