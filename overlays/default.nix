@@ -1,18 +1,18 @@
 { inputs }:
 let
-  # Override clawdbot source to v2026.1.16-2
+  # Override clawdbot source to v2026.1.20
   clawdbotSourceOverride = {
     owner = "clawdbot";
     repo = "clawdbot";
-    rev = "be37b39782e0799ba5b9533561de6d128d50c863";
-    hash = "sha256-y1ToqEcfl0yVAJkVld0k5AX5tztiE7yJt/F7Rhg+dAc=";
-    pnpmDepsHash = "sha256-NPQrkhhvAoIYzR1gopqsErps1K/HkfxmrPXpyMlN0Bc=";
+    rev = "9a14267dfa5238188a30636bd60eed08f05a7255";
+    hash = "sha256-T44joLbbbEFmsdOA9Q6W5Fpq1+1BtRJOHAy7/p3CXls=";
+    pnpmDepsHash = "sha256-tGzKcCiZNlWlKMNNFmxcFpIvO92G9myhM+OYaGea4hw=";
   };
-  # Override clawdbot-app to v2026.1.16-2 (fixes broken app package)
+  # Override clawdbot-app to v2026.1.20 (fixes broken app package)
   clawdbotAppOverride = {
-    version = "2026.1.16-2";
-    url = "https://github.com/clawdbot/clawdbot/releases/download/v2026.1.16-2/Clawdbot-2026.1.16-2.zip";
-    hash = "sha256-CQDGFA+/2McVxIw7WXtJZgr6LmtWTy0Dks++pjdU4rU=";
+    version = "2026.1.20";
+    url = "https://github.com/clawdbot/clawdbot/releases/download/v2026.1.20/Clawdbot-2026.1.20.zip";
+    hash = "sha256-BQuZqiTgcshT/YUnEq4OS6RxvjeTFgpPhd2jrGmcZXk=";
   };
 in
 [
@@ -22,7 +22,7 @@ in
   (
     final: prev:
     let
-      clawdbotVersion = "2026.1.16-2";
+      clawdbotVersion = "2026.1.20";
       basePkgs = import "${inputs.nix-clawdbot}/nix/packages" {
         pkgs = prev;
         sourceInfo = clawdbotSourceOverride;

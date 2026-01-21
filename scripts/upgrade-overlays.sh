@@ -83,6 +83,37 @@ sed_inplace() {
   fi
 }
 
+compute_pnpm_deps_hash() {
+  local fake_hash="sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+  local current_hash
+
+  # Get current pnpmDepsHash
+  current_hash=$(grep 'pnpmDepsHash = "' "$OVERLAY_FILE" | head -1 | sed 's/.*pnpmDepsHash = "\([^"]*\)".*/\1/')
+
+  echo "  Computing pnpmDepsHash (this requires a build attempt)..."
+
+  # Temporarily set fake hash
+  sed_inplace "s|pnpmDepsHash = \"[^\"]*\";|pnpmDepsHash = \"$fake_hash\";|" "$OVERLAY_FILE"
+
+  # Run nix build and capture the correct hash from error output
+  local build_output correct_hash
+  build_output=$(nix build ".#darwinConfigurations.aarch64-darwin.system" --no-link 2>&1 || true)
+
+  # Extract the correct hash from "got: sha256-..." line
+  correct_hash=$(echo "$build_output" | grep -o 'got:[[:space:]]*sha256-[A-Za-z0-9+/=]*' | head -1 | sed 's/got:[[:space:]]*//')
+
+  if [ -n "$correct_hash" ]; then
+    echo "  pnpmDepsHash: $correct_hash"
+    sed_inplace "s|pnpmDepsHash = \"[^\"]*\";|pnpmDepsHash = \"$correct_hash\";|" "$OVERLAY_FILE"
+    return 0
+  else
+    # Restore original hash if we couldn't get a new one
+    log_warn "  Could not determine pnpmDepsHash, restoring original"
+    sed_inplace "s|pnpmDepsHash = \"[^\"]*\";|pnpmDepsHash = \"$current_hash\";|" "$OVERLAY_FILE"
+    return 1
+  fi
+}
+
 # --- Clawdbot upgrade ---
 
 upgrade_clawdbot() {
@@ -155,24 +186,43 @@ upgrade_clawdbot() {
   sed_inplace "s|# Override clawdbot source to v[^ ]*|# Override clawdbot source to v$version|" "$OVERLAY_FILE"
   sed_inplace "s|# Override clawdbot-app to v[^ ]* |# Override clawdbot-app to v$version |" "$OVERLAY_FILE"
 
-  log_info "✅ clawdbot upgraded from $current_version to $version"
-  log_warn "⚠️  Note: pnpmDepsHash may need manual update after first build failure"
-  log_warn "   Run 'make build' and check for hash mismatch errors"
+  # Update pnpmDepsHash automatically
+  if compute_pnpm_deps_hash; then
+    log_info "✅ clawdbot upgraded from $current_version to $version"
+  else
+    log_info "✅ clawdbot upgraded from $current_version to $version"
+    log_warn "⚠️  pnpmDepsHash may need manual verification"
+  fi
+
   echo ""
   echo "📝 Review changes with 'git diff overlays/default.nix'"
 }
 
 # --- Main ---
 
-usage() {
-  echo "Usage: $0 <overlay|all>"
+update_pnpm_hash() {
+  log_info "📦 Updating pnpmDepsHash..."
+  if compute_pnpm_deps_hash; then
+    log_info "✅ pnpmDepsHash updated successfully"
+  else
+    log_error "❌ Failed to update pnpmDepsHash"
+    exit 1
+  fi
   echo ""
-  echo "Available overlays:"
-  echo "  clawdbot  - Upgrade clawdbot overlay to latest release"
-  echo "  all       - Upgrade all overlays"
+  echo "📝 Review changes with 'git diff overlays/default.nix'"
+}
+
+usage() {
+  echo "Usage: $0 <overlay|all|pnpm-hash>"
+  echo ""
+  echo "Available commands:"
+  echo "  clawdbot   - Upgrade clawdbot overlay to latest release"
+  echo "  pnpm-hash  - Update only pnpmDepsHash (after flake.lock changes)"
+  echo "  all        - Upgrade all overlays"
   echo ""
   echo "Examples:"
   echo "  $0 clawdbot"
+  echo "  $0 pnpm-hash"
   echo "  $0 all"
 }
 
@@ -190,6 +240,9 @@ main() {
   clawdbot)
     upgrade_clawdbot
     ;;
+  pnpm-hash)
+    update_pnpm_hash
+    ;;
   all)
     upgrade_clawdbot
     # Add more overlay upgrades here as needed:
@@ -199,7 +252,7 @@ main() {
     usage
     ;;
   *)
-    log_error "Unknown overlay: $target"
+    log_error "Unknown command: $target"
     echo ""
     usage
     exit 1
