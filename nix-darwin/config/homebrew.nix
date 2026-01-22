@@ -40,7 +40,14 @@
       "pinentry-mac"
       "pnpm"
       "postgresql"
-      "postgresql@18"
+      {
+        name = "postgresql";
+        link = false;
+      }
+      {
+        name = "postgresql@18";
+        link = true;
+      }
       "protobuf"
       "pulumi"
       "qwen-code"
