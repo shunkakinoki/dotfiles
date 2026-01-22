@@ -116,7 +116,7 @@ help: ## Show this help message.
 ##@ General
 
 .PHONY: install
-install: setup nix-build nix-switch shell-install ## Set up full environment (setup, flake-update, build, switch, shell-install).
+install: setup git-submodule-sync nix-build nix-switch shell-install ## Set up full environment (setup, flake-update, build, switch, shell-install).
 
 .PHONY: build
 build: nix-build ## Build Nix configuration.
