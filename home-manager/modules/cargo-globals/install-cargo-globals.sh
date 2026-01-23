@@ -67,9 +67,11 @@ while read -r dep; do
         continue
       fi
       echo "Installing $NAME@$VERSION..."
-      cargo install "$NAME" --version "$VERSION" --locked 2>/dev/null ||
-        cargo install "$NAME" --version "$VERSION" 2>/dev/null ||
-        echo "Failed to install $NAME@$VERSION, skipping..."
+      if ! cargo install "$NAME" --version "$VERSION" --locked 2>&1; then
+        if ! cargo install "$NAME" --version "$VERSION" 2>&1; then
+          echo "Failed to install $NAME@$VERSION, skipping..."
+        fi
+      fi
     fi
     ;;
   git)
@@ -91,9 +93,11 @@ while read -r dep; do
       elif [ -n "$BRANCH" ]; then
         INSTALL_ARGS+=(--branch "$BRANCH")
       fi
-      cargo install "$NAME" "${INSTALL_ARGS[@]}" --locked 2>/dev/null ||
-        cargo install "$NAME" "${INSTALL_ARGS[@]}" 2>/dev/null ||
-        echo "Failed to install $NAME from git, skipping..."
+      if ! cargo install "$NAME" "${INSTALL_ARGS[@]}" --locked 2>&1; then
+        if ! cargo install "$NAME" "${INSTALL_ARGS[@]}" 2>&1; then
+          echo "Failed to install $NAME from git, skipping..."
+        fi
+      fi
     fi
     ;;
   *)
