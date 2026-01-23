@@ -87,6 +87,7 @@
       "google-drive"
       "hammerspoon"
       "karabiner-elements"
+      "libiconv"
       "linear-linear"
       "lm-studio"
       "notion"
