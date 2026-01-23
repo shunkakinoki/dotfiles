@@ -73,7 +73,7 @@
 				"claude-haiku-4-5-20251001": {
 					"name": "Claude Haiku 4.5 (via CLIProxyAPI)"
 				},
-				"z-ai/glm-4.7": {
+				"glm-4.7": {
 					"name": "GLM-4.7 (via CLIProxyAPI)",
 					"options": {
 						"stream": false
