@@ -53,6 +53,29 @@ cliproxy_server:
     port: 8317
     auto_start: false
 # ----------------------------------------------------------------------------
+# Quota Management: Automatic account failover when quota exhausted (AGY only)
+#
+# Modes:
+#   auto: Fully automatic failover based on quota percentage
+#   manual: User controls everything (no auto-switching)
+#   hybrid: Auto failover + manual pausing/forcing (default)
+#
+# Preflight check runs before each session to verify account health.
+# Exhausted accounts enter cooldown period before being retried.
+# ----------------------------------------------------------------------------
+quota_management:
+  mode: hybrid
+  auto:
+    preflight_check: true
+    exhaustion_threshold: 5
+    tier_priority:
+      - paid
+    cooldown_minutes: 5
+  manual:
+    paused_accounts: []
+    forced_default: null
+    tier_lock: null
+# ----------------------------------------------------------------------------
 # Preferences: User settings
 # ----------------------------------------------------------------------------
 preferences:
