@@ -2,6 +2,13 @@
 
 set -euo pipefail
 
+# Set macOS SDK path for linker (required in Nix environments)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  if command -v xcrun &>/dev/null; then
+    export SDKROOT=$(xcrun --show-sdk-path 2>/dev/null || true)
+  fi
+fi
+
 # Install cargo global packages from Cargo.toml
 # Reads dependencies from ~/dotfiles/Cargo.toml and installs them globally
 
