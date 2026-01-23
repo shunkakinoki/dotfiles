@@ -4,6 +4,7 @@
   ./cliproxyapi
   ./codex
   ./crush
+  ./cursor
   ./claude
   ./direnv
   ./factory
