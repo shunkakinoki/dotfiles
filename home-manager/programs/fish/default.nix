@@ -108,6 +108,7 @@
       shortcuts = "_fish_shortcuts";
       zdo = "_zdo_function";
       zmo = "_zmo_function";
+      zpo = "_zpo_function";
     };
     plugins = [
       {
