@@ -83,14 +83,13 @@ openai-compatibility:
     api-key-entries:
       - api-key: "__OPENROUTER_API_KEY__"
     models:
-      - name: "z-ai/glm-4.6"
-        alias: "glm-4.6"
+      - name: "z-ai/glm-4.7"
+        alias: "glm-4.7"
   - name: "z-ai"
     base-url: "https://api.z.ai/api/coding/paas/v4"
     api-key-entries:
       - api-key: "__ZAI_API_KEY__"
     models:
-      - name: "glm-4.6"
       - name: "glm-4.7"
 
 # payload: # Optional payload configuration
