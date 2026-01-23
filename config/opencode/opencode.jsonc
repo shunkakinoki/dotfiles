@@ -1,8 +1,8 @@
 {
 	"$schema": "https://opencode.ai/config.json",
 	"theme": "opencode",
-	"model": "openrouter-preset/glm-4.7",
-	"small_model": "openrouter-preset/glm-4.7",
+	"model": "cliproxyapi/glm-4.7",
+	"small_model": "cliproxyapi/glm-4.7",
 	"autoupdate": true,
 	"agent": {
 		"code-reviewer": {
@@ -74,10 +74,7 @@
 					"name": "Claude Haiku 4.5 (via CLIProxyAPI)"
 				},
 				"glm-4.7": {
-					"name": "GLM-4.7 (via CLIProxyAPI)",
-					"options": {
-						"stream": false
-					}
+					"name": "GLM-4.7 (via CLIProxyAPI)"
 				}
 			}
 		},
