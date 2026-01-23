@@ -1,0 +1,19 @@
+{
+  "tools": {
+    "enableHooks": true
+  },
+  "hooks": {
+    "BeforeTool": [
+      {
+        "matcher": "write_file|replace",
+        "command": "git-ai checkpoint gemini --hook-input stdin"
+      }
+    ],
+    "AfterTool": [
+      {
+        "matcher": "write_file|replace",
+        "command": "git-ai checkpoint gemini --hook-input stdin"
+      }
+    ]
+  }
+}

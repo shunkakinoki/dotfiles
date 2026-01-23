@@ -8,6 +8,7 @@
   ./claude
   ./direnv
   ./factory
+  ./gemini
   ./ghostty
   ./hammerspoon
   ./jj
