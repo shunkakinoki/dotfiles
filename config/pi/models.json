@@ -156,22 +156,6 @@
           },
           "contextWindow": 131072,
           "maxTokens": 16384
-        },
-        {
-          "id": "z-ai/glm-4.6",
-          "name": "GLM-4.6 (Z-AI)",
-          "reasoning": false,
-          "input": [
-            "text"
-          ],
-          "cost": {
-            "input": 0,
-            "output": 0,
-            "cacheRead": 0,
-            "cacheWrite": 0
-          },
-          "contextWindow": 131072,
-          "maxTokens": 16384
         }
       ]
     },

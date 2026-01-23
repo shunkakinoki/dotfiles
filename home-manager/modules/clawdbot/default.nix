@@ -316,10 +316,6 @@ lib.mkIf (!env.isCI) {
                       id = "glm-4.7";
                       name = "GLM 4.7";
                     })
-                    (mkModel {
-                      id = "glm-4.6";
-                      name = "GLM 4.6";
-                    })
                   ];
               };
             };
