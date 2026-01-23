@@ -8,5 +8,5 @@ function _ocxeh_function --description "Run OpenCode headlessly with GLM-4.7"
     return 1
   end
 
-  opencode run "$prompt" -m 'openrouter-preset/glm-4-7'
+  opencode run "$prompt" -m 'cliproxyapi/glm-4-7'
 end
