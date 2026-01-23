@@ -28,6 +28,9 @@ usage-statistics-enabled: true
 proxy-url: ""
 # Number of times to retry a request. Retries will occur if the HTTP response code is 403, 408, 500, 502, 503, or 504.
 request-retry: 3
+# Routing strategy: "round-robin" (default) or "fill-first" (tries first matching provider)
+routing:
+  strategy: "fill-first"
 # Quota exceeded behavior
 quota-exceeded:
   switch-project: true # Whether to automatically switch to another project when a quota is exceeded
@@ -91,6 +94,7 @@ openai-compatibility:
       - api-key: "__ZAI_API_KEY__"
     models:
       - name: "glm-4.7"
+        alias: "glm-4.7"
 
 # payload: # Optional payload configuration
 #   default: # Default rules only set parameters when they are missing in the payload.
