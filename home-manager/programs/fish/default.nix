@@ -187,6 +187,7 @@
         "_kyberm_function"
         "_zdo_function"
         "_zmo_function"
+        "_zpo_function"
         "_ssh_add_github"
         "fish_user_key_bindings"
       ]
