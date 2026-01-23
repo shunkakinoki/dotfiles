@@ -185,6 +185,28 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git-ai checkpoint 2>/dev/null || true",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git-ai checkpoint claude --hook-input \"$(cat)\" 2>/dev/null || true",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "Notification": [
