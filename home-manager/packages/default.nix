@@ -105,6 +105,7 @@ with pkgs;
   gcc
   gemini-cli
   keychain
+  libiconv
   opencode
   openssl
   openssl.dev

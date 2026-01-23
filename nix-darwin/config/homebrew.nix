@@ -33,7 +33,6 @@
       "jjui"
       "kimi-cli"
       "kurtosis-cli"
-      "libiconv"
       "mas"
       "opencode"
       "ollama"
