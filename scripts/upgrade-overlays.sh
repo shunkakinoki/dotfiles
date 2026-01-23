@@ -95,9 +95,23 @@ compute_pnpm_deps_hash() {
   # Temporarily set fake hash
   sed_inplace "s|pnpmDepsHash = \"[^\"]*\";|pnpmDepsHash = \"$fake_hash\";|" "$OVERLAY_FILE"
 
+  # Detect platform and build configuration
+  local nix_config
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    local arch
+    arch=$(uname -m)
+    if [[ "$arch" == "arm64" ]]; then
+      nix_config=".#darwinConfigurations.aarch64-darwin.system"
+    else
+      nix_config=".#darwinConfigurations.x86_64-darwin.system"
+    fi
+  else
+    nix_config=".#homeConfigurations.$(whoami)@$(hostname).activationPackage"
+  fi
+
   # Run nix build and capture the correct hash from error output
   local build_output correct_hash
-  build_output=$(nix build ".#darwinConfigurations.aarch64-darwin.system" --no-link 2>&1 || true)
+  build_output=$(nix build "$nix_config" --no-link 2>&1 || true)
 
   # Extract the correct hash from "got: sha256-..." line
   correct_hash=$(echo "$build_output" | grep -o 'got:[[:space:]]*sha256-[A-Za-z0-9+/=]*' | head -1 | sed 's/got:[[:space:]]*//')

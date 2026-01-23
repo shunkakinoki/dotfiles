@@ -25,6 +25,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Pull Request
+        id: cpr
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.PAT_TOKEN }}
@@ -33,6 +34,11 @@ jobs:
           body: Automated overlay upgrade
           branch: chore/upgrade-overlays
           delete-branch: true
+      - name: Enable Auto-Merge
+        if: steps.cpr.outputs.pull-request-number
+        run: gh pr merge ${{ steps.cpr.outputs.pull-request-number }} --squash --auto
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
   upgrade-check:
     if: always()
     needs:

@@ -6,7 +6,7 @@ let
     repo = "clawdbot";
     rev = "80c1edc3ff43b3bd3b7b545eed79f303d992f7dc";
     hash = "sha256-IsTNC79KXKL7ByBh7zUmH6qXx0YFdiQ4a4TI40C53U8=";
-    pnpmDepsHash = "sha256-tGzKcCiZNlWlKMNNFmxcFpIvO92G9myhM+OYaGea4hw=";
+    pnpmDepsHash = "sha256-lp4Ef237ESao7OzCjkEv7FZArh68XHSfrHRjvaUBo2Q=";
   };
   # Override clawdbot-app to v2026.1.21 (fixes broken app package)
   clawdbotAppOverride = {
