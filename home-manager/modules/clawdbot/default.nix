@@ -14,6 +14,8 @@ let
 in
 # Only enable on kyber (gateway host) and outside CI
 lib.mkIf (host.isKyber && !env.isCI) {
+  # Add clawdbot to PATH
+  home.packages = [ inputs.nix-clawdbot.packages.${pkgs.system}.clawdbot ];
   # Ensure secrets directory exists
   home.activation.clawdbotSecretsDir = lib.mkIf (lib ? hm && lib.hm ? dag) (
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
