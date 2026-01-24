@@ -9,19 +9,8 @@ let
   inherit (inputs) env host;
   homeDir = config.home.homeDirectory;
 
-  # Get clawdbot package from flake
-  clawdbotPkg = inputs.nix-clawdbot.packages.${pkgs.system}.clawdbot;
-
-  # Template config file
-  templateFile = ../../../config/clawdbot/clawdbot.template.json;
-
-  # Hydrate script with injected paths
-  hydrateScript = pkgs.replaceVars ../../../config/clawdbot/hydrate.sh {
-    template = templateFile;
-    sed = "${pkgs.gnused}/bin/sed";
-    chromium = pkgs.chromium;
-    clawdbot = clawdbotPkg;
-  };
+  # Import hydrate script from config/clawdbot
+  hydrateScript = import ../../../config/clawdbot { inherit pkgs inputs; };
 in
 # Only enable on kyber (gateway host) and outside CI
 lib.mkIf (host.isKyber && !env.isCI) {
