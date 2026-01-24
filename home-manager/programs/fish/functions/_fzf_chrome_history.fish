@@ -1,4 +1,4 @@
-function _fzf_chrome_history --description="fzf Chrome browser history"
+function _fzf_chrome_history --description="fzf Chrome history"
     # Chrome history database location (macOS)
     set -l chrome_history "$HOME/Library/Application Support/Google/Chrome/Default/History"
 
