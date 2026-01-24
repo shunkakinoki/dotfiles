@@ -28,7 +28,6 @@ in
     ++ services
     ++ [
       inputs.agenix.homeManagerModules.default
-      inputs.nix-clawdbot.homeManagerModules.clawdbot
     ];
 
   home.username = username;
