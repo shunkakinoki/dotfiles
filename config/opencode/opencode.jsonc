@@ -57,25 +57,25 @@
 			},
 			"models": {
 				"gemini-3-pro-preview": {
-					"name": "Gemini 3.0 Pro (via CLIProxyAPI)"
+					"name": "Gemini 3.0 Pro (via local CLIProxyAPI)"
 				},
 				"gpt-5.1": {
-					"name": "GPT-5.1 (via CLIProxyAPI)"
+					"name": "GPT-5.1 (via local CLIProxyAPI)"
 				},
 				"gpt-5.1-codex": {
-					"name": "GPT-5.1 Codex (via CLIProxyAPI)"
+					"name": "GPT-5.1 Codex (via local CLIProxyAPI)"
 				},
 				"gpt-5.1-codex-max": {
-					"name": "GPT-5.1 Codex Max (via CLIProxyAPI)"
+					"name": "GPT-5.1 Codex Max (via local CLIProxyAPI)"
 				},
 				"claude-opus-4-5-20251101": {
-					"name": "Claude Opus 4.5 (via CLIProxyAPI)"
+					"name": "Claude Opus 4.5 (via local CLIProxyAPI)"
 				},
 				"claude-haiku-4-5-20251001": {
-					"name": "Claude Haiku 4.5 (via CLIProxyAPI)"
+					"name": "Claude Haiku 4.5 (via local CLIProxyAPI)"
 				},
 				"glm-4.7": {
-					"name": "GLM-4.7 (via CLIProxyAPI)"
+					"name": "GLM-4.7 (via local CLIProxyAPI)"
 				}
 			}
 		},
