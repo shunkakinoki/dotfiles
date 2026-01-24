@@ -102,6 +102,7 @@ with pkgs;
   collectd
   docker
   docker-compose
+  fwupd
   gcc
   gemini-cli
   keychain
