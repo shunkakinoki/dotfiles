@@ -60,6 +60,7 @@
     casks = [
       "antigravity"
       "atuin-desktop"
+      "balenaetcher"
       "beeper"
       "beekeeper-studio"
       "blender"
