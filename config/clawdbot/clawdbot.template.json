@@ -52,20 +52,7 @@
     "native": "auto",
     "nativeSkills": "auto"
   },
-  "channels": {
-    "telegram": {
-      "enabled": true,
-      "dmPolicy": "pairing",
-      "tokenFile": "__HOME__/.config/clawdbot/telegram-token",
-      "groups": {
-        "*": {"requireMention": false},
-        "-1003612372477": {"requireMention": false, "enabled": true}
-      },
-      "allowFrom": [983653361, 2104262990],
-      "groupPolicy": "allowlist",
-      "streamMode": "partial"
-    }
-  },
+  "channels": {},
   "gateway": {
     "mode": "local",
     "bind": "lan",
