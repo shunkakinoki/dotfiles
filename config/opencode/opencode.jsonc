@@ -52,7 +52,8 @@
 			"npm": "@ai-sdk/openai-compatible",
 			"name": "CLIProxyAPI (local)",
 			"options": {
-				"baseURL": "http://localhost:8317/v1"
+				"baseURL": "http://localhost:8317/v1",
+				"apiKey": "{env:CLIPROXY_API_KEY}"
 			},
 			"models": {
 				"gemini-3-pro-preview": {
