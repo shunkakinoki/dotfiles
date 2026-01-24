@@ -9,13 +9,71 @@ let
   inherit (inputs) env host;
   homeDir = config.home.homeDirectory;
 
-  # Import hydrate script from config/clawdbot
-  hydrateScript = import ../../../config/clawdbot { inherit pkgs inputs; };
+  # Build clawdbot from source using pnpm
+  clawdbotSrc = pkgs.fetchFromGitHub {
+    owner = "clawdbot";
+    repo = "clawdbot";
+    rev = "v2026.1.22";
+    hash = "sha256-DJZulGqo2E7XvitR3kYKme9vqSfQyYs9I9fsBIpqQdQ=";
+  };
+
+  clawdbotPkg = pkgs.stdenv.mkDerivation rec {
+    pname = "clawdbot";
+    version = "2026.1.22";
+    src = clawdbotSrc;
+
+    nativeBuildInputs = [
+      pkgs.nodejs_22
+      pkgs.pnpm_10
+      pkgs.pnpm_10.configHook
+      pkgs.makeWrapper
+    ];
+
+    pnpmDeps = pkgs.pnpm_10.fetchDeps {
+      inherit pname version src;
+      hash = "sha256-LSqWBa2etVDA4CZSRsaVOEt9Hp2CfAmbnLoiqxjSjOY=";
+      fetcherVersion = 1;
+    };
+
+    buildPhase = ''
+      runHook preBuild
+      pnpm run build
+      runHook postBuild
+    '';
+
+    installPhase = ''
+      runHook preInstall
+      mkdir -p $out/bin $out/lib/clawdbot
+      cp -r dist node_modules package.json $out/lib/clawdbot/
+      makeWrapper ${pkgs.nodejs_22}/bin/node $out/bin/clawdbot \
+        --add-flags "$out/lib/clawdbot/dist/cli.js"
+      runHook postInstall
+    '';
+
+    meta = with lib; {
+      description = "Clawdbot gateway";
+      homepage = "https://github.com/clawdbot/clawdbot";
+      license = licenses.mit;
+      platforms = platforms.unix;
+    };
+  };
+
+  # Template config file
+  templateFile = ../../../config/clawdbot/clawdbot.template.json;
+
+  # Hydrate script with injected paths
+  hydrateScript = pkgs.replaceVars ../../../config/clawdbot/hydrate.sh {
+    template = templateFile;
+    sed = "${pkgs.gnused}/bin/sed";
+    chromium = pkgs.chromium;
+    clawdbot = clawdbotPkg;
+  };
 in
 # Only enable on kyber (gateway host) and outside CI
 lib.mkIf (host.isKyber && !env.isCI) {
   # Add clawdbot to PATH
-  home.packages = [ inputs.nix-clawdbot.packages.${pkgs.system}.clawdbot ];
+  home.packages = [ clawdbotPkg ];
+
   # Ensure secrets directory exists
   home.activation.clawdbotSecretsDir = lib.mkIf (lib ? hm && lib.hm ? dag) (
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
@@ -24,7 +82,7 @@ lib.mkIf (host.isKyber && !env.isCI) {
     ''
   );
 
-  # Extract secrets from cliproxyapi auth (reuse existing extract-secrets.sh pattern)
+  # Extract secrets from cliproxyapi auth
   home.activation.clawdbotSecrets = lib.mkIf (lib ? hm && lib.hm ? dag) (
     lib.hm.dag.entryAfter [ "writeBoundary" "clawdbotSecretsDir" ] ''
       SECRETS_DIR="${homeDir}/.config/clawdbot"
