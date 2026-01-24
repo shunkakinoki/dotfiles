@@ -44,7 +44,11 @@ let
     installPhase = ''
       runHook preInstall
       mkdir -p $out/bin $out/lib/clawdbot
+      # Copy all relevant directories for the monorepo
       cp -r dist node_modules package.json $out/lib/clawdbot/
+      cp -r extensions ui apps tools $out/lib/clawdbot/ 2>/dev/null || true
+      # Remove broken symlinks
+      find $out -xtype l -delete
       makeWrapper ${pkgs.nodejs_22}/bin/node $out/bin/clawdbot \
         --add-flags "$out/lib/clawdbot/dist/cli.js"
       runHook postInstall
