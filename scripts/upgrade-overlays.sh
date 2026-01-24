@@ -97,10 +97,10 @@ compute_pnpm_deps_hash() {
 
   # Detect platform and build configuration
   local nix_config
-  if [[ "$OSTYPE" == "darwin"* ]]; then
+  if [[ $OSTYPE == "darwin"* ]]; then
     local arch
     arch=$(uname -m)
-    if [[ "$arch" == "arm64" ]]; then
+    if [[ $arch == "arm64" ]]; then
       nix_config=".#darwinConfigurations.aarch64-darwin.system"
     else
       nix_config=".#darwinConfigurations.x86_64-darwin.system"

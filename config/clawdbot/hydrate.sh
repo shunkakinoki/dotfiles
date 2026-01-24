@@ -20,7 +20,7 @@ fi
 read_secret() {
   local file="$1"
   if [ -f "$file" ]; then
-    tr -d '\n\r' < "$file"
+    tr -d '\n\r' <"$file"
   else
     echo ""
   fi
@@ -45,7 +45,7 @@ mkdir -p "$STATE_DIR"
   -e "s|__GATEWAY_TOKEN__|${GATEWAY_TOKEN}|g" \
   -e "s|__CHROMIUM_PATH__|${CHROMIUM_PATH}|g" \
   -e "s|__HOME__|${HOME}|g" \
-  "$TEMPLATE" > "$CONFIG"
+  "$TEMPLATE" >"$CONFIG"
 
 echo "Generated clawdbot config at $CONFIG" >&2
 
