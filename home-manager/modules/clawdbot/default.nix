@@ -235,8 +235,9 @@ lib.mkIf (!env.isCI) {
       configOverrides =
         # Kyber only: Local gateway mode with browser + bridge for nodes
         lib.optionalAttrs host.isKyber {
-          # Explicitly disable memory plugin slot (upstream default causes config validation error)
-          plugins.slots = { };
+          # Explicitly disable memory plugin slot (upstream defaults to "memory-core" if undefined)
+          # Set to "none" to disable the slot (empty string gets normalized to default)
+          plugins.slots.memory = "none";
           # Override messages.queue to use byChannel instead of deprecated byProvider
           messages.queue = {
             mode = "interrupt";
