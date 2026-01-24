@@ -62,6 +62,54 @@ lib.mkIf (!env.isCI) {
     ''
   );
 
+  # Inject gateway auth token into clawdbot.json for local mode on kyber (tokenFile deprecated)
+  home.activation.clawdbotGatewayToken = lib.mkIf (lib ? hm && lib.hm ? dag && host.isKyber) (
+    lib.hm.dag.entryAfter [ "clawdbotSecrets" "clawdbotConfigFiles" ] ''
+      TOKEN_FILE="${clawdbotDir}/gateway-token"
+      CONFIG_FILE="${homeDir}/.clawdbot/clawdbot.json"
+      if [ -f "$TOKEN_FILE" ] && [ -f "$CONFIG_FILE" ]; then
+        TOKEN=$(${pkgs.coreutils}/bin/cat "$TOKEN_FILE" | ${pkgs.coreutils}/bin/tr -d '\n')
+        # Inject token into gateway.auth.token
+        ${pkgs.jq}/bin/jq --arg token "$TOKEN" \
+          '.gateway.auth.token = $token' \
+          "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && \
+          ${pkgs.coreutils}/bin/mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+        echo "Injected gateway auth token into clawdbot config"
+      fi
+    ''
+  );
+
+  # Inject telegram bot token into clawdbot.json for kyber (botTokenFile deprecated)
+  home.activation.clawdbotTelegramToken = lib.mkIf (lib ? hm && lib.hm ? dag && host.isKyber) (
+    lib.hm.dag.entryAfter [ "clawdbotSecrets" "clawdbotConfigFiles" ] ''
+      TOKEN_FILE="${clawdbotDir}/telegram-token"
+      CONFIG_FILE="${homeDir}/.clawdbot/clawdbot.json"
+      if [ -f "$TOKEN_FILE" ] && [ -f "$CONFIG_FILE" ]; then
+        TOKEN=$(${pkgs.coreutils}/bin/cat "$TOKEN_FILE" | ${pkgs.coreutils}/bin/tr -d '\n')
+        # Inject botToken into channels.telegram
+        ${pkgs.jq}/bin/jq --arg token "$TOKEN" \
+          '.channels.telegram.botToken = $token' \
+          "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && \
+          ${pkgs.coreutils}/bin/mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+        echo "Injected telegram bot token into clawdbot config"
+      fi
+    ''
+  );
+
+  # Clean up deprecated config keys (byProvider, etc.) on kyber
+  home.activation.clawdbotCleanDeprecated = lib.mkIf (lib ? hm && lib.hm ? dag && host.isKyber) (
+    lib.hm.dag.entryAfter [ "clawdbotTelegramToken" ] ''
+      CONFIG_FILE="${homeDir}/.clawdbot/clawdbot.json"
+      if [ -f "$CONFIG_FILE" ]; then
+        # Remove deprecated keys that cause config validation errors
+        ${pkgs.jq}/bin/jq 'del(.messages.queue.byProvider)' \
+          "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && \
+          ${pkgs.coreutils}/bin/mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+        echo "Cleaned deprecated config keys from clawdbot config"
+      fi
+    ''
+  );
+
   # Inject gateway token into clawdbot.json for remote mode (tokenFile not supported upstream)
   home.activation.clawdbotRemoteToken = lib.mkIf (lib ? hm && lib.hm ? dag && !host.isKyber) (
     lib.hm.dag.entryAfter [ "clawdbotSecrets" "clawdbotConfigFiles" ] ''
@@ -187,17 +235,23 @@ lib.mkIf (!env.isCI) {
       configOverrides =
         # Kyber only: Local gateway mode with browser + bridge for nodes
         lib.optionalAttrs host.isKyber {
+          # Explicitly disable memory plugin slot (upstream default causes config validation error)
+          plugins.slots = { };
+          # Override messages.queue to use byChannel instead of deprecated byProvider
+          messages.queue = {
+            mode = "interrupt";
+            byChannel = {
+              discord = "queue";
+              telegram = "interrupt";
+              webchat = "queue";
+            };
+          };
           gateway = {
             mode = "local";
             bind = "lan";
-            auth = {
-              tokenFile = "${clawdbotDir}/gateway-token";
-            };
+            # auth.token injected by activation script (tokenFile deprecated in new clawdbot)
           };
-          bridge = {
-            enabled = true;
-            bind = "lan"; # Allow nodes to connect from LAN/ingress
-          };
+          # bridge removed - deprecated in new clawdbot version
           browser = {
             enabled = true;
             headless = true;
@@ -211,7 +265,7 @@ lib.mkIf (!env.isCI) {
             providers = {
               cliproxy = {
                 baseUrl = "http://localhost:8317/v1";
-                apiKeyFile = "${clawdbotDir}/cliproxy-key";
+                # apiKey injected by activation script (apiKeyFile deprecated)
                 api = "openai-completions";
                 models =
                   let
@@ -324,6 +378,23 @@ lib.mkIf (!env.isCI) {
               };
             };
           };
+          # Telegram channel config (moved from root telegram key to channels.telegram)
+          channels.telegram = {
+            # botToken injected by activation script
+            allowFrom = [
+              983653361
+              2104262990
+            ];
+            groups = {
+              "*" = {
+                requireMention = false;
+              };
+              "-1003612372477" = {
+                enabled = true;
+                requireMention = false;
+              };
+            };
+          };
         }
         # All other hosts (macOS + non-kyber Linux): Remote mode - connect to kyber gateway
         // lib.optionalAttrs (!host.isKyber) {
@@ -350,24 +421,8 @@ lib.mkIf (!env.isCI) {
         apiKeyFile = "${clawdbotDir}/anthropic-key";
       };
 
-      # Telegram provider - kyber gateway only (reads from ~/.config/clawdbot/telegram-token)
-      providers.telegram = {
-        enable = host.isKyber;
-        botTokenFile = "${clawdbotDir}/telegram-token";
-        allowFrom = [
-          983653361
-          2104262990
-        ];
-        groups = {
-          "*" = {
-            requireMention = false;
-          };
-          "-1003612372477" = {
-            enabled = true;
-            requireMention = false;
-          };
-        };
-      };
+      # Telegram config moved to configOverrides.channels.telegram (new clawdbot schema)
+      # providers.telegram deprecated - see configOverrides above
 
       # # iMessage provider - macOS only (reads messages from anyone)
       # providers.imessage = {
