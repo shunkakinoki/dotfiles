@@ -91,6 +91,7 @@
       fdp = "_fzf_directory_picker --allow-cd --prompt-name Projects ~/";
       ffp = "_fzf_file_picker --allow-open-in-editor --prompt-name Files";
       ffpf = "_fzf_file_picker --allow-open-in-editor --show-hidden-files --prompt-name Files+";
+      fbh = "_fzf_chrome_history";
       fgb = "_fzf_git_branch";
       fgw = "_fzf_git_worktree";
       fhq = "_fzf_ghq_picker";
@@ -166,6 +167,7 @@
         "_coxelh_function"
         "_dev_function"
         "_fish_shortcuts"
+        "_fzf_chrome_history"
         "_fzf_cmd_history"
         "_fzf_directory_picker"
         "_fzf_file_picker"
