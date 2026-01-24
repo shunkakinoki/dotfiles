@@ -77,7 +77,7 @@
     "load": {
       "paths": ["__HOME__/.clawdbot/plugins"]
     },
-    "slots": {},
+    "slots": {"memory": null},
     "entries": {
       "telegram": {"enabled": true}
     }
