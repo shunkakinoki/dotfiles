@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 let
   isDarwin = pkgs.stdenv.isDarwin;
   libiconvPkgConfigPath = lib.optionalString isDarwin ":${pkgs.libiconv.dev}/lib/pkgconfig";
