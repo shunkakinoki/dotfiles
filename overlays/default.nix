@@ -1,12 +1,12 @@
 { inputs }:
 let
-  # Override clawdbot source to v2026.1.21
+  # Override clawdbot source to include PR #1554 fix for memory plugin
   clawdbotSourceOverride = {
     owner = "clawdbot";
     repo = "clawdbot";
-    rev = "80c1edc3ff43b3bd3b7b545eed79f303d992f7dc";
-    hash = "sha256-IsTNC79KXKL7ByBh7zUmH6qXx0YFdiQ4a4TI40C53U8=";
-    pnpmDepsHash = "sha256-lp4Ef237ESao7OzCjkEv7FZArh68XHSfrHRjvaUBo2Q=";
+    rev = "71f7bd1cfd2448485e823f8f59a865d83a52d861";
+    hash = "sha256-3vcNfKDHJL3WsHoyrJoEQDU3g8IESVjd2V5h1lNHcp0=";
+    pnpmDepsHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   };
   # Override clawdbot-app to v2026.1.21 (fixes broken app package)
   clawdbotAppOverride = {
