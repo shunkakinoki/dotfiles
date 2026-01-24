@@ -94,7 +94,7 @@
       fgb = "_fzf_git_branch";
       fgw = "_fzf_git_worktree";
       fhq = "_fzf_ghq_picker";
-      fsh = "_fzf_cmd_history --allow-execute";
+      fsh = "_fzf_shell_history --allow-execute";
       gco = "_gco_function";
       grco = "_grco_function";
       grcr = "_grcr_function";
