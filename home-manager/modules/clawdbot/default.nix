@@ -50,7 +50,7 @@ let
       # Remove broken symlinks
       find $out -xtype l -delete
       makeWrapper ${pkgs.nodejs_22}/bin/node $out/bin/clawdbot \
-        --add-flags "$out/lib/clawdbot/dist/cli.js"
+        --add-flags "$out/lib/clawdbot/dist/entry.js"
       runHook postInstall
     '';
 
