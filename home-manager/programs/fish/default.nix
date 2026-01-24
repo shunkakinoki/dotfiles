@@ -94,10 +94,13 @@
       fgb = "_fzf_git_branch";
       fgw = "_fzf_git_worktree";
       fhq = "_fzf_ghq_picker";
+      fpc = "_fzf_preview_cmd";
+      fpn = "_fzf_preview_name";
       fsh = "_fzf_shell_history --allow-execute";
       gco = "_gco_function";
       grco = "_grco_function";
       grcr = "_grcr_function";
+      hme = "_hm_load_env_file";
       kyber = "_kyber_function";
       kyberd = "_kyberd_function";
       kyberm = "_kyberm_function";
