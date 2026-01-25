@@ -1,8 +1,14 @@
 [project]
 name = "dotfiles"
 version = "0.1.0"
-requires-python = ">=3.14.2"
-dependencies = ["mistral-vibe>=1.3.5", "ruff>=0.14.14"]
+requires-python = ">=3.13"
+dependencies = []
 
-[tool.uv]
-dev-dependencies = []
+# UV global tools - installed as isolated environments
+# Tracked here for Renovate to update versions
+[tool.uv-globals]
+tools = [
+  "aider-chat>=0.86.1",
+  "mistral-vibe>=1.3.5",
+  "ruff>=0.11.13",
+]

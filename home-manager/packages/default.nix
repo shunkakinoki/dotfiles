@@ -11,7 +11,6 @@ with pkgs;
   pkgs.nur.repos.charmbracelet.crush
   age
   aichat
-  aider-chat
   argocd
   ast-grep
   awscli

@@ -31,19 +31,25 @@ fi
 
 echo "Installing uv global tools from pyproject.toml..."
 
-# Parse dependencies from standard pyproject.toml format
-DEPS=$(dasel -f "$PYPROJECT" -r toml -w json 'project.dependencies' 2>/dev/null | jq -r '.[]' 2>/dev/null || true)
+# Parse tools from [tool.uv-globals] section
+DEPS=$(dasel -f "$PYPROJECT" -r toml -w json 'tool.uv-globals.tools' 2>/dev/null | jq -r '.[]' 2>/dev/null || true)
 
 if [ -z "$DEPS" ]; then
-  echo "No dependencies found in pyproject.toml"
+  echo "No tools found in [tool.uv-globals] section"
   exit 0
 fi
 
 echo "$DEPS" | while read -r pkg; do
   if [ -n "$pkg" ]; then
     echo "Installing $pkg..."
-    uv tool install "$pkg" --force 2>/dev/null ||
-      echo "Failed to install $pkg, skipping..."
+    # aider-chat requires Python 3.13 (tiktoken doesn't support 3.14)
+    if [[ "$pkg" == aider-chat* ]]; then
+      uv tool install "$pkg" --python 3.13 --force 2>/dev/null ||
+        echo "Failed to install $pkg, skipping..."
+    else
+      uv tool install "$pkg" --force 2>/dev/null ||
+        echo "Failed to install $pkg, skipping..."
+    fi
   fi
 done
 
