@@ -8,8 +8,8 @@ let
   inherit (inputs) env host;
   homeDir = config.home.homeDirectory;
 in
-# Only enable on kyber (gateway host) and outside CI
-lib.mkIf (host.isKyber && !env.isCI) {
+# Only enable on kyber (gateway host)
+lib.mkIf (host.isKyber) {
   # Systemd service for clawdbot gateway
   systemd.user.services.clawdbot-gateway = {
     Unit = {
