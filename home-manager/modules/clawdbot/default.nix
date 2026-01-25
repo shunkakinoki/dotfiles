@@ -8,66 +8,9 @@
 let
   inherit (inputs) env host;
   homeDir = config.home.homeDirectory;
-
-  # Build clawdbot from source using pnpm
-  clawdbotSrc = pkgs.fetchFromGitHub {
-    owner = "clawdbot";
-    repo = "clawdbot";
-    rev = "v2026.1.22";
-    hash = "sha256-DJZulGqo2E7XvitR3kYKme9vqSfQyYs9I9fsBIpqQdQ=";
-  };
-
-  clawdbotPkg = pkgs.stdenv.mkDerivation rec {
-    pname = "clawdbot";
-    version = "2026.1.22";
-    src = clawdbotSrc;
-
-    nativeBuildInputs = [
-      pkgs.nodejs_22
-      pkgs.pnpm_10
-      pkgs.pnpm_10.configHook
-      pkgs.makeWrapper
-    ];
-
-    pnpmDeps = pkgs.pnpm_10.fetchDeps {
-      inherit pname version src;
-      hash = "sha256-LSqWBa2etVDA4CZSRsaVOEt9Hp2CfAmbnLoiqxjSjOY=";
-      fetcherVersion = 1;
-    };
-
-    buildPhase = ''
-      runHook preBuild
-      pnpm run build
-      runHook postBuild
-    '';
-
-    installPhase = ''
-      runHook preInstall
-      mkdir -p $out/bin $out/lib/clawdbot
-      # Copy all relevant directories for the monorepo
-      cp -r dist node_modules package.json $out/lib/clawdbot/
-      cp -r extensions ui apps tools $out/lib/clawdbot/ 2>/dev/null || true
-      # Remove broken symlinks
-      find $out -xtype l -delete
-      makeWrapper ${pkgs.nodejs_22}/bin/node $out/bin/clawdbot \
-        --add-flags "$out/lib/clawdbot/dist/entry.js"
-      runHook postInstall
-    '';
-
-    meta = with lib; {
-      description = "Clawdbot gateway";
-      homepage = "https://github.com/clawdbot/clawdbot";
-      license = licenses.mit;
-      platforms = platforms.unix;
-    };
-  };
-
 in
 # Only enable on kyber (gateway host) and outside CI
 lib.mkIf (host.isKyber && !env.isCI) {
-  # Add clawdbot to PATH
-  home.packages = [ clawdbotPkg ];
-
   # Ensure state directory exists
   home.activation.clawdbotStateDir = lib.mkIf (lib ? hm && lib.hm ? dag) (
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
@@ -129,7 +72,7 @@ lib.mkIf (host.isKyber && !env.isCI) {
     };
     Service = {
       Type = "simple";
-      ExecStart = "${clawdbotPkg}/bin/clawdbot gateway --port 18789";
+      ExecStart = "${homeDir}/.bun/bin/clawdbot gateway --port 18789";
       Restart = "always";
       RestartSec = "5s";
       Environment = [
