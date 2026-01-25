@@ -42,13 +42,16 @@ fi
 echo "$DEPS" | while read -r pkg; do
   if [ -n "$pkg" ]; then
     echo "Installing $pkg..."
-    # aider-chat requires Python 3.13 (tiktoken doesn't support 3.14)
-    if [[ "$pkg" == aider-chat* ]]; then
-      uv tool install "$pkg" --python 3.13 --force 2>/dev/null ||
+    # Try default Python first, fall back to older versions if build fails
+    if ! uv tool install "$pkg" --force 2>/dev/null; then
+      # Some packages don't support latest Python, try 3.13 then 3.12
+      if uv tool install "$pkg" --python 3.13 --force 2>/dev/null; then
+        echo "Installed $pkg with Python 3.13"
+      elif uv tool install "$pkg" --python 3.12 --force 2>/dev/null; then
+        echo "Installed $pkg with Python 3.12"
+      else
         echo "Failed to install $pkg, skipping..."
-    else
-      uv tool install "$pkg" --force 2>/dev/null ||
-        echo "Failed to install $pkg, skipping..."
+      fi
     fi
   fi
 done
