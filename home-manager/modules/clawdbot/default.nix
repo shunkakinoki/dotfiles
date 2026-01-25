@@ -62,21 +62,18 @@ let
     };
   };
 
-  # Template config file
-  templateFile = ../../../config/clawdbot/clawdbot.template.json;
-
-  # Hydrate script with injected paths
-  hydrateScript = pkgs.replaceVars ../../../config/clawdbot/hydrate.sh {
-    template = templateFile;
-    sed = "${pkgs.gnused}/bin/sed";
-    chromium = pkgs.chromium;
-    clawdbot = clawdbotPkg;
-  };
 in
 # Only enable on kyber (gateway host) and outside CI
 lib.mkIf (host.isKyber && !env.isCI) {
   # Add clawdbot to PATH
   home.packages = [ clawdbotPkg ];
+
+  # Ensure state directory exists
+  home.activation.clawdbotStateDir = lib.mkIf (lib ? hm && lib.hm ? dag) (
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      mkdir -p "${homeDir}/.clawdbot"
+    ''
+  );
 
   # Ensure secrets directory exists
   home.activation.clawdbotSecretsDir = lib.mkIf (lib ? hm && lib.hm ? dag) (
@@ -132,7 +129,7 @@ lib.mkIf (host.isKyber && !env.isCI) {
     };
     Service = {
       Type = "simple";
-      ExecStart = "${pkgs.bash}/bin/bash ${hydrateScript}";
+      ExecStart = "${clawdbotPkg}/bin/clawdbot gateway --port 18789";
       Restart = "always";
       RestartSec = "5s";
       Environment = [
