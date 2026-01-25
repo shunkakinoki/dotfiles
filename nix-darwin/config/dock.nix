@@ -18,6 +18,7 @@
       "/System/Applications/Mail.app"
       "/Applications/ChatGPT.app"
       "/Applications/Claude.app"
+      "/Applications/Clawdbot.app"
       "/Applications/Google Chrome.app"
       "/Applications/Wispr Flow.app"
       "/Applications/Docker.app"
