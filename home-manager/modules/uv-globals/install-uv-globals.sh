@@ -31,11 +31,11 @@ fi
 
 echo "Installing uv global tools from pyproject.toml..."
 
-# Parse tools from [tool.uv-globals] section
-DEPS=$(dasel -f "$PYPROJECT" -r toml -w json 'tool.uv-globals.tools' 2>/dev/null | jq -r '.[]' 2>/dev/null || true)
+# Parse dependencies from standard pyproject.toml format
+DEPS=$(dasel -f "$PYPROJECT" -r toml -w json 'project.dependencies' 2>/dev/null | jq -r '.[]' 2>/dev/null || true)
 
 if [ -z "$DEPS" ]; then
-  echo "No tools found in [tool.uv-globals] section"
+  echo "No dependencies found in pyproject.toml"
   exit 0
 fi
 
