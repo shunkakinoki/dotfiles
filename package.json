@@ -27,6 +27,7 @@
     "@vibe-kit/grok-cli": "^0.0.34",
     "agent-browser": "^0.7.6",
     "ccusage": "^18.0.5",
+    "clawdbot": "^2026.1.24-3",
     "clawdhub": "^0.3.0",
     "cline": "^1.0.10",
     "mcporter": "^0.7.3",
