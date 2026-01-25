@@ -26,10 +26,12 @@ DOCKER_IMAGE_TAGGED := $(DOCKER_IMAGE_NAME_BASE):$(GIT_COMMIT_SHA)
 # Nix executable path
 NIX_EXEC := $(shell which nix)
 
-# Common cache settings (apply even before switch)
+# Common cache settings (only applied when user is trusted to avoid warnings)
 NIX_SUBSTITUTERS := https://cache.nixos.org https://devenv.cachix.org https://cachix.cachix.org
 NIX_TRUSTED_KEYS := cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw= cachix.cachix.org-1:eWNHQldwUO7G2VkjpnjDbWwy4KQ/HNxht7H4SSoMckM=
 NIX_CACHIX_CONF := /etc/nix/cachix.conf
+# Check if user is trusted (to avoid "ignoring untrusted substituter" warnings)
+NIX_USER_TRUSTED := $(shell grep -qE "trusted-users.*=.*(\\*|$(shell whoami))" /etc/nix/nix.conf 2>/dev/null && echo "yes" || echo "no")
 
 # Nix configuration system
 NIX_SYSTEM := $(shell if [ "$(OS)" = "Darwin" ] && [ "$(ARCH)" = "arm64" ]; then \
@@ -69,7 +71,14 @@ NIX_USERNAME := $(shell \
 	fi)
 NIX_ENV := $(shell . ~/.nix-profile/etc/profile.d/nix.sh 2>/dev/null || echo "not_found")
 NIX_FLAGS := --extra-experimental-features 'flakes nix-command' --no-pure-eval --impure
+# Only add cache options when user is trusted or on Darwin/CI (avoids "ignoring untrusted substituter" warnings)
+ifeq ($(OS),Darwin)
 NIX_FLAGS += --option substituters "$(NIX_SUBSTITUTERS)" --option trusted-public-keys "$(NIX_TRUSTED_KEYS)"
+else ifeq ($(NIX_USER_TRUSTED),yes)
+NIX_FLAGS += --option substituters "$(NIX_SUBSTITUTERS)" --option trusted-public-keys "$(NIX_TRUSTED_KEYS)"
+else ifdef CI
+NIX_FLAGS += --option substituters "$(NIX_SUBSTITUTERS)" --option trusted-public-keys "$(NIX_TRUSTED_KEYS)"
+endif
 
 # Machine detection for automatic host mapping
 DETECTED_HOST := $(shell \
@@ -142,7 +151,7 @@ setup: nix-setup ## Basic Nix setup (alias for nix-setup).
 setup-dev: nix-setup git-submodule-sync shell-install ## Set up local development environment (Nix + submodules + shell).
 
 .PHONY: switch
-switch: nix-switch services sync ## Apply Nix configuration, restart services, and sync plugins.
+switch: nix-switch services dotagents-sync ## Apply Nix configuration, restart services, and sync plugins.
 
 .PHONY: services
 services: ## Restart platform-specific services (launchd on macOS, systemd on Linux).
@@ -152,8 +161,8 @@ services: ## Restart platform-specific services (launchd on macOS, systemd on Li
 		$(MAKE) systemctl; \
 	fi
 
-.PHONY: sync
-sync: ## Sync dotagents (commands, skills, MCP configuration).
+.PHONY: dotagents-sync
+dotagents-sync: ## Sync dotagents (commands, skills, MCP configuration).
 	@$(MAKE) -C dotagents sync
 
 .PHONY: test
