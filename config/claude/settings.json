@@ -139,7 +139,8 @@
           {
             "type": "command",
             "command": "jq -c '{timestamp: (now | todate), prompt: .prompt[0:500]}' >> ~/.claude/prompt-history.jsonl",
-            "timeout": 5
+            "timeout": 5,
+            "async": true
           }
         ]
       }
@@ -150,12 +151,14 @@
           {
             "type": "command",
             "command": "$HOME/.claude/notify.sh",
-            "timeout": 10
+            "timeout": 10,
+            "async": true
           },
           {
             "type": "command",
             "command": "$HOME/.claude/pushover.sh",
-            "timeout": 10
+            "timeout": 10,
+            "async": true
           }
         ]
       }
@@ -167,7 +170,8 @@
           {
             "type": "command",
             "command": "command -v dcg >/dev/null 2>&1 && dcg",
-            "timeout": 5
+            "timeout": 5,
+            "async": true
           },
           {
             "type": "command",
@@ -177,12 +181,14 @@
           {
             "type": "command",
             "command": "$HOME/.claude/notify.sh",
-            "timeout": 10
+            "timeout": 10,
+            "async": true
           },
           {
             "type": "command",
             "command": "$HOME/.claude/pushover.sh",
-            "timeout": 10
+            "timeout": 10,
+            "async": true
           }
         ]
       },
@@ -204,7 +210,8 @@
           {
             "type": "command",
             "command": "git-ai checkpoint claude --hook-input \"$(cat)\" 2>/dev/null || true",
-            "timeout": 5
+            "timeout": 5,
+            "async": true
           }
         ]
       }
@@ -215,12 +222,14 @@
           {
             "type": "command",
             "command": "$HOME/.claude/notify.sh",
-            "timeout": 10
+            "timeout": 10,
+            "async": true
           },
           {
             "type": "command",
             "command": "$HOME/.claude/pushover.sh",
-            "timeout": 10
+            "timeout": 10,
+            "async": true
           }
         ]
       }
@@ -231,12 +240,14 @@
           {
             "type": "command",
             "command": "$HOME/.claude/notify.sh",
-            "timeout": 10
+            "timeout": 10,
+            "async": true
           },
           {
             "type": "command",
             "command": "$HOME/.claude/pushover.sh",
-            "timeout": 10
+            "timeout": 10,
+            "async": true
           }
         ]
       }
@@ -247,12 +258,14 @@
           {
             "type": "command",
             "command": "$HOME/.claude/notify.sh",
-            "timeout": 10
+            "timeout": 10,
+            "async": true
           },
           {
             "type": "command",
             "command": "$HOME/.claude/pushover.sh",
-            "timeout": 10
+            "timeout": 10,
+            "async": true
           }
         ]
       }
@@ -263,12 +276,14 @@
           {
             "type": "command",
             "command": "$HOME/.claude/notify.sh",
-            "timeout": 10
+            "timeout": 10,
+            "async": true
           },
           {
             "type": "command",
             "command": "$HOME/.claude/pushover.sh",
-            "timeout": 10
+            "timeout": 10,
+            "async": true
           }
         ]
       }
@@ -279,12 +294,14 @@
           {
             "type": "command",
             "command": "$HOME/.claude/notify.sh",
-            "timeout": 10
+            "timeout": 10,
+            "async": true
           },
           {
             "type": "command",
             "command": "$HOME/.claude/pushover.sh",
-            "timeout": 10
+            "timeout": 10,
+            "async": true
           }
         ]
       }
