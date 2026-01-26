@@ -31,4 +31,10 @@
       '';
     });
   })
+  (final: prev: {
+    # Disable brightnessSupport on aarch64-linux to avoid ddcutil build failure
+    fastfetch = prev.fastfetch.override {
+      brightnessSupport = !prev.stdenv.hostPlatform.isAarch64;
+    };
+  })
 ]
