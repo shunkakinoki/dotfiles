@@ -23,6 +23,7 @@ lib.mkIf (host.isKyber) {
       RestartSec = "5s";
       Environment = [
         "HOME=${homeDir}"
+        "PATH=${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:${homeDir}/.local/bin:/usr/local/bin:/usr/bin:/bin"
       ];
       WorkingDirectory = "${homeDir}/.clawdbot";
       StandardOutput = "append:/tmp/clawdbot/clawdbot-gateway.log";
