@@ -13,7 +13,7 @@ let
   direnv = import ./direnv;
   fd = import ./fd;
   fish = import ./fish;
-  fnm = import ./fnm { inherit config lib pkgs; };
+  fnm = import ./fnm;
   fzf = import ./fzf;
   gh = import ./gh;
   ghq = import ./ghq;
