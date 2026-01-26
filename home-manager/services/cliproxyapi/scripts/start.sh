@@ -110,6 +110,25 @@ rm -f "$OBJECTSTORE_CONFIG" "$BACKUP_CONFIG"
 cp "$CONFIG" "$OBJECTSTORE_CONFIG"
 cp "$CONFIG" "$BACKUP_CONFIG"
 
+# Push config to objectstore so remote-backed config doesn't revert locally
+if [ -n "$OBJECTSTORE_ENDPOINT" ] && [ -n "$OBJECTSTORE_ACCESS_KEY" ] && [ -n "$OBJECTSTORE_SECRET_KEY" ]; then
+  AWS_ACCESS_KEY_ID="$OBJECTSTORE_ACCESS_KEY" \
+    AWS_SECRET_ACCESS_KEY="$OBJECTSTORE_SECRET_KEY" \
+    @aws@ s3 sync \
+    --endpoint-url="$OBJECTSTORE_ENDPOINT" \
+    --no-progress \
+    "$OBJECTSTORE_CONFIG_DIR/" \
+    "s3://${OBJECTSTORE_BUCKET}/config/" || true
+
+  AWS_ACCESS_KEY_ID="$OBJECTSTORE_ACCESS_KEY" \
+    AWS_SECRET_ACCESS_KEY="$OBJECTSTORE_SECRET_KEY" \
+    @aws@ s3 sync \
+    --endpoint-url="$OBJECTSTORE_ENDPOINT" \
+    --no-progress \
+    "$BACKUP_CONFIG_DIR/" \
+    "s3://${OBJECTSTORE_BUCKET}/backup/config/" || true
+fi
+
 cd "$CONFIG_DIR"
 
 # Linux: Docker
