@@ -2,22 +2,16 @@
   config,
   lib,
   inputs,
-  pkgs,
   ...
 }:
 let
-  inherit (inputs) env host;
+  inherit (inputs) host;
   homeDir = config.home.homeDirectory;
-  fnmNodePath = "${homeDir}/.local/share/fnm/node-versions/v22.22.0/installation/bin/node";
 in
 # Only enable on kyber (gateway host)
 lib.mkIf (host.isKyber) {
-  # Create node symlink for clawdbot (requires Node >=22)
-  home.file.".local/bin/node" = {
-    source = config.lib.file.mkOutOfStoreSymlink fnmNodePath;
-  };
-
   # Ensure clawdbot directories exist
+  # Note: Node symlink is managed by fnm module
   home.activation.clawdbotSetup = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p /tmp/clawdbot
     mkdir -p ${homeDir}/.clawdbot
