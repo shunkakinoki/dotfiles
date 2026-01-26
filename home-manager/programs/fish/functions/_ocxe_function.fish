@@ -3,9 +3,9 @@ function _ocxe_function --description "Run OpenCode with GLM-4.7 via OpenRouter"
   # Usage: ocxe [<prompt words...>]
 
   if test (count $argv) -eq 0
-    opencode -m 'cliproxyapi/glm-4-7'
+    opencode -m 'cliproxyapi/glm-4.7'
   else
     set -l prompt (string join " " -- $argv)
-    opencode run "$prompt" -m 'cliproxyapi/glm-4-7'
+    opencode run "$prompt" -m 'cliproxyapi/glm-4.7'
   end
 end
