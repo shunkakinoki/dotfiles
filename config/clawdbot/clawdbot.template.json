@@ -321,8 +321,11 @@
   "channels": {
     "telegram": {
       "enabled": true,
+      "capabilities": {
+        "inlineButtons": "allowlist"
+      },
       "dmPolicy": "pairing",
-      "tokenFile": "__HOME__/.config/clawdbot/telegram-token",
+      "botToken": "__TELEGRAM_TOKEN__",
       "groups": {
         "*": {
           "requireMention": false
@@ -337,6 +340,9 @@
         2104262990
       ],
       "groupPolicy": "allowlist",
+      "reactionNotifications": "all",
+      "reactionLevel": "extensive",
+      "replyToMode": "first",
       "streamMode": "partial"
     }
   },
