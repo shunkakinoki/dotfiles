@@ -10,7 +10,7 @@ in
 {
   # Use activation script to copy settings.json instead of symlinking
   # This allows ruler and other tools to modify the file
-  home.activation.geminiSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.geminiSettings = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p "$HOME/.gemini"
     if [ ! -f "$HOME/.gemini/settings.json" ]; then
       $DRY_RUN_CMD cp ${geminiSettingsSource} "$HOME/.gemini/settings.json"

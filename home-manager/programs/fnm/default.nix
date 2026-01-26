@@ -21,7 +21,7 @@ in
   '';
 
   # Pre-install node versions and set default
-  home.activation.fnmSetup = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.fnmSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     export PATH="${pkgs.fnm}/bin:$PATH"
     export FNM_DIR="${homeDir}/.local/share/fnm"
 

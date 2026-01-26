@@ -12,7 +12,7 @@ in
 lib.mkIf (host.isKyber) {
   # Ensure clawdbot directories exist
   # Note: Node symlink is managed by fnm module
-  home.activation.clawdbotSetup = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.clawdbotSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p /tmp/clawdbot
     mkdir -p ${homeDir}/.clawdbot
   '';
