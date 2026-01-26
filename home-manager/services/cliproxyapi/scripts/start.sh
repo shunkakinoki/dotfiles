@@ -147,6 +147,7 @@ usage_import() {
     "${MANAGEMENT_URL}/usage/import" >/dev/null || true
 }
 
+# shellcheck disable=SC2329 # Invoked via trap
 usage_export() {
   if [ -z "$MANAGEMENT_KEY" ]; then
     return 0
@@ -163,8 +164,7 @@ wait_for_management() {
     return 0
   fi
   local attempts=60
-  local i
-  for i in $(seq 1 "$attempts"); do
+  for _ in $(seq 1 "$attempts"); do
     if curl -sS \
       -H "Authorization: Bearer ${MANAGEMENT_KEY}" \
       "${MANAGEMENT_URL}/usage/export" \
