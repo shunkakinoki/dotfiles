@@ -100,6 +100,12 @@ if [ -f "$TEMPLATE" ]; then
   fi
 fi
 
+# Keep objectstore-backed config in sync for management UI
+OBJECTSTORE_CONFIG_DIR="$CONFIG_DIR/objectstore/config"
+OBJECTSTORE_CONFIG="$OBJECTSTORE_CONFIG_DIR/config.yaml"
+mkdir -p "$OBJECTSTORE_CONFIG_DIR"
+cp "$CONFIG" "$OBJECTSTORE_CONFIG"
+
 cd "$CONFIG_DIR"
 
 # Linux: Docker
