@@ -161,10 +161,35 @@ update_repo() {
 
   # Git pull
   log_step "  Pulling latest changes..."
-  if ! (cd "$repo_dir" && git pull 2>&1); then
-    log_error "  Git pull failed"
-    FAILURES+=("$repo_name (git pull failed)")
-    return 1
+  if (cd "$repo_dir" && [ -n "$(git status --porcelain)" ]); then
+    log_warn "  Working tree dirty; resetting to remote (destructive)..."
+    if ! (
+      cd "$repo_dir" &&
+        git fetch --prune 2>&1 &&
+        upstream_ref="$(git rev-parse --abbrev-ref --symbolic-full-name "@{u}" 2>/dev/null || true)" &&
+        if [ -n "$upstream_ref" ]; then
+          git reset --hard "$upstream_ref" 2>&1
+        else
+          git reset --hard HEAD 2>&1
+        fi &&
+        git clean -fd 2>&1
+    ); then
+      log_error "  Reset to remote failed"
+      FAILURES+=("$repo_name (reset failed)")
+      return 1
+    fi
+
+    if ! (cd "$repo_dir" && git pull 2>&1); then
+      log_error "  Git pull failed"
+      FAILURES+=("$repo_name (git pull failed)")
+      return 1
+    fi
+  else
+    if ! (cd "$repo_dir" && git pull 2>&1); then
+      log_error "  Git pull failed"
+      FAILURES+=("$repo_name (git pull failed)")
+      return 1
+    fi
   fi
 
   # Build
