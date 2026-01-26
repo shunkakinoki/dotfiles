@@ -20,8 +20,8 @@ jobs:
         uses: cachix/install-nix-action@v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Run Upgrade Overlays
-        run: ./scripts/upgrade-overlays.sh all
+      - name: Run Upgrade
+        run: make upgrade
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Pull Request
@@ -29,10 +29,10 @@ jobs:
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.PAT_TOKEN }}
-          commit-message: 'chore: upgrade overlays'
-          title: 'chore: upgrade overlays'
-          body: Automated overlay upgrade
-          branch: chore/upgrade-overlays
+          commit-message: 'chore: upgrade'
+          title: 'chore: upgrade'
+          body: Automated upgrade
+          branch: chore/upgrade
           delete-branch: true
       - name: Enable Auto-Merge
         if: steps.cpr.outputs.pull-request-number
