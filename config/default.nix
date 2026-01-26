@@ -4,9 +4,11 @@
   ./cliproxyapi
   ./codex
   ./crush
+  ./cursor
   ./claude
   ./direnv
   ./factory
+  ./gemini
   ./ghostty
   ./hammerspoon
   ./jj

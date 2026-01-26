@@ -5,6 +5,28 @@ notify = [
   "notify",
 ]
 
+[features]
+undo = false
+shell_tool = true
+web_search_request = false
+web_search_cached = false
+unified_exec = false
+apply_patch_freeform = false
+exec_policy = true
+experimental_windows_sandbox = false
+elevated_windows_sandbox = false
+remote_compaction = true
+remote_models = true
+shell_snapshot = true
+child_agents_md = false
+powershell_utf8 = false
+enable_request_compression = false
+collab = false
+connectors = false
+steer = false
+collaboration_modes = true
+responses_websockets = false
+
 [model_providers.cliproxyapi]
 name = "CLIProxyAPI"
 base_url = "http://localhost:8317/v1"

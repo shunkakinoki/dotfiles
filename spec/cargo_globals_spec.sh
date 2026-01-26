@@ -54,13 +54,18 @@ The output should include 'dasel'
 End
 
 It 'supports table-style dependency versions'
-When run bash -c "grep 'version // .value' '$SCRIPT'"
-The output should include 'version // .value'
+When run bash -c "grep -E '\\.value\\.version|type\\)\\s*==\"string\"' '$SCRIPT'"
+The output should include '.value.version'
 End
 
 It 'uses cargo install with version'
 When run bash -c "grep 'cargo install' '$SCRIPT'"
 The output should include '--version'
+End
+
+It 'supports git dependencies'
+When run bash -c "grep -E '\\.value\\.git|--git' '$SCRIPT'"
+The output should include '--git'
 End
 
 It 'tries --locked flag first'

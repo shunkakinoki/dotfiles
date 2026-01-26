@@ -34,11 +34,9 @@ let
 in
 {
   # Hydrate auth cache after home-manager switch
-  home.activation = lib.optionalAttrs (lib ? hm && lib.hm ? dag) {
-    hydrateCliproxyAuths = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      ${pkgs.bash}/bin/bash ${hydrateScript} || true
-    '';
-  };
+  home.activation.hydrateCliproxyAuths = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    ${pkgs.bash}/bin/bash ${hydrateScript} || true
+  '';
 
   home.packages = lib.mkIf pkgs.stdenv.isDarwin [ cliWrapper ];
 

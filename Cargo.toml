@@ -7,4 +7,5 @@ edition = "2021"
 path = "lib.rs"
 
 [dependencies]
+git-ai = { git = "https://github.com/git-ai-project/git-ai", branch = "main" }
 worktrunk = "0.18.2"

@@ -1,8 +1,8 @@
 {
 	"$schema": "https://opencode.ai/config.json",
 	"theme": "opencode",
-	"model": "openrouter-preset/glm-4.7",
-	"small_model": "openrouter-preset/glm-4.7",
+	"model": "cliproxyapi/glm-4.7",
+	"small_model": "cliproxyapi/glm-4.7",
 	"autoupdate": true,
 	"agent": {
 		"code-reviewer": {
@@ -43,9 +43,6 @@
 				"claude-haiku-4-5-20251001": {
 					"name": "Claude Haiku 4.5 (via shunkakinoki's CLIProxy)"
 				},
-				"z-ai/glm-4.6": {
-					"name": "GLM-4.6 (via shunkakinoki's CLIProxy)"
-				},
 				"z-ai/glm-4.7": {
 					"name": "GLM-4.7 (via shunkakinoki's CLIProxy)"
 				}
@@ -55,38 +52,30 @@
 			"npm": "@ai-sdk/openai-compatible",
 			"name": "CLIProxyAPI (local)",
 			"options": {
-				"baseURL": "http://localhost:8317/v1"
+				"baseURL": "http://localhost:8317/v1",
+				"apiKey": "{env:CLIPROXY_API_KEY}"
 			},
 			"models": {
 				"gemini-3-pro-preview": {
-					"name": "Gemini 3.0 Pro (via CLIProxyAPI)"
+					"name": "Gemini 3.0 Pro (via local CLIProxyAPI)"
 				},
 				"gpt-5.1": {
-					"name": "GPT-5.1 (via CLIProxyAPI)"
+					"name": "GPT-5.1 (via local CLIProxyAPI)"
 				},
 				"gpt-5.1-codex": {
-					"name": "GPT-5.1 Codex (via CLIProxyAPI)"
+					"name": "GPT-5.1 Codex (via local CLIProxyAPI)"
 				},
 				"gpt-5.1-codex-max": {
-					"name": "GPT-5.1 Codex Max (via CLIProxyAPI)"
+					"name": "GPT-5.1 Codex Max (via local CLIProxyAPI)"
 				},
 				"claude-opus-4-5-20251101": {
-					"name": "Claude Opus 4.5 (via CLIProxyAPI)"
+					"name": "Claude Opus 4.5 (via local CLIProxyAPI)"
 				},
 				"claude-haiku-4-5-20251001": {
-					"name": "Claude Haiku 4.5 (via CLIProxyAPI)"
+					"name": "Claude Haiku 4.5 (via local CLIProxyAPI)"
 				},
-				"z-ai/glm-4.6": {
-					"name": "GLM-4.6 (via CLIProxyAPI)",
-					"options": {
-						"stream": false
-					}
-				},
-				"z-ai/glm-4.7": {
-					"name": "GLM-4.7 (via CLIProxyAPI)",
-					"options": {
-						"stream": false
-					}
+				"glm-4.7": {
+					"name": "GLM-4.7 (via local CLIProxyAPI)"
 				}
 			}
 		},
@@ -196,7 +185,7 @@
 				"apiKey": "{env:OPENROUTER_API_KEY}"
 			},
 			"models": {
-				"glm-4-7": {
+				"glm-4.7": {
 					"id": "@preset/glm-4-7",
 					"name": "Preset GLM-4.7 (via OpenRouter)"
 				}
@@ -266,9 +255,6 @@
 		},
 		"zai-coding-plan": {
 			"models": {
-				"glm-4.6": {
-					"name": "GLM-4.6 Coding Plan (via Z-AI)"
-				},
 				"glm-4.7": {
 					"name": "GLM-4.7 Coding Plan (via Z-AI)"
 				}

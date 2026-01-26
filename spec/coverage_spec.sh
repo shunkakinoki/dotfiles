@@ -89,8 +89,8 @@ It 'has spec file for home-manager/modules/cargo-globals/install-cargo-globals.s
 The path "spec/cargo_globals_spec.sh" should be exist
 End
 
-It 'has spec file for home-manager/modules/clawdbot/extract-secrets.sh'
-The path "spec/clawdbot_spec.sh" should be exist
+It 'has spec file for config/clawdbot/hydrate.sh'
+The path "spec/clawdbot_hydrate_spec.sh" should be exist
 End
 
 It 'has spec file for home-manager/modules/npm-globals/install-npm-globals.sh'
@@ -122,8 +122,8 @@ config/claude/notify.sh
 config/claude/pushover.sh
 config/claude/security.sh
 config/claude/statusline-git.sh
+config/clawdbot/hydrate.sh
 home-manager/modules/cargo-globals/install-cargo-globals.sh
-home-manager/modules/clawdbot/extract-secrets.sh
 home-manager/modules/local-binaries/sync-local-binaries.sh
 home-manager/modules/npm-globals/install-npm-globals.sh
 home-manager/modules/uv-globals/install-uv-globals.sh

@@ -1,0 +1,365 @@
+{
+  "browser": {
+    "enabled": true,
+    "executablePath": "__CHROMIUM_PATH__",
+    "headless": true,
+    "noSandbox": true
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "cliproxy": {
+        "baseUrl": "http://localhost:8317/v1",
+        "apiKey": "__CLIPROXY_API_KEY__",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "claude-opus-4-5-20251101",
+            "name": "Claude Opus 4.5",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "claude-opus-4-5-thinking",
+            "name": "Claude Opus 4.5 Thinking",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "claude-sonnet-4-5-20250929",
+            "name": "Claude Sonnet 4.5",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "claude-sonnet-4-5-thinking",
+            "name": "Claude Sonnet 4.5 Thinking",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "claude-sonnet-4-20250514",
+            "name": "Claude Sonnet 4",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "claude-opus-4-20250514",
+            "name": "Claude Opus 4",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "claude-haiku-4-5-20251001",
+            "name": "Claude Haiku 4.5",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "gpt-5.2",
+            "name": "GPT-5.2",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "gpt-5.2-codex",
+            "name": "GPT-5.2 Codex",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "gpt-5.1",
+            "name": "GPT-5.1",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "gpt-5",
+            "name": "GPT-5",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "gpt-5-codex",
+            "name": "GPT-5 Codex",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "gemini-3-pro-preview",
+            "name": "Gemini 3 Pro",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "gemini-3-flash-preview",
+            "name": "Gemini 3 Flash",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "gemini-2.5-pro",
+            "name": "Gemini 2.5 Pro",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "gemini-2.5-flash",
+            "name": "Gemini 2.5 Flash",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "glm-4.7",
+            "name": "GLM 4.7",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "anthropic/claude-opus-4-5"
+      },
+      "workspace": "__HOME__/.clawdbot/workspace",
+      "thinkingDefault": "high",
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    },
+    "list": [
+      {
+        "id": "main",
+        "default": true
+      }
+    ]
+  },
+  "messages": {
+    "queue": {
+      "mode": "interrupt"
+    },
+    "ackReactionScope": "group-mentions"
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto"
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "pairing",
+      "tokenFile": "__HOME__/.config/clawdbot/telegram-token",
+      "groups": {
+        "*": {
+          "requireMention": false
+        },
+        "-1003612372477": {
+          "requireMention": false,
+          "enabled": true
+        }
+      },
+      "allowFrom": [
+        983653361,
+        2104262990
+      ],
+      "groupPolicy": "allowlist",
+      "streamMode": "partial"
+    }
+  },
+  "gateway": {
+    "mode": "local",
+    "bind": "lan",
+    "auth": {
+      "token": "__GATEWAY_TOKEN__"
+    },
+    "trustedProxies": [
+      "10.0.0.0/8",
+      "172.16.0.0/12",
+      "192.168.0.0/16"
+    ]
+  },
+  "plugins": {
+    "load": {
+      "paths": [
+        "__HOME__/.clawdbot/plugins"
+      ]
+    },
+    "slots": {
+      "memory": ""
+    }
+  }
+}

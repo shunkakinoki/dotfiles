@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "afterFileEdit": [
+      {
+        "command": "git-ai checkpoint cursor --hook-input stdin"
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": "git-ai checkpoint cursor --hook-input stdin"
+      }
+    ]
+  },
+  "version": 1
+}

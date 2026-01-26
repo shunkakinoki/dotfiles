@@ -1,6 +1,6 @@
-function _fzf_cmd_history --description="fzf command history"
+function _fzf_shell_history --description="fzf shell history"
     set -l search_term (commandline --current-token)
-    set -l prompt_name 'Command History'
+    set -l prompt_name 'Shell History'
     set -l allow_execute
 
     if test (count $argv) -gt 0

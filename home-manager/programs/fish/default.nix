@@ -87,16 +87,20 @@
       coxel = "_coxel_function";
       coxelh = "_coxelh_function";
       dev = "_dev_function";
-      fch = "_fzf_cmd_history --allow-execute";
+      fch = "_fzf_chrome_history";
       fdp = "_fzf_directory_picker --allow-cd --prompt-name Projects ~/";
       ffp = "_fzf_file_picker --allow-open-in-editor --prompt-name Files";
       ffpf = "_fzf_file_picker --allow-open-in-editor --show-hidden-files --prompt-name Files+";
       fgb = "_fzf_git_branch";
       fgw = "_fzf_git_worktree";
       fhq = "_fzf_ghq_picker";
+      fpc = "_fzf_preview_cmd";
+      fpn = "_fzf_preview_name";
+      fsh = "_fzf_shell_history --allow-execute";
       gco = "_gco_function";
       grco = "_grco_function";
       grcr = "_grcr_function";
+      hme = "_hm_load_env_file";
       kyber = "_kyber_function";
       kyberd = "_kyberd_function";
       kyberm = "_kyberm_function";
@@ -108,6 +112,7 @@
       shortcuts = "_fish_shortcuts";
       zdo = "_zdo_function";
       zmo = "_zmo_function";
+      zpo = "_zpo_function";
     };
     plugins = [
       {
@@ -164,19 +169,16 @@
         "_coxel_function"
         "_coxelh_function"
         "_dev_function"
-        "_ocxe_function"
-        "_ocxeh_function"
-        "_pixe_function"
-        "_pixeh_function"
         "_fish_shortcuts"
-        "_fzf_cmd_history"
+        "_fzf_chrome_history"
         "_fzf_directory_picker"
         "_fzf_file_picker"
+        "_fzf_ghq_picker"
         "_fzf_git_branch"
         "_fzf_git_worktree"
-        "_fzf_ghq_picker"
         "_fzf_preview_cmd"
         "_fzf_preview_name"
+        "_fzf_shell_history"
         "_gco_function"
         "_grco_function"
         "_grcr_function"
@@ -184,9 +186,14 @@
         "_kyber_function"
         "_kyberd_function"
         "_kyberm_function"
+        "_ocxe_function"
+        "_ocxeh_function"
+        "_pixe_function"
+        "_pixeh_function"
+        "_ssh_add_github"
         "_zdo_function"
         "_zmo_function"
-        "_ssh_add_github"
+        "_zpo_function"
         "fish_user_key_bindings"
       ]
   );
