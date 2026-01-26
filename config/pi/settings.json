@@ -1,7 +1,7 @@
 {
   "theme": "dark",
   "defaultProvider": "cli-proxy-api",
-  "defaultModel": "gpt-5.2-codex",
+  "defaultModel": "glm-4.7",
   "defaultThinkingLevel": "medium",
   "enabledModels": [
     "cli-proxy-api/*",
