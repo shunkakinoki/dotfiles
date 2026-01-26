@@ -56,6 +56,9 @@
       export PATH="/nix/var/nix/profiles/default/bin:$PATH"
       export PATH="/opt/homebrew/bin:$PATH"
       export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
+
+      # Worktrunk shell init
+      eval "$(wt config shell init bash)"
     '';
 
     profileExtra = ''

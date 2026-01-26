@@ -23,6 +23,9 @@
       set -gx GOPATH $HOME/go
 
       direnv hook fish | source
+
+      # Worktrunk shell init
+      wt config shell init fish | source
     '';
     loginShellInit = ''
       if test -f /opt/homebrew/bin/brew

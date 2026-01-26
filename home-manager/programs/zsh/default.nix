@@ -65,6 +65,9 @@
       export FNM_LOGLEVEL="info"
       export FNM_NODE_DIST_MIRROR="https://nodejs.org/dist"
       export FNM_VERSION_FILE_STRATEGY="local"
+
+      # Worktrunk shell init
+      eval "$(wt config shell init zsh)"
     '';
   };
 }
