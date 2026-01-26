@@ -704,12 +704,6 @@ systemctl: systemctl-cliproxyapi systemctl-clawdbot systemctl-code-syncer system
 
 .PHONY: systemctl-cliproxyapi
 systemctl-cliproxyapi: ## Pull latest image and restart cliproxyapi systemd user service.
-	@if docker info >/dev/null 2>&1; then \
-		echo "🔄 Pulling latest cliproxyapi image..."; \
-		docker pull eceasy/cli-proxy-api:latest || true; \
-	else \
-		echo "⏭️ Skipping docker pull (docker not accessible)"; \
-	fi
 	@echo "🔄 Restarting cliproxyapi..."
 	@systemctl --user restart cliproxyapi.service || true
 	@echo "✅ cliproxyapi restarted"

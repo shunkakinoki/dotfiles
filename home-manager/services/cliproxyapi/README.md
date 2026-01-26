@@ -15,7 +15,7 @@ This directory contains the Nix-based configuration for the cliproxyapi service 
 |--------|---------|
 | `hydrate.sh` | Pull S3 → local → CCS (runs at activation) |
 | `backup.sh` | Push local → S3 → CCS (triggered by WatchPaths) |
-| `start.sh` | Load .env, hydrate auth cache if needed, generate config, start binary |
+| `start.sh` | Load .env, hydrate auth cache if needed, generate config, start service |
 | `wrapper.sh` | Load .env, sync auth cache, exec binary (for CLI usage) |
 
 ### Directory Structure
@@ -134,6 +134,8 @@ tail -f /tmp/cliproxyapi-backup.log
 
 # OAuth login
 cliproxyapi --claude-login
+
+# Usage statistics backup/restore happens automatically on start/exit
 ```
 
 ## Dependencies

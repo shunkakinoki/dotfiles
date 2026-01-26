@@ -7,6 +7,8 @@ TEMPLATE="$CONFIG_DIR/config.template.yaml"
 CONFIG="$CONFIG_DIR/config.yaml"
 ENV_FILE="${HOME}/dotfiles/.env"
 AUTH_DIR="${CONFIG_DIR}/objectstore/auths"
+USAGE_EXPORT_FILE="${CONFIG_DIR}/usage-export.json"
+MANAGEMENT_URL="${CLIPROXY_MANAGEMENT_URL:-http://127.0.0.1:8317/v0/management}"
 
 if [ -f "$ENV_FILE" ]; then
   set -a
@@ -26,6 +28,7 @@ OBJECTSTORE_ACCESS_KEY="$(strip_quotes "${OBJECTSTORE_ACCESS_KEY:-}")"
 OBJECTSTORE_SECRET_KEY="$(strip_quotes "${OBJECTSTORE_SECRET_KEY:-}")"
 OBJECTSTORE_LOCAL_PATH="$CONFIG_DIR"
 MANAGEMENT_PASSWORD="${CLIPROXY_MANAGEMENT_PASSWORD:-}"
+MANAGEMENT_KEY="${CLIPROXY_MANAGEMENT_PASSWORD:-${CLIPROXY_MANAGEMENT_KEY:-}}"
 export OBJECTSTORE_ENDPOINT OBJECTSTORE_BUCKET OBJECTSTORE_ACCESS_KEY OBJECTSTORE_SECRET_KEY OBJECTSTORE_LOCAL_PATH MANAGEMENT_PASSWORD
 
 if [ -n "$OBJECTSTORE_ENDPOINT" ] && [ -n "$OBJECTSTORE_ACCESS_KEY" ] && [ -n "$OBJECTSTORE_SECRET_KEY" ]; then
@@ -132,10 +135,62 @@ fi
 cd "$CONFIG_DIR"
 
 # Linux: Docker
+usage_import() {
+  if [ -z "$MANAGEMENT_KEY" ] || [ ! -f "$USAGE_EXPORT_FILE" ]; then
+    return 0
+  fi
+  curl -sS \
+    -H "Authorization: Bearer ${MANAGEMENT_KEY}" \
+    -H "Content-Type: application/json" \
+    -X POST \
+    --data-binary @"$USAGE_EXPORT_FILE" \
+    "${MANAGEMENT_URL}/usage/import" >/dev/null || true
+}
+
+# shellcheck disable=SC2329 # Invoked via trap
+usage_export() {
+  if [ -z "$MANAGEMENT_KEY" ]; then
+    return 0
+  fi
+  mkdir -p "$(dirname "$USAGE_EXPORT_FILE")"
+  curl -sS \
+    -H "Authorization: Bearer ${MANAGEMENT_KEY}" \
+    "${MANAGEMENT_URL}/usage/export" \
+    -o "$USAGE_EXPORT_FILE" || true
+}
+
+wait_for_management() {
+  if [ -z "$MANAGEMENT_KEY" ]; then
+    return 0
+  fi
+  local attempts=60
+  for _ in $(seq 1 "$attempts"); do
+    if curl -sS \
+      -H "Authorization: Bearer ${MANAGEMENT_KEY}" \
+      "${MANAGEMENT_URL}/usage/export" \
+      -o /dev/null; then
+      return 0
+    fi
+    sleep 3
+  done
+  return 1
+}
+
+child_pid=""
+trap 'usage_export' EXIT
+trap 'usage_export; if [ -n "$child_pid" ]; then kill -TERM "$child_pid" 2>/dev/null || true; wait "$child_pid" 2>/dev/null || true; fi' TERM INT
+
 if [ "$(uname)" = "Linux" ] && command -v docker >/dev/null 2>&1; then
+  if docker info >/dev/null 2>&1; then
+    echo "🔄 Pulling latest cliproxyapi image..."
+    docker pull eceasy/cli-proxy-api:latest || true
+  else
+    echo "⏭️ Skipping docker pull (docker not accessible)"
+  fi
+
   docker rm -f cliproxyapi 2>/dev/null || true
   mkdir -p "$CONFIG_DIR/logs"
-  exec docker run --rm \
+  docker run --rm \
     --name cliproxyapi \
     --network host \
     --ulimit nofile=65536:65536 \
@@ -143,14 +198,29 @@ if [ "$(uname)" = "Linux" ] && command -v docker >/dev/null 2>&1; then
     -v "$CONFIG_DIR:/root/.cli-proxy-api" \
     -v "$CONFIG_DIR/logs:/CLIProxyAPI/logs" \
     -e MANAGEMENT_PASSWORD="${MANAGEMENT_PASSWORD:-}" \
-    eceasy/cli-proxy-api:latest
+    eceasy/cli-proxy-api:latest &
+  child_pid=$!
+  wait_for_management || true
+  usage_import
+  wait "$child_pid"
+  exit $?
 fi
 
 # macOS: Homebrew binary
 if [ -x /opt/homebrew/bin/cliproxyapi ]; then
-  exec /opt/homebrew/bin/cliproxyapi -config "$CONFIG" "$@"
+  /opt/homebrew/bin/cliproxyapi -config "$CONFIG" "$@" &
+  child_pid=$!
+  wait_for_management || true
+  usage_import
+  wait "$child_pid"
+  exit $?
 elif [ -x /usr/local/bin/cliproxyapi ]; then
-  exec /usr/local/bin/cliproxyapi -config "$CONFIG" "$@"
+  /usr/local/bin/cliproxyapi -config "$CONFIG" "$@" &
+  child_pid=$!
+  wait_for_management || true
+  usage_import
+  wait "$child_pid"
+  exit $?
 else
   echo "cliproxyapi not found" >&2
   exit 1
