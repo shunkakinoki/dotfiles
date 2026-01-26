@@ -17,9 +17,10 @@ lib.mkIf (host.isKyber) {
     source = config.lib.file.mkOutOfStoreSymlink fnmNodePath;
   };
 
-  # Ensure clawdbot log directory exists
-  home.activation.clawdbotLogDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  # Ensure clawdbot directories exist
+  home.activation.clawdbotSetup = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p /tmp/clawdbot
+    mkdir -p ${homeDir}/.clawdbot
   '';
 
   # Systemd service for clawdbot gateway
