@@ -4,10 +4,6 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-OVERLAY_FILE="$REPO_ROOT/overlays/default.nix"
-
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
