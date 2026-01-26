@@ -292,7 +292,10 @@
   "agents": {
     "defaults": {
       "model": {
-        "primary": "anthropic/claude-opus-4-5"
+        "primary": "cliproxy/claude-opus-4-5",
+        "fallbacks": [
+          "cliproxy/glm-4.7"
+        ]
       },
       "workspace": "__HOME__/.clawdbot/workspace",
       "thinkingDefault": "high",

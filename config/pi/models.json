@@ -2,7 +2,7 @@
   "providers": {
     "cli-proxy-api": {
       "baseUrl": "http://localhost:8317/v1",
-      "apiKey": "dummy",
+      "apiKey": "CLIPROXY_API_KEY",
       "api": "openai-responses",
       "models": [
         {
