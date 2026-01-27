@@ -218,6 +218,42 @@
         "type": "github"
       }
     },
+    "flake-utils": {
+      "locked": {
+        "lastModified": 1644229661,
+        "narHash": "sha256-1YdnJAsNy69bpcjuoKdOYQX0YxZBiCYZo4Twxerqv7k=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "3cecb5b042f7f209c56ffd8371b2711a290ec797",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "foundry": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1769497704,
+        "narHash": "sha256-McmVZ/3yWd1ifYyhyPG+GIiG5LjOukwu0l3S5mob96g=",
+        "owner": "shazow",
+        "repo": "foundry.nix",
+        "rev": "55d3c56b759b03bc15c2a4ebf7d47c41beec886b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "shazow",
+        "repo": "foundry.nix",
+        "type": "github"
+      }
+    },
     "git-hooks": {
       "inputs": {
         "flake-compat": [
@@ -503,6 +539,7 @@
         "agenix": "agenix",
         "devenv": "devenv",
         "flake-parts": "flake-parts_2",
+        "foundry": "foundry",
         "home-manager": "home-manager",
         "mk-shell-bin": "mk-shell-bin",
         "neovim-nightly-overlay": "neovim-nightly-overlay",

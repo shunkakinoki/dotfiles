@@ -35,7 +35,6 @@
       fish_add_path -p ~/.local/bin
       fish_add_path -p ~/.bun/bin
       fish_add_path -p ~/.cargo/bin
-      fish_add_path -p ~/.foundry/bin
       fish_add_path -p ~/.nix-profile/bin
       fish_add_path -p ~/go/bin
       fish_add_path -p /nix/var/nix/profiles/default/bin
@@ -56,7 +55,6 @@
       fish_add_path -p ~/.local/bin
       fish_add_path -p ~/.bun/bin
       fish_add_path -p ~/.cargo/bin
-      fish_add_path -p ~/.foundry/bin
       fish_add_path -p ~/.nix-profile/bin
       fish_add_path -p ~/go/bin
       fish_add_path -p /nix/var/nix/profiles/default/bin
