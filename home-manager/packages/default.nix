@@ -36,6 +36,7 @@ with pkgs;
   eza
   fastfetch
   fd
+  foundry-bin
   fswatch
   fzf-make
   gh
