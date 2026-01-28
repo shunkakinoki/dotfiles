@@ -5,8 +5,6 @@ notify = [
   "notify",
 ]
 
-suppress_unstable_features_warning = true
-
 [features]
 undo = false
 shell_tool = true
