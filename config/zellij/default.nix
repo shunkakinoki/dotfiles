@@ -1,9 +1,9 @@
 { config, ... }:
 {
   xdg.configFile."zellij/config.kdl" = {
-    source = config.lib.file.mkOutOfStoreSymlink ./config.kdl;
+    source = ./config.kdl;
   };
   xdg.configFile."zellij/layouts/primary.kdl" = {
-    source = config.lib.file.mkOutOfStoreSymlink ./layouts/primary.kdl;
+    source = ./layouts/primary.kdl;
   };
 }

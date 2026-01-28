@@ -1,7 +1,7 @@
 { config, ... }:
 {
   home.file.".codex/config.toml" = {
-    source = config.lib.file.mkOutOfStoreSymlink ./config.toml;
+    source = ./config.toml;
     force = true;
   };
 }

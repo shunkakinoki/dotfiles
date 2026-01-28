@@ -153,7 +153,7 @@
 
   xdg.configFile = {
     "fish/themes/dracula.theme".source = ./dracula.theme;
-    "fish/completions".source = config.lib.file.mkOutOfStoreSymlink ./completions;
+    "fish/completions".source = ./completions;
   }
   // lib.listToAttrs (
     map

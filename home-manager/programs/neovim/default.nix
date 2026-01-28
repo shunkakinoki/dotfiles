@@ -18,7 +18,7 @@ in
   };
 
   home.file.".config/nvim/init.lua" = {
-    source = config.lib.file.mkOutOfStoreSymlink nvimInitLua;
+    source = nvimInitLua;
     force = true;
   };
 
