@@ -6,9 +6,10 @@
 {
   ids.gids.nixbld = 350;
 
-  # Set SHELL environment variable for GUI applications
+  # Set environment variables for GUI applications (VS Code, etc.)
   launchd.user.envVariables = {
     SHELL = "${pkgs.bash}/bin/bash";
+    PATH = "/etc/profiles/per-user/${username}/bin:/run/current-system/sw/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin";
   };
 
   system = {
