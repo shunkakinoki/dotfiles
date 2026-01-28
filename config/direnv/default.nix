@@ -1,7 +1,7 @@
 { config, ... }:
 {
   home.file.".config/direnv/direnvrc" = {
-    source = config.lib.file.mkOutOfStoreSymlink ./direnvrc;
+    source = ./direnvrc;
     force = true;
   };
 }

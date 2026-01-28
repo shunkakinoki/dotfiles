@@ -1,7 +1,7 @@
 { config, ... }:
 {
   home.file.".ssh/rc" = {
-    source = config.lib.file.mkOutOfStoreSymlink ./rc;
+    source = ./rc;
     force = true;
   };
   programs.ssh = {

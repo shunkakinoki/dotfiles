@@ -6,10 +6,18 @@
 {
   ids.gids.nixbld = 350;
 
-  # Set SHELL environment variable for GUI applications
+  # Set environment variables for GUI applications (VS Code, etc.)
   launchd.user.envVariables = {
     SHELL = "${pkgs.bash}/bin/bash";
+    GOROOT = "/etc/go-root";
+    GOPATH = "/Users/${username}/go";
+    PATH = "/Users/${username}/go/bin:/etc/profiles/per-user/${username}/bin:/run/current-system/sw/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin";
   };
+
+  environment.etc."go-root".source = "${pkgs.go}/share/go";
+
+  # Avoid nixpkgs options.json warning during docs generation.
+  documentation.enable = false;
 
   system = {
     stateVersion = 4;
