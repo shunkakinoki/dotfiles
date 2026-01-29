@@ -631,7 +631,7 @@ lua-check-hammerspoon-dev: ## Run the Hammerspoon Lua check inside the Nix dev s
 ##@ Launchd Services
 
 .PHONY: launchctl
-launchctl: launchctl-brew-upgrader launchctl-clawdbot launchctl-cliproxyapi launchctl-cliproxyapi-backup launchctl-code-syncer launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama ## Restart all launchd agents.
+launchctl: launchctl-brew-upgrader launchctl-clawdbot launchctl-cliproxyapi launchctl-cliproxyapi-backup launchctl-code-syncer launchctl-docker-postgres launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama ## Restart all launchd agents.
 
 .PHONY: launchctl-brew-upgrader
 launchctl-brew-upgrader: ## Restart brew-upgrader launchd agent.
@@ -689,6 +689,14 @@ launchctl-neverssl-keepalive: ## Restart neverssl-keepalive launchd agent.
 	@launchctl load ~/Library/LaunchAgents/org.nix-community.home.neverssl-keepalive.plist
 	@echo "✅ neverssl-keepalive restarted"
 
+.PHONY: launchctl-docker-postgres
+launchctl-docker-postgres: ## Restart docker-postgres launchd agent.
+	@echo "🔄 Restarting docker-postgres..."
+	@launchctl unload ~/Library/LaunchAgents/org.nix-community.home.docker-postgres.plist 2>/dev/null || true
+	@sleep 3
+	@launchctl load ~/Library/LaunchAgents/org.nix-community.home.docker-postgres.plist
+	@echo "✅ docker-postgres restarted"
+
 .PHONY: launchctl-ollama
 launchctl-ollama: ## Restart ollama launchd agent.
 	@echo "🔄 Restarting ollama..."
@@ -700,7 +708,7 @@ launchctl-ollama: ## Restart ollama launchd agent.
 ##@ Systemd Services (Linux)
 
 .PHONY: systemctl
-systemctl: systemctl-cliproxyapi systemctl-clawdbot systemctl-code-syncer systemctl-dotfiles-updater systemctl-ollama ## Restart all systemd user services.
+systemctl: systemctl-cliproxyapi systemctl-clawdbot systemctl-code-syncer systemctl-docker-postgres systemctl-dotfiles-updater systemctl-ollama ## Restart all systemd user services.
 
 .PHONY: systemctl-cliproxyapi
 systemctl-cliproxyapi: ## Pull latest image and restart cliproxyapi systemd user service.
@@ -719,6 +727,12 @@ systemctl-code-syncer: ## Restart code-syncer systemd user service.
 	@echo "🔄 Restarting code-syncer..."
 	@systemctl --user restart code-syncer.service || true
 	@echo "✅ code-syncer restarted"
+
+.PHONY: systemctl-docker-postgres
+systemctl-docker-postgres: ## Restart docker-postgres systemd user service.
+	@echo "🔄 Restarting docker-postgres..."
+	@systemctl --user restart docker-postgres.service || true
+	@echo "✅ docker-postgres restarted"
 
 .PHONY: systemctl-dotfiles-updater
 systemctl-dotfiles-updater: ## Restart dotfiles-updater systemd user service.
