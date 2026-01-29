@@ -9,6 +9,7 @@ let
   cliproxyapi = import ./cliproxyapi;
   codeSyncer = import ./code-syncer { inherit pkgs; };
   docker = import ./docker { inherit lib pkgs; };
+  dockerPostgres = import ./docker-postgres { inherit pkgs; };
   dotfilesUpdater = import ./dotfiles-updater { inherit pkgs; };
   makeUpdater = import ./make-updater { inherit pkgs; };
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
@@ -22,6 +23,7 @@ in
   cliproxyapi
   codeSyncer
   docker
+  dockerPostgres
   dotfilesUpdater
   makeUpdater
   neversslKeepalive

@@ -45,6 +45,10 @@ It 'has spec file for home-manager/services/code-syncer/sync.sh'
 The path "spec/code_syncer_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/docker-postgres/start-postgres.sh'
+The path "spec/docker_postgres_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/dotfiles-updater/update.sh'
 The path "spec/dotfiles_updater_spec.sh" should be exist
 End
@@ -136,6 +140,7 @@ home-manager/services/cliproxyapi/scripts/hydrate.sh
 home-manager/services/cliproxyapi/scripts/start.sh
 home-manager/services/cliproxyapi/scripts/wrapper.sh
 home-manager/services/code-syncer/sync.sh
+home-manager/services/docker-postgres/start-postgres.sh
 home-manager/services/dotfiles-updater/update.sh
 home-manager/services/make-updater/update.sh
 home-manager/services/neverssl-keepalive/keepalive.sh
