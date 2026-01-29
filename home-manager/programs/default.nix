@@ -23,6 +23,7 @@ let
   lazygit = import ./lazygit;
   lsd = import ./lsd;
   neovim = import ./neovim;
+  node = import ./node;
   python = import ./python;
   rust = import ./rust;
   ssh = import ./ssh;
