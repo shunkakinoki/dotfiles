@@ -8,10 +8,10 @@ notify = [
 [features]
 undo = false
 shell_tool = true
-web_search_request = false
+web_search_request = true
 web_search_cached = true
-unified_exec = false
-apply_patch_freeform = false
+unified_exec = true
+apply_patch_freeform = true
 exec_policy = true
 experimental_windows_sandbox = false
 elevated_windows_sandbox = false
