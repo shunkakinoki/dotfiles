@@ -211,6 +211,15 @@
               };
               settings = treefmtSettings;
             };
+
+            checks = import ./tests {
+              inherit
+                pkgs
+                lib
+                inputs
+                system
+                ;
+            };
           };
       }
     );
