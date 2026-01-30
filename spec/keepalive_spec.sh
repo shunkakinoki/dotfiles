@@ -62,11 +62,13 @@ After 'cleanup'
 It 'exits 0 even when curl fails'
 When run bash "$SCRIPT"
 The status should be success
+The stderr should include 'FAIL'
 End
 
-It 'silently ignores curl failures'
+It 'logs failure to stderr when curl fails'
 When run bash "$SCRIPT"
 The output should eq ''
+The stderr should include 'FAIL'
 The status should be success
 End
 End
