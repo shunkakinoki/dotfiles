@@ -80,6 +80,7 @@
       "dropbox"
       "figma"
       "firefox"
+      "flameshot"
       "font-hack-nerd-font"
       "font-jetbrains-mono"
       "font-jetbrains-mono-nerd-font"
