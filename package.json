@@ -19,7 +19,7 @@
     "@github/copilot": "^0.0.399",
     "@google/jules": "^0.1.42",
     "@kaitranntt/ccs": "^7.32.0",
-    "@mariozechner/pi-coding-agent": "^0.50.3",
+    "@mariozechner/pi-coding-agent": "^0.50.4",
     "@nanocollective/nanocoder": "^1.21.0",
     "@pulumi/pulumi": "^3.218.0",
     "@sourcegraph/amp": "^0.0.1767254483-g812f6b",
