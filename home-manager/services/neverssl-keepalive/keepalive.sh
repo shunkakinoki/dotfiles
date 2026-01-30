@@ -11,14 +11,17 @@ else
   echo "$(date): FAIL" >&2
 fi
 
-# macOS-specific: Open captive portal for Starbucks WiFi if connectivity is lost
+# macOS-specific: Restart WiFi to trigger captive portal popup when connectivity is lost
 if [[ $OSTYPE == "darwin"* ]]; then
   SSID=$(networksetup -getairportnetwork en0 2>/dev/null | awk -F": " '{print $2}' || echo "")
 
-  # Check for Starbucks networks (e.g., at_STARBUCKS_Wi2)
-  if [[ $SSID == *"STARBUCKS"* ]]; then
+  # Check for Starbucks or Komeda networks
+  if [[ $SSID == *"STARBUCKS"* ]] || [[ $SSID == *"Komeda_Wi-Fi"* ]]; then
     if ! ping -c 1 -W 2 1.1.1.1 >/dev/null 2>&1; then
-      open "http://captive.apple.com" 2>/dev/null || true
+      # Restart WiFi to trigger macOS captive portal popup
+      networksetup -setairportpower en0 off
+      sleep 3
+      networksetup -setairportpower en0 on
     fi
   fi
 fi
