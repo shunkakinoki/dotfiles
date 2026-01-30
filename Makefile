@@ -166,7 +166,7 @@ dotagents-sync: ## Sync dotagents (commands, skills, MCP configuration).
 	@$(MAKE) -C dotagents sync
 
 .PHONY: test
-test: neovim-test shell-test ## Run all tests (neovim + shell).
+test: neovim-test nix-test shell-test ## Run all tests (neovim + nix + shell).
 
 ##@ Update
 
@@ -779,6 +779,14 @@ shell-check-dev: ## Run ShellCheck inside the Nix dev shell (mirrors CI).
 
 .PHONY: shell-lint
 shell-lint: shell-check ## Lint shell scripts (alias for shell-check).
+
+##@ Nix Tests
+
+.PHONY: nix-test
+nix-test: ## Run Nix flake checks (eval, overlay, lib tests).
+	@echo "🧪 Running Nix tests via flake checks..."
+	@$(NIX_ALLOW_UNFREE) $(NIX_EXEC) flake check --system $(NIX_SYSTEM) --impure $(NIX_FLAGS) --print-build-logs
+	@echo "✅ Nix tests passed"
 
 ##@ Doppler
 

@@ -71,6 +71,7 @@ tags
 
 # Ignore 
 result
+result-*
 ref
 
 .direnv/
