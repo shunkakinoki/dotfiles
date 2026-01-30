@@ -1,4 +1,5 @@
 [
+  ./aichat
   ./amp
   ./ccs
   ./cliproxyapi
