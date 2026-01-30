@@ -102,9 +102,10 @@ When run bash -c "cat '$SCRIPT'"
 The output should include '*"STARBUCKS"*'
 End
 
-It 'opens captive portal when connectivity fails'
+It 'restarts WiFi when connectivity fails'
 When run bash -c "cat '$SCRIPT'"
-The output should include 'captive.apple.com'
+The output should include 'networksetup -setairportpower'
+The output should include 'sleep 3'
 End
 End
 
