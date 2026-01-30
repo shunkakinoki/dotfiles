@@ -1404,7 +1404,7 @@ dependencies = [
 [[package]]
 name = "git-ai"
 version = "1.0.41"
-source = "git+https://github.com/git-ai-project/git-ai?branch=main#8380de26d1c069b3b48e421077b9593d3681b78f"
+source = "git+https://github.com/git-ai-project/git-ai?branch=main#942ad109d13e6efbc8f9a6607308656c9aebe81c"
 dependencies = [
  "chrono",
  "clap",
@@ -4298,9 +4298,9 @@ checksum = "d7249219f66ced02969388cf2bb044a09756a083d0fab1e566056b04d9fbcaa5"
 
 [[package]]
 name = "worktrunk"
-version = "0.20.3"
+version = "0.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d7c01920305cf090a3b7288ce4598ec3a6b0aa372bb8d2d4e40e1faebcd04eee"
+checksum = "5b6e9f4ba90bfdac31de7ccae561bafe104dfc1bc8a9dca3447a5fa657a6f7ee"
 dependencies = [
  "ansi-str",
  "anstream",
