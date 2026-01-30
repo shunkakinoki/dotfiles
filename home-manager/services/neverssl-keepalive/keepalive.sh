@@ -5,7 +5,11 @@
 set -euo pipefail
 
 # Silently ping neverssl.com - ignore failures (network may be unavailable)
-curl -fsS --max-time 10 http://neverssl.com >/dev/null 2>&1 || true
+if curl -fsS --max-time 10 http://neverssl.com >/dev/null 2>&1; then
+  echo "$(date): OK"
+else
+  echo "$(date): FAIL" >&2
+fi
 
 # macOS-specific: Open captive portal for Starbucks WiFi if connectivity is lost
 if [[ $OSTYPE == "darwin"* ]]; then
