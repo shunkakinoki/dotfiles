@@ -5,8 +5,10 @@
 set -euo pipefail
 
 # Silently ping neverssl.com - ignore failures (network may be unavailable)
+CURL_OK=false
 if curl -fsS --max-time 10 http://neverssl.com >/dev/null 2>&1; then
   echo "$(date): OK"
+  CURL_OK=true
 else
   echo "$(date): FAIL" >&2
 fi
@@ -17,7 +19,7 @@ if [[ $OSTYPE == "darwin"* ]]; then
 
   # Check for Starbucks or Komeda networks
   if [[ $SSID == *"STARBUCKS"* ]] || [[ $SSID == *"Komeda_Wi-Fi"* ]]; then
-    if ! ping -c 1 -W 2 1.1.1.1 >/dev/null 2>&1; then
+    if [[ $CURL_OK == false ]]; then
       # Restart WiFi to trigger macOS captive portal popup
       networksetup -setairportpower en0 off
       sleep 3
