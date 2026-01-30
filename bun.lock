@@ -5,14 +5,14 @@
     "": {
       "name": "dotfiles",
       "dependencies": {
-        "@augmentcode/auggie": "^0.14.0",
+        "@augmentcode/auggie": "^0.15.0",
         "@biomejs/biome": "^2.3.13",
         "@ccusage/codex": "^18.0.5",
         "@ccusage/mcp": "^18.0.5",
         "@getgrit/cli": "^0.1.0-alpha.1743007075",
         "@github/copilot": "^0.0.399",
         "@google/jules": "^0.1.42",
-        "@kaitranntt/ccs": "^7.31.1",
+        "@kaitranntt/ccs": "^7.32.0",
         "@mariozechner/pi-coding-agent": "^0.50.3",
         "@nanocollective/nanocoder": "^1.21.0",
         "@pulumi/pulumi": "^3.218.0",
@@ -84,7 +84,7 @@
 
     "@ark/util": ["@ark/util@0.56.0", "", {}, "sha512-BghfRC8b9pNs3vBoDJhcta0/c1J1rsoS1+HgVUreMFPdhz/CRAKReAu57YEllNaSy98rWAdY1gE+gFup7OXpgA=="],
 
-    "@augmentcode/auggie": ["@augmentcode/auggie@0.14.0", "", { "bin": { "auggie": "augment.mjs" } }, "sha512-VhCTtYeEgjwDCEbSa11wJup2oFnzL26uMvbMzrr73k9JG3XVaVkvn+8bwOxybus0Xk/NlmspCXvD38c15InJ4w=="],
+    "@augmentcode/auggie": ["@augmentcode/auggie@0.15.0", "", { "bin": { "auggie": "augment.mjs" } }, "sha512-s6Yw3gpWItztICjx7GOIM7GTrfVadKMZCP0dlIsIVVb0dzUaY2pybEqxUMoaOuzf1vnrnd67Z2PoE3tmUsov0g=="],
 
     "@aws-crypto/crc32": ["@aws-crypto/crc32@5.2.0", "", { "dependencies": { "@aws-crypto/util": "^5.2.0", "@aws-sdk/types": "^3.222.0", "tslib": "^2.6.2" } }, "sha512-nLbCWqQNgUiwwtFsen1AdzAtvuLRsQS8rYgMuxCrdKf9kOssamGLuPwyTY9wyYblNr9+1XM8v6zoDTPPSIeANg=="],
 
@@ -422,7 +422,7 @@
 
     "@js-sdsl/ordered-map": ["@js-sdsl/ordered-map@4.4.2", "", {}, "sha512-iUKgm52T8HOE/makSxjqoWhe95ZJA1/G1sYsGev2JDKUSS14KAgg1LHb+Ba+IPow0xflbnSkOsZcO08C7w1gYw=="],
 
-    "@kaitranntt/ccs": ["@kaitranntt/ccs@7.31.1", "", { "dependencies": { "bcrypt": "^6.0.0", "boxen": "^5.1.2", "chalk": "^4.1.2", "chokidar": "^3.6.0", "cli-table3": "^0.6.5", "express": "^4.18.2", "express-rate-limit": "^8.2.1", "express-session": "^1.18.2", "get-port": "^5.1.1", "gradient-string": "^2.0.2", "js-yaml": "^4.1.1", "listr2": "^3.14.0", "open": "^8.4.2", "ora": "^5.4.1", "ws": "^8.16.0" }, "os": [ "linux", "win32", "darwin", ], "bin": { "ccs": "dist/ccs.js" } }, "sha512-To6fK/KdT+8/A/PE2FoE8kaErO0NIAQQBnq+E9PnAY6DeBc93mFVqSDo0DCWvtFBdwnMsuGtcEeN3Kr1uSNpvQ=="],
+    "@kaitranntt/ccs": ["@kaitranntt/ccs@7.32.0", "", { "dependencies": { "bcrypt": "^6.0.0", "boxen": "^5.1.2", "chalk": "^4.1.2", "chokidar": "^3.6.0", "cli-table3": "^0.6.5", "express": "^4.18.2", "express-rate-limit": "^8.2.1", "express-session": "^1.18.2", "get-port": "^5.1.1", "gradient-string": "^2.0.2", "js-yaml": "^4.1.1", "listr2": "^3.14.0", "open": "^8.4.2", "ora": "^5.4.1", "ws": "^8.16.0" }, "os": [ "linux", "win32", "darwin", ], "bin": { "ccs": "dist/ccs.js" } }, "sha512-lBetb0WT2YQczpKIav4amRcIElvYRRoNmSsA1kXmICzJmXI+gg5yt/yjAJHwbkjuP2njserlpxbtcDUnU7Ylvg=="],
 
     "@keyv/bigmap": ["@keyv/bigmap@1.3.1", "", { "dependencies": { "hashery": "^1.4.0", "hookified": "^1.15.0" }, "peerDependencies": { "keyv": "^5.6.0" } }, "sha512-WbzE9sdmQtKy8vrNPa9BRnwZh5UF4s1KTmSK0KUVLo3eff5BlQNNWDnFOouNpKfPKDnms9xynJjsMYjMaT/aFQ=="],
 
