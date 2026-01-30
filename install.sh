@@ -42,7 +42,7 @@ fi
 if ! command -v nix >/dev/null 2>&1; then
   echo "Installing Nix..."
   if [ "$OS" = "macos" ]; then
-    curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+    curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm
     # For macOS, source the Nix profile immediately to update PATH in CI.
     # shellcheck source=/dev/null
     . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
