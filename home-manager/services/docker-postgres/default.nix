@@ -1,6 +1,9 @@
 { pkgs, ... }:
 let
   inherit (pkgs) lib;
+  startPostgresWrapper = pkgs.writeShellScript "start-postgres-wrapper" ''
+    exec /usr/bin/sg docker -c "${pkgs.bash}/bin/bash ${./start-postgres.sh}"
+  '';
 in
 {
   launchd.agents.docker-postgres = lib.mkIf pkgs.stdenv.isDarwin {
@@ -31,6 +34,8 @@ in
     Service = {
       Type = "oneshot";
       RemainAfterExit = true;
+      Restart = "on-failure";
+      RestartSec = 30;
       Environment = "PATH=${
         lib.makeBinPath [
           pkgs.bash
@@ -38,7 +43,7 @@ in
           pkgs.docker
         ]
       }";
-      ExecStart = "${pkgs.bash}/bin/bash ${./start-postgres.sh}";
+      ExecStart = "${startPostgresWrapper}";
     };
     Install = {
       WantedBy = [ "default.target" ];
