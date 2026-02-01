@@ -5,11 +5,12 @@ notify = [
   "notify",
 ]
 
+web_search = "cached"
+
 [features]
+ghost_commit = false
 undo = false
 shell_tool = true
-web_search = true
-web_search_cached = true
 unified_exec = true
 apply_patch_freeform = true
 exec_policy = true
@@ -22,10 +23,12 @@ child_agents_md = true
 powershell_utf8 = false
 enable_request_compression = false
 collab = true
-connectors = false
+apps = true
+skills = true
 steer = true
 collaboration_modes = true
 responses_websockets = false
+personality = true
 
 [model_providers.cliproxyapi]
 name = "CLIProxyAPI"
