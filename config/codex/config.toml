@@ -8,6 +8,7 @@ notify = [
 web_search = "cached"
 
 [features]
+ghost_commit = false
 undo = false
 shell_tool = true
 unified_exec = true
@@ -23,9 +24,11 @@ powershell_utf8 = false
 enable_request_compression = false
 collab = true
 apps = true
+skills = true
 steer = true
 collaboration_modes = true
 responses_websockets = false
+personality = true
 
 [model_providers.cliproxyapi]
 name = "CLIProxyAPI"
