@@ -631,7 +631,7 @@ lua-check-hammerspoon-dev: ## Run the Hammerspoon Lua check inside the Nix dev s
 ##@ Launchd Services
 
 .PHONY: launchctl
-launchctl: launchctl-brew-upgrader launchctl-clawdbot launchctl-cliproxyapi launchctl-cliproxyapi-backup launchctl-code-syncer launchctl-docker-postgres launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama ## Restart all launchd agents.
+launchctl: launchctl-brew-upgrader launchctl-openclaw launchctl-cliproxyapi launchctl-cliproxyapi-backup launchctl-code-syncer launchctl-docker-postgres launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama ## Restart all launchd agents.
 
 .PHONY: launchctl-brew-upgrader
 launchctl-brew-upgrader: ## Restart brew-upgrader launchd agent.
@@ -641,13 +641,6 @@ launchctl-brew-upgrader: ## Restart brew-upgrader launchd agent.
 	@launchctl load ~/Library/LaunchAgents/org.nix-community.home.brew-upgrader.plist
 	@echo "✅ brew-upgrader restarted"
 
-.PHONY: launchctl-clawdbot
-launchctl-clawdbot: ## Restart clawdbot gateway launchd agent.
-	@echo "🔄 Restarting clawdbot..."
-	@launchctl unload ~/Library/LaunchAgents/com.steipete.clawdbot.gateway.plist 2>/dev/null || true
-	@sleep 3
-	@launchctl load ~/Library/LaunchAgents/com.steipete.clawdbot.gateway.plist
-	@echo "✅ clawdbot restarted"
 
 .PHONY: launchctl-cliproxyapi
 launchctl-cliproxyapi: ## Restart cliproxyapi launchd agent.
@@ -681,6 +674,14 @@ launchctl-dotfiles-updater: ## Restart dotfiles-updater launchd agent.
 	@launchctl load ~/Library/LaunchAgents/org.nix-community.home.dotfiles-updater.plist
 	@echo "✅ dotfiles-updater restarted"
 
+.PHONY: launchctl-openclaw
+launchctl-openclaw: ## Restart OpenClaw gateway launchd agent.
+	@echo "🔄 Restarting openclaw..."
+	@launchctl unload ~/Library/LaunchAgents/bot.molt.gateway.plist 2>/dev/null || true
+	@sleep 3
+	@launchctl load ~/Library/LaunchAgents/bot.molt.gateway.plist
+	@echo "✅ openclaw restarted"
+
 .PHONY: launchctl-neverssl-keepalive
 launchctl-neverssl-keepalive: ## Restart neverssl-keepalive launchd agent.
 	@echo "🔄 Restarting neverssl-keepalive..."
@@ -708,7 +709,7 @@ launchctl-ollama: ## Restart ollama launchd agent.
 ##@ Systemd Services (Linux)
 
 .PHONY: systemctl
-systemctl: systemctl-cliproxyapi systemctl-clawdbot systemctl-code-syncer systemctl-docker-postgres systemctl-dotfiles-updater systemctl-ollama ## Restart all systemd user services.
+systemctl: systemctl-cliproxyapi systemctl-openclaw systemctl-code-syncer systemctl-docker-postgres systemctl-dotfiles-updater systemctl-ollama ## Restart all systemd user services.
 
 .PHONY: systemctl-cliproxyapi
 systemctl-cliproxyapi: ## Pull latest image and restart cliproxyapi systemd user service.
@@ -716,11 +717,6 @@ systemctl-cliproxyapi: ## Pull latest image and restart cliproxyapi systemd user
 	@systemctl --user restart cliproxyapi.service || true
 	@echo "✅ cliproxyapi restarted"
 
-.PHONY: systemctl-clawdbot
-systemctl-clawdbot: ## Restart clawdbot gateway systemd user service.
-	@echo "🔄 Restarting clawdbot..."
-	@systemctl --user restart clawdbot-gateway.service || true
-	@echo "✅ clawdbot restarted"
 
 .PHONY: systemctl-code-syncer
 systemctl-code-syncer: ## Restart code-syncer systemd user service.
@@ -745,6 +741,12 @@ systemctl-ollama: ## Restart ollama systemd user service.
 	@echo "🔄 Restarting ollama..."
 	@systemctl --user restart ollama.service || true
 	@echo "✅ ollama restarted"
+
+.PHONY: systemctl-openclaw
+systemctl-openclaw: ## Restart OpenClaw gateway systemd user service.
+	@echo "🔄 Restarting openclaw..."
+	@systemctl --user restart openclaw-gateway.service || true
+	@echo "✅ openclaw restarted"
 
 ##@ Git Submodule
 

@@ -1,6 +1,6 @@
 [
   ./cargo-globals
-  ./clawdbot
+  ./openclaw
   ./local-binaries
   ./npm-globals
   ./tailscale

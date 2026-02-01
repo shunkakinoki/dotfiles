@@ -10,31 +10,31 @@ let
 in
 # Only enable on kyber (gateway host)
 lib.mkIf (host.isKyber) {
-  # Ensure clawdbot directories exist
+  # Ensure OpenClaw directories exist
   # Note: Node symlink is managed by fnm module
-  home.activation.clawdbotSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    mkdir -p /tmp/clawdbot
-    mkdir -p ${homeDir}/.clawdbot
+  home.activation.openclawSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p /tmp/openclaw
+    mkdir -p ${homeDir}/.openclaw
   '';
 
-  # Systemd service for clawdbot gateway
-  systemd.user.services.clawdbot-gateway = {
+  # Systemd service for OpenClaw gateway
+  systemd.user.services.openclaw-gateway = {
     Unit = {
-      Description = "Clawdbot gateway";
+      Description = "OpenClaw gateway";
       After = [ "network.target" ];
     };
     Service = {
       Type = "simple";
-      ExecStart = "${homeDir}/.bun/bin/clawdbot gateway --port 18789";
+      ExecStart = "${homeDir}/.bun/bin/openclaw gateway --port 18789";
       Restart = "always";
       RestartSec = "5s";
       Environment = [
         "HOME=${homeDir}"
         "PATH=${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin"
       ];
-      WorkingDirectory = "${homeDir}/.clawdbot";
-      StandardOutput = "append:/tmp/clawdbot/clawdbot-gateway.log";
-      StandardError = "append:/tmp/clawdbot/clawdbot-gateway.log";
+      WorkingDirectory = "${homeDir}/.openclaw";
+      StandardOutput = "append:/tmp/openclaw/openclaw-gateway.log";
+      StandardError = "append:/tmp/openclaw/openclaw-gateway.log";
     };
     Install = {
       WantedBy = [ "default.target" ];

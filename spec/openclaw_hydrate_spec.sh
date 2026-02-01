@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2329
 
-Describe 'config/clawdbot/hydrate.sh'
-SCRIPT="$PWD/config/clawdbot/hydrate.sh"
+Describe 'config/openclaw/hydrate.sh'
+SCRIPT="$PWD/config/openclaw/hydrate.sh"
 
 Describe 'script properties'
 It 'uses bash shebang'
@@ -17,13 +17,18 @@ End
 End
 
 Describe 'directory configuration'
-It 'uses ~/.clawdbot for state directory'
+It 'uses ~/.openclaw for state directory'
 When run bash -c "grep 'STATE_DIR=' '$SCRIPT'"
-The output should include '.clawdbot'
+The output should include '.openclaw'
 End
 
-It 'uses ~/.config/clawdbot for secrets'
+It 'uses ~/.config/openclaw for secrets'
 When run bash -c "grep 'SECRETS_DIR=' '$SCRIPT'"
+The output should include '.config/openclaw'
+End
+
+It 'keeps legacy ~/.config/clawdbot fallback'
+When run bash -c "grep 'LEGACY_SECRETS_DIR=' '$SCRIPT'"
 The output should include '.config/clawdbot'
 End
 
@@ -83,8 +88,8 @@ When run bash -c "grep 'export ANTHROPIC_API_KEY' '$SCRIPT'"
 The output should include 'export ANTHROPIC_API_KEY'
 End
 
-It 'starts clawdbot gateway'
-When run bash -c "grep 'exec.*clawdbot.*gateway' '$SCRIPT'"
+It 'starts openclaw gateway'
+When run bash -c "grep 'exec.*openclaw.*gateway' '$SCRIPT'"
 The output should include 'gateway'
 End
 End

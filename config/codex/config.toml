@@ -8,7 +8,7 @@ notify = [
 [features]
 undo = false
 shell_tool = true
-web_search_request = true
+web_search = true
 web_search_cached = true
 unified_exec = true
 apply_patch_freeform = true

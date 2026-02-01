@@ -44,10 +44,10 @@ home-manager.lib.homeManagerConfiguration {
               fi
             done
 
-            # Backup existing clawdbot configuration
-            if [ -f "$HOME/.clawdbot/clawdbot.json" ] && [ ! -L "$HOME/.clawdbot/clawdbot.json" ]; then
-              echo "Backing up existing .clawdbot/clawdbot.json to .clawdbot/clawdbot.json.hm-backup"
-              mv "$HOME/.clawdbot/clawdbot.json" "$HOME/.clawdbot/clawdbot.json.hm-backup"
+            # Backup existing OpenClaw configuration
+            if [ -f "$HOME/.openclaw/openclaw.json" ] && [ ! -L "$HOME/.openclaw/openclaw.json" ]; then
+              echo "Backing up existing .openclaw/openclaw.json to .openclaw/openclaw.json.hm-backup"
+              mv "$HOME/.openclaw/openclaw.json" "$HOME/.openclaw/openclaw.json.hm-backup"
             fi
 
             # Clean up old backups in .codex

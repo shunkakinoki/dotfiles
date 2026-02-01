@@ -67,7 +67,7 @@
       "block-goose"
       "chatgpt"
       "claude"
-      "clawdbot"
+      "openclaw"
       "codex"
       "codexbar"
       "claude-code"
