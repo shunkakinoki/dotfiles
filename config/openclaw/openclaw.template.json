@@ -297,7 +297,7 @@
           "cliproxy/glm-4.7"
         ]
       },
-      "workspace": "__HOME__/.clawdbot/workspace",
+      "workspace": "__HOME__/.openclaw/workspace",
       "thinkingDefault": "high",
       "maxConcurrent": 4,
       "subagents": {
@@ -353,6 +353,7 @@
     "mode": "local",
     "bind": "lan",
     "auth": {
+      "mode": "token",
       "token": "__GATEWAY_TOKEN__"
     },
     "trustedProxies": [
@@ -364,7 +365,7 @@
   "plugins": {
     "load": {
       "paths": [
-        "__HOME__/.clawdbot/plugins"
+        "__HOME__/.openclaw/plugins"
       ]
     },
     "slots": {

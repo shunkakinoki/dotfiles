@@ -118,6 +118,7 @@ with pkgs;
 ++ lib.optionals (stdenv.isLinux && !isCI) [
   chromium
   ffmpeg
+  ghostty
   github-desktop
   google-chrome
   signal-desktop

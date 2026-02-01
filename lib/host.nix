@@ -5,7 +5,7 @@
   # Detect if running on galactica (macOS node)
   isGalactica = builtins.getEnv "HOSTNAME" == "galactica" || builtins.getEnv "HOST" == "galactica";
 
-  # Get the node name for clawdbot remote mode
+  # Get the node name for OpenClaw remote mode
   # Falls back to "unknown" if no hostname is detected
   nodeName =
     if builtins.getEnv "HOSTNAME" == "kyber" || builtins.getEnv "HOST" == "kyber" then
