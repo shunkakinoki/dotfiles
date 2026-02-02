@@ -72,7 +72,7 @@ else
     "remote": {
       "transport": "direct",
       "url": "wss://kyber.tail950b36.ts.net",
-      "password": "${GATEWAY_TOKEN}"
+      "token": "${GATEWAY_TOKEN}"
     }
   }
 }
