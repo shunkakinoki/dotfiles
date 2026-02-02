@@ -7,7 +7,6 @@ STATE_DIR="${OPENCLAW_STATE_DIR:-${HOME}/.openclaw}"
 CONFIG="${OPENCLAW_CONFIG_PATH:-${STATE_DIR}/openclaw.json}"
 TEMPLATE="@template@"
 SECRETS_DIR="${HOME}/.config/openclaw"
-LEGACY_SECRETS_DIR="${HOME}/.config/clawdbot"
 ENV_FILE="${HOME}/dotfiles/.env"
 
 # Source .env if it exists
@@ -30,10 +29,10 @@ read_secret() {
 }
 
 # Load secrets from files or environment
-CLIPROXY_API_KEY="${OPENCLAW_CLIPROXY_API_KEY:-${CLIPROXY_API_KEY:-$(read_secret "${SECRETS_DIR}/cliproxy-key" "${LEGACY_SECRETS_DIR}/cliproxy-key")}}"
-TELEGRAM_TOKEN="${OPENCLAW_TELEGRAM_TOKEN:-${TELEGRAM_TOKEN:-$(read_secret "${SECRETS_DIR}/telegram-token" "${LEGACY_SECRETS_DIR}/telegram-token")}}"
-GATEWAY_TOKEN="${OPENCLAW_GATEWAY_TOKEN:-${GATEWAY_TOKEN:-$(read_secret "${SECRETS_DIR}/gateway-token" "${LEGACY_SECRETS_DIR}/gateway-token")}}"
-ANTHROPIC_API_KEY="${OPENCLAW_ANTHROPIC_API_KEY:-${ANTHROPIC_API_KEY:-$(read_secret "${SECRETS_DIR}/anthropic-key" "${LEGACY_SECRETS_DIR}/anthropic-key")}}"
+CLIPROXY_API_KEY="${OPENCLAW_CLIPROXY_API_KEY:-${CLIPROXY_API_KEY:-$(read_secret "${SECRETS_DIR}/cliproxy-key")}}"
+TELEGRAM_TOKEN="${OPENCLAW_TELEGRAM_TOKEN:-${TELEGRAM_TOKEN:-$(read_secret "${SECRETS_DIR}/telegram-token")}}"
+GATEWAY_TOKEN="${OPENCLAW_GATEWAY_TOKEN:-${GATEWAY_TOKEN:-$(read_secret "${SECRETS_DIR}/gateway-token")}}"
+ANTHROPIC_API_KEY="${OPENCLAW_ANTHROPIC_API_KEY:-${ANTHROPIC_API_KEY:-$(read_secret "${SECRETS_DIR}/anthropic-key")}}"
 
 # Chromium path (injected by nix)
 CHROMIUM_PATH="@chromium@/bin/chromium"
