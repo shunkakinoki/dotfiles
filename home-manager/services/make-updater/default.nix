@@ -36,12 +36,14 @@ in
         "PATH=${
           lib.makeBinPath [
             pkgs.bash
+            pkgs.cargo
             pkgs.coreutils
             pkgs.curl
             pkgs.gawk
             pkgs.git
             pkgs.gnumake
             pkgs.gnused
+            pkgs.go
             pkgs.nix
             pkgs.sudo
             pkgs.which
