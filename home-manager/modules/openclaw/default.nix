@@ -1,22 +1,37 @@
 {
   config,
   lib,
+  pkgs,
   inputs,
   ...
 }:
 let
   inherit (inputs) host;
   homeDir = config.home.homeDirectory;
-in
-# Only enable on kyber (gateway host)
-lib.mkIf (host.isKyber) {
-  # Ensure OpenClaw directories exist
-  # Note: Node symlink is managed by fnm module
-  home.activation.openclawSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    mkdir -p /tmp/openclaw
-    mkdir -p ${homeDir}/.openclaw
-  '';
 
+  mode = if host.isKyber then "gateway" else "client";
+
+  hydrateScript = pkgs.replaceVars ../../config/openclaw/hydrate.sh ({
+    sed = "${pkgs.gnused}/bin/sed";
+    template = ../../config/openclaw/openclaw.template.json;
+    inherit mode;
+  } // (if host.isKyber then {
+    chromium = pkgs.chromium;
+    openclaw = "${homeDir}/.bun";
+  } else {
+    # Client mode: gateway-only placeholders are unused but must be substituted
+    chromium = "/unused";
+    openclaw = "/unused";
+  }));
+in
+{
+  # Hydrate OpenClaw config from .env secrets
+  # Gateway mode on Kyber, client mode everywhere else
+  home.activation.hydrateOpenclawConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p ${homeDir}/.openclaw
+    ${pkgs.bash}/bin/bash ${hydrateScript} || true
+  '';
+} // lib.optionalAttrs (host.isKyber) {
   # Systemd service for OpenClaw gateway
   systemd.user.services.openclaw-gateway = {
     Unit = {
