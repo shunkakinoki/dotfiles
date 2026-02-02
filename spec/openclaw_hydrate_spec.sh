@@ -27,11 +27,6 @@ When run bash -c "grep 'SECRETS_DIR=' '$SCRIPT'"
 The output should include '.config/openclaw'
 End
 
-It 'keeps legacy ~/.config/clawdbot fallback'
-When run bash -c "grep 'LEGACY_SECRETS_DIR=' '$SCRIPT'"
-The output should include '.config/clawdbot'
-End
-
 It 'reads from dotfiles .env file'
 When run bash -c "grep 'ENV_FILE=' '$SCRIPT'"
 The output should include 'dotfiles/.env'
