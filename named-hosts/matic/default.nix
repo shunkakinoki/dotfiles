@@ -122,7 +122,6 @@ inputs.nixpkgs.lib.nixosSystem {
     # Fonts
     {
       nixpkgs.pkgs = pkgs;
-      nixpkgs.config.joypixels.acceptLicense = true;
 
       fonts.fontconfig.enable = true;
       fonts.packages = with pkgs; [
