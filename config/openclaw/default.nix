@@ -11,17 +11,25 @@ let
 
   mode = if host.isKyber then "gateway" else "client";
 
-  hydrateScript = pkgs.replaceVars ./hydrate.sh ({
-    sed = "${pkgs.gnused}/bin/sed";
-    template = ./openclaw.template.json;
-    inherit mode;
-  } // (if host.isKyber then {
-    chromium = pkgs.chromium;
-    openclaw = "${homeDir}/.bun";
-  } else {
-    chromium = "/unused";
-    openclaw = "/unused";
-  }));
+  hydrateScript = pkgs.replaceVars ./hydrate.sh (
+    {
+      sed = "${pkgs.gnused}/bin/sed";
+      template = ./openclaw.template.json;
+      inherit mode;
+    }
+    // (
+      if host.isKyber then
+        {
+          chromium = pkgs.chromium;
+          openclaw = "${homeDir}/.bun";
+        }
+      else
+        {
+          chromium = "/unused";
+          openclaw = "/unused";
+        }
+    )
+  );
 in
 {
   # Hydrate OpenClaw config from .env secrets
