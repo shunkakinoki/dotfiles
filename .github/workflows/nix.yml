@@ -26,6 +26,10 @@ jobs:
           sudo mv /etc/shells /etc/shells.before-nix-darwin || true
       - name: Run Nix Darwin
         run: make build
+      - name: Build Host `galactica`
+        env:
+          HOST: galactica
+        run: make build
   nix-flake:
     runs-on: ubuntu-latest
     timeout-minutes: 300
@@ -68,6 +72,11 @@ jobs:
         env:
           NIX_CONFIG_TARGET: home
         run: make build
+      - name: Build Host `kyber`
+        env:
+          NIX_CONFIG_TARGET: home
+          HOST: kyber
+        run: make build
   nix-nixos:
     runs-on: ubuntu-latest
     timeout-minutes: 300
@@ -85,6 +94,11 @@ jobs:
       - name: Build Nix NixOS
         env:
           NIX_CONFIG_TARGET: nixos
+        run: make build
+      - name: Build Host `matic`
+        env:
+          NIX_CONFIG_TARGET: nixos
+          HOST: matic
         run: make build
   nix-test:
     runs-on: ubuntu-latest

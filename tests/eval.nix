@@ -66,6 +66,13 @@ let
           isRunner = true;
           username = "runner";
         }).config.system.build.toplevel;
+
+    eval-nixos-matic =
+      mkEvalCheck "nixos-matic"
+        (import ../named-hosts/matic {
+          inherit inputs;
+          username = "shunkakinoki";
+        }).config.system.build.toplevel;
   };
 
   # --- Home-manager configurations (filtered by matching system) ---

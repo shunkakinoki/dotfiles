@@ -79,8 +79,8 @@ inputs.nixpkgs.lib.nixosSystem {
 
         # Desktop environment (GNOME)
         services.xserver.enable = true;
-        services.xserver.displayManager.gdm.enable = true;
-        services.xserver.desktopManager.gnome.enable = true;
+        services.displayManager.gdm.enable = true;
+        services.desktopManager.gnome.enable = true;
 
         # WiFi MT7925e fix (disable ASPM)
         boot.extraModprobeConfig = ''
