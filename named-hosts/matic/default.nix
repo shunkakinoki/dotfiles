@@ -76,6 +76,11 @@ inputs.nixpkgs.lib.nixosSystem {
         # Power management
         services.power-profiles-daemon.enable = true;
 
+        # Desktop environment (GNOME)
+        services.xserver.enable = true;
+        services.xserver.displayManager.gdm.enable = true;
+        services.xserver.desktopManager.gnome.enable = true;
+
         # WiFi MT7925e fix (disable ASPM)
         boot.extraModprobeConfig = ''
           options mt7925e disable_aspm=1
