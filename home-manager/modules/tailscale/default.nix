@@ -226,6 +226,9 @@ in
                 SUDO_CMD=""
                 if command -v sudo >/dev/null 2>&1; then
                   SUDO_CMD="sudo"
+                elif [ -x /run/wrappers/bin/sudo ]; then
+                  # NixOS puts sudo in /run/wrappers/bin
+                  SUDO_CMD="/run/wrappers/bin/sudo"
                 elif [ -x /usr/bin/sudo ]; then
                   SUDO_CMD="/usr/bin/sudo"
                 elif command -v doas >/dev/null 2>&1; then
