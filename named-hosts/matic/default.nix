@@ -122,9 +122,25 @@ inputs.nixpkgs.lib.nixosSystem {
     # Fonts
     {
       nixpkgs.pkgs = pkgs;
+      nixpkgs.config.joypixels.acceptLicense = true;
+
+      fonts.fontconfig.enable = true;
       fonts.packages = with pkgs; [
+        inter
+        ipaexfont
+        ipafont
+        joypixels
         nerd-fonts.jetbrains-mono
+        noto-fonts-cjk-sans
+        noto-fonts-cjk-serif
+        noto-fonts-color-emoji
       ];
+      fonts.fontconfig.defaultFonts = {
+        serif = [ "Noto Serif CJK JP" "DejaVu Serif" ];
+        sansSerif = [ "Inter" "Noto Sans CJK JP" "DejaVu Sans" ];
+        monospace = [ "JetBrainsMono Nerd Font" "Noto Sans Mono CJK JP" ];
+        emoji = [ "JoyPixels" "Noto Color Emoji" ];
+      };
     }
 
     # Home Manager integration
