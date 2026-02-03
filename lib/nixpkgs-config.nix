@@ -8,4 +8,5 @@
       "qwen-code"
       "crush"
     ];
+  joypixels.acceptLicense = true;
 }
