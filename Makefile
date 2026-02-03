@@ -93,6 +93,8 @@ DETECTED_HOST := $(shell \
 		hostname=$$(hostname 2>/dev/null || echo ""); \
 		if [ "$$hostname" = "kyber" ]; then \
 			echo "kyber"; \
+		elif [ "$$hostname" = "matic" ]; then \
+			echo "matic"; \
 		else \
 			echo ""; \
 		fi; \
