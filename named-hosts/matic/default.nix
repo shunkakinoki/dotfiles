@@ -136,10 +136,23 @@ inputs.nixpkgs.lib.nixosSystem {
         noto-fonts-color-emoji
       ];
       fonts.fontconfig.defaultFonts = {
-        serif = [ "Noto Serif CJK JP" "DejaVu Serif" ];
-        sansSerif = [ "Inter" "Noto Sans CJK JP" "DejaVu Sans" ];
-        monospace = [ "JetBrainsMono Nerd Font" "Noto Sans Mono CJK JP" ];
-        emoji = [ "JoyPixels" "Noto Color Emoji" ];
+        serif = [
+          "Noto Serif CJK JP"
+          "DejaVu Serif"
+        ];
+        sansSerif = [
+          "Inter"
+          "Noto Sans CJK JP"
+          "DejaVu Sans"
+        ];
+        monospace = [
+          "JetBrainsMono Nerd Font"
+          "Noto Sans Mono CJK JP"
+        ];
+        emoji = [
+          "JoyPixels"
+          "Noto Color Emoji"
+        ];
       };
     }
 
