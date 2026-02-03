@@ -16,6 +16,7 @@
   ./k3s
   ./karabiner
   ./llm
+  ./openclaw
   ./opencode
   ./pi
   ./serena

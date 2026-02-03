@@ -11,7 +11,6 @@ in
 # Only enable on kyber (gateway host)
 lib.mkIf (host.isKyber) {
   # Ensure OpenClaw directories exist
-  # Note: Node symlink is managed by fnm module
   home.activation.openclawSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p /tmp/openclaw
     mkdir -p ${homeDir}/.openclaw

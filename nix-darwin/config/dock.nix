@@ -30,6 +30,7 @@
       "/Applications/Ghostty.app"
       "/Applications/Linear.app"
       "/Applications/Tailscale.app"
+      "/Applications/Codex.app"
       "/Applications/Cursor.app"
       "/Applications/Visual Studio Code.app"
       "/Applications/Visual Studio Code - Insiders.app"

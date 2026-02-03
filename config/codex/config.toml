@@ -5,6 +5,7 @@ notify = [
   "notify",
 ]
 
+suppress_unstable_features_warning = true
 web_search = "cached"
 
 [features]
