@@ -109,6 +109,18 @@ CONFIG_DIR := $(HOME_DIR)/.config
 # Darwin-rebuild path
 DARWIN_REBUILD := $(shell command -v darwin-rebuild 2>/dev/null || echo "./result/sw/bin/darwin-rebuild")
 
+# Sudo path (NixOS uses /run/wrappers/bin/sudo)
+SUDO := $(shell \
+	if command -v sudo >/dev/null 2>&1; then \
+		echo "sudo"; \
+	elif [ -x /run/wrappers/bin/sudo ]; then \
+		echo "/run/wrappers/bin/sudo"; \
+	elif [ -x /usr/bin/sudo ]; then \
+		echo "/usr/bin/sudo"; \
+	else \
+		echo "sudo"; \
+	fi)
+
 ##@ Help
 
 # Default target
@@ -154,6 +166,12 @@ setup-dev: nix-setup git-submodule-sync shell-install ## Set up local developmen
 
 .PHONY: switch
 switch: nix-switch services dotagents-sync ## Apply Nix configuration, restart services, and sync plugins.
+
+.PHONY: clean
+clean: ## Clean up old Nix generations and garbage collect.
+	@echo "🧹 Cleaning up old generations and garbage collecting..."
+	@$(SUDO) nix-collect-garbage -d
+	@echo "✅ Cleanup complete"
 
 .PHONY: services
 services: ## Restart platform-specific services (launchd on macOS, systemd on Linux).
@@ -202,8 +220,8 @@ nix-setup: nix-install nix-check nix-connect ## Set up Nix environment (install,
 nix-connect: ## Ensure Nix daemon is running.
 	@echo "🔌 Ensuring Nix daemon is running for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"
 	@if [ "$(OS)" = "Darwin" ]; then \
-		sudo launchctl unload /Library/LaunchDaemons/org.nixos.nix-daemon.plist 2>/dev/null || true; \
-		sudo launchctl load -w /Library/LaunchDaemons/org.nixos.nix-daemon.plist; \
+		$(SUDO) launchctl unload /Library/LaunchDaemons/org.nixos.nix-daemon.plist 2>/dev/null || true; \
+		$(SUDO) launchctl load -w /Library/LaunchDaemons/org.nixos.nix-daemon.plist; \
 	elif [ "$(OS)" = "Linux" ]; then \
 		if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ] || [ "$$AUTOMATED_UPDATE" = "true" ]; then \
 			echo "🏃‍♂️ Nix daemon management (e.g., systemctl) is skipped in CI/Docker/automated environments."; \
@@ -216,7 +234,7 @@ nix-connect: ## Ensure Nix daemon is running.
 		else \
 			if [ -d /run/systemd/system ] && [ -S /run/systemd/private ]; then \
 				echo "🐧 systemd detected as PID 1. Attempting to restart nix-daemon.service..."; \
-				sudo systemctl restart nix-daemon.service; \
+				$(SUDO) systemctl restart nix-daemon.service; \
 			else \
 				echo "🏃‍♂️ systemd not detected as PID 1 or not fully operational. Nix daemon management via systemctl is skipped."; \
 				echo "ℹ️ This environment might be using a single-user Nix installation, require manual daemon setup, or be inside a container without full systemd."; \
@@ -296,12 +314,12 @@ nix-build: nix-connect ## Build Nix configuration.
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			if [ -n "$(HOST)" ]; then \
 				echo "Building named host: $(HOST)"; \
-				sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(HOST) --impure; \
+				$(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(HOST) --impure; \
 			elif [ -n "$(DETECTED_HOST)" ]; then \
 				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(DETECTED_HOST) --impure; \
+				$(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(DETECTED_HOST) --impure; \
 			else \
-				sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM) --impure; \
+				$(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM) --impure; \
 			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
 			HOST=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --impure --show-trace; \
@@ -355,10 +373,10 @@ nix-switch: ## Activate Nix configuration.
 	@echo "🔧 Activating Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"
 	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		if [ "$(OS)" = "Darwin" ]; then \
-			sudo env CI="$$CI" IN_DOCKER="$$IN_DOCKER" $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#runner --impure --no-update-lock-file; \
+			$(SUDO) env CI="$$CI" IN_DOCKER="$$IN_DOCKER" $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#runner --impure --no-update-lock-file; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			echo "⏭️ NixOS switch skipped in CI as the runner is not a NixOS system"; \
-			sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file || exit 0; \
+			$(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file || exit 0; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
 			USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
 		else \
@@ -372,22 +390,22 @@ nix-switch: ## Activate Nix configuration.
 		elif [ "$(OS)" = "Darwin" ]; then \
 			if [ -n "$(HOST)" ]; then \
 				echo "Switching named host: $(HOST)"; \
-				sudo HOST=$(HOST) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(HOST) --impure; \
+				$(SUDO) HOST=$(HOST) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(HOST) --impure; \
 			elif [ -n "$(DETECTED_HOST)" ]; then \
 				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				sudo HOST=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(DETECTED_HOST) --impure; \
+				$(SUDO) HOST=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(DETECTED_HOST) --impure; \
 			else \
-				sudo HOST=$(NIX_SYSTEM) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM) --impure; \
+				$(SUDO) HOST=$(NIX_SYSTEM) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM) --impure; \
 			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			if [ -n "$(HOST)" ]; then \
 				echo "Switching named host: $(HOST)"; \
-				sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#$(HOST); \
+				$(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#$(HOST); \
 			elif [ -n "$(DETECTED_HOST)" ]; then \
 				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#$(DETECTED_HOST); \
+				$(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#$(DETECTED_HOST); \
 			else \
-				sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM); \
+				$(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM); \
 			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
 			if [ -n "$(HOST)" ]; then \
@@ -438,11 +456,11 @@ nix-build-offline: ## Build Nix configuration in offline mode.
 nix-switch-offline: ## Activate Nix configuration in offline mode.
 	@echo "🔧 Activating Nix configuration in offline mode"
 	@if [ "$(OS)" = "Darwin" ]; then \
-		NIX_OFFLINE=1 sudo $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#galactica --impure --offline; \
+		NIX_OFFLINE=1 $(SUDO) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#galactica --impure --offline; \
 	elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
-		NIX_OFFLINE=1 sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file --offline || exit 0; \
+		NIX_OFFLINE=1 $(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file --offline || exit 0; \
 	elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-		NIX_OFFLINE=1 USER=$(NIX_USERNAME) sudo $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage --offline; \
+		NIX_OFFLINE=1 USER=$(NIX_USERNAME) $(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage --offline; \
 	else \
 		echo "Unsupported OS $(OS) for offline switch"; \
 		exit 1; \
@@ -522,7 +540,7 @@ shell-install: ## Set up Fish shell as default shell.
 		fish_path=$$(command -v fish); \
 		if ! grep -q "$$fish_path" /etc/shells; then \
 			echo "Adding $$fish_path to /etc/shells..."; \
-			echo $$fish_path | sudo tee -a /etc/shells; \
+			echo $$fish_path | $(SUDO) tee -a /etc/shells; \
 		fi; \
 		if [ "$$(basename "$$SHELL")" != "fish" ]; then \
 			echo "Changing default shell to Fish shell..."; \
