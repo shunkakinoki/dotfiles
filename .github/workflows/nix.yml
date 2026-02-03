@@ -98,6 +98,44 @@ jobs:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run Nix Tests
         run: make nix-test
+  nix-named-hosts:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - host: galactica
+            runner: macos-latest
+            config_target: ""
+          - host: matic
+            runner: ubuntu-latest
+            config_target: nixos
+          - host: kyber
+            runner: ubuntu-latest
+            config_target: home
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 300
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Free Disk Space (Ubuntu)
+        if: runner.os == 'Linux'
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: false
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Prepare System Files
+        if: runner.os == 'macOS'
+        run: |
+          sudo mv /etc/nix/nix.conf /etc/nix/nix.conf.before-nix-darwin || true
+          sudo mv /etc/shells /etc/shells.before-nix-darwin || true
+      - name: Build ${{ matrix.host }}
+        env:
+          NIX_CONFIG_TARGET: ${{ matrix.config_target }}
+          HOST: ${{ matrix.host }}
+        run: make build
   nix-check:
     if: always()
     needs:
@@ -107,6 +145,7 @@ jobs:
       - nix-linux
       - nix-nixos
       - nix-test
+      - nix-named-hosts
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
