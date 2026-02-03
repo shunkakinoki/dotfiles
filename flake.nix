@@ -48,6 +48,9 @@
       url = "github:nlewo/nix2container";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixos-hardware = {
+      url = "github:NixOS/nixos-hardware/master";
+    };
   };
 
   outputs =
@@ -113,6 +116,10 @@
                 inherit inputs;
                 isRunner = true;
                 username = "runner";
+              };
+              matic = import ./named-hosts/matic {
+                inherit inputs;
+                username = "shunkakinoki";
               };
             };
             homeConfigurations = {
