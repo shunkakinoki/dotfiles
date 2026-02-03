@@ -17,6 +17,7 @@
       "/System/Applications/Notes.app"
       "/System/Applications/Mail.app"
       "/Applications/ChatGPT.app"
+      "/Applications/Codex.app"
       "/Applications/Claude.app"
       "/Applications/OpenClaw.app"
       "/Applications/Google Chrome.app"
