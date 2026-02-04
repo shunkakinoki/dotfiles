@@ -110,12 +110,11 @@ in
       PrivateTmp = false;
     };
 
-    environment = {
-      PATH = lib.makeBinPath [
-        pkgs.coreutils
-        pkgs.gnugrep
-        pkgs.bash
-      ];
-    };
+    # Add required tools to PATH
+    path = [
+      pkgs.bash
+      pkgs.coreutils
+      pkgs.gnugrep
+    ];
   };
 }

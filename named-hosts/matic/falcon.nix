@@ -83,14 +83,12 @@ in
       PrivateTmp = false;
     };
 
-    # Environment file for CID
-    environment = {
-      PATH = lib.makeBinPath [
-        pkgs.coreutils
-        pkgs.gnugrep
-        pkgs.bash
-      ];
-    };
+    # Add required tools to PATH
+    path = [
+      pkgs.bash
+      pkgs.coreutils
+      pkgs.gnugrep
+    ];
   };
 
   # Required kernel modules for Falcon sensor
