@@ -101,7 +101,7 @@ in
           exit 1
         fi
       '';
-      ExecStart = "${kolideFhs}/bin/kolide-launcher-fhs --enroll_secret_path=/etc/kolide-k2/secret --root_directory=/var/kolide-k2";
+      ExecStart = "${kolideFhs}/bin/kolide-launcher-fhs --enroll_secret_path=/etc/kolide-k2/secret --root_directory=/var/kolide-k2 --autoupdate=false";
       Restart = "on-failure";
       RestartSec = "10s";
 
