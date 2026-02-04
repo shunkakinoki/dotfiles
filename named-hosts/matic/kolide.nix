@@ -9,7 +9,12 @@
 #
 # The dpkg status shim below satisfies Kolide's osquery deb_packages check
 # for CrowdStrike compliance on NixOS (which has no dpkg database).
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   # Kolide launcher package (download from company portal)
@@ -36,15 +41,16 @@ let
   # FHS environment for Kolide launcher
   kolideFhs = pkgs.buildFHSEnv {
     name = "kolide-launcher-fhs";
-    targetPkgs = pkgs: with pkgs; [
-      bash
-      coreutils
-      glibc
-      gnugrep
-      nodejs
-      openssl
-      zlib
-    ];
+    targetPkgs =
+      pkgs: with pkgs; [
+        bash
+        coreutils
+        glibc
+        gnugrep
+        nodejs
+        openssl
+        zlib
+      ];
     runScript = "/opt/kolide-k2/bin/launcher";
   };
 in
@@ -68,7 +74,10 @@ in
   systemd.services.kolide-launcher = {
     description = "Kolide Launcher";
     wantedBy = [ "multi-user.target" ];
-    after = [ "network.target" "local-fs.target" ];
+    after = [
+      "network.target"
+      "local-fs.target"
+    ];
 
     serviceConfig = {
       Type = "simple";
@@ -102,7 +111,11 @@ in
     };
 
     environment = {
-      PATH = lib.makeBinPath [ pkgs.coreutils pkgs.gnugrep pkgs.bash ];
+      PATH = lib.makeBinPath [
+        pkgs.coreutils
+        pkgs.gnugrep
+        pkgs.bash
+      ];
     };
   };
 }

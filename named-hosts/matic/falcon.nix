@@ -6,24 +6,30 @@
 # 3. Extract and place sensor files (see README for details)
 #
 # Based on: https://gist.github.com/klDen/c90d9798828e31fecbb603f85e27f4f1
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   # FHS environment for CrowdStrike Falcon
   # NixOS doesn't have standard /opt paths, so we create an FHS-compatible environment
   falconFhs = pkgs.buildFHSEnv {
     name = "falcon-sensor-fhs";
-    targetPkgs = pkgs: with pkgs; [
-      # Runtime dependencies for Falcon sensor
-      bash
-      coreutils
-      curl
-      glibc
-      gnugrep
-      libnl
-      openssl
-      zlib
-    ];
+    targetPkgs =
+      pkgs: with pkgs; [
+        # Runtime dependencies for Falcon sensor
+        bash
+        coreutils
+        curl
+        glibc
+        gnugrep
+        libnl
+        openssl
+        zlib
+      ];
     runScript = "/opt/CrowdStrike/falcond";
   };
 in
@@ -38,7 +44,10 @@ in
   systemd.services.falcon-sensor = {
     description = "CrowdStrike Falcon Sensor";
     wantedBy = [ "multi-user.target" ];
-    after = [ "network.target" "local-fs.target" ];
+    after = [
+      "network.target"
+      "local-fs.target"
+    ];
 
     # Load the CID from environment file
     serviceConfig = {
@@ -76,7 +85,11 @@ in
 
     # Environment file for CID
     environment = {
-      PATH = lib.makeBinPath [ pkgs.coreutils pkgs.gnugrep pkgs.bash ];
+      PATH = lib.makeBinPath [
+        pkgs.coreutils
+        pkgs.gnugrep
+        pkgs.bash
+      ];
     };
   };
 
