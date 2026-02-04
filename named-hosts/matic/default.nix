@@ -57,6 +57,7 @@ inputs.nixpkgs.lib.nixosSystem {
             "video"
           ];
           home = "/home/${username}";
+          initialPassword = "changemeow";  # Change this after first login with: passwd
         };
 
         security.sudo.wheelNeedsPassword = false;
