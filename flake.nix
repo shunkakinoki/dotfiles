@@ -119,7 +119,7 @@
               };
               matic = import ./named-hosts/matic {
                 inherit inputs;
-                username = "shunkakinoki";
+                username = "skakinoki";
               };
             };
             homeConfigurations = {
