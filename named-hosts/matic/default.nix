@@ -26,6 +26,10 @@ inputs.nixpkgs.lib.nixosSystem {
     # Hardware configuration
     ./hardware-configuration.nix
 
+    # Security/endpoint monitoring
+    ./falcon.nix # CrowdStrike Falcon sensor
+    ./kolide.nix # Kolide launcher with dpkg shim
+
     # Base system configuration
     (
       { config, lib, ... }:
