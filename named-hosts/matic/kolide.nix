@@ -67,8 +67,8 @@ in
     # Create Kolide directories
     "d /etc/kolide-k2 0755 root root -"
     "d /opt/kolide-k2 0755 root root -"
-    "d /var/kolide-k2 0770 root root -"
-    "d /var/kolide-k2/tuf 0770 root root -"
+    "d /var/kolide-k2 0750 root root -"
+    "d /var/kolide-k2/tuf 0750 root root -"
   ];
 
   # Kolide Launcher service
