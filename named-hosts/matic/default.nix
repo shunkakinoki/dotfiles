@@ -48,6 +48,9 @@ inputs.nixpkgs.lib.nixosSystem {
         networking.networkmanager.enable = true;
         networking.networkmanager.wifi.powersave = false;
 
+        # Enable fish shell
+        programs.fish.enable = true;
+
         # User configuration
         users.users.${username} = {
           isNormalUser = true;
@@ -57,6 +60,7 @@ inputs.nixpkgs.lib.nixosSystem {
             "video"
           ];
           home = "/home/${username}";
+          shell = pkgs.fish;
         };
 
         security.sudo.wheelNeedsPassword = false;
