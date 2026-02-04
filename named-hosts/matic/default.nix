@@ -61,6 +61,7 @@ inputs.nixpkgs.lib.nixosSystem {
           ];
           home = "/home/${username}";
           shell = pkgs.fish;
+          initialPassword = "changemeow";  # Change this after first login with: passwd
         };
 
         security.sudo.wheelNeedsPassword = false;
