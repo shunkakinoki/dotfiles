@@ -39,8 +39,9 @@ let
     targetPkgs = pkgs: with pkgs; [
       bash
       coreutils
-      gnugrep
       glibc
+      gnugrep
+      nodejs
       openssl
       zlib
     ];
