@@ -61,7 +61,7 @@ inputs.nixpkgs.lib.nixosSystem {
           ];
           home = "/home/${username}";
           shell = pkgs.fish;
-          initialPassword = "changemeow";  # Change this after first login with: passwd
+          initialPassword = "changemeow"; # Change this after first login with: passwd
         };
 
         security.sudo.wheelNeedsPassword = false;
@@ -104,6 +104,18 @@ inputs.nixpkgs.lib.nixosSystem {
           vim
           wget
           zellij
+        ];
+
+        # Enable nix-ld for running dynamically linked binaries (CrowdStrike, Kolide, etc.)
+        programs.nix-ld.enable = true;
+        programs.nix-ld.libraries = with pkgs; [
+          # Common libraries needed by security tools
+          glibc
+          zlib
+          openssl
+          curl
+          libnl
+          libgcc
         ];
 
         # Nix settings
