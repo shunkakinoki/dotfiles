@@ -17,18 +17,12 @@ let
     #!${pkgs.bash}/bin/sh
     set -euo pipefail
 
-    # Remove immutable attributes set by CrowdStrike (security feature)
-    if [ -d /opt/CrowdStrike ]; then
-      ${pkgs.e2fsprogs}/bin/chattr -i -R /opt/CrowdStrike 2>/dev/null || true
+    # Only initialize if not already set up (CrowdStrike protects its files)
+    if [ ! -f /opt/CrowdStrike/falcond ]; then
+      install -d -m 0770 /opt/CrowdStrike
+      cp -a ${falcon}/opt/CrowdStrike/. /opt/CrowdStrike/
+      chown -R root:root /opt/CrowdStrike
     fi
-
-    rm -rf /opt/CrowdStrike
-    install -d -m 0770 /opt/CrowdStrike
-
-    # Copy real files so Falcon can write falconstore/CsConfig
-    cp -a ${falcon}/opt/CrowdStrike/. /opt/CrowdStrike/
-
-    chown -R root:root /opt/CrowdStrike
 
     # load CID from /etc/falcon-sensor.env (root-only)
     . /etc/falcon-sensor.env
