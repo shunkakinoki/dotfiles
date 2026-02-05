@@ -13,182 +13,187 @@ let
     inherit system overlays;
     config = nixpkgsConfig;
   };
+
+  # Check if falcon .deb exists (for conditional import)
+  # In CI, this will be false; locally with .deb present, it will be true
+  falconDebExists = builtins.pathExists /etc/nixos/falcon-sensor.deb;
 in
 inputs.nixpkgs.lib.nixosSystem {
   inherit system;
   specialArgs = {
     inherit inputs username;
   };
-  modules = [
-    # Framework 13" AMD AI 300 hardware support
-    inputs.nixos-hardware.nixosModules.framework-amd-ai-300-series
+  modules =
+    [
+      # Framework 13" AMD AI 300 hardware support
+      inputs.nixos-hardware.nixosModules.framework-amd-ai-300-series
 
-    # Hardware configuration
-    ./hardware-configuration.nix
+      # Hardware configuration
+      ./hardware-configuration.nix
 
-    # Security/endpoint monitoring
-    ./falcon.nix # CrowdStrike Falcon sensor
-    ./kolide.nix # Kolide launcher with dpkg shim
+      # Kolide launcher
+      ./kolide.nix
 
-    # Base system configuration
-    (
-      { config, lib, ... }:
-      {
-        # Boot loader (EFI/systemd-boot)
-        boot.loader.systemd-boot.enable = true;
-        boot.loader.systemd-boot.configurationLimit = 10;
-        boot.loader.efi.canTouchEfiVariables = true;
-        boot.loader.timeout = 3;
+      # Base system configuration
+      (
+        { config, lib, ... }:
+        {
+          # Boot loader (EFI/systemd-boot)
+          boot.loader.systemd-boot.enable = true;
+          boot.loader.systemd-boot.configurationLimit = 10;
+          boot.loader.efi.canTouchEfiVariables = true;
+          boot.loader.timeout = 3;
 
-        # Latest kernel for AMD AI 300 support
-        boot.kernelPackages = pkgs.linuxPackages_latest;
+          # Latest kernel for AMD AI 300 support
+          boot.kernelPackages = pkgs.linuxPackages_latest;
 
-        # Networking
-        networking.hostName = "matic";
-        networking.networkmanager.enable = true;
-        networking.networkmanager.wifi.powersave = false;
+          # Networking
+          networking.hostName = "matic";
+          networking.networkmanager.enable = true;
+          networking.networkmanager.wifi.powersave = false;
 
-        # Enable fish shell
-        programs.fish.enable = true;
+          # Enable fish shell
+          programs.fish.enable = true;
 
-        # User configuration
-        users.users.${username} = {
-          isNormalUser = true;
-          extraGroups = [
-            "wheel"
-            "networkmanager"
-            "video"
-          ];
-          home = "/home/${username}";
-          shell = pkgs.fish;
-          initialPassword = "changemeow"; # Change this after first login with: passwd
-        };
-
-        security.sudo.wheelNeedsPassword = false;
-
-        # AMD graphics with hardware acceleration
-        hardware.graphics.enable = true;
-        hardware.graphics.extraPackages = with pkgs; [
-          libva
-          libva-vdpau-driver
-          libvdpau-va-gl
-        ];
-
-        # Thunderbolt support
-        services.hardware.bolt.enable = true;
-
-        # Fingerprint authentication
-        services.fprintd.enable = true;
-
-        # Firmware updates
-        services.fwupd.enable = true;
-
-        # Power management
-        services.power-profiles-daemon.enable = true;
-
-        # Desktop environment (GNOME)
-        services.xserver.enable = true;
-        services.displayManager.gdm.enable = true;
-        services.desktopManager.gnome.enable = true;
-
-        # WiFi MT7925e fix (disable ASPM)
-        boot.extraModprobeConfig = ''
-          options mt7925e disable_aspm=1
-        '';
-
-        # System packages
-        environment.systemPackages = with pkgs; [
-          curl
-          git
-          home-manager
-          vim
-          wget
-          zellij
-        ];
-
-        # Enable nix-ld for running dynamically linked binaries (CrowdStrike, Kolide, etc.)
-        programs.nix-ld.enable = true;
-        programs.nix-ld.libraries = with pkgs; [
-          # Common libraries needed by security tools
-          glibc
-          zlib
-          openssl
-          curl
-          libnl
-          libgcc
-        ];
-
-        # Nix settings
-        nix = {
-          settings = {
-            experimental-features = [
-              "nix-command"
-              "flakes"
+          # User configuration
+          users.users.${username} = {
+            isNormalUser = true;
+            extraGroups = [
+              "wheel"
+              "networkmanager"
+              "video"
             ];
-            substituters = [
-              "https://cache.nixos.org"
-            ];
-            trusted-users = [
-              "root"
-              username
-            ];
+            home = "/home/${username}";
+            shell = pkgs.fish;
+            initialPassword = "changemeow"; # Change this after first login with: passwd
           };
-          package = pkgs.nixVersions.stable;
+
+          security.sudo.wheelNeedsPassword = false;
+
+          # AMD graphics with hardware acceleration
+          hardware.graphics.enable = true;
+          hardware.graphics.extraPackages = with pkgs; [
+            libva
+            libva-vdpau-driver
+            libvdpau-va-gl
+          ];
+
+          # Thunderbolt support
+          services.hardware.bolt.enable = true;
+
+          # Fingerprint authentication
+          services.fprintd.enable = true;
+
+          # Firmware updates
+          services.fwupd.enable = true;
+
+          # Power management
+          services.power-profiles-daemon.enable = true;
+
+          # Desktop environment (GNOME)
+          services.xserver.enable = true;
+          services.displayManager.gdm.enable = true;
+          services.desktopManager.gnome.enable = true;
+
+          # WiFi MT7925e fix (disable ASPM)
+          boot.extraModprobeConfig = ''
+            options mt7925e disable_aspm=1
+          '';
+
+          # System packages
+          environment.systemPackages = with pkgs; [
+            curl
+            git
+            home-manager
+            vim
+            wget
+            zellij
+          ];
+
+          # Enable nix-ld for running dynamically linked binaries (CrowdStrike, Kolide, etc.)
+          programs.nix-ld.enable = true;
+          programs.nix-ld.libraries = with pkgs; [
+            # Common libraries needed by security tools
+            glibc
+            zlib
+            openssl
+            curl
+            libnl
+            libgcc
+          ];
+
+          # Nix settings
+          nix = {
+            settings = {
+              experimental-features = [
+                "nix-command"
+                "flakes"
+              ];
+              substituters = [
+                "https://cache.nixos.org"
+              ];
+              trusted-users = [
+                "root"
+                username
+              ];
+            };
+            package = pkgs.nixVersions.stable;
+          };
+
+          system.stateVersion = "24.11";
+        }
+      )
+
+      # Fonts
+      {
+        nixpkgs.pkgs = pkgs;
+
+        fonts.fontconfig.enable = true;
+        fonts.packages = with pkgs; [
+          inter
+          ipaexfont
+          ipafont
+          joypixels
+          nerd-fonts.jetbrains-mono
+          noto-fonts-cjk-sans
+          noto-fonts-cjk-serif
+          noto-fonts-color-emoji
+        ];
+        fonts.fontconfig.defaultFonts = {
+          serif = [
+            "Noto Serif CJK JP"
+            "DejaVu Serif"
+          ];
+          sansSerif = [
+            "Inter"
+            "Noto Sans CJK JP"
+            "DejaVu Sans"
+          ];
+          monospace = [
+            "JetBrainsMono Nerd Font"
+            "Noto Sans Mono CJK JP"
+          ];
+          emoji = [
+            "JoyPixels"
+            "Noto Color Emoji"
+          ];
         };
-
-        system.stateVersion = "24.11";
       }
-    )
 
-    # Fonts
-    {
-      nixpkgs.pkgs = pkgs;
-
-      fonts.fontconfig.enable = true;
-      fonts.packages = with pkgs; [
-        inter
-        ipaexfont
-        ipafont
-        joypixels
-        nerd-fonts.jetbrains-mono
-        noto-fonts-cjk-sans
-        noto-fonts-cjk-serif
-        noto-fonts-color-emoji
-      ];
-      fonts.fontconfig.defaultFonts = {
-        serif = [
-          "Noto Serif CJK JP"
-          "DejaVu Serif"
-        ];
-        sansSerif = [
-          "Inter"
-          "Noto Sans CJK JP"
-          "DejaVu Sans"
-        ];
-        monospace = [
-          "JetBrainsMono Nerd Font"
-          "Noto Sans Mono CJK JP"
-        ];
-        emoji = [
-          "JoyPixels"
-          "Noto Color Emoji"
-        ];
-      };
-    }
-
-    # Home Manager integration
-    inputs.home-manager.nixosModules.home-manager
-    {
-      home-manager.backupFileExtension = "hm-backup";
-      home-manager.extraSpecialArgs = { inherit inputs; };
-      home-manager.useGlobalPkgs = true;
-      home-manager.useUserPackages = true;
-      home-manager.users.${username} = import ../../home-manager {
-        inherit inputs username;
-        lib = inputs.nixpkgs.lib;
-        pkgs = pkgs;
-        config = { };
-      };
-    }
-  ];
+      # Home Manager integration
+      inputs.home-manager.nixosModules.home-manager
+      {
+        home-manager.backupFileExtension = "hm-backup";
+        home-manager.extraSpecialArgs = { inherit inputs; };
+        home-manager.useGlobalPkgs = true;
+        home-manager.useUserPackages = true;
+        home-manager.users.${username} = import ../../home-manager {
+          inherit inputs username;
+          lib = inputs.nixpkgs.lib;
+          pkgs = pkgs;
+          config = { };
+        };
+      }
+    ]
+    ++ (if falconDebExists then [ ./falcon.nix ] else [ ]); # CrowdStrike Falcon (only if .deb exists)
 }
