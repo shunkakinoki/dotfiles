@@ -44,6 +44,12 @@ in
       else
         ''echo "FAIL: host.nodeName must exist and be a string" && exit 1''
     }
+    ${
+      if host ? isDesktop && builtins.isBool host.isDesktop then
+        ''echo "lib/host.nix: isDesktop is a boolean (value: ${builtins.toString host.isDesktop})"''
+      else
+        ''echo "FAIL: host.isDesktop must exist and be a boolean" && exit 1''
+    }
     touch $out
   '';
 
