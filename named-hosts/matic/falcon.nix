@@ -2,12 +2,18 @@
 #
 # Prerequisites (manual steps):
 # 1. Obtain the Falcon sensor .deb from IT
-# 2. Place it in ./falcon/ directory (e.g., falcon-sensor_7.31.0-18410_amd64.deb)
+# 2. Place it at: /etc/nixos/falcon-sensor.deb
+#    sudo cp ~/Downloads/falcon-sensor*.deb /etc/nixos/falcon-sensor.deb
 # 3. Create /etc/falcon-sensor.env with: FALCON_CID=<your-cid>
 #
+# This module is automatically disabled if the .deb file doesn't exist.
+#
 # Based on: https://github.com/taylanpince/nixos-config
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 let
+  falconDebPath = /etc/nixos/falcon-sensor.deb;
+  falconDebExists = builtins.pathExists falconDebPath;
+
   falcon = pkgs.callPackage ./falcon { };
 
   initScript = pkgs.writeScript "init-falcon" ''
@@ -32,38 +38,43 @@ let
     ${falcon}/bin/fs-bash -c "/opt/CrowdStrike/falconctl -g --cid"
   '';
 in
-{
-  systemd.tmpfiles.rules = [
-    "d /opt/CrowdStrike 0770 root root -"
-  ];
-
-  systemd.services.falcon-sensor = {
-    description = "CrowdStrike Falcon Sensor";
-    wantedBy = [ "multi-user.target" ];
-
-    unitConfig.DefaultDependencies = false;
-    after = [ "local-fs.target" ];
-    conflicts = [ "shutdown.target" ];
-    before = [
-      "sysinit.target"
-      "shutdown.target"
+if falconDebExists then
+  {
+    systemd.tmpfiles.rules = [
+      "d /opt/CrowdStrike 0770 root root -"
     ];
 
-    serviceConfig = {
-      Type = "forking";
-      PIDFile = "/run/falcond.pid";
-      ExecStartPre = initScript;
-      ExecStart = "${falcon}/bin/fs-bash -c \"/opt/CrowdStrike/falcond\"";
+    systemd.services.falcon-sensor = {
+      description = "CrowdStrike Falcon Sensor";
+      wantedBy = [ "multi-user.target" ];
 
-      Restart = "on-failure";
-      RestartSec = "15s";
+      unitConfig.DefaultDependencies = false;
+      after = [ "local-fs.target" ];
+      conflicts = [ "shutdown.target" ];
+      before = [
+        "sysinit.target"
+        "shutdown.target"
+      ];
 
-      # Avoid systemd giving up during flapping
-      StartLimitIntervalSec = 0;
+      serviceConfig = {
+        Type = "forking";
+        PIDFile = "/run/falcond.pid";
+        ExecStartPre = initScript;
+        ExecStart = "${falcon}/bin/fs-bash -c \"/opt/CrowdStrike/falcond\"";
 
-      TimeoutStopSec = "60s";
-      KillMode = "process";
-      Delegate = true;
+        Restart = "on-failure";
+        RestartSec = "15s";
+
+        # Avoid systemd giving up during flapping
+        StartLimitIntervalSec = 0;
+
+        TimeoutStopSec = "60s";
+        KillMode = "process";
+        Delegate = true;
+      };
     };
-  };
-}
+  }
+else
+  {
+    # Falcon sensor disabled - /etc/nixos/falcon-sensor.deb not found
+  }
