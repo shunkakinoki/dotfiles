@@ -82,6 +82,9 @@ inputs.nixpkgs.lib.nixosSystem {
 
         # Fingerprint authentication
         services.fprintd.enable = true;
+        security.pam.services.login.fprintAuth = true;
+        security.pam.services.gdm.fprintAuth = true;
+        security.pam.services.sudo.fprintAuth = true;
 
         # Firmware updates
         services.fwupd.enable = true;
