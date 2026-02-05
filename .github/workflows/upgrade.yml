@@ -24,6 +24,7 @@ jobs:
         run: make upgrade
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SKIP_HOME_MANAGER_SWITCH: "true"
       - name: Create Pull Request
         id: cpr
         uses: peter-evans/create-pull-request@v8

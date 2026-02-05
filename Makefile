@@ -378,7 +378,11 @@ nix-switch: ## Activate Nix configuration.
 			echo "⏭️ NixOS switch skipped in CI as the runner is not a NixOS system"; \
 			$(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file || exit 0; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
+			if [ "$$SKIP_HOME_MANAGER_SWITCH" = "true" ]; then \
+				echo "⏭️ Home-manager switch skipped (SKIP_HOME_MANAGER_SWITCH=true)"; \
+			else \
+				USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
+			fi; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI switch"; \
 			exit 1; \
