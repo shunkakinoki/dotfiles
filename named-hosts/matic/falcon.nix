@@ -2,95 +2,68 @@
 #
 # Prerequisites (manual steps):
 # 1. Obtain the Falcon sensor .deb from IT
-# 2. Create /etc/falcon-sensor.env with: FALCON_CID=<your-cid>
-# 3. Extract and place sensor files (see README for details)
+# 2. Place it in ./falcon/ directory (e.g., falcon-sensor_7.31.0-18410_amd64.deb)
+# 3. Create /etc/falcon-sensor.env with: FALCON_CID=<your-cid>
 #
-# Based on: https://gist.github.com/klDen/c90d9798828e31fecbb603f85e27f4f1
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-
+# Based on: https://github.com/taylanpince/nixos-config
+{ pkgs, ... }:
 let
-  # FHS environment for CrowdStrike Falcon
-  # NixOS doesn't have standard /opt paths, so we create an FHS-compatible environment
-  falconFhs = pkgs.buildFHSEnv {
-    name = "falcon-sensor-fhs";
-    targetPkgs =
-      pkgs: with pkgs; [
-        # Runtime dependencies for Falcon sensor
-        bash
-        coreutils
-        curl
-        glibc
-        gnugrep
-        libnl
-        openssl
-        zlib
-      ];
-    runScript = "/opt/CrowdStrike/falcond";
-  };
+  falcon = pkgs.callPackage ./falcon { };
+
+  initScript = pkgs.writeScript "init-falcon" ''
+    #!${pkgs.bash}/bin/sh
+    set -euo pipefail
+
+    rm -rf /opt/CrowdStrike
+    install -d -m 0770 /opt/CrowdStrike
+
+    # Copy real files so Falcon can write falconstore/CsConfig
+    cp -a ${falcon}/opt/CrowdStrike/. /opt/CrowdStrike/
+
+    chown -R root:root /opt/CrowdStrike
+
+    # load CID from /etc/falcon-sensor.env (root-only)
+    . /etc/falcon-sensor.env
+
+    # set CID via falconctl inside FHS env
+    ${falcon}/bin/fs-bash -c "/opt/CrowdStrike/falconctl -s -f --cid=\"$FALCON_CID\""
+
+    # sanity print
+    ${falcon}/bin/fs-bash -c "/opt/CrowdStrike/falconctl -g --cid"
+  '';
 in
 {
-  # Create necessary directories and symlinks for CrowdStrike
   systemd.tmpfiles.rules = [
-    # Create /opt/CrowdStrike directory
     "d /opt/CrowdStrike 0770 root root -"
   ];
 
-  # CrowdStrike Falcon sensor service
   systemd.services.falcon-sensor = {
     description = "CrowdStrike Falcon Sensor";
     wantedBy = [ "multi-user.target" ];
-    after = [
-      "network.target"
-      "local-fs.target"
+
+    unitConfig.DefaultDependencies = false;
+    after = [ "local-fs.target" ];
+    conflicts = [ "shutdown.target" ];
+    before = [
+      "sysinit.target"
+      "shutdown.target"
     ];
 
-    # Load the CID from environment file
     serviceConfig = {
       Type = "forking";
-      ExecStartPre = pkgs.writeShellScript "falcon-sensor-pre" ''
-        # Ensure CID is configured
-        if [ ! -f /etc/falcon-sensor.env ]; then
-          echo "ERROR: /etc/falcon-sensor.env not found. Create it with FALCON_CID=<your-cid>"
-          exit 1
-        fi
+      PIDFile = "/run/falcond.pid";
+      ExecStartPre = initScript;
+      ExecStart = "${falcon}/bin/fs-bash -c \"/opt/CrowdStrike/falcond\"";
 
-        # Source the CID
-        source /etc/falcon-sensor.env
-        if [ -z "$FALCON_CID" ]; then
-          echo "ERROR: FALCON_CID not set in /etc/falcon-sensor.env"
-          exit 1
-        fi
-
-        # Set the CID if not already set
-        if ! /opt/CrowdStrike/falconctl -g --cid | grep -q "$FALCON_CID"; then
-          /opt/CrowdStrike/falconctl -s --cid="$FALCON_CID"
-        fi
-      '';
-      ExecStart = "${falconFhs}/bin/falcon-sensor-fhs";
-      ExecStop = "/bin/kill -TERM $MAINPID";
       Restart = "on-failure";
-      RestartSec = "10s";
+      RestartSec = "15s";
+
+      # Avoid systemd giving up during flapping
+      StartLimitIntervalSec = 0;
+
+      TimeoutStopSec = "60s";
       KillMode = "process";
-
-      # Security hardening
-      ProtectHome = false;
-      ProtectSystem = false;
-      PrivateTmp = false;
+      Delegate = true;
     };
-
-    # Add required tools to PATH
-    path = [
-      pkgs.bash
-      pkgs.coreutils
-      pkgs.gnugrep
-    ];
   };
-
-  # Required kernel modules for Falcon sensor
-  boot.kernelModules = [ "falcon" ];
 }
