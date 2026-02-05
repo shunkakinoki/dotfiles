@@ -183,11 +183,24 @@ inputs.nixpkgs.lib.nixosSystem {
     inputs.home-manager.nixosModules.home-manager
     {
       home-manager.backupFileExtension = "hm-backup";
-      home-manager.extraSpecialArgs = { inherit inputs; };
+      home-manager.extraSpecialArgs = {
+        # Override host detection for matic (isDesktop = true)
+        inputs = inputs // {
+          host = (import ../../lib/host.nix) // {
+            isDesktop = true;
+          };
+        };
+      };
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
       home-manager.users.${username} = import ../../home-manager {
-        inherit inputs username;
+        inherit username;
+        # Override host detection for matic (isDesktop = true)
+        inputs = inputs // {
+          host = (import ../../lib/host.nix) // {
+            isDesktop = true;
+          };
+        };
         lib = inputs.nixpkgs.lib;
         pkgs = pkgs;
         config = { };
