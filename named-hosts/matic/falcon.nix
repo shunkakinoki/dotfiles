@@ -17,6 +17,11 @@ let
     #!${pkgs.bash}/bin/sh
     set -euo pipefail
 
+    # Remove immutable attributes set by CrowdStrike (security feature)
+    if [ -d /opt/CrowdStrike ]; then
+      ${pkgs.e2fsprogs}/bin/chattr -i -R /opt/CrowdStrike 2>/dev/null || true
+    fi
+
     rm -rf /opt/CrowdStrike
     install -d -m 0770 /opt/CrowdStrike
 
