@@ -404,12 +404,12 @@ nix-switch: ## Activate Nix configuration.
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			if [ -n "$(HOST)" ]; then \
 				echo "Switching named host: $(HOST)"; \
-				$(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#$(HOST); \
+				$(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(HOST) --impure; \
 			elif [ -n "$(DETECTED_HOST)" ]; then \
 				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				$(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#$(DETECTED_HOST); \
+				$(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(DETECTED_HOST) --impure; \
 			else \
-				$(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM); \
+				$(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM) --impure; \
 			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
 			if [ -n "$(HOST)" ]; then \
