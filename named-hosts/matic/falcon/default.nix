@@ -2,8 +2,9 @@
 #
 # Prerequisites:
 # 1. Obtain the Falcon sensor .deb from IT
-# 2. Place it in this directory as: falcon-sensor_<version>_amd64.deb
-# 3. Update the version below to match
+# 2. Place it at: /etc/nixos/falcon-sensor.deb
+#    sudo cp ~/Downloads/falcon-sensor*.deb /etc/nixos/falcon-sensor.deb
+# 3. Update the version below to match if different
 {
   stdenv,
   lib,
@@ -21,10 +22,8 @@ let
   version = "7.31.0-18410";
   arch = "amd64";
 
-  src = builtins.path {
-    path = ./${pname}_${version}_${arch}.deb;
-    name = "${pname}_${version}_${arch}.deb";
-  };
+  # Use absolute path outside the flake (gitignored files aren't visible to flakes)
+  src = /etc/nixos/falcon-sensor.deb;
 
   falcon-sensor = stdenv.mkDerivation {
     name = pname;
