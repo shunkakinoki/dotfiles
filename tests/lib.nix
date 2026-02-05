@@ -39,6 +39,12 @@ in
         ''echo "FAIL: host.isGalactica must exist and be a boolean" && exit 1''
     }
     ${
+      if host ? isMatic && builtins.isBool host.isMatic then
+        ''echo "lib/host.nix: isMatic is a boolean"''
+      else
+        ''echo "FAIL: host.isMatic must exist and be a boolean" && exit 1''
+    }
+    ${
       if host ? nodeName && builtins.isString host.nodeName then
         ''echo "lib/host.nix: nodeName is a string (value: ${host.nodeName})"''
       else
@@ -82,9 +88,12 @@ in
           ''echo "FAIL: ${name} should be allowed by unfree predicate" && exit 1''
       )
       [
+        "1password"
         "claude-code"
-        "qwen-code"
+        "clickup"
         "crush"
+        "qwen-code"
+        "slack"
       ]
     }
     touch $out
