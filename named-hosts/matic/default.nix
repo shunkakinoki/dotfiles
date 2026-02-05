@@ -67,7 +67,7 @@ inputs.nixpkgs.lib.nixosSystem {
           initialPassword = "changemeow"; # Change this after first login with: passwd
         };
 
-        security.sudo.wheelNeedsPassword = true;
+        security.sudo.wheelNeedsPassword = false;
 
         # AMD graphics with hardware acceleration
         hardware.graphics.enable = true;

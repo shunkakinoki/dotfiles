@@ -3,7 +3,7 @@
   inputs,
 }:
 let
-  inherit (inputs.env) isCI;
+  inherit (inputs.host) isDesktop;
 in
 with pkgs;
 [
@@ -115,12 +115,15 @@ with pkgs;
   tailscale
   trashy
 ]
-++ lib.optionals (stdenv.isLinux && !isCI) [
+++ lib.optionals (stdenv.isLinux && isDesktop) [
+  _1password-gui
   chromium
+  clickup
   ffmpeg
   ghostty
   github-desktop
   google-chrome
   signal-desktop
+  slack
   vlc
 ]

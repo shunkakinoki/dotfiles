@@ -4,9 +4,12 @@
   allowUnfreePredicate =
     pkg:
     builtins.elem (nixpkgsLib.getName pkg) [
+      "1password"
       "claude-code"
-      "qwen-code"
+      "clickup"
       "crush"
+      "qwen-code"
+      "slack"
     ];
   joypixels.acceptLicense = true;
 }
