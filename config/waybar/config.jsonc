@@ -7,6 +7,8 @@
   "modules-left": ["hyprland/workspaces"],
   "modules-center": ["clock"],
   "modules-right": [
+    "cpu",
+    "memory",
     "pulseaudio",
     "backlight",
     "battery",
@@ -36,6 +38,18 @@
         "today": "<span color='#ff79c6'><b><u>{}</u></b></span>"
       }
     }
+  },
+
+  "cpu": {
+    "interval": 5,
+    "format": " {usage}%",
+    "tooltip-format": "{avg_frequency} GHz\n{usage}% used"
+  },
+
+  "memory": {
+    "interval": 5,
+    "format": " {percentage}%",
+    "tooltip-format": "{used:0.1f} / {total:0.1f} GiB"
   },
 
   "pulseaudio": {
