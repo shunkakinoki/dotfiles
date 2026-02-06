@@ -118,15 +118,32 @@ with pkgs;
 ]
 ++ lib.optionals (stdenv.isLinux && isDesktop) [
   _1password-gui
+  brightnessctl
   chromium
   clickup
+  cliphist
   emote
   ffmpeg
   ghostty
   github-desktop
   google-chrome
+  grim
+  hypridle
+  hyprlock
+  libnotify
+  networkmanagerapplet
+  pavucontrol
+  playerctl
   signal-desktop
   slack
+  slurp
+  swappy
+  swaynotificationcenter
   vlc
   vscode
+  waybar
+  wl-clipboard
+  wlogout
+  wob
+  wofi
 ]

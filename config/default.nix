@@ -1,3 +1,7 @@
+{ inputs }:
+let
+  inherit (inputs.host) isDesktop;
+in
 [
   ./aichat
   ./amp
@@ -23,3 +27,16 @@
   ./starship
   ./zellij
 ]
+++ (
+  if isDesktop then
+    [
+      ./gtk
+      ./hyprland
+      ./swaync
+      ./waybar
+      ./wlogout
+      ./wofi
+    ]
+  else
+    [ ]
+)

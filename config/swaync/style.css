@@ -1,0 +1,119 @@
+.notification-row {
+    outline: none;
+}
+
+.notification-row:focus,
+.notification-row:hover {
+    background: #44475a;
+}
+
+.notification {
+    border-radius: 12px;
+    margin: 4px 8px;
+    padding: 0;
+    border: 2px solid #44475a;
+    background: #282a36;
+}
+
+.notification-content {
+    padding: 8px;
+}
+
+.close-button {
+    background: #ff5555;
+    color: #282a36;
+    border-radius: 50%;
+    margin: 4px;
+    padding: 2px;
+    min-width: 20px;
+    min-height: 20px;
+}
+
+.close-button:hover {
+    background: #ff79c6;
+}
+
+.notification-default-action,
+.notification-action {
+    border-radius: 8px;
+    margin: 4px;
+    padding: 4px 8px;
+    background: #44475a;
+    color: #f8f8f2;
+    border: none;
+}
+
+.notification-default-action:hover,
+.notification-action:hover {
+    background: #6272a4;
+}
+
+.summary {
+    font-weight: bold;
+    font-size: 14px;
+    color: #f8f8f2;
+}
+
+.body {
+    font-size: 13px;
+    color: #f8f8f2;
+}
+
+.time {
+    font-size: 11px;
+    color: #6272a4;
+    margin-right: 8px;
+}
+
+.control-center {
+    background: #282a36;
+    border: 2px solid #44475a;
+    border-radius: 12px;
+    margin: 8px;
+    padding: 8px;
+}
+
+.control-center-list {
+    background: transparent;
+}
+
+.widget-title {
+    color: #f8f8f2;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 8px;
+}
+
+.widget-title > button {
+    background: #bd93f9;
+    color: #282a36;
+    border-radius: 8px;
+    padding: 4px 12px;
+    border: none;
+    font-weight: bold;
+}
+
+.widget-title > button:hover {
+    background: #ff79c6;
+}
+
+.widget-dnd {
+    color: #f8f8f2;
+    margin: 4px 8px;
+    font-size: 14px;
+}
+
+.widget-dnd > switch {
+    background: #44475a;
+    border-radius: 12px;
+    border: 2px solid #6272a4;
+}
+
+.widget-dnd > switch:checked {
+    background: #bd93f9;
+}
+
+.widget-dnd > switch slider {
+    background: #f8f8f2;
+    border-radius: 50%;
+}

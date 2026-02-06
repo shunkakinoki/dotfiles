@@ -92,6 +92,26 @@ inputs.nixpkgs.lib.nixosSystem {
         # Power management
         services.power-profiles-daemon.enable = true;
 
+        # Auto timezone (via geolocation)
+        services.geoclue2.enable = true;
+        services.localtimed.enable = true;
+
+        # Audio (PipeWire)
+        services.pipewire = {
+          enable = true;
+          alsa.enable = true;
+          alsa.support32Bit = true;
+          pulse.enable = true;
+          wireplumber.enable = true;
+        };
+        services.pulseaudio.enable = false;
+        security.rtkit.enable = true;
+
+        # Bluetooth
+        hardware.bluetooth.enable = true;
+        hardware.bluetooth.powerOnBoot = true;
+        services.blueman.enable = true;
+
         # Desktop environment (Hyprland)
         services.xserver.enable = true;
         services.displayManager.gdm.enable = true;
@@ -229,7 +249,6 @@ inputs.nixpkgs.lib.nixosSystem {
               pkgs = pkgs;
               config = { };
             })
-            ../../config/hyprland
           ];
 
           # Agenix configuration for GitHub SSH key

@@ -7,7 +7,7 @@
   ...
 }:
 let
-  hmConfig = import ../config;
+  hmConfig = import ../config { inherit inputs; };
   packages = import ./packages { inherit pkgs inputs; };
   misc = import ./misc;
   modules = import ./modules;
