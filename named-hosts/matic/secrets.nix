@@ -20,4 +20,10 @@ in
     file = ../galactica/keys/id_ed25519.age;
     publicKeys = allMachines;
   };
+
+  # GPG key for commit signing (synced from galactica)
+  "keys/gpg.age" = {
+    file = ../galactica/keys/gpg.age;
+    publicKeys = allMachines;
+  };
 }
