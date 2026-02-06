@@ -52,7 +52,7 @@
       url = "github:NixOS/nixos-hardware/master";
     };
     hyprland = {
-      url = "github:hyprwm/Hyprland";
+      url = "github:hyprwm/Hyprland/v0.53.3";
     };
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
