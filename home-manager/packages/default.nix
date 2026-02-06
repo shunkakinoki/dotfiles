@@ -139,6 +139,7 @@ with pkgs;
   slurp
   swappy
   swaynotificationcenter
+  swww
   vlc
   vscode
   waybar
