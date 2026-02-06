@@ -15,7 +15,8 @@ in
     systemd.enable = false;
     extraConfig = ''
       plugin = ${hyprexpoPlugin}/lib/libhyprexpo.so
-      exec-once = ${pkgs.swaybg}/bin/swaybg -i ${wallpaper} -m fill
+      exec-once = ${pkgs.swww}/bin/swww-daemon
+      exec-once = sleep 1 && ${pkgs.swww}/bin/swww img ${wallpaper}
     ''
     + builtins.readFile ./hyprland.conf;
   };
