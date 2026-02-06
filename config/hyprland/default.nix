@@ -5,12 +5,12 @@
   ...
 }:
 let
-  hyprexpoPlugin = inputs.hyprland-plugins.packages.${pkgs.stdenv.hostPlatform.system}.hyprexpo;
+  hyprexpoPlugin = pkgs.hyprlandPlugins.hyprexpo;
 in
 {
   wayland.windowManager.hyprland = {
     enable = true;
-    package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+    package = pkgs.hyprland;
     systemd.enable = false;
     extraConfig = ''
       plugin = ${hyprexpoPlugin}/lib/libhyprexpo.so
