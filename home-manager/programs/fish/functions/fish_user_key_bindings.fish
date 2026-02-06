@@ -5,4 +5,8 @@
 function fish_user_key_bindings
   # Exit vim insert mode with jj (like in Vim)
   bind -M insert jj 'set fish_bind_mode default; commandline -f repaint-mode'
+
+  # Ctrl+V = paste from clipboard (macOS-style via keyd Framework key)
+  bind \cv fish_clipboard_paste
+  bind -M insert \cv fish_clipboard_paste
 end
