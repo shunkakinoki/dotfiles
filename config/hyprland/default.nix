@@ -29,10 +29,11 @@ in
   };
   xdg.configFile."hypr/hyprpaper.conf" = {
     text = ''
-      splash = false
-      ipc = on
-      preload = ${wallpaper}/share/backgrounds/nixos/nix-wallpaper-nineish-catppuccin-mocha-alt.png
-      wallpaper = ,${wallpaper}/share/backgrounds/nixos/nix-wallpaper-nineish-catppuccin-mocha-alt.png
+      splash = 0
+
+      wallpaper {
+        path = ${wallpaper}/share/backgrounds/nixos/nix-wallpaper-nineish-catppuccin-mocha-alt.png
+      }
     '';
     force = true;
   };
