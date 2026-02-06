@@ -119,6 +119,7 @@ with pkgs;
   _1password-gui
   chromium
   clickup
+  emote
   ffmpeg
   ghostty
   github-desktop
