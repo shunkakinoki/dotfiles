@@ -6,7 +6,7 @@
 }:
 let
   hyprexpoPlugin = pkgs.hyprlandPlugins.hyprexpo;
-  wallpaper = pkgs.nixos-artwork.wallpapers.nineish-catppuccin-mocha-alt;
+  wallpaper = "${pkgs.nixos-artwork.wallpapers.nineish-catppuccin-mocha-alt}/share/backgrounds/nixos/nix-wallpaper-nineish-catppuccin-mocha-alt.png";
 in
 {
   wayland.windowManager.hyprland = {
@@ -15,6 +15,8 @@ in
     systemd.enable = false;
     extraConfig = ''
       plugin = ${hyprexpoPlugin}/lib/libhyprexpo.so
+      exec-once = ${pkgs.swww}/bin/swww-daemon
+      exec-once = sleep 1 && ${pkgs.swww}/bin/swww img ${wallpaper}
     ''
     + builtins.readFile ./hyprland.conf;
   };
@@ -25,15 +27,6 @@ in
   };
   xdg.configFile."hypr/hyprlock.conf" = {
     source = ./hyprlock.conf;
-    force = true;
-  };
-  xdg.configFile."hypr/hyprpaper.conf" = {
-    text = ''
-      splash = false
-      ipc = on
-      preload = ${wallpaper}/share/backgrounds/nixos/nix-wallpaper-nineish-catppuccin-mocha-alt.png
-      wallpaper = ,${wallpaper}/share/backgrounds/nixos/nix-wallpaper-nineish-catppuccin-mocha-alt.png
-    '';
     force = true;
   };
 }

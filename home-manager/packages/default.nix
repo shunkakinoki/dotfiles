@@ -130,7 +130,6 @@ with pkgs;
   grim
   hypridle
   hyprlock
-  hyprpaper
   libnotify
   networkmanagerapplet
   pavucontrol
@@ -140,6 +139,7 @@ with pkgs;
   slurp
   swappy
   swaynotificationcenter
+  swww
   vlc
   vscode
   waybar
