@@ -53,6 +53,14 @@ tooltip {
     font-weight: bold;
 }
 
+#cpu {
+    color: @green;
+}
+
+#memory {
+    color: @orange;
+}
+
 #pulseaudio {
     color: @cyan;
 }
