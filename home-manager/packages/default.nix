@@ -146,4 +146,5 @@ with pkgs;
   wlogout
   wob
   wofi
+  wofi-emoji
 ]
