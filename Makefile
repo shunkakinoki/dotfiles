@@ -27,8 +27,8 @@ DOCKER_IMAGE_TAGGED := $(DOCKER_IMAGE_NAME_BASE):$(GIT_COMMIT_SHA)
 NIX_EXEC := $(shell which nix)
 
 # Common cache settings (only applied when user is trusted to avoid warnings)
-NIX_SUBSTITUTERS := https://cache.nixos.org https://devenv.cachix.org https://cachix.cachix.org
-NIX_TRUSTED_KEYS := cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw= cachix.cachix.org-1:eWNHQldwUO7G2VkjpnjDbWwy4KQ/HNxht7H4SSoMckM=
+NIX_SUBSTITUTERS := https://cache.nixos.org https://devenv.cachix.org https://cachix.cachix.org https://hyprland.cachix.org
+NIX_TRUSTED_KEYS := cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw= cachix.cachix.org-1:eWNHQldwUO7G2VkjpnjDbWwy4KQ/HNxht7H4SSoMckM= hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=
 NIX_CACHIX_CONF := /etc/nix/cachix.conf
 # Check if user is trusted (to avoid "ignoring untrusted substituter" warnings)
 NIX_USER_TRUSTED := $(shell grep -qE "trusted-users.*=.*(\\*|$(shell whoami))" /etc/nix/nix.conf 2>/dev/null && echo "yes" || echo "no")
@@ -749,14 +749,13 @@ launchctl-ollama: ## Restart ollama launchd agent.
 ##@ Systemd Services (Linux)
 
 .PHONY: systemctl
-systemctl: systemctl-cliproxyapi systemctl-openclaw systemctl-code-syncer systemctl-docker-postgres systemctl-dotfiles-updater systemctl-ollama ## Restart all systemd user services.
+systemctl: systemctl-cliproxyapi systemctl-code-syncer systemctl-docker-postgres systemctl-dotfiles-updater systemctl-ollama systemctl-openclaw systemctl-waybar ## Restart all systemd user services.
 
 .PHONY: systemctl-cliproxyapi
 systemctl-cliproxyapi: ## Pull latest image and restart cliproxyapi systemd user service.
 	@echo "🔄 Restarting cliproxyapi..."
 	@systemctl --user restart cliproxyapi.service || true
 	@echo "✅ cliproxyapi restarted"
-
 
 .PHONY: systemctl-code-syncer
 systemctl-code-syncer: ## Restart code-syncer systemd user service.
@@ -787,6 +786,14 @@ systemctl-openclaw: ## Restart OpenClaw gateway systemd user service.
 	@echo "🔄 Restarting openclaw..."
 	@systemctl --user restart openclaw-gateway.service || true
 	@echo "✅ openclaw restarted"
+
+.PHONY: systemctl-waybar
+systemctl-waybar: ## Restart waybar.
+	@echo "🔄 Restarting waybar..."
+	@pkill waybar 2>/dev/null || true
+	@sleep 1
+	@hyprctl dispatch exec waybar 2>/dev/null || true
+	@echo "✅ waybar restarted"
 
 ##@ Git Submodule
 
