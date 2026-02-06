@@ -16,6 +16,8 @@ mouse-hide-while-typing = true
 clipboard-read = "allow"
 clipboard-paste-protection = false
 
+keybind = ctrl+c=copy_to_clipboard
+keybind = ctrl+v=paste_from_clipboard
 keybind = super+alt+left=previous_tab
 keybind = super+alt+right=next_tab
 keybind = super+shift+left=move_tab:-1
