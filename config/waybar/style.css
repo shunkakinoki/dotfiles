@@ -54,11 +54,11 @@ tooltip {
 }
 
 #cpu {
-    color: @green;
+    color: @orange;
 }
 
 #memory {
-    color: @orange;
+    color: @green;
 }
 
 #pulseaudio {
