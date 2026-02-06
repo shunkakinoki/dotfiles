@@ -120,6 +120,9 @@ inputs.nixpkgs.lib.nixosSystem {
 
         programs.hyprland = {
           enable = true;
+          package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+          portalPackage =
+            inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
           xwayland.enable = true;
           withUWSM = true;
         };
@@ -129,7 +132,6 @@ inputs.nixpkgs.lib.nixosSystem {
         xdg.portal = {
           enable = true;
           extraPortals = with pkgs; [
-            xdg-desktop-portal-hyprland
             xdg-desktop-portal-gtk
           ];
         };
