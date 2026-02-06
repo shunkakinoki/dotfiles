@@ -14,7 +14,8 @@ in
     systemd.enable = false;
     extraConfig = ''
       plugin = ${hyprexpoPlugin}/lib/libhyprexpo.so
-    '' + builtins.readFile ./hyprland.conf;
+    ''
+    + builtins.readFile ./hyprland.conf;
   };
 
   xdg.configFile."hypr/hypridle.conf" = {
