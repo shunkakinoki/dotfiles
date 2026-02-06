@@ -32,6 +32,7 @@ in
       splash = 0
 
       wallpaper {
+        monitor =
         path = ${wallpaper}/share/backgrounds/nixos/nix-wallpaper-nineish-catppuccin-mocha-alt.png
       }
     '';
