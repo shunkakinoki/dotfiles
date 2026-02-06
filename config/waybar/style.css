@@ -127,6 +127,8 @@ tooltip {
 }
 
 /* Module spacing */
+#cpu,
+#memory,
 #pulseaudio,
 #backlight,
 #battery,
