@@ -170,9 +170,6 @@ inputs.nixpkgs.lib.nixosSystem {
               "nix-command"
               "flakes"
             ];
-            substituters = [
-              "https://cache.nixos.org"
-            ];
             trusted-users = [
               "root"
               username
