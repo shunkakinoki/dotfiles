@@ -27,15 +27,16 @@ in
     source = ./hyprlock.conf;
     force = true;
   };
-  xdg.configFile."hypr/hyprpaper.conf" = {
-    text = ''
-      splash = 0
-
-      wallpaper {
-        monitor =
-        path = ${wallpaper}/share/backgrounds/nixos/nix-wallpaper-nineish-catppuccin-mocha-alt.png
-      }
-    '';
-    force = true;
+  services.hyprpaper = {
+    enable = true;
+    settings = {
+      splash = false;
+      preload = [
+        "${wallpaper}/share/backgrounds/nixos/nix-wallpaper-nineish-catppuccin-mocha-alt.png"
+      ];
+      wallpaper = [
+        ",${wallpaper}/share/backgrounds/nixos/nix-wallpaper-nineish-catppuccin-mocha-alt.png"
+      ];
+    };
   };
 }

@@ -130,7 +130,6 @@ with pkgs;
   grim
   hypridle
   hyprlock
-  hyprpaper
   libnotify
   networkmanagerapplet
   pavucontrol
