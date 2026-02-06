@@ -33,6 +33,9 @@ inputs.nixpkgs.lib.nixosSystem {
     # Kolide launcher
     ./kolide.nix
 
+    # Keyd configuration
+    ../../config/keyd
+
     # Base system configuration
     (
       { config, lib, ... }:
@@ -89,10 +92,27 @@ inputs.nixpkgs.lib.nixosSystem {
         # Power management
         services.power-profiles-daemon.enable = true;
 
-        # Desktop environment (GNOME)
+        # Desktop environment (Hyprland)
         services.xserver.enable = true;
         services.displayManager.gdm.enable = true;
-        services.desktopManager.gnome.enable = true;
+        services.displayManager.defaultSession = "hyprland";
+        services.desktopManager.gnome.enable = false;
+
+        programs.hyprland = {
+          enable = true;
+          xwayland.enable = true;
+          withUWSM = true;
+        };
+
+        programs.dconf.enable = true;
+
+        xdg.portal = {
+          enable = true;
+          extraPortals = with pkgs; [
+            xdg-desktop-portal-hyprland
+            xdg-desktop-portal-gtk
+          ];
+        };
 
         # WiFi MT7925e fix (disable ASPM)
         boot.extraModprobeConfig = ''
@@ -193,18 +213,50 @@ inputs.nixpkgs.lib.nixosSystem {
       };
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
-      home-manager.users.${username} = import ../../home-manager {
-        inherit username;
-        # Override host detection for matic (isDesktop = true)
-        inputs = inputs // {
-          host = (import ../../lib/host.nix) // {
-            isDesktop = true;
-          };
+      home-manager.users.${username} =
+        { config, lib, ... }:
+        {
+          imports = [
+            (import ../../home-manager {
+              inherit username;
+              # Override host detection for matic (isDesktop = true)
+              inputs = inputs // {
+                host = (import ../../lib/host.nix) // {
+                  isDesktop = true;
+                };
+              };
+              lib = inputs.nixpkgs.lib;
+              pkgs = pkgs;
+              config = { };
+            })
+            ../../config/hyprland
+          ];
+
+          # Agenix configuration for GitHub SSH key
+          age.identityPaths = [ "/home/${username}/.ssh/id_ed25519" ];
+          age.secrets = builtins.mapAttrs (
+            name: value:
+            {
+              file = value.file;
+            }
+            // (
+              if name == "keys/id_github.age" then
+                {
+                  # Deploy GitHub SSH key to ~/.ssh/ with correct permissions
+                  path = "/home/${username}/.ssh/id_ed25519_github";
+                  mode = "0600";
+                }
+              else
+                { }
+            )
+          ) (import ./secrets.nix);
+
+          # Ensure SSH directory exists before agenix tries to deploy secrets
+          home.activation.ensureSshDirectory = config.lib.dag.entryBefore [ "writeBoundary" ] ''
+            $DRY_RUN_CMD mkdir -p $VERBOSE_ARG ${config.home.homeDirectory}/.ssh
+            $DRY_RUN_CMD chmod $VERBOSE_ARG 700 ${config.home.homeDirectory}/.ssh
+          '';
         };
-        lib = inputs.nixpkgs.lib;
-        pkgs = pkgs;
-        config = { };
-      };
     }
   ]
   ++ (if falconDebExists then [ ./falcon.nix ] else [ ]); # CrowdStrike Falcon (only if .deb exists)
