@@ -114,6 +114,7 @@ with pkgs;
   powertop
   tailscale
   trashy
+  xclip
 ]
 ++ lib.optionals (stdenv.isLinux && isDesktop) [
   _1password-gui
@@ -127,4 +128,5 @@ with pkgs;
   signal-desktop
   slack
   vlc
+  vscode
 ]
