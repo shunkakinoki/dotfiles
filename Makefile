@@ -749,7 +749,7 @@ launchctl-ollama: ## Restart ollama launchd agent.
 ##@ Systemd Services (Linux)
 
 .PHONY: systemctl
-systemctl: systemctl-cliproxyapi systemctl-code-syncer systemctl-docker-postgres systemctl-dotfiles-updater systemctl-ollama systemctl-openclaw systemctl-waybar ## Restart all systemd user services.
+systemctl: systemctl-cliproxyapi systemctl-code-syncer systemctl-docker-postgres systemctl-dotfiles-updater systemctl-ollama systemctl-openclaw ## Restart all systemd user services.
 
 .PHONY: systemctl-cliproxyapi
 systemctl-cliproxyapi: ## Pull latest image and restart cliproxyapi systemd user service.
@@ -787,15 +787,6 @@ systemctl-openclaw: ## Restart OpenClaw gateway systemd user service.
 	@systemctl --user restart openclaw-gateway.service || true
 	@echo "✅ openclaw restarted"
 
-.PHONY: systemctl-waybar
-systemctl-waybar: ## Restart waybar.
-	@echo "🔄 Restarting waybar..."
-	@pkill waybar 2>/dev/null || true
-	@sleep 1
-	@hyprctl dispatch exec waybar 2>/dev/null || true
-	@echo "✅ waybar restarted"
-
-##@ Git Submodule
 
 .PHONY: git-submodule-sync
 git-submodule-sync: ## Sync and update git submodules.
