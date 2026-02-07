@@ -264,7 +264,6 @@ inputs.nixpkgs.lib.nixosSystem {
               config = { };
             })
             inputs.timewall.homeManagerModules.default
-            ../../config/wallpaper
           ];
 
           # Dynamic wallpaper (macOS Sequoia-style) via timewall
