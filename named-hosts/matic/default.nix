@@ -93,7 +93,7 @@ inputs.nixpkgs.lib.nixosSystem {
         services.power-profiles-daemon.enable = true;
 
         # Power button behavior - lock screen instead of shutdown
-        services.logind.powerKey = "lock";
+        services.logind.settings.Login.HandlePowerKey = "lock";
 
         # Auto timezone (via geolocation)
         services.geoclue2.enable = true;
@@ -115,11 +115,24 @@ inputs.nixpkgs.lib.nixosSystem {
         hardware.bluetooth.powerOnBoot = true;
         services.blueman.enable = true;
 
-        # Desktop environment (Hyprland)
-        services.xserver.enable = true;
-        services.displayManager.gdm.enable = true;
-        services.displayManager.defaultSession = "hyprland";
-        services.desktopManager.gnome.enable = false;
+        # Login manager (greetd + tuigreet)
+        services.greetd = {
+          enable = true;
+          settings = {
+            default_session = {
+              command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-session --asterisks --sessions /etc/greetd/wayland-sessions";
+              user = "greeter";
+            };
+          };
+        };
+
+        # Provide Hyprland session file for tuigreet to discover
+        environment.etc."greetd/wayland-sessions/hyprland.desktop".text = ''
+          [Desktop Entry]
+          Name=Hyprland
+          Exec=uwsm start hyprland-uwsm.desktop
+          Type=Application
+        '';
 
         programs.hyprland = {
           enable = true;
@@ -250,7 +263,44 @@ inputs.nixpkgs.lib.nixosSystem {
               pkgs = pkgs;
               config = { };
             })
+            inputs.timewall.homeManagerModules.default
           ];
+
+          # Dynamic wallpaper (macOS Sequoia-style) via timewall
+          # Place a dynamic HEIC wallpaper at ~/.local/share/wallpapers/dynamic.heic
+          # Sources: dynamicwallpaper.club, mczachurski/wallpapper, or copy from macOS
+          services.timewall = {
+            enable = true;
+            wallpaperPath = "${config.home.homeDirectory}/.local/share/wallpapers/dynamic.heic";
+            config = {
+              geoclue = {
+                enable = true;
+                cache_fallback = true;
+                timeout = 3000;
+              };
+              setter = {
+                command = [
+                  "${pkgs.swww}/bin/swww"
+                  "img"
+                  "--transition-type"
+                  "fade"
+                  "--transition-duration"
+                  "3"
+                  "--transition-fps"
+                  "60"
+                  "%f"
+                ];
+              };
+              daemon = {
+                update_interval_seconds = 300;
+              };
+            };
+          };
+
+          # Ensure wallpaper directory exists
+          home.activation.ensureWallpaperDirectory = config.lib.dag.entryBefore [ "writeBoundary" ] ''
+            $DRY_RUN_CMD mkdir -p $VERBOSE_ARG ${config.home.homeDirectory}/.local/share/wallpapers
+          '';
 
           # Agenix configuration for GitHub SSH key
           age.identityPaths = [ "/home/${username}/.ssh/id_ed25519" ];
