@@ -6,7 +6,6 @@
 }:
 let
   hyprexpoPlugin = pkgs.hyprlandPlugins.hyprexpo;
-  wallpaper = "${pkgs.nixos-artwork.wallpapers.nineish-catppuccin-mocha-alt}/share/backgrounds/nixos/nix-wallpaper-nineish-catppuccin-mocha-alt.png";
 in
 {
   wayland.windowManager.hyprland = {
@@ -16,7 +15,6 @@ in
     extraConfig = ''
       plugin = ${hyprexpoPlugin}/lib/libhyprexpo.so
       exec-once = ${pkgs.swww}/bin/swww-daemon
-      exec-once = sleep 1 && ${pkgs.swww}/bin/swww img ${wallpaper}
     ''
     + builtins.readFile ./hyprland.conf;
   };
@@ -47,6 +45,11 @@ in
   };
   xdg.configFile."hypr/scripts/record-screen.sh" = {
     source = ./scripts/record-screen.sh;
+    executable = true;
+    force = true;
+  };
+  xdg.configFile."hypr/scripts/wofi-wifi.sh" = {
+    source = ./scripts/wofi-wifi.sh;
     executable = true;
     force = true;
   };
