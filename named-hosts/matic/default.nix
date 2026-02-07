@@ -263,37 +263,7 @@ inputs.nixpkgs.lib.nixosSystem {
               pkgs = pkgs;
               config = { };
             })
-            inputs.timewall.homeManagerModules.default
           ];
-
-          # Dynamic wallpaper (macOS Sequoia-style) via timewall
-          services.timewall = {
-            enable = true;
-            wallpaperPath = "${config.home.homeDirectory}/.local/share/wallpapers/dynamic.heic";
-            config = {
-              geoclue = {
-                enable = true;
-                cache_fallback = true;
-                timeout = 3000;
-              };
-              setter = {
-                command = [
-                  "${pkgs.swww}/bin/swww"
-                  "img"
-                  "--transition-type"
-                  "fade"
-                  "--transition-duration"
-                  "3"
-                  "--transition-fps"
-                  "60"
-                  "%f"
-                ];
-              };
-              daemon = {
-                update_interval_seconds = 300;
-              };
-            };
-          };
 
           # Agenix configuration for GitHub SSH key
           age.identityPaths = [ "/home/${username}/.ssh/id_ed25519" ];

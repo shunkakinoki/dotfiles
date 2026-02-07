@@ -51,10 +51,6 @@
     nixos-hardware = {
       url = "github:NixOS/nixos-hardware/master";
     };
-    timewall = {
-      url = "github:bcyran/timewall";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =

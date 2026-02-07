@@ -141,7 +141,7 @@ with pkgs;
   slack
   slurp
   swappy
-  swww
+  mpvpaper
   vlc
   vscode
   walker
