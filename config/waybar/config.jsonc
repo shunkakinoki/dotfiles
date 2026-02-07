@@ -88,7 +88,7 @@
     "format-disconnected": "󰤭 disconnected",
     "tooltip-format-wifi": "{essid} ({signalStrength}%)\n{ipaddr}",
     "tooltip-format-ethernet": "{ifname}\n{ipaddr}",
-    "on-click": "nm-connection-editor"
+    "on-click": "~/.config/hypr/scripts/wofi-wifi.sh"
   },
 
   "bluetooth": {
