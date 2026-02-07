@@ -15,6 +15,7 @@ in
     extraConfig = ''
       plugin = ${hyprexpoPlugin}/lib/libhyprexpo.so
       exec-once = ${pkgs.swww}/bin/swww-daemon
+      exec-once = ${pkgs.hyprpanel}/bin/hyprpanel
     ''
     + builtins.readFile ./hyprland.conf;
   };
