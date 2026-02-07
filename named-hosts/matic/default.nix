@@ -90,6 +90,7 @@ inputs.nixpkgs.lib.nixosSystem {
         services.fwupd.enable = true;
 
         # Power management
+        services.upower.enable = true;
         services.power-profiles-daemon.enable = true;
 
         # Power button behavior - lock screen instead of shutdown
