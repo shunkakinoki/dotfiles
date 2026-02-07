@@ -92,6 +92,9 @@ inputs.nixpkgs.lib.nixosSystem {
         # Power management
         services.power-profiles-daemon.enable = true;
 
+        # Power button behavior - lock screen instead of shutdown
+        services.logind.powerKey = "lock";
+
         # Auto timezone (via geolocation)
         services.geoclue2.enable = true;
         services.localtimed.enable = true;
