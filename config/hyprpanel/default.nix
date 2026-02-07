@@ -22,8 +22,11 @@
         };
       };
 
+      # Dashboard
+      "bar.dashboard.icon" = "";
+
       # Clock
-      "bar.clock.format" = "%a %b %d  %H:%M";
+      "bar.clock.format" = "%Y/%m/%d %H:%M:%S";
 
       # Battery
       "bar.battery.label" = true;
@@ -35,15 +38,48 @@
       "bar.bluetooth.label" = false;
 
       # Workspaces
-      "bar.workspaces.show_icons" = false;
+      "bar.workspaces.show_icons" = true;
       "bar.workspaces.numbered_active_indicator" = "underline";
+      "bar.workspaces.show_application_icons" = true;
+      "bar.workspaces.workspaceIconMap" = {
+        "1" = "";
+        "2" = "";
+        "3" = "";
+        "4" = "󰙯";
+      };
+      "bar.workspaces.applicationIconMap" = {
+        "google-chrome" = "";
+        "[sS]lack" = "";
+        "[dD]iscord" = "󰙯";
+        "com.mitchellh.ghostty" = "";
+        "cursor" = "󰨞";
+        "1[pP]assword" = "󰌋";
+        "code" = "󰨞";
+      };
+
+      # Dashboard shortcuts
+      "menus.dashboard.shortcuts.left.shortcut1" = {
+        icon = "󰌾";
+        tooltip = "Screen Saver";
+        command = "hyprlock";
+      };
+      "menus.dashboard.shortcuts.left.shortcut2" = {
+        icon = "";
+        tooltip = "Google Chrome";
+        command = "google-chrome-stable";
+      };
+      "menus.dashboard.shortcuts.left.shortcut3" = {
+        icon = "󰙯";
+        tooltip = "Discord";
+        command = "discord";
+      };
 
       # Font
       "theme.font.name" = "JetBrainsMono Nerd Font";
       "theme.font.size" = "14px";
 
       # Bar
-      "theme.bar.transparent" = false;
+      "theme.bar.transparent" = true;
       "theme.bar.floating" = false;
 
       # Notifications

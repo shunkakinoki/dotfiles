@@ -122,6 +122,7 @@ with pkgs;
   chromium
   clickup
   cliphist
+  discord
   emote
   ffmpeg
   ghostty
