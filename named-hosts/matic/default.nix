@@ -114,7 +114,6 @@ inputs.nixpkgs.lib.nixosSystem {
         # Bluetooth
         hardware.bluetooth.enable = true;
         hardware.bluetooth.powerOnBoot = true;
-        services.blueman.enable = true;
 
         # Login manager (greetd + tuigreet)
         services.greetd = {
