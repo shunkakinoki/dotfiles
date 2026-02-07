@@ -28,10 +28,10 @@ keybind = super+shift+right=move_tab:1
 keybind = super+shift+down=move_tab:1
 
 # Navigate between splits (Vim-style)
-keybind = ctrl+h=goto_split:left
-keybind = ctrl+j=goto_split:down
-keybind = ctrl+k=goto_split:up
-keybind = ctrl+l=goto_split:right
+keybind = super+h=goto_split:left
+keybind = super+j=goto_split:down
+keybind = super+k=goto_split:up
+keybind = super+l=goto_split:right
 
 # Create new splits
 keybind = ctrl+shift+backslash=new_split:right
