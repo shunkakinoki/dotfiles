@@ -58,10 +58,10 @@
       };
 
       # Dashboard shortcuts (left)
-      "menus.dashboard.shortcuts.left.shortcut1.icon" = "";
+      "menus.dashboard.shortcuts.left.shortcut1.icon" = "";
       "menus.dashboard.shortcuts.left.shortcut1.tooltip" = "Google Chrome";
       "menus.dashboard.shortcuts.left.shortcut1.command" = "google-chrome-stable";
-      "menus.dashboard.shortcuts.left.shortcut2.icon" = "";
+      "menus.dashboard.shortcuts.left.shortcut2.icon" = "";
       "menus.dashboard.shortcuts.left.shortcut2.tooltip" = "Slack";
       "menus.dashboard.shortcuts.left.shortcut2.command" = "slack";
       "menus.dashboard.shortcuts.left.shortcut3.icon" = "󰙯";
