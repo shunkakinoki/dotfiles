@@ -37,6 +37,10 @@ It 'has spec file for config/hyprland/scripts/toggle-terminal.sh'
 The path "spec/hyprland_toggle_terminal_spec.sh" should be exist
 End
 
+It 'has spec file for config/hyprland/scripts/wofi-wifi.sh'
+The path "spec/hyprland_wofi_wifi_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/programs/neovim/run_tests.sh'
 The path "spec/neovim_tests_spec.sh" should be exist
 End
@@ -146,6 +150,7 @@ config/hyprland/scripts/osd-brightness.sh
 config/hyprland/scripts/osd-volume.sh
 config/hyprland/scripts/record-screen.sh
 config/hyprland/scripts/toggle-terminal.sh
+config/hyprland/scripts/wofi-wifi.sh
 config/openclaw/hydrate.sh
 home-manager/modules/cargo-globals/install-cargo-globals.sh
 home-manager/modules/local-binaries/sync-local-binaries.sh

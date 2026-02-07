@@ -1,0 +1,55 @@
+force_keyboard_focus = true
+close_when_open = true
+click_to_close = true
+single_click_activation = true
+selection_wrap = true
+theme = "dracula"
+resume_last_query = false
+disable_mouse = false
+
+[shell]
+anchor_top = true
+anchor_bottom = false
+anchor_left = true
+anchor_right = true
+
+[placeholders]
+"default" = { input = "Search...", list = "No Results" }
+
+[keybinds]
+close = ["Escape"]
+next = ["Down"]
+previous = ["Up"]
+
+[providers]
+default = ["desktopapplications", "calc", "websearch"]
+empty = ["desktopapplications"]
+max_results = 8
+
+[[providers.prefixes]]
+prefix = "="
+provider = "calc"
+
+[[providers.prefixes]]
+prefix = "@"
+provider = "websearch"
+
+[[providers.prefixes]]
+prefix = ">"
+provider = "runner"
+
+[[providers.prefixes]]
+prefix = "/"
+provider = "files"
+
+[[providers.prefixes]]
+prefix = ":"
+provider = "clipboard"
+
+[[providers.prefixes]]
+prefix = "$"
+provider = "windows"
+
+[[providers.prefixes]]
+prefix = ";"
+provider = "providerlist"

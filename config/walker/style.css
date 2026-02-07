@@ -1,0 +1,75 @@
+#window {
+    background-color: rgba(40, 42, 54, 0.92);
+    border: 2px solid #bd93f9;
+    border-radius: 12px;
+}
+
+#box {
+    padding: 8px;
+}
+
+#input {
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 18px;
+    padding: 12px 16px;
+    background-color: #44475a;
+    color: #f8f8f2;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+#input:focus {
+    border-color: #bd93f9;
+}
+
+#list {
+    background-color: transparent;
+}
+
+#list row {
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin: 2px 0;
+}
+
+#list row:selected {
+    background-color: #bd93f9;
+}
+
+#list row:hover:not(:selected) {
+    background-color: #44475a;
+}
+
+.item-label {
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 14px;
+    color: #f8f8f2;
+}
+
+#list row:selected .item-label {
+    color: #282a36;
+}
+
+.item-sub {
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 12px;
+    color: #6272a4;
+}
+
+#list row:selected .item-sub {
+    color: #44475a;
+}
+
+.item-icon {
+    margin-right: 12px;
+}
+
+.activation-label {
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 12px;
+    color: #6272a4;
+    padding: 2px 6px;
+    background-color: #44475a;
+    border-radius: 4px;
+}

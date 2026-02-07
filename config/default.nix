@@ -33,6 +33,7 @@ in
       ./gtk
       ./hyprland
       ./swaync
+      ./walker
       ./waybar
       ./wlogout
       ./wofi

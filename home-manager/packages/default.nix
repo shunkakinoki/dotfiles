@@ -95,7 +95,7 @@ with pkgs;
   atop
   below
   binutils
-  blueberry
+  blueman
   claude-code
   cmake
   codex
@@ -145,6 +145,7 @@ with pkgs;
   swww
   vlc
   vscode
+  walker
   waybar
   wf-recorder
   wl-clip-persist
