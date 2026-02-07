@@ -784,7 +784,11 @@ systemctl-ollama: ## Restart ollama systemd user service.
 .PHONY: systemctl-openclaw
 systemctl-openclaw: ## Restart OpenClaw gateway systemd user service.
 	@echo "🔄 Restarting openclaw..."
-	@systemctl --user restart openclaw-gateway.service || true
+	@if [ "$(DETECTED_HOST)" = "kyber" ] || [ "$(HOST)" = "kyber" ]; then \
+		systemctl --user restart openclaw-gateway.service; \
+	else \
+		echo "Skipping openclaw-gateway.service (host not kyber)"; \
+	fi
 	@echo "✅ openclaw restarted"
 
 
