@@ -15,6 +15,7 @@ in
   ./factory
   ./gemini
   ./ghostty
+  ./iterm2
   ./hammerspoon
   ./jj
   ./k3s

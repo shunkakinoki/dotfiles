@@ -321,5 +321,6 @@
     "type": "command",
     "command": "$HOME/.claude/statusline-git.sh"
   },
+  "teammateMode": "tmux",
   "defaultMode": "bypassPermissions"
 }

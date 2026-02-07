@@ -89,6 +89,7 @@
       "google-chrome"
       "google-drive"
       "hammerspoon"
+      "iterm2"
       "karabiner-elements"
       "linear-linear"
       "lm-studio"

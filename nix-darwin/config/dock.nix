@@ -27,6 +27,7 @@
       "/Applications/Screen Studio.app"
       "/Applications/Figma.app"
       "/Applications/Notion.app"
+      "/Applications/iTerm.app"
       "/Applications/Ghostty.app"
       "/Applications/Linear.app"
       "/Applications/Tailscale.app"
