@@ -51,6 +51,10 @@
     nixos-hardware = {
       url = "github:NixOS/nixos-hardware/master";
     };
+    timewall = {
+      url = "github:bcyran/timewall";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -182,7 +186,7 @@
             treefmtSettings = lib.recursiveUpdate treefmtToml {
               formatter = {
                 nix = (treefmtToml.formatter.nix or { }) // {
-                  command = lib.getExe pkgs.nixfmt-rfc-style;
+                  command = lib.getExe pkgs.nixfmt;
                 };
                 biome = (treefmtToml.formatter.biome or { }) // {
                   command = lib.getExe pkgs.biome;
