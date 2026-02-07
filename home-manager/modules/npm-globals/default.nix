@@ -7,6 +7,10 @@
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./install-npm-globals.sh}
   '';
 
+  home.sessionVariables = {
+    BUN_INSTALL = "$HOME/.bun";
+  };
+
   # Add local and bun bins to PATH
   home.sessionPath = [
     "$HOME/.local/bin"

@@ -66,7 +66,9 @@
       export FNM_VERSION_FILE_STRATEGY="local"
 
       # Worktrunk shell init
-      eval "$(wt config shell init zsh)"
+      if command -v wt >/dev/null 2>&1; then
+        eval "$(wt config shell init zsh)"
+      fi
     '';
   };
 }
