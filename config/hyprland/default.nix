@@ -29,4 +29,25 @@ in
     source = ./hyprlock.conf;
     force = true;
   };
+
+  xdg.configFile."hypr/scripts/osd-volume.sh" = {
+    source = ./scripts/osd-volume.sh;
+    executable = true;
+    force = true;
+  };
+  xdg.configFile."hypr/scripts/osd-brightness.sh" = {
+    source = ./scripts/osd-brightness.sh;
+    executable = true;
+    force = true;
+  };
+  xdg.configFile."hypr/scripts/toggle-terminal.sh" = {
+    source = ./scripts/toggle-terminal.sh;
+    executable = true;
+    force = true;
+  };
+  xdg.configFile."hypr/scripts/record-screen.sh" = {
+    source = ./scripts/record-screen.sh;
+    executable = true;
+    force = true;
+  };
 }

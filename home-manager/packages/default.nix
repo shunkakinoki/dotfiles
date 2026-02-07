@@ -130,6 +130,9 @@ with pkgs;
   grim
   hypridle
   hyprlock
+  hyprpicker
+  hyprshot
+  hyprsunset
   libnotify
   networkmanagerapplet
   pavucontrol
@@ -143,6 +146,8 @@ with pkgs;
   vlc
   vscode
   waybar
+  wf-recorder
+  wl-clip-persist
   wl-clipboard
   wlogout
   wob

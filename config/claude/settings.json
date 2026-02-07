@@ -1,4 +1,8 @@
 {
+  "model": "opus",
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
   "cleanupPeriodDays": 99999,
   "enabledPlugins": {
     "commit-commands@claude-plugins-official": true,
