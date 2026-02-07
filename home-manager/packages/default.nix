@@ -141,7 +141,7 @@ with pkgs;
   slack
   slurp
   swappy
-  mpvpaper
+  linux-wallpaperengine
   vlc
   vscode
   walker

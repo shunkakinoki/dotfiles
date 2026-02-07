@@ -142,6 +142,9 @@ inputs.nixpkgs.lib.nixosSystem {
           withUWSM = true;
         };
 
+        # Steam (for Wallpaper Engine assets)
+        programs.steam.enable = true;
+
         programs.dconf.enable = true;
 
         xdg.portal = {
@@ -270,6 +273,21 @@ inputs.nixpkgs.lib.nixosSystem {
               config = { };
             })
           ];
+
+          # Animated wallpaper via Wallpaper Engine
+          services.linux-wallpaperengine = {
+            enable = true;
+            assetsPath = "${config.home.homeDirectory}/.local/share/Steam/steamapps/common/wallpaper_engine/assets";
+            wallpapers = [
+              {
+                monitor = "eDP-1";
+                wallpaperId = "1845706469";
+                scaling = "fill";
+                fps = 30;
+                audio.silent = true;
+              }
+            ];
+          };
 
           # Agenix configuration for GitHub SSH key
           age.identityPaths = [ "/home/${username}/.ssh/id_ed25519" ];
