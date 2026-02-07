@@ -284,7 +284,7 @@ inputs.nixpkgs.lib.nixosSystem {
             wallpapers = [
               {
                 monitor = "eDP-1";
-                wallpaperId = "1845706469";
+                wallpaperId = "3603712208";
                 scaling = "fill";
                 fps = 30;
                 audio.silent = true;
