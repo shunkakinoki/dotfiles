@@ -27,7 +27,7 @@ in
         if test (count $keys) -gt 0
           # Use --quiet to suppress most output, --eval to set environment variables
           # --confirm will skip keys that need a passphrase in non-interactive contexts
-          eval (keychain --eval --quiet --confirm $keys ^/dev/null; or true)
+          eval (keychain --eval --quiet --confirm $keys 2>/dev/null; or true)
         end
       end
     ''
