@@ -3,7 +3,7 @@
 #
 
 auto-update-channel = tip
-theme = Dracula
+theme = dark:Dracula,light:Catppuccin Latte
 background-opacity = 0.8
 confirm-close-surface = true
 macos-option-as-alt = true
