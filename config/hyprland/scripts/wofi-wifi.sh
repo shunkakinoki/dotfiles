@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 # Wofi-based WiFi network picker using nmcli
 
+# Toggle: kill existing wofi and exit if already open
+if pgrep -x wofi >/dev/null; then
+  pkill -x wofi
+  exit 0
+fi
+
 notify-send "WiFi" "Scanning networks..." -t 2000
 
 # Get list of available networks (deduplicated by SSID)
