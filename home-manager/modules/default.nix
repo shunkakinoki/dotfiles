@@ -5,6 +5,5 @@
   ./npm-globals
   ./tailscale
   ./uv-globals
-  ./wallpaper
   ./yek
 ]
