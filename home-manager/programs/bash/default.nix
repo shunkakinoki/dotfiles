@@ -57,7 +57,9 @@
       export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
 
       # Worktrunk shell init
-      eval "$(wt config shell init bash)"
+      if command -v wt >/dev/null 2>&1; then
+        eval "$(wt config shell init bash)"
+      fi
     '';
 
     profileExtra = ''

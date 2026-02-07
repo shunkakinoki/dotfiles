@@ -23,9 +23,6 @@
       set -gx GOPATH $HOME/go
 
       direnv hook fish | source
-
-      # Worktrunk shell init
-      wt config shell init fish | source
     '';
     loginShellInit = ''
       if test -f /opt/homebrew/bin/brew
@@ -61,6 +58,10 @@
       fish_add_path -p /opt/homebrew/bin
       fish_add_path -p /opt/homebrew/opt/postgresql@18/bin
       fish_add_path -p /etc/profiles/per-user/${config.home.username}/bin
+      # Worktrunk shell init
+      if type -q wt
+        wt config shell init fish | source
+      end
       set -a fish_complete_path ~/.nix-profile/share/fish/completions/ ~/.nix-profile/share/fish/vendor_completions.d/
       set -x FISH_HISTFILE fish
       fish_vi_key_bindings

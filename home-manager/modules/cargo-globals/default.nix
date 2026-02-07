@@ -15,8 +15,10 @@ in
 {
   # Install cargo global packages from Cargo.toml using home-manager activation
   home.activation.installCargoGlobals = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    export PATH=${pkgs.rustup}/bin:${pkgs.cargo}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.gcc}/bin:${pkgs.pkg-config}/bin:$PATH
+    export PATH=${pkgs.rustup}/bin:${pkgs.cargo}/bin:${pkgs.rustc}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.gcc}/bin:${pkgs.pkg-config}/bin:$PATH
     export CARGO_HOME="$HOME/.cargo"
+    $DRY_RUN_CMD ${pkgs.rustup}/bin/rustup toolchain install stable
+    $DRY_RUN_CMD ${pkgs.rustup}/bin/rustup default stable
     export PKG_CONFIG_PATH="${pkgs.openssl.dev}/lib/pkgconfig${libiconvPkgConfigPath}''${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
     export OPENSSL_DIR="${pkgs.openssl.dev}"
     export OPENSSL_LIB_DIR="${pkgs.openssl.out}/lib"
