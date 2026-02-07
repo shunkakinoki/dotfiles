@@ -1,0 +1,41 @@
+{
+  "Profiles": [
+    {
+      "Name": "Default",
+      "Guid": "dotfiles-default-profile",
+      "Dynamic Profile Parent Name": "Default",
+      "Custom Command": "Yes",
+      "Command": "/etc/profiles/per-user/shunkakinoki/bin/fish",
+      "Normal Font": "HackNerdFont-Regular 14",
+      "Horizontal Spacing": 1.0,
+      "Vertical Spacing": 1.1,
+      "Use Non-ASCII Font": false,
+      "ASCII Anti Aliased": true,
+      "Non-ASCII Anti Aliased": true,
+      "Columns": 120,
+      "Rows": 36,
+      "Terminal Type": "xterm-256color",
+      "Scrollback Lines": 10000,
+      "Unlimited Scrollback": true,
+      "Option Key Sends": 2,
+      "Right Option Key Sends": 2,
+      "Silence Bell": true,
+      "Visual Bell": false,
+      "Flashing Bell": false,
+      "BM Growl": false,
+      "Close Sessions On End": true,
+      "Prompt Before Closing 2": 0,
+      "Mouse Reporting": true,
+      "Cursor Type": 2,
+      "Blinking Cursor": true,
+      "Use Bold Font": true,
+      "Use Bright Bold": true,
+      "Use Italic Font": true,
+      "Minimum Contrast": 0.0,
+      "Transparency": 0.0,
+      "Blur": false,
+      "Window Type": 0,
+      "Initial Use Transparency": false
+    }
+  ]
+}
