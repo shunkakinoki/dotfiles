@@ -9,7 +9,6 @@
       tmux-fzf
       resurrect
       continuum
-      vim-tmux-navigator
       tmux-sessionx
       tmux-thumbs
       open
