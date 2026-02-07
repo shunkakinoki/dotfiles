@@ -72,10 +72,10 @@
       "menus.dashboard.shortcuts.right.shortcut1.icon" = "󰌾";
       "menus.dashboard.shortcuts.right.shortcut1.tooltip" = "Screen Saver";
       "menus.dashboard.shortcuts.right.shortcut1.command" = "hyprlock";
-      "menus.dashboard.shortcuts.right.shortcut2.icon" = "";
+      "menus.dashboard.shortcuts.right.shortcut2.icon" = "󰉋";
       "menus.dashboard.shortcuts.right.shortcut2.tooltip" = "Files";
       "menus.dashboard.shortcuts.right.shortcut2.command" = "ghostty -e yazi";
-      "menus.dashboard.shortcuts.right.shortcut3.icon" = "";
+      "menus.dashboard.shortcuts.right.shortcut3.icon" = "󰊠";
       "menus.dashboard.shortcuts.right.shortcut3.tooltip" = "Terminal";
       "menus.dashboard.shortcuts.right.shortcut3.command" = "ghostty";
 
