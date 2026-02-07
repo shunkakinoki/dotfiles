@@ -134,24 +134,17 @@ with pkgs;
   hyprshot
   hyprsunset
   libnotify
-  networkmanagerapplet
   pavucontrol
   playerctl
   signal-desktop
   slack
   slurp
   swappy
-  swaynotificationcenter
   swww
   vlc
   vscode
   walker
-  waybar
   wf-recorder
   wl-clip-persist
   wl-clipboard
-  wlogout
-  wob
-  wofi
-  wofi-emoji
 ]
