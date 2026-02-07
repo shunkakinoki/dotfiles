@@ -149,6 +149,12 @@ inputs.nixpkgs.lib.nixosSystem {
           extraPortals = with pkgs; [
             xdg-desktop-portal-gtk
           ];
+          config = {
+            hyprland = {
+              default = [ "hyprland" "gtk" ];
+              "org.freedesktop.impl.portal.Settings" = [ "gtk" ];
+            };
+          };
         };
 
         # WiFi MT7925e fix (disable ASPM)
