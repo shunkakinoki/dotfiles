@@ -154,7 +154,10 @@ inputs.nixpkgs.lib.nixosSystem {
           ];
           config = {
             hyprland = {
-              default = [ "hyprland" "gtk" ];
+              default = [
+                "hyprland"
+                "gtk"
+              ];
               "org.freedesktop.impl.portal.Settings" = [ "gtk" ];
             };
           };
