@@ -264,11 +264,10 @@ inputs.nixpkgs.lib.nixosSystem {
               config = { };
             })
             inputs.timewall.homeManagerModules.default
+            ../../config/wallpaper
           ];
 
           # Dynamic wallpaper (macOS Sequoia-style) via timewall
-          # Place a dynamic HEIC wallpaper at ~/.local/share/wallpapers/dynamic.heic
-          # Sources: dynamicwallpaper.club, mczachurski/wallpapper, or copy from macOS
           services.timewall = {
             enable = true;
             wallpaperPath = "${config.home.homeDirectory}/.local/share/wallpapers/dynamic.heic";
@@ -296,11 +295,6 @@ inputs.nixpkgs.lib.nixosSystem {
               };
             };
           };
-
-          # Ensure wallpaper directory exists
-          home.activation.ensureWallpaperDirectory = config.lib.dag.entryBefore [ "writeBoundary" ] ''
-            $DRY_RUN_CMD mkdir -p $VERBOSE_ARG ${config.home.homeDirectory}/.local/share/wallpapers
-          '';
 
           # Agenix configuration for GitHub SSH key
           age.identityPaths = [ "/home/${username}/.ssh/id_ed25519" ];

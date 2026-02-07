@@ -57,21 +57,38 @@
         "code" = "󰨞";
       };
 
-      # Dashboard shortcuts
+      # Dashboard shortcuts (left)
       "menus.dashboard.shortcuts.left.shortcut1" = {
-        icon = "󰌾";
-        tooltip = "Screen Saver";
-        command = "hyprlock";
-      };
-      "menus.dashboard.shortcuts.left.shortcut2" = {
         icon = "";
         tooltip = "Google Chrome";
         command = "google-chrome-stable";
+      };
+      "menus.dashboard.shortcuts.left.shortcut2" = {
+        icon = "";
+        tooltip = "Slack";
+        command = "slack";
       };
       "menus.dashboard.shortcuts.left.shortcut3" = {
         icon = "󰙯";
         tooltip = "Discord";
         command = "discord";
+      };
+
+      # Dashboard shortcuts (right)
+      "menus.dashboard.shortcuts.right.shortcut1" = {
+        icon = "󰌾";
+        tooltip = "Screen Saver";
+        command = "hyprlock";
+      };
+      "menus.dashboard.shortcuts.right.shortcut2" = {
+        icon = "";
+        tooltip = "Files";
+        command = "ghostty -e yazi";
+      };
+      "menus.dashboard.shortcuts.right.shortcut3" = {
+        icon = "";
+        tooltip = "Terminal";
+        command = "ghostty";
       };
 
       # Font
