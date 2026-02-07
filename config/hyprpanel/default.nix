@@ -91,6 +91,9 @@
       "notifications.position" = "top right";
       "notifications.cache_actions" = true;
 
+      # Scaling (fix dropdown menus overflowing on fractional scale)
+      "scalingPriority" = "hyprland";
+
       # OSD
       "theme.osd.enable" = true;
       "theme.osd.orientation" = "vertical";
