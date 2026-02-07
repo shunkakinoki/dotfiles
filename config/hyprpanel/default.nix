@@ -90,6 +90,7 @@
       # Notifications
       "notifications.position" = "top right";
       "notifications.cache_actions" = true;
+      "notifications.showActionsOnHover" = false;
 
       # Scaling (fix dropdown menus overflowing on fractional scale)
       "scalingPriority" = "hyprland";
@@ -513,9 +514,9 @@
       "theme.bar.menus.menu.power.buttons.sleep.text" = "#8be9fd";
       "theme.bar.menus.menu.power.buttons.sleep.icon" = "#282a36";
 
-      # Notifications menu
-      "theme.bar.menus.menu.notifications.background" = "#282a36";
-      "theme.bar.menus.menu.notifications.card" = "#44475a";
+      # Notifications menu (translucent/frosted)
+      "theme.bar.menus.menu.notifications.background" = "#282a36cc";
+      "theme.bar.menus.menu.notifications.card" = "#44475acc";
       "theme.bar.menus.menu.notifications.border" = "#44475a";
       "theme.bar.menus.menu.notifications.label" = "#bd93f9";
       "theme.bar.menus.menu.notifications.no_notifications_label" = "#44475a";
@@ -538,12 +539,12 @@
       "theme.osd.icon" = "#282a36";
       "theme.osd.label" = "#bd93f9";
 
-      # ── Notification Theme ──────────────────────────────────────────
-      "theme.notification.background" = "#282a36";
+      # ── Notification Theme (translucent/frosted) ────────────────────
+      "theme.notification.background" = "#282a36cc";
       "theme.notification.actions.background" = "#bd93f9";
       "theme.notification.actions.text" = "#282a36";
       "theme.notification.label" = "#bd93f9";
-      "theme.notification.border" = "#44475a";
+      "theme.notification.border" = "#44475acc";
       "theme.notification.time" = "#6272a4";
       "theme.notification.text" = "#f8f8f2";
       "theme.notification.labelicon" = "#bd93f9";
