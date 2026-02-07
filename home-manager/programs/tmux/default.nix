@@ -4,10 +4,15 @@
     enable = true;
     extraConfig = builtins.readFile ./tmux.conf;
     plugins = with pkgs.tmuxPlugins; [
-      dracula
       sensible
-      tmux-fzf
       yank
+      tmux-fzf
+      resurrect
+      continuum
+      tmux-sessionx
+      tmux-thumbs
+      open
+      extrakto
     ];
   };
 }

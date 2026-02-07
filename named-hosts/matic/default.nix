@@ -90,7 +90,11 @@ inputs.nixpkgs.lib.nixosSystem {
         services.fwupd.enable = true;
 
         # Power management
+        services.upower.enable = true;
         services.power-profiles-daemon.enable = true;
+
+        # Power button behavior - lock screen instead of shutdown
+        services.logind.settings.Login.HandlePowerKey = "lock";
 
         # Auto timezone (via geolocation)
         services.geoclue2.enable = true;
@@ -110,13 +114,25 @@ inputs.nixpkgs.lib.nixosSystem {
         # Bluetooth
         hardware.bluetooth.enable = true;
         hardware.bluetooth.powerOnBoot = true;
-        services.blueman.enable = true;
 
-        # Desktop environment (Hyprland)
-        services.xserver.enable = true;
-        services.displayManager.gdm.enable = true;
-        services.displayManager.defaultSession = "hyprland";
-        services.desktopManager.gnome.enable = false;
+        # Login manager (greetd + tuigreet)
+        services.greetd = {
+          enable = true;
+          settings = {
+            default_session = {
+              command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-session --asterisks --sessions /etc/greetd/wayland-sessions";
+              user = "greeter";
+            };
+          };
+        };
+
+        # Provide Hyprland session file for tuigreet to discover
+        environment.etc."greetd/wayland-sessions/hyprland.desktop".text = ''
+          [Desktop Entry]
+          Name=Hyprland
+          Exec=uwsm start hyprland-uwsm.desktop
+          Type=Application
+        '';
 
         programs.hyprland = {
           enable = true;
@@ -126,6 +142,9 @@ inputs.nixpkgs.lib.nixosSystem {
           withUWSM = true;
         };
 
+        # Steam (for Wallpaper Engine assets)
+        programs.steam.enable = true;
+
         programs.dconf.enable = true;
 
         xdg.portal = {
@@ -133,6 +152,15 @@ inputs.nixpkgs.lib.nixosSystem {
           extraPortals = with pkgs; [
             xdg-desktop-portal-gtk
           ];
+          config = {
+            hyprland = {
+              default = [
+                "hyprland"
+                "gtk"
+              ];
+              "org.freedesktop.impl.portal.Settings" = [ "gtk" ];
+            };
+          };
         };
 
         # WiFi MT7925e fix (disable ASPM)
@@ -248,6 +276,21 @@ inputs.nixpkgs.lib.nixosSystem {
               config = { };
             })
           ];
+
+          # Animated wallpaper via Wallpaper Engine
+          services.linux-wallpaperengine = {
+            enable = true;
+            assetsPath = "${config.home.homeDirectory}/.local/share/Steam/steamapps/common/wallpaper_engine/assets";
+            wallpapers = [
+              {
+                monitor = "eDP-1";
+                wallpaperId = "3602362048";
+                scaling = "fill";
+                fps = 30;
+                audio.silent = true;
+              }
+            ];
+          };
 
           # Agenix configuration for GitHub SSH key
           age.identityPaths = [ "/home/${username}/.ssh/id_ed25519" ];

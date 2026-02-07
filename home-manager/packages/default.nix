@@ -95,7 +95,7 @@ with pkgs;
   atop
   below
   binutils
-  blueberry
+  blueman
   claude-code
   cmake
   codex
@@ -122,6 +122,7 @@ with pkgs;
   chromium
   clickup
   cliphist
+  discord
   emote
   ffmpeg
   ghostty
@@ -130,22 +131,21 @@ with pkgs;
   grim
   hypridle
   hyprlock
+  hyprpicker
+  hyprshot
+  hyprsunset
   libnotify
-  networkmanagerapplet
   pavucontrol
   playerctl
   signal-desktop
   slack
   slurp
   swappy
-  swaynotificationcenter
-  swww
+  linux-wallpaperengine
   vlc
   vscode
-  waybar
+  walker
+  wf-recorder
+  wl-clip-persist
   wl-clipboard
-  wlogout
-  wob
-  wofi
-  wofi-emoji
 ]

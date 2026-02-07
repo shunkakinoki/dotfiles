@@ -111,6 +111,9 @@
       pixeh = "_pixeh_function";
       sag = "_ssh_add_github";
       shortcuts = "_fish_shortcuts";
+      tdo = "_tdo_function";
+      tmo = "_tmo_function";
+      tpo = "_tpo_function";
       zdo = "_zdo_function";
       zmo = "_zmo_function";
       zpo = "_zpo_function";
@@ -192,6 +195,9 @@
         "_pixe_function"
         "_pixeh_function"
         "_ssh_add_github"
+        "_tdo_function"
+        "_tmo_function"
+        "_tpo_function"
         "_zdo_function"
         "_zmo_function"
         "_zpo_function"

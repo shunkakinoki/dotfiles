@@ -3,7 +3,8 @@
 #
 
 auto-update-channel = tip
-theme = dark:Dracula,light:Catppuccin Latte
+# theme = dark:Dracula,light:Catppuccin Latte
+theme = Dracula
 background-opacity = 0.8
 confirm-close-surface = true
 macos-option-as-alt = true
@@ -26,3 +27,25 @@ keybind = super+shift+left=move_tab:-1
 keybind = super+shift+up=move_tab:-1
 keybind = super+shift+right=move_tab:1
 keybind = super+shift+down=move_tab:1
+
+# Navigate between splits (Vim-style)
+keybind = super+h=goto_split:left
+keybind = super+j=goto_split:down
+keybind = super+k=goto_split:up
+keybind = super+l=goto_split:right
+
+# Create new splits
+keybind = ctrl+shift+backslash=new_split:right
+keybind = ctrl+shift+minus=new_split:down
+
+# Split management
+keybind = ctrl+shift+z=toggle_split_zoom
+keybind = ctrl+shift+e=equalize_splits
+keybind = ctrl+shift+w=close_surface
+
+# Split border styling
+split-divider-color = #88c0d0
+
+# Active panel highlighting (dim unfocused splits)
+unfocused-split-opacity = 0.7
+unfocused-split-fill = #1e1e2e

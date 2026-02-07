@@ -1,0 +1,75 @@
+force_keyboard_focus = true
+close_when_open = true
+click_to_close = true
+single_click_activation = true
+selection_wrap = true
+theme = "dracula"
+resume_last_query = false
+disable_mouse = false
+
+[shell]
+anchor_top = true
+anchor_bottom = false
+anchor_left = true
+anchor_right = true
+
+[placeholders]
+"default" = { input = "Search...", list = "No Results" }
+
+[keybinds]
+close = ["Escape"]
+next = ["Down"]
+previous = ["Up"]
+
+[providers]
+default = ["desktopapplications", "customcommands", "calc", "websearch"]
+empty = ["desktopapplications"]
+max_results = 8
+
+[[providers.prefixes]]
+prefix = "="
+provider = "calc"
+
+[[providers.prefixes]]
+prefix = "@"
+provider = "websearch"
+
+[[providers.prefixes]]
+prefix = ">"
+provider = "runner"
+
+[[providers.prefixes]]
+prefix = "/"
+provider = "files"
+
+[[providers.prefixes]]
+prefix = ":"
+provider = "clipboard"
+
+[[providers.prefixes]]
+prefix = "$"
+provider = "windows"
+
+[[providers.prefixes]]
+prefix = ";"
+provider = "providerlist"
+
+# =============================================================================
+# Custom Commands (searchable system actions)
+# =============================================================================
+[customcommands]
+"Lock Screen" = "hyprlock"
+"Start Screen Saver" = "hyprlock"
+"Suspend" = "systemctl suspend"
+"Reboot" = "systemctl reboot"
+"Shutdown" = "systemctl poweroff"
+"Logout" = "hyprctl dispatch exit"
+"Toggle WiFi" = "nmcli radio wifi toggle"
+"Bluetooth Manager" = "blueman-manager"
+"Audio Settings" = "pavucontrol"
+"Screenshot Region" = "grim -g \"$(slurp)\" - | swappy -f -"
+"Record Screen" = "~/.config/hypr/scripts/record-screen.sh"
+"Color Picker" = "hyprpicker -a"
+"Toggle Notifications" = "hyprpanel toggleWindow notifications-center"
+"Network Menu" = "hyprpanel toggleWindow network-menu"
+"Power Menu" = "hyprpanel toggleWindow power-menu"

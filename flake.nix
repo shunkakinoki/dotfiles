@@ -182,7 +182,7 @@
             treefmtSettings = lib.recursiveUpdate treefmtToml {
               formatter = {
                 nix = (treefmtToml.formatter.nix or { }) // {
-                  command = lib.getExe pkgs.nixfmt-rfc-style;
+                  command = lib.getExe pkgs.nixfmt;
                 };
                 biome = (treefmtToml.formatter.biome or { }) // {
                   command = lib.getExe pkgs.biome;

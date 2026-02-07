@@ -32,10 +32,8 @@ in
     [
       ./gtk
       ./hyprland
-      ./swaync
-      ./waybar
-      ./wlogout
-      ./wofi
+      ./hyprpanel
+      ./walker
     ]
   else
     [ ]
