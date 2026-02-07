@@ -14,7 +14,7 @@ in
     systemd.enable = false;
     extraConfig = ''
       plugin = ${hyprexpoPlugin}/lib/libhyprexpo.so
-      exec-once = ${pkgs.mpvpaper}/bin/mpvpaper -o "no-audio loop-file=inf hwdec=auto" ALL ~/.local/share/wallpapers/aerial.mov
+      exec-once = ${pkgs.mpvpaper}/bin/mpvpaper -o "no-audio loop-file=inf hwdec=auto panscan=1.0" ALL ~/.local/share/wallpapers/aerial.mov
       exec-once = ${pkgs.hyprpanel}/bin/hyprpanel
     ''
     + builtins.readFile ./hyprland.conf;
