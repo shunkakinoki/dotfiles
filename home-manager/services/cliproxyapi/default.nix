@@ -23,7 +23,7 @@ let
   };
 
   dockerStartScript = pkgs.writeShellScript "cliproxyapi-docker-start" ''
-    exec /usr/bin/sg docker -c "${pkgs.bash}/bin/bash ${startScript}"
+    exec ${pkgs.shadow}/bin/sg docker -c "${pkgs.bash}/bin/bash ${startScript}"
   '';
 
   wrapperScript = pkgs.replaceVars ./scripts/wrapper.sh {

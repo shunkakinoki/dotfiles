@@ -2,7 +2,7 @@
 let
   inherit (pkgs) lib;
   startPostgresWrapper = pkgs.writeShellScript "start-postgres-wrapper" ''
-    exec /usr/bin/sg docker -c "${pkgs.bash}/bin/bash ${./start-postgres.sh}"
+    exec ${pkgs.shadow}/bin/sg docker -c "${pkgs.bash}/bin/bash ${./start-postgres.sh}"
   '';
 in
 {
