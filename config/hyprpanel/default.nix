@@ -58,38 +58,26 @@
       };
 
       # Dashboard shortcuts (left)
-      "menus.dashboard.shortcuts.left.shortcut1" = {
-        icon = "";
-        tooltip = "Google Chrome";
-        command = "google-chrome-stable";
-      };
-      "menus.dashboard.shortcuts.left.shortcut2" = {
-        icon = "";
-        tooltip = "Slack";
-        command = "slack";
-      };
-      "menus.dashboard.shortcuts.left.shortcut3" = {
-        icon = "󰙯";
-        tooltip = "Discord";
-        command = "discord";
-      };
+      "menus.dashboard.shortcuts.left.shortcut1.icon" = "";
+      "menus.dashboard.shortcuts.left.shortcut1.tooltip" = "Google Chrome";
+      "menus.dashboard.shortcuts.left.shortcut1.command" = "google-chrome-stable";
+      "menus.dashboard.shortcuts.left.shortcut2.icon" = "";
+      "menus.dashboard.shortcuts.left.shortcut2.tooltip" = "Slack";
+      "menus.dashboard.shortcuts.left.shortcut2.command" = "slack";
+      "menus.dashboard.shortcuts.left.shortcut3.icon" = "󰙯";
+      "menus.dashboard.shortcuts.left.shortcut3.tooltip" = "Discord";
+      "menus.dashboard.shortcuts.left.shortcut3.command" = "discord";
 
       # Dashboard shortcuts (right)
-      "menus.dashboard.shortcuts.right.shortcut1" = {
-        icon = "󰌾";
-        tooltip = "Screen Saver";
-        command = "hyprlock";
-      };
-      "menus.dashboard.shortcuts.right.shortcut2" = {
-        icon = "";
-        tooltip = "Files";
-        command = "ghostty -e yazi";
-      };
-      "menus.dashboard.shortcuts.right.shortcut3" = {
-        icon = "";
-        tooltip = "Terminal";
-        command = "ghostty";
-      };
+      "menus.dashboard.shortcuts.right.shortcut1.icon" = "󰌾";
+      "menus.dashboard.shortcuts.right.shortcut1.tooltip" = "Screen Saver";
+      "menus.dashboard.shortcuts.right.shortcut1.command" = "hyprlock";
+      "menus.dashboard.shortcuts.right.shortcut2.icon" = "";
+      "menus.dashboard.shortcuts.right.shortcut2.tooltip" = "Files";
+      "menus.dashboard.shortcuts.right.shortcut2.command" = "ghostty -e yazi";
+      "menus.dashboard.shortcuts.right.shortcut3.icon" = "";
+      "menus.dashboard.shortcuts.right.shortcut3.tooltip" = "Terminal";
+      "menus.dashboard.shortcuts.right.shortcut3.command" = "ghostty";
 
       # Font
       "theme.font.name" = "JetBrainsMono Nerd Font";
