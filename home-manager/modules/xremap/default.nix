@@ -12,13 +12,14 @@ let
   # Hyper = Framework key (keyd: [cmd_hyper:C-A-S-M]) → remapped to Ctrl for macOS-style shortcuts
   hyperPrefix = "C-Alt-Shift-Super-";
   ctrlPrefix = "C-";
+  # "f" is excluded — passes through as Hyper+F for Hyprland fullscreen bind.
+  # See: config/hyprland/hyprland.conf (Window Management section)
   letters = [
     "a"
     "b"
     "c"
     "d"
     "e"
-    "f"
     "g"
     "h"
     "i"
