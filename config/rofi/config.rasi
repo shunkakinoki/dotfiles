@@ -80,7 +80,16 @@ element normal.normal {
     text-color:       @fg;
 }
 
+element alternate.normal {
+    background-color: transparent;
+    text-color:       @fg;
+}
+
 element normal.urgent {
+    text-color: @urgent;
+}
+
+element alternate.urgent {
     text-color: @urgent;
 }
 
