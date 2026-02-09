@@ -593,7 +593,7 @@ neovim-upgrade: ## Update Neovim plugins.
 .PHONY: neovim-upgrade-dev
 neovim-upgrade-dev: ## Update Neovim plugins inside the Nix dev shell (mirrors CI).
 	@echo "📦 Updating neovim plugins inside the Nix dev shell..."
-	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command nvim --headless +"lua vim.pack.update()" +qa
+	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) neovim-upgrade
 
 .PHONY: neovim-sync
 neovim-sync: neovim-upgrade ## Sync Neovim plugins.
