@@ -140,6 +140,8 @@ with pkgs;
   linux-wallpaperengine
   pavucontrol
   playerctl
+  rofi-wayland
+  rofimoji
   signal-desktop
   slack
   slurp
@@ -151,4 +153,5 @@ with pkgs;
   wf-recorder
   wl-clip-persist
   wl-clipboard
+  wtype
 ]
