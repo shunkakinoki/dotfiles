@@ -81,7 +81,7 @@ element normal.normal {
 }
 
 element alternate.normal {
-    background-color: transparent;
+    background-color: #ffffff06;
     text-color:       @fg;
 }
 
