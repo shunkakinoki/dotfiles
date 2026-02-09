@@ -51,6 +51,10 @@
     nixos-hardware = {
       url = "github:NixOS/nixos-hardware/master";
     };
+    xremap = {
+      url = "github:xremap/nix-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

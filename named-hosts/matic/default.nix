@@ -36,6 +36,9 @@ inputs.nixpkgs.lib.nixosSystem {
     # Keyd configuration
     ../../config/keyd
 
+    # Xremap module
+    inputs.xremap.nixosModules.default
+
     # Base system configuration
     (
       { config, lib, ... }:
@@ -63,6 +66,7 @@ inputs.nixpkgs.lib.nixosSystem {
           extraGroups = [
             "wheel"
             "networkmanager"
+            "input"
             "video"
           ];
           home = "/home/${username}";
@@ -71,6 +75,128 @@ inputs.nixpkgs.lib.nixosSystem {
         };
 
         security.sudo.wheelNeedsPassword = false;
+
+        # Input remapping (xremap)
+        hardware.uinput.enable = true;
+        services.udev.extraRules = ''
+          KERNEL=="uinput", GROUP="input", TAG+="uaccess", MODE:="0660", OPTIONS+="static_node=uinput"
+          KERNEL=="event*", ATTRS{name}=="keyd virtual keyboard", GROUP="input", MODE:="0660"
+          KERNEL=="event*", ATTRS{name}=="keyd virtual pointer", GROUP="input", MODE:="0660"
+        '';
+        services.xremap =
+          let
+            hyperPrefix = "C-Alt-Shift-Super-";
+            ctrlPrefix = "C-";
+            letters = [
+              "a"
+              "b"
+              "c"
+              "d"
+              "e"
+              "f"
+              "g"
+              "h"
+              "i"
+              "j"
+              "k"
+              "l"
+              "m"
+              "n"
+              "o"
+              "p"
+              "q"
+              "r"
+              "s"
+              "t"
+              "u"
+              "v"
+              "w"
+              "x"
+              "y"
+              "z"
+            ];
+            # Numbers 3, 4, 5 are intentionally excluded — they pass through as
+            # Hyper+3/4/5 for Hyprland screenshot/recording bindings.
+            # See: config/hyprland/hyprland.conf (screenshot section)
+            numbers = [
+              "0"
+              "1"
+              "2"
+              "6"
+              "7"
+              "8"
+              "9"
+            ];
+            symbols = [
+              "semicolon"
+              "dot"
+              "comma"
+              "slash"
+              "grave"
+              "backslash"
+              "leftbrace"
+              "rightbrace"
+              "apostrophe"
+            ];
+            navigation = [
+              "tab"
+              "backspace"
+              "left"
+              "right"
+              "up"
+              "down"
+            ];
+            remapKeys = letters ++ numbers ++ symbols ++ navigation;
+            mkRemap =
+              keys:
+              builtins.listToAttrs (
+                map (key: {
+                  name = "${hyperPrefix}${key}";
+                  value = "${ctrlPrefix}${key}";
+                }) keys
+              );
+            globalRemap = mkRemap remapKeys;
+            # Override copy/paste to Ctrl+Shift (terminal convention: Ctrl+C = SIGINT).
+            # All other keys (including z for undo) inherit from globalRemap.
+            ghosttyRemap = globalRemap // {
+              "${hyperPrefix}c" = "C-Shift-c";
+              "${hyperPrefix}v" = "C-Shift-v";
+            };
+          in
+          {
+            enable = true;
+            serviceMode = "user";
+            userName = username;
+            withWlroots = true;
+            watch = true;
+            deviceNames = [ "keyd virtual keyboard" ];
+            config = {
+              keymap = [
+                {
+                  name = "Framework Command (Ghostty)";
+                  application.only = [ "com.mitchellh.ghostty" ];
+                  remap = ghosttyRemap;
+                }
+                {
+                  name = "Framework Command (Global)";
+                  application.not = [ "com.mitchellh.ghostty" ];
+                  remap = globalRemap;
+                }
+              ];
+            };
+          };
+
+        # Ensure xremap starts after Hyprland and auto-restarts on failure
+        systemd.user.services.xremap = {
+          after = [ "graphical-session.target" ];
+          partOf = [ "graphical-session.target" ];
+          serviceConfig = {
+            Restart = "on-failure";
+            RestartSec = 3;
+          };
+          # StartLimitIntervalSec is a [Unit] directive, not [Service].
+          unitConfig.StartLimitIntervalSec = 0;
+        };
 
         # AMD graphics with hardware acceleration
         hardware.graphics.enable = true;
@@ -219,7 +345,6 @@ inputs.nixpkgs.lib.nixosSystem {
         ipaexfont
         ipafont
         joypixels
-        nerdfonts
         nerd-fonts.jetbrains-mono
         noto-fonts-cjk-sans
         noto-fonts-cjk-serif
