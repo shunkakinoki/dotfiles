@@ -1,7 +1,8 @@
 name: Upgrade
 on:
+  pull_request:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 3 * * *'
   workflow_dispatch:
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.sha }}
@@ -21,11 +22,12 @@ jobs:
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run Upgrade
-        run: make upgrade
+        run: make upgrade-dev
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SKIP_HOME_MANAGER_SWITCH: "true"
       - name: Create Pull Request
+        if: github.action != 'pull_request'
         id: cpr
         uses: peter-evans/create-pull-request@v8
         with:

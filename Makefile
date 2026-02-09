@@ -208,6 +208,11 @@ update-local-binaries: ## Update and rebuild local binaries from .local-binaries
 .PHONY: upgrade
 upgrade: nix-upgrade overlays-upgrade neovim-upgrade ## Upgrade Nix flake, overlays, Neovim plugins
 
+.PHONY: upgrade-dev
+upgrade-dev: ## Upgrade inside the Nix dev shell (mirrors CI).
+	@echo "🔄 Running upgrade inside the Nix dev shell..."
+	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) upgrade
+
 .PHONY: dev
 dev: nix-develop ## Enter the Nix dev shell (alias for nix-develop).
 
