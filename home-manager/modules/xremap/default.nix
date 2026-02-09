@@ -9,6 +9,7 @@ let
   inherit (inputs.host) isDesktop;
   inherit (pkgs.stdenv) isLinux;
 
+  # Hyper = Framework key (keyd: [cmd_hyper:C-A-S-M]) → remapped to Ctrl for macOS-style shortcuts
   hyperPrefix = "C-Alt-Shift-Super-";
   ctrlPrefix = "C-";
   letters = [
@@ -79,9 +80,9 @@ let
         value = "${ctrlPrefix}${key}";
       }) keys
     );
+  # Framework+key → Ctrl+key for all apps (macOS-style shortcuts)
   globalRemap = mkRemap remapKeys;
-  # Override copy/paste to Ctrl+Shift (terminal convention: Ctrl+C = SIGINT).
-  # All other keys (including z for undo) inherit from globalRemap.
+  # Ghostty: Framework+C/V → Ctrl+Shift+C/V (terminal convention: Ctrl+C = SIGINT)
   ghosttyRemap = globalRemap // {
     "${hyperPrefix}c" = "C-Shift-c";
     "${hyperPrefix}v" = "C-Shift-v";
@@ -93,6 +94,7 @@ in
       enable = true;
       withWlroots = true;
       watch = true;
+      # Only intercept keyd output — SUPER (CapsLock/RightAlt) goes straight to Hyprland
       deviceNames = [ "keyd virtual keyboard" ];
       config = {
         keymap = [
