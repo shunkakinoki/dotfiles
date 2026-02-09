@@ -179,6 +179,16 @@ inputs.nixpkgs.lib.nixosSystem {
             };
           };
 
+        # Ensure xremap starts after Hyprland and auto-restarts on failure
+        systemd.user.services.xremap = {
+          after = [ "graphical-session.target" ];
+          partOf = [ "graphical-session.target" ];
+          serviceConfig = {
+            Restart = "on-failure";
+            RestartSec = 3;
+          };
+        };
+
         # AMD graphics with hardware acceleration
         hardware.graphics.enable = true;
         hardware.graphics.extraPackages = with pkgs; [
