@@ -1,0 +1,101 @@
+/**
+ * Frosted Glass theme — matches HyprPanel frosty translucent palette.
+ * Relies on Hyprland layer-rule blur for the translucency effect.
+ */
+
+* {
+    bg:           #1a1b26cc;
+    bg-solid:     #1a1b26ee;
+    fg:           #ffffffdd;
+    fg-dim:       #ffffff66;
+    accent:       #88c0d0;
+    border-clr:   #ffffff18;
+    selected-bg:  #88c0d033;
+    selected-fg:  #88c0d0;
+    urgent:       #bf616a;
+
+    font: "JetBrainsMono Nerd Font 13";
+
+    background-color: transparent;
+    text-color:       @fg;
+}
+
+window {
+    transparency:     "real";
+    background-color: @bg;
+    border:           2px;
+    border-color:     @border-clr;
+    border-radius:    12px;
+    width:            600px;
+}
+
+mainbox {
+    background-color: transparent;
+    children:         [ inputbar, listview ];
+}
+
+inputbar {
+    background-color: @bg-solid;
+    border:           0 0 1px 0;
+    border-color:     @border-clr;
+    border-radius:    12px 12px 0 0;
+    padding:          14px 16px;
+    children:         [ prompt, entry ];
+    spacing:          10px;
+}
+
+prompt {
+    background-color: transparent;
+    text-color:       @accent;
+}
+
+entry {
+    background-color:  transparent;
+    text-color:        @fg;
+    placeholder:       "Search...";
+    placeholder-color: @fg-dim;
+}
+
+listview {
+    background-color: transparent;
+    lines:            8;
+    padding:          8px 0;
+    scrollbar:        false;
+    fixed-height:     false;
+}
+
+element {
+    background-color: transparent;
+    padding:          10px 16px;
+    spacing:          10px;
+}
+
+element selected.normal {
+    background-color: @selected-bg;
+    text-color:       @selected-fg;
+}
+
+element normal.normal {
+    background-color: transparent;
+    text-color:       @fg;
+}
+
+element normal.urgent {
+    text-color: @urgent;
+}
+
+element selected.urgent {
+    background-color: @selected-bg;
+    text-color:       @urgent;
+}
+
+element-text {
+    background-color: transparent;
+    text-color:       inherit;
+    highlight:        bold underline;
+}
+
+element-icon {
+    background-color: transparent;
+    size:             1.2em;
+}

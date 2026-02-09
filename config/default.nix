@@ -34,6 +34,7 @@ in
       ./gtk
       ./hyprland
       ./hyprpanel
+      ./rofi
       ./walker
     ]
   else
