@@ -139,7 +139,7 @@ with pkgs;
   linux-wallpaperengine
   pavucontrol
   playerctl
-  rofi-wayland
+  rofi
   rofimoji
   signal-desktop
   slack
