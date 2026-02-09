@@ -67,6 +67,7 @@ with pkgs;
   mariadb
   mkcert
   navi
+  pingu
   postgresql
   procs
   qwen-code
@@ -127,6 +128,8 @@ with pkgs;
   ffmpeg
   ghostty
   github-desktop
+  gnome.evince
+  gnome.totem
   google-chrome
   grim
   hypridle
