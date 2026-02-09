@@ -160,7 +160,7 @@ inputs.nixpkgs.lib.nixosSystem {
             enable = true;
             serviceMode = "user";
             userName = username;
-            withHypr = true;
+            withWlroots = true;
             watch = true;
             deviceNames = [ "keyd virtual keyboard" ];
             config = {
