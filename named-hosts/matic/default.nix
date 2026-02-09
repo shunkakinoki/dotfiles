@@ -61,14 +61,12 @@ inputs.nixpkgs.lib.nixosSystem {
         programs.fish.enable = true;
 
         # User configuration
-        users.users.groups.uinput.members = [ username ];
-        users.users.group.input.members = [ username ];
         users.users.${username} = {
           isNormalUser = true;
           extraGroups = [
             "wheel"
             "networkmanager"
-            "input"
+            "inputs"
             "video"
           ];
           home = "/home/${username}";
