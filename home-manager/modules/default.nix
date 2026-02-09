@@ -5,5 +5,6 @@
   ./npm-globals
   ./tailscale
   ./uv-globals
+  ./xremap
   ./yek
 ]
