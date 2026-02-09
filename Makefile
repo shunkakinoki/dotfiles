@@ -583,8 +583,17 @@ neovim-dev: ## Set up local Neovim development environment.
 .PHONY: neovim-upgrade
 neovim-upgrade: ## Update Neovim plugins.
 	@echo "📦 Updating neovim plugins..."
-	@nvim --headless +"lua vim.pack.update()" +qa
+	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
+		$(MAKE) neovim-upgrade-dev; \
+	else \
+		nvim --headless +"lua vim.pack.update()" +qa; \
+	fi
 	@echo "✅ Neovim plugins updated"
+
+.PHONY: neovim-upgrade-dev
+neovim-upgrade-dev: ## Update Neovim plugins inside the Nix dev shell (mirrors CI).
+	@echo "📦 Updating neovim plugins inside the Nix dev shell..."
+	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) neovim-upgrade
 
 .PHONY: neovim-sync
 neovim-sync: neovim-upgrade ## Sync Neovim plugins.
