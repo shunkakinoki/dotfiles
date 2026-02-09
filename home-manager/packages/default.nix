@@ -125,11 +125,10 @@ with pkgs;
   cliphist
   discord
   emote
+  evince
   ffmpeg
   ghostty
   github-desktop
-  gnome.evince
-  gnome.totem
   google-chrome
   grim
   hypridle
@@ -138,13 +137,14 @@ with pkgs;
   hyprshot
   hyprsunset
   libnotify
+  linux-wallpaperengine
   pavucontrol
   playerctl
   signal-desktop
   slack
   slurp
   swappy
-  linux-wallpaperengine
+  totem
   vlc
   vscode
   walker
