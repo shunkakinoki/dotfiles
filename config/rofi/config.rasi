@@ -6,13 +6,13 @@
 * {
     bg:           #1a1b26cc;
     bg-solid:     #1a1b26ee;
-    fg:           #ffffffdd;
-    fg-dim:       #ffffff66;
-    accent:       #88c0d0;
-    border-clr:   #ffffff18;
-    selected-bg:  #88c0d033;
-    selected-fg:  #88c0d0;
-    urgent:       #bf616a;
+    fg:           #ffffffbb;
+    fg-dim:       #ffffff44;
+    accent:       #a0a8c0;
+    border-clr:   #ffffff12;
+    selected-bg:  #252836;
+    selected-fg:  #ffffffee;
+    urgent:       #8a3a42;
 
     font: "JetBrainsMono Nerd Font 13";
 
