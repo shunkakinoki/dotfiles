@@ -145,10 +145,14 @@ inputs.nixpkgs.lib.nixosSystem {
               "down"
             ];
             remapKeys = letters ++ numbers ++ symbols ++ navigation;
-            mkRemap = keys: builtins.listToAttrs (map (key: {
-              name = "${hyperPrefix}${key}";
-              value = "${ctrlPrefix}${key}";
-            }) keys);
+            mkRemap =
+              keys:
+              builtins.listToAttrs (
+                map (key: {
+                  name = "${hyperPrefix}${key}";
+                  value = "${ctrlPrefix}${key}";
+                }) keys
+              );
             globalRemap = mkRemap remapKeys;
             ghosttyRemap = globalRemap // {
               "${hyperPrefix}c" = "C-Shift-c";
