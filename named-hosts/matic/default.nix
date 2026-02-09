@@ -66,7 +66,7 @@ inputs.nixpkgs.lib.nixosSystem {
           extraGroups = [
             "wheel"
             "networkmanager"
-            "inputs"
+            "input"
             "video"
           ];
           home = "/home/${username}";
