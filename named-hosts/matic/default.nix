@@ -78,7 +78,6 @@ inputs.nixpkgs.lib.nixosSystem {
 
         # Input remapping (xremap)
         hardware.uinput.enable = true;
-        boot.kernelModules = [ "uinput" ];
         services.udev.extraRules = ''
           KERNEL=="uinput", GROUP="input", TAG+="uaccess", MODE:="0660", OPTIONS+="static_node=uinput"
           KERNEL=="event*", ATTRS{name}=="keyd virtual keyboard", GROUP="input", MODE:="0660"
@@ -116,6 +115,9 @@ inputs.nixpkgs.lib.nixosSystem {
               "y"
               "z"
             ];
+            # Numbers 3, 4, 5 are intentionally excluded — they pass through as
+            # Hyper+3/4/5 for Hyprland screenshot/recording bindings.
+            # See: config/hyprland/hyprland.conf (screenshot section)
             numbers = [
               "0"
               "1"
@@ -154,10 +156,11 @@ inputs.nixpkgs.lib.nixosSystem {
                 }) keys
               );
             globalRemap = mkRemap remapKeys;
+            # Override copy/paste to Ctrl+Shift (terminal convention: Ctrl+C = SIGINT).
+            # All other keys (including z for undo) inherit from globalRemap.
             ghosttyRemap = globalRemap // {
               "${hyperPrefix}c" = "C-Shift-c";
               "${hyperPrefix}v" = "C-Shift-v";
-              "${hyperPrefix}z" = "C-z";
             };
           in
           {
@@ -190,10 +193,9 @@ inputs.nixpkgs.lib.nixosSystem {
           serviceConfig = {
             Restart = "on-failure";
             RestartSec = 3;
-
-            # Avoid systemd giving up during session startup races.
-            StartLimitIntervalSec = 0;
           };
+          # StartLimitIntervalSec is a [Unit] directive, not [Service].
+          unitConfig.StartLimitIntervalSec = 0;
         };
 
         # AMD graphics with hardware acceleration
