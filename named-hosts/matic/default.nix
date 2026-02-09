@@ -84,7 +84,7 @@ inputs.nixpkgs.lib.nixosSystem {
         '';
         services.xremap =
           let
-            hyperPrefix = "C-A-S-Super-";
+            hyperPrefix = "C-Alt-Shift-Super-";
             ctrlPrefix = "C-";
             letters = [
               "a"
@@ -158,7 +158,7 @@ inputs.nixpkgs.lib.nixosSystem {
             enable = true;
             serviceMode = "user";
             userName = username;
-            withWlroots = true;
+            withHypr = true;
             watch = true;
             deviceNames = [ "keyd virtual keyboard" ];
             config = {
