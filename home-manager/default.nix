@@ -28,6 +28,7 @@ in
     ++ services
     ++ [
       inputs.agenix.homeManagerModules.default
+      inputs.xremap.homeManagerModules.default
     ];
 
   home.username = username;
