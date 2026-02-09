@@ -81,6 +81,8 @@ inputs.nixpkgs.lib.nixosSystem {
         boot.kernelModules = [ "uinput" ];
         services.udev.extraRules = ''
           KERNEL=="uinput", GROUP="input", TAG+="uaccess", MODE:="0660", OPTIONS+="static_node=uinput"
+          KERNEL=="event*", ATTRS{name}=="keyd virtual keyboard", GROUP="input", MODE:="0660"
+          KERNEL=="event*", ATTRS{name}=="keyd virtual pointer", GROUP="input", MODE:="0660"
         '';
         services.xremap =
           let
@@ -156,7 +158,7 @@ inputs.nixpkgs.lib.nixosSystem {
           in
           {
             enable = true;
-            serviceMode = "system";
+            serviceMode = "user";
             userName = username;
             withHypr = true;
             watch = true;
