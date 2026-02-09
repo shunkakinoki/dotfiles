@@ -1,5 +1,6 @@
 name: Upgrade
 on:
+  pull_request:
   schedule:
     - cron: '0 2 * * *'
   workflow_dispatch:
@@ -26,6 +27,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SKIP_HOME_MANAGER_SWITCH: "true"
       - name: Create Pull Request
+        if: github.action != 'pull_request'
         id: cpr
         uses: peter-evans/create-pull-request@v8
         with:
