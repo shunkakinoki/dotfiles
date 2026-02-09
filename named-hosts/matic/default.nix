@@ -61,6 +61,8 @@ inputs.nixpkgs.lib.nixosSystem {
         programs.fish.enable = true;
 
         # User configuration
+        users.groups.uinput.members = [ username ];
+        users.group.input.members = [ username ];
         users.users.${username} = {
           isNormalUser = true;
           extraGroups = [
