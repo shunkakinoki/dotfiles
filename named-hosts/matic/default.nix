@@ -36,6 +36,9 @@ inputs.nixpkgs.lib.nixosSystem {
     # Keyd configuration
     ../../config/keyd
 
+    # Xremap module
+    inputs.xremap.nixosModules.default
+
     # Base system configuration
     (
       { config, lib, ... }:
@@ -63,6 +66,7 @@ inputs.nixpkgs.lib.nixosSystem {
           extraGroups = [
             "wheel"
             "networkmanager"
+            "input"
             "video"
           ];
           home = "/home/${username}";
@@ -71,6 +75,106 @@ inputs.nixpkgs.lib.nixosSystem {
         };
 
         security.sudo.wheelNeedsPassword = false;
+
+        # Input remapping (xremap)
+        hardware.uinput.enable = true;
+        boot.kernelModules = [ "uinput" ];
+        services.udev.extraRules = ''
+          KERNEL=="uinput", GROUP="input", TAG+="uaccess", MODE:="0660", OPTIONS+="static_node=uinput"
+        '';
+        services.xremap =
+          let
+            hyperPrefix = "C-A-S-Super-";
+            ctrlPrefix = "C-";
+            letters = [
+              "a"
+              "b"
+              "c"
+              "d"
+              "e"
+              "f"
+              "g"
+              "h"
+              "i"
+              "j"
+              "k"
+              "l"
+              "m"
+              "n"
+              "o"
+              "p"
+              "q"
+              "r"
+              "s"
+              "t"
+              "u"
+              "v"
+              "w"
+              "x"
+              "y"
+              "z"
+            ];
+            numbers = [
+              "0"
+              "1"
+              "2"
+              "6"
+              "7"
+              "8"
+              "9"
+            ];
+            symbols = [
+              "semicolon"
+              "dot"
+              "comma"
+              "slash"
+              "grave"
+              "backslash"
+              "leftbrace"
+              "rightbrace"
+              "apostrophe"
+            ];
+            navigation = [
+              "tab"
+              "backspace"
+              "left"
+              "right"
+              "up"
+              "down"
+            ];
+            remapKeys = letters ++ numbers ++ symbols ++ navigation;
+            mkRemap = keys: builtins.listToAttrs (map (key: {
+              name = "${hyperPrefix}${key}";
+              value = "${ctrlPrefix}${key}";
+            }) keys);
+            globalRemap = mkRemap remapKeys;
+            ghosttyRemap = globalRemap // {
+              "${hyperPrefix}c" = "C-Shift-c";
+              "${hyperPrefix}v" = "C-Shift-v";
+              "${hyperPrefix}z" = "C-z";
+            };
+          in
+          {
+            enable = true;
+            serviceMode = "user";
+            userName = username;
+            withWlroots = true;
+            watch = true;
+            config = {
+              keymap = [
+                {
+                  name = "Framework Command (Ghostty)";
+                  application.only = [ "com.mitchellh.ghostty" ];
+                  remap = ghosttyRemap;
+                }
+                {
+                  name = "Framework Command (Global)";
+                  application.not = [ "com.mitchellh.ghostty" ];
+                  remap = globalRemap;
+                }
+              ];
+            };
+          };
 
         # AMD graphics with hardware acceleration
         hardware.graphics.enable = true;
