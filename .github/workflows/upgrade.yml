@@ -27,7 +27,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SKIP_HOME_MANAGER_SWITCH: "true"
       - name: Create Pull Request
-        if: github.action != 'pull_request'
+        if: github.event_name != 'pull_request'
         id: cpr
         uses: peter-evans/create-pull-request@v8
         with:
