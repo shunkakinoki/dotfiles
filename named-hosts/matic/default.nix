@@ -190,6 +190,9 @@ inputs.nixpkgs.lib.nixosSystem {
           serviceConfig = {
             Restart = "on-failure";
             RestartSec = 3;
+
+            # Avoid systemd giving up during session startup races.
+            StartLimitIntervalSec = 0;
           };
         };
 
