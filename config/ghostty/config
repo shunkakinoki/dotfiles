@@ -19,8 +19,8 @@ clipboard-write = "allow"
 clipboard-paste-protection = false
 copy-on-select = clipboard
 
-keybind = ctrl+c=copy_to_clipboard
-keybind = ctrl+v=paste_from_clipboard
+keybind = ctrl+shift+c=copy_to_clipboard
+keybind = ctrl+shift+v=paste_from_clipboard
 keybind = super+alt+left=previous_tab
 keybind = super+alt+right=next_tab
 keybind = super+shift+left=move_tab:-1
@@ -29,13 +29,14 @@ keybind = super+shift+right=move_tab:1
 keybind = super+shift+down=move_tab:1
 
 # Navigate between splits (Vim-style)
-keybind = super+h=goto_split:left
-keybind = super+j=goto_split:down
-keybind = super+k=goto_split:up
-keybind = super+l=goto_split:right
+keybind = ctrl+alt+h=goto_split:left
+keybind = ctrl+alt+j=goto_split:down
+keybind = ctrl+alt+k=goto_split:up
+keybind = ctrl+alt+l=goto_split:right
 
 # Create new splits
 keybind = ctrl+shift+backslash=new_split:right
+keybind = ctrl+shift+equal=new_split:right
 keybind = ctrl+shift+minus=new_split:down
 
 # Split management

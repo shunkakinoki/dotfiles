@@ -13,6 +13,7 @@
           ];
           middle = [ "clock" ];
           right = [
+            "netstat"
             "cpu"
             "ram"
             "volume"
@@ -192,15 +193,15 @@
 
       # RAM
       "theme.bar.buttons.modules.ram.icon_background" = "#ffffff0d";
-      "theme.bar.buttons.modules.ram.icon" = "#a3be8c";
-      "theme.bar.buttons.modules.ram.text" = "#a3be8c";
+      "theme.bar.buttons.modules.ram.icon" = "#ffffffcc";
+      "theme.bar.buttons.modules.ram.text" = "#ffffffcc";
       "theme.bar.buttons.modules.ram.background" = "#ffffff0d";
       "theme.bar.buttons.modules.ram.border" = "#ffffff18";
 
       # CPU
       "theme.bar.buttons.modules.cpu.icon_background" = "#ffffff0d";
-      "theme.bar.buttons.modules.cpu.icon" = "#88c0d0";
-      "theme.bar.buttons.modules.cpu.text" = "#88c0d0";
+      "theme.bar.buttons.modules.cpu.icon" = "#ffffffcc";
+      "theme.bar.buttons.modules.cpu.text" = "#ffffffcc";
       "theme.bar.buttons.modules.cpu.background" = "#ffffff0d";
       "theme.bar.buttons.modules.cpu.border" = "#ffffff18";
 
@@ -213,8 +214,8 @@
 
       # Netstat
       "theme.bar.buttons.modules.netstat.icon_background" = "#ffffff0d";
-      "theme.bar.buttons.modules.netstat.icon" = "#a3be8c";
-      "theme.bar.buttons.modules.netstat.text" = "#a3be8c";
+      "theme.bar.buttons.modules.netstat.icon" = "#ffffffcc";
+      "theme.bar.buttons.modules.netstat.text" = "#ffffffcc";
       "theme.bar.buttons.modules.netstat.background" = "#ffffff0d";
       "theme.bar.buttons.modules.netstat.border" = "#ffffff18";
 
@@ -288,7 +289,7 @@
       "theme.bar.buttons.modules.worldclock.border" = "#ffffff18";
 
       # ── Menu Theme (frosted glass) ──────────────────────────────────
-      "theme.bar.menus.background" = "#1a1b26cc";
+      "theme.bar.menus.background" = "#1a1b26";
       "theme.bar.menus.cards" = "#ffffff0d";
       "theme.bar.menus.border.color" = "#ffffff18";
       "theme.bar.menus.text" = "#ffffffdd";
@@ -296,7 +297,7 @@
       "theme.bar.menus.feinttext" = "#ffffff33";
       "theme.bar.menus.label" = "#88c0d0";
       "theme.bar.menus.popover.border" = "#ffffff18";
-      "theme.bar.menus.popover.background" = "#1a1b26ee";
+      "theme.bar.menus.popover.background" = "#1a1b26";
       "theme.bar.menus.popover.text" = "#88c0d0";
       "theme.bar.menus.listitems.active" = "#88c0d0";
       "theme.bar.menus.listitems.passive" = "#ffffffdd";
@@ -319,15 +320,15 @@
       "theme.bar.menus.slider.background" = "#ffffff22";
       "theme.bar.menus.slider.backgroundhover" = "#ffffff33";
       "theme.bar.menus.slider.puck" = "#ffffff44";
-      "theme.bar.menus.dropdownmenu.background" = "#1a1b26ee";
+      "theme.bar.menus.dropdownmenu.background" = "#1a1b26";
       "theme.bar.menus.dropdownmenu.text" = "#ffffffdd";
       "theme.bar.menus.dropdownmenu.divider" = "#ffffff18";
-      "theme.bar.menus.tooltip.background" = "#1a1b26ee";
+      "theme.bar.menus.tooltip.background" = "#1a1b26";
       "theme.bar.menus.tooltip.text" = "#ffffffdd";
 
       # Volume menu
       "theme.bar.menus.menu.volume.card.color" = "#ffffff0d";
-      "theme.bar.menus.menu.volume.background.color" = "#1a1b26cc";
+      "theme.bar.menus.menu.volume.background.color" = "#1a1b26";
       "theme.bar.menus.menu.volume.border.color" = "#ffffff18";
       "theme.bar.menus.menu.volume.label.color" = "#ebcb8b";
       "theme.bar.menus.menu.volume.text" = "#ffffffdd";
@@ -347,7 +348,7 @@
       "theme.bar.menus.menu.volume.input_slider.puck" = "#ffffff44";
 
       # Media menu
-      "theme.bar.menus.menu.media.background.color" = "#1a1b26cc";
+      "theme.bar.menus.menu.media.background.color" = "#1a1b26";
       "theme.bar.menus.menu.media.card.color" = "#ffffff0d";
       "theme.bar.menus.menu.media.border.color" = "#ffffff18";
       "theme.bar.menus.menu.media.song" = "#88c0d0";
@@ -365,7 +366,7 @@
 
       # Network menu
       "theme.bar.menus.menu.network.card.color" = "#ffffff0d";
-      "theme.bar.menus.menu.network.background.color" = "#1a1b26cc";
+      "theme.bar.menus.menu.network.background.color" = "#1a1b26";
       "theme.bar.menus.menu.network.border.color" = "#ffffff18";
       "theme.bar.menus.menu.network.label.color" = "#88c0d0";
       "theme.bar.menus.menu.network.text" = "#ffffffdd";
@@ -383,7 +384,7 @@
 
       # Bluetooth menu
       "theme.bar.menus.menu.bluetooth.card.color" = "#ffffff0d";
-      "theme.bar.menus.menu.bluetooth.background.color" = "#1a1b26cc";
+      "theme.bar.menus.menu.bluetooth.background.color" = "#1a1b26";
       "theme.bar.menus.menu.bluetooth.border.color" = "#ffffff18";
       "theme.bar.menus.menu.bluetooth.label.color" = "#81a1c1";
       "theme.bar.menus.menu.bluetooth.text" = "#ffffffdd";
@@ -401,13 +402,13 @@
       "theme.bar.menus.menu.bluetooth.scroller.color" = "#81a1c1";
 
       # Systray menu
-      "theme.bar.menus.menu.systray.dropdownmenu.background" = "#1a1b26ee";
+      "theme.bar.menus.menu.systray.dropdownmenu.background" = "#1a1b26";
       "theme.bar.menus.menu.systray.dropdownmenu.text" = "#ffffffdd";
       "theme.bar.menus.menu.systray.dropdownmenu.divider" = "#ffffff18";
 
       # Battery menu
       "theme.bar.menus.menu.battery.card.color" = "#ffffff0d";
-      "theme.bar.menus.menu.battery.background.color" = "#1a1b26cc";
+      "theme.bar.menus.menu.battery.background.color" = "#1a1b26";
       "theme.bar.menus.menu.battery.border.color" = "#ffffff18";
       "theme.bar.menus.menu.battery.label.color" = "#a3be8c";
       "theme.bar.menus.menu.battery.text" = "#ffffffdd";
@@ -422,7 +423,7 @@
 
       # Clock menu
       "theme.bar.menus.menu.clock.card.color" = "#ffffff0d";
-      "theme.bar.menus.menu.clock.background.color" = "#1a1b26cc";
+      "theme.bar.menus.menu.clock.background.color" = "#1a1b26";
       "theme.bar.menus.menu.clock.border.color" = "#ffffff18";
       "theme.bar.menus.menu.clock.text" = "#ffffffdd";
       "theme.bar.menus.menu.clock.time.time" = "#88c0d0";
@@ -448,7 +449,7 @@
 
       # Dashboard menu
       "theme.bar.menus.menu.dashboard.card.color" = "#ffffff0d";
-      "theme.bar.menus.menu.dashboard.background.color" = "#1a1b26cc";
+      "theme.bar.menus.menu.dashboard.background.color" = "#1a1b26";
       "theme.bar.menus.menu.dashboard.border.color" = "#ffffff18";
       "theme.bar.menus.menu.dashboard.profile.name" = "#88c0d0";
       "theme.bar.menus.menu.dashboard.powermenu.shutdown" = "#bf616a";
@@ -456,7 +457,7 @@
       "theme.bar.menus.menu.dashboard.powermenu.logout" = "#a3be8c";
       "theme.bar.menus.menu.dashboard.powermenu.sleep" = "#88c0d0";
       "theme.bar.menus.menu.dashboard.powermenu.confirmation.card" = "#ffffff0d";
-      "theme.bar.menus.menu.dashboard.powermenu.confirmation.background" = "#1a1b26ee";
+      "theme.bar.menus.menu.dashboard.powermenu.confirmation.background" = "#1a1b26";
       "theme.bar.menus.menu.dashboard.powermenu.confirmation.border" = "#ffffff18";
       "theme.bar.menus.menu.dashboard.powermenu.confirmation.label" = "#88c0d0";
       "theme.bar.menus.menu.dashboard.powermenu.confirmation.body" = "#ffffffdd";
@@ -498,7 +499,7 @@
       "theme.bar.menus.menu.dashboard.monitors.disk.label" = "#b48ead";
 
       # Power menu
-      "theme.bar.menus.menu.power.background.color" = "#1a1b26cc";
+      "theme.bar.menus.menu.power.background.color" = "#1a1b26";
       "theme.bar.menus.menu.power.border.color" = "#ffffff18";
       "theme.bar.menus.menu.power.buttons.shutdown.background" = "#ffffff0d";
       "theme.bar.menus.menu.power.buttons.shutdown.icon_background" = "#bf616a";
@@ -518,7 +519,7 @@
       "theme.bar.menus.menu.power.buttons.sleep.icon" = "#1a1b26";
 
       # Notifications menu
-      "theme.bar.menus.menu.notifications.background" = "#1a1b26cc";
+      "theme.bar.menus.menu.notifications.background" = "#1a1b26";
       "theme.bar.menus.menu.notifications.card" = "#ffffff0d";
       "theme.bar.menus.menu.notifications.border" = "#ffffff18";
       "theme.bar.menus.menu.notifications.label" = "#88c0d0";
