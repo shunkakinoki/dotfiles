@@ -124,7 +124,6 @@ with pkgs;
   clickup
   cliphist
   discord
-  emote
   evince
   ffmpeg
   ghostty
@@ -140,6 +139,8 @@ with pkgs;
   linux-wallpaperengine
   pavucontrol
   playerctl
+  rofi
+  rofimoji
   signal-desktop
   slack
   slurp
@@ -151,4 +152,5 @@ with pkgs;
   wf-recorder
   wl-clip-persist
   wl-clipboard
+  wtype
 ]
