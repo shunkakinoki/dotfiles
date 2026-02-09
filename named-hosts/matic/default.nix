@@ -156,7 +156,7 @@ inputs.nixpkgs.lib.nixosSystem {
           in
           {
             enable = true;
-            serviceMode = "user";
+            serviceMode = "system";
             userName = username;
             withHypr = true;
             watch = true;
