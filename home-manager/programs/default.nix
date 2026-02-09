@@ -15,7 +15,7 @@ let
   fish = import ./fish;
   fnm = import ./fnm;
   fzf = import ./fzf;
-  gh = import ./gh;
+  gh = import ./gh { inherit pkgs; };
   ghq = import ./ghq;
   git = import ./git;
   go = import ./go;

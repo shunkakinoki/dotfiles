@@ -324,6 +324,7 @@ inputs.nixpkgs.lib.nixosSystem {
         ipaexfont
         ipafont
         joypixels
+        nerdfonts
         nerd-fonts.jetbrains-mono
         noto-fonts-cjk-sans
         noto-fonts-cjk-serif
