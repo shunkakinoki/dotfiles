@@ -22,7 +22,7 @@ jobs:
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run Upgrade
-        run: make upgrade
+        run: make upgrade-dev
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SKIP_HOME_MANAGER_SWITCH: "true"

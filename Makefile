@@ -208,6 +208,11 @@ update-local-binaries: ## Update and rebuild local binaries from .local-binaries
 .PHONY: upgrade
 upgrade: nix-upgrade overlays-upgrade neovim-upgrade ## Upgrade Nix flake, overlays, Neovim plugins
 
+.PHONY: upgrade-dev
+upgrade-dev: ## Upgrade inside the Nix dev shell (mirrors CI).
+	@echo "🔄 Running upgrade inside the Nix dev shell..."
+	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) upgrade
+
 .PHONY: dev
 dev: nix-develop ## Enter the Nix dev shell (alias for nix-develop).
 
@@ -583,17 +588,8 @@ neovim-dev: ## Set up local Neovim development environment.
 .PHONY: neovim-upgrade
 neovim-upgrade: ## Update Neovim plugins.
 	@echo "📦 Updating neovim plugins..."
-	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
-		$(MAKE) neovim-upgrade-dev; \
-	else \
-		nvim --headless +"lua vim.pack.update()" +qa; \
-	fi
+	@nvim --headless +"lua vim.pack.update()" +qa
 	@echo "✅ Neovim plugins updated"
-
-.PHONY: neovim-upgrade-dev
-neovim-upgrade-dev: ## Update Neovim plugins inside the Nix dev shell (mirrors CI).
-	@echo "📦 Updating neovim plugins inside the Nix dev shell..."
-	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) neovim-upgrade
 
 .PHONY: neovim-sync
 neovim-sync: neovim-upgrade ## Sync Neovim plugins.
