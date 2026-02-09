@@ -124,7 +124,6 @@ with pkgs;
   clickup
   cliphist
   discord
-  emote
   evince
   ffmpeg
   ghostty
