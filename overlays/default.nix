@@ -32,4 +32,14 @@
       '';
     });
   })
+  (final: prev: {
+    nightlyPkgs = import inputs.nixpkgs-nightly {
+      system = prev.system;
+      config = prev.config;
+      overlays = [ ];
+    };
+    codex = final.nightlyPkgs.codex;
+    claude-code = final.nightlyPkgs.claude-code;
+    opencode = final.nightlyPkgs.opencode;
+  })
 ]
