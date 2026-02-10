@@ -123,6 +123,7 @@ with pkgs;
   chromium
   clickup
   cliphist
+  code-cursor
   discord
   evince
   ffmpeg
