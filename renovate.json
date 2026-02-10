@@ -1,6 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "repositories": ["shunkakinoki/dotfiles"],
+  "repositories": [
+    "shunkakinoki/dotfiles"
+  ],
   "extends": [
     "config:recommended",
     "group:allNonMajor",
