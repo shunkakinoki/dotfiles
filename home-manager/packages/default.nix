@@ -65,6 +65,7 @@ with pkgs;
   llama-cpp
   llm
   mariadb
+  mise
   mkcert
   navi
   pingu
