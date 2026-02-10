@@ -2,11 +2,17 @@
   description = "Shun Kakinoki's Nix Configuration";
 
   inputs = {
-    nixpkgs = {
+    nixpkgs-stable = {
+      url = "github:NixOS/nixpkgs/nixos-24.11";
+    };
+    nixpkgs-unstable = {
       url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     };
     nixpkgs-nightly = {
       url = "github:NixOS/nixpkgs/master";
+    };
+    nixpkgs = {
+      follows = "nixpkgs-unstable";
     };
     home-manager = {
       url = "github:nix-community/home-manager";
