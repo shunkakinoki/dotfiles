@@ -32,7 +32,9 @@ in
         lib.makeBinPath [
           pkgs.bash
           pkgs.coreutils
+          pkgs.code-cursor
           pkgs.inotify-tools
+          pkgs.vscode
         ]
       }";
       ExecStart = "${pkgs.bash}/bin/bash ${./sync.sh}";
