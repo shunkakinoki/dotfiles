@@ -13,6 +13,7 @@
       "kurtosis-tech/tap"
       "oven-sh/bun"
       "paradigmxyz/brew"
+      "entireio/tap"
       "sst/tap"
       "steipete/tap"
     ];
@@ -24,6 +25,7 @@
       "coder"
       "colima"
       "coreutils"
+      "entire"
       "ffmpeg"
       "gemini-cli"
       "geth"
