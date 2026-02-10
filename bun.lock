@@ -61,6 +61,7 @@
     "@ccusage/codex",
     "openclaw",
     "clawdhub",
+    "turbo",
     "@google/jules",
   ],
   "packages": {
