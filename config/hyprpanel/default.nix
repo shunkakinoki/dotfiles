@@ -16,7 +16,6 @@
             "netstat"
             "cpu"
             "ram"
-            "media"
             "volume"
             "microphone"
             "hyprsunset"
