@@ -141,13 +141,6 @@
       "theme.bar.buttons.windowtitle.border" = "#ffffff18";
       "theme.bar.buttons.windowtitle.background" = "#ffffff0d";
 
-      # Media
-      "theme.bar.buttons.media.icon_background" = "#ffffff0d";
-      "theme.bar.buttons.media.icon" = "#ffffffcc";
-      "theme.bar.buttons.media.text" = "#ffffffaa";
-      "theme.bar.buttons.media.background" = "#ffffff0d";
-      "theme.bar.buttons.media.border" = "#ffffff18";
-
       # Volume
       "theme.bar.buttons.volume.icon_background" = "#ffffff0d";
       "theme.bar.buttons.volume.icon" = "#ffffffcc";
@@ -350,23 +343,6 @@
       "theme.bar.menus.menu.volume.input_slider.background" = "#ffffff22";
       "theme.bar.menus.menu.volume.input_slider.backgroundhover" = "#ffffff33";
       "theme.bar.menus.menu.volume.input_slider.puck" = "#ffffff44";
-
-      # Media menu
-      "theme.bar.menus.menu.media.background.color" = "#1a1b26";
-      "theme.bar.menus.menu.media.card.color" = "#ffffff0d";
-      "theme.bar.menus.menu.media.border.color" = "#ffffff18";
-      "theme.bar.menus.menu.media.song" = "#88c0d0";
-      "theme.bar.menus.menu.media.artist" = "#ffffffaa";
-      "theme.bar.menus.menu.media.album" = "#b48ead";
-      "theme.bar.menus.menu.media.timestamp" = "#ffffff88";
-      "theme.bar.menus.menu.media.buttons.inactive" = "#ffffff33";
-      "theme.bar.menus.menu.media.buttons.enabled" = "#88c0d0";
-      "theme.bar.menus.menu.media.buttons.background" = "#88c0d0";
-      "theme.bar.menus.menu.media.buttons.text" = "#1a1b26";
-      "theme.bar.menus.menu.media.slider.primary" = "#88c0d0";
-      "theme.bar.menus.menu.media.slider.background" = "#ffffff22";
-      "theme.bar.menus.menu.media.slider.backgroundhover" = "#ffffff33";
-      "theme.bar.menus.menu.media.slider.puck" = "#ffffff44";
 
       # Network menu
       "theme.bar.menus.menu.network.card.color" = "#ffffff0d";
