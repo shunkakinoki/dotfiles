@@ -25,7 +25,7 @@
     "@sourcegraph/amp": "^0.0.1770734955-g93e689",
     "@typescript/native-preview": "^7.0.0-dev.20260210.1",
     "@vibe-kit/grok-cli": "^0.0.34",
-    "agent-browser": "^0.9.1",
+    "agent-browser": "^0.9.2",
     "ccusage": "^18.0.5",
     "clawdhub": "^0.3.0",
     "cline": "^2.0.5",
@@ -35,7 +35,7 @@
     "oxfmt": "^0.30.0",
     "oxlint": "^1.43.0",
     "ralph-tui": "^0.7.1",
-    "turbo": "^2.8.4",
+    "turbo": "^2.8.5",
     "typescript": "^5.9.3",
     "vite": "^7.3.1"
   },
