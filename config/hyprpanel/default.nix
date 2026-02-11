@@ -152,7 +152,7 @@
       # Volume
       "theme.bar.buttons.volume.icon_background" = "#ffffff0d";
       "theme.bar.buttons.volume.icon" = "#ffffffcc";
-      "theme.bar.buttons.volume.text" = "#ffffffaa";
+      "theme.bar.buttons.volume.text" = "#ffffffcc";
       "theme.bar.buttons.volume.background" = "#ffffff0d";
       "theme.bar.buttons.volume.border" = "#ffffff18";
 
