@@ -16,12 +16,16 @@
             "netstat"
             "cpu"
             "ram"
+            "media"
             "volume"
             "microphone"
+            "hyprsunset"
+            "hypridle"
             "battery"
             "network"
             "bluetooth"
             "systray"
+            "power"
             "notifications"
           ];
         };
