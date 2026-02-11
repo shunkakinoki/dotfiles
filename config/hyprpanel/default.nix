@@ -247,7 +247,7 @@
 
       # Power
       "theme.bar.buttons.modules.power.icon_background" = "#ffffff0d";
-      "theme.bar.buttons.modules.power.icon" = "#bf616a";
+      "theme.bar.buttons.modules.power.icon" = "#ffffffcc";
       "theme.bar.buttons.modules.power.background" = "#ffffff0d";
       "theme.bar.buttons.modules.power.border" = "#ffffff18";
 
@@ -259,17 +259,17 @@
       "theme.bar.buttons.modules.submap.icon_background" = "#ffffff0d";
 
       # Hyprsunset
-      "theme.bar.buttons.modules.hyprsunset.icon" = "#ebcb8b";
+      "theme.bar.buttons.modules.hyprsunset.icon" = "#ffffffcc";
       "theme.bar.buttons.modules.hyprsunset.background" = "#ffffff0d";
       "theme.bar.buttons.modules.hyprsunset.icon_background" = "#ffffff0d";
-      "theme.bar.buttons.modules.hyprsunset.text" = "#ebcb8b";
+      "theme.bar.buttons.modules.hyprsunset.text" = "#ffffffcc";
       "theme.bar.buttons.modules.hyprsunset.border" = "#ffffff18";
 
       # Hypridle
-      "theme.bar.buttons.modules.hypridle.icon" = "#b48ead";
+      "theme.bar.buttons.modules.hypridle.icon" = "#ffffffcc";
       "theme.bar.buttons.modules.hypridle.background" = "#ffffff0d";
       "theme.bar.buttons.modules.hypridle.icon_background" = "#ffffff0d";
-      "theme.bar.buttons.modules.hypridle.text" = "#b48ead";
+      "theme.bar.buttons.modules.hypridle.text" = "#ffffffcc";
       "theme.bar.buttons.modules.hypridle.border" = "#ffffff18";
 
       # Cava
