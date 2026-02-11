@@ -18,10 +18,13 @@
             "ram"
             "volume"
             "microphone"
+            "hyprsunset"
+            "hypridle"
             "battery"
             "network"
             "bluetooth"
             "systray"
+            "power"
             "notifications"
           ];
         };
@@ -138,17 +141,10 @@
       "theme.bar.buttons.windowtitle.border" = "#ffffff18";
       "theme.bar.buttons.windowtitle.background" = "#ffffff0d";
 
-      # Media
-      "theme.bar.buttons.media.icon_background" = "#ffffff0d";
-      "theme.bar.buttons.media.icon" = "#ffffffcc";
-      "theme.bar.buttons.media.text" = "#ffffffaa";
-      "theme.bar.buttons.media.background" = "#ffffff0d";
-      "theme.bar.buttons.media.border" = "#ffffff18";
-
       # Volume
       "theme.bar.buttons.volume.icon_background" = "#ffffff0d";
       "theme.bar.buttons.volume.icon" = "#ffffffcc";
-      "theme.bar.buttons.volume.text" = "#ffffffaa";
+      "theme.bar.buttons.volume.text" = "#ffffffcc";
       "theme.bar.buttons.volume.background" = "#ffffff0d";
       "theme.bar.buttons.volume.border" = "#ffffff18";
 
@@ -243,7 +239,7 @@
 
       # Power
       "theme.bar.buttons.modules.power.icon_background" = "#ffffff0d";
-      "theme.bar.buttons.modules.power.icon" = "#bf616a";
+      "theme.bar.buttons.modules.power.icon" = "#ffffffcc";
       "theme.bar.buttons.modules.power.background" = "#ffffff0d";
       "theme.bar.buttons.modules.power.border" = "#ffffff18";
 
@@ -255,17 +251,17 @@
       "theme.bar.buttons.modules.submap.icon_background" = "#ffffff0d";
 
       # Hyprsunset
-      "theme.bar.buttons.modules.hyprsunset.icon" = "#ebcb8b";
+      "theme.bar.buttons.modules.hyprsunset.icon" = "#ffffffcc";
       "theme.bar.buttons.modules.hyprsunset.background" = "#ffffff0d";
       "theme.bar.buttons.modules.hyprsunset.icon_background" = "#ffffff0d";
-      "theme.bar.buttons.modules.hyprsunset.text" = "#ebcb8b";
+      "theme.bar.buttons.modules.hyprsunset.text" = "#ffffffcc";
       "theme.bar.buttons.modules.hyprsunset.border" = "#ffffff18";
 
       # Hypridle
-      "theme.bar.buttons.modules.hypridle.icon" = "#b48ead";
+      "theme.bar.buttons.modules.hypridle.icon" = "#ffffffcc";
       "theme.bar.buttons.modules.hypridle.background" = "#ffffff0d";
       "theme.bar.buttons.modules.hypridle.icon_background" = "#ffffff0d";
-      "theme.bar.buttons.modules.hypridle.text" = "#b48ead";
+      "theme.bar.buttons.modules.hypridle.text" = "#ffffffcc";
       "theme.bar.buttons.modules.hypridle.border" = "#ffffff18";
 
       # Cava
@@ -278,8 +274,8 @@
       # Microphone
       "theme.bar.buttons.modules.microphone.border" = "#ffffff18";
       "theme.bar.buttons.modules.microphone.background" = "#ffffff0d";
-      "theme.bar.buttons.modules.microphone.text" = "#a3be8c";
-      "theme.bar.buttons.modules.microphone.icon" = "#a3be8c";
+      "theme.bar.buttons.modules.microphone.text" = "#ffffffcc";
+      "theme.bar.buttons.modules.microphone.icon" = "#ffffffcc";
       "theme.bar.buttons.modules.microphone.icon_background" = "#ffffff0d";
 
       # World Clock
@@ -347,23 +343,6 @@
       "theme.bar.menus.menu.volume.input_slider.background" = "#ffffff22";
       "theme.bar.menus.menu.volume.input_slider.backgroundhover" = "#ffffff33";
       "theme.bar.menus.menu.volume.input_slider.puck" = "#ffffff44";
-
-      # Media menu
-      "theme.bar.menus.menu.media.background.color" = "#1a1b26";
-      "theme.bar.menus.menu.media.card.color" = "#ffffff0d";
-      "theme.bar.menus.menu.media.border.color" = "#ffffff18";
-      "theme.bar.menus.menu.media.song" = "#88c0d0";
-      "theme.bar.menus.menu.media.artist" = "#ffffffaa";
-      "theme.bar.menus.menu.media.album" = "#b48ead";
-      "theme.bar.menus.menu.media.timestamp" = "#ffffff88";
-      "theme.bar.menus.menu.media.buttons.inactive" = "#ffffff33";
-      "theme.bar.menus.menu.media.buttons.enabled" = "#88c0d0";
-      "theme.bar.menus.menu.media.buttons.background" = "#88c0d0";
-      "theme.bar.menus.menu.media.buttons.text" = "#1a1b26";
-      "theme.bar.menus.menu.media.slider.primary" = "#88c0d0";
-      "theme.bar.menus.menu.media.slider.background" = "#ffffff22";
-      "theme.bar.menus.menu.media.slider.backgroundhover" = "#ffffff33";
-      "theme.bar.menus.menu.media.slider.puck" = "#ffffff44";
 
       # Network menu
       "theme.bar.menus.menu.network.card.color" = "#ffffff0d";
