@@ -274,8 +274,8 @@
       # Microphone
       "theme.bar.buttons.modules.microphone.border" = "#ffffff18";
       "theme.bar.buttons.modules.microphone.background" = "#ffffff0d";
-      "theme.bar.buttons.modules.microphone.text" = "#a3be8c";
-      "theme.bar.buttons.modules.microphone.icon" = "#a3be8c";
+      "theme.bar.buttons.modules.microphone.text" = "#ffffffcc";
+      "theme.bar.buttons.modules.microphone.icon" = "#ffffffcc";
       "theme.bar.buttons.modules.microphone.icon_background" = "#ffffff0d";
 
       # World Clock
