@@ -17,6 +17,7 @@
             "cpu"
             "ram"
             "volume"
+            "microphone"
             "battery"
             "network"
             "bluetooth"
