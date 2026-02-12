@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "d710f8eb92f7",
+  "strategy": "manual-commit",
+  "branch": "fix/tmux-capture-pane",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "home-manager/programs/tmux/tmux.conf"
+  ],
+  "sessions": [
+    {
+      "metadata": "/d7/10f8eb92f7/0/metadata.json",
+      "transcript": "/d7/10f8eb92f7/0/full.jsonl",
+      "context": "/d7/10f8eb92f7/0/context.md",
+      "content_hash": "/d7/10f8eb92f7/0/content_hash.txt",
+      "prompt": "/d7/10f8eb92f7/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 17,
+    "cache_creation_tokens": 46838,
+    "cache_read_tokens": 523711,
+    "output_tokens": 707,
+    "api_call_count": 13
+  }
+}
