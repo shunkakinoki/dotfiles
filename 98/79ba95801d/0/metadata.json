@@ -1,0 +1,33 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "9879ba95801d",
+  "session_id": "6d726179-fd4c-4078-acd0-9f8ed2364b4b",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-13T14:02:13.053034Z",
+  "branch": "refactor/move-isDev-section",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "home-manager/packages/default.nix"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "c4fa19ab-1c02-4613-84d2-45cb12bef0b3",
+  "checkpoint_transcript_start": 1215,
+  "transcript_lines_at_start": 1215,
+  "token_usage": {
+    "input_tokens": 15,
+    "cache_creation_tokens": 3030,
+    "cache_read_tokens": 1541567,
+    "output_tokens": 790,
+    "api_call_count": 11
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-13T14:02:11.849589Z",
+    "agent_lines": 7,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 7,
+    "agent_percentage": 100
+  },
+  "transcript_path": ".claude/projects/-Users-shunkakinoki-dotfiles/6d726179-fd4c-4078-acd0-9f8ed2364b4b.jsonl"
+}

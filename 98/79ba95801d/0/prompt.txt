@@ -1,0 +1,52 @@
+tmux ctrl+B + P stil lreturns "Can't write to client"
+
+---
+
+git add; make build and switch and reload to check if it works
+
+---
+
+<task-notification>
+<task-id>b512a9b</task-id>
+<output-file>/private/tmp/claude-501/-Users-shunkakinoki-dotfiles/tasks/b512a9b.output</output-file>
+<status>completed</status>
+<summary>Background command "Build and switch nix config" completed (exit code 0)</summary>
+</task-notification>
+Read the output file to retrieve the result: /private/tmp/claude-501/-Users-shunkakinoki-dotfiles/tasks/b512a9b.output
+
+---
+
+wait does ctrol + bP copy to clipboadrd?
+
+---
+
+yes it needs to copy to clipboard instead
+
+---
+
+ok please do the same to confirm hte functionality is stable
+
+---
+
+ok; cool does p has to be capital ?
+
+---
+
+oh; what are other bindings that are open so that they don't conflict?
+
+---
+
+let's add y for full pane history and v for current visible pane
+
+---
+
+ok cool create PR
+
+---
+
+maybe change isLSP to isDev
+
+---
+
+checkout to main; move       96 +++ lib.optionals isDev [
+section to the bottom after isDesktiop and recreate RP
