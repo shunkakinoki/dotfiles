@@ -109,3 +109,9 @@ openai-compatibility:
 #           protocol: "codex" # restricts the rule to a specific protocol, options: openai, gemini, claude, codex
 #       params: # JSON path (gjson/sjson syntax) -> value
 #         "reasoning.effort": "high"
+
+oauth-model-alias:
+  antigravity:
+    - name: "claude-opus-4-6-thinking"
+      alias: "claude-opus-4.6"
+      fork: true

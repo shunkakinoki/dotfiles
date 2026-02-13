@@ -25,26 +25,29 @@
 				"apiKey": "{env:CLIPROXY_API_KEY}"
 			},
 			"models": {
-				"gemini-3-pro-preview": {
-					"name": "Gemini 3.0 Pro (via shunkakinoki's CLIProxy)"
+				"claude-opus-4.6": {
+					"name": "Claude Opus 4.6 (via shunkakinoki's CLIProxy)"
 				},
-				"gpt-5.1": {
-					"name": "GPT-5.1 (via shunkakinoki's CLIProxy)"
+				"claude-sonnet-4.5-20250929": {
+					"name": "Claude Sonnet 4.5 (via shunkakinoki's CLIProxy)"
 				},
-				"gpt-5.1-codex": {
-					"name": "GPT-5.1 Codex (via shunkakinoki's CLIProxy)"
-				},
-				"gpt-5.1-codex-max": {
-					"name": "GPT-5.1 Codex Max (via shunkakinoki's CLIProxy)"
-				},
-				"claude-opus-4-5-20251101": {
-					"name": "Claude Opus 4.5 (via shunkakinoki's CLIProxy)"
-				},
-				"claude-haiku-4-5-20251001": {
+				"claude-haiku-4.5-20251001": {
 					"name": "Claude Haiku 4.5 (via shunkakinoki's CLIProxy)"
 				},
+				"gpt-5.2": {
+					"name": "GPT 5.2 (via shunkakinoki's CLIProxy)"
+				},
+				"gpt-5.3-codex": {
+					"name": "GPT 5.3 Codex (via shunkakinoki's CLIProxy)"
+				},
+				"gemini-3-pro-preview": {
+					"name": "Gemini 3 Pro (via shunkakinoki's CLIProxy)"
+				},
+				"gemini-3-flash-preview": {
+					"name": "Gemini 3 Flash (via shunkakinoki's CLIProxy)"
+				},
 				"z-ai/glm-4.7": {
-					"name": "GLM-4.7 (via shunkakinoki's CLIProxy)"
+					"name": "GLM 4.7 (via shunkakinoki's CLIProxy)"
 				}
 			}
 		},
@@ -56,26 +59,29 @@
 				"apiKey": "{env:CLIPROXY_API_KEY}"
 			},
 			"models": {
-				"gemini-3-pro-preview": {
-					"name": "Gemini 3.0 Pro (via local CLIProxyAPI)"
+				"claude-opus-4.6": {
+					"name": "Claude Opus 4.6 (via local CLIProxyAPI)"
 				},
-				"gpt-5.1": {
-					"name": "GPT-5.1 (via local CLIProxyAPI)"
+				"claude-sonnet-4.5-20250929": {
+					"name": "Claude Sonnet 4.5 (via local CLIProxyAPI)"
 				},
-				"gpt-5.1-codex": {
-					"name": "GPT-5.1 Codex (via local CLIProxyAPI)"
-				},
-				"gpt-5.1-codex-max": {
-					"name": "GPT-5.1 Codex Max (via local CLIProxyAPI)"
-				},
-				"claude-opus-4-5-20251101": {
-					"name": "Claude Opus 4.5 (via local CLIProxyAPI)"
-				},
-				"claude-haiku-4-5-20251001": {
+				"claude-haiku-4.5-20251001": {
 					"name": "Claude Haiku 4.5 (via local CLIProxyAPI)"
 				},
+				"gpt-5.2": {
+					"name": "GPT 5.2 (via local CLIProxyAPI)"
+				},
+				"gpt-5.3-codex": {
+					"name": "GPT 5.3 Codex (via local CLIProxyAPI)"
+				},
+				"gemini-3-pro-preview": {
+					"name": "Gemini 3 Pro (via local CLIProxyAPI)"
+				},
+				"gemini-3-flash-preview": {
+					"name": "Gemini 3 Flash (via local CLIProxyAPI)"
+				},
 				"glm-4.7": {
-					"name": "GLM-4.7 (via local CLIProxyAPI)"
+					"name": "GLM 4.7 (via local CLIProxyAPI)"
 				}
 			}
 		},
@@ -260,7 +266,7 @@
 				}
 			},
 			"options": {
-				"apiKey": "{env:ZAI_API_KEY}",
+				"apiKey": "{env:ZAI_API_KEY}"
 			}
 		}
 	},
