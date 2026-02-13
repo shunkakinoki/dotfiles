@@ -3,7 +3,7 @@
   inputs,
 }:
 let
-  inherit (inputs.host) isDesktop isLSP;
+  inherit (inputs.host) isDesktop isDev;
 in
 with pkgs;
 [
@@ -93,7 +93,7 @@ with pkgs;
   zellij
   zoxide
 ]
-++ lib.optionals isLSP [
+++ lib.optionals isDev [
   gopls
   lua-language-server
   nil

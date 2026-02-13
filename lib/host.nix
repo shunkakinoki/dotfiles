@@ -12,7 +12,7 @@
   isDesktop = false;
 
   # Install language server packages
-  isLSP = true;
+  isDev = true;
 
   # Get the node name for OpenClaw remote mode
   # Falls back to "unknown" if no hostname is detected
