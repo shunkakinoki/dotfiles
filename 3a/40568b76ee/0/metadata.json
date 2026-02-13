@@ -1,0 +1,34 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "3a40568b76ee",
+  "session_id": "6d726179-fd4c-4078-acd0-9f8ed2364b4b",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-13T14:00:03.814781Z",
+  "branch": "feat/tmux-clipboard-and-lsp-packages",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "home-manager/packages/default.nix",
+    "lib/host.nix"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "8238d0ed-f7f1-469c-a60a-b25174e07e94",
+  "checkpoint_transcript_start": 1185,
+  "transcript_lines_at_start": 1185,
+  "token_usage": {
+    "input_tokens": 6,
+    "cache_creation_tokens": 764,
+    "cache_read_tokens": 552748,
+    "output_tokens": 173,
+    "api_call_count": 4
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-13T14:00:02.769281Z",
+    "agent_lines": 3,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 3,
+    "agent_percentage": 100
+  },
+  "transcript_path": ".claude/projects/-Users-shunkakinoki-dotfiles/6d726179-fd4c-4078-acd0-9f8ed2364b4b.jsonl"
+}
