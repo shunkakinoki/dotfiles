@@ -1,4 +1,5 @@
 [
+  ./bin-shells
   ./cargo-globals
   ./openclaw
   ./local-binaries
