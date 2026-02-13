@@ -11,6 +11,9 @@
   # Desktop machines with GUI - default false, override in named-hosts
   isDesktop = false;
 
+  # Install language server packages
+  isLSP = true;
+
   # Get the node name for OpenClaw remote mode
   # Falls back to "unknown" if no hostname is detected
   nodeName =

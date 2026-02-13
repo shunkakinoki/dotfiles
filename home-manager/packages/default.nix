@@ -3,7 +3,7 @@
   inputs,
 }:
 let
-  inherit (inputs.host) isDesktop;
+  inherit (inputs.host) isDesktop isLSP;
 in
 with pkgs;
 [
@@ -92,6 +92,13 @@ with pkgs;
   yq
   zellij
   zoxide
+]
+++ lib.optionals isLSP [
+  gopls
+  lua-language-server
+  nil
+  nodePackages.typescript-language-server
+  pyright
 ]
 ++ lib.optionals stdenv.isLinux [
   atop
