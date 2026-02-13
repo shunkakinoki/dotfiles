@@ -93,13 +93,6 @@ with pkgs;
   zellij
   zoxide
 ]
-++ lib.optionals isDev [
-  gopls
-  lua-language-server
-  nil
-  nodePackages.typescript-language-server
-  pyright
-]
 ++ lib.optionals stdenv.isLinux [
   atop
   below
@@ -162,4 +155,11 @@ with pkgs;
   wl-clip-persist
   wl-clipboard
   wtype
+]
+++ lib.optionals isDev [
+  gopls
+  lua-language-server
+  nil
+  nodePackages.typescript-language-server
+  pyright
 ]
