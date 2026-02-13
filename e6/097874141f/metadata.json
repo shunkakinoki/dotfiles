@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "e6097874141f",
+  "strategy": "manual-commit",
+  "branch": "feat/tmux-clipboard-and-lsp-packages",
+  "checkpoints_count": 4,
+  "files_touched": [
+    "home-manager/packages/default.nix",
+    "home-manager/programs/tmux/tmux.conf",
+    "lib/host.nix"
+  ],
+  "sessions": [
+    {
+      "metadata": "/e6/097874141f/0/metadata.json",
+      "transcript": "/e6/097874141f/0/full.jsonl",
+      "context": "/e6/097874141f/0/context.md",
+      "content_hash": "/e6/097874141f/0/content_hash.txt",
+      "prompt": "/e6/097874141f/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 211,
+    "cache_creation_tokens": 124682,
+    "cache_read_tokens": 6645039,
+    "output_tokens": 3084,
+    "api_call_count": 69
+  }
+}
