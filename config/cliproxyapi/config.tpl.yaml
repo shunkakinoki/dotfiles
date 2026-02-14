@@ -112,6 +112,6 @@ openai-compatibility:
 
 oauth-model-alias:
   antigravity:
-    - name: "__CLAUDE_OPUS_THINKING_NONDOT__"
+    - name: "__CLAUDE_OPUS_THINKING__"
       alias: "__CLAUDE_OPUS__"
       fork: true
