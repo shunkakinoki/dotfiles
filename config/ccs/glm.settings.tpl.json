@@ -1,0 +1,10 @@
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.z.ai/api/anthropic",
+    "ANTHROPIC_AUTH_TOKEN": "__ZAI_API_KEY__",
+    "ANTHROPIC_MODEL": "__GLM__",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "__GLM__",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "__GLM__",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "__GLM__"
+  }
+}

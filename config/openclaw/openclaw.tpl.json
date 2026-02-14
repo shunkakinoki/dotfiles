@@ -14,8 +14,8 @@
         "api": "openai-completions",
         "models": [
           {
-            "id": "claude-opus-4.6",
-            "name": "Claude Opus 4.6",
+            "id": "__CLAUDE_OPUS__",
+            "name": "__CLAUDE_OPUS_PRETTY__",
             "reasoning": true,
             "input": [
               "text"
@@ -30,8 +30,8 @@
             "maxTokens": 32000
           },
           {
-            "id": "claude-sonnet-4.5-20250929",
-            "name": "Claude Sonnet 4.5",
+            "id": "__CLAUDE_SONNET__",
+            "name": "__CLAUDE_SONNET_PRETTY__",
             "reasoning": false,
             "input": [
               "text"
@@ -46,8 +46,8 @@
             "maxTokens": 32000
           },
           {
-            "id": "claude-haiku-4.5-20251001",
-            "name": "Claude Haiku 4.5",
+            "id": "__CLAUDE_HAIKU__",
+            "name": "__CLAUDE_HAIKU_PRETTY__",
             "reasoning": false,
             "input": [
               "text"
@@ -62,8 +62,8 @@
             "maxTokens": 32000
           },
           {
-            "id": "claude-opus-4.6-thinking",
-            "name": "Claude Opus 4.6 Thinking",
+            "id": "__CLAUDE_OPUS_THINKING__",
+            "name": "__CLAUDE_OPUS_THINKING_PRETTY__",
             "reasoning": true,
             "input": [
               "text"
@@ -78,8 +78,8 @@
             "maxTokens": 32000
           },
           {
-            "id": "claude-sonnet-4.5-thinking",
-            "name": "Claude Sonnet 4.5 Thinking",
+            "id": "__CLAUDE_SONNET_THINKING__",
+            "name": "__CLAUDE_SONNET_THINKING_PRETTY__",
             "reasoning": true,
             "input": [
               "text"
@@ -94,8 +94,8 @@
             "maxTokens": 32000
           },
           {
-            "id": "gpt-5.2",
-            "name": "GPT 5.2",
+            "id": "__GPT__",
+            "name": "__GPT_PRETTY__",
             "reasoning": false,
             "input": [
               "text"
@@ -110,8 +110,8 @@
             "maxTokens": 32000
           },
           {
-            "id": "gpt-5.3-codex",
-            "name": "GPT 5.3 Codex",
+            "id": "__GPT_CODEX__",
+            "name": "__GPT_CODEX_PRETTY__",
             "reasoning": false,
             "input": [
               "text"
@@ -126,8 +126,8 @@
             "maxTokens": 32000
           },
           {
-            "id": "gemini-3-pro-preview",
-            "name": "Gemini 3 Pro",
+            "id": "__GEMINI_PRO__",
+            "name": "__GEMINI_PRO_PRETTY__",
             "reasoning": false,
             "input": [
               "text"
@@ -142,8 +142,8 @@
             "maxTokens": 32000
           },
           {
-            "id": "gemini-3-flash-preview",
-            "name": "Gemini 3 Flash",
+            "id": "__GEMINI_FLASH__",
+            "name": "__GEMINI_FLASH_PRETTY__",
             "reasoning": false,
             "input": [
               "text"
@@ -158,8 +158,8 @@
             "maxTokens": 32000
           },
           {
-            "id": "glm-4.7",
-            "name": "GLM 4.7",
+            "id": "__GLM__",
+            "name": "__GLM_PRETTY__",
             "reasoning": false,
             "input": [
               "text"
@@ -180,9 +180,9 @@
   "agents": {
     "defaults": {
       "model": {
-        "primary": "cliproxy/claude-opus-4.6",
+        "primary": "cliproxy/__CLAUDE_OPUS__",
         "fallbacks": [
-          "cliproxy/glm-4.7"
+          "cliproxy/__GLM__"
         ]
       },
       "workspace": "__HOME__/.openclaw/workspace",

@@ -1,0 +1,12 @@
+{
+  "claude-opus": "claude-opus-4.6",
+  "claude-sonnet": "claude-sonnet-4.5-20250929",
+  "claude-haiku": "claude-haiku-4.5-20251001",
+  "claude-opus-thinking": "claude-opus-4.6-thinking",
+  "claude-sonnet-thinking": "claude-sonnet-4.5-thinking",
+  "gpt": "gpt-5.2",
+  "gpt-codex": "gpt-5.3-codex",
+  "gemini-pro": "gemini-3-pro-preview",
+  "gemini-flash": "gemini-3-flash-preview",
+  "glm": "glm-4.7"
+}

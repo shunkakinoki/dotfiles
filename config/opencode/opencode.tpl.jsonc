@@ -1,8 +1,8 @@
 {
 	"$schema": "https://opencode.ai/config.json",
 	"theme": "opencode",
-	"model": "cliproxyapi/glm-4.7",
-	"small_model": "cliproxyapi/glm-4.7",
+	"model": "cliproxyapi/__GLM__",
+	"small_model": "cliproxyapi/__GLM__",
 	"autoupdate": true,
 	"agent": {
 		"code-reviewer": {
@@ -25,29 +25,29 @@
 				"apiKey": "{env:CLIPROXY_API_KEY}"
 			},
 			"models": {
-				"claude-opus-4.6": {
-					"name": "Claude Opus 4.6 (via shunkakinoki's CLIProxy)"
+				"__CLAUDE_OPUS__": {
+					"name": "__CLAUDE_OPUS_PRETTY__ (via shunkakinoki's CLIProxy)"
 				},
-				"claude-sonnet-4.5-20250929": {
-					"name": "Claude Sonnet 4.5 (via shunkakinoki's CLIProxy)"
+				"__CLAUDE_SONNET__": {
+					"name": "__CLAUDE_SONNET_PRETTY__ (via shunkakinoki's CLIProxy)"
 				},
-				"claude-haiku-4.5-20251001": {
-					"name": "Claude Haiku 4.5 (via shunkakinoki's CLIProxy)"
+				"__CLAUDE_HAIKU__": {
+					"name": "__CLAUDE_HAIKU_PRETTY__ (via shunkakinoki's CLIProxy)"
 				},
-				"gpt-5.2": {
-					"name": "GPT 5.2 (via shunkakinoki's CLIProxy)"
+				"__GPT__": {
+					"name": "__GPT_PRETTY__ (via shunkakinoki's CLIProxy)"
 				},
-				"gpt-5.3-codex": {
-					"name": "GPT 5.3 Codex (via shunkakinoki's CLIProxy)"
+				"__GPT_CODEX__": {
+					"name": "__GPT_CODEX_PRETTY__ (via shunkakinoki's CLIProxy)"
 				},
-				"gemini-3-pro-preview": {
-					"name": "Gemini 3 Pro (via shunkakinoki's CLIProxy)"
+				"__GEMINI_PRO__": {
+					"name": "__GEMINI_PRO_PRETTY__ (via shunkakinoki's CLIProxy)"
 				},
-				"gemini-3-flash-preview": {
-					"name": "Gemini 3 Flash (via shunkakinoki's CLIProxy)"
+				"__GEMINI_FLASH__": {
+					"name": "__GEMINI_FLASH_PRETTY__ (via shunkakinoki's CLIProxy)"
 				},
-				"z-ai/glm-4.7": {
-					"name": "GLM 4.7 (via shunkakinoki's CLIProxy)"
+				"z-ai/__GLM__": {
+					"name": "__GLM_PRETTY__ (via shunkakinoki's CLIProxy)"
 				}
 			}
 		},
@@ -59,29 +59,29 @@
 				"apiKey": "{env:CLIPROXY_API_KEY}"
 			},
 			"models": {
-				"claude-opus-4.6": {
-					"name": "Claude Opus 4.6 (via local CLIProxyAPI)"
+				"__CLAUDE_OPUS__": {
+					"name": "__CLAUDE_OPUS_PRETTY__ (via local CLIProxyAPI)"
 				},
-				"claude-sonnet-4.5-20250929": {
-					"name": "Claude Sonnet 4.5 (via local CLIProxyAPI)"
+				"__CLAUDE_SONNET__": {
+					"name": "__CLAUDE_SONNET_PRETTY__ (via local CLIProxyAPI)"
 				},
-				"claude-haiku-4.5-20251001": {
-					"name": "Claude Haiku 4.5 (via local CLIProxyAPI)"
+				"__CLAUDE_HAIKU__": {
+					"name": "__CLAUDE_HAIKU_PRETTY__ (via local CLIProxyAPI)"
 				},
-				"gpt-5.2": {
-					"name": "GPT 5.2 (via local CLIProxyAPI)"
+				"__GPT__": {
+					"name": "__GPT_PRETTY__ (via local CLIProxyAPI)"
 				},
-				"gpt-5.3-codex": {
-					"name": "GPT 5.3 Codex (via local CLIProxyAPI)"
+				"__GPT_CODEX__": {
+					"name": "__GPT_CODEX_PRETTY__ (via local CLIProxyAPI)"
 				},
-				"gemini-3-pro-preview": {
-					"name": "Gemini 3 Pro (via local CLIProxyAPI)"
+				"__GEMINI_PRO__": {
+					"name": "__GEMINI_PRO_PRETTY__ (via local CLIProxyAPI)"
 				},
-				"gemini-3-flash-preview": {
-					"name": "Gemini 3 Flash (via local CLIProxyAPI)"
+				"__GEMINI_FLASH__": {
+					"name": "__GEMINI_FLASH_PRETTY__ (via local CLIProxyAPI)"
 				},
-				"glm-4.7": {
-					"name": "GLM 4.7 (via local CLIProxyAPI)"
+				"__GLM__": {
+					"name": "__GLM_PRETTY__ (via local CLIProxyAPI)"
 				}
 			}
 		},
