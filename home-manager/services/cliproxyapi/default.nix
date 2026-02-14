@@ -128,6 +128,7 @@ in
           pkgs.coreutils
           pkgs.awscli2
           pkgs.docker
+          pkgs.curl
         ]
       }";
       ExecStart = "${dockerStartScript}";
