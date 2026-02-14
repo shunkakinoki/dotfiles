@@ -14,7 +14,7 @@
         "api": "openai-completions",
         "models": [
           {
-            "id": "claude-opus-4.6",
+            "id": "claude-opus-4-6",
             "name": "Claude Opus 4.6",
             "reasoning": true,
             "input": [
@@ -30,7 +30,7 @@
             "maxTokens": 32000
           },
           {
-            "id": "claude-sonnet-4.5-20250929",
+            "id": "claude-sonnet-4-5-20250929",
             "name": "Claude Sonnet 4.5",
             "reasoning": false,
             "input": [
@@ -46,7 +46,7 @@
             "maxTokens": 32000
           },
           {
-            "id": "claude-haiku-4.5-20251001",
+            "id": "claude-haiku-4-5-20251001",
             "name": "Claude Haiku 4.5",
             "reasoning": false,
             "input": [
@@ -62,7 +62,7 @@
             "maxTokens": 32000
           },
           {
-            "id": "claude-opus-4.6-thinking",
+            "id": "claude-opus-4-6-thinking",
             "name": "Claude Opus 4.6 Thinking",
             "reasoning": true,
             "input": [
@@ -78,7 +78,7 @@
             "maxTokens": 32000
           },
           {
-            "id": "claude-sonnet-4.5-thinking",
+            "id": "claude-sonnet-4-5-thinking",
             "name": "Claude Sonnet 4.5 Thinking",
             "reasoning": true,
             "input": [
@@ -180,7 +180,7 @@
   "agents": {
     "defaults": {
       "model": {
-        "primary": "cliproxy/claude-opus-4.6",
+        "primary": "cliproxy/claude-opus-4-6",
         "fallbacks": [
           "cliproxy/glm-4.7"
         ]

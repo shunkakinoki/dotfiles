@@ -113,5 +113,5 @@ openai-compatibility:
 oauth-model-alias:
   antigravity:
     - name: "claude-opus-4-6-thinking"
-      alias: "claude-opus-4.6"
+      alias: "claude-opus-4-6"
       fork: true
