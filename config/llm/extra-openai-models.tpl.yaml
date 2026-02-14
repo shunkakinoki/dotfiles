@@ -1,0 +1,17 @@
+# Custom OpenAI-compatible models for llm
+- model_id: claude-sonnet
+  model_name: __CLAUDE_SONNET__
+  api_base: http://localhost:8317/v1
+  api_key_name: cliproxyapi
+- model_id: claude-opus
+  model_name: __CLAUDE_OPUS__
+  api_base: http://localhost:8317/v1
+  api_key_name: cliproxyapi
+- model_id: claude-haiku
+  model_name: __CLAUDE_HAIKU__
+  api_base: http://localhost:8317/v1
+  api_key_name: cliproxyapi
+- model_id: glm
+  model_name: __GLM__
+  api_base: http://localhost:8317/v1
+  api_key_name: cliproxyapi

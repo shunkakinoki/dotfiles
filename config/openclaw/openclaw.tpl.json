@@ -1,0 +1,263 @@
+{
+  "browser": {
+    "enabled": true,
+    "executablePath": "__CHROMIUM_PATH__",
+    "headless": true,
+    "noSandbox": true
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "cliproxy": {
+        "baseUrl": "http://localhost:8317/v1",
+        "apiKey": "__CLIPROXY_API_KEY__",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "__CLAUDE_OPUS__",
+            "name": "__CLAUDE_OPUS_PRETTY__",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "__CLAUDE_SONNET__",
+            "name": "__CLAUDE_SONNET_PRETTY__",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "__CLAUDE_HAIKU__",
+            "name": "__CLAUDE_HAIKU_PRETTY__",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "__CLAUDE_OPUS_THINKING__",
+            "name": "__CLAUDE_OPUS_THINKING_PRETTY__",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "__CLAUDE_SONNET_THINKING__",
+            "name": "__CLAUDE_SONNET_THINKING_PRETTY__",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "__GPT__",
+            "name": "__GPT_PRETTY__",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "__GPT_CODEX__",
+            "name": "__GPT_CODEX_PRETTY__",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "__GEMINI_PRO__",
+            "name": "__GEMINI_PRO_PRETTY__",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "__GEMINI_FLASH__",
+            "name": "__GEMINI_FLASH_PRETTY__",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          },
+          {
+            "id": "__GLM__",
+            "name": "__GLM_PRETTY__",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 32000
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "cliproxy/__CLAUDE_OPUS__",
+        "fallbacks": [
+          "cliproxy/__GLM__"
+        ]
+      },
+      "workspace": "__HOME__/.openclaw/workspace",
+      "thinkingDefault": "high",
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    },
+    "list": [
+      {
+        "id": "main",
+        "default": true
+      }
+    ]
+  },
+  "messages": {
+    "queue": {
+      "mode": "interrupt"
+    },
+    "ackReactionScope": "group-mentions"
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto"
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "capabilities": {
+        "inlineButtons": "allowlist"
+      },
+      "dmPolicy": "pairing",
+      "botToken": "__TELEGRAM_TOKEN__",
+      "groups": {
+        "*": {
+          "requireMention": false
+        },
+        "-1003612372477": {
+          "requireMention": false,
+          "enabled": true
+        }
+      },
+      "allowFrom": [
+        983653361,
+        2104262990
+      ],
+      "groupPolicy": "allowlist",
+      "reactionNotifications": "all",
+      "reactionLevel": "extensive",
+      "replyToMode": "first",
+      "streamMode": "partial"
+    }
+  },
+  "gateway": {
+    "mode": "local",
+    "bind": "lan",
+    "auth": {
+      "mode": "token",
+      "token": "__GATEWAY_TOKEN__"
+    },
+    "trustedProxies": [
+      "10.0.0.0/8",
+      "172.16.0.0/12",
+      "192.168.0.0/16"
+    ]
+  },
+  "plugins": {
+    "load": {
+      "paths": [
+        "__HOME__/.openclaw/plugins"
+      ]
+    },
+    "slots": {
+      "memory": ""
+    }
+  }
+}

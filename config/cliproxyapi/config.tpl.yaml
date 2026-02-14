@@ -1,0 +1,117 @@
+# Server port
+port: 8317
+# Management API settings
+remote-management:
+  # Whether to allow remote (non-localhost) management access.
+  # When false, only localhost can access management endpoints (a key is still required).
+  allow-remote: true
+  # Management key. If a plaintext value is provided here, it will be hashed on startup.
+  # All management requests (even from localhost) require this key.
+  # Leave empty to disable the Management API entirely (404 for all /v0/management routes).
+  secret-key: "__CLIPROXY_MANAGEMENT_PASSWORD__"
+  # Disable the bundled management control panel asset download and HTTP route when true.
+  disable-control-panel: false
+# Authentication directory (supports ~ for home directory). If you use Windows, please set the directory like this: `C:/cli-proxy-api/`
+# Use objectstore/auths subdirectory to avoid duplicate scanning (root-level files are legacy)
+auth-dir: "~/.cli-proxy-api/objectstore/auths"
+# API keys for client authentication (optional - leave commented for open access)
+# api-keys:
+#   - "__CLIPROXY_API_KEY__"
+
+# Enable debug logging
+debug: true
+# When true, write application logs to rotating files instead of stdout
+logging-to-file: true
+# When false, disable in-memory usage statistics aggregation
+usage-statistics-enabled: true
+# Proxy URL. Supports socks5/http/https protocols. Example: socks5://user:pass@192.168.1.1:1080/
+proxy-url: ""
+# Number of times to retry a request. Retries will occur if the HTTP response code is 403, 408, 500, 502, 503, or 504.
+request-retry: 3
+# Routing strategy: "round-robin" (default) or "fill-first" (tries first matching provider)
+routing:
+  strategy: "fill-first"
+# Quota exceeded behavior
+quota-exceeded:
+  switch-project: true # Whether to automatically switch to another project when a quota is exceeded
+  switch-preview-model: true # Whether to automatically switch to a preview model when a quota is exceeded
+# When true, enable authentication for the WebSocket API (/v1/ws).
+ws-auth: false
+# AMP integration
+ampcode:
+  upstream-url: "https://ampcode.com"
+  upstream-api-key: "__AMP_UPSTREAM_API_KEY__"
+  restrict-management-to-localhost: false
+  # Map non-prefixed model names to antigravity provider's gemini-prefixed models
+  model-mappings:
+    - from: "claude-opus-4-5-thinking"
+      to: "gemini-claude-opus-4-5-thinking"
+    - from: "claude-sonnet-4-5"
+      to: "gemini-claude-sonnet-4-5"
+    - from: "claude-sonnet-4-5-thinking"
+      to: "gemini-claude-sonnet-4-5-thinking"
+# Gemini API keys (preferred)
+# gemini-api-key:
+#   - api-key: "AIzaSy...01"
+#     base-url: "https://generativelanguage.googleapis.com"
+#     headers:
+#       X-Custom-Header: "custom-value"
+#     proxy-url: "socks5://proxy.example.com:1080"
+#   - api-key: "AIzaSy...02"
+
+# Codex API keys
+# codex-api-key:
+#   - api-key: "sk-atSM..."
+#     base-url: "https://www.example.com" # use the custom codex API endpoint
+#     headers:
+#       X-Custom-Header: "custom-value"
+#     proxy-url: "socks5://proxy.example.com:1080" # optional: per-key proxy override
+
+# Claude API keys
+# claude-api-key:
+#   - api-key: "sk-atSM..." # use the official claude API key, no need to set the base url
+#   - api-key: "sk-atSM..."
+#     base-url: "https://www.example.com" # use the custom claude API endpoint
+#     headers:
+#       X-Custom-Header: "custom-value"
+#     proxy-url: "socks5://proxy.example.com:1080" # optional: per-key proxy override
+#     models:
+#       - name: "claude-3-5-sonnet-20241022" # upstream model name
+#        alias: "claude-sonnet-latest" # client alias mapped to the upstream model
+
+# OpenAI compatibility providers
+openai-compatibility:
+  - name: "openrouter"
+    base-url: "https://openrouter.ai/api/v1"
+    api-key-entries:
+      - api-key: "__OPENROUTER_API_KEY__"
+    models:
+      - name: "@preset/glm-4-7"
+        alias: "glm-4.7"
+  - name: "z-ai"
+    base-url: "https://api.z.ai/api/coding/paas/v4"
+    api-key-entries:
+      - api-key: "__ZAI_API_KEY__"
+    models:
+      - name: "glm-4.7"
+        alias: "glm-4.7"
+
+# payload: # Optional payload configuration
+#   default: # Default rules only set parameters when they are missing in the payload.
+#     - models:
+#         - name: "gemini-2.5-pro" # Supports wildcards (e.g., "gemini-*")
+#           protocol: "gemini" # restricts the rule to a specific protocol, options: openai, gemini, claude, codex
+#       params: # JSON path (gjson/sjson syntax) -> value
+#         "generationConfig.thinkingConfig.thinkingBudget": 32768
+#   override: # Override rules always set parameters, overwriting any existing values.
+#     - models:
+#         - name: "gpt-*" # Supports wildcards (e.g., "gpt-*")
+#           protocol: "codex" # restricts the rule to a specific protocol, options: openai, gemini, claude, codex
+#       params: # JSON path (gjson/sjson syntax) -> value
+#         "reasoning.effort": "high"
+
+oauth-model-alias:
+  antigravity:
+    - name: "__CLAUDE_OPUS_THINKING_NONDOT__"
+      alias: "__CLAUDE_OPUS__"
+      fork: true
