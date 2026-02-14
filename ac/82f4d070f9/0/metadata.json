@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "ac82f4d070f9",
+  "session_id": "652bb704-d6ef-4aef-8371-1c0a8dd289e9",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-14T23:08:11.910288Z",
+  "branch": "feat/llm-update",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "plan-lexical-mapping-globe.md"
+  ],
+  "agent": "Claude Code",
+  "token_usage": {
+    "input_tokens": 27,
+    "cache_creation_tokens": 62018,
+    "cache_read_tokens": 825966,
+    "output_tokens": 1319,
+    "api_call_count": 19
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-14T23:08:11.874207Z",
+    "agent_lines": 0,
+    "human_added": 748,
+    "human_modified": 72,
+    "human_removed": 0,
+    "total_committed": 820,
+    "agent_percentage": 0
+  },
+  "transcript_path": ".claude/projects/-Users-shunkakinoki-dotfiles/652bb704-d6ef-4aef-8371-1c0a8dd289e9.jsonl"
+}
