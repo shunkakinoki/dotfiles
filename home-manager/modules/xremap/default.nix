@@ -13,7 +13,8 @@ let
   hyperPrefix = "C-Alt-Shift-Super-";
   ctrlPrefix = "C-";
   # "f" is excluded — passes through as Hyper+F for Hyprland fullscreen bind.
-  # See: config/hyprland/hyprland.conf (Window Management section)
+  # "l" is excluded — passes through as Hyper+L for Hyprland lock screen bind.
+  # See: config/hyprland/hyprland.conf (Window Management section, Lock Screen section)
   letters = [
     "a"
     "b"
@@ -25,7 +26,6 @@ let
     "i"
     "j"
     "k"
-    "l"
     "m"
     "n"
     "o"
