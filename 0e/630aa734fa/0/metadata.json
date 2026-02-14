@@ -1,0 +1,35 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "0e630aa734fa",
+  "session_id": "652bb704-d6ef-4aef-8371-1c0a8dd289e9",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-14T23:53:34.450926Z",
+  "branch": "fix/shell-test-coverage",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "scripts/llm-update.sh",
+    "spec/coverage_spec.sh",
+    "spec/llm_update_spec.sh"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "e7658ae3-f73d-4969-aa7f-c70e90f3a6f8",
+  "checkpoint_transcript_start": 152,
+  "transcript_lines_at_start": 152,
+  "token_usage": {
+    "input_tokens": 36,
+    "cache_creation_tokens": 19739,
+    "cache_read_tokens": 1726795,
+    "output_tokens": 1423,
+    "api_call_count": 28
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-14T23:53:34.379609Z",
+    "agent_lines": 96,
+    "human_added": 128,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 224,
+    "agent_percentage": 42.857142857142854
+  },
+  "transcript_path": ".claude/projects/-Users-shunkakinoki-dotfiles/652bb704-d6ef-4aef-8371-1c0a8dd289e9.jsonl"
+}

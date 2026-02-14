@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "0e630aa734fa",
+  "strategy": "manual-commit",
+  "branch": "fix/shell-test-coverage",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "scripts/llm-update.sh",
+    "spec/coverage_spec.sh",
+    "spec/llm_update_spec.sh"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0e/630aa734fa/0/metadata.json",
+      "transcript": "/0e/630aa734fa/0/full.jsonl",
+      "context": "/0e/630aa734fa/0/context.md",
+      "content_hash": "/0e/630aa734fa/0/content_hash.txt",
+      "prompt": "/0e/630aa734fa/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 36,
+    "cache_creation_tokens": 19739,
+    "cache_read_tokens": 1726795,
+    "output_tokens": 1423,
+    "api_call_count": 28
+  }
+}
