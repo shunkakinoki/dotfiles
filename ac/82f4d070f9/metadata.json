@@ -3,9 +3,20 @@
   "checkpoint_id": "ac82f4d070f9",
   "strategy": "manual-commit",
   "branch": "feat/llm-update",
-  "checkpoints_count": 1,
+  "checkpoints_count": 2,
   "files_touched": [
-    "plan-lexical-mapping-globe.md"
+    "config/ccs/agy.settings.tpl.json",
+    "config/ccs/codex.settings.tpl.json",
+    "config/ccs/gemini.settings.tpl.json",
+    "config/ccs/glm.settings.tpl.json",
+    "config/cliproxyapi/config.tpl.yaml",
+    "config/codex/config.tpl.toml",
+    "config/llm/extra-openai-models.tpl.yaml",
+    "config/openclaw/openclaw.tpl.json",
+    "config/opencode/opencode.tpl.jsonc",
+    "plan-cozy-strolling-wombat.md",
+    "plan-lexical-mapping-globe.md",
+    "scripts/llm-update.sh"
   ],
   "sessions": [
     {
@@ -14,13 +25,20 @@
       "context": "/ac/82f4d070f9/0/context.md",
       "content_hash": "/ac/82f4d070f9/0/content_hash.txt",
       "prompt": "/ac/82f4d070f9/0/prompt.txt"
+    },
+    {
+      "metadata": "/ac/82f4d070f9/1/metadata.json",
+      "transcript": "/ac/82f4d070f9/1/full.jsonl",
+      "context": "/ac/82f4d070f9/1/context.md",
+      "content_hash": "/ac/82f4d070f9/1/content_hash.txt",
+      "prompt": "/ac/82f4d070f9/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 27,
-    "cache_creation_tokens": 62018,
-    "cache_read_tokens": 825966,
-    "output_tokens": 1319,
-    "api_call_count": 19
+    "input_tokens": 49,
+    "cache_creation_tokens": 118874,
+    "cache_read_tokens": 2024273,
+    "output_tokens": 3000,
+    "api_call_count": 37
   }
 }

@@ -1,0 +1,180 @@
+Implement the following plan:
+
+# Plan: Template-based model propagation with `__PLACEHOLDER__` substitution
+
+## Context
+
+`models.json` is the single source of truth for model identifiers, and `scripts/llm-update.sh` (230 lines) propagates these into 6 tool configs using complex per-tool jq transformations. The goal is to replace this with a simple, transparent placeholder-based approach where config templates contain `__CLAUDE_OPUS__`-style tokens that get sed-substituted from `models.json` — matching the existing secret placeholder pattern (`__CLIPROXY_API_KEY__`).
+
+## Approach
+
+1. Create `.tpl.*` source template files with model placeholders alongside existing secret placeholders
+2. Rewrite `llm-update.sh` (~50 lines) to do sed substitution: `.tpl.*` files + `models.json` → output files
+3. Both `.tpl` source files and generated outputs are committed to git
+
+## Placeholder convention
+
+Transform `models.json` key → placeholder: uppercase, `-` → `_`, wrap in `__...__`
+
+| models.json key | ID placeholder | Pretty placeholder | NONDOT placeholder |
+|---|---|---|---|
+| `claude-opus` | `__CLAUDE_OPUS__` | `__CLAUDE_OPUS_PRETTY__` | `__CLAUDE_OPUS_NONDOT__` |
+| `claude-sonnet` | `__CLAUDE_SONNET__` | `__CLAUDE_SONNET_PRETTY__` | — |
+| `gpt-codex` | `__GPT_CODEX__` | `__GPT_CODEX_PRETTY__` | — |
+| ... | (same pattern for all 10 aliases) | | |
+
+- **`__X__`** → raw model ID (e.g. `claude-opus-4.6`)
+- **`__X_PRETTY__`** → display name (e.g. `Claude Opus 4.6`) — used in openclaw/opencode
+- **`__X_NONDOT__`** → dots→hyphens variant (e.g. `claude-opus-4-6`) — used in cliproxy API format
+
+## File pairs
+
+| Source template (committed) | Generated output (committed) |
+|---|---|
+| `config/openclaw/openclaw.tpl.json` | `config/openclaw/openclaw.template.json` |
+| `config/opencode/opencode.tpl.jsonc` | `config/opencode/opencode.jsonc` |
+| `config/llm/extra-openai-models.tpl.yaml` | `config/llm/extra-openai-models.yaml` |
+| `config/ccs/agy.settings.tpl.json` | `config/ccs/agy.settings.template.json` |
+| `config/ccs/codex.settings.tpl.json` | `config/ccs/codex.settings.template.json` |
+| `config/ccs/gemini.settings.tpl.json` | `config/ccs/gemini.settings.template.json` |
+| `config/ccs/glm.settings.tpl.json` | `config/ccs/glm.settings.template.json` |
+| `config/codex/config.tpl.toml` | `config/codex/config.toml` |
+| `config/cliproxyapi/config.tpl.yaml` | `config/cliproxyapi/config.template.yaml` |
+
+## Implementation steps
+
+### Step 1: Create `.tpl.*` source templates (9 files)
+
+Copy each output file → `.tpl.*`, then replace concrete model IDs with placeholders.
+
+Example transformations:
+
+**`config/ccs/agy.settings.tpl.json`** (simple — IDs only):
+```json
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:8317/api/provider/agy",
+    "ANTHROPIC_AUTH_TOKEN": "__CLIPROXY_API_KEY__",
+    "ANTHROPIC_MODEL": "__CLAUDE_OPUS_THINKING__",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "__CLAUDE_OPUS_THINKING__",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "__CLAUDE_OPUS_THINKING__",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "__CLAUDE_SONNET__"
+  }
+}
+```
+
+**`config/openclaw/openclaw.tpl.json`** (IDs + pretty names):
+```json
+{ "id": "__CLAUDE_OPUS__", "name": "__CLAUDE_OPUS_PRETTY__", "reasoning": true, ... }
+```
+Also: `"primary": "cliproxy/__CLAUDE_OPUS__"`, `"fallbacks": ["cliproxy/__GLM__"]`
+
+**`config/opencode/opencode.tpl.jsonc`** (IDs as JSON keys + pretty names):
+```jsonc
+"model": "cliproxyapi/__GLM__",
+"__CLAUDE_OPUS__": { "name": "__CLAUDE_OPUS_PRETTY__ (via local CLIProxyAPI)" },
+"z-ai/__GLM__": { "name": "__GLM_PRETTY__ (via shunkakinoki's CLIProxy)" }
+```
+
+**`config/codex/config.tpl.toml`** (single ID):
+```toml
+model = "__GPT_CODEX__"
+```
+
+**`config/cliproxyapi/config.tpl.yaml`** (ID + NONDOT variant):
+```yaml
+oauth-model-alias:
+  antigravity:
+    - name: "__CLAUDE_OPUS_THINKING_NONDOT__"
+      alias: "__CLAUDE_OPUS__"
+      fork: true
+```
+
+**`config/llm/extra-openai-models.tpl.yaml`** (IDs only):
+```yaml
+- model_id: claude-opus
+  model_name: __CLAUDE_OPUS__
+```
+
+### Step 2: Rewrite `scripts/llm-update.sh`
+
+Replace 230-line jq script with ~50-line sed-based substitution:
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+MODELS="$ROOT/models.json"
+
+# Pretty name derivation (via jq, already a dependency)
+PRETTY_JQ='gsub("-20[0-9]{6}$";"") | gsub("-preview$";"") |
+  split("-") | reduce .[] as $s ([]; if ($s|test("^[0-9]+$")) and length>0 and (last|test("^[0-9]")) then .[:-1]+[last+"."+$s] else .+[$s] end) |
+  map(if .=="claude" then "Claude" elif .=="gpt" then "GPT" elif .=="gemini" then "Gemini" elif .=="glm" then "GLM" elif test("^[0-9]") then . else (.[0:1]|ascii_upcase)+.[1:] end) |
+  join(" ")'
+
+# Build sed args from models.json
+sed_args=()
+while IFS=$'\t' read -r key value pretty nondot; do
+  placeholder="__$(echo "$key" | tr 'a-z-' 'A-Z_')__"
+  sed_args+=(-e "s|${placeholder%__}_PRETTY__|${pretty}|g")
+  sed_args+=(-e "s|${placeholder%__}_NONDOT__|${nondot}|g")
+  sed_args+=(-e "s|${placeholder}|${value}|g")
+done < <(jq -r "$PRETTY_JQ as \$pjq | to_entries[] |
+  [.key, .value, (.value | $PRETTY_JQ), (.value | gsub(\"\\.\";  \"-\"))] |
+  @tsv" "$MODELS")
+
+# Template → output pairs
+declare -A TEMPLATES=(
+  [config/openclaw/openclaw.tpl.json]=config/openclaw/openclaw.template.json
+  [config/opencode/opencode.tpl.jsonc]=config/opencode/opencode.jsonc
+  [config/llm/extra-openai-models.tpl.yaml]=config/llm/extra-openai-models.yaml
+  [config/ccs/agy.settings.tpl.json]=config/ccs/agy.settings.template.json
+  [config/ccs/codex.settings.tpl.json]=config/ccs/codex.settings.template.json
+  [config/ccs/gemini.settings.tpl.json]=config/ccs/gemini.settings.template.json
+  [config/ccs/glm.settings.tpl.json]=config/ccs/glm.settings.template.json
+  [config/codex/config.tpl.toml]=config/codex/config.toml
+  [config/cliproxyapi/config.tpl.yaml]=config/cliproxyapi/config.template.yaml
+)
+
+for src in "${!TEMPLATES[@]}"; do
+  dst="${TEMPLATES[$src]}"
+  [[ -f "$ROOT/$src" ]] || { echo "SKIP: $src"; continue; }
+  sed "${sed_args[@]}" "$ROOT/$src" > "$ROOT/$dst"
+  echo "OK: $dst"
+done
+```
+
+### Step 3: Verify output matches current state
+
+After creating templates and rewriting the script:
+1. Run `scripts/llm-update.sh`
+2. `git diff` should show zero changes in the generated output files (confirming the template+sed produces identical results to current jq approach)
+
+## Workflow after implementation
+
+**Bumping a model version:**
+1. Edit `models.json` (e.g. `"claude-opus": "claude-opus-5.0"`)
+2. Run `scripts/llm-update.sh`
+3. All 9 output files are regenerated with new model IDs + display names
+4. Commit both `models.json` and regenerated outputs
+
+**Adding a new model alias:**
+1. Add entry to `models.json`
+2. Add entries with placeholders to relevant `.tpl.*` files
+3. Run `scripts/llm-update.sh`
+4. Commit all changes
+
+## Verification
+
+1. Run `scripts/llm-update.sh` — should succeed with "OK" for all 9 configs
+2. `git diff` on all output files — should be empty (proving template+sed = current jq output)
+3. Spot-check a few outputs to confirm placeholder substitution is correct
+4. Verify JSONC comments preserved in `opencode.jsonc`
+5. Verify `__CLIPROXY_API_KEY__` and other secret placeholders are NOT touched (still present in outputs)
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/shunkakinoki/.REDACTED.jsonl
+
+---
+
+nah; it's okay push now

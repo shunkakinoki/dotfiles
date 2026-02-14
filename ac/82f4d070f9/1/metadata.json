@@ -1,0 +1,41 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "ac82f4d070f9",
+  "session_id": "76a8a807-af4f-4742-9016-53cc14c7cbf4",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-14T23:08:26.958178Z",
+  "branch": "feat/llm-update",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "config/ccs/agy.settings.tpl.json",
+    "config/ccs/codex.settings.tpl.json",
+    "config/ccs/gemini.settings.tpl.json",
+    "config/ccs/glm.settings.tpl.json",
+    "config/cliproxyapi/config.tpl.yaml",
+    "config/codex/config.tpl.toml",
+    "config/llm/extra-openai-models.tpl.yaml",
+    "config/openclaw/openclaw.tpl.json",
+    "config/opencode/opencode.tpl.jsonc",
+    "plan-cozy-strolling-wombat.md",
+    "plan-lexical-mapping-globe.md",
+    "scripts/llm-update.sh"
+  ],
+  "agent": "Claude Code",
+  "token_usage": {
+    "input_tokens": 22,
+    "cache_creation_tokens": 56856,
+    "cache_read_tokens": 1198307,
+    "output_tokens": 1681,
+    "api_call_count": 18
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-14T23:08:26.859141Z",
+    "agent_lines": 820,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 243,
+    "total_committed": 820,
+    "agent_percentage": 100
+  },
+  "transcript_path": ".claude/projects/-Users-shunkakinoki-dotfiles/76a8a807-af4f-4742-9016-53cc14c7cbf4.jsonl"
+}
