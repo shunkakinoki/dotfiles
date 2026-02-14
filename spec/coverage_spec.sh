@@ -157,6 +157,7 @@ home-manager/services/neverssl-keepalive/keepalive.sh
 install.sh
 named-hosts/kyber/rekey-galactica.sh
 named-hosts/kyber/setup.sh
+scripts/llm-update.sh
 scripts/update-gitalias.sh
 scripts/update-local-binaries.sh
 scripts/upgrade-overlays.sh"
