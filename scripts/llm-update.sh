@@ -7,7 +7,10 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MODELS="$ROOT/models.json"
 
-[[ -f "$MODELS" ]] || { echo "ERROR: models.json not found" >&2; exit 1; }
+[[ -f $MODELS ]] || {
+  echo "ERROR: models.json not found" >&2
+  exit 1
+}
 
 # jq function: derive display name from a model ID
 # claude-opus-4.6 → "Claude Opus 4.6", claude-sonnet-4.5-20250929 → "Claude Sonnet 4.5"
@@ -41,15 +44,15 @@ done < <(jq -r "$JQ_PRETTY"'
 
 # Template → output pairs
 declare -A TEMPLATES=(
-  [config/openclaw/openclaw.tpl.json]=config/openclaw/openclaw.template.json
-  [config/opencode/opencode.tpl.jsonc]=config/opencode/opencode.jsonc
-  [config/llm/extra-openai-models.tpl.yaml]=config/llm/extra-openai-models.yaml
-  [config/ccs/agy.settings.tpl.json]=config/ccs/agy.settings.template.json
-  [config/ccs/codex.settings.tpl.json]=config/ccs/codex.settings.template.json
-  [config/ccs/gemini.settings.tpl.json]=config/ccs/gemini.settings.template.json
-  [config/ccs/glm.settings.tpl.json]=config/ccs/glm.settings.template.json
-  [config/codex/config.tpl.toml]=config/codex/config.toml
-  [config/cliproxyapi/config.tpl.yaml]=config/cliproxyapi/config.template.yaml
+  ["config/openclaw/openclaw.tpl.json"]=config/openclaw/openclaw.template.json
+  ["config/opencode/opencode.tpl.jsonc"]=config/opencode/opencode.jsonc
+  ["config/llm/extra-openai-models.tpl.yaml"]=config/llm/extra-openai-models.yaml
+  ["config/ccs/agy.settings.tpl.json"]=config/ccs/agy.settings.template.json
+  ["config/ccs/codex.settings.tpl.json"]=config/ccs/codex.settings.template.json
+  ["config/ccs/gemini.settings.tpl.json"]=config/ccs/gemini.settings.template.json
+  ["config/ccs/glm.settings.tpl.json"]=config/ccs/glm.settings.template.json
+  ["config/codex/config.tpl.toml"]=config/codex/config.toml
+  ["config/cliproxyapi/config.tpl.yaml"]=config/cliproxyapi/config.template.yaml
 )
 
 echo "Updating tool configs from $MODELS ..."
@@ -57,8 +60,11 @@ echo
 
 for src in "${!TEMPLATES[@]}"; do
   dst="${TEMPLATES[$src]}"
-  [[ -f "$ROOT/$src" ]] || { echo "SKIP: $src"; continue; }
-  sed "${sed_args[@]}" "$ROOT/$src" > "$ROOT/$dst"
+  [[ -f "$ROOT/$src" ]] || {
+    echo "SKIP: $src"
+    continue
+  }
+  sed "${sed_args[@]}" "$ROOT/$src" >"$ROOT/$dst"
   echo "OK: $dst"
 done
 

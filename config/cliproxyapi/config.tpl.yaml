@@ -95,7 +95,6 @@ openai-compatibility:
     models:
       - name: "glm-4.7"
         alias: "glm-4.7"
-
 # payload: # Optional payload configuration
 #   default: # Default rules only set parameters when they are missing in the payload.
 #     - models:
@@ -109,7 +108,6 @@ openai-compatibility:
 #           protocol: "codex" # restricts the rule to a specific protocol, options: openai, gemini, claude, codex
 #       params: # JSON path (gjson/sjson syntax) -> value
 #         "reasoning.effort": "high"
-
 oauth-model-alias:
   antigravity:
     - name: "__CLAUDE_OPUS_THINKING__"
