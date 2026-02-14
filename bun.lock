@@ -19,7 +19,7 @@
         "@sourcegraph/amp": "^0.0.1770734955-g93e689",
         "@typescript/native-preview": "^7.0.0-dev.20260211.1",
         "@vibe-kit/grok-cli": "^0.0.34",
-        "agent-browser": "^0.9.2",
+        "agent-browser": "^0.10.0",
         "ccusage": "^18.0.5",
         "clawdhub": "^0.3.0",
         "cline": "^2.2.0",
@@ -1181,7 +1181,7 @@
 
     "agent-base": ["agent-base@7.1.4", "", {}, "sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ=="],
 
-    "agent-browser": ["agent-browser@0.9.3", "", { "dependencies": { "node-simctl": "^7.4.0", "playwright-core": "^1.57.0", "webdriverio": "^9.15.0", "ws": "^8.19.0", "zod": "^3.22.4" }, "bin": { "agent-browser": "bin/agent-browser.js" } }, "sha512-HiGbOProQ4joWn0E8XQtrVpn45iLQEx+4yaOla63ouWYvHS+KMvC5jcoRXPTUybQJfeP7reEghRhITCjr1pujQ=="],
+    "agent-browser": ["agent-browser@0.10.0", "", { "dependencies": { "node-simctl": "^7.4.0", "playwright-core": "^1.57.0", "webdriverio": "^9.15.0", "ws": "^8.19.0", "zod": "^3.22.4" }, "bin": { "agent-browser": "bin/agent-browser.js" } }, "sha512-aUezeusBNfoLIucmD7q/+pN0MYK3CeVSA/7t0fZBGhcbEgXwwIJfIhWJJVCwhJZ4ErKfsjNxjArLPfqX9WQkcA=="],
 
     "aggregate-error": ["aggregate-error@3.1.0", "", { "dependencies": { "clean-stack": "^2.0.0", "indent-string": "^4.0.0" } }, "sha512-4I7Td01quW/RpocfNayFdFVk1qSuoh0E7JrbRJ16nH01HhKFQ88INq9Sd+nd72zqRySlr9BmDA8xlEJ6vJMrYA=="],
 
