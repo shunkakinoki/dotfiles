@@ -1,0 +1,132 @@
+Implement the following plan:
+
+# Fix PR #799 GitHub Actions Failures
+
+## Context
+
+PR #799 (`feat/hyprland-keybinds-and-shell-compat`) adds `/bin/{bash,fish,zsh}` symlinks via a new home-manager activation module. The activation script hardcodes `/run/wrappers/bin/sudo`, which only exists on NixOS. This breaks both the **E2E Ubuntu** and **Docker build** CI jobs — they run on standard Ubuntu where sudo is at `/usr/bin/sudo`.
+
+## Root Cause
+
+**Single root cause for all 3 failing jobs:**
+
+```
+Activating binShells
+/nix/store/.../home-manager-generation: line 344: /run/wrappers/bin/sudo: No such file or directory
+make: *** [Makefile:379: nix-switch] Error 127
+```
+
+- `e2e-run (Ubuntu)` — fails during `make nix-switch`
+- `docker-build-push (amd64)` — fails during `install.sh` → home-manager activation
+- `docker-build-push (arm64)` — same as above
+
+(`docker-check` and `e2e-check` are rollup jobs that fail because their dependencies failed.)
+
+## Fix
+
+**File:** `home-manager/modules/bin-shells/default.nix`
+
+Replace hardcoded `/run/wrappers/bin/sudo` with the same sudo detection pattern already used in `home-manager/modules/tailscale/default.nix` (lines 226-250):
+
+```nix
+{ lib, pkgs, ... }:
+let
+  inherit (pkgs.stdenv) isLinux;
+in
+{
+  config = lib.mkIf isLinux {
+    home.activation.binShells = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      SUDO_CMD=""
+      if command -v sudo >/dev/null 2>&1; then
+        SUDO_CMD="sudo"
+      elif [ -x /run/wrappers/bin/sudo ]; then
+        SUDO_CMD="/run/wrappers/bin/sudo"
+      elif [ -x /usr/bin/sudo ]; then
+        SUDO_CMD="/usr/bin/sudo"
+      elif [ "$(id -u)" -ne 0 ]; then
+        echo "Creating /bin shell symlinks requires root privileges, but sudo is not available." >&2
+        exit 1
+      fi
+
+      run_root_cmd() {
+        if [ -n "$SUDO_CMD" ]; then
+          ''${DRY_RUN_CMD:-} "$SUDO_CMD" "$@"
+        else
+          ''${DRY_RUN_CMD:-} "$@"
+        fi
+      }
+
+      run_root_cmd mkdir -p /bin
+      run_root_cmd ln -sf ${pkgs.bash}/bin/bash /bin/bash
+      run_root_cmd ln -sf ${pkgs.fish}/bin/fish /bin/fish
+      run_root_cmd ln -sf ${pkgs.zsh}/bin/zsh /bin/zsh
+    '';
+  };
+}
+```
+
+## Verification
+
+1. Push fix to the PR branch
+2. All 3 failing jobs should pass:
+   - `e2e-run (Ubuntu)` — `command -v sudo` finds `/usr/bin/sudo`
+   - `docker-build-push` (both arches) — same, sudo is installed via apt in Dockerfile
+3. Existing passing jobs (nix-nixos, nix-linux, nix-darwin) should remain green
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/shunkakinoki/.REDACTED.jsonl
+
+---
+
+is make format passing?
+
+---
+
+still failing why
+
+---
+
+checkout to main and fix github actions failing
+
+---
+
+ok; create PR to main
+
+---
+
+Fix shell tests and failures and run make format and create new PR
+
+---
+
+is  ⚠Large /Users/shunkakinoki/.claude/CLAUDE.md will impact performance (42.7k chars > 40.0k) • /memory to
+ fixed because of the past several updates in dotagents
+
+---
+
+<task-notification>
+<task-id>b7f9364</task-id>
+<output-file>REDACTED.output</output-file>
+<status>failed</status>
+<summary>Background command "Find commit-lint.md and .ruler directories" failed with exit code 1</summary>
+</task-notification>
+Read the output file to retrieve the result: REDACTED.output
+
+---
+
+hmm run make sync to see if it fixes?
+
+---
+
+hmm but i want to make it even smaller; there's too much
+
+---
+
+[Request interrupted by user for tool use]
+
+---
+
+oh. ok that's cool thanks
+
+---
+
+yes please do that
