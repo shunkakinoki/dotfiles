@@ -17,7 +17,9 @@
             "id": "__CLAUDE_OPUS__",
             "name": "__CLAUDE_OPUS_PRETTY__",
             "reasoning": true,
-            "input": ["text"],
+            "input": [
+              "text"
+            ],
             "cost": {
               "input": 0,
               "output": 0,
@@ -31,7 +33,9 @@
             "id": "__CLAUDE_SONNET__",
             "name": "__CLAUDE_SONNET_PRETTY__",
             "reasoning": false,
-            "input": ["text"],
+            "input": [
+              "text"
+            ],
             "cost": {
               "input": 0,
               "output": 0,
@@ -45,7 +49,9 @@
             "id": "__CLAUDE_HAIKU__",
             "name": "__CLAUDE_HAIKU_PRETTY__",
             "reasoning": false,
-            "input": ["text"],
+            "input": [
+              "text"
+            ],
             "cost": {
               "input": 0,
               "output": 0,
@@ -59,7 +65,9 @@
             "id": "__CLAUDE_OPUS_THINKING__",
             "name": "__CLAUDE_OPUS_THINKING_PRETTY__",
             "reasoning": true,
-            "input": ["text"],
+            "input": [
+              "text"
+            ],
             "cost": {
               "input": 0,
               "output": 0,
@@ -73,7 +81,9 @@
             "id": "__CLAUDE_SONNET_THINKING__",
             "name": "__CLAUDE_SONNET_THINKING_PRETTY__",
             "reasoning": true,
-            "input": ["text"],
+            "input": [
+              "text"
+            ],
             "cost": {
               "input": 0,
               "output": 0,
@@ -87,7 +97,9 @@
             "id": "__GPT__",
             "name": "__GPT_PRETTY__",
             "reasoning": false,
-            "input": ["text"],
+            "input": [
+              "text"
+            ],
             "cost": {
               "input": 0,
               "output": 0,
@@ -101,7 +113,9 @@
             "id": "__GPT_CODEX__",
             "name": "__GPT_CODEX_PRETTY__",
             "reasoning": false,
-            "input": ["text"],
+            "input": [
+              "text"
+            ],
             "cost": {
               "input": 0,
               "output": 0,
@@ -115,7 +129,9 @@
             "id": "__GEMINI_PRO__",
             "name": "__GEMINI_PRO_PRETTY__",
             "reasoning": false,
-            "input": ["text"],
+            "input": [
+              "text"
+            ],
             "cost": {
               "input": 0,
               "output": 0,
@@ -129,7 +145,9 @@
             "id": "__GEMINI_FLASH__",
             "name": "__GEMINI_FLASH_PRETTY__",
             "reasoning": false,
-            "input": ["text"],
+            "input": [
+              "text"
+            ],
             "cost": {
               "input": 0,
               "output": 0,
@@ -143,7 +161,9 @@
             "id": "__GLM__",
             "name": "__GLM_PRETTY__",
             "reasoning": false,
-            "input": ["text"],
+            "input": [
+              "text"
+            ],
             "cost": {
               "input": 0,
               "output": 0,
@@ -161,7 +181,9 @@
     "defaults": {
       "model": {
         "primary": "cliproxy/__CLAUDE_OPUS__",
-        "fallbacks": ["cliproxy/__GLM__"]
+        "fallbacks": [
+          "cliproxy/__GLM__"
+        ]
       },
       "workspace": "__HOME__/.openclaw/workspace",
       "thinkingDefault": "high",
@@ -204,7 +226,10 @@
           "enabled": true
         }
       },
-      "allowFrom": [983653361, 2104262990],
+      "allowFrom": [
+        983653361,
+        2104262990
+      ],
       "groupPolicy": "allowlist",
       "reactionNotifications": "all",
       "reactionLevel": "extensive",
@@ -219,11 +244,17 @@
       "mode": "token",
       "token": "__GATEWAY_TOKEN__"
     },
-    "trustedProxies": ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+    "trustedProxies": [
+      "10.0.0.0/8",
+      "172.16.0.0/12",
+      "192.168.0.0/16"
+    ]
   },
   "plugins": {
     "load": {
-      "paths": ["__HOME__/.openclaw/plugins"]
+      "paths": [
+        "__HOME__/.openclaw/plugins"
+      ]
     },
     "slots": {
       "memory": ""
