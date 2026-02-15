@@ -213,7 +213,7 @@
   },
   "broadcast": {
     "strategy": "parallel",
-    "*": [
+    "120363425572081403@g.us": [
       "main",
       "sonnet",
       "glm"
