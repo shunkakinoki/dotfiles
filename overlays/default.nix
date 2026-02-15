@@ -4,6 +4,10 @@
   inputs.neovim-nightly-overlay.overlays.default
   inputs.foundry.overlay
   (final: prev: {
+    # Pin argocd to stable version due to broken argocd-ui in unstable (yarn hash mismatch)
+    argocd = inputs.nixpkgs-stable.legacyPackages.${prev.stdenv.hostPlatform.system}.argocd;
+  })
+  (final: prev: {
     # Ensure neovim-unwrapped exposes a lua attribute for wrapper consumers (e.g., home-manager)
     neovim-unwrapped =
       (prev.neovim-unwrapped.overrideAttrs (oldAttrs: {
