@@ -4723,9 +4723,9 @@ dependencies = [
 
 [[package]]
 name = "worktrunk"
-version = "0.23.2"
+version = "0.24.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7f35df178b40a51e0853438937bd17fc89a9a185392e43662e9c07223fff7f9d"
+checksum = "e295f7416571eade97f38ed6af583d492224ef841ab71998f92dce140172482f"
 dependencies = [
  "ansi-str",
  "anstream",
