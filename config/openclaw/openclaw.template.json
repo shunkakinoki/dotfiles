@@ -18,7 +18,8 @@
             "name": "Claude Opus 4.6",
             "reasoning": true,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
@@ -34,7 +35,8 @@
             "name": "Claude Sonnet 4.5",
             "reasoning": false,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
@@ -50,7 +52,8 @@
             "name": "Claude Haiku 4.5",
             "reasoning": false,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
@@ -66,7 +69,8 @@
             "name": "Claude Opus 4.6 Thinking",
             "reasoning": true,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
@@ -82,7 +86,8 @@
             "name": "Claude Sonnet 4.5 Thinking",
             "reasoning": true,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
@@ -98,7 +103,8 @@
             "name": "GPT 5.2",
             "reasoning": false,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
@@ -114,7 +120,8 @@
             "name": "GPT 5.3 Codex",
             "reasoning": false,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
@@ -130,7 +137,8 @@
             "name": "Gemini 3 Pro",
             "reasoning": false,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
@@ -146,7 +154,8 @@
             "name": "Gemini 3 Flash",
             "reasoning": false,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
@@ -162,7 +171,8 @@
             "name": "GLM 4.7",
             "reasoning": false,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
