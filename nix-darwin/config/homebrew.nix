@@ -112,6 +112,7 @@
       "vscodium"
       "warp"
       "wezterm"
+      "whatsapp"
       "windsurf"
       "zed"
       "zoom"
