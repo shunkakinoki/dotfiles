@@ -237,7 +237,6 @@
       "streamMode": "partial"
     },
     "whatsapp": {
-      "enabled": true,
       "dmPolicy": "pairing",
       "allowFrom": [
         "__WHATSAPP_ALLOW_FROM__"
