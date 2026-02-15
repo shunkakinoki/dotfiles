@@ -52,7 +52,7 @@ The output should include 'def pretty'
 End
 
 It 'capitalizes Claude model names'
-When run bash -c "grep '"Claude"' '$SCRIPT'"
+When run bash -c "grep 'Claude' '$SCRIPT'"
 The output should include 'Claude'
 End
 End

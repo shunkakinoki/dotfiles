@@ -14,6 +14,7 @@ MODELS="$ROOT/models.json"
 
 # jq function: derive display name from a model ID
 # claude-opus-4.6 → "Claude Opus 4.6", claude-sonnet-4.5-20250929 → "Claude Sonnet 4.5"
+# shellcheck disable=SC2016
 JQ_PRETTY='def pretty:
   gsub("-20[0-9]{6}$";"") | gsub("-preview$";"") |
   split("-") |
