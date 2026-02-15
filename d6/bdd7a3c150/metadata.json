@@ -2,10 +2,12 @@
   "cli_version": "0.4.4",
   "checkpoint_id": "d6bdd7a3c150",
   "strategy": "manual-commit",
-  "branch": "fix/shell-test-coverage",
-  "checkpoints_count": 1,
+  "branch": "fix/claude-md-size",
+  "checkpoints_count": 2,
   "files_touched": [
-    "config/claude/settings.json"
+    "config/claude/settings.json",
+    "config/openclaw/openclaw.tpl.json",
+    "dotagents/rules/tool-search.md"
   ],
   "sessions": [
     {
@@ -14,13 +16,20 @@
       "context": "/d6/bdd7a3c150/0/context.md",
       "content_hash": "/d6/bdd7a3c150/0/content_hash.txt",
       "prompt": "/d6/bdd7a3c150/0/prompt.txt"
+    },
+    {
+      "metadata": "/d6/bdd7a3c150/1/metadata.json",
+      "transcript": "/d6/bdd7a3c150/1/full.jsonl",
+      "context": "/d6/bdd7a3c150/1/context.md",
+      "content_hash": "/d6/bdd7a3c150/1/content_hash.txt",
+      "prompt": "/d6/bdd7a3c150/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 537,
-    "cache_creation_tokens": 63355,
-    "cache_read_tokens": 1609770,
-    "output_tokens": 443,
-    "api_call_count": 28
+    "input_tokens": 637,
+    "cache_creation_tokens": 210629,
+    "cache_read_tokens": 12964792,
+    "output_tokens": 3833,
+    "api_call_count": 126
   }
 }
