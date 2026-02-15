@@ -235,6 +235,25 @@
       "reactionLevel": "extensive",
       "replyToMode": "first",
       "streamMode": "partial"
+    },
+    "whatsapp": {
+      "enabled": true,
+      "dmPolicy": "pairing",
+      "allowFrom": [
+        "__WHATSAPP_ALLOW_FROM__"
+      ],
+      "groupPolicy": "allowlist",
+      "groups": {
+        "*": {
+          "requireMention": false
+        }
+      },
+      "sendReadReceipts": true,
+      "ackReaction": {
+        "emoji": "\ud83d\udc40",
+        "direct": true,
+        "group": "mentions"
+      }
     }
   },
   "gateway": {
