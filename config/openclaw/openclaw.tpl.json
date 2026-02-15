@@ -120,7 +120,8 @@
             "name": "__GPT_CODEX_PRETTY__",
             "reasoning": false,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,

@@ -120,7 +120,8 @@
             "name": "GPT 5.3 Codex",
             "reasoning": false,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
