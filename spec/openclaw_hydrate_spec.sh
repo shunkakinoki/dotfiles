@@ -53,6 +53,11 @@ It 'loads ANTHROPIC_API_KEY from file'
 When run bash -c "grep 'ANTHROPIC_API_KEY' '$SCRIPT'"
 The output should include 'anthropic-key'
 End
+
+It 'loads WHATSAPP_ALLOW_FROM from file'
+When run bash -c "grep 'WHATSAPP_ALLOW_FROM' '$SCRIPT'"
+The output should include 'whatsapp-allow-from'
+End
 End
 
 Describe 'config generation'
@@ -69,6 +74,11 @@ End
 It 'substitutes TELEGRAM_TOKEN in template'
 When run bash -c "grep '__TELEGRAM_TOKEN__' '$SCRIPT'"
 The output should include 'TELEGRAM_TOKEN'
+End
+
+It 'substitutes WHATSAPP_ALLOW_FROM in template'
+When run bash -c "grep '__WHATSAPP_ALLOW_FROM__' '$SCRIPT'"
+The output should include 'WHATSAPP_ALLOW_FROM'
 End
 
 It 'creates state directory'

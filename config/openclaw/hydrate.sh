@@ -44,12 +44,14 @@ if [ "$MODE" = "gateway" ]; then
   # Gateway mode (Kyber): hydrate full template and start gateway
   CLIPROXY_API_KEY="${OPENCLAW_CLIPROXY_API_KEY:-${CLIPROXY_API_KEY:-$(read_secret "${SECRETS_DIR}/cliproxy-key")}}"
   TELEGRAM_TOKEN="${OPENCLAW_TELEGRAM_TOKEN:-${TELEGRAM_TOKEN:-$(read_secret "${SECRETS_DIR}/telegram-token")}}"
+  WHATSAPP_ALLOW_FROM="${OPENCLAW_WHATSAPP_ALLOW_FROM:-${WHATSAPP_ALLOW_FROM:-$(read_secret "${SECRETS_DIR}/whatsapp-allow-from")}}"
   ANTHROPIC_API_KEY="${OPENCLAW_ANTHROPIC_API_KEY:-${ANTHROPIC_API_KEY:-$(read_secret "${SECRETS_DIR}/anthropic-key")}}"
   CHROMIUM_PATH="@chromium@/bin/chromium"
 
   @sed@ \
     -e "s|__CLIPROXY_API_KEY__|${CLIPROXY_API_KEY}|g" \
     -e "s|__TELEGRAM_TOKEN__|${TELEGRAM_TOKEN}|g" \
+    -e "s|__WHATSAPP_ALLOW_FROM__|${WHATSAPP_ALLOW_FROM}|g" \
     -e "s|__GATEWAY_TOKEN__|${GATEWAY_TOKEN}|g" \
     -e "s|__CHROMIUM_PATH__|${CHROMIUM_PATH}|g" \
     -e "s|__HOME__|${HOME}|g" \
