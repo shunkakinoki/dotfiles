@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "146f9966abc2",
+  "strategy": "manual-commit",
+  "branch": "fix/claude-md-size",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "dotagents/rules/commit-push.md",
+    "dotagents/rules/ruler-apply.md",
+    "dotagents/rules/shell-usage.md",
+    "dotagents/rules/tool-search.md",
+    "dotagents/rules/workspace-file-references.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/14/6f9966abc2/0/metadata.json",
+      "transcript": "/14/6f9966abc2/0/full.jsonl",
+      "context": "/14/6f9966abc2/0/context.md",
+      "content_hash": "/14/6f9966abc2/0/content_hash.txt",
+      "prompt": "/14/6f9966abc2/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 126,
+    "cache_creation_tokens": 95387,
+    "cache_read_tokens": 9094111,
+    "output_tokens": 7229,
+    "api_call_count": 120
+  }
+}
