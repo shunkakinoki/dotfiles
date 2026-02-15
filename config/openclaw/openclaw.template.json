@@ -736,7 +736,7 @@
         "direct": true,
         "group": "mentions"
       },
-      "debounceMs": 0
+      "debounceMs": 300
     }
   },
   "gateway": {
