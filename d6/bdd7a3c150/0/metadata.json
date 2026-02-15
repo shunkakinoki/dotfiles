@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "d6bdd7a3c150",
+  "session_id": "66cd6c20-0706-44ba-bf5a-113d267c8cc3",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-15T22:16:37.610655Z",
+  "branch": "fix/shell-test-coverage",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "config/claude/settings.json"
+  ],
+  "agent": "Claude Code",
+  "token_usage": {
+    "input_tokens": 537,
+    "cache_creation_tokens": 63355,
+    "cache_read_tokens": 1609770,
+    "output_tokens": 443,
+    "api_call_count": 28
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-15T22:16:37.544262Z",
+    "agent_lines": 0,
+    "human_added": 130,
+    "human_modified": 2,
+    "human_removed": 0,
+    "total_committed": 132,
+    "agent_percentage": 0
+  },
+  "transcript_path": ".claude/projects/-Users-shunkakinoki-dotfiles/66cd6c20-0706-44ba-bf5a-113d267c8cc3.jsonl"
+}

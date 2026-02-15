@@ -1,0 +1,9 @@
+investigate why git-ai isn't initiated in claude
+
+---
+
+https://usegitai.com/docs/cli/claude-code
+
+---
+
+add https://usegitai.com/docs/cli/gemini-cli too
