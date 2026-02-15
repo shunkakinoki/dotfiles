@@ -18,7 +18,8 @@
             "name": "__CLAUDE_OPUS_PRETTY__",
             "reasoning": true,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
@@ -34,7 +35,8 @@
             "name": "__CLAUDE_SONNET_PRETTY__",
             "reasoning": false,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
@@ -50,7 +52,8 @@
             "name": "__CLAUDE_HAIKU_PRETTY__",
             "reasoning": false,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
@@ -66,7 +69,8 @@
             "name": "__CLAUDE_OPUS_THINKING_PRETTY__",
             "reasoning": true,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
@@ -82,7 +86,8 @@
             "name": "__CLAUDE_SONNET_THINKING_PRETTY__",
             "reasoning": true,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
@@ -98,7 +103,8 @@
             "name": "__GPT_PRETTY__",
             "reasoning": false,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
@@ -130,7 +136,8 @@
             "name": "__GEMINI_PRO_PRETTY__",
             "reasoning": false,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
@@ -146,7 +153,8 @@
             "name": "__GEMINI_FLASH_PRETTY__",
             "reasoning": false,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
