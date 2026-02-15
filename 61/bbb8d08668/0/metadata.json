@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "61bbb8d08668",
+  "session_id": "39e6f0fc-97ca-4d65-91dc-2bf5a365d1c9",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-15T00:01:32.999447Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "config/openclaw/openclaw.tpl.json"
+  ],
+  "agent": "Claude Code",
+  "token_usage": {
+    "input_tokens": 21,
+    "cache_creation_tokens": 39609,
+    "cache_read_tokens": 808044,
+    "output_tokens": 498,
+    "api_call_count": 17
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-15T00:01:32.951697Z",
+    "agent_lines": 45,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 45,
+    "agent_percentage": 100
+  },
+  "transcript_path": ".claude/projects/-Users-shunkakinoki-dotfiles/39e6f0fc-97ca-4d65-91dc-2bf5a365d1c9.jsonl"
+}

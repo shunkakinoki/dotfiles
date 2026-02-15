@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "61bbb8d08668",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "config/openclaw/openclaw.tpl.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/61/bbb8d08668/0/metadata.json",
+      "transcript": "/61/bbb8d08668/0/full.jsonl",
+      "context": "/61/bbb8d08668/0/context.md",
+      "content_hash": "/61/bbb8d08668/0/content_hash.txt",
+      "prompt": "/61/bbb8d08668/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 21,
+    "cache_creation_tokens": 39609,
+    "cache_read_tokens": 808044,
+    "output_tokens": 498,
+    "api_call_count": 17
+  }
+}
