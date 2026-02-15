@@ -171,7 +171,8 @@
             "name": "GLM 4.7",
             "reasoning": false,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,

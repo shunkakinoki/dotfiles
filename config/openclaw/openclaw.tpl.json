@@ -171,7 +171,8 @@
             "name": "__GLM_PRETTY__",
             "reasoning": false,
             "input": [
-              "text"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
