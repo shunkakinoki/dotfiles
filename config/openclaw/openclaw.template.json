@@ -198,39 +198,106 @@
         "default": true
       },
       {
-        "id": "sonnet",
+        "id": "code-reviewer-opus",
+        "name": "Code Reviewer (Opus)",
+        "workspace": "__HOME__/agents/code-review",
         "model": {
-          "primary": "cliproxy/claude-sonnet-4-5-20250929"
-        }
+          "primary": "cliproxy/claude-opus-4-6",
+          "fallbacks": ["cliproxy/glm-4.7"]
+        },
+        "tools": { "allow": ["read", "exec"] }
       },
       {
-        "id": "glm",
+        "id": "code-reviewer-sonnet",
+        "name": "Code Reviewer (Sonnet)",
+        "workspace": "__HOME__/agents/code-review",
+        "model": {
+          "primary": "cliproxy/claude-sonnet-4-5-20250929",
+          "fallbacks": ["cliproxy/glm-4.7"]
+        },
+        "tools": { "allow": ["read", "exec"] }
+      },
+      {
+        "id": "code-reviewer-glm",
+        "name": "Code Reviewer (GLM)",
+        "workspace": "__HOME__/agents/code-review",
         "model": {
           "primary": "cliproxy/glm-4.7"
-        }
+        },
+        "tools": { "allow": ["read", "exec"] }
       },
       {
-        "id": "gpt-codex",
+        "id": "code-reviewer-gpt-codex",
+        "name": "Code Reviewer (GPT Codex)",
+        "workspace": "__HOME__/agents/code-review",
         "model": {
-          "primary": "cliproxy/gpt-5.3-codex"
-        }
+          "primary": "cliproxy/gpt-5.3-codex",
+          "fallbacks": ["cliproxy/glm-4.7"]
+        },
+        "tools": { "allow": ["read", "exec"] }
       },
       {
-        "id": "gemini-pro",
+        "id": "code-reviewer-gemini",
+        "name": "Code Reviewer (Gemini Pro)",
+        "workspace": "__HOME__/agents/code-review",
         "model": {
-          "primary": "cliproxy/gemini-3-pro-preview"
-        }
+          "primary": "cliproxy/gemini-3-pro-preview",
+          "fallbacks": ["cliproxy/glm-4.7"]
+        },
+        "tools": { "allow": ["read", "exec"] }
+      },
+      {
+        "id": "code-formatter",
+        "name": "Code Formatter",
+        "workspace": "__HOME__/agents/formatter",
+        "model": {
+          "primary": "cliproxy/glm-4.7"
+        },
+        "tools": { "allow": ["read", "write"] }
+      },
+      {
+        "id": "security-scanner",
+        "name": "Security Scanner",
+        "workspace": "__HOME__/agents/security",
+        "model": {
+          "primary": "cliproxy/claude-opus-4-6",
+          "fallbacks": ["cliproxy/claude-sonnet-4-5-20250929"]
+        },
+        "tools": { "allow": ["read", "exec"] }
+      },
+      {
+        "id": "test-coverage",
+        "name": "Test Coverage",
+        "workspace": "__HOME__/agents/testing",
+        "model": {
+          "primary": "cliproxy/glm-4.7"
+        },
+        "tools": { "allow": ["read", "exec"] }
+      },
+      {
+        "id": "docs-checker",
+        "name": "Docs Checker",
+        "workspace": "__HOME__/agents/docs",
+        "model": {
+          "primary": "cliproxy/claude-sonnet-4-5-20250929",
+          "fallbacks": ["cliproxy/glm-4.7"]
+        },
+        "tools": { "allow": ["read"] }
       }
     ]
   },
   "broadcast": {
     "strategy": "parallel",
     "120363425148909388@g.us": [
-      "main",
-      "sonnet",
-      "glm",
-      "gpt-codex",
-      "gemini-pro"
+      "code-reviewer-opus",
+      "code-reviewer-sonnet",
+      "code-reviewer-glm",
+      "code-reviewer-gpt-codex",
+      "code-reviewer-gemini",
+      "code-formatter",
+      "security-scanner",
+      "test-coverage",
+      "docs-checker"
     ]
   },
   "messages": {
