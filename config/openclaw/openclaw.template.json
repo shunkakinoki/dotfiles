@@ -208,15 +208,29 @@
         "model": {
           "primary": "cliproxy/glm-4.7"
         }
+      },
+      {
+        "id": "gpt-codex",
+        "model": {
+          "primary": "cliproxy/gpt-5.3-codex"
+        }
+      },
+      {
+        "id": "gemini-pro",
+        "model": {
+          "primary": "cliproxy/gemini-3-pro-preview"
+        }
       }
     ]
   },
   "broadcast": {
     "strategy": "parallel",
-    "120363425572081403@g.us": [
+    "120363425148909388@g.us": [
       "main",
       "sonnet",
-      "glm"
+      "glm",
+      "gpt-codex",
+      "gemini-pro"
     ]
   },
   "messages": {
