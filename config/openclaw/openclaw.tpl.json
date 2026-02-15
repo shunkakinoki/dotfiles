@@ -203,9 +203,16 @@
         "workspace": "__HOME__/agents/code-review",
         "model": {
           "primary": "cliproxy/__CLAUDE_OPUS__",
-          "fallbacks": ["cliproxy/__GLM__"]
+          "fallbacks": [
+            "cliproxy/__GLM__"
+          ]
         },
-        "tools": { "allow": ["read", "exec"] }
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
       },
       {
         "id": "code-reviewer-sonnet",
@@ -213,9 +220,16 @@
         "workspace": "__HOME__/agents/code-review",
         "model": {
           "primary": "cliproxy/__CLAUDE_SONNET__",
-          "fallbacks": ["cliproxy/__GLM__"]
+          "fallbacks": [
+            "cliproxy/__GLM__"
+          ]
         },
-        "tools": { "allow": ["read", "exec"] }
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
       },
       {
         "id": "code-reviewer-glm",
@@ -224,7 +238,12 @@
         "model": {
           "primary": "cliproxy/__GLM__"
         },
-        "tools": { "allow": ["read", "exec"] }
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
       },
       {
         "id": "code-reviewer-gpt-codex",
@@ -232,9 +251,16 @@
         "workspace": "__HOME__/agents/code-review",
         "model": {
           "primary": "cliproxy/__GPT_CODEX__",
-          "fallbacks": ["cliproxy/__GLM__"]
+          "fallbacks": [
+            "cliproxy/__GLM__"
+          ]
         },
-        "tools": { "allow": ["read", "exec"] }
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
       },
       {
         "id": "code-reviewer-gemini",
@@ -242,9 +268,16 @@
         "workspace": "__HOME__/agents/code-review",
         "model": {
           "primary": "cliproxy/__GEMINI_PRO__",
-          "fallbacks": ["cliproxy/__GLM__"]
+          "fallbacks": [
+            "cliproxy/__GLM__"
+          ]
         },
-        "tools": { "allow": ["read", "exec"] }
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
       },
       {
         "id": "code-formatter",
@@ -253,7 +286,12 @@
         "model": {
           "primary": "cliproxy/__GLM__"
         },
-        "tools": { "allow": ["read", "write"] }
+        "tools": {
+          "allow": [
+            "read",
+            "write"
+          ]
+        }
       },
       {
         "id": "security-scanner",
@@ -261,9 +299,16 @@
         "workspace": "__HOME__/agents/security",
         "model": {
           "primary": "cliproxy/__CLAUDE_OPUS__",
-          "fallbacks": ["cliproxy/__CLAUDE_SONNET__"]
+          "fallbacks": [
+            "cliproxy/__CLAUDE_SONNET__"
+          ]
         },
-        "tools": { "allow": ["read", "exec"] }
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
       },
       {
         "id": "test-coverage",
@@ -272,7 +317,12 @@
         "model": {
           "primary": "cliproxy/__GLM__"
         },
-        "tools": { "allow": ["read", "exec"] }
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
       },
       {
         "id": "docs-checker",
@@ -280,9 +330,15 @@
         "workspace": "__HOME__/agents/docs",
         "model": {
           "primary": "cliproxy/__CLAUDE_SONNET__",
-          "fallbacks": ["cliproxy/__GLM__"]
+          "fallbacks": [
+            "cliproxy/__GLM__"
+          ]
         },
-        "tools": { "allow": ["read"] }
+        "tools": {
+          "allow": [
+            "read"
+          ]
+        }
       }
     ]
   },
@@ -350,7 +406,7 @@
       },
       "sendReadReceipts": true,
       "ackReaction": {
-        "emoji": "\ud83d\udc40",
+        "emoji": "👀",
         "direct": true,
         "group": "mentions"
       }
