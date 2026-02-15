@@ -196,7 +196,27 @@
       {
         "id": "main",
         "default": true
+      },
+      {
+        "id": "sonnet",
+        "model": {
+          "primary": "cliproxy/__CLAUDE_SONNET__"
+        }
+      },
+      {
+        "id": "glm",
+        "model": {
+          "primary": "cliproxy/__GLM__"
+        }
       }
+    ]
+  },
+  "broadcast": {
+    "strategy": "parallel",
+    "*": [
+      "main",
+      "sonnet",
+      "glm"
     ]
   },
   "messages": {

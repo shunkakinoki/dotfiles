@@ -196,7 +196,27 @@
       {
         "id": "main",
         "default": true
+      },
+      {
+        "id": "sonnet",
+        "model": {
+          "primary": "cliproxy/claude-sonnet-4-5-20250929"
+        }
+      },
+      {
+        "id": "glm",
+        "model": {
+          "primary": "cliproxy/glm-4.7"
+        }
       }
+    ]
+  },
+  "broadcast": {
+    "strategy": "parallel",
+    "*": [
+      "main",
+      "sonnet",
+      "glm"
     ]
   },
   "messages": {
