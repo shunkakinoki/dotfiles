@@ -48,12 +48,15 @@ if [ "$MODE" = "gateway" ]; then
   ANTHROPIC_API_KEY="${OPENCLAW_ANTHROPIC_API_KEY:-${ANTHROPIC_API_KEY:-$(read_secret "${SECRETS_DIR}/anthropic-key")}}"
   CHROMIUM_PATH="@chromium@/bin/chromium"
 
+  WORKSPACE="${HOME}/ghq/github.com/shunkakinoki/openclaw"
+
   @sed@ \
     -e "s|__CLIPROXY_API_KEY__|${CLIPROXY_API_KEY}|g" \
     -e "s|__TELEGRAM_TOKEN__|${TELEGRAM_TOKEN}|g" \
     -e "s|__WHATSAPP_ALLOW_FROM__|${WHATSAPP_ALLOW_FROM}|g" \
     -e "s|__GATEWAY_TOKEN__|${GATEWAY_TOKEN}|g" \
     -e "s|__CHROMIUM_PATH__|${CHROMIUM_PATH}|g" \
+    -e "s|__WORKSPACE__|${WORKSPACE}|g" \
     -e "s|__HOME__|${HOME}|g" \
     "$TEMPLATE" >"$CONFIG"
 

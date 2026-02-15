@@ -200,7 +200,7 @@
       {
         "id": "code-reviewer-opus",
         "name": "Code Reviewer (Opus)",
-        "workspace": "__HOME__/agents/code-review",
+        "workspace": "__WORKSPACE__/agents/code-review",
         "model": {
           "primary": "cliproxy/claude-opus-4-6",
           "fallbacks": [
@@ -217,7 +217,7 @@
       {
         "id": "code-reviewer-sonnet",
         "name": "Code Reviewer (Sonnet)",
-        "workspace": "__HOME__/agents/code-review",
+        "workspace": "__WORKSPACE__/agents/code-review",
         "model": {
           "primary": "cliproxy/claude-sonnet-4-5-20250929",
           "fallbacks": [
@@ -234,7 +234,7 @@
       {
         "id": "code-reviewer-glm",
         "name": "Code Reviewer (GLM)",
-        "workspace": "__HOME__/agents/code-review",
+        "workspace": "__WORKSPACE__/agents/code-review",
         "model": {
           "primary": "cliproxy/glm-4.7"
         },
@@ -248,7 +248,7 @@
       {
         "id": "code-reviewer-gpt-codex",
         "name": "Code Reviewer (GPT Codex)",
-        "workspace": "__HOME__/agents/code-review",
+        "workspace": "__WORKSPACE__/agents/code-review",
         "model": {
           "primary": "cliproxy/gpt-5.3-codex",
           "fallbacks": [
@@ -265,7 +265,7 @@
       {
         "id": "code-reviewer-gemini",
         "name": "Code Reviewer (Gemini Pro)",
-        "workspace": "__HOME__/agents/code-review",
+        "workspace": "__WORKSPACE__/agents/code-review",
         "model": {
           "primary": "cliproxy/gemini-3-pro-preview",
           "fallbacks": [
@@ -282,7 +282,7 @@
       {
         "id": "code-formatter",
         "name": "Code Formatter",
-        "workspace": "__HOME__/agents/formatter",
+        "workspace": "__WORKSPACE__/agents/formatter",
         "model": {
           "primary": "cliproxy/glm-4.7"
         },
@@ -296,7 +296,7 @@
       {
         "id": "security-scanner",
         "name": "Security Scanner",
-        "workspace": "__HOME__/agents/security",
+        "workspace": "__WORKSPACE__/agents/security",
         "model": {
           "primary": "cliproxy/claude-opus-4-6",
           "fallbacks": [
@@ -313,7 +313,7 @@
       {
         "id": "test-coverage",
         "name": "Test Coverage",
-        "workspace": "__HOME__/agents/testing",
+        "workspace": "__WORKSPACE__/agents/testing",
         "model": {
           "primary": "cliproxy/glm-4.7"
         },
@@ -327,7 +327,7 @@
       {
         "id": "docs-checker",
         "name": "Docs Checker",
-        "workspace": "__HOME__/agents/docs",
+        "workspace": "__WORKSPACE__/agents/docs",
         "model": {
           "primary": "cliproxy/claude-sonnet-4-5-20250929",
           "fallbacks": [
@@ -339,9 +339,321 @@
             "read"
           ]
         }
+      },
+      {
+        "id": "cicd-fixer",
+        "name": "CI/CD Fixer",
+        "workspace": "__WORKSPACE__/agents/cicd",
+        "model": {
+          "primary": "cliproxy/glm-4.7"
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "write",
+            "edit",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "sales",
+        "name": "Sales Agent",
+        "workspace": "__WORKSPACE__/agents/sales",
+        "model": {
+          "primary": "cliproxy/gpt-5.2",
+          "fallbacks": [
+            "cliproxy/glm-4.7"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "twitter-gemini",
+        "name": "Twitter (Gemini)",
+        "workspace": "__WORKSPACE__/agents/twitter",
+        "model": {
+          "primary": "cliproxy/gemini-3-pro-preview",
+          "fallbacks": [
+            "cliproxy/glm-4.7"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "twitter-opus",
+        "name": "Twitter (Opus)",
+        "workspace": "__WORKSPACE__/agents/twitter",
+        "model": {
+          "primary": "cliproxy/claude-opus-4-6",
+          "fallbacks": [
+            "cliproxy/glm-4.7"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "mindset",
+        "name": "Mindset Coach",
+        "workspace": "__WORKSPACE__/agents/mindset",
+        "model": {
+          "primary": "cliproxy/claude-opus-4-6",
+          "fallbacks": [
+            "cliproxy/glm-4.7"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "routine",
+        "name": "Routine Manager",
+        "workspace": "__WORKSPACE__/agents/routine",
+        "model": {
+          "primary": "cliproxy/claude-sonnet-4-5-20250929",
+          "fallbacks": [
+            "cliproxy/glm-4.7"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "dev-opus",
+        "name": "Dev (Opus)",
+        "workspace": "__WORKSPACE__/agents/dev",
+        "model": {
+          "primary": "cliproxy/claude-opus-4-6",
+          "fallbacks": [
+            "cliproxy/glm-4.7"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "write",
+            "edit",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "dev-gpt-codex",
+        "name": "Dev (GPT Codex)",
+        "workspace": "__WORKSPACE__/agents/dev",
+        "model": {
+          "primary": "cliproxy/gpt-5.3-codex",
+          "fallbacks": [
+            "cliproxy/glm-4.7"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "write",
+            "edit",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "product",
+        "name": "Product Manager",
+        "workspace": "__WORKSPACE__/agents/product",
+        "model": {
+          "primary": "cliproxy/gemini-3-pro-preview",
+          "fallbacks": [
+            "cliproxy/glm-4.7"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "strategy-opus",
+        "name": "Strategy (Opus)",
+        "workspace": "__WORKSPACE__/agents/strategy",
+        "model": {
+          "primary": "cliproxy/claude-opus-4-6",
+          "fallbacks": [
+            "cliproxy/glm-4.7"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "strategy-gpt",
+        "name": "Strategy (GPT)",
+        "workspace": "__WORKSPACE__/agents/strategy",
+        "model": {
+          "primary": "cliproxy/gpt-5.2",
+          "fallbacks": [
+            "cliproxy/glm-4.7"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "strategy-gemini",
+        "name": "Strategy (Gemini)",
+        "workspace": "__WORKSPACE__/agents/strategy",
+        "model": {
+          "primary": "cliproxy/gemini-3-pro-preview",
+          "fallbacks": [
+            "cliproxy/glm-4.7"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "communication",
+        "name": "Communication Specialist",
+        "workspace": "__WORKSPACE__/agents/communication",
+        "model": {
+          "primary": "cliproxy/claude-sonnet-4-5-20250929",
+          "fallbacks": [
+            "cliproxy/glm-4.7"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "devops",
+        "name": "DevOps Engineer",
+        "workspace": "__WORKSPACE__/agents/devops",
+        "model": {
+          "primary": "cliproxy/glm-4.7"
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "write",
+            "edit",
+            "exec"
+          ]
+        }
       }
     ]
   },
+  "bindings": [
+    {
+      "agentId": "cicd-fixer",
+      "match": {
+        "channel": "whatsapp",
+        "peer": {
+          "kind": "group",
+          "id": "120363424741471538@g.us"
+        }
+      }
+    },
+    {
+      "agentId": "sales",
+      "match": {
+        "channel": "whatsapp",
+        "peer": {
+          "kind": "group",
+          "id": "120363406548236154@g.us"
+        }
+      }
+    },
+    {
+      "agentId": "mindset",
+      "match": {
+        "channel": "whatsapp",
+        "peer": {
+          "kind": "group",
+          "id": "120363424541382217@g.us"
+        }
+      }
+    },
+    {
+      "agentId": "routine",
+      "match": {
+        "channel": "whatsapp",
+        "peer": {
+          "kind": "group",
+          "id": "120363407129974400@g.us"
+        }
+      }
+    },
+    {
+      "agentId": "product",
+      "match": {
+        "channel": "whatsapp",
+        "peer": {
+          "kind": "group",
+          "id": "120363426303081391@g.us"
+        }
+      }
+    },
+    {
+      "agentId": "communication",
+      "match": {
+        "channel": "whatsapp",
+        "peer": {
+          "kind": "group",
+          "id": "120363424749277621@g.us"
+        }
+      }
+    },
+    {
+      "agentId": "devops",
+      "match": {
+        "channel": "whatsapp",
+        "peer": {
+          "kind": "group",
+          "id": "120363424912006821@g.us"
+        }
+      }
+    }
+  ],
   "broadcast": {
     "strategy": "parallel",
     "120363425148909388@g.us": [
@@ -354,6 +666,19 @@
       "security-scanner",
       "test-coverage",
       "docs-checker"
+    ],
+    "120363406322027123@g.us": [
+      "twitter-gemini",
+      "twitter-opus"
+    ],
+    "120363405790595065@g.us": [
+      "dev-opus",
+      "dev-gpt-codex"
+    ],
+    "120363407321327235@g.us": [
+      "strategy-opus",
+      "strategy-gpt",
+      "strategy-gemini"
     ]
   },
   "messages": {
@@ -405,11 +730,13 @@
         }
       },
       "sendReadReceipts": true,
+      "mediaMaxMb": 50,
       "ackReaction": {
         "emoji": "👀",
         "direct": true,
         "group": "mentions"
-      }
+      },
+      "debounceMs": 0
     }
   },
   "gateway": {
