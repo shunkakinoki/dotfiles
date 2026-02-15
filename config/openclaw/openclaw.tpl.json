@@ -196,7 +196,164 @@
       {
         "id": "main",
         "default": true
+      },
+      {
+        "id": "code-reviewer-opus",
+        "name": "Code Reviewer (Opus)",
+        "workspace": "__HOME__/agents/code-review",
+        "model": {
+          "primary": "cliproxy/__CLAUDE_OPUS__",
+          "fallbacks": [
+            "cliproxy/__GLM__"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "code-reviewer-sonnet",
+        "name": "Code Reviewer (Sonnet)",
+        "workspace": "__HOME__/agents/code-review",
+        "model": {
+          "primary": "cliproxy/__CLAUDE_SONNET__",
+          "fallbacks": [
+            "cliproxy/__GLM__"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "code-reviewer-glm",
+        "name": "Code Reviewer (GLM)",
+        "workspace": "__HOME__/agents/code-review",
+        "model": {
+          "primary": "cliproxy/__GLM__"
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "code-reviewer-gpt-codex",
+        "name": "Code Reviewer (GPT Codex)",
+        "workspace": "__HOME__/agents/code-review",
+        "model": {
+          "primary": "cliproxy/__GPT_CODEX__",
+          "fallbacks": [
+            "cliproxy/__GLM__"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "code-reviewer-gemini",
+        "name": "Code Reviewer (Gemini Pro)",
+        "workspace": "__HOME__/agents/code-review",
+        "model": {
+          "primary": "cliproxy/__GEMINI_PRO__",
+          "fallbacks": [
+            "cliproxy/__GLM__"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "code-formatter",
+        "name": "Code Formatter",
+        "workspace": "__HOME__/agents/formatter",
+        "model": {
+          "primary": "cliproxy/__GLM__"
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "write"
+          ]
+        }
+      },
+      {
+        "id": "security-scanner",
+        "name": "Security Scanner",
+        "workspace": "__HOME__/agents/security",
+        "model": {
+          "primary": "cliproxy/__CLAUDE_OPUS__",
+          "fallbacks": [
+            "cliproxy/__CLAUDE_SONNET__"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "test-coverage",
+        "name": "Test Coverage",
+        "workspace": "__HOME__/agents/testing",
+        "model": {
+          "primary": "cliproxy/__GLM__"
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "docs-checker",
+        "name": "Docs Checker",
+        "workspace": "__HOME__/agents/docs",
+        "model": {
+          "primary": "cliproxy/__CLAUDE_SONNET__",
+          "fallbacks": [
+            "cliproxy/__GLM__"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read"
+          ]
+        }
       }
+    ]
+  },
+  "broadcast": {
+    "strategy": "parallel",
+    "120363425148909388@g.us": [
+      "code-reviewer-opus",
+      "code-reviewer-sonnet",
+      "code-reviewer-glm",
+      "code-reviewer-gpt-codex",
+      "code-reviewer-gemini",
+      "code-formatter",
+      "security-scanner",
+      "test-coverage",
+      "docs-checker"
     ]
   },
   "messages": {
@@ -249,7 +406,7 @@
       },
       "sendReadReceipts": true,
       "ackReaction": {
-        "emoji": "\ud83d\udc40",
+        "emoji": "👀",
         "direct": true,
         "group": "mentions"
       }
