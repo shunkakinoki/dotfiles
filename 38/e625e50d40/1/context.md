@@ -6,3 +6,7 @@
 
 git-ai is not registering https://usegitai.com/docs/cli/claude-code that's configured in @config/claude/settings.json fix and push
 
+### Prompt 2
+
+check again to see if it works
+
