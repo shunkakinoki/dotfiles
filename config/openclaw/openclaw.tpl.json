@@ -695,7 +695,7 @@
     }
   ],
   "broadcast": {
-    "strategy": "parallel",
+    "strategy": "sequential",
     "120363425148909388@g.us": [
       "code-reviewer-opus",
       "code-reviewer-sonnet",
