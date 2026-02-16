@@ -1,0 +1,2 @@
+add claude marketplace add tobi/qmd
+claude plugin add qmd@qmd to claucde config json

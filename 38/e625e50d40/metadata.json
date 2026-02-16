@@ -3,7 +3,7 @@
   "checkpoint_id": "38e625e50d40",
   "strategy": "manual-commit",
   "branch": "upd",
-  "checkpoints_count": 2,
+  "checkpoints_count": 3,
   "files_touched": [
     "config/claude/settings.json",
     "dotagents/.ruler/mcp.json"
@@ -22,13 +22,20 @@
       "context": "/38/e625e50d40/1/context.md",
       "content_hash": "/38/e625e50d40/1/content_hash.txt",
       "prompt": "/38/e625e50d40/1/prompt.txt"
+    },
+    {
+      "metadata": "/38/e625e50d40/2/metadata.json",
+      "transcript": "/38/e625e50d40/2/full.jsonl",
+      "context": "/38/e625e50d40/2/context.md",
+      "content_hash": "/38/e625e50d40/2/content_hash.txt",
+      "prompt": "/38/e625e50d40/2/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 36,
-    "cache_creation_tokens": 26448,
-    "cache_read_tokens": 1351837,
-    "output_tokens": 2822,
-    "api_call_count": 30
+    "input_tokens": 51,
+    "cache_creation_tokens": 71630,
+    "cache_read_tokens": 1939183,
+    "output_tokens": 3228,
+    "api_call_count": 43
   }
 }
