@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "38e625e50d40",
+  "strategy": "manual-commit",
+  "branch": "upd",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "dotagents/.ruler/mcp.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/38/e625e50d40/0/metadata.json",
+      "transcript": "/38/e625e50d40/0/full.jsonl",
+      "context": "/38/e625e50d40/0/context.md",
+      "content_hash": "/38/e625e50d40/0/content_hash.txt",
+      "prompt": "/38/e625e50d40/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 25,
+    "cache_creation_tokens": 21134,
+    "cache_read_tokens": 983763,
+    "output_tokens": 2298,
+    "api_call_count": 23
+  }
+}
