@@ -18,7 +18,8 @@
     "plan-export@cc-marketplace": true,
     "safety-net@cc-marketplace": true,
     "worktrunk@worktrunk": true,
-    "claude-mem@claude-mem": true
+    "claude-mem@claude-mem": true,
+    "qmd@qmd": true
   },
   "extraKnownMarketplaces": {
     "cc-marketplace": {
@@ -37,6 +38,12 @@
       "source": {
         "source": "github",
         "repo": "thedotmack/claude-mem"
+      }
+    },
+    "qmd": {
+      "source": {
+        "source": "github",
+        "repo": "tobi/qmd"
       }
     }
   },
