@@ -1,0 +1,8 @@
+# Session Context
+
+## User Prompts
+
+### Prompt 1
+
+git-ai is not registering https://usegitai.com/docs/cli/claude-code that's configured in @config/claude/settings.json fix and push
+
