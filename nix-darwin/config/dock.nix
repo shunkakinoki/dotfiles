@@ -41,6 +41,7 @@
       "/Applications/Xcode.app"
       "/Applications/Zed.app"
       "/System/Applications/Messages.app"
+      "/Applications/WhatsApp.app"
       "/Applications/Beeper Desktop.app"
       "/Applications/Slack.app"
       "/Applications/Discord.app"
