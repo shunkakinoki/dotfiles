@@ -6,7 +6,8 @@
   "checkpoints_count": 3,
   "files_touched": [
     "config/claude/settings.json",
-    "dotagents/.ruler/mcp.json"
+    "dotagents/.ruler/mcp.json",
+    "dotagents/SKILLS.txt"
   ],
   "sessions": [
     {
@@ -32,10 +33,10 @@
     }
   ],
   "token_usage": {
-    "input_tokens": 51,
-    "cache_creation_tokens": 71630,
-    "cache_read_tokens": 1939183,
-    "output_tokens": 3228,
-    "api_call_count": 43
+    "input_tokens": 74,
+    "cache_creation_tokens": 102752,
+    "cache_read_tokens": 3868519,
+    "output_tokens": 4536,
+    "api_call_count": 62
   }
 }
