@@ -1,0 +1,7 @@
+{
+  "prompt_storage": "notes",
+  "disable_auto_updates": true,
+  "disable_version_checks": true,
+  "quiet": false,
+  "update_channel": "latest"
+}

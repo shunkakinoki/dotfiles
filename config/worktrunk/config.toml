@@ -1,0 +1,17 @@
+worktree-path = "{{ repo_path }}/.worktrees/{{ branch | sanitize }}"
+
+[commit]
+stage = "all"
+
+[commit.generation]
+command = "MAX_THINKING_TOKENS=0 claude -p --model=haiku --tools='' --disable-slash-commands --setting-sources='' --system-prompt=''"
+
+[list]
+summary = true
+
+[merge]
+squash = true
+commit = true
+rebase = true
+remove = true
+verify = true

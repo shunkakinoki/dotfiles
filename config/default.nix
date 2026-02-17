@@ -14,6 +14,7 @@ in
   ./direnv
   ./factory
   ./gemini
+  ./git-ai
   ./ghostty
   ./iterm2
   ./hammerspoon
@@ -26,6 +27,7 @@ in
   ./pi
   ./serena
   ./starship
+  ./worktrunk
   ./zellij
 ]
 ++ (
