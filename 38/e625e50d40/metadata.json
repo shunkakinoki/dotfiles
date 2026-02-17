@@ -2,10 +2,11 @@
   "cli_version": "0.4.4",
   "checkpoint_id": "38e625e50d40",
   "strategy": "manual-commit",
-  "branch": "upd",
-  "checkpoints_count": 3,
+  "branch": "feat/git-ai-worktrunk-config",
+  "checkpoints_count": 4,
   "files_touched": [
     "config/claude/settings.json",
+    "config/git-ai/default.nix",
     "dotagents/.ruler/mcp.json",
     "dotagents/SKILLS.txt"
   ],
@@ -30,13 +31,20 @@
       "context": "/38/e625e50d40/2/context.md",
       "content_hash": "/38/e625e50d40/2/content_hash.txt",
       "prompt": "/38/e625e50d40/2/prompt.txt"
+    },
+    {
+      "metadata": "/38/e625e50d40/3/metadata.json",
+      "transcript": "/38/e625e50d40/3/full.jsonl",
+      "context": "/38/e625e50d40/3/context.md",
+      "content_hash": "/38/e625e50d40/3/content_hash.txt",
+      "prompt": "/38/e625e50d40/3/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 74,
-    "cache_creation_tokens": 102752,
-    "cache_read_tokens": 3868519,
-    "output_tokens": 4536,
-    "api_call_count": 62
+    "input_tokens": 85,
+    "cache_creation_tokens": 152634,
+    "cache_read_tokens": 4059802,
+    "output_tokens": 5196,
+    "api_call_count": 70
   }
 }

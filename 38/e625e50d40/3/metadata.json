@@ -1,0 +1,31 @@
+{
+  "cli_version": "0.4.4",
+  "checkpoint_id": "38e625e50d40",
+  "session_id": "4e1061c8-060e-4633-9ce4-a9462922bc66",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-17T02:07:01.618887Z",
+  "branch": "feat/git-ai-worktrunk-config",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "config/git-ai/default.nix"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "41cc1bc9-4e18-4627-9578-e1f6f31118b8",
+  "token_usage": {
+    "input_tokens": 11,
+    "cache_creation_tokens": 49882,
+    "cache_read_tokens": 191283,
+    "output_tokens": 660,
+    "api_call_count": 8
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-17T02:07:01.592667Z",
+    "agent_lines": 11,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 11,
+    "agent_percentage": 100
+  },
+  "transcript_path": ".claude/projects/-Users-shunkakinoki-dotfiles/4e1061c8-060e-4633-9ce4-a9462922bc66.jsonl"
+}
