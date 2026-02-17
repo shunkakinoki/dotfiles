@@ -6,7 +6,7 @@
   "checkpoints_count": 4,
   "files_touched": [
     "config/claude/settings.json",
-    "config/git-ai/default.nix",
+    "config/worktrunk/config.toml",
     "dotagents/.ruler/mcp.json",
     "dotagents/SKILLS.txt"
   ],
@@ -41,10 +41,10 @@
     }
   ],
   "token_usage": {
-    "input_tokens": 85,
-    "cache_creation_tokens": 152634,
-    "cache_read_tokens": 4059802,
-    "output_tokens": 5196,
+    "input_tokens": 84,
+    "cache_creation_tokens": 106045,
+    "cache_read_tokens": 4177628,
+    "output_tokens": 5214,
     "api_call_count": 70
   }
 }

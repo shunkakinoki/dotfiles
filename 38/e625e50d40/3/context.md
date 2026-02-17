@@ -20,3 +20,7 @@ continue
 
 make format and push
 
+### Prompt 4
+
+search worktree config there's a new llm summarization feature eenbale that in the config as well
+

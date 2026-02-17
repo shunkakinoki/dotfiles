@@ -13,3 +13,7 @@ continue
 ---
 
 make format and push
+
+---
+
+search worktree config there's a new llm summarization feature eenbale that in the config as well
