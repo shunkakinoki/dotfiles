@@ -16,7 +16,7 @@
     "@ccusage/codex": "^18.0.5",
     "@ccusage/mcp": "^18.0.5",
     "@getgrit/cli": "^0.1.0-alpha.1743007075",
-    "@github/copilot": "^0.0.410",
+    "@github/copilot": "^0.0.411",
     "@google/jules": "^0.1.42",
     "@kaitranntt/ccs": "^7.43.0",
     "@mariozechner/pi-coding-agent": "^0.52.12",
