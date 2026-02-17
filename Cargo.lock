@@ -4747,9 +4747,9 @@ dependencies = [
 
 [[package]]
 name = "worktrunk"
-version = "0.24.1"
+version = "0.25.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "55deb12f42ed66a416507d85d105e48eac0af3695079fc77ec1fa783a0a60516"
+checksum = "0678b318845041e7c013dd38b4c7e0013f4c78bf3246e690e21879cb3e34562b"
 dependencies = [
  "ansi-str",
  "anstream 1.0.0",
@@ -4789,7 +4789,6 @@ dependencies = [
  "serde_json",
  "shell-escape",
  "shellexpand",
- "shlex",
  "signal-hook 0.4.3",
  "skim",
  "strum 0.27.2",
