@@ -31,8 +31,8 @@
             "maxTokens": 32000
           },
           {
-            "id": "claude-sonnet-4-5-20250929",
-            "name": "Claude Sonnet 4.5",
+            "id": "claude-sonnet-4-6",
+            "name": "Claude Sonnet 4.6",
             "reasoning": false,
             "input": [
               "text",
@@ -82,8 +82,8 @@
             "maxTokens": 32000
           },
           {
-            "id": "claude-sonnet-4-5-thinking",
-            "name": "Claude Sonnet 4.5 Thinking",
+            "id": "claude-sonnet-4-6-thinking",
+            "name": "Claude Sonnet 4.6 Thinking",
             "reasoning": true,
             "input": [
               "text",
@@ -235,7 +235,7 @@
         "name": "Code Reviewer (Sonnet)",
         "workspace": "__WORKSPACE__/agents/code-review",
         "model": {
-          "primary": "cliproxy/claude-sonnet-4-5-20250929",
+          "primary": "cliproxy/claude-sonnet-4-6",
           "fallbacks": [
             "cliproxy/glm-4.7"
           ]
@@ -340,7 +340,7 @@
         "model": {
           "primary": "cliproxy/claude-opus-4-6",
           "fallbacks": [
-            "cliproxy/claude-sonnet-4-5-20250929"
+            "cliproxy/claude-sonnet-4-6"
           ]
         },
         "tools": {
@@ -369,7 +369,7 @@
         "name": "Docs Checker",
         "workspace": "__WORKSPACE__/agents/docs",
         "model": {
-          "primary": "cliproxy/claude-sonnet-4-5-20250929",
+          "primary": "cliproxy/claude-sonnet-4-6",
           "fallbacks": [
             "cliproxy/glm-4.7"
           ]
@@ -469,7 +469,7 @@
         "name": "Routine Manager",
         "workspace": "__WORKSPACE__/agents/routine",
         "model": {
-          "primary": "cliproxy/claude-sonnet-4-5-20250929",
+          "primary": "cliproxy/claude-sonnet-4-6",
           "fallbacks": [
             "cliproxy/glm-4.7"
           ]
@@ -592,7 +592,7 @@
         "name": "Communication Specialist",
         "workspace": "__WORKSPACE__/agents/communication",
         "model": {
-          "primary": "cliproxy/claude-sonnet-4-5-20250929",
+          "primary": "cliproxy/claude-sonnet-4-6",
           "fallbacks": [
             "cliproxy/glm-4.7"
           ]

@@ -46,10 +46,10 @@ ampcode:
   model-mappings:
     - from: "claude-opus-4-5-thinking"
       to: "gemini-claude-opus-4-5-thinking"
-    - from: "claude-sonnet-4-5"
-      to: "gemini-claude-sonnet-4-5"
-    - from: "claude-sonnet-4-5-thinking"
-      to: "gemini-claude-sonnet-4-5-thinking"
+    - from: "claude-sonnet-4-6"
+      to: "gemini-claude-sonnet-4-6"
+    - from: "claude-sonnet-4-6-thinking"
+      to: "gemini-claude-sonnet-4-6-thinking"
 # Gemini API keys (preferred)
 # gemini-api-key:
 #   - api-key: "AIzaSy...01"
