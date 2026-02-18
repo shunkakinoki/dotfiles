@@ -1,0 +1,17 @@
+upgrade @models.json sonnet to use the lates 4.6 model and upate all accordindlgy
+
+---
+
+ran the scirpt to update beased on the models
+
+---
+
+"ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-opus-4-6-thinking", should be sonnet?
+
+---
+
+"ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6-1m" why is ther no opus in
+
+---
+
+yes please add except the 1-m
