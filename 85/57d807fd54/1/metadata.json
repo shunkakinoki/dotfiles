@@ -1,0 +1,37 @@
+{
+  "cli_version": "0.4.5",
+  "checkpoint_id": "8557d807fd54",
+  "session_id": "6c7a4541-f2f7-4a40-bbc3-603193025e07",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-18T09:23:56.780309Z",
+  "branch": "update-models-json",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "config/ccs/agy.settings.template.json",
+    "config/cliproxyapi/config.template.yaml",
+    "config/cliproxyapi/config.tpl.yaml",
+    "config/llm/extra-openai-models.yaml",
+    "config/openclaw/openclaw.template.json",
+    "config/opencode/opencode.jsonc",
+    "models.json"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "098dc804c97a",
+  "token_usage": {
+    "input_tokens": 4208,
+    "cache_creation_tokens": 54521,
+    "cache_read_tokens": 879193,
+    "output_tokens": 165,
+    "api_call_count": 18
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-18T09:23:56.70777Z",
+    "agent_lines": 21,
+    "human_added": 8,
+    "human_modified": 4,
+    "human_removed": 0,
+    "total_committed": 33,
+    "agent_percentage": 63.63636363636363
+  },
+  "transcript_path": ".claude/projects/-Users-shunkakinoki-dotfiles/6c7a4541-f2f7-4a40-bbc3-603193025e07.jsonl"
+}

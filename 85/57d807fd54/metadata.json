@@ -3,7 +3,7 @@
   "checkpoint_id": "8557d807fd54",
   "strategy": "manual-commit",
   "branch": "update-models-json",
-  "checkpoints_count": 0,
+  "checkpoints_count": 1,
   "files_touched": [
     "config/ccs/agy.settings.template.json",
     "config/claude/settings.json",
@@ -24,13 +24,20 @@
       "context": "/85/57d807fd54/0/context.md",
       "content_hash": "/85/57d807fd54/0/content_hash.txt",
       "prompt": "/85/57d807fd54/0/prompt.txt"
+    },
+    {
+      "metadata": "/85/57d807fd54/1/metadata.json",
+      "transcript": "/85/57d807fd54/1/full.jsonl",
+      "context": "/85/57d807fd54/1/context.md",
+      "content_hash": "/85/57d807fd54/1/content_hash.txt",
+      "prompt": "/85/57d807fd54/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 44,
-    "cache_creation_tokens": 36614,
-    "cache_read_tokens": 1435386,
-    "output_tokens": 1740,
-    "api_call_count": 36
+    "input_tokens": 4252,
+    "cache_creation_tokens": 91135,
+    "cache_read_tokens": 2314579,
+    "output_tokens": 1905,
+    "api_call_count": 54
   }
 }
