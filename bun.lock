@@ -5,7 +5,7 @@
     "": {
       "name": "dotfiles",
       "dependencies": {
-        "@augmentcode/auggie": "^0.16.1",
+        "@augmentcode/auggie": "^0.16.2",
         "@biomejs/biome": "^2.3.15",
         "@ccusage/codex": "^18.0.5",
         "@ccusage/mcp": "^18.0.5",
@@ -95,7 +95,7 @@
 
     "@ark/util": ["@ark/util@0.56.0", "", {}, "sha512-BghfRC8b9pNs3vBoDJhcta0/c1J1rsoS1+HgVUreMFPdhz/CRAKReAu57YEllNaSy98rWAdY1gE+gFup7OXpgA=="],
 
-    "@augmentcode/auggie": ["@augmentcode/auggie@0.16.1", "", { "bin": { "auggie": "augment.mjs" } }, "sha512-SBTxdWzdSy4x5/MzEP2qeTC3Q8vSyrUD3WZDFVqF0fF5hQZ/0WW200kzOjP0/I45KXNj0pfiq0zKWNR9cW6l2Q=="],
+    "@augmentcode/auggie": ["@augmentcode/auggie@0.16.2", "", { "bin": { "auggie": "augment.mjs" } }, "sha512-0JJPlXqgNyPwAYWVTe9lBuZ7nYXdlGz9ZK+v2heBAOnrhIuk9qt6RueOzS42Xa1qA9L0QLjAvSpRNnJjBsRafg=="],
 
     "@aws-crypto/crc32": ["@aws-crypto/crc32@5.2.0", "", { "dependencies": { "@aws-crypto/util": "^5.2.0", "@aws-sdk/types": "^3.222.0", "tslib": "^2.6.2" } }, "sha512-nLbCWqQNgUiwwtFsen1AdzAtvuLRsQS8rYgMuxCrdKf9kOssamGLuPwyTY9wyYblNr9+1XM8v6zoDTPPSIeANg=="],
 
