@@ -28,8 +28,8 @@
 				"claude-opus-4-6": {
 					"name": "Claude Opus 4.6 (via shunkakinoki's CLIProxy)"
 				},
-				"claude-sonnet-4-5-20250929": {
-					"name": "Claude Sonnet 4.5 (via shunkakinoki's CLIProxy)"
+				"claude-sonnet-4-6": {
+					"name": "Claude Sonnet 4.6 (via shunkakinoki's CLIProxy)"
 				},
 				"claude-haiku-4-5-20251001": {
 					"name": "Claude Haiku 4.5 (via shunkakinoki's CLIProxy)"
@@ -62,8 +62,8 @@
 				"claude-opus-4-6": {
 					"name": "Claude Opus 4.6 (via local CLIProxyAPI)"
 				},
-				"claude-sonnet-4-5-20250929": {
-					"name": "Claude Sonnet 4.5 (via local CLIProxyAPI)"
+				"claude-sonnet-4-6": {
+					"name": "Claude Sonnet 4.6 (via local CLIProxyAPI)"
 				},
 				"claude-haiku-4-5-20251001": {
 					"name": "Claude Haiku 4.5 (via local CLIProxyAPI)"

@@ -1,6 +1,6 @@
 # Custom OpenAI-compatible models for llm
 - model_id: claude-sonnet
-  model_name: claude-sonnet-4-5-20250929
+  model_name: claude-sonnet-4-6
   api_base: http://localhost:8317/v1
   api_key_name: cliproxyapi
 - model_id: claude-opus
