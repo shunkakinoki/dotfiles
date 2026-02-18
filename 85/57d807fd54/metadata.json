@@ -1,0 +1,36 @@
+{
+  "cli_version": "0.4.5",
+  "checkpoint_id": "8557d807fd54",
+  "strategy": "manual-commit",
+  "branch": "update-models-json",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "config/ccs/agy.settings.template.json",
+    "config/claude/settings.json",
+    "config/claude/settings.local.json",
+    "config/cliproxyapi/config.template.yaml",
+    "config/cliproxyapi/config.tpl.yaml",
+    "config/codex/config.toml",
+    "config/codex/config.tpl.toml",
+    "config/llm/extra-openai-models.yaml",
+    "config/openclaw/openclaw.template.json",
+    "config/opencode/opencode.jsonc",
+    "models.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/85/57d807fd54/0/metadata.json",
+      "transcript": "/85/57d807fd54/0/full.jsonl",
+      "context": "/85/57d807fd54/0/context.md",
+      "content_hash": "/85/57d807fd54/0/content_hash.txt",
+      "prompt": "/85/57d807fd54/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 44,
+    "cache_creation_tokens": 36614,
+    "cache_read_tokens": 1435386,
+    "output_tokens": 1740,
+    "api_call_count": 36
+  }
+}
