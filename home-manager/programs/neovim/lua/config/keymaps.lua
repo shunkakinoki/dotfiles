@@ -40,8 +40,14 @@ end, opts)
 keymap("n", "[b", function()
 	utils.cycle_buffer("prev")
 end, opts)
--- @keymap <leader>q: Close current buffer
-keymap("n", "<leader>q", ":Bdelete<CR>", opts)
+-- @keymap <leader>q: Close current window/split, or delete buffer if last window
+keymap("n", "<leader>q", function()
+	if #vim.api.nvim_tabpage_list_wins(0) > 1 then
+		vim.cmd("close")
+	else
+		vim.cmd("Bdelete")
+	end
+end, opts)
 -- @keymap <leader>bad: Wipe all buffers
 keymap("n", "<leader>bad", ":%bwipeout!<cr>:intro<cr>", opts)
 -- @keymap <leader>w: Write file
@@ -200,12 +206,12 @@ keymap("n", "<leader>dl", vim.diagnostic.open_float, { desc = "Line Diagnostics"
 -- ====================================================================================
 -- @keymap <leader>ff: Open fff file picker
 keymap("n", "<leader>ff", function()
-	require("fff").open()
+	require("fff").find_files()
 end, { desc = "FFF File Picker" })
 
 -- @keymap <leader>fp: Open fff file picker (alternate)
 keymap("n", "<leader>fp", function()
-	require("fff").open()
+	require("fff").find_files()
 end, { desc = "FFF File Picker" })
 
 -- ====================================================================================
