@@ -1,6 +1,6 @@
 local opts = { noremap = true, silent = true }
 local keymap = vim.keymap.set
-local utils = require("utils")
+local utils = require("config.utils")
 
 -- Enhanced navigation with label-based motion jump targets.
 -- From: https://github.com/folke/flash.nvim

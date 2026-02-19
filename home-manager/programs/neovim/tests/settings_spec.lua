@@ -3,8 +3,8 @@
 
 describe("settings", function()
 	before_each(function()
-		package.loaded["settings"] = nil
-		require("settings")
+		package.loaded["config.settings"] = nil
+		require("config.settings")
 	end)
 
 	describe("basic options", function()

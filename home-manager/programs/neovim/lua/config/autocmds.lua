@@ -1,6 +1,6 @@
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
-local utils = require("utils")
+local utils = require("config.utils")
 
 -- ====================================================================================
 -- HIGHLIGHT ON YANK WITH REGISTER ROTATION

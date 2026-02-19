@@ -3,8 +3,8 @@
 
 describe("workspace", function()
 	before_each(function()
-		package.loaded["workspace"] = nil
-		require("workspace")
+		package.loaded["config.workspace"] = nil
+		require("config.workspace")
 	end)
 
 	describe("user commands", function()
