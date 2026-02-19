@@ -1,0 +1,57 @@
+Implement the following plan:
+
+# Remove pcall guard from telescope fzf extension loading
+
+## Context
+
+The `pcall` around `telescope.load_extension("fzf")` was added as defense-in-depth, but the activation script now reliably builds `libfzf.so` on every `make switch`. The `pcall` silently swallows errors, which is worse — we'd never notice if fzf broke again.
+
+## Change
+
+**File**: `home-manager/programs/neovim/lua/config/telescope.lua` (line 43)
+
+Revert `pcall(telescope.load_extension, "fzf")` back to `telescope.load_extension("fzf")`.
+
+## Verification
+
+- `make neovim-test` passes
+- `nvim` starts without errors
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/shunkakinoki/.REDACTED.jsonl
+
+If this plan can be broken down into multiple independent tasks, consider using the TeamCreate tool to create a team and parallelize the work.
+
+---
+
+push
+
+---
+
+fails on github actions il    ||    plugins e2e init.lua loading should load full config without Lua errors    
+            ...iles/home-manager/programs/neovim/tests/plugins_spec.lua:108: init.lua raised an error: vim/_core/editor.lua:0: command line..script nvim_exec2() called at command line:0[1]../home/runner/work/dotfiles/dotfiles/home-manager/programs/neovim/init.lua: Vim(source):E5113: Lua chunk: vim/_core/options.lua:0: E474: Invalid argument
+            stack traceback:
+                [C]: in function 'nvim_set_option_value'
+                vim/_core/options.lua: in function '_set'
+                vim/_core/options.lua: in function 'append'
+                ./lua/config/settings.lua:106: in main chunk
+                [C]: in function 'require'
+                .../dotfiles/dotfiles/home-manager/programs/neovim/init.lua:32: in main chunk
+                [builtin#36]: at 0x7ffff7e73040
+                /tmp/plenary.nvim/lua/plenary/busted.lua:268: in function 'run'
+                [string ":lua"]:1: in main chunk
+            Expected objects to be the same.
+            Passed in:
+            (boolean) false
+            Expected:
+            (boolean) true
+            
+            stack traceback:
+                ...iles/home-manager/programs/neovim/tests/plugins_spec.lua:108: in function <...iles/home-manager/programs/neovim/tests/plugins_spec.lua:83>
+                
+    
+Success:     7    
+Failed :     1    
+Errors :     0    
+========================================    
+Tests Failed. Exit: 1
