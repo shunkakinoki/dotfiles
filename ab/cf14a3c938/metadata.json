@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.5",
+  "checkpoint_id": "abcf14a3c938",
+  "strategy": "manual-commit",
+  "branch": "fix/telescope-fzf-native-build",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "plan-serene-nibbling-blossom.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/ab/cf14a3c938/0/metadata.json",
+      "transcript": "/ab/cf14a3c938/0/full.jsonl",
+      "context": "/ab/cf14a3c938/0/context.md",
+      "content_hash": "/ab/cf14a3c938/0/content_hash.txt",
+      "prompt": "/ab/cf14a3c938/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 906,
+    "cache_creation_tokens": 84005,
+    "cache_read_tokens": 7273003,
+    "output_tokens": 7661,
+    "api_call_count": 98
+  }
+}
