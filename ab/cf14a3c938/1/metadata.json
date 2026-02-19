@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.5",
+  "checkpoint_id": "abcf14a3c938",
+  "session_id": "497ae4c2-3818-4c52-aa65-31f65d89500c",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-19T18:54:18.792512Z",
+  "branch": "fix/telescope-fzf-native-build",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "plan-serene-nibbling-blossom.md"
+  ],
+  "agent": "Claude Code",
+  "checkpoint_transcript_start": 296,
+  "transcript_lines_at_start": 296,
+  "token_usage": {
+    "input_tokens": 44,
+    "cache_creation_tokens": 36614,
+    "cache_read_tokens": 1435386,
+    "output_tokens": 1740,
+    "api_call_count": 36
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-19T18:54:18.75325Z",
+    "agent_lines": 41,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 41,
+    "agent_percentage": 100
+  },
+  "transcript_path": ".claude/projects/-Users-shunkakinoki-dotfiles/497ae4c2-3818-4c52-aa65-31f65d89500c.jsonl"
+}
