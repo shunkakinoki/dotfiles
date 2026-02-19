@@ -1,0 +1,98 @@
+Implement the following plan:
+
+# Fix telescope-fzf-native.nvim: Declarative Build + E2E Test
+
+## Context
+
+`telescope-fzf-native.nvim` requires a compiled native library (`libfzf.so`/`libfzf.dylib`). The plugin spec has `build = "make"` but `vim.pack`'s build step didn't execute (or failed silently), leaving the `build/` directory missing. This causes `telescope.load_extension("fzf")` to error on nvim startup.
+
+The user wants a **declarative** fix (via Nix/home-manager) rather than a manual `make` command, plus an **e2e test** to catch these errors in CI.
+
+## Changes
+
+### 1. Add home-manager activation script to build native plugins
+**File**: `home-manager/programs/neovim/default.nix`
+
+Add a `home.activation.buildNvimNativePlugins` step that runs after `writeBoundary`. It will:
+- Check if `telescope-fzf-native.nvim` exists in the pack directory
+- Run `make` if `build/libfzf.{so,dylib}` is missing
+- Use `pkgs.gnumake` and `pkgs.gcc` (or `pkgs.clang` on Darwin) to ensure build tools are available
+
+This runs automatically on every `home-manager switch` / `make switch`.
+
+### 2. Add pcall guard to telescope fzf extension loading
+**File**: `home-manager/programs/neovim/lua/config/telescope.lua`
+
+Wrap `telescope.load_extension("fzf")` in `pcall` so a missing native library doesn't crash nvim startup. This is defense-in-depth — the activation script is the primary fix.
+
+### 3. Add e2e init.lua loading test
+**File**: `home-manager/programs/neovim/tests/plugins_spec.lua`
+
+Add a test that verifies the full `init.lua` can be loaded headlessly without Lua errors. This catches the exact class of error from the bug report.
+
+### 4. Update CI workflow to run e2e config validation
+**File**: `.github/workflows/lua.yml`
+
+The existing `lua-neovim` job already runs `make lua-check-neovim-dev` which loads `init.lua` headlessly. The pcall guard (change #2) will prevent this from being a hard error on fresh CI installs where plugins aren't synced. The new test (change #3) will validate the pattern.
+
+## Verification
+
+1. Run `make switch` — activation script builds `libfzf.dylib`
+2. Run `nvim` — no E5113 error
+3. Run `make neovim-test` — new e2e test passes
+4. Verify `ls ~/.local/share/nvim/site/pack/core/opt/telescope-fzf-native.nvim/build/` shows the compiled library
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/shunkakinoki/.REDACTED.jsonl
+
+If this plan can be broken down into multiple independent tasks, consider using the TeamCreate tool to create a team and parallelize the work.
+
+---
+
+make build and switch
+
+---
+
+ok cool create PR but before tell me how to close file ideally i want it <space> + w like how u do for other apps
+
+---
+
+hmm it doesn't close the panel though
+
+---
+
+[Request interrupted by user]
+
+---
+
+space + ff returns E5108: Lua: /Users/shunkakinoki/.config/nvim/lua/config/keymaps.lua:203: attempt to call field 'open' (a nil value)
+stack traceback:
+        /Users/shunkakinoki/.config/nvim/lua/config/keymaps.lua:203: in function </Users/shunkakinoki/.config/nvim/lua/config/keymaps.lua:202>
+
+---
+
+ok.. also why is space + q not closing the buffer (there's two panels w/ 1 and 1)
+
+---
+
+ok make build and switch
+
+---
+
+what's the blan kline in the middle? is it a scrollbar
+
+---
+
+hmm yea remove that
+
+---
+
+what's the recommended way to quit nvim?
+
+---
+
+can you make it quit or detatch w/ space + shift + w?
+
+---
+
+ok commit and push how to reload nvim as well
