@@ -4808,9 +4808,9 @@ dependencies = [
 
 [[package]]
 name = "worktrunk"
-version = "0.25.0"
+version = "0.26.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0678b318845041e7c013dd38b4c7e0013f4c78bf3246e690e21879cb3e34562b"
+checksum = "204fdf2560c18278004078ee2f62eddc29f45681a901f20159114ca5b3c27c30"
 dependencies = [
  "ansi-str",
  "anstream 1.0.0",
@@ -4855,6 +4855,7 @@ dependencies = [
  "strum 0.27.2",
  "supports-hyperlinks",
  "synoptic",
+ "tempfile",
  "termimad",
  "terminal_size",
  "toml 0.9.12+spec-1.1.0",
