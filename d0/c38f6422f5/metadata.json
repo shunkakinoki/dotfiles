@@ -3,7 +3,7 @@
   "checkpoint_id": "d0c38f6422f5",
   "strategy": "manual-commit",
   "branch": "fix/telescope-fzf-native-build",
-  "checkpoints_count": 1,
+  "checkpoints_count": 2,
   "files_touched": [
     "home-manager/programs/neovim/lua/config/telescope.lua"
   ],
@@ -21,13 +21,20 @@
       "context": "/d0/c38f6422f5/1/context.md",
       "content_hash": "/d0/c38f6422f5/1/content_hash.txt",
       "prompt": "/d0/c38f6422f5/1/prompt.txt"
+    },
+    {
+      "metadata": "/d0/c38f6422f5/2/metadata.json",
+      "transcript": "/d0/c38f6422f5/2/full.jsonl",
+      "context": "/d0/c38f6422f5/2/context.md",
+      "content_hash": "/d0/c38f6422f5/2/content_hash.txt",
+      "prompt": "/d0/c38f6422f5/2/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 950,
-    "cache_creation_tokens": 120619,
-    "cache_read_tokens": 8708389,
-    "output_tokens": 9401,
-    "api_call_count": 134
+    "input_tokens": 961,
+    "cache_creation_tokens": 141883,
+    "cache_read_tokens": 8989538,
+    "output_tokens": 9553,
+    "api_call_count": 141
   }
 }
