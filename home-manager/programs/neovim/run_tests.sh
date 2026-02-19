@@ -38,13 +38,14 @@ cd "$NVIM_DIR"
 echo -e "${YELLOW}Executing tests...${NC}"
 nvim --headless \
   -u tests/minimal_init.lua \
-  -c "lua require('plenary.test_harness').test_directory('tests/', { minimal_init = 'tests/minimal_init.lua', sequential = true })" 2>&1 | tee /tmp/nvim-test-output.txt
+  -c "lua require('plenary.test_harness').test_directory('tests/', { minimal_init = 'tests/minimal_init.lua', sequential = true })"
 
-# Plenary exits with code 2 even on success, so check output for failures instead
-if grep -q "Failed : \s*[1-9]" /tmp/nvim-test-output.txt || grep -q "Errors : \s*[1-9]" /tmp/nvim-test-output.txt; then
-  echo -e "${RED}Tests failed!${NC}"
-  exit 1
-else
+EXIT_CODE=$?
+
+if [ $EXIT_CODE -eq 0 ]; then
   echo -e "${GREEN}All tests passed!${NC}"
-  exit 0
+else
+  echo -e "${RED}Tests failed with exit code: $EXIT_CODE${NC}"
 fi
+
+exit $EXIT_CODE

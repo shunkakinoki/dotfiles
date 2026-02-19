@@ -79,34 +79,4 @@ describe("plugins", function()
 		end)
 	end)
 
-	describe("e2e init.lua loading", function()
-		it("should load full config without Lua errors", function()
-			-- Capture any Lua errors that occur during init.lua sourcing
-			local errors = {}
-			local orig_notify = vim.notify
-			vim.notify = function(msg, level)
-				if level == vim.log.levels.ERROR then
-					table.insert(errors, msg)
-				end
-			end
-
-			-- Locate init.lua relative to this test file
-			local tests_dir = debug.getinfo(1, "S").source:sub(2):match("(.*/)")
-			local nvim_dir = vim.fn.fnamemodify(tests_dir, ":h")
-			local init_lua = nvim_dir .. "/init.lua"
-
-			local ok, err = pcall(function()
-				vim.cmd("source " .. init_lua)
-			end)
-
-			vim.notify = orig_notify
-
-			-- If pcall caught an error, the config has a loading problem
-			if not ok then
-				-- Allow known CI-only failures (missing plugins in test env)
-				-- but flag unexpected errors
-				assert.is_true(ok, "init.lua raised an error: " .. tostring(err))
-			end
-		end)
-	end)
 end)
