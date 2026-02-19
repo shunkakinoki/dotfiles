@@ -5,8 +5,8 @@ describe("init", function()
 	describe("settings", function()
 		it("should load without errors", function()
 			assert.has_no.errors(function()
-				package.loaded["settings"] = nil
-				require("settings")
+				package.loaded["config.settings"] = nil
+				require("config.settings")
 			end)
 		end)
 	end)

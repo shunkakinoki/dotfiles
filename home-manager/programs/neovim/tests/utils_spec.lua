@@ -6,8 +6,8 @@ describe("utils", function()
 
 	before_each(function()
 		-- Clear any cached module to get fresh state
-		package.loaded["utils"] = nil
-		utils = require("utils")
+		package.loaded["config.utils"] = nil
+		utils = require("config.utils")
 	end)
 
 	describe("cycle_buffer", function()

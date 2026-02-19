@@ -3,8 +3,8 @@
 
 describe("autocmds", function()
 	before_each(function()
-		package.loaded["autocmds"] = nil
-		require("autocmds")
+		package.loaded["config.autocmds"] = nil
+		require("config.autocmds")
 	end)
 
 	describe("augroup creation", function()

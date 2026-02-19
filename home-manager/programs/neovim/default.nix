@@ -22,6 +22,12 @@ in
     force = true;
   };
 
+  home.file.".config/nvim/lua" = {
+    source = ./lua;
+    recursive = true;
+    force = true;
+  };
+
   home.activation.copyNvimPackLock = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD mkdir -p "$HOME/.config/nvim"
     $DRY_RUN_CMD cp -f ${nvimPackLockJson} "$HOME/.config/nvim/nvim-pack-lock.json"
