@@ -52,6 +52,8 @@ end, opts)
 keymap("n", "<leader>bad", ":%bwipeout!<cr>:intro<cr>", opts)
 -- @keymap <leader>w: Write file
 keymap("n", "<leader>w", ":write<CR>", opts)
+-- @keymap <leader>W: Save all and quit
+keymap("n", "<leader>W", ":wall | qall<CR>", opts)
 -- @keymap <leader>r: Reload Neovim configuration
 keymap("n", "<leader>r", function()
 	vim.cmd("source $MYVIMRC")
