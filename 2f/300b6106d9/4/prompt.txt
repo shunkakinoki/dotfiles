@@ -1,0 +1,60 @@
+Implement the following plan:
+
+# Fix CI: build libfzf.so in test environment
+
+## Context
+
+`telescope.load_extension("fzf")` (without `pcall`) fails in CI because `libfzf.so` isn't compiled there. The plugin is downloaded by `vim.pack.add()` (`plugins.lua:38`, `build = "make"`), but the devenv shell (`devenv.nix`) lacks `gcc`/`make` so the native build silently fails. The home-manager activation script (`default.nix:50-63`) handles this in production but doesn't run in CI.
+
+## Changes
+
+### 1. Add build tools to `devenv.nix`
+
+Add `pkgs.gnumake` and `pkgs.gcc` to `packages` so `vim.pack`'s `build = "make"` can compile native extensions in CI.
+
+### 2. Add pre-build step to `run_tests.sh`
+
+Before running tests, find `telescope-fzf-native.nvim` in nvim's pack directory and run `make` if `libfzf.so` is missing — mirrors the activation script logic. This ensures the `.so` exists even if `vim.pack` skips the build on subsequent runs.
+
+```bash
+# Build telescope-fzf-native if libfzf.so is missing
+PACK_DIR="$HOME/.local/share/nvim/site/pack"
+for d in "$PACK_DIR"/*/opt/telescope-fzf-native.nvim "$PACK_DIR"/*/start/telescope-fzf-native.nvim; do
+  if [ -d "$d" ] && [ ! -f "$d/build/libfzf.so" ]; then
+    echo "Building telescope-fzf-native.nvim..."
+    make -C "$d" clean all
+  fi
+done
+```
+
+## Files
+
+- `devenv.nix` — add `pkgs.gnumake`, `pkgs.gcc`
+- `home-manager/programs/neovim/run_tests.sh` — add libfzf.so build step
+
+## Verification
+
+- `make neovim-test` passes locally
+- `make neovim-test-dev` passes locally (nix dev shell)
+- CI `lua-neovim-test` job passes
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/shunkakinoki/.REDACTED.jsonl
+
+If this plan can be broken down into multiple independent tasks, consider using the TeamCreate tool to create a team and parallelize the work.
+
+---
+
+[Request interrupted by user]
+
+---
+
+how to test locally fresh to confirm that works on ci
+
+---
+
+yea
+
+---
+
+[Request interrupted by user for tool use]
