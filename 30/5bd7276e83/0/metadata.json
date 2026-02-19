@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.5",
+  "checkpoint_id": "305bd7276e83",
+  "session_id": "44ccf946-80c9-40f4-86c5-c17a145d3ec5",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-19T13:16:29.447213Z",
+  "branch": "fix/telescope-fzf-native-build",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "home-manager/programs/neovim/default.nix",
+    "home-manager/programs/neovim/tests/plugins_spec.lua"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "1f007059861a",
+  "token_usage": {
+    "input_tokens": 855,
+    "cache_creation_tokens": 52479,
+    "cache_read_tokens": 3848772,
+    "output_tokens": 3044,
+    "api_call_count": 61
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-19T13:16:29.209503Z",
+    "agent_lines": 0,
+    "human_added": 7,
+    "human_modified": 5,
+    "human_removed": 0,
+    "total_committed": 7,
+    "agent_percentage": 0
+  },
+  "transcript_path": ".claude/projects/-Users-shunkakinoki-dotfiles/44ccf946-80c9-40f4-86c5-c17a145d3ec5.jsonl"
+}
