@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.5",
+  "checkpoint_id": "1dfaa3a49b3d",
+  "strategy": "manual-commit",
+  "branch": "fix/telescope-fzf-native-build",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "home-manager/programs/neovim/run_tests.sh"
+  ],
+  "sessions": [
+    {
+      "metadata": "/1d/faa3a49b3d/0/metadata.json",
+      "transcript": "/1d/faa3a49b3d/0/full.jsonl",
+      "context": "/1d/faa3a49b3d/0/context.md",
+      "content_hash": "/1d/faa3a49b3d/0/content_hash.txt",
+      "prompt": "/1d/faa3a49b3d/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 867,
+    "cache_creation_tokens": 57941,
+    "cache_read_tokens": 4499032,
+    "output_tokens": 3855,
+    "api_call_count": 69
+  }
+}
