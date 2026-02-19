@@ -150,7 +150,6 @@ with pkgs;
   totem
   vlc
   vscode
-  walker
   wf-recorder
   wl-clip-persist
   wl-clipboard

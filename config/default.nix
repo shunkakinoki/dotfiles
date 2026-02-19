@@ -37,7 +37,6 @@ in
       ./hyprland
       ./hyprpanel
       ./rofi
-      ./walker
     ]
   else
     [ ]
