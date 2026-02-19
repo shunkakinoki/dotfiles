@@ -1,0 +1,56 @@
+Implement the following plan:
+
+# Verify CI fix: local fresh-environment test for libfzf.so
+
+## Context
+
+Changes to `devenv.nix` and `run_tests.sh` are already applied. Need to verify they work in a fresh environment that mirrors CI. CI runs `make neovim-test-dev` (`.github/workflows/lua.yml:36`), which executes:
+
+```
+DEVENV_ROOT=. nix develop .# --command make neovim-test
+```
+
+This enters the devenv shell (only packages from `devenv.nix`) and runs `run_tests.sh`. The pre-build step in `run_tests.sh` should detect missing `libfzf.so` and compile it using `gnumake`/`gcc` from `devenv.nix`.
+
+## Verification steps
+
+### 1. Delete `libfzf.so` to simulate fresh CI
+
+```bash
+rm ~/.local/share/nvim/site/pack/core/opt/telescope-fzf-native.nvim/build/libfzf.so
+```
+
+### 2. Run `make neovim-test-dev` (mirrors CI exactly)
+
+```bash
+make neovim-test-dev
+```
+
+**Expected**: The `run_tests.sh` output shows `Building telescope-fzf-native.nvim...` followed by all tests passing.
+
+### 3. Confirm `libfzf.so` was rebuilt
+
+```bash
+ls -la ~/.local/share/nvim/site/pack/core/opt/telescope-fzf-native.nvim/build/libfzf.so
+```
+
+### 4. Run again to confirm idempotency
+
+```bash
+make neovim-test-dev
+```
+
+**Expected**: No "Building..." message (already exists), tests still pass.
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/shunkakinoki/.REDACTED.jsonl
+
+If this plan can be broken down into multiple independent tasks, consider using the TeamCreate tool to create a team and parallelize the work.
+
+---
+
+push
+
+---
+
+github action still fails
