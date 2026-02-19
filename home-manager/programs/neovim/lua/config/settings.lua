@@ -103,6 +103,7 @@ vim.diagnostic.config({
 vim.opt.shortmess:append("c")
 vim.opt.timeoutlen = 300
 vim.opt.winborder = "none"
+vim.opt.fillchars:append({ vert = " " })
 -- Suppress deprecation warnings (temporary until plugins update)
 vim.deprecate = function() end
 vim.hl.priorities.semantic_tokens = 10

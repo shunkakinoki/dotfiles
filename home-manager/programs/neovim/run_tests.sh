@@ -31,6 +31,29 @@ fi
 # Export plenary directory for minimal_init.lua
 export PLENARY_DIR
 
+# Bootstrap plugins so vim.pack installs them before tests run
+PACK_DIR="$HOME/.local/share/nvim/site/pack"
+FZF_NATIVE_FOUND=false
+for d in "$PACK_DIR"/*/opt/telescope-fzf-native.nvim "$PACK_DIR"/*/start/telescope-fzf-native.nvim; do
+  if [ -d "$d" ]; then
+    FZF_NATIVE_FOUND=true
+    break
+  fi
+done
+
+if [ "$FZF_NATIVE_FOUND" = false ]; then
+  echo -e "${YELLOW}Bootstrapping plugins (first run)...${NC}"
+  nvim --headless -u "$NVIM_DIR/init.lua" -c 'qall!' 2>/dev/null || true
+fi
+
+# Build telescope-fzf-native if libfzf.so is missing
+for d in "$PACK_DIR"/*/opt/telescope-fzf-native.nvim "$PACK_DIR"/*/start/telescope-fzf-native.nvim; do
+  if [ -d "$d" ] && [ ! -f "$d/build/libfzf.so" ]; then
+    echo -e "${YELLOW}Building telescope-fzf-native.nvim...${NC}"
+    make -C "$d" clean all
+  fi
+done
+
 # Change to the nvim config directory
 cd "$NVIM_DIR"
 

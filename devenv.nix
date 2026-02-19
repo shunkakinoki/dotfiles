@@ -7,6 +7,8 @@
     pkgs.neovim
     pkgs.shellcheck
     pkgs.shellspec
+    pkgs.gnumake
+    pkgs.gcc
   ];
 
   containers = pkgs.lib.mkIf (!pkgs.stdenv.hostPlatform.isLinux) (pkgs.lib.mkForce { });

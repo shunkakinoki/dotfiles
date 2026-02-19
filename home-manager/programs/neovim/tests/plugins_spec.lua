@@ -78,4 +78,21 @@ describe("plugins", function()
 			assert.equals("~", signs_config.change.text)
 		end)
 	end)
+
+	describe("e2e init.lua loading", function()
+		it("should load full config without Lua errors", function()
+			-- Spawn a separate headless nvim to test init.lua loading.
+			-- vim.pack needs to run during nvim startup to properly load opt
+			-- packages onto the runtimepath, so we can't just source init.lua
+			-- within the current plenary session.
+			local source = debug.getinfo(1, "S").source:sub(2)
+			local nvim_dir = vim.fn.fnamemodify(source, ":p:h:h")
+			local init_lua = nvim_dir .. "/init.lua"
+
+			local result = vim.fn.system("nvim --headless -u " .. init_lua .. " -c 'qall!' 2>&1")
+			local exit_code = vim.v.shell_error
+
+			assert.are.equal(0, exit_code, "init.lua loading failed:\n" .. result)
+		end)
+	end)
 end)
