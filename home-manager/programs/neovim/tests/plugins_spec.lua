@@ -105,10 +105,7 @@ describe("plugins", function()
 			if not ok then
 				-- Allow known CI-only failures (missing plugins in test env)
 				-- but flag unexpected errors
-				assert.is_true(
-					ok,
-					"init.lua raised an error: " .. tostring(err)
-				)
+				assert.is_true(ok, "init.lua raised an error: " .. tostring(err))
 			end
 		end)
 	end)

@@ -8,7 +8,17 @@ let
   nvimInitLua = ./init.lua;
   nvimPackLockJson = ./nvim-pack-lock.json;
   packDir = "$HOME/.local/share/nvim/site/pack";
-  buildTools = if pkgs.stdenv.isDarwin then [ pkgs.gnumake pkgs.clang ] else [ pkgs.gnumake pkgs.gcc ];
+  buildTools =
+    if pkgs.stdenv.isDarwin then
+      [
+        pkgs.gnumake
+        pkgs.clang
+      ]
+    else
+      [
+        pkgs.gnumake
+        pkgs.gcc
+      ];
   libExt = "so";
 in
 {
