@@ -31,6 +31,15 @@ fi
 # Export plenary directory for minimal_init.lua
 export PLENARY_DIR
 
+# Build telescope-fzf-native if libfzf.so is missing
+PACK_DIR="$HOME/.local/share/nvim/site/pack"
+for d in "$PACK_DIR"/*/opt/telescope-fzf-native.nvim "$PACK_DIR"/*/start/telescope-fzf-native.nvim; do
+  if [ -d "$d" ] && [ ! -f "$d/build/libfzf.so" ]; then
+    echo -e "${YELLOW}Building telescope-fzf-native.nvim...${NC}"
+    make -C "$d" clean all
+  fi
+done
+
 # Change to the nvim config directory
 cd "$NVIM_DIR"
 
