@@ -1,0 +1,99 @@
+Implement the following plan:
+
+# Verify CI fix: local fresh-environment test for libfzf.so
+
+## Context
+
+Changes to `devenv.nix` and `run_tests.sh` are already applied. Need to verify they work in a fresh environment that mirrors CI. CI runs `make neovim-test-dev` (`.github/workflows/lua.yml:36`), which executes:
+
+```
+DEVENV_ROOT=. nix develop .# --command make neovim-test
+```
+
+This enters the devenv shell (only packages from `devenv.nix`) and runs `run_tests.sh`. The pre-build step in `run_tests.sh` should detect missing `libfzf.so` and compile it using `gnumake`/`gcc` from `devenv.nix`.
+
+## Verification steps
+
+### 1. Delete `libfzf.so` to simulate fresh CI
+
+```bash
+rm ~/.local/share/nvim/site/pack/core/opt/telescope-fzf-native.nvim/build/libfzf.so
+```
+
+### 2. Run `make neovim-test-dev` (mirrors CI exactly)
+
+```bash
+make neovim-test-dev
+```
+
+**Expected**: The `run_tests.sh` output shows `Building telescope-fzf-native.nvim...` followed by all tests passing.
+
+### 3. Confirm `libfzf.so` was rebuilt
+
+```bash
+ls -la ~/.local/share/nvim/site/pack/core/opt/telescope-fzf-native.nvim/build/libfzf.so
+```
+
+### 4. Run again to confirm idempotency
+
+```bash
+make neovim-test-dev
+```
+
+**Expected**: No "Building..." message (already exists), tests still pass.
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/shunkakinoki/.REDACTED.jsonl
+
+If this plan can be broken down into multiple independent tasks, consider using the TeamCreate tool to create a team and parallelize the work.
+
+---
+
+push
+
+---
+
+github action still fails
+
+---
+
+Success    ||    plugins plugin setup pattern should support setup with empty table    
+Success    ||    plugins plugin setup pattern should support setup with options    
+Success    ||    plugins gitsigns pattern should support signs configuration    
+Fail    ||    plugins e2e init.lua loading should load full config without Lua errors    
+            ...iles/home-manager/programs/neovim/tests/plugins_spec.lua:108: init.lua raised an error: vim/_core/editor.lua:0: command line..script nvim_exec2() called at command line:0[1]../home/runner/work/dotfiles/dotfiles/home-manager/programs/neovim/init.lua: Vim(source):E5113: Lua chunk: ./lua/config/treesitter.lua:32: module 'nvim-treesitter.configs' not found:
+                no field package.preload['nvim-treesitter.configs']
+                no file './nvim-treesitter/configs.lua'
+                no file 'REDACTED.1.1741730670/share/luajit-2.1/nvim-treesitter/configs.lua'
+                no file '/usr/local/share/lua/5.1/nvim-treesitter/configs.lua'
+                no file '/usr/local/share/lua/5.1/nvim-treesitter/configs/init.lua'
+                no file 'REDACTED.1.1741730670/share/lua/5.1/nvim-treesitter/configs.lua'
+                no file 'REDACTED.1.1741730670/share/lua/5.1/nvim-treesitter/configs/init.lua'
+                no file '/home/runner/work/dotfiles/dotfiles/home-manager/programs/neovim/lua/nvim-treesitter/configs.lua'
+                no file '/home/runner/work/dotfiles/dotfiles/home-manager/programs/neovim/lua/nvim-treesitter/configs/init.lua'
+                no file '/home/runner/.config/nvim/lua/nvim-treesitter/configs.lua'
+                no file '/home/runner/.config/nvim/lua/nvim-treesitter/configs/init.lua'
+                no file './nvim-treesitter/configs.so'
+                no file '/usr/local/lib/lua/5.1/nvim-treesitter/configs.so'
+                no file 'REDACTED.1.1741730670/lib/lua/5.1/nvim-treesitter/configs.so'
+                no file '/usr/local/lib/lua/5.1/loadall.so'
+                no file './nvim-treesitter.so'
+                no file '/usr/local/lib/lua/5.1/nvim-treesitter.so'
+                no file 'REDACTED.1.1741730670/lib/lua/5.1/nvim-treesitter.so'
+                no file '/usr/local/lib/lua/5.1/loadall.so'
+            stack traceback:
+                [C]: in function 'require'
+                ./lua/config/treesitter.lua:32: in main chunk
+                [C]: in function 'require'
+                .../dotfiles/dotfiles/home-manager/programs/neovim/init.lua:38: in main chunk
+                [builtin#36]: at 0x7ffff7e73040
+                /tmp/plenary.nvim/lua/plenary/busted.lua:268: in function 'run'
+                [string ":lua"]:1: in main chunk
+            Expected objects to be the same.
+            Passed in:
+            (boolean) false
+            Expected:
+            (boolean) true
+            
+            stack traceback:
+                ...iles/home-manager/programs/neovim/tests/plugins_spec.lua:108: in function <...iles/home-manager/programs/neovim/tests/plugins_spec.lua:83>
