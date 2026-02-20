@@ -1,0 +1,29 @@
+how to see git notes
+
+---
+
+can you list all refs/notes/commits
+
+---
+
+why? git-ai is supposed to push to main
+
+---
+
+hmm yea pleaes check why it's not pushing
+
+---
+
+yea let's chain the hooks
+
+---
+
+nah; keep the cargo git-ai
+
+---
+
+ah; so it will still work w/ the git-ai binary being in .cargo/bin?'
+
+---
+
+no; the git-ai needs to be called from ~/.cargo/bin/git-ai make it work as is

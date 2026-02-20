@@ -3,7 +3,7 @@
   "checkpoint_id": "a75cf8aed123",
   "strategy": "manual-commit",
   "branch": "git-ai",
-  "checkpoints_count": 1,
+  "checkpoints_count": 3,
   "files_touched": [
     "home-manager/programs/fish/default.nix",
     "home-manager/programs/zsh/default.nix"
@@ -15,13 +15,20 @@
       "context": "/a7/5cf8aed123/0/context.md",
       "content_hash": "/a7/5cf8aed123/0/content_hash.txt",
       "prompt": "/a7/5cf8aed123/0/prompt.txt"
+    },
+    {
+      "metadata": "/a7/5cf8aed123/1/metadata.json",
+      "transcript": "/a7/5cf8aed123/1/full.jsonl",
+      "context": "/a7/5cf8aed123/1/context.md",
+      "content_hash": "/a7/5cf8aed123/1/content_hash.txt",
+      "prompt": "/a7/5cf8aed123/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 44,
-    "cache_creation_tokens": 36614,
-    "cache_read_tokens": 1435386,
-    "output_tokens": 1740,
-    "api_call_count": 36
+    "input_tokens": 363,
+    "cache_creation_tokens": 156102,
+    "cache_read_tokens": 5423315,
+    "output_tokens": 6075,
+    "api_call_count": 96
   }
 }
