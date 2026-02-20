@@ -1573,7 +1573,7 @@ dependencies = [
 [[package]]
 name = "git-ai"
 version = "1.1.5"
-source = "git+https://github.com/git-ai-project/git-ai?branch=main#d197963c40c77f53d5406a1f80bd3948abc811a0"
+source = "git+https://github.com/git-ai-project/git-ai?branch=main#5742ad856895def1ece012a7ebb27a01893b7da4"
 dependencies = [
  "chrono",
  "clap",
@@ -3235,9 +3235,9 @@ dependencies = [
 
 [[package]]
 name = "security-framework-sys"
-version = "2.16.0"
+version = "2.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "321c8673b092a9a42605034a9879d73cb79101ed5fd117bc9a597b89b4e9e61a"
+checksum = "6ce2691df843ecc5d231c0b14ece2acc3efb62c0a398c7e1d875f3983ce020e3"
 dependencies = [
  "core-foundation-sys",
  "libc",
