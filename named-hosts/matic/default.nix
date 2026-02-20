@@ -74,9 +74,6 @@ inputs.nixpkgs.lib.nixosSystem {
 
         security.sudo.wheelNeedsPassword = false;
 
-        # PAM integration for GNOME Keyring auto-unlock on login
-        security.pam.services.greetd.enableGnomeKeyring = true;
-
         # Keyd configuration (Linux desktop only)
         services.keyd.enable = true;
         users.groups.keyd = { };
@@ -403,15 +400,9 @@ inputs.nixpkgs.lib.nixosSystem {
           services.gpg-agent = {
             enable = true;
             enableSshSupport = false;
-            pinentry.package = pkgs.pinentry-gnome3;
+            pinentry.package = pkgs.pinentry-tty;
             defaultCacheTtl = 94608000; # 3 years
             maxCacheTtl = 94608000; # 3 years
-          };
-
-          # GNOME Keyring for persistent GPG passphrase storage across reboots
-          services.gnome-keyring = {
-            enable = true;
-            components = [ "secrets" ];
           };
 
           # GPG_TTY is set in fish shell init instead of sessionVariables
