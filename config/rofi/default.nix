@@ -59,14 +59,20 @@
       name = "Audio Settings";
       exec = "pavucontrol";
       icon = "audio-volume-high";
-      categories = [ "System" "Settings" ];
+      categories = [
+        "System"
+        "Settings"
+      ];
       noDisplay = false;
     };
     bluetooth-settings = {
       name = "Bluetooth Settings";
       exec = "blueman-manager";
       icon = "bluetooth";
-      categories = [ "System" "Settings" ];
+      categories = [
+        "System"
+        "Settings"
+      ];
       noDisplay = false;
     };
     screenshot-region = {
