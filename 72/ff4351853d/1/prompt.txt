@@ -1,0 +1,108 @@
+how to see git notes
+
+---
+
+can you list all refs/notes/commits
+
+---
+
+why? git-ai is supposed to push to main
+
+---
+
+hmm yea pleaes check why it's not pushing
+
+---
+
+yea let's chain the hooks
+
+---
+
+nah; keep the cargo git-ai
+
+---
+
+ah; so it will still work w/ the git-ai binary being in .cargo/bin?'
+
+---
+
+no; the git-ai needs to be called from ~/.cargo/bin/git-ai make it work as is
+
+---
+
+confirm it's now working
+
+---
+
+Base directory for this skill: /Users/shunkakinoki/.claude/skills/pr-create
+
+# /pr-create — Create pull requests
+
+Create GitHub PRs with proper formatting, labeling, and quality checks.
+
+## Quick Workflow
+
+```bash
+# 1. Stage and commit
+git add .
+git commit -m "feat: add feature"
+
+# 2. Push branch
+git push -u origin feature-branch
+
+# 3. Create PR
+gh pr create \
+  --title "feat: add feature" \
+  --body "## Changes
+- Added feature X
+
+## Testing
+- All checks pass
+
+Generated with [AI_TOOL] by [AI_MODEL]" \
+  --base main
+```
+
+## Variant: `/pr-create auto`
+
+Enable auto-merge after creation:
+
+```bash
+gh pr merge $(gh pr view --json number -q '.number') --squash --auto
+```
+
+## PR Description Template
+
+```markdown
+## Changes
+- What was modified
+
+## Technical Details
+- Implementation specifics
+
+## Testing
+- Verification steps
+
+Generated with [AI_TOOL] by [AI_MODEL]
+```
+
+## Labeling
+
+```bash
+gh pr edit <number> --add-label enhancement  # feat:
+gh pr edit <number> --add-label bug          # fix:
+gh pr edit <number> --add-label documentation # docs:
+```
+
+## Guidelines
+
+- Conventional commit title format
+- Under 72 characters
+- Solo-authored commits (no co-authorship)
+- AI attribution in PR body only
+- Generate changeset via `/changesets` if applicable
+- Run quality checks before creating
+
+---
+
+add path for bash as well and push?
