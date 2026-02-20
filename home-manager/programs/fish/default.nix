@@ -29,15 +29,16 @@
           eval "$(/opt/homebrew/bin/brew shellenv)"
       end
 
-      fish_add_path -p ~/.local/bin
-      fish_add_path -p ~/.bun/bin
-      fish_add_path -p ~/.cargo/bin
       fish_add_path -p ~/.nix-profile/bin
       fish_add_path -p ~/go/bin
       fish_add_path -p /nix/var/nix/profiles/default/bin
       fish_add_path -p /opt/homebrew/bin
       fish_add_path -p /opt/homebrew/opt/postgresql@18/bin
       fish_add_path -p /etc/profiles/per-user/${config.home.username}/bin
+      fish_add_path -p ~/.git-ai/bin
+      fish_add_path -p ~/.cargo/bin
+      fish_add_path -p ~/.bun/bin
+      fish_add_path -p ~/.local/bin
     '';
     interactiveShellInit = ''
       source ${config.home.homeDirectory}/.config/fish/functions/_hm_load_env_file.fish
@@ -49,15 +50,16 @@
           eval "$(/opt/homebrew/bin/brew shellenv)"
       end
 
-      fish_add_path -p ~/.local/bin
-      fish_add_path -p ~/.bun/bin
-      fish_add_path -p ~/.cargo/bin
       fish_add_path -p ~/.nix-profile/bin
       fish_add_path -p ~/go/bin
       fish_add_path -p /nix/var/nix/profiles/default/bin
       fish_add_path -p /opt/homebrew/bin
       fish_add_path -p /opt/homebrew/opt/postgresql@18/bin
       fish_add_path -p /etc/profiles/per-user/${config.home.username}/bin
+      fish_add_path -p ~/.git-ai/bin
+      fish_add_path -p ~/.cargo/bin
+      fish_add_path -p ~/.bun/bin
+      fish_add_path -p ~/.local/bin
       # Worktrunk shell init
       if type -q wt
         wt config shell init fish | source
