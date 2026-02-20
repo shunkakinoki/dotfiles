@@ -62,11 +62,15 @@ inputs.nixpkgs.lib.nixosSystem {
             "networkmanager"
             "input"
             "video"
+            "docker"
           ];
           home = "/home/${username}";
           shell = pkgs.fish;
           initialPassword = "changemeow"; # Change this after first login with: passwd
         };
+
+        # Docker
+        virtualisation.docker.enable = true;
 
         security.sudo.wheelNeedsPassword = false;
 
