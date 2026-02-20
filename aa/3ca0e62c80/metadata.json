@@ -3,7 +3,7 @@
   "checkpoint_id": "aa3ca0e62c80",
   "strategy": "manual-commit",
   "branch": "feat/ghostty-split-keybindings",
-  "checkpoints_count": 1,
+  "checkpoints_count": 7,
   "files_touched": [
     "config/ghostty/config"
   ],
@@ -14,13 +14,20 @@
       "context": "/aa/3ca0e62c80/0/context.md",
       "content_hash": "/aa/3ca0e62c80/0/content_hash.txt",
       "prompt": "/aa/3ca0e62c80/0/prompt.txt"
+    },
+    {
+      "metadata": "/aa/3ca0e62c80/1/metadata.json",
+      "transcript": "/aa/3ca0e62c80/1/full.jsonl",
+      "context": "/aa/3ca0e62c80/1/context.md",
+      "content_hash": "/aa/3ca0e62c80/1/content_hash.txt",
+      "prompt": "/aa/3ca0e62c80/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 44,
-    "cache_creation_tokens": 36614,
-    "cache_read_tokens": 1435386,
-    "output_tokens": 1740,
-    "api_call_count": 36
+    "input_tokens": 80,
+    "cache_creation_tokens": 55236,
+    "cache_read_tokens": 2211757,
+    "output_tokens": 2575,
+    "api_call_count": 55
   }
 }

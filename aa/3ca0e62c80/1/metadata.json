@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.5",
+  "checkpoint_id": "aa3ca0e62c80",
+  "session_id": "735b13d4-3a89-4f44-874e-e7e4c43277b1",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-20T10:03:12.854631Z",
+  "branch": "feat/ghostty-split-keybindings",
+  "checkpoints_count": 6,
+  "files_touched": [
+    "config/ghostty/config"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "2301ff5f01a0",
+  "transcript_identifier_at_start": "35f0ef85-c418-41bf-be9d-3288982fad44",
+  "token_usage": {
+    "input_tokens": 36,
+    "cache_creation_tokens": 18622,
+    "cache_read_tokens": 776371,
+    "output_tokens": 835,
+    "api_call_count": 19
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-20T10:03:12.828269Z",
+    "agent_lines": 12,
+    "human_added": 114,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 126,
+    "agent_percentage": 9.523809523809524
+  },
+  "transcript_path": ".claude/projects/-Users-shunkakinoki-dotfiles/735b13d4-3a89-4f44-874e-e7e4c43277b1.jsonl"
+}
