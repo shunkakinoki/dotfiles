@@ -1008,9 +1008,9 @@ checksum = "26bf8fc351c5ed29b5c2f0cbbac1b209b74f60ecd62e675a998df72c49af5204"
 
 [[package]]
 name = "deranged"
-version = "0.5.6"
+version = "0.5.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cc3dc5ad92c2e2d1c193bbbbdf2ea477cb81331de4f3103f267ca18368b988c4"
+checksum = "2163a0e204a148662b6b6816d4b5d5668a5f2f8df498ccbd5cd0e864e78fecba"
 dependencies = [
  "powerfmt",
 ]
@@ -1573,7 +1573,7 @@ dependencies = [
 [[package]]
 name = "git-ai"
 version = "1.1.5"
-source = "git+https://github.com/git-ai-project/git-ai?branch=main#5742ad856895def1ece012a7ebb27a01893b7da4"
+source = "git+https://github.com/git-ai-project/git-ai?branch=main#99630396a72d6a4ae61c6742e9d96cc27d034a5e"
 dependencies = [
  "chrono",
  "clap",
