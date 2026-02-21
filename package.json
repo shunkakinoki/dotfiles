@@ -25,7 +25,7 @@
     "@sourcegraph/amp": "^0.0.1770734955-g93e689",
     "@steipete/bird": "^0.8.0",
     "@tobilu/qmd": "^1.0.7",
-    "@typescript/native-preview": "^7.0.0-dev.20260220.1",
+    "@typescript/native-preview": "^7.0.0-dev.20260221.1",
     "@vibe-kit/grok-cli": "^0.0.34",
     "agent-browser": "^0.10.0",
     "ccusage": "^18.0.5",
