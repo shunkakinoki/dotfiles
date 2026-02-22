@@ -23,12 +23,12 @@ FIRST_CMD="$CMD"
 
 # Skip if already using rtk
 case "$FIRST_CMD" in
-  rtk\ *|*/rtk\ *) exit 0 ;;
+rtk\ * | */rtk\ *) exit 0 ;;
 esac
 
 # Skip commands with heredocs, variable assignments as the whole command, etc.
 case "$FIRST_CMD" in
-  *'<<'*) exit 0 ;;
+*'<<'*) exit 0 ;;
 esac
 
 # Strip leading env var assignments for pattern matching
@@ -54,9 +54,9 @@ if echo "$MATCH_CMD" | grep -qE '^git[[:space:]]'; then
     -e 's/--(no-pager|no-optional-locks|bare|literal-pathspecs)[[:space:]]*//g' \
     -e 's/^[[:space:]]+//')
   case "$GIT_SUBCMD" in
-    status|status\ *|diff|diff\ *|log|log\ *|add|add\ *|commit|commit\ *|push|push\ *|pull|pull\ *|branch|branch\ *|fetch|fetch\ *|stash|stash\ *|show|show\ *)
-      REWRITTEN="${ENV_PREFIX}rtk $CMD_BODY"
-      ;;
+  status | status\ * | diff | diff\ * | log | log\ * | add | add\ * | commit | commit\ * | push | push\ * | pull | pull\ * | branch | branch\ * | fetch | fetch\ * | stash | stash\ * | show | show\ *)
+    REWRITTEN="${ENV_PREFIX}rtk $CMD_BODY"
+    ;;
   esac
 
 # --- GitHub CLI (added: api, release) ---
@@ -67,9 +67,9 @@ elif echo "$MATCH_CMD" | grep -qE '^gh[[:space:]]+(pr|issue|run|api|release)([[:
 elif echo "$MATCH_CMD" | grep -qE '^cargo[[:space:]]'; then
   CARGO_SUBCMD=$(echo "$MATCH_CMD" | sed -E 's/^cargo[[:space:]]+(\+[^[:space:]]+[[:space:]]+)?//')
   case "$CARGO_SUBCMD" in
-    test|test\ *|build|build\ *|clippy|clippy\ *|check|check\ *|install|install\ *|fmt|fmt\ *)
-      REWRITTEN="${ENV_PREFIX}rtk $CMD_BODY"
-      ;;
+  test | test\ * | build | build\ * | clippy | clippy\ * | check | check\ * | install | install\ * | fmt | fmt\ *)
+    REWRITTEN="${ENV_PREFIX}rtk $CMD_BODY"
+    ;;
   esac
 
 # --- File operations ---
@@ -137,9 +137,9 @@ elif echo "$MATCH_CMD" | grep -qE '^docker[[:space:]]'; then
       -e 's/--[a-z-]+=[^[:space:]]+[[:space:]]*//g' \
       -e 's/^[[:space:]]+//')
     case "$DOCKER_SUBCMD" in
-      ps|ps\ *|images|images\ *|logs|logs\ *|run|run\ *|build|build\ *|exec|exec\ *)
-        REWRITTEN="${ENV_PREFIX}$(echo "$CMD_BODY" | sed 's/^docker /rtk docker /')"
-        ;;
+    ps | ps\ * | images | images\ * | logs | logs\ * | run | run\ * | build | build\ * | exec | exec\ *)
+      REWRITTEN="${ENV_PREFIX}$(echo "$CMD_BODY" | sed 's/^docker /rtk docker /')"
+      ;;
     esac
   fi
 elif echo "$MATCH_CMD" | grep -qE '^kubectl[[:space:]]'; then
@@ -149,9 +149,9 @@ elif echo "$MATCH_CMD" | grep -qE '^kubectl[[:space:]]'; then
     -e 's/--[a-z-]+=[^[:space:]]+[[:space:]]*//g' \
     -e 's/^[[:space:]]+//')
   case "$KUBE_SUBCMD" in
-    get|get\ *|logs|logs\ *|describe|describe\ *|apply|apply\ *)
-      REWRITTEN="${ENV_PREFIX}$(echo "$CMD_BODY" | sed 's/^kubectl /rtk kubectl /')"
-      ;;
+  get | get\ * | logs | logs\ * | describe | describe\ * | apply | apply\ *)
+    REWRITTEN="${ENV_PREFIX}$(echo "$CMD_BODY" | sed 's/^kubectl /rtk kubectl /')"
+    ;;
   esac
 
 # --- Network ---
