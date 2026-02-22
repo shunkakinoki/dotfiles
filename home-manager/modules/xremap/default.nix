@@ -90,33 +90,39 @@ let
   };
 in
 {
-  config = lib.mkIf (isDesktop && isLinux) {
-    services.xremap = {
-      enable = true;
-      withWlroots = true;
-      watch = true;
-      # Only intercept keyd output — SUPER (CapsLock/RightAlt) goes straight to Hyprland
-      deviceNames = [ "keyd virtual keyboard" ];
-      config = {
-        keymap = [
-          {
-            name = "Framework Command (Ghostty)";
-            application.only = [ "com.mitchellh.ghostty" ];
-            remap = ghosttyRemap;
-          }
-          {
-            name = "Framework Command (Global)";
-            application.not = [ "com.mitchellh.ghostty" ];
-            remap = globalRemap;
-          }
-        ];
+  config = lib.mkMerge [
+    {
+      # Explicitly disable to suppress the "module imported but not enabled" warning.
+      services.xremap.enable = lib.mkDefault false;
+    }
+    (lib.mkIf (isDesktop && isLinux) {
+      services.xremap = {
+        enable = true;
+        withWlroots = true;
+        watch = true;
+        # Only intercept keyd output — SUPER (CapsLock/RightAlt) goes straight to Hyprland
+        deviceNames = [ "keyd virtual keyboard" ];
+        config = {
+          keymap = [
+            {
+              name = "Framework Command (Ghostty)";
+              application.only = [ "com.mitchellh.ghostty" ];
+              remap = ghosttyRemap;
+            }
+            {
+              name = "Framework Command (Global)";
+              application.not = [ "com.mitchellh.ghostty" ];
+              remap = globalRemap;
+            }
+          ];
+        };
       };
-    };
 
-    # Upstream module already sets After/PartOf/Restart; only add extras.
-    systemd.user.services.xremap = {
-      Unit.StartLimitIntervalSec = 0;
-      Service.RestartSec = 3;
-    };
-  };
+      # Upstream module already sets After/PartOf/Restart; only add extras.
+      systemd.user.services.xremap = {
+        Unit.StartLimitIntervalSec = 0;
+        Service.RestartSec = 3;
+      };
+    })
+  ];
 }
