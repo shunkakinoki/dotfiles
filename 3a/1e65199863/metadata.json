@@ -1,0 +1,29 @@
+{
+  "cli_version": "0.4.5",
+  "checkpoint_id": "3a1e65199863",
+  "strategy": "manual-commit",
+  "branch": "fix-git-ai",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "config/claude/RTK.md",
+    "config/claude/default.nix",
+    "config/claude/rtk-rewrite.sh",
+    "config/claude/settings.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/3a/1e65199863/0/metadata.json",
+      "transcript": "/3a/1e65199863/0/full.jsonl",
+      "context": "/3a/1e65199863/0/context.md",
+      "content_hash": "/3a/1e65199863/0/content_hash.txt",
+      "prompt": "/3a/1e65199863/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 44,
+    "cache_creation_tokens": 36614,
+    "cache_read_tokens": 1435386,
+    "output_tokens": 1740,
+    "api_call_count": 36
+  }
+}
