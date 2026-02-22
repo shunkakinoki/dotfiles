@@ -135,6 +135,7 @@ with pkgs;
   hypridle
   hyprlock
   hyprpicker
+  hyprshell
   hyprshot
   hyprsunset
   libnotify
