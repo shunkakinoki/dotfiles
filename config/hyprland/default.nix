@@ -38,4 +38,9 @@ in
     executable = true;
     force = true;
   };
+  xdg.configFile."hypr/scripts/alt-tab.sh" = {
+    source = ./scripts/alt-tab.sh;
+    executable = true;
+    force = true;
+  };
 }

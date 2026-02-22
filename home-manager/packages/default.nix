@@ -16,6 +16,7 @@ with pkgs;
   awscli
   azure-cli
   bat
+  bc
   broot
   bun
   clipse
