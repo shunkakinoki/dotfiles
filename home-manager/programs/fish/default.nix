@@ -84,6 +84,8 @@
       cliproxyapi = "_cliproxyapi_function";
       clxe = "_clxe_function";
       clxeh = "_clxeh_function";
+      clxte = "_clxte_function";
+      clxteh = "_clxteh_function";  
       coxe = "_coxe_function";
       coxeh = "_coxeh_function";
       coxel = "_coxel_function";
@@ -169,6 +171,8 @@
         "_cliproxyapi_function"
         "_clxe_function"
         "_clxeh_function"
+        "_clxte_function"
+        "_clxteh_function"
         "_coxe_function"
         "_coxeh_function"
         "_coxel_function"

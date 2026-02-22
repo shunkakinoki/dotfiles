@@ -1,5 +1,8 @@
 worktree-path = "{{ repo_path }}/.worktrees/{{ branch | sanitize }}"
 
+[post-create]
+copy = "wt step copy-ignored"
+
 [commit]
 stage = "all"
 
