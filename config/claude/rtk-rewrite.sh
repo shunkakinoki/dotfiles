@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2001
 # RTK auto-rewrite hook for Claude Code PreToolUse:Bash
 # Transparently rewrites raw commands to their rtk equivalents.
 # Outputs JSON with updatedInput to modify the command before execution.
