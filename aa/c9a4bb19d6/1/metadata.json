@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.5",
+  "checkpoint_id": "aac9a4bb19d6",
+  "session_id": "6b14bce8-e22e-4af7-95af-e3089f2612ec",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-22T00:55:58.980062Z",
+  "branch": "clxte",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "home-manager/programs/fish/functions/_cltxe_function.fish"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "af8c013f56ab",
+  "transcript_identifier_at_start": "dbc00171-9c4f-47ff-8b34-129cccacdc92",
+  "token_usage": {
+    "input_tokens": 246,
+    "cache_creation_tokens": 107378,
+    "cache_read_tokens": 3155340,
+    "output_tokens": 2237,
+    "api_call_count": 53
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-22T00:55:58.902851Z",
+    "agent_lines": 0,
+    "human_added": 11,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 11,
+    "agent_percentage": 0
+  },
+  "transcript_path": ".claude/projects/-Users-shunkakinoki-dotfiles/6b14bce8-e22e-4af7-95af-e3089f2612ec.jsonl"
+}
