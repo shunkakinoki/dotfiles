@@ -1,0 +1,31 @@
+{
+  "cli_version": "0.4.5",
+  "checkpoint_id": "57a5d0fee028",
+  "session_id": "497ae4c2-3818-4c52-aa65-31f65d89500c",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-22T00:45:34.192934Z",
+  "branch": "clxte",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "config/claude/settings.json",
+    "home-manager/programs/fish/default.nix"
+  ],
+  "agent": "Claude Code",
+  "token_usage": {
+    "input_tokens": 44,
+    "cache_creation_tokens": 36614,
+    "cache_read_tokens": 1435386,
+    "output_tokens": 1740,
+    "api_call_count": 36
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-22T00:45:34.140547Z",
+    "agent_lines": 20,
+    "human_added": 4,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 24,
+    "agent_percentage": 83.33333333333334
+  },
+  "transcript_path": ".claude/projects/-Users-shunkakinoki-dotfiles/497ae4c2-3818-4c52-aa65-31f65d89500c.jsonl"
+}
