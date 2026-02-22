@@ -3,7 +3,7 @@
   "checkpoint_id": "a30c3013232a",
   "strategy": "manual-commit",
   "branch": "fix-git-ai",
-  "checkpoints_count": 2,
+  "checkpoints_count": 3,
   "files_touched": [
     "Cargo.lock",
     "Cargo.toml"
@@ -22,13 +22,20 @@
       "context": "/a3/0c3013232a/1/context.md",
       "content_hash": "/a3/0c3013232a/1/content_hash.txt",
       "prompt": "/a3/0c3013232a/1/prompt.txt"
+    },
+    {
+      "metadata": "/a3/0c3013232a/2/metadata.json",
+      "transcript": "/a3/0c3013232a/2/full.jsonl",
+      "context": "/a3/0c3013232a/2/context.md",
+      "content_hash": "/a3/0c3013232a/2/content_hash.txt",
+      "prompt": "/a3/0c3013232a/2/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 312,
-    "cache_creation_tokens": 152930,
-    "cache_read_tokens": 5712230,
-    "output_tokens": 5155,
-    "api_call_count": 102
+    "input_tokens": 677,
+    "cache_creation_tokens": 291316,
+    "cache_read_tokens": 13660591,
+    "output_tokens": 11369,
+    "api_call_count": 195
   }
 }
