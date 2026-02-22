@@ -1,6 +1,6 @@
-function _cltxeh_function --description "Run Claude Code headlessly with a prompted input withtmux integration"
+function _clxteh_function --description "Run Claude Code headlessly with a prompted input with tmux integration"
   # Prompt for input and run Claude Code
-  # Usage: cltxeh
+  # Usage: clxteh
 
   read -P "Prompt: " prompt
   if test -z "$prompt"
