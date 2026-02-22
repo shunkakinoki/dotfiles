@@ -37,6 +37,7 @@ in
       ./hyprland
       ./hyprpanel
       ./rofi
+      ./snappy-switcher
     ]
   else
     [ ]
