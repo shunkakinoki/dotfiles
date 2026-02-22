@@ -1,9 +1,12 @@
-{ config, ... }:
+{ config, lib, ... }:
 {
-  home.file.".claude/settings.json" = {
-    source = ./settings.json;
-    force = true;
-  };
+  # Use activation script for settings.json instead of symlink
+  # git-ai install-hooks needs write access, which breaks with Nix store symlinks
+  home.activation.claudeConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    $DRY_RUN_CMD mkdir -p ~/.claude
+    $DRY_RUN_CMD cp -f ${./settings.json} ~/.claude/settings.json
+    $DRY_RUN_CMD chmod 644 ~/.claude/settings.json
+  '';
 
   home.file.".claude/pushover.sh" = {
     source = ./pushover.sh;

@@ -349,6 +349,5 @@
     "command": "$HOME/.claude/statusline-git.sh"
   },
   "teammateMode": "tmux",
-  "defaultMode": "bypassPermissions",
-  "claudeHooksImported": true
+  "defaultMode": "bypassPermissions"
 }
