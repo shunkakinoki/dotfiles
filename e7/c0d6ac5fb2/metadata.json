@@ -3,7 +3,7 @@
   "checkpoint_id": "e7c0d6ac5fb2",
   "strategy": "manual-commit",
   "branch": "clxte",
-  "checkpoints_count": 1,
+  "checkpoints_count": 3,
   "files_touched": [
     "config/worktrunk/config.toml"
   ],
@@ -14,13 +14,20 @@
       "context": "/e7/c0d6ac5fb2/0/context.md",
       "content_hash": "/e7/c0d6ac5fb2/0/content_hash.txt",
       "prompt": "/e7/c0d6ac5fb2/0/prompt.txt"
+    },
+    {
+      "metadata": "/e7/c0d6ac5fb2/1/metadata.json",
+      "transcript": "/e7/c0d6ac5fb2/1/full.jsonl",
+      "context": "/e7/c0d6ac5fb2/1/context.md",
+      "content_hash": "/e7/c0d6ac5fb2/1/content_hash.txt",
+      "prompt": "/e7/c0d6ac5fb2/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 44,
-    "cache_creation_tokens": 36614,
-    "cache_read_tokens": 1435386,
-    "output_tokens": 1740,
-    "api_call_count": 36
+    "input_tokens": 272,
+    "cache_creation_tokens": 137580,
+    "cache_read_tokens": 3855789,
+    "output_tokens": 3414,
+    "api_call_count": 80
   }
 }
