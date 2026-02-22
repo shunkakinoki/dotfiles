@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.4.5",
+  "checkpoint_id": "a30c3013232a",
+  "strategy": "manual-commit",
+  "branch": "fix-git-ai",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "Cargo.lock",
+    "Cargo.toml"
+  ],
+  "sessions": [
+    {
+      "metadata": "/a3/0c3013232a/0/metadata.json",
+      "transcript": "/a3/0c3013232a/0/full.jsonl",
+      "context": "/a3/0c3013232a/0/context.md",
+      "content_hash": "/a3/0c3013232a/0/content_hash.txt",
+      "prompt": "/a3/0c3013232a/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 44,
+    "cache_creation_tokens": 36614,
+    "cache_read_tokens": 1435386,
+    "output_tokens": 1740,
+    "api_call_count": 36
+  }
+}
