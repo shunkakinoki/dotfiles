@@ -305,6 +305,26 @@
         ]
       }
     ],
+    "WorktreeCreate": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'NAME=$(jq -r .name); REPO=$(git rev-parse --show-toplevel); DIR=\"$REPO/.worktrees/$NAME\"; wt switch --create \"$NAME\" --no-cd -y >&2 && echo \"$DIR\"'"
+          }
+        ]
+      }
+    ],
+    "WorktreeRemove": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'WORKTREE_PATH=$(jq -r .worktree_path); BRANCH=$(basename \"$WORKTREE_PATH\"); wt remove \"$BRANCH\" -y >&2'"
+          }
+        ]
+      }
+    ],
     "SubagentStop": [
       {
         "hooks": [
