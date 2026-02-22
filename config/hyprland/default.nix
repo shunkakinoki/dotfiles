@@ -15,6 +15,7 @@ in
     extraConfig = ''
       plugin = ${hyprexpoPlugin}/lib/libhyprexpo.so
       exec-once = ${pkgs.hyprpanel}/bin/hyprpanel
+      exec-once = ${pkgs.hyprshell}/bin/hyprshell run &
     ''
     + builtins.readFile ./hyprland.conf;
   };
