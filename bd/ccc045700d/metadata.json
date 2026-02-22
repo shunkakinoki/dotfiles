@@ -3,7 +3,7 @@
   "checkpoint_id": "bdccc045700d",
   "strategy": "manual-commit",
   "branch": "clxte",
-  "checkpoints_count": 1,
+  "checkpoints_count": 2,
   "files_touched": [
     "home-manager/programs/fish/default.nix",
     "home-manager/programs/fish/functions/_cltxeh_function.fish"
@@ -15,13 +15,20 @@
       "context": "/bd/ccc045700d/0/context.md",
       "content_hash": "/bd/ccc045700d/0/content_hash.txt",
       "prompt": "/bd/ccc045700d/0/prompt.txt"
+    },
+    {
+      "metadata": "/bd/ccc045700d/1/metadata.json",
+      "transcript": "/bd/ccc045700d/1/full.jsonl",
+      "context": "/bd/ccc045700d/1/context.md",
+      "content_hash": "/bd/ccc045700d/1/content_hash.txt",
+      "prompt": "/bd/ccc045700d/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 44,
-    "cache_creation_tokens": 36614,
-    "cache_read_tokens": 1435386,
-    "output_tokens": 1740,
-    "api_call_count": 36
+    "input_tokens": 290,
+    "cache_creation_tokens": 143992,
+    "cache_read_tokens": 4590726,
+    "output_tokens": 3977,
+    "api_call_count": 89
   }
 }
