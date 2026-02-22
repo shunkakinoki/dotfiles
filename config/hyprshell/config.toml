@@ -1,0 +1,7 @@
+version = 1
+
+[windows]
+scale = 8.0
+
+[windows.switch]
+modifier = "super"
