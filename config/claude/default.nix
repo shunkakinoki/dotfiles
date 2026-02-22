@@ -38,8 +38,4 @@
     force = true;
   };
 
-  home.file.".claude/RTK.md" = {
-    source = ./RTK.md;
-    force = true;
-  };
 }
