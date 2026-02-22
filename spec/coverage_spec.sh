@@ -13,6 +13,10 @@ It 'has spec file for config/claude/pushover.sh'
 The path "spec/pushover_spec.sh" should be exist
 End
 
+It 'has spec file for config/claude/rtk-rewrite.sh'
+The path "spec/rtk_rewrite_spec.sh" should be exist
+End
+
 It 'has spec file for config/claude/security.sh'
 The path "spec/security_spec.sh" should be exist
 End
@@ -132,6 +136,7 @@ It 'covers all non-spec shell scripts in the repository'
 covered_scripts="config/ccs/hydrate.sh
 config/claude/notify.sh
 config/claude/pushover.sh
+config/claude/rtk-rewrite.sh
 config/claude/security.sh
 config/claude/statusline-git.sh
 config/hyprland/scripts/record-screen.sh
