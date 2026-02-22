@@ -6,7 +6,6 @@
 }:
 let
   hyprexpoPlugin = pkgs.hyprlandPlugins.hyprexpo;
-  hyprshellPkg = inputs.hyprshell.packages.${pkgs.system}.hyprshell-nixpkgs;
 in
 {
   wayland.windowManager.hyprland = {
@@ -16,7 +15,6 @@ in
     extraConfig = ''
       plugin = ${hyprexpoPlugin}/lib/libhyprexpo.so
       exec-once = ${pkgs.hyprpanel}/bin/hyprpanel
-      exec-once = ${hyprshellPkg}/bin/hyprshell run &
     ''
     + builtins.readFile ./hyprland.conf;
   };

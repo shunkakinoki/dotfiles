@@ -36,7 +36,6 @@ in
       ./gtk
       ./hyprland
       ./hyprpanel
-      ./hyprshell
       ./rofi
     ]
   else
