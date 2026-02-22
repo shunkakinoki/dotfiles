@@ -29,6 +29,7 @@ in
     ++ [
       inputs.agenix.homeManagerModules.default
       inputs.xremap.homeManagerModules.default
+      inputs.hyprshell.homeModules.hyprshell
     ];
 
   home.username = username;

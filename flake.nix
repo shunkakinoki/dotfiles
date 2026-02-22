@@ -64,6 +64,9 @@
       url = "github:xremap/nix-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    hyprshell = {
+      url = "github:H3rmt/hyprshell?ref=hyprshell-release";
+    };
   };
 
   outputs =
