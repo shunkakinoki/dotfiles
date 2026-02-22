@@ -7,7 +7,7 @@ SCRIPT="$PWD/config/claude/rtk-rewrite.sh"
 # Create a mock rtk binary so the guard passes in CI where rtk is not installed
 MOCK_BIN="$SHELLSPEC_TMPBASE/mock_bin"
 mkdir -p "$MOCK_BIN"
-printf '#!/bin/bash\nexit 0\n' > "$MOCK_BIN/rtk"
+printf '#!/bin/bash\nexit 0\n' >"$MOCK_BIN/rtk"
 chmod +x "$MOCK_BIN/rtk"
 
 run_hook() {
