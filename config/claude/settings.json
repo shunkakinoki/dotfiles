@@ -102,6 +102,10 @@
       {
         "hooks": [
           {
+            "command": "$HOME/.claude/hooks/rtk-rewrite.sh",
+            "type": "command"
+          },
+          {
             "async": true,
             "command": "command -v dcg >/dev/null 2>&1 && dcg",
             "timeout": 5,

@@ -31,4 +31,15 @@
     executable = true;
     force = true;
   };
+
+  home.file.".claude/hooks/rtk-rewrite.sh" = {
+    source = ./rtk-rewrite.sh;
+    executable = true;
+    force = true;
+  };
+
+  home.file.".claude/RTK.md" = {
+    source = ./RTK.md;
+    force = true;
+  };
 }
