@@ -64,6 +64,9 @@
       url = "github:xremap/nix-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    snappy-switcher = {
+      url = "github:OpalAayan/snappy-switcher";
+    };
   };
 
   outputs =

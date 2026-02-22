@@ -120,6 +120,7 @@ with pkgs;
   xclip
 ]
 ++ lib.optionals (stdenv.isLinux && isDesktop) [
+  inputs.snappy-switcher.packages.${stdenv.hostPlatform.system}.default
   _1password-gui
   brightnessctl
   chromium
