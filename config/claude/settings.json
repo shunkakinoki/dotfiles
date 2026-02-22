@@ -73,7 +73,7 @@
       {
         "hooks": [
           {
-            "command": "/Users/shunkakinoki/.git-ai/bin/git-ai checkpoint claude --hook-input stdin",
+            "command": "git-ai checkpoint claude --hook-input stdin",
             "type": "command"
           }
         ],
@@ -130,7 +130,7 @@
       {
         "hooks": [
           {
-            "command": "/Users/shunkakinoki/.git-ai/bin/git-ai checkpoint claude --hook-input stdin",
+            "command": "git-ai checkpoint claude --hook-input stdin",
             "type": "command"
           }
         ],
