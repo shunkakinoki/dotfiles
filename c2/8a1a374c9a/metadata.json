@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.5",
+  "checkpoint_id": "c28a1a374c9a",
+  "strategy": "manual-commit",
+  "branch": "feat/add-skill-codex-plugin",
+  "checkpoints_count": 1,
+  "files_touched": [
+    ".gitignore"
+  ],
+  "sessions": [
+    {
+      "metadata": "/c2/8a1a374c9a/0/metadata.json",
+      "transcript": "/c2/8a1a374c9a/0/full.jsonl",
+      "context": "/c2/8a1a374c9a/0/context.md",
+      "content_hash": "/c2/8a1a374c9a/0/content_hash.txt",
+      "prompt": "/c2/8a1a374c9a/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 44,
+    "cache_creation_tokens": 36614,
+    "cache_read_tokens": 1435386,
+    "output_tokens": 1740,
+    "api_call_count": 36
+  }
+}
