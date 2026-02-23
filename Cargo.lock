@@ -645,7 +645,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "117725a109d387c937a1533ce01b450cbde6b88abceea8473c4d7a85853cda3c"
 dependencies = [
  "lazy_static",
- "windows-sys 0.48.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4841,9 +4841,9 @@ dependencies = [
 
 [[package]]
 name = "worktrunk"
-version = "0.26.1"
+version = "0.27.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "204fdf2560c18278004078ee2f62eddc29f45681a901f20159114ca5b3c27c30"
+checksum = "b862878a27cc1ea3d8ab8a400666832f828a9a42be15f1b06b40b07348408815"
 dependencies = [
  "ansi-str",
  "anstream 1.0.0",
