@@ -27,7 +27,7 @@
         "cline": "^2.2.3",
         "mcporter": "^0.7.3",
         "open-composer": "^0.8.23",
-        "openclaw": "^2026.2.19",
+        "openclaw": "^2026.2.21",
         "oxfmt": "^0.32.0",
         "oxlint": "^1.47.0",
         "ralph-tui": "^0.7.1",
