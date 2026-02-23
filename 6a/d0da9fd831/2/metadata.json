@@ -1,0 +1,31 @@
+{
+  "cli_version": "0.4.5",
+  "checkpoint_id": "6ad0da9fd831",
+  "session_id": "9d2c4bc0-1aa9-43d9-816f-b3473ce484d9",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-23T13:08:40.230394Z",
+  "branch": "feat/add-skill-codex-plugin",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "config/claude/settings.json"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "57fb3eba41ea",
+  "token_usage": {
+    "input_tokens": 129,
+    "cache_creation_tokens": 39229,
+    "cache_read_tokens": 643259,
+    "output_tokens": 288,
+    "api_call_count": 14
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-23T13:08:40.194922Z",
+    "agent_lines": 7,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 7,
+    "agent_percentage": 100
+  },
+  "transcript_path": ".claude/projects/-Users-shunkakinoki-dotfiles/9d2c4bc0-1aa9-43d9-816f-b3473ce484d9.jsonl"
+}
