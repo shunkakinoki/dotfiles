@@ -86,6 +86,8 @@
       clxeh = "_clxeh_function";
       clxte = "_clxte_function";
       clxteh = "_clxteh_function";
+      clxwe = "_clxwe_function";
+      clxweh = "_clxweh_function";
       coxe = "_coxe_function";
       coxeh = "_coxeh_function";
       coxel = "_coxel_function";
@@ -173,6 +175,8 @@
         "_clxeh_function"
         "_clxte_function"
         "_clxteh_function"
+        "_clxwe_function"
+        "_clxweh_function"
         "_coxe_function"
         "_coxeh_function"
         "_coxel_function"
