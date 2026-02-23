@@ -1,5 +1,6 @@
 # AI
 .claude
+.worktrees
 
 # CCS runtime state (lastUsedAt timestamps change frequently)
 config/ccs/accounts.json
