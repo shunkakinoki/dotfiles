@@ -43,8 +43,8 @@ inputs.nixpkgs.lib.nixosSystem {
         boot.loader.efi.canTouchEfiVariables = true;
         boot.loader.timeout = 3;
 
-        # Pin kernel to 6.12 for CrowdStrike Falcon compatibility (RFM on 6.19)
-        boot.kernelPackages = pkgs.linuxPackages_6_12;
+        # Pin kernel to 6.18 for CrowdStrike Falcon compatibility (RFM on 6.19)
+        boot.kernelPackages = pkgs.linuxPackages_6_18;
 
         # Networking
         networking.hostName = "matic";
