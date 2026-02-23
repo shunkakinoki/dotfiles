@@ -1,0 +1,48 @@
+why is dotfiles on  upd [$!] is 📦 v0.1.0 via 🥟 v1.3.9 via 🐍 v3.13.11 via 🦀 v1.93.1 
+❯ 
+dotfiles on  upd [$!] is 📦 v0.1.0 via 🥟 v1.3.9 via 🐍 v3.13.11 via 🦀 v1.93.1 
+❯ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ dotfiles git showing that it's changed
+
+---
+
+hmm tyr to fix this
+
+---
+
+hmm but why is it showing !
+
+---
+
+it still has ! even after push
