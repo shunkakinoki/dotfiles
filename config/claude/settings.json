@@ -15,6 +15,7 @@
     "ralph-loop@claude-plugins-official": true,
     "safety-net@cc-marketplace": true,
     "serena@claude-plugins-official": true,
+    "skill-codex@skill-codex": true,
     "typescript-lsp@claude-plugins-official": true,
     "worktrunk@worktrunk": true
   },
@@ -40,6 +41,12 @@
     "qmd": {
       "source": {
         "repo": "tobi/qmd",
+        "source": "github"
+      }
+    },
+    "skill-codex": {
+      "source": {
+        "repo": "skills-directory/skill-codex",
         "source": "github"
       }
     },
