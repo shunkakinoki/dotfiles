@@ -1,0 +1,35 @@
+{
+  "cli_version": "0.4.6",
+  "checkpoint_id": "03cb3a789aa0",
+  "session_id": "9db037e9-09f4-4224-9e61-6c285a365332",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-24T09:59:33.257593Z",
+  "branch": "fix/claude-skip-permissions-yes",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "home-manager/programs/fish/functions/_clxe_function.fish",
+    "home-manager/programs/fish/functions/_clxwe_function.fish",
+    "home-manager/programs/fish/functions/_clxte_function.fish",
+    "home-manager/programs/fish/functions/_clxeh_function.fish",
+    "home-manager/programs/fish/functions/_clxweh_function.fish",
+    "home-manager/programs/fish/functions/_clxteh_function.fish"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "bfba0fdbc289",
+  "token_usage": {
+    "input_tokens": 23,
+    "cache_creation_tokens": 20887,
+    "cache_read_tokens": 119905,
+    "output_tokens": 10,
+    "api_call_count": 6
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-24T09:59:33.23125Z",
+    "agent_lines": 9,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 9,
+    "agent_percentage": 100
+  }
+}
