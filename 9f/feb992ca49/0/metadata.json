@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.6",
+  "checkpoint_id": "9ffeb992ca49",
+  "session_id": "6b14bce8-e22e-4af7-95af-e3089f2612ec",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-24T10:05:57.695865Z",
+  "branch": "clxe-yes-fix",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "home-manager/programs/fish/functions/_clxe_function.fish",
+    "home-manager/programs/fish/functions/_clxeh_function.fish"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "c95524b88a9c",
+  "transcript_identifier_at_start": "dbc00171-9c4f-47ff-8b34-129cccacdc92",
+  "token_usage": {
+    "input_tokens": 268,
+    "cache_creation_tokens": 116316,
+    "cache_read_tokens": 4276844,
+    "output_tokens": 3415,
+    "api_call_count": 66
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-24T10:05:57.56337Z",
+    "agent_lines": 0,
+    "human_added": 6,
+    "human_modified": 3,
+    "human_removed": 0,
+    "total_committed": 6,
+    "agent_percentage": 0
+  }
+}
