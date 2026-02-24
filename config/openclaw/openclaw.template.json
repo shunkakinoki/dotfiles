@@ -188,12 +188,6 @@
             "read",
             "exec"
           ]
-        },
-        "groupChat": {
-          "historyLimit": 100,
-          "mentionPatterns": [
-            ".*"
-          ]
         }
       },
       {
@@ -211,12 +205,6 @@
             "read",
             "exec"
           ]
-        },
-        "groupChat": {
-          "historyLimit": 100,
-          "mentionPatterns": [
-            ".*"
-          ]
         }
       },
       {
@@ -230,12 +218,6 @@
           "allow": [
             "read",
             "exec"
-          ]
-        },
-        "groupChat": {
-          "historyLimit": 100,
-          "mentionPatterns": [
-            ".*"
           ]
         }
       },
@@ -254,12 +236,6 @@
             "read",
             "exec"
           ]
-        },
-        "groupChat": {
-          "historyLimit": 100,
-          "mentionPatterns": [
-            ".*"
-          ]
         }
       },
       {
@@ -276,12 +252,6 @@
           "allow": [
             "read",
             "exec"
-          ]
-        },
-        "groupChat": {
-          "historyLimit": 100,
-          "mentionPatterns": [
-            ".*"
           ]
         }
       },
@@ -766,6 +736,14 @@
     },
     "slots": {
       "memory": ""
+    },
+    "entries": {
+      "telegram": {
+        "enabled": true
+      },
+      "whatsapp": {
+        "enabled": true
+      }
     }
   }
 }
