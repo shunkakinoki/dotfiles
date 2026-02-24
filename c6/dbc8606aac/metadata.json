@@ -3,7 +3,7 @@
   "checkpoint_id": "c6dbc8606aac",
   "strategy": "manual-commit",
   "branch": "clxe-yes-fix",
-  "checkpoints_count": 0,
+  "checkpoints_count": 2,
   "files_touched": [
     "config/claude/settings.json"
   ],
@@ -14,13 +14,20 @@
       "context": "/c6/dbc8606aac/0/context.md",
       "content_hash": "/c6/dbc8606aac/0/content_hash.txt",
       "prompt": "/c6/dbc8606aac/0/prompt.txt"
+    },
+    {
+      "metadata": "/c6/dbc8606aac/1/metadata.json",
+      "transcript": "/c6/dbc8606aac/1/full.jsonl",
+      "context": "/c6/dbc8606aac/1/context.md",
+      "content_hash": "/c6/dbc8606aac/1/content_hash.txt",
+      "prompt": "/c6/dbc8606aac/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 29,
-    "cache_creation_tokens": 27455,
-    "cache_read_tokens": 376873,
-    "output_tokens": 64,
-    "api_call_count": 11
+    "input_tokens": 65,
+    "cache_creation_tokens": 50194,
+    "cache_read_tokens": 678578,
+    "output_tokens": 1034,
+    "api_call_count": 21
   }
 }
