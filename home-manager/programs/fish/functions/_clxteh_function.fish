@@ -8,5 +8,5 @@ function _clxteh_function --description "Run Claude Code headlessly with a promp
     return 1
   end
 
-  claude --dangerously-skip-permissions --yes --worktree --tmux --print -- "$prompt"
+  claude --dangerously-skip-permissions --worktree --tmux --print -- "$prompt"
 end
