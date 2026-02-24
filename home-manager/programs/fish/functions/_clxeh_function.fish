@@ -8,5 +8,5 @@ function _clxeh_function --description "Run Claude Code headlessly with a prompt
     return 1
   end
 
-  claude --dangerously-skip-permissions --print -- "$prompt"
+  claude --dangerously-skip-permissions --yes --print -- "$prompt"
 end
