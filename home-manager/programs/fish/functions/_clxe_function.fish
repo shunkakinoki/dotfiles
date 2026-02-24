@@ -3,8 +3,7 @@ function _clxe_function --description "Run Claude Code with a free-form prompt w
   # Usage: clxe [<prompt words...>]
 
   if test (count $argv) -eq 0
-    claude --dangerously-skip-permissions --yes
-  else
+    claude --dangerously-skip-permissions  else
     set -l prompt (string join " " -- $argv)
     claude --dangerously-skip-permissions --yes --print -- "$prompt"
   end
