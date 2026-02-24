@@ -65,40 +65,6 @@
             "maxTokens": 32000
           },
           {
-            "id": "__CLAUDE_OPUS_THINKING__",
-            "name": "__CLAUDE_OPUS_THINKING_PRETTY__",
-            "reasoning": true,
-            "input": [
-              "text",
-              "image"
-            ],
-            "cost": {
-              "input": 0,
-              "output": 0,
-              "cacheRead": 0,
-              "cacheWrite": 0
-            },
-            "contextWindow": 200000,
-            "maxTokens": 32000
-          },
-          {
-            "id": "__CLAUDE_SONNET_THINKING__",
-            "name": "__CLAUDE_SONNET_THINKING_PRETTY__",
-            "reasoning": true,
-            "input": [
-              "text",
-              "image"
-            ],
-            "cost": {
-              "input": 0,
-              "output": 0,
-              "cacheRead": 0,
-              "cacheWrite": 0
-            },
-            "contextWindow": 200000,
-            "maxTokens": 32000
-          },
-          {
             "id": "__GPT__",
             "name": "__GPT_PRETTY__",
             "reasoning": false,
