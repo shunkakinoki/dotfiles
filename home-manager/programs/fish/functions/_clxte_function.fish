@@ -3,9 +3,9 @@ function _clxte_function --description "Run Claude Code with a free-form prompt 
   # Usage: clxte [<prompt words...>]
 
   if test (count $argv) -eq 0
-    claude --dangerously-skip-permissions --worktree --tmux
+    claude --dangerously-skip-permissions --yes --worktree --tmux
   else
     set -l prompt (string join " " -- $argv)
-    claude --dangerously-skip-permissions --worktree --tmux --print -- "$prompt"
+    claude --dangerously-skip-permissions --yes --worktree --tmux --print -- "$prompt"
   end
 end
