@@ -1,7 +1,5 @@
 { pkgs, ... }:
 {
-  home.packages = [ pkgs.tmuxinator ];
-
   home.file.".config/tmux/session-logger.sh" = {
     executable = true;
     source = ./session-logger.sh;
