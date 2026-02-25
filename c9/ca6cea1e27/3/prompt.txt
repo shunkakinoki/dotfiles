@@ -1,0 +1,113 @@
+Implement the following plan:
+
+# Plan: Tmux Session/Window Search Improvements
+
+## Context
+The setup already has `_tss_function` (session picker, `prefix+S` / `tss`) and `tmux-sessionx` (`prefix+o`).
+The gaps are:
+1. `_tss_function` is blind — no preview of what windows are in a session, and no way to kill a session from the picker.
+2. There is no cross-session **window** fuzzy picker — no way to jump directly to a named window by name across all sessions.
+3. No quick last-session toggle keybinding in tmux.
+
+## Improvements
+
+### 1. Enhance `_tss_function` — preview + kill binding
+
+Add two fzf flags:
+- `--preview 'tmux list-windows -F "#I: #W" -t {} 2>/dev/null'` — shows windows of hovered session
+- `--bind 'ctrl-x:execute-silent(tmux kill-session -t {})+abort'` — kills the selected session and exits
+
+Only the `fzf` call on line 13 changes; all session logic stays the same.
+
+**File:** `home-manager/programs/fish/functions/_tss_function.fish`
+
+```fish
+  set -l selected (printf '%s\n' $candidates | fzf \
+    --prompt="session> " \
+    --height=40% \
+    --preview='tmux list-windows -F "#I: #W" -t {} 2>/dev/null' \
+    --bind='ctrl-x:execute-silent(tmux kill-session -t {})+abort')
+```
+
+---
+
+### 2. New `_twf_function` — cross-session window fuzzy picker
+
+Lists every window across every session as `session:index  window_name`. Selecting one switches to that session then that window.
+
+**File to create:** `home-manager/programs/fish/functions/_twf_function.fish`
+
+```fish
+function _twf_function --description "Fuzzy-pick any window across all sessions"
+  set -l selected (tmux list-windows -a -F '#{session_name}:#{window_index}  #{window_name}' 2>/dev/null \
+    | fzf --prompt="window> " --height=40% \
+          --preview='set t (string split "  " {})[1]; tmux list-panes -t $t -F "#P: #{pane_current_command}  #{pane_current_path}" 2>/dev/null')
+
+  if test -z "$selected"
+    return
+  end
+
+  set -l target (string split '  ' $selected)[1]   # "session:index"
+  set -l parts (string split ':' $target)
+  set -l sess $parts[1]
+  set -l widx $parts[2]
+
+  if test -n "$TMUX"
+    tmux switch-client -t "$sess"
+    tmux select-window -t "$sess:$widx"
+  else
+    tmux attach-session -t "$sess" \; select-window -t "$sess:$widx"
+  end
+end
+```
+
+Register in **`home-manager/programs/fish/default.nix`**:
+- Add `"_twf_function"` to the `xdg.configFile` function list (alphabetical between `_tss_function` and `_two_function`)
+- Add `twf = "_twf_function";` to `shellAbbrs`
+
+---
+
+### 3. `tmux.conf` — last-session toggle + window picker bind
+
+Add two lines to **`home-manager/programs/tmux/tmux.conf`** in the bindings section:
+
+```
+# Last session (quick flip)
+bind Tab switch-client -l
+
+# Cross-session window picker
+bind W run-shell "tmux new-window 'fish -c _twf_function'"
+```
+
+`Tab` is currently unbound. `W` is currently unbound (lowercase `w` is default select-window by index, not bound here).
+
+---
+
+## Files to Modify/Create
+
+| File | Action |
+|------|--------|
+| `home-manager/programs/fish/functions/_tss_function.fish` | Add preview + ctrl-x kill to fzf call |
+| `home-manager/programs/fish/functions/_twf_function.fish` | **create** — cross-session window picker |
+| `home-manager/programs/fish/default.nix` | Add `_twf_function` to list + `twf` abbr |
+| `home-manager/programs/tmux/tmux.conf` | Add `bind Tab switch-client -l` and `bind W` |
+
+## Verification
+
+1. `tss` → hover over a session → right panel shows numbered windows
+2. `tss` → hover over a session → press `ctrl-x` → session is killed, picker closes
+3. `twf` (or `prefix+W` inside tmux) → lists all windows from all sessions → select one → lands in the right session+window
+4. Inside tmux, press `prefix+Tab` → switches to the previously active session instantly
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/shunkakinoki/.claude/projects/-Users-shunkakinoki-dotfiles/f2ac1f1e-7a52-44c5-88b7-f45f6ba3cec8.jsonl
+
+If this plan can be broken down into multiple independent tasks, consider using the TeamCreate tool to create a team and parallelize the work.
+
+---
+
+ok; so two should resurrect also make all tmux session save to a txt file every 30 sec and searchable w/ fish functions
+
+---
+
+[Request interrupted by user for tool use]

@@ -3,7 +3,7 @@
   "checkpoint_id": "c9ca6cea1e27",
   "strategy": "manual-commit",
   "branch": "feat/tmux-session-logging-and-pane-archive",
-  "checkpoints_count": 10,
+  "checkpoints_count": 11,
   "files_touched": [
     "config/tmuxinator/default.nix",
     "config/tmuxinator/tmuxinator/desktop.yml",
@@ -40,13 +40,20 @@
       "context": "/c9/ca6cea1e27/2/context.md",
       "content_hash": "/c9/ca6cea1e27/2/content_hash.txt",
       "prompt": "/c9/ca6cea1e27/2/prompt.txt"
+    },
+    {
+      "metadata": "/c9/ca6cea1e27/3/metadata.json",
+      "transcript": "/c9/ca6cea1e27/3/full.jsonl",
+      "context": "/c9/ca6cea1e27/3/context.md",
+      "content_hash": "/c9/ca6cea1e27/3/content_hash.txt",
+      "prompt": "/c9/ca6cea1e27/3/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 140,
-    "cache_creation_tokens": 173096,
-    "cache_read_tokens": 4716010,
-    "output_tokens": 9812,
-    "api_call_count": 108
+    "input_tokens": 392,
+    "cache_creation_tokens": 209737,
+    "cache_read_tokens": 5228120,
+    "output_tokens": 16575,
+    "api_call_count": 122
   }
 }
