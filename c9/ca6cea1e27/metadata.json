@@ -5,12 +5,16 @@
   "branch": "feat/tmux-session-logging-and-pane-archive",
   "checkpoints_count": 11,
   "files_touched": [
+    "config/default.nix",
     "config/tmuxinator/default.nix",
     "config/tmuxinator/tmuxinator/desktop.yml",
     "config/tmuxinator/tmuxinator/mobile.yml",
     "config/tmuxinator/tmuxinator/primary.yml",
     "config/tmuxinator/tmuxinator/work.yml",
     "home-manager/programs/fish/default.nix",
+    "home-manager/programs/fish/functions/_tdo_function.fish",
+    "home-manager/programs/fish/functions/_tmo_function.fish",
+    "home-manager/programs/fish/functions/_tpo_function.fish",
     "home-manager/programs/fish/functions/_tsh_function.fish",
     "home-manager/programs/fish/functions/_tss_function.fish",
     "home-manager/programs/fish/functions/_tsw_function.fish",
@@ -47,13 +51,20 @@
       "context": "/c9/ca6cea1e27/3/context.md",
       "content_hash": "/c9/ca6cea1e27/3/content_hash.txt",
       "prompt": "/c9/ca6cea1e27/3/prompt.txt"
+    },
+    {
+      "metadata": "/c9/ca6cea1e27/4/metadata.json",
+      "transcript": "/c9/ca6cea1e27/4/full.jsonl",
+      "context": "/c9/ca6cea1e27/4/context.md",
+      "content_hash": "/c9/ca6cea1e27/4/content_hash.txt",
+      "prompt": "/c9/ca6cea1e27/4/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 392,
-    "cache_creation_tokens": 209737,
-    "cache_read_tokens": 5228120,
-    "output_tokens": 16575,
-    "api_call_count": 122
+    "input_tokens": 421,
+    "cache_creation_tokens": 237192,
+    "cache_read_tokens": 5604993,
+    "output_tokens": 16639,
+    "api_call_count": 133
   }
 }
