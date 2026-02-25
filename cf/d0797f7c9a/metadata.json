@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.7",
+  "checkpoint_id": "cfd0797f7c9a",
+  "strategy": "manual-commit",
+  "branch": "feat/tmux-session-logging-and-pane-archive",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "spec/coverage_spec.sh"
+  ],
+  "sessions": [
+    {
+      "metadata": "/cf/d0797f7c9a/0/metadata.json",
+      "transcript": "/cf/d0797f7c9a/0/full.jsonl",
+      "context": "/cf/d0797f7c9a/0/context.md",
+      "content_hash": "/cf/d0797f7c9a/0/content_hash.txt",
+      "prompt": "/cf/d0797f7c9a/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 29,
+    "cache_creation_tokens": 27455,
+    "cache_read_tokens": 376873,
+    "output_tokens": 64,
+    "api_call_count": 11
+  }
+}
