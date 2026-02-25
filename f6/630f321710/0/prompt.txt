@@ -1,0 +1,49 @@
+Implement the following plan:
+
+# Plan: Reconfigure tmuxinator session layouts
+
+## Context
+
+Update the three tmuxinator configs (`primary`, `mobile`, `desktop`) used by
+`tpo`/`tmo`/`tdo` to have a consistent layout:
+- Window 0: `btop` (system monitor)
+- Window 1: `dotfiles` — 1:1 vertical split (two equal shell panes), cwd `~/dotfiles`
+- Remove the `bun run dev` server window
+
+## Changes
+
+**Files to modify:**
+- `config/tmuxinator/tmuxinator/primary.yml`
+- `config/tmuxinator/tmuxinator/mobile.yml`
+- `config/tmuxinator/tmuxinator/desktop.yml`
+
+All three get the same layout:
+
+```yaml
+name: <primary|mobile|desktop>
+windows:
+  - btop: btop
+  - dotfiles:
+      layout: even-horizontal
+      root: ~/dotfiles
+      panes:
+        -
+        -
+```
+
+`even-horizontal` is the tmuxinator layout name for a 1:1 side-by-side (vertical) split.
+Empty pane entries start bare shells.
+
+## Verification
+
+- `tpo` / `tmo` / `tdo` → session opens with window 0 running `btop`
+- Switch to window 1 → two equal side-by-side shell panes, both in `~/dotfiles`
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/shunkakinoki/.claude/projects/-Users-shunkakinoki-dotfiles/0332642c-477f-4778-8796-0f87dc7c2650.jsonl
+
+If this plan can be broken down into multiple independent tasks, consider using the TeamCreate tool to create a team and parallelize the work.
+
+---
+
+ok commit and push

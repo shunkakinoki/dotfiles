@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.7",
+  "checkpoint_id": "f6630f321710",
+  "session_id": "6ed40ce4-7ce9-49f9-bbd3-44548d6293d4",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-25T18:06:34.609452Z",
+  "branch": "feat/tmux-session-logging-and-pane-archive",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "config/tmuxinator/tmuxinator/desktop.yml",
+    "config/tmuxinator/tmuxinator/mobile.yml",
+    "config/tmuxinator/tmuxinator/primary.yml"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "d43cb84a85ee",
+  "token_usage": {
+    "input_tokens": 9,
+    "cache_creation_tokens": 14160,
+    "cache_read_tokens": 120454,
+    "output_tokens": 257,
+    "api_call_count": 5
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-25T18:06:34.576679Z",
+    "agent_lines": 21,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 21,
+    "agent_percentage": 100
+  }
+}
