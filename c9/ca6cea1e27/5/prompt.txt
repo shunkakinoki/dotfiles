@@ -1,0 +1,180 @@
+Implement the following plan:
+
+# Plan: Tmux Session Presets via tmuxinator
+
+## Context
+The 4 named sessions (`primary`, `mobile`, `desktop`, `work`) are created bare with `tmux new-session -A -s <name>`. The goal is to have each session automatically start with predefined windows when first created (editor, shell, server, etc.). **tmuxinator** is the chosen mechanism — it reads a YAML layout file per session and wires up windows/panes on first create, then falls back to normal attach on subsequent invocations.
+
+Pattern from the repo:
+- `config/` = XDG config file management (e.g. `config/jj/`, `config/ghostty/`)
+- `home-manager/programs/` = package + program option configuration (e.g. `home-manager/programs/tms/`)
+
+## Implementation
+
+### 1. Install package in `home-manager/programs/tmux/default.nix`
+
+Add `home.packages = [ pkgs.tmuxinator ];` alongside the existing `programs.tmux`:
+
+```nix
+{ pkgs, ... }:
+{
+  home.packages = [ pkgs.tmuxinator ];
+
+  programs.tmux = {
+    enable = true;
+    # ... unchanged
+  };
+}
+```
+
+### 2. Create `config/tmuxinator/` (new config directory)
+
+**`config/tmuxinator/default.nix`** — following `config/jj/default.nix` pattern:
+```nix
+{ ... }:
+{
+  xdg.configFile."tmuxinator".source = ./tmuxinator;
+}
+```
+
+Register in **`config/default.nix`** (alongside other entries):
+```nix
+./tmuxinator
+```
+
+### 3. Create YAML layout files in `config/tmuxinator/tmuxinator/`
+
+(Mirrors `~/.config/tmuxinator/` under XDG)
+
+**`primary.yml`** — editor + shell + server:
+```yaml
+name: primary
+windows:
+  - editor: nvim
+  - shell:
+  - server: bun run dev
+```
+
+**`mobile.yml`** — editor + dev server:
+```yaml
+name: mobile
+windows:
+  - editor: nvim
+  - server: bun run dev
+```
+
+**`desktop.yml`** — editor + dev server:
+```yaml
+name: desktop
+windows:
+  - editor: nvim
+  - server: bun run dev
+```
+
+**`work.yml`** — editor + shell:
+```yaml
+name: work
+windows:
+  - editor: nvim
+  - shell:
+```
+
+### 4. Update the 4 individual fish functions
+
+Pattern: if session exists → attach/switch normally; if new → `tmuxinator start <name>` (tmuxinator handles attach/switch-client automatically by detecting `$TMUX`).
+
+**`_tpo_function.fish`**:
+```fish
+function _tpo_function --description "Attach to tmux primary session"
+  if tmux has-session -t primary 2>/dev/null
+    if test -n "$TMUX"
+      tmux switch-client -t primary
+    else
+      tmux attach-session -t primary
+    end
+  else
+    tmuxinator start primary
+  end
+end
+```
+
+Same pattern for `_tmo_function` (`mobile`), `_tdo_function` (`desktop`), `_two_function` (`work`).
+
+### 5. Update `_tss_function.fish` (sessionizer)
+
+Default sessions use tmuxinator on first create; ad-hoc sessions use plain `tmux new-session`:
+
+```fish
+function _tss_function --description "Fuzzy-pick or create a tmux session"
+  set -l default_sessions primary mobile desktop work
+
+  set -l existing (tmux list-sessions -F '#S' 2>/dev/null)
+  set -l candidates $default_sessions
+  for s in $existing
+    if not contains $s $default_sessions
+      set -a candidates $s
+    end
+  end
+
+  set -l selected (printf '%s\n' $candidates | fzf --prompt="session> " --height=40%)
+
+  if test -n "$selected"
+    if tmux has-session -t "$selected" 2>/dev/null
+      if test -n "$TMUX"
+        tmux switch-client -t "$selected"
+      else
+        tmux attach-session -t "$selected"
+      end
+    else if contains $selected $default_sessions
+      tmuxinator start "$selected"
+    else
+      tmux new-session -d -s "$selected"
+      if test -n "$TMUX"
+        tmux switch-client -t "$selected"
+      else
+        tmux attach-session -t "$selected"
+      end
+    end
+  end
+end
+```
+
+## Files to Modify/Create
+| File | Action |
+|------|--------|
+| `home-manager/programs/tmux/default.nix` | Add `home.packages = [ pkgs.tmuxinator ]` |
+| `config/default.nix` | Add `./tmuxinator` entry |
+| `config/tmuxinator/default.nix` | **create** — `xdg.configFile."tmuxinator".source = ./tmuxinator` |
+| `config/tmuxinator/tmuxinator/primary.yml` | **create** |
+| `config/tmuxinator/tmuxinator/mobile.yml` | **create** |
+| `config/tmuxinator/tmuxinator/desktop.yml` | **create** |
+| `config/tmuxinator/tmuxinator/work.yml` | **create** |
+| `home-manager/programs/fish/functions/_tpo_function.fish` | Use tmuxinator on first create |
+| `home-manager/programs/fish/functions/_tmo_function.fish` | Use tmuxinator on first create |
+| `home-manager/programs/fish/functions/_tdo_function.fish` | Use tmuxinator on first create |
+| `home-manager/programs/fish/functions/_two_function.fish` | Use tmuxinator on first create |
+| `home-manager/programs/fish/functions/_tss_function.fish` | Use tmuxinator for default sessions |
+
+## Verification
+1. After `home-manager switch`, run `tpo` with no existing `primary` session → tmuxinator creates it with 3 windows (editor, shell, server)
+2. Run `tpo` again → attaches/switches normally without re-applying layout
+3. Run `tss`, select `mobile` (non-existent) → tmuxinator creates it with 2 windows
+4. Run `tss`, select an existing session → switch/attach as before
+5. Run `tss`, type a new ad-hoc name → plain `tmux new-session` (no YAML needed)
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/shunkakinoki/.claude/projects/-Users-shunkakinoki-dotfiles/712ac31c-4f63-49b7-851c-7c2435789654.jsonl
+
+If this plan can be broken down into multiple independent tasks, consider using the TeamCreate tool to create a team and parallelize the work.
+
+---
+
+for the work session; make it so that the sessionizer always recover the last session
+
+---
+
+yes thank you; any other imprvovements in tmux aside from display but other session searching, etc. ?
+
+---
+
+[Request interrupted by user for tool use]

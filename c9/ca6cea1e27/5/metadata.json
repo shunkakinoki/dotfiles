@@ -1,0 +1,41 @@
+{
+  "cli_version": "0.4.7",
+  "checkpoint_id": "c9ca6cea1e27",
+  "session_id": "f2ac1f1e-7a52-44c5-88b7-f45f6ba3cec8",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-25T17:43:06.455939Z",
+  "branch": "feat/tmux-session-logging-and-pane-archive",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "config/default.nix",
+    "config/tmuxinator/default.nix",
+    "config/tmuxinator/tmuxinator/desktop.yml",
+    "config/tmuxinator/tmuxinator/mobile.yml",
+    "config/tmuxinator/tmuxinator/primary.yml",
+    "config/tmuxinator/tmuxinator/work.yml",
+    "home-manager/programs/fish/functions/_tdo_function.fish",
+    "home-manager/programs/fish/functions/_tmo_function.fish",
+    "home-manager/programs/fish/functions/_tpo_function.fish",
+    "home-manager/programs/fish/functions/_tss_function.fish",
+    "home-manager/programs/fish/functions/_two_function.fish",
+    "home-manager/programs/tmux/default.nix"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "3f17bd165442",
+  "token_usage": {
+    "input_tokens": 495,
+    "cache_creation_tokens": 46680,
+    "cache_read_tokens": 717097,
+    "output_tokens": 143,
+    "api_call_count": 18
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-25T17:43:06.406091Z",
+    "agent_lines": 125,
+    "human_added": 166,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 291,
+    "agent_percentage": 42.955326460481096
+  }
+}
