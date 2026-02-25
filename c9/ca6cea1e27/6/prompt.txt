@@ -1,0 +1,187 @@
+Implement the following plan:
+
+# Plan: Tmux Session History + `two` Resurrect Fix
+
+## Context
+
+Three related improvements to the tmux workflow:
+
+1. **`_two_function` resurrect gap** — `_two_function` only runs resurrect restore when the work session does _not_ exist. `_tss_function` (work branch) runs restore _first_, then checks existence. `_two_function` should match that behavior so reconnecting always replays any saved state.
+
+2. **Session history log** — No persistent record of which sessions/windows were active. Adding a 30-second background snapshot to a log file enables "where was I?" lookups via fzf.
+
+3. **`_tsh_function` search** — A fish function to fzf-search the history log and optionally jump to a still-existing session/window.
+
+---
+
+## Changes
+
+### 1. Fix `_two_function` — always resurrect first
+
+**File:** `home-manager/programs/fish/functions/_two_function.fish`
+
+Move the resurrect restore call to _before_ the session-existence check:
+
+```fish
+function _two_function --description "Attach to tmux work session"
+  set -l restore (tmux list-keys 2>/dev/null | string match -rg '(/\S+/resurrect/scripts/restore\.sh)')
+  set -l restore $restore[1]
+  if test -n "$restore"
+    tmux run-shell "$restore"
+  end
+
+  if tmux has-session -t work 2>/dev/null
+    if test -n "$TMUX"
+      tmux switch-client -t work
+    else
+      tmux attach-session -t work
+    end
+  else
+    tmuxinator start work
+  end
+end
+```
+
+---
+
+### 2. Session logger script
+
+**File to add via `home.file`:** `~/.config/tmux/session-logger.sh`
+
+Declare in **`home-manager/programs/tmux/default.nix`** using `home.file`:
+
+```nix
+home.file.".config/tmux/session-logger.sh" = {
+  executable = true;
+  text = ''
+    #!/usr/bin/env sh
+    mkdir -p ~/.local/share/tmux
+    LOG=~/.local/share/tmux/session-history.log
+    while true; do
+      sleep 30
+      tmux list-windows -a \
+        -F "$(date +%Y-%m-%dT%H:%M:%S)  #{session_name}:#{window_index}  #{window_name}  #{pane_current_path}" \
+        >> "$LOG" 2>/dev/null
+      # Trim to last 10 000 lines to cap file size
+      if [ "$(wc -l < "$LOG")" -gt 10000 ]; then
+        tail -n 10000 "$LOG" > "$LOG.tmp" && mv "$LOG.tmp" "$LOG"
+      fi
+    done
+  '';
+};
+```
+
+Start it when the tmux server boots — add to **`home-manager/programs/tmux/tmux.conf`**:
+
+```
+# Persistent session history logger (starts once per server boot)
+set-hook -g 'server-startup' 'run-shell -b "~/.config/tmux/session-logger.sh"'
+```
+
+---
+
+### 3. New `_tsh_function` — search session history
+
+**File to create:** `home-manager/programs/fish/functions/_tsh_function.fish`
+
+```fish
+function _tsh_function --description "Search tmux session history log"
+  set -l log ~/.local/share/tmux/session-history.log
+  if not test -f "$log"
+    echo "No session history found at $log"
+    return
+  end
+
+  set -l selected (cat "$log" | fzf \
+    --prompt="session-history> " \
+    --height=40% \
+    --tac \
+    --no-sort \
+    --preview='echo {}')
+
+  if test -z "$selected"
+    return
+  end
+
+  # Field 2 is "session:window_index"
+  set -l target (string split '  ' $selected)[2]
+  set -l parts (string split ':' $target)
+  set -l sess $parts[1]
+  set -l widx $parts[2]
+
+  if not tmux has-session -t "$sess" 2>/dev/null
+    echo "Session '$sess' no longer exists"
+    return
+  end
+
+  if test -n "$TMUX"
+    tmux switch-client -t "$sess"
+    tmux select-window -t "$sess:$widx" 2>/dev/null
+  else
+    tmux attach-session -t "$sess" \; select-window -t "$sess:$widx"
+  end
+end
+```
+
+Register in **`home-manager/programs/fish/default.nix`**:
+- Add `"_tsh_function"` to the `xdg.configFile` function list (alphabetically between `_tss_function` and `_twf_function`)
+- Add `tsh = "_tsh_function";` to `shellAbbrs`
+
+---
+
+## Files to Modify / Create
+
+| File | Action |
+|------|--------|
+| `home-manager/programs/fish/functions/_two_function.fish` | Move resurrect to before session-existence check |
+| `home-manager/programs/tmux/default.nix` | Add `home.file` for `session-logger.sh` |
+| `home-manager/programs/tmux/tmux.conf` | Add `server-startup` hook to launch logger |
+| `home-manager/programs/fish/functions/_tsh_function.fish` | **create** — session history search |
+| `home-manager/programs/fish/default.nix` | Add `_tsh_function` to list + `tsh` abbr |
+
+---
+
+## Verification
+
+1. `two` with no work session → resurrect runs first, work session restored or tmuxinator starts
+2. `two` with existing work session → resurrect runs silently, then attaches (no harm if nothing to restore)
+3. After tmux server boots, `~/.local/share/tmux/session-history.log` starts populating after 30s
+4. `tsh` → fzf shows history newest-first → select an entry → switches to still-existing session/window; prints error for dead sessions
+5. Log file stays under 10 000 lines after many saves
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/shunkakinoki/.claude/projects/-Users-shunkakinoki-dotfiles/83b2b5df-ccc6-4a65-b740-2fd3a285ea74.jsonl
+
+If this plan can be broken down into multiple independent tasks, consider using the TeamCreate tool to create a team and parallelize the work.
+
+---
+
+rename _twf_function to tsw
+
+---
+
+how does auto saving sessions work? i want to save ALL sessions across all of the tmux sessions across the work is it posible to do that and search text using tsh
+
+---
+
+i want to store the full pane contents
+
+---
+
+no pane contents should be saved historically
+
+---
+
+it should store the full pane contents
+
+---
+
+what's the <N>
+
+---
+
+consider what would be the best to do this
+
+---
+
+[Request interrupted by user for tool use]
