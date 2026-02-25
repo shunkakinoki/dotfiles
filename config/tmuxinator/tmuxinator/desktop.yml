@@ -1,0 +1,9 @@
+name: desktop
+windows:
+  - btop: btop
+  - dotfiles:
+      layout: even-horizontal
+      root: ~/dotfiles
+      panes:
+        -
+        -

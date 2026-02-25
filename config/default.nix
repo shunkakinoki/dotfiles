@@ -27,6 +27,7 @@ in
   ./pi
   ./serena
   ./starship
+  ./tmuxinator
   ./worktrunk
   ./zellij
 ]

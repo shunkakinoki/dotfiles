@@ -81,6 +81,7 @@ with pkgs;
   sqlite
   stern
   tealdeer
+  tmuxinator
   tokei
   tree
   turso-cli

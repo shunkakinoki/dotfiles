@@ -77,7 +77,6 @@
       j = "jj";
       lzd = "lazydocker";
       lzg = "lazygit";
-      ta = "tmux new -A -s default";
       v = "nvim";
 
       # Function-based abbreviations
@@ -119,6 +118,10 @@
       tdo = "_tdo_function";
       tmo = "_tmo_function";
       tpo = "_tpo_function";
+      tsh = "_tsh_function";
+      tss = "_tss_function";
+      tsw = "_tsw_function";
+      two = "_two_function";
       zdo = "_zdo_function";
       zmo = "_zmo_function";
       zpo = "_zpo_function";
@@ -207,6 +210,10 @@
         "_tdo_function"
         "_tmo_function"
         "_tpo_function"
+        "_tsh_function"
+        "_tss_function"
+        "_tsw_function"
+        "_two_function"
         "_zdo_function"
         "_zmo_function"
         "_zpo_function"

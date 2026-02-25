@@ -1,0 +1,4 @@
+name: work
+windows:
+  - editor: nvim
+  - shell:

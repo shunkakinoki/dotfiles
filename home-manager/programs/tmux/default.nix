@@ -1,5 +1,10 @@
 { pkgs, ... }:
 {
+  home.file.".config/tmux/session-logger.sh" = {
+    executable = true;
+    source = ./session-logger.sh;
+  };
+
   programs.tmux = {
     enable = true;
     extraConfig = builtins.readFile ./tmux.conf;
