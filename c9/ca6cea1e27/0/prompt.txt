@@ -1,0 +1,21 @@
+add two as tmux work session in @fish/default.nix
+
+---
+
+two should stand for work
+
+---
+
+did you add two?
+
+---
+
+should mirror tpo
+
+---
+
+how to utilize tmux sessionizer to have default sessions
+
+---
+
+[Request interrupted by user for tool use]
