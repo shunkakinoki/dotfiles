@@ -1,0 +1,150 @@
+Implement the following plan:
+
+# Plan: Pane Content Storage — Best Approach
+
+## Context
+
+The current pane snapshot approach has three problems:
+
+1. **Opaque filenames** — files named `3.txt`, `7.txt` by numeric pane ID, which resets on server restart and is unreadable
+2. **No stale cleanup** — files for closed panes accumulate forever; old IDs from previous server sessions leave ghost files
+3. **Shallow scrollback** — `tmux capture-pane -S -` is bounded by `history-limit`, which defaults to only 2 000 lines
+
+The fix is straightforward: readable `session--window--pane.txt` naming, atomic stale-file cleanup each cycle, and a large `history-limit` so the scrollback is deep enough to be genuinely useful.
+
+`pipe-pane` (real-time output streaming) would capture content past the scrollback limit but requires ANSI stripping, unbounded log rotation, and hook plumbing — not worth the complexity given 50 000-line scrollback covers days of typical work.
+
+---
+
+## Changes
+
+### 1. Raise scrollback limit
+
+**File:** `home-manager/programs/tmux/tmux.conf`
+
+Add after the existing session/window options:
+
+```
+set -g history-limit 50000
+```
+
+---
+
+### 2. Standalone script + Nix reference
+
+**Create:** `home-manager/programs/tmux/session-logger.sh`
+
+```sh
+#!/usr/bin/env sh
+mkdir -p ~/.local/share/tmux/panes
+LOG=~/.local/share/tmux/session-history.log
+PANE_DIR=~/.local/share/tmux/panes
+
+while true; do
+  sleep 30
+
+  # Append window metadata
+  tmux list-windows -a \
+    -F "$(date +%Y-%m-%dT%H:%M:%S)  #{session_name}:#{window_index}  #{window_name}  #{pane_current_path}" \
+    >> "$LOG" 2>/dev/null
+
+  # Trim to last 10 000 lines
+  if [ "$(wc -l < "$LOG")" -gt 10000 ]; then
+    tail -n 10000 "$LOG" > "$LOG.tmp" && mv "$LOG.tmp" "$LOG"
+  fi
+
+  # Rotate existing snapshots, capture all live panes, delete stale
+  for f in "$PANE_DIR"/*.txt; do
+    [ -f "$f" ] && mv "$f" "${f%.txt}.old"
+  done
+
+  tmux list-panes -a -F "#{session_name} #{window_index} #{pane_index} #{pane_id}" \
+    2>/dev/null | while IFS= read -r line; do
+      sess=$(printf '%s' "$line" | cut -d' ' -f1)
+      widx=$(printf '%s' "$line" | cut -d' ' -f2)
+      pidx=$(printf '%s' "$line" | cut -d' ' -f3)
+      pane_id=$(printf '%s' "$line" | cut -d' ' -f4)
+      tmux capture-pane -pt "$pane_id" -S - 2>/dev/null \
+        > "$PANE_DIR/$sess--$widx--$pidx.txt"
+    done
+
+  rm -f "$PANE_DIR"/*.old 2>/dev/null
+done
+```
+
+**Update:** `home-manager/programs/tmux/default.nix` — replace the inline `text = ''...''` block with a file source:
+
+```nix
+home.file.".config/tmux/session-logger.sh" = {
+  executable = true;
+  source = ./session-logger.sh;
+};
+```
+
+Key changes vs current:
+- **Standalone file** — no Nix string escaping, easier to edit/test directly
+- **Readable names** — `work--0--0.txt` instead of `3.txt`
+- **Stale cleanup** — rotate-to-`.old`, recreate live, delete `.old`
+
+---
+
+### 3. Update `_tsh_function` to parse filename
+
+**File:** `home-manager/programs/fish/functions/_tsh_function.fish`
+
+Replace the metadata-header parsing with filename parsing:
+
+```fish
+# work--0--0.txt → sess=work, widx=0
+set -l fname (string replace -r '.*/' '' "$selected" | string replace '.txt' '')
+set -l parts (string split -- '--' $fname)
+set -l sess $parts[1]
+set -l widx $parts[2]
+```
+
+Remove the `head -n 1` / `string match -rg 'session=...'` lines.
+
+---
+
+## Files to Modify / Create
+
+| File | Change |
+|------|--------|
+| `home-manager/programs/tmux/tmux.conf` | Add `set -g history-limit 50000` |
+| `home-manager/programs/tmux/session-logger.sh` | **create** — standalone script |
+| `home-manager/programs/tmux/default.nix` | Replace inline `text=` with `source = ./session-logger.sh` |
+| `home-manager/programs/fish/functions/_tsh_function.fish` | Parse session/window from filename, drop header parsing |
+
+---
+
+## Verification
+
+1. After server restart, `~/.local/share/tmux/panes/` shows `work--0--0.txt` style files
+2. Close a pane → after the next 30 s cycle, its `.txt` file is gone
+3. `tsh cargo build` → rg finds the file, fzf preview shows matching lines, selecting jumps to session/window
+4. Deep scrollback: run a long command, scroll far back, confirm `tsh <text>` still finds it
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/shunkakinoki/.claude/projects/-Users-shunkakinoki-dotfiles/f693495f-6f55-4063-a032-383f7c670a28.jsonl
+
+If this plan can be broken down into multiple independent tasks, consider using the TeamCreate tool to create a team and parallelize the work.
+
+---
+
+yea set it to 0
+
+---
+
+fix make shell-test and shell-lint
+
+---
+
+so take me through on the directory and format aand the contexnts of pane and how they would be stored again?
+
+---
+
+hmm but how does it store the full history doesn't it overwrite!
+
+---
+
+create PR
