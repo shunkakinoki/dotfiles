@@ -1,5 +1,9 @@
 name: primary
 windows:
-  - editor: nvim
-  - shell:
-  - server: bun run dev
+  - btop: btop
+  - dotfiles:
+      layout: even-horizontal
+      root: ~/dotfiles
+      panes:
+        -
+        -
