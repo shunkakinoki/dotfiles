@@ -20,10 +20,14 @@
     "worktrunk@worktrunk": true
   },
   "env": {
+    "AIKIDO_DISABLE": "true",
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-sonnet-4-6",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-6",
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6",
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "NO_COLOR": "1",
+    "SAFE_CHAIN_LOGGING": "silent",
+    "TURBO_NO_UPDATE_NOTIFIER": "1"
   },
   "extraKnownMarketplaces": {
     "cc-marketplace": {
