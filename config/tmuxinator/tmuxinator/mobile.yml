@@ -1,0 +1,4 @@
+name: mobile
+windows:
+  - editor: nvim
+  - server: bun run dev

@@ -1,0 +1,5 @@
+name: primary
+windows:
+  - editor: nvim
+  - shell:
+  - server: bun run dev
