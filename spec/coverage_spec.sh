@@ -149,6 +149,7 @@ home-manager/modules/uv-globals/install-uv-globals.sh
 home-manager/modules/yek/install-yek.sh
 home-manager/modules/yek/yek.sh
 home-manager/programs/neovim/run_tests.sh
+home-manager/programs/tmux/session-logger.sh
 home-manager/services/brew-upgrader/upgrade.sh
 home-manager/services/cliproxyapi/scripts/backup.sh
 home-manager/services/cliproxyapi/scripts/hydrate.sh
