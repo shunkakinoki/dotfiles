@@ -15,11 +15,6 @@
           name = "Shun Kakinoki";
           email = "shunkakinoki@gmail.com";
         };
-        alias = {
-          co = "checkout";
-          lt = "log --tags --decorate --simplify-by-decoration --oneline";
-          unshallow = "fetch --prune --tags --unshallow";
-        };
         core = {
           editor = "nvim";
           compression = -1;

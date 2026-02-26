@@ -807,14 +807,31 @@ git-submodule-sync: ## Sync and update git submodules.
 ##@ Shell
 
 .PHONY: shell-test
-shell-test: ## Run shell script tests using ShellSpec.
+shell-test: ## Run shell script tests using ShellSpec and fishtape.
 	@echo "🧪 Running shell tests..."
 	@bash -c "shellspec"
+	@$(MAKE) fish-test
 
 .PHONY: shell-test-dev
 shell-test-dev: ## Run shell tests inside the Nix dev shell (mirrors CI).
 	@echo "🧪 Running shell tests inside the Nix dev shell..."
 	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) shell-test
+
+.PHONY: fish-test
+fish-test: ## Run fish function tests using fishtape.
+	@echo "🐟 Running fish function tests..."
+	@fish_errors=$$(mktemp); \
+	  fishtape spec/fish/*_test.fish 2>"$$fish_errors"; \
+	  rc=$$?; \
+	  if [ -s "$$fish_errors" ]; then \
+	    echo "fish test stderr (failing):"; cat "$$fish_errors"; rm -f "$$fish_errors"; exit 1; \
+	  fi; \
+	  rm -f "$$fish_errors"; exit $$rc
+
+.PHONY: fish-test-dev
+fish-test-dev: ## Run fish tests inside the Nix dev shell (mirrors CI).
+	@echo "🐟 Running fish function tests inside the Nix dev shell..."
+	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) fish-test
 
 .PHONY: shell-check
 shell-check: ## Run ShellCheck on shell scripts.

@@ -91,6 +91,7 @@ with pkgs;
   yarn
   yazi
   yq
+  yt-dlp
   zellij
   zoxide
 ]
