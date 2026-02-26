@@ -76,6 +76,9 @@
         merge = {
           conflictStyle = "zdiff3";
         };
+        notes = {
+          displayRef = "refs/notes/ai";
+        };
         "remote \"origin\"" = {
           fetch = "+refs/notes/*:refs/notes/*";
         };
