@@ -27,6 +27,7 @@
           whitespace = "trailing-space,space-before-tab";
           precomposeunicode = true;
           ignorecase = false;
+          notesRef = "refs/notes/ai";
         };
         color = {
           diff = "auto";
@@ -75,9 +76,6 @@
         };
         merge = {
           conflictStyle = "zdiff3";
-        };
-        notes = {
-          displayRef = "refs/notes/ai";
         };
         "remote \"origin\"" = {
           fetch = "+refs/notes/*:refs/notes/*";
