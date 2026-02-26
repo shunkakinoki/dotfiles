@@ -1,0 +1,156 @@
+Implement the following plan:
+
+# Plan: Fix CI failures + `_tsh_function` behavior change
+
+## Context
+
+Two independent changes needed on branch `feat/fish-fishtape-tests` (PR #947):
+
+1. **CI fix** — `shell-test` is failing because three test files source fish functions that call `_fzf_preview_name` (as a fzf `--prompt=` argument), but the test files don't source `_fzf_preview_name.fish` first. Even with a mock `fzf`, fish evaluates command substitutions in arguments _before_ calling the function.
+
+2. **`_tsh_function` behavior** — When `fsh` (which calls `_tsh_function`) is invoked, it should **never** switch to/attach an active tmux session. Instead, always display the selected pane content file with `bat` (or fall back to `less`). This applies both to active sessions (currently switches to them) and archived files (already uses bat — no change needed there).
+
+## CI Failures (PR #947 shell-test job)
+
+**Root cause:** `_fzf_file_picker.fish`, `_fzf_directory_picker.fish`, and `_fzf_ghq_picker.fish` all call `_fzf_preview_name` inside fzf `--prompt=(_fzf_preview_name ...)` argument. Fish evaluates that command substitution before calling the (mocked) `fzf`, so `_fzf_preview_name` must already be defined.
+
+**Failing tests:**
+- `not ok 41 missing EDITOR prints error` (expected 0, got 1)
+- `not ok 42 missing EDITOR returns 1` (expected 1, got 0)
+- (plus silent errors from `_fzf_directory_picker` and `_fzf_ghq_picker`)
+
+**Fix:** Add `source $fn/_fzf_preview_name.fish` to the three test files before sourcing the dependent function.
+
+## Files to Modify
+
+| File | Change |
+|---|---|
+| `spec/fish/_fzf_file_picker_test.fish` | Add `source $fn/_fzf_preview_name.fish` on line 2 |
+| `spec/fish/_fzf_directory_picker_test.fish` | Add `source $fn/_fzf_preview_name.fish` on line 2 |
+| `spec/fish/_fzf_ghq_picker_test.fish` | Add `source $fn/_fzf_preview_name.fish` on line 2 |
+| `home-manager/programs/fish/functions/_tsh_function.fish` | Remove active-session switching; always bat |
+| `spec/fish/_tsh_function_test.fish` | Add bat-always behavior tests |
+
+## Implementation
+
+### Fix 1: `spec/fish/_fzf_file_picker_test.fish`
+
+```fish
+set fn (status dirname)/../../home-manager/programs/fish/functions
+source $fn/_fzf_preview_name.fish   # ← ADD THIS
+source $fn/_fzf_file_picker.fish
+...
+```
+
+### Fix 2: `spec/fish/_fzf_directory_picker_test.fish`
+
+```fish
+set fn (status dirname)/../../home-manager/programs/fish/functions
+source $fn/_fzf_preview_name.fish   # ← ADD THIS
+source $fn/_fzf_directory_picker.fish
+...
+```
+
+### Fix 3: `spec/fish/_fzf_ghq_picker_test.fish`
+
+```fish
+set fn (status dirname)/../../home-manager/programs/fish/functions
+source $fn/_fzf_preview_name.fish   # ← ADD THIS
+source $fn/_fzf_ghq_picker.fish
+...
+```
+
+### Fix 4: `home-manager/programs/fish/functions/_tsh_function.fish`
+
+Remove lines 30-40 (the `tmux has-session` block and switch-client/attach-session logic).
+Replace with simply always using `bat`:
+
+```fish
+  # Always display content with bat — never switch to/attach sessions
+  bat --style=plain "$selected" 2>/dev/null; or less "$selected"
+end
+```
+
+**Before (lines 30-40):**
+```fish
+  if not tmux has-session -t "$sess" 2>/dev/null
+    bat --style=plain "$selected" 2>/dev/null; or less "$selected"
+    return
+  end
+
+  if test -n "$TMUX"
+    tmux switch-client -t "$sess"
+    tmux select-window -t "$sess:$widx" 2>/dev/null
+  else
+    tmux attach-session -t "$sess" \; select-window -t "$sess:$widx"
+  end
+```
+
+**After:**
+```fish
+  bat --style=plain "$selected" 2>/dev/null; or less "$selected"
+```
+
+### Fix 5: `spec/fish/_tsh_function_test.fish`
+
+Add tests for the new bat-always behavior (mock tmux and bat, verify session is not switched):
+
+```fish
+set fn (status dirname)/../../home-manager/programs/fish/functions
+source $fn/_tsh_function.fish
+
+set tmpdir (mktemp -d)
+set -x HOME $tmpdir
+
+@test "reports missing pane dir" \
+  (string match -q "*No pane content store found*" (_tsh_function 2>&1); echo $status) = 0
+
+# ── bat-always: active session should not be switched to ──
+mkdir -p $tmpdir/.local/share/tmux/panes
+set pane_file $tmpdir/.local/share/tmux/panes/mysess--0--0.txt
+echo "pane content here" > $pane_file
+
+set switched ""
+function tmux
+    if string match -q "has-session*" "$argv"
+        return 0  # session "exists"
+    end
+    set -g switched "yes"
+end
+function rg; echo $pane_file; end
+function fzf; echo $pane_file; end
+function bat; cat $argv[-1] 2>/dev/null; end
+
+@test "does not switch to active session" $switched = ""
+@test "bats the selected file" \
+  (string match -q "*pane content here*" (_tsh_function 2>&1); echo $status) = 0
+
+rm -rf $tmpdir
+```
+
+## Verification
+
+```bash
+# Run fish tests locally
+make fish-test-dev
+
+# Run full shell tests
+make shell-test-dev
+
+# Or directly
+fishtape spec/fish/_fzf_file_picker_test.fish
+fishtape spec/fish/_fzf_directory_picker_test.fish
+fishtape spec/fish/_fzf_ghq_picker_test.fish
+fishtape spec/fish/_tsh_function_test.fish
+```
+
+All previously-failing tests should now pass. The tsh function should display content with bat in all cases (both active sessions and archived files).
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/shunkakinoki/.claude/projects/-Users-shunkakinoki-dotfiles/187ec711-a685-45a5-a31b-dd049cb5c04a.jsonl
+
+If this plan can be broken down into multiple independent tasks, consider using the TeamCreate tool to create a team and parallelize the work.
+
+---
+
+commit and push?
