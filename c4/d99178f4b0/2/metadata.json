@@ -1,13 +1,12 @@
 {
   "cli_version": "0.4.7",
   "checkpoint_id": "c4d99178f4b0",
+  "session_id": "f68dc757-aeb0-4b34-8184-edf8e7d7b745",
   "strategy": "manual-commit",
+  "created_at": "2026-02-26T07:33:05.212381Z",
   "branch": "feat/fish-fishtape-tests",
-  "checkpoints_count": 4,
+  "checkpoints_count": 2,
   "files_touched": [
-    ".github/workflows/shell.yml",
-    "Makefile",
-    "devenv.nix",
     "spec/fish/_cliproxyapi_function_test.fish",
     "spec/fish/_clxe_function_test.fish",
     "spec/fish/_clxeh_function_test.fish",
@@ -19,21 +18,12 @@
     "spec/fish/_coxeh_function_test.fish",
     "spec/fish/_coxel_function_test.fish",
     "spec/fish/_coxelh_function_test.fish",
-    "spec/fish/_dev_function_test.fish",
     "spec/fish/_fish_shortcuts_test.fish",
     "spec/fish/_fzf_chrome_history_test.fish",
     "spec/fish/_fzf_directory_picker_test.fish",
     "spec/fish/_fzf_file_picker_test.fish",
     "spec/fish/_fzf_ghq_picker_test.fish",
-    "spec/fish/_fzf_git_branch_test.fish",
-    "spec/fish/_fzf_git_worktree_test.fish",
-    "spec/fish/_fzf_preview_cmd_test.fish",
-    "spec/fish/_fzf_preview_name_test.fish",
     "spec/fish/_fzf_shell_history_test.fish",
-    "spec/fish/_gco_function_test.fish",
-    "spec/fish/_grco_function_test.fish",
-    "spec/fish/_grcr_function_test.fish",
-    "spec/fish/_hm_load_env_file_test.fish",
     "spec/fish/_kyber_function_test.fish",
     "spec/fish/_kyberd_function_test.fish",
     "spec/fish/_kyberm_function_test.fish",
@@ -41,12 +31,9 @@
     "spec/fish/_ocxeh_function_test.fish",
     "spec/fish/_pixe_function_test.fish",
     "spec/fish/_pixeh_function_test.fish",
-    "spec/fish/_ssh_add_github_test.fish",
     "spec/fish/_tdo_function_test.fish",
     "spec/fish/_tmo_function_test.fish",
     "spec/fish/_tpo_function_test.fish",
-    "spec/fish/_tsh_function_test.fish",
-    "spec/fish/_tsk_function_test.fish",
     "spec/fish/_tss_function_test.fish",
     "spec/fish/_tsw_function_test.fish",
     "spec/fish/_two_function_test.fish",
@@ -56,34 +43,22 @@
     "spec/fish/fish_user_key_bindings_test.fish",
     "spec/fish_functions_coverage_spec.sh"
   ],
-  "sessions": [
-    {
-      "metadata": "/c4/d99178f4b0/0/metadata.json",
-      "transcript": "/c4/d99178f4b0/0/full.jsonl",
-      "context": "/c4/d99178f4b0/0/context.md",
-      "content_hash": "/c4/d99178f4b0/0/content_hash.txt",
-      "prompt": "/c4/d99178f4b0/0/prompt.txt"
-    },
-    {
-      "metadata": "/c4/d99178f4b0/1/metadata.json",
-      "transcript": "/c4/d99178f4b0/1/full.jsonl",
-      "context": "/c4/d99178f4b0/1/context.md",
-      "content_hash": "/c4/d99178f4b0/1/content_hash.txt",
-      "prompt": "/c4/d99178f4b0/1/prompt.txt"
-    },
-    {
-      "metadata": "/c4/d99178f4b0/2/metadata.json",
-      "transcript": "/c4/d99178f4b0/2/full.jsonl",
-      "context": "/c4/d99178f4b0/2/context.md",
-      "content_hash": "/c4/d99178f4b0/2/content_hash.txt",
-      "prompt": "/c4/d99178f4b0/2/prompt.txt"
-    }
-  ],
+  "agent": "Claude Code",
+  "turn_id": "2f67b8cd1dbc",
   "token_usage": {
-    "input_tokens": 18534,
-    "cache_creation_tokens": 212116,
-    "cache_read_tokens": 3163849,
-    "output_tokens": 50965,
-    "api_call_count": 61
+    "input_tokens": 28,
+    "cache_creation_tokens": 18617,
+    "cache_read_tokens": 667203,
+    "output_tokens": 3698,
+    "api_call_count": 20
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-26T07:33:05.160731Z",
+    "agent_lines": 0,
+    "human_added": 735,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 735,
+    "agent_percentage": 0
   }
 }
