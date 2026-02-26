@@ -13,7 +13,8 @@
     (pkgs.writeShellScriptBin "fishtape" ''
       exec ${pkgs.fish}/bin/fish \
         -C "source ${pkgs.fishPlugins.fishtape_3.src}/functions/fishtape.fish" \
-        "$@"
+        -c 'fishtape $argv' \
+        -- "$@"
     '')
   ];
 
