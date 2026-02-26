@@ -13,7 +13,7 @@ function _tsh_function --description "Search tmux pane contents (live + archived
     | fzf --prompt="pane-search> " \
           --height=40% \
           --query="$query" \
-          --preview="bat --color=always --style=plain {} 2>/dev/null" \
+          --preview="rg -n -- '$query' {} 2>/dev/null | head -80" \
           --preview-window=right:60%)
 
   if test -z "$selected"
