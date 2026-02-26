@@ -2,7 +2,7 @@
   "cli_version": "0.4.7",
   "checkpoint_id": "bc5f589eaa45",
   "strategy": "manual-commit",
-  "branch": "main",
+  "branch": "fix/tsh-string-replace-pattern",
   "checkpoints_count": 0,
   "files_touched": [
     "home-manager/programs/tmux/tmux.conf"
@@ -14,13 +14,20 @@
       "context": "/bc/5f589eaa45/0/context.md",
       "content_hash": "/bc/5f589eaa45/0/content_hash.txt",
       "prompt": "/bc/5f589eaa45/0/prompt.txt"
+    },
+    {
+      "metadata": "/bc/5f589eaa45/1/metadata.json",
+      "transcript": "/bc/5f589eaa45/1/full.jsonl",
+      "context": "/bc/5f589eaa45/1/context.md",
+      "content_hash": "/bc/5f589eaa45/1/content_hash.txt",
+      "prompt": "/bc/5f589eaa45/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 15,
-    "cache_creation_tokens": 9241,
-    "cache_read_tokens": 457006,
-    "output_tokens": 1832,
-    "api_call_count": 13
+    "input_tokens": 23,
+    "cache_creation_tokens": 34365,
+    "cache_read_tokens": 636488,
+    "output_tokens": 3177,
+    "api_call_count": 19
   }
 }
