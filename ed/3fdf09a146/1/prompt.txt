@@ -1,0 +1,17 @@
+is the tmux capability running of storing session txt pane captures and everything?
+
+---
+
+does this scale?
+
+---
+
+create PR
+
+---
+
+[Request interrupted by user]
+
+---
+
+no revert back; we should not care about the size and never delete
