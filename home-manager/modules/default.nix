@@ -5,6 +5,7 @@
   ./local-binaries
   ./npm-globals
   ./tailscale
+  ./tmux-backup
   ./uv-globals
   ./xremap
   ./yek

@@ -59,6 +59,8 @@ inputs.nix-darwin.lib.darwinSystem {
           home.sessionVariables = {
             GPG_TTY = "$(tty)";
           };
+
+          modules.tmux-backup.enable = true;
         };
     }
   ];

@@ -147,6 +147,8 @@ home-manager.lib.homeManagerConfiguration {
         # Enable XDG directories
         xdg.enable = true;
 
+        modules.tmux-backup.enable = true;
+
         # Tailscale configuration
         # Using system-level service only (via installSystemService)
         # User services are disabled by leaving serviceConfig empty
