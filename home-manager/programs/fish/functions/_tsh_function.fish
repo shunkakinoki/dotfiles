@@ -13,7 +13,7 @@ function _tsh_function --description "Search tmux pane contents (live + archived
     | fzf --prompt="pane-search> " \
           --height=40% \
           --query="$query" \
-          --preview="rg -n -- '$query' {} 2>/dev/null | head -80" \
+          --preview="bat --color=always --style=plain {} 2>/dev/null" \
           --preview-window=right:60%)
 
   if test -z "$selected"
@@ -29,7 +29,7 @@ function _tsh_function --description "Search tmux pane contents (live + archived
   set -l widx $parts[2]
 
   if not tmux has-session -t "$sess" 2>/dev/null
-    echo "Session '$sess' no longer exists (archived pane — content shown above in preview)"
+    bat --style=plain "$selected" 2>/dev/null; or less "$selected"
     return
   end
 
