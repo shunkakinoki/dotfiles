@@ -1,0 +1,47 @@
+check if the tmux session logger is active and working
+
+---
+
+what's the alias for searching history again? prefix = l?
+
+---
+
+no searchng through the logs
+
+---
+
+hmm the <query> behavior should be default i think
+
+---
+
+no deprecate the --log and move that to tss --log?
+
+---
+
+also i think dotfiles/config/tmuxinator/tmuxinator
+/primary.yml
+can be just dotfiles/config/tmuxinator
+
+---
+
+nice, create PR
+
+---
+
+also is there a prefix function for tsh?
+
+---
+
+[Request interrupted by user]
+
+---
+
+in tmux
+
+---
+
+yes
+
+---
+
+yes commit and push

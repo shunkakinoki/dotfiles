@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.7",
+  "checkpoint_id": "ca682e18f222",
+  "strategy": "manual-commit",
+  "branch": "refactor/tmux-tsh-tss-tmuxinator",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "home-manager/programs/tmux/tmux.conf"
+  ],
+  "sessions": [
+    {
+      "metadata": "/ca/682e18f222/0/metadata.json",
+      "transcript": "/ca/682e18f222/0/full.jsonl",
+      "context": "/ca/682e18f222/0/context.md",
+      "content_hash": "/ca/682e18f222/0/content_hash.txt",
+      "prompt": "/ca/682e18f222/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 65,
+    "cache_creation_tokens": 64697,
+    "cache_read_tokens": 1787319,
+    "output_tokens": 8681,
+    "api_call_count": 45
+  }
+}
