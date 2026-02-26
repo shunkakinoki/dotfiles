@@ -1,4 +1,5 @@
 set fn (status dirname)/../../home-manager/programs/fish/functions
+source $fn/_fzf_preview_name.fish
 source $fn/_fzf_file_picker.fish
 
 function commandline; end

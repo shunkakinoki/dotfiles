@@ -27,15 +27,6 @@ function _tsh_function --description "Search tmux pane contents (live + archived
   set -l sess $parts[1]
   set -l widx $parts[2]
 
-  if not tmux has-session -t "$sess" 2>/dev/null
-    bat --style=plain "$selected" 2>/dev/null; or less "$selected"
-    return
-  end
-
-  if test -n "$TMUX"
-    tmux switch-client -t "$sess"
-    tmux select-window -t "$sess:$widx" 2>/dev/null
-  else
-    tmux attach-session -t "$sess" \; select-window -t "$sess:$widx"
-  end
+  # Always display content with bat — never switch to/attach sessions
+  bat --style=plain "$selected" 2>/dev/null; or less "$selected"
 end
