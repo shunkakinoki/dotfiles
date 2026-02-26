@@ -1,0 +1,284 @@
+Implement the following plan:
+
+# Plan: Add Native Fish Function Tests with Fishtape
+
+## Context
+
+The dotfiles repo has ShellSpec tests that syntax-check `.fish` files but no behavioral tests for the ~40 fish functions. This plan adds native fish tests using **fishtape 3** — a TAP-based test runner written in pure Fish — to test the actual business logic: env file parsing, flake.nix traversal, git command sequencing, and tmux pane search.
+
+## Fishtape 3 API
+
+```fish
+@test "description" [actual] operator expected
+# actual can be a command substitution
+@test "parses KEY=VALUE" $FOO = bar
+@test "exits with 0" (some_command >/dev/null) $status -eq 0
+@test "file exists" -f /path/to/file
+```
+
+Each test file runs in its own fish shell — global env changes stay isolated.
+
+## What to Test
+
+### `_hm_load_env_file` — pure parsing logic, no mocks needed
+- `KEY=VALUE` → env var exported
+- `"quoted value"` → quotes stripped
+- `'single quoted'` → quotes stripped
+- `export KEY=VALUE` prefix stripped
+- `# comment` lines skipped
+- blank lines skipped
+- returns cleanly when no env file exists
+
+### `_dev_function` — flake.nix traversal (mock `nix`)
+- cwd has `flake.nix` → `echo "Entering devshell in <cwd>"`
+- parent has `flake.nix` → `echo "Entering devshell in <parent>"`
+- no `flake.nix` anywhere → `echo "Entering devshell in ~/dotfiles"`
+
+### `_tsh_function` — early return + no mocks
+- pane dir missing → prints `"No pane content store found at ..."`, exits 0
+
+### `_gco_function` — git sequence (mock `git`)
+- calls `git symbolic-ref refs/remotes/origin/HEAD` → reads branch
+- then `git checkout <branch>` → switches
+- then `git pull` → updates
+
+### `_grco_function` — git reset sequence (mock `git`)
+- calls `git fetch origin <branch>`
+- then `git checkout <branch>`
+- then `git reset --hard origin/<branch>`
+
+## Files to Create / Modify
+
+| Path | Action |
+|---|---|
+| `spec/fish/_hm_load_env_file_test.fish` | Create |
+| `spec/fish/_dev_function_test.fish` | Create |
+| `spec/fish/_tsh_function_test.fish` | Create |
+| `spec/fish/_gco_function_test.fish` | Create |
+| `spec/fish/_grco_function_test.fish` | Create |
+| `devenv.nix` | Add `pkgs.fish` + fishtape wrapper |
+| `Makefile` | Add `fish-test` / `fish-test-dev` targets; add to `test:` |
+| `.github/workflows/shell.yml` | Add `fish-test` job |
+
+## Implementation
+
+### `devenv.nix`
+
+Add two packages:
+
+```nix
+pkgs.fish
+(pkgs.writeShellScriptBin "fishtape" ''
+  exec ${pkgs.fish}/bin/fish \
+    -C "source ${pkgs.fishPlugins.fishtape_3.src}/functions/fishtape.fish" \
+    "$@"
+'')
+```
+
+This makes `fishtape` a shell command that executes test files inside fish with fishtape pre-loaded.
+
+### `spec/fish/_hm_load_env_file_test.fish`
+
+```fish
+set fn (status dirname)/../../home-manager/programs/fish/functions
+source $fn/_hm_load_env_file.fish
+
+# ── KEY=VALUE ──────────────────────────────────────────────
+set tmpdir (mktemp -d)
+printf "FOO=bar\n" > $tmpdir/t.env
+set -x DOTFILES_ENV_FILE $tmpdir/t.env
+_hm_load_env_file
+@test "parses KEY=VALUE" $FOO = bar
+
+# ── double-quoted value ────────────────────────────────────
+printf 'QVAL="hello world"\n' > $tmpdir/t.env
+set -x DOTFILES_ENV_FILE $tmpdir/t.env
+_hm_load_env_file
+@test "strips double quotes" $QVAL = "hello world"
+
+# ── export prefix ─────────────────────────────────────────
+printf "export EXPKEY=expval\n" > $tmpdir/t.env
+set -x DOTFILES_ENV_FILE $tmpdir/t.env
+_hm_load_env_file
+@test "strips export prefix" $EXPKEY = expval
+
+# ── comment and blank lines ───────────────────────────────
+printf "# comment\n\nBARK=baz\n" > $tmpdir/t.env
+set -x DOTFILES_ENV_FILE $tmpdir/t.env
+_hm_load_env_file
+@test "skips comments" $BARK = baz
+
+# ── missing env file ───────────────────────────────────────
+set -e DOTFILES_ENV_FILE
+set -x HOME $tmpdir
+@test "returns 0 when no file" (_hm_load_env_file; echo done) = done
+
+rm -rf $tmpdir
+```
+
+### `spec/fish/_dev_function_test.fish`
+
+```fish
+set fn (status dirname)/../../home-manager/programs/fish/functions
+source $fn/_dev_function.fish
+
+set tmpdir (mktemp -d)
+mkdir -p $tmpdir/child/grandchild
+
+# Mock nix so devshell doesn't actually launch
+function nix; end
+
+# ── cwd has flake.nix ─────────────────────────────────────
+touch $tmpdir/child/flake.nix
+@test "uses cwd" (cd $tmpdir/child; _dev_function) = "Entering devshell in $tmpdir/child"
+
+# ── grandchild → walks up to parent ──────────────────────
+@test "walks up to parent" (cd $tmpdir/child/grandchild; _dev_function) = "Entering devshell in $tmpdir/child"
+
+# ── no flake.nix → falls back to ~/dotfiles ──────────────
+rm $tmpdir/child/flake.nix
+set -x HOME $tmpdir
+@test "falls back to dotfiles" (cd $tmpdir/child/grandchild; _dev_function) = "Entering devshell in $tmpdir/dotfiles"
+
+rm -rf $tmpdir
+```
+
+### `spec/fish/_tsh_function_test.fish`
+
+```fish
+set fn (status dirname)/../../home-manager/programs/fish/functions
+source $fn/_tsh_function.fish
+
+set tmpdir (mktemp -d)
+set -x HOME $tmpdir
+
+@test "reports missing pane dir" \
+  (string match -q "*No pane content store found*" (_tsh_function 2>&1); echo $status) = 0
+
+rm -rf $tmpdir
+```
+
+### `spec/fish/_gco_function_test.fish`
+
+```fish
+set fn (status dirname)/../../home-manager/programs/fish/functions
+source $fn/_gco_function.fish
+
+set call_log (mktemp)
+function git
+    echo $argv >> $call_log
+    if test "$argv[1]" = symbolic-ref
+        echo "refs/remotes/origin/main"
+    end
+end
+
+_gco_function
+
+@test "calls checkout on default branch" \
+  (grep -c "checkout main" $call_log) -ge 1
+@test "calls pull" \
+  (grep -c "^pull" $call_log) -ge 1
+
+rm -f $call_log
+```
+
+### `spec/fish/_grco_function_test.fish`
+
+```fish
+set fn (status dirname)/../../home-manager/programs/fish/functions
+source $fn/_grco_function.fish
+
+set call_log (mktemp)
+function git
+    echo $argv >> $call_log
+    if test "$argv[1]" = symbolic-ref
+        echo "refs/remotes/origin/main"
+    end
+end
+
+_grco_function
+
+@test "fetches default branch" \
+  (grep -c "fetch origin main" $call_log) -ge 1
+@test "checks out default branch" \
+  (grep -c "checkout main" $call_log) -ge 1
+@test "resets hard to remote" \
+  (grep -c "reset --hard origin/main" $call_log) -ge 1
+
+rm -f $call_log
+```
+
+### `Makefile` additions
+
+```makefile
+.PHONY: fish-test
+fish-test: ## Run fish function tests using fishtape.
+    @echo "🐟 Running fish function tests..."
+    @fishtape spec/fish/*_test.fish
+
+.PHONY: fish-test-dev
+fish-test-dev: ## Run fish tests inside the Nix dev shell (mirrors CI).
+    @echo "🐟 Running fish function tests inside the Nix dev shell..."
+    @DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) fish-test
+```
+
+Also extend `test:` to include `fish-test`:
+```makefile
+test: neovim-test nix-test shell-test fish-test
+```
+
+### `.github/workflows/shell.yml` additions
+
+Add a new job after `shell-test`:
+```yaml
+fish-test:
+  runs-on: ubuntu-latest
+  timeout-minutes: 30
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+    - name: Install Nix
+      uses: cachix/install-nix-action@v31
+      with:
+        github_access_token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Run Fishtape Tests (Dev Shell)
+      run: make fish-test-dev
+```
+
+Also add `fish-test` to the `needs:` list of `shell-check`.
+
+## Verification
+
+```bash
+# Install fishtape locally (one-time)
+make fish-test-dev
+
+# Or directly if fish + fishtape on PATH
+fishtape spec/fish/*_test.fish
+
+# Full suite (matches CI)
+make test
+```
+
+All tests should pass. Each test file is isolated (separate fish shell per file).
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/shunkakinoki/.claude/projects/-Users-shunkakinoki-dotfiles/b959df61-6545-4b73-b23f-c9fa4410b287.jsonl
+
+If this plan can be broken down into multiple independent tasks, consider using the TeamCreate tool to create a team and parallelize the work.
+
+---
+
+let's add test for all functions and make sure that we have the script to track testing for all fish fucntison like we have in the .sh too
+
+---
+
+ok create PR
+
+---
+
+[Request interrupted by user]
+
+---
+
+add all files
