@@ -1,0 +1,29 @@
+{
+  "cli_version": "0.4.7",
+  "checkpoint_id": "cd018ddef1ae",
+  "strategy": "manual-commit",
+  "branch": "feat/fish-fishtape-tests",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "home-manager/packages/default.nix",
+    "home-manager/programs/git/default.nix",
+    "home-manager/programs/tmux/tmux.conf",
+    "nix-darwin/config/homebrew.nix"
+  ],
+  "sessions": [
+    {
+      "metadata": "/cd/018ddef1ae/0/metadata.json",
+      "transcript": "/cd/018ddef1ae/0/full.jsonl",
+      "context": "/cd/018ddef1ae/0/context.md",
+      "content_hash": "/cd/018ddef1ae/0/content_hash.txt",
+      "prompt": "/cd/018ddef1ae/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 29,
+    "cache_creation_tokens": 27455,
+    "cache_read_tokens": 376873,
+    "output_tokens": 64,
+    "api_call_count": 11
+  }
+}
