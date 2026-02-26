@@ -119,6 +119,7 @@
       tmo = "_tmo_function";
       tpo = "_tpo_function";
       tsh = "_tsh_function";
+      tsk = "_tsk_function";
       tss = "_tss_function";
       tsw = "_tsw_function";
       two = "_two_function";
@@ -211,6 +212,7 @@
         "_tmo_function"
         "_tpo_function"
         "_tsh_function"
+        "_tsk_function"
         "_tss_function"
         "_tsw_function"
         "_two_function"
