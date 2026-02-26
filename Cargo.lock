@@ -1584,7 +1584,7 @@ dependencies = [
 [[package]]
 name = "git-ai"
 version = "1.1.6"
-source = "git+https://github.com/git-ai-project/git-ai?branch=main#65237236e1854039cd5efc7d8e0fb988b1494a75"
+source = "git+https://github.com/git-ai-project/git-ai?branch=main#e29bb452d6b41dbd007dff9360ee275334152ec4"
 dependencies = [
  "chrono",
  "clap",
