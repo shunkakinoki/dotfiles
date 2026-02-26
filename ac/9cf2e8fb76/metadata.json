@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.7",
+  "checkpoint_id": "ac9cf2e8fb76",
+  "strategy": "manual-commit",
+  "branch": "feat/fish-fishtape-tests",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "spec/fish/_dev_function_test.fish"
+  ],
+  "sessions": [
+    {
+      "metadata": "/ac/9cf2e8fb76/0/metadata.json",
+      "transcript": "/ac/9cf2e8fb76/0/full.jsonl",
+      "context": "/ac/9cf2e8fb76/0/context.md",
+      "content_hash": "/ac/9cf2e8fb76/0/content_hash.txt",
+      "prompt": "/ac/9cf2e8fb76/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 29,
+    "cache_creation_tokens": 27455,
+    "cache_read_tokens": 376873,
+    "output_tokens": 64,
+    "api_call_count": 11
+  }
+}
