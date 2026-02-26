@@ -76,6 +76,9 @@
         merge = {
           conflictStyle = "zdiff3";
         };
+        "remote \"origin\"" = {
+          fetch = "+refs/notes/*:refs/notes/*";
+        };
       };
       signing = {
         signByDefault = true;
