@@ -820,7 +820,13 @@ shell-test-dev: ## Run shell tests inside the Nix dev shell (mirrors CI).
 .PHONY: fish-test
 fish-test: ## Run fish function tests using fishtape.
 	@echo "🐟 Running fish function tests..."
-	@fishtape spec/fish/*_test.fish
+	@fish_errors=$$(mktemp); \
+	  fishtape spec/fish/*_test.fish 2>"$$fish_errors"; \
+	  rc=$$?; \
+	  if [ -s "$$fish_errors" ]; then \
+	    echo "fish test stderr (failing):"; cat "$$fish_errors"; rm -f "$$fish_errors"; exit 1; \
+	  fi; \
+	  rm -f "$$fish_errors"; exit $$rc
 
 .PHONY: fish-test-dev
 fish-test-dev: ## Run fish tests inside the Nix dev shell (mirrors CI).
