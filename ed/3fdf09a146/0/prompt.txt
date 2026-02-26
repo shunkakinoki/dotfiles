@@ -1,0 +1,9 @@
+Fix tmux /Users/shunkakinoki/.config/tmux/tmux.conf:238: invalid option: server-startup
+
+---
+
+build and switch
+
+---
+
+how to restart tmux to enable that
