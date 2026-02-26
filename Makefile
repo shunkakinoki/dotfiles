@@ -186,7 +186,7 @@ dotagents-sync: ## Sync dotagents (commands, skills, MCP configuration).
 	@$(MAKE) -C dotagents sync
 
 .PHONY: test
-test: neovim-test nix-test shell-test ## Run all tests (neovim + nix + shell).
+test: neovim-test nix-test shell-test fish-test ## Run all tests (neovim + nix + shell + fish).
 
 ##@ Update
 
@@ -815,6 +815,16 @@ shell-test: ## Run shell script tests using ShellSpec.
 shell-test-dev: ## Run shell tests inside the Nix dev shell (mirrors CI).
 	@echo "🧪 Running shell tests inside the Nix dev shell..."
 	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) shell-test
+
+.PHONY: fish-test
+fish-test: ## Run fish function tests using fishtape.
+	@echo "🐟 Running fish function tests..."
+	@fishtape spec/fish/*_test.fish
+
+.PHONY: fish-test-dev
+fish-test-dev: ## Run fish tests inside the Nix dev shell (mirrors CI).
+	@echo "🐟 Running fish function tests inside the Nix dev shell..."
+	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) fish-test
 
 .PHONY: shell-check
 shell-check: ## Run ShellCheck on shell scripts.
