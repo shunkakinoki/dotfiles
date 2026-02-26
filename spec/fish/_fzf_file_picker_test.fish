@@ -13,4 +13,4 @@ set -e EDITOR
 function fzf; echo somefile; end
 
 @test "missing EDITOR prints error" (string match -q "*EDITOR*is not set*" (_fzf_file_picker --allow-open-in-editor 2>&1); echo $status) = 0
-@test "missing EDITOR returns 1" (_fzf_file_picker --allow-open-in-editor 2>/dev/null; echo $status) = 1
+@test "missing EDITOR returns 1" (_fzf_file_picker --allow-open-in-editor >/dev/null 2>/dev/null; echo $status) = 1
