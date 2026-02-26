@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.7",
+  "checkpoint_id": "813d9926c401",
+  "strategy": "manual-commit",
+  "branch": "refactor/tmux-tsh-tss-tmuxinator",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "config/tmuxinator/default.nix",
+    "config/tmuxinator/desktop.yml",
+    "config/tmuxinator/mobile.yml",
+    "config/tmuxinator/primary.yml",
+    "config/tmuxinator/work.yml",
+    "home-manager/programs/fish/functions/_tsh_function.fish",
+    "home-manager/programs/fish/functions/_tss_function.fish"
+  ],
+  "sessions": [
+    {
+      "metadata": "/81/3d9926c401/0/metadata.json",
+      "transcript": "/81/3d9926c401/0/full.jsonl",
+      "context": "/81/3d9926c401/0/context.md",
+      "content_hash": "/81/3d9926c401/0/content_hash.txt",
+      "prompt": "/81/3d9926c401/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 49,
+    "cache_creation_tokens": 61428,
+    "cache_read_tokens": 1267378,
+    "output_tokens": 7371,
+    "api_call_count": 35
+  }
+}
