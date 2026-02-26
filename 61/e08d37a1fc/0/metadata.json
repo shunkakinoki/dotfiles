@@ -1,0 +1,31 @@
+{
+  "cli_version": "0.4.7",
+  "checkpoint_id": "61e08d37a1fc",
+  "session_id": "187ec711-a685-45a5-a31b-dd049cb5c04a",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-26T08:49:40.541111Z",
+  "branch": "feat/fish-fishtape-tests",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "spec/fish/_fzf_file_picker_test.fish",
+    "spec/fish/_tsh_function_test.fish"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "4d763967a951",
+  "token_usage": {
+    "input_tokens": 18558,
+    "cache_creation_tokens": 270508,
+    "cache_read_tokens": 9656965,
+    "output_tokens": 79672,
+    "api_call_count": 91
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-26T08:49:38.303164Z",
+    "agent_lines": 21,
+    "human_added": 19,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 40,
+    "agent_percentage": 52.5
+  }
+}

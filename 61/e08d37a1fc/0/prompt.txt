@@ -1,0 +1,529 @@
+Implement the following plan:
+
+# Plan: Add Native Fish Function Tests with Fishtape
+
+## Context
+
+The dotfiles repo has ShellSpec tests that syntax-check `.fish` files but no behavioral tests for the ~40 fish functions. This plan adds native fish tests using **fishtape 3** — a TAP-based test runner written in pure Fish — to test the actual business logic: env file parsing, flake.nix traversal, git command sequencing, and tmux pane search.
+
+## Fishtape 3 API
+
+```fish
+@test "description" [actual] operator expected
+# actual can be a command substitution
+@test "parses KEY=VALUE" $FOO = bar
+@test "exits with 0" (some_command >/dev/null) $status -eq 0
+@test "file exists" -f /path/to/file
+```
+
+Each test file runs in its own fish shell — global env changes stay isolated.
+
+## What to Test
+
+### `_hm_load_env_file` — pure parsing logic, no mocks needed
+- `KEY=VALUE` → env var exported
+- `"quoted value"` → quotes stripped
+- `'single quoted'` → quotes stripped
+- `export KEY=VALUE` prefix stripped
+- `# comment` lines skipped
+- blank lines skipped
+- returns cleanly when no env file exists
+
+### `_dev_function` — flake.nix traversal (mock `nix`)
+- cwd has `flake.nix` → `echo "Entering devshell in <cwd>"`
+- parent has `flake.nix` → `echo "Entering devshell in <parent>"`
+- no `flake.nix` anywhere → `echo "Entering devshell in ~/dotfiles"`
+
+### `_tsh_function` — early return + no mocks
+- pane dir missing → prints `"No pane content store found at ..."`, exits 0
+
+### `_gco_function` — git sequence (mock `git`)
+- calls `git symbolic-ref refs/remotes/origin/HEAD` → reads branch
+- then `git checkout <branch>` → switches
+- then `git pull` → updates
+
+### `_grco_function` — git reset sequence (mock `git`)
+- calls `git fetch origin <branch>`
+- then `git checkout <branch>`
+- then `git reset --hard origin/<branch>`
+
+## Files to Create / Modify
+
+| Path | Action |
+|---|---|
+| `spec/fish/_hm_load_env_file_test.fish` | Create |
+| `spec/fish/_dev_function_test.fish` | Create |
+| `spec/fish/_tsh_function_test.fish` | Create |
+| `spec/fish/_gco_function_test.fish` | Create |
+| `spec/fish/_grco_function_test.fish` | Create |
+| `devenv.nix` | Add `pkgs.fish` + fishtape wrapper |
+| `Makefile` | Add `fish-test` / `fish-test-dev` targets; add to `test:` |
+| `.github/workflows/shell.yml` | Add `fish-test` job |
+
+## Implementation
+
+### `devenv.nix`
+
+Add two packages:
+
+```nix
+pkgs.fish
+(pkgs.writeShellScriptBin "fishtape" ''
+  exec ${pkgs.fish}/bin/fish \
+    -C "source ${pkgs.fishPlugins.fishtape_3.src}/functions/fishtape.fish" \
+    "$@"
+'')
+```
+
+This makes `fishtape` a shell command that executes test files inside fish with fishtape pre-loaded.
+
+### `spec/fish/_hm_load_env_file_test.fish`
+
+```fish
+set fn (status dirname)/../../home-manager/programs/fish/functions
+source $fn/_hm_load_env_file.fish
+
+# ── KEY=VALUE ──────────────────────────────────────────────
+set tmpdir (mktemp -d)
+printf "FOO=bar\n" > $tmpdir/t.env
+set -x DOTFILES_ENV_FILE $tmpdir/t.env
+_hm_load_env_file
+@test "parses KEY=VALUE" $FOO = bar
+
+# ── double-quoted value ────────────────────────────────────
+printf 'QVAL="hello world"\n' > $tmpdir/t.env
+set -x DOTFILES_ENV_FILE $tmpdir/t.env
+_hm_load_env_file
+@test "strips double quotes" $QVAL = "hello world"
+
+# ── export prefix ─────────────────────────────────────────
+printf "export EXPKEY=expval\n" > $tmpdir/t.env
+set -x DOTFILES_ENV_FILE $tmpdir/t.env
+_hm_load_env_file
+@test "strips export prefix" $EXPKEY = expval
+
+# ── comment and blank lines ───────────────────────────────
+printf "# comment\n\nBARK=baz\n" > $tmpdir/t.env
+set -x DOTFILES_ENV_FILE $tmpdir/t.env
+_hm_load_env_file
+@test "skips comments" $BARK = baz
+
+# ── missing env file ───────────────────────────────────────
+set -e DOTFILES_ENV_FILE
+set -x HOME $tmpdir
+@test "returns 0 when no file" (_hm_load_env_file; echo done) = done
+
+rm -rf $tmpdir
+```
+
+### `spec/fish/_dev_function_test.fish`
+
+```fish
+set fn (status dirname)/../../home-manager/programs/fish/functions
+source $fn/_dev_function.fish
+
+set tmpdir (mktemp -d)
+mkdir -p $tmpdir/child/grandchild
+
+# Mock nix so devshell doesn't actually launch
+function nix; end
+
+# ── cwd has flake.nix ─────────────────────────────────────
+touch $tmpdir/child/flake.nix
+@test "uses cwd" (cd $tmpdir/child; _dev_function) = "Entering devshell in $tmpdir/child"
+
+# ── grandchild → walks up to parent ──────────────────────
+@test "walks up to parent" (cd $tmpdir/child/grandchild; _dev_function) = "Entering devshell in $tmpdir/child"
+
+# ── no flake.nix → falls back to ~/dotfiles ──────────────
+rm $tmpdir/child/flake.nix
+set -x HOME $tmpdir
+@test "falls back to dotfiles" (cd $tmpdir/child/grandchild; _dev_function) = "Entering devshell in $tmpdir/dotfiles"
+
+rm -rf $tmpdir
+```
+
+### `spec/fish/_tsh_function_test.fish`
+
+```fish
+set fn (status dirname)/../../home-manager/programs/fish/functions
+source $fn/_tsh_function.fish
+
+set tmpdir (mktemp -d)
+set -x HOME $tmpdir
+
+@test "reports missing pane dir" \
+  (string match -q "*No pane content store found*" (_tsh_function 2>&1); echo $status) = 0
+
+rm -rf $tmpdir
+```
+
+### `spec/fish/_gco_function_test.fish`
+
+```fish
+set fn (status dirname)/../../home-manager/programs/fish/functions
+source $fn/_gco_function.fish
+
+set call_log (mktemp)
+function git
+    echo $argv >> $call_log
+    if test "$argv[1]" = symbolic-ref
+        echo "refs/remotes/origin/main"
+    end
+end
+
+_gco_function
+
+@test "calls checkout on default branch" \
+  (grep -c "checkout main" $call_log) -ge 1
+@test "calls pull" \
+  (grep -c "^pull" $call_log) -ge 1
+
+rm -f $call_log
+```
+
+### `spec/fish/_grco_function_test.fish`
+
+```fish
+set fn (status dirname)/../../home-manager/programs/fish/functions
+source $fn/_grco_function.fish
+
+set call_log (mktemp)
+function git
+    echo $argv >> $call_log
+    if test "$argv[1]" = symbolic-ref
+        echo "refs/remotes/origin/main"
+    end
+end
+
+_grco_function
+
+@test "fetches default branch" \
+  (grep -c "fetch origin main" $call_log) -ge 1
+@test "checks out default branch" \
+  (grep -c "checkout main" $call_log) -ge 1
+@test "resets hard to remote" \
+  (grep -c "reset --hard origin/main" $call_log) -ge 1
+
+rm -f $call_log
+```
+
+### `Makefile` additions
+
+```makefile
+.PHONY: fish-test
+fish-test: ## Run fish function tests using fishtape.
+    @echo "🐟 Running fish function tests..."
+    @fishtape spec/fish/*_test.fish
+
+.PHONY: fish-test-dev
+fish-test-dev: ## Run fish tests inside the Nix dev shell (mirrors CI).
+    @echo "🐟 Running fish function tests inside the Nix dev shell..."
+    @DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) fish-test
+```
+
+Also extend `test:` to include `fish-test`:
+```makefile
+test: neovim-test nix-test shell-test fish-test
+```
+
+### `.github/workflows/shell.yml` additions
+
+Add a new job after `shell-test`:
+```yaml
+fish-test:
+  runs-on: ubuntu-latest
+  timeout-minutes: 30
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+    - name: Install Nix
+      uses: cachix/install-nix-action@v31
+      with:
+        github_access_token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Run Fishtape Tests (Dev Shell)
+      run: make fish-test-dev
+```
+
+Also add `fish-test` to the `needs:` list of `shell-check`.
+
+## Verification
+
+```bash
+# Install fishtape locally (one-time)
+make fish-test-dev
+
+# Or directly if fish + fishtape on PATH
+fishtape spec/fish/*_test.fish
+
+# Full suite (matches CI)
+make test
+```
+
+All tests should pass. Each test file is isolated (separate fish shell per file).
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/shunkakinoki/.claude/projects/-Users-shunkakinoki-dotfiles/b959df61-6545-4b73-b23f-c9fa4410b287.jsonl
+
+If this plan can be broken down into multiple independent tasks, consider using the TeamCreate tool to create a team and parallelize the work.
+
+---
+
+let's add test for all functions and make sure that we have the script to track testing for all fish fucntison like we have in the .sh too
+
+---
+
+ok create PR
+
+---
+
+[Request interrupted by user]
+
+---
+
+add all files
+
+---
+
+<task-notification>
+<task-id>b9uhe7hd2</task-id>
+<tool-use-id>toolu_014H4oczi3HfYs5VdKAF2UV1</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-shunkakinoki-dotfiles/tasks/b9uhe7hd2.output</output-file>
+<status>completed</status>
+<summary>Background command "Commit all staged files" completed (exit code 0)</summary>
+</task-notification>
+Read the output file to retrieve the result: /private/tmp/claude-501/-Users-shunkakinoki-dotfiles/tasks/b9uhe7hd2.output
+
+---
+
+could you put the fish-test inside shell-trst
+
+---
+
+push
+
+---
+
+<task-notification>
+<task-id>bo7im1mpy</task-id>
+<tool-use-id>toolu_01KaiweewfMJaCsau3Ngj4nQ</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-shunkakinoki-dotfiles/tasks/bo7im1mpy.output</output-file>
+<status>completed</status>
+<summary>Background command "Commit and push" completed (exit code 0)</summary>
+</task-notification>
+Read the output file to retrieve the result: /private/tmp/claude-501/-Users-shunkakinoki-dotfiles/tasks/bo7im1mpy.output
+
+---
+
+make[2]: Entering directory '/home/runner/work/dotfiles/dotfiles'
+🐟 Running fish function tests...
+fish: Unknown command: @test
+spec/fish/_cliproxyapi_function_test.fish (line 13): 
+@test "linux path restarts cliproxyapi" (grep -c "restart cliproxyapi" $call_log) -ge 1
+^~~~^
+
+---
+
+<task-notification>
+<task-id>b1wn16hh4</task-id>
+<tool-use-id>toolu_01XLyN75ytWFykbFwWiY7NQn</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-shunkakinoki-dotfiles/tasks/b1wn16hh4.output</output-file>
+<status>completed</status>
+<summary>Background command "Commit and push the fix" completed (exit code 0)</summary>
+</task-notification>
+Read the output file to retrieve the result: /private/tmp/claude-501/-Users-shunkakinoki-dotfiles/tasks/b1wn16hh4.output
+
+---
+
+check loclly that shell-test-dev runs the fish tests approairately as well
+
+---
+
+<task-notification>
+<task-id>bfpk2n2q3</task-id>
+<tool-use-id>toolu_01PQQYoZdkZVeJhURRbPahPq</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-shunkakinoki-dotfiles/tasks/bfpk2n2q3.output</output-file>
+<status>completed</status>
+<summary>Background command "Commit and push all test fixes" completed (exit code 0)</summary>
+</task-notification>
+Read the output file to retrieve the result: /private/tmp/claude-501/-Users-shunkakinoki-dotfiles/tasks/bfpk2n2q3.output
+
+---
+
+This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+
+Analysis:
+Let me analyze the conversation chronologically:
+
+1. The user asked to implement a plan for adding native Fish function tests with fishtape
+2. The plan was implemented with 5 initial test files, devenv.nix changes, Makefile additions, and CI workflow updates
+3. The user asked to add tests for ALL functions and add a tracking mechanism similar to shell_files_spec.sh
+4. 41 more test files were created (one per fish function) plus a ShellSpec coverage tracker
+5. The user asked to "add all files" and create a PR - it was committed and pushed to PR #947
+6. The user asked to put fish-test inside shell-test - refactored Makefile and workflow
+7. CI failed with "Unknown command: @test" - fixed by calling `fishtape $argv` explicitly
+8. Local testing revealed 6 failing tests - fixed by suppressing stdout in status-check tests and fixing empty-arg edge case
+9. Now the user has entered plan mode and described a new feature: clicking "fsh" should search history but NOT open pane/session if it's active - if it's a closed session in archive, it should use `bat` instead
+
+The current request is about modifying the `_tsh_function` behavior to:
+- When searching history, DON'T open the pane/session if the session is active (just show the content?)
+- Actually re-reading: "should search for history but not open the pane/session only if it's active" - meaning if the session IS active, don't switch to it (just show the content via bat or something)
+- "if it's a closed session and in archive it should opt to just bat" - if in archive, use bat to view it
+
+Wait, let me re-read: "when i click fsh; it should search for history but not open the pane/session only if it's active - if it's a closed session and in archive it should opt to just bat"
+
+So the behavior change is:
+- `fsh` / `_tsh_function`: search pane content store
+- If result is from an ACTIVE session → just show content (bat), DON'T switch to the session
+- If result is from an ARCHIVED (closed) session → use bat to view it
+
+Currently the function:
+1. Searches pane dirs
+2. If session exists in tmux → switches to it
+3. If session doesn't exist → uses bat/less to view
+
+The new behavior would be:
+1. Search pane dirs  
+2. ALWAYS use bat to view (never switch to session)
+
+Wait, re-reading again: "not open the pane/session only if it's active" - this could mean "only show bat if it's active; if archived always bat"
+
+Hmm, I think the intent is:
+- Active session → DON'T switch to it, just bat the file
+- Archived/closed session → bat the file
+
+So basically: always use bat, never switch to the session. The current behavior switches when session is active. The new behavior should always bat.
+
+Actually I think I need to re-read one more time: "should search for history but not open the pane/session only if it's active" - "only if it's active" modifies "not open" - so it means "don't open the pane/session when the session is active" (but maybe do something else). And "if it's a closed session and in archive it should opt to just bat" - so archived ones should bat.
+
+So the complete new behavior:
+- If session is ACTIVE → don't switch to it (maybe just display/highlight?), or bat the content
+- If session is ARCHIVED (in archive dir, closed) → bat the content
+
+This changes the current logic where active sessions get switched to. Now both paths should bat.
+
+The plan mode request is to plan this change to `_tsh_function`.
+
+Summary:
+1. Primary Request and Intent:
+   The conversation had two main phases:
+   
+   **Phase 1 (Completed):** Implement native Fish function tests using fishtape 3 for all 46 fish functions in the dotfiles repo. This included:
+   - Creating 46 fishtape test files (one per function) in `spec/fish/`
+   - Creating `spec/fish_functions_coverage_spec.sh` (ShellSpec tracker ensuring every fish function has a test)
+   - Adding fishtape wrapper to `devenv.nix`, Makefile targets, and CI job
+   - Folding `fish-test` into `shell-test`
+   - Fixing test failures (stdout leaking into command substitutions, empty-arg edge case)
+   - All 105 tests passing locally and pushed to PR #947
+
+   **Phase 2 (New/Current):** Modify `_tsh_function` behavior: when searching pane history (`fsh`), do NOT switch to/open active sessions — instead always use `bat` to display content. If the result is from an archived (closed) session, also use `bat`.
+
+2. Key Technical Concepts:
+   - **fishtape 3**: TAP-based test runner for Fish shell; `@test` is the assertion macro; test files run in subshells with `fishtape $argv` providing `@test`
+   - **Fish shell**: `status dirname` for relative paths, `$argv` expansion behavior (empty list → zero tokens, `test -n $argv` with no arg = `test "-n"` → always truthy)
+   - **ShellSpec**: Dynamic parametrize pattern `Parameters:dynamic ... End` for coverage tracking
+   - **devenv.nix**: Nix dev environment config; `pkgs.writeShellScriptBin` for creating CLI wrappers; `pkgs.fishPlugins.fishtape_3.src` for source path
+   - **fishtape wrapper fix**: Must use `-c 'fishtape $argv' -- "$@"` not just `"$@"` (otherwise test files run as plain fish scripts without `@test` defined)
+   - **tmux pane content store**: `~/.local/share/tmux/panes/` for live panes, `~/.local/share/tmux/archive/` for closed sessions
+   - **`_tsh_function`**: Searches pane content files, currently switches to active tmux sessions when found
+
+3. Files and Code Sections:
+   - **`home-manager/programs/fish/functions/_tsh_function.fish`** (key function to be modified):
+     ```fish
+     function _tsh_function --description "Search tmux pane contents (live + archived)"
+       set -l pane_dir ~/.local/share/tmux/panes
+       set -l archive_dir ~/.local/share/tmux/archive
+       if not test -d "$pane_dir"
+         echo "No pane content store found at $pane_dir"
+         return
+       end
+       set -l query (string join ' ' $argv)
+       set -l selected (rg -l -- "$query" "$pane_dir" "$archive_dir" 2>/dev/null \
+         | fzf --prompt="pane-search> " ...)
+       if test -z "$selected"
+         return
+       end
+       # parses filename → sess, widx
+       if not tmux has-session -t "$sess" 2>/dev/null
+         bat --style=plain "$selected" 2>/dev/null; or less "$selected"
+         return
+       end
+       # Currently: if session IS active → switch to it
+       if test -n "$TMUX"
+         tmux switch-client -t "$sess"
+         tmux select-window -t "$sess:$widx" 2>/dev/null
+       else
+         tmux attach-session -t "$sess" \; select-window -t "$sess:$widx"
+       end
+     end
+     ```
+   - **`devenv.nix`** (fixed):
+     ```nix
+     (pkgs.writeShellScriptBin "fishtape" ''
+       exec ${pkgs.fish}/bin/fish \
+         -C "source ${pkgs.fishPlugins.fishtape_3.src}/functions/fishtape.fish" \
+         -c 'fishtape $argv' \
+         -- "$@"
+     '')
+     ```
+   - **`Makefile`**: `shell-test` now runs shellspec then `$(MAKE) fish-test`; `fish-test` runs `fishtape spec/fish/*_test.fish`
+   - **`.github/workflows/shell.yml`**: `shell-test` CI job covers both shellspec and fishtape (no separate fish-test job)
+   - **`spec/fish/_tsh_function_test.fish`** (existing test):
+     ```fish
+     @test "reports missing pane dir" (string match -q "*No pane content store found*" (_tsh_function 2>&1); echo $status) = 0
+     ```
+   - **`spec/fish_functions_coverage_spec.sh`**: ShellSpec file checking each `.fish` function has a corresponding test
+   - **6 fixed test files** (all had stdout-leaking-into-status pattern):
+     - `_fzf_git_branch_test.fish`: `>/dev/null 2>/dev/null` before `; echo $status`
+     - `_fzf_git_worktree_test.fish`: same
+     - `_ssh_add_github_test.fish`: same
+     - `_fzf_file_picker_test.fish`: same
+     - `_fzf_chrome_history_test.fish`: same
+     - `_fzf_preview_name_test.fish`: `(_fzf_preview_name "")` instead of `(_fzf_preview_name)`
+
+4. Errors and fixes:
+   - **"Unknown command: @test"** in CI: The wrapper passed test files as `"$@"` making fish execute the first file as a plain script without `@test` defined. Fixed by changing to `-c 'fishtape $argv' -- "$@"` to call the `fishtape` function which sets up `@test` for each test file.
+   - **Multi-line stdout leaking into `@test` status checks**: Commands like `(_func 2>/dev/null; echo $status)` captured both the error message and "1", making two list items. `@test` got confused by extra tokens. Fixed by adding `>/dev/null` to suppress stdout too.
+   - **`_fzf_preview_name` empty-arg edge case**: `test -n $argv` with empty `$argv` expands to `test -n` (no operand), which fish evaluates as `test "-n"` (non-empty string) → always truthy. Fixed by passing `""` explicitly: `(_fzf_preview_name "")`.
+   - **Branch protection preventing direct push to main**: Fixed by creating `feat/fish-fishtape-tests` branch and PR.
+
+5. Problem Solving:
+   - Designed 1:1 test coverage (46 test files for 46 functions) with ShellSpec coverage tracker
+   - Used mock functions (`function git; end`, `function tmux; end`, etc.) to test external-tool-dependent functions
+   - Grouped functions by pattern: "no args → interactive / with args → exec", "empty prompt → return 1", "tmux session routing", etc.
+   - All 105 fishtape tests passing locally (`# pass 105 / # ok`)
+
+6. All user messages:
+   - "Implement the following plan: [fishtape plan document]"
+   - "let's add test for all functions and make sure that we have the script to track testing for all fish functions like we have in the .sh too"
+   - "ok create PR[Request interrupted by user]add all files"
+   - "push"
+   - "[CI error notification] fish: Unknown command: @test"
+   - "check locally that shell-test-dev runs the fish tests appropriately as well"
+   - "[task notification] background command completed"
+   - "when i click fsh; it should search for history but not open the pane/session only if it's active - if it's a closed session and in archive it should opt to just bat"
+
+7. Pending Tasks:
+   - Modify `_tsh_function` so that:
+     - If the selected pane file belongs to an **active** tmux session → do NOT switch to it; instead use `bat` to display the file content
+     - If the selected pane file is from an **archived** (closed) session → use `bat` to display it
+     - Essentially: always `bat` the content, never switch/attach to sessions
+   - Update `spec/fish/_tsh_function_test.fish` to cover the new behavior
+
+8. Current Work:
+   We have just entered plan mode. The user's new request is to change `_tsh_function` behavior:
+   - "fsh" (which calls `_tsh_function`) should search history
+   - If session is **active**: do NOT open/switch to the pane, just bat the content
+   - If session is in **archive** (closed): bat the content
+   
+   The current `_tsh_function` at `home-manager/programs/fish/functions/_tsh_function.fish` currently switches to active sessions. The new behavior removes the session-switching logic for active sessions entirely, falling through to `bat` in all cases.
+
+9. Optional Next Step:
+   Plan the modification to `_tsh_function`: remove the `tmux switch-client`/`tmux attach-session` logic for active sessions, replacing it with `bat --style=plain "$selected"` in all cases (both active sessions and archived files). Also update `spec/fish/_tsh_function_test.fish` to add tests for the new bat-always behavior.
+
+If you need specific details from before compaction (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/shunkakinoki/.claude/projects/-Users-shunkakinoki-dotfiles/187ec711-a685-45a5-a31b-dd049cb5c04a.jsonl
+Please continue the conversation from where we left off without asking the user any further questions. Continue with the last task that you were asked to work on.
+
+---
+
+[Request interrupted by user for tool use]
