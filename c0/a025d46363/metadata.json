@@ -5,7 +5,8 @@
   "branch": "main",
   "checkpoints_count": 0,
   "files_touched": [
-    "home-manager/programs/fish/functions/_tsh_function.fish"
+    "home-manager/programs/fish/functions/_tsh_function.fish",
+    "home-manager/programs/tmux/tmux.conf"
   ],
   "sessions": [
     {
@@ -14,13 +15,20 @@
       "context": "/c0/a025d46363/0/context.md",
       "content_hash": "/c0/a025d46363/0/content_hash.txt",
       "prompt": "/c0/a025d46363/0/prompt.txt"
+    },
+    {
+      "metadata": "/c0/a025d46363/1/metadata.json",
+      "transcript": "/c0/a025d46363/1/full.jsonl",
+      "context": "/c0/a025d46363/1/context.md",
+      "content_hash": "/c0/a025d46363/1/content_hash.txt",
+      "prompt": "/c0/a025d46363/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 4,
-    "cache_creation_tokens": 1562,
-    "cache_read_tokens": 128504,
-    "output_tokens": 601,
-    "api_call_count": 4
+    "input_tokens": 15,
+    "cache_creation_tokens": 27956,
+    "cache_read_tokens": 428346,
+    "output_tokens": 2803,
+    "api_call_count": 13
   }
 }

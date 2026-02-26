@@ -1,0 +1,8 @@
+# Session Context
+
+## User Prompts
+
+### Prompt 1
+
+the scrolling of tmux panes is not working because of some tmux configuration i did today how to revert locally in @home-manager/programs/tmux/tmux.conf and create PR to fix
+
