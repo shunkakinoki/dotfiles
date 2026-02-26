@@ -57,6 +57,7 @@
       "sshpass"
       "temporal"
       "watchexec"
+      "yt-dlp"
     ];
     casks = [
       "antigravity"
