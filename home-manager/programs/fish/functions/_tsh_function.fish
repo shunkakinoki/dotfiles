@@ -27,7 +27,8 @@ function _tsh_function --description "Search tmux pane contents (live + archived
   set -l sess $parts[1]
   set -l widx $parts[2]
 
-  if not tmux has-session -t "$sess" 2>/dev/null
+  # Archived file → display with bat; live pane → switch to session
+  if string match -q "$archive_dir/*" "$selected"
     bat --style=plain "$selected" 2>/dev/null; or less "$selected"
     return
   end
