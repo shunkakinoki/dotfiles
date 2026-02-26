@@ -22,7 +22,7 @@ function _tsh_function --description "Search tmux pane contents (live + archived
 
   # work--0--0.txt or work--0--0--20260226-103000.txt → sess=work, widx=0
   set -l fname (string replace -r '.*/' '' "$selected" \
-    | string replace -r '--\d{8}-\d{6}\.txt$' '' \
+    | string replace -r -- '--\d{8}-\d{6}\.txt$' '' \
     | string replace '.txt' '')
   set -l parts (string split -- '--' $fname)
   set -l sess $parts[1]
