@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.4.7",
+  "checkpoint_id": "fccc89875de7",
+  "strategy": "manual-commit",
+  "branch": "feat/fish-fishtape-tests",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".github/workflows/shell.yml",
+    "Makefile"
+  ],
+  "sessions": [
+    {
+      "metadata": "/fc/cc89875de7/0/metadata.json",
+      "transcript": "/fc/cc89875de7/0/full.jsonl",
+      "context": "/fc/cc89875de7/0/context.md",
+      "content_hash": "/fc/cc89875de7/0/content_hash.txt",
+      "prompt": "/fc/cc89875de7/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 29,
+    "cache_creation_tokens": 27455,
+    "cache_read_tokens": 376873,
+    "output_tokens": 64,
+    "api_call_count": 11
+  }
+}
