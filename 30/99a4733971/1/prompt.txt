@@ -1,0 +1,9 @@
+why is git-ai not pushing to git-notes on github actions
+
+---
+
+yes and creat PR
+
+---
+
+i've merged can you check git-ai notes to see if it's regiestered
