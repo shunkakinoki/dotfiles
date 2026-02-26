@@ -186,7 +186,7 @@ dotagents-sync: ## Sync dotagents (commands, skills, MCP configuration).
 	@$(MAKE) -C dotagents sync
 
 .PHONY: test
-test: neovim-test nix-test shell-test fish-test ## Run all tests (neovim + nix + shell + fish).
+test: neovim-test nix-test shell-test ## Run all tests (neovim + nix + shell).
 
 ##@ Update
 
@@ -807,9 +807,10 @@ git-submodule-sync: ## Sync and update git submodules.
 ##@ Shell
 
 .PHONY: shell-test
-shell-test: ## Run shell script tests using ShellSpec.
+shell-test: ## Run shell script tests using ShellSpec and fishtape.
 	@echo "🧪 Running shell tests..."
 	@bash -c "shellspec"
+	@$(MAKE) fish-test
 
 .PHONY: shell-test-dev
 shell-test-dev: ## Run shell tests inside the Nix dev shell (mirrors CI).
