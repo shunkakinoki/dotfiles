@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.7",
+  "checkpoint_id": "3099a4733971",
+  "session_id": "25148b72-779a-4b61-b6da-b78c2d8e69ee",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-26T04:13:44.714643Z",
+  "branch": "fix/tsh-string-replace-pattern",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "home-manager/programs/fish/functions/_tsh_function.fish"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "0485d42bb52e",
+  "token_usage": {
+    "input_tokens": 19,
+    "cache_creation_tokens": 16889,
+    "cache_read_tokens": 333895,
+    "output_tokens": 1250,
+    "api_call_count": 12
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-26T04:13:44.684643Z",
+    "agent_lines": 1,
+    "human_added": 1,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 2,
+    "agent_percentage": 50
+  }
+}

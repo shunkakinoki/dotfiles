@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.7",
+  "checkpoint_id": "3099a4733971",
+  "strategy": "manual-commit",
+  "branch": "fix/tsh-string-replace-pattern",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "home-manager/programs/fish/functions/_tsh_function.fish"
+  ],
+  "sessions": [
+    {
+      "metadata": "/30/99a4733971/0/metadata.json",
+      "transcript": "/30/99a4733971/0/full.jsonl",
+      "context": "/30/99a4733971/0/context.md",
+      "content_hash": "/30/99a4733971/0/content_hash.txt",
+      "prompt": "/30/99a4733971/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 19,
+    "cache_creation_tokens": 16889,
+    "cache_read_tokens": 333895,
+    "output_tokens": 1250,
+    "api_call_count": 12
+  }
+}
