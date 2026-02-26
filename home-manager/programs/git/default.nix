@@ -27,6 +27,7 @@
           whitespace = "trailing-space,space-before-tab";
           precomposeunicode = true;
           ignorecase = false;
+          notesRef = "refs/notes/ai";
         };
         color = {
           diff = "auto";
