@@ -17,6 +17,7 @@ touch $tmpdir/child/flake.nix
 # ── no flake.nix → falls back to ~/dotfiles ──────────────
 rm $tmpdir/child/flake.nix
 set -x HOME $tmpdir
+mkdir -p $tmpdir/dotfiles
 @test "falls back to dotfiles" (cd $tmpdir/child/grandchild; _dev_function) = "Entering devshell in $tmpdir/dotfiles"
 
 rm -rf $tmpdir
