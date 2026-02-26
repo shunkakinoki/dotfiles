@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.7",
+  "checkpoint_id": "10f412b2c8b5",
+  "session_id": "070beabc-adcb-4a86-a226-b76ee00ae530",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-26T04:08:23.242993Z",
+  "branch": "fix/git-ai-checkout",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".github/workflows/git-ai.yaml"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "327ed9a22946",
+  "token_usage": {
+    "input_tokens": 8,
+    "cache_creation_tokens": 15970,
+    "cache_read_tokens": 173980,
+    "output_tokens": 1901,
+    "api_call_count": 6
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-26T04:08:23.197074Z",
+    "agent_lines": 5,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 5,
+    "agent_percentage": 100
+  }
+}

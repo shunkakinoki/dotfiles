@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.7",
+  "checkpoint_id": "10f412b2c8b5",
+  "strategy": "manual-commit",
+  "branch": "fix/git-ai-checkout",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".github/workflows/git-ai.yaml"
+  ],
+  "sessions": [
+    {
+      "metadata": "/10/f412b2c8b5/0/metadata.json",
+      "transcript": "/10/f412b2c8b5/0/full.jsonl",
+      "context": "/10/f412b2c8b5/0/context.md",
+      "content_hash": "/10/f412b2c8b5/0/content_hash.txt",
+      "prompt": "/10/f412b2c8b5/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 8,
+    "cache_creation_tokens": 15970,
+    "cache_read_tokens": 173980,
+    "output_tokens": 1901,
+    "api_call_count": 6
+  }
+}

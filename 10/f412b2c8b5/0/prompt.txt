@@ -1,0 +1,132 @@
+Skip to main content
+NixOS Discourse
+Virtually mounting Google Drive
+Help
+
+Log In
+
+​
+
+​
+Virtually mounting Google Drive
+Help
+
+1.6k
+views
+
+1
+link
+
+
+
+
+Jun 2024
+19d ago
+
+StrongSand94191
+
+1
+Jun 2024
+Hello! I would like to virtually mount 2 Google Drive accounts in Dolphin. I don’t want them to use up storage space on my computer, so I don’t want offline sync, just to be able to access them from Dolphin.
+
+Previously, I used the Online Accounts menu in System Settings (in Kubuntu) to link my Google account, but I can’t find the option in NixOS.
+
+Is this possible on NixOS (24.05)?
+
+Thanks in advance!
+
+
+
+1.6k
+views
+
+1
+link
+
+
+
+
+
+mausch
+Jun 2024
+No idea about Dolphin specifically but FWIW I use and recommend https://rclone.org/ for mounting Google Drive
+
+
+
+StrongSand94191
+Jun 2024
+Mounting Google Drive with Rclone works, but whenever I try to open it with Dolphin, it just loads infinitely.
+
+
+27 days later
+
+oldhomemovie
+Jun 2024
+Were you able to battle this issue, by any chance? If so, how did you do it? :thinking:
+
+
+
+StrongSand94191
+Jul 2024
+I was not able to solve this :sweat_smile:
+
+
+2 years later
+
+DarkestDot
+19d
+Set up rclone and then
+set up a service for rclone in your home-manager config
+
+systemd.user.services.rclone-gdrive = {
+    Unit = {
+      Description = "RClone Mount for Google Drive";
+      After = [ "network-online.target" ];
+      Wants = [ "network-online.target" ];
+    };
+    Service = {
+      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p %h/GDrive";
+      ExecStart = "${pkgs.rclone}/bin/rclone mount rclonemountnameforgdrive: %h/GDrive --vfs-cache-mode full";
+      ExecStop = "${pkgs.fuse}/bin/fusermount -u %h/GDrive";
+      Restart = "on-failure";
+      RestartSec = "10s";
+      Environment = [ "PATH=/run/wrappers/bin:$PATH" ];
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+  };
+
+Hello! Looks like you’re enjoying the discussion, but you haven’t signed up for an account yet.
+Tired of scrolling through the same posts? When you create an account you’ll always come back to where you left off. With an account you can also be notified of new replies, save bookmarks, and use likes to thank others. We can all work together to make this community great. heart
+
+
+Sign Up
+
+Maybe later
+
+no thanks
+
+New & Unread Topics
+Topic list, column headers with buttons are sortable.
+Topic    Replies    Views    Activity
+Building a minimal kernel, stripping out unneeded drivers
+Help
+3    632    Jun 2025
+Accessing private binary release stored in GCS during build
+Help
+0    55    May 2025
+Move $HOME/$USER into $HOME/$USER/Sync/home/?
+Help
+8    175    Jun 2025
+`mkfs.ext4: is not found` in postResumeCommands
+Help
+2    119    Aug 2025
+Podman uid mapping
+Help
+8    394    Mar 2025
+Want to read more? Browse other topics in 
+Help
+ or view latest topics.
+Powered by Discourse
+Hosted by Flying Circus. i want to do this plan
