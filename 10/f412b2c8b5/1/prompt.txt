@@ -1,0 +1,5 @@
+why is git-ai not pushing to git-notes on github actions
+
+---
+
+yes and creat PR
