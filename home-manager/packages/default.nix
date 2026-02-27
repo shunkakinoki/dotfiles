@@ -91,7 +91,6 @@ with pkgs;
   yarn
   yazi
   yq
-  yt-dlp
   zellij
   zoxide
 ]
@@ -157,6 +156,7 @@ with pkgs;
   wl-clip-persist
   wl-clipboard
   wtype
+  yt-dlp
 ]
 ++ lib.optionals isDev [
   gopls
