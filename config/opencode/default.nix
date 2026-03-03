@@ -4,4 +4,9 @@
     source = ./opencode.jsonc;
     force = true;
   };
+
+  home.file.".config/opencode/themes/transparent.json" = {
+    source = ./themes/transparent.json;
+    force = true;
+  };
 }
