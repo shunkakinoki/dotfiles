@@ -1,0 +1,14 @@
+{
+  "background": {
+    "light": "none",
+    "dark": "none"
+  },
+  "backgroundPanel": {
+    "light": "none",
+    "dark": "none"
+  },
+  "backgroundElement": {
+    "light": "none",
+    "dark": "none"
+  }
+}

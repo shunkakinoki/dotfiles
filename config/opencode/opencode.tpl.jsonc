@@ -1,6 +1,6 @@
 {
 	"$schema": "https://opencode.ai/config.json",
-	"theme": "opencode",
+	"theme": "transparent",
 	"model": "cliproxyapi/__GLM__",
 	"small_model": "cliproxyapi/__GLM__",
 	"autoupdate": true,
