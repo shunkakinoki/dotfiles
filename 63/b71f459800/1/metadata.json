@@ -1,0 +1,33 @@
+{
+  "cli_version": "0.4.9",
+  "checkpoint_id": "63b71f459800",
+  "session_id": "94747aa7-b29d-4a3a-b4a0-d43c6b09c80a",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-03T11:12:10.543205Z",
+  "branch": "fix-remove-opencode-transparent-theme",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "config/opencode/opencode.jsonc",
+    "config/opencode/opencode.tpl.jsonc"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "7b832ace7aab",
+  "checkpoint_transcript_start": 167,
+  "transcript_lines_at_start": 167,
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 0,
+    "api_call_count": 0
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-03T11:12:10.519506Z",
+    "agent_lines": 526,
+    "human_added": 26,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 552,
+    "agent_percentage": 95.28985507246377
+  }
+}
