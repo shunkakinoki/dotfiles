@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.9",
+  "checkpoint_id": "1c2f4102d158",
+  "strategy": "manual-commit",
+  "branch": "chore/migrate-opencode-theme-to-tui-json",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "config/opencode/default.nix",
+    "config/opencode/opencode.jsonc",
+    "config/opencode/opencode.tpl.jsonc",
+    "config/opencode/tui.json",
+    "config/opencode/tui.tpl.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/1c/2f4102d158/0/metadata.json",
+      "transcript": "/1c/2f4102d158/0/full.jsonl",
+      "context": "/1c/2f4102d158/0/context.md",
+      "content_hash": "/1c/2f4102d158/0/content_hash.txt",
+      "prompt": "/1c/2f4102d158/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 0,
+    "api_call_count": 0
+  }
+}
