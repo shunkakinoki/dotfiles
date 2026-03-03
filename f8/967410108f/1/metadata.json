@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.9",
+  "checkpoint_id": "f8967410108f",
+  "session_id": "9068c7da-1c53-4e5a-be56-a5316b5c6bda",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-03T13:08:36.212588Z",
+  "branch": "chore/migrate-opencode-theme-to-tui-json",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "config/opencode/tui.tpl.json"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "222f66a065a7",
+  "checkpoint_transcript_start": 159,
+  "transcript_lines_at_start": 159,
+  "token_usage": {
+    "input_tokens": 6,
+    "cache_creation_tokens": 992,
+    "cache_read_tokens": 229331,
+    "output_tokens": 691,
+    "api_call_count": 4
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-03T13:08:36.180832Z",
+    "agent_lines": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 0,
+    "agent_percentage": 0
+  }
+}
