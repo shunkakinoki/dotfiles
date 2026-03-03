@@ -173,6 +173,12 @@ clean: ## Clean up old Nix generations and garbage collect.
 	@$(SUDO) nix-collect-garbage -d
 	@echo "✅ Cleanup complete"
 
+.PHONY: reset
+reset: git-submodule-sync ## Reset git status to clean (restore all changes and reinitialize submodules).
+	@echo "🔄 Resetting git status to clean..."
+	@git checkout -- .
+	@echo "✅ Git status reset to clean"
+
 .PHONY: services
 services: ## Restart platform-specific services (launchd on macOS, systemd on Linux).
 	@if [ "$(OS)" = "Darwin" ]; then \
