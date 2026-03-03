@@ -1,6 +1,5 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "theme": "dracula",
   "model": "cliproxyapi/glm-4.7",
   "small_model": "cliproxyapi/glm-4.7",
   "autoupdate": true,
@@ -120,9 +119,7 @@
         "reasoningEffort": "medium",
         "reasoningSummary": "auto",
         "textVerbosity": "medium",
-        "include": [
-          "reasoning.encrypted_content"
-        ]
+        "include": ["reasoning.encrypted_content"]
       },
       "models": {
         "gpt-5-codex-low-oauth": {
@@ -203,9 +200,7 @@
           "name": "DeepSeek Chat V3.1 (via OpenRouter)",
           "options": {
             "provider": {
-              "order": [
-                "open-inference"
-              ],
+              "order": ["open-inference"],
               "allow_fallbacks": false
             }
           }
@@ -214,9 +209,7 @@
           "name": "Kimi K2 (via OpenRouter)",
           "options": {
             "provider": {
-              "order": [
-                "open-inference"
-              ],
+              "order": ["open-inference"],
               "allow_fallbacks": false
             }
           }
@@ -225,9 +218,7 @@
           "name": "Kimi K2 Free (via OpenRouter)",
           "options": {
             "provider": {
-              "order": [
-                "open-inference"
-              ],
+              "order": ["open-inference"],
               "allow_fallbacks": false
             }
           }
@@ -236,9 +227,7 @@
           "name": "GPT-OSS 120B Free (via OpenRouter)",
           "options": {
             "provider": {
-              "order": [
-                "open-inference"
-              ],
+              "order": ["open-inference"],
               "allow_fallbacks": false
             }
           }
@@ -247,9 +236,7 @@
           "name": "Qwen3 Coder Free (via OpenRouter)",
           "options": {
             "provider": {
-              "order": [
-                "open-inference"
-              ],
+              "order": ["open-inference"],
               "allow_fallbacks": false
             }
           }
@@ -270,10 +257,5 @@
       }
     }
   },
-  "plugin": [
-    "cc-safety-net"
-  ],
-  "tui": {
-    "scroll_speed": 3
-  }
+  "plugin": ["cc-safety-net"]
 }
