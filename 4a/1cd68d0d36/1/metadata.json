@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.9",
+  "checkpoint_id": "4a1cd68d0d36",
+  "session_id": "94747aa7-b29d-4a3a-b4a0-d43c6b09c80a",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-03T10:54:55.296623Z",
+  "branch": "renovate/lock-file-maintenance",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "named-hosts/matic/kolide.nix"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "7b832ace7aab",
+  "checkpoint_transcript_start": 167,
+  "transcript_lines_at_start": 167,
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 0,
+    "api_call_count": 0
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-03T10:54:55.271114Z",
+    "agent_lines": 5,
+    "human_added": 28,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 33,
+    "agent_percentage": 15.151515151515152
+  }
+}
