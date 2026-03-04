@@ -2472,9 +2472,9 @@ dependencies = [
 
 [[package]]
 name = "minijinja"
-version = "2.17.0"
+version = "2.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "65ab6f50e4e8fb40bd21f527066bd019f5b029035b4e5ac9b9f9ba526c6bd87b"
+checksum = "5ea5ea1e90055f200af6b8e52a4a34e05e77e7fee953a9fb40c631efdc43cab1"
 dependencies = [
  "serde",
 ]
@@ -2970,9 +2970,9 @@ dependencies = [
 
 [[package]]
 name = "reflink-copy"
-version = "0.1.28"
+version = "0.1.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "23bbed272e39c47a095a5242218a67412a220006842558b03fe2935e8f3d7b92"
+checksum = "13362233b147e57674c37b802d216b7c5e3dcccbed8967c84f0d8d223868ae27"
 dependencies = [
  "cfg-if",
  "libc",
@@ -3040,8 +3040,8 @@ dependencies = [
 
 [[package]]
 name = "rtk"
-version = "0.23.0"
-source = "git+https://github.com/rtk-ai/rtk?branch=master#a6ccefe8e71372b61e6e556f0d36a944d1bcbd70"
+version = "0.24.0"
+source = "git+https://github.com/rtk-ai/rtk?branch=master#dd643d2322ac91472d4ee2de67ec284f0524a7fc"
 dependencies = [
  "anyhow",
  "chrono",
