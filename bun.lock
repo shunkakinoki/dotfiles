@@ -21,7 +21,7 @@
         "@tobilu/qmd": "^1.0.7",
         "@typescript/native-preview": "^7.0.0-dev.20260303.1",
         "@vibe-kit/grok-cli": "^0.0.34",
-        "agent-browser": "^0.15.3",
+        "agent-browser": "^0.16.1",
         "ccusage": "^18.0.8",
         "clawdhub": "^0.3.0",
         "cline": "^2.5.2",
@@ -1179,7 +1179,7 @@
 
     "agent-base": ["agent-base@7.1.4", "", {}, "sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ=="],
 
-    "agent-browser": ["agent-browser@0.15.3", "", { "dependencies": { "node-simctl": "^7.4.0", "playwright-core": "^1.57.0", "webdriverio": "^9.15.0", "ws": "^8.19.0", "zod": "^3.22.4" }, "bin": { "agent-browser": "bin/agent-browser.js" } }, "sha512-0HUhEc9kGPzQmDbGgjvc3BkAEQkfyQeY19d/ITgP+dSlUvoDRM09YwFhOM8dBbfvNiKtLnlIEFoxD6kmFB5h0A=="],
+    "agent-browser": ["agent-browser@0.16.1", "", { "dependencies": { "node-simctl": "^7.4.0", "playwright-core": "^1.57.0", "webdriverio": "^9.15.0", "ws": "^8.19.0", "zod": "^3.22.4" }, "bin": { "agent-browser": "bin/agent-browser.js" } }, "sha512-AxL0IB3n/Ov83cJB7tdPRd8HKDR9dRtVgV80QfLaHuH8c4a+0cSC2p4bTsRQybZrbXcV1CbMthIjkk7PlAh3Zg=="],
 
     "aggregate-error": ["aggregate-error@3.1.0", "", { "dependencies": { "clean-stack": "^2.0.0", "indent-string": "^4.0.0" } }, "sha512-4I7Td01quW/RpocfNayFdFVk1qSuoh0E7JrbRJ16nH01HhKFQ88INq9Sd+nd72zqRySlr9BmDA8xlEJ6vJMrYA=="],
 

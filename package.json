@@ -27,7 +27,7 @@
     "@tobilu/qmd": "^1.0.7",
     "@typescript/native-preview": "^7.0.0-dev.20260303.1",
     "@vibe-kit/grok-cli": "^0.0.34",
-    "agent-browser": "^0.15.3",
+    "agent-browser": "^0.16.1",
     "ccusage": "^18.0.8",
     "clawdhub": "^0.3.0",
     "cline": "^2.5.2",
