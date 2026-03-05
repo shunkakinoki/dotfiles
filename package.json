@@ -21,7 +21,7 @@
     "@kaitranntt/ccs": "^7.52.2",
     "@mariozechner/pi-coding-agent": "^0.56.0",
     "@nanocollective/nanocoder": "^1.23.0",
-    "@pulumi/pulumi": "^3.224.0",
+    "@pulumi/pulumi": "^3.225.0",
     "@sourcegraph/amp": "^0.0.1770734955-g93e689",
     "@steipete/bird": "^0.8.0",
     "@tobilu/qmd": "^1.0.7",
