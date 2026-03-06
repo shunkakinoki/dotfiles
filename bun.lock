@@ -28,7 +28,7 @@
         "agent-browser": "^0.16.3",
         "ccusage": "^18.0.9",
         "clawdhub": "^0.3.0",
-        "cline": "^2.6.0",
+        "cline": "^2.6.1",
         "mcporter": "^0.7.3",
         "open-composer": "^0.8.23",
         "openclaw": "^2026.3.2",
