@@ -1,0 +1,27 @@
+what's the command to capture and copy all the contents of the apane again
+
+---
+
+is there a way to do the currently focused one through tmux keybaord shortcuts?
+
+---
+
+To make the background transparent in OpenCode, open the command palette using Ctrl+P and select "Enable transparent background" to toggle it, or set your theme background to "none" in your custom theme config file. This allows the terminal or desktop background to show through, which can be configured via ~/.config/opencode/themes/. 
+GitHub
+GitHub
+ +2
+Steps to Enable Transparent Background in OpenCode:
+Toggle Command: Press Ctrl+P (or Cmd+P on Mac) to open the command palette and select "Enable transparent background".
+Custom Theme Setup: Create or edit a custom theme file (e.g.~/.config/opencode/themes/my-theme.json) and set the background to "none":
+json
+{
+  "background": { "light": "none""dark": "none" }"backgroundPanel": { "light": "none""dark": "none" }"backgroundElement": { "light": "none""dark": "none" }
+}
+Fixing Component Visibility: If the background is transparent but text contrast is poor, use a theme like lucent-orng or explicitly define selectedListItemText to ensure readability.
+Terminal Integration: If using with a terminal like Ghostty, ensure the terminal's background-opacity is set to less than 1.0, as OpenCode inherits these settings when the theme background is set to "none". 
+GitHub
+GitHub
+ +3
+These settings are persistent, allowing the transparent background to remain between sessions. 
+GitHub
+GitHub add this to opencode config and create PR
