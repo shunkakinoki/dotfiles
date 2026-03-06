@@ -20,7 +20,7 @@
     "@github/copilot": "^0.0.422",
     "@google/gemini-cli": "^0.32.1",
     "@google/jules": "^0.1.42",
-    "@googleworkspace/cli": "^0.6.3",
+    "@googleworkspace/cli": "^0.7.0",
     "@kaitranntt/ccs": "^7.52.2",
     "@mariozechner/pi-coding-agent": "^0.56.2",
     "@nanocollective/nanocoder": "^1.23.0",
