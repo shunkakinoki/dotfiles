@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.4.9",
+  "checkpoint_id": "0f50a0bbfa1f",
+  "strategy": "manual-commit",
+  "branch": "fix-path-priority-homebrew-bun-nix",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "home-manager/programs/bash/default.nix",
+    "home-manager/programs/fish/default.nix",
+    "home-manager/programs/zsh/default.nix"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0f/50a0bbfa1f/0/metadata.json",
+      "transcript": "/0f/50a0bbfa1f/0/full.jsonl",
+      "context": "/0f/50a0bbfa1f/0/context.md",
+      "content_hash": "/0f/50a0bbfa1f/0/content_hash.txt",
+      "prompt": "/0f/50a0bbfa1f/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 0,
+    "api_call_count": 0
+  }
+}
