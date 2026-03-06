@@ -1,0 +1,34 @@
+{
+  "cli_version": "0.4.9",
+  "checkpoint_id": "7b9f85572658",
+  "session_id": "e6e94a43-dcf3-4f05-9d87-e7820e373417",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-06T08:21:55.337998Z",
+  "branch": "fix-path-priority-homebrew-bun-nix",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "home-manager/programs/fish/default.nix",
+    "home-manager/programs/bash/default.nix",
+    "home-manager/programs/zsh/default.nix"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "5a3c32e25689",
+  "checkpoint_transcript_start": 422,
+  "transcript_lines_at_start": 422,
+  "token_usage": {
+    "input_tokens": 18,
+    "cache_creation_tokens": 10680,
+    "cache_read_tokens": 1088358,
+    "output_tokens": 7126,
+    "api_call_count": 16
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-06T08:21:55.249698Z",
+    "agent_lines": 26,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 26,
+    "agent_percentage": 100
+  }
+}
