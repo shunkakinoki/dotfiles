@@ -1,0 +1,205 @@
+how to make PATH read in priority homebrew > npm-global or bun global > nixpkgs
+
+---
+
+ok let's do that for all bash and zsh
+
+---
+
+Base directory for this skill: /Users/shunkakinoki/.claude/skills/pr-create
+
+# /pr-create — Create pull requests
+
+Create GitHub PRs with proper formatting, labeling, and quality checks.
+
+## Quick Workflow
+
+```bash
+# 1. Stage and commit
+git add .
+git commit -m "feat: add feature"
+
+# 2. Push branch
+git push -u origin feature-branch
+
+# 3. Create PR
+gh pr create \
+  --title "feat: add feature" \
+  --body "## Changes
+- Added feature X
+
+## Testing
+- All checks pass
+
+Generated with [AI_TOOL] by [AI_MODEL]" \
+  --base main
+```
+
+## Variant: `/pr-create auto`
+
+Enable auto-merge after creation:
+
+```bash
+gh pr merge $(gh pr view --json number -q '.number') --squash --auto
+```
+
+## PR Description Template
+
+```markdown
+## Changes
+- What was modified
+
+## Technical Details
+- Implementation specifics
+
+## Testing
+- Verification steps
+
+Generated with [AI_TOOL] by [AI_MODEL]
+```
+
+## Labeling
+
+```bash
+gh pr edit <number> --add-label enhancement  # feat:
+gh pr edit <number> --add-label bug          # fix:
+gh pr edit <number> --add-label documentation # docs:
+```
+
+## Guidelines
+
+- Conventional commit title format
+- Under 72 characters
+- Solo-authored commits (no co-authorship)
+- AI attribution in PR body only
+- Generate changeset via `/changesets` if applicable
+- Run quality checks before creating
+
+---
+
+fish-shell » fish-shell 4.5.0 documentation » Commands » fish_add_path - add to the path 
+Quick search
+ 
+Documents
+Introduction
+Frequently asked questions
+Interactive use
+The fish language
+Commands
+Fish for bash users
+Tutorial
+Writing your own completions
+Writing your own prompt
+Design
+Release notes
+Terminal Compatibility
+Contributing To Fish
+License
+Quick search
+ 
+Sections
+fish_add_path - add to the path
+Synopsis
+Description
+Options
+Example
+fish_add_path - add to the path
+Synopsis
+fish_add_path path ...
+fish_add_path [(-g | --global) | (-U | --universal) | (-P | --path)] [(-m | --move)] [(-a | --append) | (-p | --prepend)] [(-v | --verbose) | (-n | --dry-run)] PATHS ...
+COPY
+Description
+fish_add_path is a simple way to add more directories to fish’s PATH. It does this by adding the directories either to fish_user_paths or directly to PATH (if the --path switch is given).
+
+It is (by default) safe to use fish_add_path in config.fish, or it can be used once, interactively, and the paths will stay in future because of universal variables. This is a “do what I mean” style command - it tries to do the right thing by default, and follow your lead on what you have already set up (e.g. by using a global fish_user_paths if you have that already). If you need more control, consider modifying the variable yourself.
+
+Directories are normalized with realpath. Trailing slashes are ignored and relative paths are made absolute (but symlinks are not resolved). If a directory is already included, it is not added again and stays in the same place unless the --move switch is given.
+
+Directories are added in the order they are given, and they are prepended to the path unless --append is given. If $fish_user_paths is used, that means they are last in $fish_user_paths, which is itself prepended to PATH, so they still stay ahead of the system paths. If the --path option is used, the paths are appended/prepended to PATH directly, so this doesn’t happen.
+
+With --path, because PATH must be a global variable instead of a universal one, the changes won’t persist, so those calls need to be stored in config.fish. This also applies to fish_user_paths if you make it global (for instance by passing --global).
+
+If no directory is new, the variable (fish_user_paths or PATH) is not set again or otherwise modified, so variable handlers are not triggered.
+
+If an argument is not an existing directory, fish_add_path ignores it.
+
+Options
+-a or --append
+Add directories to the end of the variable.
+
+-p or --prepend
+Add directories to the front of the variable (this is the default).
+
+-g or --global
+Use a global fish_user_paths.
+
+-U or --universal
+Use a universal fish_user_paths - this is the default if it doesn’t already exist.
+
+-P or --path
+Manipulate PATH directly.
+
+-m or --move
+Move already-included directories to the place they would be added - by default they would be left in place and not added again.
+
+-v or --verbose
+Print the set command used, and some more warnings, like when a path is skipped because it doesn’t exist or is not a directory. Verbose mode is automatically enabled when fish_add_path is used interactively and the output goes to the terminal.
+
+-n or --dry-run
+Print the set command that would be used without executing it.
+
+-h or --help
+Displays help about using this command.
+
+If --move is used, it may of course lead to the path swapping order, so you should be careful doing that in config.fish.
+
+Example
+
+
+
+fish_add_path /opt/mycoolthing/bin
+
+
+
+fish_add_path -m ~/.local/bin
+
+
+
+
+fish_add_path -g ~/.local/bin ~/.otherbin /usr/local/sbin
+
+
+
+
+fish_add_path --append --path /opt/fallback/bin
+
+
+
+fish_add_path -v bin/
+
+
+
+fish_add_path /usr/local/opt/ruby/bin
+COPY
+ fish-shell » fish-shell 4.5.0 documentation » Commands » fish_add_path - add to the path 
+Quick search
+ 
+© Copyright fish-shell developers.
+Found a bug?
+Created using Sphinx 8.2.3. is your diangozis correct? ideally want to preserve original structure if possibile
+
+---
+
+resolve merge conflcits w/ master and push
+
+---
+
+is there a way to keep the original order and add a prepend way or something to all shell path configuration?
+
+---
+
+no i want a order
+
+---
+
+hmm revert to lowest to highest
