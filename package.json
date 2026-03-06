@@ -18,7 +18,7 @@
     "@getgrit/cli": "^0.1.0-alpha.1743007075",
     "@github/copilot": "^0.0.421",
     "@google/jules": "^0.1.42",
-    "@googleworkspace/cli": "^0.5.0",
+    "@googleworkspace/cli": "^0.6.0",
     "@kaitranntt/ccs": "^7.52.2",
     "@mariozechner/pi-coding-agent": "^0.56.1",
     "@nanocollective/nanocoder": "^1.23.0",
