@@ -46,17 +46,15 @@
       # Go configuration
       export GOPATH="$HOME/go"
 
-      # First line = highest priority
-      _paths="/opt/homebrew/bin"
-      _paths="$_paths:/opt/homebrew/opt/postgresql@18/bin"
-      _paths="$_paths:$HOME/.bun/bin"
-      _paths="$_paths:$HOME/.local/bin"
-      _paths="$_paths:$HOME/.cargo/bin"
-      _paths="$_paths:$HOME/go/bin"
-      _paths="$_paths:$HOME/.nix-profile/bin"
-      _paths="$_paths:/nix/var/nix/profiles/default/bin"
-      export PATH="$_paths:$PATH"
-      unset _paths
+      # Last line = highest priority (each export prepends, so last ends up at front of PATH)
+      export PATH="$PATH:$HOME/go/bin"
+      export PATH="/nix/var/nix/profiles/default/bin:$PATH"
+      export PATH="$HOME/.nix-profile/bin:$PATH"
+      export PATH="$HOME/.cargo/bin:$PATH"
+      export PATH="$HOME/.local/bin:$PATH"
+      export PATH="$HOME/.bun/bin:$PATH"
+      export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
+      export PATH="/opt/homebrew/bin:$PATH"
 
       # Worktrunk shell init
       if command -v wt >/dev/null 2>&1; then
