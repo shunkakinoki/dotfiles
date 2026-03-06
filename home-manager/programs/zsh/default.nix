@@ -47,15 +47,8 @@
       # Go configuration
       export GOPATH="$HOME/go"
 
-      # Additional bin paths (lowest priority first, highest last)
-      export PATH="$PATH:$GOPATH/bin"
-      export PATH="/nix/var/nix/profiles/default/bin:$PATH"
-      export PATH="$HOME/.nix-profile/bin:$PATH"
-      export PATH="$HOME/.cargo/bin:$PATH"
-      export PATH="$HOME/.local/bin:$PATH"
-      export PATH="$HOME/.bun/bin:$PATH"
-      export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
-      export PATH="/opt/homebrew/bin:$PATH"
+      # Left = highest priority
+      export PATH="/opt/homebrew/bin:/opt/homebrew/opt/postgresql@18/bin:$HOME/.bun/bin:$HOME/.local/bin:$HOME/.cargo/bin:$HOME/go/bin:$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:$PATH"
 
       # FNM (Fast Node Manager) configuration
       export FNM_DIR="$HOME/Library/Application Support/fnm"
