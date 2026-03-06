@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.4.9",
+  "checkpoint_id": "1afaac5b117a",
+  "strategy": "manual-commit",
+  "branch": "fix-path-priority-homebrew-bun-nix",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "bun.lock",
+    "package.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/1a/faac5b117a/0/metadata.json",
+      "transcript": "/1a/faac5b117a/0/full.jsonl",
+      "context": "/1a/faac5b117a/0/context.md",
+      "content_hash": "/1a/faac5b117a/0/content_hash.txt",
+      "prompt": "/1a/faac5b117a/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 0,
+    "api_call_count": 0
+  }
+}
