@@ -8,8 +8,8 @@
         "@anthropic-ai/claude-code": "^2.1.70",
         "@augmentcode/auggie": "^0.18.1",
         "@biomejs/biome": "^2.4.6",
-        "@ccusage/codex": "^18.0.8",
-        "@ccusage/mcp": "^18.0.8",
+        "@ccusage/codex": "^18.0.9",
+        "@ccusage/mcp": "^18.0.9",
         "@getgrit/cli": "^0.1.0-alpha.1743007075",
         "@github/copilot": "^0.0.422",
         "@google/gemini-cli": "^0.32.1",
@@ -26,7 +26,7 @@
         "@typescript/native-preview": "^7.0.0-dev.20260306.1",
         "@vibe-kit/grok-cli": "^0.0.34",
         "agent-browser": "^0.16.3",
-        "ccusage": "^18.0.8",
+        "ccusage": "^18.0.9",
         "clawdhub": "^0.3.0",
         "cline": "^2.6.0",
         "mcporter": "^0.7.3",
@@ -211,9 +211,9 @@
 
     "@cacheable/utils": ["@cacheable/utils@2.4.0", "", { "dependencies": { "hashery": "^1.5.0", "keyv": "^5.6.0" } }, "sha512-PeMMsqjVq+bF0WBsxFBxr/WozBJiZKY0rUojuaCoIaKnEl3Ju1wfEwS+SV1DU/cSe8fqHIPiYJFif8T3MVt4cQ=="],
 
-    "@ccusage/codex": ["@ccusage/codex@18.0.8", "", { "bin": { "ccusage-codex": "dist/index.js" } }, "sha512-cifZ+uPdbCE3gFSZeoNMdyMVkifa2F55wBVV9AnplcUaBGHUTN7GK8V6wd8f2SD0bx9aDN2WKsOW+YCQvHdCsg=="],
+    "@ccusage/codex": ["@ccusage/codex@18.0.9", "", { "bin": { "ccusage-codex": "dist/index.js" } }, "sha512-eXfcPq4/dPpScyyo1wg2jYmIdk08VBpyz/6fAy188cVElv+T7yYmWcvQExuylGue5CfL58SgLtDkqTSIvbntRA=="],
 
-    "@ccusage/mcp": ["@ccusage/mcp@18.0.8", "", { "dependencies": { "@ccusage/codex": "18.0.8", "@hono/mcp": "^0.1.5", "@hono/node-server": "^1.19.7", "@modelcontextprotocol/sdk": "^1.24.3", "ccusage": "18.0.8", "gunshi": "^0.26.3", "hono": "^4.9.2", "nano-spawn": "^1.0.3", "zod": "^4.1.13" }, "bin": { "ccusage-mcp": "dist/index.js" } }, "sha512-C9ELybQygBQDZmijxvmxocmnrmU13eFk69wBNFdPJy1IvNCKV7Qy2LxGmCjXR1gtGe5IYXkGtYQJ+JKj/FdZsw=="],
+    "@ccusage/mcp": ["@ccusage/mcp@18.0.9", "", { "dependencies": { "@ccusage/codex": "18.0.9", "@hono/mcp": "^0.1.5", "@hono/node-server": "^1.19.7", "@modelcontextprotocol/sdk": "^1.24.3", "ccusage": "18.0.9", "gunshi": "^0.26.3", "hono": "^4.9.2", "nano-spawn": "^1.0.3", "zod": "^4.1.13" }, "bin": { "ccusage-mcp": "dist/index.js" } }, "sha512-Dgdh4Kc6l5dLs7mzonFg24rmMJH/tqB1t3jp6PikqEYk14LSGb7bhmpgtEpM1Lwnvou8ZCEPUzNv5F1WLv3VHg=="],
 
     "@clack/core": ["@clack/core@0.5.0", "", { "dependencies": { "picocolors": "^1.0.0", "sisteransi": "^1.0.5" } }, "sha512-p3y0FIOwaYRUPRcMO7+dlmLh8PSRcrjuTndsiA0WAFbWES0mLZlrjVoBRZ9DzkPFJZG6KGkJmoEAY0ZcVWTkow=="],
 
@@ -1475,7 +1475,7 @@
 
     "camelcase": ["camelcase@6.3.0", "", {}, "sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA=="],
 
-    "ccusage": ["ccusage@18.0.8", "", { "bin": { "ccusage": "dist/index.js" } }, "sha512-9GLGh8FYNBRz5BSqF/cZ0/JtdO9X/vnwmk0kIRaye6UvFjpu/CtRaD4BhKtmErrU6V8dTXh+5bTnCSTi84qvQA=="],
+    "ccusage": ["ccusage@18.0.9", "", { "bin": { "ccusage": "dist/index.js" } }, "sha512-X1ano43eHDg2k+8YkxV2d8bROqiQYwjqQC8K6UoTXEfEwZMPnG1RfJKnRZyoEkYgwTuqupBLhA01T+k6kxvYJA=="],
 
     "cfonts": ["cfonts@3.3.1", "", { "dependencies": { "supports-color": "^8", "window-size": "^1" }, "bin": { "cfonts": "bin/index.js" } }, "sha512-ZGEmN3W9mViWEDjsuPo4nK4h39sfh6YtoneFYp9WLPI/rw8BaSSrfQC6jkrGW3JMvV3ZnExJB/AEqXc/nHYxkw=="],
 
