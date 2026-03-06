@@ -29,16 +29,16 @@
           eval "$(/opt/homebrew/bin/brew shellenv)"
       end
 
-      # Lowest priority first, highest last (fish_add_path -p prepends; last call = highest)
-      fish_add_path -p /nix/var/nix/profiles/default/bin
-      fish_add_path -p ~/.nix-profile/bin
-      fish_add_path -p /etc/profiles/per-user/${config.home.username}/bin
-      fish_add_path -p ~/go/bin
-      fish_add_path -p ~/.cargo/bin
-      fish_add_path -p ~/.local/bin
-      fish_add_path -p ~/.bun/bin
-      fish_add_path -p /opt/homebrew/opt/postgresql@18/bin
-      fish_add_path -p /opt/homebrew/bin
+      # Lowest priority first, highest last (-p prepends; last call = highest; -m moves existing entries)
+      fish_add_path -p -m /nix/var/nix/profiles/default/bin
+      fish_add_path -p -m ~/.nix-profile/bin
+      fish_add_path -p -m /etc/profiles/per-user/${config.home.username}/bin
+      fish_add_path -p -m ~/go/bin
+      fish_add_path -p -m ~/.cargo/bin
+      fish_add_path -p -m ~/.local/bin
+      fish_add_path -p -m ~/.bun/bin
+      fish_add_path -p -m /opt/homebrew/opt/postgresql@18/bin
+      fish_add_path -p -m /opt/homebrew/bin
     '';
     interactiveShellInit = ''
       source ${config.home.homeDirectory}/.config/fish/functions/_hm_load_env_file.fish
@@ -50,16 +50,16 @@
           eval "$(/opt/homebrew/bin/brew shellenv)"
       end
 
-      # Lowest priority first, highest last (fish_add_path -p prepends; last call = highest)
-      fish_add_path -p /nix/var/nix/profiles/default/bin
-      fish_add_path -p ~/.nix-profile/bin
-      fish_add_path -p /etc/profiles/per-user/${config.home.username}/bin
-      fish_add_path -p ~/go/bin
-      fish_add_path -p ~/.cargo/bin
-      fish_add_path -p ~/.local/bin
-      fish_add_path -p ~/.bun/bin
-      fish_add_path -p /opt/homebrew/opt/postgresql@18/bin
-      fish_add_path -p /opt/homebrew/bin
+      # Lowest priority first, highest last (-p prepends; last call = highest; -m moves existing entries)
+      fish_add_path -p -m /nix/var/nix/profiles/default/bin
+      fish_add_path -p -m ~/.nix-profile/bin
+      fish_add_path -p -m /etc/profiles/per-user/${config.home.username}/bin
+      fish_add_path -p -m ~/go/bin
+      fish_add_path -p -m ~/.cargo/bin
+      fish_add_path -p -m ~/.local/bin
+      fish_add_path -p -m ~/.bun/bin
+      fish_add_path -p -m /opt/homebrew/opt/postgresql@18/bin
+      fish_add_path -p -m /opt/homebrew/bin
       # Worktrunk shell init
       if type -q wt
         wt config shell init fish | source
