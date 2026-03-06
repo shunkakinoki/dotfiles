@@ -3058,7 +3058,7 @@ dependencies = [
 [[package]]
 name = "rtk"
 version = "0.27.2"
-source = "git+https://github.com/rtk-ai/rtk?branch=master#15f3befccf64046a852974090e1774dac1f18714"
+source = "git+https://github.com/rtk-ai/rtk?branch=master#b11fb00cde0d8759de563d602c2e3952be482309"
 dependencies = [
  "anyhow",
  "chrono",
