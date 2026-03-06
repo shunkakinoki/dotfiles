@@ -22,6 +22,9 @@
       # Go configuration
       set -gx GOPATH $HOME/go
 
+      # Foundry configuration
+      set -gx FOUNDRY_DISABLE_NIGHTLY_WARNING 1
+
       direnv hook fish | source
     '';
     loginShellInit = ''
