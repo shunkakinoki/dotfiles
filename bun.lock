@@ -14,7 +14,7 @@
         "@github/copilot": "^0.0.423",
         "@google/gemini-cli": "^0.32.1",
         "@google/jules": "^0.1.42",
-        "@googleworkspace/cli": "^0.7.0",
+        "@googleworkspace/cli": "^0.8.0",
         "@kaitranntt/ccs": "^7.52.2",
         "@mariozechner/pi-coding-agent": "^0.56.3",
         "@nanocollective/nanocoder": "^1.23.0",
@@ -333,7 +333,7 @@
 
     "@google/jules": ["@google/jules@0.1.42", "", { "dependencies": { "tar": "^7.4.3" }, "bin": { "jules": "run.cjs" } }, "sha512-R6uxhWVe+3HEIqbkPiEQhtW6G9FnICz9IaQ2lSPXDfTU0loTtDNiCNuhwxvZbWrPhyCwCvUw2/EkUkrcTrk7ow=="],
 
-    "@googleworkspace/cli": ["@googleworkspace/cli@0.7.0", "", { "dependencies": { "axios": "^1.13.5", "axios-proxy-builder": "^0.1.2", "console.table": "^0.10.0", "detect-libc": "^2.1.2", "rimraf": "^6.1.3" }, "bin": { "gws": "run-gws.js" } }, "sha512-8zqQToo/L0f3s8Yfj0XSEwedcgYsFh2eCXS/7tdx3sE2O7al/eS007E2myDna7oWDY7M7R71iByH98MolL9RVg=="],
+    "@googleworkspace/cli": ["@googleworkspace/cli@0.8.0", "", { "dependencies": { "axios": "^1.13.5", "axios-proxy-builder": "^0.1.2", "console.table": "^0.10.0", "detect-libc": "^2.1.2", "rimraf": "^6.1.3" }, "bin": { "gws": "run-gws.js" } }, "sha512-KjvIADIjGChlM/tAOUO78gE2f7E0z/8VwcW8QYGvqFjuCtNko/PA/V59yt+IzauYhPpIbD32t/dOlDZQtPL/TA=="],
 
     "@grammyjs/runner": ["@grammyjs/runner@2.0.3", "", { "dependencies": { "abort-controller": "^3.0.0" }, "peerDependencies": { "grammy": "^1.13.1" } }, "sha512-nckmTs1dPWfVQteK9cxqxzE+0m1VRvluLWB8UgFzsjg62w3qthPJt0TYtJBEdG7OedvfQq4vnFAyE6iaMkR42A=="],
 
