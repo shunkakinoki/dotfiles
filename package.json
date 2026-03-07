@@ -11,7 +11,7 @@
   "license": "ISC",
   "packageManager": "bun@1.3.0",
   "dependencies": {
-    "@anthropic-ai/claude-code": "^2.1.70",
+    "@anthropic-ai/claude-code": "^2.1.71",
     "@augmentcode/auggie": "^0.18.1",
     "@biomejs/biome": "^2.4.6",
     "@ccusage/codex": "^18.0.9",
