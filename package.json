@@ -22,7 +22,7 @@
     "@google/jules": "^0.1.42",
     "@googleworkspace/cli": "^0.8.0",
     "@kaitranntt/ccs": "^7.52.2",
-    "@mariozechner/pi-coding-agent": "^0.56.3",
+    "@mariozechner/pi-coding-agent": "^0.57.0",
     "@nanocollective/nanocoder": "^1.23.0",
     "@openai/codex": "^0.111.0",
     "@pulumi/pulumi": "^3.225.1",
