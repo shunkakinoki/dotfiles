@@ -28,7 +28,7 @@
     "@pulumi/pulumi": "^3.225.1",
     "@sourcegraph/amp": "^0.0.1770734955-g93e689",
     "@steipete/bird": "^0.8.0",
-    "@tobilu/qmd": "^1.0.7",
+    "@tobilu/qmd": "^1.1.2",
     "@typescript/native-preview": "^7.0.0-dev.20260307.1",
     "@vibe-kit/grok-cli": "^0.0.34",
     "agent-browser": "^0.16.3",
