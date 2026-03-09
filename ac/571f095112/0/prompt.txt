@@ -15,3 +15,11 @@ no; revert last change - search for fish functions tpo and two i wantt to enable
 ---
 
 ❯ no; revert last change - search for fish functions tpo and two i wantt to enable only for two and not tpo
+
+---
+
+yes but i want to enable for only tpo
+
+---
+
+continue
