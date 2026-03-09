@@ -1,0 +1,37 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "ac571f095112",
+  "session_id": "d453ae76-7aaa-4a00-9f13-97fde1d47408",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-09T08:30:27.779502Z",
+  "branch": "feat/add-language-servers",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "home-manager/programs/node/default.nix",
+    "home-manager/programs/rust/default.nix"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-4-6",
+  "turn_id": "3ea187690b62",
+  "checkpoint_transcript_start": 268,
+  "transcript_lines_at_start": 268,
+  "token_usage": {
+    "input_tokens": 15,
+    "cache_creation_tokens": 7798,
+    "cache_read_tokens": 627044,
+    "output_tokens": 2018,
+    "api_call_count": 13
+  },
+  "session_metrics": {
+    "turn_count": 2
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-09T08:30:27.712446Z",
+    "agent_lines": 0,
+    "human_added": 0,
+    "human_modified": 1,
+    "human_removed": 1,
+    "total_committed": 0,
+    "agent_percentage": 0
+  }
+}
