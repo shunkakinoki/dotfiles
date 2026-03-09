@@ -1,7 +1,7 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
-    node
+    nodejs
     nodePackages.typescript-language-server
   ];
 }
