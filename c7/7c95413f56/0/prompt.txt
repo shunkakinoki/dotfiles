@@ -27,3 +27,7 @@ continue
 ---
 
 does this apply to the tpo session only or
+
+---
+
+no; only apply it to work session and create PR from scratch from main
