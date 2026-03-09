@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "ac571f095112",
+  "strategy": "manual-commit",
+  "branch": "feat/add-language-servers",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "home-manager/programs/node/default.nix",
+    "home-manager/programs/rust/default.nix"
+  ],
+  "sessions": [
+    {
+      "metadata": "/ac/571f095112/0/metadata.json",
+      "transcript": "/ac/571f095112/0/full.jsonl",
+      "content_hash": "/ac/571f095112/0/content_hash.txt",
+      "prompt": "/ac/571f095112/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 1259,
+    "cache_creation_tokens": 59708,
+    "cache_read_tokens": 1041385,
+    "output_tokens": 6387,
+    "api_call_count": 24
+  }
+}
