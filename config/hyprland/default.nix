@@ -4,16 +4,12 @@
   pkgs,
   ...
 }:
-let
-  hyprexpoPlugin = pkgs.hyprlandPlugins.hyprexpo;
-in
 {
   wayland.windowManager.hyprland = {
     enable = true;
     package = pkgs.hyprland;
     systemd.enable = false;
     extraConfig = ''
-      plugin = ${hyprexpoPlugin}/lib/libhyprexpo.so
       exec-once = ${pkgs.hyprpanel}/bin/hyprpanel
       exec-once = ${pkgs.hyprshell}/bin/hyprshell run &
     ''
