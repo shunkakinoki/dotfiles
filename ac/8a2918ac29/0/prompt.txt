@@ -1,0 +1,9 @@
+why is it tmux resurrecting on tpo (primary too)
+
+---
+
+it should only be enabled for two
+
+---
+
+fit should only be enabled for work in tmuxinator oar two not tpo
