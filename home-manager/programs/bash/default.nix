@@ -1,5 +1,9 @@
 { lib, pkgs, ... }:
 {
+  home.packages = with pkgs; [
+    nodePackages.bash-language-server
+  ];
+
   programs.bash = {
     enable = true;
     enableCompletion = true;

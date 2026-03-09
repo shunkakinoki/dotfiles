@@ -24,6 +24,7 @@ let
   lsd = import ./lsd;
   neovim = import ./neovim;
   node = import ./node;
+  php = import ./php;
   python = import ./python;
   rust = import ./rust;
   ssh = import ./ssh;
@@ -53,6 +54,8 @@ in
   lazygit
   lsd
   neovim
+  node
+  php
   python
   rust
   ssh
