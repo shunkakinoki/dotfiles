@@ -4,6 +4,10 @@
 }:
 let
   inherit (inputs.host) isDesktop isDev;
+  pkgs-nightly = import inputs.nixpkgs-nightly {
+    inherit (pkgs) system;
+    config.allowUnfree = true;
+  };
 in
 with pkgs;
 [
@@ -151,7 +155,7 @@ with pkgs;
   swappy
   totem
   vlc
-  vscode
+  pkgs-nightly.vscode
   wf-recorder
   wl-clip-persist
   wl-clipboard

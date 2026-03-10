@@ -9,8 +9,11 @@ let
   bash = import ./bash { inherit lib pkgs; };
   bat = import ./bat;
   btop = import ./btop;
+  clang = import ./clang;
+  dart = import ./dart;
   delta = import ./delta;
   direnv = import ./direnv;
+  elixir = import ./elixir;
   fd = import ./fd;
   fish = import ./fish;
   fnm = import ./fnm;
@@ -19,18 +22,28 @@ let
   ghq = import ./ghq;
   git = import ./git;
   go = import ./go;
+  haskell = import ./haskell;
+  java = import ./java;
+  kotlin = import ./kotlin;
   lazydocker = import ./lazydocker;
   lazygit = import ./lazygit;
   lsd = import ./lsd;
+  lua = import ./lua;
   neovim = import ./neovim;
+  nix = import ./nix;
   node = import ./node;
+  ocaml = import ./ocaml;
   php = import ./php;
   python = import ./python;
+  ruby = import ./ruby;
   rust = import ./rust;
   ssh = import ./ssh;
   starship = import ./starship;
+  swift = import ./swift;
+  terraform = import ./terraform;
   tms = import ./tms;
   tmux = import ./tmux;
+  yaml = import ./yaml;
   zig = import ./zig;
   zoxide = import ./zoxide;
   zsh = import ./zsh;
@@ -40,8 +53,11 @@ in
   bash
   bat
   btop
+  clang
+  dart
   delta
   direnv
+  elixir
   fd
   fish
   fnm
@@ -50,19 +66,29 @@ in
   ghq
   git
   go
+  haskell
+  java
+  kotlin
   lazydocker
   lazygit
   lsd
+  lua
   neovim
+  nix
   node
+  ocaml
   php
   python
+  ruby
   rust
   ssh
-  zig
   starship
+  swift
+  terraform
   tms
   tmux
+  yaml
+  zig
   zoxide
   zsh
 ]
