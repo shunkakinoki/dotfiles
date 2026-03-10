@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "786e6790f448",
+  "strategy": "manual-commit",
+  "branch": "feat/lsp-servers",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "home-manager/packages/default.nix",
+    "lib/nixpkgs-config.nix"
+  ],
+  "sessions": [
+    {
+      "metadata": "/78/6e6790f448/0/metadata.json",
+      "transcript": "/78/6e6790f448/0/full.jsonl",
+      "content_hash": "/78/6e6790f448/0/content_hash.txt",
+      "prompt": "/78/6e6790f448/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 18,
+    "cache_creation_tokens": 8049,
+    "cache_read_tokens": 1398486,
+    "output_tokens": 3699,
+    "api_call_count": 14
+  }
+}

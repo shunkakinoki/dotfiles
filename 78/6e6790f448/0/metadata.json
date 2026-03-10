@@ -1,0 +1,37 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "786e6790f448",
+  "session_id": "90def49d-2292-4ced-8ac6-f3ba3783a25b",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-10T08:40:46.781486Z",
+  "branch": "feat/lsp-servers",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "home-manager/packages/default.nix",
+    "lib/nixpkgs-config.nix"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-4-6",
+  "turn_id": "d0020b415531",
+  "checkpoint_transcript_start": 667,
+  "transcript_lines_at_start": 667,
+  "token_usage": {
+    "input_tokens": 18,
+    "cache_creation_tokens": 8049,
+    "cache_read_tokens": 1398486,
+    "output_tokens": 3699,
+    "api_call_count": 14
+  },
+  "session_metrics": {
+    "turn_count": 8
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-10T08:40:46.664186Z",
+    "agent_lines": 2,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 2,
+    "agent_percentage": 100
+  }
+}

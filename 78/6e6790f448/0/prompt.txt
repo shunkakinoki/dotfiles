@@ -1,0 +1,12 @@
+<task-notification>
+<task-id>bqj21zh1i</task-id>
+<tool-use-id>REDACTED</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-shunkakinoki-dotfiles/tasks/bqj21zh1i.output</output-file>
+<status>completed</status>
+<summary>Background command "Watch run until complete" completed (exit code 0)</summary>
+</task-notification>
+Read the output file to retrieve the result: /private/tmp/claude-501/-Users-shunkakinoki-dotfiles/tasks/bqj21zh1i.output
+
+---
+
+use pkgs-nightly for vscode?
