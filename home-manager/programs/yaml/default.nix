@@ -1,7 +1,6 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
-    rustup
-    rust-analyzer
+    yaml-language-server
   ];
 }

@@ -1,7 +1,7 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
-    rustup
-    rust-analyzer
+    jdk21
+    jdt-language-server
   ];
 }

@@ -1,7 +1,7 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
-    rustup
-    rust-analyzer
+    ghc
+    haskell-language-server
   ];
 }

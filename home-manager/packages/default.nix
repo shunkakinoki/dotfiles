@@ -151,7 +151,7 @@ with pkgs;
   swappy
   totem
   vlc
-  vscode
+  vscode-insiders
   wf-recorder
   wl-clip-persist
   wl-clipboard
