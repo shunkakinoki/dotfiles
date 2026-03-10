@@ -1,0 +1,3 @@
+no keep both   154 -  vscode
+      154 +  vscode-insiders
+i just want the vscode pakcage to be pulled from nixpkgs.nightly
