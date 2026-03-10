@@ -155,8 +155,7 @@ with pkgs;
   swappy
   totem
   vlc
-  vscode
-  pkgs-nightly.vscode-insiders
+  pkgs-nightly.vscode
   wf-recorder
   wl-clip-persist
   wl-clipboard

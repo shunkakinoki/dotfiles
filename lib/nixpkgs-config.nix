@@ -10,7 +10,7 @@
       "crush"
       "qwen-code"
       "slack"
-      "vscode-insiders"
+      "vscode"
     ];
   joypixels.acceptLicense = true;
 }
