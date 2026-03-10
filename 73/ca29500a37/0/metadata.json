@@ -1,0 +1,48 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "73ca29500a37",
+  "session_id": "90def49d-2292-4ced-8ac6-f3ba3783a25b",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-10T07:55:20.411301Z",
+  "branch": "feat/lsp-servers",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "home-manager/programs/clang/default.nix",
+    "home-manager/programs/dart/default.nix",
+    "home-manager/programs/default.nix",
+    "home-manager/programs/elixir/default.nix",
+    "home-manager/programs/haskell/default.nix",
+    "home-manager/programs/java/default.nix",
+    "home-manager/programs/kotlin/default.nix",
+    "home-manager/programs/lua/default.nix",
+    "home-manager/programs/nix/default.nix",
+    "home-manager/programs/ocaml/default.nix",
+    "home-manager/programs/ruby/default.nix",
+    "home-manager/programs/rust/default.nix",
+    "home-manager/programs/swift/default.nix",
+    "home-manager/programs/terraform/default.nix",
+    "home-manager/programs/yaml/default.nix"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-4-6",
+  "turn_id": "d1c2d610dfae",
+  "token_usage": {
+    "input_tokens": 39,
+    "cache_creation_tokens": 96608,
+    "cache_read_tokens": 1189993,
+    "output_tokens": 13639,
+    "api_call_count": 30
+  },
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-10T07:55:20.356972Z",
+    "agent_lines": 108,
+    "human_added": 1,
+    "human_modified": 6,
+    "human_removed": 0,
+    "total_committed": 115,
+    "agent_percentage": 93.91304347826087
+  }
+}
