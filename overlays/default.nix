@@ -37,18 +37,16 @@
     # Notifications with empty action IDs (e.g. from Claude Code) bypass the length
     # guard and render a blank bar. Filter them out before the guard and the map.
     hyprpanel = prev.hyprpanel.overrideAttrs (oldAttrs: {
-      postPatch =
-        (oldAttrs.postPatch or "")
-        + ''
-          substituteInPlace src/components/notifications/Notification/index.tsx \
-            --replace-fail \
-            'notification.get_actions().length' \
-            'notification.get_actions().filter((a) => a.id !== "").length'
-          substituteInPlace src/components/notifications/Actions/index.tsx \
-            --replace-fail \
-            'notification.get_actions().map' \
-            'notification.get_actions().filter((a) => a.id !== "").map'
-        '';
+      postPatch = (oldAttrs.postPatch or "") + ''
+        substituteInPlace src/components/notifications/Notification/index.tsx \
+          --replace-fail \
+          'notification.get_actions().length' \
+          'notification.get_actions().filter((a) => a.id !== "").length'
+        substituteInPlace src/components/notifications/Actions/index.tsx \
+          --replace-fail \
+          'notification.get_actions().map' \
+          'notification.get_actions().filter((a) => a.id !== "").map'
+      '';
     });
   })
   (final: prev: {
