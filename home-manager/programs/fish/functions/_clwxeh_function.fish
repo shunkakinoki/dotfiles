@@ -1,6 +1,6 @@
-function _clxweh_function --description "Run Claude Code headlessly with a prompted input with git worktree integration"
+function _clwxeh_function --description "Run Claude Code headlessly with a prompted input with git worktree integration"
   # Prompt for input and run Claude Code
-  # Usage: clxweh
+  # Usage: clwxeh
 
   read -P "Prompt: " prompt
   if test -z "$prompt"

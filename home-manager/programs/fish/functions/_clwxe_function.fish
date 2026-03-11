@@ -1,6 +1,6 @@
-function _clxwe_function --description "Run Claude Code with a free-form prompt while skipping permissions with git worktree integration"
+function _clwxe_function --description "Run Claude Code with a free-form prompt while skipping permissions with git worktree integration"
   # Run Claude Code with a free-form prompt (spaces allowed) and bypass permission checks
-  # Usage: clxwe [<prompt words...>]
+  # Usage: clwxe [<prompt words...>]
 
   if test (count $argv) -eq 0
     claude --dangerously-skip-permissions --worktree
