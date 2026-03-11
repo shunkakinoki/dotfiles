@@ -22,11 +22,16 @@ let
       ${pkgs.e2fsprogs}/bin/chattr -i -R /opt/CrowdStrike 2>/dev/null || true
     fi
 
-    rm -rf /opt/CrowdStrike
     install -d -m 0770 /opt/CrowdStrike
 
-    # Copy real files so Falcon can write falconstore/CsConfig
-    cp -a ${falcon}/opt/CrowdStrike/. /opt/CrowdStrike/
+    # Update binaries from the nix store, but preserve runtime state files.
+    # falconstore contains the Agent ID (AID) — if lost, the sensor re-registers
+    # as a new host and consumes another license seat.
+    ${pkgs.rsync}/bin/rsync -a --delete \
+      --exclude=falconstore \
+      --exclude=falconstore.bak \
+      --exclude=CsConfig \
+      "${falcon}/opt/CrowdStrike/" /opt/CrowdStrike/
 
     chown -R root:root /opt/CrowdStrike
 
