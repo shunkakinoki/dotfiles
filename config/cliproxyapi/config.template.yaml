@@ -96,7 +96,7 @@ openai-compatibility:
       - name: "glm-4.7"
         alias: "glm-4.7"
   - name: "opencodezen"
-    base-url: "https://api.minimax.chat/v1"
+    base-url: "https://opencode.ai/zen/v1"
     api-key-entries:
       - api-key: "__OPENCODE_API_KEY__"
     models:
