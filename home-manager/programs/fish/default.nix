@@ -180,12 +180,12 @@
       })
       [
         "_cliproxyapi_function"
-        "_clxe_function"
-        "_clxeh_function"
         "_cltxe_function"
         "_cltxeh_function"
         "_clwxe_function"
         "_clwxeh_function"
+        "_clxe_function"
+        "_clxeh_function"
         "_coxe_function"
         "_coxeh_function"
         "_coxel_function"
