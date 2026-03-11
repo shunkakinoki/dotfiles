@@ -86,12 +86,12 @@
 
       # Function-based abbreviations
       cliproxyapi = "_cliproxyapi_function";
+      cltxe = "_cltxe_function";
+      cltxeh = "_cltxeh_function";
+      clwxe = "_clwxe_function";
+      clwxeh = "_clwxeh_function";
       clxe = "_clxe_function";
       clxeh = "_clxeh_function";
-      clxte = "_clxte_function";
-      clxteh = "_clxteh_function";
-      clxwe = "_clxwe_function";
-      clxweh = "_clxweh_function";
       coxe = "_coxe_function";
       coxeh = "_coxeh_function";
       coxel = "_coxel_function";
@@ -182,10 +182,10 @@
         "_cliproxyapi_function"
         "_clxe_function"
         "_clxeh_function"
-        "_clxte_function"
-        "_clxteh_function"
-        "_clxwe_function"
-        "_clxweh_function"
+        "_cltxe_function"
+        "_cltxeh_function"
+        "_clwxe_function"
+        "_clwxeh_function"
         "_coxe_function"
         "_coxeh_function"
         "_coxel_function"
