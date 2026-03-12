@@ -1,4 +1,4 @@
-set fn (status dirname)/../../home-manager/programs/fish/functions
+set fn ../../home-manager/programs/fish/functions
 source $fn/_fzf_preview_name.fish
 
 @test "with arg includes arg name" (string match -q "*Files*" (_fzf_preview_name "Files"); echo $status) = 0

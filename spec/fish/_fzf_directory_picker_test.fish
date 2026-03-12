@@ -1,4 +1,4 @@
-set fn (status dirname)/../../home-manager/programs/fish/functions
+set fn ../../home-manager/programs/fish/functions
 source $fn/_fzf_preview_name.fish
 source $fn/_fzf_directory_picker.fish
 

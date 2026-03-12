@@ -1,4 +1,4 @@
-set fn (status dirname)/../../home-manager/programs/fish/functions
+set fn ../../home-manager/programs/fish/functions
 source $fn/_tmo_function.fish
 
 # ── session missing → tmuxinator start mobile ─────────────

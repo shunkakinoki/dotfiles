@@ -1,4 +1,4 @@
-set fn (status dirname)/../../home-manager/programs/fish/functions
+set fn ../../home-manager/programs/fish/functions
 source $fn/_hm_load_env_file.fish
 
 set tmpdir (mktemp -d)
