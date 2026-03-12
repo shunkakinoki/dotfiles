@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "727c1e2925c4",
+  "strategy": "manual-commit",
+  "branch": "cozy-baking-glacier",
+  "checkpoints_count": 4,
+  "files_touched": [
+    "config/cliproxyapi/config.template.yaml",
+    "config/cliproxyapi/config.tpl.yaml",
+    "config/openclaw/openclaw.template.json",
+    "config/openclaw/openclaw.tpl.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/72/7c1e2925c4/0/metadata.json",
+      "transcript": "/72/7c1e2925c4/0/full.jsonl",
+      "content_hash": "/72/7c1e2925c4/0/content_hash.txt",
+      "prompt": "/72/7c1e2925c4/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 52,
+    "cache_creation_tokens": 134217,
+    "cache_read_tokens": 2300455,
+    "output_tokens": 14378,
+    "api_call_count": 38
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "727c1e2925c4",
+  "session_id": "80a57739-bc39-40ff-a01f-13e02a86387d",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-12T19:59:20.604931Z",
+  "branch": "cozy-baking-glacier",
+  "checkpoints_count": 4,
+  "files_touched": [
+    "config/cliproxyapi/config.template.yaml",
+    "config/cliproxyapi/config.tpl.yaml",
+    "config/openclaw/openclaw.template.json",
+    "config/openclaw/openclaw.tpl.json"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-6",
+  "turn_id": "c956ab80eb98",
+  "token_usage": {
+    "input_tokens": 52,
+    "cache_creation_tokens": 134217,
+    "cache_read_tokens": 2300455,
+    "output_tokens": 14378,
+    "api_call_count": 38
+  },
+  "session_metrics": {
+    "turn_count": 4
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-12T19:59:20.073509Z",
+    "agent_lines": 46,
+    "human_added": 0,
+    "human_modified": 54,
+    "human_removed": 0,
+    "total_committed": 100,
+    "agent_percentage": 46
+  }
+}
