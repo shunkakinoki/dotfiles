@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "8a80e1d67a39",
+  "strategy": "manual-commit",
+  "branch": "feat/local-binaries-improvements",
+  "checkpoints_count": 5,
+  "files_touched": [
+    ".local-binaries.txt",
+    "Makefile",
+    "home-manager/modules/local-binaries/sync-local-binaries.sh",
+    "scripts/update-local-binaries.sh"
+  ],
+  "sessions": [
+    {
+      "metadata": "/8a/80e1d67a39/0/metadata.json",
+      "transcript": "/8a/80e1d67a39/0/full.jsonl",
+      "content_hash": "/8a/80e1d67a39/0/content_hash.txt",
+      "prompt": "/8a/80e1d67a39/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 57,
+    "cache_creation_tokens": 60172,
+    "cache_read_tokens": 2168408,
+    "output_tokens": 18346,
+    "api_call_count": 46
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "8a80e1d67a39",
+  "session_id": "d0e2d87a-6bc5-4663-9af1-b2ec7a7a248e",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-12T20:06:11.261318Z",
+  "branch": "feat/local-binaries-improvements",
+  "checkpoints_count": 5,
+  "files_touched": [
+    ".local-binaries.txt",
+    "Makefile",
+    "home-manager/modules/local-binaries/sync-local-binaries.sh",
+    "scripts/update-local-binaries.sh"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-4-6",
+  "turn_id": "af983cd218e6",
+  "token_usage": {
+    "input_tokens": 57,
+    "cache_creation_tokens": 60172,
+    "cache_read_tokens": 2168408,
+    "output_tokens": 18346,
+    "api_call_count": 46
+  },
+  "session_metrics": {
+    "turn_count": 5
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-12T20:06:11.187772Z",
+    "agent_lines": 84,
+    "human_added": 189,
+    "human_modified": 2,
+    "human_removed": 0,
+    "total_committed": 275,
+    "agent_percentage": 30.545454545454547
+  }
+}

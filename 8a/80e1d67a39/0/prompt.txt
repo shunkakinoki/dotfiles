@@ -1,0 +1,21 @@
+make ~/ghq/github.com/openai/symphony/elixir/bin/symphony work out of the box w/ @.local-binaries.txt
+
+---
+
+yea make it build w/ makefile?
+
+---
+
+fix make shell-test
+
+---
+
+why can't i run dotfiles on  main [$+] is 📦 v0.1.0 via 🥟 v1.3.10 via 🐍 v3.13.12 via 🦀 v1.94.0 on ☁️  shun@horizon.io 
+❯ symphony 
+env: escript: No such file or directory
+dotfiles on  main [$+] is 📦 v0.1.0 via 🥟 v1.3.10 via 🐍 v3.13.12 via 🦀 v1.94.0 on ☁️  shun@horizon.io 
+❯
+
+---
+
+so what was the fix?
