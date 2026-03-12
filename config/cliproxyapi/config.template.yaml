@@ -102,13 +102,6 @@ openai-compatibility:
     models:
       - name: "minimax-m2.5"
         alias: "minimax-m2.5"
-  - name: "minimax"
-    base-url: "https://api.minimax.io/v1"
-    api-key-entries:
-      - api-key: "__MINIMAX_API_KEY__"
-    models:
-      - name: "MiniMax-M2.5"
-        alias: "minimax-m2.5"
 # payload: # Optional payload configuration
 #   default: # Default rules only set parameters when they are missing in the payload.
 #     - models:
