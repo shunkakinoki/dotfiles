@@ -1,4 +1,4 @@
-set fn ../../home-manager/programs/fish/functions
+set fn (status dirname)/../../home-manager/programs/fish/functions
 source $fn/_two_function.fish
 
 # ── no resurrect, no work session → tmuxinator start work ─

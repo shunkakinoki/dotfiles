@@ -1,4 +1,4 @@
-set fn ../../home-manager/programs/fish/functions
+set fn (status dirname)/../../home-manager/programs/fish/functions
 source $fn/_grco_function.fish
 
 set call_log (mktemp)

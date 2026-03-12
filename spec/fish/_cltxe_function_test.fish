@@ -1,4 +1,4 @@
-set fn ../../home-manager/programs/fish/functions
+set fn (status dirname)/../../home-manager/programs/fish/functions
 source $fn/_cltxe_function.fish
 
 # ── no args: interactive mode ─────────────────────────────
