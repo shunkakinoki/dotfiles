@@ -765,6 +765,7 @@ systemctl: systemctl-cliproxyapi systemctl-code-syncer systemctl-docker-postgres
 .PHONY: systemctl-cliproxyapi
 systemctl-cliproxyapi: ## Pull latest image and restart cliproxyapi systemd user service.
 	@echo "🔄 Restarting cliproxyapi..."
+	@systemctl --user daemon-reload
 	@systemctl --user restart cliproxyapi.service || true
 	@echo "✅ cliproxyapi restarted"
 
