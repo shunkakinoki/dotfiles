@@ -148,6 +148,23 @@
             },
             "contextWindow": 200000,
             "maxTokens": 32000
+          },
+          {
+            "id": "minimax-m2.5",
+            "name": "Minimax M2.5",
+            "reasoning": false,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1000000,
+            "maxTokens": 40960
           }
         ]
       }
@@ -156,8 +173,9 @@
   "agents": {
     "defaults": {
       "model": {
-        "primary": "cliproxy/claude-opus-4-6",
+        "primary": "cliproxy/minimax-m2.5",
         "fallbacks": [
+          "cliproxy/claude-opus-4-6",
           "cliproxy/glm-4.7"
         ]
       },

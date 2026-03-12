@@ -6,5 +6,6 @@
   "gpt-codex": "gpt-5.3-codex",
   "gemini-pro": "gemini-3-pro-preview",
   "gemini-flash": "gemini-3-flash-preview",
-  "glm": "glm-4.7"
+  "glm": "glm-4.7",
+  "minimax": "minimax-m2.5"
 }

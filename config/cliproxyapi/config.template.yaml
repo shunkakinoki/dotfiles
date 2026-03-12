@@ -95,6 +95,13 @@ openai-compatibility:
     models:
       - name: "glm-4.7"
         alias: "glm-4.7"
+  - name: "opencodezen"
+    base-url: "https://opencode.ai/zen/v1"
+    api-key-entries:
+      - api-key: "__OPENCODE_API_KEY__"
+    models:
+      - name: "minimax-m2.5"
+        alias: "minimax-m2.5"
 # payload: # Optional payload configuration
 #   default: # Default rules only set parameters when they are missing in the payload.
 #     - models:

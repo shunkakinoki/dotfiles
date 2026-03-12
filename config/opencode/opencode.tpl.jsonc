@@ -81,6 +81,9 @@
         },
         "__GLM__": {
           "name": "__GLM_PRETTY__ (via local CLIProxyAPI)"
+        },
+        "__MINIMAX__": {
+          "name": "__MINIMAX_PRETTY__ (via local CLIProxyAPI)"
         }
       }
     },
