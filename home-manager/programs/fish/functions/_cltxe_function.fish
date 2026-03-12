@@ -1,6 +1,6 @@
-function _clxte_function --description "Run Claude Code with a free-form prompt while skipping permissions with tmux integration"
+function _cltxe_function --description "Run Claude Code with a free-form prompt while skipping permissions with tmux integration"
   # Run Claude Code with a free-form prompt (spaces allowed) and bypass permission checks
-  # Usage: clxte [<prompt words...>]
+  # Usage: cltxe [<prompt words...>]
 
   if test (count $argv) -eq 0
     claude --dangerously-skip-permissions --worktree --tmux
