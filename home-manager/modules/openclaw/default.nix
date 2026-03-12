@@ -10,17 +10,19 @@ let
 in
 # Only enable on kyber (gateway host)
 lib.mkIf (host.isKyber) {
-  # Ensure OpenClaw directories exist
+  # Ensure OpenClaw directories exist with correct permissions
   home.activation.openclawSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p /tmp/openclaw
     mkdir -p ${homeDir}/.openclaw
+    chmod 700 ${homeDir}/.openclaw
   '';
 
   # Systemd service for OpenClaw gateway
   systemd.user.services.openclaw-gateway = {
     Unit = {
       Description = "OpenClaw gateway";
-      After = [ "network.target" ];
+      After = [ "network-online.target" ];
+      Wants = [ "network-online.target" ];
     };
     Service = {
       Type = "simple";
