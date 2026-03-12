@@ -16,6 +16,7 @@
     "safety-net@cc-marketplace": true,
     "serena@claude-plugins-official": true,
     "skill-codex@skill-codex": true,
+    "gopls-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
     "worktrunk@worktrunk": true
   },
