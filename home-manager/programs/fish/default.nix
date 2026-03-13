@@ -119,6 +119,8 @@
       ocxeh = "_ocxeh_function";
       ocxelh = "_ocxelh_function";
       pixe = "_pixe_function";
+      pixel = "_pixel_function";
+      pixelh = "_pixelh_function";
       pixeh = "_pixeh_function";
       sag = "_ssh_add_github";
       shortcuts = "_fish_shortcuts";
@@ -215,6 +217,8 @@
         "_ocxeh_function"
         "_ocxelh_function"
         "_pixe_function"
+        "_pixel_function"
+        "_pixelh_function"
         "_pixeh_function"
         "_ssh_add_github"
         "_tdo_function"

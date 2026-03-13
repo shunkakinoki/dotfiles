@@ -62,9 +62,10 @@ The output should include 'config/llm/default_model.tpl.txt'
 End
 
 It 'includes fish wrapper templates in template mappings'
-When run bash -c "grep '_ocxe_function.tpl.fish' '$SCRIPT' && grep '_pixe_function.tpl.fish' '$SCRIPT'"
+When run bash -c "grep '_ocxe_function.tpl.fish' '$SCRIPT' && grep '_pixe_function.tpl.fish' '$SCRIPT' && grep '_pixel_function.tpl.fish' '$SCRIPT'"
 The output should include '_ocxe_function.tpl.fish'
 The output should include '_pixe_function.tpl.fish'
+The output should include '_pixel_function.tpl.fish'
 End
 End
 

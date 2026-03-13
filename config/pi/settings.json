@@ -6,10 +6,12 @@
   "defaultThinkingLevel": "medium",
   "enabledModels": [
     "cli-proxy-api/*",
+    "lmstudio/*",
     "*gpt-5*",
     "*gemini*",
     "*claude*",
     "*glm*",
+    "*qwen*",
     "*kimi*"
   ],
   "steeringMode": "one-at-a-time",
