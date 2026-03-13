@@ -1,0 +1,24 @@
+this path will be fetched (107.5 KiB download, 107.4 KiB unpacked):
+  /nix/store/5vmwpgmif2wa2hw5ip3ab6q40wvyfw2w-bash-interactive-5.3p9-man
+copying path '/nix/store/5vmwpgmif2wa2hw5ip3ab6q40wvyfw2w-bash-interactive-5.3p9-man' from 'https://cache.nixos.org'...
+Running tasks     devenv:enterShell
+
+Running           devenv:files:cleanup
+Succeeded         devenv:files:cleanup (4.84ms)
+Running           devenv:enterShell
+Succeeded         devenv:enterShell (12.18ms)
+Running           devenv:enterTest
+No command        devenv:enterTest
+1 Skipped, 2 Succeeded
+Dev shell ready: Node.js, bun, and Neovim available.
+make[1]: Entering directory '/home/runner/work/dotfiles/dotfiles'
+🔍 Running ShellCheck...
+
+In ./home-manager/services/cliproxyapi/scripts/common.sh line 7:
+    . "$env_file"
+      ^---------^ SC1090 (warning): ShellCheck can't follow non-constant source. Use a directive to specify location.
+
+For more information:
+  https://www.shellcheck.net/wiki/SC1090 -- ShellCheck can't follow non-const...
+make[1]: *** [Makefile:866: shell-check] Error 123
+make[1]: Leaving directory '/home/runner/work/dotfiles fix shell lint
