@@ -45,6 +45,29 @@ The output should include '.tpl.'
 End
 End
 
+Describe 'mapping coverage'
+It 'includes aichat config in template mappings'
+When run bash -c "grep 'config/aichat/config.tpl.yaml' '$SCRIPT'"
+The output should include 'config/aichat/config.tpl.yaml'
+End
+
+It 'includes pi settings in template mappings'
+When run bash -c "grep 'config/pi/settings.tpl.json' '$SCRIPT'"
+The output should include 'config/pi/settings.tpl.json'
+End
+
+It 'includes llm default model in template mappings'
+When run bash -c "grep 'config/llm/default_model.tpl.txt' '$SCRIPT'"
+The output should include 'config/llm/default_model.tpl.txt'
+End
+
+It 'includes fish wrapper templates in template mappings'
+When run bash -c "grep '_ocxe_function.tpl.fish' '$SCRIPT' && grep '_pixe_function.tpl.fish' '$SCRIPT'"
+The output should include '_ocxe_function.tpl.fish'
+The output should include '_pixe_function.tpl.fish'
+End
+End
+
 Describe 'jq pretty-printing'
 It 'defines a jq pretty function for model names'
 When run bash -c "grep 'def pretty' '$SCRIPT'"

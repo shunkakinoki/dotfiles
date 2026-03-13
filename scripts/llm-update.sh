@@ -45,6 +45,8 @@ done < <(jq -r "$JQ_PRETTY"'
 
 # Template → output pairs
 declare -A TEMPLATES=(
+  ["config/aichat/config.tpl.yaml"]=config/aichat/config.yaml
+  ["config/llm/default_model.tpl.txt"]=config/llm/default_model.txt
   ["config/openclaw/openclaw.tpl.json"]=config/openclaw/openclaw.template.json
   ["config/opencode/opencode.tpl.jsonc"]=config/opencode/opencode.jsonc
   ["config/llm/extra-openai-models.tpl.yaml"]=config/llm/extra-openai-models.yaml
@@ -55,8 +57,13 @@ declare -A TEMPLATES=(
   ["config/codex/config.tpl.toml"]=config/codex/config.toml
   ["config/cliproxyapi/config.tpl.yaml"]=config/cliproxyapi/config.template.yaml
   ["config/pi/models.tpl.json"]=config/pi/models.json
+  ["config/pi/settings.tpl.json"]=config/pi/settings.json
   ["home-manager/programs/fish/functions/_coxe_function.tpl.fish"]=home-manager/programs/fish/functions/_coxe_function.fish
   ["home-manager/programs/fish/functions/_coxeh_function.tpl.fish"]=home-manager/programs/fish/functions/_coxeh_function.fish
+  ["home-manager/programs/fish/functions/_ocxe_function.tpl.fish"]=home-manager/programs/fish/functions/_ocxe_function.fish
+  ["home-manager/programs/fish/functions/_ocxeh_function.tpl.fish"]=home-manager/programs/fish/functions/_ocxeh_function.fish
+  ["home-manager/programs/fish/functions/_pixe_function.tpl.fish"]=home-manager/programs/fish/functions/_pixe_function.fish
+  ["home-manager/programs/fish/functions/_pixeh_function.tpl.fish"]=home-manager/programs/fish/functions/_pixeh_function.fish
 )
 
 echo "Updating tool configs from $MODELS ..."
