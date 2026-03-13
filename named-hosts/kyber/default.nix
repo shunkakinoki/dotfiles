@@ -147,7 +147,11 @@ home-manager.lib.homeManagerConfiguration {
         # Enable XDG directories
         xdg.enable = true;
 
-        modules.tmux-backup.enable = true;
+        modules.gdrive-backup = {
+          enable = true;
+          localPath = "${config.home.homeDirectory}/.local/share/tmux";
+          remotePath = "tmux-logs";
+        };
 
         # Tailscale configuration
         # Using system-level service only (via installSystemService)

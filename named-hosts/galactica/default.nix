@@ -60,7 +60,11 @@ inputs.nix-darwin.lib.darwinSystem {
             GPG_TTY = "$(tty)";
           };
 
-          modules.tmux-backup.enable = true;
+          modules.gdrive-backup = {
+            enable = true;
+            localPath = "${config.home.homeDirectory}/.local/share/tmux";
+            remotePath = "tmux-logs";
+          };
         };
     }
   ];
