@@ -50,14 +50,6 @@ name = "OpenRouter"
 base_url = "https://openrouter.ai/api/v1"
 env_key = "OPENROUTER_API_KEY"
 
-[profiles.gpt-oss-20b]
-model = "gpt-oss:20b"
-model_provider = "ollama"
-
-[profiles.gpt-oss-120b]
-model = "openai/gpt-oss-120b"
-model_provider = "lmstudio"
-
-[profiles.glm-4-7-flash]
-model = "zai-org/glm-4.7-flash"
+[profiles.qwen-local]
+model = "__QWEN_LOCAL__"
 model_provider = "lmstudio"
