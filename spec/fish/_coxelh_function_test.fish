@@ -12,6 +12,7 @@ echo "hello world" | _coxelh_function
 @test "non-empty prompt uses exec subcommand" (grep -c "^exec " $log1) -ge 1
 @test "non-empty prompt uses substituted Qwen model" (grep -c "qwen/qwen3.5-9b" $log1) -ge 1
 @test "non-empty prompt forces lmstudio provider" (grep -c "model_provider=lmstudio" $log1) -ge 1
+@test "non-empty prompt lowers reasoning effort" (grep -c "model_reasoning_effort=minimal" $log1) -ge 1
 @test "non-empty prompt forwards prompt" (grep -c "hello world" $log1) -ge 1
 
 rm -f $log1

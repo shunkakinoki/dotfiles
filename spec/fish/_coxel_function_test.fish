@@ -9,6 +9,7 @@ _coxel_function
 
 @test "no args uses substituted Qwen model" (grep -c "qwen/qwen3.5-9b" $log1) -ge 1
 @test "no args forces lmstudio provider" (grep -c "model_provider=lmstudio" $log1) -ge 1
+@test "no args lowers reasoning effort" (grep -c "model_reasoning_effort=minimal" $log1) -ge 1
 
 # ── with args: exec mode ──────────────────────────────────
 set log2 (mktemp)
@@ -20,5 +21,6 @@ _coxel_function hello world
 @test "with args builds prompt" (grep -c "hello world" $log2) -ge 1
 @test "with args uses substituted Qwen model" (grep -c "qwen/qwen3.5-9b" $log2) -ge 1
 @test "with args forces lmstudio provider" (grep -c "model_provider=lmstudio" $log2) -ge 1
+@test "with args lowers reasoning effort" (grep -c "model_reasoning_effort=minimal" $log2) -ge 1
 
 rm -f $log1 $log2

@@ -3,9 +3,9 @@ function _coxel_function --description "Run Codex with a free-form prompt using 
   # Usage: cxel [<prompt words...>]
 
   if test (count $argv) -eq 0
-    codex --model 'qwen/qwen3.5-9b' --full-auto -c model_provider=lmstudio -c model_reasoning_summary_format=experimental
+    codex --model 'qwen/qwen3.5-9b' --full-auto -c model_provider=lmstudio -c model_reasoning_effort=minimal
   else
     set -l prompt (string join " " -- $argv)
-    codex exec --model 'qwen/qwen3.5-9b' --full-auto -c model_provider=lmstudio -c model_reasoning_summary_format=experimental -- "$prompt"
+    codex exec --model 'qwen/qwen3.5-9b' --full-auto -c model_provider=lmstudio -c model_reasoning_effort=minimal -- "$prompt"
   end
 end
