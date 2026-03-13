@@ -4,6 +4,7 @@ cliproxy_load_env() {
   local env_file="${HOME}/dotfiles/.env"
   if [ -f "$env_file" ]; then
     set -a
+    # shellcheck source=/dev/null
     . "$env_file"
     set +a
   fi
