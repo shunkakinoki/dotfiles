@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "be2b1fb66e85",
+  "strategy": "manual-commit",
+  "branch": "feat/pi-local-qwen-wrappers",
+  "checkpoints_count": 1,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/be/2b1fb66e85/0/metadata.json",
+      "transcript": "/be/2b1fb66e85/0/full.jsonl",
+      "content_hash": "/be/2b1fb66e85/0/content_hash.txt",
+      "prompt": "/be/2b1fb66e85/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 84,
+    "cache_creation_tokens": 150571,
+    "cache_read_tokens": 5268108,
+    "output_tokens": 18067,
+    "api_call_count": 67
+  }
+}
