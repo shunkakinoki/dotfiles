@@ -1,0 +1,29 @@
+fix .................................................................................................................F.F.................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+
+Examples:
+  1) fish function test coverage has a fishtape test file: _coxe_function.tpl
+     1.1) The path spec/fish/_coxe_function.tpl_test.fish should be exist
+
+            The specified path does not exist
+            path: spec/fish/_coxe_function.tpl_test.fish
+
+          # spec/fish_functions_coverage_spec.sh:14
+
+  2) fish function test coverage has a fishtape test file: _coxeh_function.tpl
+     2.1) The path spec/fish/_coxeh_function.tpl_test.fish should be exist
+
+            The specified path does not exist
+            path: spec/fish/_coxeh_function.tpl_test.fish
+
+          # spec/fish_functions_coverage_spec.sh:14
+
+Finished in 14.06 seconds (user 11.18 seconds, sys 6.63 seconds)
+629 examples, 2 failures
+
+
+Failure examples / Errors: (Listed here affect your suite's status)
+
+shellspec spec/fish_functions_coverage_spec.sh:13 # 1) fish function test coverage has a fishtape test file: _coxe_function.tpl FAILED
+shellspec spec/fish_functions_coverage_spec.sh:13 # 2) fish function test coverage has a fishtape test file: _coxeh_function.tpl FAILED
+
+make[1]: *** [Makefile:819: shell-test] Error 101
