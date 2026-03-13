@@ -182,7 +182,7 @@
       },
       "models": {
         "glm-4.7": {
-          "id": "@preset/glm-4-7",
+          "id": "@preset/__GLM_NONDOT__",
           "name": "Preset GLM-4.7 (via OpenRouter)"
         }
       }

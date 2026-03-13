@@ -1,6 +1,6 @@
 {
   "providers": {
-    "cli-proxy-api": {
+    "cliproxyapi": {
       "baseUrl": "http://localhost:8317/v1",
       "apiKey": "CLIPROXY_API_KEY",
       "api": "openai-responses",
@@ -165,7 +165,7 @@
       "api": "openai-completions",
       "models": [
         {
-          "id": "@preset/glm-4-7",
+          "id": "@preset/__GLM_NONDOT__",
           "name": "GLM-4.7 (Z-AI)",
           "reasoning": false,
           "input": [
@@ -179,6 +179,30 @@
           },
           "contextWindow": 131072,
           "maxTokens": 16384
+        }
+      ]
+    },
+    "lmstudio": {
+      "baseUrl": "http://127.0.0.1:1234/v1",
+      "apiKey": "LM_API_TOKEN",
+      "api": "openai-responses",
+      "models": [
+        {
+          "id": "__QWEN_LOCAL__",
+          "name": "Qwen 3.5 9B (LM Studio)",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 262144,
+          "maxTokens": 32768
         }
       ]
     }
