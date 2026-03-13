@@ -212,7 +212,19 @@ update-local-binaries: ## Update and rebuild local binaries from .local-binaries
 ##@ Upgrade
 
 .PHONY: upgrade
-upgrade: nix-upgrade overlays-upgrade neovim-upgrade ## Upgrade Nix flake, overlays, Neovim plugins
+upgrade: nix-upgrade overlays-upgrade neovim-upgrade llm-upgrade gitalias-upgrade ## Upgrade Nix flake, overlays, Neovim plugins, LLM configs, and gitalias
+
+.PHONY: llm-upgrade
+llm-upgrade: ## Regenerate tool configs from models.json.
+	@echo "🤖 Updating LLM tool configs..."
+	@./scripts/llm-update.sh
+	@echo "✅ LLM configs updated"
+
+.PHONY: gitalias-upgrade
+gitalias-upgrade: ## Download latest gitalias.txt from upstream.
+	@echo "📥 Updating gitalias.txt..."
+	@./scripts/update-gitalias.sh
+	@echo "✅ gitalias.txt updated"
 
 .PHONY: upgrade-dev
 upgrade-dev: ## Upgrade inside the Nix dev shell (mirrors CI).
@@ -594,6 +606,9 @@ neovim-dev: ## Set up local Neovim development environment.
 .PHONY: neovim-upgrade
 neovim-upgrade: ## Update Neovim plugins.
 	@echo "📦 Updating neovim plugins..."
+	@mkdir -p ~/.config/nvim
+	@ln -sf "$(PWD)/home-manager/programs/neovim/init.lua" ~/.config/nvim/init.lua
+	@ln -sf "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json" ~/.config/nvim/nvim-pack-lock.json
 	@nvim --headless +"lua vim.pack.update()" +qa
 	@echo "✅ Neovim plugins updated"
 
