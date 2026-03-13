@@ -1,5 +1,5 @@
-function _pixeh_function --description "Run Pi agent headlessly with a prompted input"
-  # Prompt for input and run Pi agent
+function _pixeh_function --description "Run Pi headlessly with a prompted input"
+  # Prompt for input and run Pi in print mode
   # Usage: pixeh
 
   read -P "Prompt: " prompt
@@ -8,5 +8,5 @@ function _pixeh_function --description "Run Pi agent headlessly with a prompted 
     return 1
   end
 
-  pi-agent "$prompt" -m 'openrouter-preset/@preset/__GLM_NONDOT__'
+  pi --model 'cliproxyapi/__GLM__' -p "$prompt"
 end
