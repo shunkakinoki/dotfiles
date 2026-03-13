@@ -1,0 +1,1 @@
+install pi extension w/ pi install https://github.com/davebcn87/pi-autoresearch

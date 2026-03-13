@@ -1,0 +1,35 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "ec97fc3467eb",
+  "session_id": "8bedd980-ea87-411b-908f-7ad069797a58",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-13T10:00:19.951055Z",
+  "branch": "uv-bun-bump",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "bun.lock",
+    "package.json"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-4-6",
+  "turn_id": "31a4725178a7",
+  "token_usage": {
+    "input_tokens": 4,
+    "cache_creation_tokens": 15804,
+    "cache_read_tokens": 39187,
+    "output_tokens": 151,
+    "api_call_count": 2
+  },
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-13T10:00:19.948649Z",
+    "agent_lines": 0,
+    "human_added": 71,
+    "human_modified": 376,
+    "human_removed": 0,
+    "total_committed": 71,
+    "agent_percentage": 0
+  }
+}
