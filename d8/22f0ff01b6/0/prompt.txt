@@ -1,0 +1,24 @@
+why is upgrade github actions not working - investigate and make the PR work @.github/workflows/upgrade.yml
+
+---
+
+hmm nix flake update is run through renovate so don't want it i just want it to run the upgrad-dev command and generate the files so that it can be automated w/ PR\
+for example is @scripts/llm-update.sh included in make upgrade-dev
+
+---
+
+neovim-upgrade runs nvim but doesn’t write tracked files
+
+why is this
+
+---
+
+ok run upgrade and see if it modifies
+
+---
+
+continue
+
+---
+
+what's the progress
