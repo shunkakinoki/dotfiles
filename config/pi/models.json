@@ -1,6 +1,6 @@
 {
   "providers": {
-    "cli-proxy-api": {
+    "cliproxyapi": {
       "baseUrl": "http://localhost:8317/v1",
       "apiKey": "CLIPROXY_API_KEY",
       "api": "openai-responses",
@@ -184,6 +184,7 @@
     },
     "lmstudio": {
       "baseUrl": "http://127.0.0.1:1234/v1",
+      "apiKey": "LM_API_TOKEN",
       "api": "openai-responses",
       "models": [
         {

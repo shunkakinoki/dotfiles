@@ -1,5 +1,5 @@
-function _pixelh_function --description "Run Pi agent headlessly with the local Qwen model"
-  # Prompt for input and run Pi agent with the local Qwen model
+function _pixelh_function --description "Run Pi headlessly with the local Qwen model"
+  # Prompt for input and run Pi in print mode with the local Qwen model
   # Usage: pixelh
 
   read -P "Prompt: " prompt
@@ -8,5 +8,5 @@ function _pixelh_function --description "Run Pi agent headlessly with the local 
     return 1
   end
 
-  pi-agent "$prompt" -m 'lmstudio/qwen/qwen3.5-9b'
+  pi --model 'lmstudio/qwen/qwen3.5-9b' -p "$prompt"
 end
