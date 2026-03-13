@@ -1,0 +1,8 @@
+# see https://github.com/sigoden/aichat/blob/main/config.example.yaml
+model: cliproxy:__GLM__
+clients:
+  - type: openai-compatible
+    name: cliproxy
+    api_base: http://localhost:8317/v1
+    models:
+      - name: __GLM__

@@ -8,5 +8,5 @@ function _pixeh_function --description "Run Pi agent headlessly with a prompted 
     return 1
   end
 
-  pi-agent "$prompt" -m 'openrouter-preset/@preset/glm-4-7'
+  pi-agent "$prompt" -m 'openrouter-preset/@preset/__GLM_NONDOT__'
 end
