@@ -108,7 +108,7 @@ usage_import() {
 
 # shellcheck disable=SC2329 # Invoked via trap
 usage_export() {
-  if [ -z "$MANAGEMENT_KEY" ]; then
+  if [ -z "${MANAGEMENT_KEY:-}" ] || [ -z "${USAGE_EXPORT_FILE:-}" ]; then
     return 0
   fi
   mkdir -p "$(dirname "$USAGE_EXPORT_FILE")"
@@ -147,6 +147,7 @@ if [ "$(uname)" = "Linux" ] && command -v docker >/dev/null 2>&1; then
     echo "⏭️ Skipping docker pull (docker not accessible)"
   fi
 
+  docker stop cliproxyapi 2>/dev/null || true
   docker rm -f cliproxyapi 2>/dev/null || true
   mkdir -p "$CONFIG_DIR/logs"
   docker run --rm \

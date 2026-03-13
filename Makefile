@@ -778,11 +778,10 @@ launchctl-ollama: ## Restart ollama launchd agent.
 systemctl: systemctl-cliproxyapi systemctl-code-syncer systemctl-docker-postgres systemctl-dotfiles-updater systemctl-ollama systemctl-openclaw ## Restart all systemd user services.
 
 .PHONY: systemctl-cliproxyapi
-systemctl-cliproxyapi: ## Pull latest image and restart cliproxyapi systemd user service.
-	@echo "🔄 Restarting cliproxyapi..."
+systemctl-cliproxyapi: ## Reload systemd units for cliproxyapi (home-manager handles restart).
+	@echo "🔄 Reloading cliproxyapi..."
 	@systemctl --user daemon-reload
-	@systemctl --user restart cliproxyapi.service || true
-	@echo "✅ cliproxyapi restarted"
+	@echo "✅ cliproxyapi reloaded"
 
 .PHONY: systemctl-code-syncer
 systemctl-code-syncer: ## Restart code-syncer systemd user service.
