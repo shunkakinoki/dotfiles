@@ -1,0 +1,13 @@
+wh yis stop hooks stuck ⏺ Now vim.pack.update() writes through the symlink into the repo's nvim-pack-lock.json, which gets picked up by the upgrade
+   PR.                                                                                    
+
+✳ Percolating… (running stop hooks… 1/4 · 3m 26s · ↓ 944 tokens · thinking)                                                
+  ⎿  Tip: Use /btw to ask a quick side question without interrupting Claude's current work
+
+---
+
+yes pleaes
+
+---
+
+modify @config/claude/settings.json
