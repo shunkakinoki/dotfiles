@@ -23,6 +23,7 @@ let
 
   startScript = pkgs.replaceVars ./scripts/start.sh {
     sed = "${pkgs.gnused}/bin/sed";
+    aws = "${pkgs.awscli2}/bin/aws";
     common = commonScript;
   };
 
