@@ -24,7 +24,8 @@
     "keepRecentTokens": 20000
   },
   "packages": [
-    "https://github.com/davebcn87/pi-autoresearch"
+    "https://github.com/davebcn87/pi-autoresearch",
+    "https://github.com/cagdotin/agents"
   ],
   "skills": [],
   "retry": {
