@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "b185be8c0859",
+  "strategy": "manual-commit",
+  "branch": "uv-bun-bump",
+  "checkpoints_count": 1,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/b1/85be8c0859/0/metadata.json",
+      "transcript": "/b1/85be8c0859/0/full.jsonl",
+      "content_hash": "/b1/85be8c0859/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 30,
+    "cache_creation_tokens": 49021,
+    "cache_read_tokens": 1037291,
+    "output_tokens": 16877,
+    "api_call_count": 24
+  }
+}
