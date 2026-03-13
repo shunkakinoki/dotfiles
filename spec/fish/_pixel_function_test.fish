@@ -3,15 +3,15 @@ source $fn/_pixel_function.fish
 
 # ── no args: interactive mode ─────────────────────────────
 set log1 (mktemp)
-function pi-agent; echo $argv >> $log1; end
+function pi; echo $argv >> $log1; end
 
 _pixel_function
 
-@test "no args calls pi-agent with local Qwen model" (grep -c "lmstudio/qwen/qwen3.5-9b" $log1) -ge 1
+@test "no args calls pi with local Qwen model" (grep -c "lmstudio/qwen/qwen3.5-9b" $log1) -ge 1
 
 # ── with args: builds prompt ──────────────────────────────
 set log2 (mktemp)
-function pi-agent; echo $argv >> $log2; end
+function pi; echo $argv >> $log2; end
 
 _pixel_function hello world
 

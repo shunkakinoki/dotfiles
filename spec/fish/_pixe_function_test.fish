@@ -3,15 +3,15 @@ source $fn/_pixe_function.fish
 
 # ── no args: interactive mode ─────────────────────────────
 set log1 (mktemp)
-function pi-agent; echo $argv >> $log1; end
+function pi; echo $argv >> $log1; end
 
 _pixe_function
 
-@test "no args calls pi-agent with cliproxyapi model" (grep -c "cliproxyapi/glm-4.7" $log1) -ge 1
+@test "no args calls pi with cliproxyapi model" (grep -c "cliproxyapi/glm-4.7" $log1) -ge 1
 
 # ── with args: builds prompt ──────────────────────────────
 set log2 (mktemp)
-function pi-agent; echo $argv >> $log2; end
+function pi; echo $argv >> $log2; end
 
 _pixe_function hello world
 
