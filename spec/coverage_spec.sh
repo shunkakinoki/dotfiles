@@ -53,6 +53,10 @@ It 'has spec file for home-manager/services/cliproxyapi/scripts/backup-auth.sh'
 The path "spec/cliproxyapi_backup_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/cliproxyapi/scripts/common.sh'
+The path "spec/cliproxyapi_backup_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/code-syncer/sync.sh'
 The path "spec/code_syncer_spec.sh" should be exist
 End
@@ -152,6 +156,7 @@ home-manager/programs/neovim/run_tests.sh
 home-manager/programs/tmux/session-logger.sh
 home-manager/services/brew-upgrader/upgrade.sh
 home-manager/services/cliproxyapi/scripts/backup.sh
+home-manager/services/cliproxyapi/scripts/common.sh
 home-manager/services/cliproxyapi/scripts/hydrate.sh
 home-manager/services/cliproxyapi/scripts/start.sh
 home-manager/services/cliproxyapi/scripts/wrapper.sh

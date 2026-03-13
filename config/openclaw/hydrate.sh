@@ -9,6 +9,7 @@ STATE_DIR="${OPENCLAW_STATE_DIR:-${HOME}/.openclaw}"
 CONFIG="${OPENCLAW_CONFIG_PATH:-${STATE_DIR}/openclaw.json}"
 TEMPLATE="@template@"
 SECRETS_DIR="${HOME}/.config/openclaw"
+CLIPROXY_CONFIG="${OPENCLAW_CLIPROXY_CONFIG_PATH:-${HOME}/.cli-proxy-api/config.yaml}"
 ENV_FILE="${HOME}/dotfiles/.env"
 
 # Source .env if it exists
@@ -30,6 +31,23 @@ read_secret() {
   echo ""
 }
 
+read_cliproxy_api_key_from_config() {
+  local config_file="$1"
+  [ -f "$config_file" ] || return 0
+
+  awk '
+    /^api-keys:/ { in_api_keys = 1; next }
+    in_api_keys && /^  - / {
+      value = $0
+      sub(/^  - "/, "", value)
+      sub(/"$/, "", value)
+      print value
+      exit
+    }
+    in_api_keys && /^[^[:space:]]/ { exit }
+  ' "$config_file"
+}
+
 # Load gateway token (required for both modes)
 GATEWAY_TOKEN="${OPENCLAW_GATEWAY_TOKEN:-${GATEWAY_TOKEN:-$(read_secret "${SECRETS_DIR}/gateway-token")}}"
 
@@ -42,7 +60,17 @@ mkdir -p "$STATE_DIR"
 
 if [ "$MODE" = "gateway" ]; then
   # Gateway mode (Kyber): hydrate full template and start gateway
-  CLIPROXY_API_KEY="${OPENCLAW_CLIPROXY_API_KEY:-${CLIPROXY_API_KEY:-$(read_secret "${SECRETS_DIR}/cliproxy-key")}}"
+  cliproxy_api_key_from_env="${CLIPROXY_API_KEY:-}"
+  CLIPROXY_API_KEY="${OPENCLAW_CLIPROXY_API_KEY:-}"
+  if [ -z "$CLIPROXY_API_KEY" ]; then
+    CLIPROXY_API_KEY="$(read_cliproxy_api_key_from_config "$CLIPROXY_CONFIG")"
+  fi
+  if [ -z "$CLIPROXY_API_KEY" ]; then
+    CLIPROXY_API_KEY="$cliproxy_api_key_from_env"
+  fi
+  if [ -z "$CLIPROXY_API_KEY" ]; then
+    CLIPROXY_API_KEY="$(read_secret "${SECRETS_DIR}/cliproxy-key")"
+  fi
   TELEGRAM_TOKEN="${OPENCLAW_TELEGRAM_TOKEN:-${TELEGRAM_TOKEN:-$(read_secret "${SECRETS_DIR}/telegram-token")}}"
   WHATSAPP_ALLOW_FROM="${OPENCLAW_WHATSAPP_ALLOW_FROM:-${WHATSAPP_ALLOW_FROM:-$(read_secret "${SECRETS_DIR}/whatsapp-allow-from")}}"
   ANTHROPIC_API_KEY="${OPENCLAW_ANTHROPIC_API_KEY:-${ANTHROPIC_API_KEY:-$(read_secret "${SECRETS_DIR}/anthropic-key")}}"

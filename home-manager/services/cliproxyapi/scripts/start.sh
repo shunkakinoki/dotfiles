@@ -1,74 +1,31 @@
 #!/usr/bin/env bash
 # shellcheck source=/dev/null
 set -euo pipefail
+. "@common@"
 
 CONFIG_DIR="${HOME}/.cli-proxy-api"
 TEMPLATE="$CONFIG_DIR/config.template.yaml"
 CONFIG="$CONFIG_DIR/config.yaml"
-ENV_FILE="${HOME}/dotfiles/.env"
 AUTH_DIR="${CONFIG_DIR}/objectstore/auths"
 USAGE_EXPORT_FILE="${CONFIG_DIR}/usage-export.json"
 MANAGEMENT_URL="${CLIPROXY_MANAGEMENT_URL:-http://127.0.0.1:8317/v0/management}"
 
-if [ -f "$ENV_FILE" ]; then
-  set -a
-  . "$ENV_FILE"
-  set +a
-fi
-
-strip_quotes() {
-  local v="$1"
-  v="${v%\"}"
-  v="${v#\"}"
-  printf '%s' "$v"
-}
-OBJECTSTORE_ENDPOINT="$(strip_quotes "${OBJECTSTORE_ENDPOINT:-}")"
-OBJECTSTORE_BUCKET="$(strip_quotes "${OBJECTSTORE_BUCKET:-cliproxyapi}")"
-OBJECTSTORE_ACCESS_KEY="$(strip_quotes "${OBJECTSTORE_ACCESS_KEY:-}")"
-OBJECTSTORE_SECRET_KEY="$(strip_quotes "${OBJECTSTORE_SECRET_KEY:-}")"
+cliproxy_init_objectstore_env
 OBJECTSTORE_LOCAL_PATH="$CONFIG_DIR"
 MANAGEMENT_PASSWORD="${CLIPROXY_MANAGEMENT_PASSWORD:-}"
 MANAGEMENT_KEY="${CLIPROXY_MANAGEMENT_PASSWORD:-${CLIPROXY_MANAGEMENT_KEY:-}}"
 export OBJECTSTORE_ENDPOINT OBJECTSTORE_BUCKET OBJECTSTORE_ACCESS_KEY OBJECTSTORE_SECRET_KEY OBJECTSTORE_LOCAL_PATH MANAGEMENT_PASSWORD
 
-if [ -n "$OBJECTSTORE_ENDPOINT" ] && [ -n "$OBJECTSTORE_ACCESS_KEY" ] && [ -n "$OBJECTSTORE_SECRET_KEY" ]; then
+if cliproxy_has_objectstore_credentials; then
   mkdir -p "$AUTH_DIR"
 
   if [ -z "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
     echo "⚠️  Local auth cache empty; hydrating from S3" >&2
-    AWS_ACCESS_KEY_ID="$OBJECTSTORE_ACCESS_KEY" \
-      AWS_SECRET_ACCESS_KEY="$OBJECTSTORE_SECRET_KEY" \
-      @aws@ s3 sync \
-      --endpoint-url="$OBJECTSTORE_ENDPOINT" \
-      --no-progress \
-      "s3://${OBJECTSTORE_BUCKET}/auths/" \
-      "$AUTH_DIR/" || true
-
-    AWS_ACCESS_KEY_ID="$OBJECTSTORE_ACCESS_KEY" \
-      AWS_SECRET_ACCESS_KEY="$OBJECTSTORE_SECRET_KEY" \
-      @aws@ s3 sync \
-      --endpoint-url="$OBJECTSTORE_ENDPOINT" \
-      --no-progress \
-      "s3://${OBJECTSTORE_BUCKET}/backup/auths/" \
-      "$AUTH_DIR/" || true
+    cliproxy_sync_auth_from_s3 "$AUTH_DIR"
   fi
 
   if [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
-    AWS_ACCESS_KEY_ID="$OBJECTSTORE_ACCESS_KEY" \
-      AWS_SECRET_ACCESS_KEY="$OBJECTSTORE_SECRET_KEY" \
-      @aws@ s3 sync \
-      --endpoint-url="$OBJECTSTORE_ENDPOINT" \
-      --no-progress \
-      "$AUTH_DIR/" \
-      "s3://${OBJECTSTORE_BUCKET}/auths/" || true
-
-    AWS_ACCESS_KEY_ID="$OBJECTSTORE_ACCESS_KEY" \
-      AWS_SECRET_ACCESS_KEY="$OBJECTSTORE_SECRET_KEY" \
-      @aws@ s3 sync \
-      --endpoint-url="$OBJECTSTORE_ENDPOINT" \
-      --no-progress \
-      "$AUTH_DIR/" \
-      "s3://${OBJECTSTORE_BUCKET}/backup/auths/" || true
+    cliproxy_sync_auth_to_s3 "$AUTH_DIR"
   fi
 fi
 
@@ -151,7 +108,7 @@ usage_import() {
 
 # shellcheck disable=SC2329 # Invoked via trap
 usage_export() {
-  if [ -z "$MANAGEMENT_KEY" ]; then
+  if [ -z "${MANAGEMENT_KEY:-}" ] || [ -z "${USAGE_EXPORT_FILE:-}" ]; then
     return 0
   fi
   mkdir -p "$(dirname "$USAGE_EXPORT_FILE")"
@@ -190,6 +147,7 @@ if [ "$(uname)" = "Linux" ] && command -v docker >/dev/null 2>&1; then
     echo "⏭️ Skipping docker pull (docker not accessible)"
   fi
 
+  docker stop cliproxyapi 2>/dev/null || true
   docker rm -f cliproxyapi 2>/dev/null || true
   mkdir -p "$CONFIG_DIR/logs"
   docker run --rm \

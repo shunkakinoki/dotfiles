@@ -30,31 +30,13 @@ This directory contains the Nix-based configuration for the cliproxyapi service 
 ~/.ccs/cliproxy/auth/              # CCS auth directory (synced from local)
 
 S3 Storage:
-├── s3://cliproxyapi/auths/        # Primary storage
-└── s3://cliproxyapi/backup/auths/ # Redundant backup
+└── s3://cliproxyapi/auths/        # Auth storage
 ```
 
 ## Data Flow
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                     S3 (Source of Truth)                │
-│  ┌──────────────┐         ┌───────────────────────┐     │
-│  │ auths/       │         │ backup/auths/         │     │
-│  └──────┬───────┘         └───────────┬───────────┘     │
-└─────────┼─────────────────────────────┼─────────────────┘
-          │                             │
-          ▼         hydrate.sh          ▼
-┌─────────────────────────────────────────────────────────┐
-│              ~/.cli-proxy-api/objectstore/auths/        │
-│                      (local cache)                      │
-└─────────────────────────┬───────────────────────────────┘
-                          │
-                          ▼  backup.sh (on file change)
-┌─────────────────────────────────────────────────────────┐
-│                  ~/.ccs/cliproxy/auth/                  │
-│                    (CCS compatibility)                  │
-└─────────────────────────────────────────────────────────┘
+``` 
+S3 auths/ -> ~/.cli-proxy-api/objectstore/auths -> ~/.ccs/cliproxy/auth
 ```
 
 ### Pre-start guard (service)
@@ -72,14 +54,12 @@ key error when S3 already has auths.
 ### Hydrate (on activation/switch)
 
 1. Pull from S3 `auths/` → local
-2. Pull from S3 `backup/auths/` → local (takes precedence, overwrites conflicts)
-3. Copy local → CCS auth dir
+2. Copy local → CCS auth dir
 
 ### Backup (on file change)
 
 1. Push local → S3 `auths/`
-2. Push local → S3 `backup/auths/`
-3. Copy local → CCS auth dir
+2. Copy local → CCS auth dir
 
 ### WatchPaths (file watchers)
 

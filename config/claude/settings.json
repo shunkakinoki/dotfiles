@@ -330,6 +330,8 @@
       "Bash(rm -rf /*:*)",
       "Bash(rm -rf ~/*:*)",
       "Bash(chmod -R 777:*)",
+      "Bash(docker system prune -a:*)",
+      "Bash(docker system prune -f:*)",
       "Bash(mkfs:*)",
       "Bash(dd if=:*)",
       "Bash(git push --force origin main:*)",
