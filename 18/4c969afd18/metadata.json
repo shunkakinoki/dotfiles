@@ -3,7 +3,7 @@
   "checkpoint_id": "184c969afd18",
   "strategy": "manual-commit",
   "branch": "fix/cliproxyapi",
-  "checkpoints_count": 1,
+  "checkpoints_count": 2,
   "files_touched": [
     "config/claude/settings.json",
     "home-manager/services/cliproxyapi/scripts/common.sh"
@@ -14,13 +14,19 @@
       "transcript": "/18/4c969afd18/0/full.jsonl",
       "content_hash": "/18/4c969afd18/0/content_hash.txt",
       "prompt": "/18/4c969afd18/0/prompt.txt"
+    },
+    {
+      "metadata": "/18/4c969afd18/1/metadata.json",
+      "transcript": "/18/4c969afd18/1/full.jsonl",
+      "content_hash": "/18/4c969afd18/1/content_hash.txt",
+      "prompt": "/18/4c969afd18/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 5,
-    "cache_creation_tokens": 36231,
-    "cache_read_tokens": 48721,
-    "output_tokens": 339,
-    "api_call_count": 3
+    "input_tokens": 89,
+    "cache_creation_tokens": 186802,
+    "cache_read_tokens": 5316829,
+    "output_tokens": 18406,
+    "api_call_count": 70
   }
 }
