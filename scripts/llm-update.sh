@@ -63,7 +63,9 @@ declare -A TEMPLATES=(
   ["home-manager/programs/fish/functions/_coxel_function.tpl.fish"]=home-manager/programs/fish/functions/_coxel_function.fish
   ["home-manager/programs/fish/functions/_coxelh_function.tpl.fish"]=home-manager/programs/fish/functions/_coxelh_function.fish
   ["home-manager/programs/fish/functions/_ocxe_function.tpl.fish"]=home-manager/programs/fish/functions/_ocxe_function.fish
+  ["home-manager/programs/fish/functions/_ocxel_function.tpl.fish"]=home-manager/programs/fish/functions/_ocxel_function.fish
   ["home-manager/programs/fish/functions/_ocxeh_function.tpl.fish"]=home-manager/programs/fish/functions/_ocxeh_function.fish
+  ["home-manager/programs/fish/functions/_ocxelh_function.tpl.fish"]=home-manager/programs/fish/functions/_ocxelh_function.fish
   ["home-manager/programs/fish/functions/_pixe_function.tpl.fish"]=home-manager/programs/fish/functions/_pixe_function.fish
   ["home-manager/programs/fish/functions/_pixeh_function.tpl.fish"]=home-manager/programs/fish/functions/_pixeh_function.fish
 )

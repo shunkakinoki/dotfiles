@@ -9,6 +9,7 @@ suppress_unstable_features_warning = true
 web_search = "cached"
 model = "__GPT_CODEX__"
 model_reasoning_effort = "xhigh"
+oss_provider = "lmstudio"
 
 [features]
 ghost_commit = false
@@ -53,3 +54,4 @@ env_key = "OPENROUTER_API_KEY"
 [profiles.qwen-local]
 model = "__QWEN_LOCAL__"
 model_provider = "lmstudio"
+model_reasoning_effort = "minimal"

@@ -115,7 +115,9 @@
       kyberd = "_kyberd_function";
       kyberm = "_kyberm_function";
       ocxe = "_ocxe_function";
+      ocxel = "_ocxel_function";
       ocxeh = "_ocxeh_function";
+      ocxelh = "_ocxelh_function";
       pixe = "_pixe_function";
       pixeh = "_pixeh_function";
       sag = "_ssh_add_github";
@@ -209,7 +211,9 @@
         "_kyberd_function"
         "_kyberm_function"
         "_ocxe_function"
+        "_ocxel_function"
         "_ocxeh_function"
+        "_ocxelh_function"
         "_pixe_function"
         "_pixeh_function"
         "_ssh_add_github"
