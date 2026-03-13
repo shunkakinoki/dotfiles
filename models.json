@@ -2,10 +2,10 @@
   "claude-opus": "claude-opus-4-6",
   "claude-sonnet": "claude-sonnet-4-6",
   "claude-haiku": "claude-haiku-4-5-20251001",
-  "gpt": "gpt-5.2",
+  "gpt": "gpt-5.4",
   "gpt-codex": "gpt-5.3-codex",
-  "gemini-pro": "gemini-3-pro-preview",
-  "gemini-flash": "gemini-3-flash-preview",
+  "gemini-pro": "gemini-3.1-pro-preview",
+  "gemini-flash": "gemini-3.1-flash-preview",
   "glm": "glm-4.7",
   "minimax": "minimax-m2.5"
 }
