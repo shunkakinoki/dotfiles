@@ -6,18 +6,25 @@ SCRIPTS_DIR="$PWD/home-manager/services/cliproxyapi/scripts"
 
 # Preprocess scripts once at describe-time
 __PREPROCESSED_DIR=$(mktemp -d)
+__COMMON_SCRIPT="$__PREPROCESSED_DIR/common.sh"
 __HYDRATE_SCRIPT="$__PREPROCESSED_DIR/hydrate.sh"
 __BACKUP_SCRIPT="$__PREPROCESSED_DIR/backup.sh"
 
-# Preprocess hydrate.sh
+# Preprocess common.sh
 sed \
   -e 's|@aws@|aws|g' \
+  "$SCRIPTS_DIR/common.sh" >"$__COMMON_SCRIPT"
+chmod +x "$__COMMON_SCRIPT"
+
+# Preprocess hydrate.sh
+sed \
+  -e 's|@common@|'"$__COMMON_SCRIPT"'|g' \
   "$SCRIPTS_DIR/hydrate.sh" >"$__HYDRATE_SCRIPT"
 chmod +x "$__HYDRATE_SCRIPT"
 
 # Preprocess backup.sh
 sed \
-  -e 's|@aws@|aws|g' \
+  -e 's|@common@|'"$__COMMON_SCRIPT"'|g' \
   "$SCRIPTS_DIR/backup.sh" >"$__BACKUP_SCRIPT"
 chmod +x "$__BACKUP_SCRIPT"
 
@@ -50,11 +57,22 @@ cleanup() {
 Before 'setup'
 After 'cleanup'
 
-It 'pulls from S3 auths and backup/auths'
+It 'pulls from the configured S3 auth path'
 When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$__HYDRATE_SCRIPT"'" 2>&1; cat "$MOCK_LOG" 2>/dev/null || true'
 The status should be success
 The output should include 's3://cliproxyapi/auths/'
-The output should include 's3://cliproxyapi/backup/auths/'
+End
+
+It 'uses OBJECTSTORE_BUCKET for hydrate paths'
+cat >"$TEMP_HOME/dotfiles/.env" <<'ENV'
+OBJECTSTORE_ACCESS_KEY=test_key
+OBJECTSTORE_SECRET_KEY=test_secret
+OBJECTSTORE_ENDPOINT=https://test.endpoint.com
+OBJECTSTORE_BUCKET=custom-bucket
+ENV
+When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$__HYDRATE_SCRIPT"'" 2>&1; cat "$MOCK_LOG" 2>/dev/null || true'
+The status should be success
+The output should include 's3://custom-bucket/auths/'
 End
 
 It 'skips when credentials are missing'
@@ -105,7 +123,19 @@ touch "$TEMP_HOME/.cli-proxy-api/objectstore/auths/test-auth.json"
 When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$__BACKUP_SCRIPT"'" 2>&1; cat "$MOCK_LOG" 2>/dev/null || true'
 The status should be success
 The output should include 's3://cliproxyapi/auths/'
-The output should include 's3://cliproxyapi/backup/auths/'
+End
+
+It 'uses OBJECTSTORE_BUCKET for backup paths'
+cat >"$TEMP_HOME/dotfiles/.env" <<'ENV'
+OBJECTSTORE_ACCESS_KEY=test_key
+OBJECTSTORE_SECRET_KEY=test_secret
+OBJECTSTORE_ENDPOINT=https://test.endpoint.com
+OBJECTSTORE_BUCKET=custom-bucket
+ENV
+touch "$TEMP_HOME/.cli-proxy-api/objectstore/auths/test-auth.json"
+When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$__BACKUP_SCRIPT"'" 2>&1; cat "$MOCK_LOG" 2>/dev/null || true'
+The status should be success
+The output should include 's3://custom-bucket/auths/'
 End
 
 It 'skips when credentials are missing'

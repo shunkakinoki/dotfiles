@@ -9,17 +9,21 @@ let
     config.home.homeDirectory
       or (if pkgs.stdenv.isDarwin then builtins.getEnv "HOME" else "/home/${config.home.username}");
 
-  hydrateScript = pkgs.replaceVars ./scripts/hydrate.sh {
+  commonScript = pkgs.replaceVars ./scripts/common.sh {
     aws = "${pkgs.awscli2}/bin/aws";
   };
 
+  hydrateScript = pkgs.replaceVars ./scripts/hydrate.sh {
+    common = commonScript;
+  };
+
   backupScript = pkgs.replaceVars ./scripts/backup.sh {
-    aws = "${pkgs.awscli2}/bin/aws";
+    common = commonScript;
   };
 
   startScript = pkgs.replaceVars ./scripts/start.sh {
     sed = "${pkgs.gnused}/bin/sed";
-    aws = "${pkgs.awscli2}/bin/aws";
+    common = commonScript;
   };
 
   # Smart wrapper that handles both NixOS and non-NixOS Linux
@@ -45,7 +49,7 @@ let
   '';
 
   wrapperScript = pkgs.replaceVars ./scripts/wrapper.sh {
-    aws = "${pkgs.awscli2}/bin/aws";
+    common = commonScript;
   };
 
   cliWrapper = pkgs.writeShellScriptBin "cliproxyapi" (builtins.readFile wrapperScript);

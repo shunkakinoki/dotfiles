@@ -31,10 +31,20 @@ It 'reads from dotfiles .env file'
 When run bash -c "grep 'ENV_FILE=' '$SCRIPT'"
 The output should include 'dotfiles/.env'
 End
+
+It 'uses cliproxyapi config as the Kyber source of truth'
+When run bash -c "grep 'CLIPROXY_CONFIG=' '$SCRIPT'"
+The output should include '.cli-proxy-api/config.yaml'
+End
 End
 
 Describe 'secret loading'
-It 'loads CLIPROXY_API_KEY from file'
+It 'loads CLIPROXY_API_KEY from cliproxyapi config root'
+When run bash -c "grep 'read_cliproxy_api_key_from_config' '$SCRIPT'"
+The output should include 'read_cliproxy_api_key_from_config'
+End
+
+It 'falls back to cliproxy key file'
 When run bash -c "grep 'CLIPROXY_API_KEY' '$SCRIPT'"
 The output should include 'cliproxy-key'
 End
@@ -57,6 +67,70 @@ End
 It 'loads WHATSAPP_ALLOW_FROM from file'
 When run bash -c "grep 'WHATSAPP_ALLOW_FROM' '$SCRIPT'"
 The output should include 'whatsapp-allow-from'
+End
+End
+
+Describe 'gateway api key resolution'
+setup_gateway() {
+  TEMP_HOME=$(mktemp -d)
+  mkdir -p "$TEMP_HOME/.cli-proxy-api"
+  mkdir -p "$TEMP_HOME/.config/openclaw"
+  mkdir -p "$TEMP_HOME/openclaw/bin"
+  mkdir -p "$TEMP_HOME/chromium/bin"
+  mkdir -p "$TEMP_HOME/templates"
+
+  cat >"$TEMP_HOME/.cli-proxy-api/config.yaml" <<'YAML'
+api-keys:
+  - "from-cliproxy-config"
+YAML
+
+  cat >"$TEMP_HOME/.config/openclaw/gateway-token" <<'EOF'
+gateway-token
+EOF
+
+  cat >"$TEMP_HOME/.config/openclaw/cliproxy-key" <<'EOF'
+from-secret-file
+EOF
+
+  cat >"$TEMP_HOME/templates/openclaw.json" <<'EOF'
+{"apiKey":"__CLIPROXY_API_KEY__","token":"__GATEWAY_TOKEN__","workspace":"__WORKSPACE__","home":"__HOME__","chromium":"__CHROMIUM_PATH__"}
+EOF
+
+  cat >"$TEMP_HOME/openclaw/bin/openclaw" <<'EOF'
+#!/usr/bin/env bash
+exit 0
+EOF
+  chmod +x "$TEMP_HOME/openclaw/bin/openclaw"
+
+  cat >"$TEMP_HOME/chromium/bin/chromium" <<'EOF'
+#!/usr/bin/env bash
+exit 0
+EOF
+  chmod +x "$TEMP_HOME/chromium/bin/chromium"
+
+  PREPROCESSED_SCRIPT="$TEMP_HOME/hydrate.sh"
+  sed \
+    -e 's|@mode@|gateway|g' \
+    -e 's|@sed@|sed|g' \
+    -e 's|@template@|'"$TEMP_HOME"'/templates/openclaw.json|g' \
+    -e 's|@chromium@|'"$TEMP_HOME"'/chromium|g' \
+    -e 's|@openclaw@|'"$TEMP_HOME"'/openclaw|g' \
+    "$SCRIPT" >"$PREPROCESSED_SCRIPT"
+  chmod +x "$PREPROCESSED_SCRIPT"
+}
+
+cleanup_gateway() {
+  rm -rf "$TEMP_HOME"
+}
+
+Before 'setup_gateway'
+After 'cleanup_gateway'
+
+It 'prefers the root api-keys entry from cliproxyapi config over the secret file'
+When run bash -c 'HOME="'"$TEMP_HOME"'" OPENCLAW_CONFIG_PATH="'"$TEMP_HOME"'/generated-openclaw.json" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/generated-openclaw.json"'
+The status should be success
+The output should include 'from-cliproxy-config'
+The output should not include 'from-secret-file'
 End
 End
 
