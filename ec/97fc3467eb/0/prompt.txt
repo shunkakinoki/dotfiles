@@ -1,0 +1,13 @@
+how to fix dotfiles on  main [$] is 📦 v0.1.0 via 🥟 v1.3.10 via 🐍 v3.13.12 via 🦀 v1.94.0 on ☁️  shun@horizon.io 
+❯ uv add marker-pdf
+  × No solution found when resolving dependencies:
+  ╰─▶ Because only aider-chat<=0.86.2 is available and aider-chat==0.86.2 depends on pillow==12.1.1, we can conclude that
+      aider-chat>=0.86.2 depends on pillow==12.1.1.
+      And because all versions of marker-pdf depend on pillow>=10.1.0,<11.0.0, we can conclude that aider-chat>=0.86.2
+      and all versions of marker-pdf are incompatible.
+      And because your project depends on aider-chat>=0.86.2 and marker-pdf, we can conclude that your project's
+      requirements are unsatisfiable.
+  help: If you want to add the package regardless of the failed resolution, provide the `--frozen` flag to skip locking
+        and syncing.
+dotfiles on  main [$!] is 📦 v0.1.0 via 🥟 v1.3.10 via 🐍 v3.13.12 via 🦀 v1.94.0 on ☁️  shun@horizon.io 
+❯
