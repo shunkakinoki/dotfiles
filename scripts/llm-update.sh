@@ -54,6 +54,9 @@ declare -A TEMPLATES=(
   ["config/ccs/glm.settings.tpl.json"]=config/ccs/glm.settings.template.json
   ["config/codex/config.tpl.toml"]=config/codex/config.toml
   ["config/cliproxyapi/config.tpl.yaml"]=config/cliproxyapi/config.template.yaml
+  ["config/pi/models.tpl.json"]=config/pi/models.json
+  ["home-manager/programs/fish/functions/_coxe_function.tpl.fish"]=home-manager/programs/fish/functions/_coxe_function.fish
+  ["home-manager/programs/fish/functions/_coxeh_function.tpl.fish"]=home-manager/programs/fish/functions/_coxeh_function.fish
 )
 
 echo "Updating tool configs from $MODELS ..."
