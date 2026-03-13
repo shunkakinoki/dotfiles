@@ -86,6 +86,7 @@
         "hooks": [
           {
             "command": "git-ai checkpoint claude --hook-input stdin",
+            "timeout": 10,
             "type": "command"
           }
         ],
@@ -147,6 +148,7 @@
         "hooks": [
           {
             "command": "git-ai checkpoint claude --hook-input stdin",
+            "timeout": 10,
             "type": "command"
           }
         ],
