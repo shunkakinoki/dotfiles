@@ -8,5 +8,5 @@ function _coxelh_function --description "Run Codex headlessly with the local Qwe
     return 1
   end
 
-  codex exec --oss --local-provider lmstudio --model 'qwen/qwen3.5-9b' --full-auto -c model_reasoning_effort=minimal -- "$prompt"
+  codex exec --oss --local-provider lmstudio --model '__QWEN_LOCAL__' --full-auto -c model_reasoning_effort=minimal -- "$prompt"
 end

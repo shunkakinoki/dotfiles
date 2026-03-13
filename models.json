@@ -7,5 +7,6 @@
   "gemini-pro": "gemini-3.1-pro-preview",
   "gemini-flash": "gemini-3.1-flash-preview",
   "glm": "glm-4.7",
-  "minimax": "minimax-m2.5"
+  "minimax": "minimax-m2.5",
+  "qwen-local": "qwen/qwen3.5-9b"
 }
