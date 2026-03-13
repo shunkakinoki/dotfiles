@@ -21,9 +21,10 @@
     "reserveTokens": 16384,
     "keepRecentTokens": 20000
   },
-  "skills": {
-    "enabled": true
-  },
+  "packages": [
+    "https://github.com/davebcn87/pi-autoresearch"
+  ],
+  "skills": [],
   "retry": {
     "enabled": true,
     "maxRetries": 3,
