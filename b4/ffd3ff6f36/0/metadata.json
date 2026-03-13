@@ -1,0 +1,40 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "b4ffd3ff6f36",
+  "session_id": "67fdc35c-ce22-4c19-80bc-5934e5b433b9",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-13T10:33:53.544512Z",
+  "branch": "uv-bun-bump",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "config/pi/models.json",
+    "config/pi/models.tpl.json",
+    "home-manager/programs/fish/functions/_coxe_function.fish",
+    "home-manager/programs/fish/functions/_coxe_function.tpl.fish",
+    "home-manager/programs/fish/functions/_coxeh_function.fish",
+    "home-manager/programs/fish/functions/_coxeh_function.tpl.fish",
+    "scripts/llm-update.sh"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-4-6",
+  "turn_id": "60499000702d",
+  "token_usage": {
+    "input_tokens": 24,
+    "cache_creation_tokens": 47472,
+    "cache_read_tokens": 811473,
+    "output_tokens": 15718,
+    "api_call_count": 20
+  },
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-13T10:33:53.493899Z",
+    "agent_lines": 283,
+    "human_added": 74,
+    "human_modified": 3,
+    "human_removed": 0,
+    "total_committed": 360,
+    "agent_percentage": 78.61111111111111
+  }
+}

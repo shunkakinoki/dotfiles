@@ -1,0 +1,10 @@
+add pi models.json to the local tracked models.json SOTA model sync
+
+---
+
+no but it should sync to pi models.json using @scripts/llm-update.sh                                                     
+  ⎿  Read scripts/llm-update.sh (74 lines)
+  ⎿  Async hook Stop completed                                                                                             
+  ⎿  Async hook Stop completed                                                                                             
+                                                                                                                           
+❯ for coxe fish functions as well
