@@ -1,11 +1,11 @@
-function _pixe_function --description "Run Pi agent with a free-form prompt using the local Qwen model"
-  # Run Pi agent with a free-form prompt (spaces allowed) using the local Qwen model
+function _pixe_function --description "Run Pi agent with a free-form prompt"
+  # Run Pi agent with a free-form prompt (spaces allowed)
   # Usage: pixe [<prompt words...>]
 
   if test (count $argv) -eq 0
-    pi-agent -m 'lmstudio/qwen/qwen3.5-9b'
+    pi-agent -m 'openrouter-preset/@preset/glm-4-7'
   else
     set -l prompt (string join " " -- $argv)
-    pi-agent "$prompt" -m 'lmstudio/qwen/qwen3.5-9b'
+    pi-agent "$prompt" -m 'openrouter-preset/@preset/glm-4-7'
   end
 end

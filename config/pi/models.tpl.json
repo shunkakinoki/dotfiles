@@ -165,7 +165,7 @@
       "api": "openai-completions",
       "models": [
         {
-          "id": "@preset/glm-4-7",
+          "id": "@preset/__GLM_NONDOT__",
           "name": "GLM-4.7 (Z-AI)",
           "reasoning": false,
           "input": [

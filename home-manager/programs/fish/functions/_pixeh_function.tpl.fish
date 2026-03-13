@@ -1,5 +1,5 @@
-function _pixeh_function --description "Run Pi agent headlessly with the local Qwen model"
-  # Prompt for input and run Pi agent with the local Qwen model
+function _pixeh_function --description "Run Pi agent headlessly with a prompted input"
+  # Prompt for input and run Pi agent
   # Usage: pixeh
 
   read -P "Prompt: " prompt
@@ -8,5 +8,5 @@ function _pixeh_function --description "Run Pi agent headlessly with the local Q
     return 1
   end
 
-  pi-agent "$prompt" -m 'lmstudio/__QWEN_LOCAL__'
+  pi-agent "$prompt" -m 'openrouter-preset/@preset/__GLM_NONDOT__'
 end
