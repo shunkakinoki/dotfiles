@@ -35,7 +35,10 @@ while IFS= read -r line || [ -n "$line" ]; do
   # Parse optional alias (path:alias)
   alias_name=""
   case "$line" in
-  *:*) alias_name="${line##*:}"; line="${line%:*}" ;;
+  *:*)
+    alias_name="${line##*:}"
+    line="${line%:*}"
+    ;;
   esac
 
   # Expand ~ to $HOME
