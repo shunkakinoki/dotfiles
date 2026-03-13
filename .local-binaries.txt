@@ -1,12 +1,15 @@
 # Local development binaries
 # Add one binary path per line
 # Lines starting with # are comments
+# Use path:alias to create a symlink with a custom name (e.g., ~/path/to/pi:pir)
 
 ~/ghq/github.com/Dicklesworthstone/beads_viewer/bv
 ~/ghq/github.com/Dicklesworthstone/coding_agent_session_search/target/release/cass
 ~/ghq/github.com/Dicklesworthstone/cross_agent_sessions_resumer/target/release/casr
 ~/ghq/github.com/Dicklesworthstone/destructive_command_guard/target/release/dcg
+~/ghq/github.com/Dicklesworthstone/pi_agent_rust/target/release/pi:pir
 ~/ghq/github.com/Dicklesworthstone/ultimate_bug_scanner/ubs
 ~/ghq/github.com/nwiizo/ccswarm/target/release/ccswarm
+~/ghq/github.com/openai/symphony/elixir/bin/symphony
 ~/ghq/github.com/steveyegge/beads/bd
 ~/ghq/github.com/steveyegge/gastown/gt

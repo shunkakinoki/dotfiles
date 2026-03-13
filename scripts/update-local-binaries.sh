@@ -88,36 +88,82 @@ get_repo_name() {
   basename "$repo_dir"
 }
 
+# Find closest ancestor directory (from binary up to repo root) that has a build file
+find_build_dir() {
+  local repo_dir="$1"
+  local binary_path="$2"
+  # Expand ~
+  binary_path="${binary_path/#\~/$HOME}"
+
+  local dir
+  dir="$(dirname "$binary_path")"
+
+  # Walk up from binary dir to repo root (inclusive)
+  while true; do
+    if [ -f "$dir/Makefile" ] || [ -f "$dir/Cargo.toml" ] || [ -f "$dir/go.mod" ] || [ -f "$dir/mix.exs" ]; then
+      echo "$dir"
+      return 0
+    fi
+    [ "$dir" = "$repo_dir" ] && break
+    dir="$(dirname "$dir")"
+  done
+
+  # Fallback to repo root
+  echo "$repo_dir"
+}
+
 # Detect and run build command
 build_repo() {
   local repo_dir="$1"
+  local binary_path="${2:-}"
   local repo_name
   repo_name="$(get_repo_name "$repo_dir")"
 
   log_step "  Building $repo_name..."
 
-  if [ -f "$repo_dir/Makefile" ]; then
-    if make -C "$repo_dir" build 2>&1; then
+  # Use subdirectory build dir if binary path provided
+  local build_dir="$repo_dir"
+  if [ -n "$binary_path" ]; then
+    build_dir="$(find_build_dir "$repo_dir" "$binary_path")"
+  fi
+
+  # Install tools via mise if mise.toml is present
+  if [ -f "$build_dir/mise.toml" ] && command -v mise >/dev/null 2>&1; then
+    log_step "  Installing tools via mise..."
+    (cd "$build_dir" && mise install 2>&1) || true
+  fi
+
+  if [ -f "$build_dir/Makefile" ]; then
+    # Use mise exec if mise.toml present to ensure correct tool versions
+    local make_cmd="make"
+    if [ -f "$build_dir/mise.toml" ] && command -v mise >/dev/null 2>&1; then
+      make_cmd="mise exec -- make"
+    fi
+    # Run deps target first if the Makefile defines it
+    if (cd "$build_dir" && $make_cmd -n deps >/dev/null 2>&1); then
+      (cd "$build_dir" && $make_cmd deps 2>&1) || true
+    fi
+    if (cd "$build_dir" && $make_cmd build 2>&1); then
       return 0
     else
       return 1
     fi
-  elif [ -f "$repo_dir/Cargo.toml" ]; then
-    if (cd "$repo_dir" && cargo build --release 2>&1); then
+  elif [ -f "$build_dir/Cargo.toml" ]; then
+    if (cd "$build_dir" && cargo build --release 2>&1); then
       return 0
     else
       return 1
     fi
-  elif [ -f "$repo_dir/go.mod" ]; then
+  elif [ -f "$build_dir/go.mod" ]; then
     # Go project: build ./cmd/{repo_name} if it exists, otherwise build root
-    if [ -d "$repo_dir/cmd/$repo_name" ]; then
-      if (cd "$repo_dir" && go build "./cmd/$repo_name" 2>&1); then
+    if [ -d "$build_dir/cmd/$repo_name" ]; then
+      if (cd "$build_dir" && go build "./cmd/$repo_name" 2>&1); then
         return 0
       else
         return 1
       fi
     else
-      if (cd "$repo_dir" && go build 2>&1); then
+      if (cd "$build_dir" && go build 2>&1); then
         return 0
       else
         return 1
@@ -193,7 +239,7 @@ update_repo() {
   fi
 
   # Build
-  if build_repo "$repo_dir"; then
+  if build_repo "$repo_dir" "$binary_path"; then
     log_info "  ✅ $repo_name updated successfully"
     SUCCESSES+=("$repo_name")
   else
@@ -266,6 +312,11 @@ main() {
     if [ -n "$filter" ] && [[ ! $line =~ $filter ]]; then
       continue
     fi
+
+    # Strip optional alias suffix (path:alias)
+    case "$line" in
+    *:*) line="${line%:*}" ;;
+    esac
 
     # Get repo directory and check if already processed
     local repo_dir

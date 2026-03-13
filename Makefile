@@ -765,6 +765,7 @@ systemctl: systemctl-cliproxyapi systemctl-code-syncer systemctl-docker-postgres
 .PHONY: systemctl-cliproxyapi
 systemctl-cliproxyapi: ## Pull latest image and restart cliproxyapi systemd user service.
 	@echo "🔄 Restarting cliproxyapi..."
+	@systemctl --user daemon-reload
 	@systemctl --user restart cliproxyapi.service || true
 	@echo "✅ cliproxyapi restarted"
 
@@ -826,13 +827,18 @@ shell-test-dev: ## Run shell tests inside the Nix dev shell (mirrors CI).
 .PHONY: fish-test
 fish-test: ## Run fish function tests using fishtape.
 	@echo "🐟 Running fish function tests..."
-	@fish_errors=$$(mktemp); \
+	@if ! command -v fishtape >/dev/null 2>&1; then \
+	  echo "  fishtape not found, running inside Nix dev shell..."; \
+	  $(MAKE) fish-test-dev; \
+	else \
+	  fish_errors=$$(mktemp); \
 	  fishtape spec/fish/*_test.fish 2>"$$fish_errors"; \
 	  rc=$$?; \
 	  if [ -s "$$fish_errors" ]; then \
 	    echo "fish test stderr (failing):"; cat "$$fish_errors"; rm -f "$$fish_errors"; exit 1; \
 	  fi; \
-	  rm -f "$$fish_errors"; exit $$rc
+	  rm -f "$$fish_errors"; exit $$rc; \
+	fi
 
 .PHONY: fish-test-dev
 fish-test-dev: ## Run fish tests inside the Nix dev shell (mirrors CI).

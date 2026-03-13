@@ -86,6 +86,8 @@ openai-compatibility:
     api-key-entries:
       - api-key: "__OPENROUTER_API_KEY__"
     models:
+      - name: "openrouter/free"
+        alias: "free"
       - name: "@preset/glm-4-7"
         alias: "glm-4.7"
   - name: "z-ai"
