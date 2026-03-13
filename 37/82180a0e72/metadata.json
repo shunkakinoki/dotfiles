@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "3782180a0e72",
+  "strategy": "manual-commit",
+  "branch": "chore/track-llm-upgrade-templates",
+  "checkpoints_count": 1,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/37/82180a0e72/0/metadata.json",
+      "transcript": "/37/82180a0e72/0/full.jsonl",
+      "content_hash": "/37/82180a0e72/0/content_hash.txt",
+      "prompt": "/37/82180a0e72/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 84,
+    "cache_creation_tokens": 150571,
+    "cache_read_tokens": 5268108,
+    "output_tokens": 18067,
+    "api_call_count": 67
+  }
+}
