@@ -104,7 +104,7 @@ else
     "mode": "remote",
     "remote": {
       "transport": "direct",
-      "url": "wss://kyber.tail950b36.ts.net",
+      "url": "wss://kyber.tail950b36.ts.net:18789",
       "token": "${GATEWAY_TOKEN}"
     }
   }
