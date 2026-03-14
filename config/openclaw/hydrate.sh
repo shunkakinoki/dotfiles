@@ -87,6 +87,7 @@ if [ "$MODE" = "gateway" ]; then
     -e "s|__WORKSPACE__|${WORKSPACE}|g" \
     -e "s|__HOME__|${HOME}|g" \
     "$TEMPLATE" >"$CONFIG"
+  chmod 600 "$CONFIG"
 
   echo "Generated openclaw gateway config at $CONFIG" >&2
 
@@ -97,19 +98,20 @@ if [ "$MODE" = "gateway" ]; then
   exec @openclaw@/bin/openclaw gateway --port 18789 "$@"
 
 else
-  # Client mode (macOS): generate remote config with gateway token
+  # Client mode (macOS): connect through kyber's Tailscale Serve endpoint
   cat >"$CONFIG" <<EOF
 {
   "gateway": {
     "mode": "remote",
     "remote": {
       "transport": "direct",
-      "url": "wss://kyber.tail950b36.ts.net:18789",
+      "url": "wss://kyber.tail950b36.ts.net",
       "token": "${GATEWAY_TOKEN}"
     }
   }
 }
 EOF
+  chmod 600 "$CONFIG"
 
   echo "Generated openclaw client config at $CONFIG" >&2
 fi

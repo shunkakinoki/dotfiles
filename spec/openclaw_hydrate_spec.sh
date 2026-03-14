@@ -134,6 +134,42 @@ The output should not include 'from-secret-file'
 End
 End
 
+Describe 'client config generation'
+setup_client() {
+  TEMP_HOME=$(mktemp -d)
+  mkdir -p "$TEMP_HOME/.config/openclaw"
+
+  cat >"$TEMP_HOME/.config/openclaw/gateway-token" <<'EOF'
+gateway-token
+EOF
+
+  PREPROCESSED_SCRIPT="$TEMP_HOME/hydrate.sh"
+  sed \
+    -e 's|@mode@|client|g' \
+    -e 's|@sed@|sed|g' \
+    -e 's|@template@|/unused|g' \
+    -e 's|@chromium@|/unused|g' \
+    -e 's|@openclaw@|/unused|g' \
+    "$SCRIPT" >"$PREPROCESSED_SCRIPT"
+  chmod +x "$PREPROCESSED_SCRIPT"
+}
+
+cleanup_client() {
+  rm -rf "$TEMP_HOME"
+}
+
+Before 'setup_client'
+After 'cleanup_client'
+
+It 'writes the Tailscale Serve URL without the gateway port'
+When run bash -c 'HOME="'"$TEMP_HOME"'" OPENCLAW_CONFIG_PATH="'"$TEMP_HOME"'/generated-openclaw.json" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/generated-openclaw.json"'
+The status should be success
+The output should include '"transport": "direct"'
+The output should include '"url": "wss://kyber.tail950b36.ts.net"'
+The output should not include '18789'
+End
+End
+
 Describe 'config generation'
 It 'uses sed to substitute values in template'
 When run bash -c "grep '@sed@' '$SCRIPT'"

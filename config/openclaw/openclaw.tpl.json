@@ -786,13 +786,16 @@
   },
   "gateway": {
     "mode": "local",
-    "bind": "lan",
+    "bind": "loopback",
+    "tailscale": {
+      "mode": "serve"
+    },
     "controlUi": {
       "allowedOrigins": [
         "http://localhost:18789",
         "http://127.0.0.1:18789",
         "https://openclaw.shunkakinoki.com",
-        "https://kyber.tail950b36.ts.net:18789"
+        "https://kyber.tail950b36.ts.net"
       ]
     },
     "auth": {
