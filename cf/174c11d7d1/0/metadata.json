@@ -1,0 +1,34 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "cf174c11d7d1",
+  "session_id": "002a787f-a3b7-4a3a-b6e4-fe3a95615d0b",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-14T01:08:50.407058Z",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "config/openclaw/hydrate.sh",
+    "config/openclaw/openclaw.template.json",
+    "config/openclaw/openclaw.tpl.json",
+    "spec/openclaw_hydrate_spec.sh"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-4-6",
+  "turn_id": "a592d47d4424",
+  "token_usage": {
+    "input_tokens": 5,
+    "cache_creation_tokens": 40206,
+    "cache_read_tokens": 80747,
+    "output_tokens": 587,
+    "api_call_count": 4
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-14T01:08:50.386172Z",
+    "agent_lines": 50,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 50,
+    "agent_percentage": 100
+  }
+}
