@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "c88addb44eab",
+  "strategy": "manual-commit",
+  "branch": "fix/openclaw-gateway-port",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "config/openclaw/hydrate.sh",
+    "config/pi/settings.tpl.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/c8/8addb44eab/0/metadata.json",
+      "transcript": "/c8/8addb44eab/0/full.jsonl",
+      "content_hash": "/c8/8addb44eab/0/content_hash.txt",
+      "prompt": "/c8/8addb44eab/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 693,
+    "cache_creation_tokens": 56071,
+    "cache_read_tokens": 718334,
+    "output_tokens": 4735,
+    "api_call_count": 16
+  }
+}

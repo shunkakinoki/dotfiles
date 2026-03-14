@@ -1,0 +1,5 @@
+openclaw macos can't connect to the gateway how to fix this
+
+---
+
+modify ~dotfiles config
