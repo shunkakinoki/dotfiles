@@ -200,6 +200,7 @@ inputs.nixpkgs.lib.nixosSystem {
           curl
           git
           home-manager
+          nautilus
           vim
           wget
           zellij
