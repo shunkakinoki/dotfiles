@@ -10,7 +10,7 @@ let
   inherit (inputs) env host;
   dock = import ./config/dock.nix;
   fonts = import ./config/fonts.nix { inherit pkgs; };
-  homebrew = import ./config/homebrew.nix { inherit isRunner; };
+  homebrew = import ./config/homebrew.nix { inherit isRunner lib; };
   networking = import ./config/networking.nix;
   nix = import ./config/nix.nix;
   security = import ./config/security.nix { inherit username; };
