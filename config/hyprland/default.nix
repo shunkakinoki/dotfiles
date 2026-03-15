@@ -12,6 +12,7 @@
     extraConfig = ''
       exec-once = ${pkgs.hyprpanel}/bin/hyprpanel
       exec-once = ${pkgs.hyprshell}/bin/hyprshell run &
+      exec-once = ${pkgs.lib.getExe pkgs.hyprpolkitagent}
     ''
     + builtins.readFile ./hyprland.conf;
   };
