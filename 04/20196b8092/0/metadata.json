@@ -1,0 +1,34 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "0420196b8092",
+  "session_id": "e90f365e-d321-49b6-b2c5-04ea54def780",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-15T17:36:03.451283Z",
+  "branch": "update-hardware-configuration-matic",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "named-hosts/matic/default.nix"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-4-6",
+  "turn_id": "5628efe5f19f",
+  "token_usage": {
+    "input_tokens": 29,
+    "cache_creation_tokens": 117286,
+    "cache_read_tokens": 971497,
+    "output_tokens": 10962,
+    "api_call_count": 22
+  },
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-15T17:36:03.381449Z",
+    "agent_lines": 1,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 1,
+    "agent_percentage": 100
+  }
+}
