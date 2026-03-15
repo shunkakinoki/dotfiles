@@ -1,5 +1,11 @@
-{ isRunner }:
+{ isRunner, lib }:
 {
+  # Prepend `set +e` so individual brew bundle failures don't abort
+  # the entire darwin-rebuild activation. Errors are printed but ignored.
+  system.activationScripts.homebrew.text = lib.mkBefore ''
+    set +e
+  '';
+
   homebrew = {
     enable = !isRunner && (builtins.getEnv "NIX_OFFLINE" != "1");
     onActivation = {
