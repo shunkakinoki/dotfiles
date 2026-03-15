@@ -153,6 +153,11 @@ inputs.nixpkgs.lib.nixosSystem {
           };
         };
 
+        
+        # Disk management
+        services.gvfs.enable = true; # For automounting external drives in Nautilus and managing disk permissions 
+        services.udisks2.enable = true; # For better integration with external drives, including NTFS support and proper permissions handling
+
         # Provide Hyprland session file for tuigreet to discover
         environment.etc."greetd/wayland-sessions/hyprland.desktop".text = ''
           [Desktop Entry]
