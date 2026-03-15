@@ -359,9 +359,12 @@ inputs.nixpkgs.lib.nixosSystem {
               echo "Deploying GitHub SSH key from agenix..."
               SECRET_FILE="${builtins.toString ../galactica/keys/id_ed25519.age}"
               if [[ -f "$SECRET_FILE" ]]; then
-                $DRY_RUN_CMD ${pkgs.rage}/bin/rage -d -i ${config.home.homeDirectory}/.ssh/id_ed25519 "$SECRET_FILE" -o ${config.home.homeDirectory}/.ssh/id_ed25519_github
-                $DRY_RUN_CMD chmod $VERBOSE_ARG 0600 ${config.home.homeDirectory}/.ssh/id_ed25519_github
-                echo "✅ GitHub SSH key deployed successfully"
+                if $DRY_RUN_CMD ${pkgs.rage}/bin/rage -d -i ${config.home.homeDirectory}/.ssh/id_ed25519 "$SECRET_FILE" -o ${config.home.homeDirectory}/.ssh/id_ed25519_github 2>/dev/null; then
+                  $DRY_RUN_CMD chmod $VERBOSE_ARG 0600 ${config.home.homeDirectory}/.ssh/id_ed25519_github
+                  echo "✅ GitHub SSH key deployed successfully"
+                else
+                  echo "⚠️  Warning: SSH key not authorized to decrypt — skipping"
+                fi
               else
                 echo "⚠️  Warning: Secret file not found at $SECRET_FILE"
               fi
