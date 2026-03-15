@@ -1,0 +1,9 @@
+will it work for launch disk de-encryption?
+
+---
+
+what happens w/ tpm2 auto-unlock
+
+---
+
+yes please
