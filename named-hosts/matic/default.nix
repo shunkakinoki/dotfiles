@@ -45,8 +45,8 @@ inputs.nixpkgs.lib.nixosSystem {
         boot.loader.timeout = 3;
 
         # TPM2 auto-unlock for LUKS disk encryption
-        boot.initrd.systemd.enable = true;
-        boot.initrd.luks.devices."luks-4a2ddfc4-1a40-4e18-99f5-250baf72b4ac".cryptTabExtraOpts = [ "tpm2-device=auto" ];
+        # boot.initrd.systemd.enable = true;
+        # boot.initrd.luks.devices."luks-4a2ddfc4-1a40-4e18-99f5-250baf72b4ac".cryptTabExtraOpts = [ "tpm2-device=auto" ];
 
         # Pin kernel to 6.18 for CrowdStrike Falcon compatibility (RFM on 6.19)
         boot.kernelPackages = pkgs.linuxPackages_6_18;
