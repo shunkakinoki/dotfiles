@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "13e221ac9049",
+  "strategy": "manual-commit",
+  "branch": "update-hardware-configuration-matic",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "named-hosts/matic/default.nix"
+  ],
+  "sessions": [
+    {
+      "metadata": "/13/e221ac9049/0/metadata.json",
+      "transcript": "/13/e221ac9049/0/full.jsonl",
+      "content_hash": "/13/e221ac9049/0/content_hash.txt",
+      "prompt": "/13/e221ac9049/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 6,
+    "cache_creation_tokens": 56389,
+    "cache_read_tokens": 133100,
+    "output_tokens": 1546,
+    "api_call_count": 4
+  }
+}
