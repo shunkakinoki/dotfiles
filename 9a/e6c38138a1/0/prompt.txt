@@ -1,0 +1,41 @@
+what's the command to install nautilus?
+
+---
+
+dotfiles on  update-hardware-configuration-matic is 📦 v0.1.0 via 🥟 v1.3.10 via 🐍 v3.13.12 via 🦀
+❯ make build && make switch
+🔌 Ensuring Nix daemon is running for nixosConfigurations on Linux x86_64 for USER=skakinoki
+🐧 systemd detected as PID 1. Attempting to restart nix-daemon.service...
+⏳ Waiting for daemon to initialize...
+✅ Nix daemon should now be active!
+🏗️ Building Nix configuration for nixosConfigurations on Linux x86_64 for USER=skakinoki
+Auto-detected host: matic
+building the system configuration...
+Done. The new configuration is /nix/store/REDACTED.05.20260314.e802360
+✅ Nix configuration built successfully!
+🔧 Activating Nix configuration for nixosConfigurations on Linux x86_64 for USER=skakinoki
+Auto-detected host: matic
+building the system configuration...
+Starting [systemd-run] /nix/store/REDACTED.05.20260314.e802360/bin/switch-to-configuration switch...
+Started [systemd-run] /nix/store/REDACTED.05.20260314.e802360/bin/switch-to-configuration switch.
+Checking switch inhibitors... done
+switching to system configuration /nix/store/REDACTED.05.20260314.e802360
+activating the configuration...
+setting up /etc...
+reloading user units for skakinoki...
+restarting sysinit-reactivation.target
+Command 'systemd-run -E LOCALE_ARCHIVE -E NIXOS_INSTALL_BOOTLOADER -E NIXOS_NO_CHECK --collect --wait --no-ask-password --quiet --service-type=exec --unit=nixos-rebuild-switch-to-configuration-87742f2f /nix/store/REDACTED.05.20260314.e802360/bin/switch-to-configuration switch' returned non-zero exit status 4.
+make: *** [Makefile:397: nix-switch] Error 4 fix
+
+---
+
+it says home manager-skakinoki.service loaded failed failed
+
+---
+
+it says deploying github ssh key from agenix\
+Error identity file not found: /home/skakinoki/ssh/id_ed25519
+
+---
+
+hmm it gets the same error need to stop it?
