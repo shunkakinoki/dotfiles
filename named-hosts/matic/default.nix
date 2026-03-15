@@ -41,6 +41,7 @@ inputs.nixpkgs.lib.nixosSystem {
         boot.loader.systemd-boot.enable = true;
         boot.loader.systemd-boot.configurationLimit = 10;
         boot.loader.efi.canTouchEfiVariables = true;
+        boot.loader.grub.enable = false;
         boot.loader.timeout = 3;
 
         # Pin kernel to 6.18 for CrowdStrike Falcon compatibility (RFM on 6.19)
