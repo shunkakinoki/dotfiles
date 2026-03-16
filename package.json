@@ -34,7 +34,7 @@
     "@typescript/native-preview": "^7.0.0-dev.20260315.1",
     "@vibe-kit/grok-cli": "^0.0.34",
     "acpx": "^0.3.0",
-    "agent-browser": "^0.20.11",
+    "agent-browser": "^0.20.12",
     "agentcash": "^0.9.5",
     "ccusage": "^18.0.10",
     "clawdhub": "^0.3.0",
