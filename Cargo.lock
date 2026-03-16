@@ -1590,11 +1590,11 @@ dependencies = [
 [[package]]
 name = "git-ai"
 version = "1.1.13"
-source = "git+https://github.com/git-ai-project/git-ai?branch=main#e8163618b5535015771602ac2897c010db058631"
+source = "git+https://github.com/git-ai-project/git-ai?branch=main#9db445b7e74ba17ee7ee5c16fc7dc2491b541916"
 dependencies = [
  "chrono",
  "clap",
- "crossterm 0.28.1",
+ "crossterm 0.29.0",
  "dirs 5.0.1",
  "envy",
  "futures",
