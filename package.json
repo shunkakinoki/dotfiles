@@ -24,7 +24,7 @@
     "@kaitranntt/ccs": "^7.54.0",
     "@mariozechner/pi-coding-agent": "^0.58.3",
     "@nanocollective/nanocoder": "^1.23.0",
-    "@openai/codex": "^0.114.0",
+    "@openai/codex": "^0.115.0",
     "@pkieltyka/gitgenie": "^0.1.2",
     "@pulumi/pulumi": "^3.226.0",
     "@schpet/linear-cli": "^1.11.1",
