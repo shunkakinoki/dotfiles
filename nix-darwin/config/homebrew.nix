@@ -20,6 +20,7 @@
       "oven-sh/bun"
       "paradigmxyz/brew"
       "entireio/tap"
+      "manaflow-ai/cmux"
       "sst/tap"
       "steipete/tap"
     ];
@@ -74,6 +75,7 @@
       "blender"
       "block-goose"
       "chatgpt"
+      "cmux"
       "claude-code"
       "claude"
       "codex-app"
