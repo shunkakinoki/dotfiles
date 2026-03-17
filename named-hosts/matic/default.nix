@@ -208,17 +208,6 @@ inputs.nixpkgs.lib.nixosSystem {
           options mt7925e disable_aspm=1
         '';
 
-        # System packages
-        environment.systemPackages = with pkgs; [
-          curl
-          git
-          home-manager
-          nautilus
-          vim
-          wget
-          zellij
-        ];
-
         # Enable nix-ld for running dynamically linked binaries (CrowdStrike, Kolide, etc.)
         programs.nix-ld.enable = true;
         programs.nix-ld.libraries = with pkgs; [

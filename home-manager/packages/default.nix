@@ -135,6 +135,7 @@ with pkgs;
   ffmpeg
   ghostty
   github-desktop
+  gnome-disk-utility
   google-chrome
   grim
   hypridle
@@ -145,6 +146,7 @@ with pkgs;
   hyprsunset
   libnotify
   linux-wallpaperengine
+  nautilus
   pavucontrol
   playerctl
   rofi
