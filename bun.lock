@@ -29,7 +29,7 @@
         "@vibe-kit/grok-cli": "^0.0.34",
         "acpx": "^0.3.0",
         "agent-browser": "^0.20.14",
-        "agentcash": "^0.10.0",
+        "agentcash": "^0.10.1",
         "ccusage": "^18.0.10",
         "clawdhub": "^0.3.0",
         "cline": "^2.8.0",
@@ -1341,7 +1341,7 @@
 
     "agent-browser": ["agent-browser@0.20.14", "", { "bin": { "agent-browser": "bin/agent-browser.js" } }, "sha512-Z/6uCtDJXsKpr7XkY+ljHbz7QGjorFDQR54v30AMPgs0ocTWT9noId2k3Lwj0XHCZIVpbri3PE7XGOmmJSv6Rg=="],
 
-    "agentcash": ["agentcash@0.10.0", "", { "dependencies": { "@agentcash/discovery": "1.1.0", "@clack/prompts": "^0.11.0", "@iarna/toml": "^2.2.5", "@modelcontextprotocol/sdk": "^1.27.0", "@scure/base": "^2.0.0", "@solana-program/compute-budget": "^0.11.0", "@solana-program/token": "^0.9.0", "@solana-program/token-2022": "^0.6.1", "@solana/kit": "^5.5.1", "@x402/core": "2.6.0", "@x402/evm": "2.6.0", "@x402/extensions": "2.6.0", "@x402/svm": "2.6.0", "chalk": "^5.6.2", "content-type": "^1.0.5", "js-yaml": "^4.1.1", "jsonc-parser": "^3.3.1", "mppx": "^0.4.2", "open": "^11.0.0", "viem": "^2.46.2", "yargs": "^18.0.0", "zod": "^4.3.6" }, "bin": { "agentcash": "dist/esm/index.js" } }, "sha512-SaFWszADX0dcKUt7P9AiLNn81RiwdrVABibhMmWq+ANjxT9gpT6TTOE3+Qqo6VZlnd+lulcFg7zLJCwDoRJjZQ=="],
+    "agentcash": ["agentcash@0.10.1", "", { "dependencies": { "@agentcash/discovery": "1.1.0", "@clack/prompts": "^0.11.0", "@iarna/toml": "^2.2.5", "@modelcontextprotocol/sdk": "^1.27.0", "@scure/base": "^2.0.0", "@solana-program/compute-budget": "^0.11.0", "@solana-program/token": "^0.9.0", "@solana-program/token-2022": "^0.6.1", "@solana/kit": "^5.5.1", "@x402/core": "2.6.0", "@x402/evm": "2.6.0", "@x402/extensions": "2.6.0", "@x402/svm": "2.6.0", "chalk": "^5.6.2", "content-type": "^1.0.5", "js-yaml": "^4.1.1", "jsonc-parser": "^3.3.1", "mppx": "^0.4.2", "open": "^11.0.0", "viem": "^2.46.2", "yargs": "^18.0.0", "zod": "^4.3.6" }, "bin": { "agentcash": "dist/esm/index.js" } }, "sha512-IUO+E/4GaD9yEy/8B7/ptJSSC2nb9lRouoxyKPAVl/moQ+0LogO+75pHyBQgSelzt3uuSjB98+nX7jur/Z4HSA=="],
 
     "aggregate-error": ["aggregate-error@3.1.0", "", { "dependencies": { "clean-stack": "^2.0.0", "indent-string": "^4.0.0" } }, "sha512-4I7Td01quW/RpocfNayFdFVk1qSuoh0E7JrbRJ16nH01HhKFQ88INq9Sd+nd72zqRySlr9BmDA8xlEJ6vJMrYA=="],
 
