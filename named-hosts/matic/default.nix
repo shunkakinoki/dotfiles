@@ -46,7 +46,9 @@ inputs.nixpkgs.lib.nixosSystem {
 
         # TPM2 auto-unlock for LUKS disk encryption
         boot.initrd.systemd.enable = true;
-        boot.initrd.luks.devices."luks-4a2ddfc4-1a40-4e18-99f5-250baf72b4ac".crypttabExtraOpts = [ "tpm2-device=auto" ];
+        boot.initrd.luks.devices."luks-4a2ddfc4-1a40-4e18-99f5-250baf72b4ac".crypttabExtraOpts = [
+          "tpm2-device=auto"
+        ];
 
         # Pin kernel to 6.18 for CrowdStrike Falcon compatibility (RFM on 6.19)
         boot.kernelPackages = pkgs.linuxPackages_6_18;
@@ -161,9 +163,8 @@ inputs.nixpkgs.lib.nixosSystem {
           };
         };
 
-        
         # Disk management
-        services.gvfs.enable = true; # For automounting external drives in Nautilus and managing disk permissions 
+        services.gvfs.enable = true; # For automounting external drives in Nautilus and managing disk permissions
         services.udisks2.enable = true; # For better integration with external drives, including NTFS support and proper permissions handling
 
         # Provide Hyprland session file for tuigreet to discover
