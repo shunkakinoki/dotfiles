@@ -112,6 +112,9 @@ inputs.nixpkgs.lib.nixosSystem {
 
         # Fingerprint authentication
         services.fprintd.enable = true;
+        security.pam.services.greetd = {
+          fprintAuth = true;
+        };
         security.pam.services.hyprlock = {
           fprintAuth = true;
         };
