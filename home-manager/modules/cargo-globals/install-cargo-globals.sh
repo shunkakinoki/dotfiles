@@ -38,7 +38,7 @@ if ! command -v jq &>/dev/null; then
 fi
 
 # Parse dependencies from Cargo.toml (supports version strings and git tables)
-DEPS=$(dasel -f "$CARGO_TOML" -r toml -w json 'dependencies' 2>/dev/null | jq -c 'to_entries[]' 2>/dev/null || true)
+DEPS=$(dasel query dependencies -i toml -o json <"$CARGO_TOML" 2>/dev/null | jq -c 'to_entries[]' 2>/dev/null || true)
 
 if [ -z "$DEPS" ]; then
   echo "No dependencies found in Cargo.toml"
