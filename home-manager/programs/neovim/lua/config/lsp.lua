@@ -44,6 +44,7 @@ local function configure_servers()
 		jsonls = {},
 		bashls = {},
 		dockerls = {},
+		perlpls = {},
 		yamlls = {},
 	}
 
