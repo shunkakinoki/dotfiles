@@ -1,7 +1,7 @@
 # Matic secrets - synced from galactica via agenix
 let
   galactica = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEKze2jlpV7SyTKA2ezqbumpCiDn+5Sj4z5SxrqfzesX shunkakinoki@gmail.com";
-  matic = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIQqWYSDaaoazVNOrAimCpUxNgaLe9Von237zIoox3E5 skakinoki@matic";
+  matic = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEeknNbHasmT+43PgO9oy0mutoe+V2R2ZNRa5SPOLmLN skakinoki@matic";
   allMachines = [
     galactica
     matic
