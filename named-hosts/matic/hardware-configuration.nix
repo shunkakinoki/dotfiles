@@ -18,7 +18,6 @@
     "nvme"
     "xhci_pci"
     "thunderbolt"
-    "usb_storage"
     "uas"
     "sd_mod"
   ];
@@ -27,12 +26,15 @@
   boot.extraModulePackages = [ ];
 
   fileSystems."/" = {
-    device = "/dev/disk/by-uuid/019b9ecb-2db1-426e-8b14-bc4684a5c452";
+    device = "/dev/mapper/luks-4a2ddfc4-1a40-4e18-99f5-250baf72b4ac";
     fsType = "ext4";
   };
 
+  boot.initrd.luks.devices."luks-4a2ddfc4-1a40-4e18-99f5-250baf72b4ac".device =
+    "/dev/disk/by-uuid/4a2ddfc4-1a40-4e18-99f5-250baf72b4ac";
+
   fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/4070-0CFA";
+    device = "/dev/disk/by-uuid/D849-552A";
     fsType = "vfat";
     options = [
       "fmask=0077"

@@ -256,8 +256,12 @@ nix-connect: ## Ensure Nix daemon is running.
 			fi; \
 		else \
 			if [ -d /run/systemd/system ] && [ -S /run/systemd/private ]; then \
-				echo "🐧 systemd detected as PID 1. Attempting to restart nix-daemon.service..."; \
-				$(SUDO) systemctl restart nix-daemon.service; \
+				if systemctl is-active --quiet nix-daemon.service; then \
+					echo "🐧 nix-daemon.service is already running. Skipping restart."; \
+				else \
+					echo "🐧 nix-daemon.service not running. Attempting to start..."; \
+					$(SUDO) systemctl start nix-daemon.service; \
+				fi; \
 			else \
 				echo "🏃‍♂️ systemd not detected as PID 1 or not fully operational. Nix daemon management via systemctl is skipped."; \
 				echo "ℹ️ This environment might be using a single-user Nix installation, require manual daemon setup, or be inside a container without full systemd."; \

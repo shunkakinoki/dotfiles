@@ -41,7 +41,14 @@ inputs.nixpkgs.lib.nixosSystem {
         boot.loader.systemd-boot.enable = true;
         boot.loader.systemd-boot.configurationLimit = 10;
         boot.loader.efi.canTouchEfiVariables = true;
+        boot.loader.grub.enable = false;
         boot.loader.timeout = 3;
+
+        # TPM2 auto-unlock for LUKS disk encryption
+        boot.initrd.systemd.enable = true;
+        boot.initrd.luks.devices."luks-4a2ddfc4-1a40-4e18-99f5-250baf72b4ac".crypttabExtraOpts = [
+          "tpm2-device=auto"
+        ];
 
         # Pin kernel to 6.18 for CrowdStrike Falcon compatibility (RFM on 6.19)
         boot.kernelPackages = pkgs.linuxPackages_6_18;
@@ -73,7 +80,6 @@ inputs.nixpkgs.lib.nixosSystem {
         virtualisation.docker.enable = true;
 
         security.sudo.wheelNeedsPassword = false;
-
         # Keyd configuration (Linux desktop only)
         services.keyd.enable = true;
         users.groups.keyd = { };
@@ -107,6 +113,15 @@ inputs.nixpkgs.lib.nixosSystem {
 
         # Fingerprint authentication
         services.fprintd.enable = true;
+        security.pam.services.greetd = {
+          fprintAuth = true;
+        };
+        security.pam.services.hyprlock = {
+          fprintAuth = true;
+        };
+        security.pam.services.sudo = {
+          fprintAuth = true;
+        };
 
         # Firmware updates
         services.fwupd.enable = true;
@@ -147,6 +162,10 @@ inputs.nixpkgs.lib.nixosSystem {
             };
           };
         };
+
+        # Disk management
+        services.gvfs.enable = true; # For automounting external drives in Nautilus and managing disk permissions
+        services.udisks2.enable = true; # For better integration with external drives, including NTFS support and proper permissions handling
 
         # Provide Hyprland session file for tuigreet to discover
         environment.etc."greetd/wayland-sessions/hyprland.desktop".text = ''
@@ -189,16 +208,6 @@ inputs.nixpkgs.lib.nixosSystem {
         boot.extraModprobeConfig = ''
           options mt7925e disable_aspm=1
         '';
-
-        # System packages
-        environment.systemPackages = with pkgs; [
-          curl
-          git
-          home-manager
-          vim
-          wget
-          zellij
-        ];
 
         # Enable nix-ld for running dynamically linked binaries (CrowdStrike, Kolide, etc.)
         programs.nix-ld.enable = true;
@@ -353,9 +362,12 @@ inputs.nixpkgs.lib.nixosSystem {
               echo "Deploying GitHub SSH key from agenix..."
               SECRET_FILE="${builtins.toString ../galactica/keys/id_ed25519.age}"
               if [[ -f "$SECRET_FILE" ]]; then
-                $DRY_RUN_CMD ${pkgs.rage}/bin/rage -d -i ${config.home.homeDirectory}/.ssh/id_ed25519 "$SECRET_FILE" -o ${config.home.homeDirectory}/.ssh/id_ed25519_github
-                $DRY_RUN_CMD chmod $VERBOSE_ARG 0600 ${config.home.homeDirectory}/.ssh/id_ed25519_github
-                echo "✅ GitHub SSH key deployed successfully"
+                if $DRY_RUN_CMD ${pkgs.rage}/bin/rage -d -i ${config.home.homeDirectory}/.ssh/id_ed25519 "$SECRET_FILE" -o ${config.home.homeDirectory}/.ssh/id_ed25519_github 2>/dev/null; then
+                  $DRY_RUN_CMD chmod $VERBOSE_ARG 0600 ${config.home.homeDirectory}/.ssh/id_ed25519_github
+                  echo "✅ GitHub SSH key deployed successfully"
+                else
+                  echo "⚠️  Warning: SSH key not authorized to decrypt — skipping"
+                fi
               else
                 echo "⚠️  Warning: Secret file not found at $SECRET_FILE"
               fi

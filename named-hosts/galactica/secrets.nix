@@ -4,7 +4,7 @@ let
   # Kyber's SSH public key
   kyber = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO0IZtP3KSzY6GVSZ+R+VQYYfu3sEOVaQGDblQxAtwNM ubuntu@kyber";
   # Matic's SSH public key
-  matic = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIQqWYSDaaoazVNOrAimCpUxNgaLe9Von237zIoox3E5 skakinoki@matic";
+  matic = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEeknNbHasmT+43PgO9oy0mutoe+V2R2ZNRa5SPOLmLN skakinoki@matic";
   # All machines that can decrypt shared secrets
   allMachines = [
     galactica

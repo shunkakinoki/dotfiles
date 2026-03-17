@@ -53,6 +53,11 @@ When run bash -c "grep 'dasel' '$SCRIPT'"
 The output should include 'dasel'
 End
 
+It 'uses dasel v3 query syntax for dependencies'
+When run bash -c "grep 'dasel query dependencies -i toml -o json' '$SCRIPT'"
+The output should include 'dasel query dependencies -i toml -o json'
+End
+
 It 'supports table-style dependency versions'
 When run bash -c "grep -E '\\.value\\.version|type\\)\\s*==\"string\"' '$SCRIPT'"
 The output should include '.value.version'
