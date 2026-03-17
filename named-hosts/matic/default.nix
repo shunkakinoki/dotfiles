@@ -77,8 +77,7 @@ inputs.nixpkgs.lib.nixosSystem {
         # Docker
         virtualisation.docker.enable = true;
 
-        # Require sudo auth so fingerprint + password fallback can be used
-        security.sudo.wheelNeedsPassword = true;
+        security.sudo.wheelNeedsPassword = false;
         # Keyd configuration (Linux desktop only)
         services.keyd.enable = true;
         users.groups.keyd = { };
