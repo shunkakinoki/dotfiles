@@ -33,6 +33,7 @@ let
   nix = import ./nix;
   node = import ./node;
   ocaml = import ./ocaml;
+  perl = import ./perl;
   php = import ./php;
   python = import ./python;
   ruby = import ./ruby;
@@ -77,6 +78,7 @@ in
   nix
   node
   ocaml
+  perl
   php
   python
   ruby

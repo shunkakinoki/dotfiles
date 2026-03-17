@@ -63,6 +63,7 @@ require("nvim-treesitter.configs").setup({
 		"markdown_inline",
 		"mermaid",
 		"nix",
+		"perl",
 		"python",
 		"query",
 		"regex",
