@@ -45,8 +45,8 @@ inputs.nixpkgs.lib.nixosSystem {
         boot.loader.timeout = 3;
 
         # TPM2 auto-unlock for LUKS disk encryption
-        # boot.initrd.systemd.enable = true;
-        # boot.initrd.luks.devices."luks-4a2ddfc4-1a40-4e18-99f5-250baf72b4ac".cryptTabExtraOpts = [ "tpm2-device=auto" ];
+        boot.initrd.systemd.enable = true;
+        boot.initrd.luks.devices."luks-4a2ddfc4-1a40-4e18-99f5-250baf72b4ac".crypttabExtraOpts = [ "tpm2-device=auto" ];
 
         # Pin kernel to 6.18 for CrowdStrike Falcon compatibility (RFM on 6.19)
         boot.kernelPackages = pkgs.linuxPackages_6_18;
@@ -77,8 +77,8 @@ inputs.nixpkgs.lib.nixosSystem {
         # Docker
         virtualisation.docker.enable = true;
 
-        security.sudo.wheelNeedsPassword = false;
-
+        # Require sudo auth so fingerprint + password fallback can be used
+        security.sudo.wheelNeedsPassword = true;
         # Keyd configuration (Linux desktop only)
         services.keyd.enable = true;
         users.groups.keyd = { };
@@ -113,6 +113,9 @@ inputs.nixpkgs.lib.nixosSystem {
         # Fingerprint authentication
         services.fprintd.enable = true;
         security.pam.services.hyprlock = {
+          fprintAuth = true;
+        };
+        security.pam.services.sudo = {
           fprintAuth = true;
         };
 
