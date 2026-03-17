@@ -2,7 +2,11 @@
 [
   inputs.nur.overlays.default
   inputs.neovim-nightly-overlay.overlays.default
-  inputs.foundry.overlay
+  (final: prev: {
+    # Use stable nixpkgs foundry instead of shazow/foundry.nix nightly overlay
+    # to avoid unreliable nightly binary downloads.
+    foundry-bin = prev.foundry;
+  })
   (final: prev: {
     # Ensure neovim-unwrapped exposes a lua attribute for wrapper consumers (e.g., home-manager)
     neovim-unwrapped =

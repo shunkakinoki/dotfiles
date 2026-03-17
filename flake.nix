@@ -46,10 +46,6 @@
       url = "github:cachix/devenv";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    foundry = {
-      url = "github:shazow/foundry.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     mk-shell-bin = {
       url = "github:rrbutani/nix-mk-shell-bin";
     };
