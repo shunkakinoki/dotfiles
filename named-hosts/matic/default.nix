@@ -136,6 +136,7 @@ inputs.nixpkgs.lib.nixosSystem {
           serviceConfig = {
             Type = "oneshot";
             User = username;
+            TimeoutStartSec = 60;
             LoadCredentialEncrypted = "gnome-keyring:/etc/credstore.encrypted/gnome-keyring.cred";
             ExecStart =
               let
@@ -173,11 +174,28 @@ inputs.nixpkgs.lib.nixosSystem {
                       _, result = struct.unpack(">II", resp)
                       return result
 
-                  pw = sys.stdin.readline().rstrip("\n")
-                  result = unlock(pw)
+                  import time
+
+                  pw = sys.stdin.read().rstrip("\n")
                   codes = {0: "OK", 1: "DENIED", 2: "FAILED", 3: "NO_DAEMON"}
-                  print(f"gnome-keyring unlock: {codes.get(result, result)}", flush=True)
-                  sys.exit(0 if result == 0 else 1)
+                  uid = os.getuid()
+                  sock_path = f"/run/user/{uid}/keyring/control"
+
+                  for attempt in range(10):
+                      # Wait for the control socket to appear (keyring daemon to start)
+                      if not os.path.exists(sock_path):
+                          print(f"attempt {attempt+1}: waiting for control socket...", flush=True)
+                          time.sleep(3)
+                          continue
+                      result = unlock(pw)
+                      print(f"attempt {attempt+1}: gnome-keyring unlock: {codes.get(result, result)}", flush=True)
+                      if result == 0:
+                          sys.exit(0)
+                      # DENIED might mean daemon not fully ready yet, retry
+                      time.sleep(3)
+
+                  print("gnome-keyring unlock: gave up after 10 attempts", flush=True)
+                  sys.exit(1)
                 '';
               in
                 pkgs.writeShellScript "unlock-keyring" ''
