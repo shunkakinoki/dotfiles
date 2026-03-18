@@ -134,6 +134,8 @@ inputs.nixpkgs.lib.nixosSystem {
         services.fwupd.enable = true;
 
         # Power management
+        powerManagement.enable = true;
+        powerManagement.powertop.enable = true;
         services.upower.enable = true;
         services.power-profiles-daemon.enable = false;
         services.auto-cpufreq = {
