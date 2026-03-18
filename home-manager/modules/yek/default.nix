@@ -24,10 +24,14 @@ let
   };
 
   # Create install-yek as a standalone script
-  installScript = pkgs.writeScriptBin "install-yek" ''
-    #!${pkgs.bash}/bin/bash
-    exec ${pkgs.bash}/bin/bash ${installYekScript} "$@"
-  '';
+  installScript = pkgs.writeScriptBin "install-yek" (
+    builtins.readFile (
+      pkgs.replaceVars ./install-yek-shim.sh {
+        bash = pkgs.bash;
+        install_yek_script = installYekScript;
+      }
+    )
+  );
 
   # Wrapper script with install-yek path substituted
   yekWrapperScript = pkgs.replaceVars ./yek.sh {
@@ -35,10 +39,14 @@ let
   };
 
   # Create yek wrapper as a standalone script
-  yekWrapper = pkgs.writeScriptBin "yek" ''
-    #!${pkgs.bash}/bin/bash
-    exec ${pkgs.bash}/bin/bash ${yekWrapperScript} "$@"
-  '';
+  yekWrapper = pkgs.writeScriptBin "yek" (
+    builtins.readFile (
+      pkgs.replaceVars ./yek-shim.sh {
+        bash = pkgs.bash;
+        yek_wrapper_script = yekWrapperScript;
+      }
+    )
+  );
 in
 {
   home.packages = [

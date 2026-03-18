@@ -10,12 +10,15 @@
     pkgs.gnumake
     pkgs.gcc
     pkgs.fish
-    (pkgs.writeShellScriptBin "fishtape" ''
-      exec ${pkgs.fish}/bin/fish \
-        -C "source ${pkgs.fishPlugins.fishtape_3.src}/functions/fishtape.fish" \
-        -c 'fishtape $argv' \
-        -- "$@"
-    '')
+    pkgs.statix
+    (pkgs.writeShellScriptBin "fishtape" (
+      builtins.readFile (
+        pkgs.replaceVars ./scripts/fishtape-wrapper.sh {
+          fish = pkgs.fish;
+          fishtape_3_src = pkgs.fishPlugins.fishtape_3.src;
+        }
+      )
+    ))
   ];
 
   containers = pkgs.lib.mkIf (!pkgs.stdenv.hostPlatform.isLinux) (pkgs.lib.mkForce { });

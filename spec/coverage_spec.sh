@@ -65,6 +65,10 @@ It 'has spec file for home-manager/services/docker-postgres/start-postgres.sh'
 The path "spec/docker_postgres_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/docker-postgres/start-postgres-wrapper.sh'
+The path "spec/start_postgres_wrapper_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/dotfiles-updater/update.sh'
 The path "spec/dotfiles_updater_spec.sh" should be exist
 End
@@ -128,6 +132,42 @@ End
 It 'has spec file for home-manager/modules/yek/yek.sh'
 The path "spec/yek_spec.sh" should be exist
 End
+
+It 'has spec file for home-manager/modules/yek/install-yek-shim.sh'
+The path "spec/install_yek_shim_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/modules/yek/yek-shim.sh'
+The path "spec/yek_shim_spec.sh" should be exist
+End
+
+It 'has spec file for named-hosts/matic/falcon-init.sh'
+The path "spec/falcon_init_spec.sh" should be exist
+End
+
+It 'has spec file for named-hosts/matic/pam-gnome-keyring-tpm-unlock.sh'
+The path "spec/pam_gnome_keyring_tpm_unlock_spec.sh" should be exist
+End
+
+It 'has spec file for scripts/fishtape-wrapper.sh'
+The path "spec/fishtape_wrapper_spec.sh" should be exist
+End
+
+It 'has spec file for scripts/check-nix-inline-scripts.sh'
+The path "spec/check_nix_inline_scripts_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/services/cliproxyapi/scripts/docker-start.sh'
+The path "spec/cliproxyapi_docker_start_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/services/docker/setup-docker.sh'
+The path "spec/docker_setup_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/services/docker/docker-setup.sh'
+The path "spec/docker_setup_wrapper_spec.sh" should be exist
+End
 End
 
 Describe 'no shell scripts are missing from coverage list'
@@ -150,24 +190,34 @@ home-manager/modules/cargo-globals/install-cargo-globals.sh
 home-manager/modules/local-binaries/sync-local-binaries.sh
 home-manager/modules/npm-globals/install-npm-globals.sh
 home-manager/modules/uv-globals/install-uv-globals.sh
+home-manager/modules/yek/install-yek-shim.sh
 home-manager/modules/yek/install-yek.sh
+home-manager/modules/yek/yek-shim.sh
 home-manager/modules/yek/yek.sh
 home-manager/programs/neovim/run_tests.sh
 home-manager/programs/tmux/session-logger.sh
 home-manager/services/brew-upgrader/upgrade.sh
 home-manager/services/cliproxyapi/scripts/backup.sh
 home-manager/services/cliproxyapi/scripts/common.sh
+home-manager/services/cliproxyapi/scripts/docker-start.sh
 home-manager/services/cliproxyapi/scripts/hydrate.sh
 home-manager/services/cliproxyapi/scripts/start.sh
 home-manager/services/cliproxyapi/scripts/wrapper.sh
 home-manager/services/code-syncer/sync.sh
+home-manager/services/docker-postgres/start-postgres-wrapper.sh
 home-manager/services/docker-postgres/start-postgres.sh
+home-manager/services/docker/docker-setup.sh
+home-manager/services/docker/setup-docker.sh
 home-manager/services/dotfiles-updater/update.sh
 home-manager/services/make-updater/update.sh
 home-manager/services/neverssl-keepalive/keepalive.sh
 install.sh
 named-hosts/kyber/rekey-galactica.sh
 named-hosts/kyber/setup.sh
+named-hosts/matic/falcon-init.sh
+named-hosts/matic/pam-gnome-keyring-tpm-unlock.sh
+scripts/check-nix-inline-scripts.sh
+scripts/fishtape-wrapper.sh
 scripts/llm-update.sh
 scripts/update-gitalias.sh
 scripts/update-local-binaries.sh
