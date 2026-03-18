@@ -1,0 +1,5 @@
+how to prevent python inline scripts or bash inline scripts defined in nix going forward (see last commit) for more info
+
+---
+
+name it shell-inline-check

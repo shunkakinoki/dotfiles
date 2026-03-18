@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "e8e1acbbe266",
+  "strategy": "manual-commit",
+  "branch": "feat/shell-inline-check",
+  "checkpoints_count": 1,
+  "files_touched": [
+    ".github/workflows/shell.yml"
+  ],
+  "sessions": [
+    {
+      "metadata": "/e8/e1acbbe266/0/metadata.json",
+      "transcript": "/e8/e1acbbe266/0/full.jsonl",
+      "content_hash": "/e8/e1acbbe266/0/content_hash.txt",
+      "prompt": "/e8/e1acbbe266/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 28,
+    "cache_creation_tokens": 49881,
+    "cache_read_tokens": 849532,
+    "output_tokens": 5691,
+    "api_call_count": 21
+  }
+}
