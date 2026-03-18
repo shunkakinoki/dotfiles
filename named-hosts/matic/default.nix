@@ -449,6 +449,7 @@ inputs.nixpkgs.lib.nixosSystem {
               Description = "Unlock GNOME Keyring via TPM2 credential";
               After = [ "graphical-session-pre.target" ];
               PartOf = [ "graphical-session-pre.target" ];
+              ConditionPathExists = "%h/.config/credstore.encrypted/gnome-keyring.cred";
             };
             Service = {
               Type = "oneshot";
