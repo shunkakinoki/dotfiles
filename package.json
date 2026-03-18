@@ -18,7 +18,7 @@
     "@ccusage/mcp": "^18.0.10",
     "@getgrit/cli": "^0.1.0-alpha.1743007075",
     "@github/copilot": "^1.0.7",
-    "@google/gemini-cli": "^0.33.2",
+    "@google/gemini-cli": "^0.34.0",
     "@google/jules": "^0.1.42",
     "@googleworkspace/cli": "^0.17.0",
     "@kaitranntt/ccs": "^7.55.0",
