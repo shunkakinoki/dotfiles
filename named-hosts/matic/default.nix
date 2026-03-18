@@ -189,6 +189,12 @@ inputs.nixpkgs.lib.nixosSystem {
                 pamScript = pkgs.writeShellScript "pam-gnome-keyring-tpm-unlock" ''
                   CRED="/etc/credstore.encrypted/gnome-keyring.cred"
                   [ -f "$CRED" ] || exit 0
+                  SOCK="/run/user/$(id -u "$PAM_USER")/keyring/control"
+                  for i in 1 2 3 4 5; do
+                    [ -S "$SOCK" ] && break
+                    sleep 1
+                  done
+                  [ -S "$SOCK" ] || exit 1
                   ${pkgs.systemd}/bin/systemd-creds decrypt --name=gnome-keyring "$CRED" - | \
                     ${pkgs.util-linux}/bin/runuser -u "$PAM_USER" -- \
                       ${pkgs.coreutils}/bin/env XDG_RUNTIME_DIR="/run/user/$(id -u "$PAM_USER")" \
