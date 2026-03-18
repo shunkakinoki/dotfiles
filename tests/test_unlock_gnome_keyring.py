@@ -5,12 +5,9 @@ exec-ing the module body, so we can test the unlock() function directly
 without spawning a subprocess.
 """
 
-import importlib.util
 import os
-import socket
 import stat
 import struct
-import sys
 import types
 import unittest
 from pathlib import Path
@@ -162,7 +159,9 @@ class TestUnlockProtocol(unittest.TestCase):
     @patch("socket.socket")
     @patch("os.lstat")
     @patch("os.getuid", return_value=1000)
-    def test_daemon_closes_connection_raises(self, mock_uid, mock_lstat, mock_socket_cls):
+    def test_daemon_closes_connection_raises(
+        self, mock_uid, mock_lstat, mock_socket_cls
+    ):
         mock_lstat.return_value = self._make_stat(uid=1000)
         sock = MagicMock()
         sock.__enter__ = lambda s: s

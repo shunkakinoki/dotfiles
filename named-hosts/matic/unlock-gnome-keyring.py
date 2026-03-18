@@ -11,8 +11,8 @@
 #   4. read [8:4][result:4] — result 0 = OK
 import os
 import socket
-import struct
 import stat
+import struct
 import sys
 
 
@@ -34,9 +34,7 @@ def unlock(password):
         while len(resp) < 8:
             chunk = s.recv(8 - len(resp))
             if not chunk:
-                raise RuntimeError(
-                    f"daemon closed connection after {len(resp)} bytes"
-                )
+                raise RuntimeError(f"daemon closed connection after {len(resp)} bytes")
             resp += chunk
     _, result = struct.unpack(">II", resp)
     return result

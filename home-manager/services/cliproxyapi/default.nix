@@ -30,11 +30,15 @@ let
   # Smart wrapper that handles both NixOS and non-NixOS Linux
   # On NixOS: docker group is properly inherited, or use /run/wrappers/bin/sg
   # On non-NixOS: systemd user session may lack docker group, use /usr/bin/sg
-  dockerStartScript = pkgs.writeShellScript "cliproxyapi-docker-start" (builtins.readFile (pkgs.replaceVars ./scripts/docker-start.sh {
-    bash = pkgs.bash;
-    start_script = startScript;
-    docker = pkgs.docker;
-  }));
+  dockerStartScript = pkgs.writeShellScript "cliproxyapi-docker-start" (
+    builtins.readFile (
+      pkgs.replaceVars ./scripts/docker-start.sh {
+        bash = pkgs.bash;
+        start_script = startScript;
+        docker = pkgs.docker;
+      }
+    )
+  );
 
   wrapperScript = pkgs.replaceVars ./scripts/wrapper.sh {
     common = commonScript;

@@ -153,21 +153,29 @@ inputs.nixpkgs.lib.nixosSystem {
                 #   3. send [oplen:4][op=1:4][pwlen:4][password bytes]
                 #          where oplen = 8 + 4 + len(password)
                 #   4. read [8:4][result:4] — result 0 = OK
-                unlockPy = pkgs.writeScript "unlock-gnome-keyring.py" (builtins.readFile (pkgs.replaceVars ./unlock-gnome-keyring.py {
-                  python3 = pkgs.python3;
-                }));
+                unlockPy = pkgs.writeScript "unlock-gnome-keyring.py" (
+                  builtins.readFile (
+                    pkgs.replaceVars ./unlock-gnome-keyring.py {
+                      python3 = pkgs.python3;
+                    }
+                  )
+                );
 
                 # PAM exec script: runs as root, decrypts TPM credential, then
                 # uses runuser to run the Python unlock as the target user.
-                pamScript = pkgs.writeShellScript "pam-gnome-keyring-tpm-unlock" (builtins.readFile (pkgs.replaceVars ./pam-gnome-keyring-tpm-unlock.sh {
-                  logger = "${pkgs.util-linux}/bin/logger";
-                  systemd_creds = "${pkgs.systemd}/bin/systemd-creds";
-                  id = "${pkgs.coreutils}/bin/id";
-                  sleep = "${pkgs.coreutils}/bin/sleep";
-                  env = "${pkgs.coreutils}/bin/env";
-                  runuser = "${pkgs.util-linux}/bin/runuser";
-                  unlock_py = unlockPy;
-                }));
+                pamScript = pkgs.writeShellScript "pam-gnome-keyring-tpm-unlock" (
+                  builtins.readFile (
+                    pkgs.replaceVars ./pam-gnome-keyring-tpm-unlock.sh {
+                      logger = "${pkgs.util-linux}/bin/logger";
+                      systemd_creds = "${pkgs.systemd}/bin/systemd-creds";
+                      id = "${pkgs.coreutils}/bin/id";
+                      sleep = "${pkgs.coreutils}/bin/sleep";
+                      env = "${pkgs.coreutils}/bin/env";
+                      runuser = "${pkgs.util-linux}/bin/runuser";
+                      unlock_py = unlockPy;
+                    }
+                  )
+                );
               in
               {
                 order = config.security.pam.services.greetd.rules.session.gnome_keyring.order + 10;

@@ -38,8 +38,11 @@ SOCK="/run/user/$USER_UID/keyring/control"
   UNLOCKED=0
   for attempt in 1 2 3 4 5 6 7 8; do
     @sleep@ 3
-    [ -S "$SOCK" ] || { log "attempt $attempt: socket not found"; continue; }
-    OUT=$(printf '%s' "$PW" | \
+    [ -S "$SOCK" ] || {
+      log "attempt $attempt: socket not found"
+      continue
+    }
+    OUT=$(printf '%s' "$PW" |
       @runuser@ -u "$PAM_USER" -- \
         @env@ XDG_RUNTIME_DIR="/run/user/$USER_UID" \
         @unlock_py@ 2>&1)

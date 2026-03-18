@@ -25,7 +25,7 @@ if ! "$SYSTEMCTL" is-active --quiet docker 2>/dev/null; then
   if [ ! -f /etc/systemd/system/docker.service ]; then
     echo "Installing Docker systemd service..."
     # shellcheck disable=SC2024
-    sudo "$TEE" /etc/systemd/system/docker.service > /dev/null < "$DOCKER_SERVICE_FILE"
+    sudo "$TEE" /etc/systemd/system/docker.service >/dev/null <"$DOCKER_SERVICE_FILE"
     sudo "$SYSTEMCTL" daemon-reload
     sudo "$SYSTEMCTL" enable docker
   fi

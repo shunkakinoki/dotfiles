@@ -6,11 +6,15 @@ let
   # Smart wrapper that handles both NixOS and non-NixOS Linux
   # On NixOS: docker group is properly inherited, or use /run/wrappers/bin/sg
   # On non-NixOS: systemd user session may lack docker group, use /usr/bin/sg
-  startPostgresWrapper = pkgs.writeShellScript "start-postgres-wrapper" (builtins.readFile (pkgs.replaceVars ./start-postgres-wrapper.sh {
-    bash = pkgs.bash;
-    start_script = startScript;
-    docker = pkgs.docker;
-  }));
+  startPostgresWrapper = pkgs.writeShellScript "start-postgres-wrapper" (
+    builtins.readFile (
+      pkgs.replaceVars ./start-postgres-wrapper.sh {
+        bash = pkgs.bash;
+        start_script = startScript;
+        docker = pkgs.docker;
+      }
+    )
+  );
 in
 {
   launchd.agents.docker-postgres = lib.mkIf pkgs.stdenv.isDarwin {

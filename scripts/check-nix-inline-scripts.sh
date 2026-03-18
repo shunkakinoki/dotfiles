@@ -16,8 +16,8 @@ violations=$(grep -rn \
   --exclude-dir='.git' \
   --exclude-dir='result' \
   --exclude-dir='.direnv' \
-  --exclude-dir='.worktrees' \
-  | grep -v "^Binary" || true)
+  --exclude-dir='.worktrees' |
+  grep -v "^Binary" || true)
 
 if [ -n "$violations" ]; then
   echo "ERROR: Inline script strings found in Nix files." >&2
