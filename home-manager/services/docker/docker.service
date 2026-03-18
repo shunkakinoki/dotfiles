@@ -1,0 +1,15 @@
+[Unit]
+Description=Docker Application Container Engine
+Documentation=https://docs.docker.com
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=notify
+ExecStart=@docker@/bin/dockerd
+ExecReload=@coreutils@/bin/kill -s HUP $MAINPID
+Restart=always
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target

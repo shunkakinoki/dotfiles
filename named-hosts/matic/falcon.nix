@@ -13,37 +13,12 @@
 let
   falcon = pkgs.callPackage ./falcon { };
 
-  initScript = pkgs.writeScript "init-falcon" ''
-    #!${pkgs.bash}/bin/sh
-    set -euo pipefail
-
-    # Remove immutable attributes set by CrowdStrike (security feature)
-    if [ -d /opt/CrowdStrike ]; then
-      ${pkgs.e2fsprogs}/bin/chattr -i -R /opt/CrowdStrike 2>/dev/null || true
-    fi
-
-    install -d -m 0770 /opt/CrowdStrike
-
-    # Update binaries from the nix store, but preserve runtime state files.
-    # falconstore contains the Agent ID (AID) — if lost, the sensor re-registers
-    # as a new host and consumes another license seat.
-    ${pkgs.rsync}/bin/rsync -a --delete \
-      --exclude=falconstore \
-      --exclude=falconstore.bak \
-      --exclude=CsConfig \
-      "${falcon}/opt/CrowdStrike/" /opt/CrowdStrike/
-
-    chown -R root:root /opt/CrowdStrike
-
-    # load CID from /etc/falcon-sensor.env (root-only)
-    . /etc/falcon-sensor.env
-
-    # set CID via falconctl inside FHS env
-    ${falcon}/bin/fs-bash -c "/opt/CrowdStrike/falconctl -s -f --cid=\"$FALCON_CID\""
-
-    # sanity print
-    ${falcon}/bin/fs-bash -c "/opt/CrowdStrike/falconctl -g --cid"
-  '';
+  initScript = pkgs.writeScript "init-falcon" (builtins.readFile (pkgs.replaceVars ./falcon-init.sh {
+    bash = pkgs.bash;
+    e2fsprogs = pkgs.e2fsprogs;
+    rsync = pkgs.rsync;
+    falcon = falcon;
+  }));
 in
 {
   systemd.tmpfiles.rules = [

@@ -30,24 +30,11 @@ let
   # Smart wrapper that handles both NixOS and non-NixOS Linux
   # On NixOS: docker group is properly inherited, or use /run/wrappers/bin/sg
   # On non-NixOS: systemd user session may lack docker group, use /usr/bin/sg
-  dockerStartScript = pkgs.writeShellScript "cliproxyapi-docker-start" ''
-    SCRIPT="${pkgs.bash}/bin/bash ${startScript}"
-
-    # Try docker directly first (works on NixOS or when user has docker group)
-    if ${pkgs.docker}/bin/docker info >/dev/null 2>&1; then
-      exec $SCRIPT
-    fi
-
-    # Docker not accessible directly, try sg to switch group
-    if [ -x /run/wrappers/bin/sg ]; then
-      exec /run/wrappers/bin/sg docker -c "$SCRIPT"
-    elif [ -x /usr/bin/sg ]; then
-      exec /usr/bin/sg docker -c "$SCRIPT"
-    else
-      echo "ERROR: Cannot access Docker. User not in docker group and no sg binary found." >&2
-      exit 1
-    fi
-  '';
+  dockerStartScript = pkgs.writeShellScript "cliproxyapi-docker-start" (builtins.readFile (pkgs.replaceVars ./scripts/docker-start.sh {
+    bash = pkgs.bash;
+    start_script = startScript;
+    docker = pkgs.docker;
+  }));
 
   wrapperScript = pkgs.replaceVars ./scripts/wrapper.sh {
     common = commonScript;

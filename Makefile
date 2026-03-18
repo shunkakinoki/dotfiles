@@ -192,7 +192,7 @@ dotagents-sync: ## Sync dotagents (commands, skills, MCP configuration).
 	@$(MAKE) -C dotagents sync
 
 .PHONY: test
-test: neovim-test nix-test shell-test ## Run all tests (neovim + nix + shell).
+test: neovim-test nix-test shell-test python-test nix-inline-check ## Run all tests (neovim + nix + shell + python + nix-inline-check).
 
 ##@ Update
 
@@ -875,6 +875,29 @@ shell-check-dev: ## Run ShellCheck inside the Nix dev shell (mirrors CI).
 
 .PHONY: shell-lint
 shell-lint: shell-check ## Lint shell scripts (alias for shell-check).
+
+.PHONY: nix-inline-check
+nix-inline-check: ## Fail if any .nix file contains inline write*Script* strings.
+	@echo "🔍 Checking for inline scripts in Nix files..."
+	@bash scripts/check-nix-inline-scripts.sh
+
+##@ Python
+
+.PHONY: python-test
+python-test: ## Run Python tests with pytest.
+	@echo "🧪 Running Python tests..."
+	@uv run --with pytest --no-project pytest tests
+
+.PHONY: python-test-dev
+python-test-dev: ## Run Python tests inside the Nix dev shell (mirrors CI).
+	@echo "🧪 Running Python tests inside the Nix dev shell..."
+	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) python-test
+
+.PHONY: python-lint
+python-lint: ## Lint Python files with Ruff.
+	@echo "🔍 Linting Python files with Ruff..."
+	@uv run ruff check --target-version=py313
+	@uv run ruff format --diff --target-version=py313
 
 ##@ Nix Tests
 
