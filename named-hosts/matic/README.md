@@ -19,22 +19,19 @@ sudo bash -c 'mkdir -p /etc/credstore.encrypted && \
   - /etc/credstore.encrypted/gnome-keyring.cred'
 ```
 
-Then restart the service:
-
-```bash
-sudo systemctl restart gnome-keyring-unlock.service
-```
+The keyring password must be your **system login password** (the one PAM uses when you log in with password).
 
 ### How it works
 
-1. `services.gnome.gnome-keyring.enable` starts the keyring daemon at login via PAM.
-2. `security.pam.services.greetd.enableGnomeKeyring` auto-unlocks for password logins.
-3. `systemd.services.gnome-keyring-unlock` runs as a **system service** with `User=skakinoki` so the system manager handles TPM decryption. It then speaks the gnome-keyring **control socket protocol** directly to unlock the running daemon — covering fingerprint logins where PAM has no password to forward.
-4. The service skips silently if the credential file does not exist yet.
+1. `pam_gnome_keyring.so` starts the keyring daemon during PAM session open (order 12600).
+2. For **password login**: PAM forwards the password and the keyring auto-unlocks.
+3. For **fingerprint login**: PAM has no password, so the keyring stays locked. Immediately after, `pam_exec.so` (order 12610) runs a script that:
+   - Decrypts the TPM2 credential via `systemd-creds decrypt` (runs as root, has TPM access)
+   - Uses `runuser` to switch to the target user
+   - Speaks the gnome-keyring **control socket protocol** directly to unlock the daemon
+4. The script exits silently if the credential file does not exist.
 
-> **Note:** `gnome-keyring-daemon --unlock` (v48+) ignores `GNOME_KEYRING_CONTROL` and always starts a fresh instance. The service works around this by writing directly to `$XDG_RUNTIME_DIR/keyring/control` using the binary protocol: credentials byte + big-endian `[oplen][op=1][pwlen][password]`, reads `[8][result]`.
->
-> **Note:** The credential must be at `/etc/credstore.encrypted/gnome-keyring.cred` (not `~/.config`). User-level systemd services cannot access TPM/host keys — only the system manager can.
+> **Note:** `gnome-keyring-daemon --unlock` (v48+) ignores `GNOME_KEYRING_CONTROL` and always starts a fresh instance. The PAM script works around this by writing directly to `$XDG_RUNTIME_DIR/keyring/control` using the binary protocol: credentials byte + big-endian `[oplen][op=1][pwlen][password]`, reads `[8][result]`.
 
 ### Re-encrypting after keyring password change
 
