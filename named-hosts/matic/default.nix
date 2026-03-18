@@ -203,6 +203,8 @@ inputs.nixpkgs.lib.nixosSystem {
                   # Fork a background retry loop so login is never blocked; the daemon
                   # is ready within a few seconds of the user session starting.
                   USER_UID=$(id -u "$PAM_USER")
+                  # Skip system/greeter users (uid < 1000)
+                  [ "$USER_UID" -lt 1000 ] && exit 0
                   SOCK="/run/user/$USER_UID/keyring/control"
                   (
                     for attempt in 1 2 3 4 5 6 7 8; do
