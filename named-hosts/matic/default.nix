@@ -118,10 +118,99 @@ inputs.nixpkgs.lib.nixosSystem {
         # Thunderbolt support
         services.hardware.bolt.enable = true;
 
+        # GNOME Keyring - auto-unlocks GPG key on login via PAM
+        services.gnome.gnome-keyring.enable = true;
+
+        # Unlock GNOME Keyring via TPM2 credential at login.
+        # System service so the system manager (not user manager) handles TPM decryption.
+        # Credential stored at /etc/credstore.encrypted/gnome-keyring.cred — create once with:
+        #   sudo bash -c 'mkdir -p /etc/credstore.encrypted && \
+        #     systemd-ask-password "Keyring password:" | \
+        #     systemd-creds encrypt --name=gnome-keyring --with-key=tpm2+host \
+        #     - /etc/credstore.encrypted/gnome-keyring.cred'
+        systemd.services.gnome-keyring-unlock = {
+          description = "Unlock GNOME Keyring via TPM2 credential";
+          after = [ "user@${toString 1000}.service" ];
+          wantedBy = [ "user@${toString 1000}.service" ];
+          unitConfig.ConditionPathExists = "/etc/credstore.encrypted/gnome-keyring.cred";
+          serviceConfig = {
+            Type = "oneshot";
+            User = username;
+            TimeoutStartSec = 60;
+            LoadCredentialEncrypted = "gnome-keyring:/etc/credstore.encrypted/gnome-keyring.cred";
+            ExecStart =
+              let
+                # Speaks the gnome-keyring control socket protocol directly.
+                # gnome-keyring-daemon --unlock (v48) ignores GNOME_KEYRING_CONTROL
+                # and always starts a new instance, so we bypass it entirely.
+                #
+                # Protocol (all big-endian):
+                #   1. connect to $XDG_RUNTIME_DIR/keyring/control (UNIX stream)
+                #   2. send \x00 — daemon reads our UID via SO_PEERCRED
+                #   3. send [oplen:4][op=1:4][pwlen:4][password bytes]
+                #          where oplen = 8 + 4 + len(password)
+                #   4. read [8:4][result:4] — result 0 = OK
+                unlockPy = pkgs.writeScript "unlock-gnome-keyring.py" ''
+                  #!${pkgs.python3}/bin/python3
+                  import os, socket, struct, stat, sys
+
+                  def unlock(password):
+                      uid = os.getuid()
+                      xdg = os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{uid}")
+                      sock_path = os.path.join(xdg, "keyring", "control")
+                      st = os.lstat(sock_path)
+                      if not stat.S_ISSOCK(st.st_mode) or st.st_uid != uid:
+                          raise RuntimeError(f"bad socket: {sock_path}")
+                      pw = password.encode()
+                      oplen = 8 + 4 + len(pw)
+                      pkt = struct.pack(">II", oplen, 1) + struct.pack(">I", len(pw)) + pw
+                      with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
+                          s.connect(sock_path)
+                          s.sendall(b"\x00")
+                          s.sendall(pkt)
+                          resp = b""
+                          while len(resp) < 8:
+                              resp += s.recv(8 - len(resp))
+                      _, result = struct.unpack(">II", resp)
+                      return result
+
+                  import time
+
+                  pw = sys.stdin.read().rstrip("\n")
+                  codes = {0: "OK", 1: "DENIED", 2: "FAILED", 3: "NO_DAEMON"}
+                  uid = os.getuid()
+                  sock_path = f"/run/user/{uid}/keyring/control"
+
+                  for attempt in range(10):
+                      # Wait for the control socket to appear (keyring daemon to start)
+                      if not os.path.exists(sock_path):
+                          print(f"attempt {attempt+1}: waiting for control socket...", flush=True)
+                          time.sleep(3)
+                          continue
+                      result = unlock(pw)
+                      print(f"attempt {attempt+1}: gnome-keyring unlock: {codes.get(result, result)}", flush=True)
+                      if result == 0:
+                          sys.exit(0)
+                      # DENIED might mean daemon not fully ready yet, retry
+                      time.sleep(3)
+
+                  print("gnome-keyring unlock: gave up after 10 attempts", flush=True)
+                  sys.exit(1)
+                '';
+              in
+                pkgs.writeShellScript "unlock-keyring" ''
+                  export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+                  cat "$CREDENTIALS_DIRECTORY/gnome-keyring" | ${unlockPy}
+                '';
+            RemainAfterExit = "yes";
+          };
+        };
+
         # Fingerprint authentication
         services.fprintd.enable = true;
         security.pam.services.greetd = {
           fprintAuth = true;
+          enableGnomeKeyring = true;
         };
         security.pam.services.hyprlock = {
           fprintAuth = true;
@@ -438,9 +527,9 @@ inputs.nixpkgs.lib.nixosSystem {
           services.gpg-agent = {
             enable = true;
             enableSshSupport = false;
-            pinentry.package = pkgs.pinentry-tty;
-            defaultCacheTtl = 94608000; # 3 years
-            maxCacheTtl = 94608000; # 3 years
+            pinentry.package = pkgs.pinentry-gnome3;
+            defaultCacheTtl = 2147483647; # max (effectively forever)
+            maxCacheTtl = 2147483647; # max (effectively forever)
           };
 
           # GPG_TTY is set in fish shell init instead of sessionVariables

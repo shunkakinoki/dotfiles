@@ -125,19 +125,26 @@ with pkgs;
 ]
 ++ lib.optionals (stdenv.isLinux && isDesktop) [
   _1password-gui
+  baobab
   brightnessctl
+  celluloid
+  cheese
   chromium
   clickup
   cliphist
   code-cursor
   discord
+  eog
   evince
   ffmpeg
+  file-roller
+  gedit
   ghostty
   github-desktop
   gnome-disk-utility
   google-chrome
   grim
+  gthumb
   hypridle
   hyprlock
   hyprpicker
@@ -146,11 +153,14 @@ with pkgs;
   hyprsunset
   libnotify
   linux-wallpaperengine
+  loupe
   nautilus
   pavucontrol
   playerctl
   rofi
   rofimoji
+  seahorse
+  shotwell
   signal-desktop
   slack
   slurp
