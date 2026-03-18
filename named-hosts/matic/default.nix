@@ -434,13 +434,17 @@ inputs.nixpkgs.lib.nixosSystem {
             };
           };
 
+          # GNOME Keyring - auto-unlocks GPG key on login via PAM
+          services.gnome.gnome-keyring.enable = true;
+          security.pam.services.greetd.enableGnomeKeyring = true;
+
           # GPG agent configuration
           services.gpg-agent = {
             enable = true;
             enableSshSupport = false;
-            pinentry.package = pkgs.pinentry-tty;
-            defaultCacheTtl = 94608000; # 3 years
-            maxCacheTtl = 94608000; # 3 years
+            pinentry.package = pkgs.pinentry-gnome3;
+            defaultCacheTtl = 2147483647; # max (effectively forever)
+            maxCacheTtl = 2147483647; # max (effectively forever)
           };
 
           # GPG_TTY is set in fish shell init instead of sessionVariables
