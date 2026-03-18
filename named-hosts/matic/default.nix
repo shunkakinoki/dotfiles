@@ -438,6 +438,32 @@ inputs.nixpkgs.lib.nixosSystem {
             };
           };
 
+          # Auto-unlock GNOME Keyring on login via TPM2-backed credential
+          # Setup (run once):
+          #   mkdir -p ~/.config/credstore.encrypted
+          #   echo -n "your-keyring-password" | systemd-creds encrypt \
+          #     --name=gnome-keyring --with-key=tpm2+host \
+          #     - ~/.config/credstore.encrypted/gnome-keyring.cred
+          systemd.user.services.gnome-keyring-unlock = {
+            Unit = {
+              Description = "Unlock GNOME Keyring via TPM2 credential";
+              After = [ "graphical-session-pre.target" ];
+              PartOf = [ "graphical-session-pre.target" ];
+            };
+            Service = {
+              Type = "oneshot";
+              LoadCredentialEncrypted = "gnome-keyring:%h/.config/credstore.encrypted/gnome-keyring.cred";
+              ExecStart = "${pkgs.writeShellScript "unlock-keyring" ''
+                cat "$CREDENTIALS_DIRECTORY/gnome-keyring" | \
+                  ${pkgs.gnome-keyring}/bin/gnome-keyring-daemon --unlock
+              ''}";
+              RemainAfterExit = "yes";
+            };
+            Install = {
+              WantedBy = [ "graphical-session-pre.target" ];
+            };
+          };
+
           # GPG agent configuration
           services.gpg-agent = {
             enable = true;
