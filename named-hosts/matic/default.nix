@@ -118,10 +118,14 @@ inputs.nixpkgs.lib.nixosSystem {
         # Thunderbolt support
         services.hardware.bolt.enable = true;
 
+        # GNOME Keyring - auto-unlocks GPG key on login via PAM
+        services.gnome.gnome-keyring.enable = true;
+
         # Fingerprint authentication
         services.fprintd.enable = true;
         security.pam.services.greetd = {
           fprintAuth = true;
+          enableGnomeKeyring = true;
         };
         security.pam.services.hyprlock = {
           fprintAuth = true;
@@ -433,10 +437,6 @@ inputs.nixpkgs.lib.nixosSystem {
               default-key = "shunkakinoki@gmail.com";
             };
           };
-
-          # GNOME Keyring - auto-unlocks GPG key on login via PAM
-          services.gnome.gnome-keyring.enable = true;
-          security.pam.services.greetd.enableGnomeKeyring = true;
 
           # GPG agent configuration
           services.gpg-agent = {
