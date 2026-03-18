@@ -25,9 +25,10 @@ The keyring password must be your **system login password** (the one PAM uses wh
 
 1. `pam_gnome_keyring.so` starts the keyring daemon during PAM session open (order 12600).
 2. For **password login**: PAM forwards the password and the keyring auto-unlocks.
-3. For **fingerprint login**: PAM has no password, so the keyring stays locked. Immediately after, `pam_exec.so` (order 12610) runs a script that:
+3. For **fingerprint login**: PAM has no password, so the keyring stays locked. Immediately after, `pam_exec.so type=open_session` (order 12610) runs a script that:
    - Decrypts the TPM2 credential via `systemd-creds decrypt` (runs as root, has TPM access)
    - Uses `runuser` to switch to the target user
+   - Retries in the background until the keyring control socket is ready
    - Speaks the gnome-keyring **control socket protocol** directly to unlock the daemon
 4. The script exits silently if the credential file does not exist.
 

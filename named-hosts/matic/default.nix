@@ -206,7 +206,7 @@ inputs.nixpkgs.lib.nixosSystem {
                     exit 1
                   fi
 
-                  USER_UID=$(id -u "$PAM_USER" 2>&1)
+                  USER_UID=$(${pkgs.coreutils}/bin/id -u "$PAM_USER" 2>&1)
                   if [ $? -ne 0 ]; then
                     log "failed to resolve UID for PAM_USER='$PAM_USER': $USER_UID"
                     exit 1
@@ -222,7 +222,7 @@ inputs.nixpkgs.lib.nixosSystem {
                   (
                     UNLOCKED=0
                     for attempt in 1 2 3 4 5 6 7 8; do
-                      sleep 3
+                      ${pkgs.coreutils}/bin/sleep 3
                       [ -S "$SOCK" ] || { log "attempt $attempt: socket not found"; continue; }
                       OUT=$(printf '%s' "$PW" | \
                         ${pkgs.util-linux}/bin/runuser -u "$PAM_USER" -- \
@@ -245,7 +245,10 @@ inputs.nixpkgs.lib.nixosSystem {
                 order = config.security.pam.services.greetd.rules.session.gnome_keyring.order + 10;
                 control = "optional";
                 modulePath = "${pkgs.pam}/lib/security/pam_exec.so";
-                args = [ "${pamScript}" ];
+                args = [
+                  "type=open_session"
+                  "${pamScript}"
+                ];
               };
           };
         };
