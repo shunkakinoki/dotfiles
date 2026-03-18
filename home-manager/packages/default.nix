@@ -114,6 +114,7 @@ with pkgs;
   gemini-cli
   keychain
   libiconv
+  nvtop
   opencode
   openssl
   openssl.dev
