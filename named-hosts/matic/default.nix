@@ -118,10 +118,139 @@ inputs.nixpkgs.lib.nixosSystem {
         # Thunderbolt support
         services.hardware.bolt.enable = true;
 
+        # GNOME Keyring - auto-unlocks GPG key on login via PAM
+        services.gnome.gnome-keyring.enable = true;
+
+        # Unlock GNOME Keyring via TPM2 credential at login (PAM exec).
+        # Runs in the PAM session stack right after pam_gnome_keyring starts the daemon,
+        # so there are no timing/retry issues. Runs as root (can access TPM), then uses
+        # runuser to speak the control socket protocol as the target user (SO_PEERCRED).
+        #
+        # Credential stored at /etc/credstore.encrypted/gnome-keyring.cred — create once with:
+        #   sudo bash -c 'mkdir -p /etc/credstore.encrypted && \
+        #     systemd-ask-password "Keyring password:" | \
+        #     systemd-creds encrypt --name=gnome-keyring --with-key=tpm2+host \
+        #     - /etc/credstore.encrypted/gnome-keyring.cred'
+
         # Fingerprint authentication
         services.fprintd.enable = true;
         security.pam.services.greetd = {
           fprintAuth = true;
+          enableGnomeKeyring = true;
+          rules.session = {
+            # Run after pam_gnome_keyring (which starts the daemon but can't unlock
+            # on fingerprint login). Decrypts the TPM2 credential and sends the
+            # password to the running daemon via the control socket protocol.
+            gnome_keyring_tpm_unlock =
+              let
+                # Speaks the gnome-keyring control socket protocol directly.
+                # gnome-keyring-daemon --unlock (v48) ignores GNOME_KEYRING_CONTROL
+                # and always starts a new instance, so we bypass it entirely.
+                #
+                # Protocol (all big-endian):
+                #   1. connect to $XDG_RUNTIME_DIR/keyring/control (UNIX stream)
+                #   2. send \x00 — daemon reads our UID via SO_PEERCRED
+                #   3. send [oplen:4][op=1:4][pwlen:4][password bytes]
+                #          where oplen = 8 + 4 + len(password)
+                #   4. read [8:4][result:4] — result 0 = OK
+                unlockPy = pkgs.writeScript "unlock-gnome-keyring.py" ''
+                  #!${pkgs.python3}/bin/python3
+                  import os, socket, struct, stat, sys
+
+                  def unlock(password):
+                      uid = os.getuid()
+                      xdg = os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{uid}")
+                      sock_path = os.path.join(xdg, "keyring", "control")
+                      st = os.lstat(sock_path)
+                      if not stat.S_ISSOCK(st.st_mode) or st.st_uid != uid:
+                          raise RuntimeError(f"bad socket: {sock_path}")
+                      pw = password.encode()
+                      oplen = 8 + 4 + len(pw)
+                      pkt = struct.pack(">II", oplen, 1) + struct.pack(">I", len(pw)) + pw
+                      with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
+                          s.connect(sock_path)
+                          s.sendall(b"\x00")
+                          s.sendall(pkt)
+                          resp = b""
+                          while len(resp) < 8:
+                              chunk = s.recv(8 - len(resp))
+                              if not chunk:
+                                  raise RuntimeError(f"daemon closed connection after {len(resp)} bytes")
+                              resp += chunk
+                      _, result = struct.unpack(">II", resp)
+                      return result
+
+                  pw = sys.stdin.read().rstrip("\n")
+                  result = unlock(pw)
+                  codes = {0: "OK", 1: "DENIED", 2: "FAILED", 3: "NO_DAEMON"}
+                  print(f"gnome-keyring unlock: {codes.get(result, result)}", flush=True)
+                  sys.exit(0 if result == 0 else 1)
+                '';
+
+                # PAM exec script: runs as root, decrypts TPM credential, then
+                # uses runuser to run the Python unlock as the target user.
+                pamScript = pkgs.writeShellScript "pam-gnome-keyring-tpm-unlock" ''
+                  log() { echo "gnome-keyring-tpm: $*" | ${pkgs.util-linux}/bin/logger -t gnome-keyring-tpm; }
+                  CRED="/etc/credstore.encrypted/gnome-keyring.cred"
+                  [ -f "$CRED" ] || exit 0
+
+                  if [ -z "$PAM_USER" ]; then
+                    log "PAM_USER is not set"
+                    exit 1
+                  fi
+
+                  # Decrypt synchronously — requires root/TPM access (not available after fork).
+                  PW=$(${pkgs.systemd}/bin/systemd-creds decrypt --name=gnome-keyring "$CRED" - 2>/dev/null)
+                  if [ $? -ne 0 ] || [ -z "$PW" ]; then
+                    log "credential decrypt failed"
+                    exit 1
+                  fi
+
+                  USER_UID=$(${pkgs.coreutils}/bin/id -u "$PAM_USER" 2>&1)
+                  if [ $? -ne 0 ]; then
+                    log "failed to resolve UID for PAM_USER='$PAM_USER': $USER_UID"
+                    exit 1
+                  fi
+                  # Skip system/greeter users (uid < 1000)
+                  [ "$USER_UID" -lt 1000 ] && exit 0
+
+                  # The gnome-keyring-daemon p11-kit backend is not fully initialized at
+                  # PAM session-open time — unlock attempts at this point return DENIED.
+                  # Fork a background retry loop so login is never blocked; the daemon
+                  # is ready within a few seconds of the user session starting.
+                  SOCK="/run/user/$USER_UID/keyring/control"
+                  (
+                    UNLOCKED=0
+                    for attempt in 1 2 3 4 5 6 7 8; do
+                      ${pkgs.coreutils}/bin/sleep 3
+                      [ -S "$SOCK" ] || { log "attempt $attempt: socket not found"; continue; }
+                      OUT=$(printf '%s' "$PW" | \
+                        ${pkgs.util-linux}/bin/runuser -u "$PAM_USER" -- \
+                          ${pkgs.coreutils}/bin/env XDG_RUNTIME_DIR="/run/user/$USER_UID" \
+                          ${unlockPy} 2>&1)
+                      STATUS=$?
+                      log "attempt $attempt: $OUT (exit $STATUS)"
+                      if [ "$STATUS" -eq 0 ]; then
+                        UNLOCKED=1
+                        break
+                      fi
+                    done
+                    [ "$UNLOCKED" -eq 0 ] && log "all attempts exhausted — keyring was NOT unlocked for $PAM_USER"
+                  ) &
+
+                  exit 0
+                '';
+              in
+              {
+                order = config.security.pam.services.greetd.rules.session.gnome_keyring.order + 10;
+                control = "optional";
+                modulePath = "${pkgs.pam}/lib/security/pam_exec.so";
+                args = [
+                  "type=open_session"
+                  "${pamScript}"
+                ];
+              };
+          };
         };
         security.pam.services.hyprlock = {
           fprintAuth = true;
@@ -438,9 +567,9 @@ inputs.nixpkgs.lib.nixosSystem {
           services.gpg-agent = {
             enable = true;
             enableSshSupport = false;
-            pinentry.package = pkgs.pinentry-tty;
-            defaultCacheTtl = 94608000; # 3 years
-            maxCacheTtl = 94608000; # 3 years
+            pinentry.package = pkgs.pinentry-gnome3;
+            defaultCacheTtl = 2147483647; # max (effectively forever)
+            maxCacheTtl = 2147483647; # max (effectively forever)
           };
 
           # GPG_TTY is set in fish shell init instead of sessionVariables
