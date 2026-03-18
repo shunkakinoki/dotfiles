@@ -33,7 +33,7 @@
     "@tobilu/qmd": "^2.0.1",
     "@typescript/native-preview": "^7.0.0-dev.20260317.1",
     "@vibe-kit/grok-cli": "^0.0.34",
-    "acpx": "^0.3.0",
+    "acpx": "^0.3.1",
     "agent-browser": "^0.21.0",
     "agentcash": "^0.12.0",
     "ccusage": "^18.0.10",

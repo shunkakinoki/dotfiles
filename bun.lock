@@ -27,7 +27,7 @@
         "@tobilu/qmd": "^2.0.1",
         "@typescript/native-preview": "^7.0.0-dev.20260317.1",
         "@vibe-kit/grok-cli": "^0.0.34",
-        "acpx": "^0.3.0",
+        "acpx": "^0.3.1",
         "agent-browser": "^0.21.0",
         "agentcash": "^0.12.0",
         "ccusage": "^18.0.10",
@@ -1339,7 +1339,7 @@
 
     "acorn-import-attributes": ["acorn-import-attributes@1.9.5", "", { "peerDependencies": { "acorn": "^8" } }, "sha512-n02Vykv5uA3eHGM/Z2dQrcD56kL8TyDb2p1+0P83PClMnC/nc+anbQRhIOWnSq4Ke/KvDPrY3C9hDtC/A3eHnQ=="],
 
-    "acpx": ["acpx@0.3.0", "", { "dependencies": { "@agentclientprotocol/sdk": "^0.15.0", "commander": "^14.0.3", "skillflag": "^0.1.4" }, "bin": { "acpx": "dist/cli.js" } }, "sha512-5F3GRojIqXyMCzWZ6fT3+mgXXS0sRR7Phc6VyAdEUyfjQQTVeJHr81+XQ/Z4jHrP3pbjtqwlRC6E0O5Glc8lOg=="],
+    "acpx": ["acpx@0.3.1", "", { "dependencies": { "@agentclientprotocol/sdk": "^0.15.0", "commander": "^14.0.3", "skillflag": "^0.1.4" }, "bin": { "acpx": "dist/cli.js" } }, "sha512-761rkCnL1q9D6S5g5MP9C/aK7XdeoO4KkLFkCCxFExmi+/luwlrpNWcjPTDCap2WUXbTBy1vPTfGlSBiiGEIng=="],
 
     "aes-js": ["aes-js@4.0.0-beta.5", "", {}, "sha512-G965FqalsNyrPqgEGON7nIx1e/OVENSgiEIzyC63haUMuvNnwIgIjMs52hlTCKhkBny7A2ORNlfY9Zu+jmGk1Q=="],
 
