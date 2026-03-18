@@ -139,6 +139,7 @@ inputs.nixpkgs.lib.nixosSystem {
             LoadCredentialEncrypted = "gnome-keyring:/etc/credstore.encrypted/gnome-keyring.cred";
             ExecStart = pkgs.writeShellScript "unlock-keyring" ''
               export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u)/bus"
+              export GNOME_KEYRING_CONTROL="/run/user/$(id -u)/keyring"
               cat "$CREDENTIALS_DIRECTORY/gnome-keyring" | \
                 ${pkgs.gnome-keyring}/bin/gnome-keyring-daemon --unlock
             '';
