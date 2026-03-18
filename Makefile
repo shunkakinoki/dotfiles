@@ -896,8 +896,8 @@ python-test-dev: ## Run Python tests inside the Nix dev shell (mirrors CI).
 .PHONY: python-lint
 python-lint: ## Lint Python files with Ruff.
 	@echo "🔍 Linting Python files with Ruff..."
-	@uv run ruff check --target-version=py313
-	@uv run ruff format --diff --target-version=py313
+	@uv run --with ruff --no-project ruff check
+	@uv run --with ruff --no-project ruff format --check --diff
 
 ##@ Nix Tests
 

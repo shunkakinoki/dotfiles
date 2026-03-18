@@ -105,7 +105,7 @@ class TestUnlockProtocol(unittest.TestCase):
     def test_bad_socket_wrong_owner(self, mock_uid, mock_lstat):
         mock_lstat.return_value = self._make_stat(uid=9999)
 
-        with self.assertRaises(RuntimeError, msg="bad socket"):
+        with self.assertRaisesRegex(RuntimeError, "bad socket"):
             unlock("pw")
 
     @patch("os.lstat")
@@ -113,7 +113,7 @@ class TestUnlockProtocol(unittest.TestCase):
     def test_bad_socket_not_a_socket(self, mock_uid, mock_lstat):
         mock_lstat.return_value = self._make_stat(uid=1000, is_sock=False)
 
-        with self.assertRaises(RuntimeError, msg="bad socket"):
+        with self.assertRaisesRegex(RuntimeError, "bad socket"):
             unlock("pw")
 
     @patch("socket.socket")
@@ -169,7 +169,7 @@ class TestUnlockProtocol(unittest.TestCase):
         sock.recv.return_value = b""  # simulate closed connection
         mock_socket_cls.return_value = sock
 
-        with self.assertRaises(RuntimeError, msg="daemon closed connection"):
+        with self.assertRaisesRegex(RuntimeError, "daemon closed"):
             unlock("pw")
 
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # CrowdStrike Falcon sensor init script.
-# @bash@, @e2fsprogs@, @rsync@, @falcon@ are substituted by pkgs.replaceVars.
+# @e2fsprogs@, @rsync@, @falcon@ are substituted by pkgs.replaceVars.
 set -euo pipefail
 
 # Remove immutable attributes set by CrowdStrike (security feature)

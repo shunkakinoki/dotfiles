@@ -27,6 +27,21 @@ When run bash -c "grep '@systemd_creds@' '$SCRIPT'"
 The output should include '@systemd_creds@'
 End
 
+It 'references @id@'
+When run bash -c "grep '@id@' '$SCRIPT'"
+The output should include '@id@'
+End
+
+It 'references @sleep@'
+When run bash -c "grep '@sleep@' '$SCRIPT'"
+The output should include '@sleep@'
+End
+
+It 'references @env@'
+When run bash -c "grep '@env@' '$SCRIPT'"
+The output should include '@env@'
+End
+
 It 'references @runuser@'
 When run bash -c "grep '@runuser@' '$SCRIPT'"
 The output should include '@runuser@'

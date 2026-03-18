@@ -27,6 +27,7 @@ def unlock(password):
     oplen = 8 + 4 + len(pw)
     pkt = struct.pack(">II", oplen, 1) + struct.pack(">I", len(pw)) + pw
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
+        s.settimeout(10)
         s.connect(sock_path)
         s.sendall(b"\x00")
         s.sendall(pkt)

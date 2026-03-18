@@ -11,7 +11,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 violations=$(grep -rn \
   --include='*.nix' \
-  -P "write(Shell)?(Script|ScriptBin)\s+\"[^\"]+\"\s+''" \
+  -E 'write(Shell)?(Script|ScriptBin)[[:space:]]+"[^"]+"+[[:space:]]+'"''" \
   "$ROOT" \
   --exclude-dir='.git' \
   --exclude-dir='result' \

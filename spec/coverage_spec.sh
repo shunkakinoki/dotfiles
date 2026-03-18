@@ -153,6 +153,10 @@ It 'has spec file for scripts/fishtape-wrapper.sh'
 The path "spec/fishtape_wrapper_spec.sh" should be exist
 End
 
+It 'has spec file for scripts/check-nix-inline-scripts.sh'
+The path "spec/check_nix_inline_scripts_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/cliproxyapi/scripts/docker-start.sh'
 The path "spec/cliproxyapi_docker_start_spec.sh" should be exist
 End
@@ -212,6 +216,7 @@ named-hosts/kyber/rekey-galactica.sh
 named-hosts/kyber/setup.sh
 named-hosts/matic/falcon-init.sh
 named-hosts/matic/pam-gnome-keyring-tpm-unlock.sh
+scripts/check-nix-inline-scripts.sh
 scripts/fishtape-wrapper.sh
 scripts/llm-update.sh
 scripts/update-gitalias.sh
