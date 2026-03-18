@@ -121,6 +121,31 @@ inputs.nixpkgs.lib.nixosSystem {
         # GNOME Keyring - auto-unlocks GPG key on login via PAM
         services.gnome.gnome-keyring.enable = true;
 
+        # Unlock GNOME Keyring via TPM2 credential at login.
+        # System service so the system manager (not user manager) handles TPM decryption.
+        # Credential stored at /etc/credstore.encrypted/gnome-keyring.cred — create once with:
+        #   sudo bash -c 'mkdir -p /etc/credstore.encrypted && \
+        #     systemd-ask-password "Keyring password:" | \
+        #     systemd-creds encrypt --name=gnome-keyring --with-key=tpm2+host \
+        #     - /etc/credstore.encrypted/gnome-keyring.cred'
+        systemd.services.gnome-keyring-unlock = {
+          description = "Unlock GNOME Keyring via TPM2 credential";
+          after = [ "user@${toString 1000}.service" ];
+          wantedBy = [ "user@${toString 1000}.service" ];
+          unitConfig.ConditionPathExists = "/etc/credstore.encrypted/gnome-keyring.cred";
+          serviceConfig = {
+            Type = "oneshot";
+            User = username;
+            LoadCredentialEncrypted = "gnome-keyring:/etc/credstore.encrypted/gnome-keyring.cred";
+            ExecStart = pkgs.writeShellScript "unlock-keyring" ''
+              export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u)/bus"
+              cat "$CREDENTIALS_DIRECTORY/gnome-keyring" | \
+                ${pkgs.gnome-keyring}/bin/gnome-keyring-daemon --unlock
+            '';
+            RemainAfterExit = "yes";
+          };
+        };
+
         # Fingerprint authentication
         services.fprintd.enable = true;
         security.pam.services.greetd = {
@@ -435,33 +460,6 @@ inputs.nixpkgs.lib.nixosSystem {
             enable = true;
             settings = {
               default-key = "shunkakinoki@gmail.com";
-            };
-          };
-
-          # Auto-unlock GNOME Keyring on login via TPM2-backed credential
-          # Setup (run once):
-          #   mkdir -p ~/.config/credstore.encrypted
-          #   echo -n "your-keyring-password" | systemd-creds encrypt \
-          #     --name=gnome-keyring --with-key=tpm2+host \
-          #     - ~/.config/credstore.encrypted/gnome-keyring.cred
-          systemd.user.services.gnome-keyring-unlock = {
-            Unit = {
-              Description = "Unlock GNOME Keyring via TPM2 credential";
-              After = [ "graphical-session-pre.target" ];
-              PartOf = [ "graphical-session-pre.target" ];
-              ConditionPathExists = "%h/.config/credstore.encrypted/gnome-keyring.cred";
-            };
-            Service = {
-              Type = "oneshot";
-              LoadCredentialEncrypted = "gnome-keyring:%h/.config/credstore.encrypted/gnome-keyring.cred";
-              ExecStart = "${pkgs.writeShellScript "unlock-keyring" ''
-                cat "$CREDENTIALS_DIRECTORY/gnome-keyring" | \
-                  ${pkgs.gnome-keyring}/bin/gnome-keyring-daemon --unlock
-              ''}";
-              RemainAfterExit = "yes";
-            };
-            Install = {
-              WantedBy = [ "graphical-session-pre.target" ];
             };
           };
 
