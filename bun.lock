@@ -5,7 +5,7 @@
     "": {
       "name": "dotfiles",
       "dependencies": {
-        "@anthropic-ai/claude-code": "^2.1.77",
+        "@anthropic-ai/claude-code": "^2.1.78",
         "@augmentcode/auggie": "^0.19.0",
         "@biomejs/biome": "^2.4.7",
         "@ccusage/codex": "^18.0.10",
@@ -29,7 +29,7 @@
         "@vibe-kit/grok-cli": "^0.0.34",
         "acpx": "^0.3.0",
         "agent-browser": "^0.21.0",
-        "agentcash": "^0.11.1",
+        "agentcash": "^0.11.2",
         "ccusage": "^18.0.10",
         "clawdhub": "^0.3.0",
         "cline": "^2.8.0",
@@ -111,7 +111,7 @@
 
     "@alcalzone/ansi-tokenize": ["@alcalzone/ansi-tokenize@0.2.5", "", { "dependencies": { "ansi-styles": "^6.2.1", "is-fullwidth-code-point": "^5.0.0" } }, "sha512-3NX/MpTdroi0aKz134A6RC2Gb2iXVECN4QaAXnvCIxxIm3C3AVB1mkUe8NaaiyvOpDfsrqWhYtj+Q6a62RrTsw=="],
 
-    "@anthropic-ai/claude-code": ["@anthropic-ai/claude-code@2.1.77", "", { "optionalDependencies": { "@img/sharp-darwin-arm64": "^0.34.2", "@img/sharp-darwin-x64": "^0.34.2", "@img/sharp-linux-arm": "^0.34.2", "@img/sharp-linux-arm64": "^0.34.2", "@img/sharp-linux-x64": "^0.34.2", "@img/sharp-linuxmusl-arm64": "^0.34.2", "@img/sharp-linuxmusl-x64": "^0.34.2", "@img/sharp-win32-arm64": "^0.34.2", "@img/sharp-win32-x64": "^0.34.2" }, "bin": { "claude": "cli.js" } }, "sha512-bygcy1SP50yklEJ7dEPYh3rePkVYJGpylvwsZoAvCUTeEkORJSrbpaFDu/iYuySLNlFr0uGeN4Qonqk9ZWqAug=="],
+    "@anthropic-ai/claude-code": ["@anthropic-ai/claude-code@2.1.78", "", { "optionalDependencies": { "@img/sharp-darwin-arm64": "^0.34.2", "@img/sharp-darwin-x64": "^0.34.2", "@img/sharp-linux-arm": "^0.34.2", "@img/sharp-linux-arm64": "^0.34.2", "@img/sharp-linux-x64": "^0.34.2", "@img/sharp-linuxmusl-arm64": "^0.34.2", "@img/sharp-linuxmusl-x64": "^0.34.2", "@img/sharp-win32-arm64": "^0.34.2", "@img/sharp-win32-x64": "^0.34.2" }, "bin": { "claude": "cli.js" } }, "sha512-CQDwZoMZhXicm2HHhVqCO319eepmXx01tVmq1COC35hP5mTwdDvMJkz+y//8xrhpSc6kBu6nw1uGLcG1IsIHlA=="],
 
     "@anthropic-ai/sdk": ["@anthropic-ai/sdk@0.73.0", "", { "dependencies": { "json-schema-to-ts": "^3.1.1" }, "peerDependencies": { "zod": "^3.25.0 || ^4.0.0" }, "optionalPeers": ["zod"], "bin": { "anthropic-ai-sdk": "bin/cli" } }, "sha512-URURVzhxXGJDGUGFunIOtBlSl7KWvZiAAKY/ttTkZAkXT9bTPqdk2eK0b8qqSxXpikh3QKPnPYpiyX98zf5ebw=="],
 
@@ -1343,7 +1343,7 @@
 
     "agent-browser": ["agent-browser@0.21.0", "", { "bin": { "agent-browser": "bin/agent-browser.js" } }, "sha512-isVHEeb2WL5hLhr4o+zNmcYwmBrldxvrH+FIoRoUmDxyrHr3bhIS6L8BlUMHqT77YtkPq0YSmwoBRrwqeouw9Q=="],
 
-    "agentcash": ["agentcash@0.11.1", "", { "dependencies": { "@agentcash/discovery": "1.1.3", "@clack/prompts": "^0.11.0", "@iarna/toml": "^2.2.5", "@modelcontextprotocol/sdk": "^1.27.0", "@scure/base": "^2.0.0", "@solana-program/compute-budget": "^0.11.0", "@solana-program/token": "^0.9.0", "@solana-program/token-2022": "^0.6.1", "@solana/kit": "^5.5.1", "@x402/core": "2.6.0", "@x402/evm": "2.6.0", "@x402/extensions": "2.6.0", "@x402/svm": "2.6.0", "chalk": "^5.6.2", "content-type": "^1.0.5", "js-yaml": "^4.1.1", "jsonc-parser": "^3.3.1", "mppx": "^0.4.2", "open": "^11.0.0", "viem": "^2.46.2", "yargs": "^18.0.0", "zod": "^4.3.6" }, "bin": { "agentcash": "dist/esm/index.js" } }, "sha512-g4Z+4CdrVZvKdvT3DXZdJ6tuBXtEFahfGhKQztMShq07VTAYxZqCrG/GwHv+l+q/5lRwNqZvB+AnphxQdjAEnQ=="],
+    "agentcash": ["agentcash@0.11.2", "", { "dependencies": { "@agentcash/discovery": "1.1.3", "@clack/prompts": "^0.11.0", "@iarna/toml": "^2.2.5", "@modelcontextprotocol/sdk": "^1.27.0", "@scure/base": "^2.0.0", "@solana-program/compute-budget": "^0.11.0", "@solana-program/token": "^0.9.0", "@solana-program/token-2022": "^0.6.1", "@solana/kit": "^5.5.1", "@x402/core": "2.6.0", "@x402/evm": "2.6.0", "@x402/extensions": "2.6.0", "@x402/svm": "2.6.0", "chalk": "^5.6.2", "content-type": "^1.0.5", "js-yaml": "^4.1.1", "jsonc-parser": "^3.3.1", "mppx": "^0.4.2", "open": "^11.0.0", "viem": "^2.46.2", "yargs": "^18.0.0", "zod": "^4.3.6" }, "bin": { "agentcash": "dist/esm/index.js" } }, "sha512-O1KVQv0XfcEHiQV7aJczk9+xULn3ofm/hgDaq5YnP4oZUe3sqlcq8oidBCQOlQKUidkch8h4xvlmt+E2/q24vw=="],
 
     "aggregate-error": ["aggregate-error@3.1.0", "", { "dependencies": { "clean-stack": "^2.0.0", "indent-string": "^4.0.0" } }, "sha512-4I7Td01quW/RpocfNayFdFVk1qSuoh0E7JrbRJ16nH01HhKFQ88INq9Sd+nd72zqRySlr9BmDA8xlEJ6vJMrYA=="],
 
