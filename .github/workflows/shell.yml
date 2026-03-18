@@ -10,6 +10,14 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.sha }}
   cancel-in-progress: true
 jobs:
+  shell-inline-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Check for inline scripts in Nix files
+        run: make shell-inline-check
   shell-lint:
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -37,6 +45,7 @@ jobs:
   shell-check:
     if: always()
     needs:
+      - shell-inline-check
       - shell-lint
       - shell-test
     runs-on: ubuntu-latest

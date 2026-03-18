@@ -3,21 +3,30 @@
 # All script content must live in external files referenced via builtins.readFile
 # or pkgs.replaceVars, not embedded as inline '' strings.
 #
-# Catches: writeScript, writeShellScript, writeShellScriptBin, writeScriptBin
+# Catches shell writers: writeScript, writeShellScript, writeShellScriptBin, writeScriptBin
+# Catches Python writers: writePython3, writePython3Bin
 # Does NOT flag: writeText (used for config files, not scripts)
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-violations=$(grep -rn \
+EXCLUDE_DIRS=(--exclude-dir='.git' --exclude-dir='result' --exclude-dir='.direnv' --exclude-dir='.worktrees')
+
+shell_violations=$(grep -rn \
   --include='*.nix' \
   -E 'write(Shell)?(Script|ScriptBin)[[:space:]]+"[^"]+"+[[:space:]]+'"''" \
   "$ROOT" \
-  --exclude-dir='.git' \
-  --exclude-dir='result' \
-  --exclude-dir='.direnv' \
-  --exclude-dir='.worktrees' |
+  "${EXCLUDE_DIRS[@]}" |
   grep -v "^Binary" || true)
+
+python_violations=$(grep -rn \
+  --include='*.nix' \
+  -E 'writePython3(Bin)?[[:space:]]+"[^"]+"+[[:space:]]+' \
+  "$ROOT" \
+  "${EXCLUDE_DIRS[@]}" |
+  grep -v "^Binary" || true)
+
+violations="${shell_violations}${python_violations}"
 
 if [ -n "$violations" ]; then
   echo "ERROR: Inline script strings found in Nix files." >&2
@@ -27,4 +36,4 @@ if [ -n "$violations" ]; then
   exit 1
 fi
 
-echo "✓ No inline scripts in Nix files"
+echo "✓ No inline shell or Python scripts in Nix files"

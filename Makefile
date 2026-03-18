@@ -192,7 +192,7 @@ dotagents-sync: ## Sync dotagents (commands, skills, MCP configuration).
 	@$(MAKE) -C dotagents sync
 
 .PHONY: test
-test: neovim-test nix-test shell-test python-test nix-inline-check ## Run all tests (neovim + nix + shell + python + nix-inline-check).
+test: neovim-test nix-test shell-test python-test shell-inline-check ## Run all tests (neovim + nix + shell + python + shell-inline-check).
 
 ##@ Update
 
@@ -876,8 +876,8 @@ shell-check-dev: ## Run ShellCheck inside the Nix dev shell (mirrors CI).
 .PHONY: shell-lint
 shell-lint: shell-check ## Lint shell scripts (alias for shell-check).
 
-.PHONY: nix-inline-check
-nix-inline-check: ## Fail if any .nix file contains inline write*Script* strings.
+.PHONY: shell-inline-check
+shell-inline-check: ## Fail if any .nix file contains inline shell or Python write*Script* strings.
 	@echo "🔍 Checking for inline scripts in Nix files..."
 	@bash scripts/check-nix-inline-scripts.sh
 
