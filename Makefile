@@ -845,18 +845,34 @@ shell-test-dev: ## Run shell tests inside the Nix dev shell (mirrors CI).
 .PHONY: fish-test
 fish-test: ## Run fish function tests using fishtape.
 	@echo "🐟 Running fish function tests..."
-	@if ! command -v fishtape >/dev/null 2>&1; then \
-	  echo "  fishtape not found, running inside Nix dev shell..."; \
-	  $(MAKE) fish-test-dev; \
-	else \
-	  fish_errors=$$(mktemp); \
-	  fishtape spec/fish/*_test.fish 2>"$$fish_errors"; \
-	  rc=$$?; \
-	  if [ -s "$$fish_errors" ]; then \
-	    echo "fish test stderr (failing):"; cat "$$fish_errors"; rm -f "$$fish_errors"; exit 1; \
+	@fish_runner=$$(command -v fishtape 2>/dev/null || true); \
+	if [ -z "$$fish_runner" ]; then \
+	  set -- /nix/store/*-fishtape/bin/fishtape; \
+	  if [ -x "$$1" ]; then \
+	    fish_runner=$$1; \
+	    echo "  fishtape not on PATH, using $$fish_runner"; \
+	  else \
+	    echo "  fishtape not found, running inside Nix dev shell..."; \
+	    $(MAKE) fish-test-dev; \
+	    exit $$?; \
 	  fi; \
-	  rm -f "$$fish_errors"; exit $$rc; \
-	fi
+	fi; \
+	fish_home=$$(mktemp -d "$${TMPDIR:-/tmp}/fish-test.XXXXXX"); \
+	fish_errors=$$(mktemp); \
+	fish_errors_filtered=$$(mktemp); \
+	trap 'rm -rf "$$fish_home" "$$fish_errors" "$$fish_errors_filtered"' EXIT; \
+	mkdir -p "$$fish_home/.config/fish" "$$fish_home/.local/state" "$$fish_home/.local/share"; \
+	HOME="$$fish_home" \
+	XDG_CONFIG_HOME="$$fish_home/.config" \
+	XDG_STATE_HOME="$$fish_home/.local/state" \
+	XDG_DATA_HOME="$$fish_home/.local/share" \
+	"$$fish_runner" spec/fish/*_test.fish 2>"$$fish_errors"; \
+	rc=$$?; \
+	grep -v -E '^(warning: notify_register_file_descriptor\(\) failed with status 9\.|warning: Universal variable notifications may not be received\.)$$' "$$fish_errors" >"$$fish_errors_filtered" || true; \
+	if [ -s "$$fish_errors_filtered" ]; then \
+	  echo "fish test stderr (failing):"; cat "$$fish_errors_filtered"; exit 1; \
+	fi; \
+	exit $$rc
 
 .PHONY: fish-test-dev
 fish-test-dev: ## Run fish tests inside the Nix dev shell (mirrors CI).
