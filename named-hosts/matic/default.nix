@@ -187,18 +187,28 @@ inputs.nixpkgs.lib.nixosSystem {
                 # PAM exec script: runs as root, decrypts TPM credential, then
                 # uses runuser to run the Python unlock as the target user.
                 pamScript = pkgs.writeShellScript "pam-gnome-keyring-tpm-unlock" ''
+                  log() { echo "gnome-keyring-tpm: $*" | ${pkgs.util-linux}/bin/logger -t gnome-keyring-tpm; }
                   CRED="/etc/credstore.encrypted/gnome-keyring.cred"
                   [ -f "$CRED" ] || exit 0
                   SOCK="/run/user/$(id -u "$PAM_USER")/keyring/control"
+                  log "PAM_USER=$PAM_USER sock=$SOCK"
                   for i in 1 2 3 4 5; do
                     [ -S "$SOCK" ] && break
+                    log "waiting for socket (attempt $i)..."
                     sleep 1
                   done
-                  [ -S "$SOCK" ] || exit 1
-                  ${pkgs.systemd}/bin/systemd-creds decrypt --name=gnome-keyring "$CRED" - | \
+                  if [ ! -S "$SOCK" ]; then
+                    log "socket not found after 5s, giving up"
+                    exit 1
+                  fi
+                  log "socket found, decrypting credential and unlocking"
+                  OUT=$(${pkgs.systemd}/bin/systemd-creds decrypt --name=gnome-keyring "$CRED" - | \
                     ${pkgs.util-linux}/bin/runuser -u "$PAM_USER" -- \
                       ${pkgs.coreutils}/bin/env XDG_RUNTIME_DIR="/run/user/$(id -u "$PAM_USER")" \
-                      ${unlockPy}
+                      ${unlockPy} 2>&1)
+                  STATUS=$?
+                  log "result: $OUT (exit $STATUS)"
+                  exit $STATUS
                 '';
               in
               {
