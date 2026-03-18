@@ -33,6 +33,7 @@
         "ccusage": "^18.0.10",
         "clawdhub": "^0.3.0",
         "cline": "^2.8.0",
+        "get-shit-done-cc": "^1.25.1",
         "mcporter": "^0.7.3",
         "open-composer": "^0.8.23",
         "openclaw": "^2026.3.13",
@@ -72,6 +73,7 @@
     "@sourcegraph/amp",
     "portless",
     "typescript",
+    "get-shit-done-cc",
     "vite",
     "@augmentcode/auggie",
     "@github/copilot",
@@ -1856,6 +1858,8 @@
     "get-port": ["get-port@5.1.1", "", {}, "sha512-g/Q1aTSDOxFpchXC4i8ZWvxA1lnPqx/JHqcpIw0/LX9T8x/GBbi6YnlN5nhaKIFkT8oFsscUKgDJYxfwfS6QsQ=="],
 
     "get-proto": ["get-proto@1.0.1", "", { "dependencies": { "dunder-proto": "^1.0.1", "es-object-atoms": "^1.0.0" } }, "sha512-sTSfBjoXBp89JvIKIefqw7U2CCebsc74kiY6awiGogKtoSGbgjYE/G/+l9sF3MWFPNc9IcoOC4ODfKHfxFmp0g=="],
+
+    "get-shit-done-cc": ["get-shit-done-cc@1.25.1", "", { "bin": { "get-shit-done-cc": "bin/install.js" } }, "sha512-TbNTOAfjdbA3IC/m4KJLCEi47B8RZ7Se0n58gvTo1DeI/qQHwndG/E6IBdE2/b+d32KmjnvNcbqHa5cNR3p+Ng=="],
 
     "get-stream": ["get-stream@5.2.0", "", { "dependencies": { "pump": "^3.0.0" } }, "sha512-nBF+F1rAZVCu/p7rjzgA+Yb4lfYXrpl7a6VmJrU8wF9I1CKvP/QwPNZHnOlwbTkY6dvtFIzFMSyQXbLoTQPRpA=="],
 
