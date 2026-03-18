@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "bf361fd86b2c",
+  "strategy": "manual-commit",
+  "branch": "feat/add-security-rules-and-tools",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "bun.lock",
+    "config/claude/settings.json",
+    "dotagents",
+    "package.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/bf/361fd86b2c/0/metadata.json",
+      "transcript": "/bf/361fd86b2c/0/full.jsonl",
+      "content_hash": "/bf/361fd86b2c/0/content_hash.txt",
+      "prompt": "/bf/361fd86b2c/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 91,
+    "cache_creation_tokens": 66637,
+    "cache_read_tokens": 784941,
+    "output_tokens": 5904,
+    "api_call_count": 19
+  }
+}

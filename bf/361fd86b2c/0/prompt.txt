@@ -1,0 +1,13 @@
+https://github.com/gsd-build/get-shit-done install this w/ package.json and trusted installs w/ bun + claude config deny
+
+---
+
+no; permissions in README.md shoudl be managed in @config/claude/settings.json
+
+---
+
+it's npx get-shit-done-cc@latest
+
+---
+
+alphabetically order and add all deny sections from the readme
