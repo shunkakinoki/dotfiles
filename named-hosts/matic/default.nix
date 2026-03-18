@@ -53,10 +53,17 @@ inputs.nixpkgs.lib.nixosSystem {
         # Pin kernel to 6.18 for CrowdStrike Falcon compatibility (RFM on 6.19)
         boot.kernelPackages = pkgs.linuxPackages_6_18;
 
+        # AMD power management kernel params
+        boot.kernelParams = [
+          "amdgpu.abmlevel=3" # auto backlight management
+          "amdgpu.runpm=1" # runtime power management for GPU
+          "amd_pstate=active" # AMD P-state driver (better than acpi-cpufreq)
+        ];
+
         # Networking
         networking.hostName = "matic";
         networking.networkmanager.enable = true;
-        networking.networkmanager.wifi.powersave = false;
+        networking.networkmanager.wifi.powersave = true;
 
         # Enable fish shell
         programs.fish.enable = true;
@@ -128,7 +135,20 @@ inputs.nixpkgs.lib.nixosSystem {
 
         # Power management
         services.upower.enable = true;
-        services.power-profiles-daemon.enable = true;
+        services.power-profiles-daemon.enable = false;
+        services.auto-cpufreq = {
+          enable = true;
+          settings = {
+            battery = {
+              governor = "powersave";
+              turbo = "never";
+            };
+            charger = {
+              governor = "performance";
+              turbo = "auto";
+            };
+          };
+        };
 
         # Power button behavior - lock screen instead of shutdown
         services.logind.settings.Login.HandlePowerKey = "lock";
