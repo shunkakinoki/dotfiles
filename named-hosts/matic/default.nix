@@ -190,25 +190,35 @@ inputs.nixpkgs.lib.nixosSystem {
                   log() { echo "gnome-keyring-tpm: $*" | ${pkgs.util-linux}/bin/logger -t gnome-keyring-tpm; }
                   CRED="/etc/credstore.encrypted/gnome-keyring.cred"
                   [ -f "$CRED" ] || exit 0
-                  SOCK="/run/user/$(id -u "$PAM_USER")/keyring/control"
-                  log "PAM_USER=$PAM_USER sock=$SOCK"
-                  for i in 1 2 3 4 5; do
-                    [ -S "$SOCK" ] && break
-                    log "waiting for socket (attempt $i)..."
-                    sleep 1
-                  done
-                  if [ ! -S "$SOCK" ]; then
-                    log "socket not found after 5s, giving up"
+
+                  # Decrypt synchronously — requires root/TPM access (not available after fork).
+                  PW=$(${pkgs.systemd}/bin/systemd-creds decrypt --name=gnome-keyring "$CRED" -)
+                  if [ -z "$PW" ]; then
+                    log "credential decrypt failed"
                     exit 1
                   fi
-                  log "socket found, decrypting credential and unlocking"
-                  OUT=$(${pkgs.systemd}/bin/systemd-creds decrypt --name=gnome-keyring "$CRED" - | \
-                    ${pkgs.util-linux}/bin/runuser -u "$PAM_USER" -- \
-                      ${pkgs.coreutils}/bin/env XDG_RUNTIME_DIR="/run/user/$(id -u "$PAM_USER")" \
-                      ${unlockPy} 2>&1)
-                  STATUS=$?
-                  log "result: $OUT (exit $STATUS)"
-                  exit $STATUS
+
+                  # The gnome-keyring-daemon p11-kit backend is not fully initialized at
+                  # PAM session-open time — unlock attempts at this point return DENIED.
+                  # Fork a background retry loop so login is never blocked; the daemon
+                  # is ready within a few seconds of the user session starting.
+                  USER_UID=$(id -u "$PAM_USER")
+                  SOCK="/run/user/$USER_UID/keyring/control"
+                  (
+                    for attempt in 1 2 3 4 5 6 7 8; do
+                      sleep 3
+                      [ -S "$SOCK" ] || { log "attempt $attempt: socket not found"; continue; }
+                      OUT=$(printf '%s' "$PW" | \
+                        ${pkgs.util-linux}/bin/runuser -u "$PAM_USER" -- \
+                          ${pkgs.coreutils}/bin/env XDG_RUNTIME_DIR="/run/user/$USER_UID" \
+                          ${unlockPy} 2>&1)
+                      STATUS=$?
+                      log "attempt $attempt: $OUT (exit $STATUS)"
+                      [ "$STATUS" -eq 0 ] && break
+                    done
+                  ) &
+
+                  exit 0
                 '';
               in
               {
