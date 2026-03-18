@@ -340,6 +340,8 @@
       "Bash(rm -rf /*:*)",
       "Bash(rm -rf ~/*:*)",
       "Bash(sudo:*)",
+      "Read(.conf)",
+      "Read(.conf*)",
       "Read(.env)",
       "Read(.env.*)",
       "Read(**/*credential*)",
