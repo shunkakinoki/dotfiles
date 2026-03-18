@@ -132,9 +132,44 @@ inputs.nixpkgs.lib.nixosSystem {
 
         # Power button behavior - lock screen instead of shutdown
         services.logind.settings.Login.HandlePowerKey = "lock";
-        # Ignore lid close — let hypridle's 30-min idle timer handle suspension
+        # On battery: let lid-battery-suspend.service handle it (3-min delay then suspend)
+        # On AC: ignore lid close — let hypridle's 30-min idle timer handle suspension
         services.logind.settings.Login.HandleLidSwitch = "ignore";
         services.logind.settings.Login.HandleLidSwitchExternalPower = "ignore";
+
+        # Suspend after 3 minutes on battery when lid is closed
+        systemd.services.lid-battery-suspend = {
+          description = "Suspend after lid closed on battery for 3 minutes";
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = pkgs.writeShellScript "lid-battery-suspend" ''
+              # Only proceed if on battery (AC not online)
+              if cat /sys/class/power_supply/AC*/online 2>/dev/null | grep -q 1; then
+                exit 0
+              fi
+              # Wait 3 minutes
+              sleep 180
+              # Re-check: still on battery?
+              if cat /sys/class/power_supply/AC*/online 2>/dev/null | grep -q 1; then
+                exit 0
+              fi
+              # Re-check: lid still closed?
+              if grep -q open /proc/acpi/button/lid/*/state 2>/dev/null; then
+                exit 0
+              fi
+              systemctl suspend
+            '';
+          };
+        };
+
+        # Trigger lid-battery-suspend service on lid close via acpid
+        services.acpid = {
+          enable = true;
+          handlers.lid-close = {
+            event = "button/lid LID close";
+            action = "systemctl start lid-battery-suspend.service";
+          };
+        };
 
         # Auto timezone (via geolocation)
         services.geoclue2.enable = true;
