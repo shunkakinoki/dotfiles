@@ -1,0 +1,35 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "0c9b1873ce75",
+  "session_id": "9b9c5961-73fd-4b70-b0f3-e14ba9d3ab3a",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-19T19:15:08.342734Z",
+  "branch": "fix/clrc-clwrc-drop-node",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "home-manager/programs/fish/functions/_clrc_function.fish",
+    "home-manager/programs/fish/functions/_clwrc_function.fish"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-6[1m]",
+  "turn_id": "27886cefe2c5",
+  "token_usage": {
+    "input_tokens": 28,
+    "cache_creation_tokens": 135874,
+    "cache_read_tokens": 597578,
+    "output_tokens": 4011,
+    "api_call_count": 18
+  },
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-19T19:15:08.309419Z",
+    "agent_lines": 2,
+    "human_added": 14,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 16,
+    "agent_percentage": 12.5
+  }
+}

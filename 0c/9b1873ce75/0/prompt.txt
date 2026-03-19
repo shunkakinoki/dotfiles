@@ -1,0 +1,36 @@
+dotfiles on  main [$⇣] is 📦 v0.1.0 via 🥟 v1.3.11 via 🐍 v3.13.12 via 🦀 v1.94.0 on ☁️  shun@horizon.io took 10m46s 
+❯ _clrc_function
+/opt/homebrew/Caskroom/claude-code/2.1.79/claude:1
+����
+    H
+
+
+SyntaxError: Invalid or unexpected token
+    at wrapSafe (node:internal/modules/cjs/loader:1762:18)
+    at Module._compile (node:internal/modules/cjs/loader:1803:20)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1969:10)
+    at Module.load (node:internal/modules/cjs/loader:1552:32)
+    at Module._load (node:internal/modules/cjs/loader:1354:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47
+
+Node.js v25.8.1
+dotfiles on  main [$⇣] is 📦 v0.1.0 via 🥟 v1.3.11 via 🐍 v3.13.12 via 🦀 v1.94.0 on ☁️  shun@horizon.io 
+❯ _clwrc_function
+/opt/homebrew/Caskroom/claude-code/2.1.79/claude:1
+����
+    H
+
+
+SyntaxError: Invalid or unexpected token
+    at wrapSafe (node:internal/modules/cjs/loader:1762:18)
+    at Module._compile (node:internal/modules/cjs/loader:1803:20)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1969:10)
+    at Module.load (node:internal/modules/cjs/loader:1552:32)
+    at Module._load (node:internal/modules/cjs/loader:1354:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47
+
+Node.js v25.8.1 why is this failing
