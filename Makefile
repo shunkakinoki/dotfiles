@@ -1,5 +1,7 @@
 ##@ Variables
 
+SHELL := bash
+
 # Include dotagents from submodule but keep the local help target authoritative.
 DOTAGENTS_SKIP_HELP := 1
 -include dotagents/Makefile
