@@ -43,7 +43,7 @@ in
     serviceConfig = {
       Type = "forking";
       PIDFile = "/run/falcond.pid";
-      ExecStartPre = initScript;
+      ExecStartPre = "${pkgs.bash}/bin/bash ${initScript}";
       ExecStart = "${falcon}/bin/fs-bash -c \"/opt/CrowdStrike/falcond\"";
 
       Restart = "on-failure";
