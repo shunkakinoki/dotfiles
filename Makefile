@@ -701,7 +701,7 @@ lua-check-hammerspoon-dev: ## Run the Hammerspoon Lua check inside the Nix dev s
 ##@ Launchd Services
 
 .PHONY: launchctl
-launchctl: launchctl-brew-upgrader launchctl-openclaw launchctl-cliproxyapi launchctl-cliproxyapi-backup launchctl-code-syncer launchctl-docker-postgres launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama ## Restart all launchd agents.
+launchctl: launchctl-brew-upgrader launchctl-openclaw launchctl-cliproxyapi launchctl-cliproxyapi-backup launchctl-code-syncer launchctl-docker-postgres launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama launchctl-tmux-session-logger ## Restart all launchd agents.
 
 .PHONY: launchctl-brew-upgrader
 launchctl-brew-upgrader: ## Restart brew-upgrader launchd agent.
@@ -776,16 +776,30 @@ launchctl-ollama: ## Restart ollama launchd agent.
 	@launchctl load ~/Library/LaunchAgents/org.nix-community.home.ollama.plist
 	@echo "✅ ollama restarted"
 
+.PHONY: launchctl-tmux-session-logger
+launchctl-tmux-session-logger: ## Restart tmux-session-logger launchd agent.
+	@echo "🔄 Restarting tmux-session-logger..."
+	@launchctl unload ~/Library/LaunchAgents/org.nix-community.home.tmux-session-logger.plist 2>/dev/null || true
+	@sleep 3
+	@launchctl load ~/Library/LaunchAgents/org.nix-community.home.tmux-session-logger.plist
+	@echo "✅ tmux-session-logger restarted"
+
 ##@ Systemd Services (Linux)
 
 .PHONY: systemctl
-systemctl: systemctl-cliproxyapi systemctl-code-syncer systemctl-docker-postgres systemctl-dotfiles-updater systemctl-ollama systemctl-openclaw ## Restart all systemd user services.
+systemctl: systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-code-syncer systemctl-docker-postgres systemctl-dotfiles-updater systemctl-make-updater systemctl-neverssl-keepalive systemctl-ollama systemctl-openclaw systemctl-tmux-session-logger ## Restart all systemd user services.
 
 .PHONY: systemctl-cliproxyapi
 systemctl-cliproxyapi: ## Reload systemd units for cliproxyapi (home-manager handles restart).
 	@echo "🔄 Reloading cliproxyapi..."
 	@systemctl --user daemon-reload
 	@echo "✅ cliproxyapi reloaded"
+
+.PHONY: systemctl-cliproxyapi-backup
+systemctl-cliproxyapi-backup: ## Restart cliproxyapi-backup systemd user service.
+	@echo "🔄 Restarting cliproxyapi-backup..."
+	@systemctl --user restart cliproxyapi-backup.service || true
+	@echo "✅ cliproxyapi-backup restarted"
 
 .PHONY: systemctl-code-syncer
 systemctl-code-syncer: ## Restart code-syncer systemd user service.
@@ -805,6 +819,18 @@ systemctl-dotfiles-updater: ## Restart dotfiles-updater systemd user service.
 	@systemctl --user restart dotfiles-updater.service || true
 	@echo "✅ dotfiles-updater restarted"
 
+.PHONY: systemctl-make-updater
+systemctl-make-updater: ## Restart make-updater systemd timer and service.
+	@echo "🔄 Restarting make-updater..."
+	@systemctl --user restart make-updater.timer || true
+	@echo "✅ make-updater restarted"
+
+.PHONY: systemctl-neverssl-keepalive
+systemctl-neverssl-keepalive: ## Restart neverssl-keepalive systemd timer and service.
+	@echo "🔄 Restarting neverssl-keepalive..."
+	@systemctl --user restart neverssl-keepalive.timer || true
+	@echo "✅ neverssl-keepalive restarted"
+
 .PHONY: systemctl-ollama
 systemctl-ollama: ## Restart ollama systemd user service.
 	@echo "🔄 Restarting ollama..."
@@ -821,6 +847,12 @@ systemctl-openclaw: ## Restart OpenClaw gateway systemd user service.
 	fi
 	@echo "✅ openclaw restarted"
 
+
+.PHONY: systemctl-tmux-session-logger
+systemctl-tmux-session-logger: ## Restart tmux-session-logger systemd timer and service.
+	@echo "🔄 Restarting tmux-session-logger..."
+	@systemctl --user restart tmux-session-logger.timer || true
+	@echo "✅ tmux-session-logger restarted"
 
 .PHONY: git-submodule-sync
 git-submodule-sync: ## Sync and update git submodules.
@@ -845,18 +877,34 @@ shell-test-dev: ## Run shell tests inside the Nix dev shell (mirrors CI).
 .PHONY: fish-test
 fish-test: ## Run fish function tests using fishtape.
 	@echo "🐟 Running fish function tests..."
-	@if ! command -v fishtape >/dev/null 2>&1; then \
-	  echo "  fishtape not found, running inside Nix dev shell..."; \
-	  $(MAKE) fish-test-dev; \
-	else \
-	  fish_errors=$$(mktemp); \
-	  fishtape spec/fish/*_test.fish 2>"$$fish_errors"; \
-	  rc=$$?; \
-	  if [ -s "$$fish_errors" ]; then \
-	    echo "fish test stderr (failing):"; cat "$$fish_errors"; rm -f "$$fish_errors"; exit 1; \
+	@fish_runner=$$(command -v fishtape 2>/dev/null || true); \
+	if [ -z "$$fish_runner" ]; then \
+	  set -- /nix/store/*-fishtape/bin/fishtape; \
+	  if [ -x "$$1" ]; then \
+	    fish_runner=$$1; \
+	    echo "  fishtape not on PATH, using $$fish_runner"; \
+	  else \
+	    echo "  fishtape not found, running inside Nix dev shell..."; \
+	    $(MAKE) fish-test-dev; \
+	    exit $$?; \
 	  fi; \
-	  rm -f "$$fish_errors"; exit $$rc; \
-	fi
+	fi; \
+	fish_home=$$(mktemp -d "$${TMPDIR:-/tmp}/fish-test.XXXXXX"); \
+	fish_errors=$$(mktemp); \
+	fish_errors_filtered=$$(mktemp); \
+	trap 'rm -rf "$$fish_home" "$$fish_errors" "$$fish_errors_filtered"' EXIT; \
+	mkdir -p "$$fish_home/.config/fish" "$$fish_home/.local/state" "$$fish_home/.local/share"; \
+	HOME="$$fish_home" \
+	XDG_CONFIG_HOME="$$fish_home/.config" \
+	XDG_STATE_HOME="$$fish_home/.local/state" \
+	XDG_DATA_HOME="$$fish_home/.local/share" \
+	"$$fish_runner" spec/fish/*_test.fish 2>"$$fish_errors"; \
+	rc=$$?; \
+	grep -v -E '^(warning: notify_register_file_descriptor\(\) failed with status 9\.|warning: Universal variable notifications may not be received\.)$$' "$$fish_errors" >"$$fish_errors_filtered" || true; \
+	if [ -s "$$fish_errors_filtered" ]; then \
+	  echo "fish test stderr (failing):"; cat "$$fish_errors_filtered"; exit 1; \
+	fi; \
+	exit $$rc
 
 .PHONY: fish-test-dev
 fish-test-dev: ## Run fish tests inside the Nix dev shell (mirrors CI).

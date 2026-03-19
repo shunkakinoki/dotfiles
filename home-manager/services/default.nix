@@ -17,6 +17,7 @@ let
   sshAgent = import ./ssh-agent {
     inherit config lib pkgs;
   };
+  tmuxSessionLogger = import ./tmux-session-logger { inherit pkgs; };
 in
 [
   brewUpgrader
@@ -29,4 +30,5 @@ in
   neversslKeepalive
   ollama
   sshAgent
+  tmuxSessionLogger
 ]
