@@ -253,6 +253,9 @@ inputs.nixpkgs.lib.nixosSystem {
             };
           };
         };
+        # Ensure fprintd is ready before greetd starts to avoid PAM fingerprint timeout
+        systemd.services.greetd.after = [ "fprintd.service" ];
+        systemd.services.greetd.wants = [ "fprintd.service" ];
 
         # Disk management
         services.gvfs.enable = true; # For automounting external drives in Nautilus and managing disk permissions
