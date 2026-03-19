@@ -1,0 +1,1 @@
+add more granular timeouts to claude settings.json for each event?
