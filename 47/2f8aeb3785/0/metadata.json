@@ -1,0 +1,36 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "472f8aeb3785",
+  "session_id": "4671fa0c-8b00-4f84-89ea-86bd6b4f8f29",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-19T17:14:20.068382Z",
+  "branch": "fix/shell-test-failures",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "config/claude/pushover.sh"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-4-6",
+  "turn_id": "c197955302b7",
+  "checkpoint_transcript_start": 257,
+  "transcript_lines_at_start": 257,
+  "token_usage": {
+    "input_tokens": 8,
+    "cache_creation_tokens": 7894,
+    "cache_read_tokens": 379853,
+    "output_tokens": 4428,
+    "api_call_count": 8
+  },
+  "session_metrics": {
+    "turn_count": 2
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-19T17:14:19.998545Z",
+    "agent_lines": 2,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 2,
+    "agent_percentage": 100
+  }
+}
