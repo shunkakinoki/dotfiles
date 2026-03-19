@@ -1,6 +1,11 @@
-{ pkgs, ... }:
+{
+  config,
+  pkgs,
+  ...
+}:
 let
   inherit (pkgs) lib;
+  homeDir = config.home.homeDirectory;
 in
 {
   launchd.agents.make-updater = lib.mkIf pkgs.stdenv.isDarwin {
@@ -35,10 +40,13 @@ in
       Environment = [
         "PATH=${
           lib.makeBinPath [
+            pkgs.autoconf
             pkgs.bash
+            pkgs.binutils
             pkgs.cargo
             pkgs.coreutils
             pkgs.curl
+            pkgs.elixir
             pkgs.gawk
             pkgs.gcc
             pkgs.ghq
@@ -46,14 +54,18 @@ in
             pkgs.gnumake
             pkgs.gnused
             pkgs.go
+            pkgs.libtool
             pkgs.nix
             pkgs.openssl.dev
             pkgs.pkg-config
+            pkgs.rustup
             pkgs.sudo
             pkgs.which
           ]
         }"
         "AUTOMATED_UPDATE=true"
+        "RUSTUP_HOME=${homeDir}/.rustup"
+        "CARGO_HOME=${homeDir}/.cargo"
       ];
       ExecStart = "${./update.sh}";
     };
