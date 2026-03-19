@@ -3,7 +3,7 @@
   "checkpoint_id": "472f8aeb3785",
   "strategy": "manual-commit",
   "branch": "fix/shell-test-failures",
-  "checkpoints_count": 0,
+  "checkpoints_count": 1,
   "files_touched": [
     "config/claude/pushover.sh"
   ],
@@ -13,13 +13,19 @@
       "transcript": "/47/2f8aeb3785/0/full.jsonl",
       "content_hash": "/47/2f8aeb3785/0/content_hash.txt",
       "prompt": ""
+    },
+    {
+      "metadata": "/47/2f8aeb3785/1/metadata.json",
+      "transcript": "/47/2f8aeb3785/1/full.jsonl",
+      "content_hash": "/47/2f8aeb3785/1/content_hash.txt",
+      "prompt": ""
     }
   ],
   "token_usage": {
-    "input_tokens": 8,
-    "cache_creation_tokens": 7894,
-    "cache_read_tokens": 379853,
-    "output_tokens": 4428,
-    "api_call_count": 8
+    "input_tokens": 11,
+    "cache_creation_tokens": 8740,
+    "cache_read_tokens": 500973,
+    "output_tokens": 4766,
+    "api_call_count": 11
   }
 }
