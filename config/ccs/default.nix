@@ -10,10 +10,7 @@ let
   # Hydration script for CCS provider settings
   # Use writeText instead of replaceVars to avoid builtins.toFile context warnings
   hydrateScript = pkgs.writeText "hydrate.sh" (
-    builtins.replaceStrings
-      [ "@sed@" ]
-      [ "${pkgs.gnused}/bin/sed" ]
-      (builtins.readFile ./hydrate.sh)
+    builtins.replaceStrings [ "@sed@" ] [ "${pkgs.gnused}/bin/sed" ] (builtins.readFile ./hydrate.sh)
   );
 in
 {
