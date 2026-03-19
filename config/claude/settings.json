@@ -79,13 +79,13 @@
           {
             "async": true,
             "command": "$HOME/.claude/notify.sh",
-            "timeout": 10,
+            "timeout": 3,
             "type": "command"
           },
           {
             "async": true,
             "command": "$HOME/.claude/pushover.sh",
-            "timeout": 10,
+            "timeout": 6,
             "type": "command"
           }
         ]
@@ -96,7 +96,7 @@
         "hooks": [
           {
             "command": "git-ai checkpoint claude --hook-input stdin",
-            "timeout": 10,
+            "timeout": 15,
             "type": "command"
           }
         ],
@@ -109,13 +109,13 @@
           {
             "async": true,
             "command": "$HOME/.claude/notify.sh",
-            "timeout": 10,
+            "timeout": 3,
             "type": "command"
           },
           {
             "async": true,
             "command": "$HOME/.claude/pushover.sh",
-            "timeout": 10,
+            "timeout": 6,
             "type": "command"
           }
         ]
@@ -126,6 +126,7 @@
         "hooks": [
           {
             "command": "$HOME/.claude/hooks/rtk-rewrite.sh",
+            "timeout": 5,
             "type": "command"
           },
           {
@@ -142,13 +143,13 @@
           {
             "async": true,
             "command": "$HOME/.claude/notify.sh",
-            "timeout": 10,
+            "timeout": 3,
             "type": "command"
           },
           {
             "async": true,
             "command": "$HOME/.claude/pushover.sh",
-            "timeout": 10,
+            "timeout": 6,
             "type": "command"
           }
         ],
@@ -158,11 +159,20 @@
         "hooks": [
           {
             "command": "git-ai checkpoint claude --hook-input stdin",
-            "timeout": 10,
+            "timeout": 15,
             "type": "command"
           }
         ],
         "matcher": "Write|Edit|MultiEdit"
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "dcg"
+          }
+        ]
       }
     ],
     "PermissionRequest": [
@@ -171,13 +181,13 @@
           {
             "async": true,
             "command": "$HOME/.claude/notify.sh",
-            "timeout": 10,
+            "timeout": 3,
             "type": "command"
           },
           {
             "async": true,
             "command": "$HOME/.claude/pushover.sh",
-            "timeout": 10,
+            "timeout": 6,
             "type": "command"
           }
         ]
@@ -189,13 +199,13 @@
           {
             "async": true,
             "command": "$HOME/.claude/notify.sh",
-            "timeout": 10,
+            "timeout": 3,
             "type": "command"
           },
           {
             "async": true,
             "command": "$HOME/.claude/pushover.sh",
-            "timeout": 10,
+            "timeout": 6,
             "type": "command"
           }
         ]
@@ -207,13 +217,13 @@
           {
             "async": true,
             "command": "$HOME/.claude/notify.sh",
-            "timeout": 10,
+            "timeout": 3,
             "type": "command"
           },
           {
             "async": true,
             "command": "$HOME/.claude/pushover.sh",
-            "timeout": 10,
+            "timeout": 6,
             "type": "command"
           }
         ]
@@ -225,13 +235,13 @@
           {
             "async": true,
             "command": "$HOME/.claude/notify.sh",
-            "timeout": 10,
+            "timeout": 3,
             "type": "command"
           },
           {
             "async": true,
             "command": "$HOME/.claude/pushover.sh",
-            "timeout": 10,
+            "timeout": 6,
             "type": "command"
           }
         ]
@@ -243,7 +253,7 @@
           {
             "async": true,
             "command": "jq -c '{timestamp: (now | todate), prompt: .prompt[0:500]}' >> ~/.claude/prompt-history.jsonl",
-            "timeout": 5,
+            "timeout": 3,
             "type": "command"
           }
         ]
@@ -254,6 +264,7 @@
         "hooks": [
           {
             "command": "bash -c 'NAME=$(jq -r .name); REPO=$(git rev-parse --show-toplevel); DIR=\"$REPO/.worktrees/$NAME\"; wt switch --create \"$NAME\" --no-cd -y >&2 && echo \"$DIR\"'",
+            "timeout": 30,
             "type": "command"
           }
         ]
@@ -264,6 +275,7 @@
         "hooks": [
           {
             "command": "bash -c 'WORKTREE_PATH=$(jq -r .worktree_path); BRANCH=$(basename \"$WORKTREE_PATH\"); wt remove \"$BRANCH\" -y >&2'",
+            "timeout": 30,
             "type": "command"
           }
         ]
