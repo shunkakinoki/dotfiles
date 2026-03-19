@@ -1,0 +1,5 @@
+add clrc to @home-manager/programs/fish/default.nix and also add clwrc to do it in workspace git
+
+---
+
+run make format and create PR
