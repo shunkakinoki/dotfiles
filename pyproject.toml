@@ -11,7 +11,7 @@ tools = [
   "aider-chat>=0.86.2",
   "marker-pdf>=1.10.2",
   "mistral-vibe>=2.5.0",
-  "ruff>=0.15.6",
+  "ruff>=0.15.7",
 ]
 
 [tool.pytest.ini_options]

@@ -23,7 +23,7 @@
     "@googleworkspace/cli": "^0.18.1",
     "@kaitranntt/ccs": "^7.55.0",
     "@mariozechner/pi-coding-agent": "^0.60.0",
-    "@nanocollective/nanocoder": "^1.24.0",
+    "@nanocollective/nanocoder": "^1.24.1",
     "@openai/codex": "^0.115.0",
     "@pkieltyka/gitgenie": "^0.1.2",
     "@pulumi/pulumi": "^3.226.0",
@@ -47,7 +47,7 @@
     "oxlint": "^1.56.0",
     "portless": "^0.7.1",
     "ralph-tui": "^0.11.0",
-    "turbo": "^2.8.19",
+    "turbo": "^2.8.20",
     "typescript": "^5.9.3",
     "vite": "^8.0.1",
     "vite-plus": "^0.1.12"
