@@ -1,0 +1,16 @@
+❯ i think the stop hook is off and causing problems to kick off requests;
+please investigate why
+
+✳ Bunning… (57s)
+  ⎿  Tip: Name your conversations with /rename to find them easily in /resume
+     later
+
+ it doesn't request tokens
+
+---
+
+it doesn't request tokens
+
+---
+
+it doesn't request tokens
