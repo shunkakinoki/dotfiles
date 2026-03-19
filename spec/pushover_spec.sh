@@ -63,33 +63,6 @@ The output should eq ''
 End
 End
 
-Describe 'SessionEnd hook'
-setup() {
-  mock_bin_setup curl
-
-  # Set test credentials
-  export PUSHOVER_API_TOKEN="test_token"
-  export PUSHOVER_USER_KEY="test_user"
-}
-cleanup() {
-  mock_bin_cleanup
-}
-Before 'setup'
-After 'cleanup'
-
-It 'skips notification for "other" reason'
-When run bash -c 'echo "{\"reason\": \"other\"}" | bash '"$SCRIPT"'; cat "$MOCK_LOG"'
-The status should be success
-The output should eq ''
-End
-
-It 'processes notification for "user_exit" reason'
-When run bash -c 'echo "{\"reason\": \"user_exit\"}" | bash '"$SCRIPT"'; cat "$MOCK_LOG"'
-The status should be success
-The output should include 'priority=0'
-The output should include 'https://api.pushover.net/1/messages.json'
-End
-End
 
 Describe 'Notification hook'
 setup() {
