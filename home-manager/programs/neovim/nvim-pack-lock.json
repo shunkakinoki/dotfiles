@@ -157,6 +157,10 @@
       "rev": "a61a9de7965324d4019fb1637b66bfacdcb01f51",
       "src": "https://github.com/RRethy/nvim-treesitter-endwise"
     },
+    "nvim-treesitter-textobjects": {
+      "rev": "5ca4aaa6efdcc59be46b95a3e876300cfead05ef",
+      "src": "https://github.com/nvim-treesitter/nvim-treesitter-textobjects"
+    },
     "nvim-ts-autotag": {
       "rev": "c4ca798ab95b316a768d51eaaaee48f64a4a46bc",
       "src": "https://github.com/windwp/nvim-ts-autotag"
