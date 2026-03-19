@@ -5,5 +5,5 @@ function _clrc_function --description "Run Claude Code remote-control with a sta
   # Usage: clrc [<claude remote-control args...>]
 
   set -l claude_real (realpath (which claude))
-  node $claude_real remote-control $argv
+  $claude_real remote-control $argv
 end
