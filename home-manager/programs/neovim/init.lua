@@ -13,10 +13,6 @@ local function append_package_path(path)
 	end
 end
 
-local config_lua_path = vim.fn.stdpath("config") .. "/lua/?.lua"
-append_package_path(config_lua_path)
-append_package_path(vim.fn.stdpath("config") .. "/lua/?/init.lua")
-
 local init_source = debug.getinfo(1, "S").source
 if init_source:sub(1, 1) == "@" then
 	init_source = init_source:sub(2)
@@ -25,6 +21,10 @@ local init_path = vim.loop.fs_realpath(init_source) or init_source
 local init_dir = vim.fn.fnamemodify(init_path, ":h")
 append_package_path(init_dir .. "/lua/?.lua")
 append_package_path(init_dir .. "/lua/?/init.lua")
+
+local config_lua_path = vim.fn.stdpath("config") .. "/lua/?.lua"
+append_package_path(config_lua_path)
+append_package_path(vim.fn.stdpath("config") .. "/lua/?/init.lua")
 
 -- ====================================================================================
 -- MODULES

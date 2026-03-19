@@ -75,7 +75,6 @@ vim.pack.add({
 	{ src = "https://github.com/kylechui/nvim-surround" },
 	{ src = "https://github.com/folke/todo-comments.nvim" },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter-context" },
-	{ src = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects" },
 	{ src = "https://github.com/RRethy/nvim-treesitter-endwise" },
 
 	-- LSP
