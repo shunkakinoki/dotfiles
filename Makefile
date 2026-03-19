@@ -701,7 +701,7 @@ lua-check-hammerspoon-dev: ## Run the Hammerspoon Lua check inside the Nix dev s
 ##@ Launchd Services
 
 .PHONY: launchctl
-launchctl: launchctl-brew-upgrader launchctl-openclaw launchctl-cliproxyapi launchctl-cliproxyapi-backup launchctl-code-syncer launchctl-docker-postgres launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama ## Restart all launchd agents.
+launchctl: launchctl-brew-upgrader launchctl-openclaw launchctl-cliproxyapi launchctl-cliproxyapi-backup launchctl-code-syncer launchctl-docker-postgres launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama launchctl-tmux-session-logger ## Restart all launchd agents.
 
 .PHONY: launchctl-brew-upgrader
 launchctl-brew-upgrader: ## Restart brew-upgrader launchd agent.
@@ -775,6 +775,14 @@ launchctl-ollama: ## Restart ollama launchd agent.
 	@sleep 3
 	@launchctl load ~/Library/LaunchAgents/org.nix-community.home.ollama.plist
 	@echo "✅ ollama restarted"
+
+.PHONY: launchctl-tmux-session-logger
+launchctl-tmux-session-logger: ## Restart tmux-session-logger launchd agent.
+	@echo "🔄 Restarting tmux-session-logger..."
+	@launchctl unload ~/Library/LaunchAgents/org.nix-community.home.tmux-session-logger.plist 2>/dev/null || true
+	@sleep 3
+	@launchctl load ~/Library/LaunchAgents/org.nix-community.home.tmux-session-logger.plist
+	@echo "✅ tmux-session-logger restarted"
 
 ##@ Systemd Services (Linux)
 
