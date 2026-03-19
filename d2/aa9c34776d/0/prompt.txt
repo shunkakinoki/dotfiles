@@ -1,0 +1,5 @@
+run make format too and push
+
+---
+
+also debug why does it take so long to run the stop hook ✳ Fiddle-faddling… (running stop hooks… 1/4 · 57s · ↓ 308 tokens · thinking)
