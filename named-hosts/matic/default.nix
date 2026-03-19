@@ -304,12 +304,12 @@ inputs.nixpkgs.lib.nixosSystem {
         programs.nix-ld.enable = true;
         programs.nix-ld.libraries = with pkgs; [
           # Common libraries needed by security tools
-          glibc
-          zlib
-          openssl
           curl
-          libnl
+          glibc
           libgcc
+          libnl
+          openssl
+          zlib
         ];
 
         # Nix settings
