@@ -1,0 +1,36 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "194eb96a8bbc",
+  "session_id": "4671fa0c-8b00-4f84-89ea-86bd6b4f8f29",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-19T17:33:29.18789Z",
+  "branch": "chore/claude-hook-timeouts",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "config/claude/settings.json"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-4-6",
+  "turn_id": "f1067d8b7593",
+  "checkpoint_transcript_start": 472,
+  "transcript_lines_at_start": 472,
+  "token_usage": {
+    "input_tokens": 12,
+    "cache_creation_tokens": 83595,
+    "cache_read_tokens": 737086,
+    "output_tokens": 2142,
+    "api_call_count": 10
+  },
+  "session_metrics": {
+    "turn_count": 4
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-19T17:33:29.048098Z",
+    "agent_lines": 225,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 225,
+    "agent_percentage": 100
+  }
+}

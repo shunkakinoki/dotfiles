@@ -1,0 +1,10 @@
+gco    {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "dcg"
+          }
+        ]
+      } 
+    ], doesn't ahve timeout? include timeout for all
