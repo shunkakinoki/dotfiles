@@ -1,0 +1,12 @@
+lastChangelogVersion: 13.13.2
+modelRoles:
+  default: codex/gpt-5.4
+display:
+  showTokenUsage: true
+theme:
+  dark: dark-dracula
+steeringMode: all
+followUpMode: all
+interruptMode: immediate
+startup:
+  quiet: true

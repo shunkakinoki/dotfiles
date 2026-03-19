@@ -56,6 +56,7 @@ declare -A TEMPLATES=(
   ["config/ccs/glm.settings.tpl.json"]=config/ccs/glm.settings.template.json
   ["config/codex/config.tpl.toml"]=config/codex/config.toml
   ["config/cliproxyapi/config.tpl.yaml"]=config/cliproxyapi/config.template.yaml
+  ["config/omp/config.tpl.yml"]=config/omp/config.yml
   ["config/pi/models.tpl.json"]=config/pi/models.json
   ["config/pi/settings.tpl.json"]=config/pi/settings.json
   ["home-manager/programs/fish/functions/_coxe_function.tpl.fish"]=home-manager/programs/fish/functions/_coxe_function.fish
