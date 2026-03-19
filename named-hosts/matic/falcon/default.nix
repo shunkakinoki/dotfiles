@@ -30,9 +30,9 @@ let
     inherit version arch src;
 
     buildInputs = [
+      autoPatchelfHook
       dpkg
       zlib
-      autoPatchelfHook
     ];
     sourceRoot = ".";
 
