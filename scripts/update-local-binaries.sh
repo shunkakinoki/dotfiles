@@ -237,10 +237,13 @@ update_repo() {
       return 1
     fi
   else
-    if ! (cd "$repo_dir" && git pull 2>&1); then
-      log_error "  Git pull failed"
-      FAILURES+=("$repo_name (git pull failed)")
-      return 1
+    if ! (cd "$repo_dir" && git pull --ff-only 2>&1); then
+      log_warn "  Fast-forward failed; rebasing onto remote..."
+      if ! (cd "$repo_dir" && git pull --rebase 2>&1); then
+        log_error "  Git pull failed"
+        FAILURES+=("$repo_name (git pull failed)")
+        return 1
+      fi
     fi
   fi
 

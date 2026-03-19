@@ -86,8 +86,10 @@
 
       # Function-based abbreviations
       cliproxyapi = "_cliproxyapi_function";
+      clrc = "_clrc_function";
       cltxe = "_cltxe_function";
       cltxeh = "_cltxeh_function";
+      clwrc = "_clwrc_function";
       clwxe = "_clwxe_function";
       clwxeh = "_clwxeh_function";
       clxe = "_clxe_function";
@@ -184,8 +186,10 @@
       })
       [
         "_cliproxyapi_function"
+        "_clrc_function"
         "_cltxe_function"
         "_cltxeh_function"
+        "_clwrc_function"
         "_clwxe_function"
         "_clwxeh_function"
         "_clxe_function"
