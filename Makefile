@@ -779,7 +779,7 @@ launchctl-ollama: ## Restart ollama launchd agent.
 ##@ Systemd Services (Linux)
 
 .PHONY: systemctl
-systemctl: systemctl-cliproxyapi systemctl-code-syncer systemctl-docker-postgres systemctl-dotfiles-updater systemctl-ollama systemctl-openclaw ## Restart all systemd user services.
+systemctl: systemctl-cliproxyapi systemctl-code-syncer systemctl-docker-postgres systemctl-dotfiles-updater systemctl-ollama systemctl-openclaw systemctl-tmux-session-logger ## Restart all systemd user services.
 
 .PHONY: systemctl-cliproxyapi
 systemctl-cliproxyapi: ## Reload systemd units for cliproxyapi (home-manager handles restart).
@@ -821,6 +821,29 @@ systemctl-openclaw: ## Restart OpenClaw gateway systemd user service.
 	fi
 	@echo "✅ openclaw restarted"
 
+
+.PHONY: systemctl-tmux-session-logger
+systemctl-tmux-session-logger: ## Restart tmux-session-logger systemd timer and service.
+	@echo "🔄 Restarting tmux-session-logger..."
+	@systemctl --user restart tmux-session-logger.timer || true
+	@echo "✅ tmux-session-logger restarted"
+
+.PHONY: systemctl-tmux-session-logger-logs
+systemctl-tmux-session-logger-logs: ## Show recent tmux-session-logger journal logs and snapshot status.
+	@echo "📋 tmux-session-logger timer status:"
+	@systemctl --user status tmux-session-logger.timer --no-pager || true
+	@echo ""
+	@echo "📋 tmux-session-logger service status:"
+	@systemctl --user status tmux-session-logger.service --no-pager || true
+	@echo ""
+	@echo "📋 Recent journal entries:"
+	@journalctl --user -u tmux-session-logger.service --since "1 hour ago" --no-pager || true
+	@echo ""
+	@echo "📋 Session history log (last 20 lines):"
+	@tail -20 ~/.local/share/tmux/session-history.log 2>/dev/null || echo "No session history log found"
+	@echo ""
+	@echo "📋 Live pane snapshots:"
+	@ls -lh ~/.local/share/tmux/panes/ 2>/dev/null || echo "No pane snapshots found"
 
 .PHONY: git-submodule-sync
 git-submodule-sync: ## Sync and update git submodules.
