@@ -787,13 +787,19 @@ launchctl-tmux-session-logger: ## Restart tmux-session-logger launchd agent.
 ##@ Systemd Services (Linux)
 
 .PHONY: systemctl
-systemctl: systemctl-cliproxyapi systemctl-code-syncer systemctl-docker-postgres systemctl-dotfiles-updater systemctl-ollama systemctl-openclaw systemctl-tmux-session-logger ## Restart all systemd user services.
+systemctl: systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-code-syncer systemctl-docker-postgres systemctl-dotfiles-updater systemctl-make-updater systemctl-neverssl-keepalive systemctl-ollama systemctl-openclaw systemctl-tmux-session-logger ## Restart all systemd user services.
 
 .PHONY: systemctl-cliproxyapi
 systemctl-cliproxyapi: ## Reload systemd units for cliproxyapi (home-manager handles restart).
 	@echo "🔄 Reloading cliproxyapi..."
 	@systemctl --user daemon-reload
 	@echo "✅ cliproxyapi reloaded"
+
+.PHONY: systemctl-cliproxyapi-backup
+systemctl-cliproxyapi-backup: ## Restart cliproxyapi-backup systemd user service.
+	@echo "🔄 Restarting cliproxyapi-backup..."
+	@systemctl --user restart cliproxyapi-backup.service || true
+	@echo "✅ cliproxyapi-backup restarted"
 
 .PHONY: systemctl-code-syncer
 systemctl-code-syncer: ## Restart code-syncer systemd user service.
@@ -812,6 +818,18 @@ systemctl-dotfiles-updater: ## Restart dotfiles-updater systemd user service.
 	@echo "🔄 Restarting dotfiles-updater..."
 	@systemctl --user restart dotfiles-updater.service || true
 	@echo "✅ dotfiles-updater restarted"
+
+.PHONY: systemctl-make-updater
+systemctl-make-updater: ## Restart make-updater systemd timer and service.
+	@echo "🔄 Restarting make-updater..."
+	@systemctl --user restart make-updater.timer || true
+	@echo "✅ make-updater restarted"
+
+.PHONY: systemctl-neverssl-keepalive
+systemctl-neverssl-keepalive: ## Restart neverssl-keepalive systemd timer and service.
+	@echo "🔄 Restarting neverssl-keepalive..."
+	@systemctl --user restart neverssl-keepalive.timer || true
+	@echo "✅ neverssl-keepalive restarted"
 
 .PHONY: systemctl-ollama
 systemctl-ollama: ## Restart ollama systemd user service.
