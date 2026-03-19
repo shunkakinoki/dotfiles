@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "7b75defaf526",
+  "session_id": "d8f66867-5fea-4faa-814f-b67f714fad74",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-19T16:06:51.955035Z",
+  "branch": "feat/fish-clrc-clwrc-abbreviations",
+  "checkpoints_count": 1,
+  "files_touched": [],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-4-6",
+  "turn_id": "efc44dbb0cbb",
+  "token_usage": {
+    "input_tokens": 15,
+    "cache_creation_tokens": 149391,
+    "cache_read_tokens": 144405,
+    "output_tokens": 12026,
+    "api_call_count": 7
+  },
+  "session_metrics": {
+    "turn_count": 3
+  }
+}

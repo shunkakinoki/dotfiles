@@ -3,7 +3,7 @@
   "checkpoint_id": "7b75defaf526",
   "strategy": "manual-commit",
   "branch": "feat/fish-clrc-clwrc-abbreviations",
-  "checkpoints_count": 2,
+  "checkpoints_count": 3,
   "files_touched": [
     "home-manager/programs/fish/default.nix",
     "home-manager/programs/fish/functions/_clwrc_function.fish"
@@ -20,13 +20,19 @@
       "transcript": "/7b/75defaf526/1/full.jsonl",
       "content_hash": "/7b/75defaf526/1/content_hash.txt",
       "prompt": "/7b/75defaf526/1/prompt.txt"
+    },
+    {
+      "metadata": "/7b/75defaf526/2/metadata.json",
+      "transcript": "/7b/75defaf526/2/full.jsonl",
+      "content_hash": "/7b/75defaf526/2/content_hash.txt",
+      "prompt": "/7b/75defaf526/2/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 25,
-    "cache_creation_tokens": 35860,
-    "cache_read_tokens": 866403,
-    "output_tokens": 4141,
-    "api_call_count": 21
+    "input_tokens": 40,
+    "cache_creation_tokens": 185251,
+    "cache_read_tokens": 1010808,
+    "output_tokens": 16167,
+    "api_call_count": 28
   }
 }
