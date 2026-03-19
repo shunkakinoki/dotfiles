@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "4835af23e3d5",
+  "strategy": "manual-commit",
+  "branch": "fix/clrc-remote-control-flags",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "home-manager/programs/fish/functions/_clwrc_function.fish",
+    "spec/fish/_clwrc_function_test.fish"
+  ],
+  "sessions": [
+    {
+      "metadata": "/48/35af23e3d5/0/metadata.json",
+      "transcript": "/48/35af23e3d5/0/full.jsonl",
+      "content_hash": "/48/35af23e3d5/0/content_hash.txt",
+      "prompt": "/48/35af23e3d5/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 175,
+    "cache_creation_tokens": 47537,
+    "cache_read_tokens": 818771,
+    "output_tokens": 3805,
+    "api_call_count": 22
+  }
+}
