@@ -39,6 +39,8 @@ send_notification() {
   [ -z "$message" ] && return
 
   curl -s \
+    --max-time 5 \
+    --connect-timeout 3 \
     --form-string "token=${PUSHOVER_API_TOKEN}" \
     --form-string "user=${PUSHOVER_USER_KEY}" \
     --form-string "message=${message}" \
