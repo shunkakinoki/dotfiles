@@ -18,7 +18,8 @@ let
         sed = "${pkgs.gnused}/bin/sed";
         template = "${./openclaw.template.json}";
         inherit mode;
-      } // (
+      }
+      // (
         if host.isKyber then
           {
             chromium = "${pkgs.chromium}";
@@ -33,10 +34,9 @@ let
       names = builtins.attrNames vars;
     in
     pkgs.writeText "hydrate.sh" (
-      builtins.replaceStrings
-        (map (n: "@${n}@") names)
-        (map (n: builtins.toString vars.${n}) names)
-        (builtins.readFile ./hydrate.sh)
+      builtins.replaceStrings (map (n: "@${n}@") names) (map (n: builtins.toString vars.${n}) names) (
+        builtins.readFile ./hydrate.sh
+      )
     );
 in
 {
