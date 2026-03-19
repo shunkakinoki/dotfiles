@@ -1,0 +1,37 @@
+#11 6.522 info: downloading the Determinate Nix Installer
+#11 7.404  INFO nix-installer v3.17.0
+#11 7.853 `nix-installer` needs to run as `root`, attempting to escalate now via `sudo`...
+#11 7.864  INFO nix-installer v3.17.0
+#11 8.215 nix-env (Nix) 2.18.1
+#11 8.218 `nix` is already a valid command, so it is installed
+#11 8.258 make: *** [Makefile:301: nix-install] Error 1
+#11 ERROR: process "/bin/sh -c /usr/bin/nix-daemon &     sleep 5 &&     sudo -u $USER -E -H bash -c \"curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_SHA/install.sh | bash\"" did not complete successfully: exit code: 2
+------
+ > [6/7] RUN /usr/bin/nix-daemon &     sleep 5 &&     sudo -u runner -E -H bash -c "curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/72ca381571fbc013f4b127b70461ca9636dfc6dc/install.sh | bash":
+6.324 Prepending /usr/bin to PATH for 'make install' command.
+6.324 Ensuring USER=runner and CI= are passed to make install.
+6.372 🚀 Installing Determinate Nix environment for homeConfigurations on Linux x86_64 for USER=runner
+6.522 info: downloading the Determinate Nix Installer
+7.404  INFO nix-installer v3.17.0
+7.853 `nix-installer` needs to run as `root`, attempting to escalate now via `sudo`...
+7.864  INFO nix-installer v3.17.0
+8.215 nix-env (Nix) 2.18.1
+8.218 `nix` is already a valid command, so it is installed
+8.258 make: *** [Makefile:301: nix-install] Error 1
+------
+
+ 1 warning found (use docker --debug to expand):
+ - SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ARG "GITHUB_TOKEN") (line 30)
+Dockerfile:56
+--------------------
+  55 |     
+  56 | >>> RUN /usr/bin/nix-daemon & \
+  57 | >>>     sleep 5 && \
+  58 | >>>     # Run your dotfiles installation script.
+  59 | >>>     # This script is expected to install fish and other tools.
+  60 | >>>     # Make sure this script is idempotent or handles being run in a fresh environment.
+  61 | >>>     sudo -u $USER -E -H bash -c "curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_SHA/install.sh | bash"
+  62 |     
+--------------------
+ERROR: failed to build: failed to solve: process "/bin/sh -c /usr/bin/nix-daemon &     sleep 5 &&     sudo -u $USER -E -H bash -c \"curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_SHA/install.sh | bash\"" did not complete successfully: exit code: 2
+Reference is failing
