@@ -11,25 +11,33 @@ let
 
   mode = if host.isKyber then "gateway" else "client";
 
-  hydrateScript = pkgs.replaceVars ./hydrate.sh (
-    {
-      sed = "${pkgs.gnused}/bin/sed";
-      template = ./openclaw.template.json;
-      inherit mode;
-    }
-    // (
-      if host.isKyber then
-        {
-          chromium = pkgs.chromium;
-          openclaw = "${homeDir}/.bun";
-        }
-      else
-        {
-          chromium = "/unused";
-          openclaw = "/unused";
-        }
-    )
-  );
+  # Use writeText instead of replaceVars to avoid builtins.toFile context warnings
+  hydrateScript =
+    let
+      vars = {
+        sed = "${pkgs.gnused}/bin/sed";
+        template = "${./openclaw.template.json}";
+        inherit mode;
+      }
+      // (
+        if host.isKyber then
+          {
+            chromium = "${pkgs.chromium}";
+            openclaw = "${homeDir}/.bun";
+          }
+        else
+          {
+            chromium = "/unused";
+            openclaw = "/unused";
+          }
+      );
+      names = builtins.attrNames vars;
+    in
+    pkgs.writeText "hydrate.sh" (
+      builtins.replaceStrings (map (n: "@${n}@") names) (map (n: builtins.toString vars.${n}) names) (
+        builtins.readFile ./hydrate.sh
+      )
+    );
 in
 {
   # Hydrate OpenClaw config from .env secrets

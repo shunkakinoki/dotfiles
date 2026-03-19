@@ -11,10 +11,11 @@ set -x HOME $tmpdir
 # ── key exists but keychain missing ───────────────────────
 mkdir -p $tmpdir/.ssh
 touch $tmpdir/.ssh/id_ed25519_github
-function keychain; end
-# Remove keychain from PATH by shadowing with non-existent command
-functions -e keychain
+# Filter keychain binary out of PATH so command -v keychain fails
+set -l old_PATH $PATH
+set -x PATH (for p in $PATH; if not test -x $p/keychain; echo $p; end; end)
 
 @test "no keychain prints error" (string match -q "*keychain not found*" (_ssh_add_github 2>&1); echo $status) = 0
 
+set -x PATH $old_PATH
 rm -rf $tmpdir
