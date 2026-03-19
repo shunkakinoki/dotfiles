@@ -300,7 +300,7 @@ devenv-cli: ## Build the packaged devenv CLI binary.
 nix-install: ## Install Nix if not already installed.
 	@if [ "$(NIX_ENV)" = "not_found" ]; then \
 		echo "🚀 Installing Determinate Nix environment for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"; \
-		curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install; \
+		curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm; \
 	fi
 	@echo "✅ Nix environment installed!"
 
