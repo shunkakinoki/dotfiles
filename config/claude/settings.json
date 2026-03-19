@@ -165,7 +165,7 @@
         "matcher": "Write|Edit|MultiEdit"
       }
     ],
-    "SessionEnd": [
+    "PermissionRequest": [
       {
         "hooks": [
           {

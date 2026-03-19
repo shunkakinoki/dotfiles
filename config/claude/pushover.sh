@@ -2,7 +2,7 @@
 
 # Claude Code Pushover Notification Script
 # Sends notifications to your smartwatch/phone when Claude needs attention
-# Supports: Notification, Stop, SessionEnd, PreCompact, SubagentStop hooks
+# Supports: Notification, Stop, PermissionRequest, PreCompact, SubagentStop hooks
 
 # Source credentials from dotfiles/.env if environment variables aren't set
 # This is needed because Claude Code hooks run in a subprocess that may not
@@ -117,14 +117,12 @@ if echo "$input" | jq -e '.message' >/dev/null 2>&1; then
   exit 0
 fi
 
-# Handle SessionEnd hook (priority 0 = normal)
-# Skip "other" reason - it's a generic/unknown reason that's noisy
-if echo "$input" | jq -e '.reason' >/dev/null 2>&1; then
-  REASON=$(echo "$input" | jq -r '.reason')
-  if [ "$REASON" = "other" ]; then
-    exit 0
-  fi
-  send_notification "👋 Session ended: ${REASON}" 0
+# Handle PermissionRequest hook (priority 1 = high - needs immediate attention)
+if echo "$input" | jq -e '.hook_event_name == "PermissionRequest"' >/dev/null 2>&1; then
+  TOOL_NAME=$(echo "$input" | jq -r '.tool_name // "unknown"')
+  CWD=$(echo "$input" | jq -r '.cwd // empty' | sed "s|$HOME|~|")
+  send_notification "🔐 [${HOSTNAME}] Approval required: ${TOOL_NAME}
+📂 ${CWD}" 1
   exit 0
 fi
 
