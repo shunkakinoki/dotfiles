@@ -36,6 +36,9 @@ in
   home.packages = packages;
   home.stateVersion = "24.11";
 
+  # Suppress home-manager manual options.json generation warning.
+  manual.manpages.enable = false;
+
   accounts.email.accounts = {
     Gmail = {
       primary = true;
