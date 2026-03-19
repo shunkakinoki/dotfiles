@@ -15,6 +15,7 @@ _clrc_function
 
 @test "runs resolved binary directly" (grep -c $fake_cli $log1) -ge 1
 @test "passes remote-control subcommand" (grep -c "remote-control" $log1) -ge 1
+@test "passes --permission-mode bypassPermissions" (grep -c -- "bypassPermissions" $log1) -ge 1
 
 # ── with args: passes through extra args ──────────────────────
 set log2 (mktemp)
@@ -25,5 +26,6 @@ _clrc_function --name mysession
 
 @test "passes extra args through" (grep -c -- "--name" $log2) -ge 1
 @test "still includes remote-control with args" (grep -c "remote-control" $log2) -ge 1
+@test "still includes bypassPermissions with args" (grep -c -- "bypassPermissions" $log2) -ge 1
 
 rm -f $log1 $log2 $fake_cli
