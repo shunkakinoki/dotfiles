@@ -1,11 +1,6 @@
-{
-  config,
-  pkgs,
-  ...
-}:
+{ pkgs, ... }:
 let
   inherit (pkgs) lib;
-  homeDir = config.home.homeDirectory;
 in
 {
   launchd.agents.make-updater = lib.mkIf pkgs.stdenv.isDarwin {
@@ -64,8 +59,8 @@ in
           ]
         }"
         "AUTOMATED_UPDATE=true"
-        "RUSTUP_HOME=${homeDir}/.rustup"
-        "CARGO_HOME=${homeDir}/.cargo"
+        "RUSTUP_HOME=%h/.rustup"
+        "CARGO_HOME=%h/.cargo"
       ];
       ExecStart = "${./update.sh}";
     };
