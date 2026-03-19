@@ -18,14 +18,12 @@ for f in "$PANE_DIR"/*.txt; do
 done
 
 # Recapture all currently live panes
-tmux list-panes -a -F "#{session_name} #{window_index} #{pane_index} #{pane_id}" \
-  2>/dev/null | while IFS= read -r line; do
-  sess=$(printf '%s' "$line" | cut -d' ' -f1)
-  widx=$(printf '%s' "$line" | cut -d' ' -f2)
-  pidx=$(printf '%s' "$line" | cut -d' ' -f3)
-  pane_id=$(printf '%s' "$line" | cut -d' ' -f4)
-  tmux capture-pane -pt "$pane_id" -S - 2>/dev/null \
-    >"$PANE_DIR/$sess--$widx--$pidx.txt"
+tmux list-panes -a -F "#{session_name}	#{window_index}	#{pane_index}	#{pane_id}" \
+  2>/dev/null | while IFS='	' read -r sess widx pidx pane_id; do
+  if [ -n "$sess" ]; then
+    tmux capture-pane -pt "$pane_id" -S - 2>/dev/null \
+      >"$PANE_DIR/$sess--$widx--$pidx.txt"
+  fi
 done
 
 # For each .old: if a live .txt exists → pane survived → delete .old
