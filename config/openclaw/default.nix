@@ -11,8 +11,9 @@ let
 
   mode = if host.isKyber then "gateway" else "client";
 
-  hydrateScript = pkgs.replaceVars ./hydrate.sh (
+  hydrateScript = pkgs.substituteAll (
     {
+      src = ./hydrate.sh;
       sed = "${pkgs.gnused}/bin/sed";
       template = ./openclaw.template.json;
       inherit mode;

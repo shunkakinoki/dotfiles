@@ -8,7 +8,8 @@ let
   dotfilesDir = "${config.home.homeDirectory}/dotfiles";
 
   # Hydration script for CCS provider settings
-  hydrateScript = pkgs.replaceVars ./hydrate.sh {
+  hydrateScript = pkgs.substituteAll {
+    src = ./hydrate.sh;
     sed = "${pkgs.gnused}/bin/sed";
   };
 in
