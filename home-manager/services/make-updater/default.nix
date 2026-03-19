@@ -40,11 +40,15 @@ in
             pkgs.coreutils
             pkgs.curl
             pkgs.gawk
+            pkgs.gcc
+            pkgs.ghq
             pkgs.git
             pkgs.gnumake
             pkgs.gnused
             pkgs.go
             pkgs.nix
+            pkgs.openssl.dev
+            pkgs.pkg-config
             pkgs.sudo
             pkgs.which
           ]

@@ -205,6 +205,12 @@ update_repo() {
     fi
   fi
 
+  # Remove stale lock files left by crashed git processes
+  if [ -f "$repo_dir/.git/index.lock" ]; then
+    log_warn "  Removing stale .git/index.lock..."
+    rm -f "$repo_dir/.git/index.lock"
+  fi
+
   # Git pull
   log_step "  Pulling latest changes..."
   if (cd "$repo_dir" && [ -n "$(git status --porcelain)" ]); then
