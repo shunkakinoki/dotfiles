@@ -63,7 +63,6 @@ The output should eq ''
 End
 End
 
-
 Describe 'Notification hook'
 setup() {
   mock_bin_setup curl
