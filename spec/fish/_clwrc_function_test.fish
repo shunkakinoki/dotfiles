@@ -1,23 +1,26 @@
 set fn (status dirname)/../../home-manager/programs/fish/functions
 source $fn/_clwrc_function.fish
 
-# ── basic: resolves symlink and runs node with remote-control --worktree ──
+# ── basic: resolves symlink and runs binary with remote-control --worktree ──
 set log1 (mktemp)
 set fake_cli (mktemp)
+chmod +x $fake_cli
+echo '#!/bin/sh
+echo "$0" "$@" >> '$log1 > $fake_cli
 
 function which; echo $fake_cli; end
 function realpath; echo $argv[1]; end
-function node; echo "node" $argv >> $log1; end
 
 _clwrc_function
 
-@test "calls node directly (not claude symlink)" (grep -c "^node" $log1) -ge 1
+@test "runs resolved binary directly" (grep -c $fake_cli $log1) -ge 1
 @test "passes remote-control subcommand" (grep -c "remote-control" $log1) -ge 1
 @test "passes --worktree flag" (grep -c -- "--worktree" $log1) -ge 1
 
 # ── with args: passes through extra args ──────────────────────
 set log2 (mktemp)
-function node; echo "node" $argv >> $log2; end
+echo '#!/bin/sh
+echo "$0" "$@" >> '$log2 > $fake_cli
 
 _clwrc_function --name mysession
 
