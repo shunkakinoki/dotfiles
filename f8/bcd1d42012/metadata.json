@@ -3,7 +3,7 @@
   "checkpoint_id": "f8bcd1d42012",
   "strategy": "manual-commit",
   "branch": "feat/claude-permission-request-notifications",
-  "checkpoints_count": 3,
+  "checkpoints_count": 5,
   "files_touched": [
     "config/claude/notify.sh",
     "config/claude/pushover.sh",
@@ -21,13 +21,19 @@
       "transcript": "/f8/bcd1d42012/1/full.jsonl",
       "content_hash": "/f8/bcd1d42012/1/content_hash.txt",
       "prompt": "/f8/bcd1d42012/1/prompt.txt"
+    },
+    {
+      "metadata": "/f8/bcd1d42012/2/metadata.json",
+      "transcript": "/f8/bcd1d42012/2/full.jsonl",
+      "content_hash": "/f8/bcd1d42012/2/content_hash.txt",
+      "prompt": "/f8/bcd1d42012/2/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 23,
-    "cache_creation_tokens": 77004,
-    "cache_read_tokens": 600595,
-    "output_tokens": 7490,
-    "api_call_count": 17
+    "input_tokens": 57,
+    "cache_creation_tokens": 204563,
+    "cache_read_tokens": 1667377,
+    "output_tokens": 10613,
+    "api_call_count": 36
   }
 }

@@ -1,0 +1,13 @@
+no need to have session end notification for claude code
+
+---
+
+no in @config/claude/
+
+---
+
+also are there any remote control related hooks? search from the latest claude docs i want to have ntoifications for approvals running on remote control claude instance
+
+---
+
+edit notify.sh and pushover.sh
