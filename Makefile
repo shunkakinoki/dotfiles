@@ -854,23 +854,6 @@ systemctl-tmux-session-logger: ## Restart tmux-session-logger systemd timer and 
 	@systemctl --user restart tmux-session-logger.timer || true
 	@echo "✅ tmux-session-logger restarted"
 
-.PHONY: systemctl-tmux-session-logger-logs
-systemctl-tmux-session-logger-logs: ## Show recent tmux-session-logger journal logs and snapshot status.
-	@echo "📋 tmux-session-logger timer status:"
-	@systemctl --user status tmux-session-logger.timer --no-pager || true
-	@echo ""
-	@echo "📋 tmux-session-logger service status:"
-	@systemctl --user status tmux-session-logger.service --no-pager || true
-	@echo ""
-	@echo "📋 Recent journal entries:"
-	@journalctl --user -u tmux-session-logger.service --since "1 hour ago" --no-pager || true
-	@echo ""
-	@echo "📋 Session history log (last 20 lines):"
-	@tail -20 ~/.local/share/tmux/session-history.log 2>/dev/null || echo "No session history log found"
-	@echo ""
-	@echo "📋 Live pane snapshots:"
-	@ls -lh ~/.local/share/tmux/panes/ 2>/dev/null || echo "No pane snapshots found"
-
 .PHONY: git-submodule-sync
 git-submodule-sync: ## Sync and update git submodules.
 	@echo "🔁 Syncing and updating git submodules..."
