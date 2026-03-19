@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "4784ad01e636",
+  "strategy": "manual-commit",
+  "branch": "omp",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "Makefile"
+  ],
+  "sessions": [
+    {
+      "metadata": "/47/84ad01e636/0/metadata.json",
+      "transcript": "/47/84ad01e636/0/full.jsonl",
+      "content_hash": "/47/84ad01e636/0/content_hash.txt",
+      "prompt": "/47/84ad01e636/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 1560,
+    "cache_creation_tokens": 84971,
+    "cache_read_tokens": 869236,
+    "output_tokens": 2847,
+    "api_call_count": 14
+  }
+}
