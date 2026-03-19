@@ -1589,8 +1589,8 @@ dependencies = [
 
 [[package]]
 name = "git-ai"
-version = "1.1.16"
-source = "git+https://github.com/git-ai-project/git-ai?branch=main#b51acb567679a802c78fd6772178ab493a05a22c"
+version = "1.1.17"
+source = "git+https://github.com/git-ai-project/git-ai?branch=main#2cb9dc5ae1be0169b64bf2540f18468154e249fd"
 dependencies = [
  "chrono",
  "clap",
@@ -3073,8 +3073,8 @@ dependencies = [
 
 [[package]]
 name = "rtk"
-version = "0.30.1"
-source = "git+https://github.com/rtk-ai/rtk?branch=master#48e53cb2c56ed99df35e225401f02bf94a812d02"
+version = "0.31.0"
+source = "git+https://github.com/rtk-ai/rtk?branch=master#c85e348a91ee5c7afb5adc298e1e71d6782a594e"
 dependencies = [
  "anyhow",
  "chrono",

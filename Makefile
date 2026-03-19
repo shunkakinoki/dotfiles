@@ -1,5 +1,7 @@
 ##@ Variables
 
+SHELL := bash
+
 # Include dotagents from submodule but keep the local help target authoritative.
 DOTAGENTS_SKIP_HELP := 1
 -include dotagents/Makefile
@@ -69,7 +71,7 @@ NIX_USERNAME := $(shell \
 	else \
 		echo "$(shell whoami)"; \
 	fi)
-NIX_ENV := $(shell . ~/.nix-profile/etc/profile.d/nix.sh 2>/dev/null || echo "not_found")
+NIX_ENV := $(shell . ~/.nix-profile/etc/profile.d/nix.sh 2>/dev/null || . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh 2>/dev/null || command -v nix >/dev/null 2>&1 || echo "not_found")
 NIX_FLAGS := --extra-experimental-features 'flakes nix-command' --no-pure-eval --impure
 # Only add cache options when user is trusted or on Darwin/CI (avoids "ignoring untrusted substituter" warnings)
 ifeq ($(OS),Darwin)
@@ -298,7 +300,7 @@ devenv-cli: ## Build the packaged devenv CLI binary.
 nix-install: ## Install Nix if not already installed.
 	@if [ "$(NIX_ENV)" = "not_found" ]; then \
 		echo "🚀 Installing Determinate Nix environment for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"; \
-		curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install; \
+		curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm; \
 	fi
 	@echo "✅ Nix environment installed!"
 

@@ -35,10 +35,13 @@ in
       Environment = [
         "PATH=${
           lib.makeBinPath [
+            pkgs.autoconf
             pkgs.bash
+            pkgs.binutils
             pkgs.cargo
             pkgs.coreutils
             pkgs.curl
+            pkgs.elixir
             pkgs.gawk
             pkgs.gcc
             pkgs.ghq
@@ -46,14 +49,18 @@ in
             pkgs.gnumake
             pkgs.gnused
             pkgs.go
+            pkgs.libtool
             pkgs.nix
             pkgs.openssl.dev
             pkgs.pkg-config
+            pkgs.rustup
             pkgs.sudo
             pkgs.which
           ]
         }"
         "AUTOMATED_UPDATE=true"
+        "RUSTUP_HOME=%h/.rustup"
+        "CARGO_HOME=%h/.cargo"
       ];
       ExecStart = "${./update.sh}";
     };

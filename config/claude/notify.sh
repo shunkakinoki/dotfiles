@@ -54,10 +54,10 @@ if echo "$input" | jq -e '.message' >/dev/null 2>&1; then
   exit 0
 fi
 
-# Handle SessionEnd hook
-if echo "$input" | jq -e '.reason' >/dev/null 2>&1; then
-  REASON=$(echo "$input" | jq -r '.reason')
-  notify "Session ended: ${REASON}"
+# Handle PermissionRequest hook
+if echo "$input" | jq -e '.hook_event_name == "PermissionRequest"' >/dev/null 2>&1; then
+  TOOL_NAME=$(echo "$input" | jq -r '.tool_name // "unknown"')
+  notify "Approval required: ${TOOL_NAME}" "Basso"
   exit 0
 fi
 
