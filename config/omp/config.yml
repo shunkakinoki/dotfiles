@@ -8,5 +8,6 @@ theme:
 steeringMode: all
 followUpMode: all
 interruptMode: immediate
+doubleEscapeAction: none
 startup:
   quiet: true
