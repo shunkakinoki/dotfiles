@@ -241,6 +241,20 @@ startup:
 #   # Default: 1000
 #   maxEntries: 1000
 
+# --- Task Agent Overrides ---------------------------------------------------
+# Override discovered agent model patterns by agent name. These names match the
+# custom agents shown in the subagent dashboard.
+task:
+  agentModelOverrides:
+    code-architect: __GPT__
+    code-explorer: __GPT_SPARK__
+    code-reviewer: __GPT__
+    code-simplifier: __GPT__
+    comment-analyzer: __GPT_MINI__
+    pr-test-analyzer: __GPT_MINI__
+    silent-failure-hunter: __GPT__
+    type-design-analyzer: __GPT__
+
 # --- Agent Definitions -------------------------------------------------------
 # Inline agent definitions (alternative to skill/agent files).
 # agents: {}
