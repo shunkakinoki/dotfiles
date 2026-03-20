@@ -58,6 +58,7 @@ inputs.nixpkgs.lib.nixosSystem {
           "amdgpu.abmlevel=3" # auto backlight management
           "amdgpu.runpm=1" # runtime power management for GPU
           "amd_pstate=active" # AMD P-state driver (better than acpi-cpufreq)
+          "amdgpu.dcdebugmask=0x410" # disable PSR and REPLAY to fix screen flickering
         ];
 
         # Networking
