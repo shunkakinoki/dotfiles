@@ -165,6 +165,7 @@ with pkgs;
   slack
   slurp
   swappy
+  telegram-desktop
   totem
   vlc
   pkgs-nightly.vscode
