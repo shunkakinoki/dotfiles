@@ -8,9 +8,10 @@ let
   dotfilesDir = "${config.home.homeDirectory}/dotfiles";
 
   # Hydration script for CCS provider settings
-  hydrateScript = pkgs.replaceVars ./hydrate.sh {
-    sed = "${pkgs.gnused}/bin/sed";
-  };
+  # Use writeText instead of replaceVars to avoid builtins.toFile context warnings
+  hydrateScript = pkgs.writeText "hydrate.sh" (
+    builtins.replaceStrings [ "@sed@" ] [ "${pkgs.gnused}/bin/sed" ] (builtins.readFile ./hydrate.sh)
+  );
 in
 {
   # CCS (Claude Code Switcher) account registry
