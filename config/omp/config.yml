@@ -52,7 +52,7 @@ modelRoles:
   # [REQUIRED] Default model — fallback for all model selections.
   default: openai-codex/gpt-5.4
   # Smaller / dumber model for cheap lightweight work.
-  smol: openai-codex/gpt-5.4-codex-mini
+  smol: openai-codex/gpt-5.4-mini
   # Strongest model in the suite for hard tasks.
   slow: openai-codex/gpt-5.4
   # Keep vision on the main default model.
@@ -60,7 +60,7 @@ modelRoles:
   # Planning / architecture model.
   plan: openai-codex/gpt-5.4
   # Commit message model.
-  commit: openai-codex/gpt-5.4
+  commit: openai/gpt-5.4-nano
   # Fast subagent path.
   task: openai-codex/gpt-5.3-codex-spark
 # =============================================================================
@@ -250,7 +250,7 @@ task:
     code-explorer: gpt-5.3-codex-spark
     code-reviewer: gpt-5.4
     code-simplifier: gpt-5.4
-    comment-analyzer: gpt-5.4-mini
+    comment-analyzer: gpt-5.4-nano
     pr-test-analyzer: gpt-5.4-mini
     silent-failure-hunter: gpt-5.4
     type-design-analyzer: gpt-5.4

@@ -60,9 +60,9 @@ modelRoles:
   # Planning / architecture model.
   plan: openai-codex/__GPT__
   # Commit message model.
-  commit: openai-codex/__GPT__
+  commit: openai/__GPT_NANO__
   # Fast subagent path.
-  task: openai-codex/__GPT_SPARK__
+  task: openai-codex/__GPT_CODEX_SPARK__
 # =============================================================================
 # DISPLAY
 # =============================================================================
@@ -247,10 +247,10 @@ startup:
 task:
   agentModelOverrides:
     code-architect: __GPT__
-    code-explorer: __GPT_SPARK__
+    code-explorer: __GPT_CODEX_SPARK__
     code-reviewer: __GPT__
     code-simplifier: __GPT__
-    comment-analyzer: __GPT_MINI__
+    comment-analyzer: __GPT_NANO__
     pr-test-analyzer: __GPT_MINI__
     silent-failure-hunter: __GPT__
     type-design-analyzer: __GPT__
