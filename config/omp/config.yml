@@ -15,18 +15,15 @@
 # 2. Copy any field from here into config.yml to override the default.
 # 3. Run `omp config validate` to check your config.yml for errors.
 # =============================================================================
-
 # =============================================================================
 # CHANGELOG TRACKING
 # =============================================================================
-
 # lastChangelogVersion
 #   Track the last changelog version shown to the user.
 #   Type: string (semver, e.g. "13.13.2")
 #   Default: "0.0.0" (show all entries on first run)
 #   Increment this value to re-display a changelog entry to the user.
 lastChangelogVersion: "13.13.2"
-
 # =============================================================================
 # MODEL ROLES
 # =============================================================================
@@ -66,11 +63,9 @@ modelRoles:
   commit: openai-codex/gpt-5.4
   # Fast subagent path.
   task: openai-codex/gpt-5.3-codex-spark
-
 # =============================================================================
 # DISPLAY
 # =============================================================================
-
 display:
   # showTokenUsage
   #   Display token count and cost estimate after each model response.
@@ -78,11 +73,9 @@ display:
   #   Default: false
   #   Recommended: true for cost monitoring, false for reduced noise.
   showTokenUsage: true
-
 # =============================================================================
 # THEME
 # =============================================================================
-
 theme:
   # dark
   #   Dark theme variant for the terminal UI.
@@ -98,7 +91,6 @@ theme:
   #
   #   Light theme support depends on your terminal and harness config.
   dark: dark-dracula
-
 # =============================================================================
 # INTERACTION MODES
 # =============================================================================
@@ -115,7 +107,6 @@ theme:
 #     - "none"     — No steering: purely reactive, no initiative.
 #   Default: "all"
 steeringMode: all
-
 # followUpMode
 #   Whether the agent generates follow-up questions or suggestions after
 #   completing a task or response.
@@ -127,7 +118,6 @@ steeringMode: all
 #     - "none"      — Never proactively suggest follow-ups.
 #   Default: "all"
 followUpMode: all
-
 # interruptMode
 #   How the agent handles user input while mid-task.
 #   Type: string
@@ -140,7 +130,6 @@ followUpMode: all
 #                       respond. Use when you want atomic task completion.
 #   Default: "immediate"
 interruptMode: immediate
-
 # doubleEscapeAction
 #   Action triggered by double-Escape key press (Escape within ~500ms of
 #   another Escape). This is the standard interrupt shortcut.
@@ -154,11 +143,9 @@ interruptMode: immediate
 #     - "suspend"   — Suspend the agent to background, return to idle.
 #   Default: "none" (double-Escape is disabled)
 doubleEscapeAction: none
-
 # =============================================================================
 # STARTUP BEHAVIOUR
 # =============================================================================
-
 startup:
   # quiet
   #   Suppress the startup banner and welcome message.
