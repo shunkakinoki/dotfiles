@@ -26,7 +26,7 @@
 #
 # The explicit current settings snapshot begins below.
 #
-lastChangelogVersion: "13.13.2"
+lastChangelogVersion: "0.0.0"
 # shellPath
 #   Optional shell binary used for spawned shell sessions. When null, OMP uses
 #   its built-in shell-resolution fallback chain.
@@ -97,7 +97,7 @@ showHardwareCursor: true
 # clearOnShrink
 #   Clear empty rows when content shrinks; may cause flicker on some terminals.
 #   Upstream default: false
-clearOnShrink: false
+clearOnShrink: true
 # hideThinkingBlock
 #   Hide thinking blocks in assistant responses.
 #   Upstream default: false
@@ -109,7 +109,7 @@ repeatToolDescriptions: false
 # collapseChangelog
 #   Show condensed changelog after updates.
 #   Upstream default: false
-collapseChangelog: false
+collapseChangelog: true
 # defaultThinkingLevel
 #   Reasoning depth for thinking-capable models.
 #   Upstream default: high
@@ -315,7 +315,7 @@ compaction:
   # handoffSaveToDisk
 
   #   Save generated handoff documents for the auto-handoff flow.
-  handoffSaveToDisk: false
+  handoffSaveToDisk: true
   # remoteEnabled
 
   #   Prefer remote compaction endpoints when available.
@@ -326,12 +326,12 @@ compaction:
   remoteEndpoint: null
 branchSummary:
   # Prompt to summarize when leaving a branch.
-  enabled: false
+  enabled: true
   reserveTokens: 16384
 # --- Memory & Context --------------------------------------------------------
 memories:
   # Enable autonomous memory extraction and consolidation.
-  enabled: false
+  enabled: true
   maxRolloutsPerStartup: 64
   maxRolloutAgeDays: 30
   minRolloutIdleHours: 12
@@ -394,16 +394,16 @@ notebook:
   enabled: true
 renderMermaid:
   # Mermaid-to-ASCII rendering helper.
-  enabled: false
+  enabled: true
 calc:
   # Basic calculator tool.
-  enabled: false
+  enabled: true
 inspect_image:
   # Vision delegation helper for image understanding.
-  enabled: false
+  enabled: true
 checkpoint:
   # Context checkpointing / rewind tools.
-  enabled: false
+  enabled: true
 fetch:
   # URL fetching tool.
   enabled: true
