@@ -1,7 +1,7 @@
 # =============================================================================
-# Oh My Pi — Configuration Template
+# Oh My Pi — Configuration
 # =============================================================================
-# This is the annotated reference template for config.yml.
+# This is the annotated configuration for config.yml.
 # It shows every available configuration field with documentation.
 # Copy values from here into config.yml to override defaults.
 #
@@ -12,7 +12,7 @@
 # HOW TO USE THIS FILE
 # =============================================================================
 # 1. Edit config.yml (your actual settings) — this file is read-only reference.
-# 2. Copy any field from this template into config.yml to override the default.
+# 2. Copy any field from here into config.yml to override the default.
 # 3. Run `omp config validate` to check your config.yml for errors.
 # =============================================================================
 
@@ -53,19 +53,19 @@ lastChangelogVersion: "13.13.2"
 #   cheap:   google/gemini-3-flash
 modelRoles:
   # [REQUIRED] Default model — fallback for all model selections.
-  default: cliproxyapi/gpt-5.4
-  # Small / fast model for quick tasks.
-  smol: cliproxyapi/claude-haiku-4-5-20251001
-  # Large / capable model for complex work.
-  slow: cliproxyapi/claude-opus-4-6
-  # Vision-capable model for image tasks.
-  vision: cliproxyapi/claude-sonnet-4-6
+  default: openai-codex/gpt-5.4
+  # Smaller / dumber model for cheap lightweight work.
+  smol: openai-codex/gpt-5.4-codex-mini
+  # Strongest model in the suite for hard tasks.
+  slow: openai-codex/gpt-5.4
+  # Keep vision on the main default model.
+  vision: openai-codex/gpt-5.4
   # Planning / architecture model.
-  plan: cliproxyapi/claude-opus-4-6
+  plan: openai-codex/gpt-5.4
   # Commit message model.
-  commit: cliproxyapi/claude-haiku-4-5-20251001
-  # Subagent model.
-  task: cliproxyapi/claude-sonnet-4-6
+  commit: openai-codex/gpt-5.4
+  # Fast subagent path.
+  task: openai-codex/gpt-5.3-codex-spark
 
 # =============================================================================
 # DISPLAY

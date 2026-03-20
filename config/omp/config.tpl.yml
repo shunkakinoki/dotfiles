@@ -1,7 +1,7 @@
 # =============================================================================
-# Oh My Pi — Configuration Template
+# Oh My Pi — Configuration
 # =============================================================================
-# This is the annotated reference template for config.yml.
+# This is the annotated configuration for config.yml.
 # It shows every available configuration field with documentation.
 # Copy values from here into config.yml to override defaults.
 #
@@ -12,7 +12,7 @@
 # HOW TO USE THIS FILE
 # =============================================================================
 # 1. Edit config.yml (your actual settings) — this file is read-only reference.
-# 2. Copy any field from this template into config.yml to override the default.
+# 2. Copy any field from here into config.yml to override the default.
 # 3. Run `omp config validate` to check your config.yml for errors.
 # =============================================================================
 
@@ -52,9 +52,20 @@ lastChangelogVersion: "13.13.2"
 #   slow:    anthropic/claude-opus-4
 #   cheap:   google/gemini-3-flash
 modelRoles:
-  # [REQUIRED] The default model used when no role is specified.
-  # This is the fallback for all model selections.
-  default: codex/__GPT__
+  # [REQUIRED] Default model — fallback for all model selections.
+  default: openai-codex/__GPT__
+  # Smaller / dumber model for cheap lightweight work.
+  smol: openai-codex/__GPT_MINI__
+  # Strongest model in the suite for hard tasks.
+  slow: openai-codex/__GPT__
+  # Keep vision on the main default model.
+  vision: openai-codex/__GPT__
+  # Planning / architecture model.
+  plan: openai-codex/__GPT__
+  # Commit message model.
+  commit: openai-codex/__GPT__
+  # Fast subagent path.
+  task: openai-codex/__GPT_SPARK__
 
 # =============================================================================
 # DISPLAY
