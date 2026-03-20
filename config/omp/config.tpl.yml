@@ -156,12 +156,12 @@ statusLine:
   #   Type: string
   #   Options: default | minimal | compact | full | nerd | ascii | custom
   #   Use "custom" when defining leftSegments/rightSegments below.
-  preset: "custom"
+  preset: "full"
   # separator
   #   Visual separator between status line segments.
   #   Type: string
   #   Options: powerline | powerline-thin | slash | pipe | block | none | ascii
-  separator: "powerline-thin"
+  separator: "pipe"
   # showHookStatus
   #   Display hook status messages below the status line.
   #   Type: boolean
