@@ -399,9 +399,9 @@ nix-format-check: nix-format-clear-cache ## Check Nix file formatting.
 	@echo "✅ All Nix files are properly formatted"
 
 .PHONY: nix-lint
-nix-lint: ## Lint Nix files with statix.
+nix-lint: ## Lint Nix files with statix from the flake/dev shell.
 	@echo "🔍 Linting Nix files with statix..."
-	@$(NIX_EXEC) run nixpkgs#statix -- check .
+	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command statix check .
 	@echo "✅ All Nix files pass lint checks"
 
 .PHONY: nix-switch
