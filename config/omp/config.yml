@@ -21,13 +21,19 @@
 # lastChangelogVersion
 #   Track the last changelog version shown to the user.
 #   Type: string (semver, e.g. "13.13.2")
-#   Default: "0.0.0" (show all entries on first run)
-#   Increment this value to re-display a changelog entry to the user.
+#   Default: unset / undefined (first run shows all entries)
+#   Set this to the last changelog version you have acknowledged.
 #
 # The explicit current settings snapshot begins below.
-
+#
 lastChangelogVersion: "13.13.2"
+# shellPath
+#   Optional shell binary used for spawned shell sessions. When null, OMP uses
+#   the process environment / platform default shell.
 shellPath: null
+# extensions / enabledModels / disabledProviders / disabledExtensions
+#   Low-level capability and provider filters from the unified settings schema.
+#   Empty arrays keep upstream discovery behavior unchanged.
 extensions: []
 enabledModels: []
 disabledProviders: []
@@ -49,7 +55,7 @@ disabledExtensions: []
 #   codex      — OpenAI Codex (ChatGPT, gpt-5.4, etc.)
 #   deepseek   — DeepSeek models
 #   mistral    — Mistral models
-#   groove     — Groq models
+#   groq       — Groq models
 #   openrouter — OpenRouter (access to many models)
 #
 # Examples:
@@ -78,26 +84,50 @@ modelRoles:
 # =============================================================================
 display:
   # showTokenUsage
-  #   Display token count and cost estimate after each model response.
+  #   Show per-turn token usage on assistant messages.
   #   Type: boolean
-  #   Default: false
-  #   Recommended: true for cost monitoring, false for reduced noise.
+  #   Upstream default: false
   showTokenUsage: true
+  # tabWidth
+  #   Default number of spaces used when rendering tab characters.
+  #   Type: integer
+  #   Upstream default: 3
   tabWidth: 3
 
+# showHardwareCursor
+#   Show terminal cursor for IME support.
+#   Upstream default: true (computed by platform if unset)
 showHardwareCursor: true
+# clearOnShrink
+#   Clear empty rows when content shrinks; may cause flicker on some terminals.
+#   Upstream default: false
 clearOnShrink: false
+# hideThinkingBlock
+#   Hide thinking blocks in assistant responses.
+#   Upstream default: false
 hideThinkingBlock: false
+# repeatToolDescriptions
+#   Render full tool descriptions in the system prompt instead of a tool-name list.
+#   Upstream default: false
 repeatToolDescriptions: false
+# collapseChangelog
+#   Show condensed changelog after updates.
+#   Upstream default: false
 collapseChangelog: false
+# defaultThinkingLevel
+#   Reasoning depth for thinking-capable models.
+#   Upstream default: high
 defaultThinkingLevel: "high"
 
+# Sampling and provider knobs. `-1` keeps provider defaults.
 temperature: -1
 topP: -1
 topK: -1
 minP: -1
 presencePenalty: -1
 repetitionPenalty: -1
+# serviceTier
+#   OpenAI processing priority. `none` omits the parameter entirely.
 serviceTier: "none"
 
 # =============================================================================
@@ -105,22 +135,24 @@ serviceTier: "none"
 # =============================================================================
 theme:
   # dark
-  #   Dark theme variant for the terminal UI.
+  #   Theme used when the terminal has a dark background.
   #   Type: string (theme name)
-  #   Default: "dark-dracula"
-  #
-  #   Common themes:
-  #     dark-dracula   — Dracula (purple/pink accents)
-  #     dark-one       — One Dark (blue/green accents)
-  #     dark-gruvbox   — Gruvbox (warm retro colors)
-  #     dark-catppuccin — Catppuccin Mocha
-  #     dark-nord      — Nord (cool blue-grey)
-  #
-  #   Light theme support depends on your terminal and harness config.
+  #   Upstream schema default: "titanium"
+  #   This repo overrides it to "dark-dracula".
   dark: "dark-dracula"
+  # light
+  #   Theme used when the terminal has a light background.
+  #   Type: string (theme name)
+  #   Upstream schema default: "light"
   light: "light"
 
+# symbolPreset
+#   Icon/symbol style for the UI. Options: unicode | nerd | ascii.
+#   Upstream default: unicode
 symbolPreset: "unicode"
+# colorBlindMode
+#   Use blue instead of green for diff additions.
+#   Upstream default: false
 colorBlindMode: false
 
 # =============================================================================
@@ -166,56 +198,41 @@ statusLine:
 # =============================================================================
 # INTERACTION MODES
 # =============================================================================
-# Control how the agent steers, follows up, and handles interruptions.
+# Control how queued user input is processed while the agent is working.
 #
 # steeringMode
-#   How actively the agent guides the conversation and takes initiative.
+#   How to process queued messages while agent work is in progress.
 #   Type: string
 #   Options:
-#     - "all"      — Full steering: agent proposes directions, asks clarifying
-#                    questions, suggests next steps proactively.
-#     - "minimal"  — Minimal steering: agent follows user lead, only
-#                    intervenes when explicitly needed.
-#     - "none"     — No steering: purely reactive, no initiative.
-#   Default: "all"
+#     - "all"            — drain the entire queued message set in one go
+#     - "one-at-a-time" — dequeue one queued message per turn
+#   Upstream default: "one-at-a-time"
 steeringMode: "all"
 # followUpMode
-#   Whether the agent generates follow-up questions or suggestions after
-#   completing a task or response.
+#   How to drain follow-up messages after a turn completes.
 #   Type: string
-#   Options:
-#     - "all"       — Always offer follow-up suggestions relevant to the task.
-#     - "contextual" — Only suggest when the context clearly warrants it
-#                      (e.g., after a code change, suggest running tests).
-#     - "none"      — Never proactively suggest follow-ups.
-#   Default: "all"
+#   Options: all | one-at-a-time
+#   Upstream default: "one-at-a-time"
 followUpMode: "all"
 # interruptMode
-#   How the agent handles user input while mid-task.
+#   When steering messages interrupt tool execution.
 #   Type: string
-#   Options:
-#     - "immediate"  — Drop everything and respond right away. Fastest
-#                       response to interruption but may leave partial state.
-#     - "checkpoint"  — Finish the current logical step (e.g., finish writing
-#                       a file, complete a tool call) before responding.
-#     - "deferred"   — Queue the interruption, finish the full task, then
-#                       respond. Use when you want atomic task completion.
-#   Default: "immediate"
+#   Options: immediate | wait
+#   Upstream default: "immediate"
 interruptMode: "immediate"
 # doubleEscapeAction
-#   Action triggered by double-Escape key press (Escape within ~500ms of
-#   another Escape). This is the standard interrupt shortcut.
+#   Action when pressing Escape twice with an empty editor.
 #   Type: string
-#   Options:
-#     - "none"      — Do nothing (disable double-Escape).
-#     - "interrupt"  — Soft interrupt: signal the current task to stop,
-#                       allow graceful cleanup.
-#     - "stop"      — Hard stop: immediately terminate the current task,
-#                       do not clean up.
-#     - "suspend"   — Suspend the agent to background, return to idle.
-#   Default: "none" (double-Escape is disabled)
+#   Options: branch | tree | none
+#   Upstream default: "tree"
+#   This repo disables it explicitly.
 doubleEscapeAction: "none"
+# treeFilterMode
+#   Default filter mode when opening the session tree.
+#   Options: default | no-tools | user-only | labeled-only | all
 treeFilterMode: "default"
+# autocompleteMaxVisible
+#   Max visible items in the autocomplete dropdown (3-20 upstream).
 autocompleteMaxVisible: 5
 
 # =============================================================================
@@ -223,26 +240,38 @@ autocompleteMaxVisible: 5
 # =============================================================================
 startup:
   # quiet
-  #   Suppress the startup banner and welcome message.
+  #   Skip welcome screen and startup status messages.
   #   Type: boolean
-  #   Default: false (show banner)
-  #   Set to true for scripting, CI, or minimal-output workflows.
+  #   Upstream default: false (show banner)
   quiet: true
+  # checkUpdate
+  #   If false, skip update checks.
+  #   Upstream default: true
   checkUpdate: true
 
 completion:
+  # notify
+  #   Notify when the agent completes. Options: on | off.
   notify: "on"
 
 ask:
+  # timeout
+  #   Auto-select the recommended option after timeout; 0 disables timeout.
   timeout: 30
+  # notify
+  #   Notify when ask tool input is waiting. Options: on | off.
   notify: "on"
 
 stt:
+  # Speech-to-text input via microphone. Disabled by default in this repo.
   enabled: false
+  # Language code for transcription (for example: en, es, fr).
   language: "en"
+  # Whisper model size; larger models are slower but more accurate.
   modelName: "base.en"
 
 contextPromotion:
+  # Promote to a larger-context model on overflow instead of compacting.
   enabled: true
 
 # =============================================================================
@@ -303,17 +332,33 @@ contextPromotion:
 
 # --- Retry & Timeout ---------------------------------------------------------
 retry:
+  # enabled
+#   Enable API retries on transient failures.
   enabled: true
+  # maxRetries
+#   Maximum retry attempts on API errors. Upstream default: 3
   maxRetries: 3
+  # baseDelayMs
+#   Base delay between retries in milliseconds. Upstream default: 2000
   baseDelayMs: 2000
 
 # --- Compaction --------------------------------------------------------------
 compaction:
+  # enabled
+#   Automatically compact context when it gets too large.
   enabled: true
+  # strategy
+#   In-place context maintenance, auto-handoff, or disabled maintenance.
   strategy: "context-full"
+  # thresholdPercent / thresholdTokens
+#   `-1` keeps reserve-based behavior; explicit values enable threshold-based maintenance.
   thresholdPercent: -1
   thresholdTokens: -1
+  # handoffSaveToDisk
+#   Save generated handoff documents for the auto-handoff flow.
   handoffSaveToDisk: false
+  # remoteEnabled
+#   Prefer remote compaction endpoints when available.
   remoteEnabled: true
   reserveTokens: 16384
   keepRecentTokens: 20000
@@ -321,11 +366,13 @@ compaction:
   remoteEndpoint: null
 
 branchSummary:
+  # Prompt to summarize when leaving a branch.
   enabled: false
   reserveTokens: 16384
 
 # --- Memory & Context --------------------------------------------------------
 memories:
+  # Enable autonomous memory extraction and consolidation.
   enabled: false
   maxRolloutsPerStartup: 64
   maxRolloutAgeDays: 30
@@ -343,84 +390,111 @@ memories:
   summaryInjectionTokenLimit: 5000
 
 ttsr:
+  # Time Traveling Stream Rules: interrupt agent output when configured rules match.
   enabled: true
+  # contextMode
+#   What to do with partial output when TTSR triggers. Options: discard | keep
   contextMode: "discard"
+  # interruptMode
+#   When to interrupt mid-stream. Options: never | prose-only | tool-only | always
   interruptMode: "always"
+  # repeatMode / repeatGap
+#   Allow one trigger per session or retrigger after a message gap.
   repeatMode: "once"
   repeatGap: 10
 
 edit:
+  # Edit tool configuration: hashline mode with fuzzy matching enabled.
   mode: "hashline"
   fuzzyMatch: true
   fuzzyThreshold: 0.95
   streamingAbort: false
   blockAutoGenerated: true
 
+# Read tool rendering defaults.
 readLineNumbers: false
 readHashLines: true
 
 read:
+  # Default number of lines returned when read is called without a limit.
   defaultLimit: 300
 
 grep:
+  # Grep tool defaults.
   enabled: true
   contextBefore: 0
   contextAfter: 0
 
 find:
+  # File search tool.
   enabled: true
 
 astGrep:
+  # Structural AST search tool.
   enabled: true
 
 astEdit:
+  # Structural AST rewrite tool.
   enabled: true
 
 notebook:
+  # Notebook editing tool.
   enabled: true
 
 renderMermaid:
+  # Mermaid-to-ASCII rendering helper.
   enabled: false
 
 calc:
+  # Basic calculator tool.
   enabled: false
 
 inspect_image:
+  # Vision delegation helper for image understanding.
   enabled: false
 
 checkpoint:
+  # Context checkpointing / rewind tools.
   enabled: false
 
 fetch:
+  # URL fetching tool.
   enabled: true
 
 web_search:
+  # Web search tool.
   enabled: true
 
 browser:
+  # Browser automation tool (Ulixee Hero).
   enabled: true
   headless: true
 
 async:
+  # Background bash command execution.
   enabled: false
   maxJobs: 100
 
 lsp:
+  # Language Server Protocol integration.
   enabled: true
   formatOnWrite: false
   diagnosticsOnWrite: true
   diagnosticsOnEdit: false
 
 bashInterceptor:
+  # Block shell commands that have dedicated tools.
   enabled: false
   simpleLs: true
 
 python:
+  # Python execution path: both bash and IPython are available.
   toolMode: "both"
   kernelMode: "session"
   sharedGateway: true
 
 tools:
+  # Artifact spill controls and tool-call intent tracing.
   artifactSpillThreshold: 50
   artifactTailBytes: 20
   artifactTailLines: 500
@@ -428,13 +502,16 @@ tools:
   maxTimeout: 0
 
 terminal:
+  # Render images inline when terminal protocol support exists.
   showImages: true
 
 images:
+  # Resize large images for model compatibility and allow image input by default.
   autoResize: true
   blockImages: false
 
 mcp:
+  # Model Context Protocol project config and notification behavior.
   enableProjectConfig: true
   discoveryMode: false
   discoveryDefaultServers: []
@@ -446,9 +523,13 @@ mcp:
 # custom agents shown in the subagent dashboard.
 task:
   isolation:
+    # Isolation mode for subagents. `none` disables worktree/overlay isolation.
     mode: "none"
+    # How isolated task changes are reintegrated.
     merge: "patch"
+    # Commit message style for nested repo changes.
     commits: "generic"
+  # Encourage delegation only when it is materially useful.
   eager: false
   maxConcurrency: 32
   maxRecursionDepth: 2
@@ -468,15 +549,18 @@ task:
 # agents: {}
 
 tasks:
+  # How long to wait before auto-clearing completed/abandoned todos.
   todoClearDelay: 60
 
 todo:
+  # Enable todo_write task tracking and reminders.
   enabled: true
   reminders:
     max: 3
   eager: false
 
 skills:
+  # Skill loading toggles and custom directory filters.
   enabled: true
   enableSkillCommands: true
   enableCodexUser: true
@@ -489,13 +573,16 @@ skills:
   includeSkills: []
 
 commands:
+  # Load Claude user/project command directories.
   enableClaudeUser: true
   enableClaudeProject: true
 
 secrets:
+  # Obfuscate secrets before sending them to providers.
   enabled: false
 
 providers:
+  # Provider selection for search/image/fetch behavior.
   webSearch: "auto"
   codeSearch: "grep"
   image: "auto"
@@ -504,12 +591,14 @@ providers:
   parallelFetch: true
 
 exa:
+  # Exa provider feature toggles.
   enabled: true
   enableSearch: true
   enableResearcher: false
   enableWebsets: false
 
 commit:
+  # Map-reduce commit proposal settings.
   mapReduceEnabled: true
   mapReduceMinFiles: 4
   mapReduceMaxFileTokens: 50000
@@ -518,6 +607,7 @@ commit:
   changelogMaxDiffChars: 120000
 
 thinkingBudgets:
+  # Token budgets for reasoning levels.
   minimal: 1024
   low: 2048
   medium: 8192
