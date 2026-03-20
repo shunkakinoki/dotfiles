@@ -100,16 +100,17 @@ in
         # Only intercept keyd output — SUPER (CapsLock/RightAlt) goes straight to Hyprland
         deviceNames = [ "keyd virtual keyboard" ];
         config = {
-          virtual_modifiers = [ "Alt-Shift-Super" ];
           keymap = [
             {
+              # Ghostty: Framework+C/V → Ctrl+Shift+C/V (terminal convention: Ctrl+C = SIGINT)
               name = "Framework Command (Ghostty)";
               application.only = [ "com.mitchellh.ghostty" ];
               remap = ghosttyRemap;
             }
             {
+              # Global: no application filter — applies unconditionally so window detection
+              # failures don't cause raw Hyper events to leak through to apps (e.g. Slack).
               name = "Framework Command (Global)";
-              application.not = [ "com.mitchellh.ghostty" ];
               remap = globalRemap;
             }
           ];
