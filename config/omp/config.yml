@@ -23,7 +23,16 @@
 #   Type: string (semver, e.g. "13.13.2")
 #   Default: "0.0.0" (show all entries on first run)
 #   Increment this value to re-display a changelog entry to the user.
+#
+# The explicit current settings snapshot begins below.
+
 lastChangelogVersion: "13.13.2"
+shellPath: null
+extensions: []
+enabledModels: []
+disabledProviders: []
+disabledExtensions: []
+
 # =============================================================================
 # MODEL ROLES
 # =============================================================================
@@ -50,19 +59,20 @@ lastChangelogVersion: "13.13.2"
 #   cheap:   google/gemini-3-flash
 modelRoles:
   # [REQUIRED] Default model — fallback for all model selections.
-  default: openai-codex/gpt-5.4
+  default: "openai-codex/gpt-5.4"
   # Smaller / dumber model for cheap lightweight work.
-  smol: openai-codex/gpt-5.4-mini
+  smol: "openai-codex/gpt-5.4-mini"
   # Strongest model in the suite for hard tasks.
-  slow: openai-codex/gpt-5.4
+  slow: "openai-codex/gpt-5.4"
   # Keep vision on the main default model.
-  vision: openai-codex/gpt-5.4
+  vision: "openai-codex/gpt-5.4"
   # Planning / architecture model.
-  plan: openai-codex/gpt-5.4
+  plan: "openai-codex/gpt-5.4"
   # Commit message model.
-  commit: openai/gpt-5.4-nano
+  commit: "openai/gpt-5.4-nano"
   # Fast subagent path.
-  task: openai-codex/gpt-5.3-codex-spark
+  task: "openai-codex/gpt-5.3-codex-spark"
+
 # =============================================================================
 # DISPLAY
 # =============================================================================
@@ -73,6 +83,23 @@ display:
   #   Default: false
   #   Recommended: true for cost monitoring, false for reduced noise.
   showTokenUsage: true
+  tabWidth: 3
+
+showHardwareCursor: true
+clearOnShrink: false
+hideThinkingBlock: false
+repeatToolDescriptions: false
+collapseChangelog: false
+defaultThinkingLevel: "high"
+
+temperature: -1
+topP: -1
+topK: -1
+minP: -1
+presencePenalty: -1
+repetitionPenalty: -1
+serviceTier: "none"
+
 # =============================================================================
 # THEME
 # =============================================================================
@@ -90,12 +117,57 @@ theme:
   #     dark-nord      — Nord (cool blue-grey)
   #
   #   Light theme support depends on your terminal and harness config.
-  dark: dark-dracula
+  dark: "dark-dracula"
+  light: "light"
+
+symbolPreset: "unicode"
+colorBlindMode: false
+
+# =============================================================================
+# STATUS LINE
+# =============================================================================
+statusLine:
+  # preset
+  #   Pre-built status line configuration.
+  #   Type: string
+  #   Options: default | minimal | compact | full | nerd | ascii | custom
+  #   Use "custom" when defining leftSegments/rightSegments below.
+  preset: "custom"
+  # separator
+  #   Visual separator between status line segments.
+  #   Type: string
+  #   Options: powerline | powerline-thin | slash | pipe | block | none | ascii
+  separator: "powerline-thin"
+  # showHookStatus
+  #   Display hook status messages below the status line.
+  #   Type: boolean
+  showHookStatus: true
+  # leftSegments
+  #   Segments rendered on the left side of the status line.
+  #   Supported IDs include: pi, model, plan_mode, path, git, pr, subagents,
+  #   token_in, token_out, token_total, token_rate, cost, context_pct,
+  #   context_total, time_spent, time, session, hostname, cache_read, cache_write.
+  leftSegments:
+    - "pi"
+    - "model"
+    - "path"
+    - "git"
+  # rightSegments
+  #   Segments rendered on the right side of the status line.
+  rightSegments:
+    - "context_pct"
+    - "cost"
+    - "subagents"
+    - "time_spent"
+  # segmentOptions
+  #   Per-segment overrides. Keep empty until a concrete override is needed.
+  segmentOptions: {}
+
 # =============================================================================
 # INTERACTION MODES
 # =============================================================================
 # Control how the agent steers, follows up, and handles interruptions.
-
+#
 # steeringMode
 #   How actively the agent guides the conversation and takes initiative.
 #   Type: string
@@ -106,7 +178,7 @@ theme:
 #                    intervenes when explicitly needed.
 #     - "none"     — No steering: purely reactive, no initiative.
 #   Default: "all"
-steeringMode: all
+steeringMode: "all"
 # followUpMode
 #   Whether the agent generates follow-up questions or suggestions after
 #   completing a task or response.
@@ -117,7 +189,7 @@ steeringMode: all
 #                      (e.g., after a code change, suggest running tests).
 #     - "none"      — Never proactively suggest follow-ups.
 #   Default: "all"
-followUpMode: all
+followUpMode: "all"
 # interruptMode
 #   How the agent handles user input while mid-task.
 #   Type: string
@@ -129,7 +201,7 @@ followUpMode: all
 #     - "deferred"   — Queue the interruption, finish the full task, then
 #                       respond. Use when you want atomic task completion.
 #   Default: "immediate"
-interruptMode: immediate
+interruptMode: "immediate"
 # doubleEscapeAction
 #   Action triggered by double-Escape key press (Escape within ~500ms of
 #   another Escape). This is the standard interrupt shortcut.
@@ -142,7 +214,10 @@ interruptMode: immediate
 #                       do not clean up.
 #     - "suspend"   — Suspend the agent to background, return to idle.
 #   Default: "none" (double-Escape is disabled)
-doubleEscapeAction: none
+doubleEscapeAction: "none"
+treeFilterMode: "default"
+autocompleteMaxVisible: 5
+
 # =============================================================================
 # STARTUP BEHAVIOUR
 # =============================================================================
@@ -153,6 +228,22 @@ startup:
   #   Default: false (show banner)
   #   Set to true for scripting, CI, or minimal-output workflows.
   quiet: true
+  checkUpdate: true
+
+completion:
+  notify: "on"
+
+ask:
+  timeout: 30
+  notify: "on"
+
+stt:
+  enabled: false
+  language: "en"
+  modelName: "base.en"
+
+contextPromotion:
+  enabled: true
 
 # =============================================================================
 # ADVANCED FIELDS (uncomment to use)
@@ -211,50 +302,223 @@ startup:
 #   maxSize: 10485760
 
 # --- Retry & Timeout ---------------------------------------------------------
-# retry:
-#   # Maximum number of retries on transient errors (network, rate limit, etc.)
-#   # Default: 3
-#   maxAttempts: 3
-#
-#   # Base delay between retries (milliseconds).
-#   # Default: 1000
-#   baseDelay: 1000
-#
-#   # Timeout for a single model request (milliseconds).
-#   # Default: 120000 (2 minutes)
-#   requestTimeout: 120000
+retry:
+  enabled: true
+  maxRetries: 3
+  baseDelayMs: 2000
+
+# --- Compaction --------------------------------------------------------------
+compaction:
+  enabled: true
+  strategy: "context-full"
+  thresholdPercent: -1
+  thresholdTokens: -1
+  handoffSaveToDisk: false
+  remoteEnabled: true
+  reserveTokens: 16384
+  keepRecentTokens: 20000
+  autoContinue: true
+  remoteEndpoint: null
+
+branchSummary:
+  enabled: false
+  reserveTokens: 16384
 
 # --- Memory & Context --------------------------------------------------------
-# memory:
-#   # Enable workspace memory (persist notes between sessions).
-#   # Type: boolean
-#   # Default: true
-#   workspaceMemory: true
-#
-#   # Enable global memory (shared across all projects).
-#   # Type: boolean
-#   # Default: false
-#   globalMemory: false
-#
-#   # Maximum memory entries to retain.
-#   # Type: integer
-#   # Default: 1000
-#   maxEntries: 1000
+memories:
+  enabled: false
+  maxRolloutsPerStartup: 64
+  maxRolloutAgeDays: 30
+  minRolloutIdleHours: 12
+  threadScanLimit: 300
+  maxRawMemoriesForGlobal: 200
+  stage1Concurrency: 8
+  stage1LeaseSeconds: 120
+  stage1RetryDelaySeconds: 120
+  phase2LeaseSeconds: 180
+  phase2RetryDelaySeconds: 180
+  phase2HeartbeatSeconds: 30
+  rolloutPayloadPercent: 0.7
+  fallbackTokenLimit: 16000
+  summaryInjectionTokenLimit: 5000
+
+ttsr:
+  enabled: true
+  contextMode: "discard"
+  interruptMode: "always"
+  repeatMode: "once"
+  repeatGap: 10
+
+edit:
+  mode: "hashline"
+  fuzzyMatch: true
+  fuzzyThreshold: 0.95
+  streamingAbort: false
+  blockAutoGenerated: true
+
+readLineNumbers: false
+readHashLines: true
+
+read:
+  defaultLimit: 300
+
+grep:
+  enabled: true
+  contextBefore: 0
+  contextAfter: 0
+
+find:
+  enabled: true
+
+astGrep:
+  enabled: true
+
+astEdit:
+  enabled: true
+
+notebook:
+  enabled: true
+
+renderMermaid:
+  enabled: false
+
+calc:
+  enabled: false
+
+inspect_image:
+  enabled: false
+
+checkpoint:
+  enabled: false
+
+fetch:
+  enabled: true
+
+web_search:
+  enabled: true
+
+browser:
+  enabled: true
+  headless: true
+
+async:
+  enabled: false
+  maxJobs: 100
+
+lsp:
+  enabled: true
+  formatOnWrite: false
+  diagnosticsOnWrite: true
+  diagnosticsOnEdit: false
+
+bashInterceptor:
+  enabled: false
+  simpleLs: true
+
+python:
+  toolMode: "both"
+  kernelMode: "session"
+  sharedGateway: true
+
+tools:
+  artifactSpillThreshold: 50
+  artifactTailBytes: 20
+  artifactTailLines: 500
+  intentTracing: true
+  maxTimeout: 0
+
+terminal:
+  showImages: true
+
+images:
+  autoResize: true
+  blockImages: false
+
+mcp:
+  enableProjectConfig: true
+  discoveryMode: false
+  discoveryDefaultServers: []
+  notifications: false
+  notificationDebounceMs: 500
 
 # --- Task Agent Overrides ---------------------------------------------------
 # Override discovered agent model patterns by agent name. These names match the
 # custom agents shown in the subagent dashboard.
 task:
+  isolation:
+    mode: "none"
+    merge: "patch"
+    commits: "generic"
+  eager: false
+  maxConcurrency: 32
+  maxRecursionDepth: 2
+  disabledAgents: []
   agentModelOverrides:
-    code-architect: gpt-5.4
-    code-explorer: gpt-5.3-codex-spark
-    code-reviewer: gpt-5.4
-    code-simplifier: gpt-5.4
-    comment-analyzer: gpt-5.4-nano
-    pr-test-analyzer: gpt-5.4-mini
-    silent-failure-hunter: gpt-5.4
-    type-design-analyzer: gpt-5.4
+    code-architect: "gpt-5.4"
+    code-explorer: "gpt-5.3-codex-spark"
+    code-reviewer: "gpt-5.4"
+    code-simplifier: "gpt-5.4"
+    comment-analyzer: "gpt-5.4-nano"
+    pr-test-analyzer: "gpt-5.4-mini"
+    silent-failure-hunter: "gpt-5.4"
+    type-design-analyzer: "gpt-5.4"
 
 # --- Agent Definitions -------------------------------------------------------
 # Inline agent definitions (alternative to skill/agent files).
 # agents: {}
+
+tasks:
+  todoClearDelay: 60
+
+todo:
+  enabled: true
+  reminders:
+    max: 3
+  eager: false
+
+skills:
+  enabled: true
+  enableSkillCommands: true
+  enableCodexUser: true
+  enableClaudeUser: true
+  enableClaudeProject: true
+  enablePiUser: true
+  enablePiProject: true
+  customDirectories: []
+  ignoredSkills: []
+  includeSkills: []
+
+commands:
+  enableClaudeUser: true
+  enableClaudeProject: true
+
+secrets:
+  enabled: false
+
+providers:
+  webSearch: "auto"
+  codeSearch: "grep"
+  image: "auto"
+  kimiApiFormat: "anthropic"
+  openaiWebsockets: "auto"
+  parallelFetch: true
+
+exa:
+  enabled: true
+  enableSearch: true
+  enableResearcher: false
+  enableWebsets: false
+
+commit:
+  mapReduceEnabled: true
+  mapReduceMinFiles: 4
+  mapReduceMaxFileTokens: 50000
+  mapReduceTimeoutMs: 120000
+  mapReduceMaxConcurrency: 5
+  changelogMaxDiffChars: 120000
+
+thinkingBudgets:
+  minimal: 1024
+  low: 2048
+  medium: 8192
+  high: 16384
