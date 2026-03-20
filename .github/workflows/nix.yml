@@ -100,6 +100,18 @@ jobs:
           NIX_CONFIG_TARGET: nixos
           HOST: matic
         run: make build
+  nix-lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Lint Nix Files
+        run: make nix-lint
   nix-test:
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -118,6 +130,7 @@ jobs:
       - nix-darwin
       - nix-flake
       - nix-format
+      - nix-lint
       - nix-linux
       - nix-nixos
       - nix-test

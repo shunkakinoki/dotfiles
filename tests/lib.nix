@@ -61,7 +61,7 @@ in
 
   lib-nixpkgs-config = pkgs.runCommand "lib-nixpkgs-config" { } ''
     ${
-      if nixpkgsConfig ? allowUnfree && nixpkgsConfig.allowUnfree == true then
+      if nixpkgsConfig ? allowUnfree && nixpkgsConfig.allowUnfree then
         ''echo "lib/nixpkgs-config.nix: allowUnfree is true"''
       else
         ''echo "FAIL: allowUnfree must be true" && exit 1''

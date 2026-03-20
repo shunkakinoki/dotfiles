@@ -14,7 +14,7 @@ let
 
   # Install script with tool paths substituted
   installYekScript = pkgs.replaceVars ./install-yek.sh {
-    target = target;
+    inherit target;
     curl = "${pkgs.curl}/bin/curl";
     grep = "${pkgs.gnugrep}/bin/grep";
     cut = "${pkgs.coreutils}/bin/cut";
@@ -27,7 +27,7 @@ let
   installScript = pkgs.writeScriptBin "install-yek" (
     builtins.readFile (
       pkgs.replaceVars ./install-yek-shim.sh {
-        bash = pkgs.bash;
+        inherit (pkgs) bash;
         install_yek_script = installYekScript;
       }
     )
@@ -42,7 +42,7 @@ let
   yekWrapper = pkgs.writeScriptBin "yek" (
     builtins.readFile (
       pkgs.replaceVars ./yek-shim.sh {
-        bash = pkgs.bash;
+        inherit (pkgs) bash;
         yek_wrapper_script = yekWrapperScript;
       }
     )

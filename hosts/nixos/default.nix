@@ -99,7 +99,7 @@ let
 in
 nixpkgs.lib.nixosSystem {
   inherit system;
-  lib = nixpkgs.lib;
+  inherit (nixpkgs) lib;
   specialArgs = {
     inherit username isRunner;
   };
@@ -125,8 +125,8 @@ nixpkgs.lib.nixosSystem {
       home-manager.useUserPackages = true;
       home-manager.users."${username}" = import ../../home-manager {
         inherit inputs username;
-        lib = nixpkgs.lib;
-        pkgs = pkgs;
+        inherit (nixpkgs) lib;
+        inherit pkgs;
         config = { };
       };
     }

@@ -9,7 +9,7 @@ let
   homeDir = config.home.homeDirectory;
 in
 # Only enable on kyber (gateway host)
-lib.mkIf (host.isKyber) {
+lib.mkIf host.isKyber {
   # Ensure OpenClaw directories exist with correct permissions
   home.activation.openclawSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p /tmp/openclaw

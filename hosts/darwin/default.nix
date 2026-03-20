@@ -19,13 +19,11 @@ let
     inherit system overlays;
     config = nixpkgsConfig;
   };
-  configuration =
-    { ... }:
-    {
-      networking.hostName = hostname;
-      users.users.${username}.home = "/Users/${username}";
-      system.stateVersion = 4;
-    };
+  configuration = _: {
+    networking.hostName = hostname;
+    users.users.${username}.home = "/Users/${username}";
+    system.stateVersion = 4;
+  };
 in
 {
   specialArgs = {
@@ -55,7 +53,7 @@ in
       home-manager.useUserPackages = true;
       home-manager.users."${username}" = import ../../home-manager {
         inherit inputs username pkgs;
-        lib = pkgs.lib;
+        inherit (pkgs) lib;
         config = { };
       };
     }

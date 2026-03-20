@@ -141,35 +141,35 @@
     plugins = [
       {
         name = "autopair";
-        src = pkgs.fishPlugins.autopair-fish.src;
+        inherit (pkgs.fishPlugins.autopair-fish) src;
       }
       {
         name = "colored-man-pages";
-        src = pkgs.fishPlugins.colored-man-pages.src;
+        inherit (pkgs.fishPlugins.colored-man-pages) src;
       }
       {
         name = "done";
-        src = pkgs.fishPlugins.done.src;
+        inherit (pkgs.fishPlugins.done) src;
       }
       {
         name = "fzf";
-        src = pkgs.fishPlugins.fzf.src;
+        inherit (pkgs.fishPlugins.fzf) src;
       }
       {
         name = "fzf-fish";
-        src = pkgs.fishPlugins.fzf-fish.src;
+        inherit (pkgs.fishPlugins.fzf-fish) src;
       }
       {
         name = "grc";
-        src = pkgs.fishPlugins.grc.src;
+        inherit (pkgs.fishPlugins.grc) src;
       }
       {
         name = "puffer";
-        src = pkgs.fishPlugins.puffer.src;
+        inherit (pkgs.fishPlugins.puffer) src;
       }
       {
         name = "sponge";
-        src = pkgs.fishPlugins.sponge.src;
+        inherit (pkgs.fishPlugins.sponge) src;
       }
     ];
   };

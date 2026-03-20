@@ -4,8 +4,7 @@ let
   dockerServiceFile = pkgs.writeText "docker.service" (
     builtins.readFile (
       pkgs.replaceVars ./docker.service {
-        docker = pkgs.docker;
-        coreutils = pkgs.coreutils;
+        inherit (pkgs) docker coreutils;
       }
     )
   );
@@ -14,10 +13,12 @@ let
   setupDockerScript = pkgs.writeShellScript "setup-docker" (
     builtins.readFile (
       pkgs.replaceVars ./setup-docker.sh {
-        shadow = pkgs.shadow;
-        gnugrep = pkgs.gnugrep;
-        systemd = pkgs.systemd;
-        coreutils = pkgs.coreutils;
+        inherit (pkgs)
+          shadow
+          gnugrep
+          systemd
+          coreutils
+          ;
         docker_service_file = dockerServiceFile;
       }
     )

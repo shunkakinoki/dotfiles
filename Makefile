@@ -151,6 +151,7 @@ check: ## Run all validation checks (nix, format, lua).
 	@echo "🔍 Running all validation checks..."
 	@$(MAKE) nix-flake-check
 	@$(MAKE) nix-format-check
+	@$(MAKE) nix-lint
 	@$(MAKE) lua-check
 	@echo "✅ All checks passed"
 
@@ -396,6 +397,12 @@ nix-format-check: nix-format-clear-cache ## Check Nix file formatting.
 	@echo "🔍 Checking Nix file formatting..."
 	@$(NIX_EXEC) fmt -- --fail-on-change
 	@echo "✅ All Nix files are properly formatted"
+
+.PHONY: nix-lint
+nix-lint: ## Lint Nix files with statix.
+	@echo "🔍 Linting Nix files with statix..."
+	@$(NIX_EXEC) run nixpkgs#statix -- check .
+	@echo "✅ All Nix files pass lint checks"
 
 .PHONY: nix-switch
 nix-switch: ## Activate Nix configuration.

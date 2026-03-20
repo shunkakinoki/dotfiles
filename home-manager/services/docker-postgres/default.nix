@@ -9,9 +9,9 @@ let
   startPostgresWrapper = pkgs.writeShellScript "start-postgres-wrapper" (
     builtins.readFile (
       pkgs.replaceVars ./start-postgres-wrapper.sh {
-        bash = pkgs.bash;
+        inherit (pkgs) bash;
         start_script = startScript;
-        docker = pkgs.docker;
+        inherit (pkgs) docker;
       }
     )
   );

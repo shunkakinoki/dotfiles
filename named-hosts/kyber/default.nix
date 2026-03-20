@@ -14,7 +14,7 @@ let
     inherit system overlays;
     config = nixpkgsConfig;
   };
-  lib = pkgs.lib;
+  inherit (pkgs) lib;
 in
 home-manager.lib.homeManagerConfiguration {
   inherit pkgs;
@@ -28,7 +28,7 @@ home-manager.lib.homeManagerConfiguration {
       { config, lib, ... }:
       {
         home = {
-          username = username;
+          inherit username;
           homeDirectory = lib.mkForce "/home/${username}";
           activation.backupExistingFiles = lib.mkForce {
             before = [ "checkLinkTargets" ];
@@ -50,7 +50,7 @@ home-manager.lib.homeManagerConfiguration {
         age.secrets = builtins.mapAttrs (
           name: value:
           {
-            file = value.file;
+            inherit (value) file;
           }
           // (
             if name == "keys/id_github.age" then
