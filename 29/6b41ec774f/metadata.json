@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "296b41ec774f",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "AGENTS.md",
+    "config/omp/config.tpl.yml",
+    "config/omp/config.yml",
+    "config/omp/default.nix"
+  ],
+  "sessions": [
+    {
+      "metadata": "/29/6b41ec774f/0/metadata.json",
+      "transcript": "/29/6b41ec774f/0/full.jsonl",
+      "content_hash": "/29/6b41ec774f/0/content_hash.txt",
+      "prompt": "/29/6b41ec774f/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 601,
+    "cache_creation_tokens": 62262,
+    "cache_read_tokens": 391740,
+    "output_tokens": 1814,
+    "api_call_count": 9
+  }
+}

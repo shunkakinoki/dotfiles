@@ -1,0 +1,1 @@
+openclaw's cliproxyapi is not using opencode go endpoint search and edit
