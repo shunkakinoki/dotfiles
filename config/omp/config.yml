@@ -38,7 +38,6 @@ extensions: []
 enabledModels: []
 disabledProviders: []
 disabledExtensions: []
-
 # =============================================================================
 # MODEL ROLES
 # =============================================================================
@@ -77,7 +76,6 @@ modelRoles:
   commit: "openai/gpt-5.4-nano"
   # Fast subagent path.
   task: "openai-codex/gpt-5.3-codex-spark"
-
 # =============================================================================
 # DISPLAY
 # =============================================================================
@@ -92,7 +90,6 @@ display:
   #   Type: integer
   #   Upstream default: 3
   tabWidth: 3
-
 # showHardwareCursor
 #   Show terminal cursor for IME support.
 #   Upstream default: true (computed by platform if unset)
@@ -117,7 +114,6 @@ collapseChangelog: false
 #   Reasoning depth for thinking-capable models.
 #   Upstream default: high
 defaultThinkingLevel: "high"
-
 # Sampling and provider knobs. `-1` keeps provider defaults.
 temperature: -1
 topP: -1
@@ -128,7 +124,6 @@ repetitionPenalty: -1
 # serviceTier
 #   OpenAI processing priority. `none` omits the parameter entirely.
 serviceTier: "none"
-
 # =============================================================================
 # THEME
 # =============================================================================
@@ -144,7 +139,6 @@ theme:
   #   Type: string (theme name)
   #   Upstream schema default: "light"
   light: "light"
-
 # symbolPreset
 #   Icon/symbol style for the UI. Options: unicode | nerd | ascii.
 #   Upstream default: unicode
@@ -153,7 +147,6 @@ symbolPreset: "unicode"
 #   Use blue instead of green for diff additions.
 #   Upstream default: false
 colorBlindMode: false
-
 # =============================================================================
 # STATUS LINE
 # =============================================================================
@@ -193,7 +186,6 @@ statusLine:
   # segmentOptions
   #   Per-segment overrides. Keep empty until a concrete override is needed.
   segmentOptions: {}
-
 # =============================================================================
 # INTERACTION MODES
 # =============================================================================
@@ -233,7 +225,6 @@ treeFilterMode: "default"
 # autocompleteMaxVisible
 #   Max visible items in the autocomplete dropdown (3-20 upstream).
 autocompleteMaxVisible: 5
-
 # =============================================================================
 # STARTUP BEHAVIOUR
 # =============================================================================
@@ -247,12 +238,10 @@ startup:
   #   If false, skip update checks.
   #   Upstream default: true
   checkUpdate: true
-
 completion:
   # notify
   #   Notify when the agent completes. Options: on | off.
   notify: "on"
-
 ask:
   # timeout
   #   Auto-select the recommended option after timeout; 0 disables timeout.
@@ -260,7 +249,6 @@ ask:
   # notify
   #   Notify when ask tool input is waiting. Options: on | off.
   notify: "on"
-
 stt:
   # Speech-to-text input via microphone. Disabled by default in this repo.
   enabled: false
@@ -268,11 +256,9 @@ stt:
   language: "en"
   # Whisper model size; larger models are slower but more accurate.
   modelName: "base.en"
-
 contextPromotion:
   # Promote to a larger-context model on overflow instead of compacting.
   enabled: true
-
 # =============================================================================
 # ADVANCED FIELDS (uncomment to use)
 # =============================================================================
@@ -302,43 +288,46 @@ contextPromotion:
 # --- Retry & Timeout ---------------------------------------------------------
 retry:
   # enabled
-#   Enable API retries on transient failures.
+  #   Enable API retries on transient failures.
   enabled: true
   # maxRetries
-#   Maximum retry attempts on API errors. Upstream default: 3
+
+  #   Maximum retry attempts on API errors. Upstream default: 3
   maxRetries: 3
   # baseDelayMs
-#   Base delay between retries in milliseconds. Upstream default: 2000
-  baseDelayMs: 2000
 
+  #   Base delay between retries in milliseconds. Upstream default: 2000
+  baseDelayMs: 2000
 # --- Compaction --------------------------------------------------------------
 compaction:
   # enabled
-#   Automatically compact context when it gets too large.
+  #   Automatically compact context when it gets too large.
   enabled: true
   # strategy
-#   In-place context maintenance, auto-handoff, or disabled maintenance.
+
+  #   In-place context maintenance, auto-handoff, or disabled maintenance.
   strategy: "context-full"
   # thresholdPercent / thresholdTokens
-#   `-1` keeps reserve-based behavior; explicit values enable threshold-based maintenance.
+
+  #   `-1` keeps reserve-based behavior; explicit values enable threshold-based maintenance.
   thresholdPercent: -1
   thresholdTokens: -1
   # handoffSaveToDisk
-#   Save generated handoff documents for the auto-handoff flow.
+
+  #   Save generated handoff documents for the auto-handoff flow.
   handoffSaveToDisk: false
   # remoteEnabled
-#   Prefer remote compaction endpoints when available.
+
+  #   Prefer remote compaction endpoints when available.
   remoteEnabled: true
   reserveTokens: 16384
   keepRecentTokens: 20000
   autoContinue: true
   remoteEndpoint: null
-
 branchSummary:
   # Prompt to summarize when leaving a branch.
   enabled: false
   reserveTokens: 16384
-
 # --- Memory & Context --------------------------------------------------------
 memories:
   # Enable autonomous memory extraction and consolidation.
@@ -357,21 +346,22 @@ memories:
   rolloutPayloadPercent: 0.7
   fallbackTokenLimit: 16000
   summaryInjectionTokenLimit: 5000
-
 ttsr:
   # Time Traveling Stream Rules: interrupt agent output when configured rules match.
   enabled: true
   # contextMode
-#   What to do with partial output when TTSR triggers. Options: discard | keep
+
+  #   What to do with partial output when TTSR triggers. Options: discard | keep
   contextMode: "discard"
   # interruptMode
-#   When to interrupt mid-stream. Options: never | prose-only | tool-only | always
+
+  #   When to interrupt mid-stream. Options: never | prose-only | tool-only | always
   interruptMode: "always"
   # repeatMode / repeatGap
-#   Allow one trigger per session or retrigger after a message gap.
+
+  #   Allow one trigger per session or retrigger after a message gap.
   repeatMode: "once"
   repeatGap: 10
-
 edit:
   # Edit tool configuration: hashline mode with fuzzy matching enabled.
   mode: "hashline"
@@ -379,89 +369,70 @@ edit:
   fuzzyThreshold: 0.95
   streamingAbort: false
   blockAutoGenerated: true
-
 # Read tool rendering defaults.
 readLineNumbers: false
 readHashLines: true
-
 read:
   # Default number of lines returned when read is called without a limit.
   defaultLimit: 300
-
 grep:
   # Grep tool defaults.
   enabled: true
   contextBefore: 0
   contextAfter: 0
-
 find:
   # File search tool.
   enabled: true
-
 astGrep:
   # Structural AST search tool.
   enabled: true
-
 astEdit:
   # Structural AST rewrite tool.
   enabled: true
-
 notebook:
   # Notebook editing tool.
   enabled: true
-
 renderMermaid:
   # Mermaid-to-ASCII rendering helper.
   enabled: false
-
 calc:
   # Basic calculator tool.
   enabled: false
-
 inspect_image:
   # Vision delegation helper for image understanding.
   enabled: false
-
 checkpoint:
   # Context checkpointing / rewind tools.
   enabled: false
-
 fetch:
   # URL fetching tool.
   enabled: true
-
 web_search:
   # Web search tool.
   enabled: true
-
 browser:
   # Browser automation tool (Ulixee Hero).
   enabled: true
   headless: true
-
 async:
   # Background bash command execution.
   enabled: false
   maxJobs: 100
-
 lsp:
   # Language Server Protocol integration.
   enabled: true
   formatOnWrite: false
   diagnosticsOnWrite: true
   diagnosticsOnEdit: false
-
 bashInterceptor:
   # Block shell commands that have dedicated tools.
   enabled: false
   simpleLs: true
-
 python:
   # Python execution path: both bash and IPython are available.
   toolMode: "both"
   kernelMode: "session"
   sharedGateway: true
-
 tools:
   # Artifact spill controls and tool-call intent tracing.
   artifactSpillThreshold: 50
@@ -469,16 +440,13 @@ tools:
   artifactTailLines: 500
   intentTracing: true
   maxTimeout: 0
-
 terminal:
   # Render images inline when terminal protocol support exists.
   showImages: true
-
 images:
   # Resize large images for model compatibility and allow image input by default.
   autoResize: true
   blockImages: false
-
 mcp:
   # Model Context Protocol project config and notification behavior.
   enableProjectConfig: true
@@ -486,7 +454,6 @@ mcp:
   discoveryDefaultServers: []
   notifications: false
   notificationDebounceMs: 500
-
 # --- Task Agent Overrides ---------------------------------------------------
 # Override discovered agent model patterns by agent name. These names match the
 # custom agents shown in the subagent dashboard.
@@ -512,22 +479,18 @@ task:
     pr-test-analyzer: "gpt-5.4-mini"
     silent-failure-hunter: "gpt-5.4"
     type-design-analyzer: "gpt-5.4"
-
 # --- Agent Definitions -------------------------------------------------------
 # Inline agent definitions (alternative to skill/agent files).
 # agents: {}
-
 tasks:
   # How long to wait before auto-clearing completed/abandoned todos.
   todoClearDelay: 60
-
 todo:
   # Enable the todo_write task-tracking tool.
   enabled: true
   reminders:
     max: 3
   eager: false
-
 skills:
   # Skill loading toggles and custom directory filters.
   enabled: true
@@ -540,16 +503,13 @@ skills:
   customDirectories: []
   ignoredSkills: []
   includeSkills: []
-
 commands:
   # Load Claude user/project command directories.
   enableClaudeUser: true
   enableClaudeProject: true
-
 secrets:
   # Obfuscate secrets before sending them to providers.
   enabled: false
-
 providers:
   # Provider selection for search/image/fetch behavior.
   webSearch: "auto"
@@ -558,14 +518,12 @@ providers:
   kimiApiFormat: "anthropic"
   openaiWebsockets: "auto"
   parallelFetch: true
-
 exa:
   # Exa provider feature toggles.
   enabled: true
   enableSearch: true
   enableResearcher: false
   enableWebsets: false
-
 commit:
   # Map-reduce commit proposal settings.
   mapReduceEnabled: true
@@ -574,7 +532,6 @@ commit:
   mapReduceTimeoutMs: 120000
   mapReduceMaxConcurrency: 5
   changelogMaxDiffChars: 120000
-
 thinkingBudgets:
   # Token budgets for reasoning levels.
   minimal: 1024
