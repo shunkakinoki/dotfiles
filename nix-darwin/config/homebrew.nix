@@ -41,6 +41,7 @@
       "jjui"
       "kimi-cli"
       "kurtosis-cli"
+      "mactop"
       "mas"
       "mlx-lm"
       "opencode"
