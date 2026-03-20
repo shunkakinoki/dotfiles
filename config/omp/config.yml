@@ -1,13 +1,164 @@
-lastChangelogVersion: 13.13.2
+# =============================================================================
+# Oh My Pi — Agent Configuration
+# =============================================================================
+# This file is the runtime configuration for the Oh My Pi agent harness.
+# It is symlinked to ~/.omp/agent/config.yml by the Nix module in
+# config/omp/default.nix (if present), or by your shell's activation hook.
+#
+# CONFIGURATION REFERENCE
+# ----------------------------------------------------------------------
+# All fields are optional unless marked REQUIRED.
+# Unset fields fall back to the harness defaults.
+#
+# For the template (with inline docs), see config.tpl.yml.
+# =============================================================================
+
+# =============================================================================
+# CHANGELOG TRACKING
+# =============================================================================
+
+# lastChangelogVersion
+#   Tracks which changelog version was last shown to the user.
+#   Increment this to re-display the changelog entry for a given version.
+#   The harness compares this against CHANGELOG.md (if present) and shows
+#   new entries since this version.
+lastChangelogVersion: "13.13.2"
+
+# =============================================================================
+# MODEL ROLES
+# =============================================================================
+# Defines which AI model to use for each operational role.
+# Each key is a role name; the value is a model identifier in the format:
+#   "<provider>/<model>"
+#
+# Built-in roles (must be defined):
+#   - default    : The fallback model for general tasks.
+#
+# Custom roles:
+#   - You may define additional roles (e.g., fast, slow, cheap, reasoning)
+#     and reference them in commands, skills, or agent definitions.
+#
+# Available providers and models depend on your connected providers.
+# Common formats:
+#   - "anthropic/claude-sonnet-4"   — Anthropic models
+#   - "openai/gpt-5.4"             — OpenAI models
+#   - "google/gemini-3-pro"        — Google models
+#   - "codex/__GPT__"              — Codex (uses current ChatGPT model)
+#   - "codex/gpt-5.4"              — Codex with specific model
+#
+# NOTE: The model identifier format varies by provider plugin. Check your
+#       provider's documentation for the exact format.
 modelRoles:
+  # REQUIRED. The default model used when no role is specified.
   default: codex/gpt-5.4
+
+# =============================================================================
+# DISPLAY
+# =============================================================================
+# Controls UI / terminal output behaviour.
+
 display:
+  # showTokenUsage
+  #   When true, display token usage stats after each model response.
+  #   Useful for monitoring context window pressure and cost.
+  #   Type: boolean (true | false)
   showTokenUsage: true
+
+# =============================================================================
+# THEME
+# =============================================================================
+# Sets the visual theme for the terminal UI.
+
 theme:
+  # dark
+  #   The dark theme variant to use.
+  #   Available themes depend on your installation; common options include:
+  #   - "dark-dracula"    — Dracula-inspired dark theme
+  #   - "dark-one"         — One Dark
+  #   - "dark-gruvbox"     — Gruvbox dark
+  #   - "dark-catppuccin"  — Catppuccin Mocha
+  #
+  #   Run `omp theme list` or check your theme documentation to see
+  #   all available themes.
   dark: dark-dracula
+
+# =============================================================================
+# INTERACTION MODES
+# =============================================================================
+# These settings control how the agent responds to user input, steers
+# conversations, and handles interruptions.
+
+# steeringMode
+#   Controls how the agent interprets and follows user intent.
+#   Options:
+#     - "all"      — Full steering (agent actively guides conversation)
+#     - "minimal"  — Minimal steering (agent follows, less initiative)
+#     - "none"     — No steering (purely reactive)
 steeringMode: all
+
+# followUpMode
+#   Controls whether the agent generates follow-up questions or suggestions.
+#   Options:
+#     - "all"       — Always suggest follow-ups
+#     - "contextual" — Only suggest when context warrants
+#     - "none"      — Never suggest follow-ups
 followUpMode: all
+
+# interruptMode
+#   Controls how the agent handles user interruptions mid-task.
+#   Options:
+#     - "immediate" — Stop current action and respond right away
+#     - "checkpoint" — Finish current logical step before responding
+#     - "deferred"  — Queue the interruption, respond after current task
 interruptMode: immediate
+
+# doubleEscapeAction
+#   Action triggered when the user presses Escape twice in quick succession.
+#   This is a keyboard shortcut for cancelling or interrupting the agent.
+#   Options:
+#     - "none"      — Do nothing
+#     - "interrupt"  — Send interrupt signal (equivalent to Ctrl+C)
+#     - "stop"      — Hard stop (kill current task)
+#     - "suspend"   — Suspend and return to idle state
 doubleEscapeAction: none
+
+# =============================================================================
+# STARTUP BEHAVIOUR
+# =============================================================================
+
 startup:
+  # quiet
+  #   When true, suppress the startup banner and welcome message.
+  #   When false, show the full startup output (version, model, etc.).
+  #   Type: boolean (true | false)
   quiet: true
+
+# =============================================================================
+# ADDITIONAL CONFIGURATION
+# =============================================================================
+# The fields above cover the most common settings. For advanced
+# configuration options, see the Oh My Pi documentation or the
+# full config.tpl.yml template which includes every available field
+# with inline documentation.
+#
+# Common advanced fields you may want to add:
+#
+#   # Provider API keys (set via environment variables instead for security):
+#   # env:
+#   #   OPENAI_API_KEY: ...
+#   #   ANTHROPIC_API_KEY: ...
+#
+#   # Tool permissions / restrictions:
+#   # toolPolicy:
+#   #   allowed: [read, grep, bash]
+#   #   denied:  [write, delete]
+#
+#   # Context limits:
+#   # context:
+#   #   maxTokens: 100000
+#   #   maxTurns: 50
+#
+#   # Logging:
+#   # logging:
+#   #   level: info   # debug | info | warn | error
+#   #   file: ~/.omp/logs/agent.log

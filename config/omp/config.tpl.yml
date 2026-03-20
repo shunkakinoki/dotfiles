@@ -1,13 +1,248 @@
-lastChangelogVersion: 13.13.2
+# =============================================================================
+# Oh My Pi — Configuration Template
+# =============================================================================
+# This is the annotated reference template for config.yml.
+# It shows every available configuration field with documentation.
+# Copy values from here into config.yml to override defaults.
+#
+# Fields marked [REQUIRED] must be present in config.yml.
+# All other fields are optional and fall back to harness defaults.
+#
+# =============================================================================
+# HOW TO USE THIS FILE
+# =============================================================================
+# 1. Edit config.yml (your actual settings) — this file is read-only reference.
+# 2. Copy any field from this template into config.yml to override the default.
+# 3. Run `omp config validate` to check your config.yml for errors.
+# =============================================================================
+
+# =============================================================================
+# CHANGELOG TRACKING
+# =============================================================================
+
+# lastChangelogVersion
+#   Track the last changelog version shown to the user.
+#   Type: string (semver, e.g. "13.13.2")
+#   Default: "0.0.0" (show all entries on first run)
+#   Increment this value to re-display a changelog entry to the user.
+lastChangelogVersion: "13.13.2"
+
+# =============================================================================
+# MODEL ROLES
+# =============================================================================
+# Map of role name -> model identifier.
+# Each role is a named model configuration you can reference in skills,
+# commands, or agent definitions.
+#
+# Model identifier format: "<provider>/<model>"
+#
+# Common providers:
+#   anthropic  — Claude models (claude-sonnet-4, claude-opus-4, etc.)
+#   openai     — OpenAI models (gpt-5.4, gpt-4o, etc.)
+#   google     — Gemini models (gemini-3-pro, gemini-3-flash, etc.)
+#   codex      — OpenAI Codex (ChatGPT, gpt-5.4, etc.)
+#   deepseek   — DeepSeek models
+#   mistral    — Mistral models
+#   groove     — Groq models
+#   openrouter — OpenRouter (access to many models)
+#
+# Examples:
+#   default: openai/gpt-5.4
+#   fast:    openai/gpt-4o-mini
+#   slow:    anthropic/claude-opus-4
+#   cheap:   google/gemini-3-flash
 modelRoles:
+  # [REQUIRED] The default model used when no role is specified.
+  # This is the fallback for all model selections.
   default: codex/__GPT__
+
+# =============================================================================
+# DISPLAY
+# =============================================================================
+
 display:
+  # showTokenUsage
+  #   Display token count and cost estimate after each model response.
+  #   Type: boolean
+  #   Default: false
+  #   Recommended: true for cost monitoring, false for reduced noise.
   showTokenUsage: true
+
+# =============================================================================
+# THEME
+# =============================================================================
+
 theme:
+  # dark
+  #   Dark theme variant for the terminal UI.
+  #   Type: string (theme name)
+  #   Default: "dark-dracula"
+  #
+  #   Common themes:
+  #     dark-dracula   — Dracula (purple/pink accents)
+  #     dark-one       — One Dark (blue/green accents)
+  #     dark-gruvbox   — Gruvbox (warm retro colors)
+  #     dark-catppuccin — Catppuccin Mocha
+  #     dark-nord      — Nord (cool blue-grey)
+  #
+  #   Light theme support depends on your terminal and harness config.
   dark: dark-dracula
+
+# =============================================================================
+# INTERACTION MODES
+# =============================================================================
+# Control how the agent steers, follows up, and handles interruptions.
+
+# steeringMode
+#   How actively the agent guides the conversation and takes initiative.
+#   Type: string
+#   Options:
+#     - "all"      — Full steering: agent proposes directions, asks clarifying
+#                    questions, suggests next steps proactively.
+#     - "minimal"  — Minimal steering: agent follows user lead, only
+#                    intervenes when explicitly needed.
+#     - "none"     — No steering: purely reactive, no initiative.
+#   Default: "all"
 steeringMode: all
+
+# followUpMode
+#   Whether the agent generates follow-up questions or suggestions after
+#   completing a task or response.
+#   Type: string
+#   Options:
+#     - "all"       — Always offer follow-up suggestions relevant to the task.
+#     - "contextual" — Only suggest when the context clearly warrants it
+#                      (e.g., after a code change, suggest running tests).
+#     - "none"      — Never proactively suggest follow-ups.
+#   Default: "all"
 followUpMode: all
+
+# interruptMode
+#   How the agent handles user input while mid-task.
+#   Type: string
+#   Options:
+#     - "immediate"  — Drop everything and respond right away. Fastest
+#                       response to interruption but may leave partial state.
+#     - "checkpoint"  — Finish the current logical step (e.g., finish writing
+#                       a file, complete a tool call) before responding.
+#     - "deferred"   — Queue the interruption, finish the full task, then
+#                       respond. Use when you want atomic task completion.
+#   Default: "immediate"
 interruptMode: immediate
+
+# doubleEscapeAction
+#   Action triggered by double-Escape key press (Escape within ~500ms of
+#   another Escape). This is the standard interrupt shortcut.
+#   Type: string
+#   Options:
+#     - "none"      — Do nothing (disable double-Escape).
+#     - "interrupt"  — Soft interrupt: signal the current task to stop,
+#                       allow graceful cleanup.
+#     - "stop"      — Hard stop: immediately terminate the current task,
+#                       do not clean up.
+#     - "suspend"   — Suspend the agent to background, return to idle.
+#   Default: "none" (double-Escape is disabled)
 doubleEscapeAction: none
+
+# =============================================================================
+# STARTUP BEHAVIOUR
+# =============================================================================
+
 startup:
+  # quiet
+  #   Suppress the startup banner and welcome message.
+  #   Type: boolean
+  #   Default: false (show banner)
+  #   Set to true for scripting, CI, or minimal-output workflows.
   quiet: true
+
+# =============================================================================
+# ADVANCED FIELDS (uncomment to use)
+# =============================================================================
+# The fields below are not set by default. Uncomment and configure as needed.
+
+# --- Context Limits -----------------------------------------------------------
+# Limits on context window and conversation length.
+# context:
+#   # Maximum tokens in the context window (input + output).
+#   # Type: integer
+#   # Default: Provider limit (e.g., 200k for GPT-5.4)
+#   # Use lower values to cap cost or force more aggressive summarization.
+#   maxTokens: 100000
+#
+#   # Maximum number of conversation turns before forcing a summary or reset.
+#   # Type: integer
+#   # Default: unlimited
+#   maxTurns: 50
+
+# --- Tool Policy -------------------------------------------------------------
+# Restrict which tools the agent is allowed to use.
+# Use this for safety, testing, or sandboxed environments.
+# toolPolicy:
+#   # Tools the agent is allowed to call.
+#   # Type: array of tool names
+#   # Examples: [read, grep, bash] | [read, write] | all
+#   allowed: []
+#
+#   # Tools the agent is explicitly forbidden from using.
+#   # Takes precedence over 'allowed'.
+#   # Type: array of tool names
+#   denied: []
+
+# --- Provider Credentials -----------------------------------------------------
+# API keys for model providers. It is STRONGLY recommended to set these via
+# environment variables instead of in this file, to avoid accidental commit.
+# env:
+#   OPENAI_API_KEY: ""
+#   ANTHROPIC_API_KEY: ""
+#   GOOGLE_API_KEY: ""
+#   DEEPSEEK_API_KEY: ""
+
+# --- Logging -----------------------------------------------------------------
+# logging:
+#   # Log level: debug | info | warn | error
+#   # Default: info
+#   level: info
+#
+#   # Log file path. Supports ~/ expansion.
+#   # Default: stderr only (no file)
+#   file: ~/.omp/logs/agent.log
+#
+#   # Log file max size before rotation (bytes).
+#   # Default: 10MB
+#   maxSize: 10485760
+
+# --- Retry & Timeout ---------------------------------------------------------
+# retry:
+#   # Maximum number of retries on transient errors (network, rate limit, etc.)
+#   # Default: 3
+#   maxAttempts: 3
+#
+#   # Base delay between retries (milliseconds).
+#   # Default: 1000
+#   baseDelay: 1000
+#
+#   # Timeout for a single model request (milliseconds).
+#   # Default: 120000 (2 minutes)
+#   requestTimeout: 120000
+
+# --- Memory & Context --------------------------------------------------------
+# memory:
+#   # Enable workspace memory (persist notes between sessions).
+#   # Type: boolean
+#   # Default: true
+#   workspaceMemory: true
+#
+#   # Enable global memory (shared across all projects).
+#   # Type: boolean
+#   # Default: false
+#   globalMemory: false
+#
+#   # Maximum memory entries to retain.
+#   # Type: integer
+#   # Default: 1000
+#   maxEntries: 1000
+
+# --- Agent Definitions -------------------------------------------------------
+# Inline agent definitions (alternative to skill/agent files).
+# agents: {}
