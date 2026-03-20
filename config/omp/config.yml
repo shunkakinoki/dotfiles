@@ -29,7 +29,7 @@
 lastChangelogVersion: "13.13.2"
 # shellPath
 #   Optional shell binary used for spawned shell sessions. When null, OMP uses
-#   the process environment / platform default shell.
+#   its built-in shell-resolution fallback chain.
 shellPath: null
 # extensions / enabledModels / disabledProviders / disabledExtensions
 #   Low-level capability and provider filters from the unified settings schema.
@@ -46,25 +46,24 @@ disabledExtensions: []
 # Each role is a named model configuration you can reference in skills,
 # commands, or agent definitions.
 #
-# Model identifier format: "<provider>/<model>"
+# Model identifier format: "<provider>/<model>[:thinkingLevel]"
 #
 # Common providers:
-#   anthropic  — Claude models (claude-sonnet-4, claude-opus-4, etc.)
-#   openai     — OpenAI models (gpt-5.4, gpt-4o, etc.)
-#   google     — Gemini models (gemini-3-pro, gemini-3-flash, etc.)
-#   codex      — OpenAI Codex (ChatGPT, gpt-5.4, etc.)
-#   deepseek   — DeepSeek models
-#   mistral    — Mistral models
-#   groq       — Groq models
-#   openrouter — OpenRouter (access to many models)
+#   anthropic    — Claude models (claude-sonnet-4, claude-opus-4, etc.)
+#   openai       — OpenAI models (gpt-5.4, gpt-4o, etc.)
+#   openai-codex — OpenAI Codex models/providers used by OMP
+#   google       — Gemini models (gemini-3-pro, gemini-3-flash, etc.)
+#   deepseek     — DeepSeek models
+#   mistral      — Mistral models
+#   groq         — Groq models
+#   openrouter   — OpenRouter (access to many models)
 #
 # Examples:
-#   default: openai/gpt-5.4
-#   fast:    openai/gpt-4o-mini
-#   slow:    anthropic/claude-opus-4
-#   cheap:   google/gemini-3-flash
+#   default: openai-codex/gpt-5.4
+#   fast:    openai-codex/gpt-5.4-mini
+#   slow:    openai-codex/gpt-5.3-codex:high
 modelRoles:
-  # [REQUIRED] Default model — fallback for all model selections.
+  # Default model role used as the fallback when no other role is selected.
   default: "openai-codex/gpt-5.4"
   # Smaller / dumber model for cheap lightweight work.
   smol: "openai-codex/gpt-5.4-mini"
@@ -279,35 +278,15 @@ contextPromotion:
 # =============================================================================
 # The fields below are not set by default. Uncomment and configure as needed.
 
-# --- Context Limits -----------------------------------------------------------
-# Limits on context window and conversation length.
-# context:
-#   # Maximum tokens in the context window (input + output).
-#   # Type: integer
-#   # Default: Provider limit (e.g., 200k for GPT-5.4)
-#   # Use lower values to cap cost or force more aggressive summarization.
-#   maxTokens: 100000
-#
-#   # Maximum number of conversation turns before forcing a summary or reset.
-#   # Type: integer
-#   # Default: unlimited
-#   maxTurns: 50
+# --- Context ---------------------------------------------------------------
+# Upstream no longer exposes a standalone `context.maxTokens` / `context.maxTurns`
+# block. Current context behavior is controlled by:
+#   - contextPromotion.*
+#   - compaction.*
+#   - branchSummary.*
+#   - memories.*
 
-# --- Tool Policy -------------------------------------------------------------
-# Restrict which tools the agent is allowed to use.
-# Use this for safety, testing, or sandboxed environments.
-# toolPolicy:
-#   # Tools the agent is allowed to call.
-#   # Type: array of tool names
-#   # Examples: [read, grep, bash] | [read, write] | all
-#   allowed: []
-#
-#   # Tools the agent is explicitly forbidden from using.
-#   # Takes precedence over 'allowed'.
-#   # Type: array of tool names
-#   denied: []
-
-# --- Provider Credentials -----------------------------------------------------
+# --- Provider Credentials --------------------------------------------------
 # API keys for model providers. It is STRONGLY recommended to set these via
 # environment variables instead of in this file, to avoid accidental commit.
 # env:
@@ -316,19 +295,9 @@ contextPromotion:
 #   GOOGLE_API_KEY: ""
 #   DEEPSEEK_API_KEY: ""
 
-# --- Logging -----------------------------------------------------------------
-# logging:
-#   # Log level: debug | info | warn | error
-#   # Default: info
-#   level: info
-#
-#   # Log file path. Supports ~/ expansion.
-#   # Default: stderr only (no file)
-#   file: ~/.omp/logs/agent.log
-#
-#   # Log file max size before rotation (bytes).
-#   # Default: 10MB
-#   maxSize: 10485760
+# --- Logging ---------------------------------------------------------------
+# Upstream settings schema does not currently expose logging.* fields in the
+# user-configurable config surface, so they are intentionally omitted here.
 
 # --- Retry & Timeout ---------------------------------------------------------
 retry:
@@ -553,7 +522,7 @@ tasks:
   todoClearDelay: 60
 
 todo:
-  # Enable todo_write task tracking and reminders.
+  # Enable the todo_write task-tracking tool.
   enabled: true
   reminders:
     max: 3
