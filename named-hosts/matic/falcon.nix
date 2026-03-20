@@ -16,9 +16,8 @@ let
   initScript = pkgs.writeScript "init-falcon" (
     builtins.readFile (
       pkgs.replaceVars ./falcon-init.sh {
-        e2fsprogs = pkgs.e2fsprogs;
-        rsync = pkgs.rsync;
-        falcon = falcon;
+        inherit (pkgs) e2fsprogs rsync;
+        inherit falcon;
       }
     )
   );

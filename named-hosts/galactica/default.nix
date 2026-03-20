@@ -8,11 +8,11 @@ let
 in
 inputs.nix-darwin.lib.darwinSystem {
   system = "aarch64-darwin";
-  specialArgs = darwin-modules.specialArgs;
+  inherit (darwin-modules) specialArgs;
   modules = darwin-modules.modules ++ [
     {
       age.identityPaths = [ "/Users/${username}/.ssh/id_ed25519" ];
-      age.secrets = builtins.mapAttrs (name: value: { file = value.file; }) (import ./secrets.nix);
+      age.secrets = builtins.mapAttrs (name: value: { inherit (value) file; }) (import ./secrets.nix);
       home-manager.users.${username} =
         { pkgs, config, ... }:
         {

@@ -156,7 +156,7 @@ inputs.nixpkgs.lib.nixosSystem {
                 unlockPy = pkgs.writeScript "unlock-gnome-keyring.py" (
                   builtins.readFile (
                     pkgs.replaceVars ./unlock-gnome-keyring.py {
-                      python3 = pkgs.python3;
+                      inherit (pkgs) python3;
                     }
                   )
                 );
@@ -393,8 +393,8 @@ inputs.nixpkgs.lib.nixosSystem {
                   isDesktop = true;
                 };
               };
-              lib = inputs.nixpkgs.lib;
-              pkgs = pkgs;
+              inherit (inputs.nixpkgs) lib;
+              inherit pkgs;
               config = { };
             })
           ];
@@ -419,7 +419,7 @@ inputs.nixpkgs.lib.nixosSystem {
           age.secrets = builtins.mapAttrs (
             name: value:
             {
-              file = value.file;
+              inherit (value) file;
             }
             // (
               if name == "keys/id_github.age" then

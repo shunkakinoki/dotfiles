@@ -14,7 +14,7 @@
     (pkgs.writeShellScriptBin "fishtape" (
       builtins.readFile (
         pkgs.replaceVars ./scripts/fishtape-wrapper.sh {
-          fish = pkgs.fish;
+          inherit (pkgs) fish;
           fishtape_3_src = pkgs.fishPlugins.fishtape_3.src;
         }
       )

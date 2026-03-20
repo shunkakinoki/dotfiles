@@ -33,9 +33,9 @@ let
   dockerStartScript = pkgs.writeShellScript "cliproxyapi-docker-start" (
     builtins.readFile (
       pkgs.replaceVars ./scripts/docker-start.sh {
-        bash = pkgs.bash;
+        inherit (pkgs) bash;
         start_script = startScript;
-        docker = pkgs.docker;
+        inherit (pkgs) docker;
       }
     )
   );

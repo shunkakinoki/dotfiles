@@ -14,7 +14,7 @@ let
     inherit system overlays;
     config = nixpkgsConfig;
   };
-  lib = pkgs.lib;
+  inherit (pkgs) lib;
 in
 home-manager.lib.homeManagerConfiguration {
   inherit pkgs;
@@ -30,7 +30,7 @@ home-manager.lib.homeManagerConfiguration {
     ../../home-manager/default.nix
     {
       home = {
-        username = username;
+        inherit username;
         homeDirectory = lib.mkForce (if username == "root" then "/root" else "/home/${username}");
         activation.backupExistingFiles = lib.mkForce {
           before = [ "checkLinkTargets" ];

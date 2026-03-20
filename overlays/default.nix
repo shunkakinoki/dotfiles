@@ -17,7 +17,7 @@
   })
   (final: prev: {
     # Provide non-deprecated alias so upstream modules using pkgs.system don't emit warnings.
-    system = prev.stdenv.hostPlatform.system;
+    inherit (prev.stdenv.hostPlatform) system;
   })
   (final: prev: {
     # Fix shellspec wrapper script that breaks when called via symlinks
@@ -51,15 +51,11 @@
   })
   (final: prev: {
     nightlyPkgs = import inputs.nixpkgs-nightly {
-      system = prev.system;
-      config = prev.config;
+      inherit (prev) system config;
       overlays = [ ];
     };
     # deno 2.6.10 on nixpkgs-unstable has broken check phase (integration_tests vs integration_test)
     # Use nightly (master) which has the fix and is in the binary cache
-    deno = final.nightlyPkgs.deno;
-    codex = final.nightlyPkgs.codex;
-    claude-code = final.nightlyPkgs.claude-code;
-    opencode = final.nightlyPkgs.opencode;
+    inherit (final.nightlyPkgs) deno codex claude-code opencode;
   })
 ]

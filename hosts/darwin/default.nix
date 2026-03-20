@@ -20,7 +20,7 @@ let
     config = nixpkgsConfig;
   };
   configuration =
-    { ... }:
+    _:
     {
       networking.hostName = hostname;
       users.users.${username}.home = "/Users/${username}";
@@ -55,7 +55,7 @@ in
       home-manager.useUserPackages = true;
       home-manager.users."${username}" = import ../../home-manager {
         inherit inputs username pkgs;
-        lib = pkgs.lib;
+        inherit (pkgs) lib;
         config = { };
       };
     }

@@ -1,4 +1,4 @@
-{ ... }:
+_:
 {
   xdg.configFile."tmuxinator/primary.yml".source = ./primary.yml;
   xdg.configFile."tmuxinator/mobile.yml".source = ./mobile.yml;
