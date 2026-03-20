@@ -100,6 +100,7 @@ in
         # Only intercept keyd output — SUPER (CapsLock/RightAlt) goes straight to Hyprland
         deviceNames = [ "keyd virtual keyboard" ];
         config = {
+          virtual_modifiers = [ "Alt-Shift-Super" ];
           keymap = [
             {
               name = "Framework Command (Ghostty)";
