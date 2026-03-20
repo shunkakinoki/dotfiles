@@ -19,6 +19,7 @@
         "@mariozechner/pi-coding-agent": "^0.60.0",
         "@nanocollective/nanocoder": "^1.24.0",
         "@oh-my-pi/pi-coding-agent": "^13.13.2",
+        "@oh-my-pi/swarm-extension": "^13.13.2",
         "@openai/codex": "^0.115.0",
         "@pkieltyka/gitgenie": "^0.1.2",
         "@pulumi/pulumi": "^3.226.0",
@@ -51,6 +52,7 @@
   },
   "trustedDependencies": [
     "agent-browser",
+    "@oh-my-pi/pi-coding-agent",
     "oxlint",
     "@kaitranntt/ccs",
     "cline",
@@ -667,6 +669,8 @@
     "@oh-my-pi/pi-tui": ["@oh-my-pi/pi-tui@13.13.2", "", { "dependencies": { "@oh-my-pi/pi-natives": "13.13.2", "@oh-my-pi/pi-utils": "13.13.2", "marked": "^17.0" } }, "sha512-M3v2mjOh+iIao/fXhQcfuwvaQF8BVh1m4UDB4aH4a4YeHcUEKbF0acpQ89h+ahxbS2AEFF0Q/CO9agyv419JdA=="],
 
     "@oh-my-pi/pi-utils": ["@oh-my-pi/pi-utils@13.13.2", "", { "dependencies": { "beautiful-mermaid": "^1.1", "winston": "^3.19", "winston-daily-rotate-file": "^5.0" } }, "sha512-2k8WI4RdihxnPovskNu5OQAfiu28GIp2h2MO1Xf1N/RAZmvlnrnTye7pcdwWXPvpG5mnJpFCRAapCxeOCr4xWA=="],
+
+    "@oh-my-pi/swarm-extension": ["@oh-my-pi/swarm-extension@13.13.2", "", { "peerDependencies": { "@oh-my-pi/pi-coding-agent": "^13" }, "bin": { "omp-swarm": "src/cli.ts" } }, "sha512-qAn5OUJWIM9PVyM817mLRYRc8CUxNaCLXSENWPVMLichptfJr4J6gdaV2ggOwu7aFLU1htPAwggDfgH4VxNufw=="],
 
     "@open-composer/cli-darwin-arm64": ["@open-composer/cli-darwin-arm64@0.8.23", "", { "os": "darwin", "cpu": "arm64", "bin": { "oc": "bin/open-composer", "opencomposer": "bin/open-composer", "open-composer": "bin/open-composer" } }, "sha512-EXN7uPMzLQJXsQRfyaYmkOlST8hnbMpxwzNh6OOUot/0Wq9tIy7z38RLdUjhb9/2L3X0UihtC6vz6d2TYEm18Q=="],
 
