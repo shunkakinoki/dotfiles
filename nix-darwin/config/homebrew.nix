@@ -42,6 +42,7 @@
       "kimi-cli"
       "kurtosis-cli"
       "mas"
+      "mlx-lm"
       "opencode"
       "ollama"
       "pandoc"
