@@ -19,13 +19,11 @@ let
     inherit system overlays;
     config = nixpkgsConfig;
   };
-  configuration =
-    _:
-    {
-      networking.hostName = hostname;
-      users.users.${username}.home = "/Users/${username}";
-      system.stateVersion = 4;
-    };
+  configuration = _: {
+    networking.hostName = hostname;
+    users.users.${username}.home = "/Users/${username}";
+    system.stateVersion = 4;
+  };
 in
 {
   specialArgs = {

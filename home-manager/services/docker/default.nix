@@ -13,7 +13,12 @@ let
   setupDockerScript = pkgs.writeShellScript "setup-docker" (
     builtins.readFile (
       pkgs.replaceVars ./setup-docker.sh {
-        inherit (pkgs) shadow gnugrep systemd coreutils;
+        inherit (pkgs)
+          shadow
+          gnugrep
+          systemd
+          coreutils
+          ;
         docker_service_file = dockerServiceFile;
       }
     )

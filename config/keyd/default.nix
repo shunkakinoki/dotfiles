@@ -1,5 +1,4 @@
-_:
-{
+_: {
   services.keyd.enable = true;
 
   # Optional: silence the setgid warning (nice to have, not required for functionality)

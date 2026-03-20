@@ -56,6 +56,11 @@
     };
     # deno 2.6.10 on nixpkgs-unstable has broken check phase (integration_tests vs integration_test)
     # Use nightly (master) which has the fix and is in the binary cache
-    inherit (final.nightlyPkgs) deno codex claude-code opencode;
+    inherit (final.nightlyPkgs)
+      deno
+      codex
+      claude-code
+      opencode
+      ;
   })
 ]
