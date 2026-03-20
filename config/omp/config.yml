@@ -1,13 +1,540 @@
-lastChangelogVersion: 13.13.2
+# =============================================================================
+# Oh My Pi — Configuration
+# =============================================================================
+# This is the annotated configuration for config.yml.
+# It shows every available configuration field with documentation.
+# Copy values from here into config.yml to override defaults.
+#
+# Fields marked [REQUIRED] must be present in config.yml.
+# All other fields are optional and fall back to harness defaults.
+#
+# =============================================================================
+# HOW TO USE THIS FILE
+# =============================================================================
+# 1. Edit config.yml (your actual settings) — this file is read-only reference.
+# 2. Copy any field from here into config.yml to override the default.
+# 3. Run `omp config validate` to check your config.yml for errors.
+# =============================================================================
+# =============================================================================
+# CHANGELOG TRACKING
+# =============================================================================
+# lastChangelogVersion
+#   Track the last changelog version shown to the user.
+#   Type: string (semver, e.g. "13.13.2")
+#   Default: unset / undefined (first run shows all entries)
+#   Set this to the last changelog version you have acknowledged.
+#
+# The explicit current settings snapshot begins below.
+#
+lastChangelogVersion: "13.13.2"
+# shellPath
+#   Optional shell binary used for spawned shell sessions. When null, OMP uses
+#   its built-in shell-resolution fallback chain.
+shellPath: null
+# extensions / enabledModels / disabledProviders / disabledExtensions
+#   Low-level capability and provider filters from the unified settings schema.
+#   Empty arrays keep upstream discovery behavior unchanged.
+extensions: []
+enabledModels: []
+disabledProviders: []
+disabledExtensions: []
+# =============================================================================
+# MODEL ROLES
+# =============================================================================
+# Map of role name -> model identifier.
+# Each role is a named model configuration you can reference in skills,
+# commands, or agent definitions.
+#
+# Model identifier format: "<provider>/<model>[:thinkingLevel]"
+#
+# Common providers:
+#   anthropic    — Claude models (claude-sonnet-4, claude-opus-4, etc.)
+#   openai       — OpenAI models (gpt-5.4, gpt-4o, etc.)
+#   openai-codex — OpenAI Codex models/providers used by OMP
+#   google       — Gemini models (gemini-3-pro, gemini-3-flash, etc.)
+#   deepseek     — DeepSeek models
+#   mistral      — Mistral models
+#   groq         — Groq models
+#   openrouter   — OpenRouter (access to many models)
+#
+# Examples:
+#   default: openai-codex/gpt-5.4
+#   fast:    openai-codex/gpt-5.4-mini
+#   slow:    openai-codex/gpt-5.3-codex:high
 modelRoles:
-  default: codex/gpt-5.4
+  # Default model role used as the fallback when no other role is selected.
+  default: "openai-codex/gpt-5.4"
+  # Smaller / dumber model for cheap lightweight work.
+  smol: "openai-codex/gpt-5.4-mini"
+  # Strongest model in the suite for hard tasks.
+  slow: "openai-codex/gpt-5.4"
+  # Keep vision on the main default model.
+  vision: "openai-codex/gpt-5.4"
+  # Planning / architecture model.
+  plan: "openai-codex/gpt-5.4"
+  # Commit message model.
+  commit: "openai/gpt-5.4-nano"
+  # Fast subagent path.
+  task: "openai-codex/gpt-5.3-codex-spark"
+# =============================================================================
+# DISPLAY
+# =============================================================================
 display:
+  # showTokenUsage
+  #   Show per-turn token usage on assistant messages.
+  #   Type: boolean
+  #   Upstream default: false
   showTokenUsage: true
+  # tabWidth
+  #   Default number of spaces used when rendering tab characters.
+  #   Type: integer
+  #   Upstream default: 3
+  tabWidth: 3
+# showHardwareCursor
+#   Show terminal cursor for IME support.
+#   Upstream default: true (computed by platform if unset)
+showHardwareCursor: true
+# clearOnShrink
+#   Clear empty rows when content shrinks; may cause flicker on some terminals.
+#   Upstream default: false
+clearOnShrink: false
+# hideThinkingBlock
+#   Hide thinking blocks in assistant responses.
+#   Upstream default: false
+hideThinkingBlock: false
+# repeatToolDescriptions
+#   Render full tool descriptions in the system prompt instead of a tool-name list.
+#   Upstream default: false
+repeatToolDescriptions: false
+# collapseChangelog
+#   Show condensed changelog after updates.
+#   Upstream default: false
+collapseChangelog: false
+# defaultThinkingLevel
+#   Reasoning depth for thinking-capable models.
+#   Upstream default: high
+defaultThinkingLevel: "high"
+# Sampling and provider knobs. `-1` keeps provider defaults.
+temperature: -1
+topP: -1
+topK: -1
+minP: -1
+presencePenalty: -1
+repetitionPenalty: -1
+# serviceTier
+#   OpenAI processing priority. `none` omits the parameter entirely.
+serviceTier: "none"
+# =============================================================================
+# THEME
+# =============================================================================
 theme:
-  dark: dark-dracula
-steeringMode: all
-followUpMode: all
-interruptMode: immediate
-doubleEscapeAction: none
+  # dark
+  #   Theme used when the terminal has a dark background.
+  #   Type: string (theme name)
+  #   Upstream schema default: "titanium"
+  #   This repo overrides it to "dark-dracula".
+  dark: "dark-dracula"
+  # light
+  #   Theme used when the terminal has a light background.
+  #   Type: string (theme name)
+  #   Upstream schema default: "light"
+  light: "light"
+# symbolPreset
+#   Icon/symbol style for the UI. Options: unicode | nerd | ascii.
+#   Upstream default: unicode
+symbolPreset: "unicode"
+# colorBlindMode
+#   Use blue instead of green for diff additions.
+#   Upstream default: false
+colorBlindMode: false
+# =============================================================================
+# STATUS LINE
+# =============================================================================
+statusLine:
+  # preset
+  #   Pre-built status line configuration.
+  #   Type: string
+  #   Options: default | minimal | compact | full | nerd | ascii | custom
+  #   Use "custom" when defining leftSegments/rightSegments below.
+  preset: "custom"
+  # separator
+  #   Visual separator between status line segments.
+  #   Type: string
+  #   Options: powerline | powerline-thin | slash | pipe | block | none | ascii
+  separator: "powerline-thin"
+  # showHookStatus
+  #   Display hook status messages below the status line.
+  #   Type: boolean
+  showHookStatus: true
+  # leftSegments
+  #   Segments rendered on the left side of the status line.
+  #   Supported IDs include: pi, model, plan_mode, path, git, pr, subagents,
+  #   token_in, token_out, token_total, token_rate, cost, context_pct,
+  #   context_total, time_spent, time, session, hostname, cache_read, cache_write.
+  leftSegments:
+    - "pi"
+    - "model"
+    - "path"
+    - "git"
+  # rightSegments
+  #   Segments rendered on the right side of the status line.
+  rightSegments:
+    - "context_pct"
+    - "cost"
+    - "subagents"
+    - "time_spent"
+  # segmentOptions
+  #   Per-segment overrides. Keep empty until a concrete override is needed.
+  segmentOptions: {}
+# =============================================================================
+# INTERACTION MODES
+# =============================================================================
+# Control how queued user input is processed while the agent is working.
+#
+# steeringMode
+#   How to process queued messages while agent work is in progress.
+#   Type: string
+#   Options:
+#     - "all"            — drain the entire queued message set in one go
+#     - "one-at-a-time" — dequeue one queued message per turn
+#   Upstream default: "one-at-a-time"
+steeringMode: "all"
+# followUpMode
+#   How to drain follow-up messages after a turn completes.
+#   Type: string
+#   Options: all | one-at-a-time
+#   Upstream default: "one-at-a-time"
+followUpMode: "all"
+# interruptMode
+#   When steering messages interrupt tool execution.
+#   Type: string
+#   Options: immediate | wait
+#   Upstream default: "immediate"
+interruptMode: "immediate"
+# doubleEscapeAction
+#   Action when pressing Escape twice with an empty editor.
+#   Type: string
+#   Options: branch | tree | none
+#   Upstream default: "tree"
+#   This repo disables it explicitly.
+doubleEscapeAction: "none"
+# treeFilterMode
+#   Default filter mode when opening the session tree.
+#   Options: default | no-tools | user-only | labeled-only | all
+treeFilterMode: "default"
+# autocompleteMaxVisible
+#   Max visible items in the autocomplete dropdown (3-20 upstream).
+autocompleteMaxVisible: 5
+# =============================================================================
+# STARTUP BEHAVIOUR
+# =============================================================================
 startup:
+  # quiet
+  #   Skip welcome screen and startup status messages.
+  #   Type: boolean
+  #   Upstream default: false (show banner)
   quiet: true
+  # checkUpdate
+  #   If false, skip update checks.
+  #   Upstream default: true
+  checkUpdate: true
+completion:
+  # notify
+  #   Notify when the agent completes. Options: on | off.
+  notify: "on"
+ask:
+  # timeout
+  #   Auto-select the recommended option after timeout; 0 disables timeout.
+  timeout: 30
+  # notify
+  #   Notify when ask tool input is waiting. Options: on | off.
+  notify: "on"
+stt:
+  # Speech-to-text input via microphone. Disabled by default in this repo.
+  enabled: false
+  # Language code for transcription (for example: en, es, fr).
+  language: "en"
+  # Whisper model size; larger models are slower but more accurate.
+  modelName: "base.en"
+contextPromotion:
+  # Promote to a larger-context model on overflow instead of compacting.
+  enabled: true
+# =============================================================================
+# ADVANCED FIELDS (uncomment to use)
+# =============================================================================
+# The fields below are not set by default. Uncomment and configure as needed.
+
+# --- Context ---------------------------------------------------------------
+# Upstream no longer exposes a standalone `context.maxTokens` / `context.maxTurns`
+# block. Current context behavior is controlled by:
+#   - contextPromotion.*
+#   - compaction.*
+#   - branchSummary.*
+#   - memories.*
+
+# --- Provider Credentials --------------------------------------------------
+# API keys for model providers. It is STRONGLY recommended to set these via
+# environment variables instead of in this file, to avoid accidental commit.
+# env:
+#   OPENAI_API_KEY: ""
+#   ANTHROPIC_API_KEY: ""
+#   GOOGLE_API_KEY: ""
+#   DEEPSEEK_API_KEY: ""
+
+# --- Logging ---------------------------------------------------------------
+# Upstream settings schema does not currently expose logging.* fields in the
+# user-configurable config surface, so they are intentionally omitted here.
+
+# --- Retry & Timeout ---------------------------------------------------------
+retry:
+  # enabled
+  #   Enable API retries on transient failures.
+  enabled: true
+  # maxRetries
+
+  #   Maximum retry attempts on API errors. Upstream default: 3
+  maxRetries: 3
+  # baseDelayMs
+
+  #   Base delay between retries in milliseconds. Upstream default: 2000
+  baseDelayMs: 2000
+# --- Compaction --------------------------------------------------------------
+compaction:
+  # enabled
+  #   Automatically compact context when it gets too large.
+  enabled: true
+  # strategy
+
+  #   In-place context maintenance, auto-handoff, or disabled maintenance.
+  strategy: "context-full"
+  # thresholdPercent / thresholdTokens
+
+  #   `-1` keeps reserve-based behavior; explicit values enable threshold-based maintenance.
+  thresholdPercent: -1
+  thresholdTokens: -1
+  # handoffSaveToDisk
+
+  #   Save generated handoff documents for the auto-handoff flow.
+  handoffSaveToDisk: false
+  # remoteEnabled
+
+  #   Prefer remote compaction endpoints when available.
+  remoteEnabled: true
+  reserveTokens: 16384
+  keepRecentTokens: 20000
+  autoContinue: true
+  remoteEndpoint: null
+branchSummary:
+  # Prompt to summarize when leaving a branch.
+  enabled: false
+  reserveTokens: 16384
+# --- Memory & Context --------------------------------------------------------
+memories:
+  # Enable autonomous memory extraction and consolidation.
+  enabled: false
+  maxRolloutsPerStartup: 64
+  maxRolloutAgeDays: 30
+  minRolloutIdleHours: 12
+  threadScanLimit: 300
+  maxRawMemoriesForGlobal: 200
+  stage1Concurrency: 8
+  stage1LeaseSeconds: 120
+  stage1RetryDelaySeconds: 120
+  phase2LeaseSeconds: 180
+  phase2RetryDelaySeconds: 180
+  phase2HeartbeatSeconds: 30
+  rolloutPayloadPercent: 0.7
+  fallbackTokenLimit: 16000
+  summaryInjectionTokenLimit: 5000
+ttsr:
+  # Time Traveling Stream Rules: interrupt agent output when configured rules match.
+  enabled: true
+  # contextMode
+
+  #   What to do with partial output when TTSR triggers. Options: discard | keep
+  contextMode: "discard"
+  # interruptMode
+
+  #   When to interrupt mid-stream. Options: never | prose-only | tool-only | always
+  interruptMode: "always"
+  # repeatMode / repeatGap
+
+  #   Allow one trigger per session or retrigger after a message gap.
+  repeatMode: "once"
+  repeatGap: 10
+edit:
+  # Edit tool configuration: hashline mode with fuzzy matching enabled.
+  mode: "hashline"
+  fuzzyMatch: true
+  fuzzyThreshold: 0.95
+  streamingAbort: false
+  blockAutoGenerated: true
+# Read tool rendering defaults.
+readLineNumbers: false
+readHashLines: true
+read:
+  # Default number of lines returned when read is called without a limit.
+  defaultLimit: 300
+grep:
+  # Grep tool defaults.
+  enabled: true
+  contextBefore: 0
+  contextAfter: 0
+find:
+  # File search tool.
+  enabled: true
+astGrep:
+  # Structural AST search tool.
+  enabled: true
+astEdit:
+  # Structural AST rewrite tool.
+  enabled: true
+notebook:
+  # Notebook editing tool.
+  enabled: true
+renderMermaid:
+  # Mermaid-to-ASCII rendering helper.
+  enabled: false
+calc:
+  # Basic calculator tool.
+  enabled: false
+inspect_image:
+  # Vision delegation helper for image understanding.
+  enabled: false
+checkpoint:
+  # Context checkpointing / rewind tools.
+  enabled: false
+fetch:
+  # URL fetching tool.
+  enabled: true
+web_search:
+  # Web search tool.
+  enabled: true
+browser:
+  # Browser automation tool (Ulixee Hero).
+  enabled: true
+  headless: true
+async:
+  # Background bash command execution.
+  enabled: false
+  maxJobs: 100
+lsp:
+  # Language Server Protocol integration.
+  enabled: true
+  formatOnWrite: false
+  diagnosticsOnWrite: true
+  diagnosticsOnEdit: false
+bashInterceptor:
+  # Block shell commands that have dedicated tools.
+  enabled: false
+  simpleLs: true
+python:
+  # Python execution path: both bash and IPython are available.
+  toolMode: "both"
+  kernelMode: "session"
+  sharedGateway: true
+tools:
+  # Artifact spill controls and tool-call intent tracing.
+  artifactSpillThreshold: 50
+  artifactTailBytes: 20
+  artifactTailLines: 500
+  intentTracing: true
+  maxTimeout: 0
+terminal:
+  # Render images inline when terminal protocol support exists.
+  showImages: true
+images:
+  # Resize large images for model compatibility and allow image input by default.
+  autoResize: true
+  blockImages: false
+mcp:
+  # Model Context Protocol project config and notification behavior.
+  enableProjectConfig: true
+  discoveryMode: false
+  discoveryDefaultServers: []
+  notifications: false
+  notificationDebounceMs: 500
+# --- Task Agent Overrides ---------------------------------------------------
+# Override discovered agent model patterns by agent name. These names match the
+# custom agents shown in the subagent dashboard.
+task:
+  isolation:
+    # Isolation mode for subagents. `none` disables worktree/overlay isolation.
+    mode: "none"
+    # How isolated task changes are reintegrated.
+    merge: "patch"
+    # Commit message style for nested repo changes.
+    commits: "generic"
+  # Encourage delegation only when it is materially useful.
+  eager: false
+  maxConcurrency: 32
+  maxRecursionDepth: 2
+  disabledAgents: []
+  agentModelOverrides:
+    code-architect: "gpt-5.4"
+    code-explorer: "gpt-5.3-codex-spark"
+    code-reviewer: "gpt-5.4"
+    code-simplifier: "gpt-5.4"
+    comment-analyzer: "gpt-5.4-nano"
+    pr-test-analyzer: "gpt-5.4-mini"
+    silent-failure-hunter: "gpt-5.4"
+    type-design-analyzer: "gpt-5.4"
+# --- Agent Definitions -------------------------------------------------------
+# Inline agent definitions (alternative to skill/agent files).
+# agents: {}
+tasks:
+  # How long to wait before auto-clearing completed/abandoned todos.
+  todoClearDelay: 60
+todo:
+  # Enable the todo_write task-tracking tool.
+  enabled: true
+  reminders:
+    max: 3
+  eager: false
+skills:
+  # Skill loading toggles and custom directory filters.
+  enabled: true
+  enableSkillCommands: true
+  enableCodexUser: true
+  enableClaudeUser: true
+  enableClaudeProject: true
+  enablePiUser: true
+  enablePiProject: true
+  customDirectories: []
+  ignoredSkills: []
+  includeSkills: []
+commands:
+  # Load Claude user/project command directories.
+  enableClaudeUser: true
+  enableClaudeProject: true
+secrets:
+  # Obfuscate secrets before sending them to providers.
+  enabled: false
+providers:
+  # Provider selection for search/image/fetch behavior.
+  webSearch: "auto"
+  codeSearch: "grep"
+  image: "auto"
+  kimiApiFormat: "anthropic"
+  openaiWebsockets: "auto"
+  parallelFetch: true
+exa:
+  # Exa provider feature toggles.
+  enabled: true
+  enableSearch: true
+  enableResearcher: false
+  enableWebsets: false
+commit:
+  # Map-reduce commit proposal settings.
+  mapReduceEnabled: true
+  mapReduceMinFiles: 4
+  mapReduceMaxFileTokens: 50000
+  mapReduceTimeoutMs: 120000
+  mapReduceMaxConcurrency: 5
+  changelogMaxDiffChars: 120000
+thinkingBudgets:
+  # Token budgets for reasoning levels.
+  minimal: 1024
+  low: 2048
+  medium: 8192
+  high: 16384
