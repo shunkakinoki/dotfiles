@@ -23,6 +23,7 @@ in
   ./karabiner
   ./llm
   ./openclaw
+  ./omp
   ./opencode
   ./pi
   ./serena
