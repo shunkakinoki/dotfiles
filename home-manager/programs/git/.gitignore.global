@@ -35,6 +35,11 @@ Temporary Items
 tmp
 .tmp*
 tmp*
+
+# AI
+.cursor/
+.entire/
+.serena/
  
 # Ignore deprecated files
 *.deprecated
