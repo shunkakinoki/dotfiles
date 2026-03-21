@@ -811,10 +811,11 @@ launchctl-tmux-session-logger: ## Restart tmux-session-logger launchd agent.
 systemctl: systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-code-syncer systemctl-docker-postgres systemctl-dotfiles-updater systemctl-make-updater systemctl-neverssl-keepalive systemctl-ollama systemctl-openclaw systemctl-tmux-session-logger ## Restart all systemd user services.
 
 .PHONY: systemctl-cliproxyapi
-systemctl-cliproxyapi: ## Reload systemd units for cliproxyapi (home-manager handles restart).
-	@echo "🔄 Reloading cliproxyapi..."
+systemctl-cliproxyapi: ## Restart cliproxyapi systemd user service.
+	@echo "🔄 Restarting cliproxyapi..."
 	@systemctl --user daemon-reload
-	@echo "✅ cliproxyapi reloaded"
+	@systemctl --user restart cliproxyapi.service || true
+	@echo "✅ cliproxyapi restarted"
 
 .PHONY: systemctl-cliproxyapi-backup
 systemctl-cliproxyapi-backup: ## Restart cliproxyapi-backup systemd user service.
