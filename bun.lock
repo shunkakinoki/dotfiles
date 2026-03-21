@@ -19,6 +19,7 @@
         "@mariozechner/pi-coding-agent": "^0.60.0",
         "@nanocollective/nanocoder": "^1.24.0",
         "@oh-my-pi/pi-coding-agent": "^13.13.2",
+        "@oh-my-pi/swarm-extension": "^13.13.2",
         "@openai/codex": "^0.115.0",
         "@pkieltyka/gitgenie": "^0.1.2",
         "@pulumi/pulumi": "^3.226.0",
@@ -26,6 +27,7 @@
         "@sourcegraph/amp": "^0.0.1773432280-gcd86a7",
         "@steipete/bird": "^0.8.0",
         "@tobilu/qmd": "^2.0.1",
+        "@traces-sh/traces": "^0.4.3",
         "@typescript/native-preview": "^7.0.0-dev.20260319.1",
         "@vibe-kit/grok-cli": "^0.0.34",
         "acpx": "^0.3.1",
@@ -51,6 +53,7 @@
   },
   "trustedDependencies": [
     "agent-browser",
+    "@oh-my-pi/pi-coding-agent",
     "oxlint",
     "@kaitranntt/ccs",
     "cline",
@@ -88,8 +91,9 @@
     "openclaw",
     "clawdhub",
     "@googleworkspace/cli",
-    "turbo",
+    "@oh-my-pi/swarm-extension",
     "@google/jules",
+    "turbo",
   ],
   "packages": {
     "@a2a-js/sdk": ["@a2a-js/sdk@0.3.11", "", { "dependencies": { "uuid": "^11.1.0" }, "peerDependencies": { "@bufbuild/protobuf": "^2.10.2", "@grpc/grpc-js": "^1.11.0", "express": "^4.21.2 || ^5.1.0" }, "optionalPeers": ["@bufbuild/protobuf", "@grpc/grpc-js", "express"] }, "sha512-pXjjlL0ZYHgAxObov1J+W3ylfQV0rOrDBB8Eo4a9eCunqs7iNW5OIfMcV8YnZQdzeVSRomj8jHeudVz0zc4RNw=="],
@@ -667,6 +671,8 @@
     "@oh-my-pi/pi-tui": ["@oh-my-pi/pi-tui@13.13.2", "", { "dependencies": { "@oh-my-pi/pi-natives": "13.13.2", "@oh-my-pi/pi-utils": "13.13.2", "marked": "^17.0" } }, "sha512-M3v2mjOh+iIao/fXhQcfuwvaQF8BVh1m4UDB4aH4a4YeHcUEKbF0acpQ89h+ahxbS2AEFF0Q/CO9agyv419JdA=="],
 
     "@oh-my-pi/pi-utils": ["@oh-my-pi/pi-utils@13.13.2", "", { "dependencies": { "beautiful-mermaid": "^1.1", "winston": "^3.19", "winston-daily-rotate-file": "^5.0" } }, "sha512-2k8WI4RdihxnPovskNu5OQAfiu28GIp2h2MO1Xf1N/RAZmvlnrnTye7pcdwWXPvpG5mnJpFCRAapCxeOCr4xWA=="],
+
+    "@oh-my-pi/swarm-extension": ["@oh-my-pi/swarm-extension@13.13.2", "", { "peerDependencies": { "@oh-my-pi/pi-coding-agent": "^13" }, "bin": { "omp-swarm": "src/cli.ts" } }, "sha512-qAn5OUJWIM9PVyM817mLRYRc8CUxNaCLXSENWPVMLichptfJr4J6gdaV2ggOwu7aFLU1htPAwggDfgH4VxNufw=="],
 
     "@open-composer/cli-darwin-arm64": ["@open-composer/cli-darwin-arm64@0.8.23", "", { "os": "darwin", "cpu": "arm64", "bin": { "oc": "bin/open-composer", "opencomposer": "bin/open-composer", "open-composer": "bin/open-composer" } }, "sha512-EXN7uPMzLQJXsQRfyaYmkOlST8hnbMpxwzNh6OOUot/0Wq9tIy7z38RLdUjhb9/2L3X0UihtC6vz6d2TYEm18Q=="],
 
@@ -1263,6 +1269,18 @@
     "@tootallnate/once": ["@tootallnate/once@2.0.0", "", {}, "sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A=="],
 
     "@tootallnate/quickjs-emscripten": ["@tootallnate/quickjs-emscripten@0.23.0", "", {}, "sha512-C5Mc6rdnsaJDjO3UpGW/CQTHtCKaYlScZTly4JIu97Jxo/odCiH0ITnDXSJPTOrEKk/ycSZ0AOgTmkDtkOsvIA=="],
+
+    "@traces-sh/traces": ["@traces-sh/traces@0.4.3", "", { "optionalDependencies": { "@traces-sh/traces-darwin-arm64": "0.4.3", "@traces-sh/traces-darwin-x64": "0.4.3", "@traces-sh/traces-linux-arm64": "0.4.3", "@traces-sh/traces-linux-x64": "0.4.3", "@traces-sh/traces-windows-x64": "0.4.3" }, "bin": { "traces": "bin/traces" } }, "sha512-rs4OtkV5TZJ3WKWn9oZSZAazq3NIVOiL5kx22gcwBIrEhpsXr5vPYtIxRiPqs4NCq4W/uu/sXG7w0KnKW1q6Pw=="],
+
+    "@traces-sh/traces-darwin-arm64": ["@traces-sh/traces-darwin-arm64@0.4.3", "", { "os": "darwin", "cpu": "arm64" }, "sha512-iwOeqYn8Nf2dYs4U6Zsqq9dB5a95NFcDfG9Xqtkx6HCflXR7JP0eu2r2dEwoOalO4RxjSTiJCdKZ2Uyx5dxB5A=="],
+
+    "@traces-sh/traces-darwin-x64": ["@traces-sh/traces-darwin-x64@0.4.3", "", { "os": "darwin", "cpu": "x64" }, "sha512-4twEaGp0Zlj40BTN+OWFX3vglY7Yfkfnk07MYu3ORTYEmq/qz7R6F2wJtvkgqYbTLQtWVjAFesU5gF20HhvVyw=="],
+
+    "@traces-sh/traces-linux-arm64": ["@traces-sh/traces-linux-arm64@0.4.3", "", { "os": "linux", "cpu": "arm64" }, "sha512-gTXZrF7qydLac2pHwSA1FNdp7QtBR+Ga0pOEKynwGP68POs3HGht0vIz0Jp24VcWvDZm8CvYyxvEH6PyICW+fA=="],
+
+    "@traces-sh/traces-linux-x64": ["@traces-sh/traces-linux-x64@0.4.3", "", { "os": "linux", "cpu": "x64" }, "sha512-10xPuTlV2uUZsMzyX12PghHP/KgCwRxz1kGeUl8VELaZkuMGHOAyPti4pYerOQ8j5IQUSY+evsr21SVve0LUVw=="],
+
+    "@traces-sh/traces-windows-x64": ["@traces-sh/traces-windows-x64@0.4.3", "", { "os": "win32", "cpu": "x64" }, "sha512-wbsDe/GAf/f/VHwtWArtsduFJnePRVm2tcyQ40Ib2/NZhwIRAHW4NkYzHtxpF7m3kkHTm4dygrxEN4mRZzfrmQ=="],
 
     "@tufjs/canonical-json": ["@tufjs/canonical-json@2.0.0", "", {}, "sha512-yVtV8zsdo8qFHe+/3kw81dSLyF7D576A5cCFCi4X7B39tWT7SekaEFUnvnWJHz+9qO7qJTah1JbrDjWKqFtdWA=="],
 
