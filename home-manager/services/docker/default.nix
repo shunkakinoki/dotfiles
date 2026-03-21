@@ -18,6 +18,7 @@ let
           gnugrep
           systemd
           coreutils
+          diffutils
           ;
         docker_service_file = dockerServiceFile;
       }
