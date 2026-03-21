@@ -34,8 +34,7 @@ shellPath: null
 # extensions / enabledModels / disabledProviders / disabledExtensions
 #   Low-level capability and provider filters from the unified settings schema.
 #   Empty arrays keep upstream discovery behavior unchanged.
-extensions:
-  - "~/.omp/agent/extensions/swarm-extension"
+extensions: []
 enabledModels: []
 disabledProviders: []
 disabledExtensions: []
