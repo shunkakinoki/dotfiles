@@ -187,58 +187,6 @@
         }
       }
     },
-    "openrouter": {
-      "models": {
-        "deepseek/deepseek-chat-v3.1:free": {
-          "name": "DeepSeek Chat V3.1 (via OpenRouter)",
-          "options": {
-            "provider": {
-              "order": ["open-inference"],
-              "allow_fallbacks": false
-            }
-          }
-        },
-        "moonshotai/kimi-k2": {
-          "name": "Kimi K2 (via OpenRouter)",
-          "options": {
-            "provider": {
-              "order": ["open-inference"],
-              "allow_fallbacks": false
-            }
-          }
-        },
-        "moonshotai/kimi-k2:free": {
-          "name": "Kimi K2 Free (via OpenRouter)",
-          "options": {
-            "provider": {
-              "order": ["open-inference"],
-              "allow_fallbacks": false
-            }
-          }
-        },
-        "openai/gpt-oss-120b:free": {
-          "name": "GPT-OSS 120B Free (via OpenRouter)",
-          "options": {
-            "provider": {
-              "order": ["open-inference"],
-              "allow_fallbacks": false
-            }
-          }
-        },
-        "qwen/qwen3-coder:free": {
-          "name": "Qwen3 Coder Free (via OpenRouter)",
-          "options": {
-            "provider": {
-              "order": ["open-inference"],
-              "allow_fallbacks": false
-            }
-          }
-        }
-      },
-      "options": {
-        "apiKey": "{env:OPENROUTER_API_KEY}"
-      }
-    },
     "zai-coding-plan": {
       "models": {
         "glm-4.7": {
