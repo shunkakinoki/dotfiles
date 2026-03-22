@@ -102,6 +102,7 @@
       "google-chrome"
       "google-drive"
       "hammerspoon"
+      "handy"
       "iina"
       "iterm2"
       "karabiner-elements"
