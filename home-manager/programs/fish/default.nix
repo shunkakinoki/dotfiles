@@ -84,6 +84,7 @@
       lzg = "lazygit";
       ompc = "omp commit";
       ompcp = "omp commit --push";
+      rm = "gomi";
       v = "nvim";
 
       # Function-based abbreviations

@@ -35,6 +35,10 @@
       FNM_VERSION_FILE_STRATEGY = "local";
     };
 
+    shellAliases = {
+      rm = "gomi";
+    };
+
     bashrcExtra = ''
       # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
       if [ "$(uname)" = "Linux" ]; then

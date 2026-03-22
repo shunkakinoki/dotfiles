@@ -15,6 +15,7 @@ in
   ./factory
   ./gemini
   ./git-ai
+  ./gomi
   ./ghostty
   ./iterm2
   ./hammerspoon
