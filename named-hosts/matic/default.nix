@@ -336,20 +336,19 @@ inputs.nixpkgs.lib.nixosSystem {
           zlib
         ];
 
-        # Nix settings
+        # NixOS-level nix settings (complements home-manager misc/nix)
         nix = {
+          channel.enable = false;
           settings = {
-            experimental-features = [
-              "nix-command"
-              "flakes"
-            ];
+            nix-path = lib.mkForce "nixpkgs=/etc/nix/inputs/nixpkgs";
             trusted-users = [
-              "root"
               username
+              "@wheel"
+              "root"
             ];
           };
-          package = pkgs.nixVersions.stable;
         };
+        environment.etc."nix/inputs/nixpkgs".source = "${inputs.nixpkgs}";
 
         system.stateVersion = "24.11";
       }

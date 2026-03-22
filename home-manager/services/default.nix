@@ -17,6 +17,7 @@ let
   sshAgent = import ./ssh-agent {
     inherit config lib pkgs;
   };
+  syncthing = import ./syncthing { inherit lib pkgs; };
   tmuxSessionLogger = import ./tmux-session-logger { inherit pkgs; };
 in
 [
@@ -30,5 +31,6 @@ in
   neversslKeepalive
   ollama
   sshAgent
+  syncthing
   tmuxSessionLogger
 ]
