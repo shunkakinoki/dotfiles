@@ -9,6 +9,7 @@
       sync_frequency = "3m";
       sync_address = "https://api.atuin.sh";
       search_mode = "fuzzy";
+      filter_mode = "global";
     };
   };
 }
