@@ -92,14 +92,17 @@
     "@tobilu/qmd",
     "@traces-sh/traces",
     "@typescript/native-preview",
+    "@upstash/context7-mcp",
     "@vibe-kit/grok-cli",
     "acpx",
     "agent-browser",
     "agentcash",
     "ccusage",
+    "chrome-devtools-mcp",
     "clawdhub",
     "cline",
     "get-shit-done-cc",
+    "mcp-remote",
     "mcporter",
     "open-composer",
     "openclaw",
@@ -110,6 +113,7 @@
     "turbo",
     "typescript",
     "vite",
-    "vite-plus"
+    "vite-plus",
+    "xcodebuildmcp"
   ]
 }
