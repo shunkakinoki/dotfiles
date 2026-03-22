@@ -43,6 +43,10 @@
       fi
     '';
 
+    shellAliases = {
+      rm = "gomi";
+    };
+
     initContent = ''
       # Go configuration
       export GOPATH="$HOME/go"
