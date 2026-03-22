@@ -53,6 +53,14 @@ inputs.nixpkgs.lib.nixosSystem {
         # Pin kernel to 6.18 for CrowdStrike Falcon compatibility (RFM on 6.19)
         boot.kernelPackages = pkgs.linuxPackages_6_18;
 
+        # Filesystem hardening
+        boot.kernel.sysctl = {
+          "fs.protected_regular" = 2;
+          "fs.protected_fifos" = 2;
+          "fs.protected_symlinks" = 1;
+          "fs.protected_hardlinks" = 1;
+        };
+
         # AMD power management kernel params
         boot.kernelParams = [
           "amdgpu.abmlevel=3" # auto backlight management
@@ -88,6 +96,18 @@ inputs.nixpkgs.lib.nixosSystem {
         virtualisation.docker.enable = true;
 
         security.sudo.wheelNeedsPassword = false;
+
+        # Immutable root — prevents rm -rf / by blocking top-level entry removal
+        systemd.services.immutable-root = {
+          description = "Set immutable flag on /";
+          wantedBy = [ "multi-user.target" ];
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            ExecStart = "${pkgs.e2fsprogs}/bin/chattr +i /";
+            ExecStop = "${pkgs.e2fsprogs}/bin/chattr -i /";
+          };
+        };
         # Keyd configuration (Linux desktop only)
         services.keyd.enable = true;
         users.groups.keyd = { };
