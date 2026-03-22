@@ -196,6 +196,7 @@ When run grep -F 'ompxeh = "_ompxeh_function";' "$FISH_SCRIPT"
 The status should be success
 The output should include 'ompxeh = "_ompxeh_function";'
 End
+End
 
 
 Describe 'no shell scripts are missing from coverage list'
