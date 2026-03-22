@@ -14,6 +14,7 @@ let
   networking = import ./config/networking.nix;
   nix = import ./config/nix.nix;
   security = import ./config/security.nix { inherit username; };
+  serviceModules = import ./services { inherit lib isRunner pkgs; };
   system = import ./config/system.nix { inherit isRunner pkgs username; };
   time = import ./config/time.nix;
 in
@@ -27,6 +28,7 @@ in
     security
     system
     time
-  ];
+  ]
+  ++ serviceModules;
 
 }
