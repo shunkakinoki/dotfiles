@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "0c4cf218df34",
+  "strategy": "manual-commit",
+  "branch": "chore/gitignore-global-updates",
+  "checkpoints_count": 1,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/0c/4cf218df34/0/metadata.json",
+      "transcript": "/0c/4cf218df34/0/full.jsonl",
+      "content_hash": "/0c/4cf218df34/0/content_hash.txt",
+      "prompt": "/0c/4cf218df34/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 98,
+    "cache_creation_tokens": 50969,
+    "cache_read_tokens": 728365,
+    "output_tokens": 2909,
+    "api_call_count": 18
+  }
+}
