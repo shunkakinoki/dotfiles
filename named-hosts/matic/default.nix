@@ -336,7 +336,7 @@ inputs.nixpkgs.lib.nixosSystem {
           zlib
         ];
 
-        # NixOS-level nix settings (complements home-manager misc/nix)
+        # NixOS-level nix settings (complements home-manager nix/)
         nix = {
           channel.enable = false;
           settings = {
