@@ -170,6 +170,34 @@ The path "spec/docker_setup_wrapper_spec.sh" should be exist
 End
 End
 
+Describe 'fish shortcut declarations'
+FISH_SCRIPT="$PWD/home-manager/programs/fish/default.nix"
+
+It 'defines ompc abbreviation'
+When run grep -F 'ompc = "omp commit";' "$FISH_SCRIPT"
+The status should be success
+The output should include 'ompc = "omp commit";'
+End
+
+It 'defines ompcp abbreviation'
+When run grep -F 'ompcp = "omp commit --push";' "$FISH_SCRIPT"
+The status should be success
+The output should include 'ompcp = "omp commit --push";'
+End
+
+It 'registers ompxe helper abbreviation'
+When run grep -F 'ompxe = "_ompxe_function";' "$FISH_SCRIPT"
+The status should be success
+The output should include 'ompxe = "_ompxe_function";'
+End
+
+It 'registers ompxeh helper abbreviation'
+When run grep -F 'ompxeh = "_ompxeh_function";' "$FISH_SCRIPT"
+The status should be success
+The output should include 'ompxeh = "_ompxeh_function";'
+End
+End
+
 Describe 'no shell scripts are missing from coverage list'
 # This test will fail if a new .sh file is added without updating this spec
 # When adding a new shell script, add it to this list AND create a corresponding spec file
