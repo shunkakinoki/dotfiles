@@ -1,7 +1,7 @@
 worktree-path = "{{ repo_path }}/.worktrees/{{ branch | sanitize }}"
 
 [post-start]
-copy = "wt step copy-ignored"
+copy = "bash -c 'created=0; [ ! -f .worktreeinclude ] && printf \".env*\\nnode_modules/\\n\" > .worktreeinclude && created=1; wt step copy-ignored; [ $created -eq 1 ] && rm -f .worktreeinclude; exit 0'"
 
 [commit]
 stage = "all"
