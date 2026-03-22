@@ -82,8 +82,8 @@
         "glm-4.7": {
           "name": "GLM 4.7 (via local CLIProxyAPI)"
         },
-        "minimax-m2.5": {
-          "name": "Minimax M2.5 (via local CLIProxyAPI)"
+        "minimax-m2.7": {
+          "name": "Minimax M2.7 (via local CLIProxyAPI)"
         }
       }
     },
