@@ -150,8 +150,8 @@
             "maxTokens": 32000
           },
           {
-            "id": "minimax-m2.5",
-            "name": "Minimax M2.5",
+            "id": "minimax-m2.7",
+            "name": "Minimax M2.7",
             "reasoning": false,
             "input": [
               "text",
@@ -190,7 +190,7 @@
   "agents": {
     "defaults": {
       "model": {
-        "primary": "cliproxy/minimax-m2.5",
+        "primary": "cliproxy/minimax-m2.7",
         "fallbacks": [
           "cliproxy/claude-opus-4-6",
           "cliproxy/glm-4.7",

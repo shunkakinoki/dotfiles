@@ -102,8 +102,8 @@ openai-compatibility:
     api-key-entries:
       - api-key: "__OPENCODE_API_KEY__"
     models:
-      - name: "minimax-m2.5"
-        alias: "minimax-m2.5"
+      - name: "minimax-m2.7"
+        alias: "minimax-m2.7"
 # payload: # Optional payload configuration
 #   default: # Default rules only set parameters when they are missing in the payload.
 #     - models:
