@@ -1,3 +1,29 @@
+# AI
+.conductor/
+.cursor/
+.entire/
+.pi/
+.serena/
+.worktrees/
+
+# Env files
+.env.*
+.env.local
+.envrc
+
+# Other
+.cache/
+.devenv/
+.jj/
+
+# Tmp files
+tmp
+.tmp*
+tmp*
+
+# Ignore deprecated files
+*.deprecated
+
 # General
 .DS_Store
 .AppleDouble
@@ -25,21 +51,3 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
-
-# Env files
-.env.*
-.env.local
-.envrc
-
-# Tmp files
-tmp
-.tmp*
-tmp*
-
-# AI
-.cursor/
-.entire/
-.serena/
- 
-# Ignore deprecated files
-*.deprecated
