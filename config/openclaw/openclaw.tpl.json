@@ -212,7 +212,7 @@
       {
         "id": "code-reviewer-opus",
         "name": "Code Reviewer (Opus)",
-        "workspace": "__WORKSPACE__/agents/code-review",
+        "workspace": "__HOME__/.openclaw/workspace/agents/code-review",
         "model": {
           "primary": "cliproxy/__CLAUDE_OPUS__",
           "fallbacks": [
@@ -230,7 +230,7 @@
       {
         "id": "code-reviewer-sonnet",
         "name": "Code Reviewer (Sonnet)",
-        "workspace": "__WORKSPACE__/agents/code-review",
+        "workspace": "__HOME__/.openclaw/workspace/agents/code-review",
         "model": {
           "primary": "cliproxy/__CLAUDE_SONNET__",
           "fallbacks": [
@@ -248,7 +248,7 @@
       {
         "id": "code-reviewer-glm",
         "name": "Code Reviewer (GLM)",
-        "workspace": "__WORKSPACE__/agents/code-review",
+        "workspace": "__HOME__/.openclaw/workspace/agents/code-review",
         "model": {
           "primary": "cliproxy/__GLM__",
           "fallbacks": [
@@ -265,7 +265,7 @@
       {
         "id": "code-reviewer-gpt-codex",
         "name": "Code Reviewer (GPT Codex)",
-        "workspace": "__WORKSPACE__/agents/code-review",
+        "workspace": "__HOME__/.openclaw/workspace/agents/code-review",
         "model": {
           "primary": "cliproxy/__GPT_CODEX__",
           "fallbacks": [
@@ -283,7 +283,7 @@
       {
         "id": "code-reviewer-gemini",
         "name": "Code Reviewer (Gemini Pro)",
-        "workspace": "__WORKSPACE__/agents/code-review",
+        "workspace": "__HOME__/.openclaw/workspace/agents/code-review",
         "model": {
           "primary": "cliproxy/__GEMINI_PRO__",
           "fallbacks": [
@@ -301,7 +301,7 @@
       {
         "id": "code-formatter",
         "name": "Code Formatter",
-        "workspace": "__WORKSPACE__/agents/formatter",
+        "workspace": "__HOME__/.openclaw/workspace/agents/formatter",
         "model": {
           "primary": "cliproxy/__GLM__",
           "fallbacks": [
@@ -318,7 +318,7 @@
       {
         "id": "security-scanner",
         "name": "Security Scanner",
-        "workspace": "__WORKSPACE__/agents/security",
+        "workspace": "__HOME__/.openclaw/workspace/agents/security",
         "model": {
           "primary": "cliproxy/__CLAUDE_OPUS__",
           "fallbacks": [
@@ -336,7 +336,7 @@
       {
         "id": "test-coverage",
         "name": "Test Coverage",
-        "workspace": "__WORKSPACE__/agents/testing",
+        "workspace": "__HOME__/.openclaw/workspace/agents/testing",
         "model": {
           "primary": "cliproxy/__GLM__",
           "fallbacks": [
@@ -353,7 +353,7 @@
       {
         "id": "docs-checker",
         "name": "Docs Checker",
-        "workspace": "__WORKSPACE__/agents/docs",
+        "workspace": "__HOME__/.openclaw/workspace/agents/docs",
         "model": {
           "primary": "cliproxy/__CLAUDE_SONNET__",
           "fallbacks": [
@@ -370,7 +370,7 @@
       {
         "id": "cicd-fixer",
         "name": "CI/CD Fixer",
-        "workspace": "__WORKSPACE__/agents/cicd",
+        "workspace": "__HOME__/.openclaw/workspace/agents/cicd",
         "model": {
           "primary": "cliproxy/__GLM__",
           "fallbacks": [
@@ -389,7 +389,7 @@
       {
         "id": "sales",
         "name": "Sales Agent",
-        "workspace": "__WORKSPACE__/agents/sales",
+        "workspace": "__HOME__/.openclaw/workspace/agents/sales",
         "model": {
           "primary": "cliproxy/__GPT__",
           "fallbacks": [
@@ -407,7 +407,7 @@
       {
         "id": "twitter-gemini",
         "name": "Twitter (Gemini)",
-        "workspace": "__WORKSPACE__/agents/twitter",
+        "workspace": "__HOME__/.openclaw/workspace/agents/twitter",
         "model": {
           "primary": "cliproxy/__GEMINI_PRO__",
           "fallbacks": [
@@ -425,7 +425,7 @@
       {
         "id": "twitter-opus",
         "name": "Twitter (Opus)",
-        "workspace": "__WORKSPACE__/agents/twitter",
+        "workspace": "__HOME__/.openclaw/workspace/agents/twitter",
         "model": {
           "primary": "cliproxy/__CLAUDE_OPUS__",
           "fallbacks": [
@@ -443,7 +443,7 @@
       {
         "id": "mindset",
         "name": "Mindset Coach",
-        "workspace": "__WORKSPACE__/agents/mindset",
+        "workspace": "__HOME__/.openclaw/workspace/agents/mindset",
         "model": {
           "primary": "cliproxy/__CLAUDE_OPUS__",
           "fallbacks": [
@@ -461,7 +461,7 @@
       {
         "id": "routine",
         "name": "Routine Manager",
-        "workspace": "__WORKSPACE__/agents/routine",
+        "workspace": "__HOME__/.openclaw/workspace/agents/routine",
         "model": {
           "primary": "cliproxy/__CLAUDE_SONNET__",
           "fallbacks": [
@@ -479,7 +479,7 @@
       {
         "id": "dev-opus",
         "name": "Dev (Opus)",
-        "workspace": "__WORKSPACE__/agents/dev",
+        "workspace": "__HOME__/.openclaw/workspace/agents/dev",
         "model": {
           "primary": "cliproxy/__CLAUDE_OPUS__",
           "fallbacks": [
@@ -499,7 +499,7 @@
       {
         "id": "dev-gpt-codex",
         "name": "Dev (GPT Codex)",
-        "workspace": "__WORKSPACE__/agents/dev",
+        "workspace": "__HOME__/.openclaw/workspace/agents/dev",
         "model": {
           "primary": "cliproxy/__GPT_CODEX__",
           "fallbacks": [
@@ -519,7 +519,7 @@
       {
         "id": "product",
         "name": "Product Manager",
-        "workspace": "__WORKSPACE__/agents/product",
+        "workspace": "__HOME__/.openclaw/workspace/agents/product",
         "model": {
           "primary": "cliproxy/__GEMINI_PRO__",
           "fallbacks": [
@@ -537,7 +537,7 @@
       {
         "id": "strategy-opus",
         "name": "Strategy (Opus)",
-        "workspace": "__WORKSPACE__/agents/strategy",
+        "workspace": "__HOME__/.openclaw/workspace/agents/strategy",
         "model": {
           "primary": "cliproxy/__CLAUDE_OPUS__",
           "fallbacks": [
@@ -555,7 +555,7 @@
       {
         "id": "strategy-gpt",
         "name": "Strategy (GPT)",
-        "workspace": "__WORKSPACE__/agents/strategy",
+        "workspace": "__HOME__/.openclaw/workspace/agents/strategy",
         "model": {
           "primary": "cliproxy/__GPT__",
           "fallbacks": [
@@ -573,7 +573,7 @@
       {
         "id": "strategy-gemini",
         "name": "Strategy (Gemini)",
-        "workspace": "__WORKSPACE__/agents/strategy",
+        "workspace": "__HOME__/.openclaw/workspace/agents/strategy",
         "model": {
           "primary": "cliproxy/__GEMINI_PRO__",
           "fallbacks": [
@@ -591,7 +591,7 @@
       {
         "id": "communication",
         "name": "Communication Specialist",
-        "workspace": "__WORKSPACE__/agents/communication",
+        "workspace": "__HOME__/.openclaw/workspace/agents/communication",
         "model": {
           "primary": "cliproxy/__CLAUDE_SONNET__",
           "fallbacks": [
@@ -609,7 +609,7 @@
       {
         "id": "devops",
         "name": "DevOps Engineer",
-        "workspace": "__WORKSPACE__/agents/devops",
+        "workspace": "__HOME__/.openclaw/workspace/agents/devops",
         "model": {
           "primary": "cliproxy/__GLM__",
           "fallbacks": [
@@ -726,6 +726,9 @@
       "strategy-gemini"
     ]
   },
+  "session": {
+    "dmScope": "per-channel-peer"
+  },
   "messages": {
     "queue": {
       "mode": "interrupt"
@@ -801,7 +804,12 @@
     "auth": {
       "mode": "token",
       "token": "__GATEWAY_TOKEN__",
-      "allowTailscale": true
+      "allowTailscale": true,
+      "rateLimit": {
+        "maxAttempts": 10,
+        "windowMs": 60000,
+        "lockoutMs": 300000
+      }
     },
     "trustedProxies": [
       "10.0.0.0/8",
