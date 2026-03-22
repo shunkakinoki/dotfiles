@@ -22,41 +22,39 @@ core:
     verbose: true
   permanent_delete:
     enable: false
-
 ui:
   density: spacious
   preview:
     syntax_highlight: true
-    colorscheme: nord
+    colorscheme: dracula
     directory_command: ls -F -A --color=always
   style:
     list_view:
-      cursor: "#AD58B4"
-      selected: "#5FB458"
-      filter_match: "#F39C12"
-      filter_prompt: "#7AA2F7"
+      cursor: "#BD93F9"
+      selected: "#50FA7B"
+      filter_match: "#FFB86C"
+      filter_prompt: "#8BE9FD"
       indent_on_select: false
     detail_view:
-      border: "#FFFFFF"
+      border: "#6272A4"
       info_pane:
         deleted_from:
-          fg: "#EEEEEE"
-          bg: "#1C1C1C"
+          fg: "#F8F8F2"
+          bg: "#282A36"
         deleted_at:
-          fg: "#EEEEEE"
-          bg: "#1C1C1C"
+          fg: "#F8F8F2"
+          bg: "#282A36"
       preview_pane:
-        border: "#3C3C3C"
+        border: "#44475A"
         size:
-          fg: "#EEEEDD"
-          bg: "#3C3C3C"
+          fg: "#F8F8F2"
+          bg: "#44475A"
         scroll:
-          fg: "#EEEEDD"
-          bg: "#3C3C3C"
-    deletion_dialog: "#FF007F"
+          fg: "#F8F8F2"
+          bg: "#44475A"
+    deletion_dialog: "#FF79C6"
   exit_message: bye!
   paginator_type: dots
-
 history:
   include:
     within_days: 100
@@ -70,7 +68,6 @@ history:
     size:
       min: ""
       max: 10GB
-
 logging:
   enabled: false
   level: info
