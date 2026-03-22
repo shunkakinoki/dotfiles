@@ -39,14 +39,17 @@
     "@tobilu/qmd": "^2.0.1",
     "@traces-sh/traces": "^0.4.3",
     "@typescript/native-preview": "^7.0.0-dev.20260321.1",
+    "@upstash/context7-mcp": "^2.1.4",
     "@vibe-kit/grok-cli": "^0.0.34",
     "acpx": "^0.3.1",
     "agent-browser": "^0.21.4",
     "agentcash": "^0.12.1",
     "ccusage": "^18.0.10",
+    "chrome-devtools-mcp": "^0.20.3",
     "clawdhub": "^0.3.0",
     "cline": "^2.9.0",
     "get-shit-done-cc": "^1.27.0",
+    "mcp-remote": "^0.1.38",
     "mcporter": "^0.7.3",
     "open-composer": "^0.8.23",
     "openclaw": "^2026.3.13",
@@ -57,7 +60,8 @@
     "turbo": "^2.8.20",
     "typescript": "^5.9.3",
     "vite": "^8.0.1",
-    "vite-plus": "^0.1.13"
+    "vite-plus": "^0.1.13",
+    "xcodebuildmcp": "^2.3.0"
   },
   "trustedDependencies": [
     "@anthropic-ai/claude-code",
@@ -88,14 +92,17 @@
     "@tobilu/qmd",
     "@traces-sh/traces",
     "@typescript/native-preview",
+    "@upstash/context7-mcp",
     "@vibe-kit/grok-cli",
     "acpx",
     "agent-browser",
     "agentcash",
     "ccusage",
+    "chrome-devtools-mcp",
     "clawdhub",
     "cline",
     "get-shit-done-cc",
+    "mcp-remote",
     "mcporter",
     "open-composer",
     "openclaw",
@@ -106,6 +113,7 @@
     "turbo",
     "typescript",
     "vite",
-    "vite-plus"
+    "vite-plus",
+    "xcodebuildmcp"
   ]
 }

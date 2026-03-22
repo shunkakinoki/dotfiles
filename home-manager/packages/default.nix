@@ -48,6 +48,7 @@ with pkgs;
   glance
   glow
   gnumake
+  gomi
   go-task
   google-cloud-sdk
   goose-cli
