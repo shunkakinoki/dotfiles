@@ -30,6 +30,7 @@ let
   lsd = import ./lsd;
   lua = import ./lua;
   neovim = import ./neovim;
+  nvtop = import ./nvtop;
   nix = import ./nix;
   node = import ./node;
   ocaml = import ./ocaml;
@@ -75,6 +76,7 @@ in
   lsd
   lua
   neovim
+  nvtop
   nix
   node
   ocaml
