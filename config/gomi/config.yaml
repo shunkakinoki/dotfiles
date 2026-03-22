@@ -22,7 +22,6 @@ core:
     verbose: true
   permanent_delete:
     enable: false
-
 ui:
   density: spacious
   preview:
@@ -56,7 +55,6 @@ ui:
     deletion_dialog: "#FF007F"
   exit_message: bye!
   paginator_type: dots
-
 history:
   include:
     within_days: 100
@@ -70,7 +68,6 @@ history:
     size:
       min: ""
       max: 10GB
-
 logging:
   enabled: false
   level: info
