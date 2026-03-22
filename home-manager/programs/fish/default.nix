@@ -82,6 +82,8 @@
       j = "jj";
       lzd = "lazydocker";
       lzg = "lazygit";
+      ompc = "omp commit";
+      ompcp = "omp commit --push";
       v = "nvim";
 
       # Function-based abbreviations
@@ -120,6 +122,8 @@
       ocxel = "_ocxel_function";
       ocxeh = "_ocxeh_function";
       ocxelh = "_ocxelh_function";
+      ompxe = "_ompxe_function";
+      ompxeh = "_ompxeh_function";
       pixe = "_pixe_function";
       pixel = "_pixel_function";
       pixelh = "_pixelh_function";
@@ -220,6 +224,8 @@
         "_ocxel_function"
         "_ocxeh_function"
         "_ocxelh_function"
+        "_ompxe_function"
+        "_ompxeh_function"
         "_pixe_function"
         "_pixel_function"
         "_pixelh_function"
