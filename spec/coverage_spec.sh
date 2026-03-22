@@ -198,7 +198,6 @@ The output should include 'ompxeh = "_ompxeh_function";'
 End
 End
 
-
 Describe 'no shell scripts are missing from coverage list'
 # This test will fail if a new .sh file is added without updating this spec
 # When adding a new shell script, add it to this list AND create a corresponding spec file
