@@ -1,5 +1,6 @@
 # AI
 .claude
+!.claude/settings.json
 .pi
 .worktrees
 prompts.db
