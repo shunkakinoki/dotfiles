@@ -163,6 +163,28 @@
             "async": true
           }
         ]
+      },
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code post-task",
+            "timeout": 30,
+            "async": true
+          }
+        ]
+      },
+      {
+        "matcher": "TodoWrite",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code post-todo",
+            "timeout": 30,
+            "async": true
+          }
+        ]
       }
     ],
     "PreCompact": [
@@ -236,6 +258,17 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code pre-task",
+            "timeout": 30,
+            "async": true
+          }
+        ]
       }
     ],
     "PermissionRequest": [
@@ -270,6 +303,24 @@
             "command": "$HOME/.claude/pushover.sh",
             "timeout": 6,
             "async": true
+          },
+          {
+            "type": "command",
+            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code session-start",
+            "timeout": 30,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code session-end",
+            "timeout": 30,
+            "async": true
           }
         ]
       }
@@ -287,6 +338,12 @@
             "type": "command",
             "command": "$HOME/.claude/pushover.sh",
             "timeout": 6,
+            "async": true
+          },
+          {
+            "type": "command",
+            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code stop",
+            "timeout": 30,
             "async": true
           }
         ]
@@ -317,6 +374,12 @@
             "type": "command",
             "command": "jq -c '{timestamp: (now | todate), prompt: .prompt[0:500]}' >> ~/.claude/prompt-history.jsonl",
             "timeout": 3,
+            "async": true
+          },
+          {
+            "type": "command",
+            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code user-prompt-submit",
+            "timeout": 30,
             "async": true
           }
         ]
