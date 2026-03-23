@@ -10,10 +10,10 @@ in
         "${pkgs.bash}/bin/bash"
         "${./sync.sh}"
       ];
-      Environment = {
+      EnvironmentVariables = {
         PATH = "${lib.makeBinPath [
           pkgs.fswatch
-        ]}";
+        ]}:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin";
       };
       RunAtLoad = true;
       KeepAlive = true;
