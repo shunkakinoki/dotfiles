@@ -29,6 +29,7 @@
         "com.apple.screensaver" = {
           askForPassword = true;
           askForPasswordDelay = 0;
+          idleTime = 600;
         };
         "com.apple.screencapture" = {
           location = "~/Desktop";
