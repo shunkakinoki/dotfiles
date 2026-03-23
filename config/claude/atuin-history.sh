@@ -41,20 +41,20 @@ run_in_background=$(jq_read '
 [ "$run_in_background" = "true" ] && exit 0
 
 exit_code=$(jq_read '
-  .tool_response.exit_code
-  // .response.exit_code
-  // empty
+  (if .tool_result  | type == "object" then .tool_result.exit_code  else null end)
+  // (if .tool_response | type == "object" then .tool_response.exit_code else null end)
+  // (if .response     | type == "object" then .response.exit_code     else null end)
+  // 0
 ')
 
 case "$exit_code" in
-'' | *[!0-9-]*) exit 0 ;;
+*[!0-9-]*) exit_code=0 ;;
 esac
 
 duration=$(jq_read '
-  .tool_response.duration_ms
-  // .tool_response.duration
-  // .response.duration_ms
-  // .response.duration
+  (if .tool_result  | type == "object" then (.tool_result.duration_ms  // .tool_result.duration)  else null end)
+  // (if .tool_response | type == "object" then (.tool_response.duration_ms // .tool_response.duration) else null end)
+  // (if .response     | type == "object" then (.response.duration_ms     // .response.duration)     else null end)
   // 0
 ')
 
