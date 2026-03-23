@@ -20,7 +20,7 @@ in
           ]
         }:/opt/homebrew/bin:/usr/local/bin";
       };
-      StartInterval = 10800;
+      StartInterval = 16200;
       StandardOutPath = "/tmp/make-updater.log";
       StandardErrorPath = "/tmp/make-updater.error.log";
     };
@@ -62,6 +62,8 @@ in
         "RUSTUP_HOME=%h/.rustup"
         "CARGO_HOME=%h/.cargo"
       ];
+      Nice = 19;
+      IOSchedulingPriority = 7;
       ExecStart = "${./update.sh}";
     };
   };
@@ -71,7 +73,7 @@ in
       Description = "Timer for make update";
     };
     Timer = {
-      OnCalendar = "*-*-* 00/3:00:00";
+      OnCalendar = "*-*-* 01/3:30:00";
       Persistent = true;
     };
     Install = {

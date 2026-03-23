@@ -14,7 +14,7 @@ in
       Environment = {
         PATH = lib.makeBinPath [ pkgs.curl ] + ":/usr/bin:/bin:/usr/sbin:/sbin";
       };
-      StartInterval = 3;
+      StartInterval = 30;
       StandardOutPath = "/tmp/neverssl-keepalive.log";
       StandardErrorPath = "/tmp/neverssl-keepalive.error.log";
     };
@@ -44,8 +44,8 @@ in
       Description = "Timer for neverssl captive portal keepalive";
     };
     Timer = {
-      OnBootSec = "3s";
-      OnUnitActiveSec = "3s";
+      OnBootSec = "30s";
+      OnUnitActiveSec = "30s";
       AccuracySec = "1s";
       Unit = "neverssl-keepalive.service";
     };

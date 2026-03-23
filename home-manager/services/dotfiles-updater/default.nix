@@ -48,6 +48,8 @@ in
         }"
         "AUTOMATED_UPDATE=true"
       ];
+      Nice = 19;
+      IOSchedulingPriority = 7;
       ExecStart = "${./update.sh}";
     };
   };
