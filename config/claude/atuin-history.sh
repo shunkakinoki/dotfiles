@@ -47,7 +47,7 @@ exit_code=$(jq_read '
 ')
 
 case "$exit_code" in
-  ''|*[!0-9-]*) exit 0 ;;
+'' | *[!0-9-]*) exit 0 ;;
 esac
 
 duration=$(jq_read '
@@ -59,7 +59,7 @@ duration=$(jq_read '
 ')
 
 case "$duration" in
-  ''|*[!0-9]*) duration=0 ;;
+'' | *[!0-9]*) duration=0 ;;
 esac
 
 cwd=$(jq_read '.cwd // empty')

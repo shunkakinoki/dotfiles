@@ -21,7 +21,6 @@ It 'has spec file for config/claude/atuin-history.sh'
 The path "spec/atuin_history_spec.sh" should be exist
 End
 
-
 It 'has spec file for config/claude/security.sh'
 The path "spec/security_spec.sh" should be exist
 End
