@@ -40,6 +40,9 @@
     };
 
     bashrcExtra = ''
+      # Allow aliases defined in the managed bashrc to expand in non-interactive shells.
+      shopt -s expand_aliases
+
       # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
       if [ "$(uname)" = "Linux" ]; then
           export XDG_RUNTIME_DIR="/run/user/$(id -u)"

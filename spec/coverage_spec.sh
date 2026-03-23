@@ -17,12 +17,17 @@ It 'has spec file for config/claude/rtk-rewrite.sh'
 The path "spec/rtk_rewrite_spec.sh" should be exist
 End
 
+It 'has spec file for config/claude/atuin-history.sh'
+The path "spec/atuin_history_spec.sh" should be exist
+End
+
+
 It 'has spec file for config/claude/security.sh'
 The path "spec/security_spec.sh" should be exist
 End
 
-It 'has spec file for config/claude/statusline-git.sh'
-The path "spec/statusline_git_spec.sh" should be exist
+It 'has spec file for config/claude/statusline.sh'
+The path "spec/statusline_spec.sh" should be exist
 End
 
 It 'has spec file for config/hyprland/scripts/record-screen.sh'
@@ -214,7 +219,8 @@ config/claude/notify.sh
 config/claude/pushover.sh
 config/claude/rtk-rewrite.sh
 config/claude/security.sh
-config/claude/statusline-git.sh
+config/claude/atuin-history.sh
+config/claude/statusline.sh
 config/hyprland/scripts/record-screen.sh
 config/hyprland/scripts/toggle-terminal.sh
 config/openclaw/hydrate.sh

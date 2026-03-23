@@ -151,6 +151,17 @@
             "timeout": 15
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/atuin-history.sh",
+            "timeout": 5,
+            "async": true
+          }
+        ]
       }
     ],
     "PreCompact": [
@@ -335,7 +346,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "$HOME/.claude/statusline-git.sh"
+    "command": "$HOME/.claude/statusline.sh"
   },
   "enabledPlugins": {
     "claude-mem@claude-mem": true,
