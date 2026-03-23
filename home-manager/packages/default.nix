@@ -104,6 +104,7 @@ with pkgs;
   below
   binutils
   blueman
+  bubblewrap
   claude-code
   cmake
   codex
