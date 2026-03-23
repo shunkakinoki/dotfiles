@@ -61,9 +61,19 @@
       export PATH="/opt/homebrew/bin:$PATH"
 
       # FNM (Fast Node Manager) configuration
-      export FNM_DIR="$HOME/Library/Application Support/fnm"
+      ${
+        if pkgs.stdenv.isDarwin then
+          ''export FNM_DIR="$HOME/Library/Application Support/fnm"''
+        else
+          ''export FNM_DIR="$HOME/.local/share/fnm"''
+      }
       export FNM_COREPACK_ENABLED="false"
-      export FNM_ARCH="arm64"
+      ${
+        if pkgs.stdenv.hostPlatform.isAarch64 then
+          ''export FNM_ARCH="arm64"''
+        else
+          ''export FNM_ARCH="x64"''
+      }
       export FNM_RESOLVE_ENGINES="false"
       export FNM_LOGLEVEL="info"
       export FNM_NODE_DIST_MIRROR="https://nodejs.org/dist"
