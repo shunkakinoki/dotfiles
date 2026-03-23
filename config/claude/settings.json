@@ -148,7 +148,8 @@
           {
             "type": "command",
             "command": "git-ai checkpoint claude --hook-input stdin",
-            "timeout": 15
+            "timeout": 15,
+            "async": true
           }
         ]
       }
@@ -183,8 +184,7 @@
           {
             "type": "command",
             "command": "command -v dcg >/dev/null 2>&1 && dcg",
-            "timeout": 5,
-            "async": true
+            "timeout": 5
           },
           {
             "type": "command",
@@ -211,7 +211,8 @@
           {
             "type": "command",
             "command": "git-ai checkpoint claude --hook-input stdin",
-            "timeout": 15
+            "timeout": 15,
+            "async": true
           }
         ]
       },
@@ -220,7 +221,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "dcg",
+            "command": "command -v dcg >/dev/null 2>&1 && dcg",
             "timeout": 5
           }
         ]
