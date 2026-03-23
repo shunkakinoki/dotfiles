@@ -1,5 +1,5 @@
 # AI
-.claude
+.claude/*
 !.claude/settings.json
 .pi
 .worktrees
