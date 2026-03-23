@@ -26,14 +26,20 @@
     force = true;
   };
 
-  home.file.".claude/statusline-git.sh" = {
-    source = ./statusline-git.sh;
+  home.file.".claude/statusline.sh" = {
+    source = ./statusline.sh;
     executable = true;
     force = true;
   };
 
   home.file.".claude/hooks/rtk-rewrite.sh" = {
     source = ./rtk-rewrite.sh;
+    executable = true;
+    force = true;
+  };
+
+  home.file.".claude/hooks/atuin-history.sh" = {
+    source = ./atuin-history.sh;
     executable = true;
     force = true;
   };

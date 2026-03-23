@@ -41,11 +41,10 @@
           export OPENSSL_LIB_DIR="${pkgs.openssl.out}/lib"
           export OPENSSL_INCLUDE_DIR="${pkgs.openssl.dev}/include"
       fi
-    '';
 
-    shellAliases = {
-      rm = "gomi";
-    };
+      # Define aliases in .zshenv so non-interactive zsh invocations can use them.
+      alias rm='gomi'
+    '';
 
     initContent = ''
       # Go configuration
