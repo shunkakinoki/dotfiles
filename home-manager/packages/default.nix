@@ -73,6 +73,7 @@ with pkgs;
   mise
   mkcert
   navi
+  ncdu
   pingu
   postgresql
   procs
