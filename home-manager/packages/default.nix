@@ -120,6 +120,7 @@ with pkgs;
   openssl.dev
   pkg-config
   powertop
+  qemu
   tailscale
   trashy
   xclip
