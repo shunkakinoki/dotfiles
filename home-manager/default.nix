@@ -9,6 +9,7 @@
 let
   hmConfig = import ../config { inherit inputs; };
   packages = import ./packages { inherit pkgs inputs; };
+  nix = [ ./nix ];
   modules = import ./modules;
   programs = import ./programs {
     inherit config lib pkgs;
@@ -21,7 +22,7 @@ in
 {
   imports =
     hmConfig
-    ++ [ ./nix ]
+    ++ nix
     ++ modules
     ++ programs
     ++ services
