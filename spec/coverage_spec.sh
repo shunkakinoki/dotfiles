@@ -168,6 +168,10 @@ End
 It 'has spec file for home-manager/services/docker/docker-setup.sh'
 The path "spec/docker_setup_wrapper_spec.sh" should be exist
 End
+It 'has spec file for nix-darwin/services/pmset-battery-policy/power-policy.sh'
+The path "spec/pmset_battery_policy_spec.sh" should be exist
+End
+
 End
 
 Describe 'fish shortcut declarations'
@@ -244,6 +248,7 @@ named-hosts/kyber/rekey-galactica.sh
 named-hosts/kyber/setup.sh
 named-hosts/matic/falcon-init.sh
 named-hosts/matic/pam-gnome-keyring-tpm-unlock.sh
+nix-darwin/services/pmset-battery-policy/power-policy.sh
 scripts/check-nix-inline-scripts.sh
 scripts/fishtape-wrapper.sh
 scripts/llm-update.sh
