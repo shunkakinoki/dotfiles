@@ -5,6 +5,7 @@
   "branch": "fix/nvim-treesitter-api",
   "checkpoints_count": 1,
   "files_touched": [
+    "Makefile",
     "scripts/check-neovim.sh"
   ],
   "sessions": [
