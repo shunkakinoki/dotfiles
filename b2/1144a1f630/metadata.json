@@ -3,7 +3,7 @@
   "checkpoint_id": "b21144a1f630",
   "strategy": "manual-commit",
   "branch": "fix/nvim-treesitter-api",
-  "checkpoints_count": 2,
+  "checkpoints_count": 3,
   "files_touched": [
     "Makefile",
     "scripts/check-neovim.sh"
@@ -23,10 +23,10 @@
     }
   ],
   "token_usage": {
-    "input_tokens": 130,
-    "cache_creation_tokens": 199966,
-    "cache_read_tokens": 6654980,
-    "output_tokens": 21157,
-    "api_call_count": 98
+    "input_tokens": 137,
+    "cache_creation_tokens": 201317,
+    "cache_read_tokens": 7168897,
+    "output_tokens": 21542,
+    "api_call_count": 103
   }
 }

@@ -187,3 +187,31 @@ Error: Process completed with exit code 2.
 ---
 
 maybe revert https://github.com/shunkakinoki/dotfiles/pull/1270/commits/2cadf578c36c841b450fa6c5c0e7df276865e2c1 and call the lua-check-neovim inside the devshell where it contains fzf?
+
+---
+
+is it possible to put that all in a script
+
+---
+
+no revert just the +  @for d in $(HOME)/.local/share/nvim/site/pack/*/opt/telescope-fzf-native.nvim $(HOME)/.local/share/nvim/site/pack/*/start/telescope-fzf-nativ
+          +e.nvim; do \
+      684 +    if [ -d "$$d" ] && [ ! -f "$$d/build/libfzf.so" ] && [ ! -f "$$d/build/libfzf.dylib" ]; then \
+      685 +      echo "🔨 Building telescope-fzf-native.nvim..."; \
+      686 +      make -C "$$d" clean all; \
+      687 +    fi; \
+      688 +  done part
+
+---
+
+no you made the entire thing a script i only want 7 -for d in "$HOME"/.local/share/nvim/site/pack/*/opt/telescope-fzf-native.nvim \
+      38 -         "$HOME"/.local/share/nvim/site/pack/*/start/telescope-fzf-native.nvim; do
+      39 -  if [ -d "$d" ] && [ ! -f "$d/build/libfzf.so" ] && [ ! -f "$d/build/libfzf.dylib" ]; then
+      40 -    echo "🔨 Building telescope-fzf-native.nvim..."
+      41 -    make -C "$d" clean all
+      42 -  fi
+      43 -done this part as a script
+
+---
+
+isn't it more so build-neovim? plz add corresponding test and make `make shell-test` pass

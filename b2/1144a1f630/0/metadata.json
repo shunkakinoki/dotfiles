@@ -3,26 +3,26 @@
   "checkpoint_id": "b21144a1f630",
   "session_id": "e10c22d6-870b-468a-87ed-1038a03231ad",
   "strategy": "manual-commit",
-  "created_at": "2026-03-24T08:38:03.780358Z",
+  "created_at": "2026-03-24T08:45:47.658298Z",
   "branch": "fix/nvim-treesitter-api",
-  "checkpoints_count": 2,
+  "checkpoints_count": 3,
   "files_touched": [
     "scripts/check-neovim.sh"
   ],
   "agent": "Claude Code",
-  "turn_id": "f19a2ec7d757",
+  "turn_id": "66fdbae6ad44",
   "token_usage": {
-    "input_tokens": 130,
-    "cache_creation_tokens": 199966,
-    "cache_read_tokens": 6654980,
-    "output_tokens": 21157,
-    "api_call_count": 98
+    "input_tokens": 137,
+    "cache_creation_tokens": 201317,
+    "cache_read_tokens": 7168897,
+    "output_tokens": 21542,
+    "api_call_count": 103
   },
   "session_metrics": {
-    "turn_count": 2
+    "turn_count": 3
   },
   "initial_attribution": {
-    "calculated_at": "2026-03-24T08:38:03.473451Z",
+    "calculated_at": "2026-03-24T08:45:47.355232Z",
     "agent_lines": 0,
     "human_added": 52,
     "human_modified": 0,
