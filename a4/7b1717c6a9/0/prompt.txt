@@ -45,3 +45,145 @@ no; fi
     fi
     @nvim --headless -c "lua dofile('$(PWD)/home-manager/programs/neovim/init.lua')" -c "qa"
     @echo "✅ Neovim configuration is valid" keep the original format i'm saying that @NVIM_OUTPUT=$$(nvim --headless -c "lua dofile('$(PWD)/home-manager/programs/neovim/init.lua')" -c "qa" 2>&1); \ is ugly
+
+---
+
+yes nice; tysm
+
+---
+
+Skip to content
+shunkakinoki
+dotfiles
+Repository navigation
+Code
+Issues
+1
+ (1)
+Pull requests
+1
+ (1)
+Agents
+Actions
+Security
+2
+ (2)
+Insights
+Settings
+Back to pull request #1270
+fix(nvim): update treesitter config for new main branch API #2652
+All jobs
+Run details
+Annotations
+1 error
+lua-neovim
+failed 3 minutes ago in 7m 48s
+Search logs
+1s
+1s
+4s
+7m 38s
+vim.pack:   7% Installing plugins (5/68) - cmp-buffer
+vim.pack:   8% Installing plugins (6/68) - auto-dark-mode.nvim
+vim.pack:  10% Installing plugins (7/68) - blink.cmp
+vim.pack:  11% Installing plugins (8/68) - vim-speeddating
+vim.pack:  13% Installing plugins (9/68) - vim-tmux-navigator
+vim.pack:  14% Installing plugins (10/68) - vim-sleuth
+vim.pack:  16% Installing plugins (11/68) - which-key.nvim
+vim.pack:  17% Installing plugins (12/68) - vim-rhubarb
+vim.pack:  19% Installing plugins (13/68) - vscode-diff.nvim
+vim.pack:  20% Installing plugins (14/68) - vim-repeat
+vim.pack:  22% Installing plugins (15/68) - vim-illuminate
+vim.pack:  23% Installing plugins (16/68) - vim-eunuch
+vim.pack:  25% Installing plugins (17/68) - vim-abolish
+vim.pack:  26% Installing plugins (18/68) - trouble.nvim
+vim.pack:  27% Installing plugins (19/68) - treesj
+vim.pack:  29% Installing plugins (20/68) - telescope-ui-select.nvim
+vim.pack:  30% Installing plugins (21/68) - todo-comments.nvim
+vim.pack:  32% Installing plugins (22/68) - toggleterm.nvim
+vim.pack:  33% Installing plugins (23/68) - vim-fugitive
+vim.pack:  35% Installing plugins (24/68) - telescope-fzf-native.nvim
+vim.pack:  36% Installing plugins (25/68) - telescope.nvim
+vim.pack:  38% Installing plugins (26/68) - telescope-github.nvim
+vim.pack:  39% Installing plugins (27/68) - sidekick.nvim
+Submodule 'deps/jsregexp' (https://github.com/kmarius/jsregexp) registered for path 'deps/jsregexp'
+Submodule 'deps/jsregexp005' (https://github.com/kmarius/jsregexp) registered for path 'deps/jsregexp005'
+Submodule 'deps/jsregexp006' (https://github.com/kmarius/jsregexp) registered for path 'deps/jsregexp006'
+Cloning into '/home/runner/.local/share/nvim/site/pack/core/opt/LuaSnip/deps/jsregexp'...
+Cloning into '/home/runner/.local/share/nvim/site/pack/core/opt/LuaSnip/deps/jsregexp005'...
+Cloning into '/home/runner/.local/share/nvim/site/pack/core/opt/LuaSnip/deps/jsregexp006'...
+vim.pack:  41% Installing plugins (28/68) - LuaSnip
+vim.pack:  42% Installing plugins (29/68) - plenary.nvim
+vim.pack:  44% Installing plugins (30/68) - opencode.nvim
+vim.pack:  45% Installing plugins (31/68) - nvim-vtsls
+vim.pack:  47% Installing plugins (32/68) - other.nvim
+vim.pack:  48% Installing plugins (33/68) - nvim-web-devicons
+vim.pack:  50% Installing plugins (34/68) - oil.nvim
+vim.pack:  51% Installing plugins (35/68) - snacks.nvim
+vim.pack:  52% Installing plugins (36/68) - nvim-ts-autotag
+vim.pack:  54% Installing plugins (37/68) - nvim-treesitter-textobjects
+vim.pack:  55% Installing plugins (38/68) - nvim-treesitter-endwise
+vim.pack:  57% Installing plugins (39/68) - nvim-notify
+vim.pack:  58% Installing plugins (40/68) - nvim-surround
+vim.pack:  60% Installing plugins (41/68) - nvim-treesitter-context
+vim.pack:  61% Installing plugins (42/68) - nvim-colorizer.lua
+vim.pack:  63% Installing plugins (43/68) - nvim-tree.lua
+vim.pack:  64% Installing plugins (44/68) - nvim-lint
+vim.pack:  66% Installing plugins (45/68) - nvim-autopairs
+vim.pack:  67% Installing plugins (46/68) - nvim-cmp
+vim.pack:  69% Installing plugins (47/68) - lazygit.nvim
+vim.pack:  70% Installing plugins (48/68) - neogen
+vim.pack:  72% Installing plugins (49/68) - indent-blankline.nvim
+vim.pack:  73% Installing plugins (50/68) - lualine.nvim
+vim.pack:  75% Installing plugins (51/68) - gruvbox.nvim
+vim.pack:  76% Installing plugins (52/68) - nvim-lspconfig
+vim.pack:  77% Installing plugins (53/68) - nvim-treesitter
+vim.pack:  79% Installing plugins (54/68) - git-conflict.nvim
+vim.pack:  80% Installing plugins (55/68) - flash.nvim
+vim.pack:  82% Installing plugins (56/68) - gitsigns.nvim
+vim.pack:  83% Installing plugins (57/68) - fidget.nvim
+vim.pack:  85% Installing plugins (58/68) - dressing.nvim
+vim.pack:  86% Installing plugins (59/68) - friendly-snippets
+vim.pack:  88% Installing plugins (60/68) - dracula.nvim
+vim.pack:  89% Installing plugins (61/68) - copilot-cmp
+vim.pack:  91% Installing plugins (62/68) - cmp_luasnip
+vim.pack:  92% Installing plugins (63/68) - fff.nvim
+vim.pack:  94% Installing plugins (64/68) - cmp-path
+vim.pack:  95% Installing plugins (65/68) - cmp-nvim-lsp
+vim.pack:  97% Installing plugins (66/68) - grug-far.nvim
+vim.pack:  98% Installing plugins (67/68) - conform.nvim
+vim.pack: 100% Installing plugins (68/68) - copilot.lua
+Error in /home/runner/.config/nvim/init.lua:
+E5113: Lua chunk: ...re/opt/telescope.nvim/lua/telescope/_extensions/init.lua:10: 'fzf' extension doesn't exist or isn't installed: .../pack/core/opt/telescope-fzf-native.nvim/lua/fzf_lib.lua:11: /home/runner/.local/share/nvim/site/pack/core/opt/telescope-fzf-native.nvim/lua/../build/libfzf.so: cannot open shared object file: No such file or directory
+stack traceback:
+    [C]: in function 'error'
+    ...re/opt/telescope.nvim/lua/telescope/_extensions/init.lua:10: in function 'load_extension'
+    ...re/opt/telescope.nvim/lua/telescope/_extensions/init.lua:62: in function 'load_extension'
+    /home/runner/.config/nvim/lua/config/telescope.lua:43: in main chunk
+    [C]: in function 'require'
+    /home/runner/.config/nvim/init.lua:37: in main chunk
+Installing libvscode-diff v1.6.3 for linux x64...
+Downloading from: https://github.com/esmuellert/vscode-diff.nvim/releases/download/v1.6.3/libvscode_diff_linux_x64_1.6.3.so
+Successfully installed libvscode-diff!
+System libgomp.so.1 not found, downloading...
+Downloading libgomp from: https://github.com/esmuellert/vscode-diff.nvim/releases/download/v1.6.3/libgomp_linux_x64_1.6.3.so.1
+Successfully downloaded libgomp.so.1
+Error in command line:
+E5108: Lua: .../dotfiles/dotfiles/home-manager/programs/neovim/init.lua:37: loop or previous error loading module 'config.telescope'
+stack traceback:
+    [C]: in function 'require'
+    .../dotfiles/dotfiles/home-manager/programs/neovim/init.lua:37: in main chunk
+    [C]: in function 'dofile'
+    [string ":lua"]:1: in main chunk
+vim.pack: 100% Installing plugins (68/68)❌ Neovim configuration has errors
+make[1]: *** [Makefile:670: lua-check-neovim] Error 1
+make[1]: Leaving directory '/home/runner/work/dotfiles/dotfiles'
+make: *** [Makefile:691: lua-check-neovim-dev] Error 2
+Error: Process completed with exit code 2.
+0s
+0s
+ failing on CI
+
+---
+
+maybe revert https://github.com/shunkakinoki/dotfiles/pull/1270/commits/2cadf578c36c841b450fa6c5c0e7df276865e2c1 and call the lua-check-neovim inside the devshell where it contains fzf?
