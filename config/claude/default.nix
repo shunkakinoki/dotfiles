@@ -44,4 +44,10 @@
     force = true;
   };
 
+  home.file.".claude/hooks/atuin-history-pre.sh" = {
+    source = ./atuin-history-pre.sh;
+    executable = true;
+    force = true;
+  };
+
 }

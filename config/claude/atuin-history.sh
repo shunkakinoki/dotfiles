@@ -51,16 +51,20 @@ case "$exit_code" in
 *[!0-9-]*) exit_code=0 ;;
 esac
 
-duration=$(jq_read '
-  (if .tool_result  | type == "object" then (.tool_result.duration_ms  // .tool_result.duration)  else null end)
-  // (if .tool_response | type == "object" then (.tool_response.duration_ms // .tool_response.duration) else null end)
-  // (if .response     | type == "object" then (.response.duration_ms     // .response.duration)     else null end)
-  // 0
-')
-
-case "$duration" in
-'' | *[!0-9]*) duration=0 ;;
-esac
+duration=0
+session_id=$(jq_read '.session_id // empty')
+if [ -n "$session_id" ]; then
+  timer_file="${TMPDIR:-/tmp}/claude-atuin-timer/$session_id"
+  if [ -f "$timer_file" ]; then
+    start_ms=$(cat "$timer_file")
+    rm -f "$timer_file"
+    end_ms=$(gdate +%s%3N 2>/dev/null || date +%s%3N 2>/dev/null) || end_ms=0
+    if [ "$start_ms" -gt 0 ] 2>/dev/null && [ "$end_ms" -gt 0 ] 2>/dev/null; then
+      duration=$((end_ms - start_ms))
+      [ "$duration" -lt 0 ] && duration=0
+    fi
+  fi
+fi
 
 cwd=$(jq_read '.cwd // empty')
 if [ -z "$cwd" ] || [ ! -d "$cwd" ]; then

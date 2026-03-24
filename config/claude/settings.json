@@ -211,6 +211,11 @@
         "hooks": [
           {
             "type": "command",
+            "command": "$HOME/.claude/hooks/atuin-history-pre.sh",
+            "timeout": 3
+          },
+          {
+            "type": "command",
             "command": "$HOME/.claude/hooks/rtk-rewrite.sh",
             "timeout": 5
           },
