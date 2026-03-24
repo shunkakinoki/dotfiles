@@ -39,9 +39,9 @@ When run bash -c "cat '$SCRIPT'"
 The output should include '-CONT'
 End
 
-It 'exits cleanly when PID is missing'
+It 'skips cleanly when PID is missing'
 When run bash -c "cat '$SCRIPT'"
-The output should include 'exit 0'
+The output should include 'return'
 End
 End
 
