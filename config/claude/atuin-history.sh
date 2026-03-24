@@ -48,7 +48,7 @@ exit_code=$(jq_read '
 ')
 
 case "$exit_code" in
-*[!0-9-]*) exit_code=0 ;;
+'' | -* | *[!0-9]*) exit_code=0 ;;
 esac
 
 duration=$(jq_read '

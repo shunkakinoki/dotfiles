@@ -20,7 +20,7 @@ in
           ]
         }:/opt/homebrew/bin:/usr/local/bin";
       };
-      StartInterval = 16200;
+      StartInterval = 10800;
       StandardOutPath = "/tmp/make-updater.log";
       StandardErrorPath = "/tmp/make-updater.error.log";
     };
@@ -73,7 +73,7 @@ in
       Description = "Timer for make update";
     };
     Timer = {
-      OnCalendar = "*-*-* 01/3:30:00";
+      OnCalendar = "*-*-* 1/3:30:00";
       Persistent = true;
     };
     Install = {
