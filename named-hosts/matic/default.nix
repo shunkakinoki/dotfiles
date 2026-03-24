@@ -85,6 +85,7 @@ inputs.nixpkgs.lib.nixosSystem {
             "networkmanager"
             "input"
             "video"
+            "audio"
             "docker"
           ];
           home = "/home/${username}";
