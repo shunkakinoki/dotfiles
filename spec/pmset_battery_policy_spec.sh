@@ -11,7 +11,7 @@ The output should include '#!/usr/bin/env bash'
 End
 
 It 'passes bash syntax check after replacing placeholders'
-When run bash -c "sed -e 's|@pmsetBin@|/usr/bin/pmset|g' -e 's|@awkBin@|/usr/bin/awk|g' -e 's|@highBatteryThreshold@|30|g' -e 's|@highBatterySleepMinutes@|300|g' -e 's|@lowBatterySleepMinutes@|30|g' '$SCRIPT' | bash -n"
+When run bash -c "sed -e 's|@pmsetBin@|/usr/bin/pmset|g' -e 's|@awkBin@|'\"$(command -v awk)\"'|g' -e 's|@highBatteryThreshold@|30|g' -e 's|@highBatterySleepMinutes@|300|g' -e 's|@lowBatterySleepMinutes@|30|g' '$SCRIPT' | bash -n"
 The status should be success
 End
 End
@@ -35,7 +35,7 @@ EOF
 
   sed \
     -e "s|@pmsetBin@|$PMSET_BIN|g" \
-    -e 's|@awkBin@|/usr/bin/awk|g' \
+    -e "s|@awkBin@|$(command -v awk)|g" \
     -e 's|@highBatteryThreshold@|30|g' \
     -e 's|@highBatterySleepMinutes@|300|g' \
     -e 's|@lowBatterySleepMinutes@|30|g' \

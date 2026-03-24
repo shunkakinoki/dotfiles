@@ -62,6 +62,8 @@ in
         "RUSTUP_HOME=%h/.rustup"
         "CARGO_HOME=%h/.cargo"
       ];
+      Nice = 19;
+      IOSchedulingPriority = 7;
       ExecStart = "${./update.sh}";
     };
   };
@@ -71,7 +73,7 @@ in
       Description = "Timer for make update";
     };
     Timer = {
-      OnCalendar = "*-*-* 00/3:00:00";
+      OnCalendar = "*-*-* 1/3:30:00";
       Persistent = true;
     };
     Install = {

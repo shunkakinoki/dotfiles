@@ -52,21 +52,28 @@ cleanup() {
 Before 'setup'
 After 'cleanup'
 
-It 'records completed Bash commands through atuin history start and end'
-When run run_hook_and_log "{\"cwd\":\"$TEMP_CWD\",\"tool_name\":\"Bash\",\"tool_input\":{\"command\":\"echo hook-test\",\"description\":\"Testing hook\"},\"tool_response\":{\"exit_code\":0,\"duration_ms\":12}}"
+It 'records completed Bash commands with object tool_result'
+When run run_hook_and_log "{\"cwd\":\"$TEMP_CWD\",\"tool_name\":\"Bash\",\"tool_input\":{\"command\":\"echo hook-test\",\"description\":\"Testing hook\"},\"tool_result\":{\"exit_code\":0,\"duration_ms\":12}}"
 The status should be success
 The output should include "cwd=$TEMP_CWD subcommand=history action=start author=claude intent=Testing hook args=-- echo hook-test"
 The output should include "cwd=$TEMP_CWD subcommand=history action=end author=claude intent=Testing hook args=--exit 0 --duration 12 mock-history-id"
 End
 
+It 'records completed Bash commands with string tool_result'
+When run run_hook_and_log "{\"cwd\":\"$TEMP_CWD\",\"tool_name\":\"Bash\",\"tool_input\":{\"command\":\"echo hello\",\"description\":\"Say hello\"},\"tool_result\":\"hello\"}"
+The status should be success
+The output should include "cwd=$TEMP_CWD subcommand=history action=start author=claude intent=Say hello args=-- echo hello"
+The output should include "cwd=$TEMP_CWD subcommand=history action=end author=claude intent=Say hello args=--exit 0 --duration 0 mock-history-id"
+End
+
 It 'skips background Bash commands'
-When run run_hook_and_log "{\"cwd\":\"$TEMP_CWD\",\"tool_name\":\"Bash\",\"tool_input\":{\"command\":\"sleep 1\",\"run_in_background\":true},\"tool_response\":{\"exit_code\":0}}"
+When run run_hook_and_log "{\"cwd\":\"$TEMP_CWD\",\"tool_name\":\"Bash\",\"tool_input\":{\"command\":\"sleep 1\",\"run_in_background\":true},\"tool_result\":\"running\"}"
 The status should be success
 The output should eq ''
 End
 
 It 'skips non-Bash tool events'
-When run run_hook_and_log '{"cwd":"/tmp","tool_name":"Read","tool_input":{"path":"README.md"},"tool_response":{}}'
+When run run_hook_and_log '{"cwd":"/tmp","tool_name":"Read","tool_input":{"path":"README.md"},"tool_result":"file contents"}'
 The status should be success
 The output should eq ''
 End

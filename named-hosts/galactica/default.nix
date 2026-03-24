@@ -55,10 +55,6 @@ inputs.nix-darwin.lib.darwinSystem {
             maxCacheTtl = 7200;
           };
 
-          # Environment variables for GPG
-          home.sessionVariables = {
-            GPG_TTY = "$(tty)";
-          };
         };
     }
   ];
