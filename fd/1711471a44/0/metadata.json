@@ -3,7 +3,7 @@
   "checkpoint_id": "fd1711471a44",
   "session_id": "fe3b0a59-f613-4101-99f5-59efe5a68687",
   "strategy": "manual-commit",
-  "created_at": "2026-03-24T06:51:42.736564Z",
+  "created_at": "2026-03-24T06:56:57.409321Z",
   "branch": "fix/nvim-treesitter-api",
   "checkpoints_count": 0,
   "files_touched": [
@@ -22,12 +22,12 @@
     "api_call_count": 0
   },
   "initial_attribution": {
-    "calculated_at": "2026-03-24T06:51:42.72165Z",
-    "agent_lines": 0,
+    "calculated_at": "2026-03-24T06:56:57.394616Z",
+    "agent_lines": 3,
     "human_added": 0,
-    "human_modified": 2,
+    "human_modified": 0,
     "human_removed": 0,
-    "total_committed": 0,
-    "agent_percentage": 0
+    "total_committed": 3,
+    "agent_percentage": 100
   }
 }
