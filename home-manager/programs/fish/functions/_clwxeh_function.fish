@@ -2,7 +2,13 @@ function _clwxeh_function --description "Run Claude Code headlessly with a promp
   # Prompt for input and run Claude Code
   # Usage: clwxeh
 
-  read -P "Prompt: " prompt
+  set -l prompt
+  if test (count $argv) -gt 0
+    set prompt (string join " " $argv)
+  else
+    read -P "Prompt: " prompt
+  end
+
   if test -z "$prompt"
     echo "No prompt provided, aborting." >&2
     return 1

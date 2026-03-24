@@ -13,4 +13,13 @@ echo "hello world" | _ompxeh_function
 @test "non-empty prompt uses print mode" (grep -Fx -c 'arg=-p' $log1) -ge 1
 @test "non-empty prompt preserves spaces in the prompt" (grep -Fx -c 'arg=hello world' $log1) -ge 1
 
-rm -f $log1
+set log2 (mktemp)
+function omp; echo "argc="(count $argv) >> $log2; for arg in $argv; echo "arg=$arg" >> $log2; end; end
+
+_ompxeh_function hello world
+
+@test "inline args passes two arguments" (grep -Fx -c 'argc=2' $log2) -ge 1
+@test "inline args uses print mode" (grep -Fx -c 'arg=-p' $log2) -ge 1
+@test "inline args preserves spaces in the prompt" (grep -Fx -c 'arg=hello world' $log2) -ge 1
+
+rm -f $log1 $log2
