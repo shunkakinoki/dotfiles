@@ -126,6 +126,8 @@ inputs.nixpkgs.lib.nixosSystem {
           KERNEL=="uinput", GROUP="input", TAG+="uaccess", MODE:="0660", OPTIONS+="static_node=uinput"
           KERNEL=="event*", ATTRS{name}=="keyd virtual keyboard", GROUP="input", MODE:="0660"
           KERNEL=="event*", ATTRS{name}=="keyd virtual pointer", GROUP="input", MODE:="0660"
+          # Restart wallpaper power monitor on AC state change
+          SUBSYSTEM=="power_supply", ATTR{type}=="Mains", RUN+="${pkgs.systemd}/bin/systemctl --machine=${username}@.host --user restart wallpaper-power-monitor.service"
         '';
 
         # AMD graphics with hardware acceleration
@@ -429,12 +431,40 @@ inputs.nixpkgs.lib.nixosSystem {
             wallpapers = [
               {
                 monitor = "eDP-1";
-                wallpaperId = "3602362048";
+                wallpaperId = "1845706469";
                 scaling = "fill";
                 fps = 30;
                 audio.silent = true;
               }
             ];
+          };
+
+          # Force RADV (hardware Vulkan) for wallpaper engine instead of lavapipe (software rendering)
+          systemd.user.services.linux-wallpaperengine.Service.Environment = [
+            "VK_DRIVER_FILES=/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json"
+          ];
+
+          # Pause animated wallpaper on battery to save power (SIGSTOP/SIGCONT)
+          systemd.user.services.wallpaper-power-monitor = {
+            Unit = {
+              Description = "Pause wallpaper engine on battery, resume on AC";
+              After = [ "linux-wallpaperengine.service" ];
+              Requires = [ "linux-wallpaperengine.service" ];
+            };
+            Service = {
+              Type = "oneshot";
+              RemainAfterExit = true;
+              ExecStart = pkgs.writeShellScript "wallpaper-power-check" (
+                builtins.readFile (
+                  pkgs.replaceVars ../../scripts/wallpaper-power-check.sh {
+                    ac_supply_path = "/sys/class/power_supply/ACAD/online";
+                    systemctl = "${pkgs.systemd}/bin/systemctl";
+                    kill = "${pkgs.coreutils}/bin/kill";
+                  }
+                )
+              );
+            };
+            Install.WantedBy = [ "linux-wallpaperengine.service" ];
           };
 
           # Agenix configuration for GitHub SSH key
