@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "b21144a1f630",
+  "strategy": "manual-commit",
+  "branch": "fix/nvim-treesitter-api",
+  "checkpoints_count": 1,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/b2/1144a1f630/0/metadata.json",
+      "transcript": "/b2/1144a1f630/0/full.jsonl",
+      "content_hash": "/b2/1144a1f630/0/content_hash.txt",
+      "prompt": "/b2/1144a1f630/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 95,
+    "cache_creation_tokens": 90625,
+    "cache_read_tokens": 4074831,
+    "output_tokens": 16557,
+    "api_call_count": 69
+  }
+}
