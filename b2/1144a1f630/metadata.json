@@ -4,13 +4,21 @@
   "strategy": "manual-commit",
   "branch": "fix/nvim-treesitter-api",
   "checkpoints_count": 1,
-  "files_touched": null,
+  "files_touched": [
+    "scripts/check-neovim.sh"
+  ],
   "sessions": [
     {
       "metadata": "/b2/1144a1f630/0/metadata.json",
       "transcript": "/b2/1144a1f630/0/full.jsonl",
       "content_hash": "/b2/1144a1f630/0/content_hash.txt",
       "prompt": "/b2/1144a1f630/0/prompt.txt"
+    },
+    {
+      "metadata": "/b2/1144a1f630/1/metadata.json",
+      "transcript": "/b2/1144a1f630/1/full.jsonl",
+      "content_hash": "/b2/1144a1f630/1/content_hash.txt",
+      "prompt": ""
     }
   ],
   "token_usage": {
