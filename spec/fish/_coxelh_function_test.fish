@@ -16,4 +16,12 @@ echo "hello world" | _coxelh_function
 @test "non-empty prompt lowers reasoning effort" (grep -c "model_reasoning_effort=minimal" $log1) -ge 1
 @test "non-empty prompt forwards prompt" (grep -c "hello world" $log1) -ge 1
 
-rm -f $log1
+set log2 (mktemp)
+function codex; echo $argv >> $log2; end
+
+_coxelh_function hello world
+
+@test "inline args forwards prompt" (grep -c "hello world" $log2) -ge 1
+@test "inline args uses exec subcommand" (grep -c "^exec " $log2) -ge 1
+
+rm -f $log1 $log2

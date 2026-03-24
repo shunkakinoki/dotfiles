@@ -109,6 +109,10 @@ It 'has spec file for scripts/upgrade-overlays.sh'
 The path "spec/upgrade_overlays_spec.sh" should be exist
 End
 
+It 'has spec file for scripts/wallpaper-power-check.sh'
+The path "spec/wallpaper_power_check_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/modules/local-binaries/sync-local-binaries.sh'
 The path "spec/local_binaries_spec.sh" should be exist
 End
@@ -254,12 +258,14 @@ named-hosts/kyber/setup.sh
 named-hosts/matic/falcon-init.sh
 named-hosts/matic/pam-gnome-keyring-tpm-unlock.sh
 nix-darwin/services/pmset-battery-policy/power-policy.sh
+scripts/build-neovim-plugins.sh
 scripts/check-nix-inline-scripts.sh
 scripts/fishtape-wrapper.sh
 scripts/llm-update.sh
 scripts/update-gitalias.sh
 scripts/update-local-binaries.sh
-scripts/upgrade-overlays.sh"
+scripts/upgrade-overlays.sh
+scripts/wallpaper-power-check.sh"
 
 # Get actual scripts from git (excluding spec directory)
 actual_scripts=$(git ls-files '*.sh' 2>/dev/null | grep -v '^spec/' | sort)

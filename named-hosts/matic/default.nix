@@ -430,12 +430,42 @@ inputs.nixpkgs.lib.nixosSystem {
             wallpapers = [
               {
                 monitor = "eDP-1";
-                wallpaperId = "3602362048";
+                wallpaperId = "1845706469";
                 scaling = "fill";
                 fps = 30;
                 audio.silent = true;
               }
             ];
+          };
+
+          # Force RADV (hardware Vulkan) for wallpaper engine instead of lavapipe (software rendering)
+          systemd.user.services.linux-wallpaperengine.Service.Environment = [
+            "VK_DRIVER_FILES=/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json"
+          ];
+
+          # Pause animated wallpaper on battery to save power (SIGSTOP/SIGCONT)
+          systemd.user.services.wallpaper-power-monitor = {
+            Unit = {
+              Description = "Pause wallpaper engine on battery, resume on AC";
+              After = [ "linux-wallpaperengine.service" ];
+              BindsTo = [ "linux-wallpaperengine.service" ];
+            };
+            Service = {
+              Type = "simple";
+              Restart = "on-failure";
+              RestartSec = 5;
+              ExecStart = pkgs.writeShellScript "wallpaper-power-check" (
+                builtins.readFile (
+                  pkgs.replaceVars ../../scripts/wallpaper-power-check.sh {
+                    ac_supply_path = "/sys/class/power_supply/ACAD/online";
+                    systemctl = "${pkgs.systemd}/bin/systemctl";
+                    kill = "${pkgs.coreutils}/bin/kill";
+                    sleep = "${pkgs.coreutils}/bin/sleep";
+                  }
+                )
+              );
+            };
+            Install.WantedBy = [ "linux-wallpaperengine.service" ];
           };
 
           # Agenix configuration for GitHub SSH key

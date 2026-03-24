@@ -13,4 +13,12 @@ echo "hello world" | _ocxelh_function
 @test "non-empty prompt builds prompt" (grep -c "hello world" $log1) -ge 1
 @test "non-empty prompt uses templated local Qwen model" (grep -c "lmstudio/__QWEN_LOCAL__" $log1) -ge 1
 
-rm -f $log1
+set log2 (mktemp)
+function opencode; echo $argv >> $log2; end
+
+_ocxelh_function hello world
+
+@test "inline args forwards prompt" (grep -c "hello world" $log2) -ge 1
+@test "inline args uses run subcommand" (grep -c "^run " $log2) -ge 1
+
+rm -f $log1 $log2

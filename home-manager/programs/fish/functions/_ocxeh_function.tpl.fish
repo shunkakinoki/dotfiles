@@ -2,7 +2,13 @@ function _ocxeh_function --description "Run OpenCode headlessly with a prompted 
   # Prompt for input and run OpenCode
   # Usage: ocxeh
 
-  read -P "Prompt: " prompt
+  set -l prompt
+  if test (count $argv) -gt 0
+    set prompt (string join " " $argv)
+  else
+    read -P "Prompt: " prompt
+  end
+
   if test -z "$prompt"
     echo "No prompt provided, aborting." >&2
     return 1
