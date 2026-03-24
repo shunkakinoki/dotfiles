@@ -678,14 +678,12 @@ lua-check-neovim: ## Check Neovim configuration.
 	@if [ -f "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json" ]; then \
 		ln -sf "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json" ~/.config/nvim/nvim-pack-lock.json; \
 	fi
-	@nvim --headless -c "lua dofile('$(PWD)/home-manager/programs/neovim/init.lua')" -c "qa" 2>&1; \
-	EXIT_CODE=$$?; \
-	if [ $$EXIT_CODE -eq 0 ]; then \
-		echo "✅ Neovim configuration is valid"; \
-	else \
-		echo "❌ Neovim configuration has errors (exit code: $$EXIT_CODE)"; \
-		exit $$EXIT_CODE; \
+	@nvim --headless -c "lua dofile('$(PWD)/home-manager/programs/neovim/init.lua')" -c "qa" 2>&1 | tee /tmp/nvim-check.log; \
+	if grep -q "^E[0-9]\|^Error\|module .* not found" /tmp/nvim-check.log; then \
+		echo "❌ Neovim configuration has errors"; \
+		exit 1; \
 	fi
+	@echo "✅ Neovim configuration is valid"
 
 .PHONY: lua-check-neovim-dev
 lua-check-neovim-dev: ## Run the Neovim Lua check inside the Nix dev shell (mirrors CI).
