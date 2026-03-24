@@ -678,6 +678,14 @@ lua-check-neovim: ## Check Neovim configuration.
 	@if [ -f "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json" ]; then \
 		ln -sf "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json" ~/.config/nvim/nvim-pack-lock.json; \
 	fi
+	@echo "📦 Installing plugins..."
+	@nvim --headless +"lua vim.pack.update()" +qa 2>&1
+	@for d in $(HOME)/.local/share/nvim/site/pack/*/opt/telescope-fzf-native.nvim $(HOME)/.local/share/nvim/site/pack/*/start/telescope-fzf-native.nvim; do \
+		if [ -d "$$d" ] && [ ! -f "$$d/build/libfzf.so" ] && [ ! -f "$$d/build/libfzf.dylib" ]; then \
+			echo "🔨 Building telescope-fzf-native.nvim..."; \
+			make -C "$$d" clean all; \
+		fi; \
+	done
 	@nvim --headless -c "lua dofile('$(PWD)/home-manager/programs/neovim/init.lua')" -c "qa" 2>&1 | tee /tmp/nvim-check.log; \
 	if grep -q "^E[0-9]\|^Error\|module .* not found" /tmp/nvim-check.log; then \
 		echo "❌ Neovim configuration has errors"; \
