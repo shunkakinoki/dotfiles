@@ -1,0 +1,47 @@
+fix Error in /Users/shunkakinoki/.config/nvim/init.lua:
+E5113: Lua chunk: /Users/shunkakinoki/.config/nvim/lua/config/treesitter.lua:32: module 'nvim-treesitter.config' not found:
+        no field package.preload['nvim-treesitter.config']
+        no file './nvim-treesitter/config.lua'
+        no file '/nix/store/REDACTED.1.1741730670/share/luajit-2.1/nvim-treesitter/config.lua'
+        no file '/usr/local/share/lua/5.1/nvim-treesitter/config.lua'
+        no file '/usr/local/share/lua/5.1/nvim-treesitter/config/init.lua'
+        no file '/nix/store/REDACTED.1.1741730670/share/lua/5.1/nvim-treesitter/config.lua'
+        no file '/nix/store/REDACTED.1.1741730670/share/lua/5.1/nvim-treesitter/config/init.lua'
+        no file '/nix/store/lua/nvim-treesitter/config.lua'
+        no file '/nix/store/lua/nvim-treesitter/config/init.lua'
+        no file '/Users/shunkakinoki/.config/nvim/lua/nvim-treesitter/config.lua'
+        no file '/Users/shunkakinoki/.config/nvim/lua/nvim-treesitter/config/init.lua'
+        no file './nvim-treesitter/config.so'
+        no file '/usr/local/lib/lua/5.1/nvim-treesitter/config.so'
+        no file '/nix/store/REDACTED.1.1741730670/lib/lua/5.1/nvim-treesitter/config.so'
+        no file '/usr/local/lib/lua/5.1/loadall.so'
+        no file './nvim-treesitter.so'
+        no file '/usr/local/lib/lua/5.1/nvim-treesitter.so'
+        no file '/nix/store/REDACTED.1.1741730670/lib/lua/5.1/nvim-treesitter.so'
+        no file '/usr/local/lib/lua/5.1/loadall.so'
+stack traceback:
+        [C]: in function 'require'
+        /Users/shunkakinoki/.config/nvim/lua/config/treesitter.lua:32: in main chunk
+        [C]: in function 'require'
+        /Users/shunkakinoki/.config/nvim/init.lua:38: in main chunk
+Press ENTER or type command to continue
+
+---
+
+/pr-create
+
+---
+
+i want to keep @nvim --headless -c "lua dofile('$(PWD)/home-manager/programs/neovim/init.lua')" in the makefile
+
+---
+
+no; fi
+    @NVIM_OUTPUT=$$(nvim --headless -c "lua dofile('$(PWD)/home-manager/programs/neovim/init.lua')" -c "qa" 2>&1); \
+    if echo "$$NVIM_OUTPUT" | grep -q "^E[0-9]\|^Error\|module .* not found"; then \
+        echo "❌ Neovim configuration has errors:"; \
+        echo "$$NVIM_OUTPUT"; \
+        exit 1; \
+    fi
+    @nvim --headless -c "lua dofile('$(PWD)/home-manager/programs/neovim/init.lua')" -c "qa"
+    @echo "✅ Neovim configuration is valid" keep the original format i'm saying that @NVIM_OUTPUT=$$(nvim --headless -c "lua dofile('$(PWD)/home-manager/programs/neovim/init.lua')" -c "qa" 2>&1); \ is ugly
