@@ -258,6 +258,7 @@ named-hosts/kyber/setup.sh
 named-hosts/matic/falcon-init.sh
 named-hosts/matic/pam-gnome-keyring-tpm-unlock.sh
 nix-darwin/services/pmset-battery-policy/power-policy.sh
+scripts/build-neovim-plugins.sh
 scripts/check-nix-inline-scripts.sh
 scripts/fishtape-wrapper.sh
 scripts/llm-update.sh
