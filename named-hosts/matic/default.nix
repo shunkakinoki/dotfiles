@@ -126,8 +126,6 @@ inputs.nixpkgs.lib.nixosSystem {
           KERNEL=="uinput", GROUP="input", TAG+="uaccess", MODE:="0660", OPTIONS+="static_node=uinput"
           KERNEL=="event*", ATTRS{name}=="keyd virtual keyboard", GROUP="input", MODE:="0660"
           KERNEL=="event*", ATTRS{name}=="keyd virtual pointer", GROUP="input", MODE:="0660"
-          # Restart wallpaper power monitor on AC state change
-          SUBSYSTEM=="power_supply", ATTR{type}=="Mains", RUN+="${pkgs.systemd}/bin/systemctl --machine=${username}@.host --user restart wallpaper-power-monitor.service"
         '';
 
         # AMD graphics with hardware acceleration
@@ -449,17 +447,19 @@ inputs.nixpkgs.lib.nixosSystem {
             Unit = {
               Description = "Pause wallpaper engine on battery, resume on AC";
               After = [ "linux-wallpaperengine.service" ];
-              Requires = [ "linux-wallpaperengine.service" ];
+              BindsTo = [ "linux-wallpaperengine.service" ];
             };
             Service = {
-              Type = "oneshot";
-              RemainAfterExit = true;
+              Type = "simple";
+              Restart = "on-failure";
+              RestartSec = 5;
               ExecStart = pkgs.writeShellScript "wallpaper-power-check" (
                 builtins.readFile (
                   pkgs.replaceVars ../../scripts/wallpaper-power-check.sh {
                     ac_supply_path = "/sys/class/power_supply/ACAD/online";
                     systemctl = "${pkgs.systemd}/bin/systemctl";
                     kill = "${pkgs.coreutils}/bin/kill";
+                    sleep = "${pkgs.coreutils}/bin/sleep";
                   }
                 )
               );
