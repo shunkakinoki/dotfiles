@@ -40,7 +40,7 @@ telescope.setup({
 	},
 })
 telescope.load_extension("gh")
-pcall(telescope.load_extension, "fzf")
+telescope.load_extension("fzf")
 telescope.load_extension("ui-select")
 
 local function ivy(iopts)
