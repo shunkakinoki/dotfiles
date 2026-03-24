@@ -183,3 +183,7 @@ Error: Process completed with exit code 2.
 0s
 0s
  failing on CI
+
+---
+
+maybe revert https://github.com/shunkakinoki/dotfiles/pull/1270/commits/2cadf578c36c841b450fa6c5c0e7df276865e2c1 and call the lua-check-neovim inside the devshell where it contains fzf?
