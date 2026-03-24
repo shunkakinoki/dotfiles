@@ -157,6 +157,7 @@ with pkgs;
   libnotify
   linux-wallpaperengine
   loupe
+  mpv
   nautilus
   pavucontrol
   playerctl
@@ -170,6 +171,7 @@ with pkgs;
   swappy
   telegram-desktop
   totem
+  v4l-utils
   vlc
   pkgs-nightly.vscode
   wf-recorder
