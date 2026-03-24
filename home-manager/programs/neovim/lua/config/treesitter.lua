@@ -28,8 +28,7 @@ require("treesitter-context").setup()
 
 -- Configures Treesitter language parsers, highlighting, and textobjects.
 -- From: https://github.com/nvim-treesitter/nvim-treesitter
----@diagnostic disable-next-line: missing-fields
-require("nvim-treesitter.config").setup({
+require("nvim-treesitter").setup({
 	ensure_installed = {
 		"arduino",
 		"awk",
@@ -81,31 +80,6 @@ require("nvim-treesitter.config").setup({
 		"vimdoc",
 		"yaml",
 		"zig",
-	},
-	highlight = {
-		enable = true,
-	},
-	indent = {
-		enable = true,
-	},
-	endwise = {
-		enable = true,
-	},
-	autopairs = {
-		enable = true,
-	},
-	context_commentstring = {
-		enable = true,
-		enable_autocmd = false,
-	},
-	incremental_selection = {
-		enable = true,
-		keymaps = {
-			init_selection = "<C-space>",
-			node_incremental = "<C-space>",
-			node_decremental = "<bs>",
-			scope_incremental = "<noop>",
-		},
 	},
 	auto_install = true,
 })
