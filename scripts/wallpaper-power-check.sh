@@ -27,6 +27,9 @@ apply_state() {
   fi
 }
 
+# Let wallpaper engine render its first frame before potentially stopping it
+@sleep@ 30
+
 while true; do
   CURRENT_STATE="$(cat "$AC_PATH" 2>/dev/null || echo "")"
 
