@@ -4,6 +4,15 @@
 
 set -euo pipefail
 
+# Ensure the linker can find clang_rt on macOS (Xcode clang version may differ
+# from the version some Rust crates hard-code in their build scripts).
+if [ "$(uname)" = "Darwin" ]; then
+  CLANG_LIB="$(echo /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/*/lib/darwin)"
+  if [ -d "$CLANG_LIB" ]; then
+    export LIBRARY_PATH="${CLANG_LIB}${LIBRARY_PATH:+:$LIBRARY_PATH}"
+  fi
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 CONFIG_FILE="$REPO_ROOT/.local-binaries.txt"
