@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "06e8f9690147",
+  "strategy": "manual-commit",
+  "branch": "fix/services-ollama-and-local-binaries",
+  "checkpoints_count": 1,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/06/e8f9690147/0/metadata.json",
+      "transcript": "/06/e8f9690147/0/full.jsonl",
+      "content_hash": "/06/e8f9690147/0/content_hash.txt",
+      "prompt": "/06/e8f9690147/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 103,
+    "cache_creation_tokens": 65180,
+    "cache_read_tokens": 2454254,
+    "output_tokens": 8121,
+    "api_call_count": 52
+  }
+}
