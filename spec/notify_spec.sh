@@ -20,7 +20,7 @@ End
 
 Describe 'Pushover configured with .env present'
 setup() {
-  mock_bin_setup osascript
+  mock_bin_setup notify-local
   TEMP_HOME=$(mktemp -d)
   mkdir -p "$TEMP_HOME/dotfiles"
   cat >"$TEMP_HOME/dotfiles/.env" <<'ENV'
@@ -45,7 +45,7 @@ End
 
 Describe 'Notification hook (no Pushover)'
 setup() {
-  mock_bin_setup osascript
+  mock_bin_setup notify-local
 
   # Unset Pushover credentials to ensure clean test environment
   unset PUSHOVER_API_TOKEN
@@ -73,13 +73,13 @@ It 'sends Basso notification for permission request'
 When run bash -c 'echo "{\"message\": \"Claude needs your permission to use Bash\"}" | env HOME=/nonexistent bash '"$SCRIPT"'; cat "$MOCK_LOG"'
 The status should be success
 The output should include 'Bash permission required'
-The output should include 'sound name "Basso"'
+The output should include 'Basso'
 End
 End
 
 Describe 'when credentials come from HOME/dotfiles/.env'
 setup() {
-  mock_bin_setup osascript
+  mock_bin_setup notify-local
   TEMP_HOME=$(mktemp -d)
   mkdir -p "$TEMP_HOME/dotfiles"
   cat >"$TEMP_HOME/dotfiles/.env" <<'ENV'
@@ -106,7 +106,7 @@ End
 
 Describe 'credential sourcing edge cases'
 setup() {
-  mock_bin_setup osascript
+  mock_bin_setup notify-local
   TEMP_HOME=$(mktemp -d)
   mkdir -p "$TEMP_HOME/dotfiles"
 
@@ -135,7 +135,8 @@ PUSHOVER_API_TOKEN=only_token
 ENV
 When run bash -c 'echo "{\"message\": \"Hello\"}" | env HOME="'"$TEMP_HOME"'" bash '"$SCRIPT"'; cat "$MOCK_LOG"'
 The status should be success
-The output should include 'display notification'
+The output should include 'Claude Code'
+The output should include 'Hello'
 End
 
 It 'ignores .env stderr and still sends local notification on source error'
@@ -144,13 +145,14 @@ this is not valid bash
 ENV
 When run bash -c 'echo "{\"message\": \"Hello\"}" | env HOME="'"$TEMP_HOME"'" bash '"$SCRIPT"'; cat "$MOCK_LOG"'
 The status should be success
-The output should include 'display notification'
+The output should include 'Claude Code'
+The output should include 'Hello'
 End
 End
 
 Describe 'SessionEnd hook (no Pushover)'
 setup() {
-  mock_bin_setup osascript
+  mock_bin_setup notify-local
 
   # Unset Pushover credentials to ensure clean test environment
   unset PUSHOVER_API_TOKEN
@@ -171,7 +173,7 @@ End
 
 Describe 'other hooks (no Pushover)'
 setup() {
-  mock_bin_setup osascript
+  mock_bin_setup notify-local
   TEMP_HOME=$(mktemp -d)
 
   unset PUSHOVER_API_TOKEN
@@ -206,7 +208,7 @@ It 'warns on risky PreToolUse Bash command'
 When run bash -c 'echo "{\"tool\": {\"name\": \"Bash\", \"input\": \"rm -rf /\"}}" | env HOME=/nonexistent bash '"$SCRIPT"'; cat "$MOCK_LOG"'
 The status should be success
 The output should include 'Risky: rm -rf /'
-The output should include 'sound name "Basso"'
+The output should include 'Basso'
 End
 
 It 'does not warn on PreToolUse non-Bash tool'

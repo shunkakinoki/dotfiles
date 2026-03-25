@@ -3,8 +3,7 @@
 #
 
 auto-update-channel = tip
-# theme = dark:Dracula,light:Catppuccin Latte
-theme = Dracula
+theme = dark:Dracula Custom,light:Catppuccin Latte Custom
 background-opacity = 0.8
 confirm-close-surface = true
 macos-option-as-alt = true
@@ -47,9 +46,5 @@ keybind = ctrl+shift+z=toggle_split_zoom
 keybind = ctrl+shift+e=equalize_splits
 keybind = ctrl+shift+w=close_surface
 
-# Split border styling
-split-divider-color = #88c0d0
-
 # Active panel highlighting (dim unfocused splits)
 unfocused-split-opacity = 0.7
-unfocused-split-fill = #1e1e2e

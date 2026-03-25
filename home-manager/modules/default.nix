@@ -3,6 +3,7 @@
   ./cargo-globals
   ./openclaw
   ./local-binaries
+  ./local-scripts
   ./npm-globals
   ./tailscale
   ./uv-globals
