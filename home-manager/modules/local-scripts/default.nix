@@ -1,4 +1,4 @@
-{ ... }:
+_:
 {
   home.file.".local/scripts/clipboard-copy" = {
     executable = true;
