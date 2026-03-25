@@ -9,20 +9,10 @@ in
       usegeoclue = true;
     };
     darkModeScripts = {
-      gtk-theme = ''
-        ${pkgs.dconf}/bin/dconf write \
-          /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
-        ${pkgs.dconf}/bin/dconf write \
-          /org/gnome/desktop/interface/gtk-theme "'Adwaita-dark'"
-      '';
+      gtk-theme = builtins.readFile ./dark-mode.sh;
     };
     lightModeScripts = {
-      gtk-theme = ''
-        ${pkgs.dconf}/bin/dconf write \
-          /org/gnome/desktop/interface/color-scheme "'prefer-light'"
-        ${pkgs.dconf}/bin/dconf write \
-          /org/gnome/desktop/interface/gtk-theme "'Adwaita'"
-      '';
+      gtk-theme = builtins.readFile ./light-mode.sh;
     };
   };
 }

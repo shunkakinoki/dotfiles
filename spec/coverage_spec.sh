@@ -180,6 +180,14 @@ It 'has spec file for nix-darwin/services/pmset-battery-policy/power-policy.sh'
 The path "spec/pmset_battery_policy_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/darkman/dark-mode.sh'
+The path "spec/darkman_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/services/darkman/light-mode.sh'
+The path "spec/darkman_spec.sh" should be exist
+End
+
 End
 
 Describe 'fish shortcut declarations'
@@ -247,6 +255,8 @@ home-manager/services/cliproxyapi/scripts/hydrate.sh
 home-manager/services/cliproxyapi/scripts/start.sh
 home-manager/services/cliproxyapi/scripts/wrapper.sh
 home-manager/services/code-syncer/sync.sh
+home-manager/services/darkman/dark-mode.sh
+home-manager/services/darkman/light-mode.sh
 home-manager/services/docker-postgres/start-postgres-wrapper.sh
 home-manager/services/docker-postgres/start-postgres.sh
 home-manager/services/docker/docker-setup.sh
