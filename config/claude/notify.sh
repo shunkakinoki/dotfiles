@@ -25,10 +25,18 @@ input=$(cat)
 notify() {
   local message="$1"
   local sound="${2:-Sonar}"
+  local notifier
 
   [ -z "$message" ] && return
 
-  "$HOME/.local/bin/notify-local" "Claude Code" "$message" "$sound"
+  notifier="$(command -v notify-local 2>/dev/null || true)"
+  if [ -z "$notifier" ] && [ -x "$HOME/.local/bin/notify-local" ]; then
+    notifier="$HOME/.local/bin/notify-local"
+  fi
+
+  if [ -n "$notifier" ]; then
+    "$notifier" "Claude Code" "$message" "$sound"
+  fi
 }
 
 # Handle Notification hook
