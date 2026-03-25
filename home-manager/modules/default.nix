@@ -3,8 +3,8 @@
   ./cargo-globals
   ./openclaw
   ./local-binaries
+  ./local-scripts
   ./npm-globals
-  ./scripts
   ./tailscale
   ./uv-globals
   ./xremap

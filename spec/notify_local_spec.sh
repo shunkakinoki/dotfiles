@@ -2,7 +2,7 @@
 # shellcheck disable=SC2329,SC2016
 
 Describe 'notify-local.sh'
-SCRIPT="$PWD/home-manager/modules/scripts/notify-local.sh"
+SCRIPT="$PWD/home-manager/modules/local-scripts/notify-local.sh"
 
 Describe 'when message is empty'
 It 'exits 0 without sending notification'

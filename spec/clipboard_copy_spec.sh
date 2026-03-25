@@ -2,7 +2,7 @@
 # shellcheck disable=SC2329,SC2016
 
 Describe 'clipboard-copy.sh'
-SCRIPT="$PWD/home-manager/modules/scripts/clipboard-copy.sh"
+SCRIPT="$PWD/home-manager/modules/local-scripts/clipboard-copy.sh"
 
 Describe 'when pbcopy is available'
 setup() {
