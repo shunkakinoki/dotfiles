@@ -669,19 +669,10 @@ lua-check-neovim: ## Check Neovim configuration.
 		exit 1; \
 	fi
 	@echo "📝 Validating Neovim configuration syntax..."
-	@mkdir -p ~/.config/nvim
-	@if [ -L "$(HOME)/.config/nvim/lua" ] || [ -d "$(HOME)/.config/nvim/lua" ]; then \
-		rm -rf "$(HOME)/.config/nvim/lua"; \
-	fi
-	@ln -sf "$(PWD)/home-manager/programs/neovim/init.lua" ~/.config/nvim/init.lua
-	@ln -sf "$(PWD)/home-manager/programs/neovim/lua" ~/.config/nvim/lua
-	@if [ -f "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json" ]; then \
-		ln -sf "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json" ~/.config/nvim/nvim-pack-lock.json; \
-	fi
 	@echo "📦 Installing plugins..."
-	@nvim --headless +"lua vim.pack.update()" +qa 2>&1
+	@nvim -u "$(PWD)/home-manager/programs/neovim/init.lua" --headless +"lua vim.pack.update()" +qa 2>&1
 	@bash $(PWD)/scripts/build-neovim-plugins.sh
-	@nvim --headless -c "lua dofile('$(PWD)/home-manager/programs/neovim/init.lua')" -c "qa" 2>&1 | tee /tmp/nvim-check.log; \
+	@nvim -u "$(PWD)/home-manager/programs/neovim/init.lua" --headless -c "qa" 2>&1 | tee /tmp/nvim-check.log; \
 	if grep -q "^E[0-9]\|^Error\|module .* not found" /tmp/nvim-check.log; then \
 		echo "❌ Neovim configuration has errors"; \
 		exit 1; \
