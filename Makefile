@@ -393,9 +393,9 @@ nix-format-clear-cache: ## Clear Nix format cache.
 	@echo "✅ Cache cleared"
 
 .PHONY: nix-format-check
-nix-format-check: nix-format-clear-cache ## Check Nix file formatting.
+nix-format-check: ## Check Nix file formatting.
 	@echo "🔍 Checking Nix file formatting..."
-	@$(NIX_EXEC) fmt -- --fail-on-change
+	@$(NIX_EXEC) fmt -- --clear-cache --fail-on-change
 	@echo "✅ All Nix files are properly formatted"
 
 .PHONY: nix-lint
