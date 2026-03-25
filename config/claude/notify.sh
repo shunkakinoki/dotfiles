@@ -30,8 +30,8 @@ notify() {
   [ -z "$message" ] && return
 
   notifier="$(command -v notify-local 2>/dev/null || true)"
-  if [ -z "$notifier" ] && [ -x "$HOME/.local/bin/notify-local" ]; then
-    notifier="$HOME/.local/bin/notify-local"
+  if [ -z "$notifier" ] && [ -x "$HOME/.local/scripts/notify-local" ]; then
+    notifier="$HOME/.local/scripts/notify-local"
   fi
 
   if [ -n "$notifier" ]; then
