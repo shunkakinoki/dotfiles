@@ -33,6 +33,7 @@ with pkgs;
   difftastic
   direnv
   doggo
+  dolt
   doppler
   duf
   dust
