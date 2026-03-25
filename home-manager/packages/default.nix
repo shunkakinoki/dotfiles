@@ -92,6 +92,9 @@ with pkgs;
   tree
   turso-cli
   uv
+  victorialogs
+  victoriametrics
+  victoriatraces
   watchexec
   wget
   yarn
