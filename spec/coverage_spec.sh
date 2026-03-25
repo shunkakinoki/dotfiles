@@ -229,6 +229,8 @@ config/hyprland/scripts/toggle-terminal.sh
 config/openclaw/hydrate.sh
 home-manager/modules/cargo-globals/install-cargo-globals.sh
 home-manager/modules/local-binaries/sync-local-binaries.sh
+home-manager/modules/local-scripts/clipboard-copy.sh
+home-manager/modules/local-scripts/notify-local.sh
 home-manager/modules/npm-globals/install-npm-globals.sh
 home-manager/modules/uv-globals/install-uv-globals.sh
 home-manager/modules/yek/install-yek-shim.sh

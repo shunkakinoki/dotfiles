@@ -6,7 +6,7 @@ title="${1:-Notification}"
 message="${2:-}"
 sound="${3:-}"
 
-if [[ -z "$message" ]]; then
+if [[ -z $message ]]; then
   exit 0
 fi
 
@@ -27,7 +27,7 @@ if command -v osascript >/dev/null 2>&1; then
   escaped_title="$(escape_applescript "$title")"
   escaped_message="$(escape_applescript "$message")"
 
-  if [[ -n "$sound" ]]; then
+  if [[ -n $sound ]]; then
     escaped_sound="$(escape_applescript "$sound")"
     osascript -e "display notification \"$escaped_message\" with title \"$escaped_title\" sound name \"$escaped_sound\"" >/dev/null 2>&1 || true
   else
