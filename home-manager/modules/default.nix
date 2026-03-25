@@ -4,6 +4,7 @@
   ./openclaw
   ./local-binaries
   ./npm-globals
+  ./scripts
   ./tailscale
   ./uv-globals
   ./xremap
