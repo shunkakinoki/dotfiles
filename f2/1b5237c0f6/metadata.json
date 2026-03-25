@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "f21b5237c0f6",
+  "strategy": "manual-commit",
+  "branch": "feat/add-victoria-packages",
+  "checkpoints_count": 1,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/f2/1b5237c0f6/0/metadata.json",
+      "transcript": "/f2/1b5237c0f6/0/full.jsonl",
+      "content_hash": "/f2/1b5237c0f6/0/content_hash.txt",
+      "prompt": "/f2/1b5237c0f6/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 103,
+    "cache_creation_tokens": 65180,
+    "cache_read_tokens": 2454254,
+    "output_tokens": 8121,
+    "api_call_count": 52
+  }
+}
