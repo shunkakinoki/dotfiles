@@ -1,6 +1,9 @@
 { pkgs, ... }:
 let
   inherit (pkgs) lib;
+  dconf = "${pkgs.dconf}/bin/dconf";
+  readScript = file:
+    builtins.replaceStrings [ "@dconf@" ] [ dconf ] (builtins.readFile file);
 in
 {
   services.darkman = lib.mkIf pkgs.stdenv.isLinux {
@@ -9,10 +12,10 @@ in
       usegeoclue = true;
     };
     darkModeScripts = {
-      gtk-theme = builtins.readFile ./dark-mode.sh;
+      gtk-theme = readScript ./dark-mode.sh;
     };
     lightModeScripts = {
-      gtk-theme = builtins.readFile ./light-mode.sh;
+      gtk-theme = readScript ./light-mode.sh;
     };
   };
 }

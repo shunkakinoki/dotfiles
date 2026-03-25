@@ -26,8 +26,8 @@ When run bash -c "cat '$DARK_SCRIPT'"
 The output should include "Adwaita-dark"
 End
 
-It 'uses dconf to write settings'
-When run bash -c "grep -c 'dconf write' '$DARK_SCRIPT'"
+It 'uses @dconf@ placeholder for Nix substitution'
+When run bash -c "grep -c '@dconf@ write' '$DARK_SCRIPT'"
 The output should eq '2'
 End
 End
@@ -55,9 +55,28 @@ When run bash -c "cat '$LIGHT_SCRIPT'"
 The output should include "Adwaita"
 End
 
-It 'uses dconf to write settings'
-When run bash -c "grep -c 'dconf write' '$LIGHT_SCRIPT'"
+It 'uses @dconf@ placeholder for Nix substitution'
+When run bash -c "grep -c '@dconf@ write' '$LIGHT_SCRIPT'"
 The output should eq '2'
+End
+End
+
+Describe 'default.nix'
+NIX_FILE="$PWD/home-manager/services/darkman/default.nix"
+
+It 'substitutes @dconf@ with pkgs.dconf path'
+When run bash -c "cat '$NIX_FILE'"
+The output should include 'replaceStrings [ "@dconf@" ] [ dconf ]'
+End
+
+It 'references dark-mode.sh'
+When run bash -c "cat '$NIX_FILE'"
+The output should include './dark-mode.sh'
+End
+
+It 'references light-mode.sh'
+When run bash -c "cat '$NIX_FILE'"
+The output should include './light-mode.sh'
 End
 End
 
