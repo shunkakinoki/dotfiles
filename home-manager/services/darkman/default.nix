@@ -2,8 +2,7 @@
 let
   inherit (pkgs) lib;
   dconf = "${pkgs.dconf}/bin/dconf";
-  readScript = file:
-    builtins.replaceStrings [ "@dconf@" ] [ dconf ] (builtins.readFile file);
+  readScript = file: builtins.replaceStrings [ "@dconf@" ] [ dconf ] (builtins.readFile file);
 in
 {
   services.darkman = lib.mkIf pkgs.stdenv.isLinux {
