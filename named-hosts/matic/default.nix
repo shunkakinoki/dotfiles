@@ -315,7 +315,7 @@ inputs.nixpkgs.lib.nixosSystem {
                 "hyprland"
                 "gtk"
               ];
-              "org.freedesktop.impl.portal.Settings" = [ "gtk" ];
+              "org.freedesktop.impl.portal.Settings" = [ "darkman" "gtk" ];
             };
           };
         };
