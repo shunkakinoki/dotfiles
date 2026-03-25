@@ -39,6 +39,7 @@
       fish_add_path -p -m ~/go/bin
       fish_add_path -p -m ~/.cargo/bin
       fish_add_path -p -m ~/.local/bin
+      fish_add_path -p -m ~/.local/scripts
       fish_add_path -p -m ~/.bun/bin
       fish_add_path -p -m /opt/homebrew/opt/postgresql@18/bin
       fish_add_path -p -m /opt/homebrew/bin
@@ -60,6 +61,7 @@
       fish_add_path -p -m ~/go/bin
       fish_add_path -p -m ~/.cargo/bin
       fish_add_path -p -m ~/.local/bin
+      fish_add_path -p -m ~/.local/scripts
       fish_add_path -p -m ~/.bun/bin
       fish_add_path -p -m /opt/homebrew/opt/postgresql@18/bin
       fish_add_path -p -m /opt/homebrew/bin
