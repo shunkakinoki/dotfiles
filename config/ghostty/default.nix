@@ -8,4 +8,10 @@ in
   xdg.configFile."ghostty/config" = {
     text = configText;
   };
+  xdg.configFile."ghostty/themes/Dracula Custom" = {
+    source = ./themes + "/Dracula Custom";
+  };
+  xdg.configFile."ghostty/themes/Catppuccin Latte Custom" = {
+    source = ./themes + "/Catppuccin Latte Custom";
+  };
 }

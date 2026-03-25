@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-# Claude Code Local Notification Script
-# Sends macOS notifications via osascript
-# Skips if Pushover is configured (to avoid duplicate notifications)
+# Claude Code local notification script.
+# Uses the shared local notifier and skips local popups when Pushover is configured.
 
 # Source credentials to check if Pushover is configured
 if [ -z "$PUSHOVER_API_TOKEN" ] || [ -z "$PUSHOVER_USER_KEY" ]; then
@@ -22,14 +21,14 @@ fi
 # Read JSON input from stdin
 input=$(cat)
 
-# Function to send local macOS notification
+# Function to send a local notification on the active platform
 notify() {
   local message="$1"
   local sound="${2:-Sonar}"
 
   [ -z "$message" ] && return
 
-  osascript -e "display notification \"${message}\" with title \"Claude Code\" sound name \"${sound}\"" 2>/dev/null
+  "$HOME/.local/bin/notify-local" "Claude Code" "$message" "$sound"
 }
 
 # Handle Notification hook

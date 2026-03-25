@@ -8,6 +8,7 @@ let
   brewUpgrader = import ./brew-upgrader { inherit pkgs; };
   cliproxyapi = import ./cliproxyapi;
   codeSyncer = import ./code-syncer { inherit pkgs; };
+  darkman = import ./darkman { inherit pkgs; };
   docker = import ./docker { inherit lib pkgs; };
   dockerPostgres = import ./docker-postgres { inherit pkgs; };
   dotfilesUpdater = import ./dotfiles-updater { inherit pkgs; };
@@ -23,6 +24,7 @@ in
   brewUpgrader
   cliproxyapi
   codeSyncer
+  darkman
   docker
   dockerPostgres
   dotfilesUpdater
