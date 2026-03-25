@@ -1,0 +1,13 @@
+why isn't light mode working for ghostty
+
+---
+
+yea.. i don't know why is this
+
+---
+
+it works on linux though
+
+---
+
+yea 2. in dotfiles
