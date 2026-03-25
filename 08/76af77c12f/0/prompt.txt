@@ -1,0 +1,21 @@
+checkout 1272 and go through the home-manager/modules/local-binaries/default.nix portion - it shouldn't contain the inline bash scripts
+
+---
+
+hmm shouldn't those two stay in @scripts/
+
+---
+
+remove the localbin/clipboard copy and notify-local from @home-manager/modules/local-binaries/ and create a new config/scripts?
+
+---
+
+move the clipboard-copy and notify local inside there
+
+---
+
+yes
+
+---
+
+ok now create tests so `make shell-test` pass
