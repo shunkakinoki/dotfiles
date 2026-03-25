@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "da954c1272e9",
+  "strategy": "manual-commit",
+  "branch": "dankman",
+  "checkpoints_count": 6,
+  "files_touched": [
+    "home-manager/modules/default.nix",
+    "home-manager/modules/scripts/clipboard-copy.sh",
+    "home-manager/modules/scripts/default.nix",
+    "home-manager/modules/scripts/notify-local.sh",
+    "spec/clipboard_copy_spec.sh",
+    "spec/notify_local_spec.sh"
+  ],
+  "sessions": [
+    {
+      "metadata": "/da/954c1272e9/0/metadata.json",
+      "transcript": "/da/954c1272e9/0/full.jsonl",
+      "content_hash": "/da/954c1272e9/0/content_hash.txt",
+      "prompt": "/da/954c1272e9/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 1103,
+    "cache_creation_tokens": 127094,
+    "cache_read_tokens": 3838901,
+    "output_tokens": 14814,
+    "api_call_count": 72
+  }
+}
