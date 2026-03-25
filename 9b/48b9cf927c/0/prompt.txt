@@ -1,0 +1,236 @@
+failing w/ Skip to content
+shunkakinoki
+dotfiles
+Repository navigation
+Code
+Issues
+1
+ (1)
+Pull requests
+2
+ (2)
+Agents
+Actions
+Security
+2
+ (2)
+Insights
+Settings
+Back to pull request #1275
+fix(ghostty): write config to macOS Application Support for GUI app #3890
+All jobs
+Run details
+Annotations
+1 error
+nix-test
+failed 1 hour ago in 3m 5s
+Search logs
+1s
+1s
+4s
+2m 57s
+copying path '/nix/store/REDACTED.13-tomli-2.4.0' from 'https://cache.nixos.org'...
+building '/nix/store/6n6llg39k1bz4aacy3mn3hb3q4c54kz5-lib-host.drv'...
+eval-nixos-runner> nixos-runner evaluates successfully
+copying path '/nix/store/rgif5d5i5lwpy57scya0znq5bai9w5cd-perl5.42.0-HTTP-Date-6.06' from 'https://cache.nixos.org'...
+building '/nix/store/REDACTED.drv'...
+lib-env> lib/env.nix: isCI is a boolean (value: 1)
+copying path '/nix/store/REDACTED.3.1' from 'https://cache.nixos.org'...
+copying path '/nix/store/REDACTED.42.0-Test-Fatal-0.017' from 'https://cache.nixos.org'...
+building '/nix/store/REDACTED.drv'...
+lib-host> lib/host.nix: isKyber is a boolean
+lib-host> lib/host.nix: isGalactica is a boolean
+lib-host> lib/host.nix: isMatic is a boolean
+lib-host> lib/host.nix: nodeName is a string (value: unknown)
+lib-host> lib/host.nix: isDesktop is a boolean (value: )
+copying path '/nix/store/ad630z5lkrrirwjrz8z8ymrzgklqjqdl-perl5.42.0-Net-SMTP-SSL-1.04' from 'https://cache.nixos.org'...
+copying path '/nix/store/REDACTED.13.0' from 'https://cache.nixos.org'...
+copying path '/nix/store/kddx44aylr3s2vpqzp4n6l48vqajamfy-python3.13-markdown-it-py-4.0.0' from 'https://cache.nixos.org'...
+building '/nix/store/REDACTED.drv'...
+lib-nixpkgs-config> lib/nixpkgs-config.nix: allowUnfree is true
+lib-nixpkgs-config> lib/nixpkgs-config.nix: allowUnfreePredicate exists
+lib-nixpkgs-unfree-predicate> 1password is allowed by unfree predicate
+lib-nixpkgs-unfree-predicate> claude-code is allowed by unfree predicate
+lib-nixpkgs-unfree-predicate> clickup is allowed by unfree predicate
+lib-nixpkgs-unfree-predicate> crush is allowed by unfree predicate
+lib-nixpkgs-unfree-predicate> qwen-code is allowed by unfree predicate
+lib-nixpkgs-unfree-predicate> slack is allowed by unfree predicate
+copying path '/nix/store/REDACTED.10.0' from 'https://cache.nixos.org'...
+copying path '/nix/store/REDACTED.4.0' from 'https://cache.nixos.org'...
+copying path '/nix/store/fwm9dj1445f55qyxxld8lv3lvazmnvyi-treefmt-2.4.1' from 'https://cache.nixos.org'...
+building '/nix/store/REDACTED.drv'...
+copying path '/nix/store/chr1cr56p1849pnll0bffh6s7529inc4-yamlfmt-0.21.0' from 'https://cache.nixos.org'...
+overlay-neovim-lua> neovim-unwrapped has lua attribute
+copying path '/nix/store/REDACTED.42-51-dev' from 'https://cache.nixos.org'...
+overlay-system-alias> pkgs.system exists: x86_64-linux
+copying path '/nix/store/5ciif1nws6k0maxdpw2rqryqsxdd0ams-perl5.42.0-File-Listing-6.16' from 'https://cache.nixos.org'...
+copying path '/nix/store/7zgq0585s33nqhf05j4qh4iwzp7sk6rj-perl5.42.0-HTTP-CookieJar-0.014' from 'https://cache.nixos.org'...
+copying path '/nix/store/x4mz2jzaayv8q5wrprwl0xzgszg6wk7v-perl5.42.0-HTTP-Message-6.45' from 'https://cache.nixos.org'...
+copying path '/nix/store/REDACTED.13-rich-14.2.0' from 'https://cache.nixos.org'...
+copying path '/nix/store/6k38kk69g0c627mk0jcz8dvgbvj461d6-perl5.42.0-HTML-Parser-3.81' from 'https://cache.nixos.org'...
+copying path '/nix/store/6ihhdz5frv36dasbabsihfv987ha2cpi-perl5.42.0-HTTP-Daemon-6.16' from 'https://cache.nixos.org'...
+copying path '/nix/store/bgm2mqsfhp32x2vhxr9rip78bi89z7cb-perl5.42.0-HTTP-Cookies-6.10' from 'https://cache.nixos.org'...
+copying path '/nix/store/rx7f1i2jbignsr6qm3x65csidd2xqcq3-perl5.42.0-HTTP-Negotiate-6.01' from 'https://cache.nixos.org'...
+copying path '/nix/store/REDACTED.42.0-CGI-4.59' from 'https://cache.nixos.org'...
+copying path '/nix/store/j4y4fm69wrv38jn319zl8ncz4hy34kx4-perl5.42.0-CGI-Fast-2.16' from 'https://cache.nixos.org'...
+copying path '/nix/store/b7iyh07s9qzf406harff396hmz8a76m3-python3.13-rich-argparse-1.7.2' from 'https://cache.nixos.org'...
+copying path '/nix/store/REDACTED.13-remarshal-1.3.0' from 'https://cache.nixos.org'...
+copying path '/nix/store/sca0pf46jmxva40qahkcwys5c1lvk6n2-gcc-15.2.0' from 'https://cache.nixos.org'...
+copying path '/nix/store/REDACTED.44' from 'https://cache.nixos.org'...
+building '/nix/store/REDACTED.toml.drv'...
+copying path '/nix/store/xxxiiqjcir30wgyr24cx9s1a135flfhw-perl5.42.0-libwww-perl-6.72' from 'https://cache.nixos.org'...
+copying path '/nix/store/REDACTED.53.0' from 'https://cache.nixos.org'...
+treefmt.toml> 
+building '/nix/store/rldndyx427xvsmyzyldba6d9476xwzm9-treefmt.drv'...
+building '/nix/store/85zryz86rx99qqhhrk552a9vc4dq9qrd-treefmt-check.drv'...
+treefmt-check> treefmt v2.4.1traversed 541 files
+treefmt-check> emitted 352 files for processing
+treefmt-check> formatted 352 files (0 changed) in 435ms
+treefmt-check>  M home-manager/modules/local-scripts/default.nix
+treefmt-check> diff --git a/home-manager/modules/local-scripts/default.nix b/home-manager/modules/local-scripts/default.nix
+treefmt-check> index 663df26..d813f95 100644
+treefmt-check> --- a/home-manager/modules/local-scripts/default.nix
+treefmt-check> +++ b/home-manager/modules/local-scripts/default.nix
+treefmt-check> @@ -1,5 +1,4 @@
+treefmt-check> -_:
+treefmt-check> -{
+treefmt-check> +_: {
+treefmt-check>    home.file.".local/scripts/clipboard-copy" = {
+treefmt-check>      executable = true;
+treefmt-check>      force = true;
+error: failed to build attribute 'checks.x86_64-linux.treefmt', build of '/nix/store/85zryz86rx99qqhhrk552a9vc4dq9qrd-treefmt-check.drv^*' failed: Cannot build '/nix/store/85zryz86rx99qqhhrk552a9vc4dq9qrd-treefmt-check.drv'.
+       Reason: builder failed with exit code 1.
+       Output paths:
+         /nix/store/REDACTED
+       Last 15 log lines:
+       > treefmt v2.4.1traversed 541 files
+       > emitted 352 files for processing
+       > formatted 352 files (0 changed) in 435ms
+       >  M home-manager/modules/local-scripts/default.nix
+       > diff --git a/home-manager/modules/local-scripts/default.nix b/home-manager/modules/local-scripts/default.nix
+       > index 663df26..d813f95 100644
+       > --- a/home-manager/modules/local-scripts/default.nix
+       > +++ b/home-manager/modules/local-scripts/default.nix
+       > @@ -1,5 +1,4 @@
+       > -_:
+       > -{
+       > +_: {
+       >    home.file.".local/scripts/clipboard-copy" = {
+       >      executable = true;
+       >      force = true;
+       For full logs, run:
+         nix log /nix/store/85zryz86rx99qqhhrk552a9vc4dq9qrd-treefmt-check.drv
+make: *** [Makefile:978: nix-test] Error 1
+Error: Process completed with exit code 2.
+0s
+0s
+ but why is `nix-format` not failing? fix both
+
+---
+
+no see the nix-format job Skip to content
+shunkakinoki
+dotfiles
+Repository navigation
+Code
+Issues
+1
+ (1)
+Pull requests
+2
+ (2)
+Agents
+Actions
+Security
+2
+ (2)
+Insights
+Settings
+Back to pull request #1275
+fix(ghostty): write config to macOS Application Support for GUI app #3890
+All jobs
+Run details
+nix-format
+succeeded 1 hour ago in 32s
+Search logs
+0s
+1s
+4s
+24s
+Run make nix-format-check
+🧹 Clearing Nix cache...
+unpacking 'github:hercules-ci/flake-parts/f20dc5d9b8027381c474144ecabc9034d6a839a3?REDACTED%3D' into the Git cache...
+unpacking 'github:nix-community/nixpkgs.lib/c185c7a5e5dd8f9add5b2f8ebeff00888b070742?narHash=sha256-e%2B/T/REDACTED%2BQ%3D' into the Git cache...
+unpacking 'github:numtide/treefmt-nix/71b125cd05fbfd78cab3e070b73544abe24c5016?narHash=sha256-6E/yhXP7Oy/NbXtf1ktzmU8SdVqJQ09HC/48ebEGBpk%3D' into the Git cache...
+unpacking 'github:cachix/devenv/e183f79bf67ace9c21212aa83363a28c941dc4ae?REDACTED%3D' into the Git cache...
+copying path '/nix/store/REDACTED' from 'https://cache.nixos.org'...
+unpacking 'github:nix-community/NUR/311061911211990620a59b42838e15f79f98ff5a?narHash=sha256-OcPr%2BFiMeeEF41b%REDACTED%3D' into the Git cache...
+unpacking 'github:hercules-ci/flake-parts/205b12d8b7cd4802fbcb8e8ef6a0f1408781a4f9?REDACTED/Sye1mzps0zHWYnP88c%3D' into the Git cache...
+unpacking 'github:nix-community/neovim-nightly-overlay/14408dc1b61b6112a79d4b2e5e10e658e18bd554?narHash=sha256-yfJ3Vj0kqvJ%2BF5E1QtGfYgCFDncEe2vmYcDK%2BofUrmQ%3D' into the Git cache...
+unpacking 'github:shazow/foundry.nix/e987b2b6d6b3bc40d4fcb86e6e85d508f59dd3f9?REDACTED/Gd25eu8%3D' into the Git cache...
+unpacking 'github:numtide/flake-utils/3cecb5b042f7f209c56ffd8371b2711a290ec797?REDACTED%3D' into the Git cache...
+these 2 derivations will be built:
+  /nix/store/REDACTED.toml.drv
+  /nix/store/rldndyx427xvsmyzyldba6d9476xwzm9-treefmt.drv
+these 87 paths will be fetched (93.1 MiB download, 345.1 MiB unpacked):
+  /nix/store/vfa8fqz4k8dnlwivphif88qai54nxnqf-acl-2.3.2
+  /nix/store/7ssfvw8z4ylzjkw73z1y78svbhkdlkvb-attr-2.5.2
+  /nix/store/2hjsch59amjs3nbgh7ahcfzm2bfwl8zi-bash-5.3p9
+  /nix/store/b0wd8iqzz2cqx389qav1c5h5cv87dmb5-biome-2.4.7
+  /nix/store/sb2rv4sivgmmgdwszyhjbsb51gs3dpai-brotli-1.2.0-lib
+  /nix/store/ydpw9xwv0j5v8swa6wlz1ag2p19635mi-bzip2-1.0.8
+  /nix/store/x8l7qzpab2gpdrp89g48mxlrsiz4f0gm-bzip2-1.0.8-bin
+  /nix/store/REDACTED.10
+  /nix/store/REDACTED.18.0
+  /nix/store/icrrz26xbyp293kagrlkab1bhc6gra0r-diffutils-3.12
+  /nix/store/nnhkhd6pj8zqd3m3yanpgky02ywrkhms-ed-1.22.4
+  /nix/store/588hnj4f64i2bbdjk1mjzif778dk4zp4-elfutils-0.194
+  /nix/store/ans4y7j70iwwa1xvck2vjzzi2iknx4h1-expat-2.7.4
+  /nix/store/p3j7lphwlci13f9w2v4rav6rbvpi80li-file-5.45
+  /nix/store/REDACTED.10.0
+  /nix/store/gf7b4yz4vhd0y2hnnrimhh875ghwzzzj-gawk-5.3.2
+  /nix/store/ihpdbhy4rfxaixiamyb588zfc3vj19al-gcc-15.2.0-lib
+  /nix/store/REDACTED.2.0-libgcc
+  /nix/store/7qb2ak72cnd85rgjlsg2v7jkrf382s4y-gdbm-1.26-lib
+  /nix/store/l0l2ll1lmylczj1ihqn351af2kyp5x19-glibc-2.42-51
+  /nix/store/REDACTED.3.0
+  /nix/store/wqikjqrnbynh44y0nfr16ynyq1g891wf-gmp-with-cxx-6.3.0
+  /nix/store/s0xj50a5awma0jwgsqws61014nxzxy19-gnu-config-2024-01-01
+  /nix/store/8laf6k81j9ckylrigj3xsk76j69knhvl-gnugrep-3.12
+  /nix/store/REDACTED.4.1
+  /nix/store/REDACTED.9
+  /nix/store/isva9q9zx3frx6hh6cnpihh1kd2bx6bk-gnutar-1.35
+1s
+0s
+ it's not failing
+
+---
+
+commit and push
+
+---
+
+revert lua changes (git stash) and go through why they change when i run the lua make script typechange thing idk why
+
+---
+
+wait why is it doing that?
+
+---
+
+yea why does it do the symlink change This is what lua-check-neovim does — look at line 673-677 of the Makefile:
+
+  @rm -rf "$(HOME)/.config/nvim/lua"
+  @ln -sf "$(PWD)/home-manager/programs/neovim/lua" ~/.config/nvim/lua makes no sense
+
+---
+
+does this work?
+
+---
+
+wait but why do you need to do step2. in the first place?
+
+---
+
+test that it works that way now?
