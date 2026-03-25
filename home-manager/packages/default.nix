@@ -33,6 +33,7 @@ with pkgs;
   difftastic
   direnv
   doggo
+  dolt
   doppler
   duf
   dust
@@ -92,6 +93,9 @@ with pkgs;
   tree
   turso-cli
   uv
+  victorialogs
+  victoriametrics
+  victoriatraces
   watchexec
   wget
   yarn
