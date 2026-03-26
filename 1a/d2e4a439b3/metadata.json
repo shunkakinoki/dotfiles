@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "1ad2e4a439b3",
+  "strategy": "manual-commit",
+  "branch": "feat/cliproxyapi-exact-timestamps",
+  "checkpoints_count": 2,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/1a/d2e4a439b3/0/metadata.json",
+      "transcript": "/1a/d2e4a439b3/0/full.jsonl",
+      "content_hash": "/1a/d2e4a439b3/0/content_hash.txt",
+      "prompt": "/1a/d2e4a439b3/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 669,
+    "cache_creation_tokens": 510283,
+    "cache_read_tokens": 14473995,
+    "output_tokens": 37895,
+    "api_call_count": 166
+  }
+}
