@@ -1,0 +1,25 @@
+fix dotfiles on  main [$] is 📦 v0.1.0 via 🥟 v1.3.11 via 🐍 v3.13.12 via 🦀 v1.94.0 on ☁️  shun@horizon.io
+❯ bd --version
+Error: bd binary not found at /Users/shunkakinoki/.bun/install/global/node_modules/@beads/bd/bin/bd
+This may indicate that the postinstall script failed to download the binary.
+Platform: darwin, Architecture: arm64
+
+---
+
+why is it so behind? most recent is 0.62.0
+
+---
+
+yes - and give me why it wasn't so in the first place
+
+---
+
+ah; thanks hwo about other ones - also is it possible to run bd to sync w/ linear
+
+---
+
+remove clawdbot, oh-my-opencode-opencode-swarm-plugin since it's not needed remove from global store
+
+---
+
+oh so you can do sync for bidirectional?
