@@ -38,6 +38,7 @@ with pkgs;
   duf
   dust
   entr
+  eww
   eza
   fastfetch
   fd

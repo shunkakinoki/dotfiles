@@ -4,8 +4,6 @@
   ...
 }:
 {
-  home.packages = [ pkgs.eww ];
-
   xdg.configFile."eww/eww.yuck" = {
     source = ./eww.yuck;
     force = true;
