@@ -14,6 +14,8 @@ EMAIL="@email@"
 KEYCHAIN_ACCOUNT="@keychain_account@"
 JQ="@jq@"
 
+SECURITY="${SECURITY:-/usr/bin/security}"
+
 mkdir -p "$AUTH_DIR"
 
 changed=0
@@ -21,7 +23,7 @@ changed=0
 # --- Claude Code (keychain) ---
 sync_claude() {
   local raw
-  raw=$(/usr/bin/security find-generic-password \
+  raw=$("$SECURITY" find-generic-password \
     -s "Claude Code-credentials" \
     -a "$KEYCHAIN_ACCOUNT" \
     -w 2>/dev/null) || return 0

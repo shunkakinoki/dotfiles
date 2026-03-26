@@ -61,6 +61,10 @@ It 'has spec file for home-manager/services/cliproxyapi/scripts/common.sh'
 The path "spec/cliproxyapi_backup_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/cliproxyapi/scripts/keychain-sync.sh'
+The path "spec/cliproxyapi_keychain_sync_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/code-syncer/sync.sh'
 The path "spec/code_syncer_spec.sh" should be exist
 End
@@ -252,6 +256,7 @@ home-manager/services/cliproxyapi/scripts/backup.sh
 home-manager/services/cliproxyapi/scripts/common.sh
 home-manager/services/cliproxyapi/scripts/docker-start.sh
 home-manager/services/cliproxyapi/scripts/hydrate.sh
+home-manager/services/cliproxyapi/scripts/keychain-sync.sh
 home-manager/services/cliproxyapi/scripts/start.sh
 home-manager/services/cliproxyapi/scripts/wrapper.sh
 home-manager/services/code-syncer/sync.sh
