@@ -13,6 +13,7 @@
       exec-once = ${pkgs.hyprpanel}/bin/hyprpanel
       exec-once = ${pkgs.hyprshell}/bin/hyprshell run &
       exec-once = ${pkgs.lib.getExe pkgs.hyprpolkitagent}
+      exec-once = sleep 3 && ${pkgs.conky}/bin/conky -d
     ''
     + builtins.readFile ./hyprland.conf;
   };
