@@ -7,6 +7,7 @@
       "dependencies": {
         "@anthropic-ai/claude-code": "^2.1.81",
         "@augmentcode/auggie": "^0.20.1",
+        "@beads/bd": "^0.62.0",
         "@biomejs/biome": "^2.4.8",
         "@ccusage/amp": "^18.0.10",
         "@ccusage/codex": "^18.0.10",
@@ -103,6 +104,7 @@
     "@sourcegraph/amp",
     "xcodebuildmcp",
     "typescript",
+    "@beads/bd",
     "@augmentcode/auggie",
     "@github/copilot",
     "chrome-devtools-mcp",
@@ -226,6 +228,8 @@
     "@babel/helper-validator-identifier": ["@babel/helper-validator-identifier@7.28.5", "", {}, "sha512-qSs4ifwzKJSV39ucNjsvc6WVHs6b7S03sOh2OcHF9UHfVPqWWALUsNUVzhSBiItjRZoLHx7nIarVjqKVusUZ1Q=="],
 
     "@babel/runtime": ["@babel/runtime@7.29.2", "", {}, "sha512-JiDShH45zKHWyGe4ZNVRrCjBz8Nh9TMmZG1kh4QTK8hCBTWBi8Da+i7s1fJw7/lYpM4ccepSNfqzZ/QvABBi5g=="],
+
+    "@beads/bd": ["@beads/bd@0.62.0", "", { "os": [ "!aix", "!sunos", "!freebsd", "!openbsd", ], "cpu": [ "x64", "arm64", ], "bin": { "bd": "bin/bd.js" } }, "sha512-UvGLw6L7UEIqCjQNuh6p3CpuJGz5xxaoJDr6o/brBZpmdYnDJcnTwAWPnviT4czxgkwVIhUzpERkj+IT+YhEBQ=="],
 
     "@biomejs/biome": ["@biomejs/biome@2.4.8", "", { "optionalDependencies": { "@biomejs/cli-darwin-arm64": "2.4.8", "@biomejs/cli-darwin-x64": "2.4.8", "@biomejs/cli-linux-arm64": "2.4.8", "@biomejs/cli-linux-arm64-musl": "2.4.8", "@biomejs/cli-linux-x64": "2.4.8", "@biomejs/cli-linux-x64-musl": "2.4.8", "@biomejs/cli-win32-arm64": "2.4.8", "@biomejs/cli-win32-x64": "2.4.8" }, "bin": { "biome": "bin/biome" } }, "sha512-ponn0oKOky1oRXBV+rlSaUlixUxf1aZvWC19Z41zBfUOUesthrQqL3OtiAlSB1EjFjyWpn98Q64DHelhA6jNlA=="],
 
