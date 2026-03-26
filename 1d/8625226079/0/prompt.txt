@@ -1,0 +1,52 @@
+set up a service to sync the current claude oauth keys to cliproxyapi - also when i upload a new key; does it sync on remote?
+
+---
+
+you've prompted everything
+
+---
+
+don't do that
+
+---
+
+it raises a popup for every keychain dump
+
+---
+
+yes please
+
+---
+
+verify that the claude token is valid
+
+---
+
+so where is the oauth otken from?
+
+---
+
+yes that's what i want
+
+---
+
+fix `make shell-test` and `make shell-lint`
+
+---
+
+run `make format`
+
+---
+
+<task-notification>
+<task-id>bfjdspfqc</task-id>
+<tool-use-id>toolu_01A6TtECz5oK8er216bLgcN6</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-shunkakinoki-dotfiles/f5116f20-03a5-402d-982c-df7ad180518f/tasks/bfjdspfqc.output</output-file>
+<status>completed</status>
+<summary>Background command "Run make format" completed (exit code 0)</summary>
+</task-notification>
+Read the output file to retrieve the result: /private/tmp/claude-501/-Users-shunkakinoki-dotfiles/f5116f20-03a5-402d-982c-df7ad180518f/tasks/bfjdspfqc.output
+
+---
+
+fix `make shell-test`
