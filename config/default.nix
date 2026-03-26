@@ -36,6 +36,7 @@ in
 ++ (
   if isDesktop then
     [
+      ./eww
       ./gtk
       ./hyprland
       ./hyprpanel

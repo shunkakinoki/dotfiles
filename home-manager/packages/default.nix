@@ -144,6 +144,7 @@ with pkgs;
   discord
   eog
   evince
+  eww
   ffmpeg
   file-roller
   gedit
