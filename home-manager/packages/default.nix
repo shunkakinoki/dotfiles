@@ -38,7 +38,6 @@ with pkgs;
   duf
   dust
   entr
-  eww
   eza
   fastfetch
   fd
@@ -145,6 +144,7 @@ with pkgs;
   discord
   eog
   evince
+  eww
   ffmpeg
   file-roller
   gedit
