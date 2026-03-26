@@ -13,6 +13,7 @@
   "dependencies": {
     "@anthropic-ai/claude-code": "^2.1.81",
     "@augmentcode/auggie": "^0.20.1",
+    "@beads/bd": "^0.62.0",
     "@biomejs/biome": "^2.4.8",
     "@ccusage/amp": "^18.0.10",
     "@ccusage/codex": "^18.0.10",
@@ -66,6 +67,7 @@
   "trustedDependencies": [
     "@anthropic-ai/claude-code",
     "@augmentcode/auggie",
+    "@beads/bd",
     "@biomejs/biome",
     "@ccusage/amp",
     "@ccusage/codex",

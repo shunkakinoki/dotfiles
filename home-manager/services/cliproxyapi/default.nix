@@ -40,6 +40,12 @@ let
     )
   );
 
+  keychainSyncScript = pkgs.replaceVars ./scripts/keychain-sync.sh {
+    email = "shunkakinoki@gmail.com";
+    keychain_account = "shunkakinoki";
+    jq = "${pkgs.jq}/bin/jq";
+  };
+
   wrapperScript = pkgs.replaceVars ./scripts/wrapper.sh {
     common = commonScript;
   };
@@ -105,6 +111,53 @@ in
     };
   };
 
+  # Keychain sync - extract Claude/Codex OAuth from local stores into auth dir
+  launchd.agents.cliproxyapi-keychain-sync = lib.mkIf pkgs.stdenv.isDarwin {
+    enable = true;
+    config = {
+      ProgramArguments = [
+        "${pkgs.bash}/bin/bash"
+        "${keychainSyncScript}"
+      ];
+      Environment = {
+        PATH = "${
+          lib.makeBinPath [
+            pkgs.bash
+            pkgs.coreutils
+            pkgs.jq
+          ]
+        }:/usr/bin";
+      };
+      StartInterval = 300;
+      RunAtLoad = true;
+      StandardOutPath = "/tmp/cliproxyapi-keychain-sync.log";
+      StandardErrorPath = "/tmp/cliproxyapi-keychain-sync.error.log";
+    };
+  };
+
+  # Periodic sync - pull auth files from S3 every 5 minutes
+  launchd.agents.cliproxyapi-sync = lib.mkIf pkgs.stdenv.isDarwin {
+    enable = true;
+    config = {
+      ProgramArguments = [
+        "${pkgs.bash}/bin/bash"
+        "${hydrateScript}"
+      ];
+      Environment = {
+        PATH = "${
+          lib.makeBinPath [
+            pkgs.bash
+            pkgs.coreutils
+            pkgs.awscli2
+          ]
+        }:/opt/homebrew/bin:/usr/local/bin:/usr/bin";
+      };
+      StartInterval = 300;
+      StandardOutPath = "/tmp/cliproxyapi-sync.log";
+      StandardErrorPath = "/tmp/cliproxyapi-sync.error.log";
+    };
+  };
+
   # Linux systemd
   systemd.user.services.cliproxyapi = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {
@@ -151,6 +204,32 @@ in
     Service = {
       Type = "oneshot";
       ExecStart = "${pkgs.bash}/bin/bash ${backupScript}";
+      Environment = "PATH=${
+        lib.makeBinPath [
+          pkgs.bash
+          pkgs.awscli2
+          pkgs.coreutils
+        ]
+      }";
+    };
+  };
+
+  # Periodic sync - pull auth files from S3 every 5 minutes
+  systemd.user.timers.cliproxyapi-sync = lib.mkIf pkgs.stdenv.isLinux {
+    Unit.Description = "Periodically sync auth files from S3";
+    Timer = {
+      OnBootSec = "1min";
+      OnUnitActiveSec = "5min";
+      Unit = "cliproxyapi-sync.service";
+    };
+    Install.WantedBy = [ "timers.target" ];
+  };
+
+  systemd.user.services.cliproxyapi-sync = lib.mkIf pkgs.stdenv.isLinux {
+    Unit.Description = "CLIProxyAPI auth sync from S3";
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.bash}/bin/bash ${hydrateScript}";
       Environment = "PATH=${
         lib.makeBinPath [
           pkgs.bash
