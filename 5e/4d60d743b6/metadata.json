@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "5e4d60d743b6",
+  "strategy": "manual-commit",
+  "branch": "keychainsy",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "home-manager/services/cliproxyapi/scripts/keychain-sync.sh",
+    "spec/cliproxyapi_keychain_sync_spec.sh"
+  ],
+  "sessions": [
+    {
+      "metadata": "/5e/4d60d743b6/0/metadata.json",
+      "transcript": "/5e/4d60d743b6/0/full.jsonl",
+      "content_hash": "/5e/4d60d743b6/0/content_hash.txt",
+      "prompt": "/5e/4d60d743b6/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 478,
+    "cache_creation_tokens": 273945,
+    "cache_read_tokens": 9322836,
+    "output_tokens": 31262,
+    "api_call_count": 122
+  }
+}
