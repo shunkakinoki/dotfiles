@@ -3,7 +3,7 @@
   "checkpoint_id": "1d8625226079",
   "strategy": "manual-commit",
   "branch": "keychainsy",
-  "checkpoints_count": 5,
+  "checkpoints_count": 6,
   "files_touched": [
     "bun.lock",
     "home-manager/services/cliproxyapi/default.nix",
@@ -16,13 +16,19 @@
       "transcript": "/1d/8625226079/0/full.jsonl",
       "content_hash": "/1d/8625226079/0/content_hash.txt",
       "prompt": "/1d/8625226079/0/prompt.txt"
+    },
+    {
+      "metadata": "/1d/8625226079/1/metadata.json",
+      "transcript": "/1d/8625226079/1/full.jsonl",
+      "content_hash": "/1d/8625226079/1/content_hash.txt",
+      "prompt": "/1d/8625226079/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 472,
-    "cache_creation_tokens": 272954,
-    "cache_read_tokens": 8597661,
-    "output_tokens": 30725,
-    "api_call_count": 116
+    "input_tokens": 575,
+    "cache_creation_tokens": 338134,
+    "cache_read_tokens": 11051915,
+    "output_tokens": 38846,
+    "api_call_count": 168
   }
 }
