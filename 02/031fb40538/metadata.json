@@ -3,8 +3,10 @@
   "checkpoint_id": "02031fb40538",
   "strategy": "manual-commit",
   "branch": "feat/tmux-save-on-kill",
-  "checkpoints_count": 1,
-  "files_touched": null,
+  "checkpoints_count": 11,
+  "files_touched": [
+    "home-manager/programs/tmux/tmux.conf"
+  ],
   "sessions": [
     {
       "metadata": "/02/031fb40538/0/metadata.json",
@@ -23,13 +25,19 @@
       "transcript": "/02/031fb40538/2/full.jsonl",
       "content_hash": "/02/031fb40538/2/content_hash.txt",
       "prompt": "/02/031fb40538/2/prompt.txt"
+    },
+    {
+      "metadata": "/02/031fb40538/3/metadata.json",
+      "transcript": "/02/031fb40538/3/full.jsonl",
+      "content_hash": "/02/031fb40538/3/content_hash.txt",
+      "prompt": "/02/031fb40538/3/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 13,
-    "cache_creation_tokens": 38355,
-    "cache_read_tokens": 403531,
-    "output_tokens": 1953,
-    "api_call_count": 9
+    "input_tokens": 2544,
+    "cache_creation_tokens": 119651,
+    "cache_read_tokens": 11044605,
+    "output_tokens": 25978,
+    "api_call_count": 160
   }
 }

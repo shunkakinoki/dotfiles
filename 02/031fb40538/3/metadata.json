@@ -1,0 +1,33 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "02031fb40538",
+  "session_id": "88d4e0ee-a711-4832-b79a-651beecf5f87",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-27T03:26:01.751375Z",
+  "branch": "feat/tmux-save-on-kill",
+  "checkpoints_count": 10,
+  "files_touched": [
+    "home-manager/programs/tmux/tmux.conf"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "c29406cd126a",
+  "token_usage": {
+    "input_tokens": 2531,
+    "cache_creation_tokens": 81296,
+    "cache_read_tokens": 10641074,
+    "output_tokens": 24025,
+    "api_call_count": 151
+  },
+  "session_metrics": {
+    "turn_count": 13
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-27T03:26:01.606901Z",
+    "agent_lines": 0,
+    "human_added": 36,
+    "human_modified": 12,
+    "human_removed": 0,
+    "total_committed": 40,
+    "agent_percentage": 0
+  }
+}

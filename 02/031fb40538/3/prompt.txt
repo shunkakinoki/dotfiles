@@ -1,0 +1,193 @@
+configure tmuxinator - i want 3 tabs for work and primary
+
+---
+
+just shell is fine for work / primary
+
+---
+
+also debug why resurrect is not working for work sesions
+
+---
+
+no just the 3rd tab
+
+---
+
+git only works for work session right?
+
+---
+
+hmm i only want to make it for work session
+
+---
+
+no only the work session should be saved - also make it work for linux too
+
+---
+
+ok now - make it now so that tmuxinator sessions have a 3rd tab (only add this not refactor the entire yaml)
+
+---
+
+no reset manually all tmuxinaotr tabs
+
+---
+
+no reset to main
+
+---
+
+ok now work on it now i've did it
+
+---
+
+hmm rename `work` instead of `shell-3` for work.yml `primary` instead of `shell-3`, `desktop` and `mobile`
+
+---
+
+nice create PR
+
+---
+
+also can you decrease transparency for capucino on ghostty to 95%
+
+---
+
+no i want it separate - is it possible to do that/
+
+---
+
+create PR
+
+---
+
+kill all tmux -sessions
+
+---
+
+is it reset?
+
+---
+
+it's not working (the resurrect) check again
+
+---
+
+yea the resurrect restore isn't working on the work session
+
+---
+
+so what was the reason?
+
+---
+
+no continium should work for the `work` sesion only not restore
+
+---
+
+likewwhen i kill the server and i run `two` it's still from scratch again
+
+---
+
+resurrect brings back pane/processes right?
+
+---
+
+nice - fix `make shell-test` and redo
+
+---
+
+ok create PR
+
+---
+
+explain though - how does continium and resurrect link together
+
+---
+
+<task-notification>
+<task-id>bczk9vcgh</task-id>
+<tool-use-id>toolu_01Q6rFqEWpZrqpu5rbgriy2L</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-shunkakinoki-dotfiles/4e998541-4f1d-4a79-851e-9f9c898d8a0d/tasks/bczk9vcgh.output</output-file>
+<status>completed</status>
+<summary>Background command "Find resurrect data directory" completed (exit code 0)</summary>
+</task-notification>
+
+---
+
+resurrect not working after doing two and manually killing + two again
+
+---
+
+hmm i did the rebuild should i restart?
+
+---
+
+i did check if correctly loaded
+
+---
+
+i've merged 1285?
+
+---
+
+did it go through Using wezterm
+Using whatsapp
+Using windsurf
+Using zed
+Using zoom
+Using Apollo
+Using Final Cut Pro
+Using Line
+Installing Notability
+^[[44;7uUsing Xcode
+`brew bundle` complete! 110 Brewfile dependencies now installed.
+Activating home-manager configuration for shunkakinoki
+Starting Home Manager activation
+warning: unknown setting 'eval-cores'
+warning: unknown setting 'lazy-trees'
+warning: unknown setting 'upgrade-nix-store-path-url'
+Activating checkFilesChanged
+Activating removeBackups
+Activating checkLinkTargets
+Existing file '/Users/shunkakinoki/.config/tmuxinator/mobile.yml' is in the way of '/nix/store/REDACTED/.config/tmuxinator/mobile.yml', will be moved to '/Users/shunkakinoki/.config/tmuxinator/mobile.yml.hm-backup'
+Existing file '/Users/shunkakinoki/.config/tmuxinator/primary.yml' is in the way of '/nix/store/REDACTED/.config/tmuxinator/primary.yml', will be moved to '/Users/shunkakinoki/.config/tmuxinator/primary.yml.hm-backup'
+Existing file '/Users/shunkakinoki/.config/tmuxinator/work.yml' is in the way of '/nix/store/REDACTED/.config/tmuxinator/work.yml', will be moved to '/Users/shunkakinoki/.config/tmuxinator/work.yml.hm-backup'
+Existing file '/Users/shunkakinoki/.config/tmuxinator/desktop.yml' is in the way of '/nix/store/REDACTED/.config/tmuxinator/desktop.yml', will be moved to '/Users/shunkakinoki/.config/tmuxinator/desktop.yml.hm-backup'
+Activating writeBoundary
+Activating createGpgHomedir
+Activating migrateGhAccounts
+Activating linkGeneration
+Cleaning up orphan links from /Users/shunkakinoki
+Creating home file links in /Users/shunkakinoki
+mv: cannot move '/Users/shunkakinoki/.config/tmuxinator/mobile.yml' to '/Users/shunkakinoki/.config/tmuxinator/mobile.yml.hm-backup': Permission denied
+Moving '/Users/shunkakinoki/.config/tmuxinator/mobile.yml' failed!
+ln: failed to create symbolic link '/Users/shunkakinoki/.config/tmuxinator/mobile.yml': Permission denied
+✅ Nix configuration activated successfully!
+make[1]: Entering directory '/Users/shunkakinoki/dotfiles'
+🔄 Restarting brew-upgrader...
+✅ brew-upgrader restarted
+🔄 Restarting openclaw...
+Load failed: 5: Input/output error
+Try running `launchctl bootstrap` as root for richer errors.
+✅ openclaw restarted
+🔄 Restarting cliproxyapi...
+✅ cliproxyapi restarted
+🔄 Restarting cliproxyapi-backup...
+✅ cliproxyapi-backup restarted
+🔄 Restarting code-syncer...
+
+---
+
+how abou the tmux conf itself
+
+---
+
+how about the tmux conf
+
+---
+
+Creating home file links in /Users/shunkakinoki
+mkdir: cannot create directory ‘/Users/shunkakinoki/.config/tmuxinator’: File exists
+ln: failed to create symbolic link '/Users/shunkakinoki/.config/tmuxinator/mobile.yml': No such file or directory
