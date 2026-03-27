@@ -1,0 +1,35 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "6cd53ae141f5",
+  "session_id": "45369b8c-9ea7-4dc4-aaf9-953bd3d6d1df",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-27T01:26:53.269231Z",
+  "branch": "chore/bump-deps",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "bun.lock",
+    "package.json"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-6[1m]",
+  "turn_id": "96824defabba",
+  "token_usage": {
+    "input_tokens": 194,
+    "cache_creation_tokens": 38371,
+    "cache_read_tokens": 1368574,
+    "output_tokens": 3066,
+    "api_call_count": 32
+  },
+  "session_metrics": {
+    "turn_count": 4
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-27T01:26:53.221594Z",
+    "agent_lines": 257,
+    "human_added": 12,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 269,
+    "agent_percentage": 95.53903345724906
+  }
+}

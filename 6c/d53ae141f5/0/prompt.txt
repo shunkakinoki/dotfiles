@@ -1,0 +1,17 @@
+what's the command to unstage bun.lock
+
+---
+
+continue
+
+---
+
+can't do that
+
+---
+
+how to upgrade worktrunk to latest version
+
+---
+
+run that

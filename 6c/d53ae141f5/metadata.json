@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "6cd53ae141f5",
+  "strategy": "manual-commit",
+  "branch": "chore/bump-deps",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "bun.lock",
+    "package.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/6c/d53ae141f5/0/metadata.json",
+      "transcript": "/6c/d53ae141f5/0/full.jsonl",
+      "content_hash": "/6c/d53ae141f5/0/content_hash.txt",
+      "prompt": "/6c/d53ae141f5/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 194,
+    "cache_creation_tokens": 38371,
+    "cache_read_tokens": 1368574,
+    "output_tokens": 3066,
+    "api_call_count": 32
+  }
+}
