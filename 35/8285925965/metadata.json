@@ -3,7 +3,7 @@
   "checkpoint_id": "358285925965",
   "strategy": "manual-commit",
   "branch": "fix/two-resurrect-restore",
-  "checkpoints_count": 7,
+  "checkpoints_count": 8,
   "files_touched": null,
   "sessions": [
     {
@@ -23,13 +23,19 @@
       "transcript": "/35/8285925965/2/full.jsonl",
       "content_hash": "/35/8285925965/2/content_hash.txt",
       "prompt": "/35/8285925965/2/prompt.txt"
+    },
+    {
+      "metadata": "/35/8285925965/3/metadata.json",
+      "transcript": "/35/8285925965/3/full.jsonl",
+      "content_hash": "/35/8285925965/3/content_hash.txt",
+      "prompt": "/35/8285925965/3/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 1386,
-    "cache_creation_tokens": 126174,
-    "cache_read_tokens": 2133484,
-    "output_tokens": 7453,
-    "api_call_count": 50
+    "input_tokens": 1549,
+    "cache_creation_tokens": 167397,
+    "cache_read_tokens": 2574882,
+    "output_tokens": 8419,
+    "api_call_count": 59
   }
 }
