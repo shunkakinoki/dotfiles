@@ -16,7 +16,6 @@ function _two_function --description "Attach to tmux work session"
     set -l restore $restore[1]
     if test -n "$restore"
       tmux run-shell "$restore"
-      sleep 1
     end
     # Clean up temp session if restore created work
     if tmux has-session -t work 2>/dev/null
