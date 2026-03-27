@@ -4039,17 +4039,17 @@ dependencies = [
 
 [[package]]
 name = "toml_edit"
-version = "0.24.1+spec-1.1.0"
+version = "0.25.5+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "01f2eadbbc6b377a847be05f60791ef1058d9f696ecb51d2c07fe911d8569d8e"
+checksum = "8ca1a40644a28bce036923f6a431df0b34236949d111cc07cb6dca830c9ef2e1"
 dependencies = [
  "indexmap",
  "serde_core",
  "serde_spanned 1.0.4",
- "toml_datetime 0.7.5+spec-1.1.0",
+ "toml_datetime 1.0.1+spec-1.1.0",
  "toml_parser",
  "toml_writer",
- "winnow 0.7.15",
+ "winnow 1.0.0",
 ]
 
 [[package]]
@@ -4985,9 +4985,9 @@ dependencies = [
 
 [[package]]
 name = "worktrunk"
-version = "0.29.4"
+version = "0.33.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c8fdd17cb5256e849f295531d62897b2824539671d14bc88ba503644e4d4d9a5"
+checksum = "e1c262337ff50b022825d0de9176f8514b24f626126ddbe68a4d0064f19574f2"
 dependencies = [
  "ansi-str",
  "anstream 1.0.0",
@@ -5037,8 +5037,8 @@ dependencies = [
  "tempfile",
  "termimad",
  "terminal_size",
- "toml 0.9.12+spec-1.1.0",
- "toml_edit 0.24.1+spec-1.1.0",
+ "toml 1.0.7+spec-1.1.0",
+ "toml_edit 0.25.5+spec-1.1.0",
  "tree-sitter",
  "tree-sitter-bash",
  "tree-sitter-highlight",
