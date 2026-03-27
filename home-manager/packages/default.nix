@@ -58,6 +58,7 @@ with pkgs;
   htop
   httpie
   hyperfine
+  input-leap
   jq
   jujutsu
   just
