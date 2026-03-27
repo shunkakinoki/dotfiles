@@ -1,0 +1,28 @@
+why is it doing dotfiles on  main [$!] is 📦 v0.1.0 via 🥟 v1.3.11 via 🐍 v3.13.12 via 🦀 v1.94.1 on ☁️  shun@horizon.io took 10m18s
+❯ _gco_function
+M       bun.lock
+T       home-manager/programs/neovim/lua/config/ai.lua
+T       home-manager/programs/neovim/lua/config/autocmds.lua
+T       home-manager/programs/neovim/lua/config/completion.lua
+T       home-manager/programs/neovim/lua/config/keymaps.lua
+T       home-manager/programs/neovim/lua/config/lsp.lua
+T       home-manager/programs/neovim/lua/config/plugins.lua
+T       home-manager/programs/neovim/lua/config/settings.lua
+T       home-manager/programs/neovim/lua/config/telescope.lua
+T       home-manager/programs/neovim/lua/config/terminal.lua
+T       home-manager/programs/neovim/lua/config/treesitter.lua
+T       home-manager/programs/neovim/lua/config/ui.lua
+T       home-manager/programs/neovim/lua/config/utils.lua
+T       home-manager/programs/neovim/lua/config/workspace.lua
+M       package.json
+Already on 'main'
+Your branch is up to date with 'origin/main'.
+Already up to date. keep package.json and bun.lock but i want to investigate why the .lua config why is it doing that
+
+---
+
+yea but this is doing this for each `make switch` i don't want to make it do that anymore
+
+---
+
+hmm no - make it relative link like all of the other repos - i want to make it ./lua
