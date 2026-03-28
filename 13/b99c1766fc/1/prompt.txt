@@ -1,0 +1,41 @@
+what's the command to unstage bun.lock
+
+---
+
+continue
+
+---
+
+can't do that
+
+---
+
+how to upgrade worktrunk to latest version
+
+---
+
+run that
+
+---
+
+yes please and update cargo.lock too
+
+---
+
+ok add worktrunk config Copy-ignored exclude patterns: wt step copy-ignored now skips built-in VCS metadata and tool-state directories (.bzr/, .conductor/, .entire/, .hg/, .jj/, .pi/, .pijul/, .sl/, .svn/, .worktrees/) by default. Additional excludes are configurable via [step.copy-ignored] exclude = [...] in user or project config. (#1667, thanks @shunkakinoki for #1653) for custom copy-ignored
+
+---
+
+what's .bzr
+
+---
+
+maybe just make it one of the dotdirs that's not in the above from ~/dotfiles
+
+---
+
+let's do .serena .cache .devenv
+
+---
+
+ok create PR and merge with admin priveleges
