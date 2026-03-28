@@ -17,6 +17,7 @@ in
   ./git-ai
   ./gomi
   ./ghostty
+  ./input-leap
   ./iterm2
   ./hammerspoon
   ./jj
@@ -32,7 +33,6 @@ in
   ./tmuxinator
   ./worktrunk
   ./zellij
-  ./input-leap
 ]
 ++ (
   if isDesktop then
