@@ -1,0 +1,28 @@
+why does 
+❯ how to set up https://github.com/input-leap/input-leap between galactica and
+matic
+  ⎿  Please run /login · API Error: 401
+     {"type":"error","error":{"type":"authentication_error","message":"OAuth
+     token has expired. Please obtain a new token or refresh your existing
+     token."},"request_id":"req_011CZUbuiJFKa59gdMqtU9zd"}
+ this happen so often - this didn't before cliproxyapi s3 backup tokens
+
+---
+
+yea his didn't happen before i started sync - search internet on why
+
+---
+
+no but oauth token is for cliprpxoayapi not claude code itself
+
+---
+
+1. search current dir for more inofomration
+
+---
+
+2.
+
+---
+
+is there a way to keep alive?
