@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "40230c5022e1",
+  "strategy": "manual-commit",
+  "branch": "feat/input-leap-tailscale",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "home-manager/services/input-leap/default.nix"
+  ],
+  "sessions": [
+    {
+      "metadata": "/40/230c5022e1/0/metadata.json",
+      "transcript": "/40/230c5022e1/0/full.jsonl",
+      "content_hash": "/40/230c5022e1/0/content_hash.txt",
+      "prompt": "/40/230c5022e1/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 136,
+    "cache_creation_tokens": 100677,
+    "cache_read_tokens": 5322530,
+    "output_tokens": 17120,
+    "api_call_count": 74
+  }
+}
