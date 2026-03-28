@@ -93,6 +93,9 @@ inputs.nixpkgs.lib.nixosSystem {
           initialPassword = "changemeow"; # Change this after first login with: passwd
         };
 
+        # Tailscale VPN
+        services.tailscale.enable = true;
+
         # Docker
         virtualisation.docker.enable = true;
 

@@ -18,6 +18,7 @@ let
   sshAgent = import ./ssh-agent {
     inherit config lib pkgs;
   };
+  inputLeap = import ./input-leap { inherit pkgs; };
   tmuxSessionLogger = import ./tmux-session-logger { inherit pkgs; };
 in
 [
@@ -28,6 +29,7 @@ in
   docker
   dockerPostgres
   dotfilesUpdater
+  inputLeap
   makeUpdater
   neversslKeepalive
   ollama

@@ -32,6 +32,7 @@ in
   ./tmuxinator
   ./worktrunk
   ./zellij
+  ./input-leap
 ]
 ++ (
   if isDesktop then
