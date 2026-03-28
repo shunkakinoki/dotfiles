@@ -1,0 +1,29 @@
+how to set up https://github.com/input-leap/input-leap between galactica and matic
+
+---
+
+continue
+
+---
+
+es put the services and put the confs in config
+
+---
+
+is it possible to use tailscale for this?
+
+---
+
+so.. this is not needed?
+
+---
+
+i don't think tailscale server is enabled on matic
+
+---
+
+it's enabled on kyber right? give me the exact code snippet
+
+---
+
+hmm walk me through what i need to make this work then

@@ -4,20 +4,28 @@
   "strategy": "manual-commit",
   "branch": "feat/input-leap-tailscale",
   "checkpoints_count": 1,
-  "files_touched": null,
+  "files_touched": [
+    "home-manager/default.nix"
+  ],
   "sessions": [
     {
       "metadata": "/0b/832d3d6c80/0/metadata.json",
       "transcript": "/0b/832d3d6c80/0/full.jsonl",
       "content_hash": "/0b/832d3d6c80/0/content_hash.txt",
       "prompt": "/0b/832d3d6c80/0/prompt.txt"
+    },
+    {
+      "metadata": "/0b/832d3d6c80/1/metadata.json",
+      "transcript": "/0b/832d3d6c80/1/full.jsonl",
+      "content_hash": "/0b/832d3d6c80/1/content_hash.txt",
+      "prompt": "/0b/832d3d6c80/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 13,
-    "cache_creation_tokens": 38355,
-    "cache_read_tokens": 403531,
-    "output_tokens": 1953,
-    "api_call_count": 9
+    "input_tokens": 128,
+    "cache_creation_tokens": 128093,
+    "cache_read_tokens": 4323654,
+    "output_tokens": 16071,
+    "api_call_count": 68
   }
 }
