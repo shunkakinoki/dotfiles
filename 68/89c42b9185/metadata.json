@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "6889c42b9185",
+  "strategy": "manual-commit",
+  "branch": "feat/cliproxyapi-token-refresh",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "home-manager/services/cliproxyapi/default.nix",
+    "home-manager/services/cliproxyapi/scripts/token-refresh.sh"
+  ],
+  "sessions": [
+    {
+      "metadata": "/68/89c42b9185/0/metadata.json",
+      "transcript": "/68/89c42b9185/0/full.jsonl",
+      "content_hash": "/68/89c42b9185/0/content_hash.txt",
+      "prompt": "/68/89c42b9185/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 7,
+    "cache_creation_tokens": 29117,
+    "cache_read_tokens": 98243,
+    "output_tokens": 858,
+    "api_call_count": 3
+  }
+}

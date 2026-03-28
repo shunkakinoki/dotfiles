@@ -1,0 +1,5 @@
+is macos awake behind the scenes when lid is closed?
+
+---
+
+check the current configurations
