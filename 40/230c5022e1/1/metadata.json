@@ -1,0 +1,33 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "40230c5022e1",
+  "session_id": "c400c8b9-473c-4d57-8c4c-1fd091b71d13",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-28T01:59:06.291471Z",
+  "branch": "feat/input-leap-tailscale",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "home-manager/services/input-leap/default.nix"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-6[1m]",
+  "turn_id": "e2c34ddf187b",
+  "checkpoint_transcript_start": 219,
+  "transcript_lines_at_start": 219,
+  "token_usage": {
+    "input_tokens": 5,
+    "cache_creation_tokens": 1652,
+    "cache_read_tokens": 486445,
+    "output_tokens": 1132,
+    "api_call_count": 5
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-28T01:59:06.055714Z",
+    "agent_lines": 0,
+    "human_added": 305,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 305,
+    "agent_percentage": 0
+  }
+}
