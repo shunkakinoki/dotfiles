@@ -12,13 +12,13 @@ let
   docker = import ./docker { inherit lib pkgs; };
   dockerPostgres = import ./docker-postgres { inherit pkgs; };
   dotfilesUpdater = import ./dotfiles-updater { inherit pkgs; };
+  inputLeap = import ./input-leap { inherit pkgs; };
   makeUpdater = import ./make-updater { inherit pkgs; };
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
   ollama = import ./ollama { inherit pkgs; };
   sshAgent = import ./ssh-agent {
     inherit config lib pkgs;
   };
-  inputLeap = import ./input-leap { inherit pkgs; };
   tmuxSessionLogger = import ./tmux-session-logger { inherit pkgs; };
 in
 [
