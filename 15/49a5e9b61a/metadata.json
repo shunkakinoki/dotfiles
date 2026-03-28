@@ -3,7 +3,7 @@
   "checkpoint_id": "1549a5e9b61a",
   "strategy": "manual-commit",
   "branch": "feat/input-leap-tailscale",
-  "checkpoints_count": 4,
+  "checkpoints_count": 5,
   "files_touched": [
     "config/input-leap/default.nix"
   ],
@@ -19,13 +19,19 @@
       "transcript": "/15/49a5e9b61a/1/full.jsonl",
       "content_hash": "/15/49a5e9b61a/1/content_hash.txt",
       "prompt": "/15/49a5e9b61a/1/prompt.txt"
+    },
+    {
+      "metadata": "/15/49a5e9b61a/2/metadata.json",
+      "transcript": "/15/49a5e9b61a/2/full.jsonl",
+      "content_hash": "/15/49a5e9b61a/2/content_hash.txt",
+      "prompt": "/15/49a5e9b61a/2/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 125,
-    "cache_creation_tokens": 127446,
-    "cache_read_tokens": 4235212,
-    "output_tokens": 15967,
-    "api_call_count": 67
+    "input_tokens": 161,
+    "cache_creation_tokens": 176767,
+    "cache_read_tokens": 5285299,
+    "output_tokens": 20312,
+    "api_call_count": 89
   }
 }
