@@ -1,0 +1,35 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "6889c42b9185",
+  "session_id": "af21f33a-2b39-4ff3-9aa0-b69d86da5e53",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-28T01:55:51.259868Z",
+  "branch": "feat/cliproxyapi-token-refresh",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "home-manager/services/cliproxyapi/default.nix",
+    "home-manager/services/cliproxyapi/scripts/token-refresh.sh"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-6[1m]",
+  "turn_id": "7323aab75985",
+  "token_usage": {
+    "input_tokens": 122,
+    "cache_creation_tokens": 92586,
+    "cache_read_tokens": 4368544,
+    "output_tokens": 14743,
+    "api_call_count": 64
+  },
+  "session_metrics": {
+    "turn_count": 2
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-28T01:55:51.132437Z",
+    "agent_lines": 213,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 1,
+    "total_committed": 213,
+    "agent_percentage": 100
+  }
+}
