@@ -1,0 +1,17 @@
+how to set up https://github.com/input-leap/input-leap between galactica and matic
+
+---
+
+continue
+
+---
+
+es put the services and put the confs in config
+
+---
+
+is it possible to use tailscale for this?
+
+---
+
+so.. this is not needed?
