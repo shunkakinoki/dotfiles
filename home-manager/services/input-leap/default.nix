@@ -1,7 +1,8 @@
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 let
   inherit (pkgs) lib;
   inherit (pkgs.stdenv) isDarwin isLinux;
+  inherit (inputs.host) isDesktop;
 in
 {
   # macOS: launchd agent for input-leap server
@@ -24,8 +25,8 @@ in
     };
   };
 
-  # Linux: systemd user service for input-leap client
-  systemd.user.services.input-leap-client = lib.mkIf isLinux {
+  # Linux desktop only (matic, not kyber)
+  systemd.user.services.input-leap-client = lib.mkIf (isLinux && isDesktop) {
     Unit = {
       Description = "Input Leap client (connects to galactica)";
       After = [
