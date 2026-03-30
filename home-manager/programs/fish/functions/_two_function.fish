@@ -1,10 +1,9 @@
 function _two_function --description "Attach to tmux work session"
   if tmux has-session -t work 2>/dev/null
     if test -n "$TMUX"
-      tmux switch-client -t work
-    else
-      tmux attach-session -t work
+      tmux detach-client
     end
+    tmux attach-session -t work
     return
   end
 

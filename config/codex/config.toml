@@ -1,10 +1,3 @@
-notify = [
-  "bash",
-  "-lc",
-  "JSON=\"$1\"; LAST_MESSAGE=$(echo \"$JSON\" | jq -r '.\"last-assistant-message\" // \"Codex task completed\"'); \"$HOME/.local/scripts/notify-local\" \"Codex\" \"$LAST_MESSAGE\"",
-  "notify",
-]
-
 suppress_unstable_features_warning = true
 web_search = "cached"
 model = "gpt-5.3-codex"
@@ -12,27 +5,36 @@ model_reasoning_effort = "xhigh"
 oss_provider = "lmstudio"
 
 [features]
-ghost_commit = false
-undo = false
-shell_tool = true
-unified_exec = true
 apply_patch_freeform = true
-exec_policy = true
-experimental_windows_sandbox = false
-elevated_windows_sandbox = false
-remote_compaction = true
-remote_models = true
-shell_snapshot = true
-child_agents_md = true
-powershell_utf8 = false
-enable_request_compression = false
-multi_agent = true
 apps = true
-skills = true
-steer = true
-collaboration_modes = true
-responses_websockets = false
+artifact = true
+child_agents_md = true
+code_mode = true
+codex_git_commit = true
+codex_hooks = true
+enable_fanout = true
+enable_request_compression = true
+fast_mode = true
+guardian_approval = true
+image_detail_original = true
+image_generation = true
+js_repl = true
+memories = true
+multi_agent = true
+multi_agent_v2 = true
 personality = true
+plugins = true
+prevent_idle_sleep = true
+realtime_conversation = true
+runtime_metrics = true
+shell_snapshot = true
+shell_tool = true
+tool_call_mcp_elicitation = true
+tool_search = true
+tool_suggest = true
+tui_app_server = true
+unified_exec = true
+voice_transcription = true
 
 [model_providers.cliproxyapi]
 name = "CLIProxyAPI"
