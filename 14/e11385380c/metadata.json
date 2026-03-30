@@ -1,0 +1,39 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "14e11385380c",
+  "strategy": "manual-commit",
+  "branch": "feat/codex-hooks",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "config/codex/config.toml",
+    "config/codex/config.tpl.toml",
+    "config/codex/default.nix",
+    "config/codex/hooks.json",
+    "config/codex/hooks/atuin-history.sh",
+    "config/codex/hooks/notify.sh",
+    "config/codex/hooks/pushover.sh",
+    "config/codex/hooks/rtk-rewrite.sh",
+    "config/codex/hooks/security.sh",
+    "home-manager/modules/local-scripts/default.nix",
+    "home-manager/modules/local-scripts/pushover-notify.sh",
+    "home-manager/programs/fish/functions/_tdo_function.fish",
+    "home-manager/programs/fish/functions/_tmo_function.fish",
+    "home-manager/programs/fish/functions/_tpo_function.fish",
+    "home-manager/programs/fish/functions/_two_function.fish"
+  ],
+  "sessions": [
+    {
+      "metadata": "/14/e11385380c/0/metadata.json",
+      "transcript": "/14/e11385380c/0/full.jsonl",
+      "content_hash": "/14/e11385380c/0/content_hash.txt",
+      "prompt": "/14/e11385380c/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 201,
+    "cache_creation_tokens": 90960,
+    "cache_read_tokens": 3028493,
+    "output_tokens": 17012,
+    "api_call_count": 40
+  }
+}

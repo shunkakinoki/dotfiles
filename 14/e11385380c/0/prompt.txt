@@ -1,0 +1,374 @@
+implement hooks OpenAI Developers
+Home
+API
+Codex
+ChatGPT
+Resources
+
+Start searching
+
+Codex
+Docs
+Overview
+Quickstart
+Explore
+Pricing
+Community
+Use cases
+Speed
+Rules
+Hooks
+AGENTS.md
+MCP
+Skills
+Subagents
+Authentication
+Agent approvals & security
+Windows
+Non-interactive Mode
+Codex SDK
+App Server
+MCP Server
+GitHub Action
+Best practices
+Videos
+Building AI Teams
+Changelog
+Feature Maturity
+Open Source
+Where Codex looks for hooks
+Config shape
+Matcher patterns
+Common input fields
+Common output fields
+Hooks
+SessionStart
+PreToolUse
+PostToolUse
+UserPromptSubmit
+Stop
+Schemas
+Hooks
+Run deterministic scripts during the Codex lifecycle
+
+Experimental. Hooks are under active development. Windows support temporarily disabled.
+
+Hooks are an extensibility framework for Codex. They allow you to inject your own scripts into the agentic loop, enabling features such as:
+
+Send the conversation to a custom logging/analytics engine
+Scan your team’s prompts to block accidentally pasting API keys
+Summarize conversations to create persistent memories automatically
+Run a custom validator when a conversation turn stops, enforcing standards
+Customize prompting when in a certain directory
+Hooks are behind a feature flag in config.toml:
+
+[features]
+codex_hooks = true
+
+Runtime behavior to keep in mind:
+
+Matching hooks from multiple files all run.
+Multiple matching command hooks for the same event are launched concurrently, so one hook cannot prevent another matching hook from starting.
+PreToolUse, PostToolUse, UserPromptSubmit, and Stop run at turn scope.
+Hooks are currently disabled on Windows.
+Where Codex looks for hooks
+
+Codex discovers hooks.json next to active config layers.
+
+In practice, the two most useful locations are:
+
+~/.codex/hooks.json
+<repo>/.codex/hooks.json
+If more than one hooks.json file exists, Codex loads all matching hooks. Higher-precedence config layers do not replace lower-precedence hooks.
+
+Config shape
+
+Hooks are organized in three levels:
+
+A hook event such as PreToolUse, PostToolUse, or Stop
+A matcher group that decides when that event matches
+One or more hook handlers that run when the matcher group matches
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.codex/hooks/session_start.py",
+            "statusMessage": "Loading session notes"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/pre_tool_use_policy.py\"",
+            "statusMessage": "Checking Bash command"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/post_tool_use_review.py\"",
+            "statusMessage": "Reviewing Bash output"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/user_prompt_submit_data_flywheel.py\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/stop_continue.py\"",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
+
+Notes:
+
+timeout is in seconds.
+timeoutSec is also accepted as an alias.
+If timeout is omitted, Codex uses 600 seconds.
+statusMessage is optional.
+Commands run with the session cwd as their working directory.
+For repo-local hooks, prefer resolving from the git root instead of using a relative path such as .codex/hooks/.... Codex may be started from a subdirectory, and a git-root-based path keeps the hook location stable.
+Matcher patterns
+
+The matcher field is a regex string that filters when hooks fire. Use "*", "", or omit matcher entirely to match every occurrence of a supported event.
+
+Only some current Codex events honor matcher:
+
+Event    What matcher filters    Notes
+PostToolUse    tool name    Current Codex runtime only emits Bash.
+PreToolUse    tool name    Current Codex runtime only emits Bash.
+SessionStart    start source    Current runtime values are startup and resume.
+UserPromptSubmit    not supported    Any configured matcher is ignored for this event.
+Stop    not supported    Any configured matcher is ignored for this event.
+Examples:
+
+Bash
+startup|resume
+Edit|Write
+That last example is still a valid regex, but current Codex PreToolUse and PostToolUse events only emit Bash, so it will not match anything today.
+
+Common input fields
+
+Every command hook receives one JSON object on stdin.
+
+These are the shared fields you will usually use:
+
+Field    Type    Meaning
+session_id    string    Current session or thread id.
+transcript_path    string | null    Path to the session transcript file, if any
+cwd    string    Working directory for the session
+hook_event_name    string    Current hook event name
+model    string    Active model slug
+Turn-scoped hooks list turn_id in their event-specific tables.
+
+If you need the full wire format, see Schemas.
+
+Common output fields
+
+SessionStart, UserPromptSubmit, and Stop support these shared JSON fields:
+
+{
+  "continue": true,
+  "stopReason": "optional",
+  "systemMessage": "optional",
+  "suppressOutput": false
+}
+
+Field    Effect
+continue    If false, marks that hook run as stopped
+stopReason    Recorded as the reason for stopping
+systemMessage    Surfaced as a warning in the UI or event stream
+suppressOutput    Parsed today but not yet implemented
+Exit 0 with no output is treated as success and Codex continues.
+
+PreToolUse supports systemMessage, but continue, stopReason, and suppressOutput are not currently supported for that event.
+
+PostToolUse supports systemMessage, continue: false, and stopReason. suppressOutput is parsed but not currently supported for that event.
+
+Hooks
+
+SessionStart
+
+matcher is applied to source for this event.
+
+Fields in addition to Common input fields:
+
+Field    Type    Meaning
+source    string    How the session started: startup or resume
+Plain text on stdout is added as extra developer context.
+
+JSON on stdout supports Common output fields and this hook-specific shape:
+
+{
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": "Load the workspace conventions before editing."
+  }
+}
+
+That additionalContext text is added as extra developer context.
+
+PreToolUse
+
+Currently PreToolUse only supports Bash tool interception. The model can still work around this by writing its own script to disk and then running that script with Bash, so treat this as a useful guardrail rather than a complete enforcement boundary.
+
+matcher is applied to tool_name, which currently always equals Bash.
+
+Fields in addition to Common input fields:
+
+Field    Type    Meaning
+turn_id    string    Codex-specific extension. Active Codex turn id
+tool_name    string    Currently always Bash
+tool_use_id    string    Tool-call id for this invocation
+tool_input.command    string    Shell command Codex is about to run
+Plain text on stdout is ignored.
+
+JSON on stdout can use systemMessage and can block a Bash command with this hook-specific shape:
+
+{
+  "hookSpecificOutput": {
+    "hookEventName": "PreToolUse",
+    "permissionDecision": "deny",
+    "permissionDecisionReason": "Destructive command blocked by hook."
+  }
+}
+
+Codex also accepts this older block shape:
+
+{
+  "decision": "block",
+  "reason": "Destructive command blocked by hook."
+}
+
+You can also use exit code 2 and write the blocking reason to stderr.
+
+permissionDecision: "allow" and "ask", legacy decision: "approve", updatedInput, additionalContext, continue: false, stopReason, and suppressOutput are parsed but not supported yet, so they fail open.
+
+PostToolUse
+
+Currently PostToolUse only supports Bash tool results. It is not limited to commands that exit successfully: non-interactive exec_command calls can still trigger PostToolUse when Codex emits a Bash post-tool payload. It cannot undo side effects from the command that already ran.
+
+matcher is applied to tool_name, which currently always equals Bash.
+
+Fields in addition to Common input fields:
+
+Field    Type    Meaning
+turn_id    string    Codex-specific extension. Active Codex turn id
+tool_name    string    Currently always Bash
+tool_use_id    string    Tool-call id for this invocation
+tool_input.command    string    Shell command Codex just ran
+tool_response    JSON value    Bash tool output payload. Today this is usually a JSON string
+Plain text on stdout is ignored.
+
+JSON on stdout can use systemMessage and this hook-specific shape:
+
+{
+  "decision": "block",
+  "reason": "The Bash output needs review before continuing.",
+  "hookSpecificOutput": {
+    "hookEventName": "PostToolUse",
+    "additionalContext": "The command updated generated files."
+  }
+}
+
+That additionalContext text is added as extra developer context.
+
+For this event, decision: "block" does not undo the completed Bash command. Instead, Codex records the feedback, replaces the tool result with that feedback, and continues the model from the hook-provided message.
+
+You can also use exit code 2 and write the feedback reason to stderr.
+
+To stop normal processing of the original tool result after the command has already run, return continue: false. Codex will replace the tool result with your feedback or stop text and continue from there.
+
+updatedMCPToolOutput and suppressOutput are parsed but not supported yet, so they fail open.
+
+UserPromptSubmit
+
+matcher is not currently used for this event.
+
+Fields in addition to Common input fields:
+
+Field    Type    Meaning
+turn_id    string    Codex-specific extension. Active Codex turn id
+prompt    string    User prompt that is about to be sent
+Plain text on stdout is added as extra developer context.
+
+JSON on stdout supports Common output fields and this hook-specific shape:
+
+{
+  "hookSpecificOutput": {
+    "hookEventName": "UserPromptSubmit",
+    "additionalContext": "Ask for a clearer reproduction before editing files."
+  }
+}
+
+That additionalContext text is added as extra developer context.
+
+To block the prompt, return:
+
+{
+  "decision": "block",
+  "reason": "Ask for confirmation before doing that."
+}
+
+You can also use exit code 2 and write the blocking reason to stderr.
+
+Stop
+
+matcher is not currently used for this event.
+
+Fields in addition to Common input fields:
+
+Field    Type    Meaning
+turn_id    string    Codex-specific extension. Active Codex turn id
+stop_hook_active    boolean    Whether this turn was already continued by Stop
+last_assistant_message    string | null    Latest assistant message text, if available
+Stop expects JSON on stdout when it exits 0. Plain text output is invalid for this event.
+
+JSON on stdout supports Common output fields. To keep Codex going, return:
+
+{
+  "decision": "block",
+  "reason": "Run one more pass over the failing tests."
+}
+
+You can also use exit code 2 and write the continuation reason to stderr.
+
+For this event, decision: "block" does not reject the turn. Instead, it tells Codex to continue and automatically creates a new continuation prompt that acts as a new user prompt, using your reason as that prompt text.
+
+If any matching Stop hook returns continue: false, that takes precedence over continuation decisions from other matching Stop hooks.
+
+Schemas
+
+If you need the exact current wire format, see the generated schemas in the Codex GitHub repository.
+
+ mirroring @config/claude/ hooks (share scripts potentially?) in @home-manager/modules/local-scripts/ if possible
