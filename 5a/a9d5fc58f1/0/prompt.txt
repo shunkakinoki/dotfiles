@@ -1,0 +1,73 @@
+make `shell-test` pass
+
+---
+
+what are the other experimental features that can be added on codex?
+
+---
+
+yea enable all in alphabetical order except skill_mcp_dependency_install
+
+---
+
+create PR to main and `make build && make switch`
+
+---
+
+<task-notification>
+<task-id>ba3ciu4d9</task-id>
+<tool-use-id>REDACTED</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-shunkakinoki-dotfiles/37ff6f60-7a62-4e1e-a9b1-203a831ccf89/tasks/ba3ciu4d9.output</output-file>
+<status>completed</status>
+<summary>Background command "Run make switch" completed (exit code 0)</summary>
+</task-notification>
+
+---
+
+ok move the claude hooks into config/claude/hooks as well
+
+---
+
+yes; how to auto sync using `make upgrade`
+
+---
+
+oh.. currently it's both handwriteeten? search the rtk repo using ghq and double check
+
+---
+
+run `make format` and push
+
+---
+
+i've merged ot main remove @.codex/hooks.json since it should be tracked inside @config/codex if needed
+
+---
+
+│ >_ OpenAI Codex (v0.117.0)                  │
+│                                             │
+│ model:     gpt-5.4 xhigh   /model to change │
+│ directory: ~/dotfiles                       │
+╰─────────────────────────────────────────────╯
+
+  Tip: NEW: Prevent sleep while running is now available in /experimental.
+
+
+› hi
+
+
+■ {"type":"error","status":400,"error":{"type":"invalid_request_error","message":"Unsupported tool type: image_generation"}}
+
+
+› hi
+
+
+■ {"type":"error","status":400,"error":{"type":"invalid_request_error","message":"Unsupported tool type: image_generation"}} why is it errroign (codex)
+
+---
+
+ok commit and push - just to confirm - hooks.json sin't needed right?
+
+---
+
+pushover notification isn't working on codex why
