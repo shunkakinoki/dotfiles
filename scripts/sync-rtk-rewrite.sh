@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-URL="https://raw.githubusercontent.com/rtk-ai/rtk/main/.claude/hooks/rtk-rewrite.sh"
+URL="https://raw.githubusercontent.com/rtk-ai/rtk/master/.claude/hooks/rtk-rewrite.sh"
 
 tmpfile=$(mktemp)
 trap 'rm -f "$tmpfile"' EXIT
