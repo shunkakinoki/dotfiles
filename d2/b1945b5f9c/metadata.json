@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "d2b1945b5f9c",
+  "strategy": "manual-commit",
+  "branch": "chore/add-open-pencil",
+  "checkpoints_count": 2,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/d2/b1945b5f9c/0/metadata.json",
+      "transcript": "/d2/b1945b5f9c/0/full.jsonl",
+      "content_hash": "/d2/b1945b5f9c/0/content_hash.txt",
+      "prompt": "/d2/b1945b5f9c/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 384,
+    "cache_creation_tokens": 187615,
+    "cache_read_tokens": 26306475,
+    "output_tokens": 49448,
+    "api_call_count": 199
+  }
+}
