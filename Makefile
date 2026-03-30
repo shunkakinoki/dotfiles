@@ -215,7 +215,7 @@ update-local-binaries: ## Update and rebuild local binaries from .local-binaries
 ##@ Upgrade
 
 .PHONY: upgrade
-upgrade: nix-upgrade overlays-upgrade neovim-upgrade llm-upgrade gitalias-upgrade ## Upgrade Nix flake, overlays, Neovim plugins, LLM configs, and gitalias
+upgrade: nix-upgrade overlays-upgrade neovim-upgrade llm-upgrade gitalias-upgrade codex-security-sync ## Upgrade Nix flake, overlays, Neovim plugins, LLM configs, and gitalias
 
 .PHONY: llm-upgrade
 llm-upgrade: ## Regenerate tool configs from models.json.
@@ -228,6 +228,12 @@ gitalias-upgrade: ## Download latest gitalias.txt from upstream.
 	@echo "📥 Updating gitalias.txt..."
 	@./scripts/update-gitalias.sh
 	@echo "✅ gitalias.txt updated"
+
+.PHONY: codex-security-sync
+codex-security-sync: ## Sync Codex security deny patterns from Claude settings.
+	@echo "🔒 Syncing Codex security deny patterns..."
+	@./scripts/sync-codex-security.sh
+	@echo "✅ Codex security patterns synced"
 
 .PHONY: upgrade-dev
 upgrade-dev: ## Upgrade inside the Nix dev shell (mirrors CI).
