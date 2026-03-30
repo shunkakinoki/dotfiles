@@ -3,7 +3,7 @@
   "checkpoint_id": "14e11385380c",
   "strategy": "manual-commit",
   "branch": "feat/codex-hooks",
-  "checkpoints_count": 0,
+  "checkpoints_count": 2,
   "files_touched": [
     "config/codex/config.toml",
     "config/codex/config.tpl.toml",
@@ -27,13 +27,19 @@
       "transcript": "/14/e11385380c/0/full.jsonl",
       "content_hash": "/14/e11385380c/0/content_hash.txt",
       "prompt": "/14/e11385380c/0/prompt.txt"
+    },
+    {
+      "metadata": "/14/e11385380c/1/metadata.json",
+      "transcript": "/14/e11385380c/1/full.jsonl",
+      "content_hash": "/14/e11385380c/1/content_hash.txt",
+      "prompt": "/14/e11385380c/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 201,
-    "cache_creation_tokens": 90960,
-    "cache_read_tokens": 3028493,
-    "output_tokens": 17012,
-    "api_call_count": 40
+    "input_tokens": 219,
+    "cache_creation_tokens": 132118,
+    "cache_read_tokens": 3429326,
+    "output_tokens": 19142,
+    "api_call_count": 52
   }
 }
