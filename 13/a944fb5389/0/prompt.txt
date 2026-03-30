@@ -1,0 +1,13 @@
+make `shell-test` pass
+
+---
+
+what are the other experimental features that can be added on codex?
+
+---
+
+yea enable all in alphabetical order except skill_mcp_dependency_install
+
+---
+
+create PR to main and `make build && make switch`
