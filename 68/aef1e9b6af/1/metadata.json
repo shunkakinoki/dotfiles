@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "68aef1e9b6af",
+  "session_id": "4b47405c-5da1-4aa1-8d66-5e0c8fd953f1",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-30T11:15:21.420596Z",
+  "branch": "feat/codex-hooks",
+  "checkpoints_count": 0,
+  "files_touched": [],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-6[1m]",
+  "turn_id": "e794d503d286",
+  "checkpoint_transcript_start": 56,
+  "transcript_lines_at_start": 56,
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 0,
+    "api_call_count": 0
+  },
+  "session_metrics": {
+    "turn_count": 2
+  }
+}
