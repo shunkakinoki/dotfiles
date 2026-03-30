@@ -2,7 +2,7 @@
 # shellcheck disable=SC2329
 
 Describe 'rtk-rewrite.sh'
-SCRIPT="$PWD/config/claude/rtk-rewrite.sh"
+SCRIPT="$PWD/config/claude/hooks/rtk-rewrite.sh"
 
 # Create a mock rtk binary so the guard passes in CI where rtk is not installed
 MOCK_BIN="$SHELLSPEC_TMPBASE/mock_bin"

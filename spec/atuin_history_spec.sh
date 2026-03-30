@@ -2,7 +2,7 @@
 # shellcheck disable=SC2329,SC2016
 
 Describe 'atuin-history.sh'
-HOOK_SCRIPT="$PWD/config/claude/atuin-history.sh"
+HOOK_SCRIPT="$PWD/config/claude/hooks/atuin-history.sh"
 CLAUDE_DEFAULT="$PWD/config/claude/default.nix"
 CLAUDE_SETTINGS="$PWD/config/claude/settings.json"
 BASH_CONFIG="$PWD/home-manager/programs/bash/default.nix"
