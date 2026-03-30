@@ -29,3 +29,7 @@ ok move the claude hooks into config/claude/hooks as well
 ---
 
 yes; how to auto sync using `make upgrade`
+
+---
+
+oh.. currently it's both handwriteeten? search the rtk repo using ghq and double check
