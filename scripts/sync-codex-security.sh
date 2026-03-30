@@ -18,10 +18,10 @@ CODEX_SECURITY="$ROOT/config/codex/hooks/security.sh"
 }
 
 # Extract Bash deny patterns and strip the Bash(...:*) wrapper
-patterns=$(jq -r '.permissions.deny[]' "$CLAUDE_SETTINGS" \
-  | grep '^Bash(' \
-  | sed -E 's/^Bash\((.+):\*\)$/\1/' \
-  | sort)
+patterns=$(jq -r '.permissions.deny[]' "$CLAUDE_SETTINGS" |
+  grep '^Bash(' |
+  sed -E 's/^Bash\((.+):\*\)$/\1/' |
+  sort)
 
 # Build the replacement file using sed to replace the block
 tmpfile=$(mktemp)

@@ -28,7 +28,8 @@ MOCK
 fi
 
 run_hook() {
-  if [ "$HAS_RTK_REWRITE" = true ]; then bash "$SCRIPT"
+  if [ "$HAS_RTK_REWRITE" = true ]; then
+    bash "$SCRIPT"
   else PATH="$MOCK_BIN:$PATH" bash "$SCRIPT"; fi
 }
 
