@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "1ddc99fddfb6",
+  "strategy": "manual-commit",
+  "branch": "chore/remove-codex-hooks-json",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "config/codex/config.toml",
+    "config/codex/config.tpl.toml"
+  ],
+  "sessions": [
+    {
+      "metadata": "/1d/dc99fddfb6/0/metadata.json",
+      "transcript": "/1d/dc99fddfb6/0/full.jsonl",
+      "content_hash": "/1d/dc99fddfb6/0/content_hash.txt",
+      "prompt": "/1d/dc99fddfb6/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 338,
+    "cache_creation_tokens": 173202,
+    "cache_read_tokens": 19530605,
+    "output_tokens": 44792,
+    "api_call_count": 161
+  }
+}

@@ -1,0 +1,43 @@
+make `shell-test` pass
+
+---
+
+what are the other experimental features that can be added on codex?
+
+---
+
+yea enable all in alphabetical order except skill_mcp_dependency_install
+
+---
+
+create PR to main and `make build && make switch`
+
+---
+
+<task-notification>
+<task-id>ba3ciu4d9</task-id>
+<tool-use-id>REDACTED</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-shunkakinoki-dotfiles/37ff6f60-7a62-4e1e-a9b1-203a831ccf89/tasks/ba3ciu4d9.output</output-file>
+<status>completed</status>
+<summary>Background command "Run make switch" completed (exit code 0)</summary>
+</task-notification>
+
+---
+
+ok move the claude hooks into config/claude/hooks as well
+
+---
+
+yes; how to auto sync using `make upgrade`
+
+---
+
+oh.. currently it's both handwriteeten? search the rtk repo using ghq and double check
+
+---
+
+run `make format` and push
+
+---
+
+i've merged ot main remove @.codex/hooks.json since it should be tracked inside @config/codex if needed
