@@ -3,7 +3,7 @@
   "checkpoint_id": "d23ba1a1cf20",
   "strategy": "manual-commit",
   "branch": "feat/codex-hooks",
-  "checkpoints_count": 6,
+  "checkpoints_count": 7,
   "files_touched": [
     "Makefile",
     "config/codex/hooks/security.sh"
@@ -20,13 +20,19 @@
       "transcript": "/d2/3ba1a1cf20/1/full.jsonl",
       "content_hash": "/d2/3ba1a1cf20/1/content_hash.txt",
       "prompt": "/d2/3ba1a1cf20/1/prompt.txt"
+    },
+    {
+      "metadata": "/d2/3ba1a1cf20/2/metadata.json",
+      "transcript": "/d2/3ba1a1cf20/2/full.jsonl",
+      "content_hash": "/d2/3ba1a1cf20/2/content_hash.txt",
+      "prompt": "/d2/3ba1a1cf20/2/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 276,
-    "cache_creation_tokens": 185888,
-    "cache_read_tokens": 9287573,
-    "output_tokens": 26639,
-    "api_call_count": 116
+    "input_tokens": 294,
+    "cache_creation_tokens": 227046,
+    "cache_read_tokens": 9688406,
+    "output_tokens": 28769,
+    "api_call_count": 128
   }
 }
