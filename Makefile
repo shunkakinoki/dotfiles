@@ -215,7 +215,7 @@ update-local-binaries: ## Update and rebuild local binaries from .local-binaries
 ##@ Upgrade
 
 .PHONY: upgrade
-upgrade: nix-upgrade overlays-upgrade neovim-upgrade llm-upgrade gitalias-upgrade codex-security-sync ## Upgrade Nix flake, overlays, Neovim plugins, LLM configs, and gitalias
+upgrade: nix-upgrade overlays-upgrade neovim-upgrade llm-upgrade gitalias-upgrade codex-security-sync rtk-rewrite-sync ## Upgrade Nix flake, overlays, Neovim plugins, LLM configs, and gitalias
 
 .PHONY: llm-upgrade
 llm-upgrade: ## Regenerate tool configs from models.json.
@@ -234,6 +234,12 @@ codex-security-sync: ## Sync Codex security deny patterns from Claude settings.
 	@echo "🔒 Syncing Codex security deny patterns..."
 	@./scripts/sync-codex-security.sh
 	@echo "✅ Codex security patterns synced"
+
+.PHONY: rtk-rewrite-sync
+rtk-rewrite-sync: ## Sync rtk-rewrite.sh from upstream rtk repo.
+	@echo "🔄 Syncing rtk-rewrite.sh from upstream..."
+	@./scripts/sync-rtk-rewrite.sh
+	@echo "✅ rtk-rewrite.sh synced"
 
 .PHONY: upgrade-dev
 upgrade-dev: ## Upgrade inside the Nix dev shell (mirrors CI).

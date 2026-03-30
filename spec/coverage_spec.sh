@@ -243,6 +243,7 @@ config/codex/hooks/rtk-rewrite.sh
 config/codex/hooks/security.sh
 home-manager/modules/local-scripts/pushover-notify.sh
 scripts/sync-codex-security.sh
+scripts/sync-rtk-rewrite.sh
 config/hyprland/scripts/record-screen.sh
 config/hyprland/scripts/toggle-terminal.sh
 config/openclaw/hydrate.sh
