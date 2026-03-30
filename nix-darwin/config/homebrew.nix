@@ -21,6 +21,7 @@
       "paradigmxyz/brew"
       "entireio/tap"
       "manaflow-ai/cmux"
+      "open-pencil/tap"
       "sst/tap"
       "steipete/tap"
     ];
@@ -44,6 +45,7 @@
       "mactop"
       "mas"
       "mlx-lm"
+      "open-pencil"
       "opencode"
       "ollama"
       "pandoc"
