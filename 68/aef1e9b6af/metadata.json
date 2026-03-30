@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "68aef1e9b6af",
+  "strategy": "manual-commit",
+  "branch": "feat/codex-hooks",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "config/codex/hooks/rtk-rewrite.sh"
+  ],
+  "sessions": [
+    {
+      "metadata": "/68/aef1e9b6af/0/metadata.json",
+      "transcript": "/68/aef1e9b6af/0/full.jsonl",
+      "content_hash": "/68/aef1e9b6af/0/content_hash.txt",
+      "prompt": "/68/aef1e9b6af/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 69,
+    "cache_creation_tokens": 32821,
+    "cache_read_tokens": 8752655,
+    "output_tokens": 12909,
+    "api_call_count": 59
+  }
+}
