@@ -119,6 +119,7 @@
       "sf-symbols"
       "slack"
       "tailscale-app"
+      "telegram-desktop"
       "trae"
       "vlc"
       "visual-studio-code"
