@@ -17,6 +17,10 @@ excludes = ["home-manager/programs/neovim/nvim-pack-lock.json"]
 command = "shfmt"
 options = ["-i", "2", "-s", "-w"]
 includes = ["*.sh"]
+excludes = [
+  "config/claude/hooks/rtk-rewrite.sh",
+  "config/codex/hooks/rtk-rewrite.sh",
+]
 
 [formatter.lua]
 command = "stylua"
