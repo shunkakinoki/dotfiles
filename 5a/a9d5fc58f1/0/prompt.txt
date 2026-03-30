@@ -71,3 +71,119 @@ ok commit and push - just to confirm - hooks.json sin't needed right?
 ---
 
 pushover notification isn't working on codex why
+
+---
+
+Skip to content
+shunkakinoki
+dotfiles
+Repository navigation
+Code
+Issues
+1
+ (1)
+Pull requests
+3
+ (3)
+Agents
+Actions
+Security
+1
+ (1)
+Insights
+Settings
+Upgrade
+chore: remove repo-local .codex/hooks.json (#1298) #1593
+All jobs
+Run details
+Annotations
+1 error
+upgrade
+failed 2 minutes ago in 22m 27s
+Search logs
+2s
+1s
+2m 41s
+4s
+19m 34s
+vim.pack:  57% Downloading updates (39/68) - copilot-cmp
+vim.pack:  58% Downloading updates (40/68) - cmp-cmdline
+vim.pack:  60% Downloading updates (41/68) - cmp-path
+vim.pack:  61% Downloading updates (42/68) - cmp-buffer
+vim.pack:  63% Downloading updates (43/68) - cmp-nvim-lsp
+vim.pack:  64% Downloading updates (44/68) - grug-far.nvim
+vim.pack:  66% Downloading updates (45/68) - nvim-lint
+vim.pack:  67% Downloading updates (46/68) - nvim-cmp
+vim.pack:  69% Downloading updates (47/68) - friendly-snippets
+vim.pack:  70% Downloading updates (48/68) - copilot.lua
+vim.pack:  72% Downloading updates (49/68) - conform.nvim
+vim.pack:  73% Downloading updates (50/68) - neogen
+vim.pack:  75% Downloading updates (51/68) - telescope-fzf-native.nvim
+vim.pack:  76% Downloading updates (52/68) - other.nvim
+vim.pack:  77% Downloading updates (53/68) - telescope-ui-select.nvim
+vim.pack:  79% Downloading updates (54/68) - telescope.nvim
+vim.pack:  80% Downloading updates (55/68) - plenary.nvim
+vim.pack:  82% Downloading updates (56/68) - telescope-github.nvim
+vim.pack:  83% Downloading updates (57/68) - fff.nvim
+vim.pack:  85% Downloading updates (58/68) - LuaSnip
+vim.pack:  86% Downloading updates (59/68) - fidget.nvim
+vim.pack:  88% Downloading updates (60/68) - oil.nvim
+vim.pack:  89% Downloading updates (61/68) - flash.nvim
+vim.pack:  91% Downloading updates (62/68) - trouble.nvim
+vim.pack:  92% Downloading updates (63/68) - which-key.nvim
+vim.pack:  94% Downloading updates (64/68) - git-conflict.nvim
+vim.pack:  95% Downloading updates (65/68) - gitsigns.nvim
+vim.pack:  97% Downloading updates (66/68) - nvim-colorizer.lua
+vim.pack:  98% Downloading updates (67/68) - auto-hlsearch.nvim
+vim.pack: 100% Downloading updates (68/68) - bufdelete.nvim
+✅ Neovim plugins updated
+🤖 Updating LLM tool configs...
+Updating tool configs from /home/runner/work/dotfiles/dotfiles/models.json ...
+
+OK: home-manager/programs/fish/functions/_pixelh_function.fish
+OK: config/llm/extra-openai-models.yaml
+OK: config/aichat/config.yaml
+OK: config/pi/models.json
+OK: home-manager/programs/fish/functions/_ocxe_function.fish
+OK: config/opencode/opencode.jsonc
+OK: home-manager/programs/fish/functions/_pixe_function.fish
+OK: config/ccs/glm.settings.template.json
+OK: home-manager/programs/fish/functions/_pixel_function.fish
+OK: home-manager/programs/fish/functions/_pixeh_function.fish
+OK: config/ccs/agy.settings.template.json
+OK: home-manager/programs/fish/functions/_ocxelh_function.fish
+OK: config/ccs/gemini.settings.template.json
+OK: config/llm/default_model.txt
+OK: config/cliproxyapi/config.template.yaml
+OK: config/omp/config.yml
+OK: config/openclaw/openclaw.template.json
+OK: home-manager/programs/fish/functions/_coxel_function.fish
+OK: home-manager/programs/fish/functions/_ocxeh_function.fish
+OK: config/pi/settings.json
+OK: config/ccs/codex.settings.template.json
+OK: home-manager/programs/fish/functions/_coxeh_function.fish
+OK: home-manager/programs/fish/functions/_coxe_function.fish
+OK: home-manager/programs/fish/functions/_ocxel_function.fish
+OK: home-manager/programs/fish/functions/_coxelh_function.fish
+OK: config/codex/config.toml
+
+All configs updated.
+✅ LLM configs updated
+📥 Updating gitalias.txt...
+Downloading latest gitalias.txt from GitHub...
+✅ Updated gitalias.txt
+📝 Review changes and commit if needed
+✅ gitalias.txt updated
+🔒 Syncing Codex security deny patterns...
+✅ Codex security patterns synced
+🔄 Syncing rtk-rewrite.sh from upstream...
+vim.pack: 100% Downloading updates (68/68)curl: (22) The requested URL returned error: 404
+make[1]: *** [Makefile:241: rtk-rewrite-sync] Error 22
+make[1]: Leaving directory '/home/runner/work/dotfiles/dotfiles'
+make: *** [Makefile:247: upgrade-dev] Error 2
+Error: Process completed with exit code 2.
+0s
+0s
+0s
+0s
+ is failing creaet PR
