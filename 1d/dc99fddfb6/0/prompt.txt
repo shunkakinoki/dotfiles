@@ -41,3 +41,25 @@ run `make format` and push
 ---
 
 i've merged ot main remove @.codex/hooks.json since it should be tracked inside @config/codex if needed
+
+---
+
+│ >_ OpenAI Codex (v0.117.0)                  │
+│                                             │
+│ model:     gpt-5.4 xhigh   /model to change │
+│ directory: ~/dotfiles                       │
+╰─────────────────────────────────────────────╯
+
+  Tip: NEW: Prevent sleep while running is now available in /experimental.
+
+
+› hi
+
+
+■ {"type":"error","status":400,"error":{"type":"invalid_request_error","message":"Unsupported tool type: image_generation"}}
+
+
+› hi
+
+
+■ {"type":"error","status":400,"error":{"type":"invalid_request_error","message":"Unsupported tool type: image_generation"}} why is it errroign (codex)
