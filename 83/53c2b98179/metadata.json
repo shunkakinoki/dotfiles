@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "8353c2b98179",
+  "strategy": "manual-commit",
+  "branch": "chore/remove-codex-hooks-json",
+  "checkpoints_count": 1,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/83/53c2b98179/0/metadata.json",
+      "transcript": "/83/53c2b98179/0/full.jsonl",
+      "content_hash": "/83/53c2b98179/0/content_hash.txt",
+      "prompt": "/83/53c2b98179/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 327,
+    "cache_creation_tokens": 171477,
+    "cache_read_tokens": 18331151,
+    "output_tokens": 43844,
+    "api_call_count": 154
+  }
+}
