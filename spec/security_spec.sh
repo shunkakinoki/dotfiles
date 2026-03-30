@@ -2,7 +2,7 @@
 # shellcheck disable=SC2329
 
 Describe 'security.sh'
-SCRIPT="$PWD/config/claude/security.sh"
+SCRIPT="$PWD/config/claude/hooks/security.sh"
 
 setup() {
   TEMP_HOME=$(mktemp -d)

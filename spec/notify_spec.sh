@@ -2,7 +2,7 @@
 # shellcheck disable=SC2329,SC2016
 
 Describe 'notify.sh'
-SCRIPT="$PWD/config/claude/notify.sh"
+SCRIPT="$PWD/config/claude/hooks/notify.sh"
 
 Describe 'when Pushover is configured'
 setup() {

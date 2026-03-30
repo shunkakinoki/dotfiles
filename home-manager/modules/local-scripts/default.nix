@@ -9,4 +9,9 @@ _: {
     force = true;
     source = ./notify-local.sh;
   };
+  home.file.".local/scripts/pushover-notify" = {
+    executable = true;
+    force = true;
+    source = ./pushover-notify.sh;
+  };
 }

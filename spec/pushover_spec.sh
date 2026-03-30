@@ -2,7 +2,7 @@
 # shellcheck disable=SC2329,SC2016
 
 Describe 'pushover.sh'
-SCRIPT="$PWD/config/claude/pushover.sh"
+SCRIPT="$PWD/config/claude/hooks/pushover.sh"
 
 Describe 'credential handling'
 setup() {

@@ -2,7 +2,7 @@
 # shellcheck disable=SC2329
 
 Describe 'statusline.sh'
-SCRIPT="$PWD/config/claude/statusline.sh"
+SCRIPT="$PWD/config/claude/hooks/statusline.sh"
 
 strip_ansi() {
   sed -E 's/\x1B\[[0-9;]*m//g'

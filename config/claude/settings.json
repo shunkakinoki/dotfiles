@@ -128,13 +128,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.claude/notify.sh",
+            "command": "$HOME/.claude/hooks/notify.sh",
             "timeout": 3,
             "async": true
           },
           {
             "type": "command",
-            "command": "$HOME/.claude/pushover.sh",
+            "command": "$HOME/.claude/hooks/pushover.sh",
             "timeout": 6,
             "async": true
           }
@@ -192,13 +192,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.claude/notify.sh",
+            "command": "$HOME/.claude/hooks/notify.sh",
             "timeout": 3,
             "async": true
           },
           {
             "type": "command",
-            "command": "$HOME/.claude/pushover.sh",
+            "command": "$HOME/.claude/hooks/pushover.sh",
             "timeout": 6,
             "async": true
           }
@@ -221,18 +221,18 @@
           },
           {
             "type": "command",
-            "command": "$HOME/.claude/security.sh",
+            "command": "$HOME/.claude/hooks/security.sh",
             "timeout": 5
           },
           {
             "type": "command",
-            "command": "$HOME/.claude/notify.sh",
+            "command": "$HOME/.claude/hooks/notify.sh",
             "timeout": 3,
             "async": true
           },
           {
             "type": "command",
-            "command": "$HOME/.claude/pushover.sh",
+            "command": "$HOME/.claude/hooks/pushover.sh",
             "timeout": 6,
             "async": true
           }
@@ -276,13 +276,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.claude/notify.sh",
+            "command": "$HOME/.claude/hooks/notify.sh",
             "timeout": 3,
             "async": true
           },
           {
             "type": "command",
-            "command": "$HOME/.claude/pushover.sh",
+            "command": "$HOME/.claude/hooks/pushover.sh",
             "timeout": 6,
             "async": true
           }
@@ -294,13 +294,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.claude/notify.sh",
+            "command": "$HOME/.claude/hooks/notify.sh",
             "timeout": 3,
             "async": true
           },
           {
             "type": "command",
-            "command": "$HOME/.claude/pushover.sh",
+            "command": "$HOME/.claude/hooks/pushover.sh",
             "timeout": 6,
             "async": true
           },
@@ -330,13 +330,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.claude/notify.sh",
+            "command": "$HOME/.claude/hooks/notify.sh",
             "timeout": 3,
             "async": true
           },
           {
             "type": "command",
-            "command": "$HOME/.claude/pushover.sh",
+            "command": "$HOME/.claude/hooks/pushover.sh",
             "timeout": 6,
             "async": true
           },
@@ -354,13 +354,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.claude/notify.sh",
+            "command": "$HOME/.claude/hooks/notify.sh",
             "timeout": 3,
             "async": true
           },
           {
             "type": "command",
-            "command": "$HOME/.claude/pushover.sh",
+            "command": "$HOME/.claude/hooks/pushover.sh",
             "timeout": 6,
             "async": true
           }
@@ -410,7 +410,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "$HOME/.claude/statusline.sh"
+    "command": "$HOME/.claude/hooks/statusline.sh"
   },
   "enabledPlugins": {
     "claude-mem@claude-mem": true,

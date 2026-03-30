@@ -5,27 +5,27 @@
 Describe 'shell script test coverage'
 
 Describe 'all required scripts have spec files'
-It 'has spec file for config/claude/notify.sh'
+It 'has spec file for config/claude/hooks/notify.sh'
 The path "spec/notify_spec.sh" should be exist
 End
 
-It 'has spec file for config/claude/pushover.sh'
+It 'has spec file for config/claude/hooks/pushover.sh'
 The path "spec/pushover_spec.sh" should be exist
 End
 
-It 'has spec file for config/claude/rtk-rewrite.sh'
+It 'has spec file for config/claude/hooks/rtk-rewrite.sh'
 The path "spec/rtk_rewrite_spec.sh" should be exist
 End
 
-It 'has spec file for config/claude/atuin-history.sh'
+It 'has spec file for config/claude/hooks/atuin-history.sh'
 The path "spec/atuin_history_spec.sh" should be exist
 End
 
-It 'has spec file for config/claude/security.sh'
+It 'has spec file for config/claude/hooks/security.sh'
 The path "spec/security_spec.sh" should be exist
 End
 
-It 'has spec file for config/claude/statusline.sh'
+It 'has spec file for config/claude/hooks/statusline.sh'
 The path "spec/statusline_spec.sh" should be exist
 End
 
@@ -230,12 +230,20 @@ It 'covers all non-spec shell scripts in the repository'
 # List of all shell scripts that should have tests
 # Update this list when adding new shell scripts
 covered_scripts="config/ccs/hydrate.sh
-config/claude/notify.sh
-config/claude/pushover.sh
-config/claude/rtk-rewrite.sh
-config/claude/security.sh
-config/claude/atuin-history.sh
-config/claude/statusline.sh
+config/claude/hooks/notify.sh
+config/claude/hooks/pushover.sh
+config/claude/hooks/rtk-rewrite.sh
+config/claude/hooks/security.sh
+config/claude/hooks/atuin-history.sh
+config/claude/hooks/statusline.sh
+config/codex/hooks/atuin-history.sh
+config/codex/hooks/notify.sh
+config/codex/hooks/pushover.sh
+config/codex/hooks/rtk-rewrite.sh
+config/codex/hooks/security.sh
+home-manager/modules/local-scripts/pushover-notify.sh
+scripts/sync-codex-security.sh
+scripts/sync-rtk-rewrite.sh
 config/hyprland/scripts/record-screen.sh
 config/hyprland/scripts/toggle-terminal.sh
 config/openclaw/hydrate.sh
