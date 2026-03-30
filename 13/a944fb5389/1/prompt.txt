@@ -1,0 +1,9 @@
+why when i switch tpo and create two in a different ghostty terminal tpo's sesion switches to work too
+
+---
+
+yea let's fix both in tpo/tmo/tdo/tmo
+
+---
+
+make `shell-test` pass?
