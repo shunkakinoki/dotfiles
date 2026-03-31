@@ -118,6 +118,11 @@ nixpkgs.lib.nixosSystem {
       ];
     }
     home-manager.nixosModules.home-manager
+    # Home Manager activation can take a long time (npm globals, etc.)
+    {
+      systemd.services."home-manager-${username}".serviceConfig.TimeoutStartSec =
+        nixpkgs.lib.mkForce "30m";
+    }
     {
       home-manager.backupFileExtension = "hm-backup";
       home-manager.extraSpecialArgs = { inherit inputs; };
