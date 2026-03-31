@@ -77,7 +77,7 @@ with pkgs;
   navi
   ncdu
   pingu
-  postgresql
+  postgresql_18
   procs
   qwen-code
   ripgrep
