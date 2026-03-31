@@ -52,25 +52,25 @@ sync_claude() {
   local dest="$AUTH_DIR/claude-${EMAIL}.json"
   local new_json
   # shellcheck disable=SC2016
-  # refresh_interval_seconds=999999999 disables cliproxyapi's built-in
-  # auto-refresh for this auth entry. Without this, cliproxyapi refreshes
-  # Claude tokens 4h before expiry, rotating the refresh_token. keychain-sync
-  # then overwrites with the old (now-invalidated) refresh_token, breaking the
-  # refresh chain. Let Claude Code handle its own token lifecycle instead.
+  # Omit the expired field so cliproxyapi's built-in refresh (RefreshLead=4h)
+  # won't preemptively refresh this token. Without an expiry, cliproxyapi only
+  # checks if last_refresh is >4h old - since keychain-sync writes every 5 min,
+  # last_refresh stays recent and refresh never triggers.
+  #
+  # This prevents cliproxyapi from rotating the refresh_token on Anthropic's
+  # side, which would invalidate the token in Claude Code's keychain.
   new_json=$($JQ -n \
     --arg at "$access_token" \
     --arg rt "${refresh_token:-}" \
     --arg email "$EMAIL" \
-    --arg expired "${expires_at:-}" \
     --arg last_refresh "$(date -u +%Y-%m-%dT%H:%M:%S+00:00)" \
     '{
       access_token: $at,
       disabled: false,
       email: $email,
-      expired: $expired,
+      expired: "",
       id_token: "",
       last_refresh: $last_refresh,
-      refresh_interval_seconds: 999999999,
       refresh_token: $rt,
       type: "claude"
     }')
