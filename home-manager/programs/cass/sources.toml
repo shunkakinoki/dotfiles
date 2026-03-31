@@ -1,0 +1,6 @@
+[[sources]]
+name = "kyber"
+type = "ssh"
+host = "ubuntu@kyber"
+platform = "linux"
+sync_schedule = "daily"

@@ -2,6 +2,12 @@
 # Add one binary path per line
 # Lines starting with # are comments
 # Use path:alias to create a symlink with a custom name (e.g., ~/path/to/pi:pir)
+# Dependencies (lib-only repos) must appear before the binaries that need them
+
+# cass dependencies (pull + build before cass itself)
+~/ghq/github.com/Dicklesworthstone/asupersync/target/release/libasupersync.rlib
+~/ghq/github.com/Dicklesworthstone/franken_agent_detection/target/release/libfranken_agent_detection.rlib
+~/ghq/github.com/Dicklesworthstone/frankensqlite/target/release/libfsqlite.rlib
 
 ~/ghq/github.com/Dicklesworthstone/beads_viewer/bv
 ~/ghq/github.com/Dicklesworthstone/coding_agent_session_search/target/release/cass
