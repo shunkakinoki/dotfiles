@@ -173,6 +173,8 @@ with pkgs;
   mpv
   obsidian
   nautilus
+  nwg-dock-hyprland
+  nwg-drawer
   pavucontrol
   playerctl
   rofi
