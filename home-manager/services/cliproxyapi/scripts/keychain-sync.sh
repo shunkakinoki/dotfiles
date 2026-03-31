@@ -52,6 +52,11 @@ sync_claude() {
   local dest="$AUTH_DIR/claude-${EMAIL}.json"
   local new_json
   # shellcheck disable=SC2016
+  # refresh_interval_seconds=999999999 disables cliproxyapi's built-in
+  # auto-refresh for this auth entry. Without this, cliproxyapi refreshes
+  # Claude tokens 4h before expiry, rotating the refresh_token. keychain-sync
+  # then overwrites with the old (now-invalidated) refresh_token, breaking the
+  # refresh chain. Let Claude Code handle its own token lifecycle instead.
   new_json=$($JQ -n \
     --arg at "$access_token" \
     --arg rt "${refresh_token:-}" \
@@ -65,6 +70,7 @@ sync_claude() {
       expired: $expired,
       id_token: "",
       last_refresh: $last_refresh,
+      refresh_interval_seconds: 999999999,
       refresh_token: $rt,
       type: "claude"
     }')
@@ -76,7 +82,9 @@ sync_claude() {
   fi
 
   if [ "$access_token" != "$existing_at" ]; then
-    printf '%s' "$new_json" >"$dest"
+    local tmp
+    tmp=$(mktemp "${AUTH_DIR}/.claude-sync.XXXXXX")
+    printf '%s' "$new_json" >"$tmp" && mv "$tmp" "$dest" || rm -f "$tmp"
     echo "[$(date)] Claude: synced new token to $dest" >&2
     changed=1
   fi
@@ -129,7 +137,9 @@ sync_codex() {
   fi
 
   if [ "$access_token" != "$existing_at" ]; then
-    printf '%s' "$new_json" >"$dest"
+    local tmp
+    tmp=$(mktemp "${AUTH_DIR}/.codex-sync.XXXXXX")
+    printf '%s' "$new_json" >"$tmp" && mv "$tmp" "$dest" || rm -f "$tmp"
     echo "[$(date)] Codex: synced new token to $dest" >&2
     changed=1
   fi

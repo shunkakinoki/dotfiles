@@ -37,6 +37,10 @@
           StrictHostKeyChecking = "false";
         };
       };
+      "kyber" = {
+        hostname = "100.74.174.97";
+        user = "ubuntu";
+      };
       "github.com" = {
         serverAliveInterval = 0;
         identityFile = "~/.ssh/id_ed25519_github";

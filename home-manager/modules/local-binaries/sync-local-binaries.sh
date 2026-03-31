@@ -44,6 +44,11 @@ while IFS= read -r line || [ -n "$line" ]; do
   # Expand ~ to $HOME
   line="${line/#\~/$HOME}"
 
+  # Skip library files silently (dependencies listed for update-local-binaries.sh)
+  case "$line" in
+  *.rlib | *.a | *.so | *.dylib) continue ;;
+  esac
+
   # Check if binary exists and is executable
   if [ ! -f "$line" ] || [ ! -x "$line" ]; then
     echo "Skipping (not found or not executable): $line"

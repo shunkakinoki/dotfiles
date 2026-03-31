@@ -9,6 +9,7 @@ let
   bash = import ./bash { inherit lib pkgs; };
   bat = import ./bat;
   btop = import ./btop;
+  cass = import ./cass;
   clang = import ./clang;
   dart = import ./dart;
   delta = import ./delta;
@@ -55,6 +56,7 @@ in
   bash
   bat
   btop
+  cass
   clang
   dart
   delta
