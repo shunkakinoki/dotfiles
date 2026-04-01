@@ -6,6 +6,7 @@
 }:
 let
   brewUpgrader = import ./brew-upgrader { inherit pkgs; };
+  cass = import ./cass { inherit pkgs; };
   cliproxyapi = import ./cliproxyapi;
   codeSyncer = import ./code-syncer { inherit pkgs; };
   darkman = import ./darkman { inherit pkgs; };
@@ -22,6 +23,7 @@ let
 in
 [
   brewUpgrader
+  cass
   cliproxyapi
   codeSyncer
   darkman
