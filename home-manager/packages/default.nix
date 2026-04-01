@@ -106,7 +106,6 @@ with pkgs;
   zoxide
 ]
 ++ lib.optionals stdenv.isLinux [
-  alsa-lib
   atop
   below
   binutils
@@ -137,6 +136,7 @@ with pkgs;
   xclip
   zlib
 ]
+++ lib.optional stdenv.isLinux alsa-lib
 ++ lib.optionals (stdenv.isLinux && isDesktop) [
   _1password-gui
   baobab
