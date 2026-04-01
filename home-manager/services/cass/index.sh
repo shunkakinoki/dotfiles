@@ -13,8 +13,11 @@ echo "$(date): starting cass sync + index + analytics rebuild"
 # Sync remote sources (ignore failures for unreachable hosts)
 "$CASS" sources sync || true
 
-# Full reindex
-"$CASS" index --full
+# Full reindex (--force-rebuild to pick up new session files)
+"$CASS" index --full --force-rebuild
+
+# Build semantic vector index (ignore OOM on low-memory machines)
+"$CASS" index --semantic --embedder fastembed || true
 
 # Rebuild analytics rollup tables
 "$CASS" analytics rebuild
