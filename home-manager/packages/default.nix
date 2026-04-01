@@ -106,6 +106,7 @@ with pkgs;
   zoxide
 ]
 ++ lib.optionals stdenv.isLinux [
+  alsa-lib
   atop
   below
   binutils
@@ -120,17 +121,21 @@ with pkgs;
   fwupd
   gcc
   gemini-cli
+  glib
   keychain
   libiconv
+  libsecret
   opencode
   openssl
   openssl.dev
   pkg-config
   powertop
   qemu
+  stdenv.cc.cc.lib
   tailscale
   trashy
   xclip
+  zlib
 ]
 ++ lib.optionals (stdenv.isLinux && isDesktop) [
   _1password-gui
