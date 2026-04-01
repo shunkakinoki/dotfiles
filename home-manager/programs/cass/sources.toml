@@ -3,18 +3,18 @@ name = "kyber"
 type = "ssh"
 host = "ubuntu@kyber"
 paths = [
-    "~/.claude/projects",
-    "~/.codex/sessions",
-    "~/.config/Code/User/globalStorage/saoudrizwan.claude-dev",
-    "~/.config/Code/User/globalStorage/rooveterinaryinc.roo-cline",
-    "~/.config/Cursor/User/globalStorage/saoudrizwan.claude-dev",
-    "~/.config/Cursor/User/globalStorage/rooveterinaryinc.roo-cline",
-    "~/.gemini/tmp",
-    "~/.pi/agent/sessions",
-    "~/.local/share/opencode/storage",
-    "~/.continue/sessions",
-    "~/.aider.chat.history.md",
-    "~/.goose/sessions",
+  "~/.claude/projects",
+  "~/.codex/sessions",
+  "~/.config/Code/User/globalStorage/saoudrizwan.claude-dev",
+  "~/.config/Code/User/globalStorage/rooveterinaryinc.roo-cline",
+  "~/.config/Cursor/User/globalStorage/saoudrizwan.claude-dev",
+  "~/.config/Cursor/User/globalStorage/rooveterinaryinc.roo-cline",
+  "~/.gemini/tmp",
+  "~/.pi/agent/sessions",
+  "~/.local/share/opencode/storage",
+  "~/.continue/sessions",
+  "~/.aider.chat.history.md",
+  "~/.goose/sessions",
 ]
 sync_schedule = "manual"
 path_mappings = []

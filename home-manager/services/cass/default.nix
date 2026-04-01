@@ -28,7 +28,12 @@ in
         "${pkgs.bash}/bin/bash"
         "${./index.sh}"
       ];
-      StartCalendarInterval = [{ Hour = 4; Minute = 0; }];
+      StartCalendarInterval = [
+        {
+          Hour = 4;
+          Minute = 0;
+        }
+      ];
       StandardOutPath = "/tmp/cass-indexer.log";
       StandardErrorPath = "/tmp/cass-indexer.error.log";
     };
