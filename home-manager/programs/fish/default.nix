@@ -21,6 +21,7 @@
           # ICU for CGo builds (e.g. go-icu-regex used by beads)
           set -gx PKG_CONFIG_PATH "${pkgs.icu.dev}/lib/pkgconfig" $PKG_CONFIG_PATH
           set -gx CGO_CFLAGS "-I${pkgs.icu.dev}/include $CGO_CFLAGS"
+          set -gx CGO_CXXFLAGS "-I${pkgs.icu.dev}/include $CGO_CXXFLAGS"
           set -gx CGO_LDFLAGS "-L${pkgs.icu.out}/lib $CGO_LDFLAGS"
 
           # Native libraries for bun-installed packages (e.g. @oh-my-pi/pi-natives, sharp, keytar)
