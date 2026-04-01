@@ -87,6 +87,12 @@ sync_claude() {
     printf '%s' "$new_json" >"$tmp" && mv "$tmp" "$dest" || rm -f "$tmp"
     echo "[$(date)] Claude: synced new token to $dest" >&2
     changed=1
+  elif [ -f "$dest" ]; then
+    # Token unchanged - just bump last_refresh to prevent cliproxyapi's
+    # built-in refresh from triggering (it checks now - last_refresh >= 4h)
+    local tmp
+    tmp=$(mktemp "${AUTH_DIR}/.claude-refresh-ts.XXXXXX")
+    $JQ --arg lr "$(date -u +%Y-%m-%dT%H:%M:%S+00:00)" '.last_refresh = $lr' "$dest" >"$tmp" && mv "$tmp" "$dest" || rm -f "$tmp"
   fi
 }
 
