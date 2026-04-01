@@ -162,9 +162,9 @@ When run bash -c "grep 'Cargo.toml' '$SCRIPT'"
 The output should include 'Cargo.toml'
 End
 
-It 'runs cargo build --release for Rust projects'
-When run bash -c "grep 'cargo build --release' '$SCRIPT'"
-The output should include 'cargo build --release'
+It 'runs cargo +nightly build --release for Rust projects'
+When run bash -c "grep 'cargo +nightly build --release' '$SCRIPT'"
+The output should include 'cargo +nightly build --release'
 End
 
 It 'detects go.mod for go build'
