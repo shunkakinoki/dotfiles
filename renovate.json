@@ -12,6 +12,7 @@
     ":gitSignOff",
     ":semanticCommits"
   ],
+  "minimumReleaseAge": "7 days",
   "rangeStrategy": "bump",
   "schedule": [
     "at any time"
