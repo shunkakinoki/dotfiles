@@ -84,15 +84,21 @@ sync_claude() {
   if [ "$access_token" != "$existing_at" ]; then
     local tmp
     tmp=$(mktemp "${AUTH_DIR}/.claude-sync.XXXXXX")
-    printf '%s' "$new_json" >"$tmp" && mv "$tmp" "$dest" || rm -f "$tmp"
-    echo "[$(date)] Claude: synced new token to $dest" >&2
-    changed=1
+    if printf '%s' "$new_json" >"$tmp" && mv "$tmp" "$dest"; then
+      echo "[$(date)] Claude: synced new token to $dest" >&2
+      changed=1
+    else
+      rm -f "$tmp"
+    fi
   elif [ -f "$dest" ]; then
     # Token unchanged - just bump last_refresh to prevent cliproxyapi's
     # built-in refresh from triggering (it checks now - last_refresh >= 4h)
     local tmp
     tmp=$(mktemp "${AUTH_DIR}/.claude-refresh-ts.XXXXXX")
-    $JQ --arg lr "$(date -u +%Y-%m-%dT%H:%M:%S+00:00)" '.last_refresh = $lr' "$dest" >"$tmp" && mv "$tmp" "$dest" || rm -f "$tmp"
+    # shellcheck disable=SC2016
+    if ! $JQ --arg lr "$(date -u +%Y-%m-%dT%H:%M:%S+00:00)" '.last_refresh = $lr' "$dest" >"$tmp" || ! mv "$tmp" "$dest"; then
+      rm -f "$tmp"
+    fi
   fi
 }
 
@@ -145,8 +151,12 @@ sync_codex() {
   if [ "$access_token" != "$existing_at" ]; then
     local tmp
     tmp=$(mktemp "${AUTH_DIR}/.codex-sync.XXXXXX")
-    printf '%s' "$new_json" >"$tmp" && mv "$tmp" "$dest" || rm -f "$tmp"
-    echo "[$(date)] Codex: synced new token to $dest" >&2
+    if printf '%s' "$new_json" >"$tmp" && mv "$tmp" "$dest"; then
+      echo "[$(date)] Codex: synced new token to $dest" >&2
+    else
+      rm -f "$tmp"
+      return 1
+    fi
     changed=1
   fi
 }
