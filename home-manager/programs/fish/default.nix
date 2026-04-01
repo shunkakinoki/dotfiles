@@ -17,6 +17,9 @@
           set -gx OPENSSL_DIR "${pkgs.openssl.dev}"
           set -gx OPENSSL_LIB_DIR "${pkgs.openssl.out}/lib"
           set -gx OPENSSL_INCLUDE_DIR "${pkgs.openssl.dev}/include"
+
+          # Native libraries for bun-installed packages (e.g. @oh-my-pi/pi-natives, sharp, keytar)
+          set -gx LD_LIBRARY_PATH "${pkgs.alsa-lib}/lib" "${pkgs.glib.out}/lib" "${pkgs.libsecret}/lib" "${pkgs.stdenv.cc.cc.lib}/lib" "${pkgs.zlib}/lib" $LD_LIBRARY_PATH
       end
 
       # Go configuration
