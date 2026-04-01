@@ -63,6 +63,7 @@ in
         "CARGO_HOME=%h/.cargo"
         "PKG_CONFIG_PATH=${pkgs.openssl.dev}/lib/pkgconfig:${pkgs.icu.dev}/lib/pkgconfig"
         "CGO_CFLAGS=-I${pkgs.icu.dev}/include"
+        "CGO_CXXFLAGS=-I${pkgs.icu.dev}/include"
         "CGO_LDFLAGS=-L${pkgs.icu.out}/lib"
       ];
       Nice = 19;
