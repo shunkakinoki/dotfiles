@@ -192,6 +192,7 @@ build_repo() {
       )
     fi
     # Go project: build ./cmd/{repo_name} if it exists, otherwise build root
+    # ICU/CGo env vars are provided by shell init (fish/bash/zsh via nix)
     if [ -d "$build_dir/cmd/$repo_name" ]; then
       if (cd "$build_dir" && "${go_env[@]}" go build "./cmd/$repo_name" 2>&1); then
         return 0
