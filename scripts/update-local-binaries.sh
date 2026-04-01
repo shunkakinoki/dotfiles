@@ -158,7 +158,7 @@ build_repo() {
       return 1
     fi
   elif [ -f "$build_dir/Cargo.toml" ]; then
-    if (cd "$build_dir" && cargo build --release 2>&1); then
+    if (cd "$build_dir" && cargo update 2>&1 && cargo +nightly build --release 2>&1); then
       return 0
     else
       return 1
