@@ -139,7 +139,14 @@ build_repo() {
   # Install tools via mise if mise.toml is present
   if [ -f "$build_dir/mise.toml" ] && command -v mise >/dev/null 2>&1; then
     log_step "  Installing tools via mise..."
+    (cd "$build_dir" && mise trust 2>&1) || true
     (cd "$build_dir" && mise install 2>&1) || true
+  fi
+
+  # Initialize git submodules if .gitmodules exists
+  if [ -f "$repo_dir/.gitmodules" ]; then
+    log_step "  Initializing submodules..."
+    (cd "$repo_dir" && git submodule update --init --recursive 2>&1) || true
   fi
 
   if [ -f "$build_dir/Makefile" ]; then
@@ -152,27 +159,47 @@ build_repo() {
     if (cd "$build_dir" && $make_cmd -n deps >/dev/null 2>&1); then
       (cd "$build_dir" && $make_cmd deps 2>&1) || true
     fi
-    if (cd "$build_dir" && $make_cmd build 2>&1); then
-      return 0
+    # If Makefile has no build target, fall through to other build systems
+    if (cd "$build_dir" && $make_cmd -n build >/dev/null 2>&1); then
+      if (cd "$build_dir" && $make_cmd build 2>&1); then
+        return 0
+      else
+        return 1
+      fi
     else
-      return 1
+      log_warn "  Makefile has no build target, trying other build systems..."
     fi
-  elif [ -f "$build_dir/Cargo.toml" ]; then
+  fi
+
+  if [ -f "$build_dir/Cargo.toml" ]; then
     if (cd "$build_dir" && cargo +nightly build --release 2>&1); then
       return 0
     else
       return 1
     fi
   elif [ -f "$build_dir/go.mod" ]; then
+    # Provide ICU headers for CGo builds that need them (e.g. go-icu-regex)
+    local icu_dev
+    icu_dev="$(nix-build '<nixpkgs>' -A icu.dev --no-out-link 2>/dev/null || true)"
+    local icu_lib
+    icu_lib="$(nix-build '<nixpkgs>' -A icu --no-out-link 2>/dev/null || true)"
+    local go_env=()
+    if [ -n "$icu_dev" ] && [ -n "$icu_lib" ]; then
+      go_env=(env
+        PKG_CONFIG_PATH="${icu_dev}/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+        CGO_CFLAGS="-I${icu_dev}/include ${CGO_CFLAGS:-}"
+        CGO_LDFLAGS="-L${icu_lib}/lib ${CGO_LDFLAGS:-}"
+      )
+    fi
     # Go project: build ./cmd/{repo_name} if it exists, otherwise build root
     if [ -d "$build_dir/cmd/$repo_name" ]; then
-      if (cd "$build_dir" && go build "./cmd/$repo_name" 2>&1); then
+      if (cd "$build_dir" && "${go_env[@]}" go build "./cmd/$repo_name" 2>&1); then
         return 0
       else
         return 1
       fi
     else
-      if (cd "$build_dir" && go build 2>&1); then
+      if (cd "$build_dir" && "${go_env[@]}" go build 2>&1); then
         return 0
       else
         return 1
