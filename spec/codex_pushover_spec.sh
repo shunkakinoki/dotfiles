@@ -5,9 +5,32 @@ Describe 'codex hooks/pushover.sh'
 SCRIPT="$PWD/config/codex/hooks/pushover.sh"
 
 Describe 'without pushover-notify'
+setup() {
+  MOCK_BIN="$(mktemp -d)"
+  MOCK_ORIGINAL_PATH="${PATH:-}"
+  # Build a PATH with basic utilities but without pushover-notify
+  local bash_dir cat_dir jq_dir sed_dir hostname_dir head_dir grep_dir
+  bash_dir="$(dirname "$(command -v bash)")"
+  cat_dir="$(dirname "$(command -v cat)")"
+  jq_dir="$(dirname "$(command -v jq 2>/dev/null || echo /nonexistent)")"
+  sed_dir="$(dirname "$(command -v sed)")"
+  hostname_dir="$(dirname "$(command -v hostname 2>/dev/null || echo /nonexistent)")"
+  head_dir="$(dirname "$(command -v head)")"
+  grep_dir="$(dirname "$(command -v grep)")"
+  export PATH="$MOCK_BIN:$bash_dir:$cat_dir:$jq_dir:$sed_dir:$hostname_dir:$head_dir:$grep_dir"
+  export MOCK_BIN MOCK_ORIGINAL_PATH
+}
+cleanup() {
+  export PATH="$MOCK_ORIGINAL_PATH"
+  rm -rf "$MOCK_BIN"
+  unset MOCK_BIN MOCK_ORIGINAL_PATH
+}
+Before 'setup'
+After 'cleanup'
+
 It 'exits silently when pushover-notify is not available'
 Data '{"hook_event_name": "Stop", "cwd": "/tmp"}'
-When run bash -c "PATH=/usr/bin:/bin bash '$SCRIPT'"
+When run bash "$SCRIPT"
 The status should be success
 End
 End

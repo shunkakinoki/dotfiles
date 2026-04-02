@@ -2,6 +2,12 @@
 
 set -euo pipefail
 
+# Skip if offline
+if ! timeout 3 bash -c 'exec 3<>/dev/tcp/1.1.1.1/53' 2>/dev/null; then
+  echo "Network unavailable, skipping npm globals install"
+  exit 0
+fi
+
 # Install npm global packages from package.json using bun
 # Reads dependencies from ~/dotfiles/package.json and installs them globally
 

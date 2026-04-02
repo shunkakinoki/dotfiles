@@ -74,16 +74,22 @@ Describe 'when no clipboard backend is available'
 setup() {
   MOCK_BIN="$(mktemp -d)"
   MOCK_ORIGINAL_PATH="${PATH:-}"
+  MOCK_ORIGINAL_WAYLAND="${WAYLAND_DISPLAY:-}"
   # Keep bash on PATH but nothing else
+  # Use readlink -f to resolve to nix store path (avoids NixOS profile bin with all packages)
   local bash_dir
-  bash_dir="$(dirname "$(command -v bash)")"
+  bash_dir="$(dirname "$(readlink -f "$(command -v bash)")")"
   export PATH="$MOCK_BIN:$bash_dir"
-  export MOCK_BIN MOCK_ORIGINAL_PATH
+  unset WAYLAND_DISPLAY
+  export MOCK_BIN MOCK_ORIGINAL_PATH MOCK_ORIGINAL_WAYLAND
 }
 cleanup() {
   export PATH="$MOCK_ORIGINAL_PATH"
+  if [ -n "$MOCK_ORIGINAL_WAYLAND" ]; then
+    export WAYLAND_DISPLAY="$MOCK_ORIGINAL_WAYLAND"
+  fi
   rm -rf "$MOCK_BIN"
-  unset MOCK_BIN MOCK_ORIGINAL_PATH
+  unset MOCK_BIN MOCK_ORIGINAL_PATH MOCK_ORIGINAL_WAYLAND
 }
 Before 'setup'
 After 'cleanup'
