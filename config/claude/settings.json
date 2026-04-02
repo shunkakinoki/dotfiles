@@ -143,16 +143,6 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "Agent",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "CLAUDE_TEAMS_SOCKET=/tmp/claude-teams.sock CLAUDE_TEAMS_SEND=$HOME/ghq/github.com/shunkakinoki/tmux-claude-teams/daemon/bin/send $HOME/ghq/github.com/shunkakinoki/tmux-claude-teams/hooks/post-tool-use.sh",
-            "timeout": 5000
-          }
-        ]
-      },
-      {
         "matcher": "Write|Edit|MultiEdit",
         "hooks": [
           {
@@ -216,16 +206,6 @@
       }
     ],
     "PreToolUse": [
-      {
-        "matcher": "Agent",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "CLAUDE_TEAMS_SOCKET=/tmp/claude-teams.sock CLAUDE_TEAMS_SEND=$HOME/ghq/github.com/shunkakinoki/tmux-claude-teams/daemon/bin/send CLAUDE_TEAMS_TMUX=tmux $HOME/ghq/github.com/shunkakinoki/tmux-claude-teams/hooks/pre-tool-use.sh",
-            "timeout": 5000
-          }
-        ]
-      },
       {
         "matcher": "Bash",
         "hooks": [
