@@ -5,5 +5,6 @@ function _grco_function --description "Hard reset default branch to remote state
   # Ensure we have the latest refs, then hard reset local default to remote
   git fetch origin $default_branch
   git checkout $default_branch
+  git branch --set-upstream-to=origin/$default_branch $default_branch
   git reset --hard origin/$default_branch
 end

@@ -14,6 +14,7 @@ _grco_function
 
 @test "fetches default branch" (grep -c "fetch origin main" $call_log) -ge 1
 @test "checks out default branch" (grep -c "checkout main" $call_log) -ge 1
+@test "fixes upstream tracking" (grep -c "branch --set-upstream-to=origin/main main" $call_log) -ge 1
 @test "resets hard to remote" (grep -c "reset --hard origin/main" $call_log) -ge 1
 
 rm -f $call_log
