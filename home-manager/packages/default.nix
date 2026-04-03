@@ -170,6 +170,7 @@ with pkgs;
   linux-wallpaperengine
   loupe
   mpv
+  obsidian
   nautilus
   pavucontrol
   playerctl
