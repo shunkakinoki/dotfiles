@@ -150,6 +150,7 @@
       tss = "_tss_function";
       tsw = "_tsw_function";
       two = "_two_function";
+      tzo = "_tzo_function";
       zdo = "_zdo_function";
       zmo = "_zmo_function";
       zpo = "_zpo_function";
@@ -251,6 +252,7 @@
         "_tss_function"
         "_tsw_function"
         "_two_function"
+        "_tzo_function"
         "_zdo_function"
         "_zmo_function"
         "_zpo_function"
