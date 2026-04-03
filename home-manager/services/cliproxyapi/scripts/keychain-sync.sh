@@ -59,9 +59,12 @@ sync_claude() {
   #
   # This prevents cliproxyapi from rotating the refresh_token on Anthropic's
   # side, which would invalidate the token in Claude Code's keychain.
+  # Write empty refresh_token so cliproxyapi cannot refresh (and rotate)
+  # the token. cliproxyapi's refresh invalidates the token in Claude Code's
+  # keychain. This file gets pushed to S3 by the backup watcher, so the
+  # empty refresh_token also persists across hydrate/switch cycles.
   new_json=$($JQ -n \
     --arg at "$access_token" \
-    --arg rt "${refresh_token:-}" \
     --arg email "$EMAIL" \
     --arg last_refresh "$(date -u +%Y-%m-%dT%H:%M:%S+00:00)" \
     '{
@@ -71,7 +74,7 @@ sync_claude() {
       expired: "",
       id_token: "",
       last_refresh: $last_refresh,
-      refresh_token: $rt,
+      refresh_token: "",
       type: "claude"
     }')
 
