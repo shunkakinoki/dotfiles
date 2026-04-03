@@ -438,6 +438,7 @@ inputs.nixpkgs.lib.nixosSystem {
                 scaling = "fill";
                 fps = 30;
                 audio.silent = true;
+                extraOptions = [ "--no-fullscreen-pause" ];
               }
             ];
           };
