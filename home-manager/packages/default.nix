@@ -141,6 +141,7 @@ with pkgs;
 ++ lib.optionals (stdenv.isLinux && isDesktop) [
   _1password-gui
   baobab
+  blueman
   brightnessctl
   celluloid
   cheese
@@ -157,7 +158,19 @@ with pkgs;
   gedit
   ghostty
   github-desktop
+  gnome-calculator
+  gnome-calendar
+  gnome-clocks
+  gnome-connections
+  gnome-control-center
   gnome-disk-utility
+  gnome-font-viewer
+  gnome-power-manager
+  gnome-screenshot
+  gnome-system-monitor
+  gnome-text-editor
+  gnome-tweaks
+  gnome-weather
   google-chrome
   grim
   gthumb
@@ -171,12 +184,14 @@ with pkgs;
   linux-wallpaperengine
   loupe
   mpv
-  obsidian
   nautilus
+  networkmanagerapplet
   nwg-dock-hyprland
   nwg-drawer
+  obsidian
   pavucontrol
   playerctl
+  polari
   rofi
   rofimoji
   seahorse
