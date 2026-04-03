@@ -2,6 +2,12 @@
 
 set -euo pipefail
 
+# Skip if offline
+if ! timeout 3 bash -c 'exec 3<>/dev/tcp/1.1.1.1/53' 2>/dev/null; then
+  echo "Network unavailable, skipping uv globals install"
+  exit 0
+fi
+
 # Install uv global tools from pyproject.toml
 # Reads dependencies from ~/dotfiles/pyproject.toml and installs them as global tools
 
