@@ -77,6 +77,7 @@ with pkgs;
   navi
   ncdu
   pingu
+  pnpm
   postgresql_18
   procs
   qwen-code
