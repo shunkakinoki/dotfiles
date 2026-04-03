@@ -69,7 +69,7 @@ with pkgs;
   kubectx
   kubernetes-helm
   kustomize
-  llama-cpp
+  (if stdenv.isLinux && isDesktop then llama-cpp.override { vulkanSupport = true; } else llama-cpp)
   llm
   mariadb
   mise

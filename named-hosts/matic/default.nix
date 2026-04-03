@@ -447,6 +447,10 @@ inputs.nixpkgs.lib.nixosSystem {
             "VK_DRIVER_FILES=/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json"
           ];
 
+          home.sessionVariables = {
+            VK_DRIVER_FILES = "/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json";
+          };
+
           # Pause animated wallpaper on battery to save power (SIGSTOP/SIGCONT)
           systemd.user.services.wallpaper-power-monitor = {
             Unit = {
