@@ -10,6 +10,7 @@ mkdir -p "${INSTANCE_DIR}"
 chmod 600 "$CONFIG"
 
 # Create paperclip database on docker-postgres if needed
+# shellcheck disable=SC2050 -- @is_kyber@ is substituted by Nix replaceVars
 if [ "@is_kyber@" = "true" ]; then
   if command -v docker >/dev/null 2>&1 && docker container inspect postgres >/dev/null 2>&1; then
     if ! docker exec postgres psql -U postgres -lqt | cut -d \| -f 1 | grep -qw paperclip; then
