@@ -18,6 +18,7 @@ lib.mkIf host.isKyber {
   '';
 
   # Systemd service for Paperclip
+  # Uses bun runtime instead of node to avoid pino-http crash (logger[stringifySym] is not a function)
   systemd.user.services.paperclip = {
     Unit = {
       Description = "Paperclip AI agent orchestration platform";
@@ -26,7 +27,7 @@ lib.mkIf host.isKyber {
     };
     Service = {
       Type = "simple";
-      ExecStart = "${homeDir}/.bun/bin/paperclipai run";
+      ExecStart = "${homeDir}/.bun/bin/bun run ${homeDir}/.bun/install/global/node_modules/paperclipai/dist/index.js run --no-repair";
       Restart = "always";
       RestartSec = "5s";
       Environment = [
