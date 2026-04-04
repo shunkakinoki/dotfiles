@@ -26,6 +26,8 @@ let
       ];
 in
 {
+  home.packages = [ ollamaPackage ];
+
   launchd.agents.ollama = lib.mkIf pkgs.stdenv.isDarwin {
     enable = true;
     config = {
