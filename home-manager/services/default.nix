@@ -1,5 +1,6 @@
 {
   config,
+  inputs,
   lib,
   pkgs,
   ...
@@ -15,7 +16,7 @@ let
   dotfilesUpdater = import ./dotfiles-updater { inherit pkgs; };
   makeUpdater = import ./make-updater { inherit pkgs; };
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
-  ollama = import ./ollama { inherit pkgs; };
+  ollama = import ./ollama { inherit pkgs inputs; };
   sshAgent = import ./ssh-agent {
     inherit config lib pkgs;
   };

@@ -250,6 +250,7 @@ scripts/sync-codex-security.sh
 scripts/sync-rtk-rewrite.sh
 config/hyprland/scripts/record-screen.sh
 config/hyprland/scripts/toggle-terminal.sh
+config/rofi/gnome-control-center-wrapper.sh
 config/openclaw/hydrate.sh
 home-manager/modules/cargo-globals/install-cargo-globals.sh
 home-manager/modules/local-binaries/sync-local-binaries.sh

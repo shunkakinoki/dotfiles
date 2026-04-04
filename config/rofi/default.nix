@@ -1,10 +1,13 @@
 { pkgs, ... }:
 let
-  gnome-control-center-wrapper = pkgs.writeShellScript "gnome-control-center-wrapper" ''
-    export XDG_CURRENT_DESKTOP=GNOME
-    export XDG_DATA_DIRS="${pkgs.gnome-shell}/share/gsettings-schemas/${pkgs.gnome-shell.name}:$XDG_DATA_DIRS"
-    exec ${pkgs.gnome-control-center}/bin/gnome-control-center "$@"
-  '';
+  gnome-control-center-wrapper = pkgs.writeShellScript "gnome-control-center-wrapper" (
+    builtins.readFile (
+      pkgs.replaceVars ./gnome-control-center-wrapper.sh {
+        gnome_shell_schemas = "${pkgs.gnome-shell}/share/gsettings-schemas/${pkgs.gnome-shell.name}";
+        gnome_control_center = pkgs.gnome-control-center;
+      }
+    )
+  );
 in
 {
   xdg.configFile."rofi/config.rasi" = {
