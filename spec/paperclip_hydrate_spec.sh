@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2329
 
-Describe 'config/paperclip/setup.sh'
-SCRIPT="$PWD/config/paperclip/setup.sh"
+Describe 'config/paperclip/hydrate.sh'
+SCRIPT="$PWD/config/paperclip/hydrate.sh"
 
 Describe 'script properties'
 It 'uses bash shebang'

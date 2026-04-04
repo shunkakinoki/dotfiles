@@ -9,7 +9,7 @@ let
   homeDir = config.home.homeDirectory;
   instanceDir = "${homeDir}/.paperclip/instances/default";
 
-  setupScript = pkgs.replaceVars ./setup.sh {
+  setupScript = pkgs.replaceVars ./hydrate.sh {
     instance_dir = instanceDir;
     template = "${./config.template.json}";
     sed = "${pkgs.gnused}/bin/sed";
