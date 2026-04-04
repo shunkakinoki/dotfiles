@@ -243,9 +243,9 @@ inputs.nixpkgs.lib.nixosSystem {
 
         # Power button behavior - lock screen instead of shutdown
         services.logind.settings.Login.HandlePowerKey = "lock";
-        # Ignore lid close on both battery and AC — let hypridle's idle timer handle suspension
-        services.logind.settings.Login.HandleLidSwitch = "ignore";
-        services.logind.settings.Login.HandleLidSwitchExternalPower = "ignore";
+        # Suspend on lid close
+        services.logind.settings.Login.HandleLidSwitch = "suspend";
+        services.logind.settings.Login.HandleLidSwitchExternalPower = "suspend";
 
         # Auto timezone (via geolocation)
         services.geoclue2.enable = true;
