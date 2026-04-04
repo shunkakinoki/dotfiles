@@ -1,4 +1,12 @@
-_: {
+{ pkgs, ... }:
+let
+  gnome-control-center-wrapper = pkgs.writeShellScript "gnome-control-center-wrapper" ''
+    export XDG_CURRENT_DESKTOP=GNOME
+    export XDG_DATA_DIRS="${pkgs.gnome-shell}/share/gsettings-schemas/${pkgs.gnome-shell.name}:$XDG_DATA_DIRS"
+    exec ${pkgs.gnome-control-center}/bin/gnome-control-center "$@"
+  '';
+in
+{
   xdg.configFile."rofi/config.rasi" = {
     source = ./config.rasi;
     force = true;
@@ -86,6 +94,26 @@ _: {
       exec = "hyprpicker -a";
       icon = "color-select";
       categories = [ "Utility" ];
+      noDisplay = false;
+    };
+    wifi-settings = {
+      name = "WiFi Settings";
+      exec = "${gnome-control-center-wrapper} wifi";
+      icon = "network-wireless";
+      categories = [
+        "System"
+        "Settings"
+      ];
+      noDisplay = false;
+    };
+    network-connections = {
+      name = "Network Connections";
+      exec = "nm-connection-editor";
+      icon = "preferences-system-network";
+      categories = [
+        "System"
+        "Settings"
+      ];
       noDisplay = false;
     };
   };

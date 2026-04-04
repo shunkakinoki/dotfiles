@@ -130,6 +130,7 @@ with pkgs;
   openssl.dev
   pkg-config
   powertop
+  psmisc
   qemu
   stdenv.cc.cc.lib
   tailscale
