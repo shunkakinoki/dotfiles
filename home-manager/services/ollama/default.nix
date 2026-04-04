@@ -25,8 +25,11 @@ in
     };
     Service = {
       Type = "simple";
-      ExecStart = "${pkgs.ollama}/bin/ollama serve";
-      Environment = "OLLAMA_HOST=0.0.0.0";
+      ExecStart = "${pkgs.ollama-rocm}/bin/ollama serve";
+      Environment = [
+        "OLLAMA_HOST=0.0.0.0"
+        "HSA_OVERRIDE_GFX_VERSION=11.5.0"
+      ];
       Restart = "always";
       RestartSec = 3;
     };
