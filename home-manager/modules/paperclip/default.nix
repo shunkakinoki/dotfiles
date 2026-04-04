@@ -27,7 +27,7 @@ lib.mkIf host.isKyber {
     };
     Service = {
       Type = "simple";
-      ExecStart = "${homeDir}/.bun/bin/bun run ${homeDir}/.bun/install/global/node_modules/paperclipai/dist/index.js run --no-repair";
+      ExecStart = "${homeDir}/.nix-profile/bin/bun run ${homeDir}/.bun/install/global/node_modules/paperclipai/dist/index.js run --no-repair";
       Restart = "always";
       RestartSec = "5s";
       Environment = [
