@@ -62,9 +62,9 @@ in
       categories = [ "System" ];
       noDisplay = false;
     };
-    audio-settings = {
-      name = "Audio Settings";
-      exec = "pavucontrol";
+    sound-settings = {
+      name = "Sound Settings";
+      exec = "${gnome-control-center-wrapper} sound";
       icon = "audio-volume-high";
       categories = [
         "System"
@@ -74,7 +74,7 @@ in
     };
     bluetooth-settings = {
       name = "Bluetooth Settings";
-      exec = "blueman-manager";
+      exec = "${gnome-control-center-wrapper} bluetooth";
       icon = "bluetooth";
       categories = [
         "System"
