@@ -438,7 +438,12 @@ inputs.nixpkgs.lib.nixosSystem {
                 scaling = "fill";
                 fps = 30;
                 audio.silent = true;
-                extraOptions = [ ];
+                extraOptions = [
+                  "--no-audio-processing"
+                  "--disable-mouse"
+                  "--disable-parallax"
+                  "--disable-particles"
+                ];
               }
             ];
           };
