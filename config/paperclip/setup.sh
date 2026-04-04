@@ -3,10 +3,15 @@ set -euo pipefail
 
 INSTANCE_DIR="@instance_dir@"
 CONFIG="${INSTANCE_DIR}/config.json"
+TEMPLATE="@template@"
 
 mkdir -p "${INSTANCE_DIR}"
 
-@cp@ "@config_file@" "$CONFIG"
+@sed@ \
+  -e "s|__DATABASE_MODE__|@database_mode@|g" \
+  -e "s|__DATABASE_CONNECTION_STRING__|@database_connection_string@|g" \
+  -e "s|__HOST__|@host@|g" \
+  "$TEMPLATE" >"$CONFIG"
 chmod 600 "$CONFIG"
 
 # Create paperclip database on docker-postgres if needed

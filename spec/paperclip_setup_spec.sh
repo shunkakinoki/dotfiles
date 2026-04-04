@@ -16,15 +16,25 @@ The output should include 'set -euo pipefail'
 End
 End
 
-Describe 'config management'
-It 'creates instance directory'
-When run bash -c "grep 'mkdir -p' '$SCRIPT'"
-The output should include 'INSTANCE_DIR'
+Describe 'config generation'
+It 'uses sed to substitute values in template'
+When run bash -c "grep '@sed@' '$SCRIPT'"
+The output should include '@sed@'
 End
 
-It 'copies config file to instance directory'
-When run bash -c "grep '@cp@' '$SCRIPT'"
-The output should include 'config_file'
+It 'substitutes DATABASE_MODE in template'
+When run bash -c "grep '__DATABASE_MODE__' '$SCRIPT'"
+The output should include 'DATABASE_MODE'
+End
+
+It 'substitutes DATABASE_CONNECTION_STRING in template'
+When run bash -c "grep '__DATABASE_CONNECTION_STRING__' '$SCRIPT'"
+The output should include 'DATABASE_CONNECTION_STRING'
+End
+
+It 'substitutes HOST in template'
+When run bash -c "grep '__HOST__' '$SCRIPT'"
+The output should include 'HOST'
 End
 
 It 'sets restrictive permissions on config'
