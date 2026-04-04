@@ -16,6 +16,18 @@ The output should include 'set -euo pipefail'
 End
 End
 
+Describe 'secret loading'
+It 'reads DATABASE_URL from dotfiles .env'
+When run bash -c "grep 'DATABASE_URL' '$SCRIPT'"
+The output should include 'DATABASE_URL'
+End
+
+It 'sources the env file'
+When run bash -c "grep 'ENV_FILE' '$SCRIPT'"
+The output should include 'dotfiles/.env'
+End
+End
+
 Describe 'config generation'
 It 'uses sed to substitute values in template'
 When run bash -c "grep '@sed@' '$SCRIPT'"
@@ -44,13 +56,8 @@ End
 End
 
 Describe 'database provisioning'
-It 'creates paperclip database on docker-postgres'
-When run bash -c "grep 'createdb' '$SCRIPT'"
-The output should include 'paperclip'
-End
-
-It 'checks if database already exists before creating'
-When run bash -c "grep 'grep -qw paperclip' '$SCRIPT'"
+It 'creates paperclip database if missing'
+When run bash -c "grep 'CREATE DATABASE' '$SCRIPT'"
 The output should include 'paperclip'
 End
 
