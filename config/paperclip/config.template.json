@@ -1,0 +1,10 @@
+{
+  "database": {
+    "mode": "__DATABASE_MODE__",
+    "connectionString": "__DATABASE_CONNECTION_STRING__"
+  },
+  "server": {
+    "host": "__HOST__",
+    "port": 3100
+  }
+}

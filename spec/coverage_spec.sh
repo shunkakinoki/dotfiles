@@ -133,6 +133,10 @@ It 'has spec file for config/openclaw/hydrate.sh'
 The path "spec/openclaw_hydrate_spec.sh" should be exist
 End
 
+It 'has spec file for config/paperclip/hydrate.sh'
+The path "spec/paperclip_hydrate_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/modules/npm-globals/install-npm-globals.sh'
 The path "spec/npm_globals_spec.sh" should be exist
 End
@@ -251,6 +255,7 @@ scripts/sync-rtk-rewrite.sh
 config/hyprland/scripts/record-screen.sh
 config/hyprland/scripts/toggle-terminal.sh
 config/openclaw/hydrate.sh
+config/paperclip/hydrate.sh
 home-manager/modules/cargo-globals/install-cargo-globals.sh
 home-manager/modules/local-binaries/sync-local-binaries.sh
 home-manager/modules/local-scripts/clipboard-copy.sh

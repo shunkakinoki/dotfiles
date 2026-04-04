@@ -25,6 +25,7 @@ in
   ./llm
   ./openclaw
   ./omp
+  ./paperclip
   ./opencode
   ./pi
   ./serena
