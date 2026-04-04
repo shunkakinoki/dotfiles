@@ -38,7 +38,6 @@ lib.mkIf host.isKyber {
         "HOME=${homeDir}"
         "PATH=${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:${homeDir}/.local/share/pnpm:${homeDir}/.local/share/fnm/current/bin:${homeDir}/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
       ];
-      EnvironmentFile = "${instanceDir}/.env";
       WorkingDirectory = "${homeDir}/.paperclip";
       StandardOutput = "append:/tmp/paperclip/paperclip.log";
       StandardError = "append:/tmp/paperclip/paperclip.log";
