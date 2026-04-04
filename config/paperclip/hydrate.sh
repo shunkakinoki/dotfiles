@@ -10,7 +10,9 @@ mkdir -p "${INSTANCE_DIR}"
 @sed@ \
   -e "s|__DATABASE_MODE__|@database_mode@|g" \
   -e "s|__DATABASE_CONNECTION_STRING__|@database_connection_string@|g" \
+  -e "s|__DEPLOYMENT_MODE__|@deployment_mode@|g" \
   -e "s|__HOST__|@host@|g" \
+  -e "s|__ALLOWED_HOSTNAME__|@allowed_hostname@|g" \
   "$TEMPLATE" >"$CONFIG"
 chmod 600 "$CONFIG"
 

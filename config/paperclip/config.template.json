@@ -1,10 +1,23 @@
 {
+  "$meta": {
+    "version": 1,
+    "updatedAt": "2026-04-04T00:00:00.000Z",
+    "source": "configure"
+  },
   "database": {
     "mode": "__DATABASE_MODE__",
     "connectionString": "__DATABASE_CONNECTION_STRING__"
   },
+  "logging": {
+    "mode": "file"
+  },
   "server": {
+    "deploymentMode": "__DEPLOYMENT_MODE__",
+    "exposure": "private",
     "host": "__HOST__",
-    "port": 3100
+    "port": 3100,
+    "allowedHostnames": [
+      "__ALLOWED_HOSTNAME__"
+    ]
   }
 }
