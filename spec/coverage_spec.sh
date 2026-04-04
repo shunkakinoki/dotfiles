@@ -29,6 +29,10 @@ It 'has spec file for config/claude/hooks/statusline.sh'
 The path "spec/statusline_spec.sh" should be exist
 End
 
+It 'has spec file for config/claude/hooks/auto-switch.sh'
+The path "spec/auto_switch_spec.sh" should be exist
+End
+
 It 'has spec file for config/hyprland/scripts/record-screen.sh'
 The path "spec/hyprland_record_screen_spec.sh" should be exist
 End
@@ -238,6 +242,7 @@ config/claude/hooks/notify.sh
 config/claude/hooks/pushover.sh
 config/claude/hooks/rtk-rewrite.sh
 config/claude/hooks/security.sh
+config/claude/hooks/auto-switch.sh
 config/claude/hooks/atuin-history.sh
 config/claude/hooks/statusline.sh
 config/codex/hooks/atuin-history.sh
