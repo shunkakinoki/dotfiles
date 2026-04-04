@@ -15,6 +15,7 @@
     "deploymentMode": "__DEPLOYMENT_MODE__",
     "exposure": "private",
     "host": "__HOST__",
-    "port": 3100
+    "port": 3100,
+    "allowedHostnames": ["__ALLOWED_HOSTNAME__"]
   }
 }
