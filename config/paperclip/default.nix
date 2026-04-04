@@ -16,6 +16,7 @@ let
     database_mode = if host.isKyber then "postgres" else "embedded-postgres";
     database_connection_string =
       if host.isKyber then "postgres://postgres:postgres@localhost:5432/paperclip" else "";
+    deployment_mode = if host.isKyber then "authenticated" else "local_trusted";
     host = if host.isKyber then "0.0.0.0" else "127.0.0.1";
     is_kyber = if host.isKyber then "true" else "false";
   };
