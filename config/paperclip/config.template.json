@@ -16,6 +16,8 @@
     "exposure": "private",
     "host": "__HOST__",
     "port": 3100,
-    "allowedHostnames": ["__ALLOWED_HOSTNAME__"]
+    "allowedHostnames": [
+      "__ALLOWED_HOSTNAME__"
+    ]
   }
 }
