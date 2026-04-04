@@ -7,7 +7,6 @@
 let
   inherit (inputs) host;
   homeDir = config.home.homeDirectory;
-  instanceDir = "${homeDir}/.paperclip/instances/default";
 in
 # Only enable on kyber (server host)
 lib.mkIf host.isKyber {
@@ -22,12 +21,8 @@ lib.mkIf host.isKyber {
   systemd.user.services.paperclip = {
     Unit = {
       Description = "Paperclip AI agent orchestration platform";
-      After = [
-        "network-online.target"
-        "docker-postgres.service"
-      ];
+      After = [ "network-online.target" ];
       Wants = [ "network-online.target" ];
-      Requires = [ "docker-postgres.service" ];
     };
     Service = {
       Type = "simple";
