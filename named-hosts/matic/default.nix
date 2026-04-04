@@ -436,7 +436,7 @@ inputs.nixpkgs.lib.nixosSystem {
                 monitor = "eDP-1";
                 wallpaperId = "2826529529";
                 scaling = "fill";
-                fps = 3;
+                fps = 1;
                 audio.silent = true;
                 extraOptions = [
                   "--no-audio-processing"
