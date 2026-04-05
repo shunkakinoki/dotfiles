@@ -15,6 +15,9 @@ in
 {
   # Install cargo global packages from Cargo.toml using home-manager activation
   home.activation.installCargoGlobals = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    if [ "$(${pkgs.systemd}/bin/systemctl is-system-running 2>/dev/null)" = "starting" ]; then
+      echo "System is booting, skipping cargo globals install"
+    else
     export PATH=${pkgs.rustup}/bin:${pkgs.cargo}/bin:${pkgs.rustc}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.gcc}/bin:${pkgs.pkg-config}/bin:${pkgs.perl}/bin:$PATH
     export CARGO_HOME="$HOME/.cargo"
     $DRY_RUN_CMD ${pkgs.rustup}/bin/rustup toolchain install stable --no-self-update || true
@@ -28,7 +31,32 @@ in
     ${lib.optionalString isDarwin ''export LDFLAGS="${libiconvLdFlags}''${LDFLAGS:-}"''}
     ${lib.optionalString isDarwin ''export CPPFLAGS="${libiconvCppFlags}''${CPPFLAGS:-}"''}
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./install-cargo-globals.sh}
+    fi
   '';
+
+  # Run cargo globals install after login
+  systemd.user.services.install-cargo-globals = {
+    Unit = {
+      Description = "Install cargo global packages";
+      After = [ "default.target" ];
+    };
+    Service = {
+      Type = "oneshot";
+      Environment = [
+        "PATH=${pkgs.rustup}/bin:${pkgs.cargo}/bin:${pkgs.rustc}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.gcc}/bin:${pkgs.pkg-config}/bin:${pkgs.perl}/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin"
+        "CARGO_HOME=%h/.cargo"
+        "HOME=%h"
+        "PKG_CONFIG_PATH=${pkgs.openssl.dev}/lib/pkgconfig${libiconvPkgConfigPath}"
+        "OPENSSL_DIR=${pkgs.openssl.dev}"
+        "OPENSSL_LIB_DIR=${pkgs.openssl.out}/lib"
+        "OPENSSL_INCLUDE_DIR=${pkgs.openssl.dev}/include"
+      ];
+      ExecStart = "${pkgs.bash}/bin/bash ${./install-cargo-globals.sh}";
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+  };
 
   # Add cargo bin to PATH
   home.sessionPath = [
