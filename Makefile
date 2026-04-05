@@ -233,7 +233,7 @@ rtk-rewrite-sync: ## Sync rtk-rewrite.sh from upstream rtk repo.
 ##@ Upgrade
 
 .PHONY: upgrade
-upgrade: nix-upgrade overlays-upgrade neovim-upgrade llm-upgrade gitalias-upgrade codex-security-sync rtk-rewrite-sync ## Upgrade Nix flake, overlays, Neovim plugins, LLM configs, and gitalias
+upgrade: nix-upgrade overlays-upgrade neovim-upgrade llm-upgrade gitalias-upgrade ## Upgrade Nix flake, overlays, Neovim plugins, LLM configs, and gitalias
 
 .PHONY: llm-upgrade
 llm-upgrade: ## Regenerate tool configs from models.json.
