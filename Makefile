@@ -207,10 +207,10 @@ devenv-cli: ## Build the packaged devenv CLI binary.
 	@$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#devenv-cli $(NIX_FLAGS) --show-trace
 	@echo "✅ devenv CLI available in ./result/bin/devenv"
 
-##@ Update
+##@ Upgrade
 
-.PHONY: update
-update: sync upgrade
+.PHONY: upgrade
+upgrade: sync update
 
 ##@ Sync
 
@@ -230,10 +230,10 @@ rtk-rewrite-sync: ## Sync rtk-rewrite.sh from upstream rtk repo.
 	@./scripts/sync-rtk-rewrite.sh
 	@echo "✅ rtk-rewrite.sh synced"
 
-##@ Upgrade
+##@ Update
 
-.PHONY: upgrade
-upgrade: nix-update overlays-update neovim-update llm-update gitalias-update ## Upgrade Nix flake, overlays, Neovim plugins, LLM configs, and gitalias
+.PHONY: uptate
+update: nix-update overlays-update neovim-update llm-update gitalias-update ## Update Nix flake, overlays, Neovim plugins, LLM configs, and gitalias
 
 .PHONY: llm-update
 llm-update: ## Regenerate tool configs from models.json.
