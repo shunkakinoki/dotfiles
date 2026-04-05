@@ -29,6 +29,9 @@ fi
 # Reads dependencies from ~/dotfiles/pyproject.toml and installs them as global tools
 echo "Installing uv global tools from pyproject.toml..."
 
+PYTHON_VERSION=$(tomlq -r '.project["requires-python"]' "$PYPROJECT" 2>/dev/null | sed 's/[^0-9.]//g')
+PYTHON_VERSION=${PYTHON_VERSION:-3.13}
+
 DEPS=$(tomlq -r '.["dependency-groups"].tools[]' "$PYPROJECT" 2>/dev/null)
 
 if [ -z "$DEPS" ]; then
@@ -39,7 +42,7 @@ fi
 echo "$DEPS" | while read -r pkg; do
   if [ -n "$pkg" ]; then
     echo "Installing $pkg..."
-    uv tool install "$pkg" --force 2>/dev/null || echo "Failed to install $pkg, skipping..."
+    uv tool install "$pkg" --python "$PYTHON_VERSION" --force 2>/dev/null || echo "Failed to install $pkg, skipping..."
   fi
 done
 
