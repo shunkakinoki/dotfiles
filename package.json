@@ -68,8 +68,7 @@
     "xcodebuildmcp": "^2.3.1"
   },
   "overrides": {
-    "pino": "9.6.0",
-    "pino-http": "9.0.0"
+    "pino": "9.14.0"
   },
   "trustedDependencies": [
     "@anthropic-ai/claude-code",

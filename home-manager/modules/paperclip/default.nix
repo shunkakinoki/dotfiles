@@ -18,7 +18,6 @@ lib.mkIf host.isKyber {
   '';
 
   # Systemd service for Paperclip
-  # Uses bun runtime instead of node to avoid pino-http crash (logger[stringifySym] is not a function)
   systemd.user.services.paperclip = {
     Unit = {
       Description = "Paperclip AI agent orchestration platform";
@@ -27,12 +26,19 @@ lib.mkIf host.isKyber {
     };
     Service = {
       Type = "simple";
-      ExecStart = "${homeDir}/.nix-profile/bin/bun run ${homeDir}/.bun/install/global/node_modules/paperclipai/dist/index.js run --no-repair";
+      ExecStart = "${homeDir}/dotfiles/node_modules/.bin/paperclipai run --no-repair";
       Restart = "always";
       RestartSec = "5s";
       Environment = [
         "HOME=${homeDir}"
+        "HOST=0.0.0.0"
+        "PAPERCLIP_DEPLOYMENT_MODE=authenticated"
+        "PAPERCLIP_ALLOWED_HOSTNAMES=paperclip.shunkakinoki.com,172.17.0.1"
         "PATH=${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:${homeDir}/.local/share/pnpm:${homeDir}/.local/share/fnm/current/bin:${homeDir}/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
+      ];
+      EnvironmentFile = [
+        "${homeDir}/dotfiles/.env"
+        "${homeDir}/.paperclip/instances/default/.env"
       ];
       WorkingDirectory = "${homeDir}/.paperclip";
       StandardOutput = "append:/tmp/paperclip/paperclip.log";
