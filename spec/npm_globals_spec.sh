@@ -4,6 +4,20 @@
 Describe 'npm-globals/install-npm-globals.sh'
 SCRIPT="$PWD/home-manager/modules/npm-globals/install-npm-globals.sh"
 
+Describe 'systemd activation skip'
+NIX_FILE="$PWD/home-manager/modules/npm-globals/default.nix"
+
+It 'checks INVOCATION_ID to detect systemd service'
+When run bash -c "grep 'INVOCATION_ID' '$NIX_FILE'"
+The output should include 'INVOCATION_ID'
+End
+
+It 'skips install when running inside systemd'
+When run bash -c "grep -A 1 'INVOCATION_ID' '$NIX_FILE'"
+The output should include 'skipping npm globals install'
+End
+End
+
 Describe 'script properties'
 It 'uses bash shebang'
 When run bash -c "head -1 '$SCRIPT'"

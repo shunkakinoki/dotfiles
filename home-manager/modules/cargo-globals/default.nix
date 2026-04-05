@@ -15,6 +15,9 @@ in
 {
   # Install cargo global packages from Cargo.toml using home-manager activation
   home.activation.installCargoGlobals = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    if [ -n "''${INVOCATION_ID:-}" ]; then
+      echo "Running inside systemd service, skipping cargo globals install"
+    else
     export PATH=${pkgs.rustup}/bin:${pkgs.cargo}/bin:${pkgs.rustc}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.gcc}/bin:${pkgs.pkg-config}/bin:${pkgs.perl}/bin:$PATH
     export CARGO_HOME="$HOME/.cargo"
     $DRY_RUN_CMD ${pkgs.rustup}/bin/rustup toolchain install stable --no-self-update || true
@@ -28,6 +31,7 @@ in
     ${lib.optionalString isDarwin ''export LDFLAGS="${libiconvLdFlags}''${LDFLAGS:-}"''}
     ${lib.optionalString isDarwin ''export CPPFLAGS="${libiconvCppFlags}''${CPPFLAGS:-}"''}
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./install-cargo-globals.sh}
+    fi
   '';
 
   # Add cargo bin to PATH
