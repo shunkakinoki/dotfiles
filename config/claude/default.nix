@@ -43,4 +43,10 @@
     executable = true;
     force = true;
   };
+
+  home.file.".claude/hooks/auto-switch.sh" = {
+    source = ./hooks/auto-switch.sh;
+    executable = true;
+    force = true;
+  };
 }

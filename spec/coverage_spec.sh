@@ -242,12 +242,12 @@ It 'covers all non-spec shell scripts in the repository'
 # List of all shell scripts that should have tests
 # Update this list when adding new shell scripts
 covered_scripts="config/ccs/hydrate.sh
+config/claude/hooks/atuin-history.sh
+config/claude/hooks/auto-switch.sh
 config/claude/hooks/notify.sh
 config/claude/hooks/pushover.sh
 config/claude/hooks/rtk-rewrite.sh
 config/claude/hooks/security.sh
-config/claude/hooks/auto-switch.sh
-config/claude/hooks/atuin-history.sh
 config/claude/hooks/statusline.sh
 config/codex/hooks/atuin-history.sh
 config/codex/hooks/notify.sh

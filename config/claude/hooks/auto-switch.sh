@@ -7,26 +7,26 @@
 
 set -euo pipefail
 
-# Require cswap
-if ! command -v cswap &>/dev/null; then
+# Require cswap and jq
+if ! command -v cswap &>/dev/null || ! command -v jq &>/dev/null; then
   exit 0
 fi
 
 # Require at least 2 managed accounts
-ACCOUNT_COUNT=$(cswap --list 2>/dev/null | grep -c '^\s*[0-9]' || echo 0)
+ACCOUNT_COUNT=$(cswap --list 2>/dev/null | grep -c '^[[:space:]]*[0-9]' || printf '0')
 if [ "$ACCOUNT_COUNT" -lt 2 ]; then
   exit 0
 fi
 
 # Read hook input from stdin
 INPUT=$(cat)
-ERROR=$(echo "$INPUT" | jq -r '.error // empty' 2>/dev/null) || true
-ERROR_DETAILS=$(echo "$INPUT" | jq -r '.error_details // empty' 2>/dev/null) || true
+ERROR=$(printf '%s' "$INPUT" | jq -r '.error // empty' 2>/dev/null) || true
+ERROR_DETAILS=$(printf '%s' "$INPUT" | jq -r '.error_details // empty' 2>/dev/null) || true
 
 # Check if the error is rate-limit related
 case "${ERROR}${ERROR_DETAILS}" in
-  *rate_limit*|*rate-limit*|*rate\ limit*|*overloaded*|*too_many_requests*|*429*|*quota*|*capacity*)
-    echo "[$(date)] Auto-switching Claude account due to rate limit" >&2
+  *rate_limit* | *rate-limit* | *rate\ limit* | *overloaded* | *too_many_requests* | *429* | *quota* | *capacity*)
+    printf '[%s] Auto-switching Claude account due to rate limit\n' "$(date)" >&2
     cswap --switch 2>&1 | head -5 >&2
     ;;
 esac
