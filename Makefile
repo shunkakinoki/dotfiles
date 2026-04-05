@@ -261,7 +261,9 @@ nix-setup: nix-install nix-check nix-connect ## Set up Nix environment (install,
 nix-connect: ## Ensure Nix daemon is running.
 	@echo "🔌 Ensuring Nix daemon is running for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"
 	@if [ "$(OS)" = "Darwin" ]; then \
-		if [ -f /Library/LaunchDaemons/systems.determinate.nix-daemon.plist ]; then \
+		if [ -S /var/run/nix-daemon.socket ] && nix --version >/dev/null 2>&1; then \
+			echo "✅ Nix daemon is already reachable. Skipping restart."; \
+		elif [ -f /Library/LaunchDaemons/systems.determinate.nix-daemon.plist ]; then \
 			$(SUDO) launchctl bootout system/systems.determinate.nix-daemon 2>/dev/null || true; \
 			$(SUDO) launchctl bootstrap system /Library/LaunchDaemons/systems.determinate.nix-daemon.plist; \
 		elif [ -f /Library/LaunchDaemons/org.nixos.nix-daemon.plist ]; then \
@@ -735,10 +737,10 @@ lua-check-hammerspoon-dev: ## Run the Hammerspoon Lua check inside the Nix dev s
 ##@ Launchd Services
 
 .PHONY: launchctl
-launchctl: launchctl-brew-updater launchctl-openclaw launchctl-cliproxyapi launchctl-cliproxyapi-backup launchctl-code-syncer launchctl-docker-postgres launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama launchctl-tmux-session-logger ## Restart all launchd agents.
+launchctl: launchctl-brew-upgrader launchctl-openclaw launchctl-cliproxyapi launchctl-cliproxyapi-backup launchctl-code-syncer launchctl-docker-postgres launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama launchctl-tmux-session-logger ## Restart all launchd agents.
 
-.PHONY: launchctl-brew-updater
-launchctl-brew-updater: ## Restart brew-updater launchd agent.
+.PHONY: launchctl-brew-upgrader
+launchctl-brew-upgrader: ## Restart brew-updater launchd agent.
 	@echo "🔄 Restarting brew-updater..."
 	@launchctl unload ~/Library/LaunchAgents/org.nix-community.home.brew-updater.plist 2>/dev/null || true
 	@sleep 3
