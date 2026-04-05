@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2329
 
-Describe 'cass/index.sh'
-SCRIPT="$PWD/home-manager/services/cass/index.sh"
+Describe 'cass/daily.sh'
+SCRIPT="$PWD/home-manager/services/cass/daily.sh"
 
 Describe 'script properties'
 It 'uses strict mode'
@@ -20,11 +20,6 @@ Describe 'cass commands'
 It 'runs sources sync'
 When run bash -c "cat '$SCRIPT'"
 The output should include 'sources sync'
-End
-
-It 'runs index --full'
-When run bash -c "cat '$SCRIPT'"
-The output should include 'index --full'
 End
 
 It 'runs analytics rebuild'

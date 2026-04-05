@@ -45,7 +45,7 @@ It 'has spec file for home-manager/programs/neovim/run_tests.sh'
 The path "spec/neovim_tests_spec.sh" should be exist
 End
 
-It 'has spec file for home-manager/services/cass/index.sh'
+It 'has spec file for home-manager/services/cass/daily.sh'
 The path "spec/cass_indexer_spec.sh" should be exist
 End
 
@@ -254,7 +254,7 @@ home-manager/modules/uv-globals/install-uv-globals.sh
 home-manager/programs/neovim/run_tests.sh
 home-manager/programs/tmux/session-logger.sh
 home-manager/services/brew-upgrader/upgrade.sh
-home-manager/services/cass/index.sh
+home-manager/services/cass/daily.sh
 home-manager/services/cliproxyapi/scripts/backup.sh
 home-manager/services/cliproxyapi/scripts/common.sh
 home-manager/services/cliproxyapi/scripts/docker-start.sh
