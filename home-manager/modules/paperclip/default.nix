@@ -19,9 +19,9 @@ lib.mkIf host.isKyber {
   '';
 
   # Systemd service for Paperclip
-  # Runs from cloned repo via pnpm dev:once — the global bun install has a
+  # Runs from cloned repo with bun — the global bun install has a
   # pino-http/pino version mismatch that crashes node after the first request.
-  # The repo's lockfile resolves deps correctly.
+  # Running bun directly from the repo resolves deps correctly.
   systemd.user.services.paperclip = {
     Unit = {
       Description = "Paperclip AI agent orchestration platform";
@@ -30,7 +30,7 @@ lib.mkIf host.isKyber {
     };
     Service = {
       Type = "simple";
-      ExecStart = "${homeDir}/.bun/bin/pnpm dev:once";
+      ExecStart = "${homeDir}/.bun/bin/bun run ${repoDir}/server/src/index.ts";
       Restart = "always";
       RestartSec = "5s";
       Environment = [
