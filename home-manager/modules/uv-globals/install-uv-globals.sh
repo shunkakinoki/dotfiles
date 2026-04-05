@@ -39,11 +39,23 @@ if [ -z "$DEPS" ]; then
   exit 0
 fi
 
+INSTALLED=$(uv tool list 2>/dev/null || true)
+
 echo "$DEPS" | while read -r pkg; do
-  if [ -n "$pkg" ]; then
-    echo "Installing $pkg..."
-    uv tool install "$pkg" --python "$PYTHON_VERSION" --force 2>/dev/null || echo "Failed to install $pkg, skipping..."
+  if [ -z "$pkg" ]; then
+    continue
   fi
+  name=$(echo "$pkg" | sed 's/[><=!].*//')
+  # Extract minimum version from spec (e.g. ">=0.86.2" -> "0.86.2")
+  req_version=$(echo "$pkg" | sed -n 's/.*>=\([0-9][0-9.]*\).*/\1/p')
+  installed_version=$(echo "$INSTALLED" | sed -n "s/^${name} v\([0-9][0-9.]*\).*/\1/p")
+
+  if [ -n "$installed_version" ] && [ -n "$req_version" ] && [ "$installed_version" = "$req_version" ]; then
+    echo "$name $installed_version already installed, skipping"
+    continue
+  fi
+  echo "Installing $pkg..."
+  uv tool install "$pkg" --python "$PYTHON_VERSION" --force 2>/dev/null || echo "Failed to install $pkg, skipping..."
 done
 
 echo "uv globals installation complete"
