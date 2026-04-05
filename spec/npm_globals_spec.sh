@@ -74,9 +74,14 @@ When run bash -c "grep 'trustedDependencies' '$SCRIPT'"
 The output should include 'trustedDependencies'
 End
 
-It 'uses bun install --global'
-When run bash -c "grep 'bun install --global' '$SCRIPT'"
-The output should include 'bun install --global'
+It 'uses bun add --global in batches'
+When run bash -c "grep 'bun add --global' '$SCRIPT'"
+The output should include 'bun add --global'
+End
+
+It 'batches packages to avoid bun resolution hangs'
+When run bash -c "grep 'BATCH_SIZE' '$SCRIPT'"
+The output should include 'BATCH_SIZE'
 End
 
 It 'parses dependencies with jq'

@@ -42,11 +42,21 @@ if [ -n "$TRUSTED_DEPS" ]; then
   done
 fi
 
-# Install global packages
+# Install global packages in batches (bun hangs when resolving too many at once)
 DEPS=$(jq -r '.dependencies | keys[]' "$PACKAGE_JSON" 2>/dev/null || true)
 if [ -n "$DEPS" ]; then
-  # shellcheck disable=SC2086
-  bun install --global $DEPS 2>/dev/null || true
+  BATCH_SIZE=10
+  BATCH=()
+  while IFS= read -r dep; do
+    BATCH+=("$dep")
+    if [ "${#BATCH[@]}" -ge "$BATCH_SIZE" ]; then
+      bun add --global "${BATCH[@]}" 2>/dev/null || true
+      BATCH=()
+    fi
+  done <<< "$DEPS"
+  if [ "${#BATCH[@]}" -gt 0 ]; then
+    bun add --global "${BATCH[@]}" 2>/dev/null || true
+  fi
 fi
 
 # Apply dependency overrides to the global install
