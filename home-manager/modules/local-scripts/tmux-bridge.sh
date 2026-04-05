@@ -245,6 +245,7 @@ cmd_message() {
   # Detect sender identity and location
   local sender_pane="${TMUX_PANE:-}"
   if [[ -z $sender_pane ]]; then
+    # shellcheck disable=SC2016
     die 'not running inside a tmux pane ($TMUX_PANE is unset)'
   fi
   local sender_label
@@ -303,6 +304,7 @@ cmd_resolve() {
 
 cmd_id() {
   if [[ -z ${TMUX_PANE:-} ]]; then
+    # shellcheck disable=SC2016
     die 'not running inside a tmux pane ($TMUX_PANE is unset)'
   fi
   echo "$TMUX_PANE"
@@ -376,6 +378,7 @@ cmd_doctor() {
   else
     echo "Status: ISSUES DETECTED"
     echo ""
+    # shellcheck disable=SC2016
     echo 'Likely cause: $TMUX env var is stale (terminal was restarted).'
     echo "Fix: re-source tmux env or set TMUX_BRIDGE_SOCKET explicitly."
     return 1
