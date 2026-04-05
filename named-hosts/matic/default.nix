@@ -98,6 +98,10 @@ inputs.nixpkgs.lib.nixosSystem {
 
         security.sudo.wheelNeedsPassword = false;
 
+        # Home Manager activation can take a long time (npm globals, cargo installs, etc.)
+        systemd.services."home-manager-${username}".serviceConfig.TimeoutStartSec =
+          lib.mkForce "30m";
+
         # Immutable root — prevents rm -rf / by blocking top-level entry removal
         systemd.services.immutable-root = {
           description = "Set immutable flag on /";
