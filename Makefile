@@ -210,16 +210,25 @@ devenv-cli: ## Build the packaged devenv CLI binary.
 ##@ Update
 
 .PHONY: update
-update: update-local-binaries ## Update local binaries
+update: sync upgrade
 
-.PHONY: update-local-binaries
-update-local-binaries: ## Update and rebuild local binaries from .local-binaries.txt.
-	@echo "🔄 Updating local binaries..."
-	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
-		echo "⏭️ Skipping local binaries update in CI/Docker"; \
-	else \
-		./scripts/update-local-binaries.sh; \
-	fi
+##@ Sync
+
+.PHONY: dotagents-sync
+dotagents-sync: ## Sync dotagents (commands, skills, MCP configuration).
+	@$(MAKE) -C dotagents sync
+
+.PHONY: codex-security-sync
+codex-security-sync: ## Sync Codex security deny patterns from Claude settings.
+	@echo "🔒 Syncing Codex security deny patterns..."
+	@./scripts/sync-codex-security.sh
+	@echo "✅ Codex security patterns synced"
+
+.PHONY: rtk-rewrite-sync
+rtk-rewrite-sync: ## Sync rtk-rewrite.sh from upstream rtk repo.
+	@echo "🔄 Syncing rtk-rewrite.sh from upstream..."
+	@./scripts/sync-rtk-rewrite.sh
+	@echo "✅ rtk-rewrite.sh synced"
 
 ##@ Upgrade
 
@@ -242,24 +251,6 @@ gitalias-upgrade: ## Download latest gitalias.txt from upstream.
 upgrade-dev: ## Upgrade inside the Nix dev shell (mirrors CI).
 	@echo "🔄 Running upgrade inside the Nix dev shell..."
 	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) upgrade
-
-##@ Sync
-
-.PHONY: dotagents-sync
-dotagents-sync: ## Sync dotagents (commands, skills, MCP configuration).
-	@$(MAKE) -C dotagents sync
-
-.PHONY: codex-security-sync
-codex-security-sync: ## Sync Codex security deny patterns from Claude settings.
-	@echo "🔒 Syncing Codex security deny patterns..."
-	@./scripts/sync-codex-security.sh
-	@echo "✅ Codex security patterns synced"
-
-.PHONY: rtk-rewrite-sync
-rtk-rewrite-sync: ## Sync rtk-rewrite.sh from upstream rtk repo.
-	@echo "🔄 Syncing rtk-rewrite.sh from upstream..."
-	@./scripts/sync-rtk-rewrite.sh
-	@echo "✅ rtk-rewrite.sh synced"
 
 ##@ Nix Setup
 
