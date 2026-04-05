@@ -190,44 +190,41 @@ services: ## Restart platform-specific services (launchd on macOS, systemd on Li
 		$(MAKE) systemctl; \
 	fi
 
-.PHONY: dotagents-sync
-dotagents-sync: ## Sync dotagents (commands, skills, MCP configuration).
-	@$(MAKE) -C dotagents sync
-
 .PHONY: test
 test: neovim-test nix-test shell-test python-test shell-inline-check ## Run all tests (neovim + nix + shell + python + shell-inline-check).
 
-##@ Update
+##@ Dev
+.PHONY: dev
+dev: nix-develop ## Enter the Nix dev shell (alias for nix-develop).
 
-.PHONY: update
-update: update-local-binaries ## Update local binaries
+.PHONY: nix-develop
+nix-develop: ## Enter the Nix development shell.
+	DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS)
 
-.PHONY: update-local-binaries
-update-local-binaries: ## Update and rebuild local binaries from .local-binaries.txt.
-	@echo "🔄 Updating local binaries..."
-	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
-		echo "⏭️ Skipping local binaries update in CI/Docker"; \
-	else \
-		./scripts/update-local-binaries.sh; \
-	fi
-
+.PHONY: devenv-cli
+devenv-cli: ## Build the packaged devenv CLI binary.
+	@echo "📦 Building packaged devenv CLI..."
+	@$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#devenv-cli $(NIX_FLAGS) --show-trace
+	@echo "✅ devenv CLI available in ./result/bin/devenv"
 
 ##@ Upgrade
 
 .PHONY: upgrade
-upgrade: nix-upgrade overlays-upgrade neovim-upgrade llm-upgrade gitalias-upgrade codex-security-sync rtk-rewrite-sync ## Upgrade Nix flake, overlays, Neovim plugins, LLM configs, and gitalias
+upgrade: sync update
 
-.PHONY: llm-upgrade
-llm-upgrade: ## Regenerate tool configs from models.json.
-	@echo "🤖 Updating LLM tool configs..."
-	@./scripts/llm-update.sh
-	@echo "✅ LLM configs updated"
+.PHONY: upgrade-dev
+upgrade-dev: ## Upgrade inside the Nix dev shell (mirrors CI).
+	@echo "🔄 Running upgrade inside the Nix dev shell..."
+	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) upgrade
 
-.PHONY: gitalias-upgrade
-gitalias-upgrade: ## Download latest gitalias.txt from upstream.
-	@echo "📥 Updating gitalias.txt..."
-	@./scripts/update-gitalias.sh
-	@echo "✅ gitalias.txt updated"
+##@ Sync
+
+.PHONY: sync
+sync: dotagents-sync codex-security-sync rtk-rewrite-sync ## Sync all components (dotagents, Codex security patterns, rtk-rewrite.sh).
+
+.PHONY: dotagents-sync
+dotagents-sync: ## Sync dotagents (commands, skills, MCP configuration).
+	@$(MAKE) -C dotagents sync
 
 .PHONY: codex-security-sync
 codex-security-sync: ## Sync Codex security deny patterns from Claude settings.
@@ -241,13 +238,41 @@ rtk-rewrite-sync: ## Sync rtk-rewrite.sh from upstream rtk repo.
 	@./scripts/sync-rtk-rewrite.sh
 	@echo "✅ rtk-rewrite.sh synced"
 
-.PHONY: upgrade-dev
-upgrade-dev: ## Upgrade inside the Nix dev shell (mirrors CI).
-	@echo "🔄 Running upgrade inside the Nix dev shell..."
-	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) upgrade
 
-.PHONY: dev
-dev: nix-develop ## Enter the Nix dev shell (alias for nix-develop).
+
+##@ Update
+
+.PHONY: update
+update: nix-update neovim-update gitalias-update llm-update overlays-update  ## Update Nix flake, overlays, Neovim plugins, LLM configs, gitalias, and bun deps
+
+.PHONY: bun-update
+bun-update: ## Update bun dependencies to latest and regenerate lock file.
+	@echo "📦 Updating bun dependencies..."
+	@bun update --latest --recursive
+	@git checkout bun.lock
+	@bun install
+	@echo "✅ bun dependencies updated"
+
+.PHONY: gitalias-update
+gitalias-update: ## Download latest gitalias.txt from upstream.
+	@echo "📥 Updating gitalias.txt..."
+	@./scripts/update-gitalias.sh
+	@echo "✅ gitalias.txt updated"
+
+.PHONY: llm-update
+llm-update: ## Regenerate tool configs from models.json.
+	@echo "🤖 Updating LLM tool configs..."
+	@./scripts/llm-update.sh
+	@echo "✅ LLM configs updated"
+
+.PHONY: overlays-update
+overlays-update: ## Upgrade all custom overlays to latest versions.
+	@echo "🔄 Upgrading custom overlays..."
+	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
+		echo "⏭️ Skipping overlay upgrade in CI/Docker"; \
+	else \
+		./scripts/upgrade-overlays.sh all; \
+	fi
 
 ##@ Nix Setup
 
@@ -258,8 +283,17 @@ nix-setup: nix-install nix-check nix-connect ## Set up Nix environment (install,
 nix-connect: ## Ensure Nix daemon is running.
 	@echo "🔌 Ensuring Nix daemon is running for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"
 	@if [ "$(OS)" = "Darwin" ]; then \
-		$(SUDO) launchctl unload /Library/LaunchDaemons/org.nixos.nix-daemon.plist 2>/dev/null || true; \
-		$(SUDO) launchctl load -w /Library/LaunchDaemons/org.nixos.nix-daemon.plist; \
+		if nix store info >/dev/null 2>&1; then \
+			echo "✅ Nix daemon is already reachable. Skipping restart."; \
+		elif [ -f /Library/LaunchDaemons/systems.determinate.nix-daemon.plist ]; then \
+			$(SUDO) launchctl bootout system/systems.determinate.nix-daemon 2>/dev/null || true; \
+			$(SUDO) launchctl bootstrap system /Library/LaunchDaemons/systems.determinate.nix-daemon.plist; \
+		elif [ -f /Library/LaunchDaemons/org.nixos.nix-daemon.plist ]; then \
+			$(SUDO) launchctl bootout system/org.nixos.nix-daemon 2>/dev/null || true; \
+			$(SUDO) launchctl bootstrap system /Library/LaunchDaemons/org.nixos.nix-daemon.plist; \
+		else \
+			echo "❌ No Nix daemon plist found"; exit 1; \
+		fi; \
 	elif [ "$(OS)" = "Linux" ]; then \
 		if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ] || [ "$$AUTOMATED_UPDATE" = "true" ]; then \
 			echo "🏃‍♂️ Nix daemon management (e.g., systemctl) is skipped in CI/Docker/automated environments."; \
@@ -299,16 +333,6 @@ nix-check: ## Verify Nix environment setup.
 	fi
 	@echo "✅ Nix environment found!"
 
-.PHONY: nix-develop
-nix-develop: ## Enter the Nix development shell.
-	DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS)
-
-.PHONY: devenv-cli
-devenv-cli: ## Build the packaged devenv CLI binary.
-	@echo "📦 Building packaged devenv CLI..."
-	@$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#devenv-cli $(NIX_FLAGS) --show-trace
-	@echo "✅ devenv CLI available in ./result/bin/devenv"
-
 .PHONY: nix-install
 nix-install: ## Install Nix if not already installed.
 	@if [ "$(NIX_ENV)" = "not_found" ]; then \
@@ -319,8 +343,8 @@ nix-install: ## Install Nix if not already installed.
 
 ##@ Nix
 
-.PHONY: nix-upgrade
-nix-upgrade: nix-flake-upgrade nix-build nix-switch ## Upgrade Nix flake, build, and switch.
+.PHONY: nix-update
+nix-update: nix-connect nix-daemon-update nix-flake-update ## Upgrade Nix flake, build, and switch.
 
 .PHONY: nix-backup
 nix-backup: ## Backup configuration files.
@@ -372,6 +396,15 @@ nix-build: nix-connect ## Build Nix configuration.
 	fi
 	@echo "✅ Nix configuration built successfully!"
 
+.PHONY: nix-daemon-update
+nix-daemon-update: ## Upgrade Determinate Nix daemon to latest version.
+	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
+		echo "⏭️ Skipping determinate-nixd upgrade in CI"; \
+	else \
+		echo "⬆️ Upgrading Determinate Nix daemon..."; \
+		$(SUDO) determinate-nixd upgrade || true; \
+	fi
+
 .PHONY: nix-flake-check
 nix-flake-check: ## Check Nix flake configuration.
 	@echo "🔍 Checking Nix flake configuration..."
@@ -382,8 +415,8 @@ nix-flake-check: ## Check Nix flake configuration.
 	fi
 	@echo "✅ Nix flake check completed successfully"
 
-.PHONY: nix-flake-upgrade
-nix-flake-upgrade: nix-connect ## Update flake.lock file.
+.PHONY: nix-flake-update
+nix-flake-update: nix-connect ## Update flake.lock file.
 	@echo "♻️ Refreshing flake.lock file..."
 	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ] || [ "$$AUTOMATED_UPDATE" = "true" ]; then \
 		echo "Bypassing flake update in CI/Docker/automated update"; \
@@ -632,8 +665,14 @@ neovim-dev: ## Set up local Neovim development environment.
 	@echo "✅ Local Neovim development environment ready"
 	@echo "🚧 To restore the Nix-managed version, run 'make switch'"
 
-.PHONY: neovim-upgrade
-neovim-upgrade: ## Update Neovim plugins.
+.PHONY: neovim-sync
+neovim-sync: neovim-update ## Sync Neovim plugins.
+	@echo "🔄 Syncing neovim plugins..."
+	@nvim --headless +"lua vim.cmd('source ' .. vim.fn.stdpath('config') .. '/init.lua')" +qa
+	@echo "✅ Neovim plugins synced"
+
+.PHONY: neovim-update
+neovim-update: ## Update Neovim plugins.
 	@echo "📦 Updating neovim plugins..."
 	@mkdir -p ~/.config/nvim
 	@if [ -L "$(HOME)/.config/nvim/lua" ] || [ -d "$(HOME)/.config/nvim/lua" ]; then \
@@ -644,12 +683,6 @@ neovim-upgrade: ## Update Neovim plugins.
 	@ln -sf "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json" ~/.config/nvim/nvim-pack-lock.json
 	@nvim --headless +"lua vim.pack.update()" +qa
 	@echo "✅ Neovim plugins updated"
-
-.PHONY: neovim-sync
-neovim-sync: neovim-upgrade ## Sync Neovim plugins.
-	@echo "🔄 Syncing neovim plugins..."
-	@nvim --headless +"lua vim.cmd('source ' .. vim.fn.stdpath('config') .. '/init.lua')" +qa
-	@echo "✅ Neovim plugins synced"
 
 .PHONY: neovim-test
 neovim-test: ## Run Neovim tests using plenary.nvim.
@@ -729,13 +762,12 @@ lua-check-hammerspoon-dev: ## Run the Hammerspoon Lua check inside the Nix dev s
 launchctl: launchctl-brew-upgrader launchctl-openclaw launchctl-cliproxyapi launchctl-cliproxyapi-backup launchctl-code-syncer launchctl-docker-postgres launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama launchctl-tmux-session-logger ## Restart all launchd agents.
 
 .PHONY: launchctl-brew-upgrader
-launchctl-brew-upgrader: ## Restart brew-upgrader launchd agent.
-	@echo "🔄 Restarting brew-upgrader..."
-	@launchctl unload ~/Library/LaunchAgents/org.nix-community.home.brew-upgrader.plist 2>/dev/null || true
+launchctl-brew-upgrader: ## Restart brew-updater launchd agent.
+	@echo "🔄 Restarting brew-updater..."
+	@launchctl unload ~/Library/LaunchAgents/org.nix-community.home.brew-updater.plist 2>/dev/null || true
 	@sleep 3
-	@launchctl load ~/Library/LaunchAgents/org.nix-community.home.brew-upgrader.plist
-	@echo "✅ brew-upgrader restarted"
-
+	@launchctl load ~/Library/LaunchAgents/org.nix-community.home.brew-updater.plist
+	@echo "✅ brew-updater restarted"
 
 .PHONY: launchctl-cliproxyapi
 launchctl-cliproxyapi: ## Restart cliproxyapi launchd agent.
@@ -1005,13 +1037,3 @@ doppler-upload: ## Upload .env file to Doppler (dotfiles/prd).
 	@doppler secrets upload --project dotfiles --config prd .env
 	@echo "✅ .env uploaded to Doppler (dotfiles/prd)"
 
-##@ Overlays
-
-.PHONY: overlays-upgrade
-overlays-upgrade: ## Upgrade all custom overlays to latest versions.
-	@echo "🔄 Upgrading custom overlays..."
-	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
-		echo "⏭️ Skipping overlay upgrade in CI/Docker"; \
-	else \
-		./scripts/upgrade-overlays.sh all; \
-	fi
