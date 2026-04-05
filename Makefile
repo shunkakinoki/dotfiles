@@ -190,11 +190,22 @@ services: ## Restart platform-specific services (launchd on macOS, systemd on Li
 		$(MAKE) systemctl; \
 	fi
 
+.PHONY: test
+test: neovim-test nix-test shell-test python-test shell-inline-check ## Run all tests (neovim + nix + shell + python + shell-inline-check).
+
+##@ Dev
 .PHONY: dev
 dev: nix-develop ## Enter the Nix dev shell (alias for nix-develop).
 
-.PHONY: test
-test: neovim-test nix-test shell-test python-test shell-inline-check ## Run all tests (neovim + nix + shell + python + shell-inline-check).
+.PHONY: nix-develop
+nix-develop: ## Enter the Nix development shell.
+	DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS)
+
+.PHONY: devenv-cli
+devenv-cli: ## Build the packaged devenv CLI binary.
+	@echo "📦 Building packaged devenv CLI..."
+	@$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#devenv-cli $(NIX_FLAGS) --show-trace
+	@echo "✅ devenv CLI available in ./result/bin/devenv"
 
 ##@ Update
 
@@ -299,16 +310,6 @@ nix-check: ## Verify Nix environment setup.
 		exit 1; \
 	fi
 	@echo "✅ Nix environment found!"
-
-.PHONY: nix-develop
-nix-develop: ## Enter the Nix development shell.
-	DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS)
-
-.PHONY: devenv-cli
-devenv-cli: ## Build the packaged devenv CLI binary.
-	@echo "📦 Building packaged devenv CLI..."
-	@$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#devenv-cli $(NIX_FLAGS) --show-trace
-	@echo "✅ devenv CLI available in ./result/bin/devenv"
 
 .PHONY: nix-install
 nix-install: ## Install Nix if not already installed.
