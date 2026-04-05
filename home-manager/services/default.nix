@@ -1,5 +1,6 @@
 {
   config,
+  inputs,
   lib,
   pkgs,
   ...
@@ -13,6 +14,7 @@ let
   docker = import ./docker { inherit lib pkgs; };
   dockerPostgres = import ./docker-postgres { inherit pkgs; };
   dotfilesUpdater = import ./dotfiles-updater { inherit pkgs; };
+  inputLeap = import ./input-leap { inherit inputs pkgs; };
   makeUpdater = import ./make-updater { inherit pkgs; };
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
   ollama = import ./ollama { inherit pkgs; };
@@ -30,6 +32,7 @@ in
   docker
   dockerPostgres
   dotfilesUpdater
+  inputLeap
   makeUpdater
   neversslKeepalive
   ollama

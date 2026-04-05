@@ -17,6 +17,7 @@ in
   ./git-ai
   ./gomi
   ./ghostty
+  ./input-leap
   ./iterm2
   ./hammerspoon
   ./jj
