@@ -42,21 +42,37 @@ if [ -n "$TRUSTED_DEPS" ]; then
   done
 fi
 
-# Install global packages in batches (bun hangs when resolving too many at once)
+# Build list of packages that are not yet installed
+GLOBAL_MODULES="${HOME}/.bun/install/global/node_modules"
 DEPS=$(jq -r '.dependencies | keys[]' "$PACKAGE_JSON" 2>/dev/null || true)
+MISSING=()
 if [ -n "$DEPS" ]; then
-  BATCH_SIZE=10
-  BATCH=()
   while IFS= read -r dep; do
-    BATCH+=("$dep")
-    if [ "${#BATCH[@]}" -ge "$BATCH_SIZE" ]; then
-      bun add --global "${BATCH[@]}" 2>/dev/null || true
-      BATCH=()
+    if [ ! -d "${GLOBAL_MODULES}/${dep}" ]; then
+      MISSING+=("$dep")
+    else
+      echo "$dep already installed, skipping"
     fi
   done <<< "$DEPS"
+fi
+
+# Install missing packages in small batches with a timeout
+if [ "${#MISSING[@]}" -gt 0 ]; then
+  echo "Installing ${#MISSING[@]} missing packages..."
+  BATCH_SIZE=5
+  BATCH=()
+  for dep in "${MISSING[@]}"; do
+    BATCH+=("$dep")
+    if [ "${#BATCH[@]}" -ge "$BATCH_SIZE" ]; then
+      bun add --global "${BATCH[@]}" 2>/dev/null || echo "Batch install failed: ${BATCH[*]}"
+      BATCH=()
+    fi
+  done
   if [ "${#BATCH[@]}" -gt 0 ]; then
-    bun add --global "${BATCH[@]}" 2>/dev/null || true
+    bun add --global "${BATCH[@]}" 2>/dev/null || echo "Batch install failed: ${BATCH[*]}"
   fi
+else
+  echo "All npm global packages already installed"
 fi
 
 # Apply dependency overrides to the global install
