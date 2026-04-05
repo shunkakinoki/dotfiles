@@ -274,6 +274,21 @@ overlays-update: ## Upgrade all custom overlays to latest versions.
 		./scripts/upgrade-overlays.sh all; \
 	fi
 
+.PHONY: uv-update
+uv-update: ## Update uv global tool versions in pyproject.toml to latest and reinstall.
+	@echo "📦 Updating uv global tool versions in pyproject.toml..."
+	@tomlq -r '.["dependency-groups"].tools[]' pyproject.toml | while read -r dep; do \
+		pkg=$$(echo "$$dep" | sed 's/>=.*//'); \
+		latest=$$(curl -sfL "https://pypi.org/pypi/$$pkg/json" | jq -r '.info.version'); \
+		if [ -n "$$latest" ] && [ "$$latest" != "null" ]; then \
+			echo "$$pkg: $$dep -> $$pkg>=$$latest"; \
+			sed -i '' "s|\"$$dep\"|\"$$pkg>=$$latest\"|" pyproject.toml; \
+		else \
+			echo "$$pkg: failed to fetch latest version, skipping..."; \
+		fi; \
+	done
+	@echo "✅ uv global tools updated in pyproject.toml and reinstalled"
+
 ##@ Nix Setup
 
 .PHONY: nix-setup
