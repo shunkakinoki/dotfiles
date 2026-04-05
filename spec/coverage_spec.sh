@@ -247,11 +247,13 @@ scripts/sync-codex-security.sh
 scripts/sync-rtk-rewrite.sh
 config/hyprland/scripts/record-screen.sh
 config/hyprland/scripts/toggle-terminal.sh
+config/rofi/gnome-control-center-wrapper.sh
 config/openclaw/hydrate.sh
 config/paperclip/hydrate.sh
 home-manager/modules/cargo-globals/install-cargo-globals.sh
 home-manager/modules/local-binaries/sync-local-binaries.sh
 home-manager/modules/local-scripts/clipboard-copy.sh
+home-manager/modules/local-scripts/clipboard-paste.sh
 home-manager/modules/local-scripts/notify-local.sh
 home-manager/modules/local-scripts/tmux-bridge.sh
 home-manager/modules/npm-globals/install-npm-globals.sh

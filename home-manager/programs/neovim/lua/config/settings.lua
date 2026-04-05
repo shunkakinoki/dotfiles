@@ -17,7 +17,6 @@ local function is_ssh()
 end
 
 if is_ssh() then
-	-- Use OSC 52 for clipboard when in SSH session
 	vim.g.clipboard = {
 		name = "OSC 52",
 		copy = {
@@ -29,7 +28,24 @@ if is_ssh() then
 			["*"] = require("vim.ui.clipboard.osc52").paste("*"),
 		},
 	}
+else
+	local clipboard_copy = vim.fn.expand("~/.local/scripts/clipboard-copy")
+	local clipboard_paste = vim.fn.expand("~/.local/scripts/clipboard-paste")
+	if vim.fn.executable(clipboard_copy) == 1 and vim.fn.executable(clipboard_paste) == 1 then
+		vim.g.clipboard = {
+			name = "local-scripts",
+			copy = {
+				["+"] = { clipboard_copy },
+				["*"] = { clipboard_copy },
+			},
+			paste = {
+				["+"] = { clipboard_paste },
+				["*"] = { clipboard_paste },
+			},
+		}
+	end
 end
+vim.opt.clipboard = "unnamedplus"
 vim.opt.inccommand = "nosplit"
 vim.opt.splitbelow = true
 vim.opt.splitright = true

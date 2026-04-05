@@ -1,4 +1,15 @@
-_: {
+{ pkgs, ... }:
+let
+  gnome-control-center-wrapper = pkgs.writeShellScript "gnome-control-center-wrapper" (
+    builtins.readFile (
+      pkgs.replaceVars ./gnome-control-center-wrapper.sh {
+        gnome_shell_schemas = "${pkgs.gnome-shell}/share/gsettings-schemas/${pkgs.gnome-shell.name}";
+        gnome_control_center = pkgs.gnome-control-center;
+      }
+    )
+  );
+in
+{
   xdg.configFile."rofi/config.rasi" = {
     source = ./config.rasi;
     force = true;
@@ -54,9 +65,9 @@ _: {
       categories = [ "System" ];
       noDisplay = false;
     };
-    audio-settings = {
-      name = "Audio Settings";
-      exec = "pavucontrol";
+    sound-settings = {
+      name = "Sound Settings";
+      exec = "${gnome-control-center-wrapper} sound";
       icon = "audio-volume-high";
       categories = [
         "System"
@@ -66,7 +77,7 @@ _: {
     };
     bluetooth-settings = {
       name = "Bluetooth Settings";
-      exec = "blueman-manager";
+      exec = "${gnome-control-center-wrapper} bluetooth";
       icon = "bluetooth";
       categories = [
         "System"
@@ -86,6 +97,26 @@ _: {
       exec = "hyprpicker -a";
       icon = "color-select";
       categories = [ "Utility" ];
+      noDisplay = false;
+    };
+    wifi-settings = {
+      name = "WiFi Settings";
+      exec = "${gnome-control-center-wrapper} wifi";
+      icon = "network-wireless";
+      categories = [
+        "System"
+        "Settings"
+      ];
+      noDisplay = false;
+    };
+    network-connections = {
+      name = "Network Connections";
+      exec = "nm-connection-editor";
+      icon = "preferences-system-network";
+      categories = [
+        "System"
+        "Settings"
+      ];
       noDisplay = false;
     };
   };

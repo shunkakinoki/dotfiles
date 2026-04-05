@@ -1,8 +1,33 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 let
   inherit (pkgs) lib;
+  inherit (inputs.host) isMatic;
+
+  # Per-host ollama package:
+  #   AMD GPU (ROCm): ollama-rocm (matic)
+  #   NVIDIA GPU (CUDA): ollama-cuda
+  #   CPU fallback: ollama
+  ollamaPackage =
+    if isMatic then
+      pkgs.ollama-rocm
+    # else if isNvidiaHost then pkgs.ollama-cuda
+    else
+      pkgs.ollama;
+
+  ollamaEnv =
+    if isMatic then
+      [
+        "OLLAMA_HOST=0.0.0.0"
+        "HSA_OVERRIDE_GFX_VERSION=11.5.0"
+      ]
+    else
+      [
+        "OLLAMA_HOST=0.0.0.0"
+      ];
 in
 {
+  home.packages = [ ollamaPackage ];
+
   launchd.agents.ollama = lib.mkIf pkgs.stdenv.isDarwin {
     enable = true;
     config = {
@@ -25,8 +50,8 @@ in
     };
     Service = {
       Type = "simple";
-      ExecStart = "${pkgs.ollama}/bin/ollama serve";
-      Environment = "OLLAMA_HOST=0.0.0.0";
+      ExecStart = "${ollamaPackage}/bin/ollama serve";
+      Environment = ollamaEnv;
       Restart = "always";
       RestartSec = 3;
     };

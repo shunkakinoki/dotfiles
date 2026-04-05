@@ -42,6 +42,8 @@ in
       ./hyprland
       ./hyprpanel
       ./hyprshell
+      ./nwg-dock-hyprland
+      ./nwg-drawer
       ./rofi
     ]
   else

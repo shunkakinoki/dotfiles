@@ -1,0 +1,48 @@
+/* Dracula theme for nwg-drawer */
+window {
+    background-color: rgba(40, 42, 54, 0.9);
+    color: #f8f8f2;
+}
+
+/* Search entry */
+entry {
+    background-color: #44475a;
+    color: #f8f8f2;
+    border: 2px solid #6272a4;
+    border-radius: 8px;
+    padding: 6px 12px;
+    margin: 6px;
+}
+
+entry:focus {
+    border-color: #bd93f9;
+}
+
+button, image {
+    background: none;
+    border: none;
+    color: #f8f8f2;
+}
+
+button:hover {
+    background-color: #44475a;
+    border-radius: 8px;
+}
+
+button:focus {
+    box-shadow: none;
+}
+
+/* Category labels */
+label {
+    color: #f8f8f2;
+}
+
+/* Grid / Flowbox */
+#grid {
+    padding: 10px;
+}
+
+#pinned-box {
+    padding: 4px 0;
+}

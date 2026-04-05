@@ -73,6 +73,7 @@ inputs.nixpkgs.lib.nixosSystem {
         networking.hostName = "matic";
         networking.networkmanager.enable = true;
         networking.networkmanager.wifi.powersave = true;
+        networking.networkmanager.wifi.band = "a";
 
         # Enable fish shell
         programs.fish.enable = true;
@@ -243,9 +244,9 @@ inputs.nixpkgs.lib.nixosSystem {
 
         # Power button behavior - lock screen instead of shutdown
         services.logind.settings.Login.HandlePowerKey = "lock";
-        # Ignore lid close on both battery and AC — let hypridle's idle timer handle suspension
-        services.logind.settings.Login.HandleLidSwitch = "ignore";
-        services.logind.settings.Login.HandleLidSwitchExternalPower = "ignore";
+        # Suspend on lid close
+        services.logind.settings.Login.HandleLidSwitch = "suspend";
+        services.logind.settings.Login.HandleLidSwitchExternalPower = "suspend";
 
         # Auto timezone (via geolocation)
         services.geoclue2.enable = true;
@@ -434,10 +435,16 @@ inputs.nixpkgs.lib.nixosSystem {
             wallpapers = [
               {
                 monitor = "eDP-1";
-                wallpaperId = "1845706469";
+                wallpaperId = "2826529529";
                 scaling = "fill";
-                fps = 30;
+                fps = 1;
                 audio.silent = true;
+                extraOptions = [
+                  "--no-audio-processing"
+                  "--disable-mouse"
+                  "--disable-parallax"
+                  "--disable-particles"
+                ];
               }
             ];
           };
@@ -446,6 +453,10 @@ inputs.nixpkgs.lib.nixosSystem {
           systemd.user.services.linux-wallpaperengine.Service.Environment = [
             "VK_DRIVER_FILES=/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json"
           ];
+
+          home.sessionVariables = {
+            VK_DRIVER_FILES = "/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json";
+          };
 
           # Pause animated wallpaper on battery to save power (SIGSTOP/SIGCONT)
           systemd.user.services.wallpaper-power-monitor = {

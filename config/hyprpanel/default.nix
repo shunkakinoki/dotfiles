@@ -100,6 +100,9 @@
       "notifications.cache_actions" = true;
       "notifications.showActionsOnHover" = false;
 
+      # Disable hyprpanel's built-in wallpaper (swww) — using linux-wallpaperengine instead
+      "wallpaper.enable" = false;
+
       # Scaling (fix dropdown menus overflowing on fractional scale)
       "scalingPriority" = "hyprland";
 
