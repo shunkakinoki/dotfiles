@@ -253,6 +253,12 @@ bun-update: ## Update bun dependencies to latest and regenerate lock file.
 	@bun install
 	@echo "✅ bun dependencies updated"
 
+.PHONY: cargo-update
+cargo-update: ## Update Cargo dependencies to latest and regenerate lock file.
+	@echo "📦 Updating Cargo dependencies..."
+	@cargo +nightly update --breaking -Z unstable-options
+	@echo "✅ Cargo dependencies updated"
+
 .PHONY: gitalias-update
 gitalias-update: ## Download latest gitalias.txt from upstream.
 	@echo "📥 Updating gitalias.txt..."
