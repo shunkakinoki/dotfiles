@@ -26,7 +26,7 @@ lib.mkIf host.isKyber {
     };
     Service = {
       Type = "simple";
-      ExecStart = "${homeDir}/dotfiles/node_modules/.bin/paperclipai run --no-repair";
+      ExecStart = "${homeDir}/.bun/bin/paperclipai run --no-repair";
       Restart = "always";
       RestartSec = "5s";
       Environment = [
