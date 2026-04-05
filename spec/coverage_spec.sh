@@ -235,7 +235,6 @@ config/claude/hooks/pushover.sh
 config/claude/hooks/rtk-rewrite.sh
 config/claude/hooks/auto-switch.sh
 config/claude/hooks/security.sh
-config/claude/hooks/auto-switch.sh
 config/claude/hooks/atuin-history.sh
 config/claude/hooks/statusline.sh
 config/codex/hooks/atuin-history.sh
@@ -256,6 +255,7 @@ home-manager/modules/local-binaries/sync-local-binaries.sh
 home-manager/modules/local-scripts/clipboard-copy.sh
 home-manager/modules/local-scripts/clipboard-paste.sh
 home-manager/modules/local-scripts/notify-local.sh
+home-manager/modules/local-scripts/tmux-bridge.sh
 home-manager/modules/npm-globals/install-npm-globals.sh
 home-manager/modules/uv-globals/install-uv-globals.sh
 home-manager/programs/neovim/run_tests.sh
