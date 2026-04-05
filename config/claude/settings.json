@@ -406,6 +406,17 @@
           }
         ]
       }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/auto-switch.sh",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   },
   "statusLine": {

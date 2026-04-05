@@ -16,6 +16,6 @@ paths = [
   "~/.aider.chat.history.md",
   "~/.goose/sessions",
 ]
-sync_schedule = "manual"
+sync_schedule = "daily"
 path_mappings = []
 platform = "linux"

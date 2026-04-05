@@ -235,6 +235,19 @@ update_repo() {
     rm -f "$repo_dir/.git/index.lock"
   fi
 
+  # If in detached HEAD state, switch to default branch
+  if (cd "$repo_dir" && ! git symbolic-ref -q HEAD >/dev/null 2>&1); then
+    log_warn "  Detached HEAD; switching to default branch..."
+    local default_branch
+    default_branch="$(cd "$repo_dir" && git remote show origin 2>/dev/null | sed -n 's/.*HEAD branch: //p')" || true
+    default_branch="${default_branch:-main}"
+    if ! (cd "$repo_dir" && git checkout -f "$default_branch" 2>&1); then
+      log_error "  Failed to checkout $default_branch"
+      FAILURES+=("$repo_name (checkout failed)")
+      return 1
+    fi
+  fi
+
   # Git pull
   log_step "  Pulling latest changes..."
   if (cd "$repo_dir" && [ -n "$(git status --porcelain)" ]); then

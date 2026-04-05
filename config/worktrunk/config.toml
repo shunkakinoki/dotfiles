@@ -4,7 +4,7 @@ worktree-path = "{{ repo_path }}/.worktrees/{{ branch | sanitize }}"
 copy = "wt step copy-ignored"
 
 [step.copy-ignored]
-exclude = [".cache/", ".devenv/", ".serena/"]
+exclude = [".cache/", ".devenv/", ".serena/", ".paperclip/"]
 
 [commit]
 stage = "all"
