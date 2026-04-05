@@ -21,6 +21,10 @@ It 'has spec file for config/claude/hooks/atuin-history.sh'
 The path "spec/atuin_history_spec.sh" should be exist
 End
 
+It 'has spec file for config/claude/hooks/auto-switch.sh'
+The path "spec/auto_switch_spec.sh" should be exist
+End
+
 It 'has spec file for config/claude/hooks/security.sh'
 The path "spec/security_spec.sh" should be exist
 End
@@ -133,28 +137,16 @@ It 'has spec file for config/openclaw/hydrate.sh'
 The path "spec/openclaw_hydrate_spec.sh" should be exist
 End
 
+It 'has spec file for config/paperclip/hydrate.sh'
+The path "spec/paperclip_hydrate_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/modules/npm-globals/install-npm-globals.sh'
 The path "spec/npm_globals_spec.sh" should be exist
 End
 
 It 'has spec file for home-manager/modules/uv-globals/install-uv-globals.sh'
 The path "spec/uv_globals_spec.sh" should be exist
-End
-
-It 'has spec file for home-manager/modules/yek/install-yek.sh'
-The path "spec/yek_spec.sh" should be exist
-End
-
-It 'has spec file for home-manager/modules/yek/yek.sh'
-The path "spec/yek_spec.sh" should be exist
-End
-
-It 'has spec file for home-manager/modules/yek/install-yek-shim.sh'
-The path "spec/install_yek_shim_spec.sh" should be exist
-End
-
-It 'has spec file for home-manager/modules/yek/yek-shim.sh'
-The path "spec/yek_shim_spec.sh" should be exist
 End
 
 It 'has spec file for named-hosts/matic/falcon-init.sh'
@@ -237,6 +229,7 @@ covered_scripts="config/ccs/hydrate.sh
 config/claude/hooks/notify.sh
 config/claude/hooks/pushover.sh
 config/claude/hooks/rtk-rewrite.sh
+config/claude/hooks/auto-switch.sh
 config/claude/hooks/security.sh
 config/claude/hooks/atuin-history.sh
 config/claude/hooks/statusline.sh
@@ -251,16 +244,13 @@ scripts/sync-rtk-rewrite.sh
 config/hyprland/scripts/record-screen.sh
 config/hyprland/scripts/toggle-terminal.sh
 config/openclaw/hydrate.sh
+config/paperclip/hydrate.sh
 home-manager/modules/cargo-globals/install-cargo-globals.sh
 home-manager/modules/local-binaries/sync-local-binaries.sh
 home-manager/modules/local-scripts/clipboard-copy.sh
 home-manager/modules/local-scripts/notify-local.sh
 home-manager/modules/npm-globals/install-npm-globals.sh
 home-manager/modules/uv-globals/install-uv-globals.sh
-home-manager/modules/yek/install-yek-shim.sh
-home-manager/modules/yek/install-yek.sh
-home-manager/modules/yek/yek-shim.sh
-home-manager/modules/yek/yek.sh
 home-manager/programs/neovim/run_tests.sh
 home-manager/programs/tmux/session-logger.sh
 home-manager/services/brew-upgrader/upgrade.sh

@@ -2,11 +2,11 @@
   ./bin-shells
   ./cargo-globals
   ./openclaw
+  ./paperclip
   ./local-binaries
   ./local-scripts
   ./npm-globals
   ./tailscale
   ./uv-globals
   ./xremap
-  ./yek
 ]

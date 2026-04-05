@@ -812,7 +812,7 @@ launchctl-tmux-session-logger: ## Restart tmux-session-logger launchd agent.
 ##@ Systemd Services (Linux)
 
 .PHONY: systemctl
-systemctl: systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-code-syncer systemctl-docker-postgres systemctl-dotfiles-updater systemctl-make-updater systemctl-neverssl-keepalive systemctl-ollama systemctl-openclaw systemctl-tmux-session-logger ## Restart all systemd user services.
+systemctl: systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-code-syncer systemctl-docker-postgres systemctl-dotfiles-updater systemctl-make-updater systemctl-neverssl-keepalive systemctl-ollama systemctl-openclaw systemctl-paperclip systemctl-tmux-session-logger ## Restart all systemd user services.
 
 .PHONY: systemctl-cliproxyapi
 systemctl-cliproxyapi: ## Restart cliproxyapi systemd user service.
@@ -873,6 +873,16 @@ systemctl-openclaw: ## Restart OpenClaw gateway systemd user service.
 	fi
 	@echo "✅ openclaw restarted"
 
+.PHONY: systemctl-paperclip
+systemctl-paperclip: ## Restart Paperclip systemd user service.
+	@echo "🔄 Restarting paperclip..."
+	@if [ "$(DETECTED_HOST)" = "kyber" ] || [ "$(HOST)" = "kyber" ]; then \
+		systemctl --user daemon-reload; \
+		systemctl --user restart paperclip.service; \
+	else \
+		echo "Skipping paperclip.service (host not kyber)"; \
+	fi
+	@echo "✅ paperclip restarted"
 
 .PHONY: systemctl-tmux-session-logger
 systemctl-tmux-session-logger: ## Restart tmux-session-logger systemd timer and service.

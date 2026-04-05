@@ -53,13 +53,11 @@ Describe 'with notify-send available (no osascript)'
 setup() {
   mock_bin_setup notify-send
   # Hide osascript so notify-send path is taken
-  if command -v osascript >/dev/null 2>&1; then
-    local bash_dir cat_dir printf_dir
-    bash_dir="$(dirname "$(command -v bash)")"
-    cat_dir="$(dirname "$(command -v cat)")"
-    printf_dir="$(dirname "$(command -v printf)")"
-    export PATH="$MOCK_BIN:$bash_dir:$cat_dir:$printf_dir"
-  fi
+  # Use readlink -f to resolve to nix store path (avoids NixOS profile bin with all packages)
+  local bash_dir cat_dir
+  bash_dir="$(dirname "$(readlink -f "$(command -v bash)")")"
+  cat_dir="$(dirname "$(readlink -f "$(command -v cat)")")"
+  export PATH="$MOCK_BIN:$bash_dir:$cat_dir"
 }
 cleanup() {
   mock_bin_cleanup
@@ -79,14 +77,12 @@ End
 Describe 'with terminal-notifier available (no osascript or notify-send)'
 setup() {
   mock_bin_setup terminal-notifier
-  # Hide osascript so terminal-notifier path is taken
-  if command -v osascript >/dev/null 2>&1; then
-    local bash_dir cat_dir printf_dir
-    bash_dir="$(dirname "$(command -v bash)")"
-    cat_dir="$(dirname "$(command -v cat)")"
-    printf_dir="$(dirname "$(command -v printf)")"
-    export PATH="$MOCK_BIN:$bash_dir:$cat_dir:$printf_dir"
-  fi
+  # Hide osascript and notify-send so terminal-notifier path is taken
+  # Use readlink -f to resolve to nix store path (avoids NixOS profile bin with all packages)
+  local bash_dir cat_dir
+  bash_dir="$(dirname "$(readlink -f "$(command -v bash)")")"
+  cat_dir="$(dirname "$(readlink -f "$(command -v cat)")")"
+  export PATH="$MOCK_BIN:$bash_dir:$cat_dir"
 }
 cleanup() {
   mock_bin_cleanup
@@ -107,8 +103,9 @@ Describe 'with no notification backend'
 setup() {
   MOCK_BIN="$(mktemp -d)"
   MOCK_ORIGINAL_PATH="${PATH:-}"
+  # Use readlink -f to resolve to nix store path (avoids NixOS profile bin with all packages)
   local bash_dir
-  bash_dir="$(dirname "$(command -v bash)")"
+  bash_dir="$(dirname "$(readlink -f "$(command -v bash)")")"
   export PATH="$MOCK_BIN:$bash_dir"
   export MOCK_BIN MOCK_ORIGINAL_PATH
 }

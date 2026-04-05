@@ -110,6 +110,7 @@
       "linear-linear"
       "lm-studio"
       "notion"
+      "obsidian"
       "ollama-app"
       "open-pencil"
       "openclaw"

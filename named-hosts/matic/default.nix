@@ -127,6 +127,8 @@ inputs.nixpkgs.lib.nixosSystem {
           KERNEL=="uinput", GROUP="input", TAG+="uaccess", MODE:="0660", OPTIONS+="static_node=uinput"
           KERNEL=="event*", ATTRS{name}=="keyd virtual keyboard", GROUP="input", MODE:="0660"
           KERNEL=="event*", ATTRS{name}=="keyd virtual pointer", GROUP="input", MODE:="0660"
+          # Prevent powertop autosuspend on touchpad so idle detection works on battery
+          ACTION=="add", SUBSYSTEM=="i2c", DRIVERS=="i2c_hid_acpi", ATTRS{name}=="PIXA3854:00 093A:0274", ATTR{power/control}="on"
         '';
 
         # AMD graphics with hardware acceleration
@@ -241,9 +243,8 @@ inputs.nixpkgs.lib.nixosSystem {
 
         # Power button behavior - lock screen instead of shutdown
         services.logind.settings.Login.HandlePowerKey = "lock";
-        # On battery: suspend immediately when lid closed
-        # On AC: ignore lid close — let hypridle's 30-min idle timer handle suspension
-        services.logind.settings.Login.HandleLidSwitch = "suspend";
+        # Ignore lid close on both battery and AC — let hypridle's idle timer handle suspension
+        services.logind.settings.Login.HandleLidSwitch = "ignore";
         services.logind.settings.Login.HandleLidSwitchExternalPower = "ignore";
 
         # Auto timezone (via geolocation)

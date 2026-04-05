@@ -44,7 +44,6 @@ cliproxy_s3_sync() {
     @aws@ s3 sync \
     --endpoint-url="${OBJECTSTORE_ENDPOINT:?OBJECTSTORE_ENDPOINT is required}" \
     --no-progress \
-    --exact-timestamps \
     "$source_path" \
     "$destination_path" || true
 }

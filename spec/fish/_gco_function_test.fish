@@ -13,6 +13,7 @@ end
 _gco_function
 
 @test "calls checkout on default branch" (grep -c "checkout main" $call_log) -ge 1
+@test "fixes upstream tracking" (grep -c "branch --set-upstream-to=origin/main main" $call_log) -ge 1
 @test "calls pull" (grep -c "^pull" $call_log) -ge 1
 
 rm -f $call_log

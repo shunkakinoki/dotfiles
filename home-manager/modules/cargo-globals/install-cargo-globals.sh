@@ -2,6 +2,12 @@
 
 set -euo pipefail
 
+# Skip if offline
+if ! timeout 3 bash -c 'exec 3<>/dev/tcp/1.1.1.1/53' 2>/dev/null; then
+  echo "Network unavailable, skipping cargo globals install"
+  exit 0
+fi
+
 # Set macOS SDK path for linker (required in Nix environments)
 if [[ $OSTYPE == "darwin"* ]]; then
   if command -v xcrun &>/dev/null; then

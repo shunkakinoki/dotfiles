@@ -47,6 +47,18 @@ The output should include 'exit 0'
 End
 End
 
+Describe 'offline skip'
+It 'checks network connectivity before installing'
+When run bash -c "grep 'timeout 3 bash' '$SCRIPT'"
+The output should include 'timeout 3 bash'
+End
+
+It 'exits gracefully when offline'
+When run bash -c "grep -A 2 'Network unavailable' '$SCRIPT'"
+The output should include 'exit 0'
+End
+End
+
 Describe 'tool installation'
 It 'uses dasel to parse TOML'
 When run bash -c "grep 'dasel' '$SCRIPT'"

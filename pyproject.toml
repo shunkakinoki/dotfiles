@@ -11,6 +11,7 @@ tools = [
   "aider-chat>=0.86.2",
   "marker-pdf>=1.10.2",
   "mistral-vibe>=2.7.0",
+  "claude-swap>=1.1.5",
   "ruff>=0.15.8",
 ]
 
