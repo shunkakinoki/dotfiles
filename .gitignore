@@ -1,7 +1,14 @@
 # AI
-.claude/*
+.aider.tags.cache.v4
+.claude
 !.claude/settings.json
+.codex
+.conductor
+.crush
+.cursor
+.paperclip
 .pi
+.serena
 .worktrees
 prompts.db
 
@@ -11,6 +18,9 @@ config/ccs/accounts.json
 # Local binaries list (machine-specific)
 .devenv.nix
 objectstore
+
+# JJ
+.jj
 
 # Nix
 .devenv

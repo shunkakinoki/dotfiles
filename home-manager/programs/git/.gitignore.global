@@ -1,7 +1,11 @@
 # AI
+.aider.tags.cache.*/
+.claude/
 .conductor/
+.crush/
 .cursor/
 .entire/
+.paperclip/
 .pi/
 .serena/
 .worktrees/
