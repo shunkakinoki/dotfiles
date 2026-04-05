@@ -190,9 +190,8 @@ services: ## Restart platform-specific services (launchd on macOS, systemd on Li
 		$(MAKE) systemctl; \
 	fi
 
-.PHONY: dotagents-sync
-dotagents-sync: ## Sync dotagents (commands, skills, MCP configuration).
-	@$(MAKE) -C dotagents sync
+.PHONY: dev
+dev: nix-develop ## Enter the Nix dev shell (alias for nix-develop).
 
 .PHONY: test
 test: neovim-test nix-test shell-test python-test shell-inline-check ## Run all tests (neovim + nix + shell + python + shell-inline-check).
@@ -211,7 +210,6 @@ update-local-binaries: ## Update and rebuild local binaries from .local-binaries
 		./scripts/update-local-binaries.sh; \
 	fi
 
-
 ##@ Upgrade
 
 .PHONY: upgrade
@@ -229,6 +227,17 @@ gitalias-upgrade: ## Download latest gitalias.txt from upstream.
 	@./scripts/update-gitalias.sh
 	@echo "✅ gitalias.txt updated"
 
+.PHONY: upgrade-dev
+upgrade-dev: ## Upgrade inside the Nix dev shell (mirrors CI).
+	@echo "🔄 Running upgrade inside the Nix dev shell..."
+	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) upgrade
+
+##@ Sync
+
+.PHONY: dotagents-sync
+dotagents-sync: ## Sync dotagents (commands, skills, MCP configuration).
+	@$(MAKE) -C dotagents sync
+
 .PHONY: codex-security-sync
 codex-security-sync: ## Sync Codex security deny patterns from Claude settings.
 	@echo "🔒 Syncing Codex security deny patterns..."
@@ -240,14 +249,6 @@ rtk-rewrite-sync: ## Sync rtk-rewrite.sh from upstream rtk repo.
 	@echo "🔄 Syncing rtk-rewrite.sh from upstream..."
 	@./scripts/sync-rtk-rewrite.sh
 	@echo "✅ rtk-rewrite.sh synced"
-
-.PHONY: upgrade-dev
-upgrade-dev: ## Upgrade inside the Nix dev shell (mirrors CI).
-	@echo "🔄 Running upgrade inside the Nix dev shell..."
-	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) upgrade
-
-.PHONY: dev
-dev: nix-develop ## Enter the Nix dev shell (alias for nix-develop).
 
 ##@ Nix Setup
 
@@ -320,7 +321,7 @@ nix-install: ## Install Nix if not already installed.
 ##@ Nix
 
 .PHONY: nix-upgrade
-nix-upgrade: nix-flake-upgrade nix-build nix-switch ## Upgrade Nix flake, build, and switch.
+nix-upgrade: nix-daemon-upgrade nix-flake-upgrade ## Upgrade Nix flake, build, and switch.
 
 .PHONY: nix-backup
 nix-backup: ## Backup configuration files.
@@ -371,6 +372,15 @@ nix-build: nix-connect ## Build Nix configuration.
 		fi; \
 	fi
 	@echo "✅ Nix configuration built successfully!"
+
+.PHONY: nix-daemon-upgrade
+nix-daemon-upgrade: ## Upgrade Determinate Nix daemon to latest version.
+	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
+		echo "⏭️ Skipping determinate-nixd upgrade in CI"; \
+	else \
+		echo "⬆️ Upgrading Determinate Nix daemon..."; \
+		$(SUDO) determinate-nixd upgrade || true; \
+	fi
 
 .PHONY: nix-flake-check
 nix-flake-check: ## Check Nix flake configuration.
