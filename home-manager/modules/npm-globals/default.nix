@@ -2,8 +2,8 @@
 {
   # Install npm global packages from package.json using home-manager activation
   home.activation.installNpmGlobals = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    if [ -n "''${INVOCATION_ID:-}" ]; then
-      echo "Running inside systemd service, skipping npm globals install"
+    if [ "$(${pkgs.systemd}/bin/systemctl is-system-running 2>/dev/null)" = "starting" ]; then
+      echo "System is booting, skipping npm globals install"
     else
     export PATH=${pkgs.bun}/bin:${pkgs.jq}/bin:$PATH
     export BUN_INSTALL="$HOME/.bun"

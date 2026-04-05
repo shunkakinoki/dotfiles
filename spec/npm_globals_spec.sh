@@ -7,13 +7,13 @@ SCRIPT="$PWD/home-manager/modules/npm-globals/install-npm-globals.sh"
 Describe 'systemd activation skip'
 NIX_FILE="$PWD/home-manager/modules/npm-globals/default.nix"
 
-It 'checks INVOCATION_ID to detect systemd service'
-When run bash -c "grep 'INVOCATION_ID' '$NIX_FILE'"
-The output should include 'INVOCATION_ID'
+It 'checks systemctl is-system-running to detect boot'
+When run bash -c "grep 'is-system-running' '$NIX_FILE'"
+The output should include 'is-system-running'
 End
 
-It 'skips install when running inside systemd'
-When run bash -c "grep -A 1 'INVOCATION_ID' '$NIX_FILE'"
+It 'skips install during system boot'
+When run bash -c "grep -A 1 'is-system-running' '$NIX_FILE'"
 The output should include 'skipping npm globals install'
 End
 End
