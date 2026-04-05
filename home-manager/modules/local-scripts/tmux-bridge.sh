@@ -196,7 +196,7 @@ cmd_list() {
   printf "%-8s %-16s %-10s %-25s %-10s %s\n" "TARGET" "SESSION:WIN" "SIZE" "PROCESS" "LABEL" "CWD"
   tmx list-panes -a \
     -F '#{pane_id}|#{session_name}|#{window_index}|#{window_name}|#{pane_pid}|#{pane_width}x#{pane_height}|#{@name}|#{pane_current_path}' \
-    2>/dev/null | while IFS='|' read -r id sess widx wname pid size label cwd; do
+    2>/dev/null | while IFS='|' read -r id sess widx _wname pid size label cwd; do
       # Get the actual running process (deepest child of pane pid)
       local proc child_pid
       proc=$(ps -o comm= -p "$pid" 2>/dev/null || echo "?")
