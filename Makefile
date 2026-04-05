@@ -219,6 +219,9 @@ upgrade-dev: ## Upgrade inside the Nix dev shell (mirrors CI).
 
 ##@ Sync
 
+.PHONY: sync
+sync: dotagents-sync codex-security-sync rtk-rewrite-sync ## Sync all components (dotagents, Codex security patterns, rtk-rewrite.sh).
+
 .PHONY: dotagents-sync
 dotagents-sync: ## Sync dotagents (commands, skills, MCP configuration).
 	@$(MAKE) -C dotagents sync
