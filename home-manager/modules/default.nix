@@ -9,5 +9,4 @@
   ./tailscale
   ./uv-globals
   ./xremap
-  ./yek
 ]
