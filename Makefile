@@ -2,8 +2,9 @@
 
 SHELL := bash
 
-# Include dotagents from submodule but keep the local help target authoritative.
+# Include dotagents from submodule but keep the local targets authoritative.
 DOTAGENTS_SKIP_HELP := 1
+DOTAGENTS_SKIP_SYNC := 1
 -include dotagents/Makefile
 
 # Detect architecture and OS
