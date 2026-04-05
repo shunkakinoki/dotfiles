@@ -49,4 +49,17 @@ if [ -n "$DEPS" ]; then
   bun install --global $DEPS 2>/dev/null || true
 fi
 
+# Apply dependency overrides to the global install
+# Bun's flat hoisting can resolve incompatible versions (e.g. pino@10 vs pino-http@10.5)
+OVERRIDES=$(jq -c '.overrides // empty' "$PACKAGE_JSON" 2>/dev/null || true)
+if [ -n "$OVERRIDES" ]; then
+  GLOBAL_PKG="${HOME}/.bun/install/global/package.json"
+  if [ -f "$GLOBAL_PKG" ]; then
+    jq --argjson overrides "$OVERRIDES" '.overrides = $overrides' "$GLOBAL_PKG" >"${GLOBAL_PKG}.tmp" &&
+      mv "${GLOBAL_PKG}.tmp" "$GLOBAL_PKG"
+    (cd "${HOME}/.bun/install/global" && bun install 2>/dev/null || true)
+    echo "Applied dependency overrides to global install"
+  fi
+fi
+
 echo "npm globals installation complete"

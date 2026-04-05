@@ -47,6 +47,7 @@ ensure_container() {
       -p "${HOST_PORT}:${CONTAINER_PORT}" \
       -e POSTGRES_DB=trails_api \
       -e POSTGRES_PASSWORD=postgres \
+      -e POSTGRES_HOST_AUTH_METHOD=trust \
       "$IMAGE"
     log "Container '$CONTAINER_NAME' created and started"
   fi
