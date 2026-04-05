@@ -10,6 +10,25 @@
     fi
   '';
 
+  # Run uv globals install after login
+  systemd.user.services.install-uv-globals = {
+    Unit = {
+      Description = "Install uv global tools";
+      After = [ "default.target" ];
+    };
+    Service = {
+      Type = "oneshot";
+      Environment = [
+        "PATH=${pkgs.uv}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin"
+        "HOME=%h"
+      ];
+      ExecStart = "${pkgs.bash}/bin/bash ${./install-uv-globals.sh}";
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+  };
+
   # Add uv tools bin to PATH
   home.sessionPath = [
     "$HOME/.local/bin"

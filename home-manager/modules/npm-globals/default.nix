@@ -11,6 +11,26 @@
     fi
   '';
 
+  # Run npm globals install after login
+  systemd.user.services.install-npm-globals = {
+    Unit = {
+      Description = "Install npm global packages";
+      After = [ "default.target" ];
+    };
+    Service = {
+      Type = "oneshot";
+      Environment = [
+        "PATH=${pkgs.bun}/bin:${pkgs.jq}/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin"
+        "BUN_INSTALL=%h/.bun"
+        "HOME=%h"
+      ];
+      ExecStart = "${pkgs.bash}/bin/bash ${./install-npm-globals.sh}";
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+  };
+
   home.sessionVariables = {
     BUN_INSTALL = "$HOME/.bun";
   };
