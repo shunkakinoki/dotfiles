@@ -25,8 +25,8 @@ ERROR_DETAILS=$(echo "$INPUT" | jq -r '.error_details // empty' 2>/dev/null) || 
 
 # Check if the error is rate-limit related
 case "${ERROR}${ERROR_DETAILS}" in
-  *rate_limit*|*rate-limit*|*rate\ limit*|*overloaded*|*too_many_requests*|*429*|*quota*|*capacity*)
-    echo "[$(date)] Auto-switching Claude account due to rate limit" >&2
-    cswap --switch 2>&1 | head -5 >&2
-    ;;
+*rate_limit* | *rate-limit* | *rate\ limit* | *overloaded* | *too_many_requests* | *429* | *quota* | *capacity*)
+  echo "[$(date)] Auto-switching Claude account due to rate limit" >&2
+  cswap --switch 2>&1 | head -5 >&2
+  ;;
 esac
