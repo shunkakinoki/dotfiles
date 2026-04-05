@@ -322,7 +322,7 @@ nix-install: ## Install Nix if not already installed.
 ##@ Nix
 
 .PHONY: nix-update
-nix-update: nix-daemon-update nix-flake-update ## Upgrade Nix flake, build, and switch.
+nix-update: nix-connect nix-daemon-update nix-flake-update ## Upgrade Nix flake, build, and switch.
 
 .PHONY: nix-backup
 nix-backup: ## Backup configuration files.
