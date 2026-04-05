@@ -10,13 +10,24 @@ function tmux
     end
 end
 
-# Test: missing ZELLIJ_TAB_NAME
-set -e ZELLIJ_TAB_NAME
+# Test: not inside Zellij
+set -e ZELLIJ
+set -e ZELLIJ_PANE_ID
+_tzo_function 2>/dev/null
+@test "missing ZELLIJ returns 1" $status -eq 1
+
+# Test: inside Zellij but tab name lookup fails
+set -gx ZELLIJ 0
+function zellij
+    return 1
+end
 _tzo_function 2>/dev/null
 @test "missing tab name returns 1" $status -eq 1
 
 # Test: creates new session
-set -gx ZELLIJ_TAB_NAME "my-tab"
+function zellij
+    echo 'tab name="my-tab" focus=true {'
+end
 _tzo_function
 
 @test "checks for existing session" (grep -c "has-session -t my-tab" $call_log) -ge 1
