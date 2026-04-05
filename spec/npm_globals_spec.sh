@@ -70,4 +70,21 @@ When run bash -c "grep 'dependencies' '$SCRIPT'"
 The output should include 'dependencies'
 End
 End
+
+Describe 'dependency overrides'
+It 'reads overrides from package.json'
+When run bash -c "grep 'overrides' '$SCRIPT'"
+The output should include 'overrides'
+End
+
+It 'applies overrides to global bun install'
+When run bash -c "grep 'GLOBAL_PKG' '$SCRIPT'"
+The output should include '.bun/install/global/package.json'
+End
+
+It 'runs bun install in global dir after applying overrides'
+When run bash -c "grep 'cd.*bun/install/global.*bun install' '$SCRIPT'"
+The output should include 'bun install'
+End
+End
 End
