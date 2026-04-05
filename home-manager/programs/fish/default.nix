@@ -127,6 +127,9 @@
       grco = "_grco_function";
       grcr = "_grcr_function";
       hme = "_hm_load_env_file";
+      icg = "_install_cargo_globals_function";
+      ing = "_install_npm_globals_function";
+      iug = "_install_uv_globals_function";
       kyber = "_kyber_function";
       kyberd = "_kyberd_function";
       kyberm = "_kyberm_function";
@@ -141,6 +144,8 @@
       pixelh = "_pixelh_function";
       pixeh = "_pixeh_function";
       sag = "_ssh_add_github";
+      llmu = "_llm_update_function";
+      slb = "_sync_local_binaries_function";
       shortcuts = "_fish_shortcuts";
       tdo = "_tdo_function";
       tmo = "_tmo_function";
@@ -151,6 +156,7 @@
       tsw = "_tsw_function";
       two = "_two_function";
       tzo = "_tzo_function";
+      ulb = "_update_local_binaries_function";
       zdo = "_zdo_function";
       zmo = "_zmo_function";
       zpo = "_zpo_function";
@@ -227,9 +233,13 @@
         "_fzf_preview_name"
         "_fzf_shell_history"
         "_gco_function"
+        "_install_cargo_globals_function"
+        "_install_npm_globals_function"
+        "_install_uv_globals_function"
         "_grco_function"
         "_grcr_function"
         "_hm_load_env_file"
+        "_llm_update_function"
         "_kyber_function"
         "_kyberd_function"
         "_kyberm_function"
@@ -244,6 +254,8 @@
         "_pixelh_function"
         "_pixeh_function"
         "_ssh_add_github"
+        "_sync_local_binaries_function"
+        "_update_local_binaries_function"
         "_tdo_function"
         "_tmo_function"
         "_tpo_function"
