@@ -62,13 +62,19 @@ if [ -n "$OVERRIDES" ]; then
   fi
 fi
 
-# Deduplicate nested pino in @paperclipai/server to prevent Symbol mismatch
-# pino-http imports stringifySym from the top-level pino, but the server creates
-# loggers with its own nested copy — different Symbol instances cause a crash.
-NESTED_PINO="${HOME}/.bun/install/global/node_modules/@paperclipai/server/node_modules/pino"
-if [ -d "$NESTED_PINO" ]; then
-  rm -r "$NESTED_PINO"
-  echo "Removed nested pino from @paperclipai/server (deduplicated)"
-fi
+# Deduplicate overridden packages from nested node_modules
+# Bun can install the same package at both top-level and nested locations.
+# When packages use Symbols (like pino), two copies create incompatible
+# instances. Remove nested copies of any overridden package so everything
+# resolves to the single top-level version.
+GLOBAL_MODULES="${HOME}/.bun/install/global/node_modules"
+for pkg in $(echo "$OVERRIDES" | jq -r 'keys[]' 2>/dev/null); do
+  find "$GLOBAL_MODULES" -mindepth 3 -maxdepth 4 -type d -name "$pkg" \
+    -path "*/node_modules/$pkg" \
+    ! -path "$GLOBAL_MODULES/$pkg" 2>/dev/null | while read -r nested; do
+    rm -r "$nested"
+    echo "Deduplicated nested $pkg: $nested"
+  done
+done
 
 echo "npm globals installation complete"

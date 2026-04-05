@@ -86,5 +86,15 @@ It 'runs bun install in global dir after applying overrides'
 When run bash -c "grep 'cd.*bun/install/global.*bun install' '$SCRIPT'"
 The output should include 'bun install'
 End
+
+It 'deduplicates nested copies of overridden packages'
+When run bash -c "grep 'Deduplicated nested' '$SCRIPT'"
+The output should include 'Deduplicated'
+End
+
+It 'finds nested node_modules with find command'
+When run bash -c "grep 'find.*GLOBAL_MODULES.*node_modules' '$SCRIPT'"
+The output should include 'find'
+End
 End
 End
