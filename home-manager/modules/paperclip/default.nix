@@ -7,7 +7,6 @@
 let
   inherit (inputs) host;
   homeDir = config.home.homeDirectory;
-  repoDir = "${homeDir}/ghq/github.com/paperclipai/paperclip";
 in
 # Only enable on kyber (server host)
 lib.mkIf host.isKyber {
@@ -19,9 +18,6 @@ lib.mkIf host.isKyber {
   '';
 
   # Systemd service for Paperclip
-  # Runs from cloned repo with bun — the global bun install has a
-  # pino-http/pino version mismatch that crashes node after the first request.
-  # Running bun directly from the repo resolves deps correctly.
   systemd.user.services.paperclip = {
     Unit = {
       Description = "Paperclip AI agent orchestration platform";
@@ -30,7 +26,7 @@ lib.mkIf host.isKyber {
     };
     Service = {
       Type = "simple";
-      ExecStart = "${homeDir}/.bun/bin/bun run ${repoDir}/server/src/index.ts";
+      ExecStart = "${homeDir}/dotfiles/node_modules/.bin/paperclipai run --no-repair";
       Restart = "always";
       RestartSec = "5s";
       Environment = [
@@ -44,7 +40,7 @@ lib.mkIf host.isKyber {
         "${homeDir}/dotfiles/.env"
         "${homeDir}/.paperclip/instances/default/.env"
       ];
-      WorkingDirectory = "${repoDir}";
+      WorkingDirectory = "${homeDir}/.paperclip";
       StandardOutput = "append:/tmp/paperclip/paperclip.log";
       StandardError = "append:/tmp/paperclip/paperclip.log";
     };
