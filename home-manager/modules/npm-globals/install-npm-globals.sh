@@ -62,4 +62,13 @@ if [ -n "$OVERRIDES" ]; then
   fi
 fi
 
+# Deduplicate nested pino in @paperclipai/server to prevent Symbol mismatch
+# pino-http imports stringifySym from the top-level pino, but the server creates
+# loggers with its own nested copy — different Symbol instances cause a crash.
+NESTED_PINO="${HOME}/.bun/install/global/node_modules/@paperclipai/server/node_modules/pino"
+if [ -d "$NESTED_PINO" ]; then
+  rm -r "$NESTED_PINO"
+  echo "Removed nested pino from @paperclipai/server (deduplicated)"
+fi
+
 echo "npm globals installation complete"
