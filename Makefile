@@ -238,6 +238,13 @@ rtk-rewrite-sync: ## Sync rtk-rewrite.sh from upstream rtk repo.
 	@./scripts/sync-rtk-rewrite.sh
 	@echo "✅ rtk-rewrite.sh synced"
 
+
+
+##@ Update
+
+.PHONY: update
+update: nix-update neovim-update gitalias-update llm-update overlays-update  ## Update Nix flake, overlays, Neovim plugins, LLM configs, gitalias, and bun deps
+
 .PHONY: bun-update
 bun-update: ## Update bun dependencies to latest and regenerate lock file.
 	@echo "📦 Updating bun dependencies..."
@@ -246,10 +253,11 @@ bun-update: ## Update bun dependencies to latest and regenerate lock file.
 	@bun install
 	@echo "✅ bun dependencies updated"
 
-##@ Update
-
-.PHONY: update
-update: nix-update overlays-update neovim-update llm-update gitalias-update bun-update ## Update Nix flake, overlays, Neovim plugins, LLM configs, gitalias, and bun deps
+.PHONY: gitalias-update
+gitalias-update: ## Download latest gitalias.txt from upstream.
+	@echo "📥 Updating gitalias.txt..."
+	@./scripts/update-gitalias.sh
+	@echo "✅ gitalias.txt updated"
 
 .PHONY: llm-update
 llm-update: ## Regenerate tool configs from models.json.
@@ -257,11 +265,14 @@ llm-update: ## Regenerate tool configs from models.json.
 	@./scripts/llm-update.sh
 	@echo "✅ LLM configs updated"
 
-.PHONY: gitalias-update
-gitalias-update: ## Download latest gitalias.txt from upstream.
-	@echo "📥 Updating gitalias.txt..."
-	@./scripts/update-gitalias.sh
-	@echo "✅ gitalias.txt updated"
+.PHONY: overlays-update
+overlays-update: ## Upgrade all custom overlays to latest versions.
+	@echo "🔄 Upgrading custom overlays..."
+	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
+		echo "⏭️ Skipping overlay upgrade in CI/Docker"; \
+	else \
+		./scripts/upgrade-overlays.sh all; \
+	fi
 
 ##@ Nix Setup
 
@@ -1026,13 +1037,3 @@ doppler-upload: ## Upload .env file to Doppler (dotfiles/prd).
 	@doppler secrets upload --project dotfiles --config prd .env
 	@echo "✅ .env uploaded to Doppler (dotfiles/prd)"
 
-##@ Overlays
-
-.PHONY: overlays-update
-overlays-update: ## Upgrade all custom overlays to latest versions.
-	@echo "🔄 Upgrading custom overlays..."
-	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
-		echo "⏭️ Skipping overlay upgrade in CI/Docker"; \
-	else \
-		./scripts/upgrade-overlays.sh all; \
-	fi
