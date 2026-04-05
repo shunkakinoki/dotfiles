@@ -74,5 +74,15 @@ It 'parses dependency-groups.tools'
 When run bash -c "grep 'dependency-groups' '$SCRIPT'"
 The output should include 'dependency-groups'
 End
+
+It 'parses requires-python version'
+When run bash -c "grep 'requires-python' '$SCRIPT'"
+The output should include 'requires-python'
+End
+
+It 'passes --python flag to uv tool install'
+When run bash -c "grep -- '--python' '$SCRIPT'"
+The output should include '--python'
+End
 End
 End
