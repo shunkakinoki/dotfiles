@@ -73,7 +73,6 @@ inputs.nixpkgs.lib.nixosSystem {
         networking.hostName = "matic";
         networking.networkmanager.enable = true;
         networking.networkmanager.wifi.powersave = true;
-        networking.networkmanager.wifi.band = "a";
 
         # Enable fish shell
         programs.fish.enable = true;
