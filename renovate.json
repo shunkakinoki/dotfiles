@@ -64,9 +64,6 @@
       "matchManagers": [
         "npm"
       ],
-      "matchDepTypes": [
-        "flake-inputs"
-      ],
       "automerge": true,
       "platformAutomerge": true,
       "schedule": [
