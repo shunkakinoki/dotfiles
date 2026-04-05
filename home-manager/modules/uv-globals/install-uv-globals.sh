@@ -45,7 +45,7 @@ echo "$DEPS" | while read -r pkg; do
   if [ -z "$pkg" ]; then
     continue
   fi
-  name=$(echo "$pkg" | sed 's/[><=!].*//')
+  name=${pkg%%[><=!]*}
   # Extract minimum version from spec (e.g. ">=0.86.2" -> "0.86.2")
   req_version=$(echo "$pkg" | sed -n 's/.*>=\([0-9][0-9.]*\).*/\1/p')
   installed_version=$(echo "$INSTALLED" | sed -n "s/^${name} v\([0-9][0-9.]*\).*/\1/p")

@@ -90,8 +90,8 @@ The output should include 'uv tool list'
 End
 
 It 'extracts package name from version spec'
-When run bash -c "grep 'sed.*><=!' '$SCRIPT'"
-The output should include 'sed'
+When run bash -c "grep '><=!' '$SCRIPT'"
+The output should include '><=!'
 End
 
 It 'extracts requested version from >= spec'
