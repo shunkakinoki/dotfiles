@@ -238,10 +238,18 @@ rtk-rewrite-sync: ## Sync rtk-rewrite.sh from upstream rtk repo.
 	@./scripts/sync-rtk-rewrite.sh
 	@echo "✅ rtk-rewrite.sh synced"
 
+.PHONY: bun-update
+bun-update: ## Update bun dependencies to latest and regenerate lock file.
+	@echo "📦 Updating bun dependencies..."
+	@bun update --latest --recursive
+	@git checkout bun.lock
+	@bun install
+	@echo "✅ bun dependencies updated"
+
 ##@ Update
 
-.PHONY: uptate
-update: nix-update overlays-update neovim-update llm-update gitalias-update ## Update Nix flake, overlays, Neovim plugins, LLM configs, and gitalias
+.PHONY: update
+update: nix-update overlays-update neovim-update llm-update gitalias-update bun-update ## Update Nix flake, overlays, Neovim plugins, LLM configs, gitalias, and bun deps
 
 .PHONY: llm-update
 llm-update: ## Regenerate tool configs from models.json.
