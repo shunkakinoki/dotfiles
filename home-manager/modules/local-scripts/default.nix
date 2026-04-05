@@ -14,4 +14,9 @@ _: {
     force = true;
     source = ./pushover-notify.sh;
   };
+  home.file.".local/scripts/tmux-bridge" = {
+    executable = true;
+    force = true;
+    source = ./tmux-bridge.sh;
+  };
 }
