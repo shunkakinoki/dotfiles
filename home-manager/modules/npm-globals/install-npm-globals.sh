@@ -62,4 +62,19 @@ if [ -n "$OVERRIDES" ]; then
   fi
 fi
 
+# Deduplicate overridden packages from nested node_modules
+# Bun can install the same package at both top-level and nested locations.
+# When packages use Symbols (like pino), two copies create incompatible
+# instances. Remove nested copies of any overridden package so everything
+# resolves to the single top-level version.
+GLOBAL_MODULES="${HOME}/.bun/install/global/node_modules"
+for pkg in $(echo "$OVERRIDES" | jq -r 'keys[]' 2>/dev/null); do
+  find "$GLOBAL_MODULES" -mindepth 3 -maxdepth 4 -type d -name "$pkg" \
+    -path "*/node_modules/$pkg" \
+    ! -path "$GLOBAL_MODULES/$pkg" 2>/dev/null | while read -r nested; do
+    rm -r "$nested"
+    echo "Deduplicated nested $pkg: $nested"
+  done
+done
+
 echo "npm globals installation complete"
