@@ -261,7 +261,7 @@ nix-setup: nix-install nix-check nix-connect ## Set up Nix environment (install,
 nix-connect: ## Ensure Nix daemon is running.
 	@echo "🔌 Ensuring Nix daemon is running for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"
 	@if [ "$(OS)" = "Darwin" ]; then \
-		if [ -S /var/run/nix-daemon.socket ] && nix --version >/dev/null 2>&1; then \
+		if nix store info >/dev/null 2>&1; then \
 			echo "✅ Nix daemon is already reachable. Skipping restart."; \
 		elif [ -f /Library/LaunchDaemons/systems.determinate.nix-daemon.plist ]; then \
 			$(SUDO) launchctl bootout system/systems.determinate.nix-daemon 2>/dev/null || true; \
