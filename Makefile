@@ -212,6 +212,11 @@ devenv-cli: ## Build the packaged devenv CLI binary.
 .PHONY: upgrade
 upgrade: sync update
 
+.PHONY: upgrade-dev
+upgrade-dev: ## Upgrade inside the Nix dev shell (mirrors CI).
+	@echo "🔄 Running upgrade inside the Nix dev shell..."
+	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) upgrade
+
 ##@ Sync
 
 .PHONY: dotagents-sync
@@ -247,11 +252,6 @@ gitalias-update: ## Download latest gitalias.txt from upstream.
 	@./scripts/update-gitalias.sh
 	@echo "✅ gitalias.txt updated"
 
-.PHONY: upgrade-dev
-upgrade-dev: ## Upgrade inside the Nix dev shell (mirrors CI).
-	@echo "🔄 Running upgrade inside the Nix dev shell..."
-	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command $(MAKE) upgrade
-
 ##@ Nix Setup
 
 .PHONY: nix-setup
@@ -261,8 +261,15 @@ nix-setup: nix-install nix-check nix-connect ## Set up Nix environment (install,
 nix-connect: ## Ensure Nix daemon is running.
 	@echo "🔌 Ensuring Nix daemon is running for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"
 	@if [ "$(OS)" = "Darwin" ]; then \
-		$(SUDO) launchctl unload /Library/LaunchDaemons/org.nixos.nix-daemon.plist 2>/dev/null || true; \
-		$(SUDO) launchctl load -w /Library/LaunchDaemons/org.nixos.nix-daemon.plist; \
+		if [ -f /Library/LaunchDaemons/systems.determinate.nix-daemon.plist ]; then \
+			$(SUDO) launchctl bootout system/systems.determinate.nix-daemon 2>/dev/null || true; \
+			$(SUDO) launchctl bootstrap system /Library/LaunchDaemons/systems.determinate.nix-daemon.plist; \
+		elif [ -f /Library/LaunchDaemons/org.nixos.nix-daemon.plist ]; then \
+			$(SUDO) launchctl bootout system/org.nixos.nix-daemon 2>/dev/null || true; \
+			$(SUDO) launchctl bootstrap system /Library/LaunchDaemons/org.nixos.nix-daemon.plist; \
+		else \
+			echo "❌ No Nix daemon plist found"; exit 1; \
+		fi; \
 	elif [ "$(OS)" = "Linux" ]; then \
 		if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ] || [ "$$AUTOMATED_UPDATE" = "true" ]; then \
 			echo "🏃‍♂️ Nix daemon management (e.g., systemctl) is skipped in CI/Docker/automated environments."; \
