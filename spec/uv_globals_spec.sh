@@ -29,14 +29,9 @@ When run bash -c "grep 'command -v uv' '$SCRIPT'"
 The output should include 'uv'
 End
 
-It 'checks for dasel command'
-When run bash -c "grep 'command -v dasel' '$SCRIPT'"
-The output should include 'dasel'
-End
-
-It 'checks for jq command'
-When run bash -c "grep 'command -v jq' '$SCRIPT'"
-The output should include 'jq'
+It 'checks for tomlq command'
+When run bash -c "grep 'command -v tomlq' '$SCRIPT'"
+The output should include 'tomlq'
 End
 End
 
@@ -60,9 +55,9 @@ End
 End
 
 Describe 'tool installation'
-It 'uses dasel to parse TOML'
-When run bash -c "grep 'dasel' '$SCRIPT'"
-The output should include 'dasel'
+It 'uses tomlq to parse TOML'
+When run bash -c "grep 'tomlq' '$SCRIPT'"
+The output should include 'tomlq'
 End
 
 It 'uses uv tool install'
@@ -75,9 +70,9 @@ When run bash -c "grep -- '--force' '$SCRIPT'"
 The output should include '--force'
 End
 
-It 'parses project.dependencies'
-When run bash -c "grep 'project.dependencies' '$SCRIPT'"
-The output should include 'project.dependencies'
+It 'parses dependency-groups.tools'
+When run bash -c "grep 'dependency-groups' '$SCRIPT'"
+The output should include 'dependency-groups'
 End
 End
 End
