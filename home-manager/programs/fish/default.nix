@@ -144,7 +144,7 @@
       pixelh = "_pixelh_function";
       pixeh = "_pixeh_function";
       sag = "_ssh_add_github";
-      llmu = "_llm_update_function";
+      lmu = "_llm_update_function";
       slb = "_sync_local_binaries_function";
       shortcuts = "_fish_shortcuts";
       tdo = "_tdo_function";
