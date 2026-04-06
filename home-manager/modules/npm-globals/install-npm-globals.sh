@@ -42,21 +42,49 @@ if [ -n "$TRUSTED_DEPS" ]; then
   done
 fi
 
-# Install global packages in batches (bun hangs when resolving too many at once)
-DEPS=$(jq -r '.dependencies | keys[]' "$PACKAGE_JSON" 2>/dev/null || true)
+# Build list of packages that need installing or updating
+GLOBAL_MODULES="${HOME}/.bun/install/global/node_modules"
+DEPS=$(jq -r '.dependencies | to_entries[] | "\(.key)=\(.value)"' "$PACKAGE_JSON" 2>/dev/null || true)
+MISSING=()
 if [ -n "$DEPS" ]; then
-  BATCH_SIZE=10
-  BATCH=()
-  while IFS= read -r dep; do
-    BATCH+=("$dep")
-    if [ "${#BATCH[@]}" -ge "$BATCH_SIZE" ]; then
-      bun add --global "${BATCH[@]}" 2>/dev/null || true
-      BATCH=()
+  while IFS= read -r entry; do
+    dep="${entry%%=*}"
+    wanted="${entry#*=}"
+    # Extract minimum version from semver spec (e.g. "^2.1.92" -> "2.1.92")
+    wanted_ver=$(echo "$wanted" | sed 's/[^0-9.]//g')
+    installed_ver=""
+    pkg_json="${GLOBAL_MODULES}/${dep}/package.json"
+    if [ -f "$pkg_json" ]; then
+      installed_ver=$(jq -r '.version // empty' "$pkg_json" 2>/dev/null || true)
+    fi
+    if [ -n "$installed_ver" ] && [ -n "$wanted_ver" ] && [ "$installed_ver" = "$wanted_ver" ]; then
+      echo "$dep@$installed_ver already installed, skipping"
+    elif [ -n "$installed_ver" ]; then
+      echo "$dep@$installed_ver installed, want $wanted_ver, updating"
+      MISSING+=("$dep")
+    else
+      MISSING+=("$dep")
     fi
   done <<<"$DEPS"
+fi
+
+# Install missing packages in small batches
+if [ "${#MISSING[@]}" -gt 0 ]; then
+  echo "Installing ${#MISSING[@]} missing packages..."
+  BATCH_SIZE=5
+  BATCH=()
+  for dep in "${MISSING[@]}"; do
+    BATCH+=("$dep")
+    if [ "${#BATCH[@]}" -ge "$BATCH_SIZE" ]; then
+      bun add --global "${BATCH[@]}" 2>/dev/null || echo "Batch install failed: ${BATCH[*]}"
+      BATCH=()
+    fi
+  done
   if [ "${#BATCH[@]}" -gt 0 ]; then
-    bun add --global "${BATCH[@]}" 2>/dev/null || true
+    bun add --global "${BATCH[@]}" 2>/dev/null || echo "Batch install failed: ${BATCH[*]}"
   fi
+else
+  echo "All npm global packages already installed"
 fi
 
 # Apply dependency overrides to the global install
