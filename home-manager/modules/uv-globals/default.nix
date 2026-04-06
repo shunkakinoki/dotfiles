@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 let
   inherit (pkgs.stdenv) isDarwin;
 in
@@ -6,10 +11,10 @@ in
   # Install uv global tools from pyproject.toml using home-manager activation
   home.activation.installUvGlobals = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     ${lib.optionalString (!isDarwin) ''
-    if [ "$(${pkgs.systemd}/bin/systemctl is-system-running 2>/dev/null)" = "starting" ]; then
-      echo "System is booting, skipping uv globals install"
-      exit 0
-    fi
+      if [ "$(${pkgs.systemd}/bin/systemctl is-system-running 2>/dev/null)" = "starting" ]; then
+        echo "System is booting, skipping uv globals install"
+        exit 0
+      fi
     ''}
     export PATH=${pkgs.uv}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:$PATH
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./install-uv-globals.sh}

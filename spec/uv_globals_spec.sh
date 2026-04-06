@@ -84,6 +84,31 @@ When run bash -c "grep -- '--force' '$SCRIPT'"
 The output should include '--force'
 End
 
+It 'checks uv tool list for installed packages'
+When run bash -c "grep 'uv tool list' '$SCRIPT'"
+The output should include 'uv tool list'
+End
+
+It 'extracts package name from version spec'
+When run bash -c "grep '><=!' '$SCRIPT'"
+The output should include '><=!'
+End
+
+It 'extracts requested version from >= spec'
+When run bash -c "grep 'req_version' '$SCRIPT'"
+The output should include 'req_version'
+End
+
+It 'extracts installed version from uv tool list output'
+When run bash -c "grep 'installed_version' '$SCRIPT'"
+The output should include 'installed_version'
+End
+
+It 'skips install when version matches'
+When run bash -c "grep 'already installed, skipping' '$SCRIPT'"
+The output should include 'already installed, skipping'
+End
+
 It 'parses dependency-groups.tools'
 When run bash -c "grep 'dependency-groups' '$SCRIPT'"
 The output should include 'dependency-groups'

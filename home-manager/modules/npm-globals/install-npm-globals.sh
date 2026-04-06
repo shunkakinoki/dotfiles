@@ -53,7 +53,7 @@ if [ -n "$DEPS" ]; then
       bun add --global "${BATCH[@]}" 2>/dev/null || true
       BATCH=()
     fi
-  done <<< "$DEPS"
+  done <<<"$DEPS"
   if [ "${#BATCH[@]}" -gt 0 ]; then
     bun add --global "${BATCH[@]}" 2>/dev/null || true
   fi
