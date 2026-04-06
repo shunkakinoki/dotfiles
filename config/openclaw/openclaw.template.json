@@ -848,7 +848,7 @@
       "reactionNotifications": "all",
       "reactionLevel": "extensive",
       "replyToMode": "first",
-      "streamMode": "partial"
+      "streaming": "partial"
     },
     "whatsapp": {
       "dmPolicy": "pairing",
