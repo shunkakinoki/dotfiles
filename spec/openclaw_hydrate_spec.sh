@@ -112,9 +112,9 @@ EOF
   sed \
     -e 's|@mode@|gateway|g' \
     -e 's|@sed@|sed|g' \
+    -e 's|@awk@|awk|g' \
     -e 's|@template@|'"$TEMP_HOME"'/templates/openclaw.json|g' \
     -e 's|@chromium@|'"$TEMP_HOME"'/chromium|g' \
-    -e 's|@openclaw@|'"$TEMP_HOME"'/openclaw|g' \
     "$SCRIPT" >"$PREPROCESSED_SCRIPT"
   chmod +x "$PREPROCESSED_SCRIPT"
 }
@@ -147,9 +147,9 @@ EOF
   sed \
     -e 's|@mode@|client|g' \
     -e 's|@sed@|sed|g' \
+    -e 's|@awk@|awk|g' \
     -e 's|@template@|/unused|g' \
     -e 's|@chromium@|/unused|g' \
-    -e 's|@openclaw@|/unused|g' \
     "$SCRIPT" >"$PREPROCESSED_SCRIPT"
   chmod +x "$PREPROCESSED_SCRIPT"
 }
@@ -198,14 +198,9 @@ End
 End
 
 Describe 'execution'
-It 'exports ANTHROPIC_API_KEY when set'
-When run bash -c "grep 'export ANTHROPIC_API_KEY' '$SCRIPT'"
-The output should include 'export ANTHROPIC_API_KEY'
-End
-
-It 'starts openclaw gateway'
-When run bash -c "grep 'exec.*openclaw.*gateway' '$SCRIPT'"
-The output should include 'gateway'
+It 'generates config without starting gateway'
+When run bash -c "grep 'Generated openclaw gateway config' '$SCRIPT'"
+The output should include 'Generated openclaw gateway config'
 End
 End
 

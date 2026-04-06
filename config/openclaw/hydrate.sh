@@ -35,7 +35,8 @@ read_cliproxy_api_key_from_config() {
   local config_file="$1"
   [ -f "$config_file" ] || return 0
 
-  awk '
+  # shellcheck disable=SC2016
+  @awk@ '
     /^api-keys:/ { in_api_keys = 1; next }
     in_api_keys && /^  - / {
       value = $0
@@ -87,12 +88,6 @@ if [ "$MODE" = "gateway" ]; then
   chmod 600 "$CONFIG"
 
   echo "Generated openclaw gateway config at $CONFIG" >&2
-
-  if [ -n "$ANTHROPIC_API_KEY" ]; then
-    export ANTHROPIC_API_KEY
-  fi
-
-  exec @openclaw@/bin/openclaw gateway --port 18789 "$@"
 
 else
   # Client mode (macOS): connect through kyber's Tailscale Serve endpoint
