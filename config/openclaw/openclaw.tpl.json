@@ -755,6 +755,7 @@
       "code-reviewer-opus",
       "code-reviewer-sonnet",
       "code-reviewer-glm",
+      "code-reviewer-gpt",
       "code-reviewer-gpt-codex",
       "code-reviewer-gemini",
       "code-formatter",
