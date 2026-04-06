@@ -57,9 +57,14 @@ if [ -n "$DEPS" ]; then
     if [ -f "$pkg_json" ]; then
       installed_ver=$(jq -r '.version // empty' "$pkg_json" 2>/dev/null || true)
     fi
-    if [ -n "$installed_ver" ] && [ -n "$wanted_ver" ] && [ "$installed_ver" = "$wanted_ver" ]; then
-      echo "$dep@$installed_ver already installed, skipping"
-    elif [ -n "$installed_ver" ]; then
+    if [ -n "$installed_ver" ] && [ -n "$wanted_ver" ]; then
+      min_ver=$(printf '%s\n%s\n' "$wanted_ver" "$installed_ver" | sort -V | head -n1)
+      if [ "$min_ver" = "$wanted_ver" ]; then
+        echo "$dep@$installed_ver already installed, skipping"
+        continue
+      fi
+    fi
+    if [ -n "$installed_ver" ]; then
       echo "$dep@$installed_ver installed, want $wanted_ver, updating"
       MISSING+=("$dep")
     else
