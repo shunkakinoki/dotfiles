@@ -720,7 +720,7 @@
     }
   ],
   "broadcast": {
-    "strategy": "sequential",
+    "strategy": "parallel",
     "120363425148909388@g.us": [
       "code-reviewer-opus",
       "code-reviewer-sonnet",
