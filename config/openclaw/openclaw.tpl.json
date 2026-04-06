@@ -801,16 +801,13 @@
       "docs-checker"
     ],
     "120363406322027123@g.us": [
-      "twitter-gemini",
-      "twitter-opus"
+      "twitter-gpt"
     ],
     "120363405790595065@g.us": [
       "dev-gpt"
     ],
     "120363407321327235@g.us": [
-      "strategy-opus",
-      "strategy-gpt",
-      "strategy-gemini"
+      "strategy-gpt"
     ]
   },
   "session": {
