@@ -914,6 +914,13 @@
       },
       "whatsapp": {
         "enabled": true
+      },
+      "memory-core": {
+        "config": {
+          "dreaming": {
+            "enabled": true
+          }
+        }
       }
     }
   }
