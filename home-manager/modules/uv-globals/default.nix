@@ -30,7 +30,7 @@ in
       Service = {
         Type = "oneshot";
         Environment = [
-          "PATH=${pkgs.uv}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.yq}/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin"
+          "PATH=${pkgs.uv}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.yq}/bin:${pkgs.gnused}/bin:${pkgs.gnugrep}/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin"
           "HOME=%h"
         ];
         ExecStart = "${pkgs.bash}/bin/bash ${./install-uv-globals.sh}";

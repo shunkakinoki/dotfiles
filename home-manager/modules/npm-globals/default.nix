@@ -31,7 +31,7 @@ in
       Service = {
         Type = "oneshot";
         Environment = [
-          "PATH=${pkgs.bun}/bin:${pkgs.jq}/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin"
+          "PATH=${pkgs.bun}/bin:${pkgs.jq}/bin:${pkgs.findutils}/bin:${pkgs.gnugrep}/bin:${pkgs.gnused}/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin"
           "BUN_INSTALL=%h/.bun"
           "HOME=%h"
         ];
