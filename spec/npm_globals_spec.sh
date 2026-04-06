@@ -68,10 +68,54 @@ The output should include 'exit 0'
 End
 End
 
-Describe 'package installation'
+Describe 'trusted dependencies'
 It 'reads trustedDependencies from package.json'
 When run bash -c "grep 'trustedDependencies' '$SCRIPT'"
 The output should include 'trustedDependencies'
+End
+
+It 'trusts postinstall scripts before installing'
+When run bash -c "grep 'bun pm -g trust' '$SCRIPT'"
+The output should include 'bun pm -g trust'
+End
+End
+
+Describe 'skip already installed'
+It 'checks global node_modules for installed packages'
+When run bash -c "grep 'GLOBAL_MODULES=' '$SCRIPT' | head -1"
+The output should include '.bun/install/global/node_modules'
+End
+
+It 'reads installed version from package.json'
+When run bash -c "grep 'installed_ver' '$SCRIPT'"
+The output should include 'installed_ver'
+End
+
+It 'extracts wanted version from semver spec'
+When run bash -c "grep 'wanted_ver' '$SCRIPT'"
+The output should include 'wanted_ver'
+End
+
+It 'skips when installed version matches wanted'
+When run bash -c "grep 'already installed, skipping' '$SCRIPT'"
+The output should include 'already installed, skipping'
+End
+
+It 'detects when update is needed'
+When run bash -c "grep 'updating' '$SCRIPT'"
+The output should include 'updating'
+End
+
+It 'builds a MISSING array of packages to install'
+When run bash -c "grep 'MISSING' '$SCRIPT'"
+The output should include 'MISSING'
+End
+End
+
+Describe 'batch installation'
+It 'uses batch size of 5'
+When run bash -c "grep 'BATCH_SIZE=5' '$SCRIPT'"
+The output should include 'BATCH_SIZE=5'
 End
 
 It 'uses bun add --global in batches'
@@ -79,14 +123,14 @@ When run bash -c "grep 'bun add --global' '$SCRIPT'"
 The output should include 'bun add --global'
 End
 
-It 'batches packages to avoid bun resolution hangs'
-When run bash -c "grep 'BATCH_SIZE' '$SCRIPT'"
-The output should include 'BATCH_SIZE'
+It 'reports batch failures'
+When run bash -c "grep 'Batch install failed' '$SCRIPT'"
+The output should include 'Batch install failed'
 End
 
-It 'parses dependencies with jq'
-When run bash -c "grep 'dependencies' '$SCRIPT'"
-The output should include 'dependencies'
+It 'reports when all packages are already installed'
+When run bash -c "grep 'All npm global packages already installed' '$SCRIPT'"
+The output should include 'All npm global packages already installed'
 End
 End
 

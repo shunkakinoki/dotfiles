@@ -36,13 +36,15 @@ setup() {
   MOCK_BIN="$(mktemp -d)"
   MOCK_ORIGINAL_PATH="${PATH:-}"
   export MOCK_BIN MOCK_ORIGINAL_PATH
-  export PATH="$MOCK_BIN:$MOCK_ORIGINAL_PATH"
   export WAYLAND_DISPLAY=wayland-0
   cat >"$MOCK_BIN/wl-paste" <<'EOF'
 #!/usr/bin/env bash
 printf 'hello'
 EOF
   chmod +x "$MOCK_BIN/wl-paste"
+  local bash_dir
+  bash_dir="$(dirname "$(readlink -f "$(command -v bash)")")"
+  export PATH="$MOCK_BIN:$bash_dir"
 }
 cleanup() {
   export PATH="$MOCK_ORIGINAL_PATH"
@@ -61,16 +63,23 @@ End
 
 Describe 'when xclip is available'
 setup() {
-  mock_bin_setup xclip
+  MOCK_BIN="$(mktemp -d)"
+  MOCK_ORIGINAL_PATH="${PATH:-}"
+  export MOCK_BIN MOCK_ORIGINAL_PATH
   unset WAYLAND_DISPLAY
   cat >"$MOCK_BIN/xclip" <<'EOF'
 #!/usr/bin/env bash
 printf 'hello'
 EOF
   chmod +x "$MOCK_BIN/xclip"
+  local bash_dir
+  bash_dir="$(dirname "$(readlink -f "$(command -v bash)")")"
+  export PATH="$MOCK_BIN:$bash_dir"
 }
 cleanup() {
-  mock_bin_cleanup
+  export PATH="$MOCK_ORIGINAL_PATH"
+  rm -rf "$MOCK_BIN"
+  unset MOCK_BIN MOCK_ORIGINAL_PATH
 }
 Before 'setup'
 After 'cleanup'
