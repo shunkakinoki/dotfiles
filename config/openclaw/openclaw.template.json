@@ -699,16 +699,6 @@
       }
     },
     {
-      "agentId": "dev-opus",
-      "match": {
-        "channel": "whatsapp",
-        "peer": {
-          "kind": "group",
-          "id": "120363405790595065@g.us"
-        }
-      }
-    },
-    {
       "agentId": "dev-gpt-codex",
       "match": {
         "channel": "whatsapp",
@@ -737,7 +727,6 @@
       "twitter-opus"
     ],
     "120363405790595065@g.us": [
-      "dev-opus",
       "dev-gpt-codex"
     ],
     "120363407321327235@g.us": [
