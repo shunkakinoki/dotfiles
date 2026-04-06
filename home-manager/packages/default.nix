@@ -62,6 +62,7 @@ with pkgs;
   jq
   jujutsu
   just
+  k6
   k9s
   kind
   kubeconform
