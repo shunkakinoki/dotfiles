@@ -263,6 +263,24 @@
         }
       },
       {
+        "id": "code-reviewer-gpt",
+        "name": "Code Reviewer (GPT)",
+        "workspace": "__HOME__/.openclaw/workspace/agents/code-review",
+        "model": {
+          "primary": "cliproxy/__GPT__",
+          "fallbacks": [
+            "cliproxy/__GLM__",
+            "cliproxy/free"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
         "id": "code-reviewer-gpt-codex",
         "name": "Code Reviewer (GPT Codex)",
         "workspace": "__HOME__/.openclaw/workspace/agents/code-review",
