@@ -16,7 +16,7 @@ in
         exit 0
       fi
     ''}
-    export PATH=${pkgs.uv}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:$PATH
+    export PATH=${pkgs.uv}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.yq}/bin:$PATH
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./install-uv-globals.sh}
   '';
 
@@ -30,7 +30,7 @@ in
       Service = {
         Type = "oneshot";
         Environment = [
-          "PATH=${pkgs.uv}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin"
+          "PATH=${pkgs.uv}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.yq}/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin"
           "HOME=%h"
         ];
         ExecStart = "${pkgs.bash}/bin/bash ${./install-uv-globals.sh}";
