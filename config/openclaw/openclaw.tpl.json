@@ -773,7 +773,6 @@
       "code-reviewer-glm",
       "code-reviewer-gpt",
       "code-reviewer-gpt-codex",
-      "code-reviewer-gemini",
       "code-reviewer-minimax",
       "code-formatter",
       "security-scanner",
