@@ -356,9 +356,9 @@
         "name": "Security Scanner",
         "workspace": "__HOME__/.openclaw/workspace/agents/security",
         "model": {
-          "primary": "cliproxy/__CLAUDE_OPUS__",
+          "primary": "cliproxy/__MINIMAX__",
           "fallbacks": [
-            "cliproxy/__CLAUDE_SONNET__",
+            "cliproxy/__GLM__",
             "cliproxy/free"
           ]
         },
@@ -391,7 +391,7 @@
         "name": "Docs Checker",
         "workspace": "__HOME__/.openclaw/workspace/agents/docs",
         "model": {
-          "primary": "cliproxy/__CLAUDE_SONNET__",
+          "primary": "cliproxy/__MINIMAX__",
           "fallbacks": [
             "cliproxy/__GLM__",
             "cliproxy/free"
