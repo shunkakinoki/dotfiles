@@ -503,6 +503,7 @@
         "model": {
           "primary": "cliproxy/gpt-5.4",
           "fallbacks": [
+            "cliproxy/gpt-5.3-codex",
             "cliproxy/glm-4.7",
             "cliproxy/free"
           ]
@@ -523,6 +524,7 @@
         "model": {
           "primary": "cliproxy/gpt-5.3-codex",
           "fallbacks": [
+            "cliproxy/gpt-5.4",
             "cliproxy/glm-4.7",
             "cliproxy/free"
           ]
