@@ -16,6 +16,7 @@ let
     let
       vars = {
         sed = "${pkgs.gnused}/bin/sed";
+        awk = "${pkgs.gawk}/bin/awk";
         template = "${./openclaw.template.json}";
         inherit mode;
       }
@@ -23,12 +24,10 @@ let
         if host.isKyber then
           {
             chromium = "${pkgs.chromium}";
-            openclaw = "${homeDir}/.bun";
           }
         else
           {
             chromium = "/unused";
-            openclaw = "/unused";
           }
       );
       names = builtins.attrNames vars;
