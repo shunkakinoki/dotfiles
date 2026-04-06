@@ -192,7 +192,6 @@
       "model": {
         "primary": "cliproxy/minimax-m2.7",
         "fallbacks": [
-          "cliproxy/claude-opus-4-6",
           "cliproxy/glm-4.7",
           "cliproxy/free"
         ]
@@ -263,6 +262,24 @@
         }
       },
       {
+        "id": "code-reviewer-gpt",
+        "name": "Code Reviewer (GPT)",
+        "workspace": "__HOME__/.openclaw/workspace/agents/code-review",
+        "model": {
+          "primary": "cliproxy/gpt-5.4",
+          "fallbacks": [
+            "cliproxy/glm-4.7",
+            "cliproxy/free"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
         "id": "code-reviewer-gpt-codex",
         "name": "Code Reviewer (GPT Codex)",
         "workspace": "__HOME__/.openclaw/workspace/agents/code-review",
@@ -299,6 +316,25 @@
         }
       },
       {
+        "id": "code-reviewer-minimax",
+        "name": "Code Reviewer (Minimax)",
+        "workspace": "__HOME__/.openclaw/workspace/agents/code-review",
+        "model": {
+          "primary": "cliproxy/minimax-m2.7",
+          "fallbacks": [
+            "cliproxy/claude-opus-4-6",
+            "cliproxy/glm-4.7",
+            "cliproxy/free"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
         "id": "code-formatter",
         "name": "Code Formatter",
         "workspace": "__HOME__/.openclaw/workspace/agents/formatter",
@@ -320,9 +356,9 @@
         "name": "Security Scanner",
         "workspace": "__HOME__/.openclaw/workspace/agents/security",
         "model": {
-          "primary": "cliproxy/claude-opus-4-6",
+          "primary": "cliproxy/minimax-m2.7",
           "fallbacks": [
-            "cliproxy/claude-sonnet-4-6",
+            "cliproxy/glm-4.7",
             "cliproxy/free"
           ]
         },
@@ -355,7 +391,7 @@
         "name": "Docs Checker",
         "workspace": "__HOME__/.openclaw/workspace/agents/docs",
         "model": {
-          "primary": "cliproxy/claude-sonnet-4-6",
+          "primary": "cliproxy/minimax-m2.7",
           "fallbacks": [
             "cliproxy/glm-4.7",
             "cliproxy/free"
@@ -411,6 +447,26 @@
         "model": {
           "primary": "cliproxy/gemini-3.1-pro-preview",
           "fallbacks": [
+            "cliproxy/minimax-m2.7",
+            "cliproxy/glm-4.7",
+            "cliproxy/free"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "twitter-gpt",
+        "name": "Twitter (GPT)",
+        "workspace": "__HOME__/.openclaw/workspace/agents/twitter",
+        "model": {
+          "primary": "cliproxy/gpt-5.4",
+          "fallbacks": [
+            "cliproxy/minimax-m2.7",
             "cliproxy/glm-4.7",
             "cliproxy/free"
           ]
@@ -429,6 +485,7 @@
         "model": {
           "primary": "cliproxy/claude-opus-4-6",
           "fallbacks": [
+            "cliproxy/minimax-m2.7",
             "cliproxy/glm-4.7",
             "cliproxy/free"
           ]
@@ -497,12 +554,34 @@
         }
       },
       {
+        "id": "dev-gpt",
+        "name": "Dev (GPT)",
+        "workspace": "__HOME__/.openclaw/workspace/agents/dev",
+        "model": {
+          "primary": "cliproxy/gpt-5.4",
+          "fallbacks": [
+            "cliproxy/gpt-5.3-codex",
+            "cliproxy/glm-4.7",
+            "cliproxy/free"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "write",
+            "edit",
+            "exec"
+          ]
+        }
+      },
+      {
         "id": "dev-gpt-codex",
         "name": "Dev (GPT Codex)",
         "workspace": "__HOME__/.openclaw/workspace/agents/dev",
         "model": {
           "primary": "cliproxy/gpt-5.3-codex",
           "fallbacks": [
+            "cliproxy/gpt-5.4",
             "cliproxy/glm-4.7",
             "cliproxy/free"
           ]
@@ -697,33 +776,38 @@
           "id": "120363424912006821@g.us"
         }
       }
+    },
+    {
+      "agentId": "dev-gpt",
+      "match": {
+        "channel": "whatsapp",
+        "peer": {
+          "kind": "group",
+          "id": "120363405790595065@g.us"
+        }
+      }
     }
   ],
   "broadcast": {
-    "strategy": "sequential",
+    "strategy": "parallel",
     "120363425148909388@g.us": [
-      "code-reviewer-opus",
-      "code-reviewer-sonnet",
       "code-reviewer-glm",
+      "code-reviewer-gpt",
       "code-reviewer-gpt-codex",
-      "code-reviewer-gemini",
+      "code-reviewer-minimax",
       "code-formatter",
       "security-scanner",
       "test-coverage",
       "docs-checker"
     ],
     "120363406322027123@g.us": [
-      "twitter-gemini",
-      "twitter-opus"
+      "twitter-gpt"
     ],
     "120363405790595065@g.us": [
-      "dev-opus",
-      "dev-gpt-codex"
+      "dev-gpt"
     ],
     "120363407321327235@g.us": [
-      "strategy-opus",
-      "strategy-gpt",
-      "strategy-gemini"
+      "strategy-gpt"
     ]
   },
   "session": {
