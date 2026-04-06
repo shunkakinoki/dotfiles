@@ -192,7 +192,6 @@
       "model": {
         "primary": "cliproxy/minimax-m2.7",
         "fallbacks": [
-          "cliproxy/claude-opus-4-6",
           "cliproxy/glm-4.7",
           "cliproxy/free"
         ]
@@ -263,6 +262,24 @@
         }
       },
       {
+        "id": "code-reviewer-gpt",
+        "name": "Code Reviewer (GPT)",
+        "workspace": "__HOME__/.openclaw/workspace/agents/code-review",
+        "model": {
+          "primary": "cliproxy/gpt-5.4",
+          "fallbacks": [
+            "cliproxy/glm-4.7",
+            "cliproxy/free"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
         "id": "code-reviewer-gpt-codex",
         "name": "Code Reviewer (GPT Codex)",
         "workspace": "__HOME__/.openclaw/workspace/agents/code-review",
@@ -287,6 +304,25 @@
         "model": {
           "primary": "cliproxy/gemini-3.1-pro-preview",
           "fallbacks": [
+            "cliproxy/glm-4.7",
+            "cliproxy/free"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "code-reviewer-minimax",
+        "name": "Code Reviewer (Minimax)",
+        "workspace": "__HOME__/.openclaw/workspace/agents/code-review",
+        "model": {
+          "primary": "cliproxy/minimax-m2.7",
+          "fallbacks": [
+            "cliproxy/claude-opus-4-6",
             "cliproxy/glm-4.7",
             "cliproxy/free"
           ]
@@ -737,8 +773,10 @@
       "code-reviewer-opus",
       "code-reviewer-sonnet",
       "code-reviewer-glm",
+      "code-reviewer-gpt",
       "code-reviewer-gpt-codex",
       "code-reviewer-gemini",
+      "code-reviewer-minimax",
       "code-formatter",
       "security-scanner",
       "test-coverage",
