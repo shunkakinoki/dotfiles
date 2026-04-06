@@ -10,11 +10,18 @@
 ~/ghq/github.com/Dicklesworthstone/frankensqlite/target/release/libfsqlite.rlib
 
 ~/ghq/github.com/Dicklesworthstone/beads_viewer/bv
+~/ghq/github.com/Dicklesworthstone/coding_agent_account_manager/caam
 ~/ghq/github.com/Dicklesworthstone/coding_agent_session_search/target/release/cass
 ~/ghq/github.com/Dicklesworthstone/cross_agent_sessions_resumer/target/release/casr
 ~/ghq/github.com/Dicklesworthstone/destructive_command_guard/target/release/dcg
+~/ghq/github.com/Dicklesworthstone/mcp_agent_mail/am
+~/ghq/github.com/Dicklesworthstone/ntm/ntm
 ~/ghq/github.com/Dicklesworthstone/pi_agent_rust/target/release/pi:pir
+~/ghq/github.com/Dicklesworthstone/slb/build/slb
 ~/ghq/github.com/Dicklesworthstone/ultimate_bug_scanner/ubs
+~/ghq/github.com/NousResearch/hermes-agent/.venv/bin/hermes
+~/ghq/github.com/NousResearch/hermes-agent/.venv/bin/hermes-agent
+~/ghq/github.com/NousResearch/hermes-agent/.venv/bin/hermes-acp
 ~/ghq/github.com/nwiizo/ccswarm/target/release/ccswarm
 ~/ghq/github.com/openai/symphony/elixir/bin/symphony
 ~/ghq/github.com/steveyegge/beads/bd

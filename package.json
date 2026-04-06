@@ -13,7 +13,6 @@
   "dependencies": {
     "@anthropic-ai/claude-code": "^2.1.92",
     "@augmentcode/auggie": "^0.22.0",
-    "@beads/bd": "^0.63.3",
     "@biomejs/biome": "^2.4.10",
     "@ccusage/amp": "^18.0.10",
     "@ccusage/codex": "^18.0.10",
@@ -37,11 +36,11 @@
     "@pkieltyka/gitgenie": "^0.1.2",
     "@pulumi/pulumi": "^3.229.0",
     "@schpet/linear-cli": "^2.0.0",
-    "@sourcegraph/amp": "^0.0.1775433977-g406649",
+    "@sourcegraph/amp": "^0.0.1775463997-ga80857",
     "@steipete/bird": "^0.8.0",
     "@tobilu/qmd": "^2.1.0",
     "@traces-sh/traces": "^0.4.13",
-    "@typescript/native-preview": "^7.0.0-dev.20260405.1",
+    "@typescript/native-preview": "^7.0.0-dev.20260406.1",
     "@upstash/context7-mcp": "^2.1.6",
     "@vibe-kit/grok-cli": "^0.0.34",
     "acpx": "^0.4.1",
@@ -63,7 +62,7 @@
     "ralph-tui": "^0.11.0",
     "turbo": "^2.9.4",
     "typescript": "^6.0.2",
-    "vite": "^8.0.3",
+    "vite": "^8.0.4",
     "vite-plus": "^0.1.15",
     "xcodebuildmcp": "^2.3.2"
   },
@@ -73,7 +72,6 @@
   "trustedDependencies": [
     "@anthropic-ai/claude-code",
     "@augmentcode/auggie",
-    "@beads/bd",
     "@biomejs/biome",
     "@ccusage/amp",
     "@ccusage/codex",

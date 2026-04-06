@@ -183,6 +183,33 @@ When run bash -c 'grep "cmd/\$repo_name" '"'$SCRIPT'"
 # shellcheck disable=SC2016
 The output should include 'cmd/$repo_name'
 End
+
+It 'prefers go build ./cmd/{binary-basename} over repo name'
+# shellcheck disable=SC2016
+When run bash -c 'grep "cmd/\$bin_basename" '"'$SCRIPT'"
+# shellcheck disable=SC2016
+The output should include 'cmd/$bin_basename'
+End
+
+It 'detects pyproject.toml for uv-managed Python projects'
+When run bash -c "grep 'pyproject.toml' '$SCRIPT'"
+The output should include 'pyproject.toml'
+End
+
+It 'runs uv sync for Python projects'
+When run bash -c "grep 'uv sync' '$SCRIPT'"
+The output should include 'uv sync'
+End
+
+It 'derives module name from pyproject.toml name field'
+When run bash -c "grep -E 'pkg_name=.*pyproject.toml' '$SCRIPT'"
+The output should include 'pyproject.toml'
+End
+
+It 'hides generated wrappers via .git/info/exclude'
+When run bash -c "grep '.git/info/exclude' '$SCRIPT'"
+The output should include '.git/info/exclude'
+End
 End
 
 Describe 'git operations'
