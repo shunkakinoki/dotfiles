@@ -172,7 +172,14 @@ build_repo() {
   fi
 
   if [ -f "$build_dir/Cargo.toml" ]; then
-    if (cd "$build_dir" && cargo +nightly build --release 2>&1); then
+    # If the target is a .rlib, only build the library (avoids compiling all
+    # test/harness binaries in large workspaces like frankensqlite).
+    local cargo_flags="--release"
+    local expanded_bin="${binary_path/#\~/$HOME}"
+    if [[ "$expanded_bin" == *.rlib ]]; then
+      cargo_flags="--release --lib"
+    fi
+    if (cd "$build_dir" && cargo +nightly build $cargo_flags 2>&1); then
       return 0
     else
       return 1
