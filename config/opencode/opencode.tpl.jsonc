@@ -198,5 +198,5 @@
       }
     }
   },
-  "plugin": ["cc-safety-net", "opencode-atuin-history"]
+  "plugin": ["cc-safety-net", "opencode-atuin-history", "opencode-claude-hooks"]
 }
