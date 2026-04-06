@@ -447,6 +447,26 @@
         "model": {
           "primary": "cliproxy/__GEMINI_PRO__",
           "fallbacks": [
+            "cliproxy/__MINIMAX__",
+            "cliproxy/__GLM__",
+            "cliproxy/free"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "exec"
+          ]
+        }
+      },
+      {
+        "id": "twitter-gpt",
+        "name": "Twitter (GPT)",
+        "workspace": "__HOME__/.openclaw/workspace/agents/twitter",
+        "model": {
+          "primary": "cliproxy/__GPT__",
+          "fallbacks": [
+            "cliproxy/__MINIMAX__",
             "cliproxy/__GLM__",
             "cliproxy/free"
           ]
@@ -465,6 +485,7 @@
         "model": {
           "primary": "cliproxy/__CLAUDE_OPUS__",
           "fallbacks": [
+            "cliproxy/__MINIMAX__",
             "cliproxy/__GLM__",
             "cliproxy/free"
           ]
