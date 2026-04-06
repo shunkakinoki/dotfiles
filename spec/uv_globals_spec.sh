@@ -109,6 +109,29 @@ When run bash -c "grep 'already installed, skipping' '$SCRIPT'"
 The output should include 'already installed, skipping'
 End
 
+It 'uses sort -V for version comparison instead of exact match'
+When run bash -c "grep 'sort -V' '$SCRIPT'"
+The output should include 'sort -V'
+End
+
+It 'skips when installed version is newer than required'
+# Simulate: installed=0.15.9, required=0.15.8 -> should skip
+When run bash -c "printf '0.15.8\n0.15.9\n' | sort -V | head -n1"
+The output should eq '0.15.8'
+End
+
+It 'skips when installed version equals required'
+# Simulate: installed=0.86.2, required=0.86.2 -> should skip
+When run bash -c "printf '0.86.2\n0.86.2\n' | sort -V | head -n1"
+The output should eq '0.86.2'
+End
+
+It 'detects when installed version is older than required'
+# Simulate: installed=2.6.9, required=2.7.0 -> min is 2.6.9, not 2.7.0
+When run bash -c "printf '2.7.0\n2.6.9\n' | sort -V | head -n1"
+The output should eq '2.6.9'
+End
+
 It 'parses dependency-groups.tools'
 When run bash -c "grep 'dependency-groups' '$SCRIPT'"
 The output should include 'dependency-groups'

@@ -101,6 +101,29 @@ When run bash -c "grep 'already installed, skipping' '$SCRIPT'"
 The output should include 'already installed, skipping'
 End
 
+It 'uses sort -V for version comparison instead of exact match'
+When run bash -c "grep 'sort -V' '$SCRIPT'"
+The output should include 'sort -V'
+End
+
+It 'skips when installed version is newer than wanted'
+# Simulate: installed=2.9.4, wanted=2.9.3 -> should skip (min is 2.9.3)
+When run bash -c "printf '2.9.3\n2.9.4\n' | sort -V | head -n1"
+The output should eq '2.9.3'
+End
+
+It 'skips when installed version equals wanted'
+# Simulate: installed=2.1.92, wanted=2.1.92 -> should skip
+When run bash -c "printf '2.1.92\n2.1.92\n' | sort -V | head -n1"
+The output should eq '2.1.92'
+End
+
+It 'detects when installed version is older than wanted'
+# Simulate: installed=0.65.0, wanted=0.65.2 -> min is 0.65.0, not 0.65.2
+When run bash -c "printf '0.65.2\n0.65.0\n' | sort -V | head -n1"
+The output should eq '0.65.0'
+End
+
 It 'detects when update is needed'
 When run bash -c "grep 'updating' '$SCRIPT'"
 The output should include 'updating'

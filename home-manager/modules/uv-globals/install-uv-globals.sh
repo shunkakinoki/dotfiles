@@ -50,9 +50,11 @@ echo "$DEPS" | while read -r pkg; do
   req_version=$(echo "$pkg" | sed -n 's/.*>=\([0-9][0-9.]*\).*/\1/p')
   installed_version=$(echo "$INSTALLED" | sed -n "s/^${name} v\([0-9][0-9.]*\).*/\1/p")
 
-  if [ -n "$installed_version" ] && [ -n "$req_version" ] && [ "$installed_version" = "$req_version" ]; then
-    echo "$name $installed_version already installed, skipping"
-    continue
+  if [ -n "$installed_version" ] && [ -n "$req_version" ]; then
+    if printf '%s\n%s\n' "$req_version" "$installed_version" | sort -V | head -n1 | grep -qx "$req_version"; then
+      echo "$name $installed_version already installed, skipping"
+      continue
+    fi
   fi
   echo "Installing $pkg..."
   uv tool install "$pkg" --python "$PYTHON_VERSION" --force 2>/dev/null || echo "Failed to install $pkg, skipping..."
