@@ -697,6 +697,26 @@
           "id": "120363424912006821@g.us"
         }
       }
+    },
+    {
+      "agentId": "dev-opus",
+      "match": {
+        "channel": "whatsapp",
+        "peer": {
+          "kind": "group",
+          "id": "120363405790595065@g.us"
+        }
+      }
+    },
+    {
+      "agentId": "dev-gpt-codex",
+      "match": {
+        "channel": "whatsapp",
+        "peer": {
+          "kind": "group",
+          "id": "120363405790595065@g.us"
+        }
+      }
     }
   ],
   "broadcast": {
