@@ -497,6 +497,26 @@
         }
       },
       {
+        "id": "dev-gpt",
+        "name": "Dev (GPT)",
+        "workspace": "__HOME__/.openclaw/workspace/agents/dev",
+        "model": {
+          "primary": "cliproxy/__GPT__",
+          "fallbacks": [
+            "cliproxy/__GLM__",
+            "cliproxy/free"
+          ]
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "write",
+            "edit",
+            "exec"
+          ]
+        }
+      },
+      {
         "id": "dev-gpt-codex",
         "name": "Dev (GPT Codex)",
         "workspace": "__HOME__/.openclaw/workspace/agents/dev",
@@ -699,7 +719,7 @@
       }
     },
     {
-      "agentId": "dev-gpt-codex",
+      "agentId": "dev-gpt",
       "match": {
         "channel": "whatsapp",
         "peer": {
@@ -727,7 +747,7 @@
       "twitter-opus"
     ],
     "120363405790595065@g.us": [
-      "dev-gpt-codex"
+      "dev-gpt"
     ],
     "120363407321327235@g.us": [
       "strategy-opus",
