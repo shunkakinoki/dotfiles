@@ -51,7 +51,7 @@ if [ -n "$DEPS" ]; then
     dep="${entry%%=*}"
     wanted="${entry#*=}"
     # Extract minimum version from semver spec (e.g. "^2.1.92" -> "2.1.92")
-    wanted_ver=$(echo "$wanted" | sed 's/[^0-9.]//g')
+    wanted_ver="${wanted//[^0-9.]/}"
     installed_ver=""
     pkg_json="${GLOBAL_MODULES}/${dep}/package.json"
     if [ -f "$pkg_json" ]; then
