@@ -770,8 +770,6 @@
   "broadcast": {
     "strategy": "parallel",
     "120363425148909388@g.us": [
-      "code-reviewer-opus",
-      "code-reviewer-sonnet",
       "code-reviewer-glm",
       "code-reviewer-gpt",
       "code-reviewer-gpt-codex",
