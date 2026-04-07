@@ -168,8 +168,46 @@ setup: nix-setup ## Basic Nix setup (alias for nix-setup).
 .PHONY: setup-dev
 setup-dev: nix-setup git-submodule-sync shell-install ## Set up local development environment (Nix + submodules + shell).
 
+.PHONY: nvim-plugins-install
+nvim-plugins-install: ## Download/build missing Neovim native plugin binaries (fff.nvim, telescope-fzf-native, vscode-diff).
+	@PACK_DIR="$$HOME/.local/share/nvim/site/pack"; \
+	\
+	FFF_DIR=""; \
+	for d in "$$PACK_DIR"/*/opt/fff.nvim "$$PACK_DIR"/*/start/fff.nvim; do \
+		if [ -d "$$d" ]; then FFF_DIR="$$d"; break; fi; \
+	done; \
+	if [ -n "$$FFF_DIR" ]; then \
+		FFF_BINARY="$$FFF_DIR/target/libfff_nvim.so"; \
+		if [ ! -f "$$FFF_BINARY" ]; then \
+			echo "Downloading fff.nvim native binary..."; \
+			FFF_VERSION=$$(git -C "$$FFF_DIR" rev-parse --short HEAD 2>/dev/null || echo ""); \
+			if [ -n "$$FFF_VERSION" ]; then \
+				_ARCH=$$(uname -m); \
+				_LDD=$$(ldd --version 2>&1 || echo ""); \
+				if echo "$$_LDD" | grep -q musl; then \
+					_TRIPLE="$${_ARCH}-unknown-linux-musl"; \
+				else \
+					_TRIPLE="$${_ARCH}-unknown-linux-gnu"; \
+				fi; \
+				mkdir -p "$$FFF_DIR/target"; \
+				echo "Fetching https://github.com/dmtrKovalenko/fff.nvim/releases/download/$$FFF_VERSION/$${_TRIPLE}.so"; \
+				curl --fail --location --silent --show-error \
+					-o "$$FFF_BINARY" \
+					"https://github.com/dmtrKovalenko/fff.nvim/releases/download/$$FFF_VERSION/$${_TRIPLE}.so" \
+					&& echo "fff.nvim binary downloaded successfully" \
+					|| echo "fff.nvim binary download failed"; \
+			else \
+				echo "fff.nvim: could not determine version, skipping"; \
+			fi; \
+		else \
+			echo "fff.nvim binary already present"; \
+		fi; \
+	else \
+		echo "fff.nvim plugin directory not found, skipping"; \
+	fi
+
 .PHONY: switch
-switch: nix-switch services dotagents-sync ## Apply Nix configuration, restart services, and sync plugins.
+switch: nix-switch services nvim-plugins-install dotagents-sync ## Apply Nix configuration, restart services, and sync plugins.
 
 .PHONY: clean
 clean: ## Clean up old Nix generations and garbage collect.

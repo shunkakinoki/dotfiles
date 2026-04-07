@@ -6,7 +6,16 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 NVIM_DIR="$SCRIPT_DIR"
-PLENARY_DIR="${PLENARY_DIR:-/tmp/plenary.nvim}"
+# Prefer pack-installed plenary (has test_harness); fall back to /tmp clone
+PACK_DIR_EARLY="$HOME/.local/share/nvim/site/pack"
+PLENARY_PACK=""
+for d in "$PACK_DIR_EARLY"/*/opt/plenary.nvim "$PACK_DIR_EARLY"/*/start/plenary.nvim; do
+  if [ -d "$d" ] && [ -f "$d/lua/plenary/test_harness.lua" ]; then
+    PLENARY_PACK="$d"
+    break
+  fi
+done
+PLENARY_DIR="${PLENARY_DIR:-${PLENARY_PACK:-/tmp/plenary.nvim}}"
 
 # Colors for output
 RED='\033[0;31m'

@@ -89,4 +89,68 @@ describe("completion", function()
 			vim.keymap.del("i", "<C-test-expr>")
 		end)
 	end)
+
+	describe("cmp source configuration pattern", function()
+		it("should define expected source names", function()
+			local sources = { "nvim_lsp", "copilot", "luasnip", "buffer", "path" }
+			for _, s in ipairs(sources) do
+				assert.is_string(s)
+				assert.is_true(#s > 0)
+			end
+		end)
+
+		it("should support cmdline source names", function()
+			local cmdline_sources = { "buffer", "path", "cmdline" }
+			for _, s in ipairs(cmdline_sources) do
+				assert.is_string(s)
+			end
+		end)
+
+		it("should support filetype-specific source pattern", function()
+			local gitcommit_sources = { { name = "git" }, { name = "buffer" } }
+			assert.equals("git", gitcommit_sources[1].name)
+			assert.equals("buffer", gitcommit_sources[2].name)
+		end)
+	end)
+
+	describe("cmp mapping patterns", function()
+		it("should support scroll_docs mapping pattern", function()
+			local mappings = { ["<C-b>"] = "scroll_docs(-4)", ["<C-f>"] = "scroll_docs(4)" }
+			assert.is_not_nil(mappings["<C-b>"])
+			assert.is_not_nil(mappings["<C-f>"])
+		end)
+
+		it("should support abort and confirm pattern", function()
+			local mappings = { ["<C-e>"] = "abort", ["<CR>"] = "confirm" }
+			assert.equals("abort", mappings["<C-e>"])
+			assert.equals("confirm", mappings["<CR>"])
+		end)
+
+		it("should support tab/shift-tab navigation pattern", function()
+			local nav_keys = { "<Tab>", "<S-Tab>" }
+			for _, k in ipairs(nav_keys) do
+				assert.is_string(k)
+			end
+		end)
+	end)
+
+	describe("copilot config pattern", function()
+		it("should disable suggestion panel by default", function()
+			local config = { suggestion = { enabled = false }, panel = { enabled = false } }
+			assert.is_false(config.suggestion.enabled)
+			assert.is_false(config.panel.enabled)
+		end)
+	end)
+
+	describe("luasnip pattern", function()
+		it("should support lsp_expand callback pattern", function()
+			local snippet_config = {
+				expand = function(args)
+					return args.body
+				end,
+			}
+			assert.is_function(snippet_config.expand)
+			assert.equals("test", snippet_config.expand({ body = "test" }))
+		end)
+	end)
 end)

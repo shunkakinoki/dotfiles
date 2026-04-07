@@ -51,7 +51,6 @@ end
 -- From: https://github.com/nvim-telescope/telescope.nvim
 local builtin = require("telescope.builtin")
 local keymap = vim.keymap.set
-local opts = { noremap = true, silent = true }
 
 -- @keymap <C-p>: Find files (Telescope)
 keymap("n", "<C-p>", function()
@@ -64,51 +63,51 @@ keymap("n", "<C-p>", function()
 			"--hidden",
 		},
 	}))
-end, opts)
+end, { noremap = true, silent = true, desc = "Find files" })
 
 -- @keymap <leader>of: Open old files (Telescope)
 keymap("n", "<leader>of", function()
 	builtin.oldfiles(ivy({
 		only_cwd = true,
 	}))
-end, opts)
+end, { noremap = true, silent = true, desc = "Recent files" })
 
 -- @keymap <leader>lg: Live grep (Telescope)
 keymap("n", "<leader>lg", function()
 	builtin.live_grep(ivy())
-end, opts)
+end, { noremap = true, silent = true, desc = "Live grep" })
 
 -- @keymap <leader>fb: Find buffers (Telescope)
 keymap("n", "<leader>fb", function()
 	builtin.buffers(ivy())
-end, opts)
+end, { noremap = true, silent = true, desc = "Find buffers" })
 
 -- @keymap <leader>fh: Find help tags (Telescope)
 keymap("n", "<leader>fh", function()
 	builtin.help_tags(ivy())
-end, opts)
+end, { noremap = true, silent = true, desc = "Find help tags" })
 
 -- @keymap <leader>fc: Find commands (Telescope)
 keymap("n", "<leader>fc", function()
 	builtin.commands(ivy())
-end, opts)
+end, { noremap = true, silent = true, desc = "Find commands" })
 
 -- @keymap <leader>fr: Resume last Telescope search
 keymap("n", "<leader>fr", function()
 	builtin.resume(ivy())
-end, opts)
+end, { noremap = true, silent = true, desc = "Resume last search" })
 
 -- @keymap <leader>fq: Find in quickfix (Telescope)
 keymap("n", "<leader>fq", function()
 	builtin.quickfix(ivy())
-end, opts)
+end, { noremap = true, silent = true, desc = "Find in quickfix" })
 
 -- @keymap <leader>/: Fuzzy find in current buffer (Telescope)
 keymap("n", "<leader>/", function()
 	builtin.current_buffer_fuzzy_find(ivy())
-end, opts)
+end, { noremap = true, silent = true, desc = "Fuzzy find in buffer" })
 
 -- @keymap <leader>ghi: Find GitHub issues (Telescope)
 keymap("n", "<leader>ghi", function()
 	telescope.extensions.gh.issues(ivy())
-end, opts)
+end, { noremap = true, silent = true, desc = "GitHub issues" })
