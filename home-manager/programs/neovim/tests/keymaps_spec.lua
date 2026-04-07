@@ -508,4 +508,115 @@ describe("keymaps", function()
 			assert.is_table(results)
 		end)
 	end)
+
+	describe("keymap desc enforcement", function()
+		-- Parses all lua config files and finds every keymap.set call with a leader
+		-- lhs, then verifies a desc is present. This catches regressions across ALL
+		-- config files automatically — no manual maintenance required.
+
+		local function get_lua_config_files()
+			local init_path = debug.getinfo(1, "S").source:sub(2)
+			local tests_dir = vim.fn.fnamemodify(init_path, ":h")
+			local lua_dir = vim.fn.fnamemodify(tests_dir, ":h") .. "/lua/config"
+			return vim.fn.glob(lua_dir .. "/*.lua", false, true)
+		end
+
+		local function scan_keymaps_missing_desc(files)
+			local missing = {}
+			-- Pattern: keymap(..., "<leader>...", ...) or keymap.set(..., "<leader>...", ...)
+			-- without a desc = "..." on the same logical call
+			local keymap_pattern = "keymap[^(]*%([^,]*,?%s*[\"']([^\"']*<[Ll]eader>[^\"']*)[\"']"
+			for _, filepath in ipairs(files) do
+				local f = io.open(filepath, "r")
+				if f then
+					local content = f:read("*a")
+					f:close()
+					-- Find each keymap call block (up to the closing paren with opts)
+					-- We look for lines containing a leader lhs
+					for line in content:gmatch("[^\n]+") do
+						if line:match("['\"]<[Ll]eader>") and line:match("keymap") then
+							-- Check if this line or nearby has desc
+							-- Simple heuristic: if the line has desc= it's fine
+							-- We'll do a chunk-based scan below for multi-line calls
+						end
+					end
+
+					-- Chunk-based: find keymap( ... ) blocks and check for desc
+					local pos = 1
+					while pos <= #content do
+						local s, e = content:find("keymap[^(]*%(", pos)
+						if not s then
+							break
+						end
+						-- Find matching closing paren (simple depth counter)
+						local depth = 0
+						local chunk_end = e
+						for i = e, math.min(e + 2000, #content) do
+							local c = content:sub(i, i)
+							if c == "(" then
+								depth = depth + 1
+							elseif c == ")" then
+								depth = depth - 1
+								if depth == 0 then
+									chunk_end = i
+									break
+								end
+							end
+						end
+						local chunk = content:sub(s, chunk_end)
+						-- Only care about chunks with a leader lhs
+						if chunk:match("['\"]<[Ll]eader>") or chunk:match("['\"]%s*<[Ll]eader>") then
+							-- Skip if it's setting the leader itself (<Space> = <Nop>)
+							if not chunk:match('"",') and not chunk:match('"<[Ss]pace>"') then
+								if not chunk:match("desc%s*=") then
+									-- Extract lhs for the error message
+									local lhs = chunk:match("[\"']([^\"']*<[Ll]eader>[^\"']*)[\"']") or "?"
+									local file = vim.fn.fnamemodify(filepath, ":t")
+									table.insert(missing, file .. ": " .. lhs)
+								end
+							end
+						end
+						pos = chunk_end + 1
+					end
+				end
+			end
+			return missing
+		end
+
+		it("sanity: missing desc is detectable in source scan", function()
+			-- Inject a fake file content and verify the scanner catches it
+			local fake_file = vim.fn.tempname() .. ".lua"
+			local f = io.open(fake_file, "w")
+			if f then
+				f:write('keymap("n", "<leader>foo", ":echo hi<CR>", { noremap = true })\n')
+				f:close()
+				local missing = scan_keymaps_missing_desc({ fake_file })
+				assert.is_true(#missing > 0, "Expected scanner to detect missing desc")
+				os.remove(fake_file)
+			end
+		end)
+
+		it("sanity: keymap with desc passes source scan", function()
+			local fake_file = vim.fn.tempname() .. ".lua"
+			local f = io.open(fake_file, "w")
+			if f then
+				f:write('keymap("n", "<leader>foo", ":echo hi<CR>", { noremap = true, desc = "My action" })\n')
+				f:close()
+				local missing = scan_keymaps_missing_desc({ fake_file })
+				assert.are.same({}, missing, "Expected no missing desc")
+				os.remove(fake_file)
+			end
+		end)
+
+		it("all leader keymaps in all config files have a desc", function()
+			local files = get_lua_config_files()
+			assert.is_true(#files > 0, "No config files found")
+			local missing = scan_keymaps_missing_desc(files)
+			assert.are.same(
+				{},
+				missing,
+				"Keymaps missing desc across config files (" .. #missing .. "):\n  " .. table.concat(missing, "\n  ")
+			)
+		end)
+	end)
 end)

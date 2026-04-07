@@ -234,6 +234,7 @@ autocmd("FileType", {
 			buffer = vim.api.nvim_get_current_buf(),
 			noremap = true,
 			silent = true,
+			desc = "Close buffer",
 		})
 	end,
 })

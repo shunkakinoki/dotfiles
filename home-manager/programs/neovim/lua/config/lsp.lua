@@ -1,26 +1,31 @@
 -- Keymaps for LSP actions in on_attach
 local on_attach = function(client, bufnr)
-	local opts = { buffer = bufnr, noremap = true, silent = true }
+	local o = { buffer = bufnr, noremap = true, silent = true }
 	-- @keymap K: Show hover information
-	vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+	vim.keymap.set("n", "K", vim.lsp.buf.hover, vim.tbl_extend("force", o, { desc = "Hover information" }))
 	-- @keymap gd: Go to definition
-	vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+	vim.keymap.set("n", "gd", vim.lsp.buf.definition, vim.tbl_extend("force", o, { desc = "Go to definition" }))
 	-- @keymap gD: Go to declaration
-	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, vim.tbl_extend("force", o, { desc = "Go to declaration" }))
 	-- @keymap gi: Go to implementation
-	vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+	vim.keymap.set("n", "gi", vim.lsp.buf.implementation, vim.tbl_extend("force", o, { desc = "Go to implementation" }))
 	-- @keymap gr: Find references
-	vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+	vim.keymap.set("n", "gr", vim.lsp.buf.references, vim.tbl_extend("force", o, { desc = "Find references" }))
 	-- @keymap <leader>D: Go to type definition
-	vim.keymap.set("n", "<leader>D", vim.lsp.buf.type_definition, opts)
+	vim.keymap.set(
+		"n",
+		"<leader>D",
+		vim.lsp.buf.type_definition,
+		vim.tbl_extend("force", o, { desc = "Type definition" })
+	)
 	-- @keymap ca: Show code actions
-	vim.keymap.set("n", "ca", vim.lsp.buf.code_action, opts)
+	vim.keymap.set("n", "ca", vim.lsp.buf.code_action, vim.tbl_extend("force", o, { desc = "Code actions" }))
 	-- @keymap <leader>rn: Rename symbol
-	vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+	vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, vim.tbl_extend("force", o, { desc = "Rename symbol" }))
 	-- @keymap <C-k>: Show signature help (normal mode)
-	vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
+	vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, vim.tbl_extend("force", o, { desc = "Signature help" }))
 	-- @keymap <C-k>: Show signature help (insert mode)
-	vim.keymap.set("i", "<C-k>", vim.lsp.buf.signature_help, opts)
+	vim.keymap.set("i", "<C-k>", vim.lsp.buf.signature_help, vim.tbl_extend("force", o, { desc = "Signature help" }))
 end
 
 -- Set up capabilities for nvim-cmp

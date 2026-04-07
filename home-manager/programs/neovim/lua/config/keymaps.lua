@@ -14,9 +14,9 @@ keymap("", "<Space>", "<Nop>", opts)
 -- QUICKFIX LISTS
 -- ====================================================================================
 -- @keymap <leader>co: Open quickfix list
-keymap("n", "<leader>co", ":copen<CR>", opts)
+keymap("n", "<leader>co", ":copen<CR>", { noremap = true, silent = true, desc = "Open quickfix list" })
 -- @keymap <leader>cc: Close quickfix list
-keymap("n", "<leader>cc", ":cclose<CR>", opts)
+keymap("n", "<leader>cc", ":cclose<CR>", { noremap = true, silent = true, desc = "Close quickfix list" })
 
 -- ====================================================================================
 -- BUFFER AND FILE OPERATIONS
@@ -24,22 +24,22 @@ keymap("n", "<leader>cc", ":cclose<CR>", opts)
 -- @keymap <leader><Tab>: Cycle to next buffer
 keymap("n", "<leader><tab>", function()
 	utils.cycle_buffer("next")
-end, { noremap = true, silent = true })
+end, { noremap = true, silent = true, desc = "Next buffer" })
 
 -- @keymap <leader><S-Tab>: Cycle to previous buffer
 keymap("n", "<leader><s-tab>", function()
 	utils.cycle_buffer("prev")
-end, { noremap = true, silent = true })
+end, { noremap = true, silent = true, desc = "Previous buffer" })
 
 -- @keymap ]b: Cycle to next buffer
 keymap("n", "]b", function()
 	utils.cycle_buffer("next")
-end, opts)
+end, { noremap = true, silent = true, desc = "Next buffer" })
 
 -- @keymap [b: Cycle to previous buffer
 keymap("n", "[b", function()
 	utils.cycle_buffer("prev")
-end, opts)
+end, { noremap = true, silent = true, desc = "Previous buffer" })
 -- @keymap <leader>q: Close current window/split, or delete buffer if last window
 keymap("n", "<leader>q", function()
 	if #vim.api.nvim_tabpage_list_wins(0) > 1 then
@@ -47,17 +47,17 @@ keymap("n", "<leader>q", function()
 	else
 		vim.cmd("Bdelete")
 	end
-end, opts)
+end, { noremap = true, silent = true, desc = "Close window / delete buffer" })
 -- @keymap <leader>bad: Wipe all buffers
-keymap("n", "<leader>bad", ":%bwipeout!<cr>:intro<cr>", opts)
+keymap("n", "<leader>bad", ":%bwipeout!<cr>:intro<cr>", { noremap = true, silent = true, desc = "Wipe all buffers" })
 -- @keymap <leader>w: Write file
-keymap("n", "<leader>w", ":write<CR>", opts)
+keymap("n", "<leader>w", ":write<CR>", { noremap = true, silent = true, desc = "Save file" })
 -- @keymap <leader>W: Save all and quit
-keymap("n", "<leader>W", ":wall | qall<CR>", opts)
+keymap("n", "<leader>W", ":wall | qall<CR>", { noremap = true, silent = true, desc = "Save all and quit" })
 -- @keymap <leader>r: Reload Neovim configuration
 keymap("n", "<leader>r", function()
 	vim.cmd("source $MYVIMRC")
-end, opts)
+end, { noremap = true, silent = true, desc = "Reload config" })
 -- @keymap <leader>R: Full reload of all nvim config files
 keymap("n", "<leader>R", function()
 	for name, _ in pairs(package.loaded) do
@@ -69,7 +69,7 @@ keymap("n", "<leader>R", function()
 	vim.notify("Neovim config reloaded", vim.log.levels.INFO)
 end, { desc = "Full reload of Neovim config" })
 -- @keymap ZZ: Save all buffers and quit
-keymap("n", "ZZ", ":wa<CR>:q<CR>", opts)
+keymap("n", "ZZ", ":wa<CR>:q<CR>", { noremap = true, silent = true, desc = "Save all and quit" })
 
 -- ====================================================================================
 -- TERMINAL
@@ -77,86 +77,86 @@ keymap("n", "ZZ", ":wa<CR>:q<CR>", opts)
 -- @keymap <leader>u: Spawn a new managed terminal
 keymap({ "n", "t" }, "<leader>u", function()
 	SpawnTerminal()
-end, opts)
+end, { noremap = true, silent = true, desc = "Spawn terminal" })
 -- @keymap <leader>h: Close the current managed terminal
 keymap({ "n", "t" }, "<leader>h", function()
 	KillCurrentTerminal()
-end, opts)
+end, { noremap = true, silent = true, desc = "Kill terminal" })
 -- @keymap <leader>j: Toggle the focused managed terminal
 keymap({ "n", "t" }, "<leader>j", function()
 	ToggleTerminal()
-end, opts)
+end, { noremap = true, silent = true, desc = "Toggle terminal" })
 -- @keymap <leader><S-]>: Jump to next managed terminal
 keymap({ "n", "t" }, "<leader><S-]>", function()
 	CycleNextTerm()
-end, opts)
+end, { noremap = true, silent = true, desc = "Next terminal" })
 -- @keymap <leader><S-[>: Jump to previous managed terminal
 keymap({ "n", "t" }, "<leader><S-[>", function()
 	CyclePreviousTerm()
-end, opts)
+end, { noremap = true, silent = true, desc = "Previous terminal" })
 
 -- ====================================================================================
 -- NAVIGATION
 -- ====================================================================================
 -- @keymap n: Next search result and center screen
-keymap("n", "n", "nzzzv", opts)
+keymap("n", "n", "nzzzv", { noremap = true, silent = true, desc = "Next search result" })
 -- @keymap N: Previous search result and center screen
-keymap("n", "N", "Nzzzv", opts)
+keymap("n", "N", "Nzzzv", { noremap = true, silent = true, desc = "Previous search result" })
 -- @keymap <C-u>: Scroll up and center screen
-keymap("n", "<C-u>", "<C-u>zz", opts)
+keymap("n", "<C-u>", "<C-u>zz", { noremap = true, silent = true, desc = "Scroll up" })
 -- @keymap <C-d>: Scroll down and center screen
-keymap("n", "<C-d>", "<C-d>zz", opts)
+keymap("n", "<C-d>", "<C-d>zz", { noremap = true, silent = true, desc = "Scroll down" })
 -- @keymap <C-o>: Jump to older position and center screen
-keymap("n", "<C-o>", "<C-o>zz", opts)
+keymap("n", "<C-o>", "<C-o>zz", { noremap = true, silent = true, desc = "Jump back" })
 -- @keymap <C-i>: Jump to newer position and center screen
-keymap("n", "<C-i>", "<C-i>zz", opts)
+keymap("n", "<C-i>", "<C-i>zz", { noremap = true, silent = true, desc = "Jump forward" })
 
 -- @keymap s: Flash jump
 keymap({ "n", "x", "o" }, "s", function()
 	flash.jump()
-end, opts)
+end, { noremap = true, silent = true, desc = "Flash jump" })
 
 -- ====================================================================================
 -- CLIPBOARD OPERATIONS
 -- ====================================================================================
 -- @keymap <leader>y: Yank to system clipboard
-keymap({ "n", "v" }, "<leader>y", '"+y', opts)
+keymap({ "n", "v" }, "<leader>y", '"+y', { noremap = true, silent = true, desc = "Yank to clipboard" })
 
 -- @keymap <leader>py: Copy current file path to clipboard
-keymap("n", "<leader>py", ':let @" = expand("%:p")<CR>', opts)
+keymap("n", "<leader>py", ':let @" = expand("%:p")<CR>', { noremap = true, silent = true, desc = "Copy file path" })
 
 -- @keymap <leader>d: Delete to blackhole register
-keymap({ "n", "v" }, "<leader>d", '"_d', opts)
+keymap({ "n", "v" }, "<leader>d", '"_d', { noremap = true, silent = true, desc = "Delete (no clipboard)" })
 
 -- @keymap dd: Smart delete (uses blackhole register for empty lines)
 -- From: https://github.com/dmtrKovalenko/dotfiles
 keymap("n", "dd", function()
 	return utils.smart_delete("dd")
-end, { noremap = true, expr = true })
+end, { noremap = true, expr = true, desc = "Smart delete line" })
 
 -- @keymap <Esc>: Close floating windows
 keymap("n", "<Esc>", function()
 	utils.close_floating_wins()
 	vim.cmd("nohlsearch")
-end, opts)
+end, { noremap = true, silent = true, desc = "Close floats / clear search" })
 
 -- ====================================================================================
 -- GIT OPERATIONS
 -- ====================================================================================
 -- @keymap <leader>gs: Open Git status in new tab
-keymap("n", "<leader>gs", ":tab Git<cr>", opts)
+keymap("n", "<leader>gs", ":tab Git<cr>", { noremap = true, silent = true, desc = "Git status" })
 -- @keymap <F9>: Open Git mergetool in new tab
-keymap("n", "<F9>", ":tab Git mergetool<cr>", opts)
+keymap("n", "<F9>", ":tab Git mergetool<cr>", { noremap = true, silent = true, desc = "Git mergetool" })
 -- @keymap <leader>gg: Open LazyGit
-keymap("n", "<leader>lg", ":LazyGit<cr>", opts)
+keymap("n", "<leader>lg", ":LazyGit<cr>", { noremap = true, silent = true, desc = "LazyGit" })
 -- @keymap <leader>gD: VscDiff explorer (git status browser)
 keymap("n", "<leader>gD", function()
 	require("vscode-diff.commands").vscode_diff({ fargs = {} })
-end, opts)
+end, { noremap = true, silent = true, desc = "Diff explorer" })
 -- @keymap <leader>gH: VscDiff current file vs HEAD
 keymap("n", "<leader>gH", function()
 	require("vscode-diff.commands").vscode_diff({ fargs = { "file", "HEAD" } })
-end, opts)
+end, { noremap = true, silent = true, desc = "Diff file vs HEAD" })
 -- @keymap <leader>gr: VscDiff current file vs prompted revision
 keymap("n", "<leader>gr", function()
 	vim.ui.input({ prompt = "Diff against revision: ", default = "HEAD" }, function(rev)
@@ -164,7 +164,7 @@ keymap("n", "<leader>gr", function()
 			require("vscode-diff.commands").vscode_diff({ fargs = { "file", rev } })
 		end
 	end)
-end, opts)
+end, { noremap = true, silent = true, desc = "Diff file vs revision" })
 -- @keymap <leader>gf: VscDiff two files (prompted)
 keymap("n", "<leader>gf", function()
 	vim.ui.input({ prompt = "File A: ", completion = "file" }, function(a)
@@ -177,68 +177,88 @@ keymap("n", "<leader>gf", function()
 			end
 		end)
 	end)
-end, opts)
+end, { noremap = true, silent = true, desc = "Diff two files" })
 -- @keymap <leader>gd: Preview hunk inline
-keymap("n", "<leader>gd", ":Gitsigns preview_hunk_inline<cr>", opts)
+keymap(
+	"n",
+	"<leader>gd",
+	":Gitsigns preview_hunk_inline<cr>",
+	{ noremap = true, silent = true, desc = "Preview hunk inline" }
+)
 -- @keymap <leader>hs: Stage hunk (Gitsigns)
-keymap("n", "<leader>hs", ":Gitsigns stage_hunk<cr>", opts)
+keymap("n", "<leader>hs", ":Gitsigns stage_hunk<cr>", { noremap = true, silent = true, desc = "Stage hunk" })
 -- @keymap <leader>hr: Reset hunk (Gitsigns)
-keymap("n", "<leader>hr", ":Gitsigns reset_hunk<cr>", opts)
+keymap("n", "<leader>hr", ":Gitsigns reset_hunk<cr>", { noremap = true, silent = true, desc = "Reset hunk" })
 -- @keymap <leader>hp: Preview hunk (Gitsigns)
-keymap("n", "<leader>hp", ":Gitsigns preview_hunk<cr>", opts)
+keymap("n", "<leader>hp", ":Gitsigns preview_hunk<cr>", { noremap = true, silent = true, desc = "Preview hunk" })
 -- @keymap <leader>hb: Blame line (Gitsigns)
-keymap("n", "<leader>hb", ":Gitsigns blame_line<cr>", opts)
+keymap("n", "<leader>hb", ":Gitsigns blame_line<cr>", { noremap = true, silent = true, desc = "Blame line" })
 -- @keymap <leader>hn: Next hunk (Gitsigns)
-keymap("n", "<leader>hn", ":Gitsigns next_hunk<cr>", opts)
+keymap("n", "<leader>hn", ":Gitsigns next_hunk<cr>", { noremap = true, silent = true, desc = "Next hunk" })
 -- @keymap <leader>hN: Prev hunk (Gitsigns)
-keymap("n", "<leader>hN", ":Gitsigns prev_hunk<cr>", opts)
+keymap("n", "<leader>hN", ":Gitsigns prev_hunk<cr>", { noremap = true, silent = true, desc = "Prev hunk" })
 -- @keymap <leader>gs: Fugitive vertical diff split (current file vs index)
-keymap("n", "<leader>gs", ":Gvdiffsplit<cr>", opts)
+keymap("n", "<leader>gs", ":Gvdiffsplit<cr>", { noremap = true, silent = true, desc = "Diff split (index)" })
 -- @keymap <leader>gS: Fugitive diff split vs HEAD
-keymap("n", "<leader>gS", ":Gvdiffsplit HEAD<cr>", opts)
+keymap("n", "<leader>gS", ":Gvdiffsplit HEAD<cr>", { noremap = true, silent = true, desc = "Diff split vs HEAD" })
 
 -- ====================================================================================
 -- VISUAL MODE OPERATIONS
 -- ====================================================================================
 -- @keymap <: Decrease indent (visual mode)
-keymap("v", "<", "<gv", opts)
+keymap("v", "<", "<gv", { noremap = true, silent = true, desc = "Decrease indent" })
 -- @keymap >: Increase indent (visual mode)
-keymap("v", ">", ">gv", opts)
+keymap("v", ">", ">gv", { noremap = true, silent = true, desc = "Increase indent" })
 
 -- @keymap p: Paste without replacing clipboard (visual mode)
-keymap("v", "p", '"_dP', opts)
+keymap("v", "p", '"_dP', { noremap = true, silent = true, desc = "Paste (keep clipboard)" })
 
 -- @keymap K: Move selected text up (visual mode)
-keymap("x", "K", ":move '<-2<CR>gv-gv", opts)
+keymap("x", "K", ":move '<-2<CR>gv-gv", { noremap = true, silent = true, desc = "Move selection up" })
 -- @keymap J: Move selected text down (visual mode)
-keymap("x", "J", ":move '>+1<CR>gv-gv", opts)
+keymap("x", "J", ":move '>+1<CR>gv-gv", { noremap = true, silent = true, desc = "Move selection down" })
 
 -- ====================================================================================
 -- INSERT MODE OPERATIONS
 -- ====================================================================================
 -- @keymap -/_/,/./;/:/!/?: Add undo breakpoints after punctuation
 for _, lhs in ipairs({ "-", "_", ",", ".", ";", ":", "/", "!", "?" }) do
-	keymap("i", lhs, lhs .. "<c-g>u", opts)
+	keymap("i", lhs, lhs .. "<c-g>u", { noremap = true, silent = true, desc = "Undo breakpoint: " .. lhs })
 end
 
 -- @keymap jj: Exit insert mode
-keymap("i", "jj", "<Esc>", opts)
+keymap("i", "jj", "<Esc>", { noremap = true, silent = true, desc = "Exit insert mode" })
 
 -- ====================================================================================
 -- DIAGNOSTICS
 -- ====================================================================================
 -- @keymap <leader>xx: Open diagnostics (Trouble)
-keymap("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", opts)
+keymap(
+	"n",
+	"<leader>xx",
+	"<cmd>Trouble diagnostics toggle<cr>",
+	{ noremap = true, silent = true, desc = "Diagnostics" }
+)
 -- @keymap <leader>xX: Toggle Trouble
-keymap("n", "<leader>xX", "<cmd>Trouble toggle<cr>", opts)
+keymap("n", "<leader>xX", "<cmd>Trouble toggle<cr>", { noremap = true, silent = true, desc = "Toggle Trouble" })
 -- @keymap <leader>cs: Open symbols (Trouble)
-keymap("n", "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>", opts)
+keymap(
+	"n",
+	"<leader>cs",
+	"<cmd>Trouble symbols toggle focus=false<cr>",
+	{ noremap = true, silent = true, desc = "Symbols" }
+)
 -- @keymap <leader>cl: Open LSP references/defs (Trouble)
-keymap("n", "<leader>cl", "<cmd>Trouble lsp toggle focus=false win.position=right<cr>", opts)
+keymap(
+	"n",
+	"<leader>cl",
+	"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+	{ noremap = true, silent = true, desc = "LSP refs/defs" }
+)
 -- @keymap <leader>xq: Open quickfix (Trouble)
-keymap("n", "<leader>xq", "<cmd>Trouble qflist toggle<cr>", opts)
+keymap("n", "<leader>xq", "<cmd>Trouble qflist toggle<cr>", { noremap = true, silent = true, desc = "Quickfix list" })
 -- @keymap <leader>xl: Open loclist (Trouble)
-keymap("n", "<leader>xl", "<cmd>Trouble loclist toggle<cr>", opts)
+keymap("n", "<leader>xl", "<cmd>Trouble loclist toggle<cr>", { noremap = true, silent = true, desc = "Location list" })
 -- @keymap ]d: Go to next diagnostic
 keymap("n", "]d", vim.diagnostic.goto_next, { desc = "Next Diagnostic" })
 -- @keymap [d: Go to previous diagnostic
@@ -284,33 +304,33 @@ keymap("n", "<leader>-", function()
 end, { desc = "Oil: open two dirs side by side" })
 
 -- @keymap <leader>S: Open Search/Replace (GrugFar)
-keymap("n", "<leader>S", ":GrugFar<cr>", opts)
+keymap("n", "<leader>S", ":GrugFar<cr>", { noremap = true, silent = true, desc = "Search & replace" })
 
 -- @keymap <leader>oo: Navigate to related file (other.nvim)
-keymap("n", "<leader>oo", ":Other<cr>", opts)
+keymap("n", "<leader>oo", ":Other<cr>", { noremap = true, silent = true, desc = "Related file" })
 -- @keymap <leader>ov: Navigate to related file in vertical split
-keymap("n", "<leader>ov", ":OtherVSplit<cr>", opts)
+keymap("n", "<leader>ov", ":OtherVSplit<cr>", { noremap = true, silent = true, desc = "Related file (vsplit)" })
 -- @keymap <leader>os: Navigate to related file in horizontal split
-keymap("n", "<leader>os", ":OtherSplit<cr>", opts)
+keymap("n", "<leader>os", ":OtherSplit<cr>", { noremap = true, silent = true, desc = "Related file (split)" })
 
 -- @keymap gco: Generate code annotation (neogen)
-keymap("n", "gco", ":Neogen<cr>", opts)
+keymap("n", "gco", ":Neogen<cr>", { noremap = true, silent = true, desc = "Generate annotation" })
 
 -- @keymap <leader>st: Toggle treesitter split/join
 -- Treesitter-based split/join helper for code structures.
 -- From: https://github.com/wansmer/treesj
 local treesj = require("treesj")
 treesj.setup({ use_default_keymaps = false })
-keymap("n", "<leader>st", treesj.toggle, opts)
+keymap("n", "<leader>st", treesj.toggle, { noremap = true, silent = true, desc = "Split/join toggle" })
 
 -- ====================================================================================
 -- NVIMTREE
 -- ====================================================================================
 -- @keymap <leader>b: Toggle file tree (nvim-tree)
-keymap("n", "<leader>b", ":NvimTreeToggle<CR>", opts)
+keymap("n", "<leader>b", ":NvimTreeToggle<CR>", { noremap = true, silent = true, desc = "File tree" })
 
 -- @keymap <leader>sk: Toggle Sidekick CLI (per docs)
-keymap("n", "<leader>sk", ":Sidekick cli toggle<CR>", opts)
+keymap("n", "<leader>sk", ":Sidekick cli toggle<CR>", { noremap = true, silent = true, desc = "Sidekick CLI" })
 
 -- ====================================================================================
 -- SIDEKICK
@@ -329,35 +349,35 @@ end, { desc = "Sidekick Toggle" })
 -- @keymap <leader>aa: Toggle Sidekick CLI window (alternate)
 keymap("n", "<leader>aa", function()
 	require("sidekick.cli").toggle()
-end, opts)
+end, { noremap = true, silent = true, desc = "Sidekick toggle" })
 -- @keymap <leader>as: Select a CLI tool
 keymap("n", "<leader>as", function()
 	require("sidekick.cli").select()
-end, opts)
+end, { noremap = true, silent = true, desc = "Sidekick select tool" })
 -- @keymap <leader>ad: Close detached CLI
 keymap("n", "<leader>ad", function()
 	require("sidekick.cli").close()
-end, opts)
+end, { noremap = true, silent = true, desc = "Sidekick close" })
 -- @keymap <leader>at: Send current context, per docs
 keymap({ "n", "x" }, "<leader>at", function()
 	require("sidekick.cli").send({ msg = "{this}" })
-end, opts)
+end, { noremap = true, silent = true, desc = "Sidekick send context" })
 -- @keymap <leader>af: Send entire buffer
 keymap("n", "<leader>af", function()
 	require("sidekick.cli").send({ msg = "{file}" })
-end, opts)
+end, { noremap = true, silent = true, desc = "Sidekick send file" })
 -- @keymap <leader>av: Send selection
 keymap("x", "<leader>av", function()
 	require("sidekick.cli").send({ msg = "{selection}" })
-end, opts)
+end, { noremap = true, silent = true, desc = "Sidekick send selection" })
 -- @keymap <leader>ap: Open Sidekick prompt/command picker
 keymap({ "n", "x" }, "<leader>ap", function()
 	require("sidekick.cli").prompt()
-end, opts)
+end, { noremap = true, silent = true, desc = "Sidekick prompt picker" })
 -- @keymap <leader>ac: Toggle Claude session and focus it
 keymap("n", "<leader>ac", function()
 	require("sidekick.cli").toggle({ name = "claude", focus = true })
-end, opts)
+end, { noremap = true, silent = true, desc = "Sidekick Claude" })
 
 -- ====================================================================================
 -- WHICH-KEY GROUPS
