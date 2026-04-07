@@ -215,8 +215,12 @@ describe("utils", function()
 			-- is_ssh checks non-nil, empty string is still non-nil
 			-- just verify it returns boolean
 			assert.is_boolean(utils.is_ssh())
-			if old_client then vim.fn.setenv("SSH_CLIENT", old_client) end
-			if old_tty then vim.fn.setenv("SSH_TTY", old_tty) end
+			if old_client then
+				vim.fn.setenv("SSH_CLIENT", old_client)
+			end
+			if old_tty then
+				vim.fn.setenv("SSH_TTY", old_tty)
+			end
 		end)
 	end)
 

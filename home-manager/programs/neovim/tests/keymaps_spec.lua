@@ -137,7 +137,9 @@ describe("keymaps", function()
 			end, opts)
 			vim.keymap.set("n", "<leader>gf_test", function()
 				vim.ui.input({ prompt = "File A: ", completion = "file" }, function(a)
-					if not a or a == "" then return end
+					if not a or a == "" then
+						return
+					end
 					vim.ui.input({ prompt = "File B: ", completion = "file" }, function(b)
 						if b and b ~= "" then
 							require("vscode-diff.commands").vscode_diff({ fargs = { "file", a, b } })
@@ -288,9 +290,13 @@ describe("keymaps", function()
 		before_each(function()
 			vim.keymap.set("n", "<leader>-_test", function()
 				vim.ui.input({ prompt = "Dir A: ", default = vim.fn.expand("%:p:h"), completion = "dir" }, function(a)
-					if not a or a == "" then return end
+					if not a or a == "" then
+						return
+					end
 					vim.ui.input({ prompt = "Dir B: ", completion = "dir" }, function(b)
-						if not b or b == "" then return end
+						if not b or b == "" then
+							return
+						end
 						vim.cmd("vsplit")
 						vim.cmd("wincmd h")
 						require("oil").open(a)

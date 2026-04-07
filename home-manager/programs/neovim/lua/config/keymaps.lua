@@ -158,7 +158,9 @@ end, opts)
 -- @keymap <leader>gf: VscDiff two files (prompted)
 keymap("n", "<leader>gf", function()
 	vim.ui.input({ prompt = "File A: ", completion = "file" }, function(a)
-		if not a or a == "" then return end
+		if not a or a == "" then
+			return
+		end
 		vim.ui.input({ prompt = "File B: ", completion = "file" }, function(b)
 			if b and b ~= "" then
 				require("vscode-diff.commands").vscode_diff({ fargs = { "file", a, b } })
@@ -255,9 +257,13 @@ keymap("n", "-", "<CMD>Oil<CR>", { desc = "Open Parent Directory" })
 -- @keymap <leader>-: Oil split - open two dirs side by side (prompted)
 keymap("n", "<leader>-", function()
 	vim.ui.input({ prompt = "Dir A: ", default = vim.fn.expand("%:p:h"), completion = "dir" }, function(a)
-		if not a or a == "" then return end
+		if not a or a == "" then
+			return
+		end
 		vim.ui.input({ prompt = "Dir B: ", completion = "dir" }, function(b)
-			if not b or b == "" then return end
+			if not b or b == "" then
+				return
+			end
 			vim.cmd("vsplit")
 			vim.cmd("wincmd h")
 			require("oil").open(a)

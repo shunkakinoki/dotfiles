@@ -62,9 +62,15 @@ describe("terminal globals pattern", function()
 		return {
 			count = id,
 			_open = false,
-			is_open = function(self) return self._open end,
-			open = function(self) self._open = true end,
-			close = function(self) self._open = false end,
+			is_open = function(self)
+				return self._open
+			end,
+			open = function(self)
+				self._open = true
+			end,
+			close = function(self)
+				self._open = false
+			end,
 		}
 	end
 
@@ -78,21 +84,29 @@ describe("terminal globals pattern", function()
 
 	local function index_of(count)
 		for idx, value in ipairs(term_sequence) do
-			if value == count then return idx end
+			if value == count then
+				return idx
+			end
 		end
 	end
 
 	local function close_other_terms(except_id)
 		for id, term in pairs(terms) do
-			if id ~= except_id and term:is_open() then term:close() end
+			if id ~= except_id and term:is_open() then
+				term:close()
+			end
 		end
 	end
 
 	local function show_term(id)
 		local term = terms[id]
-		if not term then return end
+		if not term then
+			return
+		end
 		close_other_terms(id)
-		if not term:is_open() then term:open() end
+		if not term:is_open() then
+			term:open()
+		end
 		current_index = index_of(id) or 0
 	end
 
