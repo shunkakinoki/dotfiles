@@ -373,3 +373,58 @@ wk.add({
 	{ "<leader>c", group = "Code" },
 	{ "<leader>h", group = "Hunk (Git)" },
 })
+
+-- ====================================================================================
+-- PLUGIN BINARY INSTALL
+-- ====================================================================================
+-- :NvimPluginsInstall — download/build all plugins that require native binaries.
+-- Covers: fff.nvim (Rust .so), telescope-fzf-native (C make), vscode-diff (C build.sh)
+vim.api.nvim_create_user_command("NvimPluginsInstall", function()
+	-- fff.nvim
+	local ok_fff, fff_dl = pcall(require, "fff.download")
+	if ok_fff then
+		fff_dl.download_or_build_binary()
+	else
+		vim.notify("fff.nvim not loaded, skipping", vim.log.levels.WARN)
+	end
+
+	-- telescope-fzf-native: run make in plugin dir
+	local fzf_dir = vim.fn.globpath(vim.o.packpath, "*/opt/telescope-fzf-native.nvim", 0, 1)[1]
+		or vim.fn.globpath(vim.o.packpath, "*/start/telescope-fzf-native.nvim", 0, 1)[1]
+	if fzf_dir and fzf_dir ~= "" then
+		if vim.fn.filereadable(fzf_dir .. "/build/libfzf.so") == 0 then
+			vim.notify("Building telescope-fzf-native.nvim...", vim.log.levels.INFO)
+			vim.system({ "make", "-C", fzf_dir, "clean", "all" }, {}, function(res)
+				if res.code == 0 then
+					vim.schedule(function()
+						vim.notify("telescope-fzf-native.nvim built successfully", vim.log.levels.INFO)
+					end)
+				else
+					vim.schedule(function()
+						vim.notify("telescope-fzf-native build failed: " .. (res.stderr or ""), vim.log.levels.ERROR)
+					end)
+				end
+			end)
+		end
+	end
+
+	-- vscode-diff.nvim: run build.sh in plugin dir
+	local vsd_dir = vim.fn.globpath(vim.o.packpath, "*/opt/vscode-diff.nvim", 0, 1)[1]
+		or vim.fn.globpath(vim.o.packpath, "*/start/vscode-diff.nvim", 0, 1)[1]
+	if vsd_dir and vsd_dir ~= "" then
+		if vim.fn.empty(vim.fn.glob(vsd_dir .. "/libvscode_diff*.so")) == 1 then
+			vim.notify("Building vscode-diff.nvim...", vim.log.levels.INFO)
+			vim.system({ "bash", vsd_dir .. "/build.sh" }, { cwd = vsd_dir }, function(res)
+				if res.code == 0 then
+					vim.schedule(function()
+						vim.notify("vscode-diff.nvim built successfully", vim.log.levels.INFO)
+					end)
+				else
+					vim.schedule(function()
+						vim.notify("vscode-diff build failed: " .. (res.stderr or ""), vim.log.levels.ERROR)
+					end)
+				end
+			end)
+		end
+	end
+end, { desc = "Download/build all Neovim plugins that require native binaries" })

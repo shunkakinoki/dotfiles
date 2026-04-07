@@ -26,6 +26,8 @@ local plenary_paths = {
 	vim.fn.stdpath("data") .. "/site/pack/plugins/opt/plenary.nvim",
 	vim.fn.expand("~/.local/share/nvim/site/pack/plugins/start/plenary.nvim"),
 	vim.fn.expand("~/.local/share/nvim/site/pack/plugins/opt/plenary.nvim"),
+	vim.fn.expand("~/.local/share/nvim/site/pack/core/start/plenary.nvim"),
+	vim.fn.expand("~/.local/share/nvim/site/pack/core/opt/plenary.nvim"),
 	-- CI/test environment paths
 	"/tmp/plenary.nvim",
 	tests_dir .. "/plenary.nvim",
@@ -34,6 +36,8 @@ local plenary_paths = {
 for _, path in ipairs(plenary_paths) do
 	if vim.fn.isdirectory(path) == 1 then
 		vim.opt.runtimepath:append(path)
+		package.path = package.path .. ";" .. path .. "/lua/?.lua"
+		package.path = package.path .. ";" .. path .. "/lua/?/init.lua"
 		break
 	end
 end

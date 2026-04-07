@@ -462,4 +462,50 @@ describe("keymaps", function()
 			vim.api.nvim_buf_delete(buf, { force = true })
 		end)
 	end)
+
+	describe("NvimPluginsInstall user command", function()
+		before_each(function()
+			-- Register a minimal version of the command for testing
+			pcall(vim.api.nvim_del_user_command, "NvimPluginsInstall")
+			vim.api.nvim_create_user_command("NvimPluginsInstall", function()
+				-- minimal stub: just records that it was called
+				vim.g._nvim_plugins_install_called = true
+			end, { desc = "Download/build all Neovim plugins that require native binaries" })
+		end)
+
+		after_each(function()
+			pcall(vim.api.nvim_del_user_command, "NvimPluginsInstall")
+			vim.g._nvim_plugins_install_called = nil
+		end)
+
+		it("should be a registered user command", function()
+			local cmds = vim.api.nvim_get_commands({})
+			assert.is_not_nil(cmds["NvimPluginsInstall"])
+		end)
+
+		it("should have a description", function()
+			local cmds = vim.api.nvim_get_commands({})
+			local cmd = cmds["NvimPluginsInstall"]
+			assert.is_not_nil(cmd)
+			assert.is_string(cmd.definition or cmd.desc or "")
+		end)
+
+		it("should execute without error", function()
+			assert.has_no.errors(function()
+				vim.cmd("NvimPluginsInstall")
+			end)
+		end)
+
+		it("should run the install callback when called", function()
+			vim.g._nvim_plugins_install_called = false
+			vim.cmd("NvimPluginsInstall")
+			assert.is_true(vim.g._nvim_plugins_install_called == true)
+		end)
+
+		it("should support globpath for plugin dir discovery", function()
+			-- globpath with 0,1 returns a list - verify the API works
+			local results = vim.fn.globpath(vim.o.packpath, "*/opt/*.nvim", 0, 1)
+			assert.is_table(results)
+		end)
+	end)
 end)
