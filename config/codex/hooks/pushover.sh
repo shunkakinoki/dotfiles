@@ -12,11 +12,11 @@ if [[ -z $pushover ]] && [[ -x "$HOME/.local/scripts/pushover-notify" ]]; then
 fi
 [[ -z $pushover ]] && exit 0
 
-# Skip notifications only for pure timer-driven Paperclip heartbeats.
-# PAPERCLIP_RUN_ID is set for every adapter run, but TASK_ID / WAKE_REASON
-# are only set when the wake came from an explicit trigger. A bare heartbeat
-# has RUN_ID with no TASK_ID and no WAKE_REASON -- silence that case only.
-if [[ -n ${PAPERCLIP_RUN_ID:-} ]] && [[ -z ${PAPERCLIP_TASK_ID:-} ]] && [[ -z ${PAPERCLIP_WAKE_REASON:-} ]]; then
+# Skip notifications for any Paperclip-spawned adapter run (heartbeat ticks,
+# cron routines, assignment wakes, etc.). PAPERCLIP_RUN_ID is injected by
+# paperclip on every adapter invocation and is never set for interactive
+# Codex sessions.
+if [[ -n ${PAPERCLIP_RUN_ID:-} ]]; then
   exit 0
 fi
 
