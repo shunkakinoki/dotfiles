@@ -139,9 +139,32 @@ keymap("n", "<leader>gs", ":tab Git<cr>", opts)
 keymap("n", "<F9>", ":tab Git mergetool<cr>", opts)
 -- @keymap <leader>gg: Open LazyGit
 keymap("n", "<leader>lg", ":LazyGit<cr>", opts)
--- @keymap <leader>gD: Open VS Code style diff
+-- @keymap <leader>gD: VscDiff explorer (git status browser)
 keymap("n", "<leader>gD", function()
-	require("vscode-diff").diff()
+	require("vscode-diff.commands").vscode_diff({ fargs = {} })
+end, opts)
+-- @keymap <leader>gH: VscDiff current file vs HEAD
+keymap("n", "<leader>gH", function()
+	require("vscode-diff.commands").vscode_diff({ fargs = { "file", "HEAD" } })
+end, opts)
+-- @keymap <leader>gr: VscDiff current file vs prompted revision
+keymap("n", "<leader>gr", function()
+	vim.ui.input({ prompt = "Diff against revision: ", default = "HEAD" }, function(rev)
+		if rev and rev ~= "" then
+			require("vscode-diff.commands").vscode_diff({ fargs = { "file", rev } })
+		end
+	end)
+end, opts)
+-- @keymap <leader>gf: VscDiff two files (prompted)
+keymap("n", "<leader>gf", function()
+	vim.ui.input({ prompt = "File A: ", completion = "file" }, function(a)
+		if not a or a == "" then return end
+		vim.ui.input({ prompt = "File B: ", completion = "file" }, function(b)
+			if b and b ~= "" then
+				require("vscode-diff.commands").vscode_diff({ fargs = { "file", a, b } })
+			end
+		end)
+	end)
 end, opts)
 -- @keymap <leader>gd: Preview hunk inline
 keymap("n", "<leader>gd", ":Gitsigns preview_hunk_inline<cr>", opts)
@@ -153,6 +176,14 @@ keymap("n", "<leader>hr", ":Gitsigns reset_hunk<cr>", opts)
 keymap("n", "<leader>hp", ":Gitsigns preview_hunk<cr>", opts)
 -- @keymap <leader>hb: Blame line (Gitsigns)
 keymap("n", "<leader>hb", ":Gitsigns blame_line<cr>", opts)
+-- @keymap <leader>hn: Next hunk (Gitsigns)
+keymap("n", "<leader>hn", ":Gitsigns next_hunk<cr>", opts)
+-- @keymap <leader>hN: Prev hunk (Gitsigns)
+keymap("n", "<leader>hN", ":Gitsigns prev_hunk<cr>", opts)
+-- @keymap <leader>gs: Fugitive vertical diff split (current file vs index)
+keymap("n", "<leader>gs", ":Gvdiffsplit<cr>", opts)
+-- @keymap <leader>gS: Fugitive diff split vs HEAD
+keymap("n", "<leader>gS", ":Gvdiffsplit HEAD<cr>", opts)
 
 -- ====================================================================================
 -- VISUAL MODE OPERATIONS
@@ -221,6 +252,20 @@ end, { desc = "FFF File Picker" })
 -- ====================================================================================
 -- @keymap -: Open parent directory (Oil)
 keymap("n", "-", "<CMD>Oil<CR>", { desc = "Open Parent Directory" })
+-- @keymap <leader>-: Oil split - open two dirs side by side (prompted)
+keymap("n", "<leader>-", function()
+	vim.ui.input({ prompt = "Dir A: ", default = vim.fn.expand("%:p:h"), completion = "dir" }, function(a)
+		if not a or a == "" then return end
+		vim.ui.input({ prompt = "Dir B: ", completion = "dir" }, function(b)
+			if not b or b == "" then return end
+			vim.cmd("vsplit")
+			vim.cmd("wincmd h")
+			require("oil").open(a)
+			vim.cmd("wincmd l")
+			require("oil").open(b)
+		end)
+	end)
+end, { desc = "Oil: open two dirs side by side" })
 
 -- @keymap <leader>S: Open Search/Replace (GrugFar)
 keymap("n", "<leader>S", ":GrugFar<cr>", opts)
