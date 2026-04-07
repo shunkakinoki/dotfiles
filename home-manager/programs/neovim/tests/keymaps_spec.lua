@@ -371,25 +371,28 @@ describe("keymaps", function()
 		end)
 	end)
 
-	describe("nix switch keymap", function()
+	describe("full config reload keymap", function()
 		before_each(function()
 			vim.keymap.set("n", "<leader>R_test", function()
-				local dotfiles = vim.fn.expand("~/dotfiles")
-				local cmd = "cd " .. dotfiles .. " && make switch"
-				assert.is_string(cmd)
-			end, { desc = "Rebuild and switch Nix config" })
+				for name, _ in pairs(package.loaded) do
+					if name:match("^config%.") then
+						package.loaded[name] = nil
+					end
+				end
+				vim.cmd("source $MYVIMRC")
+			end, { desc = "Full reload of Neovim config" })
 		end)
 
 		after_each(function()
 			pcall(vim.keymap.del, "n", "<leader>R_test")
 		end)
 
-		it("should register nix switch keymap", function()
+		it("should register full reload keymap", function()
 			local km = vim.fn.maparg("<leader>R_test", "n")
 			assert.is_true(km ~= "")
 		end)
 
-		it("nix switch keymap should have a function callback", function()
+		it("should have a function callback", function()
 			local keymaps = vim.api.nvim_get_keymap("n")
 			for _, km in ipairs(keymaps) do
 				if km.lhs:match("R_test") then
@@ -400,16 +403,15 @@ describe("keymaps", function()
 			assert.is_true(false, "keymap not found")
 		end)
 
-		it("should resolve dotfiles path", function()
-			local dotfiles = vim.fn.expand("~/dotfiles")
-			assert.is_string(dotfiles)
-			assert.is_true(#dotfiles > 0)
-		end)
-
-		it("should build correct make switch command", function()
-			local dotfiles = vim.fn.expand("~/dotfiles")
-			local cmd = "cd " .. dotfiles .. " && make switch"
-			assert.is_true(cmd:match("make switch") ~= nil)
+		it("config module unloading pattern should work", function()
+			-- Verify we can unload config.* modules
+			package.loaded["config.test_fake"] = {}
+			for name, _ in pairs(package.loaded) do
+				if name:match("^config%.") then
+					package.loaded[name] = nil
+				end
+			end
+			assert.is_nil(package.loaded["config.test_fake"])
 		end)
 	end)
 
