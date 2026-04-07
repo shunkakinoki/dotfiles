@@ -377,10 +377,11 @@ wk.add({
 -- ====================================================================================
 -- PLUGIN BINARY INSTALL
 -- ====================================================================================
--- :NvimPluginsInstall — download/build all plugins that require native binaries.
--- Covers: fff.nvim (Rust .so), telescope-fzf-native (C make), vscode-diff (C build.sh)
+-- :NvimPluginsInstall — download/build all plugins that require native binaries,
+-- then install all treesitter parsers.
+-- Covers: fff.nvim, blink.cmp, telescope-fzf-native, vscode-diff, nvim-treesitter
 vim.api.nvim_create_user_command("NvimPluginsInstall", function()
-	-- fff.nvim
+	-- fff.nvim (Rust .so — has built-in downloader)
 	local ok_fff, fff_dl = pcall(require, "fff.download")
 	if ok_fff then
 		fff_dl.download_or_build_binary()
@@ -388,7 +389,56 @@ vim.api.nvim_create_user_command("NvimPluginsInstall", function()
 		vim.notify("fff.nvim not loaded, skipping", vim.log.levels.WARN)
 	end
 
-	-- telescope-fzf-native: run make in plugin dir
+	-- blink.cmp (Rust .so — download from GitHub releases by git tag)
+	local blink_dir = vim.fn.globpath(vim.o.packpath, "*/opt/blink.cmp", 0, 1)[1]
+		or vim.fn.globpath(vim.o.packpath, "*/start/blink.cmp", 0, 1)[1]
+	if blink_dir and blink_dir ~= "" then
+		local blink_bin = blink_dir .. "/target/release/libblink_cmp_fuzzy.so"
+		if vim.fn.filereadable(blink_bin) == 0 then
+			vim.system({ "git", "-C", blink_dir, "describe", "--tags", "--exact-match", "HEAD" }, {}, function(tag_res)
+				local tag = tag_res.stdout and tag_res.stdout:gsub("%s+", "") or ""
+				if tag == "" then
+					vim.schedule(function()
+						vim.notify("blink.cmp: not on a git tag, skipping prebuilt download", vim.log.levels.WARN)
+					end)
+					return
+				end
+				local libc = "gnu"
+				local cc_res = vim.system({ "cc", "-dumpmachine" }, { text = true }):wait()
+				if cc_res.code == 0 then
+					local parts = vim.split(cc_res.stdout:gsub("%s+", ""), "-")
+					local last = parts[#parts]
+					if last == "musl" or last == "gnu" then
+						libc = last
+					end
+				end
+				local arch = jit.arch:lower():match("x64") and "x86_64" or "aarch64"
+				local triple = arch .. "-unknown-linux-" .. libc
+				local url = "https://github.com/saghen/blink.cmp/releases/download/" .. tag .. "/" .. triple .. ".so"
+				vim.schedule(function()
+					vim.notify("Downloading blink.cmp binary (" .. tag .. ")...", vim.log.levels.INFO)
+				end)
+				vim.fn.mkdir(blink_dir .. "/target/release", "p")
+				vim.system(
+					{ "curl", "--fail", "--location", "--silent", "--show-error", "-o", blink_bin, url },
+					{},
+					function(dl)
+						if dl.code == 0 then
+							vim.schedule(function()
+								vim.notify("blink.cmp binary downloaded successfully", vim.log.levels.INFO)
+							end)
+						else
+							vim.schedule(function()
+								vim.notify("blink.cmp download failed: " .. (dl.stderr or ""), vim.log.levels.ERROR)
+							end)
+						end
+					end
+				)
+			end)
+		end
+	end
+
+	-- telescope-fzf-native (C, make)
 	local fzf_dir = vim.fn.globpath(vim.o.packpath, "*/opt/telescope-fzf-native.nvim", 0, 1)[1]
 		or vim.fn.globpath(vim.o.packpath, "*/start/telescope-fzf-native.nvim", 0, 1)[1]
 	if fzf_dir and fzf_dir ~= "" then
@@ -408,7 +458,7 @@ vim.api.nvim_create_user_command("NvimPluginsInstall", function()
 		end
 	end
 
-	-- vscode-diff.nvim: run build.sh in plugin dir
+	-- vscode-diff.nvim (C, build.sh)
 	local vsd_dir = vim.fn.globpath(vim.o.packpath, "*/opt/vscode-diff.nvim", 0, 1)[1]
 		or vim.fn.globpath(vim.o.packpath, "*/start/vscode-diff.nvim", 0, 1)[1]
 	if vsd_dir and vsd_dir ~= "" then
@@ -427,4 +477,13 @@ vim.api.nvim_create_user_command("NvimPluginsInstall", function()
 			end)
 		end
 	end
-end, { desc = "Download/build all Neovim plugins that require native binaries" })
+
+	-- nvim-treesitter: install all parsers (async, shows progress in status line)
+	local ok_ts = pcall(require, "nvim-treesitter")
+	if ok_ts then
+		vim.notify("Installing all treesitter parsers (this may take a while)...", vim.log.levels.INFO)
+		vim.cmd("TSInstall all")
+	else
+		vim.notify("nvim-treesitter not loaded, skipping TSInstall", vim.log.levels.WARN)
+	end
+end, { desc = "Download/build all Neovim plugins that require native binaries + TSInstall all" })
