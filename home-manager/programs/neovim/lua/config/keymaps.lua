@@ -58,6 +58,21 @@ keymap("n", "<leader>W", ":wall | qall<CR>", opts)
 keymap("n", "<leader>r", function()
 	vim.cmd("source $MYVIMRC")
 end, opts)
+-- @keymap <leader>R: Rebuild and switch Nix config (make switch in dotfiles dir)
+keymap("n", "<leader>R", function()
+	local dotfiles = vim.fn.expand("~/dotfiles")
+	local cmd = "cd " .. dotfiles .. " && make switch"
+	require("toggleterm.terminal").Terminal
+		:new({
+			cmd = cmd,
+			direction = "horizontal",
+			close_on_exit = false,
+			on_open = function()
+				vim.cmd("startinsert!")
+			end,
+		})
+		:toggle()
+end, { desc = "Rebuild and switch Nix config" })
 -- @keymap ZZ: Save all buffers and quit
 keymap("n", "ZZ", ":wa<CR>:q<CR>", opts)
 

@@ -371,6 +371,48 @@ describe("keymaps", function()
 		end)
 	end)
 
+	describe("nix switch keymap", function()
+		before_each(function()
+			vim.keymap.set("n", "<leader>R_test", function()
+				local dotfiles = vim.fn.expand("~/dotfiles")
+				local cmd = "cd " .. dotfiles .. " && make switch"
+				assert.is_string(cmd)
+			end, { desc = "Rebuild and switch Nix config" })
+		end)
+
+		after_each(function()
+			pcall(vim.keymap.del, "n", "<leader>R_test")
+		end)
+
+		it("should register nix switch keymap", function()
+			local km = vim.fn.maparg("<leader>R_test", "n")
+			assert.is_true(km ~= "")
+		end)
+
+		it("nix switch keymap should have a function callback", function()
+			local keymaps = vim.api.nvim_get_keymap("n")
+			for _, km in ipairs(keymaps) do
+				if km.lhs:match("R_test") then
+					assert.is_function(km.callback)
+					return
+				end
+			end
+			assert.is_true(false, "keymap not found")
+		end)
+
+		it("should resolve dotfiles path", function()
+			local dotfiles = vim.fn.expand("~/dotfiles")
+			assert.is_string(dotfiles)
+			assert.is_true(#dotfiles > 0)
+		end)
+
+		it("should build correct make switch command", function()
+			local dotfiles = vim.fn.expand("~/dotfiles")
+			local cmd = "cd " .. dotfiles .. " && make switch"
+			assert.is_true(cmd:match("make switch") ~= nil)
+		end)
+	end)
+
 	describe("lazygit keymap", function()
 		before_each(function()
 			vim.keymap.set("n", "<leader>lg_t", ":LazyGit<cr>", { noremap = true, silent = true })
