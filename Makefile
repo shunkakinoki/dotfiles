@@ -246,6 +246,9 @@ rtk-rewrite-sync: ## Sync rtk-rewrite.sh from upstream rtk repo.
 .PHONY: update
 update: nix-update neovim-update gitalias-update llm-update overlays-update  ## Update Nix flake, overlays, Neovim plugins, LLM configs, gitalias, and bun deps
 
+.PHONY: update-lock
+update-lock: nix-flake-update bun-update cargo-update ## Update lock files for Nix flake, bun, and Cargo.
+
 .PHONY: bun-update
 bun-update: ## Update bun dependencies to latest and regenerate lock file.
 	@echo "📦 Updating bun dependencies..."
@@ -253,6 +256,12 @@ bun-update: ## Update bun dependencies to latest and regenerate lock file.
 	@git checkout bun.lock
 	@bun install
 	@echo "✅ bun dependencies updated"
+
+.PHONY: cargo-update
+cargo-update: ## Update Rust dependencies to latest and regenerate lock file.
+	@echo "🦀 Updating Cargo dependencies..."
+	@cargo +nightly update --breaking -Z unstable-options
+	@echo "✅ Cargo dependencies updated"
 
 .PHONY: gitalias-update
 gitalias-update: ## Download latest gitalias.txt from upstream.
