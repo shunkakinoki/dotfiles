@@ -19,6 +19,14 @@ if [[ -n ${PUSHOVER_API_TOKEN:-} ]] && [[ -n ${PUSHOVER_USER_KEY:-} ]]; then
   exit 0
 fi
 
+# Skip notifications only for pure timer-driven Paperclip heartbeats.
+# PAPERCLIP_RUN_ID is set for every adapter run, but TASK_ID / WAKE_REASON
+# are only set when the wake came from an explicit trigger. A bare heartbeat
+# has RUN_ID with no TASK_ID and no WAKE_REASON -- silence that case only.
+if [[ -n ${PAPERCLIP_RUN_ID:-} ]] && [[ -z ${PAPERCLIP_TASK_ID:-} ]] && [[ -z ${PAPERCLIP_WAKE_REASON:-} ]]; then
+  exit 0
+fi
+
 input=$(cat)
 
 notify() {

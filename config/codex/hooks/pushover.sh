@@ -12,6 +12,14 @@ if [[ -z $pushover ]] && [[ -x "$HOME/.local/scripts/pushover-notify" ]]; then
 fi
 [[ -z $pushover ]] && exit 0
 
+# Skip notifications only for pure timer-driven Paperclip heartbeats.
+# PAPERCLIP_RUN_ID is set for every adapter run, but TASK_ID / WAKE_REASON
+# are only set when the wake came from an explicit trigger. A bare heartbeat
+# has RUN_ID with no TASK_ID and no WAKE_REASON -- silence that case only.
+if [[ -n ${PAPERCLIP_RUN_ID:-} ]] && [[ -z ${PAPERCLIP_TASK_ID:-} ]] && [[ -z ${PAPERCLIP_WAKE_REASON:-} ]]; then
+  exit 0
+fi
+
 HOSTNAME=$(scutil --get ComputerName 2>/dev/null || hostname -s 2>/dev/null || echo "unknown")
 CWD=$(echo "$input" | jq -r '.cwd // empty' | sed "s|$HOME|~|")
 

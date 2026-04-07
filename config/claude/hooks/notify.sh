@@ -18,6 +18,16 @@ if [ -n "$PUSHOVER_API_TOKEN" ] && [ -n "$PUSHOVER_USER_KEY" ]; then
   exit 0
 fi
 
+# Skip notifications only for pure timer-driven Paperclip heartbeats.
+# Paperclip sets PAPERCLIP_RUN_ID for every adapter run, but PAPERCLIP_TASK_ID
+# and PAPERCLIP_WAKE_REASON are only set when the wake came from an explicit
+# trigger (issue_assigned, issue_comment_mentioned, approval_approved, etc.).
+# A bare heartbeat tick has RUN_ID set with no TASK_ID and no WAKE_REASON --
+# that is the noisy case we want silent. Triggered wakes still notify.
+if [ -n "${PAPERCLIP_RUN_ID:-}" ] && [ -z "${PAPERCLIP_TASK_ID:-}" ] && [ -z "${PAPERCLIP_WAKE_REASON:-}" ]; then
+  exit 0
+fi
+
 # Read JSON input from stdin
 input=$(cat)
 
