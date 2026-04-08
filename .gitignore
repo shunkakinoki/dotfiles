@@ -26,6 +26,15 @@ objectstore
 .devenv
 *.hm-backup
 
+# Nix
+result-1
+
+# Build
+target
+
+# Config
+objectstore
+
 # General
 .DS_Store
 .AppleDouble
