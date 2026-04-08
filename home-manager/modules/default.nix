@@ -1,6 +1,7 @@
 [
   ./bin-shells
   ./cargo-globals
+  ./obsidian-headless
   ./openclaw
   ./paperclip
   ./local-binaries
