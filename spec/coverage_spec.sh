@@ -257,6 +257,7 @@ home-manager/modules/local-scripts/clipboard-paste.sh
 home-manager/modules/local-scripts/notify-local.sh
 home-manager/modules/local-scripts/tmux-bridge.sh
 home-manager/modules/npm-globals/install-npm-globals.sh
+home-manager/modules/obsidian/obsidian-headless.sh
 home-manager/modules/uv-globals/install-uv-globals.sh
 home-manager/programs/neovim/run_tests.sh
 home-manager/programs/tmux/session-logger.sh
