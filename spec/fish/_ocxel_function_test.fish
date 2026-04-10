@@ -7,7 +7,7 @@ function opencode; echo $argv >> $log1; end
 
 _ocxel_function
 
-@test "no args calls opencode with local Qwen model" (grep -c "lmstudio/qwen/qwen3.5-9b" $log1) -ge 1
+@test "no args calls opencode with local Qwen model" (grep -c "lmstudio/qwen3.5-0.8b-optiq" $log1) -ge 1
 @test "no args skips run subcommand" (grep -c "^run " $log1) -eq 0
 
 # ── with args: run mode ──────────────────────────────────
@@ -18,6 +18,6 @@ _ocxel_function hello world
 
 @test "with args uses run subcommand" (grep -c "^run " $log2) -ge 1
 @test "with args builds prompt" (grep -c "hello world" $log2) -ge 1
-@test "with args uses local Qwen model" (grep -c "lmstudio/qwen/qwen3.5-9b" $log2) -ge 1
+@test "with args uses local Qwen model" (grep -c "lmstudio/qwen3.5-0.8b-optiq" $log2) -ge 1
 
 rm -f $log1 $log2
