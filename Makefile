@@ -325,7 +325,7 @@ overlays-update: ## Upgrade all custom overlays to latest versions.
 ##@ Nix Setup
 
 .PHONY: nix-setup
-nix-setup: nix-install nix-check nix-connect ## Set up Nix environment (install, check, connect, trust caches). 
+nix-setup: nix-install nix-check nix-connect nix-trust ## Set up Nix environment (install, check, connect, trust caches).
 
 .PHONY: nix-connect
 nix-connect: ## Ensure Nix daemon is running.
@@ -371,6 +371,19 @@ nix-connect: ## Ensure Nix daemon is running.
 	@echo "⏳ Waiting for daemon to initialize..."
 	@sleep 3
 	@echo "✅ Nix daemon should now be active!"
+
+.PHONY: nix-trust
+nix-trust: ## Ensure current user is trusted by the Nix daemon.
+	@if [ "$(OS)" = "Linux" ] && [ "$(NIX_USER_TRUSTED)" = "no" ] && [ "$$CI" != "true" ] && [ "$$IN_DOCKER" != "true" ]; then \
+		echo "🔐 Adding $(NIX_USERNAME) to trusted-users in /etc/nix/nix.conf"; \
+		if grep -q '^trusted-users' /etc/nix/nix.conf 2>/dev/null; then \
+			$(SUDO) sed -i 's/^trusted-users.*/trusted-users = root $(NIX_USERNAME)/' /etc/nix/nix.conf; \
+		else \
+			echo "trusted-users = root $(NIX_USERNAME)" | $(SUDO) tee -a /etc/nix/nix.conf > /dev/null; \
+		fi; \
+		$(SUDO) systemctl restart nix-daemon.service; \
+		echo "✅ $(NIX_USERNAME) is now a trusted Nix user"; \
+	fi
 
 .PHONY: nix-check
 nix-check: ## Verify Nix environment setup.
