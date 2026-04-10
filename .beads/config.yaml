@@ -52,7 +52,6 @@
 # - linear.api-key
 # - github.org
 # - github.repo
-
 prefix: df
 issue-prefix: df
 dolt.idle-timeout: "0"
