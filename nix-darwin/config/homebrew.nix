@@ -99,6 +99,7 @@
       "font-jetbrains-mono-nerd-font"
       "font-jetbrains-mono"
       "ghostty"
+      "gitbutler"
       "github"
       "google-chrome"
       "google-drive"
