@@ -142,8 +142,8 @@ The output should include 'bun add --global'
 End
 
 It 'installs one package at a time'
-When run bash -c "grep 'bun add --global' '$SCRIPT'"
-The output should include '"$dep"'
+When run bash -c "grep 'bun add --global \"\$dep\"' '$SCRIPT'"
+The output should include 'bun add --global'
 End
 
 It 'has a timeout per package'
