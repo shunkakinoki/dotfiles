@@ -45,6 +45,11 @@ name = "OpenRouter"
 base_url = "https://openrouter.ai/api/v1"
 env_key = "OPENROUTER_API_KEY"
 
+[profiles.gemma]
+model = "__GEMMA__"
+model_provider = "lmstudio"
+model_reasoning_effort = "minimal"
+
 [profiles.qwen-local]
 model = "__QWEN_LOCAL__"
 model_provider = "lmstudio"
