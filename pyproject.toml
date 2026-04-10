@@ -12,7 +12,7 @@ tools = [
   "marker-pdf>=1.10.2",
   "mistral-vibe>=2.7.2",
   "claude-swap>=0.7.1",
-  "ruff>=0.15.8",
+  "ruff>=0.15.9",
 ]
 
 [tool.uv]
