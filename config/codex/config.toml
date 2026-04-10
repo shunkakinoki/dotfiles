@@ -46,6 +46,6 @@ base_url = "https://openrouter.ai/api/v1"
 env_key = "OPENROUTER_API_KEY"
 
 [profiles.qwen-local]
-model = "qwen/qwen3.5-9b"
+model = "mlx-community/Qwen3.5-0.8B-OptiQ-4bit"
 model_provider = "lmstudio"
 model_reasoning_effort = "minimal"

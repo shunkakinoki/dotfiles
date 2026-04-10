@@ -14,5 +14,5 @@ function _pixelh_function --description "Run Pi headlessly with the local Qwen m
     return 1
   end
 
-  pi --model 'lmstudio/qwen/qwen3.5-9b' -p "$prompt"
+  pi --model 'lmstudio/mlx-community/Qwen3.5-0.8B-OptiQ-4bit' -p "$prompt"
 end
