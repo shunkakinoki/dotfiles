@@ -10,7 +10,7 @@ function pi; echo $argv >> $log1; end
 echo "hello world" | _pixelh_function
 
 @test "non-empty prompt builds prompt" (grep -c "hello world" $log1) -ge 1
-@test "non-empty prompt uses local Qwen model" (grep -c "lmstudio/qwen/qwen3.5-9b" $log1) -ge 1
+@test "non-empty prompt uses local Qwen model" (grep -c "lmstudio/qwen3.5-0.8b-optiq" $log1) -ge 1
 @test "non-empty prompt uses print mode" (grep -c -- "-p" $log1) -ge 1
 
 set log2 (mktemp)
