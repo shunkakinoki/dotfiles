@@ -1,5 +1,4 @@
-_:
-{
+_: {
   xdg.configFile."eww/eww.yuck" = {
     source = ./eww.yuck;
     force = true;

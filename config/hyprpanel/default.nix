@@ -1,5 +1,4 @@
-_:
-{
+_: {
   programs.hyprpanel = {
     enable = true;
     systemd.enable = false;

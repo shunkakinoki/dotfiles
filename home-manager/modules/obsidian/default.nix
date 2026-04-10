@@ -17,9 +17,14 @@ let
   # so they get pulled into the closure automatically without needing to
   # appear directly on PATH. Only this shim is exposed as `obsidian`,
   # which is exactly what memory-wiki probes for.
-  obsidianHeadless = pkgs.writeShellScriptBin "obsidian" ''
-    exec ${pkgs.xvfb-run}/bin/xvfb-run -a ${pkgs.obsidian}/bin/obsidian "$@"
-  '';
+  obsidianHeadless = pkgs.writeShellScriptBin "obsidian" (
+    builtins.readFile (
+      pkgs.replaceVars ./obsidian-headless.sh {
+        xvfbRun = pkgs.xvfb-run;
+        obsidian = pkgs.obsidian;
+      }
+    )
+  );
 in
 # Only enable on kyber (gateway host) — desktops already get pkgs.obsidian
 # directly via home-manager/packages/default.nix.

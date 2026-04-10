@@ -1,5 +1,4 @@
-_:
-{
+_: {
   xdg.configFile."gomi/config.yaml" = {
     source = ./config.yaml;
   };

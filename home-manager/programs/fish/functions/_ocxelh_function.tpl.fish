@@ -1,5 +1,5 @@
-function _ocxelh_function --description "Run OpenCode headlessly with the local Gemma model"
-  # Prompt for input and run OpenCode with the local Gemma model
+function _ocxelh_function --description "Run OpenCode headlessly with the local Qwen model"
+  # Prompt for input and run OpenCode with the local Qwen model
   # Usage: ocxelh
 
   set -l prompt
@@ -14,5 +14,5 @@ function _ocxelh_function --description "Run OpenCode headlessly with the local 
     return 1
   end
 
-  opencode run "$prompt" -m 'lmstudio/__GEMMA__'
+  opencode run "$prompt" -m 'lmstudio/__QWEN_LOCAL__'
 end
