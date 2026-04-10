@@ -1,5 +1,4 @@
-_:
-{
+_: {
   xdg.configFile."hyprshell/config.toml" = {
     source = ./config.toml;
     force = true;

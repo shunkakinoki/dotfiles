@@ -1,5 +1,4 @@
-_:
-{
+_: {
   # Template config - the service wrapper injects secrets and writes to config.yaml
   home.file.".cli-proxy-api/config.template.yaml" = {
     source = ./config.template.yaml;

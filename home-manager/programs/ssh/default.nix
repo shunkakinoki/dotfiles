@@ -1,5 +1,4 @@
-_:
-{
+_: {
   home.file.".ssh/rc" = {
     source = ./rc;
     force = true;
