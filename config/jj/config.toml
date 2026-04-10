@@ -7,3 +7,8 @@ email = "shunkakinoki@gmail.com"
 [ui]
 pager = "delta"
 diff.format = "git"
+editor = "nvim"
+default-command = "log"
+
+[git]
+auto-local-bookmark = true
