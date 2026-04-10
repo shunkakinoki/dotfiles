@@ -86,12 +86,12 @@ end, { noremap = true, silent = true, desc = "Kill terminal" })
 keymap({ "n", "t" }, "<leader>j", function()
 	ToggleTerminal()
 end, { noremap = true, silent = true, desc = "Toggle terminal" })
--- @keymap <leader><S-]>: Jump to next managed terminal
-keymap({ "n", "t" }, "<leader><S-]>", function()
+-- @keymap <leader><S-]>: Jump to next managed terminal (terminal mode only)
+keymap("t", "<leader><S-]>", function()
 	CycleNextTerm()
 end, { noremap = true, silent = true, desc = "Next terminal" })
--- @keymap <leader><S-[>: Jump to previous managed terminal
-keymap({ "n", "t" }, "<leader><S-[>", function()
+-- @keymap <leader><S-[>: Jump to previous managed terminal (terminal mode only)
+keymap("t", "<leader><S-[>", function()
 	CyclePreviousTerm()
 end, { noremap = true, silent = true, desc = "Previous terminal" })
 

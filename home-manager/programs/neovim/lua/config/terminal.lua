@@ -126,6 +126,7 @@ local function cycle(step)
 		current_index = ((current_index - 1 + step) % len) + 1
 	end
 	show_term(term_sequence[current_index])
+	vim.notify(string.format("terminal %d/%d", current_index, len), vim.log.levels.INFO, { title = "terminal" })
 end
 
 function CycleNextTerm()
