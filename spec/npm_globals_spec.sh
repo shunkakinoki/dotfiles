@@ -135,20 +135,25 @@ The output should include 'MISSING'
 End
 End
 
-Describe 'batch installation'
-It 'uses batch size of 5'
-When run bash -c "grep 'BATCH_SIZE=5' '$SCRIPT'"
-The output should include 'BATCH_SIZE=5'
-End
-
-It 'uses bun add --global in batches'
+Describe 'per-package installation'
+It 'uses bun add --global for each package'
 When run bash -c "grep 'bun add --global' '$SCRIPT'"
 The output should include 'bun add --global'
 End
 
-It 'reports batch failures'
-When run bash -c "grep 'Batch install failed' '$SCRIPT'"
-The output should include 'Batch install failed'
+It 'installs one package at a time'
+When run bash -c "grep 'bun add --global' '$SCRIPT'"
+The output should include '"$dep"'
+End
+
+It 'has a timeout per package'
+When run bash -c "grep 'timeout.*bun add --global' '$SCRIPT'"
+The output should include 'timeout'
+End
+
+It 'reports per-package failures'
+When run bash -c "grep 'Install failed' '$SCRIPT'"
+The output should include 'Install failed'
 End
 
 It 'reports when all packages are already installed'
