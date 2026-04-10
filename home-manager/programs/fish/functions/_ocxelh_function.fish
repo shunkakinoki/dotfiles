@@ -14,5 +14,5 @@ function _ocxelh_function --description "Run OpenCode headlessly with the local 
     return 1
   end
 
-  opencode run "$prompt" -m 'lmstudio/qwen/qwen3.5-9b'
+  opencode run "$prompt" -m 'lmstudio/qwen3.5-0.8b-optiq'
 end
