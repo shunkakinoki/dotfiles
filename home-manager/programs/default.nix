@@ -1,8 +1,7 @@
 {
-  config,
   lib,
   pkgs,
-  sources,
+  ...
 }:
 let
   atuin = import ./atuin;
@@ -47,6 +46,7 @@ let
   tms = import ./tms;
   tmux = import ./tmux;
   yaml = import ./yaml;
+  yazi = import ./yazi;
   zig = import ./zig;
   zoxide = import ./zoxide;
   zsh = import ./zsh;
@@ -94,6 +94,7 @@ in
   tms
   tmux
   yaml
+  yazi
   zig
   zoxide
   zsh

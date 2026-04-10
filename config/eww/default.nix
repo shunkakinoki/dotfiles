@@ -1,8 +1,4 @@
-{
-  config,
-  pkgs,
-  ...
-}:
+_:
 {
   xdg.configFile."eww/eww.yuck" = {
     source = ./eww.yuck;

@@ -1,5 +1,5 @@
-function _coxelh_function --description "Run Codex headlessly with the local Qwen model"
-  # Prompt for input and run Codex with the local Qwen model
+function _coxelh_function --description "Run Codex headlessly with the local Gemma model"
+  # Prompt for input and run Codex with the local Gemma model
   # Usage: coxelh
 
   set -l prompt
@@ -14,5 +14,5 @@ function _coxelh_function --description "Run Codex headlessly with the local Qwe
     return 1
   end
 
-  codex exec --oss --local-provider lmstudio --model '__QWEN_LOCAL__' --full-auto -c model_reasoning_effort=minimal -- "$prompt"
+  codex exec --oss --local-provider lmstudio --model '__GEMMA__' --full-auto -c model_reasoning_effort=minimal -- "$prompt"
 end

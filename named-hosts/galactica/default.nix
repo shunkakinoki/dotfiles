@@ -12,9 +12,9 @@ inputs.nix-darwin.lib.darwinSystem {
   modules = darwin-modules.modules ++ [
     {
       age.identityPaths = [ "/Users/${username}/.ssh/id_ed25519" ];
-      age.secrets = builtins.mapAttrs (name: value: { inherit (value) file; }) (import ./secrets.nix);
+      age.secrets = builtins.mapAttrs (_: value: { inherit (value) file; }) (import ./secrets.nix);
       home-manager.users.${username} =
-        { pkgs, config, ... }:
+        { pkgs, ... }:
         {
           programs.ssh = {
             enable = true;

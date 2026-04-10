@@ -44,7 +44,7 @@ in
         After = [ "default.target" ];
       };
       Service = {
-        Type = "oneshot";
+        Type = "simple";
         Environment = [
           "PATH=${pkgs.rustup}/bin:${pkgs.cargo}/bin:${pkgs.rustc}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.gcc}/bin:${pkgs.pkg-config}/bin:${pkgs.perl}/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin"
           "CARGO_HOME=%h/.cargo"

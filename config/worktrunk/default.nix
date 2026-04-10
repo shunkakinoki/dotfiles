@@ -1,4 +1,4 @@
-{ config, ... }:
+_:
 {
   xdg.configFile."worktrunk/config.toml" = {
     source = ./config.toml;

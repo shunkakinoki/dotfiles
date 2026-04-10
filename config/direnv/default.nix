@@ -1,4 +1,4 @@
-{ config, ... }:
+_:
 {
   home.file.".config/direnv/direnvrc" = {
     source = ./direnvrc;

@@ -94,8 +94,11 @@
         "baseURL": "http://127.0.0.1:1234/v1"
       },
       "models": {
+        "__GEMMA__": {
+          "name": "Gemma 4 E4B (via LM Studio)"
+        },
         "__QWEN_LOCAL__": {
-          "name": "Qwen 3.5 9B (via LM Studio)"
+          "name": "Qwen 3.5 0.8B (via LM Studio)"
         }
       }
     },

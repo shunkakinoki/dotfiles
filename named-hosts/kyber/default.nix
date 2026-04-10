@@ -14,7 +14,6 @@ let
     inherit system overlays;
     config = nixpkgsConfig;
   };
-  inherit (pkgs) lib;
 in
 home-manager.lib.homeManagerConfiguration {
   inherit pkgs;

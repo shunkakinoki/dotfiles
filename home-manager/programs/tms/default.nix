@@ -1,10 +1,4 @@
-{
-  lib,
-  pkgs,
-  config,
-  inputs,
-  ...
-}:
+{ pkgs, ... }:
 {
   home.packages = [
     pkgs.tmux-sessionizer

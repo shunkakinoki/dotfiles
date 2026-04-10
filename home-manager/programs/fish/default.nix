@@ -88,6 +88,8 @@
     };
     shellAbbrs = {
       cat = "bat";
+      copy = "~/.local/scripts/clipboard-copy";
+      paste = "~/.local/scripts/clipboard-paste";
       e = "nvim";
       g = "git";
       j = "jj";

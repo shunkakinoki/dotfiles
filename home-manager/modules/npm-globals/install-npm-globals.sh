@@ -73,21 +73,12 @@ if [ -n "$DEPS" ]; then
   done <<<"$DEPS"
 fi
 
-# Install missing packages in small batches
+# Install missing packages one by one
 if [ "${#MISSING[@]}" -gt 0 ]; then
   echo "Installing ${#MISSING[@]} missing packages..."
-  BATCH_SIZE=5
-  BATCH=()
   for dep in "${MISSING[@]}"; do
-    BATCH+=("$dep")
-    if [ "${#BATCH[@]}" -ge "$BATCH_SIZE" ]; then
-      bun add --global "${BATCH[@]}" 2>/dev/null || echo "Batch install failed: ${BATCH[*]}"
-      BATCH=()
-    fi
+    timeout 600 bun add --global "$dep" 2>/dev/null || echo "Install failed: $dep"
   done
-  if [ "${#BATCH[@]}" -gt 0 ]; then
-    bun add --global "${BATCH[@]}" 2>/dev/null || echo "Batch install failed: ${BATCH[*]}"
-  fi
 else
   echo "All npm global packages already installed"
 fi

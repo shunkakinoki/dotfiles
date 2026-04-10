@@ -173,7 +173,6 @@
 
         perSystem =
           {
-            config,
             system,
             ...
           }:

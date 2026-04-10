@@ -11,6 +11,7 @@
     pkgs.gcc
     pkgs.fish
     pkgs.statix
+    pkgs.deadnix
     (pkgs.writeShellScriptBin "fishtape" (
       builtins.readFile (
         pkgs.replaceVars ./scripts/fishtape-wrapper.sh {

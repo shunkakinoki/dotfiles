@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ lib, ... }:
 {
   # Use activation script instead of home.file symlink
   # Codex CLI uses atomic writes that break symlinks, so we force-copy on each switch

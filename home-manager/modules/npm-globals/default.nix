@@ -29,7 +29,7 @@ in
         After = [ "default.target" ];
       };
       Service = {
-        Type = "oneshot";
+        Type = "simple";
         Environment = [
           "PATH=${pkgs.bun}/bin:${pkgs.jq}/bin:${pkgs.findutils}/bin:${pkgs.gnugrep}/bin:${pkgs.gnused}/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin"
           "BUN_INSTALL=%h/.bun"

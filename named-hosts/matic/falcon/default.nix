@@ -8,7 +8,6 @@
 {
   stdenv,
   lib,
-  pkgs,
   dpkg,
   openssl,
   libnl,
@@ -54,7 +53,7 @@ let
 in
 buildFHSEnv {
   name = "fs-bash";
-  targetPkgs = pkgs: [
+  targetPkgs = _: [
     libnl
     openssl
     zlib

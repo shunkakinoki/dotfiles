@@ -28,7 +28,7 @@ in
         After = [ "default.target" ];
       };
       Service = {
-        Type = "oneshot";
+        Type = "simple";
         Environment = [
           "PATH=${pkgs.uv}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.yq}/bin:${pkgs.gnused}/bin:${pkgs.gnugrep}/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin"
           "HOME=%h"

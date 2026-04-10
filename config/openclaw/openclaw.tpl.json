@@ -921,6 +921,47 @@
             "enabled": true
           }
         }
+      },
+      "memory-wiki": {
+        "enabled": true,
+        "config": {
+          "vaultMode": "bridge",
+          "vault": {
+            "path": "__HOME__/ghq/github.com/shunkakinoki/wiki",
+            "renderMode": "obsidian"
+          },
+          "obsidian": {
+            "enabled": true,
+            "useOfficialCli": true,
+            "vaultName": "Shun Kakinoki",
+            "openAfterWrites": false
+          },
+          "bridge": {
+            "enabled": true,
+            "readMemoryArtifacts": true,
+            "indexDreamReports": true,
+            "indexDailyNotes": true,
+            "indexMemoryRoot": true,
+            "followMemoryEvents": true
+          },
+          "ingest": {
+            "autoCompile": true,
+            "maxConcurrentJobs": 4,
+            "allowUrlIngest": true
+          },
+          "search": {
+            "backend": "shared",
+            "corpus": "all"
+          },
+          "context": {
+            "includeCompiledDigestPrompt": true
+          },
+          "render": {
+            "preserveHumanBlocks": true,
+            "createBacklinks": true,
+            "createDashboards": true
+          }
+        }
       }
     }
   }

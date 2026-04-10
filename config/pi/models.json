@@ -188,7 +188,7 @@
       "api": "openai-responses",
       "models": [
         {
-          "id": "qwen/qwen3.5-9b",
+          "id": "qwen3.5-0.8b-optiq",
           "name": "Qwen 3.5 9B (LM Studio)",
           "reasoning": true,
           "input": [

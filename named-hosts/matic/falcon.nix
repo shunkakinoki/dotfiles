@@ -9,7 +9,7 @@
 # This module is only imported if /etc/nixos/falcon-sensor.deb exists.
 #
 # Based on: https://github.com/taylanpince/nixos-config
-{ pkgs, lib, ... }:
+{ pkgs, ... }:
 let
   falcon = pkgs.callPackage ./falcon { };
 
