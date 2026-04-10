@@ -11,6 +11,6 @@
   "gemini-flash": "gemini-3.1-flash-preview",
   "glm": "glm-4.7",
   "minimax": "minimax-m2.7",
-  "gemma": "mlx-community/gemma-4-e4b-it",
+  "gemma": "lmstudio-community/gemma-4-e4b-it",
   "qwen-local": "qwen3.5-0.8b-optiq"
 }

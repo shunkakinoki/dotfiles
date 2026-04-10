@@ -4,14 +4,14 @@ function _ocxel_function --description "Run OpenCode with a free-form prompt usi
 
   if test (count $argv) -gt 0; and contains -- "$argv[1]" --resume -r --continue -c
     if test (count $argv) -gt 1
-      opencode -m 'lmstudio/mlx-community/gemma-4-e4b-it' --session "$argv[2]"
+      opencode -m 'lmstudio/lmstudio-community/gemma-4-e4b-it' --session "$argv[2]"
     else
-      opencode -m 'lmstudio/mlx-community/gemma-4-e4b-it' --continue
+      opencode -m 'lmstudio/lmstudio-community/gemma-4-e4b-it' --continue
     end
   else if test (count $argv) -eq 0
-    opencode -m 'lmstudio/mlx-community/gemma-4-e4b-it'
+    opencode -m 'lmstudio/lmstudio-community/gemma-4-e4b-it'
   else
     set -l prompt (string join " " -- $argv)
-    opencode run "$prompt" -m 'lmstudio/mlx-community/gemma-4-e4b-it'
+    opencode run "$prompt" -m 'lmstudio/lmstudio-community/gemma-4-e4b-it'
   end
 end

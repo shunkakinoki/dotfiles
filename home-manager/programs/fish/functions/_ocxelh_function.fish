@@ -14,5 +14,5 @@ function _ocxelh_function --description "Run OpenCode headlessly with the local 
     return 1
   end
 
-  opencode run "$prompt" -m 'lmstudio/mlx-community/gemma-4-e4b-it'
+  opencode run "$prompt" -m 'lmstudio/lmstudio-community/gemma-4-e4b-it'
 end

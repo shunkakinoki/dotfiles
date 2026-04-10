@@ -5,9 +5,9 @@ function _coxel_function --description "Run Codex with a free-form prompt using 
   if test (count $argv) -gt 0; and contains -- "$argv[1]" --resume -r --continue -c
     codex resume $argv[2]
   else if test (count $argv) -eq 0
-    codex --oss --local-provider lmstudio --model 'mlx-community/gemma-4-e4b-it' --full-auto -c model_reasoning_effort=minimal
+    codex --oss --local-provider lmstudio --model 'lmstudio-community/gemma-4-e4b-it' --full-auto -c model_reasoning_effort=minimal
   else
     set -l prompt (string join " " -- $argv)
-    codex exec --oss --local-provider lmstudio --model 'mlx-community/gemma-4-e4b-it' --full-auto -c model_reasoning_effort=minimal -- "$prompt"
+    codex exec --oss --local-provider lmstudio --model 'lmstudio-community/gemma-4-e4b-it' --full-auto -c model_reasoning_effort=minimal -- "$prompt"
   end
 end
