@@ -77,7 +77,7 @@ fi
 if [ "${#MISSING[@]}" -gt 0 ]; then
   echo "Installing ${#MISSING[@]} missing packages..."
   for dep in "${MISSING[@]}"; do
-    timeout 120 bun add --global "$dep" 2>/dev/null || echo "Install failed: $dep"
+    timeout 600 bun add --global "$dep" 2>/dev/null || echo "Install failed: $dep"
   done
 else
   echo "All npm global packages already installed"
