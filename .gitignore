@@ -483,3 +483,8 @@ target
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 *.deb
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
