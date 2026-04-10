@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 let
   inherit (pkgs) lib;
   fishPath = "${pkgs.fish}/bin/fish";

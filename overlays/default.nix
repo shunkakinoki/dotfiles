@@ -3,7 +3,7 @@
   inputs.nur.overlays.default
   inputs.neovim-nightly-overlay.overlays.default
   inputs.foundry.overlay
-  (final: prev: {
+  (_: prev: {
     # Ensure neovim-unwrapped exposes a lua attribute for wrapper consumers (e.g., home-manager)
     neovim-unwrapped =
       (prev.neovim-unwrapped.overrideAttrs (oldAttrs: {
@@ -15,11 +15,11 @@
         lua = prev.lua5_4;
       };
   })
-  (final: prev: {
+  (_: prev: {
     # Provide non-deprecated alias so upstream modules using pkgs.system don't emit warnings.
     inherit (prev.stdenv.hostPlatform) system;
   })
-  (final: prev: {
+  (_: prev: {
     # Fix shellspec wrapper script that breaks when called via symlinks
     shellspec = prev.shellspec.overrideAttrs (oldAttrs: {
       postInstall = (oldAttrs.postInstall or "") + ''
@@ -32,7 +32,7 @@
       '';
     });
   })
-  (final: prev: {
+  (_: prev: {
     # Hide empty action bar in hyprpanel notifications when no valid actions exist.
     # Notifications with empty action IDs (e.g. from Claude Code) bypass the length
     # guard and render a blank bar. Filter them out before the guard and the map.

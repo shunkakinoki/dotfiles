@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+_:
 {
   xdg.configFile."walker/config.toml" = {
     source = ./config.toml;

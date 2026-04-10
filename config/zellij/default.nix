@@ -1,4 +1,4 @@
-{ config, ... }:
+_:
 {
   xdg.configFile."zellij/config.kdl" = {
     source = ./config.kdl;

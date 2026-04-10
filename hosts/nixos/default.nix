@@ -16,7 +16,7 @@ let
     config = nixpkgsConfig;
   };
   configuration =
-    { config, lib, ... }:
+    { lib, ... }:
     {
       boot.loader.grub.enable = true;
       boot.loader.grub.device = "/dev/sda";

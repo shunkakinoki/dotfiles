@@ -12,12 +12,7 @@
 #    sudo sh -c 'cat /tmp/kolide-deb/etc/kolide-k2/secret > /etc/kolide-k2/secret'
 #    sudo chown root:root /etc/kolide-k2/secret
 #    sudo chmod 600 /etc/kolide-k2/secret
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
+{ pkgs, ... }:
 
 let
   # Official Kolide NixOS module

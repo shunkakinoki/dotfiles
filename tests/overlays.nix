@@ -1,8 +1,4 @@
-{
-  pkgs,
-  lib,
-  inputs,
-}:
+{ pkgs }:
 {
   overlay-neovim-lua = pkgs.runCommand "overlay-neovim-lua" { } ''
     ${

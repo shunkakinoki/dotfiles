@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 let
   baseConfig = builtins.fromJSON (builtins.readFile ./config.json);
   hydratedConfig = baseConfig // {

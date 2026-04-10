@@ -6,7 +6,6 @@
 }:
 let
   inherit (inputs)
-    nix-darwin
     home-manager
     agenix
     ;

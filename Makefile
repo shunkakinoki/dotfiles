@@ -495,6 +495,8 @@ nix-format-check: ## Check Nix file formatting.
 nix-lint: ## Lint Nix files with statix from the flake/dev shell.
 	@echo "🔍 Linting Nix files with statix..."
 	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command statix check .
+	@echo "🔍 Checking for dead Nix code with deadnix..."
+	@DEVENV_ROOT=$(CURDIR) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) develop $(NIX_FLAGS) .# --command deadnix .
 	@echo "✅ All Nix files pass lint checks"
 
 .PHONY: nix-switch

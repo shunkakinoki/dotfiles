@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+_:
 {
   xdg.configFile."nwg-drawer/drawer.css" = {
     source = ./drawer.css;

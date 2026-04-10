@@ -1,4 +1,4 @@
-{ config, ... }:
+_:
 {
   home.file.".factory/config.json" = {
     source = ./config.json;

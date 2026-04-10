@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+_:
 {
   xdg.configFile."hyprshell/config.toml" = {
     source = ./config.toml;

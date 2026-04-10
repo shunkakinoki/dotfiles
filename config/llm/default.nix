@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 {
   home.file."Library/Application Support/io.datasette.llm/extra-openai-models.yaml" = {
     enable = pkgs.stdenv.isDarwin;

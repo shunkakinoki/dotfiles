@@ -1,12 +1,9 @@
 {
   config,
-  lib,
   pkgs,
   ...
 }:
 let
-  dotfilesDir = "${config.home.homeDirectory}/dotfiles";
-
   # Hydration script for CCS provider settings
   # Use writeText instead of replaceVars to avoid builtins.toFile context warnings
   hydrateScript = pkgs.writeText "hydrate.sh" (

@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ lib, ... }:
 {
   # Use activation script instead of symlink
   # git-ai install-hooks needs write access, which breaks with Nix store symlinks
