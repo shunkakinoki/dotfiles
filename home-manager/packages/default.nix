@@ -133,6 +133,7 @@ with pkgs;
   powertop
   psmisc
   qemu
+  socat
   stdenv.cc.cc.lib
   tailscale
   trashy
