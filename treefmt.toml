@@ -14,8 +14,7 @@ excludes = ["*.json"]
 command = "jsonfmt"
 includes = ["*.json"]
 excludes = [
-  ".beads/metadata.json",
-  "home-manager/programs/neovim/nvim-pack-lock.json",
+  "home-manager/programs/neovim/nvim-pack-lock.json"
 ]
 
 [formatter.shell]
