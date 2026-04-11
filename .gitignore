@@ -1,6 +1,5 @@
 # AI
 .aider.tags.cache.v4
-polecats/
 .claude
 !.claude/settings.json
 .codex
@@ -12,6 +11,11 @@ polecats/
 .serena
 .worktrees
 prompts.db
+
+# GT
+crew
+polecats
+refinery
 
 # CCS runtime state (lastUsedAt timestamps change frequently)
 config/ccs/accounts.json
