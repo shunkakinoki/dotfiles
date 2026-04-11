@@ -21,7 +21,7 @@ let
     builtins.readFile (
       pkgs.replaceVars ./obsidian-headless.sh {
         xvfbRun = pkgs.xvfb-run;
-        obsidian = pkgs.obsidian;
+        inherit (pkgs) obsidian;
       }
     )
   );

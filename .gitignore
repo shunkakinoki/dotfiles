@@ -12,6 +12,11 @@
 .worktrees
 prompts.db
 
+# GT
+crew
+polecats
+refinery
+
 # CCS runtime state (lastUsedAt timestamps change frequently)
 config/ccs/accounts.json
 
