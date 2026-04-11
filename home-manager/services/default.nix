@@ -14,7 +14,7 @@ let
   docker = import ./docker { inherit lib pkgs; };
   dockerPostgres = import ./docker-postgres { inherit pkgs; };
   dotfilesUpdater = import ./dotfiles-updater { inherit pkgs; };
-  gasTown = import ./gt-daemon { inherit pkgs; };
+  gasTown = import ./gas-town { inherit pkgs; };
   makeUpdater = import ./make-updater { inherit pkgs; };
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
   ollama = import ./ollama { inherit pkgs inputs; };

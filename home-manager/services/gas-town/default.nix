@@ -3,7 +3,7 @@ let
   inherit (pkgs) lib;
 in
 {
-  systemd.user.services.gt-daemon = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.gas-town = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {
       Description = "Gas Town daemon (dolt + tmux + worker orchestration)";
       After = [ "network.target" ];

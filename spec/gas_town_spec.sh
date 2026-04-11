@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2329
 
-Describe 'gt-daemon/start.sh'
-SCRIPT="$PWD/home-manager/services/gt-daemon/start.sh"
+Describe 'gas-town/start.sh'
+SCRIPT="$PWD/home-manager/services/gas-town/start.sh"
 
 Describe 'script properties'
 It 'uses bash shebang'
