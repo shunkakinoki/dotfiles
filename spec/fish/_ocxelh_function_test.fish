@@ -11,7 +11,7 @@ echo "hello world" | _ocxelh_function
 
 @test "non-empty prompt uses run subcommand" (grep -c "^run " $log1) -ge 1
 @test "non-empty prompt builds prompt" (grep -c "hello world" $log1) -ge 1
-@test "non-empty prompt uses local Qwen model" (grep -c "lmstudio/qwen/qwen3.5-9b" $log1) -ge 1
+@test "non-empty prompt uses local Qwen model" (grep -c "lmstudio/qwen3.5-0.8b-optiq" $log1) -ge 1
 
 set log2 (mktemp)
 function opencode; echo $argv >> $log2; end

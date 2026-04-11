@@ -7,6 +7,7 @@
 # cass dependencies (pull + build before cass itself)
 ~/ghq/github.com/Dicklesworthstone/asupersync/target/release/libasupersync.rlib
 ~/ghq/github.com/Dicklesworthstone/franken_agent_detection/target/release/libfranken_agent_detection.rlib
+~/ghq/github.com/Dicklesworthstone/frankensearch/target/release/libfrankensearch.rlib
 ~/ghq/github.com/Dicklesworthstone/frankensqlite/target/release/libfsqlite.rlib
 
 ~/ghq/github.com/Dicklesworthstone/beads_viewer/bv

@@ -12,6 +12,11 @@
 .worktrees
 prompts.db
 
+# GT
+crew
+polecats
+refinery
+
 # CCS runtime state (lastUsedAt timestamps change frequently)
 config/ccs/accounts.json
 
@@ -483,3 +488,20 @@ target
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 *.deb
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
+
+# Gas Town (added by gt)
+.runtime/
+.logs/
+state.json
+CLAUDE.md
+CLAUDE.local.md
+crew/
+mayor/
+settings/
+.beads/.gt-types-configured
+.beads/PRIME.md
