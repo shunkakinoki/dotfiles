@@ -146,6 +146,19 @@ home-manager.lib.homeManagerConfiguration {
         # Enable XDG directories
         xdg.enable = true;
 
+        # IP forwarding for Tailscale exit node
+        home.activation.enableIpForwarding = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+          if [ "$(cat /proc/sys/net/ipv4/ip_forward)" != "1" ]; then
+            echo "Enabling IP forwarding for Tailscale exit node..."
+            sudo sysctl -w net.ipv4.ip_forward=1
+            sudo sysctl -w net.ipv6.conf.all.forwarding=1
+          fi
+          if [ ! -f /etc/sysctl.d/99-tailscale.conf ]; then
+            echo 'net.ipv4.ip_forward=1' | sudo tee /etc/sysctl.d/99-tailscale.conf
+            echo 'net.ipv6.conf.all.forwarding=1' | sudo tee -a /etc/sysctl.d/99-tailscale.conf
+          fi
+        '';
+
         # Tailscale configuration
         # Using system-level service only (via installSystemService)
         # User services are disabled by leaving serviceConfig empty

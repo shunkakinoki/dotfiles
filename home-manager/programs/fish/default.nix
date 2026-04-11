@@ -159,6 +159,7 @@
       two = "_two_function";
       tzo = "_tzo_function";
       ulb = "_update_local_binaries_function";
+      vpn = "_vpn_function";
       zdo = "_zdo_function";
       zmo = "_zmo_function";
       zpo = "_zpo_function";
@@ -258,6 +259,7 @@
         "_ssh_add_github"
         "_sync_local_binaries_function"
         "_update_local_binaries_function"
+        "_vpn_function"
         "_tdo_function"
         "_tmo_function"
         "_tpo_function"
