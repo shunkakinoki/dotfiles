@@ -1100,3 +1100,31 @@ doppler-upload: ## Upload .env file to Doppler (dotfiles/prd).
 	@doppler secrets upload --project dotfiles --config prd .env
 	@echo "✅ .env uploaded to Doppler (dotfiles/prd)"
 
+##@ Gas Town
+
+.PHONY: gt-remote-setup
+gt-remote-setup: ## Bootstrap Gas Town on a remote server (init town, add rig, start services).
+	@echo "🏭 Bootstrapping Gas Town on remote..."
+	@./scripts/gt-remote-bootstrap.sh
+	@echo "✅ Gas Town bootstrapped"
+
+.PHONY: gt-sync
+gt-sync: ## Push local Dolt databases to configured DoltHub remotes.
+	@echo "🔄 Syncing Dolt databases to remotes..."
+	@gt dolt sync
+	@echo "✅ Dolt databases synced"
+
+.PHONY: gt-pull
+gt-pull: ## Pull Dolt databases from configured remotes.
+	@echo "🔄 Pulling Dolt databases from remotes..."
+	@gt dolt pull
+	@echo "✅ Dolt databases pulled"
+
+.PHONY: gt-status
+gt-status: ## Show Gas Town health and Dolt server status.
+	@gt health
+
+.PHONY: gt-dolt-status
+gt-dolt-status: ## Show Dolt server status and latency.
+	@gt dolt status
+
