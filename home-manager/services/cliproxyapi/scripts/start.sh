@@ -141,8 +141,7 @@ wait_for_management() {
 ensure_container_removed() {
   local name="$1"
   docker rm -f "$name" 2>/dev/null || true
-  local attempt
-  for attempt in 1 2 3 4 5; do
+  for _ in 1 2 3 4 5; do
     if ! docker inspect "$name" >/dev/null 2>&1; then
       return 0
     fi
