@@ -1,5 +1,6 @@
 # AI
 .aider.tags.cache.v4
+polecats/
 .claude
 !.claude/settings.json
 .codex
