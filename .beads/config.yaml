@@ -22,12 +22,10 @@
 
 # Default actor for audit trails (overridden by BEADS_ACTOR or --actor)
 # actor: ""
-
 # Export events (audit trail) to .beads/events.jsonl on each flush/sync
 # When enabled, new events are appended incrementally using a high-water mark.
 # Use 'bd export --events' to trigger manually regardless of this setting.
 # events-export: false
-
 # Multi-repo configuration (experimental - bd-307)
 # Allows hydrating from multiple repositories and routing writes to the correct database
 # repos:
