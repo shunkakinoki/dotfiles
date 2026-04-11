@@ -157,6 +157,7 @@ home-manager.lib.homeManagerConfiguration {
           extraUpArgs = [
             "--reset"
             "--accept-dns=false"
+            "--advertise-exit-node"
           ];
         };
       }
