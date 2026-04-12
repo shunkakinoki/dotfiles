@@ -14,8 +14,8 @@ let
 in
 lib.mkIf enabled {
   home.activation.qmdSetup = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    PATH="${pkgs.nodejs}/bin:${homeDir}/.bun/bin:$PATH" \
-      $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${qmdBin}" "${wikiDir}"
+    export PATH="${pkgs.nodejs}/bin:${homeDir}/.bun/bin:$PATH"
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${qmdBin}" "${wikiDir}"
   '';
 
   launchd.agents.qmd = lib.mkIf pkgs.stdenv.isDarwin {
