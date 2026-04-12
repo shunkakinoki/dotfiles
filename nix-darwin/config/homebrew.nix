@@ -15,14 +15,14 @@
       extraFlags = [ "--force" ];
     };
     taps = [
+      "anomalyco/tap"
+      "entireio/tap"
       "homebrew/cask"
       "kurtosis-tech/tap"
-      "oven-sh/bun"
-      "paradigmxyz/brew"
-      "entireio/tap"
       "manaflow-ai/cmux"
       "open-pencil/tap"
-      "sst/tap"
+      "oven-sh/bun"
+      "paradigmxyz/brew"
       "steipete/tap"
     ];
     brews = [
@@ -46,6 +46,7 @@
       "mas"
       "mlx-lm"
       "ollama"
+      "opencode@latest"
       "pandoc"
       "pinentry-mac"
       "pnpm"
@@ -114,7 +115,6 @@
       "ollama-app"
       "open-pencil"
       "openclaw"
-      "opencode@latest"
       "opencode-desktop"
       "raycast"
       "repobar"
