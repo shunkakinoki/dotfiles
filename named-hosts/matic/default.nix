@@ -505,18 +505,18 @@ inputs.nixpkgs.lib.nixosSystem {
           ) (import ./secrets.nix);
 
           # Ensure SSH directory exists before agenix tries to deploy secrets
-          home.activation.ensureSshDirectory = config.lib.dag.entryBefore [ "writeBoundary" ] ''
+          home.activation.ensureSshDirectory = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
             $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-directory.sh}" "700" "${config.home.homeDirectory}/.ssh"
           '';
 
           # Ensure agenix config directory exists
-          home.activation.ensureAgenixDirectory = config.lib.dag.entryBefore [ "writeBoundary" ] ''
+          home.activation.ensureAgenixDirectory = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
             $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-directory.sh}" "700" "${config.home.homeDirectory}/.config/agenix"
           '';
 
           # Manually deploy agenix secrets during activation
           # This ensures secrets are deployed even if the agenix activation hook doesn't run properly
-          home.activation.deployAgenixSecrets = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+          home.activation.deployAgenixSecrets = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
             $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/deploy-agenix-secret.sh}" \
               "${config.home.homeDirectory}/.ssh/id_ed25519_github" \
               "${builtins.toString ../galactica/keys/id_ed25519.age}" \
@@ -526,7 +526,7 @@ inputs.nixpkgs.lib.nixosSystem {
 
           # Import GPG key from agenix (all systems with dotfiles)
           # Fails silently if SSH key isn't authorized to decrypt
-          home.activation.importGpgKey = config.lib.dag.entryAfter [ "linkGeneration" ] ''
+          home.activation.importGpgKey = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
             $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/import-gpg-key.sh}" \
               "${config.home.homeDirectory}/dotfiles/named-hosts/galactica/keys/gpg.age" \
               "${config.home.homeDirectory}/.ssh/id_ed25519" \

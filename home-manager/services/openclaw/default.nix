@@ -12,7 +12,7 @@ in
 # Only enable on kyber (gateway host)
 lib.mkIf host.isKyber {
   # Ensure OpenClaw directories exist with correct permissions
-  home.activation.openclawSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.openclawSetup = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${homeDir}"
   '';
 

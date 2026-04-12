@@ -40,11 +40,11 @@ in
     force = true;
   };
 
-  home.activation.copyNvimPackLock = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.copyNvimPackLock = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-copy-pack-lock.sh}" "${nvimPackLockJson}"
   '';
 
-  home.activation.buildNvimNativePlugins = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.buildNvimNativePlugins = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     export PATH="${lib.makeBinPath buildTools}:$PATH"
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-build-plugins.sh}" "${packDir}" "${libExt}"
   '';

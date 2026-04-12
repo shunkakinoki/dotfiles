@@ -54,7 +54,7 @@ let
 in
 {
   # Hydrate auth cache after home-manager switch
-  home.activation.hydrateCliproxyAuths = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.hydrateCliproxyAuths = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.bash}/bin/bash ${hydrateScript} || true
   '';
 

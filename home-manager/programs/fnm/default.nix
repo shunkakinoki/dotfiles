@@ -21,7 +21,7 @@ in
   '';
 
   # Pre-install node versions and set default
-  home.activation.fnmSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.fnmSetup = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     export PATH="${pkgs.fnm}/bin:$PATH"
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" \
       "${pkgs.fnm}/bin/fnm" \

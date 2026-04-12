@@ -19,26 +19,10 @@ let
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
   obsidian = import ./obsidian { inherit pkgs inputs; };
   ollama = import ./ollama { inherit pkgs inputs; };
-  qmd = import ./qmd { inherit config pkgs inputs; };
-  openclaw = import ./openclaw {
-    inherit
-      config
-      lib
-      pkgs
-      inputs
-      ;
-  };
-  paperclip = import ./paperclip {
-    inherit
-      config
-      lib
-      pkgs
-      inputs
-      ;
-  };
-  sshAgent = import ./ssh-agent {
-    inherit config lib pkgs;
-  };
+  qmd = ./qmd;
+  openclaw = ./openclaw;
+  paperclip = ./paperclip;
+  sshAgent = ./ssh-agent;
   tmuxSessionLogger = import ./tmux-session-logger { inherit pkgs; };
 in
 [

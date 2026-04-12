@@ -12,7 +12,7 @@ in
 # Only enable on kyber (server host)
 lib.mkIf host.isKyber {
   # Ensure Paperclip directories exist with correct permissions
-  home.activation.paperclipSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.paperclipSetup = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${homeDir}"
   '';
 

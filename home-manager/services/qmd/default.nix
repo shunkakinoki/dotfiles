@@ -1,11 +1,11 @@
 {
   config,
+  lib,
   pkgs,
   inputs,
   ...
 }:
 let
-  inherit (pkgs) lib;
   inherit (inputs.host) isKyber isGalactica;
   homeDir = config.home.homeDirectory;
   wikiDir = "${homeDir}/ghq/github.com/shunkakinoki/wiki";
