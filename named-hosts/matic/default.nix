@@ -269,15 +269,19 @@ inputs.nixpkgs.lib.nixosSystem {
         hardware.bluetooth.enable = true;
         hardware.bluetooth.powerOnBoot = true;
 
-        # Login manager (greetd + tuigreet)
+        # Login manager (greetd + ReGreet)
+        programs.regreet = {
+          enable = true;
+          cageArgs = [
+            "-s"
+            "-d"
+            "-m"
+            "last"
+          ];
+        };
         services.greetd = {
           enable = true;
-          settings = {
-            default_session = {
-              command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-session --asterisks --sessions /etc/greetd/wayland-sessions";
-              user = "greeter";
-            };
-          };
+          settings.default_session.user = "greeter";
         };
         # Ensure fprintd is ready before greetd starts to avoid PAM fingerprint timeout
         systemd.services.greetd.after = [ "fprintd.service" ];
@@ -287,13 +291,34 @@ inputs.nixpkgs.lib.nixosSystem {
         services.gvfs.enable = true; # For automounting external drives in Nautilus and managing disk permissions
         services.udisks2.enable = true; # For better integration with external drives, including NTFS support and proper permissions handling
 
-        # Provide Hyprland session file for tuigreet to discover
-        environment.etc."greetd/wayland-sessions/hyprland.desktop".text = ''
-          [Desktop Entry]
-          Name=Hyprland
-          Exec=uwsm start hyprland-uwsm.desktop
-          Type=Application
-        '';
+        # Override the default Hyprland session entries so display managers keep
+        # launching Hyprland through UWSM while only presenting a single option.
+        services.displayManager.sessionPackages = lib.mkBefore [
+          (pkgs.symlinkJoin {
+            name = "hyprland-regreet-session-overrides";
+            passthru.providedSessions = [
+              "hyprland"
+              "hyprland-uwsm"
+            ];
+            paths = [
+              (pkgs.writeTextDir "share/wayland-sessions/hyprland.desktop" ''
+                [Desktop Entry]
+                Name=Hyprland
+                Comment=Hyprland compositor managed by UWSM
+                Exec=uwsm start -F -- /run/current-system/sw/bin/Hyprland
+                Type=Application
+              '')
+              (pkgs.writeTextDir "share/wayland-sessions/hyprland-uwsm.desktop" ''
+                [Desktop Entry]
+                Name=Hyprland (UWSM)
+                Comment=Hyprland compositor managed by UWSM
+                Exec=uwsm start -F -- /run/current-system/sw/bin/Hyprland
+                NoDisplay=true
+                Type=Application
+              '')
+            ];
+          })
+        ];
 
         programs.hyprland = {
           enable = true;
