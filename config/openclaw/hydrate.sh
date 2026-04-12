@@ -79,7 +79,7 @@ if [ "$MODE" = "gateway" ]; then
   CHROMIUM_PATH="@chromium@/bin/chromium"
 
   # Resolve Alloy OTLP ClusterIP for local telemetry export
-  OTEL_ENDPOINT="http://$(kubectl get svc alloy -n alloy -o jsonpath='{.spec.clusterIP}' 2>/dev/null || echo localhost):4318"
+  OTEL_ENDPOINT="http://$(@kubectl@ get svc alloy -n alloy -o jsonpath='{.spec.clusterIP}' 2>/dev/null || echo localhost):4318"
 
   @sed@ \
     -e "s|__CLIPROXY_API_KEY__|${CLIPROXY_API_KEY}|g" \
