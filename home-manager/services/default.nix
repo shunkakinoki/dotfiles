@@ -15,6 +15,7 @@ let
   dockerPostgres = import ./docker-postgres { inherit pkgs; };
   dotfilesUpdater = import ./dotfiles-updater { inherit pkgs; };
   gasTown = import ./gas-town { inherit pkgs; };
+  obsidian = import ./obsidian { inherit pkgs inputs; };
   makeUpdater = import ./make-updater { inherit pkgs; };
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
   ollama = import ./ollama { inherit pkgs inputs; };
@@ -33,6 +34,7 @@ in
   dockerPostgres
   dotfilesUpdater
   gasTown
+  obsidian
   makeUpdater
   neversslKeepalive
   ollama
