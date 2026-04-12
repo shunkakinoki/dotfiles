@@ -368,9 +368,9 @@ home-manager/modules/local-scripts/notify-local.sh
 home-manager/modules/local-scripts/pushover-notify.sh
 home-manager/modules/local-scripts/tmux-bridge.sh
 home-manager/modules/npm-globals/install-npm-globals.sh
-home-manager/modules/obsidian/obsidian-headless.sh
-home-manager/modules/openclaw/activate.sh
-home-manager/modules/paperclip/activate.sh
+home-manager/services/obsidian/obsidian-headless.sh
+home-manager/services/openclaw/activate.sh
+home-manager/services/paperclip/activate.sh
 home-manager/modules/tailscale/activate-create-dirs.sh
 home-manager/modules/tailscale/activate-install-service.sh
 home-manager/modules/uv-globals/install-uv-globals.sh

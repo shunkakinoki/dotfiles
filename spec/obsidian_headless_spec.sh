@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2329
 
-Describe 'home-manager/modules/obsidian/obsidian-headless.sh'
-SCRIPT="$PWD/home-manager/modules/obsidian/obsidian-headless.sh"
+Describe 'home-manager/services/obsidian/obsidian-headless.sh'
+SCRIPT="$PWD/home-manager/services/obsidian/obsidian-headless.sh"
 
 Describe 'script properties'
 It 'uses bash shebang'
