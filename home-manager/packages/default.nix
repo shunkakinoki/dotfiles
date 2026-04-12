@@ -100,7 +100,6 @@ with pkgs;
   victorialogs
   victoriametrics
   victoriatraces
-  vllm
   watchexec
   wget
   yarn
@@ -139,6 +138,7 @@ with pkgs;
   stdenv.cc.cc.lib
   tailscale
   trashy
+  vllm
   xclip
   zlib
 ]

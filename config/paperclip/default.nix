@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   inputs,
   ...
@@ -22,7 +23,7 @@ let
   };
 in
 {
-  home.activation.paperclipConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.paperclipConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.bash}/bin/bash ${setupScript} || true
   '';
 }

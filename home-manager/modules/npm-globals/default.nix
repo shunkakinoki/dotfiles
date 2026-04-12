@@ -9,7 +9,7 @@ let
 in
 {
   # Install npm global packages from package.json using home-manager activation
-  home.activation.installNpmGlobals = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.installNpmGlobals = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     export PATH=${pkgs.bun}/bin:${pkgs.jq}/bin:$PATH
     export BUN_INSTALL="$HOME/.bun"
     ${lib.optionalString (!isDarwin) ''export SYSTEMCTL_BIN="${pkgs.systemd}/bin/systemctl"''}

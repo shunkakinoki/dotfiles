@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }:
@@ -19,7 +20,7 @@ in
   # Hydrate CCS settings templates with secrets from .env
   # ANTHROPIC_AUTH_TOKEN is substituted from CLIPROXY_API_KEY at activation time
   # Processes all *.settings.template.json files in config/ccs/
-  home.activation.hydrateCcsSettings = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.hydrateCcsSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.bash}/bin/bash ${hydrateScript} || true
   '';
 }
