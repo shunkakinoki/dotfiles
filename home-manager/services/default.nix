@@ -19,6 +19,7 @@ let
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
   obsidian = import ./obsidian { inherit pkgs inputs; };
   ollama = import ./ollama { inherit pkgs inputs; };
+  qmd = import ./qmd { inherit config pkgs inputs; };
   openclaw = import ./openclaw {
     inherit
       config
@@ -54,6 +55,7 @@ in
   neversslKeepalive
   obsidian
   ollama
+  qmd
   openclaw
   paperclip
   sshAgent
