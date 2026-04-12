@@ -77,7 +77,6 @@
   "trustedDependencies": [
     "@anthropic-ai/claude-code",
     "@augmentcode/auggie",
-    "better-sqlite3",
     "@biomejs/biome",
     "@ccusage/amp",
     "@ccusage/codex",
@@ -111,6 +110,7 @@
     "acpx",
     "agent-browser",
     "agentcash",
+    "better-sqlite3",
     "ccusage",
     "chrome-devtools-mcp",
     "clawdhub",
