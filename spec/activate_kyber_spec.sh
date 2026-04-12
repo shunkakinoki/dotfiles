@@ -86,13 +86,11 @@ End
 Describe 'activation wrapper quoting'
 It 'quotes shared helper arguments that include the home directory'
 When run cat "$PWD/named-hosts/kyber/default.nix"
-# shellcheck disable=SC2016
 The output should include '"${config.home.homeDirectory}/.ssh"'
 End
 
 It 'quotes the agenix config directory argument'
 When run cat "$PWD/named-hosts/kyber/default.nix"
-# shellcheck disable=SC2016
 The output should include '"${config.home.homeDirectory}/.config/agenix"'
 End
 End

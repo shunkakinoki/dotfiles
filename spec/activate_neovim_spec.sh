@@ -84,13 +84,11 @@ End
 Describe 'activation wrapper quoting'
 It 'quotes the pack lock source path'
 When run cat "$PWD/home-manager/programs/neovim/default.nix"
-# shellcheck disable=SC2016
 The output should include '"${nvimPackLockJson}"'
 End
 
 It 'quotes the pack directory argument for plugin builds'
 When run cat "$PWD/home-manager/programs/neovim/default.nix"
-# shellcheck disable=SC2016
 The output should include '"${packDir}" "${libExt}"'
 End
 End
