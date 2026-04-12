@@ -100,6 +100,7 @@ with pkgs;
   victorialogs
   victoriametrics
   victoriatraces
+  vllm
   watchexec
   wget
   yarn
