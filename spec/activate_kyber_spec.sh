@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329
+# shellcheck disable=SC2016,SC2329
 
 Describe 'named-hosts/kyber/activate-backup-files.sh'
 SCRIPT="$PWD/named-hosts/kyber/activate-backup-files.sh"

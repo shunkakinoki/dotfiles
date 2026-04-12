@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329
+# shellcheck disable=SC2016,SC2329
 
 Describe 'config/codex/activate.sh'
 SCRIPT="$PWD/config/codex/activate.sh"
