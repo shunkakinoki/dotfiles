@@ -1,4 +1,9 @@
-{ config, pkgs, inputs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 let
   inherit (pkgs) lib;
   inherit (inputs.host) isKyber isGalactica;
