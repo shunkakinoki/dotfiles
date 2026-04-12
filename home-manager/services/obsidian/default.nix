@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   inputs,
   ...
@@ -12,11 +13,14 @@ let
   # full Electron asar, so they need a display server. We wrap the real
   # binary in `xvfb-run` so each invocation gets an ephemeral virtual X
   # server, letting the CLI run on a headless host.
+  homeDir = config.home.homeDirectory;
+
   obsidianHeadless = pkgs.writeShellScriptBin "obsidian" (
     builtins.readFile (
       pkgs.replaceVars ./obsidian-headless.sh {
         xvfbRun = pkgs.xvfb-run;
         inherit (pkgs) obsidian;
+        inherit homeDir;
       }
     )
   );

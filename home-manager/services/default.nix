@@ -17,7 +17,7 @@ let
   gasTown = import ./gas-town { inherit pkgs; };
   makeUpdater = import ./make-updater { inherit pkgs; };
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
-  obsidian = import ./obsidian { inherit pkgs inputs; };
+  obsidian = import ./obsidian { inherit config pkgs inputs; };
   ollama = import ./ollama { inherit pkgs inputs; };
   qmd = ./qmd;
   openclaw = ./openclaw;
