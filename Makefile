@@ -295,6 +295,19 @@ bun-update: ## Update bun dependencies to latest and regenerate lock file.
 	@bun install
 	@echo "✅ bun dependencies updated"
 
+.PHONY: uv-update
+uv-update: ## Update uv tool versions in pyproject.toml to latest.
+	@echo "🐍 Updating uv dependencies..."
+	@tomlq -r '.["dependency-groups"].tools[]' pyproject.toml | while read -r pkg; do \
+		name=$${pkg%%[><=!]*}; \
+		latest=$$(uv pip compile --no-deps - <<< "$$name" 2>/dev/null | grep "^$$name==" | sed "s/$$name==//"); \
+		if [ -n "$$latest" ]; then \
+			sed -i '' "s|\"$$name>=.*\"|\"$$name>=$$latest\"|" pyproject.toml; \
+			echo "  $$name -> $$latest"; \
+		fi; \
+	done
+	@echo "✅ uv dependencies updated"
+
 .PHONY: cargo-update
 cargo-update: ## Update Rust dependencies to latest and regenerate lock file.
 	@echo "🦀 Updating Cargo dependencies..."
