@@ -46,6 +46,7 @@
         "chrome-devtools-mcp": "^0.21.0",
         "clawdhub": "^0.3.0",
         "cline": "^2.14.0",
+        "droid": "^0.99.0",
         "get-shit-done-cc": "^1.34.2",
         "gh-axi": "^0.1.11",
         "mcp-remote": "^0.1.38",
@@ -72,6 +73,7 @@
     "ralph-tui",
     "cline",
     "@pencil.dev/cli",
+    "droid",
     "@ccusage/mcp",
     "@tobilu/qmd",
     "acpx",
@@ -84,12 +86,13 @@
     "get-shit-done-cc",
     "mcp-remote",
     "@steipete/bird",
-    "paperclipai",
+    "btca",
     "@ccusage/opencode",
     "@fission-ai/openspec",
     "@getgrit/cli",
     "@google/gemini-cli",
     "mcporter",
+    "paperclipai",
     "vite-plus",
     "@traces-sh/traces",
     "@oh-my-pi/swarm-extension",
@@ -111,6 +114,7 @@
     "ccusage",
     "@nanocollective/nanocoder",
     "@pkieltyka/gitgenie",
+    "better-sqlite3",
     "playwright-chromium",
     "@sourcegraph/amp",
     "xcodebuildmcp",
@@ -433,6 +437,24 @@
     "@eshaz/web-worker": ["@eshaz/web-worker@1.2.2", "", {}, "sha512-WxXiHFmD9u/owrzempiDlBB1ZYqiLnm9s6aPc8AlFQalq2tKmqdmMr9GXOupDgzXtqnBipj8Un0gkIm7Sjf8mw=="],
 
     "@exodus/bytes": ["@exodus/bytes@1.15.0", "", { "peerDependencies": { "@noble/hashes": "^1.8.0 || ^2.0.0" }, "optionalPeers": ["@noble/hashes"] }, "sha512-UY0nlA+feH81UGSHv92sLEPLCeZFjXOuHhrIo0HQydScuQc8s0A7kL/UdgwgDq8g8ilksmuoF35YVTNphV2aBQ=="],
+
+    "@factory/cli-darwin-arm64": ["@factory/cli-darwin-arm64@0.99.0", "", { "os": "darwin", "cpu": "arm64" }, "sha512-BpwJIWCJqJTw4bbs5rIJLIALkJYcNsXJAuGIxnXVv1IE0pBhWtswIKbgD4XEiu7Y3UEQD6IgfFYYz8MnbDnWbA=="],
+
+    "@factory/cli-darwin-x64": ["@factory/cli-darwin-x64@0.99.0", "", { "os": "darwin", "cpu": "x64" }, "sha512-7nD9wweVIcleueNulv3yDE7TDrjO6ZRgVdLKwyWP9lfAZTFj6j53KTe2rTz0ctkAalyVU7rOyjM9Tzur5D2xwg=="],
+
+    "@factory/cli-darwin-x64-baseline": ["@factory/cli-darwin-x64-baseline@0.99.0", "", { "os": "darwin", "cpu": "x64" }, "sha512-L5IbnutTcxZLqnQMLp5ZbCWrZyZio4z6tDQ66kijepX0GRRwoTfSld/kZeaMPRrtBgt/7629LzP3IdhukyNfOg=="],
+
+    "@factory/cli-linux-arm64": ["@factory/cli-linux-arm64@0.99.0", "", { "os": "linux", "cpu": "arm64" }, "sha512-DGqAc7W4pYcsQ/qeIwawbyWtbjKyC8YqbFt01n7y+/WkyZ37CThTIZGnxBMDJ++O1yWOKeMyMSXdi2yYqWJ2bQ=="],
+
+    "@factory/cli-linux-x64": ["@factory/cli-linux-x64@0.99.0", "", { "os": "linux", "cpu": "x64" }, "sha512-16fmqhBS2ijMVC2DNuVkmXLToRhAmZad7Lz8pQYb8ECW0uQthX5hM91grNoQ39MkZVDoYOmmrbTL7y6q3H3uJA=="],
+
+    "@factory/cli-linux-x64-baseline": ["@factory/cli-linux-x64-baseline@0.99.0", "", { "os": "linux", "cpu": "x64" }, "sha512-myuXfRI7C8TiFLD3idmC7qRYZgDnl/GV7hDkPe9xXIvjfOFaH8l4REOEThp/yPRGsO9pBp2FmRFQ5q9qUuQd/g=="],
+
+    "@factory/cli-win32-arm64": ["@factory/cli-win32-arm64@0.99.0", "", { "os": "win32", "cpu": "arm64" }, "sha512-rY7wzB6O5NpSk9b07HkkVMfVPDFuqmv4JdXC+unBckgg8MdpgSW8adi6DDSIz5BGPldyZWS2mK0pLoMnf1DeDw=="],
+
+    "@factory/cli-win32-x64": ["@factory/cli-win32-x64@0.99.0", "", { "os": "win32", "cpu": "x64" }, "sha512-3kp7jvaGBoqZ1L84Q2zwN3a1NfsJpgIzUKVS/ro9UwMQ61U72zN9cLWhD2FdZBUuFKPG6DMLgoRAFVXgzIvtig=="],
+
+    "@factory/cli-win32-x64-baseline": ["@factory/cli-win32-x64-baseline@0.99.0", "", { "os": "win32", "cpu": "x64" }, "sha512-TU8GrU6sniltkDCuwsDQgyCcLGNxBZs3m0HBfSQryKwVlxeMfLIM+Onfqq7/o13AE5Y6GdWTCfpKuahs89Z57w=="],
 
     "@fastify/busboy": ["@fastify/busboy@2.1.1", "", {}, "sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA=="],
 
@@ -2121,6 +2143,8 @@
     "dotenv": ["dotenv@17.3.1", "", {}, "sha512-IO8C/dzEb6O3F9/twg6ZLXz164a2fhTnEWb95H23Dm4OuN+92NmEAlTrupP9VW6Jm3sO26tQlqyvyi4CsnY9GA=="],
 
     "drizzle-orm": ["drizzle-orm@0.38.4", "", { "peerDependencies": { "@aws-sdk/client-rds-data": ">=3", "@cloudflare/workers-types": ">=4", "@electric-sql/pglite": ">=0.2.0", "@libsql/client": ">=0.10.0", "@libsql/client-wasm": ">=0.10.0", "@neondatabase/serverless": ">=0.10.0", "@op-engineering/op-sqlite": ">=2", "@opentelemetry/api": "^1.4.1", "@planetscale/database": ">=1", "@prisma/client": "*", "@tidbcloud/serverless": "*", "@types/better-sqlite3": "*", "@types/pg": "*", "@types/react": ">=18", "@types/sql.js": "*", "@vercel/postgres": ">=0.8.0", "@xata.io/client": "*", "better-sqlite3": ">=7", "bun-types": "*", "expo-sqlite": ">=14.0.0", "knex": "*", "kysely": "*", "mysql2": ">=2", "pg": ">=8", "postgres": ">=3", "react": ">=18", "sql.js": ">=1", "sqlite3": ">=5" }, "optionalPeers": ["@aws-sdk/client-rds-data", "@cloudflare/workers-types", "@electric-sql/pglite", "@libsql/client", "@libsql/client-wasm", "@neondatabase/serverless", "@op-engineering/op-sqlite", "@opentelemetry/api", "@planetscale/database", "@prisma/client", "@tidbcloud/serverless", "@types/better-sqlite3", "@types/pg", "@types/react", "@types/sql.js", "@vercel/postgres", "@xata.io/client", "better-sqlite3", "bun-types", "expo-sqlite", "knex", "kysely", "mysql2", "pg", "postgres", "react", "sql.js", "sqlite3"] }, "sha512-s7/5BpLKO+WJRHspvpqTydxFob8i1vo2rEx4pY6TGY7QSMuUfWUuzaY0DIpXCkgHOo37BaFC+SJQb99dDUXT3Q=="],
+
+    "droid": ["droid@0.99.0", "", { "optionalDependencies": { "@factory/cli-darwin-arm64": "0.99.0", "@factory/cli-darwin-x64": "0.99.0", "@factory/cli-darwin-x64-baseline": "0.99.0", "@factory/cli-linux-arm64": "0.99.0", "@factory/cli-linux-x64": "0.99.0", "@factory/cli-linux-x64-baseline": "0.99.0", "@factory/cli-win32-arm64": "0.99.0", "@factory/cli-win32-x64": "0.99.0", "@factory/cli-win32-x64-baseline": "0.99.0" }, "bin": { "droid": "bin/droid" } }, "sha512-L89bi/LjBCWBuk7gFKTxCP9Qst2MY/n5u0KuNGIi3VeRVSahe3lUEcj6GOyxSpJTwQRLkJ/4FHC9kzD/tGkKpg=="],
 
     "duck": ["duck@0.1.12", "", { "dependencies": { "underscore": "^1.13.1" } }, "sha512-wkctla1O6VfP89gQ+J/yDesM0S7B7XLXjKGzXxMDVFg7uEn706niAtyYovKbyq1oT9YwDcly721/iUWoc8MVRg=="],
 

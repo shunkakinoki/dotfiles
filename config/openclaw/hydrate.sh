@@ -76,6 +76,7 @@ if [ "$MODE" = "gateway" ]; then
   TELEGRAM_TOKEN="${OPENCLAW_TELEGRAM_TOKEN:-${TELEGRAM_TOKEN:-$(read_secret "${SECRETS_DIR}/telegram-token")}}"
   WHATSAPP_ALLOW_FROM="${OPENCLAW_WHATSAPP_ALLOW_FROM:-${WHATSAPP_ALLOW_FROM:-$(read_secret "${SECRETS_DIR}/whatsapp-allow-from")}}"
   ANTHROPIC_API_KEY="${OPENCLAW_ANTHROPIC_API_KEY:-${ANTHROPIC_API_KEY:-$(read_secret "${SECRETS_DIR}/anthropic-key")}}"
+  HOOKS_TOKEN="${OPENCLAW_HOOKS_TOKEN:-${HOOKS_TOKEN:-$(read_secret "${SECRETS_DIR}/hooks-token")}}"
   CHROMIUM_PATH="@chromium@/bin/chromium"
 
   # Resolve Alloy OTLP ClusterIP for local telemetry export
@@ -85,6 +86,7 @@ if [ "$MODE" = "gateway" ]; then
     -e "s|__CLIPROXY_API_KEY__|${CLIPROXY_API_KEY}|g" \
     -e "s|__TELEGRAM_TOKEN__|${TELEGRAM_TOKEN}|g" \
     -e "s|__WHATSAPP_ALLOW_FROM__|${WHATSAPP_ALLOW_FROM}|g" \
+    -e "s|__HOOKS_TOKEN__|${HOOKS_TOKEN}|g" \
     -e "s|__GATEWAY_TOKEN__|${GATEWAY_TOKEN}|g" \
     -e "s|__CHROMIUM_PATH__|${CHROMIUM_PATH}|g" \
     -e "s|__OTEL_ENDPOINT__|${OTEL_ENDPOINT}|g" \
