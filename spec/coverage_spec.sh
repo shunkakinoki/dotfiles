@@ -196,6 +196,94 @@ It 'has spec file for home-manager/services/darkman/light-mode.sh'
 The path "spec/darkman_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/activation/ensure-directory.sh'
+The path "spec/activation_shared_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/activation/deploy-agenix-secret.sh'
+The path "spec/activation_shared_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/activation/import-gpg-key.sh'
+The path "spec/activation_shared_spec.sh" should be exist
+End
+
+It 'has spec file for config/codex/activate.sh'
+The path "spec/activate_config_spec.sh" should be exist
+End
+
+It 'has spec file for config/claude/activate.sh'
+The path "spec/activate_config_spec.sh" should be exist
+End
+
+It 'has spec file for config/cursor/activate.sh'
+The path "spec/activate_config_spec.sh" should be exist
+End
+
+It 'has spec file for config/omp/activate.sh'
+The path "spec/activate_config_spec.sh" should be exist
+End
+
+It 'has spec file for config/gemini/activate.sh'
+The path "spec/activate_config_spec.sh" should be exist
+End
+
+It 'has spec file for config/serena/activate.sh'
+The path "spec/activate_config_spec.sh" should be exist
+End
+
+It 'has spec file for config/k3s/activate.sh'
+The path "spec/activate_k3s_spec.sh" should be exist
+End
+
+It 'has spec file for hosts/darwin/activate-remove-backups.sh'
+The path "spec/activate_hosts_spec.sh" should be exist
+End
+
+It 'has spec file for hosts/linux/activate-backup-files.sh'
+The path "spec/activate_hosts_spec.sh" should be exist
+End
+
+It 'has spec file for named-hosts/kyber/activate-backup-files.sh'
+The path "spec/activate_kyber_spec.sh" should be exist
+End
+
+It 'has spec file for named-hosts/kyber/activate-ip-forwarding.sh'
+The path "spec/activate_kyber_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/modules/bin-shells/activate.sh'
+The path "spec/activate_bin_shells_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/modules/paperclip/activate.sh'
+The path "spec/activate_paperclip_openclaw_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/modules/openclaw/activate.sh'
+The path "spec/activate_paperclip_openclaw_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/modules/tailscale/activate-create-dirs.sh'
+The path "spec/activate_tailscale_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/modules/tailscale/activate-install-service.sh'
+The path "spec/activate_tailscale_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/programs/fnm/activate.sh'
+The path "spec/activate_fnm_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/programs/neovim/activate-copy-pack-lock.sh'
+The path "spec/activate_neovim_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/programs/neovim/activate-build-plugins.sh'
+The path "spec/activate_neovim_spec.sh" should be exist
+End
+
 End
 
 Describe 'fish shortcut declarations'
@@ -233,7 +321,8 @@ Describe 'no shell scripts are missing from coverage list'
 It 'covers all non-spec shell scripts in the repository'
 # List of all shell scripts that should have tests
 # Update this list when adding new shell scripts
-covered_scripts="config/ccs/hydrate.sh
+covered_scripts="config/claude/activate.sh
+config/ccs/hydrate.sh
 config/claude/hooks/notify.sh
 config/claude/hooks/pushover.sh
 config/claude/hooks/rtk-rewrite.sh
@@ -241,28 +330,43 @@ config/claude/hooks/auto-switch.sh
 config/claude/hooks/security.sh
 config/claude/hooks/atuin-history.sh
 config/claude/hooks/statusline.sh
+config/codex/activate.sh
 config/codex/hooks/atuin-history.sh
 config/codex/hooks/notify.sh
 config/codex/hooks/pushover.sh
 config/codex/hooks/rtk-rewrite.sh
 config/codex/hooks/security.sh
-home-manager/modules/local-scripts/pushover-notify.sh
-scripts/sync-codex-security.sh
-scripts/sync-rtk-rewrite.sh
+config/cursor/activate.sh
+config/gemini/activate.sh
 config/hyprland/scripts/record-screen.sh
 config/hyprland/scripts/toggle-terminal.sh
-config/rofi/gnome-control-center-wrapper.sh
+config/k3s/activate.sh
+config/omp/activate.sh
 config/openclaw/hydrate.sh
 config/paperclip/hydrate.sh
+config/rofi/gnome-control-center-wrapper.sh
+config/serena/activate.sh
+home-manager/activation/deploy-agenix-secret.sh
+home-manager/activation/ensure-directory.sh
+home-manager/activation/import-gpg-key.sh
+home-manager/modules/bin-shells/activate.sh
 home-manager/modules/cargo-globals/install-cargo-globals.sh
 home-manager/modules/local-binaries/sync-local-binaries.sh
 home-manager/modules/local-scripts/clipboard-copy.sh
 home-manager/modules/local-scripts/clipboard-paste.sh
 home-manager/modules/local-scripts/notify-local.sh
+home-manager/modules/local-scripts/pushover-notify.sh
 home-manager/modules/local-scripts/tmux-bridge.sh
 home-manager/modules/npm-globals/install-npm-globals.sh
 home-manager/modules/obsidian/obsidian-headless.sh
+home-manager/modules/openclaw/activate.sh
+home-manager/modules/paperclip/activate.sh
+home-manager/modules/tailscale/activate-create-dirs.sh
+home-manager/modules/tailscale/activate-install-service.sh
 home-manager/modules/uv-globals/install-uv-globals.sh
+home-manager/programs/fnm/activate.sh
+home-manager/programs/neovim/activate-build-plugins.sh
+home-manager/programs/neovim/activate-copy-pack-lock.sh
 home-manager/programs/neovim/run_tests.sh
 home-manager/programs/tmux/session-logger.sh
 home-manager/services/brew-upgrader/upgrade.sh
@@ -285,7 +389,11 @@ home-manager/services/dotfiles-updater/update.sh
 home-manager/services/gas-town/start.sh
 home-manager/services/make-updater/update.sh
 home-manager/services/neverssl-keepalive/keepalive.sh
+hosts/darwin/activate-remove-backups.sh
+hosts/linux/activate-backup-files.sh
 install.sh
+named-hosts/kyber/activate-backup-files.sh
+named-hosts/kyber/activate-ip-forwarding.sh
 named-hosts/kyber/rekey-galactica.sh
 named-hosts/kyber/setup.sh
 named-hosts/matic/falcon-init.sh
@@ -295,6 +403,8 @@ scripts/build-neovim-plugins.sh
 scripts/check-nix-inline-scripts.sh
 scripts/fishtape-wrapper.sh
 scripts/llm-update.sh
+scripts/sync-codex-security.sh
+scripts/sync-rtk-rewrite.sh
 scripts/update-gitalias.sh
 scripts/update-local-binaries.sh
 scripts/upgrade-overlays.sh

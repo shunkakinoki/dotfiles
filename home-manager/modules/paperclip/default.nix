@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   inputs,
   ...
 }:
@@ -12,9 +13,7 @@ in
 lib.mkIf host.isKyber {
   # Ensure Paperclip directories exist with correct permissions
   home.activation.paperclipSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    mkdir -p /tmp/paperclip
-    mkdir -p ${homeDir}/.paperclip
-    chmod 700 ${homeDir}/.paperclip
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} ${homeDir}
   '';
 
   # Systemd service for Paperclip

@@ -15,16 +15,8 @@ in
 {
   # Install cargo global packages from Cargo.toml using home-manager activation
   home.activation.installCargoGlobals = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    ${lib.optionalString (!isDarwin) ''
-      if [ "$(${pkgs.systemd}/bin/systemctl is-system-running 2>/dev/null)" = "starting" ]; then
-        echo "System is booting, skipping cargo globals install"
-        exit 0
-      fi
-    ''}
     export PATH=${pkgs.rustup}/bin:${pkgs.cargo}/bin:${pkgs.rustc}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.gcc}/bin:${pkgs.pkg-config}/bin:${pkgs.perl}/bin:$PATH
     export CARGO_HOME="$HOME/.cargo"
-    $DRY_RUN_CMD ${pkgs.rustup}/bin/rustup toolchain install stable --no-self-update || true
-    $DRY_RUN_CMD ${pkgs.rustup}/bin/rustup default stable || true
     export PKG_CONFIG_PATH="${pkgs.openssl.dev}/lib/pkgconfig${libiconvPkgConfigPath}''${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
     export OPENSSL_DIR="${pkgs.openssl.dev}"
     export OPENSSL_LIB_DIR="${pkgs.openssl.out}/lib"
@@ -33,6 +25,8 @@ in
     ${lib.optionalString isDarwin ''export CPATH="${libiconvCPath}''${CPATH:+:$CPATH}"''}
     ${lib.optionalString isDarwin ''export LDFLAGS="${libiconvLdFlags}''${LDFLAGS:-}"''}
     ${lib.optionalString isDarwin ''export CPPFLAGS="${libiconvCppFlags}''${CPPFLAGS:-}"''}
+    ${lib.optionalString (!isDarwin) ''export SYSTEMCTL_BIN="${pkgs.systemd}/bin/systemctl"''}
+    export RUSTUP_BIN="${pkgs.rustup}/bin/rustup"
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./install-cargo-globals.sh}
   '';
 

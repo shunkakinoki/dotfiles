@@ -10,14 +10,9 @@ in
 {
   # Install npm global packages from package.json using home-manager activation
   home.activation.installNpmGlobals = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    ${lib.optionalString (!isDarwin) ''
-      if [ "$(${pkgs.systemd}/bin/systemctl is-system-running 2>/dev/null)" = "starting" ]; then
-        echo "System is booting, skipping npm globals install"
-        exit 0
-      fi
-    ''}
     export PATH=${pkgs.bun}/bin:${pkgs.jq}/bin:$PATH
     export BUN_INSTALL="$HOME/.bun"
+    ${lib.optionalString (!isDarwin) ''export SYSTEMCTL_BIN="${pkgs.systemd}/bin/systemctl"''}
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./install-npm-globals.sh}
   '';
 

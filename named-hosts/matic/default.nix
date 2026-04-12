@@ -506,60 +506,34 @@ inputs.nixpkgs.lib.nixosSystem {
 
           # Ensure SSH directory exists before agenix tries to deploy secrets
           home.activation.ensureSshDirectory = config.lib.dag.entryBefore [ "writeBoundary" ] ''
-            $DRY_RUN_CMD mkdir -p $VERBOSE_ARG ${config.home.homeDirectory}/.ssh
-            $DRY_RUN_CMD chmod $VERBOSE_ARG 700 ${config.home.homeDirectory}/.ssh
+            $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${../../home-manager/activation/ensure-directory.sh} 700 ${config.home.homeDirectory}/.ssh
           '';
 
           # Ensure agenix config directory exists
           home.activation.ensureAgenixDirectory = config.lib.dag.entryBefore [ "writeBoundary" ] ''
-            $DRY_RUN_CMD mkdir -p $VERBOSE_ARG ${config.home.homeDirectory}/.config/agenix
-            $DRY_RUN_CMD chmod $VERBOSE_ARG 700 ${config.home.homeDirectory}/.config/agenix
+            $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${../../home-manager/activation/ensure-directory.sh} 700 ${config.home.homeDirectory}/.config/agenix
           '';
 
           # Manually deploy agenix secrets during activation
           # This ensures secrets are deployed even if the agenix activation hook doesn't run properly
           home.activation.deployAgenixSecrets = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-            # Decrypt and deploy GitHub SSH key if it doesn't exist
-            if [[ ! -f "${config.home.homeDirectory}/.ssh/id_ed25519_github" ]]; then
-              echo "Deploying GitHub SSH key from agenix..."
-              SECRET_FILE="${builtins.toString ../galactica/keys/id_ed25519.age}"
-              if [[ -f "$SECRET_FILE" ]]; then
-                if $DRY_RUN_CMD ${pkgs.rage}/bin/rage -d -i ${config.home.homeDirectory}/.ssh/id_ed25519 "$SECRET_FILE" -o ${config.home.homeDirectory}/.ssh/id_ed25519_github 2>/dev/null; then
-                  $DRY_RUN_CMD chmod $VERBOSE_ARG 0600 ${config.home.homeDirectory}/.ssh/id_ed25519_github
-                  echo "✅ GitHub SSH key deployed successfully"
-                else
-                  echo "⚠️  Warning: SSH key not authorized to decrypt — skipping"
-                fi
-              else
-                echo "⚠️  Warning: Secret file not found at $SECRET_FILE"
-              fi
-            fi
+            $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${../../home-manager/activation/deploy-agenix-secret.sh} \
+              ${config.home.homeDirectory}/.ssh/id_ed25519_github \
+              ${builtins.toString ../galactica/keys/id_ed25519.age} \
+              ${config.home.homeDirectory}/.ssh/id_ed25519 \
+              ${pkgs.rage}/bin/rage
           '';
 
           # Import GPG key from agenix (all systems with dotfiles)
           # Fails silently if SSH key isn't authorized to decrypt
           home.activation.importGpgKey = config.lib.dag.entryAfter [ "linkGeneration" ] ''
-            $VERBOSE_ECHO "🔑 Starting GPG key import process..."
-            GPG_SECRET_FILE="${config.home.homeDirectory}/dotfiles/named-hosts/galactica/keys/gpg.age"
-            GPG_TEMP_FILE="${config.home.homeDirectory}/.config/agenix/gpg.key"
-
-            # Create agenix directory if it doesn't exist
-            mkdir -p "${config.home.homeDirectory}/.config/agenix"
-
-            if [[ -f "$GPG_SECRET_FILE" ]]; then
-              # Check if key is already imported
-              if ! ${pkgs.gnupg}/bin/gpg --list-secret-keys 2>/dev/null | grep -q "C2E97FCFF482925D"; then
-                echo "Importing GPG key from agenix..."
-                # Try to decrypt - will fail silently if SSH key isn't authorized
-                if ${pkgs.rage}/bin/rage -d -i ${config.home.homeDirectory}/.ssh/id_ed25519 -o "$GPG_TEMP_FILE" "$GPG_SECRET_FILE" 2>/dev/null; then
-                  ${pkgs.gnupg}/bin/gpg --batch --import "$GPG_TEMP_FILE" 2>/dev/null
-                  rm -f "$GPG_TEMP_FILE"
-                  echo "✅ GPG key imported successfully"
-                fi
-              else
-                $VERBOSE_ECHO "ℹ️  GPG key already imported"
-              fi
-            fi
+            $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${../../home-manager/activation/import-gpg-key.sh} \
+              ${config.home.homeDirectory}/dotfiles/named-hosts/galactica/keys/gpg.age \
+              ${config.home.homeDirectory}/.ssh/id_ed25519 \
+              ${config.home.homeDirectory}/.config/agenix \
+              ${pkgs.rage}/bin/rage \
+              ${pkgs.gnupg}/bin/gpg \
+              C2E97FCFF482925D
           '';
 
           # GPG configuration for commit signing

@@ -5,15 +5,13 @@ Describe 'cargo-globals/install-cargo-globals.sh'
 SCRIPT="$PWD/home-manager/modules/cargo-globals/install-cargo-globals.sh"
 
 Describe 'systemd activation skip'
-NIX_FILE="$PWD/home-manager/modules/cargo-globals/default.nix"
-
 It 'checks systemctl is-system-running to detect boot'
-When run bash -c "grep 'is-system-running' '$NIX_FILE'"
+When run bash -c "grep 'is-system-running' '$SCRIPT'"
 The output should include 'is-system-running'
 End
 
 It 'skips install during system boot'
-When run bash -c "grep -A 1 'is-system-running' '$NIX_FILE'"
+When run bash -c "grep -A 1 'is-system-running' '$SCRIPT'"
 The output should include 'skipping cargo globals install'
 End
 End
