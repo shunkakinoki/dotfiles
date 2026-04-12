@@ -48,6 +48,33 @@ if [ -n "$TRUSTED_DEPS" ]; then
   done
 fi
 
+# Remove packages that are no longer declared in dotfiles/package.json
+GLOBAL_PKG="${HOME}/.bun/install/global/package.json"
+STALE=()
+if [ -f "$GLOBAL_PKG" ]; then
+  GLOBAL_DEPS=$(jq -r '.dependencies | keys[]?' "$GLOBAL_PKG" 2>/dev/null || true)
+  if [ -n "$GLOBAL_DEPS" ]; then
+    while IFS= read -r dep; do
+      [ -z "$dep" ] && continue
+      if ! jq -e --arg dep "$dep" '.dependencies | has($dep)' "$PACKAGE_JSON" >/dev/null 2>&1; then
+        STALE+=("$dep")
+      fi
+    done <<<"$GLOBAL_DEPS"
+  fi
+fi
+
+if [ "${#STALE[@]}" -gt 0 ]; then
+  echo "Removing ${#STALE[@]} stale packages..."
+  for dep in "${STALE[@]}"; do
+    timeout 600 bun remove --global "$dep" 2>/dev/null || echo "Remove failed: $dep"
+    if [ -f "$GLOBAL_PKG" ] && jq -e --arg dep "$dep" '.dependencies | has($dep)' "$GLOBAL_PKG" >/dev/null 2>&1; then
+      jq --arg dep "$dep" 'del(.dependencies[$dep])' "$GLOBAL_PKG" >"${GLOBAL_PKG}.tmp" &&
+        mv "${GLOBAL_PKG}.tmp" "$GLOBAL_PKG"
+    fi
+    rm -rf "${HOME}/.bun/install/global/node_modules/$dep"
+  done
+fi
+
 # Build list of packages that need installing or updating
 GLOBAL_MODULES="${HOME}/.bun/install/global/node_modules"
 DEPS=$(jq -r '.dependencies | to_entries[] | "\(.key)=\(.value)"' "$PACKAGE_JSON" 2>/dev/null || true)
@@ -89,11 +116,21 @@ else
   echo "All npm global packages already installed"
 fi
 
+# Remove stale shims left behind by prior Bun global installs
+BUN_BIN="${HOME}/.bun/bin"
+if [ -d "$BUN_BIN" ]; then
+  find "$BUN_BIN" -mindepth 1 -maxdepth 1 -type l 2>/dev/null | while read -r shim; do
+    if [ ! -e "$shim" ]; then
+      rm -f "$shim"
+      echo "Removed dangling bun shim: $(basename "$shim")"
+    fi
+  done
+fi
+
 # Apply dependency overrides to the global install
 # Bun's flat hoisting can resolve incompatible versions (e.g. pino@10 vs pino-http@10.5)
 OVERRIDES=$(jq -c '.overrides // empty' "$PACKAGE_JSON" 2>/dev/null || true)
 if [ -n "$OVERRIDES" ]; then
-  GLOBAL_PKG="${HOME}/.bun/install/global/package.json"
   if [ -f "$GLOBAL_PKG" ]; then
     jq --argjson overrides "$OVERRIDES" '.overrides = $overrides' "$GLOBAL_PKG" >"${GLOBAL_PKG}.tmp" &&
       mv "${GLOBAL_PKG}.tmp" "$GLOBAL_PKG"

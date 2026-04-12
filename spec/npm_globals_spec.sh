@@ -186,4 +186,78 @@ When run bash -c "grep 'find.*GLOBAL_MODULES' '$SCRIPT'"
 The output should include 'find'
 End
 End
+
+Describe 'stale global package pruning'
+setup() {
+  TEMP_HOME=$(mktemp -d)
+  MOCK_BIN=$(mktemp -d)
+  MOCK_LOG="$TEMP_HOME/mock.log"
+  REAL_BIN_DIR="$(dirname "$(command -v jq)")"
+  REAL_SYSTEM_BIN_DIR="$(dirname "$(command -v mv)")"
+  : >"$MOCK_LOG"
+
+  mkdir -p "$TEMP_HOME/dotfiles" "$TEMP_HOME/.bun/install/global" "$TEMP_HOME/.bun/bin"
+
+  cat >"$TEMP_HOME/dotfiles/package.json" <<'EOF'
+{
+  "dependencies": {}
+}
+EOF
+
+  cat >"$TEMP_HOME/.bun/install/global/package.json" <<'EOF'
+{
+  "dependencies": {
+    "@beads/bd": "^0.63.3"
+  }
+}
+EOF
+
+  ln -sf ../install/global/node_modules/@beads/bd/bin/bd.js "$TEMP_HOME/.bun/bin/bd"
+
+  cat >"$MOCK_BIN/timeout" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+shift
+if [ "${1:-}" = "bash" ] && [ "${2:-}" = "-c" ] && [ "${3:-}" = "exec 3<>/dev/tcp/1.1.1.1/53" ]; then
+  exit 0
+fi
+exec "$@"
+EOF
+  chmod +x "$MOCK_BIN/timeout"
+
+  cat >"$MOCK_BIN/bun" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+printf 'bun %s\n' "$*" >>"$MOCK_LOG"
+if [ "${1:-}" = "remove" ] && [ "${2:-}" = "--global" ] && [ "${3:-}" = "@beads/bd" ]; then
+  jq 'del(.dependencies["@beads/bd"])' "$HOME/.bun/install/global/package.json" >"$HOME/.bun/install/global/package.json.tmp"
+  mv "$HOME/.bun/install/global/package.json.tmp" "$HOME/.bun/install/global/package.json"
+  rm -f "$HOME/.bun/bin/bd"
+fi
+EOF
+  chmod +x "$MOCK_BIN/bun"
+}
+
+cleanup() {
+  rm -rf "$TEMP_HOME" "$MOCK_BIN"
+}
+
+Before 'setup'
+After 'cleanup'
+
+It 'removes packages no longer declared in dotfiles package.json'
+When run bash -c "HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
+The output should include 'bun remove --global @beads/bd'
+End
+
+It 'removes stale package entries from bun global package.json'
+When run bash -c "HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT' >/dev/null 2>&1; jq -r '.dependencies[\"@beads/bd\"] // \"missing\"' '$TEMP_HOME/.bun/install/global/package.json'"
+The output should eq 'missing'
+End
+
+It 'removes dangling bun shims for stale packages'
+When run bash -c "HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT' >/dev/null 2>&1; test -e '$TEMP_HOME/.bun/bin/bd' && echo present || echo missing"
+The output should eq 'missing'
+End
+End
 End
