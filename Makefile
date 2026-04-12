@@ -418,7 +418,7 @@ nix-backup: ## Backup configuration files.
 	fi
 
 .PHONY: nix-build
-nix-build: nix-connect ## Build Nix configuration.
+nix-build: nix-connect nix-trust ## Build Nix configuration.
 	@echo "🏗️ Building Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"
 	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		echo "🤖 Running in CI/Docker environment"; \
