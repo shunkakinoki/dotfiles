@@ -21,6 +21,7 @@
 ~/ghq/github.com/Dicklesworthstone/slb/build/slb
 ~/ghq/github.com/Dicklesworthstone/ultimate_bug_scanner/ubs
 ~/ghq/github.com/GoogleCloudPlatform/scion/scion
+~/ghq/github.com/MH4GF/tq/tq
 ~/ghq/github.com/NousResearch/hermes-agent/.venv/bin/hermes
 ~/ghq/github.com/NousResearch/hermes-agent/.venv/bin/hermes-agent
 ~/ghq/github.com/NousResearch/hermes-agent/.venv/bin/hermes-acp
@@ -28,4 +29,3 @@
 ~/ghq/github.com/openai/symphony/elixir/bin/symphony
 ~/ghq/github.com/steveyegge/beads/bd
 ~/ghq/github.com/steveyegge/gastown/gt
-~/ghq/github.com/MH4GF/tq/tq
