@@ -228,6 +228,14 @@ It 'has spec file for config/gemini/activate.sh'
 The path "spec/activate_config_spec.sh" should be exist
 End
 
+It 'has spec file for config/git-ai/activate.sh'
+The path "spec/activate_config_spec.sh" should be exist
+End
+
+It 'has spec file for config/obsidian/activate.sh'
+The path "spec/activate_config_spec.sh" should be exist
+End
+
 It 'has spec file for config/serena/activate.sh'
 The path "spec/activate_config_spec.sh" should be exist
 End
@@ -338,9 +346,11 @@ config/codex/hooks/rtk-rewrite.sh
 config/codex/hooks/security.sh
 config/cursor/activate.sh
 config/gemini/activate.sh
+config/git-ai/activate.sh
 config/hyprland/scripts/record-screen.sh
 config/hyprland/scripts/toggle-terminal.sh
 config/k3s/activate.sh
+config/obsidian/activate.sh
 config/omp/activate.sh
 config/openclaw/hydrate.sh
 config/paperclip/hydrate.sh

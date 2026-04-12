@@ -1,13 +1,6 @@
-{ pkgs, ... }:
-let
-  baseConfig = builtins.fromJSON (builtins.readFile ./config.json);
-  hydratedConfig = baseConfig // {
-    git_path = "${pkgs.git}/bin/git";
-  };
-in
+{ pkgs, lib, ... }:
 {
-  home.file.".git-ai/config.json" = {
-    text = builtins.toJSON hydratedConfig;
-    force = true;
-  };
+  home.activation.gitAiConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} ${./config.json} ${pkgs.git}/bin/git
+  '';
 }

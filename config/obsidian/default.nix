@@ -2,25 +2,20 @@
   config,
   inputs,
   pkgs,
+  lib,
   ...
 }:
 let
   inherit (inputs.host) isKyber isGalactica;
   enabled = isKyber || isGalactica;
-  obsidianJson = pkgs.writeText "obsidian.json" (
-    builtins.toJSON {
-      cli = true;
-      vaults.wiki = {
-        path = "${config.home.homeDirectory}/ghq/github.com/shunkakinoki/wiki";
-        ts = 0;
-        open = true;
-      };
-    }
-  );
 in
 {
-  xdg.configFile."obsidian/obsidian.json" = {
-    source = obsidianJson;
-    enable = enabled;
-  };
+  home.activation.obsidianConfig = lib.mkIf enabled (
+    config.lib.dag.entryAfter [ "writeBoundary" ] ''
+      $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} \
+        ${./config.json} \
+        ${config.home.homeDirectory} \
+        ${pkgs.gnused}/bin/sed
+    ''
+  );
 }

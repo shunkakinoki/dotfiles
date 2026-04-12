@@ -109,3 +109,41 @@ When run bash -c "grep 'chmod u+w' '$SCRIPT'"
 The output should include 'chmod u+w'
 End
 End
+
+Describe 'config/git-ai/activate.sh'
+SCRIPT="$PWD/config/git-ai/activate.sh"
+
+It 'uses bash shebang'
+When run bash -c "head -1 '$SCRIPT'"
+The output should include '#!/usr/bin/env bash'
+End
+
+It 'creates .git-ai directory'
+When run bash -c "grep 'mkdir -p' '$SCRIPT'"
+The output should include '.git-ai'
+End
+
+It 'injects git_path via jq'
+When run bash -c "grep 'jq' '$SCRIPT'"
+The output should include 'git_path'
+End
+End
+
+Describe 'config/obsidian/activate.sh'
+SCRIPT="$PWD/config/obsidian/activate.sh"
+
+It 'uses bash shebang'
+When run bash -c "head -1 '$SCRIPT'"
+The output should include '#!/usr/bin/env bash'
+End
+
+It 'substitutes home directory placeholder'
+When run bash -c "grep '__HOME_DIR__' '$SCRIPT'"
+The output should include '__HOME_DIR__'
+End
+
+It 'creates obsidian config directory'
+When run bash -c "grep 'mkdir -p' '$SCRIPT'"
+The output should include 'obsidian'
+End
+End

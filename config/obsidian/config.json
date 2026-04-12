@@ -1,0 +1,10 @@
+{
+  "cli": true,
+  "vaults": {
+    "wiki": {
+      "path": "__HOME_DIR__/ghq/github.com/shunkakinoki/wiki",
+      "ts": 0,
+      "open": true
+    }
+  }
+}
