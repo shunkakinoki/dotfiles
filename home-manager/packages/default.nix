@@ -140,6 +140,7 @@ with pkgs;
   trashy
   vllm
   xclip
+  xdg-utils
   zlib
 ]
 ++ lib.optionals stdenv.isLinux [ alsa-lib ]

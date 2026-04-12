@@ -703,6 +703,45 @@
             "exec"
           ]
         }
+      },
+      {
+        "id": "amp",
+        "name": "AMP (Sourcegraph)",
+        "workspace": "__HOME__/.openclaw/workspace/agents/amp",
+        "runtime": {
+          "type": "acp",
+          "acp": {
+            "agent": "amp",
+            "backend": "acpx",
+            "mode": "persistent"
+          }
+        }
+      },
+      {
+        "id": "factory",
+        "name": "Factory Droid",
+        "workspace": "__HOME__/.openclaw/workspace/agents/factory",
+        "runtime": {
+          "type": "acp",
+          "acp": {
+            "agent": "droid",
+            "backend": "acpx",
+            "mode": "persistent"
+          }
+        }
+      },
+      {
+        "id": "codex",
+        "name": "Codex (GPT)",
+        "workspace": "__HOME__/.openclaw/workspace/agents/codex",
+        "runtime": {
+          "type": "acp",
+          "acp": {
+            "agent": "codex",
+            "backend": "acpx",
+            "mode": "persistent"
+          }
+        }
       }
     ]
   },
