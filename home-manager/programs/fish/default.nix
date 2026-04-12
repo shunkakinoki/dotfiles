@@ -159,6 +159,7 @@
       two = "_two_function";
       tzo = "_tzo_function";
       ulb = "_update_local_binaries_function";
+      vpn = "_vpn_function";
       zdo = "_zdo_function";
       zmo = "_zmo_function";
       zpo = "_zpo_function";
@@ -267,6 +268,7 @@
         "_tsw_function"
         "_two_function"
         "_tzo_function"
+        "_vpn_function"
         "_zdo_function"
         "_zmo_function"
         "_zpo_function"

@@ -23,10 +23,11 @@ in
   ./k3s
   ./karabiner
   ./llm
-  ./openclaw
+  ./obsidian
   ./omp
-  ./paperclip
+  ./openclaw
   ./opencode
+  ./paperclip
   ./pi
   ./serena
   ./starship
