@@ -28,3 +28,4 @@
 ~/ghq/github.com/openai/symphony/elixir/bin/symphony
 ~/ghq/github.com/steveyegge/beads/bd
 ~/ghq/github.com/steveyegge/gastown/gt
+~/ghq/github.com/MH4GF/tq/tq
