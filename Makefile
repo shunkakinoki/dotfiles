@@ -1056,7 +1056,7 @@ fish-test-dev: ## Run fish tests inside the Nix dev shell (mirrors CI).
 .PHONY: shell-check
 shell-check: ## Run ShellCheck on shell scripts.
 	@echo "🔍 Running ShellCheck..."
-	@find . -name '*.sh' -not -path './node_modules/*' -not -path './.git/*' -not -path './.worktrees/*' -not -path './result/*' -not -path './result-*' -not -path './.venv/*' -not -path './.claude/*' -not -path './dotagents/.claude/*' -not -path './dotagents/.codex/*' -not -path './.conductor/*' -print0 | xargs -0 shellcheck
+	@git ls-files -z '*.sh' | xargs -0 shellcheck
 
 .PHONY: shell-check-dev
 shell-check-dev: ## Run ShellCheck inside the Nix dev shell (mirrors CI).
