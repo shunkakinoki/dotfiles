@@ -12,6 +12,7 @@ tools = [
   "marker-pdf>=1.10.2",
   "mistral-vibe>=2.7.3",
   "claude-swap>=0.7.1",
+  "mempalace>=3.0.0",
   "ruff>=0.15.9",
 ]
 
