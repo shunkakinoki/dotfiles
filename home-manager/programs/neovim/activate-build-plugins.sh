@@ -43,9 +43,9 @@ if [ -n "$fff_dir" ]; then
       echo "Fetching https://github.com/dmtrKovalenko/fff.nvim/releases/download/$fff_version/${_triple}.${LIB_EXT}"
       curl --fail --location --silent --show-error \
         -o "$fff_binary" \
-        "https://github.com/dmtrKovalenko/fff.nvim/releases/download/$fff_version/${_triple}.${LIB_EXT}" \
-        && echo "fff.nvim binary downloaded successfully" \
-        || echo "fff.nvim binary download failed (will fall back to build on first use)"
+        "https://github.com/dmtrKovalenko/fff.nvim/releases/download/$fff_version/${_triple}.${LIB_EXT}" &&
+        echo "fff.nvim binary downloaded successfully" ||
+        echo "fff.nvim binary download failed (will fall back to build on first use)"
     else
       echo "fff.nvim: could not determine version, skipping download"
     fi
@@ -63,7 +63,7 @@ done
 if [ -n "$vsd_dir" ]; then
   if ! ls "$vsd_dir"/libvscode_diff*."${LIB_EXT}" 1>/dev/null 2>&1; then
     echo "Building vscode-diff.nvim native library..."
-    bash "$vsd_dir/build.sh" && echo "vscode-diff.nvim built successfully" \
-      || echo "vscode-diff.nvim build failed"
+    bash "$vsd_dir/build.sh" && echo "vscode-diff.nvim built successfully" ||
+      echo "vscode-diff.nvim build failed"
   fi
 fi

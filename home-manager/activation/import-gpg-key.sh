@@ -12,7 +12,7 @@ GPG_TEMP_FILE="$AGENIX_DIR/gpg.key"
 
 mkdir -p "$AGENIX_DIR"
 
-if [[ ! -f "$GPG_SECRET_FILE" ]]; then
+if [[ ! -f $GPG_SECRET_FILE ]]; then
   exit 0
 fi
 

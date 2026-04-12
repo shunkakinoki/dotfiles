@@ -7,12 +7,12 @@ SECRET_FILE="$2"
 IDENTITY_KEY="$3"
 RAGE_BIN="$4"
 
-if [[ -f "$DEST" ]]; then
+if [[ -f $DEST ]]; then
   exit 0
 fi
 
 echo "Deploying secret from agenix..."
-if [[ ! -f "$SECRET_FILE" ]]; then
+if [[ ! -f $SECRET_FILE ]]; then
   echo "Warning: Secret file not found at $SECRET_FILE" >&2
   exit 0
 fi

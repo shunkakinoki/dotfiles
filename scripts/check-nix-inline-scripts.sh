@@ -100,7 +100,7 @@ violations="${shell_violations}${python_violations}${activation_violations}"
 if [ -n "$violations" ]; then
   echo "ERROR: Inline scripts found in Nix files." >&2
   echo "All scripts must be external files referenced via builtins.readFile, pkgs.replaceVars," >&2
-  echo "or \${pkgs.bash}/bin/bash \${./script.sh}." >&2
+  echo 'or ${pkgs.bash}/bin/bash ${./script.sh}.' >&2
   echo "" >&2
   echo "$violations" >&2
   exit 1

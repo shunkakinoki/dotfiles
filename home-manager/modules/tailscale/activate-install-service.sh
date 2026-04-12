@@ -48,7 +48,7 @@ Defaults secure_path=\"${NIX_PROFILE_DIR}/.nix-profile/bin:/nix/var/nix/profiles
 "
 
 TEMP_SUDOERS=$(mktemp)
-echo "$SUDOERS_CONTENT" > "$TEMP_SUDOERS"
+echo "$SUDOERS_CONTENT" >"$TEMP_SUDOERS"
 
 if ! cmp -s "$TEMP_SUDOERS" "$SUDOERS_FILE" 2>/dev/null; then
   run_root_cmd cp "$TEMP_SUDOERS" "$SUDOERS_FILE"
