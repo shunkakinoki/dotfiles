@@ -23,10 +23,12 @@ let
         if host.isKyber then
           {
             chromium = "${pkgs.chromium}";
+            kubectl = "${pkgs.kubectl}/bin/kubectl";
           }
         else
           {
             chromium = "/unused";
+            kubectl = "/usr/bin/true";
           }
       );
       names = builtins.attrNames vars;
