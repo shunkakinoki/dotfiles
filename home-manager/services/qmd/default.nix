@@ -1,4 +1,9 @@
-{ config, pkgs, inputs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 let
   inherit (pkgs) lib;
   inherit (inputs.host) isKyber isGalactica;
@@ -9,7 +14,8 @@ let
 in
 lib.mkIf enabled {
   home.activation.qmdSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${qmdBin}" "${wikiDir}"
+    PATH="${pkgs.nodejs}/bin:${homeDir}/.bun/bin:$PATH" \
+      $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${qmdBin}" "${wikiDir}"
   '';
 
   launchd.agents.qmd = lib.mkIf pkgs.stdenv.isDarwin {
@@ -30,13 +36,21 @@ lib.mkIf enabled {
   systemd.user.services.qmd = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {
       Description = "QMD hybrid search engine";
-      After = [ "network.target" ];
+      After = [
+        "network.target"
+        "install-npm-globals.service"
+      ];
+      Wants = [ "network.target" ];
     };
     Service = {
       Type = "simple";
       ExecStart = "${qmdBin} mcp --http";
       Restart = "always";
       RestartSec = 5;
+      Environment = [
+        "HOME=${homeDir}"
+        "PATH=${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:${homeDir}/.local/share/pnpm:${homeDir}/.local/share/fnm/current/bin:${homeDir}/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
+      ];
     };
     Install = {
       WantedBy = [ "default.target" ];
