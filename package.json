@@ -110,6 +110,7 @@
     "acpx",
     "agent-browser",
     "agentcash",
+    "better-sqlite3",
     "ccusage",
     "chrome-devtools-mcp",
     "clawdhub",
