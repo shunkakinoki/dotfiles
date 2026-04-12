@@ -151,6 +151,7 @@ End
 Describe 'config/obsidian/default.nix'
 It 'quotes the home directory argument when invoking the helper'
 When run cat "$PWD/config/obsidian/default.nix"
+# shellcheck disable=SC2016
 The output should include '"${config.home.homeDirectory}"'
 End
 End
