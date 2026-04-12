@@ -46,6 +46,7 @@
     "acpx": "^0.5.3",
     "agent-browser": "^0.25.3",
     "agentcash": "^0.13.8",
+    "btca": "^2.0.5",
     "ccusage": "^18.0.10",
     "chrome-devtools-axi": "^0.1.15",
     "chrome-devtools-mcp": "^0.21.0",
