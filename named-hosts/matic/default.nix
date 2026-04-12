@@ -278,6 +278,19 @@ inputs.nixpkgs.lib.nixosSystem {
             "-m"
             "last"
           ];
+          settings.GTK.application_prefer_dark_theme = true;
+          theme = {
+            package = pkgs.dracula-theme;
+            name = "Dracula";
+          };
+          iconTheme = {
+            package = pkgs.dracula-icon-theme;
+            name = "Dracula";
+          };
+          cursorTheme = {
+            package = pkgs.dracula-theme;
+            name = "Dracula-cursors";
+          };
         };
         services.greetd = {
           enable = true;
@@ -291,8 +304,9 @@ inputs.nixpkgs.lib.nixosSystem {
         services.gvfs.enable = true; # For automounting external drives in Nautilus and managing disk permissions
         services.udisks2.enable = true; # For better integration with external drives, including NTFS support and proper permissions handling
 
-        # Override the default Hyprland session entries so display managers keep
-        # launching Hyprland through UWSM while only presenting a single option.
+        # Override the visible Hyprland entries so ReGreet presents a single
+        # option while UWSM still resolves through Hyprland's packaged
+        # start-hyprland wrapper.
         services.displayManager.sessionPackages = lib.mkBefore [
           (pkgs.symlinkJoin {
             name = "hyprland-regreet-session-overrides";
@@ -305,14 +319,14 @@ inputs.nixpkgs.lib.nixosSystem {
                 [Desktop Entry]
                 Name=Hyprland
                 Comment=Hyprland compositor managed by UWSM
-                Exec=uwsm start -F -- /run/current-system/sw/bin/Hyprland
+                Exec=${lib.getExe pkgs.uwsm} start ${config.programs.hyprland.package}/share/wayland-sessions/hyprland.desktop
                 Type=Application
               '')
               (pkgs.writeTextDir "share/wayland-sessions/hyprland-uwsm.desktop" ''
                 [Desktop Entry]
                 Name=Hyprland (UWSM)
                 Comment=Hyprland compositor managed by UWSM
-                Exec=uwsm start -F -- /run/current-system/sw/bin/Hyprland
+                Exec=${lib.getExe pkgs.uwsm} start ${config.programs.hyprland.package}/share/wayland-sessions/hyprland.desktop
                 NoDisplay=true
                 Type=Application
               '')
