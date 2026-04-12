@@ -78,12 +78,16 @@ if [ "$MODE" = "gateway" ]; then
   ANTHROPIC_API_KEY="${OPENCLAW_ANTHROPIC_API_KEY:-${ANTHROPIC_API_KEY:-$(read_secret "${SECRETS_DIR}/anthropic-key")}}"
   CHROMIUM_PATH="@chromium@/bin/chromium"
 
+  # Resolve Alloy OTLP ClusterIP for local telemetry export
+  OTEL_ENDPOINT="http://$(kubectl get svc alloy -n alloy -o jsonpath='{.spec.clusterIP}' 2>/dev/null || echo localhost):4318"
+
   @sed@ \
     -e "s|__CLIPROXY_API_KEY__|${CLIPROXY_API_KEY}|g" \
     -e "s|__TELEGRAM_TOKEN__|${TELEGRAM_TOKEN}|g" \
     -e "s|__WHATSAPP_ALLOW_FROM__|${WHATSAPP_ALLOW_FROM}|g" \
     -e "s|__GATEWAY_TOKEN__|${GATEWAY_TOKEN}|g" \
     -e "s|__CHROMIUM_PATH__|${CHROMIUM_PATH}|g" \
+    -e "s|__OTEL_ENDPOINT__|${OTEL_ENDPOINT}|g" \
     -e "s|__HOME__|${HOME}|g" \
     "$TEMPLATE" >"$CONFIG"
   chmod 600 "$CONFIG"
