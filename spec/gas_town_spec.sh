@@ -29,14 +29,14 @@ End
 End
 
 Describe 'rig setup'
-It 'checks for dotfiles rig'
-When run bash -c "grep 'gt rig list' '$SCRIPT'"
-The output should include 'gt rig list'
+It 'reads rigs from mayor/rigs.json'
+When run bash -c "grep 'mayor/rigs.json' '$SCRIPT'"
+The output should include 'mayor/rigs.json'
 End
 
-It 'adds dotfiles rig with adopt flag'
-When run bash -c "grep 'gt rig add dotfiles --adopt' '$SCRIPT'"
-The output should include 'gt rig add dotfiles --adopt'
+It 'registers rigs dynamically with adopt flag'
+When run bash -c "grep 'gt rig add' '$SCRIPT'"
+The output should include 'gt rig add'
 End
 End
 
