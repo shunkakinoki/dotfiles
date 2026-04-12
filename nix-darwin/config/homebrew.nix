@@ -46,7 +46,7 @@
       "mas"
       "mlx-lm"
       "ollama"
-      "opencode@latest"
+      "opencode"
       "pandoc"
       "pinentry-mac"
       "pnpm"
