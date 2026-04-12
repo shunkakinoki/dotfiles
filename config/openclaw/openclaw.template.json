@@ -908,7 +908,14 @@
       "serviceName": "openclaw",
       "traces": true,
       "metrics": true,
-      "logs": true
+      "logs": true,
+      "sampleRate": 1
+    },
+    "cacheTrace": {
+      "enabled": true,
+      "includeMessages": true,
+      "includePrompt": true,
+      "includeSystem": true
     }
   },
   "plugins": {
