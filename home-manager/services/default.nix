@@ -15,9 +15,9 @@ let
   dockerPostgres = import ./docker-postgres { inherit pkgs; };
   dotfilesUpdater = import ./dotfiles-updater { inherit pkgs; };
   gasTown = import ./gas-town { inherit pkgs; };
-  obsidian = import ./obsidian { inherit pkgs inputs; };
   makeUpdater = import ./make-updater { inherit pkgs; };
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
+  obsidian = import ./obsidian { inherit pkgs inputs; };
   ollama = import ./ollama { inherit pkgs inputs; };
   sshAgent = import ./ssh-agent {
     inherit config lib pkgs;
@@ -34,9 +34,9 @@ in
   dockerPostgres
   dotfilesUpdater
   gasTown
-  obsidian
   makeUpdater
   neversslKeepalive
+  obsidian
   ollama
   sshAgent
   tmuxSessionLogger
