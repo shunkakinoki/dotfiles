@@ -61,20 +61,22 @@ while IFS= read -r nix_file; do
           if (line == "") continue
           # Allow: export statements
           if (line ~ /^export /) continue
+          # Allow: nix conditional expressions (lib.optionalString)
           if (line ~ /^\$\{lib\.optionalString/) continue
-          # Allow: $DRY_RUN_CMD ${pkgs.bash}/bin/bash or similar bash delegation
+          # Allow: bash delegation line ($DRY_RUN_CMD ${pkgs.bash}/bin/bash ...)
           if (line ~ /bin\/bash/) { has_bash_call = 1; continue }
-          # Allow: $DRY_RUN_CMD at start (dry-run prefix)
-          if (line ~ /^\$DRY_RUN_CMD /) continue
-          # Allow: line continuations (trailing \)
+          # Allow: line continuations (trailing \) for multi-line bash calls
           if (line ~ /\\$/) continue
-          # Allow: nix interpolation-only lines (start with ${ and end with })
-          if (line ~ /^\$\{.*\}$/) continue
-          # Anything else is a violation
+          # Allow: nix interpolation lines (start with ${ - args to bash call)
+          if (line ~ /^\$\{/) continue
+          # Allow: quoted nix interpolation args (bash call continuation args)
+          if (line ~ /^".*"$/) continue
+          # Allow: bare identifiers (e.g. GPG fingerprints passed as args)
+          if (line ~ /^[A-Za-z0-9_-]+$/) continue
+          # Anything else is a violation - including bare $DRY_RUN_CMD commands
           has_violation = 1
         }
-        if (has_violation && !has_bash_call) {
-          # Only flag if there is no bash call at all
+        if (has_violation) {
           printf "%s: inline shell in home.activation block\n", FILENAME
         }
       }
