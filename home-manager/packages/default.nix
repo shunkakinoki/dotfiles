@@ -82,7 +82,6 @@ with pkgs;
   pnpm
   postgresql_18
   procs
-  qwen-code
   ripgrep
   sccache
   sd
@@ -142,6 +141,9 @@ with pkgs;
   xclip
   xdg-utils
   zlib
+]
+++ lib.optionals (stdenv.hostPlatform.system != "aarch64-linux") [
+  qwen-code
 ]
 ++ lib.optionals stdenv.isLinux [ alsa-lib ]
 ++ lib.optionals (stdenv.isLinux && isDesktop) [
