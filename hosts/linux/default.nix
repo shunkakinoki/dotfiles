@@ -36,22 +36,7 @@ home-manager.lib.homeManagerConfiguration {
           before = [ "checkLinkTargets" ];
           after = [ ];
           data = ''
-            # Backup existing bash configuration files
-            for file in .bashrc .profile .bash_profile; do
-              if [ -f "$HOME/$file" ] && [ ! -L "$HOME/$file" ]; then
-                echo "Backing up existing $file to $file.hm-backup"
-                mv "$HOME/$file" "$HOME/$file.hm-backup"
-              fi
-            done
-
-            # Backup existing OpenClaw configuration
-            if [ -f "$HOME/.openclaw/openclaw.json" ] && [ ! -L "$HOME/.openclaw/openclaw.json" ]; then
-              echo "Backing up existing .openclaw/openclaw.json to .openclaw/openclaw.json.hm-backup"
-              mv "$HOME/.openclaw/openclaw.json" "$HOME/.openclaw/openclaw.json.hm-backup"
-            fi
-
-            # Clean up old backups in .codex
-            find ~/.codex -name "*.hm-backup*" -delete 2>/dev/null || true
+            ${pkgs.bash}/bin/bash "${./activate-backup-files.sh}"
           '';
         };
       };

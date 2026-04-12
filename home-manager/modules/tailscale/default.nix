@@ -202,80 +202,18 @@ in
     };
 
     home.activation.createTailscaleDirs = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-      TAILSCALE_STATE_DIR="${config.xdg.dataHome}/tailscale"
-      TAILSCALE_RUN_DIR="$(dirname "${cfg.tailscaled.socketPath}")"
-
-      # Create directories
-      $DRY_RUN_CMD mkdir -p "$TAILSCALE_STATE_DIR"
-      $DRY_RUN_CMD mkdir -p "$TAILSCALE_RUN_DIR"
-
-      # Set proper permissions
-      $DRY_RUN_CMD chmod 700 "$TAILSCALE_STATE_DIR"
-      $DRY_RUN_CMD chmod 700 "$TAILSCALE_RUN_DIR"
+      $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-create-dirs.sh}" \
+        "${config.xdg.dataHome}/tailscale" \
+        "$(dirname "${cfg.tailscaled.socketPath}")"
     '';
 
     # Install system-level tailscaled service (requires sudo)
     # Uses nix-generated service file for full declarative config
     home.activation.installTailscaleService = mkIf cfg.installSystemService (
       config.lib.dag.entryAfter [ "writeBoundary" ] ''
-                SERVICE_FILE="/etc/systemd/system/tailscaled.service"
-                NIX_SERVICE="${tailscaledServiceFile}"
-                SUDOERS_FILE="/etc/sudoers.d/nix-tailscale"
-
-                # Resolve an elevated command helper
-                SUDO_CMD=""
-                if command -v sudo >/dev/null 2>&1; then
-                  SUDO_CMD="sudo"
-                elif [ -x /run/wrappers/bin/sudo ]; then
-                  # NixOS puts sudo in /run/wrappers/bin
-                  SUDO_CMD="/run/wrappers/bin/sudo"
-                elif [ -x /usr/bin/sudo ]; then
-                  SUDO_CMD="/usr/bin/sudo"
-                elif command -v doas >/dev/null 2>&1; then
-                  SUDO_CMD="doas"
-                elif [ -x /usr/bin/doas ]; then
-                  SUDO_CMD="/usr/bin/doas"
-                elif [ "$(id -u)" -ne 0 ]; then
-                  echo "Tailscale system service installation requires root privileges, but sudo/doas is not available." >&2
-                  echo "Either install sudo, configure doas, or run home-manager as root." >&2
-                  exit 1
-                fi
-
-                run_root_cmd() {
-                  if [ -n "$SUDO_CMD" ]; then
-                    ''${DRY_RUN_CMD:-} "$SUDO_CMD" "$@"
-                  else
-                    ''${DRY_RUN_CMD:-} "$@"
-                  fi
-                }
-
-                # Only install if service file differs from nix-generated one
-                if ! cmp -s "$NIX_SERVICE" "$SERVICE_FILE" 2>/dev/null; then
-                  echo "Installing tailscaled systemd service (requires root)..."
-                  run_root_cmd cp "$NIX_SERVICE" "$SERVICE_FILE"
-                  run_root_cmd systemctl daemon-reload
-                  run_root_cmd systemctl enable tailscaled
-                  echo "Tailscaled service installed."
-                fi
-
-                # Configure sudo to include Nix profile paths
-                echo "Configuring sudo PATH for Nix packages..."
-                SUDOERS_CONTENT="# Added by home-manager for Nix Tailscale
-        Defaults secure_path=\"${config.home.homeDirectory}/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\"
-        "
-
-                # Create temporary file with correct content
-                TEMP_SUDOERS=$(mktemp)
-                echo "$SUDOERS_CONTENT" > "$TEMP_SUDOERS"
-
-                # Only update if different or doesn't exist
-                if ! cmp -s "$TEMP_SUDOERS" "$SUDOERS_FILE" 2>/dev/null; then
-                  run_root_cmd cp "$TEMP_SUDOERS" "$SUDOERS_FILE"
-                  run_root_cmd chmod 0440 "$SUDOERS_FILE"
-                  echo "Sudo PATH configured. You can now use: sudo tailscale login"
-                fi
-
-                rm -f "$TEMP_SUDOERS"
+        $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-install-service.sh}" \
+          "${tailscaledServiceFile}" \
+          "${config.home.homeDirectory}"
       ''
     );
   };

@@ -13,6 +13,7 @@ with pkgs;
 [
   inputs.agenix.packages.${stdenv.hostPlatform.system}.default
   pkgs.nur.repos.charmbracelet.crush
+  act
   age
   aichat
   argocd

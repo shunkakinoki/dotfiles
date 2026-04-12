@@ -44,7 +44,7 @@ in
             before = [ "checkLinkTargets" ];
             after = [ ];
             data = ''
-              find ~/.codex -name "*.hm-backup*" -delete 2>/dev/null || true
+              ${pkgs.bash}/bin/bash "${./activate-remove-backups.sh}"
             '';
           };
         }

@@ -5,15 +5,13 @@ Describe 'uv-globals/install-uv-globals.sh'
 SCRIPT="$PWD/home-manager/modules/uv-globals/install-uv-globals.sh"
 
 Describe 'systemd activation skip'
-NIX_FILE="$PWD/home-manager/modules/uv-globals/default.nix"
-
 It 'checks systemctl is-system-running to detect boot'
-When run bash -c "grep 'is-system-running' '$NIX_FILE'"
+When run bash -c "grep 'is-system-running' '$SCRIPT'"
 The output should include 'is-system-running'
 End
 
 It 'skips install during system boot'
-When run bash -c "grep -A 1 'is-system-running' '$NIX_FILE'"
+When run bash -c "grep -A 1 'is-system-running' '$SCRIPT'"
 The output should include 'skipping uv globals install'
 End
 End

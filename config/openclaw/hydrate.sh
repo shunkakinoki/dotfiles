@@ -6,6 +6,7 @@ set -euo pipefail
 
 MODE="@mode@"
 STATE_DIR="${OPENCLAW_STATE_DIR:-${HOME}/.openclaw}"
+mkdir -p "$STATE_DIR"
 CONFIG="${OPENCLAW_CONFIG_PATH:-${STATE_DIR}/openclaw.json}"
 TEMPLATE="@template@"
 SECRETS_DIR="${HOME}/.config/openclaw"

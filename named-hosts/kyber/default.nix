@@ -33,13 +33,7 @@ home-manager.lib.homeManagerConfiguration {
             before = [ "checkLinkTargets" ];
             after = [ ];
             data = ''
-              # Backup existing bash configuration files
-              for file in .bashrc .profile .bash_profile; do
-                if [ -f "$HOME/$file" ] && [ ! -L "$HOME/$file" ]; then
-                  echo "Backing up existing $file to $file.hm-backup"
-                  mv "$HOME/$file" "$HOME/$file.hm-backup"
-                fi
-              done
+              ${pkgs.bash}/bin/bash ${./activate-backup-files.sh}
             '';
           };
         };
@@ -65,57 +59,34 @@ home-manager.lib.homeManagerConfiguration {
 
         # Ensure SSH directory exists before agenix tries to deploy secrets
         home.activation.ensureSshDirectory = config.lib.dag.entryBefore [ "writeBoundary" ] ''
-          $DRY_RUN_CMD mkdir -p $VERBOSE_ARG ${config.home.homeDirectory}/.ssh
-          $DRY_RUN_CMD chmod $VERBOSE_ARG 700 ${config.home.homeDirectory}/.ssh
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-directory.sh}" "700" "${config.home.homeDirectory}/.ssh"
         '';
 
         # Ensure agenix config directory exists
         home.activation.ensureAgenixDirectory = config.lib.dag.entryBefore [ "writeBoundary" ] ''
-          $DRY_RUN_CMD mkdir -p $VERBOSE_ARG ${config.home.homeDirectory}/.config/agenix
-          $DRY_RUN_CMD chmod $VERBOSE_ARG 700 ${config.home.homeDirectory}/.config/agenix
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-directory.sh}" "700" "${config.home.homeDirectory}/.config/agenix"
         '';
 
         # Manually deploy agenix secrets during activation
         # This ensures secrets are deployed even if the agenix activation hook doesn't run properly
         home.activation.deployAgenixSecrets = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-          # Decrypt and deploy GitHub SSH key if it doesn't exist
-          if [[ ! -f "${config.home.homeDirectory}/.ssh/id_ed25519_github" ]]; then
-            echo "Deploying GitHub SSH key from agenix..."
-            SECRET_FILE="${builtins.toString ../galactica/keys/id_github.age}"
-            if [[ -f "$SECRET_FILE" ]]; then
-              $DRY_RUN_CMD ${pkgs.rage}/bin/rage -d -i ${config.home.homeDirectory}/.ssh/id_ed25519 "$SECRET_FILE" -o ${config.home.homeDirectory}/.ssh/id_ed25519_github
-              $DRY_RUN_CMD chmod $VERBOSE_ARG 0600 ${config.home.homeDirectory}/.ssh/id_ed25519_github
-              echo "✅ GitHub SSH key deployed successfully"
-            else
-              echo "⚠️  Warning: Secret file not found at $SECRET_FILE"
-            fi
-          fi
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/deploy-agenix-secret.sh}" \
+            "${config.home.homeDirectory}/.ssh/id_ed25519_github" \
+            "${builtins.toString ../galactica/keys/id_github.age}" \
+            "${config.home.homeDirectory}/.ssh/id_ed25519" \
+            "${pkgs.rage}/bin/rage"
         '';
 
         # Import GPG key from agenix (all systems with dotfiles)
         # Fails silently if SSH key isn't authorized to decrypt
         home.activation.importGpgKey = config.lib.dag.entryAfter [ "linkGeneration" ] ''
-          $VERBOSE_ECHO "🔑 Starting GPG key import process..."
-          GPG_SECRET_FILE="${config.home.homeDirectory}/dotfiles/named-hosts/galactica/keys/gpg.age"
-          GPG_TEMP_FILE="${config.home.homeDirectory}/.config/agenix/gpg.key"
-
-          # Create agenix directory if it doesn't exist
-          mkdir -p "${config.home.homeDirectory}/.config/agenix"
-
-          if [[ -f "$GPG_SECRET_FILE" ]]; then
-            # Check if key is already imported
-            if ! ${pkgs.gnupg}/bin/gpg --list-secret-keys 2>/dev/null | grep -q "C2E97FCFF482925D"; then
-              echo "Importing GPG key from agenix..."
-              # Try to decrypt - will fail silently if SSH key isn't authorized
-              if ${pkgs.rage}/bin/rage -d -i ${config.home.homeDirectory}/.ssh/id_ed25519 -o "$GPG_TEMP_FILE" "$GPG_SECRET_FILE" 2>/dev/null; then
-                ${pkgs.gnupg}/bin/gpg --batch --import "$GPG_TEMP_FILE" 2>/dev/null
-                rm -f "$GPG_TEMP_FILE"
-                echo "✅ GPG key imported successfully"
-              fi
-            else
-              $VERBOSE_ECHO "ℹ️  GPG key already imported"
-            fi
-          fi
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/import-gpg-key.sh}" \
+            "${config.home.homeDirectory}/dotfiles/named-hosts/galactica/keys/gpg.age" \
+            "${config.home.homeDirectory}/.ssh/id_ed25519" \
+            "${config.home.homeDirectory}/.config/agenix" \
+            "${pkgs.rage}/bin/rage" \
+            "${pkgs.gnupg}/bin/gpg" \
+            "C2E97FCFF482925D"
         '';
 
         programs.home-manager.enable = true;
@@ -148,40 +119,7 @@ home-manager.lib.homeManagerConfiguration {
 
         # IP forwarding for Tailscale exit node
         home.activation.enableIpForwarding = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-          # Resolve an elevated command helper
-          SUDO_CMD=""
-          if command -v sudo >/dev/null 2>&1; then
-            SUDO_CMD="sudo"
-          elif [ -x /run/wrappers/bin/sudo ]; then
-            SUDO_CMD="/run/wrappers/bin/sudo"
-          elif [ -x /usr/bin/sudo ]; then
-            SUDO_CMD="/usr/bin/sudo"
-          elif command -v doas >/dev/null 2>&1; then
-            SUDO_CMD="doas"
-          elif [ -x /usr/bin/doas ]; then
-            SUDO_CMD="/usr/bin/doas"
-          elif [ "$(id -u)" -ne 0 ]; then
-            echo "IP forwarding requires root privileges, but sudo/doas is not available." >&2
-            exit 1
-          fi
-
-          run_root_cmd() {
-            if [ -n "$SUDO_CMD" ]; then
-              ''${DRY_RUN_CMD:-} "$SUDO_CMD" "$@"
-            else
-              ''${DRY_RUN_CMD:-} "$@"
-            fi
-          }
-
-          if [ "$(cat /proc/sys/net/ipv4/ip_forward)" != "1" ]; then
-            echo "Enabling IP forwarding for Tailscale exit node..."
-            run_root_cmd sysctl -w net.ipv4.ip_forward=1
-            run_root_cmd sysctl -w net.ipv6.conf.all.forwarding=1
-          fi
-          if [ ! -f /etc/sysctl.d/99-tailscale.conf ]; then
-            echo 'net.ipv4.ip_forward=1' | run_root_cmd tee /etc/sysctl.d/99-tailscale.conf
-            echo 'net.ipv6.conf.all.forwarding=1' | run_root_cmd tee -a /etc/sysctl.d/99-tailscale.conf
-          fi
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-ip-forwarding.sh}"
         '';
 
         # Tailscale configuration

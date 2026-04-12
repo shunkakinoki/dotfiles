@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   inputs,
   ...
 }:
@@ -12,9 +13,7 @@ in
 lib.mkIf host.isKyber {
   # Ensure OpenClaw directories exist with correct permissions
   home.activation.openclawSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    mkdir -p /tmp/openclaw
-    mkdir -p ${homeDir}/.openclaw
-    chmod 700 ${homeDir}/.openclaw
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${homeDir}"
   '';
 
   # Systemd service for OpenClaw gateway

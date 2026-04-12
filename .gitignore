@@ -12,6 +12,10 @@
 .worktrees
 prompts.db
 
+# Configuration
+dotagents
+dotagents/private-skills
+
 # GT
 crew
 polecats

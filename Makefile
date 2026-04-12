@@ -418,7 +418,7 @@ nix-backup: ## Backup configuration files.
 	fi
 
 .PHONY: nix-build
-nix-build: nix-connect ## Build Nix configuration.
+nix-build: nix-connect nix-trust ## Build Nix configuration.
 	@echo "🏗️ Building Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"
 	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		echo "🤖 Running in CI/Docker environment"; \
@@ -1056,7 +1056,7 @@ fish-test-dev: ## Run fish tests inside the Nix dev shell (mirrors CI).
 .PHONY: shell-check
 shell-check: ## Run ShellCheck on shell scripts.
 	@echo "🔍 Running ShellCheck..."
-	@find . -name '*.sh' -not -path './node_modules/*' -not -path './.git/*' -not -path './.worktrees/*' -not -path './result/*' -not -path './.venv/*' -not -path './.claude/*' -not -path './dotagents/.claude/*' -not -path './dotagents/.codex/*' -print0 | xargs -0 shellcheck
+	@git ls-files -z '*.sh' | xargs -0 shellcheck
 
 .PHONY: shell-check-dev
 shell-check-dev: ## Run ShellCheck inside the Nix dev shell (mirrors CI).

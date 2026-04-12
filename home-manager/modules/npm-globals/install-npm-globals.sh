@@ -2,6 +2,12 @@
 
 set -euo pipefail
 
+# Skip during boot on Linux (SYSTEMCTL_BIN set by nix activation)
+if [ -n "${SYSTEMCTL_BIN:-}" ] && [ "$("$SYSTEMCTL_BIN" is-system-running 2>/dev/null)" = "starting" ]; then
+  echo "System is booting, skipping npm globals install"
+  exit 0
+fi
+
 # Skip if offline
 if ! timeout 3 bash -c 'exec 3<>/dev/tcp/1.1.1.1/53' 2>/dev/null; then
   echo "Network unavailable, skipping npm globals install"
