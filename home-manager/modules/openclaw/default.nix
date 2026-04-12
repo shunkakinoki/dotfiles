@@ -21,7 +21,10 @@ lib.mkIf host.isKyber {
   systemd.user.services.openclaw-gateway = {
     Unit = {
       Description = "OpenClaw gateway";
-      After = [ "network-online.target" "install-npm-globals.service" ];
+      After = [
+        "network-online.target"
+        "install-npm-globals.service"
+      ];
       Wants = [ "network-online.target" ];
       StartLimitIntervalSec = 300;
       StartLimitBurst = 10;
