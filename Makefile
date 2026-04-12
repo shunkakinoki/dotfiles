@@ -285,7 +285,7 @@ rtk-rewrite-sync: ## Sync rtk-rewrite.sh from upstream rtk repo.
 update: nix-update neovim-update gitalias-update llm-update overlays-update  ## Update Nix flake, overlays, Neovim plugins, LLM configs, gitalias, and bun deps
 
 .PHONY: update-lock
-update-lock: nix-flake-update bun-update cargo-update ## Update lock files for Nix flake, bun, and Cargo.
+update-lock: nix-flake-update bun-update cargo-update uv-update ## Update lock files for Nix flake, bun, and Cargo.
 
 .PHONY: bun-update
 bun-update: ## Update bun dependencies to latest and regenerate lock file.
@@ -294,19 +294,6 @@ bun-update: ## Update bun dependencies to latest and regenerate lock file.
 	@git checkout bun.lock
 	@bun install
 	@echo "✅ bun dependencies updated"
-
-.PHONY: uv-update
-uv-update: ## Update uv tool versions in pyproject.toml to latest.
-	@echo "🐍 Updating uv dependencies..."
-	@tomlq -r '.["dependency-groups"].tools[]' pyproject.toml | while read -r pkg; do \
-		name=$${pkg%%[><=!]*}; \
-		latest=$$(uv pip compile --no-deps - <<< "$$name" 2>/dev/null | grep "^$$name==" | sed "s/$$name==//"); \
-		if [ -n "$$latest" ]; then \
-			sed -i '' "s|\"$$name>=.*\"|\"$$name>=$$latest\"|" pyproject.toml; \
-			echo "  $$name -> $$latest"; \
-		fi; \
-	done
-	@echo "✅ uv dependencies updated"
 
 .PHONY: cargo-update
 cargo-update: ## Update Rust dependencies to latest and regenerate lock file.
@@ -334,6 +321,19 @@ overlays-update: ## Upgrade all custom overlays to latest versions.
 	else \
 		./scripts/upgrade-overlays.sh all; \
 	fi
+
+.PHONY: uv-update
+uv-update: ## Update uv tool versions in pyproject.toml to latest.
+	@echo "🐍 Updating uv dependencies..."
+	@tomlq -r '.["dependency-groups"].tools[]' pyproject.toml | while read -r pkg; do \
+		name=$${pkg%%[><=!]*}; \
+		latest=$$(uv pip compile --no-deps - <<< "$$name" 2>/dev/null | grep "^$$name==" | sed "s/$$name==//"); \
+		if [ -n "$$latest" ]; then \
+			sed -i '' "s|\"$$name>=.*\"|\"$$name>=$$latest\"|" pyproject.toml; \
+			echo "  $$name -> $$latest"; \
+		fi; \
+	done
+	@echo "✅ uv dependencies updated"
 
 ##@ Nix Setup
 
