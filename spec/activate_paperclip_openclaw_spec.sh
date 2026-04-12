@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2016,SC2329
 
-Describe 'home-manager/modules/paperclip/activate.sh'
-SCRIPT="$PWD/home-manager/modules/paperclip/activate.sh"
+Describe 'home-manager/services/paperclip/activate.sh'
+SCRIPT="$PWD/home-manager/services/paperclip/activate.sh"
 
 It 'uses bash shebang'
 When run bash -c "head -1 '$SCRIPT'"
@@ -25,15 +25,15 @@ The output should include 'chmod 700'
 End
 End
 
-Describe 'home-manager/modules/paperclip/default.nix'
+Describe 'home-manager/services/paperclip/default.nix'
 It 'quotes the home directory argument when invoking the helper'
-When run cat "$PWD/home-manager/modules/paperclip/default.nix"
+When run cat "$PWD/home-manager/services/paperclip/default.nix"
 The output should include '"${./activate.sh}" "${homeDir}"'
 End
 End
 
-Describe 'home-manager/modules/openclaw/activate.sh'
-SCRIPT="$PWD/home-manager/modules/openclaw/activate.sh"
+Describe 'home-manager/services/openclaw/activate.sh'
+SCRIPT="$PWD/home-manager/services/openclaw/activate.sh"
 
 It 'uses bash shebang'
 When run bash -c "head -1 '$SCRIPT'"
@@ -56,9 +56,9 @@ The output should include 'chmod 700'
 End
 End
 
-Describe 'home-manager/modules/openclaw/default.nix'
+Describe 'home-manager/services/openclaw/default.nix'
 It 'quotes the home directory argument when invoking the helper'
-When run cat "$PWD/home-manager/modules/openclaw/default.nix"
+When run cat "$PWD/home-manager/services/openclaw/default.nix"
 The output should include '"${./activate.sh}" "${homeDir}"'
 End
 End

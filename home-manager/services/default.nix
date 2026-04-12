@@ -19,6 +19,12 @@ let
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
   obsidian = import ./obsidian { inherit pkgs inputs; };
   ollama = import ./ollama { inherit pkgs inputs; };
+  openclaw = import ./openclaw {
+    inherit config lib pkgs inputs;
+  };
+  paperclip = import ./paperclip {
+    inherit config lib pkgs inputs;
+  };
   sshAgent = import ./ssh-agent {
     inherit config lib pkgs;
   };
@@ -38,6 +44,8 @@ in
   neversslKeepalive
   obsidian
   ollama
+  openclaw
+  paperclip
   sshAgent
   tmuxSessionLogger
 ]
