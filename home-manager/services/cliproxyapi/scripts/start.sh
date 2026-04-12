@@ -98,7 +98,7 @@ usage_import() {
   if [ -z "$MANAGEMENT_KEY" ] || [ ! -f "$USAGE_EXPORT_FILE" ]; then
     return 0
   fi
-  curl -sS \
+  curl -sS --max-time 10 \
     -H "Authorization: Bearer ${MANAGEMENT_KEY}" \
     -H "Content-Type: application/json" \
     -X POST \
@@ -112,7 +112,7 @@ usage_export() {
     return 0
   fi
   mkdir -p "$(dirname "$USAGE_EXPORT_FILE")"
-  curl -sS \
+  curl -sS --max-time 5 \
     -H "Authorization: Bearer ${MANAGEMENT_KEY}" \
     "${MANAGEMENT_URL}/usage/export" \
     -o "$USAGE_EXPORT_FILE" || true
@@ -124,7 +124,7 @@ wait_for_management() {
   fi
   local attempts=60
   for _ in $(seq 1 "$attempts"); do
-    if curl -sS \
+    if curl -sS --max-time 3 \
       -H "Authorization: Bearer ${MANAGEMENT_KEY}" \
       "${MANAGEMENT_URL}/usage/export" \
       -o /dev/null; then
@@ -135,9 +135,38 @@ wait_for_management() {
   return 1
 }
 
+# Remove any stale cliproxyapi container and verify dockerd has released the name.
+# Previous SIGKILL of the service can leave the container running inside dockerd
+# even though the docker client went away, causing "name already in use" on restart.
+ensure_container_removed() {
+  local name="$1"
+  docker rm -f "$name" 2>/dev/null || true
+  for _ in 1 2 3 4 5; do
+    if ! docker inspect "$name" >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 1
+    docker rm -f "$name" 2>/dev/null || true
+  done
+  docker inspect "$name" >/dev/null 2>&1 && return 1
+  return 0
+}
+
 child_pid=""
+helper_pid=""
 trap 'usage_export' EXIT
-trap 'usage_export; if [ -n "$child_pid" ]; then kill -TERM "$child_pid" 2>/dev/null || true; wait "$child_pid" 2>/dev/null || true; fi' TERM INT
+# On shutdown, stop the container via dockerd (not kill on the client PID), so
+# --rm cleanup runs and the name is freed before the next start.
+trap '
+  usage_export
+  if [ -n "$helper_pid" ]; then
+    kill -TERM "$helper_pid" 2>/dev/null || true
+  fi
+  docker stop --time 15 cliproxyapi 2>/dev/null || docker rm -f cliproxyapi 2>/dev/null || true
+  if [ -n "$child_pid" ]; then
+    wait "$child_pid" 2>/dev/null || true
+  fi
+' TERM INT
 
 if [ "$(uname)" = "Linux" ] && command -v docker >/dev/null 2>&1; then
   if docker info >/dev/null 2>&1; then
@@ -147,9 +176,20 @@ if [ "$(uname)" = "Linux" ] && command -v docker >/dev/null 2>&1; then
     echo "⏭️ Skipping docker pull (docker not accessible)"
   fi
 
-  docker stop cliproxyapi 2>/dev/null || true
-  docker rm -f cliproxyapi 2>/dev/null || true
+  if ! ensure_container_removed cliproxyapi; then
+    echo "⚠️  Failed to remove stale cliproxyapi container; aborting" >&2
+    exit 1
+  fi
   mkdir -p "$CONFIG_DIR/logs"
+
+  # Probe management endpoint and import usage in a background helper so the
+  # main shell can wait on docker run without the poll loop blocking signals.
+  (
+    wait_for_management || exit 0
+    usage_import
+  ) &
+  helper_pid=$!
+
   docker run --rm \
     --name cliproxyapi \
     --network host \
@@ -160,8 +200,6 @@ if [ "$(uname)" = "Linux" ] && command -v docker >/dev/null 2>&1; then
     -e MANAGEMENT_PASSWORD="${MANAGEMENT_PASSWORD:-}" \
     eceasy/cli-proxy-api:latest &
   child_pid=$!
-  wait_for_management || true
-  usage_import
   wait "$child_pid"
   exit $?
 fi
