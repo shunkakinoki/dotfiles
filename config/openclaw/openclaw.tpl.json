@@ -899,6 +899,17 @@
     ],
     "allowRealIpFallback": true
   },
+  "diagnostics": {
+    "enabled": true,
+    "otel": {
+      "enabled": true,
+      "protocol": "http/protobuf",
+      "serviceName": "openclaw",
+      "traces": true,
+      "metrics": true,
+      "logs": true
+    }
+  },
   "plugins": {
     "load": {
       "paths": [
@@ -921,6 +932,9 @@
             "enabled": true
           }
         }
+      },
+      "diagnostics-otel": {
+        "enabled": true
       },
       "memory-wiki": {
         "enabled": true,
