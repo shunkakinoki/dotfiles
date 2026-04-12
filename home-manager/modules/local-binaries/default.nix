@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   # Create ~/.local/bin directory
   home.file.".local/bin/.keep".text = "";

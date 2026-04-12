@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   # Use activation script to copy settings.json instead of symlinking
   # This allows ruler and other tools to modify the file

@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   serenaConfigDest = "${config.home.homeDirectory}/.serena/serena_config.yml";
 in
