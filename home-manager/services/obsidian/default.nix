@@ -28,7 +28,11 @@ in
 # Only enable on kyber (gateway host) - desktops already get pkgs.obsidian
 # directly via home-manager/packages/default.nix.
 lib.mkIf host.isKyber {
-  home.packages = [ obsidianHeadless ];
+  home.packages = [
+    obsidianHeadless
+    pkgs.dejavu_fonts
+    pkgs.fontconfig
+  ];
 
   systemd.user.services.obsidian = {
     Unit = {
@@ -37,6 +41,11 @@ lib.mkIf host.isKyber {
     };
     Service = {
       Type = "simple";
+      ExecStartPre = "${pkgs.writeShellScript "obsidian-pre" ''
+        rm -f ${config.xdg.configHome}/obsidian/SingletonLock
+        rm -f ${config.xdg.configHome}/obsidian/SingletonSocket
+        rm -f ${config.xdg.configHome}/obsidian/SingletonCookie
+      ''}";
       ExecStart = "${obsidianHeadless}/bin/obsidian";
       Restart = "always";
       RestartSec = 10;
