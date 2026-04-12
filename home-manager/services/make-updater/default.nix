@@ -50,6 +50,7 @@ in
             pkgs.gnused
             pkgs.go
             pkgs.libtool
+            pkgs.neovim
             pkgs.nix
             pkgs.openssl.dev
             pkgs.pkg-config
