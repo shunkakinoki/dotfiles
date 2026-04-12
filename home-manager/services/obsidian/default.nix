@@ -41,11 +41,6 @@ lib.mkIf host.isKyber {
     };
     Service = {
       Type = "simple";
-      ExecStartPre = "${pkgs.writeShellScript "obsidian-pre" ''
-        rm -f ${config.xdg.configHome}/obsidian/SingletonLock
-        rm -f ${config.xdg.configHome}/obsidian/SingletonSocket
-        rm -f ${config.xdg.configHome}/obsidian/SingletonCookie
-      ''}";
       ExecStart = "${obsidianHeadless}/bin/obsidian";
       Restart = "always";
       RestartSec = 10;

@@ -16,6 +16,7 @@ in
             pkgs.bash
             pkgs.coreutils
             pkgs.git
+            pkgs.jq
             pkgs.tmux
           ]
         }:$HOME/.local/bin:$HOME/go/bin:/usr/local/bin"
