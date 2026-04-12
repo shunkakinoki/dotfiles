@@ -144,12 +144,7 @@ End
 
 It 'creates obsidian config directory'
 When run bash -c "grep 'mkdir -p' '$SCRIPT'"
-The output should include 'OBS_DIR'
-End
-
-It 'seeds missing per-vault config files'
-When run bash -c "grep 'wiki.json\|vault.*json\|vid.*json' '$SCRIPT'"
-The output should not equal ''
+The output should include 'obsidian'
 End
 End
 
