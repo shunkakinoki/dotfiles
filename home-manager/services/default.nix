@@ -17,6 +17,7 @@ let
   gasTown = import ./gas-town { inherit pkgs; };
   makeUpdater = import ./make-updater { inherit pkgs; };
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
+  obsidian = import ./obsidian { inherit pkgs inputs; };
   ollama = import ./ollama { inherit pkgs inputs; };
   sshAgent = import ./ssh-agent {
     inherit config lib pkgs;
@@ -35,6 +36,7 @@ in
   gasTown
   makeUpdater
   neversslKeepalive
+  obsidian
   ollama
   sshAgent
   tmuxSessionLogger
