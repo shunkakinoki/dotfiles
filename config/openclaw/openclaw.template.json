@@ -187,6 +187,13 @@
       }
     }
   },
+  "memory": {
+    "qmd": {
+      "scope": {
+        "default": "allow"
+      }
+    }
+  },
   "agents": {
     "defaults": {
       "model": {
@@ -909,6 +916,27 @@
       },
       "debounceMs": 300
     }
+  },
+  "hooks": {
+    "enabled": true,
+    "token": "__HOOKS_TOKEN__",
+    "path": "/hooks",
+    "mappings": [
+      {
+        "match": {
+          "path": "github"
+        },
+        "action": "agent",
+        "agentId": "dev-gpt",
+        "wakeMode": "now",
+        "name": "GitHub",
+        "sessionKey": "hook:github:{{delivery}}",
+        "messageTemplate": "GitHub {{headers.x-github-event}} event on {{repository.full_name}}:\n\nAction: {{action}}\nSender: {{sender.login}}\n\n{{pull_request.title}}{{issue.title}}\n\n{{pull_request.html_url}}{{issue.html_url}}",
+        "deliver": true,
+        "channel": "whatsapp",
+        "to": "120363405790595065@g.us"
+      }
+    ]
   },
   "gateway": {
     "mode": "local",
