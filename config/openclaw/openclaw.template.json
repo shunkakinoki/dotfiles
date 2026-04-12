@@ -903,6 +903,7 @@
     "enabled": true,
     "otel": {
       "enabled": true,
+      "endpoint": "__OTEL_ENDPOINT__",
       "protocol": "http/protobuf",
       "serviceName": "openclaw",
       "traces": true,
