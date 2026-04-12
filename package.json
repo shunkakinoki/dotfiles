@@ -77,6 +77,7 @@
   "trustedDependencies": [
     "@anthropic-ai/claude-code",
     "@augmentcode/auggie",
+    "better-sqlite3",
     "@biomejs/biome",
     "@ccusage/amp",
     "@ccusage/codex",
