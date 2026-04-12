@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329
+# shellcheck disable=SC2016,SC2329
 
 Describe 'home-manager/modules/tailscale/activate-create-dirs.sh'
 SCRIPT="$PWD/home-manager/modules/tailscale/activate-create-dirs.sh"

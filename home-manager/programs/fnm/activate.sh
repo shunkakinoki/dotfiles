@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2012
 # Pre-install Node.js versions and set default via fnm
 # Usage: activate.sh <fnm_bin> <fnm_dir> <default_version> [version1] [version2] ...
 set -euo pipefail

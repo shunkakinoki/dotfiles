@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329
+# shellcheck disable=SC2016,SC2329
 
 Describe 'home-manager/programs/fnm/activate.sh'
 SCRIPT="$PWD/home-manager/programs/fnm/activate.sh"
