@@ -49,7 +49,7 @@ End
 
 Describe 'runtime behavior'
 It 'accepts delegated bash activation blocks'
-  cat >"$TEMP_DIR/good.nix" <<'EOF'
+cat >"$TEMP_DIR/good.nix" <<'EOF'
 { pkgs, config, ... }:
 {
   home.activation.good = config.lib.dag.entryAfter [ "writeBoundary" ] ''
@@ -65,7 +65,7 @@ The stdout should include 'No inline shell or Python scripts in Nix files'
 End
 
 It 'rejects inline activation commands'
-  cat >"$TEMP_DIR/bad-inline.nix" <<'EOF'
+cat >"$TEMP_DIR/bad-inline.nix" <<'EOF'
 { pkgs, config, ... }:
 {
   home.activation.bad = config.lib.dag.entryAfter [ "writeBoundary" ] ''
@@ -79,7 +79,7 @@ The stderr should include 'inline shell in home.activation block'
 End
 
 It 'rejects extra commands appended to bash delegation'
-  cat >"$TEMP_DIR/bad-chain.nix" <<'EOF'
+cat >"$TEMP_DIR/bad-chain.nix" <<'EOF'
 { pkgs, config, ... }:
 {
   home.activation.bad = config.lib.dag.entryAfter [ "writeBoundary" ] ''
