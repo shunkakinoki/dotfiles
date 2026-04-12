@@ -36,7 +36,7 @@ home-manager.lib.homeManagerConfiguration {
           before = [ "checkLinkTargets" ];
           after = [ ];
           data = ''
-            ${pkgs.bash}/bin/bash ${./activate-backup-files.sh}
+            ${pkgs.bash}/bin/bash "${./activate-backup-files.sh}"
           '';
         };
       };

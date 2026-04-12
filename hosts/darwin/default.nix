@@ -44,7 +44,7 @@ in
             before = [ "checkLinkTargets" ];
             after = [ ];
             data = ''
-              ${pkgs.bash}/bin/bash ${./activate-remove-backups.sh}
+              ${pkgs.bash}/bin/bash "${./activate-remove-backups.sh}"
             '';
           };
         }

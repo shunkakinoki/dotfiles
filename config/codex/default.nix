@@ -3,7 +3,7 @@
   # Use activation script instead of home.file symlink
   # Codex CLI uses atomic writes that break symlinks, so we force-copy on each switch
   home.activation.codexConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} ${./config.toml} ${./hooks.json}
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${./config.toml}" "${./hooks.json}"
   '';
 
   home.file.".codex/hooks/notify.sh" = {

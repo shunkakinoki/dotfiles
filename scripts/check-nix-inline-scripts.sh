@@ -29,66 +29,74 @@ python_violations=$(grep -rn \
   grep -v "^Binary" || true)
 
 # --- Check 2: home.activation blocks with inline shell ---
-# Strategy: find activation script bodies (between '' delimiters) that contain
-# shell commands beyond allowed patterns (exports, bash delegation, DRY_RUN_CMD).
-#
-# We use awk to extract activation block bodies and check each one.
+# Strategy: find activation script bodies (between '' delimiters) and require
+# them to contain only:
+#   - export statements
+#   - lib.optionalString export interpolations
+#   - a delegated bash script invocation
+#   - argument continuation lines for that bash invocation
 activation_violations=""
 while IFS= read -r nix_file; do
-  # Extract activation block bodies using awk
-  # Looks for: home.activation.NAME = ... ''  ...  '';
-  # Allows: export, $DRY_RUN_CMD, ${pkgs.bash}/bin/bash, empty lines, comments
   result=$(awk '
-    /home\.activation\.[a-zA-Z]/ { in_activation = 1; name = $0 }
+    function trim(s) {
+      sub(/^[[:space:]]+/, "", s)
+      sub(/[[:space:]]+$/, "", s)
+      return s
+    }
+
+    function is_single_arg(line) {
+      return line ~ /^(".*"|\$\{.*\}|[^[:space:];|&<>`]+)[[:space:]]*\\?$/
+    }
+
+    function is_bash_delegate(line) {
+      return line ~ /^(\$DRY_RUN_CMD[[:space:]]+)?[^[:space:];|&<>`]*bin\/bash([[:space:]]+(".*"|\$\{.*\}|[^[:space:];|&<>`]+))+([[:space:]]+\|\|[[:space:]]+true)?[[:space:]]*\\?$/
+    }
+
+    function block_has_violation(  i, line, saw_bash_call, saw_content) {
+      saw_bash_call = 0
+      saw_content = 0
+      split(body, lines, "\n")
+
+      for (i in lines) {
+        line = trim(lines[i])
+
+        if (line == "" || line ~ /^#/) continue
+        saw_content = 1
+
+        if (line ~ /&&|;|`|[<>]/) return 1
+        if (line ~ /\|/ && line !~ /[[:space:]]\|\|[[:space:]]+true[[:space:]]*\\?$/) return 1
+
+        if (line ~ /^export /) continue
+        if (line ~ /^\$\{lib\.optionalString/) continue
+        if (is_bash_delegate(line)) {
+          saw_bash_call = 1
+          continue
+        }
+        if (saw_bash_call && is_single_arg(line)) continue
+
+        return 1
+      }
+
+      return saw_content && !saw_bash_call
+    }
+
+    /home\.activation\.[a-zA-Z]/ { in_activation = 1 }
     in_activation && /'"''"'$/ && !body_started {
       body_started = 1
       body = ""
-      line_count = 0
       next
     }
     body_started && /^[[:space:]]*'"''"';/ {
-      # End of body - check it
-      if (line_count > 0) {
-        # Check each non-empty line
-        has_violation = 0
-        split(body, lines, "\n")
-        has_bash_call = 0
-        for (i in lines) {
-          line = lines[i]
-          # Strip leading whitespace
-          gsub(/^[[:space:]]+/, "", line)
-          # Skip empty lines
-          if (line == "") continue
-          # Allow: export statements
-          if (line ~ /^export /) continue
-          # Allow: nix conditional expressions (lib.optionalString)
-          if (line ~ /^\$\{lib\.optionalString/) continue
-          # Allow: bash delegation line ($DRY_RUN_CMD ${pkgs.bash}/bin/bash ...)
-          if (line ~ /bin\/bash/) { has_bash_call = 1; continue }
-          # Allow: line continuations (trailing \) for multi-line bash calls
-          if (line ~ /\\$/) continue
-          # Allow: nix interpolation lines (start with ${ - args to bash call)
-          if (line ~ /^\$\{/) continue
-          # Allow: quoted nix interpolation args (bash call continuation args)
-          if (line ~ /^".*"$/) continue
-          # Allow: bare identifiers (e.g. GPG fingerprints passed as args)
-          if (line ~ /^[A-Za-z0-9_-]+$/) continue
-          # Anything else is a violation - including bare $DRY_RUN_CMD commands
-          has_violation = 1
-        }
-        if (has_violation) {
-          printf "%s: inline shell in home.activation block\n", FILENAME
-        }
+      if (block_has_violation()) {
+        printf "%s: inline shell in home.activation block\n", FILENAME
       }
       in_activation = 0
       body_started = 0
       body = ""
-      line_count = 0
       next
     }
     body_started {
       body = body "\n" $0
-      line_count++
     }
   ' "$nix_file")
   if [ -n "$result" ]; then

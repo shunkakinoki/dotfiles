@@ -47,4 +47,11 @@ When run bash -c "grep 'ln -sf' '$SCRIPT'"
 The output should include '.local/bin/node'
 End
 End
+
+Describe 'activation wrapper quoting'
+It 'quotes the fnm directory path'
+When run cat "$PWD/home-manager/programs/fnm/default.nix"
+The output should include '"${homeDir}/.local/share/fnm"'
+End
+End
 End

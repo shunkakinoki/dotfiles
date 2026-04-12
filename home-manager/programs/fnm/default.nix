@@ -23,10 +23,10 @@ in
   # Pre-install node versions and set default
   home.activation.fnmSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     export PATH="${pkgs.fnm}/bin:$PATH"
-    $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} \
-      ${pkgs.fnm}/bin/fnm \
-      ${homeDir}/.local/share/fnm \
-      ${defaultVersion} \
-      ${lib.concatStringsSep " " (builtins.tail nodeVersions)}
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" \
+      "${pkgs.fnm}/bin/fnm" \
+      "${homeDir}/.local/share/fnm" \
+      "${defaultVersion}" \
+      ${lib.concatMapStringsSep " " (version: "\"${version}\"") (builtins.tail nodeVersions)}
   '';
 }

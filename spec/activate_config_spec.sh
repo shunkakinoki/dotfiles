@@ -147,3 +147,10 @@ When run bash -c "grep 'mkdir -p' '$SCRIPT'"
 The output should include 'obsidian'
 End
 End
+
+Describe 'config/obsidian/default.nix'
+It 'quotes the home directory argument when invoking the helper'
+When run cat "$PWD/config/obsidian/default.nix"
+The output should include '"${config.home.homeDirectory}"'
+End
+End

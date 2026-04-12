@@ -5,6 +5,6 @@
 
   # Symlink local binaries during activation
   home.activation.symlinkLocalBinaries = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./sync-local-binaries.sh}
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./sync-local-binaries.sh}"
   '';
 }

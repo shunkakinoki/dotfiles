@@ -202,7 +202,7 @@ in
     };
 
     home.activation.createTailscaleDirs = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-      $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate-create-dirs.sh} \
+      $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-create-dirs.sh}" \
         "${config.xdg.dataHome}/tailscale" \
         "$(dirname "${cfg.tailscaled.socketPath}")"
     '';
@@ -211,7 +211,7 @@ in
     # Uses nix-generated service file for full declarative config
     home.activation.installTailscaleService = mkIf cfg.installSystemService (
       config.lib.dag.entryAfter [ "writeBoundary" ] ''
-        $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate-install-service.sh} \
+        $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-install-service.sh}" \
           "${tailscaledServiceFile}" \
           "${config.home.homeDirectory}"
       ''

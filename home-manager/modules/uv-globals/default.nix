@@ -12,7 +12,7 @@ in
   home.activation.installUvGlobals = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     export PATH=${pkgs.uv}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.yq}/bin:$PATH
     ${lib.optionalString (!isDarwin) ''export SYSTEMCTL_BIN="${pkgs.systemd}/bin/systemctl"''}
-    $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./install-uv-globals.sh}
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./install-uv-globals.sh}"
   '';
 
   # Run uv globals install after login (Linux only - systemd)

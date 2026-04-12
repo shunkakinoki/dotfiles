@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2016,SC2329
 
+KYBER_NIX_FILE="$PWD/named-hosts/kyber/default.nix"
+MATIC_NIX_FILE="$PWD/named-hosts/matic/default.nix"
+
 Describe 'home-manager/activation/ensure-directory.sh'
 SCRIPT="$PWD/home-manager/activation/ensure-directory.sh"
 
@@ -117,5 +120,17 @@ It 'accepts key fingerprint as argument'
 When run bash -c "grep 'KEY_FINGERPRINT' '$SCRIPT'"
 The output should include 'KEY_FINGERPRINT'
 End
+End
+End
+
+Describe 'shared host wrapper quoting'
+It 'quotes the imported GPG secret path on kyber'
+When run cat "$KYBER_NIX_FILE"
+The output should include '"${config.home.homeDirectory}/dotfiles/named-hosts/galactica/keys/gpg.age"'
+End
+
+It 'quotes the imported GPG secret path on matic'
+When run cat "$MATIC_NIX_FILE"
+The output should include '"${config.home.homeDirectory}/dotfiles/named-hosts/galactica/keys/gpg.age"'
 End
 End

@@ -41,11 +41,11 @@ in
   };
 
   home.activation.copyNvimPackLock = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate-copy-pack-lock.sh} ${nvimPackLockJson}
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-copy-pack-lock.sh}" "${nvimPackLockJson}"
   '';
 
   home.activation.buildNvimNativePlugins = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     export PATH="${lib.makeBinPath buildTools}:$PATH"
-    $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate-build-plugins.sh} ${packDir} ${libExt}
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-build-plugins.sh}" "${packDir}" "${libExt}"
   '';
 }

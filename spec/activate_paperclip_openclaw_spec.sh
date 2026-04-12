@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329
+# shellcheck disable=SC2016,SC2329
 
 Describe 'home-manager/modules/paperclip/activate.sh'
 SCRIPT="$PWD/home-manager/modules/paperclip/activate.sh"
@@ -25,6 +25,13 @@ The output should include 'chmod 700'
 End
 End
 
+Describe 'home-manager/modules/paperclip/default.nix'
+It 'quotes the home directory argument when invoking the helper'
+When run cat "$PWD/home-manager/modules/paperclip/default.nix"
+The output should include '"${./activate.sh}" "${homeDir}"'
+End
+End
+
 Describe 'home-manager/modules/openclaw/activate.sh'
 SCRIPT="$PWD/home-manager/modules/openclaw/activate.sh"
 
@@ -46,5 +53,12 @@ End
 It 'sets restrictive permissions'
 When run bash -c "grep 'chmod 700' '$SCRIPT'"
 The output should include 'chmod 700'
+End
+End
+
+Describe 'home-manager/modules/openclaw/default.nix'
+It 'quotes the home directory argument when invoking the helper'
+When run cat "$PWD/home-manager/modules/openclaw/default.nix"
+The output should include '"${./activate.sh}" "${homeDir}"'
 End
 End

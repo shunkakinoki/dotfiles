@@ -13,7 +13,7 @@ in
     export PATH=${pkgs.bun}/bin:${pkgs.jq}/bin:$PATH
     export BUN_INSTALL="$HOME/.bun"
     ${lib.optionalString (!isDarwin) ''export SYSTEMCTL_BIN="${pkgs.systemd}/bin/systemctl"''}
-    $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./install-npm-globals.sh}
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./install-npm-globals.sh}"
   '';
 
   # Run npm globals install after login (Linux only - systemd)

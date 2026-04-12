@@ -82,4 +82,16 @@ When run bash -c "grep '99-tailscale.conf' '$SCRIPT'"
 The output should include '99-tailscale.conf'
 End
 End
+
+Describe 'activation wrapper quoting'
+It 'quotes shared helper arguments that include the home directory'
+When run cat "$PWD/named-hosts/kyber/default.nix"
+The output should include '"${config.home.homeDirectory}/.ssh"'
+End
+
+It 'quotes the agenix config directory argument'
+When run cat "$PWD/named-hosts/kyber/default.nix"
+The output should include '"${config.home.homeDirectory}/.config/agenix"'
+End
+End
 End

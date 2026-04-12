@@ -4,6 +4,6 @@ let
 in
 {
   home.activation.serenaConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} ${./serena_config.yml} "${serenaConfigDest}"
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${./serena_config.yml}" "${serenaConfigDest}"
   '';
 }

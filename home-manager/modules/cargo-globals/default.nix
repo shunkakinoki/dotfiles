@@ -27,7 +27,7 @@ in
     ${lib.optionalString isDarwin ''export CPPFLAGS="${libiconvCppFlags}''${CPPFLAGS:-}"''}
     ${lib.optionalString (!isDarwin) ''export SYSTEMCTL_BIN="${pkgs.systemd}/bin/systemctl"''}
     export RUSTUP_BIN="${pkgs.rustup}/bin/rustup"
-    $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./install-cargo-globals.sh}
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./install-cargo-globals.sh}"
   '';
 
   # Run cargo globals install after login (Linux only - systemd)
