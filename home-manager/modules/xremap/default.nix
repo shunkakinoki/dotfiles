@@ -99,6 +99,9 @@ in
         # Only intercept keyd output — SUPER (CapsLock/RightAlt) goes straight to Hyprland
         deviceNames = [ "keyd virtual keyboard" ];
         config = {
+          # Slack/Electron on Wayland can misread synthesized Hyper->Ctrl
+          # shortcuts when xremap replays them with no delay.
+          keypress_delay_ms = 10;
           keymap = [
             {
               # Ghostty: Framework+C/V → Ctrl+Shift+C/V (terminal convention: Ctrl+C = SIGINT)
