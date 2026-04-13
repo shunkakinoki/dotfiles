@@ -1,12 +1,17 @@
 {
   "cleanupPeriodDays": 99999,
+  "effortLevel": "high",
   "env": {
     "AIKIDO_DISABLE": "true",
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-sonnet-4-6",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-6",
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6",
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1",
+    "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING": "1",
+    "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
     "NO_COLOR": "1",
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
     "SAFE_CHAIN_LOGGING": "silent",
     "TURBO_NO_UPDATE_NOTIFIER": "1"
   },
