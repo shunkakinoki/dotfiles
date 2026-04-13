@@ -39,17 +39,17 @@ quota-exceeded:
 ws-auth: false
 # AMP integration
 # ampcode:
-  # upstream-url: "https://ampcode.com"
-  # upstream-api-key: "__AMP_UPSTREAM_API_KEY__"
-  # restrict-management-to-localhost: false
-  # Map non-prefixed model names to antigravity provider's gemini-prefixed models
-  # model-mappings:
-    # - from: "claude-opus-4-5-thinking"
-      # to: "gemini-claude-opus-4-5-thinking"
-    # - from: "claude-sonnet-4-6"
-      # to: "gemini-claude-sonnet-4-6"
-    # - from: "claude-sonnet-4-6-thinking"
-      # to: "gemini-claude-sonnet-4-6-thinking"
+# upstream-url: "https://ampcode.com"
+# upstream-api-key: "__AMP_UPSTREAM_API_KEY__"
+# restrict-management-to-localhost: false
+# Map non-prefixed model names to antigravity provider's gemini-prefixed models
+# model-mappings:
+# - from: "claude-opus-4-5-thinking"
+# to: "gemini-claude-opus-4-5-thinking"
+# - from: "claude-sonnet-4-6"
+# to: "gemini-claude-sonnet-4-6"
+# - from: "claude-sonnet-4-6-thinking"
+# to: "gemini-claude-sonnet-4-6-thinking"
 # Gemini API keys (preferred)
 # gemini-api-key:
 #   - api-key: "AIzaSy...01"
