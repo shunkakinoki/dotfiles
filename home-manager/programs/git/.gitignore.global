@@ -1,6 +1,7 @@
 # AI
 .aider.tags.cache.*/
 .claude/
+.codex/
 .conductor/
 .crush/
 .cursor/
