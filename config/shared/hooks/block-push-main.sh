@@ -28,7 +28,7 @@ if ! echo "$command" | grep -qE '\b(main|master)\b'; then
 fi
 
 # Check repo allowlist (owner/repo from git remote)
-repo=$(git remote get-url origin 2>/dev/null | sed -E 's#.+[:/]([^/]+/[^/]+?)(\.git)?$#\1#' || echo "")
+repo=$(git remote get-url origin 2>/dev/null | sed -E 's#.*[:/]([^/]+/[^/]+)$#\1#; s#\.git$##' || echo "")
 for allowed in "${ALLOWED_REPOS[@]}"; do
   if [[ $repo == "$allowed" ]]; then
     exit 0
