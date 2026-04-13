@@ -46,5 +46,20 @@ keybind = ctrl+shift+z=toggle_split_zoom
 keybind = ctrl+shift+e=equalize_splits
 keybind = ctrl+shift+w=close_surface
 
+# opensessions sidebar
+keybind = cmd+e=text:\x02\x14
+keybind = cmd+shift+o=text:\x02\x13
+keybind = cmd+o>s=text:\x02\x13
+keybind = cmd+o>t=text:\x02\x14
+keybind = cmd+o>1=text:\x02\x1b1
+keybind = cmd+o>2=text:\x02\x1b2
+keybind = cmd+o>3=text:\x02\x1b3
+keybind = cmd+o>4=text:\x02\x1b4
+keybind = cmd+o>5=text:\x02\x1b5
+keybind = cmd+o>6=text:\x02\x1b6
+keybind = cmd+o>7=text:\x02\x1b7
+keybind = cmd+o>8=text:\x02\x1b8
+keybind = cmd+o>9=text:\x02\x1b9
+
 # Active panel highlighting (dim unfocused splits)
 unfocused-split-opacity = 0.7
