@@ -137,13 +137,13 @@ with pkgs;
   stdenv.cc.cc.lib
   tailscale
   trashy
-  vllm
   xclip
   xdg-utils
   zlib
 ]
 ++ lib.optionals (stdenv.hostPlatform.system != "aarch64-linux") [
   qwen-code
+  vllm
 ]
 ++ lib.optionals stdenv.isLinux [ alsa-lib ]
 ++ lib.optionals (stdenv.isLinux && isDesktop) [
