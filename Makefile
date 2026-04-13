@@ -1069,7 +1069,7 @@ fish-test-dev: ## Run fish tests inside the Nix dev shell (mirrors CI).
 .PHONY: shell-check
 shell-check: ## Run ShellCheck on shell scripts.
 	@echo "🔍 Running ShellCheck..."
-	@git ls-files -z '*.sh' | xargs -0 shellcheck
+	@{ git ls-files -z '*.sh'; git diff --cached --name-only -z --diff-filter=A -- '*.sh'; } | sort -zu | xargs -0 shellcheck
 
 .PHONY: shell-check-dev
 shell-check-dev: ## Run ShellCheck inside the Nix dev shell (mirrors CI).
