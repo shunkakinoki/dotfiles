@@ -124,11 +124,13 @@
               x86_64-linux = import ./hosts/nixos {
                 inherit inputs;
                 username = "shunkakinoki";
+                stateVersion = "24.05";
               };
               runner = import ./hosts/nixos {
                 inherit inputs;
                 isRunner = true;
                 username = "runner";
+                stateVersion = "24.05";
               };
               matic = import ./named-hosts/matic {
                 inherit inputs;
