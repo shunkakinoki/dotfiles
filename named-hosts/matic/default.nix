@@ -9,7 +9,6 @@ in
 import ../../hosts/nixos {
   inherit inputs username;
   hostname = "matic";
-  userInitialPassword = "changemeow";
   userExtraGroups = [
     "input"
     "video"
