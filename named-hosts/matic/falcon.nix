@@ -30,6 +30,11 @@ in
   systemd.services.falcon-sensor = {
     description = "CrowdStrike Falcon Sensor";
     wantedBy = [ "multi-user.target" ];
+    # Falcon does not stop cleanly during nixos-rebuild switch, leaving
+    # vendor processes behind and causing restart attempts to fail with
+    # "Device or resource busy". Keep the running sensor in place during
+    # switch and apply unit changes on the next boot or manual restart.
+    restartIfChanged = false;
 
     unitConfig.DefaultDependencies = false;
     # Start-limit directives belong in [Unit], not [Service].

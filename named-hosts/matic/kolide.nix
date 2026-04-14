@@ -12,9 +12,11 @@
 #    sudo sh -c 'cat /tmp/kolide-deb/etc/kolide-k2/secret > /etc/kolide-k2/secret'
 #    sudo chown root:root /etc/kolide-k2/secret
 #    sudo chmod 600 /etc/kolide-k2/secret
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
 let
+  falconInstalled = builtins.pathExists /etc/nixos/falcon-sensor.deb;
+
   # Official Kolide NixOS module
   # Pin to specific commit to avoid hash mismatches when upstream pushes to main.
   # To update: get latest commit from https://github.com/kolide/nix-agent
@@ -37,8 +39,16 @@ in
     "f /var/lib/dpkg/status 0644 root root - Package: falcon-sensor\\nStatus: install ok installed\\nPriority: optional\\nSection: misc\\nInstalled-Size: 0\\nMaintainer: CrowdStrike\\nArchitecture: amd64\\nVersion: 7.31.0-18410\\nDescription: CrowdStrike Falcon Sensor (shim for Kolide/osquery on NixOS)\\n"
   ];
 
-  # Add dpkg to Kolide service PATH for deb_packages table
-  systemd.services.kolide-launcher.path = with pkgs; [ dpkg ];
+  systemd.services.kolide-launcher = {
+    # Kolide shells out to both dpkg-backed package checks and gsettings-based
+    # screen-lock checks, neither of which are on PATH by default on NixOS.
+    path = with pkgs; [ dpkg glib ];
+
+    # When Falcon is installed, start Kolide after it so the initial CrowdStrike
+    # compliance query does not race the sensor startup during boot/switch.
+    after = lib.optional falconInstalled "falcon-sensor.service";
+    wants = lib.optional falconInstalled "falcon-sensor.service";
+  };
 
   # Enable Kolide launcher
   services.kolide-launcher.enable = true;
