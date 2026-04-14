@@ -1,7 +1,6 @@
 function _coxeh_function --description "Run Codex headlessly with a prompted input"
   # Prompt for input and run Codex
   # Usage: coxeh
-  set -l bypass_flag --dangerously-bypass-approvals-and-sandbox
 
   set -l prompt
   if test (count $argv) -gt 0
@@ -15,5 +14,5 @@ function _coxeh_function --description "Run Codex headlessly with a prompted inp
     return 1
   end
 
-  codex $bypass_flag exec --model 'gpt-5.4' --full-auto -c model_reasoning_summary_format=experimental -- "$prompt"
+  codex exec --model 'gpt-5.4' --full-auto -c model_reasoning_summary_format=experimental -- "$prompt"
 end

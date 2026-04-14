@@ -19,6 +19,26 @@ When run bash -c "grep 'chmod 600' '$SCRIPT'"
 The output should include 'chmod 600'
 End
 
+It 'config.toml defaults to never approval policy'
+When run bash -c "grep '^approval_policy = \"never\"$' '$PWD/config/codex/config.toml'"
+The output should include 'approval_policy = "never"'
+End
+
+It 'config.toml defaults to danger-full-access sandbox'
+When run bash -c "grep '^sandbox_mode = \"danger-full-access\"$' '$PWD/config/codex/config.toml'"
+The output should include 'sandbox_mode = "danger-full-access"'
+End
+
+It 'config template defaults to never approval policy'
+When run bash -c "grep '^approval_policy = \"never\"$' '$PWD/config/codex/config.tpl.toml'"
+The output should include 'approval_policy = "never"'
+End
+
+It 'config template defaults to danger-full-access sandbox'
+When run bash -c "grep '^sandbox_mode = \"danger-full-access\"$' '$PWD/config/codex/config.tpl.toml'"
+The output should include 'sandbox_mode = "danger-full-access"'
+End
+
 It 'copies hooks.json'
 When run bash -c "grep 'HOOKS_JSON' '$SCRIPT'"
 The output should include 'HOOKS_JSON'

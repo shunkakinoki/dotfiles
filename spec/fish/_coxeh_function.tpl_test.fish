@@ -11,6 +11,5 @@ _coxeh_function hello world
 
 @test "inline args forwards prompt" (grep -c "hello world" $log1) -ge 1
 @test "inline args uses full-auto" (grep -c -- "--full-auto" $log1) -ge 1
-@test "inline args includes bypass flag" (grep -c -- "--dangerously-bypass-approvals-and-sandbox" $log1) -ge 1
 
 rm -f $log1
