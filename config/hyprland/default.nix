@@ -10,7 +10,7 @@
     extraConfig = ''
       exec-once = ${pkgs.hyprpanel}/bin/hyprpanel
       exec-once = ${pkgs.hyprshell}/bin/hyprshell run &
-      exec-once = ${pkgs.lib.getExe pkgs.hyprpolkitagent}
+      exec-once = ${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent
       exec-once = sleep 3 && ${pkgs.eww}/bin/eww open clock-widget
       exec-once = ${pkgs.nwg-dock-hyprland}/bin/nwg-dock-hyprland -d -i 48 -hd 0
     ''
