@@ -152,6 +152,7 @@ inputs.nixpkgs.lib.nixosSystem {
   }
   // specialArgs;
   modules = [
+    inputs.nixpkgs.nixosModules.readOnlyPkgs
     { nixpkgs.pkgs = pkgs; }
     baseModule
   ]
