@@ -105,6 +105,7 @@ tags
 result
 result-*
 ref
+*.iso
 
 .direnv/
 .env

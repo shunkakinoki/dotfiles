@@ -134,6 +134,18 @@
                 inherit inputs;
                 username = "skakinoki";
               };
+              maticIso = import ./named-hosts/matic/iso.nix {
+                inherit inputs;
+                username = "skakinoki";
+              };
+              viper = import ./named-hosts/viper {
+                inherit inputs;
+                username = "shunkakinoki";
+              };
+              viperIso = import ./named-hosts/viper/iso.nix {
+                inherit inputs;
+                username = "shunkakinoki";
+              };
             };
             homeConfigurations = {
               "ubuntu@x86_64-linux" = import ./hosts/linux {

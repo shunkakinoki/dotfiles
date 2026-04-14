@@ -12,8 +12,9 @@ priority="${3:-0}"
 
 [[ -z $message ]] && exit 0
 
-# Source credentials if not already set
-if [[ -z ${PUSHOVER_API_TOKEN:-} ]] || [[ -z ${PUSHOVER_USER_KEY:-} ]]; then
+# Source credentials only when the vars are unset. Explicitly blank values
+# should disable notifications instead of falling back to ~/.env.
+if [[ -z ${PUSHOVER_API_TOKEN+x} ]] || [[ -z ${PUSHOVER_USER_KEY+x} ]]; then
   if [[ -f "$HOME/dotfiles/.env" ]]; then
     set -a
     # shellcheck source=/dev/null
@@ -35,4 +36,4 @@ curl -s \
   --form-string "message=${message}" \
   --form-string "priority=${priority}" \
   --form-string "title=${title}" \
-  https://api.pushover.net/1/messages.json >/dev/null 2>&1
+  https://api.pushover.net/1/messages.json >/dev/null 2>&1 || exit 0

@@ -638,6 +638,57 @@ nix-setup-offline: ## Set up offline environment.
 
 ##@ Named Hosts Specific Targets
 
+.PHONY: build-vm
+build-vm: ## Build a named host VM launcher (set HOST=<name>, e.g. make build-vm HOST=viper).
+	@host="$(HOST)"; \
+	if [ -z "$$host" ]; then \
+		host="$(DETECTED_HOST)"; \
+	fi; \
+	if [ -z "$$host" ]; then \
+		echo "❌ No HOST specified and no named host auto-detected"; \
+		exit 1; \
+	fi; \
+	echo "🏗️ Building VM for $$host"; \
+	$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.$$host.config.system.build.vm $(NIX_FLAGS) --impure --show-trace
+
+.PHONY: run-vm
+run-vm: ## Run a named host VM launcher (set HOST=<name>, e.g. make run-vm HOST=viper).
+	@host="$(HOST)"; \
+	if [ -z "$$host" ]; then \
+		host="$(DETECTED_HOST)"; \
+	fi; \
+	if [ -z "$$host" ]; then \
+		echo "❌ No HOST specified and no named host auto-detected"; \
+		exit 1; \
+	fi; \
+	$(MAKE) build-vm HOST="$$host"; \
+	script=$$(find ./result/bin -maxdepth 1 -type f \( -name 'run-*-vm' -o -name 'run-nixos-vm' \) | head -n 1); \
+	if [ -z "$$script" ]; then \
+		echo "❌ Could not find a VM launcher under ./result/bin"; \
+		exit 1; \
+	fi; \
+	"$$script"
+
+.PHONY: build-iso
+build-iso: ## Build a named host live/install ISO and copy it to ./<host>.iso (set HOST=<name>, e.g. make build-iso HOST=viper).
+	@host="$(HOST)"; \
+	if [ -z "$$host" ]; then \
+		host="$(DETECTED_HOST)"; \
+	fi; \
+	if [ -z "$$host" ]; then \
+		echo "❌ No HOST specified and no named host auto-detected"; \
+		exit 1; \
+	fi; \
+	echo "💿 Building ISO for $$host"; \
+	$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.$$host"Iso".config.system.build.isoImage $(NIX_FLAGS) --impure --show-trace; \
+	iso_path=$$(find ./result -type f -name '*.iso' | head -n 1); \
+	if [ -z "$$iso_path" ]; then \
+		echo "❌ Could not find a built ISO under ./result"; \
+		exit 1; \
+	fi; \
+	cp -f "$$iso_path" "./$$host.iso"; \
+	echo "✅ Copied $$iso_path to ./$$host.iso"
+
 .PHONY: switch-%
 switch-%: ## Switch to a named host configuration (e.g., make switch-galactica).
 	@$(MAKE) nix-switch HOST=$*
@@ -1151,4 +1202,3 @@ gt-status: ## Show Gas Town health and Dolt server status.
 .PHONY: gt-dolt-status
 gt-dolt-status: ## Show Dolt server status and latency.
 	@gt dolt status
-
