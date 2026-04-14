@@ -14,5 +14,5 @@ function _coxeh_function --description "Run Codex headlessly with a prompted inp
     return 1
   end
 
-  codex exec --model 'gpt-5.4' --full-auto -c model_reasoning_summary_format=experimental -- "$prompt"
+  codex --dangerously-bypass-approvals-and-sandbox exec --model 'gpt-5.4' --full-auto -c model_reasoning_summary_format=experimental -- "$prompt"
 end

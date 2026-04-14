@@ -3,8 +3,6 @@ web_search = "cached"
 model = "gpt-5.3-codex"
 model_reasoning_effort = "xhigh"
 oss_provider = "lmstudio"
-approval_policy = "never"
-sandbox_mode = "danger-full-access"
 
 [features]
 apply_patch_freeform = true
