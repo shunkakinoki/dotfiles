@@ -143,7 +143,12 @@ in
 inputs.nixpkgs.lib.nixosSystem {
   inherit system;
   specialArgs = {
-    inherit inputs username isRunner;
+    inherit
+      inputs
+      username
+      isRunner
+      pkgs
+      ;
   }
   // specialArgs;
   modules = [
