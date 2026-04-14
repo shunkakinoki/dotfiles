@@ -14,5 +14,5 @@ function _coxelh_function --description "Run Codex headlessly with the local Qwe
     return 1
   end
 
-  codex --dangerously-bypass-approvals-and-sandbox exec --oss --local-provider lmstudio --model 'qwen3.5-0.8b-optiq' --full-auto -c model_reasoning_effort=minimal -- "$prompt"
+  codex --dangerously-bypass-approvals-and-sandbox exec --oss --local-provider lmstudio --model 'qwen3.5-0.8b-optiq' -c model_reasoning_effort=minimal -- "$prompt"
 end

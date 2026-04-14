@@ -5,9 +5,9 @@ function _coxel_function --description "Run Codex with a free-form prompt using 
   if test (count $argv) -gt 0; and contains -- "$argv[1]" --resume -r --continue -c
     codex --dangerously-bypass-approvals-and-sandbox resume $argv[2]
   else if test (count $argv) -eq 0
-    codex --dangerously-bypass-approvals-and-sandbox --oss --local-provider lmstudio --model '__QWEN_LOCAL__' --full-auto -c model_reasoning_effort=minimal
+    codex --dangerously-bypass-approvals-and-sandbox --oss --local-provider lmstudio --model '__QWEN_LOCAL__' -c model_reasoning_effort=minimal
   else
     set -l prompt (string join " " -- $argv)
-    codex --dangerously-bypass-approvals-and-sandbox exec --oss --local-provider lmstudio --model '__QWEN_LOCAL__' --full-auto -c model_reasoning_effort=minimal -- "$prompt"
+    codex --dangerously-bypass-approvals-and-sandbox exec --oss --local-provider lmstudio --model '__QWEN_LOCAL__' -c model_reasoning_effort=minimal -- "$prompt"
   end
 end
