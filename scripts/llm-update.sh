@@ -82,8 +82,14 @@ for src in "${!TEMPLATES[@]}"; do
     echo "SKIP: $src"
     continue
   }
-  sed "${sed_args[@]}" "$ROOT/$src" >"$ROOT/$dst"
-  echo "OK: $dst"
+  tmp=$(mktemp)
+  if sed "${sed_args[@]}" "$ROOT/$src" >"$tmp"; then
+    mv "$tmp" "$ROOT/$dst"
+    echo "OK: $dst"
+  else
+    rm -f "$tmp"
+    echo "ERROR: sed failed for $src, skipping $dst" >&2
+  fi
 done
 
 echo
