@@ -70,8 +70,6 @@ let
 
       environment.etc."nix/inputs/nixpkgs".source = "${inputs.nixpkgs}";
 
-      nixpkgs.pkgs = pkgs;
-
       system.stateVersion = stateVersion;
     };
 
@@ -148,5 +146,9 @@ inputs.nixpkgs.lib.nixosSystem {
     inherit inputs username isRunner;
   }
   // specialArgs;
-  modules = [ baseModule ] ++ (if modules == null then genericModules else modules);
+  modules = [
+    { nixpkgs.pkgs = pkgs; }
+    baseModule
+  ]
+  ++ (if modules == null then genericModules else modules);
 }
