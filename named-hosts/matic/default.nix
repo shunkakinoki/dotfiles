@@ -358,166 +358,169 @@ import ../../hosts/nixos {
 
     # Home Manager integration
     inputs.home-manager.nixosModules.home-manager
-    {
-      home-manager.backupFileExtension = "hm-backup";
-      home-manager.extraSpecialArgs = {
-        inputs = inputs // {
-          host = (import ../../lib/host.nix) // {
-            isDesktop = true;
+    (
+      { pkgs, ... }:
+      {
+        home-manager.backupFileExtension = "hm-backup";
+        home-manager.extraSpecialArgs = {
+          inherit pkgs;
+          inputs = inputs // {
+            host = (import ../../lib/host.nix) // {
+              isDesktop = true;
+            };
           };
         };
-      };
-      home-manager.useGlobalPkgs = true;
-      home-manager.useUserPackages = true;
-      home-manager.users.${username} =
-        {
-          config,
-          lib,
-          pkgs,
-          ...
-        }:
-        {
-          imports = [
-            (import ../../home-manager {
-              inherit username;
-              inputs = inputs // {
-                host = (import ../../lib/host.nix) // {
-                  isDesktop = true;
+        home-manager.useGlobalPkgs = true;
+        home-manager.useUserPackages = true;
+        home-manager.users.${username} =
+          {
+            config,
+            lib,
+            pkgs,
+            ...
+          }:
+          {
+            imports = [
+              (import ../../home-manager {
+                inherit username pkgs;
+                inputs = inputs // {
+                  host = (import ../../lib/host.nix) // {
+                    isDesktop = true;
+                  };
                 };
-              };
-              inherit (inputs.nixpkgs) lib;
-              inherit pkgs;
-              config = { };
-            })
-          ];
-
-          # Animated wallpaper via Wallpaper Engine
-          services.linux-wallpaperengine = {
-            enable = true;
-            assetsPath = "${config.home.homeDirectory}/.local/share/Steam/steamapps/common/wallpaper_engine/assets";
-            wallpapers = [
-              {
-                monitor = "eDP-1";
-                wallpaperId = "2826529529";
-                scaling = "fill";
-                fps = 1;
-                audio.silent = true;
-                extraOptions = [
-                  "--no-audio-processing"
-                  "--disable-mouse"
-                  "--disable-parallax"
-                  "--disable-particles"
-                ];
-              }
+                inherit (inputs.nixpkgs) lib;
+                config = { };
+              })
             ];
-          };
 
-          # Force RADV (hardware Vulkan) for wallpaper engine instead of lavapipe (software rendering)
-          systemd.user.services.linux-wallpaperengine.Service.Environment = [
-            "VK_DRIVER_FILES=/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json"
-          ];
-
-          home.sessionVariables = {
-            VK_DRIVER_FILES = "/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json";
-          };
-
-          # Pause animated wallpaper on battery to save power (SIGSTOP/SIGCONT)
-          systemd.user.services.wallpaper-power-monitor = {
-            Unit = {
-              Description = "Pause wallpaper engine on battery, resume on AC";
-              After = [ "linux-wallpaperengine.service" ];
-              BindsTo = [ "linux-wallpaperengine.service" ];
-            };
-            Service = {
-              Type = "simple";
-              Restart = "on-failure";
-              RestartSec = 5;
-              ExecStart = pkgs.writeShellScript "wallpaper-power-check" (
-                builtins.readFile (
-                  pkgs.replaceVars ../../scripts/wallpaper-power-check.sh {
-                    ac_supply_path = "/sys/class/power_supply/ACAD/online";
-                    systemctl = "${pkgs.systemd}/bin/systemctl";
-                    kill = "${pkgs.coreutils}/bin/kill";
-                    sleep = "${pkgs.coreutils}/bin/sleep";
-                  }
-                )
-              );
-            };
-            Install.WantedBy = [ "linux-wallpaperengine.service" ];
-          };
-
-          # Agenix configuration for GitHub SSH key
-          age.identityPaths = [ "/home/${username}/.ssh/id_ed25519" ];
-          age.secrets = builtins.mapAttrs (
-            name: value:
-            {
-              inherit (value) file;
-            }
-            // (
-              if name == "keys/id_github.age" then
+            # Animated wallpaper via Wallpaper Engine
+            services.linux-wallpaperengine = {
+              enable = true;
+              assetsPath = "${config.home.homeDirectory}/.local/share/Steam/steamapps/common/wallpaper_engine/assets";
+              wallpapers = [
                 {
-                  path = "/home/${username}/.ssh/id_ed25519_github";
-                  mode = "0600";
+                  monitor = "eDP-1";
+                  wallpaperId = "2826529529";
+                  scaling = "fill";
+                  fps = 1;
+                  audio.silent = true;
+                  extraOptions = [
+                    "--no-audio-processing"
+                    "--disable-mouse"
+                    "--disable-parallax"
+                    "--disable-particles"
+                  ];
                 }
-              else
-                { }
-            )
-          ) (import ./secrets.nix);
-
-          # Ensure SSH directory exists before agenix tries to deploy secrets
-          home.activation.ensureSshDirectory = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
-            $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-directory.sh}" "700" "${config.home.homeDirectory}/.ssh"
-          '';
-
-          # Ensure agenix config directory exists
-          home.activation.ensureAgenixDirectory = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
-            $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-directory.sh}" "700" "${config.home.homeDirectory}/.config/agenix"
-          '';
-
-          # Manually deploy agenix secrets during activation
-          home.activation.deployAgenixSecrets = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-            $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/deploy-agenix-secret.sh}" \
-              "${config.home.homeDirectory}/.ssh/id_ed25519_github" \
-              "${builtins.toString ../galactica/keys/id_ed25519.age}" \
-              "${config.home.homeDirectory}/.ssh/id_ed25519" \
-              "${pkgs.rage}/bin/rage"
-          '';
-
-          # Import GPG key from agenix (all systems with dotfiles)
-          home.activation.importGpgKey = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-            $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/import-gpg-key.sh}" \
-              "${config.home.homeDirectory}/dotfiles/named-hosts/galactica/keys/gpg.age" \
-              "${config.home.homeDirectory}/.ssh/id_ed25519" \
-              "${config.home.homeDirectory}/.config/agenix" \
-              "${pkgs.rage}/bin/rage" \
-              "${pkgs.gnupg}/bin/gpg" \
-              "C2E97FCFF482925D"
-          '';
-
-          # GPG configuration for commit signing
-          programs.gpg = {
-            enable = true;
-            settings = {
-              default-key = "shunkakinoki@gmail.com";
+              ];
             };
-          };
 
-          # GPG agent configuration
-          services.gpg-agent = {
-            enable = true;
-            enableSshSupport = false;
-            pinentry.package = pkgs.pinentry-gnome3;
-            defaultCacheTtl = 2147483647;
-            maxCacheTtl = 2147483647;
-          };
+            # Force RADV (hardware Vulkan) for wallpaper engine instead of lavapipe (software rendering)
+            systemd.user.services.linux-wallpaperengine.Service.Environment = [
+              "VK_DRIVER_FILES=/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json"
+            ];
 
-          # GPG_TTY is set in fish shell init instead of sessionVariables
-          # because it needs to be evaluated dynamically per shell session
-          programs.fish.interactiveShellInit = lib.mkAfter ''
-            set -gx GPG_TTY (tty)
-          '';
-        };
-    }
+            home.sessionVariables = {
+              VK_DRIVER_FILES = "/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json";
+            };
+
+            # Pause animated wallpaper on battery to save power (SIGSTOP/SIGCONT)
+            systemd.user.services.wallpaper-power-monitor = {
+              Unit = {
+                Description = "Pause wallpaper engine on battery, resume on AC";
+                After = [ "linux-wallpaperengine.service" ];
+                BindsTo = [ "linux-wallpaperengine.service" ];
+              };
+              Service = {
+                Type = "simple";
+                Restart = "on-failure";
+                RestartSec = 5;
+                ExecStart = pkgs.writeShellScript "wallpaper-power-check" (
+                  builtins.readFile (
+                    pkgs.replaceVars ../../scripts/wallpaper-power-check.sh {
+                      ac_supply_path = "/sys/class/power_supply/ACAD/online";
+                      systemctl = "${pkgs.systemd}/bin/systemctl";
+                      kill = "${pkgs.coreutils}/bin/kill";
+                      sleep = "${pkgs.coreutils}/bin/sleep";
+                    }
+                  )
+                );
+              };
+              Install.WantedBy = [ "linux-wallpaperengine.service" ];
+            };
+
+            # Agenix configuration for GitHub SSH key
+            age.identityPaths = [ "/home/${username}/.ssh/id_ed25519" ];
+            age.secrets = builtins.mapAttrs (
+              name: value:
+              {
+                inherit (value) file;
+              }
+              // (
+                if name == "keys/id_github.age" then
+                  {
+                    path = "/home/${username}/.ssh/id_ed25519_github";
+                    mode = "0600";
+                  }
+                else
+                  { }
+              )
+            ) (import ./secrets.nix);
+
+            # Ensure SSH directory exists before agenix tries to deploy secrets
+            home.activation.ensureSshDirectory = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
+              $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-directory.sh}" "700" "${config.home.homeDirectory}/.ssh"
+            '';
+
+            # Ensure agenix config directory exists
+            home.activation.ensureAgenixDirectory = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
+              $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-directory.sh}" "700" "${config.home.homeDirectory}/.config/agenix"
+            '';
+
+            # Manually deploy agenix secrets during activation
+            home.activation.deployAgenixSecrets = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+              $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/deploy-agenix-secret.sh}" \
+                "${config.home.homeDirectory}/.ssh/id_ed25519_github" \
+                "${builtins.toString ../galactica/keys/id_ed25519.age}" \
+                "${config.home.homeDirectory}/.ssh/id_ed25519" \
+                "${pkgs.rage}/bin/rage"
+            '';
+
+            # Import GPG key from agenix (all systems with dotfiles)
+            home.activation.importGpgKey = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+              $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/import-gpg-key.sh}" \
+                "${config.home.homeDirectory}/dotfiles/named-hosts/galactica/keys/gpg.age" \
+                "${config.home.homeDirectory}/.ssh/id_ed25519" \
+                "${config.home.homeDirectory}/.config/agenix" \
+                "${pkgs.rage}/bin/rage" \
+                "${pkgs.gnupg}/bin/gpg" \
+                "C2E97FCFF482925D"
+            '';
+
+            # GPG configuration for commit signing
+            programs.gpg = {
+              enable = true;
+              settings = {
+                default-key = "shunkakinoki@gmail.com";
+              };
+            };
+
+            # GPG agent configuration
+            services.gpg-agent = {
+              enable = true;
+              enableSshSupport = false;
+              pinentry.package = pkgs.pinentry-gnome3;
+              defaultCacheTtl = 2147483647;
+              maxCacheTtl = 2147483647;
+            };
+
+            # GPG_TTY is set in fish shell init instead of sessionVariables
+            # because it needs to be evaluated dynamically per shell session
+            programs.fish.interactiveShellInit = lib.mkAfter ''
+              set -gx GPG_TTY (tty)
+            '';
+          };
+      }
+    )
   ]
   ++ (if falconDebExists then [ ./falcon.nix ] else [ ]);
 }
