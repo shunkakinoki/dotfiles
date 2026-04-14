@@ -173,6 +173,10 @@ It 'has spec file for scripts/check-nix-inline-scripts.sh'
 The path "spec/check_nix_inline_scripts_spec.sh" should be exist
 End
 
+It 'has spec file for scripts/find-built-iso.sh'
+The path "spec/find_built_iso_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/cliproxyapi/scripts/docker-start.sh'
 The path "spec/cliproxyapi_docker_start_spec.sh" should be exist
 End

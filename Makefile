@@ -35,6 +35,9 @@ NIX_TRUSTED_KEYS := cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShj
 NIX_CACHIX_CONF := /etc/nix/cachix.conf
 # Check if user is trusted (to avoid "ignoring untrusted substituter" warnings)
 NIX_USER_TRUSTED := $(shell grep -qE "trusted-users.*=.*(\\*|$(shell whoami))" /etc/nix/nix.conf 2>/dev/null && echo "yes" || echo "no")
+NAMED_HOSTS := galactica kyber matic viper
+NIXOS_NAMED_HOSTS := $(filter matic viper,$(NAMED_HOSTS))
+ISO_NAMED_HOSTS := $(filter matic viper,$(NAMED_HOSTS))
 
 # Nix configuration system
 NIX_SYSTEM := $(shell if [ "$(OS)" = "Darwin" ] && [ "$(ARCH)" = "arm64" ]; then \
@@ -137,7 +140,7 @@ default: help ## Default target (shows help).
 help: ## Show this help message.
 	@echo "Usage: make <target>"
 	@echo
-	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9_-]+:.*?## / {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9_%-]+:.*?## / {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 ##@ General
 
@@ -638,6 +641,21 @@ nix-setup-offline: ## Set up offline environment.
 
 ##@ Named Hosts Specific Targets
 
+define MAKE_NIXOS_HOST_BUILD_TARGET
+.PHONY: build-$(1)
+build-$(1): ## Build the $(1) named host configuration.
+	@$(MAKE) build HOST=$(1)
+endef
+
+define MAKE_NIXOS_HOST_ISO_TARGET
+.PHONY: build-$(1)-iso
+build-$(1)-iso: ## Build the $(1) named host live/install ISO.
+	@$(MAKE) build-iso HOST=$(1)
+endef
+
+$(foreach host,$(NIXOS_NAMED_HOSTS),$(eval $(call MAKE_NIXOS_HOST_BUILD_TARGET,$(host))))
+$(foreach host,$(ISO_NAMED_HOSTS),$(eval $(call MAKE_NIXOS_HOST_ISO_TARGET,$(host))))
+
 .PHONY: build-vm
 build-vm: ## Build a named host VM launcher (set HOST=<name>, e.g. make build-vm HOST=viper).
 	@host="$(HOST)"; \
@@ -671,7 +689,8 @@ run-vm: ## Run a named host VM launcher (set HOST=<name>, e.g. make run-vm HOST=
 
 .PHONY: build-iso
 build-iso: ## Build a named host live/install ISO and copy it to ./<host>.iso (set HOST=<name>, e.g. make build-iso HOST=viper).
-	@host="$(HOST)"; \
+	@set -e; \
+	host="$(HOST)"; \
 	if [ -z "$$host" ]; then \
 		host="$(DETECTED_HOST)"; \
 	fi; \
@@ -681,7 +700,7 @@ build-iso: ## Build a named host live/install ISO and copy it to ./<host>.iso (s
 	fi; \
 	echo "💿 Building ISO for $$host"; \
 	$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.$$host"Iso".config.system.build.isoImage $(NIX_FLAGS) --impure --show-trace; \
-	iso_path=$$(find ./result -type f -name '*.iso' | head -n 1); \
+	iso_path=$$(bash ./scripts/find-built-iso.sh ./result); \
 	if [ -z "$$iso_path" ]; then \
 		echo "❌ Could not find a built ISO under ./result"; \
 		exit 1; \

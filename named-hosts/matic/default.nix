@@ -195,6 +195,9 @@ import ../../hosts/nixos {
         security.pam.services.sudo = {
           fprintAuth = true;
         };
+        security.pam.services.polkit-1 = {
+          fprintAuth = true;
+        };
 
         # Firmware updates
         services.fwupd.enable = true;
@@ -217,6 +220,10 @@ import ../../hosts/nixos {
             };
           };
         };
+        # auto-cpufreq-gtk writes turbo overrides to /opt/auto-cpufreq/
+        systemd.tmpfiles.rules = [
+          "d /opt/auto-cpufreq 0755 root root -"
+        ];
 
         # Power button behavior - lock screen instead of shutdown
         services.logind.settings.Login.HandlePowerKey = "lock";
