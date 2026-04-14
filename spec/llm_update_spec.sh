@@ -26,6 +26,11 @@ It 'exits if models.json is missing'
 When run bash -c "grep 'models.json not found' '$SCRIPT'"
 The output should include 'ERROR'
 End
+
+It 'checks for jq before generating outputs'
+When run bash -c "grep 'require_command jq' '$SCRIPT'"
+The output should include 'require_command jq'
+End
 End
 
 Describe 'template processing'
@@ -118,6 +123,50 @@ End
 It 'generates NONDOT variant placeholders'
 When run bash -c "grep '_NONDOT__' '$SCRIPT'"
 The output should include '_NONDOT__'
+End
+End
+
+Describe 'failure handling'
+setup_failure_fixture() {
+  TEMP_ROOT=$(mktemp -d)
+  MOCK_BIN=$(mktemp -d)
+  TARGET="$TEMP_ROOT/home-manager/programs/fish/functions/_pixelh_function.fish"
+
+  mkdir -p "$TEMP_ROOT/scripts" "$(dirname "$TARGET")"
+  cp -f "$SCRIPT" "$TEMP_ROOT/scripts/llm-update.sh"
+  cp -f "$PWD/models.json" "$TEMP_ROOT/models.json"
+  cp -f "$PWD/home-manager/programs/fish/functions/_pixelh_function.tpl.fish" "$TEMP_ROOT/home-manager/programs/fish/functions/_pixelh_function.tpl.fish"
+  printf 'sentinel\n' >"$TARGET"
+
+  cat >"$MOCK_BIN/jq" <<'EOF'
+#!/usr/bin/env bash
+echo "mock jq failure" >&2
+exit 127
+EOF
+  chmod +x "$MOCK_BIN/jq"
+
+  REAL_BIN_DIRS=$(
+    for cmd in bash dirname mktemp mv sed tr awk paste; do
+      dirname "$(command -v "$cmd")"
+    done | awk '!seen[$0]++' | paste -sd:
+  )
+}
+
+cleanup_failure_fixture() {
+  rm -rf "$TEMP_ROOT" "$MOCK_BIN"
+}
+
+Before 'setup_failure_fixture'
+After 'cleanup_failure_fixture'
+
+It 'fails fast when jq is unavailable'
+When run bash -c "PATH='$MOCK_BIN:$REAL_BIN_DIRS' bash '$TEMP_ROOT/scripts/llm-update.sh' >/dev/null 2>&1"
+The status should not be success
+End
+
+It 'preserves generated outputs when jq is unavailable'
+When run bash -c "PATH='$MOCK_BIN:$REAL_BIN_DIRS' bash '$TEMP_ROOT/scripts/llm-update.sh' >/dev/null 2>&1 || true; cat '$TARGET'"
+The output should equal 'sentinel'
 End
 End
 

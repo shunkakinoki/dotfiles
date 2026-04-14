@@ -17,6 +17,7 @@ in
             pkgs.bash
             pkgs.coreutils
             pkgs.gnumake
+            pkgs.jq
           ]
         }:/opt/homebrew/bin:/usr/local/bin";
       };
@@ -49,6 +50,7 @@ in
             pkgs.gnumake
             pkgs.gnused
             pkgs.go
+            pkgs.jq
             pkgs.libtool
             pkgs.neovim
             pkgs.nix

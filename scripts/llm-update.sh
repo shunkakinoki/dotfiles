@@ -12,6 +12,19 @@ MODELS="$ROOT/models.json"
   exit 1
 }
 
+require_command() {
+  local cmd="$1"
+  command -v "$cmd" >/dev/null 2>&1 || {
+    echo "ERROR: required command '$cmd' not found" >&2
+    exit 1
+  }
+}
+
+require_command jq
+require_command sed
+require_command mktemp
+require_command mv
+
 # jq function: derive display name from a model ID
 # claude-opus-4.6 → "Claude Opus 4.6", claude-sonnet-4.5-20250929 → "Claude Sonnet 4.5"
 # shellcheck disable=SC2016
@@ -33,15 +46,28 @@ JQ_PRETTY='def pretty:
 # Build sed args from models.json
 # Order: PRETTY, NONDOT, then base — longer patterns must be replaced first
 sed_args=()
+model_rows="$(
+  jq -r "$JQ_PRETTY"'
+    to_entries[] |
+    [.key, .value, (.value | pretty), (.value | gsub("\\.";"-"))] |
+    @tsv' "$MODELS"
+)" || {
+  echo "ERROR: failed to parse models.json" >&2
+  exit 1
+}
+
+[[ -n "$model_rows" ]] || {
+  echo "ERROR: no model rows generated from $MODELS" >&2
+  exit 1
+}
+
 while IFS=$'\t' read -r key value pretty nondot; do
+  [[ -n "$key" ]] || continue
   placeholder="__$(echo "$key" | tr 'a-z-' 'A-Z_')__"
   sed_args+=(-e "s|${placeholder%__}_PRETTY__|${pretty}|g")
   sed_args+=(-e "s|${placeholder%__}_NONDOT__|${nondot}|g")
   sed_args+=(-e "s|${placeholder}|${value}|g")
-done < <(jq -r "$JQ_PRETTY"'
-  to_entries[] |
-  [.key, .value, (.value | pretty), (.value | gsub("\\.";"-"))] |
-  @tsv' "$MODELS")
+done <<< "$model_rows"
 
 # Template → output pairs
 declare -A TEMPLATES=(
@@ -82,14 +108,19 @@ for src in "${!TEMPLATES[@]}"; do
     echo "SKIP: $src"
     continue
   }
-  tmp=$(mktemp)
-  if sed "${sed_args[@]}" "$ROOT/$src" >"$tmp"; then
-    mv "$tmp" "$ROOT/$dst"
-    echo "OK: $dst"
-  else
+
+  tmp=$(mktemp "$ROOT/.llm-update.XXXXXX")
+  if ! sed "${sed_args[@]}" "$ROOT/$src" >"$tmp"; then
     rm -f "$tmp"
-    echo "ERROR: sed failed for $src, skipping $dst" >&2
+    echo "ERROR: sed failed for $src" >&2
+    exit 1
   fi
+  if ! mv -f "$tmp" "$ROOT/$dst"; then
+    rm -f "$tmp"
+    echo "ERROR: failed to update $dst" >&2
+    exit 1
+  fi
+  echo "OK: $dst"
 done
 
 echo
