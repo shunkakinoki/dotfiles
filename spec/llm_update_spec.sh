@@ -69,6 +69,29 @@ The output should include '_pixel_function.tpl.fish'
 End
 End
 
+Describe 'generated fish wrapper outputs'
+Parameters:dynamic
+for file in $(git ls-files 'home-manager/programs/fish/functions/*.tpl.fish'); do
+  output_file=${file/.tpl/}
+  %data "$file" "$output_file"
+done
+End
+
+It 'has a generated fish wrapper sibling: $2'
+The path "$2" should be exist
+End
+
+It 'keeps generated fish wrappers non-empty: $2'
+When run bash -c "[ -s '$2' ]"
+The status should be success
+End
+
+It 'resolves placeholders in generated fish wrappers: $2'
+When run bash -c "! grep -Eq '__[A-Z0-9_]+__' '$2'"
+The status should be success
+End
+End
+
 Describe 'jq pretty-printing'
 It 'defines a jq pretty function for model names'
 When run bash -c "grep 'def pretty' '$SCRIPT'"

@@ -59,11 +59,38 @@ echo "$DEPS" | while read -r pkg; do
   if [ -n "$installed_version" ] && [ -n "$req_version" ]; then
     if printf '%s\n%s\n' "$req_version" "$installed_version" | sort -V | head -n1 | grep -qx "$req_version"; then
       echo "$name $installed_version already installed, skipping"
-      continue
+    else
+      echo "Installing $pkg..."
+      uv tool install "$pkg" --python "$PYTHON_VERSION" --force 2>/dev/null || echo "Failed to install $pkg, skipping..."
     fi
+  else
+    echo "Installing $pkg..."
+    uv tool install "$pkg" --python "$PYTHON_VERSION" --force 2>/dev/null || echo "Failed to install $pkg, skipping..."
   fi
-  echo "Installing $pkg..."
-  uv tool install "$pkg" --python "$PYTHON_VERSION" --force 2>/dev/null || echo "Failed to install $pkg, skipping..."
+
+  # Symlink each tool's python3 for per-tool access: `python3-<tool> -m <tool>`
+  tool_python="${HOME}/.local/share/uv/tools/${name}/bin/python3"
+  if [ -f "$tool_python" ]; then
+    ln -sf "$tool_python" "${HOME}/.local/bin/python3-${name}"
+  fi
 done
+
+# Write a dispatcher so `python3 -m <tool>` uses that tool's isolated Python
+cat > "${HOME}/.local/bin/python3" << 'EOF'
+#!/usr/bin/env bash
+prev=""
+for arg in "$@"; do
+  if [ "$prev" = "-m" ]; then
+    per_tool="${HOME}/.local/bin/python3-${arg}"
+    if [ -x "$per_tool" ]; then
+      exec "$per_tool" "$@"
+    fi
+    break
+  fi
+  prev="$arg"
+done
+exec /etc/profiles/per-user/"${USER}"/bin/python3 "$@"
+EOF
+chmod +x "${HOME}/.local/bin/python3"
 
 echo "uv globals installation complete"
