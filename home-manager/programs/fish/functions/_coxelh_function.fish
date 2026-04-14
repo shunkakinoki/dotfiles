@@ -1,6 +1,7 @@
 function _coxelh_function --description "Run Codex headlessly with the local Qwen model"
   # Prompt for input and run Codex with the local Qwen model
   # Usage: coxelh
+  set -l bypass_flag --dangerously-bypass-approvals-and-sandbox
 
   set -l prompt
   if test (count $argv) -gt 0
@@ -14,5 +15,5 @@ function _coxelh_function --description "Run Codex headlessly with the local Qwe
     return 1
   end
 
-  codex exec --oss --local-provider lmstudio --model 'qwen3.5-0.8b-optiq' --full-auto -c model_reasoning_effort=minimal -- "$prompt"
+  codex $bypass_flag exec --oss --local-provider lmstudio --model 'qwen3.5-0.8b-optiq' --full-auto -c model_reasoning_effort=minimal -- "$prompt"
 end
