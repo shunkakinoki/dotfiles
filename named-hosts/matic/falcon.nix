@@ -32,6 +32,8 @@ in
     wantedBy = [ "multi-user.target" ];
 
     unitConfig.DefaultDependencies = false;
+    # Start-limit directives belong in [Unit], not [Service].
+    unitConfig.StartLimitIntervalSec = 0;
     after = [ "local-fs.target" ];
     conflicts = [ "shutdown.target" ];
     before = [
@@ -47,9 +49,6 @@ in
 
       Restart = "on-failure";
       RestartSec = "15s";
-
-      # Avoid systemd giving up during flapping
-      StartLimitIntervalSec = 0;
 
       TimeoutStopSec = "60s";
       KillMode = "process";
