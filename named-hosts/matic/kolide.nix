@@ -42,7 +42,10 @@ in
   systemd.services.kolide-launcher = {
     # Kolide shells out to both dpkg-backed package checks and gsettings-based
     # screen-lock checks, neither of which are on PATH by default on NixOS.
-    path = with pkgs; [ dpkg glib ];
+    path = with pkgs; [
+      dpkg
+      glib
+    ];
 
     # When Falcon is installed, start Kolide after it so the initial CrowdStrike
     # compliance query does not race the sensor startup during boot/switch.

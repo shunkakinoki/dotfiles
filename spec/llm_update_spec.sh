@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329,SC2034
+# shellcheck disable=SC2329,SC2034,SC2016
 
 Describe 'scripts/llm-update.sh'
 SCRIPT="$PWD/scripts/llm-update.sh"

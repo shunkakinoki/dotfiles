@@ -76,7 +76,7 @@ echo "$DEPS" | while read -r pkg; do
 done
 
 # Write a dispatcher so `python3 -m <tool>` uses that tool's isolated Python
-cat > "${HOME}/.local/bin/python3" << 'EOF'
+cat >"${HOME}/.local/bin/python3" <<'EOF'
 #!/usr/bin/env bash
 prev=""
 for arg in "$@"; do
