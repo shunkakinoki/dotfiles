@@ -217,6 +217,10 @@ import ../../hosts/nixos {
             };
           };
         };
+        # auto-cpufreq-gtk writes turbo overrides to /opt/auto-cpufreq/
+        systemd.tmpfiles.rules = [
+          "d /opt/auto-cpufreq 0755 root root -"
+        ];
 
         # Power button behavior - lock screen instead of shutdown
         services.logind.settings.Login.HandlePowerKey = "lock";
