@@ -87,6 +87,10 @@ let
     "${hyperPrefix}c" = "C-Shift-c";
     "${hyperPrefix}v" = "C-Shift-v";
   };
+  # Slack: same mapping as global but isolated so Slack-specific workarounds
+  # (modifier leak, thread mark-as-read on bare `c`/`Esc`) can be tuned here
+  # without affecting other apps. See commits e60e0df, 95679b8, 48ad8f5.
+  slackRemap = globalRemap;
 in
 {
   config = lib.mkMerge [
@@ -108,6 +112,13 @@ in
               name = "Framework Command (Ghostty)";
               application.only = [ "com.mitchellh.ghostty" ];
               remap = ghosttyRemap;
+            }
+            {
+              # Slack: isolated block so modifier-leak / thread mark-as-read
+              # workarounds can be tuned without affecting other apps.
+              name = "Framework Command (Slack)";
+              application.only = [ "Slack" ];
+              remap = slackRemap;
             }
             {
               # Global: no application filter — applies unconditionally so window detection
