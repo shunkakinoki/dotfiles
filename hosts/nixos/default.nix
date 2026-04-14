@@ -32,19 +32,19 @@ let
 
       programs.fish.enable = true;
 
-      users.users.${username} =
-        {
-          isNormalUser = true;
-          extraGroups = [
-            "wheel"
-            "networkmanager"
-          ] ++ userExtraGroups;
-          home = "/home/${username}";
-          shell = pkgs.fish;
-        }
-        // lib.optionalAttrs (userInitialPassword != null) {
-          initialPassword = userInitialPassword;
-        };
+      users.users.${username} = {
+        isNormalUser = true;
+        extraGroups = [
+          "wheel"
+          "networkmanager"
+        ]
+        ++ userExtraGroups;
+        home = "/home/${username}";
+        shell = pkgs.fish;
+      }
+      // lib.optionalAttrs (userInitialPassword != null) {
+        initialPassword = userInitialPassword;
+      };
 
       security.sudo.wheelNeedsPassword = false;
 
@@ -146,6 +146,7 @@ inputs.nixpkgs.lib.nixosSystem {
   inherit system;
   specialArgs = {
     inherit inputs username isRunner;
-  } // specialArgs;
+  }
+  // specialArgs;
   modules = [ baseModule ] ++ (if modules == null then genericModules else modules);
 }
