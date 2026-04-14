@@ -119,5 +119,15 @@ in
       ];
       noDisplay = false;
     };
+    battery-settings = {
+      name = "Battery Settings";
+      exec = "auto-cpufreq-gtk";
+      icon = "battery";
+      categories = [
+        "System"
+        "Settings"
+      ];
+      noDisplay = false;
+    };
   };
 }
