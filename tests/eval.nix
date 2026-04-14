@@ -73,6 +73,27 @@ let
           inherit inputs;
           username = "shunkakinoki";
         }).config.system.build.toplevel;
+
+    eval-nixos-matic-iso =
+      mkEvalCheck "nixos-matic-iso"
+        (import ../named-hosts/matic/iso.nix {
+          inherit inputs;
+          username = "shunkakinoki";
+        }).config.system.build.isoImage;
+
+    eval-nixos-viper =
+      mkEvalCheck "nixos-viper"
+        (import ../named-hosts/viper {
+          inherit inputs;
+          username = "shunkakinoki";
+        }).config.system.build.toplevel;
+
+    eval-nixos-viper-iso =
+      mkEvalCheck "nixos-viper-iso"
+        (import ../named-hosts/viper/iso.nix {
+          inherit inputs;
+          username = "shunkakinoki";
+        }).config.system.build.isoImage;
   };
 
   # --- Home-manager configurations (filtered by matching system) ---

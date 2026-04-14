@@ -37,6 +37,19 @@ inputs.nixpkgs.lib.nixosSystem {
     (
       { config, lib, ... }:
       {
+        imports = [
+          (import ../shared/linux-base.nix {
+            inherit inputs pkgs username;
+            hostname = "matic";
+            userExtraGroups = [
+              "input"
+              "video"
+              "audio"
+              "docker"
+            ];
+          })
+        ];
+
         # Boot loader (EFI/systemd-boot)
         boot.loader.systemd-boot.enable = true;
         boot.loader.systemd-boot.configurationLimit = 10;
@@ -70,33 +83,10 @@ inputs.nixpkgs.lib.nixosSystem {
         ];
 
         # Networking
-        networking.hostName = "matic";
-        networking.networkmanager.enable = true;
         networking.networkmanager.wifi.powersave = true;
-
-        # Enable fish shell
-        programs.fish.enable = true;
-
-        # User configuration
-        users.users.${username} = {
-          isNormalUser = true;
-          extraGroups = [
-            "wheel"
-            "networkmanager"
-            "input"
-            "video"
-            "audio"
-            "docker"
-          ];
-          home = "/home/${username}";
-          shell = pkgs.fish;
-          initialPassword = "changemeow"; # Change this after first login with: passwd
-        };
 
         # Docker
         virtualisation.docker.enable = true;
-
-        security.sudo.wheelNeedsPassword = false;
 
         # Home Manager activation can take a long time (npm globals, cargo installs, etc.)
         systemd.services."home-manager-${username}".serviceConfig.TimeoutStartSec = lib.mkForce "30m";
@@ -344,21 +334,6 @@ inputs.nixpkgs.lib.nixosSystem {
           zlib
         ];
 
-        # NixOS-level nix settings (complements home-manager nix/)
-        nix = {
-          channel.enable = false;
-          settings = {
-            nix-path = lib.mkForce "nixpkgs=/etc/nix/inputs/nixpkgs";
-            trusted-users = [
-              username
-              "@wheel"
-              "root"
-            ];
-          };
-        };
-        environment.etc."nix/inputs/nixpkgs".source = "${inputs.nixpkgs}";
-
-        system.stateVersion = "24.11";
       }
     )
 
