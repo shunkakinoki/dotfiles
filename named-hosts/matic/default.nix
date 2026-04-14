@@ -195,6 +195,9 @@ import ../../hosts/nixos {
         security.pam.services.sudo = {
           fprintAuth = true;
         };
+        security.pam.services.polkit-1 = {
+          fprintAuth = true;
+        };
 
         # Firmware updates
         services.fwupd.enable = true;
