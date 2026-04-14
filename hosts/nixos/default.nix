@@ -147,12 +147,10 @@ inputs.nixpkgs.lib.nixosSystem {
       inputs
       username
       isRunner
-      pkgs
       ;
   }
   // specialArgs;
   modules = [
-    inputs.nixpkgs.nixosModules.readOnlyPkgs
     { nixpkgs.pkgs = pkgs; }
     baseModule
   ]
