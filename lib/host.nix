@@ -8,12 +8,13 @@
   # Detect if running on matic (Framework 13)
   isMatic = builtins.getEnv "HOSTNAME" == "matic" || builtins.getEnv "HOST" == "matic";
 
+  # Detect if running on viper (VM)
+  isViper = builtins.getEnv "HOSTNAME" == "viper" || builtins.getEnv "HOST" == "viper";
+
   # Desktop machines with GUI - default false, override in named-hosts
   isDesktop = false;
 
-  # Install language server packages
-  isDev = true;
-
+  # Install language server package
   # Get the node name for OpenClaw remote mode
   # Falls back to "unknown" if no hostname is detected
   nodeName =
@@ -23,6 +24,8 @@
       "galactica"
     else if builtins.getEnv "HOSTNAME" == "matic" || builtins.getEnv "HOST" == "matic" then
       "matic"
+    else if builtins.getEnv "HOSTNAME" == "viper" || builtins.getEnv "HOST" == "viper" then
+      "viper"
     else
       "unknown";
 }

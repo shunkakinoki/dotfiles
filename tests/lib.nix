@@ -45,6 +45,12 @@ in
         ''echo "FAIL: host.isMatic must exist and be a boolean" && exit 1''
     }
     ${
+      if host ? isViper && builtins.isBool host.isViper then
+        ''echo "lib/host.nix: isViper is a boolean"''
+      else
+        ''echo "FAIL: host.isViper must exist and be a boolean" && exit 1''
+    }
+    ${
       if host ? nodeName && builtins.isString host.nodeName then
         ''echo "lib/host.nix: nodeName is a string (value: ${host.nodeName})"''
       else
