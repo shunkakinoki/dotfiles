@@ -211,6 +211,7 @@
         value.source = ./functions/${name}.fish;
       })
       [
+        "__tmux_bootstrap_default_session"
         "_cliproxyapi_function"
         "_clrc_function"
         "_cltxe_function"
@@ -258,8 +259,6 @@
         "_pixeh_function"
         "_ssh_add_github"
         "_sync_local_binaries_function"
-        "_update_local_binaries_function"
-        "__tmux_bootstrap_default_session"
         "_tdo_function"
         "_tmo_function"
         "_tpo_function"
@@ -269,6 +268,7 @@
         "_tsw_function"
         "_two_function"
         "_tzo_function"
+        "_update_local_binaries_function"
         "_vpn_function"
         "_zdo_function"
         "_zmo_function"

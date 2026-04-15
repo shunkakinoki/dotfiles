@@ -1,7 +1,3 @@
-if not functions -q __tmux_bootstrap_default_session
-  source (status dirname)/__tmux_bootstrap_default_session.fish
-end
-
 function _two_function --description "Attach to tmux work session"
   if tmux has-session -t work 2>/dev/null
     if test -n "$TMUX"

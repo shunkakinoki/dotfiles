@@ -1,7 +1,3 @@
-if not functions -q __tmux_bootstrap_default_session
-  source (status dirname)/__tmux_bootstrap_default_session.fish
-end
-
 function _tmo_function --description "Attach to tmux mobile session"
   if tmux has-session -t mobile 2>/dev/null
     if test -n "$TMUX"

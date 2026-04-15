@@ -1,17 +1,4 @@
 function _tss_function --description "Fuzzy-pick or create a tmux session"
-  if not functions -q _tpo_function
-    source (status dirname)/_tpo_function.fish
-  end
-  if not functions -q _tmo_function
-    source (status dirname)/_tmo_function.fish
-  end
-  if not functions -q _tdo_function
-    source (status dirname)/_tdo_function.fish
-  end
-  if not functions -q _two_function
-    source (status dirname)/_two_function.fish
-  end
-
   set -l log ~/.local/share/tmux/session-history.log
 
   # --log: browse session/window metadata log

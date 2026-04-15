@@ -1,4 +1,5 @@
 set fn (status dirname)/../../home-manager/programs/fish/functions
+source $fn/__tmux_bootstrap_default_session.fish
 source $fn/_tmo_function.fish
 
 # ── session missing → bootstrap + attach ──────────────────
