@@ -83,13 +83,12 @@
       fish_vi_key_bindings
     '';
     shellAliases = {
+      copy = "clipboard-copy";
       neofetch = "fastfetch";
-      ocd = "bun run ${config.home.homeDirectory}/ghq/github.com/shunkakinoki/open-composer/apps/cli/src/index.ts";
+      paste = "clipboard-paste";
     };
     shellAbbrs = {
       cat = "bat";
-      copy = "~/.local/scripts/clipboard-copy";
-      paste = "~/.local/scripts/clipboard-paste";
       e = "nvim";
       g = "git";
       j = "jj";
