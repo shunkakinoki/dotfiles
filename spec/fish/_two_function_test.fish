@@ -42,7 +42,7 @@ _two_function
 @test "restore path attaches restored work session" (grep -c "attach-session -t work" $log_restore) -ge 1
 @test "restore path skips tmuxinator fallback" (grep -c "tmuxinator" $log_restore) -eq 0
 
-# ── no restore path, inside tmux → detached tmuxinator start ─
+# ── no restore path, inside tmux → bootstrap + switch ────────
 set log (mktemp)
 set -gx TMUX /tmp/tmux-work-test
 function tmux
@@ -51,12 +51,15 @@ function tmux
     if test "$argv[1]" = list-sessions; echo primary; return 0; end
     echo $argv >> $log
 end
-function tmuxinator; echo "TMUX=$TMUX" $argv >> $log; end
+function tmuxinator; echo tmuxinator $argv >> $log; end
 
 _two_function
 
-@test "missing work session inside tmux starts detached" (grep -c "TMUX= start work --no-attach" $log) -ge 1
+@test "missing work session inside tmux bootstraps session" (grep -c "new-session -d -s work -n editor" $log) -ge 1
+@test "missing work session starts editor window" (grep -c "send-keys -t work:0 nvim C-m" $log) -ge 1
+@test "missing work session creates shell window" (grep -c "new-window -t work:1 -n shell" $log) -ge 1
 @test "missing work session inside tmux switches client" (grep -c "switch-client -t work" $log) -ge 1
+@test "missing work session inside tmux bypasses tmuxinator" (grep -c "tmuxinator" $log) -eq 0
 
 # ── session exists, outside tmux → attach ────────────────
 set log2 (mktemp)

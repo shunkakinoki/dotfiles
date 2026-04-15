@@ -1,3 +1,7 @@
+if not functions -q __tmux_bootstrap_default_session
+  source (status dirname)/__tmux_bootstrap_default_session.fish
+end
+
 function _two_function --description "Attach to tmux work session"
   if tmux has-session -t work 2>/dev/null
     if test -n "$TMUX"
@@ -41,11 +45,13 @@ function _two_function --description "Attach to tmux work session"
     tmux kill-session -t _bootstrap 2>/dev/null
   end
 
-  # Restore didn't produce work — fall back to tmuxinator.
+  # Restore didn't produce work — fall back to the built-in session bootstrap.
+  __tmux_bootstrap_default_session work
+  or return 1
+
   if test -n "$TMUX"
-    TMUX= tmuxinator start work --no-attach 2>/dev/null
     tmux switch-client -t work
   else
-    tmuxinator start work
+    tmux attach-session -t work
   end
 end
