@@ -1005,7 +1005,7 @@
       ]
     },
     "slots": {
-      "memory": ""
+      "memory": "memory-core"
     },
     "entries": {
       "telegram": {
