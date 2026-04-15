@@ -5,6 +5,13 @@ function _tmo_function --description "Attach to tmux mobile session"
     end
     tmux attach-session -t mobile
   else
-    tmuxinator start mobile
+    __tmux_bootstrap_default_session mobile
+    or return 1
+
+    if test -n "$TMUX"
+      tmux switch-client -t mobile
+    else
+      tmux attach-session -t mobile
+    end
   end
 end

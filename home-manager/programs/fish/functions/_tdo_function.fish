@@ -5,6 +5,13 @@ function _tdo_function --description "Attach to tmux desktop session"
     end
     tmux attach-session -t desktop
   else
-    tmuxinator start desktop
+    __tmux_bootstrap_default_session desktop
+    or return 1
+
+    if test -n "$TMUX"
+      tmux switch-client -t desktop
+    else
+      tmux attach-session -t desktop
+    end
   end
 end

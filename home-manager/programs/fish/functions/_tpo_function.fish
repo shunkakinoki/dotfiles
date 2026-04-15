@@ -5,6 +5,13 @@ function _tpo_function --description "Attach to tmux primary session"
     end
     tmux attach-session -t primary
   else
-    tmuxinator start primary
+    __tmux_bootstrap_default_session primary
+    or return 1
+
+    if test -n "$TMUX"
+      tmux switch-client -t primary
+    else
+      tmux attach-session -t primary
+    end
   end
 end

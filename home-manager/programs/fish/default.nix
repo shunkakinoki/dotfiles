@@ -83,13 +83,12 @@
       fish_vi_key_bindings
     '';
     shellAliases = {
+      copy = "clipboard-copy";
       neofetch = "fastfetch";
-      ocd = "bun run ${config.home.homeDirectory}/ghq/github.com/shunkakinoki/open-composer/apps/cli/src/index.ts";
+      paste = "clipboard-paste";
     };
     shellAbbrs = {
       cat = "bat";
-      copy = "~/.local/scripts/clipboard-copy";
-      paste = "~/.local/scripts/clipboard-paste";
       e = "nvim";
       g = "git";
       j = "jj";
@@ -211,6 +210,7 @@
         value.source = ./functions/${name}.fish;
       })
       [
+        "__tmux_bootstrap_default_session"
         "_cliproxyapi_function"
         "_clrc_function"
         "_cltxe_function"
@@ -258,7 +258,6 @@
         "_pixeh_function"
         "_ssh_add_github"
         "_sync_local_binaries_function"
-        "_update_local_binaries_function"
         "_tdo_function"
         "_tmo_function"
         "_tpo_function"
@@ -268,6 +267,7 @@
         "_tsw_function"
         "_two_function"
         "_tzo_function"
+        "_update_local_binaries_function"
         "_vpn_function"
         "_zdo_function"
         "_zmo_function"

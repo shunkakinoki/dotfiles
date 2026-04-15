@@ -148,7 +148,7 @@ EOF
   REAL_BIN_DIRS=$(
     for cmd in bash dirname mktemp mv sed tr awk paste; do
       dirname "$(command -v "$cmd")"
-    done | awk '!seen[$0]++' | paste -sd:
+    done | awk '!seen[$0]++ { printf "%s%s", sep, $0; sep=":" }'
   )
 }
 

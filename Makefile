@@ -453,7 +453,23 @@ nix-build: nix-connect nix-trust ## Build Nix configuration.
 			echo "❌ Unsupported system architecture: $(OS) $(ARCH)"; \
 			exit 1; \
 		elif [ "$(OS)" = "Darwin" ]; then \
-			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --impure --show-trace; \
+			if [ -n "$(HOST)" ]; then \
+				case " $(NIXOS_NAMED_HOSTS) " in \
+					*" $(HOST) "*) \
+						echo "Building named NixOS host: $(HOST)"; \
+						$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.$(HOST).config.system.build.toplevel $(NIX_FLAGS) --impure --show-trace; \
+						;; \
+					*) \
+						echo "Building named Darwin host: $(HOST)"; \
+						$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#darwinConfigurations.$(HOST).system $(NIX_FLAGS) --impure --show-trace; \
+						;; \
+				esac; \
+			elif [ -n "$(DETECTED_HOST)" ]; then \
+				echo "Auto-detected host: $(DETECTED_HOST)"; \
+				$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#darwinConfigurations.$(DETECTED_HOST).system $(NIX_FLAGS) --impure --show-trace; \
+			else \
+				$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --impure --show-trace; \
+			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			if [ -n "$(HOST)" ]; then \
 				echo "Building named host: $(HOST)"; \

@@ -63,22 +63,16 @@ function _tss_function --description "Fuzzy-pick or create a tmux session"
         tmux attach-session -t "$selected"
       end
     else if test "$selected" = work
-      set -l restore (tmux list-keys 2>/dev/null | string match -rg '(/\S+/resurrect/scripts/restore\.sh)')
-      set -l restore $restore[1]
-      if test -n "$restore"
-        tmux run-shell "$restore"
-      end
-      if tmux has-session -t work 2>/dev/null
-        if test -n "$TMUX"
-          tmux switch-client -t work
-        else
-          tmux attach-session -t work
-        end
-      else
-        tmuxinator start work
-      end
+      _two_function
     else if contains $selected $default_sessions
-      tmuxinator start "$selected"
+      switch $selected
+        case primary
+          _tpo_function
+        case mobile
+          _tmo_function
+        case desktop
+          _tdo_function
+      end
     else
       tmux new-session -d -s "$selected"
       if test -n "$TMUX"

@@ -36,6 +36,8 @@
     };
 
     shellAliases = {
+      copy = "clipboard-copy";
+      paste = "clipboard-paste";
       rm = "gomi";
     };
 

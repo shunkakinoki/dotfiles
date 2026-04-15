@@ -1,30 +1,66 @@
 set fn (status dirname)/../../home-manager/programs/fish/functions
+source $fn/__tmux_bootstrap_default_session.fish
 source $fn/_two_function.fish
 
-# ── no resurrect file, no work session → tmuxinator start work ─
-set log (mktemp)
+# ── restore script brings back work session ───────────────
+set log_restore (mktemp)
+set -e TMUX
+set -g _two_has_work 0
+set -g _two_has_server 0
 function tmux
-    if test "$argv[1]" = has-session; return 1; end
-    if test "$argv[1]" = new-session; return 0; end
-    if test "$argv[1]" = list-keys; echo ""; return; end
-    if test "$argv[1]" = kill-session; return 0; end
+    switch "$argv[1]"
+        case has-session
+            if test "$argv[3]" = work -a $_two_has_work -eq 1
+                return 0
+            end
+            return 1
+        case list-sessions
+            if test $_two_has_server -eq 1
+                echo bootstrap
+            end
+            return 0
+        case new-session
+            echo $argv >> $log_restore
+            set -g _two_has_server 1
+            return 0
+        case list-keys
+            echo 'bind-key -T prefix C-r run-shell /tmp/resurrect/scripts/restore.sh'
+            return 0
+        case run-shell
+            echo $argv >> $log_restore
+            set -g _two_has_work 1
+            return 0
+        case kill-session attach-session switch-client
+            echo $argv >> $log_restore
+            return 0
+    end
 end
-function tmuxinator; echo $argv >> $log; end
-
-# Ensure no resurrect file interferes
-set -l _bak ""
-if test -f ~/.tmux/resurrect/last
-    set _bak (mktemp)
-    mv ~/.tmux/resurrect/last $_bak
-end
+function tmuxinator; echo tmuxinator $argv >> $log_restore; end
 
 _two_function
 
-if test -n "$_bak"
-    mv $_bak ~/.tmux/resurrect/last
-end
+@test "restore path invokes restore script" (grep -c "run-shell /tmp/resurrect/scripts/restore.sh" $log_restore) -ge 1
+@test "restore path attaches restored work session" (grep -c "attach-session -t work" $log_restore) -ge 1
+@test "restore path skips tmuxinator fallback" (grep -c "tmuxinator" $log_restore) -eq 0
 
-@test "missing work session starts via tmuxinator" (grep -c "start work" $log) -ge 1
+# ── no restore path, inside tmux → bootstrap + switch ────────
+set log (mktemp)
+set -gx TMUX /tmp/tmux-work-test
+function tmux
+    if test "$argv[1]" = has-session; return 1; end
+    if test "$argv[1]" = list-keys; echo ""; return; end
+    if test "$argv[1]" = list-sessions; echo primary; return 0; end
+    echo $argv >> $log
+end
+function tmuxinator; echo tmuxinator $argv >> $log; end
+
+_two_function
+
+@test "missing work session inside tmux bootstraps session" (grep -c "new-session -d -s work -n editor" $log) -ge 1
+@test "missing work session starts editor window" (grep -c "send-keys -t work:0 nvim C-m" $log) -ge 1
+@test "missing work session creates shell window" (grep -c "new-window -t work:1 -n shell" $log) -ge 1
+@test "missing work session inside tmux switches client" (grep -c "switch-client -t work" $log) -ge 1
+@test "missing work session inside tmux bypasses tmuxinator" (grep -c "tmuxinator" $log) -eq 0
 
 # ── session exists, outside tmux → attach ────────────────
 set log2 (mktemp)
@@ -38,4 +74,4 @@ _two_function
 
 @test "existing work session attaches" (grep -c "attach-session -t work" $log2) -ge 1
 
-rm -f $log $log2
+rm -f $log_restore $log $log2
