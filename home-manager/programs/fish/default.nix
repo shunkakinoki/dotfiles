@@ -259,6 +259,7 @@
         "_ssh_add_github"
         "_sync_local_binaries_function"
         "_update_local_binaries_function"
+        "__tmux_bootstrap_default_session"
         "_tdo_function"
         "_tmo_function"
         "_tpo_function"
