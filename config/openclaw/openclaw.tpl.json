@@ -204,7 +204,7 @@
         ]
       },
       "workspace": "__HOME__/.openclaw/workspace",
-      "thinkingDefault": "high",
+      "thinkingDefault": "low",
       "maxConcurrent": 4,
       "subagents": {
         "maxConcurrent": 8
@@ -231,7 +231,8 @@
             "read",
             "exec"
           ]
-        }
+        },
+        "thinkingDefault": "high"
       },
       {
         "id": "code-reviewer-sonnet",
@@ -249,7 +250,8 @@
             "read",
             "exec"
           ]
-        }
+        },
+        "thinkingDefault": "medium"
       },
       {
         "id": "code-reviewer-glm",
@@ -266,7 +268,8 @@
             "read",
             "exec"
           ]
-        }
+        },
+        "thinkingDefault": "off"
       },
       {
         "id": "code-reviewer-gpt",
@@ -356,7 +359,8 @@
             "read",
             "write"
           ]
-        }
+        },
+        "thinkingDefault": "off"
       },
       {
         "id": "security-scanner",
@@ -391,7 +395,8 @@
             "read",
             "exec"
           ]
-        }
+        },
+        "thinkingDefault": "off"
       },
       {
         "id": "docs-checker",
@@ -427,7 +432,8 @@
             "edit",
             "exec"
           ]
-        }
+        },
+        "thinkingDefault": "off"
       },
       {
         "id": "sales",
@@ -502,7 +508,8 @@
             "read",
             "exec"
           ]
-        }
+        },
+        "thinkingDefault": "high"
       },
       {
         "id": "mindset",
@@ -520,7 +527,8 @@
             "read",
             "exec"
           ]
-        }
+        },
+        "thinkingDefault": "high"
       },
       {
         "id": "routine",
@@ -538,7 +546,8 @@
             "read",
             "exec"
           ]
-        }
+        },
+        "thinkingDefault": "medium"
       },
       {
         "id": "dev-opus",
@@ -558,7 +567,8 @@
             "edit",
             "exec"
           ]
-        }
+        },
+        "thinkingDefault": "high"
       },
       {
         "id": "dev-gpt",
@@ -636,7 +646,8 @@
             "read",
             "exec"
           ]
-        }
+        },
+        "thinkingDefault": "high"
       },
       {
         "id": "strategy-gpt",
@@ -690,7 +701,8 @@
             "read",
             "exec"
           ]
-        }
+        },
+        "thinkingDefault": "medium"
       },
       {
         "id": "devops",
@@ -709,7 +721,8 @@
             "edit",
             "exec"
           ]
-        }
+        },
+        "thinkingDefault": "off"
       },
       {
         "id": "amp",
