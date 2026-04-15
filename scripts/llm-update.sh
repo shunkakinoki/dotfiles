@@ -56,18 +56,18 @@ model_rows="$(
   exit 1
 }
 
-[[ -n "$model_rows" ]] || {
+[[ -n $model_rows ]] || {
   echo "ERROR: no model rows generated from $MODELS" >&2
   exit 1
 }
 
 while IFS=$'\t' read -r key value pretty nondot; do
-  [[ -n "$key" ]] || continue
+  [[ -n $key ]] || continue
   placeholder="__$(echo "$key" | tr 'a-z-' 'A-Z_')__"
   sed_args+=(-e "s|${placeholder%__}_PRETTY__|${pretty}|g")
   sed_args+=(-e "s|${placeholder%__}_NONDOT__|${nondot}|g")
   sed_args+=(-e "s|${placeholder}|${value}|g")
-done <<< "$model_rows"
+done <<<"$model_rows"
 
 # Template → output pairs
 declare -A TEMPLATES=(

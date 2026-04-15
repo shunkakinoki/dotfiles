@@ -1,15 +1,15 @@
 # AI
-.aider.tags.cache.*/
-.claude/
-.codex/
-.conductor/
-.crush/
-.cursor/
-.entire/
-.paperclip/
-.pi/
-.serena/
-.worktrees/
+.aider.tags.cache.*
+.claude
+.codex
+.conductor
+.crush
+.cursor
+.entire
+.paperclip
+.pi
+.serena
+.worktrees
 
 # Env files
 .env.*

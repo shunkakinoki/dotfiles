@@ -24,49 +24,50 @@ setup_iso_fixture() {
 }
 
 It 'finds an ISO beneath a symlinked result directory'
-  temp_dir="$(mktemp -d)"
-  setup_iso_fixture "$temp_dir"
-  ln -s "$temp_dir/out" "$temp_dir/result"
+temp_dir="$(mktemp -d)"
+setup_iso_fixture "$temp_dir"
+ln -s "$temp_dir/out" "$temp_dir/result"
 
-  When run bash "$SCRIPT" "$temp_dir/result"
-  The status should be success
-  The output should equal "$temp_dir/result/iso/test.iso"
+When run bash "$SCRIPT" "$temp_dir/result"
+The status should be success
+The output should equal "$temp_dir/result/iso/test.iso"
 
-  rm -rf "$temp_dir"
+rm -rf "$temp_dir"
 End
 
 It 'returns a direct ISO file path'
-  temp_dir="$(mktemp -d)"
-  : >"$temp_dir/direct.iso"
+temp_dir="$(mktemp -d)"
+: >"$temp_dir/direct.iso"
 
-  When run bash "$SCRIPT" "$temp_dir/direct.iso"
-  The status should be success
-  The output should equal "$temp_dir/direct.iso"
+When run bash "$SCRIPT" "$temp_dir/direct.iso"
+The status should be success
+The output should equal "$temp_dir/direct.iso"
 
-  rm -rf "$temp_dir"
+rm -rf "$temp_dir"
 End
 
 It 'returns the resolved ISO file for a symlinked result file'
-  temp_dir="$(mktemp -d)"
-  : >"$temp_dir/direct.iso"
-  ln -s "$temp_dir/direct.iso" "$temp_dir/result"
+temp_dir="$(mktemp -d)"
+expected_path="$(cd "$temp_dir" && pwd -P)/direct.iso"
+: >"$temp_dir/direct.iso"
+ln -s "$temp_dir/direct.iso" "$temp_dir/result"
 
-  When run bash "$SCRIPT" "$temp_dir/result"
-  The status should be success
-  The output should equal "$temp_dir/direct.iso"
+When run bash "$SCRIPT" "$temp_dir/result"
+The status should be success
+The output should equal "$expected_path"
 
-  rm -rf "$temp_dir"
+rm -rf "$temp_dir"
 End
 
 It 'fails when no ISO exists'
-  temp_dir="$(mktemp -d)"
-  mkdir -p "$temp_dir/out"
-  ln -s "$temp_dir/out" "$temp_dir/result"
+temp_dir="$(mktemp -d)"
+mkdir -p "$temp_dir/out"
+ln -s "$temp_dir/out" "$temp_dir/result"
 
-  When run bash "$SCRIPT" "$temp_dir/result"
-  The status should not be success
+When run bash "$SCRIPT" "$temp_dir/result"
+The status should not be success
 
-  rm -rf "$temp_dir"
+rm -rf "$temp_dir"
 End
 End
 
