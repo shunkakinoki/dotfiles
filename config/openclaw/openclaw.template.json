@@ -14,8 +14,8 @@
         "api": "openai-completions",
         "models": [
           {
-            "id": "claude-opus-4-6",
-            "name": "Claude Opus 4.6",
+            "id": "claude-opus-4-7",
+            "name": "Claude Opus 4.7",
             "reasoning": true,
             "input": [
               "text",
@@ -220,7 +220,7 @@
         "name": "Code Reviewer (Opus)",
         "workspace": "__HOME__/.openclaw/workspace/agents/code-review",
         "model": {
-          "primary": "cliproxy/claude-opus-4-6",
+          "primary": "cliproxy/claude-opus-4-7",
           "fallbacks": [
             "cliproxy/glm-4.7",
             "cliproxy/free"
@@ -329,7 +329,7 @@
         "model": {
           "primary": "cliproxy/minimax-m2.7",
           "fallbacks": [
-            "cliproxy/claude-opus-4-6",
+            "cliproxy/claude-opus-4-7",
             "cliproxy/glm-4.7",
             "cliproxy/free"
           ]
@@ -490,7 +490,7 @@
         "name": "Twitter (Opus)",
         "workspace": "__HOME__/.openclaw/workspace/agents/twitter",
         "model": {
-          "primary": "cliproxy/claude-opus-4-6",
+          "primary": "cliproxy/claude-opus-4-7",
           "fallbacks": [
             "cliproxy/minimax-m2.7",
             "cliproxy/glm-4.7",
@@ -509,7 +509,7 @@
         "name": "Mindset Coach",
         "workspace": "__HOME__/.openclaw/workspace/agents/mindset",
         "model": {
-          "primary": "cliproxy/claude-opus-4-6",
+          "primary": "cliproxy/claude-opus-4-7",
           "fallbacks": [
             "cliproxy/glm-4.7",
             "cliproxy/free"
@@ -545,7 +545,7 @@
         "name": "Dev (Opus)",
         "workspace": "__HOME__/.openclaw/workspace/agents/dev",
         "model": {
-          "primary": "cliproxy/claude-opus-4-6",
+          "primary": "cliproxy/claude-opus-4-7",
           "fallbacks": [
             "cliproxy/glm-4.7",
             "cliproxy/free"
@@ -625,7 +625,7 @@
         "name": "Strategy (Opus)",
         "workspace": "__HOME__/.openclaw/workspace/agents/strategy",
         "model": {
-          "primary": "cliproxy/claude-opus-4-6",
+          "primary": "cliproxy/claude-opus-4-7",
           "fallbacks": [
             "cliproxy/glm-4.7",
             "cliproxy/free"

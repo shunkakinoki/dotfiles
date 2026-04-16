@@ -4,7 +4,7 @@
   api_base: http://localhost:8317/v1
   api_key_name: cliproxyapi
 - model_id: claude-opus
-  model_name: claude-opus-4-6
+  model_name: claude-opus-4-7
   api_base: http://localhost:8317/v1
   api_key_name: cliproxyapi
 - model_id: claude-haiku
