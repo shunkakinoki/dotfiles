@@ -52,12 +52,12 @@ while IFS= read -r nix_file; do
       return line ~ /^(\$DRY_RUN_CMD[[:space:]]+)?[^[:space:];|&<>`]*bin\/bash([[:space:]]+(".*"|\$\{.*\}|[^[:space:];|&<>`]+))+([[:space:]]+\|\|[[:space:]]+true)?[[:space:]]*\\?$/
     }
 
-    function block_has_violation(  i, line, saw_bash_call, saw_content) {
+    function block_has_violation(  i, n, line, saw_bash_call, saw_content) {
       saw_bash_call = 0
       saw_content = 0
-      split(body, lines, "\n")
+      n = split(body, lines, "\n")
 
-      for (i in lines) {
+      for (i = 1; i <= n; i++) {
         line = trim(lines[i])
 
         if (line == "" || line ~ /^#/) continue
