@@ -24,6 +24,7 @@ with pkgs;
   broot
   bun
   clipse
+  cmatrix
   cloudflared
   copybara
   curl
