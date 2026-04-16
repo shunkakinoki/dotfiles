@@ -1027,7 +1027,7 @@
       "memory-wiki": {
         "enabled": true,
         "config": {
-          "vaultMode": "bridge",
+          "vaultMode": "unsafe-local",
           "vault": {
             "path": "__HOME__/ghq/github.com/shunkakinoki/wiki",
             "renderMode": "obsidian"
@@ -1038,13 +1038,11 @@
             "vaultName": "Shun Kakinoki",
             "openAfterWrites": false
           },
-          "bridge": {
-            "enabled": true,
-            "readMemoryArtifacts": true,
-            "indexDreamReports": true,
-            "indexDailyNotes": true,
-            "indexMemoryRoot": true,
-            "followMemoryEvents": true
+          "unsafeLocal": {
+            "allowPrivateMemoryCoreAccess": true,
+            "paths": [
+              "__HOME__/.openclaw/workspace"
+            ]
           },
           "ingest": {
             "autoCompile": true,
