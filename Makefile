@@ -439,7 +439,23 @@ nix-build: nix-connect nix-trust ## Build Nix configuration.
 	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		echo "🤖 Running in CI/Docker environment"; \
 		if [ "$(OS)" = "Darwin" ]; then \
-			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
+			if [ -n "$(HOST)" ]; then \
+				case " $(NIXOS_NAMED_HOSTS) " in \
+					*" $(HOST) "*) \
+						echo "Building named NixOS host: $(HOST)"; \
+						$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.$(HOST).config.system.build.toplevel $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
+						;; \
+					*) \
+						echo "Building named Darwin host: $(HOST)"; \
+						$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#darwinConfigurations.$(HOST).system $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
+						;; \
+				esac; \
+			elif [ -n "$(DETECTED_HOST)" ]; then \
+				echo "Auto-detected host: $(DETECTED_HOST)"; \
+				$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#darwinConfigurations.$(DETECTED_HOST).system $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
+			else \
+				$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
+			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.runner.config.system.build.toplevel $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
