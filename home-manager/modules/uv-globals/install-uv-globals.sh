@@ -39,6 +39,7 @@ PYTHON_VERSION=$(tomlq -r '.project["requires-python"]' "$PYPROJECT" 2>/dev/null
 PYTHON_VERSION=${PYTHON_VERSION:-3.13}
 
 DEPS=$(tomlq -r '.["dependency-groups"].tools[]' "$PYPROJECT" 2>/dev/null)
+PRERELEASE_PKGS=$(tomlq -r '.tool["uv-globals"].prerelease[]?' "$PYPROJECT" 2>/dev/null || true)
 
 if [ -z "$DEPS" ]; then
   echo "No dependencies found in pyproject.toml"
@@ -56,16 +57,21 @@ echo "$DEPS" | while read -r pkg; do
   req_version=$(echo "$pkg" | sed -n 's/.*>=\([0-9][0-9.]*\).*/\1/p')
   installed_version=$(echo "$INSTALLED" | sed -n "s/^${name} v\([0-9][0-9.]*\).*/\1/p")
 
+  extra_flags=""
+  if echo "$PRERELEASE_PKGS" | grep -qx "$name"; then
+    extra_flags="--prerelease=allow"
+  fi
+
   if [ -n "$installed_version" ] && [ -n "$req_version" ]; then
     if printf '%s\n%s\n' "$req_version" "$installed_version" | sort -V | head -n1 | grep -qx "$req_version"; then
       echo "$name $installed_version already installed, skipping"
     else
       echo "Installing $pkg..."
-      uv tool install "$pkg" --python "$PYTHON_VERSION" --force 2>/dev/null || echo "Failed to install $pkg, skipping..."
+      uv tool install "$pkg" --python "$PYTHON_VERSION" --force $extra_flags 2>/dev/null || echo "Failed to install $pkg, skipping..."
     fi
   else
     echo "Installing $pkg..."
-    uv tool install "$pkg" --python "$PYTHON_VERSION" --force 2>/dev/null || echo "Failed to install $pkg, skipping..."
+    uv tool install "$pkg" --python "$PYTHON_VERSION" --force $extra_flags 2>/dev/null || echo "Failed to install $pkg, skipping..."
   fi
 
   # Symlink each tool's python3 for per-tool access: `python3-<tool> -m <tool>`
