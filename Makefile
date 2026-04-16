@@ -921,7 +921,7 @@ lua-check-hammerspoon-dev: ## Run the Hammerspoon Lua check inside the Nix dev s
 ##@ Launchd Services
 
 .PHONY: launchctl
-launchctl: launchctl-brew-upgrader launchctl-openclaw launchctl-cliproxyapi launchctl-cliproxyapi-backup launchctl-code-syncer launchctl-docker-postgres launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama launchctl-tmux-session-logger ## Restart all launchd agents.
+launchctl: launchctl-brew-upgrader launchctl-openclaw launchctl-cliproxyapi launchctl-cliproxyapi-backup launchctl-code-syncer launchctl-docker-postgres launchctl-dolt launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama launchctl-tmux-session-logger ## Restart all launchd agents.
 
 .PHONY: launchctl-brew-upgrader
 launchctl-brew-upgrader: ## Restart brew-updater launchd agent.
@@ -987,6 +987,18 @@ launchctl-docker-postgres: ## Restart docker-postgres launchd agent.
 	@launchctl load ~/Library/LaunchAgents/org.nix-community.home.docker-postgres.plist
 	@echo "✅ docker-postgres restarted"
 
+.PHONY: launchctl-dolt
+launchctl-dolt: ## Restart dolt launchd agent.
+	@echo "🔄 Restarting dolt..."
+	@if [ "$(DETECTED_HOST)" = "galactica" ] || [ "$(HOST)" = "galactica" ]; then \
+		launchctl unload ~/Library/LaunchAgents/org.nix-community.home.dolt.plist 2>/dev/null || true; \
+		sleep 3; \
+		launchctl load ~/Library/LaunchAgents/org.nix-community.home.dolt.plist; \
+	else \
+		echo "Skipping dolt launchd agent (host not galactica)"; \
+	fi
+	@echo "✅ dolt restarted"
+
 .PHONY: launchctl-ollama
 launchctl-ollama: ## Restart ollama launchd agent.
 	@echo "🔄 Restarting ollama..."
@@ -1006,7 +1018,7 @@ launchctl-tmux-session-logger: ## Restart tmux-session-logger launchd agent.
 ##@ Systemd Services (Linux)
 
 .PHONY: systemctl
-systemctl: systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-code-syncer systemctl-docker-postgres systemctl-dotfiles-updater systemctl-make-updater systemctl-neverssl-keepalive systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-paperclip systemctl-tmux-session-logger ## Restart all systemd user services.
+systemctl: systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-code-syncer systemctl-docker-postgres systemctl-dolt systemctl-dotfiles-updater systemctl-make-updater systemctl-neverssl-keepalive systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-paperclip systemctl-tmux-session-logger ## Restart all systemd user services.
 
 .PHONY: systemctl-cliproxyapi
 systemctl-cliproxyapi: ## Restart cliproxyapi systemd user service.
@@ -1032,6 +1044,17 @@ systemctl-docker-postgres: ## Restart docker-postgres systemd user service.
 	@echo "🔄 Restarting docker-postgres..."
 	@systemctl --user restart docker-postgres.service || true
 	@echo "✅ docker-postgres restarted"
+
+.PHONY: systemctl-dolt
+systemctl-dolt: ## Restart Dolt systemd user service.
+	@echo "🔄 Restarting dolt..."
+	@if [ "$(DETECTED_HOST)" = "kyber" ] || [ "$(HOST)" = "kyber" ]; then \
+		systemctl --user daemon-reload; \
+		systemctl --user restart dolt.service; \
+	else \
+		echo "Skipping dolt.service (host not kyber)"; \
+	fi
+	@echo "✅ dolt restarted"
 
 .PHONY: systemctl-dotfiles-updater
 systemctl-dotfiles-updater: ## Restart dotfiles-updater systemd user service.
