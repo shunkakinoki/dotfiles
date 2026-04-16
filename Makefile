@@ -537,14 +537,33 @@ nix-flake-update: nix-connect ## Update flake.lock file.
 .PHONY: nix-format
 nix-format: nix-format-clear-cache ## Format Nix files.
 	@echo "🧹 Formatting Nix files..."
-	@$(NIX_EXEC) fmt -- --clear-cache
+	@if $(NIX_EXEC) fmt -- --clear-cache; then \
+		:; \
+	else \
+		nixfmt_bin=$$(command -v nixfmt 2>/dev/null || true); \
+		if [ -z "$$nixfmt_bin" ]; then \
+			set -- /nix/store/*-nixfmt-*/bin/nixfmt; \
+			if [ -x "$$1" ]; then \
+				nixfmt_bin=$$1; \
+			fi; \
+		fi; \
+		if [ -z "$$nixfmt_bin" ]; then \
+			echo "❌ nix fmt failed and no local nixfmt fallback is available"; \
+			exit 1; \
+		fi; \
+		echo "⚠️ nix fmt unavailable; falling back to $$nixfmt_bin"; \
+		git ls-files -z '*.nix' | xargs -0 -r "$$nixfmt_bin"; \
+	fi
 	@echo "✅ Formatting complete"
 
 .PHONY: nix-format-clear-cache
 nix-format-clear-cache: ## Clear Nix format cache.
 	@echo "🧹 Clearing Nix cache..."
-	@$(NIX_EXEC) fmt -- --clear-cache
-	@echo "✅ Cache cleared"
+	@if $(NIX_EXEC) fmt -- --clear-cache >/dev/null 2>&1; then \
+		echo "✅ Cache cleared"; \
+	else \
+		echo "⚠️ nix fmt cache clear unavailable; continuing without it"; \
+	fi
 
 .PHONY: nix-format-check
 nix-format-check: ## Check Nix file formatting.

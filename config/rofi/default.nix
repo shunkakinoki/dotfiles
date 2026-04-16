@@ -1,4 +1,8 @@
-{ pkgs, ... }:
+{
+  config,
+  pkgs,
+  ...
+}:
 let
   gnome-control-center-wrapper = pkgs.writeShellScript "gnome-control-center-wrapper" (
     builtins.readFile (
@@ -126,6 +130,16 @@ in
       categories = [
         "System"
         "Settings"
+      ];
+      noDisplay = false;
+    };
+    decafinate = {
+      name = "Decafinate (AC Only)";
+      exec = "${config.home.homeDirectory}/.local/scripts/decafinate";
+      icon = "battery-full-charged";
+      categories = [
+        "System"
+        "Utility"
       ];
       noDisplay = false;
     };
