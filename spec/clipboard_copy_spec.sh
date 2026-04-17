@@ -80,26 +80,70 @@ The status should be success
 End
 End
 
-Describe 'when no clipboard backend is available'
+Describe 'when no clipboard backend but SSH_TTY is set'
 setup() {
   MOCK_BIN="$(mktemp -d)"
   MOCK_ORIGINAL_PATH="${PATH:-}"
   MOCK_ORIGINAL_WAYLAND="${WAYLAND_DISPLAY:-}"
-  # Keep bash on PATH but nothing else
-  # Use readlink -f to resolve to nix store path (avoids NixOS profile bin with all packages)
+  MOCK_ORIGINAL_SSH_TTY="${SSH_TTY:-}"
   local bash_dir
   bash_dir="$(dirname "$(readlink -f "$(command -v bash)")")"
-  export PATH="$MOCK_BIN:$bash_dir"
+  local base64_dir
+  base64_dir="$(dirname "$(readlink -f "$(command -v base64)")")"
+  local tr_dir
+  tr_dir="$(dirname "$(readlink -f "$(command -v tr)")")"
+  local printf_dir
+  printf_dir="$(dirname "$(readlink -f "$(command -v printf)")")"
+  export PATH="$MOCK_BIN:$bash_dir:$base64_dir:$tr_dir:$printf_dir"
   unset WAYLAND_DISPLAY
-  export MOCK_BIN MOCK_ORIGINAL_PATH MOCK_ORIGINAL_WAYLAND
+  export SSH_TTY=/dev/pts/0
+  export MOCK_BIN MOCK_ORIGINAL_PATH MOCK_ORIGINAL_WAYLAND MOCK_ORIGINAL_SSH_TTY
 }
 cleanup() {
   export PATH="$MOCK_ORIGINAL_PATH"
   if [ -n "$MOCK_ORIGINAL_WAYLAND" ]; then
     export WAYLAND_DISPLAY="$MOCK_ORIGINAL_WAYLAND"
   fi
+  if [ -n "$MOCK_ORIGINAL_SSH_TTY" ]; then
+    export SSH_TTY="$MOCK_ORIGINAL_SSH_TTY"
+  else
+    unset SSH_TTY
+  fi
   rm -rf "$MOCK_BIN"
-  unset MOCK_BIN MOCK_ORIGINAL_PATH MOCK_ORIGINAL_WAYLAND
+  unset MOCK_BIN MOCK_ORIGINAL_PATH MOCK_ORIGINAL_WAYLAND MOCK_ORIGINAL_SSH_TTY
+}
+Before 'setup'
+After 'cleanup'
+
+It 'uses OSC 52 escape sequence'
+When run bash "$SCRIPT" <<< "hello"
+The status should be success
+The output should start with $'\033]52;c;'
+End
+End
+
+Describe 'when no clipboard backend is available'
+setup() {
+  MOCK_BIN="$(mktemp -d)"
+  MOCK_ORIGINAL_PATH="${PATH:-}"
+  MOCK_ORIGINAL_WAYLAND="${WAYLAND_DISPLAY:-}"
+  MOCK_ORIGINAL_SSH_TTY="${SSH_TTY:-}"
+  local bash_dir
+  bash_dir="$(dirname "$(readlink -f "$(command -v bash)")")"
+  export PATH="$MOCK_BIN:$bash_dir"
+  unset WAYLAND_DISPLAY SSH_TTY TMUX
+  export MOCK_BIN MOCK_ORIGINAL_PATH MOCK_ORIGINAL_WAYLAND MOCK_ORIGINAL_SSH_TTY
+}
+cleanup() {
+  export PATH="$MOCK_ORIGINAL_PATH"
+  if [ -n "$MOCK_ORIGINAL_WAYLAND" ]; then
+    export WAYLAND_DISPLAY="$MOCK_ORIGINAL_WAYLAND"
+  fi
+  if [ -n "$MOCK_ORIGINAL_SSH_TTY" ]; then
+    export SSH_TTY="$MOCK_ORIGINAL_SSH_TTY"
+  fi
+  rm -rf "$MOCK_BIN"
+  unset MOCK_BIN MOCK_ORIGINAL_PATH MOCK_ORIGINAL_WAYLAND MOCK_ORIGINAL_SSH_TTY
 }
 Before 'setup'
 After 'cleanup'

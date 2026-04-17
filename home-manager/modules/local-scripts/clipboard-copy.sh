@@ -18,5 +18,13 @@ if command -v xsel >/dev/null 2>&1; then
   exec xsel --clipboard --input
 fi
 
+# OSC 52 fallback: works over SSH if the terminal supports it
+# (ghostty, iTerm2, kitty, alacritty, tmux, etc.)
+if [[ -t 1 ]] || [[ -n ${TMUX:-} ]] || [[ -n ${SSH_TTY:-} ]]; then
+  data=$(base64 | tr -d '\n')
+  printf '\033]52;c;%s\a' "$data"
+  exit 0
+fi
+
 printf 'No clipboard backend available\n' >&2
 exit 1

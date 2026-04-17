@@ -18,5 +18,7 @@ if command -v xsel >/dev/null 2>&1; then
   exec xsel --clipboard --output
 fi
 
-printf 'No clipboard backend available\n' >&2
+# OSC 52 paste query is not reliably supported across terminals,
+# so no fallback here - print an actionable hint instead.
+printf 'No clipboard backend available (paste not supported over SSH)\n' >&2
 exit 1
