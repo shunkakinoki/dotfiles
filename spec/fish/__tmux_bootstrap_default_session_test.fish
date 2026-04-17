@@ -34,7 +34,7 @@ end
 __tmux_bootstrap_default_session unknown >/dev/null 2>/dev/null
 set unknown_status $status
 
-@test "unknown session returns failure" test $unknown_status -ne 0
-@test "unknown session does not touch tmux" test ! -s $log_unknown
+@test "unknown session returns failure" $unknown_status -ne 0
+@test "unknown session does not touch tmux" ! -s $log_unknown
 
 rm -f $log_primary $log_work $log_unknown
