@@ -13,7 +13,7 @@ let
   darkman = import ./darkman { inherit pkgs; };
   dolt = ./dolt;
   docker = import ./docker { inherit lib pkgs; };
-  dockerPostgres = import ./docker-postgres { inherit pkgs inputs; };
+  dockerPostgres = ./docker-postgres;
   dotfilesUpdater = import ./dotfiles-updater { inherit pkgs; };
   gasTown = import ./gas-town { inherit pkgs; };
   makeUpdater = import ./make-updater { inherit pkgs; };

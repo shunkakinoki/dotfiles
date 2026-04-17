@@ -1,6 +1,5 @@
-{ pkgs, inputs, ... }:
+{ pkgs, lib, inputs, ... }:
 let
-  inherit (pkgs) lib;
   inherit (inputs.host) isGalactica isMatic;
   enabled = isGalactica || isMatic;
   startScript = ./start-postgres.sh;
