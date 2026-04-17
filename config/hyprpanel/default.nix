@@ -1,8 +1,10 @@
-_: {
-  programs.hyprpanel = {
-    enable = true;
-    systemd.enable = false;
-    settings = {
+{
+  lib,
+  pkgs,
+  ...
+}:
+let
+  hyprpanelSettings = {
       # Bar layout: workspaces left, clock center, modules right
       "bar.layouts" = {
         "0" = {
@@ -536,6 +538,19 @@ _: {
       "theme.notification.labelicon" = "#88c0d0";
       "theme.notification.close_button.background" = "#88c0d0";
       "theme.notification.close_button.label" = "#1a1b26";
-    };
   };
+  hyprpanelConfig = (pkgs.formats.json { }).generate "hyprpanel-config" hyprpanelSettings;
+in
+{
+  programs.hyprpanel = {
+    enable = true;
+    systemd.enable = false;
+
+    # HyprPanel writes back to config.json at runtime and fails on store symlinks.
+    settings = { };
+  };
+
+  home.activation.hyprpanelConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${hyprpanelConfig}"
+  '';
 }

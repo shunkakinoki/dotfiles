@@ -358,6 +358,7 @@ config/gemini/activate.sh
 config/git-ai/activate.sh
 config/hyprland/scripts/record-screen.sh
 config/hyprland/scripts/toggle-terminal.sh
+config/hyprpanel/activate.sh
 config/k3s/activate.sh
 config/obsidian/activate.sh
 config/omp/activate.sh
@@ -373,6 +374,7 @@ home-manager/modules/cargo-globals/install-cargo-globals.sh
 home-manager/modules/local-binaries/sync-local-binaries.sh
 home-manager/modules/local-scripts/clipboard-copy.sh
 home-manager/modules/local-scripts/clipboard-paste.sh
+home-manager/modules/local-scripts/decafinate.sh
 home-manager/modules/local-scripts/notify-local.sh
 home-manager/modules/local-scripts/pushover-notify.sh
 home-manager/modules/local-scripts/tmux-bridge.sh

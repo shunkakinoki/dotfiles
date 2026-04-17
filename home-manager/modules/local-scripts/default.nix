@@ -9,6 +9,11 @@ _: {
     force = true;
     source = ./clipboard-paste.sh;
   };
+  home.file.".local/scripts/decafinate" = {
+    executable = true;
+    force = true;
+    source = ./decafinate.sh;
+  };
   home.file.".local/scripts/notify-local" = {
     executable = true;
     force = true;

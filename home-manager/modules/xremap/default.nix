@@ -84,6 +84,7 @@ let
   globalRemap = mkRemap remapKeys;
   # Ghostty: Framework+C/V → Ctrl+Shift+C/V (terminal convention: Ctrl+C = SIGINT)
   ghosttyRemap = globalRemap // {
+    "C-c" = "C-Shift-c";
     "${hyperPrefix}c" = "C-Shift-c";
     "${hyperPrefix}v" = "C-Shift-v";
   };

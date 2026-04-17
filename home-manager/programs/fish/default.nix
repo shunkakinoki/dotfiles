@@ -113,6 +113,7 @@
       coxeh = "_coxeh_function";
       coxel = "_coxel_function";
       coxelh = "_coxelh_function";
+      decaf = "_decaf_function";
       dev = "_dev_function";
       fch = "_fzf_chrome_history";
       fdp = "_fzf_directory_picker --allow-cd --prompt-name Projects ~/";
@@ -224,6 +225,7 @@
         "_coxeh_function"
         "_coxel_function"
         "_coxelh_function"
+        "_decaf_function"
         "_dev_function"
         "_fish_shortcuts"
         "_fzf_chrome_history"

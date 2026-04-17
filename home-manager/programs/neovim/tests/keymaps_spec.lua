@@ -619,4 +619,31 @@ describe("keymaps", function()
 			)
 		end)
 	end)
+
+	describe("terminal leader safety", function()
+		local function read_keymaps_source()
+			local test_file = debug.getinfo(1, "S").source:sub(2)
+			local tests_dir = vim.fn.fnamemodify(test_file, ":h")
+			local keymaps_path = vim.fn.fnamemodify(tests_dir, ":h") .. "/lua/config/keymaps.lua"
+			local file = assert(io.open(keymaps_path, "r"))
+			local content = file:read("*a")
+			file:close()
+			return content
+		end
+
+		it("does not bind leader-prefixed mappings in terminal mode", function()
+			local content = read_keymaps_source()
+			assert.is_nil(content:match('keymap%s*%(%s*"t"%s*,%s*"<leader>'))
+			assert.is_nil(content:match('keymap%s*%(%s*%{[^}]*"t"[^}]*}%s*,%s*"<leader>'))
+		end)
+
+		it("uses alt-based terminal management mappings instead", function()
+			local content = read_keymaps_source()
+			assert.is_truthy(content:match('keymap%s*%(%s*"t"%s*,%s*"<M%-h>"'))
+			assert.is_truthy(content:match('keymap%s*%(%s*"t"%s*,%s*"<M%-j>"'))
+			assert.is_truthy(content:match('keymap%s*%(%s*"t"%s*,%s*"<M%-u>"'))
+			assert.is_truthy(content:match('keymap%s*%(%s*"t"%s*,%s*"<M%-n>"'))
+			assert.is_truthy(content:match('keymap%s*%(%s*"t"%s*,%s*"<M%-p>"'))
+		end)
+	end)
 end)

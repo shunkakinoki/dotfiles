@@ -74,24 +74,38 @@ keymap("n", "ZZ", ":wa<CR>:q<CR>", { noremap = true, silent = true, desc = "Save
 -- ====================================================================================
 -- TERMINAL
 -- ====================================================================================
+-- Keep <leader>-based terminal controls out of terminal mode itself.
+-- <leader> is Space, so terminal-mode leader mappings will intercept normal prose sent to the shell.
 -- @keymap <leader>u: Spawn a new managed terminal
-keymap({ "n", "t" }, "<leader>u", function()
+keymap("n", "<leader>u", function()
 	SpawnTerminal()
 end, { noremap = true, silent = true, desc = "Spawn terminal" })
 -- @keymap <leader>h: Close the current managed terminal
-keymap({ "n", "t" }, "<leader>h", function()
+keymap("n", "<leader>h", function()
 	KillCurrentTerminal()
 end, { noremap = true, silent = true, desc = "Kill terminal" })
 -- @keymap <leader>j: Toggle the focused managed terminal
-keymap({ "n", "t" }, "<leader>j", function()
+keymap("n", "<leader>j", function()
 	ToggleTerminal()
 end, { noremap = true, silent = true, desc = "Toggle terminal" })
--- @keymap <leader><S-]>: Jump to next managed terminal (terminal mode only)
-keymap("t", "<leader><S-]>", function()
+-- @keymap <M-u>: Spawn a new managed terminal (terminal mode)
+keymap("t", "<M-u>", function()
+	SpawnTerminal()
+end, { noremap = true, silent = true, desc = "Spawn terminal" })
+-- @keymap <M-h>: Close the current managed terminal (terminal mode)
+keymap("t", "<M-h>", function()
+	KillCurrentTerminal()
+end, { noremap = true, silent = true, desc = "Kill terminal" })
+-- @keymap <M-j>: Toggle the focused managed terminal (terminal mode)
+keymap("t", "<M-j>", function()
+	ToggleTerminal()
+end, { noremap = true, silent = true, desc = "Toggle terminal" })
+-- @keymap <M-n>: Jump to next managed terminal (terminal mode only)
+keymap("t", "<M-n>", function()
 	CycleNextTerm()
 end, { noremap = true, silent = true, desc = "Next terminal" })
--- @keymap <leader><S-[>: Jump to previous managed terminal (terminal mode only)
-keymap("t", "<leader><S-[>", function()
+-- @keymap <M-p>: Jump to previous managed terminal (terminal mode only)
+keymap("t", "<M-p>", function()
 	CyclePreviousTerm()
 end, { noremap = true, silent = true, desc = "Previous terminal" })
 

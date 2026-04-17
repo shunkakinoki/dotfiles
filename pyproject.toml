@@ -14,11 +14,16 @@ tools = [
   "mempalace>=3.1.0",
   "mistral-vibe>=2.7.3",
   "ruff>=0.15.9",
+  "serena-agent>=1.1.2",
   "vllm>=0.19.0",
 ]
 
 [tool.uv]
 exclude-newer = "1 week"
+
+[tool.uv-globals]
+# Packages that require --prerelease=allow during uv tool install
+prerelease = ["serena-agent"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
