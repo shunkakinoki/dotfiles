@@ -188,6 +188,10 @@ End
 It 'has spec file for home-manager/services/docker/docker-setup.sh'
 The path "spec/docker_setup_wrapper_spec.sh" should be exist
 End
+
+It 'has spec file for home-manager/services/dolt/start.sh'
+The path "spec/dolt_start_spec.sh" should be exist
+End
 It 'has spec file for nix-darwin/services/pmset-battery-policy/power-policy.sh'
 The path "spec/pmset_battery_policy_spec.sh" should be exist
 End
@@ -402,6 +406,7 @@ home-manager/services/docker-postgres/start-postgres-wrapper.sh
 home-manager/services/docker-postgres/start-postgres.sh
 home-manager/services/docker/docker-setup.sh
 home-manager/services/docker/setup-docker.sh
+home-manager/services/dolt/start.sh
 home-manager/services/dotfiles-updater/update.sh
 home-manager/services/gas-town/start.sh
 home-manager/services/make-updater/update.sh
