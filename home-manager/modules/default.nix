@@ -4,6 +4,7 @@
   ./local-binaries
   ./local-scripts
   ./npm-globals
+  ./secure-dotenv
   ./tailscale
   ./uv-globals
   ./xremap
