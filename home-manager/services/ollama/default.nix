@@ -1,7 +1,7 @@
-{ pkgs, inputs, ... }:
+{ pkgs, lib, inputs, ... }:
 let
-  inherit (pkgs) lib;
-  inherit (inputs.host) isMatic;
+  inherit (inputs.host) isGalactica isMatic;
+  enabled = isGalactica || isMatic;
 
   # Per-host ollama package:
   #   AMD GPU (ROCm): ollama-rocm (matic)
@@ -17,15 +17,15 @@ let
   ollamaEnv =
     if isMatic then
       [
-        "OLLAMA_HOST=0.0.0.0"
+        "OLLAMA_HOST=127.0.0.1"
         "HSA_OVERRIDE_GFX_VERSION=11.5.0"
       ]
     else
       [
-        "OLLAMA_HOST=0.0.0.0"
+        "OLLAMA_HOST=127.0.0.1"
       ];
 in
-{
+lib.mkIf enabled {
   home.packages = [ ollamaPackage ];
 
   launchd.agents.ollama = lib.mkIf pkgs.stdenv.isDarwin {
@@ -37,7 +37,7 @@ in
       ];
       KeepAlive = true;
       RunAtLoad = true;
-      EnvironmentVariables.OLLAMA_HOST = "0.0.0.0";
+      EnvironmentVariables.OLLAMA_HOST = "127.0.0.1";
       StandardOutPath = "/tmp/ollama.log";
       StandardErrorPath = "/tmp/ollama.error.log";
     };

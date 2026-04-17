@@ -19,7 +19,7 @@ let
   makeUpdater = import ./make-updater { inherit pkgs; };
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
   obsidian = import ./obsidian { inherit config pkgs inputs; };
-  ollama = import ./ollama { inherit pkgs inputs; };
+  ollama = ./ollama;
   qmd = ./qmd;
   openclaw = ./openclaw;
   paperclip = ./paperclip;
