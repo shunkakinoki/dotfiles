@@ -74,10 +74,16 @@ echo "$DEPS" | while read -r pkg; do
     uv tool install "$pkg" --python "$PYTHON_VERSION" --force $extra_flags 2>/dev/null || echo "Failed to install $pkg, skipping..."
   fi
 
-  # Symlink each tool's python3 for per-tool access: `python3-<tool> -m <tool>`
+  # Create a wrapper so `python3-<tool> -m <tool>` uses the tool's venv python.
+  # A symlink won't work because Python resolves the real binary path and loses
+  # the venv's pyvenv.cfg, so site-packages aren't found.
   tool_python="${HOME}/.local/share/uv/tools/${name}/bin/python3"
   if [ -f "$tool_python" ]; then
-    ln -sf "$tool_python" "${HOME}/.local/bin/python3-${name}"
+    cat >"${HOME}/.local/bin/python3-${name}" <<WRAPPER
+#!/usr/bin/env bash
+exec "${HOME}/.local/share/uv/tools/${name}/bin/python3" "\$@"
+WRAPPER
+    chmod +x "${HOME}/.local/bin/python3-${name}"
   fi
 done
 
