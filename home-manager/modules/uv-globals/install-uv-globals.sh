@@ -101,7 +101,16 @@ for arg in "$@"; do
   fi
   prev="$arg"
 done
-exec /etc/profiles/per-user/"${USER}"/bin/python3 "$@"
+self="$(realpath "${BASH_SOURCE[0]}")"
+IFS=: read -ra dirs <<< "$PATH"
+for d in "${dirs[@]}"; do
+  candidate="$d/python3"
+  if [ -x "$candidate" ] && [ "$(realpath "$candidate")" != "$self" ]; then
+    exec "$candidate" "$@"
+  fi
+done
+echo "python3: no system python3 found in PATH" >&2
+exit 127
 EOF
 chmod +x "${HOME}/.local/bin/python3"
 
