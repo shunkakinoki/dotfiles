@@ -82,7 +82,7 @@ start_service() {
   systemd_inhibit="$(command -v systemd-inhibit)"
   bash_bin="$(command -v bash)"
 
-  if [[ -z "$systemd_inhibit" || -z "$bash_bin" ]]; then
+  if [[ -z $systemd_inhibit || -z $bash_bin ]]; then
     echo "Required commands not found: systemd-inhibit and bash must be available." >&2
     return 1
   fi
@@ -99,10 +99,10 @@ start_service() {
     --property=Restart=no \
     --property=Type=simple \
     "$systemd_inhibit" \
-      --what=idle:sleep:handle-lid-switch \
-      --who="decafinate" \
-      --why="Manual AC-only keep-awake session" \
-      "$bash_bin" -lc '
+    --what=idle:sleep:handle-lid-switch \
+    --who="decafinate" \
+    --why="Manual AC-only keep-awake session" \
+    "$bash_bin" -lc '
         set -euo pipefail
 
         ac_online() {
@@ -141,27 +141,27 @@ stop_service() {
 }
 
 case "${1:-toggle}" in
-  help|--help|-h)
-    print_usage
-    ;;
-  toggle)
-    if service_active; then
-      stop_service
-    else
-      start_service
-    fi
-    ;;
-  start)
-    start_service
-    ;;
-  stop)
+help | --help | -h)
+  print_usage
+  ;;
+toggle)
+  if service_active; then
     stop_service
-    ;;
-  status)
-    print_status
-    ;;
-  *)
-    print_usage >&2
-    exit 1
-    ;;
+  else
+    start_service
+  fi
+  ;;
+start)
+  start_service
+  ;;
+stop)
+  stop_service
+  ;;
+status)
+  print_status
+  ;;
+*)
+  print_usage >&2
+  exit 1
+  ;;
 esac
