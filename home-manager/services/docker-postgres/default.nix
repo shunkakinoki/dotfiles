@@ -1,6 +1,12 @@
-{ pkgs, ... }:
+{
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
 let
-  inherit (pkgs) lib;
+  inherit (inputs.host) isGalactica isMatic;
+  enabled = !(isGalactica || isMatic);
   startScript = ./start-postgres.sh;
 
   # Smart wrapper that handles both NixOS and non-NixOS Linux
@@ -16,7 +22,7 @@ let
     )
   );
 in
-{
+lib.mkIf enabled {
   launchd.agents.docker-postgres = lib.mkIf pkgs.stdenv.isDarwin {
     enable = true;
     config = {
