@@ -5,5 +5,5 @@ function _clwrc_function --description "Run Claude Code remote-control with a st
   # Usage: clwrc [<claude remote-control args...>]
 
   set -l claude_real (realpath (which claude))
-  $claude_real remote-control --spawn worktree --permission-mode bypassPermissions $argv
+  $claude_real remote-control --spawn worktree --permission-mode auto $argv
 end
