@@ -79,6 +79,7 @@ echo "$DEPS" | while read -r pkg; do
   # the venv's pyvenv.cfg, so site-packages aren't found.
   tool_python="${HOME}/.local/share/uv/tools/${name}/bin/python3"
   if [ -f "$tool_python" ]; then
+    rm -f "${HOME}/.local/bin/python3-${name}"
     cat >"${HOME}/.local/bin/python3-${name}" <<WRAPPER
 #!/usr/bin/env bash
 exec "${HOME}/.local/share/uv/tools/${name}/bin/python3" "\$@"
@@ -88,6 +89,7 @@ WRAPPER
 done
 
 # Write a dispatcher so `python3 -m <tool>` uses that tool's isolated Python
+rm -f "${HOME}/.local/bin/python3"
 cat >"${HOME}/.local/bin/python3" <<'EOF'
 #!/usr/bin/env bash
 prev=""
