@@ -16,7 +16,7 @@ The output should include 'set -euo pipefail'
 End
 
 It 'passes bash syntax check after stripping placeholders'
-When run bash -c "sed 's|@[a-z_]*@|/usr|g' '$SCRIPT' | bash -n"
+When run bash -c "sed 's|@[A-Za-z_][A-Za-z0-9_]*@|/usr|g' '$SCRIPT' | bash -n"
 The status should be success
 End
 End

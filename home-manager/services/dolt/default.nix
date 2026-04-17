@@ -24,7 +24,7 @@ lib.mkIf enabled {
   launchd.agents.dolt = lib.mkIf pkgs.stdenv.isDarwin {
     enable = true;
     config = {
-      ProgramArguments = [ startScript ];
+      ProgramArguments = [ "${startScript}" ];
       KeepAlive = true;
       RunAtLoad = true;
       WorkingDirectory = repoDir;
