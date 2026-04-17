@@ -11,20 +11,19 @@ let
   repoDir = "${homeDir}/dotfiles";
   beadsDir = "${repoDir}/.beads";
   enabled = isKyber || isGalactica;
-  startScript = pkgs.writeShellScript "dotfiles-dolt-start.sh" (
-    builtins.readFile (
-      pkgs.replaceVars ./start.sh {
-        inherit beadsDir;
-        inherit (pkgs) dolt;
-      }
-    )
-  );
+  startScript = pkgs.replaceVars ./start.sh {
+    inherit beadsDir;
+    inherit (pkgs) dolt;
+  };
 in
 lib.mkIf enabled {
   launchd.agents.dolt = lib.mkIf pkgs.stdenv.isDarwin {
     enable = true;
     config = {
-      ProgramArguments = [ "${startScript}" ];
+      ProgramArguments = [
+        "${pkgs.bash}/bin/bash"
+        "${startScript}"
+      ];
       KeepAlive = true;
       RunAtLoad = true;
       WorkingDirectory = repoDir;
@@ -40,7 +39,7 @@ lib.mkIf enabled {
     };
     Service = {
       Type = "simple";
-      ExecStart = startScript;
+      ExecStart = "${pkgs.bash}/bin/bash ${startScript}";
       Restart = "always";
       RestartSec = 5;
       WorkingDirectory = repoDir;
