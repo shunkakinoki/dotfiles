@@ -44,18 +44,18 @@ Describe 'functional behavior'
 setup() {
   TEST_HOME="$(mktemp -d)"
   # Create .env files with non-600 permissions
-  echo "SECRET=value" > "$TEST_HOME/.env"
+  echo "SECRET=value" >"$TEST_HOME/.env"
   chmod 644 "$TEST_HOME/.env"
 
   mkdir -p "$TEST_HOME/subdir"
-  echo "DB_URL=postgres://..." > "$TEST_HOME/subdir/.env.local"
+  echo "DB_URL=postgres://..." >"$TEST_HOME/subdir/.env.local"
   chmod 755 "$TEST_HOME/subdir/.env.local"
 
-  echo "KEY=val" > "$TEST_HOME/app.env"
+  echo "KEY=val" >"$TEST_HOME/app.env"
   chmod 644 "$TEST_HOME/app.env"
 
   # Create a file already at 600
-  echo "OK=true" > "$TEST_HOME/.env.safe"
+  echo "OK=true" >"$TEST_HOME/.env.safe"
   chmod 600 "$TEST_HOME/.env.safe"
 
   # Create a symlink (should be skipped)
@@ -66,7 +66,7 @@ setup() {
   sed \
     -e "s|@find@|$(command -v find)|g" \
     -e "s|@stat@|$(command -v stat)|g" \
-    "$SCRIPT" > "$PROCESSED_SCRIPT"
+    "$SCRIPT" >"$PROCESSED_SCRIPT"
   chmod +x "$PROCESSED_SCRIPT"
 
   export TEST_HOME PROCESSED_SCRIPT
