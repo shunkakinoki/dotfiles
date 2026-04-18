@@ -16,6 +16,7 @@ tools = [
   "ruff>=0.15.10",
   "serena-agent>=1.1.2",
   "vllm>=0.19.0",
+  "vllm-mlx>=0.2.8",
 ]
 
 [tool.uv]
