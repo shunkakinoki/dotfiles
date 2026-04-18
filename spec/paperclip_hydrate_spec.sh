@@ -17,9 +17,9 @@ End
 End
 
 Describe 'secret loading'
-It 'reads DATABASE_URL from dotfiles .env'
-When run bash -c "grep 'DATABASE_URL' '$SCRIPT'"
-The output should include 'DATABASE_URL'
+It 'prefers PAPERCLIP_DATABASE_URL (scoped) over DATABASE_URL'
+When run bash -c "grep 'PAPERCLIP_DATABASE_URL' '$SCRIPT'"
+The output should include 'PAPERCLIP_DATABASE_URL'
 End
 
 It 'sources the env file'

@@ -6,7 +6,7 @@ CONFIG="${INSTANCE_DIR}/config.json"
 TEMPLATE="@template@"
 ENV_FILE="${HOME}/dotfiles/.env"
 
-# Source .env if it exists (for DATABASE_URL)
+# Source .env if it exists (for PAPERCLIP_DATABASE_URL)
 if [ -f "$ENV_FILE" ]; then
   set -a
   # shellcheck source=/dev/null
@@ -16,8 +16,8 @@ fi
 
 mkdir -p "${INSTANCE_DIR}"
 
-# Use DATABASE_URL from env if set, otherwise use the Nix default
-DB_CONNECTION="${DATABASE_URL:-@database_connection_string@}"
+# Prefer PAPERCLIP_DATABASE_URL (scoped) over DATABASE_URL (legacy, global), fall back to Nix default
+DB_CONNECTION="${PAPERCLIP_DATABASE_URL:-${DATABASE_URL:-@database_connection_string@}}"
 
 @sed@ \
   -e "s|__DATABASE_MODE__|@database_mode@|g" \

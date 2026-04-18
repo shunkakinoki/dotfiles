@@ -458,8 +458,10 @@
     "ruby-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
     "safety-net@cc-marketplace": true,
+    "security-guidance@claude-plugins-official": true,
     "serena@claude-plugins-official": true,
     "skill-codex@skill-codex": true,
+    "superpowers@claude-plugins-official": true,
     "swift-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
     "worktrunk@worktrunk": true
