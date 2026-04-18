@@ -116,7 +116,7 @@ Before 'setup'
 After 'cleanup'
 
 It 'uses OSC 52 escape sequence'
-When run bash "$SCRIPT" <<< "hello"
+When run bash "$SCRIPT" <<<"hello"
 The status should be success
 The output should start with $'\033]52;c;'
 End

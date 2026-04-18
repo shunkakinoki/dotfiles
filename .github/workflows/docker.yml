@@ -79,8 +79,8 @@ jobs:
             COMMIT_SHA=${{ github.sha }}
             GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
             GITHUB_PR=${{ github.event.pull_request.number }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=registry,ref=${{ env.REGISTRY_IMAGE }}:buildcache-${{ matrix.build.arch }}
+          cache-to: type=registry,ref=${{ env.REGISTRY_IMAGE }}:buildcache-${{ matrix.build.arch }},mode=max
       - name: Export digest
         run: |
           mkdir -p ${{ runner.temp }}/digests
