@@ -151,7 +151,7 @@ After 'cleanup'
 It 'exits with error'
 When run bash "$SCRIPT"
 The status should be failure
-The stderr should include 'No clipboard backend available'
+The stderr should include 'No clipboard backend available (paste not supported over SSH)'
 End
 End
 End

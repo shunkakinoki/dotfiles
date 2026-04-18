@@ -23,6 +23,7 @@ in
   ./k3s
   ./karabiner
   ./llm
+  ./mempalace
   ./obsidian
   ./omp
   ./openclaw

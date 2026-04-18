@@ -74,14 +74,22 @@ echo "$DEPS" | while read -r pkg; do
     uv tool install "$pkg" --python "$PYTHON_VERSION" --force $extra_flags 2>/dev/null || echo "Failed to install $pkg, skipping..."
   fi
 
-  # Symlink each tool's python3 for per-tool access: `python3-<tool> -m <tool>`
+  # Create a wrapper so `python3-<tool> -m <tool>` uses the tool's venv python.
+  # A symlink won't work because Python resolves the real binary path and loses
+  # the venv's pyvenv.cfg, so site-packages aren't found.
   tool_python="${HOME}/.local/share/uv/tools/${name}/bin/python3"
   if [ -f "$tool_python" ]; then
-    ln -sf "$tool_python" "${HOME}/.local/bin/python3-${name}"
+    rm -f "${HOME}/.local/bin/python3-${name}"
+    cat >"${HOME}/.local/bin/python3-${name}" <<WRAPPER
+#!/usr/bin/env bash
+exec "${HOME}/.local/share/uv/tools/${name}/bin/python3" "\$@"
+WRAPPER
+    chmod +x "${HOME}/.local/bin/python3-${name}"
   fi
 done
 
 # Write a dispatcher so `python3 -m <tool>` uses that tool's isolated Python
+rm -f "${HOME}/.local/bin/python3"
 cat >"${HOME}/.local/bin/python3" <<'EOF'
 #!/usr/bin/env bash
 prev=""
@@ -95,7 +103,16 @@ for arg in "$@"; do
   fi
   prev="$arg"
 done
-exec /etc/profiles/per-user/"${USER}"/bin/python3 "$@"
+self="$(realpath "${BASH_SOURCE[0]}")"
+IFS=: read -ra dirs <<< "$PATH"
+for d in "${dirs[@]}"; do
+  candidate="$d/python3"
+  if [ -x "$candidate" ] && [ "$(realpath "$candidate")" != "$self" ]; then
+    exec "$candidate" "$@"
+  fi
+done
+echo "python3: no system python3 found in PATH" >&2
+exit 127
 EOF
 chmod +x "${HOME}/.local/bin/python3"
 

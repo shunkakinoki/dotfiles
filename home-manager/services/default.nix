@@ -13,13 +13,13 @@ let
   darkman = import ./darkman { inherit pkgs; };
   dolt = ./dolt;
   docker = import ./docker { inherit lib pkgs; };
-  dockerPostgres = import ./docker-postgres { inherit pkgs; };
+  dockerPostgres = ./docker-postgres;
   dotfilesUpdater = import ./dotfiles-updater { inherit pkgs; };
   gasTown = import ./gas-town { inherit pkgs; };
   makeUpdater = import ./make-updater { inherit pkgs; };
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
   obsidian = import ./obsidian { inherit config pkgs inputs; };
-  ollama = import ./ollama { inherit pkgs inputs; };
+  ollama = ./ollama;
   qmd = ./qmd;
   openclaw = ./openclaw;
   paperclip = ./paperclip;
