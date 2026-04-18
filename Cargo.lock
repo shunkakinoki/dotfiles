@@ -1695,7 +1695,7 @@ dependencies = [
 [[package]]
 name = "git-ai"
 version = "1.3.2"
-source = "git+https://github.com/git-ai-project/git-ai?branch=main#8ae8bba522b330ef810b9e925b2b006eac8afe01"
+source = "git+https://github.com/git-ai-project/git-ai?branch=main#7d6fbed0cd2a4a75f8da6e92f7d45c11f3e79928"
 dependencies = [
  "chrono",
  "clap",
@@ -2469,15 +2469,15 @@ dependencies = [
 
 [[package]]
 name = "interprocess"
-version = "2.4.0"
+version = "2.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6be5e5c847dbdb44564bd85294740d031f4f8aeb3464e5375ef7141f7538db69"
+checksum = "ce4c3c8f298ee3d5467f2616384e3560c750226cc3c620e5456d3b95783156f6"
 dependencies = [
  "doctest-file",
  "libc",
  "recvmsg",
  "widestring",
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
