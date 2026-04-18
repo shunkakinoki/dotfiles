@@ -1,4 +1,9 @@
-{ pkgs, lib, inputs, ... }:
+{
+  pkgs,
+  lib,
+  inputs,
+  ...
+}:
 let
   inherit (inputs.host) isGalactica isMatic;
   enabled = isGalactica || isMatic;
