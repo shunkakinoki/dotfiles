@@ -179,7 +179,7 @@
               };
               kyber = import ./named-hosts/kyber {
                 inherit inputs;
-                username = "ubuntu";
+                username = "shunkakinoki";
                 system = "x86_64-linux";
               };
             };

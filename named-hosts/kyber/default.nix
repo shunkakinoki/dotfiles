@@ -1,7 +1,7 @@
 # Kyber - Ubuntu Linux server configuration
 {
   inputs,
-  username ? "ubuntu",
+  username ? "shunkakinoki",
   system ? "x86_64-linux",
 }:
 let
