@@ -3711,8 +3711,8 @@ dependencies = [
 
 [[package]]
 name = "rtk"
-version = "0.37.0"
-source = "git+https://github.com/rtk-ai/rtk?branch=master#6d2e5e532e6dfb696d489d7f63c715e921f9e2e7"
+version = "0.37.1"
+source = "git+https://github.com/rtk-ai/rtk?branch=master#5c9e1ac6d72500bcb6283cf9a287a6778b7747f1"
 dependencies = [
  "anyhow",
  "automod",
