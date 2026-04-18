@@ -1,7 +1,12 @@
-{ pkgs, lib, inputs, ... }:
+{
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
 let
   inherit (inputs.host) isGalactica isMatic;
-  enabled = isGalactica || isMatic;
+  enabled = !(isGalactica || isMatic);
   startScript = ./start-postgres.sh;
 
   # Smart wrapper that handles both NixOS and non-NixOS Linux
