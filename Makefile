@@ -213,10 +213,18 @@ nvim-plugins-install: ## Download/build missing Neovim native plugin binaries (f
 switch: nix-switch services nvim-plugins-install dotagents-sync ## Apply Nix configuration, restart services, and sync plugins.
 
 .PHONY: clean
-clean: ## Clean up old Nix generations and garbage collect.
+clean: ## Clean up Nix generations older than 30 days and garbage collect.
 	@echo "🧹 Cleaning up old generations and garbage collecting..."
-	@$(SUDO) nix-collect-garbage -d
+	@$(SUDO) nix-collect-garbage --delete-older-than 30d
+	@nix store optimise
 	@echo "✅ Cleanup complete"
+
+.PHONY: clean-all
+clean-all: ## Delete ALL old Nix generations and garbage collect (nuclear).
+	@echo "🧹 Removing all old generations..."
+	@$(SUDO) nix-collect-garbage -d
+	@nix store optimise
+	@echo "✅ Full cleanup complete"
 
 .PHONY: reset
 reset: git-submodule-sync ## Reset git status to clean (restore all changes and reinitialize submodules).
@@ -1261,6 +1269,10 @@ doppler-sync: ## Sync Doppler secrets (dotfiles/prd) to .env file.
 	@echo "🔐 Syncing Doppler secrets to .env..."
 	@doppler secrets download --project dotfiles --config prd --format env --no-file > .env
 	@echo "✅ .env file updated from Doppler (dotfiles/prd)"
+
+.PHONY: doppler-diff
+doppler-diff: ## Show diff between Doppler secrets and local .env file.
+	@doppler secrets download --project dotfiles --config prd --format env --no-file | diff - .env || true
 
 .PHONY: doppler-upload
 doppler-upload: ## Upload .env file to Doppler (dotfiles/prd).

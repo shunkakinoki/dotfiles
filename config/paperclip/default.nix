@@ -17,7 +17,7 @@ let
     database_mode = if host.isKyber then "postgres" else "embedded-postgres";
     database_connection_string = "";
     deployment_mode = if host.isKyber then "authenticated" else "local_trusted";
-    host = "127.0.0.1";
+    host = if host.isKyber then "0.0.0.0" else "127.0.0.1";
     allowed_hostname = if host.isKyber then "paperclip.shunkakinoki.com" else "";
     is_kyber = if host.isKyber then "true" else "false";
   };

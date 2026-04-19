@@ -43,7 +43,7 @@ printf 'hello'
 EOF
   chmod +x "$MOCK_BIN/wl-paste"
   local bash_dir
-  bash_dir="$(dirname "$(readlink -f "$(command -v bash)")")"
+  bash_dir="$(resolve_cmd_dir bash)"
   export PATH="$MOCK_BIN:$bash_dir"
 }
 cleanup() {
@@ -73,7 +73,7 @@ printf 'hello'
 EOF
   chmod +x "$MOCK_BIN/xclip"
   local bash_dir
-  bash_dir="$(dirname "$(readlink -f "$(command -v bash)")")"
+  bash_dir="$(resolve_cmd_dir bash)"
   export PATH="$MOCK_BIN:$bash_dir"
 }
 cleanup() {
@@ -103,7 +103,7 @@ printf 'hello'
 EOF
   chmod +x "$MOCK_BIN/xsel"
   local bash_dir
-  bash_dir="$(dirname "$(readlink -f "$(command -v bash)")")"
+  bash_dir="$(resolve_cmd_dir bash)"
   export PATH="$MOCK_BIN:$bash_dir"
   unset WAYLAND_DISPLAY
   export MOCK_BIN MOCK_ORIGINAL_PATH MOCK_ORIGINAL_WAYLAND
@@ -132,7 +132,7 @@ setup() {
   MOCK_ORIGINAL_PATH="${PATH:-}"
   MOCK_ORIGINAL_WAYLAND="${WAYLAND_DISPLAY:-}"
   local bash_dir
-  bash_dir="$(dirname "$(readlink -f "$(command -v bash)")")"
+  bash_dir="$(resolve_cmd_dir bash)"
   export PATH="$MOCK_BIN:$bash_dir"
   unset WAYLAND_DISPLAY
   export MOCK_BIN MOCK_ORIGINAL_PATH MOCK_ORIGINAL_WAYLAND
