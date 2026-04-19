@@ -61,15 +61,34 @@ setup() {
   # Create a symlink (should be skipped)
   ln -s "$TEST_HOME/.env" "$TEST_HOME/.env.link"
 
+  # Create a portable stat wrapper that accepts GNU stat -c '%a' syntax
+  STAT_WRAPPER="$TEST_HOME/portable-stat.sh"
+  cat >"$STAT_WRAPPER" <<'WRAPPER'
+#!/usr/bin/env bash
+if stat -c '%a' "$0" >/dev/null 2>&1; then
+  exec stat "$@"
+fi
+# macOS: translate -c '%a' to -f '%Lp'
+args=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -c) shift; args+=(-f "$(echo "$1" | sed "s/%a/%Lp/g")"); shift ;;
+    *) args+=("$1"); shift ;;
+  esac
+done
+exec stat "${args[@]}"
+WRAPPER
+  chmod +x "$STAT_WRAPPER"
+
   # Preprocess the script, replacing placeholders with real commands
   PROCESSED_SCRIPT="$TEST_HOME/secure-dotenv-test.sh"
   sed \
     -e "s|@find@|$(command -v find)|g" \
-    -e "s|@stat@|$(command -v stat)|g" \
+    -e "s|@stat@|$STAT_WRAPPER|g" \
     "$SCRIPT" >"$PROCESSED_SCRIPT"
   chmod +x "$PROCESSED_SCRIPT"
 
-  export TEST_HOME PROCESSED_SCRIPT
+  export TEST_HOME PROCESSED_SCRIPT STAT_WRAPPER
 }
 cleanup() {
   rm -rf "$TEST_HOME"
@@ -84,17 +103,17 @@ The status should be success
 End
 
 It 'changes .env.local from 755 to 600'
-When run bash -c "bash '$PROCESSED_SCRIPT' '$TEST_HOME' && stat -c '%a' '$TEST_HOME/subdir/.env.local'"
+When run bash -c "bash '$PROCESSED_SCRIPT' '$TEST_HOME' && '$STAT_WRAPPER' -c '%a' '$TEST_HOME/subdir/.env.local'"
 The output should equal '600'
 End
 
 It 'changes app.env from 644 to 600'
-When run bash -c "bash '$PROCESSED_SCRIPT' '$TEST_HOME' && stat -c '%a' '$TEST_HOME/app.env'"
+When run bash -c "bash '$PROCESSED_SCRIPT' '$TEST_HOME' && '$STAT_WRAPPER' -c '%a' '$TEST_HOME/app.env'"
 The output should equal '600'
 End
 
 It 'leaves already-600 files unchanged'
-When run bash -c "bash '$PROCESSED_SCRIPT' '$TEST_HOME' && stat -c '%a' '$TEST_HOME/.env.safe'"
+When run bash -c "bash '$PROCESSED_SCRIPT' '$TEST_HOME' && '$STAT_WRAPPER' -c '%a' '$TEST_HOME/.env.safe'"
 The output should equal '600'
 End
 

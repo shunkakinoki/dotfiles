@@ -43,7 +43,7 @@ setup() {
   mock_bin_setup xclip
   # Restrict PATH so higher-priority backends (real xclip, pbcopy, etc.) are hidden
   local bash_dir
-  bash_dir="$(dirname "$(readlink -f "$(command -v bash)")")"
+  bash_dir="$(resolve_cmd_dir bash)"
   export PATH="$MOCK_BIN:$bash_dir"
   unset WAYLAND_DISPLAY
 }
@@ -64,7 +64,7 @@ setup() {
   mock_bin_setup xsel
   # Restrict PATH so higher-priority backends (real xclip, pbcopy, etc.) are hidden
   local bash_dir
-  bash_dir="$(dirname "$(readlink -f "$(command -v bash)")")"
+  bash_dir="$(resolve_cmd_dir bash)"
   export PATH="$MOCK_BIN:$bash_dir"
   unset WAYLAND_DISPLAY
 }
@@ -86,15 +86,13 @@ setup() {
   MOCK_ORIGINAL_PATH="${PATH:-}"
   MOCK_ORIGINAL_WAYLAND="${WAYLAND_DISPLAY:-}"
   MOCK_ORIGINAL_SSH_TTY="${SSH_TTY:-}"
-  local bash_dir
-  bash_dir="$(dirname "$(readlink -f "$(command -v bash)")")"
-  local base64_dir
-  base64_dir="$(dirname "$(readlink -f "$(command -v base64)")")"
-  local tr_dir
-  tr_dir="$(dirname "$(readlink -f "$(command -v tr)")")"
-  local printf_dir
-  printf_dir="$(dirname "$(readlink -f "$(command -v printf)")")"
-  export PATH="$MOCK_BIN:$bash_dir:$base64_dir:$tr_dir:$printf_dir"
+  # Symlink only the commands the script needs into MOCK_BIN to avoid
+  # leaking pbcopy/xclip/etc. from shared directories like /usr/bin
+  local cmd
+  for cmd in bash base64 tr printf; do
+    ln -sf "$(command -v "$cmd")" "$MOCK_BIN/$cmd"
+  done
+  export PATH="$MOCK_BIN"
   unset WAYLAND_DISPLAY
   export SSH_TTY=/dev/pts/0
   export MOCK_BIN MOCK_ORIGINAL_PATH MOCK_ORIGINAL_WAYLAND MOCK_ORIGINAL_SSH_TTY
@@ -128,9 +126,8 @@ setup() {
   MOCK_ORIGINAL_PATH="${PATH:-}"
   MOCK_ORIGINAL_WAYLAND="${WAYLAND_DISPLAY:-}"
   MOCK_ORIGINAL_SSH_TTY="${SSH_TTY:-}"
-  local bash_dir
-  bash_dir="$(dirname "$(readlink -f "$(command -v bash)")")"
-  export PATH="$MOCK_BIN:$bash_dir"
+  ln -sf "$(command -v bash)" "$MOCK_BIN/bash"
+  export PATH="$MOCK_BIN"
   unset WAYLAND_DISPLAY SSH_TTY TMUX
   export MOCK_BIN MOCK_ORIGINAL_PATH MOCK_ORIGINAL_WAYLAND MOCK_ORIGINAL_SSH_TTY
 }

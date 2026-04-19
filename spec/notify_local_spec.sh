@@ -55,8 +55,8 @@ setup() {
   # Hide osascript so notify-send path is taken
   # Use readlink -f to resolve to nix store path (avoids NixOS profile bin with all packages)
   local bash_dir cat_dir
-  bash_dir="$(dirname "$(readlink -f "$(command -v bash)")")"
-  cat_dir="$(dirname "$(readlink -f "$(command -v cat)")")"
+  bash_dir="$(resolve_cmd_dir bash)"
+  cat_dir="$(resolve_cmd_dir cat)"
   export PATH="$MOCK_BIN:$bash_dir:$cat_dir"
 }
 cleanup() {
@@ -80,8 +80,8 @@ setup() {
   # Hide osascript and notify-send so terminal-notifier path is taken
   # Use readlink -f to resolve to nix store path (avoids NixOS profile bin with all packages)
   local bash_dir cat_dir
-  bash_dir="$(dirname "$(readlink -f "$(command -v bash)")")"
-  cat_dir="$(dirname "$(readlink -f "$(command -v cat)")")"
+  bash_dir="$(resolve_cmd_dir bash)"
+  cat_dir="$(resolve_cmd_dir cat)"
   export PATH="$MOCK_BIN:$bash_dir:$cat_dir"
 }
 cleanup() {
@@ -105,7 +105,7 @@ setup() {
   MOCK_ORIGINAL_PATH="${PATH:-}"
   # Use readlink -f to resolve to nix store path (avoids NixOS profile bin with all packages)
   local bash_dir
-  bash_dir="$(dirname "$(readlink -f "$(command -v bash)")")"
+  bash_dir="$(resolve_cmd_dir bash)"
   export PATH="$MOCK_BIN:$bash_dir"
   export MOCK_BIN MOCK_ORIGINAL_PATH
 }

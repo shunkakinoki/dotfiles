@@ -2,6 +2,26 @@
 
 set -euo pipefail
 
+# Portable alternative to `dirname "$(readlink -f "$(command -v cmd)")"`.
+# macOS BSD readlink lacks -f; this uses Python as fallback.
+resolve_cmd_dir() {
+  local cmd_path
+  cmd_path="$(command -v "$1")"
+  if readlink -f "$cmd_path" >/dev/null 2>&1; then
+    dirname "$(readlink -f "$cmd_path")"
+  else
+    dirname "$(python3 -c "import os; print(os.path.realpath('$cmd_path'))")"
+  fi
+}
+
+# Portable file permission query (octal). macOS stat uses -f, GNU uses -c.
+portable_stat_perms() {
+  if stat -c '%a' "$1" 2>/dev/null; then
+    return
+  fi
+  stat -f '%Lp' "$1"
+}
+
 mock_bin_setup() {
   MOCK_BIN="$(mktemp -d)"
   MOCK_LOG="$MOCK_BIN/mock.log"
@@ -48,10 +68,12 @@ nix_script_preprocess() {
 
   # Replace @placeholder@ patterns with actual commands
   sed \
-    -e 's|@aws@|aws|g' \
-    -e 's|@rsync@|rsync|g' \
-    -e 's|@bash@|bash|g' \
-    -e 's|@sed@|sed|g' \
+    -e "s|@aws@|aws|g" \
+    -e "s|@rsync@|rsync|g" \
+    -e "s|@bash@|bash|g" \
+    -e "s|@sed@|sed|g" \
+    -e "s|@find@|$(command -v find)|g" \
+    -e "s|@stat@|$(command -v stat)|g" \
     "$script" >"$processed"
 
   chmod +x "$processed"
