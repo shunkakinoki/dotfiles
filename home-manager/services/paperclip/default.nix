@@ -25,7 +25,7 @@ lib.mkIf host.isKyber {
     };
     Service = {
       Type = "simple";
-      ExecStart = "${pkgs.bash}/bin/bash -c 'exec env DATABASE_URL=\"$PAPERCLIP_DATABASE_URL\" BETTER_AUTH_BASE_URL=\"$PAPERCLIP_BETTER_AUTH_BASE_URL\" ${homeDir}/.bun/bin/paperclipai run --no-repair'";
+      ExecStart = "${pkgs.bash}/bin/bash -c 'exec env DATABASE_URL=\"$PAPERCLIP_DATABASE_URL\" ${homeDir}/.bun/bin/paperclipai run --no-repair'";
       Restart = "always";
       RestartSec = "5s";
       Environment = [
@@ -34,7 +34,6 @@ lib.mkIf host.isKyber {
         "PAPERCLIP_DEPLOYMENT_MODE=authenticated"
         "PAPERCLIP_ALLOWED_HOSTNAMES=paperclip.shunkakinoki.com,172.17.0.1"
         "BETTER_AUTH_URL=https://paperclip.shunkakinoki.com"
-        "BETTER_AUTH_BASE_URL=https://paperclip.shunkakinoki.com"
         "PATH=${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:${homeDir}/.local/share/pnpm:${homeDir}/.local/share/fnm/current/bin:${homeDir}/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
       ];
       EnvironmentFile = [

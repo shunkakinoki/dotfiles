@@ -22,6 +22,6 @@
   },
   "auth": {
     "baseUrlMode": "auto",
-    "disableSignUp": false
+    "disableSignUp": true
   }
 }
