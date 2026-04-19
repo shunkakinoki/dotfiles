@@ -25,7 +25,7 @@ lib.mkIf host.isKyber {
     };
     Service = {
       Type = "simple";
-      ExecStart = "${pkgs.bash}/bin/bash -c 'exec env DATABASE_URL=\"$PAPERCLIP_DATABASE_URL\" ${homeDir}/.bun/bin/paperclipai run --no-repair'";
+      ExecStart = "${pkgs.bash}/bin/bash -c 'exec env DATABASE_URL=\"$PAPERCLIP_DATABASE_URL\" BETTER_AUTH_BASE_URL=\"$PAPERCLIP_BETTER_AUTH_BASE_URL\" ${homeDir}/.bun/bin/paperclipai run --no-repair'";
       Restart = "always";
       RestartSec = "5s";
       Environment = [
