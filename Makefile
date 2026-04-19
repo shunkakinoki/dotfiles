@@ -1262,6 +1262,10 @@ doppler-sync: ## Sync Doppler secrets (dotfiles/prd) to .env file.
 	@doppler secrets download --project dotfiles --config prd --format env --no-file > .env
 	@echo "✅ .env file updated from Doppler (dotfiles/prd)"
 
+.PHONY: doppler-diff
+doppler-diff: ## Show diff between Doppler secrets and local .env file.
+	@doppler secrets download --project dotfiles --config prd --format env --no-file | diff - .env || true
+
 .PHONY: doppler-upload
 doppler-upload: ## Upload .env file to Doppler (dotfiles/prd).
 	@echo "🔐 Uploading .env to Doppler..."
