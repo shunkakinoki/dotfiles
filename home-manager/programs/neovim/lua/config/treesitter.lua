@@ -38,6 +38,7 @@ require("nvim-treesitter").setup({
 		"csv",
 		"diff",
 		"dockerfile",
+		"dotenv",
 		"fish",
 		"git_config",
 		"git_rebase",

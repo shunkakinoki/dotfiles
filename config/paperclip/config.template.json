@@ -19,5 +19,9 @@
     "allowedHostnames": [
       "__ALLOWED_HOSTNAME__"
     ]
+  },
+  "auth": {
+    "baseUrlMode": "auto",
+    "disableSignUp": true
   }
 }

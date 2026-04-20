@@ -66,6 +66,9 @@ require("auto-dark-mode").setup({
 -- Sidebar file explorer built in Lua for quick navigation.
 -- From: https://github.com/nvim-tree/nvim-tree.lua
 require("nvim-tree").setup({
+	filters = {
+		dotfiles = false,
+	},
 	view = {
 		width = 30,
 	},
