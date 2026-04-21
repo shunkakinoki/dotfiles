@@ -1,4 +1,8 @@
-_: {
+{
+  username,
+  ...
+}:
+{
   services.keyd.enable = true;
 
   # Optional: silence the setgid warning (nice to have, not required for functionality)
@@ -14,4 +18,9 @@ _: {
   ];
 
   environment.etc."keyd/default.conf".source = ./default.conf;
+
+  home-manager.users.${username} = {
+    xdg.configFile."keyd/app.conf".source = ./app.conf;
+    services."keyd-application-mapper".enable = true;
+  };
 }
