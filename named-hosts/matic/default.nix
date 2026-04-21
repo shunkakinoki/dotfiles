@@ -71,7 +71,34 @@ import ../../hosts/nixos {
         ];
 
         # Networking
-        networking.networkmanager.wifi.powersave = true;
+        networking.networkmanager.wifi = {
+          powersave = true;
+          scanRandMacAddress = true;
+          macAddress = "stable-ssid";
+        };
+
+        networking.firewall = {
+          enable = true;
+          trustedInterfaces = [ "tailscale0" ];
+          allowedTCPPorts = [ ];
+          allowedUDPPorts = [ ];
+          logRefusedConnections = true;
+        };
+
+        # Audit logging
+        security.auditd.enable = true;
+        security.audit = {
+          enable = true;
+          rules = [
+            "-a exit,always -F arch=b64 -S execve -k exec"
+            "-a exit,always -F arch=b32 -S execve -k exec"
+            "-a exit,always -F arch=b64 -S setuid,setgid,setresuid,setresgid -k priv_esc"
+            "-w /etc/sudoers -p wa -k sudoers"
+            "-w /etc/passwd -p wa -k identity"
+            "-w /etc/shadow -p wa -k identity"
+            "-w /etc/ssh -p wa -k ssh"
+          ];
+        };
 
         # Docker
         virtualisation.docker.enable = true;
