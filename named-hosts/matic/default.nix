@@ -23,6 +23,9 @@ import ../../hosts/nixos {
     # Hardware configuration
     ./hardware-configuration.nix
 
+    # Shared keyd config and application mapper wiring
+    ../../config/keyd/default.nix
+
     # Kolide launcher
     ./kolide.nix
 
@@ -87,49 +90,6 @@ import ../../hosts/nixos {
             ExecStop = "${pkgs.e2fsprogs}/bin/chattr -i /";
           };
         };
-        # Keyd configuration (Linux desktop only)
-        services.keyd.enable = true;
-        users.groups.keyd = { };
-        systemd.services.keyd.serviceConfig = {
-          CapabilityBoundingSet = [ "CAP_SETGID" ];
-          AmbientCapabilities = [ "CAP_SETGID" ];
-        };
-        systemd.services.keyd.restartTriggers = [
-          (builtins.hashFile "sha256" ../../config/keyd/default.conf)
-        ];
-        environment.etc."keyd/default.conf".source = ../../config/keyd/default.conf;
-
-        home-manager.users.${username} = {
-          xdg.configFile."keyd/app.conf".text = ''
-            # keyd-application-mapper normalizes classes/titles to lowercase
-            # with punctuation collapsed to '-'. Slack's class becomes `slack`.
-            [slack]
-            leftmeta = layer(control)
-            prog1 = layer(control)
-            f13 = layer(control)
-          '';
-
-          systemd.user.services.keyd-application-mapper = {
-            Unit = {
-              Description = "keyd application mapper";
-              After = [ "graphical-session.target" ];
-              PartOf = [ "graphical-session.target" ];
-            };
-            Service = {
-              Type = "simple";
-              # User managers can start before refreshed supplementary groups
-              # are visible in the login session. Enter the keyd group
-              # explicitly so the mapper can always reach /var/run/keyd.socket.
-              ExecStart = "${pkgs.bash}/bin/bash -lc 'exec /run/wrappers/bin/sg keyd -c \"KEYD_BIN=${pkgs.keyd}/bin/keyd ${pkgs.keyd}/bin/keyd-application-mapper\"'";
-              Restart = "on-failure";
-              RestartSec = 3;
-            };
-            Install = {
-              WantedBy = [ "graphical-session.target" ];
-            };
-          };
-        };
-
         # Input remapping (xremap)
         hardware.uinput.enable = true;
         services.udev.extraRules = ''
