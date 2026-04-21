@@ -11,13 +11,14 @@ let
   # Hyper = Framework key (keyd: [cmd_hyper:C-A-S-M]) → remapped to Ctrl for macOS-style shortcuts
   hyperPrefix = "C-Alt-Shift-Super-";
   ctrlPrefix = "C-";
+  # "c" is excluded — keyd emits a native Ctrl+C directly so Slack/Electron
+  # can avoid xremap's synthesized Hyper->Ctrl path.
   # "f" is excluded — passes through as Hyper+F for Hyprland fullscreen bind.
   # "l" is excluded — passes through as Hyper+L for Hyprland lock screen bind.
   # See: config/hyprland/hyprland.conf (Window Management section, Lock Screen section)
   letters = [
     "a"
     "b"
-    "c"
     "d"
     "e"
     "g"
