@@ -89,27 +89,15 @@ let
     "${hyperPrefix}c" = "C-Shift-c";
     "${hyperPrefix}v" = "C-Shift-v";
   };
-  slackCopyCommand = [
-    (lib.getExe pkgs.bash)
-    "-lc"
-    "sleep 0.03 && exec ${lib.getExe pkgs.wtype} -M ctrl -k c -m ctrl"
-  ];
   codeEditorAppIds = [
     "cursor"
     "Cursor"
     "code"
     "Code"
   ];
-  # Slack: same mapping as global but isolated so Slack-specific workarounds
-  # (modifier leak, thread mark-as-read on bare `c`/`Esc`) can be tuned here
-  # without affecting other apps. See commits e60e0df, 95679b8, 48ad8f5.
-  slackRemap = globalRemap // {
-    # Slack/Electron misreads the native Hyper->Ctrl replay path on Wayland.
-    # Delegate copy to wtype so Slack sees a clean Ctrl+C instead.
-    "${hyperPrefix}c" = {
-      launch = slackCopyCommand;
-    };
-  };
+  # Slack-specific Framework->Ctrl behavior is handled by keyd's
+  # application mapper on hosts that enable ~/.config/keyd/app.conf.
+  slackRemap = globalRemap;
 in
 {
   config = lib.mkMerge [
