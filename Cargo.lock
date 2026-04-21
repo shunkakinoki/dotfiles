@@ -692,7 +692,6 @@ checksum = "8e68cfe19cd7d23ffde002c24ffa5cda73931913ef394d5eaaa32037dc940c0c"
 dependencies = [
  "async-trait",
  "convert_case 0.6.0",
- "indexmap",
  "json5",
  "pathdiff",
  "ron 0.12.1",
@@ -3701,7 +3700,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4147b952f3f819eca0e99527022f7d6a8d05f111aeb0a62960c74eb283bec8fc"
 dependencies = [
  "bitflags 2.11.1",
- "indexmap",
  "once_cell",
  "serde",
  "serde_derive",
@@ -5908,9 +5906,9 @@ dependencies = [
 
 [[package]]
 name = "worktrunk"
-version = "0.36.0"
+version = "0.37.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b47019b4af9a585ea3904ad39592c453c21ea9d707ff0e5e5320355837ff84a"
+checksum = "bdcb7ee3362a35d3d2ffd2557dd4dc2f421009b14bb5b0e29f87b64d00d33830"
 dependencies = [
  "ansi-str",
  "anstream",
@@ -5921,7 +5919,6 @@ dependencies = [
  "clap",
  "clap_complete",
  "color-print",
- "config 0.15.22",
  "crossbeam-channel",
  "crossterm",
  "dashmap",
