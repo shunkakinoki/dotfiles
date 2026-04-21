@@ -237,6 +237,11 @@
           },
           {
             "type": "command",
+            "command": "$HOME/dotfiles/config/shared/hooks/block-gh-settings.sh",
+            "timeout": 5
+          },
+          {
+            "type": "command",
             "command": "$HOME/.claude/hooks/notify.sh",
             "timeout": 3,
             "async": true
