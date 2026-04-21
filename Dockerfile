@@ -17,9 +17,10 @@ RUN apt-get update && apt-get install -y \
     git \
     make \
     nix-setup-systemd \
+    openssh-server \
     sudo \
-    # Add any other system-level dependencies your script needs here
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /run/sshd
 
 # Create a non-root user for running the setup and for the agent.
 # The agent will run as this user.
@@ -74,3 +75,8 @@ WORKDIR /home/$USER
 # RUN sudo chsh -s $(which fish) $USER
 # Or, to set fish as the default shell for subsequent Dockerfile commands and for the agent's shell:
 SHELL ["/usr/bin/fish", "-l", "-c"]
+
+EXPOSE 22
+
+# slep infinity keeps the container alive
+CMD ["sleep", "infinity"]
