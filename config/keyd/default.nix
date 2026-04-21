@@ -20,9 +20,7 @@
   environment.etc."keyd/default.conf".source = ./default.conf;
 
   home-manager.users.${username} = {
-    services."keyd-application-mapper" = {
-      enable = true;
-      configFile = ./app.conf;
-    };
+    xdg.configFile."keyd/app.conf".source = ./app.conf;
+    services."keyd-application-mapper".enable = true;
   };
 }

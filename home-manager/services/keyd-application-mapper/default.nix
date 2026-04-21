@@ -10,15 +10,15 @@ in
 {
   options.services."keyd-application-mapper" = {
     enable = lib.mkEnableOption "keyd application mapper user service";
-
-    configFile = lib.mkOption {
-      type = lib.types.path;
-      description = "Source keyd app.conf used by keyd-application-mapper.";
-    };
   };
 
   config = lib.mkIf (pkgs.stdenv.isLinux && cfg.enable) {
-    xdg.configFile."keyd/app.conf".source = cfg.configFile;
+    assertions = [
+      {
+        assertion = config.xdg.configFile ? "keyd/app.conf";
+        message = "services.keyd-application-mapper requires xdg.configFile.\"keyd/app.conf\"";
+      }
+    ];
 
     systemd.user.services.keyd-application-mapper = {
       Unit = {
@@ -29,7 +29,9 @@ in
       Service = {
         Type = "simple";
         # Force a unit restart on switch when app.conf changes.
-        Environment = [ "KEYD_APP_CONF_HASH=${builtins.hashFile "sha256" cfg.configFile}" ];
+        Environment = [
+          "KEYD_APP_CONF_HASH=${builtins.hashFile "sha256" config.xdg.configFile."keyd/app.conf".source}"
+        ];
         # User managers can start before refreshed supplementary groups
         # are visible in the login session. Enter the keyd group
         # explicitly so the mapper can always reach /var/run/keyd.socket.
