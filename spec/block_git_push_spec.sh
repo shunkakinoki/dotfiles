@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2329
 
-Describe 'block-push-main.sh'
-SCRIPT="$PWD/config/shared/hooks/block-push-main.sh"
+Describe 'block-git-push.sh'
+SCRIPT="$PWD/config/shared/hooks/block-git-push.sh"
 
 setup() {
   TEMP_REPO=$(mktemp -d)
