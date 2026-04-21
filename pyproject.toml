@@ -9,9 +9,9 @@ requires-python = ">=3.13"
 [dependency-groups]
 tools = [
   "aider-chat>=0.86.2",
-  "claude-swap>=0.7.3",
+  "claude-swap>=0.8.0",
   "marker-pdf>=1.10.2",
-  "mempalace>=3.2.0",
+  "mempalace>=3.3.0",
   "mistral-vibe>=2.7.5",
   "ruff>=0.15.10",
   "serena-agent>=1.1.2",
