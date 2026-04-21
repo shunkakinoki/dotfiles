@@ -35,7 +35,7 @@
           },
           {
             "type": "command",
-            "command": "$HOME/dotfiles/config/shared/hooks/block-push-main.sh",
+            "command": "$HOME/dotfiles/config/shared/hooks/block-git-push.sh",
             "timeout": 5
           },
           {

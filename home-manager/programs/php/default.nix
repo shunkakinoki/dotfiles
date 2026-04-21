@@ -1,7 +1,7 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
-    nodePackages.intelephense
+    intelephense
     php
   ];
 }

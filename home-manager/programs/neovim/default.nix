@@ -28,11 +28,7 @@ in
     defaultEditor = true;
     vimAlias = true;
     vimdiffAlias = true;
-  };
-
-  home.file.".config/nvim/init.lua" = {
-    source = nvimInitLua;
-    force = true;
+    extraLuaConfig = builtins.readFile nvimInitLua;
   };
 
   home.file.".config/nvim/lua" = {
