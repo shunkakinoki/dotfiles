@@ -54,7 +54,6 @@ with pkgs;
   gomi
   go-task
   google-cloud-sdk
-
   gping
   grc
   htop
