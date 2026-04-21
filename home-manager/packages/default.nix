@@ -226,6 +226,6 @@ with pkgs;
   gopls
   lua-language-server
   nil
-  nodePackages.typescript-language-server
+  typescript-language-server
   pyright
 ]
