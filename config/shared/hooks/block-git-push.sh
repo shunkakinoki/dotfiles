@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# block-push-main.sh — Shared hook for Claude Code + Codex
+# block-git-push.sh - Shared hook for Claude Code + Codex
 # Blocks git push to main/master unless repo is in the allowlist.
 # Exit 2 = block (Codex), JSON decision output (Claude).
 set -euo pipefail
@@ -37,5 +37,5 @@ done
 
 # Block the push
 msg="Push to main/master blocked in '$repo'. Use a feature branch + PR."
-echo "BLOCKED by block-push-main.sh: $msg" >&2
+echo "BLOCKED by block-git-push.sh: $msg" >&2
 exit 2
