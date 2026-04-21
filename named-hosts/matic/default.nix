@@ -14,6 +14,7 @@ import ../../hosts/nixos {
     "video"
     "audio"
     "docker"
+    "keyd"
   ];
   modules = [
     # Framework 13" AMD AI 300 hardware support
@@ -21,6 +22,9 @@ import ../../hosts/nixos {
 
     # Hardware configuration
     ./hardware-configuration.nix
+
+    # Shared keyd config and application mapper wiring
+    ../../config/keyd/default.nix
 
     # Kolide launcher
     ./kolide.nix
@@ -86,18 +90,6 @@ import ../../hosts/nixos {
             ExecStop = "${pkgs.e2fsprogs}/bin/chattr -i /";
           };
         };
-        # Keyd configuration (Linux desktop only)
-        services.keyd.enable = true;
-        users.groups.keyd = { };
-        systemd.services.keyd.serviceConfig = {
-          CapabilityBoundingSet = [ "CAP_SETGID" ];
-          AmbientCapabilities = [ "CAP_SETGID" ];
-        };
-        systemd.services.keyd.restartTriggers = [
-          (builtins.hashFile "sha256" ../../config/keyd/default.conf)
-        ];
-        environment.etc."keyd/default.conf".source = ../../config/keyd/default.conf;
-
         # Input remapping (xremap)
         hardware.uinput.enable = true;
         services.udev.extraRules = ''
