@@ -28,6 +28,7 @@ in
   systemd.user.services.dotfiles-updater = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {
       Description = "Dotfiles auto-updater service";
+      X-SwitchMethod = "keep-old";
     };
     Service = {
       Type = "oneshot";

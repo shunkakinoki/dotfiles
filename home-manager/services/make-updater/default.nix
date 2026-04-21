@@ -30,6 +30,7 @@ in
   systemd.user.services.make-updater = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {
       Description = "Make update service";
+      X-SwitchMethod = "keep-old";
     };
     Service = {
       Type = "oneshot";

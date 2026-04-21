@@ -26,6 +26,7 @@ in
       Description = "Keep captive portal alive via neverssl.com";
       Wants = [ "network-online.target" ];
       After = [ "network-online.target" ];
+      X-SwitchMethod = "keep-old";
     };
     Service = {
       Type = "oneshot";

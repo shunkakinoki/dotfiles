@@ -29,6 +29,7 @@ in
   systemd.user.services.tmux-session-logger = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {
       Description = "Persist tmux pane history snapshots";
+      X-SwitchMethod = "keep-old";
     };
     Service = {
       Type = "oneshot";

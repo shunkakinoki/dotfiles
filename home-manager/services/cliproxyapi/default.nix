@@ -204,6 +204,7 @@ in
 
   systemd.user.services.cliproxyapi-backup = lib.mkIf pkgs.stdenv.isLinux {
     Unit.Description = "CLIProxyAPI auth backup";
+    Unit.X-SwitchMethod = "keep-old";
     Service = {
       Type = "oneshot";
       ExecStart = "${pkgs.bash}/bin/bash ${backupScript}";
@@ -230,6 +231,7 @@ in
 
   systemd.user.services.cliproxyapi-sync = lib.mkIf pkgs.stdenv.isLinux {
     Unit.Description = "CLIProxyAPI auth sync from S3";
+    Unit.X-SwitchMethod = "keep-old";
     Service = {
       Type = "oneshot";
       ExecStart = "${pkgs.bash}/bin/bash ${hydrateScript}";
