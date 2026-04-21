@@ -48,7 +48,8 @@ if ! command -v nix >/dev/null 2>&1; then
     . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
     NIX_EFFECTIVE_BIN_PATH="/nix/var/nix/profiles/default/bin"
   else # Linux
-    if [ "$IN_DOCKER" = "true" ]; then
+    # Auto-detect container environment (Docker, Podman, RunPod, etc.)
+    if [ "$IN_DOCKER" = "true" ] || [ -f /.dockerenv ] || [ -f /run/.containerenv ] || ! pidof systemd >/dev/null 2>&1; then
       echo "Performing Determinate Nix installation (Docker environment)..."
       curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --init none --no-confirm
       # Source the Nix profile script to add Nix to PATH for the current shell
@@ -82,7 +83,7 @@ else
     # Fallback for safety, though 'command -v nix' in the outer 'if' should have caught this.
     if [ "$OS" = "macos" ]; then
       NIX_EFFECTIVE_BIN_PATH="/nix/var/nix/profiles/default/bin"
-    elif [ "$IN_DOCKER" = "true" ]; then
+    elif [ "$IN_DOCKER" = "true" ] || [ -f /.dockerenv ] || [ -f /run/.containerenv ] || ! pidof systemd >/dev/null 2>&1; then
       NIX_EFFECTIVE_BIN_PATH="$HOME/.nix-profile/bin"
     else
       NIX_EFFECTIVE_BIN_PATH="/nix/var/nix/profiles/default/bin"

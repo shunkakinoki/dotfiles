@@ -47,6 +47,9 @@
         },
         "z-ai/__GLM__": {
           "name": "__GLM_PRETTY__ (via shunkakinoki's CLIProxy)"
+        },
+        "__KIMI__": {
+          "name": "__KIMI_PRETTY__ (via shunkakinoki's CLIProxy)"
         }
       }
     },
@@ -84,6 +87,9 @@
         },
         "__MINIMAX__": {
           "name": "__MINIMAX_PRETTY__ (via local CLIProxyAPI)"
+        },
+        "__KIMI__": {
+          "name": "__KIMI_PRETTY__ (via local CLIProxyAPI)"
         }
       }
     },
