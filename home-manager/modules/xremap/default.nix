@@ -80,14 +80,21 @@ let
         value = "${ctrlPrefix}${key}";
       }) keys
     );
-  # Framework+key → Ctrl+key for all apps (macOS-style shortcuts)
+  # Framework+key -> Ctrl+key for all apps (macOS-style shortcuts)
   globalRemap = mkRemap remapKeys;
-  # Ghostty: Framework+C/V → Ctrl+Shift+C/V (terminal convention: Ctrl+C = SIGINT)
-  ghosttyRemap = globalRemap // {
+  # Terminal/editor clipboard convention: Framework+C/V -> Ctrl+Shift+C/V so
+  # copy/paste does not collide with SIGINT or app-specific bare Ctrl+C handlers.
+  terminalClipboardRemap = globalRemap // {
     "C-c" = "C-Shift-c";
     "${hyperPrefix}c" = "C-Shift-c";
     "${hyperPrefix}v" = "C-Shift-v";
   };
+  codeEditorAppIds = [
+    "cursor"
+    "Cursor"
+    "code"
+    "Code"
+  ];
   # Slack: same mapping as global but isolated so Slack-specific workarounds
   # (modifier leak, thread mark-as-read on bare `c`/`Esc`) can be tuned here
   # without affecting other apps. See commits e60e0df, 95679b8, 48ad8f5.
@@ -109,10 +116,16 @@ in
           keypress_delay_ms = 10;
           keymap = [
             {
-              # Ghostty: Framework+C/V → Ctrl+Shift+C/V (terminal convention: Ctrl+C = SIGINT)
+              # Ghostty: Framework+C/V -> Ctrl+Shift+C/V (terminal convention: Ctrl+C = SIGINT)
               name = "Framework Command (Ghostty)";
               application.only = [ "com.mitchellh.ghostty" ];
-              remap = ghosttyRemap;
+              remap = terminalClipboardRemap;
+            }
+            {
+              # Cursor/VS Code: terminal-style clipboard shortcut, not bare Ctrl+C.
+              name = "Framework Command (Code Editors)";
+              application.only = codeEditorAppIds;
+              remap = terminalClipboardRemap;
             }
             {
               # Slack: isolated block so modifier-leak / thread mark-as-read
