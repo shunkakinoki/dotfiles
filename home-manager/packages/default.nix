@@ -54,7 +54,7 @@ with pkgs;
   gomi
   go-task
   google-cloud-sdk
-  goose-cli
+
   gping
   grc
   htop

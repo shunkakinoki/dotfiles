@@ -28,7 +28,9 @@ in
     defaultEditor = true;
     vimAlias = true;
     vimdiffAlias = true;
-    extraLuaConfig = builtins.readFile nvimInitLua;
+    withRuby = false;
+    withPython3 = false;
+    initLua = builtins.readFile nvimInitLua;
   };
 
   home.file.".config/nvim/lua" = {

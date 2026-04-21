@@ -82,6 +82,7 @@
       signing = {
         signByDefault = true;
         key = "shunkakinoki@gmail.com";
+        format = "openpgp";
       };
       ignores = lib.splitString "\n" (builtins.readFile ./.gitignore.global);
     };
