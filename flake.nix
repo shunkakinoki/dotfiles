@@ -182,6 +182,11 @@
                 username = "ubuntu";
                 system = "x86_64-linux";
               };
+              pod = import ./named-hosts/pod {
+                inherit inputs;
+                username = "root";
+                system = "x86_64-linux";
+              };
             };
           };
 

@@ -35,7 +35,7 @@ NIX_TRUSTED_KEYS := cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShj
 NIX_CACHIX_CONF := /etc/nix/cachix.conf
 # Check if user is trusted (to avoid "ignoring untrusted substituter" warnings)
 NIX_USER_TRUSTED := $(shell grep -qE "trusted-users.*=.*(\\*|$(shell whoami))" /etc/nix/nix.conf 2>/dev/null && echo "yes" || echo "no")
-NAMED_HOSTS := galactica kyber matic viper
+NAMED_HOSTS := galactica kyber matic pod viper
 NIXOS_NAMED_HOSTS := $(filter matic viper,$(NAMED_HOSTS))
 ISO_NAMED_HOSTS := $(filter matic viper,$(NAMED_HOSTS))
 
@@ -70,7 +70,9 @@ NIX_CONFIG_TYPE := $(shell \
 		echo "homeConfigurations"; \
 	fi)
 NIX_USERNAME := $(shell \
-	if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
+	if [ -n "$$RUNPOD_POD_ID" ]; then \
+		echo "root"; \
+	elif [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		echo "runner"; \
 	else \
 		echo "$(shell whoami)"; \
@@ -96,13 +98,17 @@ DETECTED_HOST := $(shell \
 			echo ""; \
 		fi; \
 	elif [ "$(OS)" = "Linux" ]; then \
-		hostname=$$(hostname 2>/dev/null || echo ""); \
-		if [ "$$hostname" = "kyber" ]; then \
-			echo "kyber"; \
-		elif [ "$$hostname" = "matic" ]; then \
-			echo "matic"; \
+		if [ -n "$$RUNPOD_POD_ID" ]; then \
+			echo "pod"; \
 		else \
-			echo ""; \
+			hostname=$$(hostname 2>/dev/null || echo ""); \
+			if [ "$$hostname" = "kyber" ]; then \
+				echo "kyber"; \
+			elif [ "$$hostname" = "matic" ]; then \
+				echo "matic"; \
+			else \
+				echo ""; \
+			fi; \
 		fi; \
 	else \
 		echo ""; \

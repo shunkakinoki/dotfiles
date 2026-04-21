@@ -47,6 +47,9 @@
         },
         "z-ai/glm-4.7": {
           "name": "GLM 4.7 (via shunkakinoki's CLIProxy)"
+        },
+        "kimi-2.6": {
+          "name": "Kimi 2.6 (via shunkakinoki's CLIProxy)"
         }
       }
     },
@@ -84,6 +87,9 @@
         },
         "minimax-m2.7": {
           "name": "Minimax M2.7 (via local CLIProxyAPI)"
+        },
+        "kimi-2.6": {
+          "name": "Kimi 2.6 (via local CLIProxyAPI)"
         }
       }
     },

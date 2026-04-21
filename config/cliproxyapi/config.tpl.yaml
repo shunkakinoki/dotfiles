@@ -97,6 +97,13 @@ openai-compatibility:
     models:
       - name: "glm-4.7"
         alias: "glm-4.7"
+  - name: "kimi"
+    base-url: "https://api.moonshot.cn/v1"
+    api-key-entries:
+      - api-key: "__KIMI_API_KEY__"
+    models:
+      - name: "__KIMI__"
+        alias: "__KIMI__"
   - name: "opencode"
     base-url: "https://opencode.ai/zen/go/v1"
     api-key-entries:
@@ -104,6 +111,8 @@ openai-compatibility:
     models:
       - name: "__MINIMAX__"
         alias: "__MINIMAX__"
+      - name: "__KIMI__"
+        alias: "__KIMI__"
 # payload: # Optional payload configuration
 #   default: # Default rules only set parameters when they are missing in the payload.
 #     - models:
