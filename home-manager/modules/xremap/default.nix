@@ -11,14 +11,13 @@ let
   # Hyper = Framework key (keyd: [cmd_hyper:C-A-S-M]) → remapped to Ctrl for macOS-style shortcuts
   hyperPrefix = "C-Alt-Shift-Super-";
   ctrlPrefix = "C-";
-  # "c" is excluded — keyd emits a native Ctrl+C directly so Slack/Electron
-  # can avoid xremap's synthesized Hyper->Ctrl path.
   # "f" is excluded — passes through as Hyper+F for Hyprland fullscreen bind.
   # "l" is excluded — passes through as Hyper+L for Hyprland lock screen bind.
   # See: config/hyprland/hyprland.conf (Window Management section, Lock Screen section)
   letters = [
     "a"
     "b"
+    "c"
     "d"
     "e"
     "g"
@@ -105,8 +104,8 @@ let
   # (modifier leak, thread mark-as-read on bare `c`/`Esc`) can be tuned here
   # without affecting other apps. See commits e60e0df, 95679b8, 48ad8f5.
   slackRemap = globalRemap // {
-    # Slack/Electron still misreads xremap's synthesized Ctrl+C path on Wayland.
-    # Delegate copy to wtype so Slack sees a clean Ctrl+C without Hyper residue.
+    # Slack/Electron misreads the native Hyper->Ctrl replay path on Wayland.
+    # Delegate copy to wtype so Slack sees a clean Ctrl+C instead.
     "${hyperPrefix}c" = {
       launch = slackCopyCommand;
     };
