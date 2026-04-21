@@ -47,6 +47,7 @@ lib.mkIf enabled {
         "docker.service"
       ];
       Wants = [ "docker.service" ];
+      X-SwitchMethod = "keep-old";
     };
     Service = {
       Type = "oneshot";

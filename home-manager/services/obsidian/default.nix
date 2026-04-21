@@ -66,6 +66,7 @@ lib.mkIf host.isKyber {
     Unit = {
       Description = "Trigger obsidian-git auto-backup via CDP";
       After = [ "obsidian.service" ];
+      X-SwitchMethod = "keep-old";
     };
     Service = {
       Type = "oneshot";

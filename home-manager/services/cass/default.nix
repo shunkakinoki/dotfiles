@@ -58,6 +58,7 @@ in
   systemd.user.services.cass-daily = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {
       Description = "cass daily remote sync and analytics rebuild";
+      X-SwitchMethod = "keep-old";
     };
     Service = {
       Type = "oneshot";
