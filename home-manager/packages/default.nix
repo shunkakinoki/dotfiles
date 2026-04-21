@@ -145,9 +145,6 @@ with pkgs;
 ++ lib.optionals (stdenv.hostPlatform.system != "aarch64-linux") [
   qwen-code
 ]
-++ lib.optionals (stdenv.hostPlatform.system == "x86_64-linux") [
-  vllm
-]
 ++ lib.optionals stdenv.isLinux [ alsa-lib ]
 ++ lib.optionals (stdenv.isLinux && isDesktop) [
   _1password-gui
@@ -226,6 +223,6 @@ with pkgs;
   gopls
   lua-language-server
   nil
-  nodePackages.typescript-language-server
+  typescript-language-server
   pyright
 ]
