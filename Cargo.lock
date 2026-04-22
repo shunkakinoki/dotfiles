@@ -1694,7 +1694,7 @@ dependencies = [
 [[package]]
 name = "git-ai"
 version = "1.3.3"
-source = "git+https://github.com/git-ai-project/git-ai?branch=main#1b62c8ef5a85147c9736f7aec13247755b7623db"
+source = "git+https://github.com/git-ai-project/git-ai?branch=main#7dd86fb045bc1137f848539eec739c691902f38d"
 dependencies = [
  "chrono",
  "clap",
@@ -3806,9 +3806,9 @@ dependencies = [
 
 [[package]]
 name = "rustls"
-version = "0.23.38"
+version = "0.23.39"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "69f9466fb2c14ea04357e91413efb882e2a6d4a406e625449bc0a5d360d53a21"
+checksum = "7c2c118cb077cca2822033836dfb1b975355dfb784b5e8da48f7b6c5db74e60e"
 dependencies = [
  "log",
  "once_cell",
