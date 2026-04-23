@@ -64,15 +64,9 @@ with pkgs;
   jujutsu
   just
   k6
-  k9s
-  kind
-  kubeconform
-  kubectl
-  kubectx
-  kubernetes-helm
-  kustomize
   (if stdenv.isLinux && isDesktop then llama-cpp.override { vulkanSupport = true; } else llama-cpp)
   llm
+  lsof
   mariadb
   mise
   mkcert
@@ -94,6 +88,7 @@ with pkgs;
   tmuxinator
   tokei
   tree
+  tree-sitter
   turso-cli
   uv
   victorialogs
@@ -117,8 +112,6 @@ with pkgs;
   cmake
   codex
   collectd
-  docker
-  docker-compose
   fwupd
   gcc
   gemini-cli
@@ -163,6 +156,7 @@ with pkgs;
   ffmpeg
   file-roller
   gedit
+  ghostscript
   ghostty
   github-desktop
   gnome-calculator
@@ -187,9 +181,11 @@ with pkgs;
   hyprshell
   hyprshot
   hyprsunset
+  imagemagick
   libnotify
   linux-wallpaperengine
   loupe
+  mermaid-cli
   mpv
   nautilus
   networkmanagerapplet
@@ -207,6 +203,7 @@ with pkgs;
   slack
   slurp
   swappy
+  tectonic
   telegram-desktop
   totem
   v4l-utils

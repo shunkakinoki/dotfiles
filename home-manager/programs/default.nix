@@ -11,6 +11,7 @@ let
   cass = import ./cass;
   clang = import ./clang;
   dart = import ./dart;
+  docker = import ./docker;
   delta = import ./delta;
   direnv = import ./direnv;
   elixir = import ./elixir;
@@ -24,6 +25,7 @@ let
   go = import ./go;
   haskell = import ./haskell;
   java = import ./java;
+  k8s = import ./k8s;
   kotlin = import ./kotlin;
   lazydocker = import ./lazydocker;
   lazygit = import ./lazygit;
@@ -59,6 +61,7 @@ in
   cass
   clang
   dart
+  docker
   delta
   direnv
   elixir
@@ -72,6 +75,7 @@ in
   go
   haskell
   java
+  k8s
   kotlin
   lazydocker
   lazygit

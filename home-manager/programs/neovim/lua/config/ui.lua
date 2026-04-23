@@ -104,16 +104,16 @@ require("nvim-tree").setup({
 		vim.keymap.set("n", "i", api.node.open.horizontal, opts("Open: Horizontal Split"))
 		-- @keymap a: Add file/folder (nvim-tree)
 		vim.keymap.set("n", "a", api.fs.create, opts("Create"))
-		-- @keymap d: Delete file/folder (nvim-tree)
-		vim.keymap.set("n", "d", api.fs.remove, opts("Delete"))
+		-- @keymap D: Delete file/folder (nvim-tree)
+		vim.keymap.set("n", "D", api.fs.remove, opts("Delete"))
 		-- @keymap r: Rename file/folder (nvim-tree)
 		vim.keymap.set("n", "r", api.fs.rename, opts("Rename"))
-		-- @keymap y: Copy absolute path (nvim-tree)
-		vim.keymap.set("n", "y", api.fs.copy.absolute_path, opts("Copy Absolute Path"))
-		-- @keymap Y: Copy relative path (nvim-tree)
-		vim.keymap.set("n", "Y", api.fs.copy.relative_path, opts("Copy Relative Path"))
-		-- @keymap c: Change directory (nvim-tree)
-		vim.keymap.set("n", "c", api.tree.change_root_to_node, opts("CD"))
+		-- @keymap Y: Copy absolute path (nvim-tree)
+		vim.keymap.set("n", "Y", api.fs.copy.absolute_path, opts("Copy Absolute Path"))
+		-- @keymap <C-y>: Copy relative path (nvim-tree)
+		vim.keymap.set("n", "<C-y>", api.fs.copy.relative_path, opts("Copy Relative Path"))
+		-- @keymap C: Change directory (nvim-tree)
+		vim.keymap.set("n", "C", api.tree.change_root_to_node, opts("CD"))
 		-- @keymap u: Go to parent directory (nvim-tree)
 		vim.keymap.set("n", "u", api.tree.change_root_to_parent, opts("Up"))
 		-- @keymap q: Close tree (nvim-tree)
@@ -155,7 +155,13 @@ require("which-key").setup({})
 
 -- Shows non-blocking LSP progress spinners in the corner.
 -- From: https://github.com/j-hui/fidget.nvim
-require("fidget").setup({})
+require("fidget").setup({
+	notification = {
+		window = {
+			avoid = { "NvimTree" },
+		},
+	},
+})
 
 -- Makes directories editable as buffers for quick navigation.
 -- From: https://github.com/stevearc/oil.nvim

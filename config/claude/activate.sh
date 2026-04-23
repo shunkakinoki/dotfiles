@@ -5,5 +5,9 @@ set -euo pipefail
 SETTINGS_JSON="$1"
 
 mkdir -p ~/.claude
-cp -f "$SETTINGS_JSON" ~/.claude/settings.json
+_TMP=$(mktemp)
+jq --arg host "$(hostname)" '
+  . * (.hostOverrides[$host] // {}) | del(.hostOverrides)
+' "$SETTINGS_JSON" >"$_TMP"
+mv "$_TMP" ~/.claude/settings.json
 chmod 644 ~/.claude/settings.json

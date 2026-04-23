@@ -518,5 +518,12 @@
   },
   "skipDangerousModePermissionPrompt": true,
   "defaultMode": "bypassPermissions",
-  "teammateMode": "tmux"
+  "teammateMode": "tmux",
+  "hostOverrides": {
+    "matic": {
+      "enabledPlugins": {
+        "mempalace@mempalace": false
+      }
+    }
+  }
 }

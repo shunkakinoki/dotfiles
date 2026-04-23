@@ -48,8 +48,8 @@ keymap("n", "<leader>q", function()
 		vim.cmd("Bdelete")
 	end
 end, { noremap = true, silent = true, desc = "Close window / delete buffer" })
--- @keymap <leader>bad: Wipe all buffers
-keymap("n", "<leader>bad", ":%bwipeout!<cr>:intro<cr>", { noremap = true, silent = true, desc = "Wipe all buffers" })
+-- @keymap <leader>BD: Wipe all buffers
+keymap("n", "<leader>BD", ":%bwipeout!<cr>:intro<cr>", { noremap = true, silent = true, desc = "Wipe all buffers" })
 -- @keymap <leader>w: Write file
 keymap("n", "<leader>w", ":write<CR>", { noremap = true, silent = true, desc = "Save file" })
 -- @keymap <leader>W: Save all and quit
@@ -199,18 +199,18 @@ keymap(
 	":Gitsigns preview_hunk_inline<cr>",
 	{ noremap = true, silent = true, desc = "Preview hunk inline" }
 )
--- @keymap <leader>hs: Stage hunk (Gitsigns)
-keymap("n", "<leader>hs", ":Gitsigns stage_hunk<cr>", { noremap = true, silent = true, desc = "Stage hunk" })
--- @keymap <leader>hr: Reset hunk (Gitsigns)
-keymap("n", "<leader>hr", ":Gitsigns reset_hunk<cr>", { noremap = true, silent = true, desc = "Reset hunk" })
--- @keymap <leader>hp: Preview hunk (Gitsigns)
-keymap("n", "<leader>hp", ":Gitsigns preview_hunk<cr>", { noremap = true, silent = true, desc = "Preview hunk" })
--- @keymap <leader>hb: Blame line (Gitsigns)
-keymap("n", "<leader>hb", ":Gitsigns blame_line<cr>", { noremap = true, silent = true, desc = "Blame line" })
--- @keymap <leader>hn: Next hunk (Gitsigns)
-keymap("n", "<leader>hn", ":Gitsigns next_hunk<cr>", { noremap = true, silent = true, desc = "Next hunk" })
--- @keymap <leader>hN: Prev hunk (Gitsigns)
-keymap("n", "<leader>hN", ":Gitsigns prev_hunk<cr>", { noremap = true, silent = true, desc = "Prev hunk" })
+-- @keymap <leader>Hs: Stage hunk (Gitsigns)
+keymap("n", "<leader>Hs", ":Gitsigns stage_hunk<cr>", { noremap = true, silent = true, desc = "Stage hunk" })
+-- @keymap <leader>Hr: Reset hunk (Gitsigns)
+keymap("n", "<leader>Hr", ":Gitsigns reset_hunk<cr>", { noremap = true, silent = true, desc = "Reset hunk" })
+-- @keymap <leader>Hp: Preview hunk (Gitsigns)
+keymap("n", "<leader>Hp", ":Gitsigns preview_hunk<cr>", { noremap = true, silent = true, desc = "Preview hunk" })
+-- @keymap <leader>Hb: Blame line (Gitsigns)
+keymap("n", "<leader>Hb", ":Gitsigns blame_line<cr>", { noremap = true, silent = true, desc = "Blame line" })
+-- @keymap <leader>Hn: Next hunk (Gitsigns)
+keymap("n", "<leader>Hn", ":Gitsigns next_hunk<cr>", { noremap = true, silent = true, desc = "Next hunk" })
+-- @keymap <leader>HN: Prev hunk (Gitsigns)
+keymap("n", "<leader>HN", ":Gitsigns prev_hunk<cr>", { noremap = true, silent = true, desc = "Prev hunk" })
 -- @keymap <leader>gs: Fugitive vertical diff split (current file vs index)
 keymap("n", "<leader>gs", ":Gvdiffsplit<cr>", { noremap = true, silent = true, desc = "Diff split (index)" })
 -- @keymap <leader>gS: Fugitive diff split vs HEAD
@@ -277,8 +277,8 @@ keymap("n", "<leader>xl", "<cmd>Trouble loclist toggle<cr>", { noremap = true, s
 keymap("n", "]d", vim.diagnostic.goto_next, { desc = "Next Diagnostic" })
 -- @keymap [d: Go to previous diagnostic
 keymap("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous Diagnostic" })
--- @keymap <leader>dl: Show line diagnostics
-keymap("n", "<leader>dl", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
+-- @keymap <leader>xd: Show line diagnostics
+keymap("n", "<leader>xd", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
 
 -- ====================================================================================
 -- FFF.NVIM (Fast Fuzzy File Finder)
@@ -327,8 +327,8 @@ keymap("n", "<leader>ov", ":OtherVSplit<cr>", { noremap = true, silent = true, d
 -- @keymap <leader>os: Navigate to related file in horizontal split
 keymap("n", "<leader>os", ":OtherSplit<cr>", { noremap = true, silent = true, desc = "Related file (split)" })
 
--- @keymap gco: Generate code annotation (neogen)
-keymap("n", "gco", ":Neogen<cr>", { noremap = true, silent = true, desc = "Generate annotation" })
+-- @keymap <leader>ca: Generate code annotation (neogen)
+keymap("n", "<leader>ca", ":Neogen<cr>", { noremap = true, silent = true, desc = "Generate annotation" })
 
 -- @keymap <leader>st: Toggle treesitter split/join
 -- Treesitter-based split/join helper for code structures.
@@ -394,6 +394,17 @@ keymap("n", "<leader>ac", function()
 end, { noremap = true, silent = true, desc = "Sidekick Claude" })
 
 -- ====================================================================================
+-- PLUGIN KEYMAP OVERRIDES
+-- ====================================================================================
+-- nvim-surround v4: keymaps no longer configured via setup(); delete directly.
+require("nvim-surround").setup({})
+pcall(vim.keymap.del, "n", "yss")
+pcall(vim.keymap.del, "n", "ySS")
+
+-- Remove Neovim built-in gcc shorthand; gc_ achieves the same result.
+pcall(vim.keymap.del, "n", "gcc")
+
+-- ====================================================================================
 -- WHICH-KEY GROUPS
 -- ====================================================================================
 -- Popup helper that groups and hints keybindings as you start a mapping.
@@ -405,7 +416,7 @@ wk.add({
 	{ "<leader>f", group = "Find/Files" },
 	{ "<leader>x", group = "Trouble/Diagnostics" },
 	{ "<leader>c", group = "Code" },
-	{ "<leader>h", group = "Hunk (Git)" },
+	{ "<leader>H", group = "Hunk (Git)" },
 })
 
 -- ====================================================================================
