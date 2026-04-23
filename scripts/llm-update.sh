@@ -29,7 +29,8 @@ add_model_override() {
   local key="$1"
   local suffix="$2"
   local value="$3"
-  local placeholder="__$(echo "${key}-${suffix}" | tr 'a-z-' 'A-Z_')__"
+  local placeholder
+  placeholder="__$(echo "${key}-${suffix}" | tr 'a-z-' 'A-Z_')__"
   sed_args+=(-e "s|${placeholder}|${value}|g")
 }
 
