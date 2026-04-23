@@ -14,10 +14,6 @@ require("nvim-autopairs").setup()
 -- From: https://github.com/windwp/nvim-ts-autotag
 require("nvim-ts-autotag").setup()
 
--- Modern surround manipulation for parentheses, brackets, tags, etc.
--- From: https://github.com/kylechui/nvim-surround
-require("nvim-surround").setup()
-
 -- Highlights and lists TODO/FIXME/NOTE-style comments across projects.
 -- From: https://github.com/folke/todo-comments.nvim
 require("todo-comments").setup()
