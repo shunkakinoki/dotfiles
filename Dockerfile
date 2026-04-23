@@ -71,8 +71,7 @@ WORKDIR /home/$USER
 # RUN curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_SHA/install.sh | /bin/bash
 
 # Your install.sh script should ideally set up fish as the default shell if desired.
-# If it doesn't, you might need to add a line here like:
-# RUN sudo chsh -s $(which fish) $USER
+RUN sudo chsh -s $(which fish) $USER
 # Or, to set fish as the default shell for subsequent Dockerfile commands and for the agent's shell:
 SHELL ["/usr/bin/fish", "-l", "-c"]
 
