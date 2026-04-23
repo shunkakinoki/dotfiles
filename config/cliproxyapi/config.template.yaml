@@ -90,6 +90,8 @@ openai-compatibility:
         alias: "free"
       - name: "@preset/glm-4-7"
         alias: "glm-4.7"
+      - name: "google/gemma-4-27b-it"
+        alias: "gemma-4-27b-it"
   - name: "z-ai"
     base-url: "https://api.z.ai/api/coding/paas/v4"
     api-key-entries:
