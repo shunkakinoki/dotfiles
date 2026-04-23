@@ -88,7 +88,7 @@ openai-compatibility:
     models:
       - name: "openrouter/free"
         alias: "free"
-      - name: "openai/gpt-5.4-image-2"
+      - name: "__GPT_IMAGE_OPENROUTER__"
         alias: "__GPT_IMAGE__"
       - name: "@preset/__GLM_NONDOT__"
         alias: "__GLM__"

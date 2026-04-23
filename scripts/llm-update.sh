@@ -25,6 +25,14 @@ require_command sed
 require_command mktemp
 require_command mv
 
+add_model_override() {
+  local key="$1"
+  local suffix="$2"
+  local value="$3"
+  local placeholder="__$(echo "${key}-${suffix}" | tr 'a-z-' 'A-Z_')__"
+  sed_args+=(-e "s|${placeholder}|${value}|g")
+}
+
 # jq function: derive display name from a model ID
 # claude-opus-4.6 → "Claude Opus 4.6", claude-sonnet-4.5-20250929 → "Claude Sonnet 4.5"
 # shellcheck disable=SC2016
@@ -68,6 +76,10 @@ while IFS=$'\t' read -r key value pretty nondot; do
   sed_args+=(-e "s|${placeholder%__}_NONDOT__|${nondot}|g")
   sed_args+=(-e "s|${placeholder}|${value}|g")
 done <<<"$model_rows"
+
+# Provider-specific upstream slugs that intentionally differ from the canonical
+# alias stored in models.json.
+add_model_override "gpt-image" "openrouter" "openai/gpt-5.4-image-2"
 
 # Template → output pairs
 declare -A TEMPLATES=(
