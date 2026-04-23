@@ -25,6 +25,7 @@ let
   go = import ./go;
   haskell = import ./haskell;
   java = import ./java;
+  k8s = import ./k8s;
   kotlin = import ./kotlin;
   lazydocker = import ./lazydocker;
   lazygit = import ./lazygit;
@@ -74,6 +75,7 @@ in
   go
   haskell
   java
+  k8s
   kotlin
   lazydocker
   lazygit

@@ -64,13 +64,6 @@ with pkgs;
   jujutsu
   just
   k6
-  k9s
-  kind
-  kubeconform
-  kubectl
-  kubectx
-  kubernetes-helm
-  kustomize
   (if stdenv.isLinux && isDesktop then llama-cpp.override { vulkanSupport = true; } else llama-cpp)
   llm
   lsof
@@ -210,6 +203,7 @@ with pkgs;
   slack
   slurp
   swappy
+  tectonic
   telegram-desktop
   totem
   v4l-utils

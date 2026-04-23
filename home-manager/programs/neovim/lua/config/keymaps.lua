@@ -277,8 +277,8 @@ keymap("n", "<leader>xl", "<cmd>Trouble loclist toggle<cr>", { noremap = true, s
 keymap("n", "]d", vim.diagnostic.goto_next, { desc = "Next Diagnostic" })
 -- @keymap [d: Go to previous diagnostic
 keymap("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous Diagnostic" })
--- @keymap <leader>dl: Show line diagnostics
-keymap("n", "<leader>dl", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
+-- @keymap <leader>xd: Show line diagnostics
+keymap("n", "<leader>xd", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
 
 -- ====================================================================================
 -- FFF.NVIM (Fast Fuzzy File Finder)
