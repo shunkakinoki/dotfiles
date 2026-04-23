@@ -88,7 +88,7 @@ openai-compatibility:
     models:
       - name: "openrouter/free"
         alias: "free"
-      - name: "@preset/glm-4-7"
+      - name: "@preset/__GLM__"
         alias: "glm-4.7"
   - name: "z-ai"
     base-url: "https://api.z.ai/api/coding/paas/v4"
@@ -96,8 +96,6 @@ openai-compatibility:
       - api-key: "__ZAI_API_KEY__"
     models:
       - name: "__GLM__"
-        alias: "__GLM__"
-      - name: "@preset/__GLM__"
         alias: "__GLM__"
   - name: "kimi"
     base-url: "https://api.moonshot.cn/v1"
