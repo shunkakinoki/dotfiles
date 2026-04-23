@@ -80,8 +80,8 @@ keymap("n", "ZZ", ":wa<CR>:q<CR>", { noremap = true, silent = true, desc = "Save
 keymap("n", "<leader>u", function()
 	SpawnTerminal()
 end, { noremap = true, silent = true, desc = "Spawn terminal" })
--- @keymap <leader>kt: Close the current managed terminal
-keymap("n", "<leader>kt", function()
+-- @keymap <leader>h: Close the current managed terminal
+keymap("n", "<leader>h", function()
 	KillCurrentTerminal()
 end, { noremap = true, silent = true, desc = "Kill terminal" })
 -- @keymap <leader>j: Toggle the focused managed terminal
@@ -199,18 +199,18 @@ keymap(
 	":Gitsigns preview_hunk_inline<cr>",
 	{ noremap = true, silent = true, desc = "Preview hunk inline" }
 )
--- @keymap <leader>hs: Stage hunk (Gitsigns)
-keymap("n", "<leader>hs", ":Gitsigns stage_hunk<cr>", { noremap = true, silent = true, desc = "Stage hunk" })
--- @keymap <leader>hr: Reset hunk (Gitsigns)
-keymap("n", "<leader>hr", ":Gitsigns reset_hunk<cr>", { noremap = true, silent = true, desc = "Reset hunk" })
--- @keymap <leader>hp: Preview hunk (Gitsigns)
-keymap("n", "<leader>hp", ":Gitsigns preview_hunk<cr>", { noremap = true, silent = true, desc = "Preview hunk" })
--- @keymap <leader>hb: Blame line (Gitsigns)
-keymap("n", "<leader>hb", ":Gitsigns blame_line<cr>", { noremap = true, silent = true, desc = "Blame line" })
--- @keymap <leader>hn: Next hunk (Gitsigns)
-keymap("n", "<leader>hn", ":Gitsigns next_hunk<cr>", { noremap = true, silent = true, desc = "Next hunk" })
--- @keymap <leader>hN: Prev hunk (Gitsigns)
-keymap("n", "<leader>hN", ":Gitsigns prev_hunk<cr>", { noremap = true, silent = true, desc = "Prev hunk" })
+-- @keymap <leader>Hs: Stage hunk (Gitsigns)
+keymap("n", "<leader>Hs", ":Gitsigns stage_hunk<cr>", { noremap = true, silent = true, desc = "Stage hunk" })
+-- @keymap <leader>Hr: Reset hunk (Gitsigns)
+keymap("n", "<leader>Hr", ":Gitsigns reset_hunk<cr>", { noremap = true, silent = true, desc = "Reset hunk" })
+-- @keymap <leader>Hp: Preview hunk (Gitsigns)
+keymap("n", "<leader>Hp", ":Gitsigns preview_hunk<cr>", { noremap = true, silent = true, desc = "Preview hunk" })
+-- @keymap <leader>Hb: Blame line (Gitsigns)
+keymap("n", "<leader>Hb", ":Gitsigns blame_line<cr>", { noremap = true, silent = true, desc = "Blame line" })
+-- @keymap <leader>Hn: Next hunk (Gitsigns)
+keymap("n", "<leader>Hn", ":Gitsigns next_hunk<cr>", { noremap = true, silent = true, desc = "Next hunk" })
+-- @keymap <leader>HN: Prev hunk (Gitsigns)
+keymap("n", "<leader>HN", ":Gitsigns prev_hunk<cr>", { noremap = true, silent = true, desc = "Prev hunk" })
 -- @keymap <leader>gs: Fugitive vertical diff split (current file vs index)
 keymap("n", "<leader>gs", ":Gvdiffsplit<cr>", { noremap = true, silent = true, desc = "Diff split (index)" })
 -- @keymap <leader>gS: Fugitive diff split vs HEAD
@@ -405,7 +405,7 @@ wk.add({
 	{ "<leader>f", group = "Find/Files" },
 	{ "<leader>x", group = "Trouble/Diagnostics" },
 	{ "<leader>c", group = "Code" },
-	{ "<leader>h", group = "Hunk (Git)" },
+	{ "<leader>H", group = "Hunk (Git)" },
 })
 
 -- ====================================================================================
