@@ -33,6 +33,8 @@ in
     initLua = builtins.readFile nvimInitLua;
   };
 
+  xdg.configFile."nvim/init.lua".force = true;
+
   home.file.".config/nvim/lua" = {
     source = ./lua;
     force = true;
