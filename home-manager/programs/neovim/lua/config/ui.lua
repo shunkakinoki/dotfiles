@@ -156,11 +156,11 @@ require("which-key").setup({})
 -- Shows non-blocking LSP progress spinners in the corner.
 -- From: https://github.com/j-hui/fidget.nvim
 require("fidget").setup({
-  notification = {
-    window = {
-      avoid = { "NvimTree" },
-    },
-  },
+	notification = {
+		window = {
+			avoid = { "NvimTree" },
+		},
+	},
 })
 
 -- Makes directories editable as buffers for quick navigation.
