@@ -64,15 +64,15 @@ disabledExtensions: []
 #   slow:    openai-codex/gpt-5.3-codex:high
 modelRoles:
   # Default model role used as the fallback when no other role is selected.
-  default: "openai-codex/gpt-5.4"
+  default: "openai-codex/gpt-5.5"
   # Smaller / dumber model for cheap lightweight work.
   smol: "openai-codex/gpt-5.4-mini"
   # Strongest model in the suite for hard tasks.
-  slow: "openai-codex/gpt-5.4"
+  slow: "openai-codex/gpt-5.5"
   # Keep vision on the main default model.
-  vision: "openai-codex/gpt-5.4"
+  vision: "openai-codex/gpt-5.5"
   # Planning / architecture model.
-  plan: "openai-codex/gpt-5.4"
+  plan: "openai-codex/gpt-5.5"
   # Commit message model.
   commit: "openai/gpt-5.4-nano"
   # Fast subagent path.
@@ -472,14 +472,14 @@ task:
   maxRecursionDepth: 2
   disabledAgents: []
   agentModelOverrides:
-    code-architect: "gpt-5.4"
+    code-architect: "gpt-5.5"
     code-explorer: "gpt-5.3-codex-spark"
-    code-reviewer: "gpt-5.4"
-    code-simplifier: "gpt-5.4"
+    code-reviewer: "gpt-5.5"
+    code-simplifier: "gpt-5.5"
     comment-analyzer: "gpt-5.4-nano"
     pr-test-analyzer: "gpt-5.4-mini"
-    silent-failure-hunter: "gpt-5.4"
-    type-design-analyzer: "gpt-5.4"
+    silent-failure-hunter: "gpt-5.5"
+    type-design-analyzer: "gpt-5.5"
 # --- Agent Definitions -------------------------------------------------------
 # Inline agent definitions (alternative to skill/agent files).
 # agents: {}
