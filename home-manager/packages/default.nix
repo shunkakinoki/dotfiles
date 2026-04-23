@@ -119,8 +119,6 @@ with pkgs;
   cmake
   codex
   collectd
-  docker
-  docker-compose
   fwupd
   gcc
   gemini-cli
