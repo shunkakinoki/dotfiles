@@ -73,6 +73,7 @@ with pkgs;
   kustomize
   (if stdenv.isLinux && isDesktop then llama-cpp.override { vulkanSupport = true; } else llama-cpp)
   llm
+  lsof
   mariadb
   mise
   mkcert
@@ -94,6 +95,7 @@ with pkgs;
   tmuxinator
   tokei
   tree
+  tree-sitter
   turso-cli
   uv
   victorialogs
