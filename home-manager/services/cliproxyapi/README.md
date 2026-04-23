@@ -97,6 +97,8 @@ OBJECTSTORE_SECRET_KEY="..."
 # Service Config
 CLIPROXY_MANAGEMENT_PASSWORD="..."
 OPENROUTER_API_KEY="sk-or-v1-..."
+OPENAI_API_KEY="sk-..."
+QWEN_API_KEY="sk-..."
 ```
 
 ## Usage
