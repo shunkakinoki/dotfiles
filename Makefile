@@ -933,6 +933,15 @@ lua-check-neovim: ## Check Neovim configuration.
 		echo "❌ Neovim configuration has errors"; \
 		exit 1; \
 	fi
+	@echo "🔑 Checking for keymap conflicts..."
+	@OVERLAPS=$$(nvim -u "$(PWD)/home-manager/programs/neovim/init.lua" --headless \
+		-c "checkhealth which-key" -c "qa" 2>&1 | grep "WARNING" | grep -i "overlaps with"); \
+	if [ -n "$$OVERLAPS" ]; then \
+		echo "⚠️  Keymap overlaps (operator patterns like gc/gcc, go/goo, ys/yss are expected):"; \
+		echo "$$OVERLAPS"; \
+	else \
+		echo "✅ No keymap overlaps"; \
+	fi
 	@echo "✅ Neovim configuration is valid"
 
 .PHONY: lua-check-neovim-dev

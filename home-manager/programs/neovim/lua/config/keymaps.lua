@@ -48,8 +48,8 @@ keymap("n", "<leader>q", function()
 		vim.cmd("Bdelete")
 	end
 end, { noremap = true, silent = true, desc = "Close window / delete buffer" })
--- @keymap <leader>bad: Wipe all buffers
-keymap("n", "<leader>bad", ":%bwipeout!<cr>:intro<cr>", { noremap = true, silent = true, desc = "Wipe all buffers" })
+-- @keymap <leader>BD: Wipe all buffers
+keymap("n", "<leader>BD", ":%bwipeout!<cr>:intro<cr>", { noremap = true, silent = true, desc = "Wipe all buffers" })
 -- @keymap <leader>w: Write file
 keymap("n", "<leader>w", ":write<CR>", { noremap = true, silent = true, desc = "Save file" })
 -- @keymap <leader>W: Save all and quit
@@ -80,8 +80,8 @@ keymap("n", "ZZ", ":wa<CR>:q<CR>", { noremap = true, silent = true, desc = "Save
 keymap("n", "<leader>u", function()
 	SpawnTerminal()
 end, { noremap = true, silent = true, desc = "Spawn terminal" })
--- @keymap <leader>h: Close the current managed terminal
-keymap("n", "<leader>h", function()
+-- @keymap <leader>kt: Close the current managed terminal
+keymap("n", "<leader>kt", function()
 	KillCurrentTerminal()
 end, { noremap = true, silent = true, desc = "Kill terminal" })
 -- @keymap <leader>j: Toggle the focused managed terminal
@@ -327,8 +327,8 @@ keymap("n", "<leader>ov", ":OtherVSplit<cr>", { noremap = true, silent = true, d
 -- @keymap <leader>os: Navigate to related file in horizontal split
 keymap("n", "<leader>os", ":OtherSplit<cr>", { noremap = true, silent = true, desc = "Related file (split)" })
 
--- @keymap gco: Generate code annotation (neogen)
-keymap("n", "gco", ":Neogen<cr>", { noremap = true, silent = true, desc = "Generate annotation" })
+-- @keymap <leader>ca: Generate code annotation (neogen)
+keymap("n", "<leader>ca", ":Neogen<cr>", { noremap = true, silent = true, desc = "Generate annotation" })
 
 -- @keymap <leader>st: Toggle treesitter split/join
 -- Treesitter-based split/join helper for code structures.
