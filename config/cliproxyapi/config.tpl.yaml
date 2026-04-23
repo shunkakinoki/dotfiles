@@ -88,6 +88,8 @@ openai-compatibility:
     models:
       - name: "openrouter/free"
         alias: "free"
+      - name: "__GPT_IMAGE_OPENROUTER__"
+        alias: "__GPT_IMAGE__"
       - name: "@preset/__GLM_NONDOT__"
         alias: "__GLM__"
       - name: "google/__GEMMA__"
@@ -108,6 +110,13 @@ openai-compatibility:
     models:
       - name: "__KIMI__"
         alias: "__KIMI__"
+  - name: "qwen"
+    base-url: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
+    api-key-entries:
+      - api-key: "__QWEN_API_KEY__"
+    models:
+      - name: "__QWEN__"
+        alias: "__QWEN__"
   - name: "opencode"
     base-url: "https://opencode.ai/zen/go/v1"
     api-key-entries:
@@ -117,8 +126,13 @@ openai-compatibility:
         alias: "__MINIMAX__"
       - name: "__KIMI__"
         alias: "__KIMI__"
-      - name: "__QWEN__"
-        alias: "__QWEN__"
+  - name: "openai"
+    base-url: "https://api.openai.com/v1"
+    api-key-entries:
+      - api-key: "__OPENAI_API_KEY__"
+    models:
+      - name: "__GPT_IMAGE__"
+        alias: "__GPT_IMAGE__"
 # payload: # Optional payload configuration
 #   default: # Default rules only set parameters when they are missing in the payload.
 #     - models:

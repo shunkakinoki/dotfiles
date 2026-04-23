@@ -13,12 +13,16 @@ setup() {
   # Create template config
   cat >"$TEMP_HOME/.cli-proxy-api/config.template.yaml" <<'YAML'
 api_key: __OPENROUTER_API_KEY__
+openai_api_key: __OPENAI_API_KEY__
+qwen_api_key: __QWEN_API_KEY__
 management_password: __CLIPROXY_MANAGEMENT_PASSWORD__
 YAML
 
   # Create .env file
   cat >"$TEMP_HOME/dotfiles/.env" <<'ENV'
 OPENROUTER_API_KEY=test_openrouter_key
+OPENAI_API_KEY=test_openai_key
+QWEN_API_KEY=test_qwen_key
 CLIPROXY_MANAGEMENT_PASSWORD=test_mgmt_password
 ENV
 }
@@ -60,10 +64,14 @@ TEMPLATE="$CONFIG_DIR/config.template.yaml"
 CONFIG="$CONFIG_DIR/config.yaml"
 
 OPENROUTER_API_KEY="test_key"
+OPENAI_API_KEY="test_openai_key"
+QWEN_API_KEY="test_qwen_key"
 CLIPROXY_MANAGEMENT_PASSWORD="test_pass"
 
 if [ -f "$TEMPLATE" ]; then
   sed -e "s|__OPENROUTER_API_KEY__|${OPENROUTER_API_KEY:-}|g" \
+    -e "s|__OPENAI_API_KEY__|${OPENAI_API_KEY:-}|g" \
+    -e "s|__QWEN_API_KEY__|${QWEN_API_KEY:-}|g" \
     -e "s|__CLIPROXY_MANAGEMENT_PASSWORD__|${CLIPROXY_MANAGEMENT_PASSWORD:-}|g" \
     "$TEMPLATE" >"$CONFIG"
 fi
@@ -73,6 +81,8 @@ chmod +x "$TEMP_HOME/test_config.sh"
 
 When run bash -c "HOME='$TEMP_HOME' bash '$TEMP_HOME/test_config.sh'"
 The output should include 'api_key: test_key'
+The output should include 'openai_api_key: test_openai_key'
+The output should include 'qwen_api_key: test_qwen_key'
 The output should include 'management_password: test_pass'
 The status should be success
 End

@@ -124,6 +124,45 @@ It 'generates NONDOT variant placeholders'
 When run bash -c "grep '_NONDOT__' '$SCRIPT'"
 The output should include '_NONDOT__'
 End
+
+It 'supports provider-specific override placeholders'
+When run bash -c "grep 'add_model_override' '$SCRIPT'"
+The output should include 'add_model_override'
+The output should include 'gpt-image'
+The output should include 'openrouter'
+End
+End
+
+Describe 'provider-specific override resolution'
+setup_provider_override_fixture() {
+  TEMP_ROOT=$(mktemp -d)
+
+  mkdir -p "$TEMP_ROOT/scripts" "$TEMP_ROOT/config/cliproxyapi"
+  cp -f "$SCRIPT" "$TEMP_ROOT/scripts/llm-update.sh"
+  cp -f "$PWD/models.json" "$TEMP_ROOT/models.json"
+
+  cat >"$TEMP_ROOT/config/cliproxyapi/config.tpl.yaml" <<'EOF'
+openai-compatibility:
+  - name: "openrouter"
+    models:
+      - name: "__GPT_IMAGE_OPENROUTER__"
+        alias: "__GPT_IMAGE__"
+EOF
+}
+
+cleanup_provider_override_fixture() {
+  rm -rf "$TEMP_ROOT"
+}
+
+Before 'setup_provider_override_fixture'
+After 'cleanup_provider_override_fixture'
+
+It 'replaces provider-specific placeholders in generated configs'
+When run bash -c "cd '$TEMP_ROOT' && bash scripts/llm-update.sh >/dev/null && cat config/cliproxyapi/config.template.yaml"
+The output should include 'openai/gpt-5.4-image-2'
+The output should include 'gpt-image-2'
+The output should not include '__GPT_IMAGE_OPENROUTER__'
+End
 End
 
 Describe 'failure handling'

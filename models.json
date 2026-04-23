@@ -5,6 +5,7 @@
   "gpt": "gpt-5.4",
   "gpt-codex": "gpt-5.3-codex",
   "gpt-codex-spark": "gpt-5.3-codex-spark",
+  "gpt-image": "gpt-image-2",
   "gpt-mini": "gpt-5.4-mini",
   "gpt-nano": "gpt-5.4-nano",
   "gemini-pro": "gemini-3.1-pro-preview",
