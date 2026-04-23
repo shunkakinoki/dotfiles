@@ -30,7 +30,11 @@ in
     vimdiffAlias = true;
     withRuby = false;
     withPython3 = false;
-    initLua = builtins.readFile nvimInitLua;
+  };
+
+  home.file.".config/nvim/init.lua" = {
+    source = nvimInitLua;
+    force = true;
   };
 
   home.file.".config/nvim/lua" = {
