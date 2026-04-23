@@ -97,6 +97,8 @@ openai-compatibility:
     models:
       - name: "glm-4.7"
         alias: "glm-4.7"
+      - name: "@preset/glm-4-7"
+        alias: "glm-4.7"
   - name: "kimi"
     base-url: "https://api.moonshot.cn/v1"
     api-key-entries:
