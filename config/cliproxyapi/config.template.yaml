@@ -90,6 +90,8 @@ openai-compatibility:
         alias: "free"
       - name: "@preset/glm-4-7"
         alias: "glm-4.7"
+      - name: "google/gemma-4-27b-it"
+        alias: "gemma-4-27b-it"
   - name: "z-ai"
     base-url: "https://api.z.ai/api/coding/paas/v4"
     api-key-entries:
@@ -115,6 +117,8 @@ openai-compatibility:
         alias: "minimax-m2.7"
       - name: "kimi-2.6"
         alias: "kimi-2.6"
+      - name: "qwen3.6-plus"
+        alias: "qwen3.6-plus"
 # payload: # Optional payload configuration
 #   default: # Default rules only set parameters when they are missing in the payload.
 #     - models:

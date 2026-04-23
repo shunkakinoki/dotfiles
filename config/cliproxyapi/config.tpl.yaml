@@ -90,6 +90,8 @@ openai-compatibility:
         alias: "free"
       - name: "@preset/__GLM_NONDOT__"
         alias: "__GLM__"
+      - name: "google/__GEMMA__"
+        alias: "__GEMMA__"
   - name: "z-ai"
     base-url: "https://api.z.ai/api/coding/paas/v4"
     api-key-entries:
@@ -115,6 +117,8 @@ openai-compatibility:
         alias: "__MINIMAX__"
       - name: "__KIMI__"
         alias: "__KIMI__"
+      - name: "__QWEN__"
+        alias: "__QWEN__"
 # payload: # Optional payload configuration
 #   default: # Default rules only set parameters when they are missing in the payload.
 #     - models:
