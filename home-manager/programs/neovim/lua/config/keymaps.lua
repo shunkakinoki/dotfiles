@@ -396,13 +396,10 @@ end, { noremap = true, silent = true, desc = "Sidekick Claude" })
 -- ====================================================================================
 -- PLUGIN KEYMAP OVERRIDES
 -- ====================================================================================
--- nvim-surround: disable yss/ySS shortcuts; use ys_/yS_ (current-line motion) instead.
-require("nvim-surround").setup({
-	keymaps = {
-		normal_cur = false,
-		normal_cur_line = false,
-	},
-})
+-- nvim-surround v4: keymaps no longer configured via setup(); delete directly.
+require("nvim-surround").setup({})
+pcall(vim.keymap.del, "n", "yss")
+pcall(vim.keymap.del, "n", "ySS")
 
 -- Remove Neovim built-in gcc shorthand; gc_ achieves the same result.
 pcall(vim.keymap.del, "n", "gcc")
