@@ -115,6 +115,8 @@ openai-compatibility:
         alias: "minimax-m2.7"
       - name: "kimi-2.6"
         alias: "kimi-2.6"
+      - name: "qwen3.6-plus"
+        alias: "qwen3.6-plus"
 # payload: # Optional payload configuration
 #   default: # Default rules only set parameters when they are missing in the payload.
 #     - models:

@@ -13,5 +13,6 @@
   "minimax": "minimax-m2.7",
   "gemma": "lmstudio-community/gemma-4-e4b-it",
   "kimi": "kimi-2.6",
+  "qwen": "qwen3.6-plus",
   "qwen-local": "qwen3.5-0.8b-optiq"
 }

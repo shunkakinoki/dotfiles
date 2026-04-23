@@ -115,6 +115,8 @@ openai-compatibility:
         alias: "__MINIMAX__"
       - name: "__KIMI__"
         alias: "__KIMI__"
+      - name: "__QWEN__"
+        alias: "__QWEN__"
 # payload: # Optional payload configuration
 #   default: # Default rules only set parameters when they are missing in the payload.
 #     - models:
