@@ -73,7 +73,7 @@ cmp.setup.cmdline(":", {
 -- GitHub Copilot helper with inline suggestions disabled by default.
 -- From: https://github.com/zbirenbaum/copilot.lua
 require("copilot").setup({
-	suggestion = { enabled = false },
+	suggestion = { enabled = true },
 	panel = { enabled = false },
 })
 

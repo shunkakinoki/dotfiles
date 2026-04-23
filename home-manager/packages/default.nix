@@ -165,6 +165,7 @@ with pkgs;
   ffmpeg
   file-roller
   gedit
+  ghostscript
   ghostty
   github-desktop
   gnome-calculator
@@ -189,9 +190,11 @@ with pkgs;
   hyprshell
   hyprshot
   hyprsunset
+  imagemagick
   libnotify
   linux-wallpaperengine
   loupe
+  mermaid-cli
   mpv
   nautilus
   networkmanagerapplet

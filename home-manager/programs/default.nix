@@ -11,6 +11,7 @@ let
   cass = import ./cass;
   clang = import ./clang;
   dart = import ./dart;
+  docker = import ./docker;
   delta = import ./delta;
   direnv = import ./direnv;
   elixir = import ./elixir;
@@ -59,6 +60,7 @@ in
   cass
   clang
   dart
+  docker
   delta
   direnv
   elixir
