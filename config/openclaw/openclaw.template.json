@@ -65,8 +65,8 @@
             "maxTokens": 32000
           },
           {
-            "id": "gpt-5.4",
-            "name": "GPT 5.4",
+            "id": "gpt-5.5",
+            "name": "GPT 5.5",
             "reasoning": false,
             "input": [
               "text",
@@ -276,7 +276,7 @@
         "name": "Code Reviewer (GPT)",
         "workspace": "__HOME__/.openclaw/workspace/agents/code-review",
         "model": {
-          "primary": "cliproxy/gpt-5.4",
+          "primary": "cliproxy/gpt-5.5",
           "fallbacks": [
             "cliproxy/glm-4.7",
             "cliproxy/free"
@@ -440,7 +440,7 @@
         "name": "Sales Agent",
         "workspace": "__HOME__/.openclaw/workspace/agents/sales",
         "model": {
-          "primary": "cliproxy/gpt-5.4",
+          "primary": "cliproxy/gpt-5.5",
           "fallbacks": [
             "cliproxy/glm-4.7",
             "cliproxy/free"
@@ -477,7 +477,7 @@
         "name": "Twitter (GPT)",
         "workspace": "__HOME__/.openclaw/workspace/agents/twitter",
         "model": {
-          "primary": "cliproxy/gpt-5.4",
+          "primary": "cliproxy/gpt-5.5",
           "fallbacks": [
             "cliproxy/minimax-m2.7",
             "cliproxy/glm-4.7",
@@ -575,7 +575,7 @@
         "name": "Dev (GPT)",
         "workspace": "__HOME__/.openclaw/workspace/agents/dev",
         "model": {
-          "primary": "cliproxy/gpt-5.4",
+          "primary": "cliproxy/gpt-5.5",
           "fallbacks": [
             "cliproxy/gpt-5.3-codex",
             "cliproxy/glm-4.7",
@@ -598,7 +598,7 @@
         "model": {
           "primary": "cliproxy/gpt-5.3-codex",
           "fallbacks": [
-            "cliproxy/gpt-5.4",
+            "cliproxy/gpt-5.5",
             "cliproxy/glm-4.7",
             "cliproxy/free"
           ]
@@ -654,7 +654,7 @@
         "name": "Strategy (GPT)",
         "workspace": "__HOME__/.openclaw/workspace/agents/strategy",
         "model": {
-          "primary": "cliproxy/gpt-5.4",
+          "primary": "cliproxy/gpt-5.5",
           "fallbacks": [
             "cliproxy/glm-4.7",
             "cliproxy/free"
