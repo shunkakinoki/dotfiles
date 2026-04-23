@@ -96,7 +96,9 @@ openai-compatibility:
       - api-key: "__ZAI_API_KEY__"
     models:
       - name: "glm-4.7"
-        alias: "glm"
+        alias: "glm-4.7"
+      - name: "glm-4.7"
+        alias: "@preset/glm-4.7"
   - name: "kimi"
     base-url: "https://api.moonshot.cn/v1"
     api-key-entries:

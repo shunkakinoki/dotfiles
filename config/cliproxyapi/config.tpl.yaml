@@ -97,6 +97,8 @@ openai-compatibility:
     models:
       - name: "__GLM__"
         alias: "__GLM__"
+      - name: "__GLM__"
+        alias: "@preset/__GLM__"
   - name: "kimi"
     base-url: "https://api.moonshot.cn/v1"
     api-key-entries:
