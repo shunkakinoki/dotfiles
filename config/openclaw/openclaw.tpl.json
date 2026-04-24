@@ -947,7 +947,9 @@
     "enabled": true,
     "token": "__HOOKS_TOKEN__",
     "path": "/hooks",
-    "allowedSessionKeyPrefixes": ["hook:"],
+    "allowedSessionKeyPrefixes": [
+      "hook:"
+    ],
     "mappings": [
       {
         "match": {
