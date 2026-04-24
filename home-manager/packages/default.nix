@@ -33,6 +33,7 @@ with pkgs;
   dasel
   delta
   difftastic
+  dnsutils
   direnv
   doggo
   dolt
