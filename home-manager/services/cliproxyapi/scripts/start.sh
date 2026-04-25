@@ -27,6 +27,11 @@ if cliproxy_has_objectstore_credentials; then
   if [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
     cliproxy_sync_auth_to_s3 "$AUTH_DIR"
   fi
+
+  if [ ! -f "$USAGE_EXPORT_FILE" ]; then
+    echo "⚠️  Usage export missing locally; hydrating from S3" >&2
+    cliproxy_download_usage_from_s3 "$USAGE_EXPORT_FILE"
+  fi
 fi
 
 # Generate config from template
@@ -118,6 +123,7 @@ usage_export() {
     -H "Authorization: Bearer ${MANAGEMENT_KEY}" \
     "${MANAGEMENT_URL}/usage/export" \
     -o "$USAGE_EXPORT_FILE" || true
+  cliproxy_upload_usage_to_s3 "$USAGE_EXPORT_FILE"
 }
 
 wait_for_management() {
