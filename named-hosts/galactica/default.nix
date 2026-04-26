@@ -11,6 +11,13 @@ inputs.nix-darwin.lib.darwinSystem {
   inherit (darwin-modules) specialArgs;
   modules = darwin-modules.modules ++ [
     {
+      home-manager.extraSpecialArgs = {
+        inputs = inputs // {
+          host = (import ../../lib/host.nix) // {
+            isGalactica = true;
+          };
+        };
+      };
       age.identityPaths = [ "/Users/${username}/.ssh/id_ed25519" ];
       age.secrets = builtins.mapAttrs (_: value: { inherit (value) file; }) (import ./secrets.nix);
       home-manager.users.${username} =

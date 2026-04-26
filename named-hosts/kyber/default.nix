@@ -18,7 +18,12 @@ in
 home-manager.lib.homeManagerConfiguration {
   inherit pkgs;
   extraSpecialArgs = {
-    inherit inputs username pkgs;
+    inherit username pkgs;
+    inputs = inputs // {
+      host = (import ../../lib/host.nix) // {
+        isKyber = true;
+      };
+    };
   };
   modules = [
     agenix.homeManagerModules.default
