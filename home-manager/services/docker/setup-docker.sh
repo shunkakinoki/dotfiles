@@ -47,6 +47,26 @@ if [ "$NEEDS_RELOAD" = true ]; then
   sudo "$SYSTEMCTL" daemon-reload
 fi
 
+# Ensure inotify limits are high enough for Docker containers (e.g. cliproxyapi file watchers)
+DESIRED_INOTIFY_INSTANCES=1024
+CURRENT_INOTIFY_INSTANCES=$(cat /proc/sys/fs/inotify/max_user_instances 2>/dev/null || echo 0)
+CURRENT_USERNS_INSTANCES=$(cat /proc/sys/user/max_inotify_instances 2>/dev/null || echo 0)
+if [ "$CURRENT_INOTIFY_INSTANCES" -lt "$DESIRED_INOTIFY_INSTANCES" ]; then
+  echo "Increasing fs.inotify.max_user_instances to $DESIRED_INOTIFY_INSTANCES..."
+  echo "$DESIRED_INOTIFY_INSTANCES" | sudo "$TEE" /proc/sys/fs/inotify/max_user_instances >/dev/null
+fi
+if [ "$CURRENT_USERNS_INSTANCES" -lt "$DESIRED_INOTIFY_INSTANCES" ]; then
+  echo "Increasing user.max_inotify_instances to $DESIRED_INOTIFY_INSTANCES..."
+  echo "$DESIRED_INOTIFY_INSTANCES" | sudo "$TEE" /proc/sys/user/max_inotify_instances >/dev/null
+fi
+# Persist sysctl across reboots
+SYSCTL_CONF="/etc/sysctl.d/99-docker-inotify.conf"
+SYSCTL_CONTENT="fs.inotify.max_user_instances = $DESIRED_INOTIFY_INSTANCES"
+if [ ! -f "$SYSCTL_CONF" ] || ! "$GREP" -qF "$SYSCTL_CONTENT" "$SYSCTL_CONF" 2>/dev/null; then
+  echo "Persisting inotify sysctl settings..."
+  printf '%s\n%s\n' "$SYSCTL_CONTENT" "user.max_inotify_instances = $DESIRED_INOTIFY_INSTANCES" | sudo "$TEE" "$SYSCTL_CONF" >/dev/null
+fi
+
 # Start or restart Docker as needed
 if ! "$SYSTEMCTL" is-active --quiet docker 2>/dev/null; then
   echo "Starting Docker daemon..."
