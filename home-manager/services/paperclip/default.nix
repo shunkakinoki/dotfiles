@@ -38,7 +38,7 @@ lib.mkIf host.isKyber {
       ];
       EnvironmentFile = [
         "${homeDir}/dotfiles/.env"
-        "${homeDir}/.paperclip/instances/default/.env"
+        "-%h/.paperclip/instances/default/.env"
       ];
       WorkingDirectory = "${homeDir}/.paperclip";
       StandardOutput = "append:/tmp/paperclip/paperclip.log";

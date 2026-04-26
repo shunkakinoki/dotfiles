@@ -5,7 +5,8 @@
 set -euo pipefail
 
 # Define paths
-GROUPS_CMD=@shadow@/bin/groups
+GROUPS_CMD=@coreutils@/bin/groups
+GROUPADD=@shadow@/bin/groupadd
 GREP=@gnugrep@/bin/grep
 USERMOD=@shadow@/bin/usermod
 SYSTEMCTL=@systemd@/bin/systemctl
@@ -14,7 +15,13 @@ DIFF=@diffutils@/bin/diff
 DOCKER_SERVICE_FILE=@docker_service_file@
 SYSTEM_SERVICE=/etc/systemd/system/docker.service
 
-# Check if docker group exists and user is in it
+# Ensure docker group exists
+if ! getent group docker >/dev/null 2>&1; then
+  echo "Creating docker group..."
+  sudo "$GROUPADD" docker
+fi
+
+# Check if user is in docker group
 if ! "$GROUPS_CMD" | "$GREP" -q docker; then
   echo "Adding user to docker group..."
   sudo "$USERMOD" -aG docker "$USER"
