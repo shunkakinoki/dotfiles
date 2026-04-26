@@ -920,7 +920,9 @@
       "reactionNotifications": "all",
       "reactionLevel": "extensive",
       "replyToMode": "first",
-      "streaming": "partial"
+      "streaming": {
+        "mode": "partial"
+      }
     },
     "whatsapp": {
       "dmPolicy": "pairing",
