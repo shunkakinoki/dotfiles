@@ -178,8 +178,10 @@ in
           pkgs.awscli2
           pkgs.docker
           pkgs.curl
+          pkgs.gnugrep
+          pkgs.shadow
         ]
-      }";
+      }:/usr/bin:/usr/sbin";
       ExecStart = "${dockerStartScript}";
       # Give the start wrapper's TERM trap time to flush usage + docker stop
       # the container cleanly before systemd escalates to SIGKILL.
