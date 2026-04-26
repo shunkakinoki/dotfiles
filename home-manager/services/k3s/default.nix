@@ -1,4 +1,5 @@
 {
+  config,
   lib,
   pkgs,
   inputs,
@@ -6,15 +7,7 @@
 }:
 let
   inherit (inputs) host;
-
-  k3sServiceFile = pkgs.writeText "k3s.service" (
-    builtins.readFile (
-      pkgs.replaceVars ../../config/k3s/k3s.service {
-        inherit (pkgs) coreutils;
-        k3s = pkgs.k3s;
-      }
-    )
-  );
+  k3sServiceFile = config.modules.k3s.serviceFile;
 in
 lib.mkIf (pkgs.stdenv.isLinux && host.isKyber) {
   home.packages = [ pkgs.k3s ];
