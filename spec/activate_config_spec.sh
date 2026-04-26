@@ -3,6 +3,7 @@
 
 Describe 'config/codex/activate.sh'
 SCRIPT="$PWD/config/codex/activate.sh"
+HOOKS_JSON="$PWD/config/codex/hooks.json"
 
 It 'uses bash shebang'
 When run bash -c "head -1 '$SCRIPT'"
@@ -22,6 +23,16 @@ End
 It 'copies hooks.json'
 When run bash -c "grep 'HOOKS_JSON' '$SCRIPT'"
 The output should include 'HOOKS_JSON'
+End
+
+It 'registers the shared main/master push blocker'
+When run jq -r '.hooks.PreToolUse[] | select(.matcher == "Bash") | .hooks[].command' "$HOOKS_JSON"
+The output should include 'config/shared/hooks/block-git-push.sh'
+End
+
+It 'registers the shared GitHub settings blocker'
+When run jq -r '.hooks.PreToolUse[] | select(.matcher == "Bash") | .hooks[].command' "$HOOKS_JSON"
+The output should include 'config/shared/hooks/block-gh-settings.sh'
 End
 End
 
