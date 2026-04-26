@@ -119,6 +119,10 @@ home-manager.lib.homeManagerConfiguration {
           set -gx GPG_TTY (tty)
         '';
 
+        home.sessionVariables = {
+          KUBECONFIG = "${config.home.homeDirectory}/.kube/config";
+        };
+
         # Enable XDG directories
         xdg.enable = true;
 
