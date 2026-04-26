@@ -21,7 +21,6 @@ in
   ./hammerspoon
   ./jj
   ./k3s
-  ./kube
   ./karabiner
   ./llm
   ./mempalace
