@@ -1079,7 +1079,13 @@ launchctl-tmux-session-logger: ## Restart tmux-session-logger launchd agent.
 ##@ Systemd Services (Linux)
 
 .PHONY: systemctl
-systemctl: systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-code-syncer systemctl-docker-postgres systemctl-dolt systemctl-dotfiles-updater systemctl-make-updater systemctl-neverssl-keepalive systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-paperclip systemctl-tmux-session-logger ## Restart all systemd user services.
+systemctl: systemctl-docker-setup systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-code-syncer systemctl-docker-postgres systemctl-dolt systemctl-dotfiles-updater systemctl-make-updater systemctl-neverssl-keepalive systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-paperclip systemctl-tmux-session-logger ## Restart all systemd user services.
+
+.PHONY: systemctl-docker-setup
+systemctl-docker-setup: ## Ensure Docker daemon, group, and user membership are configured.
+	@echo "🐳 Ensuring Docker is set up..."
+	@docker-setup || true
+	@echo "✅ Docker setup complete"
 
 .PHONY: systemctl-cliproxyapi
 systemctl-cliproxyapi: ## Restart cliproxyapi systemd user service.
