@@ -140,14 +140,17 @@ fi
 
 # Install Nix packages
 echo "Running installation commands..."
+if [ -n "$HOST" ]; then
+  echo "Forwarding HOST=$HOST to make install (overrides hostname auto-detection)."
+fi
 if [ -n "$NIX_EFFECTIVE_BIN_PATH" ] && [ -d "$NIX_EFFECTIVE_BIN_PATH" ]; then
   echo "Prepending $NIX_EFFECTIVE_BIN_PATH to PATH for 'make install' command."
   echo "Ensuring USER=$USER and CI=$CI are passed to make install."
-  env PATH="$NIX_EFFECTIVE_BIN_PATH:$PATH" USER="$USER" CI="$CI" make install
+  env PATH="$NIX_EFFECTIVE_BIN_PATH:$PATH" USER="$USER" CI="$CI" HOST="$HOST" make install
 else
   echo "Warning: NIX_EFFECTIVE_BIN_PATH ('$NIX_EFFECTIVE_BIN_PATH') is not set or not a directory."
   echo "Running 'make install' with potentially incomplete PATH. Current PATH: $PATH"
   echo "Attempting to find nix via 'command -v nix': $(command -v nix || echo 'nix not found in current PATH')"
   echo "USER=$USER will be available to make install (exported)."
-  make install
+  HOST="$HOST" make install
 fi
