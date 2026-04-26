@@ -393,6 +393,7 @@ import ../../hosts/nixos {
           inputs = inputs // {
             host = (import ../../lib/host.nix) // {
               isDesktop = true;
+              isMatic = true;
             };
           };
         };
