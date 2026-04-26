@@ -9,7 +9,7 @@ let
 
   k3sServiceFile = pkgs.writeText "k3s.service" (
     builtins.readFile (
-      pkgs.replaceVars ./k3s.service {
+      pkgs.replaceVars ../../config/k3s/k3s.service {
         inherit (pkgs) coreutils;
         k3s = pkgs.k3s;
       }
