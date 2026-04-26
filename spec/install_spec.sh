@@ -99,6 +99,11 @@ It 'runs make install'
 When run bash -c "grep 'make install' '$SCRIPT'"
 The output should include 'make install'
 End
+
+It 'forwards HOST env var to make install'
+When run bash -c "grep 'HOST=\"\$HOST\" make install' '$SCRIPT'"
+The output should include 'HOST="$HOST" make install'
+End
 End
 
 Describe 'Docker support'
