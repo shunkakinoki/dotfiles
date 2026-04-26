@@ -6,12 +6,14 @@
       k9s
       kind
       kubeconform
-      kubectl
       kubectx
       kubernetes-helm
       kustomize
     ]
     ++ lib.optionals stdenv.isLinux [
       k3s
+    ]
+    ++ lib.optionals (!stdenv.isLinux) [
+      kubectl
     ];
 }
