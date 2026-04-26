@@ -16,6 +16,7 @@ let
   dockerPostgres = ./docker-postgres;
   dotfilesUpdater = import ./dotfiles-updater { inherit pkgs; };
   gasTown = import ./gas-town { inherit pkgs; };
+  k3s = ./k3s;
   keydApplicationMapper = ./keyd-application-mapper;
   makeUpdater = import ./make-updater { inherit pkgs; };
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
@@ -38,6 +39,7 @@ in
   dockerPostgres
   dotfilesUpdater
   gasTown
+  k3s
   keydApplicationMapper
   makeUpdater
   neversslKeepalive
