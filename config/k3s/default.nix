@@ -15,8 +15,7 @@ in
 
   home.file.".config/k3s/k3s.service" = lib.mkIf pkgs.stdenv.isLinux {
     source = pkgs.replaceVars ./k3s.service {
-      inherit (pkgs) coreutils;
-      k3s = pkgs.k3s;
+      inherit (pkgs) coreutils k3s;
     };
     force = true;
   };
@@ -29,7 +28,7 @@ in
     export KUBECONFIG="${kubeconfig}"
   '';
 
-  programs.zsh.initExtra = lib.mkIf pkgs.stdenv.isLinux ''
+  programs.zsh.initContent = lib.mkIf pkgs.stdenv.isLinux ''
     export KUBECONFIG="${kubeconfig}"
   '';
 
