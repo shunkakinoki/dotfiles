@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.7
+
 FROM ubuntu:26.04
 
 # Set DEBIAN_FRONTEND to noninteractive to avoid prompts during package installations
@@ -27,10 +29,6 @@ RUN apt-get update && apt-get install -y \
 ARG USER=runner
 ARG USER_UID=1001
 ARG USER_GID=$USER_UID
-ARG COMMIT_SHA=main
-ARG GITHUB_TOKEN
-ARG GITHUB_PR
-ENV GITHUB_PR=${GITHUB_PR}
 
 RUN set -e; \
     groupadd --gid $USER_GID $USER; \
@@ -49,17 +47,30 @@ RUN mkdir -p /etc/nix && \
     echo "trusted-users = root $USER" > /etc/nix/nix.conf && \
     echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf && \
     echo "filter-syscalls = false" >> /etc/nix/nix.conf && \
-    echo "sandbox = true" >> /etc/nix/nix.conf && \
-    if [ -n "$GITHUB_TOKEN" ]; then \
-      echo "access-tokens = github.com=$GITHUB_TOKEN" >> /etc/nix/nix.conf ; \
-    fi
+    echo "sandbox = true" >> /etc/nix/nix.conf
 
-RUN /usr/bin/nix-daemon & \
+COPY --chown=$USER:$USER Makefile flake.nix flake.lock /tmp/dotfiles-cache/
+COPY --chown=$USER:$USER lib /tmp/dotfiles-cache/lib
+COPY --chown=$USER:$USER scripts/nix-cache-warmup.sh /tmp/dotfiles-cache/scripts/nix-cache-warmup.sh
+
+RUN --mount=type=secret,id=github_token,mode=0444 \
+    set -e; \
+    /usr/bin/nix-daemon & \
+    sleep 5 && \
+    sudo -u "$USER" -H env GITHUB_TOKEN_FILE=/run/secrets/github_token IN_DOCKER=true USER="$USER" \
+      make -C /tmp/dotfiles-cache nix-cache-warmup
+
+ARG COMMIT_SHA=main
+ARG GITHUB_PR=
+
+RUN --mount=type=secret,id=github_token,mode=0444 \
+    set -e; \
+    /usr/bin/nix-daemon & \
     sleep 5 && \
     # Run your dotfiles installation script.
     # This script is expected to install fish and other tools.
     # Make sure this script is idempotent or handles being run in a fresh environment.
-    sudo -u $USER -E -H bash -c "curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_SHA/install.sh | bash"
+    sudo -u "$USER" -H env GITHUB_PR="$GITHUB_PR" GITHUB_TOKEN_FILE=/run/secrets/github_token IN_DOCKER=true USER="$USER" bash -c "curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_SHA/install.sh | bash"
 
 # Switch to the non-root user
 USER $USER
