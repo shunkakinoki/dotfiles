@@ -16,7 +16,7 @@
           email = "shunkakinoki@gmail.com";
         };
         core = {
-          editor = "nvim";
+          editor = "nvim -c \"stopinsert\"";
           compression = -1;
           autocrlf = "input";
           whitespace = "trailing-space,space-before-tab";
