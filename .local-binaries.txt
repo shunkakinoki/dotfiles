@@ -18,7 +18,7 @@
 ~/ghq/github.com/Dicklesworthstone/mcp_agent_mail/am
 ~/ghq/github.com/Dicklesworthstone/ntm/ntm
 ~/ghq/github.com/Dicklesworthstone/pi_agent_rust/target/release/pi:pir
-~/ghq/github.com/Dicklesworthstone/slb/build/slb
+~/ghq/github.com/Dicklesworthstone/slb/build/slb:slbutton
 ~/ghq/github.com/Dicklesworthstone/ultimate_bug_scanner/ubs
 ~/ghq/github.com/GoogleCloudPlatform/scion/scion
 ~/ghq/github.com/MH4GF/tq/tq

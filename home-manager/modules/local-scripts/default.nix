@@ -24,6 +24,16 @@ _: {
     force = true;
     source = ./pushover-notify.sh;
   };
+  home.file.".local/scripts/slb" = {
+    executable = true;
+    force = true;
+    source = ./slb.sh;
+  };
+  home.file.".local/scripts/ulb" = {
+    executable = true;
+    force = true;
+    source = ./ulb.sh;
+  };
   home.file.".local/scripts/tmux-bridge" = {
     executable = true;
     force = true;
