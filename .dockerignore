@@ -1,9 +1,0 @@
-*
-!Dockerfile
-!Makefile
-!flake.lock
-!flake.nix
-!lib/
-!lib/**
-!scripts/
-!scripts/nix-cache-warmup.sh

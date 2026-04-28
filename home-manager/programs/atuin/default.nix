@@ -10,9 +10,6 @@
       sync_address = "https://api.atuin.sh";
       search_mode = "fuzzy";
       filter_mode = "global";
-      history = {
-        exit_code = "all";
-      };
       sync = {
         records = true;
       };
