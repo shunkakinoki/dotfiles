@@ -117,6 +117,10 @@ It 'has spec file for named-hosts/kyber/setup.sh'
 The path "spec/kyber_setup_spec.sh" should be exist
 End
 
+It 'has spec file for scripts/nix-cache-warmup.sh'
+The path "spec/nix_cache_warmup_spec.sh" should be exist
+End
+
 It 'has spec file for scripts/update-gitalias.sh'
 The path "spec/update_gitalias_spec.sh" should be exist
 End
@@ -439,6 +443,7 @@ scripts/check-nix-inline-scripts.sh
 scripts/find-built-iso.sh
 scripts/fishtape-wrapper.sh
 scripts/llm-update.sh
+scripts/nix-cache-warmup.sh
 scripts/sync-codex-security.sh
 scripts/sync-rtk-rewrite.sh
 scripts/update-gitalias.sh
