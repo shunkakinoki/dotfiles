@@ -12,11 +12,11 @@ ARCH := $(shell uname -m)
 OS := $(shell uname -s)
 
 # Git variables
-GIT_REMOTE_ORIGIN_URL := $(shell git config --get remote.origin.url 2>/dev/null)
+GIT_REMOTE_ORIGIN_URL := $(shell git config --get remote.origin.url)
 GITHUB_REPO_PATH := $(shell echo $(GIT_REMOTE_ORIGIN_URL) | sed -n 's/.*github.com[:/]\(.*\)\.git/\1/p')
 GITHUB_REPO_OWNER := $(shell echo $(GITHUB_REPO_PATH) | cut -d'/' -f1)
 GITHUB_REPO_NAME := $(shell echo $(GITHUB_REPO_PATH) | cut -d'/' -f2)
-GIT_COMMIT_SHA := $(shell git rev-parse --short HEAD 2>/dev/null || echo unknown)
+GIT_COMMIT_SHA := $(shell git rev-parse --short HEAD)
 
 # Env ironment variables
 NIX_ALLOW_UNFREE := NIXPKGS_ALLOW_UNFREE=1
@@ -151,7 +151,7 @@ help: ## Show this help message.
 ##@ General
 
 .PHONY: install
-install: setup git-submodule-sync nix-cache-warmup nix-build nix-switch shell-install ## Set up full environment (setup, cache warmup, build, switch, shell-install).
+install: setup git-submodule-sync nix-build nix-switch shell-install ## Set up full environment (setup, flake-update, build, switch, shell-install).
 
 .PHONY: build
 build: nix-build ## Build Nix configuration.
@@ -431,16 +431,6 @@ nix-install: ## Install Nix if not already installed.
 		curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm; \
 	fi
 	@echo "✅ Nix environment installed!"
-
-.PHONY: nix-cache-warmup
-nix-cache-warmup: nix-connect nix-trust ## Warm flake input metadata before build/switch.
-	@echo "🔥 Warming Nix flake cache..."
-	@if command -v nix >/dev/null 2>&1; then \
-		$(NIX_ALLOW_UNFREE) sh ./scripts/nix-cache-warmup.sh . $(NIX_FLAGS); \
-		echo "✅ Nix flake cache warmed"; \
-	else \
-		echo "⚠️ Nix unavailable; skipping cache warmup"; \
-	fi
 
 ##@ Nix
 

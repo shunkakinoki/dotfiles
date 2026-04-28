@@ -38,25 +38,6 @@ else
   echo "USER variable is already set to: $USER. Ensuring it is exported."
 fi
 
-NIX_GITHUB_TOKEN=""
-if [ -n "${GITHUB_TOKEN:-}" ]; then
-  NIX_GITHUB_TOKEN="$GITHUB_TOKEN"
-elif [ -n "${GITHUB_TOKEN_FILE:-}" ] && [ -r "$GITHUB_TOKEN_FILE" ]; then
-  NIX_GITHUB_TOKEN=$(cat "$GITHUB_TOKEN_FILE")
-fi
-
-if [ -n "$NIX_GITHUB_TOKEN" ]; then
-  if [ -n "${NIX_CONFIG:-}" ]; then
-    NIX_CONFIG="${NIX_CONFIG}
-access-tokens = github.com=$NIX_GITHUB_TOKEN"
-  else
-    NIX_CONFIG="access-tokens = github.com=$NIX_GITHUB_TOKEN"
-  fi
-  export NIX_CONFIG
-  echo "Configured a GitHub token for Nix fetches during this install."
-fi
-unset NIX_GITHUB_TOKEN
-
 # Install Nix if not already installed
 if ! command -v nix >/dev/null 2>&1; then
   echo "Installing Nix..."

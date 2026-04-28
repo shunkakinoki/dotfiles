@@ -72,28 +72,21 @@ jobs:
           context: .
           file: ./Dockerfile
           platforms: ${{ matrix.build.platform }}
-          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          push: true
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
           build-args: |
             COMMIT_SHA=${{ github.sha }}
+            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
             GITHUB_PR=${{ github.event.pull_request.number }}
-          secrets: |
-            github_token=${{ secrets.GITHUB_TOKEN }}
-          cache-from: |
-            type=gha,scope=dotfiles-docker-${{ matrix.build.arch }}
-            type=registry,ref=${{ env.REGISTRY_IMAGE }}:buildcache-${{ matrix.build.arch }}
-          cache-to: |
-            type=gha,scope=dotfiles-docker-${{ matrix.build.arch }},mode=max
-            ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && format('type=registry,ref={0}:buildcache-{1},mode=max', env.REGISTRY_IMAGE, matrix.build.arch) || '' }}
+          cache-from: type=registry,ref=${{ env.REGISTRY_IMAGE }}:buildcache-${{ matrix.build.arch }}
+          cache-to: type=registry,ref=${{ env.REGISTRY_IMAGE }}:buildcache-${{ matrix.build.arch }},mode=max
       - name: Export digest
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           mkdir -p ${{ runner.temp }}/digests
           digest="${{ steps.build.outputs.digest }}"
           touch "${{ runner.temp }}/digests/${digest#sha256:}"
       - name: Upload digest
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v7
         with:
           name: digests-${{ matrix.build.arch }}
