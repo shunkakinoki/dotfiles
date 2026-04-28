@@ -1830,9 +1830,9 @@ dependencies = [
 
 [[package]]
 name = "gix-date"
-version = "0.15.2"
+version = "0.15.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5cc99523b8bf32561b9abf72c878fbff3854d806ed46c1198e57899f9f3c7f05"
+checksum = "b94cdae4eb4b0f4136e3d9b3aa2d2cd03cfb5bb9b636b31263aea2df86d41543"
 dependencies = [
  "bstr",
  "gix-error",
@@ -1843,9 +1843,9 @@ dependencies = [
 
 [[package]]
 name = "gix-error"
-version = "0.2.2"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c998bf10447f0797e579567382b5e22a19c22435d2df091e25857728c6d9af8d"
+checksum = "e207b971746ab724fccdfced2e4e19e854744611904a0195d3aa8fda8a110613"
 dependencies = [
  "bstr",
 ]
@@ -2367,9 +2367,9 @@ dependencies = [
 
 [[package]]
 name = "idna_adapter"
-version = "1.2.1"
+version = "1.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3acae9609540aa318d1bc588455225fb2085b9ed0c4f6bd0d9d5bcd86f1a0344"
+checksum = "cb68373c0d6620ef8105e855e7745e18b0d00d3bdb07fb532e434244cdb9a714"
 dependencies = [
  "icu_normalizer",
  "icu_properties",
