@@ -19,7 +19,7 @@ tools = [
   "serena-agent>=1.1.2",
   "transformers>=5.6.0",
   "vllm>=0.19.1",
-  "vllm-mlx>=0.2.8",
+  "vllm-mlx>=0.2.9",
 ]
 
 [tool.uv]
