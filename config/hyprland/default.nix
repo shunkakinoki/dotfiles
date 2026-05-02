@@ -16,10 +16,6 @@
     + builtins.readFile ./hyprland.conf;
   };
 
-  xdg.configFile."hypr/hypridle.conf" = {
-    source = ./hypridle.conf;
-    force = true;
-  };
 
   xdg.configFile."hypr/scripts/toggle-terminal.sh" = {
     source = ./scripts/toggle-terminal.sh;

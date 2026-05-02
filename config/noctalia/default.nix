@@ -53,6 +53,7 @@
       };
       appLauncher = {
         enableClipboardHistory = true;
+        autoPasteClipboard = true;
       };
       theme = "dracula";
       lockscreen = {
@@ -60,6 +61,7 @@
         allowPasswordWithFprintd = true;
       };
       wallpaper.enabled = false;
+      idle.enabled = true;
       colorSchemes.schedulingMode = "location";
       location.autoLocate = true;
     };

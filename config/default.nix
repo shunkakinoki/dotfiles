@@ -45,7 +45,6 @@ in
       ./noctalia
       ./hyprshell
       ./nwg-drawer
-      ./rofi
     ]
   else
     [ ]

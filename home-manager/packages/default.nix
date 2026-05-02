@@ -176,8 +176,6 @@ with pkgs;
   google-chrome
   grim
   gthumb
-  hypridle
-  hyprlock
   hyprpicker
   hyprshell
   hyprshot
@@ -195,8 +193,6 @@ with pkgs;
   pavucontrol
   playerctl
   polari
-  rofi
-  rofimoji
   seahorse
   shotwell
   signal-desktop
