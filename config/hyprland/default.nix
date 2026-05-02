@@ -21,10 +21,6 @@
     source = ./hypridle.conf;
     force = true;
   };
-  xdg.configFile."hypr/hyprlock.conf" = {
-    source = ./hyprlock.conf;
-    force = true;
-  };
 
   xdg.configFile."hypr/scripts/toggle-terminal.sh" = {
     source = ./scripts/toggle-terminal.sh;

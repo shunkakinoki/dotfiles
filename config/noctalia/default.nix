@@ -39,6 +39,7 @@
         enableClipboardHistory = true;
       };
       theme = "dracula";
+      lockscreen.enable = true;
       wallpaper.enable = false;
       location.enable = true;
     };
