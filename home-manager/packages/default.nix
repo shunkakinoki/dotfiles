@@ -190,7 +190,6 @@ with pkgs;
   mpv
   nautilus
   networkmanagerapplet
-  nwg-dock-hyprland
   nwg-drawer
   obsidian
   pavucontrol

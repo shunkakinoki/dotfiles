@@ -44,7 +44,6 @@ in
       ./hyprland
       ./noctalia
       ./hyprshell
-      ./nwg-dock-hyprland
       ./nwg-drawer
       ./rofi
     ]
