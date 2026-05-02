@@ -42,7 +42,7 @@ in
       ./eww
       ./gtk
       ./hyprland
-      ./hyprpanel
+      ./noctalia
       ./hyprshell
       ./nwg-dock-hyprland
       ./nwg-drawer

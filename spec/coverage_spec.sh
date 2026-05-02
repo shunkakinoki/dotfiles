@@ -367,7 +367,6 @@ config/gemini/activate.sh
 config/git-ai/activate.sh
 config/hyprland/scripts/record-screen.sh
 config/hyprland/scripts/toggle-terminal.sh
-config/hyprpanel/activate.sh
 config/k3s/activate.sh
 config/obsidian/activate.sh
 config/omp/activate.sh

@@ -8,7 +8,7 @@
     package = pkgs.hyprland;
     systemd.enable = false;
     extraConfig = ''
-      exec-once = ${pkgs.hyprpanel}/bin/hyprpanel
+      exec-once = noctalia-shell
       exec-once = ${pkgs.hyprshell}/bin/hyprshell run &
       exec-once = ${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent
       exec-once = sleep 3 && ${pkgs.eww}/bin/eww open clock-widget
