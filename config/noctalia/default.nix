@@ -10,7 +10,6 @@
 
     settings = {
       bar = {
-        clock.format = "%Y/%m/%d %H:%M:%S";
         battery.showLabel = true;
         network.showLabel = false;
         bluetooth.showLabel = false;
@@ -20,6 +19,13 @@
           showApplicationIcons = true;
           numberedActiveIndicator = "underline";
         };
+        widgets.left = [
+          { id = "Launcher"; }
+          { id = "Clock"; formatHorizontal = "yyyy/MM/dd HH:mm:ss"; }
+          { id = "SystemMonitor"; }
+          { id = "ActiveWindow"; }
+          { id = "MediaMini"; }
+        ];
         widgets.right = [
           { id = "Tray"; }
           { id = "Bluetooth"; }
