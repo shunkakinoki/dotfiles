@@ -23,7 +23,7 @@
         widgets.left = [
           { id = "Launcher"; }
           { id = "Clock"; formatHorizontal = "yyyy/MM/dd HH:mm:ss"; }
-          { id = "SystemMonitor"; }
+          { id = "SystemMonitor"; showNetworkStats = true; }
           { id = "ActiveWindow"; }
           { id = "MediaMini"; }
         ];
