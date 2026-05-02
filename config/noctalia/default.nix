@@ -15,6 +15,11 @@
         network.showLabel = false;
         bluetooth.showLabel = false;
         transparent = true;
+        workspaces = {
+          showIcons = true;
+          showApplicationIcons = true;
+          numberedActiveIndicator = "underline";
+        };
       };
       font = {
         name = "JetBrainsMono Nerd Font";
@@ -22,10 +27,18 @@
       };
       notifications = {
         position = "top-right";
+        cacheActions = true;
+        showActionsOnHover = false;
+      };
+      osd = {
+        enable = true;
+        orientation = "vertical";
+        location = "right";
       };
       appLauncher = {
         enableClipboardHistory = true;
       };
+      theme = "dracula";
       wallpaper.enable = false;
       location.enable = true;
     };
