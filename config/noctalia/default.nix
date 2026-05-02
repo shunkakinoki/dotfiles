@@ -22,8 +22,15 @@
         };
         widgets.left = [
           { id = "Launcher"; }
-          { id = "Clock"; formatHorizontal = "yyyy/MM/dd HH:mm:ss"; }
-          { id = "SystemMonitor"; showNetworkStats = true; }
+          {
+            id = "Clock";
+            formatHorizontal = "yyyy/MM/dd HH:mm:ss";
+          }
+          {
+            id = "SystemMonitor";
+            showNetworkStats = true;
+            showGpuTemp = true;
+          }
           { id = "ActiveWindow"; }
           { id = "MediaMini"; }
         ];

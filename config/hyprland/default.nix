@@ -16,7 +16,6 @@
     + builtins.readFile ./hyprland.conf;
   };
 
-
   xdg.configFile."hypr/scripts/toggle-terminal.sh" = {
     source = ./scripts/toggle-terminal.sh;
     executable = true;
