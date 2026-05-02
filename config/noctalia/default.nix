@@ -61,6 +61,8 @@
         enable = true;
         allowPasswordWithFprintd = true;
       };
+      general.compactLockScreen = true;
+      desktopWidgets.enabled = true;
       wallpaper.enabled = false;
       idle.enabled = true;
       colorSchemes.schedulingMode = "location";
