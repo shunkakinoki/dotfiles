@@ -20,6 +20,16 @@
           showApplicationIcons = true;
           numberedActiveIndicator = "underline";
         };
+        widgets.right = [
+          { id = "Tray"; }
+          { id = "Bluetooth"; }
+          { id = "Network"; }
+          { id = "NotificationHistory"; }
+          { id = "Battery"; }
+          { id = "Volume"; }
+          { id = "Brightness"; }
+          { id = "ControlCenter"; }
+        ];
       };
       font = {
         name = "JetBrainsMono Nerd Font";
