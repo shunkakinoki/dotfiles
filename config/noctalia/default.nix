@@ -14,6 +14,7 @@
         battery.showLabel = true;
         network.showLabel = false;
         bluetooth.showLabel = false;
+        transparent = true;
       };
       font = {
         name = "JetBrainsMono Nerd Font";
@@ -25,6 +26,8 @@
       appLauncher = {
         enableClipboardHistory = true;
       };
+      wallpaper.enable = false;
+      location.enable = true;
     };
   };
 }
