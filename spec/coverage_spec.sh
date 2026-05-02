@@ -365,7 +365,6 @@ config/obsidian/activate.sh
 config/omp/activate.sh
 config/openclaw/hydrate.sh
 config/paperclip/hydrate.sh
-config/rofi/gnome-control-center-wrapper.sh
 config/serena/activate.sh
 home-manager/activation/deploy-agenix-secret.sh
 home-manager/activation/ensure-directory.sh
@@ -404,7 +403,6 @@ home-manager/services/cliproxyapi/scripts/keychain-sync.sh
 home-manager/services/cliproxyapi/scripts/start.sh
 home-manager/services/cliproxyapi/scripts/wrapper.sh
 home-manager/services/code-syncer/sync.sh
-
 home-manager/services/docker-postgres/start-postgres-wrapper.sh
 home-manager/services/docker-postgres/start-postgres.sh
 home-manager/services/docker/docker-setup.sh
