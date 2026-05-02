@@ -320,7 +320,6 @@ import ../../hosts/nixos {
                 "gtk"
               ];
               "org.freedesktop.impl.portal.Settings" = [
-                "darkman"
                 "gtk"
               ];
             };

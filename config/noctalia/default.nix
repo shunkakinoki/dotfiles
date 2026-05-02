@@ -31,7 +31,7 @@
         showActionsOnHover = false;
       };
       osd = {
-        enable = true;
+        enabled = true;
         orientation = "vertical";
         location = "right";
       };
@@ -44,7 +44,8 @@
         allowPasswordWithFprintd = true;
       };
       wallpaper.enabled = false;
-      location.enable = true;
+      colorSchemes.schedulingMode = "location";
+      location.autoLocate = true;
     };
   };
 }
