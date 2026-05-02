@@ -43,7 +43,7 @@
         enable = true;
         allowPasswordWithFprintd = true;
       };
-      wallpaper.enable = false;
+      wallpaper.enabled = false;
       location.enable = true;
     };
   };
