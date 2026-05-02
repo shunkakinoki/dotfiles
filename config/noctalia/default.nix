@@ -46,6 +46,7 @@
         position = "top-right";
         cacheActions = true;
         showActionsOnHover = false;
+        backgroundOpacity = 0.75;
       };
       osd = {
         enabled = true;
