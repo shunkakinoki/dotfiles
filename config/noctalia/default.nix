@@ -45,8 +45,10 @@
           { id = "Network"; }
           { id = "NotificationHistory"; }
           { id = "Battery"; }
+          { id = "PowerProfile"; }
           { id = "Volume"; }
           { id = "Brightness"; }
+          { id = "Settings"; }
           { id = "ControlCenter"; }
         ];
       };
