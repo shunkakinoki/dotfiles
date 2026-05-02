@@ -76,10 +76,7 @@
       wallpaper.enabled = false;
       idle.enabled = true;
       colorSchemes.schedulingMode = "location";
-      location = {
-        autoLocate = true;
-        weatherTaliaMascotAlways = true;
-      };
+      location.autoLocate = true;
     };
   };
 }
