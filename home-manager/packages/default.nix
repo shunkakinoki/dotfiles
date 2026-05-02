@@ -209,6 +209,7 @@ with pkgs;
   wl-clip-persist
   wl-clipboard
   wtype
+  xdg-desktop-portal-gtk
   yt-dlp
 ]
 ++ lib.optionals isDev [

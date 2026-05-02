@@ -56,17 +56,17 @@
         enableClipboardHistory = true;
         autoPasteClipboard = true;
       };
-      general.animationSpeed = 3;
+      general = {
+        animationSpeed = 3;
+        compactLockScreen = true;
+        autoStartAuth = true;
+        allowPasswordWithFprintd = true;
+      };
       colorSchemes.predefinedScheme = "Dracula";
       hooks = {
         enabled = true;
         darkModeChange = ''if [ "$1" = "true" ]; then dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'" && dconf write /org/gnome/desktop/interface/gtk-theme "'Adwaita-dark'"; else dconf write /org/gnome/desktop/interface/color-scheme "'prefer-light'" && dconf write /org/gnome/desktop/interface/gtk-theme "'Adwaita'"; fi'';
       };
-      lockscreen = {
-        enable = true;
-        allowPasswordWithFprintd = true;
-      };
-      general.compactLockScreen = true;
       dock = {
         colorizeIcons = true;
         showLauncherIcon = true;
