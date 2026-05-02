@@ -204,7 +204,6 @@ It 'has spec file for nix-darwin/services/pmset-battery-policy/power-policy.sh'
 The path "spec/pmset_battery_policy_spec.sh" should be exist
 End
 
-
 It 'has spec file for home-manager/activation/ensure-directory.sh'
 The path "spec/activation_shared_spec.sh" should be exist
 End
