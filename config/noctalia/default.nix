@@ -15,16 +15,9 @@
 
     settings = {
       bar = {
-        battery.showLabel = true;
-        network.showLabel = false;
-        bluetooth.showLabel = false;
-        transparent = true;
+        backgroundOpacity = 0;
+        useSeparateOpacity = true;
         capsuleOpacity = 0;
-        workspaces = {
-          showIcons = true;
-          showApplicationIcons = true;
-          numberedActiveIndicator = "underline";
-        };
         widgets.left = [
           { id = "Launcher"; }
           {
@@ -44,7 +37,10 @@
           { id = "Bluetooth"; }
           { id = "Network"; }
           { id = "NotificationHistory"; }
-          { id = "Battery"; }
+          {
+            id = "Battery";
+            displayMode = "graphic";
+          }
           { id = "PowerProfile"; }
           { id = "Volume"; }
           { id = "Brightness"; }
@@ -52,19 +48,16 @@
           { id = "ControlCenter"; }
         ];
       };
-      font = {
-        name = "JetBrainsMono Nerd Font";
-        size = 14;
+      ui = {
+        fontDefault = "JetBrainsMono Nerd Font";
+        fontFixed = "JetBrainsMono Nerd Font";
       };
       notifications = {
-        position = "top-right";
-        cacheActions = true;
-        showActionsOnHover = false;
+        location = "top_right";
         backgroundOpacity = 0.75;
       };
       osd = {
         enabled = true;
-        orientation = "vertical";
         location = "right";
       };
       appLauncher = {
