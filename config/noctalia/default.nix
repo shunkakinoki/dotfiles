@@ -76,6 +76,7 @@
       desktopWidgets.enabled = true;
       wallpaper.enabled = false;
       idle.enabled = true;
+      systemMonitor.enableDgpuMonitoring = true;
       colorSchemes.schedulingMode = "location";
       location.autoLocate = true;
     };
