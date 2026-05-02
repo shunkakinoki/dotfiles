@@ -14,6 +14,7 @@
         network.showLabel = false;
         bluetooth.showLabel = false;
         transparent = true;
+        capsuleOpacity = 0;
         workspaces = {
           showIcons = true;
           showApplicationIcons = true;
@@ -56,17 +57,25 @@
         autoPasteClipboard = true;
       };
       general.animationSpeed = 3;
-      theme = "dracula";
+      colorSchemes.predefinedScheme = "Dracula";
       lockscreen = {
         enable = true;
         allowPasswordWithFprintd = true;
       };
       general.compactLockScreen = true;
+      dock = {
+        colorizeIcons = true;
+        showLauncherIcon = true;
+        showDockIndicator = true;
+      };
       desktopWidgets.enabled = true;
       wallpaper.enabled = false;
       idle.enabled = true;
       colorSchemes.schedulingMode = "location";
-      location.autoLocate = true;
+      location = {
+        autoLocate = true;
+        weatherTaliaMascotAlways = true;
+      };
     };
   };
 }
