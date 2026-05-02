@@ -55,7 +55,7 @@
         enableClipboardHistory = true;
         autoPasteClipboard = true;
       };
-      general.animationSpeed = 2;
+      general.animationSpeed = 3;
       theme = "dracula";
       lockscreen = {
         enable = true;
