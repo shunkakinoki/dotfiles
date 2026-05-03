@@ -20,6 +20,7 @@
         capsuleOpacity = 0;
         widgets.left = [
           { id = "Launcher"; }
+          { id = "Workspaces"; }
           {
             id = "Clock";
             formatHorizontal = "yyyy/MM/dd HH:mm:ss";
@@ -44,12 +45,11 @@
           { id = "PowerProfile"; }
           { id = "Volume"; }
           { id = "Brightness"; }
-          { id = "Settings"; }
           { id = "ControlCenter"; }
         ];
       };
       ui = {
-        fontDefault = "JetBrainsMono Nerd Font";
+        fontDefault = "Noto Sans";
         fontFixed = "JetBrainsMono Nerd Font";
       };
       notifications = {
@@ -73,16 +73,29 @@
       colorSchemes.predefinedScheme = "Dracula-Custom";
       hooks = {
         enabled = true;
-        darkModeChange = ''if [ "$1" = "true" ]; then dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'" && dconf write /org/gnome/desktop/interface/gtk-theme "'Adwaita-dark'"; else dconf write /org/gnome/desktop/interface/color-scheme "'prefer-light'" && dconf write /org/gnome/desktop/interface/gtk-theme "'Adwaita'"; fi'';
+        darkModeChange = ''
+          if [ "$1" = "true" ]; then
+            dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
+            dconf write /org/gnome/desktop/interface/gtk-theme "'Adwaita-dark'"
+            dconf write /org/gnome/desktop/interface/icon-theme "'Adwaita'"
+          else
+            dconf write /org/gnome/desktop/interface/color-scheme "'prefer-light'"
+            dconf write /org/gnome/desktop/interface/gtk-theme "'Adwaita'"
+            dconf write /org/gnome/desktop/interface/icon-theme "'Adwaita'"
+          fi
+        '';
       };
       dock = {
         colorizeIcons = true;
         showLauncherIcon = true;
-        showDockIndicator = true;
+        showDockIndicator = false;
       };
       desktopWidgets.enabled = true;
       wallpaper.enabled = false;
-      idle.enabled = true;
+      idle = {
+        enabled = true;
+        timeout = 300;
+      };
       systemMonitor.enableDgpuMonitoring = true;
       colorSchemes.schedulingMode = "location";
       location.autoLocate = true;
