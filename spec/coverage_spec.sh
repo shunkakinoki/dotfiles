@@ -204,14 +204,6 @@ It 'has spec file for nix-darwin/services/pmset-battery-policy/power-policy.sh'
 The path "spec/pmset_battery_policy_spec.sh" should be exist
 End
 
-It 'has spec file for home-manager/services/darkman/dark-mode.sh'
-The path "spec/darkman_spec.sh" should be exist
-End
-
-It 'has spec file for home-manager/services/darkman/light-mode.sh'
-The path "spec/darkman_spec.sh" should be exist
-End
-
 It 'has spec file for home-manager/activation/ensure-directory.sh'
 The path "spec/activation_shared_spec.sh" should be exist
 End
@@ -367,13 +359,11 @@ config/gemini/activate.sh
 config/git-ai/activate.sh
 config/hyprland/scripts/record-screen.sh
 config/hyprland/scripts/toggle-terminal.sh
-config/hyprpanel/activate.sh
 config/k3s/activate.sh
 config/obsidian/activate.sh
 config/omp/activate.sh
 config/openclaw/hydrate.sh
 config/paperclip/hydrate.sh
-config/rofi/gnome-control-center-wrapper.sh
 config/serena/activate.sh
 home-manager/activation/deploy-agenix-secret.sh
 home-manager/activation/ensure-directory.sh
@@ -412,8 +402,6 @@ home-manager/services/cliproxyapi/scripts/keychain-sync.sh
 home-manager/services/cliproxyapi/scripts/start.sh
 home-manager/services/cliproxyapi/scripts/wrapper.sh
 home-manager/services/code-syncer/sync.sh
-home-manager/services/darkman/dark-mode.sh
-home-manager/services/darkman/light-mode.sh
 home-manager/services/docker-postgres/start-postgres-wrapper.sh
 home-manager/services/docker-postgres/start-postgres.sh
 home-manager/services/docker/docker-setup.sh

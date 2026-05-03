@@ -34,6 +34,7 @@ in
     ++ [
       inputs.agenix.homeManagerModules.default
       inputs.xremap.homeManagerModules.default
+      inputs.noctalia-shell.homeModules.default
     ];
 
   home.username = username;

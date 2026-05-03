@@ -176,8 +176,6 @@ with pkgs;
   google-chrome
   grim
   gthumb
-  hypridle
-  hyprlock
   hyprpicker
   hyprshell
   hyprshot
@@ -190,14 +188,11 @@ with pkgs;
   mpv
   nautilus
   networkmanagerapplet
-  nwg-dock-hyprland
   nwg-drawer
   obsidian
   pavucontrol
   playerctl
   polari
-  rofi
-  rofimoji
   seahorse
   shotwell
   signal-desktop
@@ -214,6 +209,7 @@ with pkgs;
   wl-clip-persist
   wl-clipboard
   wtype
+  xdg-desktop-portal-gtk
   yt-dlp
 ]
 ++ lib.optionals isDev [

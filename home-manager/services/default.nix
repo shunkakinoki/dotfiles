@@ -10,7 +10,6 @@ let
   cass = import ./cass { inherit pkgs; };
   cliproxyapi = import ./cliproxyapi;
   codeSyncer = import ./code-syncer { inherit pkgs; };
-  darkman = import ./darkman { inherit pkgs; };
   dolt = ./dolt;
   docker = import ./docker { inherit lib pkgs; };
   dockerPostgres = ./docker-postgres;
@@ -33,7 +32,6 @@ in
   cass
   cliproxyapi
   codeSyncer
-  darkman
   dolt
   docker
   dockerPostgres

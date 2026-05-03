@@ -208,7 +208,7 @@ import ../../hosts/nixos {
               };
           };
         };
-        security.pam.services.hyprlock = {
+        security.pam.services.noctalia-shell = {
           fprintAuth = true;
         };
         security.pam.services.sudo = {
@@ -320,7 +320,6 @@ import ../../hosts/nixos {
                 "gtk"
               ];
               "org.freedesktop.impl.portal.Settings" = [
-                "darkman"
                 "gtk"
               ];
             };
