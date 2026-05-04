@@ -4,7 +4,7 @@ providers: {}
 fallback_providers: []
 credential_pool_strategies: {}
 toolsets:
-- hermes-cli
+  - hermes-cli
 agent:
   max_turns: 90
   gateway_timeout: 1800
@@ -299,7 +299,7 @@ updates:
   backup_keep: 5
 _config_version: 22
 custom_providers:
-- name: cliproxy
-  base_url: http://localhost:8317/v1
-  api_key: __CLIPROXY_API_KEY__
-  api_mode: chat_completions
+  - name: cliproxy
+    base_url: http://localhost:8317/v1
+    api_key: __CLIPROXY_API_KEY__
+    api_mode: chat_completions

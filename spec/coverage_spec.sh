@@ -141,6 +141,10 @@ It 'has spec file for home-manager/modules/cargo-globals/install-cargo-globals.s
 The path "spec/cargo_globals_spec.sh" should be exist
 End
 
+It 'has spec file for config/hermes/hydrate.sh'
+The path "spec/hermes_hydrate_spec.sh" should be exist
+End
+
 It 'has spec file for config/openclaw/hydrate.sh'
 The path "spec/openclaw_hydrate_spec.sh" should be exist
 End
@@ -276,6 +280,10 @@ It 'has spec file for home-manager/modules/paperclip/activate.sh'
 The path "spec/activate_paperclip_openclaw_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/hermes/activate.sh'
+The path "spec/activate_paperclip_openclaw_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/modules/openclaw/activate.sh'
 The path "spec/activate_paperclip_openclaw_spec.sh" should be exist
 End
@@ -357,6 +365,7 @@ config/shared/hooks/block-git-push.sh
 config/cursor/activate.sh
 config/gemini/activate.sh
 config/git-ai/activate.sh
+config/hermes/hydrate.sh
 config/hyprland/scripts/record-screen.sh
 config/hyprland/scripts/toggle-terminal.sh
 config/k3s/activate.sh
@@ -380,6 +389,7 @@ home-manager/modules/local-scripts/pushover-notify.sh
 home-manager/modules/local-scripts/tmux-bridge.sh
 home-manager/modules/npm-globals/install-npm-globals.sh
 home-manager/modules/secure-dotenv/secure-dotenv.sh
+home-manager/services/hermes/activate.sh
 home-manager/services/obsidian/obsidian-git-trigger.sh
 home-manager/services/obsidian/obsidian-headless.sh
 home-manager/services/openclaw/activate.sh

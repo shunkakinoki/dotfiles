@@ -62,3 +62,34 @@ When run cat "$PWD/home-manager/services/openclaw/default.nix"
 The output should include '"${./activate.sh}" "${homeDir}"'
 End
 End
+
+Describe 'home-manager/services/hermes/activate.sh'
+SCRIPT="$PWD/home-manager/services/hermes/activate.sh"
+
+It 'uses bash shebang'
+When run bash -c "head -1 '$SCRIPT'"
+The output should include '#!/usr/bin/env bash'
+End
+
+It 'creates /tmp/hermes'
+When run bash -c "grep '/tmp/hermes' '$SCRIPT'"
+The output should include '/tmp/hermes'
+End
+
+It 'creates .hermes directory'
+When run bash -c "grep '.hermes' '$SCRIPT'"
+The output should include '.hermes'
+End
+
+It 'sets restrictive permissions'
+When run bash -c "grep 'chmod 700' '$SCRIPT'"
+The output should include 'chmod 700'
+End
+End
+
+Describe 'home-manager/services/hermes/default.nix'
+It 'quotes the home directory argument when invoking the helper'
+When run cat "$PWD/home-manager/services/hermes/default.nix"
+The output should include '"${./activate.sh}" "${homeDir}"'
+End
+End
