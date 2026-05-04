@@ -299,7 +299,7 @@ rtk-rewrite-sync: ## Sync rtk-rewrite.sh from upstream rtk repo.
 ##@ Update
 
 .PHONY: update
-update: nix-update neovim-update gitalias-update llm-update overlays-update  ## Update Nix flake, overlays, Neovim plugins, LLM configs, gitalias, and bun deps
+update: neovim-update gitalias-update llm-update overlays-update  ## Update Nix flake, overlays, Neovim plugins, LLM configs, gitalias, and bun deps
 
 .PHONY: update-lock
 update-lock: nix-flake-update bun-update cargo-update uv-update ## Update lock files for Nix flake, bun, and Cargo.
