@@ -9,6 +9,33 @@
     force = true;
   };
 
+  # Inhibit idle when plugged into AC; noctalia's idle timeouts apply on battery only.
+  systemd.user.services.ac-idle-inhibit = {
+    Unit = {
+      Description = "Inhibit idle when on AC power";
+      After = [ "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+    Service = {
+      Type = "simple";
+      ExecStart =
+        let
+          script = pkgs.writeShellScript "ac-idle-inhibit" ''
+            while true; do
+              if [ "$(cat /sys/class/power_supply/ACAD/online 2>/dev/null)" = "1" ]; then
+                ${pkgs.systemd}/bin/systemd-inhibit --what=idle --why="On AC power" --mode=block ${pkgs.coreutils}/bin/sleep 20
+              else
+                ${pkgs.coreutils}/bin/sleep 20
+              fi
+            done
+          '';
+        in
+        "${script}";
+      Restart = "on-failure";
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
+
   programs.noctalia-shell = {
     enable = true;
     package = inputs.noctalia-shell.packages.${pkgs.system}.default;
@@ -95,7 +122,9 @@
       wallpaper.enabled = false;
       idle = {
         enabled = true;
-        timeout = 300;
+        screenOffTimeout = 300;  # 5 min on battery
+        lockTimeout = 300;
+        suspendTimeout = 600;    # 10 min on battery
       };
       systemMonitor.enableDgpuMonitoring = true;
       colorSchemes.schedulingMode = "location";
