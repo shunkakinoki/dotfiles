@@ -15,7 +15,7 @@ let
       vars = {
         sed = "${pkgs.gnused}/bin/sed";
         awk = "${pkgs.gawk}/bin/awk";
-        configTemplate = "${./config.yaml}";
+        configTemplate = "${./config.template.yaml}";
         envTemplate = "${./env.template}";
         inherit mode;
       };
