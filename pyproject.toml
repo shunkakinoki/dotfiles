@@ -21,6 +21,11 @@ tools = [
   "vllm>=0.20.0",
   "vllm-mlx>=0.2.9",
 ]
+# Hermes gateway runtime deps - installed into hermes venv via uv pip install
+hermes = [
+  "python-telegram-bot[webhooks]>=22.6,<23",
+  "croniter>=6.0.0,<7",
+]
 
 [tool.uv]
 exclude-newer = "1 week"
