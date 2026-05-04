@@ -18,19 +18,7 @@
     };
     Service = {
       Type = "simple";
-      ExecStart =
-        let
-          script = pkgs.writeShellScript "ac-idle-inhibit" ''
-            while true; do
-              if [ "$(cat /sys/class/power_supply/ACAD/online 2>/dev/null)" = "1" ]; then
-                ${pkgs.systemd}/bin/systemd-inhibit --what=idle --why="On AC power" --mode=block ${pkgs.coreutils}/bin/sleep 20
-              else
-                ${pkgs.coreutils}/bin/sleep 20
-              fi
-            done
-          '';
-        in
-        "${script}";
+      ExecStart = "${pkgs.bash}/bin/bash ${./ac-idle-inhibit.sh}";
       Restart = "on-failure";
     };
     Install.WantedBy = [ "graphical-session.target" ];
