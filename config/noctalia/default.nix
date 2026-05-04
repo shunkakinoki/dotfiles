@@ -69,6 +69,7 @@
         compactLockScreen = true;
         autoStartAuth = true;
         allowPasswordWithFprintd = true;
+        lockOnSuspend = true;
       };
       colorSchemes.predefinedScheme = "Dracula-Custom";
       hooks = {
