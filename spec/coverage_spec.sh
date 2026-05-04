@@ -360,6 +360,7 @@ config/git-ai/activate.sh
 config/hyprland/scripts/record-screen.sh
 config/hyprland/scripts/toggle-terminal.sh
 config/k3s/activate.sh
+config/noctalia/ac-idle-inhibit.sh
 config/obsidian/activate.sh
 config/omp/activate.sh
 config/openclaw/hydrate.sh
