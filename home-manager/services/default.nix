@@ -15,6 +15,7 @@ let
   dockerPostgres = ./docker-postgres;
   dotfilesUpdater = import ./dotfiles-updater { inherit pkgs; };
   gasTown = import ./gas-town { inherit pkgs; };
+  hermes = ./hermes;
   k3s = ./k3s;
   keydApplicationMapper = ./keyd-application-mapper;
   makeUpdater = import ./make-updater { inherit pkgs; };
@@ -37,6 +38,7 @@ in
   dockerPostgres
   dotfilesUpdater
   gasTown
+  hermes
   k3s
   keydApplicationMapper
   makeUpdater

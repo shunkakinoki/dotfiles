@@ -17,6 +17,7 @@ in
   ./git-ai
   ./gomi
   ./ghostty
+  ./hermes
   ./iterm2
   ./hammerspoon
   ./jj
