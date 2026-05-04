@@ -110,9 +110,9 @@
       wallpaper.enabled = false;
       idle = {
         enabled = true;
-        screenOffTimeout = 300;  # 5 min on battery
+        screenOffTimeout = 300; # 5 min on battery
         lockTimeout = 300;
-        suspendTimeout = 600;    # 10 min on battery
+        suspendTimeout = 600; # 10 min on battery
       };
       systemMonitor.enableDgpuMonitoring = true;
       colorSchemes.schedulingMode = "location";
