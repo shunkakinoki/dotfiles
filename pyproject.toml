@@ -25,8 +25,8 @@ tools = [
 hermes = [
   "python-telegram-bot[webhooks]>=22.6,<23",
   "croniter>=6.0.0,<7",
-  "fastapi[standard]>=0.115.0",
-  "uvicorn>=0.30.0",
+  "fastapi[standard]>=0.115.14",
+  "uvicorn>=0.30.6",
 ]
 
 [tool.uv]
