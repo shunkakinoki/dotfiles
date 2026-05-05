@@ -12,11 +12,11 @@ ARCH := $(shell uname -m)
 OS := $(shell uname -s)
 
 # Git variables
-GIT_REMOTE_ORIGIN_URL := $(shell git config --get remote.origin.url)
+GIT_REMOTE_ORIGIN_URL := $(shell git config --get remote.origin.url 2>/dev/null)
 GITHUB_REPO_PATH := $(shell echo $(GIT_REMOTE_ORIGIN_URL) | sed -n 's/.*github.com[:/]\(.*\)\.git/\1/p')
 GITHUB_REPO_OWNER := $(shell echo $(GITHUB_REPO_PATH) | cut -d'/' -f1)
 GITHUB_REPO_NAME := $(shell echo $(GITHUB_REPO_PATH) | cut -d'/' -f2)
-GIT_COMMIT_SHA := $(shell git rev-parse --short HEAD)
+GIT_COMMIT_SHA := $(shell git rev-parse --short HEAD 2>/dev/null || echo unknown)
 
 # Env ironment variables
 NIX_ALLOW_UNFREE := NIXPKGS_ALLOW_UNFREE=1
@@ -151,7 +151,7 @@ help: ## Show this help message.
 ##@ General
 
 .PHONY: install
-install: setup git-submodule-sync nix-build nix-switch shell-install ## Set up full environment (setup, flake-update, build, switch, shell-install).
+install: setup git-submodule-sync nix-build nix-switch shell-install ## Set up full environment (setup, cache warmup, build, switch, shell-install).
 
 .PHONY: build
 build: nix-build ## Build Nix configuration.
@@ -432,6 +432,18 @@ nix-install: ## Install Nix if not already installed.
 	fi
 	@echo "✅ Nix environment installed!"
 
+.PHONY: nix-cache-warmup
+nix-cache-warmup: ## Warm flake input metadata before build/switch.
+	@echo "🔥 Warming Nix flake cache..."
+	@if command -v nix >/dev/null 2>&1; then \
+		$(MAKE) nix-connect; \
+		$(MAKE) nix-trust; \
+		$(NIX_ALLOW_UNFREE) sh ./scripts/nix-cache-warmup.sh . $(NIX_FLAGS); \
+		echo "✅ Nix flake cache warmed"; \
+	else \
+		echo "⚠️ Nix unavailable; skipping cache warmup"; \
+	fi
+
 ##@ Nix
 
 .PHONY: nix-update
@@ -448,6 +460,7 @@ nix-backup: ## Backup configuration files.
 	fi
 
 .PHONY: nix-build
+nix-build: nix-cache-warmup
 nix-build: nix-connect nix-trust ## Build Nix configuration.
 	@echo "🏗️ Building Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"
 	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
@@ -594,6 +607,7 @@ nix-lint: ## Lint Nix files with statix from the flake/dev shell.
 	@echo "✅ All Nix files pass lint checks"
 
 .PHONY: nix-switch
+nix-switch: nix-cache-warmup
 nix-switch: ## Activate Nix configuration.
 	@echo "🔧 Activating Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"
 	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
