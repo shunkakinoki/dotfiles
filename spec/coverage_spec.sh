@@ -438,6 +438,7 @@ scripts/check-nix-inline-scripts.sh
 scripts/find-built-iso.sh
 scripts/fishtape-wrapper.sh
 scripts/llm-update.sh
+scripts/nix-cache-warmup.sh
 scripts/sync-codex-security.sh
 scripts/sync-rtk-rewrite.sh
 scripts/update-gitalias.sh
