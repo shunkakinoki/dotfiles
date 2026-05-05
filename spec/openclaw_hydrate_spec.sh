@@ -108,6 +108,8 @@ exit 0
 EOF
   chmod +x "$TEMP_HOME/chromium/bin/chromium"
 
+  echo "fake-soul" >"$TEMP_HOME/SOUL.md"
+
   PREPROCESSED_SCRIPT="$TEMP_HOME/hydrate.sh"
   sed \
     -e 's|@mode@|gateway|g' \
@@ -115,6 +117,7 @@ EOF
     -e 's|@awk@|awk|g' \
     -e 's|@template@|'"$TEMP_HOME"'/templates/openclaw.json|g' \
     -e 's|@chromium@|'"$TEMP_HOME"'/chromium|g' \
+    -e 's|@soul@|'"$TEMP_HOME"'/SOUL.md|g' \
     "$SCRIPT" >"$PREPROCESSED_SCRIPT"
   chmod +x "$PREPROCESSED_SCRIPT"
 }
@@ -143,6 +146,8 @@ setup_client() {
 gateway-token
 EOF
 
+  echo "fake-soul" >"$TEMP_HOME/SOUL.md"
+
   PREPROCESSED_SCRIPT="$TEMP_HOME/hydrate.sh"
   sed \
     -e 's|@mode@|client|g' \
@@ -150,6 +155,7 @@ EOF
     -e 's|@awk@|awk|g' \
     -e 's|@template@|/unused|g' \
     -e 's|@chromium@|/unused|g' \
+    -e 's|@soul@|'"$TEMP_HOME"'/SOUL.md|g' \
     "$SCRIPT" >"$PREPROCESSED_SCRIPT"
   chmod +x "$PREPROCESSED_SCRIPT"
 }
