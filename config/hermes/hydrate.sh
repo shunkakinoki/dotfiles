@@ -59,7 +59,7 @@ if [ -z "$CLIPROXY_API_KEY" ]; then
   CLIPROXY_API_KEY="$(read_secret "${SECRETS_DIR}/cliproxy-key")"
 fi
 
-TELEGRAM_TOKEN="${TELEGRAM_TOKEN:-$(read_secret "${SECRETS_DIR}/telegram-token")}"
+TELEGRAM_TOKEN="${HERMES_TELEGRAM_TOKEN:-${TELEGRAM_TOKEN:-$(read_secret "${SECRETS_DIR}/telegram-token")}}"
 GATEWAY_TOKEN="${HERMES_GATEWAY_TOKEN:-${GATEWAY_TOKEN:-$(read_secret "${SECRETS_DIR}/gateway-token")}}"
 WHATSAPP_ALLOW_FROM="${WHATSAPP_ALLOW_FROM:-$(read_secret "${SECRETS_DIR}/whatsapp-allow-from")}"
 

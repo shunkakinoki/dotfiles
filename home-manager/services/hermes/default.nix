@@ -41,4 +41,30 @@ lib.mkIf host.isKyber {
       WantedBy = [ "default.target" ];
     };
   };
+
+  systemd.user.services.hermes-dashboard = {
+    Unit = {
+      Description = "Hermes dashboard";
+      After = [ "network-online.target" ];
+      Wants = [ "network-online.target" ];
+      StartLimitIntervalSec = 300;
+      StartLimitBurst = 10;
+    };
+    Service = {
+      Type = "simple";
+      ExecStart = "${homeDir}/.local/bin/hermes dashboard --host 0.0.0.0 --port 9119 --no-open --insecure";
+      Restart = "always";
+      RestartSec = "5s";
+      Environment = [
+        "HOME=${homeDir}"
+        "PATH=${homeDir}/.local/bin:${homeDir}/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin"
+      ];
+      WorkingDirectory = "${homeDir}/.hermes";
+      StandardOutput = "append:/tmp/hermes/hermes-dashboard.log";
+      StandardError = "append:/tmp/hermes/hermes-dashboard.log";
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+  };
 }
