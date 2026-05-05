@@ -9,6 +9,7 @@ STATE_DIR="${OPENCLAW_STATE_DIR:-${HOME}/.openclaw}"
 mkdir -p "$STATE_DIR"
 CONFIG="${OPENCLAW_CONFIG_PATH:-${STATE_DIR}/openclaw.json}"
 TEMPLATE="@template@"
+SOUL_SOURCE="@soul@"
 SECRETS_DIR="${HOME}/.config/openclaw"
 CLIPROXY_CONFIG="${OPENCLAW_CLIPROXY_CONFIG_PATH:-${HOME}/.cli-proxy-api/config.yaml}"
 ENV_FILE="${HOME}/dotfiles/.env"
@@ -59,6 +60,9 @@ if [ -z "${GATEWAY_TOKEN}" ]; then
 fi
 
 mkdir -p "$STATE_DIR"
+
+# Sync SOUL.md from dotfiles root (single source of truth)
+install -m 600 "$SOUL_SOURCE" "${STATE_DIR}/SOUL.md"
 
 if [ "$MODE" = "gateway" ]; then
   # Gateway mode (Kyber): hydrate full template and start gateway

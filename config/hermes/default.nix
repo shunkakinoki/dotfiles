@@ -17,6 +17,7 @@ let
         awk = "${pkgs.gawk}/bin/awk";
         configTemplate = "${./config.template.yaml}";
         envTemplate = "${./env.template}";
+        soul = "${../../SOUL.md}";
         inherit mode;
       };
       names = builtins.attrNames vars;
