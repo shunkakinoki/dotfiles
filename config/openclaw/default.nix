@@ -18,6 +18,7 @@ let
         sed = "${pkgs.gnused}/bin/sed";
         awk = "${pkgs.gawk}/bin/awk";
         template = "${./openclaw.template.json}";
+        soul = "${../../SOUL.md}";
         inherit mode;
       }
       // (

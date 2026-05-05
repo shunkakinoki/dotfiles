@@ -9,6 +9,7 @@ STATE_DIR="${HOME}/.hermes"
 mkdir -p "$STATE_DIR"
 CONFIG_TEMPLATE="@configTemplate@"
 ENV_TEMPLATE="@envTemplate@"
+SOUL_SOURCE="@soul@"
 SECRETS_DIR="${HOME}/.config/hermes"
 CLIPROXY_CONFIG="${HOME}/.cli-proxy-api/config.yaml"
 ENV_FILE="${HOME}/dotfiles/.env"
@@ -82,5 +83,8 @@ chmod 600 "${STATE_DIR}/config.yaml"
   -e "s|__CLIPROXY_API_KEY__|${CLIPROXY_API_KEY}|g" \
   "$ENV_TEMPLATE" >"${STATE_DIR}/.env"
 chmod 600 "${STATE_DIR}/.env"
+
+# Sync SOUL.md from dotfiles root (single source of truth)
+install -m 600 "$SOUL_SOURCE" "${STATE_DIR}/SOUL.md"
 
 echo "Generated hermes ${MODE} config at ${STATE_DIR}" >&2

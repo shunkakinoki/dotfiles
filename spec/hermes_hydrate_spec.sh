@@ -98,6 +98,8 @@ HERMES_GATEWAY_TOKEN=__GATEWAY_TOKEN__
 CLIPROXY_API_KEY=__CLIPROXY_API_KEY__
 EOF
 
+  echo "fake-soul" >"$TEMP_HOME/SOUL.md"
+
   PREPROCESSED_SCRIPT="$TEMP_HOME/hydrate.sh"
   sed \
     -e 's|@mode@|gateway|g' \
@@ -105,6 +107,7 @@ EOF
     -e 's|@awk@|awk|g' \
     -e 's|@configTemplate@|'"$TEMP_HOME"'/templates/config.template.yaml|g' \
     -e 's|@envTemplate@|'"$TEMP_HOME"'/templates/env.template|g' \
+    -e 's|@soul@|'"$TEMP_HOME"'/SOUL.md|g' \
     "$SCRIPT" >"$PREPROCESSED_SCRIPT"
   chmod +x "$PREPROCESSED_SCRIPT"
 }
