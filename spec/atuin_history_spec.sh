@@ -6,6 +6,8 @@ HOOK_SCRIPT="$PWD/config/claude/hooks/atuin-history.sh"
 CLAUDE_DEFAULT="$PWD/config/claude/default.nix"
 CLAUDE_SETTINGS="$PWD/config/claude/settings.json"
 BASH_CONFIG="$PWD/home-manager/programs/bash/default.nix"
+BASH_ENV_FILE="$PWD/home-manager/programs/bash/bash_env.sh"
+FISH_CONFIG="$PWD/home-manager/programs/fish/default.nix"
 ZSH_CONFIG="$PWD/home-manager/programs/zsh/default.nix"
 
 run_hook() {
@@ -104,6 +106,45 @@ It 'defines the zsh alias from envExtra so .zshenv sees it'
 When run bash -c "grep -F \"alias rm='gomi'\" '$ZSH_CONFIG'"
 The status should be success
 The output should include "alias rm='gomi'"
+End
+
+It 'adds local binaries to zsh envExtra for non-interactive commands'
+When run bash -c "grep -F 'export PATH=\"\$HOME/.bun/bin:\$HOME/.cargo/bin:\$HOME/.local/bin:\$PATH\"' '$ZSH_CONFIG'"
+The status should be success
+The output should include '.local/bin'
+The output should include '.bun/bin'
+The output should include '.cargo/bin'
+End
+
+It 'adds local binaries to bash profileExtra before bashrc'
+When run bash -c "grep -F 'export PATH=\"\$HOME/.bun/bin:\$HOME/.cargo/bin:\$HOME/.local/bin:\$PATH\"' '$BASH_CONFIG'"
+The status should be success
+The output should include '.local/bin'
+The output should include '.bun/bin'
+The output should include '.cargo/bin'
+End
+
+It 'configures BASH_ENV for plain non-interactive bash commands'
+When run bash -c "grep -F 'BASH_ENV = \"\$HOME/.bash_env\"' '$BASH_CONFIG' && grep -F 'home.file.\".bash_env\".source = ./bash_env.sh' '$BASH_CONFIG' && ! grep -F 'home.file.\".bash_env\".text' '$BASH_CONFIG'"
+The status should be success
+The output should include 'BASH_ENV'
+The output should include 'bash_env.sh'
+End
+
+It 'loads cargo, local, and bun bins from the bash non-interactive env file'
+When run bash -c "grep -F 'export PATH=\"\$HOME/.cargo/bin:\$PATH\"' '$BASH_ENV_FILE' && grep -F 'export PATH=\"\$HOME/.bun/bin:\$PATH\"' '$BASH_ENV_FILE' && grep -F 'export PATH=\"\$HOME/.local/bin:\$PATH\"' '$BASH_ENV_FILE'"
+The status should be success
+The output should include '.cargo/bin'
+The output should include '.bun/bin'
+The output should include '.local/bin'
+End
+
+It 'adds local binaries to fish shellInit before login-only setup'
+When run bash -c "grep -F 'set -gx PATH \$HOME/.bun/bin \$HOME/.cargo/bin \$HOME/.local/bin \$PATH' '$FISH_CONFIG'"
+The status should be success
+The output should include '.local/bin'
+The output should include '.bun/bin'
+The output should include '.cargo/bin'
 End
 End
 End

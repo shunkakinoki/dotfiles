@@ -8,6 +8,9 @@
   programs.fish = {
     enable = true;
     shellInit = ''
+      # Local binaries should be available before login/interactive-only PATH setup.
+      set -gx PATH $HOME/.bun/bin $HOME/.cargo/bin $HOME/.local/bin $PATH
+
       # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
       if test (uname) = "Linux"
           set -gx XDG_RUNTIME_DIR /run/user/(id -u)
@@ -46,8 +49,8 @@
       fish_add_path -p -m ~/.nix-profile/bin
       fish_add_path -p -m /etc/profiles/per-user/${config.home.username}/bin
       fish_add_path -p -m ~/go/bin
-      fish_add_path -p -m ~/.cargo/bin
       fish_add_path -p -m ~/.local/bin
+      fish_add_path -p -m ~/.cargo/bin
       fish_add_path -p -m ~/.local/scripts
       fish_add_path -p -m ~/.bun/bin
       fish_add_path -p -m /opt/homebrew/opt/postgresql@18/bin
@@ -68,8 +71,8 @@
       fish_add_path -p -m ~/.nix-profile/bin
       fish_add_path -p -m /etc/profiles/per-user/${config.home.username}/bin
       fish_add_path -p -m ~/go/bin
-      fish_add_path -p -m ~/.cargo/bin
       fish_add_path -p -m ~/.local/bin
+      fish_add_path -p -m ~/.cargo/bin
       fish_add_path -p -m ~/.local/scripts
       fish_add_path -p -m ~/.bun/bin
       fish_add_path -p -m /opt/homebrew/opt/postgresql@18/bin

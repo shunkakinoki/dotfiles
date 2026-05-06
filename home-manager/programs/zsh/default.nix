@@ -31,6 +31,9 @@
           eval "$(/opt/homebrew/bin/brew shellenv)"
       fi
 
+      # Local binaries must be available to non-interactive zsh commands too.
+      export PATH="$HOME/.bun/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+
       # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
       if [ "$(uname)" = "Linux" ]; then
           export XDG_RUNTIME_DIR="/run/user/$(id -u)"
@@ -65,8 +68,8 @@
       export PATH="$PATH:$HOME/go/bin"
       export PATH="/nix/var/nix/profiles/default/bin:$PATH"
       export PATH="$HOME/.nix-profile/bin:$PATH"
-      export PATH="$HOME/.cargo/bin:$PATH"
       export PATH="$HOME/.local/bin:$PATH"
+      export PATH="$HOME/.cargo/bin:$PATH"
       export PATH="$HOME/.local/scripts:$PATH"
       export PATH="$HOME/.bun/bin:$PATH"
       export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
