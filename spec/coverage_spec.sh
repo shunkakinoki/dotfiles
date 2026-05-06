@@ -398,6 +398,7 @@ home-manager/services/qmd/activate.sh
 home-manager/modules/tailscale/activate-create-dirs.sh
 home-manager/modules/tailscale/activate-install-service.sh
 home-manager/modules/uv-globals/install-uv-globals.sh
+home-manager/programs/bash/bash_env.sh
 home-manager/programs/fnm/activate.sh
 home-manager/programs/neovim/activate-build-plugins.sh
 home-manager/programs/neovim/activate-copy-pack-lock.sh

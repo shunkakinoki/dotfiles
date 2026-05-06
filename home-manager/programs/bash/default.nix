@@ -4,6 +4,12 @@
     bash-language-server
   ];
 
+  home.file.".bash_env".source = ./bash_env.sh;
+
+  home.sessionVariables = {
+    BASH_ENV = "$HOME/.bash_env";
+  };
+
   programs.bash = {
     enable = true;
     enableCompletion = true;
@@ -72,8 +78,8 @@
       export PATH="$PATH:$HOME/go/bin"
       export PATH="/nix/var/nix/profiles/default/bin:$PATH"
       export PATH="$HOME/.nix-profile/bin:$PATH"
-      export PATH="$HOME/.cargo/bin:$PATH"
       export PATH="$HOME/.local/bin:$PATH"
+      export PATH="$HOME/.cargo/bin:$PATH"
       export PATH="$HOME/.local/scripts:$PATH"
       export PATH="$HOME/.bun/bin:$PATH"
       export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
@@ -86,6 +92,9 @@
     '';
 
     profileExtra = ''
+      # Local binaries should be present even before login shells source .bashrc.
+      export PATH="$HOME/.bun/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+
       # Nix
       if [ -e ~/.nix-profile/etc/profile.d/nix.sh ]; then
         . ~/.nix-profile/etc/profile.d/nix.sh
