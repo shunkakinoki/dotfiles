@@ -50,4 +50,21 @@ _tmo_function
 
 @test "existing session attaches" (grep -c "attach-session -t mobile" $log2) -ge 1
 
-rm -f $log1 $log_inside $log2
+# ── already inside mobile → no-op ─────────────────────────
+set log4 (mktemp)
+set -gx TMUX /tmp/tmux-mobile-test
+function tmux
+    if test "$argv[1]" = display-message
+        echo mobile
+        return 0
+    end
+    echo $argv >> $log4
+end
+
+_tmo_function
+
+@test "already inside mobile skips attach" (grep -c "attach-session" $log4) -eq 0
+@test "already inside mobile skips switch-client" (grep -c "switch-client" $log4) -eq 0
+@test "already inside mobile skips bootstrap" (grep -c "new-session" $log4) -eq 0
+
+rm -f $log1 $log_inside $log2 $log4

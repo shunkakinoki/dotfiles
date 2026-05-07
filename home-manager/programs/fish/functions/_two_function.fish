@@ -1,4 +1,11 @@
 function _two_function --description "Attach to tmux work session"
+  if test -n "$TMUX"
+    set -l current (tmux display-message -p '#S' 2>/dev/null)
+    if test "$current" = work
+      return 0
+    end
+  end
+
   if tmux has-session -t work 2>/dev/null
     if test -n "$TMUX"
       tmux switch-client -t work

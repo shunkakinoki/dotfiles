@@ -50,4 +50,21 @@ _tpo_function
 
 @test "existing session attaches" (grep -c "attach-session -t primary" $log3) -ge 1
 
-rm -f $log1 $log2 $log3
+# ── already inside primary → no-op ────────────────────────
+set log4 (mktemp)
+set -gx TMUX /tmp/tmux-primary-test
+function tmux
+    if test "$argv[1]" = display-message
+        echo primary
+        return 0
+    end
+    echo $argv >> $log4
+end
+
+_tpo_function
+
+@test "already inside primary skips attach" (grep -c "attach-session" $log4) -eq 0
+@test "already inside primary skips switch-client" (grep -c "switch-client" $log4) -eq 0
+@test "already inside primary skips bootstrap" (grep -c "new-session" $log4) -eq 0
+
+rm -f $log1 $log2 $log3 $log4
