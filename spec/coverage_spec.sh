@@ -370,6 +370,7 @@ config/hyprland/scripts/record-screen.sh
 config/hyprland/scripts/toggle-terminal.sh
 config/k3s/activate.sh
 config/noctalia/ac-idle-inhibit.sh
+config/noctalia/lid-lock.sh
 config/noctalia/lock-before-sleep.sh
 config/obsidian/activate.sh
 config/omp/activate.sh
