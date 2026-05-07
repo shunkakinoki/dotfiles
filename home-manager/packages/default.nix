@@ -103,6 +103,9 @@ with pkgs;
   zellij
   zoxide
 ]
+++ lib.optionals stdenv.isDarwin [
+  darwin.trash
+]
 ++ lib.optionals stdenv.isLinux [
   atop
   below

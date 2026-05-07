@@ -99,7 +99,7 @@
       lzg = "lazygit";
       ompc = "omp commit";
       ompcp = "omp commit --push";
-      rm = "gomi";
+      rm = if pkgs.stdenv.isDarwin then "trash" else "gomi";
       v = "nvim";
 
       # Function-based abbreviations
