@@ -50,4 +50,21 @@ _tdo_function
 
 @test "existing session attaches" (grep -c "attach-session -t desktop" $log2) -ge 1
 
-rm -f $log1 $log_inside $log2
+# ── already inside desktop → no-op ────────────────────────
+set log4 (mktemp)
+set -gx TMUX /tmp/tmux-desktop-test
+function tmux
+    if test "$argv[1]" = display-message
+        echo desktop
+        return 0
+    end
+    echo $argv >> $log4
+end
+
+_tdo_function
+
+@test "already inside desktop skips attach" (grep -c "attach-session" $log4) -eq 0
+@test "already inside desktop skips switch-client" (grep -c "switch-client" $log4) -eq 0
+@test "already inside desktop skips bootstrap" (grep -c "new-session" $log4) -eq 0
+
+rm -f $log1 $log_inside $log2 $log4
