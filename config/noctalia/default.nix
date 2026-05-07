@@ -3,6 +3,13 @@
   pkgs,
   ...
 }:
+let
+  noctaliaShell = inputs.noctalia-shell.packages.${pkgs.system}.default;
+  noctaliaLockBeforeSleep = pkgs.replaceVars ./lock-before-sleep.sh {
+    noctalia_shell = "${noctaliaShell}/bin/noctalia-shell";
+    sleep = "${pkgs.coreutils}/bin/sleep";
+  };
+in
 {
   xdg.configFile."noctalia/colorschemes/Dracula-Custom/Dracula-Custom.json" = {
     source = ./Dracula-Custom.json;
@@ -24,9 +31,21 @@
     Install.WantedBy = [ "graphical-session.target" ];
   };
 
+  systemd.user.services.noctalia-lock-before-sleep = {
+    Unit = {
+      Description = "Lock Noctalia before system sleep";
+      Before = [ "sleep.target" ];
+    };
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.bash}/bin/bash ${noctaliaLockBeforeSleep}";
+    };
+    Install.WantedBy = [ "sleep.target" ];
+  };
+
   programs.noctalia-shell = {
     enable = true;
-    package = inputs.noctalia-shell.packages.${pkgs.system}.default;
+    package = noctaliaShell;
 
     settings = {
       bar = {
@@ -60,6 +79,7 @@
           { id = "PowerProfile"; }
           { id = "Volume"; }
           { id = "Brightness"; }
+          { id = "DarkMode"; }
           { id = "ControlCenter"; }
         ];
       };

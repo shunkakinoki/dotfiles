@@ -210,6 +210,10 @@ import ../../hosts/nixos {
         };
         security.pam.services.noctalia-shell = {
           fprintAuth = true;
+          rules.auth.fprintd.settings = {
+            max-tries = -1;
+            timeout = -1;
+          };
         };
         security.pam.services.sudo = {
           fprintAuth = true;
@@ -246,9 +250,9 @@ import ../../hosts/nixos {
 
         # Power button behavior - lock screen instead of shutdown
         services.logind.settings.Login.HandlePowerKey = "lock";
-        # Suspend on lid close
+        # Suspend on battery lid close; on AC, Hyprland locks on the lid switch event.
         services.logind.settings.Login.HandleLidSwitch = "suspend";
-        services.logind.settings.Login.HandleLidSwitchExternalPower = "suspend";
+        services.logind.settings.Login.HandleLidSwitchExternalPower = "ignore";
 
         # Auto timezone (via geolocation)
         services.geoclue2.enable = true;
