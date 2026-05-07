@@ -47,7 +47,13 @@
           type = "png";
         };
       };
-      CustomUserPreferences = { };
+      CustomUserPreferences = {
+        "com.apple.controlcenter" = {
+          "NSStatusItem VisibleCC Bluetooth" = true;
+          "NSStatusItem VisibleCC Clock" = true;
+          "NSStatusItem VisibleCC WiFi" = true;
+        };
+      };
       NSGlobalDomain = {
         AppleEnableMouseSwipeNavigateWithScrolls = null;
         AppleEnableSwipeNavigateWithScrolls = null;
@@ -120,7 +126,7 @@
       controlcenter = {
         AirDrop = null;
         BatteryShowPercentage = null;
-        Bluetooth = null;
+        Bluetooth = true;
         Display = null;
         FocusModes = null;
         NowPlaying = null;
@@ -171,8 +177,8 @@
       menuExtraClock = {
         FlashDateSeparators = false;
         IsAnalog = null;
-        Show24Hour = null;
-        ShowAMPM = true;
+        Show24Hour = true;
+        ShowAMPM = false;
         ShowDate = 1;
         ShowDayOfMonth = null;
         ShowDayOfWeek = true;
