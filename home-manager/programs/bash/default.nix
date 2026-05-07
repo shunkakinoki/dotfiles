@@ -44,7 +44,7 @@
     shellAliases = {
       copy = "clipboard-copy";
       paste = "clipboard-paste";
-      rm = "gomi";
+      rm = if pkgs.stdenv.isDarwin then "trash" else "gomi";
     };
 
     bashrcExtra = ''

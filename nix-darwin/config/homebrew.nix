@@ -67,6 +67,7 @@
       "sshpass"
       "temporal"
       "tmux"
+      "trash"
       "watchexec"
       "yt-dlp"
     ];

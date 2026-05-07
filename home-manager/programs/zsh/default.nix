@@ -57,7 +57,7 @@
       # Define aliases in .zshenv so non-interactive zsh invocations can use them.
       alias copy='clipboard-copy'
       alias paste='clipboard-paste'
-      alias rm='gomi'
+      alias rm='${if pkgs.stdenv.isDarwin then "trash" else "gomi"}'
     '';
 
     initContent = ''
