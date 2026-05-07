@@ -65,7 +65,10 @@ in
             showNetworkStats = true;
             showGpuTemp = true;
           }
-          { id = "ActiveWindow"; }
+          {
+            id = "ActiveWindow";
+            colorizeIcons = false;
+          }
           { id = "MediaMini"; }
         ];
         widgets.center = [
@@ -81,6 +84,7 @@ in
         widgets.right = [
           {
             id = "Tray";
+            colorizeIcons = false;
             drawerEnabled = false;
           }
           { id = "Bluetooth"; }
