@@ -1,3 +1,4 @@
+{ username }:
 {
   system.defaults.dock = {
     autohide = true;
@@ -51,6 +52,16 @@
       "/System/Applications/Podcasts.app"
       "/System/Applications/iPhone Mirroring.app"
       "/System/Applications/System Settings.app"
+    ];
+    persistent-others = [
+      {
+        folder = {
+          path = "/Users/${username}/Downloads";
+          arrangement = "date-added";
+          displayas = "stack";
+          showas = "fan";
+        };
+      }
     ];
   };
 }

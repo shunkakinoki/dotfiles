@@ -6,7 +6,7 @@
   ...
 }:
 let
-  dock = import ./config/dock.nix;
+  dock = import ./config/dock.nix { inherit username; };
   fonts = import ./config/fonts.nix { inherit pkgs; };
   homebrew = import ./config/homebrew.nix { inherit isRunner lib; };
   networking = import ./config/networking.nix;
