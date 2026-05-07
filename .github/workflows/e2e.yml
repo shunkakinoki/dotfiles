@@ -63,20 +63,6 @@ jobs:
               sudo mv "$file" "${file}.before-nix-darwin"
             fi
           done
-      - name: Wait for PR Head Ref
-        if: github.event_name == 'pull_request'
-        run: |
-          for attempt in 1 2 3 4 5 6; do
-            if git ls-remote --exit-code origin "refs/pull/${{ github.event.pull_request.number }}/head"; then
-              exit 0
-            fi
-
-            echo "PR head ref is not available yet; retrying in 10s (attempt ${attempt}/6)."
-            sleep 10
-          done
-
-          echo "PR head ref refs/pull/${{ github.event.pull_request.number }}/head is unavailable."
-          exit 1
       - name: Run Install Command
         run: |
           curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/${{ github.sha }}/install.sh | sh
