@@ -9,10 +9,6 @@ let
     noctalia_shell = "${noctaliaShell}/bin/noctalia-shell";
     sleep = "${pkgs.coreutils}/bin/sleep";
   };
-  noctaliaLidLock = pkgs.replaceVars ./lid-lock.sh {
-    noctalia_shell = "${noctaliaShell}/bin/noctalia-shell";
-    sleep = "${pkgs.coreutils}/bin/sleep";
-  };
 in
 {
   xdg.configFile."noctalia/colorschemes/Dracula-Custom/Dracula-Custom.json" = {
@@ -45,21 +41,6 @@ in
       ExecStart = "${pkgs.bash}/bin/bash ${noctaliaLockBeforeSleep}";
     };
     Install.WantedBy = [ "sleep.target" ];
-  };
-
-  systemd.user.services.noctalia-lid-lock = {
-    Unit = {
-      Description = "Lock Noctalia when the lid closes";
-      After = [ "graphical-session.target" ];
-      PartOf = [ "graphical-session.target" ];
-    };
-    Service = {
-      Type = "simple";
-      ExecStart = "${pkgs.bash}/bin/bash ${noctaliaLidLock}";
-      Restart = "on-failure";
-      RestartSec = 2;
-    };
-    Install.WantedBy = [ "graphical-session.target" ];
   };
 
   programs.noctalia-shell = {
