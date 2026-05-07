@@ -74,4 +74,21 @@ _two_function
 
 @test "existing work session attaches" (grep -c "attach-session -t work" $log2) -ge 1
 
-rm -f $log_restore $log $log2
+# ── already inside work → no-op ───────────────────────────
+set log4 (mktemp)
+set -gx TMUX /tmp/tmux-work-test
+function tmux
+    if test "$argv[1]" = display-message
+        echo work
+        return 0
+    end
+    echo $argv >> $log4
+end
+
+_two_function
+
+@test "already inside work skips attach" (grep -c "attach-session" $log4) -eq 0
+@test "already inside work skips switch-client" (grep -c "switch-client" $log4) -eq 0
+@test "already inside work skips bootstrap" (grep -c "new-session" $log4) -eq 0
+
+rm -f $log_restore $log $log2 $log4
