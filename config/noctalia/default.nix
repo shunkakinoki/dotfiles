@@ -79,6 +79,7 @@ in
           { id = "PowerProfile"; }
           { id = "Volume"; }
           { id = "Brightness"; }
+          { id = "DarkMode"; }
           { id = "ControlCenter"; }
         ];
       };
