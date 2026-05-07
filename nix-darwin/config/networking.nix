@@ -1,5 +1,12 @@
 {
   networking = {
+    applicationFirewall = {
+      allowSigned = true;
+      allowSignedApp = true;
+      blockAllIncoming = false;
+      enable = false;
+      enableStealthMode = false;
+    };
     knownNetworkServices = [
       "Wi-Fi"
       "Ethernet Adaptor"

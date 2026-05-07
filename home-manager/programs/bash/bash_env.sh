@@ -5,16 +5,16 @@ if [ -z "$BUN_INSTALL" ]; then
 fi
 
 case ":$PATH:" in
-  *":$HOME/.local/bin:"*) ;;
-  *) export PATH="$HOME/.local/bin:$PATH" ;;
+*":$HOME/.local/bin:"*) ;;
+*) export PATH="$HOME/.local/bin:$PATH" ;;
 esac
 
 case ":$PATH:" in
-  *":$HOME/.cargo/bin:"*) ;;
-  *) export PATH="$HOME/.cargo/bin:$PATH" ;;
+*":$HOME/.cargo/bin:"*) ;;
+*) export PATH="$HOME/.cargo/bin:$PATH" ;;
 esac
 
 case ":$PATH:" in
-  *":$HOME/.bun/bin:"*) ;;
-  *) export PATH="$HOME/.bun/bin:$PATH" ;;
+*":$HOME/.bun/bin:"*) ;;
+*) export PATH="$HOME/.bun/bin:$PATH" ;;
 esac

@@ -109,7 +109,7 @@
       "iina"
       "iterm2"
       "karabiner-elements"
-      "linear-linear"
+      "linear"
       "lm-studio"
       "notion"
       "obsidian"
