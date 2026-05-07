@@ -54,10 +54,11 @@ in
         capsuleOpacity = 0;
         widgets.left = [
           { id = "Launcher"; }
-          { id = "Workspaces"; }
           {
             id = "Clock";
             formatHorizontal = "yyyy/MM/dd HH:mm:ss";
+            formatVertical = "HH mm ss - dd MM";
+            tooltipFormat = "yyyy/MM/dd HH:mm:ss";
           }
           {
             id = "SystemMonitor";
@@ -67,8 +68,21 @@ in
           { id = "ActiveWindow"; }
           { id = "MediaMini"; }
         ];
+        widgets.center = [
+          {
+            id = "Workspace";
+            labelMode = "index";
+            showApplications = true;
+            showApplicationsHover = false;
+            showBadge = true;
+            unfocusedIconsOpacity = 0.55;
+          }
+        ];
         widgets.right = [
-          { id = "Tray"; }
+          {
+            id = "Tray";
+            drawerEnabled = false;
+          }
           { id = "Bluetooth"; }
           { id = "Network"; }
           { id = "NotificationHistory"; }
