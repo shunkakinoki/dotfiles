@@ -103,9 +103,11 @@ The output should include 'shopt -s expand_aliases'
 End
 
 It 'defines the zsh alias from envExtra so .zshenv sees it'
-When run bash -c "grep -E \"alias rm='\\\$\\{if pkgs.stdenv.isDarwin then \\\"trash\\\" else \\\"gomi\\\"\" '$ZSH_CONFIG'"
+When run bash -c "grep -F \"alias rm='\" '$ZSH_CONFIG'"
 The status should be success
 The output should include "alias rm="
+The output should include "trash"
+The output should include "gomi"
 End
 
 It 'adds local binaries to zsh envExtra for non-interactive commands'
