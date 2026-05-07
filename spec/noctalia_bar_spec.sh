@@ -10,8 +10,14 @@ The output should include 'Brightness DarkMode ControlCenter'
 End
 
 It 'shows tray items inline instead of hiding them in the drawer'
-When run bash -c "awk '/id = \"Tray\";/{in_tray=1} in_tray && /drawerEnabled = false;/{print; exit}' '$CONFIG'"
+When run bash -c "awk '/id = \"Tray\";/{in_tray=1} in_tray && /^          }/{exit} in_tray{print}' '$CONFIG'"
+The output should include 'colorizeIcons = false;'
 The output should include 'drawerEnabled = false;'
+End
+
+It 'keeps active window app icons uncolorized'
+When run bash -c "awk '/id = \"ActiveWindow\";/{in_active_window=1} in_active_window && /^          }/{exit} in_active_window{print}' '$CONFIG'"
+The output should include 'colorizeIcons = false;'
 End
 
 It 'does not duplicate the workspace widget on the left bar'
