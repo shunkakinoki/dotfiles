@@ -287,6 +287,17 @@ import ../../hosts/nixos {
         systemd.services.greetd.after = [ "fprintd.service" ];
         systemd.services.greetd.wants = [ "fprintd.service" ];
 
+        # Restart fprintd after resume so the device isn't stuck in "already claimed" state
+        systemd.services.fprintd-resume = {
+          description = "Restart fprintd after resume to clear stale device claims";
+          after = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" ];
+          wantedBy = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" ];
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${pkgs.systemd}/bin/systemctl restart fprintd.service";
+          };
+        };
+
         # Disk management
         services.gvfs.enable = true;
         services.udisks2.enable = true;
