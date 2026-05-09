@@ -1740,7 +1740,7 @@ dependencies = [
 [[package]]
 name = "git-ai"
 version = "1.4.5"
-source = "git+https://github.com/git-ai-project/git-ai?branch=main#4f2f0a9eb0829ca83397ffd93ec174ceda7b83e6"
+source = "git+https://github.com/git-ai-project/git-ai?branch=main#0c6b47daafbe656ae70e4d855addc2b03ca9dd2f"
 dependencies = [
  "chrono",
  "clap",
