@@ -23,6 +23,7 @@
       "open-pencil/tap"
       "oven-sh/bun"
       "paradigmxyz/brew"
+      "planetscale/tap"
       "steipete/tap"
     ];
     brews = [
@@ -49,6 +50,7 @@
       "opencode"
       "pandoc"
       "pinentry-mac"
+      "planetscale/tap/pscale"
       "pnpm"
       "postgresql"
       {
