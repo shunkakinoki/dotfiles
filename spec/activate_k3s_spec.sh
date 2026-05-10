@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329
+# shellcheck disable=SC2329,SC2016
 
 Describe 'config/k3s/activate.sh'
 SCRIPT="$PWD/config/k3s/activate.sh"
