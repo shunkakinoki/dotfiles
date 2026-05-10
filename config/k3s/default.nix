@@ -8,11 +8,21 @@
 let
   inherit (inputs.host) isKyber isGalactica;
   kubeconfig = "${config.home.homeDirectory}/.kube/config-kyber";
+  # Single source of truth for how the kyber k3s API is reached from
+  # other tailnet members. Both server-side and client-side activate
+  # scripts rewrite the kubeconfig server URL to this value, so kubectl
+  # works the same on every host.
+  kyberHost = "kyber.tail950b36.ts.net";
+  kyberUser = "ubuntu";
+  kyberApiUrl = "https://${kyberHost}:6443";
   # Authorize galactica on kyber so the client activation can scp the
   # kubeconfig over Tailscale.
   galacticaAuthorizedKey = (import ../../named-hosts/pubkeys.nix).galactica;
   serverActivateScript = pkgs.replaceVars ./activate.sh {
-    inherit galacticaAuthorizedKey;
+    inherit galacticaAuthorizedKey kyberApiUrl;
+  };
+  clientActivateScript = pkgs.replaceVars ./activate-client.sh {
+    inherit kyberApiUrl kyberHost kyberUser;
   };
 in
 {
@@ -52,7 +62,7 @@ in
 
   home.activation.k3s-client = lib.mkIf isGalactica (
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-client.sh}"
+      $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${clientActivateScript}"
     ''
   );
 }

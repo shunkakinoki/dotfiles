@@ -60,12 +60,12 @@ fi
 
 K3S_KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
 REMOTE_KUBECONFIG="$HOME/.kube/config"
-TAILSCALE_DNS="kyber.tail950b36.ts.net"
+KYBER_API_URL="@kyberApiUrl@"
 
 if [ -f "$K3S_KUBECONFIG" ]; then
   mkdir -p "$HOME/.kube"
   $SUDO_CMD cat "$K3S_KUBECONFIG" |
-    sed "s|https://127.0.0.1:6443|https://${TAILSCALE_DNS}:6443|g" \
+    sed "s|https://127.0.0.1:6443|${KYBER_API_URL}|g" \
       >"$REMOTE_KUBECONFIG"
   chmod 600 "$REMOTE_KUBECONFIG"
 fi
