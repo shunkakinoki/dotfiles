@@ -25,6 +25,7 @@ let
   qmd = ./qmd;
   openclaw = ./openclaw;
   paperclip = ./paperclip;
+  roborev = ./roborev;
   sshAgent = ./ssh-agent;
   tmuxSessionLogger = import ./tmux-session-logger { inherit pkgs; };
 in
@@ -48,6 +49,7 @@ in
   qmd
   openclaw
   paperclip
+  roborev
   sshAgent
   tmuxSessionLogger
 ]
