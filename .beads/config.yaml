@@ -50,4 +50,7 @@
 # - github.repo
 prefix: df
 issue-prefix: df
+# The dotfiles Dolt SQL server is managed by Home Manager launchd/systemd.
+# Keep bd status checks on the SQL probe path instead of PID-file auto-start.
+dolt.auto-start: "false"
 dolt.idle-timeout: "0"
