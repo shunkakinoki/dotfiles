@@ -8,6 +8,12 @@
 let
   inherit (inputs.host) isKyber isGalactica;
   kubeconfig = "${config.home.homeDirectory}/.kube/config-kyber";
+  # Authorize galactica on kyber so the client activation can scp the
+  # kubeconfig over Tailscale.
+  galacticaAuthorizedKey = (import ../../named-hosts/pubkeys.nix).galactica;
+  serverActivateScript = pkgs.replaceVars ./activate.sh {
+    galacticaAuthorizedKey = galacticaAuthorizedKey;
+  };
 in
 {
   home.file.".config/k3s/config.yaml" = lib.mkIf isKyber {
@@ -40,7 +46,7 @@ in
 
   home.activation.k3s-server = lib.mkIf isKyber (
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}"
+      $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${serverActivateScript}"
     ''
   );
 

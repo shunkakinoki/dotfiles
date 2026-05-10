@@ -1,6 +1,35 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+GALACTICA_AUTHORIZED_KEY="@galacticaAuthorizedKey@"
+
+ensure_authorized_key() {
+  local key="$1"
+  local ssh_dir="$HOME/.ssh"
+  local auth_file="$ssh_dir/authorized_keys"
+
+  if [ -z "$key" ] || [[ $key == "@"*"@" ]]; then
+    return 0
+  fi
+
+  mkdir -p "$ssh_dir"
+  chmod 700 "$ssh_dir"
+  touch "$auth_file"
+  chmod 600 "$auth_file"
+
+  if grep -qxF "$key" "$auth_file"; then
+    return 0
+  fi
+
+  if [ -s "$auth_file" ] && [ "$(tail -c1 "$auth_file" | wc -l)" -eq 0 ]; then
+    printf '\n' >>"$auth_file"
+  fi
+  printf '%s\n' "$key" >>"$auth_file"
+  echo "k3s-server: authorized galactica SSH key for kubeconfig sync"
+}
+
+ensure_authorized_key "$GALACTICA_AUTHORIZED_KEY"
+
 if [ ! -f "$HOME/.config/k3s/config.yaml" ]; then
   exit 0
 fi
