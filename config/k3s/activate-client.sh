@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REMOTE_HOST="kyber.tail950b36.ts.net"
+REMOTE_HOST="ubuntu@kyber.tail950b36.ts.net"
 REMOTE_KUBECONFIG_PATH=".kube/config"
 LOCAL_KUBECONFIG="$HOME/.kube/config-kyber"
 

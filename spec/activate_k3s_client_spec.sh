@@ -39,6 +39,11 @@ When run bash -c "grep 'tail950b36.ts.net' '$SCRIPT'"
 The output should include 'tail950b36.ts.net'
 End
 
+It 'connects as the kyber ubuntu user'
+When run bash -c "grep 'REMOTE_HOST=' '$SCRIPT'"
+The output should include 'ubuntu@kyber.tail950b36.ts.net'
+End
+
 It 'sets restrictive permissions on kubeconfig'
 When run bash -c "grep 'chmod 600' '$SCRIPT'"
 The output should include 'chmod 600'
