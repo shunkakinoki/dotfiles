@@ -12,7 +12,7 @@ let
   # kubeconfig over Tailscale.
   galacticaAuthorizedKey = (import ../../named-hosts/pubkeys.nix).galactica;
   serverActivateScript = pkgs.replaceVars ./activate.sh {
-    galacticaAuthorizedKey = galacticaAuthorizedKey;
+    inherit galacticaAuthorizedKey;
   };
 in
 {

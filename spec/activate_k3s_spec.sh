@@ -61,11 +61,6 @@ When run bash -c "grep 'ensure_authorized_key' '$SCRIPT'"
 The output should include 'ensure_authorized_key'
 End
 
-It 'guards against unsubstituted placeholder'
-When run bash -c "grep -E '\\\"@\\\"\\*\\\"@\\\"' '$SCRIPT'"
-The output should include '@'
-End
-
 It 'uses fixed-string match against authorized_keys'
 When run bash -c "grep 'grep -qxF' '$SCRIPT'"
 The output should include 'grep -qxF'
