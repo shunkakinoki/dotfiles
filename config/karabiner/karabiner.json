@@ -65,7 +65,8 @@
                     }
                   },
                   {
-                    "key_code": "caps_lock"
+                    "key_code": "caps_lock",
+                    "hold_down_milliseconds": 100
                   },
                   {
                     "set_variable": {
