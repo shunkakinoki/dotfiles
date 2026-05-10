@@ -260,6 +260,10 @@ It 'has spec file for config/k3s/activate.sh'
 The path "spec/activate_k3s_spec.sh" should be exist
 End
 
+It 'has spec file for config/k3s/activate-client.sh'
+The path "spec/activate_k3s_client_spec.sh" should be exist
+End
+
 It 'has spec file for hosts/darwin/activate-remove-backups.sh'
 The path "spec/activate_hosts_spec.sh" should be exist
 End
@@ -372,6 +376,7 @@ config/git-ai/activate.sh
 config/hermes/hydrate.sh
 config/hyprland/scripts/record-screen.sh
 config/hyprland/scripts/toggle-terminal.sh
+config/k3s/activate-client.sh
 config/k3s/activate.sh
 config/noctalia/ac-idle-inhibit.sh
 config/noctalia/lock-before-sleep.sh

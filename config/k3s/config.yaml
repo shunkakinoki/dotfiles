@@ -1,2 +1,5 @@
 disable:
   - traefik
+tls-san:
+  - "100.72.158.65"
+  - "kyber.tail950b36.ts.net"
