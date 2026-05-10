@@ -457,23 +457,23 @@ nix-build: nix-connect nix-trust ## Build Nix configuration.
 				case " $(NIXOS_NAMED_HOSTS) " in \
 					*" $(HOST) "*) \
 						echo "Building named NixOS host: $(HOST)"; \
-						$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.$(HOST).config.system.build.toplevel $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
+						HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.$(HOST).config.system.build.toplevel $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 						;; \
 					*) \
 						echo "Building named Darwin host: $(HOST)"; \
-						$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#darwinConfigurations.$(HOST).system $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
+						HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#darwinConfigurations.$(HOST).system $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 						;; \
 				esac; \
 			elif [ -n "$(DETECTED_HOST)" ]; then \
 				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#darwinConfigurations.$(DETECTED_HOST).system $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
+				HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#darwinConfigurations.$(DETECTED_HOST).system $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 			else \
-				$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
+				HOST=runner HOSTNAME=runner $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
-			$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.runner.config.system.build.toplevel $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
+			HOST=runner HOSTNAME=runner $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.runner.config.system.build.toplevel $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			HOST=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
+			HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI build"; \
 			exit 1; \
@@ -487,31 +487,31 @@ nix-build: nix-connect nix-trust ## Build Nix configuration.
 				case " $(NIXOS_NAMED_HOSTS) " in \
 					*" $(HOST) "*) \
 						echo "Building named NixOS host: $(HOST)"; \
-						$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.$(HOST).config.system.build.toplevel $(NIX_FLAGS) --impure --show-trace; \
+						HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.$(HOST).config.system.build.toplevel $(NIX_FLAGS) --impure --show-trace; \
 						;; \
 					*) \
 						echo "Building named Darwin host: $(HOST)"; \
-						$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#darwinConfigurations.$(HOST).system $(NIX_FLAGS) --impure --show-trace; \
+						HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#darwinConfigurations.$(HOST).system $(NIX_FLAGS) --impure --show-trace; \
 						;; \
 				esac; \
 			elif [ -n "$(DETECTED_HOST)" ]; then \
 				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#darwinConfigurations.$(DETECTED_HOST).system $(NIX_FLAGS) --impure --show-trace; \
+				HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#darwinConfigurations.$(DETECTED_HOST).system $(NIX_FLAGS) --impure --show-trace; \
 			else \
-				$(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --impure --show-trace; \
+				HOST=$(NIX_SYSTEM) HOSTNAME=$(NIX_SYSTEM) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --impure --show-trace; \
 			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			if [ -n "$(HOST)" ]; then \
 				echo "Building named host: $(HOST)"; \
-				$(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(HOST) --impure; \
+				$(SUDO) env HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(HOST) --impure; \
 			elif [ -n "$(DETECTED_HOST)" ]; then \
 				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				$(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(DETECTED_HOST) --impure; \
+				$(SUDO) env HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(DETECTED_HOST) --impure; \
 			else \
-				$(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM) --impure; \
+				$(SUDO) env HOST=$(NIX_SYSTEM) HOSTNAME=$(NIX_SYSTEM) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM) --impure; \
 			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			HOST=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --impure --show-trace; \
+			HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --impure --show-trace; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI build"; \
 			exit 1; \
@@ -598,15 +598,15 @@ nix-switch: ## Activate Nix configuration.
 	@echo "🔧 Activating Nix configuration for $(NIX_CONFIG_TYPE) on $(OS) $(ARCH) for USER=$(NIX_USERNAME)"
 	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		if [ "$(OS)" = "Darwin" ]; then \
-			$(SUDO) env CI="$$CI" IN_DOCKER="$$IN_DOCKER" $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#runner --impure --no-update-lock-file; \
+			$(SUDO) env CI="$$CI" IN_DOCKER="$$IN_DOCKER" HOST=runner HOSTNAME=runner $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#runner --impure --no-update-lock-file; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			echo "⏭️ NixOS switch skipped in CI as the runner is not a NixOS system"; \
-			$(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file || exit 0; \
+			$(SUDO) env HOST=runner HOSTNAME=runner $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file || exit 0; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
 			if [ "$$SKIP_HOME_MANAGER_SWITCH" = "true" ]; then \
 				echo "⏭️ Home-manager switch skipped (SKIP_HOME_MANAGER_SWITCH=true)"; \
 			else \
-				USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
+				HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
 			fi; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI switch"; \
@@ -619,32 +619,32 @@ nix-switch: ## Activate Nix configuration.
 		elif [ "$(OS)" = "Darwin" ]; then \
 			if [ -n "$(HOST)" ]; then \
 				echo "Switching named host: $(HOST)"; \
-				$(SUDO) HOST=$(HOST) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(HOST) --impure; \
+				$(SUDO) env HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(HOST) --impure; \
 			elif [ -n "$(DETECTED_HOST)" ]; then \
 				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				$(SUDO) HOST=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(DETECTED_HOST) --impure; \
+				$(SUDO) env HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(DETECTED_HOST) --impure; \
 			else \
-				$(SUDO) HOST=$(NIX_SYSTEM) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM) --impure; \
+				$(SUDO) env HOST=$(NIX_SYSTEM) HOSTNAME=$(NIX_SYSTEM) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM) --impure; \
 			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			if [ -n "$(HOST)" ]; then \
 				echo "Switching named host: $(HOST)"; \
-				$(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(HOST) --impure; \
+				$(SUDO) env HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(HOST) --impure; \
 			elif [ -n "$(DETECTED_HOST)" ]; then \
 				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				$(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(DETECTED_HOST) --impure; \
+				$(SUDO) env HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(DETECTED_HOST) --impure; \
 			else \
-				$(SUDO) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM) --impure; \
+				$(SUDO) env HOST=$(NIX_SYSTEM) HOSTNAME=$(NIX_SYSTEM) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM) --impure; \
 			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
 			if [ -n "$(HOST)" ]; then \
 				echo "Switching named home config: $(HOST)"; \
-				HOST=$(HOST) USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#homeConfigurations.$(HOST).activationPackage; \
+				HOST=$(HOST) HOSTNAME=$(HOST) USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#homeConfigurations.$(HOST).activationPackage; \
 			elif [ -n "$(DETECTED_HOST)" ]; then \
 				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				HOST=$(DETECTED_HOST) USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#homeConfigurations.$(DETECTED_HOST).activationPackage; \
+				HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#homeConfigurations.$(DETECTED_HOST).activationPackage; \
 			else \
-				USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
+				HOST=$(NIX_SYSTEM) HOSTNAME=$(NIX_SYSTEM) USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
 			fi; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI switch"; \
@@ -982,7 +982,7 @@ lua-check-hammerspoon-dev: ## Run the Hammerspoon Lua check inside the Nix dev s
 ##@ Launchd Services
 
 .PHONY: launchctl
-launchctl: launchctl-brew-upgrader launchctl-openclaw launchctl-cliproxyapi launchctl-cliproxyapi-backup launchctl-code-syncer launchctl-docker-postgres launchctl-dolt launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama launchctl-tmux-session-logger ## Restart all launchd agents.
+launchctl: launchctl-brew-upgrader launchctl-openclaw launchctl-cliproxyapi launchctl-cliproxyapi-backup launchctl-code-syncer launchctl-docker-postgres launchctl-dolt launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama launchctl-roborev launchctl-tmux-session-logger ## Restart all launchd agents.
 
 .PHONY: launchctl-brew-upgrader
 launchctl-brew-upgrader: ## Restart brew-updater launchd agent.
@@ -1068,6 +1068,18 @@ launchctl-ollama: ## Restart ollama launchd agent.
 	@launchctl load ~/Library/LaunchAgents/org.nix-community.home.ollama.plist
 	@echo "✅ ollama restarted"
 
+.PHONY: launchctl-roborev
+launchctl-roborev: ## Restart roborev launchd agent.
+	@echo "🔄 Restarting roborev..."
+	@if [ "$(DETECTED_HOST)" = "galactica" ] || [ "$(HOST)" = "galactica" ]; then \
+		launchctl unload ~/Library/LaunchAgents/org.nix-community.home.roborev.plist 2>/dev/null || true; \
+		sleep 3; \
+		launchctl load ~/Library/LaunchAgents/org.nix-community.home.roborev.plist; \
+	else \
+		echo "Skipping roborev launchd agent (host not galactica)"; \
+	fi
+	@echo "✅ roborev restarted"
+
 .PHONY: launchctl-tmux-session-logger
 launchctl-tmux-session-logger: ## Restart tmux-session-logger launchd agent.
 	@echo "🔄 Restarting tmux-session-logger..."
@@ -1079,7 +1091,7 @@ launchctl-tmux-session-logger: ## Restart tmux-session-logger launchd agent.
 ##@ Systemd Services (Linux)
 
 .PHONY: systemctl
-systemctl: systemctl-docker systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-code-syncer systemctl-docker-postgres systemctl-dolt systemctl-dotfiles-updater systemctl-make-updater systemctl-neverssl-keepalive systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-paperclip systemctl-tmux-session-logger ## Restart all systemd user services.
+systemctl: systemctl-docker systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-code-syncer systemctl-docker-postgres systemctl-dolt systemctl-dotfiles-updater systemctl-make-updater systemctl-neverssl-keepalive systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-paperclip systemctl-roborev systemctl-tmux-session-logger ## Restart all systemd user services.
 
 .PHONY: systemctl-docker
 systemctl-docker: ## Start Docker daemon.
@@ -1178,6 +1190,17 @@ systemctl-paperclip: ## Restart Paperclip systemd user service.
 		echo "Skipping paperclip.service (host not kyber)"; \
 	fi
 	@echo "✅ paperclip restarted"
+
+.PHONY: systemctl-roborev
+systemctl-roborev: ## Restart roborev systemd user service.
+	@echo "🔄 Restarting roborev..."
+	@if [ "$(DETECTED_HOST)" = "matic" ] || [ "$(HOST)" = "matic" ]; then \
+		systemctl --user daemon-reload; \
+		systemctl --user restart roborev.service; \
+	else \
+		echo "Skipping roborev.service (host not matic)"; \
+	fi
+	@echo "✅ roborev restarted"
 
 .PHONY: systemctl-tmux-session-logger
 systemctl-tmux-session-logger: ## Restart tmux-session-logger systemd timer and service.
