@@ -10,6 +10,13 @@
             "description": "Caps Lock to Hyper Key",
             "manipulators": [
               {
+                "conditions": [
+                  {
+                    "name": "double_tap_caps",
+                    "type": "variable_unless",
+                    "value": 1
+                  }
+                ],
                 "from": {
                   "key_code": "caps_lock",
                   "modifiers": {
@@ -52,7 +59,19 @@
                 },
                 "to": [
                   {
+                    "set_variable": {
+                      "name": "double_tap_caps",
+                      "value": 1
+                    }
+                  },
+                  {
                     "key_code": "caps_lock"
+                  },
+                  {
+                    "set_variable": {
+                      "name": "double_tap_caps",
+                      "value": 0
+                    }
                   }
                 ],
                 "type": "basic"
