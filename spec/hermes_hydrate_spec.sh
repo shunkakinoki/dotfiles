@@ -120,14 +120,14 @@ Before 'setup_gateway'
 After 'cleanup_gateway'
 
 It 'prefers the root api-keys entry from cliproxyapi config over the secret file'
-When run bash -c 'unset CLIPROXY_API_KEY; HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/.hermes/config.yaml"'
+When run bash -c 'unset CLIPROXY_API_KEY HERMES_GATEWAY_TOKEN GATEWAY_TOKEN HERMES_TELEGRAM_TOKEN TELEGRAM_TOKEN WHATSAPP_ALLOW_FROM; HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/.hermes/config.yaml"'
 The status should be success
 The output should include 'from-cliproxy-config'
 The output should not include 'from-secret-file'
 End
 
 It 'writes .env with gateway token'
-When run bash -c 'unset CLIPROXY_API_KEY; HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/.hermes/.env"'
+When run bash -c 'unset CLIPROXY_API_KEY HERMES_GATEWAY_TOKEN GATEWAY_TOKEN HERMES_TELEGRAM_TOKEN TELEGRAM_TOKEN WHATSAPP_ALLOW_FROM; HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/.hermes/.env"'
 The status should be success
 The output should include 'HERMES_GATEWAY_TOKEN=gateway-token'
 End

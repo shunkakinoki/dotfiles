@@ -20,7 +20,7 @@ fi
 
 # OSC 52 fallback: works over SSH if the terminal supports it
 # (ghostty, iTerm2, kitty, alacritty, tmux, etc.)
-if [[ -t 1 ]] || [[ -n ${TMUX:-} ]] || [[ -n ${SSH_TTY:-} ]]; then
+if [[ -t 1 ]] || [[ -n ${TMUX:-} ]] || [[ -n ${ZELLIJ:-} ]] || [[ -n ${SSH_TTY:-} ]]; then
   data=$(base64 | tr -d '\n')
   printf '\033]52;c;%s\a' "$data"
   exit 0

@@ -120,6 +120,46 @@ The output should start with $'\033]52;c;'
 End
 End
 
+Describe 'when no clipboard backend but ZELLIJ is set'
+setup() {
+  MOCK_BIN="$(mktemp -d)"
+  MOCK_ORIGINAL_PATH="${PATH:-}"
+  MOCK_ORIGINAL_WAYLAND="${WAYLAND_DISPLAY:-}"
+  MOCK_ORIGINAL_ZELLIJ="${ZELLIJ:-}"
+  # Symlink only the commands the script needs into MOCK_BIN to avoid
+  # leaking pbcopy/xclip/etc. from shared directories like /usr/bin
+  local cmd
+  for cmd in bash base64 tr printf; do
+    ln -sf "$(command -v "$cmd")" "$MOCK_BIN/$cmd"
+  done
+  export PATH="$MOCK_BIN"
+  unset WAYLAND_DISPLAY
+  export ZELLIJ=0
+  export MOCK_BIN MOCK_ORIGINAL_PATH MOCK_ORIGINAL_WAYLAND MOCK_ORIGINAL_ZELLIJ
+}
+cleanup() {
+  export PATH="$MOCK_ORIGINAL_PATH"
+  if [ -n "$MOCK_ORIGINAL_WAYLAND" ]; then
+    export WAYLAND_DISPLAY="$MOCK_ORIGINAL_WAYLAND"
+  fi
+  if [ -n "$MOCK_ORIGINAL_ZELLIJ" ]; then
+    export ZELLIJ="$MOCK_ORIGINAL_ZELLIJ"
+  else
+    unset ZELLIJ
+  fi
+  rm -rf "$MOCK_BIN"
+  unset MOCK_BIN MOCK_ORIGINAL_PATH MOCK_ORIGINAL_WAYLAND MOCK_ORIGINAL_ZELLIJ
+}
+Before 'setup'
+After 'cleanup'
+
+It 'uses OSC 52 escape sequence'
+When run bash "$SCRIPT" <<<"hello"
+The status should be success
+The output should start with $'\033]52;c;'
+End
+End
+
 Describe 'when no clipboard backend is available'
 setup() {
   MOCK_BIN="$(mktemp -d)"
@@ -128,7 +168,7 @@ setup() {
   MOCK_ORIGINAL_SSH_TTY="${SSH_TTY:-}"
   ln -sf "$(command -v bash)" "$MOCK_BIN/bash"
   export PATH="$MOCK_BIN"
-  unset WAYLAND_DISPLAY SSH_TTY TMUX
+  unset WAYLAND_DISPLAY SSH_TTY TMUX ZELLIJ
   export MOCK_BIN MOCK_ORIGINAL_PATH MOCK_ORIGINAL_WAYLAND MOCK_ORIGINAL_SSH_TTY
 }
 cleanup() {
