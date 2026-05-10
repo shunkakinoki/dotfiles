@@ -35,8 +35,8 @@ TAILSCALE_DNS="kyber.tail950b36.ts.net"
 
 if [ -f "$K3S_KUBECONFIG" ]; then
   mkdir -p "$HOME/.kube"
-  $SUDO_CMD cat "$K3S_KUBECONFIG" \
-    | sed "s|https://127.0.0.1:6443|https://${TAILSCALE_DNS}:6443|g" \
-    > "$REMOTE_KUBECONFIG"
+  $SUDO_CMD cat "$K3S_KUBECONFIG" |
+    sed "s|https://127.0.0.1:6443|https://${TAILSCALE_DNS}:6443|g" \
+      >"$REMOTE_KUBECONFIG"
   chmod 600 "$REMOTE_KUBECONFIG"
 fi
