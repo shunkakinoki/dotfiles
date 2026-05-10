@@ -3,10 +3,7 @@
 # 1. Add the secret definition here
 # 2. Run: make encrypt-key-kyber KEY_FILE=/path/to/secret
 let
-  # Galactica's SSH public key
-  galactica = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEKze2jlpV7SyTKA2ezqbumpCiDn+5Sj4z5SxrqfzesX shunkakinoki@gmail.com";
-  # Kyber's SSH public key
-  kyber = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO0IZtP3KSzY6GVSZ+R+VQYYfu3sEOVaQGDblQxAtwNM ubuntu@kyber";
+  inherit (import ../pubkeys.nix) galactica kyber;
   # All machines that can decrypt shared secrets
   allMachines = [
     galactica

@@ -44,4 +44,16 @@ When run bash -c "grep 'chmod 600' '$SCRIPT'"
 The output should include 'chmod 600'
 End
 End
+
+Describe 'failure visibility'
+It 'does not silently discard scp stderr'
+When run bash -c "grep 'scp ' '$SCRIPT'"
+The output should not include '2>/dev/null'
+End
+
+It 'logs scp failures to stderr'
+When run bash -c "grep 'failed to fetch kubeconfig' '$SCRIPT'"
+The output should include 'failed to fetch kubeconfig'
+End
+End
 End

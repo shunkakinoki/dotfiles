@@ -1,10 +1,5 @@
 let
-  # Galactica's SSH public key
-  galactica = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEKze2jlpV7SyTKA2ezqbumpCiDn+5Sj4z5SxrqfzesX shunkakinoki@gmail.com";
-  # Kyber's SSH public key
-  kyber = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO0IZtP3KSzY6GVSZ+R+VQYYfu3sEOVaQGDblQxAtwNM ubuntu@kyber";
-  # Matic's SSH public key
-  matic = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEeknNbHasmT+43PgO9oy0mutoe+V2R2ZNRa5SPOLmLN skakinoki@matic";
+  inherit (import ../pubkeys.nix) galactica kyber matic;
   # All machines that can decrypt shared secrets
   allMachines = [
     galactica
