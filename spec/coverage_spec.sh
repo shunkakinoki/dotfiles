@@ -208,6 +208,10 @@ It 'has spec file for nix-darwin/services/pmset-battery-policy/power-policy.sh'
 The path "spec/pmset_battery_policy_spec.sh" should be exist
 End
 
+It 'has spec file for nix-darwin/config/keyboard/apply-hid-user-key-mappings.sh'
+The path "spec/keyboard_hid_user_key_mappings_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/activation/ensure-directory.sh'
 The path "spec/activation_shared_spec.sh" should be exist
 End
@@ -434,6 +438,7 @@ named-hosts/kyber/rekey-galactica.sh
 named-hosts/kyber/setup.sh
 named-hosts/matic/falcon-init.sh
 named-hosts/matic/pam-gnome-keyring-tpm-unlock.sh
+nix-darwin/config/keyboard/apply-hid-user-key-mappings.sh
 nix-darwin/services/pmset-battery-policy/power-policy.sh
 scripts/build-neovim-plugins.sh
 scripts/check-nix-inline-scripts.sh
