@@ -17,7 +17,13 @@ fi
 
 if [ -n "$SUDO_CMD" ]; then
   $SUDO_CMD mkdir -p /etc/rancher/k3s
-  $SUDO_CMD cp "$HOME/.config/k3s/config.yaml" /etc/rancher/k3s/config.yaml
+  if ! diff -q "$HOME/.config/k3s/config.yaml" /etc/rancher/k3s/config.yaml >/dev/null 2>&1; then
+    $SUDO_CMD cp "$HOME/.config/k3s/config.yaml" /etc/rancher/k3s/config.yaml
+    if systemctl is-active --quiet k3s; then
+      $SUDO_CMD systemctl restart k3s
+      echo "k3s restarted to apply config changes"
+    fi
+  fi
 else
   echo "Warning: sudo not found, skipping k3s config installation" >&2
 fi
