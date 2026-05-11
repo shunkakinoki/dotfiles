@@ -65,6 +65,7 @@ with pkgs;
   jujutsu
   just
   k6
+  lean4
   (if stdenv.isLinux && isDesktop then llama-cpp.override { vulkanSupport = true; } else llama-cpp)
   llm
   lsof
