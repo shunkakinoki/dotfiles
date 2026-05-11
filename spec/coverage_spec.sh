@@ -405,6 +405,7 @@ home-manager/services/obsidian/obsidian-headless.sh
 home-manager/services/openclaw/activate.sh
 home-manager/services/paperclip/activate.sh
 home-manager/services/qmd/activate.sh
+home-manager/services/roborev/activate.sh
 home-manager/modules/tailscale/activate-create-dirs.sh
 home-manager/modules/tailscale/activate-install-service.sh
 home-manager/modules/uv-globals/install-uv-globals.sh
