@@ -18,9 +18,6 @@
       name = "Adwaita";
       size = 24;
     };
-    gtk4.theme = {
-      name = "Adwaita";
-      package = pkgs.gnome-themes-extra;
-    };
+    gtk4.theme = null;
   };
 }

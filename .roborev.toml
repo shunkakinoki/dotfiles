@@ -1,5 +1,5 @@
 # Default agent for this repo when no workflow-specific agent is set.
-agent = 'gemini'
+agent = 'codex'
 # Default model for this repo when no workflow-specific model is set.
 model = ''
 # Backup agent for this repo if the primary agent fails.

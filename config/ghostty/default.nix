@@ -1,13 +1,10 @@
 { pkgs, ... }:
 let
   inherit (pkgs) lib;
-  fishPath = "${pkgs.fish}/bin/fish";
-  staticConfig = builtins.readFile ./config;
-  configText = builtins.replaceStrings [ "__FISH_PATH__" ] [ fishPath ] staticConfig;
 in
 {
   xdg.configFile."ghostty/config" = {
-    text = configText;
+    source = ./config;
   };
   xdg.configFile."ghostty/themes/Dracula Custom" = {
     source = ./themes + "/Dracula Custom";
@@ -20,7 +17,7 @@ in
   home.file."Library/Application Support/com.mitchellh.ghostty/config" =
     lib.mkIf pkgs.stdenv.isDarwin
       {
-        text = configText;
+        source = ./config;
       };
   home.file."Library/Application Support/com.mitchellh.ghostty/themes/Dracula Custom" =
     lib.mkIf pkgs.stdenv.isDarwin
