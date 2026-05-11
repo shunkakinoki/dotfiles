@@ -1091,7 +1091,7 @@ launchctl-tmux-session-logger: ## Restart tmux-session-logger launchd agent.
 ##@ Systemd Services (Linux)
 
 .PHONY: systemctl
-systemctl: systemctl-docker systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-code-syncer systemctl-docker-postgres systemctl-dolt systemctl-dotfiles-updater systemctl-make-updater systemctl-neverssl-keepalive systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-paperclip systemctl-roborev systemctl-tmux-session-logger ## Restart all systemd user services.
+systemctl: systemctl-docker systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-code-syncer systemctl-docker-postgres systemctl-dolt systemctl-dotfiles-updater systemctl-make-updater systemctl-neverssl-keepalive systemctl-noctalia-shell systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-paperclip systemctl-roborev systemctl-tmux-session-logger ## Restart all systemd user services.
 
 .PHONY: systemctl-docker
 systemctl-docker: ## Start Docker daemon.
@@ -1152,6 +1152,22 @@ systemctl-neverssl-keepalive: ## Restart neverssl-keepalive systemd timer and se
 	@echo "🔄 Restarting neverssl-keepalive..."
 	@systemctl --user restart neverssl-keepalive.timer || true
 	@echo "✅ neverssl-keepalive restarted"
+
+.PHONY: systemctl-noctalia-shell
+systemctl-noctalia-shell: ## Restart noctalia-shell (quickshell) after Nix rebuild (matic only).
+	@echo "🔄 Restarting noctalia-shell..."
+	@if [ "$(DETECTED_HOST)" = "matic" ] || [ "$(HOST)" = "matic" ]; then \
+		if [ -n "$$WAYLAND_DISPLAY" ]; then \
+			pkill -x quickshell || true; \
+			sleep 1; \
+			nohup noctalia-shell >/dev/null 2>&1 & \
+		else \
+			echo "Skipping noctalia-shell (WAYLAND_DISPLAY not set)"; \
+		fi; \
+	else \
+		echo "Skipping noctalia-shell (host not matic)"; \
+	fi
+	@echo "✅ noctalia-shell restarted"
 
 .PHONY: systemctl-obsidian
 systemctl-obsidian: ## Restart Obsidian headless systemd user service.
