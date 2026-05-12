@@ -8,6 +8,7 @@ embeddeddolt/
 bd.sock
 bd.sock.startlock
 sync-state.json
+last_pull
 last-touched
 .exclusive-lock
 
