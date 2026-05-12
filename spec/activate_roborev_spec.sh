@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 Describe 'home-manager/services/roborev/activate.sh'
 SCRIPT="$PWD/home-manager/services/roborev/activate.sh"
 
@@ -30,6 +31,7 @@ End
 
 It 'passes data dir to activate script'
 When run cat "$PWD/home-manager/services/roborev/default.nix"
+# shellcheck disable=SC2016
 The output should include '"${./activate.sh}" "${dataDir}"'
 End
 End
