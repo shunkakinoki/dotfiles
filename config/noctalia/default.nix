@@ -26,7 +26,7 @@ in
     Service = {
       Type = "simple";
       PassEnvironment = "WAYLAND_DISPLAY";
-      Environment = "PATH=${pkgs.wlinhibit}/bin";
+      Environment = "PATH=${pkgs.wlinhibit}/bin:${pkgs.coreutils}/bin";
       ExecStart = "${pkgs.bash}/bin/bash ${./ac-idle-inhibit.sh}";
       Restart = "on-failure";
     };
