@@ -25,6 +25,7 @@ in
     };
     Service = {
       Type = "simple";
+      Environment = "PATH=${pkgs.wlinhibit}/bin";
       ExecStart = "${pkgs.bash}/bin/bash ${./ac-idle-inhibit.sh}";
       Restart = "on-failure";
     };
