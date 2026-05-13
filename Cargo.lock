@@ -1491,9 +1491,9 @@ dependencies = [
 
 [[package]]
 name = "filetime"
-version = "0.2.28"
+version = "0.2.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2d5b2eef6fafbf69f877e55509ce5b11a760690ac9700a2921be067aa6afaef6"
+checksum = "5c287a33c7f0a620c38e641e7f60827713987b3c0f26e8ddc9462cc69cf75759"
 dependencies = [
  "cfg-if",
  "libc",
@@ -1740,7 +1740,7 @@ dependencies = [
 [[package]]
 name = "git-ai"
 version = "1.4.8"
-source = "git+https://github.com/git-ai-project/git-ai?branch=main#549c578712db0d81aedceb4eccbaa3d2173d7000"
+source = "git+https://github.com/git-ai-project/git-ai?branch=main#08a2f9515cca32052cc99f2c49fea8acc267d579"
 dependencies = [
  "chrono",
  "clap",
