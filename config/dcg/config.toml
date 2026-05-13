@@ -3,31 +3,137 @@ custom_paths = ["~/.config/dcg/packs/*.yaml"]
 
 enabled = [
 
-  # CI/CD
-  "cicd.github_actions",
+  # API Gateway
+  "apigateway.apigee",
+  "apigateway.aws",
+  "apigateway.kong",
 
-  # database
-  "database.postgresql",
+  # Backup
+  "backup.borg",
+  "backup.rclone",
+  "backup.restic",
+  "backup.velero",
 
-  # Cloudflare
+  # CDN
   "cdn.cloudflare_workers",
+  "cdn.cloudfront",
+  "cdn.fastly",
+
+  # CI/CD
+  "cicd.circleci",
+  "cicd.github_actions",
+  "cicd.gitlab_ci",
+  "cicd.jenkins",
+
+  # Cloud
+  "cloud.aws",
+  "cloud.azure",
+  "cloud.gcp",
+
+  # Containers
+  "containers.compose",
+  "containers.docker",
+  "containers.podman",
+
+  # Core
+  "core.filesystem",
+  "core.git",
+
+  # Database
+  "database.mongodb",
+  "database.mysql",
+  "database.postgresql",
+  "database.redis",
+  "database.sqlite",
+  "database.supabase",
+
+  # DNS
   "dns.cloudflare",
+  "dns.generic",
+  "dns.route53",
+
+  # Email
+  "email.mailgun",
+  "email.postmark",
+  "email.sendgrid",
+  "email.ses",
+
+  # Feature Flags
+  "featureflags.flipt",
+  "featureflags.launchdarkly",
+  "featureflags.split",
+  "featureflags.unleash",
 
   # Infrastructure
+  "infrastructure.ansible",
+  "infrastructure.pulumi",
   "infrastructure.terraform",
 
-  # Secrets management
-  "secrets.onepassword",
+  # Kubernetes
+  "kubernetes.helm",
+  "kubernetes.kubectl",
+  "kubernetes.kustomize",
 
-  # System
-  "system.permissions",
-  "system.services",
+  # Load Balancer
+  "loadbalancer.elb",
+  "loadbalancer.haproxy",
+  "loadbalancer.nginx",
+  "loadbalancer.traefik",
+
+  # Messaging
+  "messaging.kafka",
+  "messaging.nats",
+  "messaging.rabbitmq",
+  "messaging.sqs_sns",
+
+  # Monitoring
+  "monitoring.datadog",
+  "monitoring.newrelic",
+  "monitoring.pagerduty",
+  "monitoring.prometheus",
+  "monitoring.splunk",
+
+  # Package Managers
+  "package_managers",
+
+  # Payment
+  "payment.braintree",
+  "payment.square",
+  "payment.stripe",
 
   # Platform
   "platform.github",
+  "platform.gitlab",
   "platform.railway",
 
+  # Remote
+  "remote.rsync",
+  "remote.scp",
+  "remote.ssh",
+
+  # Search
+  "search.algolia",
+  "search.elasticsearch",
+  "search.meilisearch",
+  "search.opensearch",
+
+  # Secrets
+  "secrets.aws_secrets",
+  "secrets.doppler",
+  "secrets.onepassword",
+  "secrets.vault",
+
   # Storage
+  "storage.azure_blob",
   "storage.gcs",
+  "storage.minio",
   "storage.s3",
+
+  # Strict Git
+  "strict_git",
+
+  # System
+  "system.disk",
+  "system.permissions",
+  "system.services",
 ]
