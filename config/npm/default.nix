@@ -1,5 +1,4 @@
-_:
-{
+_: {
   home.file.".npmrc" = {
     source = ./npmrc;
     force = true;
