@@ -1,35 +1,33 @@
 [packs]
-custom_paths = [
-    "~/.config/dcg/packs/*.yaml",
-]
+custom_paths = ["~/.config/dcg/packs/*.yaml"]
 
 enabled = [
 
-    # CI/CD
-    "cicd.github_actions",
+  # CI/CD
+  "cicd.github_actions",
 
-    # database
-    "database.postgresql",
+  # database
+  "database.postgresql",
 
-    # Cloudflare
-    "cdn.cloudflare_workers",
-    "dns.cloudflare",
+  # Cloudflare
+  "cdn.cloudflare_workers",
+  "dns.cloudflare",
 
-    # Infrastructure
-    "infrastructure.terraform",
+  # Infrastructure
+  "infrastructure.terraform",
 
-    # Secrets management
-    "secrets.onepassword",
+  # Secrets management
+  "secrets.onepassword",
 
-    # System
-    "system.permissions",
-    "system.services",
+  # System
+  "system.permissions",
+  "system.services",
 
-    # Platform
-    "platform.github",
-    "platform.railway",
+  # Platform
+  "platform.github",
+  "platform.railway",
 
-    # Storage
-    "storage.gcs",
-    "storage.s3"
+  # Storage
+  "storage.gcs",
+  "storage.s3",
 ]
