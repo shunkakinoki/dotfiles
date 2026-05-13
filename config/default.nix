@@ -12,6 +12,7 @@ in
   ./crush
   ./cursor
   ./claude
+  ./dcg
   ./direnv
   ./factory
   ./gemini
