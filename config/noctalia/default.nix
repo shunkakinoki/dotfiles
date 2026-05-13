@@ -16,15 +16,24 @@ in
     force = true;
   };
 
-  # Inhibit idle when plugged into AC; noctalia's idle timeouts apply on battery only.
+  # Screen-off and suspend on battery only; noctalia handles lock on both AC and battery.
   systemd.user.services.ac-idle-inhibit = {
     Unit = {
-      Description = "Inhibit idle when on AC power";
+      Description = "Screen-off and suspend on battery via swayidle";
       After = [ "graphical-session.target" ];
       PartOf = [ "graphical-session.target" ];
     };
     Service = {
       Type = "simple";
+      PassEnvironment = "WAYLAND_DISPLAY";
+      Environment = "PATH=${
+        pkgs.lib.makeBinPath [
+          pkgs.swayidle
+          pkgs.hyprland
+          pkgs.coreutils
+          pkgs.systemd
+        ]
+      }";
       ExecStart = "${pkgs.bash}/bin/bash ${./ac-idle-inhibit.sh}";
       Restart = "on-failure";
     };
@@ -148,9 +157,9 @@ in
       wallpaper.enabled = false;
       idle = {
         enabled = true;
-        screenOffTimeout = 300; # 5 min on battery
+        screenOffTimeout = 0;
         lockTimeout = 300;
-        suspendTimeout = 600; # 10 min on battery
+        suspendTimeout = 0;
       };
       systemMonitor.enableDgpuMonitoring = true;
       colorSchemes.schedulingMode = "location";

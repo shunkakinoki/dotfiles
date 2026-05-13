@@ -5,6 +5,7 @@ in
 [
   ./aichat
   ./amp
+  ./bun
   ./ccs
   ./cliproxyapi
   ./codex
@@ -25,12 +26,14 @@ in
   ./karabiner
   ./llm
   ./mempalace
+  ./npm
   ./obsidian
   ./omp
   ./openclaw
   ./opencode
   ./paperclip
   ./pi
+  ./pnpm
   ./serena
   ./starship
   ./tmuxinator
