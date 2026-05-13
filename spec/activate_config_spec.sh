@@ -55,6 +55,25 @@ The output should include 'SETTINGS_JSON'
 End
 End
 
+Describe 'config/dcg/activate.sh'
+SCRIPT="$PWD/config/dcg/activate.sh"
+
+It 'uses bash shebang'
+When run bash -c "head -1 '$SCRIPT'"
+The output should include '#!/usr/bin/env bash'
+End
+
+It 'creates packs directory'
+When run bash -c "grep 'mkdir -p' '$SCRIPT'"
+The output should include '.config/dcg/packs'
+End
+
+It 'copies config.toml'
+When run bash -c "grep 'CONFIG_TOML' '$SCRIPT'"
+The output should include 'CONFIG_TOML'
+End
+End
+
 Describe 'config/cursor/activate.sh'
 SCRIPT="$PWD/config/cursor/activate.sh"
 
