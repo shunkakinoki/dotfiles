@@ -6,6 +6,7 @@
   wayland.windowManager.hyprland = {
     enable = true;
     package = pkgs.hyprland;
+    configType = "hyprlang";
     systemd.enable = false;
     extraConfig = ''
       exec-once = noctalia-shell
