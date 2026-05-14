@@ -26,6 +26,7 @@
       "/Applications/Claude.app"
       "/Applications/Conductor.app"
       "/Applications/OpenClaw.app"
+      "/Applications/Beekeeper Studio.app"
       "/Applications/Google Chrome.app"
       "/Applications/Docker.app"
       "/Applications/Docker.app/Contents/MacOS/Docker Desktop.app"
