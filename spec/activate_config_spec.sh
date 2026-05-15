@@ -34,6 +34,79 @@ It 'registers the shared GitHub settings blocker'
 When run jq -r '.hooks.PreToolUse[] | select(.matcher == "Bash") | .hooks[].command' "$HOOKS_JSON"
 The output should include 'config/shared/hooks/block-gh-settings.sh'
 End
+
+It 'registers dcg in the Bash pre-tool hook chain'
+When run jq -r '.hooks.PreToolUse[] | select(.matcher == "Bash") | .hooks[].command' "$HOOKS_JSON"
+The output should include 'command -v dcg >/dev/null 2>&1 && dcg'
+End
+End
+
+Describe 'config/copilot/activate.sh'
+SCRIPT="$PWD/config/copilot/activate.sh"
+CONFIG_JSON="$PWD/config/copilot/config.json"
+
+It 'uses bash shebang'
+When run bash -c "head -1 '$SCRIPT'"
+The output should include '#!/usr/bin/env bash'
+End
+
+It 'creates .copilot directory'
+When run bash -c "grep 'mkdir -p' '$SCRIPT'"
+The output should include '.copilot'
+End
+
+It 'registers dcg in the pre-tool hook chain'
+When run jq -r '.hooks.preToolUse[].command' "$CONFIG_JSON"
+The output should include 'command -v dcg >/dev/null 2>&1 && dcg'
+End
+
+It 'registers rtk rewrite in the pre-tool hook chain'
+When run jq -r '.hooks.preToolUse[].command' "$CONFIG_JSON"
+The output should include '$HOME/.copilot/hooks/rtk-rewrite.sh'
+End
+
+It 'registers security in the pre-tool hook chain'
+When run jq -r '.hooks.preToolUse[].command' "$CONFIG_JSON"
+The output should include '$HOME/.copilot/hooks/security.sh'
+End
+
+It 'replaces existing config with the managed config'
+TMP_HOME="$(mktemp -d)"
+mkdir -p "$TMP_HOME/.copilot"
+cat >"$TMP_HOME/.copilot/config.json" <<'JSON'
+{
+  "banner": "never",
+  "hooks": {
+    "preToolUse": [
+      {
+        "type": "command",
+        "command": "existing-hook",
+        "timeout": 1
+      }
+    ]
+  }
+}
+JSON
+
+When run bash -c 'HOME="$1" bash "$2" "$3" && jq -r ".disableAllHooks, (.hooks.preToolUse[].command)" "$1/.copilot/config.json"' _ "$TMP_HOME" "$SCRIPT" "$CONFIG_JSON"
+The status should be success
+The output should include 'false'
+The output should include 'command -v dcg >/dev/null 2>&1 && dcg'
+End
+End
+
+Describe 'config/copilot/default.nix'
+DEFAULT_NIX="$PWD/config/copilot/default.nix"
+
+It 'installs Copilot rtk rewrite hook'
+When run cat "$DEFAULT_NIX"
+The output should include '.copilot/hooks/rtk-rewrite.sh'
+End
+
+It 'installs Copilot security hook'
+When run cat "$DEFAULT_NIX"
+The output should include '.copilot/hooks/security.sh'
+End
 End
 
 Describe 'config/claude/activate.sh'

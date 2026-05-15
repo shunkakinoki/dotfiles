@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# block-git-push.sh - Shared hook for Claude Code + Codex
+# block-git-push.sh - Shared hook for Claude Code + Codex + Copilot
 # Blocks git push to main/master unless repo is in the allowlist.
 # Exit 2 = block (Codex), JSON decision output (Claude).
 set -euo pipefail
@@ -13,8 +13,8 @@ ALLOWED_REPOS=(
 # Read tool input from stdin
 input=$(cat)
 
-# Extract command (works for both Claude and Codex input formats)
-command=$(echo "$input" | jq -r '.tool_input.command // .command // empty' 2>/dev/null)
+# Extract command (works for Claude, Codex, and Copilot hook input formats)
+command=$(echo "$input" | jq -r '.tool.input.command // .tool_input.command // .toolArgs.command // .toolInput.command // .command // empty' 2>/dev/null)
 [[ -z $command ]] && exit 0
 
 # Only check git push commands

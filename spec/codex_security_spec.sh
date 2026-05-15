@@ -11,6 +11,12 @@ When run bash "$SCRIPT"
 The status should be success
 End
 
+It 'passes non-shell Copilot tools through'
+Data '{"toolName": "read", "toolArgs": {"command": "sudo rm -rf /"}}'
+When run bash "$SCRIPT"
+The status should be success
+End
+
 It 'passes when no tool specified'
 Data '{}'
 When run bash "$SCRIPT"
@@ -56,6 +62,20 @@ End
 
 It 'blocks dd if='
 Data '{"tool_name": "Bash", "tool_input": {"command": "dd if=/dev/zero of=/tmp/zero bs=1 count=1"}}'
+When run bash "$SCRIPT"
+The status should eq 2
+The stderr should include 'BLOCKED'
+End
+
+It 'blocks Copilot shell input with object toolArgs'
+Data '{"toolName": "shell", "toolArgs": {"command": "sudo rm -rf /"}}'
+When run bash "$SCRIPT"
+The status should eq 2
+The stderr should include 'BLOCKED'
+End
+
+It 'blocks Copilot bash input with string toolArgs'
+Data '{"toolName": "bash", "toolArgs": "{\"command\":\"rm -rf /*\"}"}'
 When run bash "$SCRIPT"
 The status should eq 2
 The stderr should include 'BLOCKED'

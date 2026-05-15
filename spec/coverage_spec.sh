@@ -367,6 +367,7 @@ config/claude/hooks/security.sh
 config/claude/hooks/atuin-history.sh
 config/claude/hooks/statusline.sh
 config/codex/activate.sh
+config/copilot/activate.sh
 config/codex/hooks/atuin-history.sh
 config/dcg/activate.sh
 config/codex/hooks/notify.sh

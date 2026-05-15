@@ -1,0 +1,34 @@
+{
+  "disableAllHooks": false,
+  "hooks": {
+    "preToolUse": [
+      {
+        "type": "command",
+        "matcher": "bash|shell|Bash",
+        "command": "$HOME/.copilot/hooks/rtk-rewrite.sh",
+        "timeout": 5
+      },
+      {
+        "type": "command",
+        "command": "command -v dcg >/dev/null 2>&1 && dcg",
+        "timeout": 5
+      },
+      {
+        "type": "command",
+        "matcher": "bash|shell|Bash",
+        "command": "$HOME/.copilot/hooks/security.sh",
+        "timeout": 5
+      },
+      {
+        "type": "command",
+        "command": "$HOME/dotfiles/config/shared/hooks/block-git-push.sh",
+        "timeout": 5
+      },
+      {
+        "type": "command",
+        "command": "$HOME/dotfiles/config/shared/hooks/block-gh-settings.sh",
+        "timeout": 5
+      }
+    ]
+  }
+}
