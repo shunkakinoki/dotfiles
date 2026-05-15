@@ -9,6 +9,7 @@ in
   ./ccs
   ./cliproxyapi
   ./codex
+  ./copilot
   ./crush
   ./cursor
   ./claude

@@ -103,6 +103,17 @@ The stderr should include 'BLOCKED'
 End
 End
 
+Describe 'copilot input format'
+Before 'setup'
+
+It 'blocks Copilot shell push to main'
+Data '{"toolName": "shell", "toolArgs": {"command": "git push origin main"}}'
+When run bash -c "cd '$TEMP_REPO' && bash '$SCRIPT'"
+The status should eq 2
+The stderr should include 'BLOCKED'
+End
+End
+
 Describe 'edge cases'
 Before 'setup'
 

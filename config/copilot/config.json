@@ -1,0 +1,22 @@
+{
+  "disableAllHooks": false,
+  "hooks": {
+    "preToolUse": [
+      {
+        "type": "command",
+        "command": "command -v dcg >/dev/null 2>&1 && dcg",
+        "timeout": 5
+      },
+      {
+        "type": "command",
+        "command": "$HOME/dotfiles/config/shared/hooks/block-git-push.sh",
+        "timeout": 5
+      },
+      {
+        "type": "command",
+        "command": "$HOME/dotfiles/config/shared/hooks/block-gh-settings.sh",
+        "timeout": 5
+      }
+    ]
+  }
+}

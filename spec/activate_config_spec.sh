@@ -34,6 +34,56 @@ It 'registers the shared GitHub settings blocker'
 When run jq -r '.hooks.PreToolUse[] | select(.matcher == "Bash") | .hooks[].command' "$HOOKS_JSON"
 The output should include 'config/shared/hooks/block-gh-settings.sh'
 End
+
+It 'registers dcg in the Bash pre-tool hook chain'
+When run jq -r '.hooks.PreToolUse[] | select(.matcher == "Bash") | .hooks[].command' "$HOOKS_JSON"
+The output should include 'command -v dcg >/dev/null 2>&1 && dcg'
+End
+End
+
+Describe 'config/copilot/activate.sh'
+SCRIPT="$PWD/config/copilot/activate.sh"
+CONFIG_JSON="$PWD/config/copilot/config.json"
+
+It 'uses bash shebang'
+When run bash -c "head -1 '$SCRIPT'"
+The output should include '#!/usr/bin/env bash'
+End
+
+It 'creates .copilot directory'
+When run bash -c "grep 'mkdir -p' '$SCRIPT'"
+The output should include 'COPILOT_DIR'
+End
+
+It 'registers dcg in the pre-tool hook chain'
+When run jq -r '.hooks.preToolUse[].command' "$CONFIG_JSON"
+The output should include 'command -v dcg >/dev/null 2>&1 && dcg'
+End
+
+It 'preserves existing config while merging managed hooks'
+TMP_HOME="$(mktemp -d)"
+mkdir -p "$TMP_HOME/.copilot"
+cat >"$TMP_HOME/.copilot/config.json" <<'JSON'
+{
+  "banner": "never",
+  "hooks": {
+    "preToolUse": [
+      {
+        "type": "command",
+        "command": "existing-hook",
+        "timeout": 1
+      }
+    ]
+  }
+}
+JSON
+
+When run bash -c 'HOME="$1" bash "$2" "$3" jq && jq -r ".banner, (.hooks.preToolUse[].command)" "$1/.copilot/config.json"' _ "$TMP_HOME" "$SCRIPT" "$CONFIG_JSON"
+The status should be success
+The output should include 'never'
+The output should include 'existing-hook'
+The output should include 'command -v dcg >/dev/null 2>&1 && dcg'
+End
 End
 
 Describe 'config/claude/activate.sh'

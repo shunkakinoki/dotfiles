@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# block-gh-settings.sh — Shared hook for Claude Code + Codex
+# block-gh-settings.sh — Shared hook for Claude Code + Codex + Copilot
 # Blocks gh CLI commands that modify GitHub repository settings.
 # Exit 2 = block (Codex), JSON decision output (Claude).
 set -euo pipefail
@@ -7,8 +7,8 @@ set -euo pipefail
 # Read tool input from stdin
 input=$(cat)
 
-# Extract command
-command=$(echo "$input" | jq -r '.tool_input.command // .command // empty' 2>/dev/null)
+# Extract command (works for Claude, Codex, and Copilot hook input formats)
+command=$(echo "$input" | jq -r '.tool.input.command // .tool_input.command // .toolArgs.command // .toolInput.command // .command // empty' 2>/dev/null)
 [[ -z $command ]] && exit 0
 
 # Block: gh repo <destructive-subcommand>

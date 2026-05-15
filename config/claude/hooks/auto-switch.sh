@@ -13,7 +13,7 @@ if ! command -v cswap &>/dev/null; then
 fi
 
 # Require at least 2 managed accounts
-ACCOUNT_COUNT=$(cswap --list 2>/dev/null | grep -c '^\s*[0-9]' || echo 0)
+ACCOUNT_COUNT=$(cswap --list 2>/dev/null | grep -c '^\s*[0-9]' || true)
 if [ "$ACCOUNT_COUNT" -lt 2 ]; then
   exit 0
 fi

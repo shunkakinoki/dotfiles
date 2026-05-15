@@ -113,6 +113,17 @@ End
 
 End
 
+Describe 'copilot input format'
+
+It 'blocks Copilot gh repo edit'
+Data '{"toolName": "shell", "toolArgs": {"command": "gh repo edit owner/repo --visibility private"}}'
+When run bash "$SCRIPT"
+The status should eq 2
+The stderr should include 'BLOCKED'
+End
+
+End
+
 Describe 'edge cases'
 
 It 'passes with empty input'
