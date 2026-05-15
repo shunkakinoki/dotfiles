@@ -19,15 +19,15 @@ fi
 tmp=$(mktemp "${CONFIG_JSON}.tmp.XXXXXX")
 trap 'rm -f "$tmp"' EXIT
 
-# shellcheck disable=SC2016
-"$JQ_BIN" -s '
+jq_filter=$(
+  cat <<'JQ'
   def hook_key:
     [
       (.type // ""),
       (.command // ""),
       (.bash // ""),
       (.powershell // "")
-    ] | join("\\u0000");
+    ] | join("\u0000");
 
   def dedupe_hooks:
     reduce .[] as $hook (
@@ -53,7 +53,10 @@ trap 'rm -f "$tmp"' EXIT
       )
     )
   }
-' "$CONFIG_JSON" "$MANAGED_CONFIG_JSON" >"$tmp"
+JQ
+)
+
+"$JQ_BIN" -s "$jq_filter" "$CONFIG_JSON" "$MANAGED_CONFIG_JSON" >"$tmp"
 
 cp -f "$tmp" "$CONFIG_JSON"
 chmod 600 "$CONFIG_JSON"
