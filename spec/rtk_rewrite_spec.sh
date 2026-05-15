@@ -54,6 +54,14 @@ run_hook_jq() {
   fi
 }
 
+run_hook_modified_args() {
+  if [ "$HAS_RTK_REWRITE" = true ]; then
+    bash "$SCRIPT" | jq -r '.modifiedArgs.command'
+  else
+    PATH="$MOCK_BIN:$PATH" bash "$SCRIPT" | jq -r '.modifiedArgs.command'
+  fi
+}
+
 Describe 'guards'
 It 'exits silently when no command in input'
 Data '{"tool_input": {}}'
@@ -100,6 +108,22 @@ Data '{"tool_input": {"command": "echo hello"}}'
 When run run_hook
 The status should be success
 The output should eq ''
+End
+
+It 'rewrites Copilot object toolArgs with modifiedArgs output'
+Data '{"toolName": "shell", "toolArgs": {"command": "git status", "timeout": 5000}}'
+When run run_hook_modified_args
+The status should be success
+The output should include 'rtk'
+The output should include 'git status'
+End
+
+It 'rewrites Copilot string toolArgs with modifiedArgs output'
+Data '{"toolName": "bash", "toolArgs": "{\"command\":\"git status\",\"timeout\":5000}"}'
+When run run_hook_modified_args
+The status should be success
+The output should include 'rtk'
+The output should include 'git status'
 End
 End
 
