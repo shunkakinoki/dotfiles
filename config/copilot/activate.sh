@@ -16,9 +16,6 @@ if [ ! -f "$CONFIG_JSON" ]; then
   exit 0
 fi
 
-tmp=$(mktemp "${CONFIG_JSON}.tmp.XXXXXX")
-trap 'rm -f "$tmp"' EXIT
-
 jq_filter=$(
   cat <<'JQ'
   def hook_key:
@@ -56,7 +53,6 @@ jq_filter=$(
 JQ
 )
 
-"$JQ_BIN" -s "$jq_filter" "$CONFIG_JSON" "$MANAGED_CONFIG_JSON" >"$tmp"
-
-cp -f "$tmp" "$CONFIG_JSON"
+merged_config=$("$JQ_BIN" -s "$jq_filter" "$CONFIG_JSON" "$MANAGED_CONFIG_JSON")
+printf '%s\n' "$merged_config" >"$CONFIG_JSON"
 chmod 600 "$CONFIG_JSON"
