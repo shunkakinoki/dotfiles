@@ -112,6 +112,7 @@
       clwxeh = "_clwxeh_function";
       clxe = "_clxe_function";
       clxeh = "_clxeh_function";
+      corc = "_corc_function";
       coxe = "_coxe_function";
       coxeh = "_coxeh_function";
       coxel = "_coxel_function";
@@ -224,6 +225,7 @@
         "_clwxeh_function"
         "_clxe_function"
         "_clxeh_function"
+        "_corc_function"
         "_coxe_function"
         "_coxeh_function"
         "_coxel_function"
