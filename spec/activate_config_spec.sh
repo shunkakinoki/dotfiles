@@ -60,6 +60,16 @@ When run jq -r '.hooks.preToolUse[].command' "$CONFIG_JSON"
 The output should include 'command -v dcg >/dev/null 2>&1 && dcg'
 End
 
+It 'registers rtk rewrite in the pre-tool hook chain'
+When run jq -r '.hooks.preToolUse[].command' "$CONFIG_JSON"
+The output should include '$HOME/.copilot/hooks/rtk-rewrite.sh'
+End
+
+It 'registers security in the pre-tool hook chain'
+When run jq -r '.hooks.preToolUse[].command' "$CONFIG_JSON"
+The output should include '$HOME/.copilot/hooks/security.sh'
+End
+
 It 'replaces existing config with the managed config'
 TMP_HOME="$(mktemp -d)"
 mkdir -p "$TMP_HOME/.copilot"
@@ -82,6 +92,20 @@ When run bash -c 'HOME="$1" bash "$2" "$3" && jq -r ".disableAllHooks, (.hooks.p
 The status should be success
 The output should include 'false'
 The output should include 'command -v dcg >/dev/null 2>&1 && dcg'
+End
+End
+
+Describe 'config/copilot/default.nix'
+DEFAULT_NIX="$PWD/config/copilot/default.nix"
+
+It 'installs Copilot rtk rewrite hook'
+When run cat "$DEFAULT_NIX"
+The output should include '.copilot/hooks/rtk-rewrite.sh'
+End
+
+It 'installs Copilot security hook'
+When run cat "$DEFAULT_NIX"
+The output should include '.copilot/hooks/security.sh'
 End
 End
 

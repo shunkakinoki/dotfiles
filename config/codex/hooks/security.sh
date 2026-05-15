@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Codex Security Hook
+# Codex/Copilot Security Hook
 # Blocks dangerous Bash commands by checking against deny patterns.
 # Returns exit code 2 to block, exit code 0 to allow.
 
@@ -8,11 +8,22 @@ set -euo pipefail
 
 input=$(cat)
 
-# Only process Bash commands
-tool_name=$(echo "$input" | jq -r '.tool_name // empty' 2>/dev/null)
-[[ $tool_name != "Bash" ]] && exit 0
+# Only process shell commands when the hook input includes a tool name.
+tool_name=$(echo "$input" | jq -r '.tool.name // .tool_name // .toolName // empty' 2>/dev/null)
+case "$tool_name" in
+"" | Bash | bash | shell) ;;
+*) exit 0 ;;
+esac
 
-command=$(echo "$input" | jq -r '.tool_input.command // empty' 2>/dev/null)
+command=$(echo "$input" | jq -r '
+  .tool.input.command
+  // .tool_input.command
+  // (.toolArgs | if type == "object" then .command else empty end)
+  // (.toolArgs | if type == "string" then (fromjson? | .command) else empty end)
+  // .toolInput.command
+  // .command
+  // empty
+' 2>/dev/null)
 [[ -z $command ]] && exit 0
 
 # Hardcoded deny patterns (mirrors claude settings.json deny list)
