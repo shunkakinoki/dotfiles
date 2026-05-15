@@ -52,7 +52,7 @@ End
 
 It 'creates .copilot directory'
 When run bash -c "grep 'mkdir -p' '$SCRIPT'"
-The output should include 'COPILOT_DIR'
+The output should include '.copilot'
 End
 
 It 'registers dcg in the pre-tool hook chain'
@@ -60,7 +60,7 @@ When run jq -r '.hooks.preToolUse[].command' "$CONFIG_JSON"
 The output should include 'command -v dcg >/dev/null 2>&1 && dcg'
 End
 
-It 'preserves existing config while merging managed hooks'
+It 'replaces existing config with the managed config'
 TMP_HOME="$(mktemp -d)"
 mkdir -p "$TMP_HOME/.copilot"
 cat >"$TMP_HOME/.copilot/config.json" <<'JSON'
@@ -78,10 +78,9 @@ cat >"$TMP_HOME/.copilot/config.json" <<'JSON'
 }
 JSON
 
-When run bash -c 'HOME="$1" bash "$2" "$3" jq && jq -r ".banner, (.hooks.preToolUse[].command)" "$1/.copilot/config.json"' _ "$TMP_HOME" "$SCRIPT" "$CONFIG_JSON"
+When run bash -c 'HOME="$1" bash "$2" "$3" && jq -r ".disableAllHooks, (.hooks.preToolUse[].command)" "$1/.copilot/config.json"' _ "$TMP_HOME" "$SCRIPT" "$CONFIG_JSON"
 The status should be success
-The output should include 'never'
-The output should include 'existing-hook'
+The output should include 'false'
 The output should include 'command -v dcg >/dev/null 2>&1 && dcg'
 End
 End
