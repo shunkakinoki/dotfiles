@@ -19,7 +19,7 @@ tools = [
   "serena-agent>=1.2.0",
   "transformers>=5.8.0",
   "vllm>=0.20.1",
-  "vllm-mlx>=0.2.9",
+  "vllm-mlx>=0.3.0",
 ]
 # Hermes gateway runtime deps - installed into hermes venv via uv pip install
 hermes = [
