@@ -39,14 +39,14 @@ When run bash -c "grep 'mv -f' '$SCRIPT'"
 The output should include 'mv -f'
 End
 
-It 'symlinks dolt to df for backwards compatibility'
-When run bash -c "grep 'ln -sfn df' '$SCRIPT'"
-The output should include 'ln -sfn df'
-End
-
 It 'refuses to overwrite an existing df directory'
 When run bash -c "grep 'Refusing to migrate' '$SCRIPT'"
 The output should include 'Refusing to migrate'
+End
+
+It 'does not recreate the legacy dolt -> df symlink'
+When run bash -c "grep -c 'ln -sfn df' '$SCRIPT' || true"
+The output should equal '0'
 End
 End
 

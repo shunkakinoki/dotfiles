@@ -13,9 +13,9 @@ if [ -d "@beadsDir@/dolt" ] && [ ! -L "@beadsDir@/dolt" ]; then
   mv -f "@beadsDir@/dolt" "@beadsDir@/df"
 fi
 
-if [ -d "@beadsDir@/df" ]; then
-  ln -sfn df "@beadsDir@/dolt"
-fi
+# External databases (e.g. another repo's .beads/<dbname>) are mounted by the
+# user via plain symlinks under @beadsDir@/<dbname>. The server scans
+# @beadsDir@ at startup, so each symlinked DB becomes addressable by its name.
 
 exec "@dolt@/bin/dolt" sql-server \
   -H 127.0.0.1 \
