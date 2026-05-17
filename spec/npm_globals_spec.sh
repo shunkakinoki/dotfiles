@@ -187,6 +187,23 @@ The output should include 'find'
 End
 End
 
+Describe 'native addon repair'
+It 'has a sqlite3 native binding repair step'
+When run bash -c "grep 'repair_sqlite3_native_binding' '$SCRIPT'"
+The output should include 'repair_sqlite3_native_binding'
+End
+
+It 'runs the sqlite3 package install script with foreground output'
+When run bash -c "grep 'npm run install --foreground-scripts' '$SCRIPT'"
+The output should include 'npm run install --foreground-scripts'
+End
+
+It 'verifies sqlite3 can be loaded by node'
+When run bash -c "grep 'const sqlite3 = require' '$SCRIPT'"
+The output should include 'const sqlite3 = require'
+End
+End
+
 Describe 'stale global package pruning'
 setup() {
   TEMP_HOME=$(mktemp -d)
