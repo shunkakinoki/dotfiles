@@ -11,12 +11,21 @@ let
   repoDir = "${homeDir}/dotfiles";
   beadsDir = "${repoDir}/.beads";
   enabled = isKyber || isGalactica;
+  # 1.86+ adds the git+https:// remote scheme used by the beads_global GitHub backup.
+  doltMinVersion = "1.86";
   startScript = pkgs.replaceVars ./start.sh {
     inherit beadsDir;
     inherit (pkgs) dolt;
   };
 in
 lib.mkIf enabled {
+  assertions = [
+    {
+      assertion = lib.versionAtLeast pkgs.dolt.version doltMinVersion;
+      message = "pkgs.dolt is ${pkgs.dolt.version}; needs >= ${doltMinVersion} for git+https push (beads_global GitHub backup). Run 'nix flake update nixpkgs-unstable'.";
+    }
+  ];
+
   home.sessionVariables = {
     BEADS_DOLT_SHARED_SERVER = "1";
     BEADS_DOLT_SERVER_PORT = "3307";
