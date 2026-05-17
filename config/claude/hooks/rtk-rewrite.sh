@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # rtk-hook-version: 3
-# RTK auto-rewrite hook for Claude/Codex/Copilot PreToolUse shell commands.
+# RTK auto-rewrite hook for Claude Code PreToolUse:Bash
 # Transparently rewrites raw commands to their RTK equivalents.
 # Uses `rtk rewrite` as single source of truth — no duplicate mapping logic here.
 #
@@ -32,15 +32,7 @@ fi
 set -euo pipefail
 
 INPUT=$(cat)
-CMD=$(echo "$INPUT" | jq -r '
-  .tool.input.command
-  // .tool_input.command
-  // (.toolArgs | if type == "object" then .command else empty end)
-  // (.toolArgs | if type == "string" then (fromjson? | .command) else empty end)
-  // .toolInput.command
-  // .command
-  // empty
-')
+CMD=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
 
 if [ -z "$CMD" ]; then
   _rtk_audit_log "skip:empty" "-"
@@ -86,37 +78,11 @@ esac
 
 _rtk_audit_log "rewrite" "$CMD" "$REWRITTEN"
 
-# Build the updated tool input with all original fields preserved, only command changed.
-ORIGINAL_INPUT=$(echo "$INPUT" | jq -c '
-  (
-    .tool_input
-    // .tool.input
-    // .toolArgs
-    // .toolInput
-    // {}
-  ) | if type == "string" then (fromjson? // {}) else . end
-')
+# Build the updated tool_input with all original fields preserved, only command changed.
+ORIGINAL_INPUT=$(echo "$INPUT" | jq -c '.tool_input')
 UPDATED_INPUT=$(echo "$ORIGINAL_INPUT" | jq --arg cmd "$REWRITTEN" '.command = $cmd')
-IS_COPILOT_INPUT=$(echo "$INPUT" | jq -r 'has("toolName") and has("toolArgs")')
 
-if [ "$IS_COPILOT_INPUT" = "true" ]; then
-  if [ "$EXIT_CODE" -eq 3 ]; then
-    jq -n \
-      --argjson modified "$UPDATED_INPUT" \
-      '{
-        "permissionDecision": "ask",
-        "modifiedArgs": $modified
-      }'
-  else
-    jq -n \
-      --argjson modified "$UPDATED_INPUT" \
-      '{
-        "permissionDecision": "allow",
-        "permissionDecisionReason": "RTK auto-rewrite",
-        "modifiedArgs": $modified
-      }'
-  fi
-elif [ "$EXIT_CODE" -eq 3 ]; then
+if [ "$EXIT_CODE" -eq 3 ]; then
   # Ask: rewrite the command, omit permissionDecision so Claude Code prompts.
   jq -n \
     --argjson updated "$UPDATED_INPUT" \
