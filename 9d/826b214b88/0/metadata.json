@@ -1,0 +1,49 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "9d826b214b88",
+  "session_id": "7d98d620-b710-419c-bd14-734adda07710",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-17T14:09:56.355224Z",
+  "branch": "claude/cranky-moser-aa3c37",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "scripts/sync-rtk-rewrite.sh",
+    "treefmt.toml",
+    "config/claude/hooks/rtk-rewrite.sh",
+    "spec/sync_rtk_rewrite_spec.sh"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "0e39a0903914",
+  "token_usage": {
+    "input_tokens": 152,
+    "cache_creation_tokens": 369279,
+    "cache_read_tokens": 10461695,
+    "output_tokens": 55090,
+    "api_call_count": 107
+  },
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-17T14:09:55.207086Z",
+    "agent_lines": 18,
+    "agent_removed": 2,
+    "human_added": 93,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 111,
+    "total_lines_changed": 117,
+    "agent_percentage": 17.094017094017094,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}
