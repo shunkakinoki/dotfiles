@@ -37,8 +37,12 @@ _: {
         };
       };
       "kyber" = {
-        hostname = "100.74.174.97";
+        hostname = "kyber.tail950b36.ts.net";
         user = "ubuntu";
+        identityFile = "~/.ssh/id_rsa";
+        extraOptions = {
+          IdentitiesOnly = "yes";
+        };
       };
       "github.com" = {
         serverAliveInterval = 0;
