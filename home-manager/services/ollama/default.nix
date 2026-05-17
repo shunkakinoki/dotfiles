@@ -6,29 +6,31 @@
 }:
 let
   inherit (inputs.host) isGalactica isMatic;
-  enabled = isGalactica || isMatic;
+  # isMatic disabled: ROCm build takes too long; re-enable when pre-built cache is available
+  # enabled = isGalactica || isMatic;
+  enabled = isGalactica;
 
   # Per-host ollama package:
   #   AMD GPU (ROCm): ollama-rocm (matic)
   #   NVIDIA GPU (CUDA): ollama-cuda
   #   CPU fallback: ollama
   ollamaPackage =
-    if isMatic then
-      pkgs.ollama-rocm
+    # if isMatic then
+    #   pkgs.ollama-rocm
     # else if isNvidiaHost then pkgs.ollama-cuda
-    else
-      pkgs.ollama;
+    # else
+    pkgs.ollama;
 
   ollamaEnv =
-    if isMatic then
-      [
-        "OLLAMA_HOST=127.0.0.1"
-        "HSA_OVERRIDE_GFX_VERSION=11.5.0"
-      ]
-    else
-      [
-        "OLLAMA_HOST=127.0.0.1"
-      ];
+    # if isMatic then
+    #   [
+    #     "OLLAMA_HOST=127.0.0.1"
+    #     "HSA_OVERRIDE_GFX_VERSION=11.5.0"
+    #   ]
+    # else
+    [
+      "OLLAMA_HOST=127.0.0.1"
+    ];
 in
 lib.mkIf enabled {
   home.packages = [ ollamaPackage ];
