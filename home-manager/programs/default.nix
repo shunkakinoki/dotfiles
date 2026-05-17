@@ -38,6 +38,7 @@ let
   ocaml = import ./ocaml;
   perl = import ./perl;
   php = import ./php;
+  prometheus = import ./prometheus;
   python = import ./python;
   ruby = import ./ruby;
   rust = import ./rust;
@@ -88,6 +89,7 @@ in
   ocaml
   perl
   php
+  prometheus
   python
   ruby
   rust
