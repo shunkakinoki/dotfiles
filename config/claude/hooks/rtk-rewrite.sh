@@ -42,7 +42,7 @@ INPUT=$(cat)
 CMD=$(echo "$INPUT" | jq -r '
   .tool_input.command
   // (.toolArgs | if type == "object" then .command else empty end)
-  // (.toolArgs | if type == "string" then (fromjson? | .command) else empty end)
+  // (.toolArgs | if type == "string" then (fromjson? | if type == "object" then .command else empty end) else empty end)
   // empty
 ')
 
@@ -100,7 +100,7 @@ UPDATED_INPUT=$(echo "$ORIGINAL_INPUT" | jq --arg cmd "$REWRITTEN" '.command = $
 TOOL_ARGS_KIND=$(echo "$INPUT" | jq -r '.toolArgs | type')
 case "$TOOL_ARGS_KIND" in
   object) MODIFIED_ARGS=$(echo "$INPUT" | jq -c --arg cmd "$REWRITTEN" '.toolArgs | .command = $cmd') ;;
-  string) MODIFIED_ARGS=$(echo "$INPUT" | jq -c --arg cmd "$REWRITTEN" '.toolArgs | fromjson | .command = $cmd') ;;
+  string) MODIFIED_ARGS=$(echo "$INPUT" | jq -c --arg cmd "$REWRITTEN" '.toolArgs | ((fromjson? | if type == "object" then .command = $cmd else null end) // null)') ;;
   *)      MODIFIED_ARGS="null" ;;
 esac
 
