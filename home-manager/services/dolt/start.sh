@@ -4,18 +4,17 @@ set -euo pipefail
 
 mkdir -p "@beadsDir@"
 
-if [ -d "@beadsDir@/dolt" ] && [ ! -L "@beadsDir@/dolt" ]; then
-  if [ -e "@beadsDir@/df" ]; then
-    echo "Refusing to migrate @beadsDir@/dolt because @beadsDir@/df already exists" >&2
-    exit 1
-  fi
-
+# Legacy migration: a `dolt` directory predates the rename to `df`.
+# Only migrate when `df` does not exist yet; once `df` is in place the
+# `dolt` directory is treated as its own (possibly external) database.
+if [ -d "@beadsDir@/dolt" ] && [ ! -L "@beadsDir@/dolt" ] && [ ! -e "@beadsDir@/df" ]; then
   mv -f "@beadsDir@/dolt" "@beadsDir@/df"
 fi
 
-# External databases (e.g. another repo's .beads/<dbname>) are mounted by the
-# user via plain symlinks under @beadsDir@/<dbname>. The server scans
-# @beadsDir@ at startup, so each symlinked DB becomes addressable by its name.
+# Additional databases (e.g. data shared with another repo) are managed by
+# the user as real directories under @beadsDir@/<dbname>. dolt sql-server
+# scans @beadsDir@ at startup and exposes each subdirectory as a database
+# by that name.
 
 exec "@dolt@/bin/dolt" sql-server \
   -H 127.0.0.1 \

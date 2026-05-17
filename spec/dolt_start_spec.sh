@@ -39,9 +39,9 @@ When run bash -c "grep 'mv -f' '$SCRIPT'"
 The output should include 'mv -f'
 End
 
-It 'refuses to overwrite an existing df directory'
-When run bash -c "grep 'Refusing to migrate' '$SCRIPT'"
-The output should include 'Refusing to migrate'
+It 'gates the migration on df not yet existing'
+When run bash -c "grep -- '-e \"@beadsDir@/df\"' '$SCRIPT'"
+The output should include '-e "@beadsDir@/df"'
 End
 
 It 'does not recreate the legacy dolt -> df symlink'
