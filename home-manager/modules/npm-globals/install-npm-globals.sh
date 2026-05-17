@@ -36,6 +36,44 @@ if ! command -v jq &>/dev/null; then
   exit 0
 fi
 
+repair_sqlite3_native_binding() {
+  local sqlite3_dir="${GLOBAL_MODULES}/sqlite3"
+  local global_install_dir="${HOME}/.bun/install/global"
+  local require_sqlite3='const sqlite3 = require("sqlite3"); if (!sqlite3.Database) process.exit(1);'
+
+  if [ ! -d "$sqlite3_dir" ]; then
+    return 0
+  fi
+
+  if command -v node &>/dev/null && (cd "$global_install_dir" && node -e "$require_sqlite3") >/dev/null 2>&1; then
+    echo "sqlite3 native binding already loadable"
+    return 0
+  fi
+
+  if ! command -v npm &>/dev/null; then
+    echo "npm not found, cannot rebuild sqlite3 native binding" >&2
+    return 1
+  fi
+
+  if ! command -v node &>/dev/null; then
+    echo "node not found, cannot verify sqlite3 native binding" >&2
+    return 1
+  fi
+
+  echo "Rebuilding sqlite3 native binding..."
+  if ! (cd "$sqlite3_dir" && npm run install --foreground-scripts); then
+    echo "sqlite3 native binding rebuild failed" >&2
+    return 1
+  fi
+
+  if ! (cd "$global_install_dir" && node -e "$require_sqlite3") >/dev/null 2>&1; then
+    echo "sqlite3 native binding is still not loadable after rebuild" >&2
+    return 1
+  fi
+
+  echo "sqlite3 native binding rebuilt"
+}
+
 echo "Installing npm global packages from package.json using bun..."
 cd "${HOME}/dotfiles"
 
@@ -153,5 +191,9 @@ for pkg in $(echo "$OVERRIDES" | jq -r 'keys[]' 2>/dev/null); do
     echo "Deduplicated nested $pkg: $nested"
   done
 done
+
+if ! repair_sqlite3_native_binding; then
+  echo "Warning: sqlite3 native binding repair failed" >&2
+fi
 
 echo "npm globals installation complete"
