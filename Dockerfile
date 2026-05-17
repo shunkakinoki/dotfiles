@@ -1,3 +1,42 @@
+# syntax=docker/dockerfile:1.7
+
+# Stage 1: download actions/runner agent + container hooks + docker CLI/buildx
+# so the final image can be used as a custom ARC runner image with the
+# canonical /home/runner layout (matches GitHub-hosted runners and the
+# upstream actions/runner Dockerfile).
+FROM ubuntu:26.04 AS runner-build
+ARG TARGETOS=linux
+ARG TARGETARCH
+ARG RUNNER_VERSION=2.334.0
+ARG RUNNER_CONTAINER_HOOKS_VERSION=0.7.0
+ARG DOCKER_VERSION=29.4.0
+ARG BUILDX_VERSION=0.33.0
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates curl unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /actions-runner
+RUN RUNNER_ARCH=${TARGETARCH}; [ "$RUNNER_ARCH" = "amd64" ] && RUNNER_ARCH=x64; \
+    curl -fL -o runner.tar.gz \
+      https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-${TARGETOS}-${RUNNER_ARCH}-${RUNNER_VERSION}.tar.gz \
+    && tar xzf runner.tar.gz \
+    && rm runner.tar.gz
+
+RUN curl -fL -o hooks.zip \
+      https://github.com/actions/runner-container-hooks/releases/download/v${RUNNER_CONTAINER_HOOKS_VERSION}/actions-runner-hooks-k8s-${RUNNER_CONTAINER_HOOKS_VERSION}.zip \
+    && unzip hooks.zip -d ./k8s \
+    && rm hooks.zip
+
+RUN DOCKER_ARCH=x86_64; [ "$TARGETARCH" = "arm64" ] && DOCKER_ARCH=aarch64; \
+    curl -fLo docker.tgz https://download.docker.com/${TARGETOS}/static/stable/${DOCKER_ARCH}/docker-${DOCKER_VERSION}.tgz \
+    && tar zxf docker.tgz \
+    && rm docker.tgz \
+    && mkdir -p /usr/local/lib/docker/cli-plugins \
+    && curl -fLo /usr/local/lib/docker/cli-plugins/docker-buildx \
+       https://github.com/docker/buildx/releases/download/v${BUILDX_VERSION}/buildx-v${BUILDX_VERSION}.linux-${TARGETARCH} \
+    && chmod +x /usr/local/lib/docker/cli-plugins/docker-buildx
+
 FROM ubuntu:26.04
 
 # Set DEBIAN_FRONTEND to noninteractive to avoid prompts during package installations
@@ -39,6 +78,19 @@ RUN set -e; \
     id $USER
 RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER \
     && chmod 0440 /etc/sudoers.d/$USER
+
+# Place actions/runner agent at /home/runner (canonical layout, matches
+# GitHub-hosted runners and the upstream actions/runner Dockerfile). docker
+# group GID 123 matches the standard ARC dind sidecar GID.
+RUN groupadd --gid 123 docker && usermod -aG docker $USER
+COPY --chown=$USER:docker --from=runner-build /actions-runner/. /home/$USER/
+COPY --from=runner-build /usr/local/lib/docker/cli-plugins/docker-buildx /usr/local/lib/docker/cli-plugins/docker-buildx
+RUN install -o root -g root -m 755 /home/$USER/docker/* /usr/bin/ \
+ && rm -rf /home/$USER/docker
+
+ENV RUNNER_MANUALLY_TRAP_SIG=1 \
+    ACTIONS_RUNNER_PRINT_LOG_TO_STDOUT=1 \
+    ImageOS=ubuntu26
 
 ENV NIX_BUILD_GROUP_ID=1001
 ENV IN_DOCKER=true
