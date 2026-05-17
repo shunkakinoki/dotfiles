@@ -6,6 +6,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CLAUDE_SETTINGS="$ROOT/config/claude/settings.json"
 CODEX_SECURITY="$ROOT/config/codex/hooks/security.sh"
+COPILOT_SECURITY="$ROOT/config/copilot/hooks/security.sh"
 
 [[ -f $CLAUDE_SETTINGS ]] || {
   echo "ERROR: config/claude/settings.json not found" >&2
@@ -55,4 +56,9 @@ fi
 
 mv "${CODEX_SECURITY}.tmp" "$CODEX_SECURITY"
 chmod +x "$CODEX_SECURITY"
+
+# Mirror to copilot hooks so codex + copilot stay identical.
+cp "$CODEX_SECURITY" "$COPILOT_SECURITY"
+chmod +x "$COPILOT_SECURITY"
+
 rm "$tmpfile"

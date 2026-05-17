@@ -12,3 +12,4 @@ curl -fsSL "$URL" -o "$tmpfile"
 
 cp "$tmpfile" "$ROOT/config/claude/hooks/rtk-rewrite.sh"
 cp "$tmpfile" "$ROOT/config/codex/hooks/rtk-rewrite.sh"
+cp "$tmpfile" "$ROOT/config/copilot/hooks/rtk-rewrite.sh"

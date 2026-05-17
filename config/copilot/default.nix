@@ -6,13 +6,13 @@
   '';
 
   home.file.".copilot/hooks/rtk-rewrite.sh" = {
-    source = ../codex/hooks/rtk-rewrite.sh;
+    source = ./hooks/rtk-rewrite.sh;
     executable = true;
     force = true;
   };
 
   home.file.".copilot/hooks/security.sh" = {
-    source = ../codex/hooks/security.sh;
+    source = ./hooks/security.sh;
     executable = true;
     force = true;
   };
