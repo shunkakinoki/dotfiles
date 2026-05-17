@@ -1,0 +1,1 @@
+no.. i don't want the `scripts/rtk-rewrite.copilot.patch ` please device any other ways to do this w/o it
