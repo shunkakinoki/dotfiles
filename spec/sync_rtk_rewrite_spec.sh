@@ -17,4 +17,9 @@ It 'keeps Claude and Codex rtk rewrite hooks in sync'
 When run cmp -s "$PWD/config/claude/hooks/rtk-rewrite.sh" "$PWD/config/codex/hooks/rtk-rewrite.sh"
 The status should be success
 End
+
+It 'keeps Claude and Copilot rtk rewrite hooks in sync'
+When run cmp -s "$PWD/config/claude/hooks/rtk-rewrite.sh" "$PWD/config/copilot/hooks/rtk-rewrite.sh"
+The status should be success
+End
 End

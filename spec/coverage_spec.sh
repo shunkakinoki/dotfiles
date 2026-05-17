@@ -374,6 +374,8 @@ config/codex/hooks/notify.sh
 config/codex/hooks/pushover.sh
 config/codex/hooks/rtk-rewrite.sh
 config/codex/hooks/security.sh
+config/copilot/hooks/rtk-rewrite.sh
+config/copilot/hooks/security.sh
 config/shared/hooks/block-gh-settings.sh
 config/shared/hooks/block-git-push.sh
 config/cursor/activate.sh
