@@ -18,6 +18,7 @@ in
   ./factory
   ./gemini
   ./git-ai
+  ./gitleaks
   ./gomi
   ./ghostty
   ./hermes

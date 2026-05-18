@@ -1,0 +1,37 @@
+title = "dotfiles gitleaks config"
+
+# Extend the default gitleaks rules
+[extend]
+useDefault = true
+
+[[rules]]
+id = "japanese-password-field"
+description = "Detects Japanese password field patterns"
+regex = '''(?i)(パスワード|password|pw|pass)\s*[:：=]\s*["']?[A-Za-z0-9!@#$%^&*\-_=+]{6,}["']?'''
+
+[[rules]]
+id = "japanese-api-key-field"
+description = "Detects Japanese API key field patterns"
+regex = '''(?i)(APIキー|api[-_ ]?key|secret[-_ ]?key|access[-_ ]?token)\s*[:：=]\s*["']?[A-Za-z0-9!@#$%^&*\-_=+]{16,}["']?'''
+
+[allowlist]
+description = "Global allowlist for templates, examples, and known-safe dummies"
+paths = [
+  '''(.*?)\.template\.md$''',
+  '''(.*?)\.example$''',
+  '''\.env\.example$''',
+  '''docs/.*\.template\.md$''',
+  '''dotagents/.*''',
+  '''bun\.lock$''',
+  '''Cargo\.lock$''',
+  '''flake\.lock$''',
+  '''node_modules/.*''',
+  '''target/.*''',
+]
+regexes = [
+  '''DUMMY_PASSWORD''',
+  '''<your-password-here>''',
+  '''<PLACEHOLDER>''',
+  '''xxxxxxxxxxxxxxxx''',
+  '''example\.com''',
+]

@@ -259,6 +259,11 @@
         "hooks": [
           {
             "type": "command",
+            "command": "$HOME/dotfiles/config/shared/hooks/secret-guard.sh",
+            "timeout": 5
+          },
+          {
+            "type": "command",
             "command": "git-ai checkpoint claude --hook-input stdin",
             "timeout": 15,
             "async": true

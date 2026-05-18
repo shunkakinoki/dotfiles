@@ -49,6 +49,7 @@ with pkgs;
   fzf-make
   gh
   git
+  gitleaks
   glance
   glow
   gnumake
@@ -66,6 +67,7 @@ with pkgs;
   just
   k6
   lean4
+  lefthook
   (if stdenv.isLinux && isDesktop then llama-cpp.override { vulkanSupport = true; } else llama-cpp)
   llm
   lsof
