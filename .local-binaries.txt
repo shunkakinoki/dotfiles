@@ -2,6 +2,8 @@
 # Add one binary path per line
 # Lines starting with # are comments
 # Use path:alias to create a symlink with a custom name (e.g., ~/path/to/pi:pir)
+# Use path#flag1,flag2 to set build flags. Supported flags:
+#   nomake - skip Makefile and fall through to Cargo/go.mod/pyproject
 # Dependencies (lib-only repos) must appear before the binaries that need them
 
 # cass dependencies (pull + build before cass itself)
@@ -21,7 +23,7 @@
 ~/ghq/github.com/Dicklesworthstone/slb/build/slb
 ~/ghq/github.com/Dicklesworthstone/ultimate_bug_scanner/ubs
 ~/ghq/github.com/GoogleCloudPlatform/scion/scion
-~/ghq/github.com/Infisical/agent-vault/agent-vault
+~/ghq/github.com/Infisical/agent-vault/agent-vault#nomake
 ~/ghq/github.com/MH4GF/tq/tq
 ~/ghq/github.com/NousResearch/hermes-agent/.venv/bin/hermes
 ~/ghq/github.com/NousResearch/hermes-agent/.venv/bin/hermes-agent
