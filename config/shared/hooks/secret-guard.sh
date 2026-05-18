@@ -23,16 +23,16 @@ CONTENT=$(printf '%s' "$PAYLOAD" | jq -r '
   empty
 ' 2>/dev/null)
 
-[[ -z "$CONTENT" || "$CONTENT" == "null" ]] && exit 0
+[[ -z $CONTENT || $CONTENT == "null" ]] && exit 0
 
 TMP_DIR=$(mktemp -d -t secret-guard.XXXXXX)
 trap 'rm -rf "$TMP_DIR"' EXIT
-printf '%s' "$CONTENT" > "$TMP_DIR/payload.txt"
+printf '%s' "$CONTENT" >"$TMP_DIR/payload.txt"
 
 CONFIG_ARG=()
 if [[ -f "$PWD/.gitleaks.toml" ]]; then
   CONFIG_ARG=(--config "$PWD/.gitleaks.toml")
-elif [[ -n "${GITLEAKS_CONFIG:-}" && -f "$GITLEAKS_CONFIG" ]]; then
+elif [[ -n ${GITLEAKS_CONFIG:-} && -f $GITLEAKS_CONFIG ]]; then
   CONFIG_ARG=(--config "$GITLEAKS_CONFIG")
 elif [[ -f "$HOME/.config/gitleaks/config.toml" ]]; then
   CONFIG_ARG=(--config "$HOME/.config/gitleaks/config.toml")
