@@ -1,3 +1,10 @@
+# Secrets - Layer 1 (design): structurally exclude credential locations
+_credentials/
+*.local.md
+*.secret.md
+credentials*.md
+**/draft/
+
 # AI
 .aider.tags.cache.v4
 .claude
