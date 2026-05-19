@@ -382,6 +382,7 @@ config/copilot/hooks/rtk-rewrite.sh
 config/copilot/hooks/security.sh
 config/shared/hooks/block-gh-settings.sh
 config/shared/hooks/block-git-push.sh
+config/shared/hooks/secret-guard.sh
 config/cursor/activate.sh
 config/gemini/activate.sh
 config/git-ai/activate.sh
