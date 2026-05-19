@@ -125,6 +125,7 @@ find_build_dir() {
 build_repo() {
   local repo_dir="$1"
   local binary_path="${2:-}"
+  local flags="${3:-}"
   local repo_name
   repo_name="$(get_repo_name "$repo_dir")"
 
@@ -149,7 +150,11 @@ build_repo() {
     (cd "$repo_dir" && git submodule update --init --recursive 2>&1) || true
   fi
 
-  if [ -f "$build_dir/Makefile" ]; then
+  # Honor `nomake` flag: skip Makefile detection and fall through to native
+  # build systems (Cargo/go.mod/pyproject). Useful when a repo's `make build`
+  # target pulls in heavyweight steps (e.g. a frontend bundle) that the local
+  # binary does not need.
+  if [ -f "$build_dir/Makefile" ] && [[ ",$flags," != *,nomake,* ]]; then
     # Use mise exec if mise.toml present to ensure correct tool versions
     local make_cmd="make"
     if [ -f "$build_dir/mise.toml" ] && command -v mise >/dev/null 2>&1; then
@@ -260,6 +265,7 @@ WRAPPER
 # Update a single repo
 update_repo() {
   local binary_path="$1"
+  local flags="${2:-}"
   local repo_dir
   repo_dir="$(get_repo_dir "$binary_path")"
   local repo_name
@@ -343,7 +349,7 @@ update_repo() {
   fi
 
   # Build
-  if build_repo "$repo_dir" "$binary_path"; then
+  if build_repo "$repo_dir" "$binary_path" "$flags"; then
     log_info "  ✅ $repo_name updated successfully"
     SUCCESSES+=("$repo_name")
   else
@@ -417,6 +423,15 @@ main() {
       continue
     fi
 
+    # Strip optional build-flag suffix (path[:alias]#flag1,flag2)
+    local flags=""
+    case "$line" in
+    *\#*)
+      flags="${line##*#}"
+      line="${line%#*}"
+      ;;
+    esac
+
     # Strip optional alias suffix (path:alias)
     case "$line" in
     *:*) line="${line%:*}" ;;
@@ -432,7 +447,7 @@ main() {
     seen_repos[$repo_dir]=1
 
     # Update repo (continue on failure)
-    update_repo "$line" || true
+    update_repo "$line" "$flags" || true
 
   done <"$CONFIG_FILE"
 
