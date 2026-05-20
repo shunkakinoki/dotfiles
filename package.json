@@ -22,7 +22,7 @@
     "@fission-ai/openspec": "^1.3.1",
     "@getgrit/cli": "^0.1.0-alpha.1743007075",
     "@github/copilot": "^1.0.48",
-    "@google/gemini-cli": "^0.41.2",
+    "@google/gemini-cli": "^0.42.0",
     "@google/jules": "^0.1.42",
     "@googleworkspace/cli": "^0.22.5",
     "@kaitranntt/ccs": "^7.79.1",
