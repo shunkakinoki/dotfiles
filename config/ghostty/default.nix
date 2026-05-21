@@ -2,10 +2,7 @@
 let
   inherit (pkgs) lib;
   configFile = pkgs.writeText "ghostty-config" (
-    builtins.replaceStrings
-      [ "@FISH@" ]
-      [ "${pkgs.fish}/bin/fish" ]
-      (builtins.readFile ./config)
+    builtins.replaceStrings [ "@FISH@" ] [ "${pkgs.fish}/bin/fish" ] (builtins.readFile ./config)
   );
 in
 {
