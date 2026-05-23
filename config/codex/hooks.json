@@ -35,7 +35,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.codex/hooks/rtk-rewrite.sh",
+            "command": "$HOME/dotfiles/config/shared/hooks/rtk-rewrite.sh",
             "timeout": 5
           },
           {
@@ -45,7 +45,7 @@
           },
           {
             "type": "command",
-            "command": "$HOME/.codex/hooks/security.sh",
+            "command": "$HOME/dotfiles/config/shared/hooks/security.sh",
             "timeout": 5
           },
           {

@@ -3,15 +3,15 @@
   "hooks": {
     "beforeShellExecution": [
       {
-        "command": "$HOME/.cursor/hooks/security.sh",
+        "command": "$HOME/dotfiles/config/shared/hooks/security.sh",
         "timeout": 5
       },
       {
-        "command": "$HOME/.cursor/hooks/with-env.sh $HOME/dotfiles/config/shared/hooks/block-git-push.sh",
+        "command": "$HOME/dotfiles/config/shared/hooks/block-git-push.sh",
         "timeout": 5
       },
       {
-        "command": "$HOME/.cursor/hooks/with-env.sh $HOME/dotfiles/config/shared/hooks/block-gh-settings.sh",
+        "command": "$HOME/dotfiles/config/shared/hooks/block-gh-settings.sh",
         "timeout": 5
       },
       {

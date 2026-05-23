@@ -30,12 +30,6 @@
     force = true;
   };
 
-  home.file.".claude/hooks/rtk-rewrite.sh" = {
-    source = ./hooks/rtk-rewrite.sh;
-    executable = true;
-    force = true;
-  };
-
   home.file.".claude/hooks/atuin-history.sh" = {
     source = ./hooks/atuin-history.sh;
     executable = true;

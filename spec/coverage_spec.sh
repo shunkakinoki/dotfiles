@@ -13,7 +13,7 @@ It 'has spec file for config/claude/hooks/pushover.sh'
 The path "spec/pushover_spec.sh" should be exist
 End
 
-It 'has spec file for config/claude/hooks/rtk-rewrite.sh'
+It 'has spec file for config/shared/hooks/rtk-rewrite.sh'
 The path "spec/rtk_rewrite_spec.sh" should be exist
 End
 
@@ -365,7 +365,6 @@ covered_scripts="config/claude/activate.sh
 config/ccs/hydrate.sh
 config/claude/hooks/notify.sh
 config/claude/hooks/pushover.sh
-config/claude/hooks/rtk-rewrite.sh
 config/claude/hooks/auto-switch.sh
 config/claude/hooks/security.sh
 config/claude/hooks/atuin-history.sh
@@ -376,14 +375,14 @@ config/codex/hooks/atuin-history.sh
 config/dcg/activate.sh
 config/codex/hooks/notify.sh
 config/codex/hooks/pushover.sh
-config/codex/hooks/rtk-rewrite.sh
-config/codex/hooks/security.sh
-config/copilot/hooks/rtk-rewrite.sh
-config/copilot/hooks/security.sh
 config/shared/hooks/block-gh-settings.sh
 config/shared/hooks/block-git-push.sh
 config/shared/hooks/secret-guard.sh
+config/shared/hooks/security.sh
+config/shared/hooks/rtk-rewrite.sh
 config/cursor/activate.sh
+config/cursor/hooks/notify.sh
+config/cursor/hooks/pushover.sh
 config/gemini/activate.sh
 config/git-ai/activate.sh
 config/hermes/hydrate.sh

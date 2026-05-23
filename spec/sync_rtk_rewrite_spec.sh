@@ -13,13 +13,20 @@ When run bash -c "grep -q 'raw.githubusercontent.com/rtk-ai/rtk' '$SCRIPT' && ec
 The output should eq 'found'
 End
 
-It 'keeps Claude and Codex rtk rewrite hooks in sync'
-When run cmp -s "$PWD/config/claude/hooks/rtk-rewrite.sh" "$PWD/config/codex/hooks/rtk-rewrite.sh"
-The status should be success
+It 'shared rtk-rewrite.sh exists and is executable'
+The path "$PWD/config/shared/hooks/rtk-rewrite.sh" should be executable
 End
 
-It 'keeps Claude and Copilot rtk rewrite hooks in sync'
-When run cmp -s "$PWD/config/claude/hooks/rtk-rewrite.sh" "$PWD/config/copilot/hooks/rtk-rewrite.sh"
-The status should be success
+It 'no agent-specific rtk-rewrite.sh copies remain'
+When run bash -c "
+  for path in \
+    '$PWD/config/claude/hooks/rtk-rewrite.sh' \
+    '$PWD/config/codex/hooks/rtk-rewrite.sh' \
+    '$PWD/config/copilot/hooks/rtk-rewrite.sh'; do
+    [ -e \"\$path\" ] && echo \"unexpected: \$path\"
+  done
+  exit 0
+"
+The output should eq ''
 End
 End

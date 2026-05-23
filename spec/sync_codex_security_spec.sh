@@ -6,7 +6,7 @@ SCRIPT="$PWD/scripts/sync-codex-security.sh"
 
 setup() {
   TEMP_DIR=$(mktemp -d)
-  mkdir -p "$TEMP_DIR/config/claude" "$TEMP_DIR/config/codex/hooks"
+  mkdir -p "$TEMP_DIR/config/claude" "$TEMP_DIR/config/shared/hooks"
 
   cat >"$TEMP_DIR/config/claude/settings.json" <<'JSON'
 {
@@ -21,7 +21,7 @@ setup() {
 }
 JSON
 
-  cat >"$TEMP_DIR/config/codex/hooks/security.sh" <<'SCRIPT'
+  cat >"$TEMP_DIR/config/shared/hooks/security.sh" <<'SCRIPT'
 #!/usr/bin/env bash
 set -euo pipefail
 deny_patterns=(
@@ -29,7 +29,7 @@ deny_patterns=(
 )
 echo "rest of script"
 SCRIPT
-  chmod +x "$TEMP_DIR/config/codex/hooks/security.sh"
+  chmod +x "$TEMP_DIR/config/shared/hooks/security.sh"
 }
 
 cleanup() {
@@ -41,21 +41,6 @@ After 'cleanup'
 
 It 'syncs deny patterns from Claude settings'
 When run bash -c "
-  # Create a modified script that uses TEMP_DIR paths
-  sed -e 's|/config/claude/settings.json|/config/claude/settings.json|' \
-      -e 's|\$(cd.*pwd)|echo $TEMP_DIR|' \
-      '$SCRIPT' > '$TEMP_DIR/sync.sh'
-  chmod +x '$TEMP_DIR/sync.sh'
-
-  # Run with ROOT override
-  cd '$TEMP_DIR'
-  ROOT='$TEMP_DIR' bash -c '
-    CLAUDE_SETTINGS=\"\$ROOT/config/claude/settings.json\"
-    CODEX_SECURITY=\"\$ROOT/config/codex/hooks/security.sh\"
-    source <(sed -n \"s|ROOT=.*|ROOT=\$ROOT|p\" /dev/null || true)
-  '
-
-  # Just test the script directly by simulating it
   cd '$TEMP_DIR'
   patterns=\$(jq -r '.permissions.deny[]' config/claude/settings.json | grep '^Bash(' | sed -E 's/^Bash\((.+):\\*\)\$/\\1/' | sort)
   echo \"\$patterns\"
@@ -70,5 +55,22 @@ End
 It 'runs successfully on actual repo files'
 When run bash "$SCRIPT"
 The status should be success
+End
+
+It 'shared security.sh exists and is executable'
+The path "$PWD/config/shared/hooks/security.sh" should be executable
+End
+
+It 'no agent-specific security.sh copies remain for codex/copilot/cursor'
+When run bash -c "
+  for path in \
+    '$PWD/config/codex/hooks/security.sh' \
+    '$PWD/config/copilot/hooks/security.sh' \
+    '$PWD/config/cursor/hooks/security.sh'; do
+    [ -e \"\$path\" ] && echo \"unexpected: \$path\"
+  done
+  exit 0
+"
+The output should eq ''
 End
 End

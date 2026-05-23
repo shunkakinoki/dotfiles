@@ -2,7 +2,7 @@
 # shellcheck disable=SC2329
 
 Describe 'rtk-rewrite.sh'
-SCRIPT="$PWD/config/claude/hooks/rtk-rewrite.sh"
+SCRIPT="$PWD/config/shared/hooks/rtk-rewrite.sh"
 
 # Use real rtk if available, otherwise create a mock that simulates basic rewrites
 if command -v rtk &>/dev/null && rtk rewrite "git status" >/dev/null 2>&1; then

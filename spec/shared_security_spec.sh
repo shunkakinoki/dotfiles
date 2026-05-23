@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2329
 
-Describe 'codex hooks/security.sh'
-SCRIPT="$PWD/config/codex/hooks/security.sh"
+Describe 'shared hooks/security.sh'
+SCRIPT="$PWD/config/shared/hooks/security.sh"
 
 Describe 'tool filtering'
 It 'passes non-Bash tools through'

@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
-# block-git-push.sh - Shared hook for Claude Code + Codex + Copilot
+# block-git-push.sh - Shared hook for Claude Code + Codex + Copilot + Cursor
 # Blocks git push to main/master unless repo is in the allowlist.
-# Exit 2 = block (Codex), JSON decision output (Claude).
+# Exit 2 = block; works across all four agent hook protocols.
+
+# Cursor on macOS launches GUI apps with a minimal PATH; self-bootstrap it
+# so jq/git are findable regardless of caller.
+export PATH="$HOME/.cargo/bin:/etc/profiles/per-user/shunkakinoki/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:${PATH:-}"
+
 set -euo pipefail
 
 # --- Allowlist: repos where push to main/master is permitted ---
