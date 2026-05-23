@@ -14,8 +14,8 @@
 #
 # LOCAL DIVERGENCE FROM UPSTREAM (rtk-ai/rtk @ master): this copy also reads
 # commands from Copilot's `.toolArgs` (object or string) and emits a top-level
-# `modifiedArgs` alongside `hookSpecificOutput`. scripts/sync-rtk-rewrite.sh will
-# OVERWRITE these additions on next run — re-apply or upstream after syncing.
+# `modifiedArgs` alongside `hookSpecificOutput`. scripts/sync-rtk-rewrite.sh
+# only prints upstream diff — port non-Copilot changes manually.
 
 # --- Audit logging (opt-in via RTK_HOOK_AUDIT=1) ---
 _rtk_audit_log() {

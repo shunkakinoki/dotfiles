@@ -217,7 +217,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.claude/hooks/rtk-rewrite.sh",
+            "command": "$HOME/dotfiles/config/shared/hooks/rtk-rewrite.sh",
             "timeout": 5
           },
           {

@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
-# block-gh-settings.sh — Shared hook for Claude Code + Codex + Copilot
+# block-gh-settings.sh — Shared hook for Claude Code + Codex + Copilot + Cursor
 # Blocks gh CLI commands that modify GitHub repository settings.
-# Exit 2 = block (Codex), JSON decision output (Claude).
+# Exit 2 = block; works across all four agent hook protocols.
+
+# Cursor on macOS launches GUI apps with a minimal PATH; self-bootstrap it
+# so jq/gh are findable regardless of caller.
+export PATH="$HOME/.cargo/bin:/etc/profiles/per-user/shunkakinoki/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:/opt/homebrew/bin:/usr/local/bin:/usr/sbin:/usr/bin:/bin:${PATH:-}"
+
 set -euo pipefail
 
 # Read tool input from stdin

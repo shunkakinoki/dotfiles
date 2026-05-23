@@ -5,4 +5,16 @@
   home.activation.cursorHooks = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${./hooks.json}"
   '';
+
+  home.file.".cursor/hooks/notify.sh" = {
+    source = ./hooks/notify.sh;
+    executable = true;
+    force = true;
+  };
+
+  home.file.".cursor/hooks/pushover.sh" = {
+    source = ./hooks/pushover.sh;
+    executable = true;
+    force = true;
+  };
 }

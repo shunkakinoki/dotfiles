@@ -18,18 +18,6 @@
     force = true;
   };
 
-  home.file.".codex/hooks/security.sh" = {
-    source = ./hooks/security.sh;
-    executable = true;
-    force = true;
-  };
-
-  home.file.".codex/hooks/rtk-rewrite.sh" = {
-    source = ./hooks/rtk-rewrite.sh;
-    executable = true;
-    force = true;
-  };
-
   home.file.".codex/hooks/atuin-history.sh" = {
     source = ./hooks/atuin-history.sh;
     executable = true;

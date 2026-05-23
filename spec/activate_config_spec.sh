@@ -62,12 +62,12 @@ End
 
 It 'registers rtk rewrite in the pre-tool hook chain'
 When run jq -r '.hooks.preToolUse[].command' "$CONFIG_JSON"
-The output should include '$HOME/.copilot/hooks/rtk-rewrite.sh'
+The output should include '$HOME/dotfiles/config/shared/hooks/rtk-rewrite.sh'
 End
 
 It 'registers security in the pre-tool hook chain'
 When run jq -r '.hooks.preToolUse[].command' "$CONFIG_JSON"
-The output should include '$HOME/.copilot/hooks/security.sh'
+The output should include '$HOME/dotfiles/config/shared/hooks/security.sh'
 End
 
 It 'replaces existing config with the managed config'
@@ -98,14 +98,10 @@ End
 Describe 'config/copilot/default.nix'
 DEFAULT_NIX="$PWD/config/copilot/default.nix"
 
-It 'installs Copilot rtk rewrite hook'
+It 'no longer deploys per-agent rtk-rewrite or security copies (now sourced from shared/hooks)'
 When run cat "$DEFAULT_NIX"
-The output should include '.copilot/hooks/rtk-rewrite.sh'
-End
-
-It 'installs Copilot security hook'
-When run cat "$DEFAULT_NIX"
-The output should include '.copilot/hooks/security.sh'
+The output should not include '.copilot/hooks/rtk-rewrite.sh'
+The output should not include '.copilot/hooks/security.sh'
 End
 End
 
