@@ -1,3 +1,14 @@
 [install]
+# Supply-chain hygiene: only install packages published at least 7 days ago.
 minimumReleaseAge = 604800
+# Pin exact versions when adding deps (no `^` range prefix).
 exact = true
+# Install optionalDependencies. Required for platform-native binaries shipped
+# as optional deps (turbo, esbuild, oxlint napi bindings, etc). Previously
+# set to `false`, which silently broke fresh installs in monorepos that
+# depend on them — see https://github.com/shunkakinoki/dotfiles/pull/1840.
+optional = true
+# Block arbitrary postinstall scripts as a supply-chain defense. Projects
+# that legitimately need lifecycle scripts must opt in via their own
+# bunfig.toml.
+ignoreScripts = true
