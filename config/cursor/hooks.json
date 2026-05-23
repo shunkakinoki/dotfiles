@@ -1,15 +1,49 @@
 {
+  "version": 1,
   "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": "$HOME/.cursor/hooks/security.sh",
+        "timeout": 5
+      },
+      {
+        "command": "$HOME/.cursor/hooks/with-env.sh $HOME/dotfiles/config/shared/hooks/block-git-push.sh",
+        "timeout": 5
+      },
+      {
+        "command": "$HOME/.cursor/hooks/with-env.sh $HOME/dotfiles/config/shared/hooks/block-gh-settings.sh",
+        "timeout": 5
+      },
+      {
+        "command": "$HOME/.cursor/hooks/notify.sh",
+        "timeout": 3
+      },
+      {
+        "command": "$HOME/.cursor/hooks/pushover.sh",
+        "timeout": 6
+      }
+    ],
     "afterFileEdit": [
       {
-        "command": "git-ai checkpoint cursor --hook-input stdin"
+        "command": "$HOME/.cargo/bin/git-ai checkpoint cursor --hook-input stdin",
+        "timeout": 15
       }
     ],
     "beforeSubmitPrompt": [
       {
-        "command": "git-ai checkpoint cursor --hook-input stdin"
+        "command": "$HOME/.cargo/bin/git-ai checkpoint cursor --hook-input stdin",
+        "timeout": 15
+      }
+    ],
+    "stop": [
+      {
+        "command": "$HOME/.cursor/hooks/notify.sh",
+        "timeout": 3
+      },
+      {
+        "command": "$HOME/.cursor/hooks/pushover.sh",
+        "timeout": 6
       }
     ]
-  },
-  "version": 1
+  }
 }
