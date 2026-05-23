@@ -14,7 +14,11 @@ export PATH="$HOME/.cargo/bin:/etc/profiles/per-user/shunkakinoki/bin:/run/curre
 
 set -euo pipefail
 
-command -v jq >/dev/null 2>&1 || exit 0
+# Fail closed: a security hook that can't parse its input must block, not allow.
+if ! command -v jq >/dev/null 2>&1; then
+  echo "BLOCKED by security.sh: jq not available, cannot evaluate command safely" >&2
+  exit 2
+fi
 
 input=$(cat)
 
@@ -60,7 +64,9 @@ deny_patterns=(
 IFS=$'\n' read -r -d '' -a segments < <(echo "$command" | sed -E 's/[;&|]+/\n/g' && printf '\0') || true
 
 for segment in "${segments[@]}"; do
-  segment=$(echo "$segment" | xargs 2>/dev/null) || continue
+  # Pure-bash trim avoids xargs interpreting quotes/backslashes in the deny list
+  segment="${segment#"${segment%%[![:space:]]*}"}"
+  segment="${segment%"${segment##*[![:space:]]}"}"
   [[ -z $segment ]] && continue
 
   for pattern in "${deny_patterns[@]}"; do
