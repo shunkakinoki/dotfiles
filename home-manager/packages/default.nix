@@ -13,6 +13,9 @@ with pkgs;
 [
   inputs.agenix.packages.${stdenv.hostPlatform.system}.default
   pkgs.nur.repos.charmbracelet.crush
+  pkgs.llm-agents.antigravity
+  pkgs.llm-agents.bernstein
+  pkgs.llm-agents.grok
   act
   age
   aichat

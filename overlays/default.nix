@@ -33,6 +33,7 @@
     });
   })
   inputs.noctalia-shell.overlays.default
+  inputs.llm-agents.overlays.default
   (final: prev: {
     nightlyPkgs = import inputs.nixpkgs-nightly {
       inherit (prev) system config;
