@@ -4,6 +4,11 @@ _: {
     force = true;
     source = ./clipboard-copy.sh;
   };
+  home.file.".local/scripts/clipboard-copy-image" = {
+    executable = true;
+    force = true;
+    source = ./clipboard-copy-image.sh;
+  };
   home.file.".local/scripts/clipboard-paste" = {
     executable = true;
     force = true;
