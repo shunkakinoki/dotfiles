@@ -111,13 +111,13 @@
       };
       WindowManager = {
         AppWindowGroupingBehavior = false;
-        AutoHide = true;
+        AutoHide = false;
         EnableStandardClickToShowDesktop = null;
         EnableTiledWindowMargins = false;
         EnableTilingByEdgeDrag = null;
         EnableTilingOptionAccelerator = null;
         EnableTopTilingByEdgeDrag = null;
-        GloballyEnabled = false;
+        GloballyEnabled = true;
         HideDesktop = false;
         StageManagerHideWidgets = false;
         StandardHideDesktopIcons = null;

@@ -33,6 +33,18 @@
     });
   })
   inputs.llm-agents.overlays.default
+  (_: prev: {
+    # Upstream grok 0.1.218 fails versionCheckHook because `grok --version`/`--help`
+    # do not emit the version string. Disable install check until upstream fixes it.
+    # https://github.com/numtide/llm-agents.nix
+    llm-agents =
+      (prev.llm-agents or { })
+      // prev.lib.optionalAttrs (prev.llm-agents ? grok) {
+        grok = prev.llm-agents.grok.overrideAttrs (_: {
+          doInstallCheck = false;
+        });
+      };
+  })
   inputs.noctalia-shell.overlays.default
   (final: prev: {
     nightlyPkgs = import inputs.nixpkgs-nightly {
