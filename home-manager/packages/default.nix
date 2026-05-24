@@ -16,11 +16,13 @@ with pkgs;
   act
   age
   aichat
+  pkgs.llm-agents.antigravity
   argocd
   ast-grep
   awscli
   azure-cli
   bat
+  pkgs.llm-agents.bernstein
   broot
   bun
   clipse
@@ -58,6 +60,7 @@ with pkgs;
   google-cloud-sdk
   gping
   grc
+  pkgs.llm-agents.grok
   htop
   httpie
   hyperfine

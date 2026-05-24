@@ -32,6 +32,7 @@
       '';
     });
   })
+  inputs.llm-agents.overlays.default
   inputs.noctalia-shell.overlays.default
   (final: prev: {
     nightlyPkgs = import inputs.nixpkgs-nightly {
