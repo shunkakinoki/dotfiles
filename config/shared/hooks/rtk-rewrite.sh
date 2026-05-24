@@ -25,7 +25,7 @@ _rtk_audit_log() {
   mkdir -p "$dir"
   printf '%s | %s | %s | %s\n' \
     "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$action" "$original" "$rewritten" \
-    >> "${dir}/hook-audit.log"
+    >>"${dir}/hook-audit.log"
 }
 
 # Guards: skip silently if dependencies missing
@@ -53,7 +53,10 @@ fi
 
 # Skip heredocs (rtk rewrite also skips them, but bail early)
 case "$CMD" in
-  *'<<'*) _rtk_audit_log "skip:heredoc" "$CMD"; exit 0 ;;
+*'<<'*)
+  _rtk_audit_log "skip:heredoc" "$CMD"
+  exit 0
+  ;;
 esac
 
 # Rewrite via rtk — single source of truth for all command mappings and permission checks.
@@ -62,30 +65,30 @@ EXIT_CODE=0
 REWRITTEN=$(rtk rewrite "$CMD" 2>/dev/null) || EXIT_CODE=$?
 
 case $EXIT_CODE in
-  0)
-    # Rewrite found, no permission rules matched — safe to auto-allow.
-    if [ "$CMD" = "$REWRITTEN" ]; then
-      _rtk_audit_log "skip:already_rtk" "$CMD"
-      exit 0
-    fi
-    ;;
-  1)
-    # No RTK equivalent — pass through unchanged.
-    _rtk_audit_log "skip:no_match" "$CMD"
+0)
+  # Rewrite found, no permission rules matched — safe to auto-allow.
+  if [ "$CMD" = "$REWRITTEN" ]; then
+    _rtk_audit_log "skip:already_rtk" "$CMD"
     exit 0
-    ;;
-  2)
-    # Deny rule matched — let Claude Code's native deny rule handle it.
-    _rtk_audit_log "skip:deny_rule" "$CMD"
-    exit 0
-    ;;
-  3)
-    # Ask rule matched — rewrite the command but do NOT auto-allow so that
-    # Claude Code prompts the user for confirmation.
-    ;;
-  *)
-    exit 0
-    ;;
+  fi
+  ;;
+1)
+  # No RTK equivalent — pass through unchanged.
+  _rtk_audit_log "skip:no_match" "$CMD"
+  exit 0
+  ;;
+2)
+  # Deny rule matched — let Claude Code's native deny rule handle it.
+  _rtk_audit_log "skip:deny_rule" "$CMD"
+  exit 0
+  ;;
+3)
+  # Ask rule matched — rewrite the command but do NOT auto-allow so that
+  # Claude Code prompts the user for confirmation.
+  ;;
+*)
+  exit 0
+  ;;
 esac
 
 _rtk_audit_log "rewrite" "$CMD" "$REWRITTEN"
@@ -99,9 +102,9 @@ UPDATED_INPUT=$(echo "$ORIGINAL_INPUT" | jq --arg cmd "$REWRITTEN" '.command = $
 # original toolArgs structure (e.g. `timeout`) with `command` replaced.
 TOOL_ARGS_KIND=$(echo "$INPUT" | jq -r '.toolArgs | type')
 case "$TOOL_ARGS_KIND" in
-  object) MODIFIED_ARGS=$(echo "$INPUT" | jq -c --arg cmd "$REWRITTEN" '.toolArgs | .command = $cmd') ;;
-  string) MODIFIED_ARGS=$(echo "$INPUT" | jq -c --arg cmd "$REWRITTEN" '.toolArgs | ((fromjson? | if type == "object" then .command = $cmd else null end) // null)') ;;
-  *)      MODIFIED_ARGS="null" ;;
+object) MODIFIED_ARGS=$(echo "$INPUT" | jq -c --arg cmd "$REWRITTEN" '.toolArgs | .command = $cmd') ;;
+string) MODIFIED_ARGS=$(echo "$INPUT" | jq -c --arg cmd "$REWRITTEN" '.toolArgs | ((fromjson? | if type == "object" then .command = $cmd else null end) // null)') ;;
+*) MODIFIED_ARGS="null" ;;
 esac
 
 if [ "$EXIT_CODE" -eq 3 ]; then

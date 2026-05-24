@@ -19,8 +19,8 @@ fi
 
 # Skip local popups only when Pushover is BOTH configured AND deliverable —
 # otherwise fall back to local so we don't go silent on a missing binary.
-if [[ -n ${PUSHOVER_API_TOKEN:-} ]] && [[ -n ${PUSHOVER_USER_KEY:-} ]] && \
-   { command -v pushover-notify >/dev/null 2>&1 || [[ -x "$HOME/.local/scripts/pushover-notify" ]]; }; then
+if [[ -n ${PUSHOVER_API_TOKEN:-} ]] && [[ -n ${PUSHOVER_USER_KEY:-} ]] &&
+  { command -v pushover-notify >/dev/null 2>&1 || [[ -x "$HOME/.local/scripts/pushover-notify" ]]; }; then
   exit 0
 fi
 
