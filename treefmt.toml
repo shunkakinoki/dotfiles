@@ -23,6 +23,7 @@ excludes = [
   "config/claude/hooks/rtk-rewrite.sh",
   "config/codex/hooks/rtk-rewrite.sh",
   "config/copilot/hooks/rtk-rewrite.sh",
+  "config/shared/hooks/rtk-rewrite.sh",
 ]
 
 [formatter.lua]
