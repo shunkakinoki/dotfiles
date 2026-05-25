@@ -1,8 +1,8 @@
 [install]
 # Supply-chain hygiene: only install packages published at least 7 days ago.
 minimumReleaseAge = 604800
-# Pin exact versions when adding deps (no `^` range prefix).
-exact = true
+# Use caret ranges when adding deps.
+exact = false
 # Install optionalDependencies. Required for platform-native binaries shipped
 # as optional deps (turbo, esbuild, oxlint napi bindings, etc). Previously
 # set to `false`, which silently broke fresh installs in monorepos that
