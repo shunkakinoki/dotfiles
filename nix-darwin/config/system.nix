@@ -53,6 +53,11 @@
           "NSStatusItem VisibleCC Clock" = true;
           "NSStatusItem VisibleCC WiFi" = true;
         };
+        # Stage Manager: "Show windows from an application: All at Once"
+        # (false would be "One at a Time").
+        "com.apple.WindowManager" = {
+          AppWindowGroupingBehavior = true;
+        };
       };
       NSGlobalDomain = {
         AppleEnableMouseSwipeNavigateWithScrolls = null;
