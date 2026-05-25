@@ -49,9 +49,9 @@ setup() {
   export WAYLAND_DISPLAY=wayland-0
 }
 cleanup() {
+  mock_bin_cleanup
   rm -rf "$TEST_DIR"
   unset WAYLAND_DISPLAY
-  mock_bin_cleanup
 }
 Before 'setup'
 After 'cleanup'
@@ -74,8 +74,8 @@ setup() {
   unset WAYLAND_DISPLAY
 }
 cleanup() {
-  rm -rf "$TEST_DIR"
   mock_bin_cleanup
+  rm -rf "$TEST_DIR"
 }
 Before 'setup'
 After 'cleanup'

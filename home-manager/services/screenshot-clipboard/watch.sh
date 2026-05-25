@@ -19,14 +19,16 @@ mkdir -p "$DESKTOP_DIR"
 
 echo "Watching $DESKTOP_DIR for screenshots..."
 
-# macOS writes screenshots atomically via a rename, so fswatch reports the
-# final path once writing has completed. The case glob matches both the
-# current default ("Screenshot ...") and the legacy ("Screen Shot ...")
-# filenames to keep working if locale or macOS version changes them.
+# Screenshots are written atomically (macOS via rename, hyprshot via mv from
+# a temp path), so fswatch reports the final path once writing has finished.
+# Patterns:
+#   - "Screenshot ..." / "Screen Shot ..." : macOS defaults (current / legacy)
+#   - "*_hyprshot.png"                     : hyprshot default name on Linux
+#   - "swappy-*.png"                       : grim | swappy default name
 fswatch --event=Created --event=MovedTo --event=Renamed -0 "$DESKTOP_DIR" |
   while IFS= read -r -d '' path; do
     case "$path" in
-    *"/Screenshot "*.png | *"/Screen Shot "*.png)
+    *"/Screenshot "*.png | *"/Screen Shot "*.png | *_hyprshot.png | *"/swappy-"*.png)
       "$CLIPBOARD_COPY_IMAGE" "$path" || true
       ;;
     esac
