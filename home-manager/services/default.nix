@@ -26,6 +26,7 @@ let
   openclaw = ./openclaw;
   paperclip = ./paperclip;
   roborev = ./roborev;
+  screenshotClipboard = import ./screenshot-clipboard { inherit pkgs; };
   sshAgent = ./ssh-agent;
   tmuxSessionLogger = import ./tmux-session-logger { inherit pkgs; };
 in
@@ -50,6 +51,7 @@ in
   openclaw
   paperclip
   roborev
+  screenshotClipboard
   sshAgent
   tmuxSessionLogger
 ]

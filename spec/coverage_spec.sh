@@ -81,6 +81,14 @@ It 'has spec file for home-manager/services/code-syncer/sync.sh'
 The path "spec/code_syncer_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/modules/local-scripts/clipboard-copy-image.sh'
+The path "spec/clipboard_copy_image_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/services/screenshot-clipboard/watch.sh'
+The path "spec/screenshot_clipboard_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/docker-postgres/start-postgres.sh'
 The path "spec/docker_postgres_spec.sh" should be exist
 End
@@ -404,6 +412,7 @@ home-manager/modules/bin-shells/activate.sh
 home-manager/modules/cargo-globals/install-cargo-globals.sh
 home-manager/modules/local-binaries/sync-local-binaries.sh
 home-manager/modules/local-scripts/clipboard-copy.sh
+home-manager/modules/local-scripts/clipboard-copy-image.sh
 home-manager/modules/local-scripts/clipboard-paste.sh
 home-manager/modules/local-scripts/decafinate.sh
 home-manager/modules/local-scripts/notify-local.sh
@@ -437,6 +446,7 @@ home-manager/services/cliproxyapi/scripts/keychain-sync.sh
 home-manager/services/cliproxyapi/scripts/start.sh
 home-manager/services/cliproxyapi/scripts/wrapper.sh
 home-manager/services/code-syncer/sync.sh
+home-manager/services/screenshot-clipboard/watch.sh
 home-manager/services/docker-postgres/start-postgres-wrapper.sh
 home-manager/services/docker-postgres/start-postgres.sh
 home-manager/services/docker/docker-setup.sh
