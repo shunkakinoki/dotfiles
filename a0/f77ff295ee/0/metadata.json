@@ -1,0 +1,46 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "a0f77ff295ee",
+  "session_id": "f74f367b-57e7-40e1-a7ba-b5155463d1b1",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-25T08:34:13.936525Z",
+  "branch": "claude/ecstatic-lehmann-a9c126",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "nix-darwin/config/system.nix"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "e317b3ed47bc",
+  "token_usage": {
+    "input_tokens": 55,
+    "cache_creation_tokens": 81607,
+    "cache_read_tokens": 1995395,
+    "output_tokens": 15046,
+    "api_call_count": 30
+  },
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-25T08:34:13.830125Z",
+    "agent_lines": 0,
+    "agent_removed": 19,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 0,
+    "total_lines_changed": 19,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}
