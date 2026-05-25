@@ -27,14 +27,13 @@ echo "Watching $DESKTOP_DIR for screenshots..."
 # Patterns:
 #   - "Screenshot ..." / "Screen Shot ..." : macOS defaults (current / legacy)
 #   - "*_hyprshot.png"                     : hyprshot default name on Linux
-#   - "swappy-*.png"                       : grim | swappy default name
+#     (HYPRSHOT_DIR is set to $HOME/Desktop in config/hyprland/hyprland.conf)
 fswatch --event=Created --event=MovedTo --event=Renamed -0 "$DESKTOP_DIR" |
   while IFS= read -r -d '' path; do
     case "$path" in
     "$DESKTOP_DIR/Screenshot "*.png | \
       "$DESKTOP_DIR/Screen Shot "*.png | \
-      "$DESKTOP_DIR/"*_hyprshot.png | \
-      "$DESKTOP_DIR/swappy-"*.png)
+      "$DESKTOP_DIR/"*_hyprshot.png)
       "$CLIPBOARD_COPY_IMAGE" "$path" || true
       ;;
     esac

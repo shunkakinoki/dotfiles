@@ -9,22 +9,20 @@ When run bash -n "$SCRIPT"
 The status should be success
 End
 
-It 'matches macOS screenshot patterns'
-When run grep -F 'Screenshot ' "$SCRIPT"
+# Extract only the case-arm logic (between "case" and "esac") so the
+# assertions can't be satisfied by matching the documentation comments.
+It 'declares screenshot patterns in case-arm logic'
+When run awk '/case "\$path" in/,/esac/' "$SCRIPT"
 The status should be success
-The output should include 'Screenshot'
-End
-
-It 'matches hyprshot pattern'
-When run grep -F '_hyprshot.png' "$SCRIPT"
-The status should be success
+The output should include 'Screenshot '
+The output should include 'Screen Shot '
 The output should include '_hyprshot.png'
 End
 
-It 'matches swappy pattern'
-When run grep -F 'swappy-' "$SCRIPT"
+It 'anchors patterns to $DESKTOP_DIR to avoid subfolder matches'
+When run awk '/case "\$path" in/,/esac/' "$SCRIPT"
 The status should be success
-The output should include 'swappy-'
+The output should include '"$DESKTOP_DIR/'
 End
 
 Describe 'when fswatch is missing'
