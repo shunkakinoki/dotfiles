@@ -53,11 +53,6 @@
           "NSStatusItem VisibleCC Clock" = true;
           "NSStatusItem VisibleCC WiFi" = true;
         };
-        # Stage Manager: "Show windows from an application: All at Once"
-        # (false would be "One at a Time").
-        "com.apple.WindowManager" = {
-          AppWindowGroupingBehavior = true;
-        };
       };
       NSGlobalDomain = {
         AppleEnableMouseSwipeNavigateWithScrolls = null;
@@ -113,20 +108,6 @@
         "com.apple.trackpad.forceClick" = true;
         "com.apple.trackpad.scaling" = 3.0;
         "com.apple.trackpad.trackpadCornerClickBehavior" = null;
-      };
-      WindowManager = {
-        AppWindowGroupingBehavior = false;
-        AutoHide = false;
-        EnableStandardClickToShowDesktop = null;
-        EnableTiledWindowMargins = false;
-        EnableTilingByEdgeDrag = null;
-        EnableTilingOptionAccelerator = null;
-        EnableTopTilingByEdgeDrag = null;
-        GloballyEnabled = true;
-        HideDesktop = false;
-        StageManagerHideWidgets = false;
-        StandardHideDesktopIcons = null;
-        StandardHideWidgets = false;
       };
       controlcenter = {
         AirDrop = null;
