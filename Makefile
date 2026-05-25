@@ -312,6 +312,17 @@ bun-update: ## Update bun dependencies to latest and regenerate lock file.
 	@bun install
 	@echo "✅ bun dependencies updated"
 
+.PHONY: bun-version-set
+bun-version-set: ## Bump the packageManager bun version in package.json to latest.
+	@echo "📦 Bumping bun packageManager version to latest..."
+	@latest=$$(curl -fsSL https://registry.npmjs.org/bun/latest | jq -r '.version'); \
+		if [ -z "$$latest" ] || [ "$$latest" = "null" ]; then \
+			echo "❌ Failed to fetch latest bun version"; exit 1; \
+		fi; \
+		echo "   → bun@$$latest"; \
+		bun pm pkg set packageManager="bun@$$latest"
+	@echo "✅ bun packageManager version bumped"
+
 .PHONY: cargo-update
 cargo-update: ## Update Rust dependencies to latest and regenerate lock file.
 	@echo "🦀 Updating Cargo dependencies..."
