@@ -3745,6 +3745,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dc897dd8d9e8bd1ed8cdad82b5966c3e0ecae09fb1907d58efaa013543185d0a"
 
 [[package]]
+name = "renamore"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0f5bced8a18df26d088a61a8f314d853ad18705b0aee59b43ccc088ca4bc3670"
+dependencies = [
+ "cc",
+ "tempfile",
+]
+
+[[package]]
 name = "ring"
 version = "0.17.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6003,9 +6013,9 @@ dependencies = [
 
 [[package]]
 name = "worktrunk"
-version = "0.50.0"
+version = "0.53.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2780909f922e953d4e07f35473ff0e5269f30f1c90066c17c8014dfd6b70d5db"
+checksum = "d8175b2cc806e2dbea9f8fda70076b4b9b3d7181dddb70bb65edd937305f55f0"
 dependencies = [
  "ansi-str",
  "anstream",
@@ -6040,6 +6050,7 @@ dependencies = [
  "rayon",
  "reflink-copy",
  "regex",
+ "renamore",
  "sanitize-filename",
  "schemars",
  "serde",
