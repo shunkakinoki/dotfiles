@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu
+set -euo pipefail
 
 DESKTOP_DIR="$HOME/Desktop"
 CLIPBOARD_COPY_IMAGE="$HOME/.local/scripts/clipboard-copy-image"
@@ -21,6 +21,9 @@ echo "Watching $DESKTOP_DIR for screenshots..."
 
 # Screenshots are written atomically (macOS via rename, hyprshot via mv from
 # a temp path), so fswatch reports the final path once writing has finished.
+# fswatch on macOS uses FSEvents which is always recursive, so the patterns
+# are anchored to "$DESKTOP_DIR/" to ignore screenshots inside subfolders
+# (e.g. project directories) and only react to fresh top-level captures.
 # Patterns:
 #   - "Screenshot ..." / "Screen Shot ..." : macOS defaults (current / legacy)
 #   - "*_hyprshot.png"                     : hyprshot default name on Linux
@@ -28,7 +31,10 @@ echo "Watching $DESKTOP_DIR for screenshots..."
 fswatch --event=Created --event=MovedTo --event=Renamed -0 "$DESKTOP_DIR" |
   while IFS= read -r -d '' path; do
     case "$path" in
-    *"/Screenshot "*.png | *"/Screen Shot "*.png | *_hyprshot.png | *"/swappy-"*.png)
+    "$DESKTOP_DIR/Screenshot "*.png | \
+      "$DESKTOP_DIR/Screen Shot "*.png | \
+      "$DESKTOP_DIR/"*_hyprshot.png | \
+      "$DESKTOP_DIR/swappy-"*.png)
       "$CLIPBOARD_COPY_IMAGE" "$path" || true
       ;;
     esac

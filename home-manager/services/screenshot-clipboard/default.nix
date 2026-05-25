@@ -1,6 +1,8 @@
-{ pkgs, ... }:
+{ pkgs }:
+{ config, ... }:
 let
   inherit (pkgs) lib;
+  logDir = "${config.home.homeDirectory}/Library/Logs";
 in
 {
   launchd.agents.screenshot-clipboard = lib.mkIf pkgs.stdenv.isDarwin {
@@ -18,10 +20,15 @@ in
         }:/usr/bin:/bin";
       };
       RunAtLoad = true;
-      KeepAlive = true;
+      # Restart on crash/non-zero exit, but throttle to avoid a tight loop if
+      # a prereq (fswatch, helper script) is missing during early activation.
+      KeepAlive = {
+        SuccessfulExit = false;
+      };
+      ThrottleInterval = 30;
       ProcessType = "Background";
-      StandardOutPath = "/tmp/screenshot-clipboard.log";
-      StandardErrorPath = "/tmp/screenshot-clipboard.error.log";
+      StandardOutPath = "${logDir}/screenshot-clipboard.log";
+      StandardErrorPath = "${logDir}/screenshot-clipboard.error.log";
     };
   };
 
@@ -43,8 +50,8 @@ in
         ]
       }";
       ExecStart = "${pkgs.bash}/bin/bash ${./watch.sh}";
-      Restart = "always";
-      RestartSec = 10;
+      Restart = "on-failure";
+      RestartSec = 30;
     };
     Install = {
       WantedBy = [ "graphical-session.target" ];

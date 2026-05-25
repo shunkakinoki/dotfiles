@@ -16,11 +16,15 @@ fi
 
 # macOS: AppleScript reads the file as «class PNGf» so receivers paste it as
 # an image. Piping PNG bytes through pbcopy would store them as text and
-# break image paste in Slack, Messages, browsers, etc.
+# break image paste in Slack, Messages, browsers, etc. The path is passed as
+# a positional arg to a `run` handler so no shell interpolation reaches the
+# AppleScript source - this avoids quote/backslash/$(...) injection.
 if command -v osascript >/dev/null 2>&1; then
-  escaped=${file//\\/\\\\}
-  escaped=${escaped//\"/\\\"}
-  osascript -e "set the clipboard to (read (POSIX file \"$escaped\") as «class PNGf»)"
+  osascript \
+    -e 'on run {f}' \
+    -e 'set the clipboard to (read (POSIX file f) as «class PNGf»)' \
+    -e 'end run' \
+    "$file"
   exit 0
 fi
 
