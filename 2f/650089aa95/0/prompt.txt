@@ -1,0 +1,3 @@
+❯ sudo sysctl -w kern.tty.ptmx_max=4096
+kern.tty.ptmx_max: 511
+sysctl: kern.tty.ptmx_max=4096: Invalid argument

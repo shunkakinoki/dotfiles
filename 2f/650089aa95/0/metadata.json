@@ -1,0 +1,46 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "2f650089aa95",
+  "session_id": "6558d13f-7f71-4408-a984-bb57913b37fb",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-26T08:43:12.132403Z",
+  "branch": "claude/reverent-bartik-ddf1b7",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "nix-darwin/services/sysctl-ptmx/default.nix"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "672dc6e6ba21",
+  "token_usage": {
+    "input_tokens": 480,
+    "cache_creation_tokens": 117284,
+    "cache_read_tokens": 2705094,
+    "output_tokens": 16492,
+    "api_call_count": 45
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-26T08:43:12.062699Z",
+    "agent_lines": 8,
+    "agent_removed": 2,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 8,
+    "total_lines_changed": 10,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 601,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".beads/issues.jsonl": 601
+      }
+    }
+  ]
+}
