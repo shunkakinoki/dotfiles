@@ -54,3 +54,5 @@ issue-prefix: df
 # Keep bd status checks on the SQL probe path instead of PID-file auto-start.
 dolt.auto-start: "false"
 dolt.idle-timeout: "0"
+
+sync.remote: "git+https://github.com/shunkakinoki/dotfiles.git"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Ensures the user is in the docker group and the system Docker daemon is running.
-# @shadow@, @gnugrep@, @systemd@, @coreutils@, @docker_service_file@, @diffutils@
+# @shadow@, @gnugrep@, @systemd@, @coreutils@, @docker_service_file@, @docker_daemon_file@, @diffutils@
 # are substituted by pkgs.replaceVars.
 set -euo pipefail
 
@@ -11,9 +11,14 @@ GREP=@gnugrep@/bin/grep
 USERMOD=@shadow@/bin/usermod
 SYSTEMCTL=@systemd@/bin/systemctl
 TEE=@coreutils@/bin/tee
+MKDIR=@coreutils@/bin/mkdir
+INSTALL=@coreutils@/bin/install
 DIFF=@diffutils@/bin/diff
 DOCKER_SERVICE_FILE=@docker_service_file@
+DOCKER_DAEMON_FILE=@docker_daemon_file@
 SYSTEM_SERVICE=/etc/systemd/system/docker.service
+DOCKER_CONFIG_DIR=/etc/docker
+DOCKER_DAEMON_CONFIG="$DOCKER_CONFIG_DIR/daemon.json"
 
 # Ensure docker group exists
 if ! getent group docker >/dev/null 2>&1; then
@@ -30,17 +35,35 @@ fi
 
 # Always ensure the service file is up to date (Nix GC can invalidate store paths)
 NEEDS_RELOAD=false
+NEEDS_RESTART=false
 if [ ! -f "$SYSTEM_SERVICE" ]; then
   echo "Installing Docker systemd service..."
   # shellcheck disable=SC2024
   sudo "$TEE" "$SYSTEM_SERVICE" >/dev/null <"$DOCKER_SERVICE_FILE"
   sudo "$SYSTEMCTL" enable docker
   NEEDS_RELOAD=true
+  NEEDS_RESTART=true
 elif ! "$DIFF" -q "$DOCKER_SERVICE_FILE" "$SYSTEM_SERVICE" >/dev/null 2>&1; then
   echo "Updating Docker systemd service (Nix store paths changed)..."
   # shellcheck disable=SC2024
   sudo "$TEE" "$SYSTEM_SERVICE" >/dev/null <"$DOCKER_SERVICE_FILE"
   NEEDS_RELOAD=true
+  NEEDS_RESTART=true
+fi
+
+if [ ! -d "$DOCKER_CONFIG_DIR" ]; then
+  echo "Creating Docker daemon config directory..."
+  sudo "$MKDIR" -p "$DOCKER_CONFIG_DIR"
+fi
+
+if [ ! -f "$DOCKER_DAEMON_CONFIG" ]; then
+  echo "Installing Docker daemon config..."
+  sudo "$INSTALL" -m 0644 "$DOCKER_DAEMON_FILE" "$DOCKER_DAEMON_CONFIG"
+  NEEDS_RESTART=true
+elif ! "$DIFF" -q "$DOCKER_DAEMON_FILE" "$DOCKER_DAEMON_CONFIG" >/dev/null 2>&1; then
+  echo "Updating Docker daemon config..."
+  sudo "$INSTALL" -m 0644 "$DOCKER_DAEMON_FILE" "$DOCKER_DAEMON_CONFIG"
+  NEEDS_RESTART=true
 fi
 
 if [ "$NEEDS_RELOAD" = true ]; then
@@ -72,8 +95,8 @@ if ! "$SYSTEMCTL" is-active --quiet docker 2>/dev/null; then
   echo "Starting Docker daemon..."
   sudo "$SYSTEMCTL" start docker
   echo "Docker daemon started"
-elif [ "$NEEDS_RELOAD" = true ]; then
-  echo "Restarting Docker daemon (service file updated)..."
+elif [ "$NEEDS_RESTART" = true ]; then
+  echo "Restarting Docker daemon (configuration updated)..."
   sudo "$SYSTEMCTL" restart docker
   echo "Docker daemon restarted"
 else

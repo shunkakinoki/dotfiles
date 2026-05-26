@@ -8,6 +8,16 @@
 let
   inherit (inputs) host;
   homeDir = config.home.homeDirectory;
+  paperclipNoDockerBin = pkgs.runCommand "paperclip-no-docker-bin" { } ''
+        mkdir -p "$out/bin"
+        cat >"$out/bin/docker" <<'EOF'
+    #!${pkgs.bash}/bin/bash
+    echo "Docker is disabled for the Paperclip service; use the declarative Kyber runtime instead." >&2
+    exit 127
+    EOF
+        chmod +x "$out/bin/docker"
+        ln -s "$out/bin/docker" "$out/bin/docker-compose"
+  '';
 in
 # Only enable on kyber (server host)
 lib.mkIf host.isKyber {
@@ -34,7 +44,8 @@ lib.mkIf host.isKyber {
         "PAPERCLIP_DEPLOYMENT_MODE=authenticated"
         "PAPERCLIP_ALLOWED_HOSTNAMES=paperclip.shunkakinoki.com,172.17.0.1"
         "BETTER_AUTH_URL=https://paperclip.shunkakinoki.com"
-        "PATH=${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:${homeDir}/.local/share/pnpm:${homeDir}/.local/share/fnm/current/bin:${homeDir}/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
+        "DOCKER_HOST=unix:///run/paperclip-docker-disabled.sock"
+        "PATH=${paperclipNoDockerBin}/bin:${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:${homeDir}/.local/share/pnpm:${homeDir}/.local/share/fnm/current/bin:${homeDir}/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
       ];
       EnvironmentFile = [
         "${homeDir}/dotfiles/.env"

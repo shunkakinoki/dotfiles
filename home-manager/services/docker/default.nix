@@ -9,6 +9,9 @@ let
     )
   );
 
+  # Docker daemon defaults installed on Linux hosts.
+  dockerDaemonFile = pkgs.writeText "daemon.json" (builtins.readFile ./daemon.json);
+
   # Script to ensure user is in docker group and system docker is running
   setupDockerScript = pkgs.writeShellScript "setup-docker" (
     builtins.readFile (
@@ -21,6 +24,7 @@ let
           diffutils
           ;
         docker_service_file = dockerServiceFile;
+        docker_daemon_file = dockerDaemonFile;
       }
     )
   );
