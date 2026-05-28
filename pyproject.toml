@@ -17,7 +17,7 @@ tools = [
   "nvitop>=1.7.0",
   "ruff>=0.15.13",
   "serena-agent>=1.5.1",
-  "transformers>=5.8.1",
+  "transformers>=5.9.0",
   "vllm>=0.21.0",
   "vllm-mlx>=0.3.0",
 ]
