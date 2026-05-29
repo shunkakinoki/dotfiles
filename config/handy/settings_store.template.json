@@ -40,7 +40,7 @@
     "external_script_path": null,
     "extra_recording_buffer_ms": 0,
     "history_limit": 9999999,
-    "keyboard_implementation": "handy_keys",
+    "keyboard_implementation": "tauri",
     "lazy_stream_close": true,
     "log_level": "debug",
     "model_unload_timeout": "never",
