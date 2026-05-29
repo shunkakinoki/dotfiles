@@ -57,7 +57,7 @@
       "custom": "",
       "groq": "",
       "openai": "",
-      "openrouter": "",
+      "openrouter": "__OPENROUTER_API_KEY__",
       "zai": ""
     },
     "post_process_enabled": true,
@@ -80,80 +80,6 @@
       }
     ],
     "post_process_provider_id": "openrouter",
-    "post_process_providers": [
-      {
-        "allow_base_url_edit": false,
-        "base_url": "https://api.openai.com/v1",
-        "id": "openai",
-        "label": "OpenAI",
-        "models_endpoint": "/models",
-        "supports_structured_output": true
-      },
-      {
-        "allow_base_url_edit": false,
-        "base_url": "https://api.z.ai/api/paas/v4",
-        "id": "zai",
-        "label": "Z.AI",
-        "models_endpoint": "/models",
-        "supports_structured_output": true
-      },
-      {
-        "allow_base_url_edit": false,
-        "base_url": "https://openrouter.ai/api/v1",
-        "id": "openrouter",
-        "label": "OpenRouter",
-        "models_endpoint": "/models",
-        "supports_structured_output": true
-      },
-      {
-        "allow_base_url_edit": false,
-        "base_url": "https://api.anthropic.com/v1",
-        "id": "anthropic",
-        "label": "Anthropic",
-        "models_endpoint": "/models",
-        "supports_structured_output": false
-      },
-      {
-        "allow_base_url_edit": false,
-        "base_url": "https://api.groq.com/openai/v1",
-        "id": "groq",
-        "label": "Groq",
-        "models_endpoint": "/models",
-        "supports_structured_output": false
-      },
-      {
-        "allow_base_url_edit": false,
-        "base_url": "https://api.cerebras.ai/v1",
-        "id": "cerebras",
-        "label": "Cerebras",
-        "models_endpoint": "/models",
-        "supports_structured_output": true
-      },
-      {
-        "allow_base_url_edit": false,
-        "base_url": "apple-intelligence://local",
-        "id": "apple_intelligence",
-        "label": "Apple Intelligence",
-        "models_endpoint": null,
-        "supports_structured_output": true
-      },
-      {
-        "allow_base_url_edit": true,
-        "base_url": "http://localhost:11434/v1",
-        "id": "custom",
-        "label": "Custom",
-        "models_endpoint": "/models",
-        "supports_structured_output": false
-      },
-      {
-        "allow_base_url_edit": false,
-        "base_url": "https://bedrock-mantle.us-east-1.api.aws/v1",
-        "id": "bedrock_mantle",
-        "label": "AWS Bedrock (Mantle)",
-        "models_endpoint": "/models",
-        "supports_structured_output": true
-      }
-    ],
     "post_process_selected_prompt_id": "default_improve_transcriptions",
     "push_to_talk": true,
     "recording_retention_period": "never",

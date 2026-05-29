@@ -1,9 +1,14 @@
 { lib, pkgs, ... }:
+let
+  hydrateScript = pkgs.writeText "handy-hydrate.sh" (
+    builtins.replaceStrings [ "@sed@" ] [ "${pkgs.gnused}/bin/sed" ] (builtins.readFile ./hydrate.sh)
+  );
+in
 {
-  # Handy mutates settings_store.json at runtime (UI changes, API keys, etc.),
-  # so we copy via activation instead of symlinking the read-only Nix store.
-  # Do NOT commit populated post_process_api_keys to this file.
-  home.activation.handyConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${./settings_store.json}"
+  # Handy mutates settings_store.json at runtime (UI changes), so we copy via
+  # activation rather than symlinking the read-only Nix store. The template
+  # holds an __OPENROUTER_API_KEY__ placeholder hydrated from ~/dotfiles/.env.
+  home.activation.hydrateHandy = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    ${pkgs.bash}/bin/bash ${hydrateScript} || true
   '';
 }
