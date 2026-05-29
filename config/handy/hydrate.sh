@@ -33,10 +33,15 @@ if [ -z "${OPENROUTER_API_KEY:-}" ]; then
   echo "Warning: OPENROUTER_API_KEY not set, Handy post-processing will be unauthenticated" >&2
 fi
 
+if [ -z "${ZAI_API_KEY:-}" ]; then
+  echo "Warning: ZAI_API_KEY not set, Handy Z.AI provider will be unauthenticated" >&2
+fi
+
 mkdir -p "$DEST_DIR"
 TMP="$(mktemp)"
 @sed@ \
   -e "s|__OPENROUTER_API_KEY__|${OPENROUTER_API_KEY:-}|g" \
+  -e "s|__ZAI_API_KEY__|${ZAI_API_KEY:-}|g" \
   "$TEMPLATE" >"$TMP"
 install -m 0600 "$TMP" "$DEST_DIR/settings_store.json"
 rm -f "$TMP"

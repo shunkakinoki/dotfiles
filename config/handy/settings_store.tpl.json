@@ -58,7 +58,7 @@
       "groq": "",
       "openai": "",
       "openrouter": "__OPENROUTER_API_KEY__",
-      "zai": ""
+      "zai": "__ZAI_API_KEY__"
     },
     "post_process_enabled": true,
     "post_process_models": {
