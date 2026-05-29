@@ -10,7 +10,7 @@ requires-python = ">=3.13"
 tools = [
   "aider-chat>=0.86.2",
   "claude-swap>=0.10.1",
-  "huggingface-hub[mcp]>=1.15.0",
+  "huggingface-hub[mcp]>=1.16.1",
   "marker-pdf>=1.10.2",
   "mempalace>=3.3.5",
   "mistral-vibe>=2.10.1",
