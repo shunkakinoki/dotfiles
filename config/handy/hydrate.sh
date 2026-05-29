@@ -4,16 +4,18 @@
 # shellcheck source=/dev/null
 set -euo pipefail
 
-DOTFILES_DIR="${HOME}/dotfiles"
 # Hydrate the post-llm-update artifact (model placeholders already substituted
 # by scripts/llm-update.sh from models.json). We only inject the API key here.
-TEMPLATE="${DOTFILES_DIR}/config/handy/settings_store.template.json"
-ENV_FILE="${DOTFILES_DIR}/.env"
+TEMPLATE="${HOME}/dotfiles/config/handy/settings_store.template.json"
+ENV_FILE="${HOME}/dotfiles/.env"
 
 case "$(uname -s)" in
-  Darwin) DEST_DIR="$HOME/Library/Application Support/com.pais.handy" ;;
-  Linux)  DEST_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/com.pais.handy" ;;
-  *) echo "handy hydrate: unsupported OS $(uname -s)" >&2; exit 0 ;;
+Darwin) DEST_DIR="$HOME/Library/Application Support/com.pais.handy" ;;
+Linux) DEST_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/com.pais.handy" ;;
+*)
+  echo "handy hydrate: unsupported OS $(uname -s)" >&2
+  exit 0
+  ;;
 esac
 
 if [ ! -f "$TEMPLATE" ]; then
