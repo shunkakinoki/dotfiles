@@ -5,9 +5,9 @@
     "append_trailing_space": false,
     "audio_feedback": true,
     "audio_feedback_volume": 1.0,
-    "auto_submit": true,
+    "auto_submit": false,
     "auto_submit_key": "enter",
-    "autostart_enabled": false,
+    "autostart_enabled": true,
     "bindings": {
       "cancel": {
         "current_binding": "escape",
@@ -89,7 +89,7 @@
     "selected_output_device": null,
     "show_tray_icon": true,
     "sound_theme": "marimba",
-    "start_hidden": false,
+    "start_hidden": true,
     "translate_to_english": false,
     "typing_tool": "auto",
     "update_checks_enabled": true,
