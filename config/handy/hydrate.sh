@@ -5,7 +5,9 @@
 set -euo pipefail
 
 DOTFILES_DIR="${HOME}/dotfiles"
-TEMPLATE="${DOTFILES_DIR}/config/handy/settings_store.tpl.json"
+# Hydrate the post-llm-update artifact (model placeholders already substituted
+# by scripts/llm-update.sh from models.json). We only inject the API key here.
+TEMPLATE="${DOTFILES_DIR}/config/handy/settings_store.template.json"
 ENV_FILE="${DOTFILES_DIR}/.env"
 
 case "$(uname -s)" in

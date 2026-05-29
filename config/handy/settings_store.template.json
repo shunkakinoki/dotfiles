@@ -69,7 +69,7 @@
       "custom": "",
       "groq": "",
       "openai": "",
-      "openrouter": "@preset/__GLM__",
+      "openrouter": "@preset/glm-4.7",
       "zai": ""
     },
     "post_process_prompts": [
