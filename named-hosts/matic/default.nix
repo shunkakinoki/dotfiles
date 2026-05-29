@@ -9,6 +9,7 @@ in
 import ../../hosts/nixos {
   inherit inputs username;
   hostname = "matic";
+  isDesktop = true;
   userExtraGroups = [
     "input"
     "video"
@@ -364,6 +365,7 @@ import ../../hosts/nixos {
           openssl
           zlib
         ];
+
       }
     )
 
