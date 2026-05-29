@@ -21,6 +21,7 @@ in
   ./gitleaks
   ./gomi
   ./ghostty
+  ./handy
   ./hermes
   ./iterm2
   ./hammerspoon

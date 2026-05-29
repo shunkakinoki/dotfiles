@@ -1,0 +1,100 @@
+{
+  "settings": {
+    "always_on_microphone": false,
+    "app_language": "en",
+    "append_trailing_space": false,
+    "audio_feedback": true,
+    "audio_feedback_volume": 1.0,
+    "auto_submit": true,
+    "auto_submit_key": "enter",
+    "autostart_enabled": false,
+    "bindings": {
+      "cancel": {
+        "current_binding": "escape",
+        "default_binding": "escape",
+        "description": "Cancels the current recording.",
+        "id": "cancel",
+        "name": "Cancel"
+      },
+      "transcribe": {
+        "current_binding": "option+space",
+        "default_binding": "option+space",
+        "description": "Converts your speech into text.",
+        "id": "transcribe",
+        "name": "Transcribe"
+      },
+      "transcribe_with_post_process": {
+        "current_binding": "option+shift+space",
+        "default_binding": "option+shift+space",
+        "description": "Converts your speech into text and applies AI post-processing.",
+        "id": "transcribe_with_post_process",
+        "name": "Transcribe with Post-Processing"
+      }
+    },
+    "clamshell_microphone": null,
+    "clipboard_handling": "copy_to_clipboard",
+    "custom_filler_words": null,
+    "custom_words": [],
+    "debug_mode": false,
+    "experimental_enabled": true,
+    "external_script_path": null,
+    "extra_recording_buffer_ms": 0,
+    "history_limit": 9999999,
+    "keyboard_implementation": "handy_keys",
+    "lazy_stream_close": true,
+    "log_level": "debug",
+    "model_unload_timeout": "never",
+    "mute_while_recording": true,
+    "ort_accelerator": "auto",
+    "overlay_position": "bottom",
+    "paste_delay_ms": 60,
+    "paste_method": "ctrl_v",
+    "post_process_api_keys": {
+      "anthropic": "",
+      "apple_intelligence": "",
+      "bedrock_mantle": "",
+      "cerebras": "",
+      "custom": "",
+      "groq": "",
+      "openai": "",
+      "openrouter": "__OPENROUTER_API_KEY__",
+      "zai": ""
+    },
+    "post_process_enabled": true,
+    "post_process_models": {
+      "anthropic": "",
+      "apple_intelligence": "Apple Intelligence",
+      "bedrock_mantle": "",
+      "cerebras": "",
+      "custom": "",
+      "groq": "",
+      "openai": "",
+      "openrouter": "@preset/glm-4.7",
+      "zai": ""
+    },
+    "post_process_prompts": [
+      {
+        "id": "default_improve_transcriptions",
+        "name": "Improve Transcriptions",
+        "prompt": "Clean this transcript:\n1. Fix spelling, capitalization, and punctuation errors\n2. Convert number words to digits (twenty-five → 25, ten percent → 10%, five dollars → $5)\n3. Replace spoken punctuation with symbols (period → ., comma → ,, question mark → ?)\n4. Remove filler words (um, uh, like as filler)\n5. Keep the language in the original version (if it was french, keep it in french for example)\n\nPreserve exact meaning and word order. Do not paraphrase or reorder content.\n\nReturn only the cleaned transcript.\n\nTranscript:\n${output}"
+      }
+    ],
+    "post_process_provider_id": "openrouter",
+    "post_process_selected_prompt_id": "default_improve_transcriptions",
+    "push_to_talk": true,
+    "recording_retention_period": "never",
+    "selected_language": "auto",
+    "selected_microphone": null,
+    "selected_model": "parakeet-tdt-0.6b-v3",
+    "selected_output_device": null,
+    "show_tray_icon": true,
+    "sound_theme": "marimba",
+    "start_hidden": false,
+    "translate_to_english": false,
+    "typing_tool": "auto",
+    "update_checks_enabled": true,
+    "whisper_accelerator": "auto",
+    "whisper_gpu_device": -1,
+    "word_correction_threshold": 0.18
+  }
+}

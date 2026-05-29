@@ -149,6 +149,10 @@ It 'has spec file for home-manager/modules/cargo-globals/install-cargo-globals.s
 The path "spec/cargo_globals_spec.sh" should be exist
 End
 
+It 'has spec file for config/handy/hydrate.sh'
+The path "spec/handy_hydrate_spec.sh" should be exist
+End
+
 It 'has spec file for config/hermes/hydrate.sh'
 The path "spec/hermes_hydrate_spec.sh" should be exist
 End
@@ -393,6 +397,7 @@ config/cursor/hooks/notify.sh
 config/cursor/hooks/pushover.sh
 config/gemini/activate.sh
 config/git-ai/activate.sh
+config/handy/hydrate.sh
 config/hermes/hydrate.sh
 config/hyprland/scripts/record-screen.sh
 config/hyprland/scripts/toggle-terminal.sh
