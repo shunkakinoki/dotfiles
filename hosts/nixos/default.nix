@@ -6,6 +6,7 @@
   username,
   hostname ? "x86_64-linux",
   isRunner ? false,
+  isDesktop ? false,
   system ? "x86_64-linux",
   stateVersion ? "24.11",
   userExtraGroups ? [ ],
@@ -160,5 +161,14 @@ inputs.nixpkgs.lib.nixosSystem {
     { nixpkgs.pkgs = pkgs; }
     baseModule
   ]
-  ++ (if modules == null then genericModules else modules);
+  ++ (if modules == null then genericModules else modules)
+  ++ inputs.nixpkgs.lib.optionals isDesktop [
+    inputs.handy.nixosModules.default
+    {
+      programs.handy = {
+        enable = true;
+        package = inputs.handy.packages.${system}.handy;
+      };
+    }
+  ];
 }

@@ -35,6 +35,15 @@ in
       inputs.agenix.homeManagerModules.default
       inputs.xremap.homeManagerModules.default
       inputs.noctalia-shell.homeModules.default
+    ]
+    ++ lib.optionals (pkgs.stdenv.isLinux && inputs.host.isDesktop) [
+      inputs.handy.homeManagerModules.default
+      {
+        services.handy = {
+          enable = true;
+          package = inputs.handy.packages.${pkgs.stdenv.hostPlatform.system}.handy;
+        };
+      }
     ];
 
   home.username = username;
