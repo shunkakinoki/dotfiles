@@ -50,7 +50,6 @@ let
   terraform = import ./terraform;
   tms = import ./tms;
   tmux = import ./tmux;
-  vector = import ./vector;
   victoriametrics = import ./victoriametrics;
   yaml = import ./yaml;
   yazi = import ./yazi;
@@ -105,7 +104,6 @@ in
   terraform
   tms
   tmux
-  vector
   victoriametrics
   yaml
   yazi

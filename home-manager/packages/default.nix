@@ -121,6 +121,7 @@ with pkgs;
   trippy
   turso-cli
   uv
+  vector
   watchexec
   websocat
   wget
