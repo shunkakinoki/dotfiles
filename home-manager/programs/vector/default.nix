@@ -1,8 +1,6 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
-    opentofu
-    terraform
-    terraform-ls
+    vector
   ];
 }

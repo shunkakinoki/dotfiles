@@ -1,8 +1,7 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
-    opentofu
-    terraform
-    terraform-ls
+    grafana-alloy
+    grafana-loki
   ];
 }
