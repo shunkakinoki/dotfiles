@@ -9,6 +9,7 @@
       kubectx
       kubernetes-helm
       kustomize
+      stern
     ]
     ++ lib.optionals stdenv.isLinux [
       k3s

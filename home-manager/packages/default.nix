@@ -13,22 +13,27 @@ with pkgs;
 [
   inputs.agenix.packages.${stdenv.hostPlatform.system}.default
   pkgs.nur.repos.charmbracelet.crush
+  _1password-cli
   act
   age
   aichat
+  angle-grinder
   pkgs.llm-agents.antigravity
   argocd
   ast-grep
   awscli
   azure-cli
+  bandwhich
   bat
   pkgs.llm-agents.bernstein
   broot
   bun
+  choose
   clipse
   cmatrix
   cloudflared
   copybara
+  croc
   curl
   curlie
   cursor-cli
@@ -48,9 +53,12 @@ with pkgs;
   fd
   foundry-bin
   fswatch
+  fx
   fzf-make
   gh
+  gh-dash
   git
+  git-absorb
   gitleaks
   glance
   glow
@@ -61,10 +69,14 @@ with pkgs;
   gping
   grc
   pkgs.llm-agents.grok
+  gron
+  hexyl
   htop
   httpie
   hyperfine
   input-leap
+  iperf3
+  jnv
   jq
   jujutsu
   just
@@ -73,35 +85,45 @@ with pkgs;
   lefthook
   (if stdenv.isLinux && isDesktop then llama-cpp.override { vulkanSupport = true; } else llama-cpp)
   llm
+  lnav
   lsof
   mariadb
   mise
   mkcert
+  mtr
   navi
   ncdu
+  nmap
+  oha
+  opentelemetry-collector-contrib
   pingu
   pnpm
   postgresql_18
+  process-compose
   procs
+  rclone
+  restic
   ripgrep
   sccache
   sd
   shellcheck
   shellspec
+  sops
   speedtest-cli
   sqlite
-  stern
   tealdeer
+  termshark
+  tig
   tmuxinator
   tokei
   tree
   tree-sitter
+  trippy
   turso-cli
   uv
-  victorialogs
-  victoriametrics
-  victoriatraces
+  vector
   watchexec
+  websocat
   wget
   yarn
   yazi

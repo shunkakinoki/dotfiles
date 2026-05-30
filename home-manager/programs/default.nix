@@ -23,6 +23,7 @@ let
   ghq = import ./ghq;
   git = import ./git;
   go = import ./go;
+  grafana = import ./grafana;
   haskell = import ./haskell;
   java = import ./java;
   k8s = import ./k8s;
@@ -39,6 +40,7 @@ let
   perl = import ./perl;
   php = import ./php;
   prometheus = import ./prometheus;
+  protobuf = import ./protobuf;
   python = import ./python;
   ruby = import ./ruby;
   rust = import ./rust;
@@ -48,6 +50,7 @@ let
   terraform = import ./terraform;
   tms = import ./tms;
   tmux = import ./tmux;
+  victoriametrics = import ./victoriametrics;
   yaml = import ./yaml;
   yazi = import ./yazi;
   zig = import ./zig;
@@ -74,6 +77,7 @@ in
   ghq
   git
   go
+  grafana
   haskell
   java
   k8s
@@ -90,6 +94,7 @@ in
   perl
   php
   prometheus
+  protobuf
   python
   ruby
   rust
@@ -99,6 +104,7 @@ in
   terraform
   tms
   tmux
+  victoriametrics
   yaml
   yazi
   zig
