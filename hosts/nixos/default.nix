@@ -29,6 +29,7 @@ let
     { lib, ... }:
     {
       networking.hostName = hostname;
+      networking.enableIPv6 = false;
       networking.networkmanager.enable = true;
       networking.networkmanager.dns = "none";
       networking.nameservers = [
