@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Shared Codex/Copilot/Cursor Security Hook
+# Shared Codex/Copilot/Cursor/Grok Security Hook
 # Blocks dangerous Bash commands by checking against deny patterns.
 # Returns exit code 2 to block, exit code 0 to allow.
 #

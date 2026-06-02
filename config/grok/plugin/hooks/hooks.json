@@ -1,0 +1,23 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|bash|shell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/dotfiles/config/shared/hooks/security.sh"
+          },
+          {
+            "type": "command",
+            "command": "$HOME/dotfiles/config/shared/hooks/block-git-push.sh"
+          },
+          {
+            "type": "command",
+            "command": "$HOME/dotfiles/config/shared/hooks/block-gh-settings.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

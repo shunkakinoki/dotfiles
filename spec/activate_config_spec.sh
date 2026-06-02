@@ -228,6 +228,46 @@ The output should include 'git_path'
 End
 End
 
+Describe 'config/grok/activate.sh'
+SCRIPT="$PWD/config/grok/activate.sh"
+HOOKS_JSON="$PWD/config/grok/plugin/hooks/hooks.json"
+
+It 'uses bash shebang'
+When run bash -c "head -1 '$SCRIPT'"
+The output should include '#!/usr/bin/env bash'
+End
+
+It 'creates the .grok directory'
+When run bash -c "grep 'mkdir -p' '$SCRIPT'"
+The output should include '.grok'
+End
+
+It 'copies config.toml'
+When run bash -c "grep 'CONFIG_TOML' '$SCRIPT'"
+The output should include 'CONFIG_TOML'
+End
+
+It 'installs the security-hook plugin'
+When run bash -c "grep 'PLUGIN_DIR' '$SCRIPT'"
+The output should include 'PLUGIN_DIR'
+End
+
+It 'registers the shared security hook'
+When run jq -r '.hooks.PreToolUse[] | select(.matcher == "Bash|bash|shell") | .hooks[].command' "$HOOKS_JSON"
+The output should include 'config/shared/hooks/security.sh'
+End
+
+It 'registers the shared main/master push blocker'
+When run jq -r '.hooks.PreToolUse[] | select(.matcher == "Bash|bash|shell") | .hooks[].command' "$HOOKS_JSON"
+The output should include 'config/shared/hooks/block-git-push.sh'
+End
+
+It 'registers the shared GitHub settings blocker'
+When run jq -r '.hooks.PreToolUse[] | select(.matcher == "Bash|bash|shell") | .hooks[].command' "$HOOKS_JSON"
+The output should include 'config/shared/hooks/block-gh-settings.sh'
+End
+End
+
 Describe 'config/obsidian/activate.sh'
 SCRIPT="$PWD/config/obsidian/activate.sh"
 

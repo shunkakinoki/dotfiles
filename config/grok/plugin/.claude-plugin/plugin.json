@@ -1,0 +1,8 @@
+{
+  "name": "dotfiles-security",
+  "version": "1.0.0",
+  "description": "Shared dotfiles security hooks (blocks dangerous bash, force-push, and gh settings changes).",
+  "author": {
+    "name": "Shun Kakinoki"
+  }
+}
