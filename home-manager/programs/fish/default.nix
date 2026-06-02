@@ -103,6 +103,10 @@
       v = "nvim";
 
       # Function-based abbreviations
+      cawxe = "_cawxe_function";
+      cawxeh = "_cawxeh_function";
+      caxe = "_caxe_function";
+      caxeh = "_caxeh_function";
       cliproxyapi = "_cliproxyapi_function";
       clrc = "_clrc_function";
       cltxe = "_cltxe_function";
@@ -132,6 +136,10 @@
       gco = "_gco_function";
       grco = "_grco_function";
       grcr = "_grcr_function";
+      grwxe = "_grwxe_function";
+      grwxeh = "_grwxeh_function";
+      grxe = "_grxe_function";
+      grxeh = "_grxeh_function";
       hme = "_hm_load_env_file";
       icg = "_install_cargo_globals_function";
       ing = "_install_npm_globals_function";
@@ -216,6 +224,10 @@
       })
       [
         "__tmux_bootstrap_default_session"
+        "_cawxe_function"
+        "_cawxeh_function"
+        "_caxe_function"
+        "_caxeh_function"
         "_cliproxyapi_function"
         "_clrc_function"
         "_cltxe_function"
@@ -248,6 +260,10 @@
         "_install_uv_globals_function"
         "_grco_function"
         "_grcr_function"
+        "_grwxe_function"
+        "_grwxeh_function"
+        "_grxe_function"
+        "_grxeh_function"
         "_hm_load_env_file"
         "_llm_update_function"
         "_kyber_function"

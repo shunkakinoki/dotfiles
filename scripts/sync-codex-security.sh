@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # sync-codex-security.sh — Sync deny patterns from Claude settings.json
 # into the shared security hook's hardcoded deny_patterns array.
-# The shared hook is used by Codex, Copilot, and Cursor.
+# The shared hook is used by Codex, Copilot, Cursor, and Grok.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

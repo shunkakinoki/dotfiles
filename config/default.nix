@@ -19,6 +19,7 @@ in
   ./gemini
   ./git-ai
   ./gitleaks
+  ./grok
   ./gomi
   ./ghostty
   ./handy
