@@ -1740,7 +1740,7 @@ dependencies = [
 [[package]]
 name = "git-ai"
 version = "1.5.3"
-source = "git+https://github.com/git-ai-project/git-ai?branch=main#f3da782e93c492303e44d14805179123d1740e7f"
+source = "git+https://github.com/git-ai-project/git-ai?branch=main#4c3be1c2baef13749a89efec32c8f28e78bdebce"
 dependencies = [
  "chrono",
  "clap",
@@ -2751,9 +2751,9 @@ dependencies = [
 
 [[package]]
 name = "libz-sys"
-version = "1.1.28"
+version = "1.1.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fc3a226e576f50782b3305c5ccf458698f92798987f551c6a02efe8276721e22"
+checksum = "85bc9657773828b90eeb625adff10eeac83cc21bbfd8e23a03eaa8a33c9e28d9"
 dependencies = [
  "cc",
  "libc",
@@ -5072,9 +5072,9 @@ dependencies = [
 
 [[package]]
 name = "unicode-segmentation"
-version = "1.13.2"
+version = "1.13.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9629274872b2bfaf8d66f5f15725007f635594914870f65218920345aa11aa8c"
+checksum = "c6f5d3c3b1bf09027a88a6bc961fc00497d651009560b5463668dc81b0fa87a8"
 
 [[package]]
 name = "unicode-truncate"
