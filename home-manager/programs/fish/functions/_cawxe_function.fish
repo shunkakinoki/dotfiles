@@ -3,7 +3,7 @@ function _cawxe_function --description "Run Cursor Agent with a free-form prompt
   # Usage: cawxe [<prompt words...>]
 
   if test (count $argv) -gt 0; and contains -- "$argv[1]" --resume -r --continue -c
-    cursor-agent --force --worktree --resume $argv[2]
+    cursor-agent --force --worktree --resume $argv[2..]
   else if test (count $argv) -eq 0
     cursor-agent --force --worktree
   else

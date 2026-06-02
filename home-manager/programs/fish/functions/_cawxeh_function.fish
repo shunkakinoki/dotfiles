@@ -4,7 +4,7 @@ function _cawxeh_function --description "Run Cursor Agent headlessly with a prom
 
   set -l prompt
   if test (count $argv) -gt 0
-    set prompt (string join " " $argv)
+    set prompt (string join " " -- $argv)
   else
     read -P "Prompt: " prompt
   end

@@ -4,7 +4,7 @@ function _gkwxeh_function --description "Run Grok headlessly with a prompted inp
 
   set -l prompt
   if test (count $argv) -gt 0
-    set prompt (string join " " $argv)
+    set prompt (string join " " -- $argv)
   else
     read -P "Prompt: " prompt
   end
