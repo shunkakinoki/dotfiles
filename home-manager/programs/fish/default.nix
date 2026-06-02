@@ -134,12 +134,12 @@
       fpn = "_fzf_preview_name";
       fsh = "_fzf_shell_history --allow-execute";
       gco = "_gco_function";
-      gkwxe = "_gkwxe_function";
-      gkwxeh = "_gkwxeh_function";
-      gkxe = "_gkxe_function";
-      gkxeh = "_gkxeh_function";
       grco = "_grco_function";
       grcr = "_grcr_function";
+      grwxe = "_grwxe_function";
+      grwxeh = "_grwxeh_function";
+      grxe = "_grxe_function";
+      grxeh = "_grxeh_function";
       hme = "_hm_load_env_file";
       icg = "_install_cargo_globals_function";
       ing = "_install_npm_globals_function";
@@ -255,15 +255,15 @@
         "_fzf_preview_name"
         "_fzf_shell_history"
         "_gco_function"
-        "_gkwxe_function"
-        "_gkwxeh_function"
-        "_gkxe_function"
-        "_gkxeh_function"
         "_install_cargo_globals_function"
         "_install_npm_globals_function"
         "_install_uv_globals_function"
         "_grco_function"
         "_grcr_function"
+        "_grwxe_function"
+        "_grwxeh_function"
+        "_grxe_function"
+        "_grxeh_function"
         "_hm_load_env_file"
         "_llm_update_function"
         "_kyber_function"

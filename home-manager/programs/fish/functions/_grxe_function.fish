@@ -1,6 +1,6 @@
-function _gkxe_function --description "Run Grok with a free-form prompt while auto-approving tools"
+function _grxe_function --description "Run Grok with a free-form prompt while auto-approving tools"
   # Run Grok with a free-form prompt (spaces allowed) and auto-approve all tool executions
-  # Usage: gkxe [--resume | -r] [<prompt words...>]
+  # Usage: grxe [--resume | -r] [<prompt words...>]
 
   if test (count $argv) -gt 0; and contains -- "$argv[1]" --resume -r --continue -c
     grok --always-approve --resume $argv[2..]

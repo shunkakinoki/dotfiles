@@ -1,6 +1,6 @@
-function _gkwxeh_function --description "Run Grok headlessly with a prompted input with git worktree integration"
-  # Prompt for input and run Grok
-  # Usage: gkwxeh
+function _grxeh_function --description "Run Grok headlessly with a prompted input"
+  # Run Grok headlessly
+  # Usage: grxeh "prompt here" or grxeh (interactive)
 
   set -l prompt
   if test (count $argv) -gt 0
@@ -14,5 +14,5 @@ function _gkwxeh_function --description "Run Grok headlessly with a prompted inp
     return 1
   end
 
-  grok --always-approve --worktree --single "$prompt"
+  grok --always-approve --single "$prompt"
 end
