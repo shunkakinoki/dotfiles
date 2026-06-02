@@ -247,6 +247,11 @@ When run bash -c "grep 'CONFIG_TOML' '$SCRIPT'"
 The output should include 'CONFIG_TOML'
 End
 
+It 'copies config.toml with restricted permissions'
+When run bash -c "grep 'chmod 600' '$SCRIPT'"
+The output should include 'chmod 600'
+End
+
 It 'installs the security-hook plugin'
 When run bash -c "grep 'PLUGIN_DIR' '$SCRIPT'"
 The output should include 'PLUGIN_DIR'

@@ -10,7 +10,7 @@ PLUGIN_DIR="$2"
 
 mkdir -p ~/.grok/plugins
 cp -f "$CONFIG_TOML" ~/.grok/config.toml
-chmod 644 ~/.grok/config.toml
+chmod 600 ~/.grok/config.toml
 
 # Refresh the managed plugin from the (read-only) Nix store copy.
 # rm first so cp recreates the dir instead of nesting into an existing one.
