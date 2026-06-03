@@ -9,7 +9,7 @@
     enable = true;
     shellInit = ''
       # Local binaries should be available before login/interactive-only PATH setup.
-      set -gx PATH $HOME/.bun/bin $HOME/.cargo/bin $HOME/.local/bin $PATH
+      set -gx PATH $HOME/.bun/install/global/node_modules/.bin $HOME/.bun/bin $HOME/.cargo/bin $HOME/.local/bin $PATH
 
       # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
       if test (uname) = "Linux"
@@ -55,6 +55,7 @@
       fish_add_path -p -m ~/.bun/bin
       fish_add_path -p -m /opt/homebrew/opt/postgresql@18/bin
       fish_add_path -p -m /opt/homebrew/bin
+      fish_add_path -p -m ~/.bun/install/global/node_modules/.bin
     '';
     interactiveShellInit = ''
       source ${config.home.homeDirectory}/.config/fish/functions/_hm_load_env_file.fish
@@ -77,6 +78,7 @@
       fish_add_path -p -m ~/.bun/bin
       fish_add_path -p -m /opt/homebrew/opt/postgresql@18/bin
       fish_add_path -p -m /opt/homebrew/bin
+      fish_add_path -p -m ~/.bun/install/global/node_modules/.bin
       # Worktrunk shell init
       if type -q wt
         wt config shell init fish | source

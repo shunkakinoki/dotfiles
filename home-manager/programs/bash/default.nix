@@ -84,6 +84,7 @@
       export PATH="$HOME/.bun/bin:$PATH"
       export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
       export PATH="/opt/homebrew/bin:$PATH"
+      export PATH="$HOME/.bun/install/global/node_modules/.bin:$PATH"
 
       # Worktrunk shell init
       if command -v wt >/dev/null 2>&1; then
@@ -93,7 +94,7 @@
 
     profileExtra = ''
       # Local binaries should be present even before login shells source .bashrc.
-      export PATH="$HOME/.bun/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+      export PATH="$HOME/.bun/install/global/node_modules/.bin:$HOME/.bun/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
 
       # Nix
       if [ -e ~/.nix-profile/etc/profile.d/nix.sh ]; then
