@@ -177,6 +177,87 @@ if [ -n "$OVERRIDES" ]; then
   fi
 fi
 
+# Install platform-matching optionalDependencies (e.g. claude-code-darwin-arm64).
+# Bun's transitive-optional resolution silently drops these when the parent's
+# postinstall is blocked by ignoreScripts, so we install the matching variant
+# directly. MUST run after the overrides `bun install` above, which prunes
+# optional deps. Filter by os-arch[-libc] suffix in the package name.
+OPTIONAL_DEPS=$(jq -r '.optionalDependencies // {} | to_entries[] | "\(.key)=\(.value)"' "$PACKAGE_JSON" 2>/dev/null || true)
+if [ -n "$OPTIONAL_DEPS" ]; then
+  PLATFORM_OS=""
+  case "$(uname -s)" in
+    Darwin) PLATFORM_OS="darwin" ;;
+    Linux) PLATFORM_OS="linux" ;;
+    *) PLATFORM_OS="$(uname -s | tr '[:upper:]' '[:lower:]')" ;;
+  esac
+  PLATFORM_ARCH=""
+  case "$(uname -m)" in
+    arm64 | aarch64) PLATFORM_ARCH="arm64" ;;
+    x86_64) PLATFORM_ARCH="x64" ;;
+    *) PLATFORM_ARCH="$(uname -m)" ;;
+  esac
+  PLATFORM_SUFFIX="${PLATFORM_OS}-${PLATFORM_ARCH}"
+  PLATFORM_MUSL_SUFFIX="${PLATFORM_SUFFIX}-musl"
+
+  while IFS= read -r entry; do
+    dep="${entry%%=*}"
+    [ -z "$dep" ] && continue
+    # Match exact platform variant. Skip musl on darwin/win32.
+    if [[ "$dep" == *"-${PLATFORM_SUFFIX}" ]]; then
+      :
+    elif [ "$PLATFORM_OS" = "linux" ] && [[ "$dep" == *"-${PLATFORM_MUSL_SUFFIX}" ]]; then
+      # Only install musl variant on actual musl systems (NixOS uses glibc by default).
+      if ! ldd --version 2>&1 | grep -qi musl; then
+        continue
+      fi
+    else
+      continue
+    fi
+    if [ -d "${GLOBAL_MODULES}/${dep}" ]; then
+      echo "$dep already installed, skipping"
+      continue
+    fi
+    # Bun's `bun add -g <pkg>` is a no-op if <pkg> is already in the global
+    # package.json's optionalDependencies (it never materializes the dir).
+    # Strip from optionalDependencies first so the add becomes a real install.
+    if [ -f "$GLOBAL_PKG" ] && jq -e --arg dep "$dep" '.optionalDependencies | has($dep)' "$GLOBAL_PKG" >/dev/null 2>&1; then
+      jq --arg dep "$dep" 'del(.optionalDependencies[$dep])' "$GLOBAL_PKG" >"${GLOBAL_PKG}.tmp" &&
+        mv "${GLOBAL_PKG}.tmp" "$GLOBAL_PKG"
+    fi
+    val="${entry#*=}"
+    # For npm aliases (codex pattern), pass the full <name>@<spec>. For plain
+    # semver ranges, omitting the version lets bun resolve latest.
+    if [[ "$val" == npm:* ]]; then
+      spec="${dep}@${val}"
+    else
+      spec="$dep"
+    fi
+    echo "Installing platform-native: $spec"
+    timeout 600 bun add --global "$spec" --minimum-release-age 0 2>/dev/null || echo "Install failed: $spec"
+  done <<<"$OPTIONAL_DEPS"
+fi
+
+# Strip non-matching platform-variant entries from global optionalDependencies.
+# Bun lists them but never materializes them (os/cpu mismatch), so they just
+# accumulate and clutter the global package.json across runs.
+if [ -f "$GLOBAL_PKG" ]; then
+  STALE_OPTIONAL=$(jq -r '.optionalDependencies // {} | keys[]?' "$GLOBAL_PKG" 2>/dev/null || true)
+  if [ -n "$STALE_OPTIONAL" ]; then
+    while IFS= read -r dep; do
+      [ -z "$dep" ] && continue
+      if ! jq -e --arg dep "$dep" '.dependencies | has($dep)' "$GLOBAL_PKG" >/dev/null 2>&1; then
+        jq --arg dep "$dep" 'del(.optionalDependencies[$dep])' "$GLOBAL_PKG" >"${GLOBAL_PKG}.tmp" &&
+          mv "${GLOBAL_PKG}.tmp" "$GLOBAL_PKG"
+      fi
+    done <<<"$STALE_OPTIONAL"
+  fi
+  # Drop the optionalDependencies key entirely if now empty.
+  if [ "$(jq -r '.optionalDependencies // {} | length' "$GLOBAL_PKG" 2>/dev/null)" = "0" ]; then
+    jq 'del(.optionalDependencies)' "$GLOBAL_PKG" >"${GLOBAL_PKG}.tmp" &&
+      mv "${GLOBAL_PKG}.tmp" "$GLOBAL_PKG"
+  fi
+fi
+
 # Deduplicate overridden packages from nested node_modules
 # Bun can install the same package at both top-level and nested locations.
 # When packages use Symbols (like pino), two copies create incompatible
