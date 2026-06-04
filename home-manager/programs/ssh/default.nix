@@ -1,4 +1,4 @@
-_: {
+{ lib, ... }: {
   home.file.".ssh/rc" = {
     source = ./rc;
     force = true;
@@ -10,7 +10,7 @@ _: {
     settings = {
       "*" = {
         ServerAliveInterval = 60;
-        IdentityFile = [ "~/.ssh/id_ed25519" ];
+        IdentityFile = lib.mkForce [ "~/.ssh/id_ed25519" ];
         SetEnv = {
           TERM = "xterm-256color";
         };
