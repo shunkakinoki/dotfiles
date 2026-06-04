@@ -186,15 +186,15 @@ OPTIONAL_DEPS=$(jq -r '.optionalDependencies // {} | to_entries[] | "\(.key)=\(.
 if [ -n "$OPTIONAL_DEPS" ]; then
   PLATFORM_OS=""
   case "$(uname -s)" in
-    Darwin) PLATFORM_OS="darwin" ;;
-    Linux) PLATFORM_OS="linux" ;;
-    *) PLATFORM_OS="$(uname -s | tr '[:upper:]' '[:lower:]')" ;;
+  Darwin) PLATFORM_OS="darwin" ;;
+  Linux) PLATFORM_OS="linux" ;;
+  *) PLATFORM_OS="$(uname -s | tr '[:upper:]' '[:lower:]')" ;;
   esac
   PLATFORM_ARCH=""
   case "$(uname -m)" in
-    arm64 | aarch64) PLATFORM_ARCH="arm64" ;;
-    x86_64) PLATFORM_ARCH="x64" ;;
-    *) PLATFORM_ARCH="$(uname -m)" ;;
+  arm64 | aarch64) PLATFORM_ARCH="arm64" ;;
+  x86_64) PLATFORM_ARCH="x64" ;;
+  *) PLATFORM_ARCH="$(uname -m)" ;;
   esac
   PLATFORM_SUFFIX="${PLATFORM_OS}-${PLATFORM_ARCH}"
   PLATFORM_MUSL_SUFFIX="${PLATFORM_SUFFIX}-musl"
@@ -203,9 +203,9 @@ if [ -n "$OPTIONAL_DEPS" ]; then
     dep="${entry%%=*}"
     [ -z "$dep" ] && continue
     # Match exact platform variant. Skip musl on darwin/win32.
-    if [[ "$dep" == *"-${PLATFORM_SUFFIX}" ]]; then
+    if [[ $dep == *"-${PLATFORM_SUFFIX}" ]]; then
       :
-    elif [ "$PLATFORM_OS" = "linux" ] && [[ "$dep" == *"-${PLATFORM_MUSL_SUFFIX}" ]]; then
+    elif [ "$PLATFORM_OS" = "linux" ] && [[ $dep == *"-${PLATFORM_MUSL_SUFFIX}" ]]; then
       # Only install musl variant on actual musl systems (NixOS uses glibc by default).
       if ! ldd --version 2>&1 | grep -qi musl; then
         continue
@@ -227,7 +227,7 @@ if [ -n "$OPTIONAL_DEPS" ]; then
     val="${entry#*=}"
     # For npm aliases (codex pattern), pass the full <name>@<spec>. For plain
     # semver ranges, omitting the version lets bun resolve latest.
-    if [[ "$val" == npm:* ]]; then
+    if [[ $val == npm:* ]]; then
       spec="${dep}@${val}"
     else
       spec="$dep"
