@@ -1,4 +1,5 @@
-{ lib, ... }: {
+{ lib, ... }:
+{
   home.file.".ssh/rc" = {
     source = ./rc;
     force = true;
