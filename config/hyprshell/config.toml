@@ -1,8 +1,13 @@
-version = 3
+version = 4
 
 [windows]
 scale = 8.0
+items_per_row = 5
 
 [windows.switch]
 modifier = "super"
 key = "Tab"
+filter_by = ["current_monitor"]
+switch_workspaces = false
+exclude_workspaces = ""
+kill_key = "q"
