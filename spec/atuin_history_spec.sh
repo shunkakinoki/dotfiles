@@ -111,18 +111,20 @@ The output should include "gomi"
 End
 
 It 'adds local binaries to zsh envExtra for non-interactive commands'
-When run bash -c "grep -F 'export PATH=\"\$HOME/.bun/bin:\$HOME/.cargo/bin:\$HOME/.local/bin:\$PATH\"' '$ZSH_CONFIG'"
+When run bash -c "grep -F 'export PATH=\"\$HOME/.bun/install/global/node_modules/.bin:\$HOME/.bun/bin:\$HOME/.cargo/bin:\$HOME/.local/bin:\$PATH\"' '$ZSH_CONFIG'"
 The status should be success
 The output should include '.local/bin'
 The output should include '.bun/bin'
+The output should include '.bun/install/global/node_modules/.bin'
 The output should include '.cargo/bin'
 End
 
 It 'adds local binaries to bash profileExtra before bashrc'
-When run bash -c "grep -F 'export PATH=\"\$HOME/.bun/bin:\$HOME/.cargo/bin:\$HOME/.local/bin:\$PATH\"' '$BASH_CONFIG'"
+When run bash -c "grep -F 'export PATH=\"\$HOME/.bun/install/global/node_modules/.bin:\$HOME/.bun/bin:\$HOME/.cargo/bin:\$HOME/.local/bin:\$PATH\"' '$BASH_CONFIG'"
 The status should be success
 The output should include '.local/bin'
 The output should include '.bun/bin'
+The output should include '.bun/install/global/node_modules/.bin'
 The output should include '.cargo/bin'
 End
 
@@ -142,11 +144,30 @@ The output should include '.local/bin'
 End
 
 It 'adds local binaries to fish shellInit before login-only setup'
-When run bash -c "grep -F 'set -gx PATH \$HOME/.bun/bin \$HOME/.cargo/bin \$HOME/.local/bin \$PATH' '$FISH_CONFIG'"
+When run bash -c "grep -F 'set -gx PATH \$HOME/.bun/install/global/node_modules/.bin \$HOME/.bun/bin \$HOME/.cargo/bin \$HOME/.local/bin \$PATH' '$FISH_CONFIG'"
 The status should be success
 The output should include '.local/bin'
 The output should include '.bun/bin'
+The output should include '.bun/install/global/node_modules/.bin'
 The output should include '.cargo/bin'
+End
+
+It 'prepends bun global node_modules/.bin after homebrew in bash initExtra so it wins on macOS'
+When run bash -c "awk '/export PATH=\"\\/opt\\/homebrew\\/bin:/{brew=NR} /export PATH=\"\\\$HOME\\/.bun\\/install\\/global\\/node_modules\\/.bin:/{bun=NR} END{ if (brew && bun && bun > brew) print \"ok\"; else print \"bad brew=\" brew \" bun=\" bun }' '$BASH_CONFIG'"
+The status should be success
+The output should eq 'ok'
+End
+
+It 'prepends bun global node_modules/.bin after homebrew in zsh initContent so it wins on macOS'
+When run bash -c "awk '/export PATH=\"\\/opt\\/homebrew\\/bin:/{brew=NR} /export PATH=\"\\\$HOME\\/.bun\\/install\\/global\\/node_modules\\/.bin:/{bun=NR} END{ if (brew && bun && bun > brew) print \"ok\"; else print \"bad brew=\" brew \" bun=\" bun }' '$ZSH_CONFIG'"
+The status should be success
+The output should eq 'ok'
+End
+
+It 'prepends bun global node_modules/.bin after homebrew in fish loginShellInit so it wins on macOS'
+When run bash -c "awk '/fish_add_path -p -m \\/opt\\/homebrew\\/bin/{brew=NR} /fish_add_path -p -m ~\\/.bun\\/install\\/global\\/node_modules\\/.bin/{bun=NR} END{ if (brew && bun && bun > brew) print \"ok\"; else print \"bad brew=\" brew \" bun=\" bun }' '$FISH_CONFIG'"
+The status should be success
+The output should eq 'ok'
 End
 End
 End

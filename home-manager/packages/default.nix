@@ -83,7 +83,6 @@ with pkgs;
   k6
   lean4
   lefthook
-  (if stdenv.isLinux && isDesktop then llama-cpp.override { vulkanSupport = true; } else llama-cpp)
   llm
   lnav
   lsof
@@ -151,6 +150,7 @@ with pkgs;
   keychain
   libiconv
   libsecret
+  (if isDesktop then llama-cpp.override { vulkanSupport = true; } else llama-cpp)
   opencode
   openssl
   openssl.dev

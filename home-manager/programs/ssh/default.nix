@@ -1,4 +1,5 @@
-_: {
+{ lib, ... }:
+{
   home.file.".ssh/rc" = {
     source = ./rc;
     force = true;
@@ -10,7 +11,7 @@ _: {
     settings = {
       "*" = {
         ServerAliveInterval = 60;
-        IdentityFile = "~/.ssh/id_ed25519";
+        IdentityFile = lib.mkForce [ "~/.ssh/id_ed25519" ];
         SetEnv = {
           TERM = "xterm-256color";
         };
@@ -28,12 +29,12 @@ _: {
       "kyber" = {
         HostName = "kyber.tail950b36.ts.net";
         User = "ubuntu";
-        IdentityFile = "~/.ssh/id_rsa";
+        IdentityFile = [ "~/.ssh/id_rsa" ];
         IdentitiesOnly = "yes";
       };
       "github.com" = {
         ServerAliveInterval = 0;
-        IdentityFile = "~/.ssh/id_ed25519_github";
+        IdentityFile = [ "~/.ssh/id_ed25519_github" ];
         ControlMaster = "auto";
         ControlPath = "~/.ssh/github.sock";
         ControlPersist = "3m";

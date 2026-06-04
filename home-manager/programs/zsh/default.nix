@@ -32,7 +32,7 @@
       fi
 
       # Local binaries must be available to non-interactive zsh commands too.
-      export PATH="$HOME/.bun/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+      export PATH="$HOME/.bun/install/global/node_modules/.bin:$HOME/.bun/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
 
       # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
       if [ "$(uname)" = "Linux" ]; then
@@ -74,6 +74,7 @@
       export PATH="$HOME/.bun/bin:$PATH"
       export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
       export PATH="/opt/homebrew/bin:$PATH"
+      export PATH="$HOME/.bun/install/global/node_modules/.bin:$PATH"
 
       # FNM (Fast Node Manager) configuration
       ${

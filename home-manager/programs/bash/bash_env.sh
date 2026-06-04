@@ -18,3 +18,8 @@ case ":$PATH:" in
 *":$HOME/.bun/bin:"*) ;;
 *) export PATH="$HOME/.bun/bin:$PATH" ;;
 esac
+
+case ":$PATH:" in
+*":$HOME/.bun/install/global/node_modules/.bin:"*) ;;
+*) export PATH="$HOME/.bun/install/global/node_modules/.bin:$PATH" ;;
+esac
