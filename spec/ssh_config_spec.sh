@@ -13,7 +13,7 @@ End
 
 It 'pins the Codex-compatible SSH identity'
 When run cat "$SSH_CONFIG_NIX"
-The output should include 'IdentityFile = "~/.ssh/id_rsa"'
+The output should include 'IdentityFile = [ "~/.ssh/id_rsa" ]'
 The output should include 'IdentitiesOnly = "yes"'
 End
 End
