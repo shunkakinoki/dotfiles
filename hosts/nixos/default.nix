@@ -32,11 +32,14 @@ let
       networking.enableIPv6 = false;
       networking.networkmanager.enable = true;
       networking.networkmanager.dns = "none";
-      networking.nameservers = [
-        "8.8.8.8"
-        "8.8.4.4"
-        "1.1.1.1"
-        "1.0.0.1"
+      networking.resolvconf.enable = false;
+      environment.etc."resolv.conf".text = lib.concatStringsSep "\n" [
+        "nameserver 8.8.8.8"
+        "nameserver 8.8.4.4"
+        "nameserver 1.1.1.1"
+        "nameserver 1.0.0.1"
+        "options edns0"
+        ""
       ];
 
       programs.fish.enable = true;
