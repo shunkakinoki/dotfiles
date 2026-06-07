@@ -167,6 +167,16 @@
           }
         ]
       },
+      "devices": [
+        {
+          "identifiers": {
+            "is_keyboard": true,
+            "product_id": 22,
+            "vendor_id": 1278
+          },
+          "ignore": false
+        }
+      ],
       "virtual_hid_keyboard": {
         "keyboard_type_v2": "ansi"
       }
