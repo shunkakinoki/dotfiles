@@ -25,13 +25,10 @@ inputs.nix-darwin.lib.darwinSystem {
         {
           programs.ssh = {
             enable = true;
-            matchBlocks = {
+            settings = {
               "*" = {
-                identityFile = inputs.nixpkgs.lib.mkForce " ~/.ssh/id_rsa";
-                extraOptions = {
-                  AddKeysToAgent = "yes";
-                  UseKeychain = "yes";
-                };
+                AddKeysToAgent = "yes";
+                UseKeychain = "yes";
               };
             };
           };
