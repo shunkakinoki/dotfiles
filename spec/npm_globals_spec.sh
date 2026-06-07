@@ -248,8 +248,10 @@ EOF
 
   # Installed at the wanted version, but its platform-native optionalDependency
   # directory is absent -> must be reinstalled, not skipped.
-  os_tok=$(uname -s | tr 'A-Z' 'a-z'); [ "$os_tok" = "darwin" ] || os_tok="linux"
-  cpu_tok=$(uname -m); case "$cpu_tok" in arm64|aarch64) cpu_tok=arm64 ;; *) cpu_tok=x64 ;; esac
+  os_tok=$(uname -s | tr '[:upper:]' '[:lower:]')
+  [ "$os_tok" = "darwin" ] || os_tok="linux"
+  cpu_tok=$(uname -m)
+  case "$cpu_tok" in arm64 | aarch64) cpu_tok=arm64 ;; *) cpu_tok=x64 ;; esac
   mkdir -p "$GM/nativecli"
   cat >"$GM/nativecli/package.json" <<EOF
 {
