@@ -70,6 +70,16 @@
         "vite-plus": "^0.1.24",
         "xcodebuildmcp": "^2.6.2",
       },
+      "optionalDependencies": {
+        "@anthropic-ai/claude-code-darwin-arm64": "^2.1.162",
+        "@anthropic-ai/claude-code-darwin-x64": "^2.1.162",
+        "@anthropic-ai/claude-code-linux-arm64": "^2.1.162",
+        "@anthropic-ai/claude-code-linux-arm64-musl": "^2.1.162",
+        "@anthropic-ai/claude-code-linux-x64": "^2.1.162",
+        "@anthropic-ai/claude-code-linux-x64-musl": "^2.1.162",
+        "@anthropic-ai/claude-code-win32-arm64": "^2.1.162",
+        "@anthropic-ai/claude-code-win32-x64": "^2.1.162",
+      },
     },
   },
   "trustedDependencies": [
