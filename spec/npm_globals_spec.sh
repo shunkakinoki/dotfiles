@@ -202,20 +202,92 @@ It 'verifies sqlite3 can be loaded by node'
 When run bash -c "grep 'const sqlite3 = require' '$SCRIPT'"
 The output should include 'const sqlite3 = require'
 End
-
-It 'has a claude-code native binary repair step'
-When run bash -c "grep 'repair_claude_code_native_binary' '$SCRIPT'"
-The output should include 'repair_claude_code_native_binary'
 End
 
-It 'reinstalls claude-code when its native binary is missing'
-When run bash -c "grep -A 30 'repair_claude_code_native_binary()' '$SCRIPT'"
-The output should include 'bun add --global'
+Describe 'native binary completeness'
+It 'detects a missing platform-native optionalDependency'
+When run bash -c "grep 'missing_native_optional_dep' '$SCRIPT'"
+The output should include 'missing_native_optional_dep'
 End
 
-It 'verifies the claude binary is runnable after repair'
-When run bash -c "grep 'claude --version' '$SCRIPT'"
-The output should include 'claude --version'
+It 'derives current OS and CPU tokens for native deps'
+When run bash -c "grep -E 'PLATFORM_OS=|PLATFORM_CPU=' '$SCRIPT'"
+The output should include 'PLATFORM_OS'
+End
+
+It 'inspects optionalDependencies of installed packages'
+When run bash -c "grep 'optionalDependencies' '$SCRIPT'"
+The output should include 'optionalDependencies'
+End
+
+It 'reinstalls a version-matched package whose native binary is missing'
+When run bash -c "grep 'installed but native binary missing' '$SCRIPT'"
+The output should include 'reinstalling'
+End
+End
+
+Describe 'native-binary reinstall integration'
+setup() {
+  TEMP_HOME=$(mktemp -d)
+  MOCK_BIN=$(mktemp -d)
+  MOCK_LOG="$TEMP_HOME/mock.log"
+  REAL_BIN_DIR="$(dirname "$(command -v jq)")"
+  REAL_SYSTEM_BIN_DIR="$(dirname "$(command -v mv)")"
+  : >"$MOCK_LOG"
+
+  GM="$TEMP_HOME/.bun/install/global/node_modules"
+  mkdir -p "$TEMP_HOME/dotfiles" "$TEMP_HOME/.bun/install/global" "$TEMP_HOME/.bun/bin"
+
+  cat >"$TEMP_HOME/dotfiles/package.json" <<'EOF'
+{
+  "dependencies": {
+    "nativecli": "^1.0.0"
+  }
+}
+EOF
+
+  # Installed at the wanted version, but its platform-native optionalDependency
+  # directory is absent -> must be reinstalled, not skipped.
+  os_tok=$(uname -s | tr 'A-Z' 'a-z'); [ "$os_tok" = "darwin" ] || os_tok="linux"
+  cpu_tok=$(uname -m); case "$cpu_tok" in arm64|aarch64) cpu_tok=arm64 ;; *) cpu_tok=x64 ;; esac
+  mkdir -p "$GM/nativecli"
+  cat >"$GM/nativecli/package.json" <<EOF
+{
+  "name": "nativecli",
+  "version": "1.0.0",
+  "optionalDependencies": { "nativecli-${os_tok}-${cpu_tok}": "1.0.0" }
+}
+EOF
+
+  cat >"$MOCK_BIN/timeout" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+shift
+if [ "${1:-}" = "bash" ] && [ "${2:-}" = "-c" ] && [ "${3:-}" = "exec 3<>/dev/tcp/1.1.1.1/53" ]; then
+  exit 0
+fi
+exec "$@"
+EOF
+  chmod +x "$MOCK_BIN/timeout"
+
+  cat >"$MOCK_BIN/bun" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+printf 'bun %s\n' "$*" >>"$MOCK_LOG"
+EOF
+  chmod +x "$MOCK_BIN/bun"
+}
+
+cleanup() {
+  rm -rf "$TEMP_HOME" "$MOCK_BIN"
+}
+
+Before 'setup'
+After 'cleanup'
+
+It 'reinstalls a package missing its platform-native binary'
+When run bash -c "HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
+The output should include 'bun add --global nativecli'
 End
 End
 
