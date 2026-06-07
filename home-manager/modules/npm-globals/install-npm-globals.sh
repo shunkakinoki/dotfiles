@@ -74,6 +74,47 @@ repair_sqlite3_native_binding() {
   echo "sqlite3 native binding rebuilt"
 }
 
+# Current-platform tokens used to recognise the native optionalDependency that
+# actually carries a package's binary (e.g. *-darwin-arm64, @esbuild/linux-x64).
+case "$(uname -s)" in
+Darwin) PLATFORM_OS="darwin" ;;
+Linux) PLATFORM_OS="linux" ;;
+*) PLATFORM_OS="" ;;
+esac
+case "$(uname -m)" in
+arm64 | aarch64) PLATFORM_CPU="arm64" ;;
+x86_64 | amd64) PLATFORM_CPU="x64" ;;
+*) PLATFORM_CPU="" ;;
+esac
+
+# Returns 0 when a package declares a platform-native optionalDependency for the
+# current OS/CPU but that dependency is not installed. Many CLIs ship their real
+# binary this way; a version-only skip would otherwise leave such a package
+# "installed" yet non-functional (e.g. after an `omit=optional` install).
+missing_native_optional_dep() {
+  local dep="$1"
+  local pj="${GLOBAL_MODULES}/${dep}/package.json"
+  [ -f "$pj" ] || return 1
+  [ -n "$PLATFORM_OS" ] && [ -n "$PLATFORM_CPU" ] || return 1
+
+  local opt_deps name matched=0 present=0
+  opt_deps=$(jq -r '.optionalDependencies // {} | keys[]' "$pj" 2>/dev/null || true)
+  [ -n "$opt_deps" ] || return 1
+
+  while IFS= read -r name; do
+    [ -z "$name" ] && continue
+    # Only weigh native deps targeting this platform.
+    case "$name" in
+    *"$PLATFORM_OS"*"$PLATFORM_CPU"* | *"$PLATFORM_CPU"*"$PLATFORM_OS"*) ;;
+    *) continue ;;
+    esac
+    matched=1
+    [ -d "${GLOBAL_MODULES}/${name}" ] && present=1
+  done <<<"$opt_deps"
+
+  [ "$matched" -eq 1 ] && [ "$present" -eq 0 ]
+}
+
 echo "Installing npm global packages from package.json using bun..."
 cd "${HOME}/dotfiles"
 
@@ -131,6 +172,14 @@ if [ -n "$DEPS" ]; then
     if [ -n "$installed_ver" ] && [ -n "$wanted_ver" ]; then
       min_ver=$(printf '%s\n%s\n' "$wanted_ver" "$installed_ver" | sort -V | head -n1)
       if [ "$min_ver" = "$wanted_ver" ]; then
+        # Version matches, but only skip if the native binary is actually
+        # present. Drop a broken install so the reinstall below refetches it.
+        if missing_native_optional_dep "$dep"; then
+          echo "$dep@$installed_ver installed but native binary missing, reinstalling"
+          rm -rf "${GLOBAL_MODULES:?}/${dep}"
+          MISSING+=("$dep")
+          continue
+        fi
         echo "$dep@$installed_ver already installed, skipping"
         continue
       fi

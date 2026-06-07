@@ -25,7 +25,11 @@
       {
         plugin = continuum;
         extraConfig = ''
-          set -g @continuum-restore 'on'
+          # Auto-restore is intentionally off: it fires on every cold tmux
+          # server start, racing __tmux_bootstrap_default_session and freezing
+          # the freshly-attached client (e.g. on `tpo`). Restore is driven
+          # manually by `two`/_two_function for the `work` session only.
+          set -g @continuum-restore 'off'
           set -g @continuum-save-interval '3'
           set -g status-right "#[fg=colour250]#{?#{pane_current_command},#{pane_current_command},} #[fg=colour28]| #[fg=colour255]%Y/%m/%d %H:%M:%S #{continuum_status}"
           set -g status-right-length 60
