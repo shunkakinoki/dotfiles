@@ -74,6 +74,43 @@ repair_sqlite3_native_binding() {
   echo "sqlite3 native binding rebuilt"
 }
 
+repair_claude_code_native_binary() {
+  # @anthropic-ai/claude-code ships only a wrapper in bin/claude.exe; the real
+  # binary comes from a platform-native optionalDependency installed by its
+  # postinstall. The version-only skip above leaves a broken install in place
+  # when that optional dep is missing (e.g. after an `omit=optional` install),
+  # so reinstall to fetch the native binary.
+  local claude_dir="${GLOBAL_MODULES}/@anthropic-ai/claude-code"
+  local wanted
+
+  if [ ! -d "$claude_dir" ]; then
+    return 0
+  fi
+
+  if command -v claude &>/dev/null && claude --version >/dev/null 2>&1; then
+    echo "claude native binary already loadable"
+    return 0
+  fi
+
+  wanted=$(jq -r '.dependencies["@anthropic-ai/claude-code"] // empty' "$PACKAGE_JSON" 2>/dev/null || true)
+  [ -z "$wanted" ] && wanted="latest"
+
+  echo "Reinstalling @anthropic-ai/claude-code to fetch native binary..."
+  bun pm -g trust @anthropic-ai/claude-code 2>/dev/null || true
+  bun remove --global @anthropic-ai/claude-code 2>/dev/null || true
+  if ! timeout 600 bun add --global "@anthropic-ai/claude-code@${wanted}"; then
+    echo "claude-code reinstall failed" >&2
+    return 1
+  fi
+
+  if ! (command -v claude &>/dev/null && claude --version >/dev/null 2>&1); then
+    echo "claude native binary still not loadable after reinstall" >&2
+    return 1
+  fi
+
+  echo "claude native binary repaired"
+}
+
 echo "Installing npm global packages from package.json using bun..."
 cd "${HOME}/dotfiles"
 
@@ -194,6 +231,10 @@ done
 
 if ! repair_sqlite3_native_binding; then
   echo "Warning: sqlite3 native binding repair failed" >&2
+fi
+
+if ! repair_claude_code_native_binary; then
+  echo "Warning: claude-code native binary repair failed" >&2
 fi
 
 echo "npm globals installation complete"

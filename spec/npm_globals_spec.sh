@@ -202,6 +202,21 @@ It 'verifies sqlite3 can be loaded by node'
 When run bash -c "grep 'const sqlite3 = require' '$SCRIPT'"
 The output should include 'const sqlite3 = require'
 End
+
+It 'has a claude-code native binary repair step'
+When run bash -c "grep 'repair_claude_code_native_binary' '$SCRIPT'"
+The output should include 'repair_claude_code_native_binary'
+End
+
+It 'reinstalls claude-code when its native binary is missing'
+When run bash -c "grep -A 30 'repair_claude_code_native_binary()' '$SCRIPT'"
+The output should include 'bun add --global'
+End
+
+It 'verifies the claude binary is runnable after repair'
+When run bash -c "grep 'claude --version' '$SCRIPT'"
+The output should include 'claude --version'
+End
 End
 
 Describe 'stale global package pruning'
