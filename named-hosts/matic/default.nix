@@ -52,8 +52,8 @@ import ../../hosts/nixos {
           "tpm2-device=auto"
         ];
 
-        # Pin kernel to 6.18 for CrowdStrike Falcon compatibility (RFM on 6.19)
-        boot.kernelPackages = pkgs.linuxPackages_6_18;
+        # Pin kernel: Falcon sensor 7.31.0 lacks kernel module for 6.18+, RFM on 6.19
+        boot.kernelPackages = pkgs.linuxPackages_6_17;
 
         # Filesystem hardening
         boot.kernel.sysctl = {
