@@ -1,6 +1,6 @@
 suppress_unstable_features_warning = true
 web_search = "cached"
-model = "__GPT_CODEX__"
+model = "__GPT__"
 model_reasoning_effort = "xhigh"
 oss_provider = "lmstudio"
 
@@ -37,7 +37,7 @@ js_repl = true
 js_repl_tools_only = false
 memories = true
 multi_agent = true
-multi_agent_v2 = true
+multi_agent_v2 = false
 personality = true
 plugin_hooks = true
 plugins = true
