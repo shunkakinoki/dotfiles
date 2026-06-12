@@ -414,6 +414,7 @@ import ../../hosts/nixos {
         home-manager.backupFileExtension = "hm-backup";
         home-manager.extraSpecialArgs = {
           inherit pkgs;
+          isRunner = false;
           inputs = inputs // {
             host = (import ../../lib/host.nix) // {
               isDesktop = true;

@@ -4,13 +4,14 @@
   lib,
   inputs,
   username,
+  isRunner ? false,
   ...
 }:
 let
   hmConfig = import ../config { inherit inputs; };
   modules = import ./modules;
   nix = import ./nix;
-  packages = import ./packages { inherit pkgs inputs; };
+  packages = import ./packages { inherit pkgs inputs isRunner; };
   programs = import ./programs {
     inherit config lib pkgs;
     sources = { };

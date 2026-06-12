@@ -12,6 +12,7 @@ inputs.nix-darwin.lib.darwinSystem {
   modules = darwin-modules.modules ++ [
     {
       home-manager.extraSpecialArgs = {
+        isRunner = false;
         inputs = inputs // {
           host = (import ../../lib/host.nix) // {
             isGalactica = true;
