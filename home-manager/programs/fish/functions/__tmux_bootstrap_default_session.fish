@@ -6,10 +6,11 @@ function __tmux_bootstrap_default_session --description "Create built-in tmux se
   # initializing before we build and attach. On a cold start, otherwise the
   # first new-session boots the server concurrently with the attach, freezing
   # the freshly-attached client (standalone `tpo` works only on a 2nd call).
-  tmux start-server 2>/dev/null
+  # Only warm for known sessions so an unknown name never touches tmux.
 
   switch $session_name
     case primary mobile desktop
+      tmux start-server 2>/dev/null
       tmux new-session -d -s $session_name -n btop
       if test $status -ne 0
         tmux has-session -t $session_name 2>/dev/null
@@ -30,6 +31,7 @@ function __tmux_bootstrap_default_session --description "Create built-in tmux se
       end
 
     case work
+      tmux start-server 2>/dev/null
       tmux new-session -d -s work -n editor
       if test $status -ne 0
         tmux has-session -t work 2>/dev/null
