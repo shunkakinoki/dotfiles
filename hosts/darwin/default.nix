@@ -36,7 +36,7 @@ in
     {
       nixpkgs.pkgs = pkgs;
       home-manager.backupFileExtension = "hm-backup";
-      home-manager.extraSpecialArgs = { inherit inputs; };
+      home-manager.extraSpecialArgs = { inherit inputs isRunner; };
       home-manager.useGlobalPkgs = true;
       home-manager.sharedModules = [
         {
@@ -51,7 +51,12 @@ in
       ];
       home-manager.useUserPackages = true;
       home-manager.users."${username}" = import ../../home-manager {
-        inherit inputs username pkgs;
+        inherit
+          inputs
+          username
+          pkgs
+          isRunner
+          ;
         inherit (pkgs) lib;
         config = { };
       };

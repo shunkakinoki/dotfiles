@@ -19,6 +19,7 @@ home-manager.lib.homeManagerConfiguration {
   inherit pkgs;
   extraSpecialArgs = {
     inherit username pkgs;
+    isRunner = false;
     inputs = inputs // {
       host = import ../../lib/host.nix;
     };

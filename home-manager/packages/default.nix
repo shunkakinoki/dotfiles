@@ -1,6 +1,7 @@
 {
   pkgs,
   inputs,
+  isRunner ? false,
 }:
 let
   inherit (inputs.host) isDesktop isDev;
@@ -150,7 +151,6 @@ with pkgs;
   keychain
   libiconv
   libsecret
-  (if isDesktop then llama-cpp.override { vulkanSupport = true; } else llama-cpp)
   opencode
   openssl
   openssl.dev
@@ -165,6 +165,9 @@ with pkgs;
   xclip
   xdg-utils
   zlib
+]
+++ lib.optionals (stdenv.isLinux && !isRunner) [
+  (if isDesktop then llama-cpp.override { vulkanSupport = true; } else llama-cpp)
 ]
 ++ lib.optionals (stdenv.hostPlatform.system != "aarch64-linux") [
   qwen-code
