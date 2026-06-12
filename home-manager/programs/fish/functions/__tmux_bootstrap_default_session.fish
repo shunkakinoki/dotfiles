@@ -2,6 +2,12 @@ function __tmux_bootstrap_default_session --description "Create built-in tmux se
   set -l session_name $argv[1]
   set -l dotfiles_root ~/dotfiles
 
+  # Warm the server first so config/plugins (continuum, resurrect) finish
+  # initializing before we build and attach. On a cold start, otherwise the
+  # first new-session boots the server concurrently with the attach, freezing
+  # the freshly-attached client (standalone `tpo` works only on a 2nd call).
+  tmux start-server 2>/dev/null
+
   switch $session_name
     case primary mobile desktop
       tmux new-session -d -s $session_name -n btop
