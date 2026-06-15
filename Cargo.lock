@@ -388,12 +388,6 @@ checksum = "9e1b586273c5702936fe7b7d6896644d8be71e6314cfe09d3167c95f712589e8"
 
 [[package]]
 name = "base64"
-version = "0.21.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9d297deb1925b89f2ccc13d7635fa0714f12c87adce1c75356b39ca9b7178567"
-
-[[package]]
-name = "base64"
 version = "0.22.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
@@ -582,9 +576,9 @@ dependencies = [
 
 [[package]]
 name = "clap-config-file"
-version = "0.5.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "127a746891495cee9472a52d7e661e931c7eab6bc005e27ee5d9a7116ec7dad8"
+checksum = "b0b383bc0e145de25dfe2510da1ac5b605865d0511e6183d5f25518529cabad0"
 dependencies = [
  "clap",
  "config 0.13.4",
@@ -4719,16 +4713,15 @@ dependencies = [
 
 [[package]]
 name = "tiktoken-rs"
-version = "0.6.0"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "44075987ee2486402f0808505dd65692163d243a337fc54363d49afac41087f6"
+checksum = "25563eeba904d770acf527e8b370fe9a5547bacd20ff84a0b6c3bc41288e5625"
 dependencies = [
  "anyhow",
- "base64 0.21.7",
+ "base64 0.22.1",
  "bstr",
  "fancy-regex 0.13.0",
  "lazy_static",
- "parking_lot",
  "regex",
  "rustc-hash 1.1.0",
 ]
@@ -6168,9 +6161,9 @@ dependencies = [
 
 [[package]]
 name = "yek"
-version = "0.22.1"
+version = "0.25.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dd4deec44bda821196756ccf311a9a690fee5b9603cadcda4e9dd445a300f113"
+checksum = "e9cb0f3e9bd4658748791e53e1f02198ce0c334879cb9630d51bcb3e073d283d"
 dependencies = [
  "anyhow",
  "atty",
@@ -6197,7 +6190,7 @@ dependencies = [
  "sha2 0.10.9",
  "tiktoken-rs",
  "time",
- "toml 0.8.23",
+ "toml 0.9.12+spec-1.1.0",
  "tracing",
  "tracing-subscriber",
  "walkdir",

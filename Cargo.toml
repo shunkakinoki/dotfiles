@@ -10,4 +10,4 @@ path = "lib.rs"
 git-ai = { git = "https://github.com/git-ai-project/git-ai", branch = "main" }
 rtk = { git = "https://github.com/rtk-ai/rtk", branch = "master" }
 worktrunk = "0.56.0"
-yek = "0.22.1"
+yek = "0.25.4"
