@@ -85,12 +85,12 @@
     "@anthropic-ai/claude-code-linux-x64-musl": "^2.1.170",
     "@anthropic-ai/claude-code-win32-arm64": "^2.1.170",
     "@anthropic-ai/claude-code-win32-x64": "^2.1.170",
-    "@openai/codex-darwin-arm64": "npm:@openai/codex@0.138.0-darwin-arm64",
-    "@openai/codex-darwin-x64": "npm:@openai/codex@0.138.0-darwin-x64",
-    "@openai/codex-linux-arm64": "npm:@openai/codex@0.138.0-linux-arm64",
-    "@openai/codex-linux-x64": "npm:@openai/codex@0.138.0-linux-x64",
-    "@openai/codex-win32-arm64": "npm:@openai/codex@0.138.0-win32-arm64",
-    "@openai/codex-win32-x64": "npm:@openai/codex@0.138.0-win32-x64"
+    "@openai/codex-darwin-arm64": "npm:@openai/codex@0.138.0",
+    "@openai/codex-darwin-x64": "npm:@openai/codex@0.138.0",
+    "@openai/codex-linux-arm64": "npm:@openai/codex@0.138.0",
+    "@openai/codex-linux-x64": "npm:@openai/codex@0.138.0",
+    "@openai/codex-win32-arm64": "npm:@openai/codex@0.138.0",
+    "@openai/codex-win32-x64": "npm:@openai/codex@0.138.0"
   },
   "overrides": {
     "pino": "9.14.0"
