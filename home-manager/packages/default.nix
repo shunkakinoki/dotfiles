@@ -244,6 +244,8 @@ with pkgs;
   wl-clipboard
   wtype
   xdg-desktop-portal-gtk
+  yubikey-manager
+  yubioath-flutter
   yt-dlp
 ]
 ++ lib.optionals isDev [

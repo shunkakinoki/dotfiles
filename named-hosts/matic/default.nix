@@ -153,6 +153,10 @@ import ../../hosts/nixos {
         #     systemd-creds encrypt --name=gnome-keyring --with-key=tpm2+host \
         #     - /etc/credstore.encrypted/gnome-keyring.cred'
 
+        # YubiKey support
+        services.pcscd.enable = true;
+        services.udev.packages = [ pkgs.yubikey-personalization ];
+
         # Fingerprint authentication
         services.fprintd.enable = true;
         security.pam.services.greetd = {
