@@ -245,7 +245,6 @@ with pkgs;
   wtype
   xdg-desktop-portal-gtk
   yubikey-manager
-  yubikey-manager-qt
   yubioath-flutter
   yt-dlp
 ]
