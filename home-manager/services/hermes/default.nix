@@ -52,7 +52,7 @@ lib.mkIf host.isKyber {
     };
     Service = {
       Type = "simple";
-      ExecStart = "${homeDir}/.local/bin/hermes dashboard --host 0.0.0.0 --port 9119 --no-open --insecure";
+      ExecStart = "${homeDir}/.local/bin/hermes dashboard --host 127.0.0.1 --port 9119 --no-open";
       Restart = "always";
       RestartSec = "5s";
       Environment = [

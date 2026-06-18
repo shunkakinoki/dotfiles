@@ -161,10 +161,6 @@ It 'has spec file for config/openclaw/hydrate.sh'
 The path "spec/openclaw_hydrate_spec.sh" should be exist
 End
 
-It 'has spec file for config/paperclip/hydrate.sh'
-The path "spec/paperclip_hydrate_spec.sh" should be exist
-End
-
 It 'has spec file for home-manager/modules/npm-globals/install-npm-globals.sh'
 The path "spec/npm_globals_spec.sh" should be exist
 End
@@ -308,10 +304,6 @@ It 'has spec file for home-manager/modules/bin-shells/activate.sh'
 The path "spec/activate_bin_shells_spec.sh" should be exist
 End
 
-It 'has spec file for home-manager/modules/paperclip/activate.sh'
-The path "spec/activate_paperclip_openclaw_spec.sh" should be exist
-End
-
 It 'has spec file for home-manager/services/hermes/activate.sh'
 The path "spec/activate_paperclip_openclaw_spec.sh" should be exist
 End
@@ -413,7 +405,6 @@ config/noctalia/lock-before-sleep.sh
 config/obsidian/activate.sh
 config/omp/activate.sh
 config/openclaw/hydrate.sh
-config/paperclip/hydrate.sh
 config/serena/activate.sh
 home-manager/activation/deploy-agenix-secret.sh
 home-manager/activation/ensure-directory.sh
@@ -434,7 +425,6 @@ home-manager/services/hermes/activate.sh
 home-manager/services/obsidian/obsidian-git-trigger.sh
 home-manager/services/obsidian/obsidian-headless.sh
 home-manager/services/openclaw/activate.sh
-home-manager/services/paperclip/activate.sh
 home-manager/services/qmd/activate.sh
 home-manager/services/roborev/activate.sh
 home-manager/modules/tailscale/activate-create-dirs.sh
