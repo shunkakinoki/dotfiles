@@ -24,7 +24,6 @@ let
   ollama = ./ollama;
   qmd = ./qmd;
   openclaw = ./openclaw;
-  paperclip = ./paperclip;
   roborev = ./roborev;
   screenshotClipboard = import ./screenshot-clipboard { inherit pkgs; };
   sshAgent = ./ssh-agent;
@@ -49,7 +48,6 @@ in
   ollama
   qmd
   openclaw
-  paperclip
   roborev
   screenshotClipboard
   sshAgent
