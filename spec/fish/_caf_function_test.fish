@@ -12,6 +12,12 @@ end
 function systemd-inhibit
     echo $argv
 end
+function noctalia-shell
+    true
+end
+function systemctl
+    true
+end
 
 # ── unknown argument ──────────────────────────────────────
 _caf_function bogus >/dev/null 2>&1

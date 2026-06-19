@@ -1,4 +1,4 @@
-function _caf_function --description "Keep the machine awake lid-closed (caffeinate / systemd-inhibit)"
+function _caf_function --description "Keep the machine awake lid-closed, screen-lock disabled (caffeinate / systemd-inhibit)"
     set -l pid_file "$HOME/.local/state/caf.pid"
 
     switch "$argv[1]"
@@ -13,7 +13,13 @@ function _caf_function --description "Keep the machine awake lid-closed (caffein
             end
             echo $last_pid >"$pid_file"
             disown
-            echo "caf on: awake lid-closed (pid "(cat "$pid_file")")"
+            if command -q noctalia-shell
+                noctalia-shell msg idleInhibitor enable 2>/dev/null
+            end
+            if test (uname) != Darwin
+                systemctl --user stop ac-idle-inhibit.service 2>/dev/null
+            end
+            echo "caf on: awake, screen lock disabled (pid "(cat "$pid_file")")"
         case off
             if test (uname) = Darwin
                 sudo pmset -a disablesleep 0
@@ -22,7 +28,13 @@ function _caf_function --description "Keep the machine awake lid-closed (caffein
                 kill (cat "$pid_file") 2>/dev/null
                 rm -f "$pid_file"
             end
-            echo "caf off: normal sleep restored"
+            if command -q noctalia-shell
+                noctalia-shell msg idleInhibitor disable 2>/dev/null
+            end
+            if test (uname) != Darwin
+                systemctl --user start ac-idle-inhibit.service 2>/dev/null
+            end
+            echo "caf off: normal sleep and screen lock restored"
         case status
             if test (uname) = Darwin
                 pmset -g | string match -e disablesleep
