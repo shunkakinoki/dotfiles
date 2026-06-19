@@ -102,6 +102,7 @@ RUN mkdir -p /etc/nix && \
     echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf && \
     echo "filter-syscalls = false" >> /etc/nix/nix.conf && \
     echo "sandbox = true" >> /etc/nix/nix.conf && \
+    echo "fallback = true" >> /etc/nix/nix.conf && \
     if [ -n "$GITHUB_TOKEN" ]; then \
       echo "access-tokens = github.com=$GITHUB_TOKEN" >> /etc/nix/nix.conf ; \
     fi
