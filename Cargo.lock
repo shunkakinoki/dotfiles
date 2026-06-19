@@ -1755,8 +1755,8 @@ dependencies = [
 
 [[package]]
 name = "git-ai"
-version = "1.5.9"
-source = "git+https://github.com/git-ai-project/git-ai?branch=main#4a9b16f24f11a38e315310fb4dad4c55e3f695fd"
+version = "1.5.10"
+source = "git+https://github.com/git-ai-project/git-ai?branch=main#eb94d336fa3a81474762a9908574f0842eee5230"
 dependencies = [
  "chrono",
  "clap",
@@ -3737,9 +3737,9 @@ dependencies = [
 
 [[package]]
 name = "reflink-copy"
-version = "0.1.29"
+version = "0.1.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "13362233b147e57674c37b802d216b7c5e3dcccbed8967c84f0d8d223868ae27"
+checksum = "d9dd7ab4af0363d5ccfd2838d782a28196cf32a5cc2e4fe3c5dc83f2be588b8b"
 dependencies = [
  "cfg-if",
  "libc",
