@@ -30,7 +30,12 @@ jobs:
         if: runner.os == 'Linux'
         uses: jlumbroso/free-disk-space@v1.3.1
         with:
-          tool-cache: false
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true
       - name: KVM Linux Virtualization
         if: runner.os == 'Linux'
         run: |
@@ -50,6 +55,7 @@ jobs:
             system-features = kvm
             max-jobs = auto
             cores = 0
+            fallback = true
       - name: Prepare System Files
         if: runner.os == 'macOS'
         run: |
