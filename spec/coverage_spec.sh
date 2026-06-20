@@ -304,6 +304,10 @@ It 'has spec file for home-manager/modules/bin-shells/activate.sh'
 The path "spec/activate_bin_shells_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/firewall/activate.sh'
+The path "spec/activate_firewall_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/hermes/activate.sh'
 The path "spec/activate_paperclip_openclaw_spec.sh" should be exist
 End
@@ -421,6 +425,7 @@ home-manager/modules/local-scripts/pushover-notify.sh
 home-manager/modules/local-scripts/tmux-bridge.sh
 home-manager/modules/npm-globals/install-npm-globals.sh
 home-manager/modules/secure-dotenv/secure-dotenv.sh
+home-manager/services/firewall/activate.sh
 home-manager/services/hermes/activate.sh
 home-manager/services/obsidian/obsidian-git-trigger.sh
 home-manager/services/obsidian/obsidian-headless.sh
