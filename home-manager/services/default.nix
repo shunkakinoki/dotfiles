@@ -12,6 +12,7 @@ let
   codeSyncer = import ./code-syncer { inherit pkgs; };
   dolt = ./dolt;
   docker = import ./docker { inherit lib pkgs; };
+  firewall = ./firewall;
   dockerPostgres = ./docker-postgres;
   dotfilesUpdater = import ./dotfiles-updater { inherit pkgs; };
   gasTown = import ./gas-town { inherit pkgs; };
@@ -37,6 +38,7 @@ in
   dolt
   docker
   dockerPostgres
+  firewall
   dotfilesUpdater
   gasTown
   hermes
