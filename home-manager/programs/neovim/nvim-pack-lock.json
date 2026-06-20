@@ -145,10 +145,6 @@
       "rev": "b3772adec8db61ba9098c5624a0823a77be3a23d",
       "src": "https://github.com/nvim-tree/nvim-tree.lua"
     },
-    "nvim-treesitter": {
-      "rev": "2f5d4c3f3c675962242096bcc8e586d76dd72eb2",
-      "src": "https://github.com/nvim-treesitter/nvim-treesitter"
-    },
     "nvim-treesitter-context": {
       "rev": "9a8e39993e3b895601bf8227124a48ea8268149e",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter-context"
@@ -220,6 +216,10 @@
     "toggleterm.nvim": {
       "rev": "9a88eae817ef395952e08650b3283726786fb5fb",
       "src": "https://github.com/akinsho/toggleterm.nvim"
+    },
+    "tree-sitter-manager.nvim": {
+      "rev": "ae305699da5e97b6cffdd5cc6f6045b1b0bd26ea",
+      "src": "https://github.com/romus204/tree-sitter-manager.nvim"
     },
     "treesj": {
       "rev": "4770492244ccecdc9b01e0e81fa8f2f6b4a23841",
