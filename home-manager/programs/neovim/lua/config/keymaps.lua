@@ -424,7 +424,7 @@ wk.add({
 -- ====================================================================================
 -- :NvimPluginsInstall — download/build all plugins that require native binaries,
 -- then install all treesitter parsers.
--- Covers: fff.nvim, blink.cmp, telescope-fzf-native, vscode-diff, nvim-treesitter
+-- Covers: fff.nvim, blink.cmp, telescope-fzf-native, vscode-diff, tree-sitter-manager
 vim.api.nvim_create_user_command("NvimPluginsInstall", function()
 	-- fff.nvim (Rust .so — has built-in downloader)
 	local ok_fff, fff_dl = pcall(require, "fff.download")
@@ -523,12 +523,15 @@ vim.api.nvim_create_user_command("NvimPluginsInstall", function()
 		end
 	end
 
-	-- nvim-treesitter: install all parsers (async, shows progress in status line)
-	local ok_ts = pcall(require, "nvim-treesitter")
+	-- tree-sitter-manager: parsers in ensure_installed install at startup and
+	-- auto_install handles new filetypes on demand. Use :TSManager to manage.
+	local ok_ts = pcall(require, "tree-sitter-manager")
 	if ok_ts then
-		vim.notify("Installing all treesitter parsers (this may take a while)...", vim.log.levels.INFO)
-		vim.cmd("TSInstall all")
+		vim.notify(
+			"tree-sitter-manager loaded; parsers install via ensure_installed/auto_install. Use :TSManager to manage.",
+			vim.log.levels.INFO
+		)
 	else
-		vim.notify("nvim-treesitter not loaded, skipping TSInstall", vim.log.levels.WARN)
+		vim.notify("tree-sitter-manager not loaded, skipping parser setup", vim.log.levels.WARN)
 	end
-end, { desc = "Download/build all Neovim plugins that require native binaries + TSInstall all" })
+end, { desc = "Download/build all Neovim plugins that require native binaries" })
