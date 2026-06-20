@@ -26,7 +26,7 @@ require("treesitter-context").setup({
 
 -- Manages Treesitter parsers, queries, and highlighting (replaces the archived
 -- nvim-treesitter). ensure_installed parsers install at startup; auto_install
--- handles new filetypes on demand. noauto_install skips parsers Neovim ships.
+-- installs a parser for any new filetype on demand.
 -- From: https://github.com/romus204/tree-sitter-manager.nvim
 require("tree-sitter-manager").setup({
 	ensure_installed = {
@@ -77,6 +77,5 @@ require("tree-sitter-manager").setup({
 		"zig",
 	},
 	auto_install = true,
-	noauto_install = { "c", "lua", "markdown", "markdown_inline", "query", "vim", "vimdoc" },
 	highlight = true,
 })
