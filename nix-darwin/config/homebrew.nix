@@ -15,16 +15,46 @@
       extraFlags = [ "--force" ];
     };
     taps = [
-      "anomalyco/tap"
-      "entireio/tap"
+      # Homebrew 6.0.0 enabled HOMEBREW_REQUIRE_TAP_TRUST by default, refusing
+      # to load formulae/casks from non-official taps unless explicitly trusted.
+      # Mark our non-official taps as trusted so activation can install them.
+      {
+        name = "anomalyco/tap";
+        trusted = true;
+      }
+      {
+        name = "entireio/tap";
+        trusted = true;
+      }
       "homebrew/cask"
-      "kurtosis-tech/tap"
-      "manaflow-ai/cmux"
-      "open-pencil/tap"
-      "oven-sh/bun"
-      "paradigmxyz/brew"
-      "planetscale/tap"
-      "steipete/tap"
+      {
+        name = "kurtosis-tech/tap";
+        trusted = true;
+      }
+      {
+        name = "manaflow-ai/cmux";
+        trusted = true;
+      }
+      {
+        name = "open-pencil/tap";
+        trusted = true;
+      }
+      {
+        name = "oven-sh/bun";
+        trusted = true;
+      }
+      {
+        name = "paradigmxyz/brew";
+        trusted = true;
+      }
+      {
+        name = "planetscale/tap";
+        trusted = true;
+      }
+      {
+        name = "steipete/tap";
+        trusted = true;
+      }
     ];
     brews = [
       "argo"
