@@ -1,7 +1,7 @@
 disable:
   - traefik
   # metrics-server is replaced by the Helm-chart metrics-server in the
-  # shunkakinokisoftware cluster (infra/apps/metrics-server, namespace
+  # shunkakinoki/dotfiles cluster (infra/apps/metrics-server, namespace
   # metrics-server). The k3s-bundled one has broken RBAC on kyber and floods
   # FailedGetResourceMetric/Unhealthy events; disable it so k3s stops managing
   # it. Delete the leftover kube-system deploy/svc once after this applies.
