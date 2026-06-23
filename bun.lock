@@ -5,7 +5,7 @@
     "": {
       "name": "dotfiles",
       "dependencies": {
-        "@anthropic-ai/claude-code": "^2.1.175",
+        "@anthropic-ai/claude-code": "^2.1.178",
         "@augmentcode/auggie": "^0.29.0",
         "@biomejs/biome": "^2.4.16",
         "@ccusage/amp": "^19.0.0",
@@ -15,7 +15,7 @@
         "@ccusage/pi": "^19.0.0",
         "@fission-ai/openspec": "^1.4.1",
         "@getgrit/cli": "^0.1.0-alpha.1743007075",
-        "@github/copilot": "^1.0.61",
+        "@github/copilot": "^1.0.63",
         "@google/gemini-cli": "^0.45.3",
         "@google/jules": "^0.1.42",
         "@googleworkspace/cli": "^0.22.5",
@@ -35,15 +35,15 @@
         "@sourcegraph/amp": "^0.0.1781014365-g7ac8f9",
         "@steipete/bird": "^0.8.0",
         "@tobilu/qmd": "^2.5.3",
-        "@traces-sh/traces": "^0.6.1",
-        "@typescript/native-preview": "^7.0.0-dev.20260611.2",
+        "@traces-sh/traces": "^0.6.3",
+        "@typescript/native-preview": "^7.0.0-dev.20260615.1",
         "@upstash/context7-mcp": "^3.1.0",
         "@vibe-kit/grok-cli": "^0.0.34",
         "acpx": "^0.10.0",
-        "agent-browser": "^0.27.2",
+        "agent-browser": "^0.27.3",
         "agentcash": "^0.14.4",
         "btca": "^2.0.5",
-        "ccusage": "^20.0.11",
+        "ccusage": "^20.0.14",
         "chrome-devtools-axi": "^0.1.24",
         "chrome-devtools-mcp": "^1.2.0",
         "clawdhub": "^0.3.0",
@@ -54,16 +54,16 @@
         "gh-axi": "^0.1.20",
         "mcp-remote": "^0.1.38",
         "mcporter": "^0.11.3",
-        "obsidian-headless": "^0.0.10",
+        "obsidian-headless": "^0.0.11",
         "open-composer": "^0.8.23",
-        "openclaw": "^2026.6.5",
+        "openclaw": "^2026.6.6",
         "oxfmt": "^0.54.0",
         "oxlint": "^1.69.0",
         "playwright-chromium": "^1.60.0",
         "portless": "^0.14.0",
         "ralph-tui": "^0.12.0",
         "takt": "^0.44.0",
-        "tokscale": "^3.1.2",
+        "tokscale": "^3.1.3",
         "turbo": "^2.9.18",
         "typescript": "^6.0.3",
         "vite": "^8.0.16",
@@ -71,14 +71,14 @@
         "xcodebuildmcp": "^2.6.2",
       },
       "optionalDependencies": {
-        "@anthropic-ai/claude-code-darwin-arm64": "^2.1.175",
-        "@anthropic-ai/claude-code-darwin-x64": "^2.1.175",
-        "@anthropic-ai/claude-code-linux-arm64": "^2.1.175",
-        "@anthropic-ai/claude-code-linux-arm64-musl": "^2.1.175",
-        "@anthropic-ai/claude-code-linux-x64": "^2.1.175",
-        "@anthropic-ai/claude-code-linux-x64-musl": "^2.1.175",
-        "@anthropic-ai/claude-code-win32-arm64": "^2.1.175",
-        "@anthropic-ai/claude-code-win32-x64": "^2.1.175",
+        "@anthropic-ai/claude-code-darwin-arm64": "^2.1.178",
+        "@anthropic-ai/claude-code-darwin-x64": "^2.1.178",
+        "@anthropic-ai/claude-code-linux-arm64": "^2.1.178",
+        "@anthropic-ai/claude-code-linux-arm64-musl": "^2.1.178",
+        "@anthropic-ai/claude-code-linux-x64": "^2.1.178",
+        "@anthropic-ai/claude-code-linux-x64-musl": "^2.1.178",
+        "@anthropic-ai/claude-code-win32-arm64": "^2.1.178",
+        "@anthropic-ai/claude-code-win32-x64": "^2.1.178",
         "@openai/codex-darwin-arm64": "npm:@openai/codex@0.138.0",
         "@openai/codex-darwin-x64": "npm:@openai/codex@0.138.0",
         "@openai/codex-linux-arm64": "npm:@openai/codex@0.138.0",
@@ -1590,17 +1590,17 @@
 
     "@tootallnate/quickjs-emscripten": ["@tootallnate/quickjs-emscripten@0.23.0", "", {}, "sha512-C5Mc6rdnsaJDjO3UpGW/CQTHtCKaYlScZTly4JIu97Jxo/odCiH0ITnDXSJPTOrEKk/ycSZ0AOgTmkDtkOsvIA=="],
 
-    "@traces-sh/traces": ["@traces-sh/traces@0.6.1", "", { "optionalDependencies": { "@traces-sh/traces-darwin-arm64": "0.6.1", "@traces-sh/traces-darwin-x64": "0.6.1", "@traces-sh/traces-linux-arm64": "0.6.1", "@traces-sh/traces-linux-x64": "0.6.1", "@traces-sh/traces-windows-x64": "0.6.1" }, "bin": { "traces": "bin/traces" } }, "sha512-PF4nhK+iDhq4RCiytFZvPCpCHz84jS+3eWm3etFuUU/YqgEj0YCLQv9PcsHeVQu2L70fMvlSw0tXTIWrKpC7Mw=="],
+    "@traces-sh/traces": ["@traces-sh/traces@0.6.4", "", { "optionalDependencies": { "@traces-sh/traces-darwin-arm64": "0.6.4", "@traces-sh/traces-darwin-x64": "0.6.4", "@traces-sh/traces-linux-arm64": "0.6.4", "@traces-sh/traces-linux-x64": "0.6.4", "@traces-sh/traces-windows-x64": "0.6.4" }, "bin": { "traces": "bin/traces" } }, "sha512-ynuezHbVKLjld0Ug8Cp9KpS8UibEWdPWvPlb0y2BGuIZc7tLRXpgYjvIDT8QSg3zBQhPHY7y1IIqzxsLpDmmuQ=="],
 
-    "@traces-sh/traces-darwin-arm64": ["@traces-sh/traces-darwin-arm64@0.6.1", "", { "os": "darwin", "cpu": "arm64" }, "sha512-dbgBPY0oP6NIKemXI7/cF75/Ho7Cujn2GNSci6O65s3eiQAhpZSi5zt2DeVtIA4lFjTsAjzubRdSMTNYMIEi/A=="],
+    "@traces-sh/traces-darwin-arm64": ["@traces-sh/traces-darwin-arm64@0.6.4", "", { "os": "darwin", "cpu": "arm64" }, "sha512-8I7vNl08RGZwfrsK4EWlVF8f0vEMO609SPVhcuwUIidGmOD+DcQ6RO65EU/55J02TCeGQ2hl1rxdBw4PgbjTSw=="],
 
-    "@traces-sh/traces-darwin-x64": ["@traces-sh/traces-darwin-x64@0.6.1", "", { "os": "darwin", "cpu": "x64" }, "sha512-ii6MC4ViTWl9zZbzRIkCuaBivBzFf1/Q/D2lJUpTALNLPhsE2pbESW4vPZzngjVOGLXL10DA2Rb+PTp/z4mzww=="],
+    "@traces-sh/traces-darwin-x64": ["@traces-sh/traces-darwin-x64@0.6.4", "", { "os": "darwin", "cpu": "x64" }, "sha512-AXgklSsnQDr3g8FGL9/c735UbeqPcCJ0MDvfhr96SDwM4ku0tXXVgeAJHoHMel6KYeD7GCFDuYyU8RRaVKHKbQ=="],
 
-    "@traces-sh/traces-linux-arm64": ["@traces-sh/traces-linux-arm64@0.6.1", "", { "os": "linux", "cpu": "arm64" }, "sha512-jdqriKsRJGEX5XykbIAs4KNCkuH/KDCC34IjJoENF5pxS/mv+TxP5ZYXKf1x1mBkDzLuBaWO27NpMLejcfxDbw=="],
+    "@traces-sh/traces-linux-arm64": ["@traces-sh/traces-linux-arm64@0.6.4", "", { "os": "linux", "cpu": "arm64" }, "sha512-61sr9iQTCcgySnAfn/9SepbA/7Yyhoj9G/jIQaaJIktAEVs1/wftsfOuYUWjhBThGApVeHyl2MDCjvVsVyXXWA=="],
 
-    "@traces-sh/traces-linux-x64": ["@traces-sh/traces-linux-x64@0.6.1", "", { "os": "linux", "cpu": "x64" }, "sha512-kz3XLLLMwZq+2dm2bssn38m2B7mhn6pGPPnjxwv0qzyvrdEYkrp93CBX8bbiQAt5uQQvxHkWf1rCy8pnBRXlFA=="],
+    "@traces-sh/traces-linux-x64": ["@traces-sh/traces-linux-x64@0.6.4", "", { "os": "linux", "cpu": "x64" }, "sha512-wA7H7p7FHNXG5MekP3NZbaXdXTmtKgbc8sArr+ijwPeS7Wce5wVqAd+TSK77LeSyKE4xBSnXTsw+/H0cEVLP1g=="],
 
-    "@traces-sh/traces-windows-x64": ["@traces-sh/traces-windows-x64@0.6.1", "", { "os": "win32", "cpu": "x64" }, "sha512-nbdBT/W/gfkJ1E7E5ZXU9d+nU+4yICLYsoGSLgLktQKkdUeQn04dlXg0gPpX+tV8ML9JQVR6TGTC0zzs6lo+HQ=="],
+    "@traces-sh/traces-windows-x64": ["@traces-sh/traces-windows-x64@0.6.4", "", { "os": "win32", "cpu": "x64" }, "sha512-b/4eb2EQMVnm2HPIbDOJ5HN8k27MmNmKzAVW1df4KP4I3CAuPk4V/2iPApfUKzYf9v3VS3mA2kZu25SiBheEbA=="],
 
     "@tufjs/canonical-json": ["@tufjs/canonical-json@2.0.0", "", {}, "sha512-yVtV8zsdo8qFHe+/3kw81dSLyF7D576A5cCFCi4X7B39tWT7SekaEFUnvnWJHz+9qO7qJTah1JbrDjWKqFtdWA=="],
 
@@ -2864,7 +2864,7 @@
 
     "object-keys": ["object-keys@1.1.1", "", {}, "sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA=="],
 
-    "obsidian-headless": ["obsidian-headless@0.0.10", "", { "dependencies": { "better-sqlite3": "12.6.2", "commander": "14.0.3" }, "os": [ "linux", "win32", "darwin", ], "cpu": [ "x64", "arm64", ], "bin": { "ob": "cli.js" } }, "sha512-rs90kHkX9uJNPf6fMGQoNRw9KTA+cpkBbPG2Un5iT1IZxdpW1+yaBrONbsc2t5KHpbc+s5G7/krz0VoUn+r5nw=="],
+    "obsidian-headless": ["obsidian-headless@0.0.11", "", { "dependencies": { "better-sqlite3": "12.6.2", "commander": "14.0.3" }, "os": [ "linux", "win32", "darwin", ], "cpu": [ "x64", "arm64", ], "bin": { "ob": "cli.js" } }, "sha512-3dsZaXPltGLkfyp2n/kAkuzYwAshocA3ErktHCHu6hxQCzPofzrsF9fAvTqC+CO82ORgSOmdg/3yqdPxurgJqg=="],
 
     "obug": ["obug@2.1.1", "", {}, "sha512-uTqF9MuPraAQ+IsnPf366RG4cP9RtUi7MLO1N3KEc+wb0a6yKpeL0lmk2IB1jY5KHPAlTc6T/JRdC/YqxHNwkQ=="],
 
