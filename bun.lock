@@ -5,7 +5,7 @@
     "": {
       "name": "dotfiles",
       "dependencies": {
-        "@0xsequence/codegenie": "^0.2.0",
+        "@0xsequence/codegenie": "0.2.0",
         "@anthropic-ai/claude-code": "^2.1.186",
         "@augmentcode/auggie": "^0.29.0",
         "@biomejs/biome": "^2.5.1",
@@ -56,7 +56,7 @@
         "gh-axi": "^0.1.22",
         "mcp-remote": "^0.1.38",
         "mcporter": "^0.11.3",
-        "obsidian-headless": "^0.0.10",
+        "obsidian-headless": "^0.0.11",
         "open-composer": "^0.8.23",
         "openclaw": "^2026.6.9",
         "oxfmt": "^0.54.0",
@@ -157,7 +157,7 @@
     "@posthog/cli",
   ],
   "overrides": {
-    "pino": "^9.14.0",
+    "pino": "9.14.0",
   },
   "packages": {
     "@0xsequence/codegenie": ["@0xsequence/codegenie@0.2.0", "", { "dependencies": { "@earendil-works/pi-ai": "0.79.8", "@vscode/ripgrep": "1.18.0", "commander": "15.0.0", "execa": "9.6.1", "p-limit": "7.3.0", "picomatch": "4.0.4", "smol-toml": "1.6.1", "tree-sitter-go": "0.25.0", "tree-sitter-javascript": "0.25.0", "tree-sitter-typescript": "0.23.2", "web-tree-sitter": "0.26.9", "yaml": "2.9.0", "zod": "4.4.3" }, "bin": { "codegenie": "./dist/cli/main.js" } }, "sha512-eUDSl2uddm5rOMp3/SQ4Ff6CZh4SEKOqySL8gpZQ0zFZAQWGXgTuDzxrKKQIAOEXI2GSV9f/6ZdafR3VezjCgQ=="],
@@ -2922,7 +2922,7 @@
 
     "object-keys": ["object-keys@1.1.1", "", {}, "sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA=="],
 
-    "obsidian-headless": ["obsidian-headless@0.0.10", "", { "dependencies": { "better-sqlite3": "12.6.2", "commander": "14.0.3" }, "os": [ "linux", "win32", "darwin", ], "cpu": [ "x64", "arm64", ], "bin": { "ob": "cli.js" } }, "sha512-rs90kHkX9uJNPf6fMGQoNRw9KTA+cpkBbPG2Un5iT1IZxdpW1+yaBrONbsc2t5KHpbc+s5G7/krz0VoUn+r5nw=="],
+    "obsidian-headless": ["obsidian-headless@0.0.11", "", { "dependencies": { "better-sqlite3": "12.6.2", "commander": "14.0.3" }, "os": [ "linux", "win32", "darwin", ], "cpu": [ "x64", "arm64", ], "bin": { "ob": "cli.js" } }, "sha512-3dsZaXPltGLkfyp2n/kAkuzYwAshocA3ErktHCHu6hxQCzPofzrsF9fAvTqC+CO82ORgSOmdg/3yqdPxurgJqg=="],
 
     "obug": ["obug@2.1.1", "", {}, "sha512-uTqF9MuPraAQ+IsnPf366RG4cP9RtUi7MLO1N3KEc+wb0a6yKpeL0lmk2IB1jY5KHPAlTc6T/JRdC/YqxHNwkQ=="],
 
