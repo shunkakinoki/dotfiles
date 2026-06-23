@@ -407,6 +407,7 @@ config/k3s/activate.sh
 config/noctalia/ac-idle-inhibit.sh
 config/noctalia/lock-before-sleep.sh
 config/noctalia/quit-active-app.sh
+config/noctalia/quit-all-apps-launcher.sh
 config/noctalia/quit-all-apps.sh
 config/obsidian/activate.sh
 config/omp/activate.sh
