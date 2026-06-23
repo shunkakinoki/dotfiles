@@ -9,11 +9,10 @@ let
     noctalia_shell = "${noctaliaShell}/bin/noctalia-shell";
     sleep = "${pkgs.coreutils}/bin/sleep";
   };
-  quitAllAppsScript = pkgs.writeShellScript "quit-all-apps" ''
-    ${pkgs.hyprland}/bin/hyprctl clients -j | ${pkgs.jq}/bin/jq -r '.[].address' | while read -r addr; do
-      ${pkgs.hyprland}/bin/hyprctl dispatch closewindow "address:$addr"
-    done
-  '';
+  quitAllAppsScript = pkgs.replaceVars ./quit-all-apps-launcher.sh {
+    hyprctl = "${pkgs.hyprland}/bin/hyprctl";
+    jq = "${pkgs.jq}/bin/jq";
+  };
 in
 {
   xdg.configFile."noctalia/colorschemes/Dracula-Custom/Dracula-Custom.json" = {
@@ -71,7 +70,7 @@ in
   xdg.desktopEntries.quit-all-apps = {
     name = "Quit All Apps";
     comment = "Close all open windows";
-    exec = "${quitAllAppsScript}";
+    exec = "${pkgs.bash}/bin/bash ${quitAllAppsScript}";
     terminal = false;
     categories = [ "Utility" ];
     icon = "application-exit";
