@@ -5817,9 +5817,9 @@ checksum = "1ebf944e87a7c253233ad6766e082e3cd714b5d03812acc24c318f549614536e"
 
 [[package]]
 name = "worktrunk"
-version = "0.57.0"
+version = "0.58.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b3c777f1d058a80addeb71f69c4919e665343bfb1573e5b09b1634bd2bd6682d"
+checksum = "aab7deaa49a9910d061072df7b96bdd4da375f883797b2d290c7572598619ad2"
 dependencies = [
  "ansi-str",
  "anstream",
