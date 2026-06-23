@@ -52,6 +52,26 @@ in
     Install.WantedBy = [ "sleep.target" ];
   };
 
+  xdg.configFile."noctalia/scripts/quit-active-app.sh" = {
+    source = ./quit-active-app.sh;
+    executable = true;
+    force = true;
+  };
+  xdg.configFile."noctalia/scripts/quit-all-apps.sh" = {
+    source = ./quit-all-apps.sh;
+    executable = true;
+    force = true;
+  };
+
+  xdg.desktopEntries.quit-all-apps = {
+    name = "Quit All Apps";
+    comment = "Close all open windows";
+    exec = "${pkgs.bash}/bin/bash -c '\"$HOME/.config/noctalia/scripts/quit-all-apps.sh\"'";
+    terminal = false;
+    categories = [ "Utility" ];
+    icon = "application-exit";
+  };
+
   programs.noctalia-shell = {
     enable = true;
     package = noctaliaShell;
