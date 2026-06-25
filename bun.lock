@@ -51,12 +51,12 @@
         "clawdhub": "^0.3.0",
         "cline": "^3.0.29",
         "deepsec": "^2.1.2",
-        "droid": "^0.150.0",
+        "droid": "^0.150.1",
         "get-shit-done-cc": "^1.42.3",
         "gh-axi": "^0.1.22",
         "mcp-remote": "^0.1.38",
         "mcporter": "^0.12.0",
-        "obsidian-headless": "^0.0.10",
+        "obsidian-headless": "^0.0.12",
         "open-composer": "^0.8.23",
         "openclaw": "^2026.6.9",
         "oxfmt": "^0.55.0",
@@ -2924,7 +2924,7 @@
 
     "object-keys": ["object-keys@1.1.1", "", {}, "sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA=="],
 
-    "obsidian-headless": ["obsidian-headless@0.0.10", "", { "dependencies": { "better-sqlite3": "12.6.2", "commander": "14.0.3" }, "os": [ "linux", "win32", "darwin", ], "cpu": [ "x64", "arm64", ], "bin": { "ob": "cli.js" } }, "sha512-rs90kHkX9uJNPf6fMGQoNRw9KTA+cpkBbPG2Un5iT1IZxdpW1+yaBrONbsc2t5KHpbc+s5G7/krz0VoUn+r5nw=="],
+    "obsidian-headless": ["obsidian-headless@0.0.12", "", { "dependencies": { "better-sqlite3": "12.6.2", "commander": "14.0.3" }, "os": [ "linux", "win32", "darwin", ], "cpu": [ "x64", "arm64", ], "bin": { "ob": "cli.js" } }, "sha512-d/TI1iqCZbkTCfa1zLi6a99MRVmiApvtxgP2JgDRjRAYkHgxvhGtT5aTxSXE6BXXJG4g9xADbrsRQrSqvsl1Rg=="],
 
     "obug": ["obug@2.1.1", "", {}, "sha512-uTqF9MuPraAQ+IsnPf366RG4cP9RtUi7MLO1N3KEc+wb0a6yKpeL0lmk2IB1jY5KHPAlTc6T/JRdC/YqxHNwkQ=="],
 
