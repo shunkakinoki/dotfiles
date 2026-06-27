@@ -23,8 +23,8 @@
         "@kaitranntt/ccs": "^8.6.0",
         "@mariozechner/pi-coding-agent": "^0.73.1",
         "@nanocollective/nanocoder": "^1.28.0",
-        "@oh-my-pi/pi-coding-agent": "^16.0.6",
-        "@oh-my-pi/pi-natives": "^16.0.6",
+        "@oh-my-pi/pi-coding-agent": "^16.1.7",
+        "@oh-my-pi/pi-natives": "^16.1.7",
         "@oh-my-pi/swarm-extension": "^13.17.0",
         "@openai/codex": "^0.141.0",
         "@pencil.dev/cli": "^0.2.7",
@@ -51,7 +51,7 @@
         "clawdhub": "^0.3.0",
         "cline": "^3.0.29",
         "deepsec": "^2.1.2",
-        "droid": "^0.152.0",
+        "droid": "^0.153.1",
         "get-shit-done-cc": "^1.42.3",
         "gh-axi": "^0.1.22",
         "mcp-remote": "^0.1.38",
@@ -486,23 +486,23 @@
 
     "@esbuild/win32-x64": ["@esbuild/win32-x64@0.28.0", "", { "os": "win32", "cpu": "x64" }, "sha512-pEl1bO9mfAmIC+tW5btTmrKaujg3zGtUmWNdCw/xs70FBjwAL3o9OEKNHvNmnyylD6ubxUERiEhdsL0xBQ9efw=="],
 
-    "@factory/cli-darwin-arm64": ["@factory/cli-darwin-arm64@0.152.0", "", { "os": "darwin", "cpu": "arm64" }, "sha512-YZ/NzQHgwUCU7H/AcCXNmN5wB6JZ0aLgyeUkGuasrjuqj/QXoRQaAmez56LqIG3SUSLuhdaqUkEoYFq75UGTqw=="],
+    "@factory/cli-darwin-arm64": ["@factory/cli-darwin-arm64@0.153.1", "", { "os": "darwin", "cpu": "arm64" }, "sha512-wLB8tKbaCD/qAqqGRaTBDJkjVwOYU/xx7toP95liRDiNR+7XZQxRdjDH+24ogI/KhilxkMrFJvqaIs0/OR6sow=="],
 
-    "@factory/cli-darwin-x64": ["@factory/cli-darwin-x64@0.152.0", "", { "os": "darwin", "cpu": "x64" }, "sha512-Zgd87TtIwFbGAdL/wAFZDrk50VJ+inYJ/1fhx0weUUidKSZGui6GM+GXPIby6o547C/ANK5ZNycq2Vtmx2YD7A=="],
+    "@factory/cli-darwin-x64": ["@factory/cli-darwin-x64@0.153.1", "", { "os": "darwin", "cpu": "x64" }, "sha512-nO8/fZppUPw04P7WElbrcdUGB+GHoXq60fOVQ0s3sg3/Y1uwgoXg66XKQhiLaUeSgoTBpzyvy6cLrhBghWXCow=="],
 
-    "@factory/cli-darwin-x64-baseline": ["@factory/cli-darwin-x64-baseline@0.152.0", "", { "os": "darwin", "cpu": "x64" }, "sha512-MnL+BF9C4YchOmhy3pbx72L9mtyZgiZwHeDNsklOyxiarPnz3fK5G4YgzEtIM5+qQnCmTxELHtBfZD9qDIddnw=="],
+    "@factory/cli-darwin-x64-baseline": ["@factory/cli-darwin-x64-baseline@0.153.1", "", { "os": "darwin", "cpu": "x64" }, "sha512-0IiOse7gFjJPGM064fyU81jzSEg0epWUCCUh9Tbj3z2QRhLwidxLCh9JRxSbo+46tfjrLUpjPCWlxzknUF5+Hw=="],
 
-    "@factory/cli-linux-arm64": ["@factory/cli-linux-arm64@0.152.0", "", { "os": "linux", "cpu": "arm64" }, "sha512-+EPTIfwreiKz7X2gaLnIDKFE2JzMAm60HUVo9LXKp5MAETecu1eYuaq1SOw5YwmdQIfIjny1nmTOLVFwE+htyw=="],
+    "@factory/cli-linux-arm64": ["@factory/cli-linux-arm64@0.153.1", "", { "os": "linux", "cpu": "arm64" }, "sha512-Ej+UuyUYbTXR/F8fPZALxbfE7el+He1qIW10YjTXPUUXpoU3SWvgedeblkndoLmb7+dtYrNw5tu+mucbZ5rtFA=="],
 
-    "@factory/cli-linux-x64": ["@factory/cli-linux-x64@0.152.0", "", { "os": "linux", "cpu": "x64" }, "sha512-4KDAmUwPBOBeKC7KeLeHTnXH/cNsundj/r2qPEG0tfHLgon3PD1KQo/EeAydtNhKUbqaFm7nfWDOlxgGoGliuA=="],
+    "@factory/cli-linux-x64": ["@factory/cli-linux-x64@0.153.1", "", { "os": "linux", "cpu": "x64" }, "sha512-MVUS+w+Ku5tEIkKZNDafdH9IA1DtP0GR89qH7Ma3bzCxBvDVRJYcFKelwDkNubjXK9UkwtKg35VYiiDwL0i+yg=="],
 
-    "@factory/cli-linux-x64-baseline": ["@factory/cli-linux-x64-baseline@0.152.0", "", { "os": "linux", "cpu": "x64" }, "sha512-9Hrtx+ZiHgYKp4eY/qOErQeO20HWk155bZhTTggSaXFqMQv3fYivz5U+M90BR9lJncNJNKpg1Db6pOb26sArlA=="],
+    "@factory/cli-linux-x64-baseline": ["@factory/cli-linux-x64-baseline@0.153.1", "", { "os": "linux", "cpu": "x64" }, "sha512-drXiBPvLCVxwp9oCIsdHyuXlEj+9CmPdy/vI3TIpa6RSlsrR3faTGk/Rji9swFaeXzHMN2vm/iqJLfpuraLmTA=="],
 
-    "@factory/cli-win32-arm64": ["@factory/cli-win32-arm64@0.152.0", "", { "os": "win32", "cpu": "arm64" }, "sha512-3dQuWJIWaTX1SqtXTEc6rShcNBknzUGXHyXfT1gVS80byfEmOfbim0z1djH7bdBzNAr4No6lmocCsLybVGez7w=="],
+    "@factory/cli-win32-arm64": ["@factory/cli-win32-arm64@0.153.1", "", { "os": "win32", "cpu": "arm64" }, "sha512-aF1dxYIX2liFpRpe5SmNxCdl4mwzfuzuk0JfTASrlOHWl6Qd5CJEIP0cBE9tnSYn6yquXIh500075+o+Cauafg=="],
 
-    "@factory/cli-win32-x64": ["@factory/cli-win32-x64@0.152.0", "", { "os": "win32", "cpu": "x64" }, "sha512-Wivn6GOr2bEbVTxsveoiCJqwF5qK8EoIWpyIxpOe0kJbmP1blPTJni52+5V0vxThCz1DlB5aPHbE47g8UUqYCQ=="],
+    "@factory/cli-win32-x64": ["@factory/cli-win32-x64@0.153.1", "", { "os": "win32", "cpu": "x64" }, "sha512-SxaY7vtgo8fF+/KntiMEMaXC+Pqvpnk6vUzG0XjqKHwJB6IDiUH/aOOplhvmf7FxjD/b4I28+mmNxzEn4ITDgg=="],
 
-    "@factory/cli-win32-x64-baseline": ["@factory/cli-win32-x64-baseline@0.152.0", "", { "os": "win32", "cpu": "x64" }, "sha512-OATKpPVy/UDWaj1/rkwECXZKD7ZSMhuy2/UDlTrQei//gc/VT01N9aIGEDkzZ4dRFxQ1/2kMLgh9De5OkRA4RQ=="],
+    "@factory/cli-win32-x64-baseline": ["@factory/cli-win32-x64-baseline@0.153.1", "", { "os": "win32", "cpu": "x64" }, "sha512-SbRDRm/CKqRiTEkjf84aBtMLp/llZKB4cWmAsFEiq7rRbH2ZsTSP5WLlI/jn9rtKK8qTpRYSDgGtqMisWBybQg=="],
 
     "@fallow-cli/darwin-arm64": ["@fallow-cli/darwin-arm64@2.75.0", "", { "os": "darwin", "cpu": "arm64" }, "sha512-izJTjYPNdiWPbf7QjVwje0JwJeVQJAUuncjPkuAO9hRM3t4oJ9fqAvyEXyyRq4dAJS4NO4DMEsPsN82QOF8fGw=="],
 
@@ -2192,7 +2192,7 @@
 
     "dotenv": ["dotenv@17.4.2", "", {}, "sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw=="],
 
-    "droid": ["droid@0.152.0", "", { "optionalDependencies": { "@factory/cli-darwin-arm64": "0.152.0", "@factory/cli-darwin-x64": "0.152.0", "@factory/cli-darwin-x64-baseline": "0.152.0", "@factory/cli-linux-arm64": "0.152.0", "@factory/cli-linux-x64": "0.152.0", "@factory/cli-linux-x64-baseline": "0.152.0", "@factory/cli-win32-arm64": "0.152.0", "@factory/cli-win32-x64": "0.152.0", "@factory/cli-win32-x64-baseline": "0.152.0" }, "bin": { "droid": "bin/droid" } }, "sha512-u01mNiFGxH+EUVBMmHDQH9re/Vf3aQUDaZERehe+UzLJtdZeIEuOoxpLXDNIhiLvtsfvplwt9sIFb8BQ43SXgA=="],
+    "droid": ["droid@0.153.1", "", { "optionalDependencies": { "@factory/cli-darwin-arm64": "0.153.1", "@factory/cli-darwin-x64": "0.153.1", "@factory/cli-darwin-x64-baseline": "0.153.1", "@factory/cli-linux-arm64": "0.153.1", "@factory/cli-linux-x64": "0.153.1", "@factory/cli-linux-x64-baseline": "0.153.1", "@factory/cli-win32-arm64": "0.153.1", "@factory/cli-win32-x64": "0.153.1", "@factory/cli-win32-x64-baseline": "0.153.1" }, "bin": { "droid": "bin/droid" } }, "sha512-GIVjM+6Es+wkebgbZBtTVdFL4bULMpnfA5KGgyuYEk4momhqCGkF8lDCzvIz1EHYW4PshJSK09ggIL7peBaWCA=="],
 
     "dtu-github-actions": ["dtu-github-actions@0.16.2", "", { "dependencies": { "body-parser": "^2.2.2", "minimatch": "^10.2.4", "polka": "^0.5.2", "zod": "^3.24.1" } }, "sha512-yFtWpQbPaUXjoLu2e3nen8bF8VhZ5d+/Qaa8FRGKglACIxLz5qJ59mw3vHjIcm/knINrOGW7dA3TqWGda+9Umw=="],
 
