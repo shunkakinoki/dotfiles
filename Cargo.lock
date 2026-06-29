@@ -1631,8 +1631,8 @@ dependencies = [
 
 [[package]]
 name = "git-ai"
-version = "1.6.4"
-source = "git+https://github.com/git-ai-project/git-ai?branch=main#11d9468a7f4cf22772c157937f1375d7219884fa"
+version = "1.6.5"
+source = "git+https://github.com/git-ai-project/git-ai?branch=main#0c9f180580221d80e34f4917615049a20a3add73"
 dependencies = [
  "chrono",
  "clap",
@@ -3181,9 +3181,9 @@ dependencies = [
 
 [[package]]
 name = "petname-macros"
-version = "3.0.1"
+version = "3.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ff2fb9973505377f85e28c339aaad18df99c32ee8aa3d3565534eec89b7cad76"
+checksum = "c9b4bcfb5a86125ae8f1342b95f8b64d050f0a4385c9533c5a17970b9e0479e7"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3715,8 +3715,8 @@ dependencies = [
 
 [[package]]
 name = "rtk"
-version = "0.42.4"
-source = "git+https://github.com/rtk-ai/rtk?branch=master#8a7dd7e5570d7744d4b6508479a3674fe8c49286"
+version = "0.43.0"
+source = "git+https://github.com/rtk-ai/rtk?branch=master#5a7880d404db8364d602f2ecdc41dd790f64013f"
 dependencies = [
  "anyhow",
  "automod",
@@ -4873,9 +4873,9 @@ dependencies = [
 
 [[package]]
 name = "tree-sitter"
-version = "0.26.9"
+version = "0.26.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4dab76d0b724ba557954125188cf0633a1ca43199ced82d95c7b9c32cc3de1f3"
+checksum = "3c343ed63e3f5c64d1acdecb5d2c13d4e169cb5fde0052106ebaa6c6f27f9e55"
 dependencies = [
  "cc",
  "regex",
@@ -4897,9 +4897,9 @@ dependencies = [
 
 [[package]]
 name = "tree-sitter-highlight"
-version = "0.26.9"
+version = "0.26.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f4fbfa3f35520ff730da507e2c9a526a98156f417e0008c73de873741d7e4ecc"
+checksum = "51d5c68e5dba9c2818166330961143812b22a286e51a107a0733766b50dfc87d"
 dependencies = [
  "regex",
  "streaming-iterator",
