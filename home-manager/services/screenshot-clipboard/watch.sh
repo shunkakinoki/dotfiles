@@ -41,16 +41,18 @@ wait_until_stable() {
   done
 }
 
-# Screenshots are written atomically (macOS via rename, hyprshot via mv from
-# a temp path), so fswatch reports the final path once writing has finished.
-# fswatch on macOS uses FSEvents which is always recursive, so the patterns
-# are anchored to "$DESKTOP_DIR/" to ignore screenshots inside subfolders
-# (e.g. project directories) and only react to fresh top-level captures.
+# fswatch event filters are backend-specific; on macOS FSEvents can report
+# screenshot writes with combined flags that do not pass --event filters. Watch
+# all events and keep the stable filename filtering here instead.
+#
+# fswatch on macOS uses FSEvents which is always recursive, so the patterns are
+# anchored to "$DESKTOP_DIR/" to ignore screenshots inside subfolders (e.g.
+# project directories) and only react to fresh top-level captures.
 # Patterns:
 #   - "Screenshot ..." / "Screen Shot ..." : macOS defaults (current / legacy)
 #   - "*_hyprshot.png"                     : hyprshot default name on Linux
 #     (HYPRSHOT_DIR is set to $HOME/Desktop in config/hyprland/hyprland.conf)
-fswatch --event=Created --event=MovedTo --event=Renamed -0 "$DESKTOP_DIR" |
+fswatch -0 "$DESKTOP_DIR" |
   while IFS= read -r -d '' path; do
     case "$path" in
     "$DESKTOP_DIR/Screenshot "*.png | \
