@@ -42,10 +42,6 @@
           askForPasswordDelay = 0;
           idleTime = 600;
         };
-        "com.apple.screencapture" = {
-          location = "/Users/${username}/Desktop";
-          type = "png";
-        };
       };
       CustomUserPreferences = {
         "com.apple.controlcenter" = {
@@ -173,11 +169,11 @@
       screencapture = {
         disable-shadow = null;
         include-date = null;
-        location = "/Users/${username}/Desktop";
-        save-selections = false;
-        show-thumbnail = false;
+        location = null;
+        save-selections = null;
+        show-thumbnail = null;
         target = null;
-        type = "png";
+        type = null;
       };
       screensaver = {
         askForPassword = true;
