@@ -176,7 +176,7 @@
         location = "~/Desktop";
         save-selections = false;
         show-thumbnail = false;
-        target = "clipboard";
+        target = "file";
         type = "png";
       };
       screensaver = {
