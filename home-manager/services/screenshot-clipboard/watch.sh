@@ -34,6 +34,9 @@ fswatch --event=Created --event=MovedTo --event=Renamed -0 "$DESKTOP_DIR" |
     "$DESKTOP_DIR/Screenshot "*.png | \
       "$DESKTOP_DIR/Screen Shot "*.png | \
       "$DESKTOP_DIR/"*_hyprshot.png)
+      # Native macOS captures can emit the filesystem event before the PNG is
+      # fully readable on large displays. Give the writer a brief head start.
+      sleep 1
       "$CLIPBOARD_COPY_IMAGE" "$path" || true
       ;;
     esac
