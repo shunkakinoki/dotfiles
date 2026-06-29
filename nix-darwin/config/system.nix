@@ -43,7 +43,7 @@
           idleTime = 600;
         };
         "com.apple.screencapture" = {
-          location = "~/Desktop";
+          location = "/Users/${username}/Desktop";
           type = "png";
         };
       };
@@ -173,10 +173,10 @@
       screencapture = {
         disable-shadow = null;
         include-date = null;
-        location = "~/Desktop";
+        location = "/Users/${username}/Desktop";
         save-selections = false;
         show-thumbnail = false;
-        target = "file";
+        target = null;
         type = "png";
       };
       screensaver = {
