@@ -72,6 +72,7 @@
       "grafana"
       "graphviz"
       "helm"
+      "herdr"
       "jjui"
       "kimi-cli"
       "kurtosis-cli"
