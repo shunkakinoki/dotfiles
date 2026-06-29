@@ -12,6 +12,7 @@ let
   codeSyncer = import ./code-syncer { inherit pkgs; };
   dolt = ./dolt;
   docker = import ./docker { inherit lib pkgs; };
+  firewall = ./firewall;
   dockerPostgres = ./docker-postgres;
   dotfilesUpdater = import ./dotfiles-updater { inherit pkgs; };
   gasTown = import ./gas-town { inherit pkgs; };
@@ -24,7 +25,6 @@ let
   ollama = ./ollama;
   qmd = ./qmd;
   openclaw = ./openclaw;
-  paperclip = ./paperclip;
   roborev = ./roborev;
   screenshotClipboard = import ./screenshot-clipboard { inherit pkgs; };
   sshAgent = ./ssh-agent;
@@ -38,6 +38,7 @@ in
   dolt
   docker
   dockerPostgres
+  firewall
   dotfilesUpdater
   gasTown
   hermes
@@ -49,7 +50,6 @@ in
   ollama
   qmd
   openclaw
-  paperclip
   roborev
   screenshotClipboard
   sshAgent

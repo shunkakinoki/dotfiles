@@ -78,7 +78,7 @@ NIX_USERNAME := $(shell \
 		echo "$(shell whoami)"; \
 	fi)
 NIX_ENV := $(shell . ~/.nix-profile/etc/profile.d/nix.sh 2>/dev/null || . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh 2>/dev/null || command -v nix >/dev/null 2>&1 || echo "not_found")
-NIX_FLAGS := --extra-experimental-features 'flakes nix-command' --no-pure-eval --impure
+NIX_FLAGS := --extra-experimental-features 'flakes nix-command' --no-pure-eval --impure --fallback
 # Only add cache options when user is trusted or on Darwin/CI (avoids "ignoring untrusted substituter" warnings)
 ifeq ($(OS),Darwin)
 NIX_FLAGS += --option substituters "$(NIX_SUBSTITUTERS)" --option trusted-public-keys "$(NIX_TRUSTED_KEYS)"
@@ -1091,7 +1091,7 @@ launchctl-tmux-session-logger: ## Restart tmux-session-logger launchd agent.
 ##@ Systemd Services (Linux)
 
 .PHONY: systemctl
-systemctl: systemctl-docker systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-code-syncer systemctl-docker-postgres systemctl-dolt systemctl-dotfiles-updater systemctl-make-updater systemctl-neverssl-keepalive systemctl-noctalia-shell systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-paperclip systemctl-roborev systemctl-tmux-session-logger ## Restart all systemd user services.
+systemctl: systemctl-docker systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-code-syncer systemctl-docker-postgres systemctl-dolt systemctl-dotfiles-updater systemctl-make-updater systemctl-neverssl-keepalive systemctl-noctalia-shell systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-roborev systemctl-tmux-session-logger ## Restart all systemd user services.
 
 .PHONY: systemctl-docker
 systemctl-docker: ## Start Docker daemon.
@@ -1195,17 +1195,6 @@ systemctl-openclaw: ## Restart OpenClaw gateway systemd user service.
 		echo "Skipping openclaw-gateway.service (host not kyber)"; \
 	fi
 	@echo "✅ openclaw restarted"
-
-.PHONY: systemctl-paperclip
-systemctl-paperclip: ## Restart Paperclip systemd user service.
-	@echo "🔄 Restarting paperclip..."
-	@if [ "$(DETECTED_HOST)" = "kyber" ] || [ "$(HOST)" = "kyber" ]; then \
-		systemctl --user daemon-reload; \
-		systemctl --user restart paperclip.service; \
-	else \
-		echo "Skipping paperclip.service (host not kyber)"; \
-	fi
-	@echo "✅ paperclip restarted"
 
 .PHONY: systemctl-roborev
 systemctl-roborev: ## Restart roborev systemd user service.

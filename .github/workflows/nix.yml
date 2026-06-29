@@ -15,7 +15,7 @@ jobs:
     timeout-minutes: 300
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Install Nix
         uses: cachix/install-nix-action@v31
         with:
@@ -35,7 +35,7 @@ jobs:
     timeout-minutes: 300
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Install Nix
         uses: cachix/install-nix-action@v31
         with:
@@ -47,7 +47,7 @@ jobs:
     timeout-minutes: 300
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Install Nix
         uses: cachix/install-nix-action@v31
         with:
@@ -59,7 +59,7 @@ jobs:
     timeout-minutes: 300
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@v1.3.1
         with:
@@ -82,7 +82,7 @@ jobs:
     timeout-minutes: 300
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@v1.3.1
         with:
@@ -105,7 +105,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Install Nix
         uses: cachix/install-nix-action@v31
         with:
@@ -117,7 +117,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Install Nix
         uses: cachix/install-nix-action@v31
         with:

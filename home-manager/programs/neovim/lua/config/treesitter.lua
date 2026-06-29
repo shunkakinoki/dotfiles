@@ -20,11 +20,15 @@ require("todo-comments").setup()
 
 -- Shows the current function or class context at the top of the buffer.
 -- From: https://github.com/nvim-treesitter/nvim-treesitter-context
-require("treesitter-context").setup()
+require("treesitter-context").setup({
+	multiwindow = true,
+})
 
--- Configures Treesitter language parsers, highlighting, and textobjects.
--- From: https://github.com/nvim-treesitter/nvim-treesitter
-require("nvim-treesitter").setup({
+-- Manages Treesitter parsers, queries, and highlighting (replaces the archived
+-- nvim-treesitter). ensure_installed parsers install at startup; auto_install
+-- installs a parser for any new filetype on demand.
+-- From: https://github.com/romus204/tree-sitter-manager.nvim
+require("tree-sitter-manager").setup({
 	ensure_installed = {
 		"arduino",
 		"awk",
@@ -79,4 +83,5 @@ require("nvim-treesitter").setup({
 		"zig",
 	},
 	auto_install = true,
+	highlight = true,
 })

@@ -9,6 +9,10 @@ let
     noctalia_shell = "${noctaliaShell}/bin/noctalia-shell";
     sleep = "${pkgs.coreutils}/bin/sleep";
   };
+  quitAllAppsScript = pkgs.replaceVars ./quit-all-apps-launcher.sh {
+    hyprctl = "${pkgs.hyprland}/bin/hyprctl";
+    jq = "${pkgs.jq}/bin/jq";
+  };
 in
 {
   xdg.configFile."noctalia/colorschemes/Dracula-Custom/Dracula-Custom.json" = {
@@ -50,6 +54,26 @@ in
       ExecStart = "${pkgs.bash}/bin/bash ${noctaliaLockBeforeSleep}";
     };
     Install.WantedBy = [ "sleep.target" ];
+  };
+
+  xdg.configFile."noctalia/scripts/quit-active-app.sh" = {
+    source = ./quit-active-app.sh;
+    executable = true;
+    force = true;
+  };
+  xdg.configFile."noctalia/scripts/quit-all-apps.sh" = {
+    source = ./quit-all-apps.sh;
+    executable = true;
+    force = true;
+  };
+
+  xdg.desktopEntries.quit-all-apps = {
+    name = "Quit All Apps";
+    comment = "Close all open windows";
+    exec = "${pkgs.bash}/bin/bash ${quitAllAppsScript}";
+    terminal = false;
+    categories = [ "Utility" ];
+    icon = "application-exit";
   };
 
   programs.noctalia-shell = {

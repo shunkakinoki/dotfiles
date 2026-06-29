@@ -36,7 +36,6 @@ in
   ./omp
   ./openclaw
   ./opencode
-  ./paperclip
   ./pi
   ./pnpm
   ./serena

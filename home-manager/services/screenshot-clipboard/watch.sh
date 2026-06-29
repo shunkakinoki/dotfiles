@@ -19,6 +19,28 @@ mkdir -p "$DESKTOP_DIR"
 
 echo "Watching $DESKTOP_DIR for screenshots..."
 
+file_size() {
+  stat -c %s "$1" 2>/dev/null || stat -f %z "$1" 2>/dev/null
+}
+
+wait_until_stable() {
+  previous_size=""
+  for _ in 1 2 3 4 5 6 7 8 9 10; do
+    [ -f "$1" ] || {
+      sleep 0.1
+      continue
+    }
+
+    size=$(file_size "$1" || true)
+    if [ -n "$size" ] && [ "$size" != "0" ] && [ "$size" = "$previous_size" ]; then
+      return 0
+    fi
+
+    previous_size=$size
+    sleep 0.1
+  done
+}
+
 # Screenshots are written atomically (macOS via rename, hyprshot via mv from
 # a temp path), so fswatch reports the final path once writing has finished.
 # fswatch on macOS uses FSEvents which is always recursive, so the patterns
@@ -34,6 +56,7 @@ fswatch --event=Created --event=MovedTo --event=Renamed -0 "$DESKTOP_DIR" |
     "$DESKTOP_DIR/Screenshot "*.png | \
       "$DESKTOP_DIR/Screen Shot "*.png | \
       "$DESKTOP_DIR/"*_hyprshot.png)
+      wait_until_stable "$path"
       "$CLIPBOARD_COPY_IMAGE" "$path" || true
       ;;
     esac
