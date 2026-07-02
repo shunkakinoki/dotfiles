@@ -52,6 +52,8 @@
           dontCheckRuntimeDeps = true;
         });
       };
+  }
+  // prev.lib.optionalAttrs (prev ? mise) {
     # mise's Cargo test suite asserts setuid bits survive OCI layer extraction,
     # which the nix build sandbox does not preserve on darwin/linux runners.
     mise = prev.mise.overrideAttrs (_: {
