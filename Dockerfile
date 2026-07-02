@@ -112,7 +112,10 @@ RUN /usr/bin/nix-daemon & \
     # Run your dotfiles installation script.
     # This script is expected to install fish and other tools.
     # Make sure this script is idempotent or handles being run in a fresh environment.
-    sudo -u $USER -E -H bash -c "curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_SHA/install.sh | bash"
+    # `sudo -E` silently drops the environment under the default sudoers policy
+    # (env_reset), so GITHUB_PR must be forwarded explicitly or install.sh's
+    # PR-checkout logic never triggers and it builds `main` instead of the PR.
+    sudo -u $USER --preserve-env=GITHUB_PR -H bash -c "curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/$COMMIT_SHA/install.sh | bash"
 
 # Switch to the non-root user
 USER $USER
