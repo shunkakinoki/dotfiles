@@ -10,6 +10,10 @@
         passthru = (oldAttrs.passthru or { }) // {
           lua = prev.lua5_4;
         };
+        # The nightly neovim functionaltest suite (e.g. treesitter) is flaky and
+        # fails on some revs when built from source (cache miss). Skip checks so
+        # a neovim test regression does not break nix-nixos / e2e NixOS builds.
+        doCheck = false;
       }))
       // {
         lua = prev.lua5_4;
