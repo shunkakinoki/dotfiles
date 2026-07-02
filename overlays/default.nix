@@ -33,18 +33,36 @@
     });
   })
   inputs.llm-agents.overlays.default
-  (_: prev: {
-    # Upstream grok 0.1.218 fails versionCheckHook because `grok --version`/`--help`
-    # do not emit the version string. Disable install check until upstream fixes it.
-    # https://github.com/numtide/llm-agents.nix
-    llm-agents =
-      (prev.llm-agents or { })
-      // prev.lib.optionalAttrs (prev.llm-agents ? grok) {
-        grok = prev.llm-agents.grok.overrideAttrs (_: {
-          doInstallCheck = false;
-        });
-      };
-  })
+  (
+    _: prev:
+    {
+      # Upstream grok 0.1.218 fails versionCheckHook because `grok --version`/`--help`
+      # do not emit the version string. Disable install check until upstream fixes it.
+      # https://github.com/numtide/llm-agents.nix
+      llm-agents =
+        (prev.llm-agents or { })
+        // prev.lib.optionalAttrs (prev.llm-agents ? grok) {
+          grok = prev.llm-agents.grok.overrideAttrs (_: {
+            doInstallCheck = false;
+          });
+        }
+        // prev.lib.optionalAttrs (prev.llm-agents ? bernstein) {
+          # bernstein 2.8.2 requires reportlab<5,>=4.0 but nixpkgs now provides
+          # reportlab 5.0.0, failing pythonRuntimeDepsCheckHook.
+          # https://github.com/numtide/llm-agents.nix
+          bernstein = prev.llm-agents.bernstein.overrideAttrs (_: {
+            dontCheckRuntimeDeps = true;
+          });
+        };
+    }
+    // prev.lib.optionalAttrs (prev ? mise) {
+      # mise's Cargo test suite asserts setuid bits survive OCI layer extraction,
+      # which the nix build sandbox does not preserve on darwin/linux runners.
+      mise = prev.mise.overrideAttrs (_: {
+        doCheck = false;
+      });
+    }
+  )
   inputs.noctalia-shell.overlays.default
   (final: prev: {
     nightlyPkgs = import inputs.nixpkgs-nightly {

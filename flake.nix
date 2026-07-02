@@ -65,7 +65,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     noctalia-shell = {
-      url = "github:noctalia-dev/noctalia-shell";
+      # Pinned before upstream dropped the noctalia-qs input and restructured
+      # the home-manager module (breaks programs.noctalia-shell option).
+      url = "github:noctalia-dev/noctalia-shell/b16dc50250af05d5048ac454dbf4e898d1adcac0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     llm-agents = {
