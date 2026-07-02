@@ -43,7 +43,22 @@
         grok = prev.llm-agents.grok.overrideAttrs (_: {
           doInstallCheck = false;
         });
+      }
+      // prev.lib.optionalAttrs (prev.llm-agents ? bernstein) {
+        # bernstein 2.8.2 requires reportlab<5,>=4.0 but nixpkgs now provides
+        # reportlab 5.0.0, failing pythonRuntimeDepsCheckHook.
+        # https://github.com/numtide/llm-agents.nix
+        bernstein = prev.llm-agents.bernstein.overrideAttrs (_: {
+          dontCheckRuntimeDeps = true;
+        });
       };
+  })
+  (_: prev: {
+    # mise's Cargo test suite asserts setuid bits survive OCI layer extraction,
+    # which the nix build sandbox does not preserve on darwin/linux runners.
+    mise = prev.mise.overrideAttrs (_: {
+      doCheck = false;
+    });
   })
   inputs.noctalia-shell.overlays.default
   (final: prev: {

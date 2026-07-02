@@ -71,6 +71,7 @@ with pkgs;
   grc
   pkgs.llm-agents.grok
   gron
+  pkgs.llm-agents.herdr
   hexyl
   htop
   httpie
