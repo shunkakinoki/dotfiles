@@ -1,8 +1,8 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
-    elixir_1_19
+    beamPackages.elixir_1_19
     elixir-ls
-    erlang
+    beamPackages.erlang
   ];
 }
