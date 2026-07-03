@@ -4,9 +4,10 @@
   ...
 }:
 let
-  noctaliaShell = inputs.noctalia-shell.packages.${pkgs.system}.default;
+  # v5 renamed the binary noctalia-shell -> noctalia (pname/mainProgram = "noctalia").
+  noctalia = inputs.noctalia-shell.packages.${pkgs.system}.default;
   noctaliaLockBeforeSleep = pkgs.replaceVars ./lock-before-sleep.sh {
-    noctalia_shell = "${noctaliaShell}/bin/noctalia-shell";
+    noctalia = "${noctalia}/bin/noctalia";
     sleep = "${pkgs.coreutils}/bin/sleep";
   };
   quitAllAppsScript = pkgs.replaceVars ./quit-all-apps-launcher.sh {
@@ -15,10 +16,10 @@ let
   };
 in
 {
-  xdg.configFile."noctalia/colorschemes/Dracula-Custom/Dracula-Custom.json" = {
-    source = ./Dracula-Custom.json;
-    force = true;
-  };
+  # NOTE: v4 shipped a Dracula-Custom colorscheme at noctalia/colorschemes/...
+  # v5 replaced colorschemes with a palette/theme system (noctalia/palettes/*.json,
+  # different format), so the old file is no longer wired up. Recreate the palette
+  # on-device via the v5 settings UI or programs.noctalia.customPalettes.
 
   # Screen-off and suspend on battery only; noctalia handles lock on both AC and battery.
   systemd.user.services.ac-idle-inhibit = {
@@ -76,118 +77,27 @@ in
     icon = "application-exit";
   };
 
-  programs.noctalia-shell = {
+  programs.noctalia = {
     enable = true;
-    package = noctaliaShell;
+    package = noctalia;
 
+    # v5 is a ground-up rewrite (C++/Qt, TOML config, snake_case keys) and upstream
+    # does NOT migrate v4 settings - "v5 ships with sane defaults, customize from there".
+    # The v4 config (bar widget layout, Dracula theme, dark-mode dconf hook, idle
+    # timeouts, per-widget options) has NO mechanical v5 equivalent and its semantics
+    # changed (e.g. bar widgets are now id vectors + separate styling; idle uses a
+    # behavior map; hooks run with no args). Re-apply those on-device via the settings UI.
+    #
+    # Only keys verified against the v5 schema (src/config/schema/config_schema.cpp)
+    # are set here so the build-time `noctalia config validate` passes.
     settings = {
-      bar = {
-        backgroundOpacity = 0;
-        useSeparateOpacity = true;
-        capsuleOpacity = 0;
-        widgets.left = [
-          { id = "Launcher"; }
-          {
-            id = "Clock";
-            formatHorizontal = "yyyy/MM/dd HH:mm:ss";
-            formatVertical = "HH mm ss - dd MM";
-            tooltipFormat = "yyyy/MM/dd HH:mm:ss";
-          }
-          {
-            id = "SystemMonitor";
-            showNetworkStats = true;
-            showGpuTemp = true;
-          }
-          {
-            id = "ActiveWindow";
-            colorizeIcons = false;
-          }
-          { id = "MediaMini"; }
-        ];
-        widgets.center = [
-          {
-            id = "Workspace";
-            labelMode = "index";
-            showApplications = true;
-            showApplicationsHover = false;
-            showBadge = true;
-            unfocusedIconsOpacity = 0.55;
-          }
-        ];
-        widgets.right = [
-          {
-            id = "Tray";
-            colorizeIcons = false;
-            drawerEnabled = false;
-          }
-          { id = "Bluetooth"; }
-          { id = "Network"; }
-          { id = "NotificationHistory"; }
-          {
-            id = "Battery";
-            displayMode = "graphic";
-          }
-          { id = "PowerProfile"; }
-          { id = "Volume"; }
-          { id = "Brightness"; }
-          { id = "DarkMode"; }
-          { id = "ControlCenter"; }
-        ];
+      shell = {
+        font_family = "Noto Sans"; # was ui.fontDefault
+        clipboard_enabled = true; # was appLauncher.enableClipboardHistory
+        clipboard_auto_paste = "auto"; # was appLauncher.autoPasteClipboard = true
       };
-      ui = {
-        fontDefault = "Noto Sans";
-        fontFixed = "JetBrainsMono Nerd Font";
-      };
-      notifications = {
-        location = "top_right";
-        backgroundOpacity = 0.75;
-      };
-      osd = {
-        enabled = true;
-        location = "right";
-      };
-      appLauncher = {
-        enableClipboardHistory = true;
-        autoPasteClipboard = true;
-      };
-      general = {
-        animationSpeed = 3;
-        compactLockScreen = true;
-        autoStartAuth = true;
-        allowPasswordWithFprintd = true;
-        lockOnSuspend = true;
-      };
-      colorSchemes.predefinedScheme = "Dracula-Custom";
-      hooks = {
-        enabled = true;
-        darkModeChange = ''
-          if [ "$1" = "true" ]; then
-            dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
-            dconf write /org/gnome/desktop/interface/gtk-theme "'Adwaita-dark'"
-            dconf write /org/gnome/desktop/interface/icon-theme "'Adwaita'"
-          else
-            dconf write /org/gnome/desktop/interface/color-scheme "'prefer-light'"
-            dconf write /org/gnome/desktop/interface/gtk-theme "'Adwaita'"
-            dconf write /org/gnome/desktop/interface/icon-theme "'Adwaita'"
-          fi
-        '';
-      };
-      dock = {
-        colorizeIcons = true;
-        showLauncherIcon = true;
-        showDockIndicator = false;
-      };
-      desktopWidgets.enabled = true;
-      wallpaper.enabled = false;
-      idle = {
-        enabled = true;
-        screenOffTimeout = 0;
-        lockTimeout = 300;
-        suspendTimeout = 0;
-      };
-      systemMonitor.enableDgpuMonitoring = true;
-      colorSchemes.schedulingMode = "location";
-      location.autoLocate = true;
+      location.auto_locate = true; # was location.autoLocate
+      wallpaper.enabled = false; # noctalia does not manage the wallpaper (wallpaper engine does)
     };
   };
 }
