@@ -9,7 +9,7 @@
     configType = "hyprlang";
     systemd.enable = false;
     extraConfig = ''
-      exec-once = noctalia-shell
+      exec-once = noctalia
       exec-once = ${pkgs.hyprshell}/bin/hyprshell run &
       exec-once = ${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent
       exec-once = sleep 3 && ${pkgs.eww}/bin/eww open clock-widget

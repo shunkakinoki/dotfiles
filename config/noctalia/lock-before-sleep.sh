@@ -2,10 +2,11 @@
 # Lock through Noctalia before systemd lets suspend continue.
 set -euo pipefail
 
-NOCTALIA_SHELL="@noctalia_shell@"
+NOCTALIA="@noctalia@"
 SLEEP="@sleep@"
 
-if ! "$NOCTALIA_SHELL" ipc call lockScreen lock; then
+# v5 IPC surface: `noctalia msg session <lock|...>` (was `ipc call lockScreen lock`).
+if ! "$NOCTALIA" msg session lock; then
   exit 0
 fi
 

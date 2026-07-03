@@ -65,8 +65,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     noctalia-shell = {
-      # Pinned before upstream dropped the noctalia-qs input and restructured
-      # the home-manager module (breaks programs.noctalia-shell option).
+      # v5 (C++ rewrite): option is programs.noctalia, config is TOML, binary is
+      # `noctalia`. Not a drop-in from the v4 Quickshell line - v4 settings are not
+      # migrated (see config/noctalia/default.nix). Pinned to a known-good commit,
+      # but renovate can still auto-bump this input: treat bumps as breaking and
+      # rebuild matic/viper on-device before merging (can't be validated in darwin CI).
       url = "github:noctalia-dev/noctalia-shell/6e7aa3b4daaf13f3cd7c622b248efaba5c1c1eb3";
       inputs.nixpkgs.follows = "nixpkgs";
     };
