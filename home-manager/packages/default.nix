@@ -19,7 +19,7 @@ with pkgs;
   age
   aichat
   angle-grinder
-  pkgs.llm-agents.antigravity
+  pkgs.llm-agents.antigravity-cli
   argocd
   ast-grep
   awscli
