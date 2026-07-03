@@ -13,8 +13,8 @@ function _caf_function --description "Keep the machine awake lid-closed, screen-
             end
             echo $last_pid >"$pid_file"
             disown
-            if command -q noctalia-shell
-                noctalia-shell msg idleInhibitor enable 2>/dev/null
+            if command -q noctalia
+                noctalia msg caffeine-enable 2>/dev/null
             end
             if test (uname) != Darwin
                 systemctl --user stop ac-idle-inhibit.service 2>/dev/null
@@ -28,8 +28,8 @@ function _caf_function --description "Keep the machine awake lid-closed, screen-
                 kill (cat "$pid_file") 2>/dev/null
                 rm -f "$pid_file"
             end
-            if command -q noctalia-shell
-                noctalia-shell msg idleInhibitor disable 2>/dev/null
+            if command -q noctalia
+                noctalia msg caffeine-disable 2>/dev/null
             end
             if test (uname) != Darwin
                 systemctl --user start ac-idle-inhibit.service 2>/dev/null

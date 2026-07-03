@@ -12,7 +12,7 @@ end
 function systemd-inhibit
     echo $argv
 end
-function noctalia-shell
+function noctalia
     true
 end
 function systemctl
