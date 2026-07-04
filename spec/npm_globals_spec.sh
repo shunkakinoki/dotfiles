@@ -366,4 +366,105 @@ When run bash -c "HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_B
 The output should eq 'missing'
 End
 End
+
+Describe 'aliased native binary (codex pattern)'
+It 'reconstructs the platform suffix for aliased native deps'
+When run bash -c "grep 'want_ver=\"\${base_ver}-\${suffix}\"' '$SCRIPT'"
+The output should include 'want_ver'
+End
+
+It 'derives the native binary version from the installed parent'
+When run bash -c "grep 'installed_base' '$SCRIPT'"
+The output should include 'installed_base'
+End
+
+It 'reinstalls a phantom native dir instead of trusting -d'
+When run bash -c "grep 'phantom dir' '$SCRIPT'"
+The output should include 'phantom dir'
+End
+
+It 'warns when the payload did not materialize after install'
+When run bash -c "grep 'still missing after install' '$SCRIPT'"
+The output should include 'still missing after install'
+End
+End
+
+Describe 'aliased native binary self-heal integration'
+setup() {
+  TEMP_HOME=$(mktemp -d)
+  MOCK_BIN=$(mktemp -d)
+  MOCK_LOG="$TEMP_HOME/mock.log"
+  REAL_BIN_DIR="$(dirname "$(command -v jq)")"
+  REAL_SYSTEM_BIN_DIR="$(dirname "$(command -v mv)")"
+  : >"$MOCK_LOG"
+
+  GM="$TEMP_HOME/.bun/install/global/node_modules"
+  mkdir -p "$TEMP_HOME/dotfiles" "$TEMP_HOME/.bun/install/global" "$TEMP_HOME/.bun/bin"
+
+  os_tok=$(uname -s | tr '[:upper:]' '[:lower:]')
+  [ "$os_tok" = "darwin" ] || os_tok="linux"
+  cpu_tok=$(uname -m)
+  case "$cpu_tok" in arm64 | aarch64) cpu_tok=arm64 ;; *) cpu_tok=x64 ;; esac
+  NATIVE_DEP="codexcli-${os_tok}-${cpu_tok}"
+  # Wrapper is installed at 1.0.2 but the dotfiles optional pin is a stale,
+  # SUFFIX-LESS 1.0.0 alias (the bug). The script must ignore both and install
+  # the suffixed binary at the parent's actual version.
+  WANT_SPEC="${NATIVE_DEP}@npm:codexcli@1.0.2-${os_tok}-${cpu_tok}"
+  EXPECT_INSTALL="bun add --global ${WANT_SPEC}"
+
+  cat >"$TEMP_HOME/dotfiles/package.json" <<EOF
+{
+  "dependencies": { "codexcli": "^1.0.0" },
+  "optionalDependencies": { "${NATIVE_DEP}": "npm:codexcli@1.0.0" }
+}
+EOF
+
+  # Parent installed ahead of the pin, no optionalDependencies of its own so the
+  # parent-reinstall guard leaves it in place for the optional loop to read.
+  mkdir -p "$GM/codexcli"
+  cat >"$GM/codexcli/package.json" <<'EOF'
+{ "name": "codexcli", "version": "1.0.2" }
+EOF
+
+  cat >"$MOCK_BIN/timeout" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+shift
+if [ "${1:-}" = "bash" ] && [ "${2:-}" = "-c" ] && [ "${3:-}" = "exec 3<>/dev/tcp/1.1.1.1/53" ]; then
+  exit 0
+fi
+exec "$@"
+EOF
+  chmod +x "$MOCK_BIN/timeout"
+
+  cat >"$MOCK_BIN/bun" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+printf 'bun %s\n' "$*" >>"$MOCK_LOG"
+EOF
+  chmod +x "$MOCK_BIN/bun"
+}
+
+cleanup() {
+  rm -rf "$TEMP_HOME" "$MOCK_BIN"
+}
+
+Before 'setup'
+After 'cleanup'
+
+It 'installs the suffixed binary at the installed parent version despite a stale bare pin'
+When run bash -c "HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
+The output should include "$EXPECT_INSTALL"
+End
+
+It 'reinstalls a phantom empty native dir'
+When run bash -c "mkdir -p '$GM/$NATIVE_DEP'; HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
+The output should include "$EXPECT_INSTALL"
+End
+
+It 'skips a native dir already at the correct version'
+When run bash -c "mkdir -p '$GM/$NATIVE_DEP'; printf '{\"version\":\"1.0.2-${os_tok}-${cpu_tok}\"}' >'$GM/$NATIVE_DEP/package.json'; HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
+The output should not include "bun add --global $NATIVE_DEP"
+End
+End
 End
