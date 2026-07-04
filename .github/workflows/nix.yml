@@ -20,6 +20,10 @@ jobs:
         uses: cachix/install-nix-action@v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          extra_nix_config: |
+            fallback = true
+            connect-timeout = 10
+            download-attempts = 5
       - name: Prepare System Files
         run: |
           sudo mv /etc/nix/nix.conf /etc/nix/nix.conf.before-nix-darwin || true
@@ -40,6 +44,10 @@ jobs:
         uses: cachix/install-nix-action@v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          extra_nix_config: |
+            fallback = true
+            connect-timeout = 10
+            download-attempts = 5
       - name: Run Flake Check
         run: make flake-check
   nix-format:
@@ -52,6 +60,10 @@ jobs:
         uses: cachix/install-nix-action@v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          extra_nix_config: |
+            fallback = true
+            connect-timeout = 10
+            download-attempts = 5
       - name: Check Formatting
         run: make nix-format-check
   nix-linux:
@@ -68,6 +80,10 @@ jobs:
         uses: cachix/install-nix-action@v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          extra_nix_config: |
+            fallback = true
+            connect-timeout = 10
+            download-attempts = 5
       - name: Build Nix Linux
         env:
           NIX_CONFIG_TARGET: home
@@ -91,6 +107,10 @@ jobs:
         uses: cachix/install-nix-action@v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          extra_nix_config: |
+            fallback = true
+            connect-timeout = 10
+            download-attempts = 5
       - name: Build Nix NixOS
         env:
           NIX_CONFIG_TARGET: nixos
@@ -110,6 +130,10 @@ jobs:
         uses: cachix/install-nix-action@v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          extra_nix_config: |
+            fallback = true
+            connect-timeout = 10
+            download-attempts = 5
       - name: Lint Nix Files
         run: make nix-lint
   nix-test:
@@ -122,6 +146,10 @@ jobs:
         uses: cachix/install-nix-action@v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          extra_nix_config: |
+            fallback = true
+            connect-timeout = 10
+            download-attempts = 5
       - name: Run Nix Tests
         run: make nix-test
   nix-check:
