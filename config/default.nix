@@ -23,6 +23,7 @@ in
   ./gomi
   ./ghostty
   ./handy
+  ./herdr
   ./hermes
   ./iterm2
   ./hammerspoon
