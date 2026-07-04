@@ -23,7 +23,7 @@ jobs:
           extra_nix_config: |
             fallback = true
             connect-timeout = 10
-            download-attempts = 5
+            download-attempts = 10
       - name: Prepare System Files
         run: |
           sudo mv /etc/nix/nix.conf /etc/nix/nix.conf.before-nix-darwin || true
@@ -47,7 +47,7 @@ jobs:
           extra_nix_config: |
             fallback = true
             connect-timeout = 10
-            download-attempts = 5
+            download-attempts = 10
       - name: Run Flake Check
         run: make flake-check
   nix-format:
@@ -63,7 +63,7 @@ jobs:
           extra_nix_config: |
             fallback = true
             connect-timeout = 10
-            download-attempts = 5
+            download-attempts = 10
       - name: Check Formatting
         run: make nix-format-check
   nix-linux:
@@ -83,7 +83,7 @@ jobs:
           extra_nix_config: |
             fallback = true
             connect-timeout = 10
-            download-attempts = 5
+            download-attempts = 10
       - name: Build Nix Linux
         env:
           NIX_CONFIG_TARGET: home
@@ -110,7 +110,7 @@ jobs:
           extra_nix_config: |
             fallback = true
             connect-timeout = 10
-            download-attempts = 5
+            download-attempts = 10
       - name: Build Nix NixOS
         env:
           NIX_CONFIG_TARGET: nixos
@@ -133,7 +133,7 @@ jobs:
           extra_nix_config: |
             fallback = true
             connect-timeout = 10
-            download-attempts = 5
+            download-attempts = 10
       - name: Lint Nix Files
         run: make nix-lint
   nix-test:
@@ -149,7 +149,7 @@ jobs:
           extra_nix_config: |
             fallback = true
             connect-timeout = 10
-            download-attempts = 5
+            download-attempts = 10
       - name: Run Nix Tests
         run: make nix-test
   nix-check:
