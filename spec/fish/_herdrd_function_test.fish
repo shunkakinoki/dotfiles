@@ -7,6 +7,6 @@ function herdr; echo $argv >> $call_log; end
 
 _herdrd_function
 
-@test "passes --remote kyber" (grep -c "\-\-remote kyber" $call_log) -ge 1
+@test "passes --remote kyber" (grep -c -- "--remote kyber" $call_log) -ge 1
 
 rm -f $call_log
