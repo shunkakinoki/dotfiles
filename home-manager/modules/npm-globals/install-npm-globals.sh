@@ -262,10 +262,54 @@ if [ -n "$OPTIONAL_DEPS" ]; then
     else
       continue
     fi
-    if [ -d "${GLOBAL_MODULES}/${dep}" ]; then
-      echo "$dep already installed, skipping"
-      continue
+    val="${entry#*=}"
+    # Resolve the spec to install and the exact version we expect on disk.
+    # For plain semver ranges (claude-code pattern) bun resolves latest, so we
+    # can't predict the version; want_ver stays empty and presence alone is fine.
+    spec="$dep"
+    want_ver=""
+    if [[ $val == npm:* ]]; then
+      # Aliased native binary (codex pattern): npm:@openai/codex@<ver>.
+      # These packages are PUBLISHED as <base>@<ver>-<platform-suffix> (e.g.
+      # @openai/codex@0.142.5-darwin-arm64) and only that suffixed tarball
+      # carries the vendor binary. A bare <base>@<ver> pin (no suffix) silently
+      # reinstalls the generic JS wrapper under the platform dir name -- no
+      # binary -- and the CLI dies with "Missing optional dependency". So we
+      # reconstruct the suffixed spec here regardless of how package.json pins it.
+      alias_spec="${val#npm:}"     # @openai/codex@0.142.2
+      base_name="${alias_spec%@*}" # @openai/codex
+      base_ver="${alias_spec##*@}" # 0.142.2 (fallback if parent not installed)
+      # Prefer the ACTUALLY INSTALLED parent version so the binary always matches
+      # the wrapper even when the package.json pins have drifted behind it.
+      base_pj="${GLOBAL_MODULES}/${base_name}/package.json"
+      if [ -f "$base_pj" ]; then
+        installed_base=$(jq -r '.version // empty' "$base_pj" 2>/dev/null || true)
+        [ -n "$installed_base" ] && base_ver="$installed_base"
+      fi
+      suffix="${dep#"${base_name}"-}" # darwin-arm64
+      if [ -n "$suffix" ] && [ "$suffix" != "$dep" ]; then
+        want_ver="${base_ver}-${suffix}"
+      else
+        want_ver="$base_ver"
+      fi
+      spec="${dep}@npm:${base_name}@${want_ver}"
     fi
+    # Consider the dep installed only when its payload is REAL. Bun's transitive
+    # optional resolution can leave a phantom empty dir (passes -d, holds no
+    # binary), and a stale/wrong-suffix pin leaves the generic wrapper (wrong
+    # version). Both must be torn down and reinstalled, not skipped on -d alone.
+    dep_pj="${GLOBAL_MODULES}/${dep}/package.json"
+    if [ -f "$dep_pj" ]; then
+      have_ver=$(jq -r '.version // empty' "$dep_pj" 2>/dev/null || true)
+      if [ -z "$want_ver" ] || [ "$have_ver" = "$want_ver" ]; then
+        echo "$dep@${have_ver:-unknown} already installed, skipping"
+        continue
+      fi
+      echo "$dep@${have_ver:-unknown} installed, want $want_ver, reinstalling"
+    elif [ -d "${GLOBAL_MODULES}/${dep}" ]; then
+      echo "$dep present but empty (phantom dir), reinstalling"
+    fi
+    rm -rf "${GLOBAL_MODULES:?}/${dep}"
     # Bun's `bun add -g <pkg>` is a no-op if <pkg> is already in the global
     # package.json's optionalDependencies (it never materializes the dir).
     # Strip from optionalDependencies first so the add becomes a real install.
@@ -273,16 +317,12 @@ if [ -n "$OPTIONAL_DEPS" ]; then
       jq --arg dep "$dep" 'del(.optionalDependencies[$dep])' "$GLOBAL_PKG" >"${GLOBAL_PKG}.tmp" &&
         mv "${GLOBAL_PKG}.tmp" "$GLOBAL_PKG"
     fi
-    val="${entry#*=}"
-    # For npm aliases (codex pattern), pass the full <name>@<spec>. For plain
-    # semver ranges, omitting the version lets bun resolve latest.
-    if [[ $val == npm:* ]]; then
-      spec="${dep}@${val}"
-    else
-      spec="$dep"
-    fi
     echo "Installing platform-native: $spec"
     timeout 600 bun add --global "$spec" --minimum-release-age 0 2>/dev/null || echo "Install failed: $spec"
+    # Verify the payload actually materialized; bun can silently no-op.
+    if [ ! -f "${GLOBAL_MODULES}/${dep}/package.json" ]; then
+      echo "Warning: $dep still missing after install ($spec)" >&2
+    fi
   done <<<"$OPTIONAL_DEPS"
 fi
 
