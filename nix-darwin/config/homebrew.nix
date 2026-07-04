@@ -48,6 +48,10 @@
         trusted = true;
       }
       {
+        name = "rjyo/moshi";
+        trusted = true;
+      }
+      {
         name = "planetscale/tap";
         trusted = true;
       }
@@ -78,6 +82,7 @@
       "kurtosis-cli"
       "loki"
       "mactop"
+      "moshi-hook"
       "mas"
       "mlx-lm"
       "ollama"
@@ -171,7 +176,7 @@
       "warp"
       "wezterm"
       "whatsapp"
-      "windsurf"
+      "devin-desktop"
       "zed"
       "zoom"
     ];
