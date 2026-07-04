@@ -48,6 +48,10 @@
         trusted = true;
       }
       {
+        name = "rjyo/moshi";
+        trusted = true;
+      }
+      {
         name = "planetscale/tap";
         trusted = true;
       }
@@ -79,6 +83,7 @@
       "loki"
       "mactop"
       "mas"
+      "moshi-hook"
       "mlx-lm"
       "ollama"
       "opencode"
@@ -117,26 +122,27 @@
       "blender"
       "block-goose"
       "chatgpt"
-      "cmux"
-      "claude-code"
       "claude"
-      "codex-app"
+      "claude-code"
+      "cmux"
       "codex"
+      "codex-app"
       "codexbar"
       "conductor"
       "copilot-money"
       "cursor"
+      "devin-desktop"
       "discord"
       "docker-desktop"
       "droid"
-      "entire"
       "dropbox"
+      "entire"
       "figma"
       "firefox"
       "flameshot"
       "font-hack-nerd-font"
-      "font-jetbrains-mono-nerd-font"
       "font-jetbrains-mono"
+      "font-jetbrains-mono-nerd-font"
       "ghostty"
       "gitbutler"
       "github"
@@ -164,14 +170,13 @@
       "tailscale-app"
       "telegram-desktop"
       "trae"
-      "vlc"
       "visual-studio-code"
       "visual-studio-code@insiders"
+      "vlc"
       "vscodium"
       "warp"
       "wezterm"
       "whatsapp"
-      "windsurf"
       "zed"
       "zoom"
     ];
