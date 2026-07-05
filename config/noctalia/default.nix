@@ -125,6 +125,9 @@ in
       hot_corners = {
         enabled = true;
         top_left.action = "workspaces";
+        top_right.action = "control_center";
+        bottom_left.action = "launcher";
+        bottom_right.action = "desktop";
       };
 
       control_center.width = 400;
@@ -172,17 +175,8 @@ in
           timeout = 300;
           command = "noctalia:session lock";
         };
-        behavior.screen-off = {
-          enabled = true;
-          timeout = 660;
-          command = "noctalia:dpms-off";
-          resume_command = "noctalia:dpms-on";
-        };
-        behavior.suspend = {
-          enabled = true;
-          timeout = 900;
-          action = "suspend";
-        };
+        behavior.screen-off.enabled = false;
+        behavior.suspend.enabled = false;
       };
 
       system.monitor = {
