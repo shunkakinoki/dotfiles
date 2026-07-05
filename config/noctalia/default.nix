@@ -145,9 +145,29 @@ in
         capsule = true;
         capsule_opacity = 0.6;
         shadow = true;
-        start = [ "launcher" "clock" "cpu" "memory" "network_rx" "network_tx" "gpu" "active_window" ];
+        start = [
+          "launcher"
+          "clock"
+          "cpu"
+          "memory"
+          "network_rx"
+          "network_tx"
+          "gpu"
+          "active_window"
+        ];
         center = [ "workspaces" ];
-        end = [ "tray" "bluetooth" "network" "notification_history" "battery" "power_profile" "volume" "brightness" "dark_mode" "control_center" ];
+        end = [
+          "tray"
+          "bluetooth"
+          "network"
+          "notification_history"
+          "battery"
+          "power_profile"
+          "volume"
+          "brightness"
+          "dark_mode"
+          "control_center"
+        ];
       };
 
       widget.clock = {
