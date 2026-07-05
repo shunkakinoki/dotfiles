@@ -68,6 +68,7 @@
       "cmake"
       "coder"
       "colima"
+      "container"
       "coreutils"
       "ffmpeg"
       "gemini-cli"
