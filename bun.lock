@@ -9,11 +9,7 @@
         "@anthropic-ai/claude-code": "^2.1.186",
         "@augmentcode/auggie": "^0.31.0",
         "@biomejs/biome": "^2.5.1",
-        "@ccusage/amp": "^19.0.0",
-        "@ccusage/codex": "^19.0.0",
         "@ccusage/mcp": "^18.0.11",
-        "@ccusage/opencode": "^19.0.0",
-        "@ccusage/pi": "^19.0.0",
         "@fission-ai/openspec": "^1.4.1",
         "@getgrit/cli": "^0.1.0-alpha.1743007075",
         "@github/copilot": "^1.0.63",
@@ -107,15 +103,14 @@
     "mcp-remote",
     "@steipete/bird",
     "btca",
-    "@ccusage/opencode",
     "@fission-ai/openspec",
+    "mcporter",
     "@getgrit/cli",
     "@0xsequence/codegenie",
     "@google/gemini-cli",
-    "mcporter",
     "takt",
-    "@traces-sh/traces",
     "tokscale",
+    "@traces-sh/traces",
     "vite-plus",
     "@oh-my-pi/swarm-extension",
     "turbo",
@@ -127,7 +122,6 @@
     "open-composer",
     "@oh-my-pi/pi-natives",
     "@typescript/native-preview",
-    "@ccusage/amp",
     "@mariozechner/pi-coding-agent",
     "@openai/codex",
     "@anthropic-ai/claude-code",
@@ -145,8 +139,6 @@
     "@augmentcode/auggie",
     "@github/copilot",
     "chrome-devtools-mcp",
-    "@ccusage/pi",
-    "@ccusage/codex",
     "@sentry/cli",
     "openclaw",
     "clawdhub",
@@ -346,8 +338,6 @@
 
     "@bufbuild/protobuf": ["@bufbuild/protobuf@2.12.0", "", {}, "sha512-B/XlCaFIP8LOwzo+bz5uFzATYokcwCKQcghqnlfwSmM5eX/qTkvDBnDPs+gXtX/RyjxJ4DRikECcPJbyALA8FA=="],
 
-    "@ccusage/amp": ["@ccusage/amp@19.0.0", "", { "bin": { "ccusage-amp": "./index.js" } }, "sha512-q9953++XvukIVM2yq3+ViIfN3IniBMIn7sHGcOU0EvHR4IbdaM85Qkb+/5MUxXAxAsuLMRKrEV2yuyhjo78s8g=="],
-
     "@ccusage/ccusage-darwin-arm64": ["@ccusage/ccusage-darwin-arm64@20.0.14", "", { "os": "darwin", "cpu": "arm64" }, "sha512-M8ZQzWmvLsI+eKbjQBJtw2YudUgFr4gAtXmNnb5nYam177vmajaxDWdItJr+I+Qx9QbxsKOxJslazT/WYkoFFQ=="],
 
     "@ccusage/ccusage-darwin-x64": ["@ccusage/ccusage-darwin-x64@20.0.14", "", { "os": "darwin", "cpu": "x64" }, "sha512-NORKtEWsw8n3WGTdK3LGmEbygwrUFEDYAOeXWYT5rKAU84IMMYO9BVKALsr5KWX5FpfGGhTk/QdbzSFIaAqzKw=="],
@@ -360,13 +350,9 @@
 
     "@ccusage/ccusage-win32-x64": ["@ccusage/ccusage-win32-x64@20.0.14", "", { "os": "win32", "cpu": "x64" }, "sha512-DXo5DrINH/Zwih+N7ra7jSpIo70heuzC+6k3CuB4QIacJj908uSX12Zp4JdnUwmFk7yGEwQBfVs+SmuOc+VP0w=="],
 
-    "@ccusage/codex": ["@ccusage/codex@19.0.0", "", { "bin": { "ccusage-codex": "./index.js" } }, "sha512-UwsX56bDDcEKqJDixrVoKZj6U71AYyKExFXeQHlG2D9Esc70X/u3dbFVBh9ON2Ombs1U6LBUIbjGC4nmABDYNQ=="],
+    "@ccusage/codex": ["@ccusage/codex@18.0.11", "", { "bin": { "ccusage-codex": "dist/index.js" } }, "sha512-/S0dyaO3yDegtGXTaMhu1ZyT3JbSuHsiUiIu9uP6UmqIAtSd9DOko1qkM6K1roePbF/rlk596GDHW1f0664D3A=="],
 
     "@ccusage/mcp": ["@ccusage/mcp@18.0.11", "", { "dependencies": { "@ccusage/codex": "18.0.11", "@hono/mcp": "^0.1.5", "@hono/node-server": "^1.19.7", "@modelcontextprotocol/sdk": "^1.24.3", "ccusage": "18.0.11", "gunshi": "^0.26.3", "hono": "^4.9.2", "nano-spawn": "^1.0.3", "zod": "^4.1.13" }, "bin": { "ccusage-mcp": "dist/index.js" } }, "sha512-R/pxJbSTr0n2ToZmpztsMBEX8qZjnnB7V1QGjT9g6C9TcZjWROSoqDNdzcrXYDS+Vb0pa2os/o4mq4LhJd6P3Q=="],
-
-    "@ccusage/opencode": ["@ccusage/opencode@19.0.0", "", { "bin": { "ccusage-opencode": "./index.js" } }, "sha512-emZ4xf084r8v7EcmyFSbk792iMdk8IfMHFP5/yfE2Rl/ms0IhEBzKa4XXeE+mpXMvOK4oocOjReZPZFtnQ1eGQ=="],
-
-    "@ccusage/pi": ["@ccusage/pi@19.0.0", "", { "bin": { "pi": "./index.js" } }, "sha512-kM+A3Y9MtEgf2lpdGB85fcApulj2pK8oLSiDcUjeyBQfK5vrfI9zZMvTHRPXVXlZmLvJwdUZgh1QZot7vbRQmg=="],
 
     "@cfworker/json-schema": ["@cfworker/json-schema@4.1.1", "", {}, "sha512-gAmrUZSGtKc3AiBL71iNWxDsyUC5uMaKKGdvzYsBoTW/xi42JQHl7eKV2OYzCUqvc+D2RCcf7EXY2iCyFIk6og=="],
 
@@ -3579,8 +3565,6 @@
     "@aws-sdk/nested-clients/@smithy/node-http-handler": ["@smithy/node-http-handler@4.7.8", "", { "dependencies": { "@smithy/core": "^3.24.7", "@smithy/types": "^4.14.4", "tslib": "^2.6.2" } }, "sha512-f+DbsWUwSbtMu1a/j8Y93KiU1SRg9nyzfjereqn1BJ33QOTUXxdlYvVXMhAYl1vuR1Kmna5aIJe09KSIfyFNYw=="],
 
     "@aws-sdk/xml-builder/fast-xml-parser": ["fast-xml-parser@5.7.3", "", { "dependencies": { "@nodable/entities": "^2.1.0", "fast-xml-builder": "^1.1.7", "path-expression-matcher": "^1.5.0", "strnum": "^2.2.3" }, "bin": { "fxparser": "src/cli/cli.js" } }, "sha512-C0AaNuC+mscy6vrAQKAc/rMq+zAPHodfHGZu4sGVehvAQt/JLG1O5zEcYcXSY5zSqr4YVgxsB+pHXTq0i7eDlg=="],
-
-    "@ccusage/mcp/@ccusage/codex": ["@ccusage/codex@18.0.11", "", { "bin": { "ccusage-codex": "dist/index.js" } }, "sha512-/S0dyaO3yDegtGXTaMhu1ZyT3JbSuHsiUiIu9uP6UmqIAtSd9DOko1qkM6K1roePbF/rlk596GDHW1f0664D3A=="],
 
     "@ccusage/mcp/ccusage": ["ccusage@18.0.11", "", { "bin": { "ccusage": "dist/index.js" } }, "sha512-QIFCY2gh06vjWelND1gDwJxrniAcNkPw0OHUhz985iE7FIEf738YVzxUKQMKhA2fO9CIJCz0dSpnyIufaKdjdA=="],
 
