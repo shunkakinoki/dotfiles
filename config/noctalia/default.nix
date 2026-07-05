@@ -99,7 +99,35 @@ in
         tint_intensity = 20;
       };
 
-      audio.enable_sounds = false;
+      audio = {
+        enable_sounds = false;
+        enable_overdrive = true;
+      };
+
+      shell.shadow = {
+        direction = "down";
+        alpha = 0.3;
+      };
+
+      nightlight = {
+        enabled = true;
+        temperature_night = 3500;
+      };
+
+      brightness = {
+        enable_ddcutil = true;
+        sync_all_monitors = true;
+        minimum_brightness = 5;
+      };
+
+      battery.warning_threshold = 15;
+
+      hot_corners = {
+        enabled = true;
+        top_left.action = "workspaces";
+      };
+
+      control_center.width = 400;
 
       theme = {
         mode = "auto";
@@ -113,7 +141,8 @@ in
         margin_edge = 0;
         capsule = true;
         capsule_opacity = 0.6;
-        start = [ "launcher" "clock" "cpu" "memory" "network_rx" "network_tx" "gpu" "active_window" "media" ];
+        shadow = true;
+        start = [ "launcher" "clock" "cpu" "memory" "network_rx" "network_tx" "gpu" "active_window" ];
         center = [ "workspaces" ];
         end = [ "tray" "bluetooth" "network" "notification_history" "battery" "power_profile" "volume" "brightness" "dark_mode" "control_center" ];
       };
@@ -143,6 +172,17 @@ in
           timeout = 300;
           command = "noctalia:session lock";
         };
+        behavior.screen-off = {
+          enabled = true;
+          timeout = 660;
+          command = "noctalia:dpms-off";
+          resume_command = "noctalia:dpms-on";
+        };
+        behavior.suspend = {
+          enabled = true;
+          timeout = 900;
+          action = "suspend";
+        };
       };
 
       system.monitor = {
@@ -153,6 +193,10 @@ in
         enabled = true;
         auto_hide = true;
         reserve_space = false;
+        magnification = true;
+        magnification_scale = 1.4;
+        show_running = true;
+        icon_size = 48;
         launcher_icon = "nix-snowflake";
       };
 
