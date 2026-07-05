@@ -108,7 +108,7 @@ in
       };
 
       bar.main = {
-        background_opacity = 0.6;
+        background_opacity = 0.0;
         margin_ends = 0;
         margin_edge = 0;
         capsule = true;
