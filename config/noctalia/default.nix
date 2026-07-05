@@ -90,7 +90,16 @@ in
           enabled = true;
           speed = 3;
         };
+        panel.transparency_mode = "glass";
       };
+
+      backdrop = {
+        enabled = true;
+        blur_intensity = 40;
+        tint_intensity = 20;
+      };
+
+      audio.enable_sounds = false;
 
       theme = {
         mode = "auto";
@@ -143,6 +152,7 @@ in
       dock = {
         enabled = true;
         auto_hide = true;
+        reserve_space = false;
         launcher_icon = "nix-snowflake";
       };
 
