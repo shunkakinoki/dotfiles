@@ -108,11 +108,11 @@ in
       };
 
       bar.main = {
-        background_opacity = 0.0;
+        background_opacity = 0.6;
         margin_ends = 0;
         margin_edge = 0;
         capsule = true;
-        capsule_opacity = 0.0;
+        capsule_opacity = 0.6;
         start = [ "launcher" "clock" "cpu" "memory" "network_rx" "network_tx" "gpu" "active_window" "media" ];
         center = [ "workspaces" ];
         end = [ "tray" "bluetooth" "network" "notification_history" "battery" "power_profile" "volume" "brightness" "dark_mode" "control_center" ];
