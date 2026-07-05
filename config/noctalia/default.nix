@@ -100,6 +100,8 @@ in
 
       bar.main = {
         background_opacity = 0.0;
+        margin_ends = 0;
+        margin_edge = 0;
         capsule = true;
         capsule_opacity = 0.0;
         start = [ "launcher" "clock" "cpu" "memory" "network_rx" "network_tx" "gpu" "active_window" "media" ];
@@ -140,6 +142,7 @@ in
 
       dock = {
         enabled = true;
+        auto_hide = true;
         launcher_icon = "nix-snowflake";
       };
 
