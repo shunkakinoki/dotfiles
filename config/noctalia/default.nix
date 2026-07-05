@@ -81,23 +81,83 @@ in
     enable = true;
     package = noctalia;
 
-    # v5 is a ground-up rewrite (C++/Qt, TOML config, snake_case keys) and upstream
-    # does NOT migrate v4 settings - "v5 ships with sane defaults, customize from there".
-    # The v4 config (bar widget layout, Dracula theme, dark-mode dconf hook, idle
-    # timeouts, per-widget options) has NO mechanical v5 equivalent and its semantics
-    # changed (e.g. bar widgets are now id vectors + separate styling; idle uses a
-    # behavior map; hooks run with no args). Re-apply those on-device via the settings UI.
-    #
-    # Only keys verified against the v5 schema (src/config/schema/config_schema.cpp)
-    # are set here so the build-time `noctalia config validate` passes.
     settings = {
       shell = {
-        font_family = "Noto Sans"; # was ui.fontDefault
-        clipboard_enabled = true; # was appLauncher.enableClipboardHistory
-        clipboard_auto_paste = "auto"; # was appLauncher.autoPasteClipboard = true
+        font_family = "Noto Sans";
+        clipboard_enabled = true;
+        clipboard_auto_paste = "auto";
+        animation = {
+          enabled = true;
+          speed = 3;
+        };
       };
-      location.auto_locate = true; # was location.autoLocate
-      wallpaper.enabled = false; # noctalia does not manage the wallpaper (wallpaper engine does)
+
+      theme = {
+        mode = "auto";
+        source = "builtin";
+        builtin = "Dracula";
+      };
+
+      bar.main = {
+        background_opacity = 0.0;
+        capsule = true;
+        capsule_opacity = 0.0;
+        start = [ "launcher" "clock" "cpu" "memory" "network_rx" "network_tx" "gpu" "active_window" "media" ];
+        center = [ "workspaces" ];
+        end = [ "tray" "bluetooth" "network" "notification_history" "battery" "power_profile" "volume" "brightness" "dark_mode" "control_center" ];
+      };
+
+      widget.clock = {
+        format = "{:%Y/%m/%d %H:%M:%S}";
+        vertical_format = "{:%H %M %S - %d %m}";
+        tooltip_format = "{:%Y/%m/%d %H:%M:%S}";
+      };
+
+      notification = {
+        enable_daemon = true;
+        position = "top_right";
+        background_opacity = 0.75;
+      };
+
+      osd.position = "right";
+
+      lockscreen = {
+        enabled = true;
+        fingerprint = true;
+      };
+
+      idle = {
+        behavior.lock = {
+          enabled = true;
+          timeout = 300;
+          command = "noctalia:session lock";
+        };
+      };
+
+      system.monitor = {
+        enabled = true;
+      };
+
+      dock = {
+        enabled = true;
+        launcher_icon = "nix-snowflake";
+      };
+
+      desktop_widgets.enabled = true;
+      wallpaper.enabled = false;
+      location.auto_locate = true;
+
+      hooks.theme_mode_changed = ''
+        if [ "$NOCTALIA_THEME_MODE" = "dark" ]; then
+          dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
+          dconf write /org/gnome/desktop/interface/gtk-theme "'Adwaita-dark'"
+          dconf write /org/gnome/desktop/interface/icon-theme "'Adwaita'"
+        else
+          dconf write /org/gnome/desktop/interface/color-scheme "'prefer-light'"
+          dconf write /org/gnome/desktop/interface/gtk-theme "'Adwaita'"
+          dconf write /org/gnome/desktop/interface/icon-theme "'Adwaita'"
+        fi
+      '';
     };
   };
 }
