@@ -260,8 +260,8 @@ in
         enabled = true;
         fingerprint = true;
         blurred_desktop = true;
-        blur_intensity = 40;
-        tint_intensity = 20;
+        blur_intensity = 1.0;
+        tint_intensity = 1.0;
       };
 
       lockscreen_widgets.enabled = true;
