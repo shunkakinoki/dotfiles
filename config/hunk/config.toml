@@ -1,4 +1,4 @@
-theme = "auto"
+theme = "custom"
 mode = "auto"
 vcs = "git"
 watch = false
@@ -8,3 +8,17 @@ wrap_lines = false
 menu_bar = true
 agent_notes = true
 transparent_background = true
+
+[custom_theme]
+base = "catppuccin-mocha"
+label = "Ghostty Dracula"
+accent = "#bd93f9"
+panel = "#21222c"
+noteBorder = "#ff79c6"
+
+[custom_theme.syntax]
+keyword = "#ff79c6"
+string = "#f1fa8c"
+comment = "#6272a4"
+operator = "#8be9fd"
+variable = "#f8f8f2"
