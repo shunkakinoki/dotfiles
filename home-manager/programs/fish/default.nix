@@ -9,7 +9,9 @@
     enable = true;
     shellInit = ''
       # Local binaries should be available before login/interactive-only PATH setup.
-      set -gx PATH $HOME/.bun/install/global/node_modules/.bin $HOME/.bun/bin $HOME/.cargo/bin $HOME/.local/bin $PATH
+      # ~/.bun/bin (real native bun) must precede the global node_modules/.bin so a
+      # transitively hoisted `bun`/`bunx` npm stub can never shadow the real binary.
+      set -gx PATH $HOME/.bun/bin $HOME/.bun/install/global/node_modules/.bin $HOME/.cargo/bin $HOME/.local/bin $PATH
 
       # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
       if test (uname) = "Linux"
@@ -52,10 +54,12 @@
       fish_add_path -p -m ~/.local/bin
       fish_add_path -p -m ~/.cargo/bin
       fish_add_path -p -m ~/.local/scripts
-      fish_add_path -p -m ~/.bun/bin
       fish_add_path -p -m /opt/homebrew/opt/postgresql@18/bin
       fish_add_path -p -m /opt/homebrew/bin
       fish_add_path -p -m ~/.bun/install/global/node_modules/.bin
+      # ~/.bun/bin last => frontmost, so the real native bun/bunx always win over
+      # any hoisted `bun` npm stub living in the global node_modules/.bin above.
+      fish_add_path -p -m ~/.bun/bin
     '';
     interactiveShellInit = ''
       source ${config.home.homeDirectory}/.config/fish/functions/_hm_load_env_file.fish
@@ -75,10 +79,12 @@
       fish_add_path -p -m ~/.local/bin
       fish_add_path -p -m ~/.cargo/bin
       fish_add_path -p -m ~/.local/scripts
-      fish_add_path -p -m ~/.bun/bin
       fish_add_path -p -m /opt/homebrew/opt/postgresql@18/bin
       fish_add_path -p -m /opt/homebrew/bin
       fish_add_path -p -m ~/.bun/install/global/node_modules/.bin
+      # ~/.bun/bin last => frontmost, so the real native bun/bunx always win over
+      # any hoisted `bun` npm stub living in the global node_modules/.bin above.
+      fish_add_path -p -m ~/.bun/bin
       # Worktrunk shell init
       if type -q wt
         wt config shell init fish | source
