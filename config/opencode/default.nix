@@ -13,4 +13,9 @@ _: {
     source = ./themes/transparent.json;
     force = true;
   };
+
+  home.file.".config/opencode/plugins/moshi-hooks.ts" = {
+    source = ./moshi-hooks.ts;
+    force = true;
+  };
 }

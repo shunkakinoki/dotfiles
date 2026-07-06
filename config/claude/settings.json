@@ -1,6 +1,40 @@
 {
   "cleanupPeriodDays": 99999,
+  "defaultMode": "bypassPermissions",
   "effortLevel": "high",
+  "enabledPlugins": {
+    "clangd-lsp@claude-plugins-official": true,
+    "claude-mem@claude-mem": true,
+    "code-review@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "codex@openai-codex": true,
+    "commit-commands@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "csharp-lsp@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true,
+    "jdtls-lsp@claude-plugins-official": true,
+    "kotlin-lsp@claude-plugins-official": true,
+    "lua-lsp@claude-plugins-official": true,
+    "mempalace@mempalace": true,
+    "php-lsp@claude-plugins-official": true,
+    "plan-export@cc-marketplace": true,
+    "pr-review-toolkit@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true,
+    "qmd@qmd": true,
+    "ralph-loop@claude-plugins-official": true,
+    "ruby-lsp@claude-plugins-official": true,
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "safety-net@cc-marketplace": true,
+    "security-guidance@claude-plugins-official": true,
+    "serena@claude-plugins-official": true,
+    "skill-codex@skill-codex": true,
+    "superpowers@claude-plugins-official": true,
+    "swift-lsp@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "worktrunk@worktrunk": true
+  },
   "env": {
     "AIKIDO_DISABLE": "true",
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-sonnet-4-6",
@@ -15,6 +49,456 @@
     "NO_COLOR": "1",
     "SAFE_CHAIN_LOGGING": "silent",
     "TURBO_NO_UPDATE_NOTIFIER": "1"
+  },
+  "extraKnownMarketplaces": {
+    "cc-marketplace": {
+      "source": {
+        "repo": "kenryu42/cc-marketplace",
+        "source": "github"
+      }
+    },
+    "claude-mem": {
+      "source": {
+        "repo": "thedotmack/claude-mem",
+        "source": "github"
+      }
+    },
+    "mempalace": {
+      "source": {
+        "repo": "milla-jovovich/mempalace",
+        "source": "github"
+      }
+    },
+    "openai-codex": {
+      "source": {
+        "repo": "openai/codex-plugin-cc",
+        "source": "github"
+      }
+    },
+    "qmd": {
+      "source": {
+        "repo": "tobi/qmd",
+        "source": "github"
+      }
+    },
+    "skill-codex": {
+      "source": {
+        "repo": "skills-directory/skill-codex",
+        "source": "github"
+      }
+    },
+    "worktrunk": {
+      "source": {
+        "repo": "max-sixty/worktrunk",
+        "source": "github"
+      }
+    }
+  },
+  "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "$HOME/.claude/hooks/notify.sh",
+            "timeout": 3,
+            "type": "command"
+          },
+          {
+            "async": true,
+            "command": "$HOME/.claude/hooks/pushover.sh",
+            "timeout": 6,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "$HOME/.claude/hooks/notify.sh",
+            "timeout": 3,
+            "type": "command"
+          },
+          {
+            "async": true,
+            "command": "$HOME/.claude/hooks/pushover.sh",
+            "timeout": 6,
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "async": false,
+            "command": "moshi-hook claude-hook",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "git-ai checkpoint claude --hook-input stdin",
+            "timeout": 15,
+            "type": "command"
+          }
+        ],
+        "matcher": "Write|Edit|MultiEdit"
+      },
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "$HOME/.claude/hooks/atuin-history.sh",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code post-task",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": "Task"
+      },
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code post-todo",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": "TodoWrite"
+      },
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "moshi-hook claude-hook",
+            "type": "command"
+          }
+        ],
+        "matcher": "AskUserQuestion"
+      },
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "moshi-hook claude-hook",
+            "type": "command"
+          }
+        ],
+        "matcher": "ExitPlanMode"
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "$HOME/.claude/hooks/notify.sh",
+            "timeout": 3,
+            "type": "command"
+          },
+          {
+            "async": true,
+            "command": "$HOME/.claude/hooks/pushover.sh",
+            "timeout": 6,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "dcg",
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/rtk-rewrite.sh",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "command -v dcg \u003e/dev/null 2\u003e\u00261 \u0026\u0026 dcg",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/.claude/hooks/security.sh",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/block-git-push.sh",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/block-gh-settings.sh",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "async": true,
+            "command": "$HOME/.claude/hooks/notify.sh",
+            "timeout": 3,
+            "type": "command"
+          },
+          {
+            "async": true,
+            "command": "$HOME/.claude/hooks/pushover.sh",
+            "timeout": 6,
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/secret-guard.sh",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "async": true,
+            "command": "git-ai checkpoint claude --hook-input stdin",
+            "timeout": 15,
+            "type": "command"
+          }
+        ],
+        "matcher": "Write|Edit|MultiEdit"
+      },
+      {
+        "hooks": [
+          {
+            "command": "command -v dcg \u003e/dev/null 2\u003e\u00261 \u0026\u0026 dcg",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code pre-task",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": "Task"
+      },
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "moshi-hook claude-hook",
+            "type": "command"
+          }
+        ],
+        "matcher": "AskUserQuestion"
+      },
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "moshi-hook claude-hook",
+            "type": "command"
+          }
+        ],
+        "matcher": "ExitPlanMode"
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code session-end",
+            "timeout": 30,
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "moshi-hook claude-hook",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "$HOME/.claude/hooks/notify.sh",
+            "timeout": 3,
+            "type": "command"
+          },
+          {
+            "async": true,
+            "command": "$HOME/.claude/hooks/pushover.sh",
+            "timeout": 6,
+            "type": "command"
+          },
+          {
+            "async": true,
+            "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code session-start",
+            "timeout": 30,
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "moshi-hook claude-hook",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "$HOME/.claude/hooks/notify.sh",
+            "timeout": 3,
+            "type": "command"
+          },
+          {
+            "async": true,
+            "command": "$HOME/.claude/hooks/pushover.sh",
+            "timeout": 6,
+            "type": "command"
+          },
+          {
+            "async": true,
+            "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code stop",
+            "timeout": 30,
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "moshi-hook claude-hook",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "command": "$HOME/.claude/hooks/auto-switch.sh",
+            "timeout": 10,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "$HOME/.claude/hooks/notify.sh",
+            "timeout": 3,
+            "type": "command"
+          },
+          {
+            "async": true,
+            "command": "$HOME/.claude/hooks/pushover.sh",
+            "timeout": 6,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "jq -c '{timestamp: (now | todate), prompt: .prompt[0:500]}' \u003e\u003e ~/.claude/prompt-history.jsonl",
+            "timeout": 3,
+            "type": "command"
+          },
+          {
+            "async": true,
+            "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code user-prompt-submit",
+            "timeout": 30,
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "moshi-hook claude-hook",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "WorktreeCreate": [
+      {
+        "hooks": [
+          {
+            "command": "bash -c 'NAME=$(jq -r .name); REPO=$(git rev-parse --show-toplevel); DIR=\"$REPO/.worktrees/$NAME\"; (wt switch --create \"$NAME\" --no-cd -y || wt switch \"$NAME\" --no-cd -y) \u003e\u00262 \u0026\u0026 echo \"$DIR\"'",
+            "timeout": 30,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "WorktreeRemove": [
+      {
+        "hooks": [
+          {
+            "command": "bash -c 'WORKTREE_PATH=$(jq -r .worktree_path); BRANCH=$(basename \"$WORKTREE_PATH\"); wt remove \"$BRANCH\" -y \u003e\u00262'",
+            "timeout": 30,
+            "type": "command"
+          }
+        ]
+      }
+    ]
   },
   "permissions": {
     "allow": [
@@ -128,406 +612,9 @@
       ]
     }
   },
-  "hooks": {
-    "Notification": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/notify.sh",
-            "timeout": 3,
-            "async": true
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/pushover.sh",
-            "timeout": 6,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "git-ai checkpoint claude --hook-input stdin",
-            "timeout": 15,
-            "async": true
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/atuin-history.sh",
-            "timeout": 5,
-            "async": true
-          }
-        ]
-      },
-      {
-        "matcher": "Task",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code post-task",
-            "timeout": 30,
-            "async": true
-          }
-        ]
-      },
-      {
-        "matcher": "TodoWrite",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code post-todo",
-            "timeout": 30,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "PreCompact": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/notify.sh",
-            "timeout": 3,
-            "async": true
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/pushover.sh",
-            "timeout": 6,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/dotfiles/config/shared/hooks/rtk-rewrite.sh",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "command -v dcg >/dev/null 2>&1 && dcg",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/security.sh",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "$HOME/dotfiles/config/shared/hooks/block-git-push.sh",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "$HOME/dotfiles/config/shared/hooks/block-gh-settings.sh",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/notify.sh",
-            "timeout": 3,
-            "async": true
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/pushover.sh",
-            "timeout": 6,
-            "async": true
-          }
-        ]
-      },
-      {
-        "matcher": "Write|Edit|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/dotfiles/config/shared/hooks/secret-guard.sh",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "git-ai checkpoint claude --hook-input stdin",
-            "timeout": 15,
-            "async": true
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "command -v dcg >/dev/null 2>&1 && dcg",
-            "timeout": 5
-          }
-        ]
-      },
-      {
-        "matcher": "Task",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code pre-task",
-            "timeout": 30,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "PermissionRequest": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/notify.sh",
-            "timeout": 3,
-            "async": true
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/pushover.sh",
-            "timeout": 6,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/notify.sh",
-            "timeout": 3,
-            "async": true
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/pushover.sh",
-            "timeout": 6,
-            "async": true
-          },
-          {
-            "type": "command",
-            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code session-start",
-            "timeout": 30,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code session-end",
-            "timeout": 30,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/notify.sh",
-            "timeout": 3,
-            "async": true
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/pushover.sh",
-            "timeout": 6,
-            "async": true
-          },
-          {
-            "type": "command",
-            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code stop",
-            "timeout": 30,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "SubagentStop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/notify.sh",
-            "timeout": 3,
-            "async": true
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/pushover.sh",
-            "timeout": 6,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "jq -c '{timestamp: (now | todate), prompt: .prompt[0:500]}' >> ~/.claude/prompt-history.jsonl",
-            "timeout": 3,
-            "async": true
-          },
-          {
-            "type": "command",
-            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code user-prompt-submit",
-            "timeout": 30,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "WorktreeCreate": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash -c 'NAME=$(jq -r .name); REPO=$(git rev-parse --show-toplevel); DIR=\"$REPO/.worktrees/$NAME\"; (wt switch --create \"$NAME\" --no-cd -y || wt switch \"$NAME\" --no-cd -y) >&2 && echo \"$DIR\"'",
-            "timeout": 30
-          }
-        ]
-      }
-    ],
-    "WorktreeRemove": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash -c 'WORKTREE_PATH=$(jq -r .worktree_path); BRANCH=$(basename \"$WORKTREE_PATH\"); wt remove \"$BRANCH\" -y >&2'",
-            "timeout": 30
-          }
-        ]
-      }
-    ],
-    "StopFailure": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/auto-switch.sh",
-            "timeout": 10
-          }
-        ]
-      }
-    ]
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "$HOME/.claude/hooks/statusline.sh"
-  },
-  "enabledPlugins": {
-    "clangd-lsp@claude-plugins-official": true,
-    "claude-mem@claude-mem": true,
-    "code-review@claude-plugins-official": true,
-    "code-simplifier@claude-plugins-official": true,
-    "codex@openai-codex": true,
-    "commit-commands@claude-plugins-official": true,
-    "context7@claude-plugins-official": true,
-    "csharp-lsp@claude-plugins-official": true,
-    "feature-dev@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": true,
-    "gopls-lsp@claude-plugins-official": true,
-    "jdtls-lsp@claude-plugins-official": true,
-    "kotlin-lsp@claude-plugins-official": true,
-    "lua-lsp@claude-plugins-official": true,
-    "mempalace@mempalace": true,
-    "php-lsp@claude-plugins-official": true,
-    "plan-export@cc-marketplace": true,
-    "pr-review-toolkit@claude-plugins-official": true,
-    "pyright-lsp@claude-plugins-official": true,
-    "qmd@qmd": true,
-    "ralph-loop@claude-plugins-official": true,
-    "ruby-lsp@claude-plugins-official": true,
-    "rust-analyzer-lsp@claude-plugins-official": true,
-    "safety-net@cc-marketplace": true,
-    "security-guidance@claude-plugins-official": true,
-    "serena@claude-plugins-official": true,
-    "skill-codex@skill-codex": true,
-    "superpowers@claude-plugins-official": true,
-    "swift-lsp@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true,
-    "worktrunk@worktrunk": true
-  },
-  "extraKnownMarketplaces": {
-    "cc-marketplace": {
-      "source": {
-        "source": "github",
-        "repo": "kenryu42/cc-marketplace"
-      }
-    },
-    "claude-mem": {
-      "source": {
-        "source": "github",
-        "repo": "thedotmack/claude-mem"
-      }
-    },
-    "mempalace": {
-      "source": {
-        "source": "github",
-        "repo": "milla-jovovich/mempalace"
-      }
-    },
-    "openai-codex": {
-      "source": {
-        "source": "github",
-        "repo": "openai/codex-plugin-cc"
-      }
-    },
-    "qmd": {
-      "source": {
-        "source": "github",
-        "repo": "tobi/qmd"
-      }
-    },
-    "skill-codex": {
-      "source": {
-        "source": "github",
-        "repo": "skills-directory/skill-codex"
-      }
-    },
-    "worktrunk": {
-      "source": {
-        "source": "github",
-        "repo": "max-sixty/worktrunk"
-      }
-    }
-  },
   "skipDangerousModePermissionPrompt": true,
-  "defaultMode": "bypassPermissions",
-  "hostOverrides": {
-    "matic": {
-      "enabledPlugins": {
-        "mempalace@mempalace": false
-      }
-    }
+  "statusLine": {
+    "command": "$HOME/.claude/hooks/statusline.sh",
+    "type": "command"
   }
 }
