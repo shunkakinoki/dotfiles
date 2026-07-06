@@ -1,99 +1,105 @@
 {
   "hooks": {
-    "SessionStart": [
+    "PermissionRequest": [
       {
-        "matcher": "startup|resume",
         "hooks": [
           {
-            "type": "command",
-            "command": "$HOME/.codex/hooks/notify.sh",
-            "timeout": 3,
-            "async": true
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.codex/hooks/pushover.sh",
-            "timeout": 6,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Write|Edit|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/dotfiles/config/shared/hooks/secret-guard.sh",
-            "timeout": 5
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/dotfiles/config/shared/hooks/rtk-rewrite.sh",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "command -v dcg >/dev/null 2>&1 && dcg",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "$HOME/dotfiles/config/shared/hooks/security.sh",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "$HOME/dotfiles/config/shared/hooks/block-git-push.sh",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "$HOME/dotfiles/config/shared/hooks/block-gh-settings.sh",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.codex/hooks/notify.sh",
-            "timeout": 3,
-            "async": true
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.codex/hooks/pushover.sh",
-            "timeout": 6,
-            "async": true
+            "command": "moshi-hook codex-hook",
+            "type": "command"
           }
         ]
       }
     ],
     "PostToolUse": [
       {
-        "matcher": "Bash",
         "hooks": [
           {
-            "type": "command",
+            "async": true,
             "command": "$HOME/.codex/hooks/atuin-history.sh",
             "timeout": 5,
-            "async": true
+            "type": "command"
           }
-        ]
+        ],
+        "matcher": "Bash"
       }
     ],
-    "UserPromptSubmit": [
+    "PreToolUse": [
       {
         "hooks": [
           {
-            "type": "command",
-            "command": "jq -c '{timestamp: (now | todate), prompt: .prompt[0:500]}' >> ~/.codex/prompt-history.jsonl",
+            "command": "$HOME/dotfiles/config/shared/hooks/secret-guard.sh",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "matcher": "Write|Edit|MultiEdit"
+      },
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/rtk-rewrite.sh",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "command -v dcg \u003e/dev/null 2\u003e\u00261 \u0026\u0026 dcg",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/security.sh",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/block-git-push.sh",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/block-gh-settings.sh",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "async": true,
+            "command": "$HOME/.codex/hooks/notify.sh",
             "timeout": 3,
-            "async": true
+            "type": "command"
+          },
+          {
+            "async": true,
+            "command": "$HOME/.codex/hooks/pushover.sh",
+            "timeout": 6,
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "$HOME/.codex/hooks/notify.sh",
+            "timeout": 3,
+            "type": "command"
+          },
+          {
+            "async": true,
+            "command": "$HOME/.codex/hooks/pushover.sh",
+            "timeout": 6,
+            "type": "command"
+          }
+        ],
+        "matcher": "startup|resume"
+      },
+      {
+        "hooks": [
+          {
+            "command": "moshi-hook codex-hook",
+            "type": "command"
           }
         ]
       }
@@ -102,16 +108,44 @@
       {
         "hooks": [
           {
-            "type": "command",
+            "async": true,
             "command": "$HOME/.codex/hooks/notify.sh",
             "timeout": 3,
-            "async": true
+            "type": "command"
           },
           {
-            "type": "command",
+            "async": true,
             "command": "$HOME/.codex/hooks/pushover.sh",
             "timeout": 6,
-            "async": true
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "moshi-hook codex-hook",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "jq -c '{timestamp: (now | todate), prompt: .prompt[0:500]}' \u003e\u003e ~/.codex/prompt-history.jsonl",
+            "timeout": 3,
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "moshi-hook codex-hook",
+            "type": "command"
           }
         ]
       }

@@ -11,4 +11,8 @@ _: {
     source = ./keybindings.json;
     force = true;
   };
+  home.file.".pi/agent/extensions/moshi-hooks.ts" = {
+    source = ./moshi-hooks.ts;
+    force = true;
+  };
 }

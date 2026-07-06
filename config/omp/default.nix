@@ -5,4 +5,9 @@
   home.activation.ompConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${./config.yml}"
   '';
+
+  home.file.".omp/agent/hooks/post/moshi-hooks.ts" = {
+    source = ./moshi-hooks.ts;
+    force = true;
+  };
 }

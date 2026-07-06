@@ -133,6 +133,10 @@ It 'has spec file for scripts/update-local-binaries.sh'
 The path "spec/update_local_binaries_spec.sh" should be exist
 End
 
+It 'has spec file for scripts/update-moshi-hooks.sh'
+The path "spec/update_moshi_hooks_spec.sh" should be exist
+End
+
 It 'has spec file for scripts/upgrade-overlays.sh'
 The path "spec/upgrade_overlays_spec.sh" should be exist
 End
@@ -486,6 +490,7 @@ scripts/sync-codex-security.sh
 scripts/sync-rtk-rewrite.sh
 scripts/update-gitalias.sh
 scripts/update-local-binaries.sh
+scripts/update-moshi-hooks.sh
 scripts/upgrade-overlays.sh
 scripts/wallpaper-power-check.sh"
 

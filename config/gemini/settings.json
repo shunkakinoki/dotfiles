@@ -1,19 +1,130 @@
 {
-  "tools": {
-    "enableHooks": true
-  },
+  "contextFileName": "AGENTS.md",
   "hooks": {
-    "BeforeTool": [
+    "AfterAgent": [
       {
-        "matcher": "write_file|replace",
-        "command": "git-ai checkpoint gemini --hook-input stdin"
+        "hooks": [
+          {
+            "command": "moshi-hook gemini-hook",
+            "name": "Moshi",
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
       }
     ],
     "AfterTool": [
       {
-        "matcher": "write_file|replace",
-        "command": "git-ai checkpoint gemini --hook-input stdin"
+        "command": "git-ai checkpoint gemini --hook-input stdin",
+        "matcher": "write_file|replace"
+      }
+    ],
+    "BeforeAgent": [
+      {
+        "hooks": [
+          {
+            "command": "moshi-hook gemini-hook",
+            "name": "Moshi",
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "BeforeTool": [
+      {
+        "command": "git-ai checkpoint gemini --hook-input stdin",
+        "matcher": "write_file|replace"
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "command": "moshi-hook gemini-hook",
+            "name": "Moshi",
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "command": "moshi-hook gemini-hook",
+            "name": "Moshi",
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "command": "moshi-hook gemini-hook",
+            "name": "Moshi",
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
       }
     ]
+  },
+  "mcpServers": {
+    "ChromeDevtools": {
+      "args": [
+        "--autoConnect",
+        "--channel=beta"
+      ],
+      "command": "chrome-devtools-mcp"
+    },
+    "Codex": {
+      "args": [
+        "mcp-server"
+      ],
+      "command": "codex"
+    },
+    "Context7": {
+      "args": [],
+      "command": "context7-mcp"
+    },
+    "GitHub": {
+      "args": [
+        "-c",
+        "exec mcp-remote 'https://api.githubcopilot.com/mcp/' --header \"Authorization:Bearer $(gh auth token)\""
+      ],
+      "command": "sh"
+    },
+    "MemPalace": {
+      "args": [
+        "-m",
+        "mempalace.mcp_server"
+      ],
+      "command": "python3-mempalace"
+    },
+    "Serena": {
+      "args": [
+        "start-mcp-server"
+      ],
+      "command": "serena"
+    },
+    "XcodeBuildMCP": {
+      "args": [
+        "mcp"
+      ],
+      "command": "xcodebuildmcp"
+    }
+  },
+  "security": {
+    "auth": {
+      "selectedType": "oauth-personal"
+    }
+  },
+  "tools": {
+    "enableHooks": true
   }
 }

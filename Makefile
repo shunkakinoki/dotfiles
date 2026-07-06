@@ -299,7 +299,7 @@ rtk-rewrite-sync: ## Sync rtk-rewrite.sh from upstream rtk repo.
 ##@ Update
 
 .PHONY: update
-update: neovim-update gitalias-update llm-update overlays-update  ## Update Nix flake, overlays, Neovim plugins, LLM configs, gitalias, and bun deps
+update: neovim-update gitalias-update llm-update moshi-update overlays-update  ## Update Nix flake, overlays, Neovim plugins, LLM configs, gitalias, moshi hooks, and bun deps
 
 .PHONY: update-lock
 update-lock: nix-flake-update bun-update cargo-update uv-update ## Update lock files for Nix flake, bun, and Cargo.
@@ -323,6 +323,16 @@ gitalias-update: ## Download latest gitalias.txt from upstream.
 	@echo "📥 Updating gitalias.txt..."
 	@./scripts/update-gitalias.sh
 	@echo "✅ gitalias.txt updated"
+
+.PHONY: moshi-update
+moshi-update: ## Sync moshi-hook generated configs from live to dotfiles.
+	@if command -v moshi-hook >/dev/null 2>&1; then \
+		echo "📥 Updating moshi-hook configs..."; \
+		./scripts/update-moshi-hooks.sh; \
+		echo "✅ moshi-hook configs updated"; \
+	else \
+		echo "⏭️  moshi-hook not found, skipping"; \
+	fi
 
 .PHONY: llm-update
 llm-update: ## Regenerate tool configs from models.json.
