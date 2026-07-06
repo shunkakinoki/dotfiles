@@ -259,8 +259,9 @@ in
       lockscreen = {
         enabled = true;
         fingerprint = true;
-        blur = true;
+        blurred_desktop = true;
         blur_intensity = 40;
+        tint_intensity = 20;
       };
 
       lockscreen_widgets.enabled = true;
