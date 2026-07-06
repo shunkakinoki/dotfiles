@@ -271,7 +271,7 @@ in
         behavior.lock = {
           enabled = true;
           timeout = 300;
-          command = "noctalia:session lock";
+          command = "noctalia msg session lock";
         };
         behavior.screen-off.enabled = false;
         behavior.suspend.enabled = false;
