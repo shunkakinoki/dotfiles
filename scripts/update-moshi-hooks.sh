@@ -24,7 +24,7 @@ cp ~/.gemini/settings.json "$REPO_ROOT/config/gemini/settings.json"
 cp ~/.grok/hooks/moshi-hooks.json /tmp/moshi-grok-hooks.json
 jq -s '.[0].hooks * .[1].hooks | {hooks: .}' \
   "$REPO_ROOT/config/grok/plugin/hooks/hooks.json" \
-  /tmp/moshi-grok-hooks.json > /tmp/moshi-grok-merged.json
+  /tmp/moshi-grok-hooks.json >/tmp/moshi-grok-merged.json
 mv /tmp/moshi-grok-merged.json "$REPO_ROOT/config/grok/plugin/hooks/hooks.json"
 
 echo "Formatting..."
