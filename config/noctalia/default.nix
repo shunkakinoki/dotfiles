@@ -68,6 +68,78 @@ in
     force = true;
   };
 
+  xdg.desktopEntries.logout = {
+    name = "Log Out";
+    comment = "End the current session";
+    exec = "${noctalia}/bin/noctalia msg session logout";
+    terminal = false;
+    categories = [ "System" ];
+    icon = "system-log-out";
+  };
+
+  xdg.desktopEntries.suspend = {
+    name = "Suspend";
+    comment = "Put the system to sleep";
+    exec = "${noctalia}/bin/noctalia msg session suspend";
+    terminal = false;
+    categories = [ "System" ];
+    icon = "system-suspend";
+  };
+
+  xdg.desktopEntries.screenshot-region = {
+    name = "Screenshot Region";
+    comment = "Capture a screen region";
+    exec = "${noctalia}/bin/noctalia msg screenshot-region";
+    terminal = false;
+    categories = [ "Utility" ];
+    icon = "accessories-screenshot";
+  };
+
+  xdg.desktopEntries.do-not-disturb = {
+    name = "Toggle Do Not Disturb";
+    comment = "Toggle notification Do Not Disturb mode";
+    exec = "${noctalia}/bin/noctalia msg notification-dnd-toggle";
+    terminal = false;
+    categories = [ "Utility" ];
+    icon = "notifications-disabled";
+  };
+
+  xdg.desktopEntries.reboot = {
+    name = "Reboot";
+    comment = "Restart the system";
+    exec = "${noctalia}/bin/noctalia msg session reboot";
+    terminal = false;
+    categories = [ "System" ];
+    icon = "system-reboot";
+  };
+
+  xdg.desktopEntries.shut-down = {
+    name = "Shut Down";
+    comment = "Power off the system";
+    exec = "${noctalia}/bin/noctalia msg session shutdown";
+    terminal = false;
+    categories = [ "System" ];
+    icon = "system-shutdown";
+  };
+
+  xdg.desktopEntries.lock-screen = {
+    name = "Lock Screen";
+    comment = "Lock the session";
+    exec = "${noctalia}/bin/noctalia msg session lock";
+    terminal = false;
+    categories = [ "System" ];
+    icon = "system-lock-screen";
+  };
+
+  xdg.desktopEntries.toggle-dark-mode = {
+    name = "Toggle Dark Mode";
+    comment = "Switch between dark and light theme";
+    exec = "${noctalia}/bin/noctalia msg theme-mode-toggle";
+    terminal = false;
+    categories = [ "Utility" ];
+    icon = "weather-clear-night";
+  };
+
   xdg.desktopEntries.quit-all-apps = {
     name = "Quit All Apps";
     comment = "Close all open windows";
@@ -187,7 +259,11 @@ in
       lockscreen = {
         enabled = true;
         fingerprint = true;
+        blur = true;
+        blur_intensity = 40;
       };
+
+      lockscreen_widgets.enabled = true;
 
       idle = {
         behavior.lock = {
