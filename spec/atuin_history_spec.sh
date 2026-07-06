@@ -144,7 +144,7 @@ The output should include '.local/bin'
 End
 
 It 'adds local binaries to fish shellInit before login-only setup'
-When run bash -c "grep -F 'set -gx PATH \$HOME/.bun/install/global/node_modules/.bin \$HOME/.bun/bin \$HOME/.cargo/bin \$HOME/.local/bin \$PATH' '$FISH_CONFIG'"
+When run bash -c "grep -F 'set -gx PATH \$HOME/.bun/bin \$HOME/.bun/install/global/node_modules/.bin \$HOME/.cargo/bin \$HOME/.local/bin \$PATH' '$FISH_CONFIG'"
 The status should be success
 The output should include '.local/bin'
 The output should include '.bun/bin'
