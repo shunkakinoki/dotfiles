@@ -95,8 +95,6 @@ let
     "code"
     "Code"
   ];
-  # Slack-specific Framework->Ctrl behavior is handled by keyd's
-  # application mapper on hosts that enable ~/.config/keyd/app.conf.
   slackRemap = globalRemap;
 in
 {

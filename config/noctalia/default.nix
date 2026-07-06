@@ -158,6 +158,7 @@ in
         font_family = "Noto Sans";
         clipboard_enabled = true;
         clipboard_auto_paste = "auto";
+        screen_time_enabled = true;
         animation = {
           enabled = true;
           speed = 3;
