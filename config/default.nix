@@ -25,6 +25,7 @@ in
   ./handy
   ./herdr
   ./hermes
+  ./hunk
   ./iterm2
   ./hammerspoon
   ./jj
