@@ -326,9 +326,13 @@ gitalias-update: ## Download latest gitalias.txt from upstream.
 
 .PHONY: moshi-update
 moshi-update: ## Sync moshi-hook generated configs from live to dotfiles.
-	@echo "📥 Updating moshi-hook configs..."
-	@./scripts/update-moshi-hooks.sh
-	@echo "✅ moshi-hook configs updated"
+	@if command -v moshi-hook >/dev/null 2>&1; then \
+		echo "📥 Updating moshi-hook configs..."; \
+		./scripts/update-moshi-hooks.sh; \
+		echo "✅ moshi-hook configs updated"; \
+	else \
+		echo "⏭️  moshi-hook not found, skipping"; \
+	fi
 
 .PHONY: llm-update
 llm-update: ## Regenerate tool configs from models.json.
