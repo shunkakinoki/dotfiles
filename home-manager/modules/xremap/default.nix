@@ -13,11 +13,14 @@ let
   ctrlPrefix = "C-";
   # "f" is excluded — passes through as Hyper+F for Hyprland fullscreen bind.
   # "l" is excluded — passes through as Hyper+L for Hyprland lock screen bind.
+  # "c"/"v" are excluded — keyd emits plain Ctrl+C/V for Framework+C/V directly,
+  # because Electron apps (Slack) drop xremap's synthesized Hyper→Ctrl modifier
+  # swaps. Hyper+C/V never reaches xremap.
+  # See: config/keyd/default.conf ([cmd_hyper] section)
   # See: config/hyprland/hyprland.conf (Window Management section, Lock Screen section)
   letters = [
     "a"
     "b"
-    "c"
     "d"
     "e"
     "g"
@@ -34,7 +37,6 @@ let
     "s"
     "t"
     "u"
-    "v"
     "w"
     "x"
     "y"
@@ -82,20 +84,6 @@ let
     );
   # Framework+key -> Ctrl+key for all apps (macOS-style shortcuts)
   globalRemap = mkRemap remapKeys;
-  # Terminal/editor clipboard convention: Framework+C/V -> Ctrl+Shift+C/V so
-  # copy/paste does not collide with SIGINT or app-specific bare Ctrl+C handlers.
-  terminalClipboardRemap = globalRemap // {
-    "C-c" = "C-Shift-c";
-    "${hyperPrefix}c" = "C-Shift-c";
-    "${hyperPrefix}v" = "C-Shift-v";
-  };
-  codeEditorAppIds = [
-    "cursor"
-    "Cursor"
-    "code"
-    "Code"
-  ];
-  slackRemap = globalRemap;
 in
 {
   config = lib.mkMerge [
@@ -113,28 +101,20 @@ in
           keypress_delay_ms = 10;
           keymap = [
             {
-              # Ghostty: Framework+C/V -> Ctrl+Shift+C/V (terminal convention: Ctrl+C = SIGINT)
+              # Ghostty: clipboard is Ctrl+Shift+C/V (terminal convention).
+              # keyd already collapsed Framework+C/V to plain Ctrl+C/V, so
+              # both Framework+C/V and bare Ctrl+C/V become copy/paste here.
               name = "Framework Command (Ghostty)";
               application.only = [ "com.mitchellh.ghostty" ];
-              remap = terminalClipboardRemap;
-            }
-            {
-              # Cursor/VS Code: standard Ctrl+C/V for copy/paste (not terminal-style Ctrl+Shift+C/V).
-              # The integrated terminal handles its own clipboard shortcuts internally.
-              name = "Framework Command (Code Editors)";
-              application.only = codeEditorAppIds;
-              remap = globalRemap;
-            }
-            {
-              # Slack: isolated block so modifier-leak / thread mark-as-read
-              # workarounds can be tuned without affecting other apps.
-              name = "Framework Command (Slack)";
-              application.only = [ "Slack" ];
-              remap = slackRemap;
+              remap = globalRemap // {
+                "C-c" = "C-Shift-c";
+                "C-v" = "C-Shift-v";
+              };
             }
             {
               # Global: no application filter — applies unconditionally so window detection
               # failures don't cause raw Hyper events to leak through to apps (e.g. Slack).
+              # Note: app ids are lowercase on Wayland ("slack", not "Slack").
               name = "Framework Command (Global)";
               remap = globalRemap;
             }
