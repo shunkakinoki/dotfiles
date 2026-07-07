@@ -7,5 +7,4 @@
   ./secure-dotenv
   ./tailscale
   ./uv-globals
-  ./xremap
 ]
