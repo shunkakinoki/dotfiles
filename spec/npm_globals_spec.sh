@@ -187,6 +187,28 @@ The output should include 'find'
 End
 End
 
+Describe 'bun npm shim purge'
+  It 'defines a purge_bun_npm_shim function'
+    When run bash -c "grep 'purge_bun_npm_shim()' '$SCRIPT'"
+    The output should include 'purge_bun_npm_shim'
+  End
+
+  It 'removes the bun package from global node_modules'
+    When run bash -c "grep 'rm -rf.*gm.*bun' '$SCRIPT'"
+    The output should include 'bun'
+  End
+
+  It 'removes bun shims from .bin'
+    When run bash -c "grep 'rm -f.*\.bin/bun' '$SCRIPT'"
+    The output should include '.bin/bun'
+  End
+
+  It 'calls purge after each bun add --global'
+    When run bash -c "grep -A 1 'bun add --global.*dep.*2>/dev/null' '$SCRIPT' | grep 'purge_bun_npm_shim'"
+    The output should include 'purge_bun_npm_shim'
+  End
+End
+
 Describe 'native addon repair'
 It 'has a sqlite3 native binding repair step'
 When run bash -c "grep 'repair_sqlite3_native_binding' '$SCRIPT'"

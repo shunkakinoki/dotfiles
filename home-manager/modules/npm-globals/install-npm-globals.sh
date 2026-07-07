@@ -115,6 +115,20 @@ missing_native_optional_dep() {
   [ "$matched" -eq 1 ] && [ "$present" -eq 0 ]
 }
 
+# Remove the npm "bun" wrapper package from global node_modules.
+# Some transitive deps pull in the "bun" npm package whose postinstall
+# downloads a bun binary. When that postinstall is skipped/fails, it leaves
+# a stub .bin/bun shim that shadows the real system bun, breaking every
+# subsequent postinstall that shells out to bun (e.g. @railway/cli).
+purge_bun_npm_shim() {
+  local gm="${HOME}/.bun/install/global/node_modules"
+  if [ -d "${gm}/bun" ]; then
+    rm -rf "${gm}/bun"
+    rm -f "${gm}/.bin/bun" "${gm}/.bin/bunx"
+    echo "Removed broken bun npm shim from global node_modules"
+  fi
+}
+
 echo "Installing npm global packages from package.json using bun..."
 cd "${HOME}/dotfiles"
 
@@ -153,6 +167,8 @@ if [ "${#STALE[@]}" -gt 0 ]; then
     rm -rf "${HOME}/.bun/install/global/node_modules/$dep"
   done
 fi
+
+purge_bun_npm_shim
 
 # Build list of packages that need installing or updating
 GLOBAL_MODULES="${HOME}/.bun/install/global/node_modules"
@@ -198,6 +214,7 @@ if [ "${#MISSING[@]}" -gt 0 ]; then
   echo "Installing ${#MISSING[@]} missing packages..."
   for dep in "${MISSING[@]}"; do
     timeout 600 bun add --global "$dep" 2>/dev/null || echo "Install failed: $dep"
+    purge_bun_npm_shim
   done
 else
   echo "All npm global packages already installed"
@@ -222,6 +239,7 @@ if [ -n "$OVERRIDES" ]; then
     jq --argjson overrides "$OVERRIDES" '.overrides = $overrides' "$GLOBAL_PKG" >"${GLOBAL_PKG}.tmp" &&
       mv "${GLOBAL_PKG}.tmp" "$GLOBAL_PKG"
     (cd "${HOME}/.bun/install/global" && bun install 2>/dev/null || true)
+    purge_bun_npm_shim
     echo "Applied dependency overrides to global install"
   fi
 fi
@@ -319,6 +337,7 @@ if [ -n "$OPTIONAL_DEPS" ]; then
     fi
     echo "Installing platform-native: $spec"
     timeout 600 bun add --global "$spec" --minimum-release-age 0 2>/dev/null || echo "Install failed: $spec"
+    purge_bun_npm_shim
     # Verify the payload actually materialized; bun can silently no-op.
     if [ ! -f "${GLOBAL_MODULES}/${dep}/package.json" ]; then
       echo "Warning: $dep still missing after install ($spec)" >&2
