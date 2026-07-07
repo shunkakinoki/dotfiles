@@ -119,10 +119,11 @@ in
               remap = terminalClipboardRemap;
             }
             {
-              # Cursor/VS Code: terminal-style clipboard shortcut, not bare Ctrl+C.
+              # Cursor/VS Code: standard Ctrl+C/V for copy/paste (not terminal-style Ctrl+Shift+C/V).
+              # The integrated terminal handles its own clipboard shortcuts internally.
               name = "Framework Command (Code Editors)";
               application.only = codeEditorAppIds;
-              remap = terminalClipboardRemap;
+              remap = globalRemap;
             }
             {
               # Slack: isolated block so modifier-leak / thread mark-as-read
