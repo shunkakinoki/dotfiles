@@ -11,7 +11,7 @@
       # Local binaries should be available before login/interactive-only PATH setup.
       # ~/.bun/bin (real native bun) must precede the global node_modules/.bin so a
       # transitively hoisted `bun`/`bunx` npm stub can never shadow the real binary.
-      set -gx PATH $HOME/.bun/bin $HOME/.bun/install/global/node_modules/.bin $HOME/.cargo/bin $HOME/.local/bin $PATH
+      set -gx PATH $HOME/.bun/bin $HOME/.bun/install/global/node_modules/.bin $HOME/.cargo/bin $HOME/.local/bin $HOME/.railway/bin $PATH
 
       # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
       if test (uname) = "Linux"
@@ -50,6 +50,7 @@
       fish_add_path -p -m /nix/var/nix/profiles/default/bin
       fish_add_path -p -m ~/.nix-profile/bin
       fish_add_path -p -m /etc/profiles/per-user/${config.home.username}/bin
+      fish_add_path -p -m ~/.railway/bin
       fish_add_path -p -m ~/go/bin
       fish_add_path -p -m ~/.local/bin
       fish_add_path -p -m ~/.cargo/bin
@@ -75,6 +76,7 @@
       fish_add_path -p -m /nix/var/nix/profiles/default/bin
       fish_add_path -p -m ~/.nix-profile/bin
       fish_add_path -p -m /etc/profiles/per-user/${config.home.username}/bin
+      fish_add_path -p -m ~/.railway/bin
       fish_add_path -p -m ~/go/bin
       fish_add_path -p -m ~/.local/bin
       fish_add_path -p -m ~/.cargo/bin
