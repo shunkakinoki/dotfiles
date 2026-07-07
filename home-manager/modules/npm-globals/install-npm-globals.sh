@@ -129,6 +129,36 @@ purge_bun_npm_shim() {
   fi
 }
 
+run_postinstall_if_needed() {
+  local dep="$1"
+  local dep_dir="${GLOBAL_MODULES}/${dep}"
+  local pj="${dep_dir}/package.json"
+  [ -f "$pj" ] || return 0
+  local postinstall
+  postinstall=$(jq -r '.scripts.postinstall // empty' "$pj" 2>/dev/null || true)
+  [ -n "$postinstall" ] || return 0
+  local bin_dir="${dep_dir}/bin"
+  if [ -d "$bin_dir" ]; then
+    local has_native=false
+    for f in "$bin_dir"/*; do
+      [ -f "$f" ] || continue
+      case "$f" in *.js | *.cjs | *.mjs) continue ;; esac
+      has_native=true
+      break
+    done
+    if $has_native; then
+      return 0
+    fi
+  fi
+  echo "Running postinstall for $dep (native binary missing)..."
+  if command -v node &>/dev/null; then
+    (cd "$dep_dir" && node -e "
+      const {execSync} = require('child_process');
+      execSync($(printf '%s' "$postinstall" | jq -Rs .), {stdio: 'inherit', cwd: '.'});
+    ") 2>&1 || echo "Postinstall failed for $dep" >&2
+  fi
+}
+
 echo "Installing npm global packages from package.json using bun..."
 cd "${HOME}/dotfiles"
 
@@ -215,6 +245,7 @@ if [ "${#MISSING[@]}" -gt 0 ]; then
   for dep in "${MISSING[@]}"; do
     timeout 600 bun add --global "$dep" 2>/dev/null || echo "Install failed: $dep"
     purge_bun_npm_shim
+    run_postinstall_if_needed "$dep"
   done
 else
   echo "All npm global packages already installed"

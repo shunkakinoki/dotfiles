@@ -209,6 +209,28 @@ Describe 'bun npm shim purge'
   End
 End
 
+Describe 'postinstall recovery'
+  It 'defines a run_postinstall_if_needed function'
+    When run bash -c "grep 'run_postinstall_if_needed()' '$SCRIPT'"
+    The output should include 'run_postinstall_if_needed'
+  End
+
+  It 'checks for postinstall script in package.json'
+    When run bash -c "grep 'scripts.postinstall' '$SCRIPT'"
+    The output should include 'scripts.postinstall'
+  End
+
+  It 'skips packages that already have a native binary'
+    When run bash -c "grep 'has_native=true' '$SCRIPT'"
+    The output should include 'has_native'
+  End
+
+  It 'calls run_postinstall_if_needed after bun add'
+    When run bash -c "grep -A 2 'bun add --global.*dep.*2>/dev/null' '$SCRIPT' | grep 'run_postinstall_if_needed'"
+    The output should include 'run_postinstall_if_needed'
+  End
+End
+
 Describe 'native addon repair'
 It 'has a sqlite3 native binding repair step'
 When run bash -c "grep 'repair_sqlite3_native_binding' '$SCRIPT'"
