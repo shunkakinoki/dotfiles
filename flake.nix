@@ -60,10 +60,6 @@
     nixos-hardware = {
       url = "github:NixOS/nixos-hardware/master";
     };
-    xremap = {
-      url = "github:xremap/nix-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     noctalia-shell = {
       # v5 (C++ rewrite): option is programs.noctalia, config is TOML, binary is
       # `noctalia`. Not a drop-in from the v4 Quickshell line - v4 settings are not
