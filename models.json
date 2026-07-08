@@ -10,6 +10,7 @@
   "gpt-nano": "gpt-5.4-nano",
   "gemini-pro": "gemini-3.1-pro-preview",
   "gemini-flash": "gemini-3.1-flash-preview",
+  "grok": "grok-4.5",
   "glm": "glm-4.7",
   "minimax": "minimax-m2.7",
   "gemma": "gemma-4-27b-it",
