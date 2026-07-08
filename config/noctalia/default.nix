@@ -111,6 +111,7 @@ in
     terminal = false;
     categories = [ "System" ];
     icon = "system-reboot";
+    settings.Keywords = "Restart;";
   };
 
   xdg.desktopEntries.shut-down = {
