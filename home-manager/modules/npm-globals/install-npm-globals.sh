@@ -87,20 +87,17 @@ x86_64 | amd64) PLATFORM_CPU="x64" ;;
 *) PLATFORM_CPU="" ;;
 esac
 
-# Returns 0 when a package declares a platform-native optionalDependency for the
-# current OS/CPU but that dependency is not installed. Many CLIs ship their real
-# binary this way; a version-only skip would otherwise leave such a package
-# "installed" yet non-functional (e.g. after an `omit=optional` install).
-missing_native_optional_dep() {
-  local dep="$1"
-  local pj="${GLOBAL_MODULES}/${dep}/package.json"
-  [ -f "$pj" ] || return 1
-  [ -n "$PLATFORM_OS" ] && [ -n "$PLATFORM_CPU" ] || return 1
-
-  local opt_deps name matched=0 present=0
+# Prints the name of a platform-native optionalDependency declared in the given
+# package.json that is NOT installed, or nothing if all present / none declared.
+# Emits "<native-dep-name> <declaring-version>" so callers can install the exact
+# binary that bun dropped, at the version that matches its declaring wrapper.
+missing_native_from_pkg() {
+  local pj="$1"
+  [ -f "$pj" ] || return 0
+  local opt_deps name decl_ver
   opt_deps=$(jq -r '.optionalDependencies // {} | keys[]' "$pj" 2>/dev/null || true)
-  [ -n "$opt_deps" ] || return 1
-
+  [ -n "$opt_deps" ] || return 0
+  decl_ver=$(jq -r '.version // empty' "$pj" 2>/dev/null || true)
   while IFS= read -r name; do
     [ -z "$name" ] && continue
     # Only weigh native deps targeting this platform.
@@ -108,11 +105,65 @@ missing_native_optional_dep() {
     *"$PLATFORM_OS"*"$PLATFORM_CPU"* | *"$PLATFORM_CPU"*"$PLATFORM_OS"*) ;;
     *) continue ;;
     esac
-    matched=1
-    [ -d "${GLOBAL_MODULES}/${name}" ] && present=1
+    [ -d "${GLOBAL_MODULES}/${name}" ] && continue
+    printf '%s %s\n' "$name" "$decl_ver"
+    return 0
   done <<<"$opt_deps"
+}
 
-  [ "$matched" -eq 1 ] && [ "$present" -eq 0 ]
+# Candidate package.json paths that may declare a package's real native binary:
+# the package itself, plus its direct dependencies (thin wrappers hide the binary
+# one level down, e.g. tokscale -> @tokscale/cli -> @tokscale/cli-darwin-arm64).
+native_candidate_pkgs() {
+  local dep="$1"
+  local pj="${GLOBAL_MODULES}/${dep}/package.json"
+  printf '%s\n' "$pj"
+  local child
+  while IFS= read -r child; do
+    [ -z "$child" ] && continue
+    printf '%s\n' "${GLOBAL_MODULES}/${child}/package.json"
+  done < <(jq -r '.dependencies // {} | keys[]' "$pj" 2>/dev/null || true)
+}
+
+# Returns 0 when a package (or its immediate wrapper dependency) declares a
+# platform-native optionalDependency for the current OS/CPU that is not
+# installed. Many CLIs ship their real binary this way; a version-only skip would
+# otherwise leave such a package "installed" yet non-functional (bun silently
+# drops these transitive optional deps during global installs).
+missing_native_optional_dep() {
+  local dep="$1"
+  [ -f "${GLOBAL_MODULES}/${dep}/package.json" ] || return 1
+  [ -n "$PLATFORM_OS" ] && [ -n "$PLATFORM_CPU" ] || return 1
+
+  local pj
+  while IFS= read -r pj; do
+    [ -n "$(missing_native_from_pkg "$pj")" ] && return 0
+  done < <(native_candidate_pkgs "$dep")
+  return 1
+}
+
+# Directly install the platform-native binary package that bun dropped for a
+# wrapper dep, at the version its declaring package pins, so wrapper and binary
+# always match. Returns 0 when the binary is present afterwards. Preferred over
+# reinstalling the wrapper, which just re-triggers the same bun drop.
+repair_native_optional_dep() {
+  local dep="$1"
+  local pj found native decl_ver spec
+  while IFS= read -r pj; do
+    found=$(missing_native_from_pkg "$pj")
+    [ -n "$found" ] && break
+  done < <(native_candidate_pkgs "$dep")
+  [ -n "$found" ] || return 1
+
+  native="${found%% *}"
+  decl_ver="${found##* }"
+  spec="$native"
+  [ -n "$decl_ver" ] && spec="${native}@${decl_ver}"
+  echo "Installing missing native binary: $spec"
+  timeout 600 bun add --global "$spec" --minimum-release-age 0 2>/dev/null ||
+    echo "Install failed: $spec" >&2
+  purge_bun_npm_shim
+  [ -d "${GLOBAL_MODULES}/${native}" ]
 }
 
 # Remove the npm "bun" wrapper package from global node_modules.
@@ -221,7 +272,14 @@ if [ -n "$DEPS" ]; then
         # Version matches, but only skip if the native binary is actually
         # present. Drop a broken install so the reinstall below refetches it.
         if missing_native_optional_dep "$dep"; then
-          echo "$dep@$installed_ver installed but native binary missing, reinstalling"
+          echo "$dep@$installed_ver installed but native binary missing"
+          # Install the dropped binary directly; reinstalling the wrapper just
+          # re-triggers the same bun transitive-optional drop.
+          if repair_native_optional_dep "$dep"; then
+            echo "$dep native binary repaired in place"
+            continue
+          fi
+          echo "$dep native binary repair failed, reinstalling wrapper"
           rm -rf "${GLOBAL_MODULES:?}/${dep}"
           MISSING+=("$dep")
           continue
@@ -246,6 +304,11 @@ if [ "${#MISSING[@]}" -gt 0 ]; then
     timeout 600 bun add --global "$dep" 2>/dev/null || echo "Install failed: $dep"
     purge_bun_npm_shim
     run_postinstall_if_needed "$dep"
+    # Heal in the same run: bun drops transitive platform binaries on fresh
+    # global installs, so repair immediately instead of waiting for next activation.
+    if missing_native_optional_dep "$dep"; then
+      repair_native_optional_dep "$dep" || echo "Native binary repair failed: $dep" >&2
+    fi
   done
 else
   echo "All npm global packages already installed"

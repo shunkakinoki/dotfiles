@@ -264,9 +264,19 @@ When run bash -c "grep 'optionalDependencies' '$SCRIPT'"
 The output should include 'optionalDependencies'
 End
 
-It 'reinstalls a version-matched package whose native binary is missing'
+It 'detects a version-matched package whose native binary is missing'
 When run bash -c "grep 'installed but native binary missing' '$SCRIPT'"
-The output should include 'reinstalling'
+The output should include 'installed but native binary missing'
+End
+
+It 'repairs the dropped native binary in place before reinstalling the wrapper'
+When run bash -c "grep 'repair_native_optional_dep' '$SCRIPT'"
+The output should include 'repair_native_optional_dep'
+End
+
+It 'follows one level of wrapper indirection to find the native binary'
+When run bash -c "grep 'native_candidate_pkgs' '$SCRIPT'"
+The output should include 'native_candidate_pkgs'
 End
 End
 
@@ -334,6 +344,77 @@ After 'cleanup'
 It 'reinstalls a package missing its platform-native binary'
 When run bash -c "HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
 The output should include 'bun add --global nativecli'
+End
+End
+
+Describe 'wrapper-indirection native binary self-heal (tokscale pattern)'
+setup() {
+  TEMP_HOME=$(mktemp -d)
+  MOCK_BIN=$(mktemp -d)
+  MOCK_LOG="$TEMP_HOME/mock.log"
+  REAL_BIN_DIR="$(dirname "$(command -v jq)")"
+  REAL_SYSTEM_BIN_DIR="$(dirname "$(command -v mv)")"
+  : >"$MOCK_LOG"
+
+  GM="$TEMP_HOME/.bun/install/global/node_modules"
+  mkdir -p "$TEMP_HOME/dotfiles" "$TEMP_HOME/.bun/install/global" "$TEMP_HOME/.bun/bin"
+
+  os_tok=$(uname -s | tr '[:upper:]' '[:lower:]')
+  [ "$os_tok" = "darwin" ] || os_tok="linux"
+  cpu_tok=$(uname -m)
+  case "$cpu_tok" in arm64 | aarch64) cpu_tok=arm64 ;; *) cpu_tok=x64 ;; esac
+  NATIVE_DEP="@wrap/cli-${os_tok}-${cpu_tok}"
+  EXPECT_INSTALL="bun add --global ${NATIVE_DEP}@1.0.0"
+
+  cat >"$TEMP_HOME/dotfiles/package.json" <<'EOF'
+{
+  "dependencies": { "wrapcli": "^1.0.0" }
+}
+EOF
+
+  # Thin wrapper: no optionalDependencies of its own; the native binary is
+  # declared one level down on @wrap/cli, which bun dropped.
+  mkdir -p "$GM/wrapcli" "$GM/@wrap/cli"
+  cat >"$GM/wrapcli/package.json" <<'EOF'
+{ "name": "wrapcli", "version": "1.0.0", "dependencies": { "@wrap/cli": "1.0.0" } }
+EOF
+  cat >"$GM/@wrap/cli/package.json" <<EOF
+{
+  "name": "@wrap/cli",
+  "version": "1.0.0",
+  "optionalDependencies": { "@wrap/cli-${os_tok}-${cpu_tok}": "1.0.0" }
+}
+EOF
+
+  cat >"$MOCK_BIN/timeout" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+shift
+if [ "${1:-}" = "bash" ] && [ "${2:-}" = "-c" ] && [ "${3:-}" = "exec 3<>/dev/tcp/1.1.1.1/53" ]; then
+  exit 0
+fi
+exec "$@"
+EOF
+  chmod +x "$MOCK_BIN/timeout"
+
+  cat >"$MOCK_BIN/bun" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+printf 'bun %s\n' "$*" >>"$MOCK_LOG"
+EOF
+  chmod +x "$MOCK_BIN/bun"
+}
+
+cleanup() {
+  rm -rf "$TEMP_HOME" "$MOCK_BIN"
+}
+
+Before 'setup'
+After 'cleanup'
+
+It 'installs the nested native binary directly instead of reinstalling the wrapper'
+When run bash -c "HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
+The output should include "$EXPECT_INSTALL"
 End
 End
 
