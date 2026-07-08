@@ -188,47 +188,47 @@ End
 End
 
 Describe 'bun npm shim purge'
-  It 'defines a purge_bun_npm_shim function'
-    When run bash -c "grep 'purge_bun_npm_shim()' '$SCRIPT'"
-    The output should include 'purge_bun_npm_shim'
-  End
+It 'defines a purge_bun_npm_shim function'
+When run bash -c "grep 'purge_bun_npm_shim()' '$SCRIPT'"
+The output should include 'purge_bun_npm_shim'
+End
 
-  It 'removes the bun package from global node_modules'
-    When run bash -c "grep 'rm -rf.*gm.*bun' '$SCRIPT'"
-    The output should include 'bun'
-  End
+It 'removes the bun package from global node_modules'
+When run bash -c "grep 'rm -rf.*gm.*bun' '$SCRIPT'"
+The output should include 'bun'
+End
 
-  It 'removes bun shims from .bin'
-    When run bash -c "grep 'rm -f.*\.bin/bun' '$SCRIPT'"
-    The output should include '.bin/bun'
-  End
+It 'removes bun shims from .bin'
+When run bash -c "grep 'rm -f.*\.bin/bun' '$SCRIPT'"
+The output should include '.bin/bun'
+End
 
-  It 'calls purge after each bun add --global'
-    When run bash -c "grep -A 1 'bun add --global.*dep.*2>/dev/null' '$SCRIPT' | grep 'purge_bun_npm_shim'"
-    The output should include 'purge_bun_npm_shim'
-  End
+It 'calls purge after each bun add --global'
+When run bash -c "grep -A 1 'bun add --global.*dep.*2>/dev/null' '$SCRIPT' | grep 'purge_bun_npm_shim'"
+The output should include 'purge_bun_npm_shim'
+End
 End
 
 Describe 'postinstall recovery'
-  It 'defines a run_postinstall_if_needed function'
-    When run bash -c "grep 'run_postinstall_if_needed()' '$SCRIPT'"
-    The output should include 'run_postinstall_if_needed'
-  End
+It 'defines a run_postinstall_if_needed function'
+When run bash -c "grep 'run_postinstall_if_needed()' '$SCRIPT'"
+The output should include 'run_postinstall_if_needed'
+End
 
-  It 'checks for postinstall script in package.json'
-    When run bash -c "grep 'scripts.postinstall' '$SCRIPT'"
-    The output should include 'scripts.postinstall'
-  End
+It 'checks for postinstall script in package.json'
+When run bash -c "grep 'scripts.postinstall' '$SCRIPT'"
+The output should include 'scripts.postinstall'
+End
 
-  It 'skips packages that already have a native binary'
-    When run bash -c "grep 'has_native=true' '$SCRIPT'"
-    The output should include 'has_native'
-  End
+It 'skips packages that already have a native binary'
+When run bash -c "grep 'has_native=true' '$SCRIPT'"
+The output should include 'has_native'
+End
 
-  It 'calls run_postinstall_if_needed after bun add'
-    When run bash -c "grep -A 2 'bun add --global.*dep.*2>/dev/null' '$SCRIPT' | grep 'run_postinstall_if_needed'"
-    The output should include 'run_postinstall_if_needed'
-  End
+It 'calls run_postinstall_if_needed after bun add'
+When run bash -c "grep -A 2 'bun add --global.*dep.*2>/dev/null' '$SCRIPT' | grep 'run_postinstall_if_needed'"
+The output should include 'run_postinstall_if_needed'
+End
 End
 
 Describe 'native addon repair'
