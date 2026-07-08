@@ -1,6 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "cliproxyapi/glm-4.7",
+  "model": "xai/grok-4.5",
   "small_model": "cliproxyapi/glm-4.7",
   "autoupdate": true,
   "agent": {
@@ -190,6 +190,17 @@
         "glm-4.7": {
           "id": "@preset/glm-4-7",
           "name": "Preset GLM-4.7 (via OpenRouter)"
+        }
+      }
+    },
+    "xai": {
+      "name": "xAI",
+      "options": {
+        "apiKey": "{env:XAI_API_KEY}"
+      },
+      "models": {
+        "grok-4.5": {
+          "name": "Grok 4.5 (via xAI subscription)"
         }
       }
     },
