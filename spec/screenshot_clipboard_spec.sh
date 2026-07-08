@@ -25,6 +25,15 @@ The status should be success
 The output should include '"$DESKTOP_DIR/'
 End
 
+# On Linux inotify, unfiltered fswatch reports reads too; clipboard-copy-image
+# reads the screenshot it copies, so without the CloseWrite filter the watcher
+# retriggers itself forever and clobbers the clipboard system-wide.
+It 'filters fswatch to CloseWrite on Linux to prevent a copy feedback loop'
+When run awk '/^if \[ "\$\(uname -s\)" = "Linux" \]/,/^fi/' "$SCRIPT"
+The status should be success
+The output should include '--event CloseWrite'
+End
+
 Describe 'when fswatch is missing'
 setup() {
   TEMP_HOME=$(mktemp -d)
