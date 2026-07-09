@@ -301,7 +301,7 @@ fi
 if [ "${#MISSING[@]}" -gt 0 ]; then
   echo "Installing ${#MISSING[@]} missing packages..."
   for dep in "${MISSING[@]}"; do
-    timeout 600 bun add --global "$dep" 2>/dev/null || echo "Install failed: $dep"
+    timeout 600 bun add --global "$dep" --minimum-release-age 0 2>/dev/null || echo "Install failed: $dep"
     purge_bun_npm_shim
     run_postinstall_if_needed "$dep"
     # Heal in the same run: bun drops transitive platform binaries on fresh
