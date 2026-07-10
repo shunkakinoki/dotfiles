@@ -143,6 +143,7 @@
       fpn = "_fzf_preview_name";
       fsh = "_fzf_shell_history --allow-execute";
       gco = "_gco_function";
+      grs = "_grs_function";
       grco = "_grco_function";
       grcr = "_grcr_function";
       grwxe = "_grwxe_function";
@@ -266,6 +267,7 @@
         "_fzf_preview_name"
         "_fzf_shell_history"
         "_gco_function"
+        "_grs_function"
         "_install_cargo_globals_function"
         "_install_npm_globals_function"
         "_install_uv_globals_function"
