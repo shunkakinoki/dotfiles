@@ -14,4 +14,5 @@ function _grs_function --description "Reset to origin default branch (safe: abor
     end
 
     git reset --hard origin/$default_branch
+    git branch --set-upstream-to=origin/$default_branch
 end
