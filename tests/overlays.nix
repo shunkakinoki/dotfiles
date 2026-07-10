@@ -14,6 +14,18 @@
     touch $out
   '';
 
+  # programs.neovim / devenv use pkgs.neovim, which neovim-nightly keeps distinct
+  # from neovim-unwrapped. Both must skip flaky functional tests on cache miss.
+  overlay-neovim-nocheck = pkgs.runCommand "overlay-neovim-nocheck" { } ''
+    ${
+      if !(pkgs.neovim.doCheck or true) && !(pkgs.neovim-unwrapped.doCheck or true) then
+        ''echo "neovim and neovim-unwrapped have doCheck=false"''
+      else
+        ''echo "FAIL: expected doCheck=false on neovim and neovim-unwrapped" && exit 1''
+    }
+    touch $out
+  '';
+
   overlay-system-alias = pkgs.runCommand "overlay-system-alias" { } ''
     ${
       if pkgs ? system && builtins.isString pkgs.system then
