@@ -30,7 +30,7 @@ let
   wikiGitSync = pkgs.writeShellScriptBin "wiki-git-sync" (
     builtins.readFile (
       pkgs.replaceVars ./obsidian-git-trigger.sh {
-        inherit (pkgs) coreutils git;
+        inherit (pkgs) coreutils git gitleaks;
         utilLinux = pkgs.util-linux;
         vaultDir = "${homeDir}/ghq/github.com/shunkakinoki/wiki";
       }

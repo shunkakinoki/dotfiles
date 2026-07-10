@@ -11,7 +11,7 @@ The output should include '#!/usr/bin/env bash'
 End
 
 It 'passes bash syntax check after replacing placeholders'
-When run bash -c "sed -e 's|@coreutils@|/usr|g' -e 's|@git@|/usr|g' -e 's|@utilLinux@|/usr|g' -e 's|@vaultDir@|/tmp/wiki|g' '$SCRIPT' | bash -n"
+When run bash -c "sed -e 's|@coreutils@|/usr|g' -e 's|@git@|/usr|g' -e 's|@gitleaks@|/usr|g' -e 's|@utilLinux@|/usr|g' -e 's|@vaultDir@|/tmp/wiki|g' '$SCRIPT' | bash -n"
 The status should be success
 End
 End
@@ -20,6 +20,11 @@ Describe 'placeholder references'
 It 'references git via placeholder'
 When run bash -c "grep '@git@' '$SCRIPT'"
 The output should include '@git@'
+End
+
+It 'references gitleaks via placeholder'
+When run bash -c "grep '@gitleaks@' '$SCRIPT'"
+The output should include '@gitleaks@'
 End
 
 It 'references flock via placeholder'
