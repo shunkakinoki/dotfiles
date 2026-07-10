@@ -4,6 +4,8 @@
 
 set -euo pipefail
 
+export PATH="@gh@/bin:@gitleaks@/bin:$HOME/.local/bin:$PATH"
+
 VAULT="@vaultDir@"
 GIT="@git@/bin/git"
 
@@ -30,7 +32,7 @@ if ! "$GIT" -C "$VAULT" diff --cached --quiet; then
 fi
 
 "$GIT" -C "$VAULT" fetch origin main
-"$GIT" -C "$VAULT" rebase origin/main
+"$GIT" -C "$VAULT" rebase --autostash origin/main
 
 if [ "$("$GIT" -C "$VAULT" rev-parse HEAD)" != "$("$GIT" -C "$VAULT" rev-parse origin/main)" ]; then
   "$GIT" -C "$VAULT" push origin HEAD:main
