@@ -25,6 +25,7 @@ _grs_function
 @test "fetches origin" (grep -c "fetch origin" $call_log) -ge 1
 @test "checks merge status" (grep -c "merge-base" $call_log) -ge 1
 @test "resets to origin default branch" (grep -c "reset --hard origin/main" $call_log) -ge 1
+@test "sets upstream tracking" (grep -c "branch --set-upstream-to=origin/main" $call_log) -ge 1
 
 rm -f $call_log
 
