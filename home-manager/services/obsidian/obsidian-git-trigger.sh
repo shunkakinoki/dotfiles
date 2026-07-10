@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-export PATH="@gitleaks@/bin:$PATH"
+export PATH="@gh@/bin:@gitleaks@/bin:$HOME/.local/bin:$PATH"
 
 VAULT="@vaultDir@"
 GIT="@git@/bin/git"
