@@ -19,7 +19,6 @@ with pkgs;
   age
   aichat
   angle-grinder
-  pkgs.llm-agents.antigravity-cli
   argocd
   ast-grep
   awscli
@@ -122,7 +121,6 @@ with pkgs;
   trippy
   turso-cli
   uv
-  vector
   watchexec
   websocat
   wget
@@ -131,6 +129,11 @@ with pkgs;
   yq
   zellij
   zoxide
+]
+# Heavy packages: skip on CI runners (disk pressure / LTO OOM on macos-latest).
+++ lib.optionals (!isRunner) [
+  pkgs.llm-agents.antigravity-cli
+  vector
 ]
 ++ lib.optionals stdenv.isDarwin [
   darwin.trash

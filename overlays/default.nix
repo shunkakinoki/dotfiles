@@ -5,19 +5,24 @@
   inputs.foundry.overlay
   (_: prev: {
     # Ensure neovim-unwrapped exposes a lua attribute for wrapper consumers (e.g., home-manager)
+    # Also disable checks on both neovim and neovim-unwrapped: neovim-nightly-overlay
+    # sets them to distinct derivations, and programs.neovim / devenv use pkgs.neovim.
+    # The nightly functionaltest suite (e.g. treesitter) is flaky on cache miss.
     neovim-unwrapped =
       (prev.neovim-unwrapped.overrideAttrs (oldAttrs: {
         passthru = (oldAttrs.passthru or { }) // {
           lua = prev.lua5_4;
         };
-        # The nightly neovim functionaltest suite (e.g. treesitter) is flaky and
-        # fails on some revs when built from source (cache miss). Skip checks so
-        # a neovim test regression does not break nix-nixos / e2e NixOS builds.
         doCheck = false;
+        doInstallCheck = false;
       }))
       // {
         lua = prev.lua5_4;
       };
+    neovim = prev.neovim.overrideAttrs (_: {
+      doCheck = false;
+      doInstallCheck = false;
+    });
   })
   (_: prev: {
     # Provide non-deprecated alias so upstream modules using pkgs.system don't emit warnings.
