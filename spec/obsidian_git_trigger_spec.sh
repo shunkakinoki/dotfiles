@@ -39,9 +39,9 @@ When run bash -c "grep 'flock -n' '$SCRIPT'"
 The output should include 'flock -n'
 End
 
-It 'rebases before pushing main'
-When run bash -c "grep 'rebase origin/main' '$SCRIPT'"
-The output should include 'rebase origin/main'
+It 'preserves concurrent vault writes while rebasing'
+When run bash -c "grep 'rebase --autostash origin/main' '$SCRIPT'"
+The output should include 'rebase --autostash origin/main'
 End
 
 It 'disables interactive signing for unattended commits'
