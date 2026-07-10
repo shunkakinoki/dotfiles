@@ -1,21 +1,37 @@
 #!/usr/bin/env bash
-# Trigger obsidian-git's commitAndSync via CDP.
-#
-# The Electron renderer's setTimeout doesn't fire under headless xvfb
-# (futex_wait_queue blocks the event loop pump), but CDP messages use
-# IPC and bypass the stuck loop. We trigger the backup and keep the
-# websocket open with ping-interval for 15s to pump the event loop
-# while git operations complete through the obsidian-git plugin.
+# Commit, rebase, and push the memory wiki without depending on Obsidian's
+# headless renderer or the obsidian-git community plugin.
 
-CDP="http://localhost:9222"
+set -euo pipefail
 
-WS_URL=$(@curl@/bin/curl -sf "$CDP/json" | @jq@/bin/jq -r '.[0].webSocketDebuggerUrl // empty')
-[ -z "$WS_URL" ] && exit 0
+VAULT="@vaultDir@"
+GIT="@git@/bin/git"
 
-# Send trigger, then keep stdin open for 15s so websocat stays alive.
-# The --ping-interval sends websocket pings that pump the Electron
-# event loop, allowing the obsidian-git promise queue to execute.
-{
-  echo '{"id":1,"method":"Runtime.evaluate","params":{"expression":"app.plugins.plugins['"'"'obsidian-git'"'"']?.automaticsManager?.doAutoCommitAndSync()"}}'
-  sleep 15
-} | @websocat@/bin/websocat --ping-interval 1 "$WS_URL" >/dev/null 2>&1 || true
+if ! "$GIT" -C "$VAULT" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  echo "wiki-git-sync: vault is not a Git checkout: $VAULT" >&2
+  exit 1
+fi
+
+BRANCH=$("$GIT" -C "$VAULT" symbolic-ref --short HEAD)
+if [ "$BRANCH" != "main" ]; then
+  echo "wiki-git-sync: expected main branch, found $BRANCH" >&2
+  exit 1
+fi
+
+exec 9>"$VAULT/.git/wiki-sync.lock"
+if ! @utilLinux@/bin/flock -n 9; then
+  exit 0
+fi
+
+"$GIT" -C "$VAULT" add -A
+
+if ! "$GIT" -C "$VAULT" diff --cached --quiet; then
+  "$GIT" -C "$VAULT" -c commit.gpgsign=false commit -m "vault backup: $(@coreutils@/bin/date -u '+%Y-%m-%d %H:%M:%S UTC')"
+fi
+
+"$GIT" -C "$VAULT" fetch origin main
+"$GIT" -C "$VAULT" rebase origin/main
+
+if [ "$("$GIT" -C "$VAULT" rev-parse HEAD)" != "$("$GIT" -C "$VAULT" rev-parse origin/main)" ]; then
+  "$GIT" -C "$VAULT" push origin HEAD:main
+fi

@@ -25,14 +25,14 @@ let
     )
   );
 
-  # Trigger obsidian-git's auto-backup via CDP. The Electron renderer's
-  # setTimeout doesn't fire under headless xvfb (futex blocks the event
-  # loop), but CDP uses IPC and bypasses it. All git operations still
-  # run through the obsidian-git plugin.
-  obsidianGitTrigger = pkgs.writeShellScriptBin "obsidian-git-trigger" (
+  # Sync the vault directly with Git. Headless Obsidian does not reliably
+  # load community plugins, so Git durability must not depend on its renderer.
+  wikiGitSync = pkgs.writeShellScriptBin "wiki-git-sync" (
     builtins.readFile (
       pkgs.replaceVars ./obsidian-git-trigger.sh {
-        inherit (pkgs) curl jq websocat;
+        inherit (pkgs) coreutils git;
+        utilLinux = pkgs.util-linux;
+        vaultDir = "${homeDir}/ghq/github.com/shunkakinoki/wiki";
       }
     )
   );
@@ -64,19 +64,19 @@ lib.mkIf host.isKyber {
 
   systemd.user.services.obsidian-git-trigger = {
     Unit = {
-      Description = "Trigger obsidian-git auto-backup via CDP";
-      After = [ "obsidian.service" ];
+      Description = "Commit and push the memory wiki vault";
+      After = [ "network-online.target" ];
       X-SwitchMethod = "keep-old";
     };
     Service = {
       Type = "oneshot";
-      ExecStart = "${obsidianGitTrigger}/bin/obsidian-git-trigger";
+      ExecStart = "${wikiGitSync}/bin/wiki-git-sync";
     };
   };
 
   systemd.user.timers.obsidian-git-trigger = {
     Unit = {
-      Description = "Trigger obsidian-git auto-backup every 3 minutes";
+      Description = "Commit and push the memory wiki every 3 minutes";
     };
     Timer = {
       OnBootSec = "2min";
