@@ -193,7 +193,7 @@ run_postinstall_if_needed() {
     local has_native=false
     for f in "$bin_dir"/*; do
       [ -f "$f" ] || continue
-      case "$f" in *.js | *.cjs | *.mjs) continue ;; esac
+      case "$f" in *.js | *.cjs | *.mjs | *.exe) continue ;; esac
       has_native=true
       break
     done
