@@ -66,6 +66,9 @@ voice_transcription = true
 workspace_dependencies = true
 workspace_owner_usage_nudge = true
 
+[agents]
+max_threads = 10
+
 [model_providers.cliproxyapi]
 name = "CLIProxyAPI"
 base_url = "http://localhost:8317/v1"
