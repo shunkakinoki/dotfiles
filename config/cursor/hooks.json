@@ -21,10 +21,18 @@
     ],
     "beforeReadFile": [
       {
+        "command": "command -v graphify >/dev/null 2>&1 && graphify hook-guard read",
+        "timeout": 5
+      },
+      {
         "command": "moshi-hook cursor-hook"
       }
     ],
     "beforeShellExecution": [
+      {
+        "command": "command -v graphify >/dev/null 2>&1 && graphify hook-guard search",
+        "timeout": 5
+      },
       {
         "command": "$HOME/dotfiles/config/shared/hooks/security.sh",
         "timeout": 5
