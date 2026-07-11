@@ -3914,9 +3914,9 @@ dependencies = [
 
 [[package]]
 name = "petname"
-version = "3.0.0"
+version = "3.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2ce610bff48dd7b6a127e45631795fbb0b302b99a39bef7e6da3d297e8eb2b6b"
+checksum = "1201345ec6f6630308d0549e198c58aff61df8033afe094f072def1ebe43eafa"
 dependencies = [
  "petname-macros",
  "rand 0.10.2",
@@ -7067,9 +7067,9 @@ dependencies = [
 
 [[package]]
 name = "worktrunk"
-version = "0.62.0"
+version = "0.65.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a54dad71b170001d588ef2354b0998d2a53f6929279d358c452b467d4efcc49c"
+checksum = "e99f2d28ec80c67732d712ed0443cad4531446435ca18ab0819f537df782284a"
 dependencies = [
  "ansi-str",
  "ansi-to-tui",
@@ -7103,6 +7103,7 @@ dependencies = [
  "path-slash",
  "pathdiff",
  "petname",
+ "petname-macros",
  "ratatui",
  "rayon",
  "reflink-copy",
