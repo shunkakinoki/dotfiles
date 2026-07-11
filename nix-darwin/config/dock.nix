@@ -22,7 +22,6 @@
       "/System/Applications/Notes.app"
       "/System/Applications/Mail.app"
       "/Applications/ChatGPT.app"
-      "/Applications/Codex.app"
       "/Applications/Claude.app"
       "/Applications/Cursor.app"
       "/Applications/OpenCode.app"
