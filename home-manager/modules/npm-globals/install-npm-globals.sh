@@ -277,6 +277,7 @@ if [ -n "$DEPS" ]; then
           # re-triggers the same bun transitive-optional drop.
           if repair_native_optional_dep "$dep"; then
             echo "$dep native binary repaired in place"
+            run_postinstall_if_needed "$dep"
             continue
           fi
           echo "$dep native binary repair failed, reinstalling wrapper"
@@ -307,7 +308,11 @@ if [ "${#MISSING[@]}" -gt 0 ]; then
     # Heal in the same run: bun drops transitive platform binaries on fresh
     # global installs, so repair immediately instead of waiting for next activation.
     if missing_native_optional_dep "$dep"; then
-      repair_native_optional_dep "$dep" || echo "Native binary repair failed: $dep" >&2
+      if repair_native_optional_dep "$dep"; then
+        run_postinstall_if_needed "$dep"
+      else
+        echo "Native binary repair failed: $dep" >&2
+      fi
     fi
   done
 else
