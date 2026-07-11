@@ -35,6 +35,10 @@
       {
         "command": "git-ai checkpoint gemini --hook-input stdin",
         "matcher": "write_file|replace"
+      },
+      {
+        "command": "command -v graphify >/dev/null 2>&1 && graphify hook-guard gemini",
+        "matcher": "read_file|list_directory"
       }
     ],
     "Notification": [

@@ -332,6 +332,26 @@
           }
         ],
         "matcher": "ExitPlanMode"
+      },
+      {
+        "hooks": [
+          {
+            "command": "command -v graphify >/dev/null 2>&1 && graphify hook-guard search",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "command": "command -v graphify >/dev/null 2>&1 && graphify hook-guard read",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "matcher": "Read|Glob"
       }
     ],
     "SessionEnd": [
