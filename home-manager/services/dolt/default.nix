@@ -37,6 +37,8 @@ lib.mkIf enabled {
   home.sessionVariables = {
     BEADS_DOLT_SHARED_SERVER = "1";
     BEADS_DOLT_SERVER_PORT = "3307";
+    DOLT_CLI_USER = "root";
+    DOLT_CLI_PASSWORD = "";
   };
 
   launchd.agents.dolt = lib.mkIf pkgs.stdenv.isDarwin {
