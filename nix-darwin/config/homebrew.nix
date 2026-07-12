@@ -19,10 +19,6 @@
       # to load formulae/casks from non-official taps unless explicitly trusted.
       # Mark our non-official taps as trusted so activation can install them.
       {
-        name = "anomalyco/tap";
-        trusted = true;
-      }
-      {
         name = "entireio/tap";
         trusted = true;
       }
@@ -127,7 +123,6 @@
       "claude-code"
       "cmux"
       "codex"
-      "codex-app"
       "codexbar"
       "conductor"
       "copilot-money"
