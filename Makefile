@@ -483,7 +483,15 @@ nix-build: nix-connect nix-trust ## Build Nix configuration.
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
 			HOST=runner HOSTNAME=runner $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.runner.config.system.build.toplevel $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
+			if [ -n "$(HOST)" ]; then \
+				echo "Building named home config: $(HOST)"; \
+				HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#homeConfigurations.$(HOST).activationPackage $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
+			elif [ -n "$(DETECTED_HOST)" ]; then \
+				echo "Auto-detected host: $(DETECTED_HOST)"; \
+				HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#homeConfigurations.$(DETECTED_HOST).activationPackage $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
+			else \
+				HOST=$(NIX_SYSTEM) HOSTNAME=$(NIX_SYSTEM) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
+			fi; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI build"; \
 			exit 1; \
@@ -521,7 +529,15 @@ nix-build: nix-connect nix-trust ## Build Nix configuration.
 				$(SUDO) env HOST=$(NIX_SYSTEM) HOSTNAME=$(NIX_SYSTEM) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM) --impure; \
 			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --impure --show-trace; \
+			if [ -n "$(HOST)" ]; then \
+				echo "Building named home config: $(HOST)"; \
+				HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#homeConfigurations.$(HOST).activationPackage $(NIX_FLAGS) --impure --show-trace; \
+			elif [ -n "$(DETECTED_HOST)" ]; then \
+				echo "Auto-detected host: $(DETECTED_HOST)"; \
+				HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#homeConfigurations.$(DETECTED_HOST).activationPackage $(NIX_FLAGS) --impure --show-trace; \
+			else \
+				HOST=$(NIX_SYSTEM) HOSTNAME=$(NIX_SYSTEM) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --impure --show-trace; \
+			fi; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI build"; \
 			exit 1; \
@@ -615,8 +631,14 @@ nix-switch: ## Activate Nix configuration.
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
 			if [ "$$SKIP_HOME_MANAGER_SWITCH" = "true" ]; then \
 				echo "⏭️ Home-manager switch skipped (SKIP_HOME_MANAGER_SWITCH=true)"; \
+			elif [ -n "$(HOST)" ]; then \
+				echo "Switching named home config: $(HOST)"; \
+				HOST=$(HOST) HOSTNAME=$(HOST) USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#homeConfigurations.$(HOST).activationPackage; \
+			elif [ -n "$(DETECTED_HOST)" ]; then \
+				echo "Auto-detected host: $(DETECTED_HOST)"; \
+				HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#homeConfigurations.$(DETECTED_HOST).activationPackage; \
 			else \
-				HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
+				HOST=$(NIX_SYSTEM) HOSTNAME=$(NIX_SYSTEM) USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
 			fi; \
 		else \
 			echo "Unsupported OS $(OS) for non-CI switch"; \
