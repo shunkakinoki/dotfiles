@@ -1,3 +1,4 @@
+{ pkgs, ... }:
 {
   networking = {
     applicationFirewall = {
@@ -7,6 +8,10 @@
       enable = false;
       enableStealthMode = false;
     };
+    dns = [
+      "1.1.1.1"
+      "8.8.8.8"
+    ];
     knownNetworkServices = [
       "Wi-Fi"
       "Ethernet Adaptor"
@@ -15,13 +20,19 @@
   };
 
   # Split DNS: route only Tailscale domains through Tailscale's DNS proxy.
-  # Regular DNS (internet, local router) is unaffected, so WiFi stays
-  # connectable even when the Tailscale tunnel is unreachable.
-  # Requires Tailscale's DNS proxy (100.100.100.100) to be active —
-  # ensure accept-dns=true in the Tailscale app (default).
+  # Keep Tailscale from installing its transient DNS proxy as the global
+  # resolver; regular internet DNS stays on the Wi-Fi service below.
   environment.etc = {
     "resolver/ts.net".text = ''
       nameserver 100.100.100.100
     '';
   };
+
+  # Tailscale is installed as a Homebrew app on macOS, so keep its mutable
+  # DNS preference aligned with this declarative split-DNS configuration.
+  system.activationScripts.tailscaleDns.text = ''
+    if ${pkgs.tailscale}/bin/tailscale status >/dev/null 2>&1; then
+      ${pkgs.tailscale}/bin/tailscale set --accept-dns=false || true
+    fi
+  '';
 }

@@ -13,7 +13,7 @@
   "grok": "grok-4.5",
   "glm": "glm-4.7",
   "minimax": "minimax-m2.7",
-  "gemma": "gemma-4-27b-it",
+  "gemma": "gemma-4-31b-it",
   "kimi": "kimi-2.6",
   "qwen": "qwen3.6-plus",
   "qwen-local": "qwen3.5-0.8b-optiq"

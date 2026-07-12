@@ -5,7 +5,7 @@
     extensions = with pkgs; [ gh-markdown-preview ];
     settings = {
       editor = "nvim";
-      git_protocol = "ssh";
+      git_protocol = "https";
       prompt = "enabled";
     };
   };
