@@ -7,6 +7,10 @@
       enable = false;
       enableStealthMode = false;
     };
+    dns = [
+      "1.1.1.1"
+      "8.8.8.8"
+    ];
     knownNetworkServices = [
       "Wi-Fi"
       "Ethernet Adaptor"
