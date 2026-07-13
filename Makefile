@@ -216,7 +216,28 @@ nvim-plugins-install: ## Download/build missing Neovim native plugin binaries (f
 	fi
 
 .PHONY: switch
-switch: nix-switch services nvim-plugins-install dotagents-sync ## Apply Nix configuration, restart services, and sync plugins.
+switch: nix-switch services nvim-plugins-install dotagents-sync ## Apply Nix config, refresh services/plugins, and update the Kyber Codex daemon.
+	@$(MAKE) codex-app-server-refresh
+
+.PHONY: codex-app-server-refresh
+codex-app-server-refresh: ## Update and restart the managed Codex app-server daemon on Kyber.
+	@set -euo pipefail; \
+	if [ "$(DETECTED_HOST)" != "kyber" ]; then \
+		echo "⏭️ Codex app-server refresh skipped (Kyber only)"; \
+		exit 0; \
+	fi; \
+	echo "🔄 Updating the Kyber Codex app-server daemon..."; \
+	curl -fsSL https://chatgpt.com/codex/install.sh \
+		| env PATH="$(HOME_DIR)/.local/bin:$$PATH" CODEX_NON_INTERACTIVE=1 sh; \
+	CODEX_BIN="$(HOME_DIR)/.local/bin/codex"; \
+	if ! "$$CODEX_BIN" app-server daemon restart; then \
+		echo "♻️ Replacing an unmanaged Codex app-server daemon..."; \
+		pkill -TERM -f '[c]odex app-server --listen unix://' || true; \
+		sleep 1; \
+		"$$CODEX_BIN" app-server daemon bootstrap; \
+	fi; \
+	"$$CODEX_BIN" app-server daemon version; \
+	echo "✅ Kyber Codex app-server daemon refreshed"
 
 .PHONY: clean
 clean: ## Clean up Nix generations older than 30 days and garbage collect.
