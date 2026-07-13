@@ -216,7 +216,45 @@ nvim-plugins-install: ## Download/build missing Neovim native plugin binaries (f
 	fi
 
 .PHONY: switch
-switch: nix-switch services nvim-plugins-install dotagents-sync ## Apply Nix configuration, restart services, and sync plugins.
+switch: nix-switch services nvim-plugins-install dotagents-sync ## Apply Nix config, refresh services/plugins, and refresh agent daemons.
+	@$(MAKE) refresh
+
+.PHONY: refresh
+refresh: refresh-codex-daemon refresh-claude-daemon ## Refresh the Codex and Claude daemons.
+
+.PHONY: refresh-codex-daemon
+refresh-codex-daemon: ## Restart the managed Codex app-server daemon on Kyber.
+	@set -euo pipefail; \
+	if [ "$(DETECTED_HOST)" != "kyber" ]; then \
+		echo "⏭️ Codex daemon refresh skipped (Kyber only)"; \
+		exit 0; \
+	fi; \
+	CODEX_BIN="$$(command -v codex || true)"; \
+	if [ -z "$$CODEX_BIN" ]; then \
+		echo "❌ Codex is not installed"; \
+		exit 1; \
+	fi; \
+	echo "🔄 Refreshing the Kyber Codex app-server daemon..."; \
+	"$$CODEX_BIN" app-server daemon restart; \
+	"$$CODEX_BIN" app-server daemon version; \
+	echo "✅ Kyber Codex app-server daemon refreshed"
+
+.PHONY: refresh-claude-daemon
+refresh-claude-daemon: ## Respawn Claude background sessions on the current binary on Kyber.
+	@set -euo pipefail; \
+	if [ "$(DETECTED_HOST)" != "kyber" ]; then \
+		echo "⏭️ Claude daemon refresh skipped (Kyber only)"; \
+		exit 0; \
+	fi; \
+	CLAUDE_BIN="$$(command -v claude || true)"; \
+	if [ -z "$$CLAUDE_BIN" ]; then \
+		echo "❌ Claude is not installed"; \
+		exit 1; \
+	fi; \
+	echo "🔄 Refreshing Kyber Claude background sessions..."; \
+	"$$CLAUDE_BIN" respawn --all; \
+	"$$CLAUDE_BIN" --version; \
+	echo "✅ Kyber Claude background sessions refreshed"
 
 .PHONY: clean
 clean: ## Clean up Nix generations older than 30 days and garbage collect.
