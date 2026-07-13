@@ -20,6 +20,7 @@
 .cache/
 .devenv/
 .jj/
+graphify-out/
 
 # Tmp files
 tmp
