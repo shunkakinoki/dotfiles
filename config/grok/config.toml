@@ -2,6 +2,7 @@ hints = { worktree_tip_dismissed = true }
 
 [harness]
 disable_codebase_upload = true
+trace_upload_enabled = false
 
 [ui]
 max_thoughts_width = 120
