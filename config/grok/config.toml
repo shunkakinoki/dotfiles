@@ -1,5 +1,8 @@
 hints = { worktree_tip_dismissed = true }
 
+[harness]
+disable_codebase_upload = true
+
 [ui]
 max_thoughts_width = 120
 fork_secondary_model = "grok-build"
