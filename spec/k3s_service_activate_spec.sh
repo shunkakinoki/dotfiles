@@ -16,6 +16,21 @@ The output should include 'set -euo pipefail'
 End
 End
 
+Describe 'config/k3s/k3s.service'
+SERVICE="$PWD/config/k3s/k3s.service"
+
+It 'restarts k3s after an unexpected exit'
+When run grep '^Restart=always$' "$SERVICE"
+The output should include 'Restart=always'
+The status should be success
+End
+
+It 'does not run the destructive killall helper after service exit'
+When run grep 'ExecStopPost=.*k3s-killall' "$SERVICE"
+The status should equal 1
+End
+End
+
 Describe 'sudo detection'
 It 'checks for sudo command'
 When run bash -c "grep 'command -v sudo' '$SCRIPT'"
