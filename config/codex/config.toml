@@ -1,7 +1,14 @@
 suppress_unstable_features_warning = true
 web_search = "cached"
 model = "gpt-5.6-sol"
-model_reasoning_effort = "xhigh"
+enabled-reasoning-efforts = ["medium", "high"]
+model_reasoning_effort = "high"
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
+personality = "pragmatic"
+model_verbosity = "low"
+model_reasoning_summary = "concise"
+notify = ["turn-ended"]
 oss_provider = "lmstudio"
 
 [features]
@@ -82,3 +89,15 @@ env_key = "OPENROUTER_API_KEY"
 model = "qwen3.5-0.8b-optiq"
 model_provider = "lmstudio"
 model_reasoning_effort = "minimal"
+
+[desktop]
+preventSleepWhileRunning = true
+show-context-window-usage = true
+notifications-turn-mode = "always"
+composerEnterBehavior = "cmdIfMultiline"
+
+[plugins."computer-use@openai-bundled"]
+enabled = true
+
+[plugins."browser@openai-bundled"]
+enabled = true
