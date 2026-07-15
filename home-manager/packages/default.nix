@@ -27,6 +27,7 @@ with pkgs;
   bat
   pkgs.llm-agents.bernstein
   broot
+  buildkite-cli
   bun
   choose
   clipse
