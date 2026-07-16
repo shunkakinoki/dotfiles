@@ -66,11 +66,12 @@ manifest_check = true
 # alt+..., cmd/super, and punctuation-with-modifiers may depend on your terminal/tmux setup.
 prefix = "ctrl+b"
 
-# Prefix-mode actions
+# Prefix-mode actions (tmux-aligned where possible; see tmux.conf)
 help = "prefix+?"
 settings = "prefix+s"
 detach = "prefix+q"
-reload_config = "prefix+shift+r"
+# tmux: source-file is prefix+t
+reload_config = "prefix+t"
 open_notification_target = "prefix+o"
 workspace_picker = "prefix+w"
 goto = "prefix+g"
@@ -78,7 +79,8 @@ new_workspace = "prefix+shift+n"
 new_worktree = "prefix+shift+g"
 open_worktree = ""                       # optional, unset by default
 remove_worktree = ""                     # optional, unset by default; opens confirmation
-rename_workspace = "prefix+shift+w"
+# tmux: rename-session is prefix+R
+rename_workspace = "prefix+shift+r"
 close_workspace = "prefix+shift+d"
 previous_workspace = ""                  # optional, unset by default
 next_workspace = ""                      # optional, unset by default
@@ -86,10 +88,11 @@ previous_agent = ""                      # optional, unset by default
 next_agent = ""                          # optional, unset by default
 focus_agent = ""                         # optional indexed binding, e.g. "prefix+alt+1..9"
 remote_image_paste = "ctrl+v"            # only active in herdr --remote; empty disables raw-key image paste
+# tmux windows → herdr tabs
 new_tab = "prefix+c"
-rename_tab = "prefix+shift+t"
-previous_tab = "prefix+p"
-next_tab = "prefix+n"
+rename_tab = "prefix+r"
+previous_tab = "prefix+,"
+next_tab = "prefix+."
 switch_tab = "prefix+1..9"
 switch_workspace = ""                    # optional indexed binding, e.g. "prefix+shift+1..9"
 close_tab = "prefix+shift+x"
@@ -99,14 +102,18 @@ focus_pane_left = "prefix+h"
 focus_pane_down = "prefix+j"
 focus_pane_up = "prefix+k"
 focus_pane_right = "prefix+l"
-cycle_pane_next = "prefix+tab"
-cycle_pane_previous = "prefix+shift+tab"
-last_pane = ""                           # optional, unset by default; bind e.g. "prefix+tab" for global back-and-forth
-split_vertical = "prefix+v"
-split_horizontal = "prefix+minus"
+# cycle moved off Tab so prefix+tab can mirror tmux last-session
+cycle_pane_next = "prefix+n"
+cycle_pane_previous = "prefix+p"
+# tmux: Tab is switch-client -l; closest herdr analog is last pane
+last_pane = "prefix+tab"
+# tmux -h (side-by-side) / -v (stacked)
+split_vertical = ["prefix+|", "prefix+%", "prefix+\\"]
+split_horizontal = ["prefix+-", "prefix+\"", "prefix+_"]
 close_pane = "prefix+x"
 zoom = "prefix+z"                        # legacy alias: fullscreen
-resize_mode = "prefix+r"
+# tmux uses r for rename-window; resize moved here
+resize_mode = "prefix+ctrl+r"
 toggle_sidebar = "prefix+b"
 
 # Navigate-mode movement. These local shortcuts win while navigate mode is open.
@@ -181,7 +188,7 @@ pane_borders = true
 pane_gaps = true
 
 # Show detected/reported agent labels in split pane borders when no manual pane name is set.
-show_agent_labels_on_pane_borders = false
+show_agent_labels_on_pane_borders = true
 
 # Agent panel ordering: "spaces" (grouped by space) or "priority" (attention queue).
 # "workspaces" is accepted as an alias for "spaces".
@@ -191,13 +198,30 @@ agent_panel_sort = "spaces"
 # Accepts: hex (#89b4fa), named colors (cyan, blue, magenta), or rgb(r,g,b)
 accent = "cyan"
 
+# Expanded agent rows in the sidebar.
+[ui.sidebar.agents]
+rows = [
+  [
+    "state_icon",
+    "workspace",
+    "tab",
+  ],
+  [
+    "agent",
+    "state_text",
+  ],
+  [
+    "terminal_title_stripped",
+  ],
+]
+
 # Background notification popup delivery
 [ui.toast]
 # off = disable pop-up notifications
 # herdr = show in-app toasts
 # terminal = ask the outer terminal to show a desktop notification
 # system = ask the OS notification service directly
-delivery = "off"
+delivery = "system"
 delay_seconds = 1
 
 [ui.toast.herdr]
