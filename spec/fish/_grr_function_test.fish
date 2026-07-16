@@ -1,5 +1,5 @@
 set fn (status dirname)/../../home-manager/programs/fish/functions
-source $fn/_grf_function.fish
+source $fn/_grr_function.fish
 
 # --- Test: on main, clean, ff-able -> pull --ff-only ---
 
@@ -33,7 +33,7 @@ function sleep
     echo "sleep $argv" >> $call_log
 end
 
-_grf_function --once
+_grr_function --once
 set exit_code $status
 
 @test "pull: succeeds" $exit_code -eq 0
@@ -72,7 +72,7 @@ function date
     echo "2026-07-16 12:00:00"
 end
 
-_grf_function --once
+_grr_function --once
 set exit_code $status
 
 @test "diverged: succeeds" $exit_code -eq 0
@@ -107,7 +107,7 @@ function date
     echo "2026-07-16 12:00:00"
 end
 
-_grf_function --once
+_grr_function --once
 set exit_code $status
 
 @test "other-branch: succeeds" $exit_code -eq 0
@@ -144,7 +144,7 @@ function date
     echo "2026-07-16 12:00:00"
 end
 
-_grf_function --once 2>$err_log
+_grr_function --once 2>$err_log
 set exit_code $status
 
 @test "dirty: non-zero exit" $exit_code -ne 0
@@ -157,11 +157,11 @@ rm -f $call_log $err_log
 # --- Test: unknown argument aborts ---
 
 set err_log (mktemp)
-_grf_function --bogus 2>$err_log
+_grr_function --bogus 2>$err_log
 set exit_code $status
 
 @test "bogus: exits 2" $exit_code -eq 2
-@test "bogus: prints usage" (grep -c "usage: grf" $err_log) -ge 1
+@test "bogus: prints usage" (grep -c "usage: grr" $err_log) -ge 1
 
 rm -f $err_log
 
@@ -187,7 +187,7 @@ function date
     echo "2026-07-16 12:00:00"
 end
 
-_grf_function --once 2>$err_log
+_grr_function --once 2>$err_log
 set exit_code $status
 
 @test "fail: non-zero exit" $exit_code -ne 0
