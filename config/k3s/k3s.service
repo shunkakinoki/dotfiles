@@ -19,7 +19,6 @@ Restart=always
 RestartSec=5s
 ExecStartPre=-@coreutils@/bin/rm -f /run/k3s/containerd/containerd.sock
 ExecStart=@k3s@/bin/k3s server
-ExecStopPost=-@k3s@/bin/k3s-killall.sh
 
 [Install]
 WantedBy=multi-user.target
