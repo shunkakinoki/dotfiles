@@ -74,13 +74,6 @@ let
           username = "shunkakinoki";
         }).config.system.build.toplevel;
 
-    eval-nixos-matic-iso =
-      mkEvalCheck "nixos-matic-iso"
-        (import ../named-hosts/matic/iso.nix {
-          inherit inputs;
-          username = "shunkakinoki";
-        }).config.system.build.isoImage;
-
     eval-nixos-viper =
       mkEvalCheck "nixos-viper"
         (import ../named-hosts/viper {

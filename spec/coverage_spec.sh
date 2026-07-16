@@ -177,10 +177,6 @@ It 'has spec file for home-manager/modules/uv-globals/install-uv-globals.sh'
 The path "spec/uv_globals_spec.sh" should be exist
 End
 
-It 'has spec file for named-hosts/matic/falcon-init.sh'
-The path "spec/falcon_init_spec.sh" should be exist
-End
-
 It 'has spec file for named-hosts/matic/pam-gnome-keyring-tpm-unlock.sh'
 The path "spec/pam_gnome_keyring_tpm_unlock_spec.sh" should be exist
 End
@@ -477,7 +473,6 @@ named-hosts/kyber/activate-backup-files.sh
 named-hosts/kyber/activate-ip-forwarding.sh
 named-hosts/kyber/rekey-galactica.sh
 named-hosts/kyber/setup.sh
-named-hosts/matic/falcon-init.sh
 named-hosts/matic/pam-gnome-keyring-tpm-unlock.sh
 nix-darwin/config/keyboard/apply-hid-user-key-mappings.sh
 nix-darwin/services/pmset-battery-policy/power-policy.sh

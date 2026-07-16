@@ -149,10 +149,6 @@
                 inherit inputs;
                 username = "skakinoki";
               };
-              maticIso = import ./named-hosts/matic/iso.nix {
-                inherit inputs;
-                username = "skakinoki";
-              };
               viper = import ./named-hosts/viper {
                 inherit inputs;
                 username = "shunkakinoki";
