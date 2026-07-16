@@ -4,6 +4,8 @@
 Describe 'config/codex/activate.sh'
 SCRIPT="$PWD/config/codex/activate.sh"
 HOOKS_JSON="$PWD/config/codex/hooks.json"
+CONFIG_TOML="$PWD/config/codex/config.toml"
+DESKTOP_SETTINGS_JSON="$PWD/config/codex/desktop-settings.json"
 
 It 'uses bash shebang'
 When run bash -c "head -1 '$SCRIPT'"
@@ -23,6 +25,38 @@ End
 It 'copies hooks.json'
 When run bash -c "grep 'HOOKS_JSON' '$SCRIPT'"
 The output should include 'HOOKS_JSON'
+End
+
+It 'declares the Codex Desktop Git and worktree preferences'
+When run jq -r '[.["git-branch-prefix"], .["git-pull-request-merge-method"], .["git-always-force-push"], .["git-create-pull-request-as-draft"], .["worktree-auto-cleanup-enabled"], .["worktree-keep-count"]] | @tsv' "$DESKTOP_SETTINGS_JSON"
+The output should eq 'codex/	squash	true	true	true	300'
+End
+
+It 'persists inline review delivery through config.toml'
+When run grep -qF 'reviewDelivery = "inline"' "$CONFIG_TOML"
+The status should be success
+End
+
+It 'merges managed Desktop settings without replacing unrelated state'
+TMP_HOME="$(mktemp -d)"
+mkdir -p "$TMP_HOME/.codex"
+cat >"$TMP_HOME/.codex/.codex-global-state.json" <<'JSON'
+{
+  "unrelated-top-level": "preserved",
+  "electron-persisted-atom-state": {
+    "unrelated-setting": 42,
+    "git-always-force-push": false
+  }
+}
+JSON
+
+When run bash -c 'HOME="$1" bash "$2" "$3" "$4" "$5" "$6" && jq -r ".[\"unrelated-top-level\"], .[\"electron-persisted-atom-state\"][\"unrelated-setting\"], .[\"electron-persisted-atom-state\"][\"git-always-force-push\"], .[\"electron-persisted-atom-state\"][\"git-pull-request-merge-method\"], .[\"electron-persisted-atom-state\"][\"worktree-keep-count\"]" "$1/.codex/.codex-global-state.json"' _ "$TMP_HOME" "$SCRIPT" "$CONFIG_TOML" "$HOOKS_JSON" "$DESKTOP_SETTINGS_JSON" "$(command -v jq)"
+The status should be success
+The line 1 should eq 'preserved'
+The line 2 should eq '42'
+The line 3 should eq 'true'
+The line 4 should eq 'squash'
+The line 5 should eq '300'
 End
 
 It 'registers the shared main/master push blocker'
