@@ -146,6 +146,7 @@
       grs = "_grs_function";
       grco = "_grco_function";
       grcr = "_grcr_function";
+      grr = "_grr_function";
       grwxe = "_grwxe_function";
       grwxeh = "_grwxeh_function";
       grxe = "_grxe_function";
@@ -273,6 +274,7 @@
         "_install_uv_globals_function"
         "_grco_function"
         "_grcr_function"
+        "_grr_function"
         "_grwxe_function"
         "_grwxeh_function"
         "_grxe_function"
