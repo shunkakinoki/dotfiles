@@ -3,9 +3,6 @@
   username,
   ...
 }:
-let
-  falconDebExists = builtins.pathExists /etc/nixos/falcon-sensor.deb;
-in
 import ../../hosts/nixos {
   inherit inputs username;
   hostname = "matic";
@@ -26,9 +23,6 @@ import ../../hosts/nixos {
 
     # Shared keyd config and application mapper wiring
     ../../config/keyd/default.nix
-
-    # Kolide launcher
-    ./kolide.nix
 
     # System configuration
     (
@@ -51,9 +45,6 @@ import ../../hosts/nixos {
         boot.initrd.luks.devices."luks-4a2ddfc4-1a40-4e18-99f5-250baf72b4ac".crypttabExtraOpts = [
           "tpm2-device=auto"
         ];
-
-        # Pin kernel to 6.18 for CrowdStrike Falcon compatibility (RFM on 6.19)
-        boot.kernelPackages = pkgs.linuxPackages_6_18;
 
         # Filesystem hardening
         boot.kernel.sysctl = {
@@ -359,7 +350,7 @@ import ../../hosts/nixos {
           options mt7925e disable_aspm=1
         '';
 
-        # Enable nix-ld for running dynamically linked binaries (CrowdStrike, Kolide, etc.)
+        # Enable nix-ld for running dynamically linked binaries
         programs.nix-ld.enable = true;
         programs.nix-ld.libraries = with pkgs; [
           curl
@@ -577,6 +568,5 @@ import ../../hosts/nixos {
           };
       }
     )
-  ]
-  ++ (if falconDebExists then [ ./falcon.nix ] else [ ]);
+  ];
 }
