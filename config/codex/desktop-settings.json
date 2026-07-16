@@ -1,0 +1,8 @@
+{
+  "git-branch-prefix": "codex/",
+  "git-always-force-push": true,
+  "git-create-pull-request-as-draft": true,
+  "git-pull-request-merge-method": "squash",
+  "worktree-auto-cleanup-enabled": true,
+  "worktree-keep-count": 300
+}

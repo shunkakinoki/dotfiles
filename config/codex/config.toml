@@ -95,6 +95,7 @@ preventSleepWhileRunning = true
 show-context-window-usage = true
 notifications-turn-mode = "always"
 composerEnterBehavior = "cmdIfMultiline"
+reviewDelivery = "inline"
 
 [plugins."computer-use@openai-bundled"]
 enabled = true
