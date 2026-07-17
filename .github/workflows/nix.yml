@@ -76,6 +76,8 @@ jobs:
         uses: jlumbroso/free-disk-space@v1.3.1
         with:
           tool-cache: true
+      - name: Relocate Nix Store to /mnt
+        run: make nix-relocate-store
       - name: Install Nix
         uses: cachix/install-nix-action@v31
         with:
@@ -103,6 +105,8 @@ jobs:
         uses: jlumbroso/free-disk-space@v1.3.1
         with:
           tool-cache: true
+      - name: Relocate Nix Store to /mnt
+        run: make nix-relocate-store
       - name: Install Nix
         uses: cachix/install-nix-action@v31
         with:
