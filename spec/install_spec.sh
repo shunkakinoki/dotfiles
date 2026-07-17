@@ -95,6 +95,16 @@ When run bash -c "grep 'command -v make' '$SCRIPT'"
 The output should include 'command -v make'
 End
 
+It 'uses gnumake from nixpkgs when make is absent'
+When run bash -c "grep 'shell nixpkgs#gnumake --command make install' '$SCRIPT'"
+The output should include 'shell nixpkgs#gnumake --command make install'
+End
+
+It 'does not use apt-get to bootstrap make'
+When run bash -c "grep 'apt-get install make' '$SCRIPT'"
+The status should be failure
+End
+
 It 'runs make install'
 When run bash -c "grep 'make install' '$SCRIPT'"
 The output should include 'make install'

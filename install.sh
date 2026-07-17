@@ -128,15 +128,20 @@ else
   fi
 fi
 
-# Handle `make` installation
+# Use make from nixpkgs when the base system does not provide it. This avoids
+# invoking the non-setuid sudo package binary on fresh NixOS machines.
 if ! command -v make >/dev/null 2>&1; then
-  echo "Installing make..."
-  if [ "$OS" = "macos" ]; then
-    brew install make
-  else
-    sudo apt-get install make
-  fi
+  echo "make is not installed; it will be provided temporarily by nixpkgs."
 fi
+
+run_make_install() {
+  if command -v make >/dev/null 2>&1; then
+    HOST="$HOST" make install
+  else
+    HOST="$HOST" nix --extra-experimental-features "nix-command flakes" \
+      shell nixpkgs#gnumake --command make install
+  fi
+}
 
 # Install Nix packages
 echo "Running installation commands..."
@@ -146,11 +151,13 @@ fi
 if [ -n "$NIX_EFFECTIVE_BIN_PATH" ] && [ -d "$NIX_EFFECTIVE_BIN_PATH" ]; then
   echo "Prepending $NIX_EFFECTIVE_BIN_PATH to PATH for 'make install' command."
   echo "Ensuring USER=$USER and CI=$CI are passed to make install."
-  env PATH="$NIX_EFFECTIVE_BIN_PATH:$PATH" USER="$USER" CI="$CI" HOST="$HOST" make install
+  PATH="$NIX_EFFECTIVE_BIN_PATH:$PATH"
+  export PATH USER CI HOST
+  run_make_install
 else
   echo "Warning: NIX_EFFECTIVE_BIN_PATH ('$NIX_EFFECTIVE_BIN_PATH') is not set or not a directory."
   echo "Running 'make install' with potentially incomplete PATH. Current PATH: $PATH"
   echo "Attempting to find nix via 'command -v nix': $(command -v nix || echo 'nix not found in current PATH')"
   echo "USER=$USER will be available to make install (exported)."
-  HOST="$HOST" make install
+  run_make_install
 fi

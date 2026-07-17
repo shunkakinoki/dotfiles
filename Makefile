@@ -123,10 +123,10 @@ DARWIN_REBUILD := $(shell command -v darwin-rebuild 2>/dev/null || echo "./resul
 
 # Sudo path (NixOS uses /run/wrappers/bin/sudo)
 SUDO := $(shell \
-	if command -v sudo >/dev/null 2>&1; then \
-		echo "sudo"; \
-	elif [ -x /run/wrappers/bin/sudo ]; then \
+	if [ -x /run/wrappers/bin/sudo ]; then \
 		echo "/run/wrappers/bin/sudo"; \
+	elif command -v sudo >/dev/null 2>&1; then \
+		echo "sudo"; \
 	elif [ -x /usr/bin/sudo ]; then \
 		echo "/usr/bin/sudo"; \
 	else \
