@@ -75,7 +75,7 @@ jobs:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@v1.3.1
         with:
-          tool-cache: false
+          tool-cache: true
       - name: Install Nix
         uses: cachix/install-nix-action@v31
         with:
@@ -102,7 +102,7 @@ jobs:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@v1.3.1
         with:
-          tool-cache: false
+          tool-cache: true
       - name: Install Nix
         uses: cachix/install-nix-action@v31
         with:

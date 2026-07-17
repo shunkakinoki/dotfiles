@@ -20,6 +20,10 @@ jobs:
         uses: cachix/install-nix-action@v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          extra_nix_config: |
+            fallback = true
+            connect-timeout = 10
+            download-attempts = 5
       - name: Validate Neovim Configuration (Dev Shell)
         run: make lua-check-neovim-dev
   lua-neovim-test:
@@ -32,6 +36,10 @@ jobs:
         uses: cachix/install-nix-action@v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          extra_nix_config: |
+            fallback = true
+            connect-timeout = 10
+            download-attempts = 5
       - name: Run Neovim Tests (Dev Shell)
         run: make neovim-test-dev
   lua-hammerspoon:
@@ -44,6 +52,10 @@ jobs:
         uses: cachix/install-nix-action@v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          extra_nix_config: |
+            fallback = true
+            connect-timeout = 10
+            download-attempts = 5
       - name: Validate Hammerspoon Configuration (Dev Shell)
         run: make lua-check-hammerspoon-dev
   lua-check:
