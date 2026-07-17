@@ -127,14 +127,26 @@ let
 
         services.getty.autologinUser = lib.mkIf isRunner "root";
         boot.loader.timeout = lib.mkIf isRunner 0;
+        boot.initrd.availableKernelModules = lib.optionals (!isRunner) [ "nvme" ];
 
         boot.consoleLogLevel = 7;
         services.journald.extraConfig = "Storage=volatile";
 
         fileSystems."/" = {
-          device = "/dev/sda1";
+          device = if isRunner then "/dev/sda1" else "/dev/disk/by-label/root";
           fsType = "ext4";
         };
+        fileSystems."/boot" = lib.mkIf (!isRunner) {
+          device = "/dev/disk/by-partlabel/EFI";
+          fsType = "vfat";
+          options = [
+            "fmask=0077"
+            "dmask=0077"
+          ];
+        };
+        swapDevices = lib.optionals (!isRunner) [
+          { device = "/dev/disk/by-label/swap"; }
+        ];
 
         fonts.packages = with pkgs; [
           nerd-fonts.jetbrains-mono

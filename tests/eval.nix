@@ -53,19 +53,29 @@ let
   # --- NixOS configurations (x86_64-linux only) ---
   nixosChecks = lib.optionalAttrs (system == "x86_64-linux") {
     eval-nixos-default =
-      mkEvalCheck "nixos-default"
-        (import ../hosts/nixos {
+      let
+        nixosDefault = import ../hosts/nixos {
           inherit inputs;
           username = "shunkakinoki";
-        }).config.system.build.toplevel;
+        };
+      in
+      assert nixosDefault.config.fileSystems."/".device == "/dev/disk/by-label/root";
+      assert nixosDefault.config.fileSystems."/boot".device == "/dev/disk/by-partlabel/EFI";
+      assert lib.elem "nvme" nixosDefault.config.boot.initrd.availableKernelModules;
+      assert builtins.length nixosDefault.config.swapDevices == 1;
+      assert (builtins.head nixosDefault.config.swapDevices).device == "/dev/disk/by-label/swap";
+      mkEvalCheck "nixos-default" nixosDefault.config.system.build.toplevel;
 
     eval-nixos-runner =
-      mkEvalCheck "nixos-runner"
-        (import ../hosts/nixos {
+      let
+        nixosRunner = import ../hosts/nixos {
           inherit inputs;
           isRunner = true;
           username = "runner";
-        }).config.system.build.toplevel;
+        };
+      in
+      assert nixosRunner.config.fileSystems."/".device == "/dev/sda1";
+      mkEvalCheck "nixos-runner" nixosRunner.config.system.build.toplevel;
 
     eval-nixos-matic =
       mkEvalCheck "nixos-matic"
