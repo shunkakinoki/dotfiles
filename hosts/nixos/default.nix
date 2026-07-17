@@ -90,9 +90,13 @@ let
     (
       { lib, ... }:
       {
-        boot.loader.grub.enable = true;
-        boot.loader.grub.device = "/dev/sda";
-        boot.loader.grub.useOSProber = true;
+        boot.loader.grub = {
+          enable = true;
+          device = if isRunner then "/dev/sda" else "nodev";
+          efiSupport = !isRunner;
+          useOSProber = true;
+        };
+        boot.loader.efi.canTouchEfiVariables = !isRunner;
         boot.loader.systemd-boot.configurationLimit = 10;
 
         users.users.${username} = {
