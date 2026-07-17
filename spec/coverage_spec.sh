@@ -244,6 +244,10 @@ It 'has spec file for config/codex/activate.sh'
 The path "spec/activate_config_spec.sh" should be exist
 End
 
+It 'has spec file for config/codex/sync-desktop-settings.sh'
+The path "spec/activate_config_spec.sh" should be exist
+End
+
 It 'has spec file for config/dcg/activate.sh'
 The path "spec/activate_config_spec.sh" should be exist
 End
@@ -386,6 +390,7 @@ config/claude/hooks/security.sh
 config/claude/hooks/atuin-history.sh
 config/claude/hooks/statusline.sh
 config/codex/activate.sh
+config/codex/sync-desktop-settings.sh
 config/copilot/activate.sh
 config/codex/hooks/atuin-history.sh
 config/dcg/activate.sh
