@@ -246,8 +246,8 @@ import ../../hosts/nixos {
 
         # Power button behavior - lock screen instead of shutdown
         services.logind.settings.Login.HandlePowerKey = "lock";
-        # Suspend on battery lid close; on AC, Hyprland locks on the lid switch event.
-        services.logind.settings.Login.HandleLidSwitch = "suspend";
+        # Hibernate on battery lid close; on AC, Hyprland locks on the lid switch event.
+        services.logind.settings.Login.HandleLidSwitch = "hibernate";
         services.logind.settings.Login.HandleLidSwitchExternalPower = "ignore";
 
         # Auto timezone (via geolocation)

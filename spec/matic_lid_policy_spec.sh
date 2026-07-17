@@ -4,9 +4,9 @@
 Describe 'named-hosts/matic/default.nix lid policy'
 CONFIG="$PWD/named-hosts/matic/default.nix"
 
-It 'keeps battery lid close as suspend'
-When run bash -c "grep -F 'services.logind.settings.Login.HandleLidSwitch = \"suspend\";' '$CONFIG'"
-The output should include 'HandleLidSwitch = "suspend"'
+It 'hibernates on battery lid close'
+When run bash -c "grep -F 'services.logind.settings.Login.HandleLidSwitch = \"hibernate\";' '$CONFIG'"
+The output should include 'HandleLidSwitch = "hibernate"'
 End
 
 It 'lets Hyprland handle lid close while on AC power'
