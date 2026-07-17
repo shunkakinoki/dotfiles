@@ -147,7 +147,7 @@
               };
               matic = import ./named-hosts/matic {
                 inherit inputs;
-                username = "skakinoki";
+                username = "shunkakinoki";
               };
               viper = import ./named-hosts/viper {
                 inherit inputs;
