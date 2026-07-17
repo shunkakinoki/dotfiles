@@ -36,6 +36,17 @@ jobs:
           haskell: true
           large-packages: true
           swap-storage: true
+      - name: Relocate Nix Store to /mnt
+        if: runner.os == 'Linux'
+        run: |
+          set -euo pipefail
+          if ! mountpoint -q /mnt; then
+            echo "/mnt is not a separate mount; leaving the Nix store on /"
+            exit 0
+          fi
+          sudo mkdir -p /mnt/nix /nix
+          sudo mount --bind /mnt/nix /nix
+          df -h /nix
       - name: KVM Linux Virtualization
         if: runner.os == 'Linux'
         run: |
