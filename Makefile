@@ -480,6 +480,26 @@ nix-install: ## Install Nix if not already installed.
 	fi
 	@echo "✅ Nix environment installed!"
 
+.PHONY: nix-relocate-store
+nix-relocate-store: ## Relocate the Nix store to /mnt (CI-only, Linux runners).
+	@if [ "$(OS)" != "Linux" ]; then \
+		echo "🏃‍♂️ Nix store relocation is Linux-only. Skipping on $(OS)."; \
+	elif [ "$$CI" != "true" ]; then \
+		echo "🏃‍♂️ Nix store relocation only runs in CI. Skipping."; \
+	elif ! mountpoint -q /mnt; then \
+		echo "ℹ️ /mnt is not a separate mount. Leaving the Nix store on /."; \
+	elif mountpoint -q /nix; then \
+		echo "✅ /nix is already a separate mount. Skipping."; \
+	elif [ -d /nix ] && [ -n "$$(ls -A /nix 2>/dev/null)" ]; then \
+		echo "ℹ️ /nix already exists and is not empty. Leaving it alone."; \
+	else \
+		echo "💾 Relocating the Nix store to /mnt/nix..."; \
+		$(SUDO) mkdir -p /mnt/nix /nix; \
+		$(SUDO) mount --bind /mnt/nix /nix; \
+		df -h /nix; \
+		echo "✅ Nix store relocated to /mnt/nix"; \
+	fi
+
 ##@ Nix
 
 .PHONY: nix-update
@@ -927,6 +947,28 @@ docker-build: ## Build Docker image.
 	@echo "🐳 Building Docker image: $(DOCKER_IMAGE_LATEST) and $(DOCKER_IMAGE_TAGGED)..."
 	@docker build -t $(DOCKER_IMAGE_LATEST) -t $(DOCKER_IMAGE_TAGGED) -f Dockerfile .
 	@echo "✅ Docker image built: $(DOCKER_IMAGE_LATEST) and $(DOCKER_IMAGE_TAGGED)"
+
+.PHONY: docker-relocate-root
+docker-relocate-root: ## Relocate the Docker data root to /mnt (CI-only, Linux runners).
+	@if [ "$(OS)" != "Linux" ]; then \
+		echo "🏃‍♂️ Docker data root relocation is Linux-only. Skipping on $(OS)."; \
+	elif [ "$$CI" != "true" ]; then \
+		echo "🏃‍♂️ Docker data root relocation only runs in CI. Skipping."; \
+	elif ! mountpoint -q /mnt; then \
+		echo "ℹ️ /mnt is not a separate mount. Leaving the Docker data root on /."; \
+	else \
+		echo "🐳 Relocating the Docker data root to /mnt/docker..."; \
+		$(SUDO) mkdir -p /mnt/docker /etc/docker; \
+		if [ -s /etc/docker/daemon.json ]; then \
+			jq '. + {"data-root": "/mnt/docker"}' /etc/docker/daemon.json > /tmp/daemon.json; \
+		else \
+			echo '{"data-root": "/mnt/docker"}' > /tmp/daemon.json; \
+		fi; \
+		$(SUDO) mv /tmp/daemon.json /etc/docker/daemon.json; \
+		$(SUDO) systemctl restart docker; \
+		docker info -f 'Docker root dir: {{ .DockerRootDir }}'; \
+		echo "✅ Docker data root relocated to /mnt/docker"; \
+	fi
 
 ##@ Neovim
 

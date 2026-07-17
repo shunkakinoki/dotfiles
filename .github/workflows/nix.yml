@@ -77,15 +77,7 @@ jobs:
         with:
           tool-cache: true
       - name: Relocate Nix Store to /mnt
-        run: |
-          set -euo pipefail
-          if ! mountpoint -q /mnt; then
-            echo "/mnt is not a separate mount; leaving the Nix store on /"
-            exit 0
-          fi
-          sudo mkdir -p /mnt/nix /nix
-          sudo mount --bind /mnt/nix /nix
-          df -h /nix
+        run: make nix-relocate-store
       - name: Install Nix
         uses: cachix/install-nix-action@v31
         with:
@@ -114,15 +106,7 @@ jobs:
         with:
           tool-cache: true
       - name: Relocate Nix Store to /mnt
-        run: |
-          set -euo pipefail
-          if ! mountpoint -q /mnt; then
-            echo "/mnt is not a separate mount; leaving the Nix store on /"
-            exit 0
-          fi
-          sudo mkdir -p /mnt/nix /nix
-          sudo mount --bind /mnt/nix /nix
-          df -h /nix
+        run: make nix-relocate-store
       - name: Install Nix
         uses: cachix/install-nix-action@v31
         with:
