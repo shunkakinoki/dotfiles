@@ -19,8 +19,13 @@ If the boot chain changes (firmware/kernel update), TPM2 will refuse and fall ba
 ## Building and Switching
 
 ```bash
-make build HOST=matic && make switch HOST=matic
+make build
+make switch
 ```
+
+The Makefile detects matic from its Framework 13 AMD AI 300 DMI identity, even
+when a recovery generation still uses a generic hostname. `HOST=matic` remains
+available as an explicit override.
 
 Or use `boot` instead of `switch` for major config changes (avoids dbus reload issues):
 
