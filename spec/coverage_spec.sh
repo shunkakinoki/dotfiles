@@ -113,6 +113,10 @@ It 'has spec file for home-manager/services/neverssl-keepalive/keepalive.sh'
 The path "spec/keepalive_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/night-shift/apply-night-shift.sh'
+The path "spec/night_shift_spec.sh" should be exist
+End
+
 It 'has spec file for install.sh'
 The path "spec/install_spec.sh" should be exist
 End
@@ -466,6 +470,7 @@ home-manager/services/gas-town/start.sh
 home-manager/services/k3s/activate.sh
 home-manager/services/make-updater/update.sh
 home-manager/services/neverssl-keepalive/keepalive.sh
+home-manager/services/night-shift/apply-night-shift.sh
 hosts/darwin/activate-remove-backups.sh
 hosts/linux/activate-backup-files.sh
 install.sh
