@@ -21,6 +21,7 @@ let
   keydApplicationMapper = ./keyd-application-mapper;
   makeUpdater = import ./make-updater { inherit pkgs; };
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
+  nightShift = import ./night-shift { inherit pkgs; };
   obsidian = import ./obsidian { inherit config pkgs inputs; };
   ollama = ./ollama;
   qmd = ./qmd;
@@ -46,6 +47,7 @@ in
   keydApplicationMapper
   makeUpdater
   neversslKeepalive
+  nightShift
   obsidian
   ollama
   qmd
