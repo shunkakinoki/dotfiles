@@ -38,6 +38,8 @@ NIX_USER_TRUSTED := $(shell grep -qE "trusted-users.*=.*(\\*|$(shell whoami))" /
 NAMED_HOSTS := galactica kyber matic pod viper
 NIXOS_NAMED_HOSTS := $(filter matic viper,$(NAMED_HOSTS))
 ISO_NAMED_HOSTS := $(filter matic viper,$(NAMED_HOSTS))
+DMI_SYS_VENDOR ?= $(shell cat /sys/class/dmi/id/sys_vendor 2>/dev/null || true)
+DMI_PRODUCT_NAME ?= $(shell cat /sys/class/dmi/id/product_name 2>/dev/null || true)
 
 # Nix configuration system
 NIX_SYSTEM := $(shell if [ "$(OS)" = "Darwin" ] && [ "$(ARCH)" = "arm64" ]; then \
@@ -105,6 +107,9 @@ DETECTED_HOST := $(shell \
 			if [ "$$hostname" = "kyber" ]; then \
 				echo "kyber"; \
 			elif [ "$$hostname" = "matic" ]; then \
+				echo "matic"; \
+			elif [ "$(DMI_SYS_VENDOR)" = "Framework" ] \
+				&& echo "$(DMI_PRODUCT_NAME)" | grep -q "Laptop 13.*AMD Ryzen AI 300"; then \
 				echo "matic"; \
 			else \
 				echo ""; \
