@@ -25,6 +25,23 @@ The output should include 'Restart=always'
 The status should be success
 End
 
+Describe 'containerd cleanup timer'
+It 'installs cleanup as a host-level systemd timer'
+When run bash -c "grep -q 'k3s-containerd-cleanup.service' home-manager/services/k3s/activate.sh && grep -q 'enable --now k3s-containerd-cleanup.timer' home-manager/services/k3s/activate.sh"
+The status should be success
+End
+
+It 'only removes exited containers and not-ready sandboxes'
+When run bash -c "grep -q 'ps -a --state Exited' config/k3s/containerd-cleanup.sh && grep -q 'pods --state NotReady' config/k3s/containerd-cleanup.sh"
+The status should be success
+End
+
+It 'bounds every runtime cleanup operation'
+When run grep -q 'timeout 10' config/k3s/containerd-cleanup.sh
+The status should be success
+End
+End
+
 It 'does not run the destructive killall helper after service exit'
 When run grep 'ExecStopPost=.*k3s-killall' "$SERVICE"
 The status should equal 1
