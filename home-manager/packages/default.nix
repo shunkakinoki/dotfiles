@@ -187,6 +187,7 @@ with pkgs;
   celluloid
   cheese
   chromium
+  pkgs.llm-agents.claude-desktop
   clickup
   cliphist
   code-cursor
