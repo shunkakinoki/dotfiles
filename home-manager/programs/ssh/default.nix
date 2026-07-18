@@ -32,6 +32,10 @@
         IdentityFile = [ "~/.ssh/id_rsa" ];
         IdentitiesOnly = "yes";
       };
+      "matic" = {
+        HostName = "matic.tail950b36.ts.net";
+        User = "shunkakinoki";
+      };
       "github.com" = {
         ServerAliveInterval = 0;
         IdentityFile = [ "~/.ssh/id_ed25519_github" ];

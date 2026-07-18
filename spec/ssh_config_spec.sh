@@ -17,4 +17,16 @@ The output should include 'IdentityFile = [ "~/.ssh/id_rsa" ]'
 The output should include 'IdentitiesOnly = "yes"'
 End
 End
+
+Describe 'matic host'
+It 'resolves the bare matic alias so herdr --remote matic works'
+When run bash -c "grep 'HostName =' '$SSH_CONFIG_NIX' | grep matic"
+The output should include 'matic.tail950b36.ts.net'
+End
+
+It 'uses the shunkakinoki login'
+When run bash -c "grep -A2 '\"matic\" = {' '$SSH_CONFIG_NIX'"
+The output should include 'User = "shunkakinoki"'
+End
+End
 End
