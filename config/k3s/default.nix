@@ -8,6 +8,11 @@
 let
   inherit (inputs.host) isKyber isGalactica;
   kubeconfig = "${config.home.homeDirectory}/.kube/config-kyber";
+  containerdCleanup = pkgs.writeShellApplication {
+    name = "k3s-containerd-cleanup";
+    runtimeInputs = [ pkgs.coreutils ];
+    text = builtins.readFile ./containerd-cleanup.sh;
+  };
   # Authorize galactica on kyber so the client activation can scp the
   # kubeconfig over Tailscale.
   galacticaAuthorizedKey = (import ../../named-hosts/pubkeys.nix).galactica;
@@ -25,6 +30,18 @@ in
     source = pkgs.replaceVars ./k3s.service {
       inherit (pkgs) coreutils k3s;
     };
+    force = true;
+  };
+
+  home.file.".config/k3s/k3s-containerd-cleanup.service" = lib.mkIf isKyber {
+    source = pkgs.replaceVars ./containerd-cleanup.service {
+      cleanupScript = "${containerdCleanup}/bin/k3s-containerd-cleanup";
+    };
+    force = true;
+  };
+
+  home.file.".config/k3s/k3s-containerd-cleanup.timer" = lib.mkIf isKyber {
+    source = ./containerd-cleanup.timer;
     force = true;
   };
 
