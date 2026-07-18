@@ -160,6 +160,7 @@
       kyber = "_kyber_function";
       kyberd = "_kyberd_function";
       kyberm = "_kyberm_function";
+      matic = "_matic_function";
       ocxe = "_ocxe_function";
       ocxel = "_ocxel_function";
       ocxeh = "_ocxeh_function";
@@ -287,6 +288,7 @@
         "_kyber_function"
         "_kyberd_function"
         "_kyberm_function"
+        "_matic_function"
         "_ocxe_function"
         "_ocxel_function"
         "_ocxeh_function"
