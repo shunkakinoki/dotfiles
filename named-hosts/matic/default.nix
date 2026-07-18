@@ -85,6 +85,7 @@ import ../../hosts/nixos {
           extraSetFlags = [
             "--accept-dns=true"
             "--advertise-exit-node"
+            "--ssh"
           ];
         };
 
