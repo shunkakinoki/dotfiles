@@ -122,6 +122,7 @@ with pkgs;
   tree-sitter
   trippy
   turso-cli
+  unzip
   uv
   watchexec
   websocat
