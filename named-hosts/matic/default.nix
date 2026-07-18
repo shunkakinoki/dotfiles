@@ -77,6 +77,18 @@ import ../../hosts/nixos {
           logRefusedConnections = true;
         };
 
+        # Tailscale - same settings as kyber (exit node, DNS left to NetworkManager).
+        # extraSetFlags is used instead of extraUpFlags because the latter only
+        # applies when authKeyFile is set; `tailscale set` is applied on every boot.
+        services.tailscale = {
+          enable = true;
+          useRoutingFeatures = "both";
+          extraSetFlags = [
+            "--accept-dns=false"
+            "--advertise-exit-node"
+          ];
+        };
+
         # Audit logging
         security.auditd.enable = true;
         security.audit = {
