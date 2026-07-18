@@ -3,6 +3,7 @@
 
 Describe 'config/codex/activate.sh'
 SCRIPT="$PWD/config/codex/activate.sh"
+SYNC_SCRIPT="$PWD/config/codex/sync-desktop-settings.sh"
 HOOKS_JSON="$PWD/config/codex/hooks.json"
 CONFIG_TOML="$PWD/config/codex/config.toml"
 DESKTOP_SETTINGS_JSON="$PWD/config/codex/desktop-settings.json"
@@ -50,13 +51,43 @@ cat >"$TMP_HOME/.codex/.codex-global-state.json" <<'JSON'
 }
 JSON
 
-When run bash -c 'HOME="$1" bash "$2" "$3" "$4" "$5" "$6" && jq -r ".[\"unrelated-top-level\"], .[\"electron-persisted-atom-state\"][\"unrelated-setting\"], .[\"electron-persisted-atom-state\"][\"git-always-force-push\"], .[\"electron-persisted-atom-state\"][\"git-pull-request-merge-method\"], .[\"electron-persisted-atom-state\"][\"worktree-keep-count\"]" "$1/.codex/.codex-global-state.json"' _ "$TMP_HOME" "$SCRIPT" "$CONFIG_TOML" "$HOOKS_JSON" "$DESKTOP_SETTINGS_JSON" "$(command -v jq)"
+When run bash -c 'HOME="$1" bash "$2" "$3" "$4" "$5" "$6" "$7" && jq -r ".[\"unrelated-top-level\"], .[\"electron-persisted-atom-state\"][\"unrelated-setting\"], .[\"electron-persisted-atom-state\"][\"git-always-force-push\"], .[\"electron-persisted-atom-state\"][\"git-pull-request-merge-method\"], .[\"electron-persisted-atom-state\"][\"worktree-keep-count\"]" "$1/.codex/.codex-global-state.json"' _ "$TMP_HOME" "$SCRIPT" "$CONFIG_TOML" "$HOOKS_JSON" "$DESKTOP_SETTINGS_JSON" "$(command -v jq)" "$SYNC_SCRIPT"
 The status should be success
 The line 1 should eq 'preserved'
 The line 2 should eq '42'
 The line 3 should eq 'true'
 The line 4 should eq 'squash'
 The line 5 should eq '300'
+End
+
+It 'restores managed Desktop settings after the app replaces its state'
+TMP_HOME="$(mktemp -d)"
+mkdir -p "$TMP_HOME/.codex"
+cat >"$TMP_HOME/.codex/.codex-global-state.json" <<'JSON'
+{
+  "unrelated-top-level": "preserved",
+  "electron-persisted-atom-state": {
+    "unrelated-setting": 42
+  }
+}
+JSON
+
+When run bash -c 'HOME="$1" bash "$2" "$3" "$4" && jq -r ".[\"unrelated-top-level\"], .[\"electron-persisted-atom-state\"][\"unrelated-setting\"], .[\"electron-persisted-atom-state\"][\"git-branch-prefix\"], .[\"electron-persisted-atom-state\"][\"worktree-keep-count\"]" "$1/.codex/.codex-global-state.json"' _ "$TMP_HOME" "$SYNC_SCRIPT" "$DESKTOP_SETTINGS_JSON" "$(command -v jq)"
+The status should be success
+The line 1 should eq 'preserved'
+The line 2 should eq '42'
+The line 3 should eq 'codex/'
+The line 4 should eq '300'
+End
+
+It 'does not rewrite state when managed Desktop settings already match'
+TMP_HOME="$(mktemp -d)"
+mkdir -p "$TMP_HOME/.codex"
+printf '%s\n' '{"electron-persisted-atom-state": {}}' >"$TMP_HOME/.codex/.codex-global-state.json"
+
+When run bash -c 'HOME="$1" bash "$2" "$3" "$4" && before=$(ls -di "$1/.codex/.codex-global-state.json") && before=${before%% *} && HOME="$1" bash "$2" "$3" "$4" && after=$(ls -di "$1/.codex/.codex-global-state.json") && after=${after%% *} && test "$before" = "$after" && printf "%s\\n" unchanged' _ "$TMP_HOME" "$SYNC_SCRIPT" "$DESKTOP_SETTINGS_JSON" "$(command -v jq)"
+The status should be success
+The output should eq 'unchanged'
 End
 
 It 'registers the shared main/master push blocker'
@@ -72,6 +103,17 @@ End
 It 'registers dcg in the Bash pre-tool hook chain'
 When run jq -r '.hooks.PreToolUse[] | select(.matcher == "Bash") | .hooks[].command' "$HOOKS_JSON"
 The output should include 'command -v dcg >/dev/null 2>&1 && dcg'
+End
+End
+
+Describe 'config/codex/default.nix'
+DEFAULT_NIX="$PWD/config/codex/default.nix"
+
+It 'watches Codex Desktop global state for app-owned rewrites'
+When run cat "$DEFAULT_NIX"
+The output should include 'codex-desktop-settings-sync'
+The output should include 'WatchPaths'
+The output should include '.codex/.codex-global-state.json'
 End
 End
 
