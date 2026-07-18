@@ -140,6 +140,7 @@ home-manager.lib.homeManagerConfiguration {
             "--reset"
             "--accept-dns=false"
             "--advertise-exit-node"
+            "--ssh"
           ];
         };
       }
