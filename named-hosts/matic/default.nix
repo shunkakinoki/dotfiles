@@ -42,7 +42,7 @@ import ../../hosts/nixos {
 
         # TPM2 auto-unlock for LUKS disk encryption
         boot.initrd.systemd.enable = true;
-        boot.initrd.luks.devices."luks-4a2ddfc4-1a40-4e18-99f5-250baf72b4ac".crypttabExtraOpts = [
+        boot.initrd.luks.devices."luks-eb20879c-a48d-4334-99a4-bf77a3ad289a".crypttabExtraOpts = [
           "tpm2-device=auto"
         ];
 
