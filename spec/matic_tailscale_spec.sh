@@ -19,9 +19,9 @@ When run bash -c "grep -F '\"--advertise-exit-node\"' '$CONFIG'"
 The output should include '--advertise-exit-node'
 End
 
-It 'leaves DNS to NetworkManager'
-When run bash -c "grep -F '\"--accept-dns=false\"' '$CONFIG'"
-The output should include '--accept-dns=false'
+It 'accepts DNS from tailscale'
+When run bash -c "grep -F '\"--accept-dns=true\"' '$CONFIG'"
+The output should include '--accept-dns=true'
 End
 
 It 'trusts the tailscale interface in the firewall'
