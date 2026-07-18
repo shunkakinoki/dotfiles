@@ -91,11 +91,66 @@ model_provider = "lmstudio"
 model_reasoning_effort = "minimal"
 
 [desktop]
-preventSleepWhileRunning = true
-show-context-window-usage = true
-notifications-turn-mode = "always"
+# Suggestions
+ambient-suggestions-enabled = true
+
+# Appearance
+appearanceTheme = "system"
+appearanceLightCodeThemeId = "codex"
+appearanceDarkCodeThemeId = "codex"
+appearanceDiffMarkerStyle = "color"
+sansFontSize = 14
+codeFontSize = 12
+useFontSmoothing = true
+usePointerCursors = false
+dock-icon-preference = "app-default"
+reduced-motion-preference = "system"
+
+# Appshots and browser
+appshotDestination = "automatic"
+appshotSoundEnabled = true
+browser-annotation-screenshots-mode = "always"
+
+# Files, links, and terminal
+mac-menu-bar-enabled = true
+open-in-target-preferences = {}
+open-link-in-target-preference = "in-app-browser"
+open-local-url-in-target-preference = "in-app-browser"
+custom_file_handlers = {}
+defaultTerminalLocation = "bottom"
+
+# Composer and review
+dictationDictionary = []
+followUpQueueMode = "steer"
 composerEnterBehavior = "cmdIfMultiline"
+show-context-window-usage = true
 reviewDelivery = "inline"
+conversationDetailMode = "STEPS_COMMANDS"
+
+# Power
+preventSleepWhileRunning = true
+keepRemoteControlAwakeWhilePluggedIn = true
+
+# Popout window
+hotkey-window-projectless-default-enabled = false
+
+# Git and worktrees
+git-branch-prefix = "codex/"
+git-always-force-push = true
+git-create-pull-request-as-draft = true
+git-pull-request-merge-method = "squash"
+git-review-mode = "full"
+git-worktree-root = ""
+worktree-auto-cleanup-enabled = true
+worktree-keep-count = 300
+
+# Notifications
+notifications-turn-mode = "always"
+notifications-permissions-enabled = true
+notifications-questions-enabled = true
+
+# Floating Codex pet
+avatar-overlay-mascot-width-px = 112
 
 [plugins."computer-use@openai-bundled"]
 enabled = true
