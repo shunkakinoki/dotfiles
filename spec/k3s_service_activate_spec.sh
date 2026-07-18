@@ -37,7 +37,12 @@ The status should be success
 End
 
 It 'bounds every runtime cleanup operation'
-When run grep -q 'timeout 10' config/k3s/containerd-cleanup.sh
+When run bash -c "[ \"$(grep -c 'timeout 10' config/k3s/containerd-cleanup.sh)\" -eq 4 ]"
+The status should be success
+End
+
+It 'does not start k3s when the cleanup timer fires during maintenance'
+When run grep -q '^Requisite=k3s.service$' config/k3s/containerd-cleanup.service
 The status should be success
 End
 End

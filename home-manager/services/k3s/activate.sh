@@ -45,7 +45,12 @@ install_system_unit() {
   local source_file="$1"
   local destination_file="$2"
 
-  if [ ! -f "$source_file" ] || @diff@ -q "$source_file" "$destination_file" >/dev/null 2>&1; then
+  if [ ! -f "$source_file" ]; then
+    echo "Warning: generated systemd unit is unavailable: $source_file" >&2
+    return 1
+  fi
+
+  if @diff@ -q "$source_file" "$destination_file" >/dev/null 2>&1; then
     return 1
   fi
   require_sudo || return 1
@@ -70,8 +75,9 @@ if [ "$units_changed" = true ]; then
   run_sudo @systemctl@ daemon-reload
 fi
 if [ -f "$CLEANUP_SYSTEM_TIMER" ] || [ -f "$CLEANUP_TIMER_FILE" ]; then
-  require_sudo || exit 0
-  run_sudo @systemctl@ enable --now k3s-containerd-cleanup.timer
+  if require_sudo; then
+    run_sudo @systemctl@ enable --now k3s-containerd-cleanup.timer
+  fi
 fi
 
 if [ -f "$K3S_KUBECONFIG" ]; then
