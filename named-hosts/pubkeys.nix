@@ -4,5 +4,5 @@
 {
   galactica = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEKze2jlpV7SyTKA2ezqbumpCiDn+5Sj4z5SxrqfzesX shunkakinoki@gmail.com";
   kyber = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO0IZtP3KSzY6GVSZ+R+VQYYfu3sEOVaQGDblQxAtwNM ubuntu@kyber";
-  matic = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEeknNbHasmT+43PgO9oy0mutoe+V2R2ZNRa5SPOLmLN skakinoki@matic";
+  matic = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOsMGpqklcznrSAH/TiGvcJoHEF4hyf5yiRz9MDjVVUj skakinoki@matic";
 }
