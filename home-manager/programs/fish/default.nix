@@ -152,6 +152,7 @@
       grxe = "_grxe_function";
       grxeh = "_grxeh_function";
       herdrd = "_herdrd_function";
+      herdrm = "_herdrm_function";
       hme = "_hm_load_env_file";
       icg = "_install_cargo_globals_function";
       ing = "_install_npm_globals_function";
@@ -280,6 +281,7 @@
         "_grxe_function"
         "_grxeh_function"
         "_herdrd_function"
+        "_herdrm_function"
         "_hm_load_env_file"
         "_llm_update_function"
         "_kyber_function"
