@@ -193,6 +193,10 @@ It 'has spec file for scripts/check-nix-inline-scripts.sh'
 The path "spec/check_nix_inline_scripts_spec.sh" should be exist
 End
 
+It 'has spec file for scripts/detect-host.sh'
+The path "spec/detect_host_spec.sh" should be exist
+End
+
 It 'has spec file for scripts/find-built-iso.sh'
 The path "spec/find_built_iso_spec.sh" should be exist
 End
@@ -483,6 +487,7 @@ nix-darwin/config/keyboard/apply-hid-user-key-mappings.sh
 nix-darwin/services/pmset-battery-policy/power-policy.sh
 scripts/build-neovim-plugins.sh
 scripts/check-nix-inline-scripts.sh
+scripts/detect-host.sh
 scripts/find-built-iso.sh
 scripts/fishtape-wrapper.sh
 scripts/llm-update.sh
