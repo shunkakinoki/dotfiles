@@ -91,6 +91,7 @@ with pkgs;
   mariadb
   mise
   mkcert
+  mosh
   mtr
   navi
   ncdu

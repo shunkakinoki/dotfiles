@@ -20,6 +20,7 @@ let
   k3s = ./k3s;
   keydApplicationMapper = ./keyd-application-mapper;
   makeUpdater = import ./make-updater { inherit pkgs; };
+  moshiHook = ./moshi-hook;
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
   nightShift = import ./night-shift { inherit pkgs; };
   obsidian = import ./obsidian { inherit config pkgs inputs; };
@@ -46,6 +47,7 @@ in
   k3s
   keydApplicationMapper
   makeUpdater
+  moshiHook
   neversslKeepalive
   nightShift
   obsidian
