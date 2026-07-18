@@ -544,7 +544,15 @@ nix-build: nix-connect nix-trust ## Build Nix configuration.
 				HOST=runner HOSTNAME=runner $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
-			HOST=runner HOSTNAME=runner $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.runner.config.system.build.toplevel $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
+			if [ -n "$(HOST)" ]; then \
+				echo "Building named NixOS host: $(HOST)"; \
+				$(SUDO) env HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(HOST) --impure; \
+			elif [ -n "$(DETECTED_HOST)" ]; then \
+				echo "Auto-detected host: $(DETECTED_HOST)"; \
+				$(SUDO) env HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(DETECTED_HOST) --impure; \
+			else \
+				HOST=runner HOSTNAME=runner $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.runner.config.system.build.toplevel $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
+			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
 			if [ -n "$(HOST)" ]; then \
 				echo "Building named home config: $(HOST)"; \
@@ -689,8 +697,16 @@ nix-switch: ## Activate Nix configuration.
 		if [ "$(OS)" = "Darwin" ]; then \
 			$(SUDO) env CI="$$CI" IN_DOCKER="$$IN_DOCKER" HOST=runner HOSTNAME=runner $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#runner --impure --no-update-lock-file; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
-			echo "⏭️ NixOS switch skipped in CI as the runner is not a NixOS system"; \
-			$(SUDO) env HOST=runner HOSTNAME=runner $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file || exit 0; \
+			if [ -n "$(HOST)" ]; then \
+				echo "Switching named host: $(HOST)"; \
+				$(SUDO) env HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#$(HOST) --no-update-lock-file || exit 0; \
+			elif [ -n "$(DETECTED_HOST)" ]; then \
+				echo "Auto-detected host: $(DETECTED_HOST)"; \
+				$(SUDO) env HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#$(DETECTED_HOST) --no-update-lock-file || exit 0; \
+			else \
+				echo "⏭️ NixOS switch skipped in CI as the runner is not a NixOS system"; \
+				$(SUDO) env HOST=runner HOSTNAME=runner $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file || exit 0; \
+			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
 			if [ "$$SKIP_HOME_MANAGER_SWITCH" = "true" ]; then \
 				echo "⏭️ Home-manager switch skipped (SKIP_HOME_MANAGER_SWITCH=true)"; \
