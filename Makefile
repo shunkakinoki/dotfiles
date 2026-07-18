@@ -90,34 +90,14 @@ else ifdef CI
 NIX_FLAGS += --option substituters "$(NIX_SUBSTITUTERS)" --option trusted-public-keys "$(NIX_TRUSTED_KEYS)"
 endif
 
-# Machine detection for automatic host mapping
-DETECTED_HOST := $(shell \
-	if [ "$(OS)" = "Darwin" ] && [ "$(shell whoami)" = "shunkakinoki" ] && [ "$(ARCH)" = "arm64" ]; then \
-		computer_name=$$(scutil --get ComputerName 2>/dev/null || echo ""); \
-		if echo "$$computer_name" | grep -q "Shun's MacBook M4"; then \
-			echo "galactica"; \
-		else \
-			echo ""; \
-		fi; \
-	elif [ "$(OS)" = "Linux" ]; then \
-		if [ -n "$$RUNPOD_POD_ID" ]; then \
-			echo "pod"; \
-		else \
-			hostname=$$(hostname 2>/dev/null || echo ""); \
-			if [ "$$hostname" = "kyber" ]; then \
-				echo "kyber"; \
-			elif [ "$$hostname" = "matic" ]; then \
-				echo "matic"; \
-			elif [ "$(DMI_SYS_VENDOR)" = "Framework" ] \
-				&& echo "$(DMI_PRODUCT_NAME)" | grep -q "Laptop 13.*AMD Ryzen AI 300"; then \
-				echo "matic"; \
-			else \
-				echo ""; \
-			fi; \
-		fi; \
-	else \
-		echo ""; \
-	fi)
+# Machine detection for automatic host mapping. The logic lives in a script so
+# it can be exercised directly by spec/detect_host_spec.sh.
+DETECTED_HOST := $(shell OS='$(OS)' ARCH='$(ARCH)' \
+	DMI_SYS_VENDOR='$(DMI_SYS_VENDOR)' DMI_PRODUCT_NAME='$(DMI_PRODUCT_NAME)' \
+	bash ./scripts/detect-host.sh)
+
+# Effective host: an explicit HOST always wins over machine detection.
+RESOLVED_HOST := $(or $(HOST),$(DETECTED_HOST))
 
 # User's home directory
 HOME_DIR := $(shell echo $$HOME)
@@ -160,6 +140,11 @@ install: setup git-submodule-sync nix-build nix-switch shell-install ## Set up f
 
 .PHONY: build
 build: nix-build ## Build Nix configuration.
+
+.PHONY: detect-host
+detect-host: ## Show the host this machine maps to (and the host builds will use).
+	@echo "Detected host: $(if $(DETECTED_HOST),$(DETECTED_HOST),<none>)"
+	@echo "Resolved host: $(if $(RESOLVED_HOST),$(RESOLVED_HOST),<none>)$(if $(HOST), (from HOST=$(HOST)),)"
 
 .PHONY: check
 check: ## Run all validation checks (nix, format, lua).
@@ -526,40 +511,31 @@ nix-build: nix-connect nix-trust ## Build Nix configuration.
 	@if [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		echo "🤖 Running in CI/Docker environment"; \
 		if [ "$(OS)" = "Darwin" ]; then \
-			if [ -n "$(HOST)" ]; then \
+			if [ -n "$(RESOLVED_HOST)" ]; then \
 				case " $(NIXOS_NAMED_HOSTS) " in \
-					*" $(HOST) "*) \
-						echo "Building named NixOS host: $(HOST)"; \
-						HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.$(HOST).config.system.build.toplevel $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
+					*" $(RESOLVED_HOST) "*) \
+						echo "Building named NixOS host: $(RESOLVED_HOST)"; \
+						HOST=$(RESOLVED_HOST) HOSTNAME=$(RESOLVED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.$(RESOLVED_HOST).config.system.build.toplevel $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 						;; \
 					*) \
-						echo "Building named Darwin host: $(HOST)"; \
-						HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#darwinConfigurations.$(HOST).system $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
+						echo "Building named Darwin host: $(RESOLVED_HOST)"; \
+						HOST=$(RESOLVED_HOST) HOSTNAME=$(RESOLVED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#darwinConfigurations.$(RESOLVED_HOST).system $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 						;; \
 				esac; \
-			elif [ -n "$(DETECTED_HOST)" ]; then \
-				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#darwinConfigurations.$(DETECTED_HOST).system $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 			else \
 				HOST=runner HOSTNAME=runner $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).runner.system $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
-			if [ -n "$(HOST)" ]; then \
-				echo "Building named NixOS host: $(HOST)"; \
-				$(SUDO) env HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(HOST) --impure; \
-			elif [ -n "$(DETECTED_HOST)" ]; then \
-				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				$(SUDO) env HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(DETECTED_HOST) --impure; \
+			if [ -n "$(RESOLVED_HOST)" ]; then \
+				echo "Building named NixOS host: $(RESOLVED_HOST)"; \
+				$(SUDO) env HOST=$(RESOLVED_HOST) HOSTNAME=$(RESOLVED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(RESOLVED_HOST) --impure; \
 			else \
 				HOST=runner HOSTNAME=runner $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.runner.config.system.build.toplevel $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			if [ -n "$(HOST)" ]; then \
-				echo "Building named home config: $(HOST)"; \
-				HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#homeConfigurations.$(HOST).activationPackage $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
-			elif [ -n "$(DETECTED_HOST)" ]; then \
-				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#homeConfigurations.$(DETECTED_HOST).activationPackage $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
+			if [ -n "$(RESOLVED_HOST)" ]; then \
+				echo "Building named home config: $(RESOLVED_HOST)"; \
+				HOST=$(RESOLVED_HOST) HOSTNAME=$(RESOLVED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#homeConfigurations.$(RESOLVED_HOST).activationPackage $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 			else \
 				HOST=$(NIX_SYSTEM) HOSTNAME=$(NIX_SYSTEM) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --impure --no-update-lock-file --show-trace; \
 			fi; \
@@ -572,40 +548,31 @@ nix-build: nix-connect nix-trust ## Build Nix configuration.
 			echo "❌ Unsupported system architecture: $(OS) $(ARCH)"; \
 			exit 1; \
 		elif [ "$(OS)" = "Darwin" ]; then \
-			if [ -n "$(HOST)" ]; then \
+			if [ -n "$(RESOLVED_HOST)" ]; then \
 				case " $(NIXOS_NAMED_HOSTS) " in \
-					*" $(HOST) "*) \
-						echo "Building named NixOS host: $(HOST)"; \
-						HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.$(HOST).config.system.build.toplevel $(NIX_FLAGS) --impure --show-trace; \
+					*" $(RESOLVED_HOST) "*) \
+						echo "Building named NixOS host: $(RESOLVED_HOST)"; \
+						HOST=$(RESOLVED_HOST) HOSTNAME=$(RESOLVED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#nixosConfigurations.$(RESOLVED_HOST).config.system.build.toplevel $(NIX_FLAGS) --impure --show-trace; \
 						;; \
 					*) \
-						echo "Building named Darwin host: $(HOST)"; \
-						HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#darwinConfigurations.$(HOST).system $(NIX_FLAGS) --impure --show-trace; \
+						echo "Building named Darwin host: $(RESOLVED_HOST)"; \
+						HOST=$(RESOLVED_HOST) HOSTNAME=$(RESOLVED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#darwinConfigurations.$(RESOLVED_HOST).system $(NIX_FLAGS) --impure --show-trace; \
 						;; \
 				esac; \
-			elif [ -n "$(DETECTED_HOST)" ]; then \
-				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#darwinConfigurations.$(DETECTED_HOST).system $(NIX_FLAGS) --impure --show-trace; \
 			else \
 				HOST=$(NIX_SYSTEM) HOSTNAME=$(NIX_SYSTEM) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE).$(NIX_SYSTEM).system $(NIX_FLAGS) --impure --show-trace; \
 			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
-			if [ -n "$(HOST)" ]; then \
-				echo "Building named host: $(HOST)"; \
-				$(SUDO) env HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(HOST) --impure; \
-			elif [ -n "$(DETECTED_HOST)" ]; then \
-				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				$(SUDO) env HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(DETECTED_HOST) --impure; \
+			if [ -n "$(RESOLVED_HOST)" ]; then \
+				echo "Building named host: $(RESOLVED_HOST)"; \
+				$(SUDO) env HOST=$(RESOLVED_HOST) HOSTNAME=$(RESOLVED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(RESOLVED_HOST) --impure; \
 			else \
 				$(SUDO) env HOST=$(NIX_SYSTEM) HOSTNAME=$(NIX_SYSTEM) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- build --flake .#$(NIX_SYSTEM) --impure; \
 			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			if [ -n "$(HOST)" ]; then \
-				echo "Building named home config: $(HOST)"; \
-				HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#homeConfigurations.$(HOST).activationPackage $(NIX_FLAGS) --impure --show-trace; \
-			elif [ -n "$(DETECTED_HOST)" ]; then \
-				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#homeConfigurations.$(DETECTED_HOST).activationPackage $(NIX_FLAGS) --impure --show-trace; \
+			if [ -n "$(RESOLVED_HOST)" ]; then \
+				echo "Building named home config: $(RESOLVED_HOST)"; \
+				HOST=$(RESOLVED_HOST) HOSTNAME=$(RESOLVED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#homeConfigurations.$(RESOLVED_HOST).activationPackage $(NIX_FLAGS) --impure --show-trace; \
 			else \
 				HOST=$(NIX_SYSTEM) HOSTNAME=$(NIX_SYSTEM) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) build .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage $(NIX_FLAGS) --impure --show-trace; \
 			fi; \
@@ -697,12 +664,9 @@ nix-switch: ## Activate Nix configuration.
 		if [ "$(OS)" = "Darwin" ]; then \
 			$(SUDO) env CI="$$CI" IN_DOCKER="$$IN_DOCKER" HOST=runner HOSTNAME=runner $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#runner --impure --no-update-lock-file; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
-			if [ -n "$(HOST)" ]; then \
-				echo "Switching named host: $(HOST)"; \
-				$(SUDO) env HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#$(HOST) --no-update-lock-file || exit 0; \
-			elif [ -n "$(DETECTED_HOST)" ]; then \
-				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				$(SUDO) env HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#$(DETECTED_HOST) --no-update-lock-file || exit 0; \
+			if [ -n "$(RESOLVED_HOST)" ]; then \
+				echo "Switching named host: $(RESOLVED_HOST)"; \
+				$(SUDO) env HOST=$(RESOLVED_HOST) HOSTNAME=$(RESOLVED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#$(RESOLVED_HOST) --no-update-lock-file || exit 0; \
 			else \
 				echo "⏭️ NixOS switch skipped in CI as the runner is not a NixOS system"; \
 				$(SUDO) env HOST=runner HOSTNAME=runner $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure nixpkgs#nixos-rebuild -- switch --flake .#runner --no-update-lock-file || exit 0; \
@@ -710,12 +674,9 @@ nix-switch: ## Activate Nix configuration.
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
 			if [ "$$SKIP_HOME_MANAGER_SWITCH" = "true" ]; then \
 				echo "⏭️ Home-manager switch skipped (SKIP_HOME_MANAGER_SWITCH=true)"; \
-			elif [ -n "$(HOST)" ]; then \
-				echo "Switching named home config: $(HOST)"; \
-				HOST=$(HOST) HOSTNAME=$(HOST) USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#homeConfigurations.$(HOST).activationPackage; \
-			elif [ -n "$(DETECTED_HOST)" ]; then \
-				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#homeConfigurations.$(DETECTED_HOST).activationPackage; \
+			elif [ -n "$(RESOLVED_HOST)" ]; then \
+				echo "Switching named home config: $(RESOLVED_HOST)"; \
+				HOST=$(RESOLVED_HOST) HOSTNAME=$(RESOLVED_HOST) USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#homeConfigurations.$(RESOLVED_HOST).activationPackage; \
 			else \
 				HOST=$(NIX_SYSTEM) HOSTNAME=$(NIX_SYSTEM) USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
 			fi; \
@@ -728,32 +689,23 @@ nix-switch: ## Activate Nix configuration.
 			echo "❌ Unsupported system architecture: $(OS) $(ARCH)"; \
 			exit 1; \
 		elif [ "$(OS)" = "Darwin" ]; then \
-			if [ -n "$(HOST)" ]; then \
-				echo "Switching named host: $(HOST)"; \
-				$(SUDO) env HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(HOST) --impure; \
-			elif [ -n "$(DETECTED_HOST)" ]; then \
-				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				$(SUDO) env HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(DETECTED_HOST) --impure; \
+			if [ -n "$(RESOLVED_HOST)" ]; then \
+				echo "Switching named host: $(RESOLVED_HOST)"; \
+				$(SUDO) env HOST=$(RESOLVED_HOST) HOSTNAME=$(RESOLVED_HOST) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(RESOLVED_HOST) --impure; \
 			else \
 				$(SUDO) env HOST=$(NIX_SYSTEM) HOSTNAME=$(NIX_SYSTEM) $(NIX_ALLOW_UNFREE) $(DARWIN_REBUILD) switch --flake .#$(NIX_SYSTEM) --impure; \
 			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "nixosConfigurations" ]; then \
-			if [ -n "$(HOST)" ]; then \
-				echo "Switching named host: $(HOST)"; \
-				$(SUDO) env HOST=$(HOST) HOSTNAME=$(HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(HOST) --impure; \
-			elif [ -n "$(DETECTED_HOST)" ]; then \
-				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				$(SUDO) env HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(DETECTED_HOST) --impure; \
+			if [ -n "$(RESOLVED_HOST)" ]; then \
+				echo "Switching named host: $(RESOLVED_HOST)"; \
+				$(SUDO) env HOST=$(RESOLVED_HOST) HOSTNAME=$(RESOLVED_HOST) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(RESOLVED_HOST) --impure; \
 			else \
 				$(SUDO) env HOST=$(NIX_SYSTEM) HOSTNAME=$(NIX_SYSTEM) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) nixpkgs#nixos-rebuild -- switch --flake .#$(NIX_SYSTEM) --impure; \
 			fi; \
 		elif [ "$(NIX_CONFIG_TYPE)" = "homeConfigurations" ]; then \
-			if [ -n "$(HOST)" ]; then \
-				echo "Switching named home config: $(HOST)"; \
-				HOST=$(HOST) HOSTNAME=$(HOST) USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#homeConfigurations.$(HOST).activationPackage; \
-			elif [ -n "$(DETECTED_HOST)" ]; then \
-				echo "Auto-detected host: $(DETECTED_HOST)"; \
-				HOST=$(DETECTED_HOST) HOSTNAME=$(DETECTED_HOST) USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#homeConfigurations.$(DETECTED_HOST).activationPackage; \
+			if [ -n "$(RESOLVED_HOST)" ]; then \
+				echo "Switching named home config: $(RESOLVED_HOST)"; \
+				HOST=$(RESOLVED_HOST) HOSTNAME=$(RESOLVED_HOST) USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#homeConfigurations.$(RESOLVED_HOST).activationPackage; \
 			else \
 				HOST=$(NIX_SYSTEM) HOSTNAME=$(NIX_SYSTEM) USER=$(NIX_USERNAME) $(NIX_ALLOW_UNFREE) $(NIX_EXEC) run $(NIX_FLAGS) --impure .#$(NIX_CONFIG_TYPE)."$(NIX_USERNAME)@$(NIX_SYSTEM)".activationPackage; \
 			fi; \
