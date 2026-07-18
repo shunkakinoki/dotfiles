@@ -37,7 +37,7 @@ The status should be success
 End
 
 It 'bounds every runtime cleanup operation'
-When run bash -c "[ \"$(grep -c 'timeout 10' config/k3s/containerd-cleanup.sh)\" -eq 4 ]"
+When run bash -c "[ \"$(grep -c -- '--timeout.*crictl_timeout' config/k3s/containerd-cleanup.sh)\" -eq 4 ]"
 The status should be success
 End
 
