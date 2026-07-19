@@ -413,6 +413,8 @@ config/hyprland/scripts/record-screen.sh
 config/hyprland/scripts/toggle-terminal.sh
 config/k3s/activate-client.sh
 config/k3s/activate.sh
+config/k3s/kyber-host-alert.sh
+config/k3s/kyber-host-health.sh
 config/noctalia/ac-idle-inhibit.sh
 config/noctalia/lock-before-sleep.sh
 config/noctalia/quit-active-app.sh
@@ -500,8 +502,14 @@ scripts/update-moshi-hooks.sh
 scripts/upgrade-overlays.sh
 scripts/wallpaper-power-check.sh"
 
-# Get actual scripts from git (excluding spec directory)
-actual_scripts=$(git ls-files '*.sh' 2>/dev/null | grep -v '^spec/' | sort)
+# Include untracked additions so the local coverage check is useful before
+# staging or committing a newly added script.
+actual_scripts=$(
+  {
+    git ls-files '*.sh' 2>/dev/null
+    git ls-files --others --exclude-standard '*.sh' 2>/dev/null
+  } | grep -v '^spec/' | sort -u
+)
 expected_scripts=$(echo "$covered_scripts" | sort)
 
 When run bash -c "diff <(echo '$actual_scripts') <(echo '$expected_scripts') || echo 'MISMATCH: Update coverage_spec.sh when adding new shell scripts'"

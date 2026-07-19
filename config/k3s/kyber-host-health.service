@@ -1,0 +1,7 @@
+[Unit]
+Description=Check Kyber storage and CRI reliability
+After=var-lib-rancher-k3s-agent-containerd.mount k3s.service
+
+[Service]
+Type=oneshot
+ExecStart=@healthCheckScript@/bin/kyber-host-health

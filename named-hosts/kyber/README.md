@@ -51,12 +51,14 @@ kyber  # Fish abbreviation that runs: ssh ubuntu@kyber
 
 ## k3s Containerd SSD
 
-Kyber mounts a dedicated ext4 filesystem labeled `k3s-containerd` at
+Kyber mounts the dedicated ext4 filesystem with UUID
+`90f29a7b-38ff-460b-b534-92a02f1412ec` at
 `/var/lib/rancher/k3s/agent/containerd`. The generated `k3s.service` requires
 that mount, so a missing SSD fails closed instead of silently writing images to
-the root filesystem. Linux device letters are not stable across boots; the
-systemd mount intentionally resolves the filesystem label rather than
-hard-coding `/dev/sda`.
+the root filesystem. Linux device letters and user-editable filesystem labels
+are not stable identities; the systemd mount intentionally resolves the
+verified filesystem UUID rather than hard-coding `/dev/sda`. The
+`k3s-containerd` label remains only a human-readable diagnostic aid.
 
 On a new or intentionally wiped host, prepare the empty containerd SSD before
 the first `make switch`:
@@ -67,28 +69,36 @@ sudo systemctl stop k3s
 make switch
 ```
 
-The preparation command destroys all data on the selected device. It refuses
-to run while k3s is active, while any filesystem on the device is mounted, or
-when the existing containerd directory is non-empty. Normal Home Manager
-activation never formats disks.
+The preparation command destroys all data on the selected device unless it
+already contains the expected ext4 UUID. It refuses to run while k3s is active,
+while any filesystem on the device is mounted, when the existing containerd
+directory is non-empty, or when the pinned UUID resolves to another device.
+After formatting, it validates the filesystem type and UUID before mounting it.
+Normal Home Manager activation never formats disks.
 
 Verify the persistent mount and service dependency after activation:
 
 ```bash
 findmnt /var/lib/rancher/k3s/agent/containerd
+findmnt -n -o UUID /var/lib/rancher/k3s/agent/containerd
 systemctl is-enabled var-lib-rancher-k3s-agent-containerd.mount
 systemctl show k3s -p Requires -p After
 sudo systemctl restart k3s
 findmnt /var/lib/rancher/k3s/agent/containerd
 ```
 
-Persistent volumes remain outside the containerd SSD. In particular, an
+Persistent volumes remain outside the containerd SSD. The SSD contains only
+embedded containerd runtime state: image content, snapshots, metadata, and
+temporary runtime data. K3s datastore paths and application PVCs, including
+local-path provisioner volumes, remain on the root/storage filesystem. An
 unrestricted local-path PVC must not be treated as a hard capacity quota.
 
 ## k3s Disk Headroom
 
-Host activation keeps the root ext4 reserved blocks at 1% and limits kubelet
-to two parallel image pulls. Before containerd received a dedicated SSD,
+Host activation keeps the root ext4 reserved blocks at 1%. Kubelet serializes
+image pulls, begins image garbage collection at 70% usage, targets 60%, and
+evicts before either the root (`nodefs`) or containerd (`imagefs`) filesystem
+falls below 20% available space. Before containerd received a dedicated SSD,
 Ubuntu's default 5% reserve on the 916 GiB root volume hid about 46 GiB from
 kubelet and left too little usable headroom during overlapping rollouts.
 
@@ -115,6 +125,39 @@ sudo tune2fs -l "$(findmnt -n -o SOURCE /)" | grep -E 'Block count|Reserved bloc
 sudo journalctl -u k3s --since '30 minutes ago' | grep -E 'image garbage collection|DiskPressure|deadline exceeded'
 sudo k3s crictl info
 ```
+
+## Host Reliability Monitoring and Log Bounds
+
+The Kyber activation installs native host controls rather than an external CRI
+cleaner:
+
+- journald stores at most 2 GiB persistently and 256 MiB at runtime, retains no
+  entry longer than seven days, and keeps 10 GiB free;
+- kubelet rotates each container log at 10 MiB and retains three files;
+- `kyber-smartd.service` uses `smartd` to monitor all SMART-capable physical
+  disks, including the containerd SSD, and runs short and long self-tests;
+- `kyber-host-health.timer` runs a read-only check every minute for five-minute
+  I/O PSI, five consecutive samples of at least three D-state processes,
+  containerd image-filesystem usage/identity, CRI probe latency, and recent CRI
+  lifecycle errors.
+
+Alerts are deduplicated until recovery. They are written to the journal at
+`daemon.alert` priority and broadcast to logged-in sessions with `wall`; a
+recovery notice is written when a condition clears. These checks never remove
+containers, pod sandboxes, shims, tasks, cgroups, or image content.
+
+Verify the declarations and inspect current alerts after activation:
+
+```bash
+systemctl status kyber-smartd.service kyber-host-health.timer
+systemctl list-timers kyber-host-health.timer
+sudo journalctl -t kyber-host-health --since '24 hours ago'
+sudo smartctl --scan-open
+```
+
+Run `sudo smartctl -a` against the physical device reported by
+`smartctl --scan-open`; SMART data belongs to the SSD rather than its ext4
+partition.
 
 An ordinary `systemctl restart k3s` intentionally preserves running containers
 because the upstream unit uses `KillMode=process`. If containerd itself is

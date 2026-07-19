@@ -6,9 +6,18 @@ set -euo pipefail
 SERVICE_FILE="$1"
 KUBE_DIR="$2"
 MOUNT_FILE="$3"
+JOURNALD_FILE="$4"
+HEALTH_SERVICE_FILE="$5"
+HEALTH_TIMER_FILE="$6"
+SMARTD_SERVICE_FILE="$7"
 SYSTEM_SERVICE="/etc/systemd/system/k3s.service"
 SYSTEM_MOUNT="/etc/systemd/system/var-lib-rancher-k3s-agent-containerd.mount"
+SYSTEM_JOURNALD="/etc/systemd/journald.conf.d/10-kyber-limits.conf"
+SYSTEM_HEALTH_SERVICE="/etc/systemd/system/kyber-host-health.service"
+SYSTEM_HEALTH_TIMER="/etc/systemd/system/kyber-host-health.timer"
+SYSTEM_SMARTD_SERVICE="/etc/systemd/system/kyber-smartd.service"
 MOUNT_POINT="/var/lib/rancher/k3s/agent/containerd"
+EXPECTED_CONTAINERD_UUID="90f29a7b-38ff-460b-b534-92a02f1412ec"
 K3S_KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
 
 sudo_cmd=()
@@ -38,6 +47,20 @@ require_sudo() {
     echo "Warning: sudo not found, skipping k3s system setup" >&2
     return 1
   fi
+  return 0
+}
+
+sync_root_file() {
+  local source="$1"
+  local target="$2"
+
+  if [ ! -f "$source" ] || @diff@ -q "$source" "$target" >/dev/null 2>&1; then
+    return 1
+  fi
+
+  require_sudo || return 1
+  run_sudo mkdir -p "$(dirname "$target")"
+  run_sudo cp -f "$source" "$target"
   return 0
 }
 
@@ -84,6 +107,16 @@ configure_root_ext4_reserve() {
 
 configure_root_ext4_reserve
 
+if @findmnt@ --mountpoint "$MOUNT_POINT" >/dev/null 2>&1; then
+  mounted_source="$(@findmnt@ --noheadings --output SOURCE --target "$MOUNT_POINT")"
+  mounted_uuid="$(@blkid@ --match-tag UUID --output value "$mounted_source")"
+  if [ "$mounted_uuid" != "$EXPECTED_CONTAINERD_UUID" ]; then
+    echo "Refusing to run k3s with unexpected containerd filesystem UUID: $mounted_uuid" >&2
+    echo "Expected $EXPECTED_CONTAINERD_UUID at $MOUNT_POINT" >&2
+    exit 1
+  fi
+fi
+
 if [ -f "$MOUNT_FILE" ] && ! @findmnt@ --mountpoint "$MOUNT_POINT" >/dev/null 2>&1; then
   if @systemctl@ is-active --quiet k3s; then
     echo "Refusing to mount the containerd SSD while k3s is running" >&2
@@ -105,20 +138,25 @@ if [ -f "$MOUNT_FILE" ] && ! @findmnt@ --mountpoint "$MOUNT_POINT" >/dev/null 2>
 fi
 
 systemd_changed=0
-if [ -f "$MOUNT_FILE" ] && ! @diff@ -q "$MOUNT_FILE" "$SYSTEM_MOUNT" >/dev/null 2>&1; then
-  require_sudo || exit 0
-  run_sudo cp -f "$MOUNT_FILE" "$SYSTEM_MOUNT"
-  systemd_changed=1
-fi
-
-if [ -f "$SERVICE_FILE" ] && ! @diff@ -q "$SERVICE_FILE" "$SYSTEM_SERVICE" >/dev/null 2>&1; then
-  require_sudo || exit 0
-  run_sudo cp -f "$SERVICE_FILE" "$SYSTEM_SERVICE"
-  systemd_changed=1
-fi
+for systemd_file_pair in \
+  "$MOUNT_FILE:$SYSTEM_MOUNT" \
+  "$SERVICE_FILE:$SYSTEM_SERVICE" \
+  "$HEALTH_SERVICE_FILE:$SYSTEM_HEALTH_SERVICE" \
+  "$HEALTH_TIMER_FILE:$SYSTEM_HEALTH_TIMER" \
+  "$SMARTD_SERVICE_FILE:$SYSTEM_SMARTD_SERVICE"; do
+  source_file="${systemd_file_pair%%:*}"
+  target_file="${systemd_file_pair#*:}"
+  if sync_root_file "$source_file" "$target_file"; then
+    systemd_changed=1
+  fi
+done
 
 if [ "$systemd_changed" -eq 1 ]; then
   run_sudo @systemctl@ daemon-reload
+fi
+
+if sync_root_file "$JOURNALD_FILE" "$SYSTEM_JOURNALD"; then
+  run_sudo @systemctl@ try-restart systemd-journald.service
 fi
 
 if [ -f "$MOUNT_FILE" ]; then
@@ -128,6 +166,14 @@ if [ -f "$MOUNT_FILE" ]; then
 fi
 
 run_sudo @systemctl@ enable --now k3s
+
+if [ -f "$SMARTD_SERVICE_FILE" ]; then
+  run_sudo @systemctl@ enable --now kyber-smartd.service
+fi
+
+if [ -f "$HEALTH_TIMER_FILE" ]; then
+  run_sudo @systemctl@ enable --now kyber-host-health.timer
+fi
 
 if [ -f "$K3S_KUBECONFIG" ]; then
   run mkdir -p "$KUBE_DIR"

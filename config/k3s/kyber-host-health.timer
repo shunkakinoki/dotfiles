@@ -1,0 +1,12 @@
+[Unit]
+Description=Run Kyber storage and CRI reliability checks
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=1min
+RandomizedDelaySec=15s
+Persistent=true
+Unit=kyber-host-health.service
+
+[Install]
+WantedBy=timers.target

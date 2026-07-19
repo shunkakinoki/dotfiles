@@ -1,0 +1,14 @@
+[Unit]
+Description=SMART monitoring for Kyber disks
+Documentation=man:smartd(8) man:smartd.conf(5)
+Wants=var-lib-rancher-k3s-agent-containerd.mount
+After=var-lib-rancher-k3s-agent-containerd.mount
+
+[Service]
+Type=simple
+ExecStart=@smartd@ --no-fork --quit=never --configfile=@smartdConfig@
+Restart=on-failure
+RestartSec=30s
+
+[Install]
+WantedBy=multi-user.target
