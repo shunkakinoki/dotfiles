@@ -4,6 +4,14 @@
 Describe 'home-manager/programs/ssh/default.nix'
 SSH_CONFIG_NIX="$PWD/home-manager/programs/ssh/default.nix"
 
+Describe 'andor host'
+It 'uses the Andor Tailscale DNS name'
+When run bash -c "grep -A2 '\"andor\" = {' '$SSH_CONFIG_NIX'"
+The output should include 'andor.tail950b36.ts.net'
+The output should include 'User = "ubuntu"'
+End
+End
+
 Describe 'kyber host'
 It 'uses the Tailscale DNS name instead of a stale tailnet IP'
 When run bash -c "grep 'HostName =' '$SSH_CONFIG_NIX' | grep kyber"

@@ -35,6 +35,10 @@
         UserKnownHostsFile = "/dev/null";
         StrictHostKeyChecking = "false";
       };
+      "andor" = {
+        HostName = "andor.tail950b36.ts.net";
+        User = "ubuntu";
+      };
       "kyber" = {
         HostName = "kyber.tail950b36.ts.net";
         User = "ubuntu";
