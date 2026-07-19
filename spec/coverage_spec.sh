@@ -481,6 +481,7 @@ hosts/linux/activate-backup-files.sh
 install.sh
 named-hosts/kyber/activate-backup-files.sh
 named-hosts/kyber/activate-ip-forwarding.sh
+named-hosts/kyber/prepare-containerd-disk.sh
 named-hosts/kyber/rekey-galactica.sh
 named-hosts/kyber/setup.sh
 named-hosts/matic/pam-gnome-keyring-tpm-unlock.sh

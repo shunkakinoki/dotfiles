@@ -49,31 +49,67 @@ Once Tailscale is set up:
 kyber  # Fish abbreviation that runs: ssh ubuntu@kyber
 ```
 
+## k3s Containerd SSD
+
+Kyber mounts a dedicated ext4 filesystem labeled `k3s-containerd` at
+`/var/lib/rancher/k3s/agent/containerd`. The generated `k3s.service` requires
+that mount, so a missing SSD fails closed instead of silently writing images to
+the root filesystem. Linux device letters are not stable across boots; the
+systemd mount intentionally resolves the filesystem label rather than
+hard-coding `/dev/sda`.
+
+On a new or intentionally wiped host, prepare the empty containerd SSD before
+the first `make switch`:
+
+```bash
+sudo systemctl stop k3s
+./named-hosts/kyber/prepare-containerd-disk.sh /dev/sda --confirm-wipe
+make switch
+```
+
+The preparation command destroys all data on the selected device. It refuses
+to run while k3s is active, while any filesystem on the device is mounted, or
+when the existing containerd directory is non-empty. Normal Home Manager
+activation never formats disks.
+
+Verify the persistent mount and service dependency after activation:
+
+```bash
+findmnt /var/lib/rancher/k3s/agent/containerd
+systemctl is-enabled var-lib-rancher-k3s-agent-containerd.mount
+systemctl show k3s -p Requires -p After
+sudo systemctl restart k3s
+findmnt /var/lib/rancher/k3s/agent/containerd
+```
+
+Persistent volumes remain outside the containerd SSD. In particular, an
+unrestricted local-path PVC must not be treated as a hard capacity quota.
+
 ## k3s Disk Headroom
 
-Kyber runs k3s and its embedded containerd on the root ext4 filesystem. The
-host activation keeps ext4 reserved blocks at 1% and limits kubelet to two
-parallel image pulls. On this 916 GiB volume, Ubuntu's default 5% reserve hid
-about 46 GiB from kubelet and left too little usable headroom during overlapping
-application rollouts.
+Host activation keeps the root ext4 reserved blocks at 1% and limits kubelet
+to two parallel image pulls. Before containerd received a dedicated SSD,
+Ubuntu's default 5% reserve on the 916 GiB root volume hid about 46 GiB from
+kubelet and left too little usable headroom during overlapping rollouts.
 
 Kubelet owns image, container, and pod-sandbox garbage collection. Do not add a
 separate `crictl` cleanup timer: deleting CRI objects behind kubelet can race
 active pod lifecycle operations and leave container names or cgroups stuck.
 
 The July 2026 incident was a disk-pressure feedback loop, not a slow Temporal
-queue. Root usage crossed kubelet's 85% image-GC threshold during concurrent
-image pulls. Kubelet attempted to reclaim tens of GiB from a much smaller
-logical image cache while containerd and Kine were already I/O-bound. CRI calls
-timed out, stale tasks accumulated, and Temporal workers could not start new
-chat turns. Reducing the ext4 reserve, limiting pull parallelism, and preserving
-free space prevent that loop.
+queue. The shared root image filesystem crossed kubelet's 85% image-GC
+threshold during concurrent pulls. Kubelet attempted to reclaim tens of GiB
+from a much smaller logical image cache while containerd and Kine were already
+I/O-bound. CRI calls timed out, stale tasks accumulated, and Temporal workers
+could not start new chat turns. The dedicated image filesystem removes that
+contention from the control-plane disk; pull limits and free-space thresholds
+remain defense in depth.
 
 For diagnosis, check filesystem headroom, I/O pressure, kubelet GC messages,
 and CRI health before restarting services:
 
 ```bash
-df -h /
+df -h / /var/lib/rancher/k3s/agent/containerd
 cat /proc/pressure/io
 sudo tune2fs -l "$(findmnt -n -o SOURCE /)" | grep -E 'Block count|Reserved block count'
 sudo journalctl -u k3s --since '30 minutes ago' | grep -E 'image garbage collection|DiskPressure|deadline exceeded'

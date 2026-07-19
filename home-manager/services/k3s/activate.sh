@@ -5,7 +5,10 @@ set -euo pipefail
 
 SERVICE_FILE="$1"
 KUBE_DIR="$2"
+MOUNT_FILE="$3"
 SYSTEM_SERVICE="/etc/systemd/system/k3s.service"
+SYSTEM_MOUNT="/etc/systemd/system/var-lib-rancher-k3s-agent-containerd.mount"
+MOUNT_POINT="/var/lib/rancher/k3s/agent/containerd"
 K3S_KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
 
 sudo_cmd=()
@@ -81,12 +84,43 @@ configure_root_ext4_reserve() {
 
 configure_root_ext4_reserve
 
+if [ -f "$MOUNT_FILE" ] && ! @findmnt@ --mountpoint "$MOUNT_POINT" >/dev/null 2>&1; then
+  if @systemctl@ is-active --quiet k3s; then
+    echo "Refusing to mount the containerd SSD while k3s is running" >&2
+    echo "Run named-hosts/kyber/prepare-containerd-disk.sh before activating this configuration" >&2
+    exit 1
+  fi
+  if [ -d "$MOUNT_POINT" ] && [ -n "$(@find@ "$MOUNT_POINT" -mindepth 1 -maxdepth 1 -print -quit)" ]; then
+    echo "Refusing to hide a non-empty containerd directory at $MOUNT_POINT" >&2
+    echo "Move or remove the old runtime only during an attended recovery" >&2
+    exit 1
+  fi
+fi
+
+systemd_changed=0
+if [ -f "$MOUNT_FILE" ] && ! @diff@ -q "$MOUNT_FILE" "$SYSTEM_MOUNT" >/dev/null 2>&1; then
+  require_sudo || exit 0
+  run_sudo cp -f "$MOUNT_FILE" "$SYSTEM_MOUNT"
+  systemd_changed=1
+fi
+
 if [ -f "$SERVICE_FILE" ] && ! @diff@ -q "$SERVICE_FILE" "$SYSTEM_SERVICE" >/dev/null 2>&1; then
   require_sudo || exit 0
-  run_sudo cp "$SERVICE_FILE" "$SYSTEM_SERVICE"
-  run_sudo @systemctl@ daemon-reload
-  run_sudo @systemctl@ enable --now k3s
+  run_sudo cp -f "$SERVICE_FILE" "$SYSTEM_SERVICE"
+  systemd_changed=1
 fi
+
+if [ "$systemd_changed" -eq 1 ]; then
+  run_sudo @systemctl@ daemon-reload
+fi
+
+if [ -f "$MOUNT_FILE" ]; then
+  require_sudo || exit 0
+  run_sudo mkdir -p "$MOUNT_POINT"
+  run_sudo @systemctl@ enable --now var-lib-rancher-k3s-agent-containerd.mount
+fi
+
+run_sudo @systemctl@ enable --now k3s
 
 if [ -f "$K3S_KUBECONFIG" ]; then
   run mkdir -p "$KUBE_DIR"

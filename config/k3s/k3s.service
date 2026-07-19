@@ -2,7 +2,8 @@
 Description=Lightweight Kubernetes
 Documentation=https://k3s.io
 Wants=network-online.target
-After=network-online.target
+Requires=var-lib-rancher-k3s-agent-containerd.mount
+After=network-online.target var-lib-rancher-k3s-agent-containerd.mount
 
 [Service]
 Type=notify

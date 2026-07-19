@@ -33,6 +33,11 @@ in
     force = true;
   };
 
+  home.file.".config/k3s/var-lib-rancher-k3s-agent-containerd.mount" = lib.mkIf isKyber {
+    source = ./containerd.mount;
+    force = true;
+  };
+
   home.sessionVariables = lib.mkIf (isKyber || isGalactica) {
     KUBECONFIG = kubeconfig;
   };
@@ -50,7 +55,7 @@ in
   '';
 
   home.activation.k3s-server = lib.mkIf isKyber (
-    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    lib.hm.dag.entryAfter [ "setupK3s" ] ''
       $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${serverActivateScript}"
     ''
   );

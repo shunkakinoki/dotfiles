@@ -11,16 +11,19 @@ let
   setupScript = pkgs.replaceVars ./activate.sh {
     awk = "${pkgs.gawk}/bin/awk";
     diff = "${pkgs.diffutils}/bin/diff";
+    find = "${pkgs.findutils}/bin/find";
     findmnt = "${pkgs.util-linux}/bin/findmnt";
     systemctl = "${pkgs.systemd}/bin/systemctl";
     tune2fs = "${pkgs.e2fsprogs}/bin/tune2fs";
   };
   serviceFile = "${homeDir}/.config/k3s/k3s.service";
+  mountFile = "${homeDir}/.config/k3s/var-lib-rancher-k3s-agent-containerd.mount";
 in
 lib.mkIf (pkgs.stdenv.isLinux && host.isKyber) {
   home.activation.setupK3s = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.bash}/bin/bash "${setupScript}" \
       "${serviceFile}" \
-      "${homeDir}/.kube"
+      "${homeDir}/.kube" \
+      "${mountFile}"
   '';
 }
