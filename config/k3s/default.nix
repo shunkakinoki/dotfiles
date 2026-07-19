@@ -21,6 +21,11 @@ in
     force = true;
   };
 
+  home.file.".config/k3s/kubelet.conf.d/10-kyber.conf" = lib.mkIf isKyber {
+    source = ./kubelet.conf;
+    force = true;
+  };
+
   home.file.".config/k3s/k3s.service" = lib.mkIf isKyber {
     source = pkgs.replaceVars ./k3s.service {
       inherit (pkgs) coreutils k3s;
