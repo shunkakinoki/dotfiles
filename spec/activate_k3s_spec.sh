@@ -49,6 +49,11 @@ When run bash -c "grep 'KUBELET_CONFIG_TARGET' '$SCRIPT'"
 The output should include 'kubelet.conf.d/10-kyber.conf'
 End
 
+It 'checks the system k3s service through sudo'
+When run bash -c "grep '\$SUDO_CMD systemctl is-active' '$SCRIPT'"
+The output should include '$SUDO_CMD systemctl is-active'
+End
+
 It 'skips if config file missing'
 When run bash -c "grep -A 1 '! -f' '$SCRIPT'"
 The output should include 'exit 0'
