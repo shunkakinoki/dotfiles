@@ -90,10 +90,17 @@ if [ -f "$MOUNT_FILE" ] && ! @findmnt@ --mountpoint "$MOUNT_POINT" >/dev/null 2>
     echo "Run named-hosts/kyber/prepare-containerd-disk.sh before activating this configuration" >&2
     exit 1
   fi
-  if [ -d "$MOUNT_POINT" ] && [ -n "$(@find@ "$MOUNT_POINT" -mindepth 1 -maxdepth 1 -print -quit)" ]; then
-    echo "Refusing to hide a non-empty containerd directory at $MOUNT_POINT" >&2
-    echo "Move or remove the old runtime only during an attended recovery" >&2
-    exit 1
+  if [ -d "$MOUNT_POINT" ]; then
+    require_sudo || exit 0
+    if ! first_entry="$(run_sudo @find@ "$MOUNT_POINT" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)"; then
+      echo "Refusing to mount because $MOUNT_POINT could not be inspected" >&2
+      exit 1
+    fi
+    if [ -n "$first_entry" ]; then
+      echo "Refusing to hide a non-empty containerd directory at $MOUNT_POINT" >&2
+      echo "Move or remove the old runtime only during an attended recovery" >&2
+      exit 1
+    fi
   fi
 fi
 

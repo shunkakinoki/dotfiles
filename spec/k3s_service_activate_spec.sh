@@ -103,6 +103,12 @@ When run bash -c "grep -q 'Refusing to mount the containerd SSD while k3s is run
 The status should be success
 End
 
+It 'inspects the root-owned containerd directory through sudo'
+When run grep 'run_sudo @find@ "$MOUNT_POINT"' "$SCRIPT"
+The output should include 'run_sudo @find@ "$MOUNT_POINT"'
+The status should be success
+End
+
 It 'reloads and enables k3s'
 When run bash -c "grep 'enable --now k3s' '$SCRIPT'"
 The output should include 'enable --now k3s'
@@ -147,6 +153,17 @@ End
 It 'creates the stable containerd filesystem label'
 When run grep 'mkfs.ext4 -F -L "$MOUNT_LABEL"' "$PREPARE_SCRIPT"
 The output should include 'mkfs.ext4 -F -L "$MOUNT_LABEL"'
+The status should be success
+End
+
+It 'inspects the root-owned target through sudo'
+When run grep 'sudo find "$MOUNT_POINT"' "$PREPARE_SCRIPT"
+The output should include 'sudo find "$MOUNT_POINT"'
+The status should be success
+End
+
+It 'reuses the label only when it resolves to the selected device'
+When run bash -c "grep -q 'existing_label_device=.*readlink -f' '$PREPARE_SCRIPT' && grep -q '\"\$existing_label_device\" != \"\$resolved_device\"' '$PREPARE_SCRIPT'"
 The status should be success
 End
 End
