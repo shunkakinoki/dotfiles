@@ -28,6 +28,12 @@ The output should include '.#darwinConfigurations.galactica.system'
 The output should not include '.#nixosConfigurations.matic.config.system.build.toplevel'
 End
 
+It 'builds andor through its named Home Manager configuration'
+When run bash -c 'make build HOST=andor OS=Linux ARCH=x86_64 NIX_SYSTEM=x86_64-linux NIX_CONFIG_TYPE=homeConfigurations NIX_EXEC=nix NIX_ENV=ok NIX_FLAGS= NIX_USER_TRUSTED=yes 2>/dev/null; cat "$MOCK_LOG"'
+The status should be success
+The output should include '.#homeConfigurations.andor.activationPackage'
+End
+
 It 'detects matic from Framework 13 AMD AI 300 DMI data when the hostname is generic'
 When run bash -c 'make build OS=Linux ARCH=x86_64 NIX_SYSTEM=x86_64-linux NIX_CONFIG_TYPE=nixosConfigurations DMI_SYS_VENDOR=Framework DMI_PRODUCT_NAME="Laptop 13 (AMD Ryzen AI 300 Series)" NIX_EXEC=nix NIX_ENV=ok NIX_FLAGS= NIX_USER_TRUSTED=yes SUDO=env 2>/dev/null; cat "$MOCK_LOG"'
 The status should be success

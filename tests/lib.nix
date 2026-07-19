@@ -27,6 +27,12 @@ in
 
   lib-host = pkgs.runCommand "lib-host" { } ''
     ${
+      if host ? isAndor && builtins.isBool host.isAndor then
+        ''echo "lib/host.nix: isAndor is a boolean"''
+      else
+        ''echo "FAIL: host.isAndor must exist and be a boolean" && exit 1''
+    }
+    ${
       if host ? isKyber && builtins.isBool host.isKyber then
         ''echo "lib/host.nix: isKyber is a boolean"''
       else
@@ -55,6 +61,12 @@ in
         ''echo "lib/host.nix: nodeName is a string (value: ${host.nodeName})"''
       else
         ''echo "FAIL: host.nodeName must exist and be a string" && exit 1''
+    }
+    ${
+      if host ? isK3sServer && builtins.isBool host.isK3sServer then
+        ''echo "lib/host.nix: isK3sServer is a boolean"''
+      else
+        ''echo "FAIL: host.isK3sServer must exist and be a boolean" && exit 1''
     }
     ${
       if host ? isDesktop && builtins.isBool host.isDesktop then

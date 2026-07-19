@@ -159,6 +159,11 @@
               };
             };
             homeConfigurations = {
+              andor = import ./named-hosts/andor {
+                inherit inputs;
+                username = "ubuntu";
+                system = "x86_64-linux";
+              };
               "ubuntu@x86_64-linux" = import ./hosts/linux {
                 inherit inputs;
                 username = "ubuntu";

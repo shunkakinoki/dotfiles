@@ -46,7 +46,13 @@ End
 
 It 'copies the kubelet configuration drop-in'
 When run bash -c "grep 'KUBELET_CONFIG_TARGET' '$SCRIPT'"
-The output should include 'kubelet.conf.d/10-kyber.conf'
+The output should include 'kubelet.conf.d/$KUBELET_CONFIG_NAME'
+End
+
+It 'uses host-specific kubelet and Tailscale substitutions'
+When run bash -c "grep 'KUBELET_CONFIG_NAME=' '$SCRIPT'; grep 'TAILSCALE_DNS=' '$SCRIPT'"
+The output should include '@kubeletConfigName@'
+The output should include '@tailscaleDns@'
 End
 
 It 'checks the system k3s service through sudo'
