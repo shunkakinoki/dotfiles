@@ -55,12 +55,12 @@ fi
 $SUDO_CMD mkdir -p /etc/rancher/k3s "$(dirname "$KUBELET_CONFIG_TARGET")"
 
 K3S_CONFIG_CHANGED=0
-if ! diff -q "$K3S_CONFIG_SOURCE" /etc/rancher/k3s/config.yaml >/dev/null 2>&1; then
+if ! $SUDO_CMD diff -q "$K3S_CONFIG_SOURCE" /etc/rancher/k3s/config.yaml >/dev/null 2>&1; then
   $SUDO_CMD cp "$K3S_CONFIG_SOURCE" /etc/rancher/k3s/config.yaml
   K3S_CONFIG_CHANGED=1
 fi
 
-if ! diff -q "$KUBELET_CONFIG_SOURCE" "$KUBELET_CONFIG_TARGET" >/dev/null 2>&1; then
+if ! $SUDO_CMD diff -q "$KUBELET_CONFIG_SOURCE" "$KUBELET_CONFIG_TARGET" >/dev/null 2>&1; then
   $SUDO_CMD cp "$KUBELET_CONFIG_SOURCE" "$KUBELET_CONFIG_TARGET"
   K3S_CONFIG_CHANGED=1
 fi
