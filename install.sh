@@ -65,8 +65,16 @@ if ! command -v nix >/dev/null 2>&1; then
       NIX_EFFECTIVE_BIN_PATH="$HOME/.nix-profile/bin"
     else # Linux multi-user
       echo "Performing Determinate Nix multi-user installation..."
-      curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux
-      # For Linux multi-user installations, add the default Nix path for the current shell.
+      curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --no-confirm
+      # Start the Nix daemon so nix commands work in this session
+      if command -v systemctl >/dev/null 2>&1; then
+        sudo systemctl start nix-daemon.service 2>/dev/null || true
+      fi
+      # Source the Nix profile to add nix to PATH
+      if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
+        # shellcheck source=/dev/null
+        . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+      fi
       export PATH="/nix/var/nix/profiles/default/bin:$PATH"
       NIX_EFFECTIVE_BIN_PATH="/nix/var/nix/profiles/default/bin"
     fi
@@ -89,6 +97,23 @@ else
       NIX_EFFECTIVE_BIN_PATH="/nix/var/nix/profiles/default/bin"
     fi
     echo "Using fallback NIX_EFFECTIVE_BIN_PATH: $NIX_EFFECTIVE_BIN_PATH"
+  fi
+fi
+
+# Ensure git is available (fresh Ubuntu minimal installs may not have it)
+if ! command -v git >/dev/null 2>&1; then
+  echo "git is not installed. Installing git..."
+  if command -v apt-get >/dev/null 2>&1; then
+    sudo apt-get update -qq && sudo apt-get install -y -qq git
+  elif command -v dnf >/dev/null 2>&1; then
+    sudo dnf install -y git
+  elif command -v yum >/dev/null 2>&1; then
+    sudo yum install -y git
+  elif command -v pacman >/dev/null 2>&1; then
+    sudo pacman -Sy --noconfirm git
+  else
+    echo "Error: Could not install git. No supported package manager found."
+    exit 1
   fi
 fi
 
