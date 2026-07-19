@@ -1,0 +1,13 @@
+[Unit]
+Description=Dedicated containerd filesystem for K3s
+Before=k3s.service
+
+[Mount]
+What=/dev/disk/by-label/k3s-containerd
+Where=/var/lib/rancher/k3s/agent/containerd
+Type=ext4
+Options=noatime
+TimeoutSec=90
+
+[Install]
+WantedBy=multi-user.target
