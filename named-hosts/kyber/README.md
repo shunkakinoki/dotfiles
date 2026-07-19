@@ -49,6 +49,42 @@ Once Tailscale is set up:
 kyber  # Fish abbreviation that runs: ssh ubuntu@kyber
 ```
 
+## k3s Disk Headroom
+
+Kyber runs k3s and its embedded containerd on the root ext4 filesystem. The
+host activation keeps ext4 reserved blocks at 1% and limits kubelet to two
+parallel image pulls. On this 916 GiB volume, Ubuntu's default 5% reserve hid
+about 46 GiB from kubelet and left too little usable headroom during overlapping
+application rollouts.
+
+Kubelet owns image, container, and pod-sandbox garbage collection. Do not add a
+separate `crictl` cleanup timer: deleting CRI objects behind kubelet can race
+active pod lifecycle operations and leave container names or cgroups stuck.
+
+The July 2026 incident was a disk-pressure feedback loop, not a slow Temporal
+queue. Root usage crossed kubelet's 85% image-GC threshold during concurrent
+image pulls. Kubelet attempted to reclaim tens of GiB from a much smaller
+logical image cache while containerd and Kine were already I/O-bound. CRI calls
+timed out, stale tasks accumulated, and Temporal workers could not start new
+chat turns. Reducing the ext4 reserve, limiting pull parallelism, and preserving
+free space prevent that loop.
+
+For diagnosis, check filesystem headroom, I/O pressure, kubelet GC messages,
+and CRI health before restarting services:
+
+```bash
+df -h /
+sudo tune2fs -l "$(findmnt -n -o SOURCE /)" | grep -E 'Block count|Reserved block count'
+sudo journalctl -u k3s --since '30 minutes ago' | grep -E 'image garbage collection|DiskPressure|deadline exceeded'
+sudo k3s crictl info
+```
+
+An ordinary `systemctl restart k3s` intentionally preserves running containers
+because the upstream unit uses `KillMode=process`. If containerd itself is
+wedged, use the installed `k3s-killall.sh` once during an attended recovery,
+then start k3s again. The helper preserves cluster data but terminates every
+running workload, so it is not a timer or routine cleanup mechanism.
+
 ## SSH Key Management
 
 ### Automated Setup

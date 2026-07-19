@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Install the generated k3s service and sync kubeconfig for the current user.
-# @diff@ and @systemctl@ are substituted by pkgs.replaceVars.
+# Command placeholders are substituted by pkgs.replaceVars.
 set -euo pipefail
 
 SERVICE_FILE="$1"
@@ -36,6 +36,42 @@ require_sudo() {
     return 1
   fi
 }
+
+configure_root_ext4_reserve() {
+  local root_source root_fs_type block_count reserved_blocks target_reserved_blocks
+  local target_reserved_percent=1
+
+  root_source="$(@findmnt@ --noheadings --output SOURCE --target /)"
+  root_fs_type="$(@findmnt@ --noheadings --output FSTYPE --target /)"
+
+  if [ "$root_fs_type" != "ext4" ]; then
+    return 0
+  fi
+  if [ ! -b "$root_source" ]; then
+    echo "Warning: ext4 root source is not a block device: $root_source" >&2
+    return 0
+  fi
+
+  require_sudo || return 0
+  # shellcheck disable=SC2016
+  block_count="$(run_sudo @tune2fs@ -l "$root_source" 2>/dev/null | @awk@ -F: '/^Block count:/ { gsub(/[[:space:]]/, "", $2); print $2 }')"
+  # shellcheck disable=SC2016
+  reserved_blocks="$(run_sudo @tune2fs@ -l "$root_source" 2>/dev/null | @awk@ -F: '/^Reserved block count:/ { gsub(/[[:space:]]/, "", $2); print $2 }')"
+  if [ -z "$block_count" ] || [ -z "$reserved_blocks" ]; then
+    echo "Warning: unable to inspect ext4 reserve on $root_source" >&2
+    return 0
+  fi
+
+  target_reserved_blocks=$((block_count * target_reserved_percent / 100))
+  if [ "$reserved_blocks" -eq "$target_reserved_blocks" ]; then
+    return 0
+  fi
+
+  run_sudo @tune2fs@ -m "$target_reserved_percent" "$root_source"
+  echo "Configured $root_source ext4 reserved blocks to ${target_reserved_percent}%"
+}
+
+configure_root_ext4_reserve
 
 if [ -f "$SERVICE_FILE" ] && ! @diff@ -q "$SERVICE_FILE" "$SYSTEM_SERVICE" >/dev/null 2>&1; then
   require_sudo || exit 0
