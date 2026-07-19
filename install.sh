@@ -49,7 +49,9 @@ if ! command -v nix >/dev/null 2>&1; then
     NIX_EFFECTIVE_BIN_PATH="/nix/var/nix/profiles/default/bin"
   else # Linux
     # Auto-detect container environment (Docker, Podman, RunPod, etc.)
-    if [ "$IN_DOCKER" = "true" ] || [ -f /.dockerenv ] || [ -f /run/.containerenv ] || ! pidof systemd >/dev/null 2>&1; then
+    # Use /proc/1/comm instead of pidof - pidof can fail on minimal installs even when systemd is PID 1
+    _init_name=$(cat /proc/1/comm 2>/dev/null || echo "unknown")
+    if [ "$IN_DOCKER" = "true" ] || [ -f /.dockerenv ] || [ -f /run/.containerenv ] || [ "$_init_name" != "systemd" ]; then
       echo "Performing Determinate Nix installation (Docker environment)..."
       curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --init none --no-confirm
       # Source the Nix profile script to add Nix to PATH for the current shell
