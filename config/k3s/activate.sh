@@ -66,7 +66,7 @@ if ! $SUDO_CMD diff -q "$KUBELET_CONFIG_SOURCE" "$KUBELET_CONFIG_TARGET" >/dev/n
 fi
 
 if [ "$K3S_CONFIG_CHANGED" -eq 1 ]; then
-  if systemctl is-active --quiet k3s; then
+  if $SUDO_CMD systemctl is-active --quiet k3s; then
     $SUDO_CMD systemctl restart k3s
     echo "k3s restarted to apply config changes"
   fi
