@@ -3,7 +3,7 @@ Description=Dedicated containerd filesystem for K3s
 Before=k3s.service
 
 [Mount]
-What=/dev/disk/by-label/k3s-containerd
+What=/dev/disk/by-uuid/90f29a7b-38ff-460b-b534-92a02f1412ec
 Where=/var/lib/rancher/k3s/agent/containerd
 Type=ext4
 Options=noatime
