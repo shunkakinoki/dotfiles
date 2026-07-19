@@ -75,5 +75,15 @@ It 'preserves dry-run command handling'
 When run bash -c "grep 'DRY_RUN_CMD' '$SCRIPT'"
 The output should include 'DRY_RUN_CMD'
 End
+
+It 'keeps one percent of the ext4 root volume reserved'
+When run bash -c "grep 'target_reserved_percent=1' '$SCRIPT'"
+The output should include 'target_reserved_percent=1'
+End
+
+It 'resolves the mounted root block device instead of hard-coding it'
+When run bash -c "grep '@findmnt@ --noheadings --output SOURCE --target /' '$SCRIPT'"
+The output should include '@findmnt@ --noheadings --output SOURCE --target /'
+End
 End
 End
