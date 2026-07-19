@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329
+# shellcheck disable=SC2016,SC2329
 
 Describe 'home-manager/services/k3s/activate.sh'
 SCRIPT="$PWD/home-manager/services/k3s/activate.sh"
@@ -104,8 +104,8 @@ The status should be success
 End
 
 It 'inspects the root-owned containerd directory through sudo'
-When run grep "run_sudo @find@ \"\$MOUNT_POINT\"" "$SCRIPT"
-The output should include "run_sudo @find@ \"\$MOUNT_POINT\""
+When run grep 'run_sudo @find@ "$MOUNT_POINT"' "$SCRIPT"
+The output should include 'run_sudo @find@ "$MOUNT_POINT"'
 The status should be success
 End
 
@@ -151,14 +151,14 @@ The status should be success
 End
 
 It 'creates the stable containerd filesystem label'
-When run grep "mkfs.ext4 -F -L \"\$MOUNT_LABEL\"" "$PREPARE_SCRIPT"
-The output should include "mkfs.ext4 -F -L \"\$MOUNT_LABEL\""
+When run grep 'mkfs.ext4 -F -L "$MOUNT_LABEL"' "$PREPARE_SCRIPT"
+The output should include 'mkfs.ext4 -F -L "$MOUNT_LABEL"'
 The status should be success
 End
 
 It 'inspects the root-owned target through sudo'
-When run grep "sudo find \"\$MOUNT_POINT\"" "$PREPARE_SCRIPT"
-The output should include "sudo find \"\$MOUNT_POINT\""
+When run grep 'sudo find "$MOUNT_POINT"' "$PREPARE_SCRIPT"
+The output should include 'sudo find "$MOUNT_POINT"'
 The status should be success
 End
 
