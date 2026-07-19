@@ -135,6 +135,13 @@ let
       )
     ) filteredHomeConfigs
     // lib.optionalAttrs (system == "x86_64-linux") {
+      eval-home-andor =
+        mkEvalCheck "home-andor"
+          (import ../named-hosts/andor {
+            inherit inputs;
+            username = "ubuntu";
+            system = "x86_64-linux";
+          }).activationPackage;
       eval-home-kyber =
         mkEvalCheck "home-kyber"
           (import ../named-hosts/kyber {

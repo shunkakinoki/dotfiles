@@ -17,7 +17,7 @@ let
   };
   serviceFile = "${homeDir}/.config/k3s/k3s.service";
 in
-lib.mkIf (pkgs.stdenv.isLinux && host.isKyber) {
+lib.mkIf (pkgs.stdenv.isLinux && host.isK3sServer) {
   home.activation.setupK3s = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.bash}/bin/bash "${setupScript}" \
       "${serviceFile}" \

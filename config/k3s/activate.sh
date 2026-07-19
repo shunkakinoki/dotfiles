@@ -2,6 +2,8 @@
 set -euo pipefail
 
 GALACTICA_AUTHORIZED_KEY="@galacticaAuthorizedKey@"
+KUBELET_CONFIG_NAME="@kubeletConfigName@"
+TAILSCALE_DNS="@tailscaleDns@"
 
 ensure_authorized_key() {
   local key="$1"
@@ -31,8 +33,8 @@ ensure_authorized_key() {
 ensure_authorized_key "$GALACTICA_AUTHORIZED_KEY"
 
 K3S_CONFIG_SOURCE="$HOME/.config/k3s/config.yaml"
-KUBELET_CONFIG_SOURCE="$HOME/.config/k3s/kubelet.conf.d/10-kyber.conf"
-KUBELET_CONFIG_TARGET="/var/lib/rancher/k3s/agent/etc/kubelet.conf.d/10-kyber.conf"
+KUBELET_CONFIG_SOURCE="$HOME/.config/k3s/kubelet.conf.d/$KUBELET_CONFIG_NAME"
+KUBELET_CONFIG_TARGET="/var/lib/rancher/k3s/agent/etc/kubelet.conf.d/$KUBELET_CONFIG_NAME"
 
 if [ ! -f "$K3S_CONFIG_SOURCE" ] || [ ! -f "$KUBELET_CONFIG_SOURCE" ]; then
   exit 0
@@ -74,8 +76,6 @@ fi
 
 K3S_KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
 REMOTE_KUBECONFIG="$HOME/.kube/config"
-TAILSCALE_DNS="kyber.tail950b36.ts.net"
-
 if [ -f "$K3S_KUBECONFIG" ]; then
   mkdir -p "$HOME/.kube"
   $SUDO_CMD cat "$K3S_KUBECONFIG" |

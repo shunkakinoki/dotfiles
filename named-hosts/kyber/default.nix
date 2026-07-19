@@ -14,6 +14,7 @@ let
     inherit system overlays;
     config = nixpkgsConfig;
   };
+  baseHost = import ../../lib/host.nix;
 in
 home-manager.lib.homeManagerConfiguration {
   inherit pkgs;
@@ -21,8 +22,12 @@ home-manager.lib.homeManagerConfiguration {
     inherit username pkgs;
     isRunner = false;
     inputs = inputs // {
-      host = (import ../../lib/host.nix) // {
+      host = baseHost // {
+        isAndor = false;
         isKyber = true;
+        isK3sServer = true;
+        k3s = baseHost.k3sHostConfigs.kyber;
+        nodeName = "kyber";
       };
     };
   };
