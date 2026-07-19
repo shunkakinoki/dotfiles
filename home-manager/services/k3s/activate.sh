@@ -35,10 +35,11 @@ require_sudo() {
     echo "Warning: sudo not found, skipping k3s system setup" >&2
     return 1
   fi
+  return 0
 }
 
 configure_root_ext4_reserve() {
-  local root_source root_fs_type block_count reserved_blocks target_reserved_blocks
+  local root_source root_fs_type filesystem_info block_count reserved_blocks target_reserved_blocks
   local target_reserved_percent=1
 
   root_source="$(@findmnt@ --noheadings --output SOURCE --target /)"
@@ -53,10 +54,14 @@ configure_root_ext4_reserve() {
   fi
 
   require_sudo || return 0
+  if ! filesystem_info="$(run_sudo @tune2fs@ -l "$root_source")"; then
+    echo "Warning: unable to inspect ext4 reserve on $root_source" >&2
+    return 0
+  fi
   # shellcheck disable=SC2016
-  block_count="$(run_sudo @tune2fs@ -l "$root_source" 2>/dev/null | @awk@ -F: '/^Block count:/ { gsub(/[[:space:]]/, "", $2); print $2 }')"
+  block_count="$(@awk@ -F: '/^Block count:/ { gsub(/[[:space:]]/, "", $2); print $2 }' <<<"$filesystem_info")"
   # shellcheck disable=SC2016
-  reserved_blocks="$(run_sudo @tune2fs@ -l "$root_source" 2>/dev/null | @awk@ -F: '/^Reserved block count:/ { gsub(/[[:space:]]/, "", $2); print $2 }')"
+  reserved_blocks="$(@awk@ -F: '/^Reserved block count:/ { gsub(/[[:space:]]/, "", $2); print $2 }' <<<"$filesystem_info")"
   if [ -z "$block_count" ] || [ -z "$reserved_blocks" ]; then
     echo "Warning: unable to inspect ext4 reserve on $root_source" >&2
     return 0
@@ -67,7 +72,10 @@ configure_root_ext4_reserve() {
     return 0
   fi
 
-  run_sudo @tune2fs@ -m "$target_reserved_percent" "$root_source"
+  if ! run_sudo @tune2fs@ -m "$target_reserved_percent" "$root_source"; then
+    echo "Warning: unable to configure ext4 reserve on $root_source" >&2
+    return 0
+  fi
   echo "Configured $root_source ext4 reserved blocks to ${target_reserved_percent}%"
 }
 

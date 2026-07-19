@@ -53,6 +53,12 @@ It 'warns when sudo is unavailable'
 When run bash -c "grep 'sudo not found' '$SCRIPT'"
 The output should include 'sudo not found'
 End
+
+It 'returns success when sudo is available'
+When run bash -c "sed -n '/^require_sudo()/,/^}/p' '$SCRIPT' | grep -xF '  return 0'"
+The output should include 'return 0'
+The status should be success
+End
 End
 
 Describe 'k3s setup'
@@ -77,7 +83,7 @@ The output should include 'DRY_RUN_CMD'
 End
 
 It 'keeps one percent of the ext4 root volume reserved'
-When run bash -c "grep 'target_reserved_percent=1' '$SCRIPT'"
+When run bash -c "grep -xF '  local target_reserved_percent=1' '$SCRIPT'"
 The output should include 'target_reserved_percent=1'
 End
 

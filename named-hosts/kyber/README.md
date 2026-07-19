@@ -74,6 +74,7 @@ and CRI health before restarting services:
 
 ```bash
 df -h /
+cat /proc/pressure/io
 sudo tune2fs -l "$(findmnt -n -o SOURCE /)" | grep -E 'Block count|Reserved block count'
 sudo journalctl -u k3s --since '30 minutes ago' | grep -E 'image garbage collection|DiskPressure|deadline exceeded'
 sudo k3s crictl info
