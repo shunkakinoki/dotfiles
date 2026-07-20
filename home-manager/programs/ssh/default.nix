@@ -1,23 +1,11 @@
-{ lib, ... }:
+{ lib, pkgs, ... }:
 {
   home.file.".ssh/rc" = {
     source = ./rc;
     force = true;
   };
-  # Pin tailnet host keys into ~/.ssh/known_hosts (all key types, incl. ecdsa).
-  # caam's sync client reads ~/.ssh/known_hosts directly and defaults to
-  # negotiating ecdsa, which our HostKeyAlgorithms omit — so without this it
-  # fails host-key verification. Kept mutable (append-if-missing) so ssh can
-  # still record new hosts normally.
   home.activation.caamKnownHosts = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    kh="$HOME/.ssh/known_hosts"
-    mkdir -p "$HOME/.ssh"
-    touch "$kh"
-    chmod 600 "$kh"
-    while IFS= read -r line; do
-      [ -z "$line" ] && continue
-      grep -qxF "$line" "$kh" || echo "$line" >> "$kh"
-    done < ${./known_hosts}
+    ${pkgs.bash}/bin/bash ${./pin-known-hosts.sh} ${./known_hosts}
   '';
 
   programs.ssh = {
