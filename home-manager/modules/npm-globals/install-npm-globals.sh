@@ -74,6 +74,31 @@ repair_sqlite3_native_binding() {
   echo "sqlite3 native binding rebuilt"
 }
 
+# Bun's global package layout moves the PostHog native launcher under
+# node_modules/.bin_real. The launcher loads its agent API bundle from the
+# versioned PostHog runtime directory, while the npm package ships that bundle
+# under its own lib directory. Seed the runtime location after every install.
+repair_posthog_api_cli_bundle() {
+  local posthog_cli_dir="${GLOBAL_MODULES}/@posthog/cli"
+  local source_bundle="${posthog_cli_dir}/lib/posthog-api-cli.mjs"
+  local version posthog_home target_bundle
+
+  [ -f "$source_bundle" ] || return 0
+  version=$(jq -r '.version // empty' "${posthog_cli_dir}/package.json" 2>/dev/null || true)
+  [ -n "$version" ] || return 0
+
+  posthog_home="${POSTHOG_HOME:-${HOME}/.posthog}"
+  target_bundle="${posthog_home}/api-cli/${version}/posthog-api-cli.mjs"
+  if [ -f "$target_bundle" ] && cmp -s "$source_bundle" "$target_bundle"; then
+    echo "PostHog API CLI bundle already installed"
+    return 0
+  fi
+
+  mkdir -p "$(dirname "$target_bundle")"
+  cp -f "$source_bundle" "$target_bundle"
+  echo "Installed PostHog API CLI bundle for $version"
+}
+
 # Current-platform tokens used to recognise the native optionalDependency that
 # actually carries a package's binary (e.g. *-darwin-arm64, @esbuild/linux-x64).
 case "$(uname -s)" in
@@ -482,6 +507,10 @@ done
 
 if ! repair_sqlite3_native_binding; then
   echo "Warning: sqlite3 native binding repair failed" >&2
+fi
+
+if ! repair_posthog_api_cli_bundle; then
+  echo "Warning: PostHog API CLI bundle repair failed" >&2
 fi
 
 echo "npm globals installation complete"
