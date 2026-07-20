@@ -9,9 +9,9 @@ requires-python = ">=3.13"
 [dependency-groups]
 tools = [
   "aider-chat>=0.86.2",
-  "claude-swap>=0.18.1",
+  "claude-swap>=0.20.0",
   "graphifyy>=0.9.12",
-  "huggingface-hub[mcp]>=1.22.0",
+  "huggingface-hub[mcp]>=1.23.0",
   "marker-pdf>=1.10.2",
   "mempalace>=3.5.0",
   "mistral-vibe>=2.19.0",
@@ -19,7 +19,7 @@ tools = [
   "ruff>=0.15.20",
   "serena-agent>=1.5.3",
   "transformers>=5.13.0",
-  "vllm>=0.24.0",
+  "vllm>=0.25.0",
   "vllm-mlx>=0.4.0",
 ]
 # Hermes gateway runtime deps - installed into hermes venv via uv pip install
@@ -27,7 +27,7 @@ hermes = [
   "python-telegram-bot[webhooks]>=22.8,<23",
   "croniter>=6.2.3,<7",
   "fastapi[standard]>=0.139.0",
-  "uvicorn>=0.50.2",
+  "uvicorn>=0.51.0",
 ]
 
 [tool.uv]
