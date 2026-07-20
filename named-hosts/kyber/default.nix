@@ -111,13 +111,13 @@ home-manager.lib.homeManagerConfiguration {
           };
         };
 
-        # GPG agent: short cache (matches Galactica). Shared signing key blast radius.
+        # GPG agent configuration
         services.gpg-agent = {
           enable = true;
           enableSshSupport = false;
           pinentry.package = pkgs.pinentry-tty;
-          defaultCacheTtl = 1800;
-          maxCacheTtl = 7200;
+          defaultCacheTtl = 94608000; # 3 years
+          maxCacheTtl = 94608000; # 3 years
         };
 
         # GPG_TTY is set in fish shell init instead of sessionVariables

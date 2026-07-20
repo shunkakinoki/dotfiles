@@ -104,9 +104,9 @@ When run bash -c "grep 'activate-sshd.sh' '$PWD/named-hosts/kyber/default.nix'"
 The output should include 'activate-sshd.sh'
 End
 
-It 'uses a short gpg-agent cache ttl'
-When run bash -c "grep 'defaultCacheTtl = 1800' '$PWD/named-hosts/kyber/default.nix'"
-The output should include 'defaultCacheTtl = 1800'
+It 'keeps a long gpg-agent cache ttl'
+When run bash -c "grep 'defaultCacheTtl = 94608000' '$PWD/named-hosts/kyber/default.nix'"
+The output should include 'defaultCacheTtl = 94608000'
 End
 
 It 'does not enable Tailscale SSH'
