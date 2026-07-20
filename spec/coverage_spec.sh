@@ -454,6 +454,7 @@ home-manager/programs/fnm/activate.sh
 home-manager/programs/neovim/activate-build-plugins.sh
 home-manager/programs/neovim/activate-copy-pack-lock.sh
 home-manager/programs/neovim/run_tests.sh
+home-manager/programs/ssh/pin-known-hosts.sh
 home-manager/programs/tmux/session-logger.sh
 home-manager/services/brew-upgrader/upgrade.sh
 home-manager/services/cass/daily.sh
