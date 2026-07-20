@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
+# Converge Kyber WAN firewall on every activation (IPv4 + IPv6).
+# Public SSH is denied on the WAN NIC; access is via Tailscale (and Latitude SG).
 set -euo pipefail
 
 CHAIN="kyber-firewall"
-PUBLIC_IF="eno1"
 
 SUDO_CMD=""
 if command -v sudo >/dev/null 2>&1; then
@@ -30,26 +31,78 @@ ipt() {
   run_root @iptables@ "$@"
 }
 
-if ipt -L "$CHAIN" -n >/dev/null 2>&1; then
-  echo "Firewall chain $CHAIN already exists, skipping."
-  exit 0
-fi
+ip6t() {
+  run_root @ip6tables@ "$@"
+}
 
-echo "Configuring iptables firewall on $PUBLIC_IF..."
+detect_public_if() {
+  local ifc=""
+  if [ -n "${KYBER_PUBLIC_IF:-}" ]; then
+    printf '%s\n' "$KYBER_PUBLIC_IF"
+    return 0
+  fi
 
-ipt -N "$CHAIN"
+  ifc="$(@ip@ -4 route show default 2>/dev/null | awk '/default/ {
+    for (i = 1; i <= NF; i++) {
+      if ($i == "dev") {
+        print $(i + 1)
+        exit
+      }
+    }
+  }')"
 
-# Allow established/related connections
-ipt -A "$CHAIN" -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+  if [ -z "$ifc" ]; then
+    echo "Could not detect public interface (no default IPv4 route). Set KYBER_PUBLIC_IF." >&2
+    exit 1
+  fi
 
-# Allow SSH
-ipt -A "$CHAIN" -p tcp --dport 22 -j ACCEPT
+  if [ ! -d "/sys/class/net/$ifc" ]; then
+    echo "Detected public interface '$ifc' does not exist. Set KYBER_PUBLIC_IF." >&2
+    exit 1
+  fi
 
-# Drop everything else on public interface
-ipt -A "$CHAIN" -j DROP
+  printf '%s\n' "$ifc"
+}
 
-# Insert chain into INPUT for public interface only
-ipt -I INPUT 1 -i "$PUBLIC_IF" -j "$CHAIN"
+# Remove every INPUT jump into CHAIN, then attach for the current WAN NIC.
+resync_input_jump() {
+  local ipt_cmd="$1"
+  local public_if="$2"
+  local rule
 
-echo "Firewall enabled: only SSH (22) allowed on $PUBLIC_IF."
-echo "Tailscale, k3s, and Docker traffic unaffected (different interfaces)."
+  while IFS= read -r rule; do
+    # shellcheck disable=SC2086
+    $ipt_cmd -D ${rule#-A }
+  done < <($ipt_cmd -S INPUT 2>/dev/null | awk -v chain="$CHAIN" '
+    $1 == "-A" && $0 ~ ("-j " chain "$") { print }
+  ' || true)
+
+  $ipt_cmd -I INPUT 1 -i "$public_if" -j "$CHAIN"
+}
+
+ensure_chain() {
+  local ipt_cmd="$1"
+
+  if $ipt_cmd -L "$CHAIN" -n >/dev/null 2>&1; then
+    $ipt_cmd -F "$CHAIN"
+  else
+    $ipt_cmd -N "$CHAIN"
+  fi
+
+  # Established/related only. No public SSH: Tailscale + Latitude SG own remote access.
+  $ipt_cmd -A "$CHAIN" -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+  $ipt_cmd -A "$CHAIN" -j DROP
+}
+
+PUBLIC_IF="$(detect_public_if)"
+
+echo "Converging firewall on $PUBLIC_IF (IPv4 + IPv6)..."
+
+ensure_chain ipt
+resync_input_jump ipt "$PUBLIC_IF"
+
+ensure_chain ip6t
+resync_input_jump ip6t "$PUBLIC_IF"
+
+echo "Firewall enabled: WAN $PUBLIC_IF drops all new ingress (SSH via Tailscale only)."
+echo "Tailscale, k3s, and container traffic on other interfaces are unaffected."

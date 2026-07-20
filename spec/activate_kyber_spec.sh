@@ -93,5 +93,68 @@ It 'quotes the agenix config directory argument'
 When run cat "$PWD/named-hosts/kyber/default.nix"
 The output should include '"${config.home.homeDirectory}/.config/agenix"'
 End
+
+It 'deploys the galactica id_ed25519.age ciphertext'
+When run bash -c "grep 'id_ed25519.age' '$PWD/named-hosts/kyber/default.nix'"
+The output should include 'id_ed25519.age'
+End
+
+It 'hardens sshd during activation'
+When run bash -c "grep 'activate-sshd.sh' '$PWD/named-hosts/kyber/default.nix'"
+The output should include 'activate-sshd.sh'
+End
+
+It 'uses a short gpg-agent cache ttl'
+When run bash -c "grep 'defaultCacheTtl = 1800' '$PWD/named-hosts/kyber/default.nix'"
+The output should include 'defaultCacheTtl = 1800'
+End
+
+It 'does not enable Tailscale SSH'
+When run bash -c "grep -F '\"--ssh\"' '$PWD/named-hosts/kyber/default.nix' || true"
+The output should equal ''
+End
+End
+End
+
+Describe 'named-hosts/kyber/activate-sshd.sh'
+SCRIPT="$PWD/named-hosts/kyber/activate-sshd.sh"
+
+Describe 'script properties'
+It 'uses bash shebang'
+When run bash -c "head -1 '$SCRIPT'"
+The output should include '#!/usr/bin/env bash'
+End
+
+It 'uses strict mode'
+When run bash -c "head -5 '$SCRIPT'"
+The output should include 'set -euo pipefail'
+End
+End
+
+Describe 'hardening content'
+It 'disables password authentication'
+When run bash -c "grep 'PasswordAuthentication no' '$SCRIPT'"
+The output should include 'PasswordAuthentication no'
+End
+
+It 'disables root login'
+When run bash -c "grep 'PermitRootLogin no' '$SCRIPT'"
+The output should include 'PermitRootLogin no'
+End
+
+It 'restricts AllowUsers to ubuntu'
+When run bash -c "grep 'AllowUsers ubuntu' '$SCRIPT'"
+The output should include 'AllowUsers ubuntu'
+End
+
+It 'writes an sshd_config.d drop-in'
+When run bash -c "grep '99-kyber-hardening.conf' '$SCRIPT'"
+The output should include '99-kyber-hardening.conf'
+End
+
+It 'validates config with sshd -t'
+When run bash -c "grep 'sshd -t' '$SCRIPT'"
+The output should include 'sshd -t'
+End
 End
 End

@@ -30,6 +30,11 @@ It 'quotes the home directory argument when invoking the helper'
 When run cat "$PWD/home-manager/services/openclaw/default.nix"
 The output should include '"${./activate.sh}" "${homeDir}"'
 End
+
+It 'forces loopback bind on the gateway unit'
+When run bash -c "grep -- '--bind loopback' '$PWD/home-manager/services/openclaw/default.nix'"
+The output should include '--bind loopback'
+End
 End
 
 Describe 'home-manager/services/hermes/activate.sh'

@@ -49,6 +49,27 @@ Once Tailscale is set up:
 kyber  # Fish abbreviation that runs: ssh ubuntu@kyber
 ```
 
+Remote SSH should go through Tailscale. Latitude project firewall restricts
+TCP/22 to `100.64.0.0/10`, and host activation drops new WAN ingress on the
+public NIC (IPv4 + IPv6). Prefer keeping provider SG and host firewall aligned.
+
+## Security Posture
+
+Activation converges:
+
+- WAN `iptables` / `ip6tables` chain (default-route NIC, override with
+  `KYBER_PUBLIC_IF`) — established only, no public SSH
+- `/etc/ssh/sshd_config.d/99-kyber-hardening.conf` — pubkey-only, no root,
+  `AllowUsers ubuntu`
+- OpenClaw gateway forced `--bind loopback`
+- Tailscale `--advertise-exit-node` without `--ssh` (OpenSSH over Tailscale)
+
+Still intentional / follow-up:
+
+- Shared Galactica GitHub + GPG identity until per-host deploy keys exist
+- Bootstrap still uses vendor `curl | sh` installers (verify checksums)
+- Cluster-admin kubeconfig sync from Galactica remains break-glass style
+
 ## k3s Containerd SSD
 
 Kyber mounts the dedicated ext4 filesystem with UUID

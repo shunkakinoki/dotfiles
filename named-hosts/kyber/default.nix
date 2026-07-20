@@ -75,12 +75,18 @@ home-manager.lib.homeManagerConfiguration {
 
         # Manually deploy agenix secrets during activation
         # This ensures secrets are deployed even if the agenix activation hook doesn't run properly
+        # Source ciphertext is galactica/keys/id_ed25519.age (secrets.nix keys/id_github.age)
         home.activation.deployAgenixSecrets = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/deploy-agenix-secret.sh}" \
             "${config.home.homeDirectory}/.ssh/id_ed25519_github" \
-            "${builtins.toString ../galactica/keys/id_github.age}" \
+            "${builtins.toString ../galactica/keys/id_ed25519.age}" \
             "${config.home.homeDirectory}/.ssh/id_ed25519" \
             "${pkgs.rage}/bin/rage"
+        '';
+
+        # Declarative OpenSSH hardening (password/root off; pubkey-only)
+        home.activation.hardenSshd = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-sshd.sh}"
         '';
 
         # Import GPG key from agenix (all systems with dotfiles)
@@ -105,13 +111,13 @@ home-manager.lib.homeManagerConfiguration {
           };
         };
 
-        # GPG agent configuration
+        # GPG agent: short cache (matches Galactica). Shared signing key blast radius.
         services.gpg-agent = {
           enable = true;
           enableSshSupport = false;
           pinentry.package = pkgs.pinentry-tty;
-          defaultCacheTtl = 94608000; # 3 years
-          maxCacheTtl = 94608000; # 3 years
+          defaultCacheTtl = 1800;
+          maxCacheTtl = 7200;
         };
 
         # GPG_TTY is set in fish shell init instead of sessionVariables
@@ -136,11 +142,11 @@ home-manager.lib.homeManagerConfiguration {
           installSystemService = true;
           # Auth key will be provided via agenix secret
           # authKeyFile = config.age.secrets."keys/tailscale-auth.age".path;
+          # Exit node kept; Tailscale SSH omitted — OpenSSH over Tailscale + Latitude SG.
           extraUpArgs = [
             "--reset"
             "--accept-dns=false"
             "--advertise-exit-node"
-            "--ssh"
           ];
         };
       }
