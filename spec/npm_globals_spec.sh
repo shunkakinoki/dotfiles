@@ -248,20 +248,25 @@ The output should include 'const sqlite3 = require'
 End
 End
 
-Describe 'PostHog API CLI bundle repair'
-It 'defines a PostHog API bundle repair step'
-When run bash -c "grep 'repair_posthog_api_cli_bundle()' '$SCRIPT'"
-The output should include 'repair_posthog_api_cli_bundle'
+Describe 'PostHog API CLI verification'
+It 'defines a PostHog API verification step'
+When run bash -c "grep 'verify_posthog_api_cli()' '$SCRIPT'"
+The output should include 'verify_posthog_api_cli'
 End
 
-It 'seeds the versioned PostHog runtime bundle path'
-When run bash -c "grep 'api-cli.*/posthog-api-cli.mjs' '$SCRIPT'"
-The output should include 'posthog-api-cli.mjs'
+It 'verifies the api subcommand actually runs'
+When run bash -c "grep 'api tools' '$SCRIPT'"
+The output should include 'api tools'
 End
 
-It 'runs the PostHog repair after global installs'
-When run bash -c "grep 'repair_posthog_api_cli_bundle' '$SCRIPT' | tail -1"
-The output should include 'repair_posthog_api_cli_bundle'
+It 'reports node on PATH as the real dependency'
+When run bash -c "grep 'needs node on PATH' '$SCRIPT'"
+The output should include 'node on PATH'
+End
+
+It 'runs the PostHog verification after global installs'
+When run bash -c "grep 'verify_posthog_api_cli' '$SCRIPT' | tail -1"
+The output should include 'verify_posthog_api_cli'
 End
 End
 
