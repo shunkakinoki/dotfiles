@@ -11,5 +11,5 @@ chmod 600 "$kh"
 
 while IFS= read -r line; do
   [ -z "$line" ] && continue
-  grep -qxF "$line" "$kh" || echo "$line" >> "$kh"
-done < "$KNOWN_HOSTS_FILE"
+  grep -qxF "$line" "$kh" || echo "$line" >>"$kh"
+done <"$KNOWN_HOSTS_FILE"
