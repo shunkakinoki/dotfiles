@@ -248,6 +248,23 @@ The output should include 'const sqlite3 = require'
 End
 End
 
+Describe 'PostHog API CLI bundle repair'
+It 'defines a PostHog API bundle repair step'
+When run bash -c "grep 'repair_posthog_api_cli_bundle()' '$SCRIPT'"
+The output should include 'repair_posthog_api_cli_bundle'
+End
+
+It 'seeds the versioned PostHog runtime bundle path'
+When run bash -c "grep 'api-cli.*/posthog-api-cli.mjs' '$SCRIPT'"
+The output should include 'posthog-api-cli.mjs'
+End
+
+It 'runs the PostHog repair after global installs'
+When run bash -c "grep 'repair_posthog_api_cli_bundle' '$SCRIPT' | tail -1"
+The output should include 'repair_posthog_api_cli_bundle'
+End
+End
+
 Describe 'native binary completeness'
 It 'detects a missing platform-native optionalDependency'
 When run bash -c "grep 'missing_native_optional_dep' '$SCRIPT'"
