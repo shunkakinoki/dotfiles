@@ -10,7 +10,7 @@ in
     };
     Service = {
       Type = "simple";
-      ExecStart = "%h/.local/bin/moshi-hook serve";
+      ExecStart = "${pkgs.moshi-hook}/bin/moshi-hook serve";
       Restart = "always";
       RestartSec = 5;
     };
