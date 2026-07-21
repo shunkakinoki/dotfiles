@@ -1672,7 +1672,7 @@ dependencies = [
 [[package]]
 name = "git-ai"
 version = "1.6.16"
-source = "git+https://github.com/git-ai-project/git-ai?branch=main#6ab2adbb234f24e03098c154df1856f9861d55a5"
+source = "git+https://github.com/git-ai-project/git-ai?branch=main#da79071f21f3b018aa7d4ee4e7d5fa8bf3555a88"
 dependencies = [
  "chrono",
  "clap",
@@ -4429,9 +4429,9 @@ checksum = "8ee5873ec9cce0195efcb7a4e9507a04cd49aec9c83d0389df45b1ef7ba2e649"
 
 [[package]]
 name = "skim"
-version = "5.3.1"
+version = "5.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "68d9197637da59f90841d92ed2ed764223111b7190a5188fee9cc619ba5eb666"
+checksum = "571d9fe74aa8e856726e6b6afc66317afbbbbff24d3d76e1409e06bb88cb99e9"
 dependencies = [
  "ansi-to-tui",
  "assert_enum_variants",
