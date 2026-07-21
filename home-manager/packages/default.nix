@@ -150,6 +150,7 @@ with pkgs;
   claude-code
   cmake
   codex
+  moshi-hook
   collectd
   fwupd
   gcc
