@@ -11,14 +11,14 @@ let
   ];
 in
 {
-  # Shared SSH key for GitHub authentication (synced from galactica)
-  # This is the id_github key from galactica, which is the GitHub-authorized key
+  # Shared GitHub deploy key (ciphertext: galactica/keys/id_ed25519.age).
+  # Prefer per-host least-privilege deploy keys when rotating credentials.
   "keys/id_github.age" = {
     file = ../galactica/keys/id_ed25519.age;
     publicKeys = allMachines;
   };
 
-  # GPG key for commit signing (synced from galactica)
+  # Shared GPG signing key (synced from galactica). Same blast-radius note as above.
   "keys/gpg.age" = {
     file = ../galactica/keys/gpg.age;
     publicKeys = allMachines;

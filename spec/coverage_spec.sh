@@ -308,6 +308,10 @@ It 'has spec file for named-hosts/kyber/activate-ip-forwarding.sh'
 The path "spec/activate_kyber_spec.sh" should be exist
 End
 
+It 'has spec file for named-hosts/kyber/activate-sshd.sh'
+The path "spec/activate_kyber_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/modules/bin-shells/activate.sh'
 The path "spec/activate_bin_shells_spec.sh" should be exist
 End
@@ -484,6 +488,7 @@ hosts/linux/activate-backup-files.sh
 install.sh
 named-hosts/kyber/activate-backup-files.sh
 named-hosts/kyber/activate-ip-forwarding.sh
+named-hosts/kyber/activate-sshd.sh
 named-hosts/kyber/prepare-containerd-disk.sh
 named-hosts/kyber/rekey-galactica.sh
 named-hosts/kyber/setup.sh

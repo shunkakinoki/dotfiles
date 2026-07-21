@@ -58,9 +58,9 @@ End
 End
 
 Describe 'secret deployment'
-It 'skips if destination already exists'
-When run bash -c "grep 'exit 0' '$SCRIPT'"
-The output should include 'exit 0'
+It 'redeploys when destination content differs'
+When run bash -c "grep 'cmp -s' '$SCRIPT'"
+The output should include 'cmp -s'
 End
 
 It 'uses rage for decryption'
@@ -76,6 +76,11 @@ End
 It 'warns when secret file not found'
 When run bash -c "grep 'Secret file not found' '$SCRIPT'"
 The output should include 'Secret file not found'
+End
+
+It 'replaces the destination atomically'
+When run bash -c "grep 'agenix.new' '$SCRIPT'"
+The output should include 'agenix.new'
 End
 End
 End

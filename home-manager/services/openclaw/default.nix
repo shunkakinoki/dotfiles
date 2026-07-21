@@ -30,7 +30,7 @@ lib.mkIf host.isKyber {
     };
     Service = {
       Type = "simple";
-      ExecStart = "${homeDir}/.bun/bin/openclaw gateway --port 18789";
+      ExecStart = "${homeDir}/.bun/bin/openclaw gateway --port 18789 --bind loopback";
       Restart = "always";
       RestartSec = "5s";
       Environment = [
