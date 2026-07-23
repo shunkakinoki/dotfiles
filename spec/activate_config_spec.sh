@@ -113,13 +113,14 @@ The line 1 should eq "print gui/$(id -u)/test-agent"
 The line 2 should eq "bootstrap gui/$(id -u) $TMP_HOME/Library/LaunchAgents/test-agent.plist"
 End
 
-It 'persists the generated plist without restarting an already loaded agent'
+It 'replaces a stale plist without restarting an already loaded agent'
 TMP_HOME="$(mktemp -d)"
 MOCK_BIN="$TMP_HOME/bin"
 LAUNCHCTL_LOG="$TMP_HOME/launchctl.log"
 SOURCE_PLIST="$TMP_HOME/source.plist"
-mkdir -p "$MOCK_BIN"
+mkdir -p "$MOCK_BIN" "$TMP_HOME/Library/LaunchAgents"
 printf '%s\n' '<plist><dict><key>Label</key><string>test-agent</string></dict></plist>' >"$SOURCE_PLIST"
+printf '%s\n' '<plist><dict><key>Label</key><string>stale-agent</string></dict></plist>' >"$TMP_HOME/Library/LaunchAgents/test-agent.plist"
 cat >"$MOCK_BIN/launchctl" <<'SH'
 #!/usr/bin/env bash
 printf '%s\n' "$*" >>"$LAUNCHCTL_LOG"

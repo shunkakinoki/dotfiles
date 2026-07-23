@@ -20,8 +20,8 @@ if "$LAUNCHCTL_BIN" print "$AGENT_DOMAIN/$AGENT_LABEL" >/dev/null 2>&1; then
   agent_loaded=true
 fi
 
-# A loaded service without its plist would disappear on the next login.
-if [[ ! -s $AGENT_PLIST ]]; then
+# Keep the persisted plist byte-identical to Home Manager's generated source.
+if ! cmp -s "$SOURCE_PLIST" "$AGENT_PLIST"; then
   "$INSTALL_BIN" -m 444 "$SOURCE_PLIST" "$AGENT_PLIST"
 fi
 
