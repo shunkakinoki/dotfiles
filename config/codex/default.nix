@@ -6,7 +6,9 @@
 }:
 let
   homeDir = config.home.homeDirectory;
+  desktopSettingsAgentLabel = "org.nix-community.home.codex-desktop-settings-sync";
   syncDesktopSettings = ./sync-desktop-settings.sh;
+  ensureDesktopSettingsAgent = ./ensure-desktop-settings-agent.sh;
 in
 {
   # Use activation script instead of home.file symlink
@@ -40,6 +42,20 @@ in
       StandardErrorPath = "/tmp/codex-desktop-settings-sync.error.log";
     };
   };
+
+  # Home Manager normally installs and bootstraps launchd.agents during
+  # setupLaunchAgents. Self-heal after that phase so a missed registration
+  # cannot leave the app free to replace the managed settings permanently.
+  home.activation.codexDesktopSettingsAgent = lib.mkIf pkgs.stdenv.isDarwin (
+    lib.hm.dag.entryAfter [ "setupLaunchAgents" ] ''
+      $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${ensureDesktopSettingsAgent}" \
+        "${desktopSettingsAgentLabel}" \
+        "$newGenPath/LaunchAgents/${desktopSettingsAgentLabel}.plist" \
+        "/bin/launchctl" \
+        "${pkgs.coreutils}/bin/install" \
+        "${pkgs.coreutils}/bin/id"
+    ''
+  );
 
   home.file.".codex/hooks/notify.sh" = {
     source = ./hooks/notify.sh;
