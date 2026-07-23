@@ -4,7 +4,7 @@
 set -euo pipefail
 
 AGENT_LABEL="$1"
-FALLBACK_PLIST="$2"
+SOURCE_PLIST="$2"
 LAUNCHCTL_BIN="$3"
 INSTALL_BIN="$4"
 ID_BIN="$5"
@@ -22,7 +22,7 @@ fi
 
 # A loaded service without its plist would disappear on the next login.
 if [[ ! -s $AGENT_PLIST ]]; then
-  "$INSTALL_BIN" -m 444 "$FALLBACK_PLIST" "$AGENT_PLIST"
+  "$INSTALL_BIN" -m 444 "$SOURCE_PLIST" "$AGENT_PLIST"
 fi
 
 if [[ $agent_loaded == true ]]; then
@@ -35,5 +35,5 @@ fi
 
 # Recover from a stale or malformed destination plist before retrying.
 "$LAUNCHCTL_BIN" bootout "$AGENT_DOMAIN/$AGENT_LABEL" >/dev/null 2>&1 || true
-"$INSTALL_BIN" -m 444 "$FALLBACK_PLIST" "$AGENT_PLIST"
+"$INSTALL_BIN" -m 444 "$SOURCE_PLIST" "$AGENT_PLIST"
 "$LAUNCHCTL_BIN" bootstrap "$AGENT_DOMAIN" "$AGENT_PLIST"
