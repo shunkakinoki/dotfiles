@@ -4,6 +4,7 @@
 Describe 'config/codex/activate.sh'
 SCRIPT="$PWD/config/codex/activate.sh"
 SYNC_SCRIPT="$PWD/config/codex/sync-desktop-settings.sh"
+ENSURE_AGENT_SCRIPT="$PWD/config/codex/ensure-desktop-settings-agent.sh"
 HOOKS_JSON="$PWD/config/codex/hooks.json"
 CONFIG_TOML="$PWD/config/codex/config.toml"
 DESKTOP_SETTINGS_JSON="$PWD/config/codex/desktop-settings.json"
@@ -90,6 +91,47 @@ The status should be success
 The output should eq 'unchanged'
 End
 
+It 'installs and bootstraps a missing Desktop settings LaunchAgent'
+TMP_HOME="$(mktemp -d)"
+MOCK_BIN="$TMP_HOME/bin"
+LAUNCHCTL_LOG="$TMP_HOME/launchctl.log"
+FALLBACK_PLIST="$TMP_HOME/fallback.plist"
+mkdir -p "$MOCK_BIN"
+printf '%s\n' '<plist><dict><key>Label</key><string>test-agent</string></dict></plist>' >"$FALLBACK_PLIST"
+cat >"$MOCK_BIN/launchctl" <<'SH'
+#!/usr/bin/env bash
+printf '%s\n' "$*" >>"$LAUNCHCTL_LOG"
+if [[ $1 == print ]]; then
+  exit 1
+fi
+SH
+chmod +x "$MOCK_BIN/launchctl"
+
+When run bash -c 'HOME="$1" LAUNCHCTL_LOG="$2" bash "$3" "test-agent" "$4" "$5" "$(command -v install)" "$(command -v id)" && cmp -s "$4" "$1/Library/LaunchAgents/test-agent.plist" && cat "$2"' _ "$TMP_HOME" "$LAUNCHCTL_LOG" "$ENSURE_AGENT_SCRIPT" "$FALLBACK_PLIST" "$MOCK_BIN/launchctl"
+The status should be success
+The line 1 should eq "print gui/$(id -u)/test-agent"
+The line 2 should eq "bootstrap gui/$(id -u) $TMP_HOME/Library/LaunchAgents/test-agent.plist"
+End
+
+It 'persists the fallback plist without restarting an already loaded agent'
+TMP_HOME="$(mktemp -d)"
+MOCK_BIN="$TMP_HOME/bin"
+LAUNCHCTL_LOG="$TMP_HOME/launchctl.log"
+FALLBACK_PLIST="$TMP_HOME/fallback.plist"
+mkdir -p "$MOCK_BIN"
+printf '%s\n' '<plist><dict><key>Label</key><string>test-agent</string></dict></plist>' >"$FALLBACK_PLIST"
+cat >"$MOCK_BIN/launchctl" <<'SH'
+#!/usr/bin/env bash
+printf '%s\n' "$*" >>"$LAUNCHCTL_LOG"
+exit 0
+SH
+chmod +x "$MOCK_BIN/launchctl"
+
+When run bash -c 'HOME="$1" LAUNCHCTL_LOG="$2" bash "$3" "test-agent" "$4" "$5" "$(command -v install)" "$(command -v id)" && cmp -s "$4" "$1/Library/LaunchAgents/test-agent.plist" && cat "$2"' _ "$TMP_HOME" "$LAUNCHCTL_LOG" "$ENSURE_AGENT_SCRIPT" "$FALLBACK_PLIST" "$MOCK_BIN/launchctl"
+The status should be success
+The output should eq "print gui/$(id -u)/test-agent"
+End
+
 It 'registers the shared main/master push blocker'
 When run jq -r '.hooks.PreToolUse[] | select(.matcher == "Bash") | .hooks[].command' "$HOOKS_JSON"
 The output should include 'config/shared/hooks/block-git-push.sh'
@@ -114,6 +156,12 @@ When run cat "$DEFAULT_NIX"
 The output should include 'codex-desktop-settings-sync'
 The output should include 'WatchPaths'
 The output should include '.codex/.codex-global-state.json'
+End
+
+It 'self-heals a missed Desktop settings LaunchAgent registration'
+When run cat "$DEFAULT_NIX"
+The output should include 'ensureDesktopSettingsAgent'
+The output should include 'entryAfter [ "setupLaunchAgents" ]'
 End
 End
 
