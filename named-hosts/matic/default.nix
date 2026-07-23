@@ -216,7 +216,7 @@ import ../../hosts/nixos {
               };
           };
         };
-        security.pam.services.noctalia-shell = {
+        security.pam.services.noctalia = {
           fprintAuth = true;
           rules.auth.fprintd.settings = {
             max-tries = -1;
