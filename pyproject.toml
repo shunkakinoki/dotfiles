@@ -17,8 +17,8 @@ tools = [
   "mistral-vibe>=2.20.0",
   "nvitop>=1.7.0",
   "ruff>=0.15.20",
-  "serena-agent>=1.5.3",
-  "transformers>=5.13.0",
+  "serena-agent>=1.6.0",
+  "transformers>=5.14.1",
   "vllm>=0.25.0",
   "vllm-mlx>=0.4.0",
 ]
