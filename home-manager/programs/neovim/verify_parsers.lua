@@ -5,7 +5,7 @@ local ok, err = xpcall(function()
 end, debug.traceback)
 
 if not ok then
-	vim.api.nvim_err_writeln("Treesitter parser verification failed:\n" .. err)
+	vim.api.nvim_err_writeln("Treesitter parser verification failed:\n" .. tostring(err))
 	vim.cmd("cquit 1")
 end
 
