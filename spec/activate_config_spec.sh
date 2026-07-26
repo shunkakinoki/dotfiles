@@ -39,20 +39,20 @@ When run grep -qF 'reviewDelivery = "inline"' "$CONFIG_TOML"
 The status should be success
 End
 
-It 'merges managed Desktop settings without replacing unrelated state'
+It 'merges managed top-level Desktop settings without replacing unrelated state'
 TMP_HOME="$(mktemp -d)"
 mkdir -p "$TMP_HOME/.codex"
 cat >"$TMP_HOME/.codex/.codex-global-state.json" <<'JSON'
 {
   "unrelated-top-level": "preserved",
   "electron-persisted-atom-state": {
-    "unrelated-setting": 42,
-    "git-always-force-push": false
-  }
+    "unrelated-setting": 42
+  },
+  "git-always-force-push": false
 }
 JSON
 
-When run bash -c 'HOME="$1" bash "$2" "$3" "$4" "$5" "$6" "$7" && jq -r ".[\"unrelated-top-level\"], .[\"electron-persisted-atom-state\"][\"unrelated-setting\"], .[\"electron-persisted-atom-state\"][\"git-always-force-push\"], .[\"electron-persisted-atom-state\"][\"git-pull-request-merge-method\"], .[\"electron-persisted-atom-state\"][\"worktree-keep-count\"]" "$1/.codex/.codex-global-state.json"' _ "$TMP_HOME" "$SCRIPT" "$CONFIG_TOML" "$HOOKS_JSON" "$DESKTOP_SETTINGS_JSON" "$(command -v jq)" "$SYNC_SCRIPT"
+When run bash -c 'HOME="$1" bash "$2" "$3" "$4" "$5" "$6" "$7" && jq -r ".[\"unrelated-top-level\"], .[\"electron-persisted-atom-state\"][\"unrelated-setting\"], .[\"git-always-force-push\"], .[\"git-pull-request-merge-method\"], .[\"worktree-keep-count\"]" "$1/.codex/.codex-global-state.json"' _ "$TMP_HOME" "$SCRIPT" "$CONFIG_TOML" "$HOOKS_JSON" "$DESKTOP_SETTINGS_JSON" "$(command -v jq)" "$SYNC_SCRIPT"
 The status should be success
 The line 1 should eq 'preserved'
 The line 2 should eq '42'
@@ -61,7 +61,7 @@ The line 4 should eq 'squash'
 The line 5 should eq '300'
 End
 
-It 'restores managed Desktop settings after the app replaces its state'
+It 'restores managed top-level Desktop settings after the app replaces its state'
 TMP_HOME="$(mktemp -d)"
 mkdir -p "$TMP_HOME/.codex"
 cat >"$TMP_HOME/.codex/.codex-global-state.json" <<'JSON'
@@ -73,7 +73,7 @@ cat >"$TMP_HOME/.codex/.codex-global-state.json" <<'JSON'
 }
 JSON
 
-When run bash -c 'HOME="$1" bash "$2" "$3" "$4" && jq -r ".[\"unrelated-top-level\"], .[\"electron-persisted-atom-state\"][\"unrelated-setting\"], .[\"electron-persisted-atom-state\"][\"git-branch-prefix\"], .[\"electron-persisted-atom-state\"][\"worktree-keep-count\"]" "$1/.codex/.codex-global-state.json"' _ "$TMP_HOME" "$SYNC_SCRIPT" "$DESKTOP_SETTINGS_JSON" "$(command -v jq)"
+When run bash -c 'HOME="$1" bash "$2" "$3" "$4" && jq -r ".[\"unrelated-top-level\"], .[\"electron-persisted-atom-state\"][\"unrelated-setting\"], .[\"git-branch-prefix\"], .[\"worktree-keep-count\"]" "$1/.codex/.codex-global-state.json"' _ "$TMP_HOME" "$SYNC_SCRIPT" "$DESKTOP_SETTINGS_JSON" "$(command -v jq)"
 The status should be success
 The line 1 should eq 'preserved'
 The line 2 should eq '42'
@@ -81,10 +81,32 @@ The line 3 should eq 'codex/'
 The line 4 should eq '300'
 End
 
+It 'removes legacy nested copies of managed Desktop settings'
+TMP_HOME="$(mktemp -d)"
+mkdir -p "$TMP_HOME/.codex"
+cat >"$TMP_HOME/.codex/.codex-global-state.json" <<'JSON'
+{
+  "electron-persisted-atom-state": {
+    "unrelated-setting": 42,
+    "git-branch-prefix": "legacy/",
+    "worktree-keep-count": 15
+  }
+}
+JSON
+
+When run bash -c 'HOME="$1" bash "$2" "$3" "$4" && jq -r ".[\"electron-persisted-atom-state\"][\"unrelated-setting\"], (.[\"electron-persisted-atom-state\"] | has(\"git-branch-prefix\")), (.[\"electron-persisted-atom-state\"] | has(\"worktree-keep-count\")), .[\"git-branch-prefix\"], .[\"worktree-keep-count\"]" "$1/.codex/.codex-global-state.json"' _ "$TMP_HOME" "$SYNC_SCRIPT" "$DESKTOP_SETTINGS_JSON" "$(command -v jq)"
+The status should be success
+The line 1 should eq '42'
+The line 2 should eq 'false'
+The line 3 should eq 'false'
+The line 4 should eq 'codex/'
+The line 5 should eq '300'
+End
+
 It 'does not rewrite state when managed Desktop settings already match'
 TMP_HOME="$(mktemp -d)"
 mkdir -p "$TMP_HOME/.codex"
-printf '%s\n' '{"electron-persisted-atom-state": {}}' >"$TMP_HOME/.codex/.codex-global-state.json"
+cp -f "$DESKTOP_SETTINGS_JSON" "$TMP_HOME/.codex/.codex-global-state.json"
 
 When run bash -c 'HOME="$1" bash "$2" "$3" "$4" && before=$(ls -di "$1/.codex/.codex-global-state.json") && before=${before%% *} && HOME="$1" bash "$2" "$3" "$4" && after=$(ls -di "$1/.codex/.codex-global-state.json") && after=${after%% *} && test "$before" = "$after" && printf "%s\\n" unchanged' _ "$TMP_HOME" "$SYNC_SCRIPT" "$DESKTOP_SETTINGS_JSON" "$(command -v jq)"
 The status should be success
