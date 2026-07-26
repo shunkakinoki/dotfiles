@@ -42,6 +42,16 @@ for _, path in ipairs(plenary_paths) do
 	end
 end
 
+local treesitter_paths = vim.fn.globpath(vim.fn.stdpath("data") .. "/site/pack", "*/opt/nvim-treesitter", false, true)
+for _, path in ipairs(treesitter_paths) do
+	if vim.fn.isdirectory(path) == 1 then
+		vim.opt.runtimepath:append(path)
+		package.path = package.path .. ";" .. path .. "/lua/?.lua"
+		package.path = package.path .. ";" .. path .. "/lua/?/init.lua"
+		break
+	end
+end
+
 -- Basic settings for testing
 vim.opt.swapfile = false
 vim.opt.backup = false

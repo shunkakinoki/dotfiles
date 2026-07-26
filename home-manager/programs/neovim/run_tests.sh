@@ -6,8 +6,9 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 NVIM_DIR="$SCRIPT_DIR"
+NVIM_DATA_DIR="${NVIM_DATA_DIR:-$(nvim --clean --headless +'lua io.write(vim.fn.stdpath("data"))' +qa 2>/dev/null)}"
 # Prefer pack-installed plenary (has test_harness); fall back to /tmp clone
-PACK_DIR_EARLY="$HOME/.local/share/nvim/site/pack"
+PACK_DIR_EARLY="$NVIM_DATA_DIR/site/pack"
 PLENARY_PACK=""
 for d in "$PACK_DIR_EARLY"/*/opt/plenary.nvim "$PACK_DIR_EARLY"/*/start/plenary.nvim; do
   if [ -d "$d" ] && [ -f "$d/lua/plenary/test_harness.lua" ]; then
@@ -41,7 +42,7 @@ fi
 export PLENARY_DIR
 
 # Bootstrap plugins so vim.pack installs them before tests run
-PACK_DIR="$HOME/.local/share/nvim/site/pack"
+PACK_DIR="$NVIM_DATA_DIR/site/pack"
 FZF_NATIVE_FOUND=false
 for d in "$PACK_DIR"/*/opt/telescope-fzf-native.nvim "$PACK_DIR"/*/start/telescope-fzf-native.nvim; do
   if [ -d "$d" ]; then

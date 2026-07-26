@@ -2,6 +2,30 @@
 -- Tests treesitter configuration
 
 describe("treesitter", function()
+	describe("configured parsers", function()
+		local configured = require("config.treesitter_parsers")
+		local available = require("nvim-treesitter").get_available()
+
+		it("should all exist in the nvim-treesitter registry", function()
+			local available_set = {}
+			for _, parser in ipairs(available) do
+				available_set[parser] = true
+			end
+
+			for _, parser in ipairs(configured) do
+				assert.is_true(available_set[parser], ("parser is not available: %s"):format(parser))
+			end
+		end)
+
+		it("should not contain duplicates", function()
+			local seen = {}
+			for _, parser in ipairs(configured) do
+				assert.is_nil(seen[parser], ("parser is configured more than once: %s"):format(parser))
+				seen[parser] = true
+			end
+		end)
+	end)
+
 	describe("vim.treesitter API", function()
 		it("should have vim.treesitter available", function()
 			assert.is_table(vim.treesitter)

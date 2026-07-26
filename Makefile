@@ -1061,6 +1061,9 @@ lua-check-neovim: ## Check Neovim configuration.
 	@echo "📦 Installing plugins..."
 	@nvim -u "$(PWD)/home-manager/programs/neovim/init.lua" --headless +"lua vim.pack.update()" +qa 2>&1
 	@bash $(PWD)/scripts/build-neovim-plugins.sh
+	@echo "🌳 Installing and verifying configured Treesitter parsers..."
+	@nvim -u "$(PWD)/home-manager/programs/neovim/init.lua" --headless \
+		-l "$(PWD)/home-manager/programs/neovim/verify_parsers.lua" 2>&1
 	@nvim -u "$(PWD)/home-manager/programs/neovim/init.lua" --headless -c "qa" 2>&1 | tee /tmp/nvim-check.log; \
 	if grep -q "^E[0-9]\|^Error\|module .* not found" /tmp/nvim-check.log; then \
 		echo "❌ Neovim configuration has errors"; \
