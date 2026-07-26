@@ -59,10 +59,7 @@ function M.install_configured(options)
 end
 
 function M.install_configured_sync(timeout_ms)
-	local success = M.install_configured({ summary = true }):wait(timeout_ms or 600000)
-	if not success then
-		error("failed to install one or more configured Treesitter parsers")
-	end
+	M.install_configured({ summary = true }):wait(timeout_ms or 600000)
 
 	local installed = {}
 	for _, parser in ipairs(nvim_treesitter.get_installed()) do
