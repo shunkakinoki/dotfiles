@@ -46,7 +46,8 @@ setup_migration() {
   FAKE_DOLT="$TEST_ROOT/fake-dolt"
   RENDERED_SCRIPT="$TEST_ROOT/start.sh"
   mkdir -p "$LEGACY_DIR" "$SHARED_DIR" "$FAKE_DOLT/bin"
-  ln -s "$(type -P true)" "$FAKE_DOLT/bin/dolt"
+  printf '%s\n' '#!/usr/bin/env bash' 'exit 0' >"$FAKE_DOLT/bin/dolt"
+  chmod +x "$FAKE_DOLT/bin/dolt"
   sed \
     -e "s|@legacyBeadsDir@|$LEGACY_DIR|g" \
     -e "s|@beadsDir@|$SHARED_DIR|g" \
