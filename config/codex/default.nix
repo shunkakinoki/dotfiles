@@ -23,8 +23,9 @@ in
   '';
 
   # Codex caches Desktop preferences in memory and replaces its complete state
-  # file after activation. Restore managed keys after each app-owned rewrite;
-  # the synchronizer exits without writing once the values already match.
+  # file after activation. Restore managed top-level global-state keys after
+  # each app-owned rewrite; the synchronizer exits without writing once the
+  # values already match.
   launchd.agents.codex-desktop-settings-sync = lib.mkIf pkgs.stdenv.isDarwin {
     enable = true;
     config = {
