@@ -67,4 +67,23 @@ The output should include '--data-dir'
 End
 End
 
+Describe 'home-manager/services/dolt/default.nix'
+MODULE="$PWD/home-manager/services/dolt/default.nix"
+
+It 'uses the canonical Beads shared-server directory'
+When run grep -F 'sharedServerDir = "${homeDir}/.beads/shared-server";' "$MODULE"
+The output should include 'sharedServerDir = "${homeDir}/.beads/shared-server";'
+End
+
+It 'serves databases from the shared-server dolt directory'
+When run grep -F 'beadsDir = "${sharedServerDir}/dolt";' "$MODULE"
+The output should include 'beadsDir = "${sharedServerDir}/dolt";'
+End
+
+It 'exports the same shared-server directory to bd'
+When run grep -F 'BEADS_SHARED_SERVER_DIR = sharedServerDir;' "$MODULE"
+The output should include 'BEADS_SHARED_SERVER_DIR = sharedServerDir;'
+End
+End
+
 End
