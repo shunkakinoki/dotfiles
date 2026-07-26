@@ -27,6 +27,11 @@ When run bash -c "grep '@beadsDir@' '$SCRIPT'"
 The output should include '@beadsDir@'
 End
 
+It 'references @legacyBeadsDir@'
+When run bash -c "grep '@legacyBeadsDir@' '$SCRIPT'"
+The output should include '@legacyBeadsDir@'
+End
+
 It 'references @dolt@'
 When run bash -c "grep '@dolt@' '$SCRIPT'"
 The output should include '@dolt@'
@@ -34,19 +39,59 @@ End
 End
 
 Describe 'dolt migration behavior'
-It 'migrates legacy dolt directory to df'
-When run bash -c "grep 'mv -f' '$SCRIPT'"
-The output should include 'mv -f'
+setup_migration() {
+  TEST_ROOT=$(mktemp -d)
+  LEGACY_DIR="$TEST_ROOT/legacy"
+  SHARED_DIR="$TEST_ROOT/shared/dolt"
+  FAKE_DOLT="$TEST_ROOT/fake-dolt"
+  RENDERED_SCRIPT="$TEST_ROOT/start.sh"
+  mkdir -p "$LEGACY_DIR" "$SHARED_DIR" "$FAKE_DOLT/bin"
+  ln -s "$(type -P true)" "$FAKE_DOLT/bin/dolt"
+  sed \
+    -e "s|@legacyBeadsDir@|$LEGACY_DIR|g" \
+    -e "s|@beadsDir@|$SHARED_DIR|g" \
+    -e "s|@dolt@|$FAKE_DOLT|g" \
+    "$SCRIPT" >"$RENDERED_SCRIPT"
+}
+
+cleanup_migration() {
+  rm -rf "$TEST_ROOT"
+}
+
+Before 'setup_migration'
+After 'cleanup_migration'
+
+It 'moves a legacy database into the shared-server root'
+mkdir -p "$LEGACY_DIR/beads/.dolt"
+When run bash "$RENDERED_SCRIPT"
+The status should be success
+The path "$SHARED_DIR/beads/.dolt" should be directory
+The path "$LEGACY_DIR/beads" should not be exist
 End
 
-It 'gates the migration on df not yet existing'
-When run bash -c "grep -- '-e \"@beadsDir@/df\"' '$SCRIPT'"
-The output should include '-e "@beadsDir@/df"'
+It 'does not overwrite an existing shared-server database'
+mkdir -p "$LEGACY_DIR/df/.dolt" "$SHARED_DIR/df/.dolt"
+touch "$LEGACY_DIR/df/.dolt/legacy-marker"
+When run bash "$RENDERED_SCRIPT"
+The status should be success
+The path "$LEGACY_DIR/df/.dolt/legacy-marker" should be file
+The path "$SHARED_DIR/df/.dolt" should be directory
 End
 
-It 'does not recreate the legacy dolt -> df symlink'
-When run bash -c "grep -c 'ln -sfn df' '$SCRIPT' || true"
-The output should equal '0'
+It 'maps the old dolt database name to df during legacy-root migration'
+mkdir -p "$LEGACY_DIR/dolt/.dolt"
+When run bash "$RENDERED_SCRIPT"
+The status should be success
+The path "$SHARED_DIR/df/.dolt" should be directory
+The path "$SHARED_DIR/dolt" should not be exist
+End
+
+It 'does not rename a legitimate dolt database in the shared-server root'
+mkdir -p "$SHARED_DIR/dolt/.dolt"
+When run bash "$RENDERED_SCRIPT"
+The status should be success
+The path "$SHARED_DIR/dolt/.dolt" should be directory
+The path "$SHARED_DIR/df" should not be exist
 End
 End
 
@@ -67,6 +112,8 @@ The output should include '--data-dir'
 End
 End
 
+End
+
 Describe 'home-manager/services/dolt/default.nix'
 MODULE="$PWD/home-manager/services/dolt/default.nix"
 
@@ -84,6 +131,4 @@ It 'exports the same shared-server directory to bd'
 When run grep -F 'BEADS_SHARED_SERVER_DIR = sharedServerDir;' "$MODULE"
 The output should include 'BEADS_SHARED_SERVER_DIR = sharedServerDir;'
 End
-End
-
 End

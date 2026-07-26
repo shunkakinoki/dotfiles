@@ -9,6 +9,7 @@ let
   inherit (inputs.host) isKyber isGalactica;
   homeDir = config.home.homeDirectory;
   repoDir = "${homeDir}/dotfiles";
+  legacyBeadsDir = "${repoDir}/.beads";
   sharedServerDir = "${homeDir}/.beads/shared-server";
   beadsDir = "${sharedServerDir}/dolt";
   doltManifest = "${beadsDir}/beads_global/.dolt/noms/manifest";
@@ -19,7 +20,7 @@ let
   # 1.86+ adds the git+https:// remote scheme used by the beads_global GitHub backup.
   doltMinVersion = "1.86";
   startScript = pkgs.replaceVars ./start.sh {
-    inherit beadsDir;
+    inherit beadsDir legacyBeadsDir;
     inherit (pkgs) dolt;
   };
   backupScript = pkgs.replaceVars ./backup-dolt-main.sh {
