@@ -56,6 +56,7 @@ local function notify_install_result(context, err, success)
 end
 
 function M.install_configured(options)
+	options = vim.tbl_extend("keep", options or {}, { max_jobs = 4 })
 	return nvim_treesitter.install(M.configured_parsers, options)
 end
 
@@ -112,6 +113,14 @@ vim.api.nvim_create_autocmd("FileType", {
 			return
 		end
 
+		local function start_highlighting()
+			return vim.api.nvim_buf_is_valid(args.buf) and pcall(vim.treesitter.start, args.buf, parser)
+		end
+
+		if start_highlighting() then
+			return
+		end
+
 		nvim_treesitter.install({ parser }):await(function(err, success)
 			notify_install_result(("installation for %s"):format(parser), err, success)
 			if err or not success then
@@ -119,9 +128,7 @@ vim.api.nvim_create_autocmd("FileType", {
 			end
 
 			vim.schedule(function()
-				if vim.api.nvim_buf_is_valid(args.buf) then
-					pcall(vim.treesitter.start, args.buf, parser)
-				end
+				start_highlighting()
 			end)
 		end)
 	end,
