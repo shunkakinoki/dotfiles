@@ -526,13 +526,13 @@ vim.api.nvim_create_user_command("NvimPluginsInstall", function()
 	-- nvim-treesitter: install the curated parser set asynchronously.
 	local ok_ts, treesitter = pcall(require, "config.treesitter")
 	if ok_ts then
-		vim.notify("Installing configured Treesitter parsers...", vim.log.levels.INFO)
+		vim.notify("Ensuring configured Treesitter parsers are installed...", vim.log.levels.INFO)
 		treesitter.install_configured({ summary = true }):await(function(err, success)
 			vim.schedule(function()
 				if err or not success then
 					vim.notify("One or more configured Treesitter parsers failed to install", vim.log.levels.ERROR)
 				else
-					vim.notify("Configured Treesitter parsers installed", vim.log.levels.INFO)
+					vim.notify("Configured Treesitter parsers are ready", vim.log.levels.INFO)
 				end
 			end)
 		end)

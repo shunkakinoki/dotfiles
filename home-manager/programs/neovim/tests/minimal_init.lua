@@ -42,7 +42,13 @@ for _, path in ipairs(plenary_paths) do
 	end
 end
 
-local treesitter_paths = vim.fn.globpath(vim.fn.stdpath("data") .. "/site/pack", "*/opt/nvim-treesitter", false, true)
+local treesitter_paths = {}
+for _, package_type in ipairs({ "opt", "start" }) do
+	vim.list_extend(
+		treesitter_paths,
+		vim.fn.globpath(vim.fn.stdpath("data") .. "/site/pack", "*/" .. package_type .. "/nvim-treesitter", false, true)
+	)
+end
 for _, path in ipairs(treesitter_paths) do
 	if vim.fn.isdirectory(path) == 1 then
 		vim.opt.runtimepath:append(path)

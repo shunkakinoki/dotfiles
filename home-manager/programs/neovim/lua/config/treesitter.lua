@@ -33,8 +33,6 @@ local nvim_treesitter = require("nvim-treesitter")
 
 M.configured_parsers = require("config.treesitter_parsers")
 
-nvim_treesitter.setup({})
-
 -- nvim-treesitter does not ship a separate dotenv parser. Neovim detects .env
 -- files as the "env" filetype, whose syntax is compatible with the bash parser.
 vim.treesitter.language.register("bash", "env")
@@ -97,10 +95,23 @@ function M.verify_configured()
 	end
 end
 
-local startup_install = M.install_configured()
-startup_install:await(function(err, success)
-	notify_install_result("startup installation", err, success)
-end)
+local installed_parsers = {}
+for _, parser in ipairs(nvim_treesitter.get_installed()) do
+	installed_parsers[parser] = true
+end
+
+local missing_parsers = {}
+for _, parser in ipairs(M.configured_parsers) do
+	if not installed_parsers[parser] then
+		table.insert(missing_parsers, parser)
+	end
+end
+
+if #missing_parsers > 0 then
+	nvim_treesitter.install(missing_parsers, { max_jobs = 4 }):await(function(err, success)
+		notify_install_result("startup installation", err, success)
+	end)
+end
 
 local treesitter_group = vim.api.nvim_create_augroup("TreesitterAutoInstall", { clear = true })
 vim.api.nvim_create_autocmd("FileType", {
