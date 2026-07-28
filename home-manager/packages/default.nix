@@ -158,6 +158,8 @@ with pkgs;
   keychain
   libiconv
   libsecret
+  nspr
+  nss
   opencode
   openssl
   openssl.dev

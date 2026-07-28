@@ -30,7 +30,7 @@
           set -gx CGO_LDFLAGS "-L${pkgs.icu.out}/lib $CGO_LDFLAGS"
 
           # Native libraries for bun-installed packages (e.g. @oh-my-pi/pi-natives, sharp, keytar)
-          set -gx LD_LIBRARY_PATH ${lib.optionalString pkgs.stdenv.isLinux ''"${pkgs.alsa-lib}/lib"''} "${pkgs.glib.out}/lib" "${pkgs.libsecret}/lib" "${pkgs.stdenv.cc.cc.lib}/lib" "${pkgs.zlib}/lib" $LD_LIBRARY_PATH
+          set -gx LD_LIBRARY_PATH ${lib.optionalString pkgs.stdenv.isLinux ''"${pkgs.alsa-lib}/lib"''} "${pkgs.glib.out}/lib" "${pkgs.libsecret}/lib" "${pkgs.nspr}/lib" "${pkgs.nss}/lib" "${pkgs.stdenv.cc.cc.lib}/lib" "${pkgs.zlib}/lib" $LD_LIBRARY_PATH
       end
 
       # Go configuration
