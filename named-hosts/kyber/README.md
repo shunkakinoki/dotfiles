@@ -62,7 +62,7 @@ Activation converges:
 - `/etc/ssh/sshd_config.d/99-kyber-hardening.conf` — pubkey-only, no root,
   `AllowUsers ubuntu`
 - OpenClaw gateway forced `--bind loopback`
-- Tailscale `--advertise-exit-node` without `--ssh` (OpenSSH over Tailscale)
+- Tailscale `--advertise-exit-node` with `--ssh=false` (OpenSSH over Tailscale)
 
 Still intentional / follow-up:
 
