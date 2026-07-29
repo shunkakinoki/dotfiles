@@ -46,7 +46,7 @@ make decrypt-key-kyber KEY_FILE=tailscale-auth
 Once Tailscale is set up:
 
 ```bash
-kyber  # Fish abbreviation that runs: ssh ubuntu@kyber
+kyber  # Fish abbreviation that runs: ssh kyber
 ```
 
 Remote SSH should go through Tailscale. Latitude project firewall restricts
