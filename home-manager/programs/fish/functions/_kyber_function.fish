@@ -1,3 +1,3 @@
-function _kyber_function --description "SSH to Kyber server via Tailscale"
-  tailscale ssh ubuntu@kyber
+function _kyber_function --description "SSH to Kyber via OpenSSH over Tailscale"
+  ssh kyber
 end
