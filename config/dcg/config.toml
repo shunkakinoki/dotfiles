@@ -1,3 +1,6 @@
+[general]
+hook_timeout_ms = 3000
+
 [packs]
 custom_paths = ["~/.config/dcg/packs/*.yaml"]
 
