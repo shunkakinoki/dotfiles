@@ -113,6 +113,11 @@ It 'does not enable Tailscale SSH'
 When run bash -c "grep -F '\"--ssh\"' '$PWD/named-hosts/kyber/default.nix' || true"
 The output should equal ''
 End
+
+It 'explicitly disables Tailscale SSH'
+When run bash -c "grep -F '\"--ssh=false\"' '$PWD/named-hosts/kyber/default.nix'"
+The output should include '--ssh=false'
+End
 End
 End
 

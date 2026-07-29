@@ -142,9 +142,11 @@ home-manager.lib.homeManagerConfiguration {
           installSystemService = true;
           # Auth key will be provided via agenix secret
           # authKeyFile = config.age.secrets."keys/tailscale-auth.age".path;
-          # Exit node kept; Tailscale SSH omitted — OpenSSH over Tailscale + Latitude SG.
+          # Exit node kept; explicitly disable Tailscale SSH so long-lived Codex
+          # tunnels use OpenSSH over Tailscale instead of the Tailscale SSH proxy.
           extraUpArgs = [
             "--reset"
+            "--ssh=false"
             "--accept-dns=false"
             "--advertise-exit-node"
           ];
