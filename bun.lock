@@ -7,7 +7,7 @@
       "dependencies": {
         "@0xsequence/codegenie": "^0.4.1",
         "@ampcode/cli": "^0.0.1784437277-g74ac3c",
-        "@anthropic-ai/claude-code": "^2.1.217",
+        "@anthropic-ai/claude-code": "^2.1.218",
         "@augmentcode/auggie": "^0.33.0",
         "@biomejs/biome": "^2.5.5",
         "@ccusage/mcp": "^18.0.11",
@@ -21,8 +21,8 @@
         "@kaitranntt/ccs": "^8.8.1",
         "@mariozechner/pi-coding-agent": "^0.73.1",
         "@nanocollective/nanocoder": "^1.28.1",
-        "@oh-my-pi/pi-coding-agent": "^17.0.7",
-        "@oh-my-pi/pi-natives": "^17.0.7",
+        "@oh-my-pi/pi-coding-agent": "^17.0.8",
+        "@oh-my-pi/pi-natives": "^17.0.8",
         "@oh-my-pi/swarm-extension": "^13.17.0",
         "@openai/codex": "^0.144.6",
         "@pencil.dev/cli": "^0.2.9",
@@ -32,17 +32,17 @@
         "@railway/cli": "^5.27.2",
         "@redwoodjs/agent-ci": "^0.17.1",
         "@schpet/linear-cli": "^2.0.0",
-        "@sentry/cli": "^3.6.1",
+        "@sentry/cli": "^3.6.2",
         "@steipete/bird": "^0.8.0",
         "@tobilu/qmd": "^2.5.3",
         "@traces-sh/traces": "^0.6.12",
         "@upstash/context7-mcp": "^3.2.4",
         "acpx": "^0.12.0",
-        "agent-browser": "^0.32.3",
+        "agent-browser": "^0.32.4",
         "agentcash": "^0.17.0",
         "btca": "^2.0.5",
         "ccusage": "^20.0.18",
-        "chrome-devtools-axi": "^0.1.26",
+        "chrome-devtools-axi": "^0.1.27",
         "chrome-devtools-mcp": "^1.6.0",
         "clawdhub": "^0.3.0",
         "cline": "^3.0.46",
@@ -64,21 +64,21 @@
         "ralph-tui": "^0.12.0",
         "takt": "^0.51.0",
         "tokscale": "^4.5.3",
-        "turbo": "^2.10.5",
+        "turbo": "^2.10.6",
         "typescript": "^7.0.2",
         "vite": "^8.1.5",
         "vite-plus": "^0.2.5",
         "xcodebuildmcp": "^2.6.2",
       },
       "optionalDependencies": {
-        "@anthropic-ai/claude-code-darwin-arm64": "^2.1.217",
-        "@anthropic-ai/claude-code-darwin-x64": "^2.1.217",
-        "@anthropic-ai/claude-code-linux-arm64": "^2.1.217",
-        "@anthropic-ai/claude-code-linux-arm64-musl": "^2.1.217",
-        "@anthropic-ai/claude-code-linux-x64": "^2.1.217",
-        "@anthropic-ai/claude-code-linux-x64-musl": "^2.1.217",
-        "@anthropic-ai/claude-code-win32-arm64": "^2.1.217",
-        "@anthropic-ai/claude-code-win32-x64": "^2.1.217",
+        "@anthropic-ai/claude-code-darwin-arm64": "^2.1.218",
+        "@anthropic-ai/claude-code-darwin-x64": "^2.1.218",
+        "@anthropic-ai/claude-code-linux-arm64": "^2.1.218",
+        "@anthropic-ai/claude-code-linux-arm64-musl": "^2.1.218",
+        "@anthropic-ai/claude-code-linux-x64": "^2.1.218",
+        "@anthropic-ai/claude-code-linux-x64-musl": "^2.1.218",
+        "@anthropic-ai/claude-code-win32-arm64": "^2.1.218",
+        "@anthropic-ai/claude-code-win32-x64": "^2.1.218",
         "@openai/codex-darwin-arm64": "npm:@openai/codex@0.144.6",
         "@openai/codex-darwin-x64": "npm:@openai/codex@0.144.6",
         "@openai/codex-linux-arm64": "npm:@openai/codex@0.144.6",
@@ -1538,17 +1538,17 @@
 
     "@tufjs/models": ["@tufjs/models@4.1.0", "", { "dependencies": { "@tufjs/canonical-json": "2.0.0", "minimatch": "^10.1.1" } }, "sha512-Y8cK9aggNRsqJVaKUlEYs4s7CvQ1b1ta2DVPyAimb0I2qhzjNk+A+mxvll/klL0RlfuIUei8BF7YWiua4kQqww=="],
 
-    "@turbo/darwin-64": ["@turbo/darwin-64@2.10.5", "", { "os": "darwin", "cpu": "x64" }, "sha512-ENvPwy3x5yS7MwNYHeWjqOBXkwIMp39Pd+/zXC6PoiNzF8EIvvLZOZZ+ny6L9x4WgS5vxUii2LM5gM+zjPdnWw=="],
+    "@turbo/darwin-64": ["@turbo/darwin-64@2.10.7", "", { "os": "darwin", "cpu": "x64" }, "sha512-/c9cSBRermWDv85oufLhoH6XRLOVbvzJLRd+WLyfJCP+i0HFLQj4PVNDrHcY17/ve5l8X0Oua4bJBqJUgJPnZA=="],
 
-    "@turbo/darwin-arm64": ["@turbo/darwin-arm64@2.10.5", "", { "os": "darwin", "cpu": "arm64" }, "sha512-rqROo9zsF/P9RqsdtbLD1nFJicjSrYyvQ9kNJC38AbxA3pAs6VAlATvtvOFx7bqOv6vicf20SP9kF33avJjy2w=="],
+    "@turbo/darwin-arm64": ["@turbo/darwin-arm64@2.10.7", "", { "os": "darwin", "cpu": "arm64" }, "sha512-8lpCCGWZBl9PIF8w8f2iEWrLMbHBWIfJeV6l2UEGqysD6HRIM4ySj/8R7HGEzbECJ4r/gnJcHmxEoG8yjFe64A=="],
 
-    "@turbo/linux-64": ["@turbo/linux-64@2.10.5", "", { "os": "linux", "cpu": "x64" }, "sha512-RoSSiNFUxi27zLJuM9F6GyWWjHgLch9t6nwD6K0FkXRirZkTLlzIj6IhFnK8H9++nefLtdFqylE4vGjZAv6AAA=="],
+    "@turbo/linux-64": ["@turbo/linux-64@2.10.7", "", { "os": "linux", "cpu": "x64" }, "sha512-Midw9Ed00yw9rqkWN82fY3LmLNFQ6yiL1GXB56DJKUEjWaEd27zh7ohCxzzrjfjQVrEeVWd3UPytTAV16XDQlA=="],
 
-    "@turbo/linux-arm64": ["@turbo/linux-arm64@2.10.5", "", { "os": "linux", "cpu": "arm64" }, "sha512-4ZComcpzmHGmVynQqvvi+iZOSq/tBvY1SltXB8g4NZRsrA01W8E+yRL8RNM+PLoyWsrCnJa8xa+DkWkv+xg4iQ=="],
+    "@turbo/linux-arm64": ["@turbo/linux-arm64@2.10.7", "", { "os": "linux", "cpu": "arm64" }, "sha512-UVEy+MW/xn4BcsiV3v3uv0/oObyaQgVtRT+Jj4WE53rNH05VEYEc1Z13q3zV6276wCZR4Yxc4hiTTcjw7PjSpg=="],
 
-    "@turbo/windows-64": ["@turbo/windows-64@2.10.5", "", { "os": "win32", "cpu": "x64" }, "sha512-eL2Iyj4DbMINq1Sr1w0iAi6nAiZOF16KSlRGwCJpVh+IWZeY33MAsLHVOBMj1xoFtncVJXclCVpTPL2nBoYkFg=="],
+    "@turbo/windows-64": ["@turbo/windows-64@2.10.7", "", { "os": "win32", "cpu": "x64" }, "sha512-l2nH9KGLV46SWjcXvyc2+xo5gdf5J0NVADknQk9OCJhzJBpiNl/byd26yIfwZBjLupdqT6UOdPhPxcpUPxRykQ=="],
 
-    "@turbo/windows-arm64": ["@turbo/windows-arm64@2.10.5", "", { "os": "win32", "cpu": "arm64" }, "sha512-sog+wP+8YSJrdWZ/rUJg8xghVTrwoG+BrSlDQpnK5fzSgJHn1INRWXbVWRH0d3vX8dBI01E3yxXRre9Dn+OXQA=="],
+    "@turbo/windows-arm64": ["@turbo/windows-arm64@2.10.7", "", { "os": "win32", "cpu": "arm64" }, "sha512-qjE1apG6RThuX49vUJd5ks2dV2ndXC2qktDChQonFMvUzrMrEnZMQzO+IgxBiYq1j+NbXQcRwj84nGnk1TBw1g=="],
 
     "@tybys/wasm-util": ["@tybys/wasm-util@0.10.3", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-F3fo1MYrRJYL3zER0OUOmkutjr1Vp23m7OsSgp7nq4SP6OqX6C/56XFIPAl5bt3zaBRjmW7SGz3u/6LwFpYcOg=="],
 
@@ -1992,7 +1992,7 @@
 
     "chownr": ["chownr@3.0.0", "", {}, "sha512-+IxzY9BZOQd/XuYPRmrvEVjF/nqj5kgT4kEq7VofrDoM1MxoRjEWkrCC3EtLi59TVawxTAn+orJwFQcrqEN1+g=="],
 
-    "chrome-devtools-axi": ["chrome-devtools-axi@0.1.26", "", { "dependencies": { "@modelcontextprotocol/sdk": "^1.12.1", "@toon-format/toon": "^2.1.0", "axi-sdk-js": "^0.1.8" }, "bin": { "chrome-devtools-axi": "dist/bin/chrome-devtools-axi.js" } }, "sha512-ZAquXPHjvQQL+r6rb0rrr0sHvIf6uPPzBCm7NgVpcPYDjBvdkeYfuX0WINLDdIFDga1PTu2jTC8CdcXLLKusFw=="],
+    "chrome-devtools-axi": ["chrome-devtools-axi@0.1.27", "", { "dependencies": { "@modelcontextprotocol/sdk": "^1.12.1", "@toon-format/toon": "^2.1.0", "axi-sdk-js": "^0.1.8" }, "bin": { "chrome-devtools-axi": "dist/bin/chrome-devtools-axi.js" } }, "sha512-igW9TxK03DJ0UA5jw2BT9tBw4rmZtMS5i6OSB0ivQ7UQpg6SHe4RVEKqZUZQWpoA3w0yEmkdUMczLrC1ZdIl6w=="],
 
     "chrome-devtools-mcp": ["chrome-devtools-mcp@1.6.0", "", { "peerDependencies": { "@blackwell-systems/gcf": "^2.2.2", "@toon-format/toon": "^2.2.0" }, "optionalPeers": ["@blackwell-systems/gcf", "@toon-format/toon"], "bin": { "chrome-devtools-mcp": "build/src/bin/chrome-devtools-mcp.js", "chrome-devtools": "build/src/bin/chrome-devtools.js" } }, "sha512-VZX6f/OjQSYhy2BGGRs+y3LsrsAQAz/HwZCWKBLVyST/4r/3zjVEjjVW7gMCVbRDuspnVdcp5hQDPrQ5UFrdZw=="],
 
@@ -3520,7 +3520,7 @@
 
     "tunnel-agent": ["tunnel-agent@0.6.0", "", { "dependencies": { "safe-buffer": "^5.0.1" } }, "sha512-McnNiV1l8RYeY8tBgEpuodCC1mLUdbSN+CYBL7kJsJNInOP8UjDDEwdk6Mw60vdLLrr5NHKZhMAOSrR2NZuQ+w=="],
 
-    "turbo": ["turbo@2.10.5", "", { "optionalDependencies": { "@turbo/darwin-64": "2.10.5", "@turbo/darwin-arm64": "2.10.5", "@turbo/linux-64": "2.10.5", "@turbo/linux-arm64": "2.10.5", "@turbo/windows-64": "2.10.5", "@turbo/windows-arm64": "2.10.5" }, "bin": { "turbo": "bin/turbo" } }, "sha512-07Y/C7OUp23l4P92PJoYtFNbHjLhftrZH5Ce7dbczS4kX2Re+wtbXvZLoxn/pUtzgsQaRCBaRuZPJp4zmAn0WQ=="],
+    "turbo": ["turbo@2.10.7", "", { "optionalDependencies": { "@turbo/darwin-64": "2.10.7", "@turbo/darwin-arm64": "2.10.7", "@turbo/linux-64": "2.10.7", "@turbo/linux-arm64": "2.10.7", "@turbo/windows-64": "2.10.7", "@turbo/windows-arm64": "2.10.7" }, "bin": { "turbo": "bin/turbo" } }, "sha512-GHx6WExIFSKNJ5qMlzDpXBXlu9ApxaMjqxAVrCNcW94xf/+uqgIz41SAuRUMbXva2ExNAaY/h8V0q90SWSzmRw=="],
 
     "turndown": ["turndown@7.2.4", "", { "dependencies": { "@mixmark-io/domino": "^2.2.0" } }, "sha512-I8yFsfRzmzK0WV1pNNOA4A7y4RDfFxPRxb3t+e3ui14qSGOxGtiSP6GjeX+Y6CHb7HYaFj7ECUD7VE5kQMZWGQ=="],
 
