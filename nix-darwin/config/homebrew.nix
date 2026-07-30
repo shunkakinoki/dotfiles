@@ -163,6 +163,7 @@
       "screen-studio"
       "sf-symbols"
       "slack"
+      "t3-code"
       "tailscale-app"
       "telegram-desktop"
       "trae"
