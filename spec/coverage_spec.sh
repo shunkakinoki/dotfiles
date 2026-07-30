@@ -169,6 +169,10 @@ It 'has spec file for config/openclaw/hydrate.sh'
 The path "spec/openclaw_hydrate_spec.sh" should be exist
 End
 
+It 'has spec file for config/roborev/hydrate.sh'
+The path "spec/roborev_hydrate_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/modules/npm-globals/install-npm-globals.sh'
 The path "spec/npm_globals_spec.sh" should be exist
 End
@@ -432,6 +436,7 @@ config/noctalia/quit-all-apps.sh
 config/obsidian/activate.sh
 config/omp/activate.sh
 config/openclaw/hydrate.sh
+config/roborev/hydrate.sh
 config/serena/activate.sh
 home-manager/activation/deploy-agenix-secret.sh
 home-manager/activation/ensure-directory.sh
