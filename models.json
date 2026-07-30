@@ -1,6 +1,6 @@
 {
-  "claude-opus": "claude-opus-4-7",
-  "claude-sonnet": "claude-sonnet-4-6",
+  "claude-opus": "claude-opus-5-0",
+  "claude-sonnet": "claude-sonnet-5",
   "claude-haiku": "claude-haiku-4-5-20251001",
   "gpt": "gpt-5.6-sol",
   "gpt-codex": "gpt-5.3-codex",
@@ -9,12 +9,12 @@
   "gpt-mini": "gpt-5.4-mini",
   "gpt-nano": "gpt-5.4-nano",
   "gemini-pro": "gemini-3.1-pro-preview",
-  "gemini-flash": "gemini-3.1-flash-preview",
+  "gemini-flash": "gemini-3.6-flash",
   "grok": "grok-4.5",
   "glm": "glm-4.7",
-  "minimax": "minimax-m2.7",
+  "minimax": "minimax-m3",
   "gemma": "gemma-4-31b-it",
-  "kimi": "kimi-2.6",
+  "kimi": "kimi-k3",
   "qwen": "qwen3.6-plus",
   "qwen-local": "qwen3.5-0.8b-optiq"
 }

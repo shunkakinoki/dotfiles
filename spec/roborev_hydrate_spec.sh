@@ -81,7 +81,7 @@ The output should not include '__ROBOREV_CI_REPOS__'
 End
 
 It 'restricts config file permissions to the owner'
-When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; stat -f "%OLp" "'"$TEMP_HOME"'/.roborev/config.toml" 2>/dev/null || stat -c "%a" "'"$TEMP_HOME"'/.roborev/config.toml"'
+When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; stat -c "%a" "'"$TEMP_HOME"'/.roborev/config.toml" 2>/dev/null || stat -f "%OLp" "'"$TEMP_HOME"'/.roborev/config.toml"'
 The output should eq '600'
 End
 End

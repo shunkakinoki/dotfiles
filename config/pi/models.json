@@ -74,8 +74,8 @@
           "maxTokens": 65536
         },
         {
-          "id": "claude-opus-4-7",
-          "name": "Claude Opus 4.7",
+          "id": "claude-opus-5-0",
+          "name": "Claude Opus 5.0",
           "reasoning": true,
           "input": [
             "text",
@@ -91,8 +91,8 @@
           "maxTokens": 32000
         },
         {
-          "id": "claude-sonnet-4-6",
-          "name": "Claude Sonnet 4.6",
+          "id": "claude-sonnet-5",
+          "name": "Claude Sonnet 5",
           "reasoning": false,
           "input": [
             "text",
