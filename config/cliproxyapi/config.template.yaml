@@ -108,8 +108,8 @@ openai-compatibility:
     api-key-entries:
       - api-key: "__KIMI_API_KEY__"
     models:
-      - name: "kimi-2.6"
-        alias: "kimi-2.6"
+      - name: "kimi-k3"
+        alias: "kimi-k3"
   - name: "qwen"
     base-url: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
     api-key-entries:
@@ -122,10 +122,10 @@ openai-compatibility:
     api-key-entries:
       - api-key: "__OPENCODE_API_KEY__"
     models:
-      - name: "minimax-m2.7"
-        alias: "minimax-m2.7"
-      - name: "kimi-2.6"
-        alias: "kimi-2.6"
+      - name: "minimax-m3"
+        alias: "minimax-m3"
+      - name: "kimi-k3"
+        alias: "kimi-k3"
   - name: "openai"
     base-url: "https://api.openai.com/v1"
     api-key-entries:

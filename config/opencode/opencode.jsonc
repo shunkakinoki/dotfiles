@@ -24,11 +24,11 @@
         "apiKey": "{env:CLIPROXY_API_KEY}"
       },
       "models": {
-        "claude-opus-4-7": {
-          "name": "Claude Opus 4.7 (via shunkakinoki's CLIProxy)"
+        "claude-opus-5-0": {
+          "name": "Claude Opus 5.0 (via shunkakinoki's CLIProxy)"
         },
-        "claude-sonnet-4-6": {
-          "name": "Claude Sonnet 4.6 (via shunkakinoki's CLIProxy)"
+        "claude-sonnet-5": {
+          "name": "Claude Sonnet 5 (via shunkakinoki's CLIProxy)"
         },
         "claude-haiku-4-5-20251001": {
           "name": "Claude Haiku 4.5 (via shunkakinoki's CLIProxy)"
@@ -42,14 +42,14 @@
         "gemini-3.1-pro-preview": {
           "name": "Gemini 3.1 Pro (via shunkakinoki's CLIProxy)"
         },
-        "gemini-3.1-flash-preview": {
-          "name": "Gemini 3.1 Flash (via shunkakinoki's CLIProxy)"
+        "gemini-3.6-flash": {
+          "name": "Gemini 3.6 Flash (via shunkakinoki's CLIProxy)"
         },
         "z-ai/glm-4.7": {
           "name": "GLM 4.7 (via shunkakinoki's CLIProxy)"
         },
-        "kimi-2.6": {
-          "name": "Kimi 2.6 (via shunkakinoki's CLIProxy)"
+        "kimi-k3": {
+          "name": "Kimi K3 (via shunkakinoki's CLIProxy)"
         }
       }
     },
@@ -61,11 +61,11 @@
         "apiKey": "{env:CLIPROXY_API_KEY}"
       },
       "models": {
-        "claude-opus-4-7": {
-          "name": "Claude Opus 4.7 (via local CLIProxyAPI)"
+        "claude-opus-5-0": {
+          "name": "Claude Opus 5.0 (via local CLIProxyAPI)"
         },
-        "claude-sonnet-4-6": {
-          "name": "Claude Sonnet 4.6 (via local CLIProxyAPI)"
+        "claude-sonnet-5": {
+          "name": "Claude Sonnet 5 (via local CLIProxyAPI)"
         },
         "claude-haiku-4-5-20251001": {
           "name": "Claude Haiku 4.5 (via local CLIProxyAPI)"
@@ -79,17 +79,17 @@
         "gemini-3.1-pro-preview": {
           "name": "Gemini 3.1 Pro (via local CLIProxyAPI)"
         },
-        "gemini-3.1-flash-preview": {
-          "name": "Gemini 3.1 Flash (via local CLIProxyAPI)"
+        "gemini-3.6-flash": {
+          "name": "Gemini 3.6 Flash (via local CLIProxyAPI)"
         },
         "glm-4.7": {
           "name": "GLM 4.7 (via local CLIProxyAPI)"
         },
-        "minimax-m2.7": {
-          "name": "Minimax M2.7 (via local CLIProxyAPI)"
+        "minimax-m3": {
+          "name": "Minimax M3 (via local CLIProxyAPI)"
         },
-        "kimi-2.6": {
-          "name": "Kimi 2.6 (via local CLIProxyAPI)"
+        "kimi-k3": {
+          "name": "Kimi K3 (via local CLIProxyAPI)"
         }
       }
     },

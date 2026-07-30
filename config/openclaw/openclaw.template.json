@@ -14,8 +14,8 @@
         "api": "openai-completions",
         "models": [
           {
-            "id": "claude-opus-4-7",
-            "name": "Claude Opus 4.7",
+            "id": "claude-opus-5-0",
+            "name": "Claude Opus 5.0",
             "reasoning": true,
             "input": [
               "text",
@@ -31,8 +31,8 @@
             "maxTokens": 32000
           },
           {
-            "id": "claude-sonnet-4-6",
-            "name": "Claude Sonnet 4.6",
+            "id": "claude-sonnet-5",
+            "name": "Claude Sonnet 5",
             "reasoning": false,
             "input": [
               "text",
@@ -116,8 +116,8 @@
             "maxTokens": 32000
           },
           {
-            "id": "gemini-3.1-flash-preview",
-            "name": "Gemini 3.1 Flash",
+            "id": "gemini-3.6-flash",
+            "name": "Gemini 3.6 Flash",
             "reasoning": false,
             "input": [
               "text",
@@ -150,8 +150,8 @@
             "maxTokens": 32000
           },
           {
-            "id": "minimax-m2.7",
-            "name": "Minimax M2.7",
+            "id": "minimax-m3",
+            "name": "Minimax M3",
             "reasoning": false,
             "input": [
               "text",
@@ -197,7 +197,7 @@
   "agents": {
     "defaults": {
       "model": {
-        "primary": "cliproxy/minimax-m2.7",
+        "primary": "cliproxy/minimax-m3",
         "fallbacks": [
           "cliproxy/glm-4.7",
           "cliproxy/free"
@@ -220,7 +220,7 @@
         "name": "Code Reviewer (Opus)",
         "workspace": "__HOME__/.openclaw/workspace/agents/code-review",
         "model": {
-          "primary": "cliproxy/claude-opus-4-7",
+          "primary": "cliproxy/claude-opus-5-0",
           "fallbacks": [
             "cliproxy/glm-4.7",
             "cliproxy/free"
@@ -239,7 +239,7 @@
         "name": "Code Reviewer (Sonnet)",
         "workspace": "__HOME__/.openclaw/workspace/agents/code-review",
         "model": {
-          "primary": "cliproxy/claude-sonnet-4-6",
+          "primary": "cliproxy/claude-sonnet-5",
           "fallbacks": [
             "cliproxy/glm-4.7",
             "cliproxy/free"
@@ -330,9 +330,9 @@
         "name": "Code Reviewer (Minimax)",
         "workspace": "__HOME__/.openclaw/workspace/agents/code-review",
         "model": {
-          "primary": "cliproxy/minimax-m2.7",
+          "primary": "cliproxy/minimax-m3",
           "fallbacks": [
-            "cliproxy/claude-opus-4-7",
+            "cliproxy/claude-opus-5-0",
             "cliproxy/glm-4.7",
             "cliproxy/free"
           ]
@@ -367,7 +367,7 @@
         "name": "Security Scanner",
         "workspace": "__HOME__/.openclaw/workspace/agents/security",
         "model": {
-          "primary": "cliproxy/minimax-m2.7",
+          "primary": "cliproxy/minimax-m3",
           "fallbacks": [
             "cliproxy/glm-4.7",
             "cliproxy/free"
@@ -403,7 +403,7 @@
         "name": "Docs Checker",
         "workspace": "__HOME__/.openclaw/workspace/agents/docs",
         "model": {
-          "primary": "cliproxy/minimax-m2.7",
+          "primary": "cliproxy/minimax-m3",
           "fallbacks": [
             "cliproxy/glm-4.7",
             "cliproxy/free"
@@ -460,7 +460,7 @@
         "model": {
           "primary": "cliproxy/gemini-3.1-pro-preview",
           "fallbacks": [
-            "cliproxy/minimax-m2.7",
+            "cliproxy/minimax-m3",
             "cliproxy/glm-4.7",
             "cliproxy/free"
           ]
@@ -479,7 +479,7 @@
         "model": {
           "primary": "cliproxy/gpt-5.6-sol",
           "fallbacks": [
-            "cliproxy/minimax-m2.7",
+            "cliproxy/minimax-m3",
             "cliproxy/glm-4.7",
             "cliproxy/free"
           ]
@@ -496,9 +496,9 @@
         "name": "Twitter (Opus)",
         "workspace": "__HOME__/.openclaw/workspace/agents/twitter",
         "model": {
-          "primary": "cliproxy/claude-opus-4-7",
+          "primary": "cliproxy/claude-opus-5-0",
           "fallbacks": [
-            "cliproxy/minimax-m2.7",
+            "cliproxy/minimax-m3",
             "cliproxy/glm-4.7",
             "cliproxy/free"
           ]
@@ -516,7 +516,7 @@
         "name": "Mindset Coach",
         "workspace": "__HOME__/.openclaw/workspace/agents/mindset",
         "model": {
-          "primary": "cliproxy/claude-opus-4-7",
+          "primary": "cliproxy/claude-opus-5-0",
           "fallbacks": [
             "cliproxy/glm-4.7",
             "cliproxy/free"
@@ -535,7 +535,7 @@
         "name": "Routine Manager",
         "workspace": "__HOME__/.openclaw/workspace/agents/routine",
         "model": {
-          "primary": "cliproxy/claude-sonnet-4-6",
+          "primary": "cliproxy/claude-sonnet-5",
           "fallbacks": [
             "cliproxy/glm-4.7",
             "cliproxy/free"
@@ -554,7 +554,7 @@
         "name": "Dev (Opus)",
         "workspace": "__HOME__/.openclaw/workspace/agents/dev",
         "model": {
-          "primary": "cliproxy/claude-opus-4-7",
+          "primary": "cliproxy/claude-opus-5-0",
           "fallbacks": [
             "cliproxy/glm-4.7",
             "cliproxy/free"
@@ -635,7 +635,7 @@
         "name": "Strategy (Opus)",
         "workspace": "__HOME__/.openclaw/workspace/agents/strategy",
         "model": {
-          "primary": "cliproxy/claude-opus-4-7",
+          "primary": "cliproxy/claude-opus-5-0",
           "fallbacks": [
             "cliproxy/glm-4.7",
             "cliproxy/free"
@@ -690,7 +690,7 @@
         "name": "Communication Specialist",
         "workspace": "__HOME__/.openclaw/workspace/agents/communication",
         "model": {
-          "primary": "cliproxy/claude-sonnet-4-6",
+          "primary": "cliproxy/claude-sonnet-5",
           "fallbacks": [
             "cliproxy/glm-4.7",
             "cliproxy/free"
