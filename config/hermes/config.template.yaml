@@ -1,5 +1,5 @@
 model:
-  default: cliproxy/minimax-m2.7
+  default: cliproxy/minimax-m3
 providers: {}
 fallback_providers: []
 credential_pool_strategies: {}
