@@ -39,6 +39,8 @@
       # Foundry configuration
       set -gx FOUNDRY_DISABLE_NIGHTLY_WARNING 1
 
+      set -gx GPG_TTY (tty)
+
       direnv hook fish | source
     '';
     loginShellInit = ''

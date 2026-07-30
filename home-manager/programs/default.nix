@@ -22,6 +22,7 @@ let
   gh = import ./gh { inherit pkgs; };
   ghq = import ./ghq;
   git = import ./git;
+  gpg = import ./gpg;
   go = import ./go;
   grafana = import ./grafana;
   haskell = import ./haskell;
@@ -76,6 +77,7 @@ in
   gh
   ghq
   git
+  gpg
   go
   grafana
   haskell
