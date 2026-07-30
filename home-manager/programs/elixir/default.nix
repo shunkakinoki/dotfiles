@@ -2,7 +2,7 @@
 {
   home.packages = with pkgs; [
     beamPackages.elixir_1_19
-    elixir-ls
+    beamPackages.elixir-ls
     beamPackages.erlang
   ];
 }
