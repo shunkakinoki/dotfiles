@@ -1,4 +1,4 @@
 [ci]
 enabled = true
 poll_interval = "5m"
-repos = [__ROBOREV_CI_REPOS__]
+repos = ["__ROBOREV_CI_REPOS__"]
