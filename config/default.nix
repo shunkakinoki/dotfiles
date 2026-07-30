@@ -40,6 +40,7 @@ in
   ./opencode
   ./pi
   ./pnpm
+  ./roborev
   ./serena
   ./starship
   ./tmuxinator
