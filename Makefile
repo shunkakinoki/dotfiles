@@ -1005,7 +1005,8 @@ neovim-dev: ## Set up local Neovim development environment.
 	fi
 	@ln -sf "$(PWD)/home-manager/programs/neovim/init.lua" "$(HOME)/.config/nvim/init.lua"
 	@ln -sf "$(PWD)/home-manager/programs/neovim/lua" "$(HOME)/.config/nvim/lua"
-	@ln -sf "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json" "$(HOME)/.config/nvim/nvim-pack-lock.json"
+	@rm -f "$(HOME)/.config/nvim/nvim-pack-lock.json"
+	@cp "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json" "$(HOME)/.config/nvim/nvim-pack-lock.json"
 	@echo "✅ Local Neovim development environment ready"
 	@echo "🚧 To restore the Nix-managed version, run 'make switch'"
 
@@ -1024,7 +1025,8 @@ neovim-update: ## Update Neovim plugins.
 	fi
 	@ln -sf "$(PWD)/home-manager/programs/neovim/init.lua" ~/.config/nvim/init.lua
 	@ln -sf "$(PWD)/home-manager/programs/neovim/lua" ~/.config/nvim/lua
-	@ln -sf "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json" ~/.config/nvim/nvim-pack-lock.json
+	@rm -f ~/.config/nvim/nvim-pack-lock.json
+	@cp "$(PWD)/home-manager/programs/neovim/nvim-pack-lock.json" ~/.config/nvim/nvim-pack-lock.json
 	@nvim --headless +"lua vim.pack.update()" +qa
 	@echo "✅ Neovim plugins updated"
 
