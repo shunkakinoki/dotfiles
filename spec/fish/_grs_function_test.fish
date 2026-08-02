@@ -11,6 +11,10 @@ function git
         echo "refs/remotes/origin/main"
     else if test "$argv[1]" = diff
         return 0
+    else if test "$argv[1]" = rev-parse; and test "$argv[2]" = HEAD
+        echo "abc123"
+    else if test "$argv[1]" = rev-parse; and test "$argv[2]" = "origin/main"
+        echo "def456"
     else if test "$argv[1]" = merge-base
         return 0
     end
@@ -68,6 +72,10 @@ function git
         echo "refs/remotes/origin/main"
     else if test "$argv[1]" = diff
         return 0
+    else if test "$argv[1]" = rev-parse; and test "$argv[2]" = HEAD
+        echo "abc123"
+    else if test "$argv[1]" = rev-parse; and test "$argv[2]" = "origin/main"
+        echo "def456"
     else if test "$argv[1]" = merge-base
         return 1
     end
@@ -85,3 +93,30 @@ set exit_code $status
 @test "unmerged: prints warning" (grep -c "not merged" $err_log) -ge 1
 
 rm -f $call_log $err_log
+
+# --- Test: no divergence (same commit) skips merge check ---
+
+set call_log (mktemp)
+
+function git
+    echo $argv >> $call_log
+    if test "$argv[1]" = symbolic-ref
+        echo "refs/remotes/origin/main"
+    else if test "$argv[1]" = diff
+        return 0
+    else if test "$argv[1]" = rev-parse
+        echo "same_sha"
+    end
+end
+
+function sed
+    echo "main"
+end
+
+_grs_function
+
+@test "no-divergence: skips merge-base check" (grep -c "merge-base" $call_log) -eq 0
+@test "no-divergence: resets to origin" (grep -c "reset --hard origin/main" $call_log) -ge 1
+@test "no-divergence: sets upstream" (grep -c "branch --set-upstream-to=origin/main" $call_log) -ge 1
+
+rm -f $call_log
