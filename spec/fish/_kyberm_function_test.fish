@@ -8,6 +8,6 @@ function ssh; echo $argv >> $log; end
 _kyberm_function
 
 @test "calls ssh to kyber IP" (grep -c "ubuntu@100.1.2.3" $log) -ge 1
-@test "attaches to mobile session" (grep -c "mobile" $log) -ge 1
+@test "attaches to tmux mobile session" (grep -c "tmux new-session -A -s mobile" $log) -ge 1
 
 rm -f $log

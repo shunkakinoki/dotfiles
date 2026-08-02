@@ -8,6 +8,6 @@ function ssh; echo $argv >> $log; end
 _kyberd_function
 
 @test "calls ssh to kyber IP" (grep -c "ubuntu@100.1.2.3" $log) -ge 1
-@test "attaches to desktop session" (grep -c "desktop" $log) -ge 1
+@test "attaches to tmux desktop session" (grep -c "tmux new-session -A -s desktop" $log) -ge 1
 
 rm -f $log

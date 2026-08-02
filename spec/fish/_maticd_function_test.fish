@@ -8,6 +8,6 @@ function ssh; echo $argv >> $log; end
 _maticd_function
 
 @test "calls ssh to matic IP" (grep -c "shunkakinoki@100.1.2.3" $log) -ge 1
-@test "attaches to desktop session" (grep -c "desktop" $log) -ge 1
+@test "attaches to tmux desktop session" (grep -c "tmux new-session -A -s desktop" $log) -ge 1
 
 rm -f $log
