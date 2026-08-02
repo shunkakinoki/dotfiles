@@ -80,9 +80,7 @@
       src = prev.fetchurl {
         url = "https://cdn.getmoshi.app/hook/v${version}/moshi-hook_${
           if prev.stdenv.isDarwin then "Darwin" else "Linux"
-        }_${
-          if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x86_64"
-        }.tar.gz";
+        }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x86_64"}.tar.gz";
         sha256 =
           if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isx86_64 then
             "381ab508dba6e0ea161a2441a1e24f8a4fff974e5c5f48f003117adf306c7008"
