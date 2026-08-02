@@ -22,9 +22,9 @@ When run cat "$DEFAULT_NIX"
 The output should include 'autoRotate = if managedHost then "true" else "false"'
 End
 
-It 'wraps only Claude with proactive CAAM rotation'
-When run grep -F 'command caam run claude --precheck -- $argv' "$DEFAULT_NIX"
-The output should include 'command caam run claude --precheck -- $argv'
+It 'leaves shell integration unmanaged'
+When run grep -F 'programs.fish.interactiveShellInit' "$DEFAULT_NIX"
+The status should be failure
 End
 
 It 'does not manage credential vault data'

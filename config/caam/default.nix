@@ -27,14 +27,4 @@ lib.mkIf managedHost {
   home.activation.hydrateCaamConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.bash}/bin/bash "${hydrateScript}"
   '';
-
-  # Precheck selects a healthier profile before an interactive Claude session;
-  # caam run also handles rate-limit retries for non-interactive invocations.
-  programs.fish.interactiveShellInit = lib.mkAfter ''
-    if type -q caam
-        function claude
-            command caam run claude --precheck -- $argv
-        end
-    end
-  '';
 }
