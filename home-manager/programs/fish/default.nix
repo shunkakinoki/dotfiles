@@ -154,17 +154,17 @@
       grwxeh = "_grwxeh_function";
       grxe = "_grxe_function";
       grxeh = "_grxeh_function";
-      herdrd = "_herdrd_function";
-      herdrm = "_herdrm_function";
       hme = "_hm_load_env_file";
       icg = "_install_cargo_globals_function";
       ing = "_install_npm_globals_function";
       iug = "_install_uv_globals_function";
       kyber = "_kyber_function";
       kyberd = "_kyberd_function";
+      kyberh = "_kyberh_function";
       kyberm = "_kyberm_function";
       matic = "_matic_function";
       maticd = "_maticd_function";
+      matich = "_matich_function";
       maticm = "_maticm_function";
       ocxe = "_ocxe_function";
       ocxel = "_ocxel_function";
@@ -191,9 +191,6 @@
       tzo = "_tzo_function";
       ulb = "_update_local_binaries_function";
       vpn = "_vpn_function";
-      zdo = "_zdo_function";
-      zmo = "_zmo_function";
-      zpo = "_zpo_function";
     };
     plugins = [
       {
@@ -287,15 +284,15 @@
         "_grwxeh_function"
         "_grxe_function"
         "_grxeh_function"
-        "_herdrd_function"
-        "_herdrm_function"
         "_hm_load_env_file"
         "_llm_update_function"
         "_kyber_function"
         "_kyberd_function"
+        "_kyberh_function"
         "_kyberm_function"
         "_matic_function"
         "_maticd_function"
+        "_matich_function"
         "_maticm_function"
         "_ocxe_function"
         "_ocxel_function"
@@ -320,9 +317,6 @@
         "_tzo_function"
         "_update_local_binaries_function"
         "_vpn_function"
-        "_zdo_function"
-        "_zmo_function"
-        "_zpo_function"
         "fish_user_key_bindings"
       ]
   );
