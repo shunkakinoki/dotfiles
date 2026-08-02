@@ -1,9 +1,14 @@
 { lib, pkgs, ... }:
+let
+  settings = pkgs.replaceVars ./settings.json {
+    moshiHook = "${pkgs.moshi-hook}/bin/moshi-hook";
+  };
+in
 {
   # Use activation script for settings.json instead of symlink
   # git-ai install-hooks needs write access, which breaks with Nix store symlinks
   home.activation.claudeConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${./settings.json}"
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${settings}"
   '';
 
   home.file.".claude/hooks/pushover.sh" = {

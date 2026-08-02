@@ -93,6 +93,12 @@ End
 
 Describe 'tokscale service schedule'
 CONFIG="$PWD/home-manager/services/tokscale/default.nix"
+SERVICES="$PWD/home-manager/services/default.nix"
+
+It 'loads through the Home Manager module system'
+When run bash -c "grep -F 'tokscale = ./tokscale;' '$SERVICES'"
+The output should include 'tokscale = ./tokscale;'
+End
 
 It 'uses fixed three-hour calendar slots on macOS'
 When run bash -c "awk '/calendarHours = \\[/,/\\];/' '$CONFIG' | grep -Eo '[0-9]+' | paste -sd, -"

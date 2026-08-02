@@ -5,7 +5,7 @@
       {
         "hooks": [
           {
-            "command": "moshi-hook gemini-hook",
+            "command": "@moshiHook@ gemini-hook",
             "name": "Moshi",
             "type": "command"
           }
@@ -23,7 +23,7 @@
       {
         "hooks": [
           {
-            "command": "moshi-hook gemini-hook",
+            "command": "@moshiHook@ gemini-hook",
             "name": "Moshi",
             "type": "command"
           }
@@ -45,7 +45,7 @@
       {
         "hooks": [
           {
-            "command": "moshi-hook gemini-hook",
+            "command": "@moshiHook@ gemini-hook",
             "name": "Moshi",
             "type": "command"
           }
@@ -57,7 +57,7 @@
       {
         "hooks": [
           {
-            "command": "moshi-hook gemini-hook",
+            "command": "@moshiHook@ gemini-hook",
             "name": "Moshi",
             "type": "command"
           }
@@ -69,7 +69,7 @@
       {
         "hooks": [
           {
-            "command": "moshi-hook gemini-hook",
+            "command": "@moshiHook@ gemini-hook",
             "name": "Moshi",
             "type": "command"
           }

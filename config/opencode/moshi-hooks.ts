@@ -9,7 +9,7 @@ import type { Plugin } from "@opencode-ai/plugin";
 
 // Kept for debug / manual invocation. Routine events go straight to the
 // daemon's Unix socket (see resolveSocketPath) — no subprocess spawn.
-const helperBinary = process.env.HOME + "/.local/bin/moshi-hook";
+const helperBinary = "@moshiHook@";
 
 // Mirrors internal/config.SocketPath. The MOSHI_SOCKET_PATH override wins
 // over the per-platform default so tests and dev daemons can point us at a
@@ -47,6 +47,8 @@ function sendEnvelope(
   envelope: Record<string, unknown>,
   opts: { wait: boolean; waitTimeoutMs?: number }
 ): Promise<DaemonResponse | null> {
+  if (moshiServerUrl && envelope.serverUrl === undefined)
+    envelope.serverUrl = moshiServerUrl;
   return new Promise((resolve) => {
     let settled = false;
     const finish = (val: DaemonResponse | null) => {
@@ -325,6 +327,81 @@ function projectNameForCwd(cwd: string | undefined): string {
 const modelContextLimits = new Map<string, number>();
 let modelLimitsReady: Promise<void> = Promise.resolve();
 
+// Base URL the moshi-hook gateway can reach this OpenCode instance's HTTP
+// API on. Stamped on every envelope so the daemon can persist it to session
+// state; the gateway's transcript proxy resolves the live server through it.
+//
+// A default TUI runs its server in-process with NO TCP listener —
+// PluginInput.serverUrl then reports the placeholder below and the SDK
+// client carries an in-process fetch instead. In that case we bind a
+// loopback relay that forwards the gateway's read-only requests through
+// that fetch. A real bound server (opencode --port / serve / web) reports
+// its actual URL, which we pass through untouched.
+let moshiServerUrl = "";
+const OPENCODE_UNBOUND_SERVER_URL = "http://localhost:4096";
+
+function resolveMoshiServerUrl(sdk: unknown, given: unknown): string {
+  const base = (given ? String(given) : "").replace(/\/+$/, "");
+  if (base && base !== OPENCODE_UNBOUND_SERVER_URL) return base;
+  return startOpenCodeRelay(sdk);
+}
+
+function relayPathAllowed(pathname: string): boolean {
+  if (pathname === "/event" || pathname === "/global/health") return true;
+  return /^\/session\/[^/]+\/message(\/[^/]+)?$/.test(pathname);
+}
+
+// The generated SDK class keeps the raw hey-api client on _client; its
+// config carries the in-process fetch the plugin host injected. Shapes are
+// probed defensively so an SDK layout change degrades to "" (no transcript
+// proxy) instead of breaking the plugin.
+function inProcessFetchFromClient(
+  sdk: unknown
+): ((req: Request) => Promise<Response>) | null {
+  try {
+    const raw = sdk as { _client?: { getConfig?: () => { fetch?: unknown } } };
+    const fn = raw?._client?.getConfig?.()?.fetch;
+    return typeof fn === "function"
+      ? (fn as (req: Request) => Promise<Response>)
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function startOpenCodeRelay(sdk: unknown): string {
+  const inner = inProcessFetchFromClient(sdk);
+  if (!inner) return "";
+  try {
+    const bun = (globalThis as Record<string, unknown>).Bun as
+      | { serve?: (opts: unknown) => { port: number } }
+      | undefined;
+    if (!bun || typeof bun.serve !== "function") return "";
+    const relay = bun.serve({
+      hostname: "127.0.0.1",
+      port: 0,
+      // The gateway holds /event open as an SSE stream; never idle it out.
+      idleTimeout: 0,
+      fetch(req: Request): Promise<Response> | Response {
+        const url = new URL(req.url);
+        if (req.method !== "GET" || !relayPathAllowed(url.pathname)) {
+          return new Response("forbidden", { status: 403 });
+        }
+        const target = new URL(
+          url.pathname + url.search,
+          OPENCODE_UNBOUND_SERVER_URL
+        );
+        return inner(new Request(target.toString(), req));
+      },
+    });
+    return "http://127.0.0.1:" + relay.port;
+  } catch {
+    return "";
+  }
+}
+
+const modelNamesBySession = new Map<string, string>();
+
 async function refreshOpenCodeModelLimits(
   client: Record<string, unknown>,
   directory: string
@@ -509,6 +586,9 @@ function withContextRemaining(
 ): Record<string, unknown> {
   const contextRemaining = openCodeContextRemainingForSession(sessionID);
   if (contextRemaining > 0) envelope.contextRemaining = contextRemaining;
+  const modelName = sessionID ? modelNamesBySession.get(sessionID) || "" : "";
+  if (modelName && envelope.modelName === undefined)
+    envelope.modelName = modelName;
   return envelope;
 }
 
@@ -676,6 +756,27 @@ const lastUserPrompts = new Map<string, string>();
 const lastAssistantTitles = new Map<string, string>();
 const messageRoles = new Map<string, string>();
 const assistantTextByMessage = new Map<string, string>();
+const parentSessionBySession = new Map<string, string>();
+
+function rememberSessionOrigin(value: unknown): void {
+  if (!value || typeof value !== "object") return;
+  const rec = value as Record<string, unknown>;
+  const info =
+    rec.info && typeof rec.info === "object"
+      ? (rec.info as Record<string, unknown>)
+      : rec;
+  const sessionID =
+    stringProp(info, "id", "sessionID", "sessionId") ||
+    stringProp(rec, "sessionID", "sessionId", "id");
+  const parentID =
+    stringProp(info, "parentID", "parentId", "parent_id") ||
+    stringProp(rec, "parentID", "parentId", "parent_id");
+  if (sessionID && parentID) parentSessionBySession.set(sessionID, parentID);
+}
+
+function isChildSession(sessionID: string | undefined): boolean {
+  return !!sessionID && parentSessionBySession.has(sessionID);
+}
 
 function sessionKey(sessionID: string | undefined, cwd: string): string {
   return sessionID && sessionID.length > 0 ? sessionID : "cwd:" + cwd;
@@ -783,6 +884,14 @@ function rememberMessageRole(info: unknown): void {
   if (id && role) messageRoles.set(id, role);
 }
 
+function rememberSessionModel(info: unknown): void {
+  if (!info || typeof info !== "object") return;
+  const rec = info as Record<string, unknown>;
+  const sessionID = stringProp(rec, "sessionID", "sessionId");
+  const modelID = stringProp(rec, "modelID", "modelId");
+  if (sessionID && modelID) modelNamesBySession.set(sessionID, modelID);
+}
+
 function rememberAssistantText(
   sessionID: string | undefined,
   cwd: string,
@@ -888,15 +997,6 @@ function sendTerminalInputRequired(
 ): void {
   const cwd = directoryFromProperties(props, directory);
   const sessionID = sessionIDFromProperties(props);
-  const actionID =
-    stringProp(
-      props,
-      "id",
-      "questionID",
-      "questionId",
-      "requestID",
-      "requestId"
-    ) || newSessionID();
   const message = summarizeQuestion(props) || fallbackMessage;
   void modelLimitsReady.finally(() => {
     void sendEnvelope(
@@ -905,9 +1005,7 @@ function sendTerminalInputRequired(
           type: "session.update",
           source: "opencode",
           sessionId: sessionID || newSessionID(),
-          actionId: actionID,
           eventName,
-          phase: "waitingForApproval",
           category: "approval_required",
           cwd,
           projectName: projectNameForCwd(cwd),
@@ -1052,13 +1150,15 @@ async function replyToOpenCodePermission(
   } catch {}
 }
 
-const server: Plugin = async ({ directory, client }) => {
+const server: Plugin = async ({ directory, client, serverUrl }) => {
+  moshiServerUrl = resolveMoshiServerUrl(client, serverUrl);
   modelLimitsReady = refreshOpenCodeModelLimits(
     client as unknown as Record<string, unknown>,
     directory
   );
   return {
     "chat.message": async (input, output) => {
+      if (isChildSession(input.sessionID)) return;
       const prompt = textFromParts(output.parts);
       const formatted = rememberUserPrompt(input.sessionID, directory, prompt);
       if (!formatted) return;
@@ -1077,9 +1177,11 @@ const server: Plugin = async ({ directory, client }) => {
     },
     event: async ({ event }) => {
       const props = eventRecord(event);
+      rememberSessionOrigin(props);
       switch (event.type) {
         case "session.created": {
           const cwd = directoryFromProperties(props, directory);
+          if (isChildSession(sessionIDFromProperties(props))) break;
           sendSessionUpdate(
             "session.created",
             sessionIDFromProperties(props),
@@ -1092,6 +1194,7 @@ const server: Plugin = async ({ directory, client }) => {
         }
         case "message.updated": {
           rememberMessageRole(props.info);
+          rememberSessionModel(props.info);
           break;
         }
         case "message.part.delta": {
@@ -1131,6 +1234,7 @@ const server: Plugin = async ({ directory, client }) => {
           const statusType = statusTypeFromProperties(props);
           const cwd = directoryFromProperties(props, directory);
           const sessionID = sessionIDFromProperties(props);
+          if (isChildSession(sessionID)) break;
           if (statusType === "busy") {
             break;
           } else if (statusType === "idle") {
@@ -1150,16 +1254,16 @@ const server: Plugin = async ({ directory, client }) => {
         }
         case "session.idle": {
           const cwd = directoryFromProperties(props, directory);
+          if (isChildSession(sessionIDFromProperties(props))) break;
           sendIdleIfActive("session.idle", sessionIDFromProperties(props), cwd);
           break;
         }
         case "session.deleted": {
           const cwd = directoryFromProperties(props, directory);
-          sendSessionClosed(
-            "session.deleted",
-            sessionIDFromProperties(props),
-            cwd
-          );
+          const sessionID = sessionIDFromProperties(props);
+          if (!isChildSession(sessionID))
+            sendSessionClosed("session.deleted", sessionID, cwd);
+          if (sessionID) parentSessionBySession.delete(sessionID);
           break;
         }
         case "permission.asked":

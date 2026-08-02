@@ -4,7 +4,7 @@
       {
         "hooks": [
           {
-            "command": "moshi-hook codex-hook",
+            "command": "@moshiHook@ codex-hook",
             "type": "command"
           }
         ]
@@ -42,7 +42,7 @@
             "type": "command"
           },
           {
-            "command": "command -v dcg \u003e/dev/null 2\u003e\u00261 \u0026\u0026 dcg",
+            "command": "command -v dcg >/dev/null 2>&1 && dcg",
             "timeout": 5,
             "type": "command"
           },
@@ -118,7 +118,7 @@
       {
         "hooks": [
           {
-            "command": "moshi-hook codex-hook",
+            "command": "@moshiHook@ codex-hook",
             "type": "command"
           }
         ]
@@ -144,7 +144,7 @@
       {
         "hooks": [
           {
-            "command": "moshi-hook codex-hook",
+            "command": "@moshiHook@ codex-hook",
             "type": "command"
           }
         ]
@@ -155,7 +155,7 @@
         "hooks": [
           {
             "async": true,
-            "command": "jq -c '{timestamp: (now | todate), prompt: .prompt[0:500]}' \u003e\u003e ~/.codex/prompt-history.jsonl",
+            "command": "jq -c '{timestamp: (now | todate), prompt: .prompt[0:500]}' >> ~/.codex/prompt-history.jsonl",
             "timeout": 3,
             "type": "command"
           }
@@ -164,7 +164,7 @@
       {
         "hooks": [
           {
-            "command": "moshi-hook codex-hook",
+            "command": "@moshiHook@ codex-hook",
             "type": "command"
           }
         ]

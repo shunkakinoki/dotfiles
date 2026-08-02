@@ -2,7 +2,7 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { spawn } from "node:child_process";
 
-const helperBinary = process.env.HOME + "/.local/bin/moshi-hook";
+const helperBinary = "@moshiHook@";
 
 function firstString(...values: unknown[]): string {
   for (const value of values) {
@@ -60,20 +60,32 @@ function sessionID(
   const sessionManager = ctx.sessionManager as
     | Record<string, unknown>
     | undefined;
-  const getSessionFile = sessionManager?.getSessionFile;
-  let sessionFile = "";
-  if (typeof getSessionFile === "function") {
+  const getSessionId = sessionManager?.getSessionId;
+  let managerID = "";
+  if (typeof getSessionId === "function") {
     try {
-      sessionFile = String(getSessionFile.call(sessionManager) ?? "");
+      managerID = String(getSessionId.call(sessionManager) ?? "");
     } catch {}
   }
   return firstString(
+    managerID,
     event.session_id as string,
     event.sessionId as string,
-    sessionFile,
-    ctx.cwd as string,
     "pi"
   );
+}
+
+function transcriptPath(ctx: Record<string, unknown>): string {
+  const sessionManager = ctx.sessionManager as
+    | Record<string, unknown>
+    | undefined;
+  const getSessionFile = sessionManager?.getSessionFile;
+  if (typeof getSessionFile !== "function") return "";
+  try {
+    return String(getSessionFile.call(sessionManager) ?? "");
+  } catch {
+    return "";
+  }
 }
 
 function send(
@@ -91,8 +103,10 @@ function send(
   const payload = {
     hook_event_name: eventName,
     session_id: sessionID(eventObj, ctxObj),
+    transcript_path: transcriptPath(ctxObj),
     cwd: firstString(ctxObj.cwd as string, process.cwd()),
     model: modelLabel(ctxObj.model),
+    context_remaining: contextRemaining(ctxObj),
     event,
     ...extra,
   };
@@ -109,6 +123,21 @@ function send(
   }
 }
 
+function contextRemaining(ctx: Record<string, unknown>): number | undefined {
+  const getContextUsage = ctx.getContextUsage;
+  if (typeof getContextUsage !== "function") return undefined;
+  try {
+    const usage = getContextUsage.call(ctx) as
+      | { percent?: unknown }
+      | undefined;
+    if (typeof usage?.percent !== "number" || !Number.isFinite(usage.percent))
+      return undefined;
+    return Math.max(1, Math.min(100, Math.round(100 - usage.percent)));
+  } catch {
+    return undefined;
+  }
+}
+
 export default function moshiPiHook(pi: ExtensionAPI): void {
   pi.on("session_start", (event, ctx) => {
     send("SessionStart", event, ctx);
@@ -122,12 +151,27 @@ export default function moshiPiHook(pi: ExtensionAPI): void {
     send("AgentStart", event, ctx);
   });
 
-  pi.on("agent_end", (event, ctx) => {
+  let lastAssistantMessage = "";
+
+  pi.on("agent_end", (event) => {
     const messages = Array.isArray(event.messages) ? event.messages : [];
-    const lastMessage =
-      messages.length > 0 ? messages[messages.length - 1] : undefined;
+    for (let index = messages.length - 1; index >= 0; index -= 1) {
+      const message = messages[index] as Record<string, unknown>;
+      if (message?.role === "assistant") {
+        lastAssistantMessage = textFromMessage(message);
+        break;
+      }
+    }
+  });
+
+  pi.on("agent_settled", (event, ctx) => {
     send("AgentEnd", event, ctx, {
-      last_assistant_message: textFromMessage(lastMessage),
+      last_assistant_message: lastAssistantMessage,
     });
+    lastAssistantMessage = "";
+  });
+
+  pi.on("session_shutdown", (event, ctx) => {
+    send("SessionEnd", event, ctx);
   });
 }

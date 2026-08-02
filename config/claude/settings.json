@@ -134,7 +134,7 @@
         "hooks": [
           {
             "async": false,
-            "command": "moshi-hook claude-hook",
+            "command": "@moshiHook@ claude-hook",
             "type": "command"
           }
         ]
@@ -167,7 +167,7 @@
         "hooks": [
           {
             "async": true,
-            "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code post-task",
+            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code post-task",
             "timeout": 30,
             "type": "command"
           }
@@ -178,7 +178,7 @@
         "hooks": [
           {
             "async": true,
-            "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code post-todo",
+            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code post-todo",
             "timeout": 30,
             "type": "command"
           }
@@ -189,7 +189,7 @@
         "hooks": [
           {
             "async": true,
-            "command": "moshi-hook claude-hook",
+            "command": "@moshiHook@ claude-hook",
             "type": "command"
           }
         ],
@@ -199,7 +199,7 @@
         "hooks": [
           {
             "async": true,
-            "command": "moshi-hook claude-hook",
+            "command": "@moshiHook@ claude-hook",
             "type": "command"
           }
         ],
@@ -242,7 +242,7 @@
             "type": "command"
           },
           {
-            "command": "command -v dcg \u003e/dev/null 2\u003e\u00261 \u0026\u0026 dcg",
+            "command": "command -v dcg >/dev/null 2>&1 && dcg",
             "timeout": 5,
             "type": "command"
           },
@@ -295,7 +295,7 @@
       {
         "hooks": [
           {
-            "command": "command -v dcg \u003e/dev/null 2\u003e\u00261 \u0026\u0026 dcg",
+            "command": "command -v dcg >/dev/null 2>&1 && dcg",
             "timeout": 5,
             "type": "command"
           }
@@ -306,32 +306,12 @@
         "hooks": [
           {
             "async": true,
-            "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code pre-task",
+            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code pre-task",
             "timeout": 30,
             "type": "command"
           }
         ],
         "matcher": "Task"
-      },
-      {
-        "hooks": [
-          {
-            "async": true,
-            "command": "moshi-hook claude-hook",
-            "type": "command"
-          }
-        ],
-        "matcher": "AskUserQuestion"
-      },
-      {
-        "hooks": [
-          {
-            "async": true,
-            "command": "moshi-hook claude-hook",
-            "type": "command"
-          }
-        ],
-        "matcher": "ExitPlanMode"
       },
       {
         "hooks": [
@@ -352,6 +332,26 @@
           }
         ],
         "matcher": "Read|Glob"
+      },
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "@moshiHook@ claude-hook",
+            "type": "command"
+          }
+        ],
+        "matcher": "AskUserQuestion"
+      },
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "@moshiHook@ claude-hook",
+            "type": "command"
+          }
+        ],
+        "matcher": "ExitPlanMode"
       }
     ],
     "SessionEnd": [
@@ -359,7 +359,7 @@
         "hooks": [
           {
             "async": true,
-            "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code session-end",
+            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code session-end",
             "timeout": 30,
             "type": "command"
           }
@@ -369,7 +369,7 @@
         "hooks": [
           {
             "async": true,
-            "command": "moshi-hook claude-hook",
+            "command": "@moshiHook@ claude-hook",
             "type": "command"
           }
         ]
@@ -392,7 +392,7 @@
           },
           {
             "async": true,
-            "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code session-start",
+            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code session-start",
             "timeout": 30,
             "type": "command"
           }
@@ -402,7 +402,7 @@
         "hooks": [
           {
             "async": true,
-            "command": "moshi-hook claude-hook",
+            "command": "@moshiHook@ claude-hook",
             "type": "command"
           }
         ]
@@ -425,7 +425,7 @@
           },
           {
             "async": true,
-            "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code stop",
+            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code stop",
             "timeout": 30,
             "type": "command"
           }
@@ -435,7 +435,7 @@
         "hooks": [
           {
             "async": true,
-            "command": "moshi-hook claude-hook",
+            "command": "@moshiHook@ claude-hook",
             "type": "command"
           }
         ]
@@ -475,13 +475,13 @@
         "hooks": [
           {
             "async": true,
-            "command": "jq -c '{timestamp: (now | todate), prompt: .prompt[0:500]}' \u003e\u003e ~/.claude/prompt-history.jsonl",
+            "command": "jq -c '{timestamp: (now | todate), prompt: .prompt[0:500]}' >> ~/.claude/prompt-history.jsonl",
             "timeout": 3,
             "type": "command"
           },
           {
             "async": true,
-            "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code user-prompt-submit",
+            "command": "command -v entire >/dev/null 2>&1 && entire hooks claude-code user-prompt-submit",
             "timeout": 30,
             "type": "command"
           }
@@ -491,7 +491,7 @@
         "hooks": [
           {
             "async": true,
-            "command": "moshi-hook claude-hook",
+            "command": "@moshiHook@ claude-hook",
             "type": "command"
           }
         ]
@@ -501,7 +501,7 @@
       {
         "hooks": [
           {
-            "command": "bash -c 'NAME=$(jq -r .name); REPO=$(git rev-parse --show-toplevel); DIR=\"$REPO/.worktrees/$NAME\"; (wt switch --create \"$NAME\" --no-cd -y || wt switch \"$NAME\" --no-cd -y) \u003e\u00262 \u0026\u0026 echo \"$DIR\"'",
+            "command": "bash -c 'NAME=$(jq -r .name); REPO=$(git rev-parse --show-toplevel); DIR=\"$REPO/.worktrees/$NAME\"; (wt switch --create \"$NAME\" --no-cd -y || wt switch \"$NAME\" --no-cd -y) >&2 && echo \"$DIR\"'",
             "timeout": 30,
             "type": "command"
           }
@@ -512,7 +512,7 @@
       {
         "hooks": [
           {
-            "command": "bash -c 'WORKTREE_PATH=$(jq -r .worktree_path); BRANCH=$(basename \"$WORKTREE_PATH\"); wt remove \"$BRANCH\" -y \u003e\u00262'",
+            "command": "bash -c 'WORKTREE_PATH=$(jq -r .worktree_path); BRANCH=$(basename \"$WORKTREE_PATH\"); wt remove \"$BRANCH\" -y >&2'",
             "timeout": 30,
             "type": "command"
           }

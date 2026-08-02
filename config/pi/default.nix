@@ -1,4 +1,5 @@
-_: {
+{ pkgs, ... }:
+{
   home.file.".pi/agent/models.json" = {
     source = ./models.json;
     force = true;
@@ -12,7 +13,9 @@ _: {
     force = true;
   };
   home.file.".pi/agent/extensions/moshi-hooks.ts" = {
-    source = ./moshi-hooks.ts;
+    source = pkgs.replaceVars ./moshi-hooks.ts {
+      moshiHook = "${pkgs.moshi-hook}/bin/moshi-hook";
+    };
     force = true;
   };
 }

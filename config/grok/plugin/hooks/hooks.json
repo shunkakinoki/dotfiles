@@ -1,34 +1,23 @@
 {
   "hooks": {
-    "PermissionRequest": [
+    "PermissionDenied": [
       {
         "hooks": [
           {
-            "type": "command",
-            "command": "moshi-hook grok-hook",
-            "async": false
+            "async": true,
+            "command": "@moshiHook@ grok-hook",
+            "type": "command"
           }
         ]
       }
     ],
-    "SessionStart": [
+    "PostToolUse": [
       {
         "hooks": [
           {
-            "type": "command",
-            "command": "moshi-hook grok-hook",
-            "async": true
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "moshi-hook grok-hook",
-            "async": true
+            "async": true,
+            "command": "@moshiHook@ grok-hook",
+            "type": "command"
           }
         ]
       }
@@ -52,55 +41,11 @@
         ]
       },
       {
-        "matcher": "AskUserQuestion",
         "hooks": [
           {
-            "type": "command",
-            "command": "moshi-hook grok-hook",
-            "async": true
-          }
-        ]
-      },
-      {
-        "matcher": "ExitPlanMode",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "moshi-hook grok-hook",
-            "async": true
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "AskUserQuestion",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "moshi-hook grok-hook",
-            "async": true
-          }
-        ]
-      },
-      {
-        "matcher": "ExitPlanMode",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "moshi-hook grok-hook",
-            "async": true
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "moshi-hook grok-hook",
-            "async": true
+            "async": true,
+            "command": "@moshiHook@ grok-hook",
+            "type": "command"
           }
         ]
       }
@@ -109,9 +54,42 @@
       {
         "hooks": [
           {
-            "type": "command",
-            "command": "moshi-hook grok-hook",
-            "async": true
+            "async": true,
+            "command": "@moshiHook@ grok-hook",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "@moshiHook@ grok-hook",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "@moshiHook@ grok-hook",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "@moshiHook@ grok-hook",
+            "type": "command"
           }
         ]
       }

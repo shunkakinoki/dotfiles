@@ -6,8 +6,10 @@
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${./config.yml}"
   '';
 
-  home.file.".omp/agent/hooks/post/moshi-hooks.ts" = {
-    source = ./moshi-hooks.ts;
+  home.file.".omp/agent/extensions/moshi-hooks.ts" = {
+    source = pkgs.replaceVars ./moshi-hooks.ts {
+      moshiHook = "${pkgs.moshi-hook}/bin/moshi-hook";
+    };
     force = true;
   };
 }

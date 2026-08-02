@@ -9,6 +9,9 @@ let
   desktopSettingsAgentLabel = "org.nix-community.home.codex-desktop-settings-sync";
   syncDesktopSettings = ./sync-desktop-settings.sh;
   ensureDesktopSettingsAgent = ./ensure-desktop-settings-agent.sh;
+  hooks = pkgs.replaceVars ./hooks.json {
+    moshiHook = "${pkgs.moshi-hook}/bin/moshi-hook";
+  };
 in
 {
   # Use activation script instead of home.file symlink
@@ -16,7 +19,7 @@ in
   home.activation.codexConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" \
       "${./config.toml}" \
-      "${./hooks.json}" \
+      "${hooks}" \
       "${./desktop-settings.json}" \
       "${pkgs.jq}/bin/jq" \
       "${syncDesktopSettings}"

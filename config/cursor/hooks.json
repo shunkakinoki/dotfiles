@@ -2,7 +2,7 @@
   "hooks": {
     "afterAgentResponse": [
       {
-        "command": "moshi-hook cursor-hook"
+        "command": "@moshiHook@ cursor-hook"
       }
     ],
     "afterFileEdit": [
@@ -11,12 +11,12 @@
         "timeout": 15
       },
       {
-        "command": "moshi-hook cursor-hook"
+        "command": "@moshiHook@ cursor-hook"
       }
     ],
     "beforeMCPExecution": [
       {
-        "command": "moshi-hook cursor-hook"
+        "command": "@moshiHook@ cursor-hook"
       }
     ],
     "beforeReadFile": [
@@ -25,7 +25,7 @@
         "timeout": 5
       },
       {
-        "command": "moshi-hook cursor-hook"
+        "command": "@moshiHook@ cursor-hook"
       }
     ],
     "beforeShellExecution": [
@@ -54,7 +54,7 @@
         "timeout": 6
       },
       {
-        "command": "moshi-hook cursor-hook"
+        "command": "@moshiHook@ cursor-hook"
       }
     ],
     "beforeSubmitPrompt": [
@@ -63,7 +63,7 @@
         "timeout": 15
       },
       {
-        "command": "moshi-hook cursor-hook"
+        "command": "@moshiHook@ cursor-hook"
       }
     ],
     "stop": [
@@ -76,7 +76,7 @@
         "timeout": 6
       },
       {
-        "command": "moshi-hook cursor-hook"
+        "command": "@moshiHook@ cursor-hook"
       }
     ]
   },
