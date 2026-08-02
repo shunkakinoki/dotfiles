@@ -1,12 +1,12 @@
 """Moshi observer plugin for Hermes Agent, rendered by Nix."""
 
-from collections import defaultdict, deque
-from concurrent.futures import ThreadPoolExecutor
 import json
 import os
 import subprocess
 import threading
 import uuid
+from collections import defaultdict, deque
+from concurrent.futures import ThreadPoolExecutor
 
 HELPER = "@moshiHook@"
 _pending = defaultdict(deque)
@@ -65,7 +65,9 @@ def on_pre_llm_call(session_id="", user_message="", model="", platform="", **kwa
     )
 
 
-def on_post_llm_call(session_id="", assistant_response="", model="", platform="", **kwargs):
+def on_post_llm_call(
+    session_id="", assistant_response="", model="", platform="", **kwargs
+):
     _send(
         "AgentEnd",
         _session(session_id, kwargs),
@@ -75,7 +77,14 @@ def on_post_llm_call(session_id="", assistant_response="", model="", platform=""
     )
 
 
-def on_session_end(session_id="", completed=False, interrupted=False, model="", platform="", **kwargs):
+def on_session_end(
+    session_id="",
+    completed=False,
+    interrupted=False,
+    model="",
+    platform="",
+    **kwargs,
+):
     if interrupted or not completed:
         _send(
             "TurnInterrupted",
