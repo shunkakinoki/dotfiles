@@ -29,6 +29,18 @@ let
     );
 in
 {
+  home.file.".hermes/plugins/moshi-hooks/__init__.py" = {
+    source = pkgs.replaceVars ./moshi-hooks.py {
+      moshiHook = "${pkgs.moshi-hook}/bin/moshi-hook";
+    };
+    force = true;
+  };
+
+  home.file.".hermes/plugins/moshi-hooks/plugin.yaml" = {
+    source = ./moshi-hooks-plugin.yaml;
+    force = true;
+  };
+
   home.activation.hydrateHermesConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.bash}/bin/bash "${hydrateScript}" || true
   '';

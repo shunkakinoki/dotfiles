@@ -1,27 +1,5 @@
 {
   "hooks": {
-    "PermissionDenied": [
-      {
-        "hooks": [
-          {
-            "async": true,
-            "command": "@moshiHook@ grok-hook",
-            "type": "command"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "hooks": [
-          {
-            "async": true,
-            "command": "@moshiHook@ grok-hook",
-            "type": "command"
-          }
-        ]
-      }
-    ],
     "PreToolUse": [
       {
         "matcher": "Bash|bash|shell",
@@ -37,59 +15,6 @@
           {
             "type": "command",
             "command": "$HOME/dotfiles/config/shared/hooks/block-gh-settings.sh"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "async": true,
-            "command": "@moshiHook@ grok-hook",
-            "type": "command"
-          }
-        ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "hooks": [
-          {
-            "async": true,
-            "command": "@moshiHook@ grok-hook",
-            "type": "command"
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "async": true,
-            "command": "@moshiHook@ grok-hook",
-            "type": "command"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "async": true,
-            "command": "@moshiHook@ grok-hook",
-            "type": "command"
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "async": true,
-            "command": "@moshiHook@ grok-hook",
-            "type": "command"
           }
         ]
       }

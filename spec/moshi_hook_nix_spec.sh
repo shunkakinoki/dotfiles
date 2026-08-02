@@ -20,6 +20,7 @@ When run bash -c '
     config/cursor/default.nix \
     config/gemini/default.nix \
     config/grok/default.nix \
+    config/hermes/default.nix \
     config/omp/default.nix \
     config/opencode/default.nix \
     config/pi/default.nix
@@ -38,7 +39,9 @@ When run bash -c '
     config/codex/hooks.json \
     config/cursor/hooks.json \
     config/gemini/settings.json \
-    config/grok/plugin/hooks/hooks.json \
+    config/gemini/antigravity-hooks.json \
+    config/grok/moshi-hooks.json \
+    config/hermes/moshi-hooks.py \
     config/omp/moshi-hooks.ts \
     config/opencode/moshi-hooks.ts \
     config/pi/moshi-hooks.ts
@@ -53,7 +56,9 @@ When run bash -c '
     config/codex/hooks.json \
     config/cursor/hooks.json \
     config/gemini/settings.json \
-    config/grok/plugin/hooks/hooks.json \
+    config/gemini/antigravity-hooks.json \
+    config/grok/moshi-hooks.json \
+    config/hermes/moshi-hooks.py \
     config/omp/moshi-hooks.ts \
     config/opencode/moshi-hooks.ts \
     config/pi/moshi-hooks.ts
@@ -73,6 +78,24 @@ End
 It 'does not deploy the retired OMP post-hook path'
 When run grep -RFl '.omp/agent/hooks/post/moshi-hooks.ts' config home-manager
 The status should be failure
+End
+
+It 'uses the current global Grok hook path'
+When run grep -F '.grok/hooks/moshi-hooks.json' config/grok/default.nix
+The output should include '.grok/hooks/moshi-hooks.json'
+The status should be success
+End
+
+It 'runs the daemon through Nix services on Linux and macOS'
+When run grep -F 'systemd.user.services.moshi-hook' home-manager/services/moshi-hook/default.nix
+The output should include 'systemd.user.services.moshi-hook'
+The status should be success
+End
+
+It 'runs the daemon through launchd on macOS'
+When run grep -F 'launchd.agents.moshi-hook' home-manager/services/moshi-hook/default.nix
+The output should include 'launchd.agents.moshi-hook'
+The status should be success
 End
 
 End

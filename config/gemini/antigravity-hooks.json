@@ -1,0 +1,19 @@
+{
+  "moshi-hook": {
+    "PreInvocation": [
+      {
+        "command": "@moshiHook@ antigravity-hook PreInvocation",
+        "timeout": 5,
+        "type": "command"
+      }
+    ],
+    "Stop": [
+      {
+        "command": "@moshiHook@ antigravity-hook Stop",
+        "timeout": 5,
+        "type": "command"
+      }
+    ],
+    "enabled": true
+  }
+}

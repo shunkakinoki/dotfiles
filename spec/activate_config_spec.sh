@@ -341,6 +341,12 @@ When run grep -F 'cp -f "$SETTINGS_JSON" "$HOME/.gemini/settings.json"' "$SCRIPT
 The output should include 'cp -f'
 The status should be success
 End
+
+It 'force-copies the Nix-rendered Antigravity hooks'
+When run grep -F 'cp -f "$ANTIGRAVITY_HOOKS_JSON" "$HOME/.gemini/config/hooks.json"' "$SCRIPT"
+The output should include 'cp -f'
+The status should be success
+End
 End
 
 Describe 'config/serena/activate.sh'
