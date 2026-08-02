@@ -241,17 +241,16 @@ run_postinstall_if_needed() {
 echo "Installing npm global packages from package.json using bun..."
 cd "${HOME}/dotfiles"
 
-# Trust postinstall scripts for packages listed in trustedDependencies before installing
-TRUSTED_DEPS=$(jq -r '.trustedDependencies[]?' "$PACKAGE_JSON" 2>/dev/null || true)
-if [ -n "$TRUSTED_DEPS" ]; then
-  echo "Trusting postinstall scripts for: $TRUSTED_DEPS"
-  echo "$TRUSTED_DEPS" | while read -r dep; do
-    bun pm -g trust "$dep" 2>/dev/null || true
-  done
-fi
-
-# Remove packages that are no longer declared in dotfiles/package.json
+# Trust postinstall scripts by writing trustedDependencies directly into the
+# global package.json. Avoids `bun pm -g trust` which runs postinstall scripts
+# for already-installed packages, causing long downloads and lock contention.
 GLOBAL_PKG="${HOME}/.bun/install/global/package.json"
+TRUSTED_DEPS=$(jq -c '[.trustedDependencies[]?]' "$PACKAGE_JSON" 2>/dev/null || echo '[]')
+if [ "$TRUSTED_DEPS" != "[]" ] && [ -f "$GLOBAL_PKG" ]; then
+  echo "Setting trustedDependencies in global package.json..."
+  jq --argjson trusted "$TRUSTED_DEPS" '.trustedDependencies = $trusted' "$GLOBAL_PKG" >"${GLOBAL_PKG}.tmp" &&
+    mv "${GLOBAL_PKG}.tmp" "$GLOBAL_PKG"
+fi
 STALE=()
 if [ -f "$GLOBAL_PKG" ]; then
   GLOBAL_DEPS=$(jq -r '.dependencies | keys[]?' "$GLOBAL_PKG" 2>/dev/null || true)
@@ -365,7 +364,7 @@ if [ -n "$OVERRIDES" ]; then
   if [ -f "$GLOBAL_PKG" ]; then
     jq --argjson overrides "$OVERRIDES" '.overrides = $overrides' "$GLOBAL_PKG" >"${GLOBAL_PKG}.tmp" &&
       mv "${GLOBAL_PKG}.tmp" "$GLOBAL_PKG"
-    (cd "${HOME}/.bun/install/global" && bun install 2>/dev/null || true)
+    (cd "${HOME}/.bun/install/global" && timeout 600 bun install 2>/dev/null || true)
     purge_bun_npm_shim
     echo "Applied dependency overrides to global install"
   fi
