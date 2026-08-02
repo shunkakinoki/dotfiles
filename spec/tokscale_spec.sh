@@ -194,6 +194,12 @@ The output should include '/run/wrappers/bin/crontab'
 The status should be success
 End
 
+It 'skips cleanly on Linux hosts without cron'
+When run grep -A3 -F 'if ! CRONTAB_COMMAND=' "$ACTIVATOR"
+The output should include 'crontab is unavailable'
+The output should include 'exit 0'
+End
+
 It 'binds awk through the Nix store instead of activation PATH'
 When run grep -F 'activateCron = pkgs.replaceVars' "$TOKSCALE_CONFIG"
 The output should include 'activateCron = pkgs.replaceVars'

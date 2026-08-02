@@ -24,8 +24,8 @@ resolve_crontab() {
 }
 
 if ! CRONTAB_COMMAND="$(resolve_crontab)"; then
-  echo "crontab is required for the Tokscale schedule" >&2
-  exit 1
+  echo "crontab is unavailable; skipping the Tokscale schedule" >&2
+  exit 0
 fi
 
 existing_crontab="$("$CRONTAB_COMMAND" -l 2>/dev/null || true)"
