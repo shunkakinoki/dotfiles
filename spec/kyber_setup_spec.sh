@@ -16,6 +16,18 @@ The output should include 'set -e'
 End
 End
 
+Describe 'cron installation logic'
+It 'installs cron when crontab is unavailable'
+When run bash -c "grep -A3 'command -v crontab' '$SCRIPT'"
+The output should include 'apt-get install -y cron'
+End
+
+It 'enables and starts the cron daemon'
+When run bash -c "grep 'systemctl enable --now cron' '$SCRIPT'"
+The output should include 'systemctl enable --now cron'
+End
+End
+
 Describe 'Tailscale installation logic'
 It 'checks if tailscale command exists'
 When run bash -c "grep 'command -v tailscale' '$SCRIPT'"

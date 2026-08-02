@@ -31,7 +31,7 @@ let
   screenshotClipboard = import ./screenshot-clipboard { inherit pkgs; };
   sshAgent = ./ssh-agent;
   tmuxSessionLogger = import ./tmux-session-logger { inherit pkgs; };
-  tokscale = import ./tokscale { inherit pkgs; };
+  tokscale = import ./tokscale { inherit config lib pkgs; };
 in
 [
   brewUpgrader
