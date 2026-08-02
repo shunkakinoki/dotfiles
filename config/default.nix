@@ -6,6 +6,7 @@ in
   ./aichat
   ./amp
   ./bun
+  ./caam
   ./ccs
   ./cliproxyapi
   ./codex

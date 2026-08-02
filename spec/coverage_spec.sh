@@ -161,6 +161,10 @@ It 'has spec file for home-manager/modules/cargo-globals/install-cargo-globals.s
 The path "spec/cargo_globals_spec.sh" should be exist
 End
 
+It 'has spec file for config/caam/hydrate.sh'
+The path "spec/caam_config_spec.sh" should be exist
+End
+
 It 'has spec file for config/handy/hydrate.sh'
 The path "spec/handy_hydrate_spec.sh" should be exist
 End
@@ -397,7 +401,8 @@ Describe 'no shell scripts are missing from coverage list'
 It 'covers all non-spec shell scripts in the repository'
 # List of all shell scripts that should have tests
 # Update this list when adding new shell scripts
-covered_scripts="config/claude/activate.sh
+covered_scripts="config/caam/hydrate.sh
+config/claude/activate.sh
 config/ccs/hydrate.sh
 config/claude/hooks/notify.sh
 config/claude/hooks/pushover.sh
