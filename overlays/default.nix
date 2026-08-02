@@ -73,6 +73,33 @@
     }
   )
   inputs.noctalia-shell.overlays.default
+  (_: prev: {
+    moshi-hook = prev.stdenv.mkDerivation rec {
+      pname = "moshi-hook";
+      version = "0.2.69";
+      src = prev.fetchurl {
+        url = "https://cdn.getmoshi.app/hook/v${version}/moshi-hook_${
+          if prev.stdenv.isDarwin then "Darwin" else "Linux"
+        }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x86_64"}.tar.gz";
+        sha256 =
+          if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isx86_64 then
+            "3903e2e5d1dba02f9e1f53df8cea6e2b3260e1581461b9a07ca65f18814b8b08"
+          else if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isAarch64 then
+            "0a30e081399543551bbd0ba3320f3b28be814a585e5c591e168f8fd6d9565f07"
+          else if prev.stdenv.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
+            "52258126b675dad210a8f04b83d8e90b359951af37474ff985d2c3f49102d981"
+          else
+            "7cf24d316bafffc59d30e05d6ad6b27d4c03c9953ce901056f57f03c25e4b83b";
+      };
+      sourceRoot = ".";
+      dontConfigure = true;
+      dontBuild = true;
+      installPhase = ''
+        install -Dm755 moshi-hook $out/bin/moshi-hook
+        ln -s moshi-hook $out/bin/moshi
+      '';
+    };
+  })
   (final: prev: {
     nightlyPkgs = import inputs.nixpkgs-nightly {
       inherit (prev) system config;
