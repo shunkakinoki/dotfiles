@@ -8,9 +8,14 @@ function _grs_function --description "Reset to origin default branch (safe: abor
 
     git fetch origin
 
-    if not git merge-base --is-ancestor HEAD origin/$default_branch
-        echo "grs: current branch is not merged into origin/$default_branch, aborting." >&2
-        return 1
+    set -l head_sha (git rev-parse HEAD)
+    set -l origin_sha (git rev-parse origin/$default_branch)
+
+    if test "$head_sha" != "$origin_sha"
+        if not git merge-base --is-ancestor HEAD origin/$default_branch
+            echo "grs: current branch is not merged into origin/$default_branch, aborting." >&2
+            return 1
+        end
     end
 
     git reset --hard origin/$default_branch
