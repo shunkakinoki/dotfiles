@@ -115,7 +115,7 @@ Before 'setup_no_repos'
 After 'cleanup_no_repos'
 
 It 'skips hydration when ROBOREV_CI_REPOS is unset'
-When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'"'
+When run bash -c 'unset ROBOREV_CI_REPOS; HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'"'
 The status should be success
 The error should include 'ROBOREV_CI_REPOS not set'
 The path "$TEMP_HOME/.roborev/config.toml" should not be exist
