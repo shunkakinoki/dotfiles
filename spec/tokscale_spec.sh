@@ -178,4 +178,16 @@ The line 2 of output should eq '1'
 The status should be success
 End
 
+It 'accepts an explicit crontab path when activation PATH omits it'
+When run bash -c "PATH='/usr/bin:/bin' CRONTAB_BIN='$MOCK_BIN/crontab' '$ACTIVATOR' 'echo submit' && grep -F '0 */3 * * * echo submit' '$CRONTAB_STATE'"
+The output should include '0 */3 * * * echo submit'
+The status should be success
+End
+
+It 'falls back to the NixOS setuid wrapper outside the activation PATH'
+When run grep -F '/run/wrappers/bin/crontab' "$ACTIVATOR"
+The output should include '/run/wrappers/bin/crontab'
+The status should be success
+End
+
 End

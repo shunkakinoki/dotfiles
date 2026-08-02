@@ -6,12 +6,28 @@ CRON_COMMAND="${1:?usage: activate-cron.sh <command>}"
 BEGIN_MARKER="# BEGIN home-manager tokscale"
 END_MARKER="# END home-manager tokscale"
 
-if ! command -v crontab >/dev/null 2>&1; then
+resolve_crontab() {
+  if [ -n "${CRONTAB_BIN:-}" ]; then
+    printf '%s\n' "$CRONTAB_BIN"
+  elif command -v crontab >/dev/null 2>&1; then
+    command -v crontab
+  elif [ -x /run/wrappers/bin/crontab ]; then
+    # NixOS exposes setuid programs through wrappers, which are not on the
+    # Home Manager activation PATH.
+    printf '%s\n' /run/wrappers/bin/crontab
+  elif [ -x /usr/bin/crontab ]; then
+    printf '%s\n' /usr/bin/crontab
+  else
+    return 1
+  fi
+}
+
+if ! CRONTAB_COMMAND="$(resolve_crontab)"; then
   echo "crontab is required for the Tokscale schedule" >&2
   exit 1
 fi
 
-existing_crontab="$(crontab -l 2>/dev/null || true)"
+existing_crontab="$("$CRONTAB_COMMAND" -l 2>/dev/null || true)"
 filtered_crontab="$({
   printf '%s\n' "$existing_crontab"
 } | awk -v begin="$BEGIN_MARKER" -v end="$END_MARKER" '
@@ -27,4 +43,4 @@ filtered_crontab="$({
   printf '%s\n' "$BEGIN_MARKER"
   printf '0 */3 * * * %s\n' "$CRON_COMMAND"
   printf '%s\n' "$END_MARKER"
-} | crontab -
+} | "$CRONTAB_COMMAND" -
