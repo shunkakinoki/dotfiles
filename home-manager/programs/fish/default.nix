@@ -113,6 +113,7 @@
       v = "nvim";
 
       # Function-based abbreviations
+      bu = "_brew_update_function";
       caf = "_caf_function";
       cawxe = "_cawxe_function";
       cawxeh = "_cawxeh_function";
@@ -242,6 +243,7 @@
       })
       [
         "__tmux_bootstrap_default_session"
+        "_brew_update_function"
         "_caf_function"
         "_cawxe_function"
         "_cawxeh_function"
