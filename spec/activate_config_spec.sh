@@ -336,9 +336,10 @@ When run bash -c "head -1 '$SCRIPT'"
 The output should include '#!/usr/bin/env bash'
 End
 
-It 'only copies if settings.json does not exist'
-When run bash -c "grep '! -f' '$SCRIPT'"
-The output should include 'settings.json'
+It 'force-copies the Nix-rendered settings on every activation'
+When run grep -F 'cp -f "$SETTINGS_JSON" "$HOME/.gemini/settings.json"' "$SCRIPT"
+The output should include 'cp -f'
+The status should be success
 End
 End
 

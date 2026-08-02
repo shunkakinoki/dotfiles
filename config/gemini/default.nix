@@ -10,8 +10,8 @@ let
   };
 in
 {
-  # Use activation script to copy settings.json instead of symlinking
-  # This allows ruler and other tools to modify the file
+  # Keep a writable file for tools that use atomic updates, then restore the
+  # Nix-rendered configuration on every activation.
   home.activation.geminiSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${settings}"
   '';
