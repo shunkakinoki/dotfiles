@@ -3,6 +3,7 @@
 set -euo pipefail
 
 CRON_COMMAND="${1:?usage: activate-cron.sh <command>}"
+AWK_COMMAND="${AWK_BIN:-@awk@}"
 BEGIN_MARKER="# BEGIN home-manager tokscale"
 END_MARKER="# END home-manager tokscale"
 
@@ -30,7 +31,7 @@ fi
 existing_crontab="$("$CRONTAB_COMMAND" -l 2>/dev/null || true)"
 filtered_crontab="$({
   printf '%s\n' "$existing_crontab"
-} | awk -v begin="$BEGIN_MARKER" -v end="$END_MARKER" '
+} | "$AWK_COMMAND" -v begin="$BEGIN_MARKER" -v end="$END_MARKER" '
   $0 == begin { managed = 1; next }
   $0 == end { managed = 0; next }
   !managed { print }

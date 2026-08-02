@@ -30,6 +30,9 @@ let
     ">>/tmp/tokscale.log"
     "2>>/tmp/tokscale.error.log"
   ];
+  activateCron = pkgs.replaceVars ./activate-cron.sh {
+    awk = "${pkgs.gawk}/bin/awk";
+  };
 in
 {
   # macOS (launchd)
@@ -55,7 +58,7 @@ in
   # Linux (cron)
   home.activation.installTokscaleCron = lib.mkIf pkgs.stdenv.isLinux (
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-cron.sh}" ${lib.escapeShellArg cronCommand}
+      $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${activateCron}" ${lib.escapeShellArg cronCommand}
     ''
   );
 }

@@ -130,11 +130,14 @@ End
 
 Describe 'tokscale cron activation'
 ACTIVATOR="$PWD/home-manager/services/tokscale/activate-cron.sh"
+TOKSCALE_CONFIG="$PWD/home-manager/services/tokscale/default.nix"
 
 setup() {
   MOCK_BIN=$(mktemp -d)
   CRONTAB_STATE=$(mktemp)
   export CRONTAB_STATE
+  AWK_BIN=$(command -v awk)
+  export AWK_BIN
   MOCK_ORIGINAL_PATH="$PATH"
   export PATH="$MOCK_BIN:$PATH"
   cat >"$MOCK_BIN/crontab" <<'EOF'
@@ -156,6 +159,7 @@ EOF
 
 cleanup() {
   export PATH="$MOCK_ORIGINAL_PATH"
+  unset AWK_BIN
   rm -rf "$MOCK_BIN"
   rm -f "$CRONTAB_STATE"
 }
@@ -187,6 +191,12 @@ End
 It 'falls back to the NixOS setuid wrapper outside the activation PATH'
 When run grep -F '/run/wrappers/bin/crontab' "$ACTIVATOR"
 The output should include '/run/wrappers/bin/crontab'
+The status should be success
+End
+
+It 'binds awk through the Nix store instead of activation PATH'
+When run grep -F 'activateCron = pkgs.replaceVars' "$TOKSCALE_CONFIG"
+The output should include 'activateCron = pkgs.replaceVars'
 The status should be success
 End
 
