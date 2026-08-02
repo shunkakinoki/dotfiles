@@ -54,6 +54,18 @@ When run bash "$SCRIPT"
 The status should be success
 End
 
+It 'allows an HTTPie GET with a query string'
+Data '{"tool_input": {"command": "http https://api.github.com/repos/owner/repo/rulesets?per_page=10"}}'
+When run bash "$SCRIPT"
+The status should be success
+End
+
+It 'allows an HTTPie GET with an equals-form option'
+Data '{"tool_input": {"command": "http --auth-type=bearer https://api.github.com/repos/owner/repo/rulesets"}}'
+When run bash "$SCRIPT"
+The status should be success
+End
+
 End
 
 Describe 'blocked gh repo subcommands'
@@ -228,6 +240,20 @@ End
 
 It 'blocks HTTPie mutations'
 Data '{"tool_input": {"command": "http DELETE https://api.github.com/repos/owner/repo/hooks/1"}}'
+When run bash "$SCRIPT"
+The status should eq 2
+The stderr should include 'BLOCKED'
+End
+
+It 'blocks lowercase HTTPie mutations'
+Data '{"tool_input": {"command": "http delete https://api.github.com/repos/owner/repo/hooks/1"}}'
+When run bash "$SCRIPT"
+The status should eq 2
+The stderr should include 'BLOCKED'
+End
+
+It 'blocks lowercase curl request methods'
+Data '{"tool_input": {"command": "curl --request delete https://api.github.com/repos/owner/repo/hooks/1"}}'
 When run bash "$SCRIPT"
 The status should eq 2
 The stderr should include 'BLOCKED'

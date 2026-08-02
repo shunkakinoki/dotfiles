@@ -61,12 +61,21 @@ block_push() {
 
 check_destination() {
   local destination="$1"
-  destination=${destination#refs/remotes/}
-  if [[ $destination == */* ]]; then
-    local possible_branch=${destination#*/}
-    if is_protected_branch "$possible_branch"; then
-      block_push "$possible_branch"
-    fi
+  local possible_branch=""
+
+  if [[ $destination == refs/remotes/*/* ]]; then
+    possible_branch=${destination#refs/remotes/}
+    possible_branch=${possible_branch#*/}
+  elif [[ $destination == refs/heads/* ]]; then
+    possible_branch=${destination#refs/heads/}
+  elif [[ $destination == heads/* ]]; then
+    possible_branch=${destination#heads/}
+  elif [[ $destination == */* ]] && git remote 2>/dev/null | grep -Fxq "${destination%%/*}"; then
+    possible_branch=${destination#*/}
+  fi
+
+  if [[ -n $possible_branch ]] && is_protected_branch "$possible_branch"; then
+    block_push "$possible_branch"
   fi
   if is_protected_branch "$destination"; then
     block_push "$destination"
@@ -322,7 +331,7 @@ inspect_command() {
   while IFS= read -r segment; do
     [[ -z $segment ]] && continue
     inspect_segment "$segment" "$depth"
-  done < <(printf '%s\n' "$candidate" | sed -E 's/[;&|]+/\n/g')
+  done < <(printf '%s\n' "$candidate" | tr ';&|' '\n')
 }
 
 inspect_command "$command" 0

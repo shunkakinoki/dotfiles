@@ -6,7 +6,7 @@ SCRIPT="$PWD/config/shared/hooks/block-git-push.sh"
 
 setup() {
   TEMP_REPO=$(mktemp -d)
-  git -C "$TEMP_REPO" init -q
+  git -C "$TEMP_REPO" init -q -b main
   git -C "$TEMP_REPO" config commit.gpgSign false
   git -C "$TEMP_REPO" config user.email agent@example.com
   git -C "$TEMP_REPO" config user.name Agent
@@ -16,7 +16,7 @@ setup() {
 
 setup_allowed() {
   TEMP_REPO=$(mktemp -d)
-  git -C "$TEMP_REPO" init -q
+  git -C "$TEMP_REPO" init -q -b main
   git -C "$TEMP_REPO" config commit.gpgSign false
   git -C "$TEMP_REPO" config user.email agent@example.com
   git -C "$TEMP_REPO" config user.name Agent
@@ -47,6 +47,18 @@ End
 
 It 'allows git push to feature branch'
 Data '{"tool_input": {"command": "git push origin feat/my-branch"}}'
+When run bash -c "cd '$TEMP_REPO' && bash '$SCRIPT'"
+The status should be success
+End
+
+It 'allows a feature branch whose final path component is main'
+Data '{"tool_input": {"command": "git push origin feature/main"}}'
+When run bash -c "cd '$TEMP_REPO' && bash '$SCRIPT'"
+The status should be success
+End
+
+It 'allows a feature branch whose final path component is master'
+Data '{"tool_input": {"command": "git push origin release/master"}}'
 When run bash -c "cd '$TEMP_REPO' && bash '$SCRIPT'"
 The status should be success
 End

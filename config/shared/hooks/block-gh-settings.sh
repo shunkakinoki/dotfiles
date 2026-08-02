@@ -94,7 +94,7 @@ if is_control_plane_target "$command"; then
 
   if [[ -z $http_method ]] &&
     printf '%s\n' "$command" | grep -Eiq '(^|[;&|[:space:]])(http|https|xh)([[:space:]]|$)' &&
-    printf '%s\n' "$command" | grep -Eq '(^|[[:space:]])[^[:space:]=]+(:=|=)[^[:space:]]+'; then
+    printf '%s\n' "$command" | grep -Eq '(^|[[:space:]])[^-[:space:]=?:/][^[:space:]=?/]*(:=|=)[^[:space:]]+'; then
     http_method=POST
   fi
 
@@ -104,6 +104,7 @@ if is_control_plane_target "$command"; then
     http_method=POST
   fi
 
+  http_method=${http_method^^}
   if [[ $http_method =~ ^(POST|PATCH|PUT|DELETE)$ ]]; then
     block_settings "A direct $http_method request to a repository control-plane endpoint was requested."
   fi
