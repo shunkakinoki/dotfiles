@@ -39,11 +39,11 @@ in
           lib.makeBinPath [
             pkgs.autoconf
             pkgs.bash
+            pkgs.beamPackages.elixir
             pkgs.binutils
             pkgs.cargo
             pkgs.coreutils
             pkgs.curl
-            pkgs.elixir
             pkgs.gawk
             pkgs.gcc
             pkgs.ghq
