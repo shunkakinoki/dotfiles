@@ -1,36 +1,111 @@
 #!/usr/bin/env bash
-# block-gh-settings.sh — Shared hook for Claude Code + Codex + Copilot + Cursor
-# Blocks gh CLI commands that modify GitHub repository settings.
-# Exit 2 = block; works across all four agent hook protocols.
+# Shared agent guardrail for GitHub repository control-plane mutations.
+# This is an early warning only; restricted credentials and server-side
+# rulesets are the authoritative enforcement boundary.
 
-# Cursor on macOS launches GUI apps with a minimal PATH; self-bootstrap it
-# so jq/gh are findable regardless of caller.
+# GUI-launched agents can inherit a minimal PATH on macOS.
 export PATH="$HOME/.cargo/bin:/etc/profiles/per-user/shunkakinoki/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:/opt/homebrew/bin:/usr/local/bin:/usr/sbin:/usr/bin:/bin:${PATH:-}"
 
 set -euo pipefail
 
-# Read tool input from stdin
 input=$(cat)
-
-# Extract command (works for Claude, Codex, and Copilot hook input formats)
-command=$(echo "$input" | jq -r '.tool.input.command // .tool_input.command // .toolArgs.command // .toolInput.command // .command // empty' 2>/dev/null)
+command=$(printf '%s' "$input" | jq -r '.tool.input.command // .tool_input.command // .toolArgs.command // .toolInput.command // .command // empty' 2>/dev/null)
 [[ -z $command ]] && exit 0
 
-# Block: gh repo <destructive-subcommand>
-if echo "$command" | grep -qE 'gh\s+repo\s+(delete|rename|archive|transfer|edit)\b'; then
-  subcommand=$(echo "$command" | grep -oE 'gh\s+repo\s+(delete|rename|archive|transfer|edit)' | awk '{print $3}')
-  msg="'gh repo $subcommand' is blocked. Repo settings must be changed manually."
-  echo "BLOCKED by block-gh-settings.sh: $msg" >&2
+block_settings() {
+  local detail="$1"
+  printf "BLOCKED by block-gh-settings.sh: %s Repository settings must be changed manually.\n" "$detail" >&2
   exit 2
+}
+
+is_control_plane_target() {
+  local candidate="$1"
+  local repo_prefix="(api/v3/)?repos/[^/[:space:]\"']+/[^/?[:space:]\"']+"
+  local protected_suffix="(rulesets|branches/[^/?[:space:]\"']+/protection|collaborators|teams|hooks|deploy_keys|keys|actions/(permissions|access|secrets|variables|cache/retention-limit|cache/storage-limit)|environments|pages|topics|vulnerability-alerts|automated-security-fixes|private-vulnerability-reporting|security-and-analysis|interaction-limits)"
+
+  printf '%s\n' "$candidate" | grep -Eiq "${repo_prefix}([?[:space:]\"']|$)" && return 0
+  printf '%s\n' "$candidate" | grep -Eiq "${repo_prefix}/${protected_suffix}([/?[:space:]\"']|$)"
+}
+
+explicit_method() {
+  local candidate="$1"
+  local method
+  method=$(printf '%s\n' "$candidate" | sed -nE 's/.*(^|[[:space:]])(-X|--method)(=|[[:space:]]+)(GET|POST|PATCH|PUT|DELETE)([[:space:]]|$).*/\4/ip' | tail -1)
+  if [[ -z $method ]]; then
+    method=$(printf '%s\n' "$candidate" | sed -nE 's/.*(^|[[:space:]])-X(GET|POST|PATCH|PUT|DELETE)([[:space:]]|$).*/\2/ip' | tail -1)
+  fi
+  printf '%s' "${method^^}"
+}
+
+has_implicit_body() {
+  local candidate="$1"
+  printf '%s\n' "$candidate" | grep -Eiq '(^|[[:space:]])(-f|-F|--field|--raw-field|--input)(=|[[:space:]])'
+}
+
+if printf '%s\n' "$command" | grep -Eiq '(^|[;&|[:space:]])gh[[:space:]]+repo[[:space:]]+(delete|rename|archive|transfer|edit)([[:space:]]|$)'; then
+  block_settings "A mutating 'gh repo' command was requested."
 fi
 
-# Block: gh api -X PATCH|DELETE|PUT targeting /repos/
-if echo "$command" | grep -qE 'gh\s+api'; then
-  if echo "$command" | grep -qE '\-X\s+(PATCH|DELETE|PUT)' && echo "$command" | grep -qE '/repos/'; then
-    method=$(echo "$command" | grep -oE '\-X\s+(PATCH|DELETE|PUT)' | awk '{print $2}')
-    msg="'gh api -X $method /repos/...' is blocked. Repo API mutations must be done manually."
-    echo "BLOCKED by block-gh-settings.sh: $msg" >&2
-    exit 2
+if printf '%s\n' "$command" | grep -Eiq '(^|[;&|[:space:]])gh[[:space:]]+(secret|variable)[[:space:]]+(set|delete)([[:space:]]|$)'; then
+  block_settings "A GitHub secret or variable mutation was requested."
+fi
+
+if printf '%s\n' "$command" | grep -Eiq '(^|[;&|[:space:]])gh[[:space:]]+repo[[:space:]]+deploy-key[[:space:]]+(add|delete)([[:space:]]|$)'; then
+  block_settings "A repository deploy-key mutation was requested."
+fi
+
+if printf '%s\n' "$command" | grep -Eiq '(^|[;&|[:space:]])gh[[:space:]]+workflow[[:space:]]+(enable|disable)([[:space:]]|$)'; then
+  block_settings "A workflow settings mutation was requested."
+fi
+
+if printf '%s\n' "$command" | grep -Eiq '(^|[;&|[:space:]])gh[[:space:]]+api[[:space:]]+([^;&|]*[[:space:]])?graphql([[:space:]]|$)'; then
+  if printf '%s\n' "$command" | grep -Eiq '(^|[^[:alnum:]_])mutation([^[:alnum:]_]|$)' ||
+    printf '%s\n' "$command" | grep -Eiq '(^|[[:space:]])--input(=|[[:space:]])'; then
+    block_settings "A raw GraphQL mutation was requested."
+  fi
+fi
+
+if printf '%s\n' "$command" | grep -Eiq '(^|[;&|[:space:]])gh[[:space:]]+api([[:space:]]|$)' && is_control_plane_target "$command"; then
+  method=$(explicit_method "$command")
+  if [[ -z $method ]] && has_implicit_body "$command"; then
+    method=POST
+  fi
+  if [[ $method =~ ^(POST|PATCH|PUT|DELETE)$ ]]; then
+    block_settings "A $method request to a repository control-plane endpoint was requested."
+  fi
+fi
+
+if is_control_plane_target "$command"; then
+  http_method=$(explicit_method "$command")
+
+  if printf '%s\n' "$command" | grep -Eiq '(^|[;&|[:space:]])(http|https|xh)[[:space:]]+(POST|PATCH|PUT|DELETE)([[:space:]]|$)'; then
+    http_method=$(printf '%s\n' "$command" | sed -nE 's/.*(^|[;&|[:space:]])(http|https|xh)[[:space:]]+(POST|PATCH|PUT|DELETE)([[:space:]]|$).*/\3/ip' | tail -1)
+  fi
+
+  if [[ -z $http_method ]]; then
+    http_method=$(printf '%s\n' "$command" | sed -nE 's/.*(^|[[:space:]])--request(=|[[:space:]]+)(POST|PATCH|PUT|DELETE)([[:space:]]|$).*/\3/ip' | tail -1)
+  fi
+
+  if [[ -z $http_method ]] &&
+    printf '%s\n' "$command" | grep -Eiq '(^|[;&|[:space:]])curl([[:space:]]|$)' &&
+    printf '%s\n' "$command" | grep -Eiq '(^|[[:space:]])(--data[^[:space:]]*|-d|--form|-F|--json|--upload-file|-T)(=|[[:space:]])'; then
+    http_method=POST
+  fi
+
+  if [[ -z $http_method ]] &&
+    printf '%s\n' "$command" | grep -Eiq '(^|[;&|[:space:]])(http|https|xh)([[:space:]]|$)' &&
+    printf '%s\n' "$command" | grep -Eq '(^|[[:space:]])[^[:space:]=]+(:=|=)[^[:space:]]+'; then
+    http_method=POST
+  fi
+
+  if [[ -z $http_method ]] &&
+    printf '%s\n' "$command" | grep -Eiq '(^|[;&|[:space:]])wget([[:space:]]|$)' &&
+    printf '%s\n' "$command" | grep -Eiq '(^|[[:space:]])(--post-data|--post-file|--body-data)(=|[[:space:]])'; then
+    http_method=POST
+  fi
+
+  if [[ $http_method =~ ^(POST|PATCH|PUT|DELETE)$ ]]; then
+    block_settings "A direct $http_method request to a repository control-plane endpoint was requested."
   fi
 fi
 
