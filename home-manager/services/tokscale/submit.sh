@@ -8,6 +8,10 @@ if ! timeout 3 bash -c 'exec 3<>/dev/tcp/1.1.1.1/53' 2>/dev/null; then
   exit 0
 fi
 
+# Workaround for junhoyeo/tokscale#1002: the Rust binary's TLS stack cannot
+# locate NixOS CA certs without an explicit pointer.
+export SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+
 # tokscale is installed as a bun global (see modules/npm-globals). Invoke its
 # entrypoint through bun so we do not depend on `node` being on PATH (bin.js
 # uses an `env node` shebang).
