@@ -445,6 +445,7 @@ import ../../hosts/nixos {
                 inputs = inputs // {
                   host = (import ../../lib/host.nix) // {
                     isDesktop = true;
+                    isMatic = true;
                   };
                 };
                 inherit (inputs.nixpkgs) lib;

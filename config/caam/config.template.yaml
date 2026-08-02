@@ -1,0 +1,12 @@
+version: 1
+stealth:
+  cooldown:
+    enabled: __AUTO_ROTATE__
+    default_minutes: 60
+    track_limit_hits: true
+  rotation:
+    enabled: __AUTO_ROTATE__
+    algorithm: smart
+safety:
+  auto_backup_before_switch: smart
+  max_auto_backups: 5
