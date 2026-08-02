@@ -92,6 +92,7 @@ with pkgs;
   mise
   mkcert
   mosh
+  moshi-hook
   mtr
   navi
   ncdu
@@ -150,7 +151,6 @@ with pkgs;
   claude-code
   cmake
   codex
-  moshi-hook
   collectd
   fwupd
   gcc

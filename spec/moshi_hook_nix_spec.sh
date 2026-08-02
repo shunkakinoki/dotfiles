@@ -23,7 +23,8 @@ When run bash -c '
     config/hermes/default.nix \
     config/omp/default.nix \
     config/opencode/default.nix \
-    config/pi/default.nix
+    config/pi/default.nix \
+    config/qwen/default.nix
   do
     grep -Fq "pkgs.replaceVars" "$module" || exit 1
     grep -Fq '\''moshiHook = "${pkgs.moshi-hook}/bin/moshi-hook";'\'' "$module" || exit 1
@@ -44,7 +45,8 @@ When run bash -c '
     config/hermes/moshi-hooks.py \
     config/omp/moshi-hooks.ts \
     config/opencode/moshi-hooks.ts \
-    config/pi/moshi-hooks.ts
+    config/pi/moshi-hooks.ts \
+    config/qwen/settings.json
 '
 The status should be failure
 End
@@ -61,7 +63,8 @@ When run bash -c '
     config/hermes/moshi-hooks.py \
     config/omp/moshi-hooks.ts \
     config/opencode/moshi-hooks.ts \
-    config/pi/moshi-hooks.ts
+    config/pi/moshi-hooks.ts \
+    config/qwen/settings.json
   do
     grep -Fq "@moshiHook@" "$template" || exit 1
   done
@@ -95,6 +98,23 @@ End
 It 'runs the daemon through launchd on macOS'
 When run grep -F 'launchd.agents.moshi-hook' home-manager/services/moshi-hook/default.nix
 The output should include 'launchd.agents.moshi-hook'
+The status should be success
+End
+
+It 'installs the binary from Nix on every platform'
+When run grep -F 'moshi-hook' home-manager/packages/default.nix
+The output should include 'moshi-hook'
+The status should be success
+End
+
+It 'does not install the binary through Homebrew'
+When run grep -F '"moshi-hook"' nix-darwin/config/homebrew.nix
+The status should be failure
+End
+
+It 'enables the Hermes plugin declaratively'
+When run grep -A3 '^plugins:' config/hermes/config.template.yaml
+The output should include 'moshi-hooks'
 The status should be success
 End
 

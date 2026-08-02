@@ -1,3 +1,6 @@
+plugins:
+  enabled:
+    - moshi-hooks
 model:
   default: cliproxy/minimax-m3
 providers: {}

@@ -80,7 +80,6 @@
       "loki"
       "mactop"
       "mas"
-      "moshi-hook"
       "mlx-lm"
       "ollama"
       "opencode"
