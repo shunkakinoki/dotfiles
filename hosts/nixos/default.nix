@@ -43,6 +43,7 @@ let
       ];
 
       programs.fish.enable = true;
+      services.cron.enable = true;
 
       users.users.${username} = {
         isNormalUser = true;

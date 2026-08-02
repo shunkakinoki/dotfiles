@@ -90,3 +90,86 @@ End
 End
 
 End
+
+Describe 'tokscale service schedule'
+CONFIG="$PWD/home-manager/services/tokscale/default.nix"
+
+It 'uses fixed three-hour calendar slots on macOS'
+When run bash -c "awk '/calendarHours = \\[/,/\\];/' '$CONFIG' | grep -Eo '[0-9]+' | paste -sd, -"
+The output should equal '0,3,6,9,12,15,18,21'
+End
+
+It 'maps the fixed hours to launchd calendar intervals at minute zero'
+When run bash -c "grep -A4 -F 'StartCalendarInterval = map' '$CONFIG'"
+The output should include 'Hour = hour;'
+The output should include 'Minute = 0;'
+End
+
+It 'does not use a load-relative interval on macOS'
+When run bash -c "grep -F 'StartInterval' '$CONFIG'"
+The status should be failure
+End
+
+It 'installs the Linux cron schedule during Home Manager activation'
+When run bash -c "grep -F 'installTokscaleCron' '$CONFIG'"
+The output should include 'installTokscaleCron'
+End
+
+It 'does not define a systemd service or timer'
+When run bash -c "grep -F 'systemd.user' '$CONFIG'"
+The status should be failure
+End
+
+End
+
+Describe 'tokscale cron activation'
+ACTIVATOR="$PWD/home-manager/services/tokscale/activate-cron.sh"
+
+setup() {
+  MOCK_BIN=$(mktemp -d)
+  CRONTAB_STATE=$(mktemp)
+  export CRONTAB_STATE
+  MOCK_ORIGINAL_PATH="$PATH"
+  export PATH="$MOCK_BIN:$PATH"
+  cat >"$MOCK_BIN/crontab" <<'EOF'
+#!/usr/bin/env bash
+case "${1:-}" in
+  -l)
+    cat "$CRONTAB_STATE"
+    ;;
+  -)
+    cat >"$CRONTAB_STATE"
+    ;;
+  *)
+    exit 2
+    ;;
+esac
+EOF
+  chmod +x "$MOCK_BIN/crontab"
+}
+
+cleanup() {
+  export PATH="$MOCK_ORIGINAL_PATH"
+  rm -rf "$MOCK_BIN"
+  rm -f "$CRONTAB_STATE"
+}
+
+Before 'setup'
+After 'cleanup'
+
+It 'installs the fixed three-hour cron expression and preserves existing entries'
+echo 'MAILTO=ops@example.com' >"$CRONTAB_STATE"
+When run bash -c "'$ACTIVATOR' 'echo submit' && cat '$CRONTAB_STATE'"
+The output should include 'MAILTO=ops@example.com'
+The output should include '0 */3 * * * echo submit'
+The status should be success
+End
+
+It 'replaces its managed block idempotently'
+When run bash -c "'$ACTIVATOR' 'echo old' && '$ACTIVATOR' 'echo new' && grep -c '^# BEGIN home-manager tokscale$' '$CRONTAB_STATE' && grep -c 'echo new$' '$CRONTAB_STATE'"
+The line 1 of output should eq '1'
+The line 2 of output should eq '1'
+The status should be success
+End
+
+End

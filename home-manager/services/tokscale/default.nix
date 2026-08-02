@@ -1,13 +1,35 @@
-{ pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
-  inherit (pkgs) lib;
   binPath = lib.makeBinPath [
     pkgs.bun
     pkgs.bash
     pkgs.coreutils
   ];
-  # Every 3 hours.
-  intervalSeconds = 10800;
+  # Every 3 hours, aligned to the wall clock.
+  calendarHours = [
+    0
+    3
+    6
+    9
+    12
+    15
+    18
+    21
+  ];
+  cronCommand = lib.concatStringsSep " " [
+    "env"
+    "HOME=${lib.escapeShellArg config.home.homeDirectory}"
+    "PATH=${lib.escapeShellArg binPath}"
+    "${pkgs.bash}/bin/bash"
+    "${./submit.sh}"
+    ">>/tmp/tokscale.log"
+    "2>>/tmp/tokscale.error.log"
+  ];
 in
 {
   # macOS (launchd)
@@ -21,39 +43,19 @@ in
       Environment = {
         PATH = binPath + ":/usr/bin:/bin:/usr/sbin:/sbin";
       };
-      StartInterval = intervalSeconds;
+      StartCalendarInterval = map (hour: {
+        Hour = hour;
+        Minute = 0;
+      }) calendarHours;
       StandardOutPath = "/tmp/tokscale.log";
       StandardErrorPath = "/tmp/tokscale.error.log";
     };
   };
 
-  # Linux (systemd)
-  systemd.user.services.tokscale = lib.mkIf pkgs.stdenv.isLinux {
-    Unit = {
-      Description = "Submit local usage data to Tokscale";
-      Wants = [ "network-online.target" ];
-      After = [ "network-online.target" ];
-      X-SwitchMethod = "keep-old";
-    };
-    Service = {
-      Type = "oneshot";
-      Environment = "PATH=${binPath}";
-      ExecStart = "${pkgs.bash}/bin/bash ${./submit.sh}";
-    };
-  };
-
-  systemd.user.timers.tokscale = lib.mkIf pkgs.stdenv.isLinux {
-    Unit = {
-      Description = "Timer for Tokscale usage submission";
-    };
-    Timer = {
-      OnBootSec = "5min";
-      OnUnitActiveSec = "3h";
-      Persistent = true;
-      Unit = "tokscale.service";
-    };
-    Install = {
-      WantedBy = [ "timers.target" ];
-    };
-  };
+  # Linux (cron)
+  home.activation.installTokscaleCron = lib.mkIf pkgs.stdenv.isLinux (
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-cron.sh}" ${lib.escapeShellArg cronCommand}
+    ''
+  );
 }
