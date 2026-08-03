@@ -27,6 +27,11 @@ _caam_exec_function cursor-agent --print hello
 @test "prechecks cursor-agent as cursor" (tail -n 2 $caam_log | head -n 1) = "precheck cursor --format json"
 @test "executes the recommended isolated cursor profile" (tail -n 1 $caam_log) = "exec cursor work@example.com -- --print hello"
 
+_caam_exec_function opencode run hello
+
+@test "prechecks opencode when rotation is enabled" (tail -n 2 $caam_log | head -n 1) = "precheck opencode --format json"
+@test "executes the recommended isolated opencode profile" (tail -n 1 $caam_log) = "exec opencode work@example.com -- run hello"
+
 function caam; return 1; end
 _caam_exec_function codex exec fallback
 
