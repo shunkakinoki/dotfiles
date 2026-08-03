@@ -323,7 +323,14 @@ sync: dotagents-sync codex-security-sync rtk-rewrite-sync ## Sync all components
 
 .PHONY: dotagents-sync
 dotagents-sync: ## Sync dotagents (commands, skills, MCP configuration).
-	@$(MAKE) -C dotagents sync
+	@status=0; \
+		$(MAKE) -C dotagents sync || status=$$?; \
+		$(SHELL) "$(CURDIR)/config/claude/activate.sh" "$(CURDIR)/config/claude/settings.json"; \
+		exit $$status
+
+.PHONY: caam-sync-claude
+caam-sync-claude: ## Export Galactica's Claude CAAM profiles to Matic and Kyber.
+	@$(SHELL) "$(CURDIR)/config/caam/sync-claude-remotes.sh"
 
 .PHONY: codex-security-sync
 codex-security-sync: ## Sync Codex security deny patterns from Claude settings.

@@ -17,7 +17,13 @@ in
   # Use activation script for settings.json instead of symlink
   # git-ai install-hooks needs write access, which breaks with Nix store symlinks
   home.activation.claudeConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${./settings.json}"
+    PATH=${
+      lib.makeBinPath [
+        pkgs.coreutils
+        pkgs.jq
+      ]
+    }:$PATH \
+      $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${./settings.json}"
   '';
 
   home.file.".claude/hooks/auto-switch.sh" = {

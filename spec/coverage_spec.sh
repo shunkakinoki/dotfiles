@@ -29,6 +29,10 @@ It 'has spec file for config/claude/hooks/caam-snapshot.sh'
 The path "spec/caam_snapshot_spec.sh" should be exist
 End
 
+It 'has spec file for config/caam/sync-claude-remotes.sh'
+The path "spec/caam_sync_spec.sh" should be exist
+End
+
 It 'has spec file for config/claude/hooks/security.sh'
 The path "spec/security_spec.sh" should be exist
 End
@@ -406,6 +410,7 @@ It 'covers all non-spec shell scripts in the repository'
 # List of all shell scripts that should have tests
 # Update this list when adding new shell scripts
 covered_scripts="config/caam/hydrate.sh
+config/caam/sync-claude-remotes.sh
 config/claude/activate.sh
 config/ccs/hydrate.sh
 config/claude/hooks/notify.sh
