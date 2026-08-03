@@ -502,7 +502,6 @@ home-manager/services/k3s/activate.sh
 home-manager/services/make-updater/update.sh
 home-manager/services/neverssl-keepalive/keepalive.sh
 home-manager/services/night-shift/apply-night-shift.sh
-home-manager/services/tokscale/activate-cron.sh
 home-manager/services/tokscale/submit.sh
 hosts/darwin/activate-remove-backups.sh
 hosts/linux/activate-backup-files.sh
