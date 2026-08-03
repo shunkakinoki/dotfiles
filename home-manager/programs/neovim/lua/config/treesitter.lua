@@ -24,51 +24,58 @@ require("treesitter-context").setup({
 	multiwindow = true,
 })
 
--- Manages Treesitter parsers and queries using the supported nvim-treesitter
--- main API. Parser installation is asynchronous during normal startup; CI uses
--- install_configured_sync() below to turn failures into a non-zero exit.
--- From: https://github.com/nvim-treesitter/nvim-treesitter
+-- Manages Treesitter parsers via tree-sitter-manager.nvim.
+-- From: https://github.com/romus204/tree-sitter-manager.nvim
 local M = {}
-local nvim_treesitter = require("nvim-treesitter")
-
+local tsm_util = require("tree-sitter-manager.util")
+local tsm_installer = require("tree-sitter-manager.installer")
 M.configured_parsers = require("config.treesitter_parsers")
 
--- nvim-treesitter does not ship a separate dotenv parser. Neovim detects .env
--- files as the "env" filetype, whose syntax is compatible with the bash parser.
 vim.treesitter.language.register("bash", "env")
 
-local available_parsers = {}
-for _, parser in ipairs(nvim_treesitter.get_available()) do
-	available_parsers[parser] = true
-end
+require("tree-sitter-manager").setup({
+	ensure_installed = M.configured_parsers,
+	auto_install = true,
+	highlight = true,
+})
 
-local function notify_install_result(context, err, success)
-	if not err and success then
-		return
+function M.install_configured()
+	local remaining = #M.configured_parsers
+	local all_ok = true
+	local promise = {}
+
+	function promise:await(callback)
+		callback = callback or function() end
+		tsm_installer.install(M.configured_parsers, function(out)
+			remaining = remaining - 1
+			if not out.ok then
+				all_ok = false
+			end
+			if remaining <= 0 then
+				callback(not all_ok and "some parsers failed" or nil, all_ok)
+			end
+		end)
 	end
 
-	vim.schedule(function()
-		local detail = err and tostring(err) or "one or more parsers failed"
-		vim.notify(("Treesitter %s failed: %s"):format(context, detail), vim.log.levels.ERROR)
-	end)
-end
+	function promise:wait(timeout_ms)
+		local done = false
+		self:await(function()
+			done = true
+		end)
+		vim.wait(timeout_ms or 600000, function()
+			return done
+		end, 100)
+	end
 
-function M.install_configured(options)
-	options = vim.tbl_extend("keep", options or {}, { max_jobs = 4 })
-	return nvim_treesitter.install(M.configured_parsers, options)
+	return promise
 end
 
 function M.install_configured_sync(timeout_ms)
-	M.install_configured({ summary = true }):wait(timeout_ms or 600000)
-
-	local installed = {}
-	for _, parser in ipairs(nvim_treesitter.get_installed()) do
-		installed[parser] = true
-	end
+	M.install_configured():wait(timeout_ms or 600000)
 
 	local missing = {}
 	for _, parser in ipairs(M.configured_parsers) do
-		if not installed[parser] then
+		if not tsm_util.is_installed(parser) then
 			table.insert(missing, parser)
 		end
 	end
@@ -91,55 +98,5 @@ function M.verify_configured()
 		error("configured Treesitter parsers failed to load:\n" .. table.concat(failures, "\n"))
 	end
 end
-
-local installed_parsers = {}
-for _, parser in ipairs(nvim_treesitter.get_installed()) do
-	installed_parsers[parser] = true
-end
-
-local missing_parsers = {}
-for _, parser in ipairs(M.configured_parsers) do
-	if not installed_parsers[parser] then
-		table.insert(missing_parsers, parser)
-	end
-end
-
-if #missing_parsers > 0 then
-	nvim_treesitter.install(missing_parsers, { max_jobs = 4 }):await(function(err, success)
-		notify_install_result("startup installation", err, success)
-	end)
-end
-
-local treesitter_group = vim.api.nvim_create_augroup("TreesitterAutoInstall", { clear = true })
-vim.api.nvim_create_autocmd("FileType", {
-	group = treesitter_group,
-	pattern = "*",
-	desc = "Install available parsers and enable Treesitter highlighting",
-	callback = function(args)
-		local parser = vim.treesitter.language.get_lang(args.match) or args.match
-		if not available_parsers[parser] then
-			return
-		end
-
-		local function start_highlighting()
-			return vim.api.nvim_buf_is_valid(args.buf) and pcall(vim.treesitter.start, args.buf, parser)
-		end
-
-		if start_highlighting() then
-			return
-		end
-
-		nvim_treesitter.install({ parser }):await(function(err, success)
-			notify_install_result(("installation for %s"):format(parser), err, success)
-			if err or not success then
-				return
-			end
-
-			vim.schedule(function()
-				start_highlighting()
-			end)
-		end)
-	end,
-})
 
 return M
