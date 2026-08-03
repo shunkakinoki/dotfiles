@@ -167,6 +167,38 @@
             "maxTokens": 40960
           },
           {
+            "id": "deepseek-v4-pro",
+            "name": "Deepseek V4 Pro",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0.435,
+              "output": 0.87,
+              "cacheRead": 0.003625,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1000000,
+            "maxTokens": 384000
+          },
+          {
+            "id": "deepseek-v4-flash",
+            "name": "Deepseek V4 Flash",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0.14,
+              "output": 0.28,
+              "cacheRead": 0.0028,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1000000,
+            "maxTokens": 384000
+          },
+          {
             "id": "cliproxy/free",
             "name": "CliProxy Free",
             "reasoning": false,
@@ -197,14 +229,14 @@
   "agents": {
     "defaults": {
       "model": {
-        "primary": "cliproxy/minimax-m3",
+        "primary": "cliproxy/deepseek-v4-pro",
         "fallbacks": [
-          "cliproxy/glm-4.7",
+          "cliproxy/deepseek-v4-flash",
           "cliproxy/free"
         ]
       },
       "workspace": "__HOME__/.openclaw/workspace",
-      "thinkingDefault": "low",
+      "thinkingDefault": "high",
       "maxConcurrent": 4,
       "subagents": {
         "maxConcurrent": 8
@@ -765,131 +797,13 @@
       }
     ]
   },
-  "bindings": [
-    {
-      "agentId": "cicd-fixer",
-      "match": {
-        "channel": "whatsapp",
-        "peer": {
-          "kind": "group",
-          "id": "120363424741471538@g.us"
-        }
-      }
-    },
-    {
-      "agentId": "sales",
-      "match": {
-        "channel": "whatsapp",
-        "peer": {
-          "kind": "group",
-          "id": "120363406548236154@g.us"
-        }
-      }
-    },
-    {
-      "agentId": "mindset",
-      "match": {
-        "channel": "whatsapp",
-        "peer": {
-          "kind": "group",
-          "id": "120363424541382217@g.us"
-        }
-      }
-    },
-    {
-      "agentId": "routine",
-      "match": {
-        "channel": "whatsapp",
-        "peer": {
-          "kind": "group",
-          "id": "120363407129974400@g.us"
-        }
-      }
-    },
-    {
-      "agentId": "product",
-      "match": {
-        "channel": "whatsapp",
-        "peer": {
-          "kind": "group",
-          "id": "120363426303081391@g.us"
-        }
-      }
-    },
-    {
-      "agentId": "communication",
-      "match": {
-        "channel": "whatsapp",
-        "peer": {
-          "kind": "group",
-          "id": "120363424749277621@g.us"
-        }
-      }
-    },
-    {
-      "agentId": "devops",
-      "match": {
-        "channel": "whatsapp",
-        "peer": {
-          "kind": "group",
-          "id": "120363424912006821@g.us"
-        }
-      }
-    },
-    {
-      "agentId": "dev-gpt",
-      "match": {
-        "channel": "whatsapp",
-        "peer": {
-          "kind": "group",
-          "id": "120363405790595065@g.us"
-        }
-      }
-    },
-    {
-      "agentId": "dev-gpt",
-      "match": {
-        "channel": "whatsapp",
-        "peer": {
-          "kind": "group",
-          "id": "120363425572081403@g.us"
-        }
-      }
-    }
-  ],
-  "broadcast": {
-    "strategy": "parallel",
-    "120363425148909388@g.us": [
-      "code-reviewer-glm",
-      "code-reviewer-gpt",
-      "code-reviewer-gpt-codex",
-      "code-reviewer-minimax",
-      "code-formatter",
-      "security-scanner",
-      "test-coverage",
-      "docs-checker"
-    ],
-    "120363406322027123@g.us": [
-      "twitter-gpt"
-    ],
-    "120363405790595065@g.us": [
-      "dev-gpt"
-    ],
-    "120363425572081403@g.us": [
-      "dev-gpt"
-    ],
-    "120363407321327235@g.us": [
-      "strategy-gpt"
-    ]
-  },
   "session": {
     "dmScope": "per-channel-peer"
   },
   "messages": {
     "queue": {
       "mode": "interrupt"
-    },
-    "ackReactionScope": "group-mentions"
+    }
   },
   "commands": {
     "native": "auto",
@@ -903,20 +817,11 @@
       },
       "dmPolicy": "pairing",
       "botToken": "__TELEGRAM_TOKEN__",
-      "groups": {
-        "*": {
-          "requireMention": false
-        },
-        "-1003612372477": {
-          "requireMention": false,
-          "enabled": true
-        }
-      },
       "allowFrom": [
         983653361,
         2104262990
       ],
-      "groupPolicy": "allowlist",
+      "groupPolicy": "disabled",
       "reactionNotifications": "all",
       "reactionLevel": "extensive",
       "replyToMode": "first",
@@ -929,18 +834,12 @@
       "allowFrom": [
         "__WHATSAPP_ALLOW_FROM__"
       ],
-      "groupPolicy": "allowlist",
-      "groups": {
-        "*": {
-          "requireMention": false
-        }
-      },
+      "groupPolicy": "disabled",
       "sendReadReceipts": true,
       "mediaMaxMb": 50,
       "ackReaction": {
         "emoji": "👀",
-        "direct": true,
-        "group": "mentions"
+        "direct": true
       },
       "debounceMs": 300
     }
@@ -962,10 +861,7 @@
         "wakeMode": "now",
         "name": "GitHub",
         "sessionKey": "hook:github:{{delivery}}",
-        "messageTemplate": "GitHub {{headers.x-github-event}} event on {{repository.full_name}}:\n\nAction: {{action}}\nSender: {{sender.login}}\n\n{{pull_request.title}}{{issue.title}}\n\n{{pull_request.html_url}}{{issue.html_url}}",
-        "deliver": true,
-        "channel": "whatsapp",
-        "to": "120363405790595065@g.us"
+        "messageTemplate": "GitHub {{headers.x-github-event}} event on {{repository.full_name}}:\n\nAction: {{action}}\nSender: {{sender.login}}\n\n{{pull_request.title}}{{issue.title}}\n\n{{pull_request.html_url}}{{issue.html_url}}"
       }
     ]
   },
