@@ -3,6 +3,7 @@
 
 Describe 'dotfiles-updater/update.sh'
 SCRIPT="$PWD/home-manager/services/dotfiles-updater/update.sh"
+MODULE="$PWD/home-manager/services/dotfiles-updater/default.nix"
 
 Describe 'script properties'
 It 'uses bash shebang'
@@ -18,6 +19,19 @@ End
 It 'changes to ~/dotfiles directory'
 When run bash -c "grep 'cd ~/dotfiles' '$SCRIPT'"
 The output should include 'cd ~/dotfiles'
+End
+End
+
+Describe 'service host identity'
+It 'passes the canonical named host to automatic updates'
+When run bash -c "grep 'HOST=\${canonicalHost}' '$MODULE'"
+The output should include 'HOST=${canonicalHost}'
+End
+
+It 'derives the canonical host from named-host flags'
+When run bash -c "grep -E 'inputs.host.is(Kyber|Matic)' '$MODULE'"
+The output should include 'inputs.host.isKyber'
+The output should include 'inputs.host.isMatic'
 End
 End
 

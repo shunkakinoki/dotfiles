@@ -1,6 +1,13 @@
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 let
   inherit (pkgs) lib;
+  canonicalHost =
+    if inputs.host.isKyber then
+      "kyber"
+    else if inputs.host.isMatic then
+      "matic"
+    else
+      null;
 in
 {
   launchd.agents.dotfiles-updater = lib.mkIf pkgs.stdenv.isDarwin {
@@ -48,7 +55,8 @@ in
           ]
         }"
         "AUTOMATED_UPDATE=true"
-      ];
+      ]
+      ++ lib.optional (canonicalHost != null) "HOST=${canonicalHost}";
       Nice = 19;
       IOSchedulingPriority = 7;
       ExecStart = "${./update.sh}";
