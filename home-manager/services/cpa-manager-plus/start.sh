@@ -2,8 +2,6 @@
 set -euo pipefail
 
 CONTAINER_NAME="cpa-manager-plus"
-IMAGE="${CPA_MANAGER_PLUS_IMAGE:-seakee/cpa-manager-plus:latest}"
-DATA_DIR="${CPA_MANAGER_PLUS_DATA_DIR:-${HOME}/.cpa-manager-plus}"
 ENV_FILE="${HOME}/dotfiles/.env"
 
 if [ -f "$ENV_FILE" ]; then
@@ -12,6 +10,9 @@ if [ -f "$ENV_FILE" ]; then
   . "$ENV_FILE"
   set +a
 fi
+
+IMAGE="${CPA_MANAGER_PLUS_IMAGE:-seakee/cpa-manager-plus:latest}"
+DATA_DIR="${CPA_MANAGER_PLUS_DATA_DIR:-${HOME}/.cpa-manager-plus}"
 
 umask 077
 mkdir -p "$DATA_DIR"
@@ -69,14 +70,16 @@ docker_args=(
 )
 
 if [ -n "${CPA_MANAGER_ADMIN_KEY:-}" ]; then
-  docker_args+=(-e "CPA_MANAGER_ADMIN_KEY=${CPA_MANAGER_ADMIN_KEY}")
+  export CPA_MANAGER_ADMIN_KEY
+  docker_args+=(-e CPA_MANAGER_ADMIN_KEY)
 fi
 
 management_key="${CLIPROXY_MANAGEMENT_PASSWORD:-${CLIPROXY_MANAGEMENT_KEY:-}}"
 if [ -n "$management_key" ]; then
+  export CPA_MANAGEMENT_KEY="$management_key"
   docker_args+=(
     -e "CPA_UPSTREAM_URL=http://127.0.0.1:8317"
-    -e "CPA_MANAGEMENT_KEY=${management_key}"
+    -e CPA_MANAGEMENT_KEY
   )
 fi
 

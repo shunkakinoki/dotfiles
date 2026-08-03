@@ -1262,8 +1262,12 @@ systemctl-cliproxyapi-backup: ## Restart cliproxyapi-backup systemd user service
 .PHONY: systemctl-cpa-manager-plus
 systemctl-cpa-manager-plus: ## Restart CPA Manager Plus systemd user service.
 	@echo "🔄 Restarting CPA Manager Plus..."
-	@systemctl --user daemon-reload
-	@systemctl --user restart cpa-manager-plus.service || true
+	@if [ "$(DETECTED_HOST)" = "kyber" ] || [ "$(HOST)" = "kyber" ]; then \
+		systemctl --user daemon-reload; \
+		systemctl --user restart cpa-manager-plus.service; \
+	else \
+		echo "Skipping cpa-manager-plus.service (host not kyber)"; \
+	fi
 	@echo "✅ CPA Manager Plus restarted"
 
 .PHONY: systemctl-code-syncer

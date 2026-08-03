@@ -47,8 +47,9 @@ The output should include 'chmod 700'
 End
 
 It 'connects to the local CPA without exposing the management key'
-When run grep -E 'CPA_UPSTREAM_URL=http://127.0.0.1:8317|CPA_MANAGEMENT_KEY=' "$START_SCRIPT"
+When run grep -E 'CPA_UPSTREAM_URL=http://127.0.0.1:8317|-e CPA_MANAGEMENT_KEY' "$START_SCRIPT"
 The output should include 'CPA_UPSTREAM_URL=http://127.0.0.1:8317'
-The output should include 'CPA_MANAGEMENT_KEY='
+The output should include '-e CPA_MANAGEMENT_KEY'
+The output should not include 'CPA_MANAGEMENT_KEY=${management_key}'
 End
 End
