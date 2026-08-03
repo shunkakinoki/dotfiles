@@ -420,7 +420,7 @@ import ../../hosts/nixos {
       {
         home-manager.backupFileExtension = "hm-backup";
         home-manager.extraSpecialArgs = {
-          inherit pkgs;
+          inherit pkgs username;
           isRunner = false;
           inputs = inputs // {
             host = (import ../../lib/host.nix) // {
@@ -440,17 +440,7 @@ import ../../hosts/nixos {
           }:
           {
             imports = [
-              (import ../../home-manager {
-                inherit username pkgs;
-                inputs = inputs // {
-                  host = (import ../../lib/host.nix) // {
-                    isDesktop = true;
-                    isMatic = true;
-                  };
-                };
-                inherit (inputs.nixpkgs) lib;
-                config = { };
-              })
+              ../../home-manager
             ];
 
             # Animated wallpaper via Wallpaper Engine
