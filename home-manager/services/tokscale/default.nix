@@ -10,6 +10,16 @@ let
     pkgs.bash
     pkgs.coreutils
   ];
+  activationPath = lib.concatStringsSep ":" [
+    "/run/wrappers/bin"
+    "/run/current-system/sw/bin"
+    (lib.makeBinPath [
+      pkgs.coreutils
+      pkgs.gawk
+    ])
+    "/usr/bin"
+    "/bin"
+  ];
   # Every 3 hours, aligned to the wall clock.
   calendarHours = [
     0
@@ -55,7 +65,8 @@ in
   # Linux (cron)
   home.activation.installTokscaleCron = lib.mkIf pkgs.stdenv.isLinux (
     config.lib.dag.entryAfter [ "writeBoundary" ] ''
-      $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-cron.sh}" ${lib.escapeShellArg cronCommand}
+      $DRY_RUN_CMD ${pkgs.coreutils}/bin/env PATH=${lib.escapeShellArg activationPath} \
+        ${pkgs.bash}/bin/bash "${./activate-cron.sh}" ${lib.escapeShellArg cronCommand}
     ''
   );
 }
