@@ -373,6 +373,16 @@
             "type": "command"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "async": false,
+            "command": "$HOME/.claude/hooks/caam-snapshot.sh",
+            "timeout": 10,
+            "type": "command"
+          }
+        ]
       }
     ],
     "SessionStart": [

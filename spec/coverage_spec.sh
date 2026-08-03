@@ -25,6 +25,10 @@ It 'has spec file for config/claude/hooks/auto-switch.sh'
 The path "spec/auto_switch_spec.sh" should be exist
 End
 
+It 'has spec file for config/claude/hooks/caam-snapshot.sh'
+The path "spec/caam_snapshot_spec.sh" should be exist
+End
+
 It 'has spec file for config/claude/hooks/security.sh'
 The path "spec/security_spec.sh" should be exist
 End
@@ -407,6 +411,7 @@ config/ccs/hydrate.sh
 config/claude/hooks/notify.sh
 config/claude/hooks/pushover.sh
 config/claude/hooks/auto-switch.sh
+config/claude/hooks/caam-snapshot.sh
 config/claude/hooks/security.sh
 config/claude/hooks/atuin-history.sh
 config/claude/hooks/statusline.sh

@@ -17,6 +17,12 @@
     force = true;
   };
 
+  home.file.".claude/hooks/caam-snapshot.sh" = {
+    source = ./hooks/caam-snapshot.sh;
+    executable = true;
+    force = true;
+  };
+
   home.file.".claude/hooks/pushover.sh" = {
     source = ./hooks/pushover.sh;
     executable = true;
