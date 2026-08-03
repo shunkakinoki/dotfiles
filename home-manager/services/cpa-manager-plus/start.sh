@@ -57,6 +57,8 @@ docker_args=(
   --network host
   --ulimit nofile=65536:65536
   -v "$DATA_DIR:/data"
+  # Kubernetes reaches this host port through a selectorless Service. CPA
+  # Manager Plus protects the UI with the configured or first-run admin key.
   -e "HTTP_ADDR=0.0.0.0:18317"
   -e "USAGE_DB_PATH=/data/usage.sqlite"
   -e "CPA_MANAGER_DATA_KEY_PATH=/data/data.key"

@@ -3,6 +3,7 @@
 Describe 'CPA Manager Plus service'
 NIX_MODULE="$PWD/home-manager/services/cpa-manager-plus/default.nix"
 START_SCRIPT="$PWD/home-manager/services/cpa-manager-plus/start.sh"
+DOCKER_START_SCRIPT="$PWD/home-manager/services/cpa-manager-plus/docker-start.sh"
 
 It 'is enabled only on Kyber Linux'
 When run grep 'pkgs.stdenv.isLinux && host.isKyber' "$NIX_MODULE"
@@ -13,6 +14,18 @@ It 'starts after Docker and CLIProxyAPI'
 When run grep -A 8 'After = ' "$NIX_MODULE"
 The output should include 'docker.service'
 The output should include 'cliproxyapi.service'
+End
+
+It 'uses the Docker group wrapper and allows a clean shutdown window'
+When run grep -E 'dockerStartScript|TimeoutStopSec = 45' "$NIX_MODULE"
+The output should include 'dockerStartScript'
+The output should include 'TimeoutStopSec = 45'
+End
+
+It 'falls back to the host Docker group wrappers'
+When run grep -E '/run/wrappers/bin/sg|/usr/bin/sg' "$DOCKER_START_SCRIPT"
+The output should include '/run/wrappers/bin/sg'
+The output should include '/usr/bin/sg'
 End
 
 It 'runs the published manager image on the host network'

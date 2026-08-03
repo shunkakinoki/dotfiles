@@ -9,6 +9,11 @@ let
   startScript = pkgs.replaceVars ./start.sh {
     docker = "${pkgs.docker}/bin/docker";
   };
+  dockerStartScript = pkgs.replaceVars ./docker-start.sh {
+    inherit (pkgs) bash;
+    docker = "${pkgs.docker}/bin/docker";
+    start_script = startScript;
+  };
 in
 lib.mkIf (pkgs.stdenv.isLinux && host.isKyber) {
   systemd.user.services.cpa-manager-plus = {
@@ -29,7 +34,7 @@ lib.mkIf (pkgs.stdenv.isLinux && host.isKyber) {
     };
     Service = {
       Type = "simple";
-      ExecStart = "${pkgs.bash}/bin/bash ${startScript}";
+      ExecStart = "${pkgs.bash}/bin/bash ${dockerStartScript}";
       Environment = "PATH=${
         lib.makeBinPath [
           pkgs.bash
@@ -37,7 +42,7 @@ lib.mkIf (pkgs.stdenv.isLinux && host.isKyber) {
           pkgs.docker
         ]
       }:/usr/bin:/usr/sbin";
-      TimeoutStopSec = 30;
+      TimeoutStopSec = 45;
       Restart = "always";
       RestartSec = 5;
     };
