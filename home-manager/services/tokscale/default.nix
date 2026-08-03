@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  utcOffsetHours ? 0,
   ...
 }:
 let
@@ -11,9 +10,8 @@ let
     pkgs.bash
     pkgs.coreutils
   ];
-  # launchd has no per-job timezone field, so convert the shared UTC schedule
-  # into the host's local calendar hours.
-  calendarHours = map (hour: lib.mod (hour + utcOffsetHours) 24) [
+  # All hosts run in UTC, so launchd can use the shared UTC calendar directly.
+  calendarHours = [
     0
     3
     6

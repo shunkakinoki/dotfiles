@@ -4,10 +4,7 @@
   ...
 }:
 let
-  darwin-modules = import ../../hosts/darwin {
-    inherit inputs username;
-    tokscaleUtcOffsetHours = 8;
-  };
+  darwin-modules = import ../../hosts/darwin { inherit inputs username; };
 in
 inputs.nix-darwin.lib.darwinSystem {
   system = "aarch64-darwin";

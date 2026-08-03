@@ -5,7 +5,6 @@
   inputs,
   username,
   isRunner ? false,
-  tokscaleUtcOffsetHours ? 0,
   ...
 }:
 let
@@ -23,7 +22,6 @@ let
       lib
       pkgs
       inputs
-      tokscaleUtcOffsetHours
       ;
   };
 in

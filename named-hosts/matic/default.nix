@@ -262,10 +262,6 @@ import ../../hosts/nixos {
         services.logind.settings.Login.HandleLidSwitch = "hibernate";
         services.logind.settings.Login.HandleLidSwitchExternalPower = "ignore";
 
-        # Auto timezone (via geolocation)
-        services.geoclue2.enable = true;
-        services.localtimed.enable = true;
-
         # Audio (PipeWire)
         services.pipewire = {
           enable = true;
