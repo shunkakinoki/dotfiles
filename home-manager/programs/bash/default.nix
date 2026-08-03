@@ -27,6 +27,8 @@
     ];
 
     sessionVariables = {
+      CAAM_ROTATION_ENABLED = "1";
+
       # Go configuration
       GOPATH = "$HOME/go";
 

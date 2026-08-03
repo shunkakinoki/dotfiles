@@ -14,5 +14,5 @@ function _grwxeh_function --description "Run Grok headlessly with a prompted inp
     return 1
   end
 
-  grok --always-approve --worktree --single "$prompt"
+  _caam_exec_function grok --always-approve --worktree --single "$prompt"
 end

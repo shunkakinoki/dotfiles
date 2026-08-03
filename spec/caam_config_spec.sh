@@ -5,26 +5,36 @@ Describe 'config/caam'
 DEFAULT_NIX="$PWD/config/caam/default.nix"
 SCRIPT="$PWD/config/caam/hydrate.sh"
 TEMPLATE="$PWD/config/caam/config.template.yaml"
+FISH_NIX="$PWD/home-manager/programs/fish/default.nix"
+BASH_NIX="$PWD/home-manager/programs/bash/default.nix"
+ZSH_NIX="$PWD/home-manager/programs/zsh/default.nix"
 
 It 'is imported by the shared config module'
 When run grep -F './caam' "$PWD/config/default.nix"
 The output should include './caam'
 End
 
-It 'hydrates only on Kyber and Matic'
+It 'hydrates on every host'
 When run cat "$DEFAULT_NIX"
-The output should include 'inputs.host.isKyber || inputs.host.isMatic'
-The output should include 'lib.mkIf managedHost'
+The output should not include 'inputs.host'
+The output should not include 'lib.mkIf'
 End
 
-It 'passes the host-derived rotation value to the hydrator'
+It 'always enables automatic rotation'
 When run cat "$DEFAULT_NIX"
-The output should include 'autoRotate = if managedHost then "true" else "false"'
+The output should include 'autoRotate = "true"'
 End
 
-It 'leaves shell integration unmanaged'
-When run grep -F 'programs.fish.interactiveShellInit' "$DEFAULT_NIX"
+It 'keeps shell environment ownership outside the CAAM module'
+When run grep -F 'CAAM_ROTATION_ENABLED' "$DEFAULT_NIX"
 The status should be failure
+End
+
+It 'exports the rotation flag from each shell module'
+When run bash -c "cat '$FISH_NIX' '$BASH_NIX' '$ZSH_NIX'"
+The output should include 'set -gx CAAM_ROTATION_ENABLED 1'
+The output should include 'CAAM_ROTATION_ENABLED = "1"'
+The output should include 'export CAAM_ROTATION_ENABLED=1'
 End
 
 It 'does not manage credential vault data'

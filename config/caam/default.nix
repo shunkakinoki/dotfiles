@@ -1,17 +1,16 @@
 {
-  inputs,
+  config,
   lib,
   pkgs,
   ...
 }:
 let
-  managedHost = inputs.host.isKyber || inputs.host.isMatic;
   hydrateScript =
     let
       vars = {
         sed = "${pkgs.gnused}/bin/sed";
         template = "${./config.template.yaml}";
-        autoRotate = if managedHost then "true" else "false";
+        autoRotate = "true";
       };
       names = builtins.attrNames vars;
     in
@@ -21,10 +20,10 @@ let
       ) names) (builtins.readFile ./hydrate.sh)
     );
 in
-lib.mkIf managedHost {
-  # Hydrate a mutable CAAM config only on Kyber and Matic. The credential vault
-  # under ~/.local/share/caam remains runtime-owned and outside dotfiles.
-  home.activation.hydrateCaamConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+{
+  # Hydrate mutable CAAM rotation settings on every host. The vault remains
+  # runtime-owned and outside dotfiles.
+  home.activation.hydrateCaamConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.bash}/bin/bash "${hydrateScript}"
   '';
 }

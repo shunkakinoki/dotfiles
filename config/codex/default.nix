@@ -13,7 +13,7 @@ in
 {
   # Use activation script instead of home.file symlink
   # Codex CLI uses atomic writes that break symlinks, so we force-copy on each switch
-  home.activation.codexConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.codexConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" \
       "${./config.toml}" \
       "${./hooks.json}" \
@@ -48,7 +48,7 @@ in
   # setupLaunchAgents. Self-heal after that phase so a missed registration
   # cannot leave the app free to replace the managed settings permanently.
   home.activation.codexDesktopSettingsAgent = lib.mkIf pkgs.stdenv.isDarwin (
-    lib.hm.dag.entryAfter [ "setupLaunchAgents" ] ''
+    config.lib.dag.entryAfter [ "setupLaunchAgents" ] ''
       $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${ensureDesktopSettingsAgent}" \
         "${desktopSettingsAgentLabel}" \
         "$newGenPath/LaunchAgents/${desktopSettingsAgentLabel}.plist" \

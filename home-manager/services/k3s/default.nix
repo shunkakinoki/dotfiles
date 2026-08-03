@@ -25,7 +25,7 @@ let
   smartdServiceFile = "${homeDir}/.config/k3s/kyber-smartd.service";
 in
 lib.mkIf (pkgs.stdenv.isLinux && host.isKyber) {
-  home.activation.setupK3s = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.setupK3s = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.bash}/bin/bash "${setupScript}" \
       "${serviceFile}" \
       "${homeDir}/.kube" \

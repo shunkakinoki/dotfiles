@@ -13,7 +13,7 @@ let
   enabled = isGalactica || isMatic;
 in
 lib.mkIf enabled {
-  home.activation.roborevSetup = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.roborevSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${dataDir}"
   '';
 

@@ -1,4 +1,5 @@
 set fn (status dirname)/../../home-manager/programs/fish/functions
+source $fn/_caam_exec_function.fish
 source $fn/_caxe_function.fish
 
 # ── no args: interactive mode ─────────────────────────────

@@ -44,7 +44,7 @@ in
 {
   # Hydrate OpenClaw config from .env secrets
   # Gateway mode on Kyber, client mode everywhere else
-  home.activation.hydrateOpenclawConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.hydrateOpenclawConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.bash}/bin/bash "${hydrateScript}" || true
   '';
 }

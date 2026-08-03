@@ -54,7 +54,7 @@ in
 
   # Linux (cron)
   home.activation.installTokscaleCron = lib.mkIf pkgs.stdenv.isLinux (
-    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    config.lib.dag.entryAfter [ "writeBoundary" ] ''
       $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-cron.sh}" ${lib.escapeShellArg cronCommand}
     ''
   );

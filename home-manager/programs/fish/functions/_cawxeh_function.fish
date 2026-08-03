@@ -14,5 +14,5 @@ function _cawxeh_function --description "Run Cursor Agent headlessly with a prom
     return 1
   end
 
-  cursor-agent --force --worktree --print -- "$prompt"
+  _caam_exec_function cursor-agent --force --worktree --print -- "$prompt"
 end

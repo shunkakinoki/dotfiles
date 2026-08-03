@@ -14,5 +14,5 @@ function _caxeh_function --description "Run Cursor Agent headlessly with a promp
     return 1
   end
 
-  cursor-agent --force --print -- "$prompt"
+  _caam_exec_function cursor-agent --force --print -- "$prompt"
 end

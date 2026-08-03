@@ -1,10 +1,15 @@
-{ lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   home.file.".ssh/rc" = {
     source = ./rc;
     force = true;
   };
-  home.activation.caamKnownHosts = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.caamKnownHosts = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.bash}/bin/bash ${./pin-known-hosts.sh} ${./known_hosts}
   '';
 
