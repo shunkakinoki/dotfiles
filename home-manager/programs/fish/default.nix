@@ -18,7 +18,7 @@
       ${lib.optionalString pkgs.stdenv.isDarwin ''
         # CAAM owns the default Claude login. Use claude-swap only as an isolated
         # fallback when CAAM definitively reports its recommended profile critical.
-        set -gx CLAUDE_SWAP_FALLBACK_ACCOUNT shunkakinoki@shunkakinoki.com
+        set -gx CLAUDE_SWAP_FALLBACK_ACCOUNT shunkakinoki@gmail.com
       ''}
 
       # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
