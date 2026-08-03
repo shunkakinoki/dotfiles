@@ -9,6 +9,7 @@ let
   brewUpgrader = import ./brew-upgrader { inherit pkgs; };
   cass = import ./cass { inherit pkgs; };
   cliproxyapi = import ./cliproxyapi;
+  cpaManagerPlus = ./cpa-manager-plus;
   codeSyncer = import ./code-syncer { inherit pkgs; };
   dolt = ./dolt;
   docker = import ./docker { inherit lib pkgs; };
@@ -37,6 +38,7 @@ in
   brewUpgrader
   cass
   cliproxyapi
+  cpaManagerPlus
   codeSyncer
   dolt
   docker

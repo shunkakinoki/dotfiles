@@ -1238,7 +1238,7 @@ launchctl-tmux-session-logger: ## Restart tmux-session-logger launchd agent.
 ##@ Systemd Services (Linux)
 
 .PHONY: systemctl
-systemctl: systemctl-docker systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-code-syncer systemctl-docker-postgres systemctl-dolt systemctl-dotfiles-updater systemctl-make-updater systemctl-neverssl-keepalive systemctl-noctalia-shell systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-roborev systemctl-tmux-session-logger ## Restart all systemd user services.
+systemctl: systemctl-docker systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-cpa-manager-plus systemctl-code-syncer systemctl-docker-postgres systemctl-dolt systemctl-dotfiles-updater systemctl-make-updater systemctl-neverssl-keepalive systemctl-noctalia-shell systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-roborev systemctl-tmux-session-logger ## Restart all systemd user services.
 
 .PHONY: systemctl-docker
 systemctl-docker: ## Start Docker daemon.
@@ -1258,6 +1258,17 @@ systemctl-cliproxyapi-backup: ## Restart cliproxyapi-backup systemd user service
 	@echo "🔄 Restarting cliproxyapi-backup..."
 	@systemctl --user restart cliproxyapi-backup.service || true
 	@echo "✅ cliproxyapi-backup restarted"
+
+.PHONY: systemctl-cpa-manager-plus
+systemctl-cpa-manager-plus: ## Restart CPA Manager Plus systemd user service.
+	@echo "🔄 Restarting CPA Manager Plus..."
+	@if [ "$(DETECTED_HOST)" = "kyber" ] || [ "$(HOST)" = "kyber" ]; then \
+		systemctl --user daemon-reload; \
+		systemctl --user restart cpa-manager-plus.service; \
+	else \
+		echo "Skipping cpa-manager-plus.service (host not kyber)"; \
+	fi
+	@echo "✅ CPA Manager Plus restarted"
 
 .PHONY: systemctl-code-syncer
 systemctl-code-syncer: ## Restart code-syncer systemd user service.
