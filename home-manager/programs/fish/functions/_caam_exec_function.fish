@@ -8,7 +8,7 @@ function _caam_exec_function --description "Run an agent launcher through CAAM w
   end
 
   if test "$CAAM_ROTATION_ENABLED" = "1"; and type -q caam
-    caam run $tool -- $argv
+    caam run $tool --precheck -- $argv
   else
     $executable $argv
   end

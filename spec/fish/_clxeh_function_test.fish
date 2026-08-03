@@ -13,7 +13,7 @@ _clxeh_function hello world
 
 @test "inline args forwards prompt" (grep -c "hello world" $log1) -ge 1
 @test "inline args uses print mode" (grep -c -- "--print" $log1) -ge 1
-@test "inline args route Claude through CAAM" (grep -c '^run claude -- ' $log1) -ge 1
+@test "inline args route Claude through CAAM" (grep -c '^run claude --precheck -- ' $log1) -ge 1
 
 set -e CAAM_ROTATION_ENABLED
 rm -f $log1

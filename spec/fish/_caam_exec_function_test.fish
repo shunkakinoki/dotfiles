@@ -14,11 +14,11 @@ set -gx CAAM_ROTATION_ENABLED 1
 
 _caam_exec_function codex exec hello
 
-@test "routes through caam when rotation is enabled" (cat $caam_log) = "run codex -- exec hello"
+@test "routes through caam precheck when rotation is enabled" (cat $caam_log) = "run codex --precheck -- exec hello"
 
 _caam_exec_function cursor-agent --print hello
 
-@test "maps cursor-agent to the cursor profile" (tail -n 1 $caam_log) = "run cursor -- --print hello"
+@test "maps cursor-agent to the cursor profile" (tail -n 1 $caam_log) = "run cursor --precheck -- --print hello"
 
 set -e CAAM_ROTATION_ENABLED
 rm -f $direct_log $caam_log
