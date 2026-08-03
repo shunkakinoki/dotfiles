@@ -11,7 +11,7 @@ _clxe_function
 
 @test "no args skips --print flag" (grep -c -- "--print" $log1) -eq 0
 @test "no args uses dangerously-skip-permissions" (grep -c "dangerously-skip-permissions" $log1) -ge 1
-@test "no args routes Claude through CAAM" (grep -c '^run claude -- ' $log1) -ge 1
+@test "no args routes Claude through CAAM" (grep -c '^run claude --precheck -- ' $log1) -ge 1
 
 # ── with args: print mode ─────────────────────────────────
 set log2 (mktemp)

@@ -11,7 +11,7 @@ _clwxe_function
 
 @test "no args uses --worktree flag" (grep -c -- "--worktree" $log1) -ge 1
 @test "no args skips --print flag" (grep -c -- "--print" $log1) -eq 0
-@test "no args routes Claude through CAAM" (grep -c '^run claude -- ' $log1) -ge 1
+@test "no args routes Claude through CAAM" (grep -c '^run claude --precheck -- ' $log1) -ge 1
 
 # ── with args: print mode ─────────────────────────────────
 set log2 (mktemp)
