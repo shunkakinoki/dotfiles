@@ -157,15 +157,17 @@ let
     inputs.home-manager.nixosModules.home-manager
     {
       home-manager.backupFileExtension = "hm-backup";
-      home-manager.extraSpecialArgs = { inherit inputs isRunner; };
+      home-manager.extraSpecialArgs = {
+        inherit
+          inputs
+          isRunner
+          pkgs
+          username
+          ;
+      };
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
-      home-manager.users."${username}" = import ../../home-manager {
-        inherit inputs username isRunner;
-        inherit (inputs.nixpkgs) lib;
-        inherit pkgs;
-        config = { };
-      };
+      home-manager.users."${username}" = ../../home-manager;
     }
   ];
 in
