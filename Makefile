@@ -1395,7 +1395,6 @@ fish-test: ## Run fish function tests using fishtape.
 	XDG_CONFIG_HOME="$$fish_home/.config" \
 	XDG_STATE_HOME="$$fish_home/.local/state" \
 	XDG_DATA_HOME="$$fish_home/.local/share" \
-	CAAM_ROTATION_ENABLED= \
 	"$$fish_runner" spec/fish/*_test.fish 2>"$$fish_errors"; \
 	rc=$$?; \
 	grep -v -E '^(warning: notify_register_file_descriptor\(\) failed with status 9\.|warning: Universal variable notifications may not be received\.)$$' "$$fish_errors" >"$$fish_errors_filtered" || true; \
