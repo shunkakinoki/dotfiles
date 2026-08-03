@@ -3,11 +3,11 @@ function _cltxe_function --description "Run Claude Code with a free-form prompt 
   # Usage: cltxe [<prompt words...>]
 
   if test (count $argv) -gt 0; and contains -- "$argv[1]" --resume -r --continue -c
-    claude --dangerously-skip-permissions --worktree --tmux --resume $argv[2]
+    _caam_exec_function claude --dangerously-skip-permissions --worktree --tmux --resume $argv[2]
   else if test (count $argv) -eq 0
-    claude --dangerously-skip-permissions --worktree --tmux
+    _caam_exec_function claude --dangerously-skip-permissions --worktree --tmux
   else
     set -l prompt (string join " " -- $argv)
-    claude --dangerously-skip-permissions --worktree --tmux --print -- "$prompt"
+    _caam_exec_function claude --dangerously-skip-permissions --worktree --tmux --print -- "$prompt"
   end
 end
