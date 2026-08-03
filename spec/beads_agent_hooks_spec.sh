@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 Describe 'Beads agent hook configuration'
 
 CLAUDE_SETTINGS="$PWD/config/claude/settings.json"
