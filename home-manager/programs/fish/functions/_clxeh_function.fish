@@ -14,5 +14,5 @@ function _clxeh_function --description "Run Claude Code headlessly with a prompt
     return 1
   end
 
-  claude --dangerously-skip-permissions --print -- "$prompt"
+  _caam_exec_function claude --dangerously-skip-permissions --print -- "$prompt"
 end

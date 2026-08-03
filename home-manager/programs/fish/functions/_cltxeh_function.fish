@@ -14,5 +14,5 @@ function _cltxeh_function --description "Run Claude Code headlessly with a promp
     return 1
   end
 
-  claude --dangerously-skip-permissions --worktree --tmux --print -- "$prompt"
+  _caam_exec_function claude --dangerously-skip-permissions --worktree --tmux --print -- "$prompt"
 end
