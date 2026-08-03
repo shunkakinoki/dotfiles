@@ -45,4 +45,25 @@ lib.mkIf host.isKyber {
       WantedBy = [ "default.target" ];
     };
   };
+
+  # Keep the gateway loopback-only while making it reachable from k3s. The
+  # proxy binds exclusively to Kyber's CNI bridge, so port 18789 is not exposed
+  # on the public or Tailscale interfaces.
+  systemd.user.services.openclaw-k3s-proxy = {
+    Unit = {
+      Description = "OpenClaw k3s bridge proxy";
+      After = [ "openclaw-gateway.service" ];
+      Requires = [ "openclaw-gateway.service" ];
+    };
+    Service = {
+      Type = "simple";
+      ExecStart = "${pkgs.socat}/bin/socat TCP4-LISTEN:18789,bind=10.42.0.1,reuseaddr,fork TCP4:127.0.0.1:18789";
+      Restart = "always";
+      RestartSec = "5s";
+      NoNewPrivileges = true;
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+  };
 }

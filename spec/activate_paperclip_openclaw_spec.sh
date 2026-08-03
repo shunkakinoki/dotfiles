@@ -35,6 +35,17 @@ It 'forces loopback bind on the gateway unit'
 When run bash -c "grep -- '--bind loopback' '$PWD/home-manager/services/openclaw/default.nix'"
 The output should include '--bind loopback'
 End
+
+It 'proxies the loopback gateway only through the k3s bridge'
+When run bash -c "grep -F 'TCP4-LISTEN:18789,bind=10.42.0.1' '$PWD/home-manager/services/openclaw/default.nix'"
+The output should include 'TCP4-LISTEN:18789,bind=10.42.0.1'
+The output should not include 'bind=0.0.0.0'
+End
+
+It 'orders the k3s bridge proxy after the loopback gateway'
+When run bash -c "grep -F 'After = [ \"openclaw-gateway.service\" ]' '$PWD/home-manager/services/openclaw/default.nix'"
+The output should include 'openclaw-gateway.service'
+End
 End
 
 Describe 'home-manager/services/hermes/activate.sh'
