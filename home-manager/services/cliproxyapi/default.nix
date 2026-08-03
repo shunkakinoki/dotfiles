@@ -110,7 +110,7 @@ in
         "${homeDir}/.cli-proxy-api/objectstore/auths"
         "${homeDir}/.ccs/cliproxy/auth"
       ];
-      StartInterval = 3600;
+      StartCalendarInterval = [ { Minute = 0; } ];
       RunAtLoad = true;
       StandardOutPath = "/tmp/cliproxyapi-backup.log";
       StandardErrorPath = "/tmp/cliproxyapi-backup.error.log";
@@ -234,7 +234,7 @@ in
     Unit.Description = "Periodically back up CLIProxyAPI and CPA Manager Plus data";
     Timer = {
       OnBootSec = "5min";
-      OnUnitActiveSec = "1h";
+      OnCalendar = "hourly";
       Persistent = true;
       Unit = "cliproxyapi-backup.service";
     };

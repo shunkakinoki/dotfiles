@@ -7,7 +7,7 @@ This directory contains the Nix-based configuration for the cliproxyapi service 
 ### Services
 
 1. **cliproxyapi** - Main proxy server on port 8317
-2. **cliproxyapi-backup** - File watcher and hourly job that syncs auth files and CPA Manager Plus analytics to S3
+2. **cliproxyapi-backup** - File watcher and wall-clock hourly job that syncs auth files and CPA Manager Plus analytics to S3
 
 ### Scripts
 
@@ -60,7 +60,7 @@ key error when S3 already has auths.
 1. Pull from S3 `auths/` → local
 2. Copy local → CCS auth dir
 
-### Backup (on auth-file change and hourly)
+### Backup (on auth-file change and each wall-clock hour)
 
 1. Push local → S3 `auths/`
 2. Copy local → CCS auth dir

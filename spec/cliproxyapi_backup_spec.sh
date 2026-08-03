@@ -3,6 +3,7 @@
 
 Describe 'cliproxyapi backup scripts'
 SCRIPTS_DIR="$PWD/home-manager/services/cliproxyapi/scripts"
+NIX_MODULE="$PWD/home-manager/services/cliproxyapi/default.nix"
 
 # Preprocess scripts once at describe-time
 __PREPROCESSED_DIR=$(mktemp -d)
@@ -103,7 +104,7 @@ case "$command" in
     : >"$snapshot_path"
     ;;
   'PRAGMA integrity_check;')
-    printf 'ok\n'
+    printf '%s\n' "${SQLITE_INTEGRITY_RESULT:-ok}"
     ;;
 esac
 EOF
@@ -171,12 +172,31 @@ The output should match pattern '*s3://cliproxyapi/cpa-manager-plus/analytics-ba
 The output should include 's3://cliproxyapi/cpa-manager-plus/analytics-backup.tar.gz'
 End
 
+It 'fails closed and skips analytics uploads when the snapshot is corrupt'
+mkdir -p "$TEMP_HOME/.cpa-manager-plus"
+touch "$TEMP_HOME/.cpa-manager-plus/usage.sqlite"
+touch "$TEMP_HOME/.cpa-manager-plus/data.key"
+When run bash -c 'HOME="'"$TEMP_HOME"'" SQLITE_INTEGRITY_RESULT=corrupt bash "'"$__BACKUP_SCRIPT"'" 2>&1; status=$?; cat "$MOCK_LOG" 2>/dev/null || true; exit "$status"'
+The status should be failure
+The output should include 'SQLite snapshot failed its integrity check'
+The output should not include 's3://cliproxyapi/cpa-manager-plus/'
+End
+
 It 'skips when credentials are missing'
 rm -f "$TEMP_HOME/dotfiles/.env"
 touch "$TEMP_HOME/.cli-proxy-api/objectstore/auths/test-auth.json"
 When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$__BACKUP_SCRIPT"'" 2>&1'
 The status should be success
 The output should include 'Missing S3 credentials'
+End
+End
+
+Describe 'backup scheduling'
+It 'uses wall-clock schedules independent of auth-file path triggers'
+When run grep -E 'StartCalendarInterval|OnCalendar = "hourly"' "$NIX_MODULE"
+The status should be success
+The output should include 'StartCalendarInterval'
+The output should include 'OnCalendar = "hourly"'
 End
 End
 
