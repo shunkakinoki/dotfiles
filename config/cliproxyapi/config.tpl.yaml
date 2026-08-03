@@ -122,6 +122,10 @@ openai-compatibility:
     api-key-entries:
       - api-key: "__OPENCODE_API_KEY__"
     models:
+      - name: "__DEEPSEEK_PRO__"
+        alias: "__DEEPSEEK_PRO__"
+      - name: "__DEEPSEEK_FLASH__"
+        alias: "__DEEPSEEK_FLASH__"
       - name: "__MINIMAX__"
         alias: "__MINIMAX__"
       - name: "__KIMI__"

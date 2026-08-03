@@ -107,6 +107,11 @@ It 'generates the OMP Pro default role'
 When run bash -c "grep 'default: \"opencode-zen/deepseek-v4-pro\"' config/omp/config.yml"
 The output should include 'opencode-zen/deepseek-v4-pro'
 End
+
+It 'generates the DeepSeek Go routes in CliProxy'
+When run bash -c "sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4-pro\"' && sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4-flash\"'"
+The status should be success
+End
 End
 
 Describe 'jq pretty-printing'
