@@ -1,6 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "xai/__GROK__",
+  "model": "opencode/__DEEPSEEK_FLASH__",
   "small_model": "cliproxyapi/__GLM__",
   "autoupdate": true,
   "agent": {
