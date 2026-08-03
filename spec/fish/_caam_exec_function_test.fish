@@ -24,7 +24,8 @@ _caam_exec_function codex exec hello
 
 _caam_exec_function cursor-agent --print hello
 
-@test "maps cursor-agent to the cursor profile" (tail -n 1 $caam_log) = "run cursor --precheck -- --print hello"
+@test "prechecks cursor-agent as cursor" (tail -n 2 $caam_log | head -n 1) = "precheck cursor --format json"
+@test "executes the recommended isolated cursor profile" (tail -n 1 $caam_log) = "exec cursor work@example.com -- --print hello"
 
 function caam; return 1; end
 _caam_exec_function codex exec fallback
