@@ -97,6 +97,18 @@ The status should be success
 End
 End
 
+Describe 'DeepSeek defaults'
+It 'generates the OpenCode Flash default'
+When run bash -c "grep '\"model\": \"opencode/deepseek-v4-flash\"' config/opencode/opencode.jsonc"
+The output should include 'opencode/deepseek-v4-flash'
+End
+
+It 'generates the OMP Pro default role'
+When run bash -c "grep 'default: \"opencode-zen/deepseek-v4-pro\"' config/omp/config.yml"
+The output should include 'opencode-zen/deepseek-v4-pro'
+End
+End
+
 Describe 'jq pretty-printing'
 It 'defines a jq pretty function for model names'
 When run bash -c "grep 'def pretty' '$SCRIPT'"
