@@ -3,6 +3,7 @@
   username,
   hostname ? "aarch64-darwin",
   isRunner ? false,
+  tokscaleUtcOffsetHours ? 0,
 }:
 let
   inherit (inputs)
@@ -56,6 +57,7 @@ in
           username
           pkgs
           isRunner
+          tokscaleUtcOffsetHours
           ;
         inherit (pkgs) lib;
         config = { };

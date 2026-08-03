@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  utcOffsetHours ? 0,
   ...
 }:
 let
@@ -10,8 +11,9 @@ let
     pkgs.bash
     pkgs.coreutils
   ];
-  # Every 3 hours, aligned to the wall clock.
-  calendarHours = [
+  # launchd has no per-job timezone field, so convert the shared UTC schedule
+  # into the host's local calendar hours.
+  calendarHours = map (hour: lib.mod (hour + utcOffsetHours) 24) [
     0
     3
     6
@@ -66,7 +68,7 @@ in
   systemd.user.timers.tokscale = lib.mkIf pkgs.stdenv.isLinux {
     Unit.Description = "Submit local usage data to Tokscale every three hours";
     Timer = {
-      OnCalendar = "*-*-* 0/3:00:00";
+      OnCalendar = "*-*-* 0/3:00:00 UTC";
       Persistent = true;
       Unit = "tokscale.service";
     };
