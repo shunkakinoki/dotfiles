@@ -14,6 +14,21 @@
         "command": "moshi-hook cursor-hook"
       }
     ],
+    "postToolUse": [
+      {
+        "command": "bd cursor-hook postToolUse"
+      }
+    ],
+    "preCompact": [
+      {
+        "command": "bd cursor-hook preCompact"
+      }
+    ],
+    "sessionStart": [
+      {
+        "command": "bd cursor-hook sessionStart"
+      }
+    ],
     "beforeMCPExecution": [
       {
         "command": "moshi-hook cursor-hook"

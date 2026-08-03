@@ -33,9 +33,12 @@ jobs:
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run Upgrade
-        run: make upgrade-dev
+        run: |
+          git config --global url."https://x-access-token:${PAT_TOKEN}@github.com/".insteadOf "https://github.com/"
+          make upgrade-dev
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
           SKIP_HOME_MANAGER_SWITCH: "true"
       - name: Create Pull Request
         if: github.event_name != 'pull_request'
