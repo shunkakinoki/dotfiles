@@ -40,6 +40,11 @@ NIXOS_NAMED_HOSTS := $(filter matic viper,$(NAMED_HOSTS))
 ISO_NAMED_HOSTS := $(filter matic viper,$(NAMED_HOSTS))
 DMI_SYS_VENDOR ?= $(shell cat /sys/class/dmi/id/sys_vendor 2>/dev/null || true)
 DMI_PRODUCT_NAME ?= $(shell cat /sys/class/dmi/id/product_name 2>/dev/null || true)
+MACHINE_HOSTNAME ?= $(shell hostname 2>/dev/null || true)
+TAILSCALE_DNS_NAME ?= $(shell \
+	if command -v tailscale >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then \
+		tailscale status --json 2>/dev/null | jq -r '.Self.DNSName // "" | rtrimstr(".")' 2>/dev/null; \
+	fi)
 
 # Nix configuration system
 NIX_SYSTEM := $(shell if [ "$(OS)" = "Darwin" ] && [ "$(ARCH)" = "arm64" ]; then \
@@ -103,10 +108,14 @@ DETECTED_HOST := $(shell \
 		if [ -n "$$RUNPOD_POD_ID" ]; then \
 			echo "pod"; \
 		else \
-			hostname=$$(hostname 2>/dev/null || echo ""); \
-			if [ "$$hostname" = "kyber" ]; then \
+			hostname="$(MACHINE_HOSTNAME)"; \
+			tailscale_dns="$(TAILSCALE_DNS_NAME)"; \
+			if [ "$$hostname" = "kyber" ] \
+				|| [ "$$hostname" = "c2-small-x86-chi-1" ] \
+				|| [ "$$tailscale_dns" = "kyber.tail950b36.ts.net" ]; then \
 				echo "kyber"; \
-			elif [ "$$hostname" = "matic" ]; then \
+			elif [ "$$hostname" = "matic" ] \
+				|| [ "$$tailscale_dns" = "matic.tail950b36.ts.net" ]; then \
 				echo "matic"; \
 			elif [ "$(DMI_SYS_VENDOR)" = "Framework" ] \
 				&& echo "$(DMI_PRODUCT_NAME)" | grep -q "Laptop 13.*AMD Ryzen AI 300"; then \

@@ -122,6 +122,10 @@ openai-compatibility:
     api-key-entries:
       - api-key: "__OPENCODE_API_KEY__"
     models:
+      - name: "deepseek-v4-pro"
+        alias: "deepseek-v4-pro"
+      - name: "deepseek-v4-flash"
+        alias: "deepseek-v4-flash"
       - name: "minimax-m3"
         alias: "minimax-m3"
       - name: "kimi-k3"

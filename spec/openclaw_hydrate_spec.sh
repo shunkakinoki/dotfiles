@@ -4,6 +4,31 @@
 Describe 'config/openclaw/hydrate.sh'
 SCRIPT="$PWD/config/openclaw/hydrate.sh"
 
+template_uses_opencode_go_default() {
+  jq -e '
+    .agents.defaults.model.primary == "cliproxy/deepseek-v4-pro" and
+    .agents.defaults.model.fallbacks[0] == "cliproxy/deepseek-v4-flash" and
+    (.models.providers.cliproxy.models | any(.id == "deepseek-v4-pro")) and
+    (.models.providers.cliproxy.models | any(.id == "deepseek-v4-flash"))
+  ' "$PWD/config/openclaw/openclaw.template.json" >/dev/null
+}
+
+template_disables_groups() {
+  jq -e '
+    (.bindings? == null) and
+    (.broadcast? == null) and
+    (.channels.telegram.groups? == null) and
+    (.channels.telegram.groupPolicy == "disabled") and
+    (.channels.whatsapp.groups? == null) and
+    (.channels.whatsapp.groupPolicy == "disabled") and
+    (.channels.whatsapp.ackReaction.group? == null) and
+    (.messages.ackReactionScope? == null) and
+    (.hooks.mappings | all(
+      (.deliver? == null) and (.channel? == null) and (.to? == null)
+    ))
+  ' "$PWD/config/openclaw/openclaw.template.json" >/dev/null
+}
+
 Describe 'script properties'
 It 'uses bash shebang'
 When run bash -c "head -1 '$SCRIPT'"
@@ -200,6 +225,23 @@ End
 It 'creates state directory'
 When run bash -c "grep 'mkdir -p' '$SCRIPT'"
 The output should include 'STATE_DIR'
+End
+End
+
+Describe 'declarative template'
+It 'uses DeepSeek V4 Pro from OpenCode Go as the default model'
+When call template_uses_opencode_go_default
+The status should be success
+End
+
+It 'removes group routing and explicitly disables group messages'
+When call template_disables_groups
+The status should be success
+End
+
+It 'contains no configured group identifiers'
+When run bash -c "! grep -Eq '@g\\.us|\\\"kind\\\": \\\"group\\\"' '$PWD/config/openclaw/openclaw.template.json'"
+The status should be success
 End
 End
 
