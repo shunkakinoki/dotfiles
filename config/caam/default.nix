@@ -1,4 +1,5 @@
 {
+  config,
   lib,
   pkgs,
   ...
@@ -22,7 +23,7 @@ in
 {
   # Hydrate mutable CAAM rotation settings on every host. The vault remains
   # runtime-owned and outside dotfiles.
-  home.activation.hydrateCaamConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.hydrateCaamConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.bash}/bin/bash "${hydrateScript}"
   '';
 }

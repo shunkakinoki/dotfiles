@@ -10,7 +10,7 @@ let
   homeDir = config.home.homeDirectory;
 in
 lib.mkIf host.isKyber {
-  home.activation.hermesSetup = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.hermesSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${homeDir}"
   '';
 

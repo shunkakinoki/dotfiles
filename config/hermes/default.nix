@@ -29,7 +29,7 @@ let
     );
 in
 {
-  home.activation.hydrateHermesConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.hydrateHermesConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.bash}/bin/bash "${hydrateScript}" || true
   '';
 }

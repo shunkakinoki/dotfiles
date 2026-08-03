@@ -12,7 +12,7 @@ let
   };
 in
 {
-  home.activation.secureDotenv = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.secureDotenv = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${script}" "${homeDir}"
   '';
 }

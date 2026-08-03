@@ -11,7 +11,7 @@ in
 {
   # Install uv global tools from pyproject.toml using home-manager activation
   home.activation.installUvGlobals = lib.mkIf (!isRunner) (
-    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    config.lib.dag.entryAfter [ "writeBoundary" ] ''
       export PATH=${pkgs.uv}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.yq}/bin:$PATH
       ${lib.optionalString (!isDarwin) ''export SYSTEMCTL_BIN="${pkgs.systemd}/bin/systemctl"''}
       $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./install-uv-globals.sh}"

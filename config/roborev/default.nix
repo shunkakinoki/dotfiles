@@ -20,7 +20,7 @@ let
     );
 in
 {
-  home.activation.hydrateRoborevConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.hydrateRoborevConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.bash}/bin/bash "${hydrateScript}" || true
   '';
 }

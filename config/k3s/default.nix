@@ -104,13 +104,13 @@ in
   '';
 
   home.activation.k3s-server = lib.mkIf isKyber (
-    lib.hm.dag.entryAfter [ "setupK3s" ] ''
+    config.lib.dag.entryAfter [ "setupK3s" ] ''
       $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${serverActivateScript}"
     ''
   );
 
   home.activation.k3s-client = lib.mkIf isGalactica (
-    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    config.lib.dag.entryAfter [ "writeBoundary" ] ''
       $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-client.sh}"
     ''
   );

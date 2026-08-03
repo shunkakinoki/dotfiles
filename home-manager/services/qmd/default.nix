@@ -13,7 +13,7 @@ let
   enabled = isKyber || isGalactica;
 in
 lib.mkIf enabled {
-  home.activation.qmdSetup = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.qmdSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     export PATH="${pkgs.nodejs}/bin:${homeDir}/.bun/bin:$PATH"
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${qmdBin}" "${wikiDir}"
   '';

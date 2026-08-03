@@ -164,7 +164,6 @@ let
           pkgs
           username
           ;
-        lib = pkgs.lib // inputs.home-manager.lib;
       };
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
