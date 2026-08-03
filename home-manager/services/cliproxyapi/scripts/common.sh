@@ -88,3 +88,51 @@ cliproxy_download_usage_from_s3() {
     "$(cliproxy_usage_s3_uri)" \
     "$dst" || true
 }
+
+cliproxy_manager_backup_s3_uri() {
+  printf 's3://%s/cpa-manager-plus/analytics-backup.tar.gz' "${OBJECTSTORE_BUCKET:?OBJECTSTORE_BUCKET is required}"
+}
+
+cliproxy_backup_manager_data() (
+  set -euo pipefail
+  umask 077
+
+  local data_dir="$1"
+  local database_path="${data_dir}/usage.sqlite"
+  local data_key_path="${data_dir}/data.key"
+  local backup_root snapshot_dir snapshot_path archive_path integrity
+
+  if [ ! -f "$database_path" ] || [ ! -f "$data_key_path" ]; then
+    echo "⚠️  CPA Manager Plus database or data key is missing; skipping analytics backup" >&2
+    return 0
+  fi
+
+  backup_root="$(mktemp -d "${TMPDIR:-/tmp}/cpa-manager-plus-backup.XXXXXX")"
+  trap 'rm -rf -- "$backup_root"' EXIT
+  snapshot_dir="${backup_root}/cpa-manager-plus"
+  snapshot_path="${snapshot_dir}/usage.sqlite"
+  archive_path="${backup_root}/analytics-backup.tar.gz"
+  mkdir -p "$snapshot_dir"
+
+  # The live database uses WAL mode. SQLite's online backup command produces a
+  # consistent standalone database without copying transient -wal/-shm files.
+  sqlite3 "$database_path" ".timeout 5000" ".backup '${snapshot_path}'"
+
+  integrity="$(sqlite3 "$snapshot_path" "PRAGMA integrity_check;")"
+  if [ "$integrity" != "ok" ]; then
+    echo "CPA Manager Plus SQLite snapshot failed its integrity check" >&2
+    return 1
+  fi
+
+  install -m 600 "$data_key_path" "${snapshot_dir}/data.key"
+  tar -czf "$archive_path" -C "$snapshot_dir" usage.sqlite data.key
+  chmod 600 "$archive_path"
+
+  AWS_ACCESS_KEY_ID="$OBJECTSTORE_ACCESS_KEY" \
+    AWS_SECRET_ACCESS_KEY="$OBJECTSTORE_SECRET_KEY" \
+    @aws@ s3 cp \
+    --endpoint-url="$OBJECTSTORE_ENDPOINT" \
+    --only-show-errors \
+    "$archive_path" \
+    "$(cliproxy_manager_backup_s3_uri)"
+)

@@ -7,7 +7,7 @@ This directory contains the Nix-based configuration for the cliproxyapi service 
 ### Services
 
 1. **cliproxyapi** - Main proxy server on port 8317
-2. **cliproxyapi-backup** - File watcher that syncs auth files to S3
+2. **cliproxyapi-backup** - File watcher and hourly job that syncs auth files and CPA Manager Plus analytics to S3
 
 ### Scripts
 
@@ -30,7 +30,9 @@ This directory contains the Nix-based configuration for the cliproxyapi service 
 ~/.ccs/cliproxy/auth/              # CCS auth directory (synced from local)
 
 S3 Storage:
-└── s3://cliproxyapi/auths/        # Auth storage
+├── s3://cliproxyapi/auths/        # Auth storage
+└── s3://cliproxyapi/cpa-manager-plus/analytics-backup.tar.gz
+                                      # SQLite snapshot + matching data.key
 ```
 
 ## Data Flow
@@ -56,10 +58,16 @@ key error when S3 already has auths.
 1. Pull from S3 `auths/` → local
 2. Copy local → CCS auth dir
 
-### Backup (on file change)
+### Backup (on auth-file change and hourly)
 
 1. Push local → S3 `auths/`
 2. Copy local → CCS auth dir
+3. Create and integrity-check an online CPA Manager Plus SQLite snapshot
+4. Archive the snapshot with its matching `data.key` and upload it to S3
+
+The SQLite online backup command is required because the live analytics database
+uses WAL mode. Copying only `usage.sqlite` while CPA Manager Plus is running can
+produce an incomplete backup.
 
 ### WatchPaths (file watchers)
 

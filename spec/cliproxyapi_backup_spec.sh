@@ -87,6 +87,25 @@ Describe 'backup.sh'
 
 setup() {
   mock_bin_setup aws
+  cat >"$MOCK_BIN/sqlite3" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+: "${MOCK_LOG:?MOCK_LOG must be set}"
+printf '%s\n' "$0 $*" >>"$MOCK_LOG"
+
+command="${*: -1}"
+case "$command" in
+  ".backup '"*)
+    snapshot_path="${command#.backup \'}"
+    snapshot_path="${snapshot_path%\'}"
+    : >"$snapshot_path"
+    ;;
+  'PRAGMA integrity_check;')
+    printf 'ok\n'
+    ;;
+esac
+EOF
+  chmod +x "$MOCK_BIN/sqlite3"
   TEMP_HOME=$(mktemp -d)
   mkdir -p "$TEMP_HOME/.cli-proxy-api/objectstore/auths"
   mkdir -p "$TEMP_HOME/.ccs/cliproxy/auth"
@@ -136,6 +155,17 @@ touch "$TEMP_HOME/.cli-proxy-api/objectstore/auths/test-auth.json"
 When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$__BACKUP_SCRIPT"'" 2>&1; cat "$MOCK_LOG" 2>/dev/null || true'
 The status should be success
 The output should include 's3://custom-bucket/auths/'
+End
+
+It 'uploads a consistent CPA Manager Plus archive through the existing backup service'
+mkdir -p "$TEMP_HOME/.cpa-manager-plus"
+touch "$TEMP_HOME/.cpa-manager-plus/usage.sqlite"
+touch "$TEMP_HOME/.cpa-manager-plus/data.key"
+When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$__BACKUP_SCRIPT"'" 2>&1; cat "$MOCK_LOG" 2>/dev/null || true'
+The status should be success
+The output should include ".backup '"
+The output should include 'PRAGMA integrity_check;'
+The output should include 's3://cliproxyapi/cpa-manager-plus/analytics-backup.tar.gz'
 End
 
 It 'skips when credentials are missing'
