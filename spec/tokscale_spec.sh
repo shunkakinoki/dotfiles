@@ -32,51 +32,20 @@ The output should include '.bun/install/global/node_modules/tokscale/bin.js'
 End
 End
 
-Describe 'network guard'
-setup() {
-  MOCK_BIN=$(mktemp -d)
-  MOCK_ORIGINAL_PATH="$PATH"
-  export PATH="$MOCK_BIN:$PATH"
-  # Force the offline branch: timeout exits non-zero.
-  cat >"$MOCK_BIN/timeout" <<'EOF'
-#!/usr/bin/env bash
-exit 1
-EOF
-  chmod +x "$MOCK_BIN/timeout"
-}
-
-cleanup() {
-  export PATH="$MOCK_ORIGINAL_PATH"
-  rm -rf "$MOCK_BIN"
-}
-
-Before 'setup'
-After 'cleanup'
-
-It 'skips and exits 0 when offline'
-When run bash "$SCRIPT"
-The output should include 'Network unavailable'
-The status should be success
+Describe 'network handling'
+It 'does not gate Tokscale on an unrelated endpoint'
+When run grep -F '1.1.1.1' "$SCRIPT"
+The status should be failure
 End
 End
 
 Describe 'missing tokscale guard'
 setup() {
-  MOCK_BIN=$(mktemp -d)
-  MOCK_ORIGINAL_PATH="$PATH"
-  export PATH="$MOCK_BIN:$PATH"
-  # Pass the network check so we reach the install check.
-  cat >"$MOCK_BIN/timeout" <<'EOF'
-#!/usr/bin/env bash
-exit 0
-EOF
-  chmod +x "$MOCK_BIN/timeout"
   FAKE_HOME=$(mktemp -d)
 }
 
 cleanup() {
-  export PATH="$MOCK_ORIGINAL_PATH"
-  rm -rf "$MOCK_BIN" "$FAKE_HOME"
+  rm -rf "$FAKE_HOME"
 }
 
 Before 'setup'
@@ -91,6 +60,38 @@ End
 
 End
 
+Describe 'submission failure'
+SCRIPT="$PWD/home-manager/services/tokscale/submit.sh"
+setup() {
+  MOCK_BIN=$(mktemp -d)
+  MOCK_ORIGINAL_PATH="$PATH"
+  export PATH="$MOCK_BIN:$PATH"
+  FAKE_HOME=$(mktemp -d)
+  mkdir -p "$FAKE_HOME/.bun/install/global/node_modules/tokscale"
+  touch "$FAKE_HOME/.bun/install/global/node_modules/tokscale/bin.js"
+  cat >"$MOCK_BIN/bun" <<'EOF'
+#!/usr/bin/env bash
+echo 'actual Tokscale failure' >&2
+exit 42
+EOF
+  chmod +x "$MOCK_BIN/bun"
+}
+
+cleanup() {
+  export PATH="$MOCK_ORIGINAL_PATH"
+  rm -rf "$MOCK_BIN" "$FAKE_HOME"
+}
+
+Before 'setup'
+After 'cleanup'
+
+It 'propagates the real Tokscale exit status'
+When run env HOME="$FAKE_HOME" bash "$SCRIPT"
+The stderr should include 'actual Tokscale failure'
+The status should be failure
+End
+End
+
 Describe 'tokscale service schedule'
 CONFIG="$PWD/home-manager/services/tokscale/default.nix"
 
@@ -103,6 +104,16 @@ It 'maps the fixed hours to launchd calendar intervals at minute zero'
 When run bash -c "grep -A4 -F 'StartCalendarInterval = map' '$CONFIG'"
 The output should include 'Hour = hour;'
 The output should include 'Minute = 0;'
+End
+
+It 'sets the macOS PATH through the launchd environment key'
+When run bash -c "grep -F 'EnvironmentVariables = {' '$CONFIG'"
+The output should include 'EnvironmentVariables'
+End
+
+It 'does not use the ignored Environment key'
+When run bash -c "grep -F 'Environment = {' '$CONFIG'"
+The status should be failure
 End
 
 It 'does not use a load-relative interval on macOS'

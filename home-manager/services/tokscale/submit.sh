@@ -2,12 +2,6 @@
 # Submit local usage data to Tokscale. Runs on a 3h schedule on all machines.
 set -euo pipefail
 
-# tokscale submit needs the network; skip silently when offline.
-if ! timeout 3 bash -c 'exec 3<>/dev/tcp/1.1.1.1/53' 2>/dev/null; then
-  echo "Network unavailable, skipping tokscale submit"
-  exit 0
-fi
-
 # Workaround for junhoyeo/tokscale#1002: the Rust binary's TLS stack cannot
 # locate NixOS CA certs without an explicit pointer.
 export SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt

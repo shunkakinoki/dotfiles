@@ -50,7 +50,7 @@ in
         "${pkgs.bash}/bin/bash"
         "${./submit.sh}"
       ];
-      Environment = {
+      EnvironmentVariables = {
         PATH = binPath + ":/usr/bin:/bin:/usr/sbin:/sbin";
       };
       StartCalendarInterval = map (hour: {
