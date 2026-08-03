@@ -121,66 +121,34 @@ When run bash -c "grep -F 'StartInterval' '$CONFIG'"
 The status should be failure
 End
 
-It 'installs the Linux cron schedule during Home Manager activation'
-When run bash -c "grep -F 'installTokscaleCron' '$CONFIG'"
-The output should include 'installTokscaleCron'
+It 'defines a Linux systemd oneshot service'
+When run bash -c "cat '$CONFIG'"
+The output should include 'systemd.user.services.tokscale'
+The output should include 'Type = "oneshot";'
+The output should include 'ExecStart ='
 End
 
-It 'does not define a systemd service or timer'
-When run bash -c "grep -F 'systemd.user' '$CONFIG'"
-The status should be failure
+It 'gives the Linux service its managed runtime environment'
+When run bash -c "cat '$CONFIG'"
+The output should include 'HOME='
+The output should include 'home.homeDirectory'
+The output should include 'PATH='
+The output should include 'binPath'
 End
 
+It 'runs the Linux timer on fixed three-hour wall-clock slots'
+When run bash -c "cat '$CONFIG'"
+The output should include 'systemd.user.timers.tokscale'
+The output should include 'OnCalendar = "*-*-* 0/3:00:00";'
+The output should include 'Persistent = true;'
+The output should include 'Unit = "tokscale.service";'
 End
 
-Describe 'tokscale cron activation'
-ACTIVATOR="$PWD/home-manager/services/tokscale/activate-cron.sh"
-
-setup() {
-  MOCK_BIN=$(mktemp -d)
-  CRONTAB_STATE=$(mktemp)
-  export CRONTAB_STATE
-  MOCK_ORIGINAL_PATH="$PATH"
-  export PATH="$MOCK_BIN:$PATH"
-  cat >"$MOCK_BIN/crontab" <<'EOF'
-#!/usr/bin/env bash
-case "${1:-}" in
-  -l)
-    cat "$CRONTAB_STATE"
-    ;;
-  -)
-    cat >"$CRONTAB_STATE"
-    ;;
-  *)
-    exit 2
-    ;;
-esac
-EOF
-  chmod +x "$MOCK_BIN/crontab"
-}
-
-cleanup() {
-  export PATH="$MOCK_ORIGINAL_PATH"
-  rm -rf "$MOCK_BIN"
-  rm -f "$CRONTAB_STATE"
-}
-
-Before 'setup'
-After 'cleanup'
-
-It 'installs the fixed three-hour cron expression and preserves existing entries'
-echo 'MAILTO=ops@example.com' >"$CRONTAB_STATE"
-When run bash -c "'$ACTIVATOR' 'echo submit' && cat '$CRONTAB_STATE'"
-The output should include 'MAILTO=ops@example.com'
-The output should include '0 */3 * * * echo submit'
-The status should be success
-End
-
-It 'replaces its managed block idempotently'
-When run bash -c "'$ACTIVATOR' 'echo old' && '$ACTIVATOR' 'echo new' && grep -c '^# BEGIN home-manager tokscale$' '$CRONTAB_STATE' && grep -c 'echo new$' '$CRONTAB_STATE'"
-The line 1 of output should eq '1'
-The line 2 of output should eq '1'
-The status should be success
+It 'enables the Linux timer without requiring cron'
+When run bash -c "cat '$CONFIG'"
+The output should include 'WantedBy = [ "timers.target" ];'
+The output should not include 'installTokscaleCron'
+The output should not include 'crontab'
 End
 
 End

@@ -10,16 +10,6 @@ let
     pkgs.bash
     pkgs.coreutils
   ];
-  activationPath = lib.concatStringsSep ":" [
-    "/run/wrappers/bin"
-    "/run/current-system/sw/bin"
-    (lib.makeBinPath [
-      pkgs.coreutils
-      pkgs.gawk
-    ])
-    "/usr/bin"
-    "/bin"
-  ];
   # Every 3 hours, aligned to the wall clock.
   calendarHours = [
     0
@@ -30,15 +20,6 @@ let
     15
     18
     21
-  ];
-  cronCommand = lib.concatStringsSep " " [
-    "env"
-    "HOME=${lib.escapeShellArg config.home.homeDirectory}"
-    "PATH=${lib.escapeShellArg binPath}"
-    "${pkgs.bash}/bin/bash"
-    "${./submit.sh}"
-    ">>/tmp/tokscale.log"
-    "2>>/tmp/tokscale.error.log"
   ];
 in
 {
@@ -62,11 +43,33 @@ in
     };
   };
 
-  # Linux (cron)
-  home.activation.installTokscaleCron = lib.mkIf pkgs.stdenv.isLinux (
-    config.lib.dag.entryAfter [ "writeBoundary" ] ''
-      $DRY_RUN_CMD ${pkgs.coreutils}/bin/env PATH=${lib.escapeShellArg activationPath} \
-        ${pkgs.bash}/bin/bash "${./activate-cron.sh}" ${lib.escapeShellArg cronCommand}
-    ''
-  );
+  # Linux (systemd)
+  systemd.user.services.tokscale = lib.mkIf pkgs.stdenv.isLinux {
+    Unit = {
+      Description = "Submit local usage data to Tokscale";
+      Wants = [ "network-online.target" ];
+      After = [ "network-online.target" ];
+      X-SwitchMethod = "keep-old";
+    };
+    Service = {
+      Type = "oneshot";
+      Environment = [
+        "HOME=${config.home.homeDirectory}"
+        "PATH=${binPath}:/usr/bin:/bin:/usr/sbin:/sbin"
+      ];
+      ExecStart = "${pkgs.bash}/bin/bash ${./submit.sh}";
+      StandardOutput = "append:/tmp/tokscale.log";
+      StandardError = "append:/tmp/tokscale.error.log";
+    };
+  };
+
+  systemd.user.timers.tokscale = lib.mkIf pkgs.stdenv.isLinux {
+    Unit.Description = "Submit local usage data to Tokscale every three hours";
+    Timer = {
+      OnCalendar = "*-*-* 0/3:00:00";
+      Persistent = true;
+      Unit = "tokscale.service";
+    };
+    Install.WantedBy = [ "timers.target" ];
+  };
 }
