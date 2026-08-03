@@ -378,7 +378,7 @@
         "hooks": [
           {
             "async": false,
-            "command": "$HOME/.claude/hooks/caam-snapshot.sh",
+            "command": "caam-claude-snapshot",
             "timeout": 10,
             "type": "command"
           }

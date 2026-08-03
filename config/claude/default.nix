@@ -4,7 +4,16 @@
   pkgs,
   ...
 }:
+let
+  caamClaudeSnapshot = pkgs.writeShellScriptBin "caam-claude-snapshot" (
+    builtins.readFile ./hooks/caam-snapshot.sh
+  );
+in
 {
+  # CAAM isolates HOME for each profile, so hooks invoked by a CAAM-launched
+  # Claude session must resolve from PATH rather than ~/.claude/hooks.
+  home.packages = [ caamClaudeSnapshot ];
+
   # Use activation script for settings.json instead of symlink
   # git-ai install-hooks needs write access, which breaks with Nix store symlinks
   home.activation.claudeConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
@@ -13,12 +22,6 @@
 
   home.file.".claude/hooks/auto-switch.sh" = {
     source = ./hooks/auto-switch.sh;
-    executable = true;
-    force = true;
-  };
-
-  home.file.".claude/hooks/caam-snapshot.sh" = {
-    source = ./hooks/caam-snapshot.sh;
     executable = true;
     force = true;
   };

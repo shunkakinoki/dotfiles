@@ -87,13 +87,13 @@ The status should be success
 The output should include 'backup claude work@example.com'
 End
 
-It 'is deployed by Home Manager'
-When run bash -c 'grep -F '\''home.file.".claude/hooks/caam-snapshot.sh"'\'' "$1" >/dev/null' _ "$DEFAULT_NIX"
+It 'is installed on PATH for CAAM-isolated homes'
+When run bash -c 'grep -F '\''writeShellScriptBin "caam-claude-snapshot"'\'' "$1" >/dev/null && grep -F '\''home.packages = [ caamClaudeSnapshot ];'\'' "$1" >/dev/null' _ "$DEFAULT_NIX"
 The status should be success
 End
 
 It 'is registered as a synchronous SessionEnd hook'
-When run bash -c 'jq -e '\''.hooks.SessionEnd[]?.hooks[]? | select(.command == "$HOME/.claude/hooks/caam-snapshot.sh" and .async == false)'\'' "$1" >/dev/null' _ "$SETTINGS"
+When run bash -c 'jq -e '\''.hooks.SessionEnd[]?.hooks[]? | select(.command == "caam-claude-snapshot" and .async == false)'\'' "$1" >/dev/null' _ "$SETTINGS"
 The status should be success
 End
 
