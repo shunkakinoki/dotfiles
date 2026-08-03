@@ -8,12 +8,12 @@ function _caam_exec_function --description "Run an agent launcher through CAAM w
   end
 
   if test "$CAAM_ROTATION_ENABLED" = "1"; and type -q caam
-    if test "$tool" = codex; and type -q jq
-      set -l precheck (caam precheck codex --format json)
+    if contains -- "$tool" codex cursor; and type -q jq
+      set -l precheck (caam precheck "$tool" --format json)
       if test $status -eq 0
         set -l profile (string join \n $precheck | jq -r '.recommended.name // empty')
         if test -n "$profile"
-          caam exec codex "$profile" -- $argv
+          caam exec "$tool" "$profile" -- $argv
           return $status
         end
       end

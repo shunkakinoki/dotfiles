@@ -5,6 +5,13 @@
   ...
 }:
 {
+  # CAAM invokes Cursor by its canonical provider name. Headless Linux hosts
+  # only install Cursor Agent, so expose it at that canonical path.
+  home.file.".local/bin/cursor" = lib.mkIf pkgs.stdenv.isLinux {
+    source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.local/bin/cursor-agent";
+    force = true;
+  };
+
   # Use activation script instead of symlink
   # git-ai install-hooks needs write access, which breaks with Nix store symlinks
   home.activation.cursorHooks = config.lib.dag.entryAfter [ "writeBoundary" ] ''

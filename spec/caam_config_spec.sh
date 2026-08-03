@@ -8,6 +8,7 @@ TEMPLATE="$PWD/config/caam/config.template.yaml"
 FISH_NIX="$PWD/home-manager/programs/fish/default.nix"
 BASH_NIX="$PWD/home-manager/programs/bash/default.nix"
 ZSH_NIX="$PWD/home-manager/programs/zsh/default.nix"
+CURSOR_NIX="$PWD/config/cursor/default.nix"
 
 It 'is imported by the shared config module'
 When run grep -F './caam' "$PWD/config/default.nix"
@@ -40,6 +41,12 @@ End
 It 'does not manage credential vault data'
 When run grep -E 'home\.file.*vault|xdg\.dataFile.*caam' "$DEFAULT_NIX"
 The status should be failure
+End
+
+It 'exposes cursor-agent as cursor on headless Linux hosts'
+When run cat "$CURSOR_NIX"
+The output should include 'pkgs.stdenv.isLinux'
+The output should include '.local/bin/cursor-agent'
 End
 
 Describe 'hydrate.sh'
@@ -78,6 +85,24 @@ End
 It 'restricts config file permissions to the owner'
 When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; stat -c "%a" "'"$TEMP_HOME"'/.caam/config.yaml" 2>/dev/null || stat -f "%OLp" "'"$TEMP_HOME"'/.caam/config.yaml"'
 The output should eq '600'
+End
+
+It 'bridges global Cursor auth to the XDG path'
+When run bash -c 'mkdir -p "'"$TEMP_HOME"'/.cursor"; touch "'"$TEMP_HOME"'/.cursor/auth.json"; HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; readlink "'"$TEMP_HOME"'/.config/cursor/auth.json"'
+The status should be success
+The output should eq '../../.cursor/auth.json'
+End
+
+It 'bridges isolated Cursor profile auth to the XDG path'
+When run bash -c 'profile_home="'"$TEMP_HOME"'/.local/share/caam/profiles/cursor/work/home"; mkdir -p "$profile_home/.cursor"; touch "$profile_home/.cursor/auth.json"; HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; readlink "$profile_home/.config/cursor/auth.json"'
+The status should be success
+The output should eq '../../.cursor/auth.json'
+End
+
+It 'preserves a conflicting Cursor XDG credential'
+When run bash -c 'mkdir -p "'"$TEMP_HOME"'/.cursor" "'"$TEMP_HOME"'/.config/cursor"; printf source >"'"$TEMP_HOME"'/.cursor/auth.json"; printf target >"'"$TEMP_HOME"'/.config/cursor/auth.json"; HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/.config/cursor/auth.json"'
+The status should be success
+The output should eq 'target'
 End
 End
 End
