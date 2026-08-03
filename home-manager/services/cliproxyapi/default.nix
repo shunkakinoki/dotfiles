@@ -11,6 +11,8 @@ let
 
   commonScript = pkgs.replaceVars ./scripts/common.sh {
     aws = "${pkgs.awscli2}/bin/aws";
+    sqlite3 = "${pkgs.sqlite}/bin/sqlite3";
+    tar = "${pkgs.gnutar}/bin/tar";
   };
 
   hydrateScript = pkgs.replaceVars ./scripts/hydrate.sh {

@@ -21,7 +21,7 @@ if [ -d "$AUTH_DIR" ] && [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
 
   # Also sync back to CCS auth dir so ccs can find the tokens
   mkdir -p "$CCS_AUTH_DIR"
-  cp -u "$AUTH_DIR"/*.json "$CCS_AUTH_DIR/" 2>/dev/null || true
+  cp -fu "$AUTH_DIR"/*.json "$CCS_AUTH_DIR/" 2>/dev/null || true
 else
   echo "⚠️  No auth files to backup" >&2
 fi

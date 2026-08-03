@@ -31,8 +31,10 @@ This directory contains the Nix-based configuration for the cliproxyapi service 
 
 S3 Storage:
 ├── s3://cliproxyapi/auths/        # Auth storage
+├── s3://cliproxyapi/cpa-manager-plus/analytics-backup-HH.tar.gz
+│                                     # 24 hourly rollback slots (UTC)
 └── s3://cliproxyapi/cpa-manager-plus/analytics-backup.tar.gz
-                                      # SQLite snapshot + matching data.key
+                                      # Latest SQLite snapshot + matching data.key
 ```
 
 ## Data Flow
@@ -67,7 +69,8 @@ key error when S3 already has auths.
 
 The SQLite online backup command is required because the live analytics database
 uses WAL mode. Copying only `usage.sqlite` while CPA Manager Plus is running can
-produce an incomplete backup.
+produce an incomplete backup. Each run updates the `latest` archive and its UTC
+hour slot, retaining up to 24 hourly rollback points without unbounded growth.
 
 ### WatchPaths (file watchers)
 
