@@ -6,6 +6,12 @@
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${./settings.json}"
   '';
 
+  home.file.".claude/hooks/auto-switch.sh" = {
+    source = ./hooks/auto-switch.sh;
+    executable = true;
+    force = true;
+  };
+
   home.file.".claude/hooks/pushover.sh" = {
     source = ./hooks/pushover.sh;
     executable = true;

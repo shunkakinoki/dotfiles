@@ -13,6 +13,8 @@
       # transitively hoisted `bun`/`bunx` npm stub can never shadow the real binary.
       set -gx PATH $HOME/.bun/bin $HOME/.bun/install/global/node_modules/.bin $HOME/.cargo/bin $HOME/.local/bin $PATH
 
+      set -gx CAAM_ROTATION_ENABLED 1
+
       # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
       if test (uname) = "Linux"
           set -gx XDG_RUNTIME_DIR /run/user/(id -u)
@@ -242,6 +244,7 @@
         "__tmux_bootstrap_default_session"
         "_brew_update_function"
         "_caf_function"
+        "_caam_exec_function"
         "_cawxe_function"
         "_cawxeh_function"
         "_caxe_function"

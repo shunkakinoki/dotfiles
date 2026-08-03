@@ -1,4 +1,5 @@
 set fn (status dirname)/../../home-manager/programs/fish/functions
+source $fn/_caam_exec_function.fish
 source $fn/_coxeh_function.tpl.fish
 
 @test "empty prompt rejects" (echo "" | _coxeh_function 2>&1) = "No prompt provided, aborting."

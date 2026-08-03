@@ -14,5 +14,5 @@ function _ocxeh_function --description "Run OpenCode headlessly with a prompted 
     return 1
   end
 
-  opencode run "$prompt" -m 'cliproxyapi/glm-4.7'
+  _caam_exec_function opencode run "$prompt" -m 'cliproxyapi/glm-4.7'
 end

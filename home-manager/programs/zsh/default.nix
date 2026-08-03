@@ -34,6 +34,8 @@
       # Local binaries must be available to non-interactive zsh commands too.
       export PATH="$HOME/.bun/install/global/node_modules/.bin:$HOME/.bun/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
 
+      export CAAM_ROTATION_ENABLED=1
+
       # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
       if [ "$(uname)" = "Linux" ]; then
           export XDG_RUNTIME_DIR="/run/user/$(id -u)"
