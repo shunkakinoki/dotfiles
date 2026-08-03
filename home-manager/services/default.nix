@@ -14,7 +14,7 @@ let
   docker = import ./docker { inherit lib pkgs; };
   firewall = ./firewall;
   dockerPostgres = ./docker-postgres;
-  dotfilesUpdater = import ./dotfiles-updater { inherit pkgs; };
+  dotfilesUpdater = import ./dotfiles-updater { inherit inputs pkgs; };
   gasTown = import ./gas-town { inherit pkgs; };
   hermes = ./hermes;
   k3s = ./k3s;
