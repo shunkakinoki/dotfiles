@@ -1,0 +1,46 @@
+{
+  inputs,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  inherit (inputs) host;
+  startScript = pkgs.replaceVars ./start.sh {
+    docker = "${pkgs.docker}/bin/docker";
+  };
+in
+lib.mkIf (pkgs.stdenv.isLinux && host.isKyber) {
+  systemd.user.services.cpa-manager-plus = {
+    Unit = {
+      Description = "CPA Manager Plus analytics and management server";
+      After = [
+        "network-online.target"
+        "docker.service"
+        "cliproxyapi.service"
+      ];
+      Wants = [
+        "network-online.target"
+        "docker.service"
+        "cliproxyapi.service"
+      ];
+      StartLimitIntervalSec = 300;
+      StartLimitBurst = 10;
+    };
+    Service = {
+      Type = "simple";
+      ExecStart = "${pkgs.bash}/bin/bash ${startScript}";
+      Environment = "PATH=${
+        lib.makeBinPath [
+          pkgs.bash
+          pkgs.coreutils
+          pkgs.docker
+        ]
+      }:/usr/bin:/usr/sbin";
+      TimeoutStopSec = 30;
+      Restart = "always";
+      RestartSec = 5;
+    };
+    Install.WantedBy = [ "default.target" ];
+  };
+}
