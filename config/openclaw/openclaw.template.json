@@ -222,7 +222,9 @@
   "memory": {
     "backend": "qmd",
     "qmd": {
-      "update": { "startup": "immediate" },
+      "update": {
+        "startup": "immediate"
+      },
       "scope": {
         "default": "allow"
       }
