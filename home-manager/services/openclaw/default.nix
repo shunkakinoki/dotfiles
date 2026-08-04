@@ -25,6 +25,7 @@ lib.mkIf host.isKyber {
         "install-npm-globals.service"
       ];
       Wants = [ "network-online.target" ];
+      X-SwitchMethod = "restart";
       StartLimitIntervalSec = 300;
       StartLimitBurst = 10;
     };
@@ -54,6 +55,7 @@ lib.mkIf host.isKyber {
       Description = "OpenClaw k3s bridge proxy";
       After = [ "openclaw-gateway.service" ];
       Requires = [ "openclaw-gateway.service" ];
+      X-SwitchMethod = "restart";
     };
     Service = {
       Type = "simple";

@@ -23,6 +23,11 @@ The output should include 'dockerStartScript'
 The output should include 'TimeoutStopSec = 45'
 End
 
+It 'restarts when Home Manager changes the unit'
+When run bash -c "sed -n '/systemd.user.services.cpa-manager-plus =/,/Install.WantedBy/p' '$NIX_MODULE'"
+The output should include 'X-SwitchMethod = "restart";'
+End
+
 It 'falls back to the host Docker group wrappers'
 When run grep -E '/run/wrappers/bin/sg|/usr/bin/sg' "$DOCKER_START_SCRIPT"
 The output should include '/run/wrappers/bin/sg'

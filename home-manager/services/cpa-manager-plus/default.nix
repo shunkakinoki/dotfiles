@@ -29,6 +29,7 @@ lib.mkIf (pkgs.stdenv.isLinux && host.isKyber) {
         "docker.service"
         "cliproxyapi.service"
       ];
+      X-SwitchMethod = "restart";
       StartLimitIntervalSec = 300;
       StartLimitBurst = 10;
     };
