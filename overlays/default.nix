@@ -76,20 +76,20 @@
   (_: prev: {
     moshi-hook = prev.stdenv.mkDerivation rec {
       pname = "moshi-hook";
-      version = "0.2.69";
+      version = "0.2.70";
       src = prev.fetchurl {
         url = "https://cdn.getmoshi.app/hook/v${version}/moshi-hook_${
           if prev.stdenv.isDarwin then "Darwin" else "Linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x86_64"}.tar.gz";
         sha256 =
           if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "3903e2e5d1dba02f9e1f53df8cea6e2b3260e1581461b9a07ca65f18814b8b08"
+            "da319ee343777fe1e9dda59cdd3c1f014a580a1d816b8c1b1332d6412224354f"
           else if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "0a30e081399543551bbd0ba3320f3b28be814a585e5c591e168f8fd6d9565f07"
+            "df598ee8a1d6f929f44b9a1abd8131360ee67512378eab2fdc70b269558a5c78"
           else if prev.stdenv.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "52258126b675dad210a8f04b83d8e90b359951af37474ff985d2c3f49102d981"
+            "f7c6b0b9c4c685afbec88aa8456eda897dc8d5880a3512942a7d091604765861"
           else
-            "7cf24d316bafffc59d30e05d6ad6b27d4c03c9953ce901056f57f03c25e4b83b";
+            "ade7ecfb35073b135e1a946e54204f1959ff9970f831111fe4b913119d9b4bc4";
       };
       sourceRoot = ".";
       dontConfigure = true;
@@ -98,6 +98,32 @@
         install -Dm755 moshi-hook $out/bin/moshi-hook
         ln -s moshi-hook $out/bin/moshi
       '';
+    };
+  })
+  (_: prev: {
+    orca-desktop = prev.appimageTools.wrapType2 rec {
+      pname = "orca-desktop";
+      version = "1.4.168";
+      src = prev.fetchurl {
+        url = "https://github.com/stablyai/orca/releases/download/v${version}/orca-linux${
+          if prev.stdenv.hostPlatform.isAarch64 then "-arm64" else ""
+        }.AppImage";
+        sha256 =
+          if prev.stdenv.hostPlatform.isx86_64 then
+            "0vdzx9xjcympl35s91n5r9x89s1wdd664hcibxniqf6k5rg3ngqm"
+          else
+            "1ikz24ffb9c7fhs164g07vpc07akaz6w7wfsdfqh04cm3gj5glks";
+      };
+      extraInstallCommands =
+        let
+          contents = prev.appimageTools.extractType2 { inherit pname version src; };
+        in
+        ''
+          install -Dm644 ${contents}/orca-ide.desktop $out/share/applications/orca-ide.desktop
+          substituteInPlace $out/share/applications/orca-ide.desktop \
+            --replace-warn 'Exec=AppRun' "Exec=$out/bin/${pname}"
+          cp -r ${contents}/usr/share/icons $out/share/icons 2>/dev/null || true
+        '';
     };
   })
   (final: prev: {
