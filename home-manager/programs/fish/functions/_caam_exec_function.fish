@@ -40,6 +40,29 @@ function _caam_exec_function --description "Run an agent launcher through CAAM w
           if test "$tool" = opencode; and test -z "$XDG_CONFIG_HOME"
             set -fx XDG_CONFIG_HOME "$HOME/.config"
           end
+
+          # caam exec wraps stdout for Codex session capture, which makes stdout a
+          # non-TTY pipe. Interactive TUIs (bare `codex`, resume, etc.) then abort
+          # with "stdout is not a terminal". Keep profile isolation via env and
+          # run the binary directly when stdout is a real terminal.
+          set -l profiles_root "$HOME/.local/share/caam/profiles"
+          if set -q XDG_DATA_HOME; and test -n "$XDG_DATA_HOME"
+            set profiles_root "$XDG_DATA_HOME/caam/profiles"
+          end
+          set -l profile_dir "$profiles_root/$tool/$profile"
+          if isatty stdout; and test -d "$profile_dir"
+            # Keep CODEX_HOME set inside this block: fish locals are block-scoped,
+            # so a nested `if` would drop the export before the child runs.
+            set -lx HOME "$profile_dir/home"
+            if test "$tool" = codex
+              set -lx CODEX_HOME "$profile_dir/codex_home"
+              $executable $argv
+              return $status
+            end
+            $executable $argv
+            return $status
+          end
+
           caam exec "$tool" "$profile" -- $argv
           return $status
         end

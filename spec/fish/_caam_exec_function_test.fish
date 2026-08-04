@@ -37,7 +37,51 @@ _caam_exec_function opencode run hello
 @test "executes the recommended isolated opencode profile" (tail -n 1 $caam_log) = "exec opencode work@example.com -- run hello"
 @test "shares the host XDG config with isolated opencode" (tail -n 1 $xdg_log) = "$HOME/.config"
 
+# Interactive TTY path: when stdout is a TTY and the isolated profile dir exists,
+# run the binary directly with CODEX_HOME/HOME instead of `caam exec` (which
+# wraps stdout and breaks Codex's TUI). fishtape has no TTY, so exercise the
+# branch via a fake isatty + temp profile directory.
+set fake_xdg (mktemp -d)
+set direct_env_log (mktemp)
+set -gx XDG_DATA_HOME "$fake_xdg"
+mkdir -p "$fake_xdg/caam/profiles/codex/work@example.com/home" \
+  "$fake_xdg/caam/profiles/codex/work@example.com/codex_home"
+functions -e isatty
+function isatty
+  test "$argv[1]" = stdout
+end
+functions -e codex
+function codex
+  echo "HOME=$HOME" >> $direct_env_log
+  echo "CODEX_HOME=$CODEX_HOME" >> $direct_env_log
+  echo $argv >> $direct_env_log
+end
+set caam_log (mktemp)
+functions -e caam
+function caam
+  echo $argv >> $caam_log
+  if test "$argv[1]" = precheck
+    echo '{"recommended":{"name":"work@example.com"}}'
+  end
+end
+
+_caam_exec_function codex --dangerously-bypass-approvals-and-sandbox
+
+@test "skips caam exec for interactive TTY codex" (count (cat $caam_log)) -eq 1
+@test "prechecks only for interactive TTY codex" (cat $caam_log) = "precheck codex --format json"
+@test "runs codex directly with isolated CODEX_HOME on TTY" \
+  (grep -c "CODEX_HOME=$fake_xdg/caam/profiles/codex/work@example.com/codex_home" $direct_env_log) -eq 1
+@test "runs codex directly with isolated HOME on TTY" \
+  (grep -c "HOME=$fake_xdg/caam/profiles/codex/work@example.com/home" $direct_env_log) -eq 1
+
+functions -e isatty
+set -e XDG_DATA_HOME
+rm -rf $fake_xdg
+rm -f $direct_env_log
+
 function caam; return 1; end
+functions -e codex
+function codex; echo $argv >> $direct_log; end
 _caam_exec_function codex exec fallback
 
 @test "falls back to native codex when precheck fails" (tail -n 1 $direct_log) = "exec fallback"
