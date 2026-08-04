@@ -52,6 +52,10 @@
         trusted = true;
       }
       {
+        name = "stablyai/orca";
+        trusted = true;
+      }
+      {
         name = "steipete/tap";
         trusted = true;
       }
@@ -157,6 +161,7 @@
       "open-pencil"
       "openclaw"
       "opencode-desktop"
+      "orca"
       "raycast"
       "repobar"
       "rescuetime"
