@@ -24,8 +24,8 @@ The output should include 'TimeoutStopSec = 45'
 End
 
 It 'restarts when Home Manager changes the unit'
-When run grep 'X-RestartIfChanged' "$NIX_MODULE"
-The output should include 'X-RestartIfChanged'
+When run bash -c "sed -n '/systemd.user.services.cpa-manager-plus =/,/Install.WantedBy/p' '$NIX_MODULE'"
+The output should include 'X-SwitchMethod = "restart";'
 End
 
 It 'falls back to the host Docker group wrappers'

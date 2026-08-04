@@ -47,9 +47,14 @@ When run bash -c "grep -F 'After = [ \"openclaw-gateway.service\" ]' '$PWD/home-
 The output should include 'openclaw-gateway.service'
 End
 
-It 'restarts the gateway and bridge when Home Manager changes the units'
-When run grep -c 'X-RestartIfChanged' "$PWD/home-manager/services/openclaw/default.nix"
-The output should equal 2
+It 'restarts the gateway when Home Manager changes the unit'
+When run bash -c "sed -n '/systemd.user.services.openclaw-gateway =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix' | grep -F 'X-SwitchMethod = \"restart\";'"
+The output should include 'X-SwitchMethod = "restart";'
+End
+
+It 'restarts the bridge when Home Manager changes the unit'
+When run bash -c "sed -n '/systemd.user.services.openclaw-k3s-proxy =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix' | grep -F 'X-SwitchMethod = \"restart\";'"
+The output should include 'X-SwitchMethod = "restart";'
 End
 End
 

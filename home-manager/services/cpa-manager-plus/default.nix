@@ -29,12 +29,12 @@ lib.mkIf (pkgs.stdenv.isLinux && host.isKyber) {
         "docker.service"
         "cliproxyapi.service"
       ];
+      X-SwitchMethod = "restart";
       StartLimitIntervalSec = 300;
       StartLimitBurst = 10;
     };
     Service = {
       Type = "simple";
-      "X-RestartIfChanged" = true;
       ExecStart = "${pkgs.bash}/bin/bash ${dockerStartScript}";
       Environment = "PATH=${
         lib.makeBinPath [
