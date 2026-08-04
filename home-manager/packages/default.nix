@@ -235,6 +235,7 @@ with pkgs;
   networkmanagerapplet
   nwg-drawer
   obsidian
+  orca-desktop
   pavucontrol
   playerctl
   polari

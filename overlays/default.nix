@@ -100,6 +100,32 @@
       '';
     };
   })
+  (_: prev: {
+    orca-desktop = prev.appimageTools.wrapType2 rec {
+      pname = "orca-desktop";
+      version = "1.4.168";
+      src = prev.fetchurl {
+        url = "https://github.com/stablyai/orca/releases/download/v${version}/orca-linux${
+          if prev.stdenv.hostPlatform.isAarch64 then "-arm64" else ""
+        }.AppImage";
+        sha256 =
+          if prev.stdenv.hostPlatform.isx86_64 then
+            "0vdzx9xjcympl35s91n5r9x89s1wdd664hcibxniqf6k5rg3ngqm"
+          else
+            "1ikz24ffb9c7fhs164g07vpc07akaz6w7wfsdfqh04cm3gj5glks";
+      };
+      extraInstallCommands =
+        let
+          contents = prev.appimageTools.extractType2 { inherit pname version src; };
+        in
+        ''
+          install -Dm644 ${contents}/orca-ide.desktop $out/share/applications/orca-ide.desktop
+          substituteInPlace $out/share/applications/orca-ide.desktop \
+            --replace-warn 'Exec=AppRun' "Exec=$out/bin/${pname}"
+          cp -r ${contents}/usr/share/icons $out/share/icons 2>/dev/null || true
+        '';
+    };
+  })
   (final: prev: {
     nightlyPkgs = import inputs.nixpkgs-nightly {
       inherit (prev) system config;
