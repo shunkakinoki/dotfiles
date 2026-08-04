@@ -240,7 +240,7 @@ The status should be success
 End
 
 It 'contains no configured group identifiers'
-When run bash -c "! grep -Eq '@g\\.us|\\\"kind\\\": \\\"group\\\"' '$PWD/config/openclaw/openclaw.template.json'"
+When run bash -c "! rg -q '@g\\.us|\"kind\": \"group\"' '$PWD/config/openclaw/openclaw.template.json'"
 The status should be success
 End
 End

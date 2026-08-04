@@ -1084,7 +1084,7 @@ lua-check-neovim: ## Check Neovim configuration.
 		exit 1; \
 	fi
 	@nvim -u "$(PWD)/home-manager/programs/neovim/init.lua" --headless -c "qa" 2>&1 | tee /tmp/nvim-check.log; \
-	if grep -q "^E[0-9]\|^Error\|module .* not found" /tmp/nvim-check.log; then \
+	if grep -qE '^E[0-9]|^Error|module .* not found' /tmp/nvim-check.log; then \
 		echo "❌ Neovim configuration has errors"; \
 		exit 1; \
 	fi

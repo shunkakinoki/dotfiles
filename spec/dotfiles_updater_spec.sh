@@ -25,7 +25,7 @@ End
 Describe 'service host identity'
 It 'passes the canonical named host to automatic updates'
 When run bash -c "grep 'HOST=\${canonicalHost}' '$MODULE'"
-The output should include "HOST=\${canonicalHost}"
+The output should include 'HOST=${canonicalHost}'
 End
 
 It 'derives the canonical host from named-host flags'
