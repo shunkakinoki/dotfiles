@@ -15,9 +15,10 @@ function caam
 end
 set -gx CAAM_ROTATION_ENABLED 1
 
+# fishtape has no TTY, so the non-interactive caam run path is exercised here.
 _caam_exec_function codex exec hello
 
-@test "runs vault-backed caam run for codex" (tail -n 1 $caam_log) = "run codex --precheck -- exec hello"
+@test "runs vault-backed caam run for non-TTY codex" (tail -n 1 $caam_log) = "run codex --precheck -- exec hello"
 
 _caam_exec_function cursor-agent --print hello
 
@@ -26,6 +27,32 @@ _caam_exec_function cursor-agent --print hello
 _caam_exec_function opencode run hello
 
 @test "runs vault-backed caam run for opencode" (tail -n 1 $caam_log) = "run opencode --precheck -- run hello"
+
+# Interactive TTY path: activate --auto then run the binary directly.
+set direct_env_log (mktemp)
+functions -e isatty
+function isatty
+  test "$argv[1]" = stdout
+end
+functions -e codex
+function codex
+  echo $argv >> $direct_env_log
+end
+set caam_log (mktemp)
+functions -e caam
+function caam
+  echo $argv >> $caam_log
+end
+
+_caam_exec_function codex --dangerously-bypass-approvals-and-sandbox
+
+@test "activates vault profile for interactive TTY codex" (cat $caam_log) = "activate codex --auto"
+@test "runs codex directly on interactive TTY" \
+  (cat $direct_env_log) = "--dangerously-bypass-approvals-and-sandbox"
+
+functions -e isatty
+function isatty; builtin isatty $argv; end
+rm -f $direct_env_log
 
 functions -e caam
 set claude_swap_log (mktemp)
