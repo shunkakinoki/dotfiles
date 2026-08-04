@@ -29,9 +29,15 @@ function _caam_exec_function --description "Run an agent launcher through CAAM w
       end
     end
 
-    # Vault-backed run (SmartRunner + PTY). Prefer this over `caam exec` so Codex
-    # keeps a real TTY and uses global vault auth. Requires CAAM with #64
-    # (SmartRunner honors UseGlobalEnv).
+    # Interactive TUIs: vault-activate then run the binary on the real TTY.
+    # `caam run` uses SmartRunner's PTY wrapper, which can hang for interactive
+    # Codex (lock held, no child). Non-TTY/scripted runs keep `caam run`.
+    if isatty stdout
+      caam activate $tool --auto >/dev/null
+      $executable $argv
+      return $status
+    end
+
     caam run $tool --precheck -- $argv
   else
     $executable $argv
