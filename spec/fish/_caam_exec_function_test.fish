@@ -42,5 +42,35 @@ _caam_exec_function codex exec fallback
 
 @test "falls back to native codex when precheck fails" (tail -n 1 $direct_log) = "exec fallback"
 
+functions -e caam
+set claude_swap_log (mktemp)
+set -gx MOCK_CLAUDE_HEALTH critical
+set -gx CLAUDE_SWAP_FALLBACK_ACCOUNT fallback@example.com
+function caam
+  echo $argv >> $caam_log
+  if test "$argv[1]" = precheck; and test "$argv[2]" = claude
+    echo '{"recommended":{"name":"primary@example.com"}}'
+  else if test "$argv[1]" = ls; and test "$argv[2]" = claude
+    echo '{"profiles":[{"name":"primary@example.com","system":false,"health":{"status":"'$MOCK_CLAUDE_HEALTH'"}}]}'
+  end
+end
+function claude-swap
+  echo $argv >> $claude_swap_log
+end
+
+_caam_exec_function claude --print fallback
+
+@test "uses isolated claude-swap when CAAM recommends a critical Claude profile" \
+  (cat $claude_swap_log) = "run fallback@example.com -- --print fallback"
+
+set -gx MOCK_CLAUDE_HEALTH healthy
+_caam_exec_function claude --print primary
+
+@test "keeps CAAM authoritative while its recommended Claude profile is usable" \
+  (tail -n 1 $caam_log) = "run claude --precheck -- --print primary"
+@test "does not invoke claude-swap for a healthy CAAM profile" \
+  (count (cat $claude_swap_log)) -eq 1
+
 set -e CAAM_ROTATION_ENABLED
-rm -f $direct_log $caam_log $xdg_log
+set -e CLAUDE_SWAP_FALLBACK_ACCOUNT MOCK_CLAUDE_HEALTH
+rm -f $direct_log $caam_log $xdg_log $claude_swap_log

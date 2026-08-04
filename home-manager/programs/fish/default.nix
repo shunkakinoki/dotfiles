@@ -15,6 +15,12 @@
 
       set -gx CAAM_ROTATION_ENABLED 1
 
+      ${lib.optionalString pkgs.stdenv.isDarwin ''
+        # CAAM owns the default Claude login. Use claude-swap only as an isolated
+        # fallback when CAAM definitively reports its recommended profile critical.
+        set -gx CLAUDE_SWAP_FALLBACK_ACCOUNT shunkakinoki@gmail.com
+      ''}
+
       # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
       if test (uname) = "Linux"
           set -gx XDG_RUNTIME_DIR /run/user/(id -u)

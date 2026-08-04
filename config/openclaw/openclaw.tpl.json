@@ -220,7 +220,9 @@
     }
   },
   "memory": {
+    "backend": "qmd",
     "qmd": {
+      "update": { "startup": "immediate" },
       "scope": {
         "default": "allow"
       }
