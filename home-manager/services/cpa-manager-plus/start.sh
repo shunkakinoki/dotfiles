@@ -51,10 +51,23 @@ if ! ensure_container_removed; then
   exit 1
 fi
 
+host_uid="$(id -u)"
+host_gid="$(id -g)"
+
+# Older launches ran as root inside the container. Migrate the bind-mounted data
+# before switching to the service user's numeric identity.
+@docker@ run --rm \
+  --user 0:0 \
+  -v "$DATA_DIR:/data" \
+  --entrypoint chown \
+  "$IMAGE" \
+  -R "${host_uid}:${host_gid}" /data
+
 docker_args=(
   run
   --rm
   --name "$CONTAINER_NAME"
+  --user "${host_uid}:${host_gid}"
   --network host
   --ulimit nofile=65536:65536
   -v "$DATA_DIR:/data"

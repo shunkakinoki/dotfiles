@@ -11,6 +11,8 @@ let
 
   commonScript = pkgs.replaceVars ./scripts/common.sh {
     aws = "${pkgs.awscli2}/bin/aws";
+    sqlite3 = "${pkgs.sqlite}/bin/sqlite3";
+    tar = "${pkgs.gnutar}/bin/tar";
   };
 
   hydrateScript = pkgs.replaceVars ./scripts/hydrate.sh {
@@ -98,6 +100,9 @@ in
             pkgs.bash
             pkgs.coreutils
             pkgs.awscli2
+            pkgs.gnutar
+            pkgs.gzip
+            pkgs.sqlite
           ]
         }:/opt/homebrew/bin:/usr/local/bin:/usr/bin";
       };
@@ -105,6 +110,7 @@ in
         "${homeDir}/.cli-proxy-api/objectstore/auths"
         "${homeDir}/.ccs/cliproxy/auth"
       ];
+      StartCalendarInterval = [ { Minute = 0; } ];
       RunAtLoad = true;
       StandardOutPath = "/tmp/cliproxyapi-backup.log";
       StandardErrorPath = "/tmp/cliproxyapi-backup.error.log";
@@ -215,9 +221,24 @@ in
           pkgs.bash
           pkgs.awscli2
           pkgs.coreutils
+          pkgs.gnutar
+          pkgs.gzip
+          pkgs.sqlite
         ]
       }";
+      UMask = "0077";
     };
+  };
+
+  systemd.user.timers.cliproxyapi-backup = lib.mkIf pkgs.stdenv.isLinux {
+    Unit.Description = "Periodically back up CLIProxyAPI and CPA Manager Plus data";
+    Timer = {
+      OnBootSec = "5min";
+      OnCalendar = "hourly";
+      Persistent = true;
+      Unit = "cliproxyapi-backup.service";
+    };
+    Install.WantedBy = [ "timers.target" ];
   };
 
   # Periodic sync - pull auth files from S3 every 5 minutes

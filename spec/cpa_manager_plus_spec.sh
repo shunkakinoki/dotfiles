@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016
 
 Describe 'CPA Manager Plus service'
 NIX_MODULE="$PWD/home-manager/services/cpa-manager-plus/default.nix"
@@ -32,6 +33,12 @@ It 'runs the published manager image on the host network'
 When run grep -E 'seakee/cpa-manager-plus:latest|--network host' "$START_SCRIPT"
 The output should include 'seakee/cpa-manager-plus:latest'
 The output should include '--network host'
+End
+
+It 'migrates persistent data ownership and runs as the service user'
+When run grep -E -- '--entrypoint chown|--user "\$\{host_uid\}:\$\{host_gid\}"' "$START_SCRIPT"
+The output should include '--entrypoint chown'
+The output should include '--user "${host_uid}:${host_gid}"'
 End
 
 It 'persists SQLite and the encryption key under the data mount'
