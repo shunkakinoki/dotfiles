@@ -22,6 +22,11 @@ The output should include 'dockerStartScript'
 The output should include 'TimeoutStopSec = 45'
 End
 
+It 'restarts when Home Manager changes the unit'
+When run grep 'X-RestartIfChanged' "$NIX_MODULE"
+The output should include 'X-RestartIfChanged'
+End
+
 It 'falls back to the host Docker group wrappers'
 When run grep -E '/run/wrappers/bin/sg|/usr/bin/sg' "$DOCKER_START_SCRIPT"
 The output should include '/run/wrappers/bin/sg'

@@ -34,6 +34,7 @@ lib.mkIf (pkgs.stdenv.isLinux && host.isKyber) {
     };
     Service = {
       Type = "simple";
+      "X-RestartIfChanged" = true;
       ExecStart = "${pkgs.bash}/bin/bash ${dockerStartScript}";
       Environment = "PATH=${
         lib.makeBinPath [

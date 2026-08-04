@@ -30,6 +30,7 @@ lib.mkIf host.isKyber {
     };
     Service = {
       Type = "simple";
+      "X-RestartIfChanged" = true;
       ExecStart = "${homeDir}/.bun/bin/openclaw gateway --port 18789 --bind loopback";
       Restart = "always";
       RestartSec = "5s";
@@ -57,6 +58,7 @@ lib.mkIf host.isKyber {
     };
     Service = {
       Type = "simple";
+      "X-RestartIfChanged" = true;
       ExecStart = "${pkgs.socat}/bin/socat TCP4-LISTEN:18789,bind=10.42.0.1,reuseaddr,fork TCP4:127.0.0.1:18789";
       Restart = "always";
       RestartSec = "5s";
