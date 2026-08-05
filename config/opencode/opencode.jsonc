@@ -1,6 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "opencode/deepseek-v4-flash",
+  "model": "cliproxyapi/deepseek-v4-flash",
   "small_model": "cliproxyapi/glm-4.7",
   "autoupdate": true,
   "agent": {
@@ -81,6 +81,12 @@
         },
         "gemini-3.6-flash": {
           "name": "Gemini 3.6 Flash (via local CLIProxyAPI)"
+        },
+        "deepseek-v4-flash": {
+          "name": "Deepseek V4 Flash (via local CLIProxyAPI)"
+        },
+        "deepseek-v4-pro": {
+          "name": "Deepseek V4 Pro (via local CLIProxyAPI)"
         },
         "glm-4.7": {
           "name": "GLM 4.7 (via local CLIProxyAPI)"

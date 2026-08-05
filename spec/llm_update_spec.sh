@@ -98,9 +98,9 @@ End
 End
 
 Describe 'DeepSeek defaults'
-It 'generates the OpenCode Flash default'
-When run bash -c "grep '\"model\": \"opencode/deepseek-v4-flash\"' config/opencode/opencode.jsonc"
-The output should include 'opencode/deepseek-v4-flash'
+It 'generates the CLIProxyAPI DeepSeek Flash default'
+When run bash -c "grep '\"model\": \"cliproxyapi/deepseek-v4-flash\"' config/opencode/opencode.jsonc"
+The output should include 'cliproxyapi/deepseek-v4-flash'
 End
 
 It 'generates the OMP Pro default role'
