@@ -20,18 +20,6 @@ let
     );
 in
 {
-  home.file.".local/bin/roborev-agent-hook" = {
-    source = ../shared/hooks/roborev-agent.sh;
-    executable = true;
-    force = true;
-  };
-
-  home.file.".local/bin/roborev-post-commit" = {
-    source = ../shared/hooks/roborev-post-commit.sh;
-    executable = true;
-    force = true;
-  };
-
   home.activation.hydrateRoborevConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.bash}/bin/bash "${hydrateScript}" || true
   '';

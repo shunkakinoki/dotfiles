@@ -25,10 +25,6 @@ It 'has spec file for config/shared/hooks/roborev-agent.sh'
 The path "spec/roborev_hooks_spec.sh" should be exist
 End
 
-It 'has spec file for config/shared/hooks/roborev-post-commit.sh'
-The path "spec/roborev_hooks_spec.sh" should be exist
-End
-
 It 'has spec file for config/claude/hooks/atuin-history.sh'
 The path "spec/atuin_history_spec.sh" should be exist
 End
@@ -458,7 +454,6 @@ config/shared/hooks/secret-guard.sh
 config/shared/hooks/security.sh
 config/shared/hooks/rtk-rewrite.sh
 config/shared/hooks/roborev-agent.sh
-config/shared/hooks/roborev-post-commit.sh
 config/cursor/activate.sh
 config/cursor/hooks/notify.sh
 config/cursor/hooks/pushover.sh

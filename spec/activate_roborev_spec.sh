@@ -51,7 +51,4 @@ It 'provides the local agent hook'
 The path "$PWD/config/shared/hooks/roborev-agent.sh" should be exist
 End
 
-It 'provides the local post-commit hook'
-The path "$PWD/config/shared/hooks/roborev-post-commit.sh" should be exist
-End
 End
