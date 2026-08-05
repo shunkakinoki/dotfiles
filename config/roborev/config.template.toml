@@ -1,4 +1,7 @@
 [ci]
 enabled = true
-poll_interval = "5m"
+# Poll frequently so new pushes reach the daemon promptly.
+poll_interval = "1m"
+# Never cancel a running CI review just to post an early result.
+batch_timeout = "0"
 repos = ["__ROBOREV_CI_REPOS__"]
