@@ -57,6 +57,14 @@ It 'has spec file for home-manager/services/cass/daily.sh'
 The path "spec/cass_indexer_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/caam/setup.sh'
+The path "spec/caam_sync_service_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/services/caam/sync.sh'
+The path "spec/caam_sync_service_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/brew-upgrader/upgrade.sh'
 The path "spec/brew_upgrader_spec.sh" should be exist
 End
@@ -493,6 +501,8 @@ home-manager/programs/neovim/run_tests.sh
 home-manager/programs/ssh/pin-known-hosts.sh
 home-manager/programs/tmux/session-logger.sh
 home-manager/services/brew-upgrader/upgrade.sh
+home-manager/services/caam/setup.sh
+home-manager/services/caam/sync.sh
 home-manager/services/cass/daily.sh
 home-manager/services/cpa-manager-plus/docker-start.sh
 home-manager/services/cpa-manager-plus/start.sh
