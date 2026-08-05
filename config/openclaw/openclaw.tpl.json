@@ -233,11 +233,12 @@
   "agents": {
     "defaults": {
       "model": {
-        "primary": "cliproxy/__DEEPSEEK_PRO__",
+        "primary": "cliproxy/__DEEPSEEK_FLASH__",
         "fallbacks": [
-          "cliproxy/__DEEPSEEK_FLASH__",
+          "cliproxy/__DEEPSEEK_PRO__",
           "cliproxy/gemma-4-31b-it",
           "cliproxy/glm-4.7",
+          "cliproxy/__MINIMAX__",
           "cliproxy/free"
         ]
       },
