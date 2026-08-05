@@ -170,10 +170,12 @@
       kyberd = "_kyberd_function";
       kyberh = "_kyberh_function";
       kyberm = "_kyberm_function";
+      kyberz = "_kyberz_function";
       matic = "_matic_function";
       maticd = "_maticd_function";
       matich = "_matich_function";
       maticm = "_maticm_function";
+      maticz = "_maticz_function";
       ocxe = "_ocxe_function";
       ocxel = "_ocxel_function";
       ocxeh = "_ocxeh_function";
@@ -299,10 +301,12 @@
         "_kyberd_function"
         "_kyberh_function"
         "_kyberm_function"
+        "_kyberz_function"
         "_matic_function"
         "_maticd_function"
         "_matich_function"
         "_maticm_function"
+        "_maticz_function"
         "_ocxe_function"
         "_ocxel_function"
         "_ocxeh_function"
