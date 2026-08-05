@@ -16,6 +16,22 @@
     }
   },
   "provider": {
+    "opencode-go": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "OpenCode Go",
+      "options": {
+        "baseURL": "https://opencode.ai/zen/go/v1",
+        "apiKey": "{env:OPENCODE_API_KEY}"
+      },
+      "models": {
+        "__DEEPSEEK_PRO__": {
+          "name": "__DEEPSEEK_PRO_PRETTY__ (via OpenCode Go)"
+        },
+        "__DEEPSEEK_FLASH__": {
+          "name": "__DEEPSEEK_FLASH_PRETTY__ (via OpenCode Go)"
+        }
+      }
+    },
     "shunkakinoki": {
       "npm": "@ai-sdk/openai-compatible",
       "name": "CLIProxyAPI (remote)",

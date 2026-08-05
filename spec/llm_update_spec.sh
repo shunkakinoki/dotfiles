@@ -103,6 +103,11 @@ When run bash -c "grep '\"model\": \"cliproxyapi/deepseek-v4-flash\"' config/ope
 The output should include 'cliproxyapi/deepseek-v4-flash'
 End
 
+It 'generates the OpenCode Go DeepSeek models'
+When run bash -c "sed -n '/\"opencode-go\"/,/\"shunkakinoki\"/p' config/opencode/opencode.jsonc | grep -q 'https://opencode.ai/zen/go/v1' && sed -n '/\"opencode-go\"/,/\"shunkakinoki\"/p' config/opencode/opencode.jsonc | grep -q 'deepseek-v4-flash' && sed -n '/\"opencode-go\"/,/\"shunkakinoki\"/p' config/opencode/opencode.jsonc | grep -q 'deepseek-v4-pro'"
+The status should be success
+End
+
 It 'generates the OMP Pro default role'
 When run bash -c "grep 'default: \"opencode-zen/deepseek-v4-pro\"' config/omp/config.yml"
 The output should include 'opencode-zen/deepseek-v4-pro'
