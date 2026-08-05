@@ -7,26 +7,44 @@ MANAGED_SETTINGS="$1"
 JQ_BIN="$2"
 FACTORY_DIR="${HOME}/.factory"
 SETTINGS="${FACTORY_DIR}/settings.json"
-TEMP_SETTINGS="$(mktemp)"
+TEMP_SETTINGS=""
 
 cleanup() {
-  rm -f "$TEMP_SETTINGS"
+  if [ -n "$TEMP_SETTINGS" ]; then
+    rm -f "$TEMP_SETTINGS"
+  fi
 }
 trap cleanup EXIT
+
+mkdir -p "$FACTORY_DIR"
+TEMP_SETTINGS="$(mktemp "$FACTORY_DIR/settings.json.XXXXXX")"
 
 if [ -f "$SETTINGS" ]; then
   # The jq program intentionally contains literal $HOME for Factory to expand.
   # shellcheck disable=SC2016
   "$JQ_BIN" --slurpfile managed "$MANAGED_SETTINGS" '
-    def is_managed_droid_command:
+    def is_legacy_droid_command:
+      tostring | contains("droid-hook.sh");
+
+    def is_managed_hook_command($matcher):
       tostring as $command
-      | ($command | contains("droid-hook.sh"))
-      or ($command | contains("git-ai checkpoint droid"))
-      or ($command | contains("$HOME/dotfiles/config/shared/hooks/"));
+      | (($matcher == "Execute")
+         and ($command == "$HOME/dotfiles/config/shared/hooks/security.sh"
+              or $command == "$HOME/dotfiles/config/shared/hooks/block-git-push.sh"
+              or $command == "$HOME/dotfiles/config/shared/hooks/block-gh-settings.sh"))
+      or (($matcher == "^(Edit|Write|Create|ApplyPatch)$")
+          and ($command == "$HOME/dotfiles/config/shared/hooks/secret-guard.sh"
+               or $command == "$HOME/.cargo/bin/git-ai checkpoint droid --hook-input stdin"));
 
     def clean_hook_group:
       if ((.hooks? | type) == "array") then
-        .hooks |= map(select((.command? // "") | is_managed_droid_command | not))
+        .matcher as $matcher
+        | .hooks |= map(
+            select(
+              (((.command? // "") | is_legacy_droid_command) | not)
+              and (((.command? // "") | is_managed_hook_command($matcher)) | not)
+            )
+          )
         | select((.hooks | length) > 0)
       else
         .
@@ -53,7 +71,10 @@ if [ -f "$SETTINGS" ]; then
       )
     | if ((.hooks.importedClaudeHooks? | type) == "array") then
         .hooks.importedClaudeHooks |= map(
-          select((type != "string") or (is_managed_droid_command | not))
+          select(if type == "string"
+            then ((is_legacy_droid_command or contains("git-ai checkpoint droid")) | not)
+            else true
+            end)
         )
       else
         .
@@ -70,6 +91,5 @@ else
   ' >"$TEMP_SETTINGS"
 fi
 
-mkdir -p "$FACTORY_DIR"
 mv -f "$TEMP_SETTINGS" "$SETTINGS"
-chmod 644 "$SETTINGS"
+chmod 600 "$SETTINGS"
