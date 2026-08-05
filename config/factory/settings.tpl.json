@@ -32,6 +32,11 @@
           {
             "command": "$HOME/dotfiles/config/shared/hooks/block-gh-settings.sh",
             "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
+            "timeout": 10,
+            "type": "command"
           }
         ]
       },
@@ -51,10 +56,31 @@
     ],
     "PostToolUse": [
       {
+        "matcher": "Execute",
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
+            "timeout": 10,
+            "type": "command"
+          }
+        ]
+      },
+      {
         "matcher": "^(Edit|Write|Create|ApplyPatch)$",
         "hooks": [
           {
             "command": "$HOME/.cargo/bin/git-ai checkpoint droid --hook-input stdin",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
+            "timeout": 10,
             "type": "command"
           }
         ]
