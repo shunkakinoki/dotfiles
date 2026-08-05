@@ -6,11 +6,12 @@
   ...
 }:
 let
-  inherit (inputs.host) isGalactica isMatic;
+  inherit (inputs.host) isGalactica isKyber isMatic;
   homeDir = config.home.homeDirectory;
   roborevBin = "${homeDir}/.local/bin/roborev";
   dataDir = "${homeDir}/.roborev";
-  enabled = isGalactica || isMatic;
+  serverAddr = "127.0.0.1:7373";
+  enabled = isGalactica || isKyber || isMatic;
 in
 lib.mkIf enabled {
   home.activation.roborevSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
@@ -24,6 +25,8 @@ lib.mkIf enabled {
         roborevBin
         "daemon"
         "run"
+        "--addr"
+        serverAddr
       ];
       KeepAlive = true;
       RunAtLoad = true;
@@ -45,7 +48,7 @@ lib.mkIf enabled {
     };
     Service = {
       Type = "notify";
-      ExecStart = "${roborevBin} daemon run";
+      ExecStart = "${roborevBin} daemon run --addr ${serverAddr}";
       Restart = "on-failure";
       RestartSec = 5;
       Environment = [

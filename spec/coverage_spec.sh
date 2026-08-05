@@ -17,6 +17,18 @@ It 'has spec file for config/shared/hooks/rtk-rewrite.sh'
 The path "spec/rtk_rewrite_spec.sh" should be exist
 End
 
+It 'has spec file for config/factory/activate-settings.sh'
+The path "spec/roborev_hooks_spec.sh" should be exist
+End
+
+It 'has spec file for config/shared/hooks/roborev-agent.sh'
+The path "spec/roborev_hooks_spec.sh" should be exist
+End
+
+It 'has spec file for config/shared/hooks/roborev-post-commit.sh'
+The path "spec/roborev_hooks_spec.sh" should be exist
+End
+
 It 'has spec file for config/claude/hooks/atuin-history.sh'
 The path "spec/atuin_history_spec.sh" should be exist
 End
@@ -422,6 +434,7 @@ It 'covers all non-spec shell scripts in the repository'
 # List of all shell scripts that should have tests
 # Update this list when adding new shell scripts
 covered_scripts="config/caam/hydrate.sh
+config/factory/activate-settings.sh
 config/claude/activate.sh
 config/ccs/hydrate.sh
 config/claude/hooks/notify.sh
@@ -444,6 +457,8 @@ config/shared/hooks/block-git-push.sh
 config/shared/hooks/secret-guard.sh
 config/shared/hooks/security.sh
 config/shared/hooks/rtk-rewrite.sh
+config/shared/hooks/roborev-agent.sh
+config/shared/hooks/roborev-post-commit.sh
 config/cursor/activate.sh
 config/cursor/hooks/notify.sh
 config/cursor/hooks/pushover.sh

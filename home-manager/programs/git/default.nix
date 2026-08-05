@@ -1,5 +1,11 @@
-{ lib, ... }:
+{ config, lib, ... }:
 {
+  home.file."${config.xdg.configHome}/git/hooks/post-commit" = {
+    source = ../../../config/shared/hooks/roborev-post-commit.sh;
+    executable = true;
+    force = true;
+  };
+
   programs = {
     git = {
       enable = true;
@@ -17,6 +23,7 @@
         };
         core = {
           editor = "nvim -c \"stopinsert\"";
+          hooksPath = "${config.xdg.configHome}/git/hooks";
           compression = -1;
           autocrlf = "input";
           whitespace = "trailing-space,space-before-tab";

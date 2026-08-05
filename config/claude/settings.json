@@ -159,6 +159,10 @@
             "command": "$HOME/.claude/hooks/atuin-history.sh",
             "timeout": 5,
             "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
+            "type": "command"
           }
         ],
         "matcher": "Bash"
@@ -271,6 +275,15 @@
             "async": true,
             "command": "$HOME/.claude/hooks/pushover.sh",
             "timeout": 6,
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
             "type": "command"
           }
         ],
@@ -446,6 +459,10 @@
             "async": true,
             "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code stop",
             "timeout": 30,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
             "type": "command"
           }
         ]
