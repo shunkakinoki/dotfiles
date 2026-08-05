@@ -63,11 +63,27 @@ import ../../hosts/nixos {
         ];
 
         # Networking
-        networking.networkmanager.wifi = {
-          powersave = true;
-          scanRandMacAddress = true;
-          macAddress = "stable-ssid";
+        networking.networkmanager = {
+          dns = lib.mkForce "systemd-resolved";
+          wifi = {
+            powersave = true;
+            scanRandMacAddress = true;
+            macAddress = "stable-ssid";
+          };
         };
+
+        networking.nameservers = [
+          "8.8.8.8"
+          "8.8.4.4"
+          "1.1.1.1"
+          "1.0.0.1"
+        ];
+
+        # The shared NixOS base pins /etc/resolv.conf to public resolvers.
+        # Release that override on matic so resolved can install its stub and
+        # Tailscale can register the tailnet's split-DNS route through D-Bus.
+        environment.etc."resolv.conf".text = lib.mkForce null;
+        services.resolved.enable = true;
 
         networking.firewall = {
           enable = true;
