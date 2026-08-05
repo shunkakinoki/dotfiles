@@ -285,9 +285,12 @@ clean-all: ## Delete ALL old Nix generations and garbage collect (nuclear).
 	@echo "✅ Full cleanup complete"
 
 .PHONY: reset
-reset: git-submodule-sync ## Reset git status to clean (restore all changes and reinitialize submodules).
+reset: ## Reset git status to clean (restore all changes and reinitialize submodules).
 	@echo "🔄 Resetting git status to clean..."
-	@git checkout -- .
+	@git reset --hard HEAD
+	@git submodule foreach --recursive 'git reset --hard HEAD && git clean -fd'
+	@git submodule sync --recursive
+	@git submodule update --init --recursive --force
 	@echo "✅ Git status reset to clean"
 
 .PHONY: services
@@ -1382,7 +1385,7 @@ systemctl-tmux-session-logger: ## Restart tmux-session-logger systemd timer and 
 .PHONY: git-submodule-sync
 git-submodule-sync: ## Sync and update git submodules.
 	@echo "🔁 Syncing and updating git submodules..."
-	@git submodule sync
+	@git submodule sync --recursive
 	@git submodule update --init --recursive
 	@echo "✅ Submodules synced and updated"
 
