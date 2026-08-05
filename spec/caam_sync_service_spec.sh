@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2329
+
 Describe 'home-manager/services/caam'
   SETUP="$PWD/home-manager/services/caam/setup.sh"
   SYNC="$PWD/home-manager/services/caam/sync.sh"
