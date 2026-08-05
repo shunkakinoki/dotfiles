@@ -15,8 +15,24 @@ export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin${PA
 echo "Discovering CAAM sync peers from SSH config..."
 "$CAAM" sync discover --add || true
 
-# localhost is useless in a multi-machine pool; drop it if discover added it.
+# Local hosts are useless in a multi-machine pool; drop them if discovery
+# added localhost, the full hostname, or its short form from SSH config.
 "$CAAM" sync remove localhost --force >/dev/null 2>&1 || true
+
+local_hostname="$(hostname 2>/dev/null || true)"
+local_short_hostname="${local_hostname%%.*}"
+
+if [[ -n "$local_hostname" && "$local_hostname" != "localhost" ]]; then
+  "$CAAM" sync remove "$local_hostname" --force >/dev/null 2>&1 || true
+fi
+
+if [[
+  -n "$local_short_hostname" &&
+    "$local_short_hostname" != "localhost" &&
+    "$local_short_hostname" != "$local_hostname"
+]]; then
+  "$CAAM" sync remove "$local_short_hostname" --force >/dev/null 2>&1 || true
+fi
 
 echo "Enabling CAAM auto-sync after backup/refresh..."
 "$CAAM" sync enable
