@@ -16,7 +16,7 @@ echo "Discovering CAAM sync peers from SSH config..."
 "$CAAM" sync discover --add || true
 
 # localhost is useless in a multi-machine pool; drop it if discover added it.
-"$CAAM" sync remove localhost >/dev/null 2>&1 || true
+"$CAAM" sync remove localhost --force >/dev/null 2>&1 || true
 
 echo "Enabling CAAM auto-sync after backup/refresh..."
 "$CAAM" sync enable
