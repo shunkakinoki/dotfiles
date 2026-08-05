@@ -10,6 +10,9 @@
 
 Both hooks exit `0` when a command may proceed and exit `2` with a `BLOCKED by ...` diagnostic when it must stop.
 
+Factory Droid uses the Execute matcher for shell commands and the standard edit
+matcher for file writes with these shared guardrails.
+
 ## Protected operations
 
 The push hook blocks explicit and implicit updates or deletions of `main`, `master`, and the cached remote default branch. It resolves upstream and push configuration, bulk pushes, force variants, and Git aliases without executing alias bodies. Direct pushes remain allowed for `shunkakinoki/wiki` and `shunkakinoki/gthq`.

@@ -1,0 +1,64 @@
+{
+  "sessionDefaultSettings": {
+    "model": "custom:gemma3:4b-0",
+    "reasoningEffort": "none"
+  },
+  "customModels": [
+    {
+      "model": "gemma3:4b",
+      "id": "custom:gemma3:4b-0",
+      "index": 0,
+      "baseUrl": "http://127.0.0.1:11434/v1",
+      "apiKey": "ollama",
+      "displayName": "Gemma3:4b",
+      "maxOutputTokens": 64000,
+      "noImageSupport": true,
+      "provider": "generic-chat-completion-api"
+    }
+  ],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Execute",
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/security.sh",
+            "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/block-git-push.sh",
+            "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/block-gh-settings.sh",
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "matcher": "^(Edit|Write|Create|ApplyPatch)$",
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/secret-guard.sh",
+            "type": "command"
+          },
+          {
+            "command": "$HOME/.cargo/bin/git-ai checkpoint droid --hook-input stdin",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "^(Edit|Write|Create|ApplyPatch)$",
+        "hooks": [
+          {
+            "command": "$HOME/.cargo/bin/git-ai checkpoint droid --hook-input stdin",
+            "type": "command"
+          }
+        ]
+      }
+    ]
+  }
+}
