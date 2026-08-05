@@ -34,4 +34,9 @@ When run cat "$PWD/home-manager/services/roborev/default.nix"
 # shellcheck disable=SC2016
 The output should include '"${./activate.sh}" "${dataDir}"'
 End
+
+It 'includes the Nix profile in the daemon PATH'
+When run grep -F '/etc/profiles/per-user/${config.home.username}/bin' "$PWD/home-manager/services/roborev/default.nix"
+The output should include '/etc/profiles/per-user/${config.home.username}/bin'
+End
 End
