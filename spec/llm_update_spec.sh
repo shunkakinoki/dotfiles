@@ -98,9 +98,9 @@ End
 End
 
 Describe 'DeepSeek defaults'
-It 'generates the CLIProxyAPI DeepSeek Flash default'
-When run bash -c "grep '\"model\": \"cliproxyapi/deepseek-v4-flash\"' config/opencode/opencode.jsonc"
-The output should include 'cliproxyapi/deepseek-v4-flash'
+It 'generates the remote CLIProxyAPI DeepSeek Flash default'
+When run bash -c "grep '\"model\": \"shunkakinoki/deepseek-v4-flash\"' config/opencode/opencode.jsonc"
+The output should include 'shunkakinoki/deepseek-v4-flash'
 End
 
 It 'generates the CLIProxyAPI DeepSeek models'

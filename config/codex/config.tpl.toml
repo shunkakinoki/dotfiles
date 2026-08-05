@@ -79,6 +79,7 @@ max_threads = 10
 [model_providers.cliproxyapi]
 name = "CLIProxyAPI"
 base_url = "https://cliproxy.shunkakinoki.com/v1"
+env_key = "CLIPROXY_API_KEY"
 
 [model_providers.openrouter]
 name = "OpenRouter"

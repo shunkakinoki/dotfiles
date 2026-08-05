@@ -468,6 +468,7 @@ config/k3s/activate-client.sh
 config/k3s/activate.sh
 config/k3s/kyber-host-alert.sh
 config/k3s/kyber-host-health.sh
+config/llm/hydrate.sh
 config/noctalia/ac-idle-inhibit.sh
 config/noctalia/lock-before-sleep.sh
 config/noctalia/quit-active-app.sh

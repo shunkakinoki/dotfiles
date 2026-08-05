@@ -2,6 +2,7 @@
 model: cliproxy:__GLM__
 clients:
   - type: openai-compatible
+    # Aichat derives CLIPROXY_API_KEY from this client name.
     name: cliproxy
     api_base: https://cliproxy.shunkakinoki.com/v1
     models:
