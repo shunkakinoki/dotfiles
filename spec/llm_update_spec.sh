@@ -108,8 +108,8 @@ When run bash -c "sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/clipr
 The status should be success
 End
 
-It 'routes DeepSeek presets through OpenCode Go in CliProxy'
-When run bash -c "sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'alias: \"@preset/deepseek-v4-pro\"' && sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'alias: \"@preset/deepseek-v4-flash\"'"
+It 'routes DeepSeek presets through OpenRouter with OpenCode Go fallbacks in CliProxy'
+When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"@preset/deepseek-v4-pro\"' && sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"@preset/deepseek-v4-flash\"' && sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4-pro\"' && sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4-flash\"'"
 The status should be success
 End
 End
