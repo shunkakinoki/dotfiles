@@ -7,6 +7,7 @@
 }:
 let
   brewUpgrader = import ./brew-upgrader { inherit pkgs; };
+  caam = import ./caam;
   cass = import ./cass { inherit pkgs; };
   cliproxyapi = import ./cliproxyapi;
   cpaManagerPlus = ./cpa-manager-plus;
@@ -36,6 +37,7 @@ let
 in
 [
   brewUpgrader
+  caam
   cass
   cliproxyapi
   cpaManagerPlus
