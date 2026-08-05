@@ -3,6 +3,6 @@ model: cliproxy:glm-4.7
 clients:
   - type: openai-compatible
     name: cliproxy
-    api_base: https://cliproxy.shunkakinoki.com/v1
+    api_base: http://localhost:8317/v1
     models:
       - name: glm-4.7

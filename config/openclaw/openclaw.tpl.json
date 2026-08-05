@@ -9,7 +9,7 @@
     "mode": "merge",
     "providers": {
       "cliproxy": {
-        "baseUrl": "https://cliproxy.shunkakinoki.com/v1",
+        "baseUrl": "http://localhost:8317/v1",
         "apiKey": "__CLIPROXY_API_KEY__",
         "api": "openai-completions",
         "models": [

@@ -42,9 +42,9 @@ cliproxy:
 cliproxy_server:
   remote:
     enabled: true
-    host: cliproxy.shunkakinoki.com
-    port: 443
-    protocol: https
+    host: 127.0.0.1
+    port: 8317
+    protocol: http
     auth_token: __CLIPROXY_API_KEY__
   fallback:
     enabled: true
