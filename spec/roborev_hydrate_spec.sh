@@ -41,6 +41,14 @@ The output should include '.roborev'
 End
 End
 
+Describe 'CI timing defaults'
+It 'polls promptly without canceling running reviews'
+When run bash -c "grep -E 'poll_interval = \"1m\"|batch_timeout = \"0\"' '$PWD/config/roborev/config.template.toml'"
+The output should include 'poll_interval = "1m"'
+The output should include 'batch_timeout = "0"'
+End
+End
+
 Describe 'hydration'
 setup_hydrate() {
   TEMP_HOME=$(mktemp -d)
