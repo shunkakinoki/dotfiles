@@ -6,8 +6,9 @@ set -euo pipefail
 ENV_FILE="${HOME}/dotfiles/.env"
 CLIPROXY_CONFIG="${CLIPROXY_CONFIG_PATH:-${HOME}/.cli-proxy-api/config.yaml}"
 CLIPROXY_KEY_FILE="${HOME}/.config/openclaw/cliproxy-key"
+CLIPROXY_API_KEY="${CLIPROXY_API_KEY:-}"
 
-if [ -f "$ENV_FILE" ]; then
+if [ -z "$CLIPROXY_API_KEY" ] && [ -f "$ENV_FILE" ]; then
   set -a
   . "$ENV_FILE"
   set +a
@@ -31,7 +32,6 @@ read_cliproxy_api_key_from_config() {
   ' "$config_file"
 }
 
-CLIPROXY_API_KEY="${CLIPROXY_API_KEY:-}"
 if [ -z "$CLIPROXY_API_KEY" ]; then
   CLIPROXY_API_KEY="$(read_cliproxy_api_key_from_config "$CLIPROXY_CONFIG")"
 fi
@@ -69,6 +69,6 @@ else
 fi
 
 chmod 600 "$TMP"
-mv "$TMP" "$KEYS_FILE"
+mv -f "$TMP" "$KEYS_FILE"
 trap - EXIT
 echo "Hydrated LLM cliproxyapi key from CLIPROXY_API_KEY" >&2

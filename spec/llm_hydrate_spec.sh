@@ -24,6 +24,12 @@ The status should be success
 The output should equal 'shared-key'
 End
 
+It 'prefers an inherited key over the dotenv value'
+When run bash -c 'mkdir -p "'"$TEMP_HOME"'/dotfiles"; printf '\''CLIPROXY_API_KEY=dotenv-key\n'\'' >"'"$TEMP_HOME"'/dotfiles/.env"; HOME="'"$TEMP_HOME"'" LLM_USER_PATH="'"$TEMP_HOME"'/llm" CLIPROXY_API_KEY="inherited-key" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; jq -r .cliproxyapi "'"$TEMP_HOME"'/llm/keys.json"'
+The status should be success
+The output should equal 'inherited-key'
+End
+
 It 'preserves existing LLM keys'
 When run bash -c 'mkdir -p "'"$TEMP_HOME"'/llm"; printf '\''{"openai":"existing"}\n'\'' >"'"$TEMP_HOME"'/llm/keys.json"; HOME="'"$TEMP_HOME"'" LLM_USER_PATH="'"$TEMP_HOME"'/llm" CLIPROXY_API_KEY="shared-key" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; jq -r .openai "'"$TEMP_HOME"'/llm/keys.json"'
 The status should be success
