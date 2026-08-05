@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shared PreToolUse hook for Claude Code and Codex Write/Edit operations.
+# Shared PreToolUse hook for Claude Code, Codex, and Factory Droid Write/Edit operations.
 # Blocks writes containing secrets detected by gitleaks.
 # See: https://zenn.dev/takna/articles/secret-leak-prevention-4-layer
 set -euo pipefail

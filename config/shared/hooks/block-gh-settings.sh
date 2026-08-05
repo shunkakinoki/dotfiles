@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shared agent guardrail for GitHub repository control-plane mutations.
+# Shared Codex/Claude/Cursor/Factory Droid agent guardrail for GitHub repository control-plane mutations.
 # This is an early warning only; restricted credentials and server-side
 # rulesets are the authoritative enforcement boundary.
 

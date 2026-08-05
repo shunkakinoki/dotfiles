@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Shared Codex/Copilot/Cursor/Grok Security Hook
+# Shared Codex/Copilot/Cursor/Factory Droid/Grok Security Hook
 # Blocks dangerous Bash commands by checking against deny patterns.
 # Returns exit code 2 to block, exit code 0 to allow.
 #
@@ -26,7 +26,7 @@ input=$(cat)
 # Cursor sends only .command without a tool_name → empty passes through.
 tool_name=$(echo "$input" | jq -r '.tool.name // .tool_name // .toolName // empty' 2>/dev/null)
 case "$tool_name" in
-"" | Bash | bash | shell) ;;
+"" | Bash | bash | Execute | execute | shell) ;;
 *) exit 0 ;;
 esac
 

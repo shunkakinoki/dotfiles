@@ -16,6 +16,7 @@
   "glm": "glm-4.7",
   "minimax": "minimax-m3",
   "gemma": "gemma-4-31b-it",
+  "gemma-local": "gemma3:4b",
   "kimi": "kimi-k3",
   "qwen": "qwen3.6-plus",
   "qwen-local": "qwen3.5-0.8b-optiq"

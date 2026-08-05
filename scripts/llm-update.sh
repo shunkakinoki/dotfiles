@@ -96,6 +96,7 @@ declare -A TEMPLATES=(
   ["config/codex/config.tpl.toml"]=config/codex/config.toml
   ["config/cliproxyapi/config.tpl.yaml"]=config/cliproxyapi/config.template.yaml
   ["config/handy/settings_store.tpl.json"]=config/handy/settings_store.template.json
+  ["config/factory/settings.tpl.json"]=config/factory/settings.json
   ["config/hermes/config.tpl.yaml"]=config/hermes/config.template.yaml
   ["config/omp/config.tpl.yml"]=config/omp/config.yml
   ["config/pi/models.tpl.json"]=config/pi/models.json
