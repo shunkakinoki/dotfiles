@@ -108,9 +108,9 @@ When run bash -c "sed -n '/\"cliproxyapi\"/,/\"lmstudio\"/p' config/opencode/ope
 The status should be success
 End
 
-It 'generates the OMP Pro default role'
-When run bash -c "grep 'default: \"opencode-zen/deepseek-v4-pro\"' config/omp/config.yml"
-The output should include 'opencode-zen/deepseek-v4-pro'
+It 'generates the OMP Flash default role'
+When run bash -c "grep 'default: \"opencode-zen/deepseek-v4-flash\"' config/omp/config.yml"
+The output should include 'opencode-zen/deepseek-v4-flash'
 End
 
 It 'generates the DeepSeek Go routes in CliProxy'
