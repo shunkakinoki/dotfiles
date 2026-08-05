@@ -4,10 +4,18 @@
 Describe 'config/openclaw/hydrate.sh'
 SCRIPT="$PWD/config/openclaw/hydrate.sh"
 
-template_uses_opencode_go_default() {
+template_uses_cliproxy_flash_default() {
   jq -e '
-    .agents.defaults.model.primary == "cliproxy/deepseek-v4-pro" and
-    .agents.defaults.model.fallbacks[0] == "cliproxy/deepseek-v4-flash" and
+    .agents.defaults.model == {
+      "primary": "cliproxy/deepseek-v4-flash",
+      "fallbacks": [
+        "cliproxy/deepseek-v4-pro",
+        "cliproxy/gemma-4-31b-it",
+        "cliproxy/glm-4.7",
+        "cliproxy/minimax-m3",
+        "cliproxy/free"
+      ]
+    } and
     (.models.providers.cliproxy.models | any(.id == "deepseek-v4-pro")) and
     (.models.providers.cliproxy.models | any(.id == "deepseek-v4-flash"))
   ' "$PWD/config/openclaw/openclaw.template.json" >/dev/null
@@ -229,8 +237,8 @@ End
 End
 
 Describe 'declarative template'
-It 'uses DeepSeek V4 Pro from OpenCode Go as the default model'
-When call template_uses_opencode_go_default
+It 'uses CLIProxy DeepSeek V4 Flash with resilient fallbacks'
+When call template_uses_cliproxy_flash_default
 The status should be success
 End
 
