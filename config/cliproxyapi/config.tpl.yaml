@@ -94,6 +94,10 @@ openai-compatibility:
         alias: "__GLM__"
       - name: "@preset/__GEMMA_NONDOT__"
         alias: "__GEMMA__"
+      - name: "@preset/__DEEPSEEK_FLASH_NONDOT__"
+        alias: "__DEEPSEEK_FLASH__"
+      - name: "@preset/__DEEPSEEK_PRO_NONDOT__"
+        alias: "__DEEPSEEK_PRO__"
   - name: "z-ai"
     base-url: "https://api.z.ai/api/coding/paas/v4"
     api-key-entries:
