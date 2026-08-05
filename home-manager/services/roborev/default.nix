@@ -30,7 +30,7 @@ lib.mkIf enabled {
       EnvironmentVariables = {
         HOME = homeDir;
         ROBOREV_DATA_DIR = dataDir;
-        PATH = "${homeDir}/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin";
+        PATH = "${homeDir}/.local/bin:/etc/profiles/per-user/${config.home.username}/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin";
       };
       StandardOutPath = "/tmp/roborev.log";
       StandardErrorPath = "/tmp/roborev.error.log";
@@ -51,7 +51,7 @@ lib.mkIf enabled {
       Environment = [
         "HOME=${homeDir}"
         "ROBOREV_DATA_DIR=${dataDir}"
-        "PATH=${homeDir}/.local/bin:${homeDir}/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin"
+        "PATH=${homeDir}/.local/bin:/etc/profiles/per-user/${config.home.username}/bin:${homeDir}/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin"
       ];
     };
     Install = {
