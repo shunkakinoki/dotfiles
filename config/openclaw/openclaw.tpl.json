@@ -236,6 +236,8 @@
         "primary": "cliproxy/__DEEPSEEK_PRO__",
         "fallbacks": [
           "cliproxy/__DEEPSEEK_FLASH__",
+          "cliproxy/google/gemma-4-31b-it",
+          "cliproxy/glm-4.7",
           "cliproxy/free"
         ]
       },
