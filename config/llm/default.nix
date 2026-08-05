@@ -5,7 +5,7 @@
 }:
 let
   hydrateScript = pkgs.writeText "llm-hydrate.sh" (
-    builtins.replaceStrings [ "@awk@" "@jq@" ] [ "${pkgs.gawk}/bin/awk" "${pkgs.jq}/bin/jq" ] (
+    builtins.replaceStrings [ "@jq@" "@yq@" ] [ "${pkgs.jq}/bin/jq" "${pkgs.yq}/bin/yq" ] (
       builtins.readFile ./hydrate.sh
     )
   );

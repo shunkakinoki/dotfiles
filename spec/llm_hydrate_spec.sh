@@ -7,7 +7,7 @@ SCRIPT="$PWD/config/llm/hydrate.sh"
 setup() {
   TEMP_HOME=$(mktemp -d)
   PREPROCESSED_SCRIPT="$TEMP_HOME/hydrate.sh"
-  sed -e 's|@awk@|awk|g' -e 's|@jq@|jq|g' "$SCRIPT" >"$PREPROCESSED_SCRIPT"
+  sed -e 's|@jq@|jq|g' -e 's|@yq@|yq|g' "$SCRIPT" >"$PREPROCESSED_SCRIPT"
   chmod +x "$PREPROCESSED_SCRIPT"
 }
 
@@ -46,6 +46,12 @@ It 'falls back to the CLIProxy config key'
 When run bash -c 'mkdir -p "'"$TEMP_HOME"'/.cli-proxy-api"; printf '\''api-keys:\n  - "config-key"\n'\'' >"'"$TEMP_HOME"'/.cli-proxy-api/config.yaml"; HOME="'"$TEMP_HOME"'" LLM_USER_PATH="'"$TEMP_HOME"'/llm" env -u CLIPROXY_API_KEY bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; jq -r .cliproxyapi "'"$TEMP_HOME"'/llm/keys.json"'
 The status should be success
 The output should equal 'config-key'
+End
+
+It 'reads a flow-style CLIProxy key list'
+When run bash -c 'mkdir -p "'"$TEMP_HOME"'/.cli-proxy-api"; printf '\''api-keys: [flow-key]\n'\'' >"'"$TEMP_HOME"'/.cli-proxy-api/config.yaml"; HOME="'"$TEMP_HOME"'" LLM_USER_PATH="'"$TEMP_HOME"'/llm" env -u CLIPROXY_API_KEY bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; jq -r .cliproxyapi "'"$TEMP_HOME"'/llm/keys.json"'
+The status should be success
+The output should equal 'flow-key'
 End
 
 End

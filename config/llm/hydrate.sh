@@ -17,19 +17,7 @@ fi
 read_cliproxy_api_key_from_config() {
   local config_file="$1"
   [ -f "$config_file" ] || return 0
-
-  # shellcheck disable=SC2016
-  @awk@ '
-    /^api-keys:/ { in_api_keys = 1; next }
-    in_api_keys && /^  - / {
-      value = $0
-      sub(/^  - "/, "", value)
-      sub(/"$/, "", value)
-      print value
-      exit
-    }
-    in_api_keys && /^[^[:space:]]/ { exit }
-  ' "$config_file"
+  @yq@ -r '.["api-keys"][0] // ""' "$config_file"
 }
 
 if [ -z "$CLIPROXY_API_KEY" ]; then
