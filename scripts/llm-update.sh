@@ -87,6 +87,7 @@ declare -A TEMPLATES=(
   ["config/aichat/config.tpl.yaml"]=config/aichat/config.yaml
   ["config/llm/default_model.tpl.txt"]=config/llm/default_model.txt
   ["config/openclaw/openclaw.tpl.json"]=config/openclaw/openclaw.template.json
+  ["config/opencode/opencode.tpl.jsonc"]=config/opencode/opencode.jsonc
   ["config/llm/extra-openai-models.tpl.yaml"]=config/llm/extra-openai-models.yaml
   ["config/ccs/agy.settings.tpl.json"]=config/ccs/agy.settings.template.json
   ["config/ccs/codex.settings.tpl.json"]=config/ccs/codex.settings.template.json
