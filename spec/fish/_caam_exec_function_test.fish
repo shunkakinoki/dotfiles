@@ -28,7 +28,7 @@ _caam_exec_function opencode run hello
 
 @test "runs vault-backed caam run for opencode" (tail -n 1 $caam_log) = "run opencode --precheck -- run hello"
 
-# Interactive TTY path: activate --auto then run the binary directly.
+# Interactive TTY: only activate when active usage is near the limit.
 set direct_env_log (mktemp)
 functions -e isatty
 function isatty
@@ -39,20 +39,40 @@ function codex
   echo $argv >> $direct_env_log
 end
 set caam_log (mktemp)
+set -gx MOCK_ACTIVE_USAGE 10
 functions -e caam
 function caam
   echo $argv >> $caam_log
+  if test "$argv[1]" = precheck
+    echo '{"recommended":{"name":"backup@example.com","usage_percent":0},"backups":[{"name":"work@example.com","usage_percent":'$MOCK_ACTIVE_USAGE'}]}'
+  else if test "$argv[1]" = ls
+    echo '{"profiles":[{"name":"work@example.com","active":true,"system":false,"health":{"status":"warning"}},{"name":"backup@example.com","active":false,"system":false,"health":{"status":"healthy"}}]}'
+  end
 end
 
 _caam_exec_function codex --dangerously-bypass-approvals-and-sandbox
 
-@test "activates vault profile for interactive TTY codex" (cat $caam_log) = "activate codex --auto"
-@test "runs codex directly on interactive TTY" \
+@test "skips activate on interactive TTY when usage is low" (count (cat $caam_log)) -eq 2
+@test "prechecks before interactive TTY launch" (head -n 1 $caam_log) = "precheck codex --format json"
+@test "lists profiles before interactive TTY launch" (tail -n 1 $caam_log) = "ls codex --json"
+@test "runs codex directly on interactive TTY when usage is low" \
   (cat $direct_env_log) = "--dangerously-bypass-approvals-and-sandbox"
 
+set -gx MOCK_ACTIVE_USAGE 85
+set caam_log (mktemp)
+set direct_env_log (mktemp)
+_caam_exec_function codex --dangerously-bypass-approvals-and-sandbox
+
+@test "activates recommended profile when interactive usage is near limit" \
+  (tail -n 1 $caam_log) = "activate codex backup@example.com"
+@test "runs codex directly after near-limit activate" \
+  (cat $direct_env_log) = "--dangerously-bypass-approvals-and-sandbox"
+
+# Force non-TTY for remaining tests (claude uses caam run when stdout is not a TTY).
 functions -e isatty
-function isatty; builtin isatty $argv; end
+function isatty; return 1; end
 rm -f $direct_env_log
+set -e MOCK_ACTIVE_USAGE
 
 functions -e caam
 set claude_swap_log (mktemp)
