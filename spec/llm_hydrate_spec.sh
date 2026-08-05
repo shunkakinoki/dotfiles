@@ -30,6 +30,12 @@ The status should be success
 The output should equal 'existing'
 End
 
+It 'leaves a malformed existing keys file unchanged'
+When run bash -c 'mkdir -p "'"$TEMP_HOME"'/llm"; printf '\''{malformed\n'\'' >"'"$TEMP_HOME"'/llm/keys.json"; HOME="'"$TEMP_HOME"'" LLM_USER_PATH="'"$TEMP_HOME"'/llm" CLIPROXY_API_KEY="shared-key" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/llm/keys.json"'
+The status should be success
+The output should equal '{malformed'
+End
+
 It 'falls back to the CLIProxy config key'
 When run bash -c 'mkdir -p "'"$TEMP_HOME"'/.cli-proxy-api"; printf '\''api-keys:\n  - "config-key"\n'\'' >"'"$TEMP_HOME"'/.cli-proxy-api/config.yaml"; HOME="'"$TEMP_HOME"'" LLM_USER_PATH="'"$TEMP_HOME"'/llm" env -u CLIPROXY_API_KEY bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; jq -r .cliproxyapi "'"$TEMP_HOME"'/llm/keys.json"'
 The status should be success

@@ -58,7 +58,11 @@ KEYS_FILE="${LLM_DIR}/keys.json"
 TMP="$(mktemp "${LLM_DIR}/.keys.json.XXXXXX")"
 trap 'rm -f "$TMP"' EXIT
 
-if [ -f "$KEYS_FILE" ] && @jq@ empty "$KEYS_FILE" >/dev/null 2>&1; then
+if [ -f "$KEYS_FILE" ]; then
+  if ! @jq@ empty "$KEYS_FILE" >/dev/null 2>&1; then
+    echo "Warning: LLM keys file is malformed, leaving it unchanged: $KEYS_FILE" >&2
+    exit 0
+  fi
   @jq@ '. + {"cliproxyapi": env.CLIPROXY_API_KEY}' "$KEYS_FILE" >"$TMP"
 else
   @jq@ -n '{"// Note": "This file stores secret API credentials. Do not share!", "cliproxyapi": env.CLIPROXY_API_KEY}' >"$TMP"
