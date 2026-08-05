@@ -1,6 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "opencode/__DEEPSEEK_FLASH__",
+  "model": "cliproxyapi/__DEEPSEEK_FLASH__",
   "small_model": "cliproxyapi/__GLM__",
   "autoupdate": true,
   "agent": {
@@ -81,6 +81,12 @@
         },
         "__GEMINI_FLASH__": {
           "name": "__GEMINI_FLASH_PRETTY__ (via local CLIProxyAPI)"
+        },
+        "__DEEPSEEK_FLASH__": {
+          "name": "__DEEPSEEK_FLASH_PRETTY__ (via local CLIProxyAPI)"
+        },
+        "__DEEPSEEK_PRO__": {
+          "name": "__DEEPSEEK_PRO_PRETTY__ (via local CLIProxyAPI)"
         },
         "__GLM__": {
           "name": "__GLM_PRETTY__ (via local CLIProxyAPI)"

@@ -98,9 +98,14 @@ End
 End
 
 Describe 'DeepSeek defaults'
-It 'generates the OpenCode Flash default'
-When run bash -c "grep '\"model\": \"opencode/deepseek-v4-flash\"' config/opencode/opencode.jsonc"
-The output should include 'opencode/deepseek-v4-flash'
+It 'generates the CLIProxyAPI DeepSeek Flash default'
+When run bash -c "grep '\"model\": \"cliproxyapi/deepseek-v4-flash\"' config/opencode/opencode.jsonc"
+The output should include 'cliproxyapi/deepseek-v4-flash'
+End
+
+It 'generates the CLIProxyAPI DeepSeek models'
+When run bash -c "sed -n '/\"cliproxyapi\"/,/\"lmstudio\"/p' config/opencode/opencode.jsonc | grep -q 'deepseek-v4-flash' && sed -n '/\"cliproxyapi\"/,/\"lmstudio\"/p' config/opencode/opencode.jsonc | grep -q 'deepseek-v4-pro'"
+The status should be success
 End
 
 It 'generates the OMP Pro default role'
@@ -110,6 +115,11 @@ End
 
 It 'generates the DeepSeek Go routes in CliProxy'
 When run bash -c "sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4-pro\"' && sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4-flash\"'"
+The status should be success
+End
+
+It 'routes DeepSeek presets through OpenRouter with OpenCode Go fallbacks in CliProxy'
+When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"@preset/deepseek-v4-pro\"' && sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"@preset/deepseek-v4-flash\"' && sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4-pro\"' && sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4-flash\"'"
 The status should be success
 End
 End
