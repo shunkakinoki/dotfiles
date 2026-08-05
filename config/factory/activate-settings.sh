@@ -26,15 +26,20 @@ if [ -f "$SETTINGS" ]; then
     def is_legacy_droid_command:
       tostring | contains("droid-hook.sh");
 
+    def is_home_command($command; $relative):
+      ($command == ("$HOME/" + $relative))
+      or (((env.HOME // "") != "")
+          and ($command == ((env.HOME // "") + "/" + $relative)));
+
     def is_managed_hook_command($matcher):
       tostring as $command
       | (($matcher == "Execute")
-         and ($command == "$HOME/dotfiles/config/shared/hooks/security.sh"
-              or $command == "$HOME/dotfiles/config/shared/hooks/block-git-push.sh"
-              or $command == "$HOME/dotfiles/config/shared/hooks/block-gh-settings.sh"))
+         and (is_home_command($command; "dotfiles/config/shared/hooks/security.sh")
+              or is_home_command($command; "dotfiles/config/shared/hooks/block-git-push.sh")
+              or is_home_command($command; "dotfiles/config/shared/hooks/block-gh-settings.sh")))
       or (($matcher == "^(Edit|Write|Create|ApplyPatch)$")
-          and ($command == "$HOME/dotfiles/config/shared/hooks/secret-guard.sh"
-               or $command == "$HOME/.cargo/bin/git-ai checkpoint droid --hook-input stdin"));
+          and (is_home_command($command; "dotfiles/config/shared/hooks/secret-guard.sh")
+               or is_home_command($command; ".cargo/bin/git-ai checkpoint droid --hook-input stdin")));
 
     def clean_hook_group:
       if ((.hooks? | type) == "array") then
@@ -81,7 +86,9 @@ if [ -f "$SETTINGS" ]; then
       end
     | reduce ($managed_settings.hooks | to_entries[]) as $entry (.;
         .hooks[$entry.key] =
-          (((.hooks[$entry.key] // []) | map(clean_hook_group)) + $entry.value)
+          (((.hooks[$entry.key] // [])
+            | if type == "array" then map(clean_hook_group) else [] end)
+           + $entry.value)
       )
   ' "$SETTINGS" >"$TEMP_SETTINGS"
 else
