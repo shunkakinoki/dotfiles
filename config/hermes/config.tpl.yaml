@@ -300,6 +300,6 @@ updates:
 _config_version: 22
 custom_providers:
   - name: cliproxy
-    base_url: http://localhost:8317/v1
+    base_url: https://cliproxy.shunkakinoki.com/v1
     api_key: __CLIPROXY_API_KEY__
     api_mode: chat_completions
