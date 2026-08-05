@@ -1,6 +1,6 @@
 {
   "env": {
-    "ANTHROPIC_BASE_URL": "http://127.0.0.1:8317/api/provider/agy",
+    "ANTHROPIC_BASE_URL": "https://cliproxy.shunkakinoki.com/api/provider/agy",
     "ANTHROPIC_AUTH_TOKEN": "__CLIPROXY_API_KEY__",
     "ANTHROPIC_MODEL": "claude-opus-5",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5",
