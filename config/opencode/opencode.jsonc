@@ -1,7 +1,7 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "cliproxyapi/deepseek-v4-flash",
-  "small_model": "cliproxyapi/glm-4.7",
+  "model": "shunkakinoki/deepseek-v4-flash",
+  "small_model": "shunkakinoki/z-ai/glm-4.7",
   "autoupdate": true,
   "agent": {
     "code-reviewer": {
@@ -44,6 +44,9 @@
         },
         "gemini-3.6-flash": {
           "name": "Gemini 3.6 Flash (via shunkakinoki's CLIProxy)"
+        },
+        "deepseek-v4-flash": {
+          "name": "Deepseek V4 Flash (via shunkakinoki's CLIProxy)"
         },
         "z-ai/glm-4.7": {
           "name": "GLM 4.7 (via shunkakinoki's CLIProxy)"
