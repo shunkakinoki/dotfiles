@@ -16,6 +16,7 @@ if [ -f "$ENV_FILE" ]; then
 fi
 
 ROBOREV_REPOS="${ROBOREV_REPOS:-}"
+ROBOREV_CI_ENABLED="@ciEnabled@"
 if [ -z "$ROBOREV_REPOS" ] && [ -n "${ROBOREV_CI_REPOS:-}" ]; then
   ROBOREV_REPOS="$ROBOREV_CI_REPOS"
   echo "Warning: ROBOREV_CI_REPOS is deprecated; rename it to ROBOREV_REPOS" >&2
@@ -55,6 +56,7 @@ fi
 mkdir -p "$CONFIG_DIR"
 
 @sed@ \
+  -e "s/^enabled = true$/enabled = ${ROBOREV_CI_ENABLED}/" \
   -e "s|\"__ROBOREV_REPOS__\"|${TOML_REPOS}|g" \
   "$TEMPLATE" >"$CONFIG"
 chmod 600 "$CONFIG"
