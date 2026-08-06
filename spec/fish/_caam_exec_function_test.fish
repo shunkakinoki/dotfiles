@@ -40,11 +40,16 @@ function codex
 end
 set caam_log (mktemp)
 set -gx MOCK_ACTIVE_USAGE 10
+set -gx MOCK_ACTIVE_COOLDOWN 0
 functions -e caam
 function caam
   echo $argv >> $caam_log
   if test "$argv[1]" = precheck
-    echo '{"recommended":{"name":"backup@example.com","usage_percent":0},"backups":[{"name":"work@example.com","usage_percent":'$MOCK_ACTIVE_USAGE'}]}'
+    set -l cooldowns '[]'
+    if test "$MOCK_ACTIVE_COOLDOWN" = 1
+      set cooldowns '[{"name":"work@example.com"}]'
+    end
+    echo '{"recommended":{"name":"backup@example.com","usage_percent":0},"backups":[{"name":"work@example.com","usage_percent":'$MOCK_ACTIVE_USAGE'}],"in_cooldown":'$cooldowns'}'
   else if test "$argv[1]" = ls
     echo '{"profiles":[{"name":"work@example.com","active":true,"system":false,"health":{"status":"warning"}},{"name":"backup@example.com","active":false,"system":false,"health":{"status":"healthy"}}]}'
   end
@@ -68,41 +73,32 @@ _caam_exec_function codex --dangerously-bypass-approvals-and-sandbox
 @test "runs codex directly after near-limit activate" \
   (cat $direct_env_log) = "--dangerously-bypass-approvals-and-sandbox"
 
+set -gx MOCK_ACTIVE_USAGE 10
+set -gx MOCK_ACTIVE_COOLDOWN 1
+set caam_log (mktemp)
+set direct_env_log (mktemp)
+_caam_exec_function codex --dangerously-bypass-approvals-and-sandbox
+
+@test "activates recommended profile when the active profile is in cooldown" \
+  (tail -n 1 $caam_log) = "activate codex backup@example.com"
+@test "runs codex directly after cooldown-driven activation" \
+  (cat $direct_env_log) = "--dangerously-bypass-approvals-and-sandbox"
+
 # Force non-TTY for remaining tests (claude uses caam run when stdout is not a TTY).
 functions -e isatty
 function isatty; return 1; end
 rm -f $direct_env_log
-set -e MOCK_ACTIVE_USAGE
+set -e MOCK_ACTIVE_USAGE MOCK_ACTIVE_COOLDOWN
 
+# CAAM remains authoritative for Claude launches.
 functions -e caam
-set claude_swap_log (mktemp)
-set -gx MOCK_CLAUDE_HEALTH critical
-set -gx CLAUDE_SWAP_FALLBACK_ACCOUNT fallback@example.com
 function caam
   echo $argv >> $caam_log
-  if test "$argv[1]" = precheck; and test "$argv[2]" = claude
-    echo '{"recommended":{"name":"primary@example.com"}}'
-  else if test "$argv[1]" = ls; and test "$argv[2]" = claude
-    echo '{"profiles":[{"name":"primary@example.com","system":false,"health":{"status":"'$MOCK_CLAUDE_HEALTH'"}}]}'
-  end
 end
-function claude-swap
-  echo $argv >> $claude_swap_log
-end
-
-_caam_exec_function claude --print fallback
-
-@test "uses isolated claude-swap when CAAM recommends a critical Claude profile" \
-  (cat $claude_swap_log) = "run fallback@example.com -- --print fallback"
-
-set -gx MOCK_CLAUDE_HEALTH healthy
 _caam_exec_function claude --print primary
 
-@test "keeps CAAM authoritative while its recommended Claude profile is usable" \
+@test "runs non-interactive Claude through CAAM precheck" \
   (tail -n 1 $caam_log) = "run claude --precheck -- --print primary"
-@test "does not invoke claude-swap for a healthy CAAM profile" \
-  (count (cat $claude_swap_log)) -eq 1
 
 set -e CAAM_ROTATION_ENABLED
-set -e CLAUDE_SWAP_FALLBACK_ACCOUNT MOCK_CLAUDE_HEALTH
-rm -f $direct_log $caam_log $claude_swap_log
+rm -f $direct_log $caam_log
