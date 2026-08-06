@@ -1255,13 +1255,7 @@ launchctl-ollama: ## Restart ollama launchd agent.
 .PHONY: launchctl-roborev
 launchctl-roborev: ## Restart roborev launchd agent.
 	@echo "🔄 Restarting roborev..."
-	@if [ "$(DETECTED_HOST)" = "galactica" ] || [ "$(HOST)" = "galactica" ]; then \
-		launchctl unload ~/Library/LaunchAgents/org.nix-community.home.roborev.plist 2>/dev/null || true; \
-		sleep 3; \
-		launchctl load ~/Library/LaunchAgents/org.nix-community.home.roborev.plist; \
-	else \
-		echo "Skipping roborev launchd agent (host not galactica)"; \
-	fi
+	@echo "Skipping roborev launchd agent (RoboRev is enabled only on Kyber)"
 	@echo "✅ roborev restarted"
 
 .PHONY: launchctl-tmux-session-logger
@@ -1394,11 +1388,11 @@ systemctl-openclaw: ## Restart OpenClaw gateway systemd user service.
 .PHONY: systemctl-roborev
 systemctl-roborev: ## Restart roborev systemd user service.
 	@echo "🔄 Restarting roborev..."
-	@if [ "$(DETECTED_HOST)" = "matic" ] || [ "$(HOST)" = "matic" ] || [ "$(DETECTED_HOST)" = "kyber" ] || [ "$(HOST)" = "kyber" ]; then \
+	@if [ "$(DETECTED_HOST)" = "kyber" ] || [ "$(HOST)" = "kyber" ]; then \
 		systemctl --user daemon-reload; \
 		systemctl --user restart roborev.service; \
 	else \
-		echo "Skipping roborev.service (host not matic or kyber)"; \
+		echo "Skipping roborev.service (RoboRev is enabled only on Kyber)"; \
 	fi
 	@echo "✅ roborev restarted"
 
