@@ -32,7 +32,11 @@ VALID_REPOS=()
 TOML_REPOS=""
 for value in "${REPOS[@]}"; do
   repo="$(echo "$value" | xargs)"
-  if [[ ! "$repo" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]; then
+  owner="${repo%%/*}"
+  name="${repo#*/}"
+  if [[ ! "$repo" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] || \
+    [ "$owner" = "." ] || [ "$owner" = ".." ] || \
+    [ "$name" = "." ] || [ "$name" = ".." ]; then
     echo "Warning: ignoring invalid RoboRev repository: $repo" >&2
     continue
   fi

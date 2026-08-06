@@ -72,7 +72,7 @@ instruction = "Inspect open RoboRev findings read-only. Report proposed changes 
 TOML
 
   cat >"$TEMP_HOME/dotfiles/.env" <<'ENV'
-ROBOREV_REPOS=org/repo1,org/repo2
+ROBOREV_REPOS=../evil,foo/..,org/repo1,org/repo2
 ENV
 
   cat >"$TEMP_HOME/.local/bin/roborev" <<'BASH'
@@ -101,6 +101,8 @@ When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/nu
 The status should be success
 The output should include '"org/repo1"'
 The output should include '"org/repo2"'
+The output should not include '"../evil"'
+The output should not include '"foo/.."'
 The output should not include '__ROBOREV_REPOS__'
 End
 
