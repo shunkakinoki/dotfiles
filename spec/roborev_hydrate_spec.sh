@@ -49,6 +49,21 @@ The output should include 'batch_timeout = "0"'
 End
 End
 
+Describe 'agent hook approval gate'
+It 'surfaces failed reviews without automatic turn or commit triggers'
+When run bash -c "grep -E 'turn_threshold = 0|commit_threshold = 0|failed_review_threshold = 1' '$PWD/config/roborev/config.template.toml'"
+The output should include 'turn_threshold = 0'
+The output should include 'commit_threshold = 0'
+The output should include 'failed_review_threshold = 1'
+End
+
+It 'requires explicit approval without invoking the fixer skill'
+When run bash -c "grep '^instruction = ' '$PWD/config/roborev/config.template.toml'"
+The output should include 'ask the user for explicit approval'
+The output should not include 'roborev-fix'
+End
+End
+
 Describe 'hydration'
 setup_hydrate() {
   TEMP_HOME=$(mktemp -d)
