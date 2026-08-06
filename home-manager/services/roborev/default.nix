@@ -22,10 +22,9 @@ lib.mkIf enabled {
     enable = true;
     config = {
       ProgramArguments = [
+        "${pkgs.bash}/bin/bash"
+        "${./start.sh}"
         roborevBin
-        "daemon"
-        "run"
-        "--addr"
         serverAddr
       ];
       KeepAlive = true;
@@ -48,7 +47,7 @@ lib.mkIf enabled {
     };
     Service = {
       Type = "notify";
-      ExecStart = "${roborevBin} daemon run --addr ${serverAddr}";
+      ExecStart = "${pkgs.bash}/bin/bash ${./start.sh} ${roborevBin} ${serverAddr}";
       Restart = "on-failure";
       RestartSec = 5;
       Environment = [
