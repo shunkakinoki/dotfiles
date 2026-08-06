@@ -47,9 +47,14 @@ End
 End
 
 Describe 'home-manager/services/roborev/default.nix'
-It 'enables on galactica, kyber, and matic'
-When run bash -c "grep 'isGalactica || isKyber || isMatic' '$PWD/home-manager/services/roborev/default.nix'"
-The output should include 'isGalactica || isKyber || isMatic'
+It 'enables only on kyber'
+When run bash -c "grep 'enabled = isKyber;' '$PWD/home-manager/services/roborev/default.nix'"
+The output should include 'enabled = isKyber;'
+End
+
+It 'hydrates the config only on kyber'
+When run bash -c "grep 'lib.mkIf inputs.host.isKyber' '$PWD/config/roborev/default.nix'"
+The output should include 'lib.mkIf inputs.host.isKyber'
 End
 
 It 'runs roborev daemon run'

@@ -6,12 +6,12 @@
   ...
 }:
 let
-  inherit (inputs.host) isGalactica isKyber isMatic;
+  inherit (inputs.host) isKyber;
   homeDir = config.home.homeDirectory;
   roborevBin = "${homeDir}/.local/bin/roborev";
   dataDir = "${homeDir}/.roborev";
   serverAddr = "127.0.0.1:7373";
-  enabled = isGalactica || isKyber || isMatic;
+  enabled = isKyber;
 in
 lib.mkIf enabled {
   home.activation.roborevSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''

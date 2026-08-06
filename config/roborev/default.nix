@@ -1,5 +1,6 @@
 {
   config,
+  inputs,
   lib,
   pkgs,
   ...
@@ -19,7 +20,7 @@ let
       )
     );
 in
-{
+lib.mkIf inputs.host.isKyber {
   home.activation.hydrateRoborevConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     export PATH="${lib.makeBinPath [ pkgs.git ]}:$PATH"
     ${pkgs.bash}/bin/bash "${hydrateScript}" || true
