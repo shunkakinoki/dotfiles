@@ -4,10 +4,11 @@ enabled = true
 poll_interval = "1m"
 # Never cancel a running CI review just to post an early result.
 batch_timeout = "0"
-repos = ["__ROBOREV_CI_REPOS__"]
+repos = ["__ROBOREV_REPOS__"]
 
 [agent_hook]
-# Surface the first failed review without automatically invoking a fixer.
+# Surface any open failed review without automatically invoking a fixer.
+# Keep turn and commit triggers explicitly disabled.
 turn_threshold = 0
 commit_threshold = 0
 failed_review_threshold = 1
