@@ -18,6 +18,32 @@ The output should include 'chmod 700'
 End
 End
 
+Describe 'home-manager/services/roborev/start.sh'
+SCRIPT="$PWD/home-manager/services/roborev/start.sh"
+
+setup() {
+  TEMP_HOME=$(mktemp -d)
+  mkdir -p "$TEMP_HOME/dotfiles"
+  printf 'CLIPROXY_API_KEY=test-key\n' >"$TEMP_HOME/dotfiles/.env"
+  printf '#!/usr/bin/env bash\nprintf "%%s\\n" "$CLIPROXY_API_KEY" "$*"\n' >"$TEMP_HOME/roborev"
+  chmod +x "$TEMP_HOME/roborev"
+}
+
+cleanup() {
+  rm -rf "$TEMP_HOME"
+}
+
+Before 'setup'
+After 'cleanup'
+
+It 'loads the shared CLIProxy key before starting the daemon'
+When run env -u CLIPROXY_API_KEY HOME="$TEMP_HOME" bash "$SCRIPT" "$TEMP_HOME/roborev" '127.0.0.1:7373'
+The status should be success
+The line 1 of output should equal 'test-key'
+The line 2 of output should equal 'daemon run --addr 127.0.0.1:7373'
+End
+End
+
 Describe 'home-manager/services/roborev/default.nix'
 It 'enables on galactica, kyber, and matic'
 When run bash -c "grep 'isGalactica || isKyber || isMatic' '$PWD/home-manager/services/roborev/default.nix'"
@@ -25,8 +51,8 @@ The output should include 'isGalactica || isKyber || isMatic'
 End
 
 It 'runs roborev daemon run'
-When run bash -c "grep 'daemon' '$PWD/home-manager/services/roborev/default.nix'"
-The output should include '"daemon"'
+When run bash -c "grep 'start.sh' '$PWD/home-manager/services/roborev/default.nix'"
+The output should include 'start.sh'
 End
 
 It 'passes data dir to activate script'
