@@ -59,6 +59,12 @@ The output should include 'caamSyncSetup'
 The status should be success
 End
 
+It 'disables implicit pre-switch backups in the CAAM template'
+When run bash -c "grep -F 'auto_backup_before_switch: never' '$PWD/config/caam/config.template.yaml'"
+The output should include 'auto_backup_before_switch: never'
+The status should be success
+End
+
 It 'skips periodic sync when caam binary is missing'
 When run env CAAM=/nonexistent/caam bash "$SYNC"
 The stderr should include 'caam not found'

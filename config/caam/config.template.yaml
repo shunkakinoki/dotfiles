@@ -8,5 +8,7 @@ stealth:
     enabled: __AUTO_ROTATE__
     algorithm: smart
 safety:
-  auto_backup_before_switch: smart
+  # Live OAuth files can be rewritten by an already-running CLI process. Never
+  # save that mutable state into a named profile implicitly during rotation.
+  auto_backup_before_switch: never
   max_auto_backups: 5
