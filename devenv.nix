@@ -11,6 +11,7 @@
     pkgs.gnumake
     pkgs.gcc
     pkgs.fish
+    pkgs.ripgrep
     pkgs.statix
     pkgs.deadnix
     (pkgs.writeShellScriptBin "fishtape" (

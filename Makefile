@@ -335,7 +335,12 @@ sync: dotagents-sync codex-security-sync rtk-rewrite-sync ## Sync all components
 
 .PHONY: dotagents-sync
 dotagents-sync: ## Sync dotagents (commands, skills, MCP configuration).
-	@$(MAKE) -C dotagents sync
+	@if [ "$$CI" = "true" ]; then \
+		echo "⏭️ Skipping external dotagents skill installation in CI"; \
+		$(MAKE) -C dotagents DOTAGENTS_SKIP_SYNC=1 ruler-prepare commands-sync skills-sync mcp-sync ruler-dotdirs-sync; \
+	else \
+		$(MAKE) -C dotagents sync; \
+	fi
 
 .PHONY: codex-security-sync
 codex-security-sync: ## Sync Codex security deny patterns from Claude settings.
@@ -1422,6 +1427,7 @@ fish-test: ## Run fish function tests using fishtape.
 	fish_errors_filtered=$$(mktemp); \
 	trap 'rm -rf "$$fish_home" "$$fish_errors" "$$fish_errors_filtered"' EXIT; \
 	mkdir -p "$$fish_home/.config/fish" "$$fish_home/.local/state" "$$fish_home/.local/share"; \
+	CAAM_ROTATION_ENABLED= \
 	HOME="$$fish_home" \
 	XDG_CONFIG_HOME="$$fish_home/.config" \
 	XDG_STATE_HOME="$$fish_home/.local/state" \
