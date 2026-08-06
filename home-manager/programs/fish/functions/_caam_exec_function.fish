@@ -56,6 +56,21 @@ function _caam_exec_function --description "Run an agent launcher through CAAM w
         end
       end
 
+      # Claude Code on macOS can prefer its Keychain credential over the
+      # file CAAM activates. Pin the selected file-backed token to this child
+      # process so inference uses the same account that CAAM reports active.
+      if test "$tool" = claude; and type -q jq
+        set -l credentials "$HOME/.claude/.credentials.json"
+        if test -r "$credentials"
+          set -l oauth_token (jq -er '.claudeAiOauth.accessToken // empty' "$credentials" 2>/dev/null)
+          if test -n "$oauth_token"
+            set -lx CLAUDE_CODE_OAUTH_TOKEN "$oauth_token"
+            $executable $argv
+            return $status
+          end
+        end
+      end
+
       $executable $argv
       return $status
     end

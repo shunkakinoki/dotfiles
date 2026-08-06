@@ -84,6 +84,32 @@ _caam_exec_function codex --dangerously-bypass-approvals-and-sandbox
 @test "runs codex directly after cooldown-driven activation" \
   (cat $direct_env_log) = "--dangerously-bypass-approvals-and-sandbox"
 
+# Claude Code on macOS may prefer a stale Keychain credential. The selected
+# CAAM file token must be pinned only to the launched Claude child process.
+set test_home (mktemp -d)
+mkdir -p $test_home/.claude
+echo '{"claudeAiOauth":{"accessToken":"selected-token"}}' >$test_home/.claude/.credentials.json
+set original_home $HOME
+set -gx HOME $test_home
+set claude_env_log (mktemp)
+function claude
+  if set -q CLAUDE_CODE_OAUTH_TOKEN
+    echo "$CLAUDE_CODE_OAUTH_TOKEN|$argv" >>$claude_env_log
+  else
+    echo "unset|$argv" >>$claude_env_log
+  end
+end
+
+_caam_exec_function claude --print primary
+
+@test "pins the selected CAAM token to interactive Claude" \
+  (cat $claude_env_log) = "selected-token|--print primary"
+@test "does not export the selected Claude token to the caller" \
+  (set -q CLAUDE_CODE_OAUTH_TOKEN; echo $status) -eq 1
+
+set -gx HOME $original_home
+rm -rf $test_home $claude_env_log
+
 # Force non-TTY for remaining tests (claude uses caam run when stdout is not a TTY).
 functions -e isatty
 function isatty; return 1; end
