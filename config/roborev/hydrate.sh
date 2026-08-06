@@ -34,8 +34,8 @@ for value in "${REPOS[@]}"; do
   repo="$(echo "$value" | xargs)"
   owner="${repo%%/*}"
   name="${repo#*/}"
-  if [[ ! "$repo" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] || \
-    [ "$owner" = "." ] || [ "$owner" = ".." ] || \
+  if [[ ! $repo =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] ||
+    [ "$owner" = "." ] || [ "$owner" = ".." ] ||
     [ "$name" = "." ] || [ "$name" = ".." ]; then
     echo "Warning: ignoring invalid RoboRev repository: $repo" >&2
     continue
