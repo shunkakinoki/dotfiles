@@ -33,19 +33,38 @@ if [ -n "$fff_dir" ]; then
     fff_version=$(git -C "$fff_dir" rev-parse --short HEAD 2>/dev/null || echo "")
     if [ -n "$fff_version" ]; then
       _arch=$(uname -m)
-      _ldd=$(ldd --version 2>&1 || echo "")
-      if echo "$_ldd" | grep -q musl; then
-        _triple="${_arch}-unknown-linux-musl"
-      else
-        _triple="${_arch}-unknown-linux-gnu"
+      case "$_arch" in
+      arm64) _arch="aarch64" ;;
+      amd64) _arch="x86_64" ;;
+      esac
+
+      case "$(uname -s)" in
+      Darwin)
+        _triple="${_arch}-apple-darwin"
+        ;;
+      Linux)
+        _ldd=$(ldd --version 2>&1 || echo "")
+        if echo "$_ldd" | grep -q musl; then
+          _triple="${_arch}-unknown-linux-musl"
+        else
+          _triple="${_arch}-unknown-linux-gnu"
+        fi
+        ;;
+      *)
+        _triple=""
+        echo "fff.nvim: unsupported platform, skipping download"
+        ;;
+      esac
+
+      if [ -n "$_triple" ]; then
+        mkdir -p "$fff_dir/target"
+        echo "Fetching https://github.com/dmtrKovalenko/fff.nvim/releases/download/$fff_version/${_triple}.${LIB_EXT}"
+        curl --fail --location --silent --show-error \
+          -o "$fff_binary" \
+          "https://github.com/dmtrKovalenko/fff.nvim/releases/download/$fff_version/${_triple}.${LIB_EXT}" &&
+          echo "fff.nvim binary downloaded successfully" ||
+          echo "fff.nvim binary download failed (will fall back to build on first use)"
       fi
-      mkdir -p "$fff_dir/target"
-      echo "Fetching https://github.com/dmtrKovalenko/fff.nvim/releases/download/$fff_version/${_triple}.${LIB_EXT}"
-      curl --fail --location --silent --show-error \
-        -o "$fff_binary" \
-        "https://github.com/dmtrKovalenko/fff.nvim/releases/download/$fff_version/${_triple}.${LIB_EXT}" &&
-        echo "fff.nvim binary downloaded successfully" ||
-        echo "fff.nvim binary download failed (will fall back to build on first use)"
     else
       echo "fff.nvim: could not determine version, skipping download"
     fi

@@ -200,37 +200,42 @@ nvim-plugins-install: ## Download/build missing Neovim native plugin binaries (f
 		if [ -d "$$d" ]; then FFF_DIR="$$d"; break; fi; \
 	done; \
 	if [ -n "$$FFF_DIR" ]; then \
-		FFF_BINARY="$$FFF_DIR/target/libfff_nvim.so"; \
-		if [ ! -f "$$FFF_BINARY" ]; then \
-			echo "Downloading fff.nvim native binary..."; \
-			FFF_VERSION=$$(git -C "$$FFF_DIR" rev-parse --short HEAD 2>/dev/null || echo ""); \
-			if [ -n "$$FFF_VERSION" ]; then \
-				_ARCH=$$(uname -m); \
+		_ARCH=$$(uname -m); \
+		case "$$_ARCH" in arm64) _ARCH="aarch64" ;; amd64) _ARCH="x86_64" ;; esac; \
+		case "$$(uname -s)" in \
+			Darwin) _LIB_EXT="dylib"; _TRIPLE="$${_ARCH}-apple-darwin" ;; \
+			Linux) \
 				_LDD=$$(ldd --version 2>&1 || echo ""); \
-				if echo "$$_LDD" | grep -q musl; then \
-					_TRIPLE="$${_ARCH}-unknown-linux-musl"; \
+				if echo "$$_LDD" | grep -q musl; then _TRIPLE="$${_ARCH}-unknown-linux-musl"; else _TRIPLE="$${_ARCH}-unknown-linux-gnu"; fi; \
+				_LIB_EXT="so" ;; \
+			*) _LIB_EXT=""; _TRIPLE=""; echo "fff.nvim: unsupported platform, skipping download" ;; \
+		esac; \
+		if [ -n "$$_LIB_EXT" ]; then \
+			FFF_BINARY="$$FFF_DIR/target/libfff_nvim.$$_LIB_EXT"; \
+			if [ ! -f "$$FFF_BINARY" ]; then \
+				echo "Downloading fff.nvim native binary..."; \
+				FFF_VERSION=$$(git -C "$$FFF_DIR" rev-parse --short HEAD 2>/dev/null || echo ""); \
+				if [ -n "$$FFF_VERSION" ]; then \
+					mkdir -p "$$FFF_DIR/target"; \
+					echo "Fetching https://github.com/dmtrKovalenko/fff.nvim/releases/download/$$FFF_VERSION/$${_TRIPLE}.$${_LIB_EXT}"; \
+					curl --fail --location --silent --show-error \
+						-o "$$FFF_BINARY" \
+						"https://github.com/dmtrKovalenko/fff.nvim/releases/download/$$FFF_VERSION/$${_TRIPLE}.$${_LIB_EXT}" \
+						&& echo "fff.nvim binary downloaded successfully" \
+						|| echo "fff.nvim binary download failed"; \
 				else \
-					_TRIPLE="$${_ARCH}-unknown-linux-gnu"; \
+					echo "fff.nvim: could not determine version, skipping"; \
 				fi; \
-				mkdir -p "$$FFF_DIR/target"; \
-				echo "Fetching https://github.com/dmtrKovalenko/fff.nvim/releases/download/$$FFF_VERSION/$${_TRIPLE}.so"; \
-				curl --fail --location --silent --show-error \
-					-o "$$FFF_BINARY" \
-					"https://github.com/dmtrKovalenko/fff.nvim/releases/download/$$FFF_VERSION/$${_TRIPLE}.so" \
-					&& echo "fff.nvim binary downloaded successfully" \
-					|| echo "fff.nvim binary download failed"; \
 			else \
-				echo "fff.nvim: could not determine version, skipping"; \
+				echo "fff.nvim binary already present"; \
 			fi; \
-		else \
-			echo "fff.nvim binary already present"; \
 		fi; \
 	else \
 		echo "fff.nvim plugin directory not found, skipping"; \
 	fi
 
 .PHONY: switch
-switch: nix-switch services nvim-plugins-install dotagents-sync ## Apply Nix config, refresh services/plugins, and refresh agent daemons.
+switch: nix-switch services nvim-plugins-install dotagents-switch-sync ## Apply Nix config, refresh services/plugins, and refresh agent daemons.
 	@$(MAKE) refresh
 
 .PHONY: refresh
@@ -334,13 +339,29 @@ upgrade-dev: ## Upgrade inside the Nix dev shell (mirrors CI).
 sync: dotagents-sync codex-security-sync rtk-rewrite-sync ## Sync all components (dotagents, Codex security patterns, rtk-rewrite.sh).
 
 .PHONY: dotagents-sync
-dotagents-sync: ## Sync dotagents (commands, skills, MCP configuration).
+dotagents-sync: dotagents-prepare ## Sync dotagents (commands, skills, MCP configuration).
 	@if [ "$$CI" = "true" ]; then \
 		echo "⏭️ Skipping external dotagents skill installation in CI"; \
 		$(MAKE) -C dotagents DOTAGENTS_SKIP_SYNC=1 ruler-prepare commands-sync skills-sync mcp-sync ruler-dotdirs-sync; \
 	else \
-		$(MAKE) -C dotagents sync; \
+		$(MAKE) -C dotagents DOTAGENTS_SKIP_SYNC= sync; \
 	fi
+
+.PHONY: dotagents-prepare
+dotagents-prepare: ## Initialize the dotagents submodule when needed.
+	@if [ ! -f dotagents/Makefile ]; then \
+		echo "🔁 Initializing dotagents submodule..."; \
+		git submodule update --init dotagents; \
+	fi
+	@if [ ! -f dotagents/Makefile ]; then \
+		echo "❌ dotagents submodule is unavailable"; \
+		exit 1; \
+	fi
+
+.PHONY: dotagents-switch-sync
+dotagents-switch-sync: dotagents-prepare ## Sync checked-in dotagents content during switch.
+	@echo "🔄 Syncing checked-in dotagents content..."
+	@$(MAKE) -C dotagents DOTAGENTS_SKIP_SYNC=1 ruler-prepare commands-sync skills-sync mcp-sync ruler-dotdirs-sync
 
 .PHONY: codex-security-sync
 codex-security-sync: ## Sync Codex security deny patterns from Claude settings.

@@ -63,6 +63,16 @@ When run bash -c "grep 'uname -m' '$SCRIPT'"
 The output should include 'uname -m'
 End
 
+It 'normalizes Apple Silicon architecture'
+When run grep 'aarch64' "$SCRIPT"
+The output should include 'aarch64'
+End
+
+It 'uses the Darwin fff.nvim target triple'
+When run grep 'apple-darwin' "$SCRIPT"
+The output should include 'apple-darwin'
+End
+
 It 'uses curl for download'
 When run bash -c "grep 'curl' '$SCRIPT'"
 The output should include 'curl'
@@ -90,6 +100,11 @@ End
 It 'quotes the pack directory argument for plugin builds'
 When run cat "$PWD/home-manager/programs/neovim/default.nix"
 The output should include '"${packDir}" "${libExt}"'
+End
+
+It 'uses the Darwin shared-library extension'
+When run grep 'dylib' "$PWD/home-manager/programs/neovim/default.nix"
+The output should include 'dylib'
 End
 End
 End
