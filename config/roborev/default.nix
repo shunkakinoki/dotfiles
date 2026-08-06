@@ -6,9 +6,11 @@
   ...
 }:
 let
+  ciEnabled = if inputs.host.isKyber then "true" else "false";
   hydrateScript =
     let
       vars = {
+        ciEnabled = if inputs.host.isKyber then "true" else "false";
         sed = "${pkgs.gnused}/bin/sed";
         template = "${./config.template.toml}";
       };
@@ -20,7 +22,7 @@ let
       )
     );
 in
-lib.mkIf inputs.host.isKyber {
+{
   home.activation.hydrateRoborevConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     export PATH="${lib.makeBinPath [ pkgs.git ]}:$PATH"
     ${pkgs.bash}/bin/bash "${hydrateScript}" || true
