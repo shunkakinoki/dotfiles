@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329
+# shellcheck disable=SC2016,SC2329
 
 Describe 'dotfiles-updater/update.sh'
 SCRIPT="$PWD/home-manager/services/dotfiles-updater/update.sh"
@@ -25,7 +25,7 @@ End
 Describe 'service host identity'
 It 'passes the canonical named host to automatic updates'
 When run bash -c "grep 'HOST=\${canonicalHost}' '$MODULE'"
-The output should include "HOST=\${canonicalHost}"
+The output should include 'HOST=${canonicalHost}'
 End
 
 It 'derives the canonical host from named-host flags'
