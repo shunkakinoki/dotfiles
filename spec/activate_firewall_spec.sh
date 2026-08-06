@@ -75,5 +75,10 @@ When run bash -c "grep '@iptables@' '$SCRIPT' && grep '@ip@' '$SCRIPT'"
 The output should include '@iptables@'
 The output should include '@ip@'
 End
+
+It 'uses nix-substituted awk'
+When run grep '@awk@' "$SCRIPT"
+The output should include '@awk@'
+End
 End
 End

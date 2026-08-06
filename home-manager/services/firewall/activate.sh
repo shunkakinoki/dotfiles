@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016
 # Converge Kyber WAN firewall on every activation (IPv4 + IPv6).
 # Public SSH is denied on the WAN NIC; access is via Tailscale (and Latitude SG).
 set -euo pipefail
@@ -42,7 +43,7 @@ detect_public_if() {
     return 0
   fi
 
-  ifc="$(@ip@ -4 route show default 2>/dev/null | awk '/default/ {
+  ifc="$(@ip@ -4 route show default 2>/dev/null | @awk@ '/default/ {
     for (i = 1; i <= NF; i++) {
       if ($i == "dev") {
         print $(i + 1)
@@ -73,7 +74,7 @@ resync_input_jump() {
   while IFS= read -r rule; do
     # shellcheck disable=SC2086
     $ipt_cmd -D ${rule#-A }
-  done < <($ipt_cmd -S INPUT 2>/dev/null | awk -v chain="$CHAIN" '
+  done < <($ipt_cmd -S INPUT 2>/dev/null | @awk@ -v chain="$CHAIN" '
     $1 == "-A" && $0 ~ ("-j " chain "$") { print }
   ' || true)
 

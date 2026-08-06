@@ -1,4 +1,6 @@
 # shellcheck shell=bash
+# ShellSpec fixtures intentionally contain literal shell/Nix expressions.
+# shellcheck disable=SC2016
 Describe 'home-manager/services/roborev/activate.sh'
 SCRIPT="$PWD/home-manager/services/roborev/activate.sh"
 
