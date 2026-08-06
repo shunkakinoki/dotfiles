@@ -1,7 +1,7 @@
 {
   "sessionDefaultSettings": {
-    "model": "custom:__GEMMA_LOCAL_NONDOT__-0",
-    "reasoningEffort": "none"
+    "model": "__DEEPSEEK_PRO__",
+    "reasoningEffort": "high"
   },
   "customModels": [
     {
