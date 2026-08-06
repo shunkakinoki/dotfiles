@@ -19,7 +19,7 @@ let
         pkgs.gnumake
         pkgs.gcc
       ];
-  libExt = "so";
+  libExt = if pkgs.stdenv.isDarwin then "dylib" else "so";
 in
 {
   programs.neovim = {
