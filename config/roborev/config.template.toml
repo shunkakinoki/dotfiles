@@ -4,4 +4,12 @@ enabled = true
 poll_interval = "1m"
 # Never cancel a running CI review just to post an early result.
 batch_timeout = "0"
-repos = ["__ROBOREV_CI_REPOS__"]
+repos = ["__ROBOREV_REPOS__"]
+
+[agent_hook]
+# Surface any open failed review without automatically invoking a fixer.
+# Keep turn and commit triggers explicitly disabled.
+turn_threshold = 0
+commit_threshold = 0
+failed_review_threshold = 1
+instruction = "Inspect open RoboRev findings read-only. Report proposed changes and ask the user for explicit approval. Do not edit files, run a fixer, commit, or close reviews before approval."
