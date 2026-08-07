@@ -38,6 +38,7 @@ in
         Hour = hour;
         Minute = 0;
       }) calendarHours;
+      RunAtLoad = true;
       StandardOutPath = "/tmp/tokscale.log";
       StandardErrorPath = "/tmp/tokscale.error.log";
     };
@@ -66,6 +67,7 @@ in
   systemd.user.timers.tokscale = lib.mkIf pkgs.stdenv.isLinux {
     Unit.Description = "Submit local usage data to Tokscale every three hours";
     Timer = {
+      OnBootSec = "1min";
       OnCalendar = "*-*-* 0/3:00:00";
       Persistent = true;
       Unit = "tokscale.service";

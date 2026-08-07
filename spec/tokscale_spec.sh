@@ -106,6 +106,11 @@ The output should include 'Hour = hour;'
 The output should include 'Minute = 0;'
 End
 
+It 'submits when the macOS user agent loads after startup'
+When run bash -c "grep -F 'RunAtLoad = true;' '$CONFIG'"
+The output should include 'RunAtLoad = true;'
+End
+
 It 'sets the macOS PATH through the launchd environment key'
 When run bash -c "grep -F 'EnvironmentVariables = {' '$CONFIG'"
 The output should include 'EnvironmentVariables'
@@ -142,6 +147,11 @@ The output should include 'systemd.user.timers.tokscale'
 The output should include 'OnCalendar = "*-*-* 0/3:00:00";'
 The output should include 'Persistent = true;'
 The output should include 'Unit = "tokscale.service";'
+End
+
+It 'submits shortly after Linux boot'
+When run bash -c "grep -F 'OnBootSec = \"1min\";' '$CONFIG'"
+The output should include 'OnBootSec = "1min";'
 End
 
 It 'enables the Linux timer without requiring cron'
