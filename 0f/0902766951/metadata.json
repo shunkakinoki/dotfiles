@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.9.0",
+  "checkpoint_id": "0f0902766951",
+  "strategy": "manual-commit",
+  "branch": "codex/all-machines-command",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "home-manager/programs/fish/default.nix"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0f/0902766951/0/metadata.json",
+      "transcript": "/0f/0902766951/0/full.jsonl",
+      "compact_transcript": "/0f/0902766951/0/transcript.jsonl",
+      "content_hash": "/0f/0902766951/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 2699,
+    "cache_creation_tokens": 193949,
+    "cache_read_tokens": 5430098,
+    "output_tokens": 33581,
+    "api_call_count": 54
+  }
+}
