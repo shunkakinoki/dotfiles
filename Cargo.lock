@@ -6129,9 +6129,9 @@ dependencies = [
 
 [[package]]
 name = "worktrunk"
-version = "0.70.0"
+version = "0.71.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "716e71d132f7a98f93610ab53c8a2eadf8d70a41f767829393aae830112a569b"
+checksum = "853410eaa45f431393965a56d0f12f81458c6f07c84b79720a7a5e3035ae7431"
 dependencies = [
  "ansi-str",
  "ansi-to-tui",
@@ -6193,7 +6193,6 @@ dependencies = [
  "tracing",
  "tracing-log",
  "tracing-subscriber",
- "tree-sitter",
  "tree-sitter-bash",
  "tree-sitter-highlight",
  "unicode-width 0.2.2",
