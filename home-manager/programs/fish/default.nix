@@ -121,6 +121,7 @@
       cawxeh = "_cawxeh_function";
       caxe = "_caxe_function";
       caxeh = "_caxeh_function";
+      all = "_all_function";
       cliproxyapi = "_cliproxyapi_function";
       clrc = "_clrc_function";
       cltxe = "_cltxe_function";
@@ -243,6 +244,7 @@
         value.source = ./functions/${name}.fish;
       })
       [
+        "_all_function"
         "__tmux_bootstrap_default_session"
         "_brew_update_function"
         "_caf_function"
