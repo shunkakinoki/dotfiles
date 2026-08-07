@@ -181,6 +181,7 @@
       pixelh = "_pixelh_function";
       pixeh = "_pixeh_function";
       sag = "_ssh_add_github";
+      ssxe = "_ssxe_function";
       lmu = "_llm_update_function";
       slb = "_sync_local_binaries_function";
       shortcuts = "_fish_shortcuts";
@@ -245,8 +246,8 @@
       [
         "__tmux_bootstrap_default_session"
         "_brew_update_function"
-        "_caf_function"
         "_caam_exec_function"
+        "_caf_function"
         "_cawxe_function"
         "_cawxeh_function"
         "_caxe_function"
@@ -278,9 +279,6 @@
         "_fzf_preview_name"
         "_fzf_shell_history"
         "_gco_function"
-        "_install_cargo_globals_function"
-        "_install_npm_globals_function"
-        "_install_uv_globals_function"
         "_grco_function"
         "_grcr_function"
         "_grr_function"
@@ -290,28 +288,32 @@
         "_grxe_function"
         "_grxeh_function"
         "_hm_load_env_file"
-        "_llm_update_function"
+        "_install_cargo_globals_function"
+        "_install_npm_globals_function"
+        "_install_uv_globals_function"
         "_kyber_function"
         "_kyberd_function"
         "_kyberh_function"
         "_kyberm_function"
         "_kyberz_function"
+        "_llm_update_function"
         "_matic_function"
         "_maticd_function"
         "_matich_function"
         "_maticm_function"
         "_maticz_function"
         "_ocxe_function"
-        "_ocxel_function"
         "_ocxeh_function"
+        "_ocxel_function"
         "_ocxelh_function"
         "_ompxe_function"
         "_ompxeh_function"
         "_pixe_function"
+        "_pixeh_function"
         "_pixel_function"
         "_pixelh_function"
-        "_pixeh_function"
         "_ssh_add_github"
+        "_ssxe_function"
         "_sync_local_binaries_function"
         "_tdo_function"
         "_tmo_function"
