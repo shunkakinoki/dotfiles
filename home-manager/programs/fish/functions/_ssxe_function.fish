@@ -1,6 +1,6 @@
-function _all_function --description "Run a one-time command locally, on Kyber, and on Matic"
+function _ssxe_function --description "Run a one-time command locally, on Kyber, and on Matic"
   if test (count $argv) -eq 0
-    echo "Usage: all <command> [args...]" >&2
+    echo "Usage: ssxe <command> [args...]" >&2
     return 2
   end
 

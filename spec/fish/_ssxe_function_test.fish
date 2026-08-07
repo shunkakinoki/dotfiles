@@ -1,5 +1,5 @@
 set fn (status dirname)/../../home-manager/programs/fish/functions
-source $fn/_all_function.fish
+source $fn/_ssxe_function.fish
 
 set log (mktemp)
 
@@ -17,7 +17,7 @@ function tailscale
   cat >> $log
 end
 
-_all_function echo hello
+_ssxe_function echo hello
 
 @test "runs the command locally" (grep -c '^sh -c echo hello$' $log) -eq 1
 @test "sends the command to Kyber through OpenSSH" (grep -c '^ssh kyber sh -s$' $log) -eq 1
