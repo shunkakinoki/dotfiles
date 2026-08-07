@@ -181,6 +181,7 @@
       pixelh = "_pixelh_function";
       pixeh = "_pixeh_function";
       sag = "_ssh_add_github";
+      ssxe = "_ssxe_function";
       lmu = "_llm_update_function";
       slb = "_sync_local_binaries_function";
       shortcuts = "_fish_shortcuts";
@@ -244,6 +245,7 @@
       })
       [
         "__tmux_bootstrap_default_session"
+        "_ssxe_function"
         "_brew_update_function"
         "_caf_function"
         "_caam_exec_function"
