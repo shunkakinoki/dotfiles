@@ -29,6 +29,7 @@
       "/Applications/Conductor.app"
       "/Applications/OpenClaw.app"
       "/Applications/Orca.app"
+      "/Applications/T3 Code (Nightly).app"
       "/Applications/Beekeeper Studio.app"
       "/Applications/Google Chrome.app"
       "/Applications/Docker.app"
