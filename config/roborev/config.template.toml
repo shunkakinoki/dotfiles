@@ -2,6 +2,9 @@
 enabled = true
 # Poll frequently so new pushes reach the daemon promptly.
 poll_interval = "1m"
+# Review maintainer pushes immediately so restacked heads do not wait behind
+# the default per-PR throttle.
+throttle_bypass_users = ["shunkakinoki"]
 # Never cancel a running CI review just to post an early result.
 batch_timeout = "0"
 repos = ["__ROBOREV_REPOS__"]

@@ -47,6 +47,11 @@ When run bash -c "grep -E 'poll_interval = \"1m\"|batch_timeout = \"0\"' '$PWD/c
 The output should include 'poll_interval = "1m"'
 The output should include 'batch_timeout = "0"'
 End
+
+It 'reviews maintainer pushes without the per-PR cooldown'
+When run grep -F 'throttle_bypass_users = ["shunkakinoki"]' "$PWD/config/roborev/config.template.toml"
+The output should include 'throttle_bypass_users = ["shunkakinoki"]'
+End
 End
 
 Describe 'hydration'
