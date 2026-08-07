@@ -96,6 +96,7 @@
       export FNM_LOGLEVEL="info"
       export FNM_NODE_DIST_MIRROR="https://nodejs.org/dist"
       export FNM_VERSION_FILE_STRATEGY="local"
+      eval "$(fnm env --use-on-cd --shell zsh)"
 
       # Worktrunk shell init
       if command -v wt >/dev/null 2>&1; then

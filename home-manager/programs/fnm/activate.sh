@@ -20,11 +20,11 @@ done
 # Set default version
 "$FNM_BIN" default "$DEFAULT_VERSION" || true
 
-# Create stable symlink for systemd services
+# Create a stable symlink to the configured default for non-interactive services.
 if [ -d "$FNM_DIR/node-versions" ]; then
-  latest_v22=$(ls -d "$FNM_DIR/node-versions/v22"* 2>/dev/null | head -1)
-  if [ -n "$latest_v22" ] && [ -d "$latest_v22/installation/bin" ]; then
+  default_node=$(ls -d "$FNM_DIR/node-versions/v${DEFAULT_VERSION}"* 2>/dev/null | head -1)
+  if [ -n "$default_node" ] && [ -d "$default_node/installation/bin" ]; then
     mkdir -p "$HOME/.local/bin"
-    ln -sf "$latest_v22/installation/bin/node" "$HOME/.local/bin/node"
+    ln -sf "$default_node/installation/bin/node" "$HOME/.local/bin/node"
   fi
 fi
