@@ -17,6 +17,13 @@ End
 End
 
 Describe 'node version management'
+It 'pins the managed Node versions'
+When run cat "$PWD/home-manager/programs/fnm/default.nix"
+The output should include '"24.14.0"'
+The output should include '"22.21.1"'
+The output should include '"20.19.0"'
+End
+
 It 'accepts fnm binary path as argument'
 When run bash -c "grep 'FNM_BIN' '$SCRIPT'"
 The output should include 'FNM_BIN="$1"'
@@ -46,12 +53,22 @@ It 'creates stable symlink for systemd'
 When run bash -c "grep 'ln -sf' '$SCRIPT'"
 The output should include '.local/bin/node'
 End
+
+It 'links the stable Node binary to the configured default version'
+When run bash -c "grep 'node-versions/v\${DEFAULT_VERSION}' '$SCRIPT'"
+The output should include 'DEFAULT_VERSION'
+End
 End
 
 Describe 'activation wrapper quoting'
 It 'quotes the fnm directory path'
 When run cat "$PWD/home-manager/programs/fnm/default.nix"
-The output should include '"${homeDir}/.local/share/fnm"'
+The output should include '"${fnmDir}"'
+End
+
+It 'uses the macOS fnm directory on Darwin'
+When run cat "$PWD/home-manager/programs/fnm/default.nix"
+The output should include 'Library/Application Support/fnm'
 End
 End
 End
