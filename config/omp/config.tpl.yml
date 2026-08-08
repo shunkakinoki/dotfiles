@@ -49,19 +49,19 @@ disabledExtensions: []
 # Model identifier format: "<provider>/<model>[:thinkingLevel]"
 #
 # Common providers:
-#   anthropic    — Claude models (claude-sonnet-4, claude-opus-4, etc.)
-#   openai       — OpenAI models (gpt-5.4, gpt-4o, etc.)
+#   anthropic    — Claude models (__CLAUDE_SONNET__, __CLAUDE_OPUS__, etc.)
+#   openai       — OpenAI models (__GPT__, __GPT_LUNA__, etc.)
 #   openai-codex — OpenAI Codex models/providers used by OMP
-#   google       — Gemini models (gemini-3-pro, gemini-3-flash, etc.)
+#   google       — Gemini models (__GEMINI_PRO__, __GEMINI_FLASH__, etc.)
 #   deepseek     — DeepSeek models
 #   mistral      — Mistral models
 #   groq         — Groq models
 #   openrouter   — OpenRouter (access to many models)
 #
 # Examples:
-#   default: openai-codex/gpt-5.4
+#   default: openai-codex/__GPT__
 #   fast:    openai-codex/__GPT_LUNA__
-#   slow:    openai-codex/gpt-5.3-codex:high
+#   slow:    openai-codex/__GPT_CODEX__:high
 modelRoles:
   # Default model role used as the fallback when no other role is selected.
   default: "opencode-zen/__DEEPSEEK_FLASH__"

@@ -49,17 +49,17 @@ disabledExtensions: []
 # Model identifier format: "<provider>/<model>[:thinkingLevel]"
 #
 # Common providers:
-#   anthropic    — Claude models (claude-sonnet-4, claude-opus-4, etc.)
-#   openai       — OpenAI models (gpt-5.4, gpt-4o, etc.)
+#   anthropic    — Claude models (claude-sonnet-5, claude-opus-5, etc.)
+#   openai       — OpenAI models (gpt-5.6-sol, gpt-5.6-luna, etc.)
 #   openai-codex — OpenAI Codex models/providers used by OMP
-#   google       — Gemini models (gemini-3-pro, gemini-3-flash, etc.)
+#   google       — Gemini models (gemini-3.1-pro-preview, gemini-3.6-flash, etc.)
 #   deepseek     — DeepSeek models
 #   mistral      — Mistral models
 #   groq         — Groq models
 #   openrouter   — OpenRouter (access to many models)
 #
 # Examples:
-#   default: openai-codex/gpt-5.4
+#   default: openai-codex/gpt-5.6-sol
 #   fast:    openai-codex/gpt-5.6-luna
 #   slow:    openai-codex/gpt-5.3-codex:high
 modelRoles:
