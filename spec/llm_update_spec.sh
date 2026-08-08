@@ -124,6 +124,39 @@ The status should be success
 End
 End
 
+Describe 'Codex subagent defaults'
+It 'keeps the subagent model as a placeholder in the template'
+When run bash -c "sed -n '/^\[agents\]/,/^\[/p' config/codex/config.tpl.toml | grep 'default_subagent_model'"
+The output should include '__GPT_LUNA__'
+End
+
+It 'hydrates the subagent model from models.json'
+When run bash -c "sed -n '/^\[agents\]/,/^\[/p' config/codex/config.toml | grep 'default_subagent_model'"
+The output should include 'gpt-5.6-luna'
+The output should not include '__GPT_LUNA__'
+End
+
+It 'enables the agents section'
+When run bash -c "sed -n '/^\[agents\]/,/^\[/p' config/codex/config.toml | grep 'enabled'"
+The output should include 'enabled = true'
+End
+
+It 'allows 300 concurrent subagent threads per session'
+When run bash -c "sed -n '/^\[agents\]/,/^\[/p' config/codex/config.toml | grep -q 'max_threads = 300' && sed -n '/^\[agents\]/,/^\[/p' config/codex/config.toml | grep -q 'max_concurrent_threads_per_session = 300'"
+The status should be success
+End
+
+It 'runs subagents at max reasoning effort'
+When run bash -c "sed -n '/^\[agents\]/,/^\[/p' config/codex/config.toml | grep 'default_subagent_reasoning_effort'"
+The output should include 'max'
+End
+
+It 'enables the max reasoning effort it defaults subagents to'
+When run bash -c "grep 'enabled-reasoning-efforts' config/codex/config.toml"
+The output should include 'max'
+End
+End
+
 Describe 'jq pretty-printing'
 It 'defines a jq pretty function for model names'
 When run bash -c "grep 'def pretty' '$SCRIPT'"
