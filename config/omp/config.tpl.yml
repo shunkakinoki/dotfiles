@@ -49,24 +49,24 @@ disabledExtensions: []
 # Model identifier format: "<provider>/<model>[:thinkingLevel]"
 #
 # Common providers:
-#   anthropic    — Claude models (claude-sonnet-4, claude-opus-4, etc.)
-#   openai       — OpenAI models (gpt-5.4, gpt-4o, etc.)
+#   anthropic    — Claude models (__CLAUDE_SONNET__, __CLAUDE_OPUS__, etc.)
+#   openai       — OpenAI models (__GPT__, __GPT_LUNA__, etc.)
 #   openai-codex — OpenAI Codex models/providers used by OMP
-#   google       — Gemini models (gemini-3-pro, gemini-3-flash, etc.)
+#   google       — Gemini models (__GEMINI_PRO__, __GEMINI_FLASH__, etc.)
 #   deepseek     — DeepSeek models
 #   mistral      — Mistral models
 #   groq         — Groq models
 #   openrouter   — OpenRouter (access to many models)
 #
 # Examples:
-#   default: openai-codex/gpt-5.4
-#   fast:    openai-codex/gpt-5.4-mini
-#   slow:    openai-codex/gpt-5.3-codex:high
+#   default: openai-codex/__GPT__
+#   fast:    openai-codex/__GPT_LUNA__
+#   slow:    openai-codex/__GPT_CODEX__:high
 modelRoles:
   # Default model role used as the fallback when no other role is selected.
   default: "opencode-zen/__DEEPSEEK_FLASH__"
   # Smaller / dumber model for cheap lightweight work.
-  smol: "openai-codex/__GPT_MINI__"
+  smol: "openai-codex/__GPT_LUNA__"
   # Strongest model in the suite for hard tasks.
   slow: "openai-codex/__GPT__"
   # Keep vision on the main default model.
@@ -74,7 +74,7 @@ modelRoles:
   # Planning / architecture model.
   plan: "openai-codex/__GPT__"
   # Commit message model.
-  commit: "openai/__GPT_NANO__"
+  commit: "openai/__GPT_LUNA__"
   # Fast subagent path.
   task: "openai-codex/__GPT_CODEX_SPARK__"
 # =============================================================================
@@ -476,8 +476,8 @@ task:
     code-explorer: "__GPT_CODEX_SPARK__"
     code-reviewer: "__GPT__"
     code-simplifier: "__GPT__"
-    comment-analyzer: "__GPT_NANO__"
-    pr-test-analyzer: "__GPT_MINI__"
+    comment-analyzer: "__GPT_LUNA__"
+    pr-test-analyzer: "__GPT_LUNA__"
     silent-failure-hunter: "__GPT__"
     type-design-analyzer: "__GPT__"
 # --- Agent Definitions -------------------------------------------------------

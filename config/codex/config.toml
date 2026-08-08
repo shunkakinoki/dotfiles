@@ -1,7 +1,7 @@
 suppress_unstable_features_warning = true
 web_search = "cached"
 model = "gpt-5.6-sol"
-enabled-reasoning-efforts = ["medium", "high"]
+enabled-reasoning-efforts = ["medium", "high", "max"]
 model_reasoning_effort = "high"
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
@@ -74,7 +74,11 @@ workspace_dependencies = true
 workspace_owner_usage_nudge = true
 
 [agents]
-max_threads = 10
+enabled = true
+max_threads = 300
+max_concurrent_threads_per_session = 300
+default_subagent_model = "gpt-5.6-luna"
+default_subagent_reasoning_effort = "max"
 
 [model_providers.cliproxyapi]
 name = "CLIProxyAPI"

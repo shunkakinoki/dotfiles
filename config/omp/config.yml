@@ -49,24 +49,24 @@ disabledExtensions: []
 # Model identifier format: "<provider>/<model>[:thinkingLevel]"
 #
 # Common providers:
-#   anthropic    — Claude models (claude-sonnet-4, claude-opus-4, etc.)
-#   openai       — OpenAI models (gpt-5.4, gpt-4o, etc.)
+#   anthropic    — Claude models (claude-sonnet-5, claude-opus-5, etc.)
+#   openai       — OpenAI models (gpt-5.6-sol, gpt-5.6-luna, etc.)
 #   openai-codex — OpenAI Codex models/providers used by OMP
-#   google       — Gemini models (gemini-3-pro, gemini-3-flash, etc.)
+#   google       — Gemini models (gemini-3.1-pro-preview, gemini-3.6-flash, etc.)
 #   deepseek     — DeepSeek models
 #   mistral      — Mistral models
 #   groq         — Groq models
 #   openrouter   — OpenRouter (access to many models)
 #
 # Examples:
-#   default: openai-codex/gpt-5.4
-#   fast:    openai-codex/gpt-5.4-mini
+#   default: openai-codex/gpt-5.6-sol
+#   fast:    openai-codex/gpt-5.6-luna
 #   slow:    openai-codex/gpt-5.3-codex:high
 modelRoles:
   # Default model role used as the fallback when no other role is selected.
   default: "opencode-zen/deepseek-v4-flash"
   # Smaller / dumber model for cheap lightweight work.
-  smol: "openai-codex/gpt-5.4-mini"
+  smol: "openai-codex/gpt-5.6-luna"
   # Strongest model in the suite for hard tasks.
   slow: "openai-codex/gpt-5.6-sol"
   # Keep vision on the main default model.
@@ -74,7 +74,7 @@ modelRoles:
   # Planning / architecture model.
   plan: "openai-codex/gpt-5.6-sol"
   # Commit message model.
-  commit: "openai/gpt-5.4-nano"
+  commit: "openai/gpt-5.6-luna"
   # Fast subagent path.
   task: "openai-codex/gpt-5.3-codex-spark"
 # =============================================================================
@@ -476,8 +476,8 @@ task:
     code-explorer: "gpt-5.3-codex-spark"
     code-reviewer: "gpt-5.6-sol"
     code-simplifier: "gpt-5.6-sol"
-    comment-analyzer: "gpt-5.4-nano"
-    pr-test-analyzer: "gpt-5.4-mini"
+    comment-analyzer: "gpt-5.6-luna"
+    pr-test-analyzer: "gpt-5.6-luna"
     silent-failure-hunter: "gpt-5.6-sol"
     type-design-analyzer: "gpt-5.6-sol"
 # --- Agent Definitions -------------------------------------------------------
