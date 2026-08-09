@@ -61,7 +61,9 @@ lib.mkIf host.isKyber {
       X-SwitchMethod = "restart";
       Environment = [
         "HOME=${homeDir}"
-        "PATH=${homeDir}/.local/bin:${homeDir}/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin"
+        "PATH=${hermesNode}/bin:${homeDir}/.local/bin:${homeDir}/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin"
+        "NPM_CONFIG_INCLUDE=optional"
+        "NPM_CONFIG_IGNORE_SCRIPTS=false"
       ];
       WorkingDirectory = "${homeDir}/.hermes";
       StandardOutput = "append:/tmp/hermes/hermes-dashboard.log";
