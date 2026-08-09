@@ -70,6 +70,7 @@ End
 
 It 'resolves the kyber provider hostname alias'
 When call render c2-small-x86-chi-1
+The output should include 'shunkakinoki@matic'
 The output should not include 'ubuntu@kyber'
 End
 
