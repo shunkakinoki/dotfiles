@@ -246,6 +246,53 @@ It 'verifies sqlite3 can be loaded by node'
 When run bash -c "grep 'const sqlite3 = require' '$SCRIPT'"
 The output should include 'const sqlite3 = require'
 End
+
+It 'has a node-pty native binding repair step'
+When run bash -c "grep -c 'repair_node_pty_native_binding' '$SCRIPT'"
+The output should not eq '0'
+End
+
+# Presence is not proof: a nix-toolchain build lands the file but fails dlopen
+# against the system glibc, so the gate must be an actual require().
+It 'gates node-pty repair on loadability, not file presence'
+When run bash -c "sed -n '/repair_node_pty_native_binding()/,/^}/p' '$SCRIPT'"
+The output should include "node -e 'require(process.argv[1])'"
+The output should not include 'build/Release/pty.node'
+End
+
+# npm rejects t3's bun nested-override syntax as an invalid package name, so
+# `npm rebuild` cannot be used inside a bun-installed t3.
+It 'drives node-gyp directly rather than npm rebuild'
+When run bash -c "sed -n '/repair_node_pty_native_binding()/,/^}/p' '$SCRIPT'"
+The output should include 'node-gyp rebuild'
+The output should not include 'npm rebuild'
+End
+
+It 'pins the system toolchain off NixOS to avoid a glibc mismatch'
+When run bash -c "sed -n '/repair_node_pty_native_binding()/,/^}/p' '$SCRIPT'"
+The output should include '/etc/NIXOS'
+The output should include 'CXX=/usr/bin/g++'
+End
+
+It 'searches nested node_modules for t3 own node-pty copy'
+When run bash -c "sed -n '/repair_node_pty_native_binding()/,/^}/p' '$SCRIPT'"
+The output should include 'maxdepth 3'
+The output should include '-name node-pty'
+End
+End
+
+Describe 't3 package'
+It 'declares t3 as a global dependency'
+When run bash -c "jq -r '.dependencies.t3 // empty' '$PWD/package.json'"
+The output should not eq ''
+End
+
+# Trusting node-pty would let bun build it unattended with the nix toolchain on
+# kyber, producing a file that exists but cannot load -- masking the repair.
+It 'does not trust node-pty so the verified repair stays authoritative'
+When run bash -c "jq -r '[.trustedDependencies[]? | select(. == \"node-pty\")] | length' '$PWD/package.json'"
+The output should eq '0'
+End
 End
 
 Describe 'PostHog API CLI verification'
