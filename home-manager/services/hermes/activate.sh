@@ -13,6 +13,24 @@ mkdir -p "$HOME_DIR/.hermes/skills"
 mkdir -p "$HOME_DIR/.hermes/cron"
 chmod 700 "$HOME_DIR/.hermes"
 
+# Replace Nix-managed read-only systemd unit symlinks with writable copies
+# so Hermes can auto-refresh them without PermissionError.
+SYSTEMD_USER_DIR="$HOME_DIR/.config/systemd/user"
+for unit in hermes-gateway.service hermes-dashboard.service hermes-dashboard-proxy.service; do
+  unit_path="$SYSTEMD_USER_DIR/$unit"
+  if [ -L "$unit_path" ]; then
+    # Read the target file content, then replace symlink with writable copy
+    content="$(cat "$unit_path" 2>/dev/null || true)"
+    if [ -n "$content" ]; then
+      rm -f "$unit_path"
+      printf '%s\n' "$content" > "$unit_path"
+      chmod 644 "$unit_path"
+      echo "Replaced symlink $unit with writable copy"
+    fi
+  fi
+done
+systemctl --user daemon-reload 2>/dev/null || true
+
 # Install hermes gateway runtime deps from pyproject.toml dependency group
 HERMES_VENV="$HOME_DIR/ghq/github.com/NousResearch/hermes-agent/.venv"
 if [ -d "$HERMES_VENV" ]; then
