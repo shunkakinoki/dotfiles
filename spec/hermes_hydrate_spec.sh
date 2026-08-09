@@ -181,6 +181,20 @@ It 'does not configure OpenRouter or Mixture-of-Agents presets'
 When run bash -c "! rg -q 'openrouter|@preset/' '$PWD/config/hermes/config.template.yaml'"
 The status should be success
 End
+
+It 'routes every default Mixture-of-Agents model through CLIProxy'
+When run bash -c "sed -n '/^moa:/,/^credential_pool_strategies:/p' '$PWD/config/hermes/config.template.yaml' | awk '/provider: / && \$NF != \"cliproxy\" {exit 1}'"
+The status should be success
+End
+
+It 'hydrates the default Mixture-of-Agents models from the canonical model list'
+When run bash -c "sed -n '/^moa:/,/^credential_pool_strategies:/p' '$PWD/config/hermes/config.template.yaml'"
+The output should include 'provider: cliproxy'
+The output should include 'model: deepseek-v4-pro'
+The output should include 'model: minimax-m3'
+The output should include 'model: deepseek-v4-flash'
+The output should not include 'opus'
+End
 End
 
 Describe 'execution'

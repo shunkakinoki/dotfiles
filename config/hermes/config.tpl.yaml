@@ -12,6 +12,20 @@ fallback_providers:
     model: __MINIMAX__
   - provider: cliproxy
     model: free
+moa:
+  default_preset: default
+  presets:
+    default:
+      reference_models:
+        - provider: cliproxy
+          model: __DEEPSEEK_PRO__
+          enabled: true
+        - provider: cliproxy
+          model: __MINIMAX__
+          enabled: true
+      aggregator:
+        provider: cliproxy
+        model: __DEEPSEEK_FLASH__
 credential_pool_strategies: {}
 toolsets:
   - hermes-cli
