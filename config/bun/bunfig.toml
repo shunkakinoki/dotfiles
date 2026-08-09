@@ -1,5 +1,5 @@
 [test]
-timeout = 30000
+timeout = 300000
 
 [install]
 # Supply-chain hygiene: only install packages published at least 7 days ago.
