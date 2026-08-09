@@ -1,5 +1,4 @@
 minimum-release-age=10080
 ignore-scripts=true
 save-exact=true
-omit=optional
 engine-strict=true
