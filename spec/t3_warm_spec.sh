@@ -72,6 +72,24 @@ It 'succeeds when no npx cache dirs exist'
 When run bash "$SCRIPT"
 The status should be success
 End
+
+make_runtime_dir() {
+  mkdir -p "$HOME/.t3/runtime/versions/1.2.3/node_modules/node-pty"
+}
+
+It 'also builds node-pty in the t3 service runtime tree'
+When run bash -c "$(declare -f make_runtime_dir); make_runtime_dir; bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
+The output should include 'npm rebuild --ignore-scripts=false node-pty'
+The status should be success
+End
+End
+
+Describe 'toolchain selection'
+It 'documents the nix/system glibc mismatch'
+When run bash -c "cat '$SCRIPT'"
+The output should include 'GLIBC'
+The output should include '/etc/NIXOS'
+End
 End
 
 Describe 'script properties'
