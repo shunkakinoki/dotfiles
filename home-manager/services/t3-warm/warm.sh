@@ -15,7 +15,14 @@ set -euo pipefail
 
 TAG="${T3_WARM_TAG:-nightly}"
 
-npx --yes "t3@${TAG}" --version >/dev/null
+# npx keys its cache dir on the literal spec string, not the resolved version,
+# so `t3@nightly` and `t3@0.0.33-nightly.20260809.1041` land in different dirs.
+# The client resolves the tag before invoking npx, so warm the exact version or
+# we warm a directory the client never reads.
+version="$(npm view "t3@${TAG}" version 2>/dev/null || true)"
+spec="t3@${version:-$TAG}"
+
+npx --yes "$spec" --version >/dev/null
 
 for dir in "$HOME"/.npm/_npx/*/; do
   pty="${dir}node_modules/node-pty"

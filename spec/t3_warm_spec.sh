@@ -19,15 +19,34 @@ Before 'setup'
 After 'cleanup'
 
 Describe 'cache warming'
-It 'warms the nightly tag by default'
-When run bash -c "bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
-The output should include 'npx --yes t3@nightly --version'
+# npx keys its cache dir on the literal spec string, so the script must warm
+# the resolved version the client uses, not the tag.
+mock_npm_view() {
+  cat >"$MOCK_BIN/npm" <<'EOF'
+#!/usr/bin/env bash
+printf '%s\n' "$0 $*" >>"$MOCK_LOG"
+if [ "${1:-}" = view ]; then echo "0.0.33-nightly.20260809.1041"; fi
+exit 0
+EOF
+  chmod +x "$MOCK_BIN/npm"
+}
+
+It 'resolves the tag to an exact version before warming'
+When run bash -c "$(declare -f mock_npm_view); mock_npm_view; bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
+The output should include 'npm view t3@nightly version'
+The output should include 'npx --yes t3@0.0.33-nightly.20260809.1041 --version'
 The status should be success
 End
 
 It 'honors T3_WARM_TAG override'
-When run bash -c "T3_WARM_TAG=latest bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
-The output should include 't3@latest'
+When run bash -c "$(declare -f mock_npm_view); mock_npm_view; T3_WARM_TAG=latest bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
+The output should include 'npm view t3@latest version'
+The status should be success
+End
+
+It 'falls back to the tag when resolution fails'
+When run bash -c "bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
+The output should include 'npx --yes t3@nightly --version'
 The status should be success
 End
 End
