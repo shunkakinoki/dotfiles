@@ -18,7 +18,7 @@ moa:
     default:
       reference_models:
         - provider: cliproxy
-          model: deepseek-v4-flash
+          model: deepseek-v4-pro
           enabled: true
         - provider: cliproxy
           model: minimax-m3
