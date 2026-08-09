@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2329
 
-Describe 't3-warm/warm.sh'
-SCRIPT="$PWD/home-manager/services/t3-warm/warm.sh"
+Describe 't3-connect/connect.sh'
+SCRIPT="$PWD/home-manager/services/t3-connect/connect.sh"
 
 setup() {
   mock_bin_setup npx npm
@@ -38,8 +38,8 @@ The output should include 'npx --yes t3@0.0.33-nightly.20260809.1041 --version'
 The status should be success
 End
 
-It 'honors T3_WARM_TAG override'
-When run bash -c "$(declare -f mock_npm_view); mock_npm_view; T3_WARM_TAG=latest bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
+It 'honors T3_CONNECT_TAG override'
+When run bash -c "$(declare -f mock_npm_view); mock_npm_view; T3_CONNECT_TAG=latest bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
 The output should include 'npm view t3@latest version'
 The status should be success
 End

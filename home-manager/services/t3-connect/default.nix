@@ -3,9 +3,9 @@ let
   inherit (pkgs) lib;
 in
 {
-  systemd.user.services.t3-warm = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.t3-connect = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {
-      Description = "Pre-warm npx cache for the T3 remote server";
+      Description = "Keep the T3 remote server ready to accept connections";
     };
     Service = {
       Type = "oneshot";
@@ -23,13 +23,13 @@ in
       ];
       Nice = 19;
       IOSchedulingPriority = 7;
-      ExecStart = "${pkgs.bash}/bin/bash ${./warm.sh}";
+      ExecStart = "${pkgs.bash}/bin/bash ${./connect.sh}";
     };
   };
 
-  systemd.user.timers.t3-warm = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.timers.t3-connect = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {
-      Description = "Timer to pre-warm npx cache for the T3 remote server";
+      Description = "Timer to keep the T3 remote server ready to accept connections";
     };
     Timer = {
       OnBootSec = "2m";

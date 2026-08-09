@@ -13,7 +13,7 @@
 
 set -euo pipefail
 
-TAG="${T3_WARM_TAG:-nightly}"
+TAG="${T3_CONNECT_TAG:-nightly}"
 
 # On a distro with nix installed alongside the system (kyber: Ubuntu + nix),
 # ~/.nix-profile/bin shadows the system compiler. node-gyp then links pty.node

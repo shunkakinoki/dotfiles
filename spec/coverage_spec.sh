@@ -137,8 +137,8 @@ It 'has spec file for home-manager/services/tokscale/submit.sh'
 The path "spec/tokscale_spec.sh" should be exist
 End
 
-It 'has spec file for home-manager/services/t3-warm/warm.sh'
-The path "spec/t3_warm_spec.sh" should be exist
+It 'has spec file for home-manager/services/t3-connect/connect.sh'
+The path "spec/t3_connect_spec.sh" should be exist
 End
 
 It 'has spec file for home-manager/services/night-shift/apply-night-shift.sh'
@@ -543,7 +543,7 @@ home-manager/services/k3s/activate.sh
 home-manager/services/make-updater/update.sh
 home-manager/services/neverssl-keepalive/keepalive.sh
 home-manager/services/night-shift/apply-night-shift.sh
-home-manager/services/t3-warm/warm.sh
+home-manager/services/t3-connect/connect.sh
 home-manager/services/tokscale/submit.sh
 hosts/darwin/activate-remove-backups.sh
 hosts/linux/activate-backup-files.sh
