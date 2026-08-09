@@ -141,8 +141,8 @@ When run bash -c "sed -n '/^\[agents\]/,/^\[/p' config/codex/config.toml | grep 
 The output should include 'enabled = true'
 End
 
-It 'allows 300 concurrent subagent threads per session'
-When run bash -c "sed -n '/^\[agents\]/,/^\[/p' config/codex/config.toml | grep -q 'max_threads = 300' && sed -n '/^\[agents\]/,/^\[/p' config/codex/config.toml | grep -q 'max_concurrent_threads_per_session = 300'"
+It 'uses only the canonical per-session concurrency setting'
+When run bash -c "for file in config/codex/config.tpl.toml config/codex/config.toml; do agents=\$(sed -n '/^\[agents\]/,/^\[/p' \"\$file\"); test \"\$(printf '%s\n' \"\$agents\" | grep -Ec '^(max_threads|max_concurrent_threads_per_session) = ')\" -eq 1 && printf '%s\n' \"\$agents\" | grep -qx 'max_concurrent_threads_per_session = 300' || exit 1; done"
 The status should be success
 End
 
