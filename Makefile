@@ -1275,7 +1275,7 @@ launchctl-tmux-session-logger: ## Restart tmux-session-logger launchd agent.
 ##@ Systemd Services (Linux)
 
 .PHONY: systemctl
-systemctl: systemctl-docker systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-cpa-manager-plus systemctl-code-syncer systemctl-docker-postgres systemctl-dolt systemctl-dotfiles-updater systemctl-make-updater systemctl-neverssl-keepalive systemctl-noctalia-shell systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-roborev systemctl-tmux-session-logger ## Restart all systemd user services.
+systemctl: systemctl-docker systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-cpa-manager-plus systemctl-code-syncer systemctl-docker-postgres systemctl-dolt systemctl-dotfiles-updater systemctl-hermes systemctl-make-updater systemctl-neverssl-keepalive systemctl-noctalia-shell systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-roborev systemctl-tmux-session-logger ## Restart all systemd user services.
 
 .PHONY: systemctl-docker
 systemctl-docker: ## Start Docker daemon.
@@ -1335,6 +1335,17 @@ systemctl-dotfiles-updater: ## Restart dotfiles-updater systemd user service.
 	@echo "🔄 Restarting dotfiles-updater..."
 	@systemctl --user restart dotfiles-updater.service || true
 	@echo "✅ dotfiles-updater restarted"
+
+.PHONY: systemctl-hermes
+systemctl-hermes: ## Restart Hermes gateway, dashboard, and proxy on Kyber.
+	@echo "🔄 Restarting Hermes..."
+	@if [ "$(DETECTED_HOST)" = "kyber" ] || [ "$(HOST)" = "kyber" ]; then \
+		systemctl --user daemon-reload; \
+		systemctl --user restart hermes-gateway.service hermes-dashboard.service hermes-dashboard-proxy.service; \
+	else \
+		echo "Skipping Hermes services (host not kyber)"; \
+	fi
+	@echo "✅ Hermes restarted"
 
 .PHONY: systemctl-make-updater
 systemctl-make-updater: ## Restart make-updater systemd timer and service.
