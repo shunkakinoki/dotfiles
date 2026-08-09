@@ -7,6 +7,9 @@
   },
   "models": {
     "mode": "merge",
+    "pricing": {
+      "enabled": true
+    },
     "providers": {
       "cliproxy": {
         "baseUrl": "https://cliproxy.shunkakinoki.com/v1",
@@ -376,6 +379,9 @@
   "gateway": {
     "mode": "local",
     "bind": "loopback",
+    "terminal": {
+      "enabled": true
+    },
     "tailscale": {
       "mode": "serve",
       "resetOnExit": false
