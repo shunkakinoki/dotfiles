@@ -381,11 +381,11 @@ The path "spec/activate_firewall_spec.sh" should be exist
 End
 
 It 'has spec file for home-manager/services/hermes/activate.sh'
-The path "spec/activate_paperclip_openclaw_spec.sh" should be exist
+The path "spec/activate_openclaw_hermes_spec.sh" should be exist
 End
 
 It 'has spec file for home-manager/modules/openclaw/activate.sh'
-The path "spec/activate_paperclip_openclaw_spec.sh" should be exist
+The path "spec/activate_openclaw_hermes_spec.sh" should be exist
 End
 
 It 'has spec file for home-manager/modules/tailscale/activate-create-dirs.sh'
