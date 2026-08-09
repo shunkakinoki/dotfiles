@@ -295,6 +295,9 @@
       }
     ]
   },
+  "commitments": {
+    "enabled": true
+  },
   "session": {
     "dmScope": "per-channel-peer"
   },
