@@ -23,6 +23,7 @@ It 'sets restrictive permissions'
 When run bash -c "grep 'chmod 700' '$SCRIPT'"
 The output should include 'chmod 700'
 End
+
 End
 
 Describe 'home-manager/services/openclaw/default.nix'
@@ -80,11 +81,36 @@ It 'sets restrictive permissions'
 When run bash -c "grep 'chmod 700' '$SCRIPT'"
 The output should include 'chmod 700'
 End
+
+It 'builds the Hermes dashboard with optional native dependencies'
+When run bash -c "grep -F -- '--include=optional --ignore-scripts=false' '$SCRIPT'"
+The output should include 'install --workspace web --include=optional --ignore-scripts=false'
+End
+
+It 'builds the Hermes dashboard bundle during activation'
+When run bash -c "grep -F -- 'run build --workspace web' '$SCRIPT'"
+The output should include 'run build --workspace web'
+End
 End
 
 Describe 'home-manager/services/hermes/default.nix'
 It 'quotes the home directory argument when invoking the helper'
 When run cat "$PWD/home-manager/services/hermes/default.nix"
 The output should include '"${./activate.sh}" "${homeDir}"'
+End
+
+It 'passes the compatible Nix npm binary to the activation helper'
+When run bash -c "grep -F 'nodejs_22' '$PWD/home-manager/services/hermes/default.nix'"
+The output should include 'nodejs_22'
+End
+
+It 'serves the prebuilt dashboard without rebuilding under the service npm'
+When run bash -c "grep -F -- '--skip-build' '$PWD/home-manager/services/hermes/default.nix'"
+The output should include '--skip-build'
+End
+
+It 'restarts the dashboard when Home Manager changes the unit'
+When run bash -c "sed -n '/systemd.user.services.hermes-dashboard =/,/Install = {/p' '$PWD/home-manager/services/hermes/default.nix' | grep -F 'X-SwitchMethod = \"restart\";'"
+The output should include 'X-SwitchMethod = "restart";'
 End
 End

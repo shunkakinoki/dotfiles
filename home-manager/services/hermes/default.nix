@@ -8,10 +8,11 @@
 let
   inherit (inputs) host;
   homeDir = config.home.homeDirectory;
+  hermesNode = pkgs.nodejs_22;
 in
 lib.mkIf host.isKyber {
   home.activation.hermesSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${homeDir}"
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${homeDir}" "${hermesNode}/bin/npm"
   '';
 
   systemd.user.services.hermes-gateway = {
@@ -31,7 +32,9 @@ lib.mkIf host.isKyber {
       RestartSec = "5s";
       Environment = [
         "HOME=${homeDir}"
-        "PATH=${homeDir}/.local/bin:${homeDir}/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin"
+        "PATH=${hermesNode}/bin:${homeDir}/.local/bin:${homeDir}/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin"
+        "NPM_CONFIG_INCLUDE=optional"
+        "NPM_CONFIG_IGNORE_SCRIPTS=false"
       ];
       WorkingDirectory = "${homeDir}/.hermes";
       StandardOutput = "append:/tmp/hermes/hermes-gateway.log";
@@ -52,9 +55,10 @@ lib.mkIf host.isKyber {
     };
     Service = {
       Type = "simple";
-      ExecStart = "${homeDir}/.local/bin/hermes dashboard --host 127.0.0.1 --port 9119 --no-open";
+      ExecStart = "${homeDir}/.local/bin/hermes dashboard --host 127.0.0.1 --port 9119 --no-open --skip-build";
       Restart = "always";
       RestartSec = "5s";
+      X-SwitchMethod = "restart";
       Environment = [
         "HOME=${homeDir}"
         "PATH=${homeDir}/.local/bin:${homeDir}/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin"
