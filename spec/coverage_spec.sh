@@ -65,6 +65,10 @@ It 'has spec file for home-manager/services/cass/daily.sh'
 The path "spec/cass_indexer_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/programs/cass/hydrate.sh'
+The path "spec/cass_indexer_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/caam/setup.sh'
 The path "spec/caam_sync_service_spec.sh" should be exist
 End
@@ -510,6 +514,7 @@ home-manager/modules/tailscale/activate-create-dirs.sh
 home-manager/modules/tailscale/activate-install-service.sh
 home-manager/modules/uv-globals/install-uv-globals.sh
 home-manager/programs/bash/bash_env.sh
+home-manager/programs/cass/hydrate.sh
 home-manager/programs/fnm/activate.sh
 home-manager/programs/neovim/activate-build-plugins.sh
 home-manager/programs/neovim/activate-copy-pack-lock.sh

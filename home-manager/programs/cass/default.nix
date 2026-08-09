@@ -1,8 +1,12 @@
-{ pkgs, ... }:
 {
-  xdg.configFile."cass/sources.toml".source = ./sources.toml;
-  home.file."Library/Application Support/cass/sources.toml" = {
-    enable = pkgs.stdenv.isDarwin;
-    source = ./sources.toml;
-  };
+  config,
+  pkgs,
+  ...
+}:
+{
+  # sources.toml is hydrated at activation so each machine can drop itself from
+  # the peer list using its runtime hostname.
+  home.activation.hydrateCassSources = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./hydrate.sh}" || true
+  '';
 }
