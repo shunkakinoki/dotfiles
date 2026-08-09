@@ -360,9 +360,6 @@ It 'has spec file for named-hosts/kyber/activate-ip-forwarding.sh'
 The path "spec/activate_kyber_spec.sh" should be exist
 End
 
-It 'has spec file for named-hosts/kyber/activate-build-toolchain.sh'
-The path "spec/kyber_build_toolchain_spec.sh" should be exist
-End
 
 It 'has spec file for home-manager/activation/ensure-tailscale-serve.sh'
 The path "spec/tailscale_serve_spec.sh" should be exist
@@ -563,7 +560,6 @@ hosts/darwin/activate-remove-backups.sh
 hosts/linux/activate-backup-files.sh
 install.sh
 named-hosts/kyber/activate-backup-files.sh
-named-hosts/kyber/activate-build-toolchain.sh
 named-hosts/kyber/activate-ip-forwarding.sh
 named-hosts/kyber/activate-sshd.sh
 named-hosts/kyber/prepare-containerd-disk.sh

@@ -134,14 +134,6 @@ home-manager.lib.homeManagerConfiguration {
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-ip-forwarding.sh}"
         '';
 
-        # System C/C++ toolchain for native node addons. Must run before the npm
-        # globals install, which builds node-pty and needs the distro compiler --
-        # a nix compiler targets the nix glibc and produces addons the fnm node
-        # cannot dlopen.
-        home.activation.installBuildToolchain = lib.hm.dag.entryBefore [ "installNpmGlobals" ] ''
-          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-build-toolchain.sh}"
-        '';
-
         # Publish the T3 server over tailnet HTTPS. openclaw already owns :443
         # here, and T3's discovery path must sit at the serve root, so T3 gets
         # its own HTTPS port: https://kyber.tail950b36.ts.net:8443

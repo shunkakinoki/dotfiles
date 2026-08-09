@@ -15,15 +15,13 @@ set -euo pipefail
 
 TAG="${T3_CONNECT_TAG:-nightly}"
 
-# On a distro with nix installed alongside the system (kyber: Ubuntu + nix),
-# ~/.nix-profile/bin shadows the system compiler. node-gyp then links pty.node
-# against the nix glibc while the runtime node uses the system loader, giving
-# `GLIBC_2.42 not found` at dlopen. Pin the system toolchain there. NixOS is
-# self-consistent and must keep its own compiler.
-if [ ! -e /etc/NIXOS ] && [ -x /usr/bin/g++ ] && [ -x /usr/bin/gcc ]; then
-  export CC=/usr/bin/gcc CXX=/usr/bin/g++
-fi
-
+# A native addon must be built by a compiler whose libc matches the node that
+# loads it: a nix-gcc build needs the nix glibc and fails dlopen under a
+# generic node (`GLIBC_2.42 not found`), and vice versa. Everything here is
+# nix -- the unit's PATH supplies both nix gcc and nix nodejs, and `t3 service`
+# is installed against the same nix node -- so the pair stays consistent with
+# no distro toolchain involved.
+#
 # npx keys its cache dir on the literal spec string, not the resolved version,
 # so `t3@nightly` and `t3@0.0.33-nightly.20260809.1041` land in different dirs.
 # The client resolves the tag before invoking npx, so warm the exact version or
