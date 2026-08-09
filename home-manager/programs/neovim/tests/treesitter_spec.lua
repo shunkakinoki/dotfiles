@@ -2,6 +2,19 @@
 -- Tests treesitter configuration
 
 describe("treesitter", function()
+	describe("manager revision installer", function()
+		it("pins the raw commit fetch fix", function()
+			local source = debug.getinfo(1, "S").source:sub(2)
+			local nvim_dir = vim.fn.fnamemodify(source, ":p:h:h")
+			local lockfile = table.concat(vim.fn.readfile(nvim_dir .. "/nvim-pack-lock.json"), "\n")
+			local manager = vim.json.decode(lockfile).plugins["tree-sitter-manager.nvim"]
+
+			assert.are.equal("6e5f2e7e13e7367fe7c4f83340d25832a7842fe6", manager.rev)
+			assert.are.equal("https://github.com/shunkakinoki/tree-sitter-manager.nvim", manager.src)
+			assert.are.equal("'fix/revision-sha-fetch'", manager.version)
+		end)
+	end)
+
 	describe("configured parsers", function()
 		local configured = require("config.treesitter_parsers")
 		local available = require("nvim-treesitter").get_available()

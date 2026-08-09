@@ -71,7 +71,11 @@ vim.pack.add({
 		src = "https://github.com/nvim-treesitter/nvim-treesitter",
 		version = "main",
 	},
-	{ src = "https://github.com/romus204/tree-sitter-manager.nvim" },
+	{
+		-- Raw commit installs fail on Git 2.49+ until upstream PR #199 lands.
+		src = "https://github.com/shunkakinoki/tree-sitter-manager.nvim",
+		version = "fix/revision-sha-fetch",
+	},
 	{ src = "https://github.com/lukas-reineke/indent-blankline.nvim" },
 	{ src = "https://github.com/wansmer/treesj" },
 	{ src = "https://github.com/windwp/nvim-autopairs" },
