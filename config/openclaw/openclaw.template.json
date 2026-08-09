@@ -306,6 +306,13 @@
       "mode": "interrupt"
     }
   },
+  "tools": {
+    "web": {
+      "search": {
+        "enabled": true
+      }
+    }
+  },
   "commands": {
     "native": "auto",
     "nativeSkills": "auto"
