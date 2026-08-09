@@ -62,8 +62,25 @@ The output should include 'npm rebuild --ignore-scripts=false node-pty'
 The status should be success
 End
 
-It 'skips rebuild when pty.node is already built'
+# A wrong-toolchain build still drops pty.node, so presence must NOT count as
+# done -- only a successful require() may skip the rebuild.
+It 'rebuilds anyway when pty.node exists but does not load'
 When run bash -c "$(declare -f make_cache_dir); make_cache_dir; mkdir -p \"\$HOME/.npm/_npx/abc123/node_modules/node-pty/build/Release\"; touch \"\$HOME/.npm/_npx/abc123/node_modules/node-pty/build/Release/pty.node\"; bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
+The output should include 'npm rebuild --ignore-scripts=false node-pty'
+The status should be success
+End
+
+mock_node_loads() {
+  cat >"$MOCK_BIN/node" <<'EOF'
+#!/usr/bin/env bash
+printf '%s\n' "$0 $*" >>"$MOCK_LOG"
+exit 0
+EOF
+  chmod +x "$MOCK_BIN/node"
+}
+
+It 'skips rebuild when node-pty already loads'
+When run bash -c "$(declare -f make_cache_dir mock_node_loads); make_cache_dir; mock_node_loads; bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
 The output should not include 'npm rebuild'
 The status should be success
 End

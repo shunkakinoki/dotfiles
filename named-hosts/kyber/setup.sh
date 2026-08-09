@@ -19,6 +19,24 @@ if ! command -v crontab &>/dev/null; then
 fi
 sudo systemctl enable --now cron
 
+# 1b. Install the system C/C++ toolchain
+#
+# Kyber runs Ubuntu with nix layered on top, so ~/.nix-profile/bin shadows the
+# system compiler. node-gyp would then link native addons (node-pty) against the
+# nix glibc while the runtime node -- a generic build from fnm -- uses the system
+# loader, so dlopen fails with `GLIBC_2.42 not found` even though the .node file
+# exists. Ubuntu ships gcc but not g++, which is what forces that fallback.
+# build-essential provides gcc, g++, make and libc6-dev against the system glibc.
+echo "📦 Installing build toolchain (node-gyp needs a system g++)..."
+if ! [ -x /usr/bin/g++ ]; then
+  sudo apt-get update
+  sudo apt-get install -y build-essential
+fi
+if ! [ -x /usr/bin/g++ ]; then
+  echo "❌ /usr/bin/g++ still missing; native node addons will not load" >&2
+  exit 1
+fi
+
 # 2. Install Tailscale
 echo "📦 Installing Tailscale..."
 if ! command -v tailscale &>/dev/null; then

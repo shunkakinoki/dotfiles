@@ -36,9 +36,16 @@ npx --yes "$spec" --version >/dev/null
 # Two independent trees need the native module: the npx cache used by the
 # client's SSH launch, and the runtime `t3 service` installs for its systemd
 # unit.
+#
+# Gate on loading, not on the file existing. A build with the wrong toolchain
+# still drops pty.node, so a presence check would treat a binary that fails
+# dlopen as done and skip it forever.
 for dir in "$HOME"/.npm/_npx/*/ "$HOME"/.t3/runtime/versions/*/; do
   pty="${dir}node_modules/node-pty"
-  if [ -d "$pty" ] && [ ! -f "$pty/build/Release/pty.node" ]; then
-    (cd "$dir" && npm rebuild --ignore-scripts=false node-pty >/dev/null)
+  [ -d "$pty" ] || continue
+  if node -e 'require(process.argv[1])' "$pty" >/dev/null 2>&1; then
+    continue
   fi
+  rm -rf "${pty:?}/build"
+  (cd "$dir" && npm rebuild --ignore-scripts=false node-pty >/dev/null)
 done
