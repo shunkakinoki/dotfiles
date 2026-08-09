@@ -122,6 +122,21 @@ It 'routes DeepSeek presets through OpenRouter with OpenCode Go fallbacks in Cli
 When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"@preset/deepseek-v4-pro\"' && sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"@preset/deepseek-v4-flash\"' && sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4-pro\"' && sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4-flash\"'"
 The status should be success
 End
+
+It 'hydrates the versioned Aliyun DeepSeek model behind the canonical alias'
+When run bash -c "section=\$(sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' config/cliproxyapi/config.template.yaml); printf '%s\n' \"\$section\" | grep -q 'name: \"deepseek-v4-flash-0731\"' && printf '%s\n' \"\$section\" | grep -q 'alias: \"deepseek-v4-flash\"'"
+The status should be success
+End
+
+It 'orders DeepSeek providers as OpenCode then Aliyun then OpenRouter'
+When run bash -c "grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 300' && grep -A 2 'name: \"aliyun\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 200' && grep -A 2 'name: \"openrouter\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 100'"
+The status should be success
+End
+
+It 'only exposes CLIProxy model aliases selected in models.json'
+When run bash -c "allowed=\$(jq -r '.[]' models.json); while IFS= read -r alias; do printf '%s\n' \"\$allowed\" | grep -Fxq \"\$alias\" || { echo \"unexpected alias: \$alias\"; exit 1; }; done < <(sed -n 's/^[[:space:]]*alias: \"\\(.*\\)\"/\\1/p' config/cliproxyapi/config.template.yaml)"
+The status should be success
+End
 End
 
 Describe 'Codex subagent defaults'
@@ -190,6 +205,8 @@ When run bash -c "grep 'add_model_override' '$SCRIPT'"
 The output should include 'add_model_override'
 The output should include 'gpt-image'
 The output should include 'openrouter'
+The output should include 'deepseek-flash'
+The output should include '0731'
 End
 End
 

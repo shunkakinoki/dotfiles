@@ -231,14 +231,25 @@ End
 End
 
 Describe 'Alibaba Cloud Token Plan provider'
+It 'hydrates the dedicated environment key into the runtime config'
+When run bash -c "grep 's|__ALIYUN_TOKEN_PLAN_API_KEY__|.*ALIYUN_TOKEN_PLAN_API_KEY' '$SCRIPT'"
+The output should include '__ALIYUN_TOKEN_PLAN_API_KEY__'
+The output should include 'ALIYUN_TOKEN_PLAN_API_KEY'
+The status should be success
+End
+
 It 'declares a dedicated prefixed upstream and secret placeholder'
 When run bash -c "sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'prefix: "aliyun"'
 The output should include 'base-url: "https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1"'
 The output should include 'api-key: "__ALIYUN_TOKEN_PLAN_API_KEY__"'
-The output should include 'name: "qwen3.8-max"'
+The output should include 'priority: 200'
+The output should include 'name: "qwen3.6-plus"'
 The output should include 'name: "deepseek-v4-pro"'
-The output should include 'name: "glm-5.2"'
+The output should include 'name: "deepseek-v4-flash-0731"'
+The output should include 'alias: "deepseek-v4-flash"'
+The output should not include 'name: "qwen3.8-max"'
+The output should not include 'name: "glm-5.2"'
 The status should be success
 End
 End
