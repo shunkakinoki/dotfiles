@@ -75,6 +75,19 @@ It 'neither nix file inlines a bash -c block'
 When run bash -c "cat '$PWD/home-manager/programs/cass/default.nix' '$PWD/home-manager/services/hermes/default.nix'"
 The output should not include 'bin/bash -c'
 End
+
+# Home Manager aborts in checkLinkTargets ("would be clobbered"), which runs
+# before linkGeneration. Anchoring the cleanup to linkGeneration is too late --
+# it only appeared to work when sibling DAG ordering happened to be favourable.
+It 'runs the cass cleanup before checkLinkTargets'
+When run bash -c "grep -A1 'cassSourcesCleanup' '$PWD/home-manager/programs/cass/default.nix' | head -1"
+The output should include 'entryBefore [ "checkLinkTargets" ]'
+End
+
+It 'runs the hermes cleanup before checkLinkTargets'
+When run bash -c "grep -A1 'hermesCleanup' '$PWD/home-manager/services/hermes/default.nix' | head -1"
+The output should include 'entryBefore [ "checkLinkTargets" ]'
+End
 End
 
 End
