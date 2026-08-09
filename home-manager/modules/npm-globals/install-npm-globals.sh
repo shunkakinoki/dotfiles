@@ -74,52 +74,6 @@ repair_sqlite3_native_binding() {
   echo "sqlite3 native binding rebuilt"
 }
 
-# node-pty ships no linux-x64 prebuild, so pty.node only exists if its install
-# script compiles it. It is deliberately NOT in trustedDependencies: on a distro
-# with nix layered on (kyber: Ubuntu + nix), ~/.nix-profile/bin shadows the
-# system compiler, so an unattended build links against the nix glibc while the
-# runtime node uses the system loader -- the file lands but dlopen fails with
-# `GLIBC_2.42 not found`. Presence is therefore not proof; verify by loading.
-#
-# `npm rebuild` is unusable here: t3's package.json carries bun's nested-override
-# syntax ("@clerk/clerk-js>@base-org/account"), which npm rejects as an invalid
-# package name. Drive node-gyp directly in the module dir instead.
-repair_node_pty_native_binding() {
-  local failed=0 dir
-  local -a cc_env=()
-
-  # NixOS is self-consistent and must keep its own toolchain.
-  if [ ! -e /etc/NIXOS ] && [ -x /usr/bin/gcc ] && [ -x /usr/bin/g++ ]; then
-    cc_env=(CC=/usr/bin/gcc CXX=/usr/bin/g++)
-  fi
-
-  if ! command -v node &>/dev/null || ! command -v node-gyp &>/dev/null; then
-    return 0
-  fi
-
-  # Top level plus one nesting level: bun hoists inconsistently, and t3 keeps its
-  # own copy under t3/node_modules/node-pty.
-  while IFS= read -r dir; do
-    [ -d "$dir" ] || continue
-    if node -e 'require(process.argv[1])' "$dir" >/dev/null 2>&1; then
-      continue
-    fi
-    echo "Rebuilding node-pty native binding: $dir"
-    rm -rf "${dir:?}/build"
-    if ! (cd "$dir" && env "${cc_env[@]}" node-gyp rebuild) >/dev/null 2>&1; then
-      echo "node-gyp rebuild failed for $dir" >&2
-      failed=1
-      continue
-    fi
-    if ! node -e 'require(process.argv[1])' "$dir" >/dev/null 2>&1; then
-      echo "node-pty still not loadable after rebuild: $dir" >&2
-      failed=1
-    fi
-  done < <(find "$GLOBAL_MODULES" -maxdepth 3 -type d -name node-pty -not -path '*/node-pty/*' 2>/dev/null)
-
-  return "$failed"
-}
-
 # The @posthog/cli npm package is a cargo-dist launcher: `posthog-cli` is a
 # native binary that, for the `api` subcommand, self-extracts its bundled
 # posthog-api-cli.mjs into ${HOME}/.posthog/api-cli/<version>/ and runs it with
@@ -555,10 +509,6 @@ done
 
 if ! repair_sqlite3_native_binding; then
   echo "Warning: sqlite3 native binding repair failed" >&2
-fi
-
-if ! repair_node_pty_native_binding; then
-  echo "Warning: node-pty native binding repair failed" >&2
 fi
 
 if ! verify_posthog_api_cli; then

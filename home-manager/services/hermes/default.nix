@@ -14,14 +14,11 @@ lib.mkIf host.isKyber {
   # Clean up writable copies that Hermes activate.sh creates (replacing Nix-managed
   # symlinks) so they don't block the next nix-switch's linkGeneration.
   home.activation.hermesCleanup = config.lib.dag.entryBefore [ "linkGeneration" ] ''
-    $DRY_RUN_CMD ${pkgs.bash}/bin/bash -c '
-      for f in hermes-gateway.service hermes-dashboard.service hermes-dashboard-proxy.service; do
-        unit="${homeDir}/.config/systemd/user/$f"
-        if [ -f "$unit" ] && [ ! -L "$unit" ]; then
-          rm -f "$unit"
-        fi
-      done
-    '
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-cleanup-units.sh}" \
+      "${homeDir}/.config/systemd/user" \
+      hermes-gateway.service \
+      hermes-dashboard.service \
+      hermes-dashboard-proxy.service
   '';
 
   home.activation.hermesSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''

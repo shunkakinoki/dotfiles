@@ -1316,7 +1316,18 @@ t3-service: t3-linger ## Install/repair the T3 background server so the client n
 		exit 1; \
 	fi; \
 	echo "🔧 Installing T3 background service..."; \
-	"$$T3_BIN" service install || "$$T3_BIN" service update; \
+	NIX_NODE_BIN=""; \
+	for c in "$$HOME/.nix-profile/bin/node" "/etc/profiles/per-user/$$(id -un)/bin/node" "/run/current-system/sw/bin/node"; do \
+		[ -x "$$c" ] || continue; \
+		case "$$(readlink -f "$$c")" in /nix/store/*) NIX_NODE_BIN="$$(dirname "$$c")"; break ;; esac; \
+	done; \
+	if [ -n "$$NIX_NODE_BIN" ]; then \
+		echo "   pinning the service to the nix node at $$NIX_NODE_BIN"; \
+	else \
+		echo "   no nix node found; leaving the service on the default node"; \
+	fi; \
+	PATH="$${NIX_NODE_BIN:+$$NIX_NODE_BIN:}$$PATH" "$$T3_BIN" service install \
+		|| PATH="$${NIX_NODE_BIN:+$$NIX_NODE_BIN:}$$PATH" "$$T3_BIN" service update; \
 	systemctl --user daemon-reload; \
 	systemctl --user enable --now t3code.service || true; \
 	echo "🔧 Building native modules for the service runtime..."; \

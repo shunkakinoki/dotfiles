@@ -360,6 +360,19 @@ It 'has spec file for named-hosts/kyber/activate-ip-forwarding.sh'
 The path "spec/activate_kyber_spec.sh" should be exist
 End
 
+
+It 'has spec file for home-manager/activation/ensure-tailscale-serve.sh'
+The path "spec/tailscale_serve_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/programs/cass/activate-cleanup-sources.sh'
+The path "spec/activation_cleanup_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/services/hermes/activate-cleanup-units.sh'
+The path "spec/activation_cleanup_spec.sh" should be exist
+End
+
 It 'has spec file for named-hosts/kyber/activate-sshd.sh'
 The path "spec/activate_kyber_spec.sh" should be exist
 End
@@ -373,11 +386,11 @@ The path "spec/activate_firewall_spec.sh" should be exist
 End
 
 It 'has spec file for home-manager/services/hermes/activate.sh'
-The path "spec/activate_paperclip_openclaw_spec.sh" should be exist
+The path "spec/activate_openclaw_hermes_spec.sh" should be exist
 End
 
 It 'has spec file for home-manager/modules/openclaw/activate.sh'
-The path "spec/activate_paperclip_openclaw_spec.sh" should be exist
+The path "spec/activate_openclaw_hermes_spec.sh" should be exist
 End
 
 It 'has spec file for home-manager/modules/tailscale/activate-create-dirs.sh'
@@ -489,6 +502,7 @@ config/roborev/hydrate.sh
 config/serena/activate.sh
 home-manager/activation/deploy-agenix-secret.sh
 home-manager/activation/ensure-directory.sh
+home-manager/activation/ensure-tailscale-serve.sh
 home-manager/activation/import-gpg-key.sh
 home-manager/modules/bin-shells/activate.sh
 home-manager/modules/cargo-globals/install-cargo-globals.sh
@@ -503,6 +517,7 @@ home-manager/modules/local-scripts/tmux-bridge.sh
 home-manager/modules/npm-globals/install-npm-globals.sh
 home-manager/modules/secure-dotenv/secure-dotenv.sh
 home-manager/services/firewall/activate.sh
+home-manager/services/hermes/activate-cleanup-units.sh
 home-manager/services/hermes/activate.sh
 home-manager/services/obsidian/obsidian-git-trigger.sh
 home-manager/services/obsidian/obsidian-headless.sh
@@ -514,6 +529,7 @@ home-manager/modules/tailscale/activate-create-dirs.sh
 home-manager/modules/tailscale/activate-install-service.sh
 home-manager/modules/uv-globals/install-uv-globals.sh
 home-manager/programs/bash/bash_env.sh
+home-manager/programs/cass/activate-cleanup-sources.sh
 home-manager/programs/cass/hydrate.sh
 home-manager/programs/fnm/activate.sh
 home-manager/programs/neovim/activate-build-plugins.sh

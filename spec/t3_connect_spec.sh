@@ -62,8 +62,25 @@ The output should include 'npm rebuild --ignore-scripts=false node-pty'
 The status should be success
 End
 
-It 'skips rebuild when pty.node is already built'
+# A wrong-toolchain build still drops pty.node, so presence must NOT count as
+# done -- only a successful require() may skip the rebuild.
+It 'rebuilds anyway when pty.node exists but does not load'
 When run bash -c "$(declare -f make_cache_dir); make_cache_dir; mkdir -p \"\$HOME/.npm/_npx/abc123/node_modules/node-pty/build/Release\"; touch \"\$HOME/.npm/_npx/abc123/node_modules/node-pty/build/Release/pty.node\"; bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
+The output should include 'npm rebuild --ignore-scripts=false node-pty'
+The status should be success
+End
+
+mock_node_loads() {
+  cat >"$MOCK_BIN/node" <<'EOF'
+#!/usr/bin/env bash
+printf '%s\n' "$0 $*" >>"$MOCK_LOG"
+exit 0
+EOF
+  chmod +x "$MOCK_BIN/node"
+}
+
+It 'skips rebuild when node-pty already loads'
+When run bash -c "$(declare -f make_cache_dir mock_node_loads); make_cache_dir; mock_node_loads; bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
 The output should not include 'npm rebuild'
 The status should be success
 End
@@ -103,13 +120,40 @@ The output should include 'pkgs.gcc'
 The output should include 'pkgs.gnumake'
 The output should include 'pkgs.python3'
 End
+
+# nix gcc and nix nodejs must come from the same PATH so the addon it builds is
+# loadable by the node that will require it.
+It 'supplies nodejs from nix alongside the nix compiler'
+When run bash -c "cat '$UNIT'"
+The output should include 'pkgs.nodejs'
+End
+End
+
+Describe 'service node pinning'
+MAKEFILE="$PWD/Makefile"
+
+# t3 bakes the node it finds on PATH into t3code.service ExecStart. If that is a
+# generic (fnm) node it cannot load the nix-built addon, so the install must run
+# with the nix node first.
+It 'installs the t3 service against the nix node'
+When run bash -c "sed -n '/^t3-service:/,/service status/p' '$MAKEFILE'"
+The output should include 'NIX_NODE_BIN'
+The output should include '.nix-profile/bin/node'
+End
 End
 
 Describe 'toolchain selection'
-It 'documents the nix/system glibc mismatch'
+# A native addon must be built by a compiler whose libc matches the node that
+# loads it. Everything here is nix, so no distro compiler may be pinned in.
+It 'documents the libc/loader pairing'
 When run bash -c "cat '$SCRIPT'"
 The output should include 'GLIBC'
-The output should include '/etc/NIXOS'
+End
+
+It 'pins no distro toolchain'
+When run bash -c "cat '$SCRIPT'"
+The output should not include '/usr/bin/g++'
+The output should not include '/etc/NIXOS'
 End
 End
 
