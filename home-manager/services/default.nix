@@ -32,6 +32,7 @@ let
   roborev = ./roborev;
   screenshotClipboard = import ./screenshot-clipboard { inherit pkgs; };
   sshAgent = ./ssh-agent;
+  t3Connect = import ./t3-connect { inherit pkgs; };
   tmuxSessionLogger = import ./tmux-session-logger { inherit pkgs; };
   tokscale = import ./tokscale { inherit config lib pkgs; };
 in
@@ -62,6 +63,7 @@ in
   roborev
   screenshotClipboard
   sshAgent
+  t3Connect
   tmuxSessionLogger
   tokscale
 ]
