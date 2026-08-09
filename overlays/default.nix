@@ -76,20 +76,20 @@
   (_: prev: {
     moshi-hook = prev.stdenv.mkDerivation rec {
       pname = "moshi-hook";
-      version = "0.2.75";
+      version = "0.2.76";
       src = prev.fetchurl {
         url = "https://cdn.getmoshi.app/hook/v${version}/moshi-hook_${
           if prev.stdenv.isDarwin then "Darwin" else "Linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x86_64"}.tar.gz";
         sha256 =
           if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "79b6753f133370fdaf143c423c49d0e854e9d0627c4e5106b72e3656b3ac5390"
+            "3c13c4782b0580128514b8eb54ce52a4be245a1c33b3b2463b40e350710c3392"
           else if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "90a590f669b61a76c2291ff209ab987760caf5525bddec34d48a134ccb7f3ca8"
+            "f5d66c560fdd21b9309f899a14171ced1a0e14dbbf7457c22135f8fb73cdcc82"
           else if prev.stdenv.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "3d3c6f1c1bec7eeeb7911b409a7c796209971782c97d7146ce57ad26bf1df7ae"
+            "372949b560139cc94817f394d04c1693b10f448adc54ab14a56880ff8d0f098b"
           else
-            "a7c48c233695b990449fa4d39c3f9c0f8a25f2b4e9ad79b5adae72452f2c6b8b";
+            "411dc0e83a38fd6d9b306ee954ed4025ce4f53ba0596e47be7926cd712f4c401";
       };
       sourceRoot = ".";
       dontConfigure = true;
