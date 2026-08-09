@@ -81,6 +81,7 @@ done <<<"$model_rows"
 # Provider-specific upstream slugs that intentionally differ from the canonical
 # alias stored in models.json.
 add_model_override "gpt-image" "openrouter" "openai/gpt-5.4-image-2"
+add_model_override "deepseek-flash" "0731" "deepseek-v4-flash-0731"
 
 # Template → output pairs
 declare -A TEMPLATES=(
