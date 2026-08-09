@@ -8,10 +8,11 @@
 let
   inherit (inputs) host;
   homeDir = config.home.homeDirectory;
+  hermesNode = pkgs.nodejs_22;
 in
 lib.mkIf host.isKyber {
   home.activation.hermesSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${homeDir}"
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${homeDir}" "${hermesNode}/bin/npm"
   '';
 
   systemd.user.services.hermes-gateway = {
@@ -31,7 +32,9 @@ lib.mkIf host.isKyber {
       RestartSec = "5s";
       Environment = [
         "HOME=${homeDir}"
-        "PATH=${homeDir}/.local/bin:${homeDir}/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin"
+        "PATH=${hermesNode}/bin:${homeDir}/.local/bin:${homeDir}/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin"
+        "NPM_CONFIG_INCLUDE=optional"
+        "NPM_CONFIG_IGNORE_SCRIPTS=false"
       ];
       WorkingDirectory = "${homeDir}/.hermes";
       StandardOutput = "append:/tmp/hermes/hermes-gateway.log";
@@ -52,9 +55,10 @@ lib.mkIf host.isKyber {
     };
     Service = {
       Type = "simple";
-      ExecStart = "${homeDir}/.local/bin/hermes dashboard --host 127.0.0.1 --port 9119 --no-open";
+      ExecStart = "${homeDir}/.local/bin/hermes dashboard --host 127.0.0.1 --port 9119 --no-open --skip-build";
       Restart = "always";
       RestartSec = "5s";
+      X-SwitchMethod = "restart";
       Environment = [
         "HOME=${homeDir}"
         "PATH=${homeDir}/.local/bin:${homeDir}/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin"
@@ -62,6 +66,24 @@ lib.mkIf host.isKyber {
       WorkingDirectory = "${homeDir}/.hermes";
       StandardOutput = "append:/tmp/hermes/hermes-dashboard.log";
       StandardError = "append:/tmp/hermes/hermes-dashboard.log";
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+  };
+
+  systemd.user.services.hermes-dashboard-proxy = {
+    Unit = {
+      Description = "Hermes dashboard Kubernetes bridge proxy";
+      After = [ "hermes-dashboard.service" ];
+      Requires = [ "hermes-dashboard.service" ];
+    };
+    Service = {
+      Type = "simple";
+      ExecStart = "${pkgs.socat}/bin/socat TCP4-LISTEN:9119,bind=172.17.0.1,reuseaddr,fork TCP4:127.0.0.1:9119";
+      Restart = "always";
+      RestartSec = "5s";
+      X-SwitchMethod = "restart";
     };
     Install = {
       WantedBy = [ "default.target" ];
