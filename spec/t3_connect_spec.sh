@@ -84,6 +84,27 @@ The status should be success
 End
 End
 
+Describe 'systemd unit PATH'
+UNIT="$PWD/home-manager/services/t3-connect/default.nix"
+
+# node-gyp's generated Makefile shells out to these. Omitting them fails the
+# build with `sed: command not found`, which names none of the real cause.
+It 'includes the build tools node-gyp shells out to'
+When run bash -c "cat '$UNIT'"
+The output should include 'pkgs.gnused'
+The output should include 'pkgs.gnugrep'
+The output should include 'pkgs.gawk'
+The output should include 'pkgs.which'
+End
+
+It 'includes a compiler, make and python for node-gyp'
+When run bash -c "cat '$UNIT'"
+The output should include 'pkgs.gcc'
+The output should include 'pkgs.gnumake'
+The output should include 'pkgs.python3'
+End
+End
+
 Describe 'toolchain selection'
 It 'documents the nix/system glibc mismatch'
 When run bash -c "cat '$SCRIPT'"

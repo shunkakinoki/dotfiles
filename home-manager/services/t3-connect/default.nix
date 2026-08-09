@@ -10,14 +10,22 @@ in
     Service = {
       Type = "oneshot";
       Environment = [
+        # node-gyp's generated Makefile shells out to sed/grep/awk/which, so a
+        # minimal PATH fails the compile with `sed: command not found` rather
+        # than anything that names the real dependency.
         "PATH=${
           lib.makeBinPath [
             pkgs.bash
             pkgs.coreutils
+            pkgs.findutils
+            pkgs.gawk
             pkgs.gcc
+            pkgs.gnugrep
             pkgs.gnumake
+            pkgs.gnused
             pkgs.nodejs
             pkgs.python3
+            pkgs.which
           ]
         }"
       ];

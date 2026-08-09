@@ -54,6 +54,9 @@ let
         ++ userExtraGroups;
         home = "/home/${username}";
         shell = pkgs.fish;
+        # Without lingering, systemd --user units only exist while a session is
+        # open, so timers like t3-connect never fire after an unattended reboot.
+        linger = true;
       }
       // lib.optionalAttrs (userInitialPassword != null) {
         initialPassword = userInitialPassword;
