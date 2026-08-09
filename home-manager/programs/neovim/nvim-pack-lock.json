@@ -222,6 +222,11 @@
       "rev": "9a88eae817ef395952e08650b3283726786fb5fb",
       "src": "https://github.com/akinsho/toggleterm.nvim"
     },
+    "tree-sitter-manager.nvim": {
+      "rev": "6e5f2e7e13e7367fe7c4f83340d25832a7842fe6",
+      "src": "https://github.com/shunkakinoki/tree-sitter-manager.nvim",
+      "version": "'fix/revision-sha-fetch'"
+    },
     "treesj": {
       "rev": "4770492244ccecdc9b01e0e81fa8f2f6b4a23841",
       "src": "https://github.com/wansmer/treesj"
