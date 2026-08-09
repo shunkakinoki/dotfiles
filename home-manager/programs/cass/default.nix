@@ -9,9 +9,9 @@
   # until semantic indexing can complete reliably for this archive.
   home.sessionVariables.CASS_SEARCH_MODE = "lexical";
 
-  # Clean up the hydrate.sh output before linkGeneration so it doesn't
+  # Clean up the hydrate.sh output before checkLinkTargets so it does not
   # block the next nix-switch.
-  home.activation.cassSourcesCleanup = config.lib.dag.entryBefore [ "linkGeneration" ] ''
+  home.activation.cassSourcesCleanup = config.lib.dag.entryBefore [ "checkLinkTargets" ] ''
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-cleanup-sources.sh}" \
       "${config.home.homeDirectory}/.config/cass/sources.toml"
   '';

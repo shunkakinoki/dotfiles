@@ -48,6 +48,20 @@ The output should include 'skipping serve setup'
 The status should be success
 End
 
+# Activation runs with a minimal PATH, so a bare `command -v tailscale` finds
+# nothing and the step silently never ran on either host.
+It 'finds tailscale outside PATH'
+When run bash -c "cat '$SCRIPT'"
+The output should include '.nix-profile/bin/tailscale'
+The output should include '/run/current-system/sw/bin/tailscale'
+End
+
+# serve needs root; aborting the switch over it would be worse than skipping.
+It 'skips rather than failing when no sudo is available'
+When run bash -c "cat '$SCRIPT'"
+The output should include 'no sudo/doas available'
+End
+
 It 'skips when the daemon is not running'
 When run bash -c "$(declare -f mock_daemon_down); mock_daemon_down; bash '$SCRIPT' 443 3773 2>&1"
 The output should include 'skipping serve setup'
