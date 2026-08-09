@@ -114,11 +114,19 @@ When run bash -c "sed -n '/systemd.user.services.hermes-dashboard =/,/Install = 
 The output should include 'X-SwitchMethod = "restart";'
 End
 
-It 'bridges the loopback dashboard to the Kubernetes host endpoint'
+# The bridge moved from an inline socat invocation to nginx in #2302/#2306, so
+# the listen/proxy pair now lives in hermes-dashboard-proxy.conf while the unit
+# only references it. Assert both halves so the bridge stays verified.
+It 'runs the bridge from the nginx proxy config'
 When run bash -c "sed -n '/systemd.user.services.hermes-dashboard-proxy =/,/Install = {/p' '$PWD/home-manager/services/hermes/default.nix'"
-The output should include 'socat'
-The output should include 'bind=172.17.0.1'
-The output should include 'TCP4:127.0.0.1:9119'
+The output should include 'nginx'
+The output should include 'hermes-dashboard-proxy.conf'
 The output should include 'X-SwitchMethod = "restart";'
+End
+
+It 'bridges the loopback dashboard to the Kubernetes host endpoint'
+When run bash -c "cat '$PWD/home-manager/services/hermes/hermes-dashboard-proxy.conf'"
+The output should include 'listen 172.17.0.1:9119;'
+The output should include 'proxy_pass http://127.0.0.1:9119;'
 End
 End

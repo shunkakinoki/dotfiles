@@ -562,6 +562,13 @@ import ../../hosts/nixos {
                 "C2E97FCFF482925D"
             '';
 
+            # Publish the T3 server over tailnet HTTPS so remote clients can
+            # reach https://matic.tail950b36.ts.net. Nothing else serves :443
+            # here, so T3 takes the root.
+            home.activation.tailscaleServeT3 = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+              $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 443 3773
+            '';
+
             # GPG configuration for commit signing
             programs.gpg = {
               enable = true;

@@ -364,6 +364,10 @@ It 'has spec file for named-hosts/kyber/activate-build-toolchain.sh'
 The path "spec/kyber_build_toolchain_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/activation/ensure-tailscale-serve.sh'
+The path "spec/tailscale_serve_spec.sh" should be exist
+End
+
 It 'has spec file for named-hosts/kyber/activate-sshd.sh'
 The path "spec/activate_kyber_spec.sh" should be exist
 End
@@ -493,6 +497,7 @@ config/roborev/hydrate.sh
 config/serena/activate.sh
 home-manager/activation/deploy-agenix-secret.sh
 home-manager/activation/ensure-directory.sh
+home-manager/activation/ensure-tailscale-serve.sh
 home-manager/activation/import-gpg-key.sh
 home-manager/modules/bin-shells/activate.sh
 home-manager/modules/cargo-globals/install-cargo-globals.sh
