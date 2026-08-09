@@ -17,6 +17,11 @@ End
 End
 
 Describe 'cass commands'
+It 'does not start a persistent watch indexer'
+When run bash -c "! rg -F '\${cass} index --watch' home-manager/services/cass/default.nix"
+The status should be success
+End
+
 It 'runs sources sync'
 When run bash -c "cat '$SCRIPT'"
 The output should include 'sources sync'
@@ -38,6 +43,15 @@ The output should include '! -x'
 End
 End
 
+End
+
+Describe 'cass interactive defaults'
+PROGRAM="$PWD/home-manager/programs/cass/default.nix"
+
+It 'defaults search to lexical mode'
+When run bash -c "grep -F 'CASS_SEARCH_MODE = \"lexical\"' '$PROGRAM'"
+The output should include 'CASS_SEARCH_MODE = "lexical"'
+End
 End
 
 Describe 'cass/hydrate.sh'

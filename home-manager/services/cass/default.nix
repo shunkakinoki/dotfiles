@@ -1,24 +1,11 @@
 { pkgs, ... }:
 let
   inherit (pkgs) lib;
-  cass = "$HOME/.local/bin/cass";
 in
 {
-  # Persistent watcher - incrementally indexes new sessions via filesystem notifications
-  launchd.agents.cass-watcher = lib.mkIf pkgs.stdenv.isDarwin {
-    enable = true;
-    config = {
-      ProgramArguments = [
-        "${pkgs.bash}/bin/bash"
-        "-c"
-        "${cass} index --watch"
-      ];
-      KeepAlive = true;
-      RunAtLoad = true;
-      StandardOutPath = "/tmp/cass-watcher.log";
-      StandardErrorPath = "/tmp/cass-watcher.error.log";
-    };
-  };
+  # Do not run `cass index --watch` persistently. On large archives it can
+  # wedge during startup, and launchd/systemd restart it indefinitely, which
+  # blocks the TUI's otherwise usable lexical search path.
 
   # Daily remote sync + analytics rebuild (runs at 4am)
   launchd.agents.cass-daily = lib.mkIf pkgs.stdenv.isDarwin {
@@ -36,22 +23,6 @@ in
       ];
       StandardOutPath = "/tmp/cass-daily.log";
       StandardErrorPath = "/tmp/cass-daily.error.log";
-    };
-  };
-
-  systemd.user.services.cass-watcher = lib.mkIf pkgs.stdenv.isLinux {
-    Unit = {
-      Description = "cass incremental session indexer (watch mode)";
-      After = [ "network.target" ];
-    };
-    Service = {
-      Type = "simple";
-      ExecStart = "${pkgs.bash}/bin/bash -c '${cass} index --watch'";
-      Restart = "always";
-      RestartSec = 10;
-    };
-    Install = {
-      WantedBy = [ "default.target" ];
     };
   };
 

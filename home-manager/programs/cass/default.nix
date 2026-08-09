@@ -4,6 +4,11 @@
   ...
 }:
 {
+  # Hybrid is Cass's upstream default, but it starts semantic refinement even
+  # when only the lexical index is ready. Keep interactive search responsive
+  # until semantic indexing can complete reliably for this archive.
+  home.sessionVariables.CASS_SEARCH_MODE = "lexical";
+
   # Clean up the hydrate.sh output before linkGeneration so it doesn't
   # block the next nix-switch.
   home.activation.cassSourcesCleanup = config.lib.dag.entryBefore [ "linkGeneration" ] ''
