@@ -1,7 +1,17 @@
 model:
-  default: cliproxy/minimax-m3
+  default: cliproxy/deepseek-v4-flash
 providers: {}
-fallback_providers: []
+fallback_providers:
+  - provider: cliproxy
+    model: deepseek-v4-pro
+  - provider: cliproxy
+    model: gemma-4-31b-it
+  - provider: cliproxy
+    model: glm-4.7
+  - provider: cliproxy
+    model: minimax-m3
+  - provider: cliproxy
+    model: free
 credential_pool_strategies: {}
 toolsets:
   - hermes-cli
