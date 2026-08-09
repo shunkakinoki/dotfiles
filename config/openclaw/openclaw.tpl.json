@@ -433,7 +433,9 @@
       "memory-core": {
         "config": {
           "dreaming": {
-            "enabled": true
+            "enabled": true,
+            "frequency": "0 */3 * * *",
+            "timezone": "UTC"
           }
         }
       },
