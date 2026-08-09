@@ -134,6 +134,14 @@ home-manager.lib.homeManagerConfiguration {
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-ip-forwarding.sh}"
         '';
 
+        # System C/C++ toolchain for native node addons. Must run before the npm
+        # globals install, which builds node-pty and needs the distro compiler --
+        # a nix compiler targets the nix glibc and produces addons the fnm node
+        # cannot dlopen.
+        home.activation.installBuildToolchain = lib.hm.dag.entryBefore [ "installNpmGlobals" ] ''
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-build-toolchain.sh}"
+        '';
+
         # Tailscale configuration
         # Using system-level service only (via installSystemService)
         # User services are disabled by leaving serviceConfig empty

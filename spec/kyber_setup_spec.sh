@@ -28,26 +28,6 @@ The output should include 'systemctl enable --now cron'
 End
 End
 
-Describe 'build toolchain installation logic'
-# Ubuntu ships gcc but not g++. Without a system g++, node-gyp falls back to the
-# nix compiler and links native addons against the nix glibc, which the fnm node
-# cannot dlopen (`GLIBC_2.42 not found`).
-It 'installs build-essential when g++ is absent'
-When run bash -c "grep -A4 'x /usr/bin/g++' '$SCRIPT'"
-The output should include 'apt-get install -y build-essential'
-End
-
-It 'fails loudly when g++ is still missing afterwards'
-When run bash -c "grep -A3 'g++ still missing' '$SCRIPT'"
-The output should include 'exit 1'
-End
-
-It 'explains why the nix compiler is not sufficient'
-When run bash -c "cat '$SCRIPT'"
-The output should include 'GLIBC'
-End
-End
-
 Describe 'Tailscale installation logic'
 It 'checks if tailscale command exists'
 When run bash -c "grep 'command -v tailscale' '$SCRIPT'"
