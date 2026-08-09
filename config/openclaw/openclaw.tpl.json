@@ -439,6 +439,9 @@
           }
         }
       },
+      "active-memory": {
+        "enabled": true
+      },
       "bonjour": {
         "enabled": false
       },
