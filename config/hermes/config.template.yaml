@@ -327,3 +327,9 @@ custom_providers:
     base_url: https://cliproxy.shunkakinoki.com/v1
     api_key: __CLIPROXY_API_KEY__
     api_mode: chat_completions
+platforms:
+  webhook:
+    enabled: true
+    extra:
+      port: 8644
+      secret: __WEBHOOK_SECRET__
