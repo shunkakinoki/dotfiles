@@ -1275,7 +1275,54 @@ launchctl-tmux-session-logger: ## Restart tmux-session-logger launchd agent.
 ##@ Systemd Services (Linux)
 
 .PHONY: systemctl
-systemctl: systemctl-docker systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-cpa-manager-plus systemctl-code-syncer systemctl-docker-postgres systemctl-dolt systemctl-dotfiles-updater systemctl-hermes systemctl-make-updater systemctl-neverssl-keepalive systemctl-noctalia-shell systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-roborev systemctl-tmux-session-logger ## Restart all systemd user services.
+systemctl: systemctl-docker systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-cpa-manager-plus systemctl-code-syncer systemctl-docker-postgres systemctl-dolt systemctl-dotfiles-updater systemctl-hermes systemctl-make-updater systemctl-neverssl-keepalive systemctl-noctalia-shell systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-roborev systemctl-t3-connect systemctl-tmux-session-logger ## Restart all systemd user services.
+
+.PHONY: systemctl-t3-connect
+systemctl-t3-connect: t3-linger ## Restart the t3-connect timer and run it once.
+	@echo "🔄 Restarting t3-connect..."
+	@systemctl --user daemon-reload
+	@systemctl --user restart t3-connect.timer || true
+	@systemctl --user start t3-connect.service || true
+	@echo "✅ t3-connect restarted"
+
+.PHONY: t3-linger
+t3-linger: ## Enable systemd lingering so user timers survive reboot without a login session.
+	@set -eu; \
+	if [ "$(OS)" != "Linux" ]; then \
+		echo "⏭️ Lingering is Linux-only, skipped"; \
+		exit 0; \
+	fi; \
+	user="$$(id -un)"; \
+	if [ "$$(loginctl show-user "$$user" -p Linger --value 2>/dev/null || echo no)" = "yes" ]; then \
+		echo "✅ Lingering already enabled for $$user"; \
+		exit 0; \
+	fi; \
+	echo "🔧 Enabling lingering for $$user..."; \
+	loginctl enable-linger "$$user" 2>/dev/null \
+		|| $(SUDO) loginctl enable-linger "$$user" \
+		|| { echo "❌ Could not enable lingering for $$user"; exit 1; }; \
+	echo "✅ Lingering enabled for $$user"
+
+.PHONY: t3-service
+t3-service: t3-linger ## Install/repair the T3 background server so the client never cold-starts it.
+	@set -eu; \
+	if [ "$(OS)" != "Linux" ]; then \
+		echo "⏭️ T3 background service is Linux-only, skipped"; \
+		exit 0; \
+	fi; \
+	T3_BIN="$$(command -v t3 || true)"; \
+	if [ -z "$$T3_BIN" ]; then \
+		echo "❌ t3 is not installed (expected from package.json npm globals)"; \
+		exit 1; \
+	fi; \
+	echo "🔧 Installing T3 background service..."; \
+	"$$T3_BIN" service install || "$$T3_BIN" service update; \
+	systemctl --user daemon-reload; \
+	systemctl --user enable --now t3code.service || true; \
+	echo "🔧 Building native modules for the service runtime..."; \
+	$(MAKE) systemctl-t3-connect; \
+	systemctl --user restart t3code.service || true; \
+	"$$T3_BIN" service status || true
 
 .PHONY: systemctl-docker
 systemctl-docker: ## Start Docker daemon.
