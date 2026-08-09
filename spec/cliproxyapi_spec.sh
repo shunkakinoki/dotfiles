@@ -15,6 +15,7 @@ setup() {
 api_key: __OPENROUTER_API_KEY__
 openai_api_key: __OPENAI_API_KEY__
 qwen_api_key: __QWEN_API_KEY__
+aliyun_token_plan_api_key: __ALIYUN_TOKEN_PLAN_API_KEY__
 management_password: __CLIPROXY_MANAGEMENT_PASSWORD__
 YAML
 
@@ -23,6 +24,7 @@ YAML
 OPENROUTER_API_KEY=test_openrouter_key
 OPENAI_API_KEY=test_openai_key
 QWEN_API_KEY=test_qwen_key
+ALIYUN_TOKEN_PLAN_API_KEY=test_token_plan_key
 CLIPROXY_MANAGEMENT_PASSWORD=test_mgmt_password
 ENV
 }
@@ -66,12 +68,14 @@ CONFIG="$CONFIG_DIR/config.yaml"
 OPENROUTER_API_KEY="test_key"
 OPENAI_API_KEY="test_openai_key"
 QWEN_API_KEY="test_qwen_key"
+ALIYUN_TOKEN_PLAN_API_KEY="test_token_plan_key"
 CLIPROXY_MANAGEMENT_PASSWORD="test_pass"
 
 if [ -f "$TEMPLATE" ]; then
   sed -e "s|__OPENROUTER_API_KEY__|${OPENROUTER_API_KEY:-}|g" \
     -e "s|__OPENAI_API_KEY__|${OPENAI_API_KEY:-}|g" \
     -e "s|__QWEN_API_KEY__|${QWEN_API_KEY:-}|g" \
+    -e "s|__ALIYUN_TOKEN_PLAN_API_KEY__|${ALIYUN_TOKEN_PLAN_API_KEY:-}|g" \
     -e "s|__CLIPROXY_MANAGEMENT_PASSWORD__|${CLIPROXY_MANAGEMENT_PASSWORD:-}|g" \
     "$TEMPLATE" >"$CONFIG"
 fi
@@ -83,6 +87,7 @@ When run bash -c "HOME='$TEMP_HOME' bash '$TEMP_HOME/test_config.sh'"
 The output should include 'api_key: test_key'
 The output should include 'openai_api_key: test_openai_key'
 The output should include 'qwen_api_key: test_qwen_key'
+The output should include 'aliyun_token_plan_api_key: test_token_plan_key'
 The output should include 'management_password: test_pass'
 The status should be success
 End
@@ -222,6 +227,19 @@ End
 It 'exits with error when binary not found'
 When run bash -c "grep 'exit 1' '$SCRIPT'"
 The output should include 'exit 1'
+End
+End
+
+Describe 'Alibaba Cloud Token Plan provider'
+It 'declares a dedicated prefixed upstream and secret placeholder'
+When run bash -c "sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'prefix: "aliyun"'
+The output should include 'base-url: "https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1"'
+The output should include 'api-key: "__ALIYUN_TOKEN_PLAN_API_KEY__"'
+The output should include 'name: "qwen3.8-max"'
+The output should include 'name: "deepseek-v4-pro"'
+The output should include 'name: "glm-5.2"'
+The status should be success
 End
 End
 

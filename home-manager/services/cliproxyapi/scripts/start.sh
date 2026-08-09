@@ -42,6 +42,7 @@ if [ -f "$TEMPLATE" ]; then
     -e "s|__CLIPROXY_MANAGEMENT_PASSWORD__|${CLIPROXY_MANAGEMENT_PASSWORD:-}|g" \
     -e "s|__ZAI_API_KEY__|${ZAI_API_KEY:-}|g" \
     -e "s|__QWEN_API_KEY__|${QWEN_API_KEY:-${DASHSCOPE_API_KEY:-}}|g" \
+    -e "s|__ALIYUN_TOKEN_PLAN_API_KEY__|${ALIYUN_TOKEN_PLAN_API_KEY:-}|g" \
     -e "s|__OPENCODE_API_KEY__|${OPENCODE_API_KEY:-}|g" \
     -e "s|__AMP_UPSTREAM_API_KEY__|${AMP_UPSTREAM_API_KEY:-}|g" \
     -e "s|__OPENCODE_API_KEY__|${OPENCODE_API_KEY:-}|g" \
