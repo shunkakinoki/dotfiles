@@ -80,7 +80,9 @@ lib.mkIf host.isKyber {
     };
     Service = {
       Type = "simple";
-      ExecStart = "${pkgs.socat}/bin/socat TCP4-LISTEN:9119,bind=172.17.0.1,reuseaddr,fork TCP4:127.0.0.1:9119";
+      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /tmp/hermes-dashboard-proxy";
+      ExecStart = "${pkgs.nginx}/bin/nginx -c ${./hermes-dashboard-proxy.conf} -p /tmp/hermes-dashboard-proxy -g 'daemon off;'";
+      ExecStop = "${pkgs.nginx}/bin/nginx -c ${./hermes-dashboard-proxy.conf} -p /tmp/hermes-dashboard-proxy -s quit";
       Restart = "always";
       RestartSec = "5s";
       X-SwitchMethod = "restart";
