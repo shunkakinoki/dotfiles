@@ -63,7 +63,7 @@ fi
 TELEGRAM_TOKEN="${HERMES_TELEGRAM_TOKEN:-${TELEGRAM_TOKEN:-$(read_secret "${SECRETS_DIR}/telegram-token")}}"
 GATEWAY_TOKEN="${HERMES_GATEWAY_TOKEN:-${GATEWAY_TOKEN:-$(read_secret "${SECRETS_DIR}/gateway-token")}}"
 WHATSAPP_ALLOW_FROM="${WHATSAPP_ALLOW_FROM:-$(read_secret "${SECRETS_DIR}/whatsapp-allow-from")}"
-WEBHOOK_SECRET="${WEBHOOK_SECRET:-$(read_secret "${SECRETS_DIR}/webhook-secret")}"
+WEBHOOK_SECRET="${HERMES_WEBHOOK_SECRET:-$(read_secret "${SECRETS_DIR}/webhook-secret")}"
 
 if [ -z "${GATEWAY_TOKEN}" ]; then
   echo "Warning: HERMES_GATEWAY_TOKEN not set, skipping Hermes hydration" >&2
