@@ -113,4 +113,12 @@ It 'restarts the dashboard when Home Manager changes the unit'
 When run bash -c "sed -n '/systemd.user.services.hermes-dashboard =/,/Install = {/p' '$PWD/home-manager/services/hermes/default.nix' | grep -F 'X-SwitchMethod = \"restart\";'"
 The output should include 'X-SwitchMethod = "restart";'
 End
+
+It 'bridges the loopback dashboard to the Kubernetes host endpoint'
+When run bash -c "sed -n '/systemd.user.services.hermes-dashboard-proxy =/,/Install = {/p' '$PWD/home-manager/services/hermes/default.nix'"
+The output should include 'socat'
+The output should include 'bind=172.17.0.1'
+The output should include 'TCP4:127.0.0.1:9119'
+The output should include 'X-SwitchMethod = "restart";'
+End
 End

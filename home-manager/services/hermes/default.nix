@@ -71,4 +71,22 @@ lib.mkIf host.isKyber {
       WantedBy = [ "default.target" ];
     };
   };
+
+  systemd.user.services.hermes-dashboard-proxy = {
+    Unit = {
+      Description = "Hermes dashboard Kubernetes bridge proxy";
+      After = [ "hermes-dashboard.service" ];
+      Requires = [ "hermes-dashboard.service" ];
+    };
+    Service = {
+      Type = "simple";
+      ExecStart = "${pkgs.socat}/bin/socat TCP4-LISTEN:9119,bind=172.17.0.1,reuseaddr,fork TCP4:127.0.0.1:9119";
+      Restart = "always";
+      RestartSec = "5s";
+      X-SwitchMethod = "restart";
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+  };
 }
