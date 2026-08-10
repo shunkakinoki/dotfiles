@@ -21,7 +21,8 @@
       "name": "CLIProxyAPI (remote)",
       "options": {
         "baseURL": "https://cliproxy.shunkakinoki.com/v1",
-        "apiKey": "{env:CLIPROXY_API_KEY}"
+        "apiKey": "{env:CLIPROXY_API_KEY}",
+        "setCacheKey": true
       },
       "models": {
         "claude-opus-5": {
@@ -76,7 +77,8 @@
       "name": "CLIProxyAPI (local)",
       "options": {
         "baseURL": "http://localhost:8317/v1",
-        "apiKey": "{env:CLIPROXY_API_KEY}"
+        "apiKey": "{env:CLIPROXY_API_KEY}",
+        "setCacheKey": true
       },
       "models": {
         "claude-opus-5": {
