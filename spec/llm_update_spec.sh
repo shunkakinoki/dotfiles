@@ -113,9 +113,9 @@ When run bash -c "sed -n '/\"shunkakinoki\"/,/\"cliproxyapi\"/p' config/opencode
 The status should be success
 End
 
-It 'keeps the explicitly pinned Z-AI small model'
-When run bash -c "grep '\"small_model\": \"shunkakinoki/z-ai/glm-4.7\"' config/opencode/opencode.jsonc"
-The output should include 'shunkakinoki/z-ai/glm-4.7'
+It 'uses the CLIProxy provider-fallback GLM alias for the small model'
+When run bash -c "grep '\"small_model\": \"shunkakinoki/glm-4.7\"' config/opencode/opencode.jsonc"
+The output should include 'shunkakinoki/glm-4.7'
 End
 
 It 'pins the audited OpenCode runtime fallback plugin release'
@@ -124,7 +124,7 @@ The status should be success
 End
 
 It 'generates a separate OpenCode fallback chain'
-When run bash -c "jq -e '.retry_on_errors == [401,404,429,500,502,503,504] and .max_fallback_attempts == 5 and .fallback_models == [\"shunkakinoki/deepseek-v4-pro\",\"shunkakinoki/gemma-4-31b-it\",\"shunkakinoki/glm-4.7\",\"shunkakinoki/minimax-m3\",\"shunkakinoki/free\"]' config/opencode/opencode-fallback.jsonc >/dev/null"
+When run bash -c "jq -e '.retry_on_errors == [401,404,429,500,502,503,504] and .retryable_error_patterns == [\"unknown provider for model\"] and .max_fallback_attempts == 5 and .fallback_models == [\"shunkakinoki/deepseek-v4-pro\",\"shunkakinoki/gemma-4-31b-it\",\"shunkakinoki/glm-4.7\",\"shunkakinoki/minimax-m3\",\"shunkakinoki/free\"]' config/opencode/opencode-fallback.jsonc >/dev/null"
 The status should be success
 End
 

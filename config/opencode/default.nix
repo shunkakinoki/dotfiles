@@ -1,4 +1,9 @@
-_: {
+{
+  config,
+  pkgs,
+  ...
+}:
+{
   home.file.".config/opencode/opencode.jsonc" = {
     source = ./opencode.jsonc;
     force = true;
@@ -23,4 +28,8 @@ _: {
     source = ./moshi-hooks.ts;
     force = true;
   };
+
+  home.activation.installOpenCodePlugins = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${pkgs.opencode}/bin/opencode" "${pkgs.jq}/bin/jq"
+  '';
 }
