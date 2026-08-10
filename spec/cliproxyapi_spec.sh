@@ -278,6 +278,12 @@ The output should include 'alias: "free"'
 The status should be success
 End
 
+It 'preserves prompt cache keys for the OpenRouter provider'
+When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'support-prompt-cache-key: true'
+The status should be success
+End
+
 It 'restarts the Linux service when the managed template changes'
 When run bash -c "sed -n '/systemd.user.services.cliproxyapi =/,/systemd.user.paths.cliproxyapi-backup =/p' '$PWD/home-manager/services/cliproxyapi/default.nix'"
 The output should include 'X-Restart-Triggers'
