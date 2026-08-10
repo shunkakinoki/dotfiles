@@ -20,14 +20,8 @@ template_uses_cliproxy_flash_default() {
     (.models.providers.cliproxy.models | any(.id == "deepseek-v4-flash")) and
     (.models.providers.cliproxy.models | all(
       if (.id == "deepseek-v4-pro" or .id == "deepseek-v4-flash")
-      then (
-        .compat.supportsPromptCacheKey == true and
-        .compat.sendSessionAffinityHeaders == true
-      )
-      else (
-        .compat.supportsPromptCacheKey? != true and
-        .compat.sendSessionAffinityHeaders? != true
-      )
+      then .compat.supportsPromptCacheKey == true
+      else .compat.supportsPromptCacheKey? != true
       end
     ))
   ' "$PWD/config/openclaw/openclaw.template.json" >/dev/null
