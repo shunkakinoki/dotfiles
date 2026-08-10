@@ -1,6 +1,10 @@
 model:
   default: cliproxy/deepseek-v4-flash
-providers: {}
+providers:
+  cliproxy:
+    base_url: https://cliproxy.shunkakinoki.com/v1
+    api_key: __CLIPROXY_API_KEY__
+    api_mode: chat_completions
 fallback_providers:
   - provider: cliproxy
     model: deepseek-v4-pro
