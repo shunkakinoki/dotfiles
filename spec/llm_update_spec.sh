@@ -108,6 +108,11 @@ When run bash -c "grep '\"model\": \"shunkakinoki/deepseek-v4-flash\"' config/op
 The output should include 'shunkakinoki/deepseek-v4-flash'
 End
 
+It 'enables stable prompt cache keys for both CLIProxy providers'
+When run bash -c "sed -n '/\"shunkakinoki\"/,/\"cliproxyapi\"/p' config/opencode/opencode.jsonc | grep -q '\"setCacheKey\": true' && sed -n '/\"cliproxyapi\"/,/\"lmstudio\"/p' config/opencode/opencode.jsonc | grep -q '\"setCacheKey\": true'"
+The status should be success
+End
+
 It 'keeps the explicitly pinned Z-AI small model'
 When run bash -c "grep '\"small_model\": \"shunkakinoki/z-ai/glm-4.7\"' config/opencode/opencode.jsonc"
 The output should include 'shunkakinoki/z-ai/glm-4.7'
