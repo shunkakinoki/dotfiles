@@ -95,10 +95,20 @@ openai-compatibility:
         alias: "__GEMMA__"
       - name: "@preset/__DEEPSEEK_FLASH_NONDOT__"
         alias: "__DEEPSEEK_FLASH__"
+      - name: "@preset/__DEEPSEEK_FLASH_NONDOT__"
+        alias: "main"
       - name: "@preset/__DEEPSEEK_PRO_NONDOT__"
         alias: "__DEEPSEEK_PRO__"
       - name: "openrouter/free"
         alias: "free"
+  - name: "openrouter-free"
+    priority: 0
+    base-url: "https://openrouter.ai/api/v1"
+    api-key-entries:
+      - api-key: "__OPENROUTER_API_KEY__"
+    models:
+      - name: "openrouter/free"
+        alias: "main"
   - name: "z-ai"
     base-url: "https://api.z.ai/api/coding/paas/v4"
     api-key-entries:
@@ -133,6 +143,8 @@ openai-compatibility:
         alias: "__DEEPSEEK_PRO__"
       - name: "__DEEPSEEK_FLASH_0731__"
         alias: "__DEEPSEEK_FLASH__"
+      - name: "__DEEPSEEK_FLASH_0731__"
+        alias: "main"
   - name: "opencode"
     priority: 300
     base-url: "https://opencode.ai/zen/go/v1"
@@ -142,6 +154,8 @@ openai-compatibility:
         alias: "__DEEPSEEK_PRO__"
       - name: "__DEEPSEEK_FLASH__"
         alias: "__DEEPSEEK_FLASH__"
+      - name: "__DEEPSEEK_FLASH__"
+        alias: "main"
       - name: "__MINIMAX__"
         alias: "__MINIMAX__"
       - name: "__KIMI__"

@@ -102,10 +102,15 @@ The status should be success
 End
 End
 
-Describe 'DeepSeek defaults'
-It 'generates the remote CLIProxyAPI DeepSeek Flash default'
-When run bash -c "grep '\"model\": \"shunkakinoki/deepseek-v4-flash\"' config/opencode/opencode.jsonc"
-The output should include 'shunkakinoki/deepseek-v4-flash'
+Describe 'Main model routing'
+It 'generates the remote CLIProxyAPI main default'
+When run bash -c "grep '\"model\": \"shunkakinoki/main\"' config/opencode/opencode.jsonc"
+The output should include 'shunkakinoki/main'
+End
+
+It 'uses the unprefixed GLM alias for the small model'
+When run bash -c "grep '\"small_model\": \"shunkakinoki/glm-4.7\"' config/opencode/opencode.jsonc"
+The output should include 'shunkakinoki/glm-4.7'
 End
 
 It 'generates the CLIProxyAPI DeepSeek models'
@@ -143,6 +148,11 @@ When run bash -c "section=\$(sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' c
 The status should be success
 End
 
+It 'maps the main alias across prioritized DeepSeek providers and the final free route'
+When run bash -c "grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 300' && sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'alias: \"main\"' && sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' config/cliproxyapi/config.template.yaml | grep -q 'alias: \"main\"' && sed -n '/name: \"openrouter\"/,/name: \"openrouter-free\"/p' config/cliproxyapi/config.template.yaml | grep -q 'alias: \"main\"' && sed -n '/name: \"openrouter-free\"/,/name: \"z-ai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"openrouter/free\"' && sed -n '/name: \"openrouter-free\"/,/name: \"z-ai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'alias: \"main\"'"
+The status should be success
+End
+
 It 'hydrates the versioned Aliyun DeepSeek model behind the canonical alias'
 When run bash -c "section=\$(sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' config/cliproxyapi/config.template.yaml); printf '%s\n' \"\$section\" | grep -q 'name: \"deepseek-v4-flash-0731\"' && printf '%s\n' \"\$section\" | grep -q 'alias: \"deepseek-v4-flash\"'"
 The status should be success
@@ -153,8 +163,8 @@ When run bash -c "grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.templ
 The status should be success
 End
 
-It 'only exposes selected model aliases plus the reserved free router alias'
-When run bash -c "allowed=\$(jq -r '.[]' models.json); while IFS= read -r alias; do [ \"\$alias\" = free ] || printf '%s\n' \"\$allowed\" | grep -Fxq \"\$alias\" || { echo \"unexpected alias: \$alias\"; exit 1; }; done < <(sed -n 's/^[[:space:]]*alias: \"\\(.*\\)\"/\\1/p' config/cliproxyapi/config.template.yaml)"
+It 'only exposes selected model aliases plus reserved routing aliases'
+When run bash -c "allowed=\$(jq -r '.[]' models.json); while IFS= read -r alias; do [ \"\$alias\" = free ] || [ \"\$alias\" = main ] || printf '%s\n' \"\$allowed\" | grep -Fxq \"\$alias\" || { echo \"unexpected alias: \$alias\"; exit 1; }; done < <(sed -n 's/^[[:space:]]*alias: \"\\(.*\\)\"/\\1/p' config/cliproxyapi/config.template.yaml)"
 The status should be success
 End
 End

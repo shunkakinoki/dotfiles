@@ -12,6 +12,6 @@ _ocxeh_function hello world
 
 @test "inline args forwards prompt" (grep -c "hello world" $log1) -ge 1
 @test "inline args uses run subcommand" (grep -c "^run " $log1) -ge 1
-@test "inline args uses CLIProxyAPI DeepSeek Flash model" (grep -c "cliproxyapi/deepseek-v4-flash" $log1) -ge 1
+@test "inline args uses the CLIProxyAPI main route" (grep -c "cliproxyapi/main" $log1) -ge 1
 
 rm -f $log1

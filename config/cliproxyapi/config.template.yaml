@@ -95,10 +95,20 @@ openai-compatibility:
         alias: "gemma-4-31b-it"
       - name: "@preset/deepseek-v4-flash"
         alias: "deepseek-v4-flash"
+      - name: "@preset/deepseek-v4-flash"
+        alias: "main"
       - name: "@preset/deepseek-v4-pro"
         alias: "deepseek-v4-pro"
       - name: "openrouter/free"
         alias: "free"
+  - name: "openrouter-free"
+    priority: 0
+    base-url: "https://openrouter.ai/api/v1"
+    api-key-entries:
+      - api-key: "__OPENROUTER_API_KEY__"
+    models:
+      - name: "openrouter/free"
+        alias: "main"
   - name: "z-ai"
     base-url: "https://api.z.ai/api/coding/paas/v4"
     api-key-entries:
@@ -133,6 +143,8 @@ openai-compatibility:
         alias: "deepseek-v4-pro"
       - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4-flash"
+      - name: "deepseek-v4-flash-0731"
+        alias: "main"
   - name: "opencode"
     priority: 300
     base-url: "https://opencode.ai/zen/go/v1"
@@ -142,6 +154,8 @@ openai-compatibility:
         alias: "deepseek-v4-pro"
       - name: "deepseek-v4-flash"
         alias: "deepseek-v4-flash"
+      - name: "deepseek-v4-flash"
+        alias: "main"
       - name: "minimax-m3"
         alias: "minimax-m3"
       - name: "kimi-k3"
