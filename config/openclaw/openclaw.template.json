@@ -185,7 +185,8 @@
             "contextWindow": 1000000,
             "maxTokens": 384000,
             "compat": {
-              "supportsPromptCacheKey": true
+              "supportsPromptCacheKey": true,
+              "sendSessionAffinityHeaders": true
             }
           },
           {
@@ -204,7 +205,8 @@
             "contextWindow": 1000000,
             "maxTokens": 384000,
             "compat": {
-              "supportsPromptCacheKey": true
+              "supportsPromptCacheKey": true,
+              "sendSessionAffinityHeaders": true
             }
           },
           {
