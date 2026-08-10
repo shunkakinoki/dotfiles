@@ -98,7 +98,7 @@ compression:
   target_ratio: 0.2
   protect_last_n: 20
 prompt_caching:
-  cache_ttl: 5m
+  cache_ttl: 30m
 bedrock:
   region: ''
   discovery:
@@ -238,7 +238,7 @@ human_delay:
   min_ms: 800
   max_ms: 2500
 context:
-  engine: summary
+  engine: compressor
 memory:
   memory_enabled: true
   user_profile_enabled: true
