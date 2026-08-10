@@ -26,10 +26,10 @@ moa:
     default:
       reference_models:
         - provider: cliproxy
-          model: __DEEPSEEK_PRO__
+          model: __DEEPSEEK_FLASH__
           enabled: true
         - provider: cliproxy
-          model: __MINIMAX__
+          model: minimax-m3
           enabled: true
       aggregator:
         provider: cliproxy
