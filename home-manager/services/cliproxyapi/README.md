@@ -113,6 +113,16 @@ QWEN_API_KEY="sk-..."
 ALIYUN_TOKEN_PLAN_API_KEY="sk-sp-..."
 ```
 
+For more than one OpenCode Go account behind the same upstream endpoint, set a
+comma-separated credential pool. The plural value takes precedence over the
+legacy singular value, and empty or duplicate entries are ignored:
+
+```bash
+OPENCODE_API_KEYS="first-opencode-api-key,second-opencode-api-key"
+```
+
+CLIProxyAPI selects from these entries using the configured routing strategy.
+
 ## Usage
 
 ```bash

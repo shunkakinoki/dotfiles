@@ -360,7 +360,6 @@ It 'has spec file for named-hosts/kyber/activate-ip-forwarding.sh'
 The path "spec/activate_kyber_spec.sh" should be exist
 End
 
-
 It 'has spec file for home-manager/activation/ensure-tailscale-serve.sh'
 The path "spec/tailscale_serve_spec.sh" should be exist
 End

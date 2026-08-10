@@ -23,7 +23,7 @@ for unit in hermes-gateway.service hermes-dashboard.service hermes-dashboard-pro
     content="$(cat "$unit_path" 2>/dev/null || true)"
     if [ -n "$content" ]; then
       rm -f "$unit_path"
-      printf '%s\n' "$content" > "$unit_path"
+      printf '%s\n' "$content" >"$unit_path"
       chmod 644 "$unit_path"
       echo "Replaced symlink $unit with writable copy"
     fi

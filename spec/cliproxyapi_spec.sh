@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329
+# shellcheck disable=SC2329,SC2016
 
 Describe 'cliproxyapi/start.sh'
 SCRIPT="$PWD/home-manager/services/cliproxyapi/scripts/start.sh"
@@ -250,6 +250,62 @@ The output should include 'name: "deepseek-v4-flash-0731"'
 The output should include 'alias: "deepseek-v4-flash"'
 The output should not include 'name: "qwen3.8-max"'
 The output should not include 'name: "glm-5.2"'
+The status should be success
+End
+End
+
+Describe 'OpenCode API key pool'
+setup_opencode_pool() {
+  TEMP_POOL=$(mktemp -d)
+  cat >"$TEMP_POOL/template.yaml" <<'YAML'
+openai-compatibility:
+  - name: "opencode"
+    api-key-entries: __OPENCODE_API_KEY_ENTRIES__
+YAML
+  sed -n '/^render_opencode_api_key_entries() {/,/^}/p' "$SCRIPT" >"$TEMP_POOL/render.sh"
+  cat >>"$TEMP_POOL/render.sh" <<'BASH'
+render_opencode_api_key_entries "$1"
+BASH
+}
+
+cleanup_opencode_pool() {
+  rm -rf "$TEMP_POOL"
+}
+
+Before 'setup_opencode_pool'
+After 'cleanup_opencode_pool'
+
+It 'declares a generated credential pool for the existing OpenCode endpoint'
+When run bash -c "sed -n '/name: \"opencode\"/,/name: \"openai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'base-url: "https://opencode.ai/zen/go/v1"'
+The output should include '__OPENCODE_API_KEY_ENTRIES__'
+The output should not include '__OPENCODE_API_KEY__'
+The status should be success
+End
+
+It 'renders plural keys with singular fallback without a temporary config'
+When run cat "$SCRIPT"
+The output should include 'OPENCODE_API_KEYS:-${OPENCODE_API_KEY:-}'
+The output should include 'api-key-entries: []'
+The output should include 'api_keys+=("$trimmed")'
+The output should include 'render_opencode_api_key_entries "$TEMPLATE" | @sed@'
+The output should not include 'SED_CONFIG='
+The status should be success
+End
+
+It 'renders each non-empty plural key once'
+When run env OPENCODE_API_KEYS='first-key, second-key,first-key,, third-key ' bash "$TEMP_POOL/render.sh" "$TEMP_POOL/template.yaml"
+The output should include '      - api-key: "first-key"'
+The output should include '      - api-key: "second-key"'
+The output should include '      - api-key: "third-key"'
+The output should not include '__OPENCODE_API_KEY_ENTRIES__'
+The status should be success
+End
+
+It 'falls back to the legacy singular key'
+When run env OPENCODE_API_KEYS='' OPENCODE_API_KEY='legacy-key' bash "$TEMP_POOL/render.sh" "$TEMP_POOL/template.yaml"
+The output should include '      - api-key: "legacy-key"'
+The output should not include 'api-key-entries: []'
 The status should be success
 End
 End

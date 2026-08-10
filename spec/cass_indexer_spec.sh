@@ -60,7 +60,7 @@ HYDRATE="$PWD/home-manager/programs/cass/hydrate.sh"
 render() {
   rm -rf "$SHELLSPEC_TMPBASE/cass-home"
   mkdir -p "$SHELLSPEC_TMPBASE/cass-home"
-  env -u HOSTNAME HOME="$SHELLSPEC_TMPBASE/cass-home" HOST="$1" bash "$HYDRATE" 2>/dev/null
+  env -u HOSTNAME -u XDG_CONFIG_HOME HOME="$SHELLSPEC_TMPBASE/cass-home" HOST="$1" bash "$HYDRATE" 2>/dev/null
   if [ "$(uname -s)" = "Darwin" ]; then
     cat "$SHELLSPEC_TMPBASE/cass-home/Library/Application Support/cass/sources.toml"
   else
