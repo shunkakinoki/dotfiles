@@ -173,6 +173,9 @@ in
         "docker.service"
       ];
       Wants = [ "docker.service" ];
+      X-Restart-Triggers = [
+        "${config.home.file.".cli-proxy-api/config.template.yaml".source}"
+      ];
     };
     Service = {
       Type = "simple";

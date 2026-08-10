@@ -138,6 +138,11 @@ When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' config/clipr
 The status should be success
 End
 
+It 'maps the OpenRouter free router to the canonical alias'
+When run bash -c "section=\$(sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' config/cliproxyapi/config.template.yaml); printf '%s\n' \"\$section\" | grep -q 'name: \"openrouter/free\"' && printf '%s\n' \"\$section\" | grep -q 'alias: \"free\"'"
+The status should be success
+End
+
 It 'hydrates the versioned Aliyun DeepSeek model behind the canonical alias'
 When run bash -c "section=\$(sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' config/cliproxyapi/config.template.yaml); printf '%s\n' \"\$section\" | grep -q 'name: \"deepseek-v4-flash-0731\"' && printf '%s\n' \"\$section\" | grep -q 'alias: \"deepseek-v4-flash\"'"
 The status should be success
@@ -148,8 +153,8 @@ When run bash -c "grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.templ
 The status should be success
 End
 
-It 'only exposes CLIProxy model aliases selected in models.json'
-When run bash -c "allowed=\$(jq -r '.[]' models.json); while IFS= read -r alias; do printf '%s\n' \"\$allowed\" | grep -Fxq \"\$alias\" || { echo \"unexpected alias: \$alias\"; exit 1; }; done < <(sed -n 's/^[[:space:]]*alias: \"\\(.*\\)\"/\\1/p' config/cliproxyapi/config.template.yaml)"
+It 'only exposes selected model aliases plus the reserved free router alias'
+When run bash -c "allowed=\$(jq -r '.[]' models.json); while IFS= read -r alias; do [ \"\$alias\" = free ] || printf '%s\n' \"\$allowed\" | grep -Fxq \"\$alias\" || { echo \"unexpected alias: \$alias\"; exit 1; }; done < <(sed -n 's/^[[:space:]]*alias: \"\\(.*\\)\"/\\1/p' config/cliproxyapi/config.template.yaml)"
 The status should be success
 End
 End

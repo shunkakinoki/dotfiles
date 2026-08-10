@@ -97,6 +97,8 @@ openai-compatibility:
         alias: "__DEEPSEEK_FLASH__"
       - name: "@preset/__DEEPSEEK_PRO_NONDOT__"
         alias: "__DEEPSEEK_PRO__"
+      - name: "openrouter/free"
+        alias: "free"
   - name: "z-ai"
     base-url: "https://api.z.ai/api/coding/paas/v4"
     api-key-entries:

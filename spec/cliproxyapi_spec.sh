@@ -254,6 +254,22 @@ The status should be success
 End
 End
 
+Describe 'OpenRouter fallback routing'
+It 'maps the free router to OpenClaw canonical model alias'
+When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'name: "openrouter/free"'
+The output should include 'alias: "free"'
+The status should be success
+End
+
+It 'restarts the Linux service when the managed template changes'
+When run bash -c "sed -n '/systemd.user.services.cliproxyapi =/,/systemd.user.paths.cliproxyapi-backup =/p' '$PWD/home-manager/services/cliproxyapi/default.nix'"
+The output should include 'X-Restart-Triggers'
+The output should include 'config.home.file.".cli-proxy-api/config.template.yaml".source'
+The status should be success
+End
+End
+
 Describe 'OpenCode API key pool'
 setup_opencode_pool() {
   TEMP_POOL=$(mktemp -d)

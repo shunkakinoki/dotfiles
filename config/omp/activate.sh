@@ -6,9 +6,9 @@ CONFIG_YML="$1"
 
 BUN_GLOBAL_EXTENSION="${BUN_INSTALL:-$HOME/.bun}/install/global/node_modules/@oh-my-pi/swarm-extension"
 LOCAL_EXTENSION="$HOME/dotfiles/node_modules/@oh-my-pi/swarm-extension"
-if [[ -d "$BUN_GLOBAL_EXTENSION" ]]; then
+if [[ -d $BUN_GLOBAL_EXTENSION ]]; then
   SWARM_EXTENSION="$BUN_GLOBAL_EXTENSION"
-elif [[ -d "$LOCAL_EXTENSION" ]]; then
+elif [[ -d $LOCAL_EXTENSION ]]; then
   SWARM_EXTENSION="$LOCAL_EXTENSION"
 else
   echo "ERROR: @oh-my-pi/swarm-extension is not installed" >&2

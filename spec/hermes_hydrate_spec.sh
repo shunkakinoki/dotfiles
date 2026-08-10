@@ -167,7 +167,7 @@ End
 
 Describe 'declarative model routing'
 It 'uses the OpenClaw primary and CLIProxy-only fallback chain'
-When run bash -c "sed -n '1,18p' '$PWD/config/hermes/config.template.yaml'"
+When run bash -c "sed -n '1,22p' '$PWD/config/hermes/config.template.yaml'"
 The output should include 'default: cliproxy/deepseek-v4-flash'
 The output should include 'provider: cliproxy'
 The output should include 'model: deepseek-v4-pro'
