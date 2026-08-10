@@ -8,7 +8,7 @@ function opencode; echo $argv >> $log1; end
 
 _ocxe_function
 
-@test "no args calls opencode with the CLIProxyAPI main route" (grep -c "cliproxyapi/main" $log1) -ge 1
+@test "no args calls opencode with templated CLIProxyAPI model" (grep -c "cliproxyapi/__DEEPSEEK_FLASH__" $log1) -ge 1
 @test "no args skips run subcommand" (grep -c "^run " $log1) -eq 0
 
 # ── with args: run mode ──────────────────────────────────

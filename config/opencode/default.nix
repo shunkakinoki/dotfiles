@@ -4,6 +4,11 @@ _: {
     force = true;
   };
 
+  home.file.".config/opencode/opencode-fallback.jsonc" = {
+    source = ./opencode-fallback.jsonc;
+    force = true;
+  };
+
   home.file.".config/opencode/tui.json" = {
     source = ./tui.json;
     force = true;

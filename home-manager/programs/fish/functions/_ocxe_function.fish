@@ -4,14 +4,14 @@ function _ocxe_function --description "Run OpenCode with a free-form prompt"
 
   if test (count $argv) -gt 0; and contains -- "$argv[1]" --resume -r --continue -c
     if test (count $argv) -gt 1
-      _caam_exec_function opencode -m 'cliproxyapi/main' --session "$argv[2]"
+      _caam_exec_function opencode -m 'cliproxyapi/deepseek-v4-flash' --session "$argv[2]"
     else
-      _caam_exec_function opencode -m 'cliproxyapi/main' --continue
+      _caam_exec_function opencode -m 'cliproxyapi/deepseek-v4-flash' --continue
     end
   else if test (count $argv) -eq 0
-    _caam_exec_function opencode -m 'cliproxyapi/main'
+    _caam_exec_function opencode -m 'cliproxyapi/deepseek-v4-flash'
   else
     set -l prompt (string join " " -- $argv)
-    _caam_exec_function opencode run "$prompt" -m 'cliproxyapi/main'
+    _caam_exec_function opencode run "$prompt" -m 'cliproxyapi/deepseek-v4-flash'
   end
 end

@@ -1,0 +1,15 @@
+{
+  "enabled": true,
+  "retry_on_errors": [401, 404, 429, 500, 502, 503, 504],
+  "max_fallback_attempts": 5,
+  "cooldown_seconds": 60,
+  "timeout_seconds": 30,
+  "notify_on_fallback": true,
+  "fallback_models": [
+    "shunkakinoki/__DEEPSEEK_PRO__",
+    "shunkakinoki/__GEMMA__",
+    "shunkakinoki/__GLM__",
+    "shunkakinoki/__MINIMAX__",
+    "shunkakinoki/free"
+  ]
+}

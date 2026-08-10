@@ -102,15 +102,25 @@ The status should be success
 End
 End
 
-Describe 'Main model routing'
-It 'generates the remote CLIProxyAPI main default'
-When run bash -c "grep '\"model\": \"shunkakinoki/main\"' config/opencode/opencode.jsonc"
-The output should include 'shunkakinoki/main'
+Describe 'OpenCode runtime fallback'
+It 'keeps DeepSeek Flash as the explicit default model'
+When run bash -c "grep '\"model\": \"shunkakinoki/deepseek-v4-flash\"' config/opencode/opencode.jsonc"
+The output should include 'shunkakinoki/deepseek-v4-flash'
 End
 
-It 'uses the unprefixed GLM alias for the small model'
-When run bash -c "grep '\"small_model\": \"shunkakinoki/glm-4.7\"' config/opencode/opencode.jsonc"
-The output should include 'shunkakinoki/glm-4.7'
+It 'keeps the explicitly pinned Z-AI small model'
+When run bash -c "grep '\"small_model\": \"shunkakinoki/z-ai/glm-4.7\"' config/opencode/opencode.jsonc"
+The output should include 'shunkakinoki/z-ai/glm-4.7'
+End
+
+It 'pins the audited OpenCode runtime fallback plugin release'
+When run bash -c "grep -q '\"opencode-runtime-fallback@0.2.3\"' config/opencode/opencode.jsonc"
+The status should be success
+End
+
+It 'generates a separate OpenCode fallback chain'
+When run bash -c "jq -e '.retry_on_errors == [401,404,429,500,502,503,504] and .max_fallback_attempts == 5 and .fallback_models == [\"shunkakinoki/deepseek-v4-pro\",\"shunkakinoki/gemma-4-31b-it\",\"shunkakinoki/glm-4.7\",\"shunkakinoki/minimax-m3\",\"shunkakinoki/free\"]' config/opencode/opencode-fallback.jsonc >/dev/null"
+The status should be success
 End
 
 It 'generates the CLIProxyAPI DeepSeek models'
@@ -148,8 +158,8 @@ When run bash -c "section=\$(sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' c
 The status should be success
 End
 
-It 'maps the main alias across prioritized DeepSeek providers'
-When run bash -c "grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 300' && sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'alias: \"main\"' && sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' config/cliproxyapi/config.template.yaml | grep -q 'alias: \"main\"' && sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'alias: \"main\"'"
+It 'does not expose a main alias through OpenCode or CLIProxy'
+When run bash -c "! grep -q '\"main\": {' config/opencode/opencode.jsonc && ! grep -q 'alias: \"main\"' config/cliproxyapi/config.template.yaml"
 The status should be success
 End
 
@@ -163,8 +173,8 @@ When run bash -c "grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.templ
 The status should be success
 End
 
-It 'only exposes selected model aliases plus reserved routing aliases'
-When run bash -c "allowed=\$(jq -r '.[]' models.json); while IFS= read -r alias; do [ \"\$alias\" = free ] || [ \"\$alias\" = main ] || printf '%s\n' \"\$allowed\" | grep -Fxq \"\$alias\" || { echo \"unexpected alias: \$alias\"; exit 1; }; done < <(sed -n 's/^[[:space:]]*alias: \"\\(.*\\)\"/\\1/p' config/cliproxyapi/config.template.yaml)"
+It 'only exposes selected model aliases plus the reserved free router alias'
+When run bash -c "allowed=\$(jq -r '.[]' models.json); while IFS= read -r alias; do [ \"\$alias\" = free ] || printf '%s\n' \"\$allowed\" | grep -Fxq \"\$alias\" || { echo \"unexpected alias: \$alias\"; exit 1; }; done < <(sed -n 's/^[[:space:]]*alias: \"\\(.*\\)\"/\\1/p' config/cliproxyapi/config.template.yaml)"
 The status should be success
 End
 End
