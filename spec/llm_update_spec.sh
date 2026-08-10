@@ -148,8 +148,8 @@ When run bash -c "section=\$(sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' c
 The status should be success
 End
 
-It 'maps the main alias across prioritized DeepSeek providers and the final free route'
-When run bash -c "grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 300' && sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'alias: \"main\"' && sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' config/cliproxyapi/config.template.yaml | grep -q 'alias: \"main\"' && sed -n '/name: \"openrouter\"/,/name: \"openrouter-free\"/p' config/cliproxyapi/config.template.yaml | grep -q 'alias: \"main\"' && sed -n '/name: \"openrouter-free\"/,/name: \"z-ai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"openrouter/free\"' && sed -n '/name: \"openrouter-free\"/,/name: \"z-ai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'alias: \"main\"'"
+It 'maps the main alias across prioritized DeepSeek providers'
+When run bash -c "grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 300' && sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'alias: \"main\"' && sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' config/cliproxyapi/config.template.yaml | grep -q 'alias: \"main\"' && sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'alias: \"main\"'"
 The status should be success
 End
 

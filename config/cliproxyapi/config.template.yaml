@@ -101,14 +101,6 @@ openai-compatibility:
         alias: "deepseek-v4-pro"
       - name: "openrouter/free"
         alias: "free"
-  - name: "openrouter-free"
-    priority: 0
-    base-url: "https://openrouter.ai/api/v1"
-    api-key-entries:
-      - api-key: "__OPENROUTER_API_KEY__"
-    models:
-      - name: "openrouter/free"
-        alias: "main"
   - name: "z-ai"
     base-url: "https://api.z.ai/api/coding/paas/v4"
     api-key-entries:

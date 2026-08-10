@@ -262,14 +262,6 @@ The output should include 'alias: "free"'
 The status should be success
 End
 
-It 'uses a separate lowest-priority OpenRouter free provider for the main route'
-When run bash -c "sed -n '/name: \"openrouter-free\"/,/name: \"z-ai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
-The output should include 'priority: 0'
-The output should include 'name: "openrouter/free"'
-The output should include 'alias: "main"'
-The status should be success
-End
-
 It 'restarts the Linux service when the managed template changes'
 When run bash -c "sed -n '/systemd.user.services.cliproxyapi =/,/systemd.user.paths.cliproxyapi-backup =/p' '$PWD/home-manager/services/cliproxyapi/default.nix'"
 The output should include 'X-Restart-Triggers'
