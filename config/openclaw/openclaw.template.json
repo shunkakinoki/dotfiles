@@ -183,7 +183,10 @@
               "cacheWrite": 0
             },
             "contextWindow": 1000000,
-            "maxTokens": 384000
+            "maxTokens": 384000,
+            "compat": {
+              "supportsPromptCacheKey": true
+            }
           },
           {
             "id": "deepseek-v4-flash",
@@ -199,7 +202,10 @@
               "cacheWrite": 0
             },
             "contextWindow": 1000000,
-            "maxTokens": 384000
+            "maxTokens": 384000,
+            "compat": {
+              "supportsPromptCacheKey": true
+            }
           },
           {
             "id": "free",

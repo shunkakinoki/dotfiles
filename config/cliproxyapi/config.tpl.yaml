@@ -31,6 +31,8 @@ request-retry: 3
 # Routing strategy: "round-robin" (default) or "fill-first" (tries first matching provider)
 routing:
   strategy: "fill-first"
+  session-affinity: true
+  session-affinity-ttl: "1h"
 # Quota exceeded behavior
 quota-exceeded:
   switch-project: true # Whether to automatically switch to another project when a quota is exceeded

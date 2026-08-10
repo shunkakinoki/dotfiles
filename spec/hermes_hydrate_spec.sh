@@ -177,6 +177,12 @@ The output should include 'model: minimax-m3'
 The output should include 'model: free'
 End
 
+It 'opts both CLIProxy config schemas into stable prompt cache keys'
+When run rg -c '^    supports_prompt_cache_key: true$' "$PWD/config/hermes/config.template.yaml"
+The output should equal '2'
+The status should be success
+End
+
 It 'does not configure OpenRouter or Mixture-of-Agents presets'
 When run bash -c "! rg -q 'openrouter|@preset/' '$PWD/config/hermes/config.template.yaml'"
 The status should be success

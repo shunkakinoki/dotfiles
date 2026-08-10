@@ -255,6 +255,13 @@ End
 End
 
 Describe 'OpenRouter fallback routing'
+It 'keeps provider selection sticky for one hour per client session'
+When run bash -c "sed -n '/^routing:/,/^[a-z]/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'session-affinity: true'
+The output should include 'session-affinity-ttl: "1h"'
+The status should be success
+End
+
 It 'maps the free router to OpenClaw canonical model alias'
 When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'name: "openrouter/free"'
