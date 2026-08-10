@@ -221,9 +221,12 @@ trap '
 ' TERM INT
 
 if [ "$(uname)" = "Linux" ] && command -v docker >/dev/null 2>&1; then
+  docker_image="${CLIPROXYAPI_IMAGE:-eceasy/cli-proxy-api:latest}"
   if docker info >/dev/null 2>&1; then
-    echo "🔄 Pulling latest cliproxyapi image..."
-    docker pull eceasy/cli-proxy-api:latest || true
+    if [ "${CLIPROXYAPI_SKIP_PULL:-false}" != "true" ]; then
+      echo "🔄 Pulling cliproxyapi image ${docker_image}..."
+      docker pull "$docker_image" || true
+    fi
   else
     echo "⏭️ Skipping docker pull (docker not accessible)"
   fi
@@ -250,7 +253,7 @@ if [ "$(uname)" = "Linux" ] && command -v docker >/dev/null 2>&1; then
     -v "$CONFIG_DIR:/root/.cli-proxy-api" \
     -v "$CONFIG_DIR/logs:/CLIProxyAPI/logs" \
     -e MANAGEMENT_PASSWORD="${MANAGEMENT_PASSWORD:-}" \
-    eceasy/cli-proxy-api:latest &
+    "$docker_image" &
   child_pid=$!
   wait "$child_pid"
   exit $?

@@ -255,6 +255,15 @@ End
 End
 
 Describe 'OpenRouter fallback routing'
+It 'supports a locally built canary image without pulling over it'
+When run bash -c "sed -n '/CLIPROXYAPI_IMAGE/,/\"\$docker_image\" \&/p' '$SCRIPT'"
+The output should include 'CLIPROXYAPI_IMAGE:-eceasy/cli-proxy-api:latest'
+The output should include 'CLIPROXYAPI_SKIP_PULL:-false'
+The output should include 'docker pull "$docker_image"'
+The output should include '"$docker_image" &'
+The status should be success
+End
+
 It 'keeps provider selection sticky for one hour per client session'
 When run bash -c "sed -n '/^routing:/,/^[a-z]/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'session-affinity: true'
