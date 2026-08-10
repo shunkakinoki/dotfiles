@@ -1,6 +1,6 @@
 model:
   default: cliproxy/__DEEPSEEK_FLASH__
-  provider: openrouter
+  provider: cliproxy
   base_url: https://cliproxy.shunkakinoki.com/v1
   api_key: __CLIPROXY_API_KEY__
 providers:
@@ -8,6 +8,7 @@ providers:
     base_url: https://cliproxy.shunkakinoki.com/v1
     api_key: __CLIPROXY_API_KEY__
     api_mode: chat_completions
+    supports_prompt_cache_key: true
 fallback_providers:
   - provider: cliproxy
     model: __DEEPSEEK_PRO__
@@ -334,6 +335,7 @@ custom_providers:
     base_url: https://cliproxy.shunkakinoki.com/v1
     api_key: __CLIPROXY_API_KEY__
     api_mode: chat_completions
+    supports_prompt_cache_key: true
 platforms:
   webhook:
     enabled: true
