@@ -191,6 +191,7 @@ in
           pkgs.shadow
         ]
       }:/usr/bin:/usr/sbin";
+      EnvironmentFile = [ "${homeDir}/ghq/github.com/shunkakinoki/dotfiles/.env" ];
       ExecStart = "${dockerStartScript}";
       # Give the start wrapper's TERM trap time to flush usage + docker stop
       # the container cleanly before systemd escalates to SIGKILL.
