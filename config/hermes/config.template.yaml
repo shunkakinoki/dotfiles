@@ -1,31 +1,20 @@
 model:
   default: cliproxy/deepseek-v4-flash
+  base_url: https://cliproxy.shunkakinoki.com/v1
+  api_key: __CLIPROXY_API_KEY__
 providers:
   cliproxy:
     base_url: https://cliproxy.shunkakinoki.com/v1
     api_key: __CLIPROXY_API_KEY__
     api_mode: chat_completions
-fallback_providers:
-  - provider: cliproxy
-    model: deepseek-v4-pro
-  - provider: cliproxy
-    model: gemma-4-31b-it
-  - provider: cliproxy
-    model: glm-4.7
-  - provider: cliproxy
-    model: minimax-m3
-  - provider: cliproxy
-    model: free
+fallback_providers: []
 moa:
   default_preset: default
   presets:
     default:
       reference_models:
         - provider: cliproxy
-          model: deepseek-v4-pro
-          enabled: true
-        - provider: cliproxy
-          model: minimax-m3
+          model: deepseek-v4-flash
           enabled: true
       aggregator:
         provider: cliproxy
@@ -331,9 +320,3 @@ custom_providers:
     base_url: https://cliproxy.shunkakinoki.com/v1
     api_key: __CLIPROXY_API_KEY__
     api_mode: chat_completions
-platforms:
-  webhook:
-    enabled: true
-    extra:
-      port: 8644
-      secret: __WEBHOOK_SECRET__

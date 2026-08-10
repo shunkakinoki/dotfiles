@@ -1,31 +1,20 @@
 model:
   default: cliproxy/__DEEPSEEK_FLASH__
+  base_url: https://cliproxy.shunkakinoki.com/v1
+  api_key: __CLIPROXY_API_KEY__
 providers:
   cliproxy:
     base_url: https://cliproxy.shunkakinoki.com/v1
     api_key: __CLIPROXY_API_KEY__
     api_mode: chat_completions
-fallback_providers:
-  - provider: cliproxy
-    model: __DEEPSEEK_PRO__
-  - provider: cliproxy
-    model: __GEMMA__
-  - provider: cliproxy
-    model: __GLM__
-  - provider: cliproxy
-    model: __MINIMAX__
-  - provider: cliproxy
-    model: free
+fallback_providers: []
 moa:
   default_preset: default
   presets:
     default:
       reference_models:
         - provider: cliproxy
-          model: __DEEPSEEK_PRO__
-          enabled: true
-        - provider: cliproxy
-          model: __MINIMAX__
+          model: __DEEPSEEK_FLASH__
           enabled: true
       aggregator:
         provider: cliproxy
