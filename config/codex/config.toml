@@ -94,6 +94,9 @@ model = "qwen3.5-0.8b-optiq"
 model_provider = "lmstudio"
 model_reasoning_effort = "minimal"
 
+[mcp_servers.openrouter]
+url = "https://mcp.openrouter.ai/mcp"
+
 [desktop]
 preventSleepWhileRunning = true
 show-context-window-usage = true

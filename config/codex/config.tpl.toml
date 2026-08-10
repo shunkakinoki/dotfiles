@@ -94,6 +94,9 @@ model = "__QWEN_LOCAL__"
 model_provider = "lmstudio"
 model_reasoning_effort = "minimal"
 
+[mcp_servers.openrouter]
+url = "https://mcp.openrouter.ai/mcp"
+
 [desktop]
 preventSleepWhileRunning = true
 show-context-window-usage = true
