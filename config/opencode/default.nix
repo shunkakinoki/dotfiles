@@ -30,6 +30,6 @@
   };
 
   home.activation.installOpenCodePlugins = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${pkgs.opencode}/bin/opencode" "${pkgs.jq}/bin/jq"
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${pkgs.opencode}/bin/opencode" "${pkgs.jq}/bin/jq" "${pkgs.bun}/bin/bun"
   '';
 }
