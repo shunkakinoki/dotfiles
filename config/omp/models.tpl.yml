@@ -4,8 +4,8 @@ providers:
     api: openai-completions
     auth: none
     models:
-      - id: deepseek-v4-flash
-        name: Deepseek V4 Flash (local CLIProxyAPI)
+      - id: __DEEPSEEK_FLASH__
+        name: __DEEPSEEK_FLASH_PRETTY__ (local CLIProxyAPI)
         reasoning: true
         input:
           - text

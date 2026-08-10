@@ -72,6 +72,11 @@ The output should include '_ocxe_function.tpl.fish'
 The output should include '_pixe_function.tpl.fish'
 The output should include '_pixel_function.tpl.fish'
 End
+
+It 'includes OMP model registry in template mappings'
+When run bash -c "grep 'config/omp/models.tpl.yml' '$SCRIPT'"
+The output should include 'config/omp/models.tpl.yml'
+End
 End
 
 Describe 'generated fish wrapper outputs'
@@ -113,8 +118,13 @@ When run bash -c "grep 'default: \"cliproxyapi/deepseek-v4-flash\"' config/omp/c
 The output should include 'cliproxyapi/deepseek-v4-flash'
 End
 
-It 'configures the OMP local CLIProxyAPI DeepSeek Flash provider'
-When run bash -c "grep -q 'baseUrl: http://127.0.0.1:8317/v1' config/omp/models.yml && grep -q 'id: deepseek-v4-flash' config/omp/models.yml"
+It 'keeps the OMP model registry placeholder in the template'
+When run bash -c "grep 'id: __DEEPSEEK_FLASH__' config/omp/models.tpl.yml"
+The output should include '__DEEPSEEK_FLASH__'
+End
+
+It 'hydrates the OMP local CLIProxyAPI DeepSeek Flash provider'
+When run bash -c "grep -q 'baseUrl: http://127.0.0.1:8317/v1' config/omp/models.yml && grep -q 'id: deepseek-v4-flash' config/omp/models.yml && ! grep -q '__DEEPSEEK_FLASH__' config/omp/models.yml"
 The status should be success
 End
 
