@@ -109,8 +109,13 @@ The status should be success
 End
 
 It 'generates the OMP Flash default role'
-When run bash -c "grep 'default: \"opencode-zen/deepseek-v4-flash\"' config/omp/config.yml"
-The output should include 'opencode-zen/deepseek-v4-flash'
+When run bash -c "grep 'default: \"cliproxyapi/deepseek-v4-flash\"' config/omp/config.yml"
+The output should include 'cliproxyapi/deepseek-v4-flash'
+End
+
+It 'configures the OMP local CLIProxyAPI DeepSeek Flash provider'
+When run bash -c "grep -q 'baseUrl: http://127.0.0.1:8317/v1' config/omp/models.yml && grep -q 'id: deepseek-v4-flash' config/omp/models.yml"
+The status should be success
 End
 
 It 'generates the DeepSeek Go routes in CliProxy'
