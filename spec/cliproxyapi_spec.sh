@@ -260,7 +260,7 @@ setup_opencode_pool() {
   cat >"$TEMP_POOL/template.yaml" <<'YAML'
 openai-compatibility:
   - name: "opencode"
-    __OPENCODE_API_KEY_ENTRIES__
+    api-key-entries: __OPENCODE_API_KEY_ENTRIES__
 YAML
   sed -n '/^render_opencode_api_key_entries() {/,/^}/p' "$SCRIPT" >"$TEMP_POOL/render.sh"
   cat >>"$TEMP_POOL/render.sh" <<'BASH'

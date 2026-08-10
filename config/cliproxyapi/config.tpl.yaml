@@ -134,7 +134,7 @@ openai-compatibility:
   - name: "opencode"
     priority: 300
     base-url: "https://opencode.ai/zen/go/v1"
-    __OPENCODE_API_KEY_ENTRIES__
+    api-key-entries: __OPENCODE_API_KEY_ENTRIES__
     models:
       - name: "__DEEPSEEK_PRO__"
         alias: "__DEEPSEEK_PRO__"

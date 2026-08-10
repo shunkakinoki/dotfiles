@@ -42,7 +42,7 @@ render_opencode_api_key_entries() {
   done
 
   while IFS= read -r line || [ -n "$line" ]; do
-    if [ "$line" != "    __OPENCODE_API_KEY_ENTRIES__" ]; then
+    if [ "$line" != "    api-key-entries: __OPENCODE_API_KEY_ENTRIES__" ]; then
       printf '%s\n' "$line"
       continue
     fi
