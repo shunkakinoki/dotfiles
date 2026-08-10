@@ -48,11 +48,26 @@
         "__DEEPSEEK_FLASH__": {
           "name": "__DEEPSEEK_FLASH_PRETTY__ (via shunkakinoki's CLIProxy)"
         },
+        "__DEEPSEEK_PRO__": {
+          "name": "__DEEPSEEK_PRO_PRETTY__ (via shunkakinoki's CLIProxy)"
+        },
+        "__GEMMA__": {
+          "name": "__GEMMA_PRETTY__ (via shunkakinoki's CLIProxy)"
+        },
         "z-ai/__GLM__": {
           "name": "__GLM_PRETTY__ (via shunkakinoki's CLIProxy)"
         },
+        "__GLM__": {
+          "name": "__GLM_PRETTY__ with provider fallback (via shunkakinoki's CLIProxy)"
+        },
+        "__MINIMAX__": {
+          "name": "__MINIMAX_PRETTY__ (via shunkakinoki's CLIProxy)"
+        },
         "__KIMI__": {
           "name": "__KIMI_PRETTY__ (via shunkakinoki's CLIProxy)"
+        },
+        "free": {
+          "name": "Free router fallback (via shunkakinoki's CLIProxy)"
         }
       }
     },
@@ -224,5 +239,10 @@
       }
     }
   },
-  "plugin": ["cc-safety-net", "opencode-atuin-history", "opencode-claude-hooks"]
+  "plugin": [
+    "cc-safety-net",
+    "opencode-atuin-history",
+    "opencode-claude-hooks",
+    "opencode-runtime-fallback@0.2.3"
+  ]
 }

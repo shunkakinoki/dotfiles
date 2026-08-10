@@ -102,10 +102,25 @@ The status should be success
 End
 End
 
-Describe 'DeepSeek defaults'
-It 'generates the remote CLIProxyAPI DeepSeek Flash default'
+Describe 'OpenCode runtime fallback'
+It 'keeps DeepSeek Flash as the explicit default model'
 When run bash -c "grep '\"model\": \"shunkakinoki/deepseek-v4-flash\"' config/opencode/opencode.jsonc"
 The output should include 'shunkakinoki/deepseek-v4-flash'
+End
+
+It 'keeps the explicitly pinned Z-AI small model'
+When run bash -c "grep '\"small_model\": \"shunkakinoki/z-ai/glm-4.7\"' config/opencode/opencode.jsonc"
+The output should include 'shunkakinoki/z-ai/glm-4.7'
+End
+
+It 'pins the audited OpenCode runtime fallback plugin release'
+When run bash -c "grep -q '\"opencode-runtime-fallback@0.2.3\"' config/opencode/opencode.jsonc"
+The status should be success
+End
+
+It 'generates a separate OpenCode fallback chain'
+When run bash -c "jq -e '.retry_on_errors == [401,404,429,500,502,503,504] and .max_fallback_attempts == 5 and .fallback_models == [\"shunkakinoki/deepseek-v4-pro\",\"shunkakinoki/gemma-4-31b-it\",\"shunkakinoki/glm-4.7\",\"shunkakinoki/minimax-m3\",\"shunkakinoki/free\"]' config/opencode/opencode-fallback.jsonc >/dev/null"
+The status should be success
 End
 
 It 'generates the CLIProxyAPI DeepSeek models'
@@ -140,6 +155,11 @@ End
 
 It 'maps the OpenRouter free router to the canonical alias'
 When run bash -c "section=\$(sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' config/cliproxyapi/config.template.yaml); printf '%s\n' \"\$section\" | grep -q 'name: \"openrouter/free\"' && printf '%s\n' \"\$section\" | grep -q 'alias: \"free\"'"
+The status should be success
+End
+
+It 'does not expose a main alias through OpenCode or CLIProxy'
+When run bash -c "! grep -q '\"main\": {' config/opencode/opencode.jsonc && ! grep -q 'alias: \"main\"' config/cliproxyapi/config.template.yaml"
 The status should be success
 End
 

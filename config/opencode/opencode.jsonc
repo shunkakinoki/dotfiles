@@ -48,11 +48,26 @@
         "deepseek-v4-flash": {
           "name": "Deepseek V4 Flash (via shunkakinoki's CLIProxy)"
         },
+        "deepseek-v4-pro": {
+          "name": "Deepseek V4 Pro (via shunkakinoki's CLIProxy)"
+        },
+        "gemma-4-31b-it": {
+          "name": "Gemma 4 31b It (via shunkakinoki's CLIProxy)"
+        },
         "z-ai/glm-4.7": {
           "name": "GLM 4.7 (via shunkakinoki's CLIProxy)"
         },
+        "glm-4.7": {
+          "name": "GLM 4.7 with provider fallback (via shunkakinoki's CLIProxy)"
+        },
+        "minimax-m3": {
+          "name": "Minimax M3 (via shunkakinoki's CLIProxy)"
+        },
         "kimi-k3": {
           "name": "Kimi K3 (via shunkakinoki's CLIProxy)"
+        },
+        "free": {
+          "name": "Free router fallback (via shunkakinoki's CLIProxy)"
         }
       }
     },
@@ -224,5 +239,10 @@
       }
     }
   },
-  "plugin": ["cc-safety-net", "opencode-atuin-history", "opencode-claude-hooks"]
+  "plugin": [
+    "cc-safety-net",
+    "opencode-atuin-history",
+    "opencode-claude-hooks",
+    "opencode-runtime-fallback@0.2.3"
+  ]
 }
