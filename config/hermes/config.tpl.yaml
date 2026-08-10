@@ -98,7 +98,7 @@ compression:
   target_ratio: 0.2
   protect_last_n: 20
 prompt_caching:
-  cache_ttl: 15m
+  cache_ttl: 30m
 bedrock:
   region: ''
   discovery:
