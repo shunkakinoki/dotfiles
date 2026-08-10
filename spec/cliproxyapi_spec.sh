@@ -277,6 +277,26 @@ The status should be success
 End
 End
 
+Describe 'official configuration reference'
+It 'keeps the upstream configuration guidance in both declarative templates'
+When run bash -c 'for file in config/cliproxyapi/config.tpl.yaml config/cliproxyapi/config.template.yaml; do
+  grep -Fq "# Credential concurrency is configured by Home in Home mode." "$file" &&
+  grep -Fq "# Standard dynamic library plugins are trusted in-process code." "$file" &&
+  grep -Fq "# Native Interactions API keys" "$file" &&
+  grep -Fq "# Default headers for Claude API requests." "$file" &&
+  grep -Fq "# Global OAuth model name aliases (per channel)" "$file" &&
+  grep -Fq "#   default-raw: # Default raw rules set parameters using raw JSON when missing (must be valid JSON)." "$file" &&
+  grep -Fq "#   filter: # Filter rules remove specified parameters from the payload." "$file" || exit 1
+done'
+The status should be success
+End
+
+It 'keeps behavior-changing official examples inactive'
+When run bash -c "grep -Fq '  # antigravity-credits: true' config/cliproxyapi/config.template.yaml && grep -Fq 'ws-auth: false' config/cliproxyapi/config.template.yaml && grep -Fq 'strategy: \"fill-first\"' config/cliproxyapi/config.template.yaml"
+The status should be success
+End
+End
+
 Describe 'OpenCode API key pool'
 setup_opencode_pool() {
   TEMP_POOL=$(mktemp -d)
