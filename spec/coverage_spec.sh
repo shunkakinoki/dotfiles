@@ -497,6 +497,7 @@ config/noctalia/quit-all-apps.sh
 config/obsidian/activate.sh
 config/omp/activate.sh
 config/openclaw/hydrate.sh
+config/opencode/activate.sh
 config/roborev/hydrate.sh
 config/serena/activate.sh
 home-manager/activation/deploy-agenix-secret.sh
