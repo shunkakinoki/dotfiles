@@ -7,7 +7,17 @@ providers:
     base_url: https://cliproxy.shunkakinoki.com/v1
     api_key: __CLIPROXY_API_KEY__
     api_mode: chat_completions
-fallback_providers: []
+fallback_providers:
+  - provider: cliproxy
+    model: __DEEPSEEK_PRO__
+  - provider: cliproxy
+    model: __GEMMA__
+  - provider: cliproxy
+    model: __GLM__
+  - provider: cliproxy
+    model: __MINIMAX__
+  - provider: cliproxy
+    model: free
 moa:
   default_preset: default
   presets:
@@ -320,3 +330,9 @@ custom_providers:
     base_url: https://cliproxy.shunkakinoki.com/v1
     api_key: __CLIPROXY_API_KEY__
     api_mode: chat_completions
+platforms:
+  webhook:
+    enabled: true
+    extra:
+      port: 8644
+      secret: __WEBHOOK_SECRET__
