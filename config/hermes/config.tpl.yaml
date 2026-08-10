@@ -163,7 +163,7 @@ auxiliary:
     timeout: 30
     extra_body: {}
 display:
-  compact: false
+  compact: true
   personality: kawaii
   resume_display: full
   busy_input_mode: interrupt
@@ -231,7 +231,7 @@ human_delay:
   min_ms: 800
   max_ms: 2500
 context:
-  engine: compressor
+  engine: summary
 memory:
   memory_enabled: true
   user_profile_enabled: true
@@ -239,8 +239,8 @@ memory:
   user_char_limit: 1375
   provider: ''
 delegation:
-  model: ''
-  provider: ''
+  model: cliproxy/__DEEPSEEK_FLASH__
+  provider: cliproxy
   base_url: ''
   api_key: ''
   inherit_mcp_toolsets: true
@@ -278,7 +278,7 @@ mattermost:
 approvals:
   mode: manual
   timeout: 60
-  cron_mode: deny
+  cron_mode: allow
 command_allowlist: []
 quick_commands: {}
 hooks: {}
@@ -286,11 +286,11 @@ hooks_auto_accept: false
 personalities: {}
 security:
   allow_private_urls: false
-  redact_secrets: false
+  redact_secrets: true
   tirith_enabled: true
   tirith_path: tirith
   tirith_timeout: 5
-  tirith_fail_open: true
+  tirith_fail_open: false
   website_blocklist:
     enabled: false
     domains: []
@@ -319,7 +319,7 @@ sessions:
 onboarding:
   seen: {}
 updates:
-  pre_update_backup: false
+  pre_update_backup: true
   backup_keep: 5
 _config_version: 22
 custom_providers:
