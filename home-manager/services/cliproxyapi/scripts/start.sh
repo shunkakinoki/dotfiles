@@ -16,6 +16,51 @@ MANAGEMENT_PASSWORD="${CLIPROXY_MANAGEMENT_PASSWORD:-}"
 MANAGEMENT_KEY="${CLIPROXY_MANAGEMENT_PASSWORD:-${CLIPROXY_MANAGEMENT_KEY:-}}"
 export OBJECTSTORE_ENDPOINT OBJECTSTORE_BUCKET OBJECTSTORE_ACCESS_KEY OBJECTSTORE_SECRET_KEY OBJECTSTORE_LOCAL_PATH MANAGEMENT_PASSWORD
 
+render_opencode_api_key_entries() {
+  local template="$1"
+  local key_source="${OPENCODE_API_KEYS:-${OPENCODE_API_KEY:-}}"
+  local candidate existing_key trimmed escaped line
+  local -a candidates=()
+  local -a api_keys=()
+
+  if [ -n "$key_source" ]; then
+    IFS=',' read -r -a candidates <<<"$key_source"
+  fi
+
+  for candidate in "${candidates[@]}"; do
+    trimmed="${candidate#"${candidate%%[![:space:]]*}"}"
+    trimmed="${trimmed%"${trimmed##*[![:space:]]}"}"
+    [ -n "$trimmed" ] || continue
+
+    for existing_key in "${api_keys[@]}"; do
+      if [ "$existing_key" = "$trimmed" ]; then
+        trimmed=""
+        break
+      fi
+    done
+    [ -n "$trimmed" ] && api_keys+=("$trimmed")
+  done
+
+  while IFS= read -r line || [ -n "$line" ]; do
+    if [ "$line" != "    __OPENCODE_API_KEY_ENTRIES__" ]; then
+      printf '%s\n' "$line"
+      continue
+    fi
+
+    if [ "${#api_keys[@]}" -eq 0 ]; then
+      printf '%s\n' '    api-key-entries: []'
+      continue
+    fi
+
+    printf '%s\n' '    api-key-entries:'
+    for candidate in "${api_keys[@]}"; do
+      escaped="${candidate//\\/\\\\}"
+      escaped="${escaped//\"/\\\"}"
+      printf '      - api-key: "%s"\n' "$escaped"
+    done
+  done <"$template"
+}
+
 if cliproxy_has_objectstore_credentials; then
   mkdir -p "$AUTH_DIR"
 
@@ -36,17 +81,15 @@ fi
 
 # Generate config from template
 if [ -f "$TEMPLATE" ]; then
-  @sed@ \
+  render_opencode_api_key_entries "$TEMPLATE" | @sed@ \
     -e "s|__OPENROUTER_API_KEY__|${OPENROUTER_API_KEY:-}|g" \
     -e "s|__OPENAI_API_KEY__|${OPENAI_API_KEY:-}|g" \
     -e "s|__CLIPROXY_MANAGEMENT_PASSWORD__|${CLIPROXY_MANAGEMENT_PASSWORD:-}|g" \
     -e "s|__ZAI_API_KEY__|${ZAI_API_KEY:-}|g" \
     -e "s|__QWEN_API_KEY__|${QWEN_API_KEY:-${DASHSCOPE_API_KEY:-}}|g" \
     -e "s|__ALIYUN_TOKEN_PLAN_API_KEY__|${ALIYUN_TOKEN_PLAN_API_KEY:-}|g" \
-    -e "s|__OPENCODE_API_KEY__|${OPENCODE_API_KEY:-}|g" \
     -e "s|__AMP_UPSTREAM_API_KEY__|${AMP_UPSTREAM_API_KEY:-}|g" \
-    -e "s|__OPENCODE_API_KEY__|${OPENCODE_API_KEY:-}|g" \
-    "$TEMPLATE" >"$CONFIG"
+    >"$CONFIG"
 
   if [ "$(uname)" = "Linux" ] && [ -n "${CLIPROXY_API_KEY:-}" ]; then
     @sed@ -i \
