@@ -64,7 +64,7 @@ disabledExtensions: []
 #   slow:    openai-codex/__GPT_CODEX__:high
 modelRoles:
   # Default model role used as the fallback when no other role is selected.
-  default: "opencode-zen/__DEEPSEEK_FLASH__"
+  default: "cliproxyapi/__DEEPSEEK_FLASH__"
   # Smaller / dumber model for cheap lightweight work.
   smol: "openai-codex/__GPT_LUNA__"
   # Strongest model in the suite for hard tasks.

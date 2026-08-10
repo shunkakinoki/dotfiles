@@ -1,0 +1,19 @@
+providers:
+  cliproxyapi:
+    baseUrl: http://127.0.0.1:8317/v1
+    api: openai-completions
+    auth: none
+    models:
+      - id: __DEEPSEEK_FLASH__
+        name: __DEEPSEEK_FLASH_PRETTY__ (local CLIProxyAPI)
+        reasoning: true
+        input:
+          - text
+        supportsTools: true
+        contextWindow: 1000000
+        maxTokens: 384000
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0

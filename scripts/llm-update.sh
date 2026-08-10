@@ -100,6 +100,7 @@ declare -A TEMPLATES=(
   ["config/factory/settings.tpl.json"]=config/factory/settings.json
   ["config/hermes/config.tpl.yaml"]=config/hermes/config.template.yaml
   ["config/omp/config.tpl.yml"]=config/omp/config.yml
+  ["config/omp/models.tpl.yml"]=config/omp/models.yml
   ["config/pi/models.tpl.json"]=config/pi/models.json
   ["config/pi/settings.tpl.json"]=config/pi/settings.json
   ["home-manager/programs/fish/functions/_coxe_function.tpl.fish"]=home-manager/programs/fish/functions/_coxe_function.fish
