@@ -3,6 +3,7 @@ set -euo pipefail
 
 OPENCODE_BIN="${1:-opencode}"
 JQ_BIN="${2:-jq}"
+BUN_BIN="${3:-bun}"
 CACHE_ROOT="${XDG_CACHE_HOME:-${HOME}/.cache}/opencode/packages"
 
 if [[ ! -x $OPENCODE_BIN ]]; then
@@ -12,6 +13,11 @@ fi
 
 if [[ ! -x $JQ_BIN ]]; then
   echo "ERROR: jq executable not found: ${JQ_BIN}" >&2
+  exit 1
+fi
+
+if [[ ! -x $BUN_BIN ]]; then
+  echo "ERROR: Bun executable not found: ${BUN_BIN}" >&2
   exit 1
 fi
 
@@ -44,7 +50,7 @@ fi
 
 install_plugin() {
   local plugin_spec="$1"
-  local package_name cache_spec plugin_manifest
+  local package_name cache_spec plugin_root plugin_manifest
 
   case "$plugin_spec" in
   @*/*@*)
@@ -65,17 +71,23 @@ install_plugin() {
     ;;
   esac
 
-  plugin_manifest="${CACHE_ROOT}/${cache_spec}/node_modules/${package_name}/package.json"
+  plugin_root="${CACHE_ROOT}/${cache_spec}"
+  plugin_manifest="${plugin_root}/node_modules/${package_name}/package.json"
 
   if [[ -f $plugin_manifest ]]; then
     echo "OpenCode plugin already ready: ${plugin_spec}"
     return
   fi
 
-  "$OPENCODE_BIN" plugin "$plugin_spec" --global
+  mkdir -p "$plugin_root"
+  "$BUN_BIN" add \
+    --cwd "$plugin_root" \
+    --exact \
+    --minimum-release-age 0 \
+    "$plugin_spec"
 
   if [[ ! -f $plugin_manifest ]]; then
-    echo "ERROR: OpenCode did not materialize ${plugin_spec} at ${plugin_manifest}" >&2
+    echo "ERROR: Bun did not materialize OpenCode plugin ${plugin_spec} at ${plugin_manifest}" >&2
     exit 1
   fi
 

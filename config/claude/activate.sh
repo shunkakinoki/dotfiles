@@ -6,7 +6,7 @@ SETTINGS_JSON="$1"
 
 mkdir -p ~/.claude
 _TMP=$(mktemp)
-jq --arg host "$(hostname)" '
+jq --arg host "${HOSTNAME:-unknown}" '
   . * (.hostOverrides[$host] // {})
   | del(.hostOverrides)
 ' "$SETTINGS_JSON" >"$_TMP"

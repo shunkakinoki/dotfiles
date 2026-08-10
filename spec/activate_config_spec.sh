@@ -274,6 +274,12 @@ It 'copies settings.json'
 When run bash -c "grep 'SETTINGS_JSON' '$SCRIPT'"
 The output should include 'SETTINGS_JSON'
 End
+
+It 'uses the Bash hostname without requiring the hostname executable'
+When run bash -c "grep 'HOSTNAME:-unknown' '$SCRIPT' && ! grep -q '\$(hostname)' '$SCRIPT'"
+The status should be success
+The output should include 'HOSTNAME:-unknown'
+End
 End
 
 Describe 'config/dcg/activate.sh'
