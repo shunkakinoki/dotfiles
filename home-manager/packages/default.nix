@@ -101,7 +101,6 @@ with pkgs;
   pingu
   pnpm
   postgresql_18
-  pkgs.llm-agents.prime-agent
   process-compose
   procs
   rclone
@@ -114,7 +113,6 @@ with pkgs;
   sops
   speedtest-cli
   sqlite
-  pkgs.llm-agents.t3code
   tealdeer
   termshark
   tig
@@ -138,6 +136,8 @@ with pkgs;
 # Heavy packages: skip on CI runners (disk pressure / LTO OOM on macos-latest).
 ++ lib.optionals (!isRunner) [
   pkgs.llm-agents.antigravity-cli
+  pkgs.llm-agents.prime-agent
+  pkgs.llm-agents.t3code
   vector
 ]
 ++ lib.optionals stdenv.isDarwin [
