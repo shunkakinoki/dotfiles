@@ -136,6 +136,8 @@ with pkgs;
 # Heavy packages: skip on CI runners (disk pressure / LTO OOM on macos-latest).
 ++ lib.optionals (!isRunner) [
   pkgs.llm-agents.antigravity-cli
+  pkgs.llm-agents.prime-agent
+  pkgs.llm-agents.t3code
   vector
 ]
 ++ lib.optionals stdenv.isDarwin [
@@ -244,6 +246,7 @@ with pkgs;
   slack
   slurp
   swappy
+  pkgs.llm-agents.t3code-desktop
   tectonic
   telegram-desktop
   totem
