@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.9.0",
+  "checkpoint_id": "137aaa527bed",
+  "session_id": "8e0afadf-2a97-4843-84b1-1a93234d5975",
+  "strategy": "manual-commit",
+  "created_at": "2026-08-11T08:20:59.1704Z",
+  "branch": "codex/remove-global-macos-dns",
+  "checkpoints_count": 1,
+  "files_touched": [],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-5",
+  "turn_id": "130f39f2deb7",
+  "compact_transcript_start": 0,
+  "token_usage": {
+    "input_tokens": 220,
+    "cache_creation_tokens": 426005,
+    "cache_read_tokens": 12379965,
+    "output_tokens": 35462,
+    "api_call_count": 111
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}

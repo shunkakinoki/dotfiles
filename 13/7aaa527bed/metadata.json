@@ -1,0 +1,24 @@
+{
+  "cli_version": "0.9.0",
+  "checkpoint_id": "137aaa527bed",
+  "strategy": "manual-commit",
+  "branch": "codex/remove-global-macos-dns",
+  "checkpoints_count": 1,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/13/7aaa527bed/0/metadata.json",
+      "transcript": "/13/7aaa527bed/0/full.jsonl",
+      "compact_transcript": "/13/7aaa527bed/0/transcript.jsonl",
+      "content_hash": "/13/7aaa527bed/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 220,
+    "cache_creation_tokens": 426005,
+    "cache_read_tokens": 12379965,
+    "output_tokens": 35462,
+    "api_call_count": 111
+  }
+}
