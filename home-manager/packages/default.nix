@@ -101,6 +101,7 @@ with pkgs;
   pingu
   pnpm
   postgresql_18
+  pkgs.llm-agents.prime-agent
   process-compose
   procs
   rclone
@@ -113,6 +114,7 @@ with pkgs;
   sops
   speedtest-cli
   sqlite
+  pkgs.llm-agents.t3code
   tealdeer
   termshark
   tig
@@ -244,6 +246,7 @@ with pkgs;
   slack
   slurp
   swappy
+  pkgs.llm-agents.t3code-desktop
   tectonic
   telegram-desktop
   totem
