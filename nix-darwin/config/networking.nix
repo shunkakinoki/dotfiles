@@ -8,10 +8,6 @@
       enable = false;
       enableStealthMode = false;
     };
-    dns = [
-      "1.1.1.1"
-      "8.8.8.8"
-    ];
     knownNetworkServices = [
       "Wi-Fi"
       "Ethernet Adaptor"
@@ -21,7 +17,7 @@
 
   # Split DNS: route only Tailscale domains through Tailscale's DNS proxy.
   # Keep Tailscale from installing its transient DNS proxy as the global
-  # resolver; regular internet DNS stays on the Wi-Fi service below.
+  # resolver; regular internet DNS comes from the active network via DHCP.
   environment.etc = {
     "resolver/ts.net".text = ''
       nameserver 100.100.100.100
