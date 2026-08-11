@@ -254,7 +254,39 @@ The status should be success
 End
 End
 
+Describe 'Docker image handling'
+It 'supports a locally built canary image without pulling over it'
+When run bash -c "sed -n '/CLIPROXYAPI_IMAGE/,/\"\$docker_image\" \&/p' '$SCRIPT'"
+The output should include 'CLIPROXYAPI_IMAGE:-eceasy/cli-proxy-api:latest'
+The output should include 'CLIPROXYAPI_SKIP_PULL:-false'
+The output should include '[ "${CLIPROXYAPI_SKIP_PULL:-false}" != "true" ]'
+The output should include 'docker pull "$docker_image"'
+The output should include '"$docker_image" &'
+The status should be success
+End
+
+It 'pulls default and custom images but skips a local canary'
+When run bash -c '
+  docker() { printf "pull %s\n" "$2"; }
+  pull_block=$(sed -n '\''/    if \[ "${CLIPROXYAPI_SKIP_PULL:-false}" != "true" \]; then/,/    fi/p'\'' "$1")
+  docker_image=eceasy/cli-proxy-api:latest
+  CLIPROXYAPI_SKIP_PULL=false
+  eval "$pull_block"
+  docker_image=registry.example/cliproxyapi:test
+  eval "$pull_block"
+  docker_image=cliproxyapi:local-canary
+  CLIPROXYAPI_SKIP_PULL=true
+  eval "$pull_block"
+' _ "$SCRIPT"
+The output should include 'pull eceasy/cli-proxy-api:latest'
+The output should include 'pull registry.example/cliproxyapi:test'
+The output should not include 'pull cliproxyapi:local-canary'
+The status should be success
+End
+End
+
 Describe 'OpenRouter fallback routing'
+
 It 'keeps provider selection sticky for one hour per client session'
 When run bash -c "sed -n '/^routing:/,/^[a-z]/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'session-affinity: true'
@@ -266,6 +298,12 @@ It 'maps the free router to OpenClaw canonical model alias'
 When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'name: "openrouter/free"'
 The output should include 'alias: "free"'
+The status should be success
+End
+
+It 'preserves prompt cache keys for the OpenRouter provider'
+When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'support-prompt-cache-key: true'
 The status should be success
 End
 
