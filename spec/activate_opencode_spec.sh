@@ -39,6 +39,7 @@ setup() {
     'mkdir -p "$(dirname "$manifest")"' \
     ': >"$manifest"' >"$FAKE_BUN"
   chmod +x "$FAKE_BUN"
+  mkdir -p "$TEMP_HOME/.config/opencode"
 }
 
 cleanup() {
@@ -49,16 +50,16 @@ BeforeEach 'setup'
 AfterEach 'cleanup'
 
 It 'materializes every declared npm plugin'
-When run env HOME="$TEMP_HOME" bash "$SCRIPT" "$FAKE_OPENCODE" "$(command -v jq)" "$FAKE_BUN"
+When run env HOME="$TEMP_HOME" XDG_CONFIG_HOME="$TEMP_HOME/.config" bash "$SCRIPT" "$FAKE_OPENCODE" "$(command -v jq)" "$FAKE_BUN"
 The status should be success
 The output should include 'OpenCode plugin ready: cc-safety-net'
 The output should include 'OpenCode plugin ready: opencode-atuin-history'
 The output should include 'OpenCode plugin ready: opencode-claude-hooks'
 The output should include 'OpenCode plugin ready: opencode-runtime-fallback@0.2.3'
-The file "$TEMP_HOME/.cache/opencode/packages/cc-safety-net@latest/node_modules/cc-safety-net/package.json" should be exist
-The file "$TEMP_HOME/.cache/opencode/packages/opencode-atuin-history@latest/node_modules/opencode-atuin-history/package.json" should be exist
-The file "$TEMP_HOME/.cache/opencode/packages/opencode-claude-hooks@latest/node_modules/opencode-claude-hooks/package.json" should be exist
-The file "$TEMP_HOME/.cache/opencode/packages/opencode-runtime-fallback@0.2.3/node_modules/opencode-runtime-fallback/package.json" should be exist
+The file "$TEMP_HOME/.config/opencode/node_modules/cc-safety-net/package.json" should be exist
+The file "$TEMP_HOME/.config/opencode/node_modules/opencode-atuin-history/package.json" should be exist
+The file "$TEMP_HOME/.config/opencode/node_modules/opencode-claude-hooks/package.json" should be exist
+The file "$TEMP_HOME/.config/opencode/node_modules/opencode-runtime-fallback/package.json" should be exist
 The contents of file "$TEMP_HOME/bun-invocations" should include '--exact --minimum-release-age 0 cc-safety-net'
 The contents of file "$TEMP_HOME/bun-invocations" should include '--exact --minimum-release-age 0 opencode-atuin-history'
 The contents of file "$TEMP_HOME/bun-invocations" should include '--exact --minimum-release-age 0 opencode-claude-hooks'
@@ -70,18 +71,16 @@ for plugin_spec in "${PLUGIN_SPECS[@]}"; do
   case "$plugin_spec" in
   *@*)
     plugin_package="${plugin_spec%@*}"
-    cache_spec="$plugin_spec"
     ;;
   *)
     plugin_package="$plugin_spec"
-    cache_spec="${plugin_spec}@latest"
     ;;
   esac
-  manifest="$TEMP_HOME/.cache/opencode/packages/$cache_spec/node_modules/$plugin_package/package.json"
+  manifest="$TEMP_HOME/.config/opencode/node_modules/$plugin_package/package.json"
   mkdir -p "$(dirname "$manifest")"
   : >"$manifest"
 done
-When run env HOME="$TEMP_HOME" bash "$SCRIPT" "$FAKE_OPENCODE" "$(command -v jq)" "$FAKE_BUN"
+When run env HOME="$TEMP_HOME" XDG_CONFIG_HOME="$TEMP_HOME/.config" bash "$SCRIPT" "$FAKE_OPENCODE" "$(command -v jq)" "$FAKE_BUN"
 The status should be success
 The output should include 'OpenCode plugin already ready: cc-safety-net'
 The output should include 'OpenCode plugin already ready: opencode-runtime-fallback@0.2.3'
@@ -89,30 +88,30 @@ The file "$TEMP_HOME/bun-invocations" should not be exist
 End
 
 It 'does not pass local file plugins to the package installer'
-When run env HOME="$TEMP_HOME" bash "$SCRIPT" "$FAKE_OPENCODE" "$(command -v jq)" "$FAKE_BUN"
+When run env HOME="$TEMP_HOME" XDG_CONFIG_HOME="$TEMP_HOME/.config" bash "$SCRIPT" "$FAKE_OPENCODE" "$(command -v jq)" "$FAKE_BUN"
 The status should be success
 The output should include 'OpenCode plugin ready: cc-safety-net'
 The contents of file "$TEMP_HOME/bun-invocations" should not include 'local-plugin.ts'
 End
 
 It 'succeeds when there are no npm plugins to materialize'
-When run env HOME="$TEMP_HOME" NO_NPM_PLUGINS=1 bash "$SCRIPT" "$FAKE_OPENCODE" "$(command -v jq)" "$FAKE_BUN"
+When run env HOME="$TEMP_HOME" XDG_CONFIG_HOME="$TEMP_HOME/.config" NO_NPM_PLUGINS=1 bash "$SCRIPT" "$FAKE_OPENCODE" "$(command -v jq)" "$FAKE_BUN"
 The status should be success
 The output should equal ''
 The file "$TEMP_HOME/bun-invocations" should not be exist
 End
 
 It 'fails closed when effective config cannot be resolved'
-When run env HOME="$TEMP_HOME" FAIL_DEBUG=1 bash "$SCRIPT" "$FAKE_OPENCODE" "$(command -v jq)" "$FAKE_BUN"
+When run env HOME="$TEMP_HOME" XDG_CONFIG_HOME="$TEMP_HOME/.config" FAIL_DEBUG=1 bash "$SCRIPT" "$FAKE_OPENCODE" "$(command -v jq)" "$FAKE_BUN"
 The status should be failure
 The stderr should include 'failed to resolve effective OpenCode config'
 The file "$TEMP_HOME/bun-invocations" should not be exist
 End
 
 It 'fails closed when Bun cannot materialize a configured plugin'
-When run env HOME="$TEMP_HOME" FAIL_BUN_PLUGIN=opencode-atuin-history bash "$SCRIPT" "$FAKE_OPENCODE" "$(command -v jq)" "$FAKE_BUN"
+When run env HOME="$TEMP_HOME" XDG_CONFIG_HOME="$TEMP_HOME/.config" FAIL_BUN_PLUGIN=opencode-atuin-history bash "$SCRIPT" "$FAKE_OPENCODE" "$(command -v jq)" "$FAKE_BUN"
 The status should be failure
 The output should include 'OpenCode plugin ready: cc-safety-net'
-The file "$TEMP_HOME/.cache/opencode/packages/opencode-atuin-history@latest/node_modules/opencode-atuin-history/package.json" should not be exist
+The file "$TEMP_HOME/.config/opencode/node_modules/opencode-atuin-history/package.json" should not be exist
 End
 End

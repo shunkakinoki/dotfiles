@@ -4,7 +4,7 @@ set -euo pipefail
 OPENCODE_BIN="${1:-opencode}"
 JQ_BIN="${2:-jq}"
 BUN_BIN="${3:-bun}"
-CACHE_ROOT="${XDG_CACHE_HOME:-${HOME}/.cache}/opencode/packages"
+CONFIG_ROOT="${XDG_CONFIG_HOME:-${HOME}/.config}/opencode"
 
 if [[ ! -x $OPENCODE_BIN ]]; then
   echo "ERROR: OpenCode executable not found: ${OPENCODE_BIN}" >&2
@@ -50,38 +50,32 @@ fi
 
 install_plugin() {
   local plugin_spec="$1"
-  local package_name cache_spec plugin_root plugin_manifest
+  local package_name plugin_manifest
 
   case "$plugin_spec" in
   @*/*@*)
     package_name="${plugin_spec%@*}"
-    cache_spec="$plugin_spec"
     ;;
   @*/*)
     package_name="$plugin_spec"
-    cache_spec="${plugin_spec}@latest"
     ;;
   *@*)
     package_name="${plugin_spec%@*}"
-    cache_spec="$plugin_spec"
     ;;
   *)
     package_name="$plugin_spec"
-    cache_spec="${plugin_spec}@latest"
     ;;
   esac
 
-  plugin_root="${CACHE_ROOT}/${cache_spec}"
-  plugin_manifest="${plugin_root}/node_modules/${package_name}/package.json"
+  plugin_manifest="${CONFIG_ROOT}/node_modules/${package_name}/package.json"
 
   if [[ -f $plugin_manifest ]]; then
     echo "OpenCode plugin already ready: ${plugin_spec}"
     return
   fi
 
-  mkdir -p "$plugin_root"
   "$BUN_BIN" add \
-    --cwd "$plugin_root" \
+    --cwd "$CONFIG_ROOT" \
     --exact \
     --minimum-release-age 0 \
     "$plugin_spec"
