@@ -74,8 +74,8 @@ The output should include '/etc/profiles/per-user/${config.home.username}/bin'
 End
 
 It 'includes Bun-installed agents in the daemon PATH'
-When run grep -F '${homeDir}/.bun/bin' "$PWD/home-manager/services/roborev/default.nix"
-The output should include '${homeDir}/.bun/bin'
+When run grep -Fc '${homeDir}/.bun/bin' "$PWD/home-manager/services/roborev/default.nix"
+The output should equal '2'
 End
 
 It 'binds the daemon to the local host'
