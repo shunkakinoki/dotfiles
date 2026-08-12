@@ -1,0 +1,15 @@
+{
+  "enabled": true,
+  "retry_on_errors": [401, 404, 429, 500, 502, 503, 504],
+  "retryable_error_patterns": ["unknown provider for model"],
+  "max_fallback_attempts": 5,
+  "cooldown_seconds": 60,
+  "timeout_seconds": 30,
+  "notify_on_fallback": true,
+  "fallback_models": [
+    "cliproxyapi/__MINIMAX__",
+    "cliproxyapi/__GEMINI_FLASH__",
+    "openrouter-preset/@preset/__GLM_NONDOT__",
+    "cliproxyapi/__CLAUDE_HAIKU__"
+  ]
+}

@@ -20,4 +20,18 @@
     source = ./moshi-hooks.ts;
     force = true;
   };
+
+  home.file.".omp/agent/fallback.json" = {
+    source = ./fallback.json;
+    force = true;
+  };
+  # Kept outside extensions/ so the loader does not pick it up as an extension.
+  home.file.".omp/agent/fallback-policy.ts" = {
+    source = ../shared/fallback/runtime-fallback.ts;
+    force = true;
+  };
+  home.file.".omp/agent/extensions/fallback.ts" = {
+    source = ./fallback.ts;
+    force = true;
+  };
 }
