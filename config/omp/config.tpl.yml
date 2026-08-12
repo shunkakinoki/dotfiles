@@ -307,11 +307,28 @@ retry:
 
   #   Ordered alternates per chain key. The `default` chain is expanded to every
   #   model role without its own chain, so role turns fall back too.
+  #
+  #   Candidates are the entries AFTER the current model in its chain, so a role
+  #   whose model sits last in the chain it inherits has no candidates at all.
+  #   The roles pinned to __GPT__ therefore get their own chain rather than
+  #   inheriting `default`, which ends on __GPT__.
   fallbackChains:
     default:
       - "openai-codex/__GPT_LUNA__"
       - "openai-codex/__GPT_CODEX_SPARK__"
       - "openai-codex/__GPT__"
+    slow:
+      - "openai-codex/__GPT_CODEX__"
+      - "openai-codex/__GPT_LUNA__"
+      - "cliproxyapi/__DEEPSEEK_FLASH__"
+    vision:
+      - "openai-codex/__GPT_CODEX__"
+      - "openai-codex/__GPT_LUNA__"
+      - "cliproxyapi/__DEEPSEEK_FLASH__"
+    plan:
+      - "openai-codex/__GPT_CODEX__"
+      - "openai-codex/__GPT_LUNA__"
+      - "cliproxyapi/__DEEPSEEK_FLASH__"
   # fallbackRevertPolicy
 
   #   Return to the primary once its cooldown expires. Upstream default: cooldown-expiry

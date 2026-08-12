@@ -170,6 +170,11 @@ When run bash -c "grep -q 'export default function piRuntimeFallback' config/pi/
 The status should be success
 End
 
+It 'never leaves an OMP role on the last entry of the chain it inherits'
+When run bash -c "yq -e '.retry.fallbackChains as \$c | .modelRoles | to_entries | all(. as \$r | ((\$c[\$r.key] // \$c.default) as \$chain | (\$chain | index(\$r.value)) as \$i | \$i == null or \$i < ((\$chain | length) - 1)))' config/omp/config.yml >/dev/null"
+The status should be success
+End
+
 It 'uses OMP native retry fallback chains instead of an extension'
 When run bash -c "[ ! -e config/omp/fallback.ts ] && [ ! -e config/omp/fallback.json ] && yq -e '.retry.modelFallback == true and .retry.fallbackRevertPolicy == \"cooldown-expiry\" and .retry.fallbackChains.default == [\"openai-codex/gpt-5.6-luna\",\"openai-codex/gpt-5.3-codex-spark\",\"openai-codex/gpt-5.6-sol\"]' config/omp/config.yml >/dev/null"
 The status should be success
