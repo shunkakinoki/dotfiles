@@ -299,6 +299,23 @@ retry:
 
   #   Base delay between retries in milliseconds. Upstream default: 2000
   baseDelayMs: 2000
+  # modelFallback
+
+  #   Let retry recovery switch to the chains below. Upstream default: true
+  modelFallback: true
+  # fallbackChains
+
+  #   Ordered alternates per chain key. The `default` chain is expanded to every
+  #   model role without its own chain, so role turns fall back too.
+  fallbackChains:
+    default:
+      - "openai-codex/gpt-5.6-luna"
+      - "openai-codex/gpt-5.3-codex-spark"
+      - "openai-codex/gpt-5.6-sol"
+  # fallbackRevertPolicy
+
+  #   Return to the primary once its cooldown expires. Upstream default: cooldown-expiry
+  fallbackRevertPolicy: "cooldown-expiry"
 # --- Compaction --------------------------------------------------------------
 compaction:
   # enabled

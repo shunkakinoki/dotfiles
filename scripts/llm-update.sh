@@ -102,7 +102,6 @@ declare -A TEMPLATES=(
   ["config/hermes/config.tpl.yaml"]=config/hermes/config.template.yaml
   ["config/omp/config.tpl.yml"]=config/omp/config.yml
   ["config/omp/models.tpl.yml"]=config/omp/models.yml
-  ["config/omp/fallback.tpl.json"]=config/omp/fallback.json
   ["config/pi/models.tpl.json"]=config/pi/models.json
   ["config/pi/settings.tpl.json"]=config/pi/settings.json
   ["config/pi/fallback.tpl.json"]=config/pi/fallback.json

@@ -61,10 +61,9 @@ When run bash -c "grep 'config/pi/settings.tpl.json' '$SCRIPT'"
 The output should include 'config/pi/settings.tpl.json'
 End
 
-It 'includes pi and omp fallback chains in template mappings'
-When run bash -c "grep 'config/pi/fallback.tpl.json' '$SCRIPT' && grep 'config/omp/fallback.tpl.json' '$SCRIPT'"
+It 'includes the pi fallback chain in template mappings'
+When run bash -c "grep 'config/pi/fallback.tpl.json' '$SCRIPT'"
 The output should include 'config/pi/fallback.tpl.json'
-The output should include 'config/omp/fallback.tpl.json'
 End
 
 It 'includes llm default model in template mappings'
@@ -150,34 +149,29 @@ The output should include '__DEEPSEEK_FLASH__'
 End
 End
 
-Describe 'Pi and OMP runtime fallback'
+Describe 'runtime model fallback'
 It 'generates a Pi fallback chain that excludes the default model'
 When run bash -c "jq -e '.enabled == true and .max_fallback_attempts == 5 and .fallback_models == [\"cliproxyapi/minimax-m3\",\"cliproxyapi/gemini-3.6-flash\",\"openrouter-preset/@preset/glm-4-7\",\"cliproxyapi/claude-haiku-4-5-20251001\"] and (.fallback_models | index(\"cliproxyapi/glm-4.7\")) == null' config/pi/fallback.json >/dev/null"
 The status should be success
 End
 
-It 'generates an OMP fallback chain that excludes the default role'
-When run bash -c "jq -e '.enabled == true and .fallback_models == [\"openai-codex/gpt-5.6-luna\",\"openai-codex/gpt-5.3-codex-spark\",\"openai-codex/gpt-5.6-sol\"] and (.fallback_models | index(\"cliproxyapi/deepseek-v4-flash\")) == null' config/omp/fallback.json >/dev/null"
+It 'keeps the Pi policy schema within the OpenCode schema'
+When run bash -c "pi=\$(jq -Sc 'keys' config/pi/fallback.json) && jq -Se --argjson pi \"\$pi\" '(keys - \$pi) == [\"timeout_seconds\"]' config/opencode/opencode-fallback.jsonc >/dev/null"
 The status should be success
 End
 
-It 'keeps the Pi and OMP policy schema identical and within the OpenCode schema'
-When run bash -c "pi=\$(jq -Sc 'keys' config/pi/fallback.json) && [ \"\$(jq -Sc 'keys' config/omp/fallback.json)\" = \"\$pi\" ] && jq -Se --argjson pi \"\$pi\" '(keys - \$pi) == [\"timeout_seconds\"]' config/opencode/opencode-fallback.jsonc >/dev/null"
+It 'omits the OpenCode-only timeout knob a Pi extension cannot honor'
+When run bash -c "! grep -q 'timeout_seconds' config/pi/fallback.json && ! grep -qE '^\s+timeout_seconds' config/pi/fallback.ts"
 The status should be success
 End
 
-It 'omits the OpenCode-only timeout knob the shared policy cannot honor'
-When run bash -c "! grep -q 'timeout_seconds' config/pi/fallback.json config/omp/fallback.json && ! grep -qE '^\s+timeout_seconds' config/shared/fallback/runtime-fallback.ts"
+It 'ships the Pi fallback as a single self-contained extension'
+When run bash -c "grep -q 'export default function piRuntimeFallback' config/pi/fallback.ts && grep -q '\".pi/agent/extensions/fallback.ts\"' config/pi/default.nix && [ ! -e config/shared/fallback ]"
 The status should be success
 End
 
-It 'ships one shared policy module for the Pi and OMP extensions'
-When run bash -c "grep -q 'attachFallback' config/shared/fallback/runtime-fallback.ts && grep -q '../fallback-policy.ts' config/pi/fallback.ts && grep -q '../fallback-policy.ts' config/omp/fallback.ts"
-The status should be success
-End
-
-It 'installs the shared policy outside the auto-loaded extensions directory'
-When run bash -c "grep -q '\".pi/agent/fallback-policy.ts\"' config/pi/default.nix && grep -q '\".omp/agent/fallback-policy.ts\"' config/omp/default.nix"
+It 'uses OMP native retry fallback chains instead of an extension'
+When run bash -c "[ ! -e config/omp/fallback.ts ] && [ ! -e config/omp/fallback.json ] && yq -e '.retry.modelFallback == true and .retry.fallbackRevertPolicy == \"cooldown-expiry\" and .retry.fallbackChains.default == [\"openai-codex/gpt-5.6-luna\",\"openai-codex/gpt-5.3-codex-spark\",\"openai-codex/gpt-5.6-sol\"]' config/omp/config.yml >/dev/null"
 The status should be success
 End
 End
