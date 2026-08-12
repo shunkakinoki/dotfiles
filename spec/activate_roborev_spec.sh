@@ -73,6 +73,16 @@ When run grep -F '/etc/profiles/per-user/${config.home.username}/bin' "$PWD/home
 The output should include '/etc/profiles/per-user/${config.home.username}/bin'
 End
 
+It 'includes Bun-installed agents in the launchd PATH'
+When run grep -F 'PATH = "${homeDir}/.local/bin:${homeDir}/.bun/bin:' "$PWD/home-manager/services/roborev/default.nix"
+The output should include '${homeDir}/.bun/bin'
+End
+
+It 'includes Bun-installed agents in the systemd PATH'
+When run grep -F '"PATH=${homeDir}/.local/bin:${homeDir}/.bun/bin:' "$PWD/home-manager/services/roborev/default.nix"
+The output should include '${homeDir}/.bun/bin'
+End
+
 It 'binds the daemon to the local host'
 When run grep -F '127.0.0.1:7373' "$PWD/home-manager/services/roborev/default.nix"
 The output should include '127.0.0.1:7373'
