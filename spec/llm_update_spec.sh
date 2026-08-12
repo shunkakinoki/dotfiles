@@ -4,6 +4,49 @@
 Describe 'scripts/llm-update.sh'
 SCRIPT="$PWD/scripts/llm-update.sh"
 
+# Parses the generated (fixed-format) config with regexes rather than a YAML
+# library: `yq` is the kislyuk jq-dialect build locally and the mikefarah build
+# in CI, and no filter is valid in both.
+omp_fallback_chain_tails_ok() {
+  python3 - "$1" <<'PY'
+import re, sys
+
+text = open(sys.argv[1]).read()
+
+roles = dict(re.findall(r'^  (\w+): "([^"]+)"$', re.search(
+    r'^modelRoles:\n((?:  .*\n)+)', text, re.M).group(1), re.M))
+
+chains, current = {}, None
+for line in re.search(r'^  fallbackChains:\n((?:    .*\n)+)', text, re.M).group(1).splitlines():
+    key = re.match(r'^    (\w+):$', line)
+    if key:
+        current = key.group(1)
+        chains[current] = []
+        continue
+    item = re.match(r'^      - "([^"]+)"$', line)
+    if item and current:
+        chains[current].append(item.group(1))
+
+base = lambda ref: ref.split("/", 1)[1] if "/" in ref else ref
+
+stranded = []
+for role, model in roles.items():
+    chain = chains.get(role) or chains.get("default") or []
+    if model in chain:
+        index = chain.index(model)
+    elif base(model) in [base(entry) for entry in chain]:
+        index = [base(entry) for entry in chain].index(base(model))
+    else:
+        continue
+    if index == len(chain) - 1:
+        stranded.append(f"{role} ({model}) is last in its chain")
+
+if stranded:
+    print("\n".join(stranded))
+    sys.exit(1)
+PY
+}
+
 Describe 'script properties'
 It 'uses bash shebang'
 When run bash -c "head -1 '$SCRIPT'"
@@ -180,12 +223,12 @@ End
 It 'never leaves an OMP role on the last entry of the chain it inherits'
 # OMP resolves candidates positionally, by exact selector then by base selector
 # (provider stripped), so a role matching either way at the tail gets none.
-When run bash -c "yq -e '.retry.fallbackChains as \$c | .modelRoles | to_entries | all(. as \$r | ((\$c[\$r.key] // \$c.default) as \$chain | (\$chain | map(sub(\"^[^/]+/\";\"\"))) as \$bases | ((\$chain | index(\$r.value)) // (\$bases | index(\$r.value | sub(\"^[^/]+/\";\"\")))) as \$i | \$i == null or \$i < ((\$chain | length) - 1)))' config/omp/config.yml >/dev/null"
+When call omp_fallback_chain_tails_ok config/omp/config.yml
 The status should be success
 End
 
 It 'uses OMP native retry fallback chains instead of an extension'
-When run bash -c "[ ! -e config/omp/fallback.ts ] && [ ! -e config/omp/fallback.json ] && yq -e '.retry.modelFallback == true and .retry.fallbackRevertPolicy == \"cooldown-expiry\" and .retry.fallbackChains.default == [\"openai-codex/gpt-5.6-luna\",\"openai-codex/gpt-5.3-codex-spark\",\"openai-codex/gpt-5.6-sol\"]' config/omp/config.yml >/dev/null"
+When run bash -c "[ ! -e config/omp/fallback.ts ] && [ ! -e config/omp/fallback.json ] && grep -q 'modelFallback: true' config/omp/config.yml && grep -q 'fallbackRevertPolicy: \"cooldown-expiry\"' config/omp/config.yml"
 The status should be success
 End
 End

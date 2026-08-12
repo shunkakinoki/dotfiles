@@ -315,7 +315,7 @@ retry:
   fallbackChains:
     default:
       - "openai-codex/__GPT_LUNA__"
-      - "openai-codex/__GPT_CODEX_SPARK__"
+      - "openai-codex/__GPT_CODEX__"
       - "openai-codex/__GPT__"
     slow:
       - "openai-codex/__GPT_CODEX__"

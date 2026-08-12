@@ -62,7 +62,37 @@
           bernstein = prev.llm-agents.bernstein.overrideAttrs (_: {
             dontCheckRuntimeDeps = true;
           });
-        };
+        }
+        // (
+          # t3code 0.0.33 pins one pnpm deps hash, but fetchPnpmDeps resolves
+          # platform-specific optional packages, so it only reproduces on the
+          # system upstream generated it from. Every x86_64-linux build fails on
+          # the fixed-output mismatch; other systems keep the upstream hash.
+          # https://github.com/numtide/llm-agents.nix
+          let
+            pnpmDepsHashes = {
+              x86_64-linux = "sha256-sV9aynsvHXopeCkZ0Myjj+FrkySXAooh7SVSNsuL56c=";
+            };
+            hash = pnpmDepsHashes.${prev.stdenv.hostPlatform.system} or null;
+            t3code = prev.llm-agents.t3code.overrideAttrs (old: {
+              pnpmDeps = old.pnpmDeps.overrideAttrs (_: {
+                outputHash = hash;
+              });
+            });
+          in
+          prev.lib.optionalAttrs (hash != null && prev.llm-agents ? t3code) (
+            {
+              inherit t3code;
+            }
+            # t3code-desktop is a symlinkJoin over t3code's `desktop` output, so
+            # it needs repointing at the repinned build rather than its own fix.
+            // prev.lib.optionalAttrs (prev.llm-agents ? t3code-desktop) {
+              t3code-desktop = prev.llm-agents.t3code-desktop.overrideAttrs (_: {
+                paths = [ t3code.desktop ];
+              });
+            }
+          )
+        );
     }
     // prev.lib.optionalAttrs (prev ? mise) {
       # mise's Cargo test suite asserts setuid bits survive OCI layer extraction,
