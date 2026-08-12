@@ -171,7 +171,9 @@ The status should be success
 End
 
 It 'never leaves an OMP role on the last entry of the chain it inherits'
-When run bash -c "yq -e '.retry.fallbackChains as \$c | .modelRoles | to_entries | all(. as \$r | ((\$c[\$r.key] // \$c.default) as \$chain | (\$chain | index(\$r.value)) as \$i | \$i == null or \$i < ((\$chain | length) - 1)))' config/omp/config.yml >/dev/null"
+# OMP resolves candidates positionally, by exact selector then by base selector
+# (provider stripped), so a role matching either way at the tail gets none.
+When run bash -c "yq -e '.retry.fallbackChains as \$c | .modelRoles | to_entries | all(. as \$r | ((\$c[\$r.key] // \$c.default) as \$chain | (\$chain | map(sub(\"^[^/]+/\";\"\"))) as \$bases | ((\$chain | index(\$r.value)) // (\$bases | index(\$r.value | sub(\"^[^/]+/\";\"\")))) as \$i | \$i == null or \$i < ((\$chain | length) - 1)))' config/omp/config.yml >/dev/null"
 The status should be success
 End
 
