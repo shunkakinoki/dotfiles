@@ -1,6 +1,6 @@
 {
   "sessionDefaultSettings": {
-    "model": "__DEEPSEEK_PRO__",
+    "model": "__DEEPSEEK_FLASH__",
     "reasoningEffort": "high"
   },
   "customModels": [

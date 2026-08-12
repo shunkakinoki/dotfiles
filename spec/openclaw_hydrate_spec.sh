@@ -9,7 +9,6 @@ template_uses_cliproxy_flash_default() {
     .agents.defaults.model == {
       "primary": "cliproxy/deepseek-v4-flash",
       "fallbacks": [
-        "cliproxy/deepseek-v4-pro",
         "cliproxy/gemma-4-31b-it",
         "cliproxy/glm-4.7",
         "cliproxy/minimax-m3",
