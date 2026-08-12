@@ -15,4 +15,12 @@ _: {
     source = ./moshi-hooks.ts;
     force = true;
   };
+  home.file.".pi/agent/fallback.json" = {
+    source = ./fallback.json;
+    force = true;
+  };
+  home.file.".pi/agent/extensions/fallback.ts" = {
+    source = ./fallback.ts;
+    force = true;
+  };
 }

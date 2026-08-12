@@ -104,6 +104,7 @@ declare -A TEMPLATES=(
   ["config/omp/models.tpl.yml"]=config/omp/models.yml
   ["config/pi/models.tpl.json"]=config/pi/models.json
   ["config/pi/settings.tpl.json"]=config/pi/settings.json
+  ["config/pi/fallback.tpl.json"]=config/pi/fallback.json
   ["home-manager/programs/fish/functions/_coxe_function.tpl.fish"]=home-manager/programs/fish/functions/_coxe_function.fish
   ["home-manager/programs/fish/functions/_coxeh_function.tpl.fish"]=home-manager/programs/fish/functions/_coxeh_function.fish
   ["home-manager/programs/fish/functions/_coxel_function.tpl.fish"]=home-manager/programs/fish/functions/_coxel_function.fish

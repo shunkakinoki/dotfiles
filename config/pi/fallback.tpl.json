@@ -1,0 +1,23 @@
+{
+  "enabled": true,
+  "retry_on_errors": [
+    401,
+    404,
+    429,
+    500,
+    502,
+    503,
+    504
+  ],
+  "retryable_error_patterns": [
+    "unknown provider for model"
+  ],
+  "max_fallback_attempts": 5,
+  "cooldown_seconds": 60,
+  "notify_on_fallback": true,
+  "fallback_models": [
+    "cliproxyapi/__GEMMA__",
+    "cliproxyapi/__GLM__",
+    "cliproxyapi/free"
+  ]
+}

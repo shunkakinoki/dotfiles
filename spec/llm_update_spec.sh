@@ -61,6 +61,11 @@ When run bash -c "grep 'config/pi/settings.tpl.json' '$SCRIPT'"
 The output should include 'config/pi/settings.tpl.json'
 End
 
+It 'includes the pi fallback chain in template mappings'
+When run bash -c "grep 'config/pi/fallback.tpl.json' '$SCRIPT'"
+The output should include 'config/pi/fallback.tpl.json'
+End
+
 It 'includes llm default model in template mappings'
 When run bash -c "grep 'config/llm/default_model.tpl.txt' '$SCRIPT'"
 The output should include 'config/llm/default_model.tpl.txt'
@@ -142,7 +147,50 @@ It 'keeps the OMP model registry placeholder in the template'
 When run bash -c "grep 'id: __DEEPSEEK_FLASH__' config/omp/models.tpl.yml"
 The output should include '__DEEPSEEK_FLASH__'
 End
+End
 
+Describe 'runtime model fallback'
+It 'generates the free-tier CLIProxy Pi fallback chain'
+When run bash -c "jq -e '.enabled == true and .max_fallback_attempts == 5 and .fallback_models == [\"cliproxyapi/gemma-4-31b-it\",\"cliproxyapi/glm-4.7\",\"cliproxyapi/free\"]' config/pi/fallback.json >/dev/null"
+The status should be success
+End
+
+It 'resolves every Pi fallback model against the Pi registry'
+# pi.modelRegistry.find(provider, id) returns undefined for anything missing
+# here, which would cool the whole chain down as "unavailable" at runtime.
+When run bash -c "known=\$(jq -r '.providers | to_entries[] | .key as \$p | .value.models[] | \"\(\$p)/\(.id)\"' config/pi/models.json) && jq -r '.fallback_models[]' config/pi/fallback.json | while IFS= read -r ref; do printf '%s\n' \"\$known\" | grep -Fxq \"\$ref\" || { echo \"unresolvable: \$ref\"; exit 1; }; done"
+The status should be success
+End
+
+It 'keeps the Pi policy schema within the OpenCode schema'
+When run bash -c "pi=\$(jq -Sc 'keys' config/pi/fallback.json) && jq -Se --argjson pi \"\$pi\" '(keys - \$pi) == [\"timeout_seconds\"]' config/opencode/opencode-fallback.jsonc >/dev/null"
+The status should be success
+End
+
+It 'omits the OpenCode-only timeout knob a Pi extension cannot honor'
+When run bash -c "! grep -q 'timeout_seconds' config/pi/fallback.json && ! grep -qE '^\s+timeout_seconds' config/pi/fallback.ts"
+The status should be success
+End
+
+It 'ships the Pi fallback as a single self-contained extension'
+When run bash -c "grep -q 'export default function piRuntimeFallback' config/pi/fallback.ts && grep -q '\".pi/agent/extensions/fallback.ts\"' config/pi/default.nix && [ ! -e config/shared/fallback ]"
+The status should be success
+End
+
+It 'never leaves an OMP role on the last entry of the chain it inherits'
+# OMP resolves candidates positionally, by exact selector then by base selector
+# (provider stripped), so a role matching either way at the tail gets none.
+When run bash -c "yq -e '.retry.fallbackChains as \$c | .modelRoles | to_entries | all(. as \$r | ((\$c[\$r.key] // \$c.default) as \$chain | (\$chain | map(sub(\"^[^/]+/\";\"\"))) as \$bases | ((\$chain | index(\$r.value)) // (\$bases | index(\$r.value | sub(\"^[^/]+/\";\"\")))) as \$i | \$i == null or \$i < ((\$chain | length) - 1)))' config/omp/config.yml >/dev/null"
+The status should be success
+End
+
+It 'uses OMP native retry fallback chains instead of an extension'
+When run bash -c "[ ! -e config/omp/fallback.ts ] && [ ! -e config/omp/fallback.json ] && yq -e '.retry.modelFallback == true and .retry.fallbackRevertPolicy == \"cooldown-expiry\" and .retry.fallbackChains.default == [\"openai-codex/gpt-5.6-luna\",\"openai-codex/gpt-5.3-codex-spark\",\"openai-codex/gpt-5.6-sol\"]' config/omp/config.yml >/dev/null"
+The status should be success
+End
+End
+
+Describe 'CLIProxyAPI routing'
 It 'hydrates the OMP local CLIProxyAPI DeepSeek Flash provider'
 When run bash -c "grep -q 'baseUrl: http://127.0.0.1:8317/v1' config/omp/models.yml && grep -q 'id: deepseek-v4-flash' config/omp/models.yml && ! grep -q '__DEEPSEEK_FLASH__' config/omp/models.yml"
 The status should be success
