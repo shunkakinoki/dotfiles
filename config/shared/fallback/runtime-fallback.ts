@@ -222,27 +222,34 @@ export function attachFallback(host: FallbackHost, configPath: string): void {
     const currentRef = modelRef(
       (ctx as { model?: { provider?: string; id?: string } }).model
     );
-    const decision = policy.onError(currentRef, last.errorMessage ?? "");
+    const errorMessage = last.errorMessage ?? "";
+    let decision = policy.onError(currentRef, errorMessage);
     if (decision.action === "ignore") return;
-    if (decision.action === "exhausted") {
-      notify(decision.reason, "warning");
-      return;
-    }
 
-    if (!(await selectRef(decision.to))) {
+    // A candidate the host cannot select is cooled down and skipped, so an
+    // unregistered or unauthenticated model does not strand the whole chain.
+    while (decision.action === "switch") {
+      if (await selectRef(decision.to)) {
+        policy.commit();
+        notify(
+          `${decision.from} failed (${decision.status ?? "error"}) -> ${decision.to}`,
+          "warning"
+        );
+        host.sendMessage(
+          {
+            customType: "runtime-fallback",
+            content: "Continue.",
+            display: false,
+          },
+          { triggerTurn: true }
+        );
+        return;
+      }
       policy.markUnavailable(decision.to);
       notify(`${decision.to} unavailable`, "warning");
-      return;
+      decision = policy.onError(currentRef, errorMessage);
     }
 
-    policy.commit();
-    notify(
-      `${decision.from} failed (${decision.status ?? "error"}) -> ${decision.to}`,
-      "warning"
-    );
-    host.sendMessage(
-      { customType: "runtime-fallback", content: "Continue.", display: false },
-      { triggerTurn: true }
-    );
+    if (decision.action === "exhausted") notify(decision.reason, "warning");
   });
 }
