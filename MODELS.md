@@ -25,7 +25,6 @@ Never hand-edit a generated config. Edit the `.tpl.*` file, regenerate, and comm
 | `__GPT__` | `gpt-5.6-sol` |
 | `__GPT_LUNA__` | `gpt-5.6-luna` |
 | `__GPT_CODEX__` | `gpt-5.3-codex` |
-| `__GPT_CODEX_SPARK__` | `gpt-5.3-codex-spark` |
 | `__GEMINI_PRO__` | `gemini-3.1-pro-preview` |
 | `__GEMINI_FLASH__` | `gemini-3.6-flash` |
 | `__DEEPSEEK_FLASH__` | `deepseek-v4-flash` |
@@ -98,7 +97,7 @@ Hermes also runs a Mixture-of-Agents preset: reference models
 | OMP | `smol` | `openai-codex/gpt-5.6-luna` | |
 | OMP | `slow`, `vision`, `plan` | `openai-codex/gpt-5.6-sol` | |
 | OMP | `commit` | `openai/gpt-5.6-luna` | |
-| OMP | `task` | `openai-codex/gpt-5.3-codex-spark` | |
+| OMP | `task` | `openai-codex/gpt-5.6-luna` | |
 | Codex | default | `gpt-5.6-sol` | [config.tpl.toml](config/codex/config.tpl.toml) |
 | Codex | subagents | `gpt-5.6-luna` | |
 | Codex | `qwen-local` profile | `qwen3.5-0.8b-optiq` (LM Studio) | |
@@ -109,9 +108,9 @@ Hermes also runs a Mixture-of-Agents preset: reference models
 | llm | default | `glm-4.7` | [default_model.tpl.txt](config/llm/default_model.tpl.txt) |
 | Handy | transcript post-process | `@preset/glm-4.7` (OpenRouter) | [settings_store.tpl.json](config/handy/settings_store.tpl.json) |
 
-OMP subagent overrides: `code-explorer` uses `gpt-5.3-codex-spark`;
-`comment-analyzer` and `pr-test-analyzer` use `gpt-5.6-luna`; the rest
-(`code-architect`, `code-reviewer`, `code-simplifier`, `silent-failure-hunter`,
+OMP subagent overrides: `code-explorer`, `comment-analyzer`, and
+`pr-test-analyzer` use `gpt-5.6-luna`; the rest (`code-architect`,
+`code-reviewer`, `code-simplifier`, `silent-failure-hunter`,
 `type-design-analyzer`) use `gpt-5.6-sol`.
 
 ### CCS profiles
