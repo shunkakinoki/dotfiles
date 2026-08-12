@@ -40,6 +40,13 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
           SKIP_HOME_MANAGER_SWITCH: "true"
+      - name: Cancel stale runs on upgrade branch
+        if: github.event_name != 'pull_request'
+        run: |
+          gh run list --branch chore/upgrade --status queued --json databaseId -q '.[].databaseId' | xargs -rn1 gh run cancel || true
+          gh run list --branch chore/upgrade --status in_progress --json databaseId -q '.[].databaseId' | xargs -rn1 gh run cancel || true
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
       - name: Create Pull Request
         if: github.event_name != 'pull_request'
         id: cpr
