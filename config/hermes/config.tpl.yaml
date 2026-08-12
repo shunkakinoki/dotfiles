@@ -168,7 +168,6 @@ auxiliary:
     extra_body: {}
 display:
   compact: true
-  personality: kawaii
   resume_display: full
   busy_input_mode: interrupt
   bell_on_complete: false
