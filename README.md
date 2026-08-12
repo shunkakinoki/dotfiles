@@ -14,6 +14,8 @@ To pin a named host (skips hostname auto-detection):
 
 For troubleshooting and frequently asked questions, see [FAQ.md](./FAQ.md).
 
+For default and fallback model assignments per harness, see [MODELS.md](./MODELS.md).
+
 ## Credits
 
 See [REFERENCES.md](./REFERENCES.md) for more information.

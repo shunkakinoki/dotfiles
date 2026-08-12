@@ -11,13 +11,9 @@ providers:
     supports_prompt_cache_key: true
 fallback_providers:
   - provider: cliproxy
-    model: __DEEPSEEK_PRO__
-  - provider: cliproxy
     model: __GEMMA__
   - provider: cliproxy
     model: __GLM__
-  - provider: cliproxy
-    model: __MINIMAX__
   - provider: cliproxy
     model: free
 moa:

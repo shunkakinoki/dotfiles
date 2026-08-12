@@ -76,7 +76,7 @@ modelRoles:
   # Commit message model.
   commit: "openai/gpt-5.6-luna"
   # Fast subagent path.
-  task: "openai-codex/gpt-5.3-codex-spark"
+  task: "openai-codex/gpt-5.6-luna"
 # =============================================================================
 # DISPLAY
 # =============================================================================
@@ -507,7 +507,7 @@ task:
   disabledAgents: []
   agentModelOverrides:
     code-architect: "gpt-5.6-sol"
-    code-explorer: "gpt-5.3-codex-spark"
+    code-explorer: "gpt-5.6-luna"
     code-reviewer: "gpt-5.6-sol"
     code-simplifier: "gpt-5.6-sol"
     comment-analyzer: "gpt-5.6-luna"
