@@ -16,9 +16,8 @@
   "cooldown_seconds": 60,
   "notify_on_fallback": true,
   "fallback_models": [
-    "cliproxyapi/__MINIMAX__",
-    "cliproxyapi/__GEMINI_FLASH__",
-    "openrouter-preset/@preset/__GLM_NONDOT__",
-    "cliproxyapi/__CLAUDE_HAIKU__"
+    "cliproxyapi/__GEMMA__",
+    "cliproxyapi/__GLM__",
+    "cliproxyapi/free"
   ]
 }

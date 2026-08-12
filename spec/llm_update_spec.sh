@@ -150,8 +150,15 @@ End
 End
 
 Describe 'runtime model fallback'
-It 'generates a Pi fallback chain that excludes the default model'
-When run bash -c "jq -e '.enabled == true and .max_fallback_attempts == 5 and .fallback_models == [\"cliproxyapi/minimax-m3\",\"cliproxyapi/gemini-3.6-flash\",\"openrouter-preset/@preset/glm-4-7\",\"cliproxyapi/claude-haiku-4-5-20251001\"] and (.fallback_models | index(\"cliproxyapi/glm-4.7\")) == null' config/pi/fallback.json >/dev/null"
+It 'generates the free-tier CLIProxy Pi fallback chain'
+When run bash -c "jq -e '.enabled == true and .max_fallback_attempts == 5 and .fallback_models == [\"cliproxyapi/gemma-4-31b-it\",\"cliproxyapi/glm-4.7\",\"cliproxyapi/free\"]' config/pi/fallback.json >/dev/null"
+The status should be success
+End
+
+It 'resolves every Pi fallback model against the Pi registry'
+# pi.modelRegistry.find(provider, id) returns undefined for anything missing
+# here, which would cool the whole chain down as "unavailable" at runtime.
+When run bash -c "known=\$(jq -r '.providers | to_entries[] | .key as \$p | .value.models[] | \"\(\$p)/\(.id)\"' config/pi/models.json) && jq -r '.fallback_models[]' config/pi/fallback.json | while IFS= read -r ref; do printf '%s\n' \"\$known\" | grep -Fxq \"\$ref\" || { echo \"unresolvable: \$ref\"; exit 1; }; done"
 The status should be success
 End
 

@@ -156,6 +156,38 @@
           },
           "contextWindow": 131072,
           "maxTokens": 16384
+        },
+        {
+          "id": "gemma-4-31b-it",
+          "name": "Gemma 4 31b It (via CLIProxy)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "free",
+          "name": "Free router fallback (via CLIProxy)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 131072,
+          "maxTokens": 16384
         }
       ]
     },
