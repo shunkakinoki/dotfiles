@@ -161,8 +161,13 @@ When run bash -c "jq -e '.enabled == true and .fallback_models == [\"openai-code
 The status should be success
 End
 
-It 'keeps the fallback policy schema identical across all three hosts'
-When run bash -c "ref=\$(jq -Sc 'keys' config/opencode/opencode-fallback.jsonc) && [ \"\$(jq -Sc 'keys' config/pi/fallback.json)\" = \"\$ref\" ] && [ \"\$(jq -Sc 'keys' config/omp/fallback.json)\" = \"\$ref\" ]"
+It 'keeps the Pi and OMP policy schema identical and within the OpenCode schema'
+When run bash -c "pi=\$(jq -Sc 'keys' config/pi/fallback.json) && [ \"\$(jq -Sc 'keys' config/omp/fallback.json)\" = \"\$pi\" ] && jq -Se --argjson pi \"\$pi\" '(keys - \$pi) == [\"timeout_seconds\"]' config/opencode/opencode-fallback.jsonc >/dev/null"
+The status should be success
+End
+
+It 'omits the OpenCode-only timeout knob the shared policy cannot honor'
+When run bash -c "! grep -q 'timeout_seconds' config/pi/fallback.json config/omp/fallback.json && ! grep -qE '^\s+timeout_seconds' config/shared/fallback/runtime-fallback.ts"
 The status should be success
 End
 
@@ -175,7 +180,9 @@ It 'installs the shared policy outside the auto-loaded extensions directory'
 When run bash -c "grep -q '\".pi/agent/fallback-policy.ts\"' config/pi/default.nix && grep -q '\".omp/agent/fallback-policy.ts\"' config/omp/default.nix"
 The status should be success
 End
+End
 
+Describe 'CLIProxyAPI routing'
 It 'hydrates the OMP local CLIProxyAPI DeepSeek Flash provider'
 When run bash -c "grep -q 'baseUrl: http://127.0.0.1:8317/v1' config/omp/models.yml && grep -q 'id: deepseek-v4-flash' config/omp/models.yml && ! grep -q '__DEEPSEEK_FLASH__' config/omp/models.yml"
 The status should be success

@@ -9,7 +9,9 @@
 // OpenCode is deliberately NOT a consumer. opencode-runtime-fallback switches
 // models by aborting the in-flight session request and replaying message parts
 // through the OpenCode server API; none of that machinery is portable here.
-// It shares the config schema below, not this code.
+// It shares most of the config schema below, not this code — `timeout_seconds`
+// is OpenCode-only and intentionally absent here, since an extension cannot
+// bound the provider request on either host.
 import { readFileSync } from "node:fs";
 
 export interface FallbackConfig {
@@ -18,7 +20,6 @@ export interface FallbackConfig {
   retryable_error_patterns: string[];
   max_fallback_attempts: number;
   cooldown_seconds: number;
-  timeout_seconds: number;
   notify_on_fallback: boolean;
   fallback_models: string[];
 }
@@ -29,17 +30,74 @@ export const DEFAULT_CONFIG: FallbackConfig = {
   retryable_error_patterns: [],
   max_fallback_attempts: 5,
   cooldown_seconds: 60,
-  timeout_seconds: 30,
   notify_on_fallback: true,
   fallback_models: [],
 };
 
+function arrayOf<T>(
+  value: unknown,
+  guard: (item: unknown) => item is T
+): T[] | undefined {
+  return Array.isArray(value) && value.every(guard)
+    ? (value as T[])
+    : undefined;
+}
+
+const isString = (value: unknown): value is string => typeof value === "string";
+const isNumber = (value: unknown): value is number =>
+  typeof value === "number" && Number.isFinite(value);
+const isBoolean = (value: unknown): value is boolean =>
+  typeof value === "boolean";
+
+/**
+ * Reads the policy document, keeping the default for any field whose type is
+ * wrong. A malformed config must degrade to DEFAULT_CONFIG (fallback disabled)
+ * rather than throw later from inside a host event handler.
+ */
+export function parseFallbackConfig(raw: unknown): FallbackConfig {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw))
+    return DEFAULT_CONFIG;
+  const input = raw as Record<string, unknown>;
+  const pick = <T>(key: keyof FallbackConfig, value: T | undefined): T =>
+    value === undefined ? (DEFAULT_CONFIG[key] as unknown as T) : value;
+
+  return {
+    enabled: pick(
+      "enabled",
+      isBoolean(input.enabled) ? input.enabled : undefined
+    ),
+    retry_on_errors: pick(
+      "retry_on_errors",
+      arrayOf(input.retry_on_errors, isNumber)
+    ),
+    retryable_error_patterns: pick(
+      "retryable_error_patterns",
+      arrayOf(input.retryable_error_patterns, isString)
+    ),
+    max_fallback_attempts: pick(
+      "max_fallback_attempts",
+      isNumber(input.max_fallback_attempts)
+        ? input.max_fallback_attempts
+        : undefined
+    ),
+    cooldown_seconds: pick(
+      "cooldown_seconds",
+      isNumber(input.cooldown_seconds) ? input.cooldown_seconds : undefined
+    ),
+    notify_on_fallback: pick(
+      "notify_on_fallback",
+      isBoolean(input.notify_on_fallback) ? input.notify_on_fallback : undefined
+    ),
+    fallback_models: pick(
+      "fallback_models",
+      arrayOf(input.fallback_models, isString)
+    ),
+  };
+}
+
 export function loadFallbackConfig(path: string): FallbackConfig {
   try {
-    const raw = JSON.parse(
-      readFileSync(path, "utf8")
-    ) as Partial<FallbackConfig>;
-    return { ...DEFAULT_CONFIG, ...raw };
+    return parseFallbackConfig(JSON.parse(readFileSync(path, "utf8")));
   } catch {
     return DEFAULT_CONFIG;
   }
@@ -69,8 +127,12 @@ export interface FallbackPolicy {
   recordStatus(status: number | undefined): void;
   /** A user-driven model switch restarts the chain from the newly chosen model. */
   noteManualSelection(): void;
-  /** Called after a clean turn. Returns the model to restore, if its cooldown expired. */
-  onSuccess(now?: number): string | undefined;
+  /** The model to restore after a clean turn, once its cooldown expired. Does not consume it. */
+  pendingRestore(now?: number): string | undefined;
+  /** Drop the remembered primary, once the host confirmed the restore. */
+  confirmRestore(): void;
+  /** Reset the attempt counter after a clean turn. */
+  noteSuccess(): void;
   /** Called after a failed turn. Decides whether and where to fall back. */
   onError(
     currentRef: string,
@@ -112,13 +174,18 @@ export function createFallbackPolicy(config: FallbackConfig): FallbackPolicy {
       primaryRef = undefined;
     },
 
-    onSuccess(now = Date.now()) {
+    noteSuccess() {
       attempts = 0;
+    },
+
+    pendingRestore(now = Date.now()) {
       if (!primaryRef || (cooldownUntil.get(primaryRef) ?? 0) > now)
         return undefined;
-      const restored = primaryRef;
+      return primaryRef;
+    },
+
+    confirmRestore() {
       primaryRef = undefined;
-      return restored;
     },
 
     onError(currentRef, errorMessage, now = Date.now()) {
@@ -175,7 +242,11 @@ export function attachFallback(host: FallbackHost, configPath: string): void {
   if (!config.enabled || config.fallback_models.length === 0) return;
 
   const policy = createFallbackPolicy(config);
-  let switching = false;
+  // Ref of the model this extension last selected, so a model that is active
+  // without us having chosen it can only have come from the user. Pi emits
+  // model_select and OMP does not, so both hosts are covered by comparing
+  // ctx.model instead of subscribing to an event only one of them has.
+  let appliedRef: string | undefined;
 
   const notify = (message: string, level: "info" | "warning" = "info") => {
     if (config.notify_on_fallback)
@@ -186,42 +257,40 @@ export function attachFallback(host: FallbackHost, configPath: string): void {
     const { provider, id } = splitModelRef(ref);
     const model = host.modelRegistry.find(provider, id);
     if (!model) return false;
-    switching = true;
-    try {
-      return await host.setModel(model);
-    } finally {
-      switching = false;
-    }
+    if (!(await host.setModel(model))) return false;
+    appliedRef = ref;
+    return true;
   };
 
   host.on("after_provider_response", (event) => {
     policy.recordStatus((event as { status?: number }).status);
   });
 
-  // OMP has no model_select event; there the chain just never resets early.
-  try {
-    host.on("model_select", () => {
-      if (!switching) policy.noteManualSelection();
-    });
-  } catch {
-    // host does not support the event
-  }
-
   host.on("agent_end", async (event, ctx) => {
     const messages = (event as { messages?: unknown[] }).messages ?? [];
     const last = messages[messages.length - 1] as
       | { role?: string; stopReason?: string; errorMessage?: string }
       | undefined;
-
-    if (last?.role !== "assistant" || last.stopReason !== "error") {
-      const restore = policy.onSuccess();
-      if (restore && (await selectRef(restore))) notify(`restored ${restore}`);
-      return;
-    }
-
     const currentRef = modelRef(
       (ctx as { model?: { provider?: string; id?: string } }).model
     );
+
+    // The user switched models behind our back: their choice wins outright.
+    if (appliedRef !== undefined && currentRef !== appliedRef) {
+      appliedRef = undefined;
+      policy.noteManualSelection();
+    }
+
+    if (last?.role !== "assistant" || last.stopReason !== "error") {
+      policy.noteSuccess();
+      const restore = policy.pendingRestore();
+      if (restore && (await selectRef(restore))) {
+        policy.confirmRestore();
+        notify(`restored ${restore}`);
+      }
+      return;
+    }
+
     const errorMessage = last.errorMessage ?? "";
     let decision = policy.onError(currentRef, errorMessage);
     if (decision.action === "ignore") return;
