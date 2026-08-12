@@ -137,7 +137,6 @@ with pkgs;
 ++ lib.optionals (!isRunner) [
   pkgs.llm-agents.antigravity-cli
   pkgs.llm-agents.prime-agent
-  pkgs.llm-agents.t3code
   vector
 ]
 ++ lib.optionals stdenv.isDarwin [
