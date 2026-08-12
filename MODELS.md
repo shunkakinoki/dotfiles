@@ -25,6 +25,7 @@ Never hand-edit a generated config. Edit the `.tpl.*` file, regenerate, and comm
 | `__GPT__` | `gpt-5.6-sol` |
 | `__GPT_LUNA__` | `gpt-5.6-luna` |
 | `__GPT_CODEX__` | `gpt-5.3-codex` |
+| `__GPT_IMAGE__` | `gpt-image-2` |
 | `__GEMINI_PRO__` | `gemini-3.1-pro-preview` |
 | `__GEMINI_FLASH__` | `gemini-3.6-flash` |
 | `__DEEPSEEK_FLASH__` | `deepseek-v4-flash` |
@@ -37,6 +38,20 @@ Never hand-edit a generated config. Edit the `.tpl.*` file, regenerate, and comm
 | `__GROK__` | `grok-4.5` |
 | `__QWEN__` | `qwen3.6-plus` |
 | `__QWEN_LOCAL__` | `qwen3.5-0.8b-optiq` |
+
+This table is the complete set of keys in [models.json](models.json). Every key
+also gets two derived forms: `__<KEY>_PRETTY__` for the display name
+("Deepseek V4 Flash") and `__<KEY>_NONDOT__` for the dot-stripped ID, used in
+OpenRouter `@preset/` names.
+
+Two provider-specific overrides are declared in
+[scripts/llm-update.sh](scripts/llm-update.sh) rather than in `models.json`,
+because the upstream ID differs from the canonical one:
+
+| Placeholder | Value | Used by |
+| --- | --- | --- |
+| `__GPT_IMAGE_OPENROUTER__` | `openai/gpt-5.4-image-2` | OpenRouter, aliased back to `gpt-image-2` |
+| `__DEEPSEEK_FLASH_0731__` | `deepseek-v4-flash-0731` | Aliyun, aliased back to `deepseek-v4-flash` |
 
 ## The shared fallback chain
 
