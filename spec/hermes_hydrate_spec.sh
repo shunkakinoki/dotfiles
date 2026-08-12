@@ -172,7 +172,6 @@ The output should include 'default: cliproxy/deepseek-v4-flash'
 The output should include 'provider: cliproxy'
 The output should include 'model: gemma-4-31b-it'
 The output should include 'model: glm-4.7'
-The output should include 'model: minimax-m3'
 The output should include 'model: free'
 End
 

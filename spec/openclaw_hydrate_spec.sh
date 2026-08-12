@@ -11,7 +11,6 @@ template_uses_cliproxy_flash_default() {
       "fallbacks": [
         "cliproxy/gemma-4-31b-it",
         "cliproxy/glm-4.7",
-        "cliproxy/minimax-m3",
         "cliproxy/free"
       ]
     } and

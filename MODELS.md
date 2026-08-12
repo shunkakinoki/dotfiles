@@ -46,7 +46,6 @@ Harnesses that support runtime fallback use one chain, in this order:
 deepseek-v4-flash  (primary)
   -> gemma-4-31b-it
   -> glm-4.7
-  -> minimax-m3
   -> free           (OpenRouter free router, last resort)
 ```
 
@@ -91,8 +90,8 @@ Hermes also runs a Mixture-of-Agents preset: reference models
 
 | Harness | Role | Model | Config |
 | --- | --- | --- | --- |
-| OpenCode | `small_model` | `glm-4.7` | [opencode.tpl.jsonc](config/opencode/opencode.tpl.jsonc) |
-| OpenCode | `code-reviewer` agent | `deepseek-v4-flash` | [opencode.tpl.jsonc](config/opencode/opencode.tpl.jsonc) |
+| OpenCode | `small_model` | `shunkakinoki/glm-4.7` | [opencode.tpl.jsonc](config/opencode/opencode.tpl.jsonc) |
+| OpenCode | `code-reviewer` agent | `shunkakinoki/deepseek-v4-flash` | [opencode.tpl.jsonc](config/opencode/opencode.tpl.jsonc) |
 | OMP | `default` | `cliproxyapi/deepseek-v4-flash` | [config.tpl.yml](config/omp/config.tpl.yml) |
 | OMP | `smol` | `openai-codex/gpt-5.6-luna` | |
 | OMP | `slow`, `vision`, `plan` | `openai-codex/gpt-5.6-sol` | |
@@ -139,7 +138,19 @@ The `l` suffix means local (LM Studio), `h` means headless.
 
 ## CLIProxy routing
 
-Every `cliproxy/` and `cliproxyapi/` model resolves through
+Three provider prefixes appear above. All three are CLIProxy. Each harness names
+its own, so the prefix alone does not tell you remote vs local. `cliproxyapi/`
+in particular means different endpoints in different harnesses.
+
+| Prefix | Harness | Endpoint |
+| --- | --- | --- |
+| `shunkakinoki/` | OpenCode | `https://cliproxy.shunkakinoki.com/v1` (remote) |
+| `cliproxy/` | OpenClaw, Hermes | `https://cliproxy.shunkakinoki.com/v1` (remote) |
+| `cliproxyapi/` | OpenCode | `http://localhost:8317/v1` (local) |
+| `cliproxyapi/` | OMP | `http://127.0.0.1:8317/v1` (local) |
+| `cliproxyapi/` | Pi | `https://cliproxy.shunkakinoki.com/v1` (remote) |
+
+Every one of them resolves through
 [config.tpl.yaml](config/cliproxyapi/config.tpl.yaml). Higher `priority` wins.
 
 | Provider | Priority | DeepSeek models served |

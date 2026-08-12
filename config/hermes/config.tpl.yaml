@@ -15,8 +15,6 @@ fallback_providers:
   - provider: cliproxy
     model: __GLM__
   - provider: cliproxy
-    model: __MINIMAX__
-  - provider: cliproxy
     model: free
 moa:
   default_preset: default

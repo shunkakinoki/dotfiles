@@ -15,8 +15,6 @@ fallback_providers:
   - provider: cliproxy
     model: glm-4.7
   - provider: cliproxy
-    model: minimax-m3
-  - provider: cliproxy
     model: free
 moa:
   default_preset: default

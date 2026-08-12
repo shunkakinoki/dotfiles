@@ -246,7 +246,6 @@
         "fallbacks": [
           "cliproxy/__GEMMA__",
           "cliproxy/__GLM__",
-          "cliproxy/__MINIMAX__",
           "cliproxy/free"
         ]
       },

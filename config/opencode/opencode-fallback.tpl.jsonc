@@ -9,7 +9,6 @@
   "fallback_models": [
     "shunkakinoki/__GEMMA__",
     "shunkakinoki/__GLM__",
-    "shunkakinoki/__MINIMAX__",
     "shunkakinoki/free"
   ]
 }
