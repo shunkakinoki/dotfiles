@@ -562,6 +562,7 @@ home-manager/services/dotfiles-updater/update.sh
 home-manager/services/gas-town/start.sh
 home-manager/services/k3s/activate.sh
 home-manager/services/make-updater/update.sh
+home-manager/services/mempalace-exporter/export.sh
 home-manager/services/neverssl-keepalive/keepalive.sh
 home-manager/services/night-shift/apply-night-shift.sh
 home-manager/services/t3-connect/connect.sh

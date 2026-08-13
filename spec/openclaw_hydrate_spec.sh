@@ -9,11 +9,15 @@ template_uses_cliproxy_flash_default() {
     .agents.defaults.model == {
       "primary": "cliproxy/deepseek-v4-flash",
       "fallbacks": [
+        "cliproxy/gpt-5.6-sol",
+        "cliproxy/claude-sonnet-5",
+        "cliproxy/free",
         "cliproxy/gemma-4-31b-it",
-        "cliproxy/glm-4.7",
-        "cliproxy/free"
+        "cliproxy/glm-4.7"
       ]
     } and
+    (.models.providers.cliproxy.models | any(.id == "gpt-5.6-sol")) and
+    (.models.providers.cliproxy.models | any(.id == "claude-sonnet-5")) and
     (.models.providers.cliproxy.models | any(.id == "deepseek-v4-pro")) and
     (.models.providers.cliproxy.models | any(.id == "deepseek-v4-flash")) and
     (.models.providers.cliproxy.models | any(.id == "gemma-4-31b-it")) and
