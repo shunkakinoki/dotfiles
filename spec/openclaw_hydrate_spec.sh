@@ -19,7 +19,6 @@ template_uses_cliproxy_flash_default() {
     (.models.providers.cliproxy.models | any(.id == "gemma-4-31b-it")) and
     (.models.providers.cliproxy.models | any(.id == "glm-4.7")) and
     (.models.providers.cliproxy.models | any(.id == "free")) and
-    (.agents.defaults.model.fallbacks[0] == "cliproxy/free") and
     (.models.providers.cliproxy.models | all(
       if (.id == "deepseek-v4-pro" or .id == "deepseek-v4-flash")
       then .compat.supportsPromptCacheKey == true

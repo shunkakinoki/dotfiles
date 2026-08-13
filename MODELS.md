@@ -53,15 +53,24 @@ because the upstream ID differs from the canonical one:
 | `__GPT_IMAGE_OPENROUTER__` | `openai/gpt-5.4-image-2` | OpenRouter, aliased back to `gpt-image-2` |
 | `__DEEPSEEK_FLASH_0731__` | `deepseek-v4-flash-0731` | Aliyun, aliased back to `deepseek-v4-flash` |
 
-## The shared fallback chain
+## Fallback chains
 
-Harnesses that support runtime fallback use one chain, in this order:
+Fallback-capable harnesses share this base chain:
 
 ```
 deepseek-v4-flash  (primary)
   -> gemma-4-31b-it
   -> glm-4.7
-  -> free           (OpenRouter free router, last resort)
+```
+
+OpenClaw prioritizes the independently routed OpenRouter free pool before the
+shared model fallbacks so quota exhaustion does not interrupt messaging:
+
+```
+deepseek-v4-flash  (primary)
+  -> free           (OpenRouter free router)
+  -> gemma-4-31b-it
+  -> glm-4.7
 ```
 
 Rules:
@@ -81,9 +90,9 @@ Rules:
 
 | Harness | Default | Fallback chain | Config |
 | --- | --- | --- | --- |
-| OpenCode | `shunkakinoki/deepseek-v4-flash` | shared chain, `shunkakinoki/` prefix | [opencode-fallback.tpl.jsonc](config/opencode/opencode-fallback.tpl.jsonc) |
-| OpenClaw | `cliproxy/deepseek-v4-flash` | shared chain, `cliproxy/` prefix | [openclaw.tpl.json](config/openclaw/openclaw.tpl.json) |
-| Hermes | `cliproxy/deepseek-v4-flash` | shared chain via `fallback_providers` | [config.tpl.yaml](config/hermes/config.tpl.yaml) |
+| OpenCode | `shunkakinoki/deepseek-v4-flash` | shared base chain, `shunkakinoki/` prefix | [opencode-fallback.tpl.jsonc](config/opencode/opencode-fallback.tpl.jsonc) |
+| OpenClaw | `cliproxy/deepseek-v4-flash` | service-continuity chain, `cliproxy/` prefix | [openclaw.tpl.json](config/openclaw/openclaw.tpl.json) |
+| Hermes | `cliproxy/deepseek-v4-flash` | shared base chain via `fallback_providers` | [config.tpl.yaml](config/hermes/config.tpl.yaml) |
 
 OpenCode fallback is driven by the `opencode-runtime-fallback@0.2.3` plugin:
 
