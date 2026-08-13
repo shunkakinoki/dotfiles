@@ -1,5 +1,5 @@
 model:
-  default: cliproxy/__DEEPSEEK_FLASH__
+  default: __DEEPSEEK_FLASH__
   provider: cliproxy
   base_url: https://cliproxy.shunkakinoki.com/v1
   api_key: __CLIPROXY_API_KEY__
@@ -242,7 +242,7 @@ memory:
   user_char_limit: 1375
   provider: ''
 delegation:
-  model: cliproxy/__DEEPSEEK_FLASH__
+  model: __DEEPSEEK_FLASH__
   provider: cliproxy
   base_url: ''
   api_key: ''
