@@ -14,8 +14,6 @@ fallback_providers:
     model: __GEMMA__
   - provider: cliproxy
     model: __GLM__
-  - provider: cliproxy
-    model: free
 moa:
   default_preset: default
   presets:

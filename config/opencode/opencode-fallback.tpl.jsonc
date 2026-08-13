@@ -8,7 +8,6 @@
   "notify_on_fallback": true,
   "fallback_models": [
     "shunkakinoki/__GEMMA__",
-    "shunkakinoki/__GLM__",
-    "shunkakinoki/free"
+    "shunkakinoki/__GLM__"
   ]
 }
