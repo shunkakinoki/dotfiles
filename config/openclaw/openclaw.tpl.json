@@ -261,9 +261,9 @@
       "model": {
         "primary": "cliproxy/__DEEPSEEK_FLASH__",
         "fallbacks": [
+          "cliproxy/free",
           "cliproxy/__GEMMA__",
-          "cliproxy/__GLM__",
-          "cliproxy/free"
+          "cliproxy/__GLM__"
         ]
       },
       "workspace": "__HOME__/.openclaw/workspace",
