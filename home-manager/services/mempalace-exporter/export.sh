@@ -3,7 +3,7 @@ set -euo pipefail
 
 _raw=$(hostname 2>/dev/null || echo "unknown")
 case "$_raw" in
-galactica*) HOST_NAME="galactica" ;;
+galactica* | aarch64-darwin*) HOST_NAME="galactica" ;;
 matic*) HOST_NAME="matic" ;;
 kyber*) HOST_NAME="kyber" ;;
 *) HOST_NAME="$_raw" ;;
