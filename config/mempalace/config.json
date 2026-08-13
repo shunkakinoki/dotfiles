@@ -1,3 +1,6 @@
 {
-  "palace_path": "__HOME_DIR__/ghq/github.com/shunkakinoki/wiki"
+  "palace_path": "__HOME_DIR__/ghq/github.com/shunkakinoki/wiki",
+  "hooks": {
+    "daemon": true
+  }
 }
