@@ -3,10 +3,10 @@ set -euo pipefail
 
 _raw=$(hostname 2>/dev/null || echo "unknown")
 case "$_raw" in
-  galactica*) HOST_NAME="galactica" ;;
-  matic*)     HOST_NAME="matic" ;;
-  kyber*)     HOST_NAME="kyber" ;;
-  *)          HOST_NAME="$_raw" ;;
+galactica*) HOST_NAME="galactica" ;;
+matic*) HOST_NAME="matic" ;;
+kyber*) HOST_NAME="kyber" ;;
+*) HOST_NAME="$_raw" ;;
 esac
 
 MEMPALACE_BIN="$HOME/.local/share/uv/tools/mempalace"
@@ -14,11 +14,17 @@ MEMPALACE_PYTHON="$MEMPALACE_BIN/bin/python"
 CONFIG_FILE="$HOME/.mempalace/config.json"
 WIKI_SYNC="$HOME/.mempalace/wiki-sync"
 
-[ -x "$MEMPALACE_PYTHON" ] || { echo "mempalace not installed, skipping"; exit 0; }
-[ -f "$CONFIG_FILE" ]      || { echo "no mempalace config, skipping"; exit 0; }
+[ -x "$MEMPALACE_PYTHON" ] || {
+  echo "mempalace not installed, skipping"
+  exit 0
+}
+[ -f "$CONFIG_FILE" ] || {
+  echo "no mempalace config, skipping"
+  exit 0
+}
 
 PALACE_PATH=$("$MEMPALACE_PYTHON" -c "import json; print(json.load(open('$CONFIG_FILE'))['palace_path'])")
-MEMPALACE_SITE=$(ls -d "$MEMPALACE_BIN/lib/"python*/site-packages 2>/dev/null | tail -1)
+MEMPALACE_SITE=$("$MEMPALACE_PYTHON" -c 'import sysconfig; print(sysconfig.get_path("purelib"))')
 
 if [ -d "$WIKI_SYNC/.git" ]; then
   git -C "$WIKI_SYNC" fetch origin main
