@@ -24,7 +24,7 @@ WIKI_SYNC="$HOME/.mempalace/wiki-sync"
 }
 
 PALACE_PATH=$("$MEMPALACE_PYTHON" -c "import json; print(json.load(open('$CONFIG_FILE'))['palace_path'])")
-MEMPALACE_SITE=$(find "$MEMPALACE_BIN/lib" -type d -path '*/python*/site-packages' -print -quit)
+MEMPALACE_SITE=$("$MEMPALACE_PYTHON" -c 'import sysconfig; print(sysconfig.get_path("purelib"))')
 
 if [ -d "$WIKI_SYNC/.git" ]; then
   git -C "$WIKI_SYNC" fetch origin main
