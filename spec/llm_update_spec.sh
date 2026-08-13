@@ -171,8 +171,8 @@ When run bash -c "grep -q '\"opencode-runtime-fallback@0.2.3\"' config/opencode/
 The status should be success
 End
 
-It 'generates a separate OpenCode fallback chain'
-When run bash -c "jq -e '.retry_on_errors == [401,404,429,500,502,503,504] and .retryable_error_patterns == [\"unknown provider for model\"] and .max_fallback_attempts == 5 and .fallback_models == [\"shunkakinoki/gemma-4-31b-it\",\"shunkakinoki/glm-4.7\",\"shunkakinoki/free\"]' config/opencode/opencode-fallback.jsonc >/dev/null"
+It 'generates the Flash, Gemma, GLM OpenCode fallback convention'
+When run bash -c "jq -e '.model == null and .retry_on_errors == [401,404,429,500,502,503,504] and .retryable_error_patterns == [\"unknown provider for model\"] and .max_fallback_attempts == 5 and .fallback_models == [\"shunkakinoki/gemma-4-31b-it\",\"shunkakinoki/glm-4.7\"]' config/opencode/opencode-fallback.jsonc >/dev/null"
 The status should be success
 End
 
