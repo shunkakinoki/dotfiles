@@ -22,6 +22,7 @@ let
   k3s = ./k3s;
   keydApplicationMapper = ./keyd-application-mapper;
   makeUpdater = import ./make-updater { inherit pkgs; };
+  mempalaceExporter = import ./mempalace-exporter { inherit pkgs; };
   moshiHook = ./moshi-hook;
   neversslKeepalive = import ./neverssl-keepalive { inherit pkgs; };
   nightShift = import ./night-shift { inherit pkgs; };
@@ -53,6 +54,7 @@ in
   k3s
   keydApplicationMapper
   makeUpdater
+  mempalaceExporter
   moshiHook
   neversslKeepalive
   nightShift
