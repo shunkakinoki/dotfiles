@@ -166,18 +166,18 @@ End
 End
 
 Describe 'declarative model routing'
-It 'uses the Flash, Gemma, GLM fallback convention'
-When run bash -c "sed -n '1,18p' '$PWD/config/hermes/config.template.yaml'"
+It 'uses the Flash, Gemma, GLM, free fallback convention'
+When run bash -c "sed -n '1,20p' '$PWD/config/hermes/config.template.yaml'"
 The output should include 'default: deepseek-v4-flash'
 The output should include 'provider: cliproxy'
 The output should include 'model: gemma-4-31b-it'
 The output should include 'model: glm-4.7'
-The output should not include 'model: free'
+The output should include 'model: free'
 End
 
-It 'declares exactly two Hermes fallback models'
+It 'declares exactly three Hermes fallback models'
 When run bash -c "sed -n '/^fallback_providers:/,/^[^ ]/p' '$PWD/config/hermes/config.template.yaml' | grep -c '^    model:'"
-The output should equal '2'
+The output should equal '3'
 End
 
 It 'opts both CLIProxy config schemas into stable prompt cache keys'
