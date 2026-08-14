@@ -236,7 +236,13 @@
       },
       "scope": {
         "default": "allow"
-      }
+      },
+      "paths": [
+        {
+          "name": "wiki-memory",
+          "path": "__HOME__/ghq/github.com/shunkakinoki/wiki/MEMORY.md"
+        }
+      ]
     }
   },
   "agents": {
