@@ -32,7 +32,8 @@ MEMPALACE_SITE=$("$MEMPALACE_PYTHON" -c 'import sysconfig; print(sysconfig.get_p
 
 if [ -d "$WIKI_SYNC/.git" ]; then
   git -C "$WIKI_SYNC" fetch origin main
-  git -C "$WIKI_SYNC" rebase origin/main || git -C "$WIKI_SYNC" rebase --abort
+  git -C "$WIKI_SYNC" checkout -f main 2>/dev/null || git -C "$WIKI_SYNC" checkout -f -b main origin/main
+  git -C "$WIKI_SYNC" merge --ff-only origin/main || git -C "$WIKI_SYNC" reset --mixed origin/main
 else
   mkdir -p "$HOME/.mempalace"
   git clone "https://github.com/shunkakinoki/wiki.git" "$WIKI_SYNC"
@@ -52,5 +53,5 @@ if git diff --cached --quiet; then
   exit 0
 fi
 git commit -m "chore: update mempalace palace export ($HOST_NAME)"
-git pull --rebase origin main || true
+git merge --ff-only origin/main 2>/dev/null || true
 git push origin main
