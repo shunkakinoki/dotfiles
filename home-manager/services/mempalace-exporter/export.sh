@@ -2,7 +2,7 @@
 set -euo pipefail
 
 if [ -f /etc/hostname ]; then
-  _raw=$(tr -d '[:space:]' < /etc/hostname)
+  _raw=$(tr -d '[:space:]' </etc/hostname)
 else
   _raw=$(hostname 2>/dev/null || echo "unknown")
 fi
