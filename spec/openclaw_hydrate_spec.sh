@@ -271,6 +271,13 @@ The output should include 'hook:github:{{repository.full_name}}'
 The output should not include '{{delivery}}'
 The status should be success
 End
+
+It 'caps the skills catalog injected above the cache boundary'
+When run bash -c "jq -c '.skills.limits' '$PWD/config/openclaw/openclaw.tpl.json' '$PWD/config/openclaw/openclaw.template.json'"
+The output should include '"maxSkillsInPrompt":20'
+The output should include '"maxSkillsPromptChars":4000'
+The status should be success
+End
 End
 
 Describe 'execution'
