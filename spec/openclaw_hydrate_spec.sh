@@ -264,6 +264,13 @@ It 'keeps the compiled wiki digest out of the cached system prefix'
 When run bash -c "jq -e '.plugins.entries[\"memory-wiki\"].config.context.includeCompiledDigestPrompt == false' '$PWD/config/openclaw/openclaw.tpl.json' '$PWD/config/openclaw/openclaw.template.json' >/dev/null"
 The status should be success
 End
+
+It 'reuses one GitHub hook session per repository'
+When run bash -c "jq -r '.hooks.mappings[] | select(.match.path == \"github\") | .sessionKey' '$PWD/config/openclaw/openclaw.tpl.json' '$PWD/config/openclaw/openclaw.template.json'"
+The output should include 'hook:github:{{repository.full_name}}'
+The output should not include '{{delivery}}'
+The status should be success
+End
 End
 
 Describe 'execution'

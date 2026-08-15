@@ -398,7 +398,7 @@
         "agentId": "main",
         "wakeMode": "now",
         "name": "GitHub",
-        "sessionKey": "hook:github:{{delivery}}",
+        "sessionKey": "hook:github:{{repository.full_name}}",
         "messageTemplate": "GitHub {{headers.x-github-event}} event on {{repository.full_name}}:\n\nAction: {{action}}\nSender: {{sender.login}}\n\n{{pull_request.title}}{{issue.title}}\n\n{{pull_request.html_url}}{{issue.html_url}}"
       }
     ]
