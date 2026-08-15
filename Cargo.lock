@@ -4429,9 +4429,9 @@ checksum = "8ee5873ec9cce0195efcb7a4e9507a04cd49aec9c83d0389df45b1ef7ba2e649"
 
 [[package]]
 name = "skim"
-version = "5.5.0"
+version = "5.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b31a416c645241f7456b9a1e9d20776eaa0458c368a400f2f680c94f0db5f5b4"
+checksum = "e00312f8e6e0d32a5263149253f8f5049abab2cbd4661186f8f61656b56312dc"
 dependencies = [
  "ansi-to-tui",
  "assert_enum_variants",
@@ -6129,9 +6129,9 @@ dependencies = [
 
 [[package]]
 name = "worktrunk"
-version = "0.71.0"
+version = "0.72.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "853410eaa45f431393965a56d0f12f81458c6f07c84b79720a7a5e3035ae7431"
+checksum = "a19f7b8b7c1269658f31d8cbaabb4121f819c9da801f0e01b82985cfd7677187"
 dependencies = [
  "ansi-str",
  "ansi-to-tui",
