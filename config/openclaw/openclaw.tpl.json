@@ -523,7 +523,7 @@
             "corpus": "all"
           },
           "context": {
-            "includeCompiledDigestPrompt": true
+            "includeCompiledDigestPrompt": false
           },
           "render": {
             "preserveHumanBlocks": true,
