@@ -347,6 +347,12 @@
     "native": "auto",
     "nativeSkills": "auto"
   },
+  "skills": {
+    "limits": {
+      "maxSkillsInPrompt": 20,
+      "maxSkillsPromptChars": 4000
+    }
+  },
   "channels": {
     "telegram": {
       "enabled": true,
