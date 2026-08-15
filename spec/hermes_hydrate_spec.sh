@@ -186,6 +186,20 @@ The output should equal '2'
 The status should be success
 End
 
+It 'delays conversation compression until context is nearly full'
+When run bash -c "sed -n '/^compression:/,/^[^ ]/p' '$PWD/config/hermes/config.template.yaml'"
+The output should include 'enabled: true'
+The output should include 'threshold: 0.85'
+The output should not include 'threshold: 0.5'
+The status should be success
+End
+
+It 'keeps prompt cache TTL above the DeepSeek implicit window'
+When run bash -c "sed -n '/^prompt_caching:/,/^[^ ]/p' '$PWD/config/hermes/config.template.yaml'"
+The output should include 'cache_ttl: 30m'
+The status should be success
+End
+
 It 'does not configure OpenRouter or Mixture-of-Agents presets'
 When run bash -c "! rg -q 'openrouter|@preset/' '$PWD/config/hermes/config.template.yaml'"
 The status should be success
