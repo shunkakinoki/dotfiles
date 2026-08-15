@@ -91,7 +91,9 @@ tool_output:
   max_line_length: 2000
 compression:
   enabled: true
-  threshold: 0.5
+  # Compress only when context is nearly full. Earlier rewrites
+  # bust the DeepSeek prefix cache on long agent sessions.
+  threshold: 0.85
   target_ratio: 0.2
   protect_last_n: 20
 prompt_caching:
