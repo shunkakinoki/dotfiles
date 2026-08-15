@@ -184,7 +184,10 @@ routing:
   # still decides cold bindings, requests without a session, and post-failover rebinding.
   session-affinity: true # default: false
   # How long session-to-auth bindings are retained. Default: 1h
-  session-affinity-ttl: "1h"
+  # 8h covers the 0/8/16 UTC cron gap. Cold requests still hop
+  # OpenCode (300) -> Aliyun (200) -> OpenRouter (100). Failover
+  # still rebinds when the bound plan 429s.
+  session-affinity-ttl: "8h"
 # Codex provider behavior.
 codex:
   # When true, and routing.strategy is fill-first or routing.session-affinity is true,
@@ -503,6 +506,7 @@ openai-compatibility:
     priority: 200
     prefix: "aliyun"
     base-url: "https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1"
+    support-prompt-cache-key: true
     api-key-entries:
       - api-key: "__ALIYUN_TOKEN_PLAN_API_KEY__"
     models:
@@ -515,6 +519,7 @@ openai-compatibility:
   - name: "opencode"
     priority: 300
     base-url: "https://opencode.ai/zen/go/v1"
+    support-prompt-cache-key: true
     api-key-entries: __OPENCODE_API_KEY_ENTRIES__
     models:
       - name: "__DEEPSEEK_PRO__"
