@@ -287,10 +287,11 @@ End
 
 Describe 'OpenRouter fallback routing'
 
-It 'keeps provider selection sticky for one hour per client session'
+It 'keeps provider selection sticky for eight hours per client session'
 When run bash -c "sed -n '/^routing:/,/^[a-z]/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'session-affinity: true'
-The output should include 'session-affinity-ttl: "1h"'
+The output should include 'session-affinity-ttl: "8h"'
+The output should include 'strategy: "fill-first"'
 The status should be success
 End
 
@@ -301,8 +302,28 @@ The output should include 'alias: "free"'
 The status should be success
 End
 
-It 'preserves prompt cache keys for the OpenRouter provider'
-When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+It 'preserves the OpenCode then Aliyun then OpenRouter hop'
+When run bash -c "awk '/name: \"openrouter\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"aliyun\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"opencode\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'priority: 100'
+The output should include 'priority: 200'
+The output should include 'priority: 300'
+The status should be success
+End
+
+It 'preserves prompt cache keys for OpenRouter, Aliyun, and OpenCode'
+When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'; sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' '$PWD/config/cliproxyapi/config.template.yaml'; sed -n '/name: \"opencode\"/,/name: \"openai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'support-prompt-cache-key: true'
+The status should be success
+End
+
+It 'enables prompt cache keys on the Aliyun hop'
+When run bash -c "sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'support-prompt-cache-key: true'
+The status should be success
+End
+
+It 'enables prompt cache keys on the OpenCode hop'
+When run bash -c "sed -n '/name: \"opencode\"/,/name: \"openai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'support-prompt-cache-key: true'
 The status should be success
 End
