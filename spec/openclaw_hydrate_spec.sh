@@ -259,6 +259,11 @@ It 'contains no configured group identifiers'
 When run bash -c "! rg -q '@g\\.us|\"kind\": \"group\"' '$PWD/config/openclaw/openclaw.template.json'"
 The status should be success
 End
+
+It 'keeps the compiled wiki digest out of the cached system prefix'
+When run bash -c "jq -e '.plugins.entries[\"memory-wiki\"].config.context.includeCompiledDigestPrompt == false' '$PWD/config/openclaw/openclaw.tpl.json' '$PWD/config/openclaw/openclaw.template.json' >/dev/null"
+The status should be success
+End
 End
 
 Describe 'execution'
