@@ -42,7 +42,7 @@
     "@steipete/bird": "^0.8.0",
     "@tobilu/qmd": "^2.5.3",
     "@traces-sh/traces": "^0.6.13",
-    "@upstash/context7-mcp": "^3.2.5",
+    "@upstash/context7-mcp": "^4.0.0",
     "@vercel/before-and-after": "0.0.4",
     "acpx": "^0.12.1",
     "agent-browser": "^0.32.4",
