@@ -150,6 +150,13 @@ The status should be success
 End
 End
 
+Describe 'generated AGY settings'
+It 'keeps explicit read and command permissions in both template and generated settings'
+When run bash -c "for settings in config/ccs/agy.settings.tpl.json config/ccs/agy.settings.template.json; do jq -e '.permissions.allow == [\"read_file(*)\", \"command(*)\"]' \"\$settings\" >/dev/null || exit 1; done"
+The status should be success
+End
+End
+
 Describe 'OpenCode runtime fallback'
 It 'keeps DeepSeek Flash as the explicit default model'
 When run bash -c "grep '\"model\": \"shunkakinoki/deepseek-v4-flash\"' config/opencode/opencode.jsonc"
@@ -264,8 +271,8 @@ When run bash -c "section=\$(sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' c
 The status should be success
 End
 
-It 'orders DeepSeek providers as OpenCode then Aliyun then OpenRouter'
-When run bash -c "grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 300' && grep -A 2 'name: \"aliyun\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 200' && grep -A 2 'name: \"openrouter\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 100'"
+It 'orders DeepSeek providers as OpenCode then Aliyun then Verboo then OpenRouter'
+When run bash -c "grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 300' && grep -A 2 'name: \"aliyun\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 200' && grep -A 2 'name: \"verboo\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 150' && grep -A 2 'name: \"openrouter\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 100'"
 The status should be success
 End
 
