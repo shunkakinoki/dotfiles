@@ -276,6 +276,7 @@ discord:
 whatsapp: {}
 telegram:
   channel_prompts: {}
+  require_mention: false
 slack:
   channel_prompts: {}
 mattermost:
