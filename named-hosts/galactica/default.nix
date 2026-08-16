@@ -21,6 +21,11 @@ inputs.nix-darwin.lib.darwinSystem {
       };
       age.identityPaths = [ "/Users/${username}/.ssh/id_ed25519" ];
       age.secrets = builtins.mapAttrs (_: value: { inherit (value) file; }) (import ./secrets.nix);
+
+      # The standalone macOS Tailscale app cannot host Tailscale SSH. Enable
+      # Apple's SSH server so Galactica remains reachable over its tailnet IP.
+      services.openssh.enable = true;
+
       home-manager.users.${username} =
         { pkgs, ... }:
         {
