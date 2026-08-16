@@ -277,6 +277,7 @@ whatsapp: {}
 telegram:
   channel_prompts: {}
   require_mention: false
+  group_allowed_chats: '-1003813578232'
 slack:
   channel_prompts: {}
 mattermost:
