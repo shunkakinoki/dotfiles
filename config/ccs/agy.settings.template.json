@@ -8,6 +8,9 @@
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-sonnet-5"
   },
   "permissions": {
-    "allow": ["read_file(*)", "command(*)"]
+    "allow": [
+      "read_file(*)",
+      "command(*)"
+    ]
   }
 }

@@ -6,5 +6,11 @@
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "__CLAUDE_OPUS__",
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "__CLAUDE_OPUS__",
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "__CLAUDE_SONNET__"
+  },
+  "permissions": {
+    "allow": [
+      "read_file(*)",
+      "command(*)"
+    ]
   }
 }

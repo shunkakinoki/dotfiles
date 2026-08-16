@@ -530,6 +530,17 @@ openai-compatibility:
         alias: "__MINIMAX__"
       - name: "__KIMI__"
         alias: "__KIMI__"
+  - name: "verboo"
+    priority: 150
+    base-url: "https://code.verboo.ai/router/v1"
+    support-prompt-cache-key: true
+    api-key-entries:
+      - api-key: "__VERBOO_API_KEY__"
+    models:
+      - name: "__DEEPSEEK_PRO__"
+        alias: "__DEEPSEEK_PRO__"
+      - name: "__DEEPSEEK_FLASH__"
+        alias: "__DEEPSEEK_FLASH__"
   - name: "openai"
     base-url: "https://api.openai.com/v1"
     api-key-entries:
