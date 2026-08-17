@@ -53,6 +53,7 @@
     "chrome-devtools-mcp": "^1.6.0",
     "clawdhub": "^0.3.0",
     "cline": "^3.0.52",
+    "command-code": "^1.26.0",
     "deepsec": "^2.2.9",
     "droid": "^0.175.1",
     "frog": "^1.0.15",

@@ -1,0 +1,6 @@
+{
+  "theme": "dark",
+  "model": "deepseek/deepseek-v4-flash",
+  "taste-learning": true,
+  "compact-mode": "default"
+}
