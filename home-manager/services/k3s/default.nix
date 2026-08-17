@@ -24,7 +24,7 @@ let
   healthTimerFile = "${homeDir}/.config/k3s/kyber-host-health.timer";
   smartdServiceFile = "${homeDir}/.config/k3s/kyber-smartd.service";
 in
-lib.mkIf (pkgs.stdenv.isLinux && host.isKyber) {
+lib.mkIf (pkgs.stdenv.isLinux && host.isK3sServer) {
   home.activation.setupK3s = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.bash}/bin/bash "${setupScript}" \
       "${serviceFile}" \
