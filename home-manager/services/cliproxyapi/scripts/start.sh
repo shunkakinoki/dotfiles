@@ -89,6 +89,7 @@ if [ -f "$TEMPLATE" ]; then
     -e "s|__QWEN_API_KEY__|${QWEN_API_KEY:-${DASHSCOPE_API_KEY:-}}|g" \
     -e "s|__ALIYUN_TOKEN_PLAN_API_KEY__|${ALIYUN_TOKEN_PLAN_API_KEY:-}|g" \
     -e "s|__VERBOO_API_KEY__|${VERBOO_API_KEY:-}|g" \
+    -e "s|__SURPLUS_API_KEY__|${SURPLUS_API_KEY:-}|g" \
     -e "s|__AMP_UPSTREAM_API_KEY__|${AMP_UPSTREAM_API_KEY:-}|g" \
     >"$CONFIG"
 
