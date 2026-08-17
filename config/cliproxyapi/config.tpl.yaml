@@ -549,7 +549,7 @@ openai-compatibility:
       - name: "__GPT_IMAGE__"
         alias: "__GPT_IMAGE__"
   - name: "surplus"
-    priority: 50
+    priority: 150
     base-url: "https://api.surplusintelligence.ai/v1"
     support-prompt-cache-key: true
     api-key-entries:
