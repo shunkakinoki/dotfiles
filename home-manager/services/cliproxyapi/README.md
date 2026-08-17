@@ -112,6 +112,7 @@ OPENAI_API_KEY="sk-..."
 QWEN_API_KEY="sk-..."
 ALIYUN_TOKEN_PLAN_API_KEY="sk-sp-..."
 VERBOO_API_KEY="..."
+SURPLUS_API_KEY="..."
 ```
 
 For more than one OpenCode Go account behind the same upstream endpoint, set a

@@ -17,6 +17,7 @@ openai_api_key: __OPENAI_API_KEY__
 qwen_api_key: __QWEN_API_KEY__
 aliyun_token_plan_api_key: __ALIYUN_TOKEN_PLAN_API_KEY__
 verboo_api_key: __VERBOO_API_KEY__
+surplus_api_key: __SURPLUS_API_KEY__
 management_password: __CLIPROXY_MANAGEMENT_PASSWORD__
 YAML
 
@@ -27,6 +28,7 @@ OPENAI_API_KEY=test_openai_key
 QWEN_API_KEY=test_qwen_key
 ALIYUN_TOKEN_PLAN_API_KEY=test_token_plan_key
 VERBOO_API_KEY=test_verboo_key
+SURPLUS_API_KEY=test_surplus_key
 CLIPROXY_MANAGEMENT_PASSWORD=test_mgmt_password
 ENV
 }
@@ -72,6 +74,7 @@ OPENAI_API_KEY="test_openai_key"
 QWEN_API_KEY="test_qwen_key"
 ALIYUN_TOKEN_PLAN_API_KEY="test_token_plan_key"
 VERBOO_API_KEY="test_verboo_key"
+SURPLUS_API_KEY="test_surplus_key"
 CLIPROXY_MANAGEMENT_PASSWORD="test_pass"
 
 if [ -f "$TEMPLATE" ]; then
@@ -80,6 +83,7 @@ if [ -f "$TEMPLATE" ]; then
     -e "s|__QWEN_API_KEY__|${QWEN_API_KEY:-}|g" \
     -e "s|__ALIYUN_TOKEN_PLAN_API_KEY__|${ALIYUN_TOKEN_PLAN_API_KEY:-}|g" \
     -e "s|__VERBOO_API_KEY__|${VERBOO_API_KEY:-}|g" \
+    -e "s|__SURPLUS_API_KEY__|${SURPLUS_API_KEY:-}|g" \
     -e "s|__CLIPROXY_MANAGEMENT_PASSWORD__|${CLIPROXY_MANAGEMENT_PASSWORD:-}|g" \
     "$TEMPLATE" >"$CONFIG"
 fi
@@ -93,6 +97,7 @@ The output should include 'openai_api_key: test_openai_key'
 The output should include 'qwen_api_key: test_qwen_key'
 The output should include 'aliyun_token_plan_api_key: test_token_plan_key'
 The output should include 'verboo_api_key: test_verboo_key'
+The output should include 'surplus_api_key: test_surplus_key'
 The output should include 'management_password: test_pass'
 The status should be success
 End
@@ -278,6 +283,25 @@ The status should be success
 End
 End
 
+Describe 'Surplus Intelligence marketplace provider'
+It 'hydrates the dedicated environment key into the runtime config'
+When run bash -c "grep 's|__SURPLUS_API_KEY__|.*SURPLUS_API_KEY' '$SCRIPT'"
+The output should include '__SURPLUS_API_KEY__'
+The output should include 'SURPLUS_API_KEY'
+The status should be success
+End
+
+It 'declares the OpenAI-compatible last-resort fallback upstream'
+When run bash -c "sed -n '/name: \"surplus\"/,/name: \"openai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'priority: 50'
+The output should include 'base-url: "https://api.surplusintelligence.ai/v1"'
+The output should include 'api-key: "__SURPLUS_API_KEY__"'
+The output should include 'name: "deepseek-v4-pro"'
+The output should include 'name: "deepseek-v4-flash"'
+The status should be success
+End
+End
+
 Describe 'Docker image handling'
 It 'supports a locally built canary image without pulling over it'
 When run bash -c "sed -n '/CLIPROXYAPI_IMAGE/,/\"\$docker_image\" \&/p' '$SCRIPT'"
@@ -326,8 +350,9 @@ The output should include 'alias: "free"'
 The status should be success
 End
 
-It 'preserves the OpenCode then Aliyun then Verboo then OpenRouter hop'
-When run bash -c "awk '/name: \"openrouter\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"verboo\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"aliyun\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"opencode\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'"
+It 'preserves the OpenCode then Aliyun then Verboo then OpenRouter then Surplus hop'
+When run bash -c "awk '/name: \"surplus\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"openrouter\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"verboo\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"aliyun\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"opencode\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'priority: 50'
 The output should include 'priority: 100'
 The output should include 'priority: 150'
 The output should include 'priority: 200'

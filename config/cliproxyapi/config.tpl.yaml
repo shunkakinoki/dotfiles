@@ -548,6 +548,17 @@ openai-compatibility:
     models:
       - name: "__GPT_IMAGE__"
         alias: "__GPT_IMAGE__"
+  - name: "surplus"
+    priority: 50
+    base-url: "https://api.surplusintelligence.ai/v1"
+    support-prompt-cache-key: true
+    api-key-entries:
+      - api-key: "__SURPLUS_API_KEY__"
+    models:
+      - name: "__DEEPSEEK_PRO__"
+        alias: "__DEEPSEEK_PRO__"
+      - name: "__DEEPSEEK_FLASH__"
+        alias: "__DEEPSEEK_FLASH__"
 
 # Official OpenAI compatibility provider reference
 # OpenAI compatibility providers
