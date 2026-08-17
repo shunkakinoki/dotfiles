@@ -152,7 +152,7 @@ The hooks configuration (local settings override global settings):
           },
           {
             "type": "command",
-            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh"
+            "command": "$HOME/dotfiles/config/claude/pushover.sh"
           }
         ]
       }
@@ -166,7 +166,7 @@ The hooks configuration (local settings override global settings):
           },
           {
             "type": "command",
-            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh"
+            "command": "$HOME/dotfiles/config/claude/pushover.sh"
           }
         ]
       }
@@ -176,7 +176,7 @@ The hooks configuration (local settings override global settings):
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh"
+            "command": "$HOME/dotfiles/config/claude/pushover.sh"
           }
         ]
       }
@@ -186,7 +186,7 @@ The hooks configuration (local settings override global settings):
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh"
+            "command": "$HOME/dotfiles/config/claude/pushover.sh"
           }
         ]
       }
@@ -196,7 +196,7 @@ The hooks configuration (local settings override global settings):
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh"
+            "command": "$HOME/dotfiles/config/claude/pushover.sh"
           }
         ]
       }
@@ -265,7 +265,7 @@ To enable additional notifications like `SessionStart` or `SessionEnd`:
     "hooks": [
       {
         "type": "command",
-        "command": "/Users/shunkakinoki/dotfiles/config/claude/pushover.sh"
+        "command": "$HOME/dotfiles/config/claude/pushover.sh"
       }
     ]
   }
