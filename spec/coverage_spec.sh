@@ -320,6 +320,10 @@ It 'has spec file for config/gemini/activate.sh'
 The path "spec/activate_config_spec.sh" should be exist
 End
 
+It 'has spec file for config/gemini/activate-antigravity.sh'
+The path "spec/activate_antigravity_spec.sh" should be exist
+End
+
 It 'has spec file for config/git-ai/activate.sh'
 The path "spec/activate_config_spec.sh" should be exist
 End
@@ -477,6 +481,7 @@ config/shared/hooks/roborev-agent.sh
 config/cursor/activate.sh
 config/cursor/hooks/notify.sh
 config/cursor/hooks/pushover.sh
+config/gemini/activate-antigravity.sh
 config/gemini/activate.sh
 config/git-ai/activate.sh
 config/grok/activate.sh
