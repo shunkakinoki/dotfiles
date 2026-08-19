@@ -162,9 +162,63 @@ When run bash -c "grep -q '^OnActiveSec=1min$' '$PWD/config/k3s/kyber-host-healt
 The status should be success
 End
 
-It 'warns before root nodefs reaches the kubelet emergency reserve'
-When run bash -c "grep -q 'NODEFS_USAGE_THRESHOLD=75' '$PWD/config/k3s/kyber-host-health.sh' && grep -q 'kubelet emergency reserve 50 GiB' '$PWD/config/k3s/kyber-host-health.sh'"
+It 'warns at an absolute margin before the root nodefs emergency reserve'
+When run bash -c "grep -q 'NODEFS_AVAILABLE_WARNING_GIB=200' '$PWD/config/k3s/kyber-host-health.sh' && grep -q 'NODEFS_KUBELET_RESERVE_GIB=50' '$PWD/config/k3s/kyber-host-health.sh'"
 The status should be success
+End
+
+Describe 'root nodefs check behavior'
+HEALTH_CHECK="$PWD/config/k3s/kyber-host-health.sh"
+
+It 'clears the alert after available space recovers above 200 GiB'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  source "$HEALTH_CHECK"
+  df() { printf "Avail\n%s\n" "$((201 * 1024 * 1024 * 1024))"; }
+  set_alert() { printf "alert:%s:%s\n" "$1" "$2"; }
+  clear_alert() { printf "clear:%s\n" "$1"; }
+  check_node_filesystem
+'
+The output should equal 'clear:node-filesystem'
+The status should be success
+End
+
+It 'alerts at the 200 GiB warning threshold'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  source "$HEALTH_CHECK"
+  df() { printf "Avail\n%s\n" "$((200 * 1024 * 1024 * 1024))"; }
+  set_alert() { printf "alert:%s:%s\n" "$1" "$2"; }
+  clear_alert() { printf "clear:%s\n" "$1"; }
+  check_node_filesystem
+'
+The output should include 'alert:node-filesystem:root nodefs has 200 GiB available'
+The status should be success
+End
+
+It 'alerts without clearing on malformed available-space output'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  source "$HEALTH_CHECK"
+  df() { printf "Avail\nnot-a-number\n"; }
+  set_alert() { printf "alert:%s:%s\n" "$1" "$2"; }
+  clear_alert() { printf "clear:%s\n" "$1"; }
+  check_node_filesystem
+'
+The output should equal 'alert:node-filesystem:unable to read available bytes on root nodefs'
+The status should be success
+End
+
+It 'alerts without aborting when df fails'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  source "$HEALTH_CHECK"
+  df() { return 1; }
+  set_alert() { printf "alert:%s:%s\n" "$1" "$2"; }
+  clear_alert() { printf "clear:%s\n" "$1"; }
+  check_node_filesystem
+  printf "continued\n"
+'
+The output should equal 'alert:node-filesystem:unable to read available bytes on root nodefs
+continued'
+The status should be success
+End
 End
 
 It 'orders the k3s config hook after the mount hook'

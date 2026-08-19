@@ -243,12 +243,13 @@ kubelet clear `DiskPressure`. Durable controls now:
 
 - schedule host health from timer activation and every minute thereafter;
 - replace the oversized 20% nodefs threshold with an absolute 50 GiB emergency
-  reserve and warn at 75% usage, leaving roughly 180 GiB for attended cleanup;
+  reserve and warn at 200 GiB available for attended cleanup;
 - give pods a dedicated public upstream resolver file instead of the host's
   `127.0.0.53` systemd-resolved stub;
-- weight the managed user-service cgroup above interactive session scopes; and
-- give CLIProxy the highest CPU and I/O weight inside the managed service
-  cgroup.
+- weight the host system slice and managed user-service cgroup above interactive
+  session scopes; and
+- give CLIProxy maximum Docker CPU shares and block-I/O weight within the
+  protected system slice.
 
 During a recurrence, compare local `http://127.0.0.1:8317`, the public endpoint,
 node conditions, session cgroups, and the Cloudflare tunnel pods before

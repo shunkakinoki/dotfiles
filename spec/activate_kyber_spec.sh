@@ -133,9 +133,9 @@ End
 Describe 'named-hosts/kyber/activate-user-service-priority.sh'
 SCRIPT="$PWD/named-hosts/kyber/activate-user-service-priority.sh"
 
-It 'installs a user manager systemd drop-in'
-When run grep '10-kyber-managed-services.conf' "$SCRIPT"
-The output should include '10-kyber-managed-services.conf'
+It 'installs system and user manager systemd drop-ins'
+When run bash -c "grep -q 'system.slice.d/10-kyber-managed-services.conf' '$SCRIPT' && grep -q 'user@.*service.d/10-kyber-managed-services.conf' '$SCRIPT'"
+The status should be success
 End
 
 It 'weights managed services above interactive session scopes'
@@ -146,6 +146,16 @@ End
 It 'applies the weights without restarting the user manager'
 When run grep 'set-property --runtime' "$SCRIPT"
 The output should include 'set-property --runtime'
+End
+
+It 'uses non-interactive privilege escalation'
+When run bash -c "grep -q 'ROOT_CMD=(sudo -n)' '$SCRIPT' && grep -q 'ROOT_CMD=(doas -n)' '$SCRIPT'"
+The status should be success
+End
+
+It 'skips redundant runtime property updates'
+When run bash -c "grep -q 'systemctl show' '$SCRIPT' && grep -q '\[ \"\$cpu_weight\" = 1000 \].*\[ \"\$io_weight\" = 1000 \]' '$SCRIPT'"
+The status should be success
 End
 End
 End

@@ -322,8 +322,8 @@ End
 End
 
 Describe 'Docker image handling'
-It 'prioritizes the Kyber proxy within the managed service cgroup'
-When run bash -c "grep -q 'CPUWeight = 10000' '$PWD/home-manager/services/cliproxyapi/default.nix' && grep -q 'IOWeight = 10000' '$PWD/home-manager/services/cliproxyapi/default.nix'"
+It 'prioritizes the proxy container among Docker workloads'
+When run bash -c "grep -q -- '--cpu-shares 262144' '$SCRIPT' && grep -q -- '--blkio-weight 1000' '$SCRIPT'"
 The status should be success
 End
 
