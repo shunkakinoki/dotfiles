@@ -186,8 +186,9 @@ cleaner:
   disks, including the containerd SSD, and runs short and long self-tests;
 - `kyber-host-health.timer` runs a read-only check every minute for five-minute
   I/O PSI, five consecutive samples of at least three D-state processes,
-  containerd image-filesystem usage/identity, CRI probe latency, recent CRI
-  lifecycle errors, and host DNS (Tailscale must not own `/etc/resolv.conf`).
+  root node-filesystem headroom, containerd image-filesystem usage/identity,
+  CRI probe latency, recent CRI lifecycle errors, and host DNS (Tailscale must
+  not own `/etc/resolv.conf`).
 
 Alerts are deduplicated until recovery. They are written to the journal at
 `daemon.alert` priority and broadcast to logged-in sessions with `wall`; a
@@ -212,6 +213,38 @@ because the upstream unit uses `KillMode=process`. If containerd itself is
 wedged, use the installed `k3s-killall.sh` once during an attended recovery,
 then start k3s again. The helper preserves cluster data but terminates every
 running workload, so it is not a timer or routine cleanup mechanism.
+
+## August 2026 CLIProxy and Kubernetes Pressure Outage
+
+On 2026-08-19, `cliproxy.shunkakinoki.com` timed out while
+`cliproxyapi.service` remained `active`. The proxy process and local `:8317`
+listener were healthy; the host was not. A 17-hour-old SSH/Herdr session was
+stuck in systemd's `closing` state with roughly 900-1,100 tasks. Concurrent
+type-aware Oxlint/tsgolint validation peaked near 99 GiB and consumed dozens of
+CPU cores. At the same time, root `nodefs` crossed the configured 20%-free
+kubelet threshold. Kubelet evicted the Cloudflare tunnel and ingress workloads,
+CRI and Kine calls timed out, and the public proxy lost its origin path.
+
+The incident escaped the existing checks because systemd tracked the live
+Docker client rather than end-to-end reachability, the host-health timer had no
+next trigger after activation, and storage monitoring covered the dedicated
+containerd filesystem but not root `nodefs`.
+
+Recovery stopped only the runaway validation process groups, preserved the
+Herdr/Codex session and dirty lanes, removed generated dependency data from
+clean temporary lanes, applied the existing 30-day Nix GC policy, and let
+kubelet clear `DiskPressure`. Durable controls now:
+
+- schedule host health from timer activation and every minute thereafter;
+- warn when root `nodefs` reaches 75%, before kubelet's 80% eviction boundary;
+- weight the managed user-service cgroup above interactive session scopes; and
+- give CLIProxy the highest CPU and I/O weight inside the managed service
+  cgroup.
+
+During a recurrence, compare local `http://127.0.0.1:8317`, the public endpoint,
+node conditions, session cgroups, and the Cloudflare tunnel pods before
+restarting CLIProxy. An `active` unit plus a fast local response indicates an
+origin-path or host-pressure incident, not a proxy daemon crash.
 
 ## SSH Key Management
 

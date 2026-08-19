@@ -2,7 +2,7 @@
 Description=Run Kyber storage and CRI reliability checks
 
 [Timer]
-OnBootSec=5min
+OnActiveSec=1min
 OnUnitActiveSec=1min
 RandomizedDelaySec=15s
 Persistent=true

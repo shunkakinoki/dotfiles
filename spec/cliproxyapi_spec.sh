@@ -322,6 +322,11 @@ End
 End
 
 Describe 'Docker image handling'
+It 'prioritizes the Kyber proxy within the managed service cgroup'
+When run bash -c "grep -q 'CPUWeight = 10000' '$PWD/home-manager/services/cliproxyapi/default.nix' && grep -q 'IOWeight = 10000' '$PWD/home-manager/services/cliproxyapi/default.nix'"
+The status should be success
+End
+
 It 'supports a locally built canary image without pulling over it'
 When run bash -c "sed -n '/CLIPROXYAPI_IMAGE/,/\"\$docker_image\" \&/p' '$SCRIPT'"
 The output should include 'CLIPROXYAPI_IMAGE:-eceasy/cli-proxy-api:latest'

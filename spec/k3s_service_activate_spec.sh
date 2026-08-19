@@ -148,6 +148,16 @@ When run bash -c "grep -q '/etc/systemd/journald.conf.d/10-kyber-limits.conf' '$
 The status should be success
 End
 
+It 'schedules the host-health timer relative to activation'
+When run bash -c "grep -q '^OnActiveSec=1min$' '$PWD/config/k3s/kyber-host-health.timer' && grep -q '^OnUnitActiveSec=1min$' '$PWD/config/k3s/kyber-host-health.timer'"
+The status should be success
+End
+
+It 'warns before root nodefs reaches the kubelet eviction threshold'
+When run bash -c "grep -q 'NODEFS_USAGE_THRESHOLD=75' '$PWD/config/k3s/kyber-host-health.sh' && grep -q 'kubelet eviction threshold 80%' '$PWD/config/k3s/kyber-host-health.sh'"
+The status should be success
+End
+
 It 'orders the k3s config hook after the mount hook'
 When run grep 'entryAfter \[ "setupK3s" \]' "$SERVER_MODULE"
 The output should include 'entryAfter [ "setupK3s" ]'

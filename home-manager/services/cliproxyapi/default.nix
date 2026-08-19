@@ -192,6 +192,11 @@ in
         ]
       }:/usr/bin:/usr/sbin";
       ExecStart = "${dockerStartScript}";
+      # Prefer the public proxy within the managed service cgroup during
+      # concurrent local validation. Kyber also weights user@.service above
+      # abandoned interactive session scopes.
+      CPUWeight = 10000;
+      IOWeight = 10000;
       # Give the start wrapper's TERM trap time to flush usage + docker stop
       # the container cleanly before systemd escalates to SIGKILL.
       TimeoutStopSec = 45;

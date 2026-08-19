@@ -139,6 +139,12 @@ home-manager.lib.homeManagerConfiguration {
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-ip-forwarding.sh}"
         '';
 
+        # Keep Home Manager services responsive when a disconnected SSH/Herdr
+        # session leaves CPU- or I/O-heavy validation processes behind.
+        home.activation.prioritizeManagedUserServices = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-user-service-priority.sh}"
+        '';
+
         # Publish the T3 server over tailnet HTTPS. openclaw already owns :443
         # here, and T3's discovery path must sit at the serve root, so T3 gets
         # its own HTTPS port: https://kyber.tail950b36.ts.net:8443

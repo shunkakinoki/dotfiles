@@ -8,6 +8,7 @@ readonly D_STATE_THRESHOLD=3
 readonly D_STATE_SUSTAINED_SAMPLES=5
 readonly IO_SOME_AVG300_THRESHOLD=20
 readonly IO_FULL_AVG300_THRESHOLD=10
+readonly NODEFS_USAGE_THRESHOLD=75
 readonly IMAGEFS_USAGE_THRESHOLD=70
 readonly CRI_LATENCY_THRESHOLD_SECONDS=5
 readonly CRI_ERROR_THRESHOLD=5
@@ -68,6 +69,17 @@ check_d_state() {
     set_alert "d-state" "${d_state_count} processes have remained in uninterruptible sleep for ${samples} consecutive samples"
   elif [ "$samples" -eq 0 ]; then
     clear_alert "d-state"
+  fi
+}
+
+check_node_filesystem() {
+  local usage_percent
+
+  usage_percent="$(df --output=pcent / | tail -n 1 | tr -cd '0-9')"
+  if [ "$usage_percent" -ge "$NODEFS_USAGE_THRESHOLD" ]; then
+    set_alert "node-filesystem" "root nodefs usage is ${usage_percent}% (warning threshold ${NODEFS_USAGE_THRESHOLD}%, kubelet eviction threshold 80%)"
+  else
+    clear_alert "node-filesystem"
   fi
 }
 
@@ -143,6 +155,7 @@ check_cri() {
 
 check_io_pressure
 check_d_state
+check_node_filesystem
 check_image_filesystem
 check_cri
 check_dns
