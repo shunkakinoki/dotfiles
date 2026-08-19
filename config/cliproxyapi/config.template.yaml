@@ -546,7 +546,7 @@ openai-compatibility:
     base-url: "https://api.commandcode.ai/provider/v1"
     support-prompt-cache-key: true
     api-key-entries:
-      - api-key: "__COMMAND_CODE_API_KEY__"
+      - api-key: "__COMMANDCODE_API_KEY__"
     models:
       - name: "deepseek-v4-pro"
         alias: "deepseek-v4-pro"

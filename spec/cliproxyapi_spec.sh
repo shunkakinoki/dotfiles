@@ -283,6 +283,25 @@ The status should be success
 End
 End
 
+Describe 'Command Code provider'
+It 'hydrates the dedicated environment key into the runtime config'
+When run bash -c "grep 's|__COMMANDCODE_API_KEY__|.*COMMANDCODE_API_KEY' '$SCRIPT'"
+The output should include '__COMMANDCODE_API_KEY__'
+The output should include 'COMMANDCODE_API_KEY'
+The status should be success
+End
+
+It 'declares the OpenAI-compatible DeepSeek fallback upstream'
+When run bash -c "sed -n '/name: \"commandcode\"/,/name: \"openai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'priority: 150'
+The output should include 'base-url: "https://api.commandcode.ai/provider/v1"'
+The output should include 'api-key: "__COMMANDCODE_API_KEY__"'
+The output should include 'name: "deepseek-v4-pro"'
+The output should include 'name: "deepseek-v4-flash"'
+The status should be success
+End
+End
+
 Describe 'Surplus Intelligence marketplace provider'
 It 'hydrates the dedicated environment key into the runtime config'
 When run bash -c "grep 's|__SURPLUS_API_KEY__|.*SURPLUS_API_KEY' '$SCRIPT'"
