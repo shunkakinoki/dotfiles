@@ -33,10 +33,12 @@ ensure_authorized_key() {
 ensure_authorized_key "$GALACTICA_AUTHORIZED_KEY"
 
 K3S_CONFIG_SOURCE="$HOME/.config/k3s/config.yaml"
+RESOLV_CONFIG_SOURCE="$HOME/.config/k3s/resolv.conf"
+RESOLV_CONFIG_TARGET="/etc/rancher/k3s/resolv.conf"
 KUBELET_CONFIG_SOURCE="$HOME/.config/k3s/kubelet.conf.d/$KUBELET_CONFIG_NAME"
 KUBELET_CONFIG_TARGET="/var/lib/rancher/k3s/agent/etc/kubelet.conf.d/$KUBELET_CONFIG_NAME"
 
-if [ ! -f "$K3S_CONFIG_SOURCE" ] || [ ! -f "$KUBELET_CONFIG_SOURCE" ]; then
+if [ ! -f "$K3S_CONFIG_SOURCE" ] || [ ! -f "$RESOLV_CONFIG_SOURCE" ] || [ ! -f "$KUBELET_CONFIG_SOURCE" ]; then
   exit 0
 fi
 
@@ -59,6 +61,11 @@ $SUDO_CMD mkdir -p /etc/rancher/k3s "$(dirname "$KUBELET_CONFIG_TARGET")"
 K3S_CONFIG_CHANGED=0
 if ! $SUDO_CMD diff -q "$K3S_CONFIG_SOURCE" /etc/rancher/k3s/config.yaml >/dev/null 2>&1; then
   $SUDO_CMD cp "$K3S_CONFIG_SOURCE" /etc/rancher/k3s/config.yaml
+  K3S_CONFIG_CHANGED=1
+fi
+
+if ! $SUDO_CMD diff -q "$RESOLV_CONFIG_SOURCE" "$RESOLV_CONFIG_TARGET" >/dev/null 2>&1; then
+  $SUDO_CMD cp "$RESOLV_CONFIG_SOURCE" "$RESOLV_CONFIG_TARGET"
   K3S_CONFIG_CHANGED=1
 fi
 

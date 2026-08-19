@@ -231,8 +231,10 @@ public proxy lost its origin path.
 
 The incident escaped the existing checks because systemd tracked the live
 Docker client rather than end-to-end reachability, the host-health timer had no
-next trigger after activation, and storage monitoring covered the dedicated
-containerd filesystem but not root `nodefs`.
+next trigger after activation, storage monitoring covered the dedicated
+containerd filesystem but not root `nodefs`, and K3s passed systemd-resolved's
+loopback stub into CoreDNS. After the cluster restarted, CoreDNS detected that
+forwarding loop and could not bring the Cloudflare tunnel back online.
 
 Recovery stopped only the runaway validation process groups, preserved the
 Herdr/Codex session and dirty lanes, removed generated dependency data from
@@ -242,6 +244,8 @@ kubelet clear `DiskPressure`. Durable controls now:
 - schedule host health from timer activation and every minute thereafter;
 - replace the oversized 20% nodefs threshold with an absolute 50 GiB emergency
   reserve and warn at 75% usage, leaving roughly 180 GiB for attended cleanup;
+- give pods a dedicated public upstream resolver file instead of the host's
+  `127.0.0.53` systemd-resolved stub;
 - weight the managed user-service cgroup above interactive session scopes; and
 - give CLIProxy the highest CPU and I/O weight inside the managed service
   cgroup.

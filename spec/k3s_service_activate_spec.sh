@@ -62,13 +62,22 @@ When run bash -c "grep -qxF 'imageGCHighThresholdPercent: 70' '$KUBELET_CONFIG' 
 The status should be success
 End
 
-It 'preserves twenty percent on root and image filesystems'
+It 'keeps an absolute root reserve and twenty percent on imagefs'
 When run bash -c "grep -qxF '  nodefs.available: \"50Gi\"' '$KUBELET_CONFIG' && grep -qxF '  imagefs.available: \"20%\"' '$KUBELET_CONFIG'"
 The status should be success
 End
 
 It 'uses kubelet native container log rotation'
 When run bash -c "grep -qxF 'containerLogMaxSize: 10Mi' '$KUBELET_CONFIG' && grep -qxF 'containerLogMaxFiles: 3' '$KUBELET_CONFIG'"
+The status should be success
+End
+End
+
+Describe 'pod DNS policy'
+RESOLV_CONFIG="$PWD/config/k3s/resolv.conf"
+
+It 'uses a dedicated non-loopback resolver file'
+When run bash -c "grep -q 'resolv-conf = \"/etc/rancher/k3s/resolv.conf\"' '$PWD/config/k3s/default.nix' && grep -qxF 'nameserver 1.1.1.1' '$RESOLV_CONFIG' && ! grep -qxF 'nameserver 127.0.0.53' '$RESOLV_CONFIG'"
 The status should be success
 End
 End

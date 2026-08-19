@@ -30,6 +30,7 @@ let
       "infra.shunkakinoki.software/cluster=${clusterName}"
       "infra.shunkakinoki.software/workload-profile=${k3s.workloadProfile}"
     ];
+    resolv-conf = "/etc/rancher/k3s/resolv.conf";
     tls-san = k3s.tlsSans;
   };
   # Authorize galactica on k3s servers so the client activation can scp the
@@ -77,6 +78,11 @@ in
 
   home.file.".config/k3s/kubelet.conf.d/${kubeletConfigName}" = lib.mkIf isK3sServer {
     source = ./kubelet.conf;
+    force = true;
+  };
+
+  home.file.".config/k3s/resolv.conf" = lib.mkIf isK3sServer {
+    source = ./resolv.conf;
     force = true;
   };
 
