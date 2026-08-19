@@ -63,7 +63,7 @@ The status should be success
 End
 
 It 'preserves twenty percent on root and image filesystems'
-When run bash -c "grep -qxF '  nodefs.available: \"20%\"' '$KUBELET_CONFIG' && grep -qxF '  imagefs.available: \"20%\"' '$KUBELET_CONFIG'"
+When run bash -c "grep -qxF '  nodefs.available: \"50Gi\"' '$KUBELET_CONFIG' && grep -qxF '  imagefs.available: \"20%\"' '$KUBELET_CONFIG'"
 The status should be success
 End
 
@@ -153,8 +153,8 @@ When run bash -c "grep -q '^OnActiveSec=1min$' '$PWD/config/k3s/kyber-host-healt
 The status should be success
 End
 
-It 'warns before root nodefs reaches the kubelet eviction threshold'
-When run bash -c "grep -q 'NODEFS_USAGE_THRESHOLD=75' '$PWD/config/k3s/kyber-host-health.sh' && grep -q 'kubelet eviction threshold 80%' '$PWD/config/k3s/kyber-host-health.sh'"
+It 'warns before root nodefs reaches the kubelet emergency reserve'
+When run bash -c "grep -q 'NODEFS_USAGE_THRESHOLD=75' '$PWD/config/k3s/kyber-host-health.sh' && grep -q 'kubelet emergency reserve 50 GiB' '$PWD/config/k3s/kyber-host-health.sh'"
 The status should be success
 End
 

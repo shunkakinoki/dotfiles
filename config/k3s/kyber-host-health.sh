@@ -77,7 +77,7 @@ check_node_filesystem() {
 
   usage_percent="$(df --output=pcent / | tail -n 1 | tr -cd '0-9')"
   if [ "$usage_percent" -ge "$NODEFS_USAGE_THRESHOLD" ]; then
-    set_alert "node-filesystem" "root nodefs usage is ${usage_percent}% (warning threshold ${NODEFS_USAGE_THRESHOLD}%, kubelet eviction threshold 80%)"
+    set_alert "node-filesystem" "root nodefs usage is ${usage_percent}% (warning threshold ${NODEFS_USAGE_THRESHOLD}%, kubelet emergency reserve 50 GiB)"
   else
     clear_alert "node-filesystem"
   fi

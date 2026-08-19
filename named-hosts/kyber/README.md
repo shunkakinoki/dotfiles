@@ -117,11 +117,14 @@ unrestricted local-path PVC must not be treated as a hard capacity quota.
 ## k3s Disk Headroom
 
 Host activation keeps the root ext4 reserved blocks at 1%. Kubelet serializes
-image pulls, begins image garbage collection at 70% usage, targets 60%, and
-evicts before either the root (`nodefs`) or containerd (`imagefs`) filesystem
-falls below 20% available space. Before containerd received a dedicated SSD,
-Ubuntu's default 5% reserve on the 916 GiB root volume hid about 46 GiB from
-kubelet and left too little usable headroom during overlapping rollouts.
+image pulls, begins image garbage collection at 70% usage, targets 60%, keeps a
+50 GiB emergency reserve on the root (`nodefs`), and keeps 20% available on the
+dedicated containerd (`imagefs`) filesystem. A percentage-based nodefs reserve
+is intentionally avoided: 20% of Kyber's 916 GiB root volume is roughly 183
+GiB, enough working headroom that eviction causes more harm than continued
+operation. Before containerd received a dedicated SSD, Ubuntu's default 5%
+reserve on the root volume hid about 46 GiB from kubelet and left too little
+usable headroom during overlapping rollouts.
 
 Kubelet owns image, container, and pod-sandbox garbage collection. Do not add a
 separate `crictl` cleanup timer: deleting CRI objects behind kubelet can race
@@ -222,8 +225,9 @@ listener were healthy; the host was not. A 17-hour-old SSH/Herdr session was
 stuck in systemd's `closing` state with roughly 900-1,100 tasks. Concurrent
 type-aware Oxlint/tsgolint validation peaked near 99 GiB and consumed dozens of
 CPU cores. At the same time, root `nodefs` crossed the configured 20%-free
-kubelet threshold. Kubelet evicted the Cloudflare tunnel and ingress workloads,
-CRI and Kine calls timed out, and the public proxy lost its origin path.
+kubelet threshold despite retaining roughly 193 GiB. Kubelet evicted the
+Cloudflare tunnel and ingress workloads, CRI and Kine calls timed out, and the
+public proxy lost its origin path.
 
 The incident escaped the existing checks because systemd tracked the live
 Docker client rather than end-to-end reachability, the host-health timer had no
@@ -236,7 +240,8 @@ clean temporary lanes, applied the existing 30-day Nix GC policy, and let
 kubelet clear `DiskPressure`. Durable controls now:
 
 - schedule host health from timer activation and every minute thereafter;
-- warn when root `nodefs` reaches 75%, before kubelet's 80% eviction boundary;
+- replace the oversized 20% nodefs threshold with an absolute 50 GiB emergency
+  reserve and warn at 75% usage, leaving roughly 180 GiB for attended cleanup;
 - weight the managed user-service cgroup above interactive session scopes; and
 - give CLIProxy the highest CPU and I/O weight inside the managed service
   cgroup.
