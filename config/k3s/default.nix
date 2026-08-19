@@ -6,7 +6,12 @@
   ...
 }:
 let
-  inherit (inputs.host) isGalactica isK3sServer isKyber k3s;
+  inherit (inputs.host)
+    isGalactica
+    isK3sServer
+    isKyber
+    k3s
+    ;
   clusterName = if isK3sServer then k3s.clusterName else "kyber";
   kubeconfig =
     if isGalactica then

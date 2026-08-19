@@ -102,6 +102,20 @@ End
 End
 End
 
+Describe 'home-manager/modules/tailscale/default.nix'
+MODULE="$PWD/home-manager/modules/tailscale/default.nix"
+
+It 'delegates tailscale-up to the external activate script'
+When run bash -c "grep 'activate-up.sh' '$MODULE' && grep 'bin/bash' '$MODULE'"
+The output should include 'activate-up.sh'
+End
+
+It 'does not wrap tailscale-up in an inline writeShellScript'
+When run bash -c "grep -E 'writeShellScript[[:space:]]+\"tailscale-up\"' '$MODULE' || true"
+The output should equal ''
+End
+End
+
 Describe 'home-manager/modules/tailscale/activate-up.sh'
 SCRIPT="$PWD/home-manager/modules/tailscale/activate-up.sh"
 

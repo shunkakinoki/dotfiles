@@ -32,7 +32,7 @@ jobs:
         run: make shell-check-dev
   shell-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -40,8 +40,8 @@ jobs:
         uses: cachix/install-nix-action@v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Run ShellSpec Tests (Dev Shell)
-        run: make shell-test-dev
+      - name: Run ShellSpec
+        run: nix shell nixpkgs#shellspec nixpkgs#ripgrep --command shellspec --format documentation --jobs 1
   shell-check:
     if: always()
     needs:
