@@ -136,6 +136,33 @@ could not start new chat turns. The dedicated image filesystem removes that
 contention from the control-plane disk; pull limits and free-space thresholds
 remain defense in depth.
 
+## August 2026 MagicDNS Outage
+
+On 2026-08-19 Kyber rebooted and came back with Tailscale `CorpDNS=true`.
+`tailscaled` overwrote `/etc/resolv.conf` with MagicDNS (`100.100.100.100`).
+MagicDNS had no upstream resolvers, so every glibc lookup returned SERVFAIL
+while ICMP and HTTPS-by-IP still worked. cliproxy stayed "running" but could
+not hydrate auth from R2; k3s image pulls failed the same way. SSH over the
+tailnet still worked because it does not need public DNS.
+
+`--accept-dns=false` was already declared in `modules.tailscale.extraUpArgs`,
+but `installSystemService` only installed `tailscaled`. The `tailscale-up`
+oneshot existed only for user-level services, so the flags never applied after
+boot. `tailscale set --accept-dns=false` also does not restore a previously
+overwritten resolv.conf.
+
+Recovery:
+
+```bash
+sudo tailscale set --accept-dns=false
+sudo ln -sfn /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+systemctl --user restart cliproxyapi.service
+```
+
+Durability: `tailscale-up.service` now runs `extraUpArgs` after `tailscaled`
+and re-links the systemd-resolved stub whenever `--accept-dns=false` is set.
+Host health alerts if Tailscale rewrites resolv.conf or public lookups fail.
+
 For diagnosis, check filesystem headroom, I/O pressure, kubelet GC messages,
 and CRI health before restarting services:
 
@@ -159,8 +186,8 @@ cleaner:
   disks, including the containerd SSD, and runs short and long self-tests;
 - `kyber-host-health.timer` runs a read-only check every minute for five-minute
   I/O PSI, five consecutive samples of at least three D-state processes,
-  containerd image-filesystem usage/identity, CRI probe latency, and recent CRI
-  lifecycle errors.
+  containerd image-filesystem usage/identity, CRI probe latency, recent CRI
+  lifecycle errors, and host DNS (Tailscale must not own `/etc/resolv.conf`).
 
 Alerts are deduplicated until recovery. They are written to the journal at
 `daemon.alert` priority and broadcast to logged-in sessions with `wall`; a

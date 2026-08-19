@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 # Install system-level tailscaled service and configure sudo PATH
-# Usage: activate-install-service.sh <nix_service_file> <nix_profile_dir>
+# Usage: activate-install-service.sh <nix_service_file> <nix_profile_dir> [tailscale_up_service_file]
 set -euo pipefail
 NIX_SERVICE="$1"
 NIX_PROFILE_DIR="$2"
+UP_SERVICE="${3:-}"
 SERVICE_FILE="/etc/systemd/system/tailscaled.service"
+UP_SERVICE_FILE="/etc/systemd/system/tailscale-up.service"
 SUDOERS_FILE="/etc/sudoers.d/nix-tailscale"
 
 SUDO_CMD=""
@@ -33,12 +35,29 @@ run_root_cmd() {
 }
 
 # Only install if service file differs from nix-generated one
+need_reload=false
 if ! cmp -s "$NIX_SERVICE" "$SERVICE_FILE" 2>/dev/null; then
   echo "Installing tailscaled systemd service (requires root)..."
   run_root_cmd cp "$NIX_SERVICE" "$SERVICE_FILE"
-  run_root_cmd systemctl daemon-reload
-  run_root_cmd systemctl enable tailscaled
+  need_reload=true
   echo "Tailscaled service installed."
+fi
+
+if [ -n "$UP_SERVICE" ] && ! cmp -s "$UP_SERVICE" "$UP_SERVICE_FILE" 2>/dev/null; then
+  echo "Installing tailscale-up systemd service (requires root)..."
+  run_root_cmd cp "$UP_SERVICE" "$UP_SERVICE_FILE"
+  need_reload=true
+  echo "Tailscale-up service installed."
+fi
+
+if [ "$need_reload" = true ]; then
+  run_root_cmd systemctl daemon-reload
+fi
+
+run_root_cmd systemctl enable tailscaled
+if [ -n "$UP_SERVICE" ]; then
+  run_root_cmd systemctl enable tailscale-up.service
+  run_root_cmd systemctl restart tailscale-up.service
 fi
 
 # Configure sudo to include Nix profile paths

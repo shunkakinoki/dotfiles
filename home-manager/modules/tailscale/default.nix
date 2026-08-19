@@ -37,6 +37,26 @@ let
     [Install]
     WantedBy=multi-user.target
   '';
+
+  tailscaleUpScript = pkgs.writeShellScript "tailscale-up" ''
+    exec ${pkgs.bash}/bin/bash ${./activate-up.sh} ${cfg.tailscaled.package}/bin/tailscale ${lib.escapeShellArgs cfg.extraUpArgs}
+  '';
+
+  tailscaleUpServiceFile = pkgs.writeText "tailscale-up.service" ''
+    [Unit]
+    Description=Apply Tailscale node flags
+    Documentation=https://tailscale.com/kb/
+    After=tailscaled.service systemd-resolved.service
+    Wants=tailscaled.service systemd-resolved.service
+
+    [Service]
+    Type=oneshot
+    RemainAfterExit=yes
+    ExecStart=${tailscaleUpScript}
+
+    [Install]
+    WantedBy=multi-user.target
+  '';
 in
 {
   options.modules.tailscale = {
@@ -213,7 +233,8 @@ in
       config.lib.dag.entryAfter [ "writeBoundary" ] ''
         $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-install-service.sh}" \
           "${tailscaledServiceFile}" \
-          "${config.home.homeDirectory}"
+          "${config.home.homeDirectory}" \
+          "${tailscaleUpServiceFile}"
       ''
     );
   };
