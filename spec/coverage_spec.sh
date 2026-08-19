@@ -400,6 +400,10 @@ It 'has spec file for home-manager/modules/tailscale/activate-install-service.sh
 The path "spec/activate_tailscale_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/modules/tailscale/activate-up.sh'
+The path "spec/activate_tailscale_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/programs/fnm/activate.sh'
 The path "spec/activate_fnm_spec.sh" should be exist
 End
@@ -527,6 +531,7 @@ home-manager/services/roborev/activate.sh
 home-manager/services/roborev/start.sh
 home-manager/modules/tailscale/activate-create-dirs.sh
 home-manager/modules/tailscale/activate-install-service.sh
+home-manager/modules/tailscale/activate-up.sh
 home-manager/modules/uv-globals/install-uv-globals.sh
 home-manager/programs/bash/bash_env.sh
 home-manager/programs/cass/activate-cleanup-sources.sh

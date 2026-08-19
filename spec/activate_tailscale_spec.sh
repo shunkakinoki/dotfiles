@@ -72,6 +72,16 @@ It 'enables tailscaled service'
 When run bash -c "grep 'systemctl enable tailscaled' '$SCRIPT'"
 The output should include 'enable tailscaled'
 End
+
+It 'accepts an optional tailscale-up unit'
+When run bash -c "grep 'tailscale_up_service_file' '$SCRIPT'"
+The output should include 'tailscale_up_service_file'
+End
+
+It 'enables and restarts tailscale-up after installing it'
+When run bash -c "grep 'enable tailscale-up.service' '$SCRIPT' && grep 'restart tailscale-up.service' '$SCRIPT'"
+The output should include 'restart tailscale-up.service'
+End
 End
 
 Describe 'sudoers configuration'
@@ -88,6 +98,61 @@ End
 It 'cleans up temp file'
 When run bash -c "grep 'rm -f.*TEMP_SUDOERS' '$SCRIPT'"
 The output should include 'rm -f'
+End
+End
+End
+
+Describe 'home-manager/modules/tailscale/activate-up.sh'
+SCRIPT="$PWD/home-manager/modules/tailscale/activate-up.sh"
+
+Describe 'script properties'
+It 'uses bash shebang'
+When run bash -c "head -1 '$SCRIPT'"
+The output should include '#!/usr/bin/env bash'
+End
+
+It 'uses strict mode'
+When run bash -c "head -10 '$SCRIPT'"
+The output should include 'set -euo pipefail'
+End
+End
+
+Describe 'flag application'
+It 'requires a tailscale binary argument'
+When run bash -c "grep 'tailscale binary required' '$SCRIPT'"
+The output should include 'tailscale binary required'
+End
+
+It 'runs tailscale up with the remaining args'
+When run bash -c "grep 'TAILSCALE_BIN\" up' '$SCRIPT'"
+The output should include 'up'
+End
+
+It 'retries tailscale up before giving up'
+When run bash -c "grep 'attempt' '$SCRIPT' && grep 'sleep 2' '$SCRIPT'"
+The output should include 'sleep 2'
+End
+End
+
+Describe 'dns restore'
+It 'detects --accept-dns=false'
+When run bash -c "grep -F -- '--accept-dns=false' '$SCRIPT'"
+The output should include '--accept-dns=false'
+End
+
+It 'forces accept-dns off even if up already ran'
+When run bash -c "grep -F -- 'set --accept-dns=false' '$SCRIPT'"
+The output should include 'set --accept-dns=false'
+End
+
+It 'restores the systemd-resolved stub resolv.conf'
+When run bash -c "grep 'stub-resolv.conf' '$SCRIPT' && grep 'ln -sfn' '$SCRIPT'"
+The output should include 'stub-resolv.conf'
+End
+
+It 'skips restore when already pointing at the stub'
+When run bash -c "grep 'readlink -f' '$SCRIPT'"
+The output should include 'readlink -f'
 End
 End
 End

@@ -118,6 +118,11 @@ It 'explicitly disables Tailscale SSH'
 When run bash -c "grep -F '\"--ssh=false\"' '$PWD/named-hosts/kyber/default.nix'"
 The output should include '--ssh=false'
 End
+
+It 'explicitly disables Tailscale DNS'
+When run bash -c "grep -F '\"--accept-dns=false\"' '$PWD/named-hosts/kyber/default.nix'"
+The output should include '--accept-dns=false'
+End
 End
 End
 
