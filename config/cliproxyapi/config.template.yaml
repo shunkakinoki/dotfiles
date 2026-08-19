@@ -541,6 +541,17 @@ openai-compatibility:
         alias: "deepseek-v4-pro"
       - name: "deepseek-v4-flash"
         alias: "deepseek-v4-flash"
+  - name: "commandcode"
+    priority: 150
+    base-url: "https://api.commandcode.ai/provider/v1"
+    support-prompt-cache-key: true
+    api-key-entries:
+      - api-key: "__COMMANDCODE_API_KEY__"
+    models:
+      - name: "deepseek-v4-pro"
+        alias: "deepseek-v4-pro"
+      - name: "deepseek-v4-flash"
+        alias: "deepseek-v4-flash"
   - name: "openai"
     base-url: "https://api.openai.com/v1"
     api-key-entries:
