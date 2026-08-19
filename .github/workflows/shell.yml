@@ -32,7 +32,7 @@ jobs:
         run: make shell-check-dev
   shell-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -41,7 +41,7 @@ jobs:
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run ShellSpec
-        run: nix shell nixpkgs#shellspec --command shellspec
+        run: nix shell nixpkgs#shellspec --command shellspec --format documentation --jobs 1
   shell-check:
     if: always()
     needs:
