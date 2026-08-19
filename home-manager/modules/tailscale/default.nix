@@ -38,10 +38,6 @@ let
     WantedBy=multi-user.target
   '';
 
-  tailscaleUpScript = pkgs.writeShellScript "tailscale-up" ''
-    exec ${pkgs.bash}/bin/bash ${./activate-up.sh} ${cfg.tailscaled.package}/bin/tailscale ${lib.escapeShellArgs cfg.extraUpArgs}
-  '';
-
   tailscaleUpServiceFile = pkgs.writeText "tailscale-up.service" ''
     [Unit]
     Description=Apply Tailscale node flags
@@ -52,7 +48,7 @@ let
     [Service]
     Type=oneshot
     RemainAfterExit=yes
-    ExecStart=${tailscaleUpScript}
+    ExecStart=${pkgs.bash}/bin/bash ${./activate-up.sh} ${cfg.tailscaled.package}/bin/tailscale ${lib.escapeShellArgs cfg.extraUpArgs}
 
     [Install]
     WantedBy=multi-user.target
