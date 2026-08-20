@@ -109,7 +109,7 @@ configure_root_ext4_reserve
 
 if @findmnt@ --mountpoint "$MOUNT_POINT" >/dev/null 2>&1; then
   mounted_source="$(@findmnt@ --noheadings --output SOURCE --target "$MOUNT_POINT")"
-  mounted_uuid="$(@blkid@ --match-tag UUID --output value "$mounted_source")"
+  mounted_uuid="$(run_sudo @blkid@ --match-tag UUID --output value "$mounted_source")"
   if [ "$mounted_uuid" != "$EXPECTED_CONTAINERD_UUID" ]; then
     echo "Refusing to run k3s with unexpected containerd filesystem UUID: $mounted_uuid" >&2
     echo "Expected $EXPECTED_CONTAINERD_UUID at $MOUNT_POINT" >&2
