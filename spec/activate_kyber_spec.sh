@@ -104,6 +104,11 @@ When run bash -c "grep 'activate-sshd.sh' '$PWD/named-hosts/kyber/default.nix'"
 The output should include 'activate-sshd.sh'
 End
 
+It 'prioritizes managed services during activation'
+When run bash -c "grep 'activate-user-service-priority.sh' '$PWD/named-hosts/kyber/default.nix'"
+The output should include 'activate-user-service-priority.sh'
+End
+
 It 'keeps a long gpg-agent cache ttl'
 When run bash -c "grep 'defaultCacheTtl = 94608000' '$PWD/named-hosts/kyber/default.nix'"
 The output should include 'defaultCacheTtl = 94608000'
@@ -122,6 +127,35 @@ End
 It 'explicitly disables Tailscale DNS'
 When run bash -c "grep -F '\"--accept-dns=false\"' '$PWD/named-hosts/kyber/default.nix'"
 The output should include '--accept-dns=false'
+End
+End
+
+Describe 'named-hosts/kyber/activate-user-service-priority.sh'
+SCRIPT="$PWD/named-hosts/kyber/activate-user-service-priority.sh"
+
+It 'installs system and user manager systemd drop-ins'
+When run bash -c "grep -q 'system.slice.d/10-kyber-managed-services.conf' '$SCRIPT' && grep -q 'user@.*service.d/10-kyber-managed-services.conf' '$SCRIPT'"
+The status should be success
+End
+
+It 'weights managed services above interactive session scopes'
+When run bash -c "grep -q 'CPUWeight=1000' '$SCRIPT' && grep -q 'IOWeight=1000' '$SCRIPT'"
+The status should be success
+End
+
+It 'applies the weights without restarting the user manager'
+When run grep 'set-property --runtime' "$SCRIPT"
+The output should include 'set-property --runtime'
+End
+
+It 'uses non-interactive privilege escalation'
+When run bash -c "grep -q 'ROOT_CMD=(sudo -n)' '$SCRIPT' && grep -q 'ROOT_CMD=(doas -n)' '$SCRIPT'"
+The status should be success
+End
+
+It 'skips redundant runtime property updates'
+When run bash -c "grep -q 'systemctl show' '$SCRIPT' && grep -q '\[ \"\$cpu_weight\" = 1000 \].*\[ \"\$io_weight\" = 1000 \]' '$SCRIPT'"
+The status should be success
 End
 End
 End

@@ -251,6 +251,8 @@ if [ "$(uname)" = "Linux" ] && command -v docker >/dev/null 2>&1; then
   docker run --rm \
     --name cliproxyapi \
     --network host \
+    --cpu-shares 262144 \
+    --blkio-weight 1000 \
     --ulimit nofile=65536:65536 \
     -v "$CONFIG:/CLIProxyAPI/config.yaml:ro" \
     -v "$CONFIG_DIR:/root/.cli-proxy-api" \

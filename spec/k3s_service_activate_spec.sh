@@ -62,13 +62,22 @@ When run bash -c "grep -qxF 'imageGCHighThresholdPercent: 70' '$KUBELET_CONFIG' 
 The status should be success
 End
 
-It 'preserves twenty percent on root and image filesystems'
-When run bash -c "grep -qxF '  nodefs.available: \"20%\"' '$KUBELET_CONFIG' && grep -qxF '  imagefs.available: \"20%\"' '$KUBELET_CONFIG'"
+It 'keeps an absolute root reserve and twenty percent on imagefs'
+When run bash -c "grep -qxF '  nodefs.available: \"50Gi\"' '$KUBELET_CONFIG' && grep -qxF '  imagefs.available: \"20%\"' '$KUBELET_CONFIG'"
 The status should be success
 End
 
 It 'uses kubelet native container log rotation'
 When run bash -c "grep -qxF 'containerLogMaxSize: 10Mi' '$KUBELET_CONFIG' && grep -qxF 'containerLogMaxFiles: 3' '$KUBELET_CONFIG'"
+The status should be success
+End
+End
+
+Describe 'pod DNS policy'
+RESOLV_CONFIG="$PWD/config/k3s/resolv.conf"
+
+It 'uses a dedicated non-loopback resolver file'
+When run bash -c "grep -q 'resolv-conf = \"/etc/rancher/k3s/resolv.conf\"' '$PWD/config/k3s/default.nix' && grep -qxF 'nameserver 1.1.1.1' '$RESOLV_CONFIG' && ! grep -qxF 'nameserver 127.0.0.53' '$RESOLV_CONFIG'"
 The status should be success
 End
 End
@@ -146,6 +155,70 @@ End
 It 'installs native log limits and reliability monitors'
 When run bash -c "grep -q '/etc/systemd/journald.conf.d/10-kyber-limits.conf' '$SCRIPT' && grep -q 'enable --now kyber-smartd.service' '$SCRIPT' && grep -q 'enable --now kyber-host-health.timer' '$SCRIPT'"
 The status should be success
+End
+
+It 'schedules the host-health timer relative to activation'
+When run bash -c "grep -q '^OnActiveSec=1min$' '$PWD/config/k3s/kyber-host-health.timer' && grep -q '^OnUnitActiveSec=1min$' '$PWD/config/k3s/kyber-host-health.timer'"
+The status should be success
+End
+
+It 'warns at an absolute margin before the root nodefs emergency reserve'
+When run bash -c "grep -q 'NODEFS_AVAILABLE_WARNING_GIB=200' '$PWD/config/k3s/kyber-host-health.sh' && grep -q 'NODEFS_KUBELET_RESERVE_GIB=50' '$PWD/config/k3s/kyber-host-health.sh'"
+The status should be success
+End
+
+Describe 'root nodefs check behavior'
+HEALTH_CHECK="$PWD/config/k3s/kyber-host-health.sh"
+
+It 'clears the alert after available space recovers above 200 GiB'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  source "$HEALTH_CHECK"
+  df() { printf "Avail\n%s\n" "$((201 * 1024 * 1024 * 1024))"; }
+  set_alert() { printf "alert:%s:%s\n" "$1" "$2"; }
+  clear_alert() { printf "clear:%s\n" "$1"; }
+  check_node_filesystem
+'
+The output should equal 'clear:node-filesystem'
+The status should be success
+End
+
+It 'alerts at the 200 GiB warning threshold'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  source "$HEALTH_CHECK"
+  df() { printf "Avail\n%s\n" "$((200 * 1024 * 1024 * 1024))"; }
+  set_alert() { printf "alert:%s:%s\n" "$1" "$2"; }
+  clear_alert() { printf "clear:%s\n" "$1"; }
+  check_node_filesystem
+'
+The output should include 'alert:node-filesystem:root nodefs has 200 GiB available'
+The status should be success
+End
+
+It 'alerts without clearing on malformed available-space output'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  source "$HEALTH_CHECK"
+  df() { printf "Avail\nnot-a-number\n"; }
+  set_alert() { printf "alert:%s:%s\n" "$1" "$2"; }
+  clear_alert() { printf "clear:%s\n" "$1"; }
+  check_node_filesystem
+'
+The output should equal 'alert:node-filesystem:unable to read available bytes on root nodefs'
+The status should be success
+End
+
+It 'alerts without aborting when df fails'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  source "$HEALTH_CHECK"
+  df() { return 1; }
+  set_alert() { printf "alert:%s:%s\n" "$1" "$2"; }
+  clear_alert() { printf "clear:%s\n" "$1"; }
+  check_node_filesystem
+  printf "continued\n"
+'
+The output should equal 'alert:node-filesystem:unable to read available bytes on root nodefs
+continued'
+The status should be success
+End
 End
 
 It 'orders the k3s config hook after the mount hook'

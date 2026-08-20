@@ -322,6 +322,11 @@ End
 End
 
 Describe 'Docker image handling'
+It 'prioritizes the proxy container among Docker workloads'
+When run bash -c "grep -q -- '--cpu-shares 262144' '$SCRIPT' && grep -q -- '--blkio-weight 1000' '$SCRIPT'"
+The status should be success
+End
+
 It 'supports a locally built canary image without pulling over it'
 When run bash -c "sed -n '/CLIPROXYAPI_IMAGE/,/\"\$docker_image\" \&/p' '$SCRIPT'"
 The output should include 'CLIPROXYAPI_IMAGE:-eceasy/cli-proxy-api:latest'

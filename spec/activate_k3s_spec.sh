@@ -44,6 +44,11 @@ When run bash -c "grep 'config.yaml' '$SCRIPT'"
 The output should include 'config.yaml'
 End
 
+It 'installs a non-loopback pod DNS resolver file'
+When run bash -c "grep -q 'RESOLV_CONFIG_TARGET=\"/etc/rancher/k3s/resolv.conf\"' '$SCRIPT' && grep -q 'RESOLV_CONFIG_SOURCE' '$SCRIPT'"
+The status should be success
+End
+
 It 'copies the kubelet configuration drop-in'
 When run bash -c "grep 'KUBELET_CONFIG_TARGET' '$SCRIPT'"
 The output should include 'kubelet.conf.d/$KUBELET_CONFIG_NAME'

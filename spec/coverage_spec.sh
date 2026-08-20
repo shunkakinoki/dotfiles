@@ -578,6 +578,7 @@ install.sh
 named-hosts/kyber/activate-backup-files.sh
 named-hosts/kyber/activate-ip-forwarding.sh
 named-hosts/kyber/activate-sshd.sh
+named-hosts/kyber/activate-user-service-priority.sh
 named-hosts/kyber/prepare-containerd-disk.sh
 named-hosts/kyber/rekey-galactica.sh
 named-hosts/kyber/setup.sh

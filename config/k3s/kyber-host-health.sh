@@ -8,11 +8,12 @@ readonly D_STATE_THRESHOLD=3
 readonly D_STATE_SUSTAINED_SAMPLES=5
 readonly IO_SOME_AVG300_THRESHOLD=20
 readonly IO_FULL_AVG300_THRESHOLD=10
+readonly NODEFS_AVAILABLE_WARNING_GIB=200
+readonly NODEFS_AVAILABLE_WARNING_BYTES=$((NODEFS_AVAILABLE_WARNING_GIB * 1024 * 1024 * 1024))
+readonly NODEFS_KUBELET_RESERVE_GIB=50
 readonly IMAGEFS_USAGE_THRESHOLD=70
 readonly CRI_LATENCY_THRESHOLD_SECONDS=5
 readonly CRI_ERROR_THRESHOLD=5
-
-install -d --mode 0755 "$STATE_DIR"
 
 set_alert() {
   local key="$1"
@@ -68,6 +69,23 @@ check_d_state() {
     set_alert "d-state" "${d_state_count} processes have remained in uninterruptible sleep for ${samples} consecutive samples"
   elif [ "$samples" -eq 0 ]; then
     clear_alert "d-state"
+  fi
+}
+
+check_node_filesystem() {
+  local available_bytes available_gib
+
+  if ! available_bytes="$(df --block-size=1 --output=avail / 2>/dev/null | tail -n 1 | tr -d '[:space:]')" ||
+    [[ ! $available_bytes =~ ^[0-9]+$ ]]; then
+    set_alert "node-filesystem" "unable to read available bytes on root nodefs"
+    return
+  fi
+
+  available_gib=$((available_bytes / 1024 / 1024 / 1024))
+  if [ "$available_bytes" -le "$NODEFS_AVAILABLE_WARNING_BYTES" ]; then
+    set_alert "node-filesystem" "root nodefs has ${available_gib} GiB available (warning threshold ${NODEFS_AVAILABLE_WARNING_GIB} GiB, kubelet emergency reserve ${NODEFS_KUBELET_RESERVE_GIB} GiB)"
+  else
+    clear_alert "node-filesystem"
   fi
 }
 
@@ -141,8 +159,16 @@ check_cri() {
   fi
 }
 
-check_io_pressure
-check_d_state
-check_image_filesystem
-check_cri
-check_dns
+main() {
+  install -d --mode 0755 "$STATE_DIR"
+  check_io_pressure
+  check_d_state
+  check_node_filesystem
+  check_image_filesystem
+  check_cri
+  check_dns
+}
+
+if [[ ${BASH_SOURCE[0]} == "$0" ]]; then
+  main "$@"
+fi
