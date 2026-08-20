@@ -24,6 +24,7 @@
       "/Applications/ChatGPT.app"
       "/Applications/Claude.app"
       "/Applications/Cursor.app"
+      "/Applications/Grok Bot.app"
       "/Applications/OpenCode.app"
       "/Applications/Antigravity.app"
       "/Applications/Conductor.app"
