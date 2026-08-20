@@ -16,14 +16,14 @@ cleanup() {
 Before 'setup'
 After 'cleanup'
 
-It 'creates writable Gemini-native Antigravity CLI settings'
-When run bash -c 'HOME="$1" bash "$2" "$3" jq && jq -e '\''.modelProvider == "gemini" and .model == "gemini-3.7-flash-high"'\'' "$1/.gemini/antigravity-cli/settings.json" >/dev/null && find "$1/.gemini/antigravity-cli/settings.json" -prune -perm 600 -print -quit | grep -q .' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS"
+It 'creates writable default-backend Antigravity CLI settings'
+When run bash -c 'HOME="$1" bash "$2" "$3" jq && jq -e '\''.model == "gemini-3.7-flash-high" and has("modelProvider") == false'\'' "$1/.gemini/antigravity-cli/settings.json" >/dev/null && find "$1/.gemini/antigravity-cli/settings.json" -prune -perm 600 -print -quit | grep -q .' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS"
 The status should be success
 The path "$TEMP_HOME/.gemini/antigravity-cli/settings.json" should be file
 The path "$TEMP_HOME/.gemini/antigravity-cli/settings.json" should be writable
 End
 
-It 'preserves runtime preferences while enforcing the managed provider and model'
+It 'preserves runtime preferences while removing the legacy explicit provider'
 mkdir -p "$TEMP_HOME/.gemini/antigravity-cli"
 cat >"$TEMP_HOME/.gemini/antigravity-cli/settings.json" <<'JSON'
 {
@@ -33,7 +33,7 @@ cat >"$TEMP_HOME/.gemini/antigravity-cli/settings.json" <<'JSON'
   "futureSetting": "preserved"
 }
 JSON
-When run bash -c 'HOME="$1" bash "$2" "$3" jq && jq -e '\''.modelProvider == "gemini" and .model == "gemini-3.7-flash-high" and .showTips == false and .futureSetting == "preserved"'\'' "$1/.gemini/antigravity-cli/settings.json" >/dev/null && find "$1/.gemini/antigravity-cli/settings.json" -prune -perm 600 -print -quit | grep -q .' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS"
+When run bash -c 'HOME="$1" bash "$2" "$3" jq && jq -e '\''.model == "gemini-3.7-flash-high" and has("modelProvider") == false and .showTips == false and .futureSetting == "preserved"'\'' "$1/.gemini/antigravity-cli/settings.json" >/dev/null && find "$1/.gemini/antigravity-cli/settings.json" -prune -perm 600 -print -quit | grep -q .' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS"
 The status should be success
 End
 
