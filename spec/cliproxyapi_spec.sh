@@ -327,6 +327,11 @@ When run bash -c "grep -q -- '--cpu-shares 262144' '$SCRIPT' && grep -q -- '--bl
 The status should be success
 End
 
+It 'applies the intended weights to the actual systemd cgroup-v2 scope'
+When run bash -c "grep -q 'systemctl set-property --runtime' '$SCRIPT' && grep -q 'CPUWeight=10000 IOWeight=10000' '$SCRIPT' && grep -q '^  apply_systemd_cgroup_weights$' '$SCRIPT'"
+The status should be success
+End
+
 It 'supports a locally built canary image without pulling over it'
 When run bash -c "sed -n '/CLIPROXYAPI_IMAGE/,/\"\$docker_image\" \&/p' '$SCRIPT'"
 The output should include 'CLIPROXYAPI_IMAGE:-eceasy/cli-proxy-api:latest'
