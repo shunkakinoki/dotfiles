@@ -173,6 +173,9 @@ fi
 
 if [ -f "$HEALTH_TIMER_FILE" ]; then
   run_sudo @systemctl@ enable --now kyber-host-health.timer
+  # `enable --now` does not rearm a timer that was already active but elapsed.
+  # Restart it so OnActiveSec is recalculated from this activation.
+  run_sudo @systemctl@ restart kyber-host-health.timer
 fi
 
 if [ -f "$K3S_KUBECONFIG" ]; then

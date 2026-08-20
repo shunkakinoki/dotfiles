@@ -158,7 +158,7 @@ The status should be success
 End
 
 It 'schedules the host-health timer relative to activation'
-When run bash -c "grep -q '^OnActiveSec=1min$' '$PWD/config/k3s/kyber-host-health.timer' && grep -q '^OnUnitActiveSec=1min$' '$PWD/config/k3s/kyber-host-health.timer'"
+When run bash -c "grep -q '^OnActiveSec=1min$' '$PWD/config/k3s/kyber-host-health.timer' && grep -q '^OnUnitActiveSec=1min$' '$PWD/config/k3s/kyber-host-health.timer' && grep -q 'restart kyber-host-health.timer' '$SCRIPT'"
 The status should be success
 End
 
