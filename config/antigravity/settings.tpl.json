@@ -1,4 +1,4 @@
 {
   "modelProvider": "gemini",
-  "model": "__GEMINI_PRO__"
+  "model": "gemini-3.7-flash-high"
 }

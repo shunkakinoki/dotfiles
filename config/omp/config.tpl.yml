@@ -61,7 +61,7 @@ disabledExtensions: []
 # Examples:
 #   default: openai-codex/__GPT__
 #   fast:    openai-codex/__GPT_LUNA__
-#   slow:    openai-codex/__GPT_CODEX__:high
+#   slow:    openai-codex/__GPT__:high
 modelRoles:
   # Default model role used as the fallback when no other role is selected.
   default: "cliproxyapi/__DEEPSEEK_FLASH__"
@@ -315,18 +315,14 @@ retry:
   fallbackChains:
     default:
       - "openai-codex/__GPT_LUNA__"
-      - "openai-codex/__GPT_CODEX__"
       - "openai-codex/__GPT__"
     slow:
-      - "openai-codex/__GPT_CODEX__"
       - "openai-codex/__GPT_LUNA__"
       - "cliproxyapi/__DEEPSEEK_FLASH__"
     vision:
-      - "openai-codex/__GPT_CODEX__"
       - "openai-codex/__GPT_LUNA__"
       - "cliproxyapi/__DEEPSEEK_FLASH__"
     plan:
-      - "openai-codex/__GPT_CODEX__"
       - "openai-codex/__GPT_LUNA__"
       - "cliproxyapi/__DEEPSEEK_FLASH__"
   # fallbackRevertPolicy

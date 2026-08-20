@@ -85,23 +85,6 @@
             "maxTokens": 32000
           },
           {
-            "id": "__GPT_CODEX__",
-            "name": "__GPT_CODEX_PRETTY__",
-            "reasoning": false,
-            "input": [
-              "text",
-              "image"
-            ],
-            "cost": {
-              "input": 0,
-              "output": 0,
-              "cacheRead": 0,
-              "cacheWrite": 0
-            },
-            "contextWindow": 200000,
-            "maxTokens": 32000
-          },
-          {
             "id": "__GEMINI_PRO__",
             "name": "__GEMINI_PRO_PRETTY__",
             "reasoning": false,

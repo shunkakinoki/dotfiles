@@ -24,6 +24,6 @@ else
   "$JQ" '.' "$MANAGED_SETTINGS" >"$tmp"
 fi
 
-chmod 644 "$tmp"
+chmod 600 "$tmp"
 mv -f "$tmp" "$SETTINGS_FILE"
 trap - EXIT

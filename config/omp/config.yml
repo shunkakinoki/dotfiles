@@ -52,7 +52,7 @@ disabledExtensions: []
 #   anthropic    — Claude models (claude-sonnet-5, claude-opus-5, etc.)
 #   openai       — OpenAI models (gpt-5.6-sol, gpt-5.6-luna, etc.)
 #   openai-codex — OpenAI Codex models/providers used by OMP
-#   google       — Gemini models (gemini-3.1-pro-preview, gemini-3.6-flash, etc.)
+#   google       — Gemini models (gemini-3.1-pro-low, gemini-3.7-flash-high, etc.)
 #   deepseek     — DeepSeek models
 #   mistral      — Mistral models
 #   groq         — Groq models
@@ -61,7 +61,7 @@ disabledExtensions: []
 # Examples:
 #   default: openai-codex/gpt-5.6-sol
 #   fast:    openai-codex/gpt-5.6-luna
-#   slow:    openai-codex/gpt-5.3-codex:high
+#   slow:    openai-codex/gpt-5.6-sol:high
 modelRoles:
   # Default model role used as the fallback when no other role is selected.
   default: "cliproxyapi/deepseek-v4-flash"
@@ -315,18 +315,14 @@ retry:
   fallbackChains:
     default:
       - "openai-codex/gpt-5.6-luna"
-      - "openai-codex/gpt-5.3-codex"
       - "openai-codex/gpt-5.6-sol"
     slow:
-      - "openai-codex/gpt-5.3-codex"
       - "openai-codex/gpt-5.6-luna"
       - "cliproxyapi/deepseek-v4-flash"
     vision:
-      - "openai-codex/gpt-5.3-codex"
       - "openai-codex/gpt-5.6-luna"
       - "cliproxyapi/deepseek-v4-flash"
     plan:
-      - "openai-codex/gpt-5.3-codex"
       - "openai-codex/gpt-5.6-luna"
       - "cliproxyapi/deepseek-v4-flash"
   # fallbackRevertPolicy

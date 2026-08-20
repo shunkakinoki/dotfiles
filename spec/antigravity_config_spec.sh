@@ -17,9 +17,10 @@ Before 'setup'
 After 'cleanup'
 
 It 'creates writable Gemini-native Antigravity CLI settings'
-When run bash -c 'HOME="$1" bash "$2" "$3" jq && jq -e '\''.modelProvider == "gemini" and .model == "gemini-3.1-pro-preview"'\'' "$1/.gemini/antigravity-cli/settings.json" >/dev/null' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS"
+When run bash -c 'HOME="$1" bash "$2" "$3" jq && jq -e '\''.modelProvider == "gemini" and .model == "gemini-3.7-flash-high"'\'' "$1/.gemini/antigravity-cli/settings.json" >/dev/null && find "$1/.gemini/antigravity-cli/settings.json" -prune -perm 600 -print -quit | grep -q .' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS"
 The status should be success
 The path "$TEMP_HOME/.gemini/antigravity-cli/settings.json" should be file
+The path "$TEMP_HOME/.gemini/antigravity-cli/settings.json" should be writable
 End
 
 It 'preserves runtime preferences while enforcing the managed provider and model'
@@ -32,7 +33,7 @@ cat >"$TEMP_HOME/.gemini/antigravity-cli/settings.json" <<'JSON'
   "futureSetting": "preserved"
 }
 JSON
-When run bash -c 'HOME="$1" bash "$2" "$3" jq && jq -e '\''.modelProvider == "gemini" and .model == "gemini-3.1-pro-preview" and .showTips == false and .futureSetting == "preserved"'\'' "$1/.gemini/antigravity-cli/settings.json" >/dev/null' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS"
+When run bash -c 'HOME="$1" bash "$2" "$3" jq && jq -e '\''.modelProvider == "gemini" and .model == "gemini-3.7-flash-high" and .showTips == false and .futureSetting == "preserved"'\'' "$1/.gemini/antigravity-cli/settings.json" >/dev/null && find "$1/.gemini/antigravity-cli/settings.json" -prune -perm 600 -print -quit | grep -q .' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS"
 The status should be success
 End
 

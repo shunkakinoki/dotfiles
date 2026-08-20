@@ -76,6 +76,25 @@ The output should include 'require_command jq'
 End
 End
 
+Describe 'provider-specific current model aliases'
+It 'keeps Antigravity aliases out of the shared model registry'
+When run jq -e '.["gemini-flash"] == "gemini-3.7-flash-high" and has("antigravity-pro") == false and has("antigravity-flash") == false' models.json
+The status should be success
+The output should equal 'true'
+End
+
+It 'removes the superseded Codex Spark route'
+When run jq -e 'has("gpt-codex") == false' models.json
+The status should be success
+The output should equal 'true'
+End
+
+It 'removes Codex Spark from harness templates'
+When run bash -c "! grep -R -E '__GPT_CODEX__|gpt-5\\.3-codex-spark' config/omp/config.tpl.yml config/openclaw/openclaw.tpl.json config/opencode/opencode.tpl.jsonc config/pi/models.tpl.json config/cliproxyapi/config.tpl.yaml"
+The status should be success
+End
+End
+
 Describe 'template processing'
 It 'uses sed for substitution'
 When run bash -c "grep 'sed' '$SCRIPT'"
@@ -151,14 +170,14 @@ End
 End
 
 Describe 'generated Antigravity settings'
-It 'keeps the Antigravity template on its native Gemini provider and model alias'
-When run jq -e '.modelProvider == "gemini" and .model == "__GEMINI_PRO__"' config/antigravity/settings.tpl.json
+It 'keeps the native Flash ID directly in the provider-owned Antigravity template'
+When run jq -e '.modelProvider == "gemini" and .model == "gemini-3.7-flash-high"' config/antigravity/settings.tpl.json
 The status should be success
 The output should equal 'true'
 End
 
 It 'generates the concrete Gemini model for Antigravity'
-When run jq -e '.modelProvider == "gemini" and .model == "gemini-3.1-pro-preview"' config/antigravity/settings.json
+When run jq -e '.modelProvider == "gemini" and .model == "gemini-3.7-flash-high"' config/antigravity/settings.json
 The status should be success
 The output should equal 'true'
 End
