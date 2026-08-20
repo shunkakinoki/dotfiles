@@ -92,8 +92,15 @@ setup() {
 
   cat >"$MOCK_BIN/systemctl" <<'EOF'
 #!/usr/bin/env bash
-# Keep this test on the portable direct-execution path.
-exit 1
+[[ "${USE_SYSTEMD_RUN:-0}" == 1 ]]
+EOF
+  cat >"$MOCK_BIN/systemd-run" <<'EOF'
+#!/usr/bin/env bash
+printf 'systemd-run:%s\n' "$*" >>"$CALL_LOG"
+while [[ "$1" == --* ]]; do
+  shift
+done
+"$@"
 EOF
   cat >"$MOCK_BIN/timeout" <<'EOF'
 #!/usr/bin/env bash
@@ -109,7 +116,11 @@ if [[ "${FAIL_OPENCODE:-0}" == 1 && "$*" == *'--client opencode'* ]]; then
 fi
 exit 0
 EOF
-  chmod +x "$MOCK_BIN/systemctl" "$MOCK_BIN/timeout" "$MOCK_BIN/bun"
+  chmod +x \
+    "$MOCK_BIN/systemctl" \
+    "$MOCK_BIN/systemd-run" \
+    "$MOCK_BIN/timeout" \
+    "$MOCK_BIN/bun"
 }
 
 cleanup() {
@@ -140,6 +151,19 @@ When run env HOME="$FAKE_HOME" FAIL_OPENCODE=1 bash -c 'bash "$1"; status=$?; ca
 The line 1 of output should include '--client opencode'
 The line 3 of output should include 'amp'
 The status should equal 42
+End
+
+It 'passes the managed environment into systemd-isolated phases'
+When run env HOME="$FAKE_HOME" USE_SYSTEMD_RUN=1 bash -c 'bash "$1"; status=$?; cat "$CALL_LOG"; exit "$status"' _ "$SCRIPT"
+The line 1 of output should include 'systemd-run:--user --wait --collect --pipe --quiet'
+The line 1 of output should include '--property=KillMode=control-group'
+The line 1 of output should include '--setenv=HOME='
+The line 1 of output should include '--setenv=PATH='
+The line 1 of output should include '--setenv=SSL_CERT_FILE='
+The line 2 of output should include 'timeout:900 bun'
+The line 4 of output should include 'systemd-run:'
+The line 5 of output should include 'timeout:900 bun'
+The status should be success
 End
 End
 

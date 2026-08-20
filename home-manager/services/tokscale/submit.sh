@@ -38,6 +38,9 @@ run_submit_phase() {
     systemd-run --user --wait --collect --pipe --quiet \
       --unit="tokscale-submit-${BASHPID}-${phase}" \
       --property=KillMode=control-group \
+      --setenv="HOME=$HOME" \
+      --setenv="PATH=$PATH" \
+      --setenv="SSL_CERT_FILE=$SSL_CERT_FILE" \
       timeout 900 bun "$TOKSCALE_BIN" submit "$@" </dev/null
   else
     timeout 900 bun "$TOKSCALE_BIN" submit "$@" </dev/null
