@@ -18,10 +18,15 @@ fi
 # stdin from /dev/null keeps submit non-interactive (skips the "star the repo"
 # prompt seen on a TTY).
 #
-# Wrap with `timeout`: the scan intermittently hangs on Kyber (100+ parked
-# threads, ~0% CPU, no progress - e.g. walking the 34k+ entry
-# ~/.config/Code/logs tree). A hard cap makes a wedged submit self-terminate
-# instead of pinning the oneshot thread until the next tick. 240s covers a cold
-# scan of all active clients (codex 2.1G, opencode 1.2G DB); adjust if the 3h
-# cadence drifts.
-timeout 240 bun "$TOKSCALE_BIN" submit </dev/null
+# Kyber's OpenCode database is large enough that scanning it alongside every
+# other client creates heavy random-I/O contention. Submit it separately, then
+# scan the remaining active clients as a group. Each phase gets a bounded
+# fifteen-minute cold-start window; observed warm runs complete in 30s and
+# 158s respectively. Run both phases even if the first fails, then propagate a
+# non-zero result so systemd still records partial failure.
+submit_status=0
+timeout 900 bun "$TOKSCALE_BIN" submit --client opencode </dev/null || submit_status=$?
+timeout 900 bun "$TOKSCALE_BIN" submit \
+  --client antigravity-cli,claude,codex,droid,grok,hermes,openclaw \
+  </dev/null || submit_status=$?
+exit "$submit_status"

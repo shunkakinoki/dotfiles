@@ -26,6 +26,18 @@ When run bash -c "cat '$SCRIPT'"
 The output should include '/dev/null'
 End
 
+It 'submits OpenCode separately from the remaining active clients'
+When run bash -c "cat '$SCRIPT'"
+The output should include '--client opencode'
+The output should include 'antigravity-cli,claude,codex,droid,grok,hermes,openclaw'
+End
+
+It 'allows each isolated scan up to fifteen minutes'
+When run bash -c "cat '$SCRIPT'"
+The output should include 'timeout 900'
+The output should not include 'timeout 240'
+End
+
 It 'uses the bun global tokscale entrypoint'
 When run bash -c "cat '$SCRIPT'"
 The output should include '.bun/install/global/node_modules/tokscale/bin.js'
