@@ -233,7 +233,13 @@ The status should be success
 End
 
 It 'rejects an already-mounted filesystem with the wrong UUID'
-When run bash -c "grep -q 'EXPECTED_CONTAINERD_UUID=\"90f29a7b-38ff-460b-b534-92a02f1412ec\"' '$SCRIPT' && grep -q 'mounted_uuid=.*@blkid@' '$SCRIPT' && grep -q 'unexpected containerd filesystem UUID' '$SCRIPT'"
+When run bash -c "grep -q 'EXPECTED_CONTAINERD_UUID=\"90f29a7b-38ff-460b-b534-92a02f1412ec\"' '$SCRIPT' && grep -q 'mounted_uuid=.*run_sudo @blkid@' '$SCRIPT' && grep -q 'unexpected containerd filesystem UUID' '$SCRIPT'"
+The status should be success
+End
+
+It 'reads the root-owned block-device UUID through sudo'
+When run grep 'mounted_uuid=.*run_sudo @blkid@' "$SCRIPT"
+The output should include 'run_sudo @blkid@'
 The status should be success
 End
 
