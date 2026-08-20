@@ -14,6 +14,7 @@ in
   ./crush
   ./cursor
   ./claude
+  ./commandcode
   ./dcg
   ./direnv
   ./factory
