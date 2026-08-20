@@ -162,3 +162,13 @@ The output should not include 'crontab'
 End
 
 End
+
+Describe 'managed Tokscale version'
+PACKAGE_JSON="$PWD/package.json"
+
+It 'requires the scanner-fixed Tokscale release'
+When run jq -r '.dependencies.tokscale' "$PACKAGE_JSON"
+The output should equal '^4.13.0'
+End
+
+End
