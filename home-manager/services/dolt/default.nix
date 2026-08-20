@@ -16,6 +16,10 @@ let
   mirrorDir = "${homeDir}/.cache/beads-jsonl-mirror";
   remoteUrl = "https://github.com/shunkakinoki/beads";
   userEmail = "shunkakinoki@gmail.com";
+  linearWorkspace = "shunkakinoki";
+  linearTeamId = "679ab4ed-3df3-458d-8574-4962f3ebbf31";
+  linearSyncIntervalSeconds = 300;
+  linearSyncPath = "${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:/etc/profiles/per-user/${config.home.username}/bin:/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin";
   enabled = isKyber || isGalactica;
   # 1.86+ adds the git+https:// remote scheme used by the beads_global GitHub backup.
   doltMinVersion = "1.86";
@@ -26,6 +30,12 @@ let
   backupScript = pkgs.replaceVars ./backup-dolt-main.sh {
     inherit mirrorDir remoteUrl userEmail;
     inherit (pkgs) git;
+  };
+  linearSyncScript = pkgs.replaceVars ./linear-sync.sh {
+    bd = "${homeDir}/.local/bin/bd";
+    linear = "${homeDir}/.bun/install/global/node_modules/.bin/linear";
+    inherit repoDir linearWorkspace linearTeamId;
+    inherit (pkgs) coreutils gawk jq;
   };
 in
 lib.mkIf enabled {
@@ -80,6 +90,32 @@ lib.mkIf enabled {
     };
   };
 
+  launchd.agents.dolt-linear-sync = lib.mkIf pkgs.stdenv.isDarwin {
+    enable = true;
+    config = {
+      ProgramArguments = [
+        "${pkgs.bash}/bin/bash"
+        "${linearSyncScript}"
+      ];
+      StartInterval = linearSyncIntervalSeconds;
+      ThrottleInterval = linearSyncIntervalSeconds;
+      RunAtLoad = true;
+      WorkingDirectory = repoDir;
+      EnvironmentVariables = {
+        HOME = homeDir;
+        PATH = linearSyncPath;
+        BEADS_DOLT_SHARED_SERVER = "1";
+        BEADS_DOLT_SERVER_PORT = "3307";
+        BEADS_SHARED_SERVER_DIR = sharedServerDir;
+        DOLT_CLI_USER = "root";
+        DOLT_CLI_PASSWORD = "";
+        LINEAR_TEAM_ID = linearTeamId;
+      };
+      StandardOutPath = "/tmp/dolt-linear-sync.log";
+      StandardErrorPath = "/tmp/dolt-linear-sync.error.log";
+    };
+  };
+
   systemd.user.services.dolt = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {
       Description = "Dolt SQL server for dotfiles beads";
@@ -119,5 +155,46 @@ lib.mkIf enabled {
     Install = {
       WantedBy = [ "default.target" ];
     };
+  };
+
+  systemd.user.services.dolt-linear-sync = lib.mkIf pkgs.stdenv.isLinux {
+    Unit = {
+      Description = "Synchronize Beads with Linear";
+      X-SwitchMethod = "restart";
+      After = [
+        "dolt.service"
+        "network-online.target"
+      ];
+      Wants = [
+        "dolt.service"
+        "network-online.target"
+      ];
+    };
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.bash}/bin/bash ${linearSyncScript}";
+      Environment = [
+        "HOME=${homeDir}"
+        "PATH=${linearSyncPath}"
+        "BEADS_DOLT_SHARED_SERVER=1"
+        "BEADS_DOLT_SERVER_PORT=3307"
+        "BEADS_SHARED_SERVER_DIR=${sharedServerDir}"
+        "DOLT_CLI_USER=root"
+        "DOLT_CLI_PASSWORD="
+        "LINEAR_TEAM_ID=${linearTeamId}"
+      ];
+    };
+  };
+
+  systemd.user.timers.dolt-linear-sync = lib.mkIf pkgs.stdenv.isLinux {
+    Unit.Description = "Periodically synchronize Beads with Linear";
+    Timer = {
+      OnBootSec = "2min";
+      OnCalendar = "*-*-* *:00/5:00";
+      OnUnitActiveSec = "${toString linearSyncIntervalSeconds}s";
+      Persistent = true;
+      Unit = "dolt-linear-sync.service";
+    };
+    Install.WantedBy = [ "timers.target" ];
   };
 }
