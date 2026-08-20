@@ -173,6 +173,39 @@ usage_export() {
   cliproxy_upload_usage_to_s3 "$USAGE_EXPORT_FILE"
 }
 
+apply_systemd_cgroup_weights() {
+  local container_id=""
+  local unit=""
+  local attempts=50
+  local -a root_cmd=()
+
+  command -v systemctl >/dev/null 2>&1 || return 0
+  if [ "$(id -u)" -ne 0 ]; then
+    if command -v sudo >/dev/null 2>&1; then
+      root_cmd=(sudo -n)
+    else
+      echo "⚠️  Cannot apply CLIProxy cgroup-v2 weights without non-interactive root access" >&2
+      return 0
+    fi
+  fi
+
+  while [ "$attempts" -gt 0 ]; do
+    container_id="$(docker inspect --format '{{.Id}}' cliproxyapi 2>/dev/null || true)"
+    if [ -n "$container_id" ]; then
+      unit="docker-${container_id}.scope"
+      if "${root_cmd[@]}" systemctl set-property --runtime "$unit" \
+        CPUWeight=10000 IOWeight=10000 2>/dev/null; then
+        echo "Applied CLIProxy cgroup-v2 CPU and I/O weights to $unit"
+        return 0
+      fi
+    fi
+    attempts=$((attempts - 1))
+    sleep 0.1
+  done
+
+  echo "⚠️  Could not apply CLIProxy cgroup-v2 weights; Docker limits remain in effect" >&2
+}
+
 wait_for_management() {
   if [ -z "$MANAGEMENT_KEY" ]; then
     return 0
@@ -260,6 +293,7 @@ if [ "$(uname)" = "Linux" ] && command -v docker >/dev/null 2>&1; then
     -e MANAGEMENT_PASSWORD="${MANAGEMENT_PASSWORD:-}" \
     "$docker_image" &
   child_pid=$!
+  apply_systemd_cgroup_weights
   wait "$child_pid"
   exit $?
 fi
