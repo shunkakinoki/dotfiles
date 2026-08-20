@@ -26,10 +26,16 @@ When run bash -c "cat '$SCRIPT'"
 The output should include '/dev/null'
 End
 
-It 'submits OpenCode separately from the remaining active clients'
+It 'submits OpenCode separately from every configured client family'
 When run bash -c "cat '$SCRIPT'"
 The output should include '--client opencode'
-The output should include 'antigravity-cli,claude,codex,droid,grok,hermes,openclaw'
+The output should include 'remaining_clients=('
+The output should include 'amp'
+The output should include 'commandcode'
+The output should include 'copilot'
+The output should include 'cursor'
+The output should include 'gemini'
+The output should include 'pi'
 End
 
 It 'allows each isolated scan up to fifteen minutes'
@@ -72,7 +78,7 @@ End
 
 End
 
-Describe 'submission failure'
+Describe 'submission workflow'
 SCRIPT="$PWD/home-manager/services/tokscale/submit.sh"
 setup() {
   MOCK_BIN=$(mktemp -d)
@@ -81,12 +87,29 @@ setup() {
   FAKE_HOME=$(mktemp -d)
   mkdir -p "$FAKE_HOME/.bun/install/global/node_modules/tokscale"
   touch "$FAKE_HOME/.bun/install/global/node_modules/tokscale/bin.js"
+  CALL_LOG="$FAKE_HOME/calls.log"
+  export CALL_LOG
+
+  cat >"$MOCK_BIN/systemctl" <<'EOF'
+#!/usr/bin/env bash
+# Keep this test on the portable direct-execution path.
+exit 1
+EOF
+  cat >"$MOCK_BIN/timeout" <<'EOF'
+#!/usr/bin/env bash
+printf 'timeout:%s\n' "$*" >>"$CALL_LOG"
+shift
+"$@"
+EOF
   cat >"$MOCK_BIN/bun" <<'EOF'
 #!/usr/bin/env bash
-echo 'actual Tokscale failure' >&2
-exit 42
+printf 'bun:%s\n' "$*" >>"$CALL_LOG"
+if [[ "${FAIL_OPENCODE:-0}" == 1 && "$*" == *'--client opencode'* ]]; then
+  exit 42
+fi
+exit 0
 EOF
-  chmod +x "$MOCK_BIN/bun"
+  chmod +x "$MOCK_BIN/systemctl" "$MOCK_BIN/timeout" "$MOCK_BIN/bun"
 }
 
 cleanup() {
@@ -97,10 +120,26 @@ cleanup() {
 Before 'setup'
 After 'cleanup'
 
-It 'propagates the real Tokscale exit status'
-When run env HOME="$FAKE_HOME" bash "$SCRIPT"
-The stderr should include 'actual Tokscale failure'
-The status should be failure
+It 'runs OpenCode first and then the remaining clients through bounded phases'
+When run env HOME="$FAKE_HOME" bash -c 'bash "$1"; status=$?; cat "$CALL_LOG"; exit "$status"' _ "$SCRIPT"
+The line 1 of output should include 'timeout:900 bun'
+The line 1 of output should include '--client opencode'
+The line 2 of output should include 'bun:'
+The line 2 of output should include '--client opencode'
+The line 3 of output should include 'timeout:900 bun'
+The line 3 of output should include 'amp'
+The line 3 of output should include 'copilot'
+The line 3 of output should include 'cursor'
+The line 3 of output should include 'gemini'
+The line 4 of output should include 'bun:'
+The status should be success
+End
+
+It 'runs the second phase and propagates the first phase status after failure'
+When run env HOME="$FAKE_HOME" FAIL_OPENCODE=1 bash -c 'bash "$1"; status=$?; cat "$CALL_LOG"; exit "$status"' _ "$SCRIPT"
+The line 1 of output should include '--client opencode'
+The line 3 of output should include 'amp'
+The status should equal 42
 End
 End
 

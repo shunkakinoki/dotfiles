@@ -20,13 +20,80 @@ fi
 #
 # Kyber's OpenCode database is large enough that scanning it alongside every
 # other client creates heavy random-I/O contention. Submit it separately, then
-# scan the remaining active clients as a group. Each phase gets a bounded
-# fifteen-minute cold-start window; observed warm runs complete in 30s and
-# 158s respectively. Run both phases even if the first fails, then propagate a
-# non-zero result so systemd still records partial failure.
+# scan Tokscale 4.13's remaining default-submit clients as a group. Crush, Trae,
+# Warp, and 9Router are deliberately absent because Tokscale itself excludes
+# them from unfiltered submissions.
+#
+# Interactive submit starts a detached full-history TUI-cache scan after a
+# successful upload. On systemd hosts, run each phase in its own transient
+# service so KillMode=control-group removes that cache warmer before the next
+# phase starts. Other platforms retain the normal direct invocation.
+run_submit_phase() {
+  local phase="$1"
+  shift
+
+  if command -v systemd-run >/dev/null 2>&1 \
+    && command -v systemctl >/dev/null 2>&1 \
+    && systemctl --user show-environment >/dev/null 2>&1; then
+    systemd-run --user --wait --collect --pipe --quiet \
+      --unit="tokscale-submit-${BASHPID}-${phase}" \
+      --property=KillMode=control-group \
+      timeout 900 bun "$TOKSCALE_BIN" submit "$@" </dev/null
+  else
+    timeout 900 bun "$TOKSCALE_BIN" submit "$@" </dev/null
+  fi
+}
+
+remaining_clients=(
+  amp
+  antigravity
+  antigravity-cli
+  augment
+  claude
+  cline
+  codebuddy
+  codebuff
+  codex
+  commandcode
+  copilot
+  cursor
+  devin-cli
+  devin-desktop
+  droid
+  freebuff
+  gemini
+  gjc
+  goose
+  grok
+  hermes
+  jcode
+  junie
+  kilocode
+  kilo
+  kimchi
+  kimi
+  kiro
+  micode
+  mux
+  openclaw
+  opencodereview
+  pi
+  prime-agent
+  qwen
+  reasonix
+  roocode
+  senpi
+  synthetic
+  workbuddy
+  zcode
+  zed
+)
+remaining_client_csv=$(IFS=,; echo "${remaining_clients[*]}")
+
+# Each phase gets a bounded fifteen-minute cold-start window. Run both phases
+# even if the first fails, then propagate a non-zero result so the scheduler
+# still records partial failure.
 submit_status=0
-timeout 900 bun "$TOKSCALE_BIN" submit --client opencode </dev/null || submit_status=$?
-timeout 900 bun "$TOKSCALE_BIN" submit \
-  --client antigravity-cli,claude,codex,droid,grok,hermes,openclaw \
-  </dev/null || submit_status=$?
+run_submit_phase opencode --client opencode || submit_status=$?
+run_submit_phase remaining --client "$remaining_client_csv" || submit_status=$?
 exit "$submit_status"
