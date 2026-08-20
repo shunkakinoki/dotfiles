@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Merge declarative Antigravity CLI defaults into its writable settings file.
+# The explicit Gemini provider requires GEMINI_API_KEY and bypasses Antigravity's
+# authenticated default backend, so remove that legacy managed key on upgrade.
 # Usage: activate.sh <managed-settings-json> [jq]
 set -euo pipefail
 
@@ -19,9 +21,9 @@ tmp="$(mktemp "$SETTINGS_DIR/settings.json.XXXXXX")"
 trap 'rm -f "$tmp"' EXIT
 
 if [ -f "$SETTINGS_FILE" ]; then
-  "$JQ" -s '.[0] * .[1]' "$SETTINGS_FILE" "$MANAGED_SETTINGS" >"$tmp"
+  "$JQ" -s '.[0] * .[1] | del(.modelProvider)' "$SETTINGS_FILE" "$MANAGED_SETTINGS" >"$tmp"
 else
-  "$JQ" '.' "$MANAGED_SETTINGS" >"$tmp"
+  "$JQ" 'del(.modelProvider)' "$MANAGED_SETTINGS" >"$tmp"
 fi
 
 chmod 600 "$tmp"

@@ -170,14 +170,14 @@ End
 End
 
 Describe 'generated Antigravity settings'
-It 'keeps the native Flash ID directly in the provider-owned Antigravity template'
-When run jq -e '.modelProvider == "gemini" and .model == "gemini-3.7-flash-high"' config/antigravity/settings.tpl.json
+It 'keeps the native Flash ID on the authenticated Antigravity backend'
+When run jq -e '.model == "gemini-3.7-flash-high" and has("modelProvider") == false' config/antigravity/settings.tpl.json
 The status should be success
 The output should equal 'true'
 End
 
-It 'generates the concrete Gemini model for Antigravity'
-When run jq -e '.modelProvider == "gemini" and .model == "gemini-3.7-flash-high"' config/antigravity/settings.json
+It 'generates the concrete model without forcing API-key authentication'
+When run jq -e '.model == "gemini-3.7-flash-high" and has("modelProvider") == false' config/antigravity/settings.json
 The status should be success
 The output should equal 'true'
 End
