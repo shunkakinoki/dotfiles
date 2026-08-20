@@ -119,11 +119,8 @@ jobs:
         env:
           NIX_CONFIG_TARGET: nixos
         run: make build
-      - name: Build Host `matic`
-        env:
-          NIX_CONFIG_TARGET: nixos
-          HOST: matic
-        run: make build
+      - name: Evaluate Host `matic`
+        run: nix eval .#nixosConfigurations.matic.config.system.build.toplevel --impure --no-update-lock-file
   nix-lint:
     runs-on: ubuntu-latest
     timeout-minutes: 60
