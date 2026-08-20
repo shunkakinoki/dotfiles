@@ -315,6 +315,18 @@ The output should include 'max'
 End
 End
 
+Describe 'Codex feature flags'
+It 'enables remote compaction in the template and generated config'
+When run bash -c "for file in config/codex/config.tpl.toml config/codex/config.toml; do sed -n '/^\[features\]$/,/^\[/p' \"\$file\" | grep -qx 'remote_compaction_v2 = true' || exit 1; done"
+The status should be success
+End
+
+It 'omits feature flags removed by the current Codex CLI'
+When run bash -c "removed='apply_patch_freeform apps_mcp_path_override codex_git_commit enable_fanout external_migration js_repl js_repl_tools_only plugin_hooks remote_control skill_env_var_dependency_prompt terminal_resize_reflow tool_search tool_search_always_defer_mcp_tools unavailable_dummy_tools undo workspace_owner_usage_nudge'; for file in config/codex/config.tpl.toml config/codex/config.toml; do features=\$(sed -n '/^\[features\]$/,/^\[/p' \"\$file\"); for flag in \$removed; do ! printf '%s\n' \"\$features\" | grep -q \"^\${flag}[[:space:]]*=\" || exit 1; done; done"
+The status should be success
+End
+End
+
 Describe 'jq pretty-printing'
 It 'defines a jq pretty function for model names'
 When run bash -c "grep 'def pretty' '$SCRIPT'"
