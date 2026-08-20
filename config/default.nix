@@ -4,10 +4,10 @@ let
 in
 [
   ./aichat
+  ./antigravity
   ./amp
   ./bun
   ./caam
-  ./ccs
   ./cliproxyapi
   ./codex
   ./copilot

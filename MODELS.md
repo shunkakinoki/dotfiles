@@ -24,10 +24,9 @@ Never hand-edit a generated config. Edit the `.tpl.*` file, regenerate, and comm
 | `__CLAUDE_HAIKU__` | `claude-haiku-4-5-20251001` |
 | `__GPT__` | `gpt-5.6-sol` |
 | `__GPT_LUNA__` | `gpt-5.6-luna` |
-| `__GPT_CODEX__` | `gpt-5.3-codex` |
 | `__GPT_IMAGE__` | `gpt-image-2` |
-| `__GEMINI_PRO__` | `gemini-3.1-pro-preview` |
-| `__GEMINI_FLASH__` | `gemini-3.6-flash` |
+| `__GEMINI_PRO__` | `gemini-3.1-pro-low` |
+| `__GEMINI_FLASH__` | `gemini-3.7-flash-high` |
 | `__DEEPSEEK_FLASH__` | `deepseek-v4-flash` |
 | `__DEEPSEEK_PRO__` | `deepseek-v4-pro` |
 | `__GLM__` | `glm-4.7` |
@@ -43,6 +42,11 @@ This table is the complete set of keys in [models.json](models.json). Every key
 also gets two derived forms: `__<KEY>_PRETTY__` for the display name
 ("Deepseek V4 Flash") and `__<KEY>_NONDOT__` for the dot-stripped ID, used in
 OpenRouter `@preset/` names.
+
+Provider-specific slugs remain separate even when they represent the same model
+family. `__GEMINI_PRO__` and `__GEMINI_FLASH__` are IDs verified through
+CLIProxy, while Antigravity's native model ID stays directly in its
+provider-owned template.
 
 Two provider-specific overrides are declared in
 [scripts/llm-update.sh](scripts/llm-update.sh) rather than in `models.json`,
@@ -115,6 +119,7 @@ Hermes also runs a Mixture-of-Agents preset: reference models
 | Codex | default | `gpt-5.6-sol` | [config.tpl.toml](config/codex/config.tpl.toml) |
 | Codex | subagents | `gpt-5.6-luna` | |
 | Codex | `qwen-local` profile | `qwen3.5-0.8b-optiq` (LM Studio) | |
+| Antigravity | default | `gemini-3.7-flash-high` (native Antigravity provider) | [settings.tpl.json](config/antigravity/settings.tpl.json) |
 | Pi | `defaultModel` | `glm-4.7` (provider `cliproxyapi`) | [settings.tpl.json](config/pi/settings.tpl.json) |
 | Factory (droid) | session default | `deepseek-v4-flash` | [settings.tpl.json](config/factory/settings.tpl.json) |
 | Factory (droid) | custom local | `gemma3:4b` (Ollama) | |
@@ -126,17 +131,6 @@ OMP subagent overrides: `code-explorer`, `comment-analyzer`, and
 `pr-test-analyzer` use `gpt-5.6-luna`; the rest (`code-architect`,
 `code-reviewer`, `code-simplifier`, `silent-failure-hunter`,
 `type-design-analyzer`) use `gpt-5.6-sol`.
-
-### CCS profiles
-
-Claude Code Switch swaps the whole Anthropic model triple per profile.
-
-| Profile | Opus + Sonnet slot | Haiku slot |
-| --- | --- | --- |
-| `agy` | `claude-opus-5` | `claude-sonnet-5` |
-| `codex` | `gpt-5.3-codex` | `gpt-5.3-codex` |
-| `gemini` | `gemini-3.1-pro-preview` | `gemini-3.6-flash` |
-| `glm` | `glm-4.7` | `glm-4.7` |
 
 ### Fish shortcuts
 

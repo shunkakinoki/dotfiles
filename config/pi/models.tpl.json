@@ -6,23 +6,6 @@
       "api": "openai-responses",
       "models": [
         {
-          "id": "__GPT_CODEX__",
-          "name": "__GPT_CODEX_PRETTY__ [ChatGPT Pro]",
-          "reasoning": true,
-          "input": [
-            "text",
-            "image"
-          ],
-          "cost": {
-            "input": 1.75,
-            "output": 14,
-            "cacheRead": 0.175,
-            "cacheWrite": 0
-          },
-          "contextWindow": 400000,
-          "maxTokens": 128000
-        },
-        {
           "id": "__GPT__",
           "name": "__GPT_PRETTY__ [ChatGPT Pro]",
           "reasoning": true,

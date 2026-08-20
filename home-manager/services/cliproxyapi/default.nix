@@ -108,7 +108,6 @@ in
       };
       WatchPaths = [
         "${homeDir}/.cli-proxy-api/objectstore/auths"
-        "${homeDir}/.ccs/cliproxy/auth"
       ];
       StartCalendarInterval = [ { Minute = 0; } ];
       RunAtLoad = true;
@@ -206,7 +205,6 @@ in
     Path = {
       PathChanged = [
         "%h/.cli-proxy-api/objectstore/auths"
-        "%h/.ccs/cliproxy/auth"
       ];
       Unit = "cliproxyapi-backup.service";
     };

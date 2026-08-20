@@ -37,14 +37,11 @@
         "gpt-5.6-sol": {
           "name": "GPT 5.6 Sol (via shunkakinoki's CLIProxy)"
         },
-        "gpt-5.3-codex": {
-          "name": "GPT 5.3 Codex (via shunkakinoki's CLIProxy)"
+        "gemini-3.1-pro-low": {
+          "name": "Gemini 3.1 Pro Low (via shunkakinoki's CLIProxy)"
         },
-        "gemini-3.1-pro-preview": {
-          "name": "Gemini 3.1 Pro (via shunkakinoki's CLIProxy)"
-        },
-        "gemini-3.6-flash": {
-          "name": "Gemini 3.6 Flash (via shunkakinoki's CLIProxy)"
+        "gemini-3.7-flash-high": {
+          "name": "Gemini 3.7 Flash High (via shunkakinoki's CLIProxy)"
         },
         "deepseek-v4-flash": {
           "name": "Deepseek V4 Flash (via shunkakinoki's CLIProxy)"
@@ -93,14 +90,11 @@
         "gpt-5.6-sol": {
           "name": "GPT 5.6 Sol (via local CLIProxyAPI)"
         },
-        "gpt-5.3-codex": {
-          "name": "GPT 5.3 Codex (via local CLIProxyAPI)"
+        "gemini-3.1-pro-low": {
+          "name": "Gemini 3.1 Pro Low (via local CLIProxyAPI)"
         },
-        "gemini-3.1-pro-preview": {
-          "name": "Gemini 3.1 Pro (via local CLIProxyAPI)"
-        },
-        "gemini-3.6-flash": {
-          "name": "Gemini 3.6 Flash (via local CLIProxyAPI)"
+        "gemini-3.7-flash-high": {
+          "name": "Gemini 3.7 Flash High (via local CLIProxyAPI)"
         },
         "deepseek-v4-flash": {
           "name": "Deepseek V4 Flash (via local CLIProxyAPI)"

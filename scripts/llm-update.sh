@@ -86,15 +86,12 @@ add_model_override "deepseek-flash" "0731" "deepseek-v4-flash-0731"
 # Template → output pairs
 declare -A TEMPLATES=(
   ["config/aichat/config.tpl.yaml"]=config/aichat/config.yaml
+  ["config/antigravity/settings.tpl.json"]=config/antigravity/settings.json
   ["config/llm/default_model.tpl.txt"]=config/llm/default_model.txt
   ["config/openclaw/openclaw.tpl.json"]=config/openclaw/openclaw.template.json
   ["config/opencode/opencode.tpl.jsonc"]=config/opencode/opencode.jsonc
   ["config/opencode/opencode-fallback.tpl.jsonc"]=config/opencode/opencode-fallback.jsonc
   ["config/llm/extra-openai-models.tpl.yaml"]=config/llm/extra-openai-models.yaml
-  ["config/ccs/agy.settings.tpl.json"]=config/ccs/agy.settings.template.json
-  ["config/ccs/codex.settings.tpl.json"]=config/ccs/codex.settings.template.json
-  ["config/ccs/gemini.settings.tpl.json"]=config/ccs/gemini.settings.template.json
-  ["config/ccs/glm.settings.tpl.json"]=config/ccs/glm.settings.template.json
   ["config/codex/config.tpl.toml"]=config/codex/config.toml
   ["config/cliproxyapi/config.tpl.yaml"]=config/cliproxyapi/config.template.yaml
   ["config/handy/settings_store.tpl.json"]=config/handy/settings_store.template.json

@@ -13,8 +13,8 @@ This directory contains the Nix-based configuration for the cliproxyapi service 
 
 | Script | Purpose |
 |--------|---------|
-| `hydrate.sh` | Pull S3 → local → CCS (runs at activation) |
-| `backup.sh` | Push local → S3 → CCS (triggered by WatchPaths) |
+| `hydrate.sh` | Pull S3 → local (runs at activation) |
+| `backup.sh` | Push local → S3 (triggered by WatchPaths) |
 | `start.sh` | Load .env, hydrate auth cache if needed, generate config, start service |
 | `wrapper.sh` | Load .env, sync auth cache, exec binary (for CLI usage) |
 
@@ -27,8 +27,6 @@ This directory contains the Nix-based configuration for the cliproxyapi service 
 └── objectstore/
     └── auths/                     # Auth files (S3 is source of truth)
 
-~/.ccs/cliproxy/auth/              # CCS auth directory (synced from local)
-
 S3 Storage:
 ├── s3://cliproxyapi/auths/        # Auth storage
 ├── s3://cliproxyapi/cpa-manager-plus/analytics-backup-HH.tar.gz
@@ -40,7 +38,7 @@ S3 Storage:
 ## Data Flow
 
 ``` 
-S3 auths/ -> ~/.cli-proxy-api/objectstore/auths -> ~/.ccs/cliproxy/auth
+S3 auths/ <-> ~/.cli-proxy-api/objectstore/auths
 ```
 
 ### Pre-start guard (service)
@@ -58,14 +56,12 @@ key error when S3 already has auths.
 ### Hydrate (on activation/switch)
 
 1. Pull from S3 `auths/` → local
-2. Copy local → CCS auth dir
 
 ### Backup (on auth-file change and each wall-clock hour)
 
 1. Push local → S3 `auths/`
-2. Copy local → CCS auth dir
-3. Create and integrity-check an online CPA Manager Plus SQLite snapshot
-4. Archive the snapshot with its matching `data.key` and upload it to S3
+2. Create and integrity-check an online CPA Manager Plus SQLite snapshot
+3. Archive the snapshot with its matching `data.key` and upload it to S3
 
 The SQLite online backup command is required because the live analytics database
 uses WAL mode. Copying only `usage.sqlite` while CPA Manager Plus is running can
@@ -74,9 +70,8 @@ hour slot, retaining up to 24 hourly rollback points without unbounded growth.
 
 ### WatchPaths (file watchers)
 
-The `cliproxyapi-backup` service watches these directories:
+The `cliproxyapi-backup` service watches this directory:
 - `~/.cli-proxy-api/objectstore/auths` - main auth cache
-- `~/.ccs/cliproxy/auth` - CCS auth directory
 
 **How it works (macOS launchd):**
 - launchd monitors the directories for any file changes
@@ -88,11 +83,7 @@ The `cliproxyapi-backup` service watches these directories:
 - On change, triggers the `cliproxyapi-backup.service` oneshot
 - Uses `PathChanged` directive for file monitoring
 
-**Why both directories?**
-- `objectstore/auths`: cliproxyapi writes OAuth tokens here after login
-- `ccs/cliproxy/auth`: CCS CLI may create tokens here independently
-
-When either directory changes, `backup.sh` syncs everything to S3 and keeps both local directories in sync.
+When the directory changes, `backup.sh` syncs the CLIProxyAPI auth cache to S3.
 
 ## Environment Variables
 
