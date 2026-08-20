@@ -37,7 +37,6 @@ setup() {
   mock_bin_setup aws
   TEMP_HOME=$(mktemp -d)
   mkdir -p "$TEMP_HOME/.cli-proxy-api/objectstore/auths"
-  mkdir -p "$TEMP_HOME/.ccs/cliproxy/auth"
   mkdir -p "$TEMP_HOME/dotfiles"
 
   # Create .env with test credentials
@@ -111,7 +110,6 @@ EOF
   chmod +x "$MOCK_BIN/sqlite3"
   TEMP_HOME=$(mktemp -d)
   mkdir -p "$TEMP_HOME/.cli-proxy-api/objectstore/auths"
-  mkdir -p "$TEMP_HOME/.ccs/cliproxy/auth"
   mkdir -p "$TEMP_HOME/dotfiles"
 
   # Create .env with test credentials

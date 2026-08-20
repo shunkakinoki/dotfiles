@@ -115,6 +115,7 @@ Hermes also runs a Mixture-of-Agents preset: reference models
 | Codex | default | `gpt-5.6-sol` | [config.tpl.toml](config/codex/config.tpl.toml) |
 | Codex | subagents | `gpt-5.6-luna` | |
 | Codex | `qwen-local` profile | `qwen3.5-0.8b-optiq` (LM Studio) | |
+| Antigravity | default | `gemini-3.1-pro-preview` (native Gemini provider) | [settings.tpl.json](config/antigravity/settings.tpl.json) |
 | Pi | `defaultModel` | `glm-4.7` (provider `cliproxyapi`) | [settings.tpl.json](config/pi/settings.tpl.json) |
 | Factory (droid) | session default | `deepseek-v4-flash` | [settings.tpl.json](config/factory/settings.tpl.json) |
 | Factory (droid) | custom local | `gemma3:4b` (Ollama) | |
@@ -126,17 +127,6 @@ OMP subagent overrides: `code-explorer`, `comment-analyzer`, and
 `pr-test-analyzer` use `gpt-5.6-luna`; the rest (`code-architect`,
 `code-reviewer`, `code-simplifier`, `silent-failure-hunter`,
 `type-design-analyzer`) use `gpt-5.6-sol`.
-
-### CCS profiles
-
-Claude Code Switch swaps the whole Anthropic model triple per profile.
-
-| Profile | Opus + Sonnet slot | Haiku slot |
-| --- | --- | --- |
-| `agy` | `claude-opus-5` | `claude-sonnet-5` |
-| `codex` | `gpt-5.3-codex` | `gpt-5.3-codex` |
-| `gemini` | `gemini-3.1-pro-preview` | `gemini-3.6-flash` |
-| `glm` | `glm-4.7` | `glm-4.7` |
 
 ### Fish shortcuts
 

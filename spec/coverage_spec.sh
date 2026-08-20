@@ -457,10 +457,10 @@ Describe 'no shell scripts are missing from coverage list'
 It 'covers all non-spec shell scripts in the repository'
 # List of all shell scripts that should have tests
 # Update this list when adding new shell scripts
-covered_scripts="config/caam/hydrate.sh
+covered_scripts="config/antigravity/activate.sh
+config/caam/hydrate.sh
 config/factory/activate-settings.sh
 config/claude/activate.sh
-config/ccs/hydrate.sh
 config/claude/hooks/notify.sh
 config/claude/hooks/pushover.sh
 config/claude/hooks/auto-switch.sh
@@ -609,7 +609,9 @@ actual_scripts=$(
   {
     git ls-files '*.sh' 2>/dev/null
     git ls-files --others --exclude-standard '*.sh' 2>/dev/null
-  } | grep -v '^spec/' | sort -u
+  } | grep -v '^spec/' | while IFS= read -r script; do
+    [ -f "$script" ] && printf '%s\n' "$script"
+  done | sort -u
 )
 expected_scripts=$(echo "$covered_scripts" | sort)
 

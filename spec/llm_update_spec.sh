@@ -150,10 +150,17 @@ The status should be success
 End
 End
 
-Describe 'generated AGY settings'
-It 'keeps explicit read and command permissions in both template and generated settings'
-When run bash -c "for settings in config/ccs/agy.settings.tpl.json config/ccs/agy.settings.template.json; do jq -e '.permissions.allow == [\"read_file(*)\", \"command(*)\"]' \"\$settings\" >/dev/null || exit 1; done"
+Describe 'generated Antigravity settings'
+It 'keeps the Antigravity template on its native Gemini provider and model alias'
+When run jq -e '.modelProvider == "gemini" and .model == "__GEMINI_PRO__"' config/antigravity/settings.tpl.json
 The status should be success
+The output should equal 'true'
+End
+
+It 'generates the concrete Gemini model for Antigravity'
+When run jq -e '.modelProvider == "gemini" and .model == "gemini-3.1-pro-preview"' config/antigravity/settings.json
+The status should be success
+The output should equal 'true'
 End
 End
 
