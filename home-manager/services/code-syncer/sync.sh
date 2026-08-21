@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2034,SC2155,SC2181,SC2162
+set -o pipefail
 
 # --- CONFIGURATION ---
 
@@ -93,6 +94,15 @@ ensure_dirs() {
   mkdir -p "$VSCODE_INSIDERS_USER_DIR"
 }
 
+# VS Code creates a timestamped log directory every time its CLI starts. Keep
+# the syncer's read-only extension queries out of the normal desktop profile so
+# a service restart loop cannot flood ~/.config/Code/logs.
+list_vscode_extensions() {
+  local cli_data_dir="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/code-syncer-vscode-data"
+  mkdir -p "$cli_data_dir"
+  code --user-data-dir "$cli_data_dir" --list-extensions
+}
+
 # Filter out proprietary and AI extensions from the list
 # Input can be from stdin (pipe) or a file
 clean_extension_list() {
@@ -148,7 +158,7 @@ remove_unnecessary_extensions() {
     return
   fi
 
-  if ! code --list-extensions >"$vscode_list" 2>/dev/null; then
+  if ! list_vscode_extensions >"$vscode_list" 2>/dev/null; then
     echo "⚠️  Failed to get VS Code extensions. Skipping removal check for $target_name."
     return
   fi
@@ -255,7 +265,7 @@ install_extensions() {
     return
   fi
 
-  if ! code --list-extensions >"$vscode_list" 2>/dev/null; then
+  if ! list_vscode_extensions >"$vscode_list" 2>/dev/null; then
     echo "⚠️  Failed to get VS Code extensions. Skipping extension sync for $target_name."
     return
   fi
@@ -319,7 +329,7 @@ install_all_extensions_insiders() {
     return
   fi
 
-  if ! code --list-extensions >"$vscode_list" 2>/dev/null; then
+  if ! list_vscode_extensions >"$vscode_list" 2>/dev/null; then
     echo "⚠️  Failed to get VS Code extensions. Skipping extension sync for $target_name."
     return
   fi
@@ -392,7 +402,7 @@ if ! command -v code >/dev/null 2>&1; then
 fi
 
 # Get VS Code extension count for info
-vscode_ext_count=$(code --list-extensions 2>/dev/null | wc -l | tr -d ' ')
+vscode_ext_count=$(list_vscode_extensions 2>/dev/null | wc -l | tr -d ' ')
 if [ "$vscode_ext_count" -gt 0 ]; then
   echo "📋 Found $vscode_ext_count extension(s) in VS Code"
 else
@@ -418,10 +428,14 @@ if [ "$OS_TYPE" = "Darwin" ]; then
   # macOS: use fswatch
   if command -v fswatch >/dev/null; then
     echo "Watching for changes in VS Code settings (macOS)..."
-    fswatch -o "$VSCODE_USER_DIR/$SETTINGS_FILE" "$VSCODE_USER_DIR/$KEYBINDINGS_FILE" | while read num; do
-      sync_config_file "$SETTINGS_FILE"
-      sync_config_file "$KEYBINDINGS_FILE"
-      echo "Updated at $(date)"
+    fswatch -0 "$VSCODE_USER_DIR" | while IFS= read -r -d '' changed_path; do
+      changed_file="$(basename "$changed_path")"
+      case "$changed_file" in
+      "$SETTINGS_FILE" | "$KEYBINDINGS_FILE")
+        sync_config_file "$changed_file"
+        echo "Updated $changed_file at $(date)"
+        ;;
+      esac
     done
   else
     echo "fswatch not found. Auto-sync disabled."
@@ -430,10 +444,13 @@ else
   # Linux: use inotifywait
   if command -v inotifywait >/dev/null; then
     echo "Watching for changes in VS Code settings (Linux)..."
-    inotifywait -m -e modify,create "$VSCODE_USER_DIR/$SETTINGS_FILE" "$VSCODE_USER_DIR/$KEYBINDINGS_FILE" 2>/dev/null | while read -r directory events filename; do
-      sync_config_file "$SETTINGS_FILE"
-      sync_config_file "$KEYBINDINGS_FILE"
-      echo "Updated at $(date)"
+    inotifywait -m -q -e close_write,create,moved_to --format '%f' "$VSCODE_USER_DIR" 2>/dev/null | while IFS= read -r changed_file; do
+      case "$changed_file" in
+      "$SETTINGS_FILE" | "$KEYBINDINGS_FILE")
+        sync_config_file "$changed_file"
+        echo "Updated $changed_file at $(date)"
+        ;;
+      esac
     done
   else
     echo "inotifywait not found. Auto-sync disabled."

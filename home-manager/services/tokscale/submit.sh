@@ -18,10 +18,88 @@ fi
 # stdin from /dev/null keeps submit non-interactive (skips the "star the repo"
 # prompt seen on a TTY).
 #
-# Wrap with `timeout`: the scan intermittently hangs on Kyber (100+ parked
-# threads, ~0% CPU, no progress - e.g. walking the 34k+ entry
-# ~/.config/Code/logs tree). A hard cap makes a wedged submit self-terminate
-# instead of pinning the oneshot thread until the next tick. 240s covers a cold
-# scan of all active clients (codex 2.1G, opencode 1.2G DB); adjust if the 3h
-# cadence drifts.
-timeout 240 bun "$TOKSCALE_BIN" submit </dev/null
+# Kyber's OpenCode database is large enough that scanning it alongside every
+# other client creates heavy random-I/O contention. Submit it separately, then
+# scan Tokscale's remaining default-submit clients as a group. Crush, Trae,
+# Warp, and 9Router are deliberately absent because Tokscale itself excludes
+# them from unfiltered submissions.
+#
+# Interactive submit starts a detached full-history TUI-cache scan after a
+# successful upload. On systemd hosts, run each phase in its own transient
+# service so KillMode=control-group removes that cache warmer before the next
+# phase starts. Other platforms retain the normal direct invocation.
+run_submit_phase() {
+  local phase="$1"
+  shift
+
+  if command -v systemd-run >/dev/null 2>&1 &&
+    command -v systemctl >/dev/null 2>&1 &&
+    systemctl --user show-environment >/dev/null 2>&1; then
+    systemd-run --user --wait --collect --pipe --quiet \
+      --unit="tokscale-submit-${BASHPID}-${phase}" \
+      --property=KillMode=control-group \
+      --setenv="HOME=$HOME" \
+      --setenv="PATH=$PATH" \
+      --setenv="SSL_CERT_FILE=$SSL_CERT_FILE" \
+      timeout 900 bun "$TOKSCALE_BIN" --no-spinner submit "$@" </dev/null
+  else
+    timeout 900 bun "$TOKSCALE_BIN" --no-spinner submit "$@" </dev/null
+  fi
+}
+
+remaining_clients=(
+  amp
+  antigravity
+  antigravity-cli
+  augment
+  claude
+  cline
+  codebuddy
+  codebuff
+  codex
+  commandcode
+  copilot
+  cursor
+  devin-cli
+  devin-desktop
+  droid
+  freebuff
+  gemini
+  gjc
+  goose
+  grok
+  hermes
+  jcode
+  junie
+  kilocode
+  kilo
+  kimchi
+  kimi
+  kiro
+  micode
+  mux
+  openclaw
+  opencodereview
+  pi
+  prime-agent
+  qwen
+  reasonix
+  roocode
+  senpi
+  synthetic
+  workbuddy
+  zcode
+  zed
+)
+remaining_client_csv=$(
+  IFS=,
+  echo "${remaining_clients[*]}"
+)
+
+# Each phase gets a bounded fifteen-minute cold-start window. Run both phases
+# even if the first fails, then propagate a non-zero result so the scheduler
+# records partial failure without leaving detached scanners behind.
+submit_status=0
+run_submit_phase opencode --client opencode || submit_status=$?
+run_submit_phase remaining --client "$remaining_client_csv" || submit_status=$?
+exit "$submit_status"
