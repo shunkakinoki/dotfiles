@@ -88,6 +88,7 @@ resolve_cli() {
 }
 
 ensure_dirs() {
+  mkdir -p "$VSCODE_USER_DIR"
   mkdir -p "$ANTIGRAVITY_USER_DIR"
   mkdir -p "$CURSOR_USER_DIR"
   mkdir -p "$WINDSURF_USER_DIR"

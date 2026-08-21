@@ -77,6 +77,12 @@ End
 End
 
 Describe 'config file syncing'
+It 'creates the watched VS Code user directory before starting the watcher'
+When run bash -c "grep -A 6 'ensure_dirs()' '$SCRIPT'"
+The output should include 'mkdir -p "$VSCODE_USER_DIR"'
+The status should be success
+End
+
 It 'defines sync_config_file function with cp'
 When run bash -c "grep -A 15 'sync_config_file()' '$SCRIPT'"
 The output should include 'sync_config_file'
