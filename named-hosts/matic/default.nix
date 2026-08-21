@@ -98,6 +98,7 @@ import ../../hosts/nixos {
         services.tailscale = {
           enable = true;
           useRoutingFeatures = "both";
+          operatorUser = username;
           extraSetFlags = [
             "--accept-dns=true"
             "--advertise-exit-node"
