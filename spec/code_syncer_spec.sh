@@ -54,6 +54,15 @@ The output should include 'code-syncer-vscode-data'
 The status should be success
 End
 
+It 'quarantines pathological Linux log fan-out without deleting it'
+When run bash -c "grep -A 30 'quarantine_oversized_vscode_logs()' '$SCRIPT'"
+The output should include '1048576'
+The output should include 'code-syncer/quarantine'
+The output should include 'mv -f --'
+The output should include 'mkdir -p "$log_dir"'
+The status should be success
+End
+
 It 'filters extensions through clean_extension_list function'
 When run bash -c "grep 'clean_extension_list' '$SCRIPT'"
 The output should include 'clean_extension_list'

@@ -104,6 +104,33 @@ list_vscode_extensions() {
   code --user-data-dir "$cli_data_dir" --list-extensions
 }
 
+# Recover from the historical restart loop without deleting its logs. A normal
+# VS Code log directory has a small directory inode; Kyber's grew to tens of
+# megabytes from timestamped CLI launches and made unrelated scanners stall.
+quarantine_oversized_vscode_logs() {
+  if [ "$OS_TYPE" != "Linux" ]; then
+    return
+  fi
+
+  local log_dir="${VSCODE_USER_DIR%/User}/logs"
+  if [ ! -d "$log_dir" ]; then
+    return
+  fi
+
+  local directory_size
+  directory_size=$(stat -c %s "$log_dir" 2>/dev/null || echo 0)
+  if [ "$directory_size" -le 1048576 ]; then
+    return
+  fi
+
+  local quarantine_root="${XDG_STATE_HOME:-$HOME/.local/state}/code-syncer/quarantine"
+  local quarantine_path="$quarantine_root/vscode-logs-$(date -u +%Y%m%dT%H%M%SZ)"
+  mkdir -p "$quarantine_root"
+  mv -f -- "$log_dir" "$quarantine_path"
+  mkdir -p "$log_dir"
+  echo "Quarantined oversized VS Code logs at $quarantine_path"
+}
+
 # Filter out proprietary and AI extensions from the list
 # Input can be from stdin (pipe) or a file
 clean_extension_list() {
@@ -395,6 +422,7 @@ sync_config_file() {
 
 echo "Starting Sync..."
 ensure_dirs
+quarantine_oversized_vscode_logs
 
 # 1. Check VS Code CLI availability
 if ! command -v code >/dev/null 2>&1; then
