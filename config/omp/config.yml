@@ -36,7 +36,8 @@ shellPath: null
 #   Empty arrays keep upstream discovery behavior unchanged.
 extensions:
   - "~/.omp/agent/extensions/swarm-extension"
-enabledModels: []
+enabledModels:
+  - cliproxyapi/*
 disabledProviders: []
 disabledExtensions: []
 # =============================================================================
@@ -59,24 +60,24 @@ disabledExtensions: []
 #   openrouter   — OpenRouter (access to many models)
 #
 # Examples:
-#   default: openai-codex/gpt-5.6-sol
-#   fast:    openai-codex/gpt-5.6-luna
-#   slow:    openai-codex/gpt-5.6-sol:high
+#   default: cliproxyapi/deepseek-v4-flash
+#   fast:    cliproxyapi/glm-4.7
+#   slow:    cliproxyapi/deepseek-v4-flash
 modelRoles:
   # Default model role used as the fallback when no other role is selected.
   default: "cliproxyapi/deepseek-v4-flash"
   # Smaller / dumber model for cheap lightweight work.
-  smol: "openai-codex/gpt-5.6-luna"
+  smol: "cliproxyapi/glm-4.7"
   # Strongest model in the suite for hard tasks.
-  slow: "openai-codex/gpt-5.6-sol"
+  slow: "cliproxyapi/deepseek-v4-flash"
   # Keep vision on the main default model.
-  vision: "openai-codex/gpt-5.6-sol"
+  vision: "cliproxyapi/deepseek-v4-flash"
   # Planning / architecture model.
-  plan: "openai-codex/gpt-5.6-sol"
+  plan: "cliproxyapi/deepseek-v4-flash"
   # Commit message model.
-  commit: "openai/gpt-5.6-luna"
+  commit: "cliproxyapi/glm-4.7"
   # Fast subagent path.
-  task: "openai-codex/gpt-5.6-luna"
+  task: "cliproxyapi/glm-4.7"
 # =============================================================================
 # DISPLAY
 # =============================================================================
@@ -310,21 +311,14 @@ retry:
   #
   #   Candidates are the entries AFTER the current model in its chain, so a role
   #   whose model sits last in the chain it inherits has no candidates at all.
-  #   The roles pinned to gpt-5.6-sol therefore get their own chain rather than
-  #   inheriting `default`, which ends on gpt-5.6-sol.
+  #   Roles pinned to glm-4.7 inherit `default` and still have `free` after
+  #   them. Do not put a role on the last hop.
   fallbackChains:
     default:
-      - "openai-codex/gpt-5.6-luna"
-      - "openai-codex/gpt-5.6-sol"
-    slow:
-      - "openai-codex/gpt-5.6-luna"
       - "cliproxyapi/deepseek-v4-flash"
-    vision:
-      - "openai-codex/gpt-5.6-luna"
-      - "cliproxyapi/deepseek-v4-flash"
-    plan:
-      - "openai-codex/gpt-5.6-luna"
-      - "cliproxyapi/deepseek-v4-flash"
+      - "cliproxyapi/gemma-4-31b-it"
+      - "cliproxyapi/glm-4.7"
+      - "cliproxyapi/free"
   # fallbackRevertPolicy
 
   #   Return to the primary once its cooldown expires. Upstream default: cooldown-expiry
@@ -502,14 +496,14 @@ task:
   maxRecursionDepth: 2
   disabledAgents: []
   agentModelOverrides:
-    code-architect: "gpt-5.6-sol"
-    code-explorer: "gpt-5.6-luna"
-    code-reviewer: "gpt-5.6-sol"
-    code-simplifier: "gpt-5.6-sol"
-    comment-analyzer: "gpt-5.6-luna"
-    pr-test-analyzer: "gpt-5.6-luna"
-    silent-failure-hunter: "gpt-5.6-sol"
-    type-design-analyzer: "gpt-5.6-sol"
+    code-architect: "deepseek-v4-flash"
+    code-explorer: "glm-4.7"
+    code-reviewer: "deepseek-v4-flash"
+    code-simplifier: "deepseek-v4-flash"
+    comment-analyzer: "glm-4.7"
+    pr-test-analyzer: "glm-4.7"
+    silent-failure-hunter: "deepseek-v4-flash"
+    type-design-analyzer: "deepseek-v4-flash"
 # --- Agent Definitions -------------------------------------------------------
 # Inline agent definitions (alternative to skill/agent files).
 # agents: {}

@@ -3,6 +3,8 @@ providers:
     baseUrl: http://127.0.0.1:8317/v1
     api: openai-completions
     auth: none
+    discovery:
+      type: openai-models-list
     models:
       - id: __DEEPSEEK_FLASH__
         name: __DEEPSEEK_FLASH_PRETTY__ (local CLIProxyAPI)
@@ -12,6 +14,209 @@ providers:
         supportsTools: true
         contextWindow: 1000000
         maxTokens: 384000
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+      - id: __DEEPSEEK_PRO__
+        name: __DEEPSEEK_PRO_PRETTY__ (local CLIProxyAPI)
+        reasoning: true
+        input:
+          - text
+        supportsTools: true
+        contextWindow: 1000000
+        maxTokens: 384000
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+      - id: __GLM__
+        name: __GLM_PRETTY__ (local CLIProxyAPI)
+        reasoning: false
+        input:
+          - text
+        supportsTools: true
+        contextWindow: 131072
+        maxTokens: 16384
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+      - id: __GEMMA__
+        name: __GEMMA_PRETTY__ (local CLIProxyAPI)
+        reasoning: false
+        input:
+          - text
+        supportsTools: true
+        contextWindow: 131072
+        maxTokens: 16384
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+      - id: __MINIMAX__
+        name: __MINIMAX_PRETTY__ (local CLIProxyAPI)
+        reasoning: true
+        input:
+          - text
+          - image
+        supportsTools: true
+        contextWindow: 1000000
+        maxTokens: 40960
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+      - id: __KIMI__
+        name: __KIMI_PRETTY__ (local CLIProxyAPI)
+        reasoning: true
+        input:
+          - text
+        supportsTools: true
+        contextWindow: 256000
+        maxTokens: 32768
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+      - id: __QWEN__
+        name: __QWEN_PRETTY__ (local CLIProxyAPI)
+        reasoning: true
+        input:
+          - text
+        supportsTools: true
+        contextWindow: 256000
+        maxTokens: 32768
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+      - id: __GROK__
+        name: __GROK_PRETTY__ (local CLIProxyAPI)
+        reasoning: true
+        input:
+          - text
+        supportsTools: true
+        contextWindow: 256000
+        maxTokens: 32768
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+      - id: __GPT__
+        name: __GPT_PRETTY__ (local CLIProxyAPI)
+        reasoning: true
+        input:
+          - text
+          - image
+        supportsTools: true
+        contextWindow: 400000
+        maxTokens: 128000
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+      - id: __GPT_LUNA__
+        name: __GPT_LUNA_PRETTY__ (local CLIProxyAPI)
+        reasoning: true
+        input:
+          - text
+          - image
+        supportsTools: true
+        contextWindow: 400000
+        maxTokens: 128000
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+      - id: __GEMINI_PRO__
+        name: __GEMINI_PRO_PRETTY__ (local CLIProxyAPI)
+        reasoning: true
+        input:
+          - text
+          - image
+        supportsTools: true
+        contextWindow: 1000000
+        maxTokens: 65536
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+      - id: __GEMINI_FLASH__
+        name: __GEMINI_FLASH_PRETTY__ (local CLIProxyAPI)
+        reasoning: false
+        input:
+          - text
+          - image
+        supportsTools: true
+        contextWindow: 1000000
+        maxTokens: 65536
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+      - id: __CLAUDE_OPUS__
+        name: __CLAUDE_OPUS_PRETTY__ (local CLIProxyAPI)
+        reasoning: true
+        input:
+          - text
+          - image
+        supportsTools: true
+        contextWindow: 200000
+        maxTokens: 32000
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+      - id: __CLAUDE_SONNET__
+        name: __CLAUDE_SONNET_PRETTY__ (local CLIProxyAPI)
+        reasoning: false
+        input:
+          - text
+          - image
+        supportsTools: true
+        contextWindow: 200000
+        maxTokens: 64000
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+      - id: __CLAUDE_HAIKU__
+        name: __CLAUDE_HAIKU_PRETTY__ (local CLIProxyAPI)
+        reasoning: false
+        input:
+          - text
+          - image
+        supportsTools: true
+        contextWindow: 200000
+        maxTokens: 8192
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+      - id: free
+        name: Free router fallback (local CLIProxyAPI)
+        reasoning: false
+        input:
+          - text
+        supportsTools: true
+        contextWindow: 131072
+        maxTokens: 16384
         cost:
           input: 0
           output: 0

@@ -219,6 +219,25 @@ When run bash -c "grep 'default: \"cliproxyapi/deepseek-v4-flash\"' config/omp/c
 The output should include 'cliproxyapi/deepseek-v4-flash'
 End
 
+It 'routes every OMP role through local CLIProxyAPI'
+When run bash -c "sed -n '/^modelRoles:/,/^# ====/p' config/omp/config.yml | grep -E '^  (default|smol|slow|vision|plan|commit|task):' | grep -v 'cliproxyapi/' || true"
+The output should equal ''
+End
+
+It 'restricts OMP selection to CLIProxyAPI models'
+When run bash -c "grep -A1 'enabledModels:' config/omp/config.yml | grep 'cliproxyapi/\*'"
+The output should include 'cliproxyapi/*'
+End
+
+It 'uses the shared CLIProxy fallback chain for OMP'
+When run bash -c "sed -n '/^  fallbackChains:/,/^  fallbackRevertPolicy/p' config/omp/config.yml"
+The output should include 'cliproxyapi/deepseek-v4-flash'
+The output should include 'cliproxyapi/gemma-4-31b-it'
+The output should include 'cliproxyapi/glm-4.7'
+The output should include 'cliproxyapi/free'
+The output should not include 'openai-codex/'
+End
+
 It 'keeps the OMP model registry placeholder in the template'
 When run bash -c "grep 'id: __DEEPSEEK_FLASH__' config/omp/models.tpl.yml"
 The output should include '__DEEPSEEK_FLASH__'
@@ -267,8 +286,8 @@ End
 End
 
 Describe 'CLIProxyAPI routing'
-It 'hydrates the OMP local CLIProxyAPI DeepSeek Flash provider'
-When run bash -c "grep -q 'baseUrl: http://127.0.0.1:8317/v1' config/omp/models.yml && grep -q 'id: deepseek-v4-flash' config/omp/models.yml && ! grep -q '__DEEPSEEK_FLASH__' config/omp/models.yml"
+It 'hydrates the OMP local CLIProxyAPI catalog'
+When run bash -c "grep -q 'baseUrl: http://127.0.0.1:8317/v1' config/omp/models.yml && grep -q 'type: openai-models-list' config/omp/models.yml && grep -q 'id: deepseek-v4-flash' config/omp/models.yml && grep -q 'id: glm-4.7' config/omp/models.yml && grep -q 'id: gemma-4-31b-it' config/omp/models.yml && grep -q 'id: free' config/omp/models.yml && ! grep -q '__DEEPSEEK_FLASH__' config/omp/models.yml"
 The status should be success
 End
 
