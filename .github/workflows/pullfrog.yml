@@ -27,6 +27,8 @@ jobs:
         uses: pullfrog/pullfrog@v0
         with:
           prompt: ${{ inputs.prompt }}
+          # OpenRouter Free Models Router; overrides console openai-compatible/byok
+          model: openrouter/openrouter/free
         env:
           # add at least one provider API key
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
