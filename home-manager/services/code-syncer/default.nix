@@ -40,7 +40,9 @@ in
         ]
       }";
       ExecStart = "${pkgs.bash}/bin/bash ${./sync.sh}";
-      Restart = "always";
+      # A clean watcher exit must not turn the initial extension sync into a
+      # restart loop. Unexpected watcher failures are still retried.
+      Restart = "on-failure";
       RestartSec = 10;
     };
     Install = {

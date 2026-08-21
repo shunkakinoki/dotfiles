@@ -47,6 +47,22 @@ The output should include '--list-extensions'
 The status should be success
 End
 
+It 'isolates VS Code CLI logs from the desktop profile'
+When run bash -c "grep -A 6 'list_vscode_extensions()' '$SCRIPT'"
+The output should include '--user-data-dir'
+The output should include 'code-syncer-vscode-data'
+The status should be success
+End
+
+It 'quarantines pathological Linux log fan-out without deleting it'
+When run bash -c "grep -A 30 'quarantine_oversized_vscode_logs()' '$SCRIPT'"
+The output should include '1048576'
+The output should include 'code-syncer/quarantine'
+The output should include 'mv -f --'
+The output should include 'mkdir -p "$log_dir"'
+The status should be success
+End
+
 It 'filters extensions through clean_extension_list function'
 When run bash -c "grep 'clean_extension_list' '$SCRIPT'"
 The output should include 'clean_extension_list'
@@ -70,6 +86,12 @@ End
 End
 
 Describe 'config file syncing'
+It 'creates the watched VS Code user directory before starting the watcher'
+When run bash -c "grep -A 6 'ensure_dirs()' '$SCRIPT'"
+The output should include 'mkdir -p "$VSCODE_USER_DIR"'
+The status should be success
+End
+
 It 'defines sync_config_file function with cp'
 When run bash -c "grep -A 15 'sync_config_file()' '$SCRIPT'"
 The output should include 'sync_config_file'
@@ -99,6 +121,21 @@ End
 It 'shows message when fswatch not found'
 When run bash -c "grep -A 2 'fswatch not found' '$SCRIPT'"
 The output should include 'Auto-sync disabled'
+End
+End
+
+Describe 'Linux watcher lifecycle'
+It 'watches the VS Code user directory so missing files do not end the service'
+When run bash -c "grep 'inotifywait -m' '$SCRIPT'"
+The output should include '"$VSCODE_USER_DIR"'
+The output should include "--format '%f'"
+The status should be success
+End
+
+It 'does not restart after a clean watcher exit'
+When run bash -c "grep 'Restart = ' '$PWD/home-manager/services/code-syncer/default.nix'"
+The output should include 'Restart = "on-failure";'
+The status should be success
 End
 End
 

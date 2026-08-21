@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2034,SC2155,SC2181,SC2162
+set -o pipefail
 
 # --- CONFIGURATION ---
 
@@ -87,10 +88,47 @@ resolve_cli() {
 }
 
 ensure_dirs() {
+  mkdir -p "$VSCODE_USER_DIR"
   mkdir -p "$ANTIGRAVITY_USER_DIR"
   mkdir -p "$CURSOR_USER_DIR"
   mkdir -p "$WINDSURF_USER_DIR"
   mkdir -p "$VSCODE_INSIDERS_USER_DIR"
+}
+
+# VS Code creates a timestamped log directory every time its CLI starts. Keep
+# the syncer's read-only extension queries out of the normal desktop profile so
+# a service restart loop cannot flood ~/.config/Code/logs.
+list_vscode_extensions() {
+  local cli_data_dir="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/code-syncer-vscode-data"
+  mkdir -p "$cli_data_dir"
+  code --user-data-dir "$cli_data_dir" --list-extensions
+}
+
+# Recover from the historical restart loop without deleting its logs. A normal
+# VS Code log directory has a small directory inode; Kyber's grew to tens of
+# megabytes from timestamped CLI launches and made unrelated scanners stall.
+quarantine_oversized_vscode_logs() {
+  if [ "$OS_TYPE" != "Linux" ]; then
+    return
+  fi
+
+  local log_dir="${VSCODE_USER_DIR%/User}/logs"
+  if [ ! -d "$log_dir" ]; then
+    return
+  fi
+
+  local directory_size
+  directory_size=$(stat -c %s "$log_dir" 2>/dev/null || echo 0)
+  if [ "$directory_size" -le 1048576 ]; then
+    return
+  fi
+
+  local quarantine_root="${XDG_STATE_HOME:-$HOME/.local/state}/code-syncer/quarantine"
+  local quarantine_path="$quarantine_root/vscode-logs-$(date -u +%Y%m%dT%H%M%SZ)"
+  mkdir -p "$quarantine_root"
+  mv -f -- "$log_dir" "$quarantine_path"
+  mkdir -p "$log_dir"
+  echo "Quarantined oversized VS Code logs at $quarantine_path"
 }
 
 # Filter out proprietary and AI extensions from the list
@@ -148,7 +186,7 @@ remove_unnecessary_extensions() {
     return
   fi
 
-  if ! code --list-extensions >"$vscode_list" 2>/dev/null; then
+  if ! list_vscode_extensions >"$vscode_list" 2>/dev/null; then
     echo "⚠️  Failed to get VS Code extensions. Skipping removal check for $target_name."
     return
   fi
@@ -255,7 +293,7 @@ install_extensions() {
     return
   fi
 
-  if ! code --list-extensions >"$vscode_list" 2>/dev/null; then
+  if ! list_vscode_extensions >"$vscode_list" 2>/dev/null; then
     echo "⚠️  Failed to get VS Code extensions. Skipping extension sync for $target_name."
     return
   fi
@@ -319,7 +357,7 @@ install_all_extensions_insiders() {
     return
   fi
 
-  if ! code --list-extensions >"$vscode_list" 2>/dev/null; then
+  if ! list_vscode_extensions >"$vscode_list" 2>/dev/null; then
     echo "⚠️  Failed to get VS Code extensions. Skipping extension sync for $target_name."
     return
   fi
@@ -384,6 +422,7 @@ sync_config_file() {
 
 echo "Starting Sync..."
 ensure_dirs
+quarantine_oversized_vscode_logs
 
 # 1. Check VS Code CLI availability
 if ! command -v code >/dev/null 2>&1; then
@@ -392,7 +431,7 @@ if ! command -v code >/dev/null 2>&1; then
 fi
 
 # Get VS Code extension count for info
-vscode_ext_count=$(code --list-extensions 2>/dev/null | wc -l | tr -d ' ')
+vscode_ext_count=$(list_vscode_extensions 2>/dev/null | wc -l | tr -d ' ')
 if [ "$vscode_ext_count" -gt 0 ]; then
   echo "📋 Found $vscode_ext_count extension(s) in VS Code"
 else
@@ -418,10 +457,14 @@ if [ "$OS_TYPE" = "Darwin" ]; then
   # macOS: use fswatch
   if command -v fswatch >/dev/null; then
     echo "Watching for changes in VS Code settings (macOS)..."
-    fswatch -o "$VSCODE_USER_DIR/$SETTINGS_FILE" "$VSCODE_USER_DIR/$KEYBINDINGS_FILE" | while read num; do
-      sync_config_file "$SETTINGS_FILE"
-      sync_config_file "$KEYBINDINGS_FILE"
-      echo "Updated at $(date)"
+    fswatch -0 "$VSCODE_USER_DIR" | while IFS= read -r -d '' changed_path; do
+      changed_file="$(basename "$changed_path")"
+      case "$changed_file" in
+      "$SETTINGS_FILE" | "$KEYBINDINGS_FILE")
+        sync_config_file "$changed_file"
+        echo "Updated $changed_file at $(date)"
+        ;;
+      esac
     done
   else
     echo "fswatch not found. Auto-sync disabled."
@@ -430,10 +473,13 @@ else
   # Linux: use inotifywait
   if command -v inotifywait >/dev/null; then
     echo "Watching for changes in VS Code settings (Linux)..."
-    inotifywait -m -e modify,create "$VSCODE_USER_DIR/$SETTINGS_FILE" "$VSCODE_USER_DIR/$KEYBINDINGS_FILE" 2>/dev/null | while read -r directory events filename; do
-      sync_config_file "$SETTINGS_FILE"
-      sync_config_file "$KEYBINDINGS_FILE"
-      echo "Updated at $(date)"
+    inotifywait -m -q -e close_write,create,moved_to --format '%f' "$VSCODE_USER_DIR" 2>/dev/null | while IFS= read -r changed_file; do
+      case "$changed_file" in
+      "$SETTINGS_FILE" | "$KEYBINDINGS_FILE")
+        sync_config_file "$changed_file"
+        echo "Updated $changed_file at $(date)"
+        ;;
+      esac
     done
   else
     echo "inotifywait not found. Auto-sync disabled."
