@@ -26,6 +26,11 @@ When run bash -c "cat '$SCRIPT'"
 The output should include '/dev/null'
 End
 
+It 'allows a Kyber cold scan to run for up to fifteen minutes'
+When run bash -c "grep -F 'timeout 900 bun' '$SCRIPT'"
+The output should include 'timeout 900 bun'
+End
+
 It 'uses the bun global tokscale entrypoint'
 When run bash -c "cat '$SCRIPT'"
 The output should include '.bun/install/global/node_modules/tokscale/bin.js'
