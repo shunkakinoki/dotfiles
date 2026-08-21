@@ -97,10 +97,9 @@ import ../../hosts/nixos {
         # applies when authKeyFile is set; `tailscale set` is applied on every boot.
         services.tailscale = {
           enable = true;
-          useRoutingFeatures = "both";
+          useRoutingFeatures = "client";
           extraSetFlags = [
             "--accept-dns=true"
-            "--advertise-exit-node"
             "--operator=${username}"
             "--ssh"
           ];
