@@ -38,7 +38,6 @@
       "/Applications/LM Studio.app"
       "/Applications/Screen Studio.app"
       "/Applications/Paper.app"
-      "/Applications/Pencil.app"
       "/Applications/Figma.app"
       "/Applications/Notion.app"
       "/Applications/iTerm.app"

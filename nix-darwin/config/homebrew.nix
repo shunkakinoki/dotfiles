@@ -32,10 +32,6 @@
         trusted = true;
       }
       {
-        name = "open-pencil/tap";
-        trusted = true;
-      }
-      {
         name = "oven-sh/bun";
         trusted = true;
       }
@@ -156,7 +152,6 @@
       "notion"
       "obsidian"
       "ollama-app"
-      "open-pencil"
       "openclaw"
       "opencode-desktop"
       "orca"
