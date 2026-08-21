@@ -14,5 +14,5 @@ function _ocxeh_function --description "Run OpenCode headlessly with a prompted 
     return 1
   end
 
-  _caam_exec_function opencode run "$prompt" -m 'cliproxyapi/__DEEPSEEK_FLASH__'
+  _caam_exec_function opencode run "$prompt" -m 'shunkakinoki/__DEEPSEEK_FLASH__'
 end
