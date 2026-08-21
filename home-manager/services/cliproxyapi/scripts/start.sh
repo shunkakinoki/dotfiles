@@ -94,14 +94,14 @@ cliproxy_drop_empty_compat_providers() {
         continue
       fi
 
-      if [[ "$line" == "#"* ]] || [[ "$line" =~ ^[A-Za-z] ]]; then
+      if [[ $line == "#"* ]] || [[ $line =~ ^[A-Za-z] ]]; then
         flush_item
         in_compat=0
         printf '%s\n' "$line"
         continue
       fi
 
-      if [[ "$line" == "  - "* ]]; then
+      if [[ $line == "  - "* ]]; then
         flush_item
         in_item=1
         item="${line}"$'\n'
@@ -110,7 +110,7 @@ cliproxy_drop_empty_compat_providers() {
 
       if [ "$in_item" -eq 1 ]; then
         item+="${line}"$'\n'
-        if [[ "$line" == *"api-key:"* ]]; then
+        if [[ $line == *"api-key:"* ]]; then
           keyval="${line#*api-key:}"
           keyval="${keyval#"${keyval%%[![:space:]]*}"}"
           keyval="${keyval%\"}"
