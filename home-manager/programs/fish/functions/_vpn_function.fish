@@ -3,6 +3,8 @@ function _vpn_function --description "Connect/disconnect Tailscale exit node thr
 
   switch "$argv[1]"
     case on
+      # Clear exit-node advertising first; can't both advertise and use an exit node.
+      tailscale set --advertise-exit-node=false
       # --accept-dns=true routes DNS through the exit node; without it
       # DNS queries break while tunnelled and name resolution fails.
       tailscale set --exit-node=$kyber_host --accept-dns=true
@@ -19,6 +21,7 @@ function _vpn_function --description "Connect/disconnect Tailscale exit node thr
         tailscale set --exit-node= --accept-dns=false
         and echo "VPN disconnected"
       else
+        tailscale set --advertise-exit-node=false
         tailscale set --exit-node=$kyber_host --accept-dns=true
         and echo "VPN connected through kyber"
       end
