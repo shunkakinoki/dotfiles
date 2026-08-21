@@ -3,12 +3,9 @@
 #
 # Usage: ensure-tailscale-serve.sh <https-port> <local-port>
 #
-# The T3 client discovers a remote environment via
-# https://<magicdns-name>[:<https-port>]/.well-known/t3/environment, so the
-# backend has to be reachable over HTTPS and the well-known path has to sit at
-# the serve root. A host already serving something else at :443 (kyber serves
-# openclaw there) therefore needs T3 on its own HTTPS port rather than a path
-# prefix.
+# Services that need the serve root must use distinct HTTPS ports rather than
+# path prefixes. The helper reconciles one exact HTTPS-port-to-local-port
+# mapping without disturbing other routes on the same node.
 #
 # `tailscale serve` persists in tailscaled state, so this is a no-op on every
 # activation after the first.
@@ -47,7 +44,19 @@ if ! "$TS" status >/dev/null 2>&1; then
   exit 0
 fi
 
-if "$TS" serve status 2>/dev/null | grep -qF "${TARGET}"; then
+SERVE_STATUS="$("$TS" serve status 2>/dev/null || true)"
+if printf '%s\n' "$SERVE_STATUS" | awk -v port="$HTTPS_PORT" -v target="$TARGET" '
+  /^https:\/\// {
+    if (port == "443") {
+      active = ($0 !~ /:[0-9]+ \(tailnet only\)$/)
+    } else {
+      active = ($0 ~ (":" port " \\(tailnet only\\)$"))
+    }
+    next
+  }
+  active && index($0, "proxy " target) { found = 1 }
+  END { exit found ? 0 : 1 }
+'; then
   exit 0
 fi
 
@@ -76,7 +85,7 @@ fi
 
 echo "Publishing ${TARGET} over Tailscale Serve on :${HTTPS_PORT}..."
 if [ -n "$SUDO_CMD" ]; then
-  "$SUDO_CMD" "$TS" serve --bg --https="${HTTPS_PORT}" "${TARGET}"
+  "$SUDO_CMD" "$TS" serve --yes --bg --https="${HTTPS_PORT}" "${TARGET}"
 else
-  "$TS" serve --bg --https="${HTTPS_PORT}" "${TARGET}"
+  "$TS" serve --yes --bg --https="${HTTPS_PORT}" "${TARGET}"
 fi
