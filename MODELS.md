@@ -88,6 +88,7 @@ Rules:
 | OpenCode | `shunkakinoki/deepseek-v4-flash` | shared chain, `shunkakinoki/` prefix | [opencode-fallback.tpl.jsonc](config/opencode/opencode-fallback.tpl.jsonc) |
 | OpenClaw | `cliproxy/deepseek-v4-flash` | shared chain, `cliproxy/` prefix | [openclaw.tpl.json](config/openclaw/openclaw.tpl.json) |
 | Hermes | `cliproxy/deepseek-v4-flash` | shared chain via `fallback_providers` | [config.tpl.yaml](config/hermes/config.tpl.yaml) |
+| OMP | `cliproxyapi/deepseek-v4-flash` | shared chain, `cliproxyapi/` prefix | [config.tpl.yml](config/omp/config.tpl.yml) |
 
 OpenCode fallback is driven by the `opencode-runtime-fallback@0.2.3` plugin:
 
@@ -101,6 +102,7 @@ OpenCode fallback is driven by the `opencode-runtime-fallback@0.2.3` plugin:
 
 OpenClaw and Hermes have no equivalent error-pattern matcher, so they hard-fail
 on the `unknown provider for model <prefixed-name>` 400 that OpenCode absorbs.
+OMP uses native `retry.fallbackChains` instead of a plugin.
 
 Hermes also runs a Mixture-of-Agents preset: reference models
 `deepseek-v4-flash` + `minimax-m3`, aggregator `deepseek-v4-flash`.
@@ -111,11 +113,8 @@ Hermes also runs a Mixture-of-Agents preset: reference models
 | --- | --- | --- | --- |
 | OpenCode | `small_model` | `shunkakinoki/glm-4.7` | [opencode.tpl.jsonc](config/opencode/opencode.tpl.jsonc) |
 | OpenCode | `code-reviewer` agent | `shunkakinoki/deepseek-v4-flash` | [opencode.tpl.jsonc](config/opencode/opencode.tpl.jsonc) |
-| OMP | `default` | `cliproxyapi/deepseek-v4-flash` | [config.tpl.yml](config/omp/config.tpl.yml) |
-| OMP | `smol` | `openai-codex/gpt-5.6-luna` | |
-| OMP | `slow`, `vision`, `plan` | `openai-codex/gpt-5.6-sol` | |
-| OMP | `commit` | `openai/gpt-5.6-luna` | |
-| OMP | `task` | `openai-codex/gpt-5.6-luna` | |
+| OMP | `smol`, `commit`, `task` | `cliproxyapi/glm-4.7` | [config.tpl.yml](config/omp/config.tpl.yml) |
+| OMP | `slow`, `vision`, `plan` | `cliproxyapi/deepseek-v4-flash` | |
 | Codex | default | `gpt-5.6-sol` | [config.tpl.toml](config/codex/config.tpl.toml) |
 | Codex | subagents | `gpt-5.6-luna` | |
 | Codex | `qwen-local` profile | `qwen3.5-0.8b-optiq` (LM Studio) | |
@@ -127,10 +126,14 @@ Hermes also runs a Mixture-of-Agents preset: reference models
 | llm | default | `glm-4.7` | [default_model.tpl.txt](config/llm/default_model.tpl.txt) |
 | Handy | transcript post-process | `@preset/glm-4.7` (OpenRouter) | [settings_store.tpl.json](config/handy/settings_store.tpl.json) |
 
-OMP subagent overrides: `code-explorer`, `comment-analyzer`, and
-`pr-test-analyzer` use `gpt-5.6-luna`; the rest (`code-architect`,
-`code-reviewer`, `code-simplifier`, `silent-failure-hunter`,
-`type-design-analyzer`) use `gpt-5.6-sol`.
+OMP selects only `cliproxyapi/*`. Subagent overrides: `code-explorer`,
+`comment-analyzer`, and `pr-test-analyzer` use `glm-4.7`; the rest
+(`code-architect`, `code-reviewer`, `code-simplifier`,
+`silent-failure-hunter`, `type-design-analyzer`) use `deepseek-v4-flash`.
+The registry in [models.tpl.yml](config/omp/models.tpl.yml) lists the
+CLIProxy aliases and discovers the rest from local `/v1/models`.
+OMP fallback uses the shared chain (`deepseek-v4-flash` -> `gemma-4-31b-it`
+-> `glm-4.7` -> `free`).
 
 ### Fish shortcuts
 

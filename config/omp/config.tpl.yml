@@ -36,7 +36,8 @@ shellPath: null
 #   Empty arrays keep upstream discovery behavior unchanged.
 extensions:
   - "~/.omp/agent/extensions/swarm-extension"
-enabledModels: []
+enabledModels:
+  - cliproxyapi/*
 disabledProviders: []
 disabledExtensions: []
 # =============================================================================
@@ -59,24 +60,24 @@ disabledExtensions: []
 #   openrouter   — OpenRouter (access to many models)
 #
 # Examples:
-#   default: openai-codex/__GPT__
-#   fast:    openai-codex/__GPT_LUNA__
-#   slow:    openai-codex/__GPT__:high
+#   default: cliproxyapi/__DEEPSEEK_FLASH__
+#   fast:    cliproxyapi/__GLM__
+#   slow:    cliproxyapi/__DEEPSEEK_FLASH__
 modelRoles:
   # Default model role used as the fallback when no other role is selected.
   default: "cliproxyapi/__DEEPSEEK_FLASH__"
   # Smaller / dumber model for cheap lightweight work.
-  smol: "openai-codex/__GPT_LUNA__"
+  smol: "cliproxyapi/__GLM__"
   # Strongest model in the suite for hard tasks.
-  slow: "openai-codex/__GPT__"
+  slow: "cliproxyapi/__DEEPSEEK_FLASH__"
   # Keep vision on the main default model.
-  vision: "openai-codex/__GPT__"
+  vision: "cliproxyapi/__DEEPSEEK_FLASH__"
   # Planning / architecture model.
-  plan: "openai-codex/__GPT__"
+  plan: "cliproxyapi/__DEEPSEEK_FLASH__"
   # Commit message model.
-  commit: "openai/__GPT_LUNA__"
+  commit: "cliproxyapi/__GLM__"
   # Fast subagent path.
-  task: "openai-codex/__GPT_LUNA__"
+  task: "cliproxyapi/__GLM__"
 # =============================================================================
 # DISPLAY
 # =============================================================================
@@ -310,21 +311,14 @@ retry:
   #
   #   Candidates are the entries AFTER the current model in its chain, so a role
   #   whose model sits last in the chain it inherits has no candidates at all.
-  #   The roles pinned to __GPT__ therefore get their own chain rather than
-  #   inheriting `default`, which ends on __GPT__.
+  #   Roles pinned to __GLM__ inherit `default` and still have `free` after
+  #   them. Do not put a role on the last hop.
   fallbackChains:
     default:
-      - "openai-codex/__GPT_LUNA__"
-      - "openai-codex/__GPT__"
-    slow:
-      - "openai-codex/__GPT_LUNA__"
       - "cliproxyapi/__DEEPSEEK_FLASH__"
-    vision:
-      - "openai-codex/__GPT_LUNA__"
-      - "cliproxyapi/__DEEPSEEK_FLASH__"
-    plan:
-      - "openai-codex/__GPT_LUNA__"
-      - "cliproxyapi/__DEEPSEEK_FLASH__"
+      - "cliproxyapi/__GEMMA__"
+      - "cliproxyapi/__GLM__"
+      - "cliproxyapi/free"
   # fallbackRevertPolicy
 
   #   Return to the primary once its cooldown expires. Upstream default: cooldown-expiry
@@ -502,14 +496,14 @@ task:
   maxRecursionDepth: 2
   disabledAgents: []
   agentModelOverrides:
-    code-architect: "__GPT__"
-    code-explorer: "__GPT_LUNA__"
-    code-reviewer: "__GPT__"
-    code-simplifier: "__GPT__"
-    comment-analyzer: "__GPT_LUNA__"
-    pr-test-analyzer: "__GPT_LUNA__"
-    silent-failure-hunter: "__GPT__"
-    type-design-analyzer: "__GPT__"
+    code-architect: "__DEEPSEEK_FLASH__"
+    code-explorer: "__GLM__"
+    code-reviewer: "__DEEPSEEK_FLASH__"
+    code-simplifier: "__DEEPSEEK_FLASH__"
+    comment-analyzer: "__GLM__"
+    pr-test-analyzer: "__GLM__"
+    silent-failure-hunter: "__DEEPSEEK_FLASH__"
+    type-design-analyzer: "__DEEPSEEK_FLASH__"
 # --- Agent Definitions -------------------------------------------------------
 # Inline agent definitions (alternative to skill/agent files).
 # agents: {}
