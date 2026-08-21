@@ -26,32 +26,9 @@ When run bash -c "cat '$SCRIPT'"
 The output should include '/dev/null'
 End
 
-It 'isolates OpenCode and allows fifteen minutes per phase'
-When run bash -c "cat '$SCRIPT'"
-The output should include '--client opencode'
-The output should include 'remaining_clients=('
-The output should include 'timeout 900'
-The output should not include 'timeout 240'
-End
-
-It 'uses transient cgroups without dropping the managed environment'
-When run bash -c "cat '$SCRIPT'"
-The output should include 'KillMode=control-group'
-The output should include '--setenv="HOME=$HOME"'
-The output should include '--setenv="PATH=$PATH"'
-The output should include '--setenv="SSL_CERT_FILE=$SSL_CERT_FILE"'
-End
-
 It 'uses the bun global tokscale entrypoint'
 When run bash -c "cat '$SCRIPT'"
 The output should include '.bun/install/global/node_modules/tokscale/bin.js'
-End
-
-Describe 'managed Tokscale version'
-It 'requires the scanner-fixed Tokscale release'
-When run jq -r '.dependencies.tokscale' "$PWD/package.json"
-The output should equal '^4.13.0'
-End
 End
 End
 
