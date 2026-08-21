@@ -61,6 +61,76 @@ render_opencode_api_key_entries() {
   done <"$template"
 }
 
+# Empty hydrated keys still register as clients. After a higher hop 429s,
+# session-affinity binds to that empty key and never reaches OpenRouter.
+cliproxy_drop_empty_compat_providers() {
+  local src="$1"
+  local dest="${2:-$1}"
+  local tmp in_compat=0 in_item=0 has_key=0
+  local item="" line keyval
+
+  flush_item() {
+    if [ "$in_item" -eq 0 ]; then
+      return 0
+    fi
+    if [ "$has_key" -eq 1 ]; then
+      printf '%s' "$item"
+    else
+      echo "⚠️  Dropping openai-compatibility provider with empty api-key" >&2
+    fi
+    item=""
+    in_item=0
+    has_key=0
+  }
+
+  tmp="$(mktemp "${TMPDIR:-/tmp}/cliproxy-compat.XXXXXX")"
+  {
+    while IFS= read -r line || [ -n "$line" ]; do
+      if [ "$in_compat" -eq 0 ]; then
+        printf '%s\n' "$line"
+        if [ "$line" = "openai-compatibility:" ]; then
+          in_compat=1
+        fi
+        continue
+      fi
+
+      if [[ "$line" == "#"* ]] || [[ "$line" =~ ^[A-Za-z] ]]; then
+        flush_item
+        in_compat=0
+        printf '%s\n' "$line"
+        continue
+      fi
+
+      if [[ "$line" == "  - "* ]]; then
+        flush_item
+        in_item=1
+        item="${line}"$'\n'
+        continue
+      fi
+
+      if [ "$in_item" -eq 1 ]; then
+        item+="${line}"$'\n'
+        if [[ "$line" == *"api-key:"* ]]; then
+          keyval="${line#*api-key:}"
+          keyval="${keyval#"${keyval%%[![:space:]]*}"}"
+          keyval="${keyval%\"}"
+          keyval="${keyval#\"}"
+          keyval="${keyval%\'}"
+          keyval="${keyval#\'}"
+          if [ -n "$keyval" ] && [ "$keyval" != "[]" ]; then
+            has_key=1
+          fi
+        fi
+        continue
+      fi
+
+      printf '%s\n' "$line"
+    done
+    flush_item
+  } <"$src" >"$tmp"
+  mv -f "$tmp" "$dest"
+} # cliproxy_drop_empty_compat_providers
+
 if cliproxy_has_objectstore_credentials; then
   mkdir -p "$AUTH_DIR"
 
@@ -114,6 +184,8 @@ if [ -f "$TEMPLATE" ]; then
       -e "s|^      to:|#       to:|" \
       "$CONFIG"
   fi
+
+  cliproxy_drop_empty_compat_providers "$CONFIG"
 fi
 
 # Keep objectstore-backed config in sync for management UI
