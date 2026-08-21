@@ -64,6 +64,7 @@
         "playwright-chromium": "^1.62.1",
         "portless": "^0.15.5",
         "ralph-tui": "^0.12.0",
+        "ssh-clipboard": "^0.2.8",
         "t3": "^0.0.33",
         "takt": "^0.51.0",
         "tokscale": "^4.8.1",
@@ -3940,6 +3941,8 @@
     "sqlite-vec-linux-x64": ["sqlite-vec-linux-x64@0.1.9", "", { "os": "linux", "cpu": "x64" }, "sha512-w3tCH8xK2finW8fQJ/m8uqKodXUZ9KAuAar2UIhz4BHILfpE0WM/MTGCRfa7RjYbrYim5Luk3guvMOGI7T7JQA=="],
 
     "sqlite-vec-windows-x64": ["sqlite-vec-windows-x64@0.1.9", "", { "os": "win32", "cpu": "x64" }, "sha512-y3gEIyy/17bq2QFPQOWLE68TYWcRZkBQVA2XLrTPHNTOp55xJi/BBBmOm40tVMDMjtP+Elpk6UBUXdaq+46b0Q=="],
+
+    "ssh-clipboard": ["ssh-clipboard@0.2.8", "", { "os": [ "linux", "darwin", ], "cpu": [ "x64", "arm64", ], "bin": { "ssh-clipboard": "bin/ssh-clipboard.js" } }, "sha512-X2DNg6514oSvZT+X1s5YoxZXZBOM3TfUwP0yB2CZ31Y8LwFGSuvJIZPSOaTV4LK7y7gB/IcUeKbMjfS7ZuytxA=="],
 
     "ssh2": ["ssh2@1.17.0", "", { "dependencies": { "asn1": "^0.2.6", "bcrypt-pbkdf": "^1.0.2" }, "optionalDependencies": { "cpu-features": "~0.0.10", "nan": "^2.23.0" } }, "sha512-wPldCk3asibAjQ/kziWQQt1Wh3PgDFpC0XpwclzKcdT1vql6KeYxf5LIt4nlFkUeR8WuphYMKqUA56X4rjbfgQ=="],
 
