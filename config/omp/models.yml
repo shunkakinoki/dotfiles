@@ -1,13 +1,14 @@
 providers:
   cliproxyapi:
-    baseUrl: http://127.0.0.1:8317/v1
+    baseUrl: https://cliproxy.shunkakinoki.com/v1
     api: openai-completions
-    auth: none
+    apiKey: CLIPROXY_API_KEY
+    auth: apiKey
     discovery:
       type: openai-models-list
     models:
       - id: deepseek-v4-flash
-        name: Deepseek V4 Flash (local CLIProxyAPI)
+        name: Deepseek V4 Flash (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text
@@ -20,7 +21,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: deepseek-v4-pro
-        name: Deepseek V4 Pro (local CLIProxyAPI)
+        name: Deepseek V4 Pro (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text
@@ -33,7 +34,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: glm-4.7
-        name: GLM 4.7 (local CLIProxyAPI)
+        name: GLM 4.7 (via shunkakinoki's CLIProxy)
         reasoning: false
         input:
           - text
@@ -46,7 +47,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: gemma-4-31b-it
-        name: Gemma 4 31b It (local CLIProxyAPI)
+        name: Gemma 4 31b It (via shunkakinoki's CLIProxy)
         reasoning: false
         input:
           - text
@@ -59,7 +60,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: minimax-m3
-        name: Minimax M3 (local CLIProxyAPI)
+        name: Minimax M3 (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text
@@ -73,7 +74,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: kimi-k3
-        name: Kimi K3 (local CLIProxyAPI)
+        name: Kimi K3 (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text
@@ -86,7 +87,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: qwen3.6-plus
-        name: Qwen3.6 Plus (local CLIProxyAPI)
+        name: Qwen3.6 Plus (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text
@@ -99,7 +100,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: grok-4.5
-        name: Grok 4.5 (local CLIProxyAPI)
+        name: Grok 4.5 (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text
@@ -112,7 +113,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: gpt-5.6-sol
-        name: GPT 5.6 Sol (local CLIProxyAPI)
+        name: GPT 5.6 Sol (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text
@@ -126,7 +127,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: gpt-5.6-luna
-        name: GPT 5.6 Luna (local CLIProxyAPI)
+        name: GPT 5.6 Luna (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text
@@ -140,7 +141,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: gemini-3.1-pro-low
-        name: Gemini 3.1 Pro Low (local CLIProxyAPI)
+        name: Gemini 3.1 Pro Low (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text
@@ -154,7 +155,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: gemini-3.7-flash-high
-        name: Gemini 3.7 Flash High (local CLIProxyAPI)
+        name: Gemini 3.7 Flash High (via shunkakinoki's CLIProxy)
         reasoning: false
         input:
           - text
@@ -168,7 +169,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: claude-opus-5
-        name: Claude Opus 5 (local CLIProxyAPI)
+        name: Claude Opus 5 (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text
@@ -182,7 +183,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: claude-sonnet-5
-        name: Claude Sonnet 5 (local CLIProxyAPI)
+        name: Claude Sonnet 5 (via shunkakinoki's CLIProxy)
         reasoning: false
         input:
           - text
@@ -196,7 +197,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: claude-haiku-4-5-20251001
-        name: Claude Haiku 4.5 (local CLIProxyAPI)
+        name: Claude Haiku 4.5 (via shunkakinoki's CLIProxy)
         reasoning: false
         input:
           - text
@@ -210,7 +211,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: free
-        name: Free router fallback (local CLIProxyAPI)
+        name: Free router fallback (via shunkakinoki's CLIProxy)
         reasoning: false
         input:
           - text

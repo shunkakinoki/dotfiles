@@ -13,9 +13,7 @@ vim.opt.mouse = "a"
 -- Fall back to Neovim OSC 52 when the scripts are missing on a remote host.
 -- ====================================================================================
 local function is_ssh()
-	return os.getenv("SSH_CLIENT") ~= nil
-		or os.getenv("SSH_TTY") ~= nil
-		or os.getenv("SSH_CONNECTION") ~= nil
+	return os.getenv("SSH_CLIENT") ~= nil or os.getenv("SSH_TTY") ~= nil or os.getenv("SSH_CONNECTION") ~= nil
 end
 
 local clipboard_copy = vim.fn.expand("~/.local/scripts/clipboard-copy")

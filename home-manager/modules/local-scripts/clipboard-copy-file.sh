@@ -42,6 +42,8 @@ if is_ssh; then
   mime=application/octet-stream
   mime_b64=$(printf '%s' "$mime" | base64 | tr -d '\n')
   data_b64=$(base64 <"$file" | tr -d '\n')
+  # OSC 5522 terminator is ESC + backslash. SC1003 misreads the \\ in quotes.
+  # shellcheck disable=SC1003
   seq=$(printf '\033]5522;type=write:mime=%s;%s\033\\' "$mime_b64" "$data_b64")
   printf '%s' "$seq"
   exit 0

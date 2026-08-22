@@ -1,13 +1,14 @@
 providers:
   cliproxyapi:
-    baseUrl: http://127.0.0.1:8317/v1
+    baseUrl: https://cliproxy.shunkakinoki.com/v1
     api: openai-completions
-    auth: none
+    apiKey: CLIPROXY_API_KEY
+    auth: apiKey
     discovery:
       type: openai-models-list
     models:
       - id: __DEEPSEEK_FLASH__
-        name: __DEEPSEEK_FLASH_PRETTY__ (local CLIProxyAPI)
+        name: __DEEPSEEK_FLASH_PRETTY__ (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text
@@ -20,7 +21,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: __DEEPSEEK_PRO__
-        name: __DEEPSEEK_PRO_PRETTY__ (local CLIProxyAPI)
+        name: __DEEPSEEK_PRO_PRETTY__ (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text
@@ -33,7 +34,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: __GLM__
-        name: __GLM_PRETTY__ (local CLIProxyAPI)
+        name: __GLM_PRETTY__ (via shunkakinoki's CLIProxy)
         reasoning: false
         input:
           - text
@@ -46,7 +47,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: __GEMMA__
-        name: __GEMMA_PRETTY__ (local CLIProxyAPI)
+        name: __GEMMA_PRETTY__ (via shunkakinoki's CLIProxy)
         reasoning: false
         input:
           - text
@@ -59,7 +60,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: __MINIMAX__
-        name: __MINIMAX_PRETTY__ (local CLIProxyAPI)
+        name: __MINIMAX_PRETTY__ (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text
@@ -73,7 +74,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: __KIMI__
-        name: __KIMI_PRETTY__ (local CLIProxyAPI)
+        name: __KIMI_PRETTY__ (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text
@@ -86,7 +87,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: __QWEN__
-        name: __QWEN_PRETTY__ (local CLIProxyAPI)
+        name: __QWEN_PRETTY__ (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text
@@ -99,7 +100,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: __GROK__
-        name: __GROK_PRETTY__ (local CLIProxyAPI)
+        name: __GROK_PRETTY__ (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text
@@ -112,7 +113,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: __GPT__
-        name: __GPT_PRETTY__ (local CLIProxyAPI)
+        name: __GPT_PRETTY__ (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text
@@ -126,7 +127,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: __GPT_LUNA__
-        name: __GPT_LUNA_PRETTY__ (local CLIProxyAPI)
+        name: __GPT_LUNA_PRETTY__ (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text
@@ -140,7 +141,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: __GEMINI_PRO__
-        name: __GEMINI_PRO_PRETTY__ (local CLIProxyAPI)
+        name: __GEMINI_PRO_PRETTY__ (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text
@@ -154,7 +155,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: __GEMINI_FLASH__
-        name: __GEMINI_FLASH_PRETTY__ (local CLIProxyAPI)
+        name: __GEMINI_FLASH_PRETTY__ (via shunkakinoki's CLIProxy)
         reasoning: false
         input:
           - text
@@ -168,7 +169,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: __CLAUDE_OPUS__
-        name: __CLAUDE_OPUS_PRETTY__ (local CLIProxyAPI)
+        name: __CLAUDE_OPUS_PRETTY__ (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text
@@ -182,7 +183,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: __CLAUDE_SONNET__
-        name: __CLAUDE_SONNET_PRETTY__ (local CLIProxyAPI)
+        name: __CLAUDE_SONNET_PRETTY__ (via shunkakinoki's CLIProxy)
         reasoning: false
         input:
           - text
@@ -196,7 +197,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: __CLAUDE_HAIKU__
-        name: __CLAUDE_HAIKU_PRETTY__ (local CLIProxyAPI)
+        name: __CLAUDE_HAIKU_PRETTY__ (via shunkakinoki's CLIProxy)
         reasoning: false
         input:
           - text
@@ -210,7 +211,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: free
-        name: Free router fallback (local CLIProxyAPI)
+        name: Free router fallback (via shunkakinoki's CLIProxy)
         reasoning: false
         input:
           - text
