@@ -51,7 +51,7 @@ osc52_paste() {
   if printf '%s' "$b64" | base64 -d 2>/dev/null; then
     return 0
   fi
-  printf '%s' "$b64" | base64 -D
+  printf '%s' "$b64" | base64 -D 2>/dev/null || return 1
 }
 
 if is_ssh; then

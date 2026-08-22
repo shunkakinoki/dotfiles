@@ -8,9 +8,9 @@ vim.opt.updatetime = 300
 vim.opt.mouse = "a"
 
 -- ====================================================================================
--- SSH / OSC52 CLIPBOARD HANDLING
--- From: https://github.com/dmtrKovalenko/dotfiles
--- Uses OSC 52 protocol for clipboard when running over SSH
+-- CLIPBOARD HANDLING
+-- Prefer local copy/paste scripts (OSC 52 over SSH, native locally).
+-- Fall back to Neovim OSC 52 when the scripts are missing on a remote host.
 -- ====================================================================================
 local function is_ssh()
 	return os.getenv("SSH_CLIENT") ~= nil
@@ -18,7 +18,21 @@ local function is_ssh()
 		or os.getenv("SSH_CONNECTION") ~= nil
 end
 
-if is_ssh() then
+local clipboard_copy = vim.fn.expand("~/.local/scripts/clipboard-copy")
+local clipboard_paste = vim.fn.expand("~/.local/scripts/clipboard-paste")
+if vim.fn.executable(clipboard_copy) == 1 and vim.fn.executable(clipboard_paste) == 1 then
+	vim.g.clipboard = {
+		name = "local-scripts",
+		copy = {
+			["+"] = { clipboard_copy },
+			["*"] = { clipboard_copy },
+		},
+		paste = {
+			["+"] = { clipboard_paste },
+			["*"] = { clipboard_paste },
+		},
+	}
+elseif is_ssh() then
 	vim.g.clipboard = {
 		name = "OSC 52",
 		copy = {
@@ -30,22 +44,6 @@ if is_ssh() then
 			["*"] = require("vim.ui.clipboard.osc52").paste("*"),
 		},
 	}
-else
-	local clipboard_copy = vim.fn.expand("~/.local/scripts/clipboard-copy")
-	local clipboard_paste = vim.fn.expand("~/.local/scripts/clipboard-paste")
-	if vim.fn.executable(clipboard_copy) == 1 and vim.fn.executable(clipboard_paste) == 1 then
-		vim.g.clipboard = {
-			name = "local-scripts",
-			copy = {
-				["+"] = { clipboard_copy },
-				["*"] = { clipboard_copy },
-			},
-			paste = {
-				["+"] = { clipboard_paste },
-				["*"] = { clipboard_paste },
-			},
-		}
-	end
 end
 vim.opt.clipboard = "unnamedplus"
 vim.opt.inccommand = "nosplit"

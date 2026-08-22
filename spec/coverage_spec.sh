@@ -109,6 +109,10 @@ It 'has spec file for home-manager/modules/local-scripts/clipboard-copy-image.sh
 The path "spec/clipboard_copy_image_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/modules/local-scripts/clipboard-copy-file.sh'
+The path "spec/clipboard_copy_file_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/screenshot-clipboard/watch.sh'
 The path "spec/screenshot_clipboard_spec.sh" should be exist
 End
@@ -517,6 +521,7 @@ home-manager/modules/cargo-globals/install-cargo-globals.sh
 home-manager/modules/local-binaries/sync-local-binaries.sh
 home-manager/modules/local-scripts/clipboard-copy.sh
 home-manager/modules/local-scripts/clipboard-copy-image.sh
+home-manager/modules/local-scripts/clipboard-copy-file.sh
 home-manager/modules/local-scripts/clipboard-paste.sh
 home-manager/modules/local-scripts/decafinate.sh
 home-manager/modules/local-scripts/notify-local.sh

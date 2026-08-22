@@ -14,6 +14,38 @@ if [[ ! -f $file ]]; then
   exit 1
 fi
 
+is_ssh() {
+  [[ -n ${SSH_TTY:-} || -n ${SSH_CONNECTION:-} || -n ${SSH_CLIENT:-} ]]
+}
+
+image_mime() {
+  local lower
+  lower=$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')
+  case $lower in
+    *.jpg | *.jpeg) printf 'image/jpeg' ;;
+    *.gif) printf 'image/gif' ;;
+    *.webp) printf 'image/webp' ;;
+    *.tif | *.tiff) printf 'image/tiff' ;;
+    *.bmp) printf 'image/bmp' ;;
+    *) printf 'image/png' ;;
+  esac
+}
+
+# OSC 5522 (Kitty clipboard protocol) carries typed image bytes through the
+# PTY to the local terminal. Ghostty parses this; write support is landing
+# on tip. Remote native clipboards are the wrong destination over SSH.
+if is_ssh; then
+  mime=$(image_mime "$file")
+  mime_b64=$(printf '%s' "$mime" | base64 | tr -d '\n')
+  data_b64=$(base64 <"$file" | tr -d '\n')
+  seq=$(printf '\033]5522;type=write:mime=%s;%s\033\\' "$mime_b64" "$data_b64")
+  printf '%s' "$seq"
+  if [[ -n ${SSH_TTY:-} && -w ${SSH_TTY} ]]; then
+    printf '%s' "$seq" >"$SSH_TTY" 2>/dev/null || true
+  fi
+  exit 0
+fi
+
 # macOS: AppleScript reads the file as «class PNGf» so receivers paste it as
 # an image. Piping PNG bytes through pbcopy would store them as text and
 # break image paste in Slack, Messages, browsers, etc. The path is passed as

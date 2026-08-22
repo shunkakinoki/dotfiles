@@ -86,6 +86,47 @@ The status should be success
 End
 End
 
+Describe 'when SSH is set'
+setup() {
+  TEST_DIR=$(mktemp -d)
+  TEST_FILE="$TEST_DIR/test.png"
+  printf 'png' >"$TEST_FILE"
+  MOCK_BIN="$(mktemp -d)"
+  MOCK_ORIGINAL_PATH="${PATH:-}"
+  MOCK_ORIGINAL_SSH_CONNECTION="${SSH_CONNECTION:-}"
+  MOCK_ORIGINAL_WAYLAND="${WAYLAND_DISPLAY:-}"
+  local cmd
+  for cmd in bash base64 tr printf; do
+    ln -sf "$(command -v "$cmd")" "$MOCK_BIN/$cmd"
+  done
+  export PATH="$MOCK_BIN"
+  unset WAYLAND_DISPLAY
+  export SSH_CONNECTION='1.2.3.4 1234 5.6.7.8 22'
+  export MOCK_BIN MOCK_ORIGINAL_PATH MOCK_ORIGINAL_SSH_CONNECTION MOCK_ORIGINAL_WAYLAND
+}
+cleanup() {
+  export PATH="$MOCK_ORIGINAL_PATH"
+  if [ -n "$MOCK_ORIGINAL_SSH_CONNECTION" ]; then
+    export SSH_CONNECTION="$MOCK_ORIGINAL_SSH_CONNECTION"
+  else
+    unset SSH_CONNECTION
+  fi
+  if [ -n "$MOCK_ORIGINAL_WAYLAND" ]; then
+    export WAYLAND_DISPLAY="$MOCK_ORIGINAL_WAYLAND"
+  fi
+  rm -rf "$TEST_DIR" "$MOCK_BIN"
+  unset MOCK_BIN MOCK_ORIGINAL_PATH MOCK_ORIGINAL_SSH_CONNECTION MOCK_ORIGINAL_WAYLAND
+}
+Before 'setup'
+After 'cleanup'
+
+It 'emits OSC 5522 instead of using a remote native clipboard'
+When run bash "$SCRIPT" "$TEST_FILE"
+The status should be success
+The output should start with $'\033]5522;type=write'
+End
+End
+
 Describe 'when no clipboard backend is available'
 setup() {
   TEST_DIR=$(mktemp -d)
