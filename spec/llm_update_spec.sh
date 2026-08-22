@@ -224,9 +224,15 @@ When run bash -c "sed -n '/^modelRoles:/,/^# ====/p' config/omp/config.yml | gre
 The output should equal ''
 End
 
-It 'restricts OMP selection to CLIProxyAPI models'
-When run bash -c "grep -A1 'enabledModels:' config/omp/config.yml | grep 'cliproxyapi/\*'"
+It 'keeps CLIProxyAPI as the primary OMP model source'
+When run bash -c "grep -A2 'enabledModels:' config/omp/config.yml | grep 'cliproxyapi/\*'"
 The output should include 'cliproxyapi/*'
+End
+
+It 'enables OMP OpenRouter models alongside CLIProxyAPI'
+When run bash -c "grep -A2 'enabledModels:' config/omp/config.yml"
+The output should include 'cliproxyapi/*'
+The output should include 'openrouter/*'
 End
 
 It 'uses the shared CLIProxy fallback chain for OMP'
@@ -245,6 +251,11 @@ End
 End
 
 Describe 'runtime model fallback'
+It 'enables Pi OpenRouter catalog and preset models'
+When run bash -c "jq -e '(.enabledModels | index(\"openrouter/*\") != null) and (.enabledModels | index(\"openrouter-preset/*\") != null)' config/pi/settings.json >/dev/null && jq -e '(.enabledModels | index(\"openrouter/*\") != null) and (.enabledModels | index(\"openrouter-preset/*\") != null)' config/pi/settings.tpl.json >/dev/null"
+The status should be success
+End
+
 It 'points Pi cliproxyapi at local CLIProxy'
 When run bash -c "jq -e '.providers.cliproxyapi.baseUrl == \"http://127.0.0.1:8317/v1\"' config/pi/models.json >/dev/null && jq -e '.providers.cliproxyapi.baseUrl == \"http://127.0.0.1:8317/v1\"' config/pi/models.tpl.json >/dev/null"
 The status should be success
