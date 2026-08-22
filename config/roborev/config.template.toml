@@ -1,3 +1,23 @@
+# Pi review subagents: ox-alpha via OpenRouter first, cliproxy free as fallback.
+# Both are allow-failure; panels list pi-oxalpha before pi so ox-alpha runs first.
+[review.subagents.pi-oxalpha]
+agent = 'pi'
+provider = 'openrouter'
+model = 'stealth/ox-alpha'
+review_type = 'default'
+allow_failure = true
+
+[review.subagents.pi]
+agent = 'pi'
+provider = 'cliproxyapi'
+model = 'free'
+review_type = 'default'
+allow_failure = true
+
+[review.panels.full]
+members = ['antigravity', 'opencode', 'droid', 'pi-oxalpha', 'pi']
+synthesis_agent = 'gemini'
+
 [ci]
 enabled = true
 # Poll frequently so new pushes reach the daemon promptly.
