@@ -503,6 +503,7 @@ openai-compatibility:
       - api-key: "__ZAI_API_KEY__"
     models: []
   - name: "kimi"
+    priority: 50
     base-url: "https://api.moonshot.cn/v1"
     api-key-entries:
       - api-key: "__KIMI_API_KEY__"
@@ -510,6 +511,7 @@ openai-compatibility:
       - name: "__KIMI__"
         alias: "__KIMI__"
   - name: "qwen"
+    priority: 50
     base-url: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
     api-key-entries:
       - api-key: "__QWEN_API_KEY__"
