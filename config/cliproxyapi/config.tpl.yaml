@@ -479,9 +479,10 @@ openai-compatibility:
         alias: "__DEEPSEEK_FLASH__"
       - name: "@preset/__DEEPSEEK_PRO_NONDOT__"
         alias: "__DEEPSEEK_PRO__"
+      # "free" pool: ox-alpha first, free router as fallback.
       - name: "stealth/ox-alpha"
-        alias: "ox-alpha"
-        display-name: "ox-alpha (stealth via OpenRouter)"
+        alias: "free"
+        display-name: "Free (ox-alpha first)"
       - name: "openrouter/free"
         alias: "free"
   - name: "z-ai"
