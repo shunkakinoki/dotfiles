@@ -468,6 +468,7 @@ openai-compatibility:
   # Note: with two providers serving "free", requests round-robin between
   # them per request (registry sorts by client count then provider name).
   - name: "openrouter-campaign"
+    priority: 102
     base-url: "https://openrouter.ai/api/v1"
     support-prompt-cache-key: true
     api-key-entries:
