@@ -543,7 +543,7 @@ openai-compatibility:
     models:
       - name: "deepseek-v4-pro"
         alias: "deepseek-v4-pro"
-      - name: "deepseek-v4-flash"
+      - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4-flash"
   - name: "commandcode"
     priority: 150
@@ -554,7 +554,7 @@ openai-compatibility:
     models:
       - name: "deepseek-v4-pro"
         alias: "deepseek-v4-pro"
-      - name: "deepseek-v4-flash"
+      - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4-flash"
   - name: "openai"
     base-url: "https://api.openai.com/v1"
@@ -572,7 +572,7 @@ openai-compatibility:
     models:
       - name: "deepseek-v4-pro"
         alias: "deepseek-v4-pro"
-      - name: "deepseek-v4-flash"
+      - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4-flash"
 
 # Official OpenAI compatibility provider reference
