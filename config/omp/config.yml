@@ -38,6 +38,7 @@ extensions:
   - "~/.omp/agent/extensions/swarm-extension"
 enabledModels:
   - cliproxyapi/*
+  - openrouter/*
 disabledProviders: []
 disabledExtensions: []
 # =============================================================================
