@@ -120,8 +120,7 @@ Hermes also runs a Mixture-of-Agents preset: reference models
 | Codex | `qwen-local` profile | `qwen3.5-0.8b-optiq` (LM Studio) | |
 | Antigravity | default | `gemini-3.7-flash-high` (native Antigravity provider) | [settings.tpl.json](config/antigravity/settings.tpl.json) |
 | Pi | `defaultModel` | `glm-4.7` (provider `cliproxyapi`) | [settings.tpl.json](config/pi/settings.tpl.json) |
-| Factory (droid) | session default | `deepseek-v4-flash` | [settings.tpl.json](config/factory/settings.tpl.json) |
-| Factory (droid) | custom local | `gemma3:4b` (Ollama) | |
+| Factory (droid) | session default | `custom:deepseek-v4-flash-0` via `https://cliproxy.shunkakinoki.com/v1` | [settings.tpl.json](config/factory/settings.tpl.json) |
 | aichat | default | `cliproxy:glm-4.7` | [config.tpl.yaml](config/aichat/config.tpl.yaml) |
 | llm | default | `glm-4.7` | [default_model.tpl.txt](config/llm/default_model.tpl.txt) |
 | Handy | transcript post-process | `@preset/glm-4.7` (OpenRouter) | [settings_store.tpl.json](config/handy/settings_store.tpl.json) |

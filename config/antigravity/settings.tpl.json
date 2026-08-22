@@ -1,3 +1,12 @@
 {
-  "model": "gemini-3.7-flash-high"
+  "model": "gemini-3.7-flash-high",
+  "permissions": {
+    "allow": [
+      "read_file(*)",
+      "command(pwd)",
+      "command(ls)",
+      "command(git)",
+      "command(wc)"
+    ]
+  }
 }

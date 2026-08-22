@@ -59,14 +59,19 @@ if [ -f "$SETTINGS" ]; then
     ($managed[0]) as $managed_settings
     | .sessionDefaultSettings =
         ((.sessionDefaultSettings // {}) * $managed_settings.sessionDefaultSettings)
+    | ($managed_settings.customModels // [] | map(.id)) as $managed_ids
     | .customModels =
         ((.customModels // [])
          | if type == "array" then
-             map(select(.id != $managed_settings.customModels[0].id))
+             map(select(.id as $id | ($managed_ids | index($id) | not)))
              + $managed_settings.customModels
            else
              $managed_settings.customModels
            end)
+    | .customModels |= map(select(
+        .id != "custom:gemma3:4b-0"
+        and .baseUrl != "http://127.0.0.1:11434/v1"
+      ))
     | .hooks = (.hooks // {})
     | .hooks |= with_entries(
         if ((.value | type) == "array") then
@@ -97,6 +102,25 @@ else
   "$JQ_BIN" --slurpfile managed "$MANAGED_SETTINGS" -n '
     ($managed[0])
   ' >"$TEMP_SETTINGS"
+fi
+
+# shellcheck source=/dev/null
+ENV_FILE="${HOME}/dotfiles/.env"
+cliproxy_key="${CLIPROXY_API_KEY:-}"
+if [ -z "$cliproxy_key" ] && [ -f "$ENV_FILE" ]; then
+  set -a
+  . "$ENV_FILE"
+  set +a
+  cliproxy_key="${CLIPROXY_API_KEY:-}"
+fi
+if [ -n "$cliproxy_key" ]; then
+  key_tmp="$(mktemp "$FACTORY_DIR/settings.json.XXXXXX")"
+  "$JQ_BIN" --arg key "$cliproxy_key" '
+    .customModels |= map(
+      if .apiKey == "CLIPROXY_API_KEY" then .apiKey = $key else . end
+    )
+  ' "$TEMP_SETTINGS" >"$key_tmp"
+  mv -f "$key_tmp" "$TEMP_SETTINGS"
 fi
 
 mv -f "$TEMP_SETTINGS" "$SETTINGS"
