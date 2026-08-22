@@ -312,7 +312,7 @@ retry:
   #
   #   Candidates are the entries AFTER the current model in its chain, so a role
   #   whose model sits last in the chain it inherits has no candidates at all.
-  #   Roles pinned to glm-4.7 inherit `default` and still have `free` after
+  #   Roles pinned to free inherit `default` and still have `free` after
   #   them. Do not put a role on the last hop.
   fallbackChains:
     default:
