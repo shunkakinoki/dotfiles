@@ -1,16 +1,16 @@
 {
   "sessionDefaultSettings": {
-    "model": "__DEEPSEEK_FLASH__",
+    "model": "custom:__DEEPSEEK_FLASH__-0",
     "reasoningEffort": "high"
   },
   "customModels": [
     {
-      "model": "__GEMMA_LOCAL__",
-      "id": "custom:__GEMMA_LOCAL_NONDOT__-0",
+      "model": "__DEEPSEEK_FLASH__",
+      "id": "custom:__DEEPSEEK_FLASH__-0",
       "index": 0,
-      "baseUrl": "http://127.0.0.1:11434/v1",
-      "apiKey": "ollama",
-      "displayName": "__GEMMA_LOCAL_PRETTY__",
+      "baseUrl": "https://cliproxy.shunkakinoki.com/v1",
+      "apiKey": "CLIPROXY_API_KEY",
+      "displayName": "__DEEPSEEK_FLASH_PRETTY__",
       "maxOutputTokens": 64000,
       "noImageSupport": true,
       "provider": "generic-chat-completion-api"

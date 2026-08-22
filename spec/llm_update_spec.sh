@@ -181,6 +181,20 @@ When run jq -e '.model == "gemini-3.7-flash-high" and has("modelProvider") == fa
 The status should be success
 The output should equal 'true'
 End
+
+It 'keeps headless Antigravity review tool allows'
+When run jq -e '.permissions.allow | (index("read_file(*)") != null) and (index("command(pwd)") != null) and (index("command(ls)") != null)' config/antigravity/settings.tpl.json
+The status should be success
+The output should equal 'true'
+End
+End
+
+Describe 'generated Factory settings'
+It 'pins Droid to the CLIProxy DeepSeek Flash custom model'
+When run jq -e '.sessionDefaultSettings.model == "custom:__DEEPSEEK_FLASH__-0" and (.customModels | length) == 1 and .customModels[0].id == "custom:__DEEPSEEK_FLASH__-0" and .customModels[0].baseUrl == "https://cliproxy.shunkakinoki.com/v1"' config/factory/settings.tpl.json
+The status should be success
+The output should equal 'true'
+End
 End
 
 Describe 'OpenCode runtime fallback'
