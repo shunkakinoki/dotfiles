@@ -462,6 +462,20 @@ nonstream-keepalive-interval: 0
 
 # OpenAI compatibility providers
 openai-compatibility:
+  # Temporary campaign provider: serves stealth/ox-alpha under the same
+  # "free" alias so callers keep using "free" while ox-alpha is evaluated.
+  # Same OpenRouter token; remove when the trial ends.
+  # Note: with two providers serving "free", requests round-robin between
+  # them per request (registry sorts by client count then provider name).
+  - name: "openrouter-campaign"
+    base-url: "https://openrouter.ai/api/v1"
+    support-prompt-cache-key: true
+    api-key-entries:
+      - api-key: "__OPENROUTER_API_KEY__"
+    models:
+      - name: "stealth/ox-alpha"
+        alias: "free"
+        display-name: "Free (ox-alpha via openrouter-campaign)"
   - name: "openrouter"
     priority: 100
     base-url: "https://openrouter.ai/api/v1"
@@ -479,10 +493,6 @@ openai-compatibility:
         alias: "deepseek-v4-flash"
       - name: "@preset/deepseek-v4-pro"
         alias: "deepseek-v4-pro"
-      # "free" pool: ox-alpha first, free router as fallback.
-      - name: "stealth/ox-alpha"
-        alias: "free"
-        display-name: "Free (ox-alpha first)"
       - name: "openrouter/free"
         alias: "free"
   - name: "z-ai"
