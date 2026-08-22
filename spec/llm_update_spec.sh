@@ -219,7 +219,7 @@ When run bash -c "grep 'default: \"cliproxyapi/deepseek-v4-flash\"' config/omp/c
 The output should include 'cliproxyapi/deepseek-v4-flash'
 End
 
-It 'routes every OMP role through local CLIProxyAPI'
+It 'routes every OMP role through remote CLIProxyAPI'
 When run bash -c "sed -n '/^modelRoles:/,/^# ====/p' config/omp/config.yml | grep -E '^  (default|smol|slow|vision|plan|commit|task):' | grep -v 'cliproxyapi/' || true"
 The output should equal ''
 End
@@ -256,8 +256,8 @@ When run bash -c "jq -e '(.enabledModels | index(\"openrouter/*\") != null) and 
 The status should be success
 End
 
-It 'points Pi cliproxyapi at local CLIProxy'
-When run bash -c "jq -e '.providers.cliproxyapi.baseUrl == \"http://127.0.0.1:8317/v1\"' config/pi/models.json >/dev/null && jq -e '.providers.cliproxyapi.baseUrl == \"http://127.0.0.1:8317/v1\"' config/pi/models.tpl.json >/dev/null"
+It 'points Pi cliproxyapi at remote CLIProxy'
+When run bash -c "jq -e '.providers.cliproxyapi.baseUrl == \"https://cliproxy.shunkakinoki.com/v1\"' config/pi/models.json >/dev/null && jq -e '.providers.cliproxyapi.baseUrl == \"https://cliproxy.shunkakinoki.com/v1\"' config/pi/models.tpl.json >/dev/null"
 The status should be success
 End
 
@@ -302,8 +302,8 @@ End
 End
 
 Describe 'CLIProxyAPI routing'
-It 'hydrates the OMP local CLIProxyAPI catalog'
-When run bash -c "grep -q 'baseUrl: http://127.0.0.1:8317/v1' config/omp/models.yml && grep -q 'type: openai-models-list' config/omp/models.yml && grep -q 'id: deepseek-v4-flash' config/omp/models.yml && grep -q 'id: glm-4.7' config/omp/models.yml && grep -q 'id: gemma-4-31b-it' config/omp/models.yml && grep -q 'id: free' config/omp/models.yml && ! grep -q '__DEEPSEEK_FLASH__' config/omp/models.yml"
+It 'hydrates the OMP remote CLIProxyAPI catalog'
+When run bash -c "grep -q 'baseUrl: https://cliproxy.shunkakinoki.com/v1' config/omp/models.yml && grep -q 'auth: apiKey' config/omp/models.yml && grep -q 'type: openai-models-list' config/omp/models.yml && grep -q 'id: deepseek-v4-flash' config/omp/models.yml && grep -q 'id: glm-4.7' config/omp/models.yml && grep -q 'id: gemma-4-31b-it' config/omp/models.yml && grep -q 'id: free' config/omp/models.yml && ! grep -q '__DEEPSEEK_FLASH__' config/omp/models.yml"
 The status should be success
 End
 

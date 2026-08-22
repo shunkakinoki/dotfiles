@@ -131,7 +131,7 @@ OMP selects only `cliproxyapi/*`. Subagent overrides: `code-explorer`,
 (`code-architect`, `code-reviewer`, `code-simplifier`,
 `silent-failure-hunter`, `type-design-analyzer`) use `deepseek-v4-flash`.
 The registry in [models.tpl.yml](config/omp/models.tpl.yml) lists the
-CLIProxy aliases and discovers the rest from local `/v1/models`.
+CLIProxy aliases and discovers the rest from remote `/v1/models`.
 OMP fallback uses the shared chain (`deepseek-v4-flash` -> `gemma-4-31b-it`
 -> `glm-4.7` -> `free`).
 
@@ -159,8 +159,8 @@ in particular means different endpoints in different harnesses.
 | `shunkakinoki/` | OpenCode | `https://cliproxy.shunkakinoki.com/v1` (remote) |
 | `cliproxy/` | OpenClaw, Hermes | `https://cliproxy.shunkakinoki.com/v1` (remote) |
 | `cliproxyapi/` | OpenCode | `http://localhost:8317/v1` (local) |
-| `cliproxyapi/` | OMP | `http://127.0.0.1:8317/v1` (local) |
-| `cliproxyapi/` | Pi | `http://127.0.0.1:8317/v1` (local) |
+| `cliproxyapi/` | OMP | `https://cliproxy.shunkakinoki.com/v1` (remote) |
+| `cliproxyapi/` | Pi | `https://cliproxy.shunkakinoki.com/v1` (remote) |
 
 Every one of them resolves through
 [config.tpl.yaml](config/cliproxyapi/config.tpl.yaml). Higher `priority` wins.

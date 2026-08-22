@@ -1,7 +1,7 @@
 {
   "providers": {
     "cliproxyapi": {
-      "baseUrl": "http://127.0.0.1:8317/v1",
+      "baseUrl": "https://cliproxy.shunkakinoki.com/v1",
       "apiKey": "CLIPROXY_API_KEY",
       "api": "openai-responses",
       "models": [
