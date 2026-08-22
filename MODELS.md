@@ -160,7 +160,7 @@ in particular means different endpoints in different harnesses.
 | `cliproxy/` | OpenClaw, Hermes | `https://cliproxy.shunkakinoki.com/v1` (remote) |
 | `cliproxyapi/` | OpenCode | `http://localhost:8317/v1` (local) |
 | `cliproxyapi/` | OMP | `http://127.0.0.1:8317/v1` (local) |
-| `cliproxyapi/` | Pi | `https://cliproxy.shunkakinoki.com/v1` (remote) |
+| `cliproxyapi/` | Pi | `http://127.0.0.1:8317/v1` (local) |
 
 Every one of them resolves through
 [config.tpl.yaml](config/cliproxyapi/config.tpl.yaml). Higher `priority` wins.

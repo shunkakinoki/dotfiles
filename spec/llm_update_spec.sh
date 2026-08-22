@@ -245,6 +245,11 @@ End
 End
 
 Describe 'runtime model fallback'
+It 'points Pi cliproxyapi at local CLIProxy'
+When run bash -c "jq -e '.providers.cliproxyapi.baseUrl == \"http://127.0.0.1:8317/v1\"' config/pi/models.json >/dev/null && jq -e '.providers.cliproxyapi.baseUrl == \"http://127.0.0.1:8317/v1\"' config/pi/models.tpl.json >/dev/null"
+The status should be success
+End
+
 It 'generates the free-tier CLIProxy Pi fallback chain'
 When run bash -c "jq -e '.enabled == true and .max_fallback_attempts == 5 and .fallback_models == [\"cliproxyapi/gemma-4-31b-it\",\"cliproxyapi/glm-4.7\",\"cliproxyapi/free\"]' config/pi/fallback.json >/dev/null"
 The status should be success
