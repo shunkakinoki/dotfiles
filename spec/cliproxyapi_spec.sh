@@ -372,6 +372,23 @@ The output should include 'strategy: "fill-first"'
 The status should be success
 End
 
+It 'keeps unprefixed glm-4.7 on OpenRouter instead of depleted Z-AI'
+When run bash -c "sed -n '/name: \"z-ai\"/,/name: \"kimi\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'priority: 50'
+The output should include 'prefix: "z-ai"'
+The output should include 'models: []'
+The output should not include 'alias: "glm-4.7"'
+The status should be success
+End
+
+It 'routes glm-4.7 to the OpenRouter z-ai slug instead of a dead preset'
+When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'name: "z-ai/glm-4.7"'
+The output should include 'alias: "glm-4.7"'
+The output should not include '@preset/glm-4-7'
+The status should be success
+End
+
 It 'maps the free router to OpenClaw canonical model alias'
 When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'name: "openrouter/free"'

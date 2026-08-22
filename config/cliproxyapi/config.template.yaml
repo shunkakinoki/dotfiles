@@ -471,7 +471,7 @@ openai-compatibility:
     models:
       - name: "openai/gpt-5.4-image-2"
         alias: "gpt-image-2"
-      - name: "@preset/glm-4-7"
+      - name: "z-ai/glm-4.7"
         alias: "glm-4.7"
       - name: "@preset/gemma-4-31b-it"
         alias: "gemma-4-31b-it"
@@ -482,12 +482,12 @@ openai-compatibility:
       - name: "openrouter/free"
         alias: "free"
   - name: "z-ai"
+    priority: 50
+    prefix: "z-ai"
     base-url: "https://api.z.ai/api/coding/paas/v4"
     api-key-entries:
       - api-key: "__ZAI_API_KEY__"
-    models:
-      - name: "glm-4.7"
-        alias: "glm-4.7"
+    models: []
   - name: "kimi"
     base-url: "https://api.moonshot.cn/v1"
     api-key-entries:
