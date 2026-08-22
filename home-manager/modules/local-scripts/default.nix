@@ -9,6 +9,11 @@ _: {
     force = true;
     source = ./clipboard-copy-image.sh;
   };
+  home.file.".local/scripts/clipboard-copy-file" = {
+    executable = true;
+    force = true;
+    source = ./clipboard-copy-file.sh;
+  };
   home.file.".local/scripts/clipboard-paste" = {
     executable = true;
     force = true;

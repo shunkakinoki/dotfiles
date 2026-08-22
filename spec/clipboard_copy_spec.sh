@@ -80,22 +80,62 @@ The status should be success
 End
 End
 
+Describe 'when pbcopy is available over SSH'
+setup() {
+  mock_bin_setup pbcopy
+  MOCK_CACHE="$(mktemp -d)"
+  MOCK_ORIGINAL_SSH_CONNECTION="${SSH_CONNECTION:-}"
+  MOCK_ORIGINAL_XDG_CACHE_HOME="${XDG_CACHE_HOME:-}"
+  export SSH_CONNECTION='1.2.3.4 1234 5.6.7.8 22'
+  export XDG_CACHE_HOME="$MOCK_CACHE"
+  export MOCK_CACHE MOCK_ORIGINAL_SSH_CONNECTION MOCK_ORIGINAL_XDG_CACHE_HOME
+}
+cleanup() {
+  mock_bin_cleanup
+  if [ -n "$MOCK_ORIGINAL_SSH_CONNECTION" ]; then
+    export SSH_CONNECTION="$MOCK_ORIGINAL_SSH_CONNECTION"
+  else
+    unset SSH_CONNECTION
+  fi
+  if [ -n "$MOCK_ORIGINAL_XDG_CACHE_HOME" ]; then
+    export XDG_CACHE_HOME="$MOCK_ORIGINAL_XDG_CACHE_HOME"
+  else
+    unset XDG_CACHE_HOME
+  fi
+  rm -rf "$MOCK_CACHE"
+  unset MOCK_CACHE MOCK_ORIGINAL_SSH_CONNECTION MOCK_ORIGINAL_XDG_CACHE_HOME
+}
+Before 'setup'
+After 'cleanup'
+
+It 'uses OSC 52 instead of the remote pbcopy'
+Data "hello"
+When run bash "$SCRIPT"
+The status should be success
+The output should start with $'\033]52;c;'
+The contents of file "$MOCK_CACHE/clipboard/data" should eq "hello"
+End
+End
+
 Describe 'when no clipboard backend but SSH_TTY is set'
 setup() {
   MOCK_BIN="$(mktemp -d)"
+  MOCK_CACHE="$(mktemp -d)"
   MOCK_ORIGINAL_PATH="${PATH:-}"
   MOCK_ORIGINAL_WAYLAND="${WAYLAND_DISPLAY:-}"
   MOCK_ORIGINAL_SSH_TTY="${SSH_TTY:-}"
+  MOCK_ORIGINAL_XDG_CACHE_HOME="${XDG_CACHE_HOME:-}"
   # Symlink only the commands the script needs into MOCK_BIN to avoid
   # leaking pbcopy/xclip/etc. from shared directories like /usr/bin
   local cmd
-  for cmd in bash base64 tr printf; do
+  for cmd in bash base64 tr printf tee mkdir chmod dirname cat; do
     ln -sf "$(command -v "$cmd")" "$MOCK_BIN/$cmd"
   done
   export PATH="$MOCK_BIN"
   unset WAYLAND_DISPLAY
   export SSH_TTY=/dev/pts/0
-  export MOCK_BIN MOCK_ORIGINAL_PATH MOCK_ORIGINAL_WAYLAND MOCK_ORIGINAL_SSH_TTY
+  export XDG_CACHE_HOME="$MOCK_CACHE"
+  export MOCK_BIN MOCK_CACHE MOCK_ORIGINAL_PATH MOCK_ORIGINAL_WAYLAND MOCK_ORIGINAL_SSH_TTY MOCK_ORIGINAL_XDG_CACHE_HOME
 }
 cleanup() {
   export PATH="$MOCK_ORIGINAL_PATH"
@@ -107,14 +147,20 @@ cleanup() {
   else
     unset SSH_TTY
   fi
-  rm -rf "$MOCK_BIN"
-  unset MOCK_BIN MOCK_ORIGINAL_PATH MOCK_ORIGINAL_WAYLAND MOCK_ORIGINAL_SSH_TTY
+  if [ -n "$MOCK_ORIGINAL_XDG_CACHE_HOME" ]; then
+    export XDG_CACHE_HOME="$MOCK_ORIGINAL_XDG_CACHE_HOME"
+  else
+    unset XDG_CACHE_HOME
+  fi
+  rm -rf "$MOCK_BIN" "$MOCK_CACHE"
+  unset MOCK_BIN MOCK_CACHE MOCK_ORIGINAL_PATH MOCK_ORIGINAL_WAYLAND MOCK_ORIGINAL_SSH_TTY MOCK_ORIGINAL_XDG_CACHE_HOME
 }
 Before 'setup'
 After 'cleanup'
 
 It 'uses OSC 52 escape sequence'
-When run bash "$SCRIPT" <<<"hello"
+Data "hello"
+When run bash "$SCRIPT"
 The status should be success
 The output should start with $'\033]52;c;'
 End
@@ -154,7 +200,8 @@ Before 'setup'
 After 'cleanup'
 
 It 'uses OSC 52 escape sequence'
-When run bash "$SCRIPT" <<<"hello"
+Data "hello"
+When run bash "$SCRIPT"
 The status should be success
 The output should start with $'\033]52;c;'
 End
@@ -168,7 +215,7 @@ setup() {
   MOCK_ORIGINAL_SSH_TTY="${SSH_TTY:-}"
   ln -sf "$(command -v bash)" "$MOCK_BIN/bash"
   export PATH="$MOCK_BIN"
-  unset WAYLAND_DISPLAY SSH_TTY TMUX ZELLIJ
+  unset WAYLAND_DISPLAY SSH_TTY SSH_CONNECTION SSH_CLIENT TMUX ZELLIJ
   export MOCK_BIN MOCK_ORIGINAL_PATH MOCK_ORIGINAL_WAYLAND MOCK_ORIGINAL_SSH_TTY
 }
 cleanup() {

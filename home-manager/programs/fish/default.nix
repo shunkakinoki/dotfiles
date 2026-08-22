@@ -98,9 +98,7 @@
       fish_vi_key_bindings
     '';
     shellAliases = {
-      copy = "clipboard-copy";
       neofetch = "fastfetch";
-      paste = "clipboard-paste";
     };
     shellAbbrs = {
       cat = "bat";
@@ -262,6 +260,7 @@
         "_clxe_function"
         "_clxeh_function"
         "_corc_function"
+        "copy"
         "_coxe_function"
         "_coxeh_function"
         "_coxel_function"
@@ -308,6 +307,7 @@
         "_ocxelh_function"
         "_ompxe_function"
         "_ompxeh_function"
+        "paste"
         "_pixe_function"
         "_pixeh_function"
         "_pixel_function"
