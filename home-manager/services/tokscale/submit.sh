@@ -52,7 +52,7 @@ prefetch_cursor_usage() {
   fi
 
   IFS= read -r first <"$tmp" || true
-  if [[ "$first" != Date,* ]]; then
+  if [[ $first != Date,* ]]; then
     echo "Cursor usage prefetch returned non-CSV; keeping previous cache" >&2
     rm -f "$tmp"
     return 0

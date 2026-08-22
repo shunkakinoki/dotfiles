@@ -9,14 +9,14 @@ When run bash -c "grep -A1 -F 'services.tailscale = {' '$CONFIG'"
 The output should include 'enable = true'
 End
 
-It 'enables routing features for exit node use'
-When run bash -c "grep -F 'useRoutingFeatures = \"both\";' '$CONFIG'"
-The output should include 'useRoutingFeatures = "both"'
+It 'uses client routing features'
+When run bash -c "grep -F 'useRoutingFeatures = \"client\";' '$CONFIG'"
+The output should include 'useRoutingFeatures = "client"'
 End
 
-It 'advertises the host as an exit node'
+It 'does not advertise the host as an exit node'
 When run bash -c "grep -F '\"--advertise-exit-node\"' '$CONFIG'"
-The output should include '--advertise-exit-node'
+The status should be failure
 End
 
 It 'accepts DNS from tailscale'
