@@ -317,8 +317,6 @@ retry:
   fallbackChains:
     default:
       - "cliproxyapi/__DEEPSEEK_FLASH__"
-      - "cliproxyapi/__GEMMA__"
-      - "cliproxyapi/free"
       - "cliproxyapi/free"
   # fallbackRevertPolicy
 

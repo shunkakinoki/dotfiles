@@ -317,8 +317,6 @@ retry:
   fallbackChains:
     default:
       - "cliproxyapi/deepseek-v4-flash"
-      - "cliproxyapi/gemma-4-31b-it"
-      - "cliproxyapi/glm-4.7"
       - "cliproxyapi/free"
   # fallbackRevertPolicy
 
