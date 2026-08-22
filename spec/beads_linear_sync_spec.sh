@@ -48,8 +48,8 @@ End
 End
 
 Describe 'sync scope'
-It 'pulls active Linear work only when stale'
-When run bash -c "grep -F -- '--pull-if-stale' '$SCRIPT' >/dev/null && grep -F -- '--threshold 5m' '$SCRIPT' >/dev/null && grep -F -- '--state open' '$SCRIPT' >/dev/null"
+It 'pulls all Linear states when stale'
+When run bash -c "grep -F -- '--pull-if-stale' '$SCRIPT' >/dev/null && grep -F -- '--threshold 5m' '$SCRIPT' >/dev/null && grep -F -- '--state all' '$SCRIPT' >/dev/null"
 The status should be success
 End
 
@@ -178,7 +178,7 @@ When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" XDG_STATE_HOME=
 The status should be success
 The output should include 'Pushing changed active Beads'
 The file "$STATE_HOME/beads-linear-sync/last-success" should be exist
-The contents of file "$COMMAND_LOG" should include 'linear sync --pull-if-stale --threshold 5m --state open --relations --no-wait'
+The contents of file "$COMMAND_LOG" should include 'linear sync --pull-if-stale --threshold 5m --state all --relations --no-wait'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-test --no-wait'
 End
 
