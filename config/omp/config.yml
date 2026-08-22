@@ -61,24 +61,24 @@ disabledExtensions: []
 #   openrouter   — OpenRouter (access to many models)
 #
 # Examples:
-#   default: cliproxyapi/deepseek-v4-flash
-#   fast:    cliproxyapi/glm-4.7
+#   default: cliproxyapi/free
+#   fast:    cliproxyapi/free
 #   slow:    cliproxyapi/deepseek-v4-flash
 modelRoles:
   # Default model role used as the fallback when no other role is selected.
-  default: "cliproxyapi/deepseek-v4-flash"
+  default: "cliproxyapi/free"
   # Smaller / dumber model for cheap lightweight work.
-  smol: "cliproxyapi/glm-4.7"
+  smol: "cliproxyapi/free"
   # Strongest model in the suite for hard tasks.
   slow: "cliproxyapi/deepseek-v4-flash"
   # Keep vision on the main default model.
   vision: "cliproxyapi/deepseek-v4-flash"
   # Planning / architecture model.
-  plan: "cliproxyapi/deepseek-v4-flash"
+  plan: "cliproxyapi/free"
   # Commit message model.
-  commit: "cliproxyapi/glm-4.7"
+  commit: "cliproxyapi/free"
   # Fast subagent path.
-  task: "cliproxyapi/glm-4.7"
+  task: "cliproxyapi/free"
 # =============================================================================
 # DISPLAY
 # =============================================================================
@@ -317,8 +317,6 @@ retry:
   fallbackChains:
     default:
       - "cliproxyapi/deepseek-v4-flash"
-      - "cliproxyapi/gemma-4-31b-it"
-      - "cliproxyapi/glm-4.7"
       - "cliproxyapi/free"
   # fallbackRevertPolicy
 
@@ -498,13 +496,13 @@ task:
   disabledAgents: []
   agentModelOverrides:
     code-architect: "deepseek-v4-flash"
-    code-explorer: "glm-4.7"
+    code-explorer: "free"
     code-reviewer: "deepseek-v4-flash"
-    code-simplifier: "deepseek-v4-flash"
-    comment-analyzer: "glm-4.7"
-    pr-test-analyzer: "glm-4.7"
-    silent-failure-hunter: "deepseek-v4-flash"
-    type-design-analyzer: "deepseek-v4-flash"
+    code-simplifier: "free"
+    comment-analyzer: "free"
+    pr-test-analyzer: "free"
+    silent-failure-hunter: "free"
+    type-design-analyzer: "free"
 # --- Agent Definitions -------------------------------------------------------
 # Inline agent definitions (alternative to skill/agent files).
 # agents: {}

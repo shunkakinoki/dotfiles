@@ -2,7 +2,7 @@
   "theme": "dark",
   "quietStartup": true,
   "defaultProvider": "cliproxyapi",
-  "defaultModel": "glm-4.7",
+  "defaultModel": "free",
   "defaultThinkingLevel": "medium",
   "enabledModels": [
     "cliproxyapi/*",

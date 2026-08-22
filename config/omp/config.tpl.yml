@@ -61,24 +61,24 @@ disabledExtensions: []
 #   openrouter   — OpenRouter (access to many models)
 #
 # Examples:
-#   default: cliproxyapi/__DEEPSEEK_FLASH__
-#   fast:    cliproxyapi/__GLM__
+#   default: cliproxyapi/free
+#   fast:    cliproxyapi/free
 #   slow:    cliproxyapi/__DEEPSEEK_FLASH__
 modelRoles:
   # Default model role used as the fallback when no other role is selected.
-  default: "cliproxyapi/__DEEPSEEK_FLASH__"
+  default: "cliproxyapi/free"
   # Smaller / dumber model for cheap lightweight work.
-  smol: "cliproxyapi/__GLM__"
+  smol: "cliproxyapi/free"
   # Strongest model in the suite for hard tasks.
   slow: "cliproxyapi/__DEEPSEEK_FLASH__"
   # Keep vision on the main default model.
   vision: "cliproxyapi/__DEEPSEEK_FLASH__"
   # Planning / architecture model.
-  plan: "cliproxyapi/__DEEPSEEK_FLASH__"
+  plan: "cliproxyapi/free"
   # Commit message model.
-  commit: "cliproxyapi/__GLM__"
+  commit: "cliproxyapi/free"
   # Fast subagent path.
-  task: "cliproxyapi/__GLM__"
+  task: "cliproxyapi/free"
 # =============================================================================
 # DISPLAY
 # =============================================================================
@@ -312,13 +312,11 @@ retry:
   #
   #   Candidates are the entries AFTER the current model in its chain, so a role
   #   whose model sits last in the chain it inherits has no candidates at all.
-  #   Roles pinned to __GLM__ inherit `default` and still have `free` after
+  #   Roles pinned to free inherit `default` and still have `free` after
   #   them. Do not put a role on the last hop.
   fallbackChains:
     default:
       - "cliproxyapi/__DEEPSEEK_FLASH__"
-      - "cliproxyapi/__GEMMA__"
-      - "cliproxyapi/__GLM__"
       - "cliproxyapi/free"
   # fallbackRevertPolicy
 
@@ -498,13 +496,13 @@ task:
   disabledAgents: []
   agentModelOverrides:
     code-architect: "__DEEPSEEK_FLASH__"
-    code-explorer: "__GLM__"
+    code-explorer: "free"
     code-reviewer: "__DEEPSEEK_FLASH__"
-    code-simplifier: "__DEEPSEEK_FLASH__"
-    comment-analyzer: "__GLM__"
-    pr-test-analyzer: "__GLM__"
-    silent-failure-hunter: "__DEEPSEEK_FLASH__"
-    type-design-analyzer: "__DEEPSEEK_FLASH__"
+    code-simplifier: "free"
+    comment-analyzer: "free"
+    pr-test-analyzer: "free"
+    silent-failure-hunter: "free"
+    type-design-analyzer: "free"
 # --- Agent Definitions -------------------------------------------------------
 # Inline agent definitions (alternative to skill/agent files).
 # agents: {}
