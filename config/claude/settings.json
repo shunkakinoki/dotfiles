@@ -63,6 +63,12 @@
         "source": "github"
       }
     },
+    "claude-plugins-community": {
+      "source": {
+        "repo": "anthropics/claude-plugins-community",
+        "source": "github"
+      }
+    },
     "mempalace": {
       "source": {
         "repo": "milla-jovovich/mempalace",
@@ -556,6 +562,7 @@
       }
     ]
   },
+  "outputStyle": "Concise",
   "permissions": {
     "allow": [
       "Bash(bun:*)",

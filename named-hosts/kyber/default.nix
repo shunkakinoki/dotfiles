@@ -145,11 +145,13 @@ home-manager.lib.homeManagerConfiguration {
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-user-service-priority.sh}"
         '';
 
-        # Publish the T3 server over tailnet HTTPS. openclaw already owns :443
-        # here, and T3's discovery path must sit at the serve root, so T3 gets
-        # its own HTTPS port: https://kyber.tail950b36.ts.net:8443
-        home.activation.tailscaleServeT3 = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        # Publish every Kyber gateway over tailnet-only HTTPS. Each service
+        # needs the serve root, so OpenClaw keeps :443 while T3 and Hermes use
+        # dedicated ports.
+        home.activation.tailscaleServeGateways = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 443 18789
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 8443 3773
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 9443 9120
         '';
 
         # Tailscale configuration

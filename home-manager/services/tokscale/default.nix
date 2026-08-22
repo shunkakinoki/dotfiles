@@ -9,6 +9,8 @@ let
     pkgs.bun
     pkgs.bash
     pkgs.coreutils
+    pkgs.curl
+    pkgs.jq
   ];
   # Every 3 hours, aligned to the wall clock.
   calendarHours = [

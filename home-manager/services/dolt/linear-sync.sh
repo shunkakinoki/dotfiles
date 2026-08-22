@@ -62,6 +62,18 @@ run_linear() {
   return "$status"
 }
 
+# Prefer the machine-local dotfiles .env (same convention as other launchd
+# services) before the Linear CLI credential file or keyring.
+if [ -z "${LINEAR_API_KEY:-}" ]; then
+  env_file="${DOTFILES_ENV_FILE:-$HOME/dotfiles/.env}"
+  if [ -f "$env_file" ]; then
+    set -a
+    # shellcheck source=/dev/null
+    . "$env_file"
+    set +a
+  fi
+fi
+
 if [ -z "${LINEAR_API_KEY:-}" ] && [ -f "$linear_credentials_file" ] && [ ! -L "$linear_credentials_file" ]; then
   @coreutils@/bin/chmod 600 "$linear_credentials_file"
   LINEAR_API_KEY="$(@gawk@/bin/awk -F '[[:space:]]*=[[:space:]]*' -v workspace="$linear_workspace" '
@@ -117,14 +129,15 @@ else
   previous_sync="$(@jq@/bin/jq -r '.last_sync // ""' <<<"$("$bd_cli" -C "$repo_dir" linear status --json)")"
 fi
 
-# Pull only active work, and let Beads' staleness guard debounce calls made at
-# the five-minute timer boundary. A rate-limit failure is deferred to the next
-# scheduled run instead of making launchd hot-loop a failed job.
-log "Pulling active Linear work if stale"
+# Pull open and closed Linear work so cancels/Done land in Beads. Let Beads'
+# staleness guard debounce calls made at the five-minute timer boundary. A
+# rate-limit failure is deferred to the next scheduled run instead of making
+# launchd hot-loop a failed job.
+log "Pulling Linear work if stale"
 if run_linear "$bd_cli" -C "$repo_dir" linear sync \
   --pull-if-stale \
   --threshold 5m \
-  --state open \
+  --state all \
   --relations \
   --no-wait; then
   :

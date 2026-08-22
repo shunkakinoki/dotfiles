@@ -78,7 +78,12 @@ printf '%s\n' "$0 $*" >>"$MOCK_LOG"
 case "${1:-}" in
 status) exit 0 ;;
 serve)
-  if [ "${2:-}" = status ]; then echo "|-- / proxy http://127.0.0.1:3773"; fi
+  if [ "${2:-}" = status ]; then
+    cat <<'EOF'
+https://kyber.tail950b36.ts.net (tailnet only)
+|-- / proxy http://127.0.0.1:3773
+EOF
+  fi
   exit 0
   ;;
 esac
@@ -98,13 +103,13 @@ After 'cleanup'
 # not re-issue the command.
 It 'does nothing when the target is already served'
 When run bash -c "bash '$SCRIPT' 443 3773 >/dev/null 2>&1; cat '$MOCK_LOG'"
-The output should not include 'serve --bg'
+The output should not include 'serve --yes --bg'
 The status should be success
 End
 
-It 'publishes when the target is not yet served'
-When run bash -c "bash '$SCRIPT' 8443 9999 >/dev/null 2>&1; cat '$MOCK_LOG'"
-The output should include 'serve --bg --https=8443 http://127.0.0.1:9999'
+It 'publishes when the target is served on a different HTTPS port'
+When run bash -c "bash '$SCRIPT' 8443 3773 >/dev/null 2>&1; cat '$MOCK_LOG'"
+The output should include 'serve --yes --bg --https=8443 http://127.0.0.1:3773'
 The status should be success
 End
 End
@@ -116,11 +121,20 @@ When run bash -c "cat '$MATIC'"
 The output should include 'ensure-tailscale-serve.sh}" 443 3773'
 End
 
-# openclaw owns :443 on kyber and the well-known path must be at the root, so
-# T3 needs a distinct HTTPS port rather than a path prefix.
+# Kyber owns all three current gateway routes declaratively.
+It 'publishes OpenClaw on 443 for kyber'
+When run bash -c "cat '$KYBER'"
+The output should include 'ensure-tailscale-serve.sh}" 443 18789'
+End
+
 It 'publishes T3 on 8443 for kyber to avoid the openclaw root'
 When run bash -c "cat '$KYBER'"
 The output should include 'ensure-tailscale-serve.sh}" 8443 3773'
+End
+
+It 'publishes Hermes on 9443 for kyber'
+When run bash -c "cat '$KYBER'"
+The output should include 'ensure-tailscale-serve.sh}" 9443 9120'
 End
 End
 
