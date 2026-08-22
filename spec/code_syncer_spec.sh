@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329
+# shellcheck disable=SC2329,SC2016
 
 Describe 'code-syncer/sync.sh'
 SCRIPT="$PWD/home-manager/services/code-syncer/sync.sh"
