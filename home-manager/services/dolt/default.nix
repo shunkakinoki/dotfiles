@@ -52,6 +52,7 @@ lib.mkIf enabled {
     BEADS_SHARED_SERVER_DIR = sharedServerDir;
     DOLT_CLI_USER = "root";
     DOLT_CLI_PASSWORD = "";
+    LINEAR_TEAM_ID = linearTeamId;
   };
 
   launchd.agents.dolt = lib.mkIf pkgs.stdenv.isDarwin {

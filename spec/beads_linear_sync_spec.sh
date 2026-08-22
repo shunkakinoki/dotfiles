@@ -31,6 +31,11 @@ When run bash -c "grep -F '@coreutils@/bin/chmod 600 \"\$linear_credentials_file
 The status should be success
 End
 
+It 'loads Linear credentials from the local dotfiles .env when unset'
+When run bash -c "grep -F 'DOTFILES_ENV_FILE:-\$HOME/dotfiles/.env' '$SCRIPT' >/dev/null"
+The status should be success
+End
+
 It 'invokes jq through the Nix package binary path'
 When run bash -c "grep -F '@jq@/bin/jq' '$SCRIPT' >/dev/null"
 The status should be success

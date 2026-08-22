@@ -62,6 +62,18 @@ run_linear() {
   return "$status"
 }
 
+# Prefer the machine-local dotfiles .env (same convention as other launchd
+# services) before the Linear CLI credential file or keyring.
+if [ -z "${LINEAR_API_KEY:-}" ]; then
+  env_file="${DOTFILES_ENV_FILE:-$HOME/dotfiles/.env}"
+  if [ -f "$env_file" ]; then
+    set -a
+    # shellcheck source=/dev/null
+    . "$env_file"
+    set +a
+  fi
+fi
+
 if [ -z "${LINEAR_API_KEY:-}" ] && [ -f "$linear_credentials_file" ] && [ ! -L "$linear_credentials_file" ]; then
   @coreutils@/bin/chmod 600 "$linear_credentials_file"
   LINEAR_API_KEY="$(@gawk@/bin/awk -F '[[:space:]]*=[[:space:]]*' -v workspace="$linear_workspace" '
