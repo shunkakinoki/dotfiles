@@ -53,9 +53,7 @@ end
 -- Detect if running in SSH session for clipboard handling
 -- ====================================================================================
 function M.is_ssh()
-	return os.getenv("SSH_CLIENT") ~= nil
-		or os.getenv("SSH_TTY") ~= nil
-		or os.getenv("SSH_CONNECTION") ~= nil
+	return os.getenv("SSH_CLIENT") ~= nil or os.getenv("SSH_TTY") ~= nil or os.getenv("SSH_CONNECTION") ~= nil
 end
 
 -- ====================================================================================

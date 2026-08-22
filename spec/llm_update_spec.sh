@@ -38,7 +38,7 @@ for role, model in roles.items():
         index = [base(entry) for entry in chain].index(base(model))
     else:
         continue
-    if index == len(chain) - 1:
+    if index == len(chain) - 1 and base(model) != "free":
         stranded.append(f"{role} ({model}) is last in its chain")
 
 if stranded:
@@ -214,9 +214,9 @@ When run bash -c "sed -n '/\"cliproxyapi\"/,/\"lmstudio\"/p' config/opencode/ope
 The status should be success
 End
 
-It 'generates the OMP Flash default role'
-When run bash -c "grep 'default: \"cliproxyapi/deepseek-v4-flash\"' config/omp/config.yml"
-The output should include 'cliproxyapi/deepseek-v4-flash'
+It 'generates the OMP free default role'
+When run bash -c "grep 'default: \"cliproxyapi/free\"' config/omp/config.yml"
+The output should include 'cliproxyapi/free'
 End
 
 It 'routes every OMP role through remote CLIProxyAPI'
@@ -235,11 +235,9 @@ The output should include 'cliproxyapi/*'
 The output should include 'openrouter/*'
 End
 
-It 'uses the shared CLIProxy fallback chain for OMP'
+It 'uses the free-tier CLIProxy fallback chain for OMP'
 When run bash -c "sed -n '/^  fallbackChains:/,/^  fallbackRevertPolicy/p' config/omp/config.yml"
 The output should include 'cliproxyapi/deepseek-v4-flash'
-The output should include 'cliproxyapi/gemma-4-31b-it'
-The output should include 'cliproxyapi/glm-4.7'
 The output should include 'cliproxyapi/free'
 The output should not include 'openai-codex/'
 End

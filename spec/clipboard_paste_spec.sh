@@ -137,11 +137,9 @@ setup() {
   MOCK_ORIGINAL_XDG_CACHE_HOME="${XDG_CACHE_HOME:-}"
   mkdir -p "$MOCK_CACHE/clipboard"
   printf 'from-cache' >"$MOCK_CACHE/clipboard/data"
-  local cmd bash_dir
+  local bash_dir
   bash_dir="$(resolve_cmd_dir bash)"
-  for cmd in cat; do
-    ln -sf "$(command -v "$cmd")" "$MOCK_BIN/$cmd"
-  done
+  ln -sf "$(command -v cat)" "$MOCK_BIN/cat"
   export PATH="$MOCK_BIN:$bash_dir"
   unset WAYLAND_DISPLAY
   # Non-device SSH_TTY so OSC 52 query is skipped and cache is used.
