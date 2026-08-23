@@ -289,5 +289,7 @@ cjk_ime_cursor_shape = "steady_block"
 
 [advanced]
 # Maximum scrollback buffer size in bytes retained per pane terminal.
-# Matches Ghostty's default scrollback-limit behavior.
-scrollback_limit_bytes = 300000000
+# pane_history saves every pane's scrollback on shutdown; at 300 MB kyber's
+# headless server took ~28s to write, past the 15s the remote update flow waits
+# for the server to stop.
+scrollback_limit_bytes = 1000000
