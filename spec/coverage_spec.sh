@@ -478,6 +478,7 @@ config/codex/sync-desktop-settings.sh
 config/copilot/activate.sh
 config/codex/hooks/atuin-history.sh
 config/dcg/activate.sh
+config/dsh/hydrate.sh
 config/codex/hooks/notify.sh
 config/codex/hooks/pushover.sh
 config/shared/hooks/block-gh-settings.sh
