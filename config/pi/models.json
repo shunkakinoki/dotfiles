@@ -2,7 +2,7 @@
   "providers": {
     "cliproxyapi": {
       "baseUrl": "https://cliproxy.shunkakinoki.com/v1",
-      "apiKey": "CLIPROXY_API_KEY",
+      "apiKey": "$CLIPROXY_API_KEY",
       "api": "openai-responses",
       "models": [
         {
@@ -176,7 +176,7 @@
     },
     "openrouter-preset": {
       "baseUrl": "https://openrouter.ai/api/v1",
-      "apiKey": "OPENROUTER_API_KEY",
+      "apiKey": "$OPENROUTER_API_KEY",
       "api": "openai-completions",
       "models": [
         {
