@@ -4,9 +4,14 @@
     "allow": [
       "read_file(*)",
       "command(pwd)",
+      "command(wc)",
       "command(ls)",
-      "command(git)",
-      "command(wc)"
+      "command(cat)",
+      "command(head)",
+      "command(tail)",
+      "command(stat)",
+      "command(file)",
+      "command(git)"
     ]
   }
 }
