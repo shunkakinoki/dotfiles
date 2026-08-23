@@ -7,8 +7,8 @@
   "enabledModels": [
     "cliproxyapi/*",
     "lmstudio/*",
-    "openrouter/*",
-    "openrouter-preset/*",
+    "openrouter/**",
+    "openrouter-preset/**",
     "*gpt-5*",
     "*gemini*",
     "*claude*",

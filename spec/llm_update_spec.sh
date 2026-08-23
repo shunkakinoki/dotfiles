@@ -264,7 +264,7 @@ End
 
 Describe 'runtime model fallback'
 It 'enables Pi OpenRouter catalog and preset models'
-When run bash -c "jq -e '(.enabledModels | index(\"openrouter/*\") != null) and (.enabledModels | index(\"openrouter-preset/*\") != null)' config/pi/settings.json >/dev/null && jq -e '(.enabledModels | index(\"openrouter/*\") != null) and (.enabledModels | index(\"openrouter-preset/*\") != null)' config/pi/settings.tpl.json >/dev/null"
+When run bash -c "jq -e '(.enabledModels | index(\"openrouter/**\") != null) and (.enabledModels | index(\"openrouter-preset/**\") != null)' config/pi/settings.json >/dev/null && jq -e '(.enabledModels | index(\"openrouter/**\") != null) and (.enabledModels | index(\"openrouter-preset/**\") != null)' config/pi/settings.tpl.json >/dev/null"
 The status should be success
 End
 
