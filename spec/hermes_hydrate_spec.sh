@@ -63,6 +63,12 @@ It 'loads WHATSAPP_ALLOW_FROM from file'
 When run bash -c "grep 'WHATSAPP_ALLOW_FROM' '$SCRIPT'"
 The output should include 'whatsapp-allow-from'
 End
+
+It 'loads Vercel billing credentials from files'
+When run bash -c "grep -E 'VERCEL_(TOKEN|TEAM_ID)' '$SCRIPT'"
+The output should include 'vercel-token'
+The output should include 'vercel-team-id'
+End
 End
 
 Describe 'gateway config generation'
@@ -85,6 +91,14 @@ EOF
 from-secret-file
 EOF
 
+  cat >"$TEMP_HOME/.config/hermes/vercel-token" <<'EOF'
+vercel-token
+EOF
+
+  cat >"$TEMP_HOME/.config/hermes/vercel-team-id" <<'EOF'
+team_test
+EOF
+
   cat >"$TEMP_HOME/templates/config.template.yaml" <<'EOF'
 custom_providers:
 - name: cliproxy
@@ -96,6 +110,8 @@ TELEGRAM_BOT_TOKEN=__TELEGRAM_TOKEN__
 WHATSAPP_ALLOWED_USERS=__WHATSAPP_ALLOW_FROM__
 HERMES_GATEWAY_TOKEN=__GATEWAY_TOKEN__
 CLIPROXY_API_KEY=__CLIPROXY_API_KEY__
+VERCEL_TOKEN=__VERCEL_TOKEN__
+VERCEL_TEAM_ID=__VERCEL_TEAM_ID__
 EOF
 
   echo "fake-soul" >"$TEMP_HOME/SOUL.md"
@@ -120,16 +136,24 @@ Before 'setup_gateway'
 After 'cleanup_gateway'
 
 It 'prefers the root api-keys entry from cliproxyapi config over the secret file'
-When run bash -c 'unset CLIPROXY_API_KEY HERMES_GATEWAY_TOKEN GATEWAY_TOKEN HERMES_TELEGRAM_TOKEN TELEGRAM_TOKEN WHATSAPP_ALLOW_FROM; HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/.hermes/config.yaml"'
+When run bash -c 'unset CLIPROXY_API_KEY HERMES_GATEWAY_TOKEN GATEWAY_TOKEN HERMES_TELEGRAM_TOKEN TELEGRAM_TOKEN WHATSAPP_ALLOW_FROM VERCEL_TOKEN VERCEL_TEAM_ID; HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/.hermes/config.yaml"'
 The status should be success
 The output should include 'from-cliproxy-config'
 The output should not include 'from-secret-file'
 End
 
 It 'writes .env with gateway token'
-When run bash -c 'unset CLIPROXY_API_KEY HERMES_GATEWAY_TOKEN GATEWAY_TOKEN HERMES_TELEGRAM_TOKEN TELEGRAM_TOKEN WHATSAPP_ALLOW_FROM; HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/.hermes/.env"'
+When run bash -c 'unset CLIPROXY_API_KEY HERMES_GATEWAY_TOKEN GATEWAY_TOKEN HERMES_TELEGRAM_TOKEN TELEGRAM_TOKEN WHATSAPP_ALLOW_FROM VERCEL_TOKEN VERCEL_TEAM_ID; HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/.hermes/.env"'
 The status should be success
 The output should include 'HERMES_GATEWAY_TOKEN=gateway-token'
+End
+
+
+It 'writes .env with Vercel billing credentials'
+When run bash -c 'unset CLIPROXY_API_KEY HERMES_GATEWAY_TOKEN GATEWAY_TOKEN HERMES_TELEGRAM_TOKEN TELEGRAM_TOKEN WHATSAPP_ALLOW_FROM VERCEL_TOKEN VERCEL_TEAM_ID; HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/.hermes/.env"'
+The status should be success
+The output should include 'VERCEL_TOKEN=vercel-token'
+The output should include 'VERCEL_TEAM_ID=team_test'
 End
 End
 
@@ -157,6 +181,13 @@ End
 It 'substitutes WHATSAPP_ALLOW_FROM in env template'
 When run bash -c "grep '__WHATSAPP_ALLOW_FROM__' '$SCRIPT'"
 The output should include 'WHATSAPP_ALLOW_FROM'
+End
+
+
+It 'substitutes Vercel credentials in env template'
+When run bash -c "grep -E '__VERCEL_(TOKEN|TEAM_ID)__' '$SCRIPT'"
+The output should include 'VERCEL_TOKEN'
+The output should include 'VERCEL_TEAM_ID'
 End
 
 It 'creates state directory'
