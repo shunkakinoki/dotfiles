@@ -84,6 +84,24 @@ _caam_exec_function codex --dangerously-bypass-approvals-and-sandbox
 @test "runs codex directly after cooldown-driven activation" \
   (cat $direct_env_log) = "--dangerously-bypass-approvals-and-sandbox"
 
+# Per-host codex profile (fleet policy 2026-08-23): when CAAM_CODEX_PROFILE is
+# set, codex rotation must force that account instead of caam's recommended
+# backup (which can be a different host's profile -> "refresh token was
+# revoked" when lineages mix). precheck recommends backup@example.com here;
+# with CAAM_CODEX_PROFILE pinned, activation must use the pinned profile.
+set -gx CAAM_CODEX_PROFILE work@example.com
+set caam_log (mktemp)
+set direct_env_log (mktemp)
+_caam_exec_function codex --dangerously-bypass-approvals-and-sandbox
+
+@test "codex rotation forces CAAM_CODEX_PROFILE, not recommended" \
+  (tail -n 1 $caam_log) = "activate codex work@example.com"
+@test "codex rotation never activates recommended backup when pinned" \
+  (grep -c "activate codex backup@example.com" $caam_log) -eq 0
+@test "pinned codex rotation still runs codex directly" \
+  (cat $direct_env_log) = "--dangerously-bypass-approvals-and-sandbox"
+set -e CAAM_CODEX_PROFILE
+
 # Claude Code on macOS may prefer a stale Keychain credential. The selected
 # CAAM file token must be pinned only to the launched Claude child process.
 set test_home (mktemp -d)

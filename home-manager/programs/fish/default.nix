@@ -15,6 +15,22 @@
 
       set -gx CAAM_ROTATION_ENABLED 1
 
+      # Per-host codex profile (fleet policy 2026-08-23). codex auth.json is
+      # host-shared and each machine must stay on ONE account; mixing lineages
+      # across hosts triggers "refresh token was revoked". Derived from hostname
+      # so it is committed and works on every host (no .env dependency). The
+      # fish _caam_exec_function wrapper forces codex rotation to this profile
+      # instead of caam's arbitrary recommendation. .env may override via
+      # CAAM_CODEX_PROFILE.
+      switch (hostname)
+        case matic
+          set -gx CAAM_CODEX_PROFILE shunkakinoki@shunkakinoki.com
+        case galactica
+          set -gx CAAM_CODEX_PROFILE shunkakinoki@gmail.com
+        case '*'
+          set -gx CAAM_CODEX_PROFILE admin@openfactor.ai
+      end
+
       # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
       if test (uname) = "Linux"
           set -gx XDG_RUNTIME_DIR /run/user/(id -u)

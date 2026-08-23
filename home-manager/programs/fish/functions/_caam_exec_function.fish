@@ -46,7 +46,16 @@ function _caam_exec_function --description "Run an agent launcher through CAAM w
             end
 
             if test $should_switch -eq 1
-              if test -n "$recommended"
+              # codex is pinned to ONE per-host profile (fleet policy 2026-08-23):
+              # kyber=admin@openfactor.ai, matic=shunkakinoki@shunkakinoki.com,
+              # galactica=shunkakinoki@gmail.com. caam precheck may recommend a
+              # different account (e.g. admin on matic), and activating it mixes
+              # refresh-token lineages across hosts -> "refresh token was revoked"
+              # on the next session. Never trust $recommended for codex; force the
+              # per-host profile from CAAM_CODEX_PROFILE (set per-host in .env).
+              if test "$tool" = codex; and test -n "$CAAM_CODEX_PROFILE"
+                caam activate codex "$CAAM_CODEX_PROFILE" >/dev/null
+              else if test -n "$recommended"
                 caam activate "$tool" "$recommended" >/dev/null
               else
                 caam activate "$tool" --auto >/dev/null
