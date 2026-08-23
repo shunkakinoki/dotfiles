@@ -64,6 +64,8 @@ TELEGRAM_TOKEN="${HERMES_TELEGRAM_TOKEN:-${TELEGRAM_TOKEN:-$(read_secret "${SECR
 GATEWAY_TOKEN="${HERMES_GATEWAY_TOKEN:-${GATEWAY_TOKEN:-$(read_secret "${SECRETS_DIR}/gateway-token")}}"
 WHATSAPP_ALLOW_FROM="${WHATSAPP_ALLOW_FROM:-$(read_secret "${SECRETS_DIR}/whatsapp-allow-from")}"
 WEBHOOK_SECRET="${HERMES_WEBHOOK_SECRET:-$(read_secret "${SECRETS_DIR}/webhook-secret")}"
+VERCEL_TOKEN="${VERCEL_TOKEN:-$(read_secret "${SECRETS_DIR}/vercel-token")}"
+VERCEL_TEAM_ID="${VERCEL_TEAM_ID:-$(read_secret "${SECRETS_DIR}/vercel-team-id")}"
 
 if [ -z "${GATEWAY_TOKEN}" ]; then
   echo "Warning: HERMES_GATEWAY_TOKEN not set, skipping Hermes hydration" >&2
@@ -83,6 +85,8 @@ chmod 600 "${STATE_DIR}/config.yaml"
   -e "s|__WHATSAPP_ALLOW_FROM__|${WHATSAPP_ALLOW_FROM}|g" \
   -e "s|__GATEWAY_TOKEN__|${GATEWAY_TOKEN}|g" \
   -e "s|__CLIPROXY_API_KEY__|${CLIPROXY_API_KEY}|g" \
+  -e "s|__VERCEL_TOKEN__|${VERCEL_TOKEN}|g" \
+  -e "s|__VERCEL_TEAM_ID__|${VERCEL_TEAM_ID}|g" \
   "$ENV_TEMPLATE" >"${STATE_DIR}/.env"
 chmod 600 "${STATE_DIR}/.env"
 
