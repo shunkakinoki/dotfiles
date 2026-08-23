@@ -217,6 +217,18 @@ It 'has spec file for home-manager/modules/npm-globals/install-npm-globals.sh'
 The path "spec/npm_globals_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/modules/dotenv/print-env-file.sh'
+The path "spec/print_env_file_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/modules/dotenv/load-env-file.sh'
+The path "spec/load_env_file_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/modules/dotenv/export-gui-env.sh'
+The path "spec/export_gui_env_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/modules/secure-dotenv/secure-dotenv.sh'
 The path "spec/secure_dotenv_spec.sh" should be exist
 End
@@ -528,6 +540,9 @@ home-manager/modules/local-scripts/decafinate.sh
 home-manager/modules/local-scripts/notify-local.sh
 home-manager/modules/local-scripts/pushover-notify.sh
 home-manager/modules/local-scripts/tmux-bridge.sh
+home-manager/modules/dotenv/export-gui-env.sh
+home-manager/modules/dotenv/load-env-file.sh
+home-manager/modules/dotenv/print-env-file.sh
 home-manager/modules/npm-globals/install-npm-globals.sh
 home-manager/modules/secure-dotenv/secure-dotenv.sh
 home-manager/services/firewall/activate.sh
