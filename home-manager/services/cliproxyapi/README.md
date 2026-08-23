@@ -7,14 +7,16 @@ This directory contains the Nix-based configuration for the cliproxyapi service 
 ### Services
 
 1. **cliproxyapi** - Main proxy server on port 8317
-2. **cliproxyapi-backup** - File watcher and wall-clock hourly job that syncs auth files and CPA Manager Plus analytics to S3
+2. **cliproxyapi-backup-auth** - File watcher that syncs only the auth cache to S3
+3. **cliproxyapi-backup** - Wall-clock hourly job that syncs auth files and CPA Manager Plus analytics to S3
 
 ### Scripts
 
 | Script | Purpose |
 |--------|---------|
 | `hydrate.sh` | Pull S3 → local (runs at activation) |
-| `backup.sh` | Push local → S3 (triggered by WatchPaths) |
+| `backup.sh auth` | Push auth cache local → S3 (triggered by WatchPaths) |
+| `backup.sh full` | Auth cache plus the CPA Manager Plus analytics snapshot (hourly) |
 | `start.sh` | Load .env, hydrate auth cache if needed, generate config, start service |
 | `wrapper.sh` | Load .env, sync auth cache, exec binary (for CLI usage) |
 
@@ -57,33 +59,46 @@ key error when S3 already has auths.
 
 1. Pull from S3 `auths/` → local
 
-### Backup (on auth-file change and each wall-clock hour)
+### Backup (auth, on auth-file change)
+
+1. Push local → S3 `auths/`
+
+CLIProxyAPI rewrites auth token files on every refresh, so this path fires many
+times per hour. It stays restricted to the kilobyte-scale auth cache.
+
+### Backup (full, each wall-clock hour)
 
 1. Push local → S3 `auths/`
 2. Create and integrity-check an online CPA Manager Plus SQLite snapshot
-3. Archive the snapshot with its matching `data.key` and upload it to S3
+3. Stream the snapshot and its matching `data.key` as a tarball into the UTC
+   hour slot, then server-side copy that object to the `latest` archive
 
 The SQLite online backup command is required because the live analytics database
 uses WAL mode. Copying only `usage.sqlite` while CPA Manager Plus is running can
 produce an incomplete backup. Each run updates the `latest` archive and its UTC
 hour slot, retaining up to 24 hourly rollback points without unbounded growth.
 
+The snapshot is as large as the live database. Set `CLIPROXY_BACKUP_STAGING_DIR`
+to stage it on a filesystem other than `$TMPDIR`.
+
 ### WatchPaths (file watchers)
 
-The `cliproxyapi-backup` service watches this directory:
+The `cliproxyapi-backup-auth` service watches this directory:
 - `~/.cli-proxy-api/objectstore/auths` - main auth cache
 
 **How it works (macOS launchd):**
 - launchd monitors the directories for any file changes
-- When a file is created, modified, or deleted, launchd triggers `backup.sh`
+- When a file is created, modified, or deleted, launchd triggers `backup.sh auth`
 - Changes are detected within ~1 second
 
 **How it works (Linux systemd):**
 - systemd path unit watches the directories
-- On change, triggers the `cliproxyapi-backup.service` oneshot
+- On change, triggers the `cliproxyapi-backup-auth.service` oneshot
 - Uses `PathChanged` directive for file monitoring
 
-When the directory changes, `backup.sh` syncs the CLIProxyAPI auth cache to S3.
+When the directory changes, `backup.sh auth` syncs the CLIProxyAPI auth cache to
+S3. The analytics snapshot is deliberately excluded: watch-driven runs of the
+full backup wrote roughly 9 GB/hour and exhausted the ext4 journal on kyber.
 
 ## Environment Variables
 
@@ -129,6 +144,7 @@ launchctl list | grep cliproxyapi
 # View logs
 tail -f /tmp/cliproxyapi.log
 tail -f /tmp/cliproxyapi-backup.log
+tail -f /tmp/cliproxyapi-backup-auth.log
 
 # OAuth login
 cliproxyapi --claude-login

@@ -86,13 +86,43 @@ in
     };
   };
 
-  # Backup service - watches auth dir for changes
+  # Auth backup - watches auth dir for changes. CLIProxyAPI rewrites auth files
+  # on every token refresh, so this fires many times an hour and must stay cheap.
+  launchd.agents.cliproxyapi-backup-auth = lib.mkIf pkgs.stdenv.isDarwin {
+    enable = true;
+    config = {
+      ProgramArguments = [
+        "${pkgs.bash}/bin/bash"
+        "${backupScript}"
+        "auth"
+      ];
+      Environment = {
+        PATH = "${
+          lib.makeBinPath [
+            pkgs.bash
+            pkgs.coreutils
+            pkgs.awscli2
+          ]
+        }:/opt/homebrew/bin:/usr/local/bin:/usr/bin";
+      };
+      WatchPaths = [
+        "${homeDir}/.cli-proxy-api/objectstore/auths"
+      ];
+      RunAtLoad = true;
+      StandardOutPath = "/tmp/cliproxyapi-backup-auth.log";
+      StandardErrorPath = "/tmp/cliproxyapi-backup-auth.error.log";
+    };
+  };
+
+  # Full backup - auth files plus the multi-hundred-megabyte CPA Manager Plus
+  # analytics snapshot. Wall clock only; never wire this to a file watch.
   launchd.agents.cliproxyapi-backup = lib.mkIf pkgs.stdenv.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [
         "${pkgs.bash}/bin/bash"
         "${backupScript}"
+        "full"
       ];
       Environment = {
         PATH = "${
@@ -106,9 +136,6 @@ in
           ]
         }:/opt/homebrew/bin:/usr/local/bin:/usr/bin";
       };
-      WatchPaths = [
-        "${homeDir}/.cli-proxy-api/objectstore/auths"
-      ];
       StartCalendarInterval = [ { Minute = 0; } ];
       RunAtLoad = true;
       StandardOutPath = "/tmp/cliproxyapi-backup.log";
@@ -200,23 +227,43 @@ in
     Install.WantedBy = [ "default.target" ];
   };
 
-  systemd.user.paths.cliproxyapi-backup = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.paths.cliproxyapi-backup-auth = lib.mkIf pkgs.stdenv.isLinux {
     Unit.Description = "Watch auth directories for changes";
     Path = {
       PathChanged = [
         "%h/.cli-proxy-api/objectstore/auths"
       ];
-      Unit = "cliproxyapi-backup.service";
+      Unit = "cliproxyapi-backup-auth.service";
     };
     Install.WantedBy = [ "paths.target" ];
   };
 
-  systemd.user.services.cliproxyapi-backup = lib.mkIf pkgs.stdenv.isLinux {
+  # CLIProxyAPI rewrites auth files on every token refresh, so the path unit
+  # fires many times an hour. It gets the auth-only entrypoint and a PATH
+  # without sqlite/tar so the analytics snapshot cannot ride along.
+  systemd.user.services.cliproxyapi-backup-auth = lib.mkIf pkgs.stdenv.isLinux {
     Unit.Description = "CLIProxyAPI auth backup";
     Unit.X-SwitchMethod = "keep-old";
     Service = {
       Type = "oneshot";
-      ExecStart = "${pkgs.bash}/bin/bash ${backupScript}";
+      ExecStart = "${pkgs.bash}/bin/bash ${backupScript} auth";
+      Environment = "PATH=${
+        lib.makeBinPath [
+          pkgs.bash
+          pkgs.awscli2
+          pkgs.coreutils
+        ]
+      }";
+      UMask = "0077";
+    };
+  };
+
+  systemd.user.services.cliproxyapi-backup = lib.mkIf pkgs.stdenv.isLinux {
+    Unit.Description = "CLIProxyAPI auth and CPA Manager Plus analytics backup";
+    Unit.X-SwitchMethod = "keep-old";
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.bash}/bin/bash ${backupScript} full";
       Environment = "PATH=${
         lib.makeBinPath [
           pkgs.bash

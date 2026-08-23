@@ -428,7 +428,7 @@ The status should be success
 End
 
 It 'restarts the Linux service when the managed template changes'
-When run bash -c "sed -n '/systemd.user.services.cliproxyapi =/,/systemd.user.paths.cliproxyapi-backup =/p' '$PWD/home-manager/services/cliproxyapi/default.nix'"
+When run bash -c "sed -n '/systemd.user.services.cliproxyapi =/,/systemd.user.paths.cliproxyapi-backup-auth =/p' '$PWD/home-manager/services/cliproxyapi/default.nix'"
 The output should include 'X-Restart-Triggers'
 The output should include 'config.home.file.".cli-proxy-api/config.template.yaml".source'
 The status should be success

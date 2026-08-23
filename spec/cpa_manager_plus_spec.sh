@@ -5,6 +5,8 @@ Describe 'CPA Manager Plus service'
 NIX_MODULE="$PWD/home-manager/services/cpa-manager-plus/default.nix"
 START_SCRIPT="$PWD/home-manager/services/cpa-manager-plus/start.sh"
 DOCKER_START_SCRIPT="$PWD/home-manager/services/cpa-manager-plus/docker-start.sh"
+CLIPROXY_BACKUP_SCRIPT="$PWD/home-manager/services/cliproxyapi/scripts/backup.sh"
+CLIPROXY_NIX_MODULE="$PWD/home-manager/services/cliproxyapi/default.nix"
 
 It 'is enabled only on Kyber Linux'
 When run grep 'pkgs.stdenv.isLinux && host.isKyber' "$NIX_MODULE"
@@ -56,6 +58,19 @@ It 'restricts the persistent data directory to the service user'
 When run grep -E 'umask 077|chmod 700' "$START_SCRIPT"
 The output should include 'umask 077'
 The output should include 'chmod 700'
+End
+
+It 'snapshots its SQLite database only behind the full backup mode gate'
+When run bash -c "sed -n '/MODE\" != \"full\"/,\$p' '$CLIPROXY_BACKUP_SCRIPT'"
+The output should include 'CPA_MANAGER_PLUS_DATA_DIR'
+The output should include 'cliproxy_backup_manager_data'
+End
+
+It 'is never snapshotted by the auth-file watcher'
+When run bash -c "sed -n '/launchd.agents.cliproxyapi-backup-auth =/,/^  };/p' '$CLIPROXY_NIX_MODULE'; sed -n '/systemd.user.services.cliproxyapi-backup-auth =/,/^  };/p' '$CLIPROXY_NIX_MODULE'"
+The output should include 'auth'
+The output should not include 'full'
+The output should not include 'pkgs.sqlite'
 End
 
 It 'connects to the local CPA without exposing the management key'
