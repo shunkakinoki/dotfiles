@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016
 
 Describe 'config/shared/hooks/roborev-agent.sh'
 It 'uses the local RoboRev daemon'

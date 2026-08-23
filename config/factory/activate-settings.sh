@@ -104,17 +104,18 @@ else
   ' >"$TEMP_SETTINGS"
 fi
 
-# shellcheck source=/dev/null
 ENV_FILE="${HOME}/dotfiles/.env"
 cliproxy_key="${CLIPROXY_API_KEY:-}"
 if [ -z "$cliproxy_key" ] && [ -f "$ENV_FILE" ]; then
   set -a
+  # shellcheck source=/dev/null
   . "$ENV_FILE"
   set +a
   cliproxy_key="${CLIPROXY_API_KEY:-}"
 fi
 if [ -n "$cliproxy_key" ]; then
   key_tmp="$(mktemp "$FACTORY_DIR/settings.json.XXXXXX")"
+  # shellcheck disable=SC2016
   "$JQ_BIN" --arg key "$cliproxy_key" '
     .customModels |= map(
       if .apiKey == "CLIPROXY_API_KEY" then .apiKey = $key else . end
