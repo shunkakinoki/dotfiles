@@ -14,6 +14,8 @@ readonly NODEFS_KUBELET_RESERVE_GIB=50
 readonly IMAGEFS_USAGE_THRESHOLD=70
 readonly CRI_LATENCY_THRESHOLD_SECONDS=5
 readonly CRI_ERROR_THRESHOLD=5
+readonly DISK_WEAR_WARNING_PERCENT=10
+readonly DISK_WEAR_CHECK_INTERVAL_SECONDS=21600
 
 set_alert() {
   local key="$1"
@@ -159,12 +161,48 @@ check_cri() {
   fi
 }
 
+check_disk_wear() {
+  local stamp="$STATE_DIR/disk-wear.checked"
+  local now last=0 disk name remaining
+
+  now="$(date +%s)"
+  if [ -r "$stamp" ]; then
+    read -r last <"$stamp" || last=0
+  fi
+  if [ $((now - last)) -lt "$DISK_WEAR_CHECK_INTERVAL_SECONDS" ]; then
+    return
+  fi
+  printf '%s\n' "$now" >"$stamp"
+
+  for disk in /dev/sd[a-z]; do
+    [ -b "$disk" ] || continue
+    name="$(basename "$disk")"
+    # Samsung publishes remaining write endurance as the normalized value of
+    # Wear_Leveling_Count. smartd's -f only fires once that reaches the vendor
+    # threshold of zero, which is after the rated endurance is already spent
+    # and far too late to schedule a replacement.
+    # shellcheck disable=SC2016
+    remaining="$(smartctl -A "$disk" 2>/dev/null |
+      awk '$2 == "Wear_Leveling_Count" { print $4 + 0; exit }')"
+    if [ -z "$remaining" ]; then
+      continue
+    fi
+
+    if [ "$remaining" -le "$DISK_WEAR_WARNING_PERCENT" ]; then
+      set_alert "disk-wear-$name" "$name has ${remaining}% of its rated write endurance left; schedule a replacement before moving write-heavy state onto it"
+    else
+      clear_alert "disk-wear-$name"
+    fi
+  done
+}
+
 main() {
   install -d --mode 0755 "$STATE_DIR"
   check_io_pressure
   check_d_state
   check_node_filesystem
   check_image_filesystem
+  check_disk_wear
   check_cri
   check_dns
 }
