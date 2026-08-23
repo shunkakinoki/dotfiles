@@ -183,7 +183,7 @@ The output should equal 'true'
 End
 
 It 'keeps headless Antigravity review tool allows'
-When run jq -e '.permissions.allow | (index("read_file(*)") != null) and (index("command(pwd)") != null) and (index("command(ls)") != null)' config/antigravity/settings.tpl.json
+When run jq -e '.permissions.allow | (index("read_file(*)") != null) and (index("command(pwd)") != null) and (index("command(wc)") != null) and (index("command(ls)") != null) and (index("command(cat)") != null) and (index("command(head)") != null) and (index("command(tail)") != null) and (index("command(stat)") != null) and (index("command(file)") != null) and (index("command(git)") != null)' config/antigravity/settings.tpl.json
 The status should be success
 The output should equal 'true'
 End
