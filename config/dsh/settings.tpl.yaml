@@ -1,0 +1,6 @@
+agent-default-model:
+  provider: deepseek-official
+  model: __DEEPSEEK_FLASH__
+llm-deepseek:
+  apiKeyEnv: CLIPROXY_API_KEY
+  baseURL: https://cliproxy.shunkakinoki.com/v1

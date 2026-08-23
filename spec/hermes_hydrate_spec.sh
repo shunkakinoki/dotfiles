@@ -148,7 +148,6 @@ The status should be success
 The output should include 'HERMES_GATEWAY_TOKEN=gateway-token'
 End
 
-
 It 'writes .env with Vercel billing credentials'
 When run bash -c 'unset CLIPROXY_API_KEY HERMES_GATEWAY_TOKEN GATEWAY_TOKEN HERMES_TELEGRAM_TOKEN TELEGRAM_TOKEN WHATSAPP_ALLOW_FROM VERCEL_TOKEN VERCEL_TEAM_ID; HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/.hermes/.env"'
 The status should be success
@@ -182,7 +181,6 @@ It 'substitutes WHATSAPP_ALLOW_FROM in env template'
 When run bash -c "grep '__WHATSAPP_ALLOW_FROM__' '$SCRIPT'"
 The output should include 'WHATSAPP_ALLOW_FROM'
 End
-
 
 It 'substitutes Vercel credentials in env template'
 When run bash -c "grep -E '__VERCEL_(TOKEN|TEAM_ID)__' '$SCRIPT'"
