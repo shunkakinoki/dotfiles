@@ -192,7 +192,6 @@
       tsw = "_tsw_function";
       two = "_two_function";
       tzo = "_tzo_function";
-      ulb = "_update_local_binaries_function";
       vpn = "_vpn_function";
     };
     plugins = [
@@ -324,7 +323,6 @@
         "_tsw_function"
         "_two_function"
         "_tzo_function"
-        "_update_local_binaries_function"
         "_vpn_function"
         "fish_user_key_bindings"
       ]
