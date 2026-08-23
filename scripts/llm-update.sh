@@ -94,6 +94,7 @@ declare -A TEMPLATES=(
   ["config/llm/extra-openai-models.tpl.yaml"]=config/llm/extra-openai-models.yaml
   ["config/codex/config.tpl.toml"]=config/codex/config.toml
   ["config/cliproxyapi/config.tpl.yaml"]=config/cliproxyapi/config.template.yaml
+  ["config/dsh/settings.tpl.yaml"]=config/dsh/settings.yaml
   ["config/handy/settings_store.tpl.json"]=config/handy/settings_store.template.json
   ["config/factory/settings.tpl.json"]=config/factory/settings.json
   ["config/hermes/config.tpl.yaml"]=config/hermes/config.template.yaml
