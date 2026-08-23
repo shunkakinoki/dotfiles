@@ -14,6 +14,6 @@ echo "$(date): starting cass daily sync + analytics"
 "$CASS" sources sync || true
 
 # Rebuild analytics rollup tables
-"$CASS" analytics rebuild
+"$CASS" analytics rebuild --since -1d
 
 echo "$(date): cass daily sync + analytics complete"
