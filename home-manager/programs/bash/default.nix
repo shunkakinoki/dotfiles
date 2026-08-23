@@ -53,6 +53,11 @@
       # Allow aliases defined in the managed bashrc to expand in non-interactive shells.
       shopt -s expand_aliases
 
+      if [ -f "$HOME/.config/shell/load-env-file.sh" ]; then
+          . "$HOME/.config/shell/load-env-file.sh"
+          _hm_load_env_file
+      fi
+
       # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
       if [ "$(uname)" = "Linux" ]; then
           export XDG_RUNTIME_DIR="/run/user/$(id -u)"

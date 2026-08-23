@@ -1,6 +1,8 @@
 set fn (status dirname)/../../home-manager/programs/fish/functions
 source $fn/_hm_load_env_file.fish
 
+set -x HM_PRINT_ENV_FILE (status dirname)/../../home-manager/modules/dotenv/print-env-file.sh
+
 set tmpdir (mktemp -d)
 
 # ── KEY=VALUE ──────────────────────────────────────────────

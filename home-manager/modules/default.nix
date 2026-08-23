@@ -1,6 +1,7 @@
 [
   ./bin-shells
   ./cargo-globals
+  ./dotenv
   ./local-binaries
   ./local-scripts
   ./npm-globals

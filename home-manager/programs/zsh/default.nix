@@ -63,6 +63,11 @@
     '';
 
     initContent = ''
+      if [ -f "$HOME/.config/shell/load-env-file.sh" ]; then
+          . "$HOME/.config/shell/load-env-file.sh"
+          _hm_load_env_file
+      fi
+
       # Go configuration
       export GOPATH="$HOME/go"
 
