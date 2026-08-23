@@ -157,6 +157,36 @@ It 'skips redundant runtime property updates'
 When run bash -c "grep -q 'systemctl show' '$SCRIPT' && grep -q '\[ \"\$cpu_weight\" = 1000 \].*\[ \"\$io_weight\" = 1000 \]' '$SCRIPT'"
 The status should be success
 End
+
+It 'caps user.slice write bandwidth so a runaway writer cannot flood the journal'
+When run bash -c "grep -q 'user.slice.d/10-kyber-io-ceiling.conf' '$SCRIPT' && grep -q 'IOWriteBandwidthMax' '$SCRIPT'"
+The status should be success
+End
+
+It 'defaults the write ceiling but allows an override'
+When run grep 'KYBER_USER_IO_WRITE_MAX:-150M' "$SCRIPT"
+The output should include 'KYBER_USER_IO_WRITE_MAX:-150M'
+End
+
+It 'selects bfq so IOWeight is not inert under mq-deadline'
+When run bash -c "grep -q 'select_bfq_scheduler' '$SCRIPT' && grep -q 'queue/scheduler' '$SCRIPT'"
+The status should be success
+End
+
+It 'persists the scheduler choice through a udev rule'
+When run bash -c "grep -q '60-kyber-bfq.rules' '$SCRIPT' && grep -q 'ATTR{queue/scheduler}=\"bfq\"' '$SCRIPT'"
+The status should be success
+End
+
+It 'leaves the scheduler alone when bfq is already selected'
+When run grep -F '*"[bfq]"*' "$SCRIPT"
+The output should include '[bfq]'
+End
+
+It 'warns instead of failing when bfq is unavailable'
+When run grep 'bfq unavailable on' "$SCRIPT"
+The output should include 'IOWeight stays inert there'
+End
 End
 End
 
