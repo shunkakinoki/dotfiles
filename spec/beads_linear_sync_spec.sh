@@ -36,6 +36,21 @@ When run bash -c "grep -F 'DOTFILES_ENV_FILE:-\$HOME/dotfiles/.env' '$SCRIPT' >/
 The status should be success
 End
 
+It 'takes the Beads repo from the env file with the built-in path as fallback'
+When run bash -c "grep -F 'BEADS_LINEAR_SYNC_REPO:-\$default_repo_dir' '$SCRIPT' >/dev/null"
+The status should be success
+End
+
+It 'keeps an already-exported credential and repo ahead of the env file'
+When run bash -c "grep -F 'preset_api_key=' '$SCRIPT' >/dev/null && grep -F 'preset_repo_dir=' '$SCRIPT' >/dev/null"
+The status should be success
+End
+
+It 'scopes the success watermark per repo'
+When run bash -c "grep -F 'last-success-\$repo_slug' '$SCRIPT' >/dev/null"
+The status should be success
+End
+
 It 'invokes jq through the Nix package binary path'
 When run bash -c "grep -F '@jq@/bin/jq' '$SCRIPT' >/dev/null"
 The status should be success
@@ -94,7 +109,7 @@ setup_reconciliation() {
   STATE_HOME="$TEST_ROOT/state"
   COREUTILS="$TEST_ROOT/coreutils"
   jq_prefix=$(dirname "$(dirname "$(command -v jq)")")
-  mkdir -p "$COREUTILS/bin"
+  mkdir -p "$COREUTILS/bin" "$TEST_ROOT/.beads"
   for command in chmod date env mkdir mv sleep timeout; do
     ln -s "$(command -v "$command")" "$COREUTILS/bin/$command"
   done
@@ -217,6 +232,31 @@ When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MOD
 The status should equal 42
 The output should include 'Pushing changed active Beads'
 The file "$STATE_HOME/beads-linear-sync/last-success" should not be exist
+End
+
+It 'reconciles the repo named in the env file instead of the built-in default'
+mkdir -p "$TEST_ROOT/other/.beads"
+printf '%s\n' "BEADS_LINEAR_SYNC_REPO=$TEST_ROOT/other" >"$TEST_ROOT/dotenv-fixture"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" DOTFILES_ENV_FILE="$TEST_ROOT/dotenv-fixture" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Pushing changed active Beads'
+The contents of file "$COMMAND_LOG" should include "-C $TEST_ROOT/other"
+End
+
+It 'refuses a repo path that holds no Beads directory'
+printf '%s\n' "BEADS_LINEAR_SYNC_REPO=$TEST_ROOT/missing" >"$TEST_ROOT/dotenv-fixture"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" DOTFILES_ENV_FILE="$TEST_ROOT/dotenv-fixture" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 1
+The output should include 'Not a Beads repo'
+End
+
+It 'keeps an exported repo ahead of the env file'
+mkdir -p "$TEST_ROOT/exported/.beads" "$TEST_ROOT/other/.beads"
+printf '%s\n' "BEADS_LINEAR_SYNC_REPO=$TEST_ROOT/other" >"$TEST_ROOT/dotenv-fixture"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" DOTFILES_ENV_FILE="$TEST_ROOT/dotenv-fixture" BEADS_LINEAR_SYNC_REPO="$TEST_ROOT/exported" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Pushing changed active Beads'
+The contents of file "$COMMAND_LOG" should include "-C $TEST_ROOT/exported"
 End
 End
 

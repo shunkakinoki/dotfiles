@@ -4,7 +4,8 @@ set -euo pipefail
 
 bd_cli="@bd@"
 linear_cli="@linear@"
-repo_dir="@repoDir@"
+default_repo_dir="@repoDir@"
+repo_dir="$default_repo_dir"
 linear_workspace="@linearWorkspace@"
 linear_team_id="@linearTeamId@"
 linear_credentials_file="${XDG_CONFIG_HOME:-$HOME/.config}/linear/credentials.toml"
@@ -63,15 +64,32 @@ run_linear() {
 }
 
 # Prefer the machine-local dotfiles .env (same convention as other launchd
-# services) before the Linear CLI credential file or keyring.
-if [ -z "${LINEAR_API_KEY:-}" ]; then
-  env_file="${DOTFILES_ENV_FILE:-$HOME/dotfiles/.env}"
-  if [ -f "$env_file" ]; then
-    set -a
-    # shellcheck source=/dev/null
-    . "$env_file"
-    set +a
-  fi
+# services) before the Linear CLI credential file or keyring. Keep already
+# exported Linear/Beads values ahead of the file.
+preset_api_key="${LINEAR_API_KEY:-}"
+preset_repo_dir="${BEADS_LINEAR_SYNC_REPO:-}"
+env_file="${DOTFILES_ENV_FILE:-$HOME/dotfiles/.env}"
+if [ -f "$env_file" ]; then
+  set -a
+  # shellcheck source=/dev/null
+  . "$env_file"
+  set +a
+fi
+if [ -n "$preset_api_key" ]; then
+  LINEAR_API_KEY="$preset_api_key"
+fi
+if [ -n "$preset_repo_dir" ]; then
+  BEADS_LINEAR_SYNC_REPO="$preset_repo_dir"
+fi
+
+repo_dir="${BEADS_LINEAR_SYNC_REPO:-$default_repo_dir}"
+if [ ! -d "$repo_dir/.beads" ]; then
+  log "Not a Beads repo: $repo_dir"
+  exit 1
+fi
+if [ "$repo_dir" != "$default_repo_dir" ]; then
+  repo_slug="${repo_dir##*/}"
+  sync_checkpoint_file="$sync_state_dir/last-success-$repo_slug"
 fi
 
 if [ -z "${LINEAR_API_KEY:-}" ] && [ -f "$linear_credentials_file" ] && [ ! -L "$linear_credentials_file" ]; then
