@@ -1,3 +1,7 @@
+# Kyber overrides this to one worker during hydration so a burst of full-panel
+# reviews cannot saturate the host. Desktop hosts retain the upstream default.
+max_workers = 4
+
 # Pi review subagents: ox-alpha via OpenRouter first, cliproxy free as fallback.
 # Both are allow-failure; panels list pi-oxalpha before pi so ox-alpha runs first.
 [review.subagents.pi-oxalpha]

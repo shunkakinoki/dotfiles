@@ -57,6 +57,11 @@ When run bash -c "grep 'ciEnabled = if inputs.host.isKyber then \"true\" else \"
 The output should include 'ciEnabled = if inputs.host.isKyber then "true" else "false";'
 End
 
+It 'serializes Kyber reviews while retaining desktop concurrency'
+When run bash -c "grep 'maxWorkers = if inputs.host.isKyber then \"1\" else \"4\";' '$PWD/config/roborev/default.nix'"
+The output should include 'maxWorkers = if inputs.host.isKyber then "1" else "4";'
+End
+
 It 'runs roborev daemon run'
 When run bash -c "grep 'start.sh' '$PWD/home-manager/services/roborev/default.nix'"
 The output should include 'start.sh'
@@ -86,6 +91,16 @@ End
 It 'binds the daemon to the local host'
 When run grep -F '127.0.0.1:7373' "$PWD/home-manager/services/roborev/default.nix"
 The output should include '127.0.0.1:7373'
+End
+
+It 'bounds Kyber worker resources and restart behavior'
+When run grep -E 'StartLimitIntervalSec = 300|StartLimitBurst = 3|RestartSec = 30|TimeoutStopSec = 30|TasksMax = 512|CPUQuota = "400%"' "$PWD/home-manager/services/roborev/default.nix"
+The output should include 'StartLimitIntervalSec = 300'
+The output should include 'StartLimitBurst = 3'
+The output should include 'RestartSec = 30'
+The output should include 'TimeoutStopSec = 30'
+The output should include 'TasksMax = 512'
+The output should include 'CPUQuota = "400%"'
 End
 End
 

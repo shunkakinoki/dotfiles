@@ -44,12 +44,18 @@ lib.mkIf enabled {
       Description = "roborev code review daemon";
       Documentation = [ "https://github.com/roborev-dev/roborev" ];
       After = [ "network.target" ];
+      StartLimitIntervalSec = 300;
+      StartLimitBurst = 3;
     };
     Service = {
       Type = "notify";
       ExecStart = "${pkgs.bash}/bin/bash ${./start.sh} ${roborevBin} ${serverAddr}";
       Restart = "on-failure";
-      RestartSec = 5;
+      RestartSec = 30;
+      KillMode = "control-group";
+      TimeoutStopSec = 30;
+      TasksMax = 512;
+      CPUQuota = "400%";
       Environment = [
         "HOME=${homeDir}"
         "ROBOREV_DATA_DIR=${dataDir}"
