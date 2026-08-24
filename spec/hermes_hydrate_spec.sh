@@ -248,6 +248,14 @@ The output should not include 'opus'
 End
 End
 
+Describe 'busy input acknowledgments'
+It 'suppresses the interrupt acknowledgment while keeping interrupt mode'
+When run bash -c "sed -n '/^display:/,/^[^ ]/p' '$PWD/config/hermes/config.template.yaml'"
+The output should include 'busy_input_mode: interrupt'
+The output should include 'busy_ack_enabled: false'
+End
+End
+
 Describe 'execution'
 It 'reports config generation'
 When run bash -c "grep 'Generated hermes' '$SCRIPT'"

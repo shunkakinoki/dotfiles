@@ -172,6 +172,7 @@ display:
   compact: true
   resume_display: full
   busy_input_mode: interrupt
+  busy_ack_enabled: false
   bell_on_complete: false
   show_reasoning: false
   streaming: false
