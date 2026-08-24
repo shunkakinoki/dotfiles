@@ -120,7 +120,8 @@ Hermes also runs a Mixture-of-Agents preset: reference models
 | Codex | `qwen-local` profile | `qwen3.5-0.8b-optiq` (LM Studio) | |
 | Antigravity | default | `gemini-3.7-flash-high` (native Antigravity provider) | [settings.tpl.json](config/antigravity/settings.tpl.json) |
 | Pi | `defaultModel` | `glm-4.7` (provider `cliproxyapi`) | [settings.tpl.json](config/pi/settings.tpl.json) |
-| Factory (droid) | session default | `custom:deepseek-v4-flash-0` via `https://cliproxy.shunkakinoki.com/v1` | [settings.tpl.json](config/factory/settings.tpl.json) |
+| Factory (droid) | session default | `deepseek-v4-flash-0731` (Droid Core) | [settings.tpl.json](config/factory/settings.tpl.json) |
+| Factory (droid) | custom models | `custom:deepseek-v4-flash-0`, `custom:free-1` via `https://cliproxy.shunkakinoki.com/v1` | [settings.tpl.json](config/factory/settings.tpl.json) |
 | aichat | default | `cliproxy:glm-4.7` | [config.tpl.yaml](config/aichat/config.tpl.yaml) |
 | DSH web | default | `deepseek-v4-flash` via `https://cliproxy.shunkakinoki.com/v1` (native DeepSeek adapter) | [settings.tpl.yaml](config/dsh/settings.tpl.yaml) |
 | llm | default | `glm-4.7` | [default_model.tpl.txt](config/llm/default_model.tpl.txt) |

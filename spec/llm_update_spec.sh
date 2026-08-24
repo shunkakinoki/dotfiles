@@ -190,8 +190,8 @@ End
 End
 
 Describe 'generated Factory settings'
-It 'pins Droid to the CLIProxy DeepSeek Flash custom model'
-When run jq -e '.sessionDefaultSettings.model == "custom:__DEEPSEEK_FLASH__-0" and (.customModels | length) == 1 and .customModels[0].id == "custom:__DEEPSEEK_FLASH__-0" and .customModels[0].baseUrl == "https://cliproxy.shunkakinoki.com/v1"' config/factory/settings.tpl.json
+It 'pins Droid to its built-in DeepSeek Flash model and keeps CLIProxy customs'
+When run jq -e '.sessionDefaultSettings.model == "__DEEPSEEK_FLASH_0731__" and (.customModels | length) == 2 and any(.customModels[]; .id == "custom:__DEEPSEEK_FLASH__-0" and .baseUrl == "https://cliproxy.shunkakinoki.com/v1") and any(.customModels[]; .id == "custom:free-1" and .model == "free" and .baseUrl == "https://cliproxy.shunkakinoki.com/v1")' config/factory/settings.tpl.json
 The status should be success
 The output should equal 'true'
 End
