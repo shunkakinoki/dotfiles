@@ -30,9 +30,9 @@ When run bash -c "grep '@printer@' '$SCRIPT'"
 The output should include '@printer@'
 End
 
-It 'references @keys@'
-When run bash -c "grep '@keys@' '$SCRIPT'"
-The output should include '@keys@'
+It 'does not contain a static GUI key allowlist'
+When run bash -c "! grep -Eq '@keys@|guiEnvKeys|AMP_API_KEY|OPENCODE_API_KEY' '$SCRIPT' '$PWD/home-manager/modules/dotenv/default.nix'"
+The status should be success
 End
 End
 
@@ -42,7 +42,7 @@ setup() {
   LAUNCHCTL_STUB="$TEST_HOME/launchctl"
   cat >"$LAUNCHCTL_STUB" <<'STUB'
 #!/usr/bin/env bash
-printf '%s\n' "$*" >>"${LAUNCHCTL_LOG}"
+printf '%s %s value=<%s>\n' "$1" "$2" "$3" >>"${LAUNCHCTL_LOG}"
 STUB
   chmod +x "$LAUNCHCTL_STUB"
 
@@ -53,7 +53,6 @@ STUB
   sed \
     -e "s|@launchctl@|$LAUNCHCTL_STUB|g" \
     -e "s|@printer@|$PWD/home-manager/modules/dotenv/print-env-file.sh|g" \
-    -e "s|@keys@|AMP_API_KEY OPENCODE_API_KEY|g" \
     "$SCRIPT" >"$PROCESSED_SCRIPT"
 
   export TEST_HOME LAUNCHCTL_STUB LAUNCHCTL_LOG PROCESSED_SCRIPT
@@ -71,26 +70,36 @@ run_with_env() {
   cat "$LAUNCHCTL_LOG"
 }
 
-It 'exports both allowlisted keys'
+It 'exports every valid assignment emitted by the shared parser'
 When call run_with_env 'AMP_API_KEY=amp-value
-OPENCODE_API_KEY=opencode-value'
-The line 1 of output should equal 'setenv AMP_API_KEY amp-value'
-The line 2 of output should equal 'setenv OPENCODE_API_KEY opencode-value'
+OPENCODE_API_KEY=opencode-value
+CLIPROXY_API_KEY=cliproxy-value'
+The line 1 of output should equal 'setenv AMP_API_KEY value=<amp-value>'
+The line 2 of output should equal 'setenv OPENCODE_API_KEY value=<opencode-value>'
+The line 3 of output should equal 'setenv CLIPROXY_API_KEY value=<cliproxy-value>'
 End
 
-It 'skips keys missing from the env file'
-When call run_with_env 'AMP_API_KEY=amp-value'
-The output should equal 'setenv AMP_API_KEY amp-value'
+It 'exports keys outside the previous allowlist'
+When call run_with_env 'ARBITRARY_GUI_VALUE=available'
+The output should equal 'setenv ARBITRARY_GUI_VALUE value=<available>'
 End
 
-It 'never exports keys outside the allowlist'
-When call run_with_env 'CLIPROXY_API_KEY=secret'
-The output should equal ''
+It 'preserves an explicitly empty value'
+When call run_with_env 'EMPTY_GUI_VALUE='
+The output should equal 'setenv EMPTY_GUI_VALUE value=<>'
 End
 
-It 'warns about a missing key'
-When run bash -c "printf 'AMP_API_KEY=amp-value\n' >'$TEST_HOME/env'; DOTFILES_ENV_FILE='$TEST_HOME/env' HOME='$TEST_HOME' bash '$PROCESSED_SCRIPT' 2>&1 >/dev/null"
-The output should include 'OPENCODE_API_KEY is unset'
+It 'reports the exported key without printing its value'
+When run bash -c "printf '%s\n' 'PRIVATE_GUI_VALUE=do-not-print' >'$TEST_HOME/env'; DOTFILES_ENV_FILE='$TEST_HOME/env' HOME='$TEST_HOME' bash '$PROCESSED_SCRIPT'"
+The output should equal 'Exported PRIVATE_GUI_VALUE to the GUI session'
+The output should not include 'do-not-print'
+End
+
+It 'still excludes invalid keys and comments through the shared parser'
+When call run_with_env 'VALID_GUI_VALUE=yes
+INVALID-GUI-VALUE=no
+# COMMENTED_GUI_VALUE=no'
+The output should equal 'setenv VALID_GUI_VALUE value=<yes>'
 End
 
 It 'succeeds when the env file is absent'
