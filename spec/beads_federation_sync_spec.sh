@@ -52,6 +52,25 @@ case "${1:-} ${2:-}" in
   "ping ")
     exit 0
     ;;
+  "config get")
+    if [ "${3:-}" = "sync.remote" ]; then
+      printf '%s\n' 'git+https://example.invalid/org/repo.git'
+      exit 0
+    fi
+    exit 1
+    ;;
+  "dolt remote")
+    if [ "${3:-}" = "list" ]; then
+      if [ "${FAKE_DOLT_REMOTE:-}" = "configured" ]; then
+        printf '%s\n' 'origin git+https://example.invalid/org/repo.git'
+      fi
+      exit 0
+    fi
+    if [ "${3:-}" = "add" ]; then
+      exit "${FAKE_REMOTE_ADD_STATUS:-0}"
+    fi
+    exit 1
+    ;;
   "sync --yes")
     exit "${FAKE_SYNC_STATUS:-0}"
     ;;
@@ -78,6 +97,7 @@ The status should be success
 The output should include 'Dolt federation complete'
 The file "$CHECKPOINT_FILE" should be exist
 The contents of file "$COMMAND_LOG" should include 'sync --yes'
+The contents of file "$COMMAND_LOG" should include 'dolt remote add origin git+https://example.invalid/org/repo.git --allow-git-origin'
 End
 
 It 'propagates a federation failure without advancing the checkpoint'
