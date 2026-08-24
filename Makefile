@@ -98,8 +98,10 @@ endif
 # Machine detection for automatic host mapping
 DETECTED_HOST := $(shell \
 	if [ "$(OS)" = "Darwin" ] && [ "$(shell whoami)" = "shunkakinoki" ] && [ "$(ARCH)" = "arm64" ]; then \
-		computer_name=$$(scutil --get ComputerName 2>/dev/null || echo ""); \
-		if echo "$$computer_name" | grep -q "Shun's MacBook M4"; then \
+		hostname="$(MACHINE_HOSTNAME)"; \
+		tailscale_dns="$(TAILSCALE_DNS_NAME)"; \
+		if [ "$${hostname%%.*}" = "galactica" ] \
+			|| [ "$$tailscale_dns" = "galactica.tail950b36.ts.net" ]; then \
 			echo "galactica"; \
 		else \
 			echo ""; \
@@ -113,7 +115,6 @@ DETECTED_HOST := $(shell \
 			if [ "$$hostname" = "andor" ]; then \
 				echo "andor"; \
 			elif [ "$$hostname" = "kyber" ] \
-				|| [ "$$hostname" = "c2-small-x86-chi-1" ] \
 				|| [ "$$tailscale_dns" = "kyber.tail950b36.ts.net" ]; then \
 				echo "kyber"; \
 			elif [ "$$hostname" = "matic" ] \

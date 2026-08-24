@@ -20,6 +20,7 @@ let
   };
   configuration = _: {
     networking.hostName = hostname;
+    networking.computerName = hostname;
     users.users.${username}.home = "/Users/${username}";
     system.stateVersion = 4;
   };

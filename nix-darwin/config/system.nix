@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   isRunner,
   username,
@@ -181,7 +182,7 @@
       };
       smb = {
         NetBIOSName = "MAC";
-        ServerDescription = "Shun's MacBook M4 Pro Max";
+        ServerDescription = config.networking.hostName;
       };
       spaces.spans-displays = null;
       trackpad = {

@@ -7,9 +7,9 @@ else
   _raw=$(hostname 2>/dev/null || echo "unknown")
 fi
 case "$_raw" in
-galactica* | aarch64-darwin*) HOST_NAME="galactica" ;;
+galactica*) HOST_NAME="galactica" ;;
 matic*) HOST_NAME="matic" ;;
-kyber* | c2-small-x86-chi-1*) HOST_NAME="kyber" ;;
+kyber*) HOST_NAME="kyber" ;;
 *) HOST_NAME="$_raw" ;;
 esac
 
