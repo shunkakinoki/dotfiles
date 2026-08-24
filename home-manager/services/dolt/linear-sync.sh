@@ -4,16 +4,96 @@ set -euo pipefail
 
 bd_cli="@bd@"
 linear_cli="@linear@"
-repo_dir="@repoDir@"
 linear_workspace="@linearWorkspace@"
 linear_team_id="@linearTeamId@"
 linear_credentials_file="${XDG_CONFIG_HOME:-$HOME/.config}/linear/credentials.toml"
 sync_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/beads-linear-sync"
-sync_checkpoint_file="$sync_state_dir/last-success"
 
 log() {
-  printf '[beads-linear-sync] %s\n' "$*"
+  local context=""
+
+  if [ -n "${repo_context:-}" ]; then
+    context="[$repo_context] "
+  fi
+  printf '[beads-linear-sync] %s%s\n' "$context" "$*"
 }
+
+# Repository scope and credentials are machine-local policy. The tracked Nix
+# module never embeds checkout paths or secret dotenv values in the store.
+env_file="${DOTFILES_ENV_FILE:-$HOME/dotfiles/.env}"
+if [ -f "$env_file" ]; then
+  set -a
+  # shellcheck source=/dev/null
+  . "$env_file"
+  set +a
+fi
+
+# The parent process dispatches each org/repo entry through an isolated child
+# so one repository cannot prevent later repositories from being attempted.
+if [ "${1:-}" != "--repo" ]; then
+  configured_repos="${BEADS_LINEAR_SYNC_REPOS:-}"
+  if [ -z "$configured_repos" ]; then
+    log "BEADS_LINEAR_SYNC_REPOS is required in the local dotenv file"
+    exit 1
+  fi
+
+  IFS=',' read -r -a repo_names <<<"$configured_repos"
+  declare -A seen_repo_names=()
+  overall_status=0
+
+  for repo_index in "${!repo_names[@]}"; do
+    configured_repo="${repo_names[$repo_index]}"
+    repo_context="repository $((repo_index + 1))/${#repo_names[@]}"
+    if [ -z "$configured_repo" ]; then
+      log "BEADS_LINEAR_SYNC_REPOS contains an empty repository name"
+      overall_status=1
+      continue
+    fi
+    if [[ ! $configured_repo =~ ^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$ ]]; then
+      log "Invalid org/repo entry in BEADS_LINEAR_SYNC_REPOS"
+      overall_status=1
+      continue
+    fi
+    if [ -n "${seen_repo_names[$configured_repo]:-}" ]; then
+      log "BEADS_LINEAR_SYNC_REPOS contains a duplicate repository entry"
+      overall_status=1
+      continue
+    fi
+    seen_repo_names[$configured_repo]=1
+
+    repo_path="$HOME/ghq/github.com/$configured_repo"
+    if BEADS_LINEAR_SYNC_REPO_DIR="$repo_path" BEADS_LINEAR_SYNC_REPO_NAME="$configured_repo" BEADS_LINEAR_SYNC_REPO_CONTEXT="$repo_context" "$BASH" "$0" --repo; then
+      :
+    else
+      status=$?
+      log "Repository sync failed with status $status"
+      if [ "$overall_status" -eq 0 ]; then
+        overall_status="$status"
+      fi
+    fi
+  done
+
+  exit "$overall_status"
+fi
+
+repo_dir="${BEADS_LINEAR_SYNC_REPO_DIR:-}"
+repo_name="${BEADS_LINEAR_SYNC_REPO_NAME:-}"
+repo_context="${BEADS_LINEAR_SYNC_REPO_CONTEXT:-}"
+if [ -z "$repo_dir" ] || [ -z "$repo_name" ] || [ -z "$repo_context" ]; then
+  log "Internal repository dispatch is incomplete"
+  exit 1
+fi
+
+if [ ! -d "$repo_dir" ] || [ ! -e "$repo_dir/.beads" ]; then
+  log "Configured checkout is not a Beads repository"
+  exit 1
+fi
+
+repo_dir="$(cd "$repo_dir" && pwd -P)"
+repo_slug="$repo_name"
+repo_slug="${repo_slug//\//_}"
+repo_slug="${repo_slug//[^[:alnum:]_.-]/_}"
+sync_checkpoint_file="$sync_state_dir/last-success-$repo_slug"
 
 ensure_config() {
   local key="$1"
@@ -22,7 +102,7 @@ ensure_config() {
 
   actual="$("$bd_cli" -C "$repo_dir" config get "$key" 2>/dev/null || true)"
   if [ "$actual" != "$expected" ]; then
-    "$bd_cli" -C "$repo_dir" config set "$key" "$expected"
+    "$bd_cli" -C "$repo_dir" config set "$key" "$expected" >/dev/null 2>&1
   fi
 }
 
@@ -49,10 +129,6 @@ run_linear() {
   status=$?
   set -e
 
-  if [ -n "$output" ]; then
-    printf '%s\n' "$output"
-  fi
-
   # bd may return zero after individual API operations were rejected. Treat
   # its circuit-breaker warning as a deferred run regardless of exit status.
   if [[ $output == *"rate limit circuit breaker"* ]]; then
@@ -62,17 +138,19 @@ run_linear() {
   return "$status"
 }
 
-# Prefer the machine-local dotfiles .env (same convention as other launchd
-# services) before the Linear CLI credential file or keyring.
-if [ -z "${LINEAR_API_KEY:-}" ]; then
-  env_file="${DOTFILES_ENV_FILE:-$HOME/dotfiles/.env}"
-  if [ -f "$env_file" ]; then
-    set -a
-    # shellcheck source=/dev/null
-    . "$env_file"
-    set +a
+federate_beads() {
+  local phase="$1"
+  local status
+
+  set +e
+  @coreutils@/bin/timeout 30 "$bd_cli" -C "$repo_dir" sync --yes >/dev/null 2>&1
+  status=$?
+  set -e
+
+  if [ "$status" -ne 0 ]; then
+    log "Dolt $phase federation failed with status $status; continuing with local Beads state"
   fi
-fi
+}
 
 if [ -z "${LINEAR_API_KEY:-}" ] && [ -f "$linear_credentials_file" ] && [ ! -L "$linear_credentials_file" ]; then
   @coreutils@/bin/chmod 600 "$linear_credentials_file"
@@ -117,11 +195,11 @@ ensure_config linear.state_map.duplicate closed
 ensure_config linear.outbound_state_map.open Todo
 ensure_config linear.outbound_state_map.in_progress "In Progress"
 ensure_config linear.outbound_state_map.closed Done
-"$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): configure Linear sync"
+"$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): configure Linear sync" >/dev/null 2>&1
 
-# Pull the Dolt remote first so Linear conflict resolution sees the newest
-# Beads timestamps from every machine.
-"$bd_cli" -C "$repo_dir" sync --yes
+# Prefer the newest federated Beads timestamps, but do not let a damaged backup
+# remote prevent independent Linear reconciliation.
+federate_beads "pre-sync"
 
 if [ -s "$sync_checkpoint_file" ]; then
   previous_sync="$(<"$sync_checkpoint_file")"
@@ -134,7 +212,7 @@ fi
 # rate-limit failure is deferred to the next scheduled run instead of making
 # launchd hot-loop a failed job.
 log "Pulling Linear work if stale"
-if run_linear "$bd_cli" -C "$repo_dir" linear sync \
+if run_linear @coreutils@/bin/timeout 60 "$bd_cli" -C "$repo_dir" linear sync \
   --pull-if-stale \
   --threshold 5m \
   --state all \
@@ -147,8 +225,7 @@ else
     log "Linear pull deferred; the next 300-second run will retry"
     exit 0
   fi
-  log "Linear pull failed with status $status"
-  exit "$status"
+  log "Linear pull failed with status $status; continuing with outbound Beads reconciliation"
 fi
 
 all_issues="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0 --skip-labels)"
@@ -172,27 +249,40 @@ changed_ids="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" '
   | join(",")
 ' <<<"$all_issues")"
 
-# Push only the active local delta since the previous successful pull. The
-# first successful run seeds all active work; steady-state runs remain small.
+# Push only the active local delta since the previous successful pull. Bound
+# each batch so a large first run makes durable progress without pinning the
+# recurring service on one API call.
 if [ -n "$changed_ids" ]; then
-  log "Pushing changed active Beads"
-  if run_linear "$bd_cli" -C "$repo_dir" linear sync --push --issues "$changed_ids" --no-wait; then
-    :
-  else
-    status=$?
-    if [ "$status" -eq 75 ]; then
-      log "Linear push deferred; the next 300-second run will retry"
-      exit 0
+  push_batch_size=10
+  IFS=',' read -r -a changed_id_array <<<"$changed_ids"
+  push_batch_count=$(((${#changed_id_array[@]} + push_batch_size - 1) / push_batch_size))
+
+  for ((batch_start = 0; batch_start < ${#changed_id_array[@]}; batch_start += push_batch_size)); do
+    batch_number=$((batch_start / push_batch_size + 1))
+    batch_ids="$(
+      IFS=,
+      printf '%s' "${changed_id_array[*]:batch_start:push_batch_size}"
+    )"
+    log "Pushing changed active Beads batch $batch_number/$push_batch_count"
+
+    if run_linear @coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" linear sync --push --issues "$batch_ids" --no-wait; then
+      :
+    else
+      status=$?
+      if [ "$status" -eq 75 ]; then
+        log "Linear push deferred; the next 300-second run will retry"
+        exit 0
+      fi
+      log "Linear push failed with status $status"
+      exit "$status"
     fi
-    log "Linear push failed with status $status"
-    exit "$status"
-  fi
+  done
 else
   log "No changed active Beads to push"
 fi
 
-"$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): sync Linear"
-"$bd_cli" -C "$repo_dir" sync --yes
+"$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): sync Linear" >/dev/null 2>&1
+federate_beads "post-sync"
 
 printf '%s\n' "$cycle_started" >"$sync_checkpoint_file.tmp"
 @coreutils@/bin/mv -f "$sync_checkpoint_file.tmp" "$sync_checkpoint_file"

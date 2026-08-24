@@ -36,6 +36,31 @@ When run bash -c "grep -F 'DOTFILES_ENV_FILE:-\$HOME/dotfiles/.env' '$SCRIPT' >/
 The status should be success
 End
 
+It 'requires a comma-separated org/repo list from the local dotenv file'
+When run bash -c "grep -F 'configured_repos=\"\${BEADS_LINEAR_SYNC_REPOS:-}\"' '$SCRIPT' >/dev/null && grep -F \"IFS=',' read -r -a repo_names\" '$SCRIPT' >/dev/null"
+The status should be success
+End
+
+It 'dispatches each repository through an isolated child run'
+When run bash -c "grep -F 'BEADS_LINEAR_SYNC_REPO_DIR=\"\$repo_path\" BEADS_LINEAR_SYNC_REPO_NAME=\"\$configured_repo\" BEADS_LINEAR_SYNC_REPO_CONTEXT=\"\$repo_context\" \"\$BASH\" \"\$0\" --repo' '$SCRIPT' >/dev/null"
+The status should be success
+End
+
+It 'does not print configured repository identifiers or command output'
+When run bash -c "grep -F 'context=\"[\$repo_context] \"' '$SCRIPT' >/dev/null && ! grep -F 'context=\"[\$repo_name] \"' '$SCRIPT' >/dev/null && ! grep -F 'printf '\''%s\\n'\'' \"\$output\"' '$SCRIPT' >/dev/null"
+The status should be success
+End
+
+It 'does not retain a Nix-substituted repository fallback'
+When run grep -F '@repoDir@' "$SCRIPT"
+The status should be failure
+End
+
+It 'uses an org/repo-specific checkpoint'
+When run bash -c "grep -F 'last-success-\$repo_slug' '$SCRIPT' >/dev/null"
+The status should be success
+End
+
 It 'invokes jq through the Nix package binary path'
 When run bash -c "grep -F '@jq@/bin/jq' '$SCRIPT' >/dev/null"
 The status should be success
@@ -54,7 +79,7 @@ The status should be success
 End
 
 It 'pushes only changed active Beads'
-When run bash -c "grep -F '.updated_at >= \$previous_sync' '$SCRIPT' >/dev/null && grep -F 'linear sync --push --issues \"\$changed_ids\" --no-wait' '$SCRIPT' >/dev/null"
+When run bash -c "grep -F '.updated_at >= \$previous_sync' '$SCRIPT' >/dev/null && grep -F 'linear sync --push --issues \"\$batch_ids\" --no-wait' '$SCRIPT' >/dev/null"
 The status should be success
 End
 
@@ -63,23 +88,28 @@ When run bash -c "test \"\$(grep -c 'next 300-second run will retry' '$SCRIPT')\
 The status should be success
 End
 
-It 'propagates non-rate-limit pull and push failures'
-When run bash -c "test \"\$(grep -c 'failed with status \$status' '$SCRIPT')\" -eq 2 && test \"\$(grep -c 'exit \"\$status\"' '$SCRIPT')\" -eq 2"
+It 'continues after pull failures but propagates push failures'
+When run bash -c "grep -F 'continuing with outbound Beads reconciliation' '$SCRIPT' >/dev/null && grep -F 'log \"Linear push failed with status \$status\"' '$SCRIPT' >/dev/null && test \"\$(grep -c 'exit \"\$status\"' '$SCRIPT')\" -eq 1"
+The status should be success
+End
+
+It 'bounds federation, inbound pull, and small outbound batches'
+When run bash -c "grep -F '@coreutils@/bin/timeout 30 \"\$bd_cli\" -C \"\$repo_dir\" sync --yes' '$SCRIPT' >/dev/null && grep -F 'run_linear @coreutils@/bin/timeout 60 \"\$bd_cli\"' '$SCRIPT' >/dev/null && grep -F 'push_batch_size=10' '$SCRIPT' >/dev/null && grep -F 'run_linear @coreutils@/bin/timeout 120 \"\$bd_cli\"' '$SCRIPT' >/dev/null"
 The status should be success
 End
 
 It 'checkpoints a successful cycle for delta selection'
-When run bash -c "checkpoint=\$(grep -n '\"\$cycle_started\" >\"\$sync_checkpoint_file.tmp\"' '$SCRIPT' | cut -d: -f1); final_sync=\$(grep -n 'sync --yes' '$SCRIPT' | tail -1 | cut -d: -f1); test \"\$checkpoint\" -gt \"\$final_sync\""
+When run bash -c "checkpoint=\$(grep -n '\"\$cycle_started\" >\"\$sync_checkpoint_file.tmp\"' '$SCRIPT' | cut -d: -f1); final_sync=\$(grep -n 'federate_beads \"post-sync\"' '$SCRIPT' | cut -d: -f1); test \"\$checkpoint\" -gt \"\$final_sync\""
 The status should be success
 End
 
 It 'federates Beads before and after Linear reconciliation'
-When run bash -c "test \"\$(grep -c 'sync --yes' '$SCRIPT')\" -eq 2"
+When run bash -c "test \"\$(grep -c '^federate_beads \"' '$SCRIPT')\" -eq 2 && grep -F 'federate_beads \"pre-sync\"' '$SCRIPT' >/dev/null && grep -F 'federate_beads \"post-sync\"' '$SCRIPT' >/dev/null"
 The status should be success
 End
 
 It 'commits internal Linear config before the first federation pull'
-When run bash -c "config_commit=\$(grep -n 'configure Linear sync' '$SCRIPT' | cut -d: -f1); first_pull=\$(grep -n 'sync --yes' '$SCRIPT' | head -1 | cut -d: -f1); test \"\$config_commit\" -lt \"\$first_pull\""
+When run bash -c "config_commit=\$(grep -n 'configure Linear sync' '$SCRIPT' | cut -d: -f1); first_pull=\$(grep -n 'federate_beads \"pre-sync\"' '$SCRIPT' | cut -d: -f1); test \"\$config_commit\" -lt \"\$first_pull\""
 The status should be success
 End
 End
@@ -92,9 +122,18 @@ setup_reconciliation() {
   COMMAND_LOG="$TEST_ROOT/commands.log"
   SYNC_COUNT="$TEST_ROOT/sync-count"
   STATE_HOME="$TEST_ROOT/state"
+  ENV_FILE="$TEST_ROOT/dotenv"
   COREUTILS="$TEST_ROOT/coreutils"
+  TEST_REPO_ID="test/repo-one"
+  TEST_REPO="$TEST_ROOT/ghq/github.com/$TEST_REPO_ID"
   jq_prefix=$(dirname "$(dirname "$(command -v jq)")")
-  mkdir -p "$COREUTILS/bin"
+  mkdir -p "$COREUTILS/bin" "$TEST_REPO/.beads"
+  printf 'BEADS_LINEAR_SYNC_REPOS=%q\n' "$TEST_REPO_ID" >"$ENV_FILE"
+  canonical_test_repo="$(cd "$TEST_REPO" && pwd -P)"
+  repo_slug="${TEST_REPO_ID//\//_}"
+  repo_slug="${repo_slug//[^[:alnum:]_.-]/_}"
+  CHECKPOINT_FILE="$STATE_HOME/beads-linear-sync/last-success-$repo_slug"
+  export DOTFILES_ENV_FILE="$ENV_FILE"
   for command in chmod date env mkdir mv sleep timeout; do
     ln -s "$(command -v "$command")" "$COREUTILS/bin/$command"
   done
@@ -125,6 +164,9 @@ case "${1:-} ${2:-}" in
     if [ "${FAKE_LINEAR_MODE:-}" = "final-failure" ] && [ "$count" -eq 2 ]; then
       exit 42
     fi
+    if [ "${FAKE_LINEAR_MODE:-}" = "initial-federation-failure" ] && [ "$count" -eq 1 ]; then
+      exit 41
+    fi
     ;;
   "linear status")
     printf '%s\n' '{"last_sync":""}'
@@ -136,6 +178,11 @@ case "${1:-} ${2:-}" in
         ;;
       hard-failure)
         exit 23
+        ;;
+      pull-failure)
+        if [[ " $* " != *" --push "* ]]; then
+          exit 23
+        fi
         ;;
       push-failure)
         if [[ " $* " == *" --push "* ]]; then
@@ -157,7 +204,6 @@ EOF
   sed \
     -e "s|@bd@|$FAKE_BD|g" \
     -e 's|@linear@|/usr/bin/false|g' \
-    -e "s|@repoDir@|$TEST_ROOT|g" \
     -e 's|@linearWorkspace@|test-workspace|g' \
     -e 's|@linearTeamId@|test-team|g' \
     -e "s|@coreutils@|$COREUTILS|g" \
@@ -167,6 +213,7 @@ EOF
 }
 
 cleanup_reconciliation() {
+  unset DOTFILES_ENV_FILE
   rm -rf "$TEST_ROOT"
 }
 
@@ -177,46 +224,120 @@ It 'runs both federations around pull and delta push before checkpointing'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'Pushing changed active Beads'
-The file "$STATE_HOME/beads-linear-sync/last-success" should be exist
+The file "$CHECKPOINT_FILE" should be exist
 The contents of file "$COMMAND_LOG" should include 'linear sync --pull-if-stale --threshold 5m --state all --relations --no-wait'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-test --no-wait'
+End
+
+It 'splits a large outbound delta into bounded batches'
+batch_json="$(jq -nc '[range(1;13) | {id:("df-" + tostring),status:"open",updated_at:"2099-01-01T00:00:00Z"}]')"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LIST_JSON="$batch_json" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'batch 1/2'
+The output should include 'batch 2/2'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-1,df-2,df-3,df-4,df-5,df-6,df-7,df-8,df-9,df-10 --no-wait'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-11,df-12 --no-wait'
 End
 
 It 'defers a Linear rate limit without advancing the checkpoint'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=rate-limit XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'next 300-second run will retry'
-The file "$STATE_HOME/beads-linear-sync/last-success" should not be exist
+The file "$CHECKPOINT_FILE" should not be exist
 End
 
-It 'propagates an ordinary Linear failure without advancing the checkpoint'
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=hard-failure XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
-The status should equal 23
-The output should include 'Linear pull failed with status 23'
-The file "$STATE_HOME/beads-linear-sync/last-success" should not be exist
+It 'continues outbound reconciliation after an ordinary Linear pull failure'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=pull-failure XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Linear pull failed with status 23; continuing with outbound Beads reconciliation'
+The output should include 'Pushing changed active Beads'
+The file "$CHECKPOINT_FILE" should be exist
 End
 
 It 'propagates a Linear push failure without advancing the checkpoint'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=push-failure XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should equal 24
 The output should include 'Linear push failed with status 24'
-The file "$STATE_HOME/beads-linear-sync/last-success" should not be exist
+The file "$CHECKPOINT_FILE" should not be exist
 End
 
 It 'pushes a locally closed linked issue from a steady-state delta'
 mkdir -p "$STATE_HOME/beads-linear-sync"
-printf '%s\n' '2026-01-01T00:00:00Z' >"$STATE_HOME/beads-linear-sync/last-success"
+printf '%s\n' '2026-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LIST_JSON='[{"id":"df-closed","status":"closed","updated_at":"2099-01-01T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/closed"}]' XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'Pushing changed active Beads'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-closed --no-wait'
 End
 
-It 'does not checkpoint when final federation fails'
+It 'checkpoints Linear progress when final Dolt federation fails'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=final-failure XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
-The status should equal 42
+The status should be success
 The output should include 'Pushing changed active Beads'
-The file "$STATE_HOME/beads-linear-sync/last-success" should not be exist
+The output should include 'Dolt post-sync federation failed with status 42'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'continues Linear reconciliation when initial Dolt federation fails'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=initial-federation-failure XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Dolt pre-sync federation failed with status 41'
+The output should include 'Pushing changed active Beads'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'fails closed when the repository list is absent'
+When run env -u BEADS_LINEAR_SYNC_REPOS DOTFILES_ENV_FILE="$TEST_ROOT/missing" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 1
+The output should include 'BEADS_LINEAR_SYNC_REPOS is required'
+End
+
+It 'rejects an absolute checkout path instead of logging it'
+printf 'BEADS_LINEAR_SYNC_REPOS=%q\n' '/private/checkout' >"$TEST_ROOT/invalid-dotenv"
+When run env DOTFILES_ENV_FILE="$TEST_ROOT/invalid-dotenv" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 1
+The output should include 'Invalid org/repo entry'
+The output should not include '/private/checkout'
+End
+
+It 'rejects an org/repo checkout that is not a Beads repository'
+printf 'BEADS_LINEAR_SYNC_REPOS=%q\n' 'test/not-beads' >"$TEST_ROOT/invalid-dotenv"
+mkdir -p "$TEST_ROOT/ghq/github.com/test/not-beads"
+When run env DOTFILES_ENV_FILE="$TEST_ROOT/invalid-dotenv" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 1
+The output should include 'Configured checkout is not a Beads repository'
+The output should not include 'test/not-beads'
+End
+
+It 'syncs comma-separated repositories with distinct checkpoints'
+second_repo_id="test/repo-two"
+second_repo="$TEST_ROOT/ghq/github.com/$second_repo_id"
+mkdir -p "$second_repo/.beads"
+canonical_second_repo="$(cd "$second_repo" && pwd -P)"
+printf 'BEADS_LINEAR_SYNC_REPOS=%q,%q\n' "$TEST_REPO_ID" "$second_repo_id" >"$ENV_FILE"
+second_repo_slug="${second_repo_id//\//_}"
+second_repo_slug="${second_repo_slug//[^[:alnum:]_.-]/_}"
+second_checkpoint="$STATE_HOME/beads-linear-sync/last-success-$second_repo_slug"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'repository 1/2'
+The output should include 'repository 2/2'
+The output should not include "$TEST_REPO_ID"
+The output should not include "$second_repo_id"
+The file "$CHECKPOINT_FILE" should be exist
+The file "$second_checkpoint" should be exist
+The contents of file "$COMMAND_LOG" should include "-C $canonical_test_repo"
+The contents of file "$COMMAND_LOG" should include "-C $canonical_second_repo"
+End
+
+It 'continues to the next repository after one repository fails'
+printf 'BEADS_LINEAR_SYNC_REPOS=%q,%q\n' 'test/not-beads' "$TEST_REPO_ID" >"$ENV_FILE"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 1
+The output should include 'Configured checkout is not a Beads repository'
+The output should not include 'test/not-beads'
+The output should include 'Pushing changed active Beads'
+The file "$CHECKPOINT_FILE" should be exist
 End
 End
 
