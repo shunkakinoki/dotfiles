@@ -3,6 +3,7 @@
 set -euo pipefail
 
 bd_cli="@bd@"
+dolt_cli="@dolt@/bin/dolt"
 linear_cli="@linear@"
 linear_workspace="@linearWorkspace@"
 linear_team_id="@linearTeamId@"
@@ -138,6 +139,29 @@ run_linear() {
   return "$status"
 }
 
+run_dolt_sql() {
+  local query="$1"
+
+  "$dolt_cli" \
+    --host=127.0.0.1 \
+    --port="${BEADS_DOLT_SERVER_PORT:-3307}" \
+    --user="${DOLT_CLI_USER:-root}" \
+    --no-tls \
+    sql -q "$query" >/dev/null
+}
+
+restore_linear_last_sync() {
+  if [ -z "${linear_last_sync_before_pull:-}" ]; then
+    return 0
+  fi
+  if [[ ! $linear_last_sync_before_pull =~ ^[0-9T:.+-]+Z?$ ]]; then
+    log "Refusing to restore an invalid Linear sync timestamp"
+    return 1
+  fi
+
+  run_dolt_sql "USE \`$linear_database\`; REPLACE INTO local_metadata (\`key\`, value) VALUES ('linear.last_sync', '$linear_last_sync_before_pull');"
+}
+
 federate_beads() {
   local phase="$1"
   local status
@@ -202,28 +226,41 @@ ensure_config linear.outbound_state_map.closed Done
 # reconciles from a replica that could not ingest the shared Dolt state.
 federate_beads "pre-sync"
 
+linear_status="$("$bd_cli" -C "$repo_dir" linear status --json)"
 if [ -s "$sync_checkpoint_file" ]; then
   previous_sync="$(<"$sync_checkpoint_file")"
 else
-  previous_sync="$(@jq@/bin/jq -r '.last_sync // ""' <<<"$("$bd_cli" -C "$repo_dir" linear status --json)")"
+  previous_sync="$(@jq@/bin/jq -r '.last_sync // ""' <<<"$linear_status")"
 fi
 
-# Pull open and closed Linear work so cancels/Done land in Beads. Let Beads'
-# staleness guard debounce calls made at the five-minute timer boundary. A
-# rate-limit failure is deferred to the next scheduled run instead of making
-# launchd hot-loop a failed job.
-log "Pulling Linear work if stale"
-if run_linear @coreutils@/bin/timeout 240 "$bd_cli" -C "$repo_dir" linear sync \
-  --pull-if-stale \
-  --threshold 5m \
+# Beads' incremental pull currently performs one dolt_history_issues query for
+# every pre-linked issue. At this repository's scale that path exceeds the
+# bounded service window, while a complete tracker fetch finishes promptly.
+# Clear only Kyber's ignored clone-local cursor before pulling; the successful
+# pull writes a fresh cursor, and failures restore the prior value.
+linear_database="$(@jq@/bin/jq -r '.dolt_database // empty' "$repo_dir/.beads/metadata.json")"
+if [[ ! $linear_database =~ ^[A-Za-z0-9_]+$ ]]; then
+  log "Beads metadata does not contain a valid Dolt database name"
+  exit 1
+fi
+linear_last_sync_before_pull="$(@jq@/bin/jq -r '.last_sync // ""' <<<"$linear_status")"
+run_dolt_sql "USE \`$linear_database\`; DELETE FROM local_metadata WHERE \`key\` = 'linear.last_sync';"
+
+# Pull open and closed Linear work so cancels/Done land in Beads. A rate-limit
+# failure is deferred to the next scheduled run instead of making launchd
+# hot-loop a failed job.
+log "Pulling complete Linear state"
+if run_linear @coreutils@/bin/timeout 720 "$bd_cli" -C "$repo_dir" linear sync \
+  --pull \
   --state all \
   --relations \
   --no-wait; then
   :
 else
   status=$?
+  restore_linear_last_sync
   if [ "$status" -eq 75 ]; then
-    log "Linear pull deferred; the next 300-second run will retry"
+    log "Linear pull deferred; the next 900-second run will retry"
     exit 0
   fi
   log "Linear pull failed with status $status"
@@ -272,7 +309,7 @@ if [ -n "$changed_ids" ]; then
     else
       status=$?
       if [ "$status" -eq 75 ]; then
-        log "Linear push deferred; the next 300-second run will retry"
+        log "Linear push deferred; the next 900-second run will retry"
         exit 0
       fi
       log "Linear push failed with status $status"

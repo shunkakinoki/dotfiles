@@ -18,7 +18,8 @@ let
   userEmail = "shunkakinoki@gmail.com";
   linearWorkspace = "shunkakinoki";
   linearTeamId = "679ab4ed-3df3-458d-8574-4962f3ebbf31";
-  linearSyncIntervalSeconds = 300;
+  linearSyncIntervalSeconds = 900;
+  federationSyncIntervalSeconds = 300;
   linearSyncPath = "${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:/etc/profiles/per-user/${config.home.username}/bin:/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin";
   enabled = isGalactica || isKyber || isMatic;
   linearSyncEnabled = isKyber;
@@ -38,7 +39,12 @@ let
     bd = "${homeDir}/.local/bin/bd";
     linear = "${homeDir}/.bun/install/global/node_modules/.bin/linear";
     inherit linearWorkspace linearTeamId;
-    inherit (pkgs) coreutils gawk jq;
+    inherit (pkgs)
+      coreutils
+      dolt
+      gawk
+      jq
+      ;
   };
   federationSyncScript = pkgs.replaceVars ./federation-sync.sh {
     bd = "${homeDir}/.local/bin/bd";
@@ -131,8 +137,8 @@ lib.mkIf enabled {
         "${pkgs.bash}/bin/bash"
         "${federationSyncScript}"
       ];
-      StartInterval = linearSyncIntervalSeconds;
-      ThrottleInterval = linearSyncIntervalSeconds;
+      StartInterval = federationSyncIntervalSeconds;
+      ThrottleInterval = federationSyncIntervalSeconds;
       RunAtLoad = true;
       WorkingDirectory = homeDir;
       EnvironmentVariables = {
@@ -223,7 +229,7 @@ lib.mkIf enabled {
     Unit.Description = "Periodically synchronize Beads with Linear";
     Timer = {
       OnBootSec = "2min";
-      OnCalendar = "*-*-* *:00/5:00";
+      OnCalendar = "*-*-* *:00/15:00";
       OnUnitActiveSec = "${toString linearSyncIntervalSeconds}s";
       Persistent = true;
       Unit = "dolt-linear-sync.service";
@@ -266,7 +272,7 @@ lib.mkIf enabled {
     Timer = {
       OnBootSec = "2min";
       OnCalendar = "*-*-* *:00/5:00";
-      OnUnitActiveSec = "${toString linearSyncIntervalSeconds}s";
+      OnUnitActiveSec = "${toString federationSyncIntervalSeconds}s";
       Persistent = true;
       Unit = "dolt-federation-sync.service";
     };
