@@ -82,12 +82,6 @@ The output should include 'shunkakinoki@matic'
 The output should not include 'ubuntu@kyber'
 End
 
-It 'resolves the kyber provider hostname alias'
-When call render c2-small-x86-chi-1
-The output should include 'shunkakinoki@matic'
-The output should not include 'ubuntu@kyber'
-End
-
 It 'gives matic the kyber source only'
 When call render matic
 The output should include 'ubuntu@kyber'

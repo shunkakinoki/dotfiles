@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   lib,
   isRunner,
@@ -14,7 +15,14 @@ let
   nix = import ./config/nix.nix;
   security = import ./config/security.nix { inherit username; };
   serviceModules = import ./services { inherit lib isRunner pkgs; };
-  system = import ./config/system.nix { inherit isRunner pkgs username; };
+  system = import ./config/system.nix {
+    inherit
+      config
+      isRunner
+      pkgs
+      username
+      ;
+  };
   time = import ./config/time.nix;
 in
 {

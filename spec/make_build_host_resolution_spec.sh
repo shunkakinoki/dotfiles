@@ -29,7 +29,7 @@ The output should not include '.#nixosConfigurations.matic.config.system.build.t
 End
 
 It 'detects kyber from its physical hostname'
-When run bash -c 'make build HOST= OS=Linux ARCH=x86_64 NIX_SYSTEM=x86_64-linux NIX_CONFIG_TYPE=homeConfigurations MACHINE_HOSTNAME=c2-small-x86-chi-1 TAILSCALE_DNS_NAME= NIX_EXEC=nix NIX_ENV=ok NIX_FLAGS= NIX_USER_TRUSTED=yes 2>/dev/null; cat "$MOCK_LOG"'
+When run bash -c 'make build HOST= OS=Linux ARCH=x86_64 NIX_SYSTEM=x86_64-linux NIX_CONFIG_TYPE=homeConfigurations MACHINE_HOSTNAME=kyber TAILSCALE_DNS_NAME= NIX_EXEC=nix NIX_ENV=ok NIX_FLAGS= NIX_USER_TRUSTED=yes 2>/dev/null; cat "$MOCK_LOG"'
 The status should be success
 The output should include '.#homeConfigurations.kyber.activationPackage'
 The output should not include '.#homeConfigurations."ubuntu@x86_64-linux".activationPackage'

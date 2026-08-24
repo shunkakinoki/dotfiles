@@ -6,7 +6,7 @@ set -euo pipefail
 
 # name|ssh target|platform|hostnames that identify this machine
 PEERS=(
-  "kyber|ubuntu@kyber|linux|kyber c2-small-x86-chi-1"
+  "kyber|ubuntu@kyber|linux|kyber"
   "matic|shunkakinoki@matic|linux|matic"
 )
 
