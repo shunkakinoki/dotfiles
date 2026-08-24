@@ -144,6 +144,26 @@ build_repo() {
     (cd "$build_dir" && mise install 2>&1) || true
   fi
 
+  # Install JS deps for any package.json in build_dir or its direct subdirs
+  # where node_modules is missing or empty (handles embedded web UIs like roborev).
+  _js_install_cmd=""
+  if command -v bun >/dev/null 2>&1; then
+    _js_install_cmd="bun install"
+  elif command -v npm >/dev/null 2>&1; then
+    _js_install_cmd="npm install"
+  fi
+  if [ -n "$_js_install_cmd" ]; then
+    for _pkg_json in "$build_dir/package.json" "$build_dir"/*/package.json; do
+      [ -f "$_pkg_json" ] || continue
+      _pkg_dir="$(dirname "$_pkg_json")"
+      _nm="$_pkg_dir/node_modules"
+      if [ ! -d "$_nm" ] || [ -z "$(ls -A "$_nm" 2>/dev/null)" ]; then
+        log_step "  Installing JS deps in $(basename "$_pkg_dir")..."
+        (cd "$_pkg_dir" && $_js_install_cmd 2>&1) || true
+      fi
+    done
+  fi
+
   # Initialize git submodules if .gitmodules exists
   if [ -f "$repo_dir/.gitmodules" ]; then
     log_step "  Initializing submodules..."
