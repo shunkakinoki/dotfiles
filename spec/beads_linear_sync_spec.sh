@@ -93,8 +93,13 @@ When run bash -c "! grep -F 'continuing with outbound Beads reconciliation' '$SC
 The status should be success
 End
 
-It 'bounds federation, inbound pull, and small outbound batches'
-When run bash -c "grep -F '@coreutils@/bin/timeout 120 \"\$bd_cli\" -C \"\$repo_dir\" sync --yes' '$SCRIPT' >/dev/null && grep -F 'run_linear @coreutils@/bin/timeout 720 \"\$bd_cli\"' '$SCRIPT' >/dev/null && grep -F 'push_batch_size=10' '$SCRIPT' >/dev/null && grep -F 'run_linear @coreutils@/bin/timeout 120 \"\$bd_cli\"' '$SCRIPT' >/dev/null"
+It 'gives federation fsck a bounded budget below the outer deadline'
+When run bash -c "grep -F 'federation_timeout_seconds=360' '$SCRIPT' >/dev/null && grep -F 'federation_fsck_timeout=300s' '$SCRIPT' >/dev/null && grep -F '@coreutils@/bin/timeout \"\$federation_timeout_seconds\"' '$SCRIPT' >/dev/null && grep -F '@coreutils@/bin/env BEADS_FSCK_TIMEOUT=\"\$federation_fsck_timeout\"' '$SCRIPT' >/dev/null"
+The status should be success
+End
+
+It 'bounds inbound pull and small outbound batches'
+When run bash -c "grep -F 'run_linear @coreutils@/bin/timeout 720 \"\$bd_cli\"' '$SCRIPT' >/dev/null && grep -F 'push_batch_size=10' '$SCRIPT' >/dev/null && grep -F 'run_linear @coreutils@/bin/timeout 120 \"\$bd_cli\"' '$SCRIPT' >/dev/null"
 The status should be success
 End
 

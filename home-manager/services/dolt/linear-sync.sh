@@ -9,6 +9,8 @@ linear_workspace="@linearWorkspace@"
 linear_team_id="@linearTeamId@"
 linear_credentials_file="${XDG_CONFIG_HOME:-$HOME/.config}/linear/credentials.toml"
 sync_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/beads-linear-sync"
+federation_timeout_seconds=360
+federation_fsck_timeout=300s
 
 log() {
   local context=""
@@ -167,7 +169,9 @@ federate_beads() {
   local status
 
   set +e
-  @coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" sync --yes >/dev/null 2>&1
+  @coreutils@/bin/timeout "$federation_timeout_seconds" \
+    @coreutils@/bin/env BEADS_FSCK_TIMEOUT="$federation_fsck_timeout" \
+    "$bd_cli" -C "$repo_dir" sync --yes >/dev/null 2>&1
   status=$?
   set -e
 
