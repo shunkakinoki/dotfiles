@@ -173,6 +173,10 @@ run_sudo @systemctl@ enable --now k3s
 
 if [ -f "$SMARTD_SERVICE_FILE" ]; then
   run_sudo @systemctl@ enable --now kyber-smartd.service
+  # The generated unit embeds the alert script's Nix store path. `enable --now`
+  # leaves an already-active smartd process on the previous path, so restart it
+  # after activation to apply alert delivery changes immediately.
+  run_sudo @systemctl@ restart kyber-smartd.service
 fi
 
 # smartd runs from an absolute store path, so the CLI is otherwise unreachable

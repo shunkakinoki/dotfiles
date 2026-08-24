@@ -162,6 +162,12 @@ When run bash -c "grep -q '/etc/systemd/journald.conf.d/10-kyber-limits.conf' '$
 The status should be success
 End
 
+It 'restarts smartd to activate the generated alert script path'
+When run grep 'restart kyber-smartd.service' "$SCRIPT"
+The output should include 'restart kyber-smartd.service'
+The status should be success
+End
+
 It 'schedules the host-health timer relative to activation'
 When run bash -c "grep -q '^OnActiveSec=1min$' '$PWD/config/k3s/kyber-host-health.timer' && grep -q '^OnUnitActiveSec=1min$' '$PWD/config/k3s/kyber-host-health.timer' && grep -q 'restart kyber-host-health.timer' '$SCRIPT'"
 The status should be success
