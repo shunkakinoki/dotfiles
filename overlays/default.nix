@@ -104,6 +104,11 @@
   )
   inputs.noctalia-shell.overlays.default
   (_: prev: {
+    # Keep the Dolt archive-integrity fix independent from the shared nixpkgs
+    # pin so storage recovery does not upgrade unrelated host packages.
+    dolt = inputs.nixpkgs-dolt.legacyPackages.${prev.system}.dolt;
+  })
+  (_: prev: {
     moshi-hook = prev.stdenv.mkDerivation rec {
       pname = "moshi-hook";
       version = "0.3.0";

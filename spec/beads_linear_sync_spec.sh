@@ -88,13 +88,13 @@ When run bash -c "test \"\$(grep -c 'next 300-second run will retry' '$SCRIPT')\
 The status should be success
 End
 
-It 'continues after pull failures but propagates push failures'
-When run bash -c "grep -F 'continuing with outbound Beads reconciliation' '$SCRIPT' >/dev/null && grep -F 'log \"Linear push failed with status \$status\"' '$SCRIPT' >/dev/null && test \"\$(grep -c 'exit \"\$status\"' '$SCRIPT')\" -eq 1"
+It 'fails closed after ordinary pull, push, or federation failures'
+When run bash -c "! grep -F 'continuing with outbound Beads reconciliation' '$SCRIPT' >/dev/null && ! grep -F 'continuing with local Beads state' '$SCRIPT' >/dev/null && grep -F 'log \"Linear pull failed with status \$status\"' '$SCRIPT' >/dev/null && grep -F 'log \"Linear push failed with status \$status\"' '$SCRIPT' >/dev/null"
 The status should be success
 End
 
 It 'bounds federation, inbound pull, and small outbound batches'
-When run bash -c "grep -F '@coreutils@/bin/timeout 30 \"\$bd_cli\" -C \"\$repo_dir\" sync --yes' '$SCRIPT' >/dev/null && grep -F 'run_linear @coreutils@/bin/timeout 60 \"\$bd_cli\"' '$SCRIPT' >/dev/null && grep -F 'push_batch_size=10' '$SCRIPT' >/dev/null && grep -F 'run_linear @coreutils@/bin/timeout 120 \"\$bd_cli\"' '$SCRIPT' >/dev/null"
+When run bash -c "grep -F '@coreutils@/bin/timeout 120 \"\$bd_cli\" -C \"\$repo_dir\" sync --yes' '$SCRIPT' >/dev/null && grep -F 'run_linear @coreutils@/bin/timeout 240 \"\$bd_cli\"' '$SCRIPT' >/dev/null && grep -F 'push_batch_size=10' '$SCRIPT' >/dev/null && grep -F 'run_linear @coreutils@/bin/timeout 120 \"\$bd_cli\"' '$SCRIPT' >/dev/null"
 The status should be success
 End
 
@@ -246,12 +246,12 @@ The output should include 'next 300-second run will retry'
 The file "$CHECKPOINT_FILE" should not be exist
 End
 
-It 'continues outbound reconciliation after an ordinary Linear pull failure'
+It 'fails closed after an ordinary Linear pull failure'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=pull-failure XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
-The status should be success
-The output should include 'Linear pull failed with status 23; continuing with outbound Beads reconciliation'
-The output should include 'Pushing changed active Beads'
-The file "$CHECKPOINT_FILE" should be exist
+The status should equal 23
+The output should include 'Linear pull failed with status 23'
+The output should not include 'Pushing changed active Beads'
+The file "$CHECKPOINT_FILE" should not be exist
 End
 
 It 'propagates a Linear push failure without advancing the checkpoint'
@@ -270,20 +270,20 @@ The output should include 'Pushing changed active Beads'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-closed --no-wait'
 End
 
-It 'checkpoints Linear progress when final Dolt federation fails'
+It 'fails closed without checkpointing when final Dolt federation fails'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=final-failure XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
-The status should be success
+The status should equal 42
 The output should include 'Pushing changed active Beads'
 The output should include 'Dolt post-sync federation failed with status 42'
-The file "$CHECKPOINT_FILE" should be exist
+The file "$CHECKPOINT_FILE" should not be exist
 End
 
-It 'continues Linear reconciliation when initial Dolt federation fails'
+It 'fails closed before Linear reconciliation when initial Dolt federation fails'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=initial-federation-failure XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
-The status should be success
+The status should equal 41
 The output should include 'Dolt pre-sync federation failed with status 41'
-The output should include 'Pushing changed active Beads'
-The file "$CHECKPOINT_FILE" should be exist
+The output should not include 'Pushing changed active Beads'
+The file "$CHECKPOINT_FILE" should not be exist
 End
 
 It 'fails closed when the repository list is absent'
@@ -347,12 +347,12 @@ When run bash -c "grep -F 'linearSyncIntervalSeconds = 300;' '$MODULE' >/dev/nul
 The status should be success
 End
 
-It 'installs the macOS launchd agent'
-When run bash -c "grep -F 'launchd.agents.dolt-linear-sync' '$MODULE' >/dev/null"
+It 'restricts the Linear writer to Kyber'
+When run bash -c "grep -F 'linearSyncEnabled = isKyber;' '$MODULE' >/dev/null && grep -F 'launchd.agents.dolt-linear-sync = lib.mkIf (pkgs.stdenv.isDarwin && linearSyncEnabled)' '$MODULE' >/dev/null && grep -F 'systemd.user.services.dolt-linear-sync = lib.mkIf (pkgs.stdenv.isLinux && linearSyncEnabled)' '$MODULE' >/dev/null"
 The status should be success
 End
 
-It 'installs the Linux systemd timer'
+It 'installs the Kyber Linux systemd timer'
 When run bash -c "grep -F 'systemd.user.timers.dolt-linear-sync' '$MODULE' >/dev/null && grep -F 'OnCalendar = \"*-*-* *:00/5:00\";' '$MODULE' >/dev/null && grep -F 'X-SwitchMethod = \"restart\";' '$MODULE' >/dev/null"
 The status should be success
 End
