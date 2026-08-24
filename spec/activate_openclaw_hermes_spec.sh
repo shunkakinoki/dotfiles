@@ -114,12 +114,11 @@ When run bash -c "sed -n '/systemd.user.services.hermes-dashboard =/,/Install = 
 The output should include 'X-SwitchMethod = "restart";'
 End
 
-It 'provisions Hermes log storage before either service starts'
-When run bash -c "units=\$(sed -n '/systemd.user.services.hermes-gateway =/,/Install = {/p; /systemd.user.services.hermes-dashboard =/,/Install = {/p' '$PWD/home-manager/services/hermes/default.nix'); test \"\$(printf '%s' \"\$units\" | grep -cF 'RuntimeDirectory = \"hermes\";')\" -eq 2 && test \"\$(printf '%s' \"\$units\" | grep -cF 'RuntimeDirectoryMode = \"0700\";')\" -eq 2 && test \"\$(printf '%s' \"\$units\" | grep -cF 'RuntimeDirectoryPreserve = \"yes\";')\" -eq 2; printf '%s' \"\$units\""
+It 'routes Hermes logs through systemd without a filesystem prerequisite'
+When run bash -c "units=\$(sed -n '/systemd.user.services.hermes-gateway =/,/Install = {/p; /systemd.user.services.hermes-dashboard =/,/Install = {/p' '$PWD/home-manager/services/hermes/default.nix'); test \"\$(printf '%s' \"\$units\" | grep -cF 'StandardOutput = \"journal\";')\" -eq 2 && test \"\$(printf '%s' \"\$units\" | grep -cF 'StandardError = \"journal\";')\" -eq 2; printf '%s' \"\$units\""
 The status should be success
-The output should include 'append:%t/hermes/hermes-gateway.log'
-The output should include 'append:%t/hermes/hermes-dashboard.log'
-The output should not include 'append:/tmp/hermes/'
+The output should not include 'append:'
+The output should not include '/tmp/hermes/'
 End
 
 # The bridge moved from an inline socat invocation to nginx in #2302/#2306, so
