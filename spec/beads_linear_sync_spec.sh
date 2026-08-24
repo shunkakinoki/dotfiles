@@ -73,8 +73,8 @@ End
 End
 
 Describe 'sync scope'
-It 'pulls all Linear states when stale'
-When run bash -c "grep -F -- '--pull-if-stale' '$SCRIPT' >/dev/null && grep -F -- '--threshold 5m' '$SCRIPT' >/dev/null && grep -F -- '--state all' '$SCRIPT' >/dev/null"
+It 'pulls all Linear states with the bounded full-refresh workaround'
+When run bash -c "grep -F 'DELETE FROM local_metadata' '$SCRIPT' >/dev/null && grep -F -- '--pull' '$SCRIPT' >/dev/null && grep -F -- '--state all' '$SCRIPT' >/dev/null && ! grep -F -- '--pull-if-stale' '$SCRIPT' >/dev/null"
 The status should be success
 End
 
@@ -84,7 +84,7 @@ The status should be success
 End
 
 It 'defers rate-limited work to the next timer run'
-When run bash -c "test \"\$(grep -c 'next 300-second run will retry' '$SCRIPT')\" -eq 2 && grep -F 'rate limit circuit breaker' '$SCRIPT' >/dev/null"
+When run bash -c "test \"\$(grep -c 'next 900-second run will retry' '$SCRIPT')\" -eq 2 && grep -F 'rate limit circuit breaker' '$SCRIPT' >/dev/null"
 The status should be success
 End
 
@@ -94,7 +94,7 @@ The status should be success
 End
 
 It 'bounds federation, inbound pull, and small outbound batches'
-When run bash -c "grep -F '@coreutils@/bin/timeout 120 \"\$bd_cli\" -C \"\$repo_dir\" sync --yes' '$SCRIPT' >/dev/null && grep -F 'run_linear @coreutils@/bin/timeout 240 \"\$bd_cli\"' '$SCRIPT' >/dev/null && grep -F 'push_batch_size=10' '$SCRIPT' >/dev/null && grep -F 'run_linear @coreutils@/bin/timeout 120 \"\$bd_cli\"' '$SCRIPT' >/dev/null"
+When run bash -c "grep -F '@coreutils@/bin/timeout 120 \"\$bd_cli\" -C \"\$repo_dir\" sync --yes' '$SCRIPT' >/dev/null && grep -F 'run_linear @coreutils@/bin/timeout 720 \"\$bd_cli\"' '$SCRIPT' >/dev/null && grep -F 'push_batch_size=10' '$SCRIPT' >/dev/null && grep -F 'run_linear @coreutils@/bin/timeout 120 \"\$bd_cli\"' '$SCRIPT' >/dev/null"
 The status should be success
 End
 
@@ -118,8 +118,10 @@ Describe 'reconciliation behavior'
 setup_reconciliation() {
   TEST_ROOT=$(mktemp -d)
   FAKE_BD="$TEST_ROOT/bd"
+  FAKE_DOLT_ROOT="$TEST_ROOT/dolt"
   RENDERED_SCRIPT="$TEST_ROOT/linear-sync.sh"
   COMMAND_LOG="$TEST_ROOT/commands.log"
+  DOLT_LOG="$TEST_ROOT/dolt-commands.log"
   SYNC_COUNT="$TEST_ROOT/sync-count"
   STATE_HOME="$TEST_ROOT/state"
   ENV_FILE="$TEST_ROOT/dotenv"
@@ -127,13 +129,15 @@ setup_reconciliation() {
   TEST_REPO_ID="test/repo-one"
   TEST_REPO="$TEST_ROOT/ghq/github.com/$TEST_REPO_ID"
   jq_prefix=$(dirname "$(dirname "$(command -v jq)")")
-  mkdir -p "$COREUTILS/bin" "$TEST_REPO/.beads"
+  mkdir -p "$COREUTILS/bin" "$FAKE_DOLT_ROOT/bin" "$TEST_REPO/.beads"
+  printf '%s\n' '{"dolt_database":"test_beads"}' >"$TEST_REPO/.beads/metadata.json"
   printf 'BEADS_LINEAR_SYNC_REPOS=%q\n' "$TEST_REPO_ID" >"$ENV_FILE"
   canonical_test_repo="$(cd "$TEST_REPO" && pwd -P)"
   repo_slug="${TEST_REPO_ID//\//_}"
   repo_slug="${repo_slug//[^[:alnum:]_.-]/_}"
   CHECKPOINT_FILE="$STATE_HOME/beads-linear-sync/last-success-$repo_slug"
   export DOTFILES_ENV_FILE="$ENV_FILE"
+  export DOLT_LOG
   for command in chmod date env mkdir mv sleep timeout; do
     ln -s "$(command -v "$command")" "$COREUTILS/bin/$command"
   done
@@ -169,7 +173,7 @@ case "${1:-} ${2:-}" in
     fi
     ;;
   "linear status")
-    printf '%s\n' '{"last_sync":""}'
+    printf '{"last_sync":"%s"}\n' "${FAKE_LAST_SYNC:-}"
     ;;
   "linear sync")
     case "${FAKE_LINEAR_MODE:-success}" in
@@ -201,8 +205,11 @@ case "${1:-} ${2:-}" in
 esac
 EOF
   chmod +x "$FAKE_BD"
+  printf '%s\n' '#!/usr/bin/env bash' 'printf '\''%s\n'\'' "$*" >>"$DOLT_LOG"' 'exit 0' >"$FAKE_DOLT_ROOT/bin/dolt"
+  chmod +x "$FAKE_DOLT_ROOT/bin/dolt"
   sed \
     -e "s|@bd@|$FAKE_BD|g" \
+    -e "s|@dolt@|$FAKE_DOLT_ROOT|g" \
     -e 's|@linear@|/usr/bin/false|g' \
     -e 's|@linearWorkspace@|test-workspace|g' \
     -e 's|@linearTeamId@|test-team|g' \
@@ -213,7 +220,7 @@ EOF
 }
 
 cleanup_reconciliation() {
-  unset DOTFILES_ENV_FILE
+  unset DOLT_LOG DOTFILES_ENV_FILE
   rm -rf "$TEST_ROOT"
 }
 
@@ -225,7 +232,7 @@ When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" XDG_STATE_HOME=
 The status should be success
 The output should include 'Pushing changed active Beads'
 The file "$CHECKPOINT_FILE" should be exist
-The contents of file "$COMMAND_LOG" should include 'linear sync --pull-if-stale --threshold 5m --state all --relations --no-wait'
+The contents of file "$COMMAND_LOG" should include 'linear sync --pull --state all --relations --no-wait'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-test --no-wait'
 End
 
@@ -242,16 +249,18 @@ End
 It 'defers a Linear rate limit without advancing the checkpoint'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=rate-limit XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
-The output should include 'next 300-second run will retry'
+The output should include 'next 900-second run will retry'
 The file "$CHECKPOINT_FILE" should not be exist
 End
 
 It 'fails closed after an ordinary Linear pull failure'
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=pull-failure XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=pull-failure FAKE_LAST_SYNC=2026-08-24T10:39:54Z XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should equal 23
 The output should include 'Linear pull failed with status 23'
 The output should not include 'Pushing changed active Beads'
 The file "$CHECKPOINT_FILE" should not be exist
+The contents of file "$DOLT_LOG" should include "DELETE FROM local_metadata"
+The contents of file "$DOLT_LOG" should include "REPLACE INTO local_metadata"
 End
 
 It 'propagates a Linear push failure without advancing the checkpoint'
@@ -313,6 +322,7 @@ It 'syncs comma-separated repositories with distinct checkpoints'
 second_repo_id="test/repo-two"
 second_repo="$TEST_ROOT/ghq/github.com/$second_repo_id"
 mkdir -p "$second_repo/.beads"
+printf '%s\n' '{"dolt_database":"test_beads_two"}' >"$second_repo/.beads/metadata.json"
 canonical_second_repo="$(cd "$second_repo" && pwd -P)"
 printf 'BEADS_LINEAR_SYNC_REPOS=%q,%q\n' "$TEST_REPO_ID" "$second_repo_id" >"$ENV_FILE"
 second_repo_slug="${second_repo_id//\//_}"
@@ -342,8 +352,8 @@ End
 End
 
 Describe 'Home Manager service ownership'
-It 'runs every five minutes on launchd'
-When run bash -c "grep -F 'linearSyncIntervalSeconds = 300;' '$MODULE' >/dev/null && grep -F 'ThrottleInterval = linearSyncIntervalSeconds;' '$MODULE' >/dev/null && grep -F 'PATH = linearSyncPath;' '$MODULE' >/dev/null"
+It 'runs Linear every fifteen minutes while federation stays at five minutes on launchd'
+When run bash -c "grep -F 'linearSyncIntervalSeconds = 900;' '$MODULE' >/dev/null && grep -F 'federationSyncIntervalSeconds = 300;' '$MODULE' >/dev/null && grep -F 'ThrottleInterval = linearSyncIntervalSeconds;' '$MODULE' >/dev/null && grep -F 'ThrottleInterval = federationSyncIntervalSeconds;' '$MODULE' >/dev/null && grep -F 'PATH = linearSyncPath;' '$MODULE' >/dev/null"
 The status should be success
 End
 
@@ -353,7 +363,7 @@ The status should be success
 End
 
 It 'installs the Kyber Linux systemd timer'
-When run bash -c "grep -F 'systemd.user.timers.dolt-linear-sync' '$MODULE' >/dev/null && grep -F 'OnCalendar = \"*-*-* *:00/5:00\";' '$MODULE' >/dev/null && grep -F 'X-SwitchMethod = \"restart\";' '$MODULE' >/dev/null"
+When run bash -c "grep -F 'systemd.user.timers.dolt-linear-sync' '$MODULE' >/dev/null && grep -F 'OnCalendar = \"*-*-* *:00/15:00\";' '$MODULE' >/dev/null && grep -F 'X-SwitchMethod = \"restart\";' '$MODULE' >/dev/null"
 The status should be success
 End
 End
