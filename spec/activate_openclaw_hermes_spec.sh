@@ -67,9 +67,9 @@ When run bash -c "head -1 '$SCRIPT'"
 The output should include '#!/usr/bin/env bash'
 End
 
-It 'creates /tmp/hermes'
+It 'does not depend on an activation-created temporary log directory'
 When run bash -c "grep '/tmp/hermes' '$SCRIPT'"
-The output should include '/tmp/hermes'
+The status should be failure
 End
 
 It 'creates .hermes directory'
@@ -112,6 +112,13 @@ End
 It 'restarts the dashboard when Home Manager changes the unit'
 When run bash -c "sed -n '/systemd.user.services.hermes-dashboard =/,/Install = {/p' '$PWD/home-manager/services/hermes/default.nix' | grep -F 'X-SwitchMethod = \"restart\";'"
 The output should include 'X-SwitchMethod = "restart";'
+End
+
+It 'routes Hermes logs through systemd without a filesystem prerequisite'
+When run bash -c "units=\$(sed -n '/systemd.user.services.hermes-gateway =/,/Install = {/p; /systemd.user.services.hermes-dashboard =/,/Install = {/p' '$PWD/home-manager/services/hermes/default.nix'); test \"\$(printf '%s' \"\$units\" | grep -cF 'StandardOutput = \"journal\";')\" -eq 2 && test \"\$(printf '%s' \"\$units\" | grep -cF 'StandardError = \"journal\";')\" -eq 2; printf '%s' \"\$units\""
+The status should be success
+The output should not include 'append:'
+The output should not include '/tmp/hermes/'
 End
 
 # The bridge moved from an inline socat invocation to nginx in #2302/#2306, so

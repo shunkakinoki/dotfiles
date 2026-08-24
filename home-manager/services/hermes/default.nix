@@ -47,8 +47,8 @@ lib.mkIf host.isKyber {
         "NPM_CONFIG_IGNORE_SCRIPTS=false"
       ];
       WorkingDirectory = "${homeDir}/.hermes";
-      StandardOutput = "append:/tmp/hermes/hermes-gateway.log";
-      StandardError = "append:/tmp/hermes/hermes-gateway.log";
+      StandardOutput = "journal";
+      StandardError = "journal";
     };
     Install = {
       WantedBy = [ "default.target" ];
@@ -76,8 +76,8 @@ lib.mkIf host.isKyber {
         "NPM_CONFIG_IGNORE_SCRIPTS=false"
       ];
       WorkingDirectory = "${homeDir}/.hermes";
-      StandardOutput = "append:/tmp/hermes/hermes-dashboard.log";
-      StandardError = "append:/tmp/hermes/hermes-dashboard.log";
+      StandardOutput = "journal";
+      StandardError = "journal";
     };
     Install = {
       WantedBy = [ "default.target" ];
