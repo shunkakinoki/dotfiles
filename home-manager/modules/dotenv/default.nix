@@ -6,16 +6,9 @@
 }:
 let
   inherit (pkgs.stdenv) isDarwin;
-  # Keys handed to GUI apps through launchctl. Every entry becomes readable by
-  # every GUI process in the session, so keep the list to what an app needs.
-  guiEnvKeys = [
-    "AMP_API_KEY"
-    "OPENCODE_API_KEY"
-  ];
   exportGuiEnv = pkgs.replaceVars ./export-gui-env.sh {
     launchctl = "/bin/launchctl";
     printer = "${./print-env-file.sh}";
-    keys = lib.concatStringsSep " " guiEnvKeys;
   };
 in
 {
