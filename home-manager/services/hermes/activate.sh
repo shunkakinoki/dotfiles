@@ -5,7 +5,6 @@ set -euo pipefail
 HOME_DIR="$1"
 NPM_BIN="$2"
 
-mkdir -p /tmp/hermes
 mkdir -p "$HOME_DIR/.hermes"
 mkdir -p "$HOME_DIR/.hermes/sessions"
 mkdir -p "$HOME_DIR/.hermes/memories"
