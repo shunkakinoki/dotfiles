@@ -54,6 +54,7 @@ let
       pkgs.gnugrep
       pkgs.k3s
       pkgs.procps
+      pkgs.smartmontools
       pkgs.systemd
       pkgs.util-linux
     ];
@@ -100,6 +101,11 @@ in
 
   home.file.".config/k3s/journald.conf.d/10-kyber-limits.conf" = lib.mkIf isKyber {
     source = ./journald.conf;
+    force = true;
+  };
+
+  home.file.".config/k3s/tmp.mount" = lib.mkIf isKyber {
+    source = ./kyber-tmp.mount;
     force = true;
   };
 

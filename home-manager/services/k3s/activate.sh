@@ -10,12 +10,15 @@ JOURNALD_FILE="$4"
 HEALTH_SERVICE_FILE="$5"
 HEALTH_TIMER_FILE="$6"
 SMARTD_SERVICE_FILE="$7"
+TMP_MOUNT_FILE="$8"
 SYSTEM_SERVICE="/etc/systemd/system/k3s.service"
 SYSTEM_MOUNT="/etc/systemd/system/var-lib-rancher-k3s-agent-containerd.mount"
 SYSTEM_JOURNALD="/etc/systemd/journald.conf.d/10-kyber-limits.conf"
 SYSTEM_HEALTH_SERVICE="/etc/systemd/system/kyber-host-health.service"
 SYSTEM_HEALTH_TIMER="/etc/systemd/system/kyber-host-health.timer"
 SYSTEM_SMARTD_SERVICE="/etc/systemd/system/kyber-smartd.service"
+SYSTEM_TMP_MOUNT="/etc/systemd/system/tmp.mount"
+SMARTCTL_LINK="/usr/local/bin/smartctl"
 MOUNT_POINT="/var/lib/rancher/k3s/agent/containerd"
 EXPECTED_CONTAINERD_UUID="90f29a7b-38ff-460b-b534-92a02f1412ec"
 K3S_KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
@@ -143,7 +146,8 @@ for systemd_file_pair in \
   "$SERVICE_FILE:$SYSTEM_SERVICE" \
   "$HEALTH_SERVICE_FILE:$SYSTEM_HEALTH_SERVICE" \
   "$HEALTH_TIMER_FILE:$SYSTEM_HEALTH_TIMER" \
-  "$SMARTD_SERVICE_FILE:$SYSTEM_SMARTD_SERVICE"; do
+  "$SMARTD_SERVICE_FILE:$SYSTEM_SMARTD_SERVICE" \
+  "$TMP_MOUNT_FILE:$SYSTEM_TMP_MOUNT"; do
   source_file="${systemd_file_pair%%:*}"
   target_file="${systemd_file_pair#*:}"
   if sync_root_file "$source_file" "$target_file"; then
@@ -169,6 +173,26 @@ run_sudo @systemctl@ enable --now k3s
 
 if [ -f "$SMARTD_SERVICE_FILE" ]; then
   run_sudo @systemctl@ enable --now kyber-smartd.service
+fi
+
+# smartd runs from an absolute store path, so the CLI is otherwise unreachable
+# for ad-hoc use; sudo's secure_path covers /usr/local/bin but never the store.
+if [ "$(readlink "$SMARTCTL_LINK" 2>/dev/null || true)" != "@smartctl@" ]; then
+  if require_sudo; then
+    run_sudo mkdir -p "$(dirname "$SMARTCTL_LINK")"
+    run_sudo ln -sfn "@smartctl@" "$SMARTCTL_LINK"
+  fi
+fi
+
+# Never `--now`: mounting tmpfs over a populated /tmp hides files that running
+# processes still hold open. The unit takes effect on the next boot instead.
+if [ -f "$TMP_MOUNT_FILE" ]; then
+  if require_sudo; then
+    run_sudo @systemctl@ enable tmp.mount
+    if ! @findmnt@ --types tmpfs --mountpoint /tmp >/dev/null 2>&1; then
+      echo "tmp.mount is enabled; /tmp moves to tmpfs on the next reboot"
+    fi
+  fi
 fi
 
 if [ -f "$HEALTH_TIMER_FILE" ]; then

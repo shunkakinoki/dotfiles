@@ -232,3 +232,70 @@ The output should include 'sshd -t'
 End
 End
 End
+
+Describe 'config/k3s/tmp.mount'
+UNIT="$PWD/config/k3s/kyber-tmp.mount"
+
+It 'moves /tmp onto tmpfs'
+When run bash -c "grep -q 'What=tmpfs' '$UNIT' && grep -q 'Where=/tmp' '$UNIT'"
+The status should be success
+End
+
+It 'caps the tmpfs so a runaway job cannot consume host memory'
+When run grep 'Options=' "$UNIT"
+The output should include 'size=32G'
+End
+
+It 'keeps the sticky, nosuid, nodev semantics of a real /tmp'
+When run bash -c "grep -q 'mode=1777' '$UNIT' && grep -q 'nosuid' '$UNIT' && grep -q 'nodev' '$UNIT'"
+The status should be success
+End
+
+It 'installs into local-fs.target'
+When run grep 'WantedBy=' "$UNIT"
+The output should include 'local-fs.target'
+End
+End
+
+Describe 'home-manager/services/k3s/activate.sh'
+SCRIPT="$PWD/home-manager/services/k3s/activate.sh"
+
+It 'installs the tmpfs mount unit'
+When run bash -c "grep -q 'SYSTEM_TMP_MOUNT=' '$SCRIPT' && grep -q 'TMP_MOUNT_FILE:.SYSTEM_TMP_MOUNT' '$SCRIPT'"
+The status should be success
+End
+
+It 'enables tmp.mount without mounting over a live /tmp'
+When run bash -c "grep -q 'enable tmp.mount' '$SCRIPT' && ! grep -q 'enable --now tmp.mount' '$SCRIPT'"
+The status should be success
+End
+
+It 'exposes smartctl on the sudo secure_path'
+When run bash -c "grep -q '/usr/local/bin/smartctl' '$SCRIPT' && grep -q 'ln -sfn' '$SCRIPT'"
+The status should be success
+End
+End
+
+Describe 'config/k3s/kyber-host-health.sh'
+SCRIPT="$PWD/config/k3s/kyber-host-health.sh"
+
+It 'alerts before a disk exhausts its rated write endurance'
+When run bash -c "grep -q 'check_disk_wear' '$SCRIPT' && grep -q 'DISK_WEAR_WARNING_PERCENT=10' '$SCRIPT'"
+The status should be success
+End
+
+It 'reads remaining endurance from Wear_Leveling_Count'
+When run grep 'Wear_Leveling_Count' "$SCRIPT"
+The output should include 'Wear_Leveling_Count'
+End
+
+It 'rate-limits the SMART probe away from the one-minute timer'
+When run grep 'DISK_WEAR_CHECK_INTERVAL_SECONDS' "$SCRIPT"
+The output should include '21600'
+End
+
+It 'runs the wear check as part of main'
+When run bash -c "awk '/^main\(\)/,/^}/' '$SCRIPT' | grep -q check_disk_wear"
+The status should be success
+End
+End

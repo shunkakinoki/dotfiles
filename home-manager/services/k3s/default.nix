@@ -14,6 +14,7 @@ let
     diff = "${pkgs.diffutils}/bin/diff";
     find = "${pkgs.findutils}/bin/find";
     findmnt = "${pkgs.util-linux}/bin/findmnt";
+    smartctl = "${pkgs.smartmontools}/bin/smartctl";
     systemctl = "${pkgs.systemd}/bin/systemctl";
     tune2fs = "${pkgs.e2fsprogs}/bin/tune2fs";
   };
@@ -23,6 +24,7 @@ let
   healthServiceFile = "${homeDir}/.config/k3s/kyber-host-health.service";
   healthTimerFile = "${homeDir}/.config/k3s/kyber-host-health.timer";
   smartdServiceFile = "${homeDir}/.config/k3s/kyber-smartd.service";
+  tmpMountFile = "${homeDir}/.config/k3s/tmp.mount";
 in
 lib.mkIf (pkgs.stdenv.isLinux && host.isK3sServer) {
   home.activation.setupK3s = config.lib.dag.entryAfter [ "writeBoundary" ] ''
@@ -33,6 +35,7 @@ lib.mkIf (pkgs.stdenv.isLinux && host.isK3sServer) {
       "${journaldFile}" \
       "${healthServiceFile}" \
       "${healthTimerFile}" \
-      "${smartdServiceFile}"
+      "${smartdServiceFile}" \
+      "${tmpMountFile}"
   '';
 }
