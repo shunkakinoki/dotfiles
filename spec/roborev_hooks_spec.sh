@@ -16,8 +16,8 @@ When run grep -F 'dotfiles/config/shared/hooks/roborev-agent.sh' "$SCRIPT"
 The output should include 'dotfiles/config/shared/hooks/roborev-agent.sh'
 End
 
-It 'registers DeepSeek Flash as the Factory session default via CLIProxy'
-When run jq -e '.sessionDefaultSettings.model == "custom:deepseek-v4-flash-0" and (.customModels | length) == 1 and .customModels[0].id == "custom:deepseek-v4-flash-0" and .customModels[0].baseUrl == "https://cliproxy.shunkakinoki.com/v1" and .customModels[0].apiKey == "CLIPROXY_API_KEY"' "$SETTINGS"
+It 'uses Droid Core DeepSeek Flash as the Factory session default'
+When run jq -e '.sessionDefaultSettings.model == "deepseek-v4-flash-0731" and any(.customModels[]; .id == "custom:deepseek-v4-flash-0" and .baseUrl == "https://cliproxy.shunkakinoki.com/v1" and .apiKey == "CLIPROXY_API_KEY") and any(.customModels[]; .id == "custom:free-1" and .model == "free" and .baseUrl == "https://cliproxy.shunkakinoki.com/v1" and .apiKey == "CLIPROXY_API_KEY")' "$SETTINGS"
 The status should be success
 The output should equal 'true'
 End

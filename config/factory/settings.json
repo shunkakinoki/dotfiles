@@ -1,6 +1,6 @@
 {
   "sessionDefaultSettings": {
-    "model": "custom:deepseek-v4-flash-0",
+    "model": "deepseek-v4-flash-0731",
     "reasoningEffort": "high"
   },
   "customModels": [
@@ -11,6 +11,17 @@
       "baseUrl": "https://cliproxy.shunkakinoki.com/v1",
       "apiKey": "CLIPROXY_API_KEY",
       "displayName": "Deepseek V4 Flash",
+      "maxOutputTokens": 64000,
+      "noImageSupport": true,
+      "provider": "generic-chat-completion-api"
+    },
+    {
+      "model": "free",
+      "id": "custom:free-1",
+      "index": 1,
+      "baseUrl": "https://cliproxy.shunkakinoki.com/v1",
+      "apiKey": "CLIPROXY_API_KEY",
+      "displayName": "Free Router",
       "maxOutputTokens": 64000,
       "noImageSupport": true,
       "provider": "generic-chat-completion-api"
