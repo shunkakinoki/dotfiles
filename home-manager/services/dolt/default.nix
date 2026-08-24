@@ -6,7 +6,7 @@
   ...
 }:
 let
-  inherit (inputs.host) isKyber isGalactica;
+  inherit (inputs.host) isGalactica isKyber isMatic;
   homeDir = config.home.homeDirectory;
   repoDir = "${homeDir}/dotfiles";
   legacyBeadsDir = "${repoDir}/.beads";
@@ -20,9 +20,12 @@ let
   linearTeamId = "679ab4ed-3df3-458d-8574-4962f3ebbf31";
   linearSyncIntervalSeconds = 300;
   linearSyncPath = "${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:/etc/profiles/per-user/${config.home.username}/bin:/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin";
-  enabled = isKyber || isGalactica;
-  # 1.86+ adds the git+https:// remote scheme used by the beads_global GitHub backup.
-  doltMinVersion = "1.86";
+  enabled = isGalactica || isKyber || isMatic;
+  linearSyncEnabled = isKyber;
+  federationSyncEnabled = isGalactica || isMatic;
+  # 2.2.2 fixes gitblobstore pending-write pruning that could publish a
+  # manifest whose live archive later failed with "Blob not found".
+  doltMinVersion = "2.2.2";
   startScript = pkgs.replaceVars ./start.sh {
     inherit beadsDir legacyBeadsDir;
     inherit (pkgs) dolt;
@@ -37,12 +40,16 @@ let
     inherit linearWorkspace linearTeamId;
     inherit (pkgs) coreutils gawk jq;
   };
+  federationSyncScript = pkgs.replaceVars ./federation-sync.sh {
+    bd = "${homeDir}/.local/bin/bd";
+    inherit (pkgs) coreutils;
+  };
 in
 lib.mkIf enabled {
   assertions = [
     {
       assertion = lib.versionAtLeast pkgs.dolt.version doltMinVersion;
-      message = "pkgs.dolt is ${pkgs.dolt.version}; needs >= ${doltMinVersion} for git+https push (beads_global GitHub backup). Run 'nix flake update nixpkgs-unstable'.";
+      message = "pkgs.dolt is ${pkgs.dolt.version}; needs >= ${doltMinVersion} for git+https push (beads_global GitHub backup). Update the dedicated nixpkgs-dolt pin.";
     }
   ];
 
@@ -91,7 +98,7 @@ lib.mkIf enabled {
     };
   };
 
-  launchd.agents.dolt-linear-sync = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.dolt-linear-sync = lib.mkIf (pkgs.stdenv.isDarwin && linearSyncEnabled) {
     enable = true;
     config = {
       ProgramArguments = [
@@ -114,6 +121,31 @@ lib.mkIf enabled {
       };
       StandardOutPath = "/tmp/dolt-linear-sync.log";
       StandardErrorPath = "/tmp/dolt-linear-sync.error.log";
+    };
+  };
+
+  launchd.agents.dolt-federation-sync = lib.mkIf (pkgs.stdenv.isDarwin && federationSyncEnabled) {
+    enable = true;
+    config = {
+      ProgramArguments = [
+        "${pkgs.bash}/bin/bash"
+        "${federationSyncScript}"
+      ];
+      StartInterval = linearSyncIntervalSeconds;
+      ThrottleInterval = linearSyncIntervalSeconds;
+      RunAtLoad = true;
+      WorkingDirectory = homeDir;
+      EnvironmentVariables = {
+        HOME = homeDir;
+        PATH = linearSyncPath;
+        BEADS_DOLT_SHARED_SERVER = "1";
+        BEADS_DOLT_SERVER_PORT = "3307";
+        BEADS_SHARED_SERVER_DIR = sharedServerDir;
+        DOLT_CLI_USER = "root";
+        DOLT_CLI_PASSWORD = "";
+      };
+      StandardOutPath = "/tmp/dolt-federation-sync.log";
+      StandardErrorPath = "/tmp/dolt-federation-sync.error.log";
     };
   };
 
@@ -158,7 +190,7 @@ lib.mkIf enabled {
     };
   };
 
-  systemd.user.services.dolt-linear-sync = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.dolt-linear-sync = lib.mkIf (pkgs.stdenv.isLinux && linearSyncEnabled) {
     Unit = {
       Description = "Synchronize Beads with Linear";
       X-SwitchMethod = "restart";
@@ -187,7 +219,7 @@ lib.mkIf enabled {
     };
   };
 
-  systemd.user.timers.dolt-linear-sync = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.timers.dolt-linear-sync = lib.mkIf (pkgs.stdenv.isLinux && linearSyncEnabled) {
     Unit.Description = "Periodically synchronize Beads with Linear";
     Timer = {
       OnBootSec = "2min";
@@ -195,6 +227,48 @@ lib.mkIf enabled {
       OnUnitActiveSec = "${toString linearSyncIntervalSeconds}s";
       Persistent = true;
       Unit = "dolt-linear-sync.service";
+    };
+    Install.WantedBy = [ "timers.target" ];
+  };
+
+  systemd.user.services.dolt-federation-sync =
+    lib.mkIf (pkgs.stdenv.isLinux && federationSyncEnabled)
+      {
+        Unit = {
+          Description = "Synchronize Beads with the Dolt remote";
+          X-SwitchMethod = "restart";
+          After = [
+            "dolt.service"
+            "network-online.target"
+          ];
+          Wants = [
+            "dolt.service"
+            "network-online.target"
+          ];
+        };
+        Service = {
+          Type = "oneshot";
+          ExecStart = "${pkgs.bash}/bin/bash ${federationSyncScript}";
+          Environment = [
+            "HOME=${homeDir}"
+            "PATH=${linearSyncPath}"
+            "BEADS_DOLT_SHARED_SERVER=1"
+            "BEADS_DOLT_SERVER_PORT=3307"
+            "BEADS_SHARED_SERVER_DIR=${sharedServerDir}"
+            "DOLT_CLI_USER=root"
+            "DOLT_CLI_PASSWORD="
+          ];
+        };
+      };
+
+  systemd.user.timers.dolt-federation-sync = lib.mkIf (pkgs.stdenv.isLinux && federationSyncEnabled) {
+    Unit.Description = "Periodically synchronize Beads with the Dolt remote";
+    Timer = {
+      OnBootSec = "2min";
+      OnCalendar = "*-*-* *:00/5:00";
+      OnUnitActiveSec = "${toString linearSyncIntervalSeconds}s";
+      Persistent = true;
+      Unit = "dolt-federation-sync.service";
     };
     Install.WantedBy = [ "timers.target" ];
   };

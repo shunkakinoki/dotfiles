@@ -143,12 +143,13 @@ federate_beads() {
   local status
 
   set +e
-  @coreutils@/bin/timeout 30 "$bd_cli" -C "$repo_dir" sync --yes >/dev/null 2>&1
+  @coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" sync --yes >/dev/null 2>&1
   status=$?
   set -e
 
   if [ "$status" -ne 0 ]; then
-    log "Dolt $phase federation failed with status $status; continuing with local Beads state"
+    log "Dolt $phase federation failed with status $status"
+    return "$status"
   fi
 }
 
@@ -197,8 +198,8 @@ ensure_config linear.outbound_state_map.in_progress "In Progress"
 ensure_config linear.outbound_state_map.closed Done
 "$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): configure Linear sync" >/dev/null 2>&1
 
-# Prefer the newest federated Beads timestamps, but do not let a damaged backup
-# remote prevent independent Linear reconciliation.
+# Kyber is the only Linear writer. Require federation first so Linear never
+# reconciles from a replica that could not ingest the shared Dolt state.
 federate_beads "pre-sync"
 
 if [ -s "$sync_checkpoint_file" ]; then
@@ -212,7 +213,7 @@ fi
 # rate-limit failure is deferred to the next scheduled run instead of making
 # launchd hot-loop a failed job.
 log "Pulling Linear work if stale"
-if run_linear @coreutils@/bin/timeout 60 "$bd_cli" -C "$repo_dir" linear sync \
+if run_linear @coreutils@/bin/timeout 240 "$bd_cli" -C "$repo_dir" linear sync \
   --pull-if-stale \
   --threshold 5m \
   --state all \
@@ -225,7 +226,8 @@ else
     log "Linear pull deferred; the next 300-second run will retry"
     exit 0
   fi
-  log "Linear pull failed with status $status; continuing with outbound Beads reconciliation"
+  log "Linear pull failed with status $status"
+  exit "$status"
 fi
 
 all_issues="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0 --skip-labels)"

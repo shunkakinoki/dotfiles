@@ -8,6 +8,9 @@
     nixpkgs-unstable = {
       url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     };
+    nixpkgs-dolt = {
+      url = "github:NixOS/nixpkgs/c8f90650c15282fa8656a041bfbbd2403997a9a7";
+    };
     nixpkgs-nightly = {
       url = "github:NixOS/nixpkgs/master";
     };
