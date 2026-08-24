@@ -8,6 +8,7 @@ readonly D_STATE_THRESHOLD=3
 readonly D_STATE_SUSTAINED_SAMPLES=5
 readonly IO_SOME_AVG300_THRESHOLD=20
 readonly IO_FULL_AVG300_THRESHOLD=10
+readonly NODEFS_USAGE_THRESHOLD=70
 readonly NODEFS_AVAILABLE_WARNING_GIB=200
 readonly NODEFS_AVAILABLE_WARNING_BYTES=$((NODEFS_AVAILABLE_WARNING_GIB * 1024 * 1024 * 1024))
 readonly NODEFS_KUBELET_RESERVE_GIB=50
@@ -75,7 +76,7 @@ check_d_state() {
 }
 
 check_node_filesystem() {
-  local available_bytes available_gib
+  local available_bytes available_gib usage_percent
 
   if ! available_bytes="$(df --block-size=1 --output=avail / 2>/dev/null | tail -n 1 | tr -d '[:space:]')" ||
     [[ ! $available_bytes =~ ^[0-9]+$ ]]; then
@@ -83,8 +84,16 @@ check_node_filesystem() {
     return
   fi
 
+  if ! usage_percent="$(df --output=pcent / 2>/dev/null | tail -n 1 | tr -cd '0-9')" ||
+    [[ ! $usage_percent =~ ^[0-9]+$ ]]; then
+    set_alert "node-filesystem" "unable to read usage percentage on root nodefs"
+    return
+  fi
+
   available_gib=$((available_bytes / 1024 / 1024 / 1024))
-  if [ "$available_bytes" -le "$NODEFS_AVAILABLE_WARNING_BYTES" ]; then
+  if [ "$usage_percent" -ge "$NODEFS_USAGE_THRESHOLD" ]; then
+    set_alert "node-filesystem" "root nodefs usage is ${usage_percent}% (threshold ${NODEFS_USAGE_THRESHOLD}%) with ${available_gib} GiB available"
+  elif [ "$available_bytes" -le "$NODEFS_AVAILABLE_WARNING_BYTES" ]; then
     set_alert "node-filesystem" "root nodefs has ${available_gib} GiB available (warning threshold ${NODEFS_AVAILABLE_WARNING_GIB} GiB, kubelet emergency reserve ${NODEFS_KUBELET_RESERVE_GIB} GiB)"
   else
     clear_alert "node-filesystem"

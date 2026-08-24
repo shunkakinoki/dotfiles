@@ -186,17 +186,19 @@ cleaner:
   entry longer than seven days, and keeps 10 GiB free;
 - kubelet rotates each container log at 10 MiB and retains three files;
 - `kyber-smartd.service` uses `smartd` to monitor all SMART-capable physical
-  disks, including the containerd SSD, and runs short and long self-tests;
+  disks, including wear, reallocation, error trends, and the containerd SSD,
+  and runs short and long self-tests;
 - `kyber-host-health.timer` runs a read-only check every minute for five-minute
   I/O PSI, five consecutive samples of at least three D-state processes,
-  root node-filesystem headroom, containerd image-filesystem usage/identity,
-  CRI probe latency, recent CRI lifecycle errors, and host DNS (Tailscale must
-  not own `/etc/resolv.conf`).
+  root node-filesystem usage at 70% and absolute headroom, containerd
+  image-filesystem usage/identity at 70%, remaining SSD write endurance, CRI
+  probe latency, recent CRI lifecycle errors, and host DNS (Tailscale must not
+  own `/etc/resolv.conf`).
 
 Alerts are deduplicated until recovery. They are written to the journal at
-`daemon.alert` priority and broadcast to logged-in sessions with `wall`; a
-recovery notice is written when a condition clears. These checks never remove
-containers, pod sandboxes, shims, tasks, cgroups, or image content.
+`daemon.alert` priority without interrupting logged-in terminals; a recovery
+notice is written when a condition clears. These checks never remove containers,
+pod sandboxes, shims, tasks, cgroups, or image content.
 
 Verify the declarations and inspect current alerts after activation:
 
