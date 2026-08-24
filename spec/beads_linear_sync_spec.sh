@@ -126,6 +126,7 @@ setup_reconciliation() {
   FAKE_DOLT_ROOT="$TEST_ROOT/dolt"
   RENDERED_SCRIPT="$TEST_ROOT/linear-sync.sh"
   COMMAND_LOG="$TEST_ROOT/commands.log"
+  FSCK_TIMEOUT_LOG="$TEST_ROOT/fsck-timeouts.log"
   DOLT_LOG="$TEST_ROOT/dolt-commands.log"
   SYNC_COUNT="$TEST_ROOT/sync-count"
   STATE_HOME="$TEST_ROOT/state"
@@ -142,7 +143,7 @@ setup_reconciliation() {
   repo_slug="${repo_slug//[^[:alnum:]_.-]/_}"
   CHECKPOINT_FILE="$STATE_HOME/beads-linear-sync/last-success-$repo_slug"
   export DOTFILES_ENV_FILE="$ENV_FILE"
-  export DOLT_LOG
+  export DOLT_LOG FSCK_TIMEOUT_LOG
   for command in chmod date env mkdir mv sleep timeout; do
     ln -s "$(command -v "$command")" "$COREUTILS/bin/$command"
   done
@@ -164,6 +165,7 @@ case "${1:-} ${2:-}" in
     exit 0
     ;;
   "sync --yes")
+    printf '%s\n' "${BEADS_FSCK_TIMEOUT:-}" >>"$FSCK_TIMEOUT_LOG"
     count=0
     if [ -s "$SYNC_COUNT" ]; then
       count=$(<"$SYNC_COUNT")
@@ -225,7 +227,7 @@ EOF
 }
 
 cleanup_reconciliation() {
-  unset DOLT_LOG DOTFILES_ENV_FILE
+  unset DOLT_LOG DOTFILES_ENV_FILE FSCK_TIMEOUT_LOG
   rm -rf "$TEST_ROOT"
 }
 
@@ -239,6 +241,8 @@ The output should include 'Pushing changed active Beads'
 The file "$CHECKPOINT_FILE" should be exist
 The contents of file "$COMMAND_LOG" should include 'linear sync --pull --state all --relations --no-wait'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-test --no-wait'
+The contents of file "$FSCK_TIMEOUT_LOG" should equal "300s
+300s"
 End
 
 It 'splits a large outbound delta into bounded batches'
