@@ -101,6 +101,34 @@ for _attempt in 1 2 3 4 5 6 7 8 9 10 11 12; do
 done
 
 cycle_started="$(@coreutils@/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')"
+ensure_dolt_remote() {
+  local configured_remote
+  local current_remote
+
+  configured_remote="$("$bd_cli" -C "$repo_dir" config get sync.remote 2>/dev/null || true)"
+  if [ -z "$configured_remote" ]; then
+    log "Dolt sync remote is not configured"
+    return 1
+  fi
+
+  current_remote="$("$bd_cli" -C "$repo_dir" dolt remote list 2>/dev/null | awk '$1 == "origin" { print $2; exit }')"
+  if [ -z "$current_remote" ]; then
+    log "Registering configured Dolt remote"
+    "$bd_cli" -C "$repo_dir" dolt remote add origin "$configured_remote" --allow-git-origin >/dev/null
+    return 0
+  fi
+
+  if [ "$current_remote" != "$configured_remote" ]; then
+    log "Configured Dolt remote does not match sync.remote"
+    return 1
+  fi
+}
+
+if ! ensure_dolt_remote; then
+  log "Dolt remote setup failed"
+  exit 1
+fi
+
 log "Synchronizing Dolt remote"
 @coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" sync --yes >/dev/null 2>&1
 
