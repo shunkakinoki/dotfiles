@@ -36,6 +36,14 @@ cp -rf source dest          # NOT: cp -r source dest
 - `apt-get` - use `-y` flag
 - `brew` - use `HOMEBREW_NO_AUTO_UPDATE=1` env var
 
+## Beads–Linear Repository Scope
+
+- Configure the managed service with `BEADS_LINEAR_SYNC_REPOS` in the untracked local dotenv.
+- The value is a comma-separated list of `org/repo` identifiers, never absolute checkout paths.
+- Never record private repository names, identifiers, checkout paths, or references in any tracked file, documentation, fixture, example, log, or generated configuration in this repository.
+- Use generic placeholders such as `org/repo` in tracked content; keep real repository scope only in the untracked local dotenv.
+- Never print, commit, or otherwise expose the local dotenv or its values.
+
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:ca08a54f -->
 ## Beads Issue Tracker
 

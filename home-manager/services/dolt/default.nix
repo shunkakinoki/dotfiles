@@ -34,7 +34,7 @@ let
   linearSyncScript = pkgs.replaceVars ./linear-sync.sh {
     bd = "${homeDir}/.local/bin/bd";
     linear = "${homeDir}/.bun/install/global/node_modules/.bin/linear";
-    inherit repoDir linearWorkspace linearTeamId;
+    inherit linearWorkspace linearTeamId;
     inherit (pkgs) coreutils gawk jq;
   };
 in
@@ -101,7 +101,7 @@ lib.mkIf enabled {
       StartInterval = linearSyncIntervalSeconds;
       ThrottleInterval = linearSyncIntervalSeconds;
       RunAtLoad = true;
-      WorkingDirectory = repoDir;
+      WorkingDirectory = homeDir;
       EnvironmentVariables = {
         HOME = homeDir;
         PATH = linearSyncPath;
