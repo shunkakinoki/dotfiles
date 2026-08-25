@@ -243,7 +243,7 @@ case "${1:-} ${2:-}" in
         fi
         ;;
     esac
-    if [[ " $* " == *" --push "* ]] && [[ " $* " == *" df-accepted "* ]]; then
+    if [[ " $* " == *" --push "* ]] && [[ " $* " == *" df-accepted "* ]] && [ "${FAKE_LINEAR_MODE:-}" != "push-no-reference" ]; then
       printf '%s\n' 'https://linear.app/test/issue/TEST-999/example' >"$ISSUE_REF_FILE"
     fi
     ;;
@@ -497,6 +497,20 @@ The contents of file "$COMMAND_LOG" should not include 'linear sync --push --iss
 The contents of file "$ISSUE_REF_FILE" should include 'TEST-999'
 End
 
+It 'keeps the retry marker when a successful push does not persist a Linear reference'
+printf '%s\n' closed >"$ISSUE_STATUS_FILE"
+mkdir -p "$(dirname "$CHECKPOINT_FILE")"
+printf '%s\n' '2099-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
+pending_json='[{"id":"df-accepted","status":"closed","updated_at":"2020-01-01T00:00:00Z","metadata":{"linear_completion_pending":true}}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_ISSUE_REF_MISSING=1 FAKE_LINEAR_MODE=push-no-reference FAKE_LIST_JSON="$pending_json" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 65
+The output should include 'does not have a Linear issue reference after push'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-accepted --no-wait'
+The contents of file "$COMMAND_LOG" should not include 'update df-accepted --unset-metadata linear_completion_pending'
+The contents of file "$COMMAND_LOG" should not include 'linear sync --pull'
+The contents of file "$CHECKPOINT_FILE" should equal '2099-01-01T00:00:00Z'
+End
+
 It 'fails verification without reopening an accepted Bead'
 When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LINEAR_STATE=started XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted"
 The status should equal 70
@@ -515,7 +529,7 @@ It 'waits when another reconciliation owns the repository lock'
 mkdir -p "$STATE_HOME/beads-linear-sync"
 lock_file="$STATE_HOME/beads-linear-sync/reconcile-test%2Frepo-one.lock"
 ready_file="$TEST_ROOT/lock-ready"
-python3 -c 'import fcntl,pathlib,sys,time; lock_handle=open(sys.argv[1], "w", encoding="utf-8"); fcntl.flock(lock_handle, fcntl.LOCK_EX); pathlib.Path(sys.argv[2]).touch(); time.sleep(5)' "$lock_file" "$ready_file" &
+python3 -c 'import fcntl,pathlib,signal,sys; lock_handle=open(sys.argv[1], "w", encoding="utf-8"); fcntl.flock(lock_handle, fcntl.LOCK_EX); pathlib.Path(sys.argv[2]).touch(); signal.pause()' "$lock_file" "$ready_file" &
 holder_pid=$!
 while [ ! -e "$ready_file" ]; do sleep 0.02; done
 When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_FLOCK_WAIT_SECONDS=1 XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted; status=\$?; kill '$holder_pid' 2>/dev/null || true; wait '$holder_pid' 2>/dev/null || true; exit \"\$status\""

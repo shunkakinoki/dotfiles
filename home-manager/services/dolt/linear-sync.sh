@@ -480,10 +480,28 @@ fi
 
 if [ -n "$pending_completion_ids" ]; then
   IFS=',' read -r -a pending_completion_id_array <<<"$pending_completion_ids"
-  "$bd_cli" -C "$repo_dir" update "${pending_completion_id_array[@]}" \
-    --unset-metadata linear_completion_pending >/dev/null
-  "$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): persist recovered Linear completion" >/dev/null 2>&1
-  federate_beads "post-terminal push"
+  recovered_pending_id_array=()
+  unresolved_pending_completion=0
+  for pending_completion_id in "${pending_completion_id_array[@]}"; do
+    pending_completion_issue="$("$bd_cli" -C "$repo_dir" show "$pending_completion_id" --json)"
+    pending_completion_ref="$(@jq@/bin/jq -r '.[0].external_ref // empty' <<<"$pending_completion_issue")"
+    if [[ $pending_completion_ref =~ /issue/([A-Z][A-Z0-9]*-[0-9]+)/ ]]; then
+      recovered_pending_id_array+=("$pending_completion_id")
+    else
+      unresolved_pending_completion=1
+      log "Pending completion does not have a Linear issue reference after push"
+    fi
+  done
+
+  if [ "${#recovered_pending_id_array[@]}" -gt 0 ]; then
+    "$bd_cli" -C "$repo_dir" update "${recovered_pending_id_array[@]}" \
+      --unset-metadata linear_completion_pending >/dev/null
+    "$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): persist recovered Linear completion" >/dev/null 2>&1
+    federate_beads "post-terminal push"
+  fi
+  if [ "$unresolved_pending_completion" -eq 1 ]; then
+    exit 65
+  fi
 fi
 
 # Beads' incremental pull currently performs one dolt_history_issues query for
