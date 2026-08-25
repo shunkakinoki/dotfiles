@@ -19,7 +19,7 @@ review_type = 'default'
 allow_failure = true
 
 [review.subagents.antigravity]
-agent = 'antigravity'
+agent = 'acp.antigravity'
 review_type = 'default'
 allow_failure = true
 
