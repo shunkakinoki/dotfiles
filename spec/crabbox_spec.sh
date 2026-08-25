@@ -81,6 +81,8 @@ When run bash -c "cat '$START'"
 The output should include 'https://crabbox.shunkakinoki.com'
 The output should include 'CRABBOX_TRUSTED_PROXY_CIDRS'
 The output should include '10.42.1.0/24'
+The output should include 'CRABBOX_ACCESS_TEAM_DOMAIN'
+The output should include 'shunkakinoki.cloudflareaccess.com'
 End
 
 It 'generates local secrets without requiring a provider token'
