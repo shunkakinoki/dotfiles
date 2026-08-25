@@ -26,6 +26,7 @@ lib.mkIf enabled {
         "${./start.sh}"
         roborevBin
         serverAddr
+        "${pkgs.lsof}/bin/lsof"
       ];
       KeepAlive = true;
       RunAtLoad = true;

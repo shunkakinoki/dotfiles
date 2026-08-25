@@ -44,6 +44,13 @@ The status should be success
 The line 1 of output should equal 'test-key'
 The line 2 of output should equal 'daemon run --addr 127.0.0.1:7373'
 End
+
+It 'reclaims the Darwin daemon port with the configured cleanup helper'
+When run grep -E 'Darwin|PORT_CLEANUP_BIN|sTCP:LISTEN' "$SCRIPT"
+The output should include 'Darwin'
+The output should include 'PORT_CLEANUP_BIN'
+The output should include '-sTCP:LISTEN'
+End
 End
 
 Describe 'home-manager/services/roborev/default.nix'
@@ -109,6 +116,11 @@ End
 It 'reclaims the Kyber daemon port from escaped RoboRev processes'
 When run grep -F "ExecStartPre = \"-\${pkgs.procps}/bin/pkill -KILL -f '[r]oborev daemon run'\";" "$PWD/home-manager/services/roborev/default.nix"
 The output should include "ExecStartPre = \"-\${pkgs.procps}/bin/pkill -KILL -f '[r]oborev daemon run'\";"
+End
+
+It 'passes the Darwin port cleanup helper to launchd'
+When run grep -F '"${pkgs.lsof}/bin/lsof"' "$PWD/home-manager/services/roborev/default.nix"
+The output should include '"${pkgs.lsof}/bin/lsof"'
 End
 End
 
