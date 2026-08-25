@@ -133,6 +133,30 @@
     dolt = inputs.nixpkgs-dolt.legacyPackages.${prev.system}.dolt;
   })
   (_: prev: {
+    blacksmith-testbox-cli = prev.stdenvNoCC.mkDerivation rec {
+      pname = "blacksmith-testbox-cli";
+      version = "0.4.57";
+      src = prev.fetchurl {
+        url = "https://clireleases.blacksmith.sh/cli/v${version}/${
+          if prev.stdenv.isDarwin then "darwin" else "linux"
+        }/${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}/blacksmith";
+        sha256 =
+          if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isx86_64 then
+            "7f60f3b9f8d4d7644d9743f5d962acb3b3dbf675f51676702e5f292e02060bca"
+          else if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isAarch64 then
+            "04c8d261526e23c7791f05b8acec8f02b9d1fe67c35a1adcf28076627327270a"
+          else if prev.stdenv.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
+            "607b0f4413e426574527446c7718ea32587d57b24a3ea0749e1ab4138a426584"
+          else
+            "47281f402ff223f85e5165ea9018cd0281a727f19c69af8121ae4b09658ad313";
+      };
+      dontUnpack = true;
+      installPhase = ''
+        install -Dm755 $src $out/bin/blacksmith
+      '';
+      meta.mainProgram = "blacksmith";
+    };
+
     crabbox = prev.stdenvNoCC.mkDerivation rec {
       pname = "crabbox";
       version = "0.46.0";

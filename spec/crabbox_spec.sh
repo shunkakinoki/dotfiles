@@ -4,6 +4,7 @@
 Describe 'Crabbox installation and kyber services'
 OVERLAY="$PWD/overlays/default.nix"
 PACKAGES="$PWD/home-manager/packages/default.nix"
+PACKAGE_JSON="$PWD/package.json"
 HOMEBREW="$PWD/nix-darwin/config/homebrew.nix"
 SERVICE_MODULE="$PWD/home-manager/services/crabbox/default.nix"
 SERVICE_INDEX="$PWD/home-manager/services/default.nix"
@@ -26,6 +27,15 @@ It 'installs the CLI through each platform package layer'
 When run bash -c "grep -Fx '  crabbox' '$PACKAGES'; grep -Fx '      \"crabbox\"' '$HOMEBREW'"
 The output should include '  crabbox'
 The output should include '      "crabbox"'
+End
+
+It 'packages the official Blacksmith Testbox CLI outside npm'
+When run bash -c "sed -n '/blacksmith-testbox-cli = prev.stdenvNoCC.mkDerivation rec {/,/meta.mainProgram = \"blacksmith\"/p' '$OVERLAY'; grep -Fx '  blacksmith-testbox-cli' '$PACKAGES'; grep -F '\"blacksmith-cli\"' '$PACKAGE_JSON' || true"
+The output should include 'version = "0.4.57"'
+The output should include 'clireleases.blacksmith.sh'
+The output should include 'meta.mainProgram = "blacksmith"'
+The output should include '  blacksmith-testbox-cli'
+The output should not include '"blacksmith-cli"'
 End
 
 It 'builds the Node coordinator through ulb'
