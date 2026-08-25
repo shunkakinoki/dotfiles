@@ -53,6 +53,7 @@ lib.mkIf enabled {
       Type = "notify";
       ExecStart = "${pkgs.bash}/bin/bash ${./start.sh} ${roborevBin} ${serverAddr}";
       Restart = "on-failure";
+      RestartSec = 5;
       Environment = [
         "HOME=${homeDir}"
         "ROBOREV_DATA_DIR=${dataDir}"

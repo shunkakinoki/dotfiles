@@ -94,8 +94,9 @@ The output should include '127.0.0.1:7373'
 End
 
 It 'bounds Kyber worker resources and restart behavior'
-When run grep -E 'optionalAttrs isKyber|StartLimitIntervalSec = 300|StartLimitBurst = 3|RestartSec = 30|TimeoutStopSec = 30|TasksMax = 1024|CPUQuota = "400%"|MemoryMax = "4G"' "$PWD/home-manager/services/roborev/default.nix"
+When run grep -E 'optionalAttrs isKyber|RestartSec = 5|StartLimitIntervalSec = 300|StartLimitBurst = 3|RestartSec = 30|TimeoutStopSec = 30|TasksMax = 1024|CPUQuota = "400%"|MemoryMax = "4G"' "$PWD/home-manager/services/roborev/default.nix"
 The output should include 'optionalAttrs isKyber'
+The output should include 'RestartSec = 5'
 The output should include 'StartLimitIntervalSec = 300'
 The output should include 'StartLimitBurst = 3'
 The output should include 'RestartSec = 30'
