@@ -64,9 +64,9 @@ lib.mkIf enabled {
       RestartSec = 30;
       KillMode = "control-group";
       TimeoutStopSec = 30;
-      TasksMax = 1024;
+      TasksMax = 2048;
       CPUQuota = "400%";
-      MemoryMax = "4G";
+      MemoryMax = "16G";
     };
     Install = {
       WantedBy = [ "default.target" ];
