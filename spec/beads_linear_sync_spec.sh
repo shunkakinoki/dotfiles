@@ -551,7 +551,7 @@ The status should be success
 End
 
 It 'installs the Kyber Linux systemd timer'
-When run bash -c "grep -F 'systemd.user.timers.dolt-linear-sync' '$MODULE' >/dev/null && grep -F 'OnCalendar = \"*-*-* *:00/15:00\";' '$MODULE' >/dev/null && grep -F 'X-SwitchMethod = \"restart\";' '$MODULE' >/dev/null"
+When run bash -c "timer=\$(sed -n '/systemd.user.timers.dolt-linear-sync/,/^  };/p' '$MODULE'); grep -F 'OnCalendar = \"*-*-* *:00/15:00\";' <<<\"\$timer\" >/dev/null && ! grep -F 'OnUnitActiveSec' <<<\"\$timer\" >/dev/null && grep -F 'Persistent = true;' <<<\"\$timer\" >/dev/null && grep -F 'X-SwitchMethod = \"restart\";' '$MODULE' >/dev/null"
 The status should be success
 End
 End
