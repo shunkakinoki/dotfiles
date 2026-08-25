@@ -137,9 +137,9 @@ When run bash -c "cat '$KYBER'"
 The output should include 'ensure-tailscale-serve.sh}" 9443 9120'
 End
 
-It 'publishes the Kubernetes Crabbox ingress on 10443 for kyber'
+It 'publishes the host Crabbox coordinator on 10443 for kyber'
 When run bash -c "cat '$KYBER'"
-The output should include 'ensure-tailscale-serve.sh}" 10443 80'
+The output should include 'ensure-tailscale-serve.sh}" 10443 8080'
 End
 End
 

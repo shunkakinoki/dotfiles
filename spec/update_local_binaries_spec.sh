@@ -196,6 +196,18 @@ When run bash -c "grep 'pyproject.toml' '$SCRIPT'"
 The output should include 'pyproject.toml'
 End
 
+It 'detects package.json for Node build targets'
+When run bash -c "grep 'package.json' '$SCRIPT'"
+The output should include 'package.json'
+End
+
+It 'supports locked Node coordinator builds'
+When run bash -c "grep 'node-build' '$SCRIPT'; grep 'npm ci' '$SCRIPT'; grep 'npm run build:node' '$SCRIPT'"
+The output should include 'node-build'
+The output should include 'npm ci'
+The output should include 'npm run build:node'
+End
+
 It 'runs uv sync for Python projects'
 When run bash -c "grep 'uv sync' '$SCRIPT'"
 The output should include 'uv sync'

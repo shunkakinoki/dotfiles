@@ -12,6 +12,7 @@ let
   cliproxyapi = import ./cliproxyapi;
   cpaManagerPlus = ./cpa-manager-plus;
   codeSyncer = import ./code-syncer { inherit pkgs; };
+  crabbox = ./crabbox;
   dolt = ./dolt;
   docker = import ./docker { inherit lib pkgs; };
   firewall = ./firewall;
@@ -44,6 +45,7 @@ in
   cliproxyapi
   cpaManagerPlus
   codeSyncer
+  crabbox
   dolt
   docker
   dockerPostgres

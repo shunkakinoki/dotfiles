@@ -1371,11 +1371,11 @@ systemctl-cpa-manager-plus: ## Restart CPA Manager Plus systemd user service.
 	@echo "✅ CPA Manager Plus restarted"
 
 .PHONY: systemctl-crabbox
-systemctl-crabbox: ## Restart Crabbox coordinator systemd user service.
+systemctl-crabbox: ## Restart Crabbox PostgreSQL and coordinator systemd user services.
 	@echo "🔄 Restarting Crabbox..."
 	@if [ "$(DETECTED_HOST)" = "kyber" ] || [ "$(HOST)" = "kyber" ]; then \
 		systemctl --user daemon-reload; \
-		systemctl --user restart crabbox.service; \
+		systemctl --user restart crabbox-postgres.service crabbox.service; \
 	else \
 		echo "Skipping crabbox.service (host not kyber)"; \
 	fi
