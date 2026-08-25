@@ -33,8 +33,14 @@ pod CIDR changes.
 
 After creating the Cloudflare Access application, put its audience tag in Kyber's
 `~/dotfiles/.env` as `CRABBOX_ACCESS_AUD`. The Access team domain defaults to
-`shunkakinoki.cloudflareaccess.com`. This lets Crabbox verify the Access JWT instead of
-trusting caller-supplied Cloudflare identity headers.
+`shunkakinoki.cloudflareaccess.com`. This lets Crabbox verify the Access JWT on
+token-authenticated CLI and API requests.
+
+Browser portal requests use Crabbox's trusted reverse-proxy identity mode. Cloudflare
+Access supplies `Cf-Access-Authenticated-User-Email`, which the coordinator accepts only
+from the configured Kyber proxy CIDRs and maps to a non-admin Crabbox identity in the
+`personal` org. No GitHub OAuth app or second browser login is required. Keep the admin
+token separate for administrative API operations.
 
 CLI clients also need a dedicated Cloudflare Access service token allowed by the
 application's Service Auth policy. Store its client ID and secret in the client's private Crabbox config under
@@ -42,8 +48,9 @@ application's Service Auth policy. Store its client ID and secret in the client'
 `CRABBOX_ACCESS_CLIENT_ID` and `CRABBOX_ACCESS_CLIENT_SECRET`. The Access credential gets
 the request through Cloudflare; the normal Crabbox shared/user token is still required.
 
-GitHub OAuth is optional. If it is enabled for Crabbox portal sessions, configure the app
-with these URLs and make sure the proxy forwards the public HTTPS origin:
+GitHub OAuth remains an optional alternative. If it is enabled for Crabbox portal
+sessions, configure the app with these URLs and make sure the proxy forwards the public
+HTTPS origin:
 
 - Homepage: `https://crabbox.shunkakinoki.com`
 - Callback: `https://crabbox.shunkakinoki.com/v1/auth/github/callback`
