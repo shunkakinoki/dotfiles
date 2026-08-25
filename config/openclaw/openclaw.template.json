@@ -308,6 +308,15 @@
       }
     ]
   },
+  "acp": {
+    "enabled": true,
+    "backend": "acpx",
+    "defaultAgent": "codex",
+    "maxConcurrentSessions": 4,
+    "runtime": {
+      "ttlMinutes": 120
+    }
+  },
   "commitments": {
     "enabled": true
   },
@@ -456,6 +465,13 @@
       "memory": "memory-core"
     },
     "entries": {
+      "acpx": {
+        "enabled": true,
+        "config": {
+          "permissionMode": "approve-all",
+          "nonInteractivePermissions": "deny"
+        }
+      },
       "telegram": {
         "enabled": true
       },

@@ -272,6 +272,11 @@ The output should not include '{{delivery}}'
 The status should be success
 End
 
+It 'configures ACP with a default agent and enables the acpx backend'
+When run bash -c "jq -e '.acp.enabled == true and .acp.backend == \"acpx\" and .acp.defaultAgent == \"codex\" and .plugins.entries.acpx.enabled == true' '$PWD/config/openclaw/openclaw.tpl.json' '$PWD/config/openclaw/openclaw.template.json' >/dev/null"
+The status should be success
+End
+
 It 'caps the skills catalog injected above the cache boundary'
 When run bash -c "jq -c '.skills.limits' '$PWD/config/openclaw/openclaw.tpl.json' '$PWD/config/openclaw/openclaw.template.json'"
 The output should include '"maxSkillsInPrompt":20'
