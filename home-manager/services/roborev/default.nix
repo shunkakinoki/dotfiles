@@ -66,7 +66,7 @@ lib.mkIf enabled {
       TimeoutStopSec = 30;
       TasksMax = 1024;
       CPUQuota = "400%";
-      MemoryMax = "4G";
+      MemoryMax = "16G";
     };
     Install = {
       WantedBy = [ "default.target" ];
