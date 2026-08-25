@@ -19,7 +19,10 @@ review_type = 'default'
 allow_failure = true
 
 [review.panels.full]
-members = ['antigravity', 'opencode', 'droid', 'pi-oxalpha', 'pi']
+# Droid currently exits with "Exec failed" on Kyber and consumes all three
+# retries before the fallback agent can run. Keep the panel drainable until
+# the Kyber Droid launcher is repaired.
+members = ['antigravity', 'opencode', 'pi-oxalpha', 'pi']
 synthesis_agent = 'gemini'
 
 [ci]
