@@ -581,6 +581,9 @@ home-manager/services/caam/sync.sh
 home-manager/services/cass/daily.sh
 home-manager/services/cpa-manager-plus/docker-start.sh
 home-manager/services/cpa-manager-plus/start.sh
+home-manager/services/crabbox/health-check.sh
+home-manager/services/crabbox/init-postgres.sh
+home-manager/services/crabbox/start.sh
 home-manager/services/cliproxyapi/scripts/backup.sh
 home-manager/services/cliproxyapi/scripts/common.sh
 home-manager/services/cliproxyapi/scripts/docker-start.sh

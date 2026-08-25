@@ -44,6 +44,26 @@
   inputs.llm-agents.overlays.shared-nixpkgs
   (
     _: prev:
+    let
+      wrapBuddy = prev.llm-agents.wrapBuddy;
+      wrapBuddyBinary = builtins.head wrapBuddy.propagatedBuildInputs;
+      fixedWrapBuddy = wrapBuddy.overrideAttrs (_: {
+        propagatedBuildInputs = [
+          (wrapBuddyBinary.overrideAttrs (old: {
+            postPatch = (old.postPatch or "") + ''
+              # grep -q exits as soon as it finds the match. With pipefail, the
+              # upstream echo producer can then receive SIGPIPE and fail the
+              # otherwise-successful install check under loaded CI runners.
+              substituteInPlace tests/test.sh \
+                --replace-fail 'echo "$output" | grep -q "Hello from patched binary!" ||' \
+                'grep -q "Hello from patched binary!" <<< "$output" ||' \
+                --replace-fail 'echo "$output" | grep -q "NEEDED_LOADED=yes" ||' \
+                'grep -q "NEEDED_LOADED=yes" <<< "$output" ||'
+            '';
+          }))
+        ];
+      });
+    in
     {
       # Upstream grok 0.1.218 fails versionCheckHook because `grok --version`/`--help`
       # do not emit the version string. Disable install check until upstream fixes it.
@@ -51,9 +71,13 @@
       llm-agents =
         (prev.llm-agents or { })
         // prev.lib.optionalAttrs (prev.llm-agents ? grok) {
-          grok = prev.llm-agents.grok.overrideAttrs (_: {
+          grok = prev.llm-agents.grok.overrideAttrs (old: {
             doInstallCheck = false;
+            nativeBuildInputs = map (
+              input: if (input.outPath or "") == wrapBuddy.outPath then fixedWrapBuddy else input
+            ) (old.nativeBuildInputs or [ ]);
           });
+          wrapBuddy = fixedWrapBuddy;
         }
         // prev.lib.optionalAttrs (prev.llm-agents ? bernstein) {
           # bernstein 2.8.2 requires reportlab<5,>=4.0 but nixpkgs now provides
@@ -109,6 +133,35 @@
     dolt = inputs.nixpkgs-dolt.legacyPackages.${prev.system}.dolt;
   })
   (_: prev: {
+    crabbox = prev.stdenvNoCC.mkDerivation rec {
+      pname = "crabbox";
+      version = "0.46.0";
+      src = prev.fetchurl {
+        url = "https://github.com/openclaw/crabbox/releases/download/v${version}/crabbox_${version}_${
+          if prev.stdenv.isDarwin then "darwin" else "linux"
+        }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}.tar.gz";
+        sha256 =
+          if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isx86_64 then
+            "6a9341e810307356361dbed4c4b84be28a036b5cc291af1566d2ccd376570d90"
+          else if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isAarch64 then
+            "d95730856cd3909dab0703ec024e3017a094fff2a065516782b47019fec9533d"
+          else if prev.stdenv.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
+            "2216da0acbcc6e822ee341ec313aaab58875db951fa1daf0d13dd710ebfba9b8"
+          else
+            "18035770b5b654114fa95d2e468268b13c69862137cc1f083bd674bbb2bf83bb";
+      };
+      sourceRoot = ".";
+      dontConfigure = true;
+      dontBuild = true;
+      installPhase = ''
+        install -Dm755 crabbox $out/bin/crabbox
+        ${prev.lib.optionalString (prev.stdenv.isDarwin && prev.stdenv.hostPlatform.isAarch64) ''
+          install -Dm755 crabbox-apple-vm-helper $out/bin/crabbox-apple-vm-helper
+        ''}
+      '';
+      meta.mainProgram = "crabbox";
+    };
+
     moshi-hook = prev.stdenv.mkDerivation rec {
       pname = "moshi-hook";
       version = "0.3.2";

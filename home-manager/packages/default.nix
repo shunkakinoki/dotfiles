@@ -151,6 +151,7 @@ with pkgs;
   claude-code
   cmake
   codex
+  crabbox
   moshi-hook
   collectd
   fwupd
