@@ -15,6 +15,11 @@ in
         "${pkgs.bash}/bin/bash"
         "${./daily.sh}"
       ];
+      EnvironmentVariables = {
+        CASS_DAILY_TIMEOUT_BIN = "${pkgs.coreutils}/bin/timeout";
+        CASS_DAILY_SYNC_TIMEOUT = "10m";
+        CASS_DAILY_ANALYTICS_TIMEOUT = "15m";
+      };
       StartCalendarInterval = [
         {
           Hour = 4;
@@ -34,6 +39,11 @@ in
     Service = {
       Type = "oneshot";
       ExecStart = "${pkgs.bash}/bin/bash ${./daily.sh}";
+      Environment = [
+        "CASS_DAILY_TIMEOUT_BIN=${pkgs.coreutils}/bin/timeout"
+        "CASS_DAILY_SYNC_TIMEOUT=10m"
+        "CASS_DAILY_ANALYTICS_TIMEOUT=15m"
+      ];
     };
   };
 
