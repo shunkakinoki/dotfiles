@@ -36,6 +36,13 @@ cp -rf source dest          # NOT: cp -r source dest
 - `apt-get` - use `-y` flag
 - `brew` - use `HOMEBREW_NO_AUTO_UPDATE=1` env var
 
+## Repository-Managed CLI Priority
+
+- Before installing a standalone CLI, check the repository's package-manager manifests and lockfiles for an existing CLI dependency.
+- When the CLI is already declared, install or sync dependencies with the repository's pinned package manager and use its package-local binary.
+- Do not add a separate global, user-local, curl-installed, or independently auto-updating copy of a CLI that the repository already manages.
+- Use a vendor installer only when the repository does not manage the CLI or the user explicitly requests the standalone installation.
+
 ## Repository Privacy Guidance
 
 - Never record private repository names, identifiers, checkout paths, or references in any tracked file, documentation, fixture, example, log, or generated configuration in this repository.

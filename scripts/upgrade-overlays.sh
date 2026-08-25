@@ -8,6 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 OVERLAY_FILE="${OVERLAY_FILE:-$REPO_ROOT/overlays/default.nix}"
 MOSHI_HOOK_CDN="${MOSHI_HOOK_CDN:-https://cdn.getmoshi.app}"
+BLACKSMITH_CLI_CDN="${BLACKSMITH_CLI_CDN:-https://clireleases.blacksmith.sh/cli}"
 
 # Colors for output
 RED='\033[0;31m'
@@ -31,6 +32,7 @@ usage() {
   echo "Usage: $0 <overlay|all>"
   echo ""
   echo "Available overlays:"
+  echo "  blacksmith-testbox-cli - Upgrade the pinned Blacksmith Testbox CLI binaries"
   echo "  moshi-hook - Upgrade the pinned moshi-hook binaries"
   echo "  all        - Upgrade all overlays"
   echo ""
@@ -58,6 +60,101 @@ validate_checksum() {
     log_error "Invalid checksum for $asset"
     exit 1
   fi
+}
+
+checksum_from_url() {
+  local url="$1"
+  curl -fsSL "$url" | awk 'NR == 1 { print $1; exit }'
+}
+
+checksum_for_file() {
+  local file="$1"
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$file" | awk '{ print $1 }'
+  elif command -v shasum >/dev/null 2>&1; then
+    shasum -a 256 "$file" | awk '{ print $1 }'
+  else
+    log_error "Missing SHA-256 tool: install sha256sum or shasum"
+    exit 1
+  fi
+}
+
+upgrade_blacksmith_testbox_cli() {
+  local version current_version latest_dir latest_output latest_checksum latest_actual
+  local linux_x86_64 linux_arm64 darwin_arm64 darwin_x86_64
+
+  version="${BLACKSMITH_CLI_VERSION:-}"
+  if [ -z "$version" ]; then
+    latest_dir="$(mktemp -d)"
+    curl -fsSL "$BLACKSMITH_CLI_CDN/latest/linux/amd64/blacksmith" -o "$latest_dir/blacksmith"
+    latest_checksum="$(checksum_from_url "$BLACKSMITH_CLI_CDN/latest/linux/amd64/blacksmith.sha256")"
+    validate_checksum blacksmith-latest-linux-amd64 "$latest_checksum"
+    latest_actual="$(checksum_for_file "$latest_dir/blacksmith")"
+    if [ "$latest_checksum" != "$latest_actual" ]; then
+      rm -rf "$latest_dir"
+      log_error "Checksum verification failed for the latest Blacksmith Testbox CLI"
+      exit 1
+    fi
+    chmod +x "$latest_dir/blacksmith"
+    latest_output="$("$latest_dir/blacksmith" --version)"
+    rm -rf "$latest_dir"
+    version="$(printf '%s\n' "$latest_output" | sed -n 's/^blacksmith version \([0-9][0-9.]*\)$/\1/p')"
+  fi
+
+  if [[ ! $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    log_error "Invalid Blacksmith Testbox CLI version: ${version:-unknown}"
+    exit 1
+  fi
+
+  current_version="$(sed -n '/blacksmith-testbox-cli = prev.stdenvNoCC.mkDerivation rec {/,/meta.mainProgram = "blacksmith"/p' "$OVERLAY_FILE" | sed -n 's/.*version = "\([^"]*\)";.*/\1/p' | head -1)"
+  echo "  Current version: ${current_version:-unknown}"
+  echo "  Latest version:  $version"
+
+  if [[ $current_version == "$version" ]]; then
+    log_info "✅ blacksmith-testbox-cli is already on latest version ($version)"
+    return 0
+  fi
+
+  linux_x86_64="$(checksum_from_url "$BLACKSMITH_CLI_CDN/v$version/linux/amd64/blacksmith.sha256")"
+  linux_arm64="$(checksum_from_url "$BLACKSMITH_CLI_CDN/v$version/linux/arm64/blacksmith.sha256")"
+  darwin_arm64="$(checksum_from_url "$BLACKSMITH_CLI_CDN/v$version/darwin/arm64/blacksmith.sha256")"
+  darwin_x86_64="$(checksum_from_url "$BLACKSMITH_CLI_CDN/v$version/darwin/amd64/blacksmith.sha256")"
+  validate_checksum blacksmith-linux-amd64 "$linux_x86_64"
+  validate_checksum blacksmith-linux-arm64 "$linux_arm64"
+  validate_checksum blacksmith-darwin-arm64 "$darwin_arm64"
+  validate_checksum blacksmith-darwin-amd64 "$darwin_x86_64"
+
+  awk \
+    -v version="$version" \
+    -v linux_x86_64="$linux_x86_64" \
+    -v linux_arm64="$linux_arm64" \
+    -v darwin_arm64="$darwin_arm64" \
+    -v darwin_x86_64="$darwin_x86_64" '
+      /blacksmith-testbox-cli = prev.stdenvNoCC.mkDerivation rec \{/ { in_blacksmith = 1 }
+      in_blacksmith && /version = "[^"]*";/ {
+        sub(/version = "[^"]*";/, "version = \"" version "\";")
+      }
+      in_blacksmith && /isLinux && prev.stdenv.hostPlatform.isx86_64 then/ { pending_hash = linux_x86_64 }
+      in_blacksmith && /isLinux && prev.stdenv.hostPlatform.isAarch64 then/ { pending_hash = linux_arm64 }
+      in_blacksmith && /isDarwin && prev.stdenv.hostPlatform.isAarch64 then/ { pending_hash = darwin_arm64 }
+      in_blacksmith && /^          else$/ { pending_hash = darwin_x86_64 }
+      in_blacksmith && pending_hash != "" && $0 ~ /^[[:space:]]*"[^"]*";?$/ {
+        sub(/"[^"]*"/, "\"" pending_hash "\"")
+        pending_hash = ""
+        updated_hashes++
+      }
+      in_blacksmith && /^    \};$/ { in_blacksmith = 0 }
+      { print }
+      END {
+        if (updated_hashes != 4) {
+          print "expected four blacksmith-testbox-cli checksums in " FILENAME > "/dev/stderr"
+          exit 1
+        }
+      }
+    ' "$OVERLAY_FILE" >"$OVERLAY_FILE.tmp"
+  mv -f "$OVERLAY_FILE.tmp" "$OVERLAY_FILE"
+
+  log_info "✅ blacksmith-testbox-cli upgraded from ${current_version:-unknown} to $version"
 }
 
 upgrade_moshi_hook() {
@@ -140,11 +237,25 @@ main() {
   fi
 
   case "$target" in
-  moshi-hook | all)
+  blacksmith-testbox-cli)
+    require_command awk
+    require_command curl
+    require_command sed
+    upgrade_blacksmith_testbox_cli
+    ;;
+  moshi-hook)
     require_command awk
     require_command curl
     require_command sed
     require_command tr
+    upgrade_moshi_hook
+    ;;
+  all)
+    require_command awk
+    require_command curl
+    require_command sed
+    require_command tr
+    upgrade_blacksmith_testbox_cli
     upgrade_moshi_hook
     ;;
   -h | --help)

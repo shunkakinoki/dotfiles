@@ -25,6 +25,7 @@ with pkgs;
   azure-cli
   bandwhich
   bat
+  blacksmith-testbox-cli
   pkgs.llm-agents.bernstein
   broot
   buildkite-cli
