@@ -105,6 +105,11 @@ The output should include 'TasksMax = 2048'
 The output should include 'CPUQuota = "400%"'
 The output should include 'MemoryMax = "16G"'
 End
+
+It 'reclaims the Kyber daemon port from escaped RoboRev processes'
+When run grep -F "ExecStartPre = \"-\${pkgs.procps}/bin/pkill -KILL -f '[r]oborev daemon run'\";" "$PWD/home-manager/services/roborev/default.nix"
+The output should include "ExecStartPre = \"-\${pkgs.procps}/bin/pkill -KILL -f '[r]oborev daemon run'\";"
+End
 End
 
 Describe 'shared RoboRev hooks'

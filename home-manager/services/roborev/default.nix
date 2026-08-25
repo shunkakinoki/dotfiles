@@ -61,6 +61,10 @@ lib.mkIf enabled {
       ];
     }
     // lib.optionalAttrs isKyber {
+      # RoboRev processes launched by agent multiplexers can outlive their
+      # parent cgroup and take the daemon port. Reclaim it before the managed
+      # unit starts so systemd remains the single daemon owner on Kyber.
+      ExecStartPre = "-${pkgs.procps}/bin/pkill -KILL -f '[r]oborev daemon run'";
       RestartSec = 30;
       KillMode = "control-group";
       TimeoutStopSec = 30;
