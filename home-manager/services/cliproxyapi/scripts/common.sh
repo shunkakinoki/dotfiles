@@ -94,6 +94,20 @@ cliproxy_manager_backup_s3_uri() {
   printf 's3://%s/cpa-manager-plus/%s' "${OBJECTSTORE_BUCKET:?OBJECTSTORE_BUCKET is required}" "$object_name"
 }
 
+cliproxy_promote_manager_backup() {
+  local source_object="$1"
+  local destination_object="${2:-analytics-backup.tar.gz}"
+  AWS_ACCESS_KEY_ID="$OBJECTSTORE_ACCESS_KEY" \
+    AWS_SECRET_ACCESS_KEY="$OBJECTSTORE_SECRET_KEY" \
+    @aws@ s3api copy-object \
+    --endpoint-url="$OBJECTSTORE_ENDPOINT" \
+    --bucket="$OBJECTSTORE_BUCKET" \
+    --key="cpa-manager-plus/${destination_object}" \
+    --copy-source="${OBJECTSTORE_BUCKET}/cpa-manager-plus/${source_object}" \
+    --no-cli-pager \
+    >/dev/null
+}
+
 cliproxy_backup_manager_data() (
   set -euo pipefail
   umask 077
@@ -143,13 +157,8 @@ cliproxy_backup_manager_data() (
       - \
       "$(cliproxy_manager_backup_s3_uri "$hourly_object")"
 
-  # Server-side copy: the stream is already consumed, and re-uploading would
-  # cost a second full pass over the archive.
-  AWS_ACCESS_KEY_ID="$OBJECTSTORE_ACCESS_KEY" \
-    AWS_SECRET_ACCESS_KEY="$OBJECTSTORE_SECRET_KEY" \
-    @aws@ s3 cp \
-    --endpoint-url="$OBJECTSTORE_ENDPOINT" \
-    --only-show-errors \
-    "$(cliproxy_manager_backup_s3_uri "$hourly_object")" \
-    "$(cliproxy_manager_backup_s3_uri)"
+  # Server-side copy: use the low-level API because this S3-compatible backend
+  # does not implement GetObjectTagging, which the high-level `s3 cp` command
+  # requests while preserving tags.
+  cliproxy_promote_manager_backup "$hourly_object"
 )

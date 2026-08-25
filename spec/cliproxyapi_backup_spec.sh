@@ -212,15 +212,15 @@ The status should be success
 The output should include ".backup '"
 The output should include 'PRAGMA integrity_check;'
 The output should match pattern '*s3://cliproxyapi/cpa-manager-plus/analytics-backup-??.tar.gz*'
-The output should include 's3://cliproxyapi/cpa-manager-plus/analytics-backup.tar.gz'
+The output should include 'cpa-manager-plus/analytics-backup.tar.gz'
 End
 
-It 'streams the archive instead of staging a second copy on disk'
+It 'promotes the archive with the low-level S3 copy API'
 seed_manager_data
 When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$__BACKUP_SCRIPT"'" full 2>&1; status=$?; cat "$MOCK_LOG" 2>/dev/null || true; exit "$status"'
 The status should be success
 The output should match pattern '*aws s3 cp*--only-show-errors - s3://cliproxyapi/cpa-manager-plus/analytics-backup-??.tar.gz*'
-The output should match pattern '*s3://cliproxyapi/cpa-manager-plus/analytics-backup-??.tar.gz s3://cliproxyapi/cpa-manager-plus/analytics-backup.tar.gz*'
+The output should match pattern '*aws s3api copy-object*--bucket=cliproxyapi*--key=cpa-manager-plus/analytics-backup.tar.gz*--copy-source=cliproxyapi/cpa-manager-plus/analytics-backup-??.tar.gz*'
 End
 
 It 'stages the snapshot where the caller asks'
