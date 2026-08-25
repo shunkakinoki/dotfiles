@@ -136,6 +136,11 @@ It 'publishes Hermes on 9443 for kyber'
 When run bash -c "cat '$KYBER'"
 The output should include 'ensure-tailscale-serve.sh}" 9443 9120'
 End
+
+It 'publishes the Kubernetes Crabbox ingress on 10443 for kyber'
+When run bash -c "cat '$KYBER'"
+The output should include 'ensure-tailscale-serve.sh}" 10443 80'
+End
 End
 
 End

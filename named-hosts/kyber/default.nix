@@ -147,12 +147,13 @@ home-manager.lib.homeManagerConfiguration {
 
         # Publish every Kyber gateway over tailnet-only HTTPS. Each service
         # needs the serve root, so OpenClaw keeps :443 while T3 and Hermes use
-        # dedicated ports.
+        # dedicated ports. Crabbox enters through the in-cluster NGINX ingress
+        # controller on port 80.
         home.activation.tailscaleServeGateways = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 443 18789
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 8443 3773
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 9443 9120
-          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 10443 8080
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 10443 80
         '';
 
         # Tailscale configuration

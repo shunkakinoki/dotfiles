@@ -9,7 +9,6 @@ let
   brewUpgrader = import ./brew-upgrader { inherit pkgs; };
   caam = import ./caam;
   cass = import ./cass { inherit pkgs; };
-  crabbox = ./crabbox;
   cliproxyapi = import ./cliproxyapi;
   cpaManagerPlus = ./cpa-manager-plus;
   codeSyncer = import ./code-syncer { inherit pkgs; };
@@ -42,7 +41,6 @@ in
   brewUpgrader
   caam
   cass
-  crabbox
   cliproxyapi
   cpaManagerPlus
   codeSyncer
