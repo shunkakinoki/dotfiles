@@ -14,7 +14,9 @@ the service.
 
 Home Manager creates and starts the services. Cloudflare Tunnel and Access protect
 `https://crabbox.shunkakinoki.com`, then the production Kubernetes ingress proxies the
-request to the host service. Tailscale Serve retains the tailnet-only
+request to the host service. As with Kubernetes Dashboard, Cloudflare owns the public
+HTTPS boundary; the coordinator does not force a separate canonical public origin.
+Tailscale Serve retains the tailnet-only
 `https://kyber.tail950b36.ts.net:10443` compatibility endpoint. PostgreSQL is never
 exposed.
 
@@ -40,7 +42,8 @@ application's Service Auth policy. Store its client ID and secret in the client'
 `CRABBOX_ACCESS_CLIENT_ID` and `CRABBOX_ACCESS_CLIENT_SECRET`. The Access credential gets
 the request through Cloudflare; the normal Crabbox shared/user token is still required.
 
-Portal login requires a GitHub OAuth app with these URLs:
+GitHub OAuth is optional. If it is enabled for Crabbox portal sessions, configure the app
+with these URLs and make sure the proxy forwards the public HTTPS origin:
 
 - Homepage: `https://crabbox.shunkakinoki.com`
 - Callback: `https://crabbox.shunkakinoki.com/v1/auth/github/callback`
