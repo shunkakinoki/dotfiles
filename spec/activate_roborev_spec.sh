@@ -94,7 +94,7 @@ The output should include '127.0.0.1:7373'
 End
 
 It 'bounds Kyber worker resources and restart behavior'
-When run grep -E 'optionalAttrs isKyber|RestartSec = 5|StartLimitIntervalSec = 300|StartLimitBurst = 3|RestartSec = 30|TimeoutStopSec = 30|TasksMax = 2048|CPUQuota = "400%"|MemoryMax = "16G"' "$PWD/home-manager/services/roborev/default.nix"
+When run grep -E 'optionalAttrs isKyber|RestartSec = 5|StartLimitIntervalSec = 300|StartLimitBurst = 3|RestartSec = 30|TimeoutStopSec = 30|TasksMax = 2048|CPUQuota = "400%"|MemoryMax = "8G"' "$PWD/home-manager/services/roborev/default.nix"
 The output should include 'optionalAttrs isKyber'
 The output should include 'RestartSec = 5'
 The output should include 'StartLimitIntervalSec = 300'
@@ -103,12 +103,12 @@ The output should include 'RestartSec = 30'
 The output should include 'TimeoutStopSec = 30'
 The output should include 'TasksMax = 2048'
 The output should include 'CPUQuota = "400%"'
-The output should include 'MemoryMax = "16G"'
+The output should include 'MemoryMax = "8G"'
 End
 
 It 'reclaims the Kyber daemon port from escaped RoboRev processes'
-When run grep -F "ExecStartPre = \"-\${pkgs.procps}/bin/pkill -KILL -f '[r]oborev daemon run'\";" "$PWD/home-manager/services/roborev/default.nix"
-The output should include "ExecStartPre = \"-\${pkgs.procps}/bin/pkill -KILL -f '[r]oborev daemon run'\";"
+When run grep -F -- "-\${pkgs.procps}/bin/pkill -KILL -f '[r]oborev daemon run'" "$PWD/home-manager/services/roborev/default.nix"
+The output should include "-\${pkgs.procps}/bin/pkill -KILL -f '[r]oborev daemon run'"
 End
 End
 
