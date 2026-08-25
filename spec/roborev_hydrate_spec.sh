@@ -42,6 +42,11 @@ End
 End
 
 Describe 'CI timing defaults'
+It 'keeps the desktop worker default in valid TOML'
+When run grep -F 'max_workers = 4' "$PWD/config/roborev/config.template.toml"
+The output should include 'max_workers = 4'
+End
+
 It 'polls promptly without canceling running reviews'
 When run bash -c "grep -E 'poll_interval = \"1m\"|batch_timeout = \"0\"' '$PWD/config/roborev/config.template.toml'"
 The output should include 'poll_interval = "1m"'
@@ -64,6 +69,8 @@ setup_hydrate() {
     "$TEMP_HOME/ghq/github.com/org/repo2"
 
   cat >"$TEMP_HOME/template.toml" <<'TOML'
+max_workers = 4
+
 [ci]
 enabled = true
 poll_interval = "5m"
@@ -90,8 +97,17 @@ BASH
   sed \
     -e 's|@sed@|sed|g' \
     -e 's|@template@|'"$TEMP_HOME"'/template.toml|g' \
+    -e 's|@maxWorkers@|1|g' \
     "$SCRIPT" >"$PREPROCESSED_SCRIPT"
   chmod +x "$PREPROCESSED_SCRIPT"
+
+  PREPROCESSED_DESKTOP_SCRIPT="$TEMP_HOME/hydrate-desktop.sh"
+  sed \
+    -e 's|@sed@|sed|g' \
+    -e 's|@template@|'"$TEMP_HOME"'/template.toml|g' \
+    -e 's|@maxWorkers@|4|g' \
+    "$SCRIPT" >"$PREPROCESSED_DESKTOP_SCRIPT"
+  chmod +x "$PREPROCESSED_DESKTOP_SCRIPT"
 }
 
 cleanup_hydrate() {
@@ -109,6 +125,18 @@ The output should include '"org/repo2"'
 The output should not include '"../evil"'
 The output should not include '"foo/.."'
 The output should not include '__ROBOREV_REPOS__'
+End
+
+It 'hydrates the Kyber worker limit'
+When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/.roborev/config.toml"'
+The status should be success
+The output should include 'max_workers = 1'
+End
+
+It 'hydrates the desktop worker limit'
+When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_DESKTOP_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/.roborev/config.toml"'
+The status should be success
+The output should include 'max_workers = 4'
 End
 
 It 'hydrates the complete approval gate'
@@ -153,6 +181,7 @@ TOML
   sed \
     -e 's|@sed@|sed|g' \
     -e 's|@template@|'"$TEMP_HOME"'/template.toml|g' \
+    -e 's|@maxWorkers@|1|g' \
     "$SCRIPT" >"$PREPROCESSED_SCRIPT"
   chmod +x "$PREPROCESSED_SCRIPT"
 }

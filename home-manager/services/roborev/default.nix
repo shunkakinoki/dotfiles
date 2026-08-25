@@ -44,6 +44,10 @@ lib.mkIf enabled {
       Description = "roborev code review daemon";
       Documentation = [ "https://github.com/roborev-dev/roborev" ];
       After = [ "network.target" ];
+    }
+    // lib.optionalAttrs isKyber {
+      StartLimitIntervalSec = 300;
+      StartLimitBurst = 3;
     };
     Service = {
       Type = "notify";
@@ -55,6 +59,14 @@ lib.mkIf enabled {
         "ROBOREV_DATA_DIR=${dataDir}"
         "PATH=${homeDir}/.local/bin:${homeDir}/.bun/bin:/etc/profiles/per-user/${config.home.username}/bin:${homeDir}/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin"
       ];
+    }
+    // lib.optionalAttrs isKyber {
+      RestartSec = 30;
+      KillMode = "control-group";
+      TimeoutStopSec = 30;
+      TasksMax = 1024;
+      CPUQuota = "400%";
+      MemoryMax = "4G";
     };
     Install = {
       WantedBy = [ "default.target" ];
