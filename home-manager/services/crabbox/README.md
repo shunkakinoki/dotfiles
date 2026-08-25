@@ -8,11 +8,10 @@ The first start creates `~/.config/crabbox/coordinator/generated.env` with mode
 `0600`. It contains the local PostgreSQL password and randomly generated shared,
 admin, and session tokens. Do not copy it into this repository.
 
-Add provider credentials or override coordinator settings in the untracked
-`~/dotfiles/.env`. For example:
+Override coordinator settings in the untracked `~/dotfiles/.env` when needed.
+For example:
 
 ```dotenv
-HETZNER_TOKEN=replace-me
 CRABBOX_SHARED_OWNER=you@example.com
 CRABBOX_DEFAULT_ORG=example-org
 ```
