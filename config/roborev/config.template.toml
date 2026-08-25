@@ -18,7 +18,23 @@ model = 'free'
 review_type = 'default'
 allow_failure = true
 
+[review.subagents.antigravity]
+agent = 'antigravity'
+review_type = 'default'
+allow_failure = true
+
+[review.subagents.opencode]
+agent = 'opencode'
+review_type = 'default'
+allow_failure = true
+
+[review.subagents.droid]
+agent = 'droid'
+review_type = 'default'
+allow_failure = true
+
 [review.panels.full]
+# Droid is useful when available, but its Kyber launcher is currently flaky.
 members = ['antigravity', 'opencode', 'droid', 'pi-oxalpha', 'pi']
 synthesis_agent = 'gemini'
 
