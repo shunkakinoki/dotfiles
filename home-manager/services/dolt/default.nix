@@ -48,9 +48,10 @@ let
       jq
       ;
   };
-  beadsLinearComplete = pkgs.writeShellScriptBin "beads-linear-complete" ''
-    exec ${pkgs.bash}/bin/bash ${linearSyncScript} --complete "$@"
-  '';
+  beadsLinearCompleteScript = pkgs.replaceVars ./beads-linear-complete.sh {
+    bash = pkgs.bash;
+    inherit linearSyncScript;
+  };
   federationSyncScript = pkgs.replaceVars ./federation-sync.sh {
     bd = "${homeDir}/.local/bin/bd";
     inherit (pkgs) coreutils;
@@ -73,7 +74,10 @@ lib.mkIf enabled {
     LINEAR_TEAM_ID = linearTeamId;
   };
 
-  home.packages = lib.optional linearSyncEnabled beadsLinearComplete;
+  home.file.".local/bin/beads-linear-complete" = lib.mkIf linearSyncEnabled {
+    source = beadsLinearCompleteScript;
+    executable = true;
+  };
 
   launchd.agents.dolt = lib.mkIf pkgs.stdenv.isDarwin {
     enable = true;
