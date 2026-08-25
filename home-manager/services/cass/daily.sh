@@ -2,7 +2,14 @@
 set -euo pipefail
 
 CASS="$HOME/.local/bin/cass"
-TIMEOUT_BIN="${CASS_DAILY_TIMEOUT_BIN:-timeout}"
+if [ -n "${CASS_DAILY_TIMEOUT_BIN:-}" ]; then
+  TIMEOUT_BIN="$CASS_DAILY_TIMEOUT_BIN"
+elif command -v timeout >/dev/null 2>&1; then
+  TIMEOUT_BIN="$(command -v timeout)"
+else
+  echo "cass daily: timeout binary not found; refusing to run unbounded" >&2
+  exit 1
+fi
 SYNC_TIMEOUT="${CASS_DAILY_SYNC_TIMEOUT:-10m}"
 ANALYTICS_TIMEOUT="${CASS_DAILY_ANALYTICS_TIMEOUT:-15m}"
 

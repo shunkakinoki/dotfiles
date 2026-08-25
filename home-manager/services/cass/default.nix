@@ -1,6 +1,9 @@
 { pkgs, ... }:
 let
   inherit (pkgs) lib;
+  timeoutBin = "${pkgs.coreutils}/bin/timeout";
+  syncTimeout = "10m";
+  analyticsTimeout = "15m";
 in
 {
   # Do not run `cass index --watch` persistently. On large archives it can
@@ -16,9 +19,9 @@ in
         "${./daily.sh}"
       ];
       EnvironmentVariables = {
-        CASS_DAILY_TIMEOUT_BIN = "${pkgs.coreutils}/bin/timeout";
-        CASS_DAILY_SYNC_TIMEOUT = "10m";
-        CASS_DAILY_ANALYTICS_TIMEOUT = "15m";
+        CASS_DAILY_TIMEOUT_BIN = timeoutBin;
+        CASS_DAILY_SYNC_TIMEOUT = syncTimeout;
+        CASS_DAILY_ANALYTICS_TIMEOUT = analyticsTimeout;
       };
       StartCalendarInterval = [
         {
@@ -40,9 +43,9 @@ in
       Type = "oneshot";
       ExecStart = "${pkgs.bash}/bin/bash ${./daily.sh}";
       Environment = [
-        "CASS_DAILY_TIMEOUT_BIN=${pkgs.coreutils}/bin/timeout"
-        "CASS_DAILY_SYNC_TIMEOUT=10m"
-        "CASS_DAILY_ANALYTICS_TIMEOUT=15m"
+        "CASS_DAILY_TIMEOUT_BIN=${timeoutBin}"
+        "CASS_DAILY_SYNC_TIMEOUT=${syncTimeout}"
+        "CASS_DAILY_ANALYTICS_TIMEOUT=${analyticsTimeout}"
       ];
     };
   };
