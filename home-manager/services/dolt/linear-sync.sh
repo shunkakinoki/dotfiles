@@ -118,9 +118,9 @@ if [ ! -d "$repo_dir" ] || [ ! -e "$repo_dir/.beads" ]; then
 fi
 
 repo_dir="$(cd "$repo_dir" && pwd -P)"
-repo_slug="$repo_name"
-repo_slug="${repo_slug//\//_}"
-repo_slug="${repo_slug//[^[:alnum:]_.-]/_}"
+# Percent is excluded by the validated org/repo alphabet, so this encoding is
+# injective even when either repository segment contains underscores.
+repo_slug="${repo_name//\//%2F}"
 sync_checkpoint_file="$sync_state_dir/last-success-$repo_slug"
 reconciliation_lock_file="$sync_state_dir/reconcile-$repo_slug.lock"
 
@@ -317,9 +317,20 @@ if [ "$operation" = "--complete" ]; then
   completion_issue="$("$bd_cli" -C "$repo_dir" show "$completion_bead_id" --json)"
   completion_status="$(@jq@/bin/jq -r '.[0].status // empty' <<<"$completion_issue")"
   completion_assignee="$(@jq@/bin/jq -r '.[0].assignee // empty' <<<"$completion_issue")"
+  completion_ref="$(@jq@/bin/jq -r '.[0].external_ref // empty' <<<"$completion_issue")"
   if [ -z "$completion_status" ]; then
     log "Completion Bead was not found"
     exit 66
+  fi
+
+  completion_reference_pending=0
+  if [[ ! $completion_ref =~ /issue/([A-Z][A-Z0-9]*-[0-9]+)/ ]]; then
+    # The marker is Beads-owned durable state, not a machine-local retry file.
+    # It lets the periodic sole writer recover a rate-limited first publish
+    # without selecting every unrelated locally closed Bead.
+    "$bd_cli" -C "$repo_dir" update "$completion_bead_id" \
+      --set-metadata linear_completion_pending=true >/dev/null
+    completion_reference_pending=1
   fi
 
   if [ "$completion_status" != "closed" ]; then
@@ -354,6 +365,11 @@ if [ "$operation" = "--complete" ]; then
     exit 65
   fi
   linear_identifier="${BASH_REMATCH[1]}"
+
+  if [ "$completion_reference_pending" -eq 1 ]; then
+    "$bd_cli" -C "$repo_dir" update "$completion_bead_id" \
+      --unset-metadata linear_completion_pending >/dev/null
+  fi
 
   # The push may have created the Linear reference. Federate that address
   # before verification so a verifier outage cannot cause a later duplicate.
@@ -423,8 +439,27 @@ closed_ids="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" '
     .[]
     | select(
         .status == "closed"
-        and ((.external_ref // "") | contains("linear.app"))
+        and (
+          ((.external_ref // "") | contains("linear.app"))
+          or (.metadata.linear_completion_pending // false) == true
+          or (.metadata.linear_completion_pending // false) == "true"
+        )
         and ($previous_sync == "" or .updated_at >= $previous_sync)
+      )
+    | .id
+  ]
+  | join(",")
+' <<<"$issues_before_pull")"
+pending_completion_ids="$(@jq@/bin/jq -r '
+  (if type == "object" and has("issues") then .issues else . end)
+  | [
+    .[]
+    | select(
+        .status == "closed"
+        and (
+          (.metadata.linear_completion_pending // false) == true
+          or (.metadata.linear_completion_pending // false) == "true"
+        )
       )
     | .id
   ]
@@ -439,6 +474,14 @@ else
     exit 0
   fi
   exit "$status"
+fi
+
+if [ -n "$pending_completion_ids" ]; then
+  IFS=',' read -r -a pending_completion_id_array <<<"$pending_completion_ids"
+  "$bd_cli" -C "$repo_dir" update "${pending_completion_id_array[@]}" \
+    --unset-metadata linear_completion_pending >/dev/null
+  "$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): persist recovered Linear completion" >/dev/null 2>&1
+  federate_beads "post-terminal push"
 fi
 
 # Beads' incremental pull currently performs one dolt_history_issues query for
