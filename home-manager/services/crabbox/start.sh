@@ -69,7 +69,9 @@ fi
 
 export DATABASE_URL="postgresql://crabbox:${POSTGRES_PASSWORD}@127.0.0.1:${POSTGRES_PORT}/crabbox?sslmode=disable"
 export PORT="@coordinatorPort@"
-export CRABBOX_PUBLIC_URL="${CRABBOX_PUBLIC_URL:-https://kyber.tail950b36.ts.net:10443}"
+export CRABBOX_PUBLIC_URL="${CRABBOX_PUBLIC_URL:-https://crabbox.shunkakinoki.com}"
+export CRABBOX_TRUSTED_PROXY_CIDRS="${CRABBOX_TRUSTED_PROXY_CIDRS:-10.42.1.0/24}"
+export CRABBOX_ACCESS_TEAM_DOMAIN="${CRABBOX_ACCESS_TEAM_DOMAIN:-shunkakinoki.cloudflareaccess.com}"
 export CRABBOX_SHARED_OWNER="${CRABBOX_SHARED_OWNER:-kyber}"
 export CRABBOX_DEFAULT_ORG="${CRABBOX_DEFAULT_ORG:-personal}"
 export CRABBOX_MAX_ACTIVE_LEASES="${CRABBOX_MAX_ACTIVE_LEASES:-4}"
