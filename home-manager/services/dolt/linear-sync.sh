@@ -440,11 +440,13 @@ closed_ids="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" '
     | select(
         .status == "closed"
         and (
-          ((.external_ref // "") | contains("linear.app"))
-          or (.metadata.linear_completion_pending // false) == true
+          (.metadata.linear_completion_pending // false) == true
           or (.metadata.linear_completion_pending // false) == "true"
+          or (
+            ((.external_ref // "") | contains("linear.app"))
+            and ($previous_sync == "" or .updated_at >= $previous_sync)
+          )
         )
-        and ($previous_sync == "" or .updated_at >= $previous_sync)
       )
     | .id
   ]

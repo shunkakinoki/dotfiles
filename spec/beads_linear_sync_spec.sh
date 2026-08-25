@@ -243,7 +243,7 @@ case "${1:-} ${2:-}" in
         fi
         ;;
     esac
-    if [[ " $* " == *" --push "* ]] && [[ " $* " == *" shunkakinokisoftware-test "* ]]; then
+    if [[ " $* " == *" --push "* ]] && [[ " $* " == *" df-accepted "* ]]; then
       printf '%s\n' 'https://linear.app/test/issue/TEST-999/example' >"$ISSUE_REF_FILE"
     fi
     ;;
@@ -259,7 +259,7 @@ case "${1:-} ${2:-}" in
     if [ -s "$ISSUE_REF_FILE" ]; then
       issue_ref=$(<"$ISSUE_REF_FILE")
     fi
-    printf '[{"id":"shunkakinokisoftware-test","status":"%s","assignee":"test@example.com","external_ref":"%s"}]\n' "$issue_status" "$issue_ref"
+    printf '[{"id":"df-accepted","status":"%s","assignee":"test@example.com","external_ref":"%s"}]\n' "$issue_status" "$issue_ref"
     ;;
   close\ *)
     printf '%s\n' closed >"$ISSUE_STATUS_FILE"
@@ -457,17 +457,17 @@ The file "$CHECKPOINT_FILE" should be exist
 End
 
 It 'completes acceptance under the shared lock and verifies Linear terminal state'
-When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' shunkakinokisoftware-test"
+When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted"
 The status should be success
 The output should include 'Accepted Bead and Linear issue are both terminal'
 The contents of file "$ISSUE_STATUS_FILE" should equal closed
-The contents of file "$COMMAND_LOG" should include 'close shunkakinokisoftware-test --reason-file -'
-The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues shunkakinokisoftware-test --no-wait'
+The contents of file "$COMMAND_LOG" should include 'close df-accepted --reason-file -'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-accepted --no-wait'
 The contents of file "$SYNC_COUNT" should equal 3
 End
 
 It 'keeps the accepted Bead durably closed when the Linear push fails'
-When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LINEAR_MODE=push-failure XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' shunkakinokisoftware-test"
+When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LINEAR_MODE=push-failure XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted"
 The status should equal 24
 The output should include 'Linear push failed with status 24'
 The contents of file "$ISSUE_STATUS_FILE" should equal closed
@@ -475,28 +475,30 @@ The contents of file "$SYNC_COUNT" should equal 2
 End
 
 It 'reports a deferred accepted push without claiming completion'
-When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_ISSUE_REF_MISSING=1 FAKE_LINEAR_MODE=rate-limit XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' shunkakinokisoftware-test"
+When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_ISSUE_REF_MISSING=1 FAKE_LINEAR_MODE=rate-limit XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted"
 The status should equal 75
 The output should include 'next 900-second run will retry'
 The contents of file "$ISSUE_STATUS_FILE" should equal closed
 The contents of file "$SYNC_COUNT" should equal 2
-The contents of file "$COMMAND_LOG" should include 'update shunkakinokisoftware-test --set-metadata linear_completion_pending=true'
+The contents of file "$COMMAND_LOG" should include 'update df-accepted --set-metadata linear_completion_pending=true'
 End
 
-It 'recovers a rate-limited first completion without selecting unrelated closed Beads'
+It 'recovers pending completion despite a newer checkpoint without selecting stale linked Beads'
 printf '%s\n' closed >"$ISSUE_STATUS_FILE"
-pending_json='[{"id":"shunkakinokisoftware-test","status":"closed","updated_at":"2099-01-01T00:00:00Z","metadata":{"linear_completion_pending":true}},{"id":"unrelated-closed","status":"closed","updated_at":"2099-01-01T00:00:00Z"}]'
+mkdir -p "$(dirname "$CHECKPOINT_FILE")"
+printf '%s\n' '2099-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
+pending_json='[{"id":"df-accepted","status":"closed","updated_at":"2020-01-01T00:00:00Z","metadata":{"linear_completion_pending":true}},{"id":"stale-linked","status":"closed","updated_at":"2020-01-01T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-998/example"}]'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_ISSUE_REF_MISSING=1 FAKE_LIST_JSON="$pending_json" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'Pushing terminal Beads'
-The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues shunkakinokisoftware-test --no-wait'
-The contents of file "$COMMAND_LOG" should include 'update shunkakinokisoftware-test --unset-metadata linear_completion_pending'
-The contents of file "$COMMAND_LOG" should not include 'linear sync --push --issues unrelated-closed'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-accepted --no-wait'
+The contents of file "$COMMAND_LOG" should include 'update df-accepted --unset-metadata linear_completion_pending'
+The contents of file "$COMMAND_LOG" should not include 'linear sync --push --issues stale-linked'
 The contents of file "$ISSUE_REF_FILE" should include 'TEST-999'
 End
 
 It 'fails verification without reopening an accepted Bead'
-When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LINEAR_STATE=started XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' shunkakinokisoftware-test"
+When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LINEAR_STATE=started XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted"
 The status should equal 70
 The output should include 'not in its completed state'
 The contents of file "$ISSUE_STATUS_FILE" should equal closed
@@ -504,7 +506,7 @@ The contents of file "$SYNC_COUNT" should equal 3
 End
 
 It 'is idempotent when acceptance completion is repeated'
-When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' shunkakinokisoftware-test >/dev/null && printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' shunkakinokisoftware-test >/dev/null && test \"\$(grep -c ' close shunkakinokisoftware-test --reason-file -' '$COMMAND_LOG')\" -eq 1"
+When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted >/dev/null && printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted >/dev/null && test \"\$(grep -c ' close df-accepted --reason-file -' '$COMMAND_LOG')\" -eq 1"
 The status should be success
 The contents of file "$ISSUE_STATUS_FILE" should equal closed
 End
@@ -516,7 +518,7 @@ ready_file="$TEST_ROOT/lock-ready"
 python3 -c 'import fcntl,pathlib,sys,time; lock_handle=open(sys.argv[1], "w", encoding="utf-8"); fcntl.flock(lock_handle, fcntl.LOCK_EX); pathlib.Path(sys.argv[2]).touch(); time.sleep(5)' "$lock_file" "$ready_file" &
 holder_pid=$!
 while [ ! -e "$ready_file" ]; do sleep 0.02; done
-When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_FLOCK_WAIT_SECONDS=1 XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' shunkakinokisoftware-test; status=\$?; kill '$holder_pid' 2>/dev/null || true; wait '$holder_pid' 2>/dev/null || true; exit \"\$status\""
+When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_FLOCK_WAIT_SECONDS=1 XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted; status=\$?; kill '$holder_pid' 2>/dev/null || true; wait '$holder_pid' 2>/dev/null || true; exit \"\$status\""
 The status should equal 75
 The output should include 'Timed out waiting for the repository reconciliation lock'
 The file "$ISSUE_STATUS_FILE" should not be exist
