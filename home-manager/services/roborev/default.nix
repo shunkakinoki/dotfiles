@@ -44,6 +44,8 @@ lib.mkIf enabled {
       Description = "roborev code review daemon";
       Documentation = [ "https://github.com/roborev-dev/roborev" ];
       After = [ "network.target" ];
+    }
+    // lib.optionalAttrs isKyber {
       StartLimitIntervalSec = 300;
       StartLimitBurst = 3;
     };
@@ -51,16 +53,18 @@ lib.mkIf enabled {
       Type = "notify";
       ExecStart = "${pkgs.bash}/bin/bash ${./start.sh} ${roborevBin} ${serverAddr}";
       Restart = "on-failure";
-      RestartSec = 30;
-      KillMode = "control-group";
-      TimeoutStopSec = 30;
-      TasksMax = 512;
-      CPUQuota = "400%";
       Environment = [
         "HOME=${homeDir}"
         "ROBOREV_DATA_DIR=${dataDir}"
         "PATH=${homeDir}/.local/bin:${homeDir}/.bun/bin:/etc/profiles/per-user/${config.home.username}/bin:${homeDir}/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin"
       ];
+    }
+    // lib.optionalAttrs isKyber {
+      RestartSec = 30;
+      KillMode = "control-group";
+      TimeoutStopSec = 30;
+      TasksMax = 512;
+      CPUQuota = "400%";
     };
     Install = {
       WantedBy = [ "default.target" ];

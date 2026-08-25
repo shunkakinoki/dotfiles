@@ -100,6 +100,14 @@ BASH
     -e 's|@maxWorkers@|1|g' \
     "$SCRIPT" >"$PREPROCESSED_SCRIPT"
   chmod +x "$PREPROCESSED_SCRIPT"
+
+  PREPROCESSED_DESKTOP_SCRIPT="$TEMP_HOME/hydrate-desktop.sh"
+  sed \
+    -e 's|@sed@|sed|g' \
+    -e 's|@template@|'"$TEMP_HOME"'/template.toml|g' \
+    -e 's|@maxWorkers@|4|g' \
+    "$SCRIPT" >"$PREPROCESSED_DESKTOP_SCRIPT"
+  chmod +x "$PREPROCESSED_DESKTOP_SCRIPT"
 }
 
 cleanup_hydrate() {
@@ -123,6 +131,12 @@ It 'hydrates the Kyber worker limit'
 When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/.roborev/config.toml"'
 The status should be success
 The output should include 'max_workers = 1'
+End
+
+It 'hydrates the desktop worker limit'
+When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_DESKTOP_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/.roborev/config.toml"'
+The status should be success
+The output should include 'max_workers = 4'
 End
 
 It 'hydrates the complete approval gate'
