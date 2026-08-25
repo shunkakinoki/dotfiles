@@ -21,6 +21,11 @@ When run grep -F 'config set linear.api' "$SCRIPT"
 The status should be failure
 End
 
+It 'keeps the Linear key out of verifier process arguments'
+When run bash -c "grep -F -- '--config <(' '$SCRIPT' >/dev/null && ! grep -F -- '--header \"Authorization:' '$SCRIPT' >/dev/null"
+The status should be success
+End
+
 It 'bounds workspace keyring lookup without forwarding an empty Linear key'
 When run bash -c "grep -F '@coreutils@/bin/env -u LINEAR_API_KEY' '$SCRIPT' >/dev/null"
 The status should be success
@@ -61,6 +66,11 @@ When run bash -c "grep -F 'last-success-\$repo_slug' '$SCRIPT' >/dev/null"
 The status should be success
 End
 
+It 'serializes periodic and acceptance reconciliation with one repository lock'
+When run bash -c "grep -F 'reconcile-\$repo_slug.lock' '$SCRIPT' >/dev/null && grep -F '@utilLinux@/bin/flock -w 900 9' '$SCRIPT' >/dev/null"
+The status should be success
+End
+
 It 'invokes jq through the Nix package binary path'
 When run bash -c "grep -F '@jq@/bin/jq' '$SCRIPT' >/dev/null"
 The status should be success
@@ -78,8 +88,8 @@ When run bash -c "grep -F 'DELETE FROM local_metadata' '$SCRIPT' >/dev/null && g
 The status should be success
 End
 
-It 'pushes only changed active Beads'
-When run bash -c "grep -F '.updated_at >= \$previous_sync' '$SCRIPT' >/dev/null && grep -F 'linear sync --push --issues \"\$batch_ids\" --no-wait' '$SCRIPT' >/dev/null"
+It 'pushes terminal Beads before pulling and active Beads afterward'
+When run bash -c "terminal=\$(grep -n 'push_issue_batches \"\$closed_ids\" \"terminal\"' '$SCRIPT' | cut -d: -f1); pull=\$(grep -n 'log \"Pulling complete Linear state\"' '$SCRIPT' | cut -d: -f1); active=\$(grep -n 'push_issue_batches \"\$changed_active_ids\" \"changed active\"' '$SCRIPT' | cut -d: -f1); test \"\$terminal\" -lt \"\$pull\" && test \"\$pull\" -lt \"\$active\""
 The status should be success
 End
 
@@ -99,7 +109,7 @@ The status should be success
 End
 
 It 'bounds inbound pull and small outbound batches'
-When run bash -c "grep -F 'run_linear @coreutils@/bin/timeout 720 \"\$bd_cli\"' '$SCRIPT' >/dev/null && grep -F 'push_batch_size=10' '$SCRIPT' >/dev/null && grep -F 'run_linear @coreutils@/bin/timeout 120 \"\$bd_cli\"' '$SCRIPT' >/dev/null"
+When run bash -c "grep -F 'run_linear @coreutils@/bin/timeout 720 \"\$bd_cli\"' '$SCRIPT' >/dev/null && grep -F 'local batch_size=10' '$SCRIPT' >/dev/null && grep -F 'run_linear @coreutils@/bin/timeout 120 \"\$bd_cli\"' '$SCRIPT' >/dev/null"
 The status should be success
 End
 
@@ -109,7 +119,7 @@ The status should be success
 End
 
 It 'federates Beads before and after Linear reconciliation'
-When run bash -c "test \"\$(grep -c '^federate_beads \"' '$SCRIPT')\" -eq 2 && grep -F 'federate_beads \"pre-sync\"' '$SCRIPT' >/dev/null && grep -F 'federate_beads \"post-sync\"' '$SCRIPT' >/dev/null"
+When run bash -c "grep -F 'federate_beads \"pre-sync\"' '$SCRIPT' >/dev/null && grep -F 'federate_beads \"post-sync\"' '$SCRIPT' >/dev/null && grep -F 'federate_beads \"post-completion push\"' '$SCRIPT' >/dev/null"
 The status should be success
 End
 
@@ -124,34 +134,66 @@ setup_reconciliation() {
   TEST_ROOT=$(mktemp -d)
   FAKE_BD="$TEST_ROOT/bd"
   FAKE_DOLT_ROOT="$TEST_ROOT/dolt"
+  FAKE_CURL_ROOT="$TEST_ROOT/curl"
+  FAKE_LINEAR="$TEST_ROOT/linear"
+  UTIL_LINUX="$TEST_ROOT/util-linux"
   RENDERED_SCRIPT="$TEST_ROOT/linear-sync.sh"
   COMMAND_LOG="$TEST_ROOT/commands.log"
   FSCK_TIMEOUT_LOG="$TEST_ROOT/fsck-timeouts.log"
   DOLT_LOG="$TEST_ROOT/dolt-commands.log"
   SYNC_COUNT="$TEST_ROOT/sync-count"
+  ISSUE_STATUS_FILE="$TEST_ROOT/issue-status"
+  ISSUE_REF_FILE="$TEST_ROOT/issue-ref"
   STATE_HOME="$TEST_ROOT/state"
   ENV_FILE="$TEST_ROOT/dotenv"
   COREUTILS="$TEST_ROOT/coreutils"
   TEST_REPO_ID="test/repo-one"
   TEST_REPO="$TEST_ROOT/ghq/github.com/$TEST_REPO_ID"
   jq_prefix=$(dirname "$(dirname "$(command -v jq)")")
-  mkdir -p "$COREUTILS/bin" "$FAKE_DOLT_ROOT/bin" "$TEST_REPO/.beads"
+  mkdir -p "$COREUTILS/bin" "$FAKE_CURL_ROOT/bin" "$FAKE_DOLT_ROOT/bin" "$UTIL_LINUX/bin" "$TEST_REPO/.beads"
   printf '%s\n' '{"dolt_database":"test_beads"}' >"$TEST_REPO/.beads/metadata.json"
   printf 'BEADS_LINEAR_SYNC_REPOS=%q\n' "$TEST_REPO_ID" >"$ENV_FILE"
   canonical_test_repo="$(cd "$TEST_REPO" && pwd -P)"
-  repo_slug="${TEST_REPO_ID//\//_}"
-  repo_slug="${repo_slug//[^[:alnum:]_.-]/_}"
+  repo_slug="${TEST_REPO_ID//\//%2F}"
   CHECKPOINT_FILE="$STATE_HOME/beads-linear-sync/last-success-$repo_slug"
   export DOTFILES_ENV_FILE="$ENV_FILE"
-  export DOLT_LOG FSCK_TIMEOUT_LOG
-  for command in chmod date env mkdir mv sleep timeout; do
+  export DOLT_LOG FSCK_TIMEOUT_LOG ISSUE_REF_FILE ISSUE_STATUS_FILE
+  for command in cat chmod date env mkdir mv sleep timeout; do
     ln -s "$(command -v "$command")" "$COREUTILS/bin/$command"
   done
+  cat >"$UTIL_LINUX/bin/flock" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+test "$#" -eq 3
+test "$1" = "-w"
+wait_seconds="${FAKE_FLOCK_WAIT_SECONDS:-$2}"
+fd="$3"
+exec python3 - "$wait_seconds" "$fd" <<'PY'
+import fcntl
+import sys
+import time
+
+deadline = time.monotonic() + float(sys.argv[1])
+fd = int(sys.argv[2])
+while True:
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        raise SystemExit(0)
+    except BlockingIOError:
+        if time.monotonic() >= deadline:
+            raise SystemExit(1)
+        time.sleep(0.02)
+PY
+EOF
+  chmod +x "$UTIL_LINUX/bin/flock"
 
   cat >"$FAKE_BD" <<'EOF'
 #!/usr/bin/env bash
 printf '%s\n' "$*" >>"$COMMAND_LOG"
 if [ "${1:-}" = "-C" ]; then
+  shift 2
+fi
+if [ "${1:-}" = "--actor" ]; then
   shift 2
 fi
 case "${1:-} ${2:-}" in
@@ -201,6 +243,26 @@ case "${1:-} ${2:-}" in
         fi
         ;;
     esac
+    if [[ " $* " == *" --push "* ]] && [[ " $* " == *" df-accepted "* ]] && [ "${FAKE_LINEAR_MODE:-}" != "push-no-reference" ]; then
+      printf '%s\n' 'https://linear.app/test/issue/TEST-999/example' >"$ISSUE_REF_FILE"
+    fi
+    ;;
+  show\ *)
+    issue_status=in_progress
+    if [ -s "$ISSUE_STATUS_FILE" ]; then
+      issue_status=$(<"$ISSUE_STATUS_FILE")
+    fi
+    issue_ref='https://linear.app/test/issue/TEST-999/example'
+    if [ "${FAKE_ISSUE_REF_MISSING:-0}" = "1" ]; then
+      issue_ref=""
+    fi
+    if [ -s "$ISSUE_REF_FILE" ]; then
+      issue_ref=$(<"$ISSUE_REF_FILE")
+    fi
+    printf '[{"id":"df-accepted","status":"%s","assignee":"test@example.com","external_ref":"%s"}]\n' "$issue_status" "$issue_ref"
+    ;;
+  close\ *)
+    printf '%s\n' closed >"$ISSUE_STATUS_FILE"
     ;;
   "list --all")
     if [ -n "${FAKE_LIST_JSON:-}" ]; then
@@ -214,20 +276,38 @@ EOF
   chmod +x "$FAKE_BD"
   printf '%s\n' '#!/usr/bin/env bash' 'printf '\''%s\n'\'' "$*" >>"$DOLT_LOG"' 'exit 0' >"$FAKE_DOLT_ROOT/bin/dolt"
   chmod +x "$FAKE_DOLT_ROOT/bin/dolt"
+  cat >"$FAKE_LINEAR" <<'EOF'
+#!/usr/bin/env bash
+if [ "${FAKE_LINEAR_STATE:-completed}" = "failure" ]; then
+  exit 29
+fi
+printf '{"state":{"type":"%s"}}\n' "${FAKE_LINEAR_STATE:-completed}"
+EOF
+  chmod +x "$FAKE_LINEAR"
+  cat >"$FAKE_CURL_ROOT/bin/curl" <<'EOF'
+#!/usr/bin/env bash
+if [ "${FAKE_LINEAR_STATE:-completed}" = "failure" ]; then
+  exit 29
+fi
+printf '{"data":{"issue":{"identifier":"TEST-999","state":{"type":"%s"}}}}\n' "${FAKE_LINEAR_STATE:-completed}"
+EOF
+  chmod +x "$FAKE_CURL_ROOT/bin/curl"
   sed \
     -e "s|@bd@|$FAKE_BD|g" \
     -e "s|@dolt@|$FAKE_DOLT_ROOT|g" \
-    -e 's|@linear@|/usr/bin/false|g' \
+    -e "s|@linear@|$FAKE_LINEAR|g" \
     -e 's|@linearWorkspace@|test-workspace|g' \
     -e 's|@linearTeamId@|test-team|g' \
     -e "s|@coreutils@|$COREUTILS|g" \
+    -e "s|@curl@|$FAKE_CURL_ROOT|g" \
     -e 's|@gawk@|/usr|g' \
     -e "s|@jq@|$jq_prefix|g" \
+    -e "s|@utilLinux@|$UTIL_LINUX|g" \
     "$SCRIPT" >"$RENDERED_SCRIPT"
 }
 
 cleanup_reconciliation() {
-  unset DOLT_LOG DOTFILES_ENV_FILE FSCK_TIMEOUT_LOG
+  unset DOLT_LOG DOTFILES_ENV_FILE FSCK_TIMEOUT_LOG ISSUE_REF_FILE ISSUE_STATUS_FILE
   rm -rf "$TEST_ROOT"
 }
 
@@ -238,6 +318,7 @@ It 'runs both federations around pull and delta push before checkpointing'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'Pushing changed active Beads'
+The output should include 'No terminal Beads to push'
 The file "$CHECKPOINT_FILE" should be exist
 The contents of file "$COMMAND_LOG" should include 'linear sync --pull --state all --relations --no-wait'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-test --no-wait'
@@ -284,8 +365,25 @@ mkdir -p "$STATE_HOME/beads-linear-sync"
 printf '%s\n' '2026-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LIST_JSON='[{"id":"df-closed","status":"closed","updated_at":"2099-01-01T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/closed"}]' XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
-The output should include 'Pushing changed active Beads'
+The output should include 'Pushing terminal Beads'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-closed --no-wait'
+End
+
+It 'publishes a terminal Bead before any stale inbound state can be pulled'
+mkdir -p "$STATE_HOME/beads-linear-sync"
+printf '%s\n' '2026-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
+When run bash -c "env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='[{\"id\":\"df-closed\",\"status\":\"closed\",\"updated_at\":\"2099-01-01T00:00:00Z\",\"external_ref\":\"https://linear.app/test/issue/TEST-1/closed\"}]' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' >/dev/null && push_line=\$(grep -n 'linear sync --push --issues df-closed' '$COMMAND_LOG' | head -1 | cut -d: -f1) && pull_line=\$(grep -n 'linear sync --pull' '$COMMAND_LOG' | head -1 | cut -d: -f1) && test \"\$push_line\" -lt \"\$pull_line\""
+The status should be success
+End
+
+It 'never pulls stale active state after a terminal push failure'
+mkdir -p "$STATE_HOME/beads-linear-sync"
+printf '%s\n' '2026-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=push-failure FAKE_LIST_JSON='[{"id":"df-closed","status":"closed","updated_at":"2099-01-01T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/closed"}]' XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 24
+The output should include 'Linear push failed with status 24'
+The contents of file "$COMMAND_LOG" should not include 'linear sync --pull'
+The contents of file "$CHECKPOINT_FILE" should equal '2026-01-01T00:00:00Z'
 End
 
 It 'fails closed without checkpointing when final Dolt federation fails'
@@ -334,8 +432,7 @@ mkdir -p "$second_repo/.beads"
 printf '%s\n' '{"dolt_database":"test_beads_two"}' >"$second_repo/.beads/metadata.json"
 canonical_second_repo="$(cd "$second_repo" && pwd -P)"
 printf 'BEADS_LINEAR_SYNC_REPOS=%q,%q\n' "$TEST_REPO_ID" "$second_repo_id" >"$ENV_FILE"
-second_repo_slug="${second_repo_id//\//_}"
-second_repo_slug="${second_repo_slug//[^[:alnum:]_.-]/_}"
+second_repo_slug="${second_repo_id//\//%2F}"
 second_checkpoint="$STATE_HOME/beads-linear-sync/last-success-$second_repo_slug"
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
@@ -358,6 +455,88 @@ The output should not include 'test/not-beads'
 The output should include 'Pushing changed active Beads'
 The file "$CHECKPOINT_FILE" should be exist
 End
+
+It 'completes acceptance under the shared lock and verifies Linear terminal state'
+When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted"
+The status should be success
+The output should include 'Accepted Bead and Linear issue are both terminal'
+The contents of file "$ISSUE_STATUS_FILE" should equal closed
+The contents of file "$COMMAND_LOG" should include 'close df-accepted --reason-file -'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-accepted --no-wait'
+The contents of file "$SYNC_COUNT" should equal 3
+End
+
+It 'keeps the accepted Bead durably closed when the Linear push fails'
+When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LINEAR_MODE=push-failure XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted"
+The status should equal 24
+The output should include 'Linear push failed with status 24'
+The contents of file "$ISSUE_STATUS_FILE" should equal closed
+The contents of file "$SYNC_COUNT" should equal 2
+End
+
+It 'reports a deferred accepted push without claiming completion'
+When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_ISSUE_REF_MISSING=1 FAKE_LINEAR_MODE=rate-limit XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted"
+The status should equal 75
+The output should include 'next 900-second run will retry'
+The contents of file "$ISSUE_STATUS_FILE" should equal closed
+The contents of file "$SYNC_COUNT" should equal 2
+The contents of file "$COMMAND_LOG" should include 'update df-accepted --set-metadata linear_completion_pending=true'
+End
+
+It 'recovers pending completion despite a newer checkpoint without selecting stale linked Beads'
+printf '%s\n' closed >"$ISSUE_STATUS_FILE"
+mkdir -p "$(dirname "$CHECKPOINT_FILE")"
+printf '%s\n' '2099-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
+pending_json='[{"id":"df-accepted","status":"closed","updated_at":"2020-01-01T00:00:00Z","metadata":{"linear_completion_pending":true}},{"id":"stale-linked","status":"closed","updated_at":"2020-01-01T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-998/example"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_ISSUE_REF_MISSING=1 FAKE_LIST_JSON="$pending_json" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Pushing terminal Beads'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-accepted --no-wait'
+The contents of file "$COMMAND_LOG" should include 'update df-accepted --unset-metadata linear_completion_pending'
+The contents of file "$COMMAND_LOG" should not include 'linear sync --push --issues stale-linked'
+The contents of file "$ISSUE_REF_FILE" should include 'TEST-999'
+End
+
+It 'keeps the retry marker when a successful push does not persist a Linear reference'
+printf '%s\n' closed >"$ISSUE_STATUS_FILE"
+mkdir -p "$(dirname "$CHECKPOINT_FILE")"
+printf '%s\n' '2099-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
+pending_json='[{"id":"df-accepted","status":"closed","updated_at":"2020-01-01T00:00:00Z","metadata":{"linear_completion_pending":true}}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_ISSUE_REF_MISSING=1 FAKE_LINEAR_MODE=push-no-reference FAKE_LIST_JSON="$pending_json" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 65
+The output should include 'does not have a Linear issue reference after push'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-accepted --no-wait'
+The contents of file "$COMMAND_LOG" should not include 'update df-accepted --unset-metadata linear_completion_pending'
+The contents of file "$COMMAND_LOG" should not include 'linear sync --pull'
+The contents of file "$CHECKPOINT_FILE" should equal '2099-01-01T00:00:00Z'
+End
+
+It 'fails verification without reopening an accepted Bead'
+When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LINEAR_STATE=started XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted"
+The status should equal 70
+The output should include 'not in its completed state'
+The contents of file "$ISSUE_STATUS_FILE" should equal closed
+The contents of file "$SYNC_COUNT" should equal 3
+End
+
+It 'is idempotent when acceptance completion is repeated'
+When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted >/dev/null && printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted >/dev/null && test \"\$(grep -c ' close df-accepted --reason-file -' '$COMMAND_LOG')\" -eq 1"
+The status should be success
+The contents of file "$ISSUE_STATUS_FILE" should equal closed
+End
+
+It 'waits when another reconciliation owns the repository lock'
+mkdir -p "$STATE_HOME/beads-linear-sync"
+lock_file="$STATE_HOME/beads-linear-sync/reconcile-test%2Frepo-one.lock"
+ready_file="$TEST_ROOT/lock-ready"
+python3 -c 'import fcntl,pathlib,signal,sys; lock_handle=open(sys.argv[1], "w", encoding="utf-8"); fcntl.flock(lock_handle, fcntl.LOCK_EX); pathlib.Path(sys.argv[2]).touch(); signal.pause()' "$lock_file" "$ready_file" &
+holder_pid=$!
+while [ ! -e "$ready_file" ]; do sleep 0.02; done
+When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_FLOCK_WAIT_SECONDS=1 XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted; status=\$?; kill '$holder_pid' 2>/dev/null || true; wait '$holder_pid' 2>/dev/null || true; exit \"\$status\""
+The status should equal 75
+The output should include 'Timed out waiting for the repository reconciliation lock'
+The file "$ISSUE_STATUS_FILE" should not be exist
+End
 End
 
 Describe 'Home Manager service ownership'
@@ -367,7 +546,7 @@ The status should be success
 End
 
 It 'restricts the Linear writer to Kyber'
-When run bash -c "grep -F 'linearSyncEnabled = isKyber;' '$MODULE' >/dev/null && grep -F 'launchd.agents.dolt-linear-sync = lib.mkIf (pkgs.stdenv.isDarwin && linearSyncEnabled)' '$MODULE' >/dev/null && grep -F 'systemd.user.services.dolt-linear-sync = lib.mkIf (pkgs.stdenv.isLinux && linearSyncEnabled)' '$MODULE' >/dev/null"
+When run bash -c "grep -F 'linearSyncEnabled = isKyber;' '$MODULE' >/dev/null && grep -F 'home.file.\".local/bin/beads-linear-complete\" = lib.mkIf linearSyncEnabled' '$MODULE' >/dev/null && grep -F 'systemd.user.services.dolt-linear-sync = lib.mkIf (pkgs.stdenv.isLinux && linearSyncEnabled)' '$MODULE' >/dev/null"
 The status should be success
 End
 
