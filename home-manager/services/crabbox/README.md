@@ -23,9 +23,11 @@ Generated database and auth secrets live in
 coordinator settings belong in the machine-local `~/dotfiles/.env`; no provider token is
 required merely to start the coordinator.
 
-The coordinator trusts forwarded origin and client headers only from Kyber's Kubernetes
-pod CIDR (`10.42.1.0/24` by default). Override `CRABBOX_TRUSTED_PROXY_CIDRS` in the
-machine-local environment if the cluster pod CIDR changes.
+The coordinator trusts forwarded origin and client headers only from loopback and
+Kyber's Kubernetes pod CIDR (`127.0.0.1/32,10.42.1.0/24` by default). Loopback is
+required because kube-proxy source-NATs the host-backed ingress endpoint on Kyber.
+Override `CRABBOX_TRUSTED_PROXY_CIDRS` in the machine-local environment if the cluster
+pod CIDR changes.
 
 After creating the Cloudflare Access application, put its audience tag in Kyber's
 `~/dotfiles/.env` as `CRABBOX_ACCESS_AUD`. The Access team domain defaults to

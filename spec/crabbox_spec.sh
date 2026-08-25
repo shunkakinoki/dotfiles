@@ -76,10 +76,11 @@ The output should include '/v1/health'
 The output should include '/v1/ready'
 End
 
-It 'uses the public portal origin and trusts only the Kyber pod CIDR'
+It 'uses the public portal origin and trusts only the Kyber proxy paths'
 When run bash -c "cat '$START'"
 The output should include 'https://crabbox.shunkakinoki.com'
 The output should include 'CRABBOX_TRUSTED_PROXY_CIDRS'
+The output should include '127.0.0.1/32,10.42.1.0/24'
 The output should include '10.42.1.0/24'
 The output should include 'CRABBOX_ACCESS_TEAM_DOMAIN'
 The output should include 'shunkakinoki.cloudflareaccess.com'
