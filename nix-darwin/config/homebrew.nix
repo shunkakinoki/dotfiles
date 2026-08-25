@@ -114,6 +114,7 @@
       "balenaetcher"
       "beekeeper-studio"
       "beeper"
+      "blackbar"
       "blender"
       "block-goose"
       "chatgpt"
