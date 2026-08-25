@@ -109,6 +109,32 @@
     dolt = inputs.nixpkgs-dolt.legacyPackages.${prev.system}.dolt;
   })
   (_: prev: {
+    crabbox = prev.stdenvNoCC.mkDerivation rec {
+      pname = "crabbox";
+      version = "0.46.0";
+      src = prev.fetchurl {
+        url = "https://github.com/openclaw/crabbox/releases/download/v${version}/crabbox_${version}_${
+          if prev.stdenv.isDarwin then "darwin" else "linux"
+        }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}.tar.gz";
+        sha256 =
+          if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isx86_64 then
+            "6a9341e810307356361dbed4c4b84be28a036b5cc291af1566d2ccd376570d90"
+          else if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isAarch64 then
+            "d95730856cd3909dab0703ec024e3017a094fff2a065516782b47019fec9533d"
+          else if prev.stdenv.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
+            "2216da0acbcc6e822ee341ec313aaab58875db951fa1daf0d13dd710ebfba9b8"
+          else
+            "18035770b5b654114fa95d2e468268b13c69862137cc1f083bd674bbb2bf83bb";
+      };
+      sourceRoot = ".";
+      dontConfigure = true;
+      dontBuild = true;
+      installPhase = ''
+        install -Dm755 crabbox $out/bin/crabbox
+      '';
+      meta.mainProgram = "crabbox";
+    };
+
     moshi-hook = prev.stdenv.mkDerivation rec {
       pname = "moshi-hook";
       version = "0.3.2";

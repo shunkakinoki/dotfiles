@@ -152,6 +152,7 @@ home-manager.lib.homeManagerConfiguration {
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 443 18789
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 8443 3773
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 9443 9120
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 10443 8080
         '';
 
         # Tailscale configuration

@@ -1280,7 +1280,7 @@ launchctl-tmux-session-logger: ## Restart tmux-session-logger launchd agent.
 ##@ Systemd Services (Linux)
 
 .PHONY: systemctl
-systemctl: systemctl-docker systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-cpa-manager-plus systemctl-code-syncer systemctl-docker-postgres systemctl-dolt systemctl-dotfiles-updater systemctl-hermes systemctl-make-updater systemctl-neverssl-keepalive systemctl-noctalia-shell systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-roborev systemctl-t3-connect systemctl-tmux-session-logger ## Restart all systemd user services.
+systemctl: systemctl-docker systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-cpa-manager-plus systemctl-crabbox systemctl-code-syncer systemctl-docker-postgres systemctl-dolt systemctl-dotfiles-updater systemctl-hermes systemctl-make-updater systemctl-neverssl-keepalive systemctl-noctalia-shell systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-roborev systemctl-t3-connect systemctl-tmux-session-logger ## Restart all systemd user services.
 
 .PHONY: systemctl-t3-connect
 systemctl-t3-connect: t3-linger ## Restart the t3-connect timer and run it once.
@@ -1369,6 +1369,17 @@ systemctl-cpa-manager-plus: ## Restart CPA Manager Plus systemd user service.
 		echo "Skipping cpa-manager-plus.service (host not kyber)"; \
 	fi
 	@echo "✅ CPA Manager Plus restarted"
+
+.PHONY: systemctl-crabbox
+systemctl-crabbox: ## Restart Crabbox coordinator systemd user service.
+	@echo "🔄 Restarting Crabbox..."
+	@if [ "$(DETECTED_HOST)" = "kyber" ] || [ "$(HOST)" = "kyber" ]; then \
+		systemctl --user daemon-reload; \
+		systemctl --user restart crabbox.service; \
+	else \
+		echo "Skipping crabbox.service (host not kyber)"; \
+	fi
+	@echo "✅ Crabbox restarted"
 
 .PHONY: systemctl-code-syncer
 systemctl-code-syncer: ## Restart code-syncer systemd user service.

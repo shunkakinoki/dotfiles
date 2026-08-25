@@ -70,6 +70,7 @@
       "colima"
       "container"
       "coreutils"
+      "crabbox"
       "ffmpeg"
       "gemini-cli"
       "geth"
