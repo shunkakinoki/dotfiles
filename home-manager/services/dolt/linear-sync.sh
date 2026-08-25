@@ -31,6 +31,29 @@ if [ -f "$env_file" ]; then
   set +a
 fi
 
+# An accepted issue completes through the same repository lock and credential
+# boundary as the periodic reconciler. The close reason is read from stdin so
+# evidence never appears in the process arguments.
+if [ "${1:-}" = "--complete" ]; then
+  configured_repo="${2:-}"
+  bead_id="${3:-}"
+  if [ "$#" -ne 3 ] || [[ ! $configured_repo =~ ^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$ ]]; then
+    log "Usage: beads-linear-complete org/repo bead-id < close-reason"
+    exit 64
+  fi
+  if [[ ! $bead_id =~ ^[A-Za-z0-9._-]+$ ]]; then
+    log "Invalid Bead ID"
+    exit 64
+  fi
+
+  repo_path="$HOME/ghq/github.com/$configured_repo"
+  BEADS_LINEAR_SYNC_REPO_DIR="$repo_path" \
+    BEADS_LINEAR_SYNC_REPO_NAME="$configured_repo" \
+    BEADS_LINEAR_SYNC_REPO_CONTEXT="acceptance completion" \
+    "$BASH" "$0" --repo --complete "$bead_id"
+  exit
+fi
+
 # The parent process dispatches each org/repo entry through an isolated child
 # so one repository cannot prevent later repositories from being attempted.
 if [ "${1:-}" != "--repo" ]; then
@@ -82,6 +105,8 @@ fi
 repo_dir="${BEADS_LINEAR_SYNC_REPO_DIR:-}"
 repo_name="${BEADS_LINEAR_SYNC_REPO_NAME:-}"
 repo_context="${BEADS_LINEAR_SYNC_REPO_CONTEXT:-}"
+operation="${2:---sync}"
+completion_bead_id="${3:-}"
 if [ -z "$repo_dir" ] || [ -z "$repo_name" ] || [ -z "$repo_context" ]; then
   log "Internal repository dispatch is incomplete"
   exit 1
@@ -97,6 +122,7 @@ repo_slug="$repo_name"
 repo_slug="${repo_slug//\//_}"
 repo_slug="${repo_slug//[^[:alnum:]_.-]/_}"
 sync_checkpoint_file="$sync_state_dir/last-success-$repo_slug"
+reconciliation_lock_file="$sync_state_dir/reconcile-$repo_slug.lock"
 
 ensure_config() {
   local key="$1"
@@ -139,6 +165,46 @@ run_linear() {
   fi
 
   return "$status"
+}
+
+push_issue_batches() {
+  local issue_ids="$1"
+  local description="$2"
+  local batch_size=10
+  local batch_count
+  local batch_ids
+  local batch_number
+  local batch_start
+  local status
+  local -a issue_id_array
+
+  if [ -z "$issue_ids" ]; then
+    log "No $description Beads to push"
+    return 0
+  fi
+
+  IFS=',' read -r -a issue_id_array <<<"$issue_ids"
+  batch_count=$(((${#issue_id_array[@]} + batch_size - 1) / batch_size))
+  for ((batch_start = 0; batch_start < ${#issue_id_array[@]}; batch_start += batch_size)); do
+    batch_number=$((batch_start / batch_size + 1))
+    batch_ids="$(
+      IFS=,
+      printf '%s' "${issue_id_array[*]:batch_start:batch_size}"
+    )"
+    log "Pushing $description Beads batch $batch_number/$batch_count"
+
+    if run_linear @coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" linear sync --push --issues "$batch_ids" --no-wait; then
+      :
+    else
+      status=$?
+      if [ "$status" -eq 75 ]; then
+        log "Linear push deferred; the next 900-second run will retry"
+        return 75
+      fi
+      log "Linear push failed with status $status"
+      return "$status"
+    fi
+  done
 }
 
 run_dolt_sql() {
@@ -205,9 +271,18 @@ fi
 
 export LINEAR_API_KEY
 export LINEAR_TEAM_ID="${LINEAR_TEAM_ID:-$linear_team_id}"
+if [[ $LINEAR_API_KEY == *$'\n'* ]] || [[ $LINEAR_API_KEY == *$'\r'* ]]; then
+  log "Linear credential contains an invalid line break"
+  exit 65
+fi
 
 wait_for_beads
 @coreutils@/bin/mkdir -p "$sync_state_dir"
+exec 9>"$reconciliation_lock_file"
+if ! @utilLinux@/bin/flock -w 900 9; then
+  log "Timed out waiting for the repository reconciliation lock"
+  exit 75
+fi
 cycle_started="$(@coreutils@/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')"
 
 # Linear requires an explicit inbound type map and an explicit outbound state
@@ -226,6 +301,106 @@ ensure_config linear.outbound_state_map.in_progress "In Progress"
 ensure_config linear.outbound_state_map.closed Done
 "$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): configure Linear sync" >/dev/null 2>&1
 
+if [ "$operation" = "--complete" ]; then
+  if [ -z "$completion_bead_id" ]; then
+    log "Internal completion dispatch is incomplete"
+    exit 64
+  fi
+
+  completion_reason="$(@coreutils@/bin/cat)"
+  if [ -z "${completion_reason//[[:space:]]/}" ]; then
+    log "Acceptance completion requires a close reason on stdin"
+    exit 64
+  fi
+
+  federate_beads "pre-completion"
+  completion_issue="$("$bd_cli" -C "$repo_dir" show "$completion_bead_id" --json)"
+  completion_status="$(@jq@/bin/jq -r '.[0].status // empty' <<<"$completion_issue")"
+  completion_assignee="$(@jq@/bin/jq -r '.[0].assignee // empty' <<<"$completion_issue")"
+  if [ -z "$completion_status" ]; then
+    log "Completion Bead was not found"
+    exit 66
+  fi
+
+  if [ "$completion_status" != "closed" ]; then
+    close_command=("$bd_cli" -C "$repo_dir")
+    if [ -n "$completion_assignee" ]; then
+      close_command+=(--actor "$completion_assignee")
+    fi
+    close_command+=(close "$completion_bead_id" --reason-file -)
+    printf '%s\n' "$completion_reason" | "${close_command[@]}" >/dev/null
+  fi
+
+  # Durably federate the terminal Bead before any Linear request. If the API
+  # is unavailable, the periodic closed-first pass can retry without an
+  # inbound pull ever reviving the issue.
+  "$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): record accepted completion" >/dev/null 2>&1
+  federate_beads "accepted completion"
+
+  if push_issue_batches "$completion_bead_id" "accepted"; then
+    :
+  else
+    status=$?
+    if [ "$status" -eq 75 ]; then
+      exit 75
+    fi
+    exit "$status"
+  fi
+
+  completion_issue="$("$bd_cli" -C "$repo_dir" show "$completion_bead_id" --json)"
+  completion_ref="$(@jq@/bin/jq -r '.[0].external_ref // empty' <<<"$completion_issue")"
+  if [[ ! $completion_ref =~ /issue/([A-Z][A-Z0-9]*-[0-9]+)/ ]]; then
+    log "Accepted Bead does not have a Linear issue reference after push"
+    exit 65
+  fi
+  linear_identifier="${BASH_REMATCH[1]}"
+
+  # The push may have created the Linear reference. Federate that address
+  # before verification so a verifier outage cannot cause a later duplicate.
+  "$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): persist Linear completion" >/dev/null 2>&1
+  federate_beads "post-completion push"
+
+  linear_query="$(@jq@/bin/jq -nc --arg id "$linear_identifier" '{
+    query: "query IssueState($id: String!) { issue(id: $id) { identifier state { type } } }",
+    variables: {id: $id}
+  }')"
+  if ! linear_issue="$(@coreutils@/bin/timeout 30 @curl@/bin/curl \
+    --silent \
+    --show-error \
+    --fail-with-body \
+    --config <(
+      printf 'url = "https://api.linear.app/graphql"\n'
+      printf 'header = "Authorization: %s"\n' "$LINEAR_API_KEY"
+      printf 'header = "Content-Type: application/json"\n'
+    ) \
+    --data-binary @- <<<"$linear_query")"; then
+    log "Unable to verify the accepted Linear issue"
+    exit 69
+  fi
+  if ! linear_state_type="$(@jq@/bin/jq -er '
+    if ((.errors // []) | length) == 0 and .data.issue != null then
+      .data.issue.state.type
+    else
+      empty
+    end
+  ' <<<"$linear_issue")"; then
+    log "Linear completion verification returned no issue state"
+    exit 69
+  fi
+  if [ "$linear_state_type" != "completed" ]; then
+    log "Accepted Linear issue is not in its completed state"
+    exit 70
+  fi
+
+  log "Accepted Bead and Linear issue are both terminal"
+  exit 0
+fi
+
+if [ "$operation" != "--sync" ]; then
+  log "Unknown reconciliation operation"
+  exit 64
+fi
+
 # Kyber is the only Linear writer. Require federation first so Linear never
 # reconciles from a replica that could not ingest the shared Dolt state.
 federate_beads "pre-sync"
@@ -235,6 +410,35 @@ if [ -s "$sync_checkpoint_file" ]; then
   previous_sync="$(<"$sync_checkpoint_file")"
 else
   previous_sync="$(@jq@/bin/jq -r '.last_sync // ""' <<<"$linear_status")"
+fi
+
+# Terminal Beads are authoritative after acceptance. Publish them before the
+# full inbound refresh so a stale active Linear record can never win during
+# the timer-latency window. On an initial run, publish every linked terminal
+# record once; later runs use the successful-cycle checkpoint.
+issues_before_pull="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0 --skip-labels)"
+closed_ids="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" '
+  (if type == "object" and has("issues") then .issues else . end)
+  | [
+    .[]
+    | select(
+        .status == "closed"
+        and ((.external_ref // "") | contains("linear.app"))
+        and ($previous_sync == "" or .updated_at >= $previous_sync)
+      )
+    | .id
+  ]
+  | join(",")
+' <<<"$issues_before_pull")"
+
+if push_issue_batches "$closed_ids" "terminal"; then
+  :
+else
+  status=$?
+  if [ "$status" -eq 75 ]; then
+    exit 0
+  fi
+  exit "$status"
 fi
 
 # Beads' incremental pull currently performs one dolt_history_issues query for
@@ -272,56 +476,33 @@ else
 fi
 
 all_issues="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0 --skip-labels)"
-changed_ids="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" '
+changed_active_ids="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" '
   (if type == "object" and has("issues") then .issues else . end)
   | [
     .[]
     | select(
-        if .status == "closed" then
-          $previous_sync != ""
-          and .updated_at >= $previous_sync
-          and ((.external_ref // "") | contains("linear.app"))
-        else
+        .status != "closed"
+        and (
           $previous_sync == ""
           or .updated_at >= $previous_sync
           or ((.external_ref // "") | contains("linear.app") | not)
-        end
+        )
       )
     | .id
   ]
   | join(",")
 ' <<<"$all_issues")"
 
-# Push only the active local delta since the previous successful pull. Bound
-# each batch so a large first run makes durable progress without pinning the
-# recurring service on one API call.
-if [ -n "$changed_ids" ]; then
-  push_batch_size=10
-  IFS=',' read -r -a changed_id_array <<<"$changed_ids"
-  push_batch_count=$(((${#changed_id_array[@]} + push_batch_size - 1) / push_batch_size))
-
-  for ((batch_start = 0; batch_start < ${#changed_id_array[@]}; batch_start += push_batch_size)); do
-    batch_number=$((batch_start / push_batch_size + 1))
-    batch_ids="$(
-      IFS=,
-      printf '%s' "${changed_id_array[*]:batch_start:push_batch_size}"
-    )"
-    log "Pushing changed active Beads batch $batch_number/$push_batch_count"
-
-    if run_linear @coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" linear sync --push --issues "$batch_ids" --no-wait; then
-      :
-    else
-      status=$?
-      if [ "$status" -eq 75 ]; then
-        log "Linear push deferred; the next 900-second run will retry"
-        exit 0
-      fi
-      log "Linear push failed with status $status"
-      exit "$status"
-    fi
-  done
+# Push only the active local delta after inbound reconciliation. Terminal
+# issues never enter this phase because they were made durable before pull.
+if push_issue_batches "$changed_active_ids" "changed active"; then
+  :
 else
-  log "No changed active Beads to push"
+  status=$?
+  if [ "$status" -eq 75 ]; then
+    exit 0
+  fi
+  exit "$status"
 fi
 
 "$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): sync Linear" >/dev/null 2>&1
