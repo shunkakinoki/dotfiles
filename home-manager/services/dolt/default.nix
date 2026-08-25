@@ -39,12 +39,18 @@ let
     bd = "${homeDir}/.local/bin/bd";
     linear = "${homeDir}/.bun/install/global/node_modules/.bin/linear";
     inherit linearWorkspace linearTeamId;
+    utilLinux = pkgs.util-linux;
     inherit (pkgs)
       coreutils
+      curl
       dolt
       gawk
       jq
       ;
+  };
+  beadsLinearCompleteScript = pkgs.replaceVars ./beads-linear-complete.sh {
+    inherit (pkgs) bash;
+    inherit linearSyncScript;
   };
   federationSyncScript = pkgs.replaceVars ./federation-sync.sh {
     bd = "${homeDir}/.local/bin/bd";
@@ -66,6 +72,11 @@ lib.mkIf enabled {
     DOLT_CLI_USER = "root";
     DOLT_CLI_PASSWORD = "";
     LINEAR_TEAM_ID = linearTeamId;
+  };
+
+  home.file.".local/bin/beads-linear-complete" = lib.mkIf linearSyncEnabled {
+    source = beadsLinearCompleteScript;
+    executable = true;
   };
 
   launchd.agents.dolt = lib.mkIf pkgs.stdenv.isDarwin {
