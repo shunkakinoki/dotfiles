@@ -44,6 +44,24 @@
   inputs.llm-agents.overlays.shared-nixpkgs
   (
     _: prev:
+    let
+      wrapBuddy = prev.llm-agents.wrapBuddy;
+      wrapBuddyBinary = builtins.head wrapBuddy.propagatedBuildInputs;
+      fixedWrapBuddy = wrapBuddy.overrideAttrs (_: {
+        propagatedBuildInputs = [
+          (wrapBuddyBinary.overrideAttrs (old: {
+            postPatch = (old.postPatch or "") + ''
+              # grep -q exits as soon as it finds the match. With pipefail, the
+              # upstream echo producer can then receive SIGPIPE and fail the
+              # otherwise-successful install check under loaded CI runners.
+              substituteInPlace tests/test.sh \
+                --replace-fail 'echo "$output" | grep -q "Hello from patched binary!" ||' \
+                'grep -q "Hello from patched binary!" <<< "$output" ||'
+            '';
+          }))
+        ];
+      });
+    in
     {
       # Upstream grok 0.1.218 fails versionCheckHook because `grok --version`/`--help`
       # do not emit the version string. Disable install check until upstream fixes it.
@@ -51,9 +69,13 @@
       llm-agents =
         (prev.llm-agents or { })
         // prev.lib.optionalAttrs (prev.llm-agents ? grok) {
-          grok = prev.llm-agents.grok.overrideAttrs (_: {
+          grok = prev.llm-agents.grok.overrideAttrs (old: {
             doInstallCheck = false;
+            nativeBuildInputs = map (
+              input: if (input.outPath or "") == wrapBuddy.outPath then fixedWrapBuddy else input
+            ) (old.nativeBuildInputs or [ ]);
           });
+          wrapBuddy = fixedWrapBuddy;
         }
         // prev.lib.optionalAttrs (prev.llm-agents ? bernstein) {
           # bernstein 2.8.2 requires reportlab<5,>=4.0 but nixpkgs now provides
