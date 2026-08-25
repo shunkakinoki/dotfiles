@@ -139,7 +139,7 @@ End
 
 It 'publishes the host Crabbox coordinator on 10443 for kyber'
 When run bash -c "cat '$KYBER'"
-The output should include 'ensure-tailscale-serve.sh}" 10443 8080'
+The output should include 'ensure-tailscale-serve.sh}" 10443 18080'
 End
 End
 
