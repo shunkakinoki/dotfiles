@@ -61,16 +61,18 @@ lib.mkIf enabled {
       ];
     }
     // lib.optionalAttrs isKyber {
-      # RoboRev processes launched by agent multiplexers can outlive their
-      # parent cgroup and take the daemon port. Reclaim it before the managed
-      # unit starts so systemd remains the single daemon owner on Kyber.
-      ExecStartPre = "-${pkgs.procps}/bin/pkill -KILL -f '[r]oborev daemon run'";
+      ExecStartPre = [
+        # Reclaim daemon port from orphaned processes
+        "-${pkgs.procps}/bin/pkill -KILL -f '[r]oborev daemon run'"
+        # Rotate opencode DB when it exceeds 500MB (accumulated session data from reviews)
+        "-${pkgs.bash}/bin/bash -c 'db=${homeDir}/.local/share/opencode/opencode-stable.db; [ -f \"$db\" ] && sz=$(stat -c%%s \"$db\" 2>/dev/null || echo 0) && [ \"$sz\" -gt 524288000 ] && mv \"$db\" \"$db.rotated-$(date +%%Y%%m%%dT%%H%%M%%S)\" && rm -f \"$db\"-wal \"$db\"-shm'"
+      ];
       RestartSec = 30;
       KillMode = "control-group";
       TimeoutStopSec = 30;
       TasksMax = 2048;
       CPUQuota = "400%";
-      MemoryMax = "16G";
+      MemoryMax = "8G";
     };
     Install = {
       WantedBy = [ "default.target" ];
