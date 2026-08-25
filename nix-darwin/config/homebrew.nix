@@ -52,6 +52,10 @@
         trusted = true;
       }
       {
+        name = "openclaw/tap";
+        trusted = true;
+      }
+      {
         name = "steipete/tap";
         trusted = true;
       }
@@ -114,6 +118,7 @@
       "balenaetcher"
       "beekeeper-studio"
       "beeper"
+      "blackbar"
       "blender"
       "block-goose"
       "chatgpt"
@@ -124,6 +129,7 @@
       "codexbar"
       "conductor"
       "copilot-money"
+      "crabbox"
       "cursor"
       "devin-desktop"
       "discord"
