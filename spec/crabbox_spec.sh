@@ -76,6 +76,13 @@ The output should include '/v1/health'
 The output should include '/v1/ready'
 End
 
+It 'uses the public portal origin and trusts only the Kyber pod CIDR'
+When run bash -c "cat '$START'"
+The output should include 'https://crabbox.shunkakinoki.com'
+The output should include 'CRABBOX_TRUSTED_PROXY_CIDRS'
+The output should include '10.42.1.0/24'
+End
+
 It 'generates local secrets without requiring a provider token'
 When run bash -c "cat '$START'"
 The output should include 'CRABBOX_SHARED_TOKEN'
