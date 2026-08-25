@@ -49,7 +49,7 @@ let
       ;
   };
   beadsLinearCompleteScript = pkgs.replaceVars ./beads-linear-complete.sh {
-    bash = pkgs.bash;
+    inherit (pkgs) bash;
     inherit linearSyncScript;
   };
   federationSyncScript = pkgs.replaceVars ./federation-sync.sh {
