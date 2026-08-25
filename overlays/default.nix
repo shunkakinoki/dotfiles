@@ -56,7 +56,9 @@
               # otherwise-successful install check under loaded CI runners.
               substituteInPlace tests/test.sh \
                 --replace-fail 'echo "$output" | grep -q "Hello from patched binary!" ||' \
-                'grep -q "Hello from patched binary!" <<< "$output" ||'
+                'grep -q "Hello from patched binary!" <<< "$output" ||' \
+                --replace-fail 'echo "$output" | grep -q "NEEDED_LOADED=yes" ||' \
+                'grep -q "NEEDED_LOADED=yes" <<< "$output" ||'
             '';
           }))
         ];
@@ -153,6 +155,9 @@
       dontBuild = true;
       installPhase = ''
         install -Dm755 crabbox $out/bin/crabbox
+        ${prev.lib.optionalString (prev.stdenv.isDarwin && prev.stdenv.hostPlatform.isAarch64) ''
+          install -Dm755 crabbox-apple-vm-helper $out/bin/crabbox-apple-vm-helper
+        ''}
       '';
       meta.mainProgram = "crabbox";
     };
