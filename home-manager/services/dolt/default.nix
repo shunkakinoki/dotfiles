@@ -241,7 +241,6 @@ lib.mkIf enabled {
     Timer = {
       OnBootSec = "2min";
       OnCalendar = "*-*-* *:00/15:00";
-      OnUnitActiveSec = "${toString linearSyncIntervalSeconds}s";
       Persistent = true;
       Unit = "dolt-linear-sync.service";
     };
