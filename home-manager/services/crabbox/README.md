@@ -3,7 +3,7 @@
 Crabbox runs as two systemd user services on Kyber:
 
 - `crabbox-postgres.service` runs PostgreSQL on loopback port `55432`.
-- `crabbox.service` runs the upstream Node coordinator on loopback port `8080`.
+- `crabbox.service` runs the upstream Node coordinator on loopback port `18080`.
 
 The coordinator installation is intentionally separate from the service definition. Run
 `ulb crabbox` to clone/update Crabbox, install its locked npm dependencies, build
@@ -25,6 +25,6 @@ TLS, and WebSocket routing.
 ulb crabbox
 systemctl --user restart crabbox-postgres crabbox
 systemctl --user status crabbox-postgres crabbox
-curl --fail http://127.0.0.1:8080/v1/health
-curl --fail http://127.0.0.1:8080/v1/ready
+curl --fail http://127.0.0.1:18080/v1/health
+curl --fail http://127.0.0.1:18080/v1/ready
 ```

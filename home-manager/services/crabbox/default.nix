@@ -12,7 +12,7 @@ let
   socketDir = "${homeDir}/.local/share/crabbox/postgres-socket";
   coordinatorBin = "${homeDir}/ghq/github.com/openclaw/crabbox/worker/dist-node/crabbox-coordinator";
   postgresPort = "55432";
-  coordinatorPort = "8080";
+  coordinatorPort = "18080";
   initPostgres = pkgs.replaceVars ./init-postgres.sh {
     inherit dataDir socketDir;
     databaseAdmin = config.home.username;
