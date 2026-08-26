@@ -29,6 +29,34 @@
         "command": "$HOME/dotfiles/config/shared/hooks/block-gh-settings.sh",
         "timeout": 5
       }
+    ],
+    "sessionStart": [
+      {
+        "type": "command",
+        "command": "command -v traces >/dev/null 2>&1 && traces hook agent session-start --agent copilot",
+        "timeout": 30
+      }
+    ],
+    "userPromptSubmitted": [
+      {
+        "type": "command",
+        "command": "command -v traces >/dev/null 2>&1 && traces hook agent prompt-submitted --agent copilot",
+        "timeout": 30
+      }
+    ],
+    "agentStop": [
+      {
+        "type": "command",
+        "command": "command -v traces >/dev/null 2>&1 && traces hook agent agent-done --agent copilot",
+        "timeout": 30
+      }
+    ],
+    "sessionEnd": [
+      {
+        "type": "command",
+        "command": "command -v traces >/dev/null 2>&1 && traces hook agent session-end --agent copilot",
+        "timeout": 30
+      }
     ]
   }
 }
