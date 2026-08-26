@@ -2,6 +2,10 @@
 # keeping desktop hosts at the upstream default.
 max_workers = 4
 
+# Upstream falls back to codex when no workflow agent is set; codex is not
+# usable here, so pin the default to opencode.
+default_agent = 'opencode'
+
 # Pi review subagents: ox-alpha via OpenRouter first, cliproxy free as fallback.
 # Both are allow-failure; panels list pi-oxalpha before pi so ox-alpha runs first.
 [review.subagents.pi-oxalpha]
