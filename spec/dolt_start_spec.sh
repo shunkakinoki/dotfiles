@@ -94,12 +94,36 @@ The status should be success
 The path "$SHARED_DIR/dolt/.dolt" should be directory
 The path "$SHARED_DIR/df" should not be exist
 End
+
+It 'atomically adopts a staged df database and retains the old one'
+mkdir -p "$SHARED_DIR/df/.dolt" "$SHARED_DIR-incoming/df/.dolt"
+touch "$SHARED_DIR/df/.dolt/old-marker"
+touch "$SHARED_DIR-incoming/df/.dolt/new-marker"
+When run bash "$RENDERED_SCRIPT"
+The status should be success
+The path "$SHARED_DIR/df/.dolt/new-marker" should be file
+The path "$SHARED_DIR-retired/df/.dolt/old-marker" should be file
+The path "$SHARED_DIR-incoming/df" should not be exist
+End
+
+It 'refuses to overwrite a retained df database during cutover'
+mkdir -p "$SHARED_DIR/df/.dolt" "$SHARED_DIR-incoming/df/.dolt" "$SHARED_DIR-retired/df/.dolt"
+When run bash "$RENDERED_SCRIPT"
+The status should be failure
+The stderr should include 'Refusing Dolt cutover'
+The path "$SHARED_DIR-incoming/df/.dolt" should be directory
+End
 End
 
 Describe 'sql-server invocation'
-It 'binds to localhost'
-When run bash -c "grep -- '-H 127.0.0.1' '$SCRIPT'"
-The output should include '-H 127.0.0.1'
+It 'defaults the listen host to localhost'
+When run grep -F 'BEADS_DOLT_LISTEN_HOST:-127.0.0.1' "$SCRIPT"
+The output should include 'BEADS_DOLT_LISTEN_HOST:-127.0.0.1'
+End
+
+It 'passes the selected listen host to Dolt'
+When run grep -F -- '-H "$listen_host"' "$SCRIPT"
+The output should include '-H "$listen_host"'
 End
 
 It 'listens on port 3307'
@@ -128,8 +152,8 @@ When run grep -F 'beadsDir = "${sharedServerDir}/dolt";' "$MODULE"
 The output should include 'beadsDir = "${sharedServerDir}/dolt";'
 End
 
-It 'exports the same shared-server directory to bd'
-When run grep -F 'BEADS_SHARED_SERVER_DIR = sharedServerDir;' "$MODULE"
-The output should include 'BEADS_SHARED_SERVER_DIR = sharedServerDir;'
+It 'routes supported clients to the Kyber server'
+When run bash -c "grep -F 'doltServerHost = if isKyber then \"127.0.0.1\" else \"kyber.tail950b36.ts.net\";' '$MODULE' >/dev/null && grep -F 'BEADS_DOLT_SERVER_HOST = doltServerHost;' '$MODULE' >/dev/null"
+The status should be success
 End
 End

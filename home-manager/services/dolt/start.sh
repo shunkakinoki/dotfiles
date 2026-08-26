@@ -2,7 +2,27 @@
 # @beadsDir@, @legacyBeadsDir@, and @dolt@ are substituted by pkgs.replaceVars.
 set -euo pipefail
 
+listen_host="${BEADS_DOLT_LISTEN_HOST:-127.0.0.1}"
+incoming_df="@beadsDir@-incoming/df"
+retired_df="@beadsDir@-retired/df"
+
 mkdir -p "@beadsDir@"
+
+# Adopt a fully copied replacement while the old sql-server process is down.
+# Home Manager restarts this service during activation, so both renames happen
+# on one filesystem before the replacement server accepts any connections.
+if [ -d "$incoming_df/.dolt" ]; then
+  if [ -e "$retired_df" ]; then
+    echo "Refusing Dolt cutover: $retired_df already exists" >&2
+    exit 1
+  fi
+
+  mkdir -p "@beadsDir@-retired"
+  if [ -e "@beadsDir@/df" ]; then
+    mv -f -- "@beadsDir@/df" "$retired_df"
+  fi
+  mv -f -- "$incoming_df" "@beadsDir@/df"
+fi
 
 # Move databases served by the pre-shared-server configuration into the
 # canonical root. Existing destinations win, so activation never overwrites a
@@ -31,7 +51,7 @@ done
 # by that name.
 
 exec "@dolt@/bin/dolt" sql-server \
-  -H 127.0.0.1 \
+  -H "$listen_host" \
   -P 3307 \
   --data-dir "@beadsDir@" \
   --loglevel info

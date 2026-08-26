@@ -21,9 +21,13 @@ let
   linearSyncIntervalSeconds = 900;
   federationSyncIntervalSeconds = 300;
   linearSyncPath = "${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:/etc/profiles/per-user/${config.home.username}/bin:/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin";
-  enabled = isGalactica || isKyber || isMatic;
+  clientEnabled = isGalactica || isKyber || isMatic;
+  serverEnabled = isKyber;
+  doltServerHost = if isKyber then "127.0.0.1" else "kyber.tail950b36.ts.net";
   linearSyncEnabled = isKyber;
-  federationSyncEnabled = isGalactica || isMatic;
+  # Every supported agent host writes directly to Kyber's SQL server. Kyber
+  # alone publishes that shared history to the configured remotes.
+  federationSyncEnabled = isKyber;
   # 2.2.2 fixes gitblobstore pending-write pruning that could publish a
   # manifest whose live archive later failed with "Blob not found".
   doltMinVersion = "2.2.2";
@@ -57,7 +61,7 @@ let
     inherit (pkgs) coreutils;
   };
 in
-lib.mkIf enabled {
+lib.mkIf clientEnabled {
   assertions = [
     {
       assertion = lib.versionAtLeast pkgs.dolt.version doltMinVersion;
@@ -66,9 +70,10 @@ lib.mkIf enabled {
   ];
 
   home.sessionVariables = {
-    BEADS_DOLT_SHARED_SERVER = "1";
+    BEADS_DOLT_SERVER_MODE = "1";
+    BEADS_DOLT_SERVER_HOST = doltServerHost;
     BEADS_DOLT_SERVER_PORT = "3307";
-    BEADS_SHARED_SERVER_DIR = sharedServerDir;
+    BEADS_DOLT_SERVER_USER = "root";
     DOLT_CLI_USER = "root";
     DOLT_CLI_PASSWORD = "";
     LINEAR_TEAM_ID = linearTeamId;
@@ -79,7 +84,7 @@ lib.mkIf enabled {
     executable = true;
   };
 
-  launchd.agents.dolt = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.dolt = lib.mkIf (pkgs.stdenv.isDarwin && serverEnabled) {
     enable = true;
     config = {
       ProgramArguments = [
@@ -98,7 +103,7 @@ lib.mkIf enabled {
   # is visible in the GitHub UI (Dolt's native push only writes refs/dolt/data).
   # Triggered by manifest changes inside dolt's noms store; throttled to avoid
   # hammering on rapid writes.
-  launchd.agents.dolt-backup-main = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.dolt-backup-main = lib.mkIf (pkgs.stdenv.isDarwin && serverEnabled) {
     enable = true;
     config = {
       ProgramArguments = [
@@ -129,9 +134,10 @@ lib.mkIf enabled {
       EnvironmentVariables = {
         HOME = homeDir;
         PATH = linearSyncPath;
-        BEADS_DOLT_SHARED_SERVER = "1";
+        BEADS_DOLT_SERVER_MODE = "1";
+        BEADS_DOLT_SERVER_HOST = doltServerHost;
         BEADS_DOLT_SERVER_PORT = "3307";
-        BEADS_SHARED_SERVER_DIR = sharedServerDir;
+        BEADS_DOLT_SERVER_USER = "root";
         DOLT_CLI_USER = "root";
         DOLT_CLI_PASSWORD = "";
         LINEAR_TEAM_ID = linearTeamId;
@@ -155,9 +161,10 @@ lib.mkIf enabled {
       EnvironmentVariables = {
         HOME = homeDir;
         PATH = linearSyncPath;
-        BEADS_DOLT_SHARED_SERVER = "1";
+        BEADS_DOLT_SERVER_MODE = "1";
+        BEADS_DOLT_SERVER_HOST = doltServerHost;
         BEADS_DOLT_SERVER_PORT = "3307";
-        BEADS_SHARED_SERVER_DIR = sharedServerDir;
+        BEADS_DOLT_SERVER_USER = "root";
         DOLT_CLI_USER = "root";
         DOLT_CLI_PASSWORD = "";
       };
@@ -166,7 +173,7 @@ lib.mkIf enabled {
     };
   };
 
-  systemd.user.services.dolt = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.dolt = lib.mkIf (pkgs.stdenv.isLinux && serverEnabled) {
     Unit = {
       Description = "Dolt SQL server for dotfiles beads";
       After = [ "network.target" ];
@@ -177,13 +184,17 @@ lib.mkIf enabled {
       Restart = "always";
       RestartSec = 5;
       WorkingDirectory = repoDir;
+      # Kyber's WAN firewall drops all new public-interface ingress. Binding
+      # all addresses makes the SQL service reachable on tailscale0 while
+      # retaining the public-ingress deny boundary.
+      Environment = [ "BEADS_DOLT_LISTEN_HOST=0.0.0.0" ];
     };
     Install = {
       WantedBy = [ "default.target" ];
     };
   };
 
-  systemd.user.services.dolt-backup-main = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.dolt-backup-main = lib.mkIf (pkgs.stdenv.isLinux && serverEnabled) {
     Unit = {
       Description = "Push beads_global JSONL snapshot to GitHub main";
     };
@@ -194,7 +205,7 @@ lib.mkIf enabled {
     };
   };
 
-  systemd.user.paths.dolt-backup-main = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.paths.dolt-backup-main = lib.mkIf (pkgs.stdenv.isLinux && serverEnabled) {
     Unit = {
       Description = "Watch dolt manifest and trigger JSONL backup";
     };
@@ -226,9 +237,10 @@ lib.mkIf enabled {
       Environment = [
         "HOME=${homeDir}"
         "PATH=${linearSyncPath}"
-        "BEADS_DOLT_SHARED_SERVER=1"
+        "BEADS_DOLT_SERVER_MODE=1"
+        "BEADS_DOLT_SERVER_HOST=${doltServerHost}"
         "BEADS_DOLT_SERVER_PORT=3307"
-        "BEADS_SHARED_SERVER_DIR=${sharedServerDir}"
+        "BEADS_DOLT_SERVER_USER=root"
         "DOLT_CLI_USER=root"
         "DOLT_CLI_PASSWORD="
         "LINEAR_TEAM_ID=${linearTeamId}"
@@ -268,9 +280,10 @@ lib.mkIf enabled {
           Environment = [
             "HOME=${homeDir}"
             "PATH=${linearSyncPath}"
-            "BEADS_DOLT_SHARED_SERVER=1"
+            "BEADS_DOLT_SERVER_MODE=1"
+            "BEADS_DOLT_SERVER_HOST=${doltServerHost}"
             "BEADS_DOLT_SERVER_PORT=3307"
-            "BEADS_SHARED_SERVER_DIR=${sharedServerDir}"
+            "BEADS_DOLT_SERVER_USER=root"
             "DOLT_CLI_USER=root"
             "DOLT_CLI_PASSWORD="
           ];
