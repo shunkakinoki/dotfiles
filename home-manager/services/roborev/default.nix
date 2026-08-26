@@ -71,8 +71,12 @@ lib.mkIf enabled {
       KillMode = "control-group";
       TimeoutStopSec = 30;
       TasksMax = 2048;
-      CPUQuota = "400%";
-      MemoryMax = "8G";
+      CPUQuota = "1600%";
+      # Eight concurrent review workers each spawn an agent CLI; the previous 8G
+      # ceiling OOM-killed the daemon repeatedly. MemoryHigh throttles via
+      # reclaim before MemoryMax kills the cgroup.
+      MemoryHigh = "24G";
+      MemoryMax = "32G";
     };
     Install = {
       WantedBy = [ "default.target" ];
