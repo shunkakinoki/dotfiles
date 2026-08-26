@@ -4,6 +4,7 @@
 Describe 'Beads Dolt federation synchronization'
 SCRIPT="$PWD/home-manager/services/dolt/federation-sync.sh"
 MODULE="$PWD/home-manager/services/dolt/default.nix"
+CLIENT_ENV_SCRIPT="$PWD/home-manager/services/dolt/client-environment.sh"
 
 Describe 'script properties'
 It 'uses strict bash mode and validates after placeholder replacement'
@@ -119,6 +120,11 @@ End
 Describe 'Home Manager ownership'
 It 'publishes centralized server selection without legacy shared-server variables'
 When run bash -c "grep -F 'BEADS_DOLT_SERVER_MODE = \"1\";' '$MODULE' >/dev/null && grep -F 'BEADS_DOLT_AUTO_START = \"0\";' '$MODULE' >/dev/null && ! grep -F 'BEADS_DOLT_SHARED_SERVER' '$MODULE' >/dev/null && ! grep -F 'BEADS_SHARED_SERVER_DIR' '$MODULE' >/dev/null && grep -F 'systemd.user.sessionVariables' '$MODULE' >/dev/null && grep -F 'launchd.agents.beads-dolt-client-environment' '$MODULE' >/dev/null"
+The status should be success
+End
+
+It 'seeds the launchd client environment from an external script'
+When run bash -c "grep -F 'pkgs.replaceVars ./client-environment.sh' '$MODULE' >/dev/null && grep -F 'launchctl setenv BEADS_DOLT_SERVER_HOST' '$CLIENT_ENV_SCRIPT' >/dev/null && grep -F '@doltServerHost@' '$CLIENT_ENV_SCRIPT' >/dev/null"
 The status should be success
 End
 
