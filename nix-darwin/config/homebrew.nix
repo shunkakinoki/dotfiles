@@ -137,7 +137,6 @@
       "docker-desktop"
       "droid"
       "dropbox"
-      "entire"
       "figma"
       "firefox"
       "flameshot"

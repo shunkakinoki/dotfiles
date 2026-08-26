@@ -176,6 +176,16 @@
           }
         ],
         "matcher": "startup|resume|clear"
+      },
+      {
+        "hooks": [
+          {
+            "command": "command -v traces >/dev/null 2>&1 && traces hook agent session-start --agent codex",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": ""
       }
     ],
     "Stop": [
@@ -207,6 +217,16 @@
             "type": "command"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "command -v traces >/dev/null 2>&1 && traces hook agent agent-done --agent codex",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": ""
       }
     ],
     "UserPromptSubmit": [
@@ -236,6 +256,28 @@
             "type": "command"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "command -v traces >/dev/null 2>&1 && traces hook agent prompt-submitted --agent codex",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "command": "command -v traces >/dev/null 2>&1 && traces hook agent session-end --agent codex",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": ""
       }
     ]
   }

@@ -177,28 +177,6 @@
         "hooks": [
           {
             "async": true,
-            "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code post-task",
-            "timeout": 30,
-            "type": "command"
-          }
-        ],
-        "matcher": "Task"
-      },
-      {
-        "hooks": [
-          {
-            "async": true,
-            "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code post-todo",
-            "timeout": 30,
-            "type": "command"
-          }
-        ],
-        "matcher": "TodoWrite"
-      },
-      {
-        "hooks": [
-          {
-            "async": true,
             "command": "moshi-hook claude-hook",
             "type": "command"
           }
@@ -325,17 +303,6 @@
         "hooks": [
           {
             "async": true,
-            "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code pre-task",
-            "timeout": 30,
-            "type": "command"
-          }
-        ],
-        "matcher": "Task"
-      },
-      {
-        "hooks": [
-          {
-            "async": true,
             "command": "moshi-hook claude-hook",
             "type": "command"
           }
@@ -378,16 +345,6 @@
         "hooks": [
           {
             "async": true,
-            "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code session-end",
-            "timeout": 30,
-            "type": "command"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "async": true,
             "command": "moshi-hook claude-hook",
             "type": "command"
           }
@@ -402,6 +359,15 @@
             "type": "command"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "command -v traces >/dev/null 2>&1 && traces hook agent session-end --agent claude-code",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
       }
     ],
     "SessionStart": [
@@ -417,12 +383,6 @@
             "async": true,
             "command": "$HOME/.claude/hooks/pushover.sh",
             "timeout": 6,
-            "type": "command"
-          },
-          {
-            "async": true,
-            "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code session-start",
-            "timeout": 30,
             "type": "command"
           }
         ]
@@ -444,6 +404,15 @@
             "type": "command"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "command -v traces >/dev/null 2>&1 && traces hook agent session-start --agent claude-code",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
       }
     ],
     "Stop": [
@@ -462,12 +431,6 @@
             "type": "command"
           },
           {
-            "async": true,
-            "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code stop",
-            "timeout": 30,
-            "type": "command"
-          },
-          {
             "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
             "type": "command"
           }
@@ -481,6 +444,15 @@
             "type": "command"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "command -v traces >/dev/null 2>&1 && traces hook agent agent-done --agent claude-code",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
       }
     ],
     "StopFailure": [
@@ -520,12 +492,6 @@
             "command": "jq -c '{timestamp: (now | todate), prompt: .prompt[0:500]}' \u003e\u003e ~/.claude/prompt-history.jsonl",
             "timeout": 3,
             "type": "command"
-          },
-          {
-            "async": true,
-            "command": "command -v entire \u003e/dev/null 2\u003e\u00261 \u0026\u0026 entire hooks claude-code user-prompt-submit",
-            "timeout": 30,
-            "type": "command"
           }
         ]
       },
@@ -537,6 +503,15 @@
             "type": "command"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "command -v traces >/dev/null 2>&1 && traces hook agent prompt-submitted --agent claude-code",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
       }
     ],
     "WorktreeCreate": [
