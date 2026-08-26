@@ -1,0 +1,1 @@
+1. roboRev: bump to 6 workers after fixing codex as default agent (I recommended fixing codex + default_agent=opencode first)let's bump to 8 and pr and build + switch on kyber
