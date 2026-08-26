@@ -33,15 +33,9 @@ let
     DOLT_CLI_USER = "root";
     DOLT_CLI_PASSWORD = "";
   };
-  beadsLaunchctlEnvironmentScript = pkgs.writeShellScript "beads-dolt-client-environment" ''
-    /bin/launchctl setenv BEADS_DOLT_AUTO_START 0
-    /bin/launchctl setenv BEADS_DOLT_SERVER_MODE 1
-    /bin/launchctl setenv BEADS_DOLT_SERVER_HOST ${doltServerHost}
-    /bin/launchctl setenv BEADS_DOLT_SERVER_PORT 3307
-    /bin/launchctl setenv BEADS_DOLT_SERVER_USER beads
-    /bin/launchctl setenv DOLT_CLI_USER root
-    /bin/launchctl setenv DOLT_CLI_PASSWORD ""
-  '';
+  beadsLaunchctlEnvironmentScript = pkgs.replaceVars ./client-environment.sh {
+    inherit doltServerHost;
+  };
   linearSyncEnabled = isKyber;
   # Every supported agent host writes directly to Kyber's SQL server. Kyber
   # alone publishes that shared history to the configured remotes.
@@ -96,7 +90,10 @@ lib.mkIf clientEnabled {
   launchd.agents.beads-dolt-client-environment = lib.mkIf pkgs.stdenv.isDarwin {
     enable = true;
     config = {
-      ProgramArguments = [ beadsLaunchctlEnvironmentScript ];
+      ProgramArguments = [
+        "${pkgs.bash}/bin/bash"
+        "${beadsLaunchctlEnvironmentScript}"
+      ];
       RunAtLoad = true;
       ProcessType = "Background";
     };
