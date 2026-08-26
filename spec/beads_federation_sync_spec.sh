@@ -117,6 +117,11 @@ End
 End
 
 Describe 'Home Manager ownership'
+It 'loads the launchctl client environment from an external script'
+When run bash -c "grep -F 'pkgs.replaceVars ./client-environment.sh' '$MODULE' >/dev/null && grep -F 'BEADS_DOLT_SERVER_HOST \"@doltServerHost@\"' '$PWD/home-manager/services/dolt/client-environment.sh' >/dev/null"
+The status should be success
+End
+
 It 'publishes centralized server selection without legacy shared-server variables'
 When run bash -c "grep -F 'BEADS_DOLT_SERVER_MODE = \"1\";' '$MODULE' >/dev/null && grep -F 'BEADS_DOLT_AUTO_START = \"0\";' '$MODULE' >/dev/null && ! grep -F 'BEADS_DOLT_SHARED_SERVER' '$MODULE' >/dev/null && ! grep -F 'BEADS_SHARED_SERVER_DIR' '$MODULE' >/dev/null && grep -F 'systemd.user.sessionVariables' '$MODULE' >/dev/null && grep -F 'launchd.agents.beads-dolt-client-environment' '$MODULE' >/dev/null"
 The status should be success
@@ -136,6 +141,11 @@ It 'runs the single remote publisher only on Kyber'
 When run grep -F 'federationSyncEnabled = isKyber;' "$MODULE"
 The status should be success
 The output should include 'federationSyncEnabled = isKyber;'
+End
+
+It 'keeps federation on the five-minute boundary without an active-time duplicate'
+When run bash -c "timer=\$(sed -n '/systemd.user.timers.dolt-federation-sync/,/^  };/p' '$MODULE'); grep -F 'OnBootSec = \"2min\";' <<<\"\$timer\" >/dev/null && grep -F 'OnCalendar = \"*-*-* *:00/5:00\";' <<<\"\$timer\" >/dev/null && ! grep -F 'OnUnitActiveSec' <<<\"\$timer\" >/dev/null && grep -F 'Persistent = true;' <<<\"\$timer\" >/dev/null"
+The status should be success
 End
 
 It 'requires a Dolt version containing the gitblobstore missing-blob fix'
