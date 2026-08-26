@@ -20,6 +20,16 @@
             "async": true
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "command -v traces >/dev/null 2>&1 && traces hook agent session-start --agent grok",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": ""
       }
     ],
     "UserPromptSubmit": [
@@ -31,6 +41,16 @@
             "async": true
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "command -v traces >/dev/null 2>&1 && traces hook agent prompt-submitted --agent grok",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": ""
       }
     ],
     "PreToolUse": [
@@ -103,6 +123,16 @@
             "async": true
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "command -v traces >/dev/null 2>&1 && traces hook agent agent-done --agent grok",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": ""
       }
     ],
     "SessionEnd": [
@@ -114,6 +144,16 @@
             "async": true
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "command -v traces >/dev/null 2>&1 && traces hook agent session-end --agent grok",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": ""
       }
     ]
   }

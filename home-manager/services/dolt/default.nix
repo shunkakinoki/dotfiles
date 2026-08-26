@@ -278,8 +278,8 @@ lib.mkIf clientEnabled {
   systemd.user.timers.dolt-linear-sync = lib.mkIf (pkgs.stdenv.isLinux && linearSyncEnabled) {
     Unit.Description = "Periodically synchronize Beads with Linear";
     Timer = {
-      OnBootSec = "2min";
-      OnCalendar = "*-*-* *:00/15:00";
+      OnBootSec = "4min";
+      OnCalendar = "*-*-* *:02/15:00";
       Persistent = true;
       Unit = "dolt-linear-sync.service";
     };
@@ -323,7 +323,6 @@ lib.mkIf clientEnabled {
     Timer = {
       OnBootSec = "2min";
       OnCalendar = "*-*-* *:00/5:00";
-      OnUnitActiveSec = "${toString federationSyncIntervalSeconds}s";
       Persistent = true;
       Unit = "dolt-federation-sync.service";
     };

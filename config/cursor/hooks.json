@@ -27,6 +27,9 @@
     "sessionStart": [
       {
         "command": "bd cursor-hook sessionStart"
+      },
+      {
+        "command": "command -v traces >/dev/null 2>&1 && traces hook agent session-start --agent cursor"
       }
     ],
     "beforeMCPExecution": [
@@ -79,6 +82,9 @@
       },
       {
         "command": "moshi-hook cursor-hook"
+      },
+      {
+        "command": "command -v traces >/dev/null 2>&1 && traces hook agent prompt-submitted --agent cursor"
       }
     ],
     "stop": [
@@ -92,6 +98,14 @@
       },
       {
         "command": "moshi-hook cursor-hook"
+      },
+      {
+        "command": "command -v traces >/dev/null 2>&1 && traces hook agent agent-done --agent cursor"
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": "command -v traces >/dev/null 2>&1 && traces hook agent session-end --agent cursor"
       }
     ]
   },
