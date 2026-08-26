@@ -70,7 +70,6 @@ with pkgs;
   google-cloud-sdk
   gping
   grc
-  pkgs.llm-agents.grok
   gron
   pkgs.llm-agents.herdr
   hexyl
@@ -159,6 +158,7 @@ with pkgs;
   gcc
   gemini-cli
   glib
+  pkgs.llm-agents.grok
   keychain
   libiconv
   libsecret
