@@ -117,14 +117,20 @@ End
 End
 
 Describe 'Home Manager ownership'
-It 'enables the shared Dolt server on Kyber, Galactica, and Matic'
-When run bash -c "grep -F 'enabled = isGalactica || isKyber || isMatic;' '$MODULE' >/dev/null"
+It 'enables Kyber Dolt clients on Galactica, Kyber, and Matic'
+When run bash -c "grep -F 'clientEnabled = isGalactica || isKyber || isMatic;' '$MODULE' >/dev/null && grep -F 'doltServerHost = if isKyber then \"127.0.0.1\" else \"kyber.tail950b36.ts.net\";' '$MODULE' >/dev/null"
 The status should be success
 End
 
-It 'runs federation-only sync on Galactica and Matic'
-When run bash -c "grep -F 'federationSyncEnabled = isGalactica || isMatic;' '$MODULE' >/dev/null && grep -F 'launchd.agents.dolt-federation-sync' '$MODULE' >/dev/null && grep -F 'systemd.user.timers.dolt-federation-sync' '$MODULE' >/dev/null"
+It 'runs the Dolt server and publisher only on Kyber'
+When run bash -c "grep -F 'serverEnabled = isKyber;' '$MODULE' >/dev/null && grep -F 'pkgs.stdenv.isLinux && serverEnabled' '$MODULE' >/dev/null"
 The status should be success
+End
+
+It 'runs the single remote publisher only on Kyber'
+When run grep -F 'federationSyncEnabled = isKyber;' "$MODULE"
+The status should be success
+The output should include 'federationSyncEnabled = isKyber;'
 End
 
 It 'requires a Dolt version containing the gitblobstore missing-blob fix'
