@@ -12,6 +12,10 @@ bd close <id>         # Complete work
 bd dolt push          # Push beads data to remote
 ```
 
+Use `bd ping` for routine connectivity checks. `bd doctor` is reserved for an
+explicit recovery owner because concurrent doctor runs can starve normal Beads
+transactions. Agents must not launch it as a generic timeout response.
+
 ## Non-Interactive Shell Commands
 
 **ALWAYS use non-interactive flags** with file operations to avoid hanging on confirmation prompts.

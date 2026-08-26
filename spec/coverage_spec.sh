@@ -277,6 +277,10 @@ It 'has spec file for home-manager/services/dolt/start.sh'
 The path "spec/dolt_start_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/dolt/client-environment.sh'
+The path "spec/beads_federation_sync_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/dolt/backup-dolt-main.sh'
 The path "spec/backup_dolt_main_spec.sh" should be exist
 End
@@ -598,6 +602,7 @@ home-manager/services/docker-postgres/start-postgres.sh
 home-manager/services/docker/docker-setup.sh
 home-manager/services/docker/setup-docker.sh
 home-manager/services/dolt/start.sh
+home-manager/services/dolt/client-environment.sh
 home-manager/services/dolt/backup-dolt-main.sh
 home-manager/services/dolt/beads-linear-complete.sh
 home-manager/services/dolt/federation-sync.sh
