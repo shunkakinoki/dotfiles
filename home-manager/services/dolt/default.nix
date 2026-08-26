@@ -73,7 +73,7 @@ lib.mkIf clientEnabled {
     BEADS_DOLT_SERVER_MODE = "1";
     BEADS_DOLT_SERVER_HOST = doltServerHost;
     BEADS_DOLT_SERVER_PORT = "3307";
-    BEADS_DOLT_SERVER_USER = "root";
+    BEADS_DOLT_SERVER_USER = "beads";
     DOLT_CLI_USER = "root";
     DOLT_CLI_PASSWORD = "";
     LINEAR_TEAM_ID = linearTeamId;
@@ -137,7 +137,7 @@ lib.mkIf clientEnabled {
         BEADS_DOLT_SERVER_MODE = "1";
         BEADS_DOLT_SERVER_HOST = doltServerHost;
         BEADS_DOLT_SERVER_PORT = "3307";
-        BEADS_DOLT_SERVER_USER = "root";
+        BEADS_DOLT_SERVER_USER = "beads";
         DOLT_CLI_USER = "root";
         DOLT_CLI_PASSWORD = "";
         LINEAR_TEAM_ID = linearTeamId;
@@ -164,7 +164,7 @@ lib.mkIf clientEnabled {
         BEADS_DOLT_SERVER_MODE = "1";
         BEADS_DOLT_SERVER_HOST = doltServerHost;
         BEADS_DOLT_SERVER_PORT = "3307";
-        BEADS_DOLT_SERVER_USER = "root";
+        BEADS_DOLT_SERVER_USER = "beads";
         DOLT_CLI_USER = "root";
         DOLT_CLI_PASSWORD = "";
       };
@@ -240,7 +240,7 @@ lib.mkIf clientEnabled {
         "BEADS_DOLT_SERVER_MODE=1"
         "BEADS_DOLT_SERVER_HOST=${doltServerHost}"
         "BEADS_DOLT_SERVER_PORT=3307"
-        "BEADS_DOLT_SERVER_USER=root"
+        "BEADS_DOLT_SERVER_USER=beads"
         "DOLT_CLI_USER=root"
         "DOLT_CLI_PASSWORD="
         "LINEAR_TEAM_ID=${linearTeamId}"
@@ -283,7 +283,7 @@ lib.mkIf clientEnabled {
             "BEADS_DOLT_SERVER_MODE=1"
             "BEADS_DOLT_SERVER_HOST=${doltServerHost}"
             "BEADS_DOLT_SERVER_PORT=3307"
-            "BEADS_DOLT_SERVER_USER=root"
+            "BEADS_DOLT_SERVER_USER=beads"
             "DOLT_CLI_USER=root"
             "DOLT_CLI_PASSWORD="
           ];
