@@ -117,6 +117,11 @@ End
 End
 
 Describe 'Home Manager ownership'
+It 'publishes centralized server selection without legacy shared-server variables'
+When run bash -c "grep -F 'BEADS_DOLT_SERVER_MODE = \"1\";' '$MODULE' >/dev/null && grep -F 'BEADS_DOLT_AUTO_START = \"0\";' '$MODULE' >/dev/null && ! grep -F 'BEADS_DOLT_SHARED_SERVER' '$MODULE' >/dev/null && ! grep -F 'BEADS_SHARED_SERVER_DIR' '$MODULE' >/dev/null && grep -F 'systemd.user.sessionVariables' '$MODULE' >/dev/null && grep -F 'launchd.agents.beads-dolt-client-environment' '$MODULE' >/dev/null"
+The status should be success
+End
+
 It 'enables Kyber Dolt clients on Galactica, Kyber, and Matic'
 When run bash -c "grep -F 'clientEnabled = isGalactica || isKyber || isMatic;' '$MODULE' >/dev/null && grep -F 'doltServerHost = if isKyber then \"127.0.0.1\" else \"kyber.tail950b36.ts.net\";' '$MODULE' >/dev/null"
 The status should be success

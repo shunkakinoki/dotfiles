@@ -24,6 +24,24 @@ let
   clientEnabled = isGalactica || isKyber || isMatic;
   serverEnabled = isKyber;
   doltServerHost = if isKyber then "127.0.0.1" else "kyber.tail950b36.ts.net";
+  beadsClientEnvironment = {
+    BEADS_DOLT_AUTO_START = "0";
+    BEADS_DOLT_SERVER_MODE = "1";
+    BEADS_DOLT_SERVER_HOST = doltServerHost;
+    BEADS_DOLT_SERVER_PORT = "3307";
+    BEADS_DOLT_SERVER_USER = "beads";
+    DOLT_CLI_USER = "root";
+    DOLT_CLI_PASSWORD = "";
+  };
+  beadsLaunchctlEnvironmentScript = pkgs.writeShellScript "beads-dolt-client-environment" ''
+    /bin/launchctl setenv BEADS_DOLT_AUTO_START 0
+    /bin/launchctl setenv BEADS_DOLT_SERVER_MODE 1
+    /bin/launchctl setenv BEADS_DOLT_SERVER_HOST ${doltServerHost}
+    /bin/launchctl setenv BEADS_DOLT_SERVER_PORT 3307
+    /bin/launchctl setenv BEADS_DOLT_SERVER_USER beads
+    /bin/launchctl setenv DOLT_CLI_USER root
+    /bin/launchctl setenv DOLT_CLI_PASSWORD ""
+  '';
   linearSyncEnabled = isKyber;
   # Every supported agent host writes directly to Kyber's SQL server. Kyber
   # alone publishes that shared history to the configured remotes.
@@ -69,14 +87,19 @@ lib.mkIf clientEnabled {
     }
   ];
 
-  home.sessionVariables = {
-    BEADS_DOLT_SERVER_MODE = "1";
-    BEADS_DOLT_SERVER_HOST = doltServerHost;
-    BEADS_DOLT_SERVER_PORT = "3307";
-    BEADS_DOLT_SERVER_USER = "beads";
-    DOLT_CLI_USER = "root";
-    DOLT_CLI_PASSWORD = "";
+  home.sessionVariables = beadsClientEnvironment // {
     LINEAR_TEAM_ID = linearTeamId;
+  };
+
+  # GUI applications do not source shell session variables. Seed launchd's
+  # per-user environment so newly launched agent daemons use Kyber directly.
+  launchd.agents.beads-dolt-client-environment = lib.mkIf pkgs.stdenv.isDarwin {
+    enable = true;
+    config = {
+      ProgramArguments = [ beadsLaunchctlEnvironmentScript ];
+      RunAtLoad = true;
+      ProcessType = "Background";
+    };
   };
 
   home.file.".local/bin/beads-linear-complete" = lib.mkIf linearSyncEnabled {
@@ -134,6 +157,7 @@ lib.mkIf clientEnabled {
       EnvironmentVariables = {
         HOME = homeDir;
         PATH = linearSyncPath;
+        BEADS_DOLT_AUTO_START = "0";
         BEADS_DOLT_SERVER_MODE = "1";
         BEADS_DOLT_SERVER_HOST = doltServerHost;
         BEADS_DOLT_SERVER_PORT = "3307";
@@ -161,6 +185,7 @@ lib.mkIf clientEnabled {
       EnvironmentVariables = {
         HOME = homeDir;
         PATH = linearSyncPath;
+        BEADS_DOLT_AUTO_START = "0";
         BEADS_DOLT_SERVER_MODE = "1";
         BEADS_DOLT_SERVER_HOST = doltServerHost;
         BEADS_DOLT_SERVER_PORT = "3307";
@@ -193,6 +218,10 @@ lib.mkIf clientEnabled {
       WantedBy = [ "default.target" ];
     };
   };
+
+  # Persist the same client selection in the user manager so Herdr, OpenClaw,
+  # and other systemd-launched agents do not inherit a stale shared-server mode.
+  systemd.user.sessionVariables = lib.mkIf pkgs.stdenv.isLinux beadsClientEnvironment;
 
   systemd.user.services.dolt-backup-main = lib.mkIf (pkgs.stdenv.isLinux && serverEnabled) {
     Unit = {
@@ -237,6 +266,7 @@ lib.mkIf clientEnabled {
       Environment = [
         "HOME=${homeDir}"
         "PATH=${linearSyncPath}"
+        "BEADS_DOLT_AUTO_START=0"
         "BEADS_DOLT_SERVER_MODE=1"
         "BEADS_DOLT_SERVER_HOST=${doltServerHost}"
         "BEADS_DOLT_SERVER_PORT=3307"
@@ -280,6 +310,7 @@ lib.mkIf clientEnabled {
           Environment = [
             "HOME=${homeDir}"
             "PATH=${linearSyncPath}"
+            "BEADS_DOLT_AUTO_START=0"
             "BEADS_DOLT_SERVER_MODE=1"
             "BEADS_DOLT_SERVER_HOST=${doltServerHost}"
             "BEADS_DOLT_SERVER_PORT=3307"
