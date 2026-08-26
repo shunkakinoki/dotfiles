@@ -92,7 +92,7 @@ lib.mkIf clientEnabled {
     config = {
       ProgramArguments = [
         "${pkgs.bash}/bin/bash"
-        beadsLaunchctlEnvironmentScript
+        "${beadsLaunchctlEnvironmentScript}"
       ];
       RunAtLoad = true;
       ProcessType = "Background";

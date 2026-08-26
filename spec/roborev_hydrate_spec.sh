@@ -47,6 +47,11 @@ When run grep -F 'max_workers = 4' "$PWD/config/roborev/config.template.toml"
 The output should include 'max_workers = 4'
 End
 
+It 'pins the default agent to opencode'
+When run grep -F "default_agent = 'opencode'" "$PWD/config/roborev/config.template.toml"
+The output should include "default_agent = 'opencode'"
+End
+
 It 'polls promptly without canceling running reviews'
 When run bash -c "grep -E 'poll_interval = \"1m\"|batch_timeout = \"0\"' '$PWD/config/roborev/config.template.toml'"
 The output should include 'poll_interval = "1m"'
