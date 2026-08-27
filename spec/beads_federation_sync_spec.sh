@@ -127,20 +127,19 @@ When run bash -c "grep -F 'BEADS_DOLT_SERVER_MODE = \"1\";' '$MODULE' >/dev/null
 The status should be success
 End
 
-It 'enables Kyber Dolt clients on Galactica, Kyber, and Matic'
-When run bash -c "grep -F 'clientEnabled = isGalactica || isKyber || isMatic;' '$MODULE' >/dev/null && grep -F 'doltServerHost = if isKyber then \"127.0.0.1\" else \"kyber.tail950b36.ts.net\";' '$MODULE' >/dev/null"
+It 'enables Dolt clients on Galactica, Kyber, and Matic'
+When run bash -c "grep -F 'clientEnabled = isGalactica || isKyber || isMatic;' '$MODULE' >/dev/null && grep -F 'doltServerHost = \"127.0.0.1\";' '$MODULE' >/dev/null"
 The status should be success
 End
 
-It 'runs the Dolt server and publisher only on Kyber'
-When run bash -c "grep -F 'serverEnabled = isKyber;' '$MODULE' >/dev/null && grep -F 'pkgs.stdenv.isLinux && serverEnabled' '$MODULE' >/dev/null"
+It 'serves Dolt locally on every client host'
+When run bash -c "grep -F 'serverEnabled = clientEnabled;' '$MODULE' >/dev/null && grep -F 'pkgs.stdenv.isLinux && serverEnabled' '$MODULE' >/dev/null && grep -F 'pkgs.stdenv.isDarwin && serverEnabled' '$MODULE' >/dev/null"
 The status should be success
 End
 
-It 'runs the single remote publisher only on Kyber'
-When run grep -F 'federationSyncEnabled = isKyber;' "$MODULE"
+It 'federates every client host and publishes only from Kyber'
+When run bash -c "grep -F 'federationSyncEnabled = clientEnabled;' '$MODULE' >/dev/null && grep -F 'publisherEnabled = isKyber;' '$MODULE' >/dev/null && ! grep -F 'dolt-backup-main = lib.mkIf (pkgs.stdenv.isLinux && serverEnabled)' '$MODULE' >/dev/null && ! grep -F 'dolt-backup-main = lib.mkIf (pkgs.stdenv.isDarwin && serverEnabled)' '$MODULE' >/dev/null"
 The status should be success
-The output should include 'federationSyncEnabled = isKyber;'
 End
 
 It 'keeps federation on the five-minute boundary without an active-time duplicate'

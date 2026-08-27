@@ -152,8 +152,8 @@ When run grep -F 'beadsDir = "${sharedServerDir}/dolt";' "$MODULE"
 The output should include 'beadsDir = "${sharedServerDir}/dolt";'
 End
 
-It 'routes supported clients to the Kyber server'
-When run bash -c "grep -F 'doltServerHost = if isKyber then \"127.0.0.1\" else \"kyber.tail950b36.ts.net\";' '$MODULE' >/dev/null && grep -F 'BEADS_DOLT_SERVER_HOST = doltServerHost;' '$MODULE' >/dev/null && grep -F 'BEADS_DOLT_SERVER_USER = \"beads\";' '$MODULE' >/dev/null"
+It 'routes every client to its own local server'
+When run bash -c "grep -F 'doltServerHost = \"127.0.0.1\";' '$MODULE' >/dev/null && grep -F 'BEADS_DOLT_SERVER_HOST = doltServerHost;' '$MODULE' >/dev/null && grep -F 'BEADS_DOLT_SERVER_USER = \"root\";' '$MODULE' >/dev/null && ! grep -F 'kyber.tail950b36.ts.net' '$MODULE' >/dev/null"
 The status should be success
 End
 
