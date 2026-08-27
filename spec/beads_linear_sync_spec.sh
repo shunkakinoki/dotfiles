@@ -118,6 +118,16 @@ When run bash -c "checkpoint=\$(grep -n '\"\$cycle_started\" >\"\$sync_checkpoin
 The status should be success
 End
 
+It 'skips terminal Beads already recorded in the deferred push progress'
+When run bash -c "grep -F 'push_progress_file=\"\$sync_state_dir/push-progress-\$repo_slug\"' '$SCRIPT' >/dev/null && grep -F '(\$already_pushed | index(\$entry)) | not' '$SCRIPT' >/dev/null"
+The status should be success
+End
+
+It 'clears push progress only after the cycle checkpoint is durable'
+When run bash -c "checkpoint=\$(grep -n '\"\$cycle_started\" >\"\$sync_checkpoint_file.tmp\"' '$SCRIPT' | cut -d: -f1); clear=\$(grep -n 'rm -f \"\$push_progress_file\"' '$SCRIPT' | cut -d: -f1); test \"\$clear\" -gt \"\$checkpoint\""
+The status should be success
+End
+
 It 'federates Beads before and after Linear reconciliation'
 When run bash -c "grep -F 'federate_beads \"pre-sync\"' '$SCRIPT' >/dev/null && grep -F 'federate_beads \"post-sync\"' '$SCRIPT' >/dev/null && grep -F 'federate_beads \"post-completion push\"' '$SCRIPT' >/dev/null"
 The status should be success
@@ -142,6 +152,7 @@ setup_reconciliation() {
   FSCK_TIMEOUT_LOG="$TEST_ROOT/fsck-timeouts.log"
   DOLT_LOG="$TEST_ROOT/dolt-commands.log"
   SYNC_COUNT="$TEST_ROOT/sync-count"
+  PUSH_COUNT="$TEST_ROOT/push-count"
   ISSUE_STATUS_FILE="$TEST_ROOT/issue-status"
   ISSUE_REF_FILE="$TEST_ROOT/issue-ref"
   STATE_HOME="$TEST_ROOT/state"
@@ -158,7 +169,7 @@ setup_reconciliation() {
   CHECKPOINT_FILE="$STATE_HOME/beads-linear-sync/last-success-$repo_slug"
   export DOTFILES_ENV_FILE="$ENV_FILE"
   export DOLT_LOG FSCK_TIMEOUT_LOG ISSUE_REF_FILE ISSUE_STATUS_FILE
-  for command in cat chmod date env mkdir mv sleep timeout; do
+  for command in cat chmod date env head mkdir mv paste rm sleep tail timeout; do
     ln -s "$(command -v "$command")" "$COREUTILS/bin/$command"
   done
   cat >"$UTIL_LINUX/bin/flock" <<'EOF'
@@ -228,6 +239,19 @@ case "${1:-} ${2:-}" in
     case "${FAKE_LINEAR_MODE:-success}" in
       rate-limit)
         printf '%s\n' 'rate limit circuit breaker is open'
+        ;;
+      rate-limit-after-one)
+        if [[ " $* " == *" --push "* ]]; then
+          push_count=0
+          if [ -s "${PUSH_COUNT:?}" ]; then
+            push_count=$(<"$PUSH_COUNT")
+          fi
+          push_count=$((push_count + 1))
+          printf '%s\n' "$push_count" >"$PUSH_COUNT"
+          if [ "$push_count" -gt 1 ]; then
+            printf '%s\n' 'rate limit circuit breaker is open'
+          fi
+        fi
         ;;
       hard-failure)
         exit 23
@@ -341,6 +365,19 @@ When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MOD
 The status should be success
 The output should include 'next 900-second run will retry'
 The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'resumes a deferred terminal push without repeating pushed batches'
+closed_json="$(jq -nc '[range(1;13) | {id:("df-" + tostring),status:"closed",updated_at:"2099-01-01T00:00:00Z",external_ref:("https://linear.app/test/issue/TEST-" + tostring + "/x")}]')"
+progress_file="$STATE_HOME/beads-linear-sync/push-progress-test%2Frepo-one"
+When run bash -c "env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' PUSH_COUNT='$PUSH_COUNT' FAKE_LINEAR_MODE=rate-limit-after-one FAKE_LIST_JSON='$closed_json' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' && test -s '$progress_file' && env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$closed_json' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' && test \"\$(grep -c -- '--issues df-1,df-2,df-3,df-4,df-5,df-6,df-7,df-8,df-9,df-10 --no-wait' '$COMMAND_LOG')\" -eq 1"
+The status should be success
+The output should include 'terminal Beads batch 1/2'
+The output should include 'next 900-second run will retry'
+The output should include 'terminal Beads batch 1/1'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-11,df-12 --no-wait'
+The file "$CHECKPOINT_FILE" should be exist
+The file "$progress_file" should not be exist
 End
 
 It 'fails closed after an ordinary Linear pull failure'
