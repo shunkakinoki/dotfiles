@@ -213,7 +213,11 @@ lib.mkIf clientEnabled {
       # Kyber's WAN firewall drops all new public-interface ingress. Binding
       # all addresses makes the SQL service reachable on tailscale0 while
       # retaining the public-ingress deny boundary.
-      Environment = [ "BEADS_DOLT_LISTEN_HOST=0.0.0.0" ];
+      Environment = [
+        "BEADS_DOLT_LISTEN_HOST=0.0.0.0"
+        "DOLT_CLI_USER=root"
+        "DOLT_CLI_PASSWORD="
+      ];
     };
     Install = {
       WantedBy = [ "default.target" ];
