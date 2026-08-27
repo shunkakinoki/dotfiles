@@ -48,7 +48,7 @@ The contents of file "$TEMP_HOME/.gemini/antigravity-cli/settings.json" should e
 End
 
 It 'installs every managed named hook into the global customization root'
-When run bash -c 'HOME="$1" bash "$2" "$3" "$4" jq && jq -e '\''(keys == ["moshi-hook", "orca-status", "traces-share-to-traces"]) and (.["traces-share-to-traces"].Stop[0].command | contains("traces hook agent agent-done --agent antigravity"))'\'' "$1/.gemini/config/hooks.json" >/dev/null && find "$1/.gemini/config/hooks.json" -prune -perm 644 -print -quit | grep -q .' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS" "$HOOKS"
+When run bash -c 'HOME="$1" bash "$2" "$3" "$4" jq && jq -e '\''(keys == ["moshi-hook", "traces-share-to-traces"]) and (.["traces-share-to-traces"].Stop[0].command | contains("traces hook agent agent-done --agent antigravity"))'\'' "$1/.gemini/config/hooks.json" >/dev/null && find "$1/.gemini/config/hooks.json" -prune -perm 644 -print -quit | grep -q .' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS" "$HOOKS"
 The status should be success
 The path "$TEMP_HOME/.gemini/config/hooks.json" should be file
 The path "$TEMP_HOME/.gemini/config/hooks.json" should be writable
@@ -68,12 +68,12 @@ cat >"$TEMP_HOME/.gemini/config/hooks.json" <<'JSON'
       }
     ]
   },
-  "some-other-tool": {
+  "orca-status": {
     "enabled": true
   }
 }
 JSON
-When run bash -c 'HOME="$1" bash "$2" "$3" "$4" jq && jq -e '\''(has("some-other-tool") | not) and (.["moshi-hook"].Stop[0].command == "moshi-hook antigravity-hook Stop")'\'' "$1/.gemini/config/hooks.json" >/dev/null' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS" "$HOOKS"
+When run bash -c 'HOME="$1" bash "$2" "$3" "$4" jq && jq -e '\''(has("orca-status") | not) and (.["moshi-hook"].Stop[0].command == "moshi-hook antigravity-hook Stop")'\'' "$1/.gemini/config/hooks.json" >/dev/null' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS" "$HOOKS"
 The status should be success
 End
 
