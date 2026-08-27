@@ -335,7 +335,7 @@ if [ "$operation" = "--complete" ]; then
   fi
 
   completion_reference_pending=0
-  if [[ ! $completion_ref =~ /issue/([A-Z][A-Z0-9]*-[0-9]+)/ ]]; then
+  if [[ ! $completion_ref =~ /issue/([A-Z][A-Z0-9]*-[0-9]+)(/|$) ]]; then
     # The marker is Beads-owned durable state, not a machine-local retry file.
     # It lets the periodic sole writer recover a rate-limited first publish
     # without selecting every unrelated locally closed Bead.
@@ -371,7 +371,7 @@ if [ "$operation" = "--complete" ]; then
 
   completion_issue="$("$bd_cli" -C "$repo_dir" show "$completion_bead_id" --json)"
   completion_ref="$(@jq@/bin/jq -r '.[0].external_ref // empty' <<<"$completion_issue")"
-  if [[ ! $completion_ref =~ /issue/([A-Z][A-Z0-9]*-[0-9]+)/ ]]; then
+  if [[ ! $completion_ref =~ /issue/([A-Z][A-Z0-9]*-[0-9]+)(/|$) ]]; then
     log "Accepted Bead does not have a Linear issue reference after push"
     exit 65
   fi
@@ -506,7 +506,7 @@ if [ -n "$pending_completion_ids" ]; then
   for pending_completion_id in "${pending_completion_id_array[@]}"; do
     pending_completion_issue="$("$bd_cli" -C "$repo_dir" show "$pending_completion_id" --json)"
     pending_completion_ref="$(@jq@/bin/jq -r '.[0].external_ref // empty' <<<"$pending_completion_issue")"
-    if [[ $pending_completion_ref =~ /issue/([A-Z][A-Z0-9]*-[0-9]+)/ ]]; then
+    if [[ $pending_completion_ref =~ /issue/([A-Z][A-Z0-9]*-[0-9]+)(/|$) ]]; then
       recovered_pending_id_array+=("$pending_completion_id")
     else
       unresolved_pending_completion=1

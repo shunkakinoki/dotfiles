@@ -534,6 +534,18 @@ The contents of file "$COMMAND_LOG" should not include 'linear sync --push --iss
 The contents of file "$ISSUE_REF_FILE" should include 'TEST-999'
 End
 
+It 'recovers pending completion when the Linear reference has no trailing title slug'
+printf '%s\n' closed >"$ISSUE_STATUS_FILE"
+printf '%s\n' 'https://linear.app/test/issue/TEST-999' >"$ISSUE_REF_FILE"
+mkdir -p "$(dirname "$CHECKPOINT_FILE")"
+printf '%s\n' '2099-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
+pending_json='[{"id":"df-accepted","status":"closed","updated_at":"2020-01-01T00:00:00Z","metadata":{"linear_completion_pending":true}}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=push-no-reference FAKE_LIST_JSON="$pending_json" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Pulling complete Linear state'
+The contents of file "$COMMAND_LOG" should include 'update df-accepted --unset-metadata linear_completion_pending'
+End
+
 It 'keeps the retry marker when a successful push does not persist a Linear reference'
 printf '%s\n' closed >"$ISSUE_STATUS_FILE"
 mkdir -p "$(dirname "$CHECKPOINT_FILE")"
