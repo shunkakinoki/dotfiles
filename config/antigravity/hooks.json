@@ -1,4 +1,57 @@
 {
+  "moshi-hook": {
+    "enabled": true,
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "moshi-hook antigravity-hook PreInvocation",
+        "timeout": 5
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "moshi-hook antigravity-hook Stop",
+        "timeout": 5
+      }
+    ]
+  },
+  "orca-status": {
+    "enabled": true,
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "if [ -x \"$HOME/.orca/agent-hooks/antigravity-hook.sh\" ]; then ORCA_ANTIGRAVITY_EVENT='PreInvocation' /bin/sh \"$HOME/.orca/agent-hooks/antigravity-hook.sh\"; else { command -p cat 2>/dev/null || cat; } >/dev/null 2>&1 || :; fi",
+        "timeout": 10
+      }
+    ],
+    "PostInvocation": [
+      {
+        "type": "command",
+        "command": "if [ -x \"$HOME/.orca/agent-hooks/antigravity-hook.sh\" ]; then ORCA_ANTIGRAVITY_EVENT='PostInvocation' /bin/sh \"$HOME/.orca/agent-hooks/antigravity-hook.sh\"; else { command -p cat 2>/dev/null || cat; } >/dev/null 2>&1 || :; fi",
+        "timeout": 10
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "if [ -x \"$HOME/.orca/agent-hooks/antigravity-hook.sh\" ]; then ORCA_ANTIGRAVITY_EVENT='Stop' /bin/sh \"$HOME/.orca/agent-hooks/antigravity-hook.sh\"; else { command -p cat 2>/dev/null || cat; } >/dev/null 2>&1 || :; fi",
+        "timeout": 10
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -x \"$HOME/.orca/agent-hooks/antigravity-hook.sh\" ]; then ORCA_ANTIGRAVITY_EVENT='PostToolUse' /bin/sh \"$HOME/.orca/agent-hooks/antigravity-hook.sh\"; else { command -p cat 2>/dev/null || cat; } >/dev/null 2>&1 || :; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
   "traces-share-to-traces": {
     "enabled": true,
     "Stop": [
