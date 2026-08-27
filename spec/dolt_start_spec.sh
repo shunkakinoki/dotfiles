@@ -156,4 +156,19 @@ It 'routes supported clients to the Kyber server'
 When run bash -c "grep -F 'doltServerHost = if isKyber then \"127.0.0.1\" else \"kyber.tail950b36.ts.net\";' '$MODULE' >/dev/null && grep -F 'BEADS_DOLT_SERVER_HOST = doltServerHost;' '$MODULE' >/dev/null && grep -F 'BEADS_DOLT_SERVER_USER = \"beads\";' '$MODULE' >/dev/null"
 The status should be success
 End
+
+It 'binds the systemd dolt service to all interfaces for tailnet peers'
+When run grep -F 'BEADS_DOLT_LISTEN_HOST=0.0.0.0' "$MODULE"
+The output should include 'BEADS_DOLT_LISTEN_HOST=0.0.0.0'
+End
+
+It 'provides DOLT_CLI_USER=root in the systemd dolt service environment'
+When run grep -F '"DOLT_CLI_USER=root"' "$MODULE"
+The output should include '"DOLT_CLI_USER=root"'
+End
+
+It 'provides an explicit empty DOLT_CLI_PASSWORD in the systemd dolt service environment'
+When run grep -F '"DOLT_CLI_PASSWORD="' "$MODULE"
+The output should include '"DOLT_CLI_PASSWORD="'
+End
 End
