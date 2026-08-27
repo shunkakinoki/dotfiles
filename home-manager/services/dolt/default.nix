@@ -22,14 +22,20 @@ let
   federationSyncIntervalSeconds = 300;
   linearSyncPath = "${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:/etc/profiles/per-user/${config.home.username}/bin:/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin";
   clientEnabled = isGalactica || isKyber || isMatic;
-  serverEnabled = isKyber;
-  doltServerHost = if isKyber then "127.0.0.1" else "kyber.tail950b36.ts.net";
+  # bd opens its store with dozens of sequential round trips per invocation, so
+  # a direct client of Kyber's Chicago server costs seconds per command on the
+  # ~260ms agent hosts. Every host serves its own Dolt and converges through the
+  # shared remote instead.
+  serverEnabled = clientEnabled;
+  # Kyber alone publishes the shared history to the configured remotes.
+  publisherEnabled = isKyber;
+  doltServerHost = "127.0.0.1";
   beadsClientEnvironment = {
     BEADS_DOLT_AUTO_START = "0";
     BEADS_DOLT_SERVER_MODE = "1";
     BEADS_DOLT_SERVER_HOST = doltServerHost;
     BEADS_DOLT_SERVER_PORT = "3307";
-    BEADS_DOLT_SERVER_USER = "beads";
+    BEADS_DOLT_SERVER_USER = "root";
     DOLT_CLI_USER = "root";
     DOLT_CLI_PASSWORD = "";
   };
@@ -37,9 +43,7 @@ let
     inherit doltServerHost;
   };
   linearSyncEnabled = isKyber;
-  # Every supported agent host writes directly to Kyber's SQL server. Kyber
-  # alone publishes that shared history to the configured remotes.
-  federationSyncEnabled = isKyber;
+  federationSyncEnabled = clientEnabled;
   # 2.2.2 fixes gitblobstore pending-write pruning that could publish a
   # manifest whose live archive later failed with "Blob not found".
   doltMinVersion = "2.2.2";
@@ -123,7 +127,7 @@ lib.mkIf clientEnabled {
   # is visible in the GitHub UI (Dolt's native push only writes refs/dolt/data).
   # Triggered by manifest changes inside dolt's noms store; throttled to avoid
   # hammering on rapid writes.
-  launchd.agents.dolt-backup-main = lib.mkIf (pkgs.stdenv.isDarwin && serverEnabled) {
+  launchd.agents.dolt-backup-main = lib.mkIf (pkgs.stdenv.isDarwin && publisherEnabled) {
     enable = true;
     config = {
       ProgramArguments = [
@@ -158,7 +162,7 @@ lib.mkIf clientEnabled {
         BEADS_DOLT_SERVER_MODE = "1";
         BEADS_DOLT_SERVER_HOST = doltServerHost;
         BEADS_DOLT_SERVER_PORT = "3307";
-        BEADS_DOLT_SERVER_USER = "beads";
+        BEADS_DOLT_SERVER_USER = "root";
         DOLT_CLI_USER = "root";
         DOLT_CLI_PASSWORD = "";
         LINEAR_TEAM_ID = linearTeamId;
@@ -186,7 +190,7 @@ lib.mkIf clientEnabled {
         BEADS_DOLT_SERVER_MODE = "1";
         BEADS_DOLT_SERVER_HOST = doltServerHost;
         BEADS_DOLT_SERVER_PORT = "3307";
-        BEADS_DOLT_SERVER_USER = "beads";
+        BEADS_DOLT_SERVER_USER = "root";
         DOLT_CLI_USER = "root";
         DOLT_CLI_PASSWORD = "";
       };
@@ -209,11 +213,7 @@ lib.mkIf clientEnabled {
       # Kyber's WAN firewall drops all new public-interface ingress. Binding
       # all addresses makes the SQL service reachable on tailscale0 while
       # retaining the public-ingress deny boundary.
-      Environment = [
-        "BEADS_DOLT_LISTEN_HOST=0.0.0.0"
-        "DOLT_CLI_USER=root"
-        "DOLT_CLI_PASSWORD="
-      ];
+      Environment = [ "BEADS_DOLT_LISTEN_HOST=0.0.0.0" ];
     };
     Install = {
       WantedBy = [ "default.target" ];
@@ -224,7 +224,7 @@ lib.mkIf clientEnabled {
   # and other systemd-launched agents do not inherit a stale shared-server mode.
   systemd.user.sessionVariables = lib.mkIf pkgs.stdenv.isLinux beadsClientEnvironment;
 
-  systemd.user.services.dolt-backup-main = lib.mkIf (pkgs.stdenv.isLinux && serverEnabled) {
+  systemd.user.services.dolt-backup-main = lib.mkIf (pkgs.stdenv.isLinux && publisherEnabled) {
     Unit = {
       Description = "Push beads_global JSONL snapshot to GitHub main";
     };
@@ -235,7 +235,7 @@ lib.mkIf clientEnabled {
     };
   };
 
-  systemd.user.paths.dolt-backup-main = lib.mkIf (pkgs.stdenv.isLinux && serverEnabled) {
+  systemd.user.paths.dolt-backup-main = lib.mkIf (pkgs.stdenv.isLinux && publisherEnabled) {
     Unit = {
       Description = "Watch dolt manifest and trigger JSONL backup";
     };
@@ -271,7 +271,7 @@ lib.mkIf clientEnabled {
         "BEADS_DOLT_SERVER_MODE=1"
         "BEADS_DOLT_SERVER_HOST=${doltServerHost}"
         "BEADS_DOLT_SERVER_PORT=3307"
-        "BEADS_DOLT_SERVER_USER=beads"
+        "BEADS_DOLT_SERVER_USER=root"
         "DOLT_CLI_USER=root"
         "DOLT_CLI_PASSWORD="
         "LINEAR_TEAM_ID=${linearTeamId}"
@@ -315,7 +315,7 @@ lib.mkIf clientEnabled {
             "BEADS_DOLT_SERVER_MODE=1"
             "BEADS_DOLT_SERVER_HOST=${doltServerHost}"
             "BEADS_DOLT_SERVER_PORT=3307"
-            "BEADS_DOLT_SERVER_USER=beads"
+            "BEADS_DOLT_SERVER_USER=root"
             "DOLT_CLI_USER=root"
             "DOLT_CLI_PASSWORD="
           ];
