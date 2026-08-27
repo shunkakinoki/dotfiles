@@ -123,6 +123,7 @@ repo_dir="$(cd "$repo_dir" && pwd -P)"
 repo_slug="${repo_name//\//%2F}"
 sync_checkpoint_file="$sync_state_dir/last-success-$repo_slug"
 reconciliation_lock_file="$sync_state_dir/reconcile-$repo_slug.lock"
+push_progress_file="$sync_state_dir/push-progress-$repo_slug"
 
 ensure_config() {
   local key="$1"
@@ -170,6 +171,12 @@ run_linear() {
 push_issue_batches() {
   local issue_ids="$1"
   local description="$2"
+  # Optional newline-delimited "id updated_at" lines aligned one-to-one with
+  # issue_ids. Each successfully pushed batch is appended to progress_file so
+  # a rate-limited (deferred) run resumes past those Beads instead of
+  # restarting the whole window and re-burning the API budget every retry.
+  local progress_entries="${3:-}"
+  local progress_file="${4:-}"
   local batch_size=10
   local batch_count
   local batch_ids
@@ -194,7 +201,11 @@ push_issue_batches() {
     log "Pushing $description Beads batch $batch_number/$batch_count"
 
     if run_linear @coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" linear sync --push --issues "$batch_ids" --no-wait; then
-      :
+      if [ -n "$progress_file" ] && [ -n "$progress_entries" ]; then
+        printf '%s\n' "$progress_entries" \
+          | @coreutils@/bin/tail -n +"$((batch_start + 1))" \
+          | @coreutils@/bin/head -n "$batch_size" >>"$progress_file"
+      fi
     else
       status=$?
       if [ "$status" -eq 75 ]; then
@@ -431,10 +442,18 @@ fi
 # Terminal Beads are authoritative after acceptance. Publish them before the
 # full inbound refresh so a stale active Linear record can never win during
 # the timer-latency window. On an initial run, publish every linked terminal
-# record once; later runs use the successful-cycle checkpoint.
+# record once; later runs use the successful-cycle checkpoint. Beads whose
+# exact revision was already pushed by an earlier deferred run in this window
+# are skipped; without that, a window larger than the API budget re-pushes the
+# same batches forever and the checkpoint never advances.
 issues_before_pull="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0 --skip-labels)"
-closed_ids="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" '
+pushed_progress=""
+if [ -s "$push_progress_file" ]; then
+  pushed_progress="$(<"$push_progress_file")"
+fi
+closed_push_entries="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --arg pushed "$pushed_progress" '
   (if type == "object" and has("issues") then .issues else . end)
+  | ($pushed | split("\n") | map(select(length > 0))) as $already_pushed
   | [
     .[]
     | select(
@@ -448,10 +467,12 @@ closed_ids="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" '
           )
         )
       )
-    | .id
+    | "\(.id) \(.updated_at // "")"
+    | select(. as $entry | ($already_pushed | index($entry)) | not)
   ]
-  | join(",")
+  | join("\n")
 ' <<<"$issues_before_pull")"
+closed_ids="$(printf '%s\n' "$closed_push_entries" | @gawk@/bin/awk 'NF { print $1 }' | @coreutils@/bin/paste -sd, -)"
 pending_completion_ids="$(@jq@/bin/jq -r '
   (if type == "object" and has("issues") then .issues else . end)
   | [
@@ -468,7 +489,7 @@ pending_completion_ids="$(@jq@/bin/jq -r '
   | join(",")
 ' <<<"$issues_before_pull")"
 
-if push_issue_batches "$closed_ids" "terminal"; then
+if push_issue_batches "$closed_ids" "terminal" "$closed_push_entries" "$push_progress_file"; then
   :
 else
   status=$?
@@ -573,5 +594,6 @@ federate_beads "post-sync"
 
 printf '%s\n' "$cycle_started" >"$sync_checkpoint_file.tmp"
 @coreutils@/bin/mv -f "$sync_checkpoint_file.tmp" "$sync_checkpoint_file"
+@coreutils@/bin/rm -f "$push_progress_file"
 
 "$bd_cli" -C "$repo_dir" linear status --json
