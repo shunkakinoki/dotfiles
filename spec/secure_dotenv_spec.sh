@@ -130,4 +130,25 @@ The output should include 'maxdepth 4'
 End
 End
 
+Describe 'Library pruning'
+It 'prunes the macOS Library directory'
+When run bash -c "grep -F -- '-path \"\${HOME_DIR}/Library\" -prune' '$SCRIPT'"
+The output should include '-prune'
+End
+
+It 'skips .env files under Library'
+TEST_HOME="$(mktemp -d)"
+mkdir -p "$TEST_HOME/Library/Group Containers/app"
+echo "SECRET=value" >"$TEST_HOME/Library/Group Containers/app/.env"
+chmod 644 "$TEST_HOME/Library/Group Containers/app/.env"
+PROCESSED_SCRIPT="$TEST_HOME/secure-dotenv-test.sh"
+sed \
+  -e "s|@find@|$(command -v find)|g" \
+  -e "s|@stat@|$(command -v stat)|g" \
+  "$SCRIPT" >"$PROCESSED_SCRIPT"
+When run bash -c "bash '$PROCESSED_SCRIPT' '$TEST_HOME'; ls -l '$TEST_HOME/Library/Group Containers/app/.env' | cut -c1-10; rm -rf '$TEST_HOME'"
+The output should include 'rw-r--r--'
+End
+End
+
 End

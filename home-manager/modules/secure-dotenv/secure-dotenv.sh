@@ -4,9 +4,13 @@ set -euo pipefail
 
 HOME_DIR="$1"
 
+# ~/Library is pruned: on macOS, opening app group containers blocks forever
+# on TCC app-data mediation, hanging activation. Dotenv files live in code
+# checkouts, never under Library.
 @find@ "${HOME_DIR}" \
   -maxdepth 4 \
-  \( -name '.env' -o -name '.env.*' -o -name '*.env' \) \
+  -path "${HOME_DIR}/Library" -prune -o \
+  \( -name '.env' -o -name '.env.*' -o -name '*.env' \) -print \
   2>/dev/null | while IFS= read -r f; do
   if [ -f "$f" ] && [ ! -L "$f" ]; then
     current=$(@stat@ -c '%a' "$f")
