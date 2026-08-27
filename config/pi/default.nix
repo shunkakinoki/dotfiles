@@ -15,6 +15,10 @@ _: {
     source = ./moshi-hooks.ts;
     force = true;
   };
+  home.file.".pi/agent/extensions/traces-hooks.ts" = {
+    source = ./traces-hooks.ts;
+    force = true;
+  };
   home.file.".pi/agent/fallback.json" = {
     source = ./fallback.json;
     force = true;

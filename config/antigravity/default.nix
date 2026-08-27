@@ -9,6 +9,7 @@
   home.activation.antigravityCliSettings = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" \
       "${./settings.json}" \
+      "${./hooks.json}" \
       "${pkgs.jq}/bin/jq"
   '';
 }
