@@ -10,7 +10,7 @@ function pi; echo $argv >> $log1; end
 echo "hello world" | _pixeh_function
 
 @test "non-empty prompt builds prompt" (grep -c "hello world" $log1) -ge 1
-@test "non-empty prompt uses templated cliproxyapi model" (grep -c "cliproxyapi/__GLM__" $log1) -ge 1
+@test "non-empty prompt uses templated cliproxyapi model" (grep -c "cliproxyapi/__DEEPSEEK_FLASH__" $log1) -ge 1
 @test "non-empty prompt uses print mode" (grep -c -- "-p" $log1) -ge 1
 
 set log2 (mktemp)

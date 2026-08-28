@@ -1,9 +1,9 @@
 # see https://github.com/sigoden/aichat/blob/main/config.example.yaml
-model: cliproxy:glm-4.7
+model: cliproxy:deepseek-v4-flash
 clients:
   - type: openai-compatible
     # Aichat derives CLIPROXY_API_KEY from this client name.
     name: cliproxy
     api_base: https://cliproxy.shunkakinoki.com/v1
     models:
-      - name: glm-4.7
+      - name: deepseek-v4-flash

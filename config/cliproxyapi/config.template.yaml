@@ -486,10 +486,6 @@ openai-compatibility:
     models:
       - name: "openai/gpt-5.4-image-2"
         alias: "gpt-image-2"
-      - name: "z-ai/glm-4.7"
-        alias: "glm-4.7"
-      - name: "@preset/gemma-4-31b-it"
-        alias: "gemma-4-31b-it"
       - name: "@preset/deepseek-v4-flash"
         alias: "deepseek-v4-flash"
       - name: "@preset/deepseek-v4-pro"

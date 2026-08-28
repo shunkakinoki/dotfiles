@@ -47,7 +47,6 @@ JQ_PRETTY='def pretty:
   map(if   . == "claude" then "Claude"
       elif . == "gpt"    then "GPT"
       elif . == "gemini"  then "Gemini"
-      elif . == "glm"    then "GLM"
       elif test("^[0-9]") then .
       else (.[0:1] | ascii_upcase) + .[1:] end) |
   join(" ");'

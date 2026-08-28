@@ -103,7 +103,7 @@ export function loadFallbackConfig(path: string): FallbackConfig {
   }
 }
 
-/** Model ids may contain slashes (openrouter-preset/@preset/glm-4-7), so split once. */
+/** Model ids may contain slashes (cliproxyapi/deepseek-v4-flash), so split once. */
 export function splitModelRef(ref: string): { provider: string; id: string } {
   const index = ref.indexOf("/");
   return index === -1

@@ -29,8 +29,6 @@ Never hand-edit a generated config. Edit the `.tpl.*` file, regenerate, and comm
 | `__GEMINI_FLASH__` | `gemini-3.7-flash-high` |
 | `__DEEPSEEK_FLASH__` | `deepseek-v4-flash` |
 | `__DEEPSEEK_PRO__` | `deepseek-v4-pro` |
-| `__GLM__` | `glm-4.7` |
-| `__GEMMA__` | `gemma-4-31b-it` |
 | `__GEMMA_LOCAL__` | `gemma3:4b` |
 | `__MINIMAX__` | `minimax-m3` |
 | `__KIMI__` | `kimi-k3` |
@@ -63,8 +61,6 @@ Harnesses that support runtime fallback use one chain, in this order:
 
 ```
 deepseek-v4-flash  (primary)
-  -> gemma-4-31b-it
-  -> glm-4.7
   -> free           (OpenRouter free router, last resort)
 ```
 
@@ -111,30 +107,28 @@ Hermes also runs a Mixture-of-Agents preset: reference models
 
 | Harness | Role | Model | Config |
 | --- | --- | --- | --- |
-| OpenCode | `small_model` | `shunkakinoki/glm-4.7` | [opencode.tpl.jsonc](config/opencode/opencode.tpl.jsonc) |
+| OpenCode | `small_model` | `shunkakinoki/deepseek-v4-flash` | [opencode.tpl.jsonc](config/opencode/opencode.tpl.jsonc) |
 | OpenCode | `code-reviewer` agent | `shunkakinoki/deepseek-v4-flash` | [opencode.tpl.jsonc](config/opencode/opencode.tpl.jsonc) |
-| OMP | `smol`, `commit`, `task` | `cliproxyapi/glm-4.7` | [config.tpl.yml](config/omp/config.tpl.yml) |
+| OMP | `smol`, `commit`, `task` | `cliproxyapi/free` | [config.tpl.yml](config/omp/config.tpl.yml) |
 | OMP | `slow`, `vision`, `plan` | `cliproxyapi/deepseek-v4-flash` | |
 | Codex | default | `gpt-5.6-sol` | [config.tpl.toml](config/codex/config.tpl.toml) |
 | Codex | subagents | `gpt-5.6-luna` | |
 | Codex | `qwen-local` profile | `qwen3.5-0.8b-optiq` (LM Studio) | |
 | Antigravity | default | `gemini-3.7-flash-high` (native Antigravity provider) | [settings.tpl.json](config/antigravity/settings.tpl.json) |
-| Pi | `defaultModel` | `glm-4.7` (provider `cliproxyapi`) | [settings.tpl.json](config/pi/settings.tpl.json) |
+| Pi | `defaultModel` | `free` (provider `cliproxyapi`) | [settings.tpl.json](config/pi/settings.tpl.json) |
 | Factory (droid) | session default | `deepseek-v4-flash-0731` (Droid Core) | [settings.tpl.json](config/factory/settings.tpl.json) |
 | Factory (droid) | custom models | `custom:deepseek-v4-flash-0`, `custom:free-1` via `https://cliproxy.shunkakinoki.com/v1` | [settings.tpl.json](config/factory/settings.tpl.json) |
-| aichat | default | `cliproxy:glm-4.7` | [config.tpl.yaml](config/aichat/config.tpl.yaml) |
+| aichat | default | `cliproxy:deepseek-v4-flash` | [config.tpl.yaml](config/aichat/config.tpl.yaml) |
 | DSH web | default | `deepseek-v4-flash` via `https://cliproxy.shunkakinoki.com/v1` (native DeepSeek adapter) | [settings.tpl.yaml](config/dsh/settings.tpl.yaml) |
-| llm | default | `glm-4.7` | [default_model.tpl.txt](config/llm/default_model.tpl.txt) |
-| Handy | transcript post-process | `@preset/glm-4.7` (OpenRouter) | [settings_store.tpl.json](config/handy/settings_store.tpl.json) |
+| llm | default | `deepseek-v4-flash` | [default_model.tpl.txt](config/llm/default_model.tpl.txt) |
+| Handy | transcript post-process | `@preset/deepseek-v4-flash` (OpenRouter) | [settings_store.tpl.json](config/handy/settings_store.tpl.json) |
 
-OMP selects only `cliproxyapi/*`. Subagent overrides: `code-explorer`,
-`comment-analyzer`, and `pr-test-analyzer` use `glm-4.7`; the rest
-(`code-architect`, `code-reviewer`, `code-simplifier`,
-`silent-failure-hunter`, `type-design-analyzer`) use `deepseek-v4-flash`.
+OMP selects only `cliproxyapi/*`. Subagent overrides use
+`deepseek-v4-flash` for the hard-task roles and `free` for the lightweight
+roles.
 The registry in [models.tpl.yml](config/omp/models.tpl.yml) lists the
 CLIProxy aliases and discovers the rest from remote `/v1/models`.
-OMP fallback uses the shared chain (`deepseek-v4-flash` -> `gemma-4-31b-it`
--> `glm-4.7` -> `free`).
+OMP fallback uses the shared chain (`deepseek-v4-flash` -> `free`).
 
 ### Fish shortcuts
 
@@ -146,7 +140,7 @@ The `l` suffix means local (LM Studio), `h` means headless.
 | `ocxel`, `ocxelh` | `lmstudio/qwen3.5-0.8b-optiq` |
 | `coxe`, `coxeh` | `gpt-5.6-sol` |
 | `coxel`, `coxelh` | `qwen3.5-0.8b-optiq` (`--oss --local-provider lmstudio`) |
-| `pixe`, `pixeh` | `cliproxyapi/glm-4.7` |
+| `pixe`, `pixeh` | `cliproxyapi/deepseek-v4-flash` |
 | `pixel`, `pixelh` | `lmstudio/qwen3.5-0.8b-optiq` |
 
 ## CLIProxy routing

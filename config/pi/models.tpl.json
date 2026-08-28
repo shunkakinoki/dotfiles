@@ -125,63 +125,8 @@
           "maxTokens": 40960
         },
         {
-          "id": "__GLM__",
-          "name": "__GLM_PRETTY__ (Z-AI)",
-          "reasoning": false,
-          "input": [
-            "text"
-          ],
-          "cost": {
-            "input": 0,
-            "output": 0,
-            "cacheRead": 0,
-            "cacheWrite": 0
-          },
-          "contextWindow": 131072,
-          "maxTokens": 16384
-        },
-        {
-          "id": "__GEMMA__",
-          "name": "__GEMMA_PRETTY__ (via CLIProxy)",
-          "reasoning": false,
-          "input": [
-            "text"
-          ],
-          "cost": {
-            "input": 0,
-            "output": 0,
-            "cacheRead": 0,
-            "cacheWrite": 0
-          },
-          "contextWindow": 131072,
-          "maxTokens": 16384
-        },
-        {
           "id": "free",
           "name": "Free router fallback (via CLIProxy)",
-          "reasoning": false,
-          "input": [
-            "text"
-          ],
-          "cost": {
-            "input": 0,
-            "output": 0,
-            "cacheRead": 0,
-            "cacheWrite": 0
-          },
-          "contextWindow": 131072,
-          "maxTokens": 16384
-        }
-      ]
-    },
-    "openrouter-preset": {
-      "baseUrl": "https://openrouter.ai/api/v1",
-      "apiKey": "$OPENROUTER_API_KEY",
-      "api": "openai-completions",
-      "models": [
-        {
-          "id": "@preset/__GLM_NONDOT__",
-          "name": "GLM-4.7 (Z-AI)",
           "reasoning": false,
           "input": [
             "text"

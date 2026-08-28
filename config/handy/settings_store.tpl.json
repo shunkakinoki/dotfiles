@@ -69,7 +69,7 @@
       "custom": "",
       "groq": "",
       "openai": "",
-      "openrouter": "@preset/__GLM__",
+      "openrouter": "@preset/__DEEPSEEK_FLASH_NONDOT__",
       "zai": ""
     },
     "post_process_prompts": [
