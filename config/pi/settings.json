@@ -8,11 +8,9 @@
     "cliproxyapi/*",
     "lmstudio/*",
     "openrouter/**",
-    "openrouter-preset/**",
     "*gpt-5*",
     "*gemini*",
     "*claude*",
-    "*glm*",
     "*qwen*",
     "*kimi*"
   ],

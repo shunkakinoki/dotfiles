@@ -89,6 +89,12 @@ The status should be success
 The output should equal 'true'
 End
 
+It 'removes the retired hosted aliases'
+When run jq -e 'has("glm") == false and has("gemma") == false' models.json
+The status should be success
+The output should equal 'true'
+End
+
 It 'removes Codex Spark from harness templates'
 When run bash -c "! grep -R -E '__GPT_CODEX__|gpt-5\\.3-codex-spark' config/omp/config.tpl.yml config/openclaw/openclaw.tpl.json config/opencode/opencode.tpl.jsonc config/pi/models.tpl.json config/cliproxyapi/config.tpl.yaml"
 The status should be success
@@ -208,9 +214,9 @@ When run bash -c "sed -n '/\"shunkakinoki\"/,/\"cliproxyapi\"/p' config/opencode
 The status should be success
 End
 
-It 'uses the CLIProxy provider-fallback GLM alias for the small model'
-When run bash -c "grep '\"small_model\": \"shunkakinoki/glm-4.7\"' config/opencode/opencode.jsonc"
-The output should include 'shunkakinoki/glm-4.7'
+It 'uses the DeepSeek Flash alias for the small model'
+When run bash -c "grep '\"small_model\": \"shunkakinoki/deepseek-v4-flash\"' config/opencode/opencode.jsonc"
+The output should include 'shunkakinoki/deepseek-v4-flash'
 End
 
 It 'pins the audited OpenCode runtime fallback plugin release'
@@ -218,8 +224,8 @@ When run bash -c "grep -q '\"opencode-runtime-fallback@0.2.3\"' config/opencode/
 The status should be success
 End
 
-It 'generates the Flash, Gemma, GLM OpenCode fallback convention'
-When run bash -c "jq -e '.model == null and .retry_on_errors == [401,404,429,500,502,503,504] and .retryable_error_patterns == [\"unknown provider for model\"] and .max_fallback_attempts == 5 and .fallback_models == [\"shunkakinoki/gemma-4-31b-it\",\"shunkakinoki/glm-4.7\"]' config/opencode/opencode-fallback.jsonc >/dev/null"
+It 'generates the Flash OpenCode fallback convention'
+When run bash -c "jq -e '.model == null and .retry_on_errors == [401,404,429,500,502,503,504] and .retryable_error_patterns == [\"unknown provider for model\"] and .max_fallback_attempts == 5 and .fallback_models == [\"shunkakinoki/free\"]' config/opencode/opencode-fallback.jsonc >/dev/null"
 The status should be success
 End
 
@@ -263,8 +269,8 @@ End
 End
 
 Describe 'runtime model fallback'
-It 'enables Pi OpenRouter catalog and preset models'
-When run bash -c "jq -e '(.enabledModels | index(\"openrouter/**\") != null) and (.enabledModels | index(\"openrouter-preset/**\") != null)' config/pi/settings.json >/dev/null && jq -e '(.enabledModels | index(\"openrouter/**\") != null) and (.enabledModels | index(\"openrouter-preset/**\") != null)' config/pi/settings.tpl.json >/dev/null"
+It 'keeps Pi OpenRouter discovery enabled'
+When run bash -c "jq -e '(.enabledModels | index(\"openrouter/**\") != null) and (.enabledModels | index(\"openrouter-preset/**\") == null)' config/pi/settings.json >/dev/null && jq -e '(.enabledModels | index(\"openrouter/**\") != null) and (.enabledModels | index(\"openrouter-preset/**\") == null)' config/pi/settings.tpl.json >/dev/null"
 The status should be success
 End
 
@@ -274,7 +280,7 @@ The status should be success
 End
 
 It 'generates the free-tier CLIProxy Pi fallback chain'
-When run bash -c "jq -e '.enabled == true and .max_fallback_attempts == 5 and .fallback_models == [\"cliproxyapi/gemma-4-31b-it\",\"cliproxyapi/glm-4.7\",\"cliproxyapi/free\"]' config/pi/fallback.json >/dev/null"
+When run bash -c "jq -e '.enabled == true and .max_fallback_attempts == 5 and .fallback_models == [\"cliproxyapi/free\"]' config/pi/fallback.json >/dev/null"
 The status should be success
 End
 
@@ -314,8 +320,8 @@ End
 End
 
 Describe 'CLIProxyAPI routing'
-It 'hydrates the OMP remote CLIProxyAPI catalog'
-When run bash -c "grep -q 'baseUrl: https://cliproxy.shunkakinoki.com/v1' config/omp/models.yml && grep -q 'auth: apiKey' config/omp/models.yml && grep -q 'type: openai-models-list' config/omp/models.yml && grep -q 'id: deepseek-v4-flash' config/omp/models.yml && grep -q 'id: glm-4.7' config/omp/models.yml && grep -q 'id: gemma-4-31b-it' config/omp/models.yml && grep -q 'id: free' config/omp/models.yml && ! grep -q '__DEEPSEEK_FLASH__' config/omp/models.yml"
+It 'hydrates the OMP remote CLIProxyAPI catalog without the retired model'
+When run bash -c "grep -q 'baseUrl: https://cliproxy.shunkakinoki.com/v1' config/omp/models.yml && grep -q 'auth: apiKey' config/omp/models.yml && grep -q 'type: openai-models-list' config/omp/models.yml && grep -q 'id: deepseek-v4-flash' config/omp/models.yml && grep -q 'id: free' config/omp/models.yml && ! grep -q 'id: gemma-4-31b-it' config/omp/models.yml && ! grep -q 'id: glm-4.7' config/omp/models.yml && ! grep -q '__DEEPSEEK_FLASH__' config/omp/models.yml"
 The status should be success
 End
 

@@ -3,11 +3,11 @@ function _pixe_function --description "Run Pi with a free-form prompt"
   # Usage: pixe [<prompt words...>]
 
   if test (count $argv) -gt 0; and contains -- "$argv[1]" --resume -r --continue -c
-    pi --model 'cliproxyapi/__GLM__' --resume $argv[2]
+    pi --model 'cliproxyapi/__DEEPSEEK_FLASH__' --resume $argv[2]
   else if test (count $argv) -eq 0
-    pi --model 'cliproxyapi/__GLM__'
+    pi --model 'cliproxyapi/__DEEPSEEK_FLASH__'
   else
     set -l prompt (string join " " -- $argv)
-    pi --model 'cliproxyapi/__GLM__' "$prompt"
+    pi --model 'cliproxyapi/__DEEPSEEK_FLASH__' "$prompt"
   end
 end

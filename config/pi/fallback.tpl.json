@@ -16,8 +16,6 @@
   "cooldown_seconds": 60,
   "notify_on_fallback": true,
   "fallback_models": [
-    "cliproxyapi/__GEMMA__",
-    "cliproxyapi/__GLM__",
     "cliproxyapi/free"
   ]
 }

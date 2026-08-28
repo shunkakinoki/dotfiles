@@ -33,32 +33,6 @@ providers:
           output: 0
           cacheRead: 0
           cacheWrite: 0
-      - id: glm-4.7
-        name: GLM 4.7 (via shunkakinoki's CLIProxy)
-        reasoning: false
-        input:
-          - text
-        supportsTools: true
-        contextWindow: 131072
-        maxTokens: 16384
-        cost:
-          input: 0
-          output: 0
-          cacheRead: 0
-          cacheWrite: 0
-      - id: gemma-4-31b-it
-        name: Gemma 4 31b It (via shunkakinoki's CLIProxy)
-        reasoning: false
-        input:
-          - text
-        supportsTools: true
-        contextWindow: 131072
-        maxTokens: 16384
-        cost:
-          input: 0
-          output: 0
-          cacheRead: 0
-          cacheWrite: 0
       - id: minimax-m3
         name: Minimax M3 (via shunkakinoki's CLIProxy)
         reasoning: true

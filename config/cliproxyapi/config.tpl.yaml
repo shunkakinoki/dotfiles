@@ -486,10 +486,6 @@ openai-compatibility:
     models:
       - name: "__GPT_IMAGE_OPENROUTER__"
         alias: "__GPT_IMAGE__"
-      - name: "z-ai/__GLM__"
-        alias: "__GLM__"
-      - name: "@preset/__GEMMA_NONDOT__"
-        alias: "__GEMMA__"
       - name: "@preset/__DEEPSEEK_FLASH_NONDOT__"
         alias: "__DEEPSEEK_FLASH__"
       - name: "@preset/__DEEPSEEK_PRO_NONDOT__"

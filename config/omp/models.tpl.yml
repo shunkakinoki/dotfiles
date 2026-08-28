@@ -33,32 +33,6 @@ providers:
           output: 0
           cacheRead: 0
           cacheWrite: 0
-      - id: __GLM__
-        name: __GLM_PRETTY__ (via shunkakinoki's CLIProxy)
-        reasoning: false
-        input:
-          - text
-        supportsTools: true
-        contextWindow: 131072
-        maxTokens: 16384
-        cost:
-          input: 0
-          output: 0
-          cacheRead: 0
-          cacheWrite: 0
-      - id: __GEMMA__
-        name: __GEMMA_PRETTY__ (via shunkakinoki's CLIProxy)
-        reasoning: false
-        input:
-          - text
-        supportsTools: true
-        contextWindow: 131072
-        maxTokens: 16384
-        cost:
-          input: 0
-          output: 0
-          cacheRead: 0
-          cacheWrite: 0
       - id: __MINIMAX__
         name: __MINIMAX_PRETTY__ (via shunkakinoki's CLIProxy)
         reasoning: true

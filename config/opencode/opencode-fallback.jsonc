@@ -7,7 +7,6 @@
   "timeout_seconds": 30,
   "notify_on_fallback": true,
   "fallback_models": [
-    "shunkakinoki/gemma-4-31b-it",
-    "shunkakinoki/glm-4.7"
+    "shunkakinoki/free"
   ]
 }
