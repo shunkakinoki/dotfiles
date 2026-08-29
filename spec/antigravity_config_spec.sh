@@ -72,9 +72,9 @@ The path "$TEMP_HOME/.gemini/config/hooks.json" should be file
 The path "$TEMP_HOME/.gemini/config/hooks.json" should be writable
 End
 
-It 'uses the official Traces Antigravity Stop hook verbatim'
+It 'uses the official Traces Antigravity Stop hook with an availability guard'
 When run jq -r '.["traces-share-to-traces"].Stop[0].command' "$HOOKS"
-The output should equal "traces hook agent agent-done --agent antigravity >/dev/null 2>&1; printf %s '{\"decision\":\"\"}'"
+The output should equal "command -v traces >/dev/null 2>&1 && traces hook agent agent-done --agent antigravity >/dev/null 2>&1; printf %s '{\"decision\":\"\"}'"
 End
 
 It 'reverts named hooks written by other tools'
