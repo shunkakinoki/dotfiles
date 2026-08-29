@@ -21,7 +21,7 @@
     "Stop": [
       {
         "type": "command",
-        "command": "command -v traces >/dev/null 2>&1 && traces hook agent agent-done --agent antigravity >/dev/null 2>&1; printf %s '{\"decision\":\"\"}'",
+        "command": "traces hook agent agent-done --agent antigravity >/dev/null 2>&1; printf %s '{\"decision\":\"\"}'",
         "timeout": 30
       }
     ]

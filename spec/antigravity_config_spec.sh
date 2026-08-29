@@ -66,10 +66,15 @@ The contents of file "$TEMP_HOME/.gemini/antigravity-cli/settings.json" should e
 End
 
 It 'installs every managed named hook into the global customization root'
-When run bash -c 'HOME="$1" bash "$2" "$3" "$4" jq && jq -e '\''(keys == ["moshi-hook", "traces-share-to-traces"]) and (.["traces-share-to-traces"].Stop[0].command | contains("traces hook agent agent-done --agent antigravity"))'\'' "$1/.gemini/config/hooks.json" >/dev/null && find "$1/.gemini/config/hooks.json" -prune -perm 644 -print -quit | grep -q .' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS" "$HOOKS"
+When run bash -c 'HOME="$1" bash "$2" "$3" "$4" jq && jq -e '\''(keys == ["moshi-hook", "traces-share-to-traces"]) and (.["traces-share-to-traces"].Stop | length == 1)'\'' "$1/.gemini/config/hooks.json" >/dev/null && find "$1/.gemini/config/hooks.json" -prune -perm 644 -print -quit | grep -q .' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS" "$HOOKS"
 The status should be success
 The path "$TEMP_HOME/.gemini/config/hooks.json" should be file
 The path "$TEMP_HOME/.gemini/config/hooks.json" should be writable
+End
+
+It 'uses the official Traces Antigravity Stop hook verbatim'
+When run jq -r '.["traces-share-to-traces"].Stop[0].command' "$HOOKS"
+The output should equal "traces hook agent agent-done --agent antigravity >/dev/null 2>&1; printf %s '{\"decision\":\"\"}'"
 End
 
 It 'reverts named hooks written by other tools'
@@ -101,7 +106,7 @@ The status should be success
 End
 
 Describe 'CLI wrapper'
-It 'installs Traces Git hooks before starting Antigravity in a worktree'
+It 'installs official Traces Git hooks before starting Antigravity in a worktree'
 mkdir -p "$TEMP_HOME/repo"
 git -C "$TEMP_HOME/repo" init -q
 When run bash -c 'cd "$1" && PATH="$2:$PATH" TRACES_LOG="$3" AGY_LOG="$4" ANTIGRAVITY_CLI_BIN="$2/agy-real" bash "$5" --print hello' _ "$TEMP_HOME/repo" "$TEMP_BIN" "$TRACES_LOG" "$AGY_LOG" "$WRAPPER"

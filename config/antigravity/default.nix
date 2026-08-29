@@ -13,8 +13,8 @@
       "${pkgs.jq}/bin/jq"
   '';
 
-  # Bootstrap Traces' repository-local Git dispatchers before each CLI session
-  # so the Stop hook's captured trace can be attributed and shared on push.
+  # Install Traces' repository-local Git dispatchers before each CLI session;
+  # reporting itself remains owned by the official hook in hooks.json.
   home.file.".local/bin/agy" = {
     source = ./agy.sh;
     executable = true;
