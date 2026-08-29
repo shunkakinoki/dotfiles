@@ -18,6 +18,7 @@ setup() {
   cat >"$TEMP_BIN/traces" <<'STUB'
 #!/usr/bin/env bash
 printf '%s\n' "$*" >>"$TRACES_LOG"
+exit "${TRACES_EXIT:-0}"
 STUB
   cat >"$TEMP_BIN/agy-real" <<'STUB'
 #!/usr/bin/env bash
@@ -115,6 +116,38 @@ The output should equal 'agy-ok'
 The contents of file "$TRACES_LOG" should equal 'setup git'
 The contents of file "$AGY_LOG" should equal '<--print>
 <hello>'
+End
+
+It 'skips setup when every official Traces Git hook is executable'
+mkdir -p "$TEMP_HOME/repo"
+git -C "$TEMP_HOME/repo" init -q
+hooks_dir="$(git -C "$TEMP_HOME/repo" rev-parse --path-format=absolute --git-common-dir)/hooks"
+for hook in post-commit post-merge pre-merge-commit pre-push traces-post-commit traces-post-merge traces-pre-merge-commit traces-pre-push; do
+  printf '%s\n' '#!/bin/sh' >"$hooks_dir/$hook"
+  chmod +x "$hooks_dir/$hook"
+done
+When run bash -c 'cd "$1" && PATH="$2:$PATH" TRACES_LOG="$3" AGY_LOG="$4" ANTIGRAVITY_CLI_BIN="$2/agy-real" bash "$5" --version' _ "$TEMP_HOME/repo" "$TEMP_BIN" "$TRACES_LOG" "$AGY_LOG" "$WRAPPER"
+The status should be success
+The output should equal 'agy-ok'
+The contents of file "$TRACES_LOG" should equal ''
+End
+
+It 'continues to Antigravity when Traces setup fails'
+mkdir -p "$TEMP_HOME/repo"
+git -C "$TEMP_HOME/repo" init -q
+When run bash -c 'cd "$1" && PATH="$2:$PATH" TRACES_LOG="$3" AGY_LOG="$4" TRACES_EXIT=17 ANTIGRAVITY_CLI_BIN="$2/agy-real" bash "$5" --version' _ "$TEMP_HOME/repo" "$TEMP_BIN" "$TRACES_LOG" "$AGY_LOG" "$WRAPPER"
+The status should be success
+The output should equal 'agy-ok'
+The error should include 'continuing with Antigravity CLI'
+The contents of file "$AGY_LOG" should equal '<--version>'
+End
+
+It 'does not run Traces setup in a bare repository'
+git -C "$TEMP_HOME" init --bare -q bare.git
+When run bash -c 'cd "$1" && PATH="$2:$PATH" TRACES_LOG="$3" AGY_LOG="$4" ANTIGRAVITY_CLI_BIN="$2/agy-real" bash "$5" --version' _ "$TEMP_HOME/bare.git" "$TEMP_BIN" "$TRACES_LOG" "$AGY_LOG" "$WRAPPER"
+The status should be success
+The output should equal 'agy-ok'
+The contents of file "$TRACES_LOG" should equal ''
 End
 
 It 'does not run Traces setup outside a Git worktree'
