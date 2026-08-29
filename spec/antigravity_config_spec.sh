@@ -5,9 +5,27 @@ Describe 'config/antigravity'
 SCRIPT="$PWD/config/antigravity/activate.sh"
 SETTINGS="$PWD/config/antigravity/settings.json"
 HOOKS="$PWD/config/antigravity/hooks.json"
+WRAPPER="$PWD/config/antigravity/agy.sh"
 
 setup() {
   TEMP_HOME=$(mktemp -d)
+  TEMP_BIN="$TEMP_HOME/bin"
+  TRACES_LOG="$TEMP_HOME/traces.log"
+  AGY_LOG="$TEMP_HOME/agy.log"
+  mkdir -p "$TEMP_BIN"
+  : >"$TRACES_LOG"
+  : >"$AGY_LOG"
+  cat >"$TEMP_BIN/traces" <<'STUB'
+#!/usr/bin/env bash
+printf '%s\n' "$*" >>"$TRACES_LOG"
+STUB
+  cat >"$TEMP_BIN/agy-real" <<'STUB'
+#!/usr/bin/env bash
+printf '<%s>\n' "$@" >>"$AGY_LOG"
+printf '%s\n' 'agy-ok'
+STUB
+  chmod +x "$TEMP_BIN/traces" "$TEMP_BIN/agy-real"
+  export TEMP_BIN TRACES_LOG AGY_LOG
 }
 
 cleanup() {
@@ -80,6 +98,26 @@ End
 It 'pins no absolute Nix store paths or home directories in managed hooks'
 When run bash -c 'grep -qE "/nix/store|/Users/" "$1" && exit 1 || exit 0' _ "$HOOKS"
 The status should be success
+End
+
+Describe 'CLI wrapper'
+It 'installs Traces Git hooks before starting Antigravity in a worktree'
+mkdir -p "$TEMP_HOME/repo"
+git -C "$TEMP_HOME/repo" init -q
+When run bash -c 'cd "$1" && PATH="$2:$PATH" TRACES_LOG="$3" AGY_LOG="$4" ANTIGRAVITY_CLI_BIN="$2/agy-real" bash "$5" --print hello' _ "$TEMP_HOME/repo" "$TEMP_BIN" "$TRACES_LOG" "$AGY_LOG" "$WRAPPER"
+The status should be success
+The output should equal 'agy-ok'
+The contents of file "$TRACES_LOG" should equal 'setup git'
+The contents of file "$AGY_LOG" should equal '<--print>
+<hello>'
+End
+
+It 'does not run Traces setup outside a Git worktree'
+When run bash -c 'cd "$1" && PATH="$2:$PATH" TRACES_LOG="$3" AGY_LOG="$4" ANTIGRAVITY_CLI_BIN="$2/agy-real" bash "$5" --version && test ! -s "$3"' _ "$TEMP_HOME" "$TEMP_BIN" "$TRACES_LOG" "$AGY_LOG" "$WRAPPER"
+The status should be success
+The output should equal 'agy-ok'
+The contents of file "$AGY_LOG" should equal '<--version>'
+End
 End
 
 It 'contains no remaining CCS integration outside this regression check'

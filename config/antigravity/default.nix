@@ -12,4 +12,13 @@
       "${./hooks.json}" \
       "${pkgs.jq}/bin/jq"
   '';
+
+  # Bootstrap Traces' repository-local Git dispatchers before each CLI session
+  # so the Stop hook's captured trace can be attributed and shared on push.
+  home.file.".local/bin/agy" = {
+    source = ./agy.sh;
+    executable = true;
+  };
+  home.file.".local/libexec/antigravity-cli/agy".source =
+    "${pkgs.llm-agents.antigravity-cli}/bin/agy";
 }
