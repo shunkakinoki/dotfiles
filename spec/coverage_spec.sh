@@ -490,6 +490,7 @@ It 'covers all non-spec shell scripts in the repository'
 # List of all shell scripts that should have tests
 # Update this list when adding new shell scripts
 covered_scripts="config/antigravity/activate.sh
+config/antigravity/agy.sh
 config/caam/hydrate.sh
 config/factory/activate-settings.sh
 config/claude/activate.sh

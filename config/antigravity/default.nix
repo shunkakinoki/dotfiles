@@ -12,4 +12,13 @@
       "${./hooks.json}" \
       "${pkgs.jq}/bin/jq"
   '';
+
+  # Install Traces' repository-local Git dispatchers before each CLI session;
+  # reporting itself remains owned by the official hook in hooks.json.
+  home.file.".local/bin/agy" = {
+    source = ./agy.sh;
+    executable = true;
+  };
+  home.file.".local/libexec/antigravity-cli/agy".source =
+    "${pkgs.llm-agents.antigravity-cli}/bin/agy";
 }
