@@ -57,9 +57,9 @@ When run bash -c "grep 'ciEnabled = if inputs.host.isKyber then \"true\" else \"
 The output should include 'ciEnabled = if inputs.host.isKyber then "true" else "false";'
 End
 
-It 'sizes Kyber reviews for host capacity while retaining desktop concurrency'
-When run bash -c "grep 'maxWorkers = if inputs.host.isKyber then \"8\" else \"4\";' '$PWD/config/roborev/default.nix'"
-The output should include 'maxWorkers = if inputs.host.isKyber then "8" else "4";'
+It 'keeps review concurrency bounded on every host'
+When run bash -c "grep 'maxWorkers = \"4\";' '$PWD/config/roborev/default.nix'"
+The output should include 'maxWorkers = "4";'
 End
 
 It 'runs roborev daemon run'

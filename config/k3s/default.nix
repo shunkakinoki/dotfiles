@@ -55,6 +55,7 @@ let
       pkgs.k3s
       pkgs.procps
       pkgs.smartmontools
+      pkgs.sysstat
       pkgs.systemd
       pkgs.util-linux
     ];

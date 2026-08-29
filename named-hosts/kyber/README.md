@@ -195,6 +195,20 @@ cleaner:
   probe latency, recent CRI lifecycle errors, and host DNS (Tailscale must not
   own `/etc/resolv.conf`).
 
+Herdr and RoboRev run inside `orchestration.slice`, which caps aggregate writes
+to 20 MB/s and aggregate tasks to 2,048. When sustained I/O PSI or D-state
+pressure crosses the health threshold, the host-health check records PSI,
+process/`wchan`, per-process I/O, cgroup I/O, and recent k3s logs under
+`/run/kyber-host-health/evidence`, then freezes only that disposable slice. It
+never freezes or restarts k3s, containerd, or storage services. The slice thaws
+after five consecutive pressure-free samples with a healthy CRI probe.
+
+This containment does not isolate ext4 journals. Kyber has two physical SSDs:
+the root/PVC filesystem and the dedicated containerd filesystem. Moving k3s
+server state therefore requires a third durable filesystem plus an attended
+backup, integrity check, migration, and rollback exercise; do not simulate that
+boundary with a bind mount on the root filesystem.
+
 Alerts are deduplicated until recovery. They are written to the journal at
 `daemon.alert` priority without interrupting logged-in terminals; a recovery
 notice is written when a condition clears. These checks never remove containers,

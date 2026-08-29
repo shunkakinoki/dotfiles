@@ -202,9 +202,9 @@ push_issue_batches() {
 
     if run_linear @coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" linear sync --push --issues "$batch_ids" --no-wait; then
       if [ -n "$progress_file" ] && [ -n "$progress_entries" ]; then
-        printf '%s\n' "$progress_entries" \
-          | @coreutils@/bin/tail -n +"$((batch_start + 1))" \
-          | @coreutils@/bin/head -n "$batch_size" >>"$progress_file"
+        printf '%s\n' "$progress_entries" |
+          @coreutils@/bin/tail -n +"$((batch_start + 1))" |
+          @coreutils@/bin/head -n "$batch_size" >>"$progress_file"
       fi
     else
       status=$?

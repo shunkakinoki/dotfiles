@@ -1,5 +1,5 @@
-# Kyber uses eight workers during hydration to match its host capacity while
-# keeping desktop hosts at the upstream default.
+# Keep review concurrency bounded on every host. Kyber's orchestration slice
+# provides an additional host-level containment boundary.
 max_workers = 4
 
 # Upstream falls back to codex when no workflow agent is set; codex is not

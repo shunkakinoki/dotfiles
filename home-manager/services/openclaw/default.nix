@@ -8,6 +8,16 @@
 let
   inherit (inputs) host;
   homeDir = config.home.homeDirectory;
+  k3sProxy = pkgs.writeShellApplication {
+    name = "openclaw-k3s-proxy";
+    runtimeInputs = [
+      pkgs.coreutils
+      pkgs.gawk
+      pkgs.iproute2
+      pkgs.socat
+    ];
+    text = builtins.readFile ./k3s-proxy.sh;
+  };
 in
 # Only enable on kyber (gateway host)
 lib.mkIf host.isKyber {
@@ -56,12 +66,14 @@ lib.mkIf host.isKyber {
       After = [ "openclaw-gateway.service" ];
       Requires = [ "openclaw-gateway.service" ];
       X-SwitchMethod = "restart";
+      StartLimitIntervalSec = 300;
+      StartLimitBurst = 3;
     };
     Service = {
       Type = "simple";
-      ExecStart = "${pkgs.socat}/bin/socat TCP4-LISTEN:18789,bind=10.42.0.1,reuseaddr,fork TCP4:127.0.0.1:18789";
-      Restart = "always";
-      RestartSec = "5s";
+      ExecStart = "${k3sProxy}/bin/openclaw-k3s-proxy";
+      Restart = "on-failure";
+      RestartSec = "30s";
       NoNewPrivileges = true;
     };
     Install = {

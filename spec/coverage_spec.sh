@@ -563,6 +563,7 @@ home-manager/services/hermes/activate.sh
 home-manager/services/obsidian/obsidian-git-trigger.sh
 home-manager/services/obsidian/obsidian-headless.sh
 home-manager/services/openclaw/activate.sh
+home-manager/services/openclaw/k3s-proxy.sh
 home-manager/services/qmd/activate.sh
 home-manager/services/roborev/activate.sh
 home-manager/services/roborev/start.sh
