@@ -4,6 +4,7 @@ set -euo pipefail
 readonly BRIDGE_INTERFACE="${OPENCLAW_K3S_BRIDGE_INTERFACE:-cni0}"
 readonly LISTEN_PORT=18789
 readonly ADDRESS_RETRY_SECONDS=30
+readonly ADDRESS_LOG_EVERY_RETRIES=10
 
 resolve_listen_address() {
   local address
@@ -16,13 +17,13 @@ resolve_listen_address() {
   printf '%s\n' "$address"
 }
 
-reported_missing_address=0
+missing_address_retries=0
 until listen_address="$(resolve_listen_address)"; do
-  if [ "$reported_missing_address" -eq 0 ]; then
+  if [ $((missing_address_retries % ADDRESS_LOG_EVERY_RETRIES)) -eq 0 ]; then
     printf 'OpenClaw k3s proxy: %s has no global IPv4 address; retrying every %ss\n' \
       "$BRIDGE_INTERFACE" "$ADDRESS_RETRY_SECONDS" >&2
-    reported_missing_address=1
   fi
+  missing_address_retries=$((missing_address_retries + 1))
   sleep "$ADDRESS_RETRY_SECONDS"
 done
 

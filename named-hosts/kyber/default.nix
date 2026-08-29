@@ -123,7 +123,7 @@ home-manager.lib.homeManagerConfiguration {
           };
           Service = {
             Type = "simple";
-            ExecStart = "${config.home.homeDirectory}/.local/bin/herdr server";
+            ExecStart = "${pkgs.llm-agents.herdr}/bin/herdr server";
             Restart = "on-failure";
             RestartSec = "30s";
             Slice = "orchestration.slice";

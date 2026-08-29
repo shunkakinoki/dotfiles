@@ -11,6 +11,7 @@ let
   k3sProxy = pkgs.writeShellApplication {
     name = "openclaw-k3s-proxy";
     runtimeInputs = [
+      pkgs.coreutils
       pkgs.gawk
       pkgs.iproute2
       pkgs.socat
