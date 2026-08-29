@@ -109,8 +109,8 @@ When run bash -c "grep 'activate-user-service-priority.sh' '$PWD/named-hosts/kyb
 The output should include 'activate-user-service-priority.sh'
 End
 
-It 'places Herdr and RoboRev in the disposable orchestration slice'
-When run bash -c "grep -q 'herdr-server.service.d/10-orchestration.conf' '$PWD/named-hosts/kyber/default.nix' && grep -q 'roborev.service.d/10-orchestration.conf' '$PWD/named-hosts/kyber/default.nix' && grep -qxF 'Slice=orchestration.slice' '$PWD/named-hosts/kyber/orchestration-service.conf'"
+It 'declaratively owns Herdr and places review daemons in the orchestration slice'
+When run bash -c "unit=\$(sed -n '/systemd.user.services.herdr-server =/,/Install.WantedBy/p' '$PWD/named-hosts/kyber/default.nix'); grep -q 'xdg.configFile.\"systemd/user/herdr-server.service\".force = true' '$PWD/named-hosts/kyber/default.nix' && grep -q 'Slice = \"orchestration.slice\"' <<<\"\$unit\" && grep -q 'roborev.service.d/10-orchestration.conf' '$PWD/named-hosts/kyber/default.nix' && grep -qxF 'Slice=orchestration.slice' '$PWD/named-hosts/kyber/orchestration-service.conf'"
 The status should be success
 End
 

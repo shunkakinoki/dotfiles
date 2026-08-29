@@ -42,8 +42,42 @@ When run bash -c "grep -q 'ip -4 -o address show dev' '$PWD/home-manager/service
 The status should be success
 End
 
-It 'does not restart forever when the k3s bridge is unavailable'
-When run bash -c "grep -q 'Restart = \"on-failure\"' '$PWD/home-manager/services/openclaw/default.nix' && grep -q 'RestartSec = \"30s\"' '$PWD/home-manager/services/openclaw/default.nix' && grep -q 'StartLimitBurst = 3' '$PWD/home-manager/services/openclaw/default.nix' && grep -q 'exit 75' '$PWD/home-manager/services/openclaw/k3s-proxy.sh'"
+It 'rate-limits process failures inside the k3s proxy unit'
+When run bash -c "unit=\$(sed -n '/systemd.user.services.openclaw-k3s-proxy =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -q 'Restart = \"on-failure\"' <<<\"\$unit\" && grep -q 'RestartSec = \"30s\"' <<<\"\$unit\" && grep -q 'StartLimitBurst = 3' <<<\"\$unit\""
+The status should be success
+End
+
+It 'waits in one process until the k3s bridge address appears'
+When run env SCRIPT="$PWD/home-manager/services/openclaw/k3s-proxy.sh" bash -c '
+  tools="$(mktemp -d)"
+  count_file="$tools/ip-count"
+  printf "%s\n" "#!/usr/bin/env bash" "count=0" "[ ! -r \"$count_file\" ] || read -r count <\"$count_file\"" "count=\$((count + 1))" "printf \"%s\\n\" \"\$count\" >\"$count_file\"" "[ \"\$count\" -gt 1 ] || exit 1" "printf \"%s\\n\" \"2: cni0 inet 10.42.1.1/24 scope global cni0\"" >"$tools/ip"
+  printf "%s\n" "#!/usr/bin/env bash" "exit 0" >"$tools/sleep"
+  printf "%s\n" "#!/usr/bin/env bash" "printf \"%s\\n\" \"\$*\"" >"$tools/socat"
+  chmod +x "$tools/ip" "$tools/sleep" "$tools/socat"
+  PATH="$tools:$PATH" "$SCRIPT"
+  status=$?
+  rm -rf "$tools"
+  exit "$status"
+'
+The stderr should include 'has no global IPv4 address; retrying every 30s'
+The output should include 'TCP4-LISTEN:18789,bind=10.42.1.1,reuseaddr,fork'
+The status should be success
+End
+
+It 'keeps the proxy and gateway on their shared fixed port'
+When run env SCRIPT="$PWD/home-manager/services/openclaw/k3s-proxy.sh" OPENCLAW_K3S_PROXY_PORT=19999 bash -c '
+  tools="$(mktemp -d)"
+  printf "%s\n" "#!/usr/bin/env bash" "printf \"%s\\n\" \"2: cni0 inet 10.42.1.1/24 scope global cni0\"" >"$tools/ip"
+  printf "%s\n" "#!/usr/bin/env bash" "printf \"%s\\n\" \"\$*\"" >"$tools/socat"
+  chmod +x "$tools/ip" "$tools/socat"
+  PATH="$tools:$PATH" "$SCRIPT"
+  status=$?
+  rm -rf "$tools"
+  exit "$status"
+'
+The output should include 'TCP4-LISTEN:18789,bind=10.42.1.1,reuseaddr,fork'
+The output should not include '19999'
 The status should be success
 End
 

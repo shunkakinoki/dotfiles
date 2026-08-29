@@ -111,10 +111,25 @@ home-manager.lib.homeManagerConfiguration {
         # Review daemons own disposable work and may be frozen by the host
         # health circuit breaker without interrupting production services.
         home.file.".config/systemd/user/orchestration.slice".source = ./orchestration.slice;
-        home.file.".config/systemd/user/herdr-server.service.d/10-orchestration.conf".source =
-          ./orchestration-service.conf;
         home.file.".config/systemd/user/roborev.service.d/10-orchestration.conf".source =
           ./orchestration-service.conf;
+        xdg.configFile."systemd/user/herdr-server.service".force = true;
+        systemd.user.services.herdr-server = {
+          Unit = {
+            Description = "Herdr headless server (coding-agent multiplexer)";
+            After = [ "install-npm-globals.service" ];
+            X-SwitchMethod = "restart";
+          };
+          Service = {
+            Type = "simple";
+            ExecStart = "${config.home.homeDirectory}/.local/bin/herdr server";
+            Restart = "on-failure";
+            RestartSec = "30s";
+            Slice = "orchestration.slice";
+            Environment = [ "HERDR_ENV=1" ];
+          };
+          Install.WantedBy = [ "default.target" ];
+        };
 
         # GPG configuration for commit signing
         programs.gpg = {
