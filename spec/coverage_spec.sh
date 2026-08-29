@@ -408,6 +408,10 @@ It 'has spec file for named-hosts/kyber/activate-sshd.sh'
 The path "spec/activate_kyber_spec.sh" should be exist
 End
 
+It 'has spec file for named-hosts/kyber/activate-fish-ssh-compat.sh'
+The path "spec/activate_kyber_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/modules/bin-shells/activate.sh'
 The path "spec/activate_bin_shells_spec.sh" should be exist
 End
@@ -620,6 +624,7 @@ hosts/darwin/activate-remove-backups.sh
 hosts/linux/activate-backup-files.sh
 install.sh
 named-hosts/kyber/activate-backup-files.sh
+named-hosts/kyber/activate-fish-ssh-compat.sh
 named-hosts/kyber/activate-ip-forwarding.sh
 named-hosts/kyber/activate-sshd.sh
 named-hosts/kyber/activate-user-service-priority.sh

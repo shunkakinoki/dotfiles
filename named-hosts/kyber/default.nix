@@ -94,6 +94,12 @@ home-manager.lib.homeManagerConfiguration {
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-sshd.sh}"
         '';
 
+        # Fish reads feature flags before config.fish. Store the compatibility
+        # flag universally so SSH prompts do not wait for terminal query replies.
+        home.activation.disableFishTerminalQueries = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate-fish-ssh-compat.sh} ${pkgs.fish}/bin/fish
+        '';
+
         # Import GPG key from agenix (all systems with dotfiles)
         # Fails silently if SSH key isn't authorized to decrypt
         home.activation.importGpgKey = lib.hm.dag.entryAfter [ "linkGeneration" ] ''

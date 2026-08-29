@@ -233,6 +233,25 @@ End
 End
 End
 
+Describe 'named-hosts/kyber/activate-fish-ssh-compat.sh'
+SCRIPT="$PWD/named-hosts/kyber/activate-fish-ssh-compat.sh"
+
+It 'stores the Fish terminal-query compatibility flag universally'
+When run grep -F 'set --universal --append fish_features no-query-term' "$SCRIPT"
+The output should include 'fish_features no-query-term'
+End
+
+It 'only appends the flag when it is absent'
+When run grep -F 'contains -- no-query-term $fish_features' "$SCRIPT"
+The output should include 'contains -- no-query-term'
+End
+
+It 'is activated by the Kyber Home Manager configuration'
+When run grep -F 'activate-fish-ssh-compat.sh' "$PWD/named-hosts/kyber/default.nix"
+The output should include 'activate-fish-ssh-compat.sh'
+End
+End
+
 Describe 'config/k3s/tmp.mount'
 UNIT="$PWD/config/k3s/kyber-tmp.mount"
 
