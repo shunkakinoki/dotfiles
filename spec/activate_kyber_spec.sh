@@ -109,6 +109,16 @@ When run bash -c "grep 'activate-user-service-priority.sh' '$PWD/named-hosts/kyb
 The output should include 'activate-user-service-priority.sh'
 End
 
+It 'declaratively owns Herdr and places review daemons in the orchestration slice'
+When run bash -c "unit=\$(sed -n '/systemd.user.services.herdr-server =/,/Install.WantedBy/p' '$PWD/named-hosts/kyber/default.nix'); grep -q 'xdg.configFile.\"systemd/user/herdr-server.service\".force = true' '$PWD/named-hosts/kyber/default.nix' && grep -q 'xdg.configFile.\"systemd/user/default.target.wants/herdr-server.service\".force = true' '$PWD/named-hosts/kyber/default.nix' && grep -q 'ExecStart = \"\${pkgs.llm-agents.herdr}/bin/herdr server\"' <<<\"\$unit\" && grep -q 'Slice = \"orchestration.slice\"' <<<\"\$unit\" && grep -q 'roborev.service.d/10-orchestration.conf' '$PWD/named-hosts/kyber/default.nix' && grep -qxF 'Slice=orchestration.slice' '$PWD/named-hosts/kyber/orchestration-service.conf'"
+The status should be success
+End
+
+It 'bounds orchestration write bandwidth and task count'
+When run bash -c "grep -qxF 'IOWriteBandwidthMax=/ 20M' '$PWD/named-hosts/kyber/orchestration.slice' && grep -qxF 'TasksMax=2048' '$PWD/named-hosts/kyber/orchestration.slice' && grep -qxF 'IOAccounting=yes' '$PWD/named-hosts/kyber/orchestration.slice'"
+The status should be success
+End
+
 It 'keeps a long gpg-agent cache ttl'
 When run bash -c "grep 'defaultCacheTtl = 94608000' '$PWD/named-hosts/kyber/default.nix'"
 The output should include 'defaultCacheTtl = 94608000'
@@ -230,6 +240,25 @@ It 'validates config with sshd -t'
 When run bash -c "grep 'sshd -t' '$SCRIPT'"
 The output should include 'sshd -t'
 End
+End
+End
+
+Describe 'named-hosts/kyber/activate-fish-ssh-compat.sh'
+SCRIPT="$PWD/named-hosts/kyber/activate-fish-ssh-compat.sh"
+
+It 'stores the Fish terminal-query compatibility flag universally'
+When run grep -F 'set --universal --append fish_features no-query-term' "$SCRIPT"
+The output should include 'fish_features no-query-term'
+End
+
+It 'only appends the flag when it is absent'
+When run grep -F 'contains -- no-query-term $fish_features' "$SCRIPT"
+The output should include 'contains -- no-query-term'
+End
+
+It 'is activated by the Kyber Home Manager configuration'
+When run grep -F 'activate-fish-ssh-compat.sh' "$PWD/named-hosts/kyber/default.nix"
+The output should include 'activate-fish-ssh-compat.sh'
 End
 End
 

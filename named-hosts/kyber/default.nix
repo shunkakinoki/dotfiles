@@ -94,6 +94,12 @@ home-manager.lib.homeManagerConfiguration {
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-sshd.sh}"
         '';
 
+        # Fish reads feature flags before config.fish. Store the compatibility
+        # flag universally so SSH prompts do not wait for terminal query replies.
+        home.activation.disableFishTerminalQueries = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate-fish-ssh-compat.sh} ${pkgs.fish}/bin/fish
+        '';
+
         # Import GPG key from agenix (all systems with dotfiles)
         # Fails silently if SSH key isn't authorized to decrypt
         home.activation.importGpgKey = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
@@ -107,6 +113,30 @@ home-manager.lib.homeManagerConfiguration {
         '';
 
         programs.home-manager.enable = true;
+
+        # Review daemons own disposable work and may be frozen by the host
+        # health circuit breaker without interrupting production services.
+        home.file.".config/systemd/user/orchestration.slice".source = ./orchestration.slice;
+        home.file.".config/systemd/user/roborev.service.d/10-orchestration.conf".source =
+          ./orchestration-service.conf;
+        xdg.configFile."systemd/user/herdr-server.service".force = true;
+        xdg.configFile."systemd/user/default.target.wants/herdr-server.service".force = true;
+        systemd.user.services.herdr-server = {
+          Unit = {
+            Description = "Herdr headless server (coding-agent multiplexer)";
+            After = [ "install-npm-globals.service" ];
+            X-SwitchMethod = "restart";
+          };
+          Service = {
+            Type = "simple";
+            ExecStart = "${pkgs.llm-agents.herdr}/bin/herdr server";
+            Restart = "on-failure";
+            RestartSec = "30s";
+            Slice = "orchestration.slice";
+            Environment = [ "HERDR_ENV=1" ];
+          };
+          Install.WantedBy = [ "default.target" ];
+        };
 
         # GPG configuration for commit signing
         programs.gpg = {
