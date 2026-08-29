@@ -108,6 +108,14 @@ home-manager.lib.homeManagerConfiguration {
 
         programs.home-manager.enable = true;
 
+        # Review daemons own disposable work and may be frozen by the host
+        # health circuit breaker without interrupting production services.
+        home.file.".config/systemd/user/orchestration.slice".source = ./orchestration.slice;
+        home.file.".config/systemd/user/herdr-server.service.d/10-orchestration.conf".source =
+          ./orchestration-service.conf;
+        home.file.".config/systemd/user/roborev.service.d/10-orchestration.conf".source =
+          ./orchestration-service.conf;
+
         # GPG configuration for commit signing
         programs.gpg = {
           enable = true;

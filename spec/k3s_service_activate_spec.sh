@@ -108,6 +108,65 @@ When run bash -c "grep -q '/proc/pressure/io' '$HEALTH_CHECK' && grep -q 'D_STAT
 The status should be success
 End
 
+It 'captures incident attribution before freezing only the orchestration slice'
+When run bash -c "grep -q 'pidstat -d -p ALL 1 1' '$HEALTH_CHECK' && grep -q 'systemd-cgtop.*--order=io' '$HEALTH_CHECK' && grep -q 'wchan:32' '$HEALTH_CHECK' && grep -q 'orchestration_control freeze' '$HEALTH_CHECK' && ! grep -Eq 'systemctl .* (stop|freeze) (k3s|containerd)' '$HEALTH_CHECK'"
+The status should be success
+End
+
+It 'freezes orchestration after sustained pressure'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  state="$(mktemp -d)"
+  export KYBER_HOST_HEALTH_STATE_DIR="$state"
+  source "$HEALTH_CHECK"
+  IO_PRESSURE_UNHEALTHY=1
+  capture_orchestration_evidence() { printf "%s/evidence/test\n" "$STATE_DIR"; }
+  orchestration_control() { printf "control:%s\n" "$1"; }
+  set_alert() { printf "alert:%s:%s\n" "$1" "$2"; }
+  manage_orchestration_circuit_breaker
+  test -e "$state/orchestration.frozen"
+  rm -rf "$state"
+'
+The output should include 'control:freeze'
+The output should include 'alert:orchestration-circuit-breaker:froze orchestration.slice'
+The status should be success
+End
+
+It 'thaws orchestration only after five healthy samples'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  state="$(mktemp -d)"
+  export KYBER_HOST_HEALTH_STATE_DIR="$state"
+  source "$HEALTH_CHECK"
+  : >"$state/orchestration.frozen"
+  printf "4\n" >"$state/orchestration.recovery-samples"
+  orchestration_control() { printf "control:%s\n" "$1"; }
+  clear_alert() { printf "clear:%s\n" "$1"; }
+  manage_orchestration_circuit_breaker
+  test ! -e "$state/orchestration.frozen"
+  rm -rf "$state"
+'
+The output should include 'control:thaw'
+The output should include 'clear:orchestration-circuit-breaker'
+The status should be success
+End
+
+It 'keeps orchestration frozen while CRI remains unhealthy'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  state="$(mktemp -d)"
+  export KYBER_HOST_HEALTH_STATE_DIR="$state"
+  source "$HEALTH_CHECK"
+  CRI_UNHEALTHY=1
+  : >"$state/orchestration.frozen"
+  printf "4\n" >"$state/orchestration.recovery-samples"
+  orchestration_control() { printf "unexpected:%s\n" "$1"; }
+  manage_orchestration_circuit_breaker
+  test "$(cat "$state/orchestration.recovery-samples")" = 0
+  test -e "$state/orchestration.frozen"
+  rm -rf "$state"
+'
+The output should equal ''
+The status should be success
+End
+
 It 'runs the read-only reliability check every minute'
 When run bash -c "grep -qxF 'OnUnitActiveSec=1min' '$HEALTH_TIMER' && grep -qxF 'Persistent=true' '$HEALTH_TIMER'"
 The status should be success

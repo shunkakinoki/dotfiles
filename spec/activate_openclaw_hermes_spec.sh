@@ -37,10 +37,30 @@ When run bash -c "grep -- '--bind loopback' '$PWD/home-manager/services/openclaw
 The output should include '--bind loopback'
 End
 
-It 'proxies the loopback gateway only through the k3s bridge'
-When run bash -c "grep -F 'TCP4-LISTEN:18789,bind=10.42.0.1' '$PWD/home-manager/services/openclaw/default.nix'"
-The output should include 'TCP4-LISTEN:18789,bind=10.42.0.1'
+It 'resolves the current k3s bridge address instead of pinning a pod subnet'
+When run bash -c "grep -q 'ip -4 -o address show dev' '$PWD/home-manager/services/openclaw/k3s-proxy.sh' && grep -q 'bind=\${listen_address}' '$PWD/home-manager/services/openclaw/k3s-proxy.sh' && ! grep -R -q 'bind=10.42.0.1' '$PWD/home-manager/services/openclaw'"
+The status should be success
+End
+
+It 'does not restart forever when the k3s bridge is unavailable'
+When run bash -c "grep -q 'Restart = \"on-failure\"' '$PWD/home-manager/services/openclaw/default.nix' && grep -q 'RestartSec = \"30s\"' '$PWD/home-manager/services/openclaw/default.nix' && grep -q 'StartLimitBurst = 3' '$PWD/home-manager/services/openclaw/default.nix' && grep -q 'exit 75' '$PWD/home-manager/services/openclaw/k3s-proxy.sh'"
+The status should be success
+End
+
+It 'binds the proxy to the live cni0 address'
+When run env SCRIPT="$PWD/home-manager/services/openclaw/k3s-proxy.sh" bash -c '
+  tools="$(mktemp -d)"
+  printf "%s\n" "#!/usr/bin/env bash" "printf \"%s\\n\" \"2: cni0 inet 10.42.1.1/24 scope global cni0\"" >"$tools/ip"
+  printf "%s\n" "#!/usr/bin/env bash" "printf \"%s\\n\" \"\$*\"" >"$tools/socat"
+  chmod +x "$tools/ip" "$tools/socat"
+  PATH="$tools:$PATH" "$SCRIPT"
+  status=$?
+  rm -rf "$tools"
+  exit "$status"
+'
+The output should include 'TCP4-LISTEN:18789,bind=10.42.1.1,reuseaddr,fork'
 The output should not include 'bind=0.0.0.0'
+The status should be success
 End
 
 It 'orders the k3s bridge proxy after the loopback gateway'

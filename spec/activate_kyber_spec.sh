@@ -109,6 +109,16 @@ When run bash -c "grep 'activate-user-service-priority.sh' '$PWD/named-hosts/kyb
 The output should include 'activate-user-service-priority.sh'
 End
 
+It 'places Herdr and RoboRev in the disposable orchestration slice'
+When run bash -c "grep -q 'herdr-server.service.d/10-orchestration.conf' '$PWD/named-hosts/kyber/default.nix' && grep -q 'roborev.service.d/10-orchestration.conf' '$PWD/named-hosts/kyber/default.nix' && grep -qxF 'Slice=orchestration.slice' '$PWD/named-hosts/kyber/orchestration-service.conf'"
+The status should be success
+End
+
+It 'bounds orchestration write bandwidth and task count'
+When run bash -c "grep -qxF 'IOWriteBandwidthMax=/ 20M' '$PWD/named-hosts/kyber/orchestration.slice' && grep -qxF 'TasksMax=2048' '$PWD/named-hosts/kyber/orchestration.slice' && grep -qxF 'IOAccounting=yes' '$PWD/named-hosts/kyber/orchestration.slice'"
+The status should be success
+End
+
 It 'keeps a long gpg-agent cache ttl'
 When run bash -c "grep 'defaultCacheTtl = 94608000' '$PWD/named-hosts/kyber/default.nix'"
 The output should include 'defaultCacheTtl = 94608000'
