@@ -43,7 +43,7 @@ The status should be success
 End
 
 It 'rate-limits process failures inside the k3s proxy unit'
-When run bash -c "unit=\$(sed -n '/systemd.user.services.openclaw-k3s-proxy =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -q 'pkgs.coreutils' '$PWD/home-manager/services/openclaw/default.nix' && grep -q 'Restart = \"on-failure\"' <<<\"\$unit\" && grep -q 'RestartSec = \"30s\"' <<<\"\$unit\" && grep -q 'StartLimitBurst = 3' <<<\"\$unit\""
+When run bash -c "proxy=\$(sed -n '/k3sProxy = pkgs.writeShellApplication/,/};/p' '$PWD/home-manager/services/openclaw/default.nix'); unit=\$(sed -n '/systemd.user.services.openclaw-k3s-proxy =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -q 'pkgs.coreutils' <<<\"\$proxy\" && grep -q 'Restart = \"on-failure\"' <<<\"\$unit\" && grep -q 'RestartSec = \"30s\"' <<<\"\$unit\" && grep -q 'StartLimitBurst = 3' <<<\"\$unit\""
 The status should be success
 End
 
