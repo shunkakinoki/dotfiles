@@ -29,6 +29,26 @@
     inherit (prev.stdenv.hostPlatform) system;
   })
   (_: prev: {
+    # Use the immutable GitHub CLI preview commit that adds --attach to issue and PR
+    # commands. Remove this override once the feature is released in a tagged version.
+    gh = prev.gh.overrideAttrs (_: {
+      pname = "gh";
+      version = "2.95.0-unstable-20260825";
+      src = prev.fetchFromGitHub {
+        owner = "cli";
+        repo = "cli";
+        rev = "cc831722b71c3fc1603e6473bd1d9da27c0605e5";
+        hash = "sha256-8rnqM7jApjMYhUv2m/vrfSGu9i1eGLtmc/h/JUuipWs=";
+      };
+      vendorHash = "sha256-fhFsu/LjLNFwexSfUsd4X74UD+AQojLcdxU5IqOi3GY=";
+      buildPhase = ''
+        runHook preBuild
+        make GO_LDFLAGS="-s -w -X github.com/cli/cli/v2/internal/build.Date=nixpkgs" GH_VERSION=2.95.0-unstable-20260825 bin/gh manpages
+        runHook postBuild
+      '';
+    });
+  })
+  (_: prev: {
     # Fix shellspec wrapper script that breaks when called via symlinks
     shellspec = prev.shellspec.overrideAttrs (oldAttrs: {
       postInstall = (oldAttrs.postInstall or "") + ''
