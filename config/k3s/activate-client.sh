@@ -21,6 +21,9 @@ trap 'rm -f "$SCP_ERR"' EXIT
 if scp -o ConnectTimeout=5 -o BatchMode=yes \
   "${REMOTE_HOST}:${REMOTE_KUBECONFIG_PATH}" "$LOCAL_KUBECONFIG" 2>"$SCP_ERR"; then
   chmod 600 "$LOCAL_KUBECONFIG"
+  # Server writes its kubeconfig with 127.0.0.1 (local-only). Rewrite to the
+  # tailnet DNS so this client can reach the API server over Tailscale.
+  sed -i "s|https://127.0.0.1:6443|https://${REMOTE_HOST#*@}:6443|g" "$LOCAL_KUBECONFIG"
   echo "k3s-client: kubeconfig synced from ${REMOTE_HOST}"
 else
   echo "k3s-client: failed to fetch kubeconfig from ${REMOTE_HOST}" >&2

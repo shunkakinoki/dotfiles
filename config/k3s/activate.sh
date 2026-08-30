@@ -3,7 +3,6 @@ set -euo pipefail
 
 GALACTICA_AUTHORIZED_KEY="@galacticaAuthorizedKey@"
 KUBELET_CONFIG_NAME="@kubeletConfigName@"
-TAILSCALE_DNS="@tailscaleDns@"
 
 ensure_authorized_key() {
   local key="$1"
@@ -85,8 +84,9 @@ K3S_KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
 REMOTE_KUBECONFIG="$HOME/.kube/config"
 if [ -f "$K3S_KUBECONFIG" ]; then
   mkdir -p "$HOME/.kube"
-  $SUDO_CMD cat "$K3S_KUBECONFIG" |
-    sed "s|https://127.0.0.1:6443|https://${TAILSCALE_DNS}:6443|g" \
-      >"$REMOTE_KUBECONFIG"
+  # Local kubeconfig keeps 127.0.0.1 so kubectl works on this host even when
+  # the tailnet MagicDNS name is not resolvable locally (kyber has MagicDNS off).
+  # Remote clients rewrite to the tailscale DNS in activate-client.sh.
+  $SUDO_CMD cat "$K3S_KUBECONFIG" >"$REMOTE_KUBECONFIG"
   chmod 600 "$REMOTE_KUBECONFIG"
 fi
