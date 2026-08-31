@@ -6,8 +6,12 @@
 }:
 let
   homeDir =
-    config.home.homeDirectory
-      or (if pkgs.stdenv.isDarwin then builtins.getEnv "HOME" else "/home/${config.home.username}");
+    config.home.homeDirectory or (
+      if pkgs.stdenv.hostPlatform.isDarwin then
+        builtins.getEnv "HOME"
+      else
+        "/home/${config.home.username}"
+    );
 
   commonScript = pkgs.replaceVars ./scripts/common.sh {
     aws = "${pkgs.awscli2}/bin/aws";
@@ -60,10 +64,10 @@ in
     ${pkgs.bash}/bin/bash ${hydrateScript} || true
   '';
 
-  home.packages = lib.mkIf pkgs.stdenv.isDarwin [ cliWrapper ];
+  home.packages = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin [ cliWrapper ];
 
   # Main service
-  launchd.agents.cliproxyapi = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.cliproxyapi = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [
@@ -88,7 +92,7 @@ in
 
   # Auth backup - watches auth dir for changes. CLIProxyAPI rewrites auth files
   # on every token refresh, so this fires many times an hour and must stay cheap.
-  launchd.agents.cliproxyapi-backup-auth = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.cliproxyapi-backup-auth = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [
@@ -116,7 +120,7 @@ in
 
   # Full backup - auth files plus the multi-hundred-megabyte CPA Manager Plus
   # analytics snapshot. Wall clock only; never wire this to a file watch.
-  launchd.agents.cliproxyapi-backup = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.cliproxyapi-backup = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [
@@ -144,7 +148,7 @@ in
   };
 
   # Keychain sync - extract Claude/Codex OAuth from local stores into auth dir
-  launchd.agents.cliproxyapi-keychain-sync = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.cliproxyapi-keychain-sync = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [
@@ -168,7 +172,7 @@ in
   };
 
   # Periodic sync - pull auth files from S3 every 5 minutes
-  launchd.agents.cliproxyapi-sync = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.cliproxyapi-sync = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [

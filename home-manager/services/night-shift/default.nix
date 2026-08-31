@@ -15,7 +15,7 @@ in
   #
   # RunAtLoad without a StartInterval deliberately makes this a default rather
   # than an enforcement: a manual toggle sticks until the next login.
-  launchd.agents.night-shift = pkgs.lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.night-shift = pkgs.lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [

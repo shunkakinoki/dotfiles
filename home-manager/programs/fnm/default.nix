@@ -7,7 +7,7 @@
 let
   homeDir = config.home.homeDirectory;
   fnmDir =
-    if pkgs.stdenv.isDarwin then
+    if pkgs.stdenv.hostPlatform.isDarwin then
       "${homeDir}/Library/Application Support/fnm"
     else
       "${homeDir}/.local/share/fnm";

@@ -8,7 +8,7 @@ let
   ];
 in
 {
-  launchd.agents.mempalace-exporter = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.mempalace-exporter = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [

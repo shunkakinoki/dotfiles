@@ -9,7 +9,7 @@ let
   ];
 in
 {
-  launchd.agents.tmux-session-logger = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.tmux-session-logger = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [

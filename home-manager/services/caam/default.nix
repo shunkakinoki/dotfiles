@@ -19,7 +19,7 @@ in
   '';
 
   # Persistent token-refresh daemon (foreground under launchd/systemd supervision).
-  launchd.agents.caam-daemon = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.caam-daemon = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [
@@ -40,7 +40,7 @@ in
   };
 
   # Periodic peer sync (freshness-based push/pull).
-  launchd.agents.caam-sync = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.caam-sync = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [

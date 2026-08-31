@@ -6,7 +6,7 @@
   ...
 }:
 let
-  inherit (pkgs.stdenv) isDarwin;
+  inherit (pkgs.stdenv.hostPlatform) isDarwin;
 in
 {
   # Install uv global tools from pyproject.toml using home-manager activation

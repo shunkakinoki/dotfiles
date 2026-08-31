@@ -3,7 +3,7 @@ let
   inherit (pkgs) lib;
 in
 {
-  launchd.agents.make-updater = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.make-updater = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [

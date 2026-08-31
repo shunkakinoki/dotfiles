@@ -1,6 +1,6 @@
 { pkgs, ... }:
 {
-  launchd.agents.brew-upgrader = pkgs.lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.brew-upgrader = pkgs.lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [

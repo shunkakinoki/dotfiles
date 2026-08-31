@@ -26,7 +26,7 @@ in
   # the complete global-state file after activation. Restore managed atom-state
   # keys after each app-owned rewrite; the synchronizer exits without writing
   # once the values already match.
-  launchd.agents.codex-desktop-settings-sync = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.codex-desktop-settings-sync = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [
@@ -47,7 +47,7 @@ in
   # Home Manager normally installs and bootstraps launchd.agents during
   # setupLaunchAgents. Self-heal after that phase so a missed registration
   # cannot leave the app free to replace the managed settings permanently.
-  home.activation.codexDesktopSettingsAgent = lib.mkIf pkgs.stdenv.isDarwin (
+  home.activation.codexDesktopSettingsAgent = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin (
     config.lib.dag.entryAfter [ "setupLaunchAgents" ] ''
       $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${ensureDesktopSettingsAgent}" \
         "${desktopSettingsAgentLabel}" \

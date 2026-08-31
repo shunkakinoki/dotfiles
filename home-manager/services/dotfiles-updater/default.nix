@@ -10,7 +10,7 @@ let
       null;
 in
 {
-  launchd.agents.dotfiles-updater = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.dotfiles-updater = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [

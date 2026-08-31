@@ -59,7 +59,7 @@
       # Define aliases in .zshenv so non-interactive zsh invocations can use them.
       alias copy='clipboard-copy'
       alias paste='clipboard-paste'
-      alias rm='${if pkgs.stdenv.isDarwin then "trash" else "gomi"}'
+      alias rm='${if pkgs.stdenv.hostPlatform.isDarwin then "trash" else "gomi"}'
     '';
 
     initContent = ''
@@ -85,7 +85,7 @@
 
       # FNM (Fast Node Manager) configuration
       ${
-        if pkgs.stdenv.isDarwin then
+        if pkgs.stdenv.hostPlatform.isDarwin then
           ''export FNM_DIR="$HOME/Library/Application Support/fnm"''
         else
           ''export FNM_DIR="$HOME/.local/share/fnm"''

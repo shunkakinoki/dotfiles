@@ -91,7 +91,7 @@ lib.mkIf clientEnabled {
 
   # GUI applications do not source shell session variables. Seed launchd's
   # per-user environment so newly launched agent daemons use Kyber directly.
-  launchd.agents.beads-dolt-client-environment = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.beads-dolt-client-environment = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [
@@ -108,7 +108,7 @@ lib.mkIf clientEnabled {
     executable = true;
   };
 
-  launchd.agents.dolt = lib.mkIf (pkgs.stdenv.isDarwin && serverEnabled) {
+  launchd.agents.dolt = lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin && serverEnabled) {
     enable = true;
     config = {
       ProgramArguments = [
@@ -127,7 +127,7 @@ lib.mkIf clientEnabled {
   # is visible in the GitHub UI (Dolt's native push only writes refs/dolt/data).
   # Triggered by manifest changes inside dolt's noms store; throttled to avoid
   # hammering on rapid writes.
-  launchd.agents.dolt-backup-main = lib.mkIf (pkgs.stdenv.isDarwin && publisherEnabled) {
+  launchd.agents.dolt-backup-main = lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin && publisherEnabled) {
     enable = true;
     config = {
       ProgramArguments = [
@@ -144,60 +144,64 @@ lib.mkIf clientEnabled {
     };
   };
 
-  launchd.agents.dolt-linear-sync = lib.mkIf (pkgs.stdenv.isDarwin && linearSyncEnabled) {
-    enable = true;
-    config = {
-      ProgramArguments = [
-        "${pkgs.bash}/bin/bash"
-        "${linearSyncScript}"
-      ];
-      StartInterval = linearSyncIntervalSeconds;
-      ThrottleInterval = linearSyncIntervalSeconds;
-      RunAtLoad = true;
-      WorkingDirectory = homeDir;
-      EnvironmentVariables = {
-        HOME = homeDir;
-        PATH = linearSyncPath;
-        BEADS_DOLT_AUTO_START = "0";
-        BEADS_DOLT_SERVER_MODE = "1";
-        BEADS_DOLT_SERVER_HOST = doltServerHost;
-        BEADS_DOLT_SERVER_PORT = "3307";
-        BEADS_DOLT_SERVER_USER = "root";
-        DOLT_CLI_USER = "root";
-        DOLT_CLI_PASSWORD = "";
-        LINEAR_TEAM_ID = linearTeamId;
+  launchd.agents.dolt-linear-sync =
+    lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin && linearSyncEnabled)
+      {
+        enable = true;
+        config = {
+          ProgramArguments = [
+            "${pkgs.bash}/bin/bash"
+            "${linearSyncScript}"
+          ];
+          StartInterval = linearSyncIntervalSeconds;
+          ThrottleInterval = linearSyncIntervalSeconds;
+          RunAtLoad = true;
+          WorkingDirectory = homeDir;
+          EnvironmentVariables = {
+            HOME = homeDir;
+            PATH = linearSyncPath;
+            BEADS_DOLT_AUTO_START = "0";
+            BEADS_DOLT_SERVER_MODE = "1";
+            BEADS_DOLT_SERVER_HOST = doltServerHost;
+            BEADS_DOLT_SERVER_PORT = "3307";
+            BEADS_DOLT_SERVER_USER = "root";
+            DOLT_CLI_USER = "root";
+            DOLT_CLI_PASSWORD = "";
+            LINEAR_TEAM_ID = linearTeamId;
+          };
+          StandardOutPath = "/tmp/dolt-linear-sync.log";
+          StandardErrorPath = "/tmp/dolt-linear-sync.error.log";
+        };
       };
-      StandardOutPath = "/tmp/dolt-linear-sync.log";
-      StandardErrorPath = "/tmp/dolt-linear-sync.error.log";
-    };
-  };
 
-  launchd.agents.dolt-federation-sync = lib.mkIf (pkgs.stdenv.isDarwin && federationSyncEnabled) {
-    enable = true;
-    config = {
-      ProgramArguments = [
-        "${pkgs.bash}/bin/bash"
-        "${federationSyncScript}"
-      ];
-      StartInterval = federationSyncIntervalSeconds;
-      ThrottleInterval = federationSyncIntervalSeconds;
-      RunAtLoad = true;
-      WorkingDirectory = homeDir;
-      EnvironmentVariables = {
-        HOME = homeDir;
-        PATH = linearSyncPath;
-        BEADS_DOLT_AUTO_START = "0";
-        BEADS_DOLT_SERVER_MODE = "1";
-        BEADS_DOLT_SERVER_HOST = doltServerHost;
-        BEADS_DOLT_SERVER_PORT = "3307";
-        BEADS_DOLT_SERVER_USER = "root";
-        DOLT_CLI_USER = "root";
-        DOLT_CLI_PASSWORD = "";
+  launchd.agents.dolt-federation-sync =
+    lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin && federationSyncEnabled)
+      {
+        enable = true;
+        config = {
+          ProgramArguments = [
+            "${pkgs.bash}/bin/bash"
+            "${federationSyncScript}"
+          ];
+          StartInterval = federationSyncIntervalSeconds;
+          ThrottleInterval = federationSyncIntervalSeconds;
+          RunAtLoad = true;
+          WorkingDirectory = homeDir;
+          EnvironmentVariables = {
+            HOME = homeDir;
+            PATH = linearSyncPath;
+            BEADS_DOLT_AUTO_START = "0";
+            BEADS_DOLT_SERVER_MODE = "1";
+            BEADS_DOLT_SERVER_HOST = doltServerHost;
+            BEADS_DOLT_SERVER_PORT = "3307";
+            BEADS_DOLT_SERVER_USER = "root";
+            DOLT_CLI_USER = "root";
+            DOLT_CLI_PASSWORD = "";
+          };
+          StandardOutPath = "/tmp/dolt-federation-sync.log";
+          StandardErrorPath = "/tmp/dolt-federation-sync.error.log";
+        };
       };
-      StandardOutPath = "/tmp/dolt-federation-sync.log";
-      StandardErrorPath = "/tmp/dolt-federation-sync.error.log";
-    };
-  };
 
   systemd.user.services.dolt = lib.mkIf (pkgs.stdenv.isLinux && serverEnabled) {
     Unit = {
