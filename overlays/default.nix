@@ -118,11 +118,14 @@
               x86_64-linux = "sha256-i/K5bj7CS7PGIX5hfayxAJ7ngNib92w3SDKGXTVWccA=";
             };
             hash = pnpmDepsHashes.${prev.stdenv.hostPlatform.system} or null;
-            t3code = prev.llm-agents.t3code.overrideAttrs (old: {
-              pnpmDeps = old.pnpmDeps.overrideAttrs (_: {
-                outputHash = hash;
-              });
-            });
+            t3code = prev.llm-agents.t3code.overrideAttrs (
+              old:
+              prev.lib.optionalAttrs (old ? pnpmDeps) {
+                pnpmDeps = old.pnpmDeps.overrideAttrs (_: {
+                  outputHash = hash;
+                });
+              }
+            );
           in
           prev.lib.optionalAttrs (hash != null && prev.llm-agents ? t3code) (
             {

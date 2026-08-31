@@ -46,6 +46,7 @@
 - Made the Blacksmith overlay updater select the correct probe binary for the host OS and architecture.
 - Added CMake to mise's native build inputs because 2026.8.6 now compiles `libz-ng-sys` from source.
 - Disabled Vector 0.58.0's package check phase on Darwin after three independent timing-sensitive tests failed across otherwise-green runs of more than 2,400 tests; repository Nix evaluation and full system-build checks remain enabled.
+- Guarded the legacy t3code pnpm dependency hash override so refreshed llm-agents packages that no longer expose `pnpmDeps` continue to evaluate on Linux.
 
 ## Skipped or Preserved
 
