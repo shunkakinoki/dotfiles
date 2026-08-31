@@ -69,7 +69,7 @@
       # migrated (see config/noctalia/default.nix). Pinned to a known-good commit,
       # but renovate can still auto-bump this input: treat bumps as breaking and
       # rebuild matic/viper on-device before merging (can't be validated in darwin CI).
-      url = "github:noctalia-dev/noctalia-shell/d8ba5a01cac5ba8617bf262249829b4aa5945369";
+      url = "github:noctalia-dev/noctalia-shell/f840b01baf168f9556e34ba5b8fefb2e90324960";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     llm-agents = {
