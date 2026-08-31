@@ -34,7 +34,6 @@ in
     ++ services
     ++ [
       inputs.agenix.homeManagerModules.default
-      inputs.noctalia-shell.homeModules.default
     ]
     ++ lib.optionals (pkgs.stdenv.isLinux && inputs.host.isDesktop) [
       inputs.handy.homeManagerModules.default

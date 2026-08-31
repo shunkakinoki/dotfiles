@@ -141,7 +141,18 @@
     // prev.lib.optionalAttrs (prev ? mise) {
       # mise's Cargo test suite asserts setuid bits survive OCI layer extraction,
       # which the nix build sandbox does not preserve on darwin/linux runners.
-      mise = prev.mise.overrideAttrs (_: {
+      # mise 2026.8.6 also builds libz-ng-sys from source, whose Rust build
+      # script invokes CMake without declaring it in the upstream derivation.
+      mise = prev.mise.overrideAttrs (old: {
+        doCheck = false;
+        nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ prev.cmake ];
+      });
+    }
+    // prev.lib.optionalAttrs (prev ? vector && prev.stdenv.isDarwin) {
+      # Vector 0.58.0's timing-sensitive check suite is unstable under the
+      # Darwin Nix sandbox (exec shutdown, file rotation, and adaptive
+      # concurrency tests failed across otherwise-green 2,400+ test runs).
+      vector = prev.vector.overrideAttrs (_: {
         doCheck = false;
       });
     }
@@ -208,20 +219,20 @@
 
     moshi-hook = prev.stdenv.mkDerivation rec {
       pname = "moshi-hook";
-      version = "0.3.3";
+      version = "0.3.14";
       src = prev.fetchurl {
         url = "https://cdn.getmoshi.app/hook/v${version}/moshi-hook_${
           if prev.stdenv.isDarwin then "Darwin" else "Linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x86_64"}.tar.gz";
         sha256 =
           if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "23752defd681a77032886aa4d647589a8c7b5cf9dad601df21e7ebe5eaca7ca1"
+            "91b1f74fbf831d24eabd7e92fa3a41c8736b35cee9d264378d9aed2ba4de5a02"
           else if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "6f27b0852e26300e9ad354ba3a852a08d0f3fed18a0035a4c0d324a13e0bc0eb"
+            "5862fd62b5b64a830c191106ae955f128e099256d1fc42b744dcc38053f9a481"
           else if prev.stdenv.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "8dbe6190152e20a716cbecb9b2de7dbeb39f880bd72e9a4619c90994381e2134"
+            "9a7c182706cf9b1369838306706b0f9ddf9a1f5f03fc39b34addacef4c98eb0b"
           else
-            "255ea2ce95b151182531ffcb799775df3b33fe3b64aa0aa343b2bfc8d0d8c58a";
+            "4b287e75672424210b41115b0794f340405ffc8d80f394da68420359cf3fe7e9";
       };
       sourceRoot = ".";
       dontConfigure = true;
