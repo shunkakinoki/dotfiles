@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329
+# shellcheck disable=SC2016,SC2329
 
 Describe 'block-gh-settings.sh'
 SCRIPT="$PWD/config/shared/hooks/block-gh-settings.sh"
@@ -176,11 +176,56 @@ The status should eq 2
 The stderr should include 'BLOCKED'
 End
 
+It 'blocks a ruleset mutation'
+Data '{"tool_input": {"command": "gh api graphql -f query=\"mutation { createRepositoryRuleset(input: {}) { ruleset { id } } }\""}}'
+When run bash "$SCRIPT"
+The status should eq 2
+The stderr should include 'BLOCKED'
+End
+
 It 'blocks a GraphQL input file because it may contain a mutation'
 Data '{"tool_input": {"command": "gh api graphql --input mutation.json"}}'
 When run bash "$SCRIPT"
 The status should eq 2
 The stderr should include 'BLOCKED'
+End
+
+It 'blocks a GraphQL document read from a file'
+Data '{"tool_input": {"command": "gh api graphql -F query=@mutation.graphql"}}'
+When run bash "$SCRIPT"
+The status should eq 2
+The stderr should include 'BLOCKED'
+End
+
+It 'blocks a GraphQL document read from a shell expansion'
+Data '{"tool_input": {"command": "gh api graphql -f query=\"$(cat mutation.graphql)\""}}'
+When run bash "$SCRIPT"
+The status should eq 2
+The stderr should include 'BLOCKED'
+End
+
+It 'allows resolving a pull request review thread'
+Data '{"tool_input": {"command": "gh api graphql -f threadId=PRRT_1 -f query=\"mutation ResolveThread($threadId: ID!) { resolveReviewThread(input: {threadId: $threadId}) { thread { id } } }\""}}'
+When run bash "$SCRIPT"
+The status should be success
+End
+
+It 'allows replying to a pull request review thread'
+Data '{"tool_input": {"command": "gh api graphql -f query=\"mutation Reply($threadId: ID!, $body: String!) { addPullRequestReviewThreadReply(input: {pullRequestReviewThreadId: $threadId, body: $body}) { comment { id } } }\""}}'
+When run bash "$SCRIPT"
+The status should be success
+End
+
+It 'allows a review mutation that selects repository fields'
+Data '{"tool_input": {"command": "gh api graphql -f query=\"mutation ResolveThread($threadId: ID!) { resolveReviewThread(input: {threadId: $threadId}) { thread { pullRequest { repository { name } } } } }\""}}'
+When run bash "$SCRIPT"
+The status should be success
+End
+
+It 'allows an aliased review mutation'
+Data '{"tool_input": {"command": "gh api graphql -f query=\"mutation ResolveThread($threadId: ID!) { resolved: resolveReviewThread(input: {threadId: $threadId}) { thread { id } } }\""}}'
+When run bash "$SCRIPT"
+The status should be success
 End
 End
 
@@ -316,6 +361,62 @@ End
 
 It 'blocks camel-case tool input'
 Data '{"toolInput": {"command": "gh repo edit --enable-wiki"}}'
+When run bash "$SCRIPT"
+The status should eq 2
+The stderr should include 'BLOCKED'
+End
+
+End
+
+Describe 'prose that names commands'
+
+It 'allows an issue description quoting settings commands'
+Data '{"tool_input": {"command": "bd create -t \"guard false positive\" -d \"gh repo edit and gh api graphql -f query=mutation are refused\""}}'
+When run bash "$SCRIPT"
+The status should be success
+End
+
+It 'allows a commit message quoting a settings command'
+Data '{"tool_input": {"command": "git commit -m \"fix(gh): stop gh repo edit false positives\""}}'
+When run bash "$SCRIPT"
+The status should be success
+End
+
+It 'allows a note quoting a direct HTTP mutation'
+Data '{"tool_input": {"command": "bd note issue-1 \"curl -X PATCH https://api.github.com/repos/owner/repo is refused\""}}'
+When run bash "$SCRIPT"
+The status should be success
+End
+
+It 'allows a note quoting a REST method override'
+Data '{"tool_input": {"command": "bd note issue-1 \"gh api -X PATCH /repos/owner/repo is refused\""}}'
+When run bash "$SCRIPT"
+The status should be success
+End
+
+It 'blocks a real command chained after prose'
+Data '{"tool_input": {"command": "bd note issue-1 \"gh repo edit is refused\" && gh repo edit --visibility private"}}'
+When run bash "$SCRIPT"
+The status should eq 2
+The stderr should include 'BLOCKED'
+End
+
+It 'blocks a command inside a substitution'
+Data '{"tool_input": {"command": "echo \"$(gh secret set TOKEN)\""}}'
+When run bash "$SCRIPT"
+The status should eq 2
+The stderr should include 'BLOCKED'
+End
+
+It 'blocks a command on a later line'
+Data '{"tool_input": {"command": "gh pr list\ngh repo edit --enable-wiki"}}'
+When run bash "$SCRIPT"
+The status should eq 2
+The stderr should include 'BLOCKED'
+End
+
+It 'blocks a command behind an environment assignment'
+Data '{"tool_input": {"command": "GH_TOKEN=x gh repo edit --visibility private"}}'
 When run bash "$SCRIPT"
 The status should eq 2
 The stderr should include 'BLOCKED'
