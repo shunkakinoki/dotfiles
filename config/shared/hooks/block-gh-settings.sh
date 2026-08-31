@@ -70,7 +70,7 @@ mutation_root_fields() {
 
     if [[ $char == '"' ]]; then
       while ((index < length)) && [[ ${rest:index:1} != '"' ]]; do
-        if [[ ${rest:index:1} == "\\" ]]; then
+        if [[ ${rest:index:1} == $'\\' ]]; then
           index=$((index + 1))
         fi
         index=$((index + 1))
@@ -399,7 +399,7 @@ scan_command_line() {
     if [[ $quote == '"' ]]; then
       case $char in
       '"') quote='' ;;
-      "\\")
+      $'\\')
         token+=${line:index:1}
         index=$((index + 1))
         ;;
@@ -432,7 +432,7 @@ scan_command_line() {
       quote='"'
       token_started=1
       ;;
-    "\\")
+    $'\\')
       token+=${line:index:1}
       index=$((index + 1))
       token_started=1
