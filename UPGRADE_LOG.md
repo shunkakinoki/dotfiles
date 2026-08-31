@@ -6,18 +6,18 @@
 
 ## Policy
 
-- Target the newest stable release eligible under the repository's seven-day minimum release age.
-- Preserve prerelease channels, Git branch dependencies, and annotated exact pins unless the owning update workflow explicitly advances them.
-- Treat submodules as separately owned repositories and only advance a gitlink to an eligible upstream commit.
+- Target the newest stable release available at execution time. The user explicitly overrode the repository's seven-day minimum release age for this sweep.
+- Preserve intentional prerelease channels, while advancing branch dependencies and exact platform packages through their owning update workflows.
+- Treat submodules as separately owned repositories and advance the gitlink to the current upstream default-branch head.
 
 ## Summary
 
 | Metric | Count |
 | --- | ---: |
 | Dependency surfaces audited | 7 |
-| JavaScript declarations updated | 15 |
+| JavaScript declarations updated | 54 |
 | Python declarations updated | 13 |
-| Custom overlays updated | 1 |
+| Custom overlays updated | 3 |
 | Failed and rolled back | 0 |
 | New security advisories | 0 |
 
@@ -25,22 +25,24 @@
 
 ### JavaScript and Bun
 
-- Updated Claude Code and all eight matching optional platform packages from 2.1.239 to 2.1.241.
-- Updated Oh My Pi packages from 17.4.2 to 18.0.3.
-- Updated PostHog CLI to 0.14.1, Cline to 3.0.57, gh-axi to 0.1.33, and mcp-remote to 0.1.46.
+- Updated Claude Code and all eight matching optional platform packages from 2.1.239 to 2.1.251.
+- Updated Codex and all six matching optional platform packages from 0.149.0 to 0.151.0.
+- Updated Oh My Pi packages from 17.4.2 to 18.0.11.
+- Updated every other direct Bun dependency with a newer release, including PostHog CLI 0.16.0, Cline 3.0.60, gh-axi 0.1.35, mcp-remote 0.8.2, OpenClaw 2026.8.1, and Takt 0.63.0.
 - Regenerated `bun.lock` and verified frozen installation plus CLI smoke tests.
 
 ### Python tools
 
-- Updated agentsview to 0.41.1, claude-swap to 0.25.0, git-remote-s3 to 0.4.2, graphifyy to 0.9.48, and huggingface-hub to 1.28.0.
-- Updated mempalace to 3.7.1, mistral-vibe to 2.24.3, Ruff to 0.16.4, serena-agent to 1.7.0, transformers to 5.15.1, and vLLM to 0.27.1.
+- Updated agentsview to 0.41.1, claude-swap to 0.25.0, git-remote-s3 to 0.4.2, graphifyy to 0.9.53, and huggingface-hub to 1.29.0.
+- Updated mempalace to 3.8.0, mistral-vibe to 2.24.5, Ruff to 0.16.5, serena-agent to 1.7.0, transformers to 5.16.1, and vLLM to 0.28.0.
 - Updated the Hermes runtime constraints for FastAPI to 0.141.1 and Uvicorn to 0.52.4.
 - Resolved every direct tool independently with `uv pip compile --no-deps` before running the repository tests and lint checks.
 
 ### Nix and generated upstreams
 
 - Refreshed the flake lock graph for the floating inputs, including nixpkgs channels, Home Manager, nix-darwin, flake-parts, devenv, treefmt, NUR, hardware modules, Foundry, Handy, LLM agents, and Neovim nightly.
-- Updated the Moshi Hook overlay from 0.3.3 to 0.3.14 with hashes for all four supported OS/architecture combinations.
+- Updated the Moshi Hook overlay from 0.3.3 to 0.3.15 and Crabbox from 0.46.0 to 0.47.0 with hashes for all four supported OS/architecture combinations.
+- Advanced the GitHub CLI preview overlay to the August 28 upstream trunk head and refreshed its source and Go vendor hashes.
 - Regenerated the Moshi adapters, followed the upstream Oh My Pi extension path move, and normalized machine-local binary paths to portable command names.
 - Removed the external Noctalia Home Manager module import because current Home Manager now supplies the same module; the pinned input remains the package source.
 - Made the Blacksmith overlay updater select the correct probe binary for the host OS and architecture.
@@ -52,11 +54,9 @@
 
 ## Skipped or Preserved
 
-- Preserved Worktrunk 0.74.0 because 0.75.0 had not satisfied the seven-day release-age policy and also raises the minimum Git version.
-- Preserved Renovate's GitHub Action at 46.2.3 because 46.2.4 had not satisfied the seven-day policy when audited.
-- Preserved the submodule gitlink because newer upstream commits were also inside the seven-day window.
-- Preserved prerelease channels, branch-based Rust dependencies, and annotated exact Nix pins.
-- Yek and the remaining direct JavaScript/Python dependencies were already at their newest eligible stable versions.
+- Updated Worktrunk from 0.74.0 to 0.75.0, refreshed all Cargo transitive dependencies, and advanced the Git-backed git-ai and rtk dependencies to their current branch heads.
+- Updated Renovate's GitHub Action from 46.1.21 to 46.2.5 and advanced the dotagents submodule to the current upstream default-branch head.
+- Preserved intentional prerelease channels; Yek and the remaining direct Python dependencies were already at their newest releases.
 
 ## Validation
 
@@ -82,9 +82,9 @@ The repository's Darwin `nix-flake-check` wrapper successfully completed all hos
 
 ## Commands Used
 
-- `bun update`, `bun install --frozen-lockfile`, `bun audit`, `bun audit fix`
-- `uv pip compile --no-deps`, `uv run pytest`, `uv run ruff`
-- `cargo test`
+- `bun update --latest --minimum-release-age=0`, `bun install --frozen-lockfile --minimum-release-age=0`, `bun audit`
+- `uv pip compile --no-deps --exclude-newer 2100-01-01`, `uv run pytest`, `uv run ruff`
+- `cargo update`, `cargo test`
 - `nix flake update`, `nix fmt`, repository Nix checks and build
 - repository overlay and generated-hook update targets
 - GitHub API release and action-ref audits
