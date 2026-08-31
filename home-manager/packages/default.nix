@@ -139,7 +139,7 @@ with pkgs;
   pkgs.llm-agents.prime-agent
   vector
 ]
-++ lib.optionals stdenv.isDarwin [
+++ lib.optionals stdenv.hostPlatform.isDarwin [
   darwin.trash
 ]
 ++ lib.optionals stdenv.isLinux [

@@ -158,7 +158,7 @@
         nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ prev.cmake ];
       });
     }
-    // prev.lib.optionalAttrs (prev ? vector && prev.stdenv.isDarwin) {
+    // prev.lib.optionalAttrs (prev ? vector && prev.stdenv.hostPlatform.isDarwin) {
       # Vector 0.58.0's timing-sensitive check suite is unstable under the
       # Darwin Nix sandbox (exec shutdown, file rotation, and adaptive
       # concurrency tests failed across otherwise-green 2,400+ test runs).
@@ -179,14 +179,14 @@
       version = "0.4.57";
       src = prev.fetchurl {
         url = "https://clireleases.blacksmith.sh/cli/v${version}/${
-          if prev.stdenv.isDarwin then "darwin" else "linux"
+          if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }/${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}/blacksmith";
         sha256 =
           if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isx86_64 then
             "7f60f3b9f8d4d7644d9743f5d962acb3b3dbf675f51676702e5f292e02060bca"
           else if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isAarch64 then
             "04c8d261526e23c7791f05b8acec8f02b9d1fe67c35a1adcf28076627327270a"
-          else if prev.stdenv.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
+          else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
             "607b0f4413e426574527446c7718ea32587d57b24a3ea0749e1ab4138a426584"
           else
             "47281f402ff223f85e5165ea9018cd0281a727f19c69af8121ae4b09658ad313";
@@ -203,14 +203,14 @@
       version = "0.47.0";
       src = prev.fetchurl {
         url = "https://github.com/openclaw/crabbox/releases/download/v${version}/crabbox_${version}_${
-          if prev.stdenv.isDarwin then "darwin" else "linux"
+          if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}.tar.gz";
         sha256 =
           if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isx86_64 then
             "e513ba473be4eaaadf16f88fe030a03e6a11c0b49a088941fcccdbf3a09247ad"
           else if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isAarch64 then
             "94a388cd7301c7ba1d7e42d8c55d68c6b9dd55025e79cf247c58d659aa5039d4"
-          else if prev.stdenv.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
+          else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
             "ef1567083f6bd0d01b2539efdd69ccd205c2642e7d9eefb073d58052e8a7bb91"
           else
             "642995363f7d6c367859e77f80eb66468ef2ed380d1e7ea4ae737f7deeb986d4";
@@ -220,9 +220,11 @@
       dontBuild = true;
       installPhase = ''
         install -Dm755 crabbox $out/bin/crabbox
-        ${prev.lib.optionalString (prev.stdenv.isDarwin && prev.stdenv.hostPlatform.isAarch64) ''
-          install -Dm755 crabbox-apple-vm-helper $out/bin/crabbox-apple-vm-helper
-        ''}
+        ${prev.lib.optionalString (prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64)
+          ''
+            install -Dm755 crabbox-apple-vm-helper $out/bin/crabbox-apple-vm-helper
+          ''
+        }
       '';
       meta.mainProgram = "crabbox";
     };
@@ -232,14 +234,14 @@
       version = "0.3.16";
       src = prev.fetchurl {
         url = "https://cdn.getmoshi.app/hook/v${version}/moshi-hook_${
-          if prev.stdenv.isDarwin then "Darwin" else "Linux"
+          if prev.stdenv.hostPlatform.isDarwin then "Darwin" else "Linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x86_64"}.tar.gz";
         sha256 =
           if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isx86_64 then
             "ee96ff3cebe68648a9631976660afa4a7a247cfa2cc8c030d9d5eca784df5a95"
           else if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isAarch64 then
             "8df6d83dcd1aa99c42e7516937f29249f3a8f704d9d9d7eec703fa2287a88666"
-          else if prev.stdenv.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
+          else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
             "173550c6437e6663dbdf43736fc9cbca2a5af8acf7c3d61b2c3a97c4963cf596"
           else
             "608c8af54a5d7add4e6d58ce2d1b5b3ea0ba536fd8b7e57d947b5f9f244e8311";

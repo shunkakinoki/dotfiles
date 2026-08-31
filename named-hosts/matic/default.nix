@@ -182,8 +182,9 @@ import ../../hosts/nixos {
           fprintAuth = true;
           enableGnomeKeyring = true;
           rules.session = {
-            # Run after pam_gnome_keyring (which starts the daemon but can't unlock
-            # on fingerprint login). Decrypts the TPM2 credential and sends the
+            # Run after greetd's login include, whose session stack runs
+            # pam_gnome_keyring (which starts the daemon but can't unlock on
+            # fingerprint login). Decrypts the TPM2 credential and sends the
             # password to the running daemon via the control socket protocol.
             gnome_keyring_tpm_unlock =
               let
@@ -222,7 +223,7 @@ import ../../hosts/nixos {
                 );
               in
               {
-                order = config.security.pam.services.greetd.rules.session.gnome_keyring.order + 10;
+                order = config.security.pam.services.greetd.rules.session.login.order + 10;
                 control = "optional";
                 modulePath = "${pkgs.pam}/lib/security/pam_exec.so";
                 args = [

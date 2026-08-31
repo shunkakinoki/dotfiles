@@ -5,7 +5,7 @@
   ...
 }:
 let
-  inherit (pkgs.stdenv) isDarwin;
+  inherit (pkgs.stdenv.hostPlatform) isDarwin;
   exportGuiEnv = pkgs.replaceVars ./export-gui-env.sh {
     launchctl = "/bin/launchctl";
     printer = "${./print-env-file.sh}";

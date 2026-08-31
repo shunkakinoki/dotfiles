@@ -18,7 +18,7 @@ lib.mkIf enabled {
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${qmdBin}" "${wikiDir}"
   '';
 
-  launchd.agents.qmd = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.qmd = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [

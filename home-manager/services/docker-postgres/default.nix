@@ -23,7 +23,7 @@ let
   );
 in
 lib.mkIf enabled {
-  launchd.agents.docker-postgres = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.docker-postgres = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [

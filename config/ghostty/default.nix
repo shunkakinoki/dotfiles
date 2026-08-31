@@ -18,17 +18,17 @@ in
 
   # macOS GUI app reads from ~/Library/Application Support/com.mitchellh.ghostty/
   home.file."Library/Application Support/com.mitchellh.ghostty/config" =
-    lib.mkIf pkgs.stdenv.isDarwin
+    lib.mkIf pkgs.stdenv.hostPlatform.isDarwin
       {
         source = configFile;
       };
   home.file."Library/Application Support/com.mitchellh.ghostty/themes/Dracula Custom" =
-    lib.mkIf pkgs.stdenv.isDarwin
+    lib.mkIf pkgs.stdenv.hostPlatform.isDarwin
       {
         source = ./themes + "/Dracula Custom";
       };
   home.file."Library/Application Support/com.mitchellh.ghostty/themes/Catppuccin Latte Custom" =
-    lib.mkIf pkgs.stdenv.isDarwin
+    lib.mkIf pkgs.stdenv.hostPlatform.isDarwin
       {
         source = ./themes + "/Catppuccin Latte Custom";
       };

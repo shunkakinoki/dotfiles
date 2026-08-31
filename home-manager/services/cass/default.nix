@@ -11,7 +11,7 @@ in
   # blocks the TUI's otherwise usable lexical search path.
 
   # Daily remote sync + analytics rebuild (runs at 4am)
-  launchd.agents.cass-daily = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.cass-daily = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [

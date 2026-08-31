@@ -12,13 +12,13 @@ let
 in
 {
   home.file."Library/Application Support/io.datasette.llm/extra-openai-models.yaml" = {
-    enable = pkgs.stdenv.isDarwin;
+    enable = pkgs.stdenv.hostPlatform.isDarwin;
     source = ./extra-openai-models.yaml;
     force = true;
   };
 
   home.file."Library/Application Support/io.datasette.llm/default_model.txt" = {
-    enable = pkgs.stdenv.isDarwin;
+    enable = pkgs.stdenv.hostPlatform.isDarwin;
     source = ./default_model.txt;
     force = true;
   };

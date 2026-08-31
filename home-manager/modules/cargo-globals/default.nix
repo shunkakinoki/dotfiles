@@ -5,7 +5,7 @@
   ...
 }:
 let
-  inherit (pkgs.stdenv) isDarwin;
+  inherit (pkgs.stdenv.hostPlatform) isDarwin;
   libiconvPkgConfigPath = lib.optionalString isDarwin ":${pkgs.libiconv.dev}/lib/pkgconfig";
   libiconvLibraryPath = lib.optionalString isDarwin "${pkgs.libiconv.out}/lib";
   libiconvCPath = lib.optionalString isDarwin "${pkgs.libiconv.dev}/include";

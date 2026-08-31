@@ -6,7 +6,7 @@
 let
   inherit (pkgs) lib;
   moshiHookBin =
-    if pkgs.stdenv.isDarwin then
+    if pkgs.stdenv.hostPlatform.isDarwin then
       config.lib.file.mkOutOfStoreSymlink "/opt/homebrew/bin/moshi-hook"
     else
       "${pkgs.moshi-hook}/bin/moshi-hook";

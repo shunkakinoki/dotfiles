@@ -9,7 +9,7 @@ let
   nvimPackLockJson = ./nvim-pack-lock.json;
   packDir = "$HOME/.local/share/nvim/site/pack";
   buildTools =
-    if pkgs.stdenv.isDarwin then
+    if pkgs.stdenv.hostPlatform.isDarwin then
       [
         pkgs.gnumake
         pkgs.clang
@@ -19,7 +19,7 @@ let
         pkgs.gnumake
         pkgs.gcc
       ];
-  libExt = if pkgs.stdenv.isDarwin then "dylib" else "so";
+  libExt = if pkgs.stdenv.hostPlatform.isDarwin then "dylib" else "so";
 in
 {
   programs.neovim = {

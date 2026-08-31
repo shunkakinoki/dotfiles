@@ -26,7 +26,7 @@ let
 in
 {
   # macOS (launchd)
-  launchd.agents.tokscale = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.tokscale = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [

@@ -5,7 +5,7 @@ let
   logDir = "${config.home.homeDirectory}/Library/Logs";
 in
 {
-  launchd.agents.screenshot-clipboard = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.screenshot-clipboard = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [

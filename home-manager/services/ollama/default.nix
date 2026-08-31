@@ -35,7 +35,7 @@ in
 lib.mkIf enabled {
   home.packages = [ ollamaPackage ];
 
-  launchd.agents.ollama = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.ollama = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [
