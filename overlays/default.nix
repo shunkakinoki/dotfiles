@@ -4,6 +4,13 @@
   inputs.neovim-nightly-overlay.overlays.default
   inputs.foundry.overlay
   (_: prev: {
+    # Current Foundry nightlies link forge and cast against libudev, which the
+    # upstream binary derivation does not yet include in its Linux runtime.
+    foundry-bin = prev.foundry-bin.overrideAttrs (old: {
+      buildInputs = (old.buildInputs or [ ]) ++ prev.lib.optionals prev.stdenv.isLinux [ prev.udev ];
+    });
+  })
+  (_: prev: {
     # Ensure neovim-unwrapped exposes a lua attribute for wrapper consumers (e.g., home-manager)
     # Also disable checks on both neovim and neovim-unwrapped: neovim-nightly-overlay
     # sets them to distinct derivations, and programs.neovim / devenv use pkgs.neovim.
