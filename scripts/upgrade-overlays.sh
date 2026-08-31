@@ -82,13 +82,31 @@ checksum_for_file() {
 upgrade_blacksmith_testbox_cli() {
   local version current_version latest_dir latest_output latest_checksum latest_actual
   local linux_x86_64 linux_arm64 darwin_arm64 darwin_x86_64
+  local probe_os probe_arch probe_asset
 
   version="${BLACKSMITH_CLI_VERSION:-}"
   if [ -z "$version" ]; then
+    case "$(uname -s)" in
+    Darwin) probe_os="darwin" ;;
+    Linux) probe_os="linux" ;;
+    *)
+      log_error "Unsupported host OS for Blacksmith version probe: $(uname -s)"
+      exit 1
+      ;;
+    esac
+    case "$(uname -m)" in
+    arm64 | aarch64) probe_arch="arm64" ;;
+    x86_64 | amd64) probe_arch="amd64" ;;
+    *)
+      log_error "Unsupported host architecture for Blacksmith version probe: $(uname -m)"
+      exit 1
+      ;;
+    esac
+    probe_asset="$BLACKSMITH_CLI_CDN/latest/$probe_os/$probe_arch/blacksmith"
     latest_dir="$(mktemp -d)"
-    curl -fsSL "$BLACKSMITH_CLI_CDN/latest/linux/amd64/blacksmith" -o "$latest_dir/blacksmith"
-    latest_checksum="$(checksum_from_url "$BLACKSMITH_CLI_CDN/latest/linux/amd64/blacksmith.sha256")"
-    validate_checksum blacksmith-latest-linux-amd64 "$latest_checksum"
+    curl -fsSL "$probe_asset" -o "$latest_dir/blacksmith"
+    latest_checksum="$(checksum_from_url "$probe_asset.sha256")"
+    validate_checksum "blacksmith-latest-$probe_os-$probe_arch" "$latest_checksum"
     latest_actual="$(checksum_for_file "$latest_dir/blacksmith")"
     if [ "$latest_checksum" != "$latest_actual" ]; then
       rm -rf "$latest_dir"

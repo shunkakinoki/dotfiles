@@ -29,20 +29,20 @@ When run cat "$MODULE"
 The output should include 'pkgs.moshi-hook'
 End
 
-It 'keeps Pi OpenCode and OMP plugins pointed at ~/.local/bin/moshi-hook'
-When run bash -c "grep -c 'process.env.HOME + \"/.local/bin/moshi-hook\"' '$PI_HOOK' '$OPENCODE_HOOK' '$OMP_HOOK'"
+It 'keeps Pi OpenCode and OMP adapters portable across installations'
+When run bash -c "grep -c 'const helperBinary = \"moshi-hook\";' '$PI_HOOK' '$OPENCODE_HOOK' '$OMP_HOOK'"
 The output should include "$PI_HOOK:1"
 The output should include "$OPENCODE_HOOK:1"
 The output should include "$OMP_HOOK:1"
 End
 
-It 'swallows async spawn errors so a missing moshi-hook cannot crash Pi'
-When run grep -n 'child.on("error"' "$PI_HOOK"
-The output should include 'child.on("error"'
+It 'swallows socket errors so a missing moshi-hook daemon cannot crash Pi'
+When run grep -n 'sock.on("error"' "$PI_HOOK"
+The output should include 'sock.on("error"'
 End
 
-It 'falls back to Homebrew moshi-hook when ~/.local/bin is missing'
-When run grep -F '/opt/homebrew/bin/moshi-hook' "$PI_HOOK"
-The output should include '/opt/homebrew/bin/moshi-hook'
+It 'does not embed machine-specific helper paths in generated adapters'
+When run bash -c "! grep -Eq '(/opt/homebrew/bin|process\.env\.HOME.*local/bin)' '$PI_HOOK' '$OPENCODE_HOOK' '$OMP_HOOK'"
+The status should be success
 End
 End

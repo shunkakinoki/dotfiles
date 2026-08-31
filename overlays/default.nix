@@ -4,6 +4,13 @@
   inputs.neovim-nightly-overlay.overlays.default
   inputs.foundry.overlay
   (_: prev: {
+    # Current Foundry nightlies link forge and cast against libudev, which the
+    # upstream binary derivation does not yet include in its Linux runtime.
+    foundry-bin = prev.foundry-bin.overrideAttrs (old: {
+      buildInputs = (old.buildInputs or [ ]) ++ prev.lib.optionals prev.stdenv.isLinux [ prev.udev ];
+    });
+  })
+  (_: prev: {
     # Ensure neovim-unwrapped exposes a lua attribute for wrapper consumers (e.g., home-manager)
     # Also disable checks on both neovim and neovim-unwrapped: neovim-nightly-overlay
     # sets them to distinct derivations, and programs.neovim / devenv use pkgs.neovim.
@@ -33,17 +40,17 @@
     # commands. Remove this override once the feature is released in a tagged version.
     gh = prev.gh.overrideAttrs (_: {
       pname = "gh";
-      version = "2.95.0-unstable-20260825";
+      version = "2.95.0-unstable-20260828";
       src = prev.fetchFromGitHub {
         owner = "cli";
         repo = "cli";
-        rev = "cc831722b71c3fc1603e6473bd1d9da27c0605e5";
-        hash = "sha256-8rnqM7jApjMYhUv2m/vrfSGu9i1eGLtmc/h/JUuipWs=";
+        rev = "40b742f76d68e6b1f472942a6368db4b5d765641";
+        hash = "sha256-nGquMOwkEZp6ysFJOw5qa1PqQqw7+WLqpPQiziEAPG0=";
       };
-      vendorHash = "sha256-fhFsu/LjLNFwexSfUsd4X74UD+AQojLcdxU5IqOi3GY=";
+      vendorHash = "sha256-v9h17XD/fyHasgLsHHkGvoV1qITWpwGDJ6MtlvWnN4c=";
       buildPhase = ''
         runHook preBuild
-        make GO_LDFLAGS="-s -w -X github.com/cli/cli/v2/internal/build.Date=nixpkgs" GH_VERSION=2.95.0-unstable-20260825 bin/gh manpages
+        make GO_LDFLAGS="-s -w -X github.com/cli/cli/v2/internal/build.Date=nixpkgs" GH_VERSION=2.95.0-unstable-20260828 bin/gh manpages
         runHook postBuild
       '';
     });
@@ -118,11 +125,14 @@
               x86_64-linux = "sha256-i/K5bj7CS7PGIX5hfayxAJ7ngNib92w3SDKGXTVWccA=";
             };
             hash = pnpmDepsHashes.${prev.stdenv.hostPlatform.system} or null;
-            t3code = prev.llm-agents.t3code.overrideAttrs (old: {
-              pnpmDeps = old.pnpmDeps.overrideAttrs (_: {
-                outputHash = hash;
-              });
-            });
+            t3code = prev.llm-agents.t3code.overrideAttrs (
+              old:
+              prev.lib.optionalAttrs (old ? pnpmDeps) {
+                pnpmDeps = old.pnpmDeps.overrideAttrs (_: {
+                  outputHash = hash;
+                });
+              }
+            );
           in
           prev.lib.optionalAttrs (hash != null && prev.llm-agents ? t3code) (
             {
@@ -141,7 +151,18 @@
     // prev.lib.optionalAttrs (prev ? mise) {
       # mise's Cargo test suite asserts setuid bits survive OCI layer extraction,
       # which the nix build sandbox does not preserve on darwin/linux runners.
-      mise = prev.mise.overrideAttrs (_: {
+      # mise 2026.8.6 also builds libz-ng-sys from source, whose Rust build
+      # script invokes CMake without declaring it in the upstream derivation.
+      mise = prev.mise.overrideAttrs (old: {
+        doCheck = false;
+        nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ prev.cmake ];
+      });
+    }
+    // prev.lib.optionalAttrs (prev ? vector && prev.stdenv.isDarwin) {
+      # Vector 0.58.0's timing-sensitive check suite is unstable under the
+      # Darwin Nix sandbox (exec shutdown, file rotation, and adaptive
+      # concurrency tests failed across otherwise-green 2,400+ test runs).
+      vector = prev.vector.overrideAttrs (_: {
         doCheck = false;
       });
     }
@@ -179,20 +200,20 @@
 
     crabbox = prev.stdenvNoCC.mkDerivation rec {
       pname = "crabbox";
-      version = "0.46.0";
+      version = "0.47.0";
       src = prev.fetchurl {
         url = "https://github.com/openclaw/crabbox/releases/download/v${version}/crabbox_${version}_${
           if prev.stdenv.isDarwin then "darwin" else "linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}.tar.gz";
         sha256 =
           if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "6a9341e810307356361dbed4c4b84be28a036b5cc291af1566d2ccd376570d90"
+            "e513ba473be4eaaadf16f88fe030a03e6a11c0b49a088941fcccdbf3a09247ad"
           else if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "d95730856cd3909dab0703ec024e3017a094fff2a065516782b47019fec9533d"
+            "94a388cd7301c7ba1d7e42d8c55d68c6b9dd55025e79cf247c58d659aa5039d4"
           else if prev.stdenv.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "2216da0acbcc6e822ee341ec313aaab58875db951fa1daf0d13dd710ebfba9b8"
+            "ef1567083f6bd0d01b2539efdd69ccd205c2642e7d9eefb073d58052e8a7bb91"
           else
-            "18035770b5b654114fa95d2e468268b13c69862137cc1f083bd674bbb2bf83bb";
+            "642995363f7d6c367859e77f80eb66468ef2ed380d1e7ea4ae737f7deeb986d4";
       };
       sourceRoot = ".";
       dontConfigure = true;
@@ -208,20 +229,20 @@
 
     moshi-hook = prev.stdenv.mkDerivation rec {
       pname = "moshi-hook";
-      version = "0.3.3";
+      version = "0.3.15";
       src = prev.fetchurl {
         url = "https://cdn.getmoshi.app/hook/v${version}/moshi-hook_${
           if prev.stdenv.isDarwin then "Darwin" else "Linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x86_64"}.tar.gz";
         sha256 =
           if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "23752defd681a77032886aa4d647589a8c7b5cf9dad601df21e7ebe5eaca7ca1"
+            "128a361329b33a6bd2e18dbc3af064011e0de7efe30e82e2c9ffbfbbac50f64f"
           else if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "6f27b0852e26300e9ad354ba3a852a08d0f3fed18a0035a4c0d324a13e0bc0eb"
+            "57ac652c18779cdba44dbc10459d67f712e2ee7a5b794e23dc482d1fd6a53f62"
           else if prev.stdenv.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "8dbe6190152e20a716cbecb9b2de7dbeb39f880bd72e9a4619c90994381e2134"
+            "f45151ad879a37a5aa516bde38b2ee81ac6859b0c64056bbf4809f3df0cb556e"
           else
-            "255ea2ce95b151182531ffcb799775df3b33fe3b64aa0aa343b2bfc8d0d8c58a";
+            "1fe3f2284550f9f544298419271c0fbcb2f79e158ae6f1cf458649bc5977e199";
       };
       sourceRoot = ".";
       dontConfigure = true;

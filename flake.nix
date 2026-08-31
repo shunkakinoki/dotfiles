@@ -76,9 +76,12 @@
       url = "github:numtide/llm-agents.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixpkgs-darwin-legacy = {
+      url = "github:NixOS/nixpkgs/nixpkgs-26.05-darwin";
+    };
     handy = {
       url = "github:cjpais/Handy";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-darwin-legacy";
     };
   };
 
