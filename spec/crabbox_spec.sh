@@ -17,7 +17,7 @@ HEALTH_CHECK="$PWD/home-manager/services/crabbox/health-check.sh"
 
 It 'packages the CLI independently in the shared overlay'
 When run bash -c "sed -n '/crabbox = prev.stdenvNoCC.mkDerivation rec {/,/meta.mainProgram = \"crabbox\"/p' '$OVERLAY'"
-The output should include 'version = "0.46.0"'
+The output should include 'version = "0.47.0"'
 The output should include 'crabbox_${version}'
 The output should include 'crabbox-apple-vm-helper'
 The output should include 'meta.mainProgram = "crabbox"'
