@@ -175,6 +175,28 @@
     dolt = inputs.nixpkgs-dolt.legacyPackages.${prev.system}.dolt;
   })
   (_: prev: {
+    ascii-box-cli = prev.stdenvNoCC.mkDerivation rec {
+      pname = "ascii-box-cli";
+      version = "0.1.208";
+      src = prev.fetchurl {
+        url = "https://ascii.dev/api/box/cli/download?platform=${
+          if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
+        }-${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x64"}&channel=ascii-prod";
+        sha256 =
+          {
+            "aarch64-darwin" = "0p85n67mklxfvvh1v6sj047wcskxsagzmg6r0wdd4kibpvgbxdap";
+            "aarch64-linux" = "1nsfky5jilcg2w87k4dlvkg1bki325j1mmf8qp93m8rjg4zq3sm1";
+            "x86_64-linux" = "0jmp1xvzsnxpgakrd69fiqp2fd8rzcr57s80djlzbdgfs3jr2z60";
+          }
+          .${prev.stdenv.hostPlatform.system};
+      };
+      dontUnpack = true;
+      installPhase = ''
+        install -Dm755 "$src" "$out/bin/box"
+      '';
+      meta.mainProgram = "box";
+    };
+
     blacksmith-testbox-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "blacksmith-testbox-cli";
       version = "0.4.57";

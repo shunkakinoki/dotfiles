@@ -69,6 +69,11 @@ EOF
       };
       sourceRoot = ".";
     };
+    ascii-box-cli = prev.stdenvNoCC.mkDerivation rec {
+      pname = "ascii-box-cli";
+      version = "0.1.208";
+      meta.mainProgram = "box";
+    };
     blacksmith-testbox-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "blacksmith-testbox-cli";
       version = "0.4.57";
@@ -87,7 +92,7 @@ Before 'setup'
 After 'cleanup'
 
 It 'updates moshi-hook from the all target'
-When run env OVERLAY_FILE="$TEMP_DIR/overlays/default.nix" MOSHI_HOOK_CDN="file://$TEMP_DIR/cdn" BLACKSMITH_CLI_VERSION="0.4.57" bash "$SCRIPT" all
+When run env OVERLAY_FILE="$TEMP_DIR/overlays/default.nix" ASCII_BOX_CLI_VERSION="0.1.208" MOSHI_HOOK_CDN="file://$TEMP_DIR/cdn" BLACKSMITH_CLI_VERSION="0.4.57" bash "$SCRIPT" all
 The output should include 'moshi-hook upgraded from 0.2.55 to 0.2.69'
 The status should be success
 End
