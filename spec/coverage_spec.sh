@@ -177,6 +177,10 @@ It 'has spec file for scripts/update-moshi-hooks.sh'
 The path "spec/update_moshi_hooks_spec.sh" should be exist
 End
 
+It 'has spec file for scripts/generate-hooks.sh'
+The path "spec/generate_hooks_spec.sh" should be exist
+End
+
 It 'has spec file for scripts/upgrade-overlays.sh'
 The path "spec/upgrade_overlays_spec.sh" should be exist
 End
@@ -640,6 +644,7 @@ scripts/build-neovim-plugins.sh
 scripts/check-nix-inline-scripts.sh
 scripts/find-built-iso.sh
 scripts/fishtape-wrapper.sh
+scripts/generate-hooks.sh
 scripts/llm-update.sh
 scripts/sync-codex-security.sh
 scripts/sync-rtk-rewrite.sh

@@ -17,7 +17,7 @@
   };
 
   home.file.".omp/agent/hooks/post/moshi-hooks.ts" = {
-    source = ./moshi-hooks.ts;
+    source = ../../generated/hooks/moshi/omp/moshi-hooks.ts;
     force = true;
   };
 }

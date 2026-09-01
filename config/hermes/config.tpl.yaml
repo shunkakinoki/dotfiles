@@ -287,6 +287,14 @@ command_allowlist: []
 quick_commands: {}
 hooks: {}
 hooks_auto_accept: false
+# ── Plugins ───────────────────────────────────────────────────────────
+plugins:
+  enabled:
+    - traces
+  disabled: []
+  entries:
+    traces:
+      allow_tool_override: false
 personalities: {}
 security:
   allow_private_urls: false

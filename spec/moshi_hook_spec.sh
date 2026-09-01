@@ -3,9 +3,9 @@
 
 Describe 'home-manager/services/moshi-hook'
 MODULE="$PWD/home-manager/services/moshi-hook/default.nix"
-PI_HOOK="$PWD/config/pi/moshi-hooks.ts"
-OPENCODE_HOOK="$PWD/config/opencode/moshi-hooks.ts"
-OMP_HOOK="$PWD/config/omp/moshi-hooks.ts"
+PI_HOOK="$PWD/generated/hooks/moshi/pi/moshi-hooks.ts"
+OPENCODE_HOOK="$PWD/generated/hooks/moshi/opencode/moshi-hooks.ts"
+OMP_HOOK="$PWD/generated/hooks/moshi/omp/moshi-hooks.ts"
 
 It 'is imported by the shared services module'
 When run grep -F './moshi-hook' "$PWD/home-manager/services/default.nix"

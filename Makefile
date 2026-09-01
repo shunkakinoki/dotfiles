@@ -418,6 +418,10 @@ moshi-update: ## Sync moshi-hook generated configs from live to dotfiles.
 		echo "⏭️  moshi-hook not found, skipping"; \
 	fi
 
+.PHONY: generate
+generate: ## Regenerate checked-in hook artifacts.
+	@./scripts/generate-hooks.sh
+
 .PHONY: llm-update
 llm-update: ## Regenerate tool configs from models.json.
 	@echo "🤖 Updating LLM tool configs..."

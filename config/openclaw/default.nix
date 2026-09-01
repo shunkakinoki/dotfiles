@@ -17,8 +17,11 @@ let
       vars = {
         sed = "${pkgs.gnused}/bin/sed";
         awk = "${pkgs.gawk}/bin/awk";
+        git = "${pkgs.git}/bin/git";
         template = "${./openclaw.template.json}";
         soul = "${../../SOUL.md}";
+        tracesHookManifest = "${../../generated/hooks/traces/openclaw/HOOK.md}";
+        tracesHookHandler = "${../../generated/hooks/traces/openclaw/handler.js}";
         inherit mode;
       }
       // (

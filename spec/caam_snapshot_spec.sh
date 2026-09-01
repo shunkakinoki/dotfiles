@@ -4,7 +4,7 @@
 Describe 'Claude CAAM session snapshot hook'
 SCRIPT="$PWD/config/claude/hooks/caam-snapshot.sh"
 DEFAULT_NIX="$PWD/config/claude/default.nix"
-SETTINGS="$PWD/config/claude/settings.json"
+SETTINGS="$PWD/generated/hooks/moshi/claude/settings.json"
 
 setup() {
   MOCK_BIN=$(mktemp -d)

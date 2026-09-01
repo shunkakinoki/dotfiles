@@ -5,7 +5,7 @@ Describe 'auto-switch.sh'
 SCRIPT="$PWD/config/claude/hooks/auto-switch.sh"
 DEFAULT_NIX="$PWD/config/claude/default.nix"
 ACTIVATE_SCRIPT="$PWD/config/claude/activate.sh"
-SETTINGS="$PWD/config/claude/settings.json"
+SETTINGS="$PWD/generated/hooks/moshi/claude/settings.json"
 
 Describe 'universal wiring'
 It 'enables the CAAM hook on every host'
