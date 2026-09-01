@@ -31,6 +31,7 @@ let
   ollama = ./ollama;
   qmd = ./qmd;
   openclaw = ./openclaw;
+  orchestratorWake = ./orchestrator-wake;
   roborev = ./roborev;
   screenshotClipboard = import ./screenshot-clipboard { inherit pkgs; };
   sshAgent = ./ssh-agent;
@@ -64,6 +65,7 @@ in
   ollama
   qmd
   openclaw
+  orchestratorWake
   roborev
   screenshotClipboard
   sshAgent

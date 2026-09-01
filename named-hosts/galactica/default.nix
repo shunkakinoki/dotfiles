@@ -4,8 +4,14 @@
   ...
 }:
 let
+  host = (import ../../lib/host.nix) // {
+    isGalactica = true;
+  };
   darwin-modules = import ../../hosts/darwin {
-    inherit inputs username;
+    inherit username;
+    inputs = inputs // {
+      inherit host;
+    };
     hostname = "galactica";
   };
 in
@@ -17,9 +23,7 @@ inputs.nix-darwin.lib.darwinSystem {
       home-manager.extraSpecialArgs = {
         isRunner = false;
         inputs = inputs // {
-          host = (import ../../lib/host.nix) // {
-            isGalactica = true;
-          };
+          inherit host;
         };
       };
       age.identityPaths = [ "/Users/${username}/.ssh/id_ed25519" ];
