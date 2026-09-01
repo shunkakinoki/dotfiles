@@ -45,7 +45,7 @@ End
 
 It 'exposes cursor-agent as cursor on headless Linux hosts'
 When run cat "$CURSOR_NIX"
-The output should include 'pkgs.stdenv.isLinux'
+The output should include 'pkgs.stdenv.hostPlatform.isLinux'
 The output should include '.local/bin/cursor-agent'
 End
 

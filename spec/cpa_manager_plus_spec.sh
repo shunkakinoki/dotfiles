@@ -9,8 +9,8 @@ CLIPROXY_BACKUP_SCRIPT="$PWD/home-manager/services/cliproxyapi/scripts/backup.sh
 CLIPROXY_NIX_MODULE="$PWD/home-manager/services/cliproxyapi/default.nix"
 
 It 'is enabled only on Kyber Linux'
-When run grep 'pkgs.stdenv.isLinux && host.isKyber' "$NIX_MODULE"
-The output should include 'pkgs.stdenv.isLinux && host.isKyber'
+When run grep 'pkgs.stdenv.hostPlatform.isLinux && host.isKyber' "$NIX_MODULE"
+The output should include 'pkgs.stdenv.hostPlatform.isLinux && host.isKyber'
 End
 
 It 'starts after Docker and CLIProxyAPI'

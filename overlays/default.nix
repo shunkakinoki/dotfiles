@@ -7,7 +7,8 @@
     # Current Foundry nightlies link forge and cast against libudev, which the
     # upstream binary derivation does not yet include in its Linux runtime.
     foundry-bin = prev.foundry-bin.overrideAttrs (old: {
-      buildInputs = (old.buildInputs or [ ]) ++ prev.lib.optionals prev.stdenv.hostPlatform.isLinux [ prev.udev ];
+      buildInputs =
+        (old.buildInputs or [ ]) ++ prev.lib.optionals prev.stdenv.hostPlatform.isLinux [ prev.udev ];
     });
   })
   (_: prev: {

@@ -48,7 +48,7 @@ End
 It 'registers a kyber-only host service separately from installation'
 When run bash -c "cat '$SERVICE_INDEX'; cat '$SERVICE_MODULE'"
 The output should include 'crabbox = ./crabbox;'
-The output should include 'lib.mkIf (isKyber && pkgs.stdenv.isLinux)'
+The output should include 'lib.mkIf (isKyber && pkgs.stdenv.hostPlatform.isLinux)'
 The output should include 'systemd.user.services.crabbox-postgres'
 The output should include 'systemd.user.services.crabbox'
 The output should include 'Requires = [ "crabbox-postgres.service" ]'
