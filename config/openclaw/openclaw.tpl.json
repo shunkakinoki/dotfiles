@@ -222,6 +222,9 @@
       },
       "experimental": {
         "localModelLean": true
+      },
+      "systemAgent": {
+        "agentId": "main"
       }
     },
     "list": [

@@ -58,7 +58,7 @@ The status should be success
 End
 
 It 'enables the experimental OpenClaw feature set with explicit agent ownership'
-When run bash -c "jq -e '.agents.ownership == \"explicit\" and .agents.defaults.experimental.localModelLean == true and .tools.codeMode == true and .tools.toolSearch == true and .tools.loopDetection.enabled == true and .tools.swarm == {enabled: true, maxConcurrent: 8, maxChildrenPerGroup: 50, maxTotalPerGroup: 200, waitTimeoutSecondsMax: 600, defaultAgentId: \"\"} and .gateway.cliAgents.enabled == true and .logging.audit.messages == \"all\" and .desktop.host.enabled == true and .cloudWorkers.desktop == true' '$PWD/config/openclaw/openclaw.tpl.json' >/dev/null"
+When run bash -c "jq -e '.agents.ownership == \"explicit\" and .agents.defaults.systemAgent.agentId == \"main\" and .agents.defaults.experimental.localModelLean == true and .tools.codeMode == true and .tools.toolSearch == true and .tools.loopDetection.enabled == true and .tools.swarm == {enabled: true, maxConcurrent: 8, maxChildrenPerGroup: 50, maxTotalPerGroup: 200, waitTimeoutSecondsMax: 600, defaultAgentId: \"\"} and .gateway.cliAgents.enabled == true and .logging.audit.messages == \"all\" and .desktop.host.enabled == true and .cloudWorkers.desktop == true' '$PWD/config/openclaw/openclaw.tpl.json' >/dev/null"
 The status should be success
 End
 
