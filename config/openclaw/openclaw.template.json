@@ -7,9 +7,6 @@
   },
   "models": {
     "mode": "merge",
-    "pricing": {
-      "enabled": true
-    },
     "providers": {
       "cliproxy": {
         "baseUrl": "https://cliproxy.shunkakinoki.com/v1",
@@ -195,17 +192,13 @@
     }
   },
   "memory": {
-    "backend": "qmd",
-    "qmd": {
-      "update": {
-        "startup": "immediate"
-      },
-      "scope": {
-        "default": "allow"
-      },
-      "paths": [
+    "search": {
+      "enabled": true,
+      "sources": [
+        "memory"
+      ],
+      "extraPaths": [
         {
-          "name": "wiki-memory",
           "path": "__HOME__/ghq/github.com/shunkakinoki/wiki/MEMORY.md"
         }
       ]
@@ -275,14 +268,7 @@
   "acp": {
     "enabled": true,
     "backend": "acpx",
-    "defaultAgent": "codex",
-    "maxConcurrentSessions": 4,
-    "runtime": {
-      "ttlMinutes": 120
-    }
-  },
-  "commitments": {
-    "enabled": true
+    "defaultAgent": "codex"
   },
   "session": {
     "dmScope": "per-channel-peer"
@@ -372,8 +358,7 @@
       "enabled": true
     },
     "tailscale": {
-      "mode": "serve",
-      "resetOnExit": false
+      "mode": "serve"
     },
     "controlUi": {
       "allowedOrigins": [
@@ -413,10 +398,7 @@
       "sampleRate": 1
     },
     "cacheTrace": {
-      "enabled": true,
-      "includeMessages": true,
-      "includePrompt": true,
-      "includeSystem": true
+      "enabled": true
     }
   },
   "plugins": {

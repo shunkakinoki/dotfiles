@@ -42,6 +42,11 @@ When run bash -c "grep -F 'gateway run --port 18789 --bind loopback' '$PWD/home-
 The output should include 'gateway run --port 18789 --bind loopback'
 End
 
+It 'uses the current OpenClaw configuration schema'
+When run bash -c "jq -e '(.models | has(\"pricing\") | not) and (.memory.search.enabled == true) and (.acp | has(\"maxConcurrentSessions\") | not) and (.gateway.tailscale | has(\"resetOnExit\") | not) and (.diagnostics.cacheTrace | (has(\"includeMessages\") or has(\"includePrompt\") or has(\"includeSystem\")) | not) and (has(\"commitments\") | not)' '$PWD/config/openclaw/openclaw.tpl.json' >/dev/null"
+The status should be success
+End
+
 It 'resolves the current k3s bridge address instead of pinning a pod subnet'
 When run bash -c "grep -q 'ip -4 -o address show dev' '$PWD/home-manager/services/openclaw/k3s-proxy.sh' && grep -q 'bind=\${listen_address}' '$PWD/home-manager/services/openclaw/k3s-proxy.sh' && ! grep -R -q 'bind=10.42.0.1' '$PWD/home-manager/services/openclaw'"
 The status should be success
