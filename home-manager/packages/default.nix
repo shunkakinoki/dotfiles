@@ -21,6 +21,7 @@ with pkgs;
   angle-grinder
   argocd
   ast-grep
+  ascii-box-cli
   awscli
   azure-cli
   bandwhich

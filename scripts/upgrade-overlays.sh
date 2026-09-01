@@ -9,6 +9,8 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 OVERLAY_FILE="${OVERLAY_FILE:-$REPO_ROOT/overlays/default.nix}"
 MOSHI_HOOK_CDN="${MOSHI_HOOK_CDN:-https://cdn.getmoshi.app}"
 BLACKSMITH_CLI_CDN="${BLACKSMITH_CLI_CDN:-https://clireleases.blacksmith.sh/cli}"
+ASCII_BOX_CLI_URL="${ASCII_BOX_CLI_URL:-https://ascii.dev/api/box/cli/download}"
+ASCII_BOX_CLI_CHANNEL="${ASCII_BOX_CLI_CHANNEL:-ascii-prod}"
 
 # Colors for output
 RED='\033[0;31m'
@@ -32,6 +34,7 @@ usage() {
   echo "Usage: $0 <overlay|all>"
   echo ""
   echo "Available overlays:"
+  echo "  ascii-box-cli - Upgrade the pinned ASCII Box CLI binaries"
   echo "  blacksmith-testbox-cli - Upgrade the pinned Blacksmith Testbox CLI binaries"
   echo "  moshi-hook - Upgrade the pinned moshi-hook binaries"
   echo "  all        - Upgrade all overlays"
@@ -77,6 +80,111 @@ checksum_for_file() {
     log_error "Missing SHA-256 tool: install sha256sum or shasum"
     exit 1
   fi
+}
+
+ascii_box_cli_platform() {
+  local os arch
+
+  case "$(uname -s)" in
+  Darwin) os="darwin" ;;
+  Linux) os="linux" ;;
+  *)
+    log_error "Unsupported host OS for ASCII Box CLI version probe: $(uname -s)"
+    exit 1
+    ;;
+  esac
+
+  case "$(uname -m)" in
+  arm64 | aarch64) arch="arm64" ;;
+  x86_64 | amd64) arch="x64" ;;
+  *)
+    log_error "Unsupported host architecture for ASCII Box CLI version probe: $(uname -m)"
+    exit 1
+    ;;
+  esac
+
+  printf '%s-%s' "$os" "$arch"
+}
+
+ascii_box_cli_url() {
+  local platform="${1:-$(ascii_box_cli_platform)}"
+  printf '%s?platform=%s&channel=%s' "$ASCII_BOX_CLI_URL" "$platform" "$ASCII_BOX_CLI_CHANNEL"
+}
+
+ascii_box_cli_checksum() {
+  local platform="$1"
+  nix-prefetch-url --type sha256 "$(ascii_box_cli_url "$platform")" | sed -n '1p'
+}
+
+validate_nix_checksum() {
+  local asset="$1"
+  local checksum="$2"
+  if [[ ! $checksum =~ ^[0-9a-z]{52}$ ]]; then
+    log_error "Invalid Nix checksum for $asset"
+    exit 1
+  fi
+}
+
+upgrade_ascii_box_cli() {
+  local version current_version latest_dir latest_output probe_url
+  local darwin_arm64 linux_arm64 linux_x86_64
+
+  version="${ASCII_BOX_CLI_VERSION:-}"
+  if [ -z "$version" ]; then
+    latest_dir="$(mktemp -d)"
+    probe_url="$(ascii_box_cli_url)"
+    curl -fsSL "$probe_url" -o "$latest_dir/box"
+    chmod +x "$latest_dir/box"
+    latest_output="$("$latest_dir/box" --version)"
+    rm -rf "$latest_dir"
+    version="$(printf '%s\n' "$latest_output" | sed -n 's/^box \([0-9][0-9.]*\).*/\1/p')"
+  fi
+
+  if [[ ! $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    log_error "Invalid ASCII Box CLI version: ${version:-unknown}"
+    exit 1
+  fi
+
+  current_version="$(sed -n '/ascii-box-cli = prev.stdenvNoCC.mkDerivation rec {/,/meta.mainProgram = "box"/p' "$OVERLAY_FILE" | sed -n 's/.*version = "\([^"]*\)";.*/\1/p' | head -1)"
+  echo "  Current version: ${current_version:-unknown}"
+  echo "  Latest version:  $version"
+
+  if [[ $current_version == "$version" ]]; then
+    log_info "✅ ascii-box-cli is already on latest version ($version)"
+    return 0
+  fi
+
+  darwin_arm64="$(ascii_box_cli_checksum darwin-arm64)"
+  linux_arm64="$(ascii_box_cli_checksum linux-arm64)"
+  linux_x86_64="$(ascii_box_cli_checksum linux-x64)"
+  validate_nix_checksum ascii-box-darwin-arm64 "$darwin_arm64"
+  validate_nix_checksum ascii-box-linux-arm64 "$linux_arm64"
+  validate_nix_checksum ascii-box-linux-x64 "$linux_x86_64"
+
+  awk \
+    -v version="$version" \
+    -v darwin_arm64="$darwin_arm64" \
+    -v linux_arm64="$linux_arm64" \
+    -v linux_x86_64="$linux_x86_64" '
+      /ascii-box-cli = prev.stdenvNoCC.mkDerivation rec \{/ { in_ascii_box = 1 }
+      in_ascii_box && /version = "[^"]*";/ {
+        sub(/version = "[^"]*";/, "version = \"" version "\";")
+      }
+      in_ascii_box && /"aarch64-darwin" =/ {
+        sub(/"[^"]*";$/, "\"" darwin_arm64 "\";")
+      }
+      in_ascii_box && /"aarch64-linux" =/ {
+        sub(/"[^"]*";$/, "\"" linux_arm64 "\";")
+      }
+      in_ascii_box && /"x86_64-linux" =/ {
+        sub(/"[^"]*";$/, "\"" linux_x86_64 "\";")
+      }
+      in_ascii_box && /meta.mainProgram = "box"/ { in_ascii_box = 0 }
+      { print }
+    ' "$OVERLAY_FILE" >"$OVERLAY_FILE.tmp"
+  mv -f "$OVERLAY_FILE.tmp" "$OVERLAY_FILE"
+
+  log_info "✅ ascii-box-cli upgraded from ${current_version:-unknown} to $version"
 }
 
 upgrade_blacksmith_testbox_cli() {
@@ -255,6 +363,13 @@ main() {
   fi
 
   case "$target" in
+  ascii-box-cli)
+    require_command awk
+    require_command curl
+    require_command nix-prefetch-url
+    require_command sed
+    upgrade_ascii_box_cli
+    ;;
   blacksmith-testbox-cli)
     require_command awk
     require_command curl
@@ -271,8 +386,10 @@ main() {
   all)
     require_command awk
     require_command curl
+    require_command nix-prefetch-url
     require_command sed
     require_command tr
+    upgrade_ascii_box_cli
     upgrade_blacksmith_testbox_cli
     upgrade_moshi_hook
     ;;
