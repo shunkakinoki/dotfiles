@@ -595,7 +595,7 @@ The status should be success
 End
 
 It 'restricts the Linear writer to Kyber'
-When run bash -c "grep -F 'linearSyncEnabled = isKyber;' '$MODULE' >/dev/null && grep -F 'home.file.\".local/bin/beads-linear-complete\" = lib.mkIf linearSyncEnabled' '$MODULE' >/dev/null && grep -F 'systemd.user.services.dolt-linear-sync =' '$MODULE' >/dev/null && grep -F 'lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && linearSyncEnabled)' '$MODULE' >/dev/null"
+When run bash -c "grep -F 'linearSyncEnabled = isKyber;' '$MODULE' >/dev/null && grep -F 'home.file.\".local/bin/beads-linear-complete\" = lib.mkIf linearSyncEnabled' '$MODULE' >/dev/null && grep -A1 -F 'systemd.user.services.dolt-linear-sync =' '$MODULE' | grep -F 'lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && linearSyncEnabled)' >/dev/null"
 The status should be success
 End
 
