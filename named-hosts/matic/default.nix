@@ -100,6 +100,9 @@ import ../../hosts/nixos {
           useRoutingFeatures = "client";
           extraSetFlags = [
             "--accept-dns=true"
+            # Matic is not an exit-node client by default. Clear a stale
+            # selection left by the interactive `vpn on` helper on activation.
+            "--exit-node="
             "--operator=${username}"
             "--ssh"
           ];

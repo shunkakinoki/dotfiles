@@ -24,6 +24,11 @@ When run bash -c "grep -F '\"--accept-dns=true\"' '$CONFIG'"
 The output should include '--accept-dns=true'
 End
 
+It 'clears a stale exit-node selection'
+When run bash -c "grep -F '\"--exit-node=\"' '$CONFIG'"
+The output should include '--exit-node='
+End
+
 It 'uses systemd-resolved for Tailscale MagicDNS'
 When run bash -c "grep -F 'services.resolved.enable = true;' '$CONFIG'"
 The output should include 'services.resolved.enable = true'
