@@ -229,8 +229,7 @@
     },
     "list": [
       {
-        "id": "main",
-        "default": true
+        "id": "main"
       },
       {
         "id": "amp",
