@@ -7,8 +7,9 @@ SCRIPT="$PWD/config/openclaw/hydrate.sh"
 template_uses_cliproxy_flash_default() {
   jq -e '
     .agents.defaults.model == {
-      "primary": "cliproxy/deepseek-v4-flash",
+      "primary": "openai/gpt-5.6-luna",
       "fallbacks": [
+        "cliproxy/deepseek-v4-flash",
         "cliproxy/free"
       ]
     } and
