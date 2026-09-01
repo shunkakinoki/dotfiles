@@ -25,7 +25,7 @@
   };
 
   home.file.".config/opencode/plugins/moshi-hooks.ts" = {
-    source = ./moshi-hooks.ts;
+    source = ../../generated/hooks/moshi/opencode/moshi-hooks.ts;
     force = true;
   };
 

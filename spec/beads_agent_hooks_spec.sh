@@ -2,10 +2,10 @@
 
 Describe 'Beads agent hook configuration'
 
-CLAUDE_SETTINGS="$PWD/config/claude/settings.json"
-CODEX_HOOKS="$PWD/config/codex/hooks.json"
-CURSOR_HOOKS="$PWD/config/cursor/hooks.json"
-GEMINI_SETTINGS="$PWD/config/gemini/settings.json"
+CLAUDE_SETTINGS="$PWD/generated/hooks/moshi/claude/settings.json"
+CODEX_HOOKS="$PWD/generated/hooks/moshi/codex/hooks.json"
+CURSOR_HOOKS="$PWD/generated/hooks/moshi/cursor/hooks.json"
+GEMINI_SETTINGS="$PWD/generated/hooks/moshi/gemini/settings.json"
 
 has_session_start_hook() {
   jq -e '[.hooks.SessionStart[]?.hooks[]?.command] | any(. == "bd prime --hook-json")' "$1" >/dev/null

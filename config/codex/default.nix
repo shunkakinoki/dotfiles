@@ -16,7 +16,7 @@ in
   home.activation.codexConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" \
       "${./config.toml}" \
-      "${./hooks.json}" \
+      "${../../generated/hooks/moshi/codex/hooks.json}" \
       "${./desktop-settings.json}" \
       "${pkgs.jq}/bin/jq" \
       "${syncDesktopSettings}"

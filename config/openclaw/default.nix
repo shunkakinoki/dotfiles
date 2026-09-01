@@ -20,8 +20,8 @@ let
         git = "${pkgs.git}/bin/git";
         template = "${./openclaw.template.json}";
         soul = "${../../SOUL.md}";
-        tracesHookManifest = "${./hooks/traces/HOOK.md}";
-        tracesHookHandler = "${./hooks/traces/handler.js}";
+        tracesHookManifest = "${../../generated/hooks/traces/openclaw/HOOK.md}";
+        tracesHookHandler = "${../../generated/hooks/traces/openclaw/handler.js}";
         inherit mode;
       }
       // (

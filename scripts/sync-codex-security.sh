@@ -5,11 +5,11 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-CLAUDE_SETTINGS="$ROOT/config/claude/settings.json"
+CLAUDE_SETTINGS="$ROOT/generated/hooks/moshi/claude/settings.json"
 SHARED_SECURITY="$ROOT/config/shared/hooks/security.sh"
 
 [[ -f $CLAUDE_SETTINGS ]] || {
-  echo "ERROR: config/claude/settings.json not found" >&2
+  echo "ERROR: generated/hooks/moshi/claude/settings.json not found" >&2
   exit 1
 }
 

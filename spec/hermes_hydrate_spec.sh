@@ -122,8 +122,8 @@ EOF
     -e 's|@sed@|sed|g' \
     -e 's|@awk@|awk|g' \
     -e 's|@git@|git|g' \
-    -e 's|@tracesPluginManifest@|'"$PWD"'/config/hermes/plugins/traces/plugin.yaml|g' \
-    -e 's|@tracesPluginModule@|'"$PWD"'/config/hermes/plugins/traces/__init__.py|g' \
+    -e 's|@tracesPluginManifest@|'"$PWD"'/generated/hooks/traces/hermes/plugin.yaml|g' \
+    -e 's|@tracesPluginModule@|'"$PWD"'/generated/hooks/traces/hermes/__init__.py|g' \
     -e 's|@configTemplate@|'"$TEMP_HOME"'/templates/config.template.yaml|g' \
     -e 's|@envTemplate@|'"$TEMP_HOME"'/templates/env.template|g' \
     -e 's|@soul@|'"$TEMP_HOME"'/SOUL.md|g' \

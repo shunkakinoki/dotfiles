@@ -12,7 +12,7 @@ _: {
     force = true;
   };
   home.file.".pi/agent/extensions/moshi-hooks.ts" = {
-    source = ./moshi-hooks.ts;
+    source = ../../generated/hooks/moshi/pi/moshi-hooks.ts;
     force = true;
   };
   home.file.".pi/agent/extensions/traces-hooks.ts" = {

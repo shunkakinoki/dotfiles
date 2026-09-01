@@ -23,10 +23,11 @@ The status should be success
 End
 
 It 'copies TypeScript plugin files'
-When run bash -c "grep 'moshi-hooks.ts' '$SCRIPT'"
+When run cat "$SCRIPT"
 The output should include 'omp'
 The output should include 'pi'
 The output should include 'opencode'
+The output should include 'generated/hooks/moshi'
 The status should be success
 End
 

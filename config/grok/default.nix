@@ -4,6 +4,14 @@
   pkgs,
   ...
 }:
+let
+  plugin = pkgs.runCommand "dotfiles-grok-plugin" { } ''
+    mkdir -p "$out"
+    cp -R ${./plugin}/. "$out/"
+    mkdir -p "$out/hooks"
+    cp ${../../generated/hooks/moshi/grok/plugin/hooks/hooks.json} "$out/hooks/hooks.json"
+  '';
+in
 {
   # Use activation script instead of a home.file symlink.
   # Grok performs atomic writes to config.toml that break symlinks, so force-copy on each switch.
@@ -13,6 +21,6 @@
   # under .grok/hooks/ and trust-gated), but it loads user plugins from ~/.grok/plugins/, and
   # plugins provide hooks via hooks/hooks.json.
   home.activation.grokConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${./config.toml}" "${./plugin}"
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${./config.toml}" "${plugin}"
   '';
 }

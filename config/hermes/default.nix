@@ -19,8 +19,8 @@ let
         configTemplate = "${./config.template.yaml}";
         envTemplate = "${./env.template}";
         soul = "${../../SOUL.md}";
-        tracesPluginManifest = "${./plugins/traces/plugin.yaml}";
-        tracesPluginModule = "${./plugins/traces/__init__.py}";
+        tracesPluginManifest = "${../../generated/hooks/traces/hermes/plugin.yaml}";
+        tracesPluginModule = "${../../generated/hooks/traces/hermes/__init__.py}";
         inherit mode;
       };
       names = builtins.attrNames vars;

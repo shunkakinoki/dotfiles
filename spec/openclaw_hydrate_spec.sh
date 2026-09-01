@@ -154,8 +154,8 @@ EOF
     -e 's|@sed@|sed|g' \
     -e 's|@awk@|awk|g' \
     -e 's|@git@|git|g' \
-    -e 's|@tracesHookManifest@|'"$PWD"'/config/openclaw/hooks/traces/HOOK.md|g' \
-    -e 's|@tracesHookHandler@|'"$PWD"'/config/openclaw/hooks/traces/handler.js|g' \
+    -e 's|@tracesHookManifest@|'"$PWD"'/generated/hooks/traces/openclaw/HOOK.md|g' \
+    -e 's|@tracesHookHandler@|'"$PWD"'/generated/hooks/traces/openclaw/handler.js|g' \
     -e 's|@template@|'"$TEMP_HOME"'/templates/openclaw.json|g' \
     -e 's|@chromium@|'"$TEMP_HOME"'/chromium|g' \
     -e 's|@soul@|'"$TEMP_HOME"'/SOUL.md|g' \
@@ -208,8 +208,8 @@ EOF
     -e 's|@sed@|sed|g' \
     -e 's|@awk@|awk|g' \
     -e 's|@git@|git|g' \
-    -e 's|@tracesHookManifest@|'"$PWD"'/config/openclaw/hooks/traces/HOOK.md|g' \
-    -e 's|@tracesHookHandler@|'"$PWD"'/config/openclaw/hooks/traces/handler.js|g' \
+    -e 's|@tracesHookManifest@|'"$PWD"'/generated/hooks/traces/openclaw/HOOK.md|g' \
+    -e 's|@tracesHookHandler@|'"$PWD"'/generated/hooks/traces/openclaw/handler.js|g' \
     -e 's|@template@|/unused|g' \
     -e 's|@chromium@|/unused|g' \
     -e 's|@soul@|'"$TEMP_HOME"'/SOUL.md|g' \

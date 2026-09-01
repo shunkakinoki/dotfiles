@@ -4,7 +4,7 @@
 Describe 'atuin-history.sh'
 HOOK_SCRIPT="$PWD/config/claude/hooks/atuin-history.sh"
 CLAUDE_DEFAULT="$PWD/config/claude/default.nix"
-CLAUDE_SETTINGS="$PWD/config/claude/settings.json"
+CLAUDE_SETTINGS="$PWD/generated/hooks/moshi/claude/settings.json"
 BASH_CONFIG="$PWD/home-manager/programs/bash/default.nix"
 BASH_ENV_FILE="$PWD/home-manager/programs/bash/bash_env.sh"
 FISH_CONFIG="$PWD/home-manager/programs/fish/default.nix"
