@@ -133,7 +133,7 @@ The status should be success
 End
 
 It 'serves Dolt locally on every client host'
-When run bash -c "grep -F 'serverEnabled = clientEnabled;' '$MODULE' >/dev/null && grep -F 'pkgs.stdenv.isLinux && serverEnabled' '$MODULE' >/dev/null && grep -F 'pkgs.stdenv.isDarwin && serverEnabled' '$MODULE' >/dev/null"
+When run bash -c "grep -F 'serverEnabled = clientEnabled;' '$MODULE' >/dev/null && grep -F 'pkgs.stdenv.isLinux && serverEnabled' '$MODULE' >/dev/null && grep -F 'pkgs.stdenv.hostPlatform.isDarwin && serverEnabled' '$MODULE' >/dev/null"
 The status should be success
 End
 
