@@ -195,7 +195,7 @@ in
   };
 
   # Linux systemd
-  systemd.user.services.cliproxyapi = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.cliproxyapi = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "CLI Proxy API server";
       After = [
@@ -231,7 +231,7 @@ in
     Install.WantedBy = [ "default.target" ];
   };
 
-  systemd.user.paths.cliproxyapi-backup-auth = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.paths.cliproxyapi-backup-auth = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit.Description = "Watch auth directories for changes";
     Path = {
       PathChanged = [
@@ -245,7 +245,7 @@ in
   # CLIProxyAPI rewrites auth files on every token refresh, so the path unit
   # fires many times an hour. It gets the auth-only entrypoint and a PATH
   # without sqlite/tar so the analytics snapshot cannot ride along.
-  systemd.user.services.cliproxyapi-backup-auth = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.cliproxyapi-backup-auth = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit.Description = "CLIProxyAPI auth backup";
     Unit.X-SwitchMethod = "keep-old";
     Service = {
@@ -262,7 +262,7 @@ in
     };
   };
 
-  systemd.user.services.cliproxyapi-backup = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.cliproxyapi-backup = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit.Description = "CLIProxyAPI auth and CPA Manager Plus analytics backup";
     Unit.X-SwitchMethod = "keep-old";
     Service = {
@@ -282,7 +282,7 @@ in
     };
   };
 
-  systemd.user.timers.cliproxyapi-backup = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.timers.cliproxyapi-backup = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit.Description = "Periodically back up CLIProxyAPI and CPA Manager Plus data";
     Timer = {
       OnBootSec = "5min";
@@ -294,7 +294,7 @@ in
   };
 
   # Periodic sync - pull auth files from S3 every 5 minutes
-  systemd.user.timers.cliproxyapi-sync = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.timers.cliproxyapi-sync = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit.Description = "Periodically sync auth files from S3";
     Timer = {
       OnBootSec = "1min";
@@ -304,7 +304,7 @@ in
     Install.WantedBy = [ "timers.target" ];
   };
 
-  systemd.user.services.cliproxyapi-sync = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.cliproxyapi-sync = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit.Description = "CLIProxyAPI auth sync from S3";
     Unit.X-SwitchMethod = "keep-old";
     Service = {

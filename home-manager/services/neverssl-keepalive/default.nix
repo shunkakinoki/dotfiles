@@ -21,7 +21,7 @@ in
   };
 
   # Linux (systemd)
-  systemd.user.services.neverssl-keepalive = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.neverssl-keepalive = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "Keep captive portal alive via neverssl.com";
       Wants = [ "network-online.target" ];
@@ -40,7 +40,7 @@ in
     };
   };
 
-  systemd.user.timers.neverssl-keepalive = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.timers.neverssl-keepalive = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "Timer for neverssl captive portal keepalive";
     };

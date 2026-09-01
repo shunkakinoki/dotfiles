@@ -24,13 +24,13 @@ in
   };
 
   home.file.".config/io.datasette.llm/extra-openai-models.yaml" = {
-    enable = pkgs.stdenv.isLinux;
+    enable = pkgs.stdenv.hostPlatform.isLinux;
     source = ./extra-openai-models.yaml;
     force = true;
   };
 
   home.file.".config/io.datasette.llm/default_model.txt" = {
-    enable = pkgs.stdenv.isLinux;
+    enable = pkgs.stdenv.hostPlatform.isLinux;
     source = ./default_model.txt;
     force = true;
   };

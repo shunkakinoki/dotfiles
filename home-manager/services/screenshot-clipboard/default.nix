@@ -32,7 +32,7 @@ in
     };
   };
 
-  systemd.user.services.screenshot-clipboard = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.screenshot-clipboard = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "Auto-copy screenshots to clipboard";
       PartOf = [ "graphical-session.target" ];

@@ -39,7 +39,7 @@ lib.mkIf enabled {
     };
   };
 
-  systemd.user.services.roborev = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.roborev = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "roborev code review daemon";
       Documentation = [ "https://github.com/roborev-dev/roborev" ];

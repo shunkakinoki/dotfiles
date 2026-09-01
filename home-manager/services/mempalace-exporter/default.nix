@@ -24,7 +24,7 @@ in
     };
   };
 
-  systemd.user.services.mempalace-exporter = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.mempalace-exporter = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "MemPalace palace export to wiki";
       X-SwitchMethod = "keep-old";
@@ -38,7 +38,7 @@ in
     };
   };
 
-  systemd.user.timers.mempalace-exporter = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.timers.mempalace-exporter = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "Timer for MemPalace palace exporter";
     };

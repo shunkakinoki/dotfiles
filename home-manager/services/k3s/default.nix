@@ -26,7 +26,7 @@ let
   smartdServiceFile = "${homeDir}/.config/k3s/kyber-smartd.service";
   tmpMountFile = "${homeDir}/.config/k3s/tmp.mount";
 in
-lib.mkIf (pkgs.stdenv.isLinux && host.isK3sServer) {
+lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && host.isK3sServer) {
   home.activation.setupK3s = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.bash}/bin/bash "${setupScript}" \
       "${serviceFile}" \

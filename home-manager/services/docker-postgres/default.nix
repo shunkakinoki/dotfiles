@@ -39,7 +39,7 @@ lib.mkIf enabled {
     };
   };
 
-  systemd.user.services.docker-postgres = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.docker-postgres = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "PostgreSQL Docker container auto-start";
       After = [

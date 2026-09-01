@@ -18,7 +18,7 @@ in
     force = true;
   };
 
-  systemd.user.services.moshi-hook = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.moshi-hook = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "Moshi Hook daemon";
       After = [ "network.target" ];

@@ -58,7 +58,7 @@ in
     };
   };
 
-  systemd.user.services.caam-daemon = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.caam-daemon = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "CAAM token refresh daemon";
       After = [ "network-online.target" ];
@@ -79,7 +79,7 @@ in
     };
   };
 
-  systemd.user.services.caam-sync = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.caam-sync = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "CAAM multi-machine vault sync";
       After = [ "network-online.target" ];
@@ -96,7 +96,7 @@ in
     };
   };
 
-  systemd.user.timers.caam-sync = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.timers.caam-sync = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "Periodic CAAM vault sync";
     };

@@ -31,7 +31,7 @@ let
 in
 {
   # Provide setup script for system Docker
-  home.packages = lib.mkIf pkgs.stdenv.isLinux [
+  home.packages = lib.mkIf pkgs.stdenv.hostPlatform.isLinux [
     (pkgs.writeShellScriptBin "docker-setup" (
       builtins.readFile (
         pkgs.replaceVars ./docker-setup.sh {

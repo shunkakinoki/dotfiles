@@ -3,7 +3,7 @@ let
   inherit (pkgs) lib;
 in
 {
-  systemd.user.services.t3-connect = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.t3-connect = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "Keep the T3 remote server ready to accept connections";
     };
@@ -35,7 +35,7 @@ in
     };
   };
 
-  systemd.user.timers.t3-connect = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.timers.t3-connect = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "Timer to keep the T3 remote server ready to accept connections";
     };

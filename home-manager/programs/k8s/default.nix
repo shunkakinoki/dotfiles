@@ -11,10 +11,10 @@
       kustomize
       stern
     ]
-    ++ lib.optionals stdenv.isLinux [
+    ++ lib.optionals stdenv.hostPlatform.isLinux [
       k3s
     ]
-    ++ lib.optionals (!stdenv.isLinux) [
+    ++ lib.optionals (!stdenv.hostPlatform.isLinux) [
       kubectl
     ];
 }
