@@ -358,7 +358,7 @@
       "enabled": true
     },
     "tailscale": {
-      "mode": "serve"
+      "mode": "off"
     },
     "controlUi": {
       "allowedOrigins": [
