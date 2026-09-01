@@ -78,6 +78,7 @@
       "graphviz"
       "helm"
       "herdr"
+      "infracost"
       "jjui"
       "kimi-cli"
       "kurtosis-cli"
