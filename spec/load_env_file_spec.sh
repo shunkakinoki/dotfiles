@@ -19,7 +19,7 @@ After 'cleanup'
 load_with() {
   printf '%s\n' "$1" >"$TEST_HOME/env"
   DOTFILES_ENV_FILE="$TEST_HOME/env" HM_PRINT_ENV_FILE="$PRINTER" HOME="$TEST_HOME" \
-    "$2" -c ". '$SCRIPT'; _hm_load_env_file; printf '%s' \"\${$3:-<unset>}\""
+    env -u "$3" "$2" -c ". '$SCRIPT'; _hm_load_env_file; printf '%s' \"\${$3:-<unset>}\""
 }
 
 Describe 'script properties'
