@@ -203,7 +203,7 @@ lib.mkIf clientEnabled {
         };
       };
 
-  systemd.user.services.dolt = lib.mkIf (pkgs.stdenv.isLinux && serverEnabled) {
+  systemd.user.services.dolt = lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && serverEnabled) {
     Unit = {
       Description = "Dolt SQL server for dotfiles beads";
       After = [ "network.target" ];
@@ -230,9 +230,9 @@ lib.mkIf clientEnabled {
 
   # Persist the same client selection in the user manager so Herdr, OpenClaw,
   # and other systemd-launched agents do not inherit a stale shared-server mode.
-  systemd.user.sessionVariables = lib.mkIf pkgs.stdenv.isLinux beadsClientEnvironment;
+  systemd.user.sessionVariables = lib.mkIf pkgs.stdenv.hostPlatform.isLinux beadsClientEnvironment;
 
-  systemd.user.services.dolt-backup-main = lib.mkIf (pkgs.stdenv.isLinux && publisherEnabled) {
+  systemd.user.services.dolt-backup-main = lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && publisherEnabled) {
     Unit = {
       Description = "Push beads_global JSONL snapshot to GitHub main";
     };
@@ -243,7 +243,7 @@ lib.mkIf clientEnabled {
     };
   };
 
-  systemd.user.paths.dolt-backup-main = lib.mkIf (pkgs.stdenv.isLinux && publisherEnabled) {
+  systemd.user.paths.dolt-backup-main = lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && publisherEnabled) {
     Unit = {
       Description = "Watch dolt manifest and trigger JSONL backup";
     };
@@ -256,7 +256,7 @@ lib.mkIf clientEnabled {
     };
   };
 
-  systemd.user.services.dolt-linear-sync = lib.mkIf (pkgs.stdenv.isLinux && linearSyncEnabled) {
+  systemd.user.services.dolt-linear-sync = lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && linearSyncEnabled) {
     Unit = {
       Description = "Synchronize Beads with Linear";
       X-SwitchMethod = "restart";
@@ -287,7 +287,7 @@ lib.mkIf clientEnabled {
     };
   };
 
-  systemd.user.timers.dolt-linear-sync = lib.mkIf (pkgs.stdenv.isLinux && linearSyncEnabled) {
+  systemd.user.timers.dolt-linear-sync = lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && linearSyncEnabled) {
     Unit.Description = "Periodically synchronize Beads with Linear";
     Timer = {
       OnBootSec = "4min";
@@ -299,7 +299,7 @@ lib.mkIf clientEnabled {
   };
 
   systemd.user.services.dolt-federation-sync =
-    lib.mkIf (pkgs.stdenv.isLinux && federationSyncEnabled)
+    lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && federationSyncEnabled)
       {
         Unit = {
           Description = "Synchronize Beads with the Dolt remote";
@@ -330,7 +330,7 @@ lib.mkIf clientEnabled {
         };
       };
 
-  systemd.user.timers.dolt-federation-sync = lib.mkIf (pkgs.stdenv.isLinux && federationSyncEnabled) {
+  systemd.user.timers.dolt-federation-sync = lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && federationSyncEnabled) {
     Unit.Description = "Periodically synchronize Beads with the Dolt remote";
     Timer = {
       OnBootSec = "2min";

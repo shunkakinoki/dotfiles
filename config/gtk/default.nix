@@ -4,7 +4,7 @@
   ...
 }:
 {
-  gtk = lib.mkIf pkgs.stdenv.isLinux {
+  gtk = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     enable = true;
     theme = {
       name = "Adwaita";

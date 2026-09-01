@@ -32,7 +32,7 @@ in
     };
   };
 
-  systemd.user.services.dotfiles-updater = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.dotfiles-updater = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "Dotfiles auto-updater service";
       X-SwitchMethod = "keep-old";
@@ -63,7 +63,7 @@ in
     };
   };
 
-  systemd.user.timers.dotfiles-updater = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.timers.dotfiles-updater = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "Timer for dotfiles auto-updater";
     };

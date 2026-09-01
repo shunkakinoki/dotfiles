@@ -142,7 +142,7 @@ with pkgs;
 ++ lib.optionals stdenv.hostPlatform.isDarwin [
   darwin.trash
 ]
-++ lib.optionals stdenv.isLinux [
+++ lib.optionals stdenv.hostPlatform.isLinux [
   atop
   below
   binutils
@@ -179,14 +179,14 @@ with pkgs;
   xdg-utils
   zlib
 ]
-++ lib.optionals (stdenv.isLinux && !isRunner) [
+++ lib.optionals (stdenv.hostPlatform.isLinux && !isRunner) [
   (if isDesktop then llama-cpp.override { vulkanSupport = true; } else llama-cpp)
 ]
 ++ lib.optionals (stdenv.hostPlatform.system != "aarch64-linux") [
   qwen-code
 ]
-++ lib.optionals stdenv.isLinux [ alsa-lib ]
-++ lib.optionals (stdenv.isLinux && isDesktop) [
+++ lib.optionals stdenv.hostPlatform.isLinux [ alsa-lib ]
+++ lib.optionals (stdenv.hostPlatform.isLinux && isDesktop) [
   _1password-gui
   baobab
   blueman

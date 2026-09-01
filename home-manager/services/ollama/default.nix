@@ -50,7 +50,7 @@ lib.mkIf enabled {
     };
   };
 
-  systemd.user.services.ollama = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.ollama = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "Ollama AI model server";
       After = [ "network.target" ];

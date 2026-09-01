@@ -7,7 +7,7 @@
 {
   # CAAM invokes Cursor by its canonical provider name. Headless Linux hosts
   # only install Cursor Agent, so expose it at that canonical path.
-  home.file.".local/bin/cursor" = lib.mkIf pkgs.stdenv.isLinux {
+  home.file.".local/bin/cursor" = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.local/bin/cursor-agent";
     force = true;
   };

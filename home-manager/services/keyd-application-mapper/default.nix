@@ -12,7 +12,7 @@ in
     enable = lib.mkEnableOption "keyd application mapper user service";
   };
 
-  config = lib.mkIf (pkgs.stdenv.isLinux && cfg.enable) {
+  config = lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && cfg.enable) {
     assertions = [
       {
         assertion = config.xdg.configFile ? "keyd/app.conf";

@@ -24,7 +24,7 @@ in
     };
   };
 
-  systemd.user.services.code-syncer = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.code-syncer = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "VS Code settings syncer";
     };

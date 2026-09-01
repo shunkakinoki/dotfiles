@@ -35,7 +35,7 @@ in
     ++ [
       inputs.agenix.homeManagerModules.default
     ]
-    ++ lib.optionals (pkgs.stdenv.isLinux && inputs.host.isDesktop) [
+    ++ lib.optionals (pkgs.stdenv.hostPlatform.isLinux && inputs.host.isDesktop) [
       inputs.handy.homeManagerModules.default
       {
         services.handy = {
@@ -46,7 +46,7 @@ in
     ];
 
   home.username = username;
-  home.homeDirectory = lib.mkIf pkgs.stdenv.isLinux "/home/${username}";
+  home.homeDirectory = lib.mkIf pkgs.stdenv.hostPlatform.isLinux "/home/${username}";
   home.packages = packages;
   home.stateVersion = "24.11";
 

@@ -38,7 +38,7 @@ let
     inherit (pkgs) coreutils curl;
   };
 in
-lib.mkIf (isKyber && pkgs.stdenv.isLinux) {
+lib.mkIf (isKyber && pkgs.stdenv.hostPlatform.isLinux) {
   systemd.user.services.crabbox-postgres = {
     Unit = {
       Description = "Local PostgreSQL for Crabbox";

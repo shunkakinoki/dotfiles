@@ -7,7 +7,7 @@
     # Current Foundry nightlies link forge and cast against libudev, which the
     # upstream binary derivation does not yet include in its Linux runtime.
     foundry-bin = prev.foundry-bin.overrideAttrs (old: {
-      buildInputs = (old.buildInputs or [ ]) ++ prev.lib.optionals prev.stdenv.isLinux [ prev.udev ];
+      buildInputs = (old.buildInputs or [ ]) ++ prev.lib.optionals prev.stdenv.hostPlatform.isLinux [ prev.udev ];
     });
   })
   (_: prev: {
@@ -182,9 +182,9 @@
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }/${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}/blacksmith";
         sha256 =
-          if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isx86_64 then
+          if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
             "7f60f3b9f8d4d7644d9743f5d962acb3b3dbf675f51676702e5f292e02060bca"
-          else if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isAarch64 then
+          else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
             "04c8d261526e23c7791f05b8acec8f02b9d1fe67c35a1adcf28076627327270a"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
             "607b0f4413e426574527446c7718ea32587d57b24a3ea0749e1ab4138a426584"
@@ -206,9 +206,9 @@
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}.tar.gz";
         sha256 =
-          if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isx86_64 then
+          if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
             "e513ba473be4eaaadf16f88fe030a03e6a11c0b49a088941fcccdbf3a09247ad"
-          else if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isAarch64 then
+          else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
             "94a388cd7301c7ba1d7e42d8c55d68c6b9dd55025e79cf247c58d659aa5039d4"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
             "ef1567083f6bd0d01b2539efdd69ccd205c2642e7d9eefb073d58052e8a7bb91"
@@ -237,9 +237,9 @@
           if prev.stdenv.hostPlatform.isDarwin then "Darwin" else "Linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x86_64"}.tar.gz";
         sha256 =
-          if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isx86_64 then
+          if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
             "ee96ff3cebe68648a9631976660afa4a7a247cfa2cc8c030d9d5eca784df5a95"
-          else if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isAarch64 then
+          else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
             "8df6d83dcd1aa99c42e7516937f29249f3a8f704d9d9d7eec703fa2287a88666"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
             "173550c6437e6663dbdf43736fc9cbca2a5af8acf7c3d61b2c3a97c4963cf596"

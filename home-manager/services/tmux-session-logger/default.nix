@@ -26,7 +26,7 @@ in
     };
   };
 
-  systemd.user.services.tmux-session-logger = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.tmux-session-logger = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "Persist tmux pane history snapshots";
       X-SwitchMethod = "keep-old";
@@ -38,7 +38,7 @@ in
     };
   };
 
-  systemd.user.timers.tmux-session-logger = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.timers.tmux-session-logger = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "Timer for tmux session history logging";
     };

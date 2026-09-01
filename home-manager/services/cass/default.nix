@@ -34,7 +34,7 @@ in
     };
   };
 
-  systemd.user.services.cass-daily = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.cass-daily = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "cass daily remote sync and analytics rebuild";
       X-SwitchMethod = "keep-old";
@@ -50,7 +50,7 @@ in
     };
   };
 
-  systemd.user.timers.cass-daily = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.timers.cass-daily = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "cass daily sync timer";
     };

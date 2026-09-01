@@ -33,7 +33,7 @@ lib.mkIf enabled {
     };
   };
 
-  systemd.user.services.qmd = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.qmd = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "QMD hybrid search engine";
       After = [

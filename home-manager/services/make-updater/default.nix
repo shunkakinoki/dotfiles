@@ -27,7 +27,7 @@ in
     };
   };
 
-  systemd.user.services.make-updater = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.make-updater = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "Make update service";
       X-SwitchMethod = "keep-old";
@@ -76,7 +76,7 @@ in
     };
   };
 
-  systemd.user.timers.make-updater = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.timers.make-updater = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "Timer for make update";
     };

@@ -15,7 +15,7 @@ let
     start_script = startScript;
   };
 in
-lib.mkIf (pkgs.stdenv.isLinux && host.isKyber) {
+lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && host.isKyber) {
   systemd.user.services.cpa-manager-plus = {
     Unit = {
       Description = "CPA Manager Plus analytics and management server";

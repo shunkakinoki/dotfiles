@@ -47,7 +47,7 @@ in
   };
 
   # Linux (systemd)
-  systemd.user.services.tokscale = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.tokscale = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "Submit local usage data to Tokscale";
       Wants = [ "network-online.target" ];
@@ -66,7 +66,7 @@ in
     };
   };
 
-  systemd.user.timers.tokscale = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.timers.tokscale = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit.Description = "Submit local usage data to Tokscale every three hours";
     Timer = {
       OnBootSec = "1min";
