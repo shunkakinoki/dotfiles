@@ -20,7 +20,7 @@ End
 
 It 'uses Homebrew moshi-hook on Darwin'
 When run cat "$MODULE"
-The output should include 'pkgs.stdenv.isDarwin'
+The output should include 'pkgs.stdenv.hostPlatform.isDarwin'
 The output should include '/opt/homebrew/bin/moshi-hook'
 End
 

@@ -54,8 +54,8 @@ batch_timeout = "0"
 repos = ["__ROBOREV_REPOS__"]
 
 [agent_hook]
-# Surface failed reviews for autonomous triage without broad turn or commit triggers.
+# Surface failed reviews without broad turn or commit triggers. RoboRev owns the
+# continuation instruction so its hook behavior stays aligned with the CLI.
 turn_threshold = 0
 commit_threshold = 0
 failed_review_threshold = 1
-instruction = "Inspect open RoboRev findings and triage them autonomously. Implement sound findings or decline incorrect, stale, duplicative, or out-of-scope findings; document the disposition, revalidate edits, and continue without asking for approval. Escalate only security-sensitive findings, scope expansion beyond PR intent, or operator-gated surfaces."

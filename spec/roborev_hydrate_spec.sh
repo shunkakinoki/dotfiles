@@ -85,7 +85,6 @@ repos = ["__ROBOREV_REPOS__"]
 turn_threshold = 0
 commit_threshold = 0
 failed_review_threshold = 1
-instruction = "Inspect open RoboRev findings and triage them autonomously. Implement sound findings or decline incorrect, stale, duplicative, or out-of-scope findings; document the disposition, revalidate edits, and continue without asking for approval. Escalate only security-sensitive findings, scope expansion beyond PR intent, or operator-gated surfaces."
 TOML
 
   cat >"$TEMP_HOME/dotfiles/.env" <<'ENV'
@@ -144,17 +143,13 @@ The status should be success
 The output should include 'max_workers = 4'
 End
 
-It 'hydrates the autonomous review triage contract'
+It 'hydrates the review trigger without overriding RoboRev instructions'
 When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/.roborev/config.toml"'
 The status should be success
 The output should include 'turn_threshold = 0'
 The output should include 'commit_threshold = 0'
 The output should include 'failed_review_threshold = 1'
-The output should include 'triage them autonomously.'
-The output should include 'Implement sound findings or decline incorrect, stale, duplicative, or out-of-scope findings'
-The output should include 'continue without asking for approval.'
-The output should include 'Escalate only security-sensitive findings, scope expansion beyond PR intent, or operator-gated surfaces.'
-The output should not include 'ask the user for explicit approval'
+The output should not include 'instruction ='
 End
 
 It 'installs native hooks in each configured local checkout'
