@@ -62,8 +62,8 @@ When run bash -c "jq -e '.agents.ownership == \"explicit\" and .agents.defaults.
 The status should be success
 End
 
-It 'prefers OpenAI Codex over the DeepSeek fallback'
-When run bash -c "jq -e '.agents.defaults.model.primary == \"openai/gpt-5.6-sol\" and .agents.defaults.model.fallbacks == [\"cliproxy/__DEEPSEEK_FLASH__\", \"cliproxy/free\"]' '$PWD/config/openclaw/openclaw.tpl.json' >/dev/null"
+It 'prefers OpenAI Codex Luna over the DeepSeek fallback'
+When run bash -c "jq -e '.agents.defaults.model.primary == \"openai/__GPT_LUNA__\" and .agents.defaults.model.fallbacks == [\"cliproxy/__DEEPSEEK_FLASH__\", \"cliproxy/free\"]' '$PWD/config/openclaw/openclaw.tpl.json' >/dev/null"
 The status should be success
 End
 

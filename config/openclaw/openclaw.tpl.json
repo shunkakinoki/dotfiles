@@ -208,7 +208,7 @@
     "ownership": "explicit",
     "defaults": {
       "model": {
-        "primary": "openai/gpt-5.6-sol",
+        "primary": "openai/__GPT_LUNA__",
         "fallbacks": [
           "cliproxy/__DEEPSEEK_FLASH__",
           "cliproxy/free"
