@@ -10,6 +10,8 @@ mkdir -p "$STATE_DIR"
 CONFIG_TEMPLATE="@configTemplate@"
 ENV_TEMPLATE="@envTemplate@"
 SOUL_SOURCE="@soul@"
+TRACES_PLUGIN_MANIFEST="@tracesPluginManifest@"
+TRACES_PLUGIN_MODULE="@tracesPluginModule@"
 SECRETS_DIR="${HOME}/.config/hermes"
 CLIPROXY_CONFIG="${HOME}/.cli-proxy-api/config.yaml"
 ENV_FILE="${HOME}/dotfiles/.env"
@@ -92,5 +94,19 @@ chmod 600 "${STATE_DIR}/.env"
 
 # Sync SOUL.md from dotfiles root (single source of truth)
 install -m 600 "$SOUL_SOURCE" "${STATE_DIR}/SOUL.md"
+
+# Install the Traces plugin. Hermes only discovers plugin directories that
+# carry a manifest, so the traces-generated flat traces_hook.py is inert.
+install -d -m 700 "${STATE_DIR}/plugins/traces"
+install -m 600 "$TRACES_PLUGIN_MANIFEST" "${STATE_DIR}/plugins/traces/plugin.yaml"
+install -m 600 "$TRACES_PLUGIN_MODULE" "${STATE_DIR}/plugins/traces/__init__.py"
+rm -f "${STATE_DIR}/plugins/traces_hook.py"
+
+# traces refuses to run outside a git repository and resolves the destination
+# namespace from the working directory, so the plugin needs a stable repo root.
+install -d -m 700 "${STATE_DIR}/workspace"
+if [ ! -d "${STATE_DIR}/workspace/.git" ]; then
+  @git@ -C "${STATE_DIR}/workspace" init -q
+fi
 
 echo "Generated hermes ${MODE} config at ${STATE_DIR}" >&2

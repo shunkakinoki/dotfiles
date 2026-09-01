@@ -121,6 +121,9 @@ EOF
     -e 's|@mode@|gateway|g' \
     -e 's|@sed@|sed|g' \
     -e 's|@awk@|awk|g' \
+    -e 's|@git@|git|g' \
+    -e 's|@tracesPluginManifest@|'"$PWD"'/config/hermes/plugins/traces/plugin.yaml|g' \
+    -e 's|@tracesPluginModule@|'"$PWD"'/config/hermes/plugins/traces/__init__.py|g' \
     -e 's|@configTemplate@|'"$TEMP_HOME"'/templates/config.template.yaml|g' \
     -e 's|@envTemplate@|'"$TEMP_HOME"'/templates/env.template|g' \
     -e 's|@soul@|'"$TEMP_HOME"'/SOUL.md|g' \
@@ -153,6 +156,19 @@ When run bash -c 'unset CLIPROXY_API_KEY HERMES_GATEWAY_TOKEN GATEWAY_TOKEN HERM
 The status should be success
 The output should include 'VERCEL_TOKEN=vercel-token'
 The output should include 'VERCEL_TEAM_ID=team_test'
+End
+
+It 'installs the traces plugin as a directory with a manifest and module'
+When run bash -c 'unset CLIPROXY_API_KEY HERMES_GATEWAY_TOKEN GATEWAY_TOKEN HERMES_TELEGRAM_TOKEN TELEGRAM_TOKEN WHATSAPP_ALLOW_FROM VERCEL_TOKEN VERCEL_TEAM_ID; HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; ls "'"$TEMP_HOME"'/.hermes/plugins/traces"'
+The status should be success
+The output should include 'plugin.yaml'
+The output should include '__init__.py'
+End
+
+It 'initialises the workspace git repository traces publishes from'
+When run bash -c 'unset CLIPROXY_API_KEY HERMES_GATEWAY_TOKEN GATEWAY_TOKEN HERMES_TELEGRAM_TOKEN TELEGRAM_TOKEN WHATSAPP_ALLOW_FROM VERCEL_TOKEN VERCEL_TEAM_ID; HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; test -d "'"$TEMP_HOME"'/.hermes/workspace/.git" && echo repo'
+The status should be success
+The output should include 'repo'
 End
 End
 

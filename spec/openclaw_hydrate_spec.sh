@@ -153,6 +153,9 @@ EOF
     -e 's|@mode@|gateway|g' \
     -e 's|@sed@|sed|g' \
     -e 's|@awk@|awk|g' \
+    -e 's|@git@|git|g' \
+    -e 's|@tracesHookManifest@|'"$PWD"'/config/openclaw/hooks/traces/HOOK.md|g' \
+    -e 's|@tracesHookHandler@|'"$PWD"'/config/openclaw/hooks/traces/handler.js|g' \
     -e 's|@template@|'"$TEMP_HOME"'/templates/openclaw.json|g' \
     -e 's|@chromium@|'"$TEMP_HOME"'/chromium|g' \
     -e 's|@soul@|'"$TEMP_HOME"'/SOUL.md|g' \
@@ -173,6 +176,19 @@ The status should be success
 The output should include 'from-cliproxy-config'
 The output should not include 'from-secret-file'
 End
+
+It 'installs the traces hook pack as a directory with HOOK.md and a JS handler'
+When run bash -c 'HOME="'"$TEMP_HOME"'" OPENCLAW_CONFIG_PATH="'"$TEMP_HOME"'/generated-openclaw.json" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; ls "'"$TEMP_HOME"'/.openclaw/hooks/traces"'
+The status should be success
+The output should include 'HOOK.md'
+The output should include 'handler.js'
+End
+
+It 'initialises the workspace git repository traces publishes from'
+When run bash -c 'HOME="'"$TEMP_HOME"'" OPENCLAW_CONFIG_PATH="'"$TEMP_HOME"'/generated-openclaw.json" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; test -d "'"$TEMP_HOME"'/.openclaw/workspace/.git" && echo repo'
+The status should be success
+The output should include 'repo'
+End
 End
 
 Describe 'client config generation'
@@ -191,6 +207,9 @@ EOF
     -e 's|@mode@|client|g' \
     -e 's|@sed@|sed|g' \
     -e 's|@awk@|awk|g' \
+    -e 's|@git@|git|g' \
+    -e 's|@tracesHookManifest@|'"$PWD"'/config/openclaw/hooks/traces/HOOK.md|g' \
+    -e 's|@tracesHookHandler@|'"$PWD"'/config/openclaw/hooks/traces/handler.js|g' \
     -e 's|@template@|/unused|g' \
     -e 's|@chromium@|/unused|g' \
     -e 's|@soul@|'"$TEMP_HOME"'/SOUL.md|g' \

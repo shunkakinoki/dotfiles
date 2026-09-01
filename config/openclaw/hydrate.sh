@@ -10,6 +10,8 @@ mkdir -p "$STATE_DIR"
 CONFIG="${OPENCLAW_CONFIG_PATH:-${STATE_DIR}/openclaw.json}"
 TEMPLATE="@template@"
 SOUL_SOURCE="@soul@"
+TRACES_HOOK_MANIFEST="@tracesHookManifest@"
+TRACES_HOOK_HANDLER="@tracesHookHandler@"
 SECRETS_DIR="${HOME}/.config/openclaw"
 CLIPROXY_CONFIG="${OPENCLAW_CLIPROXY_CONFIG_PATH:-${HOME}/.cli-proxy-api/config.yaml}"
 ENV_FILE="${HOME}/dotfiles/.env"
@@ -63,6 +65,20 @@ mkdir -p "$STATE_DIR"
 
 # Sync SOUL.md from dotfiles root (single source of truth)
 install -m 600 "$SOUL_SOURCE" "${STATE_DIR}/SOUL.md"
+
+# Install the Traces hook pack. OpenClaw only loads hook directories holding
+# HOOK.md plus a JS handler, so the traces-generated *.sh files are inert.
+install -d -m 700 "${STATE_DIR}/hooks/traces"
+install -m 600 "$TRACES_HOOK_MANIFEST" "${STATE_DIR}/hooks/traces/HOOK.md"
+install -m 600 "$TRACES_HOOK_HANDLER" "${STATE_DIR}/hooks/traces/handler.js"
+rm -f "${STATE_DIR}/hooks/session-start.sh" "${STATE_DIR}/hooks/prompt-submitted.sh" "${STATE_DIR}/hooks/agent-done.sh"
+
+# traces refuses to run outside a git repository and resolves the destination
+# namespace from the working directory, so the hook needs a stable repo root.
+install -d -m 700 "${STATE_DIR}/workspace"
+if [ ! -d "${STATE_DIR}/workspace/.git" ]; then
+  @git@ -C "${STATE_DIR}/workspace" init -q
+fi
 
 if [ "$MODE" = "gateway" ]; then
   # Gateway mode (Kyber): hydrate full template and start gateway
