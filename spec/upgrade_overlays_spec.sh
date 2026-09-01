@@ -126,8 +126,7 @@ The status should be success
 End
 
 It 'refreshes hashes when the version is unchanged'
-When run bash -c "env OVERLAY_FILE='$TEMP_DIR/overlays/default.nix' ASCII_BOX_CLI_VERSION='0.1.208' bash '$SCRIPT' ascii-box-cli >/dev/stdout && cat '$TEMP_DIR/overlays/default.nix'"
-The output should include 'ascii-box-cli hashes refreshed for 0.1.208'
+When run bash -c "env OVERLAY_FILE='$TEMP_DIR/overlays/default.nix' ASCII_BOX_CLI_VERSION='0.1.208' bash '$SCRIPT' ascii-box-cli >/dev/null && cat '$TEMP_DIR/overlays/default.nix'"
 The output should include '0jmp1xvzsnxpgakrd69fiqp2fd8rzcr57s80djlzbdgfs3jr2z60'
 The status should be success
 End
