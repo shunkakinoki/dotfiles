@@ -180,10 +180,6 @@
         askForPassword = true;
         askForPasswordDelay = 0;
       };
-      smb = {
-        NetBIOSName = "MAC";
-        ServerDescription = config.networking.hostName;
-      };
       spaces.spans-displays = null;
       trackpad = {
         ActuateDetents = true;
