@@ -453,6 +453,12 @@
           "nonInteractivePermissions": "deny"
         }
       },
+      "codex": {
+        "enabled": true
+      },
+      "openai": {
+        "enabled": true
+      },
       "telegram": {
         "enabled": true
       },
