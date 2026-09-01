@@ -205,10 +205,12 @@
     }
   },
   "agents": {
+    "ownership": "explicit",
     "defaults": {
       "model": {
-        "primary": "cliproxy/__DEEPSEEK_FLASH__",
+        "primary": "openai/gpt-5.6-sol",
         "fallbacks": [
+          "cliproxy/__DEEPSEEK_FLASH__",
           "cliproxy/free"
         ]
       },
@@ -217,6 +219,9 @@
       "maxConcurrent": 4,
       "subagents": {
         "maxConcurrent": 8
+      },
+      "experimental": {
+        "localModelLean": true
       }
     },
     "list": [
@@ -279,10 +284,28 @@
     }
   },
   "tools": {
+    "codeMode": true,
+    "toolSearch": true,
+    "loopDetection": {
+      "enabled": true
+    },
+    "swarm": {
+      "enabled": true,
+      "maxConcurrent": 8,
+      "maxChildrenPerGroup": 50,
+      "maxTotalPerGroup": 200,
+      "waitTimeoutSecondsMax": 600,
+      "defaultAgentId": ""
+    },
     "web": {
       "search": {
         "enabled": true
       }
+    }
+  },
+  "logging": {
+    "audit": {
+      "messages": "all"
     }
   },
   "commands": {
@@ -382,7 +405,18 @@
       "127.0.0.1/32",
       "::1/128"
     ],
-    "allowRealIpFallback": false
+    "allowRealIpFallback": false,
+    "cliAgents": {
+      "enabled": true
+    }
+  },
+  "desktop": {
+    "host": {
+      "enabled": true
+    }
+  },
+  "cloudWorkers": {
+    "desktop": true
   },
   "diagnostics": {
     "enabled": true,
