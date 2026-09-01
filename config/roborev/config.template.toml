@@ -54,9 +54,8 @@ batch_timeout = "0"
 repos = ["__ROBOREV_REPOS__"]
 
 [agent_hook]
-# Surface any open failed review without automatically invoking a fixer.
-# Keep turn and commit triggers explicitly disabled.
+# Surface failed reviews for autonomous triage without broad turn or commit triggers.
 turn_threshold = 0
 commit_threshold = 0
 failed_review_threshold = 1
-instruction = "Inspect open RoboRev findings read-only. Report proposed changes and ask the user for explicit approval. Do not edit files, run a fixer, commit, or close reviews before approval."
+instruction = "Inspect open RoboRev findings and triage them autonomously. Implement sound findings or decline incorrect, stale, duplicative, or out-of-scope findings; document the disposition, revalidate edits, and continue without asking for approval. Escalate only security-sensitive findings, scope expansion beyond PR intent, or operator-gated surfaces."
