@@ -37,6 +37,11 @@ When run bash -c "grep -- '--bind loopback' '$PWD/home-manager/services/openclaw
 The output should include '--bind loopback'
 End
 
+It 'runs the explicit foreground gateway command'
+When run bash -c "grep -F 'gateway run --port 18789 --bind loopback' '$PWD/home-manager/services/openclaw/default.nix'"
+The output should include 'gateway run --port 18789 --bind loopback'
+End
+
 It 'resolves the current k3s bridge address instead of pinning a pod subnet'
 When run bash -c "grep -q 'ip -4 -o address show dev' '$PWD/home-manager/services/openclaw/k3s-proxy.sh' && grep -q 'bind=\${listen_address}' '$PWD/home-manager/services/openclaw/k3s-proxy.sh' && ! grep -R -q 'bind=10.42.0.1' '$PWD/home-manager/services/openclaw'"
 The status should be success
