@@ -11,6 +11,8 @@ MOSHI_HOOK_CDN="${MOSHI_HOOK_CDN:-https://cdn.getmoshi.app}"
 BLACKSMITH_CLI_CDN="${BLACKSMITH_CLI_CDN:-https://clireleases.blacksmith.sh/cli}"
 ASCII_BOX_CLI_URL="${ASCII_BOX_CLI_URL:-https://ascii.dev/api/box/cli/download}"
 ASCII_BOX_CLI_CHANNEL="${ASCII_BOX_CLI_CHANNEL:-ascii-prod}"
+ASCII_BOX_CLI_RELEASE_URL="${ASCII_BOX_CLI_RELEASE_URL:-https://github.com/ariana-dot-dev/agent-server/releases/download}"
+ASCII_BOX_CLI_RELEASE_CHANNEL="${ASCII_BOX_CLI_RELEASE_CHANNEL:-ascii-prod1}"
 
 # Colors for output
 RED='\033[0;31m'
@@ -111,9 +113,17 @@ ascii_box_cli_url() {
   printf '%s?platform=%s&channel=%s' "$ASCII_BOX_CLI_URL" "$platform" "$ASCII_BOX_CLI_CHANNEL"
 }
 
+ascii_box_cli_release_url() {
+  local platform="$1"
+  local version="$2"
+  printf '%s/box-cli-v%s-%s/box-%s' \
+    "$ASCII_BOX_CLI_RELEASE_URL" "$version" "$ASCII_BOX_CLI_RELEASE_CHANNEL" "$platform"
+}
+
 ascii_box_cli_checksum() {
   local platform="$1"
-  nix-prefetch-url --type sha256 "$(ascii_box_cli_url "$platform")" | sed -n '1p'
+  local version="$2"
+  nix-prefetch-url --type sha256 "$(ascii_box_cli_release_url "$platform" "$version")" | sed -n '1p'
 }
 
 validate_nix_checksum() {
@@ -149,9 +159,9 @@ upgrade_ascii_box_cli() {
   echo "  Current version: ${current_version:-unknown}"
   echo "  Latest version:  $version"
 
-  darwin_arm64="$(ascii_box_cli_checksum darwin-arm64)"
-  linux_arm64="$(ascii_box_cli_checksum linux-arm64)"
-  linux_x86_64="$(ascii_box_cli_checksum linux-x64)"
+  darwin_arm64="$(ascii_box_cli_checksum darwin-arm64 "$version")"
+  linux_arm64="$(ascii_box_cli_checksum linux-arm64 "$version")"
+  linux_x86_64="$(ascii_box_cli_checksum linux-x64 "$version")"
   validate_nix_checksum ascii-box-darwin-arm64 "$darwin_arm64"
   validate_nix_checksum ascii-box-linux-arm64 "$linux_arm64"
   validate_nix_checksum ascii-box-linux-x64 "$linux_x86_64"

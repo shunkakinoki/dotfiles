@@ -45,9 +45,9 @@ setup() {
   cat >"$TEMP_DIR/bin/nix-prefetch-url" <<'EOF'
 #!/usr/bin/env bash
 case "$*" in
-*darwin-arm64*) printf '%s\n' '1zphmmhga7kj5058r88hz1alnbsl3c9yfg79qkpi41gg0nfkxz7m' ;;
-*linux-arm64*) printf '%s\n' '1209x694z85ynhb5kyxv39rhlqqr5xshp6jangvv3qn1hskh4nbx' ;;
-*linux-x64*) printf '%s\n' '11q5gky9i35vgfnqmhaq0w08awrkhw09jakxp1j62ad7gnb9wy0w' ;;
+*darwin-arm64*) printf '%s\n' '0p85n67mklxfvvh1v6sj047wcskxsagzmg6r0wdd4kibpvgbxdap' ;;
+*linux-arm64*) printf '%s\n' '1nsfky5jilcg2w87k4dlvkg1bki325j1mmf8qp93m8rjg4zq3sm1' ;;
+*linux-x64*) printf '%s\n' '0jmp1xvzsnxpgakrd69fiqp2fd8rzcr57s80djlzbdgfs3jr2z60' ;;
 *) exit 1 ;;
 esac
 EOF
@@ -128,7 +128,7 @@ End
 It 'refreshes hashes when the version is unchanged'
 When run bash -c "env OVERLAY_FILE='$TEMP_DIR/overlays/default.nix' ASCII_BOX_CLI_VERSION='0.1.208' bash '$SCRIPT' ascii-box-cli >/dev/stdout && cat '$TEMP_DIR/overlays/default.nix'"
 The output should include 'ascii-box-cli hashes refreshed for 0.1.208'
-The output should include '11q5gky9i35vgfnqmhaq0w08awrkhw09jakxp1j62ad7gnb9wy0w'
+The output should include '0jmp1xvzsnxpgakrd69fiqp2fd8rzcr57s80djlzbdgfs3jr2z60'
 The status should be success
 End
 End
