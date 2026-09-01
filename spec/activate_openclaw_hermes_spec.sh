@@ -57,6 +57,16 @@ When run bash -c "jq -e '.gateway.trustedProxies == [\"127.0.0.1/32\", \"::1/128
 The status should be success
 End
 
+It 'enables the experimental OpenClaw feature set with explicit agent ownership'
+When run bash -c "jq -e '.agents.ownership == \"explicit\" and .agents.defaults.systemAgent.agentId == \"main\" and .agents.defaults.experimental.localModelLean == true and .tools.codeMode == true and .tools.toolSearch == true and .tools.loopDetection.enabled == true and .tools.swarm == {enabled: true, maxConcurrent: 8, maxChildrenPerGroup: 50, maxTotalPerGroup: 200, waitTimeoutSecondsMax: 600, defaultAgentId: \"\"} and .gateway.cliAgents.enabled == true and .logging.audit.messages == \"all\" and .desktop.host.enabled == true and .cloudWorkers.desktop == true' '$PWD/config/openclaw/openclaw.tpl.json' >/dev/null"
+The status should be success
+End
+
+It 'prefers OpenAI Codex Luna over the DeepSeek fallback'
+When run bash -c "jq -e '.agents.defaults.model.primary == \"openai/__GPT_LUNA__\" and .agents.defaults.model.fallbacks == [\"cliproxy/__DEEPSEEK_FLASH__\", \"cliproxy/free\"]' '$PWD/config/openclaw/openclaw.tpl.json' >/dev/null"
+The status should be success
+End
+
 It 'resolves the current k3s bridge address instead of pinning a pod subnet'
 When run bash -c "grep -q 'ip -4 -o address show dev' '$PWD/home-manager/services/openclaw/k3s-proxy.sh' && grep -q 'bind=\${listen_address}' '$PWD/home-manager/services/openclaw/k3s-proxy.sh' && ! grep -R -q 'bind=10.42.0.1' '$PWD/home-manager/services/openclaw'"
 The status should be success
