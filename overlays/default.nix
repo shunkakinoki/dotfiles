@@ -184,9 +184,9 @@
         }-${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x64"}&channel=ascii-prod";
         sha256 =
           {
-            "aarch64-darwin" = "0p85n67mklxfvvh1v6sj047wcskxsagzmg6r0wdd4kibpvgbxdap";
-            "aarch64-linux" = "1nsfky5jilcg2w87k4dlvkg1bki325j1mmf8qp93m8rjg4zq3sm1";
-            "x86_64-linux" = "0jmp1xvzsnxpgakrd69fiqp2fd8rzcr57s80djlzbdgfs3jr2z60";
+            "aarch64-darwin" = "1zphmmhga7kj5058r88hz1alnbsl3c9yfg79qkpi41gg0nfkxz7m";
+            "aarch64-linux" = "1209x694z85ynhb5kyxv39rhlqqr5xshp6jangvv3qn1hskh4nbx";
+            "x86_64-linux" = "11q5gky9i35vgfnqmhaq0w08awrkhw09jakxp1j62ad7gnb9wy0w";
           }
           .${prev.stdenv.hostPlatform.system};
       };

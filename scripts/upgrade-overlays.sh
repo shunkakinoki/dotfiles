@@ -149,11 +149,6 @@ upgrade_ascii_box_cli() {
   echo "  Current version: ${current_version:-unknown}"
   echo "  Latest version:  $version"
 
-  if [[ $current_version == "$version" ]]; then
-    log_info "✅ ascii-box-cli is already on latest version ($version)"
-    return 0
-  fi
-
   darwin_arm64="$(ascii_box_cli_checksum darwin-arm64)"
   linux_arm64="$(ascii_box_cli_checksum linux-arm64)"
   linux_x86_64="$(ascii_box_cli_checksum linux-x64)"
@@ -184,7 +179,11 @@ upgrade_ascii_box_cli() {
     ' "$OVERLAY_FILE" >"$OVERLAY_FILE.tmp"
   mv -f "$OVERLAY_FILE.tmp" "$OVERLAY_FILE"
 
-  log_info "✅ ascii-box-cli upgraded from ${current_version:-unknown} to $version"
+  if [[ $current_version == "$version" ]]; then
+    log_info "✅ ascii-box-cli hashes refreshed for $version"
+  else
+    log_info "✅ ascii-box-cli upgraded from ${current_version:-unknown} to $version"
+  fi
 }
 
 upgrade_blacksmith_testbox_cli() {

@@ -41,7 +41,18 @@ End
 Describe 'moshi-hook overlay target'
 setup() {
   TEMP_DIR=$(mktemp -d)
-  mkdir -p "$TEMP_DIR/cdn/hook/latest" "$TEMP_DIR/cdn/hook/v0.2.69" "$TEMP_DIR/overlays"
+  mkdir -p "$TEMP_DIR/bin" "$TEMP_DIR/cdn/hook/latest" "$TEMP_DIR/cdn/hook/v0.2.69" "$TEMP_DIR/overlays"
+  cat >"$TEMP_DIR/bin/nix-prefetch-url" <<'EOF'
+#!/usr/bin/env bash
+case "$*" in
+*darwin-arm64*) printf '%s\n' '1zphmmhga7kj5058r88hz1alnbsl3c9yfg79qkpi41gg0nfkxz7m' ;;
+*linux-arm64*) printf '%s\n' '1209x694z85ynhb5kyxv39rhlqqr5xshp6jangvv3qn1hskh4nbx' ;;
+*linux-x64*) printf '%s\n' '11q5gky9i35vgfnqmhaq0w08awrkhw09jakxp1j62ad7gnb9wy0w' ;;
+*) exit 1 ;;
+esac
+EOF
+  chmod +x "$TEMP_DIR/bin/nix-prefetch-url"
+  export PATH="$TEMP_DIR/bin:$PATH"
   printf 'v0.2.69\n' >"$TEMP_DIR/cdn/hook/latest/version.txt"
   cat >"$TEMP_DIR/cdn/hook/v0.2.69/checksums.txt" <<'EOF'
 52258126b675dad210a8f04b83d8e90b359951af37474ff985d2c3f49102d981  moshi-hook_Darwin_arm64.tar.gz
@@ -72,6 +83,13 @@ EOF
     ascii-box-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "ascii-box-cli";
       version = "0.1.208";
+      src = prev.fetchurl {
+        sha256 = {
+          "aarch64-darwin" = "old-darwin-arm";
+          "aarch64-linux" = "old-linux-arm";
+          "x86_64-linux" = "old-linux-x86";
+        };
+      };
       meta.mainProgram = "box";
     };
     blacksmith-testbox-cli = prev.stdenvNoCC.mkDerivation rec {
@@ -104,6 +122,13 @@ The output should include '3903e2e5d1dba02f9e1f53df8cea6e2b3260e1581461b9a07ca65
 The output should include '0a30e081399543551bbd0ba3320f3b28be814a585e5c591e168f8fd6d9565f07'
 The output should include '52258126b675dad210a8f04b83d8e90b359951af37474ff985d2c3f49102d981'
 The output should include '7cf24d316bafffc59d30e05d6ad6b27d4c03c9953ce901056f57f03c25e4b83b'
+The status should be success
+End
+
+It 'refreshes hashes when the version is unchanged'
+When run bash -c "env OVERLAY_FILE='$TEMP_DIR/overlays/default.nix' ASCII_BOX_CLI_VERSION='0.1.208' bash '$SCRIPT' ascii-box-cli >/dev/stdout && cat '$TEMP_DIR/overlays/default.nix'"
+The output should include 'ascii-box-cli hashes refreshed for 0.1.208'
+The output should include '11q5gky9i35vgfnqmhaq0w08awrkhw09jakxp1j62ad7gnb9wy0w'
 The status should be success
 End
 End
