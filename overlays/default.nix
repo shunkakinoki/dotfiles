@@ -179,9 +179,9 @@
       pname = "ascii-box-cli";
       version = "0.1.208";
       src = prev.fetchurl {
-        url = "https://ascii.dev/api/box/cli/download?platform=${
+        url = "https://github.com/ariana-dot-dev/agent-server/releases/download/box-cli-v${version}-ascii-prod1/box-${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
-        }-${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x64"}&channel=ascii-prod";
+        }-${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x64"}";
         sha256 =
           {
             "aarch64-darwin" = "0p85n67mklxfvvh1v6sj047wcskxsagzmg6r0wdd4kibpvgbxdap";
