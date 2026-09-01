@@ -52,6 +52,11 @@ When run bash -c "jq -e '.gateway.tailscale.mode == \"off\"' '$PWD/config/opencl
 The status should be success
 End
 
+It 'trusts only the local forwarded-header proxies'
+When run bash -c "jq -e '.gateway.trustedProxies == [\"127.0.0.1/32\", \"::1/128\"] and .gateway.allowRealIpFallback == false' '$PWD/config/openclaw/openclaw.tpl.json' >/dev/null"
+The status should be success
+End
+
 It 'resolves the current k3s bridge address instead of pinning a pod subnet'
 When run bash -c "grep -q 'ip -4 -o address show dev' '$PWD/home-manager/services/openclaw/k3s-proxy.sh' && grep -q 'bind=\${listen_address}' '$PWD/home-manager/services/openclaw/k3s-proxy.sh' && ! grep -R -q 'bind=10.42.0.1' '$PWD/home-manager/services/openclaw'"
 The status should be success
