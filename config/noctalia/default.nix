@@ -6,9 +6,17 @@
 let
   # v5 renamed the binary noctalia-shell -> noctalia (pname/mainProgram = "noctalia").
   noctalia = inputs.noctalia-shell.packages.${pkgs.system}.default;
-  lockCommand = "${pkgs.systemd}/bin/systemctl --user start hyprlock.service";
+  lockScreen = pkgs.writeShellApplication {
+    name = "lock-screen";
+    runtimeInputs = [
+      pkgs.hyprlock
+      pkgs.systemd
+    ];
+    text = builtins.readFile ./lock-screen.sh;
+  };
+  lockCommand = "${lockScreen}/bin/lock-screen";
   lockBeforeSleep = pkgs.replaceVars ./lock-before-sleep.sh {
-    systemctl = "${pkgs.systemd}/bin/systemctl";
+    lockScreen = lockCommand;
     sleep = "${pkgs.coreutils}/bin/sleep";
   };
   quitAllAppsScript = pkgs.replaceVars ./quit-all-apps-launcher.sh {
@@ -17,21 +25,10 @@ let
   };
 in
 {
-  home.packages = [ pkgs.hyprlock ];
-
-  systemd.user.services.hyprlock = {
-    Unit = {
-      Description = "Hyprland screen locker";
-      After = [ "graphical-session.target" ];
-      PartOf = [ "graphical-session.target" ];
-    };
-    Service = {
-      Type = "simple";
-      ExecStart = "${pkgs.hyprlock}/bin/hyprlock --immediate-render";
-      UnsetEnvironment = "LD_LIBRARY_PATH";
-      Restart = "no";
-    };
-  };
+  home.packages = [
+    pkgs.hyprlock
+    lockScreen
+  ];
 
   xdg.configFile."hypr/hyprlock.conf".text = ''
     general {
