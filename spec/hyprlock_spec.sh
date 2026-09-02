@@ -38,6 +38,15 @@ The output should include 'fingerprint:enabled = true'
 The output should include 'input-field {'
 End
 
+It 'renders the desktop screenshot with a bounded blur treatment'
+When run bash -c "grep -A9 'background {' '$MODULE'"
+The output should include 'path = screenshot'
+The output should include 'color = rgb(282a36)'
+The output should include 'blur_passes = 3'
+The output should include 'blur_size = 8'
+The output should include 'brightness = 0.8'
+End
+
 It 'disables the crashing Noctalia lockscreen and routes idle locking to hyprlock'
 When run bash -c "grep -A4 'lockscreen = {' '$MODULE' && grep -A5 'behavior.lock = {' '$MODULE'"
 The output should include 'enabled = false'
