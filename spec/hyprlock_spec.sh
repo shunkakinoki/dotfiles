@@ -6,6 +6,7 @@ MODULE="$PWD/config/noctalia/default.nix"
 MATIC="$PWD/named-hosts/matic/default.nix"
 WALKER="$PWD/config/walker/config.toml"
 LOCK_SCRIPT="$PWD/config/noctalia/lock-screen.sh"
+EWW_STYLE="$PWD/config/eww/eww.scss"
 
 It 'installs a stable lock-screen command without a Home Manager service'
 When run bash -c "grep -F 'name = \"lock-screen\";' '$MODULE' && ! grep -F 'systemd.user.services.hyprlock = {' '$MODULE'"
@@ -45,6 +46,13 @@ The output should include 'color = rgb(282a36)'
 The output should include 'blur_passes = 3'
 The output should include 'blur_size = 8'
 The output should include 'brightness = 0.8'
+End
+
+It 'matches the home clock font family and size'
+When run bash -c "grep -A10 'label {' '$MODULE' && grep -F 'font-size: 156px;' '$EWW_STYLE'"
+The output should include 'font_family = Noto Sans'
+The output should include 'font_size = 156'
+The output should include 'font-size: 156px;'
 End
 
 It 'disables the crashing Noctalia lockscreen and routes idle locking to hyprlock'

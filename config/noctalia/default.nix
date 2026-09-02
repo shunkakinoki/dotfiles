@@ -58,7 +58,8 @@ in
         monitor =
         text = $TIME
         color = rgb(f8f8f2)
-        font_size = 64
+        font_family = Noto Sans
+        font_size = 156
         position = 0, 120
         halign = center
         valign = center
