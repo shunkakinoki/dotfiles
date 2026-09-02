@@ -4,9 +4,9 @@
 Describe 'config/hyprland/hyprland.conf hyprlock bindings'
 CONFIG="$PWD/config/hyprland/hyprland.conf"
 
-It 'defines the managed hyprlock command'
-When run bash -c "grep -F '\$lock = systemctl --user start hyprlock.service' '$CONFIG'"
-The output should include 'hyprlock.service'
+It 'defines the transient hyprlock command'
+When run bash -c "grep -F '\$lock = lock-screen' '$CONFIG'"
+The output should include 'lock-screen'
 End
 
 It 'locks through hyprlock when Hyprland reports the lid switch closing'

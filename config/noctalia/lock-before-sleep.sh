@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Start hyprlock before systemd lets suspend continue.
+# Start the transient hyprlock unit before systemd lets suspend continue.
 set -euo pipefail
 
-SYSTEMCTL="@systemctl@"
+LOCK_SCREEN="@lockScreen@"
 SLEEP="@sleep@"
 
-if ! "$SYSTEMCTL" --user start hyprlock.service; then
+if ! "$LOCK_SCREEN"; then
   exit 0
 fi
 
