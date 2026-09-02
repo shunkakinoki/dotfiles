@@ -58,8 +58,8 @@ provider = "providerlist"
 # Custom Commands (searchable system actions)
 # =============================================================================
 [customcommands]
-"Lock Screen" = "hyprlock"
-"Start Screen Saver" = "hyprlock"
+"Lock Screen" = "systemctl --user start hyprlock.service"
+"Start Screen Saver" = "systemctl --user start hyprlock.service"
 "Suspend" = "systemctl suspend"
 "Reboot" = "systemctl reboot"
 "Shutdown" = "systemctl poweroff"

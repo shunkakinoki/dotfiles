@@ -240,6 +240,9 @@ import ../../hosts/nixos {
             timeout = -1;
           };
         };
+        security.pam.services.hyprlock = {
+          fprintAuth = true;
+        };
         security.pam.services.sudo = {
           fprintAuth = true;
         };
