@@ -44,6 +44,7 @@ lib.mkIf host.isKyber {
       ExecStart = "${homeDir}/.bun/bin/openclaw gateway run --port 18789 --bind loopback";
       Restart = "always";
       RestartSec = "5s";
+      EnvironmentFile = [ "-${homeDir}/dotfiles/.env" ];
       Environment = [
         "HOME=${homeDir}"
         "PATH=${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:${homeDir}/.local/share/pnpm:${homeDir}/.local/share/fnm/current/bin:${homeDir}/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
