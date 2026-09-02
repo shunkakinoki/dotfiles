@@ -48,11 +48,14 @@ The output should include 'blur_size = 8'
 The output should include 'brightness = 0.8'
 End
 
-It 'matches the home clock font family and size'
-When run bash -c "grep -A10 'label {' '$MODULE' && grep -F 'font-size: 156px;' '$EWW_STYLE'"
-The output should include 'font_family = Noto Sans'
-The output should include 'font_size = 156'
+It 'matches the home clock rendered type metrics'
+When run bash -c "grep -A13 'label {' '$MODULE' && grep -A6 '.clock-time {' '$EWW_STYLE'"
+The output should include 'text = <span weight="700" letter_spacing="4096">$TIME</span>'
+The output should include 'font_family = Inter'
+The output should include 'font_size = 117'
 The output should include 'font-size: 156px;'
+The output should include 'font-weight: 700;'
+The output should include 'letter-spacing: 4px;'
 End
 
 It 'disables the crashing Noctalia lockscreen and routes idle locking to hyprlock'

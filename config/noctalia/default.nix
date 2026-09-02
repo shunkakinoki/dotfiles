@@ -56,10 +56,12 @@ in
 
     label {
         monitor =
-        text = $TIME
+        # Match Eww's 156px Inter 700 clock at 96 DPI. Hyprlock's Pango size is
+        # point-based; 4096 Pango units reproduce Eww's 4px letter spacing.
+        text = <span weight="700" letter_spacing="4096">$TIME</span>
         color = rgb(f8f8f2)
-        font_family = Noto Sans
-        font_size = 156
+        font_family = Inter
+        font_size = 117
         position = 0, 120
         halign = center
         valign = center
