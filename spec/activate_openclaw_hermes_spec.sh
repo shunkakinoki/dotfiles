@@ -42,13 +42,13 @@ When run bash -c "grep -F 'gateway run --port 18789 --bind loopback' '$PWD/home-
 The output should include 'gateway run --port 18789 --bind loopback'
 End
 
-It 'exports the hydrated ASCII Box credential to the gateway only at runtime'
-When run bash -c "gateway=\$(sed -n '/gatewayLauncher = pkgs.writeShellApplication/,/};/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -qF 'source \"\${homeDir}/dotfiles/.env\"' <<<\"\$gateway\" && grep -qF 'export ASCII_BOX_API_KEY' <<<\"\$gateway\" && ! grep -R -q 'ASCII_BOX_API_KEY=' '$PWD/config/openclaw'"
+It 'loads the optional dotenv only into the gateway service'
+When run bash -c "gateway=\$(sed -n '/systemd.user.services.openclaw-gateway =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix'); proxy=\$(sed -n '/systemd.user.services.openclaw-k3s-proxy =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -qF 'EnvironmentFile = [ \"-\${homeDir}/dotfiles/.env\" ];' <<<\"\$gateway\" && ! grep -qF 'EnvironmentFile' <<<\"\$proxy\" && ! grep -R -q 'ASCII_BOX_API_KEY=' '$PWD/config/openclaw'"
 The status should be success
 End
 
-It 'starts the gateway through the credential-aware launcher'
-When run bash -c "sed -n '/systemd.user.services.openclaw-gateway =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix' | grep -qF 'ExecStart = \"\${gatewayLauncher}/bin/openclaw-gateway\";'"
+It 'starts the gateway directly through systemd'
+When run bash -c "sed -n '/systemd.user.services.openclaw-gateway =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix' | grep -qF 'ExecStart = \"\${homeDir}/.bun/bin/openclaw gateway run --port 18789 --bind loopback\";'"
 The status should be success
 End
 

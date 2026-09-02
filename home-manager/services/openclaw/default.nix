@@ -8,17 +8,6 @@
 let
   inherit (inputs) host;
   homeDir = config.home.homeDirectory;
-  gatewayLauncher = pkgs.writeShellApplication {
-    name = "openclaw-gateway";
-    text = ''
-      if [ -f "${homeDir}/dotfiles/.env" ]; then
-        # shellcheck source=/dev/null
-        source "${homeDir}/dotfiles/.env"
-      fi
-      export ASCII_BOX_API_KEY
-      exec "${homeDir}/.bun/bin/openclaw" gateway run --port 18789 --bind loopback
-    '';
-  };
   k3sProxy = pkgs.writeShellApplication {
     name = "openclaw-k3s-proxy";
     runtimeInputs = [
@@ -52,9 +41,10 @@ lib.mkIf host.isKyber {
     };
     Service = {
       Type = "simple";
-      ExecStart = "${gatewayLauncher}/bin/openclaw-gateway";
+      ExecStart = "${homeDir}/.bun/bin/openclaw gateway run --port 18789 --bind loopback";
       Restart = "always";
       RestartSec = "5s";
+      EnvironmentFile = [ "-${homeDir}/dotfiles/.env" ];
       Environment = [
         "HOME=${homeDir}"
         "PATH=${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:${homeDir}/.local/share/pnpm:${homeDir}/.local/share/fnm/current/bin:${homeDir}/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
