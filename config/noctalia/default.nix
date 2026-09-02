@@ -28,6 +28,7 @@ in
     Service = {
       Type = "simple";
       ExecStart = "${pkgs.hyprlock}/bin/hyprlock --immediate-render";
+      UnsetEnvironment = "LD_LIBRARY_PATH";
       Restart = "no";
     };
   };
