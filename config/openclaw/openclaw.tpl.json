@@ -389,6 +389,14 @@
   "gateway": {
     "mode": "local",
     "bind": "loopback",
+    "publicOrigin": "https://openclaw.shunkakinoki.com",
+    "nodes": {
+      "commands": {
+        "allow": [
+          "codex.exec-server.stdio.v1"
+        ]
+      }
+    },
     "terminal": {
       "enabled": true
     },
@@ -428,7 +436,21 @@
     }
   },
   "cloudWorkers": {
-    "desktop": true
+    "desktop": true,
+    "profiles": {
+      "ascii-box": {
+        "provider": "crabbox",
+        "install": "bundle",
+        "suspendAfter": "30m",
+        "settings": {
+          "provider": "ascii-box",
+          "ttl": "8h",
+          "idleTimeout": "45m",
+          "warmImage": false,
+          "setup": "command -v node >/dev/null 2>&1 && command -v npm >/dev/null 2>&1"
+        }
+      }
+    }
   },
   "diagnostics": {
     "enabled": true,

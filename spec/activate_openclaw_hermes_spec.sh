@@ -42,6 +42,16 @@ When run bash -c "grep -F 'gateway run --port 18789 --bind loopback' '$PWD/home-
 The output should include 'gateway run --port 18789 --bind loopback'
 End
 
+It 'exports the hydrated ASCII Box credential to the gateway only at runtime'
+When run bash -c "gateway=\$(sed -n '/gatewayLauncher = pkgs.writeShellApplication/,/};/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -qF 'source \"\${homeDir}/dotfiles/.env\"' <<<\"\$gateway\" && grep -qF 'export ASCII_BOX_API_KEY' <<<\"\$gateway\" && ! grep -R -q 'ASCII_BOX_API_KEY=' '$PWD/config/openclaw'"
+The status should be success
+End
+
+It 'starts the gateway through the credential-aware launcher'
+When run bash -c "sed -n '/systemd.user.services.openclaw-gateway =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix' | grep -qF 'ExecStart = \"\${gatewayLauncher}/bin/openclaw-gateway\";'"
+The status should be success
+End
+
 It 'uses the current OpenClaw configuration schema'
 When run bash -c "jq -e '(.models | has(\"pricing\") | not) and (.memory.search.enabled == true) and (.acp | has(\"maxConcurrentSessions\") | not) and (.gateway.tailscale | has(\"resetOnExit\") | not) and (.diagnostics.cacheTrace | (has(\"includeMessages\") or has(\"includePrompt\") or has(\"includeSystem\")) | not) and (has(\"commitments\") | not)' '$PWD/config/openclaw/openclaw.tpl.json' >/dev/null"
 The status should be success
@@ -59,6 +69,11 @@ End
 
 It 'enables the experimental OpenClaw feature set with explicit agent ownership'
 When run bash -c "jq -e '.agents.ownership == \"explicit\" and (.agents.list | any(.default == true) | not) and .agents.defaults.systemAgent.agentId == \"main\" and .agents.defaults.experimental.localModelLean == true and .tools.codeMode == true and .tools.toolSearch == true and .tools.loopDetection.enabled == true and .tools.swarm == {enabled: true, maxConcurrent: 8, maxChildrenPerGroup: 50, maxTotalPerGroup: 200, waitTimeoutSecondsMax: 600, defaultAgentId: \"\"} and .gateway.cliAgents.enabled == true and .logging.audit.messages == \"all\" and .desktop.host.enabled == true and .cloudWorkers.desktop == true' '$PWD/config/openclaw/openclaw.tpl.json' >/dev/null"
+The status should be success
+End
+
+It 'configures disposable ASCII Box cloud workers for session reuse'
+When run bash -c "jq -e '.gateway.publicOrigin == \"https://openclaw.shunkakinoki.com\" and .gateway.nodes.commands.allow == [\"codex.exec-server.stdio.v1\"] and .cloudWorkers.profiles[\"ascii-box\"] == {provider: \"crabbox\", install: \"bundle\", suspendAfter: \"30m\", settings: {provider: \"ascii-box\", ttl: \"8h\", idleTimeout: \"45m\", warmImage: false, setup: \"command -v node >/dev/null 2>&1 && command -v npm >/dev/null 2>&1\"}}' '$PWD/config/openclaw/openclaw.tpl.json' >/dev/null"
 The status should be success
 End
 
