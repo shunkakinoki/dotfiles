@@ -6,8 +6,9 @@
 let
   # v5 renamed the binary noctalia-shell -> noctalia (pname/mainProgram = "noctalia").
   noctalia = inputs.noctalia-shell.packages.${pkgs.system}.default;
-  noctaliaLockBeforeSleep = pkgs.replaceVars ./lock-before-sleep.sh {
-    noctalia = "${noctalia}/bin/noctalia";
+  lockCommand = "${pkgs.systemd}/bin/systemctl --user start hyprlock.service";
+  lockBeforeSleep = pkgs.replaceVars ./lock-before-sleep.sh {
+    systemctl = "${pkgs.systemd}/bin/systemctl";
     sleep = "${pkgs.coreutils}/bin/sleep";
   };
   quitAllAppsScript = pkgs.replaceVars ./quit-all-apps-launcher.sh {
@@ -16,6 +17,66 @@ let
   };
 in
 {
+  home.packages = [ pkgs.hyprlock ];
+
+  systemd.user.services.hyprlock = {
+    Unit = {
+      Description = "Hyprland screen locker";
+      After = [ "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+    Service = {
+      Type = "simple";
+      ExecStart = "${pkgs.hyprlock}/bin/hyprlock --immediate-render";
+      Restart = "no";
+    };
+  };
+
+  xdg.configFile."hypr/hyprlock.conf".text = ''
+    general {
+        hide_cursor = true
+        immediate_render = true
+    }
+
+    auth {
+        pam:enabled = true
+        pam:module = hyprlock
+        fingerprint:enabled = true
+    }
+
+    background {
+        monitor =
+        color = rgb(282a36)
+    }
+
+    label {
+        monitor =
+        text = $TIME
+        color = rgb(f8f8f2)
+        font_size = 64
+        position = 0, 120
+        halign = center
+        valign = center
+    }
+
+    input-field {
+        monitor =
+        size = 360, 64
+        outline_thickness = 3
+        dots_size = 0.2
+        dots_spacing = 0.3
+        outer_color = rgb(bd93f9)
+        inner_color = rgb(44475a)
+        font_color = rgb(f8f8f2)
+        check_color = rgb(8be9fd)
+        fail_color = rgb(ff5555)
+        placeholder_text = <i>Password</i>
+        position = 0, -30
+        halign = center
+        valign = center
+    }
+  '';
+
   # NOTE: v4 shipped a Dracula-Custom colorscheme at noctalia/colorschemes/...
   # v5 replaced colorschemes with a palette/theme system (noctalia/palettes/*.json,
   # different format), so the old file is no longer wired up. Recreate the palette
@@ -45,14 +106,14 @@ in
     Install.WantedBy = [ "graphical-session.target" ];
   };
 
-  systemd.user.services.noctalia-lock-before-sleep = {
+  systemd.user.services.hyprlock-before-sleep = {
     Unit = {
-      Description = "Lock Noctalia before system sleep";
+      Description = "Start hyprlock before system sleep";
       Before = [ "sleep.target" ];
     };
     Service = {
       Type = "oneshot";
-      ExecStart = "${pkgs.bash}/bin/bash ${noctaliaLockBeforeSleep}";
+      ExecStart = "${pkgs.bash}/bin/bash ${lockBeforeSleep}";
     };
     Install.WantedBy = [ "sleep.target" ];
   };
@@ -126,7 +187,7 @@ in
   xdg.desktopEntries.lock-screen = {
     name = "Lock Screen";
     comment = "Lock the session";
-    exec = "${noctalia}/bin/noctalia msg session lock";
+    exec = lockCommand;
     terminal = false;
     categories = [ "System" ];
     icon = "system-lock-screen";
@@ -259,20 +320,20 @@ in
       osd.position = "right";
 
       lockscreen = {
-        enabled = true;
+        enabled = false;
         fingerprint = true;
         blurred_desktop = true;
         blur_intensity = 0.4;
         tint_intensity = 0.2;
       };
 
-      lockscreen_widgets.enabled = true;
+      lockscreen_widgets.enabled = false;
 
       idle = {
         behavior.lock = {
           enabled = true;
           timeout = 300;
-          command = "noctalia msg session lock";
+          command = lockCommand;
         };
         behavior.screen-off.enabled = false;
         behavior.suspend.enabled = false;

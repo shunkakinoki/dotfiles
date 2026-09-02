@@ -11,13 +11,13 @@ End
 
 It 'uses injected command paths'
 When run bash -c "cat '$SCRIPT'"
-The output should include '@noctalia@'
+The output should include '@systemctl@'
 The output should include '@sleep@'
 End
 
-It 'calls Noctalia lock IPC before sleeping'
+It 'starts the managed hyprlock service before sleeping'
 When run bash -c "cat '$SCRIPT'"
-The output should include 'msg session lock'
+The output should include 'start hyprlock.service'
 The output should include '"$SLEEP" 1'
 End
 

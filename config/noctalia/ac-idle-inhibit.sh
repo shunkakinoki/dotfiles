@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # On battery: run swayidle for screen-off (5 min) and suspend (10 min).
-# On AC: stop swayidle so only noctalia's lock fires.
+# On AC: stop swayidle so only the configured hyprlock idle trigger fires.
 set -euo pipefail
 
 AC=/sys/class/power_supply/ACAD/online

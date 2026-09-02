@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
-# Lock through Noctalia before systemd lets suspend continue.
+# Start hyprlock before systemd lets suspend continue.
 set -euo pipefail
 
-NOCTALIA="@noctalia@"
+SYSTEMCTL="@systemctl@"
 SLEEP="@sleep@"
 
-# v5 IPC surface: `noctalia msg session <lock|...>` (was `ipc call lockScreen lock`).
-if ! "$NOCTALIA" msg session lock; then
+if ! "$SYSTEMCTL" --user start hyprlock.service; then
   exit 0
 fi
 
