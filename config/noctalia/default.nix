@@ -44,7 +44,14 @@ in
 
     background {
         monitor =
+        path = screenshot
         color = rgb(282a36)
+        blur_passes = 3
+        blur_size = 8
+        noise = 0.0117
+        contrast = 0.9
+        brightness = 0.8
+        vibrancy = 0.15
     }
 
     label {
