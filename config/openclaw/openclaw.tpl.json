@@ -204,6 +204,16 @@
       ]
     }
   },
+  "bindings": [
+    {
+      "type": "route",
+      "agentId": "main",
+      "match": {
+        "channel": "telegram",
+        "accountId": "default"
+      }
+    }
+  ],
   "agents": {
     "ownership": "explicit",
     "defaults": {

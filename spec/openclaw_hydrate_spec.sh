@@ -28,7 +28,6 @@ template_uses_cliproxy_flash_default() {
 
 template_disables_groups() {
   jq -e '
-    (.bindings? == null) and
     (.broadcast? == null) and
     (.channels.telegram.groups? == null) and
     (.channels.telegram.groupPolicy == "disabled") and
@@ -41,6 +40,28 @@ template_disables_groups() {
     ))
   ' "$PWD/config/openclaw/openclaw.template.json" >/dev/null
 }
+
+template_routes_telegram_to_main() {
+  jq -e '
+    .bindings == [
+      {
+        "type": "route",
+        "agentId": "main",
+        "match": {
+          "channel": "telegram",
+          "accountId": "default"
+        }
+      }
+    ]
+  ' "$PWD/config/openclaw/openclaw.template.json" >/dev/null
+}
+
+Describe 'channel routing'
+It 'routes the Telegram default account to the main agent'
+When call template_routes_telegram_to_main
+The status should be success
+End
+End
 
 Describe 'script properties'
 It 'uses bash shebang'
