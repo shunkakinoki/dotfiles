@@ -7,9 +7,10 @@ MATIC="$PWD/named-hosts/matic/default.nix"
 WALKER="$PWD/config/walker/config.toml"
 
 It 'installs and manages hyprlock as a graphical-session service'
-When run bash -c "grep -F 'systemd.user.services.hyprlock' '$MODULE' && grep -F 'ExecStart = \"\${pkgs.hyprlock}/bin/hyprlock --immediate-render\";' '$MODULE'"
+When run bash -c "grep -F 'systemd.user.services.hyprlock' '$MODULE' && grep -F 'ExecStart = \"\${pkgs.hyprlock}/bin/hyprlock --immediate-render\";' '$MODULE' && grep -F 'UnsetEnvironment = \"LD_LIBRARY_PATH\";' '$MODULE'"
 The output should include 'systemd.user.services.hyprlock'
 The output should include 'hyprlock --immediate-render'
+The output should include 'UnsetEnvironment = "LD_LIBRARY_PATH";'
 End
 
 It 'starts hyprlock before system sleep'
