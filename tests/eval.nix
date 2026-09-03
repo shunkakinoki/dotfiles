@@ -43,11 +43,17 @@ let
         }).system;
 
     eval-darwin-galactica =
-      mkEvalCheck "darwin-galactica"
-        (import ../named-hosts/galactica {
+      let
+        galactica = import ../named-hosts/galactica {
           inherit inputs;
           username = "shunkakinoki";
-        }).system;
+        };
+        activation = galactica.config.system.activationScripts.tailscaleDns.text;
+      in
+      assert lib.hasInfix "--accept-dns=false" activation;
+      assert lib.hasInfix "--accept-routes=true" activation;
+      assert lib.hasInfix "--ssh=false" activation;
+      mkEvalCheck "darwin-galactica" galactica.system;
   };
 
   # --- NixOS configurations (x86_64-linux only) ---
@@ -78,11 +84,23 @@ let
       mkEvalCheck "nixos-runner" nixosRunner.config.system.build.toplevel;
 
     eval-nixos-matic =
-      mkEvalCheck "nixos-matic"
-        (import ../named-hosts/matic {
+      let
+        matic = import ../named-hosts/matic {
           inherit inputs;
           username = "shunkakinoki";
-        }).config.system.build.toplevel;
+        };
+        cfg = matic.config;
+      in
+      assert
+        cfg.services.tailscale.extraSetFlags == [
+          "--hostname=matic"
+          "--accept-dns=true"
+          "--accept-routes=false"
+          "--operator=shunkakinoki"
+          "--ssh"
+        ];
+      assert lib.hasInfix "tailscale set" cfg.system.activationScripts.tailscalePreferences.text;
+      mkEvalCheck "nixos-matic" cfg.system.build.toplevel;
 
     eval-nixos-viper =
       mkEvalCheck "nixos-viper"
@@ -192,21 +210,41 @@ let
         assert cfg.programs.ssh.settings.kamino100.data.User == "root";
         assert cfg.programs.ssh.settings.kamino100.data.HostName == "kamino100.tail950b36.ts.net";
         assert lib.hasInfix "tailscale kamino100" cfg.home.activation.configureKaminoTailscale.data;
+        assert lib.hasInfix "--hostname=kamino100" cfg.home.activation.configureKaminoTailscale.data;
+        assert lib.hasInfix "--accept-dns=false" cfg.home.activation.configureKaminoTailscale.data;
+        assert lib.hasInfix "--ssh=false" cfg.home.activation.configureKaminoTailscale.data;
         mkEvalCheck "home-kamino100" kamino.activationPackage;
       eval-home-andor =
-        mkEvalCheck "home-andor"
-          (import ../named-hosts/andor {
+        let
+          andor = import ../named-hosts/andor {
             inherit inputs;
             username = "ubuntu";
             system = "x86_64-linux";
-          }).activationPackage;
+          };
+        in
+        assert
+          andor.config.modules.tailscale.extraUpArgs == [
+            "--reset"
+            "--accept-dns=false"
+            "--ssh"
+          ];
+        mkEvalCheck "home-andor" andor.activationPackage;
       eval-home-kyber =
-        mkEvalCheck "home-kyber"
-          (import ../named-hosts/kyber {
+        let
+          kyber = import ../named-hosts/kyber {
             inherit inputs;
             username = "ubuntu";
             system = "x86_64-linux";
-          }).activationPackage;
+          };
+        in
+        assert
+          kyber.config.modules.tailscale.extraUpArgs == [
+            "--reset"
+            "--ssh=false"
+            "--accept-dns=false"
+            "--advertise-exit-node"
+          ];
+        mkEvalCheck "home-kyber" kyber.activationPackage;
     };
 in
 darwinChecks // nixosChecks // homeChecks

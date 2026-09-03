@@ -32,6 +32,15 @@ import ../../hosts/nixos {
         pkgs,
         ...
       }:
+      let
+        tailscaleSetFlags = [
+          "--hostname=matic"
+          "--accept-dns=true"
+          "--accept-routes=false"
+          "--operator=${username}"
+          "--ssh"
+        ];
+      in
       {
         # Boot loader (EFI/systemd-boot)
         boot.loader.systemd-boot.enable = true;
@@ -98,12 +107,16 @@ import ../../hosts/nixos {
         services.tailscale = {
           enable = true;
           useRoutingFeatures = "client";
-          extraSetFlags = [
-            "--accept-dns=true"
-            "--operator=${username}"
-            "--ssh"
-          ];
+          extraSetFlags = tailscaleSetFlags;
         };
+
+        # nixos-rebuild starts tailscaled-set at boot or when its unit changes.
+        # Reapply the same declared preferences during every switch as well.
+        system.activationScripts.tailscalePreferences.text = ''
+          if ${pkgs.tailscale}/bin/tailscale status >/dev/null 2>&1; then
+            ${pkgs.tailscale}/bin/tailscale set ${lib.escapeShellArgs tailscaleSetFlags}
+          fi
+        '';
 
         # Audit logging
         security.auditd.enable = true;

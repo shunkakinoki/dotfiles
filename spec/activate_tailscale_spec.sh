@@ -131,6 +131,25 @@ The output should include 'set -euo pipefail'
 End
 End
 
+
+Describe 'nix-darwin/config/networking.nix'
+DARWIN_CONFIG="$PWD/nix-darwin/config/networking.nix"
+
+It 'reapplies Galactica DNS preferences during every system activation'
+When run bash -c "grep -F 'system.activationScripts.tailscaleDns.text' '$DARWIN_CONFIG' && grep -F 'tailscale set \${lib.escapeShellArgs tailscaleSetFlags}' '$DARWIN_CONFIG'"
+The output should include 'tailscaleDns'
+The output should include 'tailscaleSetFlags'
+End
+
+It 'sources Galactica preferences from its named host definition'
+When run bash -c "grep -F '\"--accept-dns=false\"' '$PWD/named-hosts/galactica/default.nix' && grep -F '\"--accept-routes=true\"' '$PWD/named-hosts/galactica/default.nix' && grep -F '\"--ssh=false\"' '$PWD/named-hosts/galactica/default.nix' && grep -F 'inherit inputs username tailscaleSetFlags;' '$PWD/named-hosts/galactica/default.nix'"
+The output should include '--accept-dns=false'
+The output should include '--accept-routes=true'
+The output should include '--ssh=false'
+The output should include 'tailscaleSetFlags'
+End
+End
+
 Describe 'flag application'
 It 'requires a tailscale binary argument'
 When run bash -c "grep 'tailscale binary required' '$SCRIPT'"

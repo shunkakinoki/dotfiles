@@ -35,6 +35,13 @@ class ActivationTests(unittest.TestCase):
                 arguments.append(str(identity))
             if phase == "tailscale":
                 arguments.append(str(root / "tailscale"))
+                arguments.extend(
+                    [
+                        "--hostname=kamino100",
+                        "--accept-dns=false",
+                        "--ssh=false",
+                    ]
+                )
             result = subprocess.run(
                 ["/bin/bash", str(SCRIPT), *arguments],
                 capture_output=True,
@@ -72,11 +79,11 @@ class ActivationTests(unittest.TestCase):
         self.assertEqual(result.returncode, 3)
         self.assertEqual(len(log), 1)
 
-    def test_tailscale_sets_preferences_without_login_or_state_reset(self):
+    def test_tailscale_enrolls_and_sets_preferences_without_state_reset(self):
         result, log = self.run_phase("tailscale")
         self.assertEqual(result.returncode, 0)
         self.assertEqual(
-            log, ["tailscale set --hostname=kamino100 --accept-dns=false --ssh=false"]
+            log, ["tailscale up --hostname=kamino100 --accept-dns=false --ssh=false"]
         )
         result, _ = self.run_phase("tailscale", fail="tailscale")
         self.assertEqual(result.returncode, 3)

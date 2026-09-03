@@ -3,6 +3,7 @@
   username,
   hostname ? "aarch64-darwin",
   isRunner ? false,
+  tailscaleSetFlags ? [ "--accept-dns=false" ],
 }:
 let
   inherit (inputs)
@@ -27,7 +28,12 @@ let
 in
 {
   specialArgs = {
-    inherit inputs username isRunner;
+    inherit
+      inputs
+      username
+      isRunner
+      tailscaleSetFlags
+      ;
   };
   modules = [
     configuration

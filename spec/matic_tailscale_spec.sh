@@ -24,6 +24,18 @@ When run bash -c "grep -F '\"--accept-dns=true\"' '$CONFIG'"
 The output should include '--accept-dns=true'
 End
 
+It 'preserves its live hostname and route policy'
+When run bash -c "grep -F '\"--hostname=matic\"' '$CONFIG' && grep -F '\"--accept-routes=false\"' '$CONFIG'"
+The output should include '--hostname=matic'
+The output should include '--accept-routes=false'
+End
+
+It 'reapplies the declared preferences during every system activation'
+When run bash -c "grep -F 'system.activationScripts.tailscalePreferences.text' '$CONFIG' && grep -F 'tailscale set \${lib.escapeShellArgs tailscaleSetFlags}' '$CONFIG'"
+The output should include 'tailscalePreferences'
+The output should include 'tailscaleSetFlags'
+End
+
 It 'uses systemd-resolved for Tailscale MagicDNS'
 When run bash -c "grep -F 'services.resolved.enable = true;' '$CONFIG'"
 The output should include 'services.resolved.enable = true'

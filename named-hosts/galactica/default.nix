@@ -4,8 +4,13 @@
   ...
 }:
 let
+  tailscaleSetFlags = [
+    "--accept-dns=false"
+    "--accept-routes=true"
+    "--ssh=false"
+  ];
   darwin-modules = import ../../hosts/darwin {
-    inherit inputs username;
+    inherit inputs username tailscaleSetFlags;
     hostname = "galactica";
   };
 in

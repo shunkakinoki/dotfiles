@@ -15,6 +15,11 @@ let
     config = nixpkgsConfig;
   };
   baseHost = import ../../lib/host.nix;
+  tailscaleUpArgs = [
+    "--reset"
+    "--accept-dns=false"
+    "--ssh"
+  ];
 in
 home-manager.lib.homeManagerConfiguration {
   inherit pkgs;
@@ -54,11 +59,7 @@ home-manager.lib.homeManagerConfiguration {
         modules.tailscale = {
           enable = true;
           installSystemService = true;
-          extraUpArgs = [
-            "--reset"
-            "--accept-dns=false"
-            "--ssh"
-          ];
+          extraUpArgs = tailscaleUpArgs;
         };
       }
     )
