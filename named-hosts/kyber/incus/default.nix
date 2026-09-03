@@ -1,9 +1,9 @@
 { pkgs, ... }:
 let
   setup = pkgs.replaceVars ./setup.sh {
-    preseed = ./preseed.yaml;
-    networkScript = ./network.sh;
-    networkService = ./kyber-incus-network.service;
+    preseed = "${./preseed.yaml}";
+    networkScript = "${./network.sh}";
+    networkService = "${./kyber-incus-network.service}";
   };
 in
 {

@@ -40,7 +40,7 @@ if printf '%s\n' "$routes" | grep -v ' dev incus-crabbox ' | grep -q .; then
   exit 1
 fi
 
-incus_local admin init --preseed < '@preseed@'
+incus_local admin init --preseed <'@preseed@'
 
 sudo -n install -m 0755 '@networkScript@' /usr/local/sbin/kyber-incus-network
 sudo -n install -m 0644 '@networkService@' /etc/systemd/system/kyber-incus-network.service
