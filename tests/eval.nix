@@ -135,6 +135,26 @@ let
       )
     ) filteredHomeConfigs
     // lib.optionalAttrs (system == "x86_64-linux") {
+      eval-home-kamino =
+        let
+          kamino = import ../named-hosts/kamino { inherit inputs; };
+          cfg = kamino.config;
+        in
+        assert cfg.home.username == "root";
+        assert cfg.home.homeDirectory == "/root";
+        assert !(cfg.home.activation ? hardenSshd);
+        assert !(cfg.home.activation ? setupK3s);
+        assert !(cfg.systemd.user.services ? openclaw-gateway);
+        assert !(cfg.systemd.user.services ? roborev);
+        assert cfg.modules.tailscale.installSystemService;
+        assert lib.elem "--hostname=kamino" cfg.modules.tailscale.extraUpArgs;
+        assert lib.elem "--ssh=false" cfg.modules.tailscale.extraUpArgs;
+        assert cfg.programs.ssh.settings.kamino.data.User == "root";
+        assert cfg.programs.ssh.settings.kamino.data.HostName == "kamino.tail950b36.ts.net";
+        assert cfg.systemd.user.services.herdr-server.Install.WantedBy == [ "default.target" ];
+        assert cfg.systemd.user.services.herdr-server.Unit.X-SwitchMethod == "restart";
+        assert cfg.systemd.user.services.herdr-server.Service.EnvironmentFile == [ "-/root/dotfiles/.env" ];
+        mkEvalCheck "home-kamino" kamino.activationPackage;
       eval-home-andor =
         mkEvalCheck "home-andor"
           (import ../named-hosts/andor {

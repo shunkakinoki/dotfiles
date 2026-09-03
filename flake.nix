@@ -165,6 +165,7 @@
               };
             };
             homeConfigurations = {
+              kamino = import ./named-hosts/kamino { inherit inputs; };
               andor = import ./named-hosts/andor {
                 inherit inputs;
                 username = "ubuntu";

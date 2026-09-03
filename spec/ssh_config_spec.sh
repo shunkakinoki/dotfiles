@@ -12,6 +12,14 @@ The output should include 'User = "ubuntu"'
 End
 End
 
+Describe 'kamino host'
+It 'uses the root login and a distinct Tailscale DNS name'
+When run bash -c "grep -A2 '\"kamino\" = {' '$SSH_CONFIG_NIX'"
+The output should include 'kamino.tail950b36.ts.net'
+The output should include 'User = "root"'
+End
+End
+
 Describe 'kyber host'
 It 'uses the Tailscale DNS name instead of a stale tailnet IP'
 When run bash -c "grep 'HostName =' '$SSH_CONFIG_NIX' | grep kyber"

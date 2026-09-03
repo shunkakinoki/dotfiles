@@ -95,6 +95,11 @@ jobs:
           NIX_CONFIG_TARGET: home
           HOST: kyber
         run: make build
+      - name: Build Host `kamino`
+        env:
+          NIX_CONFIG_TARGET: home
+          HOST: kamino
+        run: make build
   nix-nixos:
     runs-on: ubuntu-latest
     timeout-minutes: 300

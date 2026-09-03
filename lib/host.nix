@@ -27,6 +27,9 @@ rec {
   # Detect if running on kyber (linux)
   isKyber = isHost "kyber";
 
+  # Root-managed Ubuntu worker host
+  isKamino = isHost "kamino";
+
   # Detect if running on galactica (macOS node)
   isGalactica = isHost "galactica";
 
@@ -60,6 +63,8 @@ rec {
       "andor"
     else if isKyber then
       "kyber"
+    else if isKamino then
+      "kamino"
     else if isGalactica then
       "galactica"
     else if isMatic then

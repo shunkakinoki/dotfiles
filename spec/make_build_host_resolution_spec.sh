@@ -55,6 +55,44 @@ The status should be success
 The output should include '.#homeConfigurations.andor.activationPackage'
 End
 
+It 'builds kamino through its named root Home Manager configuration'
+When run bash -c 'make build HOST=kamino OS=Linux ARCH=x86_64 NIX_SYSTEM=x86_64-linux NIX_CONFIG_TYPE=homeConfigurations NIX_USERNAME=root NIX_EXEC=nix NIX_ENV=ok NIX_FLAGS= NIX_USER_TRUSTED=yes 2>/dev/null && cat "$MOCK_LOG"'
+The status should be success
+The output should include '.#homeConfigurations.kamino.activationPackage'
+End
+
+It 'detects kamino from its physical hostname'
+When run bash -c 'make build HOST= OS=Linux ARCH=x86_64 NIX_SYSTEM=x86_64-linux NIX_CONFIG_TYPE=homeConfigurations MACHINE_HOSTNAME=kamino TAILSCALE_DNS_NAME= NIX_USERNAME=root NIX_EXEC=nix NIX_ENV=ok NIX_FLAGS= NIX_USER_TRUSTED=yes 2>/dev/null && cat "$MOCK_LOG"'
+The status should be success
+The output should include '.#homeConfigurations.kamino.activationPackage'
+End
+
+It 'detects kamino from its fully qualified physical hostname'
+When run bash -c 'make build HOST= OS=Linux ARCH=x86_64 NIX_SYSTEM=x86_64-linux NIX_CONFIG_TYPE=homeConfigurations MACHINE_HOSTNAME=kamino.example.test TAILSCALE_DNS_NAME= NIX_USERNAME=root NIX_EXEC=nix NIX_ENV=ok NIX_FLAGS= NIX_USER_TRUSTED=yes 2>/dev/null && cat "$MOCK_LOG"'
+The status should be success
+The output should include '.#homeConfigurations.kamino.activationPackage'
+End
+
+It 'detects kamino from Tailscale MagicDNS on a generically named VPS'
+When run bash -c 'make build HOST= OS=Linux ARCH=x86_64 NIX_SYSTEM=x86_64-linux NIX_CONFIG_TYPE=homeConfigurations MACHINE_HOSTNAME=generic-vps TAILSCALE_DNS_NAME=kamino.tail950b36.ts.net NIX_USERNAME=root NIX_EXEC=nix NIX_ENV=ok NIX_FLAGS= NIX_USER_TRUSTED=yes 2>/dev/null && cat "$MOCK_LOG"'
+The status should be success
+The output should include '.#homeConfigurations.kamino.activationPackage'
+End
+
+It 'does not confuse a numbered container with the kamino host'
+When run bash -c 'make build HOST= OS=Linux ARCH=x86_64 NIX_SYSTEM=x86_64-linux NIX_CONFIG_TYPE=homeConfigurations MACHINE_HOSTNAME=kamino1 TAILSCALE_DNS_NAME=kamino1.tail950b36.ts.net NIX_USERNAME=root NIX_EXEC=nix NIX_ENV=ok NIX_FLAGS= NIX_USER_TRUSTED=yes 2>/dev/null && cat "$MOCK_LOG"'
+The status should be success
+The output should not include '.#homeConfigurations.kamino.activationPackage'
+The output should include 'root@x86_64-linux'
+End
+
+It 'switches kamino through its root Home Manager activation package'
+When run bash -c 'make nix-switch HOST=kamino OS=Linux ARCH=x86_64 NIX_SYSTEM=x86_64-linux NIX_CONFIG_TYPE=homeConfigurations NIX_USERNAME=root NIX_EXEC=nix NIX_ENV=ok NIX_FLAGS= NIX_USER_TRUSTED=yes 2>/dev/null && cat "$MOCK_LOG"'
+The status should be success
+The output should include 'USER=root'
+The output should include '.#homeConfigurations.kamino.activationPackage'
+End
+
 It 'detects matic from Framework 13 AMD AI 300 DMI data when the hostname is generic'
 When run bash -c 'make build OS=Linux ARCH=x86_64 NIX_SYSTEM=x86_64-linux NIX_CONFIG_TYPE=nixosConfigurations DMI_SYS_VENDOR=Framework DMI_PRODUCT_NAME="Laptop 13 (AMD Ryzen AI 300 Series)" NIX_EXEC=nix NIX_ENV=ok NIX_FLAGS= NIX_USER_TRUSTED=yes SUDO=env 2>/dev/null; cat "$MOCK_LOG"'
 The status should be success
