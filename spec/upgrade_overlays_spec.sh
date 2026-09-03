@@ -69,9 +69,9 @@ EOF
       version = "0.2.55";
       src = prev.fetchurl {
         sha256 =
-          if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isx86_64 then
+          if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
             "old-linux-x86"
-          else if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isAarch64 then
+          else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
             "old-linux-arm"
           else if prev.stdenv.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
             "old-darwin-arm"
@@ -154,9 +154,9 @@ setup() {
       version = "0.4.57";
       src = prev.fetchurl {
         sha256 =
-          if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isx86_64 then
+          if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
             "old-linux-x86"
-          else if prev.stdenv.isLinux && prev.stdenv.hostPlatform.isAarch64 then
+          else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
             "old-linux-arm"
           else if prev.stdenv.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
             "old-darwin-arm"

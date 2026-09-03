@@ -72,7 +72,6 @@
       "coreutils"
       "crabbox"
       "ffmpeg"
-      "gemini-cli"
       "geth"
       "grafana"
       "graphviz"

@@ -157,7 +157,6 @@ with pkgs;
   collectd
   fwupd
   gcc
-  gemini-cli
   glib
   pkgs.llm-agents.grok
   keychain
