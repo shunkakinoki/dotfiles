@@ -21,12 +21,16 @@ and keeps its named profile in the automatic dotfiles upgrade path. Reinstallati
 refuses to change an already-installed Kamino identity. Plain Docker containers
 without systemd are rejected; this is not a container deployment command.
 
-The installer starts Tailscale and sets the node name without waiting for login.
-On a fresh machine, enroll it once (or provision authentication separately):
+The installer runs the host-specific Tailscale enrollment command during its
+`make nix-switch` phase:
 
 ```sh
 tailscale up --hostname=kamino1 --accept-dns=false --ssh=false
 ```
+
+On a fresh machine, follow the login URL printed during activation and choose
+the intended tailnet. On an enrolled machine, the command reapplies the declared
+name and preferences without creating a new device.
 
 This keeps the existing OpenSSH server/login policy, not Tailscale SSH. Provision
 your root authorized key separately. Never put authentication keys in this command
@@ -117,8 +121,9 @@ Run switch only after build succeeds, on the intended root/systemd Linux machine
 For an existing checkout, preserve its local changes and untracked dotenv.
 Fresh minimal Ubuntu also needs `dbus-user-session`; the installer bootstraps it.
 Activation sets the hostname, enables root lingering, starts the user manager
-and applies the named service configuration. It configures Tailscale without
-interactive enrollment; a fresh node still needs authentication.
+and applies the named service configuration. Its Tailscale phase runs
+`tailscale up` directly, so a fresh node prompts for authentication as part of
+`make nix-switch` instead of requiring a separate command afterward.
 
 MagicDNS must be enabled in the tailnet and client access rules must permit TCP
 22. Server-side `--accept-dns=false` does not prevent publishing the node name.
@@ -127,7 +132,8 @@ controls the whole VPS, not an isolated worker.
 
 ## Join the tailnet and publish the machine name
 
-After installation, use the provider console on **kamino1**, not a client:
+During installation, use the provider console on **kamino1**, not a client.
+The final command below is run automatically by `make nix-switch`:
 
 ```sh
 hostname                          # must print kamino1
@@ -135,7 +141,8 @@ systemctl is-active tailscaled    # must print active
 tailscale up --hostname=kamino1 --accept-dns=false --ssh=false
 ```
 
-Open the login URL in your browser and choose the intended tailnet. If device
+Open the login URL printed by the switch in your browser and choose the intended
+tailnet. If device
 approval is enabled, approve this device in the Tailscale admin console. Check
 its name and device ID there; the name must be exactly `kamino1`, not a suffixed
 duplicate. Do not remove another machine to clear a collision: investigate which
@@ -156,9 +163,9 @@ tailscale status --json | jq '{BackendState, Self: (.Self | {ID, DNSName, Online
 
 Expect `Running`, `Online: true` and `kamino1.tail950b36.ts.net.` with this fleet
 declaration. Record the device ID and public SSH host-key fingerprint in your
-private machine inventory. Subsequent dotfiles activation reapplies the name
-and preferences to the same persisted Tailscale state; it does not enroll a new
-device. If authentication expires, reauthenticate this machine instead of
+private machine inventory. Subsequent dotfiles activation runs the same command
+against the persisted Tailscale state and does not create a second device. If
+authentication expires, reauthenticate this machine instead of
 deleting its state. Do not use `--reset` or `--force-reauth` as routine sync steps.
 
 ## Connect from another client

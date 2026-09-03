@@ -26,8 +26,9 @@ user-manager)
 tailscale)
   name="${2:?name required}"
   tailscale_bin="${3:?tailscale binary required}"
-  "$tailscale_bin" set --hostname="$name" --accept-dns=false --ssh=false
-  echo "Tailscale installed. If not enrolled, run: tailscale up --hostname=$name --accept-dns=false --ssh=false"
+  shift 3
+  "$tailscale_bin" up "$@"
+  echo "Tailscale enrollment and preferences applied for $name."
   ;;
 *)
   echo "Unknown Kamino activation phase" >&2

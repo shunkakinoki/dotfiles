@@ -15,6 +15,12 @@ let
     config = nixpkgsConfig;
   };
   baseHost = import ../../lib/host.nix;
+  tailscaleUpArgs = [
+    "--reset"
+    "--ssh=false"
+    "--accept-dns=false"
+    "--advertise-exit-node"
+  ];
 in
 home-manager.lib.homeManagerConfiguration {
   inherit pkgs;
@@ -195,12 +201,7 @@ home-manager.lib.homeManagerConfiguration {
           # authKeyFile = config.age.secrets."keys/tailscale-auth.age".path;
           # Exit node kept; explicitly disable Tailscale SSH so long-lived Codex
           # tunnels use OpenSSH over Tailscale instead of the Tailscale SSH proxy.
-          extraUpArgs = [
-            "--reset"
-            "--ssh=false"
-            "--accept-dns=false"
-            "--advertise-exit-node"
-          ];
+          extraUpArgs = tailscaleUpArgs;
         };
       }
     )

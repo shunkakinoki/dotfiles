@@ -23,6 +23,11 @@ let
     k3s = null;
     nodeName = name;
   };
+  tailscaleUpArgs = [
+    "--hostname=${name}"
+    "--accept-dns=false"
+    "--ssh=false"
+  ];
 in
 inputs.home-manager.lib.homeManagerConfiguration {
   inherit pkgs;
@@ -76,7 +81,7 @@ inputs.home-manager.lib.homeManagerConfiguration {
         home.activation.configureKaminoTailscale =
           config.lib.dag.entryAfter [ "installTailscaleService" "startKaminoUserManager" ]
             ''
-              $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} tailscale ${lib.escapeShellArg name} ${pkgs.tailscale}/bin/tailscale
+              $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} tailscale ${lib.escapeShellArg name} ${pkgs.tailscale}/bin/tailscale ${lib.escapeShellArgs tailscaleUpArgs}
             '';
 
         systemd.user.services.herdr-server = {

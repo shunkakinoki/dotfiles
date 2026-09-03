@@ -1,4 +1,9 @@
-{ pkgs, ... }:
+{
+  lib,
+  pkgs,
+  tailscaleSetFlags,
+  ...
+}:
 {
   networking = {
     applicationFirewall = {
@@ -28,7 +33,7 @@
   # DNS preference aligned with this declarative split-DNS configuration.
   system.activationScripts.tailscaleDns.text = ''
     if ${pkgs.tailscale}/bin/tailscale status >/dev/null 2>&1; then
-      ${pkgs.tailscale}/bin/tailscale set --accept-dns=false || true
+      ${pkgs.tailscale}/bin/tailscale set ${lib.escapeShellArgs tailscaleSetFlags}
     fi
   '';
 }
