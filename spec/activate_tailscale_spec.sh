@@ -131,7 +131,6 @@ The output should include 'set -euo pipefail'
 End
 End
 
-
 Describe 'nix-darwin/config/networking.nix'
 DARWIN_CONFIG="$PWD/nix-darwin/config/networking.nix"
 
