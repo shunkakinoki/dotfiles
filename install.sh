@@ -18,6 +18,52 @@ Linux)
   ;;
 esac
 
+# Named Kamino machines share one generated Linux/root profile family.
+KAMINO_INSTALL=false
+_normalized_host=$(printf '%s' "${HOST:-}" | tr '[:upper:]' '[:lower:]')
+case "$_normalized_host" in
+kamino*)
+  if ! printf '%s\n' "$_normalized_host" | grep -Eq '^kamino([1-9][0-9]*)?$'; then
+    echo "Invalid Kamino name: use kamino or kamino1, kamino2, ..." >&2
+    exit 1
+  fi
+  if [ "$OS" != linux ] || [ "$(uname -m)" != x86_64 ] || [ "$(id -u)" != 0 ]; then
+    echo "Kamino installation requires root on x86_64 Linux." >&2
+    exit 1
+  fi
+  if [ "$(cat /proc/1/comm 2>/dev/null)" != systemd ]; then
+    echo "Kamino services require systemd (VPS or systemd-enabled container)." >&2
+    exit 1
+  fi
+  if [ -f "$HOME/.config/kamino/name" ] && [ "$(cat "$HOME/.config/kamino/name")" != "$_normalized_host" ]; then
+    echo "Refusing to change this machine's installed Kamino identity." >&2
+    exit 1
+  fi
+  HOST=$_normalized_host
+  USER=root
+  export HOST USER
+  KAMINO_INSTALL=true
+  ;;
+esac
+
+run_root() {
+  if [ "$(id -u)" = 0 ]; then
+    "$@"
+  else
+    sudo "$@"
+  fi
+}
+
+if [ "$KAMINO_INSTALL" = true ] && [ ! -f /usr/lib/systemd/user/dbus.socket ]; then
+  if command -v apt-get >/dev/null 2>&1; then
+    run_root apt-get update -qq
+    run_root apt-get install -y -qq dbus-user-session
+  else
+    echo "Install the systemd user D-Bus service before installing Kamino." >&2
+    exit 1
+  fi
+fi
+
 # Initialize
 NIX_EFFECTIVE_BIN_PATH=""
 
@@ -70,7 +116,7 @@ if ! command -v nix >/dev/null 2>&1; then
       curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --no-confirm
       # Start the Nix daemon so nix commands work in this session
       if command -v systemctl >/dev/null 2>&1; then
-        sudo systemctl start nix-daemon.service 2>/dev/null || true
+        run_root systemctl start nix-daemon.service 2>/dev/null || true
       fi
       # Source the Nix profile to add nix to PATH
       if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
@@ -106,13 +152,13 @@ fi
 if ! command -v git >/dev/null 2>&1; then
   echo "git is not installed. Installing git..."
   if command -v apt-get >/dev/null 2>&1; then
-    sudo apt-get update -qq && sudo apt-get install -y -qq git
+    run_root apt-get update -qq && run_root apt-get install -y -qq git
   elif command -v dnf >/dev/null 2>&1; then
-    sudo dnf install -y git
+    run_root dnf install -y git
   elif command -v yum >/dev/null 2>&1; then
-    sudo yum install -y git
+    run_root yum install -y git
   elif command -v pacman >/dev/null 2>&1; then
-    sudo pacman -Sy --noconfirm git
+    run_root pacman -Sy --noconfirm git
   else
     echo "Error: Could not install git. No supported package manager found."
     exit 1
@@ -157,6 +203,14 @@ fi
 
 # Use make from nixpkgs when the base system does not provide it. This avoids
 # invoking the non-setuid sudo package binary on fresh NixOS machines.
+if [ "$KAMINO_INSTALL" = true ]; then
+  if ! nix --extra-experimental-features "nix-command flakes" eval --raw \
+    ".#homeConfigurations.$HOST.config.home.username" >/dev/null; then
+    echo "HOST=$HOST is not available in this checkout's generated Kamino fleet." >&2
+    exit 1
+  fi
+fi
+
 if ! command -v make >/dev/null 2>&1; then
   echo "make is not installed; it will be provided temporarily by nixpkgs."
 fi

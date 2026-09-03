@@ -1,167 +1,83 @@
-# Kamino
+# Kamino operations
 
-`kamino` is the root-managed x86_64 Ubuntu VPS. Its Home Manager target is
-`homeConfigurations.kamino`, its account is `root`, and its home and checkout are
-`/root` and `/root/dotfiles`. It uses the common CLI environment and a persistent
-Herdr user service, without Kyber's Kubernetes, gateway, or root-SSH hardening.
+The [installation and fleet runbook](../../README.md#kamino-fleet) owns the
+generated namespace, bootstrap command, SSH access and verification commands.
+The same root profile serves `kamino` and every numbered machine. Separate
+machines need separate Tailscale and SSH state; names are not a load balancer.
 
-This configuration does not provision a VPS, enroll it in Tailscale, authorize
-SSH keys, or create worker containers. Those are separate operations. A successful
-evaluation or CI build does not prove that the pending VPS is reachable.
+## Offline validation
 
-## Names are device identities, not a load balancer
-
-| Name | Intended endpoint | Configured here |
-| --- | --- | --- |
-| `kamino` | VPS host, `root` login | Yes |
-| `kamino1` through `kamino8` | Separate AI worker containers | No |
-| `kamino9` and `kamino10` | Separate CI containers | No |
-
-The host's full name is `kamino.tail950b36.ts.net`. Registering the host does not
-create DNS records for its containers. Each future container needs its own
-Tailscale client (in the container or a network-sharing sidecar), unique hostname,
-persistent Tailscale state, and SSH server. They can share one VPS/public IP while
-having separate Tailscale IPs. Never copy the host's Tailscale state into an image
-or share one state volume between devices.
-
-[MagicDNS](https://tailscale.com/docs/features/magicdns) registers each device's
-name. The official [Docker parameters](https://tailscale.com/docs/features/containers/docker/docker-params)
-include `TS_HOSTNAME` for the name and `TS_STATE_DIR` for identity persistence.
-An SSH alias alone cannot create a Tailscale device. Do not apply `HOST=kamino`
-inside a numbered container: this profile would advertise the host's name.
-
-## Offline checks, before the VPS is available
-
-Run these from the dotfiles checkout containing this change. They work on macOS
-as well as Linux and do not activate anything:
+Run from the reviewed dotfiles checkout without activating a remote profile:
 
 ```sh
-nix eval --impure --raw .#homeConfigurations.kamino.config.home.username
+nix eval --impure --raw .#homeConfigurations.kamino100.config.home.username
 # root
-nix eval --impure --raw .#homeConfigurations.kamino.config.home.homeDirectory
+nix eval --impure --raw .#homeConfigurations.kamino100.config.home.homeDirectory
 # /root
-nix eval --impure --raw .#checks.x86_64-linux.eval-home-kamino.drvPath
-shellspec spec/make_build_host_resolution_spec.sh spec/ssh_config_spec.sh
+nix eval --impure --raw .#checks.x86_64-linux.eval-home-kamino100.drvPath
+python3 -m unittest discover -s tests -p 'test_kamino*.py'
+shellspec spec/install_spec.sh spec/make_build_host_resolution_spec.sh spec/ssh_config_spec.sh
 ```
 
-The evaluation check asserts the root home, SSH endpoint, Tailscale hostname,
-Herdr unit, and absence of Kyber-only service activation. The existing Linux CI
-job also builds the Kamino activation package. Evaluation is not a Linux build.
+The evaluation checks cover root identity, common tools/configs, SSH aliases,
+upgrade targeting and absence of Kyber-only services. Linux CI builds the parent
+and hundredth generated profile. Evaluation is not a successful Linux build;
+neither is live activation proof.
 
-## First activation, after the VPS is ready
+## Reviewed revision and first activation
 
-Use the provider console or its supplied IP first. Verify the SSH host-key
-fingerprint through that console before accepting it. Keep the console and an
-existing SSH session available until a second session works over Tailscale.
-Install the intended public SSH key for `root` without replacing existing keys;
-this profile does not change the provider's SSH authentication policy.
+Use the provider console or supplied IP first. Keep console access and an
+existing SSH session open until a second connection works over Tailscale.
+Verify the root SSH host-key fingerprint through the console. Provision the
+intended public authorized key without replacing existing keys.
 
-Prerequisites: x86_64 Ubuntu with systemd, Git, Make, Bash, sudo, a working Nix
-installation with flakes enabled, and a root user systemd bus (Ubuntu's
-`dbus-user-session` package). Use the repository's setup instructions for Nix.
-Clone this repository into `/root/dotfiles` if absent, and check out the reviewed
-revision. Do not overwrite an existing checkout or its untracked `.env`.
-
-Before switching, authenticate Tailscale interactively and confirm its assigned
-name is exactly `kamino`. The shared Tailscale activation runs `tailscale up`;
-without prior authentication it can wait for login. Use the already installed
-Tailscale client, with these same flags:
+The curl installer tracks main. To test a reviewed but unmerged revision, clone
+the repository into `/root/dotfiles`, check out that revision, and run:
 
 ```sh
-tailscale up --hostname=kamino --accept-dns=false --ssh=false
-tailscale status --json | jq '.Self | {DNSName, TailscaleIPs, Online}'
+HOST=kamino1 make build
+HOST=kamino1 make nix-switch
 ```
 
-Tailscale installation/authentication is a bootstrap prerequisite, not something
-to hide inside an unattended switch. MagicDNS must be enabled in the tailnet;
-clients resolving these names must use Tailscale DNS. `--accept-dns=false` on the
-VPS preserves its resolver choice; it does not prevent publishing its DNS name.
-Access rules must allow your client to reach Kamino's TCP port 22. This setup uses
-ordinary OpenSSH over Tailscale, not Tailscale SSH (`--ssh=false`).
+Run switch only after build succeeds, on the intended root/systemd Linux machine.
+For an existing checkout, preserve its local changes and untracked dotenv.
+Fresh minimal Ubuntu also needs `dbus-user-session`; the installer bootstraps it.
+Activation sets the hostname, enables root lingering, starts the user manager
+and applies the named service configuration. It configures Tailscale without
+interactive enrollment; a fresh node still needs authentication.
 
-On the VPS, as root:
+MagicDNS must be enabled in the tailnet and client access rules must permit TCP
+22. Server-side `--accept-dns=false` does not prevent publishing the node name.
+The profile uses OpenSSH over Tailscale, not Tailscale SSH. Root on the parent VPS
+controls the whole VPS, not an isolated worker.
 
-```sh
-test "$(id -u)" = 0
-test "$HOME" = /root
-test "$(uname -m)" = x86_64
-hostnamectl set-hostname kamino
-loginctl enable-linger root
-```
+## Runtime and persistence proof
 
-Reconnect as root to obtain a fresh systemd user session, then verify the bus
-before activation:
+Alongside `kamino-fleet verify kamino1`, check on the target:
 
 ```sh
-systemctl --user show-environment >/dev/null
-cd /root/dotfiles
-make build HOST=kamino
-make nix-switch HOST=kamino
-```
-
-Run switch only if build succeeds. `make nix-switch` is the focused Home Manager
-activation target; `make switch` includes additional dotfiles post-activation
-tasks. Do not run either Kamino switch command on your Mac. The shared Tailscale
-module installs system units and a sudoers fragment during activation, so the
-host's existing Tailscale setup must be reviewed before that first switch.
-
-## Verify the host, one layer at a time
-
-On Kamino:
-
-```sh
-id -un                              # root
-hostname                            # kamino
-systemctl is-active tailscaled      # active
-tailscale status --json | jq '.Self | {DNSName, TailscaleIPs, Online}'
-systemctl --user is-enabled herdr-server
-systemctl --user show herdr-server -p ActiveState -p SubState -p MainPID
-herdr status server
+XDG_RUNTIME_DIR=/run/user/0 systemctl --user show herdr-server -p ActiveState -p SubState -p MainPID
 home-manager generations
 readlink -f /root/dotfiles/result
 ```
 
-Expect `kamino.tail950b36.ts.net.`, an online Tailscale identity, an enabled Herdr
-unit with `ActiveState=active`, `SubState=running`, a nonzero PID, and a successful
-Herdr server response. Compare the current Home Manager generation's store path
-with the built `result`. Merely having the executable or a running process is not
-an application-health check.
-
-After applying the SSH configuration on your client using that client's normal
-build/switch workflow:
-
-```sh
-ssh -G kamino | grep -E '^(hostname|user) '
-# user root
-# hostname kamino.tail950b36.ts.net
-tailscale ping kamino
-ssh -o BatchMode=yes kamino 'id -un; hostname'
-herdr --remote kamino
-```
-
-Before the client configuration is activated, use
-`ssh root@kamino.tail950b36.ts.net` explicitly. Verify the host-key fingerprint;
-never bypass host-key checking to make this test pass. Root access controls the
-entire VPS, not an isolated container.
-
-When the numbered fleet is implemented, repeat `tailscale ping kamino1` and
-`ssh root@kamino1 'id -un; hostname'` for each name through `kamino10` (from a
-MagicDNS-enabled client). Check the Tailscale console for distinct device IDs and
-IPs, and verify those identities survive individual container restarts. Until
-then these names are a naming plan, not functioning endpoints.
+Expect an active/running Herdr unit and nonzero PID. Compare the activated
+generation with the built result. Attach interactively with Herdr, tmux and
+Zellij to test real sessions. Later, with permission to restart that machine,
+verify its Tailscale device ID and SSH host key remain unchanged and services
+return healthy. Do not infer restart persistence from source configuration.
 
 ## Environment and recovery
 
-Herdr reads the optional `/root/dotfiles/.env` at service start via systemd's
-`EnvironmentFile`. It must contain systemd-compatible variable assignments, not
-shell commands or `export` statements. This PR neither copies credentials nor
-changes hydration. A missing file does not block startup; authenticated worker
-operations still need their own credentials. Do not display the file or service
-environment as verification. Restart the Herdr service deliberately after a
-credential change; that interrupts its active sessions.
+Herdr reads optional `/root/dotfiles/.env` at service start using systemd's
+`EnvironmentFile`. Use systemd-compatible assignments, not shell commands or
+`export` statements. This change neither copies credentials nor alters
+hydration. Missing credentials may prevent authenticated AI-worker operations,
+even when the multiplexer itself works. Never display the file or service
+environment as verification.
 
-For recovery, keep console access and the previous Home Manager generation.
-Use `home-manager generations` to locate its activation script. Home Manager
-rollback alone does not undo system files installed by activation hooks; review
-the Tailscale system units and sudoers changes separately. No provider firewall,
-SSH daemon, or container-fleet policy is installed by this host profile.
+A deliberate Herdr service restart interrupts its active sessions. Keep console
+access and the previous Home Manager generation for recovery. Home Manager
+rollback does not undo hostname/lingering or system files installed by activation
+hooks; review those and the Tailscale units separately. No new SSH daemon,
+firewall policy, VPS or container runtime is provisioned here.

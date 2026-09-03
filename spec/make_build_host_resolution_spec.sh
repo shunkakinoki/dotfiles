@@ -83,7 +83,7 @@ It 'does not confuse a numbered container with the kamino host'
 When run bash -c 'make build HOST= OS=Linux ARCH=x86_64 NIX_SYSTEM=x86_64-linux NIX_CONFIG_TYPE=homeConfigurations MACHINE_HOSTNAME=kamino1 TAILSCALE_DNS_NAME=kamino1.tail950b36.ts.net NIX_USERNAME=root NIX_EXEC=nix NIX_ENV=ok NIX_FLAGS= NIX_USER_TRUSTED=yes 2>/dev/null && cat "$MOCK_LOG"'
 The status should be success
 The output should not include '.#homeConfigurations.kamino.activationPackage'
-The output should include 'root@x86_64-linux'
+The output should include '.#homeConfigurations.kamino1.activationPackage'
 End
 
 It 'switches kamino through its root Home Manager activation package'
@@ -91,6 +91,19 @@ When run bash -c 'make nix-switch HOST=kamino OS=Linux ARCH=x86_64 NIX_SYSTEM=x8
 The status should be success
 The output should include 'USER=root'
 The output should include '.#homeConfigurations.kamino.activationPackage'
+End
+
+It 'switches the hundredth generated profile as root even in CI'
+When run bash -c 'CI=true make nix-switch HOST=kamino100 OS=Linux ARCH=x86_64 NIX_SYSTEM=x86_64-linux NIX_CONFIG_TYPE=homeConfigurations NIX_EXEC=nix NIX_ENV=ok NIX_FLAGS= NIX_USER_TRUSTED=yes 2>/dev/null && cat "$MOCK_LOG"'
+The status should be success
+The output should include 'USER=root'
+The output should include '.#homeConfigurations.kamino100.activationPackage'
+End
+
+It 'detects the hundredth generated profile through MagicDNS'
+When run bash -c 'make build HOST= OS=Linux ARCH=x86_64 NIX_SYSTEM=x86_64-linux NIX_CONFIG_TYPE=homeConfigurations MACHINE_HOSTNAME=generic-vps TAILSCALE_DNS_NAME=kamino100.tail950b36.ts.net NIX_EXEC=nix NIX_ENV=ok NIX_FLAGS= NIX_USER_TRUSTED=yes 2>/dev/null && cat "$MOCK_LOG"'
+The status should be success
+The output should include '.#homeConfigurations.kamino100.activationPackage'
 End
 
 It 'detects matic from Framework 13 AMD AI 300 DMI data when the hostname is generic'

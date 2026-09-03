@@ -117,6 +117,16 @@
 
         flake =
           let
+            kaminoFleet = import ./named-hosts/kamino/fleet.nix { };
+            kaminoConfigurations = builtins.listToAttrs (
+              map (machine: {
+                name = machine.name;
+                value = import ./named-hosts/kamino {
+                  inherit inputs;
+                  name = machine.name;
+                };
+              }) kaminoFleet.machines
+            );
             mkDarwin =
               args:
               let
@@ -164,8 +174,7 @@
                 username = "shunkakinoki";
               };
             };
-            homeConfigurations = {
-              kamino = import ./named-hosts/kamino { inherit inputs; };
+            homeConfigurations = kaminoConfigurations // {
               andor = import ./named-hosts/andor {
                 inherit inputs;
                 username = "ubuntu";

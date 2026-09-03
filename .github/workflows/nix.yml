@@ -100,6 +100,11 @@ jobs:
           NIX_CONFIG_TARGET: home
           HOST: kamino
         run: make build
+      - name: Build Generated Host `kamino100`
+        env:
+          NIX_CONFIG_TARGET: home
+          HOST: kamino100
+        run: make build
   nix-nixos:
     runs-on: ubuntu-latest
     timeout-minutes: 300

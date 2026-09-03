@@ -39,10 +39,6 @@
         HostName = "andor.tail950b36.ts.net";
         User = "ubuntu";
       };
-      "kamino" = {
-        HostName = "kamino.tail950b36.ts.net";
-        User = "root";
-      };
       "kyber" = {
         HostName = "kyber.tail950b36.ts.net";
         User = "ubuntu";

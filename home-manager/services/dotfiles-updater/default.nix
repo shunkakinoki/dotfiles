@@ -6,6 +6,8 @@ let
       "kyber"
     else if inputs.host.isMatic then
       "matic"
+    else if inputs.host.isKamino then
+      inputs.host.nodeName
     else
       null;
 in
