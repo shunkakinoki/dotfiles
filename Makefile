@@ -87,7 +87,11 @@ NIX_USERNAME := $(shell \
 		echo "$(shell whoami)"; \
 	fi)
 NIX_ENV := $(shell . ~/.nix-profile/etc/profile.d/nix.sh 2>/dev/null || . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh 2>/dev/null || command -v nix >/dev/null 2>&1 || echo "not_found")
-NIX_FLAGS := --extra-experimental-features 'flakes nix-command' --no-pure-eval --impure --fallback
+NIX_FLAGS := --extra-experimental-features 'flakes nix-command' --no-pure-eval --impure --fallback --option download-attempts 5 --option connect-timeout 10
+# Optional packages are omitted by default because their fixed-output builders
+# may require registry access during the build. Opt in with
+# NIX_INCLUDE_OPTIONAL_PACKAGES=1 when network-backed packages are desired.
+export NIX_INCLUDE_OPTIONAL_PACKAGES
 # Only add cache options when user is trusted or on Darwin/CI (avoids "ignoring untrusted substituter" warnings)
 ifeq ($(OS),Darwin)
 NIX_FLAGS += --option substituters "$(NIX_SUBSTITUTERS)" --option trusted-public-keys "$(NIX_TRUSTED_KEYS)"
