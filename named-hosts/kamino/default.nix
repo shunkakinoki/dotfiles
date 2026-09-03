@@ -52,22 +52,13 @@ inputs.home-manager.lib.homeManagerConfiguration {
         xdg.configFile."kamino/name".text = "${name}\n";
 
         home.activation.checkKaminoIdentity = config.lib.dag.entryBefore [ "writeBoundary" ] ''
-          if [ "$(id -u)" != 0 ] || [ "$(cat /proc/1/comm)" != systemd ]; then
-            echo "Kamino requires root on a systemd Linux machine." >&2
-            exit 1
-          fi
-          identity="${config.xdg.configHome}/kamino/name"
-          if [ -f "$identity" ] && [ "$(cat "$identity")" != ${lib.escapeShellArg name} ]; then
-            echo "Refusing to rename an installed Kamino machine." >&2
-            exit 1
-          fi
+          ${pkgs.bash}/bin/bash ${./activate.sh} check ${lib.escapeShellArg name} "${config.xdg.configHome}/kamino/name"
         '';
         home.activation.startKaminoUserManager =
           config.lib.dag.entryBetween [ "reloadSystemd" ] [ "writeBoundary" ]
             ''
-              $DRY_RUN_CMD /usr/bin/hostnamectl set-hostname ${lib.escapeShellArg name}
-              $DRY_RUN_CMD /usr/bin/loginctl enable-linger root
-              $DRY_RUN_CMD /usr/bin/systemctl start user@0.service
+              export PATH=/usr/bin:$PATH
+              $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} user-manager ${lib.escapeShellArg name}
               export XDG_RUNTIME_DIR=/run/user/0
             '';
 
@@ -80,14 +71,12 @@ inputs.home-manager.lib.homeManagerConfiguration {
         home.activation.prepareKaminoServiceDirectories =
           config.lib.dag.entryBetween [ "installTailscaleService" ] [ "writeBoundary" ]
             ''
-              $DRY_RUN_CMD mkdir -p /etc/sudoers.d
+              $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} prepare
             '';
         home.activation.configureKaminoTailscale =
           config.lib.dag.entryAfter [ "installTailscaleService" "startKaminoUserManager" ]
             ''
-              $DRY_RUN_CMD ${pkgs.tailscale}/bin/tailscale set \
-                --hostname=${lib.escapeShellArg name} --accept-dns=false --ssh=false
-              echo "Tailscale installed. If not enrolled, run: tailscale up --hostname=${name} --accept-dns=false --ssh=false"
+              $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} tailscale ${lib.escapeShellArg name} ${pkgs.tailscale}/bin/tailscale
             '';
 
         systemd.user.services.herdr-server = {
