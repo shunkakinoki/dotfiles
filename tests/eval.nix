@@ -135,6 +135,64 @@ let
       )
     ) filteredHomeConfigs
     // lib.optionalAttrs (system == "x86_64-linux") {
+      eval-home-kamino =
+        let
+          kamino = import ../named-hosts/kamino { inherit inputs; };
+          cfg = kamino.config;
+        in
+        assert cfg.home.username == "root";
+        assert cfg.home.homeDirectory == "/root";
+        assert !(cfg.home.activation ? hardenSshd);
+        assert !(cfg.home.activation ? setupK3s);
+        assert !(cfg.systemd.user.services ? openclaw-gateway);
+        assert !(cfg.systemd.user.services ? roborev);
+        assert cfg.modules.tailscale.installSystemService;
+        assert cfg.modules.tailscale.extraUpArgs == [ ];
+        assert cfg.xdg.configFile."kamino/name".text == "kamino\n";
+        assert cfg.programs.ssh.settings.kamino.data.User == "root";
+        assert cfg.programs.ssh.settings.kamino.data.HostName == "kamino.tail950b36.ts.net";
+        assert cfg.programs.ssh.settings.kamino1.data.HostName == "kamino1.tail950b36.ts.net";
+        assert cfg.programs.ssh.settings.kamino2.data.User == "root";
+        assert cfg.programs.ssh.settings.kamino10.data.HostName == "kamino10.tail950b36.ts.net";
+        assert cfg.systemd.user.services.herdr-server.Install.WantedBy == [ "default.target" ];
+        assert cfg.systemd.user.services.herdr-server.Unit.X-SwitchMethod == "restart";
+        assert cfg.systemd.user.services.herdr-server.Service.EnvironmentFile == [ "-/root/dotfiles/.env" ];
+        mkEvalCheck "home-kamino" kamino.activationPackage;
+      eval-home-kamino100 =
+        let
+          kamino = import ../named-hosts/kamino {
+            inherit inputs;
+            name = "kamino100";
+          };
+          cfg = kamino.config;
+          packageNames = map lib.getName cfg.home.packages;
+          activationNames = map (entry: entry.name) (cfg.lib.dag.topoSort cfg.home.activation).result;
+          activationPosition =
+            name:
+            let
+              find = index: if builtins.elemAt activationNames index == name then index else find (index + 1);
+            in
+            find 0;
+        in
+        assert cfg.home.username == "root";
+        assert cfg.home.homeDirectory == "/root";
+        assert cfg.xdg.configFile."kamino/name".text == "kamino100\n";
+        assert cfg.programs.tmux.enable;
+        assert lib.elem "herdr" packageNames;
+        assert lib.elem "zellij" packageNames;
+        assert cfg.xdg.configFile ? "zellij/config.kdl";
+        assert cfg.home.file ? ".config/herdr/config.toml";
+        assert cfg.systemd.user.startServices;
+        assert activationPosition "checkKaminoIdentity" < activationPosition "writeBoundary";
+        assert activationPosition "startKaminoUserManager" < activationPosition "reloadSystemd";
+        assert
+          activationPosition "prepareKaminoServiceDirectories" < activationPosition "installTailscaleService";
+        assert activationPosition "installTailscaleService" < activationPosition "configureKaminoTailscale";
+        assert lib.elem "HOST=kamino100" cfg.systemd.user.services.dotfiles-updater.Service.Environment;
+        assert cfg.programs.ssh.settings.kamino100.data.User == "root";
+        assert cfg.programs.ssh.settings.kamino100.data.HostName == "kamino100.tail950b36.ts.net";
+        assert lib.hasInfix "tailscale kamino100" cfg.home.activation.configureKaminoTailscale.data;
+        mkEvalCheck "home-kamino100" kamino.activationPackage;
       eval-home-andor =
         mkEvalCheck "home-andor"
           (import ../named-hosts/andor {

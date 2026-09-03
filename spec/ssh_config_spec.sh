@@ -12,6 +12,16 @@ The output should include 'User = "ubuntu"'
 End
 End
 
+Describe 'kamino family'
+It 'derives SSH hosts from the generated family rather than per-host stanzas'
+When run cat home-manager/programs/kamino/default.nix
+The output should include 'fleet.nix'
+The output should include 'HostName = machine.hostname'
+The output should include 'User = machine.user'
+The output should include 'fleet.machines'
+End
+End
+
 Describe 'kyber host'
 It 'uses the Tailscale DNS name instead of a stale tailnet IP'
 When run bash -c "grep 'HostName =' '$SSH_CONFIG_NIX' | grep kyber"

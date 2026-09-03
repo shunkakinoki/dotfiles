@@ -35,7 +35,7 @@ NIX_TRUSTED_KEYS := cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShj
 NIX_CACHIX_CONF := /etc/nix/cachix.conf
 # Check if user is trusted (to avoid "ignoring untrusted substituter" warnings)
 NIX_USER_TRUSTED := $(shell grep -qE "trusted-users.*=.*(\\*|$(shell whoami))" /etc/nix/nix.conf 2>/dev/null && echo "yes" || echo "no")
-NAMED_HOSTS := andor galactica kyber matic pod viper
+NAMED_HOSTS := andor galactica kamino kyber matic pod viper
 NIXOS_NAMED_HOSTS := $(filter matic viper,$(NAMED_HOSTS))
 ISO_NAMED_HOSTS := $(filter matic viper,$(NAMED_HOSTS))
 DMI_SYS_VENDOR ?= $(shell cat /sys/class/dmi/id/sys_vendor 2>/dev/null || true)
@@ -77,7 +77,9 @@ NIX_CONFIG_TYPE := $(shell \
 		echo "homeConfigurations"; \
 	fi)
 NIX_USERNAME := $(shell \
-	if [ -n "$$RUNPOD_POD_ID" ]; then \
+	if echo "$(HOST)" | grep -qE '^kamino([1-9][0-9]*)?$$'; then \
+		echo "root"; \
+	elif [ -n "$$RUNPOD_POD_ID" ]; then \
 		echo "root"; \
 	elif [ "$$CI" = "true" ] || [ "$$IN_DOCKER" = "true" ]; then \
 		echo "runner"; \
@@ -114,6 +116,10 @@ DETECTED_HOST := $(shell \
 			tailscale_dns="$(TAILSCALE_DNS_NAME)"; \
 			if [ "$$hostname" = "andor" ]; then \
 				echo "andor"; \
+			elif echo "$${hostname%%.*}" | grep -qE '^kamino([1-9][0-9]*)?$$'; then \
+				echo "$${hostname%%.*}"; \
+			elif echo "$$tailscale_dns" | grep -qE '^kamino([1-9][0-9]*)?\.tail950b36\.ts\.net$$'; then \
+				echo "$${tailscale_dns%%.*}"; \
 			elif [ "$$hostname" = "kyber" ] \
 				|| [ "$$tailscale_dns" = "kyber.tail950b36.ts.net" ]; then \
 				echo "kyber"; \
@@ -140,7 +146,9 @@ DARWIN_REBUILD := $(shell command -v darwin-rebuild 2>/dev/null || echo "./resul
 
 # Sudo path (NixOS uses /run/wrappers/bin/sudo)
 SUDO := $(shell \
-	if [ -x /run/wrappers/bin/sudo ]; then \
+	if [ "$(shell id -u)" = 0 ]; then \
+		echo "env"; \
+	elif [ -x /run/wrappers/bin/sudo ]; then \
 		echo "/run/wrappers/bin/sudo"; \
 	elif command -v sudo >/dev/null 2>&1; then \
 		echo "sudo"; \

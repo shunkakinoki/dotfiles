@@ -15,6 +15,23 @@ let
   };
 in
 {
+  lib-kamino-fleet =
+    let
+      fleet = import ../named-hosts/kamino/fleet.nix { count = 100; };
+      first = builtins.elemAt fleet.machines 0;
+      last = builtins.elemAt fleet.machines 100;
+      names = map (machine: machine.name) fleet.machines;
+    in
+    assert builtins.length fleet.machines == 101;
+    assert first.name == "kamino";
+    assert last.name == "kamino100";
+    assert last.hostname == "kamino100.tail950b36.ts.net";
+    assert last.user == "root";
+    assert builtins.length (lib.unique names) == 101;
+    pkgs.runCommand "lib-kamino-fleet" { } ''
+      touch $out
+    '';
+
   lib-env = pkgs.runCommand "lib-env" { } ''
     ${
       if env ? isCI && builtins.isBool env.isCI then

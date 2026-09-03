@@ -28,6 +28,7 @@ let
   haskell = import ./haskell;
   java = import ./java;
   k8s = import ./k8s;
+  kamino = import ./kamino;
   kotlin = import ./kotlin;
   lazydocker = import ./lazydocker;
   lazygit = import ./lazygit;
@@ -83,6 +84,7 @@ in
   haskell
   java
   k8s
+  kamino
   kotlin
   lazydocker
   lazygit

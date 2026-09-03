@@ -16,6 +16,8 @@ For troubleshooting and frequently asked questions, see [FAQ.md](./FAQ.md).
 
 For default and fallback model assignments per harness, see [MODELS.md](./MODELS.md).
 
+For Kamino setup and verification, see the [host runbook](named-hosts/kamino/README.md).
+
 ## Credits
 
 See [REFERENCES.md](./REFERENCES.md) for more information.
