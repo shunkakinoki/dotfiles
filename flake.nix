@@ -120,10 +120,10 @@
             kaminoFleet = import ./named-hosts/kamino/fleet.nix { };
             kaminoConfigurations = builtins.listToAttrs (
               map (machine: {
-                name = machine.name;
+                inherit (machine) name;
                 value = import ./named-hosts/kamino {
                   inherit inputs;
-                  name = machine.name;
+                  inherit (machine) name;
                 };
               }) kaminoFleet.machines
             );

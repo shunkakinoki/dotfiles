@@ -6,7 +6,7 @@ in
 {
   programs.ssh.settings = builtins.listToAttrs (
     map (machine: {
-      name = machine.name;
+      inherit (machine) name;
       value = {
         HostName = machine.hostname;
         User = machine.user;
