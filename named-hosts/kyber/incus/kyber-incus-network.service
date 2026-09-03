@@ -1,0 +1,14 @@
+[Unit]
+Description=Kyber Incus bridge egress through Docker firewall
+Requires=incus.service docker.service
+After=incus.service docker.service network-online.target
+Wants=network-online.target
+PartOf=docker.service incus.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/kyber-incus-network
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
