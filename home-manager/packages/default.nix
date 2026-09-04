@@ -164,6 +164,7 @@ with pkgs;
   keychain
   libiconv
   libsecret
+  lld
   nspr
   nss
   opencode

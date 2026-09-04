@@ -15,7 +15,7 @@ in
 {
   # Install cargo global packages from Cargo.toml using home-manager activation
   home.activation.installCargoGlobals = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    export PATH=${pkgs.rustup}/bin:${pkgs.cargo}/bin:${pkgs.rustc}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.gcc}/bin:${pkgs.pkg-config}/bin:${pkgs.perl}/bin:$PATH
+    export PATH=${pkgs.rustup}/bin:${pkgs.cargo}/bin:${pkgs.rustc}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.gcc}/bin:${pkgs.binutils}/bin:${pkgs.lld}/bin:${pkgs.pkg-config}/bin:${pkgs.perl}/bin:$PATH
     export CARGO_HOME="$HOME/.cargo"
     export PKG_CONFIG_PATH="${pkgs.openssl.dev}/lib/pkgconfig${libiconvPkgConfigPath}''${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
     export OPENSSL_DIR="${pkgs.openssl.dev}"
@@ -40,7 +40,7 @@ in
       Service = {
         Type = "simple";
         Environment = [
-          "PATH=${pkgs.rustup}/bin:${pkgs.cargo}/bin:${pkgs.rustc}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.gcc}/bin:${pkgs.pkg-config}/bin:${pkgs.perl}/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin"
+          "PATH=${pkgs.rustup}/bin:${pkgs.cargo}/bin:${pkgs.rustc}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.gcc}/bin:${pkgs.binutils}/bin:${pkgs.lld}/bin:${pkgs.pkg-config}/bin:${pkgs.perl}/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin"
           "CARGO_HOME=%h/.cargo"
           "HOME=%h"
           "PKG_CONFIG_PATH=${pkgs.openssl.dev}/lib/pkgconfig${libiconvPkgConfigPath}"

@@ -52,6 +52,7 @@ in
             pkgs.gnused
             pkgs.go
             pkgs.jq
+            pkgs.lld
             pkgs.libtool
             pkgs.neovim
             pkgs.nix
