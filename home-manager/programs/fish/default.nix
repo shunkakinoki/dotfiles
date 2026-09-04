@@ -248,6 +248,11 @@
   };
 
   xdg.configFile = {
+    # Fish loads conf.d before config.fish, including shellInit. SSH command
+    # sessions can start without Nix on PATH, so plugins need these paths early.
+    "fish/conf.d/00-nix-path.fish".text = ''
+      set -gx PATH $HOME/.nix-profile/bin /etc/profiles/per-user/${config.home.username}/bin /nix/var/nix/profiles/default/bin $PATH
+    '';
     "fish/themes/dracula.theme".source = ./dracula.theme;
     "fish/completions".source = ./completions;
   }
