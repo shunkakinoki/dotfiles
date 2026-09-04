@@ -49,6 +49,23 @@ ssh -t kamino2 'tmux new-session -A -s work'
 ssh -t kamino3 'zellij attach -c work'
 ```
 
+Fish also provides the same shortcuts as Kyber and Matic for `kamino` and
+every numbered host through `kamino100`:
+
+| Shortcut | Action |
+| --- | --- |
+| `kamino1` | OpenSSH login as root over Tailscale |
+| `kamino1d` | Attach/create the tmux `desktop` session |
+| `kamino1h` | Attach to Herdr (`herdr --remote kamino1`) |
+| `kamino1m` | Attach/create the tmux `mobile` session |
+| `kamino1z` | Attach/create the Zellij `desktop` session |
+
+Replace `kamino1` with any declared fleet name. SSH and Herdr shortcuts forward
+additional arguments. Apply your **client's** normal dotfiles profile and open a
+new Fish shell to load these abbreviations; do not activate a Kamino server
+profile on your laptop. Every SSH shortcut uses the generated host configuration
+so the root login, hostname, local overrides and host-key checks stay consistent.
+
 On first SSH access, compare the presented host-key fingerprint with the VPS
 console before accepting it. The verifier deliberately will not accept unknown
 or changed SSH keys automatically.
