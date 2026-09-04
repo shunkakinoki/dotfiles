@@ -5,6 +5,7 @@
 }:
 let
   inherit (inputs.host) isDesktop isDev;
+  includeOptionalPackages = builtins.getEnv "NIX_INCLUDE_OPTIONAL_PACKAGES" == "1";
   pkgs-nightly = import inputs.nixpkgs-nightly {
     inherit (pkgs) system;
     config.allowUnfree = true;
@@ -134,8 +135,9 @@ with pkgs;
   zellij
   zoxide
 ]
-# Heavy packages: skip on CI runners (disk pressure / LTO OOM on macos-latest).
-++ lib.optionals (!isRunner) [
+# Optional packages: skip on CI runners (disk pressure / LTO OOM on macos-latest)
+# and by default to keep builds independent of registry availability.
+++ lib.optionals (!isRunner && includeOptionalPackages) [
   pkgs.llm-agents.antigravity-cli
   pkgs.llm-agents.prime-agent
   vector
