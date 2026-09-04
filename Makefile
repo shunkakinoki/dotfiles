@@ -1405,9 +1405,11 @@ systemctl-code-syncer: ## Restart code-syncer systemd user service.
 
 .PHONY: systemctl-docker-postgres
 systemctl-docker-postgres: ## Restart docker-postgres systemd user service.
-	@echo "🔄 Restarting docker-postgres..."
-	@systemctl --user restart docker-postgres.service || true
-	@echo "✅ docker-postgres restarted"
+	@if [ "$$(systemctl --user show --property=LoadState --value docker-postgres.service)" = "not-found" ]; then \
+		echo "Skipping docker-postgres.service (not installed)"; \
+	else \
+		systemctl --user restart docker-postgres.service && echo "✅ docker-postgres restarted"; \
+	fi
 
 .PHONY: systemctl-dolt
 systemctl-dolt: ## Restart Dolt systemd user service.
@@ -1478,9 +1480,11 @@ systemctl-obsidian: ## Restart Obsidian headless systemd user service.
 
 .PHONY: systemctl-ollama
 systemctl-ollama: ## Restart ollama systemd user service.
-	@echo "🔄 Restarting ollama..."
-	@systemctl --user restart ollama.service || true
-	@echo "✅ ollama restarted"
+	@if [ "$$(systemctl --user show --property=LoadState --value ollama.service)" = "not-found" ]; then \
+		echo "Skipping ollama.service (not installed)"; \
+	else \
+		systemctl --user restart ollama.service && echo "✅ ollama restarted"; \
+	fi
 
 .PHONY: systemctl-openclaw
 systemctl-openclaw: ## Restart OpenClaw gateway systemd user service.

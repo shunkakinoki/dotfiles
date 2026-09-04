@@ -116,13 +116,13 @@ x86_64 | amd64) PLATFORM_CPU="x64" ;;
 esac
 
 # Prints the name of a platform-native optionalDependency declared in the given
-# package.json that is NOT installed, or nothing if all present / none declared.
+# package.json when none of its current-platform variants are installed.
 # Emits "<native-dep-name> <declaring-version>" so callers can install the exact
 # binary that bun dropped, at the version that matches its declaring wrapper.
 missing_native_from_pkg() {
   local pj="$1"
   [ -f "$pj" ] || return 0
-  local opt_deps name decl_ver
+  local opt_deps name decl_ver missing=""
   opt_deps=$(jq -r '.optionalDependencies // {} | keys[]' "$pj" 2>/dev/null || true)
   [ -n "$opt_deps" ] || return 0
   decl_ver=$(jq -r '.version // empty' "$pj" 2>/dev/null || true)
@@ -133,10 +133,12 @@ missing_native_from_pkg() {
     *"$PLATFORM_OS"*"$PLATFORM_CPU"* | *"$PLATFORM_CPU"*"$PLATFORM_OS"*) ;;
     *) continue ;;
     esac
-    [ -d "${GLOBAL_MODULES}/${name}" ] && continue
-    printf '%s %s\n' "$name" "$decl_ver"
-    return 0
+    # Baseline/optimized and libc builds are alternatives, not prerequisites
+    # that must all be installed alongside a working platform binary.
+    [ -d "${GLOBAL_MODULES}/${name}" ] && return 0
+    [ -n "$missing" ] || missing="$name"
   done <<<"$opt_deps"
+  [ -z "$missing" ] || printf '%s %s\n' "$missing" "$decl_ver"
 }
 
 # Candidate package.json paths that may declare a package's real native binary:
@@ -154,8 +156,8 @@ native_candidate_pkgs() {
 }
 
 # Returns 0 when a package (or its immediate wrapper dependency) declares a
-# platform-native optionalDependency for the current OS/CPU that is not
-# installed. Many CLIs ship their real binary this way; a version-only skip would
+# platform-native optionalDependencies for the current OS/CPU with no installed
+# variant. Many CLIs ship their real binary this way; a version-only skip would
 # otherwise leave such a package "installed" yet non-functional (bun silently
 # drops these transitive optional deps during global installs).
 missing_native_optional_dep() {
