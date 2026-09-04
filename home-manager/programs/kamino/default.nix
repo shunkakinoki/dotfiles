@@ -51,6 +51,7 @@ in
       value = {
         HostName = machine.hostname;
         User = machine.user;
+        StrictHostKeyChecking = "accept-new";
       };
     }) fleet.machines
   );

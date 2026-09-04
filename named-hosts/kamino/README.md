@@ -32,9 +32,11 @@ On a fresh machine, follow the login URL printed during activation and choose
 the intended tailnet. On an enrolled machine, the command reapplies the declared
 name and preferences without creating a new device.
 
-This keeps the existing OpenSSH server/login policy, not Tailscale SSH. Provision
-your root authorized key separately. Never put authentication keys in this command
-or in the Nix declaration. The install command does not distribute credentials.
+This keeps the existing OpenSSH server/login policy, not Tailscale SSH. Activation
+adds the declared Galactica public key from `named-hosts/pubkeys.nix` to root's
+`authorized_keys`, preserving provider keys and other existing entries. It sets
+the SSH directory/file permissions to `700`/`600` and does not copy private keys.
+Clients with a different key still need that public key provisioned separately.
 Preserve each machine's `/var/lib/tailscale`, `/etc/ssh`, `/etc/machine-id`, and
 `/root` across restart/recreation. Never clone enrolled Tailscale state or SSH
 private host keys into a second machine. DNS names alone are not cryptographic
@@ -66,9 +68,13 @@ new Fish shell to load these abbreviations; do not activate a Kamino server
 profile on your laptop. Every SSH shortcut uses the generated host configuration
 so the root login, hostname, local overrides and host-key checks stay consistent.
 
-On first SSH access, compare the presented host-key fingerprint with the VPS
-console before accepting it. The verifier deliberately will not accept unknown
-or changed SSH keys automatically.
+Kamino client aliases use OpenSSH's `StrictHostKeyChecking=accept-new`: the first
+connection records a new host key without prompting. This is trust on first use;
+later connections still reject changed keys. The fleet verifier remains strict,
+so make the first SSH connection before running it. For an independently verified
+first connection, compare and preinstall the host key using the provider console.
+Reinstallations should preserve `/etc/ssh`; a replacement machine reusing a name
+with a different key still needs an explicitly verified known-hosts update.
 
 ```sh
 kamino-fleet list 'kamino*'                 # declared names, not running machines
@@ -123,8 +129,10 @@ neither is live activation proof.
 
 Use the provider console or supplied IP first. Keep console access and an
 existing SSH session open until a second connection works over Tailscale.
-Verify the root SSH host-key fingerprint through the console. Provision the
-intended public authorized key without replacing existing keys.
+The declared Galactica public key is installed during activation. Provision any
+additional administrator public key without replacing existing entries. For
+independent first-use verification, obtain the SSH host-key fingerprint through
+the console before connecting.
 
 The curl installer tracks main. To test a reviewed but unmerged revision, clone
 the repository into `/root/dotfiles`, check out that revision, and run:
@@ -235,9 +243,10 @@ Inspect `~/.ssh/config.local` if a local override changes the generated target.
 
 ### 3. Authorize the client key and verify the server key
 
-Use the provider's SSH-key provisioning facility or the existing console/admin
-access to append the client's **public** key to `/root/.ssh/authorized_keys` on
-the intended machine. Preserve existing keys; keep `/root/.ssh` mode `700` and
+Kamino activation already installs the Galactica public key declared in
+`named-hosts/pubkeys.nix`. For a different client, use the provider's SSH-key
+provisioning facility or existing console/admin access to append its **public**
+key to `/root/.ssh/authorized_keys`. Preserve existing keys; keep `/root/.ssh` mode `700` and
 `authorized_keys` mode `600`, owned by root. Keep the private key on the client.
 Managed clients select `~/.ssh/id_ed25519` by default; authorize its `.pub` file
 or use an explicit, locally configured key.
@@ -250,8 +259,9 @@ Obtain the server's public host-key fingerprint through the trusted console:
 ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub
 ```
 
-Then, on the client, compare that fingerprint before accepting the first
-connection. If the server presents a different key type, compare the matching
+For independent first-use verification, compare that fingerprint on the client
+before connecting. The default client policy automatically records unknown keys.
+If the server presents a different key type, compare the matching
 public host key through the console. A changed key needs investigation, not an
 automatic known-hosts reset.
 
