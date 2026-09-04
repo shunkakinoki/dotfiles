@@ -15,6 +15,29 @@ let
   };
 in
 {
+  lib-kamino-shortcuts =
+    let
+      kamino = import ../home-manager/programs/kamino { inherit lib pkgs; };
+      fish = kamino.programs.fish;
+      fleet = import ../named-hosts/kamino/fleet.nix { };
+      functions = pkgs.writeText "kamino-shortcuts.fish" (
+        lib.concatStringsSep "\n" (
+          lib.mapAttrsToList (name: value: ''
+            function ${name}
+              ${value.body}
+            end
+          '') fish.functions
+        )
+        + "\nsource ${./kamino-shortcuts.fish} $argv\n"
+      );
+    in
+    assert builtins.length (builtins.attrNames fish.shellAbbrs) == 5 * builtins.length fleet.machines;
+    assert lib.all (name: builtins.hasAttr name fish.functions) (builtins.attrValues fish.shellAbbrs);
+    pkgs.runCommand "lib-kamino-shortcuts" { nativeBuildInputs = [ pkgs.fish ]; } ''
+      fish --no-config ${functions} ${lib.escapeShellArgs (map (machine: machine.name) fleet.machines)}
+      touch "$out"
+    '';
+
   lib-kamino-fleet =
     let
       fleet = import ../named-hosts/kamino/fleet.nix { count = 100; };
