@@ -306,9 +306,37 @@ manage_orchestration_circuit_breaker() {
   fi
 }
 
+check_disk_wear_device() {
+  local disk="$1"
+  local name output remaining status=0
+
+  name="$(basename "$disk")"
+  # SMART health warnings are exit-status bits, not necessarily read failures.
+  # Capture the status separately so a worn disk cannot abort host recovery.
+  output="$(timeout --kill-after=2 10 smartctl -A "$disk" 2>/dev/null)" || status=$?
+  if [ $((status & 7)) -ne 0 ]; then
+    set_alert "disk-wear-read-$name" "unable to read SMART attributes for $name (status $status); previous wear warning retained"
+    return
+  fi
+
+  # Samsung reports remaining endurance as the normalized VALUE, not RAW_VALUE.
+  remaining="$(printf '%s\n' "$output" | awk '$2 == "Wear_Leveling_Count" { print $4; exit }')"
+  if [[ ! $remaining =~ ^[0-9]{1,3}$ ]] || [ "$((10#${remaining:-0}))" -gt 100 ]; then
+    set_alert "disk-wear-read-$name" "no valid remaining-endurance attribute for $name; previous wear warning retained"
+    return
+  fi
+  remaining=$((10#$remaining))
+  clear_alert "disk-wear-read-$name"
+  if [ "$remaining" -le "$DISK_WEAR_WARNING_PERCENT" ]; then
+    set_alert "disk-wear-$name" "$name has ${remaining}% of its rated write endurance left; schedule a replacement before moving write-heavy state onto it"
+  else
+    clear_alert "disk-wear-$name"
+  fi
+}
+
 check_disk_wear() {
   local stamp="$STATE_DIR/disk-wear.checked"
-  local now last=0 disk name remaining
+  local now last=0 disk
 
   now="$(date +%s)"
   if [ -r "$stamp" ]; then
@@ -321,23 +349,7 @@ check_disk_wear() {
 
   for disk in /dev/sd[a-z]; do
     [ -b "$disk" ] || continue
-    name="$(basename "$disk")"
-    # Samsung publishes remaining write endurance as the normalized value of
-    # Wear_Leveling_Count. smartd's -f only fires once that reaches the vendor
-    # threshold of zero, which is after the rated endurance is already spent
-    # and far too late to schedule a replacement.
-    # shellcheck disable=SC2016
-    remaining="$(smartctl -A "$disk" 2>/dev/null |
-      awk '$2 == "Wear_Leveling_Count" { print $4 + 0; exit }')"
-    if [ -z "$remaining" ]; then
-      continue
-    fi
-
-    if [ "$remaining" -le "$DISK_WEAR_WARNING_PERCENT" ]; then
-      set_alert "disk-wear-$name" "$name has ${remaining}% of its rated write endurance left; schedule a replacement before moving write-heavy state onto it"
-    else
-      clear_alert "disk-wear-$name"
-    fi
+    check_disk_wear_device "$disk"
   done
 }
 
@@ -347,10 +359,10 @@ main() {
   check_d_state
   check_node_filesystem
   check_image_filesystem
-  check_disk_wear
   check_cri
   manage_orchestration_circuit_breaker
   check_dns
+  check_disk_wear
 }
 
 if [[ ${BASH_SOURCE[0]} == "$0" ]]; then
