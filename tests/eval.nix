@@ -152,6 +152,26 @@ let
         mkEvalCheck "home-${name}" (import ../hosts/linux ({ inherit inputs; } // args)).activationPackage
       )
     ) filteredHomeConfigs
+    // lib.optionalAttrs (lib.hasSuffix "linux" system) {
+      eval-home-linux-rust-linker =
+        let
+          linux = import ../hosts/linux {
+            inherit inputs;
+            username = "ubuntu";
+            inherit system;
+          };
+          cfg = linux.config;
+          packageNames = map lib.getName cfg.home.packages;
+          cargoActivation = cfg.home.activation.installCargoGlobals.data;
+          cargoServicePath = builtins.head cfg.systemd.user.services.install-cargo-globals.Service.Environment;
+          updaterPath = builtins.head cfg.systemd.user.services.make-updater.Service.Environment;
+        in
+        assert lib.elem "lld" packageNames;
+        assert lib.hasInfix "lld-" cargoActivation;
+        assert lib.hasInfix "lld-" cargoServicePath;
+        assert lib.hasInfix "lld-" updaterPath;
+        mkEvalCheck "home-linux-rust-linker" linux.activationPackage;
+    }
     // lib.optionalAttrs (system == "x86_64-linux") {
       eval-home-kamino =
         let
