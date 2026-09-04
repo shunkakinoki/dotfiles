@@ -28,6 +28,9 @@ let
     "--accept-dns=false"
     "--ssh=false"
   ];
+  authorizedKey = pkgs.writeText "kamino-authorized-key.pub" (
+    (import ../pubkeys.nix).galactica + "\n"
+  );
 in
 inputs.home-manager.lib.homeManagerConfiguration {
   inherit pkgs;
@@ -58,6 +61,9 @@ inputs.home-manager.lib.homeManagerConfiguration {
 
         home.activation.checkKaminoIdentity = config.lib.dag.entryBefore [ "writeBoundary" ] ''
           ${pkgs.bash}/bin/bash ${./activate.sh} check ${lib.escapeShellArg name} "${config.xdg.configHome}/kamino/name"
+        '';
+        home.activation.authorizeKaminoSsh = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} authorize-ssh ${authorizedKey} "${config.home.homeDirectory}/.ssh"
         '';
         home.activation.startKaminoUserManager =
           config.lib.dag.entryBetween [ "reloadSystemd" ] [ "writeBoundary" ]
