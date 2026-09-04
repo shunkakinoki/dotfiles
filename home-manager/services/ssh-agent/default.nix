@@ -4,7 +4,7 @@
   ...
 }:
 let
-  inherit (pkgs.stdenv) isLinux;
+  inherit (pkgs.stdenv.hostPlatform) isLinux;
 in
 {
   # Configure keychain for Linux systems
