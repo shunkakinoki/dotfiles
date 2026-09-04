@@ -383,6 +383,26 @@ It 'reinstalls a package missing its platform-native binary'
 When run bash -c "HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
 The output should include 'bun add --global nativecli'
 End
+
+It 'keeps an installed native variant when an optional fallback is absent'
+jq --arg fallback "nativecli-${os_tok}-${cpu_tok}-baseline" '.optionalDependencies[$fallback] = "1.0.0"' "$GM/nativecli/package.json" >"$GM/nativecli/package.json.tmp"
+mv -f "$GM/nativecli/package.json.tmp" "$GM/nativecli/package.json"
+mkdir -p "$GM/nativecli-${os_tok}-${cpu_tok}"
+When run bash -c "HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT'"
+The status should be success
+The output should include 'nativecli@1.0.0 already installed, skipping'
+The output should not include 'Installing missing native binary'
+End
+
+It 'finds an installed fallback after an absent primary variant'
+jq --arg fallback "nativecli-${os_tok}-${cpu_tok}-baseline" '.optionalDependencies[$fallback] = "1.0.0"' "$GM/nativecli/package.json" >"$GM/nativecli/package.json.tmp"
+mv -f "$GM/nativecli/package.json.tmp" "$GM/nativecli/package.json"
+mkdir -p "$GM/nativecli-${os_tok}-${cpu_tok}-baseline"
+When run bash -c "HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT'"
+The status should be success
+The output should include 'nativecli@1.0.0 already installed, skipping'
+The output should not include 'Installing missing native binary'
+End
 End
 
 Describe 'wrapper-indirection native binary self-heal (tokscale pattern)'
