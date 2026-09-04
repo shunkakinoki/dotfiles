@@ -4,7 +4,7 @@ let
   inventory = pkgs.writeText "kamino-fleet.json" (builtins.toJSON fleet);
   shortcuts = lib.concatMap (machine: [
     {
-      name = machine.name;
+      inherit (machine) name;
       body = "ssh ${machine.name} $argv";
       description = "SSH to ${machine.name} over Tailscale";
     }
