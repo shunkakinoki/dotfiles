@@ -327,4 +327,84 @@ It 'runs the wear check as part of main'
 When run bash -c "awk '/^main\(\)/,/^}/' '$SCRIPT' | grep -q check_disk_wear"
 The status should be success
 End
+
+It 'handles SMART health status bits without aborting the remaining checks'
+When run env HEALTH_CHECK="$SCRIPT" bash -c '
+  source "$HEALTH_CHECK"
+  set_alert() { printf "alert:%s:%s\n" "$1" "$2"; }
+  clear_alert() { printf "clear:%s\n" "$1"; }
+  timeout() {
+    test "$*" = "--kill-after=2 10 smartctl -A /dev/sda"
+    printf "177 Wear_Leveling_Count 0x0013 009 009 000 Pre-fail Always - 12345\n"
+    return "$smart_status"
+  }
+  for smart_status in 0 8 16 32 64 128 248; do
+    check_disk_wear_device /dev/sda
+  done
+  printf "continued\n"
+'
+The status should be success
+The output should include 'sda has 9% of its rated write endurance left'
+The output should include 'continued'
+The output should not include 'clear:disk-wear-sda'
+End
+
+It 'preserves wear warnings when reads fail, time out, or return malformed values'
+When run env HEALTH_CHECK="$SCRIPT" bash -c '
+  source "$HEALTH_CHECK"
+  set_alert() { printf "alert:%s\n" "$1"; }
+  clear_alert() { printf "unexpected-clear:%s\n" "$1"; }
+  timeout() {
+    printf "177 Wear_Leveling_Count 0x0013 %s 009 000 Pre-fail Always - 12345\n" "$smart_value"
+    return "$smart_status"
+  }
+  smart_value=090
+  for smart_status in 1 2 4 124 137; do
+    check_disk_wear_device /dev/sda
+  done
+  smart_status=0
+  for smart_value in missing 101 1.5 -1 0000; do
+    check_disk_wear_device /dev/sda
+  done
+  timeout() { return 0; }
+  check_disk_wear_device /dev/sda
+  printf "continued\n"
+'
+The status should be success
+The output should include 'alert:disk-wear-read-sda'
+The output should include 'continued'
+The output should not include 'unexpected-clear:'
+End
+
+It 'clears read and wear alerts only after a valid healthy measurement'
+When run env HEALTH_CHECK="$SCRIPT" bash -c '
+  source "$HEALTH_CHECK"
+  set_alert() { printf "unexpected-alert:%s\n" "$1"; }
+  clear_alert() { printf "clear:%s\n" "$1"; }
+  timeout() { printf "177 Wear_Leveling_Count 0x0013 090 090 000 Pre-fail Always - 12345\n"; }
+  check_disk_wear_device /dev/sda
+'
+The status should be success
+The output should include 'clear:disk-wear-read-sda'
+The output should include 'clear:disk-wear-sda'
+The output should not include 'unexpected-alert:'
+End
+
+It 'runs CRI and freezer recovery before probing disk endurance'
+When run env HEALTH_CHECK="$SCRIPT" bash -c '
+  source "$HEALTH_CHECK"
+  install() { :; }
+  check_io_pressure() { :; }
+  check_d_state() { :; }
+  check_node_filesystem() { :; }
+  check_image_filesystem() { :; }
+  check_cri() { printf "cri\n"; }
+  manage_orchestration_circuit_breaker() { printf "recovery\n"; }
+  check_dns() { printf "dns\n"; }
+  check_disk_wear() { printf "smart\n"; }
+  main
+'
+The status should be success
+The output should equal "$(printf 'cri\nrecovery\ndns\nsmart')"
+End
 End
