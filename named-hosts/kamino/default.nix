@@ -55,6 +55,10 @@ inputs.home-manager.lib.homeManagerConfiguration {
           '';
         };
         programs.home-manager.enable = true;
+        # The installer manages Determinate Nix and garbage collection. Reuse its
+        # client during activation instead of mixing Lix with its configuration.
+        nix.enable = lib.mkForce false;
+        nix.gc.automatic = lib.mkForce false;
         xdg.enable = true;
         systemd.user.startServices = true;
         xdg.configFile."kamino/name".text = "${name}\n";
@@ -63,7 +67,7 @@ inputs.home-manager.lib.homeManagerConfiguration {
           ${pkgs.bash}/bin/bash ${./activate.sh} check ${lib.escapeShellArg name} "${config.xdg.configHome}/kamino/name"
         '';
         home.activation.authorizeKaminoSsh = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-          $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} authorize-ssh ${authorizedKey} "${config.home.homeDirectory}/.ssh"
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} authorize-ssh ${authorizedKey} "${config.home.homeDirectory}/.ssh" ${pkgs.openssh}/bin/ssh-keygen
         '';
         home.activation.startKaminoUserManager =
           config.lib.dag.entryBetween [ "reloadSystemd" ] [ "writeBoundary" ]

@@ -21,8 +21,9 @@ prepare)
 authorize-ssh)
   key_file="${2:?public key file required}"
   ssh_dir="${3:?SSH directory required}"
+  ssh_keygen="${4:?ssh-keygen binary required}"
   key="$(cat "$key_file")"
-  ssh-keygen -lf "$key_file" >/dev/null
+  "$ssh_keygen" -lf "$key_file" >/dev/null
   mkdir -p "$ssh_dir"
   chmod 700 "$ssh_dir"
   touch "$ssh_dir/authorized_keys"

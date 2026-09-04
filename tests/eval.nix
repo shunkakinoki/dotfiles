@@ -180,6 +180,10 @@ let
         in
         assert cfg.home.username == "root";
         assert cfg.home.homeDirectory == "/root";
+        assert !cfg.nix.enable;
+        assert !cfg.nix.gc.automatic;
+        assert !(cfg.xdg.configFile ? "nix/nix.conf");
+        assert lib.hasInfix "/bin/ssh-keygen" cfg.home.activation.authorizeKaminoSsh.data;
         assert !(cfg.home.activation ? hardenSshd);
         assert !(cfg.home.activation ? setupK3s);
         assert !(cfg.systemd.user.services ? openclaw-gateway);
