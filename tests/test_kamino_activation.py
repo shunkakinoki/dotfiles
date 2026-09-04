@@ -1,6 +1,7 @@
 """Run activation phases with inert OS commands, never touching host services."""
 
 import os
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -106,14 +107,18 @@ class AuthorizedKeyTests(unittest.TestCase):
         self.root = Path(self.directory.name)
         self.ssh_dir = self.root / "ssh"
         self.key = self.root / "client"
+        self.ssh_keygen = shutil.which("ssh-keygen")
         subprocess.run(
-            ["ssh-keygen", "-q", "-t", "ed25519", "-N", "", "-f", str(self.key)],
+            [self.ssh_keygen, "-q", "-t", "ed25519", "-N", "", "-f", str(self.key)],
             check=True,
             capture_output=True,
         )
         self.public_key = Path(str(self.key) + ".pub")
         self.bin = self.root / "bin"
         self.bin.mkdir()
+        # Home Manager activation has a restricted PATH without OpenSSH.
+        for name in ["cat", "mkdir", "chmod", "touch", "grep"]:
+            (self.bin / name).symlink_to(shutil.which(name))
         # Only ownership is mocked: tests run as an ordinary local user.
         chown = self.bin / "chown"
         chown.write_text('#!/bin/sh\nprintf "%s\\n" "$@" >"$OWNERSHIP_LOG"\n')
@@ -127,10 +132,11 @@ class AuthorizedKeyTests(unittest.TestCase):
                 "authorize-ssh",
                 str(self.public_key),
                 str(self.ssh_dir),
+                self.ssh_keygen,
             ],
             env={
                 **os.environ,
-                "PATH": f"{self.bin}:{os.environ['PATH']}",
+                "PATH": str(self.bin),
                 "OWNERSHIP_LOG": str(self.root / "ownership"),
             },
             capture_output=True,

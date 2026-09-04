@@ -7,9 +7,9 @@ let
       homeDirectory = "/homeless-shelter";
     };
   };
-  nixPathInit = pkgs.writeText "00-nix-path.fish" (
-    fishModule.xdg.configFile."fish/conf.d/00-nix-path.fish".text
-  );
+  nixPathInit =
+    pkgs.writeText "00-nix-path.fish"
+      fishModule.xdg.configFile."fish/conf.d/00-nix-path.fish".text;
 in
 {
   fish-ssh-startup = pkgs.runCommand "fish-ssh-startup" { } ''
