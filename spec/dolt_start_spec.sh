@@ -135,6 +135,11 @@ It 'points --data-dir at the beads directory'
 When run bash -c "grep -- '--data-dir' '$SCRIPT'"
 The output should include '--data-dir'
 End
+
+It 'does not expose the live server as a remotes API receiver'
+When run bash -c "! grep -Eq -- 'BEADS_DOLT_REMOTESAPI_PORT|--remotesapi-port' '$SCRIPT'"
+The status should be success
+End
 End
 
 End
@@ -170,5 +175,65 @@ End
 It 'provides an explicit empty DOLT_CLI_PASSWORD in the systemd dolt service environment'
 When run grep -F '"DOLT_CLI_PASSWORD="' "$MODULE"
 The output should include '"DOLT_CLI_PASSWORD="'
+End
+
+It 'does not configure the live service with a remotes API port'
+When run bash -c "! sed -n '/^  systemd.user.services.dolt =/,/^  systemd.user.services.dolt-federation-hub =/p' '$MODULE' | grep -F 'BEADS_DOLT_REMOTESAPI_PORT='"
+The status should be success
+End
+
+It 'keeps the federation mirror in a separate data directory'
+When run grep -F 'federationDir = "${homeDir}/.beads/federation-server/dolt";' "$MODULE"
+The output should include 'federationDir = "${homeDir}/.beads/federation-server/dolt";'
+End
+
+It 'enables the federation mirror only for the Kyber publisher'
+When run bash -c "grep -F 'publisherEnabled = isKyber;' '$MODULE' >/dev/null && grep -F 'federationHubEnabled = publisherEnabled;' '$MODULE' >/dev/null && grep -F 'systemd.user.services.dolt-federation-hub =' '$MODULE' >/dev/null"
+The status should be success
+End
+
+It 'creates the federation data directory before starting the mirror'
+When run grep -F 'ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${federationDir}";' "$MODULE"
+The output should include 'ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${federationDir}";'
+End
+
+It 'runs the federation mirror on dedicated SQL and remotes API ports'
+When run grep -F 'ExecStart = "${pkgs.dolt}/bin/dolt sql-server -H 0.0.0.0 -P 3309 --data-dir ${federationDir} --remotesapi-port ${toString federationRemotesApiPort}";' "$MODULE"
+The output should include 'ExecStart = "${pkgs.dolt}/bin/dolt sql-server -H 0.0.0.0 -P 3309 --data-dir ${federationDir} --remotesapi-port ${toString federationRemotesApiPort}";'
+End
+
+It 'uses remotes API port 3308 for federation clients'
+When run grep -F 'federationRemotesApiPort = 3308;' "$MODULE"
+The output should include 'federationRemotesApiPort = 3308;'
+End
+
+It 'keeps the federation hub URL on the remotes API port'
+When run grep -F 'federationHubUrl = "http://${federationHubHost}:${toString federationRemotesApiPort}";' "$MODULE"
+The output should include 'federationHubUrl = "http://${federationHubHost}:${toString federationRemotesApiPort}";'
+End
+
+It 'uses the repository as the federation mirror working directory'
+When run bash -c "sed -n '/^  systemd.user.services.dolt-federation-hub =/,/^  systemd.user.services.dolt-backup-main =/p' '$MODULE' | grep -F 'WorkingDirectory = repoDir;'"
+The output should include 'WorkingDirectory = repoDir;'
+End
+
+It 'starts the federation mirror after the network and live Dolt services'
+When run bash -c "sed -n '/^  systemd.user.services.dolt-federation-hub =/,/^  systemd.user.services.dolt-backup-main =/p' '$MODULE' | grep -F '\"network.target\"' >/dev/null && sed -n '/^  systemd.user.services.dolt-federation-hub =/,/^  systemd.user.services.dolt-backup-main =/p' '$MODULE' | grep -F '\"dolt.service\"' >/dev/null"
+The status should be success
+End
+
+It 'limits federation mirror I/O writes to 20M'
+When run bash -c "sed -n '/^  systemd.user.services.dolt-federation-hub =/,/^  systemd.user.services.dolt-backup-main =/p' '$MODULE' | grep -F 'IOWriteBandwidthMax = \"/ 20M\";'"
+The output should include 'IOWriteBandwidthMax = "/ 20M";'
+End
+
+It 'orders and wants the federation mirror before linear sync'
+When run bash -c "sed -n '/^  systemd.user.services.dolt-linear-sync =/,/^  systemd.user.timers.dolt-linear-sync =/p' '$MODULE' | awk '/\"dolt-federation-hub.service\"/ { count++ } END { exit count == 2 ? 0 : 1 }'"
+The status should be success
+End
+
+It 'orders and wants the federation mirror before federation sync'
+When run bash -c "sed -n '/^  systemd.user.services.dolt-federation-sync =/,/^  systemd.user.timers.dolt-federation-sync =/p' '$MODULE' | awk '/\"dolt-federation-hub.service\"/ { count++ } END { exit count == 2 ? 0 : 1 }'"
+The status should be success
 End
 End
