@@ -363,7 +363,7 @@
       {
         "hooks": [
           {
-            "command": "command -v traces >/dev/null 2>&1 && traces hook agent session-end --agent claude-code",
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-end --agent claude-code # traces hook agent",
             "type": "command"
           }
         ],
@@ -408,7 +408,7 @@
       {
         "hooks": [
           {
-            "command": "command -v traces >/dev/null 2>&1 && traces hook agent session-start --agent claude-code",
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-start --agent claude-code # traces hook agent",
             "type": "command"
           }
         ],
@@ -448,7 +448,7 @@
       {
         "hooks": [
           {
-            "command": "command -v traces >/dev/null 2>&1 && traces hook agent agent-done --agent claude-code",
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh agent-done --agent claude-code # traces hook agent",
             "type": "command"
           }
         ],
@@ -507,7 +507,7 @@
       {
         "hooks": [
           {
-            "command": "command -v traces >/dev/null 2>&1 && traces hook agent prompt-submitted --agent claude-code",
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh prompt-submitted --agent claude-code # traces hook agent",
             "type": "command"
           }
         ],

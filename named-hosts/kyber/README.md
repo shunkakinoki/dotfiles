@@ -195,13 +195,27 @@ cleaner:
   probe latency, recent CRI lifecycle errors, and host DNS (Tailscale must not
   own `/etc/resolv.conf`).
 
-Herdr and RoboRev run inside `orchestration.slice`, which caps aggregate writes
-to 20 MB/s and aggregate tasks to 2,048. When sustained I/O PSI or D-state
-pressure crosses the health threshold, the host-health check records PSI,
-process/`wchan`, per-process I/O, cgroup I/O, and recent k3s logs under
-`/run/kyber-host-health/evidence`, then freezes only that disposable slice. It
-never freezes or restarts k3s, containerd, or storage services. The slice thaws
-after five consecutive pressure-free samples with a healthy CRI probe.
+The Herdr server runs in `herdr.slice`, which is never frozen: it is the
+control plane for every lane and must keep answering API calls. Its pane
+shells re-exec themselves into `orchestration.slice` through the kyber fish
+init, so lane work, RoboRev, and their child processes share one disposable
+slice that caps aggregate writes to 20 MB/s and aggregate tasks to 2,048.
+When sustained host I/O PSI or D-state pressure crosses the health threshold
+and the slice's own `io.pressure` or D-state count implicates it, the
+host-health check records PSI, process/`wchan`, per-process I/O, cgroup I/O,
+and recent k3s logs under `/run/kyber-host-health/evidence`, then freezes only
+that disposable slice. Host pressure that the slice is not implicated in
+(k3s, containerd, storage) leaves it running. It never freezes or restarts
+k3s, containerd, or storage services. The slice thaws after five consecutive
+pressure-free samples with a healthy CRI probe. Three freezes within an hour
+raise `orchestration-circuit-breaker-flapping`, which means the slice re-trips
+after every thaw and its top writers in the evidence captures need attention
+rather than another auto-thaw.
+
+Coding-agent hooks are the usual writer behind a flapping slice: every hook
+event goes through `config/shared/hooks/traces-agent-hook.sh`, which bounds
+the detached `traces share` uploads that the traces hook otherwise spawns
+without limit (see [shared hooks](../../config/shared/hooks/README.md)).
 
 This containment does not isolate ext4 journals. Kyber has two physical SSDs:
 the root/PVC filesystem and the dedicated containerd filesystem. Moving k3s

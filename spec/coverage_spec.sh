@@ -520,6 +520,7 @@ config/codex/hooks/notify.sh
 config/codex/hooks/pushover.sh
 config/shared/hooks/block-gh-settings.sh
 config/shared/hooks/block-git-push.sh
+config/shared/hooks/traces-agent-hook.sh
 config/shared/hooks/secret-guard.sh
 config/shared/hooks/security.sh
 config/shared/hooks/rtk-rewrite.sh

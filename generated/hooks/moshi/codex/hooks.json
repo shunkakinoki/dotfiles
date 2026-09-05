@@ -180,7 +180,7 @@
       {
         "hooks": [
           {
-            "command": "command -v traces >/dev/null 2>&1 && traces hook agent session-start --agent codex",
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-start --agent codex # traces hook agent",
             "timeout": 30,
             "type": "command"
           }
@@ -221,7 +221,7 @@
       {
         "hooks": [
           {
-            "command": "command -v traces >/dev/null 2>&1 && traces hook agent agent-done --agent codex",
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh agent-done --agent codex # traces hook agent",
             "timeout": 30,
             "type": "command"
           }
@@ -260,7 +260,7 @@
       {
         "hooks": [
           {
-            "command": "command -v traces >/dev/null 2>&1 && traces hook agent prompt-submitted --agent codex",
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh prompt-submitted --agent codex # traces hook agent",
             "timeout": 30,
             "type": "command"
           }
@@ -272,7 +272,7 @@
       {
         "hooks": [
           {
-            "command": "command -v traces >/dev/null 2>&1 && traces hook agent session-end --agent codex",
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-end --agent codex # traces hook agent",
             "timeout": 30,
             "type": "command"
           }

@@ -120,9 +120,13 @@ home-manager.lib.homeManagerConfiguration {
 
         programs.home-manager.enable = true;
 
-        # Review daemons own disposable work and may be frozen by the host
-        # health circuit breaker without interrupting production services.
+        # Review daemons and agent lane shells own disposable work and may be
+        # frozen by the host health circuit breaker without interrupting
+        # production services. The Herdr server itself is the control plane
+        # for every lane, so it lives in its own never-frozen slice and only
+        # the panes it spawns are moved into orchestration.slice.
         home.file.".config/systemd/user/orchestration.slice".source = ./orchestration.slice;
+        home.file.".config/systemd/user/herdr.slice".source = ./herdr.slice;
         home.file.".config/systemd/user/roborev.service.d/10-orchestration.conf".source =
           ./orchestration-service.conf;
         xdg.configFile."systemd/user/herdr-server.service".force = true;
@@ -138,7 +142,7 @@ home-manager.lib.homeManagerConfiguration {
             ExecStart = "${pkgs.llm-agents.herdr}/bin/herdr server";
             Restart = "on-failure";
             RestartSec = "30s";
-            Slice = "orchestration.slice";
+            Slice = "herdr.slice";
             Environment = [ "HERDR_ENV=1" ];
           };
           Install.WantedBy = [ "default.target" ];
@@ -165,6 +169,18 @@ home-manager.lib.homeManagerConfiguration {
         # because it needs to be evaluated dynamically per shell session
         programs.fish.interactiveShellInit = lib.mkAfter ''
           set -gx GPG_TTY (tty)
+        '';
+
+        # Herdr pane shells inherit herdr.slice from the server. Re-exec them
+        # into orchestration.slice so the circuit breaker can freeze lane work
+        # without freezing the server that owns the panes.
+        programs.fish.shellInit = lib.mkAfter ''
+          if set -q HERDR_ENV; and status is-interactive; and not set -q HERDR_PANE_SCOPED; and test -r /proc/self/cgroup; and not string match -q '*/orchestration.slice/*' (cat /proc/self/cgroup)
+            set -gx HERDR_PANE_SCOPED 1
+            exec ${pkgs.systemd}/bin/systemd-run --user --quiet --scope --collect \
+              --slice=orchestration.slice --unit=herdr-pane-$fish_pid \
+              ${pkgs.fish}/bin/fish
+          end
         '';
 
         # Enable XDG directories

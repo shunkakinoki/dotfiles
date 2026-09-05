@@ -75,7 +75,7 @@ End
 
 It 'uses the official Traces Antigravity Stop hook with an availability guard'
 When run jq -r '.["traces-share-to-traces"].Stop[0].command' "$HOOKS"
-The output should equal "command -v traces >/dev/null 2>&1 && traces hook agent agent-done --agent antigravity >/dev/null 2>&1; printf %s '{\"decision\":\"\"}'"
+The output should equal "\$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh agent-done --agent antigravity >/dev/null 2>&1; printf %s '{\"decision\":\"\"}' # traces hook agent"
 End
 
 It 'reverts named hooks written by other tools'
