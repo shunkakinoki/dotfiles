@@ -235,6 +235,13 @@ lib.mkIf clientEnabled {
         "DOLT_CLI_PASSWORD="
       ]
       ++ lib.optional federationHubEnabled "BEADS_DOLT_REMOTESAPI_PORT=${toString federationRemotesApiPort}";
+    }
+    // lib.optionalAttrs isKyber {
+      # DOLT_BACKUP performs the off-site snapshot inside the server process.
+      # Bound that bulk writer so it cannot starve Kine and PostgreSQL on the
+      # shared root disk; normal transactional writes remain far below 20 MB/s.
+      IOAccounting = true;
+      IOWriteBandwidthMax = "/ 20M";
     };
     Install = {
       WantedBy = [ "default.target" ];

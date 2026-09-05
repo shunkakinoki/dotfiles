@@ -225,55 +225,35 @@ export function createFallbackPolicy(config: FallbackConfig): FallbackPolicy {
   };
 }
 
-/** The slice of Pi's ExtensionAPI this needs. */
-interface FallbackHost {
-  on(event: string, handler: (event: unknown, ctx: unknown) => unknown): void;
-  ui: { notify(message: string, type?: "info" | "warning" | "error"): void };
-  modelRegistry: { find(provider: string, modelId: string): unknown };
-  setModel(model: unknown): Promise<boolean>;
-  sendMessage(
-    message: { customType: string; content: string; display: boolean },
-    options?: { triggerTurn?: boolean }
-  ): void;
-}
-
-function attachFallback(host: FallbackHost, configPath: string): void {
+function attachFallback(host: ExtensionAPI, configPath: string): void {
   const config = loadFallbackConfig(configPath);
   if (!config.enabled || config.fallback_models.length === 0) return;
 
   const policy = createFallbackPolicy(config);
-  // Ref of the model this extension last selected, so a model that is active
-  // without us having chosen it can only have come from the user. Pi emits
-  // model_select and OMP does not, so both hosts are covered by comparing
-  // ctx.model instead of subscribing to an event only one of them has.
+  // Respect model changes made by the user between fallback attempts.
   let appliedRef: string | undefined;
 
-  const notify = (message: string, level: "info" | "warning" = "info") => {
-    if (config.notify_on_fallback)
-      host.ui.notify(`[fallback] ${message}`, level);
-  };
-
-  const selectRef = async (ref: string): Promise<boolean> => {
-    const { provider, id } = splitModelRef(ref);
-    const model = host.modelRegistry.find(provider, id);
-    if (!model) return false;
-    if (!(await host.setModel(model))) return false;
-    appliedRef = ref;
-    return true;
-  };
-
   host.on("after_provider_response", (event) => {
-    policy.recordStatus((event as { status?: number }).status);
+    policy.recordStatus(event.status);
   });
 
   host.on("agent_end", async (event, ctx) => {
-    const messages = (event as { messages?: unknown[] }).messages ?? [];
-    const last = messages[messages.length - 1] as
-      | { role?: string; stopReason?: string; errorMessage?: string }
-      | undefined;
-    const currentRef = modelRef(
-      (ctx as { model?: { provider?: string; id?: string } }).model
-    );
+    const notify = (message: string, level: "info" | "warning" = "info") => {
+      if (config.notify_on_fallback) ctx.ui.notify(`[fallback] ${message}`, level);
+    };
+
+    const selectRef = async (ref: string): Promise<boolean> => {
+      const { provider, id } = splitModelRef(ref);
+      const model = ctx.modelRegistry.find(provider, id);
+      if (!model) return false;
+      if (!(await host.setModel(model))) return false;
+      appliedRef = ref;
+      return true;
+    };
+
+    const messages = event.messages;
+    const last = messages[messages.length - 1];
+    const currentRef = modelRef(ctx.model);
 
     // The user switched models behind our back: their choice wins outright.
     if (appliedRef !== undefined && currentRef !== appliedRef) {
@@ -302,7 +282,7 @@ function attachFallback(host: FallbackHost, configPath: string): void {
         policy.commit();
         notify(
           `${decision.from} failed (${decision.status ?? "error"}) -> ${decision.to}`,
-          "warning"
+          "warning",
         );
         host.sendMessage(
           {
@@ -310,7 +290,7 @@ function attachFallback(host: FallbackHost, configPath: string): void {
             content: "Continue.",
             display: false,
           },
-          { triggerTurn: true }
+          { triggerTurn: true },
         );
         return;
       }
@@ -324,8 +304,5 @@ function attachFallback(host: FallbackHost, configPath: string): void {
 }
 
 export default function piRuntimeFallback(pi: ExtensionAPI): void {
-  attachFallback(
-    pi as unknown as FallbackHost,
-    join(homedir(), ".pi", "agent", "fallback.json")
-  );
+  attachFallback(pi, join(homedir(), ".pi", "agent", "fallback.json"));
 }
