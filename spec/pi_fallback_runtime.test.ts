@@ -35,10 +35,10 @@ async function runScenario(
               id: "msg-test",
               role: "assistant",
               status: "completed",
-              content: [{ type: "output_text", text: "OK", annotations: [] }]
-            }
+              content: [{ type: "output_text", text: "OK", annotations: [] }],
+            },
           ],
-          usage: { input_tokens: 1, output_tokens: 1, total_tokens: 2 }
+          usage: { input_tokens: 1, output_tokens: 1, total_tokens: 2 },
         };
         const events = [
           { type: "response.created", response: { id: "test" } },
@@ -49,27 +49,27 @@ async function runScenario(
               type: "message",
               id: "msg-test",
               role: "assistant",
-              content: []
-            }
+              content: [],
+            },
           },
           {
             type: "response.content_part.added",
             output_index: 0,
             content_index: 0,
-            part: { type: "output_text", text: "", annotations: [] }
+            part: { type: "output_text", text: "", annotations: [] },
           },
           {
             type: "response.output_text.delta",
             output_index: 0,
             content_index: 0,
-            delta: "OK"
+            delta: "OK",
           },
           {
             type: "response.output_item.done",
             output_index: 0,
-            item: response.output[0]
+            item: response.output[0],
           },
-          { type: "response.completed", response }
+          { type: "response.completed", response },
         ];
         return new Response(
           events.map((event) => `data: ${JSON.stringify(event)}\n\n`).join(""),
@@ -85,15 +85,15 @@ async function runScenario(
           {
             index: 0,
             delta: { role: "assistant", content: "OK" },
-            finish_reason: null
-          }
-        ]
+            finish_reason: null,
+          },
+        ],
       };
       return new Response(
         `data: ${JSON.stringify(chunk)}\n\ndata: ${JSON.stringify({ ...chunk, choices: [{ index: 0, delta: {}, finish_reason: "stop" }] })}\n\ndata: [DONE]\n\n`,
         { headers: { "content-type": "text/event-stream" } }
       );
-    }
+    },
   });
   const testHome = mkdtempSync(join(tmpdir(), "pi-runtime-"));
   try {
@@ -105,7 +105,7 @@ async function runScenario(
         defaultProvider: "cliproxyapi",
         defaultModel: primary,
         retry: { enabled: retries > 0, maxRetries: retries, baseDelayMs: 1 },
-        providerRetry: { maxRetries: 0 }
+        providerRetry: { maxRetries: 0 },
       })
     );
     writeFileSync(
@@ -125,10 +125,10 @@ async function runScenario(
               reasoning: false,
               input: ["text"],
               contextWindow: 131072,
-              maxTokens: 100
-            }))
-          }
-        }
+              maxTokens: 100,
+            })),
+          },
+        },
       })
     );
     const child = Bun.spawn(
@@ -146,13 +146,13 @@ async function runScenario(
         "-e",
         resolve("config/pi/fallback.ts"),
         "-p",
-        "Reply OK"
+        "Reply OK",
       ],
       {
         cwd: testHome,
         env: { ...process.env, HOME: testHome, PI_CODING_AGENT_DIR: agent },
         stdout: "pipe",
-        stderr: "pipe"
+        stderr: "pipe",
       }
     );
     const timer = setTimeout(() => child.kill(), 15000);
@@ -160,7 +160,7 @@ async function runScenario(
       const [stdout, stderr, status] = await Promise.all([
         new Response(child.stdout).text(),
         new Response(child.stderr).text(),
-        child.exited
+        child.exited,
       ]);
       return { stdout, stderr, status, requests };
     } finally {

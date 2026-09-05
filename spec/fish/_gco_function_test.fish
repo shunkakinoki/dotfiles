@@ -1,4 +1,5 @@
 set fn (status dirname)/../../home-manager/programs/fish/functions
+source $fn/_git_index_lock_wait.fish
 source $fn/_gco_function.fish
 
 set call_log (mktemp)

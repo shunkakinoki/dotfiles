@@ -156,7 +156,8 @@ export function createFallbackPolicy(config: FallbackConfig): FallbackPolicy {
     const messageStatus = errorMessage.match(
       /(?:^|API error \(|HTTP(?: error)?[ :]+|status(?: code)?[ :]+)([45]\d{2})\b/i
     )?.[1];
-    const status = messageStatus === undefined ? lastStatus : Number(messageStatus);
+    const status =
+      messageStatus === undefined ? lastStatus : Number(messageStatus);
     if (status !== undefined && config.retry_on_errors.includes(status)) {
       lastStatus = status;
       return true;
@@ -250,7 +251,8 @@ function attachFallback(host: ExtensionAPI, configPath: string): void {
 
   host.on("agent_end", async (event, ctx) => {
     const notify = (message: string, level: "info" | "warning" = "info") => {
-      if (config.notify_on_fallback) ctx.ui.notify(`[fallback] ${message}`, level);
+      if (config.notify_on_fallback)
+        ctx.ui.notify(`[fallback] ${message}`, level);
     };
 
     const selectRef = async (ref: string): Promise<boolean> => {
@@ -293,7 +295,7 @@ function attachFallback(host: ExtensionAPI, configPath: string): void {
         policy.commit();
         notify(
           `${decision.from} failed (${decision.status ?? "error"}) -> ${decision.to}`,
-          "warning",
+          "warning"
         );
         host.sendMessage(
           {
@@ -301,7 +303,7 @@ function attachFallback(host: ExtensionAPI, configPath: string): void {
             content: "Continue.",
             display: false,
           },
-          { triggerTurn: true },
+          { triggerTurn: true }
         );
         return;
       }
