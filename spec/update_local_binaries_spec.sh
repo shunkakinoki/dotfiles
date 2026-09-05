@@ -564,4 +564,65 @@ The output should include 'exit 1'
 End
 End
 
+Describe 'multiple targets in one repository'
+setup_targets() {
+  TARGET_FIXTURE=$(mktemp -d)
+  mkdir -p "$TARGET_FIXTURE/scripts" "$TARGET_FIXTURE/tools" "$TARGET_FIXTURE/repo/.git" "$TARGET_FIXTURE/repo/cmd/crabbox" "$TARGET_FIXTURE/repo/worker/node_modules"
+  cp "$SCRIPT" "$TARGET_FIXTURE/scripts/update-local-binaries.sh"
+  touch "$TARGET_FIXTURE/repo/go.mod" "$TARGET_FIXTURE/repo/worker/package.json" "$TARGET_FIXTURE/repo/worker/node_modules/fixture"
+  printf '%s\n' "$TARGET_FIXTURE/repo/crabbox" "$TARGET_FIXTURE/repo/crabbox:alias" "$TARGET_FIXTURE/repo/worker/dist-node/crabbox-coordinator#node-build" >"$TARGET_FIXTURE/.local-binaries.txt"
+  cat >"$TARGET_FIXTURE/tools/git" <<'FIXTURE'
+#!/usr/bin/env bash
+if [ "$1" = pull ]; then
+  echo pull >>"$TARGET_CALLS"
+  exit "${TARGET_PULL_EXIT:-0}"
+fi
+FIXTURE
+  cat >"$TARGET_FIXTURE/tools/go" <<'FIXTURE'
+#!/usr/bin/env bash
+echo "go $*" >>"$TARGET_CALLS"
+exit "${TARGET_BUILD_EXIT:-0}"
+FIXTURE
+  cat >"$TARGET_FIXTURE/tools/npm" <<'FIXTURE'
+#!/usr/bin/env bash
+echo "npm $*" >>"$TARGET_CALLS"
+mkdir -p dist-node
+touch dist-node/server.mjs
+FIXTURE
+  chmod +x "$TARGET_FIXTURE/tools/"*
+}
+cleanup_targets() { rm -rf "$TARGET_FIXTURE"; }
+run_targets() {
+  local result=0
+  env PATH="$TARGET_FIXTURE/tools:$PATH" TARGET_CALLS="$TARGET_FIXTURE/calls" TARGET_PULL_EXIT="${1:-0}" TARGET_BUILD_EXIT="${2:-0}" bash "$TARGET_FIXTURE/scripts/update-local-binaries.sh" >"$TARGET_FIXTURE/output" 2>&1 || result=$?
+  cat "$TARGET_FIXTURE/calls"
+  return "$result"
+}
+Before 'setup_targets'
+After 'cleanup_targets'
+
+It 'pulls once and builds the CLI and coordinator, ignoring alias duplicates'
+When call run_targets
+The output should eq "pull
+go build ./cmd/crabbox
+npm ci
+npm run build:node"
+The status should be success
+End
+
+It 'does not build later targets after a failed repository update'
+When call run_targets 1
+The output should eq "pull
+pull"
+The status should be failure
+End
+
+It 'does not hide a failed CLI build with a later coordinator build'
+When call run_targets 0 1
+The output should eq "pull
+go build ./cmd/crabbox"
+The status should be failure
+End
+End
+
 End
