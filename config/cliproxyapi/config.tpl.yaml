@@ -579,8 +579,8 @@ openai-compatibility:
     api-key-entries:
       - api-key: "__SURPLUS_API_KEY__"
     models:
-      - name: "__DEEPSEEK_PRO__"
-        alias: "__DEEPSEEK_PRO__"
+      - name: "__GPT_LUNA__"
+        alias: "__GPT_LUNA__"
       - name: "__DEEPSEEK_FLASH_0731__"
         alias: "__DEEPSEEK_FLASH__"
 
