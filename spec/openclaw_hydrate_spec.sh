@@ -17,7 +17,7 @@ template_uses_cliproxy_flash_default() {
     (.models.providers.cliproxy.models | any(.id == "free")) and
     (.agents.defaults.model.fallbacks[-1] == "cliproxy/free") and
     (.models.providers.cliproxy.models | all(
-      if .id == "deepseek-v4-flash"
+      if (.id == "deepseek-v4-flash" or .id == "gpt-5.6-luna")
       then .compat.supportsPromptCacheKey == true
       else .compat.supportsPromptCacheKey? != true
       end

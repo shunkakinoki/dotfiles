@@ -43,6 +43,9 @@
         "__DEEPSEEK_FLASH__": {
           "name": "__DEEPSEEK_FLASH_PRETTY__ (via shunkakinoki's CLIProxy)"
         },
+        "__GPT_LUNA__": {
+          "name": "__GPT_LUNA_PRETTY__ (via shunkakinoki's CLIProxy)"
+        },
         "__MINIMAX__": {
           "name": "__MINIMAX_PRETTY__ (via shunkakinoki's CLIProxy)"
         },
@@ -80,6 +83,9 @@
         },
         "__DEEPSEEK_FLASH__": {
           "name": "__DEEPSEEK_FLASH_PRETTY__ (via local CLIProxyAPI)"
+        },
+        "__GPT_LUNA__": {
+          "name": "__GPT_LUNA_PRETTY__ (via local CLIProxyAPI)"
         },
         "__MINIMAX__": {
           "name": "__MINIMAX_PRETTY__ (via local CLIProxyAPI)"

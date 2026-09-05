@@ -16,9 +16,20 @@
       "provider": "generic-chat-completion-api"
     },
     {
-      "model": "free",
-      "id": "custom:free-1",
+      "model": "__GPT_LUNA__",
+      "id": "custom:__GPT_LUNA__-1",
       "index": 1,
+      "baseUrl": "https://cliproxy.shunkakinoki.com/v1",
+      "apiKey": "CLIPROXY_API_KEY",
+      "displayName": "__GPT_LUNA_PRETTY__",
+      "maxOutputTokens": 128000,
+      "noImageSupport": false,
+      "provider": "generic-chat-completion-api"
+    },
+    {
+      "model": "free",
+      "id": "custom:free-2",
+      "index": 2,
       "baseUrl": "https://cliproxy.shunkakinoki.com/v1",
       "apiKey": "CLIPROXY_API_KEY",
       "displayName": "Free Router",

@@ -43,6 +43,9 @@
         "deepseek-v4-flash": {
           "name": "Deepseek V4 Flash (via shunkakinoki's CLIProxy)"
         },
+        "gpt-5.6-luna": {
+          "name": "GPT 5.6 Luna (via shunkakinoki's CLIProxy)"
+        },
         "minimax-m3": {
           "name": "Minimax M3 (via shunkakinoki's CLIProxy)"
         },
@@ -80,6 +83,9 @@
         },
         "deepseek-v4-flash": {
           "name": "Deepseek V4 Flash (via local CLIProxyAPI)"
+        },
+        "gpt-5.6-luna": {
+          "name": "GPT 5.6 Luna (via local CLIProxyAPI)"
         },
         "minimax-m3": {
           "name": "Minimax M3 (via local CLIProxyAPI)"
