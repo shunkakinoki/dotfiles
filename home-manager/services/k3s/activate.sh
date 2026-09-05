@@ -211,5 +211,11 @@ if [ -f "$K3S_KUBECONFIG" ]; then
   require_sudo || exit 0
   run_sudo cp "$K3S_KUBECONFIG" "$KUBE_DIR/config"
   run_sudo chown "$(id -u):$(id -g)" "$KUBE_DIR/config"
+  # k3s publishes a remotely reachable API hostname in its root kubeconfig.
+  # Local host operations must not depend on Tailscale MagicDNS, which is
+  # deliberately disabled on servers to preserve the system resolver.
+  run @sed@ -i -E \
+    's#^([[:space:]]*server:)[[:space:]]*https://[^:]+:6443$#\1 https://127.0.0.1:6443#' \
+    "$KUBE_DIR/config"
   run chmod 600 "$KUBE_DIR/config"
 fi
