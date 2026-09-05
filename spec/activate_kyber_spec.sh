@@ -140,7 +140,7 @@ The output should include '--accept-dns=false'
 End
 
 It 'keeps local k3s access independent of Tailscale DNS'
-When run bash -c "grep -q 'server:).*https://127.0.0.1:6443' '$PWD/home-manager/services/k3s/activate.sh' && grep -q 'sed = \"\${pkgs.gnused}/bin/sed\"' '$PWD/home-manager/services/k3s/default.nix'"
+When run bash -c "grep -q 'server:).*https://127.0.0.1:6443' '$PWD/config/k3s/activate.sh' && grep -q 'sed = \"\${pkgs.gnused}/bin/sed\"' '$PWD/config/k3s/default.nix'"
 The status should be success
 End
 End

@@ -38,7 +38,7 @@ let
   galacticaAuthorizedKey = (import ../../named-hosts/pubkeys.nix).galactica;
   serverActivateScript = pkgs.replaceVars ./activate.sh {
     inherit galacticaAuthorizedKey kubeletConfigName;
-    tailscaleDns = if isK3sServer then k3s.tailscaleDns else "kyber.tail950b36.ts.net";
+    sed = "${pkgs.gnused}/bin/sed";
   };
   alertScript = pkgs.writeShellApplication {
     name = "kyber-host-alert";
