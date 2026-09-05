@@ -105,16 +105,12 @@ export default function tracesHook(event) {
 
   // traces reads the destination namespace from the working directory, and the
   // gateway process runs from /tmp, so cwd has to be set explicitly.
-  const child = spawn(
-    TRACES_HOOK_GUARD,
-    [tracesEvent, "--agent", AGENT_ID],
-    {
-      cwd,
-      env: { ...process.env, TRACES_BIN: resolveTracesBin() },
-      stdio: ["pipe", "ignore", "ignore"],
-      detached: true,
-    }
-  );
+  const child = spawn(TRACES_HOOK_GUARD, [tracesEvent, "--agent", AGENT_ID], {
+    cwd,
+    env: { ...process.env, TRACES_BIN: resolveTracesBin() },
+    stdio: ["pipe", "ignore", "ignore"],
+    detached: true,
+  });
   child.on("error", (error) => debug(`spawn failed: ${error.message}`));
   child.stdin.on("error", () => {});
   child.stdin.end(

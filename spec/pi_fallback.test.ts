@@ -9,11 +9,18 @@ test("a 504 on free reports exhaustion through the event context", () => {
   try {
     const agentDir = join(testHome, ".pi", "agent");
     mkdirSync(agentDir, { recursive: true });
-    writeFileSync(join(agentDir, "fallback.json"), JSON.stringify({
-      enabled: true,
-      fallback_models: ["cliproxyapi/free"],
-    }));
-    const result = spawnSync(process.execPath, ["-e", `
+    writeFileSync(
+      join(agentDir, "fallback.json"),
+      JSON.stringify({
+        enabled: true,
+        fallback_models: ["cliproxyapi/free"],
+      })
+    );
+    const result = spawnSync(
+      process.execPath,
+      [
+        "-e",
+        `
       import fallback from ${JSON.stringify(resolve("config/pi/fallback.ts"))};
       const handlers = new Map();
       const notices = [];
@@ -43,7 +50,10 @@ test("a 504 on free reports exhaustion through the event context", () => {
       });
       if (notices.length !== 0) throw new Error("stale status triggered fallback");
       console.log("exhaustion handled");
-    `], { env: { ...process.env, HOME: testHome }, encoding: "utf8" });
+    `,
+      ],
+      { env: { ...process.env, HOME: testHome }, encoding: "utf8" }
+    );
     expect(result.stderr).toBe("");
     expect(result.status).toBe(0);
     expect(result.stdout).toContain("exhaustion handled");
