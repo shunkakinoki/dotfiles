@@ -34,10 +34,12 @@ let
   # spoke push is a native transfer rather than a git subprocess tree that a
   # disconnected client leaves orphaned on the server.
   federationHubEnabled = publisherEnabled;
-  federationHubHost = "kyber.tail950b36.ts.net";
   federationRemotesApiPort = 3308;
-  federationHubUrl = "http://${federationHubHost}:${toString federationRemotesApiPort}";
   doltServerHost = "127.0.0.1";
+  # Kyber reaches its own remotesapi over loopback so self-federation does not
+  # depend on MagicDNS. Spokes still reach Kyber through its tailnet address.
+  federationHubHost = if federationHubEnabled then doltServerHost else "kyber.tail950b36.ts.net";
+  federationHubUrl = "http://${federationHubHost}:${toString federationRemotesApiPort}";
   beadsClientEnvironment = {
     BEADS_DOLT_AUTO_START = "0";
     BEADS_DOLT_SERVER_MODE = "1";
@@ -94,8 +96,6 @@ let
     BEADS_DOLT_SERVER_USER = "root";
     DOLT_CLI_USER = "root";
     DOLT_CLI_PASSWORD = "";
-  }
-  // lib.optionalAttrs (!federationHubEnabled) {
     BEADS_FEDERATION_HUB = federationHubUrl;
   };
 in
