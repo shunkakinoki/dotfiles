@@ -12,6 +12,10 @@ readonly D_STATE_THRESHOLD=3
 readonly D_STATE_SUSTAINED_SAMPLES=5
 readonly IO_SOME_AVG300_THRESHOLD=20
 readonly IO_FULL_AVG300_THRESHOLD=10
+readonly ORCHESTRATION_IO_SOME_AVG300_THRESHOLD=10
+readonly ORCHESTRATION_D_STATE_THRESHOLD=3
+readonly ORCHESTRATION_FLAP_WINDOW_SECONDS=3600
+readonly ORCHESTRATION_FLAP_THRESHOLD=3
 readonly NODEFS_USAGE_THRESHOLD=70
 readonly NODEFS_AVAILABLE_WARNING_GIB=200
 readonly NODEFS_AVAILABLE_WARNING_BYTES=$((NODEFS_AVAILABLE_WARNING_GIB * 1024 * 1024 * 1024))
@@ -25,6 +29,9 @@ readonly DISK_WEAR_CHECK_INTERVAL_SECONDS=21600
 IO_PRESSURE_UNHEALTHY=0
 D_STATE_UNHEALTHY=0
 CRI_UNHEALTHY=0
+ORCHESTRATION_IMPLICATED=0
+ORCHESTRATION_IO_SOME_AVG300=0
+ORCHESTRATION_D_STATE_COUNT=0
 
 set_alert() {
   local key="$1"
@@ -238,6 +245,74 @@ orchestration_control() {
     systemctl --user "$action" "$ORCHESTRATION_SLICE"
 }
 
+orchestration_cgroup_dir() {
+  local orchestration_uid
+
+  orchestration_uid="$(id --user "$ORCHESTRATION_USER")"
+  printf '/sys/fs/cgroup/user.slice/user-%s.slice/user@%s.service/%s\n' \
+    "$orchestration_uid" "$orchestration_uid" "$ORCHESTRATION_SLICE"
+}
+
+# Host PSI says the disk is saturated; it does not say by whom. Freezing the
+# orchestration slice only helps when the slice itself is stalled or holds the
+# uninterruptible tasks, otherwise the freeze pauses the control plane while
+# k3s, the beads Dolt server, or a pod keeps the host over threshold.
+check_orchestration_pressure() {
+  local cgroup_dir some_avg300=0 d_state_count=0
+
+  cgroup_dir="$(orchestration_cgroup_dir)"
+  if [ -r "$cgroup_dir/io.pressure" ]; then
+    # shellcheck disable=SC2016
+    some_avg300="$(awk '$1 == "some" { for (i = 1; i <= NF; i++) if ($i ~ /^avg300=/) { sub(/^avg300=/, "", $i); print $i } }' "$cgroup_dir/io.pressure")"
+  fi
+  d_state_count="$(ps --no-headers -eo stat=,cgroup= | awk -v slice="/$ORCHESTRATION_SLICE/" '$1 ~ /^D/ && index($2, slice) { count++ } END { print count + 0 }')"
+
+  ORCHESTRATION_IO_SOME_AVG300="${some_avg300:-0}"
+  ORCHESTRATION_D_STATE_COUNT="$d_state_count"
+  if awk -v some="$ORCHESTRATION_IO_SOME_AVG300" -v some_limit="$ORCHESTRATION_IO_SOME_AVG300_THRESHOLD" 'BEGIN { exit !(some >= some_limit) }' ||
+    [ "$d_state_count" -ge "$ORCHESTRATION_D_STATE_THRESHOLD" ]; then
+    ORCHESTRATION_IMPLICATED=1
+  else
+    ORCHESTRATION_IMPLICATED=0
+  fi
+}
+
+orchestration_pressure_summary() {
+  printf 'slice io some avg300=%s, slice D-state=%s' "$ORCHESTRATION_IO_SOME_AVG300" "$ORCHESTRATION_D_STATE_COUNT"
+}
+
+record_orchestration_freeze() {
+  local freeze_log="$STATE_DIR/orchestration.freezes"
+  local now cutoff count
+
+  now="$(date +%s)"
+  cutoff=$((now - ORCHESTRATION_FLAP_WINDOW_SECONDS))
+  {
+    if [ -r "$freeze_log" ]; then
+      awk -v cutoff="$cutoff" '$1 >= cutoff' "$freeze_log"
+    fi
+    printf '%s\n' "$now"
+  } >"$freeze_log.next"
+  mv -f "$freeze_log.next" "$freeze_log"
+  count="$(wc -l <"$freeze_log" | tr -d '[:space:]')"
+  if [ "$count" -ge "$ORCHESTRATION_FLAP_THRESHOLD" ]; then
+    set_alert "orchestration-circuit-breaker-flapping" "froze $ORCHESTRATION_SLICE $count times in the last $((ORCHESTRATION_FLAP_WINDOW_SECONDS / 60)) minutes; the slice re-trips after every thaw, so inspect its top writers in the evidence captures instead of waiting for auto-thaw"
+  fi
+}
+
+clear_orchestration_flapping() {
+  local freeze_log="$STATE_DIR/orchestration.freezes"
+  local cutoff count=0
+
+  cutoff=$(($(date +%s) - ORCHESTRATION_FLAP_WINDOW_SECONDS))
+  if [ -r "$freeze_log" ]; then
+    count="$(awk -v cutoff="$cutoff" '$1 >= cutoff { count++ } END { print count + 0 }' "$freeze_log")"
+  fi
+  if [ "$count" -lt "$ORCHESTRATION_FLAP_THRESHOLD" ]; then
+    clear_alert "orchestration-circuit-breaker-flapping"
+  fi
+}
+
 manage_orchestration_circuit_breaker() {
   local capture_file="$STATE_DIR/orchestration.capture"
   local frozen_file="$STATE_DIR/orchestration.frozen"
@@ -245,9 +320,9 @@ manage_orchestration_circuit_breaker() {
   local freeze_failure_alert="orchestration-freeze-failed"
   local state_failure_alert="orchestration-state-persist-failed"
   local thaw_failure_alert="orchestration-thaw-failed"
-  local evidence_dir recovery_samples=0
+  local evidence_dir recovery_samples=0 newly_frozen=0
 
-  if [ "$IO_PRESSURE_UNHEALTHY" -eq 1 ] || [ "$D_STATE_UNHEALTHY" -eq 1 ]; then
+  if { [ "$IO_PRESSURE_UNHEALTHY" -eq 1 ] || [ "$D_STATE_UNHEALTHY" -eq 1 ]; } && [ "$ORCHESTRATION_IMPLICATED" -eq 1 ]; then
     printf '0\n' >"$recovery_file"
     if [ ! -s "$capture_file" ]; then
       evidence_dir="$(capture_orchestration_evidence)"
@@ -256,6 +331,7 @@ manage_orchestration_circuit_breaker() {
       read -r evidence_dir <"$capture_file"
     fi
 
+    [ -e "$frozen_file" ] || newly_frozen=1
     if ! : >"$frozen_file"; then
       clear_alert "orchestration-circuit-breaker"
       set_alert "$state_failure_alert" "failed to persist frozen state for $ORCHESTRATION_SLICE; evidence: $evidence_dir"
@@ -263,7 +339,10 @@ manage_orchestration_circuit_breaker() {
       clear_alert "$state_failure_alert"
       clear_alert "$freeze_failure_alert"
       clear_alert "$thaw_failure_alert"
-      set_alert "orchestration-circuit-breaker" "froze $ORCHESTRATION_SLICE after sustained host I/O pressure; evidence: $evidence_dir"
+      set_alert "orchestration-circuit-breaker" "froze $ORCHESTRATION_SLICE after sustained host I/O pressure ($(orchestration_pressure_summary)); evidence: $evidence_dir"
+      if [ "$newly_frozen" -eq 1 ]; then
+        record_orchestration_freeze
+      fi
     else
       rm -f "$frozen_file"
       clear_alert "orchestration-circuit-breaker"
@@ -278,6 +357,7 @@ manage_orchestration_circuit_breaker() {
     clear_alert "$state_failure_alert"
     clear_alert "$freeze_failure_alert"
     clear_alert "$thaw_failure_alert"
+    clear_orchestration_flapping
     return
   fi
 
@@ -357,6 +437,7 @@ main() {
   install -d --mode 0755 "$STATE_DIR"
   check_io_pressure
   check_d_state
+  check_orchestration_pressure
   check_node_filesystem
   check_image_filesystem
   check_cri

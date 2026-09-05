@@ -24,7 +24,7 @@
       {
         "hooks": [
           {
-            "command": "command -v traces >/dev/null 2>&1 && traces hook agent session-start --agent grok",
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-start --agent grok # traces hook agent",
             "timeout": 30,
             "type": "command"
           }
@@ -45,7 +45,7 @@
       {
         "hooks": [
           {
-            "command": "command -v traces >/dev/null 2>&1 && traces hook agent prompt-submitted --agent grok",
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh prompt-submitted --agent grok # traces hook agent",
             "timeout": 30,
             "type": "command"
           }
@@ -127,7 +127,7 @@
       {
         "hooks": [
           {
-            "command": "command -v traces >/dev/null 2>&1 && traces hook agent agent-done --agent grok",
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh agent-done --agent grok # traces hook agent",
             "timeout": 30,
             "type": "command"
           }
@@ -148,7 +148,7 @@
       {
         "hooks": [
           {
-            "command": "command -v traces >/dev/null 2>&1 && traces hook agent session-end --agent grok",
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-end --agent grok # traces hook agent",
             "timeout": 30,
             "type": "command"
           }

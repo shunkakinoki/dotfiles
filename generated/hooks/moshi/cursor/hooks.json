@@ -29,7 +29,7 @@
         "command": "bd cursor-hook sessionStart"
       },
       {
-        "command": "command -v traces >/dev/null 2>&1 && traces hook agent session-start --agent cursor"
+        "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-start --agent cursor # traces hook agent"
       }
     ],
     "beforeMCPExecution": [
@@ -84,7 +84,7 @@
         "command": "moshi-hook cursor-hook"
       },
       {
-        "command": "command -v traces >/dev/null 2>&1 && traces hook agent prompt-submitted --agent cursor"
+        "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh prompt-submitted --agent cursor # traces hook agent"
       }
     ],
     "stop": [
@@ -100,12 +100,12 @@
         "command": "moshi-hook cursor-hook"
       },
       {
-        "command": "command -v traces >/dev/null 2>&1 && traces hook agent agent-done --agent cursor"
+        "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh agent-done --agent cursor # traces hook agent"
       }
     ],
     "sessionEnd": [
       {
-        "command": "command -v traces >/dev/null 2>&1 && traces hook agent session-end --agent cursor"
+        "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-end --agent cursor # traces hook agent"
       }
     ]
   },

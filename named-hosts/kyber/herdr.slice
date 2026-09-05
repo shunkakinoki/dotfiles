@@ -1,0 +1,5 @@
+[Slice]
+CPUWeight=500
+IOWeight=500
+IOAccounting=yes
+TasksAccounting=yes

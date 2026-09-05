@@ -33,28 +33,28 @@
     "sessionStart": [
       {
         "type": "command",
-        "command": "command -v traces >/dev/null 2>&1 && traces hook agent session-start --agent copilot",
+        "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-start --agent copilot # traces hook agent",
         "timeout": 30
       }
     ],
     "userPromptSubmitted": [
       {
         "type": "command",
-        "command": "command -v traces >/dev/null 2>&1 && traces hook agent prompt-submitted --agent copilot",
+        "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh prompt-submitted --agent copilot # traces hook agent",
         "timeout": 30
       }
     ],
     "agentStop": [
       {
         "type": "command",
-        "command": "command -v traces >/dev/null 2>&1 && traces hook agent agent-done --agent copilot",
+        "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh agent-done --agent copilot # traces hook agent",
         "timeout": 30
       }
     ],
     "sessionEnd": [
       {
         "type": "command",
-        "command": "command -v traces >/dev/null 2>&1 && traces hook agent session-end --agent copilot",
+        "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-end --agent copilot # traces hook agent",
         "timeout": 30
       }
     ]

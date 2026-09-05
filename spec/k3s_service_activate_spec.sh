@@ -141,12 +141,13 @@ When run bash -c "grep -q 'runuser --user \"\$ORCHESTRATION_USER\"' '$HEALTH_CHE
 The status should be success
 End
 
-It 'freezes orchestration after sustained pressure'
+It 'freezes orchestration after sustained pressure the slice is implicated in'
 When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   state="$(mktemp -d)"
   export KYBER_HOST_HEALTH_STATE_DIR="$state"
   source "$HEALTH_CHECK"
   IO_PRESSURE_UNHEALTHY=1
+  ORCHESTRATION_IMPLICATED=1
   capture_orchestration_evidence() { printf "%s/evidence/test\n" "$STATE_DIR"; }
   orchestration_control() { test -e "$STATE_DIR/orchestration.frozen"; printf "control:%s\n" "$1"; }
   set_alert() { printf "alert:%s:%s\n" "$1" "$2"; }
@@ -161,12 +162,59 @@ The output should include 'clear:orchestration-freeze-failed'
 The status should be success
 End
 
+It 'leaves orchestration running when host pressure comes from elsewhere'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  state="$(mktemp -d)"
+  export KYBER_HOST_HEALTH_STATE_DIR="$state"
+  source "$HEALTH_CHECK"
+  IO_PRESSURE_UNHEALTHY=1
+  D_STATE_UNHEALTHY=1
+  ORCHESTRATION_IMPLICATED=0
+  capture_orchestration_evidence() { printf "%s/evidence/test\n" "$STATE_DIR"; }
+  orchestration_control() { printf "control:%s\n" "$1"; }
+  set_alert() { printf "alert:%s:%s\n" "$1" "$2"; }
+  clear_alert() { printf "clear:%s\n" "$1"; }
+  manage_orchestration_circuit_breaker
+  test ! -e "$state/orchestration.frozen"
+  rm -rf "$state"
+'
+The output should not include 'control:freeze'
+The output should include 'clear:orchestration-circuit-breaker'
+The status should be success
+End
+
+It 'attributes pressure to the orchestration slice from its own cgroup PSI and D-state count'
+When run bash -c "grep -q 'ORCHESTRATION_IO_SOME_AVG300_THRESHOLD=10' '$HEALTH_CHECK' && grep -q 'ORCHESTRATION_D_STATE_THRESHOLD=3' '$HEALTH_CHECK' && grep -q 'io.pressure' '$HEALTH_CHECK' && grep -q 'stat=,cgroup=' '$HEALTH_CHECK' && grep -q 'ORCHESTRATION_IMPLICATED\" -eq 1' '$HEALTH_CHECK'"
+The status should be success
+End
+
+It 'raises a flapping alert when the slice re-trips repeatedly within the window'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  state="$(mktemp -d)"
+  export KYBER_HOST_HEALTH_STATE_DIR="$state"
+  source "$HEALTH_CHECK"
+  set_alert() { printf "alert:%s:%s\n" "$1" "$2"; }
+  clear_alert() { printf "clear:%s\n" "$1"; }
+  now="$(date +%s)"
+  printf "%s\n%s\n%s\n" "$((now - ORCHESTRATION_FLAP_WINDOW_SECONDS - 60))" "$((now - 600))" "$((now - 300))" >"$state/orchestration.freezes"
+  record_orchestration_freeze
+  printf "entries:%s\n" "$(wc -l <"$state/orchestration.freezes" | tr -d "[:space:]")"
+  clear_orchestration_flapping
+  printf "%s\n" "$((now - ORCHESTRATION_FLAP_WINDOW_SECONDS - 60))" >"$state/orchestration.freezes"
+  clear_orchestration_flapping
+  rm -rf "$state"
+'
+The output should equal "$(printf 'alert:orchestration-circuit-breaker-flapping:froze orchestration.slice 3 times in the last 60 minutes; the slice re-trips after every thaw, so inspect its top writers in the evidence captures instead of waiting for auto-thaw\nentries:3\nclear:orchestration-circuit-breaker-flapping')"
+The status should be success
+End
+
 It 'removes the frozen marker when the freeze command fails'
 When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   state="$(mktemp -d)"
   export KYBER_HOST_HEALTH_STATE_DIR="$state"
   source "$HEALTH_CHECK"
   IO_PRESSURE_UNHEALTHY=1
+  ORCHESTRATION_IMPLICATED=1
   capture_orchestration_evidence() { printf "%s/evidence/test\n" "$STATE_DIR"; }
   orchestration_control() { return 1; }
   set_alert() { printf "alert:%s:%s\n" "$1" "$2"; }
