@@ -153,11 +153,14 @@ wait_for_beads() {
 run_linear() {
   local output
   local status
+  local category
+  local cause
 
-  set +e
-  output="$("$@" 2>&1)"
-  status=$?
-  set -e
+  if output="$("$@" --json 2>/dev/null)"; then
+    status=0
+  else
+    status=$?
+  fi
 
   # bd may return zero after individual API operations were rejected. Treat
   # its circuit-breaker warning as a deferred run regardless of exit status.
@@ -165,7 +168,48 @@ run_linear() {
     return 75
   fi
 
-  return "$status"
+  # A successful process may still contain rejected issue operations. Require
+  # one complete, clean result before recording any batch progress or cursor.
+  # Capture payloads only in memory: error messages can contain private issue
+  # text, repository identifiers, or credentials and must never reach logs.
+  if [ "$status" -eq 0 ] && @jq@/bin/jq -e -s '
+    length == 1 and (.[0] |
+      type == "object" and
+      .success == true and
+      .stats.errors == 0 and
+      (.warnings == null or (.warnings | type == "array" and length == 0)) and
+      (.error == null or .error == ""))
+  ' <<<"$output" >/dev/null 2>&1; then
+    return 0
+  fi
+
+  # Only fixed categories leave this boundary, never source error strings.
+  case "$output" in
+    *"searching local issues"*) category="local-read" ;;
+    *"building state cache"*) category="state-cache" ;;
+    *"batch pushing issues"*) category="batch-push" ;;
+    *"context deadline exceeded"* | *"context canceled"*) category="context-timeout" ;;
+    *"lock wait timeout"* | *"deadlock"*) category="database-lock" ;;
+    *) category="unclean-result" ;;
+  esac
+  case "${output,,}" in
+    *"rate limit"* | *"too many requests"*) cause="rate-limit" ;;
+    *"deadline exceeded"* | *"timeout"* | *"context canceled"*) cause="timeout" ;;
+    *"connection"* | *"broken pipe"* | *"unexpected eof"* | *"no such host"*) cause="connection" ;;
+    *"deadlock"* | *"lock wait"* | *"transaction conflict"*) cause="database-lock" ;;
+    *"not found"* | *"not exist"*) cause="not-found" ;;
+    *"unauthorized"* | *"forbidden"* | *"authentication"*) cause="authentication" ;;
+    *) cause="unknown" ;;
+  esac
+  if [ "$status" -eq 124 ]; then
+    category="command-timeout"
+    cause="timeout"
+  fi
+  log "Linear result rejected: category=$category exit=$status cause=$cause"
+  if [ "$status" -ne 0 ]; then
+    return "$status"
+  fi
+  return 65
 }
 
 push_issue_batches() {
