@@ -152,8 +152,15 @@ export function createFallbackPolicy(config: FallbackConfig): FallbackPolicy {
   let primaryRef: string | undefined;
 
   const isRetryable = (errorMessage: string): boolean => {
-    if (lastStatus !== undefined && config.retry_on_errors.includes(lastStatus))
+    // OpenAI SDKs throw on non-2xx responses before Pi emits onResponse.
+    const messageStatus = errorMessage.match(
+      /(?:^|API error \(|HTTP(?: error)?[ :]+|status(?: code)?[ :]+)([45]\d{2})\b/i
+    )?.[1];
+    const status = messageStatus === undefined ? lastStatus : Number(messageStatus);
+    if (status !== undefined && config.retry_on_errors.includes(status)) {
+      lastStatus = status;
       return true;
+    }
     const haystack = errorMessage.toLowerCase();
     return config.retryable_error_patterns.some((pattern) =>
       haystack.includes(pattern.toLowerCase())
@@ -232,6 +239,10 @@ function attachFallback(host: ExtensionAPI, configPath: string): void {
   const policy = createFallbackPolicy(config);
   // Respect model changes made by the user between fallback attempts.
   let appliedRef: string | undefined;
+
+  host.on("before_provider_request", () => {
+    policy.recordStatus(undefined);
+  });
 
   host.on("after_provider_response", (event) => {
     policy.recordStatus(event.status);
