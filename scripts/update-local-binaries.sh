@@ -462,8 +462,9 @@ main() {
   log_info "🔄 Updating local binaries"
   [ -n "$filter" ] && echo "  Filter: $filter"
 
-  # Track unique repos to avoid duplicate builds
+  # Pull each repo once, but build every distinct target within it.
   declare -A seen_repos
+  declare -A seen_targets
 
   while IFS= read -r line || [ -n "$line" ]; do
     # Skip comments and empty lines
@@ -489,17 +490,31 @@ main() {
     *:*) line="${line%:*}" ;;
     esac
 
-    # Get repo directory and check if already processed
+    local target_key="$line#$flags"
+    if [ -n "${seen_targets[$target_key]:-}" ]; then
+      continue
+    fi
+    seen_targets[$target_key]=1
+
+    # A repo can contain different build systems, such as a CLI and coordinator.
     local repo_dir
     repo_dir="$(get_repo_dir "$line")"
 
     if [ -n "${seen_repos[$repo_dir]:-}" ]; then
+      [ "${seen_repos[$repo_dir]}" = failed ] && continue
+      if build_repo "$repo_dir" "$line" "$flags"; then
+        SUCCESSES+=("$(get_repo_name "$repo_dir") ($(basename "$line"))")
+      else
+        FAILURES+=("$(get_repo_name "$repo_dir") ($(basename "$line"), build failed)")
+      fi
       continue
     fi
-    seen_repos[$repo_dir]=1
-
     # Update repo (continue on failure)
-    update_repo "$line" "$flags" || true
+    if update_repo "$line" "$flags"; then
+      seen_repos[$repo_dir]=ready
+    else
+      seen_repos[$repo_dir]=failed
+    fi
 
   done <"$CONFIG_FILE"
 

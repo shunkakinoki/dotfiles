@@ -32,6 +32,9 @@ while IFS= read -r line || [ -n "$line" ]; do
   \#*) continue ;;
   esac
 
+  # Build flags belong to the updater, not the executable path or alias.
+  line="${line%%#*}"
+
   # Parse optional alias (path:alias)
   alias_name=""
   case "$line" in

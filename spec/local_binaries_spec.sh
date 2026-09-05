@@ -69,4 +69,26 @@ The output should include 'ln -sf'
 End
 End
 
+Describe 'build flag parsing'
+setup_flagged_binary() {
+  FLAG_FIXTURE=$(mktemp -d)
+  mkdir -p "$FLAG_FIXTURE/dotfiles" "$FLAG_FIXTURE/source"
+  printf '#!/usr/bin/env bash\nexit 0\n' >"$FLAG_FIXTURE/source/coordinator"
+  chmod +x "$FLAG_FIXTURE/source/coordinator"
+  printf '%s\n' "$FLAG_FIXTURE/source/coordinator:local-coordinator#node-build" >"$FLAG_FIXTURE/dotfiles/.local-binaries.txt"
+}
+cleanup_flagged_binary() { rm -rf "$FLAG_FIXTURE"; }
+sync_flagged_binary() {
+  env HOME="$FLAG_FIXTURE" bash "$SCRIPT" >/dev/null
+  readlink "$FLAG_FIXTURE/.local/bin/local-coordinator"
+}
+Before 'setup_flagged_binary'
+After 'cleanup_flagged_binary'
+It 'links the executable using the alias without its build flags'
+When call sync_flagged_binary
+The output should eq "$FLAG_FIXTURE/source/coordinator"
+The status should be success
+End
+End
+
 End
