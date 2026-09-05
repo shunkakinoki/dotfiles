@@ -17,7 +17,7 @@ The output should include 'dotfiles/config/shared/hooks/roborev-agent.sh'
 End
 
 It 'uses Droid Core DeepSeek Flash as the Factory session default'
-When run jq -e '.sessionDefaultSettings.model == "deepseek-v4-flash-0731" and any(.customModels[]; .id == "custom:deepseek-v4-flash-0" and .baseUrl == "https://cliproxy.shunkakinoki.com/v1" and .apiKey == "CLIPROXY_API_KEY") and any(.customModels[]; .id == "custom:free-1" and .model == "free" and .baseUrl == "https://cliproxy.shunkakinoki.com/v1" and .apiKey == "CLIPROXY_API_KEY")' "$SETTINGS"
+When run jq -e '.sessionDefaultSettings.model == "deepseek-v4-flash-0731" and any(.customModels[]; .id == "custom:deepseek-v4-flash-0" and .baseUrl == "https://cliproxy.shunkakinoki.com/v1" and .apiKey == "CLIPROXY_API_KEY") and any(.customModels[]; .id == "custom:gpt-5.6-luna-1" and .model == "gpt-5.6-luna" and .baseUrl == "https://cliproxy.shunkakinoki.com/v1" and .apiKey == "CLIPROXY_API_KEY") and any(.customModels[]; .id == "custom:free-2" and .model == "free" and .baseUrl == "https://cliproxy.shunkakinoki.com/v1" and .apiKey == "CLIPROXY_API_KEY")' "$SETTINGS"
 The status should be success
 The output should equal 'true'
 End
