@@ -488,8 +488,6 @@ openai-compatibility:
         alias: "gpt-image-2"
       - name: "@preset/deepseek-v4-flash"
         alias: "deepseek-v4-flash"
-      - name: "@preset/deepseek-v4-pro"
-        alias: "deepseek-v4-pro"
       - name: "openrouter/free"
         alias: "free"
   - name: "z-ai"
@@ -525,8 +523,6 @@ openai-compatibility:
     models:
       - name: "qwen3.6-plus"
         alias: "qwen3.6-plus"
-      - name: "deepseek-v4-pro"
-        alias: "deepseek-v4-pro"
       - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4-flash"
   - name: "opencode"
@@ -535,8 +531,6 @@ openai-compatibility:
     support-prompt-cache-key: true
     api-key-entries: __OPENCODE_API_KEY_ENTRIES__
     models:
-      - name: "deepseek-v4-pro"
-        alias: "deepseek-v4-pro"
       - name: "deepseek-v4-flash"
         alias: "deepseek-v4-flash"
       - name: "minimax-m3"
@@ -550,8 +544,6 @@ openai-compatibility:
     api-key-entries:
       - api-key: "__VERBOO_API_KEY__"
     models:
-      - name: "deepseek-v4-pro"
-        alias: "deepseek-v4-pro"
       - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4-flash"
   - name: "commandcode"
@@ -561,8 +553,6 @@ openai-compatibility:
     api-key-entries:
       - api-key: "__COMMANDCODE_API_KEY__"
     models:
-      - name: "deepseek-v4-pro"
-        alias: "deepseek-v4-pro"
       - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4-flash"
   - name: "openai"

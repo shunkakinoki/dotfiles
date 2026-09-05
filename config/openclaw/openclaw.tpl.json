@@ -116,25 +116,6 @@
             "maxTokens": 40960
           },
           {
-            "id": "__DEEPSEEK_PRO__",
-            "name": "__DEEPSEEK_PRO_PRETTY__",
-            "reasoning": true,
-            "input": [
-              "text"
-            ],
-            "cost": {
-              "input": 0.435,
-              "output": 0.87,
-              "cacheRead": 0.003625,
-              "cacheWrite": 0
-            },
-            "contextWindow": 1000000,
-            "maxTokens": 384000,
-            "compat": {
-              "supportsPromptCacheKey": true
-            }
-          },
-          {
             "id": "__DEEPSEEK_FLASH__",
             "name": "__DEEPSEEK_FLASH_PRETTY__",
             "reasoning": true,

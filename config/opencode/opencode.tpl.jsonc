@@ -43,9 +43,6 @@
         "__DEEPSEEK_FLASH__": {
           "name": "__DEEPSEEK_FLASH_PRETTY__ (via shunkakinoki's CLIProxy)"
         },
-        "__DEEPSEEK_PRO__": {
-          "name": "__DEEPSEEK_PRO_PRETTY__ (via shunkakinoki's CLIProxy)"
-        },
         "__MINIMAX__": {
           "name": "__MINIMAX_PRETTY__ (via shunkakinoki's CLIProxy)"
         },
@@ -83,9 +80,6 @@
         },
         "__DEEPSEEK_FLASH__": {
           "name": "__DEEPSEEK_FLASH_PRETTY__ (via local CLIProxyAPI)"
-        },
-        "__DEEPSEEK_PRO__": {
-          "name": "__DEEPSEEK_PRO_PRETTY__ (via local CLIProxyAPI)"
         },
         "__MINIMAX__": {
           "name": "__MINIMAX_PRETTY__ (via local CLIProxyAPI)"

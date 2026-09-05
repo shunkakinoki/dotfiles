@@ -27,7 +27,6 @@ Never hand-edit a generated config. Edit the `.tpl.*` file, regenerate, and comm
 | `__GPT_IMAGE__` | `gpt-image-2` |
 | `__GEMINI_FLASH__` | `gemini-3.8-flash` |
 | `__DEEPSEEK_FLASH__` | `deepseek-v4-flash` |
-| `__DEEPSEEK_PRO__` | `deepseek-v4-pro` |
 | `__GEMMA_LOCAL__` | `gemma3:4b` |
 | `__MINIMAX__` | `minimax-m3` |
 | `__KIMI__` | `kimi-k3` |
@@ -65,8 +64,6 @@ deepseek-v4-flash  (primary)
 Rules:
 
 - `deepseek-v4-flash` is the only DeepSeek model on any automatic path.
-  `deepseek-v4-pro` stays in the CLIProxy catalog and is addressable by explicit
-  request, but it is never a fallback hop and never a default.
 - Every hop resolves through CLIProxy, so provider-level rotation (OpenCode ->
   Aliyun -> OpenRouter) already happens inside a single hop. Do not add a hop
   that repeats the primary model.
@@ -160,9 +157,9 @@ Every one of them resolves through
 
 | Provider | Priority | DeepSeek models served |
 | --- | --- | --- |
-| `opencode` | 300 | `deepseek-v4-pro`, `deepseek-v4-flash` |
-| `aliyun` | 200 | `deepseek-v4-pro`, `deepseek-v4-flash-0731` aliased to `deepseek-v4-flash` |
-| `openrouter` | 100 | `@preset/deepseek-v4-pro`, `@preset/deepseek-v4-flash` |
+| `opencode` | 300 | `deepseek-v4-flash` |
+| `aliyun` | 200 | `deepseek-v4-flash-0731` aliased to `deepseek-v4-flash` |
+| `openrouter` | 100 | `@preset/deepseek-v4-flash` |
 
 So a single `deepseek-v4-flash` request tries OpenCode Zen, then Aliyun, then
 OpenRouter before the harness-level fallback chain sees a failure.

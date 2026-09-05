@@ -255,7 +255,6 @@ The output should include 'base-url: "https://token-plan.ap-southeast-1.maas.ali
 The output should include 'api-key: "__ALIYUN_TOKEN_PLAN_API_KEY__"'
 The output should include 'priority: 200'
 The output should include 'name: "qwen3.6-plus"'
-The output should include 'name: "deepseek-v4-pro"'
 The output should include 'name: "deepseek-v4-flash-0731"'
 The output should include 'alias: "deepseek-v4-flash"'
 The output should not include 'name: "qwen3.8-max"'
@@ -277,7 +276,6 @@ When run bash -c "sed -n '/name: \"verboo\"/,/name: \"openai\"/p' '$PWD/config/c
 The output should include 'priority: 150'
 The output should include 'base-url: "https://code.verboo.ai/router/v1"'
 The output should include 'api-key: "__VERBOO_API_KEY__"'
-The output should include 'name: "deepseek-v4-pro"'
 The output should include 'name: "deepseek-v4-flash-0731"'
 The output should include 'alias: "deepseek-v4-flash"'
 The status should be success
@@ -297,7 +295,6 @@ When run bash -c "sed -n '/name: \"commandcode\"/,/name: \"openai\"/p' '$PWD/con
 The output should include 'priority: 150'
 The output should include 'base-url: "https://api.commandcode.ai/provider/v1"'
 The output should include 'api-key: "__COMMANDCODE_API_KEY__"'
-The output should include 'name: "deepseek-v4-pro"'
 The output should include 'name: "deepseek-v4-flash-0731"'
 The output should include 'alias: "deepseek-v4-flash"'
 The status should be success
@@ -317,7 +314,6 @@ When run bash -c "sed -n '/name: \"surplus\"/,/name: \"openai\"/p' '$PWD/config/
 The output should include 'priority: 150'
 The output should include 'base-url: "https://api.surplusintelligence.ai/v1"'
 The output should include 'api-key: "__SURPLUS_API_KEY__"'
-The output should include 'name: "deepseek-v4-pro"'
 The output should include 'name: "deepseek-v4-flash-0731"'
 The output should include 'alias: "deepseek-v4-flash"'
 The status should be success

@@ -43,9 +43,6 @@
         "deepseek-v4-flash": {
           "name": "Deepseek V4 Flash (via shunkakinoki's CLIProxy)"
         },
-        "deepseek-v4-pro": {
-          "name": "Deepseek V4 Pro (via shunkakinoki's CLIProxy)"
-        },
         "minimax-m3": {
           "name": "Minimax M3 (via shunkakinoki's CLIProxy)"
         },
@@ -83,9 +80,6 @@
         },
         "deepseek-v4-flash": {
           "name": "Deepseek V4 Flash (via local CLIProxyAPI)"
-        },
-        "deepseek-v4-pro": {
-          "name": "Deepseek V4 Pro (via local CLIProxyAPI)"
         },
         "minimax-m3": {
           "name": "Minimax M3 (via local CLIProxyAPI)"
