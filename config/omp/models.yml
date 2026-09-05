@@ -20,19 +20,6 @@ providers:
           output: 0
           cacheRead: 0
           cacheWrite: 0
-      - id: deepseek-v4-pro
-        name: Deepseek V4 Pro (via shunkakinoki's CLIProxy)
-        reasoning: true
-        input:
-          - text
-        supportsTools: true
-        contextWindow: 1000000
-        maxTokens: 384000
-        cost:
-          input: 0
-          output: 0
-          cacheRead: 0
-          cacheWrite: 0
       - id: minimax-m3
         name: Minimax M3 (via shunkakinoki's CLIProxy)
         reasoning: true

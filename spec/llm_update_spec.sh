@@ -202,7 +202,7 @@ End
 
 Describe 'generated Factory settings'
 It 'pins Droid to its built-in DeepSeek Flash model and keeps CLIProxy customs'
-When run jq -e '.sessionDefaultSettings.model == "__DEEPSEEK_FLASH_0731__" and (.customModels | length) == 2 and any(.customModels[]; .id == "custom:__DEEPSEEK_FLASH__-0" and .baseUrl == "https://cliproxy.shunkakinoki.com/v1") and any(.customModels[]; .id == "custom:free-1" and .model == "free" and .baseUrl == "https://cliproxy.shunkakinoki.com/v1")' config/factory/settings.tpl.json
+When run jq -e '.sessionDefaultSettings.model == "__DEEPSEEK_FLASH_0731__" and (.customModels | length) == 3 and any(.customModels[]; .id == "custom:__DEEPSEEK_FLASH__-0" and .baseUrl == "https://cliproxy.shunkakinoki.com/v1") and any(.customModels[]; .id == "custom:__GPT_LUNA__-1" and .model == "__GPT_LUNA__" and .baseUrl == "https://cliproxy.shunkakinoki.com/v1") and any(.customModels[]; .id == "custom:free-2" and .model == "free" and .baseUrl == "https://cliproxy.shunkakinoki.com/v1")' config/factory/settings.tpl.json
 The status should be success
 The output should equal 'true'
 End
@@ -234,8 +234,8 @@ When run bash -c "jq -e '.model == null and .retry_on_errors == [401,404,429,500
 The status should be success
 End
 
-It 'generates the CLIProxyAPI DeepSeek models'
-When run bash -c "sed -n '/\"cliproxyapi\"/,/\"lmstudio\"/p' config/opencode/opencode.jsonc | grep -q 'deepseek-v4-flash' && sed -n '/\"cliproxyapi\"/,/\"lmstudio\"/p' config/opencode/opencode.jsonc | grep -q 'deepseek-v4-pro'"
+It 'generates the CLIProxyAPI DeepSeek Flash model'
+When run bash -c "sed -n '/\"cliproxyapi\"/,/\"lmstudio\"/p' config/opencode/opencode.jsonc | grep -q 'deepseek-v4-flash'"
 The status should be success
 End
 
@@ -330,13 +330,13 @@ When run bash -c "grep -q 'baseUrl: https://cliproxy.shunkakinoki.com/v1' config
 The status should be success
 End
 
-It 'generates the DeepSeek Go routes in CliProxy'
-When run bash -c "sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4-pro\"' && sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4-flash\"'"
+It 'generates the DeepSeek Flash route in CliProxy'
+When run bash -c "sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4-flash\"'"
 The status should be success
 End
 
-It 'routes DeepSeek presets through OpenRouter with OpenCode Go fallbacks in CliProxy'
-When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"@preset/deepseek-v4-pro\"' && sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"@preset/deepseek-v4-flash\"' && sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4-pro\"' && sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4-flash\"'"
+It 'routes the DeepSeek Flash preset through OpenRouter and OpenCode Go in CliProxy'
+When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"@preset/deepseek-v4-flash\"' && sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4-flash\"'"
 The status should be success
 End
 

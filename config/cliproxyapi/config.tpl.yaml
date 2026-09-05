@@ -488,8 +488,6 @@ openai-compatibility:
         alias: "__GPT_IMAGE__"
       - name: "@preset/__DEEPSEEK_FLASH_NONDOT__"
         alias: "__DEEPSEEK_FLASH__"
-      - name: "@preset/__DEEPSEEK_PRO_NONDOT__"
-        alias: "__DEEPSEEK_PRO__"
       - name: "openrouter/free"
         alias: "free"
   - name: "z-ai"
@@ -525,8 +523,6 @@ openai-compatibility:
     models:
       - name: "__QWEN__"
         alias: "__QWEN__"
-      - name: "__DEEPSEEK_PRO__"
-        alias: "__DEEPSEEK_PRO__"
       - name: "__DEEPSEEK_FLASH_0731__"
         alias: "__DEEPSEEK_FLASH__"
   - name: "opencode"
@@ -535,8 +531,6 @@ openai-compatibility:
     support-prompt-cache-key: true
     api-key-entries: __OPENCODE_API_KEY_ENTRIES__
     models:
-      - name: "__DEEPSEEK_PRO__"
-        alias: "__DEEPSEEK_PRO__"
       - name: "__DEEPSEEK_FLASH__"
         alias: "__DEEPSEEK_FLASH__"
       - name: "__MINIMAX__"
@@ -550,8 +544,6 @@ openai-compatibility:
     api-key-entries:
       - api-key: "__VERBOO_API_KEY__"
     models:
-      - name: "__DEEPSEEK_PRO__"
-        alias: "__DEEPSEEK_PRO__"
       - name: "__DEEPSEEK_FLASH_0731__"
         alias: "__DEEPSEEK_FLASH__"
   - name: "commandcode"
@@ -561,8 +553,6 @@ openai-compatibility:
     api-key-entries:
       - api-key: "__COMMANDCODE_API_KEY__"
     models:
-      - name: "__DEEPSEEK_PRO__"
-        alias: "__DEEPSEEK_PRO__"
       - name: "__DEEPSEEK_FLASH_0731__"
         alias: "__DEEPSEEK_FLASH__"
   - name: "openai"
@@ -579,8 +569,8 @@ openai-compatibility:
     api-key-entries:
       - api-key: "__SURPLUS_API_KEY__"
     models:
-      - name: "__DEEPSEEK_PRO__"
-        alias: "__DEEPSEEK_PRO__"
+      - name: "__GPT_LUNA__"
+        alias: "__GPT_LUNA__"
       - name: "__DEEPSEEK_FLASH_0731__"
         alias: "__DEEPSEEK_FLASH__"
 

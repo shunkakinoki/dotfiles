@@ -7,3 +7,4 @@ clients:
     api_base: https://cliproxy.shunkakinoki.com/v1
     models:
       - name: __DEEPSEEK_FLASH__
+      - name: __GPT_LUNA__
