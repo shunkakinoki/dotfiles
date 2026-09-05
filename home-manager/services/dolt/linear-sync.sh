@@ -185,21 +185,21 @@ run_linear() {
 
   # Only fixed categories leave this boundary, never source error strings.
   case "$output" in
-    *"searching local issues"*) category="local-read" ;;
-    *"building state cache"*) category="state-cache" ;;
-    *"batch pushing issues"*) category="batch-push" ;;
-    *"context deadline exceeded"* | *"context canceled"*) category="context-timeout" ;;
-    *"lock wait timeout"* | *"deadlock"*) category="database-lock" ;;
-    *) category="unclean-result" ;;
+  *"searching local issues"*) category="local-read" ;;
+  *"building state cache"*) category="state-cache" ;;
+  *"batch pushing issues"*) category="batch-push" ;;
+  *"context deadline exceeded"* | *"context canceled"*) category="context-timeout" ;;
+  *"lock wait timeout"* | *"deadlock"*) category="database-lock" ;;
+  *) category="unclean-result" ;;
   esac
   case "${output,,}" in
-    *"rate limit"* | *"too many requests"*) cause="rate-limit" ;;
-    *"deadline exceeded"* | *"timeout"* | *"context canceled"*) cause="timeout" ;;
-    *"connection"* | *"broken pipe"* | *"unexpected eof"* | *"no such host"*) cause="connection" ;;
-    *"deadlock"* | *"lock wait"* | *"transaction conflict"*) cause="database-lock" ;;
-    *"not found"* | *"not exist"*) cause="not-found" ;;
-    *"unauthorized"* | *"forbidden"* | *"authentication"*) cause="authentication" ;;
-    *) cause="unknown" ;;
+  *"rate limit"* | *"too many requests"*) cause="rate-limit" ;;
+  *"deadline exceeded"* | *"timeout"* | *"context canceled"*) cause="timeout" ;;
+  *"connection"* | *"broken pipe"* | *"unexpected eof"* | *"no such host"*) cause="connection" ;;
+  *"deadlock"* | *"lock wait"* | *"transaction conflict"*) cause="database-lock" ;;
+  *"not found"* | *"not exist"*) cause="not-found" ;;
+  *"unauthorized"* | *"forbidden"* | *"authentication"*) cause="authentication" ;;
+  *) cause="unknown" ;;
   esac
   if [ "$status" -eq 124 ]; then
     category="command-timeout"
