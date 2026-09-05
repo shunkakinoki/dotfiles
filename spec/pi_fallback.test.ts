@@ -33,6 +33,15 @@ test("a 504 on free reports exhaustion through the event context", () => {
       if (notices.length !== 1 || !notices[0].includes("no fallback model available")) {
         throw new Error(JSON.stringify(notices));
       }
+      notices.length = 0;
+      handlers.get("before_provider_request")({});
+      await handlers.get("agent_end")({ messages: [{
+        role: "assistant", stopReason: "error", errorMessage: "400 invalid request",
+      }] }, {
+        model: { provider: "cliproxyapi", id: "free" },
+        ui: { notify: (message) => notices.push(message) },
+      });
+      if (notices.length !== 0) throw new Error("stale status triggered fallback");
       console.log("exhaustion handled");
     `], { env: { ...process.env, HOME: testHome }, encoding: "utf8" });
     expect(result.stderr).toBe("");
