@@ -10,6 +10,35 @@
 - Preserve intentional prerelease channels, while advancing branch dependencies and exact platform packages through their owning update workflows.
 - Treat submodules as separately owned repositories and advance the gitlink to the current upstream default-branch head.
 
+## 2026-09-05 package.json refresh
+
+### Summary
+
+- **Manifest:** `package.json`
+- **Lockfile:** `bun.lock`
+- **Direct and optional declarations updated:** 48
+- **Transitive lockfile packages refreshed:** yes
+- **Failed or rolled back:** 0
+
+### Updates
+
+- Advanced all outdated stable direct dependencies reported by `bun outdated`, including CodeGenie, Claude Code and its platform packages, Biome, Pi/OpenSpec, Copilot, Gemini CLI, Oh My Pi, Codex and its platform aliases, PostHog, Pulumi, Railway, Linear CLI, Traces, Context7, Agent Browser, Betterwright, Chrome DevTools Axi, Cline, Command Code, Deepsec, Droid, Hunkdiff, MCP Remote, OpenClaw, Oxfmt, Oxlint, Playwright Chromium, T3, Takt, and Tokscale.
+- Advanced the intentionally prerelease DeepSeek DSH channel from `0.1.1-rc.2` to `0.1.2-rc.1` and the Amp branch build to the latest published branch version.
+- Preserved explicit Codex platform aliases (`darwin-arm64`, `darwin-x64`, `linux-arm64`, `linux-x64`, `win32-arm64`, and `win32-x64`) while advancing them to `0.153.4`.
+
+### Validation
+
+- `bun outdated --minimum-release-age=0` reports no remaining outdated direct declarations; the six platform-suffixed Codex aliases intentionally compare against the unqualified registry version and resolve to the matching `0.153.4` platform builds.
+- `bun update --latest --minimum-release-age=0` completed and regenerated `bun.lock`.
+- Bun reported existing peer-version warnings for the prerelease DeepSeek package family and OpenTUI; these did not prevent installation and are recorded for review.
+- Forced frozen installation completed with `2,123 packages installed`.
+- Updated CLI smoke checks passed for Claude, Gemini, Codex, Biome, Copilot, OpenClaw, Oxfmt, Oxlint, Playwright, T3, Takt, Tokscale, and Linear.
+- Railway's postinstall wrapper did not download its native binary in this environment, so its `--version` check remains blocked by the package's release-asset fetch; Droid's `--version` probe did not complete within the bounded smoke-test window.
+
+### Security
+
+- `bun audit` reports 39 transitive advisories (1 critical, 15 high, 19 moderate, and 4 low). These are transitive findings outside the direct declaration ranges; no direct dependency was rolled back for the audit result.
+
 ## Summary
 
 | Metric | Count |
