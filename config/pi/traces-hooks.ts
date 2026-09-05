@@ -1,9 +1,18 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { spawn } from "node:child_process";
+import os from "node:os";
+import path from "node:path";
+
+// The guard dedupes and caps the detached uploads `traces hook agent` starts;
+// calling traces directly would let every Pi turn stack another upload.
+const TRACES_HOOK_GUARD = path.join(
+  os.homedir(),
+  "dotfiles/config/shared/hooks/traces-agent-hook.sh"
+);
 
 function sendTraces(event: string, sessionId: string) {
   try {
-    const child = spawn("traces", ["hook", "agent", event, "--agent", "pi"], {
+    const child = spawn(TRACES_HOOK_GUARD, [event, "--agent", "pi"], {
       stdio: ["pipe", "ignore", "ignore"],
       detached: true,
     });

@@ -106,6 +106,13 @@ The status should be success
 The file "$HOOK_LOG" should not be exist
 End
 
+It 'runs the binary named by TRACES_BIN when traces is off PATH'
+mv "$TEMP_BIN/traces" "$TEMP_BIN/traces-resolved"
+When call env PATH="$TEMP_BIN:/usr/bin:/bin" TRACES_BIN="$TEMP_BIN/traces-resolved" bash -c "printf '{\"session_id\":\"trace-a\"}' | '$GUARD' agent-done --agent hermes"
+The status should be success
+The contents of file "$HOOK_LOG" should include 'args:hook agent agent-done --agent hermes'
+End
+
 It 'exits successfully when traces is not installed'
 rm -f "$TEMP_BIN/traces"
 When call env PATH="$TEMP_BIN:/usr/bin:/bin" bash -c "printf '{}' | '$GUARD' session-start --agent codex"
@@ -126,6 +133,17 @@ When run bash -c "
     done
   done
   jq -r '.. | objects | .command? // empty' config/antigravity/hooks.json | grep -Fq '\$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh agent-done --agent antigravity' || { echo 'missing antigravity'; exit 1; }
+  for adapter in \
+    config/pi/traces-hooks.ts \
+    config/openclaw/hooks/traces/handler.js.tpl \
+    generated/hooks/traces/openclaw/handler.js \
+    config/hermes/plugins/traces/__init__.py.tpl \
+    generated/hooks/traces/hermes/__init__.py; do
+    grep -Fq 'dotfiles/config/shared/hooks/traces-agent-hook.sh' \"\$adapter\" || { echo \"missing guard in \$adapter\"; exit 1; }
+    if grep -Eq '\"hook\", \"agent\"' \"\$adapter\"; then
+      echo \"unguarded traces hook in \$adapter\"; exit 1
+    fi
+  done
   for config in generated/hooks/moshi/claude/settings.json generated/hooks/moshi/codex/hooks.json generated/hooks/moshi/cursor/hooks.json generated/hooks/moshi/grok/plugin/hooks/hooks.json config/copilot/config.json config/antigravity/hooks.json; do
     if jq -r '.. | objects | .command? // empty' \"\$config\" | grep -Eq '(^|&& |; )traces hook agent'; then
       echo \"unguarded traces hook in \$config\"; exit 1

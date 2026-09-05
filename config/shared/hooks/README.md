@@ -26,7 +26,9 @@ These hooks provide fast feedback and prevent common mistakes. They run with the
 # Traces agent hook guard
 
 `traces-agent-hook.sh <event> --agent <id>` wraps `traces hook agent` for Codex,
-Claude Code, Cursor, GitHub Copilot, Grok, and Antigravity. The traces hook
+Claude Code, Cursor, GitHub Copilot, Grok, Antigravity, Pi, Hermes, and
+OpenClaw; the Pi, Hermes, and OpenClaw adapters spawn it directly and pass
+the binary they resolved as `TRACES_BIN`. The traces hook
 starts a detached `traces share --trace-id <session> --source agent_hook`
 upload on every `prompt-submitted`, `agent-done`, and `session-end` event and
 never checks whether one is already running; each upload rescans the shared
