@@ -246,3 +246,46 @@ set exit_code $status
 @test "stale lock: is removed" (test -e $lock_path; echo $status) -ne 0
 
 rm -f $call_log $err_log $lock_path
+
+# --- Test: a held Git index lock skips the cycle ---
+
+set call_log (mktemp)
+set err_log (mktemp)
+set lock_path (mktemp)
+
+function git
+    echo $argv >> $call_log
+    switch $argv[1]
+        case symbolic-ref
+            echo "refs/remotes/origin/main"
+        case rev-parse
+            if contains -- '--git-path' $argv
+                echo $lock_path
+            else
+                echo "main"
+            end
+    end
+end
+
+function lsof
+    echo 4242
+end
+
+function sed
+    echo "main"
+end
+
+function date
+    echo "2026-07-16 12:00:00"
+end
+
+_grr_function --once 2>$err_log
+set exit_code $status
+
+@test "held lock: returns non-zero" $exit_code -ne 0
+@test "held lock: skips fetch" (grep -c "fetch" $call_log) -eq 0
+@test "held lock: skips pull" (grep -c "pull" $call_log) -eq 0
+@test "held lock: remains in place" (test -e $lock_path; echo $status) -eq 0
+@test "held lock: prints warning" (grep -c "git index is locked" $err_log) -eq 1
+
+rm -f $call_log $err_log $lock_path
