@@ -26,11 +26,10 @@ function _grr_function --description "Refresh to origin default branch every 3 m
     set -l default_branch (git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
     set -l ts (date '+%Y-%m-%d %H:%M:%S')
     set -l ok 0
-    set -l index_lock (git rev-parse --git-path index.lock 2>/dev/null)
 
-    # Another Git process owns the index. Do not race it or remove its lock;
-    # retry on the next cycle instead.
-    if test -n "$index_lock"; and test -e "$index_lock"
+    # Another Git process may own the index: wait for it, reap a lock whose
+    # writer is gone, and only skip the cycle when a live process still holds it.
+    if not _git_index_lock_wait 30
       echo "[$ts] grr: git index is locked, skipping" >&2
       if test $once -eq 1
         return 1
@@ -58,7 +57,14 @@ function _grr_function --description "Refresh to origin default branch every 3 m
             set ok 1
             echo "[$ts] grr: ok (pulled origin/$default_branch)"
           else if string match -q '*index.lock*' -- $pull_output
-            echo "[$ts] grr: git index became locked, will retry" >&2
+            # A writer slipped in between the check and the pull; one more try
+            # after it clears beats waiting a whole interval.
+            if _git_index_lock_wait 30; and git pull --ff-only origin $default_branch
+              set ok 1
+              echo "[$ts] grr: ok (pulled origin/$default_branch)"
+            else
+              echo "[$ts] grr: git index became locked, will retry" >&2
+            end
           else
             printf '%s\n' $pull_output >&2
             echo "[$ts] grr: pull failed, will retry" >&2

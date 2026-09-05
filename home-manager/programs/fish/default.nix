@@ -299,6 +299,7 @@
         "_fzf_preview_name"
         "_fzf_shell_history"
         "_gco_function"
+        "_git_index_lock_wait"
         "_grco_function"
         "_grcr_function"
         "_grr_function"
