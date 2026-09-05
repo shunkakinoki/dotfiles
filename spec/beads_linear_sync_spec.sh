@@ -76,6 +76,11 @@ When run bash -c "grep -F '@jq@/bin/jq' '$SCRIPT' >/dev/null"
 The status should be success
 End
 
+It 'passes deferred push progress to jq through a bounded file input'
+When run bash -c "grep -F -- '--rawfile pushed' '$SCRIPT' >/dev/null && ! grep -F -- '--arg pushed' '$SCRIPT' >/dev/null"
+The status should be success
+End
+
 It 'supports the current Beads list envelope'
 When run bash -c "grep -F 'if type == \"object\" and has(\"issues\") then .issues else . end' '$SCRIPT' >/dev/null"
 The status should be success
@@ -378,6 +383,24 @@ The output should include 'terminal Beads batch 1/1'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-11,df-12 --no-wait'
 The file "$CHECKPOINT_FILE" should be exist
 The file "$progress_file" should not be exist
+End
+
+It 'handles a deferred push progress file larger than 128 KiB'
+mkdir -p "$STATE_HOME/beads-linear-sync"
+progress_file="$STATE_HOME/beads-linear-sync/push-progress-test%2Frepo-one"
+{
+  for progress_index in {1..6000}; do
+    printf 'deferred-%s 2099-01-01T00:00:00Z\n' "$progress_index"
+  done
+  printf '%s\n' 'df-closed 2099-01-01T00:00:00Z'
+} >"$progress_file"
+test "$(wc -c <"$progress_file")" -gt 131072
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LIST_JSON='[{"id":"df-closed","status":"closed","updated_at":"2099-01-01T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/closed"}]' XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'No terminal Beads to push'
+The output should include 'Pulling complete Linear state'
+The contents of file "$COMMAND_LOG" should not include 'linear sync --push --issues df-closed'
+The file "$CHECKPOINT_FILE" should be exist
 End
 
 It 'fails closed after an ordinary Linear pull failure'
