@@ -3,7 +3,6 @@ set -euo pipefail
 
 GALACTICA_AUTHORIZED_KEY="@galacticaAuthorizedKey@"
 KUBELET_CONFIG_NAME="@kubeletConfigName@"
-TAILSCALE_DNS="@tailscaleDns@"
 
 ensure_authorized_key() {
   local key="$1"
@@ -86,7 +85,7 @@ REMOTE_KUBECONFIG="$HOME/.kube/config"
 if [ -f "$K3S_KUBECONFIG" ]; then
   mkdir -p "$HOME/.kube"
   $SUDO_CMD cat "$K3S_KUBECONFIG" |
-    sed "s|https://127.0.0.1:6443|https://${TAILSCALE_DNS}:6443|g" \
+    @sed@ -E 's#^([[:space:]]*server:)[[:space:]]*https://[^:]+:6443$#\1 https://127.0.0.1:6443#' \
       >"$REMOTE_KUBECONFIG"
   chmod 600 "$REMOTE_KUBECONFIG"
 fi

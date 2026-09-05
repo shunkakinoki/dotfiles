@@ -54,10 +54,14 @@ When run bash -c "grep 'KUBELET_CONFIG_TARGET' '$SCRIPT'"
 The output should include 'kubelet.conf.d/$KUBELET_CONFIG_NAME'
 End
 
-It 'uses host-specific kubelet and Tailscale substitutions'
-When run bash -c "grep 'KUBELET_CONFIG_NAME=' '$SCRIPT'; grep 'TAILSCALE_DNS=' '$SCRIPT'"
+It 'uses the host-specific kubelet substitution'
+When run grep 'KUBELET_CONFIG_NAME=' "$SCRIPT"
 The output should include '@kubeletConfigName@'
-The output should include '@tailscaleDns@'
+End
+
+It 'normalizes the final local kubeconfig to the loopback API'
+When run bash -c "grep -q 'server:).*https://127.0.0.1:6443' '$SCRIPT' && grep -q '@sed@ -E' '$SCRIPT'"
+The status should be success
 End
 
 It 'checks the system k3s service through sudo'

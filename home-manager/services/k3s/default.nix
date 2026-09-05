@@ -14,7 +14,6 @@ let
     diff = "${pkgs.diffutils}/bin/diff";
     find = "${pkgs.findutils}/bin/find";
     findmnt = "${pkgs.util-linux}/bin/findmnt";
-    sed = "${pkgs.gnused}/bin/sed";
     smartctl = "${pkgs.smartmontools}/bin/smartctl";
     systemctl = "${pkgs.systemd}/bin/systemctl";
     tune2fs = "${pkgs.e2fsprogs}/bin/tune2fs";
