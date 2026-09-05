@@ -447,11 +447,13 @@ fi
 # are skipped; without that, a window larger than the API budget re-pushes the
 # same batches forever and the checkpoint never advances.
 issues_before_pull="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0 --skip-labels)"
-pushed_progress=""
+pushed_progress_input=/dev/null
 if [ -s "$push_progress_file" ]; then
-  pushed_progress="$(<"$push_progress_file")"
+  pushed_progress_input="$push_progress_file"
 fi
-closed_push_entries="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --arg pushed "$pushed_progress" '
+# Keep deferred progress content out of jq's argv. The file may contain many
+# batches, so passing it with --arg exceeds Linux's per-argument limit.
+closed_push_entries="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --rawfile pushed "$pushed_progress_input" '
   (if type == "object" and has("issues") then .issues else . end)
   | ($pushed | split("\n") | map(select(length > 0))) as $already_pushed
   | [

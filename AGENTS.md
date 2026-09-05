@@ -47,6 +47,12 @@ cp -rf source dest          # NOT: cp -r source dest
 - Do not add a separate global, user-local, curl-installed, or independently auto-updating copy of a CLI that the repository already manages.
 - Use a vendor installer only when the repository does not manage the CLI or the user explicitly requests the standalone installation.
 
+## Durable Configuration and Incident Repair
+
+- Repair one-off host or database incidents directly in place, with appropriate backups and verification.
+- Keep Home Manager configuration and managed scripts focused on durable, declarative behavior and general fixes that prevent recurrence.
+- Do not embed incident-specific migrations, recovery commands, or temporary repair workarounds into recurring services or activation scripts.
+
 ## Repository Privacy Guidance
 
 - Never record private repository names, identifiers, checkout paths, or references in any tracked file, documentation, fixture, example, log, or generated configuration in this repository.
