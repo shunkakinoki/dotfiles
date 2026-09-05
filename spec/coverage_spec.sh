@@ -396,6 +396,10 @@ It 'has behavior tests for named-hosts/kamino/activate.sh'
 The path "tests/test_kamino_activation.py" should be exist
 End
 
+It 'has behavior tests for named-hosts/kyber/incus/setup.sh and network.sh'
+The path "tests/test_kyber_incus.py" should be exist
+End
+
 It 'has spec file for named-hosts/kyber/activate-ip-forwarding.sh'
 The path "spec/activate_kyber_spec.sh" should be exist
 End
@@ -641,6 +645,8 @@ named-hosts/kyber/activate-fish-ssh-compat.sh
 named-hosts/kyber/activate-ip-forwarding.sh
 named-hosts/kyber/activate-sshd.sh
 named-hosts/kyber/activate-user-service-priority.sh
+named-hosts/kyber/incus/network.sh
+named-hosts/kyber/incus/setup.sh
 named-hosts/kyber/prepare-containerd-disk.sh
 named-hosts/kyber/rekey-galactica.sh
 named-hosts/kyber/setup.sh
