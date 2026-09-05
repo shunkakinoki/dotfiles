@@ -25,8 +25,7 @@ Never hand-edit a generated config. Edit the `.tpl.*` file, regenerate, and comm
 | `__GPT__` | `gpt-5.6-sol` |
 | `__GPT_LUNA__` | `gpt-5.6-luna` |
 | `__GPT_IMAGE__` | `gpt-image-2` |
-| `__GEMINI_PRO__` | `gemini-3.1-pro-low` |
-| `__GEMINI_FLASH__` | `gemini-3.7-flash-high` |
+| `__GEMINI_FLASH__` | `gemini-3.8-flash` |
 | `__DEEPSEEK_FLASH__` | `deepseek-v4-flash` |
 | `__DEEPSEEK_PRO__` | `deepseek-v4-pro` |
 | `__GEMMA_LOCAL__` | `gemma3:4b` |
@@ -42,9 +41,8 @@ also gets two derived forms: `__<KEY>_PRETTY__` for the display name
 OpenRouter `@preset/` names.
 
 Provider-specific slugs remain separate even when they represent the same model
-family. `__GEMINI_PRO__` and `__GEMINI_FLASH__` are IDs verified through
-CLIProxy, while Antigravity's native model ID stays directly in its
-provider-owned template.
+family. `__GEMINI_FLASH__` is the Gemini ID verified through CLIProxy, while
+Antigravity's native model ID stays directly in its provider-owned template.
 
 Two provider-specific overrides are declared in
 [scripts/llm-update.sh](scripts/llm-update.sh) rather than in `models.json`,
@@ -114,7 +112,7 @@ Hermes also runs a Mixture-of-Agents preset: reference models
 | Codex | default | `gpt-5.6-sol` | [config.tpl.toml](config/codex/config.tpl.toml) |
 | Codex | subagents | `gpt-5.6-luna` | |
 | Codex | `qwen-local` profile | `qwen3.5-0.8b-optiq` (LM Studio) | |
-| Antigravity | default | `gemini-3.7-flash-high` (native Antigravity provider) | [settings.tpl.json](config/antigravity/settings.tpl.json) |
+| Antigravity | default | `gemini-3.8-flash` (native Antigravity provider) | [settings.tpl.json](config/antigravity/settings.tpl.json) |
 | Pi | `defaultModel` | `free` (provider `cliproxyapi`) | [settings.tpl.json](config/pi/settings.tpl.json) |
 | Factory (droid) | session default | `deepseek-v4-flash-0731` (Droid Core) | [settings.tpl.json](config/factory/settings.tpl.json) |
 | Factory (droid) | custom models | `custom:deepseek-v4-flash-0`, `custom:free-1` via `https://cliproxy.shunkakinoki.com/v1` | [settings.tpl.json](config/factory/settings.tpl.json) |
