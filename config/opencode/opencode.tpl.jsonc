@@ -37,9 +37,6 @@
         "__GPT__": {
           "name": "__GPT_PRETTY__ (via shunkakinoki's CLIProxy)"
         },
-        "__GEMINI_PRO__": {
-          "name": "__GEMINI_PRO_PRETTY__ (via shunkakinoki's CLIProxy)"
-        },
         "__GEMINI_FLASH__": {
           "name": "__GEMINI_FLASH_PRETTY__ (via shunkakinoki's CLIProxy)"
         },
@@ -80,9 +77,6 @@
         },
         "__GPT__": {
           "name": "__GPT_PRETTY__ (via local CLIProxyAPI)"
-        },
-        "__GEMINI_PRO__": {
-          "name": "__GEMINI_PRO_PRETTY__ (via local CLIProxyAPI)"
         },
         "__GEMINI_FLASH__": {
           "name": "__GEMINI_FLASH_PRETTY__ (via local CLIProxyAPI)"

@@ -82,25 +82,8 @@
             "maxTokens": 32000
           },
           {
-            "id": "gemini-3.1-pro-low",
-            "name": "Gemini 3.1 Pro Low",
-            "reasoning": false,
-            "input": [
-              "text",
-              "image"
-            ],
-            "cost": {
-              "input": 0,
-              "output": 0,
-              "cacheRead": 0,
-              "cacheWrite": 0
-            },
-            "contextWindow": 200000,
-            "maxTokens": 32000
-          },
-          {
-            "id": "gemini-3.7-flash-high",
-            "name": "Gemini 3.7 Flash High",
+            "id": "gemini-3.8-flash",
+            "name": "Gemini 3.8 Flash",
             "reasoning": false,
             "input": [
               "text",

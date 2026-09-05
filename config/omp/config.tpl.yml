@@ -54,7 +54,7 @@ disabledExtensions: []
 #   anthropic    — Claude models (__CLAUDE_SONNET__, __CLAUDE_OPUS__, etc.)
 #   openai       — OpenAI models (__GPT__, __GPT_LUNA__, etc.)
 #   openai-codex — OpenAI Codex models/providers used by OMP
-#   google       — Gemini models (__GEMINI_PRO__, __GEMINI_FLASH__, etc.)
+#   google       — Gemini models (__GEMINI_FLASH__, etc.)
 #   deepseek     — DeepSeek models
 #   mistral      — Mistral models
 #   groq         — Groq models

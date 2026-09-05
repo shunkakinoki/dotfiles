@@ -114,20 +114,6 @@ providers:
           output: 0
           cacheRead: 0
           cacheWrite: 0
-      - id: __GEMINI_PRO__
-        name: __GEMINI_PRO_PRETTY__ (via shunkakinoki's CLIProxy)
-        reasoning: true
-        input:
-          - text
-          - image
-        supportsTools: true
-        contextWindow: 1000000
-        maxTokens: 65536
-        cost:
-          input: 0
-          output: 0
-          cacheRead: 0
-          cacheWrite: 0
       - id: __GEMINI_FLASH__
         name: __GEMINI_FLASH_PRETTY__ (via shunkakinoki's CLIProxy)
         reasoning: false

@@ -37,7 +37,7 @@ Before 'setup'
 After 'cleanup'
 
 It 'creates writable default-backend Antigravity CLI settings'
-When run bash -c 'HOME="$1" bash "$2" "$3" "$4" jq && jq -e '\''.model == "gemini-3.7-flash-high" and has("modelProvider") == false and (.permissions.allow | index("read_file(*)") != null)'\'' "$1/.gemini/antigravity-cli/settings.json" >/dev/null && find "$1/.gemini/antigravity-cli/settings.json" -prune -perm 600 -print -quit | grep -q .' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS" "$HOOKS"
+When run bash -c 'HOME="$1" bash "$2" "$3" "$4" jq && jq -e '\''.model == "gemini-3.8-flash" and has("modelProvider") == false and (.permissions.allow | index("read_file(*)") != null)'\'' "$1/.gemini/antigravity-cli/settings.json" >/dev/null && find "$1/.gemini/antigravity-cli/settings.json" -prune -perm 600 -print -quit | grep -q .' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS" "$HOOKS"
 The status should be success
 The path "$TEMP_HOME/.gemini/antigravity-cli/settings.json" should be file
 The path "$TEMP_HOME/.gemini/antigravity-cli/settings.json" should be writable
@@ -53,7 +53,7 @@ cat >"$TEMP_HOME/.gemini/antigravity-cli/settings.json" <<'JSON'
   "futureSetting": "preserved"
 }
 JSON
-When run bash -c 'HOME="$1" bash "$2" "$3" "$4" jq && jq -e '\''.model == "gemini-3.7-flash-high" and has("modelProvider") == false and .showTips == false and .futureSetting == "preserved" and (.permissions.allow | index("read_file(*)") != null)'\'' "$1/.gemini/antigravity-cli/settings.json" >/dev/null && find "$1/.gemini/antigravity-cli/settings.json" -prune -perm 600 -print -quit | grep -q .' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS" "$HOOKS"
+When run bash -c 'HOME="$1" bash "$2" "$3" "$4" jq && jq -e '\''.model == "gemini-3.8-flash" and has("modelProvider") == false and .showTips == false and .futureSetting == "preserved" and (.permissions.allow | index("read_file(*)") != null)'\'' "$1/.gemini/antigravity-cli/settings.json" >/dev/null && find "$1/.gemini/antigravity-cli/settings.json" -prune -perm 600 -print -quit | grep -q .' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS" "$HOOKS"
 The status should be success
 End
 

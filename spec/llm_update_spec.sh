@@ -78,9 +78,14 @@ End
 
 Describe 'provider-specific current model aliases'
 It 'keeps Antigravity aliases out of the shared model registry'
-When run jq -e '.["gemini-flash"] == "gemini-3.7-flash-high" and has("antigravity-pro") == false and has("antigravity-flash") == false' models.json
+When run jq -e '.["gemini-flash"] == "gemini-3.8-flash" and has("gemini-pro") == false and has("antigravity-pro") == false and has("antigravity-flash") == false' models.json
 The status should be success
 The output should equal 'true'
+End
+
+It 'removes the retired Gemini Pro model from hydrated catalogs'
+When run bash -c "! grep -R -E '__GEMINI_PRO__|gemini-3\\.1-pro-low' config/opencode/opencode.tpl.jsonc config/opencode/opencode.jsonc config/openclaw/openclaw.tpl.json config/openclaw/openclaw.template.json config/omp/models.tpl.yml config/omp/models.yml config/pi/models.tpl.json config/pi/models.json"
+The status should be success
 End
 
 It 'removes the superseded Codex Spark route'
@@ -177,13 +182,13 @@ End
 
 Describe 'generated Antigravity settings'
 It 'keeps the native Flash ID on the authenticated Antigravity backend'
-When run jq -e '.model == "gemini-3.7-flash-high" and has("modelProvider") == false' config/antigravity/settings.tpl.json
+When run jq -e '.model == "gemini-3.8-flash" and has("modelProvider") == false' config/antigravity/settings.tpl.json
 The status should be success
 The output should equal 'true'
 End
 
 It 'generates the concrete model without forcing API-key authentication'
-When run jq -e '.model == "gemini-3.7-flash-high" and has("modelProvider") == false' config/antigravity/settings.json
+When run jq -e '.model == "gemini-3.8-flash" and has("modelProvider") == false' config/antigravity/settings.json
 The status should be success
 The output should equal 'true'
 End
