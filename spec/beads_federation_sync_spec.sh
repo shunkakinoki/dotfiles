@@ -38,7 +38,7 @@ setup_federation() {
   repo_slug="${TEST_REPO_ID//\//_}"
   CHECKPOINT_FILE="$STATE_HOME/beads-federation-sync/last-success-$repo_slug"
   export DOTFILES_ENV_FILE="$ENV_FILE"
-  for command in date mkdir mv sleep timeout; do
+  for command in date mkdir mv sleep tail timeout; do
     ln -s "$(command -v "$command")" "$COREUTILS/bin/$command"
   done
 
@@ -134,6 +134,11 @@ End
 
 It 'serves Dolt locally on every client host'
 When run bash -c "grep -F 'serverEnabled = clientEnabled;' '$MODULE' >/dev/null && grep -F 'pkgs.stdenv.hostPlatform.isLinux && serverEnabled' '$MODULE' >/dev/null && grep -F 'pkgs.stdenv.hostPlatform.isDarwin && serverEnabled' '$MODULE' >/dev/null"
+The status should be success
+End
+
+It 'bounds Kyber Dolt backup writes without constraining other hosts'
+When run bash -c "service=\$(sed -n '/systemd.user.services.dolt =/,/Install =/p' '$MODULE'); grep -F 'lib.optionalAttrs isKyber' <<<\"\$service\" >/dev/null && grep -F 'IOAccounting = true;' <<<\"\$service\" >/dev/null && grep -F 'IOWriteBandwidthMax = \"/ 20M\";' <<<\"\$service\" >/dev/null"
 The status should be success
 End
 
