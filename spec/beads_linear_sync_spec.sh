@@ -241,9 +241,18 @@ case "${1:-} ${2:-}" in
     printf '{"last_sync":"%s"}\n' "${FAKE_LAST_SYNC:-}"
     ;;
   "linear sync")
+    linear_result="${FAKE_LINEAR_RESULT:-}"
+    if [ -z "$linear_result" ]; then
+      linear_result='{"success":true,"stats":{"errors":0}}'
+    fi
     case "${FAKE_LINEAR_MODE:-success}" in
       rate-limit)
         printf '%s\n' 'rate limit circuit breaker is open'
+        exit 0
+        ;;
+      rate-limit-json)
+        printf '%s\n' '{"success":true,"stats":{"errors":0},"warnings":["rate limit circuit breaker is open"]}'
+        exit 0
         ;;
       rate-limit-after-one)
         if [[ " $* " == *" --push "* ]]; then
@@ -255,8 +264,75 @@ case "${1:-} ${2:-}" in
           printf '%s\n' "$push_count" >"$PUSH_COUNT"
           if [ "$push_count" -gt 1 ]; then
             printf '%s\n' 'rate limit circuit breaker is open'
+            exit 0
           fi
         fi
+        ;;
+      clean-null-fields)
+        linear_result='{"success":true,"stats":{"errors":0},"warnings":null,"error":""}'
+        ;;
+      clean-empty-warnings)
+        linear_result='{"success":true,"stats":{"errors":0},"warnings":[]}'
+        ;;
+      partial-push)
+        if [[ " $* " == *" --push "* ]]; then
+          printf '%s\n' '{"success":true,"stats":{"errors":1}}'
+          exit 0
+        fi
+        ;;
+      partial-pull)
+        if [[ " $* " != *" --push "* ]]; then
+          printf '%s\n' '{"success":true,"stats":{"errors":1}}'
+          exit 0
+        fi
+        ;;
+      warning-only)
+        printf '%s\n' '{"success":true,"stats":{"errors":0},"warnings":["PRIVATE_LINEAR_PAYLOAD"]}'
+        exit 0
+        ;;
+      invalid-json)
+        printf '%s\n' 'not-json PRIVATE_LINEAR_PAYLOAD'
+        exit 0
+        ;;
+      empty-json)
+        exit 0
+        ;;
+      multiple-json)
+        printf '%s\n' '{"success":true,"stats":{"errors":0}}'
+        printf '%s\n' '{"success":true,"stats":{"errors":0}}'
+        exit 0
+        ;;
+      success-false)
+        printf '%s\n' '{"success":false,"stats":{"errors":0}}'
+        exit 0
+        ;;
+      error-field)
+        printf '%s\n' '{"success":true,"stats":{"errors":0},"error":"PRIVATE_LINEAR_PAYLOAD"}'
+        exit 0
+        ;;
+      fatal-local-read)
+        printf '%s\n' 'searching local issues: connection failed PRIVATE_LINEAR_PAYLOAD'
+        exit 31
+        ;;
+      fatal-state-cache)
+        printf '%s\n' 'building state cache: not found PRIVATE_LINEAR_PAYLOAD'
+        exit 35
+        ;;
+      fatal-batch-push)
+        printf '%s\n' 'batch pushing issues: authentication failed PRIVATE_LINEAR_PAYLOAD'
+        exit 32
+        ;;
+      fatal-context-timeout)
+        printf '%s\n' 'context deadline exceeded: timeout PRIVATE_LINEAR_PAYLOAD'
+        exit 33
+        ;;
+      fatal-database-lock)
+        printf '%s\n' 'deadlock: PRIVATE_LINEAR_PAYLOAD'
+        exit 34
+        ;;
+      command-timeout)
+        printf '%s\n' 'PRIVATE_LINEAR_PAYLOAD'
+        exit 124
         ;;
       hard-failure)
         exit 23
@@ -272,6 +348,10 @@ case "${1:-} ${2:-}" in
         fi
         ;;
     esac
+    if [ -n "${FAKE_LINEAR_STDERR:-}" ]; then
+      printf '%s\n' "$FAKE_LINEAR_STDERR" >&2
+    fi
+    printf '%s\n' "$linear_result"
     if [[ " $* " == *" --push "* ]] && [[ " $* " == *" df-accepted "* ]] && [ "${FAKE_LINEAR_MODE:-}" != "push-no-reference" ]; then
       printf '%s\n' 'https://linear.app/test/issue/TEST-999/example' >"$ISSUE_REF_FILE"
     fi
@@ -351,8 +431,147 @@ The output should include 'No terminal Beads to push'
 The file "$CHECKPOINT_FILE" should be exist
 The contents of file "$COMMAND_LOG" should include 'linear sync --pull --state all --relations --no-wait'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-test --no-wait'
+The contents of file "$COMMAND_LOG" should include 'linear sync --pull --state all --relations --no-wait --json'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-test --no-wait --json'
 The contents of file "$FSCK_TIMEOUT_LOG" should equal "300s
 300s"
+End
+
+It 'accepts null and empty optional fields in an otherwise clean result'
+When run bash -c "env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LINEAR_MODE=clean-null-fields XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' >/dev/null && env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LINEAR_MODE=clean-empty-warnings XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' >/dev/null"
+The status should be success
+The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'accepts valid stdout while suppressing incidental stderr'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_STDERR=PRIVATE_LINEAR_PAYLOAD XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should not include 'PRIVATE_LINEAR_PAYLOAD'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'rejects a partial terminal push without advancing progress'
+mkdir -p "$STATE_HOME/beads-linear-sync"
+progress_file="$STATE_HOME/beads-linear-sync/push-progress-test%2Frepo-one"
+printf '%s\n' 'preserved-entry 2026-01-01T00:00:00Z' >"$progress_file"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=partial-push FAKE_LIST_JSON='[{"id":"df-closed","status":"closed","updated_at":"2099-01-01T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/closed"}]' XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 65
+The output should include 'category=unclean-result exit=0 cause=unknown'
+The output should include 'Linear push failed with status 65'
+The contents of file "$progress_file" should equal 'preserved-entry 2026-01-01T00:00:00Z'
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'rejects a partial pull after restoring the prior cursor'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=partial-pull FAKE_LAST_SYNC=2026-08-24T10:39:54Z XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 65
+The output should include 'category=unclean-result exit=0 cause=unknown'
+The output should include 'Linear pull failed with status 65'
+The contents of file "$DOLT_LOG" should include 'REPLACE INTO local_metadata'
+The contents of file "$DOLT_LOG" should include '2026-08-24T10:39:54Z'
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'rejects a warning-only result without leaking the warning'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=warning-only XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 65
+The output should include 'category=unclean-result exit=0 cause=unknown'
+The output should not include 'PRIVATE_LINEAR_PAYLOAD'
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'rejects malformed JSON without leaking its payload'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=invalid-json XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 65
+The output should include 'category=unclean-result exit=0 cause=unknown'
+The output should not include 'PRIVATE_LINEAR_PAYLOAD'
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'rejects an empty JSON result'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=empty-json XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 65
+The output should include 'category=unclean-result exit=0 cause=unknown'
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'requires exactly one JSON document'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=multiple-json XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 65
+The output should include 'category=unclean-result exit=0 cause=unknown'
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'rejects a false success result'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=success-false XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 65
+The output should include 'category=unclean-result exit=0 cause=unknown'
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'rejects a nonempty structured error without leaking it'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=error-field XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 65
+The output should include 'category=unclean-result exit=0 cause=unknown'
+The output should not include 'PRIVATE_LINEAR_PAYLOAD'
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'defers a plain circuit-breaker result without appending JSON'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=rate-limit XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'next 900-second run will retry'
+The contents of file "$COMMAND_LOG" should include 'linear sync --pull --state all --relations --no-wait --json'
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'defers a JSON circuit-breaker warning'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=rate-limit-json XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'next 900-second run will retry'
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'redacts a local-read diagnostic while preserving its status'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=fatal-local-read XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 31
+The output should include 'category=local-read exit=31 cause=connection'
+The output should not include 'PRIVATE_LINEAR_PAYLOAD'
+End
+
+It 'uses a separate state-cache category for cache failures'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=fatal-state-cache XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 35
+The output should include 'category=state-cache exit=35 cause=not-found'
+The output should not include 'PRIVATE_LINEAR_PAYLOAD'
+End
+
+It 'redacts a batch-push diagnostic while preserving its status'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=fatal-batch-push XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 32
+The output should include 'category=batch-push exit=32 cause=authentication'
+The output should not include 'PRIVATE_LINEAR_PAYLOAD'
+End
+
+It 'redacts a context-timeout diagnostic while preserving its status'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=fatal-context-timeout XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 33
+The output should include 'category=context-timeout exit=33 cause=timeout'
+The output should not include 'PRIVATE_LINEAR_PAYLOAD'
+End
+
+It 'redacts a database-lock diagnostic while preserving its status'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=fatal-database-lock XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 34
+The output should include 'category=database-lock exit=34 cause=database-lock'
+The output should not include 'PRIVATE_LINEAR_PAYLOAD'
+End
+
+It 'classifies a command timeout without leaking command output'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=command-timeout XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 124
+The output should include 'category=command-timeout exit=124 cause=timeout'
+The output should not include 'PRIVATE_LINEAR_PAYLOAD'
 End
 
 It 'splits a large outbound delta into bounded batches'
