@@ -90,6 +90,8 @@ let
           username = "shunkakinoki";
         };
         cfg = matic.config;
+        federationEnvironment =
+          cfg.home-manager.users.shunkakinoki.systemd.user.services.dolt-federation-sync.Service.Environment;
       in
       assert
         cfg.services.tailscale.extraSetFlags == [
@@ -100,6 +102,7 @@ let
           "--ssh"
         ];
       assert lib.hasInfix "tailscale set" cfg.system.activationScripts.tailscalePreferences.text;
+      assert lib.elem "BEADS_FEDERATION_HUB=http://kyber.tail950b36.ts.net:3308" federationEnvironment;
       mkEvalCheck "nixos-matic" cfg.system.build.toplevel;
 
     eval-nixos-viper =
@@ -260,6 +263,7 @@ let
             username = "ubuntu";
             system = "x86_64-linux";
           };
+          federationEnvironment = kyber.config.systemd.user.services.dolt-federation-sync.Service.Environment;
         in
         assert
           kyber.config.modules.tailscale.extraUpArgs == [
@@ -268,6 +272,7 @@ let
             "--accept-dns=false"
             "--advertise-exit-node"
           ];
+        assert lib.elem "BEADS_FEDERATION_HUB=http://127.0.0.1:3308" federationEnvironment;
         mkEvalCheck "home-kyber" kyber.activationPackage;
     };
 in

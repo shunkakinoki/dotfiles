@@ -143,7 +143,7 @@ The status should be success
 End
 
 It 'federates every client host and publishes only from Kyber'
-When run bash -c "grep -F 'federationSyncEnabled = clientEnabled;' '$MODULE' >/dev/null && grep -F 'publisherEnabled = isKyber;' '$MODULE' >/dev/null && ! grep -F 'dolt-backup-main = lib.mkIf (pkgs.stdenv.isLinux && serverEnabled)' '$MODULE' >/dev/null && ! grep -F 'dolt-backup-main = lib.mkIf (pkgs.stdenv.isDarwin && serverEnabled)' '$MODULE' >/dev/null"
+When run bash -c "grep -F 'federationSyncEnabled = clientEnabled;' '$MODULE' >/dev/null && grep -F 'publisherEnabled = isKyber;' '$MODULE' >/dev/null && grep -F 'federationHubHost = if federationHubEnabled then doltServerHost else \"kyber.tail950b36.ts.net\";' '$MODULE' >/dev/null && grep -F 'BEADS_FEDERATION_HUB = federationHubUrl;' '$MODULE' >/dev/null && ! grep -F 'dolt-backup-main = lib.mkIf (pkgs.stdenv.isLinux && serverEnabled)' '$MODULE' >/dev/null && ! grep -F 'dolt-backup-main = lib.mkIf (pkgs.stdenv.isDarwin && serverEnabled)' '$MODULE' >/dev/null"
 The status should be success
 End
 
