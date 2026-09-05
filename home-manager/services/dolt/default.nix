@@ -29,6 +29,14 @@ let
   serverEnabled = clientEnabled;
   # Kyber alone publishes the shared history to the configured remotes.
   publisherEnabled = isKyber;
+  # Kyber is also the federation hub: it serves its databases over Dolt's
+  # remotesapi and every other host syncs against it instead of GitHub, so a
+  # spoke push is a native transfer rather than a git subprocess tree that a
+  # disconnected client leaves orphaned on the server.
+  federationHubEnabled = publisherEnabled;
+  federationHubHost = "kyber.tail950b36.ts.net";
+  federationRemotesApiPort = 3308;
+  federationHubUrl = "http://${federationHubHost}:${toString federationRemotesApiPort}";
   doltServerHost = "127.0.0.1";
   beadsClientEnvironment = {
     BEADS_DOLT_AUTO_START = "0";
@@ -74,7 +82,21 @@ let
   };
   federationSyncScript = pkgs.replaceVars ./federation-sync.sh {
     bd = "${homeDir}/.local/bin/bd";
-    inherit (pkgs) coreutils;
+    inherit (pkgs) coreutils jq;
+  };
+  federationSyncEnvironment = {
+    HOME = homeDir;
+    PATH = linearSyncPath;
+    BEADS_DOLT_AUTO_START = "0";
+    BEADS_DOLT_SERVER_MODE = "1";
+    BEADS_DOLT_SERVER_HOST = doltServerHost;
+    BEADS_DOLT_SERVER_PORT = "3307";
+    BEADS_DOLT_SERVER_USER = "root";
+    DOLT_CLI_USER = "root";
+    DOLT_CLI_PASSWORD = "";
+  }
+  // lib.optionalAttrs (!federationHubEnabled) {
+    BEADS_FEDERATION_HUB = federationHubUrl;
   };
 in
 lib.mkIf clientEnabled {
@@ -187,17 +209,7 @@ lib.mkIf clientEnabled {
           ThrottleInterval = federationSyncIntervalSeconds;
           RunAtLoad = true;
           WorkingDirectory = homeDir;
-          EnvironmentVariables = {
-            HOME = homeDir;
-            PATH = linearSyncPath;
-            BEADS_DOLT_AUTO_START = "0";
-            BEADS_DOLT_SERVER_MODE = "1";
-            BEADS_DOLT_SERVER_HOST = doltServerHost;
-            BEADS_DOLT_SERVER_PORT = "3307";
-            BEADS_DOLT_SERVER_USER = "root";
-            DOLT_CLI_USER = "root";
-            DOLT_CLI_PASSWORD = "";
-          };
+          EnvironmentVariables = federationSyncEnvironment;
           StandardOutPath = "/tmp/dolt-federation-sync.log";
           StandardErrorPath = "/tmp/dolt-federation-sync.error.log";
         };
@@ -215,13 +227,14 @@ lib.mkIf clientEnabled {
       RestartSec = 5;
       WorkingDirectory = repoDir;
       # Kyber's WAN firewall drops all new public-interface ingress. Binding
-      # all addresses makes the SQL service reachable on tailscale0 while
-      # retaining the public-ingress deny boundary.
+      # all addresses makes the SQL and remotesapi services reachable on
+      # tailscale0 while retaining the public-ingress deny boundary.
       Environment = [
         "BEADS_DOLT_LISTEN_HOST=0.0.0.0"
         "DOLT_CLI_USER=root"
         "DOLT_CLI_PASSWORD="
-      ];
+      ]
+      ++ lib.optional federationHubEnabled "BEADS_DOLT_REMOTESAPI_PORT=${toString federationRemotesApiPort}";
     };
     Install = {
       WantedBy = [ "default.target" ];
@@ -324,17 +337,7 @@ lib.mkIf clientEnabled {
         Service = {
           Type = "oneshot";
           ExecStart = "${pkgs.bash}/bin/bash ${federationSyncScript}";
-          Environment = [
-            "HOME=${homeDir}"
-            "PATH=${linearSyncPath}"
-            "BEADS_DOLT_AUTO_START=0"
-            "BEADS_DOLT_SERVER_MODE=1"
-            "BEADS_DOLT_SERVER_HOST=${doltServerHost}"
-            "BEADS_DOLT_SERVER_PORT=3307"
-            "BEADS_DOLT_SERVER_USER=root"
-            "DOLT_CLI_USER=root"
-            "DOLT_CLI_PASSWORD="
-          ];
+          Environment = lib.mapAttrsToList (name: value: "${name}=${value}") federationSyncEnvironment;
         };
       };
 

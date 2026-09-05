@@ -101,27 +101,46 @@ for _attempt in 1 2 3 4 5 6 7 8 9 10 11 12; do
 done
 
 cycle_started="$(@coreutils@/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')"
+# Spokes converge on the hub's remotesapi endpoint for this repository's
+# database; the hub itself keeps the repository's sync.remote as the off-site
+# backup. The database name is the repository's own, not the hub's.
+configured_dolt_remote() {
+  local database
+
+  if [ -z "${BEADS_FEDERATION_HUB:-}" ]; then
+    "$bd_cli" -C "$repo_dir" config get sync.remote 2>/dev/null || true
+    return 0
+  fi
+
+  database="$(@jq@/bin/jq -r '.dolt_database // "beads"' "$repo_dir/.beads/metadata.json" 2>/dev/null || true)"
+  if [ -z "$database" ]; then
+    log "Dolt database name is not recorded in .beads/metadata.json"
+    return 1
+  fi
+  printf '%s/%s\n' "${BEADS_FEDERATION_HUB%/}" "$database"
+}
+
 ensure_dolt_remote() {
   local configured_remote
   local current_remote
 
-  configured_remote="$("$bd_cli" -C "$repo_dir" config get sync.remote 2>/dev/null || true)"
+  configured_remote="$(configured_dolt_remote)" || return 1
   if [ -z "$configured_remote" ]; then
     log "Dolt sync remote is not configured"
     return 1
   fi
 
   current_remote="$("$bd_cli" -C "$repo_dir" dolt remote list 2>/dev/null | awk '$1 == "origin" { print $2; exit }')"
-  if [ -z "$current_remote" ]; then
-    log "Registering configured Dolt remote"
-    "$bd_cli" -C "$repo_dir" dolt remote add origin "$configured_remote" --allow-git-origin >/dev/null
+  if [ "$current_remote" = "$configured_remote" ]; then
     return 0
   fi
 
-  if [ "$current_remote" != "$configured_remote" ]; then
-    log "Configured Dolt remote does not match sync.remote"
-    return 1
+  if [ -n "$current_remote" ]; then
+    log "Replacing Dolt remote origin"
+    "$bd_cli" -C "$repo_dir" dolt remote remove origin >/dev/null
   fi
+  log "Registering configured Dolt remote"
+  "$bd_cli" -C "$repo_dir" dolt remote add origin "$configured_remote" --allow-git-origin >/dev/null
 }
 
 if ! ensure_dolt_remote; then
@@ -130,7 +149,13 @@ if ! ensure_dolt_remote; then
 fi
 
 log "Synchronizing Dolt remote"
-@coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" sync --yes >/dev/null 2>&1
+sync_status=0
+sync_output="$(@coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" sync --yes 2>&1)" || sync_status=$?
+if [ "$sync_status" -ne 0 ]; then
+  log "Dolt sync failed with status $sync_status"
+  printf '%s\n' "$sync_output" | @coreutils@/bin/tail -n 5
+  exit "$sync_status"
+fi
 
 @coreutils@/bin/mkdir -p "$sync_state_dir"
 printf '%s\n' "$cycle_started" >"$sync_checkpoint_file.tmp"

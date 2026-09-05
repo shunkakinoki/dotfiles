@@ -50,8 +50,18 @@ done
 # scans @beadsDir@ at startup and exposes each subdirectory as a database
 # by that name.
 
-exec "@dolt@/bin/dolt" sql-server \
-  -H "$listen_host" \
-  -P 3307 \
-  --data-dir "@beadsDir@" \
+server_args=(
+  -H "$listen_host"
+  -P 3307
+  --data-dir "@beadsDir@"
   --loglevel info
+)
+
+# The federation hub serves its databases to the other hosts over Dolt's
+# native remotesapi, so a spoke push is one transfer inside this process
+# rather than a git subprocess tree the server cannot cancel.
+if [ -n "${BEADS_DOLT_REMOTESAPI_PORT:-}" ]; then
+  server_args+=(--remotesapi-port "$BEADS_DOLT_REMOTESAPI_PORT")
+fi
+
+exec "@dolt@/bin/dolt" sql-server "${server_args[@]}"
