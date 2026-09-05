@@ -4,6 +4,11 @@ import os from "node:os";
 import path from "node:path";
 
 const AGENT_ID = "openclaw";
+// The guard dedupes and caps the detached uploads `traces hook agent` starts.
+const TRACES_HOOK_GUARD = path.join(
+  os.homedir(),
+  "dotfiles/config/shared/hooks/traces-agent-hook.sh"
+);
 
 const EVENT_MAP = {
   "agent:bootstrap": "session-start",
@@ -101,10 +106,11 @@ export default function tracesHook(event) {
   // traces reads the destination namespace from the working directory, and the
   // gateway process runs from /tmp, so cwd has to be set explicitly.
   const child = spawn(
-    resolveTracesBin(),
-    ["hook", "agent", tracesEvent, "--agent", AGENT_ID],
+    TRACES_HOOK_GUARD,
+    [tracesEvent, "--agent", AGENT_ID],
     {
       cwd,
+      env: { ...process.env, TRACES_BIN: resolveTracesBin() },
       stdio: ["pipe", "ignore", "ignore"],
       detached: true,
     }

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Guard around `traces hook agent <event> --agent <id>`.
+# Guard around `traces hook agent <event> --agent <id>`. Every agent adapter
+# (native hook configs and the Pi, Hermes, and OpenClaw extensions) goes
+# through here so the in-flight accounting sees all uploads of one user.
 #
 # The traces hook spawns a detached `traces share --trace-id ... --source
 # agent_hook` upload on every prompt-submitted, agent-done, and session-end
@@ -14,7 +16,8 @@ set -u
 event="${1:-}"
 shift || true
 
-command -v traces >/dev/null 2>&1 || exit 0
+traces_bin="${TRACES_BIN:-traces}"
+command -v "$traces_bin" >/dev/null 2>&1 || exit 0
 
 MAX_INFLIGHT_UPLOADS="${TRACES_HOOK_MAX_INFLIGHT_UPLOADS:-4}"
 STALE_UPLOAD_SECONDS="${TRACES_HOOK_STALE_UPLOAD_SECONDS:-900}"
@@ -22,7 +25,7 @@ STALE_UPLOAD_SECONDS="${TRACES_HOOK_STALE_UPLOAD_SECONDS:-900}"
 payload="$(cat)"
 
 run_hook() {
-  printf '%s' "$payload" | traces hook agent "$event" "$@" || true
+  printf '%s' "$payload" | "$traces_bin" hook agent "$event" "$@" || true
   exit 0
 }
 

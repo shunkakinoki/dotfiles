@@ -10,6 +10,8 @@ from pathlib import Path
 
 AGENT_ID = "hermes"
 TIMEOUT_SECONDS = 30
+# The guard dedupes and caps the detached uploads `traces hook agent` starts.
+TRACES_HOOK_GUARD = Path.home() / "dotfiles/config/shared/hooks/traces-agent-hook.sh"
 
 
 def _resolve_traces_bin() -> str | None:
@@ -49,8 +51,9 @@ def _call_hook(event: str, session_id: str) -> None:
     payload = json.dumps({"sessionKey": session_id, "session_id": session_id})
     try:
         proc = subprocess.Popen(
-            [binary, "hook", "agent", event, "--agent", AGENT_ID],
+            [str(TRACES_HOOK_GUARD), event, "--agent", AGENT_ID],
             cwd=cwd,
+            env={**os.environ, "TRACES_BIN": binary},
             stdin=subprocess.PIPE,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
