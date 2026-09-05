@@ -57,6 +57,9 @@ unified_exec = true
 voice_transcription = true
 workspace_dependencies = true
 
+[features.context_management]
+experimental_mode = true
+
 [agents]
 enabled = true
 max_concurrent_threads_per_session = 300
