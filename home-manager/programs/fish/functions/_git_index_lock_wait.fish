@@ -26,7 +26,7 @@ function _git_index_lock_wait --description "Wait for .git/index.lock to clear; 
   # git's cleanup handler), which is the case worth reaping automatically.
   set -l repo (git rev-parse --show-toplevel 2>/dev/null)
   set -l holders
-  if command -q lsof
+  if type -q lsof
     set holders (lsof -t -- "$lock" 2>/dev/null)
     if test (count $holders) -eq 0
       set -l pid
