@@ -12,6 +12,7 @@ let
   legacyBeadsDir = "${repoDir}/.beads";
   sharedServerDir = "${homeDir}/.beads/shared-server";
   beadsDir = "${sharedServerDir}/dolt";
+  federationDir = "${homeDir}/.beads/federation-server/dolt";
   doltManifest = "${beadsDir}/beads_global/.dolt/noms/manifest";
   mirrorDir = "${homeDir}/.cache/beads-jsonl-mirror";
   remoteUrl = "https://github.com/shunkakinoki/beads";
@@ -29,10 +30,9 @@ let
   serverEnabled = clientEnabled;
   # Kyber alone publishes the shared history to the configured remotes.
   publisherEnabled = isKyber;
-  # Kyber is also the federation hub: it serves its databases over Dolt's
-  # remotesapi and every other host syncs against it instead of GitHub, so a
-  # spoke push is a native transfer rather than a git subprocess tree that a
-  # disconnected client leaves orphaned on the server.
+  # Incoming remotesapi pushes replace the receiver's working root, including
+  # ignored tables. Keep that receiver separate from the live Beads database:
+  # every host (including the hub) pulls committed history from this mirror.
   federationHubEnabled = publisherEnabled;
   federationRemotesApiPort = 3308;
   doltServerHost = "127.0.0.1";
@@ -233,8 +233,7 @@ lib.mkIf clientEnabled {
         "BEADS_DOLT_LISTEN_HOST=0.0.0.0"
         "DOLT_CLI_USER=root"
         "DOLT_CLI_PASSWORD="
-      ]
-      ++ lib.optional federationHubEnabled "BEADS_DOLT_REMOTESAPI_PORT=${toString federationRemotesApiPort}";
+      ];
     }
     // lib.optionalAttrs isKyber {
       # DOLT_BACKUP performs the off-site snapshot inside the server process.
@@ -247,6 +246,33 @@ lib.mkIf clientEnabled {
       WantedBy = [ "default.target" ];
     };
   };
+
+  systemd.user.services.dolt-federation-hub =
+    lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && federationHubEnabled)
+      {
+        Unit = {
+          Description = "Dolt committed-history federation mirror";
+          After = [
+            "network.target"
+            "dolt.service"
+          ];
+        };
+        Service = {
+          Type = "simple";
+          ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${federationDir}";
+          ExecStart = "${pkgs.dolt}/bin/dolt sql-server -H 0.0.0.0 -P 3309 --data-dir ${federationDir} --remotesapi-port ${toString federationRemotesApiPort}";
+          WorkingDirectory = repoDir;
+          Restart = "always";
+          RestartSec = 5;
+          Environment = [
+            "DOLT_CLI_USER=root"
+            "DOLT_CLI_PASSWORD="
+          ];
+          IOAccounting = true;
+          IOWriteBandwidthMax = "/ 20M";
+        };
+        Install.WantedBy = [ "default.target" ];
+      };
 
   # Persist the same client selection in the user manager so Herdr, OpenClaw,
   # and other systemd-launched agents do not inherit a stale shared-server mode.
@@ -288,10 +314,12 @@ lib.mkIf clientEnabled {
           X-SwitchMethod = "restart";
           After = [
             "dolt.service"
+            "dolt-federation-hub.service"
             "network-online.target"
           ];
           Wants = [
             "dolt.service"
+            "dolt-federation-hub.service"
             "network-online.target"
           ];
         };
@@ -335,11 +363,13 @@ lib.mkIf clientEnabled {
           After = [
             "dolt.service"
             "network-online.target"
-          ];
+          ]
+          ++ lib.optional federationHubEnabled "dolt-federation-hub.service";
           Wants = [
             "dolt.service"
             "network-online.target"
-          ];
+          ]
+          ++ lib.optional federationHubEnabled "dolt-federation-hub.service";
         };
         Service = {
           Type = "oneshot";

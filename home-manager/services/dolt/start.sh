@@ -57,11 +57,8 @@ server_args=(
   --loglevel info
 )
 
-# The federation hub serves its databases to the other hosts over Dolt's
-# native remotesapi, so a spoke push is one transfer inside this process
-# rather than a git subprocess tree the server cannot cancel.
-if [ -n "${BEADS_DOLT_REMOTESAPI_PORT:-}" ]; then
-  server_args+=(--remotesapi-port "$BEADS_DOLT_REMOTESAPI_PORT")
-fi
+# Never expose the live working database as a push receiver: incoming pushes
+# discard ignored, clone-local tables. A separate federation mirror receives
+# committed history; Beads pulls it while retaining its local working tables.
 
 exec "@dolt@/bin/dolt" sql-server "${server_args[@]}"
