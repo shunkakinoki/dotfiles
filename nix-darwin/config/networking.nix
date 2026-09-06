@@ -20,15 +20,6 @@
     ];
   };
 
-  # Split DNS: route only Tailscale domains through Tailscale's DNS proxy.
-  # Keep Tailscale from installing its transient DNS proxy as the global
-  # resolver; regular internet DNS comes from the active network via DHCP.
-  environment.etc = {
-    "resolver/ts.net".text = ''
-      nameserver 100.100.100.100
-    '';
-  };
-
   # Tailscale is installed as a Homebrew app on macOS, so keep its mutable
   # DNS preference aligned with this declarative split-DNS configuration.
   system.activationScripts.tailscaleDns.text = ''
