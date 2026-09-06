@@ -23,6 +23,8 @@ Never hand-edit a generated config. Edit the `.tpl.*` file, regenerate, and comm
 | `__CLAUDE_SONNET__` | `claude-sonnet-5` |
 | `__CLAUDE_HAIKU__` | `claude-haiku-4-5-20251001` |
 | `__GPT__` | `gpt-5.6-sol` |
+| `__GPT_ASTRA__` | `gpt-6-astra` |
+| `__GPT_SOL__` | `gpt-5.6-sol` |
 | `__GPT_LUNA__` | `gpt-5.6-luna` |
 | `__GPT_IMAGE__` | `gpt-image-2` |
 | `__GEMINI_FLASH__` | `gemini-3.8-flash` |
@@ -175,3 +177,20 @@ OpenRouter before the harness-level fallback chain sees a failure.
 3. Update the matching assertions in `spec/llm_update_spec.sh`,
    `spec/openclaw_hydrate_spec.sh`, `spec/hermes_hydrate_spec.sh`, and
    `spec/cliproxyapi_spec.sh`, then run `shellspec`.
+
+## Codex CLIProxy profiles
+
+Codex loads named profile files from `~/.codex/<name>.config.toml`.
+Activation installs the files from `config/codex/profiles/`; `make llm-update`
+hydrates their model IDs from `models.json`.
+
+| Profile | Model key | Command |
+| --- | --- | --- |
+| `cliproxy` | `gpt-luna` | `coxec` or `codex --profile cliproxy` |
+| `cliproxy-astra` | `gpt-astra` | `codex --profile cliproxy-astra` |
+| `cliproxy-sol` | `gpt-sol` | `codex --profile cliproxy-sol` |
+| `cliproxy-luna` | `gpt-luna` | `codex --profile cliproxy-luna` |
+
+The default `cliproxy` profile remains Luna for fleet consumers. Every profile
+uses the existing `cliproxyapi` provider and `CLIPROXY_API_KEY`; none consumes a
+host's native Codex login. `qwen-local` also uses a named profile file.

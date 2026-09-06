@@ -1,0 +1,3 @@
+model = "__QWEN_LOCAL__"
+model_provider = "lmstudio"
+model_reasoning_effort = "minimal"

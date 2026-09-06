@@ -7,7 +7,9 @@
 {
   nix = {
     package = lib.mkDefault pkgs.lixPackageSets.latest.lix;
-    enable = true;
+    # Darwin uses the installer-managed Determinate client and daemon. Adding
+    # Lix to activation PATH makes it read unsupported Determinate settings.
+    enable = !pkgs.stdenv.hostPlatform.isDarwin;
     registry.nixpkgs.flake = inputs.nixpkgs;
     settings = {
       experimental-features = [
@@ -28,7 +30,7 @@
       ];
     };
     gc = {
-      automatic = true;
+      automatic = !pkgs.stdenv.hostPlatform.isDarwin;
       dates = "weekly";
       options = "--delete-older-than 30d";
     };

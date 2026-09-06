@@ -50,6 +50,11 @@ let
         };
         activation = galactica.config.system.activationScripts.tailscaleDns.text;
       in
+      assert !galactica.config.home-manager.users.shunkakinoki.nix.enable;
+      assert !galactica.config.home-manager.users.shunkakinoki.nix.gc.automatic;
+      assert lib.elem "openclaw/tap/crabbox" (map (brew: brew.name) galactica.config.homebrew.brews);
+      assert !(lib.elem "crabbox" (map (brew: brew.name) galactica.config.homebrew.brews));
+      assert !(lib.elem "crabbox" (map (cask: cask.name) galactica.config.homebrew.casks));
       assert lib.hasInfix "--accept-dns=true" activation;
       assert lib.hasInfix "--accept-routes=true" activation;
       assert lib.hasInfix "--ssh=false" activation;
