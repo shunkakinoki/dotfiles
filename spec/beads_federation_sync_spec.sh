@@ -16,7 +16,7 @@ When run bash -c "grep -F 'DOTFILES_ENV_FILE:-\$HOME/dotfiles/.env' '$SCRIPT' >/
 The status should be success
 End
 
-It 'gives fsck a measured budget below the per-repository deadline'
+It 'bounds the complete locked repository cycle with a separate fsck limit'
 When run bash -c "grep -F 'federation_timeout_seconds=360' '$SCRIPT' >/dev/null && grep -F 'federation_fsck_timeout=300s' '$SCRIPT' >/dev/null && grep -F '@coreutils@/bin/timeout --kill-after=30s \"\$federation_timeout_seconds\"' '$SCRIPT' >/dev/null && grep -F '@coreutils@/bin/env BEADS_FSCK_TIMEOUT=\"\$federation_fsck_timeout\"' '$SCRIPT' >/dev/null && sync=\$(grep -n '@coreutils@/bin/timeout --kill-after=30s' '$SCRIPT' | cut -d: -f1); checkpoint=\$(grep -n '\"\$cycle_started\" >\"\$sync_checkpoint_file.tmp\"' '$SCRIPT' | cut -d: -f1); test \"\$checkpoint\" -gt \"\$sync\""
 The status should be success
 End
@@ -89,6 +89,9 @@ printf '%s\n' "$*" >>"$COMMAND_LOG"
 if [ "${1:-}" = "-C" ]; then
   shift 2
 fi
+if [ "${FAKE_HANG_COMMAND:-}" = "${1:-} ${2:-}" ]; then
+  sleep 10
+fi
 case "${1:-} ${2:-}" in
   "migrate schema")
     exit "${FAKE_INITIALIZE_STATUS:-0}"
@@ -128,6 +131,10 @@ EOF
   cat >"$FAKE_ENSURE_DATABASE" <<'EOF'
 #!/usr/bin/env bash
 printf 'ensure-database\n' >>"$COMMAND_LOG"
+if [ -n "${FAKE_PROVISION_FINISHED_FILE:-}" ]; then
+  (sleep 0.5; printf 'finished\n' >"$FAKE_PROVISION_FINISHED_FILE") &
+  wait
+fi
 exit "${FAKE_PROVISION_STATUS:-0}"
 EOF
   sed \
@@ -209,6 +216,27 @@ When run bash -c "env COMMAND_LOG='$COMMAND_LOG' FAKE_FLOCK_WAIT_SECONDS=1 XDG_S
 The status should equal 75
 The output should include 'Timed out waiting for the repository reconciliation lock'
 The contents of file "$COMMAND_LOG" should not include 'ghq/github.com/test/repo-one sync --yes'
+End
+
+It 'times out provisioning, terminates its descendants, and releases the repository lock'
+sed 's/federation_timeout_seconds=360/federation_timeout_seconds=0.2/' "$RENDERED_SCRIPT" >"$RENDERED_SCRIPT.tmp"
+mv "$RENDERED_SCRIPT.tmp" "$RENDERED_SCRIPT"
+finished_file="$TEST_ROOT/provision-finished"
+When run bash -c 'env COMMAND_LOG="$1" FAKE_PROVISION_FINISHED_FILE="$2" FAKE_FLOCK_WAIT_SECONDS=1 XDG_STATE_HOME="$3" HOME="$4" bash "$5"; status=$?; printf "timeout-status=%s\n" "$status"; sleep 0.7; test ! -e "$2" || exit 99; sed "s/federation_timeout_seconds=0.2/federation_timeout_seconds=360/" "$5" >"$5.tmp"; mv "$5.tmp" "$5"; env COMMAND_LOG="$1" FAKE_FLOCK_WAIT_SECONDS=1 XDG_STATE_HOME="$3" HOME="$4" bash "$5"' _ "$COMMAND_LOG" "$finished_file" "$STATE_HOME" "$TEST_ROOT" "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'timeout-status=124'
+The output should include 'Dolt federation complete'
+The file "$finished_file" should not be exist
+End
+
+It 'bounds post-sync readiness without advancing the checkpoint'
+sed 's/federation_timeout_seconds=360/federation_timeout_seconds=0.2/' "$RENDERED_SCRIPT" >"$RENDERED_SCRIPT.tmp"
+mv "$RENDERED_SCRIPT.tmp" "$RENDERED_SCRIPT"
+When run env COMMAND_LOG="$COMMAND_LOG" FAKE_HANG_COMMAND='ready --json' XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" bash "$RENDERED_SCRIPT"
+The status should equal 124
+The output should include 'Repository federation failed with status 124'
+The contents of file "$COMMAND_LOG" should include 'sync --yes --json'
+The file "$CHECKPOINT_FILE" should not be exist
 End
 
 It 'rejects an absolute checkout path without logging it'
