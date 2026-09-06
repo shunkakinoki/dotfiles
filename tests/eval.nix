@@ -189,6 +189,8 @@ let
         assert cfg.home.username == "root";
         assert cfg.home.homeDirectory == "/root";
         assert !cfg.nix.enable;
+        assert cfg.programs.gpg.settings.default-key == cfg.programs.git.signing.key;
+        assert lib.hasInfix "/etc/ssh/ssh_host_ed25519_key" cfg.home.activation.importGpgKey.data;
         assert !cfg.nix.gc.automatic;
         assert !(cfg.xdg.configFile ? "nix/nix.conf");
         assert lib.hasInfix "/bin/ssh-keygen" cfg.home.activation.authorizeKaminoSsh.data;
@@ -243,6 +245,7 @@ let
         assert cfg.home.username == "root";
         assert cfg.home.homeDirectory == "/root";
         assert cfg.xdg.configFile."kamino/name".text == "kamino100\n";
+        assert lib.hasInfix "/etc/ssh/ssh_host_ed25519_key" cfg.home.activation.importGpgKey.data;
         assert cfg.programs.tmux.enable;
         assert lib.elem "herdr" packageNames;
         assert lib.elem "zellij" packageNames;

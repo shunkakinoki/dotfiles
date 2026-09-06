@@ -21,6 +21,6 @@ in
   # Shared GPG signing key (synced from galactica). Same blast-radius note as above.
   "keys/gpg.age" = {
     file = ../galactica/keys/gpg.age;
-    publicKeys = allMachines;
+    publicKeys = builtins.attrValues (import ../pubkeys.nix);
   };
 }

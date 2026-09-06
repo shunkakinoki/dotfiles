@@ -14,6 +14,6 @@ in
 
   "keys/gpg.age" = {
     file = ../galactica/keys/gpg.age;
-    publicKeys = allMachines;
+    publicKeys = builtins.attrValues (import ../pubkeys.nix);
   };
 }
