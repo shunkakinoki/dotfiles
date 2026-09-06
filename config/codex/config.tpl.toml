@@ -76,6 +76,10 @@ name = "OpenRouter"
 base_url = "https://openrouter.ai/api/v1"
 env_key = "OPENROUTER_API_KEY"
 
+[profiles.cliproxy]
+model = "__GPT__"
+model_provider = "cliproxyapi"
+
 [profiles.qwen-local]
 model = "__QWEN_LOCAL__"
 model_provider = "lmstudio"
