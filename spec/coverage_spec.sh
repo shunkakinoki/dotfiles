@@ -621,6 +621,7 @@ home-manager/services/dolt/start.sh
 home-manager/services/dolt/backup-dolt-main.sh
 home-manager/services/dolt/beads-linear-complete.sh
 home-manager/services/dolt/client-environment.sh
+home-manager/services/dolt/federation-access.sh
 home-manager/services/dolt/federation-sync.sh
 home-manager/services/dolt/linear-sync.sh
 home-manager/services/dotfiles-updater/update.sh

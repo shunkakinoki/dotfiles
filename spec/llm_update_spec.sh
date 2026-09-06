@@ -214,8 +214,8 @@ When run bash -c "grep '\"model\": \"shunkakinoki/deepseek-v4-flash\"' config/op
 The output should include 'shunkakinoki/deepseek-v4-flash'
 End
 
-It 'enables stable prompt cache keys for both CLIProxy providers'
-When run bash -c "sed -n '/\"shunkakinoki\"/,/\"cliproxyapi\"/p' config/opencode/opencode.jsonc | grep -q '\"setCacheKey\": true' && sed -n '/\"cliproxyapi\"/,/\"lmstudio\"/p' config/opencode/opencode.jsonc | grep -q '\"setCacheKey\": true'"
+It 'omits unsupported prompt cache keys for both CLIProxy providers'
+When run bash -c "sed -n '/\"shunkakinoki\"/,/\"cliproxyapi\"/p' config/opencode/opencode.jsonc | grep -q '\"setCacheKey\": false' && sed -n '/\"cliproxyapi\"/,/\"lmstudio\"/p' config/opencode/opencode.jsonc | grep -q '\"setCacheKey\": false'"
 The status should be success
 End
 

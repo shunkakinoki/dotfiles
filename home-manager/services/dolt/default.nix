@@ -6,7 +6,12 @@
   ...
 }:
 let
-  inherit (inputs.host) isGalactica isKyber isMatic isKamino;
+  inherit (inputs.host)
+    isGalactica
+    isKyber
+    isMatic
+    isKamino
+    ;
   homeDir = config.home.homeDirectory;
   repoDir = "${homeDir}/dotfiles";
   legacyBeadsDir = "${repoDir}/.beads";

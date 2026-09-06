@@ -60,7 +60,7 @@ restore_tailnet_dns() {
 
   local tailnet_domain
   tailnet_domain=$("$TAILSCALE_BIN" status --json | jq -er '.CurrentTailnet.MagicDNSSuffix | select(type == "string" and length > 0)')
-  if [[ ! "$tailnet_domain" =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]+$ ]]; then
+  if [[ ! $tailnet_domain =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]+$ ]]; then
     echo "Invalid tailnet DNS suffix" >&2
     return 1
   fi

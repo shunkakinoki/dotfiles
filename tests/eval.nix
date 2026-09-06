@@ -209,7 +209,8 @@ let
         assert !(cfg.systemd.user.services ? dolt-backup-main);
         assert !(cfg.systemd.user.services ? dolt-federation-hub);
         assert !(cfg.systemd.user.services ? dolt-federation-access);
-        assert lib.elem "BEADS_FEDERATION_HUB=http://kyber.tail950b36.ts.net:3308" cfg.systemd.user.services.dolt-federation-sync.Service.Environment;
+        assert lib.elem "BEADS_FEDERATION_HUB=http://kyber.tail950b36.ts.net:3308"
+          cfg.systemd.user.services.dolt-federation-sync.Service.Environment;
         mkEvalCheck "home-kamino" kamino.activationPackage;
       eval-home-kamino100 =
         let
