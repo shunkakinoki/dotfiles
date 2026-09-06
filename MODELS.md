@@ -127,13 +127,15 @@ OMP fallback uses the shared chain (`deepseek-v4-flash` -> `free`).
 
 ### Fish shortcuts
 
-The `l` suffix means local (LM Studio), `h` means headless.
+The `l` suffix means local (LM Studio), `c` means CLIProxyAPI, `h` means
+headless.
 
 | Function | Model |
 | --- | --- |
 | `ocxe`, `ocxeh` | `cliproxyapi/deepseek-v4-flash` |
 | `ocxel`, `ocxelh` | `lmstudio/qwen3.5-0.8b-optiq` |
 | `coxe`, `coxeh` | `gpt-5.6-sol` |
+| `coxec`, `coxech` | `gpt-5.6-luna` (`--profile cliproxy`) |
 | `coxel`, `coxelh` | `qwen3.5-0.8b-optiq` (`--oss --local-provider lmstudio`) |
 | `pixe`, `pixeh` | `cliproxyapi/deepseek-v4-flash` |
 | `pixel`, `pixelh` | `lmstudio/qwen3.5-0.8b-optiq` |
