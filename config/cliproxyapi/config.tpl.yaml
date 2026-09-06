@@ -121,13 +121,19 @@ proxy-url: ""
 force-model-prefix: false
 # When true, forward filtered upstream response headers to downstream clients.
 # Default is false (disabled).
-passthrough-headers: false
-# Number of times to retry a request. Retries will occur if the HTTP response code is 403, 408, 500, 502, 503, or 504.
+passthrough-headers: true
+# Number of additional credential retry rounds after the first round exhausts its
+# eligible credentials. Round 0 is the initial round; round r only admits credentials
+# whose effective request-retry is at least r. Explicit non-negative credential/provider
+# overrides take precedence; omitted or negative overrides inherit this global value.
+# Additional rounds apply to HTTP 403, 408, 429, 500, 502, 503, and 504 failures.
 request-retry: 3
-# Maximum number of different credentials to try for one failed request.
-# Set to 0 to keep legacy behavior (try all available credentials).
+# Maximum number of different credentials to try in each credential retry round after
+# per-credential round filtering. Set to 0 to try all available credentials. Credentials
+# skipped by this cap still age with the global round.
 max-retry-credentials: 0
-# Maximum wait time in seconds for a cooled-down credential before triggering a retry.
+# Maximum cooldown wait in seconds between retry rounds.
+# Set to 0 or below to never wait for credential cooldown.
 max-retry-interval: 30
 # When true, disable auth/model cooldown scheduling globally (prevents blackout windows after failure states).
 disable-cooling: false
@@ -151,7 +157,9 @@ claude-code:
 # - true: disable image_generation everywhere (also returns 404 for /v1/images/generations and /v1/images/edits).
 # - "chat": disable image_generation injection on non-images endpoints, but keep /v1/images/generations and /v1/images/edits enabled.
 # - "passthrough": never inject or strip image_generation on non-images endpoints (forward the client payload unchanged); behaves like "chat" on /v1/images/* endpoints.
-disable-image-generation: false
+# Passthrough keeps Codex payloads byte-identical to what the client sent, at the cost of
+# CPA's image_generation injection. Use "chat" instead to keep that injection.
+disable-image-generation: "passthrough"
 # Base model used by the legacy hosted image_generation tool path when a Codex image request is not proxied directly through the Image API.
 # Must start with "gpt-" (case-insensitive). If unset or invalid, defaults to "gpt-5.4-mini".
 # gpt-image-2-base-model: "gpt-5.4-mini"
@@ -188,6 +196,10 @@ routing:
   # OpenCode (300) -> Aliyun (200) -> OpenRouter (100). Failover
   # still rebinds when the bound plan 429s.
   session-affinity-ttl: "8h"
+  # When true (default), subagents (child sessions with parent references) inherit and bind
+  # to the parent's upstream credential across all providers, maximizing Prompt/KV Cache
+  # reuse and minimizing TTFT. Ignored when routing.session-affinity is false.
+  session-affinity-subagents: true
 # Codex provider behavior.
 codex:
   # When true, and routing.strategy is fill-first or routing.session-affinity is true,
@@ -197,11 +209,29 @@ codex:
   identity-confuse: false
   # Disable forcing the official Codex User-Agent and Originator headers on HTTP/SSE and WebSocket requests.
   disable-codex-cloaking: false
+  # Hold back the initial handshake events (response.created, response.in_progress and the
+  # websocket metadata frames) until the upstream emits its first generated event.
+  # Why: the upstream smuggles `server_is_overloaded` rejections *inside* an HTTP 200 stream,
+  # right after those handshake events, instead of returning 503 on the wire. Buffering them
+  # keeps the downstream response headers uncommitted long enough to transparently retry on
+  # another credential. Only overload/rate-limit rejections trigger failover; every other
+  # terminal failure is still delivered in-stream exactly as before.
+  # Trade-off: response headers are delayed until generation starts, which can trip client or
+  # reverse-proxy read timeouts on long reasoning requests.
+  stream-bootstrap-buffering: true
   # When true, optimize Codex Desktop, codex-tui, and codex_cli_rs requests for multi-agent v2.
   # This refreshes Codex spawn_agent model details, removes message parameter encryption,
   # normalizes encrypted agent_message content for Codex, and converts agent_message input
   # into standard user messages for non-Codex upstream protocols.
-  optimize-multi-agent-v2: false
+  # The agent_message rewrite is gated behind per-model is-compat, which only exists on
+  # codex-api-key entries, so OAuth Codex traffic keeps agent_message unchanged.
+  optimize-multi-agent-v2: true
+  # When true, enable opt-in compatibility for orphan Codex delegation outputs.
+  # Converts orphan function_call_output items from codex_app/create_thread and
+  # codex_app/send_message_to_thread (which lack a valid call_id or matching function_call)
+  # into standard user messages across Responses and non-Codex protocols when the request
+  # header contains X-Openai-Subagent: collab_spawn.
+  orphan-delegation-compatibility: true
   # Terminate and relay Codex Live WebRTC audio and DataChannel traffic in this process.
   # This requires inbound UDP reachability. Keep disabled to preserve direct media behavior.
   live-media-relay:
@@ -456,9 +486,11 @@ nonstream-keepalive-interval: 0
 # These are used only for file-backed/OAuth Codex requests when the client
 # does not send the header. `user-agent` applies to HTTP and websocket requests;
 # `beta-features` only applies to websocket requests. They do not apply to codex-api-key entries.
-# codex-header-defaults:
+# user-agent stays commented so CPA's maintained baseline applies; an explicit stale value
+# is worse than the built-in one, and it is only a fallback for clients that omit the header.
+codex-header-defaults:
 #   user-agent: "codex_cli_rs/0.114.0 (Mac OS 14.2.0; x86_64) vscode/1.111.0"
-#   beta-features: "multi_agent"
+  beta-features: "multi_agent"
 
 # OpenAI compatibility providers
 openai-compatibility:
