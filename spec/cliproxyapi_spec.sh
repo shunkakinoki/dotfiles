@@ -509,7 +509,7 @@ End
 Describe 'OAuth credential priority enforcement'
 setup_oauth_priority() {
   TEMP_PRIORITY=$(mktemp -d)
-  sed -n '/^ensure_oauth_priority() {/,/^}/p' "$SCRIPT" >"$TEMP_PRIORITY/fn.sh"
+  sed -n '/^ensure_oauth_priority() {/,/^}/p' "$SCRIPT" | sed 's|@jq@|jq|g' >"$TEMP_PRIORITY/fn.sh"
 }
 
 cleanup_oauth_priority() {
