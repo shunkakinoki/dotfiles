@@ -16,8 +16,18 @@ When run bash -c "grep -F 'DOTFILES_ENV_FILE:-\$HOME/dotfiles/.env' '$SCRIPT' >/
 The status should be success
 End
 
-It 'bounds federation and checkpoints only afterward'
-When run bash -c "sync=\$(grep -n '@coreutils@/bin/timeout 120' '$SCRIPT' | cut -d: -f1); checkpoint=\$(grep -n '\"\$cycle_started\" >\"\$sync_checkpoint_file.tmp\"' '$SCRIPT' | cut -d: -f1); test \"\$checkpoint\" -gt \"\$sync\""
+It 'gives fsck a measured budget below the per-repository deadline'
+When run bash -c "grep -F 'federation_timeout_seconds=360' '$SCRIPT' >/dev/null && grep -F 'federation_fsck_timeout=300s' '$SCRIPT' >/dev/null && grep -F '@coreutils@/bin/timeout --kill-after=30s \"\$federation_timeout_seconds\"' '$SCRIPT' >/dev/null && grep -F '@coreutils@/bin/env BEADS_FSCK_TIMEOUT=\"\$federation_fsck_timeout\"' '$SCRIPT' >/dev/null && sync=\$(grep -n '@coreutils@/bin/timeout --kill-after=30s' '$SCRIPT' | cut -d: -f1); checkpoint=\$(grep -n '\"\$cycle_started\" >\"\$sync_checkpoint_file.tmp\"' '$SCRIPT' | cut -d: -f1); test \"\$checkpoint\" -gt \"\$sync\""
+The status should be success
+End
+
+It 'shares the repository lock with Linear reconciliation'
+When run bash -c "grep -F 'reconciliation_state_dir=\"\${XDG_STATE_HOME:-\$HOME/.local/state}/beads-reconciliation\"' '$SCRIPT' >/dev/null && grep -F 'reconcile-\$lock_repo_slug.lock' '$SCRIPT' >/dev/null && grep -F '@utilLinux@/bin/flock -w 900 9' '$SCRIPT' >/dev/null && grep -F 'reconciliation_lock_file=\"\$reconciliation_state_dir/reconcile-\$repo_slug.lock\"' \"$PWD/home-manager/services/dolt/linear-sync.sh\" >/dev/null"
+The status should be success
+End
+
+It 'keeps the timer fixed-rate while systemd owns process-group cleanup'
+When run bash -c "timer=\$(sed -n '/systemd.user.timers.dolt-federation-sync/,/^  };/p' '$MODULE'); grep -F 'OnCalendar = \"*-*-* *:00/5:00\";' <<<\"\$timer\" >/dev/null && ! grep -F 'OnUnitActiveSec' <<<\"\$timer\" >/dev/null && grep -F 'KillMode = \"control-group\";' '$MODULE' >/dev/null"
 The status should be success
 End
 End
@@ -32,16 +42,46 @@ setup_federation() {
   STATE_HOME="$TEST_ROOT/state"
   ENV_FILE="$TEST_ROOT/dotenv"
   COREUTILS="$TEST_ROOT/coreutils"
+  UTIL_LINUX="$TEST_ROOT/util-linux"
+  FSCK_TIMEOUT_LOG="$TEST_ROOT/fsck-timeouts.log"
   TEST_REPO_ID="test/repo-one"
   TEST_REPO="$TEST_ROOT/ghq/github.com/$TEST_REPO_ID"
-  mkdir -p "$COREUTILS/bin" "$TEST_REPO/.beads" "$TEST_ROOT/dotfiles/.beads"
+  mkdir -p "$COREUTILS/bin" "$UTIL_LINUX/bin" "$TEST_REPO/.beads" "$TEST_ROOT/dotfiles/.beads"
   printf 'BEADS_SYNC_REPOS=%q\n' "$TEST_REPO_ID" >"$ENV_FILE"
   repo_slug="${TEST_REPO_ID//\//_}"
   CHECKPOINT_FILE="$STATE_HOME/beads-federation-sync/last-success-$repo_slug"
-  export DOTFILES_ENV_FILE="$ENV_FILE"
-  for command in date mkdir mv sleep tail timeout; do
+  export DOTFILES_ENV_FILE="$ENV_FILE" FSCK_TIMEOUT_LOG
+  for command in date env mkdir mv sleep tail timeout; do
     ln -s "$(command -v "$command")" "$COREUTILS/bin/$command"
   done
+  cat >"$UTIL_LINUX/bin/flock" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+test "$#" -eq 3
+test "$1" = "-w"
+wait_seconds="${FAKE_FLOCK_WAIT_SECONDS:-0}"
+fd="$3"
+if [ "$wait_seconds" = 0 ]; then
+  exit 0
+fi
+exec python3 - "$wait_seconds" "$fd" <<'PY'
+import fcntl
+import sys
+import time
+
+deadline = time.monotonic() + float(sys.argv[1])
+fd = int(sys.argv[2])
+while True:
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        raise SystemExit(0)
+    except BlockingIOError:
+        if time.monotonic() >= deadline:
+            raise SystemExit(1)
+        time.sleep(0.02)
+PY
+EOF
+  chmod +x "$UTIL_LINUX/bin/flock"
 
   cat >"$FAKE_BD" <<'EOF'
 #!/usr/bin/env bash
@@ -76,6 +116,7 @@ case "${1:-} ${2:-}" in
     exit 1
     ;;
   "sync --yes")
+    printf '%s\n' "${BEADS_FSCK_TIMEOUT:-}" >>"$FSCK_TIMEOUT_LOG"
     exit "${FAKE_SYNC_STATUS:-0}"
     ;;
   "ready --json")
@@ -92,6 +133,7 @@ EOF
   sed \
     -e "s|@bd@|$FAKE_BD|g" \
     -e "s|@coreutils@|$COREUTILS|g" \
+    -e "s|@utilLinux@|$UTIL_LINUX|g" \
     -e "s|@ensureDatabaseScript@|$FAKE_ENSURE_DATABASE|g" \
     "$SCRIPT" >"$RENDERED_SCRIPT"
 }
@@ -112,6 +154,7 @@ The file "$CHECKPOINT_FILE" should be exist
 The file "$STATE_HOME/beads-federation-sync/last-success-dotfiles" should be exist
 The contents of file "$COMMAND_LOG" should include '/dotfiles ping'
 The contents of file "$COMMAND_LOG" should include 'sync --yes --json'
+The contents of file "$FSCK_TIMEOUT_LOG" should include '300s'
 The contents of file "$COMMAND_LOG" should include 'ready --json'
 The contents of file "$COMMAND_LOG" should include 'dolt remote add origin git+https://example.invalid/org/repo.git --allow-git-origin'
 End
@@ -153,6 +196,19 @@ When run env COMMAND_LOG="$COMMAND_LOG" FAKE_READY_STATUS=1 XDG_STATE_HOME="$STA
 The status should equal 1
 The output should include 'work-discovery verification'
 The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'fails closed when another reconciler owns the shared lock'
+mkdir -p "$STATE_HOME/beads-reconciliation"
+lock_file="$STATE_HOME/beads-reconciliation/reconcile-test%2Frepo-one.lock"
+ready_file="$TEST_ROOT/lock-ready"
+python3 -c 'import fcntl,pathlib,signal,sys; lock_handle=open(sys.argv[1], "w", encoding="utf-8"); fcntl.flock(lock_handle, fcntl.LOCK_EX); pathlib.Path(sys.argv[2]).touch(); signal.pause()' "$lock_file" "$ready_file" &
+holder_pid=$!
+while [ ! -e "$ready_file" ]; do sleep 0.02; done
+When run bash -c "env COMMAND_LOG='$COMMAND_LOG' FAKE_FLOCK_WAIT_SECONDS=1 XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' bash '$RENDERED_SCRIPT'; status=\$?; kill '$holder_pid' 2>/dev/null || true; wait '$holder_pid' 2>/dev/null || true; exit \"\$status\""
+The status should equal 75
+The output should include 'Timed out waiting for the repository reconciliation lock'
+The contents of file "$COMMAND_LOG" should not include 'ghq/github.com/test/repo-one sync --yes'
 End
 
 It 'rejects an absolute checkout path without logging it'

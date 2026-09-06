@@ -4,6 +4,9 @@ set -euo pipefail
 
 bd_cli="@bd@"
 sync_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/beads-federation-sync"
+reconciliation_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/beads-reconciliation"
+federation_timeout_seconds=360
+federation_fsck_timeout=300s
 
 log() {
   local context=""
@@ -97,6 +100,18 @@ repo_slug="$repo_name"
 repo_slug="${repo_slug//\//_}"
 repo_slug="${repo_slug//[^[:alnum:]_.-]/_}"
 sync_checkpoint_file="$sync_state_dir/last-success-$repo_slug"
+lock_repo_slug="${repo_name//\//%2F}"
+reconciliation_lock_file="$reconciliation_state_dir/reconcile-$lock_repo_slug.lock"
+
+# The periodic federation service and the Linear reconciler both mutate the
+# same Beads store. Share one per-repository lock so a manual run, timer fire,
+# or Linear cycle cannot overlap another writer.
+@coreutils@/bin/mkdir -p "$reconciliation_state_dir"
+exec 9>"$reconciliation_lock_file"
+if ! @utilLinux@/bin/flock -w 900 9; then
+  log "Timed out waiting for the repository reconciliation lock"
+  exit 75
+fi
 
 cycle_started="$(@coreutils@/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')"
 # Spokes converge on the hub's remotesapi endpoint for this repository's
@@ -168,7 +183,7 @@ fi
 
 log "Synchronizing Dolt remote"
 sync_status=0
-sync_output="$(@coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" sync --yes --json 2>&1)" || sync_status=$?
+sync_output="$(@coreutils@/bin/timeout --kill-after=30s "$federation_timeout_seconds" @coreutils@/bin/env BEADS_FSCK_TIMEOUT="$federation_fsck_timeout" "$bd_cli" -C "$repo_dir" sync --yes --json 2>&1)" || sync_status=$?
 if [ "$sync_status" -ne 0 ]; then
   log "Dolt sync failed with status $sync_status"
   printf '%s\n' "$sync_output" | @coreutils@/bin/tail -n 5

@@ -109,7 +109,7 @@ The status should be success
 End
 
 It 'gives federation fsck a bounded budget below the outer deadline'
-When run bash -c "grep -F 'federation_timeout_seconds=360' '$SCRIPT' >/dev/null && grep -F 'federation_fsck_timeout=300s' '$SCRIPT' >/dev/null && grep -F '@coreutils@/bin/timeout \"\$federation_timeout_seconds\"' '$SCRIPT' >/dev/null && grep -F '@coreutils@/bin/env BEADS_FSCK_TIMEOUT=\"\$federation_fsck_timeout\"' '$SCRIPT' >/dev/null"
+When run bash -c "grep -F 'federation_timeout_seconds=360' '$SCRIPT' >/dev/null && grep -F 'federation_fsck_timeout=300s' '$SCRIPT' >/dev/null && grep -F '@coreutils@/bin/timeout --kill-after=30s \"\$federation_timeout_seconds\"' '$SCRIPT' >/dev/null && grep -F '@coreutils@/bin/env BEADS_FSCK_TIMEOUT=\"\$federation_fsck_timeout\"' '$SCRIPT' >/dev/null"
 The status should be success
 End
 
@@ -817,8 +817,8 @@ The contents of file "$ISSUE_STATUS_FILE" should equal closed
 End
 
 It 'waits when another reconciliation owns the repository lock'
-mkdir -p "$STATE_HOME/beads-linear-sync"
-lock_file="$STATE_HOME/beads-linear-sync/reconcile-test%2Frepo-one.lock"
+mkdir -p "$STATE_HOME/beads-reconciliation"
+lock_file="$STATE_HOME/beads-reconciliation/reconcile-test%2Frepo-one.lock"
 ready_file="$TEST_ROOT/lock-ready"
 python3 -c 'import fcntl,pathlib,signal,sys; lock_handle=open(sys.argv[1], "w", encoding="utf-8"); fcntl.flock(lock_handle, fcntl.LOCK_EX); pathlib.Path(sys.argv[2]).touch(); signal.pause()' "$lock_file" "$ready_file" &
 holder_pid=$!
