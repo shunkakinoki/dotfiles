@@ -141,8 +141,8 @@ The output should include 'tailscaleSetFlags'
 End
 
 It 'sources Galactica preferences from its named host definition'
-When run bash -c "grep -F '\"--accept-dns=false\"' '$PWD/named-hosts/galactica/default.nix' && grep -F '\"--accept-routes=true\"' '$PWD/named-hosts/galactica/default.nix' && grep -F '\"--ssh=false\"' '$PWD/named-hosts/galactica/default.nix' && grep -F 'inherit inputs username tailscaleSetFlags;' '$PWD/named-hosts/galactica/default.nix'"
-The output should include '--accept-dns=false'
+When run bash -c "grep -F '\"--accept-dns=true\"' '$PWD/named-hosts/galactica/default.nix' && grep -F '\"--accept-routes=true\"' '$PWD/named-hosts/galactica/default.nix' && grep -F '\"--ssh=false\"' '$PWD/named-hosts/galactica/default.nix' && grep -F 'inherit inputs username tailscaleSetFlags;' '$PWD/named-hosts/galactica/default.nix'"
+The output should include '--accept-dns=true'
 The output should include '--accept-routes=true'
 The output should include '--ssh=false'
 The output should include 'tailscaleSetFlags'
@@ -160,23 +160,9 @@ When run bash -c "grep 'TAILSCALE_BIN\" up' '$SCRIPT'"
 The output should include 'up'
 End
 
-It 'retries tailscale up before giving up'
-When run bash -c "grep 'attempt' '$SCRIPT' && grep 'sleep 2' '$SCRIPT'"
-The output should include 'sleep 2'
-End
 End
 
-Describe 'dns restore'
-It 'detects --accept-dns=false'
-When run bash -c "grep -F -- '--accept-dns=false' '$SCRIPT'"
-The output should include '--accept-dns=false'
-End
-
-It 'forces accept-dns off even if up already ran'
-When run bash -c "grep -F -- 'set --accept-dns=false' '$SCRIPT'"
-The output should include 'set --accept-dns=false'
-End
-
+Describe 'DNS integration'
 It 'restores the systemd-resolved stub resolv.conf'
 When run bash -c "grep 'stub-resolv.conf' '$SCRIPT' && grep 'ln -sfn' '$SCRIPT'"
 The output should include 'stub-resolv.conf'

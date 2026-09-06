@@ -50,7 +50,7 @@ let
         };
         activation = galactica.config.system.activationScripts.tailscaleDns.text;
       in
-      assert lib.hasInfix "--accept-dns=false" activation;
+      assert lib.hasInfix "--accept-dns=true" activation;
       assert lib.hasInfix "--accept-routes=true" activation;
       assert lib.hasInfix "--ssh=false" activation;
       mkEvalCheck "darwin-galactica" galactica.system;
@@ -247,7 +247,7 @@ let
         assert cfg.programs.ssh.settings.kamino100.data.HostName == "kamino100.tail950b36.ts.net";
         assert lib.hasInfix "tailscale kamino100" cfg.home.activation.configureKaminoTailscale.data;
         assert lib.hasInfix "--hostname=kamino100" cfg.home.activation.configureKaminoTailscale.data;
-        assert lib.hasInfix "--accept-dns=false" cfg.home.activation.configureKaminoTailscale.data;
+        assert lib.hasInfix "--accept-dns=true" cfg.home.activation.configureKaminoTailscale.data;
         assert lib.hasInfix "--ssh=false" cfg.home.activation.configureKaminoTailscale.data;
         assert cfg.systemd.user.services ? dolt;
         assert cfg.systemd.user.services ? dolt-federation-sync;
@@ -265,7 +265,7 @@ let
         assert
           andor.config.modules.tailscale.extraUpArgs == [
             "--reset"
-            "--accept-dns=false"
+            "--accept-dns=true"
             "--ssh"
           ];
         mkEvalCheck "home-andor" andor.activationPackage;
@@ -282,7 +282,7 @@ let
           kyber.config.modules.tailscale.extraUpArgs == [
             "--reset"
             "--ssh=false"
-            "--accept-dns=false"
+            "--accept-dns=true"
             "--advertise-exit-node"
           ];
         assert lib.elem "BEADS_FEDERATION_HUB=http://127.0.0.1:3308" federationEnvironment;

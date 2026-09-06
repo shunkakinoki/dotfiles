@@ -3,7 +3,7 @@
   username,
   hostname ? "aarch64-darwin",
   isRunner ? false,
-  tailscaleSetFlags ? [ "--accept-dns=false" ],
+  tailscaleSetFlags ? [ "--accept-dns=true" ],
 }:
 let
   inherit (inputs)

@@ -18,7 +18,7 @@ let
   tailscaleUpArgs = [
     "--reset"
     "--ssh=false"
-    "--accept-dns=false"
+    "--accept-dns=true"
     "--advertise-exit-node"
   ];
 in

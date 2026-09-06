@@ -87,8 +87,12 @@ let
     inherit (pkgs) bash;
     inherit linearSyncScript;
   };
+  ensureDatabaseScript = pkgs.replaceVars ./ensure-database.sh {
+    inherit (pkgs) dolt jq;
+  };
   federationSyncScript = pkgs.replaceVars ./federation-sync.sh {
     bd = "${homeDir}/.local/bin/bd";
+    inherit ensureDatabaseScript;
     inherit (pkgs) coreutils jq;
   };
   federationAccessScript = pkgs.replaceVars ./federation-access.sh {

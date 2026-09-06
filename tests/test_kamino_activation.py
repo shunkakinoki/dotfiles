@@ -39,7 +39,7 @@ class ActivationTests(unittest.TestCase):
                 arguments.extend(
                     [
                         "--hostname=kamino100",
-                        "--accept-dns=false",
+                        "--accept-dns=true",
                         "--ssh=false",
                     ]
                 )
@@ -85,7 +85,7 @@ class ActivationTests(unittest.TestCase):
         result, log = self.run_phase("tailscale")
         self.assertEqual(result.returncode, 0)
         self.assertEqual(
-            log, ["tailscale up --hostname=kamino100 --accept-dns=false --ssh=false"]
+            log, ["tailscale up --hostname=kamino100 --accept-dns=true --ssh=false"]
         )
         result, _ = self.run_phase("tailscale", fail="tailscale")
         self.assertEqual(result.returncode, 3)
