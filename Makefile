@@ -268,6 +268,11 @@ refresh-codex-daemon: ## Restart the managed Codex app-server daemon on Kyber.
 		echo "❌ Codex is not installed"; \
 		exit 1; \
 	fi; \
+	MANAGED_CODEX_BIN="$$("$$CODEX_BIN" app-server daemon version | jq -er '.managedCodexPath')"; \
+	if [ ! -e "$$MANAGED_CODEX_BIN" ]; then \
+		echo "⏭️ Codex daemon refresh skipped (no managed standalone installation; preserving the existing app server)"; \
+		exit 0; \
+	fi; \
 	echo "🔄 Refreshing the Kyber Codex app-server daemon..."; \
 	"$$CODEX_BIN" app-server daemon restart; \
 	"$$CODEX_BIN" app-server daemon version; \

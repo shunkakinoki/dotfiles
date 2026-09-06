@@ -2,6 +2,8 @@
 
 ## Installation
 
+See [PREREQUISITES.md](./PREREQUISITES.md) for private credentials and managed CLI requirements.
+
 ```bash
  curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/main/install.sh | sh
 ```
