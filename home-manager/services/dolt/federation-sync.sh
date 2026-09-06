@@ -168,7 +168,7 @@ fi
 
 log "Synchronizing Dolt remote"
 sync_status=0
-sync_output="$(@coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" sync --yes 2>&1)" || sync_status=$?
+sync_output="$(@coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" sync --yes --json 2>&1)" || sync_status=$?
 if [ "$sync_status" -ne 0 ]; then
   log "Dolt sync failed with status $sync_status"
   printf '%s\n' "$sync_output" | @coreutils@/bin/tail -n 5

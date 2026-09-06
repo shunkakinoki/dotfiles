@@ -111,7 +111,7 @@ The output should include 'Dolt federation complete'
 The file "$CHECKPOINT_FILE" should be exist
 The file "$STATE_HOME/beads-federation-sync/last-success-dotfiles" should be exist
 The contents of file "$COMMAND_LOG" should include '/dotfiles ping'
-The contents of file "$COMMAND_LOG" should include 'sync --yes'
+The contents of file "$COMMAND_LOG" should include 'sync --yes --json'
 The contents of file "$COMMAND_LOG" should include 'ready --json'
 The contents of file "$COMMAND_LOG" should include 'dolt remote add origin git+https://example.invalid/org/repo.git --allow-git-origin'
 End

@@ -489,9 +489,8 @@ nonstream-keepalive-interval: 0
 # user-agent stays commented so CPA's maintained baseline applies; an explicit stale value
 # is worse than the built-in one, and it is only a fallback for clients that omit the header.
 codex-header-defaults:
-#   user-agent: "codex_cli_rs/0.114.0 (Mac OS 14.2.0; x86_64) vscode/1.111.0"
+  #   user-agent: "codex_cli_rs/0.114.0 (Mac OS 14.2.0; x86_64) vscode/1.111.0"
   beta-features: "multi_agent"
-
 # OpenAI compatibility providers
 openai-compatibility:
   # Temporary campaign provider: serves stealth/ox-alpha under the same

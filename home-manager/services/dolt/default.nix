@@ -47,6 +47,7 @@ let
   federationHubUrl = "http://${federationHubHost}:${toString federationRemotesApiPort}";
   beadsClientEnvironment = {
     BEADS_DOLT_AUTO_START = "0";
+    BEADS_DOLT_DATA_DIR = beadsDir;
     BEADS_DOLT_SERVER_MODE = "1";
     BEADS_DOLT_SERVER_HOST = doltServerHost;
     BEADS_DOLT_SERVER_PORT = "3307";
@@ -55,7 +56,7 @@ let
     DOLT_CLI_PASSWORD = "";
   };
   beadsLaunchctlEnvironmentScript = pkgs.replaceVars ./client-environment.sh {
-    inherit doltServerHost;
+    inherit doltServerHost beadsDir;
   };
   linearSyncEnabled = isKyber;
   federationSyncEnabled = clientEnabled;
@@ -107,6 +108,7 @@ let
     HOME = homeDir;
     PATH = linearSyncPath;
     BEADS_DOLT_AUTO_START = "0";
+    BEADS_DOLT_DATA_DIR = beadsDir;
     BEADS_DOLT_SERVER_MODE = "1";
     BEADS_DOLT_SERVER_HOST = doltServerHost;
     BEADS_DOLT_SERVER_PORT = "3307";
