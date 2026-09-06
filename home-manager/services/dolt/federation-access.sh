@@ -63,10 +63,10 @@ fi
 while IFS= read -r address; do
   sql "CREATE USER IF NOT EXISTS 'root'@'$address' IDENTIFIED BY ''; GRANT SUPER, CLONE_ADMIN ON *.* TO 'root'@'$address';" >/dev/null || fail 'mirror grant failed'
   grants=$(sql "SHOW GRANTS FOR 'root'@'$address'") || fail 'mirror grant verification failed'
-  printf '%s' "$grants" | @jq@/bin/jq -e '
-    [.rows[] | .[]] as $grants |
-    any($grants[]; startswith("GRANT SUPER ON *.* TO ")) and
-    any($grants[]; startswith("GRANT CLONE_ADMIN ON *.* TO "))
+  printf '%s' "$grants" | @jq@/bin/jq -e --arg host "$address" '
+    ([.rows[] | .[]] | sort) ==
+    (["GRANT SUPER ON *.* TO `root`@`" + $host + "`",
+      "GRANT CLONE_ADMIN ON *.* TO `root`@`" + $host + "`"] | sort)
   ' >/dev/null 2>&1 || fail 'mirror grants not confirmed'
 done <<<"$addresses"
 echo 'Federation access: approved client grants verified'
