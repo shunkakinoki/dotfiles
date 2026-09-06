@@ -71,7 +71,8 @@ ensure_oauth_priority() {
     [ -f "$f" ] || continue
     current="$(@jq@ -r '.priority // 0' "$f" 2>/dev/null)" || continue
     if [ "$current" != "$target_priority" ]; then
-      @jq@ --argjson p "$target_priority" '.priority = $p' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+      # shellcheck disable=SC2016
+      @jq@ --argjson p "$target_priority" '.priority = $p' "$f" >"$f.tmp" && mv "$f.tmp" "$f"
     fi
   done
 }
