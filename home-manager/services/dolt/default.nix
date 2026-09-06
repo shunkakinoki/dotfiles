@@ -86,6 +86,14 @@ let
     bd = "${homeDir}/.local/bin/bd";
     inherit (pkgs) coreutils jq;
   };
+  federationAccessScript = pkgs.replaceVars ./federation-access.sh {
+    inherit (pkgs)
+      coreutils
+      dolt
+      jq
+      tailscale
+      ;
+  };
   federationSyncEnvironment = {
     HOME = homeDir;
     PATH = linearSyncPath;
@@ -272,6 +280,36 @@ lib.mkIf clientEnabled {
           IOWriteBandwidthMax = "/ 20M";
         };
         Install.WantedBy = [ "default.target" ];
+      };
+
+  # Provision the mirror's independent privilege store without coupling server
+  # availability to peer discovery. This only adds the approved client grants;
+  # client removal/address rotation requires an explicit account revocation.
+  systemd.user.services.dolt-federation-access =
+    lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && federationHubEnabled)
+      {
+        Unit = {
+          Description = "Provision approved Dolt federation clients";
+          After = [ "dolt-federation-hub.service" ];
+          Requires = [ "dolt-federation-hub.service" ];
+        };
+        Service = {
+          Type = "oneshot";
+          ExecStart = "${pkgs.bash}/bin/bash ${federationAccessScript} --apply";
+          TimeoutStartSec = 600;
+        };
+        Install.WantedBy = [ "default.target" ];
+      };
+
+  systemd.user.timers.dolt-federation-access =
+    lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && federationHubEnabled)
+      {
+        Unit.Description = "Reconcile approved Dolt federation client access";
+        Timer = {
+          OnBootSec = "2min";
+          OnUnitActiveSec = "5min";
+        };
+        Install.WantedBy = [ "timers.target" ];
       };
 
   # Persist the same client selection in the user manager so Herdr, OpenClaw,
