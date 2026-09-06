@@ -52,4 +52,10 @@ restore_resolved_stub() {
 # Restore the resolved integration before enabling DNS acceptance. A stale
 # direct resolv.conf can otherwise feed Tailscale its own resolver as upstream.
 restore_resolved_stub
-"$TAILSCALE_BIN" up "$@" --accept-dns=true
+if [ "$#" -gt 0 ]; then
+  "$TAILSCALE_BIN" up "$@" --accept-dns=true
+else
+  # Empty arguments leave enrollment to the host activation. Update only DNS,
+  # preserving existing non-default preferences such as the node hostname.
+  "$TAILSCALE_BIN" set --accept-dns=true
+fi
