@@ -1,5 +1,5 @@
-# Kyber uses eight workers during hydration to match its host capacity while
-# keeping desktop hosts at the upstream default.
+# Kyber overrides this to one worker during hydration so review bursts cannot
+# saturate the host. Desktop hosts retain the upstream default.
 max_workers = 4
 
 # Upstream falls back to codex when no workflow agent is set; codex is not
