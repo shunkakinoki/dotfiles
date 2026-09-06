@@ -325,6 +325,13 @@ lib.mkIf clientEnabled {
   # and other systemd-launched agents do not inherit a stale shared-server mode.
   systemd.user.sessionVariables = lib.mkIf pkgs.stdenv.hostPlatform.isLinux beadsClientEnvironment;
 
+  # Herdr launches workers without a login shell. Give its child processes the
+  # managed server policy directly so they cannot start a competing Dolt server.
+  systemd.user.services.herdr-server = lib.mkIf isKamino {
+    Unit.After = [ "dolt.service" ];
+    Service.Environment = lib.mapAttrsToList (name: value: "${name}=${value}") beadsClientEnvironment;
+  };
+
   systemd.user.services.dolt-backup-main =
     lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && publisherEnabled)
       {

@@ -94,6 +94,18 @@ machine was replaced: the verifier does not maintain a device-ID registry.
 
 Local service checks on each machine:
 
+Set `BEADS_SYNC_REPOS=org/repo` in the machine-local `~/dotfiles/.env` before
+starting Beads federation. Use comma-separated repository identifiers for
+multiple checkouts; the dotfiles checkout is included automatically. Keep this
+file private and untracked. The managed Dolt service owns port 3307, and Herdr
+workers receive its connection settings directly instead of starting their own
+servers. Existing project-local databases require a backed-up, stopped-server
+cutover into `~/.beads/shared-server/dolt`; provisioning never replaces them.
+
+Confirm both `bd --readonly ping` and `bd --readonly ready --json` in each
+checkout, plus a successful `dolt-federation-sync.service` run. An active timer
+or a passing local read alone does not prove federation readiness.
+
 ```sh
 hostname
 systemctl is-active tailscaled
