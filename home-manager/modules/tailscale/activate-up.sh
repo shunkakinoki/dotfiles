@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
-# Apply persisted Tailscale node flags and restore host DNS when MagicDNS
-# is disabled. extraUpArgs are declared in Home Manager, but the system
-# tailscaled unit never ran `tailscale up`, so CorpDNS could stay true
-# across reboots and overwrite /etc/resolv.conf with a resolver that
-# SERVFAILs when no upstreams are configured.
+# Apply managed Tailscale flags using systemd-resolved for host DNS.
 # Usage: activate-up.sh <tailscale_bin> [tailscale up args...]
 set -euo pipefail
 
@@ -49,36 +45,11 @@ restore_resolved_stub() {
     fi
   fi
 
-  echo "Restoring systemd-resolved stub resolv.conf (Tailscale MagicDNS disabled)"
+  echo "Restoring systemd-resolved stub resolv.conf for Tailscale DNS"
   run_root_cmd ln -sfn "$stub" "$resolv"
 }
 
-accept_dns_false=false
-for arg in "$@"; do
-  if [ "$arg" = "--accept-dns=false" ]; then
-    accept_dns_false=true
-    break
-  fi
-done
-
-up_status=0
-if [ "$#" -gt 0 ]; then
-  attempt=1
-  while [ "$attempt" -le 5 ]; do
-    if "$TAILSCALE_BIN" up "$@"; then
-      up_status=0
-      break
-    fi
-    up_status=$?
-    echo "tailscale up failed (attempt ${attempt}/5, status ${up_status})" >&2
-    attempt=$((attempt + 1))
-    sleep 2
-  done
-fi
-
-if [ "$accept_dns_false" = true ]; then
-  "$TAILSCALE_BIN" set --accept-dns=false || true
-  restore_resolved_stub
-fi
-
-exit "$up_status"
+# Restore the resolved integration before enabling DNS acceptance. A stale
+# direct resolv.conf can otherwise feed Tailscale its own resolver as upstream.
+restore_resolved_stub
+"$TAILSCALE_BIN" up "$@" --accept-dns=true

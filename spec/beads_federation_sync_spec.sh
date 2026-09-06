@@ -26,6 +26,7 @@ Describe 'runtime behavior'
 setup_federation() {
   TEST_ROOT=$(mktemp -d)
   FAKE_BD="$TEST_ROOT/bd"
+  FAKE_ENSURE_DATABASE="$TEST_ROOT/ensure-database.sh"
   RENDERED_SCRIPT="$TEST_ROOT/federation-sync.sh"
   COMMAND_LOG="$TEST_ROOT/commands.log"
   STATE_HOME="$TEST_ROOT/state"
@@ -49,8 +50,11 @@ if [ "${1:-}" = "-C" ]; then
   shift 2
 fi
 case "${1:-} ${2:-}" in
+  "migrate schema")
+    exit "${FAKE_INITIALIZE_STATUS:-0}"
+    ;;
   "ping ")
-    exit 0
+    exit "${FAKE_PING_STATUS:-0}"
     ;;
   "config get")
     if [ "${3:-}" = "sync.remote" ]; then
@@ -74,12 +78,21 @@ case "${1:-} ${2:-}" in
   "sync --yes")
     exit "${FAKE_SYNC_STATUS:-0}"
     ;;
+  "ready --json")
+    exit "${FAKE_READY_STATUS:-0}"
+    ;;
 esac
 EOF
   chmod +x "$FAKE_BD"
+  cat >"$FAKE_ENSURE_DATABASE" <<'EOF'
+#!/usr/bin/env bash
+printf 'ensure-database\n' >>"$COMMAND_LOG"
+exit "${FAKE_PROVISION_STATUS:-0}"
+EOF
   sed \
     -e "s|@bd@|$FAKE_BD|g" \
     -e "s|@coreutils@|$COREUTILS|g" \
+    -e "s|@ensureDatabaseScript@|$FAKE_ENSURE_DATABASE|g" \
     "$SCRIPT" >"$RENDERED_SCRIPT"
 }
 
@@ -97,6 +110,7 @@ The status should be success
 The output should include 'Dolt federation complete'
 The file "$CHECKPOINT_FILE" should be exist
 The contents of file "$COMMAND_LOG" should include 'sync --yes'
+The contents of file "$COMMAND_LOG" should include 'ready --json'
 The contents of file "$COMMAND_LOG" should include 'dolt remote add origin git+https://example.invalid/org/repo.git --allow-git-origin'
 End
 
@@ -104,6 +118,38 @@ It 'propagates a federation failure without advancing the checkpoint'
 When run env COMMAND_LOG="$COMMAND_LOG" FAKE_SYNC_STATUS=42 XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" bash "$RENDERED_SCRIPT"
 The status should equal 42
 The output should include 'Repository federation failed with status 42'
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'does not synchronize or claim readiness after provisioning fails'
+When run env COMMAND_LOG="$COMMAND_LOG" FAKE_PROVISION_STATUS=1 XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" bash "$RENDERED_SCRIPT"
+The status should equal 1
+The output should include 'Database provisioning failed'
+The file "$CHECKPOINT_FILE" should not be exist
+The contents of file "$COMMAND_LOG" should not include 'sync --yes'
+End
+
+It 'does not synchronize or checkpoint when Beads initialization fails'
+When run env COMMAND_LOG="$COMMAND_LOG" FAKE_INITIALIZE_STATUS=1 XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" bash "$RENDERED_SCRIPT"
+The status should equal 1
+The output should include 'Beads database initialization failed'
+The file "$CHECKPOINT_FILE" should not be exist
+The contents of file "$COMMAND_LOG" should not include 'ping'
+The contents of file "$COMMAND_LOG" should not include 'sync --yes'
+End
+
+It 'does not synchronize a database that Beads cannot open'
+When run env COMMAND_LOG="$COMMAND_LOG" FAKE_PING_STATUS=1 XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" bash "$RENDERED_SCRIPT"
+The status should equal 1
+The output should include 'Beads connectivity verification'
+The file "$CHECKPOINT_FILE" should not be exist
+The contents of file "$COMMAND_LOG" should not include 'sync --yes'
+End
+
+It 'does not advance readiness when work discovery fails after sync'
+When run env COMMAND_LOG="$COMMAND_LOG" FAKE_READY_STATUS=1 XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" bash "$RENDERED_SCRIPT"
+The status should equal 1
+The output should include 'work-discovery verification'
 The file "$CHECKPOINT_FILE" should not be exist
 End
 

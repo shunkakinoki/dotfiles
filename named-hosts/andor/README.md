@@ -13,7 +13,7 @@ Home Manager configuration:
 sudo hostnamectl set-hostname andor
 curl -fsSL https://tailscale.com/install.sh | sh
 sudo systemctl enable --now tailscaled
-sudo tailscale up --accept-dns=false --ssh
+sudo tailscale up --accept-dns=true --ssh
 curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux
 git clone https://github.com/shunkakinoki/dotfiles ~/dotfiles
 cd ~/dotfiles

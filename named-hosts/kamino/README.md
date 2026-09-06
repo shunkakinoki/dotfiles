@@ -25,7 +25,7 @@ The installer runs the host-specific Tailscale enrollment command during its
 `make nix-switch` phase:
 
 ```sh
-tailscale up --hostname=kamino1 --accept-dns=false --ssh=false
+tailscale up --hostname=kamino1 --accept-dns=true --ssh=false
 ```
 
 On a fresh machine, follow the login URL printed during activation and choose
@@ -152,7 +152,7 @@ and applies the named service configuration. Its Tailscale phase runs
 `make nix-switch` instead of requiring a separate command afterward.
 
 MagicDNS must be enabled in the tailnet and client access rules must permit TCP
-22. Server-side `--accept-dns=false` does not prevent publishing the node name.
+22. Managed servers and clients both keep DNS acceptance enabled.
 The profile uses OpenSSH over Tailscale, not Tailscale SSH. Root on the parent VPS
 controls the whole VPS, not an isolated worker.
 
@@ -164,7 +164,7 @@ The final command below is run automatically by `make nix-switch`:
 ```sh
 hostname                          # must print kamino1
 systemctl is-active tailscaled    # must print active
-tailscale up --hostname=kamino1 --accept-dns=false --ssh=false
+tailscale up --hostname=kamino1 --accept-dns=true --ssh=false
 ```
 
 Open the login URL printed by the switch in your browser and choose the intended
@@ -200,10 +200,9 @@ deleting its state. Do not use `--reset` or `--force-reauth` as routine sync ste
 
 Connect the client to the same tailnet using its existing Tailscale installation.
 On Linux, enable DNS acceptance with `sudo tailscale set --accept-dns=true`;
-in the macOS/Windows app, enable **Use Tailscale DNS settings**. This is a
-**client** setting: Kamino servers deliberately keep DNS acceptance disabled.
-Clients with their own managed DNS configuration need a working split-DNS route
-for the tailnet suffix instead; do not overwrite that configuration blindly.
+in the macOS/Windows app, enable **Use Tailscale DNS settings**. The managed
+Kamino configuration also enables DNS acceptance. Verify that both public
+domains and tailnet names resolve after enrollment.
 
 The tailnet's network access policy and the server firewall must allow this
 client to reach the target's TCP port 22. Membership or a successful

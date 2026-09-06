@@ -297,6 +297,10 @@ It 'has spec file for home-manager/services/dolt/federation-sync.sh'
 The path "spec/beads_federation_sync_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/dolt/ensure-database.sh'
+The path "spec/beads_database_provisioning_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/dolt/client-environment.sh'
 The path "spec/beads_federation_sync_spec.sh" should be exist
 End
@@ -621,6 +625,8 @@ home-manager/services/dolt/start.sh
 home-manager/services/dolt/backup-dolt-main.sh
 home-manager/services/dolt/beads-linear-complete.sh
 home-manager/services/dolt/client-environment.sh
+home-manager/services/dolt/ensure-database.sh
+home-manager/services/dolt/federation-access.sh
 home-manager/services/dolt/federation-sync.sh
 home-manager/services/dolt/linear-sync.sh
 home-manager/services/dotfiles-updater/update.sh

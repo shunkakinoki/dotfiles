@@ -5,7 +5,7 @@
 }:
 let
   tailscaleSetFlags = [
-    "--accept-dns=false"
+    "--accept-dns=true"
     "--accept-routes=true"
     "--ssh=false"
   ];

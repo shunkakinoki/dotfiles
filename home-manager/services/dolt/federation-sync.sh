@@ -89,17 +89,6 @@ repo_slug="${repo_slug//\//_}"
 repo_slug="${repo_slug//[^[:alnum:]_.-]/_}"
 sync_checkpoint_file="$sync_state_dir/last-success-$repo_slug"
 
-for _attempt in 1 2 3 4 5 6 7 8 9 10 11 12; do
-  if "$bd_cli" -C "$repo_dir" ping >/dev/null 2>&1; then
-    break
-  fi
-  if [ "$_attempt" -eq 12 ]; then
-    log "Beads did not become ready within 60 seconds"
-    exit 1
-  fi
-  @coreutils@/bin/sleep 5
-done
-
 cycle_started="$(@coreutils@/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')"
 # Spokes converge on the hub's remotesapi endpoint for this repository's
 # database; the hub itself keeps the repository's sync.remote as the off-site
@@ -112,13 +101,33 @@ configured_dolt_remote() {
     return 0
   fi
 
-  database="$(@jq@/bin/jq -r '.dolt_database // "beads"' "$repo_dir/.beads/metadata.json" 2>/dev/null || true)"
+  database="$(@jq@/bin/jq -er '.dolt_database | select(type == "string" and length > 0)' "$repo_dir/.beads/metadata.json" 2>/dev/null || true)"
   if [ -z "$database" ]; then
     log "Dolt database name is not recorded in .beads/metadata.json"
     return 1
   fi
   printf '%s/%s\n' "${BEADS_FEDERATION_HUB%/}" "$database"
 }
+
+configured_remote="$(configured_dolt_remote)" || exit 1
+if [ -z "$configured_remote" ]; then
+  log "Dolt sync remote is not configured"
+  exit 1
+fi
+if ! "$BASH" "@ensureDatabaseScript@" "$repo_dir" "$configured_remote"; then
+  log "Database provisioning failed; federation did not run"
+  exit 1
+fi
+# Cloned history excludes Beads' node-local runtime tables. The supported
+# initializer restores them and retains the remote schema migration guard.
+if ! "$bd_cli" -C "$repo_dir" migrate schema --json >/dev/null 2>&1; then
+  log "Beads database initialization failed; federation did not run"
+  exit 1
+fi
+if ! "$bd_cli" -C "$repo_dir" ping >/dev/null 2>&1; then
+  log "Provisioned database did not pass Beads connectivity verification"
+  exit 1
+fi
 
 ensure_dolt_remote() {
   local configured_remote
@@ -155,6 +164,11 @@ if [ "$sync_status" -ne 0 ]; then
   log "Dolt sync failed with status $sync_status"
   printf '%s\n' "$sync_output" | @coreutils@/bin/tail -n 5
   exit "$sync_status"
+fi
+
+if ! "$bd_cli" -C "$repo_dir" ready --json >/dev/null 2>&1; then
+  log "Federated database did not pass Beads work-discovery verification"
+  exit 1
 fi
 
 @coreutils@/bin/mkdir -p "$sync_state_dir"

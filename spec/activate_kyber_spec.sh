@@ -139,9 +139,9 @@ When run bash -c "grep -F '\"--ssh=false\"' '$PWD/named-hosts/kyber/default.nix'
 The output should include '--ssh=false'
 End
 
-It 'explicitly disables Tailscale DNS'
-When run bash -c "grep -F '\"--accept-dns=false\"' '$PWD/named-hosts/kyber/default.nix'"
-The output should include '--accept-dns=false'
+It 'explicitly enables Tailscale DNS'
+When run bash -c "grep -F '\"--accept-dns=true\"' '$PWD/named-hosts/kyber/default.nix'"
+The output should include '--accept-dns=true'
 End
 
 It 'keeps local k3s access independent of Tailscale DNS'

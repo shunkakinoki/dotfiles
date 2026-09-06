@@ -148,23 +148,11 @@ while ICMP and HTTPS-by-IP still worked. cliproxy stayed "running" but could
 not hydrate auth from R2; k3s image pulls failed the same way. SSH over the
 tailnet still worked because it does not need public DNS.
 
-`--accept-dns=false` was already declared in `modules.tailscale.extraUpArgs`,
-but `installSystemService` only installed `tailscaled`. The `tailscale-up`
-oneshot existed only for user-level services, so the flags never applied after
-boot. `tailscale set --accept-dns=false` also does not restore a previously
-overwritten resolv.conf.
-
-Recovery:
-
-```bash
-sudo tailscale set --accept-dns=false
-sudo ln -sfn /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
-systemctl --user restart cliproxyapi.service
-```
-
-Durability: `tailscale-up.service` now runs `extraUpArgs` after `tailscaled`
-and re-links the systemd-resolved stub whenever `--accept-dns=false` is set.
-Host health alerts if Tailscale rewrites resolv.conf or public lookups fail.
+The fleet now keeps `--accept-dns=true`. The managed activation restores the
+systemd-resolved stub before applying Tailscale flags so Tailscale can register
+its DNS configuration with the host resolver. Do not disable DNS acceptance to
+repair public resolution: verify the host's upstream resolvers and the tailnet's
+DNS settings, then test both public and tailnet names.
 
 For diagnosis, check filesystem headroom, I/O pressure, kubelet GC messages,
 and CRI health before restarting services:

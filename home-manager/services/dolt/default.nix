@@ -6,7 +6,12 @@
   ...
 }:
 let
-  inherit (inputs.host) isGalactica isKyber isMatic isKamino;
+  inherit (inputs.host)
+    isGalactica
+    isKyber
+    isMatic
+    isKamino
+    ;
   homeDir = config.home.homeDirectory;
   repoDir = "${homeDir}/dotfiles";
   legacyBeadsDir = "${repoDir}/.beads";
@@ -82,8 +87,12 @@ let
     inherit (pkgs) bash;
     inherit linearSyncScript;
   };
+  ensureDatabaseScript = pkgs.replaceVars ./ensure-database.sh {
+    inherit (pkgs) dolt jq;
+  };
   federationSyncScript = pkgs.replaceVars ./federation-sync.sh {
     bd = "${homeDir}/.local/bin/bd";
+    inherit ensureDatabaseScript;
     inherit (pkgs) coreutils jq;
   };
   federationAccessScript = pkgs.replaceVars ./federation-access.sh {

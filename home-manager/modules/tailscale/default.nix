@@ -42,12 +42,14 @@ let
     [Unit]
     Description=Apply Tailscale node flags
     Documentation=https://tailscale.com/kb/
-    After=tailscaled.service systemd-resolved.service
-    Wants=tailscaled.service systemd-resolved.service
+    After=tailscaled.service systemd-resolved.service network-online.target
+    Wants=tailscaled.service systemd-resolved.service network-online.target
 
     [Service]
     Type=oneshot
     RemainAfterExit=yes
+    Restart=on-failure
+    RestartSec=5
     ExecStart=${pkgs.bash}/bin/bash ${./activate-up.sh} ${cfg.tailscaled.package}/bin/tailscale ${lib.escapeShellArgs cfg.extraUpArgs}
 
     [Install]

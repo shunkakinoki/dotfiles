@@ -25,7 +25,7 @@ let
   };
   tailscaleUpArgs = [
     "--hostname=${name}"
-    "--accept-dns=false"
+    "--accept-dns=true"
     "--ssh=false"
   ];
   authorizedKey = pkgs.writeText "kamino-authorized-key.pub" (
