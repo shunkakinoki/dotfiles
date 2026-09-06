@@ -30,10 +30,16 @@ run_activation() {
 Before 'setup'
 After 'cleanup'
 
-It 'enables DNS acceptance while applying the other node flags'
-When call run_activation --ssh=false
+It 'passes the managed DNS flag exactly once with the other node flags'
+When call run_activation --ssh=false --accept-dns=true
 The status should be success
 The contents of file "$DNS_LOG" should eq 'up --ssh=false --accept-dns=true'
+End
+
+It 'preserves the exit-node host arguments without duplicating DNS acceptance'
+When call run_activation --reset --ssh=false --accept-dns=true --advertise-exit-node
+The status should be success
+The contents of file "$DNS_LOG" should eq 'up --reset --ssh=false --accept-dns=true --advertise-exit-node'
 End
 
 It 'updates DNS without enrollment when no node flags are supplied'
@@ -55,7 +61,7 @@ End
 
 It 'passes explicit enrollment arguments through unchanged'
 export EXISTING_HOSTNAME=kamino3
-When call run_activation --hostname=kamino3 --ssh=false
+When call run_activation --hostname=kamino3 --ssh=false --accept-dns=true
 The status should be success
 The contents of file "$DNS_LOG" should eq 'up --hostname=kamino3 --ssh=false --accept-dns=true'
 End
@@ -69,7 +75,7 @@ End
 
 It 'reports an explicit enrollment failure'
 export TAILSCALE_STATUS=42
-When call run_activation --hostname=kamino3 --ssh=false
+When call run_activation --hostname=kamino3 --ssh=false --accept-dns=true
 The status should equal 42
 The contents of file "$DNS_LOG" should eq 'up --hostname=kamino3 --ssh=false --accept-dns=true'
 End
