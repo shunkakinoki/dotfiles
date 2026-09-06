@@ -77,7 +77,7 @@ base_url = "https://openrouter.ai/api/v1"
 env_key = "OPENROUTER_API_KEY"
 
 [profiles.cliproxy]
-model = "gpt-5.6-sol"
+model = "gpt-5.6-luna"
 model_provider = "cliproxyapi"
 
 [profiles.qwen-local]

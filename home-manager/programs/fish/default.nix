@@ -147,6 +147,8 @@
       corc = "_corc_function";
       coxe = "_coxe_function";
       coxeh = "_coxeh_function";
+      coxec = "_coxec_function";
+      coxech = "_coxech_function";
       coxel = "_coxel_function";
       coxelh = "_coxelh_function";
       decaf = "_decaf_function";
@@ -284,6 +286,8 @@
         "copy"
         "_coxe_function"
         "_coxeh_function"
+        "_coxec_function"
+        "_coxech_function"
         "_coxel_function"
         "_coxelh_function"
         "_decaf_function"
