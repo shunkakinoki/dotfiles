@@ -46,13 +46,6 @@ inputs.nix-darwin.lib.darwinSystem {
               };
             };
           };
-          programs.gpg = {
-            enable = true;
-            settings = {
-              default-key = "shunkakinoki@gmail.com";
-            };
-          };
-
           programs.git = {
             signing = {
               signByDefault = true;
