@@ -3,6 +3,7 @@
 set -euo pipefail
 
 /bin/launchctl setenv BEADS_DOLT_AUTO_START 0
+/bin/launchctl setenv BEADS_DOLT_DATA_DIR "@beadsDir@"
 /bin/launchctl setenv BEADS_DOLT_SERVER_MODE 1
 /bin/launchctl setenv BEADS_DOLT_SERVER_HOST "@doltServerHost@"
 /bin/launchctl setenv BEADS_DOLT_SERVER_PORT 3307

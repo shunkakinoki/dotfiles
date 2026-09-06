@@ -35,6 +35,15 @@ if [ "${1:-}" != "--repo" ]; then
   declare -A seen_repo_names=()
   overall_status=0
 
+  # The managed server also serves this checkout. It is outside the ghq root
+  # used for additional repositories and must be provisioned on fresh hosts.
+  if BEADS_SYNC_REPO_DIR="$HOME/dotfiles" BEADS_SYNC_REPO_NAME="dotfiles" BEADS_SYNC_REPO_CONTEXT="dotfiles" "$BASH" "$0" --repo; then
+    :
+  else
+    overall_status=$?
+    log "Dotfiles federation failed with status $overall_status"
+  fi
+
   for repo_index in "${!repo_names[@]}"; do
     configured_repo="${repo_names[$repo_index]}"
     repo_context="repository $((repo_index + 1))/${#repo_names[@]}"
@@ -159,7 +168,7 @@ fi
 
 log "Synchronizing Dolt remote"
 sync_status=0
-sync_output="$(@coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" sync --yes 2>&1)" || sync_status=$?
+sync_output="$(@coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" sync --yes --json 2>&1)" || sync_status=$?
 if [ "$sync_status" -ne 0 ]; then
   log "Dolt sync failed with status $sync_status"
   printf '%s\n' "$sync_output" | @coreutils@/bin/tail -n 5

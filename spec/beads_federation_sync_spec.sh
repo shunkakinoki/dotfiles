@@ -34,7 +34,7 @@ setup_federation() {
   COREUTILS="$TEST_ROOT/coreutils"
   TEST_REPO_ID="test/repo-one"
   TEST_REPO="$TEST_ROOT/ghq/github.com/$TEST_REPO_ID"
-  mkdir -p "$COREUTILS/bin" "$TEST_REPO/.beads"
+  mkdir -p "$COREUTILS/bin" "$TEST_REPO/.beads" "$TEST_ROOT/dotfiles/.beads"
   printf 'BEADS_SYNC_REPOS=%q\n' "$TEST_REPO_ID" >"$ENV_FILE"
   repo_slug="${TEST_REPO_ID//\//_}"
   CHECKPOINT_FILE="$STATE_HOME/beads-federation-sync/last-success-$repo_slug"
@@ -109,7 +109,9 @@ When run env COMMAND_LOG="$COMMAND_LOG" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST
 The status should be success
 The output should include 'Dolt federation complete'
 The file "$CHECKPOINT_FILE" should be exist
-The contents of file "$COMMAND_LOG" should include 'sync --yes'
+The file "$STATE_HOME/beads-federation-sync/last-success-dotfiles" should be exist
+The contents of file "$COMMAND_LOG" should include '/dotfiles ping'
+The contents of file "$COMMAND_LOG" should include 'sync --yes --json'
 The contents of file "$COMMAND_LOG" should include 'ready --json'
 The contents of file "$COMMAND_LOG" should include 'dolt remote add origin git+https://example.invalid/org/repo.git --allow-git-origin'
 End

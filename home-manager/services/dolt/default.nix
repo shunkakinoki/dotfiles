@@ -47,6 +47,7 @@ let
   federationHubUrl = "http://${federationHubHost}:${toString federationRemotesApiPort}";
   beadsClientEnvironment = {
     BEADS_DOLT_AUTO_START = "0";
+    BEADS_DOLT_DATA_DIR = beadsDir;
     BEADS_DOLT_SERVER_MODE = "1";
     BEADS_DOLT_SERVER_HOST = doltServerHost;
     BEADS_DOLT_SERVER_PORT = "3307";
@@ -55,7 +56,7 @@ let
     DOLT_CLI_PASSWORD = "";
   };
   beadsLaunchctlEnvironmentScript = pkgs.replaceVars ./client-environment.sh {
-    inherit doltServerHost;
+    inherit doltServerHost beadsDir;
   };
   linearSyncEnabled = isKyber;
   federationSyncEnabled = clientEnabled;
@@ -107,6 +108,7 @@ let
     HOME = homeDir;
     PATH = linearSyncPath;
     BEADS_DOLT_AUTO_START = "0";
+    BEADS_DOLT_DATA_DIR = beadsDir;
     BEADS_DOLT_SERVER_MODE = "1";
     BEADS_DOLT_SERVER_HOST = doltServerHost;
     BEADS_DOLT_SERVER_PORT = "3307";
@@ -324,6 +326,13 @@ lib.mkIf clientEnabled {
   # Persist the same client selection in the user manager so Herdr, OpenClaw,
   # and other systemd-launched agents do not inherit a stale shared-server mode.
   systemd.user.sessionVariables = lib.mkIf pkgs.stdenv.hostPlatform.isLinux beadsClientEnvironment;
+
+  # Herdr launches workers without a login shell. Give its child processes the
+  # managed server policy directly so they cannot start a competing Dolt server.
+  systemd.user.services.herdr-server = lib.mkIf isKamino {
+    Unit.After = [ "dolt.service" ];
+    Service.Environment = lib.mapAttrsToList (name: value: "${name}=${value}") beadsClientEnvironment;
+  };
 
   systemd.user.services.dolt-backup-main =
     lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && publisherEnabled)

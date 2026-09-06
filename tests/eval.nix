@@ -202,6 +202,13 @@ let
         assert cfg.systemd.user.services.herdr-server.Install.WantedBy == [ "default.target" ];
         assert cfg.systemd.user.services.herdr-server.Unit.X-SwitchMethod == "restart";
         assert cfg.systemd.user.services.herdr-server.Service.EnvironmentFile == [ "-/root/dotfiles/.env" ];
+        assert lib.elem "BEADS_DOLT_AUTO_START=0"
+          cfg.systemd.user.services.herdr-server.Service.Environment;
+        assert lib.elem "BEADS_DOLT_SERVER_MODE=1"
+          cfg.systemd.user.services.herdr-server.Service.Environment;
+        assert lib.elem "dolt.service" cfg.systemd.user.services.herdr-server.Unit.After;
+        assert lib.elem "BEADS_DOLT_DATA_DIR=/root/.beads/shared-server/dolt"
+          cfg.systemd.user.services.herdr-server.Service.Environment;
         assert cfg.systemd.user.services ? dolt;
         assert cfg.systemd.user.services ? dolt-federation-sync;
         assert cfg.systemd.user.timers ? dolt-federation-sync;
