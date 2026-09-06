@@ -73,6 +73,10 @@ It 'has spec file for home-manager/services/caam/setup.sh'
 The path "spec/caam_sync_service_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/herdr/start.sh'
+The path "spec/herdr_service_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/caam/sync.sh'
 The path "spec/caam_sync_service_spec.sh" should be exist
 End
@@ -586,6 +590,7 @@ home-manager/services/openclaw/k3s-proxy.sh
 home-manager/services/qmd/activate.sh
 home-manager/services/roborev/activate.sh
 home-manager/services/roborev/start.sh
+home-manager/services/herdr/start.sh
 home-manager/modules/tailscale/activate-create-dirs.sh
 home-manager/modules/tailscale/activate-install-service.sh
 home-manager/modules/tailscale/activate-up.sh
