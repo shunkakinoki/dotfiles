@@ -506,4 +506,58 @@ The status should be success
 End
 End
 
+Describe 'OAuth credential priority enforcement'
+setup_oauth_priority() {
+  TEMP_PRIORITY=$(mktemp -d)
+  sed -n '/^ensure_oauth_priority() {/,/^}/p' "$SCRIPT" >"$TEMP_PRIORITY/fn.sh"
+}
+
+cleanup_oauth_priority() {
+  rm -rf "$TEMP_PRIORITY"
+}
+
+Before 'setup_oauth_priority'
+After 'cleanup_oauth_priority'
+
+It 'bumps priority 0 auth files to the target'
+cat >"$TEMP_PRIORITY/codex-test-user.json" <<'JSON'
+{"provider":"codex","account":"test@example.com","priority":0}
+JSON
+When run bash -c '. "$1/fn.sh"; ensure_oauth_priority "$1" 300; cat "$1/codex-test-user.json"' _ "$TEMP_PRIORITY"
+The output should include '"priority": 300'
+The status should be success
+End
+
+It 'leaves auth files already at the target priority unchanged'
+cat >"$TEMP_PRIORITY/codex-already-set.json" <<'JSON'
+{"provider":"codex","account":"test@example.com","priority":300}
+JSON
+cp "$TEMP_PRIORITY/codex-already-set.json" "$TEMP_PRIORITY/codex-already-set.json.orig"
+When run bash -c '. "$1/fn.sh"; ensure_oauth_priority "$1" 300; diff "$1/codex-already-set.json.orig" "$1/codex-already-set.json"'  _ "$TEMP_PRIORITY"
+The status should be success
+End
+
+It 'bumps all provider types equally'
+cat >"$TEMP_PRIORITY/claude-user.json" <<'JSON'
+{"provider":"claude","account":"test@example.com","priority":0}
+JSON
+cat >"$TEMP_PRIORITY/gemini-user.json" <<'JSON'
+{"provider":"gemini","account":"test@example.com","priority":0}
+JSON
+When run bash -c '. "$1/fn.sh"; ensure_oauth_priority "$1" 300; jq -r .priority "$1/claude-user.json"; jq -r .priority "$1/gemini-user.json"' _ "$TEMP_PRIORITY"
+The first line of output should eq '300'
+The second line of output should eq '300'
+The status should be success
+End
+
+It 'adds priority field when missing'
+cat >"$TEMP_PRIORITY/codex-no-priority.json" <<'JSON'
+{"provider":"codex","account":"new@example.com"}
+JSON
+When run bash -c '. "$1/fn.sh"; ensure_oauth_priority "$1" 300; jq -r .priority "$1/codex-no-priority.json"' _ "$TEMP_PRIORITY"
+The output should eq '300'
+The status should be success
+End
+End
+
 End

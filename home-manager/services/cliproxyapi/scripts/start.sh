@@ -61,6 +61,21 @@ render_opencode_api_key_entries() {
   done <"$template"
 }
 
+# OAuth credentials default to priority 0, which loses to openai-compatibility
+# providers like surplus (150). Pin all auth files to the given priority so native
+# executors are selected first for cold bindings under fill-first routing.
+ensure_oauth_priority() {
+  local auth_dir="$1" target_priority="$2"
+  local f current
+  for f in "$auth_dir"/*.json; do
+    [ -f "$f" ] || continue
+    current="$(jq -r '.priority // 0' "$f" 2>/dev/null)" || continue
+    if [ "$current" != "$target_priority" ]; then
+      jq --argjson p "$target_priority" '.priority = $p' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+    fi
+  done
+}
+
 if cliproxy_has_objectstore_credentials; then
   mkdir -p "$AUTH_DIR"
 
@@ -68,6 +83,8 @@ if cliproxy_has_objectstore_credentials; then
     echo "⚠️  Local auth cache empty; hydrating from S3" >&2
     cliproxy_sync_auth_from_s3 "$AUTH_DIR"
   fi
+
+  ensure_oauth_priority "$AUTH_DIR" 300
 
   if [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
     cliproxy_sync_auth_to_s3 "$AUTH_DIR"
