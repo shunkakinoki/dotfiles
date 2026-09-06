@@ -26,7 +26,6 @@ setup_federation_access() {
   TAILSCALE_LOG="$TEST_ROOT/tailscale.log"
   DOLT_LOG="$TEST_ROOT/dolt.log"
   DOLT_INVOCATION_LOG="$TEST_ROOT/dolt-invocations.log"
-  CLIENTS_JSON='["client-one","client-two","client-three","client-four"]'
   jq_prefix=$(dirname "$(dirname "$(command -v jq)")")
 
   mkdir -p "$FAKE_TAILSCALE_ROOT/bin" "$FAKE_DOLT_ROOT/bin" "$COREUTILS/bin"
@@ -62,7 +61,18 @@ case "${FAKE_TAILSCALE_MODE:-valid}" in
     ;;
 esac
 
-printf '%s\n' "$payload"
+printf '%s\n' "$payload" | jq --arg mode "${FAKE_TAILSCALE_MODE:-valid}" '
+  .CurrentTailnet = {MagicDNSSuffix: "example.ts.net"} |
+  .Self = {DNSName: "hub.example.ts.net.", TailscaleIPs: ["100.64.1.1"]} |
+  .Peer |= with_entries(.value += {
+    DNSName: (.value.HostName + ".example.ts.net."), InNetworkMap: true, Online: false
+  }) |
+  if $mode == "foreign" then .Peer.four.DNSName = "foreign.other.ts.net."
+  elif $mode == "removed" then .Peer.four.InNetworkMap = false
+  elif $mode == "expired" then .Peer.four.Expired = true
+  elif $mode == "no-identity" then del(.CurrentTailnet)
+  else . end
+'
 EOF
   chmod +x "$FAKE_TAILSCALE_ROOT/bin/tailscale"
 
@@ -138,7 +148,6 @@ EOF
     -e "s|@dolt@|$FAKE_DOLT_ROOT|g" \
     -e "s|@jq@|$jq_prefix|g" \
     -e "s|@tailscale@|$FAKE_TAILSCALE_ROOT|g" \
-    -e "s|@federationClients@|$CLIENTS_JSON|g" \
     "$SCRIPT" >"$RENDERED_SCRIPT"
   chmod +x "$RENDERED_SCRIPT"
 }
@@ -173,20 +182,46 @@ The contents of file "$DOLT_LOG" should not include "'root'@'%'"
 The contents of file "$DOLT_INVOCATION_LOG" should not include '--port 3307'
 End
 
-It 'rejects a missing approved peer before any SQL access'
+It 'does not depend on a fixed hostname inventory'
 When run env FAKE_TAILSCALE_MODE=missing bash "$RENDERED_SCRIPT" --apply
-The status should equal 1
-The stderr should include 'approved client addresses unavailable or invalid'
-The contents of file "$DOLT_LOG" should equal ''
-The contents of file "$DOLT_INVOCATION_LOG" should equal ''
+The status should be success
+The output should include 'approved client grants verified'
+The contents of file "$DOLT_LOG" should not include '100.64.1.4'
 End
 
-It 'rejects an ambiguous approved peer before any SQL access'
+It 'admits approved nodes even when their hostnames are duplicated'
 When run env FAKE_TAILSCALE_MODE=ambiguous bash "$RENDERED_SCRIPT" --apply
+The status should be success
+The output should include 'approved client grants verified'
+The contents of file "$DOLT_LOG" should include '100.64.1.9'
+End
+
+It 'excludes foreign shared-in machines'
+When run env FAKE_TAILSCALE_MODE=foreign bash "$RENDERED_SCRIPT" --apply
+The status should be success
+The output should include 'approved client grants verified'
+The contents of file "$DOLT_LOG" should not include '100.64.1.4'
+End
+
+It 'excludes peers removed from the authenticated network map'
+When run env FAKE_TAILSCALE_MODE=removed bash "$RENDERED_SCRIPT" --apply
+The status should be success
+The output should include 'approved client grants verified'
+The contents of file "$DOLT_LOG" should not include '100.64.1.4'
+End
+
+It 'excludes expired peers'
+When run env FAKE_TAILSCALE_MODE=expired bash "$RENDERED_SCRIPT" --apply
+The status should be success
+The output should include 'approved client grants verified'
+The contents of file "$DOLT_LOG" should not include '100.64.1.4'
+End
+
+It 'fails closed without a current tailnet identity'
+When run env FAKE_TAILSCALE_MODE=no-identity bash "$RENDERED_SCRIPT" --apply
 The status should equal 1
 The stderr should include 'approved client addresses unavailable or invalid'
 The contents of file "$DOLT_LOG" should equal ''
-The contents of file "$DOLT_INVOCATION_LOG" should equal ''
 End
 
 It 'rejects an invalid IP before any SQL access'

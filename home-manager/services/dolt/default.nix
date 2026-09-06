@@ -87,10 +87,6 @@ let
     inherit (pkgs) coreutils jq;
   };
   federationAccessScript = pkgs.replaceVars ./federation-access.sh {
-    federationClients = builtins.toJSON [
-      "galactica"
-      "matic"
-    ];
     inherit (pkgs)
       coreutils
       dolt
@@ -300,7 +296,7 @@ lib.mkIf clientEnabled {
         Service = {
           Type = "oneshot";
           ExecStart = "${pkgs.bash}/bin/bash ${federationAccessScript} --apply";
-          TimeoutStartSec = 180;
+          TimeoutStartSec = 600;
         };
         Install.WantedBy = [ "default.target" ];
       };

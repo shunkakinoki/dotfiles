@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# The mirror has its own privilege store. Resolve only explicitly approved
-# clients; never grant wildcard access or copy credentials from the live DB.
+# The mirror has its own privilege store. Admit every local-tailnet machine
+# in the authenticated network map, including offline peers and this hub.
+# Never grant wildcard access or copy credentials from the live DB.
 mode=${1:---dry-run}
 case "$mode" in
 --dry-run | --apply) ;;
@@ -24,20 +25,25 @@ sql() {
 }
 
 peers=$(@coreutils@/bin/timeout 15 @tailscale@/bin/tailscale status --json 2>/dev/null) || fail 'peer discovery failed'
-# Validate the entire plan before touching SQL. Require one node per name,
-# and accept only literal Tailscale addresses (also excludes SQL metacharacters).
-addresses=$(printf '%s' "$peers" | @jq@/bin/jq -er --argjson clients '@federationClients@' '
+# The local network map is ACL-filtered: a machine must be allowed to reach
+# this hub by tailnet policy. Names are not an authorization allowlist.
+# Validate the complete plan before SQL, excluding foreign shared-in nodes.
+addresses=$(printf '%s' "$peers" | @jq@/bin/jq -er '
   def tailnet_ip:
     if test("^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$") then
       split(".") | map(tonumber) |
       .[0] == 100 and .[1] >= 64 and .[1] <= 127 and
       all(.[]; . >= 0 and . <= 255)
     else test("^fd7a:115c:a1e0:[0-9a-f:]+$") end;
-  . as $status |
   if .BackendState != "Running" then error("tailnet unavailable") else . end |
-  [$clients[] as $client |
-    [$status.Peer[]? | select(.HostName == $client)] |
-    if length != 1 then error("missing or ambiguous client") else .[0] end |
+  .CurrentTailnet.MagicDNSSuffix as $suffix |
+  if ($suffix | type) != "string" or ($suffix | length) == 0 then
+    error("missing tailnet identity") else . end |
+  if (.Peer | type) != "object" or (.Self | type) != "object" then
+    error("invalid network map") else . end |
+  [.Self, (.Peer[] | select(.InNetworkMap == true))] |
+  [.[] | select(.Expired != true) |
+    select((.DNSName // "" | rtrimstr(".")) | endswith("." + $suffix)) |
     .TailscaleIPs |
     if type != "array" or length == 0 then error("missing addresses") else . end |
     .[] | if type == "string" and tailnet_ip then . else error("invalid address") end
