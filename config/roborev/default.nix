@@ -10,7 +10,7 @@ let
     let
       vars = {
         ciEnabled = if inputs.host.isKyber then "true" else "false";
-        maxWorkers = "4";
+        maxWorkers = if inputs.host.isKyber then "1" else "4";
         sed = "${pkgs.gnused}/bin/sed";
         template = "${./config.template.toml}";
       };
