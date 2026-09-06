@@ -66,6 +66,21 @@ The error should include 'refusing to replace invalid Antigravity settings'
 The contents of file "$TEMP_HOME/.gemini/antigravity-cli/settings.json" should equal '{broken'
 End
 
+It 'installs headless review search permissions without replacing deny or ask rules'
+mkdir -p "$TEMP_HOME/.gemini/antigravity-cli"
+cat >"$TEMP_HOME/.gemini/antigravity-cli/settings.json" <<'JSON'
+{
+  "permissions": {
+    "allow": ["command(pwd)"],
+    "deny": ["command(sudo)"],
+    "ask": ["command(git push)"]
+  }
+}
+JSON
+When run bash -c 'HOME="$1" bash "$2" "$3" "$4" jq && jq -e '\''.permissions | (.allow | contains(["command(find)", "command(grep)", "command(rg)", "command(sed)"])) and (.allow | index("command(*)") == null) and .deny == ["command(sudo)"] and .ask == ["command(git push)"]'\'' "$1/.gemini/antigravity-cli/settings.json" >/dev/null' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS" "$HOOKS"
+The status should be success
+End
+
 It 'installs every managed named hook into the global customization root'
 When run bash -c 'HOME="$1" bash "$2" "$3" "$4" jq && jq -e '\''(keys == ["moshi-hook", "traces-share-to-traces"]) and (.["traces-share-to-traces"].Stop | length == 1)'\'' "$1/.gemini/config/hooks.json" >/dev/null && find "$1/.gemini/config/hooks.json" -prune -perm 644 -print -quit | grep -q .' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS" "$HOOKS"
 The status should be success

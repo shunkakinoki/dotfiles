@@ -11,6 +11,10 @@
       "command(tail)",
       "command(stat)",
       "command(file)",
+      "command(find)",
+      "command(grep)",
+      "command(rg)",
+      "command(sed)",
       "command(git)"
     ]
   }
