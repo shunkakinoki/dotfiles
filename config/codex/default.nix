@@ -19,7 +19,8 @@ in
       "${../../generated/hooks/moshi/codex/hooks.json}" \
       "${./desktop-settings.json}" \
       "${pkgs.jq}/bin/jq" \
-      "${syncDesktopSettings}"
+      "${syncDesktopSettings}" \
+      "${./profiles}"
   '';
 
   # Codex caches Desktop preferences in its persisted atom state and replaces

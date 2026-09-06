@@ -411,6 +411,22 @@ The status should be success
 End
 End
 
+Describe 'Codex named profile model hydration'
+It 'propagates independent Astra, Sol, and Luna selections into the named profiles'
+FIXTURE="$(mktemp -d)"
+mkdir -p "$FIXTURE/scripts" "$FIXTURE/config/codex/profiles"
+cp -f "$SCRIPT" "$FIXTURE/scripts/llm-update.sh"
+cp -f config/codex/profiles/*.tpl.toml "$FIXTURE/config/codex/profiles/"
+jq '.["gpt-astra"] = "astra-fixture" | .["gpt-sol"] = "sol-fixture" | .["gpt-luna"] = "luna-fixture"' models.json >"$FIXTURE/models.json"
+When run bash -c 'bash "$1/scripts/llm-update.sh" >/dev/null && for profile in cliproxy-astra cliproxy-sol cliproxy-luna cliproxy; do grep "^model = " "$1/config/codex/profiles/$profile.config.toml"; done' _ "$FIXTURE"
+The status should be success
+The line 1 should eq 'model = "astra-fixture"'
+The line 2 should eq 'model = "sol-fixture"'
+The line 3 should eq 'model = "luna-fixture"'
+The line 4 should eq 'model = "luna-fixture"'
+End
+End
+
 Describe 'jq pretty-printing'
 It 'defines a jq pretty function for model names'
 When run bash -c "grep 'def pretty' '$SCRIPT'"

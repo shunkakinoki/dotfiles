@@ -24,9 +24,9 @@ The output should include 'meta.mainProgram = "crabbox"'
 End
 
 It 'installs the CLI through each platform package layer'
-When run bash -c "grep -Fx '  crabbox' '$PACKAGES'; grep -Fx '      \"crabbox\"' '$HOMEBREW'"
+When run bash -c "grep -Fx '  crabbox' '$PACKAGES'; grep -Fx '      \"openclaw/tap/crabbox\"' '$HOMEBREW'"
 The output should include '  crabbox'
-The output should include '      "crabbox"'
+The output should include '      "openclaw/tap/crabbox"'
 End
 
 It 'packages the official Blacksmith Testbox CLI outside npm'

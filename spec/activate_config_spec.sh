@@ -8,6 +8,7 @@ ENSURE_AGENT_SCRIPT="$PWD/config/codex/ensure-desktop-settings-agent.sh"
 HOOKS_JSON="$PWD/generated/hooks/moshi/codex/hooks.json"
 CONFIG_TOML="$PWD/config/codex/config.toml"
 DESKTOP_SETTINGS_JSON="$PWD/config/codex/desktop-settings.json"
+PROFILES_DIR="$PWD/config/codex/profiles"
 
 It 'uses bash shebang'
 When run bash -c "head -1 '$SCRIPT'"
@@ -52,7 +53,7 @@ cat >"$TMP_HOME/.codex/.codex-global-state.json" <<'JSON'
 }
 JSON
 
-When run bash -c 'HOME="$1" bash "$2" "$3" "$4" "$5" "$6" "$7" && jq -r ".[\"unrelated-top-level\"], .[\"electron-persisted-atom-state\"][\"unrelated-setting\"], .[\"electron-persisted-atom-state\"][\"git-always-force-push\"], .[\"electron-persisted-atom-state\"][\"git-pull-request-merge-method\"], .[\"electron-persisted-atom-state\"][\"worktree-keep-count\"], has(\"worktree-keep-count\")" "$1/.codex/.codex-global-state.json"' _ "$TMP_HOME" "$SCRIPT" "$CONFIG_TOML" "$HOOKS_JSON" "$DESKTOP_SETTINGS_JSON" "$(command -v jq)" "$SYNC_SCRIPT"
+When run bash -c 'HOME="$1" bash "$2" "$3" "$4" "$5" "$6" "$7" "$8" && jq -r ".[\"unrelated-top-level\"], .[\"electron-persisted-atom-state\"][\"unrelated-setting\"], .[\"electron-persisted-atom-state\"][\"git-always-force-push\"], .[\"electron-persisted-atom-state\"][\"git-pull-request-merge-method\"], .[\"electron-persisted-atom-state\"][\"worktree-keep-count\"], has(\"worktree-keep-count\")" "$1/.codex/.codex-global-state.json"' _ "$TMP_HOME" "$SCRIPT" "$CONFIG_TOML" "$HOOKS_JSON" "$DESKTOP_SETTINGS_JSON" "$(command -v jq)" "$SYNC_SCRIPT" "$PROFILES_DIR"
 The status should be success
 The line 1 should eq 'preserved'
 The line 2 should eq '42'
@@ -60,6 +61,14 @@ The line 3 should eq 'true'
 The line 4 should eq 'squash'
 The line 5 should eq '300'
 The line 6 should eq 'false'
+End
+
+It 'installs named profiles and removes the legacy table from the active base config'
+TMP_HOME="$(mktemp -d)"
+mkdir -p "$TMP_HOME/.codex"
+printf '[profiles.cliproxy]\nmodel = "stale"\n' >"$TMP_HOME/.codex/config.toml"
+When run bash -c 'HOME="$1" bash "$2" "$3" "$4" "$5" "$6" "$7" "$8" && for profile in cliproxy cliproxy-astra cliproxy-sol cliproxy-luna qwen-local; do cmp "$8/$profile.config.toml" "$1/.codex/$profile.config.toml" || exit 1; done && ! grep -q "^\[profiles\." "$1/.codex/config.toml"' _ "$TMP_HOME" "$SCRIPT" "$CONFIG_TOML" "$HOOKS_JSON" "$DESKTOP_SETTINGS_JSON" "$(command -v jq)" "$SYNC_SCRIPT" "$PROFILES_DIR"
+The status should be success
 End
 
 It 'restores managed atom-state Desktop settings after the app replaces its state'

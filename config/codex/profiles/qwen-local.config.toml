@@ -1,0 +1,3 @@
+model = "qwen3.5-0.8b-optiq"
+model_provider = "lmstudio"
+model_reasoning_effort = "minimal"
