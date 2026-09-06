@@ -6,7 +6,7 @@
   ...
 }:
 let
-  inherit (inputs.host) isGalactica isKyber isMatic;
+  inherit (inputs.host) isGalactica isKyber isMatic isKamino;
   homeDir = config.home.homeDirectory;
   repoDir = "${homeDir}/dotfiles";
   legacyBeadsDir = "${repoDir}/.beads";
@@ -22,11 +22,11 @@ let
   linearSyncIntervalSeconds = 900;
   federationSyncIntervalSeconds = 300;
   linearSyncPath = "${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:/etc/profiles/per-user/${config.home.username}/bin:/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin";
-  clientEnabled = isGalactica || isKyber || isMatic;
+  clientEnabled = isGalactica || isKyber || isMatic || isKamino;
   # bd opens its store with dozens of sequential round trips per invocation, so
   # a direct client of Kyber's Chicago server costs seconds per command on the
-  # ~260ms agent hosts. Every host serves its own Dolt and converges through the
-  # shared remote instead.
+  # ~260ms agent hosts and the Kamino Herdr fleet. Every host serves its own
+  # Dolt and converges through the shared remote instead.
   serverEnabled = clientEnabled;
   # Kyber alone publishes the shared history to the configured remotes.
   publisherEnabled = isKyber;
