@@ -121,7 +121,8 @@ shellspec spec/install_spec.sh spec/make_build_host_resolution_spec.sh spec/ssh_
 ```
 
 The evaluation checks cover root identity, common tools/configs, SSH aliases,
-upgrade targeting and absence of Kyber-only services. Linux CI builds the parent
+upgrade targeting, Beads peer Dolt/federation-sync (local server + Kyber hub),
+and continued absence of Kyber-only Linear sync / backup publisher services. Linux CI builds the parent
 and hundredth generated profile. Evaluation is not a successful Linux build;
 neither is live activation proof.
 

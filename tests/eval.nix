@@ -202,6 +202,14 @@ let
         assert cfg.systemd.user.services.herdr-server.Install.WantedBy == [ "default.target" ];
         assert cfg.systemd.user.services.herdr-server.Unit.X-SwitchMethod == "restart";
         assert cfg.systemd.user.services.herdr-server.Service.EnvironmentFile == [ "-/root/dotfiles/.env" ];
+        assert cfg.systemd.user.services ? dolt;
+        assert cfg.systemd.user.services ? dolt-federation-sync;
+        assert cfg.systemd.user.timers ? dolt-federation-sync;
+        assert !(cfg.systemd.user.services ? dolt-linear-sync);
+        assert !(cfg.systemd.user.services ? dolt-backup-main);
+        assert !(cfg.systemd.user.services ? dolt-federation-hub);
+        assert !(cfg.systemd.user.services ? dolt-federation-access);
+        assert lib.elem "BEADS_FEDERATION_HUB=http://kyber.tail950b36.ts.net:3308" cfg.systemd.user.services.dolt-federation-sync.Service.Environment;
         mkEvalCheck "home-kamino" kamino.activationPackage;
       eval-home-kamino100 =
         let
@@ -240,6 +248,10 @@ let
         assert lib.hasInfix "--hostname=kamino100" cfg.home.activation.configureKaminoTailscale.data;
         assert lib.hasInfix "--accept-dns=false" cfg.home.activation.configureKaminoTailscale.data;
         assert lib.hasInfix "--ssh=false" cfg.home.activation.configureKaminoTailscale.data;
+        assert cfg.systemd.user.services ? dolt;
+        assert cfg.systemd.user.services ? dolt-federation-sync;
+        assert !(cfg.systemd.user.services ? dolt-linear-sync);
+        assert !(cfg.systemd.user.services ? dolt-backup-main);
         mkEvalCheck "home-kamino100" kamino.activationPackage;
       eval-home-andor =
         let

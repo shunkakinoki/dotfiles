@@ -127,8 +127,8 @@ When run bash -c "grep -F 'BEADS_DOLT_SERVER_MODE = \"1\";' '$MODULE' >/dev/null
 The status should be success
 End
 
-It 'enables Dolt clients on Galactica, Kyber, and Matic'
-When run bash -c "grep -F 'clientEnabled = isGalactica || isKyber || isMatic;' '$MODULE' >/dev/null && grep -F 'doltServerHost = \"127.0.0.1\";' '$MODULE' >/dev/null"
+It 'enables Dolt clients on Galactica, Kyber, Matic, and Kamino'
+When run bash -c "grep -F 'clientEnabled = isGalactica || isKyber || isMatic || isKamino;' '$MODULE' >/dev/null && grep -F 'doltServerHost = \"127.0.0.1\";' '$MODULE' >/dev/null"
 The status should be success
 End
 
