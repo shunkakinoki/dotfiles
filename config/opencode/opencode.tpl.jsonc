@@ -22,7 +22,7 @@
       "options": {
         "baseURL": "https://cliproxy.shunkakinoki.com/v1",
         "apiKey": "{env:CLIPROXY_API_KEY}",
-        "setCacheKey": true
+        "setCacheKey": false
       },
       "models": {
         "__CLAUDE_OPUS__": {
@@ -63,7 +63,7 @@
       "options": {
         "baseURL": "http://localhost:8317/v1",
         "apiKey": "{env:CLIPROXY_API_KEY}",
-        "setCacheKey": true
+        "setCacheKey": false
       },
       "models": {
         "__CLAUDE_OPUS__": {
