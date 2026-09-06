@@ -69,9 +69,9 @@ ensure_oauth_priority() {
   local f current
   for f in "$auth_dir"/*.json; do
     [ -f "$f" ] || continue
-    current="$(jq -r '.priority // 0' "$f" 2>/dev/null)" || continue
+    current="$(@jq@ -r '.priority // 0' "$f" 2>/dev/null)" || continue
     if [ "$current" != "$target_priority" ]; then
-      jq --argjson p "$target_priority" '.priority = $p' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+      @jq@ --argjson p "$target_priority" '.priority = $p' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
     fi
   done
 }
