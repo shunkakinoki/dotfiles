@@ -1,0 +1,49 @@
+# Owned pilot resources only. Do not modify the default profile or expose HTTPS.
+storage_pools:
+  - name: crabbox
+    driver: btrfs
+    config:
+      user.dotfiles: kyber-crabbox
+      size: 64GiB
+networks:
+  - name: incus-crabbox
+    type: bridge
+    config:
+      user.dotfiles: kyber-crabbox
+      ipv4.address: 10.203.0.1/24
+      ipv4.nat: "true"
+      ipv6.address: none
+projects:
+  - name: crabbox
+    config:
+      user.dotfiles: kyber-crabbox
+      features.images: "true"
+      features.profiles: "false"
+      features.networks: "false"
+      limits.instances: "2"
+      limits.virtual-machines: "0"
+      limits.cpu: "8"
+      limits.memory: 16GiB
+      restricted: "true"
+      restricted.networks.access: incus-crabbox
+profiles:
+  - name: crabbox
+    config:
+      user.dotfiles: kyber-crabbox
+      limits.cpu: "4"
+      limits.memory: 8GiB
+      limits.memory.swap: "false"
+      limits.processes: "1024"
+      security.privileged: "false"
+      security.nesting: "false"
+    devices:
+      eth0:
+        name: eth0
+        network: incus-crabbox
+        type: nic
+      root:
+        path: /
+        pool: crabbox
+        size: 24GiB
+        limits.write: 10MiB
+        type: disk

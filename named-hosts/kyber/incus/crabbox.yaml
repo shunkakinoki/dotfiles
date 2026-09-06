@@ -1,0 +1,16 @@
+# User defaults on Kyber only; explicit repo configuration and flags still win.
+provider: incus
+target: linux
+os: ubuntu:24.04
+incus:
+  socket: /var/lib/incus/unix.socket
+  project: crabbox
+  instanceType: container
+  image: images:ubuntu/24.04/cloud
+  profile: crabbox
+  user: crabbox
+  workRoot: /work/crabbox
+  deleteOnRelease: true
+  startTimeout: 10m
+  launchPort: "22"
+# Reach each guest directly on its bridge IP; a shared proxy port would collide.
