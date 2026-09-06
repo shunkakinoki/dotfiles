@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2016,SC2329
 
-KYBER_NIX_FILE="$PWD/named-hosts/kyber/default.nix"
-MATIC_NIX_FILE="$PWD/named-hosts/matic/default.nix"
-
 Describe 'home-manager/activation/ensure-directory.sh'
 SCRIPT="$PWD/home-manager/activation/ensure-directory.sh"
 
@@ -116,9 +113,9 @@ When run bash -c "grep 'batch --import' '$SCRIPT'"
 The output should include 'batch --import'
 End
 
-It 'cleans up temp file after import'
-When run bash -c "grep 'rm -f' '$SCRIPT'"
-The output should include 'rm -f'
+It 'streams decrypted material directly into gpg'
+When run bash -c "grep 'RAGE_BIN.*-d' '$SCRIPT'"
+The output should include '| "$GPG_BIN" --batch --import'
 End
 
 It 'accepts key fingerprint as argument'
@@ -128,14 +125,9 @@ End
 End
 End
 
-Describe 'shared host wrapper quoting'
-It 'quotes the imported GPG secret path on kyber'
-When run cat "$KYBER_NIX_FILE"
-The output should include '"${config.home.homeDirectory}/dotfiles/named-hosts/galactica/keys/gpg.age"'
-End
-
-It 'quotes the imported GPG secret path on matic'
-When run cat "$MATIC_NIX_FILE"
+Describe 'shared GPG wrapper quoting'
+It 'quotes the imported GPG secret path in the shared module'
+When run cat "$PWD/home-manager/programs/gpg/default.nix"
 The output should include '"${config.home.homeDirectory}/dotfiles/named-hosts/galactica/keys/gpg.age"'
 End
 End

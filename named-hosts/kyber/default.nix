@@ -106,18 +106,6 @@ home-manager.lib.homeManagerConfiguration {
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate-fish-ssh-compat.sh} ${pkgs.fish}/bin/fish
         '';
 
-        # Import GPG key from agenix (all systems with dotfiles)
-        # Fails silently if SSH key isn't authorized to decrypt
-        home.activation.importGpgKey = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/import-gpg-key.sh}" \
-            "${config.home.homeDirectory}/dotfiles/named-hosts/galactica/keys/gpg.age" \
-            "${config.home.homeDirectory}/.ssh/id_ed25519" \
-            "${config.home.homeDirectory}/.config/agenix" \
-            "${pkgs.rage}/bin/rage" \
-            "${pkgs.gnupg}/bin/gpg" \
-            "C2E97FCFF482925D"
-        '';
-
         programs.home-manager.enable = true;
 
         # Review daemons and agent lane shells own disposable work and may be
@@ -146,14 +134,6 @@ home-manager.lib.homeManagerConfiguration {
             Environment = [ "HERDR_ENV=1" ];
           };
           Install.WantedBy = [ "default.target" ];
-        };
-
-        # GPG configuration for commit signing
-        programs.gpg = {
-          enable = true;
-          settings = {
-            default-key = "shunkakinoki@gmail.com";
-          };
         };
 
         # GPG agent configuration

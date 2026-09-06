@@ -17,6 +17,6 @@ in
   # GPG key (shared with all machines for commit signing)
   "keys/gpg.age" = {
     file = ./keys/gpg.age;
-    publicKeys = allMachines;
+    publicKeys = builtins.attrValues (import ../pubkeys.nix);
   };
 }
