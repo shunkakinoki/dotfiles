@@ -48,6 +48,7 @@ let
     [Service]
     Type=oneshot
     RemainAfterExit=yes
+    Environment=PATH=${lib.makeBinPath [ pkgs.jq ]}:/usr/bin:/bin
     ExecStart=${pkgs.bash}/bin/bash ${./activate-up.sh} ${cfg.tailscaled.package}/bin/tailscale ${lib.escapeShellArgs cfg.extraUpArgs}
 
     [Install]

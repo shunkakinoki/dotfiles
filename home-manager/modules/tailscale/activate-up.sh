@@ -53,6 +53,25 @@ restore_resolved_stub() {
   run_root_cmd ln -sfn "$stub" "$resolv"
 }
 
+restore_tailnet_dns() {
+  if ! command -v resolvectl >/dev/null 2>&1; then
+    return 0
+  fi
+
+  local tailnet_domain
+  tailnet_domain=$("$TAILSCALE_BIN" status --json | jq -er '.CurrentTailnet.MagicDNSSuffix | select(type == "string" and length > 0)')
+  if [[ ! "$tailnet_domain" =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]+$ ]]; then
+    echo "Invalid tailnet DNS suffix" >&2
+    return 1
+  fi
+
+  # Keep public lookups on the host resolver while private tailnet names
+  # continue to resolve for services that do not use the Tailscale CLI.
+  run_root_cmd resolvectl dns tailscale0 100.100.100.100
+  run_root_cmd resolvectl domain tailscale0 "~$tailnet_domain"
+  run_root_cmd resolvectl default-route tailscale0 no
+}
+
 accept_dns_false=false
 for arg in "$@"; do
   if [ "$arg" = "--accept-dns=false" ]; then
@@ -79,6 +98,7 @@ fi
 if [ "$accept_dns_false" = true ]; then
   "$TAILSCALE_BIN" set --accept-dns=false || true
   restore_resolved_stub
+  restore_tailnet_dns
 fi
 
 exit "$up_status"
