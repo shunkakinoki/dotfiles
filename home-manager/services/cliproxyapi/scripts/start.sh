@@ -63,7 +63,7 @@ render_opencode_api_key_entries() {
 
 # OAuth credentials default to priority 0, which loses to openai-compatibility
 # providers like surplus (150). Pin all auth files to the given priority so native
-# executors are selected first for cold bindings under fill-first routing.
+# executors are selected first for cold bindings.
 ensure_oauth_priority() {
   local auth_dir="$1" target_priority="$2"
   local f current
