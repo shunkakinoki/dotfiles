@@ -43,12 +43,12 @@ fi
 unset BEADS_DOLT_DATA_DIR BEADS_FEDERATION_HUB BEADS_DIR BEADS_DB
 export BEADS_DOLT_SERVER_HOST="kyber.tail950b36.ts.net"
 export BEADS_DOLT_SERVER_PORT="3307"
-export BEADS_DOLT_SERVER_USER="root"
+export BEADS_DOLT_SERVER_USER="beads"
 export BEADS_DOLT_SERVER_MODE="1"
 export BEADS_DOLT_AUTO_START="0"
 export BEADS_NODE_ID="kyber"
 export BEADS_ACTOR="beads-linear-reconciler"
-export DOLT_CLI_USER="root"
+export DOLT_CLI_USER="beads"
 export DOLT_CLI_PASSWORD=""
 
 # An accepted issue completes through the same repository lock and credential
@@ -288,7 +288,7 @@ run_dolt_sql() {
   "$dolt_cli" \
     --host="$BEADS_DOLT_SERVER_HOST" \
     --port="${BEADS_DOLT_SERVER_PORT:-3307}" \
-    --user="${DOLT_CLI_USER:-root}" \
+    --user="${DOLT_CLI_USER:-beads}" \
     --no-tls \
     sql -q "$query" >/dev/null
 }
