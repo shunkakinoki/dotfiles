@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/dotfiles/config/shared/hooks/security.sh",
+            "timeout": 5000
+          }
+        ]
+      }
+    ]
+  }
+}

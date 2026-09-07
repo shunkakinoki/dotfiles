@@ -14,6 +14,12 @@
     force = true;
   };
 
+  # OpenCode reports lowercase bash; Claude's Bash matcher is case-sensitive.
+  home.file.".config/opencode/hooks.json" = {
+    source = ./hooks.json;
+    force = true;
+  };
+
   home.file.".config/opencode/tui.json" = {
     source = ./tui.json;
     force = true;
