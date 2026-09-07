@@ -223,6 +223,10 @@ case "${1:-} ${2:-}" in
     exit 0
     ;;
   "sync --yes")
+    if [ -n "${FAKE_FEDERATION_FINISHED_FILE:-}" ]; then
+      (trap '' TERM; sleep 5; printf 'finished\n' >"$FAKE_FEDERATION_FINISHED_FILE") &
+      wait
+    fi
     printf '%s\n' "${BEADS_FSCK_TIMEOUT:-}" >>"$FSCK_TIMEOUT_LOG"
     count=0
     if [ -s "$SYNC_COUNT" ]; then
@@ -671,6 +675,19 @@ The status should equal 42
 The output should include 'Pushing changed active Beads'
 The output should include 'Dolt post-sync federation failed with status 42'
 The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'kills a TERM-ignoring federation descendant before returning failure'
+sed -e 's/federation_timeout_seconds=360/federation_timeout_seconds=2/' -e 's/--kill-after=30s/--kill-after=1s/' "$RENDERED_SCRIPT" >"$RENDERED_SCRIPT.tmp"
+mv "$RENDERED_SCRIPT.tmp" "$RENDERED_SCRIPT"
+finished_file="$TEST_ROOT/federation-finished"
+When run bash -c 'env COMMAND_LOG="$1" SYNC_COUNT="$2" FAKE_FEDERATION_FINISHED_FILE="$3" XDG_STATE_HOME="$4" HOME="$5" LINEAR_API_KEY=test bash "$6"; status=$?; sleep 5.5; test ! -e "$3" || exit 99; exit "$status"' _ "$COMMAND_LOG" "$SYNC_COUNT" "$finished_file" "$STATE_HOME" "$TEST_ROOT" "$RENDERED_SCRIPT"
+The status should equal 137
+The output should include 'Dolt pre-sync federation failed with status 137'
+The output should not include 'Pushing changed active Beads'
+The error should include 'Killed'
+The file "$CHECKPOINT_FILE" should not be exist
+The file "$finished_file" should not be exist
 End
 
 It 'fails closed before Linear reconciliation when initial Dolt federation fails'

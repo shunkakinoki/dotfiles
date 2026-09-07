@@ -94,7 +94,7 @@ let
   federationSyncScript = pkgs.replaceVars ./federation-sync.sh {
     bd = "${homeDir}/.local/bin/bd";
     inherit ensureDatabaseScript;
-    inherit (pkgs) coreutils jq;
+    inherit (pkgs) coreutils jq lsof;
     utilLinux = pkgs.util-linux;
   };
   federationAccessScript = pkgs.replaceVars ./federation-access.sh {

@@ -51,7 +51,7 @@ setup_federation() {
   repo_slug="${TEST_REPO_ID//\//_}"
   CHECKPOINT_FILE="$STATE_HOME/beads-federation-sync/last-success-$repo_slug"
   export DOTFILES_ENV_FILE="$ENV_FILE" FSCK_TIMEOUT_LOG
-  for command in date env mkdir mv sleep tail timeout; do
+  for command in date env lsof mkdir mv sleep tail timeout; do
     ln -s "$(command -v "$command")" "$COREUTILS/bin/$command"
   done
   cat >"$UTIL_LINUX/bin/flock" <<'EOF'
@@ -135,7 +135,7 @@ EOF
 #!/usr/bin/env bash
 printf 'ensure-database\n' >>"$COMMAND_LOG"
 if [ -n "${FAKE_PROVISION_FINISHED_FILE:-}" ]; then
-  (sleep 5; printf 'finished\n' >"$FAKE_PROVISION_FINISHED_FILE") &
+  (trap '' TERM; sleep 5; printf 'finished\n' >"$FAKE_PROVISION_FINISHED_FILE") &
   wait
 fi
 exit "${FAKE_PROVISION_STATUS:-0}"
@@ -143,6 +143,7 @@ EOF
   sed \
     -e "s|@bd@|$FAKE_BD|g" \
     -e "s|@coreutils@|$COREUTILS|g" \
+    -e "s|@lsof@|$COREUTILS|g" \
     -e "s|@utilLinux@|$UTIL_LINUX|g" \
     -e "s|@ensureDatabaseScript@|$FAKE_ENSURE_DATABASE|g" \
     "$SCRIPT" >"$RENDERED_SCRIPT"
@@ -237,23 +238,32 @@ The output should include 'Inherited repository reconciliation lock is invalid'
 The file "$COMMAND_LOG" should not be exist
 End
 
+It 'rejects an inherited descriptor for a different lock file'
+When run bash -c 'exec 9>"$1"; env BEADS_SYNC_REPO_DIR="$2" BEADS_SYNC_REPO_NAME="$3" BEADS_SYNC_REPO_CONTEXT="repository 1/1" COMMAND_LOG="$4" XDG_STATE_HOME="$5" HOME="$6" bash "$7" --repo --locked' _ "$TEST_ROOT/other.lock" "$TEST_REPO" "$TEST_REPO_ID" "$COMMAND_LOG" "$STATE_HOME" "$TEST_ROOT" "$RENDERED_SCRIPT"
+The status should equal 75
+The output should include 'Inherited repository reconciliation lock is invalid'
+The file "$COMMAND_LOG" should not be exist
+End
+
 It 'times out provisioning, terminates its descendants, and releases the repository lock'
-sed 's/federation_timeout_seconds=360/federation_timeout_seconds=2/' "$RENDERED_SCRIPT" >"$RENDERED_SCRIPT.tmp"
+sed -e 's/federation_timeout_seconds=360/federation_timeout_seconds=2/' -e 's/--kill-after=30s/--kill-after=1s/' "$RENDERED_SCRIPT" >"$RENDERED_SCRIPT.tmp"
 mv "$RENDERED_SCRIPT.tmp" "$RENDERED_SCRIPT"
 finished_file="$TEST_ROOT/provision-finished"
 When run bash -c 'env COMMAND_LOG="$1" FAKE_PROVISION_FINISHED_FILE="$2" FAKE_FLOCK_WAIT_SECONDS=1 XDG_STATE_HOME="$3" HOME="$4" bash "$5"; status=$?; printf "timeout-status=%s\n" "$status"; sleep 5.5; test ! -e "$2" || exit 99; sed "s/federation_timeout_seconds=2/federation_timeout_seconds=360/" "$5" >"$5.tmp"; mv "$5.tmp" "$5"; env COMMAND_LOG="$1" FAKE_FLOCK_WAIT_SECONDS=1 XDG_STATE_HOME="$3" HOME="$4" bash "$5"' _ "$COMMAND_LOG" "$finished_file" "$STATE_HOME" "$TEST_ROOT" "$RENDERED_SCRIPT"
 The status should be success
-The output should include 'timeout-status=124'
+The output should include 'timeout-status=137'
 The output should include 'Dolt federation complete'
+The error should include 'Killed'
 The file "$finished_file" should not be exist
 End
 
 It 'bounds post-sync readiness without advancing the checkpoint'
-sed 's/federation_timeout_seconds=360/federation_timeout_seconds=2/' "$RENDERED_SCRIPT" >"$RENDERED_SCRIPT.tmp"
+sed -e 's/federation_timeout_seconds=360/federation_timeout_seconds=2/' -e 's/--kill-after=30s/--kill-after=1s/' "$RENDERED_SCRIPT" >"$RENDERED_SCRIPT.tmp"
 mv "$RENDERED_SCRIPT.tmp" "$RENDERED_SCRIPT"
 When run env COMMAND_LOG="$COMMAND_LOG" FAKE_HANG_COMMAND='ready --json' XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" bash "$RENDERED_SCRIPT"
-The status should equal 124
-The output should include 'Repository federation failed with status 124'
+The status should equal 137
+The output should include 'Repository federation failed with status 137'
+The error should include 'Killed'
 The contents of file "$COMMAND_LOG" should include 'sync --yes --json'
 The file "$CHECKPOINT_FILE" should not be exist
 End
