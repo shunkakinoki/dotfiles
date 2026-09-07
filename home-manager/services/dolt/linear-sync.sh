@@ -24,11 +24,32 @@ log() {
 # module never embeds checkout paths or secret dotenv values in the store.
 env_file="${DOTFILES_ENV_FILE:-$HOME/dotfiles/.env}"
 if [ -f "$env_file" ]; then
-  set -a
-  # shellcheck source=/dev/null
-  . "$env_file"
-  set +a
+  mapfile -d '' -t local_settings < <(
+    # shellcheck source=/dev/null
+    . "$env_file" >/dev/null
+    printf '%s\0' "${BEADS_LINEAR_SYNC_REPOS:-}" "${LINEAR_API_KEY:-}" "${LINEAR_TEAM_ID:-}"
+  )
+  if [ "${#local_settings[@]}" -ne 3 ]; then
+    log "Could not load local Linear settings"
+    exit 1
+  fi
+  export BEADS_LINEAR_SYNC_REPOS="${local_settings[0]}"
+  export LINEAR_API_KEY="${local_settings[1]}"
+  export LINEAR_TEAM_ID="${local_settings[2]}"
+  unset local_settings
 fi
+
+# Machine-local credentials must not override the managed database authority.
+unset BEADS_DOLT_DATA_DIR BEADS_FEDERATION_HUB BEADS_DIR BEADS_DB
+export BEADS_DOLT_SERVER_HOST="kyber.tail950b36.ts.net"
+export BEADS_DOLT_SERVER_PORT="3307"
+export BEADS_DOLT_SERVER_USER="root"
+export BEADS_DOLT_SERVER_MODE="1"
+export BEADS_DOLT_AUTO_START="0"
+export BEADS_NODE_ID="kyber"
+export BEADS_ACTOR="beads-linear-reconciler"
+export DOLT_CLI_USER="root"
+export DOLT_CLI_PASSWORD=""
 
 # An accepted issue completes through the same repository lock and credential
 # boundary as the periodic reconciler. The close reason is read from stdin so
@@ -265,7 +286,7 @@ run_dolt_sql() {
   local query="$1"
 
   "$dolt_cli" \
-    --host=127.0.0.1 \
+    --host="$BEADS_DOLT_SERVER_HOST" \
     --port="${BEADS_DOLT_SERVER_PORT:-3307}" \
     --user="${DOLT_CLI_USER:-root}" \
     --no-tls \

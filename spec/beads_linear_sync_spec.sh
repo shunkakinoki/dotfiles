@@ -192,6 +192,14 @@ EOF
   cat >"$FAKE_BD" <<'EOF'
 #!/usr/bin/env bash
 printf '%s\n' "$*" >>"$COMMAND_LOG"
+if [ "${FAKE_VERIFY_AUTHORITY:-}" = 1 ]; then
+  test "${BEADS_DOLT_SERVER_HOST:-}" = kyber.tail950b36.ts.net || exit 98
+  test "${BEADS_DOLT_SERVER_PORT:-}" = 3307 || exit 98
+  test "${BEADS_DOLT_SERVER_USER:-}" = root || exit 98
+  test "${BEADS_NODE_ID:-}" = kyber || exit 98
+  test "${BEADS_ACTOR:-}" = beads-linear-reconciler || exit 98
+  test -z "${BEADS_DOLT_DATA_DIR:-}${BEADS_FEDERATION_HUB:-}${BEADS_DIR:-}${BEADS_DB:-}" || exit 98
+fi
 if [ "${1:-}" = "-C" ]; then
   shift 2
 fi
@@ -411,6 +419,14 @@ The contents of file "$COMMAND_LOG" should not include 'dolt push'
 The contents of file "$COMMAND_LOG" should include 'linear sync --pull --state all --relations --no-wait --json'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-test --no-wait --json'
 The path "$FSCK_TIMEOUT_LOG" should not be exist
+End
+
+It 'keeps managed authority when local settings contain retired routing'
+printf '%s\n' 'BEADS_DOLT_SERVER_HOST=old-replica' 'BEADS_DOLT_SERVER_PORT=9999' 'BEADS_NODE_ID=old-replica' 'BEADS_ACTOR=shared-old-actor' 'BEADS_FEDERATION_HUB=old-replica' 'BEADS_DOLT_DATA_DIR=/old/store' 'BEADS_DIR=/old/beads' >>"$ENV_FILE"
+When run env FAKE_VERIFY_AUTHORITY=1 COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Pushing changed active Beads'
+The file "$CHECKPOINT_FILE" should be exist
 End
 
 It 'accepts null and empty optional fields in an otherwise clean result'

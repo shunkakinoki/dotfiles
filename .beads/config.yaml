@@ -56,4 +56,3 @@ dolt.auto-start: "false"
 dolt.idle-timeout: "0"
 
 dolt.host: kyber.tail950b36.ts.net
-node_id: kyber
