@@ -171,10 +171,13 @@ wait_for_beads() {
 }
 
 run_linear() {
+  local operation="$1"
   local output
   local status
   local category
   local cause
+  local diagnostic
+  shift
 
   if output="$("$@" --json 2>/dev/null)"; then
     status=0
@@ -225,7 +228,38 @@ run_linear() {
     category="command-timeout"
     cause="timeout"
   fi
-  log "Linear result rejected: category=$category exit=$status cause=$cause"
+  # Summarize the rejected contract without copying any payload values. The
+  # warning prefixes identify native sync operations, not their private causes.
+  if ! diagnostic="$(@jq@/bin/jq -r -s '
+    def counter:
+      if type == "number" and . >= 0 and . == floor then tostring else type end;
+    def family:
+      if type != "string" then "invalid"
+      elif test("^Failed to (build dependency resolver:|resolve dependency |create dependency )") then "dependency"
+      elif startswith("Failed to update last_sync:") then "cursor"
+      elif startswith("Failed to update external_ref ") then "external-ref"
+      elif startswith("Failed to record push hash ") then "push-hash"
+      elif startswith("Failed to update ") then "update"
+      elif startswith("Failed to create ") then "create"
+      elif startswith("Failed to fetch ") then "fetch"
+      elif test("^Failed to (prepare |generate ID )") then "prepare"
+      elif startswith("Failed to push ") then "push"
+      else "unknown" end;
+    if length != 1 then "shape=result-count count=\(length)"
+    elif (.[0] | type) != "object" then "shape=\(.[0] | type)"
+    else .[0] |
+      (if (.warnings | type) == "array" then .warnings else [] end) as $warnings |
+      (if (.error | type) == "string" and .error != "" then [.error] else [] end) as $errors |
+      "shape=object success=\(.success | if type == "boolean" then tostring else type end)" +
+      " stats=\(.stats | type) errors=\((if (.stats | type) == "object" then .stats.errors else null end) | counter)" +
+      " warnings=\(.warnings | if type == "array" then length else type end)" +
+      " error=\(.error | if . == null or . == "" then "none" elif type == "string" then "present" else type end)" +
+      " families=\([$warnings[], $errors[] | family] | unique | join(","))"
+    end
+  ' <<<"$output" 2>/dev/null)"; then
+    diagnostic="shape=invalid-json"
+  fi
+  log "Linear result rejected: category=$category exit=$status cause=$cause operation=$operation $diagnostic"
   if [ "$status" -ne 0 ]; then
     return "$status"
   fi
@@ -264,7 +298,7 @@ push_issue_batches() {
     )"
     log "Pushing $description Beads batch $batch_number/$batch_count"
 
-    if run_linear @coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" linear sync --push --issues "$batch_ids" --no-wait; then
+    if run_linear push @coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" linear sync --push --issues "$batch_ids" --no-wait; then
       if [ -n "$progress_file" ] && [ -n "$progress_entries" ]; then
         printf '%s\n' "$progress_entries" |
           @coreutils@/bin/tail -n +"$((batch_start + 1))" |
@@ -586,7 +620,7 @@ run_dolt_sql "USE \`$linear_database\`; DELETE FROM local_metadata WHERE \`key\`
 # failure is deferred to the next scheduled run instead of making launchd
 # hot-loop a failed job.
 log "Pulling complete Linear state"
-if run_linear @coreutils@/bin/timeout 720 "$bd_cli" -C "$repo_dir" linear sync \
+if run_linear pull @coreutils@/bin/timeout 720 "$bd_cli" -C "$repo_dir" linear sync \
   --pull \
   --state all \
   --relations \

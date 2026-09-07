@@ -109,7 +109,7 @@ The status should be success
 End
 
 It 'bounds inbound pull and small outbound batches'
-When run bash -c "grep -F 'run_linear @coreutils@/bin/timeout 720 \"\$bd_cli\"' '$SCRIPT' >/dev/null && grep -F 'local batch_size=10' '$SCRIPT' >/dev/null && grep -F 'run_linear @coreutils@/bin/timeout 120 \"\$bd_cli\"' '$SCRIPT' >/dev/null"
+When run bash -c "grep -F 'run_linear pull @coreutils@/bin/timeout 720 \"\$bd_cli\"' '$SCRIPT' >/dev/null && grep -F 'local batch_size=10' '$SCRIPT' >/dev/null && grep -F 'run_linear push @coreutils@/bin/timeout 120 \"\$bd_cli\"' '$SCRIPT' >/dev/null"
 The status should be success
 End
 
@@ -451,6 +451,7 @@ When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MOD
 The status should equal 65
 The output should include 'category=unclean-result exit=0 cause=unknown'
 The output should include 'Linear push failed with status 65'
+The output should include 'operation=push shape=object success=true stats=object errors=1 warnings=null error=none'
 The contents of file "$progress_file" should equal 'preserved-entry 2026-01-01T00:00:00Z'
 The file "$CHECKPOINT_FILE" should not be exist
 End
@@ -460,6 +461,7 @@ When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MOD
 The status should equal 65
 The output should include 'category=unclean-result exit=0 cause=unknown'
 The output should include 'Linear pull failed with status 65'
+The output should include 'operation=pull shape=object success=true stats=object errors=1 warnings=null error=none'
 The contents of file "$DOLT_LOG" should include 'REPLACE INTO local_metadata'
 The contents of file "$DOLT_LOG" should include '2026-08-24T10:39:54Z'
 The file "$CHECKPOINT_FILE" should not be exist
@@ -469,6 +471,7 @@ It 'rejects a warning-only result without leaking the warning'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=warning-only XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should equal 65
 The output should include 'category=unclean-result exit=0 cause=unknown'
+The output should include 'warnings=1 error=none families=unknown'
 The output should not include 'PRIVATE_LINEAR_PAYLOAD'
 The file "$CHECKPOINT_FILE" should not be exist
 End
@@ -477,6 +480,7 @@ It 'rejects malformed JSON without leaking its payload'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=invalid-json XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should equal 65
 The output should include 'category=unclean-result exit=0 cause=unknown'
+The output should include 'shape=invalid-json'
 The output should not include 'PRIVATE_LINEAR_PAYLOAD'
 The file "$CHECKPOINT_FILE" should not be exist
 End
@@ -485,6 +489,7 @@ It 'rejects an empty JSON result'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=empty-json XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should equal 65
 The output should include 'category=unclean-result exit=0 cause=unknown'
+The output should include 'shape=result-count count=0'
 The file "$CHECKPOINT_FILE" should not be exist
 End
 
@@ -492,6 +497,7 @@ It 'requires exactly one JSON document'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=multiple-json XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should equal 65
 The output should include 'category=unclean-result exit=0 cause=unknown'
+The output should include 'shape=result-count count=2'
 The file "$CHECKPOINT_FILE" should not be exist
 End
 
@@ -499,6 +505,7 @@ It 'rejects a false success result'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=success-false XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should equal 65
 The output should include 'category=unclean-result exit=0 cause=unknown'
+The output should include 'shape=object success=false'
 The file "$CHECKPOINT_FILE" should not be exist
 End
 
@@ -506,8 +513,37 @@ It 'rejects a nonempty structured error without leaking it'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=error-field XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should equal 65
 The output should include 'category=unclean-result exit=0 cause=unknown'
+The output should include 'error=present families=unknown'
 The output should not include 'PRIVATE_LINEAR_PAYLOAD'
 The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'reports distinct native operation families without their private messages'
+linear_result='{"success":true,"stats":{"errors":2},"warnings":["Failed to create issue for PRIVATE_LINEAR_PAYLOAD","Failed to update PRIVATE_LINEAR_PAYLOAD","Failed to update PRIVATE_LINEAR_PAYLOAD again","Failed to fetch PRIVATE_LINEAR_PAYLOAD","Failed to prepare PRIVATE_LINEAR_PAYLOAD","Failed to push PRIVATE_LINEAR_PAYLOAD","Failed to record push hash for PRIVATE_LINEAR_PAYLOAD","Failed to update external_ref for PRIVATE_LINEAR_PAYLOAD","Failed to build dependency resolver: PRIVATE_LINEAR_PAYLOAD","Failed to resolve dependency target PRIVATE_LINEAR_PAYLOAD","Failed to create dependency PRIVATE_LINEAR_PAYLOAD","Failed to update last_sync: PRIVATE_LINEAR_PAYLOAD"]}'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_RESULT="$linear_result" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 65
+The output should include 'operation=pull shape=object success=true stats=object errors=2 warnings=12 error=none'
+The output should include 'families=create,cursor,dependency,external-ref,fetch,prepare,push,push-hash,update'
+The output should not include 'PRIVATE_LINEAR_PAYLOAD'
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+Describe 'malformed result shapes'
+Parameters:dynamic
+%data '"PRIVATE_LINEAR_PAYLOAD"' 'shape=string'
+%data '["PRIVATE_LINEAR_PAYLOAD"]' 'shape=array'
+%data 'null' 'shape=null'
+%data '{"success":"PRIVATE_LINEAR_PAYLOAD","stats":{"errors":"PRIVATE_LINEAR_PAYLOAD"},"warnings":{"text":"PRIVATE_LINEAR_PAYLOAD"},"error":["PRIVATE_LINEAR_PAYLOAD"]}' 'shape=object success=string stats=object errors=string warnings=object error=array families='
+%data '{"success":false,"stats":"PRIVATE_LINEAR_PAYLOAD","warnings":[{"text":"PRIVATE_LINEAR_PAYLOAD"}]}' 'shape=object success=false stats=string errors=null warnings=1 error=none families=invalid'
+End
+
+It 'reports only shape information and preserves failure'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_RESULT="$1" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 65
+The output should include "$2"
+The output should not include 'PRIVATE_LINEAR_PAYLOAD'
+The file "$CHECKPOINT_FILE" should not be exist
+End
 End
 
 It 'defers a plain circuit-breaker result without appending JSON'
