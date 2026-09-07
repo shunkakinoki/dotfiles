@@ -19,6 +19,28 @@ The push hook blocks explicit and implicit updates or deletions of `main`, `mast
 
 The settings hook blocks repository control-plane mutations through settings-oriented `gh` commands, REST or GraphQL API calls, and common direct HTTP clients. It splits the command line into individual invocations and judges each one by its own arguments, so quoted text that merely names a command is not matched. GraphQL is judged by the root mutation fields the document invokes, and a document the hook cannot read is treated as a settings mutation. Read-only API calls and ordinary pull request, issue, review, and comment operations remain available.
 
+## Herdr worker starts
+
+The shared security hook admits local `herdr agent start` commands only after
+reading the target pane, workspace, linked worktree, and existing agent owners.
+A worker needs an explicit pane, consistent metadata and cwd under
+`~/.herdr/worktrees/<repo>/`, and no other owner of its name or checkout.
+Settled agents retain ownership. Missing, malformed, or timed-out metadata
+blocks the command before the submitted launch executes. Multiple starts in
+one command cannot share a checkout.
+
+The local host's canonical main/co-orchestrator names, including their named
+fallback seats, remain available in the root workspace. Read-only commands,
+help, and hold prompts are unaffected. OpenCode has its own lowercase `bash`
+matcher pointing at this shared hook; its Claude-hook adapter does not match
+Claude's uppercase `Bash` entries. The helper evaluates command text and uses
+only read-only Herdr probes; it never launches, moves, or stops an agent.
+
+This is admission for local shell starts through supported hooks. It does not
+prove task or PR ownership and is not a native Herdr server policy. Direct API
+calls, unhooked remote execution, and other unsupported launch paths still
+need their authoritative lifecycle controls.
+
 ## Security boundary
 
 These hooks provide fast feedback and prevent common mistakes. They run with the same user permissions as the agent and can be bypassed, disabled, or avoided through an unsupported tool path. Restricted GitHub credentials and server-side branch rulesets are the authoritative controls; do not grant an agent an administrator credential because these hooks are installed.
