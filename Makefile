@@ -1192,7 +1192,7 @@ lua-check-hammerspoon-dev: ## Run the Hammerspoon Lua check inside the Nix dev s
 ##@ Launchd Services
 
 .PHONY: launchctl
-launchctl: launchctl-brew-upgrader launchctl-openclaw launchctl-cliproxyapi launchctl-cliproxyapi-backup launchctl-code-syncer launchctl-docker-postgres launchctl-dolt launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama launchctl-roborev launchctl-tmux-session-logger ## Restart all launchd agents.
+launchctl: launchctl-brew-upgrader launchctl-openclaw launchctl-cliproxyapi launchctl-cliproxyapi-backup launchctl-code-syncer launchctl-docker-postgres launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama launchctl-roborev launchctl-tmux-session-logger ## Restart all launchd agents.
 
 .PHONY: launchctl-brew-upgrader
 launchctl-brew-upgrader: ## Restart brew-updater launchd agent.
@@ -1257,18 +1257,6 @@ launchctl-docker-postgres: ## Restart docker-postgres launchd agent.
 	@sleep 3
 	@launchctl load ~/Library/LaunchAgents/org.nix-community.home.docker-postgres.plist
 	@echo "✅ docker-postgres restarted"
-
-.PHONY: launchctl-dolt
-launchctl-dolt: ## Restart dolt launchd agent.
-	@echo "🔄 Restarting dolt..."
-	@if [ "$(DETECTED_HOST)" = "galactica" ] || [ "$(HOST)" = "galactica" ]; then \
-		launchctl unload ~/Library/LaunchAgents/org.nix-community.home.dolt.plist 2>/dev/null || true; \
-		sleep 3; \
-		launchctl load ~/Library/LaunchAgents/org.nix-community.home.dolt.plist; \
-	else \
-		echo "Skipping dolt launchd agent (host not galactica)"; \
-	fi
-	@echo "✅ dolt restarted"
 
 .PHONY: launchctl-ollama
 launchctl-ollama: ## Restart ollama launchd agent.

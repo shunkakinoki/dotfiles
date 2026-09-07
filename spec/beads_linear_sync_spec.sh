@@ -103,13 +103,8 @@ When run bash -c "test \"\$(grep -c 'next 900-second run will retry' '$SCRIPT')\
 The status should be success
 End
 
-It 'fails closed after ordinary pull, push, or federation failures'
+It 'fails closed after ordinary Linear pull or push failures'
 When run bash -c "! grep -F 'continuing with outbound Beads reconciliation' '$SCRIPT' >/dev/null && ! grep -F 'continuing with local Beads state' '$SCRIPT' >/dev/null && grep -F 'log \"Linear pull failed with status \$status\"' '$SCRIPT' >/dev/null && grep -F 'log \"Linear push failed with status \$status\"' '$SCRIPT' >/dev/null"
-The status should be success
-End
-
-It 'gives federation fsck a bounded budget below the outer deadline'
-When run bash -c "grep -F 'federation_timeout_seconds=360' '$SCRIPT' >/dev/null && grep -F 'federation_fsck_timeout=300s' '$SCRIPT' >/dev/null && grep -F '@coreutils@/bin/timeout --kill-after=30s \"\$federation_timeout_seconds\"' '$SCRIPT' >/dev/null && grep -F '@coreutils@/bin/env BEADS_FSCK_TIMEOUT=\"\$federation_fsck_timeout\"' '$SCRIPT' >/dev/null"
 The status should be success
 End
 
@@ -119,7 +114,7 @@ The status should be success
 End
 
 It 'checkpoints a successful cycle for delta selection'
-When run bash -c "checkpoint=\$(grep -n '\"\$cycle_started\" >\"\$sync_checkpoint_file.tmp\"' '$SCRIPT' | cut -d: -f1); final_sync=\$(grep -n 'federate_beads \"post-sync\"' '$SCRIPT' | cut -d: -f1); test \"\$checkpoint\" -gt \"\$final_sync\""
+When run bash -c "checkpoint=\$(grep -n '\"\$cycle_started\" >\"\$sync_checkpoint_file.tmp\"' '$SCRIPT' | cut -d: -f1); final_sync=\$(grep -n 'dolt commit -m \"chore(beads): sync Linear\"' '$SCRIPT' | cut -d: -f1); test \"\$checkpoint\" -gt \"\$final_sync\""
 The status should be success
 End
 
@@ -133,15 +128,6 @@ When run bash -c "checkpoint=\$(grep -n '\"\$cycle_started\" >\"\$sync_checkpoin
 The status should be success
 End
 
-It 'federates Beads before and after Linear reconciliation'
-When run bash -c "grep -F 'federate_beads \"pre-sync\"' '$SCRIPT' >/dev/null && grep -F 'federate_beads \"post-sync\"' '$SCRIPT' >/dev/null && grep -F 'federate_beads \"post-completion push\"' '$SCRIPT' >/dev/null"
-The status should be success
-End
-
-It 'commits internal Linear config before the first federation pull'
-When run bash -c "config_commit=\$(grep -n 'configure Linear sync' '$SCRIPT' | cut -d: -f1); first_pull=\$(grep -n 'federate_beads \"pre-sync\"' '$SCRIPT' | cut -d: -f1); test \"\$config_commit\" -lt \"\$first_pull\""
-The status should be success
-End
 End
 
 Describe 'reconciliation behavior'
@@ -206,6 +192,14 @@ EOF
   cat >"$FAKE_BD" <<'EOF'
 #!/usr/bin/env bash
 printf '%s\n' "$*" >>"$COMMAND_LOG"
+if [ "${FAKE_VERIFY_AUTHORITY:-}" = 1 ]; then
+  test "${BEADS_DOLT_SERVER_HOST:-}" = kyber.tail950b36.ts.net || exit 98
+  test "${BEADS_DOLT_SERVER_PORT:-}" = 3307 || exit 98
+  test "${BEADS_DOLT_SERVER_USER:-}" = root || exit 98
+  test "${BEADS_NODE_ID:-}" = kyber || exit 98
+  test "${BEADS_ACTOR:-}" = beads-linear-reconciler || exit 98
+  test -z "${BEADS_DOLT_DATA_DIR:-}${BEADS_FEDERATION_HUB:-}${BEADS_DIR:-}${BEADS_DB:-}" || exit 98
+fi
 if [ "${1:-}" = "-C" ]; then
   shift 2
 fi
@@ -222,24 +216,9 @@ case "${1:-} ${2:-}" in
   "config set" | "dolt commit")
     exit 0
     ;;
-  "sync --yes")
-    if [ -n "${FAKE_FEDERATION_FINISHED_FILE:-}" ]; then
-      (trap '' TERM; sleep 5; printf 'finished\n' >"$FAKE_FEDERATION_FINISHED_FILE") &
-      wait
-    fi
-    printf '%s\n' "${BEADS_FSCK_TIMEOUT:-}" >>"$FSCK_TIMEOUT_LOG"
-    count=0
-    if [ -s "$SYNC_COUNT" ]; then
-      count=$(<"$SYNC_COUNT")
-    fi
-    count=$((count + 1))
-    printf '%s\n' "$count" >"$SYNC_COUNT"
-    if [ "${FAKE_LINEAR_MODE:-}" = "final-failure" ] && [ "$count" -eq 2 ]; then
-      exit 42
-    fi
-    if [ "${FAKE_LINEAR_MODE:-}" = "initial-federation-failure" ] && [ "$count" -eq 1 ]; then
-      exit 41
-    fi
+  "sync --yes" | "dolt push" | "dolt pull")
+    echo "Writable federation is retired" >&2
+    exit 99
     ;;
   "linear status")
     printf '{"last_sync":"%s"}\n' "${FAKE_LAST_SYNC:-}"
@@ -427,7 +406,7 @@ cleanup_reconciliation() {
 Before 'setup_reconciliation'
 After 'cleanup_reconciliation'
 
-It 'runs both federations around pull and delta push before checkpointing'
+It 'reconciles Linear directly against the authority before checkpointing'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'Pushing changed active Beads'
@@ -435,10 +414,19 @@ The output should include 'No terminal Beads to push'
 The file "$CHECKPOINT_FILE" should be exist
 The contents of file "$COMMAND_LOG" should include 'linear sync --pull --state all --relations --no-wait'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-test --no-wait'
+The contents of file "$COMMAND_LOG" should not include 'sync --yes'
+The contents of file "$COMMAND_LOG" should not include 'dolt push'
 The contents of file "$COMMAND_LOG" should include 'linear sync --pull --state all --relations --no-wait --json'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-test --no-wait --json'
-The contents of file "$FSCK_TIMEOUT_LOG" should equal "300s
-300s"
+The path "$FSCK_TIMEOUT_LOG" should not be exist
+End
+
+It 'keeps managed authority when local settings contain retired routing'
+printf '%s\n' 'BEADS_DOLT_SERVER_HOST=old-replica' 'BEADS_DOLT_SERVER_PORT=9999' 'BEADS_NODE_ID=old-replica' 'BEADS_ACTOR=shared-old-actor' 'BEADS_FEDERATION_HUB=old-replica' 'BEADS_DOLT_DATA_DIR=/old/store' 'BEADS_DIR=/old/beads' >>"$ENV_FILE"
+When run env FAKE_VERIFY_AUTHORITY=1 COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Pushing changed active Beads'
+The file "$CHECKPOINT_FILE" should be exist
 End
 
 It 'accepts null and empty optional fields in an otherwise clean result'
@@ -669,35 +657,6 @@ The contents of file "$COMMAND_LOG" should not include 'linear sync --pull'
 The contents of file "$CHECKPOINT_FILE" should equal '2026-01-01T00:00:00Z'
 End
 
-It 'fails closed without checkpointing when final Dolt federation fails'
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=final-failure XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
-The status should equal 42
-The output should include 'Pushing changed active Beads'
-The output should include 'Dolt post-sync federation failed with status 42'
-The file "$CHECKPOINT_FILE" should not be exist
-End
-
-It 'kills a TERM-ignoring federation descendant before returning failure'
-sed -e 's/federation_timeout_seconds=360/federation_timeout_seconds=2/' -e 's/--kill-after=30s/--kill-after=1s/' "$RENDERED_SCRIPT" >"$RENDERED_SCRIPT.tmp"
-mv "$RENDERED_SCRIPT.tmp" "$RENDERED_SCRIPT"
-finished_file="$TEST_ROOT/federation-finished"
-When run bash -c 'env COMMAND_LOG="$1" SYNC_COUNT="$2" FAKE_FEDERATION_FINISHED_FILE="$3" XDG_STATE_HOME="$4" HOME="$5" LINEAR_API_KEY=test bash "$6"; status=$?; sleep 5.5; test ! -e "$3" || exit 99; exit "$status"' _ "$COMMAND_LOG" "$SYNC_COUNT" "$finished_file" "$STATE_HOME" "$TEST_ROOT" "$RENDERED_SCRIPT"
-The status should equal 137
-The output should include 'Dolt pre-sync federation failed with status 137'
-The output should not include 'Pushing changed active Beads'
-The error should include 'Killed'
-The file "$CHECKPOINT_FILE" should not be exist
-The file "$finished_file" should not be exist
-End
-
-It 'fails closed before Linear reconciliation when initial Dolt federation fails'
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=initial-federation-failure XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
-The status should equal 41
-The output should include 'Dolt pre-sync federation failed with status 41'
-The output should not include 'Pushing changed active Beads'
-The file "$CHECKPOINT_FILE" should not be exist
-End
-
 It 'fails closed when the repository list is absent'
 When run env -u BEADS_LINEAR_SYNC_REPOS DOTFILES_ENV_FILE="$TEST_ROOT/missing" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should equal 1
@@ -759,7 +718,7 @@ The output should include 'Accepted Bead and Linear issue are both terminal'
 The contents of file "$ISSUE_STATUS_FILE" should equal closed
 The contents of file "$COMMAND_LOG" should include 'close df-accepted --reason-file -'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-accepted --no-wait'
-The contents of file "$SYNC_COUNT" should equal 3
+The path "$SYNC_COUNT" should not be exist
 End
 
 It 'keeps the accepted Bead durably closed when the Linear push fails'
@@ -767,7 +726,7 @@ When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$C
 The status should equal 24
 The output should include 'Linear push failed with status 24'
 The contents of file "$ISSUE_STATUS_FILE" should equal closed
-The contents of file "$SYNC_COUNT" should equal 2
+The path "$SYNC_COUNT" should not be exist
 End
 
 It 'reports a deferred accepted push without claiming completion'
@@ -775,7 +734,7 @@ When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$C
 The status should equal 75
 The output should include 'next 900-second run will retry'
 The contents of file "$ISSUE_STATUS_FILE" should equal closed
-The contents of file "$SYNC_COUNT" should equal 2
+The path "$SYNC_COUNT" should not be exist
 The contents of file "$COMMAND_LOG" should include 'update df-accepted --set-metadata linear_completion_pending=true'
 End
 
@@ -824,7 +783,7 @@ When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$C
 The status should equal 70
 The output should include 'not in its completed state'
 The contents of file "$ISSUE_STATUS_FILE" should equal closed
-The contents of file "$SYNC_COUNT" should equal 3
+The path "$SYNC_COUNT" should not be exist
 End
 
 It 'is idempotent when acceptance completion is repeated'
@@ -848,8 +807,8 @@ End
 End
 
 Describe 'Home Manager service ownership'
-It 'runs Linear every fifteen minutes while federation stays at five minutes on launchd'
-When run bash -c "grep -F 'linearSyncIntervalSeconds = 900;' '$MODULE' >/dev/null && grep -F 'federationSyncIntervalSeconds = 300;' '$MODULE' >/dev/null && grep -F 'ThrottleInterval = linearSyncIntervalSeconds;' '$MODULE' >/dev/null && grep -F 'ThrottleInterval = federationSyncIntervalSeconds;' '$MODULE' >/dev/null && grep -F 'PATH = linearSyncPath;' '$MODULE' >/dev/null"
+It 'runs Linear every fifteen minutes on Kyber'
+When run bash -c "grep -F 'OnCalendar = \"*-*-* *:02/15:00\";' '$MODULE' >/dev/null"
 The status should be success
 End
 

@@ -94,17 +94,15 @@ machine was replaced: the verifier does not maintain a device-ID registry.
 
 Local service checks on each machine:
 
-Set `BEADS_SYNC_REPOS=org/repo` in the machine-local `~/dotfiles/.env` before
-starting Beads federation. Use comma-separated repository identifiers for
-multiple checkouts; the dotfiles checkout is included automatically. Keep this
-file private and untracked. The managed Dolt service owns port 3307, and Herdr
-workers receive its connection settings directly instead of starting their own
-servers. Existing project-local databases require a backed-up, stopped-server
-cutover into `~/.beads/shared-server/dolt`; provisioning never replaces them.
+Beads clients connect directly to Kyber SQL on port 3307. Herdr workers receive
+that policy with local auto-start disabled and `BEADS_NODE_ID=kyber`. Kamino
+hosts run no local Beads server or federation jobs. Provisioning never replaces
+preserved stores; reconcile unpublished data into Kyber before changing routing.
 
-Confirm both `bd --readonly ping` and `bd --readonly ready --json` in each
-checkout, plus a successful `dolt-federation-sync.service` run. An active timer
-or a passing local read alone does not prove federation readiness.
+Confirm the effective endpoint with `bd context --json` and authoritative reads
+with `bd --readonly ready --json`. The existing fleet read monitor owns scheduled
+health checks. A passing local replica read does not prove authority access;
+unavailable or misrouted reads never mean an empty queue.
 
 ```sh
 hostname
@@ -158,8 +156,8 @@ shellspec spec/install_spec.sh spec/make_build_host_resolution_spec.sh spec/ssh_
 ```
 
 The evaluation checks cover root identity, common tools/configs, SSH aliases,
-upgrade targeting, Beads peer Dolt/federation-sync (local server + Kyber hub),
-and continued absence of Kyber-only Linear sync / backup publisher services. Linux CI builds the parent
+upgrade targeting, direct Beads authority routing, and absence of local SQL,
+federation, and Linear reconciliation services. Linux CI builds the parent
 and hundredth generated profile. Evaluation is not a successful Linux build;
 neither is live activation proof.
 

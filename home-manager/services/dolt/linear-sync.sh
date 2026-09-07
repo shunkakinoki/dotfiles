@@ -10,8 +10,6 @@ linear_team_id="@linearTeamId@"
 linear_credentials_file="${XDG_CONFIG_HOME:-$HOME/.config}/linear/credentials.toml"
 sync_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/beads-linear-sync"
 reconciliation_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/beads-reconciliation"
-federation_timeout_seconds=360
-federation_fsck_timeout=300s
 
 log() {
   local context=""
@@ -26,11 +24,32 @@ log() {
 # module never embeds checkout paths or secret dotenv values in the store.
 env_file="${DOTFILES_ENV_FILE:-$HOME/dotfiles/.env}"
 if [ -f "$env_file" ]; then
-  set -a
-  # shellcheck source=/dev/null
-  . "$env_file"
-  set +a
+  mapfile -d '' -t local_settings < <(
+    # shellcheck source=/dev/null
+    . "$env_file" >/dev/null
+    printf '%s\0' "${BEADS_LINEAR_SYNC_REPOS:-}" "${LINEAR_API_KEY:-}" "${LINEAR_TEAM_ID:-}"
+  )
+  if [ "${#local_settings[@]}" -ne 3 ]; then
+    log "Could not load local Linear settings"
+    exit 1
+  fi
+  export BEADS_LINEAR_SYNC_REPOS="${local_settings[0]}"
+  export LINEAR_API_KEY="${local_settings[1]}"
+  export LINEAR_TEAM_ID="${local_settings[2]}"
+  unset local_settings
 fi
+
+# Machine-local credentials must not override the managed database authority.
+unset BEADS_DOLT_DATA_DIR BEADS_FEDERATION_HUB BEADS_DIR BEADS_DB
+export BEADS_DOLT_SERVER_HOST="kyber.tail950b36.ts.net"
+export BEADS_DOLT_SERVER_PORT="3307"
+export BEADS_DOLT_SERVER_USER="root"
+export BEADS_DOLT_SERVER_MODE="1"
+export BEADS_DOLT_AUTO_START="0"
+export BEADS_NODE_ID="kyber"
+export BEADS_ACTOR="beads-linear-reconciler"
+export DOLT_CLI_USER="root"
+export DOLT_CLI_PASSWORD=""
 
 # An accepted issue completes through the same repository lock and credential
 # boundary as the periodic reconciler. The close reason is read from stdin so
@@ -267,7 +286,7 @@ run_dolt_sql() {
   local query="$1"
 
   "$dolt_cli" \
-    --host=127.0.0.1 \
+    --host="$BEADS_DOLT_SERVER_HOST" \
     --port="${BEADS_DOLT_SERVER_PORT:-3307}" \
     --user="${DOLT_CLI_USER:-root}" \
     --no-tls \
@@ -284,28 +303,6 @@ restore_linear_last_sync() {
   fi
 
   run_dolt_sql "USE \`$linear_database\`; REPLACE INTO local_metadata (\`key\`, value) VALUES ('linear.last_sync', '$linear_last_sync_before_pull');"
-}
-
-federate_beads() {
-  local phase="$1"
-  local status
-
-  set +e
-  # Keep the supervisor alive until timeout kills TERM-ignoring descendants.
-  @coreutils@/bin/timeout --kill-after=30s "$federation_timeout_seconds" \
-    @coreutils@/bin/env BEADS_FSCK_TIMEOUT="$federation_fsck_timeout" \
-    "$BASH" -c '
-      trap '\''while :; do @coreutils@/bin/sleep 1; done'\'' TERM
-      "$@" &
-      wait "$!"
-    ' _ "$bd_cli" -C "$repo_dir" sync --yes >/dev/null 2>&1
-  status=$?
-  set -e
-
-  if [ "$status" -ne 0 ]; then
-    log "Dolt $phase federation failed with status $status"
-    return "$status"
-  fi
 }
 
 if [ -z "${LINEAR_API_KEY:-}" ] && [ -f "$linear_credentials_file" ] && [ ! -L "$linear_credentials_file" ]; then
@@ -374,7 +371,6 @@ if [ "$operation" = "--complete" ]; then
     exit 64
   fi
 
-  federate_beads "pre-completion"
   completion_issue="$("$bd_cli" -C "$repo_dir" show "$completion_bead_id" --json)"
   completion_status="$(@jq@/bin/jq -r '.[0].status // empty' <<<"$completion_issue")"
   completion_assignee="$(@jq@/bin/jq -r '.[0].assignee // empty' <<<"$completion_issue")"
@@ -403,11 +399,10 @@ if [ "$operation" = "--complete" ]; then
     printf '%s\n' "$completion_reason" | "${close_command[@]}" >/dev/null
   fi
 
-  # Durably federate the terminal Bead before any Linear request. If the API
+  # Commit the terminal Bead on the authority before any Linear request. If the API
   # is unavailable, the periodic closed-first pass can retry without an
   # inbound pull ever reviving the issue.
   "$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): record accepted completion" >/dev/null 2>&1
-  federate_beads "accepted completion"
 
   if push_issue_batches "$completion_bead_id" "accepted"; then
     :
@@ -435,7 +430,6 @@ if [ "$operation" = "--complete" ]; then
   # The push may have created the Linear reference. Federate that address
   # before verification so a verifier outage cannot cause a later duplicate.
   "$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): persist Linear completion" >/dev/null 2>&1
-  federate_beads "post-completion push"
 
   linear_query="$(@jq@/bin/jq -nc --arg id "$linear_identifier" '{
     query: "query IssueState($id: String!) { issue(id: $id) { identifier state { type } } }",
@@ -478,9 +472,8 @@ if [ "$operation" != "--sync" ]; then
   exit 64
 fi
 
-# Kyber is the only Linear writer. Require federation first so Linear never
-# reconciles from a replica that could not ingest the shared Dolt state.
-federate_beads "pre-sync"
+# Kyber owns both the live Beads database and this Linear reconciliation.
+# SQL mutations are shared immediately; there is no database push/pull phase.
 
 linear_status="$("$bd_cli" -C "$repo_dir" linear status --json)"
 if [ -s "$sync_checkpoint_file" ]; then
@@ -570,7 +563,6 @@ if [ -n "$pending_completion_ids" ]; then
     "$bd_cli" -C "$repo_dir" update "${recovered_pending_id_array[@]}" \
       --unset-metadata linear_completion_pending >/dev/null
     "$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): persist recovered Linear completion" >/dev/null 2>&1
-    federate_beads "post-terminal push"
   fi
   if [ "$unresolved_pending_completion" -eq 1 ]; then
     exit 65
@@ -642,7 +634,6 @@ else
 fi
 
 "$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): sync Linear" >/dev/null 2>&1
-federate_beads "post-sync"
 
 printf '%s\n' "$cycle_started" >"$sync_checkpoint_file.tmp"
 @coreutils@/bin/mv -f "$sync_checkpoint_file.tmp" "$sync_checkpoint_file"
