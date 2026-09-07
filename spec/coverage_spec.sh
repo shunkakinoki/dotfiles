@@ -285,7 +285,6 @@ It 'has spec file for home-manager/services/dolt/start.sh'
 The path "spec/dolt_start_spec.sh" should be exist
 End
 
-
 It 'has spec file for home-manager/services/dolt/linear-sync.sh'
 The path "spec/beads_linear_sync_spec.sh" should be exist
 End
@@ -293,8 +292,6 @@ End
 It 'has spec file for home-manager/services/dolt/beads-linear-complete.sh'
 The path "spec/beads_linear_sync_spec.sh" should be exist
 End
-
-
 
 It 'has spec file for home-manager/services/dolt/client-environment.sh'
 The path "spec/beads_authority_spec.sh" should be exist

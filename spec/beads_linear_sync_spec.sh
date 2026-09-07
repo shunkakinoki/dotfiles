@@ -108,7 +108,6 @@ When run bash -c "! grep -F 'continuing with outbound Beads reconciliation' '$SC
 The status should be success
 End
 
-
 It 'bounds inbound pull and small outbound batches'
 When run bash -c "grep -F 'run_linear @coreutils@/bin/timeout 720 \"\$bd_cli\"' '$SCRIPT' >/dev/null && grep -F 'local batch_size=10' '$SCRIPT' >/dev/null && grep -F 'run_linear @coreutils@/bin/timeout 120 \"\$bd_cli\"' '$SCRIPT' >/dev/null"
 The status should be success
@@ -128,7 +127,6 @@ It 'clears push progress only after the cycle checkpoint is durable'
 When run bash -c "checkpoint=\$(grep -n '\"\$cycle_started\" >\"\$sync_checkpoint_file.tmp\"' '$SCRIPT' | cut -d: -f1); clear=\$(grep -n 'rm -f \"\$push_progress_file\"' '$SCRIPT' | cut -d: -f1); test \"\$clear\" -gt \"\$checkpoint\""
 The status should be success
 End
-
 
 End
 
@@ -642,9 +640,6 @@ The output should include 'Linear push failed with status 24'
 The contents of file "$COMMAND_LOG" should not include 'linear sync --pull'
 The contents of file "$CHECKPOINT_FILE" should equal '2026-01-01T00:00:00Z'
 End
-
-
-
 
 It 'fails closed when the repository list is absent'
 When run env -u BEADS_LINEAR_SYNC_REPOS DOTFILES_ENV_FILE="$TEST_ROOT/missing" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
