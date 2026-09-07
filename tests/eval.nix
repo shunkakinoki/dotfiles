@@ -49,9 +49,16 @@ let
           username = "shunkakinoki";
         };
         activation = galactica.config.system.activationScripts.tailscaleDns.text;
+        beads = galactica.config.home-manager.users.shunkakinoki;
       in
       assert !galactica.config.home-manager.users.shunkakinoki.nix.enable;
       assert !galactica.config.home-manager.users.shunkakinoki.nix.gc.automatic;
+      assert beads.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "kyber.tail950b36.ts.net";
+      assert beads.home.sessionVariables.BEADS_NODE_ID == "kyber";
+      assert !(beads.home.sessionVariables ? BEADS_DOLT_DATA_DIR);
+      assert !(beads.launchd.agents ? dolt);
+      assert !(beads.launchd.agents ? dolt-backup-main);
+      assert beads.launchd.agents.beads-dolt-client-environment.enable;
       assert lib.elem "openclaw/tap/crabbox" (map (brew: brew.name) galactica.config.homebrew.brews);
       assert !(lib.elem "crabbox" (map (brew: brew.name) galactica.config.homebrew.brews));
       assert !(lib.elem "crabbox" (map (cask: cask.name) galactica.config.homebrew.casks));
@@ -95,8 +102,7 @@ let
           username = "shunkakinoki";
         };
         cfg = matic.config;
-        federationEnvironment =
-          cfg.home-manager.users.shunkakinoki.systemd.user.services.dolt-federation-sync.Service.Environment;
+        beads = cfg.home-manager.users.shunkakinoki;
       in
       assert
         cfg.services.tailscale.extraSetFlags == [
@@ -107,7 +113,10 @@ let
           "--ssh"
         ];
       assert lib.hasInfix "tailscale set" cfg.system.activationScripts.tailscalePreferences.text;
-      assert lib.elem "BEADS_FEDERATION_HUB=http://kyber.tail950b36.ts.net:3308" federationEnvironment;
+      assert beads.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "kyber.tail950b36.ts.net";
+      assert beads.home.sessionVariables.BEADS_NODE_ID == "kyber";
+      assert !(beads.systemd.user.services ? dolt);
+      assert !(beads.systemd.user.services ? dolt-federation-sync);
       mkEvalCheck "nixos-matic" cfg.system.build.toplevel;
 
     eval-nixos-viper =
@@ -213,18 +222,18 @@ let
           cfg.systemd.user.services.herdr-server.Service.Environment;
         assert lib.elem "BEADS_DOLT_SERVER_MODE=1"
           cfg.systemd.user.services.herdr-server.Service.Environment;
-        assert lib.elem "dolt.service" cfg.systemd.user.services.herdr-server.Unit.After;
-        assert lib.elem "BEADS_DOLT_DATA_DIR=/root/.beads/shared-server/dolt"
+        assert lib.elem "BEADS_DOLT_SERVER_HOST=kyber.tail950b36.ts.net"
           cfg.systemd.user.services.herdr-server.Service.Environment;
-        assert cfg.systemd.user.services ? dolt;
-        assert cfg.systemd.user.services ? dolt-federation-sync;
-        assert cfg.systemd.user.timers ? dolt-federation-sync;
+        assert lib.elem "BEADS_NODE_ID=kyber" cfg.systemd.user.services.herdr-server.Service.Environment;
+        assert !(cfg.home.sessionVariables ? BEADS_DOLT_DATA_DIR);
+        assert !(cfg.systemd.user.services ? dolt);
+        assert !(cfg.systemd.user.services ? dolt-federation-sync);
+        assert !(cfg.systemd.user.timers ? dolt-federation-sync);
         assert !(cfg.systemd.user.services ? dolt-linear-sync);
         assert !(cfg.systemd.user.services ? dolt-backup-main);
         assert !(cfg.systemd.user.services ? dolt-federation-hub);
         assert !(cfg.systemd.user.services ? dolt-federation-access);
-        assert lib.elem "BEADS_FEDERATION_HUB=http://kyber.tail950b36.ts.net:3308"
-          cfg.systemd.user.services.dolt-federation-sync.Service.Environment;
+        assert cfg.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "kyber.tail950b36.ts.net";
         mkEvalCheck "home-kamino" kamino.activationPackage;
       eval-home-kamino100 =
         let
@@ -264,8 +273,8 @@ let
         assert lib.hasInfix "--hostname=kamino100" cfg.home.activation.configureKaminoTailscale.data;
         assert lib.hasInfix "--accept-dns=true" cfg.home.activation.configureKaminoTailscale.data;
         assert lib.hasInfix "--ssh=false" cfg.home.activation.configureKaminoTailscale.data;
-        assert cfg.systemd.user.services ? dolt;
-        assert cfg.systemd.user.services ? dolt-federation-sync;
+        assert !(cfg.systemd.user.services ? dolt);
+        assert !(cfg.systemd.user.services ? dolt-federation-sync);
         assert !(cfg.systemd.user.services ? dolt-linear-sync);
         assert !(cfg.systemd.user.services ? dolt-backup-main);
         mkEvalCheck "home-kamino100" kamino.activationPackage;
@@ -291,7 +300,7 @@ let
             username = "ubuntu";
             system = "x86_64-linux";
           };
-          federationEnvironment = kyber.config.systemd.user.services.dolt-federation-sync.Service.Environment;
+          cfg = kyber.config;
         in
         assert
           kyber.config.modules.tailscale.extraUpArgs == [
@@ -300,7 +309,15 @@ let
             "--accept-dns=true"
             "--advertise-exit-node"
           ];
-        assert lib.elem "BEADS_FEDERATION_HUB=http://127.0.0.1:3308" federationEnvironment;
+        assert cfg.systemd.user.services ? dolt;
+        assert cfg.systemd.user.services ? dolt-linear-sync;
+        assert !(cfg.systemd.user.services ? dolt-federation-sync);
+        assert !(cfg.systemd.user.services ? dolt-federation-hub);
+        assert !(cfg.systemd.user.services ? dolt-federation-access);
+        assert !(cfg.systemd.user.services ? dolt-backup-main);
+        assert cfg.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "127.0.0.1";
+        assert cfg.home.sessionVariables.BEADS_NODE_ID == "kyber";
+        assert cfg.home.sessionVariables.BEADS_DOLT_DATA_DIR == "/home/ubuntu/.beads/shared-server/dolt";
         mkEvalCheck "home-kyber" kyber.activationPackage;
     };
 in

@@ -6,70 +6,37 @@
   ...
 }:
 let
-  inherit (inputs.host)
-    isGalactica
-    isKyber
-    isMatic
-    isKamino
-    ;
+  inherit (inputs.host) isKyber isKamino;
   homeDir = config.home.homeDirectory;
   repoDir = "${homeDir}/dotfiles";
-  legacyBeadsDir = "${repoDir}/.beads";
-  sharedServerDir = "${homeDir}/.beads/shared-server";
-  beadsDir = "${sharedServerDir}/dolt";
-  federationDir = "${homeDir}/.beads/federation-server/dolt";
-  doltManifest = "${beadsDir}/beads_global/.dolt/noms/manifest";
-  mirrorDir = "${homeDir}/.cache/beads-jsonl-mirror";
-  remoteUrl = "https://github.com/shunkakinoki/beads";
-  userEmail = "shunkakinoki@gmail.com";
+  beadsDir = "${homeDir}/.beads/shared-server/dolt";
   linearWorkspace = "shunkakinoki";
   linearTeamId = "679ab4ed-3df3-458d-8574-4962f3ebbf31";
-  linearSyncIntervalSeconds = 900;
-  federationSyncIntervalSeconds = 300;
   linearSyncPath = "${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:/etc/profiles/per-user/${config.home.username}/bin:/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin";
-  clientEnabled = isGalactica || isKyber || isMatic || isKamino;
-  # bd opens its store with dozens of sequential round trips per invocation, so
-  # a direct client of Kyber's Chicago server costs seconds per command on the
-  # ~260ms agent hosts and the Kamino Herdr fleet. Every host serves its own
-  # Dolt and converges through the shared remote instead.
-  serverEnabled = clientEnabled;
-  # Kyber alone publishes the shared history to the configured remotes.
-  publisherEnabled = isKyber;
-  # Incoming remotesapi pushes replace the receiver's working root, including
-  # ignored tables. Keep that receiver separate from the live Beads database:
-  # every host (including the hub) pulls committed history from this mirror.
-  federationHubEnabled = publisherEnabled;
-  federationRemotesApiPort = 3308;
-  doltServerHost = "127.0.0.1";
-  # Kyber reaches its own remotesapi over loopback so self-federation does not
-  # depend on MagicDNS. Spokes still reach Kyber through its tailnet address.
-  federationHubHost = if federationHubEnabled then doltServerHost else "kyber.tail950b36.ts.net";
-  federationHubUrl = "http://${federationHubHost}:${toString federationRemotesApiPort}";
+  # One live store owns reads, writes, and leases. Spokes never create a local
+  # server or merge another writable copy into the authority.
+  doltServerHost = if isKyber then "127.0.0.1" else "kyber.tail950b36.ts.net";
   beadsClientEnvironment = {
     BEADS_DOLT_AUTO_START = "0";
-    BEADS_DOLT_DATA_DIR = beadsDir;
     BEADS_DOLT_SERVER_MODE = "1";
     BEADS_DOLT_SERVER_HOST = doltServerHost;
     BEADS_DOLT_SERVER_PORT = "3307";
     BEADS_DOLT_SERVER_USER = "root";
+    BEADS_NODE_ID = "kyber";
     DOLT_CLI_USER = "root";
     DOLT_CLI_PASSWORD = "";
+  }
+  // lib.optionalAttrs isKyber {
+    BEADS_DOLT_DATA_DIR = beadsDir;
   };
   beadsLaunchctlEnvironmentScript = pkgs.replaceVars ./client-environment.sh {
-    inherit doltServerHost beadsDir;
+    inherit doltServerHost;
   };
   linearSyncEnabled = isKyber;
-  federationSyncEnabled = clientEnabled;
-  # 2.2.2 fixes gitblobstore pending-write pruning that could publish a
-  # manifest whose live archive later failed with "Blob not found".
   doltMinVersion = "2.2.2";
   startScript = pkgs.replaceVars ./start.sh {
-    inherit beadsDir legacyBeadsDir;
+    inherit beadsDir;
     inherit (pkgs) dolt;
-  };
-  backupScript = pkgs.replaceVars ./backup-dolt-main.sh {
-    inherit mirrorDir remoteUrl userEmail;
-    inherit (pkgs) git;
   };
   linearSyncScript = pkgs.replaceVars ./linear-sync.sh {
     bd = "${homeDir}/.local/bin/bd";
@@ -88,42 +55,13 @@ let
     inherit (pkgs) bash;
     inherit linearSyncScript;
   };
-  ensureDatabaseScript = pkgs.replaceVars ./ensure-database.sh {
-    inherit (pkgs) dolt jq;
-  };
-  federationSyncScript = pkgs.replaceVars ./federation-sync.sh {
-    bd = "${homeDir}/.local/bin/bd";
-    inherit ensureDatabaseScript;
-    inherit (pkgs) coreutils jq lsof;
-    utilLinux = pkgs.util-linux;
-  };
-  federationAccessScript = pkgs.replaceVars ./federation-access.sh {
-    inherit (pkgs)
-      coreutils
-      dolt
-      jq
-      tailscale
-      ;
-  };
-  federationSyncEnvironment = {
-    HOME = homeDir;
-    PATH = linearSyncPath;
-    BEADS_DOLT_AUTO_START = "0";
-    BEADS_DOLT_DATA_DIR = beadsDir;
-    BEADS_DOLT_SERVER_MODE = "1";
-    BEADS_DOLT_SERVER_HOST = doltServerHost;
-    BEADS_DOLT_SERVER_PORT = "3307";
-    BEADS_DOLT_SERVER_USER = "root";
-    DOLT_CLI_USER = "root";
-    DOLT_CLI_PASSWORD = "";
-    BEADS_FEDERATION_HUB = federationHubUrl;
-  };
+
 in
-lib.mkIf clientEnabled {
+{
   assertions = [
     {
       assertion = lib.versionAtLeast pkgs.dolt.version doltMinVersion;
-      message = "pkgs.dolt is ${pkgs.dolt.version}; needs >= ${doltMinVersion} for git+https push (beads_global GitHub backup). Update the dedicated nixpkgs-dolt pin.";
+      message = "pkgs.dolt is ${pkgs.dolt.version}; needs >= ${doltMinVersion} for the managed Beads SQL server. Update the dedicated nixpkgs-dolt pin.";
     }
   ];
 
@@ -150,94 +88,9 @@ lib.mkIf clientEnabled {
     executable = true;
   };
 
-  launchd.agents.dolt = lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin && serverEnabled) {
-    enable = true;
-    config = {
-      ProgramArguments = [
-        "${pkgs.bash}/bin/bash"
-        "${startScript}"
-      ];
-      KeepAlive = true;
-      RunAtLoad = true;
-      WorkingDirectory = repoDir;
-      StandardOutPath = "/tmp/dolt.log";
-      StandardErrorPath = "/tmp/dolt.error.log";
-    };
-  };
-
-  # Mirror the live beads_global DB to refs/heads/main as JSONL so the data
-  # is visible in the GitHub UI (Dolt's native push only writes refs/dolt/data).
-  # Triggered by manifest changes inside dolt's noms store; throttled to avoid
-  # hammering on rapid writes.
-  launchd.agents.dolt-backup-main = lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin && publisherEnabled) {
-    enable = true;
-    config = {
-      ProgramArguments = [
-        "${pkgs.bash}/bin/bash"
-        "${backupScript}"
-      ];
-      WatchPaths = [ doltManifest ];
-      ThrottleInterval = 60;
-      RunAtLoad = false;
-      KeepAlive = false;
-      WorkingDirectory = repoDir;
-      StandardOutPath = "/tmp/dolt-backup-main.log";
-      StandardErrorPath = "/tmp/dolt-backup-main.error.log";
-    };
-  };
-
-  launchd.agents.dolt-linear-sync =
-    lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin && linearSyncEnabled)
-      {
-        enable = true;
-        config = {
-          ProgramArguments = [
-            "${pkgs.bash}/bin/bash"
-            "${linearSyncScript}"
-          ];
-          StartInterval = linearSyncIntervalSeconds;
-          ThrottleInterval = linearSyncIntervalSeconds;
-          RunAtLoad = true;
-          WorkingDirectory = homeDir;
-          EnvironmentVariables = {
-            HOME = homeDir;
-            PATH = linearSyncPath;
-            BEADS_DOLT_AUTO_START = "0";
-            BEADS_DOLT_SERVER_MODE = "1";
-            BEADS_DOLT_SERVER_HOST = doltServerHost;
-            BEADS_DOLT_SERVER_PORT = "3307";
-            BEADS_DOLT_SERVER_USER = "root";
-            DOLT_CLI_USER = "root";
-            DOLT_CLI_PASSWORD = "";
-            LINEAR_TEAM_ID = linearTeamId;
-          };
-          StandardOutPath = "/tmp/dolt-linear-sync.log";
-          StandardErrorPath = "/tmp/dolt-linear-sync.error.log";
-        };
-      };
-
-  launchd.agents.dolt-federation-sync =
-    lib.mkIf (pkgs.stdenv.hostPlatform.isDarwin && federationSyncEnabled)
-      {
-        enable = true;
-        config = {
-          ProgramArguments = [
-            "${pkgs.bash}/bin/bash"
-            "${federationSyncScript}"
-          ];
-          StartInterval = federationSyncIntervalSeconds;
-          ThrottleInterval = federationSyncIntervalSeconds;
-          RunAtLoad = true;
-          WorkingDirectory = homeDir;
-          EnvironmentVariables = federationSyncEnvironment;
-          StandardOutPath = "/tmp/dolt-federation-sync.log";
-          StandardErrorPath = "/tmp/dolt-federation-sync.error.log";
-        };
-      };
-
-  systemd.user.services.dolt = lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && serverEnabled) {
+  systemd.user.services.dolt = lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && isKyber) {
     Unit = {
-      Description = "Dolt SQL server for dotfiles beads";
+      Description = "Authoritative Beads SQL server";
       After = [ "network.target" ];
     };
     Service = {
@@ -247,7 +100,7 @@ lib.mkIf clientEnabled {
       RestartSec = 5;
       WorkingDirectory = repoDir;
       # Kyber's WAN firewall drops all new public-interface ingress. Binding
-      # all addresses makes the SQL and remotesapi services reachable on
+      # all addresses makes the SQL service reachable on
       # tailscale0 while retaining the public-ingress deny boundary.
       Environment = [
         "BEADS_DOLT_LISTEN_HOST=0.0.0.0"
@@ -267,63 +120,6 @@ lib.mkIf clientEnabled {
     };
   };
 
-  systemd.user.services.dolt-federation-hub =
-    lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && federationHubEnabled)
-      {
-        Unit = {
-          Description = "Dolt committed-history federation mirror";
-          After = [
-            "network.target"
-            "dolt.service"
-          ];
-        };
-        Service = {
-          Type = "simple";
-          ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${federationDir}";
-          ExecStart = "${pkgs.dolt}/bin/dolt sql-server -H 0.0.0.0 -P 3309 --data-dir ${federationDir} --remotesapi-port ${toString federationRemotesApiPort}";
-          WorkingDirectory = repoDir;
-          Restart = "always";
-          RestartSec = 5;
-          Environment = [
-            "DOLT_CLI_USER=root"
-            "DOLT_CLI_PASSWORD="
-          ];
-          IOAccounting = true;
-          IOWriteBandwidthMax = "/ 20M";
-        };
-        Install.WantedBy = [ "default.target" ];
-      };
-
-  # Provision the mirror's independent privilege store without coupling server
-  # availability to peer discovery. This only adds the approved client grants;
-  # client removal/address rotation requires an explicit account revocation.
-  systemd.user.services.dolt-federation-access =
-    lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && federationHubEnabled)
-      {
-        Unit = {
-          Description = "Provision approved Dolt federation clients";
-          After = [ "dolt-federation-hub.service" ];
-          Requires = [ "dolt-federation-hub.service" ];
-        };
-        Service = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.bash}/bin/bash ${federationAccessScript} --apply";
-          TimeoutStartSec = 600;
-        };
-        Install.WantedBy = [ "default.target" ];
-      };
-
-  systemd.user.timers.dolt-federation-access =
-    lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && federationHubEnabled)
-      {
-        Unit.Description = "Reconcile approved Dolt federation client access";
-        Timer = {
-          OnBootSec = "2min";
-          OnUnitActiveSec = "5min";
-        };
-        Install.WantedBy = [ "timers.target" ];
-      };
-
   # Persist the same client selection in the user manager so Herdr, OpenClaw,
   # and other systemd-launched agents do not inherit a stale shared-server mode.
   systemd.user.sessionVariables = lib.mkIf pkgs.stdenv.hostPlatform.isLinux beadsClientEnvironment;
@@ -331,37 +127,8 @@ lib.mkIf clientEnabled {
   # Herdr launches workers without a login shell. Give its child processes the
   # managed server policy directly so they cannot start a competing Dolt server.
   systemd.user.services.herdr-server = lib.mkIf isKamino {
-    Unit.After = [ "dolt.service" ];
     Service.Environment = lib.mapAttrsToList (name: value: "${name}=${value}") beadsClientEnvironment;
   };
-
-  systemd.user.services.dolt-backup-main =
-    lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && publisherEnabled)
-      {
-        Unit = {
-          Description = "Push beads_global JSONL snapshot to GitHub main";
-        };
-        Service = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.bash}/bin/bash ${backupScript}";
-          WorkingDirectory = repoDir;
-        };
-      };
-
-  systemd.user.paths.dolt-backup-main =
-    lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && publisherEnabled)
-      {
-        Unit = {
-          Description = "Watch dolt manifest and trigger JSONL backup";
-        };
-        Path = {
-          PathChanged = doltManifest;
-          Unit = "dolt-backup-main.service";
-        };
-        Install = {
-          WantedBy = [ "default.target" ];
-        };
-      };
 
   systemd.user.services.dolt-linear-sync =
     lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && linearSyncEnabled)
@@ -371,30 +138,24 @@ lib.mkIf clientEnabled {
           X-SwitchMethod = "restart";
           After = [
             "dolt.service"
-            "dolt-federation-hub.service"
             "network-online.target"
           ];
           Wants = [
             "dolt.service"
-            "dolt-federation-hub.service"
             "network-online.target"
           ];
         };
         Service = {
           Type = "oneshot";
           ExecStart = "${pkgs.bash}/bin/bash ${linearSyncScript}";
-          Environment = [
-            "HOME=${homeDir}"
-            "PATH=${linearSyncPath}"
-            "BEADS_DOLT_AUTO_START=0"
-            "BEADS_DOLT_SERVER_MODE=1"
-            "BEADS_DOLT_SERVER_HOST=${doltServerHost}"
-            "BEADS_DOLT_SERVER_PORT=3307"
-            "BEADS_DOLT_SERVER_USER=root"
-            "DOLT_CLI_USER=root"
-            "DOLT_CLI_PASSWORD="
-            "LINEAR_TEAM_ID=${linearTeamId}"
-          ];
+          Environment = lib.mapAttrsToList (name: value: "${name}=${value}") (
+            beadsClientEnvironment
+            // {
+              HOME = homeDir;
+              PATH = linearSyncPath;
+              LINEAR_TEAM_ID = linearTeamId;
+            }
+          );
         };
       };
 
@@ -411,41 +172,4 @@ lib.mkIf clientEnabled {
         Install.WantedBy = [ "timers.target" ];
       };
 
-  systemd.user.services.dolt-federation-sync =
-    lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && federationSyncEnabled)
-      {
-        Unit = {
-          Description = "Synchronize Beads with the Dolt remote";
-          X-SwitchMethod = "restart";
-          After = [
-            "dolt.service"
-            "network-online.target"
-          ]
-          ++ lib.optional federationHubEnabled "dolt-federation-hub.service";
-          Wants = [
-            "dolt.service"
-            "network-online.target"
-          ]
-          ++ lib.optional federationHubEnabled "dolt-federation-hub.service";
-        };
-        Service = {
-          Type = "oneshot";
-          KillMode = "control-group";
-          ExecStart = "${pkgs.bash}/bin/bash ${federationSyncScript}";
-          Environment = lib.mapAttrsToList (name: value: "${name}=${value}") federationSyncEnvironment;
-        };
-      };
-
-  systemd.user.timers.dolt-federation-sync =
-    lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && federationSyncEnabled)
-      {
-        Unit.Description = "Periodically synchronize Beads with the Dolt remote";
-        Timer = {
-          OnBootSec = "2min";
-          OnCalendar = "*-*-* *:00/5:00";
-          Persistent = true;
-          Unit = "dolt-federation-sync.service";
-        };
-        Install.WantedBy = [ "timers.target" ];
-      };
 }

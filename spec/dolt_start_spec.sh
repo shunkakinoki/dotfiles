@@ -1,239 +1,32 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2016,SC2329
-
-Describe 'home-manager/services/dolt/start.sh'
-SCRIPT="$PWD/home-manager/services/dolt/start.sh"
-
-Describe 'script properties'
-It 'uses bash shebang'
-When run bash -c "head -1 '$SCRIPT'"
-The output should include '#!/usr/bin/env bash'
-End
-
-It 'uses strict mode'
-When run bash -c "grep 'set -euo pipefail' '$SCRIPT'"
-The output should include 'set -euo pipefail'
-End
-
-It 'passes bash syntax check after stripping placeholders'
-When run bash -c "sed 's|@[A-Za-z_][A-Za-z0-9_]*@|/usr|g' '$SCRIPT' | bash -n"
-The status should be success
-End
-End
-
-Describe 'placeholder substitutions'
-It 'references @beadsDir@'
-When run bash -c "grep '@beadsDir@' '$SCRIPT'"
-The output should include '@beadsDir@'
-End
-
-It 'references @legacyBeadsDir@'
-When run bash -c "grep '@legacyBeadsDir@' '$SCRIPT'"
-The output should include '@legacyBeadsDir@'
-End
-
-It 'references @dolt@'
-When run bash -c "grep '@dolt@' '$SCRIPT'"
-The output should include '@dolt@'
-End
-End
-
-Describe 'dolt migration behavior'
-setup_migration() {
-  TEST_ROOT=$(mktemp -d)
-  LEGACY_DIR="$TEST_ROOT/legacy"
-  SHARED_DIR="$TEST_ROOT/shared/dolt"
-  FAKE_DOLT="$TEST_ROOT/fake-dolt"
-  RENDERED_SCRIPT="$TEST_ROOT/start.sh"
-  mkdir -p "$LEGACY_DIR" "$SHARED_DIR" "$FAKE_DOLT/bin"
-  printf '%s\n' '#!/usr/bin/env bash' 'exit 0' >"$FAKE_DOLT/bin/dolt"
-  chmod +x "$FAKE_DOLT/bin/dolt"
-  sed \
-    -e "s|@legacyBeadsDir@|$LEGACY_DIR|g" \
-    -e "s|@beadsDir@|$SHARED_DIR|g" \
-    -e "s|@dolt@|$FAKE_DOLT|g" \
-    "$SCRIPT" >"$RENDERED_SCRIPT"
-}
-
-cleanup_migration() {
-  rm -rf "$TEST_ROOT"
-}
-
-Before 'setup_migration'
-After 'cleanup_migration'
-
-It 'moves a legacy database into the shared-server root'
-mkdir -p "$LEGACY_DIR/beads/.dolt"
-When run bash "$RENDERED_SCRIPT"
-The status should be success
-The path "$SHARED_DIR/beads/.dolt" should be directory
-The path "$LEGACY_DIR/beads" should not be exist
-End
-
-It 'does not overwrite an existing shared-server database'
-mkdir -p "$LEGACY_DIR/df/.dolt" "$SHARED_DIR/df/.dolt"
-touch "$LEGACY_DIR/df/.dolt/legacy-marker"
-When run bash "$RENDERED_SCRIPT"
-The status should be success
-The path "$LEGACY_DIR/df/.dolt/legacy-marker" should be file
-The path "$SHARED_DIR/df/.dolt" should be directory
-End
-
-It 'maps the old dolt database name to df during legacy-root migration'
-mkdir -p "$LEGACY_DIR/dolt/.dolt"
-When run bash "$RENDERED_SCRIPT"
-The status should be success
-The path "$SHARED_DIR/df/.dolt" should be directory
-The path "$SHARED_DIR/dolt" should not be exist
-End
-
-It 'does not rename a legitimate dolt database in the shared-server root'
-mkdir -p "$SHARED_DIR/dolt/.dolt"
-When run bash "$RENDERED_SCRIPT"
-The status should be success
-The path "$SHARED_DIR/dolt/.dolt" should be directory
-The path "$SHARED_DIR/df" should not be exist
-End
-
-It 'atomically adopts a staged df database and retains the old one'
-mkdir -p "$SHARED_DIR/df/.dolt" "$SHARED_DIR-incoming/df/.dolt"
-touch "$SHARED_DIR/df/.dolt/old-marker"
-touch "$SHARED_DIR-incoming/df/.dolt/new-marker"
-When run bash "$RENDERED_SCRIPT"
-The status should be success
-The path "$SHARED_DIR/df/.dolt/new-marker" should be file
-The path "$SHARED_DIR-retired/df/.dolt/old-marker" should be file
-The path "$SHARED_DIR-incoming/df" should not be exist
-End
-
-It 'refuses to overwrite a retained df database during cutover'
-mkdir -p "$SHARED_DIR/df/.dolt" "$SHARED_DIR-incoming/df/.dolt" "$SHARED_DIR-retired/df/.dolt"
-When run bash "$RENDERED_SCRIPT"
-The status should be failure
-The stderr should include 'Refusing Dolt cutover'
-The path "$SHARED_DIR-incoming/df/.dolt" should be directory
-End
-End
-
-Describe 'sql-server invocation'
-It 'defaults the listen host to localhost'
-When run grep -F 'BEADS_DOLT_LISTEN_HOST:-127.0.0.1' "$SCRIPT"
-The output should include 'BEADS_DOLT_LISTEN_HOST:-127.0.0.1'
-End
-
-It 'passes the selected listen host to Dolt'
-When run grep -F -- '-H "$listen_host"' "$SCRIPT"
-The output should include '-H "$listen_host"'
-End
-
-It 'listens on port 3307'
-When run bash -c "grep -- '-P 3307' '$SCRIPT'"
-The output should include '-P 3307'
-End
-
-It 'points --data-dir at the beads directory'
-When run bash -c "grep -- '--data-dir' '$SCRIPT'"
-The output should include '--data-dir'
-End
-
-It 'does not expose the live server as a remotes API receiver'
-When run bash -c "! grep -Eq -- 'BEADS_DOLT_REMOTESAPI_PORT|--remotesapi-port' '$SCRIPT'"
-The status should be success
-End
-End
-
-End
-
-Describe 'home-manager/services/dolt/default.nix'
-MODULE="$PWD/home-manager/services/dolt/default.nix"
-
-It 'uses the canonical Beads shared-server directory'
-When run grep -F 'sharedServerDir = "${homeDir}/.beads/shared-server";' "$MODULE"
-The output should include 'sharedServerDir = "${homeDir}/.beads/shared-server";'
-End
-
-It 'serves databases from the shared-server dolt directory'
-When run grep -F 'beadsDir = "${sharedServerDir}/dolt";' "$MODULE"
-The output should include 'beadsDir = "${sharedServerDir}/dolt";'
-End
-
-It 'routes every client to its own local server'
-When run bash -c "grep -F 'doltServerHost = \"127.0.0.1\";' '$MODULE' >/dev/null && grep -F 'BEADS_DOLT_SERVER_HOST = doltServerHost;' '$MODULE' >/dev/null && grep -F 'BEADS_DOLT_SERVER_USER = \"root\";' '$MODULE' >/dev/null"
-The status should be success
-End
-
-It 'binds the systemd dolt service to all interfaces for tailnet peers'
-When run grep -F 'BEADS_DOLT_LISTEN_HOST=0.0.0.0' "$MODULE"
-The output should include 'BEADS_DOLT_LISTEN_HOST=0.0.0.0'
-End
-
-It 'provides DOLT_CLI_USER=root in the systemd dolt service environment'
-When run grep -F '"DOLT_CLI_USER=root"' "$MODULE"
-The output should include '"DOLT_CLI_USER=root"'
-End
-
-It 'provides an explicit empty DOLT_CLI_PASSWORD in the systemd dolt service environment'
-When run grep -F '"DOLT_CLI_PASSWORD="' "$MODULE"
-The output should include '"DOLT_CLI_PASSWORD="'
-End
-
-It 'does not configure the live service with a remotes API port'
-When run bash -c "! sed -n '/^  systemd.user.services.dolt =/,/^  systemd.user.services.dolt-federation-hub =/p' '$MODULE' | grep -F 'BEADS_DOLT_REMOTESAPI_PORT='"
-The status should be success
-End
-
-It 'keeps the federation mirror in a separate data directory'
-When run grep -F 'federationDir = "${homeDir}/.beads/federation-server/dolt";' "$MODULE"
-The output should include 'federationDir = "${homeDir}/.beads/federation-server/dolt";'
-End
-
-It 'enables the federation mirror only for the Kyber publisher'
-When run bash -c "grep -F 'publisherEnabled = isKyber;' '$MODULE' >/dev/null && grep -F 'federationHubEnabled = publisherEnabled;' '$MODULE' >/dev/null && grep -F 'systemd.user.services.dolt-federation-hub =' '$MODULE' >/dev/null"
-The status should be success
-End
-
-It 'creates the federation data directory before starting the mirror'
-When run grep -F 'ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${federationDir}";' "$MODULE"
-The output should include 'ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${federationDir}";'
-End
-
-It 'runs the federation mirror on dedicated SQL and remotes API ports'
-When run grep -F 'ExecStart = "${pkgs.dolt}/bin/dolt sql-server -H 0.0.0.0 -P 3309 --data-dir ${federationDir} --remotesapi-port ${toString federationRemotesApiPort}";' "$MODULE"
-The output should include 'ExecStart = "${pkgs.dolt}/bin/dolt sql-server -H 0.0.0.0 -P 3309 --data-dir ${federationDir} --remotesapi-port ${toString federationRemotesApiPort}";'
-End
-
-It 'uses remotes API port 3308 for federation clients'
-When run grep -F 'federationRemotesApiPort = 3308;' "$MODULE"
-The output should include 'federationRemotesApiPort = 3308;'
-End
-
-It 'keeps the federation hub URL on the remotes API port'
-When run grep -F 'federationHubUrl = "http://${federationHubHost}:${toString federationRemotesApiPort}";' "$MODULE"
-The output should include 'federationHubUrl = "http://${federationHubHost}:${toString federationRemotesApiPort}";'
-End
-
-It 'uses the repository as the federation mirror working directory'
-When run bash -c "sed -n '/^  systemd.user.services.dolt-federation-hub =/,/^  systemd.user.services.dolt-backup-main =/p' '$MODULE' | grep -F 'WorkingDirectory = repoDir;'"
-The output should include 'WorkingDirectory = repoDir;'
-End
-
-It 'starts the federation mirror after the network and live Dolt services'
-When run bash -c "sed -n '/^  systemd.user.services.dolt-federation-hub =/,/^  systemd.user.services.dolt-backup-main =/p' '$MODULE' | grep -F '\"network.target\"' >/dev/null && sed -n '/^  systemd.user.services.dolt-federation-hub =/,/^  systemd.user.services.dolt-backup-main =/p' '$MODULE' | grep -F '\"dolt.service\"' >/dev/null"
-The status should be success
-End
-
-It 'limits federation mirror I/O writes to 20M'
-When run bash -c "sed -n '/^  systemd.user.services.dolt-federation-hub =/,/^  systemd.user.services.dolt-backup-main =/p' '$MODULE' | grep -F 'IOWriteBandwidthMax = \"/ 20M\";'"
-The output should include 'IOWriteBandwidthMax = "/ 20M";'
-End
-
-It 'orders and wants the federation mirror before linear sync'
-When run bash -c "sed -n '/^  systemd.user.services.dolt-linear-sync =/,/^  systemd.user.timers.dolt-linear-sync =/p' '$MODULE' | awk '/\"dolt-federation-hub.service\"/ { count++ } END { exit count == 2 ? 0 : 1 }'"
-The status should be success
-End
-
-It 'orders and wants the federation mirror before federation sync'
-When run bash -c "sed -n '/^  systemd.user.services.dolt-federation-sync =/,/^  systemd.user.timers.dolt-federation-sync =/p' '$MODULE' | awk '/\"dolt-federation-hub.service\"/ { count++ } END { exit count == 2 ? 0 : 1 }'"
-The status should be success
-End
+# shellcheck disable=SC2329
+Describe 'authoritative Dolt startup'
+  setup() {
+    TEST_ROOT=$(mktemp -d)
+    mkdir -p "$TEST_ROOT/fake/bin"
+    printf '%s\n' '#!/usr/bin/env bash' 'printf "%s\n" "$@"' >"$TEST_ROOT/fake/bin/dolt"
+    chmod +x "$TEST_ROOT/fake/bin/dolt"
+    sed -e "s|@beadsDir@|$TEST_ROOT/data|g" -e "s|@dolt@|$TEST_ROOT/fake|g" home-manager/services/dolt/start.sh >"$TEST_ROOT/start.sh"
+  }
+  cleanup() { rm -rf "$TEST_ROOT"; }
+  Before setup
+  After cleanup
+  It 'refuses to start an empty authority'
+    When run bash "$TEST_ROOT/start.sh"
+    The status should be failure
+    The stderr should include 'data directory is missing'
+    The path "$TEST_ROOT/data" should not be exist
+  End
+  It 'serves existing data without adopting preserved replicas'
+    mkdir -p "$TEST_ROOT/data/df/.dolt" "$TEST_ROOT/data-incoming/df/.dolt"
+    touch "$TEST_ROOT/data-incoming/df/.dolt/witness"
+    When run bash "$TEST_ROOT/start.sh"
+    The status should be success
+    The output should include 'sql-server'
+    The output should include '3307'
+    The output should include "$TEST_ROOT/data"
+    The output should not include 'remotesapi'
+    The path "$TEST_ROOT/data-incoming/df/.dolt/witness" should be file
+    The path "$TEST_ROOT/data/df/.dolt/witness" should not be exist
+  End
 End

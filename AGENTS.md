@@ -9,12 +9,20 @@ bd ready              # Find available work
 bd show <id>          # View issue details
 bd update <id> --claim  # Claim work atomically
 bd close <id>         # Complete work
-bd dolt push          # Push beads data to remote
+bd --readonly show <id> # Verify a mutation on the Kyber authority
 ```
 
 Use `bd ping` for routine connectivity checks. `bd doctor` is reserved for an
 explicit recovery owner because concurrent doctor runs can starve normal Beads
 transactions. Agents must not launch it as a generic timeout response.
+
+Kyber is the sole live Beads authority for fleet reads, writes, claims, and
+leases. Writable replicas and push/pull publication are retired. This contract
+supersedes earlier federation guidance and historical recovery notes. Clients
+use Kyber SQL port 3307 and store identity `BEADS_NODE_ID=kyber`; each execution
+uses its own `BEADS_ACTOR`, stable on retry. Read mutations back before reporting
+or dispatching. An ambiguous write requires readback before retry; unavailable
+reads never mean an empty queue. Preserve the existing fleet read monitor.
 
 ## Non-Interactive Shell Commands
 
@@ -92,7 +100,7 @@ bd close <id>         # Complete work
 4. **PUSH TO REMOTE** - This is MANDATORY:
    ```bash
    git pull --rebase
-   bd dolt push
+   bd --readonly show <id>
    git push
    git status  # MUST show "up to date with origin"
    ```
