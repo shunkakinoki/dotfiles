@@ -42,6 +42,17 @@ The output should include 'prefetch_cursor_usage'
 The output should include 'export-usage-events-csv'
 The output should include 'junhoyeo/tokscale#1175'
 End
+
+It 'syncs the Antigravity cache before submit'
+When run bash -c "cat '$SCRIPT'"
+The output should include 'antigravity sync'
+End
+
+It 'bounds the Antigravity sync and never lets it block submit'
+When run bash -c "cat '$SCRIPT'"
+The output should include 'timeout 300 bun'
+The output should include 'Antigravity sync failed'
+End
 End
 
 Describe 'network handling'
@@ -237,6 +248,30 @@ After 'cleanup_prefetch'
 It 'skips prefetch and still submits'
 When run env HOME="$FAKE_HOME" bash "$SCRIPT"
 The output should include 'no Cursor credentials, skipping prefetch'
+The output should include 'submitted'
+The status should be success
+End
+End
+
+Describe 'antigravity sync failure'
+setup() {
+  install_common_mocks
+  cat >"$MOCK_BIN/bun" <<'EOF'
+#!/usr/bin/env bash
+case "$*" in
+  *"antigravity sync"*) echo 'no antigravity language server' >&2; exit 1 ;;
+  *) echo submitted; exit 0 ;;
+esac
+EOF
+  chmod +x "$MOCK_BIN/bun"
+}
+
+Before 'setup'
+After 'cleanup_prefetch'
+
+It 'still submits when the Antigravity sync fails'
+When run env HOME="$FAKE_HOME" bash "$SCRIPT"
+The stderr should include 'Antigravity sync failed'
 The output should include 'submitted'
 The status should be success
 End
