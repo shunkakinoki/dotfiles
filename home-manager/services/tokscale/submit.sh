@@ -65,6 +65,14 @@ prefetch_cursor_usage() {
 
 prefetch_cursor_usage
 
+# Antigravity IDE usage is pull-based: `submit` only reads the local
+# antigravity-cache, which stays empty unless this sync runs while an
+# Antigravity language server is up. It exits 0 with an empty cache when the IDE
+# is closed or absent, so it never blocks the submit below.
+if ! timeout 300 bun "$TOKSCALE_BIN" antigravity sync </dev/null; then
+  echo "Antigravity sync failed; submit will use the existing cache" >&2
+fi
+
 # stdin from /dev/null keeps submit non-interactive (skips the "star the repo"
 # prompt seen on a TTY).
 #
