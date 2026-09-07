@@ -17,7 +17,7 @@ The status should be success
 End
 
 It 'bounds the complete locked repository cycle with a separate fsck limit'
-When run bash -c "grep -F 'federation_timeout_seconds=360' '$SCRIPT' >/dev/null && grep -F 'federation_fsck_timeout=300s' '$SCRIPT' >/dev/null && grep -F '@coreutils@/bin/timeout --kill-after=30s \"\$federation_timeout_seconds\"' '$SCRIPT' >/dev/null && grep -F '@coreutils@/bin/env BEADS_FSCK_TIMEOUT=\"\$federation_fsck_timeout\"' '$SCRIPT' >/dev/null && sync=\$(grep -n '@coreutils@/bin/timeout --kill-after=30s' '$SCRIPT' | cut -d: -f1); checkpoint=\$(grep -n '\"\$cycle_started\" >\"\$sync_checkpoint_file.tmp\"' '$SCRIPT' | cut -d: -f1); test \"\$checkpoint\" -gt \"\$sync\""
+When run bash -c "grep -F 'federation_timeout_seconds=360' '$SCRIPT' >/dev/null && grep -F 'federation_fsck_timeout=300s' '$SCRIPT' >/dev/null && grep -F '@coreutils@/bin/timeout --kill-after=30s \"\$federation_timeout_seconds\"' '$SCRIPT' >/dev/null && grep -F 'export BEADS_FSCK_TIMEOUT=\"\$federation_fsck_timeout\"' '$SCRIPT' >/dev/null && sync=\$(grep -n '@coreutils@/bin/timeout --kill-after=30s' '$SCRIPT' | cut -d: -f1); checkpoint=\$(grep -n '\"\$cycle_started\" >\"\$sync_checkpoint_file.tmp\"' '$SCRIPT' | cut -d: -f1); test \"\$checkpoint\" -gt \"\$sync\""
 The status should be success
 End
 
@@ -61,6 +61,9 @@ test "$#" -eq 3
 test "$1" = "-w"
 wait_seconds="${FAKE_FLOCK_WAIT_SECONDS:-0}"
 fd="$3"
+if ! { : >&"$fd"; } 2>/dev/null; then
+  exit 1
+fi
 if [ "$wait_seconds" = 0 ]; then
   exit 0
 fi
@@ -132,7 +135,7 @@ EOF
 #!/usr/bin/env bash
 printf 'ensure-database\n' >>"$COMMAND_LOG"
 if [ -n "${FAKE_PROVISION_FINISHED_FILE:-}" ]; then
-  (sleep 0.5; printf 'finished\n' >"$FAKE_PROVISION_FINISHED_FILE") &
+  (sleep 5; printf 'finished\n' >"$FAKE_PROVISION_FINISHED_FILE") &
   wait
 fi
 exit "${FAKE_PROVISION_STATUS:-0}"
@@ -218,11 +221,27 @@ The output should include 'Timed out waiting for the repository reconciliation l
 The contents of file "$COMMAND_LOG" should not include 'ghq/github.com/test/repo-one sync --yes'
 End
 
+It 'enforces the fsck limit after dotenv loading in the recursive child'
+printf 'BEADS_FSCK_TIMEOUT=900s\n' >>"$ENV_FILE"
+When run env COMMAND_LOG="$COMMAND_LOG" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Dolt federation complete'
+The contents of file "$FSCK_TIMEOUT_LOG" should not include '900s'
+The contents of file "$FSCK_TIMEOUT_LOG" should include '300s'
+End
+
+It 'rejects internal dispatch without an inherited repository lock'
+When run bash -c 'exec 9>&-; exec "$@"' _ env BEADS_SYNC_REPO_DIR="$TEST_REPO" BEADS_SYNC_REPO_NAME="$TEST_REPO_ID" BEADS_SYNC_REPO_CONTEXT='repository 1/1' COMMAND_LOG="$COMMAND_LOG" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" bash "$RENDERED_SCRIPT" --repo --locked
+The status should equal 75
+The output should include 'Inherited repository reconciliation lock is invalid'
+The file "$COMMAND_LOG" should not be exist
+End
+
 It 'times out provisioning, terminates its descendants, and releases the repository lock'
-sed 's/federation_timeout_seconds=360/federation_timeout_seconds=0.2/' "$RENDERED_SCRIPT" >"$RENDERED_SCRIPT.tmp"
+sed 's/federation_timeout_seconds=360/federation_timeout_seconds=2/' "$RENDERED_SCRIPT" >"$RENDERED_SCRIPT.tmp"
 mv "$RENDERED_SCRIPT.tmp" "$RENDERED_SCRIPT"
 finished_file="$TEST_ROOT/provision-finished"
-When run bash -c 'env COMMAND_LOG="$1" FAKE_PROVISION_FINISHED_FILE="$2" FAKE_FLOCK_WAIT_SECONDS=1 XDG_STATE_HOME="$3" HOME="$4" bash "$5"; status=$?; printf "timeout-status=%s\n" "$status"; sleep 0.7; test ! -e "$2" || exit 99; sed "s/federation_timeout_seconds=0.2/federation_timeout_seconds=360/" "$5" >"$5.tmp"; mv "$5.tmp" "$5"; env COMMAND_LOG="$1" FAKE_FLOCK_WAIT_SECONDS=1 XDG_STATE_HOME="$3" HOME="$4" bash "$5"' _ "$COMMAND_LOG" "$finished_file" "$STATE_HOME" "$TEST_ROOT" "$RENDERED_SCRIPT"
+When run bash -c 'env COMMAND_LOG="$1" FAKE_PROVISION_FINISHED_FILE="$2" FAKE_FLOCK_WAIT_SECONDS=1 XDG_STATE_HOME="$3" HOME="$4" bash "$5"; status=$?; printf "timeout-status=%s\n" "$status"; sleep 5.5; test ! -e "$2" || exit 99; sed "s/federation_timeout_seconds=2/federation_timeout_seconds=360/" "$5" >"$5.tmp"; mv "$5.tmp" "$5"; env COMMAND_LOG="$1" FAKE_FLOCK_WAIT_SECONDS=1 XDG_STATE_HOME="$3" HOME="$4" bash "$5"' _ "$COMMAND_LOG" "$finished_file" "$STATE_HOME" "$TEST_ROOT" "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'timeout-status=124'
 The output should include 'Dolt federation complete'
@@ -230,7 +249,7 @@ The file "$finished_file" should not be exist
 End
 
 It 'bounds post-sync readiness without advancing the checkpoint'
-sed 's/federation_timeout_seconds=360/federation_timeout_seconds=0.2/' "$RENDERED_SCRIPT" >"$RENDERED_SCRIPT.tmp"
+sed 's/federation_timeout_seconds=360/federation_timeout_seconds=2/' "$RENDERED_SCRIPT" >"$RENDERED_SCRIPT.tmp"
 mv "$RENDERED_SCRIPT.tmp" "$RENDERED_SCRIPT"
 When run env COMMAND_LOG="$COMMAND_LOG" FAKE_HANG_COMMAND='ready --json' XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" bash "$RENDERED_SCRIPT"
 The status should equal 124

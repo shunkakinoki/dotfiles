@@ -26,6 +26,7 @@ if [ -f "$env_file" ]; then
   . "$env_file"
   set +a
 fi
+export BEADS_FSCK_TIMEOUT="$federation_fsck_timeout"
 
 if [ "${1:-}" != "--repo" ]; then
   configured_repos="${BEADS_SYNC_REPOS:-${BEADS_LINEAR_SYNC_REPOS:-}}"
@@ -113,8 +114,11 @@ if [ "${2:-}" != "--locked" ]; then
     exit 75
   fi
   exec @coreutils@/bin/timeout --kill-after=30s "$federation_timeout_seconds" \
-    @coreutils@/bin/env BEADS_FSCK_TIMEOUT="$federation_fsck_timeout" \
     "$BASH" "$0" --repo --locked
+fi
+if ! @utilLinux@/bin/flock -w 900 9; then
+  log "Inherited repository reconciliation lock is invalid"
+  exit 75
 fi
 
 cycle_started="$(@coreutils@/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')"
