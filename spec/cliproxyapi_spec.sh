@@ -533,7 +533,7 @@ cat >"$TEMP_PRIORITY/codex-already-set.json" <<'JSON'
 {"provider":"codex","account":"test@example.com","priority":300}
 JSON
 cp "$TEMP_PRIORITY/codex-already-set.json" "$TEMP_PRIORITY/codex-already-set.json.orig"
-When run bash -c '. "$1/fn.sh"; ensure_oauth_priority "$1" 300; diff "$1/codex-already-set.json.orig" "$1/codex-already-set.json"'  _ "$TEMP_PRIORITY"
+When run bash -c '. "$1/fn.sh"; ensure_oauth_priority "$1" 300; diff "$1/codex-already-set.json.orig" "$1/codex-already-set.json"' _ "$TEMP_PRIORITY"
 The status should be success
 End
 

@@ -19,6 +19,7 @@ let
   dockerPostgres = ./docker-postgres;
   dotfilesUpdater = import ./dotfiles-updater { inherit inputs pkgs; };
   gasTown = import ./gas-town { inherit pkgs; };
+  herdr = ./herdr;
   hermes = ./hermes;
   k3s = ./k3s;
   keydApplicationMapper = ./keyd-application-mapper;
@@ -52,6 +53,7 @@ in
   firewall
   dotfilesUpdater
   gasTown
+  herdr
   hermes
   k3s
   keydApplicationMapper

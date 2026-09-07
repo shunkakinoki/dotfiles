@@ -568,31 +568,12 @@ import ../../hosts/nixos {
                 "${pkgs.rage}/bin/rage"
             '';
 
-            # Import GPG key from agenix (all systems with dotfiles)
-            home.activation.importGpgKey = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-              $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/import-gpg-key.sh}" \
-                "${config.home.homeDirectory}/dotfiles/named-hosts/galactica/keys/gpg.age" \
-                "${config.home.homeDirectory}/.ssh/id_ed25519" \
-                "${config.home.homeDirectory}/.config/agenix" \
-                "${pkgs.rage}/bin/rage" \
-                "${pkgs.gnupg}/bin/gpg" \
-                "C2E97FCFF482925D"
-            '';
-
             # Publish the T3 server over tailnet HTTPS so remote clients can
             # reach https://matic.tail950b36.ts.net. Nothing else serves :443
             # here, so T3 takes the root.
             home.activation.tailscaleServeT3 = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
               $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 443 3773
             '';
-
-            # GPG configuration for commit signing
-            programs.gpg = {
-              enable = true;
-              settings = {
-                default-key = "shunkakinoki@gmail.com";
-              };
-            };
 
             # GPG agent configuration
             services.gpg-agent = {

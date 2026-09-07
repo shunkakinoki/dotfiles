@@ -118,6 +118,31 @@ zellij --version
 Live deployment/SSH/session verification must be performed once the VPS and
 machines exist; evaluating or building a profile is not runtime proof.
 
+## GPG signing
+
+The shared Home Manager GPG module imports the existing agenix-encrypted signing
+key on activation for all non-runner profiles. User profiles decrypt with
+`~/.ssh/id_ed25519`; root profiles use `/etc/ssh/ssh_host_ed25519_key`.
+Kamino therefore uses its existing server identity without copying an
+administrator's private SSH key to workers.
+
+GPG recipients come from the shared `named-hosts/pubkeys.nix` registry. Enroll each
+new machine's public key there and run `make rekey-galactica` from an authorized
+operator checkout before activating that machine. A declared Kamino hostname alone
+does not grant access to encrypted secrets. The GitHub SSH secret keeps its existing
+recipient list. GPG uses the existing signing identity and GitHub registration.
+
+After the reviewed configuration and rekeyed ciphertext are deployed, run the
+normal host build/switch, then verify as root:
+
+```sh
+gpg --list-secret-keys --keyid-format LONG
+echo test | gpg --clearsign | gpg --verify
+```
+
+Passphrase-protected keys retain their existing agent/pinentry behavior; importing
+a key does not provide an unattended unlock after reboot.
+
 ## Offline validation
 
 Run from the reviewed dotfiles checkout without activating a remote profile:
