@@ -315,7 +315,7 @@ let
         assert !(cfg.systemd.user.services ? dolt-federation-hub);
         assert !(cfg.systemd.user.services ? dolt-federation-access);
         assert !(cfg.systemd.user.services ? dolt-backup-main);
-        assert cfg.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "127.0.0.1";
+        assert cfg.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "kyber.tail950b36.ts.net";
         assert cfg.home.sessionVariables.BEADS_NODE_ID == "kyber";
         assert cfg.home.sessionVariables.BEADS_DOLT_DATA_DIR == "/home/ubuntu/.beads/shared-server/dolt";
         mkEvalCheck "home-kyber" kyber.activationPackage;

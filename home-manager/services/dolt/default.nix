@@ -15,7 +15,7 @@ let
   linearSyncPath = "${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:/etc/profiles/per-user/${config.home.username}/bin:/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin";
   # One live store owns reads, writes, and leases. Spokes never create a local
   # server or merge another writable copy into the authority.
-  doltServerHost = if isKyber then "127.0.0.1" else "kyber.tail950b36.ts.net";
+  doltServerHost = "kyber.tail950b36.ts.net";
   beadsClientEnvironment = {
     BEADS_DOLT_AUTO_START = "0";
     BEADS_DOLT_SERVER_MODE = "1";
