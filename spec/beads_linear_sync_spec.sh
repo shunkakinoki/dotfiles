@@ -195,7 +195,7 @@ printf '%s\n' "$*" >>"$COMMAND_LOG"
 if [ "${FAKE_VERIFY_AUTHORITY:-}" = 1 ]; then
   test "${BEADS_DOLT_SERVER_HOST:-}" = kyber.tail950b36.ts.net || exit 98
   test "${BEADS_DOLT_SERVER_PORT:-}" = 3307 || exit 98
-  test "${BEADS_DOLT_SERVER_USER:-}" = root || exit 98
+  test "${BEADS_DOLT_SERVER_USER:-}" = beads || exit 98
   test "${BEADS_NODE_ID:-}" = kyber || exit 98
   test "${BEADS_ACTOR:-}" = beads-linear-reconciler || exit 98
   test -z "${BEADS_DOLT_DATA_DIR:-}${BEADS_FEDERATION_HUB:-}${BEADS_DIR:-}${BEADS_DB:-}" || exit 98

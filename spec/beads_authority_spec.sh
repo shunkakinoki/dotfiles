@@ -18,5 +18,7 @@ The output should include 'unsetenv BEADS_FEDERATION_HUB'
 The output should include 'setenv BEADS_DOLT_SERVER_HOST kyber.tail950b36.ts.net'
 The output should include 'setenv BEADS_DOLT_AUTO_START 0'
 The output should include 'setenv BEADS_NODE_ID kyber'
+The output should include 'setenv BEADS_DOLT_SERVER_USER beads'
+The output should include 'setenv DOLT_CLI_USER beads'
 End
 End
