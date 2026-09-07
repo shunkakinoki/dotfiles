@@ -9,6 +9,7 @@ linear_workspace="@linearWorkspace@"
 linear_team_id="@linearTeamId@"
 linear_credentials_file="${XDG_CONFIG_HOME:-$HOME/.config}/linear/credentials.toml"
 sync_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/beads-linear-sync"
+reconciliation_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/beads-reconciliation"
 federation_timeout_seconds=360
 federation_fsck_timeout=300s
 
@@ -122,7 +123,7 @@ repo_dir="$(cd "$repo_dir" && pwd -P)"
 # injective even when either repository segment contains underscores.
 repo_slug="${repo_name//\//%2F}"
 sync_checkpoint_file="$sync_state_dir/last-success-$repo_slug"
-reconciliation_lock_file="$sync_state_dir/reconcile-$repo_slug.lock"
+reconciliation_lock_file="$reconciliation_state_dir/reconcile-$repo_slug.lock"
 push_progress_file="$sync_state_dir/push-progress-$repo_slug"
 
 ensure_config() {
@@ -290,7 +291,7 @@ federate_beads() {
   local status
 
   set +e
-  @coreutils@/bin/timeout "$federation_timeout_seconds" \
+  @coreutils@/bin/timeout --kill-after=30s "$federation_timeout_seconds" \
     @coreutils@/bin/env BEADS_FSCK_TIMEOUT="$federation_fsck_timeout" \
     "$bd_cli" -C "$repo_dir" sync --yes >/dev/null 2>&1
   status=$?
@@ -332,7 +333,7 @@ if [[ $LINEAR_API_KEY == *$'\n'* ]] || [[ $LINEAR_API_KEY == *$'\r'* ]]; then
 fi
 
 wait_for_beads
-@coreutils@/bin/mkdir -p "$sync_state_dir"
+@coreutils@/bin/mkdir -p "$sync_state_dir" "$reconciliation_state_dir"
 exec 9>"$reconciliation_lock_file"
 if ! @utilLinux@/bin/flock -w 900 9; then
   log "Timed out waiting for the repository reconciliation lock"

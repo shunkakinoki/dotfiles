@@ -95,6 +95,7 @@ let
     bd = "${homeDir}/.local/bin/bd";
     inherit ensureDatabaseScript;
     inherit (pkgs) coreutils jq;
+    utilLinux = pkgs.util-linux;
   };
   federationAccessScript = pkgs.replaceVars ./federation-access.sh {
     inherit (pkgs)
@@ -429,6 +430,7 @@ lib.mkIf clientEnabled {
         };
         Service = {
           Type = "oneshot";
+          KillMode = "control-group";
           ExecStart = "${pkgs.bash}/bin/bash ${federationSyncScript}";
           Environment = lib.mapAttrsToList (name: value: "${name}=${value}") federationSyncEnvironment;
         };
