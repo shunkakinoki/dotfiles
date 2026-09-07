@@ -27,7 +27,8 @@ A worker needs an explicit pane, consistent metadata and cwd under
 `~/.herdr/worktrees/<repo>/`, and no other owner of its name or checkout.
 Settled agents retain ownership. Missing, malformed, or timed-out metadata
 blocks the command before the submitted launch executes. Multiple starts in
-one command cannot share a checkout.
+one command cannot share a checkout. Environment-changing prefixes are refused
+for worker starts because probes must inspect the same Herdr server as the launch.
 
 The local host's canonical main/co-orchestrator names, including their named
 fallback seats, remain available in the root workspace. Read-only commands,

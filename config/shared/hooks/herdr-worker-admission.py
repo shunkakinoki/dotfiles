@@ -41,27 +41,82 @@ def invocations(command):
         yield shlex.split(" ".join(pending))
 
 
-def starts(command, depth=0):
+def launch_words(words):
+    environment_changed = False
+    while words:
+        if words[0] in {"command", "exec", "do", "then", "else"}:
+            words = words[1:]
+        elif re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*=.*", words[0]):
+            environment_changed = True
+            words = words[1:]
+        elif Path(words[0]).name == "env":
+            words = words[1:]
+            while words and words[0].startswith("-"):
+                option, separator, argument = words[0].partition("=")
+                words = words[1:]
+                if option == "--":
+                    break
+                if option in {"--help", "--version"}:
+                    return [], environment_changed
+                environment_changed = True
+                if option in {
+                    "-i",
+                    "--ignore-environment",
+                    "-0",
+                    "--null",
+                    "-v",
+                    "--debug",
+                }:
+                    continue
+                if option not in {
+                    "-u",
+                    "--unset",
+                    "-C",
+                    "--chdir",
+                    "-a",
+                    "--argv0",
+                    "-S",
+                    "--split-string",
+                }:
+                    raise AdmissionError("unsupported env option in Herdr command")
+                if not separator:
+                    if not words:
+                        raise AdmissionError("incomplete env option")
+                    argument, words = words[0], words[1:]
+                if option in {"-S", "--split-string"}:
+                    words = shlex.split(argument) + words
+                    break
+        else:
+            break
+    return words, environment_changed
+
+
+def starts(command, depth=0, environment_changed=False):
     if depth > 4:
         raise AdmissionError("nested shell launch cannot be verified")
     for words in invocations(command):
-        while words and (
-            words[0] in {"command", "exec", "env", "do", "then", "else"}
-            or re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*=.*", words[0])
-        ):
-            words = words[1:]
+        words, changed = launch_words(words)
         if not words:
+            environment_changed = environment_changed or changed
             continue
+        if words[0] in {"export", "unset"}:
+            environment_changed = True
+            continue
+        changed = changed or environment_changed
         executable = Path(words[0]).name
         if executable in {"bash", "sh", "zsh", "fish"}:
             for index, word in enumerate(words[1:], 1):
                 if word in {"-c", "-lc", "-ic"} and index + 1 < len(words):
-                    yield from starts(words[index + 1], depth + 1)
+                    yield from starts(words[index + 1], depth + 1, changed)
                     break
         if executable != "herdr":
             continue
         args = words[1:]
         if args[:2] == ["agent", "start"]:
+            if changed:
+                raise AdmissionError(
+                    "worker start environment must match the admission hook"
+                )
             yield args[2:]
         elif "agent" in args:
             index = args.index("agent")
@@ -146,8 +201,11 @@ def require_worker_worktree(args, read=probe, home=None, host=None):
         or "/" in repo
     ):
         raise AdmissionError("worker requires a linked Herdr worktree")
-    checkout = Path(path).resolve()
-    root = (Path(home or Path.home()) / ".herdr" / "worktrees" / repo).resolve()
+    try:
+        checkout = Path(path).resolve()
+        root = (Path(home or Path.home()) / ".herdr" / "worktrees" / repo).resolve()
+    except (OSError, RuntimeError) as error:
+        raise AdmissionError("worker checkout path cannot be resolved") from error
     if (
         not checkout.is_relative_to(root)
         or checkout == root

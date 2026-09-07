@@ -7,6 +7,7 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location(
@@ -217,6 +218,52 @@ class WorkerAdmissionTests(unittest.TestCase):
             "herdr agent prompt worker 'held'",
         ):
             self.assertEqual(list(admission.starts(command)), [])
+
+    def test_env_options_and_assignments_cannot_bypass_or_retarget_admission(self):
+        launch = "herdr agent start worker --kind codex --pane w1:p1"
+        for prefix in (
+            "env -i ",
+            "env --unset=HOME ",
+            "env -u HOME -- ",
+            "HERDR_SOCKET_PATH=/tmp/other.sock ",
+            "env ACTOR=other ",
+        ):
+            with self.subTest(prefix=prefix):
+                with self.assertRaises(admission.AdmissionError):
+                    list(admission.starts(prefix + launch))
+        with self.assertRaises(admission.AdmissionError):
+            list(admission.starts("env -S " + repr(launch)))
+        with self.assertRaises(admission.AdmissionError):
+            list(admission.starts("env -i bash -c " + repr(launch)))
+        for prefix in (
+            "HERDR_SOCKET_PATH=/tmp/other.sock; ",
+            "export HERDR_SOCKET_PATH=/tmp/other.sock; ",
+        ):
+            with self.assertRaises(admission.AdmissionError):
+                list(admission.starts(prefix + launch))
+        self.assertEqual(list(admission.starts("env -- " + launch)), [self.args])
+        self.assertEqual(list(admission.starts("env -i herdr agent list")), [])
+
+    def test_unresolvable_metadata_path_returns_explicit_block(self):
+        require = admission.require_worker_worktree
+
+        def check_with_fixture(args):
+            return require(args, read=self.read, home=self.home, host="host")
+
+        for error in (PermissionError("denied"), RuntimeError("symlink loop")):
+            with self.subTest(error=error):
+                with patch.object(admission.Path, "resolve", side_effect=error):
+                    with patch.object(
+                        admission,
+                        "require_worker_worktree",
+                        side_effect=check_with_fixture,
+                    ):
+                        self.assertEqual(
+                            admission.main(
+                                "herdr agent start worker --kind codex --pane w1:p1"
+                            ),
+                            2,
+                        )
 
     def test_open_code_bash_envelope_reaches_existing_shared_hook(self):
         self.data[("workspace", "get", "w1")]["workspace"]["worktree"] = None
