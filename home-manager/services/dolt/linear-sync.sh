@@ -291,9 +291,14 @@ federate_beads() {
   local status
 
   set +e
+  # Keep the supervisor alive until timeout kills TERM-ignoring descendants.
   @coreutils@/bin/timeout --kill-after=30s "$federation_timeout_seconds" \
     @coreutils@/bin/env BEADS_FSCK_TIMEOUT="$federation_fsck_timeout" \
-    "$bd_cli" -C "$repo_dir" sync --yes >/dev/null 2>&1
+    "$BASH" -c '
+      trap '\''while :; do @coreutils@/bin/sleep 1; done'\'' TERM
+      "$@" &
+      wait "$!"
+    ' _ "$bd_cli" -C "$repo_dir" sync --yes >/dev/null 2>&1
   status=$?
   set -e
 

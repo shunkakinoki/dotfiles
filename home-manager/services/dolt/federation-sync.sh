@@ -113,10 +113,15 @@ if [ "${2:-}" != "--locked" ]; then
     log "Timed out waiting for the repository reconciliation lock"
     exit 75
   fi
+  # Keep the supervisor alive until timeout kills TERM-ignoring descendants.
   exec @coreutils@/bin/timeout --kill-after=30s "$federation_timeout_seconds" \
-    "$BASH" "$0" --repo --locked
+    "$BASH" -c '
+      trap '\''while :; do @coreutils@/bin/sleep 1; done'\'' TERM
+      "$@" &
+      wait "$!"
+    ' _ "$BASH" "$0" --repo --locked
 fi
-if ! @utilLinux@/bin/flock -w 900 9; then
+if ! @lsof@/bin/lsof -n -P -w -a -p "$$" -d 9 "$reconciliation_lock_file" >/dev/null 2>&1 || ! @utilLinux@/bin/flock -w 900 9; then
   log "Inherited repository reconciliation lock is invalid"
   exit 75
 fi
