@@ -367,7 +367,7 @@ It 'keeps provider selection sticky for eight hours per client session'
 When run bash -c "sed -n '/^routing:/,/^[a-z]/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'session-affinity: true'
 The output should include 'session-affinity-ttl: "8h"'
-The output should include 'strategy: "fill-first"'
+The output should include 'strategy: "round-robin"'
 The status should be success
 End
 
@@ -445,7 +445,7 @@ The status should be success
 End
 
 It 'keeps behavior-changing official examples inactive'
-When run bash -c "grep -Fq '  # antigravity-credits: true' config/cliproxyapi/config.template.yaml && grep -Fq 'ws-auth: false' config/cliproxyapi/config.template.yaml && grep -Fq 'strategy: \"fill-first\"' config/cliproxyapi/config.template.yaml"
+When run bash -c "grep -Fq '  # antigravity-credits: true' config/cliproxyapi/config.template.yaml && grep -Fq 'ws-auth: false' config/cliproxyapi/config.template.yaml && grep -Fq 'strategy: \"round-robin\"' config/cliproxyapi/config.template.yaml"
 The status should be success
 End
 End
