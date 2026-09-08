@@ -1,2 +1,4 @@
 model = "__GPT_ASTRA__"
+model_context_window = 400000
+model_auto_compact_token_limit = 360000
 model_provider = "cliproxyapi"
