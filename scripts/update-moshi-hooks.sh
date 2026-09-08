@@ -21,7 +21,8 @@ normalize_codex_hooks() {
       def owned_herdr_command:
         type == "string" and
           (test("^bun /[^ ]+/scripts/herdr-lane\\.ts hook$") or
-           test("^bun \\u0027[^\\u0027]+/scripts/herdr-lane\\.ts\\u0027 hook$"));
+           (startswith("bun '") and endswith("/scripts/herdr-lane.ts' hook") and
+            (.[4:-17] | contains("/"))));
 
       def ensure_event($event; $entry):
         .hooks[$event] = (((.hooks[$event] // [])
