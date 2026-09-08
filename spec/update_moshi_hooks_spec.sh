@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2016,SC2329,SC2034
+# shellcheck disable=SC2016,SC2034,SC2089,SC2090,SC2329
 
 Describe 'update-moshi-hooks.sh'
 SCRIPT="$PWD/scripts/update-moshi-hooks.sh"
@@ -53,10 +53,11 @@ setup_regeneration() {
   REGEN_DESKTOP_SETTINGS="$PWD/config/codex/desktop-settings.json"
   REGEN_PROFILES_DIR="$PWD/config/codex/profiles"
   REGEN_ACTIVATE_SCRIPT="$PWD/config/codex/activate.sh"
-  REGEN_SOURCE="$REGEN_ROOT/private source checkout"
+  REGEN_SOURCE="$REGEN_ROOT/private source 'checkout"
   REGEN_PRINTER="$REGEN_ROOT/env-printer.sh"
   REGEN_SYNC="$REGEN_ROOT/sync-desktop-settings.sh"
-  REGEN_UNRELATED="bun other.js --message /tmp/scripts/herdr-lane.ts hook"
+  REGEN_UNRELATED="bun other.js --message '/tmp/private source/scripts/herdr-lane.ts' hook"
+  REGEN_UNRELATED_PREFIX="bun '/tmp/other.js' --message '/tmp/scripts/herdr-lane.ts' hook"
   mkdir -p "$REGEN_HOME" "$REGEN_BIN" "$REGEN_OUTPUT/grok/plugin/hooks"
   mkdir -p "$REGEN_SOURCE/scripts"
   printf '%s\n' '{"hooks":{}}' >"$REGEN_OUTPUT/grok/plugin/hooks/hooks.json"
@@ -93,7 +94,7 @@ SH
   export REGEN_SCRIPT REGEN_MARKER REGEN_HOME REGEN_BIN REGEN_OUTPUT
   export REGEN_HOOKS_JSON REGEN_ACTIVATED_INPUT REGEN_CONFIG_TOML REGEN_DESKTOP_SETTINGS REGEN_PROFILES_DIR
   export REGEN_ACTIVATE_SCRIPT REGEN_SOURCE REGEN_PRINTER REGEN_SYNC
-  export REGEN_UNRELATED
+  export REGEN_UNRELATED REGEN_UNRELATED_PREFIX
 }
 
 cleanup_regeneration() {

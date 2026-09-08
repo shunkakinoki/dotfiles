@@ -20,9 +20,12 @@ normalize_codex_hooks() {
     '
       def owned_herdr_command:
         type == "string" and
-          (test("^bun /[^ ]+/scripts/herdr-lane\\.ts hook$") or
-           (startswith("bun '") and endswith("/scripts/herdr-lane.ts' hook") and
-            (.[4:-17] | contains("/"))));
+          (.[0:4] == "bun " and .[-5:] == " hook" and
+           (.[4:-5] | startswith("\u0027") and endswith("\u0027")) and
+           (.[4:-5] as $encoded
+             | ($encoded[1:-1] | split("\u0027\\\u0027\u0027") | join("\u0027")) as $path
+             | ($path | startswith("/") and endswith("/scripts/herdr-lane.ts")) and
+               (($path | @sh) == $encoded)));
 
       def ensure_event($event; $entry):
         .hooks[$event] = (((.hooks[$event] // [])
