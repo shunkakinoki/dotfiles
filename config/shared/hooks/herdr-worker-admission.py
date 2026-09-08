@@ -52,6 +52,10 @@ def invocations(command):
         if quote == '"':
             segment.append(char)
             if char == "\\" and index + 1 < len(command):
+                if command[index + 1] == "\n":
+                    segment.pop()
+                    index += 2
+                    continue
                 segment.append(command[index + 1])
                 index += 2
                 continue
@@ -60,6 +64,9 @@ def invocations(command):
             index += 1
             continue
         if char == "\\":
+            if index + 1 < len(command) and command[index + 1] == "\n":
+                index += 2
+                continue
             segment.append(char)
             if index + 1 < len(command):
                 segment.append(command[index + 1])
@@ -86,7 +93,7 @@ def invocations(command):
             index += 1
             continue
         segment.append(char)
-        token_start = char.isspace()
+        token_start = char in " \t\r"
         index += 1
 
     words = boundary()
