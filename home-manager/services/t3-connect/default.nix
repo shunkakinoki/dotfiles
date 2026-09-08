@@ -17,21 +17,21 @@ let
     pkgs.util-linux
     pkgs.which
   ];
-  prepareRuntime = pkgs.writeShellScript "t3-prepare-runtime" ''
-    export PATH=${toolchain}:$PATH
-    export T3_PTY_PROBE=${./pty-probe.cjs}
-    ${builtins.readFile ./prepare-runtime.sh}
-  '';
-  runtimeNpm = pkgs.writeShellScriptBin "npm" ''
-    export T3_REAL_NPM=${pkgs.nodejs}/bin/npm
-    export T3_PREPARE_RUNTIME=${prepareRuntime}
-    ${builtins.readFile ./runtime-npm.sh}
-  '';
-  launcher = pkgs.writeShellScript "t3-launch-service" ''
-    export PATH=${runtimeNpm}/bin:${toolchain}:$PATH
-    export T3_PREPARE_RUNTIME=${prepareRuntime}
-    ${builtins.readFile ./launch-service.sh}
-  '';
+  prepareRuntime = pkgs.writeShellScript "t3-prepare-runtime" (
+    "export PATH=${toolchain}:$PATH\n"
+    + "export T3_PTY_PROBE=${./pty-probe.cjs}\n"
+    + builtins.readFile ./prepare-runtime.sh
+  );
+  runtimeNpm = pkgs.writeShellScriptBin "npm" (
+    "export T3_REAL_NPM=${pkgs.nodejs}/bin/npm\n"
+    + "export T3_PREPARE_RUNTIME=${prepareRuntime}\n"
+    + builtins.readFile ./runtime-npm.sh
+  );
+  launcher = pkgs.writeShellScript "t3-launch-service" (
+    "export PATH=${runtimeNpm}/bin:${toolchain}:$PATH\n"
+    + "export T3_PREPARE_RUNTIME=${prepareRuntime}\n"
+    + builtins.readFile ./launch-service.sh
+  );
   shellInstallerPath = ''
     if [ "''${T3_BOOT_SERVICE_UNIT:-}" = t3code.service ]; then
       export PATH=${runtimeNpm}/bin:$PATH

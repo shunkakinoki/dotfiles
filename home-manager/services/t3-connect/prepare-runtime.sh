@@ -3,7 +3,10 @@ set -euo pipefail
 
 runtime="$(realpath -e -- "${1:?runtime directory required}")"
 pty="$runtime/node_modules/node-pty"
-[ -d "$pty" ] || { echo "T3 runtime has no node-pty: $runtime" >&2; exit 1; }
+[ -d "$pty" ] || {
+  echo "T3 runtime has no node-pty: $runtime" >&2
+  exit 1
+}
 
 # The updater and cache warmer may prepare the same runtime concurrently.
 exec 9>"$runtime/.native-prepare.lock"
