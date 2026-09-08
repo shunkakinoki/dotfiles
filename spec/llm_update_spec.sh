@@ -411,6 +411,13 @@ The status should be success
 End
 End
 
+Describe 'Codex notification configuration'
+It 'omits the obsolete turn notifier from the template and hydrated config'
+When run bash -c "for file in config/codex/config.tpl.toml config/codex/config.toml; do ! grep -Eq '^notify[[:space:]]*=' \"\$file\" || exit 1; done"
+The status should be success
+End
+End
+
 Describe 'Codex named profile model hydration'
 It 'propagates independent Astra, Sol, and Luna selections into the named profiles'
 FIXTURE="$(mktemp -d)"

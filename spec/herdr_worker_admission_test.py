@@ -305,6 +305,33 @@ class WorkerAdmissionTests(unittest.TestCase):
         self.assertGreaterEqual(hook["hooks"][0]["timeout"], 5000)
         self.assertIn("config/shared/hooks/security.sh", hook["hooks"][0]["command"])
 
+    def test_shared_hook_prefers_local_herdr_client(self):
+        local_bin = self.home / ".local/bin"
+        legacy_bin = self.home / ".cargo/bin"
+        local_bin.mkdir(parents=True)
+        legacy_bin.mkdir(parents=True)
+        for directory in (local_bin, legacy_bin):
+            binary = directory / "herdr"
+            binary.write_text("#!/bin/sh\nexit 0\n")
+            binary.chmod(0o755)
+
+        path_export = next(
+            line
+            for line in (ROOT / "config/shared/hooks/security.sh")
+            .read_text()
+            .splitlines()
+            if line.startswith("export PATH=")
+        )
+        env = dict(os.environ, HOME=str(self.home), PATH=str(legacy_bin))
+        result = subprocess.run(
+            [shutil.which("bash"), "-c", f"{path_export}\ntype -P herdr"],
+            text=True,
+            capture_output=True,
+            env=env,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), str(local_bin / "herdr"))
+
 
 if __name__ == "__main__":
     unittest.main()

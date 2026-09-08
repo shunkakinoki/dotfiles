@@ -10,7 +10,6 @@ sandbox_mode = "danger-full-access"
 personality = "pragmatic"
 model_verbosity = "low"
 model_reasoning_summary = "concise"
-notify = ["turn-ended"]
 oss_provider = "lmstudio"
 
 [features]
