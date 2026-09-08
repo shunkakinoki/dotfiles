@@ -1,6 +1,8 @@
 suppress_unstable_features_warning = true
 web_search = "cached"
 model = "gpt-5.6-sol"
+model_context_window = 400000
+model_auto_compact_token_limit = 360000
 enabled-reasoning-efforts = ["medium", "high", "max"]
 model_reasoning_effort = "high"
 approval_policy = "never"
