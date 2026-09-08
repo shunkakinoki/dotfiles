@@ -10,12 +10,12 @@ if [ "${1:-}" = install ]; then
   args=("$@")
   for ((index = 1; index < ${#args[@]}; index++)); do
     case "${args[index]}" in
-      --prefix)
-        ((index += 1))
-        prefix="${args[index]:-}"
-        ;;
-      --prefix=*) prefix="${args[index]#--prefix=}" ;;
-      --) break ;;
+    --prefix)
+      ((index += 1))
+      prefix="${args[index]:-}"
+      ;;
+    --prefix=*) prefix="${args[index]#--prefix=}" ;;
+    --) break ;;
     esac
   done
 fi
