@@ -80,8 +80,14 @@ case $EXIT_CODE in
     exit 0
     ;;
   3)
-    # Ask rule matched — rewrite the command but do NOT auto-allow so that
-    # Claude Code prompts the user for confirmation.
+    # Ask rule matched. Native Codex rejects updatedInput without an allow
+    # decision and does not support Claude's ask response, so let its native
+    # permission flow handle the original command.
+    if jq -e 'has("turn_id")' >/dev/null <<<"$INPUT"; then
+      _rtk_audit_log "skip:ask_native" "$CMD"
+      exit 0
+    fi
+    # Claude Code prompts the user for confirmation after this rewrite.
     ;;
   *)
     exit 0
