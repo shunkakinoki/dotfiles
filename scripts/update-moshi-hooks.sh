@@ -19,9 +19,9 @@ normalize_codex_hooks() {
     --arg marker "$CODEX_HERDR_MARKER" \
     '
       def owned_herdr_command:
-        type == "string" and startswith("bun ") and
-          (endswith("/scripts/herdr-lane.ts hook") or
-           (contains("/scripts/herdr-lane.ts") and endswith(" hook")));
+        type == "string" and
+          (test("^bun /[^ ]+/scripts/herdr-lane\\.ts hook$") or
+           test("^bun \\u0027[^\\u0027]+/scripts/herdr-lane\\.ts\\u0027 hook$"));
 
       def ensure_event($event; $entry):
         .hooks[$event] = (((.hooks[$event] // [])

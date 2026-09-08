@@ -56,6 +56,7 @@ setup_regeneration() {
   REGEN_SOURCE="$REGEN_ROOT/private source checkout"
   REGEN_PRINTER="$REGEN_ROOT/env-printer.sh"
   REGEN_SYNC="$REGEN_ROOT/sync-desktop-settings.sh"
+  REGEN_UNRELATED="bun other.js --message /tmp/scripts/herdr-lane.ts hook"
   mkdir -p "$REGEN_HOME" "$REGEN_BIN" "$REGEN_OUTPUT/grok/plugin/hooks"
   mkdir -p "$REGEN_SOURCE/scripts"
   printf '%s\n' '{"hooks":{}}' >"$REGEN_OUTPUT/grok/plugin/hooks/hooks.json"
@@ -92,6 +93,7 @@ SH
   export REGEN_SCRIPT REGEN_MARKER REGEN_HOME REGEN_BIN REGEN_OUTPUT
   export REGEN_HOOKS_JSON REGEN_ACTIVATED_INPUT REGEN_CONFIG_TOML REGEN_DESKTOP_SETTINGS REGEN_PROFILES_DIR
   export REGEN_ACTIVATE_SCRIPT REGEN_SOURCE REGEN_PRINTER REGEN_SYNC
+  export REGEN_UNRELATED
 }
 
 cleanup_regeneration() {
@@ -101,8 +103,8 @@ cleanup_regeneration() {
 Before 'setup_regeneration'
 After 'cleanup_regeneration'
 
-It 'canonicalizes activated materialized registrations after an inert Moshi recopy'
-When run bash -c 'HOME="$REGEN_HOME" bash "$REGEN_ACTIVATE_SCRIPT" "$REGEN_CONFIG_TOML" "$REGEN_HOOKS_JSON" "$REGEN_DESKTOP_SETTINGS" jq "$REGEN_SYNC" "$REGEN_PROFILES_DIR" "$REGEN_PRINTER" >/dev/null && cp -f "$REGEN_HOME/.codex/hooks.json" "$REGEN_ACTIVATED_INPUT" && HOME="$REGEN_HOME" PATH="$REGEN_BIN:$PATH" GENERATED_ROOT="$REGEN_OUTPUT" bash "$REGEN_SCRIPT" >/dev/null && jq -e --arg marker "$REGEN_MARKER" '"'"'([.hooks.SessionStart[]?.hooks[]?.command, .hooks.UserPromptSubmit[]?.hooks[]?.command] | map(select(. == $marker)) | length == 2) and ([.hooks.SessionStart[]?.hooks[]?.command, .hooks.UserPromptSubmit[]?.hooks[]?.command] | map(select(contains("/private source"))) | length == 0) and ([.hooks.SessionStart[]?.hooks[]?.command, .hooks.UserPromptSubmit[]?.hooks[]?.command] | index("moshi-hook codex-hook")) and ([.hooks.SessionStart[]?.hooks[]?.command, .hooks.UserPromptSubmit[]?.hooks[]?.command] | index("bd codex-hook UserPromptSubmit"))'"'"' "$REGEN_OUTPUT/codex/hooks.json"'
+It 'canonicalizes activated materialized registrations and preserves unrelated commands'
+When run bash -c 'HOME="$REGEN_HOME" bash "$REGEN_ACTIVATE_SCRIPT" "$REGEN_CONFIG_TOML" "$REGEN_HOOKS_JSON" "$REGEN_DESKTOP_SETTINGS" jq "$REGEN_SYNC" "$REGEN_PROFILES_DIR" "$REGEN_PRINTER" >/dev/null && jq -e --arg unrelated "$REGEN_UNRELATED" '"'"'(.hooks.SessionStart[0].hooks += [{"command":$unrelated,"type":"command"}])'"'"' "$REGEN_HOME/.codex/hooks.json" >"$REGEN_ACTIVATED_INPUT" && HOME="$REGEN_HOME" PATH="$REGEN_BIN:$PATH" GENERATED_ROOT="$REGEN_OUTPUT" bash "$REGEN_SCRIPT" >/dev/null && jq -e --arg marker "$REGEN_MARKER" --arg unrelated "$REGEN_UNRELATED" '"'"'([.hooks.SessionStart[]?.hooks[]?.command, .hooks.UserPromptSubmit[]?.hooks[]?.command] | map(select(. == $marker)) | length == 2) and ([.hooks.SessionStart[]?.hooks[]?.command, .hooks.UserPromptSubmit[]?.hooks[]?.command] | index($unrelated)) and ([.hooks.SessionStart[]?.hooks[]?.command, .hooks.UserPromptSubmit[]?.hooks[]?.command] | index("moshi-hook codex-hook")) and ([.hooks.SessionStart[]?.hooks[]?.command, .hooks.UserPromptSubmit[]?.hooks[]?.command] | index("bd codex-hook UserPromptSubmit"))'"'"' "$REGEN_OUTPUT/codex/hooks.json"'
 The status should be success
 The output should eq 'true'
 End
