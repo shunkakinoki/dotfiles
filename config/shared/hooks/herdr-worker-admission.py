@@ -16,29 +16,82 @@ class AdmissionError(Exception):
 
 
 def invocations(command):
-    # Non-POSIX lexing retains quotes around punctuation-only arguments. The
-    # second pass removes quoting only after command boundaries are known.
-    lexer = shlex.shlex(command, posix=False, punctuation_chars=";&|()\n")
-    lexer.whitespace = " \t\r"
-    lexer.whitespace_split = True
-    lexer.commenters = ""
-    pending = []
+    # Find shell command boundaries while preserving quoting for one POSIX
+    # parse per command. A non-POSIX pass followed by shlex.split() reparses
+    # quote concatenation and escaped punctuation as malformed input.
+    segment = []
+    quote = None
     comment = False
-    for token in lexer:
-        if comment and "\n" not in token:
+    token_start = True
+
+    def boundary():
+        text = "".join(segment)
+        segment.clear()
+        if not text.strip():
+            return None
+        return shlex.split(text, posix=True)
+
+    index = 0
+    while index < len(command):
+        char = command[index]
+        if comment:
+            if char == "\n":
+                comment = False
+                words = boundary()
+                if words:
+                    yield words
+                token_start = True
+            index += 1
             continue
-        if token.startswith("#"):
+        if quote == "'":
+            segment.append(char)
+            if char == "'":
+                quote = None
+            index += 1
+            continue
+        if quote == '"':
+            segment.append(char)
+            if char == "\\" and index + 1 < len(command):
+                segment.append(command[index + 1])
+                index += 2
+                continue
+            if char == '"':
+                quote = None
+            index += 1
+            continue
+        if char == "\\":
+            segment.append(char)
+            if index + 1 < len(command):
+                segment.append(command[index + 1])
+                index += 2
+            else:
+                index += 1
+            token_start = False
+            continue
+        if char in {"'", '"'}:
+            segment.append(char)
+            quote = char
+            token_start = False
+            index += 1
+            continue
+        if char == "#" and token_start:
             comment = True
+            index += 1
             continue
-        comment = False
-        if token and all(char in ";&|()\n" for char in token):
-            if pending:
-                yield shlex.split(" ".join(pending))
-                pending = []
-        else:
-            pending.append(token)
-    if pending:
-        yield shlex.split(" ".join(pending))
+        if char in ";&|()\n":
+            words = boundary()
+            if words:
+                yield words
+            token_start = True
+            index += 1
+            continue
+        segment.append(char)
+        token_start = char.isspace()
+        index += 1
+
+    words = boundary()
+    if words:
+        yield words
 
 
 def launch_words(words):
