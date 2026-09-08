@@ -8,6 +8,50 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 GENERATED_ROOT="${GENERATED_ROOT:-$REPO_ROOT/generated/hooks/moshi}"
+CODEX_HERDR_MARKER='bun __DOTFILES_HERDR_SOURCE_CHECKOUT__/scripts/herdr-lane.ts hook'
+
+normalize_codex_hooks() {
+  local hooks_json="$1"
+  local hooks_tmp
+  hooks_tmp="$(mktemp "${hooks_json}.tmp.XXXXXX")"
+
+  if jq \
+    --arg marker "$CODEX_HERDR_MARKER" \
+    '
+      def owned_herdr_command:
+        type == "string" and startswith("bun ") and
+          (endswith("/scripts/herdr-lane.ts hook") or
+           (contains("/scripts/herdr-lane.ts") and endswith(" hook")));
+
+      def ensure_event($event; $entry):
+        .hooks[$event] = (((.hooks[$event] // [])
+          | map(.hooks |= map(
+              if (.command? | owned_herdr_command) then
+                .command = $marker
+              else
+                .
+              end
+            ))) as $entries
+          | if any($entries[]?.hooks[]?.command?; . == $marker) then
+              $entries
+            else
+              $entries + [$entry]
+            end);
+      ensure_event("SessionStart"; {
+        hooks: [{ command: $marker, type: "command" }],
+        matcher: "startup|resume"
+      })
+      | ensure_event("UserPromptSubmit"; {
+        hooks: [{ command: $marker, type: "command" }]
+      })
+    ' "$hooks_json" >"$hooks_tmp"; then
+    chmod 644 "$hooks_tmp"
+    mv -f "$hooks_tmp" "$hooks_json"
+  else
+    rm -f "$hooks_tmp"
+    return 1
+  fi
+}
 
 echo "Installing latest moshi-hook configs..."
 moshi-hook install
@@ -29,6 +73,7 @@ cp ~/.config/opencode/plugins/moshi-hooks.ts "$GENERATED_ROOT/opencode/moshi-hoo
 echo "Copying generated JSON hooks..."
 cp ~/.claude/settings.json "$GENERATED_ROOT/claude/settings.json"
 cp ~/.codex/hooks.json "$GENERATED_ROOT/codex/hooks.json"
+normalize_codex_hooks "$GENERATED_ROOT/codex/hooks.json"
 cp ~/.cursor/hooks.json "$GENERATED_ROOT/cursor/hooks.json"
 cp ~/.gemini/settings.json "$GENERATED_ROOT/gemini/settings.json"
 cp ~/.grok/hooks/moshi-hooks.json /tmp/moshi-grok-hooks.json
