@@ -186,6 +186,15 @@
           }
         ],
         "matcher": ""
+      },
+      {
+        "hooks": [
+          {
+            "command": "bun scripts/herdr-lane.ts hook",
+            "type": "command"
+          }
+        ],
+        "matcher": "startup|resume"
       }
     ],
     "Stop": [
@@ -266,6 +275,14 @@
           }
         ],
         "matcher": ""
+      },
+      {
+        "hooks": [
+          {
+            "command": "bun scripts/herdr-lane.ts hook",
+            "type": "command"
+          }
+        ]
       }
     ],
     "SessionEnd": [
