@@ -1,172 +1,227 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2329
 
-Describe 't3-connect/connect.sh'
+Describe 'T3 native runtime preparation'
 SCRIPT="$PWD/home-manager/services/t3-connect/connect.sh"
+PREPARE="$PWD/home-manager/services/t3-connect/prepare-runtime.sh"
+WRAPPER="$PWD/home-manager/services/t3-connect/runtime-npm.sh"
+LAUNCHER="$PWD/home-manager/services/t3-connect/launch-service.sh"
 
 setup() {
-  mock_bin_setup npx npm
-  FAKE_HOME="$(mktemp -d)"
-  export HOME="$FAKE_HOME"
+  mock_bin_setup npm npx prepare node
+  T3_TEST_ROOT="$(mktemp -d)"
+  export T3_TEST_ROOT
+  export T3CODE_HOME="$T3_TEST_ROOT/t3"
+  export npm_config_cache="$T3_TEST_ROOT/npm-cache"
+  export T3_PREPARE_RUNTIME="$MOCK_BIN/prepare"
+  export T3_REAL_NPM="$MOCK_BIN/npm"
+  export T3_PTY_PROBE=pty-probe.cjs
+  mkdir -p "$T3CODE_HOME/runtime/versions/.staging-test" "$npm_config_cache/_npx"
 }
 
 cleanup() {
   mock_bin_cleanup
-  rm -rf "$FAKE_HOME"
+  rm -rf "$T3_TEST_ROOT"
+  unset T3_TEST_ROOT T3CODE_HOME npm_config_cache T3_PREPARE_RUNTIME T3_REAL_NPM T3_PTY_PROBE
 }
 
 Before 'setup'
 After 'cleanup'
 
-Describe 'cache warming'
-# npx keys its cache dir on the literal spec string, so the script must warm
-# the resolved version the client uses, not the tag.
-mock_npm_view() {
-  cat >"$MOCK_BIN/npm" <<'EOF'
+mock_registry() {
+  cat >"$MOCK_BIN/npm" <<'MOCK'
 #!/usr/bin/env bash
-printf '%s\n' "$0 $*" >>"$MOCK_LOG"
-if [ "${1:-}" = view ]; then echo "0.0.33-nightly.20260809.1041"; fi
-exit 0
-EOF
-  chmod +x "$MOCK_BIN/npm"
+printf '%s\n' "npm $*" >>"$MOCK_LOG"
+if [ "${1:-}" = view ]; then echo 1.2.3; fi
+MOCK
 }
 
-It 'resolves the tag to an exact version before warming'
-When run bash -c "$(declare -f mock_npm_view); mock_npm_view; bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
+warm_cache() {
+  mock_registry
+  mkdir -p "$npm_config_cache/_npx/cache/node_modules/node-pty"
+  mkdir -p "$T3CODE_HOME/runtime/versions/1.2.3/node_modules/node-pty"
+  bash "$SCRIPT"
+  cat "$MOCK_LOG"
+}
+
+It 'warms the exact version and prepares cache and service runtimes'
+When call warm_cache
+The status should be success
 The output should include 'npm view t3@nightly version'
-The output should include 'npx --yes t3@0.0.33-nightly.20260809.1041 --version'
-The status should be success
+The output should include 'npx --yes t3@1.2.3 --version'
+The output should include "prepare $npm_config_cache/_npx/cache/"
+The output should include "prepare $T3CODE_HOME/runtime/versions/1.2.3/"
 End
 
-It 'honors T3_CONNECT_TAG override'
-When run bash -c "$(declare -f mock_npm_view); mock_npm_view; T3_CONNECT_TAG=latest bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
+It 'honors the release channel override'
+export T3_CONNECT_TAG=latest
+When call warm_cache
+The status should be success
 The output should include 'npm view t3@latest version'
-The status should be success
 End
 
-It 'falls back to the tag when resolution fails'
-When run bash -c "bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
-The output should include 'npx --yes t3@nightly --version'
-The status should be success
-End
-End
-
-Describe 'node-pty rebuild'
-make_cache_dir() {
-  mkdir -p "$HOME/.npm/_npx/abc123/node_modules/node-pty"
-}
-
-It 'rebuilds node-pty with a scoped ignore-scripts override'
-When run bash -c "$(declare -f make_cache_dir); make_cache_dir; bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
-The output should include 'npm rebuild --ignore-scripts=false node-pty'
-The status should be success
-End
-
-# A wrong-toolchain build still drops pty.node, so presence must NOT count as
-# done -- only a successful require() may skip the rebuild.
-It 'rebuilds anyway when pty.node exists but does not load'
-When run bash -c "$(declare -f make_cache_dir); make_cache_dir; mkdir -p \"\$HOME/.npm/_npx/abc123/node_modules/node-pty/build/Release\"; touch \"\$HOME/.npm/_npx/abc123/node_modules/node-pty/build/Release/pty.node\"; bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
-The output should include 'npm rebuild --ignore-scripts=false node-pty'
-The status should be success
-End
-
-mock_node_loads() {
-  cat >"$MOCK_BIN/node" <<'EOF'
-#!/usr/bin/env bash
-printf '%s\n' "$0 $*" >>"$MOCK_LOG"
-exit 0
-EOF
-  chmod +x "$MOCK_BIN/node"
-}
-
-It 'skips rebuild when node-pty already loads'
-When run bash -c "$(declare -f make_cache_dir mock_node_loads); make_cache_dir; mock_node_loads; bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
-The output should not include 'npm rebuild'
-The status should be success
-End
-
-It 'succeeds when no npx cache dirs exist'
+It 'does not mask preparation failures'
+mkdir -p "$T3CODE_HOME/runtime/versions/1.2.3/node_modules/node-pty"
+printf '#!/usr/bin/env bash\nexit 23\n' >"$MOCK_BIN/prepare"
 When run bash "$SCRIPT"
-The status should be success
+The status should equal 23
 End
 
-make_runtime_dir() {
-  mkdir -p "$HOME/.t3/runtime/versions/1.2.3/node_modules/node-pty"
+Describe 'native build verification'
+make_runtime() {
+  mkdir -p "$T3CODE_HOME/runtime/versions/1.2.3/node_modules/node-pty"
+  printf '{}\n' >"$T3CODE_HOME/runtime/versions/1.2.3/package.json"
+}
+Before 'make_runtime'
+
+mock_build() {
+  cat >"$MOCK_BIN/node" <<'MOCK'
+#!/usr/bin/env bash
+printf '%s\n' "probe $*" >>"$MOCK_LOG"
+[ -f "$T3_TEST_ROOT/built" ] && [ "${T3_TEST_PROBE_FAIL:-0}" = 0 ]
+MOCK
+  cat >"$MOCK_BIN/npm" <<'MOCK'
+#!/usr/bin/env bash
+printf '%s\n' "npm $*" >>"$MOCK_LOG"
+if [ "$1" = rebuild ]; then
+  touch "$T3_TEST_ROOT/built"
+  exit "${T3_TEST_BUILD_EXIT:-0}"
+fi
+MOCK
 }
 
-It 'also builds node-pty in the t3 service runtime tree'
-When run bash -c "$(declare -f make_runtime_dir); make_runtime_dir; bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
-The output should include 'npm rebuild --ignore-scripts=false node-pty'
+prepare_runtime() {
+  bash "$PREPARE" "$T3CODE_HOME/runtime/versions/1.2.3"
+}
+
+run_build() {
+  mock_build
+  prepare_runtime
+}
+
+It 'approves only node-pty and validates the rebuilt terminal'
+When call run_build
 The status should be success
+The stderr should include 'Preparing T3 native terminal'
+The contents of file "$MOCK_LOG" should include 'npm pkg set allowScripts.node-pty=true --json'
+The contents of file "$MOCK_LOG" should include 'npm rebuild --ignore-scripts=false --foreground-scripts node-pty'
+The contents of file "$MOCK_LOG" should include 'probe pty-probe.cjs'
+End
+
+It 'fails when npm returns success but the terminal still fails'
+export T3_TEST_PROBE_FAIL=1
+When call run_build
+The status should be failure
+The stderr should include 'Preparing T3 native terminal'
+End
+
+It 'preserves the native build exit status'
+export T3_TEST_BUILD_EXIT=17
+When call run_build
+The status should equal 17
+The stderr should include 'Preparing T3 native terminal'
+End
+
+It 'skips rebuilding a working terminal'
+When call prepare_runtime
+The status should be success
+The contents of file "$MOCK_LOG" should not include 'npm'
+End
+
+It 'rejects a runtime missing node-pty'
+When run bash "$PREPARE" "$T3CODE_HOME/runtime/versions/.staging-test"
+The status should be failure
+The stderr should include 'T3 runtime has no node-pty'
 End
 End
 
-Describe 'systemd unit PATH'
-UNIT="$PWD/home-manager/services/t3-connect/default.nix"
+Describe 'synchronous update preparation'
+install_candidate() {
+  bash "$WRAPPER" install --prefix "$T3CODE_HOME/runtime/versions/.staging-test" --no-fund --no-audit t3@1.2.3
+}
 
-# node-gyp's generated Makefile shells out to these. Omitting them fails the
-# build with `sed: command not found`, which names none of the real cause.
-It 'includes the build tools node-gyp shells out to'
-When run bash -c "cat '$UNIT'"
-The output should include 'pkgs.gnused'
-The output should include 'pkgs.gnugrep'
-The output should include 'pkgs.gawk'
-The output should include 'pkgs.which'
-End
-
-It 'includes a compiler, make and python for node-gyp'
-When run bash -c "cat '$UNIT'"
-The output should include 'pkgs.gcc'
-The output should include 'pkgs.gnumake'
-The output should include 'pkgs.python3'
+It 'prepares a staged update before returning success'
+When call install_candidate
+The status should be success
+The contents of file "$MOCK_LOG" should include 't3@1.2.3 --ignore-scripts=true'
+The contents of file "$MOCK_LOG" should include "prepare $T3CODE_HOME/runtime/versions/.staging-test"
 End
 
-# nix gcc and nix nodejs must come from the same PATH so the addon it builds is
-# loadable by the node that will require it.
-It 'supplies nodejs from nix alongside the nix compiler'
-When run bash -c "cat '$UNIT'"
-The output should include 'pkgs.nodejs'
-End
+It 'fails the update when terminal preparation fails'
+printf '#!/usr/bin/env bash\nexit 23\n' >"$MOCK_BIN/prepare"
+When call install_candidate
+The status should equal 23
 End
 
-Describe 'service node pinning'
-MAKEFILE="$PWD/Makefile"
-
-# t3 bakes the node it finds on PATH into t3code.service ExecStart. If that is a
-# generic (fnm) node it cannot load the nix-built addon, so the install must run
-# with the nix node first.
-It 'installs the t3 service against the nix node'
-When run bash -c "sed -n '/^t3-service:/,/service status/p' '$MAKEFILE'"
-The output should include 'NIX_NODE_BIN'
-The output should include '.nix-profile/bin/node'
-End
+It 'prepares updates with reordered flags and an equals-form prefix'
+When run bash "$WRAPPER" install --no-audit t3@1.2.3 "--prefix=$T3CODE_HOME/runtime/versions/.staging-test" --no-fund
+The status should be success
+The contents of file "$MOCK_LOG" should include "prepare $T3CODE_HOME/runtime/versions/.staging-test"
 End
 
-Describe 'toolchain selection'
-# A native addon must be built by a compiler whose libc matches the node that
-# loads it. Everything here is nix, so no distro compiler may be pinned in.
-It 'documents the libc/loader pairing'
-When run bash -c "cat '$SCRIPT'"
-The output should include 'GLIBC'
+It 'does not prepare a failed installation'
+printf '#!/usr/bin/env bash\nexit 19\n' >"$MOCK_BIN/npm"
+When call install_candidate
+The status should equal 19
+The contents of file "$MOCK_LOG" should not include 'prepare'
 End
 
-It 'pins no distro toolchain'
-When run bash -c "cat '$SCRIPT'"
-The output should not include '/usr/bin/g++'
-The output should not include '/etc/NIXOS'
-End
-End
-
-Describe 'script properties'
-It 'uses strict mode (set -euo pipefail)'
-When run bash -c "head -20 '$SCRIPT'"
-The output should include 'set -euo pipefail'
+It 'forwards unrelated npm calls unchanged'
+When run bash "$WRAPPER" view t3@nightly version
+The status should be success
+The contents of file "$MOCK_LOG" should include 'npm view t3@nightly version'
+The contents of file "$MOCK_LOG" should not include 'prepare'
+The contents of file "$MOCK_LOG" should not include 'ignore-scripts'
 End
 
-It 'documents why the scoped override is needed'
-When run bash -c "cat '$SCRIPT'"
-The output should include 'per-package allowlist'
+It 'does not change npm policy for projects outside the T3 runtime'
+When run bash "$WRAPPER" install --prefix "$T3_TEST_ROOT" --no-fund --no-audit t3@1.2.3
+The status should be success
+The contents of file "$MOCK_LOG" should not include 'prepare'
+The contents of file "$MOCK_LOG" should not include 'ignore-scripts'
+End
+
+It 'does not follow a staging symlink outside the runtime'
+ln -s "$T3_TEST_ROOT" "$T3CODE_HOME/runtime/versions/.staging-link"
+When run bash "$WRAPPER" install --prefix "$T3CODE_HOME/runtime/versions/.staging-link" --no-fund --no-audit t3@1.2.3
+The status should be success
+The contents of file "$MOCK_LOG" should not include 'prepare'
+The contents of file "$MOCK_LOG" should not include 'ignore-scripts'
+End
+
+It 'forwards installs into new unrelated directories unchanged'
+When run bash "$WRAPPER" install --prefix "$T3_TEST_ROOT/new-project" --no-fund --no-audit t3@1.2.3
+The status should be success
+The contents of file "$MOCK_LOG" should not include 'prepare'
+The contents of file "$MOCK_LOG" should not include 'ignore-scripts'
 End
 End
 
+Describe 'service startup'
+mock_active_version() {
+  cat >"$MOCK_BIN/node" <<'MOCK'
+#!/usr/bin/env bash
+if [ "$1" = -e ]; then
+  echo 1.2.3
+else
+  printf '%s\n' "launcher $*" >>"$MOCK_LOG"
+fi
+MOCK
+}
+Before 'mock_active_version'
+
+It 'prepares the active runtime before starting the service launcher'
+When run bash "$LAUNCHER"
+The status should be success
+The contents of file "$MOCK_LOG" should include "prepare $T3CODE_HOME/runtime/versions/1.2.3"
+The contents of file "$MOCK_LOG" should include "launcher $T3CODE_HOME/runtime/service-launcher.mjs"
+End
+
+It 'does not launch a broken active runtime'
+printf '#!/usr/bin/env bash\nexit 23\n' >"$MOCK_BIN/prepare"
+When run bash "$LAUNCHER"
+The status should equal 23
+The contents of file "$MOCK_LOG" should not include 'launcher'
+End
+End
 End
