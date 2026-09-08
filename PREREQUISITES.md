@@ -30,3 +30,10 @@ See [MODELS.md](./MODELS.md) for the CLIProxy profiles and their model assignmen
 The Kyber refresh target restarts an installed standalone Codex daemon. When no
 standalone installation exists, it preserves the app server owned by another
 application. Update or restart that server through its owning application.
+## Herdr Codex hook source
+
+Hosts that use the managed Codex Herdr lane hooks must also set
+HERDR_SOURCE_CHECKOUT in this same private file to the trusted absolute
+checkout containing scripts/herdr-lane.ts. Activation renders that path into
+the installed Codex hooks; hosts without the setting omit the optional Herdr
+entries.

@@ -190,7 +190,7 @@
       {
         "hooks": [
           {
-            "command": "bun /absolute/source-checkout/scripts/herdr-lane.ts hook",
+            "command": "bun __DOTFILES_HERDR_SOURCE_CHECKOUT__/scripts/herdr-lane.ts hook",
             "type": "command"
           }
         ],
@@ -279,7 +279,7 @@
       {
         "hooks": [
           {
-            "command": "bun /absolute/source-checkout/scripts/herdr-lane.ts hook",
+            "command": "bun __DOTFILES_HERDR_SOURCE_CHECKOUT__/scripts/herdr-lane.ts hook",
             "type": "command"
           }
         ]

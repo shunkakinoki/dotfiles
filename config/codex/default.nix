@@ -9,6 +9,7 @@ let
   desktopSettingsAgentLabel = "org.nix-community.home.codex-desktop-settings-sync";
   syncDesktopSettings = ./sync-desktop-settings.sh;
   ensureDesktopSettingsAgent = ./ensure-desktop-settings-agent.sh;
+  envPrinter = ../../home-manager/modules/dotenv/print-env-file.sh;
 in
 {
   # Use activation script instead of home.file symlink
@@ -20,7 +21,8 @@ in
       "${./desktop-settings.json}" \
       "${pkgs.jq}/bin/jq" \
       "${syncDesktopSettings}" \
-      "${./profiles}"
+      "${./profiles}" \
+      "${envPrinter}"
   '';
 
   # Codex caches Desktop preferences in its persisted atom state and replaces
