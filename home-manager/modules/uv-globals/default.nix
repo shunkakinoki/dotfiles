@@ -23,7 +23,7 @@ in
     install-uv-globals = {
       Unit = {
         Description = "Install uv global tools";
-        After = [ "default.target" ];
+        # default.target wants this service and orders itself after it.
       };
       Service = {
         Type = "simple";

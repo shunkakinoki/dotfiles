@@ -21,7 +21,8 @@ in
     install-npm-globals = {
       Unit = {
         Description = "Install npm global packages";
-        After = [ "default.target" ];
+        # default.target also wants services ordered after this installer.
+        # Ordering the installer after that target creates a startup cycle.
       };
       Service = {
         Type = "simple";

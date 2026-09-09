@@ -112,7 +112,8 @@ home-manager.lib.homeManagerConfiguration {
         # frozen by the host health circuit breaker without interrupting
         # production services. The Herdr server itself is the control plane
         # for every lane, so it lives in its own never-frozen slice and only
-        # the panes it spawns are moved into orchestration.slice.
+        # ordinary panes are moved into orchestration.slice. Explicit recovery
+        # panes stay outside the workload slice they must be able to repair.
         home.file.".config/systemd/user/orchestration.slice".source = ./orchestration.slice;
         home.file.".config/systemd/user/herdr.slice".source = ./herdr.slice;
         home.file.".config/systemd/user/roborev.service.d/10-orchestration.conf".source =
@@ -127,11 +128,20 @@ home-manager.lib.homeManagerConfiguration {
           };
           Service = {
             Type = "simple";
-            ExecStart = "${pkgs.llm-agents.herdr}/bin/herdr server";
+            ExecStart = "${pkgs.bash}/bin/bash ${../../home-manager/services/herdr/start.sh} herdr";
             Restart = "on-failure";
             RestartSec = "30s";
             Slice = "herdr.slice";
-            Environment = [ "HERDR_ENV=1" ];
+            Environment = [
+              "HERDR_ENV=1"
+              "PATH=${config.home.homeDirectory}/.local/bin:${config.home.homeDirectory}/.bun/bin:${config.home.homeDirectory}/.nix-profile/bin:/etc/profiles/per-user/${username}/bin:${
+                lib.makeBinPath [
+                  pkgs.llm-agents.herdr
+                  pkgs.bash
+                  pkgs.coreutils
+                ]
+              }:/usr/local/bin:/usr/bin:/bin"
+            ];
           };
           Install.WantedBy = [ "default.target" ];
         };
@@ -151,16 +161,9 @@ home-manager.lib.homeManagerConfiguration {
           set -gx GPG_TTY (tty)
         '';
 
-        # Herdr pane shells inherit herdr.slice from the server. Re-exec them
-        # into orchestration.slice so the circuit breaker can freeze lane work
-        # without freezing the server that owns the panes.
+        # Select placement before the interactive shell starts the native agent.
         programs.fish.shellInit = lib.mkAfter ''
-          if set -q HERDR_ENV; and status is-interactive; and not set -q HERDR_PANE_SCOPED; and test -r /proc/self/cgroup; and not string match -q '*/orchestration.slice/*' (cat /proc/self/cgroup)
-            set -gx HERDR_PANE_SCOPED 1
-            exec ${pkgs.systemd}/bin/systemd-run --user --quiet --scope --collect \
-              --slice=orchestration.slice --unit=herdr-pane-$fish_pid \
-              ${pkgs.fish}/bin/fish
-          end
+          source ${./herdr-pane-scope.fish} ${pkgs.systemd}/bin/systemd-run ${pkgs.fish}/bin/fish ${pkgs.coreutils}/bin/false
         '';
 
         # Enable XDG directories
