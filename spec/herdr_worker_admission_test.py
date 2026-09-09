@@ -219,6 +219,70 @@ class WorkerAdmissionTests(unittest.TestCase):
         ):
             self.assertEqual(list(admission.starts(command)), [])
 
+    def test_quoted_words_and_escaped_punctuation_are_inert(self):
+        literal = "herdr"
+        cases = (
+            ('printf "he""rdr"', ["printf", literal]),
+            (f"printf {literal}\\(literal\\)", ["printf", f"{literal}(literal)"]),
+            (f"printf {literal}\\;literal", ["printf", f"{literal};literal"]),
+            (f"printf {literal}\\&literal", ["printf", f"{literal}&literal"]),
+            (f"printf {literal}\\|literal", ["printf", f"{literal}|literal"]),
+            (f"printf '{literal};literal'", ["printf", f"{literal};literal"]),
+        )
+        for command, expected in cases:
+            with self.subTest(command=command):
+                self.assertEqual(list(admission.invocations(command)), [expected])
+                self.assertEqual(list(admission.starts(command)), [])
+
+    def test_shell_continuations_preserve_direct_and_nested_launches(self):
+        continuation = chr(92) + chr(10)
+        launch = "herdr agent start worker --kind codex --pane w1:p1"
+        self.assertEqual(
+            list(admission.starts("herdr agent " + continuation + launch[11:])),
+            [self.args],
+        )
+        self.assertEqual(
+            list(
+                admission.starts(
+                    'bash -c "herdr agent ' + continuation + launch[11:] + '"'
+                )
+            ),
+            [self.args],
+        )
+
+    def test_non_shell_whitespace_does_not_start_a_comment(self):
+        launch = "herdr agent start worker --kind codex --pane w1:p1"
+        command = "printf literal\u00a0#literal; " + launch
+        self.assertEqual(list(admission.starts(command)), [self.args])
+
+    def test_command_substitutions_are_refused_without_inspection(self):
+        launch = "herdr agent start worker --kind codex --pane w1:p1"
+        for command in (
+            'echo "$(' + launch + ')"',
+            'echo "`' + launch + '`"',
+        ):
+            with self.subTest(command=command):
+                with self.assertRaisesRegex(
+                    admission.AdmissionError, "command substitutions"
+                ):
+                    list(admission.starts(command))
+        for command in ("printf '$(literal)'", "printf '`literal`'"):
+            with self.subTest(command=command):
+                self.assertEqual(list(admission.starts(command)), [])
+
+    def test_unsupported_reconstructing_shell_forms_are_refused(self):
+        launch = "herdr agent start worker --kind codex --pane w1:p1"
+        for command in (
+            "eval " + repr(launch),
+            "$'herdr' agent start worker --kind codex --pane w1:p1",
+            '$"herdr" agent start worker --kind codex --pane w1:p1',
+        ):
+            with self.subTest(command=command):
+                with self.assertRaisesRegex(
+                    admission.AdmissionError, "cannot be verified"
+                ):
+                    list(admission.starts(command))
+
     def test_env_options_and_assignments_cannot_bypass_or_retarget_admission(self):
         launch = "herdr agent start worker --kind codex --pane w1:p1"
         for prefix in (
