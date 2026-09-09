@@ -255,6 +255,21 @@ class WorkerAdmissionTests(unittest.TestCase):
         command = "printf literal\u00a0#literal; " + launch
         self.assertEqual(list(admission.starts(command)), [self.args])
 
+    def test_command_substitutions_are_refused_without_inspection(self):
+        launch = "herdr agent start worker --kind codex --pane w1:p1"
+        for command in (
+            'echo "$(' + launch + ')"',
+            'echo "`' + launch + '`"',
+        ):
+            with self.subTest(command=command):
+                with self.assertRaisesRegex(
+                    admission.AdmissionError, "command substitutions"
+                ):
+                    list(admission.starts(command))
+        for command in ("printf '$(literal)'", "printf '`literal`'"):
+            with self.subTest(command=command):
+                self.assertEqual(list(admission.starts(command)), [])
+
     def test_env_options_and_assignments_cannot_bypass_or_retarget_admission(self):
         launch = "herdr agent start worker --kind codex --pane w1:p1"
         for prefix in (

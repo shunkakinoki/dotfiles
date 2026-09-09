@@ -50,6 +50,10 @@ def invocations(command):
             index += 1
             continue
         if quote == '"':
+            if char == "`" or (
+                char == "$" and index + 1 < len(command) and command[index + 1] == "("
+            ):
+                raise AdmissionError("command substitutions cannot be verified")
             segment.append(char)
             if char == "\\" and index + 1 < len(command):
                 if command[index + 1] == "\n":
@@ -81,6 +85,10 @@ def invocations(command):
             token_start = False
             index += 1
             continue
+        if char == "`" or (
+            char == "$" and index + 1 < len(command) and command[index + 1] == "("
+        ):
+            raise AdmissionError("command substitutions cannot be verified")
         if char == "#" and token_start:
             comment = True
             index += 1
