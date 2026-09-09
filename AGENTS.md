@@ -60,6 +60,7 @@ cp -rf source dest          # NOT: cp -r source dest
 - Repair one-off host or database incidents directly in place, with appropriate backups and verification.
 - Keep Home Manager configuration and managed scripts focused on durable, declarative behavior and general fixes that prevent recurrence.
 - Do not embed incident-specific migrations, recovery commands, or temporary repair workarounds into recurring services or activation scripts.
+- Before adding cross-host SSH access, verify the existing trust and provisioning model. Inbound `authorized_keys` does not provide an outbound private identity. Keep reverse access machine-local when existing trust is machine-local unless declarative management is explicitly requested. Approval for access does not imply approval to expand its persistence or scope.
 
 ## Repository Privacy Guidance
 
