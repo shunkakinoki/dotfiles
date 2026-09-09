@@ -1535,9 +1535,12 @@ dependencies = [
 
 [[package]]
 name = "frizbee"
-version = "0.12.0"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c0633b457eaadb5bcbee26b5b4cad3196ae4b18cfc968a353e19e7c1a944e56a"
+checksum = "19435f276a44d90570cb403d22fbe4b20c80eabc134f718d6ec0ae888eb47edc"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "fs2"
@@ -4521,9 +4524,9 @@ checksum = "8ee5873ec9cce0195efcb7a4e9507a04cd49aec9c83d0389df45b1ef7ba2e649"
 
 [[package]]
 name = "skim"
-version = "5.6.5"
+version = "5.6.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "619b972375ba90139d79c66d1c836b814cd3dc7426695f0c18bf6fa8f14a92eb"
+checksum = "2bdf8d087c441a5484b3c5cde20280b923dafb2fb949555d8e78640d21b9e598"
 dependencies = [
  "ansi-to-tui",
  "assert_enum_variants",
@@ -6255,9 +6258,9 @@ dependencies = [
 
 [[package]]
 name = "worktrunk"
-version = "0.75.0"
+version = "0.76.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "afe1a3761c5a79f34ca2abc9163ab43ae29c76aefe74594fc7084cb7254f3088"
+checksum = "bf4b840518d0f213bbf7d20b2ad7a96d43afa811f77a14a45d4f1248189f4105"
 dependencies = [
  "ansi-str",
  "ansi-to-tui",
