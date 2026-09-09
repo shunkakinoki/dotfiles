@@ -270,6 +270,19 @@ class WorkerAdmissionTests(unittest.TestCase):
             with self.subTest(command=command):
                 self.assertEqual(list(admission.starts(command)), [])
 
+    def test_unsupported_reconstructing_shell_forms_are_refused(self):
+        launch = "herdr agent start worker --kind codex --pane w1:p1"
+        for command in (
+            "eval " + repr(launch),
+            "$'herdr' agent start worker --kind codex --pane w1:p1",
+            '$"herdr" agent start worker --kind codex --pane w1:p1',
+        ):
+            with self.subTest(command=command):
+                with self.assertRaisesRegex(
+                    admission.AdmissionError, "cannot be verified"
+                ):
+                    list(admission.starts(command))
+
     def test_env_options_and_assignments_cannot_bypass_or_retarget_admission(self):
         launch = "herdr agent start worker --kind codex --pane w1:p1"
         for prefix in (

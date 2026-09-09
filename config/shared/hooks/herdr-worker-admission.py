@@ -54,6 +54,16 @@ def invocations(command):
                 char == "$" and index + 1 < len(command) and command[index + 1] == "("
             ):
                 raise AdmissionError("command substitutions cannot be verified")
+            if (
+                char == "$"
+                and index + 1 < len(command)
+                and command[index + 1]
+                in {
+                    "'",
+                    '"',
+                }
+            ):
+                raise AdmissionError("Bash quoting cannot be verified")
             segment.append(char)
             if char == "\\" and index + 1 < len(command):
                 if command[index + 1] == "\n":
@@ -85,6 +95,16 @@ def invocations(command):
             token_start = False
             index += 1
             continue
+        if (
+            char == "$"
+            and index + 1 < len(command)
+            and command[index + 1]
+            in {
+                "'",
+                '"',
+            }
+        ):
+            raise AdmissionError("Bash quoting cannot be verified")
         if char == "`" or (
             char == "$" and index + 1 < len(command) and command[index + 1] == "("
         ):
@@ -112,6 +132,8 @@ def invocations(command):
 def launch_words(words):
     environment_changed = False
     while words:
+        if Path(words[0]).name == "eval":
+            raise AdmissionError("eval command cannot be verified")
         if words[0] in {"command", "exec", "do", "then", "else"}:
             words = words[1:]
         elif re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*=.*", words[0]):
