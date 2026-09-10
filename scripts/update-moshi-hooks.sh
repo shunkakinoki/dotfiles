@@ -53,7 +53,7 @@ normalize_dcg_hooks() {
 
 if [[ ${1:-} == "--normalize-only" ]]; then
   shift
-  if (( $# == 0 )); then
+  if (($# == 0)); then
     echo "error: --normalize-only requires at least one hook config" >&2
     exit 1
   fi
@@ -61,7 +61,7 @@ if [[ ${1:-} == "--normalize-only" ]]; then
   exit 0
 fi
 
-if (( $# != 0 )); then
+if (($# != 0)); then
   echo "usage: $0 [--normalize-only HOOK_CONFIG ...]" >&2
   exit 1
 fi
