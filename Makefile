@@ -446,7 +446,7 @@ llm-update: ## Regenerate tool configs from models.json.
 	@echo "✅ LLM configs updated"
 
 .PHONY: overlays-update
-overlays-update: ## Upgrade all custom overlays to latest versions (CI only).
+overlays-update: ## Upgrade all custom overlay versions and fixed hashes (CI only).
 	@if [ "$$CI" != "true" ]; then \
 		echo "⏭️ Skipping overlay upgrade outside CI"; \
 	elif [ "$$IN_DOCKER" = "true" ]; then \
