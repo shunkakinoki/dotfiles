@@ -1214,11 +1214,179 @@ index 1af3e0d..e3e69ab 100644
  fn pane_shell_is_initializing(pane_id: &str) -> std::io::Result<bool> {
      let response = super::send_request(&Request {
          id: "cli:agent:start:process_info".into(),
+diff --git a/src/cli/server.rs b/src/cli/server.rs
+index ff87cab..18dcc79 100644
+--- a/src/cli/server.rs
++++ b/src/cli/server.rs
+@@ -194,19 +194,41 @@ fn print_agent_manifest_status(response: &serde_json::Value) {
+ }
+ 
+ fn server_live_handoff(args: &[String]) -> std::io::Result<i32> {
+-    let Some(params) = parse_live_handoff_params(args) else {
++    let Some(mut params) = parse_live_handoff_params(args) else {
+         eprintln!(
+             "usage: herdr server live-handoff [--import-exe <path>] [--expected-protocol <n>] [--expected-version <version>]"
+         );
+         return Ok(2);
+     };
+ 
++    #[cfg(unix)]
++    let controller_identity = Some(capture_controller_handoff_identity(
++        params.import_exe.as_deref(),
++    )?);
++    #[cfg(unix)]
++    if let Some(transport) = controller_identity.as_ref() {
++        params.import_exe = Some(transport.import_exe.to_string_lossy().into_owned());
++    }
++
+     // Live handoff is itself a protocol-mismatch recovery path, so it must
+     // reach the running server without the normal CLI compatibility guard.
+-    let response = super::send_request_unchecked(&Request {
++    let response = match super::send_request_unchecked(&Request {
+         id: "cli:server:live-handoff".into(),
+         method: Method::ServerLiveHandoff(params),
+-    })?;
++    }) {
++        Ok(response) => response,
++        Err(err) => {
++            #[cfg(unix)]
++            if let Some(transport) = controller_identity.as_ref() {
++                crate::server::handoff::remove_controller_handoff_identity(transport);
++            }
++            return Err(err);
++        }
++    };
++    #[cfg(unix)]
++    if let Some(transport) = controller_identity.as_ref() {
++        crate::server::handoff::remove_controller_handoff_identity(transport);
++    }
+     if response.get("error").is_some() {
+         let rendered = serde_json::to_string(&response).unwrap_or_else(|err| {
+             format!(
+@@ -226,6 +248,106 @@ fn server_live_handoff(args: &[String]) -> std::io::Result<i32> {
+     Ok(0)
+ }
+ 
++#[cfg(unix)]
++fn capture_controller_handoff_identity(
++    import_exe: Option<&str>,
++) -> std::io::Result<crate::server::handoff::ControllerHandoffTransport> {
++    let response = super::send_request_unchecked(&Request {
++        id: "cli:server:live-handoff:pane-list".into(),
++        method: Method::PaneList(crate::api::schema::PaneListParams::default()),
++    })?;
++    let panes = response_result_field(&response, "pane.list")?
++        .get("panes")
++        .and_then(serde_json::Value::as_array)
++        .ok_or_else(|| {
++            std::io::Error::new(
++                std::io::ErrorKind::InvalidData,
++                "pane.list returned no panes",
++            )
++        })?;
++    let mut identities = Vec::with_capacity(panes.len());
++    for pane in panes {
++        let pane_id = pane
++            .get("pane_id")
++            .and_then(serde_json::Value::as_str)
++            .filter(|value| !value.is_empty())
++            .ok_or_else(|| {
++                std::io::Error::new(
++                    std::io::ErrorKind::InvalidData,
++                    "pane.list returned an invalid pane identity",
++                )
++            })?;
++        let terminal_id = pane
++            .get("terminal_id")
++            .and_then(serde_json::Value::as_str)
++            .filter(|value| !value.is_empty())
++            .ok_or_else(|| {
++                std::io::Error::new(
++                    std::io::ErrorKind::InvalidData,
++                    "pane.list returned an invalid terminal identity",
++                )
++            })?;
++        let response = super::send_request_unchecked(&Request {
++            id: format!("cli:server:live-handoff:process-info:{pane_id}"),
++            method: Method::PaneProcessInfo(crate::api::schema::PaneProcessInfoParams {
++                pane_id: Some(pane_id.to_string()),
++            }),
++        })?;
++        let shell_pid = response_result_field(&response, "pane.process_info")?
++            .get("process_info")
++            .and_then(|value| value.get("shell_pid"))
++            .and_then(serde_json::Value::as_u64)
++            .and_then(|value| u32::try_from(value).ok())
++            .filter(|value| *value != 0)
++            .ok_or_else(|| {
++                std::io::Error::new(
++                    std::io::ErrorKind::InvalidData,
++                    "pane.process_info returned no shell identity",
++                )
++            })?;
++        let terminal_id = serde_json::from_value(serde_json::Value::String(
++            terminal_id.to_string(),
++        ))
++        .map_err(|err| {
++            std::io::Error::new(
++                std::io::ErrorKind::InvalidData,
++                format!("invalid terminal identity: {err}"),
++            )
++        })?;
++        identities.push(crate::server::handoff::ControllerHandoffPaneIdentity {
++            pane_id: pane_id.to_string(),
++            terminal_id,
++            shell_pid,
++        });
++    }
++    crate::server::handoff::write_controller_handoff_identity(
++        crate::server::handoff::ControllerHandoffIdentity { panes: identities },
++        import_exe.map(std::path::Path::new),
++    )
++}
++
++#[cfg(unix)]
++fn response_result_field<'a>(
++    response: &'a serde_json::Value,
++    operation: &str,
++) -> std::io::Result<&'a serde_json::Value> {
++    if let Some(error) = response.get("error") {
++        return Err(std::io::Error::other(format!(
++            "{operation} failed: {}",
++            error
++                .get("message")
++                .and_then(serde_json::Value::as_str)
++                .unwrap_or("unknown API error")
++        )));
++    }
++    response.get("result").ok_or_else(|| {
++        std::io::Error::new(
++            std::io::ErrorKind::InvalidData,
++            format!("{operation} returned no result"),
++        )
++    })
++}
++
+ fn parse_live_handoff_params(args: &[String]) -> Option<ServerLiveHandoffParams> {
+     let mut params = ServerLiveHandoffParams::default();
+     let mut idx = 0;
 diff --git a/src/handoff_runtime.rs b/src/handoff_runtime.rs
-index 29ba85f..171486b 100644
+index 29ba85f..5c3d609 100644
 --- a/src/handoff_runtime.rs
 +++ b/src/handoff_runtime.rs
-@@ -44,3 +44,15 @@ pub(crate) struct ImportedHandoffRuntime {
+@@ -12,6 +12,11 @@ use serde::{Deserialize, Serialize};
+ #[derive(Debug, Clone, Serialize, Deserialize)]
+ pub(crate) struct HandoffRuntimeState {
+     pub pane_id: u32,
++    /// Preserve the server-owned terminal identity across replacement. This
++    /// is optional only for compatibility with handoff manifests emitted
++    /// before terminal identity was carried in the private runtime record.
++    #[serde(default, skip_serializing_if = "Option::is_none")]
++    pub terminal_id: Option<crate::terminal::TerminalId>,
+     pub child_pid: u32,
+     pub rows: u16,
+     pub cols: u16,
+@@ -44,3 +49,15 @@ pub(crate) struct ImportedHandoffRuntime {
      #[cfg(unix)]
      pub state: HandoffRuntimeState,
  }
@@ -1235,10 +1403,18 @@ index 29ba85f..171486b 100644
 +    pub fd: std::os::fd::RawFd,
 +}
 diff --git a/src/pane.rs b/src/pane.rs
-index aa6acb5..7c9cdc1 100644
+index aa6acb5..2227f53 100644
 --- a/src/pane.rs
 +++ b/src/pane.rs
-@@ -2078,7 +2078,9 @@ impl PaneRuntime {
+@@ -1868,6 +1868,7 @@ impl PaneRuntime {
+         let (rows, cols, cell_width_px, cell_height_px) = self.current_size.get();
+         crate::handoff_runtime::HandoffRuntimeState {
+             pane_id,
++            terminal_id: None,
+             child_pid,
+             rows,
+             cols,
+@@ -2078,9 +2079,12 @@ impl PaneRuntime {
          render_notify: Arc<Notify>,
          render_dirty: Arc<RenderSignal>,
      ) -> std::io::Result<Self> {
@@ -1248,9 +1424,12 @@ index aa6acb5..7c9cdc1 100644
 +        } = import;
          let crate::handoff_runtime::HandoffRuntimeState {
              pane_id,
++            terminal_id: _,
              child_pid,
+             rows,
+             cols,
 diff --git a/src/persist/restore.rs b/src/persist/restore.rs
-index 3c5775c..e7d69e8 100644
+index 3c5775c..89026ae 100644
 --- a/src/persist/restore.rs
 +++ b/src/persist/restore.rs
 @@ -127,16 +127,23 @@ pub fn handoff_pane_aliases(
@@ -1291,7 +1470,17 @@ index 3c5775c..e7d69e8 100644
          let saved_launch_argv = saved_pane.and_then(|p| p.launch_argv.clone());
          let saved_agent_session = saved_pane.and_then(|p| p.agent_session.as_ref());
          let saved_history =
-@@ -543,6 +552,9 @@ fn restore_tab(
+@@ -528,6 +537,9 @@ fn restore_tab(
+             .unwrap_or_default();
+         let imported_runtime = old_pane_id.and_then(|old_id| imported_panes.remove(&old_id));
+         let was_imported = imported_runtime.is_some();
++        let imported_terminal_id = imported_runtime
++            .as_ref()
++            .and_then(|imported| imported.state.terminal_id.clone());
+         let pending_native_agent_restore = if was_imported {
+             None
+         } else {
+@@ -543,6 +555,9 @@ fn restore_tab(
              if let Some(session) = restored_agent_session {
                  terminal.set_persisted_agent_session(session);
              }
@@ -1301,7 +1490,20 @@ index 3c5775c..e7d69e8 100644
              match (saved_agent_name, saved_managed_agent) {
                  (Some(agent_name), Some(agent)) => {
                      terminal.restore_managed_agent(agent_name, agent)
-@@ -640,6 +652,9 @@ fn restore_tab(
+@@ -627,7 +642,11 @@ fn restore_tab(
+ 
+         match runtime_result {
+             Ok(runtime) => {
+-                let terminal_id = TerminalId::alloc();
++                let terminal_id = if was_imported {
++                    imported_terminal_id.unwrap_or_else(TerminalId::alloc)
++                } else {
++                    TerminalId::alloc()
++                };
+                 let mut terminal = TerminalState::new(terminal_id.clone(), cwd.clone());
+                 if was_imported {
+                     if let Some(argv) = saved_launch_argv {
+@@ -640,6 +659,9 @@ fn restore_tab(
                  if let Some(session) = restored_agent_session {
                      terminal.set_persisted_agent_session(session);
                  }
@@ -1311,7 +1513,7 @@ index 3c5775c..e7d69e8 100644
                  match (saved_agent_name, saved_managed_agent) {
                      (Some(agent_name), Some(agent)) if was_imported => {
                          terminal.restore_managed_agent(agent_name, agent)
-@@ -994,6 +1009,18 @@ mod tests {
+@@ -994,6 +1016,18 @@ mod tests {
          );
      }
  
@@ -1330,7 +1532,7 @@ index 3c5775c..e7d69e8 100644
      #[test]
      fn restored_worktree_space_membership_drops_missing_checkout() {
          let missing =
-@@ -1191,6 +1218,7 @@ mod tests {
+@@ -1191,6 +1225,7 @@ mod tests {
                              label: Some("reviewer".into()),
                              agent_name: Some("reviewer".into()),
                              managed_agent_kind: Some("opencode".into()),
@@ -1338,7 +1540,7 @@ index 3c5775c..e7d69e8 100644
                              agent_session: Some(super::super::snapshot::PaneAgentSessionSnapshot {
                                  source: "herdr:opencode".into(),
                                  agent: "opencode".into(),
-@@ -1277,6 +1305,7 @@ mod tests {
+@@ -1277,6 +1312,7 @@ mod tests {
                                  label: None,
                                  agent_name: None,
                                  managed_agent_kind: None,
@@ -1346,7 +1548,7 @@ index 3c5775c..e7d69e8 100644
                                  agent_session: None,
                                  launch_argv: None,
                              },
-@@ -1288,6 +1317,7 @@ mod tests {
+@@ -1288,6 +1324,7 @@ mod tests {
                                  label: None,
                                  agent_name: None,
                                  managed_agent_kind: None,
@@ -1354,7 +1556,7 @@ index 3c5775c..e7d69e8 100644
                                  agent_session: None,
                                  launch_argv: None,
                              },
-@@ -1341,6 +1371,7 @@ mod tests {
+@@ -1341,6 +1378,7 @@ mod tests {
                      label: None,
                      agent_name: None,
                      managed_agent_kind: None,
@@ -1362,7 +1564,7 @@ index 3c5775c..e7d69e8 100644
                      agent_session: None,
                      launch_argv: None,
                  },
-@@ -1351,6 +1382,7 @@ mod tests {
+@@ -1351,6 +1389,7 @@ mod tests {
              label: Some("planner".into()),
              agent_name: Some("planner".into()),
              managed_agent_kind: None,
@@ -1370,7 +1572,7 @@ index 3c5775c..e7d69e8 100644
              agent_session: Some(super::super::snapshot::PaneAgentSessionSnapshot {
                  source: "herdr:codex".into(),
                  agent: "codex".into(),
-@@ -1502,6 +1534,7 @@ mod tests {
+@@ -1502,6 +1541,7 @@ mod tests {
                              label: None,
                              agent_name: None,
                              managed_agent_kind: None,
@@ -1378,7 +1580,7 @@ index 3c5775c..e7d69e8 100644
                              agent_session: Some(super::super::snapshot::PaneAgentSessionSnapshot {
                                  source: "herdr:codex".into(),
                                  agent: "codex".into(),
-@@ -1668,6 +1701,7 @@ mod tests {
+@@ -1668,6 +1708,7 @@ mod tests {
                  label: None,
                  agent_name: None,
                  managed_agent_kind: None,
@@ -1449,10 +1651,16 @@ index e6ca70f..ebd2a42 100644
                  launch_argv: None,
              },
 diff --git a/src/server/handoff.rs b/src/server/handoff.rs
-index 2cd1714..d2c19bd 100644
+index 2cd1714..5eb331c 100644
 --- a/src/server/handoff.rs
 +++ b/src/server/handoff.rs
-@@ -44,12 +44,36 @@ pub(crate) struct HandoffManifest {
+@@ -1,4 +1,5 @@
+ #[cfg(unix)]
++use std::collections::{HashMap, HashSet};
+ use std::io::{self, Read, Write};
+ #[cfg(unix)]
+ use std::os::fd::{AsRawFd, RawFd};
+@@ -44,12 +45,323 @@ pub(crate) struct HandoffManifest {
      /// Absent from manifests written before this field existed.
      #[serde(default)]
      pub api_window_title: Option<String>,
@@ -1461,6 +1669,293 @@ index 2cd1714..d2c19bd 100644
 +    /// against the 64-pane handoff limit.
 +    #[serde(default)]
 +    pub managed_checkout_leases: Vec<HandoffManagedCheckoutLease>,
++}
++
++/// Terminal identities captured by the live-handoff controller before asking
++/// an older server to export its runtime.  v0.9 manifests do not carry the
++/// terminal ID, so the importer binds this sidecar to the exported pane by
++/// the stable public pane ID and the exported PTY child PID.
++#[cfg(unix)]
++#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
++pub(crate) struct ControllerHandoffIdentity {
++    pub panes: Vec<ControllerHandoffPaneIdentity>,
++}
++
++#[cfg(unix)]
++#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
++pub(crate) struct ControllerHandoffPaneIdentity {
++    pub pane_id: String,
++    pub terminal_id: crate::terminal::TerminalId,
++    pub shell_pid: u32,
++}
++
++#[cfg(unix)]
++const CONTROLLER_IDENTITY_VERSION: u32 = 1;
++
++#[cfg(unix)]
++#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
++struct ControllerHandoffEnvelope {
++    version: u32,
++    import_argv0: String,
++    identity: ControllerHandoffIdentity,
++}
++
++#[cfg(unix)]
++fn controller_import_prefix() -> &'static str {
++    "herdr-handoff-import-"
++}
++
++#[cfg(unix)]
++fn controller_import_path(data_dir: &Path, controller_pid: u32, nonce: u128) -> PathBuf {
++    data_dir.join(format!(
++        "{}{}-{}",
++        controller_import_prefix(),
++        controller_pid,
++        nonce
++    ))
++}
++
++#[cfg(unix)]
++pub(crate) struct ControllerHandoffTransport {
++    pub import_exe: PathBuf,
++    identity_path: PathBuf,
++}
++
++#[cfg(unix)]
++pub(crate) fn write_controller_handoff_identity(
++    identity: ControllerHandoffIdentity,
++    import_exe: Option<&Path>,
++) -> io::Result<ControllerHandoffTransport> {
++    use std::os::unix::fs::PermissionsExt;
++
++    if identity.panes.is_empty()
++        || identity.panes.iter().any(|pane| {
++            pane.pane_id.is_empty()
++                || pane.terminal_id.to_string().is_empty()
++                || pane.shell_pid == 0
++        })
++    {
++        return Err(io::Error::new(
++            io::ErrorKind::InvalidData,
++            "live handoff controller captured incomplete pane identity",
++        ));
++    }
++    let mut pane_ids = HashSet::new();
++    let mut terminal_ids = HashSet::new();
++    for pane in &identity.panes {
++        if !pane_ids.insert(pane.pane_id.clone())
++            || !terminal_ids.insert(pane.terminal_id.to_string())
++        {
++            return Err(io::Error::new(
++                io::ErrorKind::InvalidData,
++                "live handoff controller captured duplicate pane identity",
++            ));
++        }
++    }
++
++    let data_dir = crate::session::data_dir();
++    std::fs::create_dir_all(&data_dir)?;
++    let nonce = std::time::SystemTime::now()
++        .duration_since(std::time::UNIX_EPOCH)
++        .unwrap_or_default()
++        .as_nanos();
++    let import_path = controller_import_path(&data_dir, std::process::id(), nonce);
++    let identity_path = import_path.with_extension("json");
++    let target = import_exe
++        .map(Path::to_path_buf)
++        .or_else(|| std::env::current_exe().ok())
++        .ok_or_else(|| io::Error::other("failed to determine handoff importer executable"))?;
++    std::os::unix::fs::symlink(&target, &import_path)?;
++    let envelope = ControllerHandoffEnvelope {
++        version: CONTROLLER_IDENTITY_VERSION,
++        import_argv0: import_path.to_string_lossy().into_owned(),
++        identity,
++    };
++    let bytes = serde_json::to_vec(&envelope).map_err(io::Error::other)?;
++    let mut file = match std::fs::OpenOptions::new()
++        .write(true)
++        .create_new(true)
++        .open(&identity_path)
++    {
++        Ok(file) => file,
++        Err(err) => {
++            let _ = std::fs::remove_file(&import_path);
++            return Err(err);
++        }
++    };
++    if let Err(err) = file
++        .write_all(&bytes)
++        .and_then(|()| file.sync_all())
++        .and_then(|()| {
++            std::fs::set_permissions(&identity_path, std::fs::Permissions::from_mode(0o600))
++        })
++    {
++        let _ = std::fs::remove_file(&identity_path);
++        let _ = std::fs::remove_file(&import_path);
++        return Err(err);
++    }
++    Ok(ControllerHandoffTransport {
++        import_exe: import_path,
++        identity_path,
++    })
++}
++
++#[cfg(unix)]
++pub(crate) fn remove_controller_handoff_identity(transport: &ControllerHandoffTransport) {
++    let _ = std::fs::remove_file(&transport.identity_path);
++    let _ = std::fs::remove_file(&transport.import_exe);
++}
++
++#[cfg(unix)]
++fn snapshot_public_pane_ids(snapshot: &crate::persist::SessionSnapshot) -> HashMap<u32, String> {
++    let mut ids = HashMap::new();
++    for workspace in &snapshot.workspaces {
++        let Some(workspace_id) = workspace.id.as_deref() else {
++            continue;
++        };
++        for (&pane_id, &number) in &workspace.public_pane_numbers {
++            ids.insert(
++                pane_id,
++                crate::workspace::public_pane_id_for_number(workspace_id, number),
++            );
++        }
++    }
++    ids
++}
++
++#[cfg(unix)]
++fn bind_controller_handoff_identity(
++    panes: &mut [crate::handoff_runtime::HandoffRuntimeState],
++    public_pane_ids: &HashMap<u32, String>,
++    identity: &ControllerHandoffIdentity,
++) -> io::Result<()> {
++    let mut by_pane = HashMap::new();
++    let mut terminal_ids = HashSet::new();
++    for pane in &identity.panes {
++        if by_pane.insert(pane.pane_id.as_str(), pane).is_some() {
++            return Err(io::Error::new(
++                io::ErrorKind::InvalidData,
++                "live handoff controller identity repeats a pane",
++            ));
++        }
++        if !terminal_ids.insert(pane.terminal_id.to_string()) {
++            return Err(io::Error::new(
++                io::ErrorKind::InvalidData,
++                "live handoff controller identity repeats a terminal",
++            ));
++        }
++    }
++    let mut consumed = HashSet::new();
++    for runtime in panes {
++        let public_pane_id = public_pane_ids.get(&runtime.pane_id).ok_or_else(|| {
++            io::Error::new(
++                io::ErrorKind::InvalidData,
++                format!(
++                    "legacy handoff runtime pane {} has no public identity",
++                    runtime.pane_id
++                ),
++            )
++        })?;
++        let entry = by_pane.get(public_pane_id.as_str()).ok_or_else(|| {
++            io::Error::new(
++                io::ErrorKind::InvalidData,
++                format!(
++                    "legacy handoff runtime pane {public_pane_id} is missing controller identity"
++                ),
++            )
++        })?;
++        if entry.shell_pid != runtime.child_pid {
++            return Err(io::Error::new(
++                io::ErrorKind::InvalidData,
++                format!("legacy handoff runtime pane {public_pane_id} changed shell identity"),
++            ));
++        }
++        if let Some(existing) = runtime.terminal_id.as_ref() {
++            if existing != &entry.terminal_id {
++                return Err(io::Error::new(
++                    io::ErrorKind::InvalidData,
++                    format!("handoff terminal identity disagrees for pane {public_pane_id}"),
++                ));
++            }
++        } else {
++            runtime.terminal_id = Some(entry.terminal_id.clone());
++        }
++        consumed.insert(public_pane_id.clone());
++    }
++    if consumed.len() != identity.panes.len() {
++        return Err(io::Error::new(
++            io::ErrorKind::InvalidData,
++            "live handoff controller identity contains an unexported pane",
++        ));
++    }
++    Ok(())
++}
++
++#[cfg(unix)]
++pub(crate) fn restore_controller_handoff_identity(
++    manifest: &mut HandoffManifest,
++) -> io::Result<()> {
++    if manifest.panes.iter().all(|pane| pane.terminal_id.is_some()) {
++        return Ok(());
++    }
++
++    let argv0 = std::env::args_os().next().ok_or_else(|| {
++        io::Error::new(
++            io::ErrorKind::InvalidData,
++            "legacy live handoff importer has no operation identity",
++        )
++    })?;
++    let import_path = PathBuf::from(argv0);
++    let data_dir = crate::session::data_dir();
++    if import_path.parent() != Some(data_dir.as_path())
++        || !import_path
++            .file_name()
++            .and_then(|name| name.to_str())
++            .is_some_and(|name| name.starts_with(controller_import_prefix()))
++    {
++        return Err(io::Error::new(
++            io::ErrorKind::InvalidData,
++            "legacy live handoff importer has an invalid operation identity",
++        ));
++    }
++    let identity_path = import_path.with_extension("json");
++    let transport = ControllerHandoffTransport {
++        import_exe: import_path.clone(),
++        identity_path: identity_path.clone(),
++    };
++    let result = (|| {
++        let bytes = std::fs::read(&identity_path)?;
++        let envelope: ControllerHandoffEnvelope =
++            serde_json::from_slice(&bytes).map_err(|err| {
++                io::Error::new(
++                    io::ErrorKind::InvalidData,
++                    format!("legacy live handoff controller identity is invalid: {err}"),
++                )
++            })?;
++        if envelope.version != CONTROLLER_IDENTITY_VERSION
++            || envelope.import_argv0 != import_path.to_string_lossy()
++        {
++            return Err(io::Error::new(
++                io::ErrorKind::InvalidData,
++                "legacy live handoff controller identity is for another operation",
++            ));
++        }
++        let public_pane_ids = snapshot_public_pane_ids(&manifest.snapshot);
++        let mut panes = manifest.panes.clone();
++        bind_controller_handoff_identity(&mut panes, &public_pane_ids, &envelope.identity)?;
++        Ok(panes)
++    })();
++    match result {
++        Ok(panes) => {
++            manifest.panes = panes;
++            remove_controller_handoff_identity(&transport);
++            Ok(())
++        }
++        Err(err) => {
++            remove_controller_handoff_identity(&transport);
++            Err(err)
++        }
++    }
 +}
 +
 +#[cfg(unix)]
@@ -1489,7 +1984,7 @@ index 2cd1714..d2c19bd 100644
      pub stream: UnixStream,
  }
  
-@@ -173,7 +197,11 @@ pub(crate) fn accept_and_validate_on(
+@@ -173,7 +485,11 @@ pub(crate) fn accept_and_validate_on(
  }
  
  #[cfg(unix)]
@@ -1502,7 +1997,7 @@ index 2cd1714..d2c19bd 100644
      if fds.len() > MAX_FDS_PER_HANDOFF {
          return Err(io::Error::new(
              io::ErrorKind::InvalidInput,
-@@ -181,6 +209,7 @@ pub(crate) fn send_fds_and_wait_restored(stream: &mut UnixStream, fds: &[RawFd])
+@@ -181,6 +497,7 @@ pub(crate) fn send_fds_and_wait_restored(stream: &mut UnixStream, fds: &[RawFd])
          ));
      }
      send_fds(stream, fds)?;
@@ -1510,7 +2005,7 @@ index 2cd1714..d2c19bd 100644
  
      stream.set_read_timeout(Some(READY_TIMEOUT))?;
      let restored = read_line_unbuffered(&mut *stream)?;
-@@ -268,9 +297,11 @@ pub(crate) fn receive(socket_path: &Path, token: &str) -> io::Result<ReceivedHan
+@@ -268,9 +585,11 @@ pub(crate) fn receive(socket_path: &Path, token: &str) -> io::Result<ReceivedHan
      stream.write_all(b"validated\n")?;
      stream.flush()?;
      let fds = recv_fds(&stream, manifest.panes.len())?;
@@ -1522,7 +2017,7 @@ index 2cd1714..d2c19bd 100644
          stream,
      })
  }
-@@ -310,6 +341,7 @@ pub(crate) fn manifest_for(
+@@ -310,6 +629,7 @@ pub(crate) fn manifest_for(
      expected_protocol: Option<u32>,
      expected_version: Option<String>,
      api_window_title: Option<String>,
@@ -1530,7 +2025,7 @@ index 2cd1714..d2c19bd 100644
  ) -> HandoffManifest {
      HandoffManifest {
          version: HANDOFF_VERSION,
-@@ -320,6 +352,7 @@ pub(crate) fn manifest_for(
+@@ -320,6 +640,7 @@ pub(crate) fn manifest_for(
          snapshot,
          panes,
          api_window_title,
@@ -1538,7 +2033,31 @@ index 2cd1714..d2c19bd 100644
      }
  }
  
-@@ -496,6 +529,7 @@ mod tests {
+@@ -476,6 +797,23 @@ pub(crate) fn log_import_result(panes: usize) {
+ mod tests {
+     use super::*;
+ 
++    fn runtime(pane_id: u32, child_pid: u32) -> crate::handoff_runtime::HandoffRuntimeState {
++        crate::handoff_runtime::HandoffRuntimeState {
++            pane_id,
++            terminal_id: None,
++            child_pid,
++            rows: 24,
++            cols: 80,
++            cell_width_px: 0,
++            cell_height_px: 0,
++            keyboard_protocol_flags: 0,
++            keyboard_protocol_ansi: None,
++            input_state: None,
++            terminal_title: None,
++            initial_history_ansi: None,
++        }
++    }
++
+     fn empty_snapshot() -> crate::persist::SessionSnapshot {
+         crate::persist::SessionSnapshot {
+             version: 0,
+@@ -496,6 +834,7 @@ mod tests {
              None,
              None,
              Some("deploying".to_string()),
@@ -1546,7 +2065,7 @@ index 2cd1714..d2c19bd 100644
          );
  
          assert_eq!(manifest.api_window_title.as_deref(), Some("deploying"));
-@@ -509,6 +543,7 @@ mod tests {
+@@ -509,6 +848,7 @@ mod tests {
              None,
              None,
              Some("deploying".to_string()),
@@ -1554,11 +2073,113 @@ index 2cd1714..d2c19bd 100644
          );
          let mut value = serde_json::to_value(&manifest).expect("manifest should serialize");
          value
+@@ -521,4 +861,91 @@ mod tests {
+ 
+         assert!(older.api_window_title.is_none());
+     }
++
++    #[test]
++    fn legacy_controller_identity_restores_terminal_ids_by_exported_shell() {
++        let mut panes = vec![runtime(41, 7001), runtime(42, 7002)];
++        let public_pane_ids = HashMap::from([(41, "w1:p1".to_string()), (42, "w1:p2".to_string())]);
++        let first = crate::terminal::TerminalId::alloc();
++        let second = crate::terminal::TerminalId::alloc();
++        let identity = ControllerHandoffIdentity {
++            panes: vec![
++                ControllerHandoffPaneIdentity {
++                    pane_id: "w1:p2".into(),
++                    terminal_id: second.clone(),
++                    shell_pid: 7002,
++                },
++                ControllerHandoffPaneIdentity {
++                    pane_id: "w1:p1".into(),
++                    terminal_id: first.clone(),
++                    shell_pid: 7001,
++                },
++            ],
++        };
++
++        bind_controller_handoff_identity(&mut panes, &public_pane_ids, &identity)
++            .expect("legacy controller mapping should bind exported runtimes");
++
++        assert_eq!(panes[0].terminal_id, Some(first));
++        assert_eq!(panes[1].terminal_id, Some(second));
++    }
++
++    #[test]
++    fn patched_handoff_identity_must_agree_with_controller_mapping() {
++        let existing = crate::terminal::TerminalId::alloc();
++        let different = crate::terminal::TerminalId::alloc();
++        let mut panes = vec![runtime(41, 7001)];
++        panes[0].terminal_id = Some(existing.clone());
++        let identity = ControllerHandoffIdentity {
++            panes: vec![ControllerHandoffPaneIdentity {
++                pane_id: "w1:p1".into(),
++                terminal_id: different,
++                shell_pid: 7001,
++            }],
++        };
++
++        let error = bind_controller_handoff_identity(
++            &mut panes,
++            &HashMap::from([(41, "w1:p1".to_string())]),
++            &identity,
++        )
++        .expect_err("controller and exported terminal identities must not diverge");
++        assert!(error.to_string().contains("disagrees"));
++    }
++
++    #[test]
++    fn orphaned_controller_operation_cannot_interfere_with_next_operation() {
++        let data_dir = std::env::temp_dir().join(format!(
++            "herdr-handoff-operation-test-{}",
++            std::process::id()
++        ));
++        std::fs::create_dir_all(&data_dir).expect("test directory should be created");
++        let first_import = controller_import_path(&data_dir, 1, 10);
++        let second_import = controller_import_path(&data_dir, 1, 11);
++        let first = ControllerHandoffTransport {
++            import_exe: first_import.clone(),
++            identity_path: first_import.with_extension("json"),
++        };
++        let second = ControllerHandoffTransport {
++            import_exe: second_import.clone(),
++            identity_path: second_import.with_extension("json"),
++        };
++        for path in [
++            &first.import_exe,
++            &first.identity_path,
++            &second.import_exe,
++            &second.identity_path,
++        ] {
++            std::fs::write(path, b"operation").expect("test operation artifact should be written");
++        }
++
++        remove_controller_handoff_identity(&first);
++
++        assert!(!first.import_exe.exists());
++        assert!(!first.identity_path.exists());
++        assert!(second.import_exe.exists());
++        assert!(second.identity_path.exists());
++        remove_controller_handoff_identity(&second);
++        let _ = std::fs::remove_dir(&data_dir);
++    }
+ }
 diff --git a/src/server/headless/bootstrap.rs b/src/server/headless/bootstrap.rs
-index 638b1b2..ec283ad 100644
+index 638b1b2..87149b9 100644
 --- a/src/server/headless/bootstrap.rs
 +++ b/src/server/headless/bootstrap.rs
-@@ -127,6 +127,24 @@ fn run_handoff_import_server(socket_path: &Path, token: &str) -> io::Result<()>
+@@ -121,12 +121,34 @@ fn run_handoff_import_server(socket_path: &Path, token: &str) -> io::Result<()>
+     let loaded_config = config::Config::load();
+     let mut received = crate::server::handoff::receive(socket_path, token)?;
+     crate::server::handoff::log_import_result(received.manifest.panes.len());
++    // Legacy v0.9 exporters omit terminal IDs. The patched controller has
++    // already captured them from pane.list/process_info; validate that typed
++    // envelope against this exact exported runtime before restoring anything.
++    crate::server::handoff::restore_controller_handoff_identity(&mut received.manifest)?;
+ 
+     let (api_tx, api_rx) = tokio::sync::mpsc::unbounded_channel();
+     let event_hub = api::EventHub::default();
      let should_quit = Arc::new(AtomicBool::new(false));
  
      let mut imports = HashMap::new();
@@ -1583,7 +2204,7 @@ index 638b1b2..ec283ad 100644
      for (pane, fd) in received.manifest.panes.into_iter().zip(received.fds) {
          let pane_id = pane.pane_id;
          imports.insert(
-@@ -137,7 +155,6 @@ fn run_handoff_import_server(socket_path: &Path, token: &str) -> io::Result<()>
+@@ -137,7 +159,6 @@ fn run_handoff_import_server(socket_path: &Path, token: &str) -> io::Result<()>
              },
          );
      }
@@ -1591,7 +2212,7 @@ index 638b1b2..ec283ad 100644
      let rt = tokio::runtime::Builder::new_multi_thread()
          .enable_all()
          .build()
-@@ -151,6 +168,7 @@ fn run_handoff_import_server(socket_path: &Path, token: &str) -> io::Result<()>
+@@ -151,6 +172,7 @@ fn run_handoff_import_server(socket_path: &Path, token: &str) -> io::Result<()>
              event_hub.clone(),
              &received.manifest.snapshot,
              &mut imports,
@@ -1600,7 +2221,7 @@ index 638b1b2..ec283ad 100644
          crate::server::handoff::report_restored(&mut received.stream)?;
          if std::env::var("HERDR_TEST_HANDOFF_IMPORT_FAIL").as_deref() == Ok("after_restored") {
 diff --git a/src/server/headless/lifecycle.rs b/src/server/headless/lifecycle.rs
-index ab1448c..277ede8 100644
+index ab1448c..e2bb1c4 100644
 --- a/src/server/headless/lifecycle.rs
 +++ b/src/server/headless/lifecycle.rs
 @@ -63,6 +63,9 @@ impl HeadlessServer {
@@ -1613,7 +2234,15 @@ index ab1448c..277ede8 100644
  
          self.handoff_in_progress = true;
          self.disconnect_all_clients_for_handoff();
-@@ -115,6 +118,7 @@ impl HeadlessServer {
+@@ -93,6 +96,7 @@ impl HeadlessServer {
+                 continue;
+             };
+             let mut handoff_runtime = runtime.handoff_runtime_state(pane_id);
++            handoff_runtime.terminal_id = Some(terminal_id.clone());
+             let has_agent_session = self
+                 .app
+                 .state
+@@ -115,6 +119,7 @@ impl HeadlessServer {
              params.expected_protocol,
              params.expected_version,
              self.api_window_title.clone(),
@@ -1621,7 +2250,7 @@ index ab1448c..277ede8 100644
          );
          let mut import_child = match crate::server::handoff::spawn_handoff_import(
              import_exe.as_deref(),
-@@ -131,6 +135,7 @@ impl HeadlessServer {
+@@ -131,6 +136,7 @@ impl HeadlessServer {
          info!(pid = child_pid, socket = %socket_path.display(), "spawned handoff import server");
  
          let mut fds = Vec::new();
@@ -1629,7 +2258,7 @@ index ab1448c..277ede8 100644
          let duplicate_result = (|| {
              for (terminal_id, _) in &handoff_entries {
                  let Some(runtime) = self.app.terminal_runtimes.get(terminal_id) else {
-@@ -138,12 +143,19 @@ impl HeadlessServer {
+@@ -138,12 +144,19 @@ impl HeadlessServer {
                  };
                  fds.push(runtime.duplicate_handoff_fd()?);
              }
@@ -1649,7 +2278,7 @@ index ab1448c..277ede8 100644
              crate::server::handoff::cleanup_failed_import_child(&mut import_child);
              self.rollback_handoff_before_commit(&socket_path, &paused_terminal_ids);
              return Err(err);
-@@ -160,16 +172,23 @@ impl HeadlessServer {
+@@ -160,16 +173,23 @@ impl HeadlessServer {
                  for fd in fds {
                      let _ = unsafe { libc::close(fd) };
                  }
