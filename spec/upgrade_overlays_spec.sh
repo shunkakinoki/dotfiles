@@ -10,7 +10,9 @@ When run bash "$SCRIPT"
 The output should include 'Usage:'
 The output should include 'upgrade-overlays.sh'
 The output should include 'blacksmith-testbox-cli'
+The output should include 'crabbox'
 The output should include 'moshi-hook'
+The output should include 't3code'
 The output should include 'all'
 The status should be failure
 End
@@ -41,7 +43,16 @@ End
 Describe 'moshi-hook overlay target'
 setup() {
   TEMP_DIR=$(mktemp -d)
-  mkdir -p "$TEMP_DIR/bin" "$TEMP_DIR/cdn/hook/latest" "$TEMP_DIR/cdn/hook/v0.2.69" "$TEMP_DIR/overlays"
+  mkdir -p \
+    "$TEMP_DIR/bin" \
+    "$TEMP_DIR/cdn/hook/latest" \
+    "$TEMP_DIR/cdn/hook/v0.2.69" \
+    "$TEMP_DIR/cdn/blacksmith/v0.4.57/linux/amd64" \
+    "$TEMP_DIR/cdn/blacksmith/v0.4.57/linux/arm64" \
+    "$TEMP_DIR/cdn/blacksmith/v0.4.57/darwin/amd64" \
+    "$TEMP_DIR/cdn/blacksmith/v0.4.57/darwin/arm64" \
+    "$TEMP_DIR/cdn/crabbox/v0.55.0" \
+    "$TEMP_DIR/overlays"
   cat >"$TEMP_DIR/bin/nix-prefetch-url" <<'EOF'
 #!/usr/bin/env bash
 case "$*" in
@@ -60,10 +71,35 @@ EOF
 0a30e081399543551bbd0ba3320f3b28be814a585e5c591e168f8fd6d9565f07  moshi-hook_Linux_arm64.tar.gz
 3903e2e5d1dba02f9e1f53df8cea6e2b3260e1581461b9a07ca65f18814b8b08  moshi-hook_Linux_x86_64.tar.gz
 EOF
+  for asset in \
+    linux/amd64 \
+    linux/arm64 \
+    darwin/amd64 \
+    darwin/arm64; do
+    printf '%s  blacksmith\n' 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' \
+      >"$TEMP_DIR/cdn/blacksmith/v0.4.57/$asset/blacksmith.sha256"
+  done
+  cat >"$TEMP_DIR/cdn/crabbox/v0.55.0/checksums.txt" <<'EOF'
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  crabbox_0.55.0_linux_amd64.tar.gz
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb  crabbox_0.55.0_linux_arm64.tar.gz
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc  crabbox_0.55.0_darwin_arm64.tar.gz
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd  crabbox_0.55.0_darwin_amd64.tar.gz
+EOF
   cat >"$TEMP_DIR/overlays/default.nix" <<'EOF'
 { inputs }:
 [
   (_: prev: {
+    gh = prev.gh.overrideAttrs (_: {
+      version = "2.98.0";
+      src = prev.fetchFromGitHub {
+        rev = "0000000000000000000000000000000000000000";
+        hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+      };
+      vendorHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+      buildPhase = ''
+        make GH_VERSION=2.98.0 bin/gh
+      '';
+    });
     moshi-hook = prev.stdenv.mkDerivation rec {
       pname = "moshi-hook";
       version = "0.2.55";
@@ -95,7 +131,43 @@ EOF
     blacksmith-testbox-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "blacksmith-testbox-cli";
       version = "0.4.57";
+      src = prev.fetchurl {
+        sha256 =
+          if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
+            "old-linux-x86"
+          else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
+            "old-linux-arm"
+          else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
+            "old-darwin-arm"
+          else
+            "old-darwin-x86";
+      };
       meta.mainProgram = "blacksmith";
+    };
+    crabbox = prev.stdenvNoCC.mkDerivation rec {
+      pname = "crabbox";
+      version = "0.46.0";
+      src = prev.fetchurl {
+        sha256 =
+          if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
+            "old-linux-x86"
+          else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
+            "old-linux-arm"
+          else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
+            "old-darwin-arm"
+          else
+            "old-darwin-x86";
+      };
+      meta.mainProgram = "crabbox";
+    };
+    # t3code 0.0.33 pins one pnpm deps hash
+    t3code-test = let
+      pnpmDepsHashes = {
+        x86_64-linux = "old-t3code-hash";
+      };
+      hash = pnpmDepsHashes.x86_64-linux;
+    in {
+      outputHash = hash;
     };
   })
 ]
@@ -109,9 +181,16 @@ cleanup() {
 Before 'setup'
 After 'cleanup'
 
-It 'updates moshi-hook from the all target'
-When run env OVERLAY_FILE="$TEMP_DIR/overlays/default.nix" ASCII_BOX_CLI_VERSION="0.1.208" MOSHI_HOOK_CDN="file://$TEMP_DIR/cdn" BLACKSMITH_CLI_VERSION="0.4.57" bash "$SCRIPT" all
+It 'updates every overlay hash from the all target'
+When run bash -c "env OVERLAY_FILE='$TEMP_DIR/overlays/default.nix' ASCII_BOX_CLI_VERSION='0.1.208' MOSHI_HOOK_CDN='file://$TEMP_DIR/cdn' BLACKSMITH_CLI_CDN='file://$TEMP_DIR/cdn/blacksmith' BLACKSMITH_CLI_VERSION='0.4.57' CRABBOX_RELEASE_CDN='file://$TEMP_DIR/cdn/crabbox' CRABBOX_VERSION='0.55.0' GH_VERSION='2.100.0' GH_REV='45437bc7eeeb3359bbfddd1742f79de7652fd3e2' GH_SOURCE_HASH='sha256-9tnSQPSqllE+Ke6LKyNbnOF1drzdEwesEuPdmWD1X5c=' GH_VENDOR_HASH='sha256-ZqUs2BnasF3QBX0I2Sxh2A/CnO61Vy6gRn1hkf0n9AY=' T3CODE_VERSION='0.0.36' T3CODE_PNPM_HASH='sha256-y/sJIluwbn65APmJ2p07FK1ScXpetCloTHtQzZMchDU=' bash '$SCRIPT' all && cat '$TEMP_DIR/overlays/default.nix'"
 The output should include 'moshi-hook upgraded from 0.2.55 to 0.2.69'
+The output should include 'crabbox upgraded from 0.46.0 to 0.55.0'
+The output should include 't3code pnpm hash refreshed for 0.0.36'
+The output should include 'gh upgraded from 2.98.0 to 2.100.0'
+The output should include '45437bc7eeeb3359bbfddd1742f79de7652fd3e2'
+The output should include 'version = "0.55.0"'
+The output should include 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+The output should include 'sha256-9tnSQPSqllE+Ke6LKyNbnOF1drzdEwesEuPdmWD1X5c='
 The status should be success
 End
 

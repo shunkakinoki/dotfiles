@@ -48,21 +48,20 @@
     inherit (prev.stdenv.hostPlatform) system;
   })
   (_: prev: {
-    # Use the immutable GitHub CLI preview commit that adds --attach to issue and PR
-    # commands. Remove this override once the feature is released in a tagged version.
+    # Use the first tagged release that includes --attach on issue and PR commands.
     gh = prev.gh.overrideAttrs (_: {
       pname = "gh";
-      version = "2.95.0-unstable-20260828";
+      version = "2.100.0";
       src = prev.fetchFromGitHub {
         owner = "cli";
         repo = "cli";
-        rev = "40b742f76d68e6b1f472942a6368db4b5d765641";
-        hash = "sha256-nGquMOwkEZp6ysFJOw5qa1PqQqw7+WLqpPQiziEAPG0=";
+        rev = "45437bc7eeeb3359bbfddd1742f79de7652fd3e2";
+        hash = "sha256-9tnSQPSqllE+Ke6LKyNbnOF1drzdEwesEuPdmWD1X5c=";
       };
-      vendorHash = "sha256-v9h17XD/fyHasgLsHHkGvoV1qITWpwGDJ6MtlvWnN4c=";
+      vendorHash = "sha256-ZqUs2BnasF3QBX0I2Sxh2A/CnO61Vy6gRn1hkf0n9AY=";
       buildPhase = ''
         runHook preBuild
-        make GO_LDFLAGS="-s -w -X github.com/cli/cli/v2/internal/build.Date=nixpkgs" GH_VERSION=2.95.0-unstable-20260828 bin/gh manpages
+        make GO_LDFLAGS="-s -w -X github.com/cli/cli/v2/internal/build.Date=nixpkgs" GH_VERSION=2.100.0 bin/gh manpages
         runHook postBuild
       '';
     });
@@ -127,14 +126,14 @@
           });
         }
         // (
-          # t3code 0.0.33 pins one pnpm deps hash, but fetchPnpmDeps resolves
+          # t3code 0.0.36 pins one pnpm deps hash, but fetchPnpmDeps resolves
           # platform-specific optional packages, so it only reproduces on the
           # system upstream generated it from. Every x86_64-linux build fails on
           # the fixed-output mismatch; other systems keep the upstream hash.
           # https://github.com/numtide/llm-agents.nix
           let
             pnpmDepsHashes = {
-              x86_64-linux = "sha256-i/K5bj7CS7PGIX5hfayxAJ7ngNib92w3SDKGXTVWccA=";
+              x86_64-linux = "sha256-y/sJIluwbn65APmJ2p07FK1ScXpetCloTHtQzZMchDU=";
             };
             hash = pnpmDepsHashes.${prev.stdenv.hostPlatform.system} or null;
             t3code = prev.llm-agents.t3code.overrideAttrs (
@@ -188,16 +187,16 @@
   (_: prev: {
     ascii-box-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "ascii-box-cli";
-      version = "0.1.208";
+      version = "0.1.228";
       src = prev.fetchurl {
         url = "https://github.com/ariana-dot-dev/agent-server/releases/download/box-cli-v${version}-ascii-prod1/box-${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }-${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x64"}";
         sha256 =
           {
-            "aarch64-darwin" = "0p85n67mklxfvvh1v6sj047wcskxsagzmg6r0wdd4kibpvgbxdap";
-            "aarch64-linux" = "1nsfky5jilcg2w87k4dlvkg1bki325j1mmf8qp93m8rjg4zq3sm1";
-            "x86_64-linux" = "0jmp1xvzsnxpgakrd69fiqp2fd8rzcr57s80djlzbdgfs3jr2z60";
+            "aarch64-darwin" = "0zhfrncihahnbln400j0n2bqxnra86q64vf4zf1vblyhwl1zwic2";
+            "aarch64-linux" = "0w89dxyq16rdkxkvl88apxxpivq473ap7r5igrhi0km3k238r5bb";
+            "x86_64-linux" = "1c05jp8jnf3qb7viqgd2fzjgdpmjvrw59wgnrx88q1w7k429iwjb";
           }
           .${prev.stdenv.hostPlatform.system};
       };
@@ -210,20 +209,20 @@
 
     blacksmith-testbox-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "blacksmith-testbox-cli";
-      version = "0.4.57";
+      version = "0.4.58";
       src = prev.fetchurl {
         url = "https://clireleases.blacksmith.sh/cli/v${version}/${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }/${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}/blacksmith";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "7f60f3b9f8d4d7644d9743f5d962acb3b3dbf675f51676702e5f292e02060bca"
+            "0b54a4398e9b35344d8fb32891703d8a393343f5001914d7482f93d068c76822"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "04c8d261526e23c7791f05b8acec8f02b9d1fe67c35a1adcf28076627327270a"
+            "2bf3e7246414e2fd113d3214577bb8951015aeda57579d1f36ec75dc5c05c716"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "607b0f4413e426574527446c7718ea32587d57b24a3ea0749e1ab4138a426584"
+            "2384984fa9cdb943e9352b4ff6a4adf9e9ac61c194c255887413357fada27d88"
           else
-            "47281f402ff223f85e5165ea9018cd0281a727f19c69af8121ae4b09658ad313";
+            "6dabf51a4e168d7ea1d9379f09fb8e08dc57a5f8c000932b1f9d507c44bc5450";
       };
       dontUnpack = true;
       installPhase = ''
@@ -234,20 +233,20 @@
 
     crabbox = prev.stdenvNoCC.mkDerivation rec {
       pname = "crabbox";
-      version = "0.47.0";
+      version = "0.55.0";
       src = prev.fetchurl {
         url = "https://github.com/openclaw/crabbox/releases/download/v${version}/crabbox_${version}_${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}.tar.gz";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "e513ba473be4eaaadf16f88fe030a03e6a11c0b49a088941fcccdbf3a09247ad"
+            "883e9201c4b508077f092ea3ded99092ea34068e19e9d4dd4812cf50d2134e98"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "94a388cd7301c7ba1d7e42d8c55d68c6b9dd55025e79cf247c58d659aa5039d4"
+            "87711d0002f0a4d034f8a651052ea4244fdcc401aed5fd69759d966953d7c4fa"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "ef1567083f6bd0d01b2539efdd69ccd205c2642e7d9eefb073d58052e8a7bb91"
+            "5c7c8faf98eb91d64b86b22f859735ae13777c8bdf759e0bd51f9456df5d018e"
           else
-            "642995363f7d6c367859e77f80eb66468ef2ed380d1e7ea4ae737f7deeb986d4";
+            "607d62adda808be29bb9341071b5e7a895f4f1f45a7905d763870b91f56d3b57";
       };
       sourceRoot = ".";
       dontConfigure = true;
@@ -265,20 +264,20 @@
 
     moshi-hook = prev.stdenv.mkDerivation rec {
       pname = "moshi-hook";
-      version = "0.3.16";
+      version = "0.3.21";
       src = prev.fetchurl {
         url = "https://cdn.getmoshi.app/hook/v${version}/moshi-hook_${
           if prev.stdenv.hostPlatform.isDarwin then "Darwin" else "Linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x86_64"}.tar.gz";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "ee96ff3cebe68648a9631976660afa4a7a247cfa2cc8c030d9d5eca784df5a95"
+            "038431d47325ab91e455491873f074df8b804e877e742e22e6b54164dd0dd926"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "8df6d83dcd1aa99c42e7516937f29249f3a8f704d9d9d7eec703fa2287a88666"
+            "e4dec1da4692e7678df70629c27bdda4e620f379ac0f73c6060c0f35d62f8520"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "173550c6437e6663dbdf43736fc9cbca2a5af8acf7c3d61b2c3a97c4963cf596"
+            "f70b3ee65a159e301c04dbf9528e0a484fd60d54daa2a203678a22a50f0e61a3"
           else
-            "608c8af54a5d7add4e6d58ce2d1b5b3ea0ba536fd8b7e57d947b5f9f244e8311";
+            "5a2883944e4e13584e4e5c6269e9d1b248a3f8e4437ded9d522dc3daa2c85ba6";
       };
       sourceRoot = ".";
       dontConfigure = true;
