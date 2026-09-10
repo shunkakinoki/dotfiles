@@ -42,15 +42,6 @@ command=$(echo "$input" | jq -r '
 ' 2>/dev/null)
 [[ -z $command ]] && exit 0
 
-if [[ $command == *herdr* ]]; then
-  if ! command -v python3 >/dev/null 2>&1; then
-    echo "BLOCKED by Herdr worker admission: python3 is unavailable" >&2
-    exit 2
-  fi
-  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-  python3 "$SCRIPT_DIR/herdr-worker-admission.py" "$command"
-fi
-
 # Hardcoded deny patterns (mirrors claude settings.json deny list)
 deny_patterns=(
   "chmod -R 777"
