@@ -124,7 +124,7 @@ home-manager.lib.homeManagerConfiguration {
           Unit = {
             Description = "Herdr headless server (coding-agent multiplexer)";
             After = [ "install-npm-globals.service" ];
-            X-SwitchMethod = "restart";
+            X-SwitchMethod = "keep-old";
           };
           Service = {
             Type = "simple";

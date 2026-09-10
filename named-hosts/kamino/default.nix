@@ -97,7 +97,7 @@ inputs.home-manager.lib.homeManagerConfiguration {
         systemd.user.services.herdr-server = {
           Unit = {
             Description = "Herdr headless server";
-            X-SwitchMethod = "restart";
+            X-SwitchMethod = "keep-old";
           };
           Service = {
             ExitType = "cgroup";
