@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329,SC2034
+# shellcheck disable=SC2016,SC2329,SC2034
 
 Describe 'update-moshi-hooks.sh'
 SCRIPT="$PWD/scripts/update-moshi-hooks.sh"
@@ -35,6 +35,30 @@ It 'runs nix fmt for formatting'
 When run bash -c "grep 'nix fmt' '$SCRIPT'"
 The output should include 'nix fmt'
 The status should be success
+End
+
+It 'normalizes dcg hooks through the fail-closed wrapper without installing'
+TEMP_DIR="$(mktemp -d)"
+HOOKS_JSON="$TEMP_DIR/hooks.json"
+cat >"$HOOKS_JSON" <<'JSON'
+{
+  "hooks": [
+    { "command": "dcg" },
+    { "command": "/nix/store/example-dcg/bin/dcg" },
+    { "command": "command -v dcg >/dev/null 2>&1 && dcg" },
+    { "command": "command -v dcg \u003e/dev/null 2\u003e\u00261 \u0026\u0026 dcg" },
+    { "command": "unrelated-hook" }
+  ]
+}
+JSON
+When run bash -c 'bash "$1" --normalize-only "$2" && jq -r ".hooks[].command" "$2"' _ "$SCRIPT" "$HOOKS_JSON"
+The status should be success
+The output should eq '$HOME/dotfiles/config/shared/hooks/dcg-guard.sh
+$HOME/dotfiles/config/shared/hooks/dcg-guard.sh
+$HOME/dotfiles/config/shared/hooks/dcg-guard.sh
+$HOME/dotfiles/config/shared/hooks/dcg-guard.sh
+unrelated-hook'
+rm -rf "$TEMP_DIR"
 End
 End
 
