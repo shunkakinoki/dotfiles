@@ -1250,10 +1250,39 @@ index aa6acb5..7c9cdc1 100644
              pane_id,
              child_pid,
 diff --git a/src/persist/restore.rs b/src/persist/restore.rs
-index 3c5775c..7d1251f 100644
+index 3c5775c..e7d69e8 100644
 --- a/src/persist/restore.rs
 +++ b/src/persist/restore.rs
-@@ -495,6 +495,8 @@ fn restore_tab(
+@@ -127,16 +127,23 @@ pub fn handoff_pane_aliases(
+         for (tab_snap, tab) in ws_snap.tabs.iter().zip(&workspace.tabs) {
+             let old_ids = collect_snapshot_pane_ids(&tab_snap.layout);
+             let new_ids = tab.layout.pane_ids();
+-            for (old_id, new_id) in old_ids.into_iter().zip(new_ids) {
+-                if old_id != new_id.raw() {
+-                    aliases.insert(old_id, new_id);
+-                }
+-            }
++            record_handoff_pane_mapping(&mut aliases, old_ids, new_ids);
+         }
+     }
+     aliases
+ }
+ 
++#[cfg(unix)]
++fn record_handoff_pane_mapping(
++    aliases: &mut HashMap<u32, PaneId>,
++    old_ids: impl IntoIterator<Item = u32>,
++    new_ids: impl IntoIterator<Item = PaneId>,
++) {
++    for (old_id, new_id) in old_ids.into_iter().zip(new_ids) {
++        aliases.insert(old_id, new_id);
++    }
++}
++
+ #[cfg(unix)]
+ fn collect_snapshot_pane_ids(node: &LayoutSnapshot) -> Vec<u32> {
+     let mut ids = Vec::new();
+@@ -495,6 +502,8 @@ fn restore_tab(
          let saved_managed_agent = saved_pane
              .and_then(|pane| pane.managed_agent_kind.as_deref())
              .and_then(crate::detect::parse_canonical_agent_label);
@@ -1262,7 +1291,7 @@ index 3c5775c..7d1251f 100644
          let saved_launch_argv = saved_pane.and_then(|p| p.launch_argv.clone());
          let saved_agent_session = saved_pane.and_then(|p| p.agent_session.as_ref());
          let saved_history =
-@@ -543,6 +545,9 @@ fn restore_tab(
+@@ -543,6 +552,9 @@ fn restore_tab(
              if let Some(session) = restored_agent_session {
                  terminal.set_persisted_agent_session(session);
              }
@@ -1272,7 +1301,7 @@ index 3c5775c..7d1251f 100644
              match (saved_agent_name, saved_managed_agent) {
                  (Some(agent_name), Some(agent)) => {
                      terminal.restore_managed_agent(agent_name, agent)
-@@ -640,6 +645,9 @@ fn restore_tab(
+@@ -640,6 +652,9 @@ fn restore_tab(
                  if let Some(session) = restored_agent_session {
                      terminal.set_persisted_agent_session(session);
                  }
@@ -1282,7 +1311,26 @@ index 3c5775c..7d1251f 100644
                  match (saved_agent_name, saved_managed_agent) {
                      (Some(agent_name), Some(agent)) if was_imported => {
                          terminal.restore_managed_agent(agent_name, agent)
-@@ -1191,6 +1199,7 @@ mod tests {
+@@ -994,6 +1009,18 @@ mod tests {
+         );
+     }
+ 
++    #[test]
++    #[cfg(unix)]
++    fn handoff_aliases_retain_equal_pane_ids_for_private_import_mapping() {
++        let old_id = 41;
++        let new_id = PaneId::from_raw(old_id);
++        let mut aliases = HashMap::new();
++
++        record_handoff_pane_mapping(&mut aliases, [old_id], [new_id]);
++
++        assert_eq!(aliases.get(&old_id), Some(&new_id));
++    }
++
+     #[test]
+     fn restored_worktree_space_membership_drops_missing_checkout() {
+         let missing =
+@@ -1191,6 +1218,7 @@ mod tests {
                              label: Some("reviewer".into()),
                              agent_name: Some("reviewer".into()),
                              managed_agent_kind: Some("opencode".into()),
@@ -1290,7 +1338,7 @@ index 3c5775c..7d1251f 100644
                              agent_session: Some(super::super::snapshot::PaneAgentSessionSnapshot {
                                  source: "herdr:opencode".into(),
                                  agent: "opencode".into(),
-@@ -1277,6 +1286,7 @@ mod tests {
+@@ -1277,6 +1305,7 @@ mod tests {
                                  label: None,
                                  agent_name: None,
                                  managed_agent_kind: None,
@@ -1298,7 +1346,7 @@ index 3c5775c..7d1251f 100644
                                  agent_session: None,
                                  launch_argv: None,
                              },
-@@ -1288,6 +1298,7 @@ mod tests {
+@@ -1288,6 +1317,7 @@ mod tests {
                                  label: None,
                                  agent_name: None,
                                  managed_agent_kind: None,
@@ -1306,7 +1354,7 @@ index 3c5775c..7d1251f 100644
                                  agent_session: None,
                                  launch_argv: None,
                              },
-@@ -1341,6 +1352,7 @@ mod tests {
+@@ -1341,6 +1371,7 @@ mod tests {
                      label: None,
                      agent_name: None,
                      managed_agent_kind: None,
@@ -1314,7 +1362,7 @@ index 3c5775c..7d1251f 100644
                      agent_session: None,
                      launch_argv: None,
                  },
-@@ -1351,6 +1363,7 @@ mod tests {
+@@ -1351,6 +1382,7 @@ mod tests {
              label: Some("planner".into()),
              agent_name: Some("planner".into()),
              managed_agent_kind: None,
@@ -1322,7 +1370,7 @@ index 3c5775c..7d1251f 100644
              agent_session: Some(super::super::snapshot::PaneAgentSessionSnapshot {
                  source: "herdr:codex".into(),
                  agent: "codex".into(),
-@@ -1502,6 +1515,7 @@ mod tests {
+@@ -1502,6 +1534,7 @@ mod tests {
                              label: None,
                              agent_name: None,
                              managed_agent_kind: None,
@@ -1330,7 +1378,7 @@ index 3c5775c..7d1251f 100644
                              agent_session: Some(super::super::snapshot::PaneAgentSessionSnapshot {
                                  source: "herdr:codex".into(),
                                  agent: "codex".into(),
-@@ -1668,6 +1682,7 @@ mod tests {
+@@ -1668,6 +1701,7 @@ mod tests {
                  label: None,
                  agent_name: None,
                  managed_agent_kind: None,
