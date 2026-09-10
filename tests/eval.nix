@@ -50,6 +50,7 @@ let
         };
         activation = galactica.config.system.activationScripts.tailscaleDns.text;
         beads = galactica.config.home-manager.users.shunkakinoki;
+        packageNames = map lib.getName beads.home.packages;
       in
       assert !galactica.config.home-manager.users.shunkakinoki.nix.enable;
       assert !galactica.config.home-manager.users.shunkakinoki.nix.gc.automatic;
@@ -59,7 +60,9 @@ let
       assert !(beads.launchd.agents ? dolt);
       assert !(beads.launchd.agents ? dolt-backup-main);
       assert beads.launchd.agents.beads-dolt-client-environment.enable;
+      assert lib.elem "herdr" packageNames;
       assert lib.elem "openclaw/tap/crabbox" (map (brew: brew.name) galactica.config.homebrew.brews);
+      assert !(lib.elem "herdr" (map (brew: brew.name) galactica.config.homebrew.brews));
       assert !(lib.elem "crabbox" (map (brew: brew.name) galactica.config.homebrew.brews));
       assert !(lib.elem "crabbox" (map (cask: cask.name) galactica.config.homebrew.casks));
       assert lib.hasInfix "--accept-dns=true" activation;

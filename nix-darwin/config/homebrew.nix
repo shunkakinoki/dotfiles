@@ -76,7 +76,6 @@
       "grafana"
       "graphviz"
       "helm"
-      "herdr"
       "infracost"
       "jjui"
       "kimi-cli"
