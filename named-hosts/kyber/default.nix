@@ -128,6 +128,7 @@ home-manager.lib.homeManagerConfiguration {
           };
           Service = {
             Type = "simple";
+            ExitType = "cgroup";
             ExecStart = "${pkgs.bash}/bin/bash ${../../home-manager/services/herdr/start.sh} herdr";
             Restart = "on-failure";
             RestartSec = "30s";

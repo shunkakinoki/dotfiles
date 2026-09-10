@@ -100,6 +100,7 @@ inputs.home-manager.lib.homeManagerConfiguration {
             X-SwitchMethod = "restart";
           };
           Service = {
+            ExitType = "cgroup";
             ExecStart = "${pkgs.llm-agents.herdr}/bin/herdr server";
             Restart = "on-failure";
             RestartSec = "5s";
