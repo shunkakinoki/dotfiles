@@ -110,12 +110,12 @@ The output should include 'activate-user-service-priority.sh'
 End
 
 It 'declaratively owns Herdr in its own slice and places review daemons in the orchestration slice'
-When run bash -c "unit=\$(sed -n '/systemd.user.services.herdr-server =/,/Install.WantedBy/p' '$PWD/named-hosts/kyber/default.nix'); grep -q 'xdg.configFile.\"systemd/user/herdr-server.service\".force = true' '$PWD/named-hosts/kyber/default.nix' && grep -q 'xdg.configFile.\"systemd/user/default.target.wants/herdr-server.service\".force = true' '$PWD/named-hosts/kyber/default.nix' && grep -q 'services/herdr/start.sh} herdr' <<<\"\$unit\" && grep -q 'Slice = \"herdr.slice\"' <<<\"\$unit\" && ! grep -q 'orchestration.slice' <<<\"\$unit\" && grep -q 'systemd/user/herdr.slice\".source = ./herdr.slice' '$PWD/named-hosts/kyber/default.nix' && grep -q 'roborev.service.d/10-orchestration.conf' '$PWD/named-hosts/kyber/default.nix' && grep -qxF 'Slice=orchestration.slice' '$PWD/named-hosts/kyber/orchestration-service.conf'"
+When run bash -c "unit=\$(sed -n '/systemd.user.services.herdr-server =/,/Install.WantedBy/p' '$PWD/named-hosts/kyber/default.nix'); grep -q 'xdg.configFile.\"systemd/user/herdr-server.service\".force = true' '$PWD/named-hosts/kyber/default.nix' && grep -q 'xdg.configFile.\"systemd/user/default.target.wants/herdr-server.service\".force = true' '$PWD/named-hosts/kyber/default.nix' && grep -q 'ExecStart = \"\${pkgs.llm-agents.herdr}/bin/herdr server\"' <<<\"\$unit\" && grep -q 'Slice = \"herdr.slice\"' <<<\"\$unit\" && ! grep -q 'orchestration.slice' <<<\"\$unit\" && grep -q 'systemd/user/herdr.slice\".source = ./herdr.slice' '$PWD/named-hosts/kyber/default.nix' && grep -q 'roborev.service.d/10-orchestration.conf' '$PWD/named-hosts/kyber/default.nix' && grep -qxF 'Slice=orchestration.slice' '$PWD/named-hosts/kyber/orchestration-service.conf'"
 The status should be success
 End
 
-It 'keeps the Herdr slice unfrozen and installs the pane placement entrypoint'
-When run bash -c "grep -qxF 'IOAccounting=yes' '$PWD/named-hosts/kyber/herdr.slice' && ! grep -q 'IOWriteBandwidthMax' '$PWD/named-hosts/kyber/herdr.slice' && grep -q 'source .*herdr-pane-scope.fish' '$PWD/named-hosts/kyber/default.nix'"
+It 'keeps the Herdr slice unfrozen and moves only pane shells into the orchestration slice'
+When run bash -c "grep -qxF 'IOAccounting=yes' '$PWD/named-hosts/kyber/herdr.slice' && ! grep -q 'IOWriteBandwidthMax' '$PWD/named-hosts/kyber/herdr.slice' && grep -q 'systemd-run --user --quiet --scope --collect' '$PWD/named-hosts/kyber/default.nix' && grep -q -- '--slice=orchestration.slice --unit=herdr-pane-' '$PWD/named-hosts/kyber/default.nix' && grep -q 'set -q HERDR_ENV; and status is-interactive; and not set -q HERDR_PANE_SCOPED' '$PWD/named-hosts/kyber/default.nix'"
 The status should be success
 End
 
