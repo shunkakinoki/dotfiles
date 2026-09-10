@@ -109,6 +109,26 @@
       # https://github.com/numtide/llm-agents.nix
       llm-agents =
         (prev.llm-agents or { })
+        // {
+          # Keep every managed client and server on the same released protocol.
+          # The upstream recipe retains native Linux/Darwin build dependencies.
+          herdr = prev.llm-agents.herdr.overrideAttrs (
+            finalAttrs: _: {
+              version = "0.9.0";
+              src = prev.fetchFromGitHub {
+                owner = "herdrdev";
+                repo = "herdr";
+                tag = "v${finalAttrs.version}";
+                hash = "sha256-SUYF4bbaYwNgoe498VoCUzuLPcjBLQXR0o0DWjjoSnI=";
+              };
+              cargoDeps = prev.rustPlatform.fetchCargoVendor {
+                inherit (finalAttrs) src;
+                name = "herdr-${finalAttrs.version}-vendor";
+                hash = "sha256-CW/SF/cAPDv47gS5B7XbVZEE6LC9F1a2I1TLTJ4AWdw=";
+              };
+            }
+          );
+        }
         // prev.lib.optionalAttrs (prev.llm-agents ? grok) {
           grok = prev.llm-agents.grok.overrideAttrs (old: {
             doInstallCheck = false;
