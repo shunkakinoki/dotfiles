@@ -210,8 +210,8 @@ End
 
 Describe 'OpenCode runtime fallback'
 It 'keeps DeepSeek Flash as the explicit default model'
-When run bash -c "grep '\"model\": \"shunkakinoki/deepseek-v4-flash\"' config/opencode/opencode.jsonc"
-The output should include 'shunkakinoki/deepseek-v4-flash'
+When run bash -c "grep '\"model\": \"shunkakinoki/deepseek-v4.1-flash\"' config/opencode/opencode.jsonc"
+The output should include 'shunkakinoki/deepseek-v4.1-flash'
 End
 
 It 'omits unsupported prompt cache keys for both CLIProxy providers'
@@ -220,8 +220,8 @@ The status should be success
 End
 
 It 'uses the DeepSeek Flash alias for the small model'
-When run bash -c "grep '\"small_model\": \"shunkakinoki/deepseek-v4-flash\"' config/opencode/opencode.jsonc"
-The output should include 'shunkakinoki/deepseek-v4-flash'
+When run bash -c "grep '\"small_model\": \"shunkakinoki/deepseek-v4.1-flash\"' config/opencode/opencode.jsonc"
+The output should include 'shunkakinoki/deepseek-v4.1-flash'
 End
 
 It 'pins the audited OpenCode runtime fallback plugin release'
@@ -235,7 +235,7 @@ The status should be success
 End
 
 It 'generates the CLIProxyAPI DeepSeek Flash model'
-When run bash -c "sed -n '/\"cliproxyapi\"/,/\"lmstudio\"/p' config/opencode/opencode.jsonc | grep -q 'deepseek-v4-flash'"
+When run bash -c "sed -n '/\"cliproxyapi\"/,/\"lmstudio\"/p' config/opencode/opencode.jsonc | grep -q 'deepseek-v4.1-flash'"
 The status should be success
 End
 
@@ -262,7 +262,7 @@ End
 
 It 'uses the free-tier CLIProxy fallback chain for OMP'
 When run bash -c "sed -n '/^  fallbackChains:/,/^  fallbackRevertPolicy/p' config/omp/config.yml"
-The output should include 'cliproxyapi/deepseek-v4-flash'
+The output should include 'cliproxyapi/deepseek-v4.1-flash'
 The output should include 'cliproxyapi/free'
 The output should not include 'openai-codex/'
 End
@@ -326,17 +326,17 @@ End
 
 Describe 'CLIProxyAPI routing'
 It 'hydrates the OMP remote CLIProxyAPI catalog without the retired model'
-When run bash -c "grep -q 'baseUrl: https://cliproxy.shunkakinoki.com/v1' config/omp/models.yml && grep -q 'auth: apiKey' config/omp/models.yml && grep -q 'type: openai-models-list' config/omp/models.yml && grep -q 'id: deepseek-v4-flash' config/omp/models.yml && grep -q 'id: free' config/omp/models.yml && ! grep -q 'id: gemma-4-31b-it' config/omp/models.yml && ! grep -q 'id: glm-4.7' config/omp/models.yml && ! grep -q '__DEEPSEEK_FLASH__' config/omp/models.yml"
+When run bash -c "grep -q 'baseUrl: https://cliproxy.shunkakinoki.com/v1' config/omp/models.yml && grep -q 'auth: apiKey' config/omp/models.yml && grep -q 'type: openai-models-list' config/omp/models.yml && grep -q 'id: deepseek-v4.1-flash' config/omp/models.yml && grep -q 'id: free' config/omp/models.yml && ! grep -q 'id: gemma-4-31b-it' config/omp/models.yml && ! grep -q 'id: glm-4.7' config/omp/models.yml && ! grep -q '__DEEPSEEK_FLASH__' config/omp/models.yml"
 The status should be success
 End
 
 It 'generates the DeepSeek Flash route in CliProxy'
-When run bash -c "sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4-flash\"'"
+When run bash -c "sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4.1-flash\"'"
 The status should be success
 End
 
 It 'routes the DeepSeek Flash preset through OpenRouter and OpenCode Go in CliProxy'
-When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"@preset/deepseek-v4-flash\"' && sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4-flash\"'"
+When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"@preset/deepseek-v4.1-flash\"' && sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4.1-flash\"'"
 The status should be success
 End
 
@@ -351,7 +351,7 @@ The status should be success
 End
 
 It 'hydrates the versioned Aliyun DeepSeek model behind the canonical alias'
-When run bash -c "section=\$(sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' config/cliproxyapi/config.template.yaml); printf '%s\n' \"\$section\" | grep -q 'name: \"deepseek-v4-flash-0731\"' && printf '%s\n' \"\$section\" | grep -q 'alias: \"deepseek-v4-flash\"'"
+When run bash -c "section=\$(sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' config/cliproxyapi/config.template.yaml); printf '%s\n' \"\$section\" | grep -q 'name: \"deepseek-v4-flash-0731\"' && printf '%s\n' \"\$section\" | grep -q 'alias: \"deepseek-v4.1-flash\"'"
 The status should be success
 End
 

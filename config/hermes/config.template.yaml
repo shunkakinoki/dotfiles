@@ -1,5 +1,5 @@
 model:
-  default: deepseek-v4-flash
+  default: deepseek-v4.1-flash
   provider: cliproxy
   base_url: https://cliproxy.shunkakinoki.com/v1
   api_key: __CLIPROXY_API_KEY__
@@ -18,14 +18,14 @@ moa:
     default:
       reference_models:
         - provider: cliproxy
-          model: deepseek-v4-flash
+          model: deepseek-v4.1-flash
           enabled: true
         - provider: cliproxy
           model: minimax-m3
           enabled: true
       aggregator:
         provider: cliproxy
-        model: deepseek-v4-flash
+        model: deepseek-v4.1-flash
 credential_pool_strategies: {}
 toolsets:
   - hermes-cli
@@ -241,7 +241,7 @@ memory:
   user_char_limit: 1375
   provider: ''
 delegation:
-  model: deepseek-v4-flash
+  model: deepseek-v4.1-flash
   provider: cliproxy
   base_url: ''
   api_key: ''

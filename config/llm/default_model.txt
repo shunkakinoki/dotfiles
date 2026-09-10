@@ -1,1 +1,1 @@
-deepseek-v4-flash
+deepseek-v4.1-flash

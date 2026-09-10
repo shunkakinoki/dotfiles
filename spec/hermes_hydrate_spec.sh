@@ -213,7 +213,7 @@ End
 Describe 'declarative model routing'
 It 'uses the Flash, free fallback convention'
 When run bash -c "sed -n '1,20p' '$PWD/config/hermes/config.template.yaml'"
-The output should include 'default: deepseek-v4-flash'
+The output should include 'default: deepseek-v4.1-flash'
 The output should include 'provider: cliproxy'
 The output should include 'model: free'
 End
@@ -256,7 +256,7 @@ End
 It 'hydrates the default Mixture-of-Agents models from the canonical model list'
 When run bash -c "sed -n '/^moa:/,/^credential_pool_strategies:/p' '$PWD/config/hermes/config.template.yaml'"
 The output should include 'provider: cliproxy'
-The output should include 'model: deepseek-v4-flash'
+The output should include 'model: deepseek-v4.1-flash'
 The output should include 'model: minimax-m3'
 The output should not include 'opus'
 End

@@ -5,12 +5,12 @@
   },
   "customModels": [
     {
-      "model": "deepseek-v4-flash",
-      "id": "custom:deepseek-v4-flash-0",
+      "model": "deepseek-v4.1-flash",
+      "id": "custom:deepseek-v4.1-flash-0",
       "index": 0,
       "baseUrl": "https://cliproxy.shunkakinoki.com/v1",
       "apiKey": "CLIPROXY_API_KEY",
-      "displayName": "Deepseek V4 Flash",
+      "displayName": "Deepseek V4.1 Flash",
       "maxOutputTokens": 64000,
       "noImageSupport": true,
       "provider": "generic-chat-completion-api"

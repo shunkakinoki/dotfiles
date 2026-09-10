@@ -69,7 +69,7 @@
       "custom": "",
       "groq": "",
       "openai": "",
-      "openrouter": "@preset/deepseek-v4-flash",
+      "openrouter": "@preset/deepseek-v4-1-flash",
       "zai": ""
     },
     "post_process_prompts": [
