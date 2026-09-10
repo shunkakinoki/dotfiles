@@ -185,7 +185,7 @@ cleaner:
 
 The Herdr server runs in `herdr.slice`, which is never frozen: it is the
 control plane for every lane and must keep answering API calls. Its pane
-ordinary pane shells re-exec themselves into `orchestration.slice` through the kyber fish
+shells re-exec themselves into `orchestration.slice` through the kyber fish
 init, so lane work, RoboRev, and their child processes share one disposable
 slice that caps aggregate writes to 20 MB/s and aggregate tasks to 2,048.
 When sustained host I/O PSI or D-state pressure crosses the health threshold
@@ -199,27 +199,6 @@ pressure-free samples with a healthy CRI probe. Three freezes within an hour
 raise `orchestration-circuit-breaker-flapping`, which means the slice re-trips
 after every thaw and its top writers in the evidence captures need attention
 rather than another auto-thaw.
-
-For an operator-authorized recovery pane, set `HERDR_PANE_ROLE=recovery` when
-creating the tab, before its shell starts:
-
-```sh
-herdr tab create --workspace <workspace-id> --label recovery --env HERDR_PANE_ROLE=recovery
-```
-
-That shell enters a separate `herdr-recovery-<pid>.scope` in `herdr.slice`.
-Ordinary panes keep their disposable placement, and unknown role values refuse
-launch. The role changes placement only; it does not grant authority to thaw
-workloads, alter permissions, or replace another worker. Verify the native
-worker's `/proc/<pid>/cgroup` and its scope's `FreezerState` before handing it
-recovery work. An already frozen pane requires an explicit operator-led move;
-setting an environment variable in its stopped shell cannot recover it.
-
-The managed server resolves `herdr` through the same user-local binary paths as
-the client, with the declared package available on PATH for fresh hosts. Its
-existing dotenv startup wrapper loads the shared environment. The npm, Cargo,
-and uv global package installers are not ordered after `default.target`, since
-that target also starts services ordered after those installers.
 
 Coding-agent hooks are the usual writer behind a flapping slice: every hook
 event goes through `config/shared/hooks/traces-agent-hook.sh`, which bounds

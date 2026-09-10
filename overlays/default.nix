@@ -126,32 +126,6 @@
             dontCheckRuntimeDeps = true;
           });
         }
-        // prev.lib.optionalAttrs (prev.llm-agents ? herdr) {
-          # Keep the native structured admission repair in the package used by
-          # the managed Linux services. The source patch is applied to the
-          # pinned v0.9.0 tag and retains the existing build hooks.
-          herdr = prev.llm-agents.herdr.overrideAttrs (
-            old:
-            let
-              herdrSrc = prev.fetchFromGitHub {
-                owner = "herdrdev";
-                repo = "herdr";
-                rev = "b99002ac99b09e00b4ca692436cb15a6b0d676f1";
-                hash = "sha256-SUYF4bbaYwNgoe498VoCUzuLPcjBLQXR0o0DWjjoSnI=";
-              };
-            in
-            {
-              version = "0.9.0";
-              src = herdrSrc;
-              patches = [ ./patches/herdr-structured-admission.patch ];
-              cargoDeps = prev.rustPlatform.fetchCargoVendor {
-                src = herdrSrc;
-                hash = "sha256-CW/SF/cAPDv47gS5B7XbVZEE6LC9F1a2I1TLTJ4AWdw=";
-              };
-              cargoHash = "sha256-CW/SF/cAPDv47gS5B7XbVZEE6LC9F1a2I1TLTJ4AWdw=";
-            }
-          );
-        }
         // (
           # t3code 0.0.33 pins one pnpm deps hash, but fetchPnpmDeps resolves
           # platform-specific optional packages, so it only reproduces on the

@@ -32,27 +32,4 @@ The line 1 of output should equal 'value with spaces'
 The line 2 of output should equal '$(touch should-not-exist)'
 The line 3 of output should equal 'server'
 End
-
-It 'resolves the same user-local binary as the client before the packaged binary'
-mkdir -p "$TEMP_HOME/.local/bin" "$TEMP_HOME/package/bin"
-cp -f "$TEMP_HOME/herdr" "$TEMP_HOME/.local/bin/herdr"
-cat >"$TEMP_HOME/package/bin/herdr" <<'CLI'
-#!/bin/sh
-echo 'stale packaged binary'
-CLI
-chmod +x "$TEMP_HOME/package/bin/herdr"
-When run env -u DOTFILES_ENV_FILE -u HM_PRINT_ENV_FILE HOME="$TEMP_HOME" PATH="$TEMP_HOME/.local/bin:$TEMP_HOME/package/bin:$PATH" bash "$SCRIPT" herdr
-The status should be success
-The line 1 of output should equal 'value with spaces'
-The line 3 of output should equal 'server'
-End
-
-It 'uses the packaged binary on a fresh host without a local override'
-mkdir -p "$TEMP_HOME/package/bin"
-cp -f "$TEMP_HOME/herdr" "$TEMP_HOME/package/bin/herdr"
-When run env -u DOTFILES_ENV_FILE -u HM_PRINT_ENV_FILE HOME="$TEMP_HOME" PATH="$TEMP_HOME/.local/bin:$TEMP_HOME/package/bin:$PATH" bash "$SCRIPT" herdr
-The status should be success
-The line 1 of output should equal 'value with spaces'
-The line 3 of output should equal 'server'
-End
 End

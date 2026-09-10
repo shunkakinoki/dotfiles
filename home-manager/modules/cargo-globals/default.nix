@@ -35,7 +35,7 @@ in
     install-cargo-globals = {
       Unit = {
         Description = "Install cargo global packages";
-        # default.target wants this service and orders itself after it.
+        After = [ "default.target" ];
       };
       Service = {
         Type = "simple";
