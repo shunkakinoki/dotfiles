@@ -28,7 +28,7 @@ Never hand-edit a generated config. Edit the `.tpl.*` file, regenerate, and comm
 | `__GPT_LUNA__` | `gpt-5.6-luna` |
 | `__GPT_IMAGE__` | `gpt-image-2` |
 | `__GEMINI_FLASH__` | `gemini-3.8-flash` |
-| `__DEEPSEEK_FLASH__` | `deepseek-v4-flash` |
+| `__DEEPSEEK_FLASH__` | `deepseek-v4.1-flash` |
 | `__GEMMA_LOCAL__` | `gemma3:4b` |
 | `__MINIMAX__` | `minimax-m3` |
 | `__KIMI__` | `kimi-k3` |
@@ -38,7 +38,7 @@ Never hand-edit a generated config. Edit the `.tpl.*` file, regenerate, and comm
 
 This table is the complete set of keys in [models.json](models.json). Every key
 also gets two derived forms: `__<KEY>_PRETTY__` for the display name
-("Deepseek V4 Flash") and `__<KEY>_NONDOT__` for the dot-stripped ID, used in
+("Deepseek V4.1 Flash") and `__<KEY>_NONDOT__` for the dot-stripped ID, used in
 OpenRouter `@preset/` names.
 
 Provider-specific slugs remain separate even when they represent the same model
@@ -52,20 +52,20 @@ because the upstream ID differs from the canonical one:
 | Placeholder | Value | Used by |
 | --- | --- | --- |
 | `__GPT_IMAGE_OPENROUTER__` | `openai/gpt-5.4-image-2` | OpenRouter, aliased back to `gpt-image-2` |
-| `__DEEPSEEK_FLASH_0731__` | `deepseek-v4-flash-0731` | Aliyun, aliased back to `deepseek-v4-flash` |
+| `__DEEPSEEK_FLASH_0731__` | `deepseek-v4-flash-0731` | Aliyun, aliased back to `deepseek-v4.1-flash` |
 
 ## The shared fallback chain
 
 Harnesses that support runtime fallback use one chain, in this order:
 
 ```
-deepseek-v4-flash  (primary)
+deepseek-v4.1-flash  (primary)
   -> free           (OpenRouter free router, last resort)
 ```
 
 Rules:
 
-- `deepseek-v4-flash` is the only DeepSeek model on any automatic path.
+- `deepseek-v4.1-flash` is the only DeepSeek model on any automatic path.
 - Every hop resolves through CLIProxy, so provider-level rotation (OpenCode ->
   Aliyun -> OpenRouter) already happens inside a single hop. Do not add a hop
   that repeats the primary model.
@@ -78,10 +78,10 @@ Rules:
 
 | Harness | Default | Fallback chain | Config |
 | --- | --- | --- | --- |
-| OpenCode | `shunkakinoki/deepseek-v4-flash` | shared chain, `shunkakinoki/` prefix | [opencode-fallback.tpl.jsonc](config/opencode/opencode-fallback.tpl.jsonc) |
-| OpenClaw | `cliproxy/deepseek-v4-flash` | shared chain, `cliproxy/` prefix | [openclaw.tpl.json](config/openclaw/openclaw.tpl.json) |
-| Hermes | `cliproxy/deepseek-v4-flash` | shared chain via `fallback_providers` | [config.tpl.yaml](config/hermes/config.tpl.yaml) |
-| OMP | `cliproxyapi/deepseek-v4-flash` | shared chain, `cliproxyapi/` prefix | [config.tpl.yml](config/omp/config.tpl.yml) |
+| OpenCode | `shunkakinoki/deepseek-v4.1-flash` | shared chain, `shunkakinoki/` prefix | [opencode-fallback.tpl.jsonc](config/opencode/opencode-fallback.tpl.jsonc) |
+| OpenClaw | `cliproxy/deepseek-v4.1-flash` | shared chain, `cliproxy/` prefix | [openclaw.tpl.json](config/openclaw/openclaw.tpl.json) |
+| Hermes | `cliproxy/deepseek-v4.1-flash` | shared chain via `fallback_providers` | [config.tpl.yaml](config/hermes/config.tpl.yaml) |
+| OMP | `cliproxyapi/deepseek-v4.1-flash` | shared chain, `cliproxyapi/` prefix | [config.tpl.yml](config/omp/config.tpl.yml) |
 
 OpenCode fallback is driven by the `opencode-runtime-fallback@0.2.3` plugin:
 
@@ -98,34 +98,34 @@ on the `unknown provider for model <prefixed-name>` 400 that OpenCode absorbs.
 OMP uses native `retry.fallbackChains` instead of a plugin.
 
 Hermes also runs a Mixture-of-Agents preset: reference models
-`deepseek-v4-flash` + `minimax-m3`, aggregator `deepseek-v4-flash`.
+`deepseek-v4.1-flash` + `minimax-m3`, aggregator `deepseek-v4.1-flash`.
 
 ### No fallback chain
 
 | Harness | Role | Model | Config |
 | --- | --- | --- | --- |
-| OpenCode | `small_model` | `shunkakinoki/deepseek-v4-flash` | [opencode.tpl.jsonc](config/opencode/opencode.tpl.jsonc) |
-| OpenCode | `code-reviewer` agent | `shunkakinoki/deepseek-v4-flash` | [opencode.tpl.jsonc](config/opencode/opencode.tpl.jsonc) |
+| OpenCode | `small_model` | `shunkakinoki/deepseek-v4.1-flash` | [opencode.tpl.jsonc](config/opencode/opencode.tpl.jsonc) |
+| OpenCode | `code-reviewer` agent | `shunkakinoki/deepseek-v4.1-flash` | [opencode.tpl.jsonc](config/opencode/opencode.tpl.jsonc) |
 | OMP | `smol`, `commit`, `task` | `cliproxyapi/free` | [config.tpl.yml](config/omp/config.tpl.yml) |
-| OMP | `slow`, `vision`, `plan` | `cliproxyapi/deepseek-v4-flash` | |
+| OMP | `slow`, `vision`, `plan` | `cliproxyapi/deepseek-v4.1-flash` | |
 | Codex | default | `gpt-5.6-sol` | [config.tpl.toml](config/codex/config.tpl.toml) |
 | Codex | subagents | `gpt-5.6-luna` | |
 | Codex | `qwen-local` profile | `qwen3.5-0.8b-optiq` (LM Studio) | |
 | Antigravity | default | `gemini-3.8-flash` (native Antigravity provider) | [settings.tpl.json](config/antigravity/settings.tpl.json) |
 | Pi | `defaultModel` | `free` (provider `cliproxyapi`) | [settings.tpl.json](config/pi/settings.tpl.json) |
 | Factory (droid) | session default | `deepseek-v4-flash-0731` (Droid Core) | [settings.tpl.json](config/factory/settings.tpl.json) |
-| Factory (droid) | custom models | `custom:deepseek-v4-flash-0`, `custom:free-1` via `https://cliproxy.shunkakinoki.com/v1` | [settings.tpl.json](config/factory/settings.tpl.json) |
-| aichat | default | `cliproxy:deepseek-v4-flash` | [config.tpl.yaml](config/aichat/config.tpl.yaml) |
-| DSH web | default | `deepseek-v4-flash` via `https://cliproxy.shunkakinoki.com/v1` (native DeepSeek adapter) | [settings.tpl.yaml](config/dsh/settings.tpl.yaml) |
-| llm | default | `deepseek-v4-flash` | [default_model.tpl.txt](config/llm/default_model.tpl.txt) |
-| Handy | transcript post-process | `@preset/deepseek-v4-flash` (OpenRouter) | [settings_store.tpl.json](config/handy/settings_store.tpl.json) |
+| Factory (droid) | custom models | `custom:deepseek-v4.1-flash-0`, `custom:free-1` via `https://cliproxy.shunkakinoki.com/v1` | [settings.tpl.json](config/factory/settings.tpl.json) |
+| aichat | default | `cliproxy:deepseek-v4.1-flash` | [config.tpl.yaml](config/aichat/config.tpl.yaml) |
+| DSH web | default | `deepseek-v4.1-flash` via `https://cliproxy.shunkakinoki.com/v1` (native DeepSeek adapter) | [settings.tpl.yaml](config/dsh/settings.tpl.yaml) |
+| llm | default | `deepseek-v4.1-flash` | [default_model.tpl.txt](config/llm/default_model.tpl.txt) |
+| Handy | transcript post-process | `@preset/deepseek-v4.1-flash` (OpenRouter) | [settings_store.tpl.json](config/handy/settings_store.tpl.json) |
 
 OMP selects only `cliproxyapi/*`. Subagent overrides use
-`deepseek-v4-flash` for the hard-task roles and `free` for the lightweight
+`deepseek-v4.1-flash` for the hard-task roles and `free` for the lightweight
 roles.
 The registry in [models.tpl.yml](config/omp/models.tpl.yml) lists the
 CLIProxy aliases and discovers the rest from remote `/v1/models`.
-OMP fallback uses the shared chain (`deepseek-v4-flash` -> `free`).
+OMP fallback uses the shared chain (`deepseek-v4.1-flash` -> `free`).
 
 ### Fish shortcuts
 
@@ -134,12 +134,12 @@ headless.
 
 | Function | Model |
 | --- | --- |
-| `ocxe`, `ocxeh` | `cliproxyapi/deepseek-v4-flash` |
+| `ocxe`, `ocxeh` | `cliproxyapi/deepseek-v4.1-flash` |
 | `ocxel`, `ocxelh` | `lmstudio/qwen3.5-0.8b-optiq` |
 | `coxe`, `coxeh` | `gpt-5.6-sol` |
 | `coxec`, `coxech` | `gpt-5.6-luna` (`--profile cliproxy`) |
 | `coxel`, `coxelh` | `qwen3.5-0.8b-optiq` (`--oss --local-provider lmstudio`) |
-| `pixe`, `pixeh` | `cliproxyapi/deepseek-v4-flash` |
+| `pixe`, `pixeh` | `cliproxyapi/deepseek-v4.1-flash` |
 | `pixel`, `pixelh` | `lmstudio/qwen3.5-0.8b-optiq` |
 
 ## CLIProxy routing
@@ -161,11 +161,11 @@ Every one of them resolves through
 
 | Provider | Priority | DeepSeek models served |
 | --- | --- | --- |
-| `opencode` | 300 | `deepseek-v4-flash` |
-| `aliyun` | 200 | `deepseek-v4-flash-0731` aliased to `deepseek-v4-flash` |
-| `openrouter` | 100 | `@preset/deepseek-v4-flash` |
+| `opencode` | 300 | `deepseek-v4.1-flash` |
+| `aliyun` | 200 | `deepseek-v4-flash-0731` aliased to `deepseek-v4.1-flash` |
+| `openrouter` | 100 | `@preset/deepseek-v4.1-flash` |
 
-So a single `deepseek-v4-flash` request tries OpenCode Zen, then Aliyun, then
+So a single `deepseek-v4.1-flash` request tries OpenCode Zen, then Aliyun, then
 OpenRouter before the harness-level fallback chain sees a failure.
 
 ## Changing a model

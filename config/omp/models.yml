@@ -7,8 +7,8 @@ providers:
     discovery:
       type: openai-models-list
     models:
-      - id: deepseek-v4-flash
-        name: Deepseek V4 Flash (via shunkakinoki's CLIProxy)
+      - id: deepseek-v4.1-flash
+        name: Deepseek V4.1 Flash (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text

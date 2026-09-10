@@ -256,7 +256,7 @@ The output should include 'api-key: "__ALIYUN_TOKEN_PLAN_API_KEY__"'
 The output should include 'priority: 200'
 The output should include 'name: "qwen3.6-plus"'
 The output should include 'name: "deepseek-v4-flash-0731"'
-The output should include 'alias: "deepseek-v4-flash"'
+The output should include 'alias: "deepseek-v4.1-flash"'
 The output should not include 'name: "qwen3.8-max"'
 The output should not include 'name: "glm-5.2"'
 The status should be success
@@ -277,7 +277,7 @@ The output should include 'priority: 150'
 The output should include 'base-url: "https://code.verboo.ai/router/v1"'
 The output should include 'api-key: "__VERBOO_API_KEY__"'
 The output should include 'name: "deepseek-v4-flash-0731"'
-The output should include 'alias: "deepseek-v4-flash"'
+The output should include 'alias: "deepseek-v4.1-flash"'
 The status should be success
 End
 End
@@ -296,7 +296,7 @@ The output should include 'priority: 150'
 The output should include 'base-url: "https://api.commandcode.ai/provider/v1"'
 The output should include 'api-key: "__COMMANDCODE_API_KEY__"'
 The output should include 'name: "deepseek-v4-flash-0731"'
-The output should include 'alias: "deepseek-v4-flash"'
+The output should include 'alias: "deepseek-v4.1-flash"'
 The status should be success
 End
 End
@@ -315,7 +315,7 @@ The output should include 'priority: 150'
 The output should include 'base-url: "https://api.surplusintelligence.ai/v1"'
 The output should include 'api-key: "__SURPLUS_API_KEY__"'
 The output should include 'name: "deepseek-v4-flash-0731"'
-The output should include 'alias: "deepseek-v4-flash"'
+The output should include 'alias: "deepseek-v4.1-flash"'
 The status should be success
 End
 End

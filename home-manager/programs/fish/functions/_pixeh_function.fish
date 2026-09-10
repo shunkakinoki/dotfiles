@@ -14,5 +14,5 @@ function _pixeh_function --description "Run Pi headlessly with a prompted input"
     return 1
   end
 
-  pi --model 'cliproxyapi/deepseek-v4-flash' -p "$prompt"
+  pi --model 'cliproxyapi/deepseek-v4.1-flash' -p "$prompt"
 end
