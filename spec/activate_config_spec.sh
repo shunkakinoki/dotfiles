@@ -181,7 +181,7 @@ End
 
 It 'registers dcg in the Bash pre-tool hook chain'
 When run jq -r '.hooks.PreToolUse[] | select(.matcher == "Bash") | .hooks[].command' "$HOOKS_JSON"
-The output should include 'command -v dcg >/dev/null 2>&1 && dcg'
+The output should include '$HOME/dotfiles/config/shared/hooks/dcg-guard.sh'
 End
 End
 
@@ -218,7 +218,7 @@ End
 
 It 'registers dcg in the pre-tool hook chain'
 When run jq -r '.hooks.preToolUse[].command' "$CONFIG_JSON"
-The output should include 'command -v dcg >/dev/null 2>&1 && dcg'
+The output should include '$HOME/dotfiles/config/shared/hooks/dcg-guard.sh'
 End
 
 It 'registers rtk rewrite in the pre-tool hook chain'
@@ -252,7 +252,7 @@ JSON
 When run bash -c 'HOME="$1" bash "$2" "$3" && jq -r ".disableAllHooks, (.hooks.preToolUse[].command)" "$1/.copilot/config.json"' _ "$TMP_HOME" "$SCRIPT" "$CONFIG_JSON"
 The status should be success
 The output should include 'false'
-The output should include 'command -v dcg >/dev/null 2>&1 && dcg'
+The output should include '$HOME/dotfiles/config/shared/hooks/dcg-guard.sh'
 End
 End
 
