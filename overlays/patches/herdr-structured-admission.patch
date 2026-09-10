@@ -1215,10 +1215,22 @@ index 1af3e0d..e3e69ab 100644
      let response = super::send_request(&Request {
          id: "cli:agent:start:process_info".into(),
 diff --git a/src/handoff_runtime.rs b/src/handoff_runtime.rs
-index 29ba85f..171486b 100644
+index 29ba85f..5c3d609 100644
 --- a/src/handoff_runtime.rs
 +++ b/src/handoff_runtime.rs
-@@ -44,3 +44,15 @@ pub(crate) struct ImportedHandoffRuntime {
+@@ -12,6 +12,11 @@ use serde::{Deserialize, Serialize};
+ #[derive(Debug, Clone, Serialize, Deserialize)]
+ pub(crate) struct HandoffRuntimeState {
+     pub pane_id: u32,
++    /// Preserve the server-owned terminal identity across replacement. This
++    /// is optional only for compatibility with handoff manifests emitted
++    /// before terminal identity was carried in the private runtime record.
++    #[serde(default, skip_serializing_if = "Option::is_none")]
++    pub terminal_id: Option<crate::terminal::TerminalId>,
+     pub child_pid: u32,
+     pub rows: u16,
+     pub cols: u16,
+@@ -44,3 +49,15 @@ pub(crate) struct ImportedHandoffRuntime {
      #[cfg(unix)]
      pub state: HandoffRuntimeState,
  }
@@ -1235,10 +1247,18 @@ index 29ba85f..171486b 100644
 +    pub fd: std::os::fd::RawFd,
 +}
 diff --git a/src/pane.rs b/src/pane.rs
-index aa6acb5..7c9cdc1 100644
+index aa6acb5..2227f53 100644
 --- a/src/pane.rs
 +++ b/src/pane.rs
-@@ -2078,7 +2078,9 @@ impl PaneRuntime {
+@@ -1868,6 +1868,7 @@ impl PaneRuntime {
+         let (rows, cols, cell_width_px, cell_height_px) = self.current_size.get();
+         crate::handoff_runtime::HandoffRuntimeState {
+             pane_id,
++            terminal_id: None,
+             child_pid,
+             rows,
+             cols,
+@@ -2078,9 +2079,12 @@ impl PaneRuntime {
          render_notify: Arc<Notify>,
          render_dirty: Arc<RenderSignal>,
      ) -> std::io::Result<Self> {
@@ -1248,9 +1268,12 @@ index aa6acb5..7c9cdc1 100644
 +        } = import;
          let crate::handoff_runtime::HandoffRuntimeState {
              pane_id,
++            terminal_id: _,
              child_pid,
+             rows,
+             cols,
 diff --git a/src/persist/restore.rs b/src/persist/restore.rs
-index 3c5775c..e7d69e8 100644
+index 3c5775c..89026ae 100644
 --- a/src/persist/restore.rs
 +++ b/src/persist/restore.rs
 @@ -127,16 +127,23 @@ pub fn handoff_pane_aliases(
@@ -1291,7 +1314,17 @@ index 3c5775c..e7d69e8 100644
          let saved_launch_argv = saved_pane.and_then(|p| p.launch_argv.clone());
          let saved_agent_session = saved_pane.and_then(|p| p.agent_session.as_ref());
          let saved_history =
-@@ -543,6 +552,9 @@ fn restore_tab(
+@@ -528,6 +537,9 @@ fn restore_tab(
+             .unwrap_or_default();
+         let imported_runtime = old_pane_id.and_then(|old_id| imported_panes.remove(&old_id));
+         let was_imported = imported_runtime.is_some();
++        let imported_terminal_id = imported_runtime
++            .as_ref()
++            .and_then(|imported| imported.state.terminal_id.clone());
+         let pending_native_agent_restore = if was_imported {
+             None
+         } else {
+@@ -543,6 +555,9 @@ fn restore_tab(
              if let Some(session) = restored_agent_session {
                  terminal.set_persisted_agent_session(session);
              }
@@ -1301,7 +1334,20 @@ index 3c5775c..e7d69e8 100644
              match (saved_agent_name, saved_managed_agent) {
                  (Some(agent_name), Some(agent)) => {
                      terminal.restore_managed_agent(agent_name, agent)
-@@ -640,6 +652,9 @@ fn restore_tab(
+@@ -627,7 +642,11 @@ fn restore_tab(
+ 
+         match runtime_result {
+             Ok(runtime) => {
+-                let terminal_id = TerminalId::alloc();
++                let terminal_id = if was_imported {
++                    imported_terminal_id.unwrap_or_else(TerminalId::alloc)
++                } else {
++                    TerminalId::alloc()
++                };
+                 let mut terminal = TerminalState::new(terminal_id.clone(), cwd.clone());
+                 if was_imported {
+                     if let Some(argv) = saved_launch_argv {
+@@ -640,6 +659,9 @@ fn restore_tab(
                  if let Some(session) = restored_agent_session {
                      terminal.set_persisted_agent_session(session);
                  }
@@ -1311,7 +1357,7 @@ index 3c5775c..e7d69e8 100644
                  match (saved_agent_name, saved_managed_agent) {
                      (Some(agent_name), Some(agent)) if was_imported => {
                          terminal.restore_managed_agent(agent_name, agent)
-@@ -994,6 +1009,18 @@ mod tests {
+@@ -994,6 +1016,18 @@ mod tests {
          );
      }
  
@@ -1330,7 +1376,7 @@ index 3c5775c..e7d69e8 100644
      #[test]
      fn restored_worktree_space_membership_drops_missing_checkout() {
          let missing =
-@@ -1191,6 +1218,7 @@ mod tests {
+@@ -1191,6 +1225,7 @@ mod tests {
                              label: Some("reviewer".into()),
                              agent_name: Some("reviewer".into()),
                              managed_agent_kind: Some("opencode".into()),
@@ -1338,7 +1384,7 @@ index 3c5775c..e7d69e8 100644
                              agent_session: Some(super::super::snapshot::PaneAgentSessionSnapshot {
                                  source: "herdr:opencode".into(),
                                  agent: "opencode".into(),
-@@ -1277,6 +1305,7 @@ mod tests {
+@@ -1277,6 +1312,7 @@ mod tests {
                                  label: None,
                                  agent_name: None,
                                  managed_agent_kind: None,
@@ -1346,7 +1392,7 @@ index 3c5775c..e7d69e8 100644
                                  agent_session: None,
                                  launch_argv: None,
                              },
-@@ -1288,6 +1317,7 @@ mod tests {
+@@ -1288,6 +1324,7 @@ mod tests {
                                  label: None,
                                  agent_name: None,
                                  managed_agent_kind: None,
@@ -1354,7 +1400,7 @@ index 3c5775c..e7d69e8 100644
                                  agent_session: None,
                                  launch_argv: None,
                              },
-@@ -1341,6 +1371,7 @@ mod tests {
+@@ -1341,6 +1378,7 @@ mod tests {
                      label: None,
                      agent_name: None,
                      managed_agent_kind: None,
@@ -1362,7 +1408,7 @@ index 3c5775c..e7d69e8 100644
                      agent_session: None,
                      launch_argv: None,
                  },
-@@ -1351,6 +1382,7 @@ mod tests {
+@@ -1351,6 +1389,7 @@ mod tests {
              label: Some("planner".into()),
              agent_name: Some("planner".into()),
              managed_agent_kind: None,
@@ -1370,7 +1416,7 @@ index 3c5775c..e7d69e8 100644
              agent_session: Some(super::super::snapshot::PaneAgentSessionSnapshot {
                  source: "herdr:codex".into(),
                  agent: "codex".into(),
-@@ -1502,6 +1534,7 @@ mod tests {
+@@ -1502,6 +1541,7 @@ mod tests {
                              label: None,
                              agent_name: None,
                              managed_agent_kind: None,
@@ -1378,7 +1424,7 @@ index 3c5775c..e7d69e8 100644
                              agent_session: Some(super::super::snapshot::PaneAgentSessionSnapshot {
                                  source: "herdr:codex".into(),
                                  agent: "codex".into(),
-@@ -1668,6 +1701,7 @@ mod tests {
+@@ -1668,6 +1708,7 @@ mod tests {
                  label: None,
                  agent_name: None,
                  managed_agent_kind: None,
@@ -1600,7 +1646,7 @@ index 638b1b2..ec283ad 100644
          crate::server::handoff::report_restored(&mut received.stream)?;
          if std::env::var("HERDR_TEST_HANDOFF_IMPORT_FAIL").as_deref() == Ok("after_restored") {
 diff --git a/src/server/headless/lifecycle.rs b/src/server/headless/lifecycle.rs
-index ab1448c..277ede8 100644
+index ab1448c..e2bb1c4 100644
 --- a/src/server/headless/lifecycle.rs
 +++ b/src/server/headless/lifecycle.rs
 @@ -63,6 +63,9 @@ impl HeadlessServer {
@@ -1613,7 +1659,15 @@ index ab1448c..277ede8 100644
  
          self.handoff_in_progress = true;
          self.disconnect_all_clients_for_handoff();
-@@ -115,6 +118,7 @@ impl HeadlessServer {
+@@ -93,6 +96,7 @@ impl HeadlessServer {
+                 continue;
+             };
+             let mut handoff_runtime = runtime.handoff_runtime_state(pane_id);
++            handoff_runtime.terminal_id = Some(terminal_id.clone());
+             let has_agent_session = self
+                 .app
+                 .state
+@@ -115,6 +119,7 @@ impl HeadlessServer {
              params.expected_protocol,
              params.expected_version,
              self.api_window_title.clone(),
@@ -1621,7 +1675,7 @@ index ab1448c..277ede8 100644
          );
          let mut import_child = match crate::server::handoff::spawn_handoff_import(
              import_exe.as_deref(),
-@@ -131,6 +135,7 @@ impl HeadlessServer {
+@@ -131,6 +136,7 @@ impl HeadlessServer {
          info!(pid = child_pid, socket = %socket_path.display(), "spawned handoff import server");
  
          let mut fds = Vec::new();
@@ -1629,7 +1683,7 @@ index ab1448c..277ede8 100644
          let duplicate_result = (|| {
              for (terminal_id, _) in &handoff_entries {
                  let Some(runtime) = self.app.terminal_runtimes.get(terminal_id) else {
-@@ -138,12 +143,19 @@ impl HeadlessServer {
+@@ -138,12 +144,19 @@ impl HeadlessServer {
                  };
                  fds.push(runtime.duplicate_handoff_fd()?);
              }
@@ -1649,7 +1703,7 @@ index ab1448c..277ede8 100644
              crate::server::handoff::cleanup_failed_import_child(&mut import_child);
              self.rollback_handoff_before_commit(&socket_path, &paused_terminal_ids);
              return Err(err);
-@@ -160,16 +172,23 @@ impl HeadlessServer {
+@@ -160,16 +173,23 @@ impl HeadlessServer {
                  for fd in fds {
                      let _ = unsafe { libc::close(fd) };
                  }
