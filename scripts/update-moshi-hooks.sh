@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016 # The generated hook command must contain literal $HOME.
 # Sync moshi-hook generated files into tracked dotfiles.
 # Runs `moshi-hook install` to ensure all agents are current,
 # then copies the generated TypeScript plugins back into the repo.
@@ -8,6 +9,62 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 GENERATED_ROOT="${GENERATED_ROOT:-$REPO_ROOT/generated/hooks/moshi}"
+
+normalize_dcg_hooks() {
+  local hook_config tmp_file
+
+  for hook_config in "$@"; do
+    if [[ ! -f $hook_config ]]; then
+      echo "error: hook config not found: $hook_config" >&2
+      return 1
+    fi
+
+    tmp_file="$(mktemp "${hook_config}.tmp.XXXXXX")"
+    if ! sed \
+      -e 's|"command": "dcg"|"command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh"|g' \
+      -e 's|"command": "[^"[:space:]]*/dcg"|"command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh"|g' \
+      -e 's|"command": "command -v dcg >/dev/null 2>&1 && dcg"|"command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh"|g' \
+      -e 's|"command": "command -v dcg \\u003e/dev/null 2\\u003e\\u00261 \\u0026\\u0026 dcg"|"command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh"|g' \
+      "$hook_config" >"$tmp_file"; then
+      rm -f "$tmp_file"
+      return 1
+    fi
+
+    if ! jq empty "$tmp_file"; then
+      echo "error: dcg hook normalization produced invalid JSON: $hook_config" >&2
+      rm -f "$tmp_file"
+      return 1
+    fi
+
+    if jq -e '
+      .. | objects | .command? // empty
+      | select(
+          . == "command -v dcg >/dev/null 2>&1 && dcg"
+          or test("(^|/)dcg$")
+        )
+    ' "$tmp_file" >/dev/null; then
+      echo "error: unguarded dcg hook remains in $hook_config" >&2
+      rm -f "$tmp_file"
+      return 1
+    fi
+    mv -f "$tmp_file" "$hook_config"
+  done
+}
+
+if [[ ${1:-} == "--normalize-only" ]]; then
+  shift
+  if (( $# == 0 )); then
+    echo "error: --normalize-only requires at least one hook config" >&2
+    exit 1
+  fi
+  normalize_dcg_hooks "$@"
+  exit 0
+fi
+
+if (( $# != 0 )); then
+  echo "usage: $0 [--normalize-only HOOK_CONFIG ...]" >&2
+  exit 1
+fi
 
 echo "Installing latest moshi-hook configs..."
 moshi-hook install
@@ -56,6 +113,17 @@ for generated_file in \
     "$generated_file" >"$generated_file.tmp"
   mv -f "$generated_file.tmp" "$generated_file"
 done
+
+# dcg's installer may emit a resolved path, a bare invocation, or a conditional
+# lookup. Route all three through the tracked fail-closed wrapper after the
+# portability pass so missing installations cannot degrade shell execution to
+# an unguarded, non-blocking hook failure.
+normalize_dcg_hooks \
+  "$GENERATED_ROOT/claude/settings.json" \
+  "$GENERATED_ROOT/codex/hooks.json" \
+  "$GENERATED_ROOT/cursor/hooks.json" \
+  "$GENERATED_ROOT/gemini/settings.json" \
+  "$GENERATED_ROOT/grok/plugin/hooks/hooks.json"
 
 echo "Formatting..."
 nix fmt -- \

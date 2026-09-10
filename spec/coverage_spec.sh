@@ -17,6 +17,10 @@ It 'has spec file for config/shared/hooks/rtk-rewrite.sh'
 The path "spec/rtk_rewrite_spec.sh" should be exist
 End
 
+It 'has spec file for config/shared/hooks/dcg-guard.sh'
+The path "spec/dcg_guard_spec.sh" should be exist
+End
+
 It 'has spec file for config/factory/activate-settings.sh'
 The path "spec/roborev_hooks_spec.sh" should be exist
 End
@@ -528,6 +532,7 @@ config/codex/hooks/notify.sh
 config/codex/hooks/pushover.sh
 config/shared/hooks/block-gh-settings.sh
 config/shared/hooks/block-git-push.sh
+config/shared/hooks/dcg-guard.sh
 config/shared/hooks/traces-agent-hook.sh
 config/shared/hooks/secret-guard.sh
 config/shared/hooks/security.sh

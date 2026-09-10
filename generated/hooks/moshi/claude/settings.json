@@ -216,7 +216,7 @@
       {
         "hooks": [
           {
-            "command": "dcg",
+            "command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh",
             "type": "command"
           }
         ],
@@ -230,7 +230,7 @@
             "type": "command"
           },
           {
-            "command": "command -v dcg \u003e/dev/null 2\u003e\u00261 \u0026\u0026 dcg",
+            "command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh",
             "timeout": 5,
             "type": "command"
           },
@@ -292,7 +292,7 @@
       {
         "hooks": [
           {
-            "command": "command -v dcg \u003e/dev/null 2\u003e\u00261 \u0026\u0026 dcg",
+            "command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh",
             "timeout": 5,
             "type": "command"
           }
