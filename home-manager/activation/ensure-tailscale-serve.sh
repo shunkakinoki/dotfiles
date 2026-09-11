@@ -86,7 +86,7 @@ ensure_route() {
       }
       next
     }
-    active && index($0, "proxy " target) { found = 1 }
+    active && $2 == "/" && $3 == "proxy" && $4 == target { found = 1 }
     END { exit found ? 0 : 1 }
   '; then
     return 0

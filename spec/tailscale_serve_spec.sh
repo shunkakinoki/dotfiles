@@ -83,10 +83,26 @@ case "${1:-}" in
 status) exit 0 ;;
 serve)
   if [ "${2:-}" = status ]; then
-    cat <<'EOF'
+    case "${MOCK_SERVE_STATUS:-exact}" in
+    non-root)
+      cat <<'EOF'
+https://kyber.tail950b36.ts.net (tailnet only)
+|-- /admin proxy http://127.0.0.1:3773
+EOF
+      ;;
+    port-prefix)
+      cat <<'EOF'
+https://kyber.tail950b36.ts.net (tailnet only)
+|-- / proxy http://127.0.0.1:37730
+EOF
+      ;;
+    *)
+      cat <<'EOF'
 https://kyber.tail950b36.ts.net (tailnet only)
 |-- / proxy http://127.0.0.1:3773
 EOF
+      ;;
+    esac
   fi
   exit 0
   ;;
@@ -116,6 +132,19 @@ When run bash -c "bash '$SCRIPT' 8443 3773 >/dev/null 2>&1; cat '$MOCK_LOG'"
 The output should include 'serve --yes --bg --https=8443 http://127.0.0.1:3773'
 The status should be success
 End
+
+It 'publishes when only a non-root handler has the target'
+When run bash -c "MOCK_SERVE_STATUS=non-root bash '$SCRIPT' 443 3773 >/dev/null 2>&1; cat '$MOCK_LOG'"
+The output should include 'serve --yes --bg --https=443 http://127.0.0.1:3773'
+The status should be success
+End
+
+It 'publishes when the configured target only shares the port prefix'
+When run bash -c "MOCK_SERVE_STATUS=port-prefix bash '$SCRIPT' 443 3773 >/dev/null 2>&1; cat '$MOCK_LOG'"
+The output should include 'serve --yes --bg --https=443 http://127.0.0.1:3773'
+The status should be success
+End
+
 It 'publishes every missing route in one invocation'
 When run bash -c "bash '$SCRIPT' 8443 3773 9443 9120 >/dev/null 2>&1; cat '$MOCK_LOG'"
 The output should include 'serve --yes --bg --https=8443 http://127.0.0.1:3773'
