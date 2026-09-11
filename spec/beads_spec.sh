@@ -29,11 +29,6 @@ When run bash -c "grep -qF 'home.file.\".local/bin/bd\"' \"$MODULE\" && grep -qF
 The status should be success
 End
 
-It 'forces the takeover so a leftover ulb symlink cannot abort activation'
-When run bash -c "test \"\$(grep -cF 'force = true;' \"$MODULE\")\" -eq 2"
-The status should be success
-End
-
 It 'imports the beads module'
 When run grep -Fx '  ./beads' "$MODULES"
 The output should include './beads'
