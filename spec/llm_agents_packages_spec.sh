@@ -14,6 +14,11 @@ When run bash -c "line=\$(grep -nF 'pkgs.llm-agents.grok' \"$PACKAGES\" | cut -d
 The status should be success
 End
 
+It 'includes Muse Code in the shared package set'
+When run grep -Fx '  pkgs.llm-agents.muse-code' "$PACKAGES"
+The output should include '  pkgs.llm-agents.muse-code'
+End
+
 It 'does not retain the separate nixpkgs Cursor CLI'
 When run grep -Fx '  cursor-cli' "$PACKAGES"
 The status should not be success
