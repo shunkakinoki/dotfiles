@@ -77,6 +77,7 @@ with pkgs;
   gron
   pkgs.llm-agents.herdr
   pkgs.llm-agents.grok
+  pkgs.llm-agents.muse-code
   hexyl
   htop
   httpie
