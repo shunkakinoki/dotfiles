@@ -83,6 +83,10 @@
       url = "github:cjpais/Handy";
       inputs.nixpkgs.follows = "nixpkgs-darwin-legacy";
     };
+    beads = {
+      url = "github:gastownhall/beads";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

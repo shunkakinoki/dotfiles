@@ -39,7 +39,7 @@ let
     inherit (pkgs) dolt;
   };
   linearSyncScript = pkgs.replaceVars ./linear-sync.sh {
-    bd = "${homeDir}/.local/bin/bd";
+    bd = "${pkgs.beads}/bin/bd";
     linear = "${homeDir}/.bun/install/global/node_modules/.bin/linear";
     inherit linearWorkspace linearTeamId;
     utilLinux = pkgs.util-linux;

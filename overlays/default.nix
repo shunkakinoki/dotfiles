@@ -208,6 +208,7 @@
     }
   )
   inputs.noctalia-shell.overlays.default
+  inputs.beads.overlays.default
   (_: prev: {
     # Keep the Dolt archive-integrity fix independent from the shared nixpkgs
     # pin so storage recovery does not upgrade unrelated host packages.

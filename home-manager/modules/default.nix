@@ -1,4 +1,5 @@
 [
+  ./beads
   ./bin-shells
   ./cargo-globals
   ./dotenv
