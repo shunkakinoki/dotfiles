@@ -190,6 +190,10 @@ let
         assert lib.hasInfix "lld-" cargoActivation;
         assert lib.hasInfix "lld-" cargoServicePath;
         assert lib.hasInfix "lld-" updaterPath;
+        assert
+          !(lib.hasInfix "T3CODE_TAILSCALE_SERVE"
+            cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text
+          );
         mkEvalCheck "home-linux-rust-linker" linux.activationPackage;
     }
     // lib.optionalAttrs (system == "x86_64-linux") {
@@ -308,6 +312,7 @@ let
         assert
           kyber.config.modules.tailscale.extraUpArgs == [
             "--reset"
+            "--operator=ubuntu"
             "--ssh=false"
             "--accept-dns=true"
             "--advertise-exit-node"
@@ -321,6 +326,10 @@ let
         assert cfg.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "kyber.tail950b36.ts.net";
         assert cfg.home.sessionVariables.BEADS_NODE_ID == "kyber";
         assert cfg.home.sessionVariables.BEADS_DOLT_DATA_DIR == "/home/ubuntu/.beads/shared-server/dolt";
+        assert lib.hasInfix "Environment=T3CODE_TAILSCALE_SERVE=true"
+          cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text;
+        assert lib.hasInfix "Environment=T3CODE_TAILSCALE_SERVE_PORT=8443"
+          cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text;
         mkEvalCheck "home-kyber" kyber.activationPackage;
     };
 in

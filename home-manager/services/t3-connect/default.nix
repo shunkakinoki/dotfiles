@@ -1,6 +1,7 @@
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 let
   inherit (pkgs) lib;
+  inherit (inputs.host) isKyber;
   # Compile and load native addons with one libc/Node toolchain. Keep the
   # caller's remaining PATH available to provider CLIs in the server.
   toolchain = lib.makeBinPath [
@@ -64,6 +65,10 @@ in
           [Service]
           ExecStart=
           ExecStart=${launcher}
+          ${lib.optionalString isKyber ''
+            Environment=T3CODE_TAILSCALE_SERVE=true
+            Environment=T3CODE_TAILSCALE_SERVE_PORT=8443
+          ''}
         '';
       };
 

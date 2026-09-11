@@ -17,6 +17,7 @@ let
   baseHost = import ../../lib/host.nix;
   tailscaleUpArgs = [
     "--reset"
+    "--operator=${username}"
     "--ssh=false"
     "--accept-dns=true"
     "--advertise-exit-node"
@@ -177,12 +178,10 @@ home-manager.lib.homeManagerConfiguration {
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-user-service-priority.sh}"
         '';
 
-        # Publish every Kyber gateway over tailnet-only HTTPS. Each service
-        # needs the serve root, so OpenClaw keeps :443 while T3 and Hermes use
-        # dedicated ports. Crabbox runs directly on the host on port 18080.
+        # Publish the non-T3 Kyber gateways over tailnet-only HTTPS. T3 owns
+        # its :8443 route through the managed t3code.service configuration.
         home.activation.tailscaleServeGateways = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 443 18789
-          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 8443 3773
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 9443 9120
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 10443 18080
         '';
