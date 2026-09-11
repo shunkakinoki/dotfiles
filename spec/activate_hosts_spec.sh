@@ -76,8 +76,8 @@ When run bash -c "grep -F 'home-manager-generation' '$SCRIPT' >/dev/null && grep
 The status should be success
 End
 
-It 'preserves activation snapshot links'
-When run bash -c "grep -F '\$HOME/.beads' '$SCRIPT' >/dev/null && grep -F '\$HOME/.cache' '$SCRIPT' >/dev/null"
+It 'uses the new generation manifest instead of scanning the home directory'
+When run bash -c "grep -F 'home_files=' '$SCRIPT' >/dev/null && grep -F 'find -L \"\$home_files\"' '$SCRIPT' >/dev/null && grep -F '\"\$newGenPath/home-files\"' '$PWD/hosts/linux/default.nix' >/dev/null"
 The status should be success
 End
 End
