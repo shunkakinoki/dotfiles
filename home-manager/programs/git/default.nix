@@ -23,6 +23,11 @@
           precomposeunicode = true;
           ignorecase = false;
           notesRef = "refs/notes/ai";
+          fsmonitor = true;
+          untrackedcache = true;
+        };
+        feature = {
+          manyFiles = true;
         };
         color = {
           diff = "auto";
