@@ -137,10 +137,6 @@ It 'has spec file for home-manager/services/dotfiles-updater/update.sh'
 The path "spec/dotfiles_updater_spec.sh" should be exist
 End
 
-It 'has spec file for home-manager/services/gas-town/start.sh'
-The path "spec/gas_town_spec.sh" should be exist
-End
-
 It 'has spec file for home-manager/services/make-updater/update.sh'
 The path "spec/make_updater_spec.sh" should be exist
 End
@@ -636,7 +632,6 @@ home-manager/services/dolt/beads-linear-complete.sh
 home-manager/services/dolt/client-environment.sh
 home-manager/services/dolt/linear-sync.sh
 home-manager/services/dotfiles-updater/update.sh
-home-manager/services/gas-town/start.sh
 home-manager/services/k3s/activate.sh
 home-manager/services/make-updater/update.sh
 home-manager/services/mempalace-exporter/export.sh
