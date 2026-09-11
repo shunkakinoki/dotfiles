@@ -25,7 +25,12 @@ The status should be success
 End
 
 It 'owns the ~/.local/bin entries that outrank the nix profile'
-When run bash -c "grep -F 'home.file.\".local/bin/bd\".source = \"\${pkgs.beads}/bin/bd\"' \"$MODULE\" >/dev/null && grep -F 'home.file.\".local/bin/beads\".source = \"\${pkgs.beads}/bin/beads\"' \"$MODULE\" >/dev/null"
+When run bash -c "grep -qF 'home.file.\".local/bin/bd\"' \"$MODULE\" && grep -qF 'home.file.\".local/bin/beads\"' \"$MODULE\" && grep -qF '\${pkgs.beads}/bin/bd' \"$MODULE\" && grep -qF '\${pkgs.beads}/bin/beads' \"$MODULE\""
+The status should be success
+End
+
+It 'forces the takeover so a leftover ulb symlink cannot abort activation'
+When run bash -c "test \"\$(grep -cF 'force = true;' \"$MODULE\")\" -eq 2"
 The status should be success
 End
 
