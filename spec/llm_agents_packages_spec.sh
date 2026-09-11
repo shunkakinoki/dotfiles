@@ -3,6 +3,7 @@
 Describe 'Cross-platform llm-agents packages'
 
 PACKAGES="$PWD/home-manager/packages/default.nix"
+OVERLAY="$PWD/overlays/default.nix"
 
 It 'uses the upstream Cursor Agent package'
 When run grep -Fx '  pkgs.llm-agents.cursor-agent' "$PACKAGES"
@@ -17,6 +18,11 @@ End
 It 'includes Muse Code in the shared package set'
 When run grep -Fx '  pkgs.llm-agents.muse-code' "$PACKAGES"
 The output should include '  pkgs.llm-agents.muse-code'
+End
+
+It 'guards the Linux-only Grok wrapBuddy override'
+When run bash -c "grep -F 'linuxGrokOverrides' \"$OVERLAY\" >/dev/null && grep -F 'prev.stdenv.hostPlatform.isLinux' \"$OVERLAY\" >/dev/null"
+The status should be success
 End
 
 It 'does not retain the separate nixpkgs Cursor CLI'
