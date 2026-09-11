@@ -519,6 +519,10 @@ openai-compatibility:
         alias: "__GPT_IMAGE__"
       - name: "@preset/__DEEPSEEK_FLASH_NONDOT__"
         alias: "__DEEPSEEK_FLASH__"
+      # Second provider for Luna: surplus is otherwise the only one that
+      # serves it, so an empty surplus wallet takes the whole model down.
+      - name: "__GPT_LUNA_OPENROUTER__"
+        alias: "__GPT_LUNA__"
       - name: "openrouter/free"
         alias: "free"
   - name: "z-ai"
