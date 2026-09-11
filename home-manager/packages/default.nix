@@ -40,7 +40,7 @@ with pkgs;
   croc
   curl
   curlie
-  cursor-cli
+  pkgs.llm-agents.cursor-agent
   dasel
   delta
   difftastic
@@ -76,6 +76,7 @@ with pkgs;
   grc
   gron
   pkgs.llm-agents.herdr
+  pkgs.llm-agents.grok
   hexyl
   htop
   httpie
@@ -162,7 +163,6 @@ with pkgs;
   fwupd
   gcc
   glib
-  pkgs.llm-agents.grok
   keychain
   libiconv
   libsecret
