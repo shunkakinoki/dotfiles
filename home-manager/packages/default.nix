@@ -22,6 +22,7 @@ with pkgs;
   angle-grinder
   argocd
   ast-grep
+  atk
   ascii-box-cli
   awscli
   azure-cli
@@ -165,6 +166,7 @@ with pkgs;
   fwupd
   gcc
   glib
+  gtk3
   keychain
   libiconv
   libsecret

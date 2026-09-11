@@ -398,8 +398,10 @@ import ../../hosts/nixos {
         # Enable nix-ld for running dynamically linked binaries
         programs.nix-ld.enable = true;
         programs.nix-ld.libraries = with pkgs; [
+          atk
           curl
           glibc
+          gtk3
           libgcc
           libnl
           openssl
