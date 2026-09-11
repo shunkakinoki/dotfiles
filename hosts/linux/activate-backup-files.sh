@@ -3,6 +3,8 @@
 # Manager checks the targets it is about to link.
 set -euo pipefail
 
+# Activation snapshots are durable rollback state, not active home files. Keep
+# their links intact while cleaning the live home tree.
 while IFS= read -r -d '' link; do
   target=$(readlink -- "$link")
   case "$target" in
@@ -12,7 +14,11 @@ while IFS= read -r -d '' link; do
     rm -f -- "$link"
     ;;
   esac
-done < <(find "$HOME" -type l -print0)
+done < <(
+  find "$HOME" \
+    \( -path "$HOME/.beads" -o -path "$HOME/.cache" -o -path "$HOME/.git" \) -prune \
+    -o -type l -print0 2>/dev/null
+)
 
 for file in .bashrc .profile .bash_profile; do
   if [ -f "$HOME/$file" ] && [ ! -L "$HOME/$file" ]; then
