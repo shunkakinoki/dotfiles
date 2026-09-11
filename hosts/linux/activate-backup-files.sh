@@ -6,11 +6,11 @@ set -euo pipefail
 while IFS= read -r -d '' link; do
   target=$(readlink -- "$link")
   case "$target" in
-    /nix/store/*-home-manager-generation/* | /nix/store/*-home-manager-files/*)
-      relative=${link#"$HOME/"}
-      echo "Removing stale Home Manager link $relative"
-      rm -f -- "$link"
-      ;;
+  /nix/store/*-home-manager-generation/* | /nix/store/*-home-manager-files/*)
+    relative=${link#"$HOME/"}
+    echo "Removing stale Home Manager link $relative"
+    rm -f -- "$link"
+    ;;
   esac
 done < <(find "$HOME" -type l -print0)
 
