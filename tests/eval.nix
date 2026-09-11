@@ -6,6 +6,7 @@
 }:
 let
   isDarwin = lib.hasSuffix "darwin" system;
+  tailscaleServeRoutes = import ../home-manager/modules/tailscale/routes.nix;
 
   # Helper: reconstruct a darwin configuration from hosts/darwin
   mkDarwinConfig =
@@ -120,6 +121,16 @@ let
       assert beads.home.sessionVariables.BEADS_NODE_ID == "kyber";
       assert !(beads.systemd.user.services ? dolt);
       assert !(beads.systemd.user.services ? dolt-federation-sync);
+      assert
+        tailscaleServeRoutes.matic == [
+          {
+            name = "t3";
+            httpsPort = 443;
+            localPort = 3773;
+            manager = "activation";
+          }
+        ];
+      assert lib.hasInfix " 443 3773" beads.home.activation.tailscaleServeRoutes.data;
       mkEvalCheck "nixos-matic" cfg.system.build.toplevel;
 
     eval-nixos-viper =
@@ -194,6 +205,7 @@ let
           !(lib.hasInfix "T3CODE_TAILSCALE_SERVE"
             cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text
           );
+        assert !(cfg.home.activation ? tailscaleServeRoutes);
         mkEvalCheck "home-linux-rust-linker" linux.activationPackage;
     }
     // lib.optionalAttrs (system == "x86_64-linux") {
@@ -326,6 +338,18 @@ let
         assert cfg.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "kyber.tail950b36.ts.net";
         assert cfg.home.sessionVariables.BEADS_NODE_ID == "kyber";
         assert cfg.home.sessionVariables.BEADS_DOLT_DATA_DIR == "/home/ubuntu/.beads/shared-server/dolt";
+        assert lib.length tailscaleServeRoutes.kyber == 4;
+        assert
+          map (route: route.name) tailscaleServeRoutes.kyber == [
+            "openclaw"
+            "t3"
+            "hermes"
+            "crabbox"
+          ];
+        assert lib.hasInfix " 443 18789" cfg.home.activation.tailscaleServeRoutes.data;
+        assert lib.hasInfix " 9443 9120" cfg.home.activation.tailscaleServeRoutes.data;
+        assert lib.hasInfix " 10443 18080" cfg.home.activation.tailscaleServeRoutes.data;
+        assert !(lib.hasInfix " 8443 3773" cfg.home.activation.tailscaleServeRoutes.data);
         assert lib.hasInfix "Environment=T3CODE_TAILSCALE_SERVE=true"
           cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text;
         assert lib.hasInfix "Environment=T3CODE_TAILSCALE_SERVE_PORT=8443"

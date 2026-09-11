@@ -3,8 +3,6 @@
 
 Describe 'activation/ensure-tailscale-serve.sh'
 SCRIPT="$PWD/home-manager/activation/ensure-tailscale-serve.sh"
-MATIC="$PWD/named-hosts/matic/default.nix"
-KYBER="$PWD/named-hosts/kyber/default.nix"
 
 Describe 'script properties'
 It 'uses strict mode (set -euo pipefail)'
@@ -16,6 +14,12 @@ It 'requires both ports as arguments'
 When run bash -c "cat '$SCRIPT'"
 The output should include 'https port required'
 The output should include 'local port required'
+End
+
+It 'rejects an incomplete route pair'
+When run bash "$SCRIPT" 443 3773 8443
+The status should equal 2
+The stderr should include 'require HTTPS/local port pairs'
 End
 End
 
@@ -79,10 +83,26 @@ case "${1:-}" in
 status) exit 0 ;;
 serve)
   if [ "${2:-}" = status ]; then
-    cat <<'EOF'
+    case "${MOCK_SERVE_STATUS:-exact}" in
+    non-root)
+      cat <<'EOF'
+https://kyber.tail950b36.ts.net (tailnet only)
+|-- /admin proxy http://127.0.0.1:3773
+EOF
+      ;;
+    port-prefix)
+      cat <<'EOF'
+https://kyber.tail950b36.ts.net (tailnet only)
+|-- / proxy http://127.0.0.1:37730
+EOF
+      ;;
+    *)
+      cat <<'EOF'
 https://kyber.tail950b36.ts.net (tailnet only)
 |-- / proxy http://127.0.0.1:3773
 EOF
+      ;;
+    esac
   fi
   exit 0
   ;;
@@ -112,34 +132,24 @@ When run bash -c "bash '$SCRIPT' 8443 3773 >/dev/null 2>&1; cat '$MOCK_LOG'"
 The output should include 'serve --yes --bg --https=8443 http://127.0.0.1:3773'
 The status should be success
 End
+
+It 'publishes when only a non-root handler has the target'
+When run bash -c "MOCK_SERVE_STATUS=non-root bash '$SCRIPT' 443 3773 >/dev/null 2>&1; cat '$MOCK_LOG'"
+The output should include 'serve --yes --bg --https=443 http://127.0.0.1:3773'
+The status should be success
 End
 
-Describe 'host wiring'
-# matic has nothing else on :443, so T3 takes the serve root.
-It 'publishes T3 on 443 for matic'
-When run bash -c "cat '$MATIC'"
-The output should include 'ensure-tailscale-serve.sh}" 443 3773'
+It 'publishes when the configured target only shares the port prefix'
+When run bash -c "MOCK_SERVE_STATUS=port-prefix bash '$SCRIPT' 443 3773 >/dev/null 2>&1; cat '$MOCK_LOG'"
+The output should include 'serve --yes --bg --https=443 http://127.0.0.1:3773'
+The status should be success
 End
 
-# Kyber owns all three current gateway routes declaratively.
-It 'publishes OpenClaw on 443 for kyber'
-When run bash -c "cat '$KYBER'"
-The output should include 'ensure-tailscale-serve.sh}" 443 18789'
-End
-
-It 'leaves the Kyber T3 route to the managed service'
-When run bash -c "grep -F ' 8443 3773' '$KYBER' || true"
-The output should equal ''
-End
-
-It 'publishes Hermes on 9443 for kyber'
-When run bash -c "cat '$KYBER'"
-The output should include 'ensure-tailscale-serve.sh}" 9443 9120'
-End
-
-It 'publishes the host Crabbox coordinator on 10443 for kyber'
-When run bash -c "cat '$KYBER'"
-The output should include 'ensure-tailscale-serve.sh}" 10443 18080'
+It 'publishes every missing route in one invocation'
+When run bash -c "bash '$SCRIPT' 8443 3773 9443 9120 >/dev/null 2>&1; cat '$MOCK_LOG'"
+The output should include 'serve --yes --bg --https=8443 http://127.0.0.1:3773'
+The output should include 'serve --yes --bg --https=9443 http://127.0.0.1:9120'
+The status should be success
 End
 End
 

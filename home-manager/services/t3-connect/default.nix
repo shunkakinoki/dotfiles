@@ -1,7 +1,12 @@
 { inputs, pkgs, ... }:
 let
   inherit (pkgs) lib;
-  inherit (inputs.host) isKyber;
+  serveRoutes = import ../../modules/tailscale/routes.nix;
+  hostServeRoutes = serveRoutes.${inputs.host.nodeName} or [ ];
+  t3ServeRoutes = lib.filter (
+    route: route.name == "t3" && route.manager == "t3-service"
+  ) hostServeRoutes;
+  t3ServeRoute = if lib.length t3ServeRoutes == 1 then lib.head t3ServeRoutes else null;
   # Compile and load native addons with one libc/Node toolchain. Keep the
   # caller's remaining PATH available to provider CLIs in the server.
   toolchain = lib.makeBinPath [
@@ -40,6 +45,11 @@ let
   '';
 in
 {
+  assertions = lib.optional inputs.host.isKyber {
+    assertion = lib.length t3ServeRoutes == 1;
+    message = "Kyber must declare exactly one T3 service-owned Tailscale Serve route";
+  };
+
   # T3 prefers PATH read from an interactive login shell to its inherited PATH.
   # Run after fnm's shell setup so that hydration retains the scoped installer.
   programs.fish.interactiveShellInit = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (
@@ -65,9 +75,9 @@ in
           [Service]
           ExecStart=
           ExecStart=${launcher}
-          ${lib.optionalString isKyber ''
+          ${lib.optionalString (t3ServeRoute != null) ''
             Environment=T3CODE_TAILSCALE_SERVE=true
-            Environment=T3CODE_TAILSCALE_SERVE_PORT=8443
+            Environment=T3CODE_TAILSCALE_SERVE_PORT=${toString t3ServeRoute.httpsPort}
           ''}
         '';
       };
