@@ -503,6 +503,8 @@ import ../../hosts/nixos {
               ../../home-manager
             ];
 
+            modules.tailscale.manageServeRoutes = true;
+
             # Animated wallpaper via Wallpaper Engine
             services.linux-wallpaperengine = {
               enable = true;

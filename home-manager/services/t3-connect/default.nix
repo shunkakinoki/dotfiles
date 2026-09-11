@@ -45,6 +45,11 @@ let
   '';
 in
 {
+  assertions = lib.optional inputs.host.isKyber {
+    assertion = lib.length t3ServeRoutes == 1;
+    message = "Kyber must declare exactly one T3 service-owned Tailscale Serve route";
+  };
+
   # T3 prefers PATH read from an interactive login shell to its inherited PATH.
   # Run after fnm's shell setup so that hydration retains the scoped installer.
   programs.fish.interactiveShellInit = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (

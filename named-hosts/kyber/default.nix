@@ -184,6 +184,7 @@ home-manager.lib.homeManagerConfiguration {
         modules.tailscale = {
           enable = true;
           installSystemService = true;
+          manageServeRoutes = true;
           # Auth key will be provided via agenix secret
           # authKeyFile = config.age.secrets."keys/tailscale-auth.age".path;
           # Exit node kept; explicitly disable Tailscale SSH so long-lived Codex

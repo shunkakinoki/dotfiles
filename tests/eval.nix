@@ -205,6 +205,7 @@ let
           !(lib.hasInfix "T3CODE_TAILSCALE_SERVE"
             cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text
           );
+        assert !(cfg.home.activation ? tailscaleServeRoutes);
         mkEvalCheck "home-linux-rust-linker" linux.activationPackage;
     }
     // lib.optionalAttrs (system == "x86_64-linux") {
