@@ -13,8 +13,31 @@ priority = 300
 region = "whole_recent"
 visible_blocker = true
 any = [
-  { contains = ["△ Permission required"] },
-  { contains = ["esc dismiss"], any = [{ contains = ["enter confirm"] }, { contains = ["enter submit"] }, { contains = ["enter toggle"] }], all = [{ any = [{ contains = ["↑↓ select"] }, { contains = ["⇆ tab"] }] }] },
+  { contains = [
+    "△ Permission required",
+  ] },
+  { contains = [
+    "esc dismiss",
+  ], any = [
+    { contains = [
+      "enter confirm",
+    ] },
+    { contains = [
+      "enter submit",
+    ] },
+    { contains = [
+      "enter toggle",
+    ] },
+  ], all = [
+    { any = [
+      { contains = [
+        "↑↓ select",
+      ] },
+      { contains = [
+        "⇆ tab",
+      ] },
+    ] },
+  ] },
 ]
 
 [[rules]]
@@ -24,10 +47,18 @@ priority = 110
 region = "bottom_non_empty_lines(3)"
 visible_working = true
 any = [
-  { contains = ["esc to interrupt"] },
-  { contains = ["ctrl+c to interrupt"] },
-  { contains = ["press esc to interrupt"] },
-  { line_regex = ['(?i).*opencode.*esc (again to )?interrupt'] },
+  { contains = [
+    "esc to interrupt",
+  ] },
+  { contains = [
+    "ctrl+c to interrupt",
+  ] },
+  { contains = [
+    "press esc to interrupt",
+  ] },
+  { line_regex = [
+    '(?i).*opencode.*esc (again to )?interrupt',
+  ] },
 ]
 
 [[rules]]
