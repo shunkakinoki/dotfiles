@@ -75,5 +75,10 @@ It 'removes stale Home Manager generation links'
 When run bash -c "grep -F 'home-manager-generation' '$SCRIPT' >/dev/null && grep -F 'home-manager-files' '$SCRIPT' >/dev/null && grep -F 'rm -f --' '$SCRIPT' >/dev/null"
 The status should be success
 End
+
+It 'preserves activation snapshot links'
+When run bash -c "grep -F '\$HOME/.beads' '$SCRIPT' >/dev/null && grep -F '\$HOME/.cache' '$SCRIPT' >/dev/null"
+The status should be success
+End
 End
 End

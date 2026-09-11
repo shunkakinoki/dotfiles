@@ -36,6 +36,11 @@ It 'preserves unrelated symlinks'
 When run bash -c "grep -F 'case \"\$target\"' '$SCRIPT' >/dev/null && grep -F '/nix/store/*-home-manager-generation/*' '$SCRIPT' >/dev/null"
 The status should be success
 End
+
+It 'preserves activation snapshot links'
+When run bash -c "grep -F '\$HOME/.beads' '$SCRIPT' >/dev/null && grep -F '\$HOME/.cache' '$SCRIPT' >/dev/null"
+The status should be success
+End
 End
 End
 
