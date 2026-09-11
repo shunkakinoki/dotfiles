@@ -3,22 +3,24 @@
 # Manager checks the targets it is about to link.
 set -euo pipefail
 
-# Activation snapshots are durable rollback state, not active home files. Keep
-# their links intact while cleaning the live home tree.
+home_files=${1:?Home Manager home-files path is required}
+
+# Inspect only paths in the new generation manifest. This avoids traversing
+# user data and durable activation snapshots while still replacing links from
+# any previous Home Manager generation.
 while IFS= read -r -d '' link; do
-  target=$(readlink -- "$link")
-  case "$target" in
+  target_path=${link#"$home_files/"}
+  target="$HOME/$target_path"
+  [ -L "$target" ] || continue
+  link_target=$(readlink -- "$target")
+  case "$link_target" in
   /nix/store/*-home-manager-generation/* | /nix/store/*-home-manager-files/*)
-    relative=${link#"$HOME/"}
+    relative=${target#"$HOME/"}
     echo "Removing stale Home Manager link $relative"
-    rm -f -- "$link"
+    rm -f -- "$target"
     ;;
   esac
-done < <(
-  find "$HOME" \
-    \( -path "$HOME/.beads" -o -path "$HOME/.cache" -o -path "$HOME/.git" \) -prune \
-    -o -type l -print0 2>/dev/null
-)
+done < <(find -L "$home_files" -type f -print0)
 
 for file in .bashrc .profile .bash_profile; do
   if [ -f "$HOME/$file" ] && [ ! -L "$HOME/$file" ]; then

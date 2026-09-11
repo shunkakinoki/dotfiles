@@ -33,12 +33,12 @@ The status should be success
 End
 
 It 'preserves unrelated symlinks'
-When run bash -c "grep -F 'case \"\$target\"' '$SCRIPT' >/dev/null && grep -F '/nix/store/*-home-manager-generation/*' '$SCRIPT' >/dev/null"
+When run bash -c "grep -F 'case \"\$link_target\"' '$SCRIPT' >/dev/null && grep -F '/nix/store/*-home-manager-generation/*' '$SCRIPT' >/dev/null"
 The status should be success
 End
 
-It 'preserves activation snapshot links'
-When run bash -c "grep -F '\$HOME/.beads' '$SCRIPT' >/dev/null && grep -F '\$HOME/.cache' '$SCRIPT' >/dev/null"
+It 'uses the new generation manifest instead of scanning the home directory'
+When run bash -c "grep -F 'home_files=' '$SCRIPT' >/dev/null && grep -F 'find -L \"\$home_files\"' '$SCRIPT' >/dev/null && grep -F '\"\$newGenPath/home-files\"' '$PWD/named-hosts/kyber/default.nix' >/dev/null"
 The status should be success
 End
 End
