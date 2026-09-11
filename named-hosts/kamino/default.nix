@@ -51,7 +51,7 @@ inputs.home-manager.lib.homeManagerConfiguration {
           before = [ "checkLinkTargets" ];
           after = [ ];
           data = ''
-            ${pkgs.bash}/bin/bash "${../../hosts/linux/activate-backup-files.sh}"
+            ${pkgs.bash}/bin/bash "${../../hosts/linux/activate-backup-files.sh}" "$newGenPath/home-files"
           '';
         };
         programs.home-manager.enable = true;
