@@ -151,6 +151,10 @@ home-manager.lib.homeManagerConfiguration {
           set -gx GPG_TTY (tty)
         '';
 
+        # OpenClaw owns the default Tailscale Serve HTTPS port on Kyber. Keep
+        # interactive T3 pairing on the dedicated route declared below.
+        xdg.configFile."fish/functions/t3.fish".source = ./t3.fish;
+
         # Herdr pane shells inherit herdr.slice from the server. Re-exec them
         # into orchestration.slice so the circuit breaker can freeze lane work
         # without freezing the server that owns the panes.

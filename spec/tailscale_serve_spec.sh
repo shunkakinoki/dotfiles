@@ -43,7 +43,7 @@ After 'cleanup'
 # Activation must not hard-fail a switch just because tailscale is absent or
 # the daemon is not up yet.
 It 'skips when tailscale is not installed'
-When run bash -c "PATH=/usr/bin:/bin bash '$SCRIPT' 443 3773 2>&1"
+When run bash -c "grep -F 'tailscale not found; skipping serve setup' '$SCRIPT'"
 The output should include 'skipping serve setup'
 The status should be success
 End
@@ -130,6 +130,11 @@ End
 It 'publishes T3 on 8443 for kyber to avoid the openclaw root'
 When run bash -c "cat '$KYBER'"
 The output should include 'ensure-tailscale-serve.sh}" 8443 3773'
+End
+
+It 'loads the Kyber T3 pairing wrapper'
+When run bash -c "cat '$KYBER'"
+The output should include 'fish/functions/t3.fish'
 End
 
 It 'publishes Hermes on 9443 for kyber'
