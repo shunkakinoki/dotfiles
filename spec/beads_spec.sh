@@ -5,7 +5,6 @@ Describe 'Nix-managed beads'
 FLAKE="$PWD/flake.nix"
 OVERLAY="$PWD/overlays/default.nix"
 PACKAGES="$PWD/home-manager/packages/default.nix"
-MODULE="$PWD/home-manager/modules/beads/default.nix"
 MODULES="$PWD/home-manager/modules/default.nix"
 LOCAL_BINARIES="$PWD/.local-binaries.txt"
 
@@ -24,14 +23,11 @@ When run bash -c "line=\$(grep -nFx '  beads' \"$PACKAGES\" | cut -d: -f1); boun
 The status should be success
 End
 
-It 'owns the ~/.local/bin entries that outrank the nix profile'
-When run bash -c "grep -qF 'home.file.\".local/bin/bd\"' \"$MODULE\" && grep -qF 'home.file.\".local/bin/beads\"' \"$MODULE\" && grep -qF '\${pkgs.beads}/bin/bd' \"$MODULE\" && grep -qF '\${pkgs.beads}/bin/beads' \"$MODULE\""
-The status should be success
-End
-
-It 'imports the beads module'
+# home.packages already puts bd and beads on PATH. A ~/.local/bin shim would
+# only matter to outrank the nix profile, and nothing writes there any more.
+It 'does not shim beads into ~/.local/bin'
 When run grep -Fx '  ./beads' "$MODULES"
-The output should include './beads'
+The status should not be success
 End
 
 It 'no longer builds bd through update-local-binaries.sh'
