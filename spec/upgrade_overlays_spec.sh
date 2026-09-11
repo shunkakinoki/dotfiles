@@ -181,6 +181,45 @@ cleanup() {
 Before 'setup'
 After 'cleanup'
 
+resolve_gh_release() {
+  cat >"$TEMP_DIR/bin/gh" <<'EOF'
+#!/usr/bin/env bash
+case "$*" in
+*releases/latest*) printf '%s\n' 'v2.100.0' ;;
+*commits/v2.100.0*) printf '%s\n' '45437bc7eeeb3359bbfddd1742f79de7652fd3e2' ;;
+*) exit 1 ;;
+esac
+EOF
+  cat >"$TEMP_DIR/bin/nix-prefetch-url" <<'EOF'
+#!/usr/bin/env bash
+printf '%s\n' '0p85n67mklxfvvh1v6sj047wcskxsagzmg6r0wdd4kibpvgbxdap'
+EOF
+  cat >"$TEMP_DIR/bin/nix" <<'EOF'
+#!/usr/bin/env bash
+if [ "$1" = hash ]; then
+  printf '%s\n' 'sha256-9tnSQPSqllE+Ke6LKyNbnOF1drzdEwesEuPdmWD1X5c='
+else
+  printf '%s\n' "$@" >"$NIX_TEST_LOG"
+  printf '%s\n' 'got: sha256-ZqUs2BnasF3QBX0I2Sxh2A/CnO61Vy6gRn1hkf0n9AY=' >&2
+  exit 1
+fi
+EOF
+  chmod +x "$TEMP_DIR/bin/gh" "$TEMP_DIR/bin/nix-prefetch-url" "$TEMP_DIR/bin/nix"
+  env -u GH_VERSION -u GH_REV -u GH_SOURCE_HASH -u GH_VENDOR_HASH \
+    OVERLAY_FILE="$TEMP_DIR/overlays/default.nix" NIX_TEST_LOG="$TEMP_DIR/nix.log" \
+    bash "$SCRIPT" gh || return
+  cat "$TEMP_DIR/nix.log" "$TEMP_DIR/overlays/default.nix"
+}
+
+It 'uses resolved release values to calculate the GitHub CLI vendor hash'
+When run resolve_gh_release
+The output should include 'gh upgraded from 2.98.0 to 2.100.0'
+The output should include 'version = "2.100.0"; src = pkgs.fetchFromGitHub'
+The output should include 'rev = "45437bc7eeeb3359bbfddd1742f79de7652fd3e2"; hash = "sha256-9tnSQPSqllE+Ke6LKyNbnOF1drzdEwesEuPdmWD1X5c="'
+The output should include 'vendorHash = "sha256-ZqUs2BnasF3QBX0I2Sxh2A/CnO61Vy6gRn1hkf0n9AY=";'
+The status should be success
+End
+
 It 'updates every overlay hash from the all target'
 When run bash -c "env OVERLAY_FILE='$TEMP_DIR/overlays/default.nix' ASCII_BOX_CLI_VERSION='0.1.208' MOSHI_HOOK_CDN='file://$TEMP_DIR/cdn' BLACKSMITH_CLI_CDN='file://$TEMP_DIR/cdn/blacksmith' BLACKSMITH_CLI_VERSION='0.4.57' CRABBOX_RELEASE_CDN='file://$TEMP_DIR/cdn/crabbox' CRABBOX_VERSION='0.55.0' GH_VERSION='2.100.0' GH_REV='45437bc7eeeb3359bbfddd1742f79de7652fd3e2' GH_SOURCE_HASH='sha256-9tnSQPSqllE+Ke6LKyNbnOF1drzdEwesEuPdmWD1X5c=' GH_VENDOR_HASH='sha256-ZqUs2BnasF3QBX0I2Sxh2A/CnO61Vy6gRn1hkf0n9AY=' T3CODE_VERSION='0.0.36' T3CODE_PNPM_HASH='sha256-y/sJIluwbn65APmJ2p07FK1ScXpetCloTHtQzZMchDU=' bash '$SCRIPT' all && cat '$TEMP_DIR/overlays/default.nix'"
 The output should include 'moshi-hook upgraded from 0.2.55 to 0.2.69'

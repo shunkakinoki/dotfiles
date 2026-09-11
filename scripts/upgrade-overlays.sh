@@ -152,6 +152,7 @@ validate_sri_checksum() {
 }
 
 github_cli_vendor_hash() {
+  local version="$1" rev="$2" source_hash="$3"
   local expression output
 
   if [ -n "${GH_VENDOR_HASH:-}" ]; then
@@ -159,7 +160,7 @@ github_cli_vendor_hash() {
     return 0
   fi
 
-  expression="let flake = builtins.getFlake (toString $REPO_ROOT); pkgs = flake.inputs.nixpkgs.legacyPackages.x86_64-linux; in pkgs.gh.overrideAttrs (_: { version = \"$GH_VERSION\"; src = pkgs.fetchFromGitHub { owner = \"cli\"; repo = \"cli\"; rev = \"$GH_REV\"; hash = \"$GH_SOURCE_HASH\"; }; vendorHash = \"sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\"; })"
+  expression="let flake = builtins.getFlake (toString $REPO_ROOT); pkgs = flake.inputs.nixpkgs.legacyPackages.x86_64-linux; in pkgs.gh.overrideAttrs (_: { version = \"$version\"; src = pkgs.fetchFromGitHub { owner = \"cli\"; repo = \"cli\"; rev = \"$rev\"; hash = \"$source_hash\"; }; vendorHash = \"sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\"; })"
   output="$(nix build --no-link --impure --print-build-logs --expr "$expression" 2>&1 || true)"
   printf '%s\n' "$output" | sed -n 's/.*got:[[:space:]]*\(sha256-[[:alnum:]+/]*=[=]*\).*/\1/p' | tail -1
 }
@@ -195,7 +196,7 @@ upgrade_gh() {
   fi
   validate_sri_checksum "gh-$version-source" "$source_hash"
 
-  vendor_hash="$(github_cli_vendor_hash)"
+  vendor_hash="$(github_cli_vendor_hash "$version" "$rev" "$source_hash")"
   validate_sri_checksum "gh-$version-vendor" "$vendor_hash"
   current_version="$(sed -n '/gh = prev.gh.overrideAttrs/,/^[[:space:]]*});/p' "$OVERLAY_FILE" | sed -n 's/.*version = "\([^"]*\)";.*/\1/p' | head -1)"
 
