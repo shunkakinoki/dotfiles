@@ -27,6 +27,7 @@ with pkgs;
   azure-cli
   bandwhich
   bat
+  beads
   blacksmith-testbox-cli
   pkgs.llm-agents.bernstein
   broot
