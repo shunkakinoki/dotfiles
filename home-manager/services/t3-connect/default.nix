@@ -1,7 +1,12 @@
 { inputs, pkgs, ... }:
 let
   inherit (pkgs) lib;
-  inherit (inputs.host) isKyber;
+  serveRoutes = import ../../modules/tailscale/routes.nix;
+  hostServeRoutes = serveRoutes.${inputs.host.nodeName} or [ ];
+  t3ServeRoutes = lib.filter (
+    route: route.name == "t3" && route.manager == "t3-service"
+  ) hostServeRoutes;
+  t3ServeRoute = if lib.length t3ServeRoutes == 1 then lib.head t3ServeRoutes else null;
   # Compile and load native addons with one libc/Node toolchain. Keep the
   # caller's remaining PATH available to provider CLIs in the server.
   toolchain = lib.makeBinPath [
@@ -65,9 +70,9 @@ in
           [Service]
           ExecStart=
           ExecStart=${launcher}
-          ${lib.optionalString isKyber ''
+          ${lib.optionalString (t3ServeRoute != null) ''
             Environment=T3CODE_TAILSCALE_SERVE=true
-            Environment=T3CODE_TAILSCALE_SERVE_PORT=8443
+            Environment=T3CODE_TAILSCALE_SERVE_PORT=${toString t3ServeRoute.httpsPort}
           ''}
         '';
       };

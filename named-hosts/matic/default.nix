@@ -485,6 +485,7 @@ import ../../hosts/nixos {
             host = (import ../../lib/host.nix) // {
               isDesktop = true;
               isMatic = true;
+              nodeName = "matic";
             };
           };
         };
@@ -592,13 +593,6 @@ import ../../hosts/nixos {
                 "${builtins.toString ../galactica/keys/id_ed25519.age}" \
                 "${config.home.homeDirectory}/.ssh/id_ed25519" \
                 "${pkgs.rage}/bin/rage"
-            '';
-
-            # Publish the T3 server over tailnet HTTPS so remote clients can
-            # reach https://matic.tail950b36.ts.net. Nothing else serves :443
-            # here, so T3 takes the root.
-            home.activation.tailscaleServeT3 = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-              $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 443 3773
             '';
 
             # GPG agent configuration

@@ -7,5 +7,6 @@
   ./npm-globals
   ./secure-dotenv
   ./tailscale
+  ./tailscale/serve-routes.nix
   ./uv-globals
 ]

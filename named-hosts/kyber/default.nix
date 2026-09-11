@@ -178,14 +178,6 @@ home-manager.lib.homeManagerConfiguration {
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-user-service-priority.sh}"
         '';
 
-        # Publish the non-T3 Kyber gateways over tailnet-only HTTPS. T3 owns
-        # its :8443 route through the managed t3code.service configuration.
-        home.activation.tailscaleServeGateways = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 443 18789
-          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 9443 9120
-          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-tailscale-serve.sh}" 10443 18080
-        '';
-
         # Tailscale configuration
         # Using system-level service only (via installSystemService)
         # User services are disabled by leaving serviceConfig empty
