@@ -398,13 +398,37 @@ import ../../hosts/nixos {
         # Enable nix-ld for running dynamically linked binaries
         programs.nix-ld.enable = true;
         programs.nix-ld.libraries = with pkgs; [
+          alsa-lib
           atk
+          at-spi2-atk
+          cairo
+          cups
           curl
+          dbus
           glibc
+          gdk-pixbuf
           gtk3
+          libdrm
+          libgbm
           libgcc
+          libxkbcommon
           libnl
+          mesa
+          nspr
+          nss
           openssl
+          pango
+          xorg.libX11
+          xorg.libXcomposite
+          xorg.libXdamage
+          xorg.libXext
+          xorg.libXfixes
+          xorg.libXi
+          xorg.libXrandr
+          xorg.libXrender
+          xorg.libXtst
+          xorg.libxcb
+          xorg.libxshmfence
           zlib
         ];
 
