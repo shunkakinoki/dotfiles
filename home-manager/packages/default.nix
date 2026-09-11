@@ -76,7 +76,7 @@ with pkgs;
   gping
   grc
   gron
-  pkgs.llm-agents.herdr
+  pkgs.herdr
   pkgs.llm-agents.grok
   pkgs.llm-agents.muse-code
   hexyl

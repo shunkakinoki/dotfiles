@@ -100,7 +100,7 @@ inputs.home-manager.lib.homeManagerConfiguration {
             X-SwitchMethod = "restart";
           };
           Service = {
-            ExecStart = "${pkgs.llm-agents.herdr}/bin/herdr server";
+            ExecStart = "${pkgs.herdr}/bin/herdr server";
             Restart = "on-failure";
             RestartSec = "5s";
             Environment = [

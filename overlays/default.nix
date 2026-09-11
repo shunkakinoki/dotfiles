@@ -125,26 +125,6 @@
       # https://github.com/numtide/llm-agents.nix
       llm-agents =
         (prev.llm-agents or { })
-        // {
-          # Keep every managed client and server on the same released protocol.
-          # The upstream recipe retains native Linux/Darwin build dependencies.
-          herdr = prev.llm-agents.herdr.overrideAttrs (
-            finalAttrs: _: {
-              version = "0.9.0";
-              src = prev.fetchFromGitHub {
-                owner = "herdrdev";
-                repo = "herdr";
-                tag = "v${finalAttrs.version}";
-                hash = "sha256-SUYF4bbaYwNgoe498VoCUzuLPcjBLQXR0o0DWjjoSnI=";
-              };
-              cargoDeps = prev.rustPlatform.fetchCargoVendor {
-                inherit (finalAttrs) src;
-                name = "herdr-${finalAttrs.version}-vendor";
-                hash = "sha256-CW/SF/cAPDv47gS5B7XbVZEE6LC9F1a2I1TLTJ4AWdw=";
-              };
-            }
-          );
-        }
         // linuxGrokOverrides
         // prev.lib.optionalAttrs (prev.llm-agents ? bernstein) {
           # bernstein 2.8.2 requires reportlab<5,>=4.0 but nixpkgs now provides
@@ -209,6 +189,11 @@
   )
   inputs.noctalia-shell.overlays.default
   inputs.beads.overlays.default
+  (_: prev: {
+    # Upstream packages the official release binaries, so clients and servers
+    # stay on one published protocol without a local Rust build.
+    herdr = inputs.herdr.packages.${prev.system}.herdr;
+  })
   (_: prev: {
     # Keep the Dolt archive-integrity fix independent from the shared nixpkgs
     # pin so storage recovery does not upgrade unrelated host packages.

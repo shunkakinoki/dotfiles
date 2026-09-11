@@ -87,6 +87,14 @@
       url = "github:gastownhall/beads";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Pinned to the bot branch: herdr-nix main still ships 0.8.0 because the
+    # 0.9.0 bump was stranded when a PR-less publish workflow replaced the bot
+    # PR flow. Repoint at main once it carries >= 0.9.0.
+    herdr = {
+      url = "github:herdrdev/herdr-nix/90bc56abd306bcc5dc7471717fa7aafb8205b451";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

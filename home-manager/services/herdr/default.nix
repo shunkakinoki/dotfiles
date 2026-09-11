@@ -14,7 +14,7 @@ in
       ProgramArguments = [
         "${pkgs.bash}/bin/bash"
         "${./start.sh}"
-        "${pkgs.llm-agents.herdr}/bin/herdr"
+        "${pkgs.herdr}/bin/herdr"
       ];
       WorkingDirectory = homeDir;
       RunAtLoad = true;
