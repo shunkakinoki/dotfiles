@@ -26,6 +26,16 @@ It 'skips symlinks'
 When run bash -c "grep -- '! -L' '$SCRIPT'"
 The output should include '! -L'
 End
+
+It 'removes stale Home Manager generation links'
+When run bash -c "grep -F 'home-manager-generation' '$SCRIPT' >/dev/null && grep -F 'home-manager-files' '$SCRIPT' >/dev/null && grep -F 'rm -f --' '$SCRIPT' >/dev/null"
+The status should be success
+End
+
+It 'preserves unrelated symlinks'
+When run bash -c "grep -F 'case \"\$target\"' '$SCRIPT' >/dev/null && grep -F '/nix/store/*-home-manager-generation/*' '$SCRIPT' >/dev/null"
+The status should be success
+End
 End
 End
 

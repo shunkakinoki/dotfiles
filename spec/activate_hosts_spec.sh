@@ -70,5 +70,10 @@ It 'cleans up codex backups'
 When run bash -c "grep 'codex' '$SCRIPT'"
 The output should include 'hm-backup'
 End
+
+It 'removes stale Home Manager generation links'
+When run bash -c "grep -F 'home-manager-generation' '$SCRIPT' >/dev/null && grep -F 'home-manager-files' '$SCRIPT' >/dev/null && grep -F 'rm -f --' '$SCRIPT' >/dev/null"
+The status should be success
+End
 End
 End
