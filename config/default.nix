@@ -4,6 +4,7 @@ let
 in
 [
   ./aichat
+  ./agentsview
   ./antigravity
   ./amp
   ./bun

@@ -206,6 +206,7 @@ let
             cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text
           );
         assert !(cfg.home.activation ? tailscaleServeRoutes);
+        assert !(cfg.home.activation ? agentsviewProviderSettings);
         mkEvalCheck "home-linux-rust-linker" linux.activationPackage;
     }
     // lib.optionalAttrs (system == "x86_64-linux") {
@@ -329,6 +330,7 @@ let
             "--accept-dns=true"
             "--advertise-exit-node"
           ];
+        assert kyber.config.home.activation ? agentsviewProviderSettings;
         assert cfg.systemd.user.services ? dolt;
         assert cfg.systemd.user.services ? dolt-linear-sync;
         assert !(cfg.systemd.user.services ? dolt-federation-sync);
