@@ -8,6 +8,11 @@ linear_cli="@linear@"
 linear_workspace="@linearWorkspace@"
 linear_team_id="@linearTeamId@"
 linear_credentials_file="${XDG_CONFIG_HOME:-$HOME/.config}/linear/credentials.toml"
+# Linear rejects an issue body over 250,000 characters with a generic
+# "Argument Validation Error", which bd surfaces as a per-issue warning rather
+# than a failed run. Hold the oversized Bead back so one unpublishable record
+# cannot keep failing every batch it lands in.
+linear_body_limit=250000
 sync_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/beads-linear-sync"
 reconciliation_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/beads-reconciliation"
 
@@ -281,6 +286,8 @@ push_issue_batches() {
   local batch_number
   local batch_start
   local status
+  local rejected_status=0
+  local rejected_batches=0
   local -a issue_id_array
 
   if [ -z "$issue_ids" ]; then
@@ -311,9 +318,21 @@ push_issue_batches() {
         return 75
       fi
       log "Linear push failed with status $status"
-      return "$status"
+      # A rejected result is scoped to the Beads in that batch, so the
+      # remaining batches still publish and record their progress. Transport
+      # and timeout failures are not scoped that way and still stop the run.
+      if [ "$status" -ne 65 ]; then
+        return "$status"
+      fi
+      rejected_status="$status"
+      rejected_batches=$((rejected_batches + 1))
     fi
   done
+
+  if [ "$rejected_status" -ne 0 ]; then
+    log "Linear push rejected $rejected_batches of $batch_count $description batches"
+    return "$rejected_status"
+  fi
 }
 
 run_dolt_sql() {
@@ -530,7 +549,12 @@ if [ -s "$push_progress_file" ]; then
 fi
 # Keep deferred progress content out of jq's argv. The file may contain many
 # batches, so passing it with --arg exceeds Linux's per-argument limit.
-closed_push_entries="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --rawfile pushed "$pushed_progress_input" '
+closed_push_selection="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" --rawfile pushed "$pushed_progress_input" '
+  def body_length:
+    ((.description // "") | length)
+    + ((.design // "") | length)
+    + ((.acceptance_criteria // "") | length)
+    + ((.notes // "") | length);
   (if type == "object" and has("issues") then .issues else . end)
   | ($pushed | split("\n") | map(select(length > 0))) as $already_pushed
   | [
@@ -546,11 +570,20 @@ closed_push_entries="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --raw
           )
         )
       )
-    | "\(.id) \(.updated_at // "")"
-    | select(. as $entry | ($already_pushed | index($entry)) | not)
+    | {entry: "\(.id) \(.updated_at // "")", oversized: (body_length > $body_limit)}
+    | select(.entry as $entry | ($already_pushed | index($entry)) | not)
   ]
-  | join("\n")
+  | {
+    entries: (map(select(.oversized | not) | .entry) | join("\n")),
+    oversized: (map(select(.oversized)) | length),
+  }
+  | "\(.oversized)\n\(.entries)"
 ' <<<"$issues_before_pull")"
+oversized_push_count="$(@coreutils@/bin/head -n 1 <<<"$closed_push_selection")"
+closed_push_entries="$(@coreutils@/bin/tail -n +2 <<<"$closed_push_selection")"
+if [ "$oversized_push_count" -gt 0 ]; then
+  log "Holding back $oversized_push_count terminal Bead(s) whose body exceeds the Linear issue limit"
+fi
 closed_ids="$(printf '%s\n' "$closed_push_entries" | @gawk@/bin/awk 'NF { print $1 }' | @coreutils@/bin/paste -sd, -)"
 pending_completion_ids="$(@jq@/bin/jq -r '
   (if type == "object" and has("issues") then .issues else . end)
