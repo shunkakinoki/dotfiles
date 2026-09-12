@@ -147,6 +147,7 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   export KYBER_HOST_HEALTH_STATE_DIR="$state"
   source "$HEALTH_CHECK"
   IO_PRESSURE_UNHEALTHY=1
+  IO_PRESSURE_CURRENT_UNHEALTHY=1
   ORCHESTRATION_IMPLICATED=1
   capture_orchestration_evidence() { printf "%s/evidence/test\n" "$STATE_DIR"; }
   orchestration_control() { test -e "$STATE_DIR/orchestration.frozen"; printf "control:%s\n" "$1"; }
@@ -168,6 +169,7 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   export KYBER_HOST_HEALTH_STATE_DIR="$state"
   source "$HEALTH_CHECK"
   IO_PRESSURE_UNHEALTHY=1
+  IO_PRESSURE_CURRENT_UNHEALTHY=1
   D_STATE_UNHEALTHY=1
   ORCHESTRATION_IMPLICATED=0
   capture_orchestration_evidence() { printf "%s/evidence/test\n" "$STATE_DIR"; }
@@ -214,6 +216,7 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   export KYBER_HOST_HEALTH_STATE_DIR="$state"
   source "$HEALTH_CHECK"
   IO_PRESSURE_UNHEALTHY=1
+  IO_PRESSURE_CURRENT_UNHEALTHY=1
   ORCHESTRATION_IMPLICATED=1
   capture_orchestration_evidence() { printf "%s/evidence/test\n" "$STATE_DIR"; }
   orchestration_control() { return 1; }
@@ -296,6 +299,153 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
 '
 The output should equal ''
 The status should be success
+End
+
+It 'does not freeze from stale host PSI after current stalls have cleared'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  state="$(mktemp -d)"
+  trap "rm -rf \"$state\"" EXIT
+  export KYBER_HOST_HEALTH_STATE_DIR="$state"
+  source "$HEALTH_CHECK"
+  IO_PRESSURE_UNHEALTHY=1
+  IO_PRESSURE_CURRENT_UNHEALTHY=0
+  ORCHESTRATION_IMPLICATED=1
+  orchestration_control() { printf "unexpected:%s\n" "$1"; }
+  capture_orchestration_evidence() { printf "unexpected:capture\n"; }
+  clear_alert() { :; }
+  manage_orchestration_circuit_breaker
+  test ! -e "$state/orchestration.frozen"
+'
+The status should be success
+The output should equal ''
+End
+
+It 'does not freeze on a current spike without sustained host pressure'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  state="$(mktemp -d)"
+  trap "rm -rf \"$state\"" EXIT
+  export KYBER_HOST_HEALTH_STATE_DIR="$state"
+  source "$HEALTH_CHECK"
+  IO_PRESSURE_CURRENT_UNHEALTHY=1
+  ORCHESTRATION_IMPLICATED=1
+  orchestration_control() { printf "unexpected:%s\n" "$1"; }
+  clear_alert() { :; }
+  manage_orchestration_circuit_breaker
+  test ! -e "$state/orchestration.frozen"
+'
+The status should be success
+The output should equal ''
+End
+
+It 'retains the sustained D-state freeze trigger independently of PSI'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  state="$(mktemp -d)"
+  trap "rm -rf \"$state\"" EXIT
+  export KYBER_HOST_HEALTH_STATE_DIR="$state"
+  source "$HEALTH_CHECK"
+  D_STATE_UNHEALTHY=1
+  ORCHESTRATION_IMPLICATED=1
+  capture_orchestration_evidence() { printf "%s/evidence/test\n" "$STATE_DIR"; }
+  orchestration_control() { printf "control:%s\n" "$1"; }
+  set_alert() { :; }
+  clear_alert() { :; }
+  manage_orchestration_circuit_breaker
+  test -e "$state/orchestration.frozen"
+'
+The status should be success
+The output should equal 'control:freeze'
+End
+
+It 'resets recovery for current host PSI or sustained D-state outside orchestration'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  state="$(mktemp -d)"
+  trap "rm -rf \"$state\"" EXIT
+  export KYBER_HOST_HEALTH_STATE_DIR="$state"
+  source "$HEALTH_CHECK"
+  : >"$state/orchestration.frozen"
+  orchestration_control() { printf "unexpected:%s\n" "$1"; }
+  for unhealthy in IO_PRESSURE_CURRENT_UNHEALTHY D_STATE_UNHEALTHY; do
+    IO_PRESSURE_CURRENT_UNHEALTHY=0
+    D_STATE_UNHEALTHY=0
+    printf -v "$unhealthy" %s 1
+    printf "4\n" >"$state/orchestration.recovery-samples"
+    manage_orchestration_circuit_breaker
+    test "$(cat "$state/orchestration.recovery-samples")" = 0
+    test -e "$state/orchestration.frozen"
+  done
+'
+The status should be success
+The output should equal ''
+End
+
+It 'can thaw after five healthy current samples while historical PSI decays'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  state="$(mktemp -d)"
+  trap "rm -rf \"$state\"" EXIT
+  export KYBER_HOST_HEALTH_STATE_DIR="$state"
+  source "$HEALTH_CHECK"
+  IO_PRESSURE_UNHEALTHY=1
+  ORCHESTRATION_IMPLICATED=1
+  : >"$state/orchestration.frozen"
+  printf "4\n" >"$state/orchestration.recovery-samples"
+  orchestration_control() { printf "control:%s\n" "$1"; }
+  clear_alert() { :; }
+  manage_orchestration_circuit_breaker
+  test ! -e "$state/orchestration.frozen"
+'
+The status should be success
+The output should equal 'control:thaw'
+End
+
+It 'requires current cgroup pressure or actual D-state to implicate orchestration'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  state="$(mktemp -d)"
+  trap "rm -rf \"$state\"" EXIT
+  export KYBER_HOST_HEALTH_STATE_DIR="$state"
+  source "$HEALTH_CHECK"
+  orchestration_cgroup_dir() { printf "%s\n" "$state"; }
+  ps() { :; }
+  printf "some avg10=1.00 avg60=10.00 avg300=30.00 total=0\n" >"$state/io.pressure"
+  check_orchestration_pressure
+  test "$ORCHESTRATION_IMPLICATED" = 0
+  printf "some avg10=30.00 avg60=30.00 avg300=30.00 total=0\n" >"$state/io.pressure"
+  check_orchestration_pressure
+  test "$ORCHESTRATION_IMPLICATED" = 1
+  printf "some avg10=0.00 avg60=0.00 avg300=0.00 total=0\n" >"$state/io.pressure"
+  ps() { printf "D 0::/orchestration.slice/test.scope\nD 0::/orchestration.slice/test.scope\nD 0::/orchestration.slice/test.scope\n"; }
+  check_orchestration_pressure
+  test "$ORCHESTRATION_IMPLICATED" = 1
+'
+The status should be success
+The output should equal ''
+End
+
+It 'separates current and historical host PSI using the same thresholds'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  state="$(mktemp -d)"
+  trap "rm -rf \"$state\"" EXIT
+  export KYBER_HOST_HEALTH_STATE_DIR="$state"
+  source "$HEALTH_CHECK"
+  set_alert() { :; }
+  clear_alert() { :; }
+  awk() {
+    local args=("$@") last
+    last=$((${#args[@]} - 1))
+    if [ "${args[$last]}" = /proc/pressure/io ]; then args[$last]="$state/io.pressure"; fi
+    command awk "${args[@]}"
+  }
+  printf "some avg10=1.00 avg60=10.00 avg300=30.00 total=0\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n" >"$state/io.pressure"
+  check_io_pressure
+  test "$IO_PRESSURE_UNHEALTHY:$IO_PRESSURE_CURRENT_UNHEALTHY" = 1:0
+  printf "some avg10=30.00 avg60=10.00 avg300=1.00 total=0\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n" >"$state/io.pressure"
+  check_io_pressure
+  test "$IO_PRESSURE_UNHEALTHY:$IO_PRESSURE_CURRENT_UNHEALTHY" = 0:1
+  printf "some avg10=0.00 avg60=0.00 avg300=0.00 total=0\nfull avg10=11.00 avg60=11.00 avg300=11.00 total=0\n" >"$state/io.pressure"
+  check_io_pressure
+  test "$IO_PRESSURE_UNHEALTHY:$IO_PRESSURE_CURRENT_UNHEALTHY" = 1:1
+'
+The status should be success
+The output should equal ''
 End
 
 It 'runs the read-only reliability check every minute'

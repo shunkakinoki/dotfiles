@@ -216,6 +216,13 @@ raise `orchestration-circuit-breaker-flapping`, which means the slice re-trips
 after every thaw and its top writers in the evidence captures need attention
 rather than another auto-thaw.
 
+A PSI-triggered freeze requires both the five-minute pressure signal and
+current ten-second pressure to exceed the existing thresholds, including
+current pressure inside orchestration. A stale average alone cannot re-freeze
+a recovered slice. The sustained D-state trigger remains active. Automatic
+thaw requires five consecutive samples with current host pressure, D-state,
+and CRI checks healthy; long averages may decay during recovery.
+
 T3-launched tools and SSH sessions also have read limits outside
 `orchestration.slice`. T3 and its children share 20 MB/s and 200 read IOPS;
 each logind session scope gets 10 MB/s and 100 read IOPS, including commands
