@@ -4,6 +4,19 @@ timeout = 300000
 [install]
 # Supply-chain hygiene: only install packages published at least 7 days ago.
 minimumReleaseAge = 604800
+# T3 Code updates these agent CLIs with `bun i -g <pkg>@latest` and compares
+# against the npm `latest` tag, so the age gate would pin them to a stale
+# release. Codex platform binaries are version aliases of `@openai/codex`.
+minimumReleaseAgeExcludes = [
+  "@anthropic-ai/claude-code",
+  "@anthropic-ai/claude-code-darwin-arm64",
+  "@anthropic-ai/claude-code-darwin-x64",
+  "@anthropic-ai/claude-code-linux-arm64",
+  "@anthropic-ai/claude-code-linux-arm64-musl",
+  "@anthropic-ai/claude-code-linux-x64",
+  "@anthropic-ai/claude-code-linux-x64-musl",
+  "@openai/codex",
+]
 # Use caret ranges when adding deps.
 exact = false
 # Install optionalDependencies. Required for platform-native binaries shipped
