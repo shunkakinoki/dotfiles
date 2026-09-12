@@ -25,18 +25,34 @@ The installer runs the host-specific Tailscale enrollment command during its
 `make nix-switch` phase:
 
 ```sh
-tailscale up --hostname=kamino1 --accept-dns=true --ssh=false
+tailscale up --hostname=kamino1 --accept-dns=true --ssh=true
 ```
 
 On a fresh machine, follow the login URL printed during activation and choose
 the intended tailnet. On an enrolled machine, the command reapplies the declared
 name and preferences without creating a new device.
 
-This keeps the existing OpenSSH server/login policy, not Tailscale SSH. Activation
-adds the declared Galactica public key from `named-hosts/pubkeys.nix` to root's
-`authorized_keys`, preserving provider keys and other existing entries. It sets
-the SSH directory/file permissions to `700`/`600` and does not copy private keys.
-Clients with a different key still need that public key provisioned separately.
+Tailnet membership is the authentication gate: `--ssh=true` puts Tailscale SSH
+in front of port 22 for tailnet-originated connections, so a newly provisioned
+worker authorizes its clients from the tailnet ACL rather than from distributed
+key material. The ACL must grant `root` on these hosts with `"action": "accept"`;
+`"check"` demands a browser re-authentication that any non-interactive client
+fails. **Tailnet ACL edits are operator-owned** (see [AGENTS.md](../../AGENTS.md)).
+
+Tailscale SSH does not fall through to OpenSSH when the ACL denies, so a rule
+that does not cover a client locks it out of root over the tailnet. Enable one
+worker first, prove a real connection, then roll the rest forward.
+
+Activation still adds the declared client public keys from
+`named-hosts/pubkeys.nix` to root's `authorized_keys`, preserving provider keys
+and other existing entries. They are the recovery path if Tailscale SSH is
+turned back off; they are not consulted while it is on. Activation sets the SSH
+directory/file permissions to `700`/`600` and does not copy private keys.
+
+Each client keeps its own `known_hosts` entry for these workers. Tailscale SSH
+presents a different host key than OpenSSH, and `StrictHostKeyChecking
+accept-new` refuses a changed key, so run `ssh-keygen -R <worker>.<tailnet>`
+once per client after enabling it.
 Preserve each machine's `/var/lib/tailscale`, `/etc/ssh`, `/etc/machine-id`, and
 `/root` across restart/recreation. Never clone enrolled Tailscale state or SSH
 private host keys into a second machine. DNS names alone are not cryptographic
@@ -199,7 +215,7 @@ The final command below is run automatically by `make nix-switch`:
 ```sh
 hostname                          # must print kamino1
 systemctl is-active tailscaled    # must print active
-tailscale up --hostname=kamino1 --accept-dns=true --ssh=false
+tailscale up --hostname=kamino1 --accept-dns=true --ssh=true
 ```
 
 Open the login URL printed by the switch in your browser and choose the intended
