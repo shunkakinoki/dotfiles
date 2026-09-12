@@ -62,6 +62,13 @@ cp -rf source dest          # NOT: cp -r source dest
 - Do not embed incident-specific migrations, recovery commands, or temporary repair workarounds into recurring services or activation scripts.
 - Before adding cross-host SSH access, verify the existing trust and provisioning model. Inbound `authorized_keys` does not provide an outbound private identity. Keep reverse access machine-local when existing trust is machine-local unless declarative management is explicitly requested. Approval for access does not imply approval to expand its persistence or scope.
 
+## Tailnet Access Policy
+
+- The tailnet ACL is operator-owned. Never edit, apply, or attempt to apply it, and never use a Tailscale API credential to change policy. Agents may read `tailscale status` and local preferences for diagnosis only.
+- A change that depends on an ACL rule is delivered as configuration plus the exact rule the operator must add. State the rule; do not apply it and do not treat its absence as a failure to work around.
+- Tailscale SSH rules must use `"action": "accept"`. `"check"` requires a browser re-authentication, which every non-interactive client fails.
+- Tailscale SSH intercepts tailnet-originated port 22 and does not fall through to OpenSSH when the ACL denies. Enabling it on a host whose clients the ACL does not cover locks them out. Enable one host, prove a real connection, then roll forward.
+
 ## Repository Privacy Guidance
 
 - Never record private repository names, identifiers, checkout paths, or references in any tracked file, documentation, fixture, example, log, or generated configuration in this repository.

@@ -291,7 +291,7 @@ let
         assert lib.hasInfix "tailscale kamino100" cfg.home.activation.configureKaminoTailscale.data;
         assert lib.hasInfix "--hostname=kamino100" cfg.home.activation.configureKaminoTailscale.data;
         assert lib.hasInfix "--accept-dns=true" cfg.home.activation.configureKaminoTailscale.data;
-        assert lib.hasInfix "--ssh=false" cfg.home.activation.configureKaminoTailscale.data;
+        assert lib.hasInfix "--ssh=true" cfg.home.activation.configureKaminoTailscale.data;
         assert !(cfg.systemd.user.services ? dolt);
         assert !(cfg.systemd.user.services ? dolt-federation-sync);
         assert !(cfg.systemd.user.services ? dolt-linear-sync);

@@ -22,16 +22,20 @@ authorize-ssh)
   key_file="${2:?public key file required}"
   ssh_dir="${3:?SSH directory required}"
   ssh_keygen="${4:?ssh-keygen binary required}"
-  key="$(cat "$key_file")"
   "$ssh_keygen" -lf "$key_file" >/dev/null
   mkdir -p "$ssh_dir"
   chmod 700 "$ssh_dir"
   touch "$ssh_dir/authorized_keys"
   chmod 600 "$ssh_dir/authorized_keys"
   chown root:root "$ssh_dir" "$ssh_dir/authorized_keys"
-  if ! grep -qxF "$key" "$ssh_dir/authorized_keys"; then
-    printf '\n%s\n' "$key" >>"$ssh_dir/authorized_keys"
-  fi
+  # The key file holds one client per line, so match per line: a whole-file
+  # comparison would re-append every key whenever any one of them changed.
+  while IFS= read -r key; do
+    [ -n "$key" ] || continue
+    if ! grep -qxF "$key" "$ssh_dir/authorized_keys"; then
+      printf '\n%s\n' "$key" >>"$ssh_dir/authorized_keys"
+    fi
+  done <"$key_file"
   ;;
 user-manager)
   hostnamectl set-hostname "${2:?name required}"
