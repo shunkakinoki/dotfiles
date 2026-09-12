@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2016
 
-Describe 'config/openfactor-hooks/install.sh'
-SCRIPT="$PWD/config/openfactor-hooks/install.sh"
+Describe 'config/openfactor/install.sh'
+SCRIPT="$PWD/config/openfactor/install.sh"
 BASH_BIN="$(command -v bash)"
 BASH_DIR="$(dirname "$BASH_BIN")"
 
