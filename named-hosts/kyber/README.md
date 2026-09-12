@@ -204,24 +204,27 @@ initial containment budgets, not latency guarantees; evaluate review completion
 time and disk pressure before tuning them. Desktop review concurrency and limits
 are unchanged. The dedicated containerd disk and K3s remain outside these limits.
 
-When sustained host I/O PSI or D-state pressure crosses the health threshold
-and the slice's own `io.pressure` or D-state count implicates it, the
-host-health check records PSI, process/`wchan`, per-process I/O, cgroup I/O,
-and recent k3s logs under `/run/kyber-host-health/evidence`, then freezes only
-that disposable slice. Host pressure that the slice is not implicated in
-(k3s, containerd, storage) leaves it running. It never freezes or restarts
-k3s, containerd, or storage services. The slice thaws after five consecutive
-pressure-free samples with a healthy CRI probe. Three freezes within an hour
-raise `orchestration-circuit-breaker-flapping`, which means the slice re-trips
-after every thaw and its top writers in the evidence captures need attention
-rather than another auto-thaw.
+The host-health check freezes `orchestration.slice` only when sustained host
+pressure, the slice's own stalls, and congestion on the physical worktree disk
+coincide. It resolves the root filesystem to its physical disk and samples the
+kernel's completion counters over two seconds. Average read, write, flush, or
+discard latency of at least 20 ms, or outstanding I/O with no completions throughout
+the sample, prevents recovery. This latency budget distinguishes storage stalls
+from waiting for the slice's own I/O limits; it is not a service latency promise.
 
-A PSI-triggered freeze requires both the five-minute pressure signal and
-current ten-second pressure to exceed the existing thresholds, including
-current pressure inside orchestration. A stale average alone cannot re-freeze
-a recovered slice. The sustained D-state trigger remains active. Automatic
-thaw requires five consecutive samples with current host pressure, D-state,
-and CRI checks healthy; long averages may decay during recovery.
+The check records PSI, process/`wchan`, per-process I/O, cgroup I/O, and recent
+K3s logs under `/run/kyber-host-health/evidence` before freezing. It never freezes
+or restarts K3s, containerd, or storage services. A PSI-triggered freeze requires
+both five-minute and current ten-second pressure, including current pressure
+inside orchestration. The sustained D-state trigger also requires congestion on
+the worktree disk. Three freezes within an hour raise a flapping alert.
+
+Automatic thaw requires five consecutive healthy worktree-disk samples. Host
+pressure or CRI failures on the separate containerd disk remain health alerts;
+they cannot keep unrelated root-disk agents frozen. Recovery runs before CRI
+checks. Missing, malformed, reset, or unsupported stacked-device measurements
+raise an alert and withhold both new freezes and automatic thaws. Existing I/O
+caps continue to apply throughout.
 
 T3-launched tools and SSH sessions also have read limits outside
 `orchestration.slice`. T3 and its children share 20 MB/s and 200 read IOPS;

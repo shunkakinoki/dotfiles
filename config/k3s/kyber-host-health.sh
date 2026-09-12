@@ -14,6 +14,7 @@ readonly IO_SOME_AVG300_THRESHOLD=20
 readonly IO_FULL_AVG300_THRESHOLD=10
 readonly ORCHESTRATION_IO_SOME_AVG300_THRESHOLD=10
 readonly ORCHESTRATION_D_STATE_THRESHOLD=3
+readonly ORCHESTRATION_DISK_LATENCY_THRESHOLD_MS=20
 readonly ORCHESTRATION_FLAP_WINDOW_SECONDS=3600
 readonly ORCHESTRATION_FLAP_THRESHOLD=3
 readonly NODEFS_USAGE_THRESHOLD=70
@@ -29,11 +30,13 @@ readonly DISK_WEAR_CHECK_INTERVAL_SECONDS=21600
 IO_PRESSURE_UNHEALTHY=0
 IO_PRESSURE_CURRENT_UNHEALTHY=0
 D_STATE_UNHEALTHY=0
-CRI_UNHEALTHY=0
 ORCHESTRATION_IMPLICATED=0
 ORCHESTRATION_IO_SOME_AVG10=0
 ORCHESTRATION_IO_SOME_AVG300=0
 ORCHESTRATION_D_STATE_COUNT=0
+ORCHESTRATION_DISK_KNOWN=0
+ORCHESTRATION_DISK_UNHEALTHY=0
+ORCHESTRATION_DISK_SUMMARY="not measured"
 
 set_alert() {
   local key="$1"
@@ -189,7 +192,6 @@ check_cri() {
 
   started_at="$(date +%s)"
   if ! timeout 15 k3s crictl info >/dev/null 2>&1; then
-    CRI_UNHEALTHY=1
     set_alert "cri-health" "k3s crictl info failed or exceeded 15 seconds"
     return
   fi
@@ -200,10 +202,8 @@ check_cri() {
     grep -Eci 'DeadlineExceeded|deadline exceeded|FailedPrecondition|failed precondition|reserved (container )?name|failed to (create|stop|remove).*(sandbox|container)|cgroup.*(busy|failed)' || true)"
 
   if [ "$latency_seconds" -ge "$CRI_LATENCY_THRESHOLD_SECONDS" ] || [ "$error_count" -ge "$CRI_ERROR_THRESHOLD" ]; then
-    CRI_UNHEALTHY=1
     set_alert "cri-health" "CRI latency was ${latency_seconds}s with ${error_count} lifecycle errors in the last five minutes"
   else
-    CRI_UNHEALTHY=0
     clear_alert "cri-health"
   fi
 }
@@ -240,6 +240,8 @@ capture_orchestration_evidence() {
   install -d --mode 0700 "$evidence_root" "$evidence_dir"
 
   cat /proc/pressure/io >"$evidence_dir/io-pressure.txt"
+  cat /proc/diskstats >"$evidence_dir/diskstats.txt"
+  printf '%s\n' "$ORCHESTRATION_DISK_SUMMARY" >"$evidence_dir/worktree-disk.txt"
   ps -eo state,pid,ppid,uid,unit,cgroup,wchan:32,comm,args >"$evidence_dir/processes.txt"
   pidstat -d -p ALL 1 1 >"$evidence_dir/process-io.txt" 2>&1 || true
   systemd-cgtop --batch --iterations=1 --depth=6 --order=io >"$evidence_dir/cgroup-io.txt" 2>&1 || true
@@ -267,10 +269,69 @@ orchestration_cgroup_dir() {
     "$orchestration_uid" "$orchestration_uid" "$ORCHESTRATION_SLICE"
 }
 
-# Host PSI says the disk is saturated; it does not say by whom. Freezing the
-# orchestration slice only helps when the slice itself is stalled or holds the
-# uninterruptible tasks, otherwise the freeze pauses the control plane while
-# k3s, the beads Dolt server, or a pod keeps the host over threshold.
+# Read the physical disk backing the worktrees. Containerd has its own disk;
+# host PSI and CRI health cannot establish congestion on this one.
+orchestration_disk_path() {
+  local device disk
+  device="$(findmnt --noheadings --output MAJ:MIN --target / | tr -d '[:space:]')" || return 1
+  [[ $device =~ ^[0-9]+:[0-9]+$ ]] || return 1
+  disk="$(readlink -f "/sys/dev/block/$device")" || return 1
+  if [ -f "$disk/partition" ]; then
+    disk="$(dirname "$disk")"
+  fi
+  # A stacked device needs attribution to its underlying disks, not a guess.
+  [ -f "$disk/stat" ] && [ ! -d "$disk/dm" ] && [ ! -d "$disk/md" ] || return 1
+  printf '%s\n' "$disk"
+}
+
+read_orchestration_disk_stat() {
+  awk '
+    NF < 17 { exit 1 }
+    { for (i = 1; i <= 17; i++) if ($i !~ /^[0-9]+$/) exit 1 }
+    { print $1, $4, $5, $8, $12, $15, $16, $17, $9; found = 1 }
+    END { if (!found) exit 1 }
+  ' "$1/stat"
+}
+
+check_orchestration_disk() {
+  local disk before after result
+  ORCHESTRATION_DISK_KNOWN=0
+  ORCHESTRATION_DISK_UNHEALTHY=0
+  ORCHESTRATION_DISK_SUMMARY="measurement unavailable"
+  if ! disk="$(orchestration_disk_path)" ||
+    ! before="$(read_orchestration_disk_stat "$disk")"; then
+    set_alert "orchestration-disk-read" "unable to read the worktree disk; automatic freeze and thaw withheld"
+    return
+  fi
+  sleep 2
+  if ! after="$(read_orchestration_disk_stat "$disk")" ||
+    ! result="$(awk -v before="$before" -v after="$after" -v limit="$ORCHESTRATION_DISK_LATENCY_THRESHOLD_MS" '
+      BEGIN {
+        split(before, a); split(after, b)
+        for (i = 1; i <= 8; i++) if (b[i] < a[i]) exit 1
+        reads = b[1] - a[1]; writes = b[3] - a[3]
+        read_ms = reads ? (b[2] - a[2]) / reads : 0
+        write_ms = writes ? (b[4] - a[4]) / writes : 0
+        discards = b[5] - a[5]; flushes = b[7] - a[7]
+        discard_ms = discards ? (b[6] - a[6]) / discards : 0
+        flush_ms = flushes ? (b[8] - a[8]) / flushes : 0
+        stuck = !reads && !writes && !discards && !flushes && a[9] > 0 && b[9] > 0
+        printf "%d read_await=%.2fms write_await=%.2fms discard_await=%.2fms flush_await=%.2fms outstanding=%d", \
+          (read_ms >= limit || write_ms >= limit || discard_ms >= limit || flush_ms >= limit || stuck), \
+          read_ms, write_ms, discard_ms, flush_ms, b[9]
+      }
+    ')"; then
+    set_alert "orchestration-disk-read" "worktree disk counters unavailable or reset; automatic freeze and thaw withheld"
+    return
+  fi
+  ORCHESTRATION_DISK_KNOWN=1
+  ORCHESTRATION_DISK_UNHEALTHY="${result%% *}"
+  ORCHESTRATION_DISK_SUMMARY="$(basename "$disk") ${result#* }"
+  clear_alert "orchestration-disk-read"
+}
+
+# Cgroup PSI can include waiting for its own I/O limits. Combine it with
+# measured worktree-disk latency before treating the slice as a freeze candidate.
 check_orchestration_pressure() {
   local cgroup_dir some_avg10=0 some_avg300=0 d_state_count=0
 
@@ -297,7 +358,7 @@ check_orchestration_pressure() {
 }
 
 orchestration_pressure_summary() {
-  printf 'slice io some avg10=%s avg300=%s, slice D-state=%s' "$ORCHESTRATION_IO_SOME_AVG10" "$ORCHESTRATION_IO_SOME_AVG300" "$ORCHESTRATION_D_STATE_COUNT"
+  printf 'slice io some avg10=%s avg300=%s, slice D-state=%s; worktree disk %s' "$ORCHESTRATION_IO_SOME_AVG10" "$ORCHESTRATION_IO_SOME_AVG300" "$ORCHESTRATION_D_STATE_COUNT" "$ORCHESTRATION_DISK_SUMMARY"
 }
 
 record_orchestration_freeze() {
@@ -341,7 +402,7 @@ manage_orchestration_circuit_breaker() {
   local thaw_failure_alert="orchestration-thaw-failed"
   local evidence_dir recovery_samples=0 newly_frozen=0
 
-  if { { [ "$IO_PRESSURE_UNHEALTHY" -eq 1 ] && [ "$IO_PRESSURE_CURRENT_UNHEALTHY" -eq 1 ]; } || [ "$D_STATE_UNHEALTHY" -eq 1 ]; } && [ "$ORCHESTRATION_IMPLICATED" -eq 1 ]; then
+  if [ "$ORCHESTRATION_DISK_KNOWN" -eq 1 ] && [ "$ORCHESTRATION_DISK_UNHEALTHY" -eq 1 ] && { { [ "$IO_PRESSURE_UNHEALTHY" -eq 1 ] && [ "$IO_PRESSURE_CURRENT_UNHEALTHY" -eq 1 ]; } || [ "$D_STATE_UNHEALTHY" -eq 1 ]; } && [ "$ORCHESTRATION_IMPLICATED" -eq 1 ]; then
     printf '0\n' >"$recovery_file"
     if [ ! -s "$capture_file" ]; then
       evidence_dir="$(capture_orchestration_evidence)"
@@ -380,7 +441,9 @@ manage_orchestration_circuit_breaker() {
     return
   fi
 
-  if [ "$CRI_UNHEALTHY" -eq 1 ] || [ "$IO_PRESSURE_CURRENT_UNHEALTHY" -eq 1 ] || [ "$D_STATE_UNHEALTHY" -eq 1 ]; then
+  # Recovery belongs to the worktree disk. A fault on the separate container
+  # disk remains an alert, but cannot indefinitely suspend unrelated agents.
+  if [ "$ORCHESTRATION_DISK_KNOWN" -ne 1 ] || [ "$ORCHESTRATION_DISK_UNHEALTHY" -eq 1 ]; then
     printf '0\n' >"$recovery_file"
     return
   fi
@@ -457,10 +520,11 @@ main() {
   check_io_pressure
   check_d_state
   check_orchestration_pressure
+  check_orchestration_disk
+  manage_orchestration_circuit_breaker
   check_node_filesystem
   check_image_filesystem
   check_cri
-  manage_orchestration_circuit_breaker
   check_dns
   check_disk_wear
 }
