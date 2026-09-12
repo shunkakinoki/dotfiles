@@ -9,7 +9,6 @@ requires-python = ">=3.13"
 [dependency-groups]
 tools = [
   "aider-chat>=0.86.2",
-  "agentsview>=0.42.0",
   "claude-swap>=0.25.0",
   "git-remote-s3>=0.4.2",
   "graphifyy>=0.9.53",
