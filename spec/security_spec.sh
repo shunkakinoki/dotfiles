@@ -3,6 +3,7 @@
 
 Describe 'security.sh'
 SCRIPT="$PWD/config/claude/hooks/security.sh"
+SHARED_SCRIPT="$PWD/config/shared/hooks/security.sh"
 
 setup() {
   TEMP_HOME=$(mktemp -d)
@@ -74,6 +75,13 @@ Describe 'blocked commands'
 It 'blocks rm -rf /*'
 Data '{"tool": {"name": "Bash", "input": {"command": "rm -rf /*"}}}'
 When run bash -c "HOME='$TEMP_HOME' bash '$SCRIPT'"
+The status should eq 2
+The stderr should include 'BLOCKED'
+End
+
+It 'blocks Devin exec commands'
+Data '{"tool_name":"exec","tool_input":{"command":"rm -rf /*"}}'
+When run bash -c "HOME='$TEMP_HOME' bash '$SHARED_SCRIPT'"
 The status should eq 2
 The stderr should include 'BLOCKED'
 End

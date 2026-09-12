@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-# Shared Codex/Copilot/Cursor/Factory Droid/Grok Security Hook
+# Shared Codex/Copilot/Cursor/Factory Droid/Grok/Devin Security Hook
 # Blocks dangerous Bash commands by checking against deny patterns.
 # Returns exit code 2 to block, exit code 0 to allow.
 #
-# Claude has its own settings.json-driven security.sh — this is for the
-# agents that don't read settings.json at runtime.
+# Claude has its own settings.json-driven security.sh; this shared hook covers
+# Devin and the agents that don't read settings.json at runtime.
 #
 # Cursor on macOS launches GUI apps with a minimal PATH, so this script
 # self-bootstraps PATH to find jq.
@@ -26,7 +26,7 @@ input=$(cat)
 # Cursor sends only .command without a tool_name → empty passes through.
 tool_name=$(echo "$input" | jq -r '.tool.name // .tool_name // .toolName // empty' 2>/dev/null)
 case "$tool_name" in
-"" | Bash | bash | Execute | execute | shell) ;;
+"" | Bash | bash | Execute | execute | exec | shell) ;;
 *) exit 0 ;;
 esac
 

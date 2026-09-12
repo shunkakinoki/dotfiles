@@ -1,6 +1,6 @@
 # Shared agent GitHub guardrails
 
-`block-git-push.sh` and `block-gh-settings.sh` are shared `PreToolUse` hooks for Codex, Claude Code, Cursor, GitHub Copilot, and Grok. They accept the command from each client's supported JSON shape:
+`block-git-push.sh` and `block-gh-settings.sh` are shared `PreToolUse` hooks for Codex, Claude Code, Cursor, GitHub Copilot, Grok, and Devin. They accept the command from each client's supported JSON shape:
 
 - `.tool.input.command`
 - `.tool_input.command`
@@ -49,7 +49,7 @@ These hooks provide fast feedback and prevent common mistakes. They run with the
 # Traces agent hook guard
 
 `traces-agent-hook.sh <event> --agent <id>` wraps `traces hook agent` for Codex,
-Claude Code, Cursor, GitHub Copilot, Grok, Antigravity, Pi, Hermes, and
+Claude Code, Cursor, GitHub Copilot, Grok, Devin, Antigravity, Pi, Hermes, and
 OpenClaw; the Pi, Hermes, and OpenClaw adapters spawn it directly and pass
 the binary they resolved as `TRACES_BIN`. The traces hook
 starts a detached `traces share --trace-id <session> --source agent_hook`

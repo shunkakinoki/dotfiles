@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shared Codex/Claude/Cursor/Factory Droid agent guardrail for pushes to protected default branches.
+# Shared Codex/Claude/Cursor/Factory Droid/Devin agent guardrail for pushes to protected default branches.
 # This is an early warning only; remote rulesets and restricted credentials are
 # the authoritative enforcement boundary.
 

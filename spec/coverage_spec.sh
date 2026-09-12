@@ -533,6 +533,10 @@ config/herdr/install-integrations.sh
 config/copilot/activate.sh
 config/codex/hooks/atuin-history.sh
 config/dcg/activate.sh
+config/devin/activate.sh
+config/devin/hooks/atuin-history.sh
+config/devin/hooks/notify.sh
+config/devin/hooks/pushover.sh
 config/dsh/hydrate.sh
 config/codex/hooks/notify.sh
 config/codex/hooks/pushover.sh
