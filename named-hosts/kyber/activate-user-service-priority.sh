@@ -8,6 +8,7 @@ readonly USER_UID
 readonly SYSTEM_DROP_IN_FILE="/etc/systemd/system/system.slice.d/10-kyber-managed-services.conf"
 readonly USER_DROP_IN_FILE="/etc/systemd/system/user@${USER_UID}.service.d/10-kyber-managed-services.conf"
 readonly USER_SLICE_DROP_IN_FILE="/etc/systemd/system/user.slice.d/10-kyber-io-ceiling.conf"
+readonly SESSION_DROP_IN_FILE="/etc/systemd/system/session-.scope.d/20-kyber-read-io.conf"
 readonly BFQ_UDEV_RULE_FILE="/etc/udev/rules.d/60-kyber-bfq.rules"
 
 # IOWeight only expresses a ratio for the block device. It cannot bound how
@@ -56,6 +57,16 @@ EOF
 )
 USER_SLICE_CONTENT=$(
   printf '[Slice]\nIOWriteBandwidthMax=%s %s\n' "$USER_IO_WRITE_PATH" "$USER_IO_WRITE_MAX"
+)
+# The dash-prefix drop-in covers current and future logind/SSH session scopes,
+# including commands run through sudo, without capping managed service reads.
+SESSION_CONTENT=$(
+  cat <<'EOF'
+[Scope]
+IOAccounting=true
+IOReadBandwidthMax=/ 10M
+IOReadIOPSMax=/ 100
+EOF
 )
 BFQ_UDEV_CONTENT=$(
   cat <<'EOF'
@@ -134,6 +145,7 @@ select_bfq_scheduler() {
 install_drop_in "$SYSTEM_DROP_IN_FILE" "$SYSTEM_CONTENT"
 install_drop_in "$USER_DROP_IN_FILE" "$USER_CONTENT"
 install_drop_in "$USER_SLICE_DROP_IN_FILE" "$USER_SLICE_CONTENT"
+install_drop_in "$SESSION_DROP_IN_FILE" "$SESSION_CONTENT"
 if [ "$changed" -eq 1 ]; then
   run_root systemctl daemon-reload
 fi

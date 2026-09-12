@@ -216,6 +216,21 @@ raise `orchestration-circuit-breaker-flapping`, which means the slice re-trips
 after every thaw and its top writers in the evidence captures need attention
 rather than another auto-thaw.
 
+T3-launched tools and SSH sessions also have read limits outside
+`orchestration.slice`. T3 and its children share 20 MB/s and 200 read IOPS;
+each logind session scope gets 10 MB/s and 100 read IOPS, including commands
+run through `sudo`. These limits apply to reads only. Dolt and other managed
+user services keep their existing controls, and no service restart is needed.
+Session budgets are per session, so they do not impose a combined SSH ceiling.
+
+Kyber's managed `find` rejects recursive scans from `/`, `/home`, `/root`, the
+user home, and the shared worktree collection. Use an exact project/state path,
+or put `-maxdepth 0`, `1`, or `2` immediately after the roots for a shallow
+inventory. The same guard is included in T3's toolchain. This is an operational
+guard, not a security boundary: explicitly invoking another scanner can bypass
+it, while the cgroup read limits still apply. Rate limits reduce contention but
+do not guarantee filesystem journal latency or prevent every breaker event.
+
 Automatic agent trace uploads are currently disabled with
 `services.traces-agent-uploads.enable = false`. The shared hook dispatcher exits
 without scanning traces, enqueueing requests, or starting an uploader. The upload
