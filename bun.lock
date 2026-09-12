@@ -67,7 +67,7 @@
         "ralph-tui": "^0.12.0",
         "t3": "^0.0.38",
         "takt": "^0.64.1",
-        "tokscale": "^4.15.1",
+        "tokscale": "^4.16.0",
         "turbo": "^2.10.12",
         "typescript": "^7.0.2",
         "vite": "^8.2.2",
@@ -2121,25 +2121,25 @@
 
     "@tokenizer/token": ["@tokenizer/token@0.3.0", "", {}, "sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A=="],
 
-    "@tokscale/cli": ["@tokscale/cli@4.15.1", "", { "optionalDependencies": { "@tokscale/cli-android-arm64": "4.15.1", "@tokscale/cli-darwin-arm64": "4.15.1", "@tokscale/cli-darwin-x64": "4.15.1", "@tokscale/cli-linux-arm64-gnu": "4.15.1", "@tokscale/cli-linux-arm64-musl": "4.15.1", "@tokscale/cli-linux-x64-gnu": "4.15.1", "@tokscale/cli-linux-x64-musl": "4.15.1", "@tokscale/cli-win32-arm64-msvc": "4.15.1", "@tokscale/cli-win32-x64-msvc": "4.15.1" }, "bin": { "tokscale": "bin.js" } }, "sha512-NXx8azcDpHGq56vvmBs/yGmOs4bKmzXAsZGCzAYQv/ciPpYbpuiuL4eDJEcd604uTCpmxHIOwLsEJJGZI0DRag=="],
+    "@tokscale/cli": ["@tokscale/cli@4.16.0", "", { "optionalDependencies": { "@tokscale/cli-android-arm64": "4.16.0", "@tokscale/cli-darwin-arm64": "4.16.0", "@tokscale/cli-darwin-x64": "4.16.0", "@tokscale/cli-linux-arm64-gnu": "4.16.0", "@tokscale/cli-linux-arm64-musl": "4.16.0", "@tokscale/cli-linux-x64-gnu": "4.16.0", "@tokscale/cli-linux-x64-musl": "4.16.0", "@tokscale/cli-win32-arm64-msvc": "4.16.0", "@tokscale/cli-win32-x64-msvc": "4.16.0" }, "bin": { "tokscale": "bin.js" } }, "sha512-DJy8mxLpaIXzr5HrZpvgwR232HQY1QjeT1kq8n3t+s4n4qs/8KuKQqND+/6mF3DqVz3O6/vgLlqd0QDalg/h/A=="],
 
-    "@tokscale/cli-android-arm64": ["@tokscale/cli-android-arm64@4.15.1", "", { "os": "android", "cpu": "arm64" }, "sha512-+B6qj2ET8ZOedochQuRkot9fKw7z2PJLUKp0ngjmTPX/Ix56Ricax4/RRqfVgt69XLtAlQ0aLD4EQT6zuGWg7g=="],
+    "@tokscale/cli-android-arm64": ["@tokscale/cli-android-arm64@4.16.0", "", { "os": "android", "cpu": "arm64" }, "sha512-OkHcTIASS/mVq06NNrrwY0A/bH0Ml0fboEmTsaX335evQfa9uNtdUb5ML/zolPeN7w1tZbxfMIZy+tNkgQjJvA=="],
 
-    "@tokscale/cli-darwin-arm64": ["@tokscale/cli-darwin-arm64@4.15.1", "", { "os": "darwin", "cpu": "arm64" }, "sha512-qAW/FAg6GkMBdqdnRN1knjnPz5yoCnmvaVEQPmJPLVOcKC/V1v4JSbu6zFFfxoYA1rTJlj+D8rqd/uuBMnIrYw=="],
+    "@tokscale/cli-darwin-arm64": ["@tokscale/cli-darwin-arm64@4.16.0", "", { "os": "darwin", "cpu": "arm64" }, "sha512-p1WhVrLMCzXstm5PgSG3gsn+Dql32y1A4pw51fQcMOf9wjWhU7DVHuLODsO0KVbH9+HrpkZNrrLzTEhdNdIFcQ=="],
 
-    "@tokscale/cli-darwin-x64": ["@tokscale/cli-darwin-x64@4.15.1", "", { "os": "darwin", "cpu": "x64" }, "sha512-HA8zg4p3CJYMbsU2S4saxuFT/0hTg5EW7O8+FxH4fL+X4jm12FuwLAmvQ0g3RZWsqgUKhb22+LdMgwvp7dJaqw=="],
+    "@tokscale/cli-darwin-x64": ["@tokscale/cli-darwin-x64@4.16.0", "", { "os": "darwin", "cpu": "x64" }, "sha512-b0FrA4nQC46BoTFe8vB0qmMuKhi1bV3a3EFpN9KREFwFrUsQyCYX/Lh7qn98NTfshxT44uLHKz6+REvDG39emA=="],
 
-    "@tokscale/cli-linux-arm64-gnu": ["@tokscale/cli-linux-arm64-gnu@4.15.1", "", { "os": "linux", "cpu": "arm64" }, "sha512-W4YgugkNkh6TeApIbgjA+YYiogYl3NT0GPsTed/V8Qgh7b5Dv52Gp85ALgUvjUtKzPTC4g2wH0oE74w+9DZylg=="],
+    "@tokscale/cli-linux-arm64-gnu": ["@tokscale/cli-linux-arm64-gnu@4.16.0", "", { "os": "linux", "cpu": "arm64" }, "sha512-95Lb8NgDZUJEvCepm3t8nUwBLMDmhv+gkhte+tct0kZwMu4fOKn7bhQ52NNihySAbPCsixhAhRDsDr4uIUifBg=="],
 
-    "@tokscale/cli-linux-arm64-musl": ["@tokscale/cli-linux-arm64-musl@4.15.1", "", { "os": "linux", "cpu": "arm64" }, "sha512-imbXQEjNdWj1jzZII5Qq/2F1vAVAtbbdrjbUzUAJHFOyD2VfLhBGV1YgpLiJml7efB1kFD7j5NbubT7nFWcxHg=="],
+    "@tokscale/cli-linux-arm64-musl": ["@tokscale/cli-linux-arm64-musl@4.16.0", "", { "os": "linux", "cpu": "arm64" }, "sha512-5fdqljWGGZ2dGhypS4JlQHu/kl10NgyoFBfqWwIuTfPZLJn/z592u3E6dPWQlMA257jn6tjCo+Ruwdakh9AtNQ=="],
 
-    "@tokscale/cli-linux-x64-gnu": ["@tokscale/cli-linux-x64-gnu@4.15.1", "", { "os": "linux", "cpu": "x64" }, "sha512-bJLuRMnDWX4mXjgNma8DSJ6g/+xmSIt+eWrVOKgYcjQY4z2DJe6S0E9pH4trmUqmyTLk7KeynISOXEIBHz1jGw=="],
+    "@tokscale/cli-linux-x64-gnu": ["@tokscale/cli-linux-x64-gnu@4.16.0", "", { "os": "linux", "cpu": "x64" }, "sha512-mDa3Y/GPMw/5SpRcMq/C8xOcL01q4QyUs620aBWlGsmATw9za//4lIaghboOg5zP1PmWw9TyVMGJ+ZAsvlsRcA=="],
 
-    "@tokscale/cli-linux-x64-musl": ["@tokscale/cli-linux-x64-musl@4.15.1", "", { "os": "linux", "cpu": "x64" }, "sha512-BRKZ3oZaZjG2XeEv3ZJ++UCvgd3bOtd/pj8eC4X+yYU6CUwyNFvs1+9SGQF0J89/zz37kWESi8EpfjSE5j/wuA=="],
+    "@tokscale/cli-linux-x64-musl": ["@tokscale/cli-linux-x64-musl@4.16.0", "", { "os": "linux", "cpu": "x64" }, "sha512-/N7EcZikLbMF+icXtTpEbrKV+Ze+NgfhQ6GT3cnlL9YhPmuyggGE6g11+t93DepNeBoIlERIeObVK4AiPC8Mjw=="],
 
-    "@tokscale/cli-win32-arm64-msvc": ["@tokscale/cli-win32-arm64-msvc@4.15.1", "", { "os": "win32", "cpu": "arm64" }, "sha512-BYXfkRnAuPA7ZDK4pP8lnYBehiNSKOBVjtUknacBA3pOt2nmuWvZbRsuUvOZZK5o4Iak4hmuQnpvwPG3W1MoOQ=="],
+    "@tokscale/cli-win32-arm64-msvc": ["@tokscale/cli-win32-arm64-msvc@4.16.0", "", { "os": "win32", "cpu": "arm64" }, "sha512-rRpmgPWo5srMxALSJyjhnC8Zw3/vIyLFRoL5CpJsaNE3c2wT54zpc0is10V/mtsjwkYEiPX2Mqud3OP/2ZHmDg=="],
 
-    "@tokscale/cli-win32-x64-msvc": ["@tokscale/cli-win32-x64-msvc@4.15.1", "", { "os": "win32", "cpu": "x64" }, "sha512-AYmG1sg26dcNhHnW6N6w6qYNS72OuCIphRCiciR8EnBFh9/OHGOamQbEt5MVdoHFUQMrzcqlR3mOMKI7irMdTw=="],
+    "@tokscale/cli-win32-x64-msvc": ["@tokscale/cli-win32-x64-msvc@4.16.0", "", { "os": "win32", "cpu": "x64" }, "sha512-U9IgOW4WWVfpPsjVP01Ac+ZA6lvL+rPVsZXqs5GjzOcXLD70hdIfbEEnXcCJXjOaYc6M+wPK+DE1LoGURx50uw=="],
 
     "@toon-format/toon": ["@toon-format/toon@2.3.1", "", {}, "sha512-sWqEMeAJGMda9qRrfPKrX3C4c33CO9SJuvJzzrcBEn5sbDB+k6pSLkDsfN0rVnLQwR97MV3sDgVbcxQNsq8xVw=="],
 
@@ -4181,7 +4181,7 @@
 
     "tokenx": ["tokenx@1.6.0", "", {}, "sha512-CKTjk345ajvBAUp5xUI9a5KKN0zU0lBueVHQbCskH1Hp6WkUKsPW2qGCYNs0pxNyfzxfo+IIjdt2W4sMbw/qBw=="],
 
-    "tokscale": ["tokscale@4.15.1", "", { "dependencies": { "@tokscale/cli": "4.15.1" }, "bin": { "tokscale": "bin.js" } }, "sha512-9xxZDfhGurx/sQfWfkdCBmETntMcjJ6rsIvdhk2a0khBzx+zUB309Ryzx+HmwALQGY1PFimFTbJxeHtOJJjNEQ=="],
+    "tokscale": ["tokscale@4.16.0", "", { "dependencies": { "@tokscale/cli": "4.16.0" }, "bin": { "tokscale": "bin.js" } }, "sha512-XiCbNIhJzUuaOPWtuYKfFASyMVRfU4Pg56mw0t23EH4tuRFSUgFGaJvvE1j9yf/9QU50cwLlNtCb/2lmHhR6hw=="],
 
     "toml": ["toml@4.3.0", "", {}, "sha512-lVb8X9BsPVuH0M4BKeS91tXAmJvCjQ5UIyAbQFaxkKGyUFK2RPkhwaFSQH8vbpl1d23eu/IBH+dwVMHWaq9A5A=="],
 
