@@ -1,0 +1,71 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/security.sh",
+            "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/block-git-push.sh",
+            "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/block-gh-settings.sh",
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash|bash|shell"
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-end --agent grok # traces hook agent",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-start --agent grok # traces hook agent",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh agent-done --agent grok # traces hook agent",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh prompt-submitted --agent grok # traces hook agent",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ]
+  }
+}

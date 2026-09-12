@@ -1,0 +1,250 @@
+{
+  "hooks": {
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "command": "bd codex-hook PostCompact",
+            "statusMessage": "Scheduling Beads context refresh",
+            "type": "command"
+          }
+        ],
+        "matcher": "manual|auto"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "$HOME/.codex/hooks/atuin-history.sh",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "command": "bd codex-hook PreCompact",
+            "statusMessage": "Checking Beads context",
+            "type": "command"
+          }
+        ],
+        "matcher": "manual|auto"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/secret-guard.sh",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "matcher": "Write|Edit|MultiEdit"
+      },
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/rtk-rewrite.sh",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/security.sh",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/block-git-push.sh",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/block-gh-settings.sh",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "async": true,
+            "command": "$HOME/.codex/hooks/notify.sh",
+            "timeout": 3,
+            "type": "command"
+          },
+          {
+            "async": true,
+            "command": "$HOME/.codex/hooks/pushover.sh",
+            "timeout": 6,
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "command": "command -v graphify >/dev/null 2>&1 && graphify hook-guard search",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "command": "command -v graphify >/dev/null 2>&1 && graphify hook-guard read",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "matcher": "Read"
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-end --agent codex # traces hook agent",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "$HOME/.codex/hooks/notify.sh",
+            "timeout": 3,
+            "type": "command"
+          },
+          {
+            "async": true,
+            "command": "$HOME/.codex/hooks/pushover.sh",
+            "timeout": 6,
+            "type": "command"
+          }
+        ],
+        "matcher": "startup|resume"
+      },
+      {
+        "hooks": [
+          {
+            "command": "bd codex-hook SessionStart",
+            "statusMessage": "Loading Beads context",
+            "type": "command"
+          }
+        ],
+        "matcher": "startup|resume|clear"
+      },
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-start --agent codex # traces hook agent",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "$HOME/.codex/hooks/notify.sh",
+            "timeout": 3,
+            "type": "command"
+          },
+          {
+            "async": true,
+            "command": "$HOME/.codex/hooks/pushover.sh",
+            "timeout": 6,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
+            "timeout": 10,
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh agent-done --agent codex # traces hook agent",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "jq -c '{timestamp: (now | todate), prompt: .prompt[0:500]}' >> ~/.codex/prompt-history.jsonl",
+            "timeout": 3,
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "bd codex-hook UserPromptSubmit",
+            "statusMessage": "Refreshing Beads context",
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh prompt-submitted --agent codex # traces hook agent",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ]
+  }
+}
