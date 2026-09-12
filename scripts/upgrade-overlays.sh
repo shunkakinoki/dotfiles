@@ -15,6 +15,7 @@ ASCII_BOX_CLI_RELEASE_URL="${ASCII_BOX_CLI_RELEASE_URL:-https://github.com/arian
 ASCII_BOX_CLI_RELEASE_CHANNEL="${ASCII_BOX_CLI_RELEASE_CHANNEL:-ascii-prod1}"
 CRABBOX_RELEASE_API="${CRABBOX_RELEASE_API:-https://api.github.com/repos/openclaw/crabbox/releases/latest}"
 CRABBOX_RELEASE_CDN="${CRABBOX_RELEASE_CDN:-https://github.com/openclaw/crabbox/releases/download}"
+DEVIN_CLI_CDN="${DEVIN_CLI_CDN:-https://static.devin.ai/cli}"
 GH_RELEASE_API="${GH_RELEASE_API:-repos/cli/cli/releases/latest}"
 
 # Colors for output
@@ -42,6 +43,7 @@ usage() {
   echo "  ascii-box-cli - Upgrade the pinned ASCII Box CLI binaries"
   echo "  blacksmith-testbox-cli - Upgrade the pinned Blacksmith Testbox CLI binaries"
   echo "  crabbox - Upgrade the pinned Crabbox binaries"
+  echo "  devin - Upgrade the pinned Devin CLI binaries"
   echo "  gh - Upgrade the pinned GitHub CLI release and Go vendor hash"
   echo "  moshi-hook - Upgrade the pinned moshi-hook binaries"
   echo "  t3code - Refresh the platform-specific t3code pnpm dependency hash"
@@ -518,6 +520,75 @@ upgrade_crabbox() {
   log_info "✅ crabbox upgraded from ${current_version:-unknown} to $version"
 }
 
+upgrade_devin() {
+  local version current_version manifest
+  local darwin_arm64 darwin_x86_64 linux_arm64 linux_x86_64
+
+  manifest="$(curl -fsSL "$DEVIN_CLI_CDN/${DEVIN_CLI_VERSION:-current}/manifest.json")"
+  version="${DEVIN_CLI_VERSION:-$(printf '%s' "$manifest" | jq -r '.version')}"
+
+  if [[ ! $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    log_error "Invalid Devin CLI version: ${version:-unknown}"
+    exit 1
+  fi
+
+  current_version="$(sed -n '/devin = prev.stdenvNoCC.mkDerivation rec {/,/meta.mainProgram = "devin"/p' "$OVERLAY_FILE" | sed -n 's/.*version = "\([^"]*\)";.*/\1/p' | head -1)"
+  echo "  Current version: ${current_version:-unknown}"
+  echo "  Latest version:  $version"
+
+  darwin_arm64="$(printf '%s' "$manifest" | jq -r '.platforms["aarch64-apple-darwin"].sha256')"
+  darwin_x86_64="$(printf '%s' "$manifest" | jq -r '.platforms["x86_64-apple-darwin"].sha256')"
+  linux_arm64="$(printf '%s' "$manifest" | jq -r '.platforms["aarch64-unknown-linux"].sha256')"
+  linux_x86_64="$(printf '%s' "$manifest" | jq -r '.platforms["x86_64-unknown-linux"].sha256')"
+  validate_checksum devin-aarch64-apple-darwin "$darwin_arm64"
+  validate_checksum devin-x86_64-apple-darwin "$darwin_x86_64"
+  validate_checksum devin-aarch64-unknown-linux "$linux_arm64"
+  validate_checksum devin-x86_64-unknown-linux "$linux_x86_64"
+
+  awk \
+    -v version="$version" \
+    -v darwin_arm64="$darwin_arm64" \
+    -v darwin_x86_64="$darwin_x86_64" \
+    -v linux_arm64="$linux_arm64" \
+    -v linux_x86_64="$linux_x86_64" '
+      /devin = prev.stdenvNoCC.mkDerivation rec \{/ { in_devin = 1 }
+      in_devin && /version = "[^"]*";/ {
+        sub(/version = "[^"]*";/, "version = \"" version "\";")
+      }
+      in_devin && /"aarch64-darwin" =/ {
+        sub(/"[^"]*";$/, "\"" darwin_arm64 "\";")
+        updated_hashes++
+      }
+      in_devin && /"x86_64-darwin" =/ {
+        sub(/"[^"]*";$/, "\"" darwin_x86_64 "\";")
+        updated_hashes++
+      }
+      in_devin && /"aarch64-linux" =/ {
+        sub(/"[^"]*";$/, "\"" linux_arm64 "\";")
+        updated_hashes++
+      }
+      in_devin && /"x86_64-linux" =/ {
+        sub(/"[^"]*";$/, "\"" linux_x86_64 "\";")
+        updated_hashes++
+      }
+      in_devin && /meta.mainProgram = "devin"/ { in_devin = 0 }
+      { print }
+      END {
+        if (updated_hashes != 4) {
+          print "expected four devin checksums in " FILENAME > "/dev/stderr"
+          exit 1
+        }
+      }
+    ' "$OVERLAY_FILE" >"$OVERLAY_FILE.tmp"
+  mv -f "$OVERLAY_FILE.tmp" "$OVERLAY_FILE"
+
+  if [[ $current_version == "$version" ]]; then
+    log_info "✅ devin hashes refreshed for $version"
+  else
+    log_info "✅ devin upgraded from ${current_version:-unknown} to $version"
+  fi
+}
+
 t3code_pnpm_hash() {
   local expression output
 
@@ -595,6 +666,13 @@ main() {
     require_command sed
     upgrade_crabbox
     ;;
+  devin)
+    require_command awk
+    require_command curl
+    require_command jq
+    require_command sed
+    upgrade_devin
+    ;;
   gh)
     require_command awk
     require_command nix
@@ -618,6 +696,7 @@ main() {
   all)
     require_command awk
     require_command curl
+    require_command jq
     require_command nix-prefetch-url
     require_command nix
     require_command sed
@@ -625,6 +704,7 @@ main() {
     upgrade_ascii_box_cli
     upgrade_blacksmith_testbox_cli
     upgrade_crabbox
+    upgrade_devin
     upgrade_gh
     upgrade_moshi_hook
     upgrade_t3code

@@ -292,6 +292,33 @@
       meta.mainProgram = "crabbox";
     };
 
+    devin = prev.stdenvNoCC.mkDerivation rec {
+      pname = "devin";
+      version = "3000.10.21";
+      src = prev.fetchurl {
+        url = "https://static.devin.ai/cli/${version}/devin-${version}-${
+          if prev.stdenv.hostPlatform.isAarch64 then "aarch64" else "x86_64"
+        }-${if prev.stdenv.hostPlatform.isDarwin then "apple-darwin" else "unknown-linux"}.tar.gz";
+        sha256 =
+          {
+            "aarch64-darwin" = "c0b97f8197bf3ce895ff14aa19257c511154b49a0a195bba4962acb5e475c68e";
+            "x86_64-darwin" = "4725d6b0dbbf6f71d833b5489469dc8b5c4a4f929926f94d500952a4cb7bbad8";
+            "aarch64-linux" = "a63124ed2f8406a5d44a162fa2eb05b9c0f218a6b131e2ca1335d4a335c70a6c";
+            "x86_64-linux" = "7cac6f5739ba3a3e5542f3b7fa07ed902d6dfb96ca22e4c63ae84c03bb7db47c";
+          }
+          .${prev.stdenv.hostPlatform.system};
+      };
+      sourceRoot = ".";
+      dontConfigure = true;
+      dontBuild = true;
+      installPhase = ''
+        install -Dm755 bin/devin $out/bin/devin
+        mkdir -p $out/share
+        cp -r share/devin $out/share/devin
+      '';
+      meta.mainProgram = "devin";
+    };
+
     moshi-hook = prev.stdenv.mkDerivation rec {
       pname = "moshi-hook";
       version = "0.3.21";
