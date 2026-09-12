@@ -1,6 +1,5 @@
 {
   config,
-  inputs,
   pkgs,
   lib,
   isRunner,
@@ -8,15 +7,11 @@
 }:
 let
   inherit (pkgs.stdenv.hostPlatform) isDarwin;
-  excludedTools = if inputs.host.isKyber then "agentsview" else "";
 in
 {
-  home.sessionVariables.UV_GLOBALS_EXCLUDED_TOOLS = excludedTools;
-
   # Install uv global tools from pyproject.toml using home-manager activation
   home.activation.installUvGlobals = lib.mkIf (!isRunner) (
     config.lib.dag.entryAfter [ "writeBoundary" ] ''
-      export UV_GLOBALS_EXCLUDED_TOOLS="${excludedTools}"
       export PATH=${pkgs.uv}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.yq}/bin:$PATH
       ${lib.optionalString (!isDarwin) ''export SYSTEMCTL_BIN="${pkgs.systemd}/bin/systemctl"''}
       $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./install-uv-globals.sh}"
@@ -35,7 +30,6 @@ in
         Environment = [
           "PATH=${pkgs.uv}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${pkgs.yq}/bin:${pkgs.gnused}/bin:${pkgs.gnugrep}/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin"
           "HOME=%h"
-          "UV_GLOBALS_EXCLUDED_TOOLS=${excludedTools}"
         ];
         ExecStart = "${pkgs.bash}/bin/bash ${./install-uv-globals.sh}";
       };
