@@ -12,7 +12,7 @@ CONFIG_FILE="$CONFIG_DIR/config.json"
 "$JQ" -e 'type == "object"' "$MANAGED_CONFIG" >/dev/null
 mkdir -p "$CONFIG_DIR"
 
-if [[ -f "$CONFIG_FILE" ]] && ! "$JQ" -e 'type == "object"' "$CONFIG_FILE" >/dev/null; then
+if [[ -f $CONFIG_FILE ]] && ! "$JQ" -e 'type == "object"' "$CONFIG_FILE" >/dev/null; then
   echo "ERROR: refusing to replace invalid Devin config: $CONFIG_FILE" >&2
   exit 1
 fi
@@ -20,7 +20,7 @@ fi
 tmp="$(mktemp "$CONFIG_DIR/config.json.XXXXXX")"
 trap 'rm -f "$tmp"' EXIT
 
-if [[ -f "$CONFIG_FILE" ]]; then
+if [[ -f $CONFIG_FILE ]]; then
   "$JQ" -s '
     .[0] as $current
     | .[1] as $managed

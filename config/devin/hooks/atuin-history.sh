@@ -13,9 +13,9 @@ bash_command=$(jq -r '.tool_input.command // .tool.input.command // empty' <<<"$
 [ -n "$bash_command" ] || exit 0
 
 exit_code=$(jq -r '.tool_result.exit_code // .tool_response.exit_code // .response.exit_code // 0' <<<"$hook_input")
-case "$exit_code" in ''|-*|*[!0-9]*) exit_code=0 ;; esac
+case "$exit_code" in '' | -* | *[!0-9]*) exit_code=0 ;; esac
 duration=$(jq -r '.tool_result.duration_ms // .tool_response.duration_ms // .response.duration_ms // 0' <<<"$hook_input")
-case "$duration" in ''|*[!0-9]*) duration=0 ;; esac
+case "$duration" in '' | *[!0-9]*) duration=0 ;; esac
 
 cwd=$(jq -r '.cwd // empty' <<<"$hook_input")
 [ -n "$cwd" ] && [ -d "$cwd" ] || cwd="$HOME"
