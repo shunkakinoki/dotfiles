@@ -187,7 +187,23 @@ Kyber hosts coordinators rather than worker lanes. The Herdr server and its
 pane processes inherit `herdr.slice`, which the circuit breaker never
 freezes, so coordinators can keep inspecting and recovering the fleet.
 RoboRev and its child processes remain in the separate `orchestration.slice`,
-which caps aggregate writes to 20 MB/s and aggregate tasks to 2,048.
+which caps aggregate tasks to 2,048 and bounds root-filesystem I/O. RoboRev's
+single worker serializes review jobs, including panel members. Its service
+cgroup bounds the active review, child tools, and daemon housekeeping together:
+
+| Root-filesystem limit | RoboRev service | Orchestration slice aggregate |
+| --- | --- | --- |
+| Read bandwidth | 20 MB/s | 40 MB/s |
+| Write bandwidth | 10 MB/s | 20 MB/s |
+| Read operations | 200 IOPS | 400 IOPS |
+| Write operations | 100 IOPS | 200 IOPS |
+
+The service and parent limits both apply. IOPS limits bound small random
+operations that can saturate a disk below its bandwidth ceiling. These are
+initial containment budgets, not latency guarantees; evaluate review completion
+time and disk pressure before tuning them. Desktop review concurrency and limits
+are unchanged. The dedicated containerd disk and K3s remain outside these limits.
+
 When sustained host I/O PSI or D-state pressure crosses the health threshold
 and the slice's own `io.pressure` or D-state count implicates it, the
 host-health check records PSI, process/`wchan`, per-process I/O, cgroup I/O,
@@ -201,9 +217,13 @@ after every thaw and its top writers in the evidence captures need attention
 rather than another auto-thaw.
 
 Coding-agent hooks are the usual writer behind a flapping slice: every hook
-event goes through `config/shared/hooks/traces-agent-hook.sh`, which bounds
-the detached `traces share` uploads that the traces hook otherwise spawns
-without limit (see [shared hooks](../../config/shared/hooks/README.md)).
+event goes through `config/shared/hooks/traces-agent-hook.sh`. On Kyber it
+queues and coalesces events for a single uploader in `traces-uploads.slice`,
+including final session uploads. The upload remains in its bounded cgroup until
+all detached children finish. Root I/O is capped at 5 MB/s reads, 2 MB/s writes,
+100 read IOPS, and 50 write IOPS. The queue's one-minute timer retries failed
+launches and timeouts without requiring another agent event (see
+[shared hooks](../../config/shared/hooks/README.md)).
 
 This containment does not isolate ext4 journals. Kyber has two physical SSDs:
 the root/PVC filesystem and the dedicated containerd filesystem. Moving k3s

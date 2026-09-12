@@ -13,6 +13,14 @@
 # real hook. It always exits 0: telemetry must never block an agent.
 set -u
 
+# Kyber's managed queue owns the hook and its detached uploader together.
+# Other hosts retain the process guard below.
+queue="${HOME}/.local/libexec/traces-agent-uploads"
+if [ -x "$queue" ]; then
+  "$queue" enqueue "$@" || true
+  exit 0
+fi
+
 event="${1:-}"
 shift || true
 

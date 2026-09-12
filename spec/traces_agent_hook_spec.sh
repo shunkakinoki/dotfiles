@@ -8,7 +8,8 @@ setup() {
   TEMP_BIN="$TEMP_ROOT/bin"
   HOOK_LOG="$TEMP_ROOT/hook.log"
   PS_TABLE="$TEMP_ROOT/ps.txt"
-  mkdir -p "$TEMP_BIN"
+  export HOME="$TEMP_ROOT/home"
+  mkdir -p "$TEMP_BIN" "$HOME"
   : >"$PS_TABLE"
   cat >"$TEMP_BIN/traces" <<'STUB'
 #!/usr/bin/env bash
@@ -53,6 +54,23 @@ When call run_guard trace-a session-start
 The status should be success
 The contents of file "$HOOK_LOG" should include 'args:hook agent session-start --agent claude-code'
 The contents of file "$HOOK_LOG" should include 'stdin:{"session_id":"trace-a"}'
+End
+
+It 'uses the managed queue for final events and preserves the hook input'
+mkdir -p "$HOME/.local/libexec"
+cp "$TEMP_BIN/traces" "$HOME/.local/libexec/traces-agent-uploads"
+When call run_guard trace-a session-end
+The status should be success
+The contents of file "$HOOK_LOG" should include 'args:enqueue session-end --agent claude-code'
+The contents of file "$HOOK_LOG" should include 'stdin:{"session_id":"trace-a"}'
+End
+
+It 'keeps queue failures from failing an agent hook'
+mkdir -p "$HOME/.local/libexec"
+printf '#!/usr/bin/env bash\nexit 1\n' >"$HOME/.local/libexec/traces-agent-uploads"
+chmod +x "$HOME/.local/libexec/traces-agent-uploads"
+When call run_guard trace-a session-end
+The status should be success
 End
 
 It 'skips prompt-submitted while the same trace is already uploading'
