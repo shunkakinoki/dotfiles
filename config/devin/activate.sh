@@ -6,7 +6,9 @@ set -euo pipefail
 
 MANAGED_CONFIG="$1"
 JQ="${2:-jq}"
-CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/devin"
+# Devin's documented user config is fixed at ~/.config/devin, independent of
+# XDG_CONFIG_HOME.
+CONFIG_DIR="$HOME/.config/devin"
 CONFIG_FILE="$CONFIG_DIR/config.json"
 
 "$JQ" -e 'type == "object"' "$MANAGED_CONFIG" >/dev/null
