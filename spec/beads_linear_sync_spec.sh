@@ -128,6 +128,16 @@ When run bash -c "checkpoint=\$(grep -n '\"\$cycle_started\" >\"\$sync_checkpoin
 The status should be success
 End
 
+It 'holds back terminal Beads whose body exceeds the Linear issue limit'
+When run bash -c "grep -F 'linear_body_limit=250000' '$SCRIPT' >/dev/null && grep -F -- '--argjson body_limit \"\$linear_body_limit\"' '$SCRIPT' >/dev/null && grep -F 'oversized: (body_length > \$body_limit)' '$SCRIPT' >/dev/null && grep -F 'exceeds the Linear issue limit' '$SCRIPT' >/dev/null"
+The status should be success
+End
+
+It 'publishes the remaining batches after a rejected batch'
+When run bash -c "grep -F 'if [ \"\$status\" -ne 65 ]; then' '$SCRIPT' >/dev/null && grep -F 'rejected_batches=\$((rejected_batches + 1))' '$SCRIPT' >/dev/null && grep -F 'return \"\$rejected_status\"' '$SCRIPT' >/dev/null"
+The status should be success
+End
+
 End
 
 Describe 'reconciliation behavior'
