@@ -19,11 +19,7 @@ BeforeEach 'setup'
 guard() { bash "$SCRIPT" "$STUB" "$@"; }
 
 Describe 'broad roots'
-Parameters
-/
-/home
-/root
-End
+Parameters:value / /home /root
 
 It "rejects an unbounded traversal of a broad root"
 When run guard "$1"
