@@ -2,6 +2,27 @@
 
 set -euo pipefail
 
+# Reconcile host exclusions locally, even when installation must wait for boot
+# or network readiness. Do not prune unrelated manually installed tools.
+read -ra excluded_tools <<<"${UV_GLOBALS_EXCLUDED_TOOLS:-}"
+if [ "${#excluded_tools[@]}" -gt 0 ]; then
+  if ! command -v uv &>/dev/null; then
+    echo "uv not found, cannot reconcile excluded tools" >&2
+    exit 1
+  fi
+  installed_tools=$(uv tool list)
+  for excluded in "${excluded_tools[@]}"; do
+    if [[ ! $excluded =~ ^[a-zA-Z0-9][a-zA-Z0-9._-]*$ ]]; then
+      echo "Invalid excluded tool name" >&2
+      exit 1
+    fi
+    if printf '%s\n' "$installed_tools" | awk '{print $1}' | grep -Fxq -- "$excluded"; then
+      uv tool uninstall "$excluded"
+    fi
+    rm -f "${HOME}/.local/bin/python3-${excluded}"
+  done
+fi
+
 # Skip during boot on Linux (SYSTEMCTL_BIN set by nix activation)
 if [ -n "${SYSTEMCTL_BIN:-}" ] && [ "$("$SYSTEMCTL_BIN" is-system-running 2>/dev/null)" = "starting" ]; then
   echo "System is booting, skipping uv globals install"
@@ -53,6 +74,10 @@ echo "$DEPS" | while read -r pkg; do
     continue
   fi
   name=${pkg%%[><=!]*}
+  if printf '%s\n' "${excluded_tools[@]}" | grep -Fxq -- "$name"; then
+    echo "$name is excluded on this host, skipping"
+    continue
+  fi
   # Extract minimum version from spec (e.g. ">=0.86.2" -> "0.86.2")
   req_version=$(echo "$pkg" | sed -n 's/.*>=\([0-9][0-9.]*\).*/\1/p')
   installed_version=$(echo "$INSTALLED" | sed -n "s/^${name} v\([0-9][0-9.]*\).*/\1/p")
