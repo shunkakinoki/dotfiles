@@ -5,6 +5,7 @@ Describe 'config/codex/activate.sh'
 SCRIPT="$PWD/config/codex/activate.sh"
 SYNC_SCRIPT="$PWD/config/codex/sync-desktop-settings.sh"
 ENSURE_AGENT_SCRIPT="$PWD/config/codex/ensure-desktop-settings-agent.sh"
+MERGE_SCRIPT="$PWD/config/codex/merge-orchestration-hooks.sh"
 HOOKS_JSON="$PWD/generated/hooks/moshi/codex/hooks.json"
 CONFIG_TOML="$PWD/config/codex/config.toml"
 DESKTOP_SETTINGS_JSON="$PWD/config/codex/desktop-settings.json"
@@ -28,6 +29,85 @@ End
 It 'copies hooks.json'
 When run bash -c "grep 'HOOKS_JSON' '$SCRIPT'"
 The output should include 'HOOKS_JSON'
+End
+
+It 'merges optional live orchestration hooks without replacing existing arrays'
+TMP_HOME="$(mktemp -d)"
+TMP_BIN="$TMP_HOME/bin"
+TMP_HOOKS="$TMP_HOME/hooks.json"
+TMP_RENDERED="$TMP_HOME/rendered.json"
+TMP_SYNC="$TMP_HOME/sync.sh"
+mkdir -p "$TMP_BIN"
+cat >"$TMP_HOOKS" <<'JSON'
+{
+  "description": "managed",
+  "other": {"preserved": true},
+  "hooks": {
+    "SessionStart": [{"hooks": [{"type": "command", "command": "existing-start"}]}],
+    "UserPromptSubmit": [{"hooks": [{"type": "command", "command": "existing-prompt"}]}]
+  }
+}
+JSON
+cat >"$TMP_RENDERED" <<'JSON'
+{
+  "description": "orchestration",
+  "hooks": {
+    "SessionStart": [{"hooks": [{"type": "command", "command": "should-not-install"}]}],
+    "UserPromptSubmit": [{"hooks": [{"type": "command", "command": "orchestration-prompt", "timeout": 5}]}]
+  }
+}
+JSON
+cat >"$TMP_BIN/orchestration" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+[[ $* == 'hooks render --harness codex' ]]
+cat "$ORCHESTRATION_RENDERED"
+SH
+cat >"$TMP_SYNC" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+SH
+chmod +x "$TMP_BIN/orchestration" "$TMP_SYNC"
+
+When run bash -c 'cp "$1" "$2" && HOME="$3" PATH="$4:$PATH" ORCHESTRATION_RENDERED="$5" bash "$6" "$7" "$1" "$8" "$9" "${10}" "${11}" && cp "$3/.codex/hooks.json" "$2" && HOME="$3" PATH="$4:$PATH" ORCHESTRATION_RENDERED="$5" bash "$6" "$7" "$1" "$8" "$9" "${10}" "${11}" && cmp -s "$2" "$3/.codex/hooks.json" && jq -e '\''.description == "managed" and .other.preserved == true and (.hooks.SessionStart | length == 1) and (.hooks.UserPromptSubmit | length == 2) and ([.hooks.UserPromptSubmit[].hooks[] | .command] | sort == ["existing-prompt", "orchestration-prompt"])'\'' "$3/.codex/hooks.json" >/dev/null' _ "$TMP_HOOKS" "$TMP_HOME/first.json" "$TMP_HOME" "$TMP_BIN" "$TMP_RENDERED" "$SCRIPT" "$CONFIG_TOML" "$DESKTOP_SETTINGS_JSON" "$(command -v jq)" "$TMP_SYNC" "$PROFILES_DIR"
+The status should be success
+End
+
+It 'skips the optional live merge when orchestration is unavailable'
+TMP_HOME="$(mktemp -d)"
+TMP_SYNC="$TMP_HOME/sync.sh"
+mkdir -p "$TMP_HOME/bin"
+cat >"$TMP_SYNC" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+SH
+chmod +x "$TMP_SYNC"
+
+When run bash -c 'HOME="$1" PATH="$1/bin:/usr/bin:/bin" bash "$2" "$3" "$4" "$5" "$6" "$7" "$8" && cmp -s "$9" "$1/.codex/hooks.json"' _ "$TMP_HOME" "$SCRIPT" "$CONFIG_TOML" "$HOOKS_JSON" "$DESKTOP_SETTINGS_JSON" "$(command -v jq)" "$TMP_SYNC" "$PROFILES_DIR" "$HOOKS_JSON"
+The status should be success
+End
+
+It 'runs the live merge helper without recopying Codex configuration'
+TMP_HOME="$(mktemp -d)"
+TMP_BIN="$TMP_HOME/bin"
+TMP_HOOKS="$TMP_HOME/hooks.json"
+TMP_RENDERED="$TMP_HOME/rendered.json"
+mkdir -p "$TMP_BIN"
+cat >"$TMP_HOOKS" <<'JSON'
+{"model":"preserved","hooks":{"UserPromptSubmit":[{"hooks":[{"type":"command","command":"existing"}]}]}}
+JSON
+cat >"$TMP_RENDERED" <<'JSON'
+{"description":"orchestration","hooks":{"UserPromptSubmit":[{"hooks":[{"type":"command","command":"receipt","timeout":5}]}]}}
+JSON
+cat >"$TMP_BIN/orchestration" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+cat "$ORCHESTRATION_RENDERED"
+SH
+chmod +x "$TMP_BIN/orchestration"
+
+When run bash -c 'HOME="$1" PATH="$2:$PATH" ORCHESTRATION_RENDERED="$3" bash "$4" "$5" "$6" && cp "$5" "$1/first.json" && HOME="$1" PATH="$2:$PATH" ORCHESTRATION_RENDERED="$3" bash "$4" "$5" "$6" && cmp -s "$1/first.json" "$5" && jq -e '\''.model == "preserved" and (.hooks.UserPromptSubmit | length == 2)'\'' "$5" >/dev/null' _ "$TMP_HOME" "$TMP_BIN" "$TMP_RENDERED" "$MERGE_SCRIPT" "$TMP_HOOKS" "$(command -v jq)"
+The status should be success
 End
 
 It 'declares the Codex Desktop Git and worktree preferences'
@@ -199,6 +279,46 @@ It 'self-heals a missed Desktop settings LaunchAgent registration'
 When run cat "$DEFAULT_NIX"
 The output should include 'ensureDesktopSettingsAgent'
 The output should include 'entryAfter [ "setupLaunchAgents" ]'
+End
+End
+
+Describe 'config/herdr/default.nix'
+HERDR_DEFAULT_NIX="$PWD/config/herdr/default.nix"
+
+It 'installs native Codex and OpenCode integrations after harness activation'
+When run cat "$HERDR_DEFAULT_NIX"
+The output should include 'installHerdrIntegrations'
+The output should include 'codexConfig'
+The output should include 'installOpenCodePlugins'
+The output should include 'install-integrations.sh'
+The output should include 'llm-agents.herdr'
+End
+End
+
+Describe 'config/herdr/install-integrations.sh'
+HERDR_INSTALL_SCRIPT="$PWD/config/herdr/install-integrations.sh"
+
+It 'installs both native harness integrations through the supplied executable'
+TMP_HOME="$(mktemp -d)"
+MOCK_HERDR="$TMP_HOME/herdr"
+LOG_FILE="$TMP_HOME/integration.log"
+cat >"$MOCK_HERDR" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\n' "$*" >>"$HERDR_TEST_LOG"
+SH
+chmod +x "$MOCK_HERDR"
+
+When run bash -c 'HERDR_TEST_LOG="$1" bash "$2" "$3" && cat "$1"' _ "$LOG_FILE" "$HERDR_INSTALL_SCRIPT" "$MOCK_HERDR"
+The status should be success
+The output should include 'integration install codex'
+The output should include 'integration install opencode'
+End
+
+It 'requires an executable argument'
+When run bash "$HERDR_INSTALL_SCRIPT"
+The status should not be success
+The stderr should include 'Herdr executable required'
 End
 End
 
