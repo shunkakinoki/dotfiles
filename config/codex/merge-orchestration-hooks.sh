@@ -16,7 +16,9 @@ if [ -z "$ORCHESTRATION_BIN" ]; then
   exit 0
 fi
 
-if ! rendered="$("$ORCHESTRATION_BIN" hooks render --harness codex)"; then
+# The renderer runs before the activation phase that puts Bun on PATH, and its
+# shebang resolves Bun through env, so supply the interpreter directory here.
+if ! rendered="$(PATH="$HOME/.bun/bin:$HOME/.local/bin:${PATH:-}" "$ORCHESTRATION_BIN" hooks render --harness codex)"; then
   echo "error: failed to render live Codex orchestration hooks" >&2
   exit 1
 fi
