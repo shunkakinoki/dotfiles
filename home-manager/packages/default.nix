@@ -45,6 +45,7 @@ with pkgs;
   pkgs.llm-agents.cursor-agent
   dasel
   delta
+  devin
   difftastic
   dnsutils
   direnv

@@ -11,6 +11,7 @@ The output should include 'Usage:'
 The output should include 'upgrade-overlays.sh'
 The output should include 'blacksmith-testbox-cli'
 The output should include 'crabbox'
+The output should include 'devin'
 The output should include 'moshi-hook'
 The output should include 't3code'
 The output should include 'all'
@@ -52,6 +53,7 @@ setup() {
     "$TEMP_DIR/cdn/blacksmith/v0.4.57/darwin/amd64" \
     "$TEMP_DIR/cdn/blacksmith/v0.4.57/darwin/arm64" \
     "$TEMP_DIR/cdn/crabbox/v0.55.0" \
+    "$TEMP_DIR/cdn/devin/3000.10.21" \
     "$TEMP_DIR/overlays"
   cat >"$TEMP_DIR/bin/nix-prefetch-url" <<'EOF'
 #!/usr/bin/env bash
@@ -84,6 +86,17 @@ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  crabbox_0.55.0
 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb  crabbox_0.55.0_linux_arm64.tar.gz
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc  crabbox_0.55.0_darwin_arm64.tar.gz
 dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd  crabbox_0.55.0_darwin_amd64.tar.gz
+EOF
+  cat >"$TEMP_DIR/cdn/devin/3000.10.21/manifest.json" <<'EOF'
+{
+  "version": "3000.10.21",
+  "platforms": {
+    "aarch64-apple-darwin": { "sha256": "1111111111111111111111111111111111111111111111111111111111111111" },
+    "x86_64-apple-darwin": { "sha256": "2222222222222222222222222222222222222222222222222222222222222222" },
+    "aarch64-unknown-linux": { "sha256": "3333333333333333333333333333333333333333333333333333333333333333" },
+    "x86_64-unknown-linux": { "sha256": "4444444444444444444444444444444444444444444444444444444444444444" }
+  }
+}
 EOF
   cat >"$TEMP_DIR/overlays/default.nix" <<'EOF'
 { inputs }:
@@ -160,6 +173,19 @@ EOF
       };
       meta.mainProgram = "crabbox";
     };
+    devin = prev.stdenvNoCC.mkDerivation rec {
+      pname = "devin";
+      version = "3000.10.20";
+      src = prev.fetchurl {
+        sha256 = {
+          "aarch64-darwin" = "old-darwin-arm";
+          "x86_64-darwin" = "old-darwin-x86";
+          "aarch64-linux" = "old-linux-arm";
+          "x86_64-linux" = "old-linux-x86";
+        };
+      };
+      meta.mainProgram = "devin";
+    };
     # t3code 0.0.33 pins one pnpm deps hash
     t3code-test = let
       pnpmDepsHashes = {
@@ -221,9 +247,10 @@ The status should be success
 End
 
 It 'updates every overlay hash from the all target'
-When run bash -c "env OVERLAY_FILE='$TEMP_DIR/overlays/default.nix' ASCII_BOX_CLI_VERSION='0.1.208' MOSHI_HOOK_CDN='file://$TEMP_DIR/cdn' BLACKSMITH_CLI_CDN='file://$TEMP_DIR/cdn/blacksmith' BLACKSMITH_CLI_VERSION='0.4.57' CRABBOX_RELEASE_CDN='file://$TEMP_DIR/cdn/crabbox' CRABBOX_VERSION='0.55.0' GH_VERSION='2.100.0' GH_REV='45437bc7eeeb3359bbfddd1742f79de7652fd3e2' GH_SOURCE_HASH='sha256-9tnSQPSqllE+Ke6LKyNbnOF1drzdEwesEuPdmWD1X5c=' GH_VENDOR_HASH='sha256-ZqUs2BnasF3QBX0I2Sxh2A/CnO61Vy6gRn1hkf0n9AY=' T3CODE_VERSION='0.0.36' T3CODE_PNPM_HASH='sha256-y/sJIluwbn65APmJ2p07FK1ScXpetCloTHtQzZMchDU=' bash '$SCRIPT' all && cat '$TEMP_DIR/overlays/default.nix'"
+When run bash -c "env OVERLAY_FILE='$TEMP_DIR/overlays/default.nix' ASCII_BOX_CLI_VERSION='0.1.208' MOSHI_HOOK_CDN='file://$TEMP_DIR/cdn' BLACKSMITH_CLI_CDN='file://$TEMP_DIR/cdn/blacksmith' BLACKSMITH_CLI_VERSION='0.4.57' CRABBOX_RELEASE_CDN='file://$TEMP_DIR/cdn/crabbox' CRABBOX_VERSION='0.55.0' DEVIN_CLI_CDN='file://$TEMP_DIR/cdn/devin' DEVIN_CLI_VERSION='3000.10.21' GH_VERSION='2.100.0' GH_REV='45437bc7eeeb3359bbfddd1742f79de7652fd3e2' GH_SOURCE_HASH='sha256-9tnSQPSqllE+Ke6LKyNbnOF1drzdEwesEuPdmWD1X5c=' GH_VENDOR_HASH='sha256-ZqUs2BnasF3QBX0I2Sxh2A/CnO61Vy6gRn1hkf0n9AY=' T3CODE_VERSION='0.0.36' T3CODE_PNPM_HASH='sha256-y/sJIluwbn65APmJ2p07FK1ScXpetCloTHtQzZMchDU=' bash '$SCRIPT' all && cat '$TEMP_DIR/overlays/default.nix'"
 The output should include 'moshi-hook upgraded from 0.2.55 to 0.2.69'
 The output should include 'crabbox upgraded from 0.46.0 to 0.55.0'
+The output should include 'devin upgraded from 3000.10.20 to 3000.10.21'
 The output should include 't3code pnpm hash refreshed for 0.0.36'
 The output should include 'gh upgraded from 2.98.0 to 2.100.0'
 The output should include '45437bc7eeeb3359bbfddd1742f79de7652fd3e2'
@@ -240,6 +267,23 @@ The output should include '3903e2e5d1dba02f9e1f53df8cea6e2b3260e1581461b9a07ca65
 The output should include '0a30e081399543551bbd0ba3320f3b28be814a585e5c591e168f8fd6d9565f07'
 The output should include '52258126b675dad210a8f04b83d8e90b359951af37474ff985d2c3f49102d981'
 The output should include '7cf24d316bafffc59d30e05d6ad6b27d4c03c9953ce901056f57f03c25e4b83b'
+The status should be success
+End
+
+It 'updates the pinned Devin CLI version and all platform checksums'
+When run bash -c "env OVERLAY_FILE='$TEMP_DIR/overlays/default.nix' DEVIN_CLI_CDN='file://$TEMP_DIR/cdn/devin' DEVIN_CLI_VERSION='3000.10.21' bash '$SCRIPT' devin >/dev/null && cat '$TEMP_DIR/overlays/default.nix'"
+The output should include 'version = "3000.10.21"'
+The output should include '1111111111111111111111111111111111111111111111111111111111111111'
+The output should include '2222222222222222222222222222222222222222222222222222222222222222'
+The output should include '3333333333333333333333333333333333333333333333333333333333333333'
+The output should include '4444444444444444444444444444444444444444444444444444444444444444'
+The status should be success
+End
+
+It 'reads the Devin CLI version from the manifest when unpinned'
+When run bash -c "env OVERLAY_FILE='$TEMP_DIR/overlays/default.nix' DEVIN_CLI_CDN='file://$TEMP_DIR/cdn/devin' bash -c \"ln -s 3000.10.21 '$TEMP_DIR/cdn/devin/current' && bash '$SCRIPT' devin\""
+The output should include 'Latest version:  3000.10.21'
+The output should include 'devin upgraded from 3000.10.20 to 3000.10.21'
 The status should be success
 End
 
