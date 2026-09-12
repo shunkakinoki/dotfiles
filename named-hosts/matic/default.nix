@@ -395,6 +395,12 @@ import ../../hosts/nixos {
           options mt7925e disable_aspm=1
         '';
 
+        # Serve /bin and /usr/bin from the requesting process's PATH. Remote
+        # build and CI tooling that drives this host over SSH runs its helper
+        # scripts through hard-coded FHS paths such as /bin/bash and
+        # /usr/bin/git, which a stock NixOS root does not provide.
+        services.envfs.enable = true;
+
         # Enable nix-ld for running dynamically linked binaries
         programs.nix-ld.enable = true;
         programs.nix-ld.libraries = with pkgs; [
