@@ -51,32 +51,6 @@ normalize_dcg_hooks() {
   done
 }
 
-install_orchestration_hooks() {
-  local harness rendered hook_config tmp_file
-  if ! command -v orchestration >/dev/null 2>&1; then
-    echo "error: orchestration CLI is required to render supplemental hooks" >&2
-    return 1
-  fi
-  for harness in claude codex; do
-    if [[ $harness == claude ]]; then
-      hook_config="$GENERATED_ROOT/claude/settings.json"
-    else
-      hook_config="$GENERATED_ROOT/codex/hooks.json"
-    fi
-    rendered="$(orchestration hooks render --harness "$harness")"
-    tmp_file="$(mktemp "${hook_config}.tmp.XXXXXX")"
-    jq -s '.[0] * {hooks: ((.[0].hooks // {}) * (.[1].hooks // {}))}' \
-      "$hook_config" <(printf '%s\n' "$rendered") >"$tmp_file"
-    mv -f "$tmp_file" "$hook_config"
-  done
-  rendered="$(orchestration hooks render --harness opencode)"
-  hook_config="$REPO_ROOT/config/opencode/hooks.json"
-  tmp_file="$(mktemp "${hook_config}.tmp.XXXXXX")"
-  jq -s '.[0] * {hooks: ((.[0].hooks // {}) * (.[1].hooks // {}))}' \
-    "$hook_config" <(printf '%s\n' "$rendered") >"$tmp_file"
-  mv -f "$tmp_file" "$hook_config"
-}
-
 if [[ ${1:-} == "--normalize-only" ]]; then
   shift
   if (($# == 0)); then
@@ -119,9 +93,6 @@ jq -s '.[0].hooks * .[1].hooks | {hooks: .}' \
   "$GENERATED_ROOT/grok/plugin/hooks/hooks.json" \
   /tmp/moshi-grok-hooks.json >/tmp/moshi-grok-merged.json
 mv /tmp/moshi-grok-merged.json "$GENERATED_ROOT/grok/plugin/hooks/hooks.json"
-
-echo "Rendering orchestration supplemental hooks..."
-install_orchestration_hooks
 
 # Generated files must remain portable and must not capture a machine-local
 # home directory. Moshi quotes absolute binaries in hook commands and embeds

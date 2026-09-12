@@ -22,6 +22,11 @@ The output should include 'moshi-hook install'
 The status should be success
 End
 
+It 'does not render live orchestration hooks into tracked generated files'
+When run bash -c "! grep -qE 'install_orchestration_hooks|orchestration hooks render' '$SCRIPT'"
+The status should be success
+End
+
 It 'copies TypeScript plugin files'
 When run cat "$SCRIPT"
 The output should include 'omp'
