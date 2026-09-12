@@ -95,6 +95,14 @@ in
     force = true;
   };
 
+  home.file.".config/k3s/k3s-io.conf" = lib.mkIf isKyber {
+    source = ./k3s-io.conf;
+  };
+
+  home.file.".config/k3s/kubepods-io.conf" = lib.mkIf isKyber {
+    source = ./kubepods-io.conf;
+  };
+
   home.file.".config/k3s/var-lib-rancher-k3s-agent-containerd.mount" = lib.mkIf isKyber {
     source = ./containerd.mount;
     force = true;
