@@ -1,6 +1,11 @@
 { inputs, pkgs, ... }:
 let
   inherit (pkgs) lib;
+  findPackage =
+    if inputs.host.isKyber then
+      import ../../../named-hosts/kyber/find.nix { inherit pkgs; }
+    else
+      pkgs.findutils;
   serveRoutes = import ../../modules/tailscale/routes.nix;
   hostServeRoutes = serveRoutes.${inputs.host.nodeName} or [ ];
   t3ServeRoutes = lib.filter (
@@ -12,7 +17,7 @@ let
   toolchain = lib.makeBinPath [
     pkgs.bash
     pkgs.coreutils
-    pkgs.findutils
+    findPackage
     pkgs.gawk
     pkgs.gcc
     pkgs.gnugrep
@@ -81,6 +86,17 @@ in
           ''}
         '';
       };
+
+  # Provider subprocesses inherit T3's cgroup. Bound their reads without
+  # freezing the server or throttling other managed user services.
+  xdg.configFile."systemd/user/t3code.service.d/read-io.conf" = lib.mkIf inputs.host.isKyber {
+    text = ''
+      [Service]
+      IOAccounting=true
+      IOReadBandwidthMax=/ 20M
+      IOReadIOPSMax=/ 200
+    '';
+  };
 
   systemd.user.services.t3-connect = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {

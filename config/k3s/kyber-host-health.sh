@@ -27,9 +27,11 @@ readonly DISK_WEAR_WARNING_PERCENT=10
 readonly DISK_WEAR_CHECK_INTERVAL_SECONDS=21600
 
 IO_PRESSURE_UNHEALTHY=0
+IO_PRESSURE_CURRENT_UNHEALTHY=0
 D_STATE_UNHEALTHY=0
 CRI_UNHEALTHY=0
 ORCHESTRATION_IMPLICATED=0
+ORCHESTRATION_IO_SOME_AVG10=0
 ORCHESTRATION_IO_SOME_AVG300=0
 ORCHESTRATION_D_STATE_COUNT=0
 
@@ -55,12 +57,24 @@ clear_alert() {
 }
 
 check_io_pressure() {
-  local some_avg300 full_avg300
+  local some_avg10 full_avg10 some_avg300 full_avg300
 
   # shellcheck disable=SC2016
   some_avg300="$(awk '$1 == "some" { for (i = 1; i <= NF; i++) if ($i ~ /^avg300=/) { sub(/^avg300=/, "", $i); print $i } }' /proc/pressure/io)"
   # shellcheck disable=SC2016
   full_avg300="$(awk '$1 == "full" { for (i = 1; i <= NF; i++) if ($i ~ /^avg300=/) { sub(/^avg300=/, "", $i); print $i } }' /proc/pressure/io)"
+
+  # A five-minute average can remain high after the offending work has ended.
+  # Require current stalls too before starting another freeze.
+  # shellcheck disable=SC2016
+  some_avg10="$(awk '$1 == "some" { for (i = 1; i <= NF; i++) if ($i ~ /^avg10=/) { sub(/^avg10=/, "", $i); print $i } }' /proc/pressure/io)"
+  # shellcheck disable=SC2016
+  full_avg10="$(awk '$1 == "full" { for (i = 1; i <= NF; i++) if ($i ~ /^avg10=/) { sub(/^avg10=/, "", $i); print $i } }' /proc/pressure/io)"
+  if awk -v some="$some_avg10" -v full="$full_avg10" -v some_limit="$IO_SOME_AVG300_THRESHOLD" -v full_limit="$IO_FULL_AVG300_THRESHOLD" 'BEGIN { exit !(some >= some_limit || full >= full_limit) }'; then
+    IO_PRESSURE_CURRENT_UNHEALTHY=1
+  else
+    IO_PRESSURE_CURRENT_UNHEALTHY=0
+  fi
 
   if awk -v some="$some_avg300" -v full="$full_avg300" -v some_limit="$IO_SOME_AVG300_THRESHOLD" -v full_limit="$IO_FULL_AVG300_THRESHOLD" 'BEGIN { exit !(some >= some_limit || full >= full_limit) }'; then
     IO_PRESSURE_UNHEALTHY=1
@@ -258,18 +272,23 @@ orchestration_cgroup_dir() {
 # uninterruptible tasks, otherwise the freeze pauses the control plane while
 # k3s, the beads Dolt server, or a pod keeps the host over threshold.
 check_orchestration_pressure() {
-  local cgroup_dir some_avg300=0 d_state_count=0
+  local cgroup_dir some_avg10=0 some_avg300=0 d_state_count=0
 
   cgroup_dir="$(orchestration_cgroup_dir)"
   if [ -r "$cgroup_dir/io.pressure" ]; then
     # shellcheck disable=SC2016
     some_avg300="$(awk '$1 == "some" { for (i = 1; i <= NF; i++) if ($i ~ /^avg300=/) { sub(/^avg300=/, "", $i); print $i } }' "$cgroup_dir/io.pressure")"
   fi
+  if [ -r "$cgroup_dir/io.pressure" ]; then
+    # shellcheck disable=SC2016
+    some_avg10="$(awk '$1 == "some" { for (i = 1; i <= NF; i++) if ($i ~ /^avg10=/) { sub(/^avg10=/, "", $i); print $i } }' "$cgroup_dir/io.pressure")"
+  fi
   d_state_count="$(ps --no-headers -eo stat=,cgroup= | awk -v slice="/$ORCHESTRATION_SLICE/" '$1 ~ /^D/ && index($2, slice) { count++ } END { print count + 0 }')"
 
+  ORCHESTRATION_IO_SOME_AVG10="${some_avg10:-0}"
   ORCHESTRATION_IO_SOME_AVG300="${some_avg300:-0}"
   ORCHESTRATION_D_STATE_COUNT="$d_state_count"
-  if awk -v some="$ORCHESTRATION_IO_SOME_AVG300" -v some_limit="$ORCHESTRATION_IO_SOME_AVG300_THRESHOLD" 'BEGIN { exit !(some >= some_limit) }' ||
+  if awk -v current="$ORCHESTRATION_IO_SOME_AVG10" -v sustained="$ORCHESTRATION_IO_SOME_AVG300" -v some_limit="$ORCHESTRATION_IO_SOME_AVG300_THRESHOLD" 'BEGIN { exit !(current >= some_limit && sustained >= some_limit) }' ||
     [ "$d_state_count" -ge "$ORCHESTRATION_D_STATE_THRESHOLD" ]; then
     ORCHESTRATION_IMPLICATED=1
   else
@@ -278,7 +297,7 @@ check_orchestration_pressure() {
 }
 
 orchestration_pressure_summary() {
-  printf 'slice io some avg300=%s, slice D-state=%s' "$ORCHESTRATION_IO_SOME_AVG300" "$ORCHESTRATION_D_STATE_COUNT"
+  printf 'slice io some avg10=%s avg300=%s, slice D-state=%s' "$ORCHESTRATION_IO_SOME_AVG10" "$ORCHESTRATION_IO_SOME_AVG300" "$ORCHESTRATION_D_STATE_COUNT"
 }
 
 record_orchestration_freeze() {
@@ -322,7 +341,7 @@ manage_orchestration_circuit_breaker() {
   local thaw_failure_alert="orchestration-thaw-failed"
   local evidence_dir recovery_samples=0 newly_frozen=0
 
-  if { [ "$IO_PRESSURE_UNHEALTHY" -eq 1 ] || [ "$D_STATE_UNHEALTHY" -eq 1 ]; } && [ "$ORCHESTRATION_IMPLICATED" -eq 1 ]; then
+  if { { [ "$IO_PRESSURE_UNHEALTHY" -eq 1 ] && [ "$IO_PRESSURE_CURRENT_UNHEALTHY" -eq 1 ]; } || [ "$D_STATE_UNHEALTHY" -eq 1 ]; } && [ "$ORCHESTRATION_IMPLICATED" -eq 1 ]; then
     printf '0\n' >"$recovery_file"
     if [ ! -s "$capture_file" ]; then
       evidence_dir="$(capture_orchestration_evidence)"
@@ -361,7 +380,7 @@ manage_orchestration_circuit_breaker() {
     return
   fi
 
-  if [ "$CRI_UNHEALTHY" -eq 1 ]; then
+  if [ "$CRI_UNHEALTHY" -eq 1 ] || [ "$IO_PRESSURE_CURRENT_UNHEALTHY" -eq 1 ] || [ "$D_STATE_UNHEALTHY" -eq 1 ]; then
     printf '0\n' >"$recovery_file"
     return
   fi

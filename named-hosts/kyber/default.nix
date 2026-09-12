@@ -56,6 +56,8 @@ home-manager.lib.homeManagerConfiguration {
           };
         };
 
+        home.file.".local/bin/find".source = "${import ./find.nix { inherit pkgs; }}/bin/find";
+
         # Pause trace scans and uploads while storage contention is unresolved.
         services.traces-agent-uploads.enable = false;
 
