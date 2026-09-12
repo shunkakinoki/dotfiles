@@ -53,8 +53,8 @@ The output should include 'isGalactica || isKyber || isMatic'
 End
 
 It 'selects CI polling by host'
-When run bash -c "grep 'ciEnabled = if inputs.host.isKyber then \"true\" else \"false\";' '$PWD/config/roborev/default.nix'"
-The output should include 'ciEnabled = if inputs.host.isKyber then "true" else "false";'
+When run bash -c "grep 'ciEnabled = if inputs.host.isMatic then \"true\" else \"false\";' '$PWD/config/roborev/default.nix'"
+The output should include 'ciEnabled = if inputs.host.isMatic then "true" else "false";'
 End
 
 It 'serializes Kyber review workers'
