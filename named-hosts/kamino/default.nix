@@ -28,8 +28,19 @@ let
     "--accept-dns=true"
     "--ssh=false"
   ];
-  authorizedKey = pkgs.writeText "kamino-authorized-key.pub" (
-    (import ../pubkeys.nix).galactica + "\n"
+  pubkeys = import ../pubkeys.nix;
+  # Every client that drives a Kamino worker over SSH. galactica-ci is a
+  # separate passphrase-free key because Crabbox runs its transfers under a
+  # generated `ssh -F` config that excludes ~/.ssh/config, so a key the macOS
+  # Keychain unlocks can never be signed with there.
+  authorizedClients = [
+    "galactica"
+    "galactica-ci"
+    "kyber"
+    "matic"
+  ];
+  authorizedKey = pkgs.writeText "kamino-authorized-keys.pub" (
+    pkgs.lib.concatMapStrings (client: pubkeys.${client} + "\n") authorizedClients
   );
 in
 inputs.home-manager.lib.homeManagerConfiguration {

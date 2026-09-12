@@ -171,6 +171,27 @@ class AuthorizedKeyTests(unittest.TestCase):
             [existing, self.public_key.read_text().strip()],
         )
 
+    def test_multiple_keys_each_authorize_independently(self):
+        second = self.root / "second"
+        subprocess.run(
+            [self.ssh_keygen, "-q", "-t", "ed25519", "-N", "", "-f", str(second)],
+            check=True,
+            capture_output=True,
+        )
+        first_key = self.public_key.read_text().strip()
+        second_key = Path(str(second) + ".pub").read_text().strip()
+        self.public_key.write_text(first_key + "\n" + second_key + "\n")
+        self.ssh_dir.mkdir()
+        authorized = self.ssh_dir / "authorized_keys"
+        authorized.write_text(first_key + "\n")
+        for _ in range(2):
+            result = self.authorize()
+            self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            authorized.read_text().splitlines(),
+            [first_key, "", second_key],
+        )
+
     def test_invalid_public_key_fails_before_creating_ssh_directory(self):
         self.public_key.write_text("not a public key\n")
         result = self.authorize()
