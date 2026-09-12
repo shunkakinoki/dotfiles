@@ -56,6 +56,9 @@ home-manager.lib.homeManagerConfiguration {
           };
         };
 
+        # Pause trace scans and uploads while storage contention is unresolved.
+        services.traces-agent-uploads.enable = false;
+
         # Agenix configuration
         age.identityPaths = [ "/home/${username}/.ssh/id_ed25519" ];
         age.secrets = builtins.mapAttrs (
