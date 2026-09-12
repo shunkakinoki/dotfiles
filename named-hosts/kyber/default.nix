@@ -41,6 +41,7 @@ home-manager.lib.homeManagerConfiguration {
   modules = [
     agenix.homeManagerModules.default
     ../../home-manager/default.nix
+    ./incus
     (
       { config, lib, ... }:
       {

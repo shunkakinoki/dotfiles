@@ -2,6 +2,9 @@
 
 Ubuntu Linux server managed via home-manager with Tailscale VPN.
 
+The [Incus Crabbox pilot](incus/README.md) provisions bounded local containers
+on Kyber without changing other hosts or the Crabbox coordinator.
+
 ## Initial Setup
 
 On the Kyber server, run:
