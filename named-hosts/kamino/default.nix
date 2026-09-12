@@ -23,13 +23,27 @@ let
     k3s = null;
     nodeName = name;
   };
+  # Tailscale SSH makes tailnet membership the authentication gate, so a newly
+  # provisioned worker needs no key distribution at all. It also carries the
+  # clients that cannot present a key: Crabbox runs every transfer under a
+  # generated `ssh -F` config excluding ~/.ssh/config, and auth lands on the
+  # `none` method before publickey is ever offered.
   tailscaleUpArgs = [
     "--hostname=${name}"
     "--accept-dns=true"
-    "--ssh=false"
+    "--ssh=true"
   ];
-  authorizedKey = pkgs.writeText "kamino-authorized-key.pub" (
-    (import ../pubkeys.nix).galactica + "\n"
+  pubkeys = import ../pubkeys.nix;
+  # Every client that drives a Kamino worker over SSH. Tailscale SSH authorizes
+  # them from the tailnet ACL, so these are the recovery path for turning it
+  # back off, not the live gate.
+  authorizedClients = [
+    "galactica"
+    "kyber"
+    "matic"
+  ];
+  authorizedKey = pkgs.writeText "kamino-authorized-keys.pub" (
+    pkgs.lib.concatMapStrings (client: pubkeys.${client} + "\n") authorizedClients
   );
 in
 inputs.home-manager.lib.homeManagerConfiguration {
