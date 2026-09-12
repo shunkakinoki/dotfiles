@@ -8,6 +8,8 @@ let
   plugin = pkgs.runCommand "dotfiles-grok-plugin" { } ''
     mkdir -p "$out"
     cp -R ${./plugin}/. "$out/"
+    # Store sources are read-only, so the copied hooks.json can't be overwritten otherwise.
+    chmod -R u+w "$out"
     mkdir -p "$out/hooks"
     cp ${../../generated/hooks/moshi/grok/plugin/hooks/hooks.json} "$out/hooks/hooks.json"
   '';
