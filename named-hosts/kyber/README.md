@@ -217,9 +217,13 @@ after every thaw and its top writers in the evidence captures need attention
 rather than another auto-thaw.
 
 Coding-agent hooks are the usual writer behind a flapping slice: every hook
-event goes through `config/shared/hooks/traces-agent-hook.sh`, which bounds
-the detached `traces share` uploads that the traces hook otherwise spawns
-without limit (see [shared hooks](../../config/shared/hooks/README.md)).
+event goes through `config/shared/hooks/traces-agent-hook.sh`. On Kyber it
+queues and coalesces events for a single uploader in `traces-uploads.slice`,
+including final session uploads. The upload remains in its bounded cgroup until
+all detached children finish. Root I/O is capped at 5 MB/s reads, 2 MB/s writes,
+100 read IOPS, and 50 write IOPS. The queue's one-minute timer retries failed
+launches and timeouts without requiring another agent event (see
+[shared hooks](../../config/shared/hooks/README.md)).
 
 This containment does not isolate ext4 journals. Kyber has two physical SSDs:
 the root/PVC filesystem and the dedicated containerd filesystem. Moving k3s

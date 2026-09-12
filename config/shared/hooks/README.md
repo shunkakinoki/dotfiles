@@ -51,7 +51,38 @@ These hooks provide fast feedback and prevent common mistakes. They run with the
 `traces-agent-hook.sh <event> --agent <id>` wraps `traces hook agent` for Codex,
 Claude Code, Cursor, GitHub Copilot, Grok, Devin, Antigravity, Pi, Hermes, and
 OpenClaw; the Pi, Hermes, and OpenClaw adapters spawn it directly and pass
-the binary they resolved as `TRACES_BIN`. The traces hook
+the binary they resolved as `TRACES_BIN`.
+
+On Kyber, the managed `traces-agent-uploads` helper writes hook requests into
+`~/.local/state/traces-agent-uploads` with private directory/file permissions
+(0700/0600). It preserves the resolved binary, working directory, arguments,
+stdin payload, and trace configuration environment overrides. Environment values
+are passed outside process arguments. Registration precedes the latest pending
+progress event, followed
+by `session-end`. Progress events for the same session, agent, and working
+directory coalesce; a final event is retained behind an in-flight upload instead
+of canceling it or bypassing the concurrency limit.
+
+One drainer holds an OS file lock through the entire hook invocation. A single
+transient `traces-agent-upload.service` uses `ExitType=cgroup`, so the slot stays
+occupied until the upstream hook's detached uploader also exits. The
+`traces-uploads.slice` budget is 5 MB/s reads, 2 MB/s writes, 100 read IOPS, and
+50 write IOPS on the root filesystem, plus one CPU, 2 GiB memory high, 4 GiB
+memory maximum, and 128 tasks. It is separate from agent and coordinator services.
+
+Each upload has a 15-minute deadline. Failed launches and timeouts retain the
+request with a bounded retry delay; a one-minute timer recovers missed wakeups
+and retries even after the last hook event. Pending requests survive service
+restarts. Requests whose working directories have been removed stay queued for
+operator resolution. Before a final hook, the queue retains its resolved trace ID from
+`traces-active.json`; if that hook removes the registration and then times out,
+the retry uses `traces share --trace-id` for that same trace. Stopping the drainer
+also stops its upload unit. Completion means the
+hook and its children exited; the upstream hook's best-effort remote delivery
+does not provide an upload acknowledgement through its exit status. Visibility,
+destination rules, and authentication remain owned by `traces`.
+
+On other hosts, the existing process guard remains in use. The traces hook
 starts a detached `traces share --trace-id <session> --source agent_hook`
 upload on every `prompt-submitted`, `agent-done`, and `session-end` event and
 never checks whether one is already running; each upload rescans the shared
