@@ -187,7 +187,23 @@ Kyber hosts coordinators rather than worker lanes. The Herdr server and its
 pane processes inherit `herdr.slice`, which the circuit breaker never
 freezes, so coordinators can keep inspecting and recovering the fleet.
 RoboRev and its child processes remain in the separate `orchestration.slice`,
-which caps aggregate writes to 20 MB/s and aggregate tasks to 2,048.
+which caps aggregate tasks to 2,048 and bounds root-filesystem I/O. RoboRev's
+single worker serializes review jobs, including panel members. Its service
+cgroup bounds the active review, child tools, and daemon housekeeping together:
+
+| Root-filesystem limit | RoboRev service | Orchestration slice aggregate |
+| --- | --- | --- |
+| Read bandwidth | 20 MB/s | 40 MB/s |
+| Write bandwidth | 10 MB/s | 20 MB/s |
+| Read operations | 200 IOPS | 400 IOPS |
+| Write operations | 100 IOPS | 200 IOPS |
+
+The service and parent limits both apply. IOPS limits bound small random
+operations that can saturate a disk below its bandwidth ceiling. These are
+initial containment budgets, not latency guarantees; evaluate review completion
+time and disk pressure before tuning them. Desktop review concurrency and limits
+are unchanged. The dedicated containerd disk and K3s remain outside these limits.
+
 When sustained host I/O PSI or D-state pressure crosses the health threshold
 and the slice's own `io.pressure` or D-state count implicates it, the
 host-health check records PSI, process/`wchan`, per-process I/O, cgroup I/O,

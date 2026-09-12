@@ -4,7 +4,10 @@ Description=Disposable Kyber review and orchestration workloads
 [Slice]
 CPUWeight=100
 IOWeight=10
+IOReadBandwidthMax=/ 40M
 IOWriteBandwidthMax=/ 20M
+IOReadIOPSMax=/ 400
+IOWriteIOPSMax=/ 200
 IOAccounting=yes
 TasksAccounting=yes
 TasksMax=2048
