@@ -9,6 +9,7 @@
     source = ./config.toml;
     force = true;
   };
+  home.file.".config/herdr/agent-detection/opencode.toml".source = ./agent-detection/opencode.toml;
 
   # Install Herdr's native integrations only after both harness configuration
   # owners have materialized their live files. The installer only updates hook
