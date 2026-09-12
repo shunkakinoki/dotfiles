@@ -533,6 +533,10 @@ config/herdr/install-integrations.sh
 config/copilot/activate.sh
 config/codex/hooks/atuin-history.sh
 config/dcg/activate.sh
+config/devin/activate.sh
+config/devin/hooks/atuin-history.sh
+config/devin/hooks/notify.sh
+config/devin/hooks/pushover.sh
 config/dsh/hydrate.sh
 config/codex/hooks/notify.sh
 config/codex/hooks/pushover.sh
@@ -544,6 +548,7 @@ config/shared/hooks/secret-guard.sh
 config/shared/hooks/security.sh
 config/shared/hooks/rtk-rewrite.sh
 config/shared/hooks/roborev-agent.sh
+config/shared/merge-moshi-hooks.sh
 config/cursor/activate.sh
 config/cursor/hooks/notify.sh
 config/cursor/hooks/pushover.sh
@@ -672,7 +677,9 @@ scripts/check-nix-inline-scripts.sh
 scripts/find-built-iso.sh
 scripts/fishtape-wrapper.sh
 scripts/generate-hooks.sh
+scripts/extract-moshi-hooks.sh
 scripts/llm-update.sh
+scripts/normalize-dcg-hooks.sh
 scripts/sync-codex-security.sh
 scripts/sync-rtk-rewrite.sh
 scripts/update-gitalias.sh

@@ -1,0 +1,203 @@
+{
+  "read_config_from": {
+    "claude": false
+  },
+  "hooks": {
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "command": "$HOME/.config/devin/hooks/notify.sh",
+            "timeout": 3,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/.config/devin/hooks/pushover.sh",
+            "timeout": 6,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "PostCompaction": [
+      {
+        "hooks": [
+          {
+            "command": "$HOME/.config/devin/hooks/notify.sh",
+            "timeout": 3,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/.config/devin/hooks/pushover.sh",
+            "timeout": 6,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "^exec$",
+        "hooks": [
+          {
+            "command": "$HOME/.config/devin/hooks/atuin-history.sh",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
+            "timeout": 10,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "^(write|edit|apply_patch)$",
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/secret-guard.sh",
+            "timeout": 5,
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "matcher": "^exec$",
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/security.sh",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/block-git-push.sh",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/block-gh-settings.sh",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/.config/devin/hooks/notify.sh",
+            "timeout": 3,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/.config/devin/hooks/pushover.sh",
+            "timeout": 6,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
+            "timeout": 10,
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "matcher": "^(read|grep|glob)$",
+        "hooks": [
+          {
+            "command": "command -v graphify >/dev/null 2>&1 && graphify hook-guard read",
+            "timeout": 5,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-end --agent devin # traces hook agent",
+            "timeout": 30,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "command": "$HOME/.config/devin/hooks/notify.sh",
+            "timeout": 3,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/.config/devin/hooks/pushover.sh",
+            "timeout": 6,
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "bd prime --hook-json",
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-start --agent devin # traces hook agent",
+            "timeout": 30,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "command": "$HOME/.config/devin/hooks/notify.sh",
+            "timeout": 3,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/.config/devin/hooks/pushover.sh",
+            "timeout": 6,
+            "type": "command"
+          },
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
+            "timeout": 10,
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh agent-done --agent devin # traces hook agent",
+            "timeout": 30,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh prompt-submitted --agent devin # traces hook agent",
+            "timeout": 30,
+            "type": "command"
+          }
+        ]
+      }
+    ]
+  }
+}

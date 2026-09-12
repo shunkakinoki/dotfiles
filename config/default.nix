@@ -16,6 +16,7 @@ in
   ./claude
   ./commandcode
   ./dcg
+  ./devin
   ./dsh
   ./direnv
   ./factory
