@@ -183,11 +183,11 @@ cleaner:
   probe latency, recent CRI lifecycle errors, and host DNS (Tailscale must not
   own `/etc/resolv.conf`).
 
-The Herdr server runs in `herdr.slice`, which is never frozen: it is the
-control plane for every lane and must keep answering API calls. Its pane
-shells re-exec themselves into `orchestration.slice` through the kyber fish
-init, so lane work, RoboRev, and their child processes share one disposable
-slice that caps aggregate writes to 20 MB/s and aggregate tasks to 2,048.
+Kyber hosts coordinators rather than worker lanes. The Herdr server and its
+pane processes inherit `herdr.slice`, which the circuit breaker never
+freezes, so coordinators can keep inspecting and recovering the fleet.
+RoboRev and its child processes remain in the separate `orchestration.slice`,
+which caps aggregate writes to 20 MB/s and aggregate tasks to 2,048.
 When sustained host I/O PSI or D-state pressure crosses the health threshold
 and the slice's own `io.pressure` or D-state count implicates it, the
 host-health check records PSI, process/`wchan`, per-process I/O, cgroup I/O,

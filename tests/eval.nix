@@ -331,6 +331,8 @@ let
           ];
         assert cfg.systemd.user.services ? dolt;
         assert cfg.systemd.user.services ? dolt-linear-sync;
+        assert cfg.systemd.user.services.herdr-server.Service.Slice == "herdr.slice";
+        assert !(lib.hasInfix "--slice=orchestration.slice" cfg.programs.fish.shellInit);
         assert !(cfg.systemd.user.services ? dolt-federation-sync);
         assert !(cfg.systemd.user.services ? dolt-federation-hub);
         assert !(cfg.systemd.user.services ? dolt-federation-access);
