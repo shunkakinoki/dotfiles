@@ -129,8 +129,8 @@ When run bash -c "unit=\$(sed -n '/systemd.user.services.herdr-server =/,/Instal
 The status should be success
 End
 
-It 'keeps the Herdr slice unfrozen and moves only pane shells into the orchestration slice'
-When run bash -c "grep -qxF 'IOAccounting=yes' '$PWD/named-hosts/kyber/herdr.slice' && ! grep -q 'IOWriteBandwidthMax' '$PWD/named-hosts/kyber/herdr.slice' && grep -q 'systemd-run --user --quiet --scope --collect' '$PWD/named-hosts/kyber/default.nix' && grep -q -- '--slice=orchestration.slice --unit=herdr-pane-' '$PWD/named-hosts/kyber/default.nix' && grep -q 'set -q HERDR_ENV; and status is-interactive; and not set -q HERDR_PANE_SCOPED' '$PWD/named-hosts/kyber/default.nix'"
+It 'keeps the Herdr slice unfrozen and leaves its panes inside it'
+When run bash -c "grep -qxF 'IOAccounting=yes' '$PWD/named-hosts/kyber/herdr.slice' && ! grep -q 'IOWriteBandwidthMax' '$PWD/named-hosts/kyber/herdr.slice' && ! grep -q 'herdr-pane-' '$PWD/named-hosts/kyber/default.nix' && ! grep -q 'HERDR_PANE_SCOPED' '$PWD/named-hosts/kyber/default.nix'"
 The status should be success
 End
 
