@@ -401,6 +401,33 @@ import ../../hosts/nixos {
         # /usr/bin/git, which a stock NixOS root does not provide.
         services.envfs.enable = true;
 
+        # The PATH lookup is useless to a process that was started with a
+        # scrubbed environment: `env -i PATH=/usr/bin:/bin /bin/bash` leaves
+        # the shell asking envfs to resolve `git` against the very directories
+        # envfs serves, so only the fallback set exists. Upstream ships just
+        # `env` and `sh` there, which is short of what those helper scripts
+        # call, so pin the rest of the FHS toolchain into the fallback.
+        services.envfs.extraFallbackPathCommands = ''
+          for fallbackPackage in ${
+            lib.concatStringsSep " " (
+              with pkgs;
+              [
+                bashInteractive
+                coreutils
+                findutils
+                gawk
+                git
+                gnugrep
+                gnused
+              ]
+            )
+          }; do
+            for fallbackBinary in "$fallbackPackage"/bin/*; do
+              ln -sfn "$fallbackBinary" "$out/$(basename "$fallbackBinary")"
+            done
+          done
+        '';
+
         # Enable nix-ld for running dynamically linked binaries
         programs.nix-ld.enable = true;
         programs.nix-ld.libraries = with pkgs; [
