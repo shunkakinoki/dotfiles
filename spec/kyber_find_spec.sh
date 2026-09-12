@@ -1,112 +1,130 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2329
 
-Describe 'kyber/find.sh'
+Describe 'named-hosts/kyber/find.sh'
 SCRIPT="$PWD/named-hosts/kyber/find.sh"
 
-# The wrapper execs the native find it is handed, so a stub prints the argv it
-# would have run and keeps the assertions independent of the host's findutils.
-# The stub has to be a script rather than a builtin, or findutils flags such as
-# --version would be consumed by the stub itself.
-setup_stub() {
+setup() {
+  HOME="$SHELLSPEC_TMPBASE/kyber-find-home"
+  mkdir -p "$HOME/ghq/github.com/org/repo" "$HOME/.herdr/worktrees/lane/tree"
   STUB="$SHELLSPEC_TMPBASE/native-find"
-  printf '#!/usr/bin/env bash\nprintf "%%s\\n" "$@"\n' >"$STUB"
+  {
+    echo '#!/usr/bin/env bash'
+    echo 'echo "native-find $*"'
+  } >"$STUB"
   chmod +x "$STUB"
 }
-BeforeAll 'setup_stub'
+BeforeEach 'setup'
 
-guarded_find() {
-  HOME=/home/tester bash "$SCRIPT" "$STUB" "$@"
-}
+guard() { bash "$SCRIPT" "$STUB" "$@"; }
 
-Describe 'broad traversal rejection'
-It 'rejects the filesystem root'
-When run guarded_find /
-The status should eq 2
-The stderr should include 'narrow the search'
+Describe 'broad roots'
+Parameters
+/
+/home
+/root
 End
 
-It 'rejects the home directory'
-When run guarded_find /home/tester
-The status should eq 2
-The stderr should include 'narrow the search'
-End
-
-It 'rejects a worktree collection without a project segment'
-When run guarded_find /home/tester/.herdr/worktrees/dotfiles
-The status should eq 2
-The stderr should include 'narrow the search'
-End
-
-It 'rejects a broad root reached through a relative path'
-When run guarded_find /home/tester/ghq/github.com/..
-The status should eq 2
-The stderr should include 'narrow the search'
-End
-
-It 'rejects a broad root hidden behind other roots'
-When run guarded_find /home/tester/src /
+It "rejects an unbounded traversal of a broad root"
+When run guard "$1"
 The status should eq 2
 The stderr should include 'narrow the search'
 End
 End
 
-Describe 'permitted traversal'
-It 'allows a project directory'
-When run guarded_find /home/tester/ghq/github.com/owner/repo -name '*.ts'
+It 'rejects the home directory itself'
+When run guard "$HOME"
+The status should eq 2
+The stderr should include 'narrow the search'
+End
+
+It 'rejects the ghq forge root, which holds every checkout'
+When run guard "$HOME/ghq/github.com"
+The status should eq 2
+The stderr should include 'narrow the search'
+End
+
+It 'rejects a worktree lane root, which holds every tree in the lane'
+When run guard "$HOME/.herdr/worktrees/lane"
+The status should eq 2
+The stderr should include 'narrow the search'
+End
+
+It 'allows a single worktree below its lane'
+When run guard "$HOME/.herdr/worktrees/lane/tree"
 The status should be success
-The output should include '/home/tester/ghq/github.com/owner/repo'
+The output should include 'native-find'
 End
 
-It 'allows a worktree once it names a project'
-When run guarded_find /home/tester/.herdr/worktrees/dotfiles/lane-1
+It 'allows a narrow project root'
+When run guard "$HOME/ghq/github.com/org/repo" -name '*.nix'
 The status should be success
-The output should include '/home/tester/.herdr/worktrees/dotfiles/lane-1'
+The output should include "-name *.nix"
 End
 
-It 'allows a broad root bounded by a leading depth limit'
-When run guarded_find / -maxdepth 1 -name 'etc'
+Describe 'depth bounds'
+It 'allows a broad root when a leading depth bound keeps it shallow'
+When run guard "$HOME" -maxdepth 1 -name '*.log'
 The status should be success
-The output should include '-maxdepth'
+The output should include 'native-find'
 End
 
-It 'defaults to the current directory when no root is given'
-When run guarded_find -name '*.sh'
-The status should be success
-The output should include '-name'
-End
-
-It 'passes option-only invocations through'
-When run guarded_find --version
-The status should be success
-The output should include '--version'
-End
-End
-
-Describe 'depth bound integrity'
-It 'ignores a depth limit that only appears after a filter'
-When run guarded_find / -name 'x' -maxdepth 1
+It 'rejects a leading depth bound that is too deep to bound the traversal'
+When run guard "$HOME" -maxdepth 3
 The status should eq 2
 The stderr should include 'narrow the search'
 End
 
-It 'rejects a depth bound weakened by a second -maxdepth'
-When run guarded_find / -maxdepth 1 -name 'x' -maxdepth 9
+It 'rejects a depth bound that does not lead, so a predicate cannot authorize the walk'
+When run guard "$HOME" -name '*.log' -maxdepth 1
 The status should eq 2
 The stderr should include 'narrow the search'
 End
 
-It 'rejects a depth limit deeper than two levels'
-When run guarded_find / -maxdepth 3
+It 'rejects a repeated depth bound, since a later one can widen the first'
+When run guard "$HOME" -maxdepth 1 -o -maxdepth 9
 The status should eq 2
 The stderr should include 'narrow the search'
 End
+End
 
-It 'rejects reading roots from a file'
-When run guarded_find -maxdepth 1 -files0-from roots.txt
+Describe 'root discovery'
+It 'rejects -files0-from, whose roots cannot be checked'
+When run guard "$HOME/ghq/github.com/org/repo" -files0-from list
 The status should eq 2
 The stderr should include 'explicit search roots'
 End
+
+It 'skips option arguments when collecting roots'
+When run guard -L "$HOME/ghq/github.com/org/repo"
+The status should be success
+The output should include 'native-find'
 End
 
+It 'treats the argument of -D as a flag value, not a root'
+When run guard -D tree "$HOME/ghq/github.com/org/repo"
+The status should be success
+The output should include 'native-find'
+End
+
+It 'checks every root, not just the first'
+When run guard "$HOME/ghq/github.com/org/repo" "$HOME"
+The status should eq 2
+The stderr should include 'narrow the search'
+End
+End
+
+Describe 'passthrough'
+It 'forwards --help without a root check'
+When run guard --help
+The status should be success
+The output should include 'native-find --help'
+End
+
+It 'forwards --version without a root check'
+When run guard --version
+The status should be success
+The output should include 'native-find --version'
+End
+End
 End

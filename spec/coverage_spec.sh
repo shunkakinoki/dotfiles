@@ -412,6 +412,11 @@ It 'has behavior tests for named-hosts/kamino/activate.sh'
 The path "tests/test_kamino_activation.py" should be exist
 End
 
+It 'has spec file for named-hosts/kyber/find.sh'
+When run test -f "$PWD/spec/kyber_find_spec.sh"
+The status should be success
+End
+
 It 'has spec file for named-hosts/kyber/activate-ip-forwarding.sh'
 The path "spec/activate_kyber_spec.sh" should be exist
 End
