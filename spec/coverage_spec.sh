@@ -336,8 +336,8 @@ It 'has spec file for config/codex/activate.sh'
 The path "spec/activate_config_spec.sh" should be exist
 End
 
-It 'has spec file for config/codex/merge-orchestration-hooks.sh'
-The path "spec/activate_config_spec.sh" should be exist
+It 'has spec file for config/openfactor/install.sh'
+The path "spec/openfactor_hooks_spec.sh" should be exist
 End
 
 It 'has spec file for config/herdr/install-integrations.sh'
@@ -527,7 +527,6 @@ config/claude/hooks/atuin-history.sh
 config/claude/hooks/statusline.sh
 config/codex/activate.sh
 config/codex/ensure-desktop-settings-agent.sh
-config/codex/merge-orchestration-hooks.sh
 config/codex/sync-desktop-settings.sh
 config/herdr/install-integrations.sh
 config/copilot/activate.sh
@@ -540,6 +539,7 @@ config/devin/hooks/pushover.sh
 config/dsh/hydrate.sh
 config/codex/hooks/notify.sh
 config/codex/hooks/pushover.sh
+config/openfactor/install.sh
 config/shared/hooks/block-gh-settings.sh
 config/shared/hooks/block-git-push.sh
 config/shared/hooks/dcg-guard.sh

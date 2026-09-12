@@ -40,6 +40,7 @@ in
   ./npm
   ./obsidian
   ./omp
+  ./openfactor
   ./openclaw
   ./opencode
   ./pi
