@@ -46,11 +46,6 @@ inputs.nix-darwin.lib.darwinSystem {
               };
             };
           };
-          # Crabbox renders its own `ssh -F` config for every transfer and
-          # never reads ~/.ssh/config, so the UseKeychain above cannot unlock
-          # the interactive key there. Delegated CI runs get a key of their
-          # own, carrying no passphrase and authorized only on the workers.
-          home.sessionVariables.CRABBOX_SSH_KEY = "/Users/${username}/.ssh/kamino_ci_ed25519";
           programs.git = {
             signing = {
               signByDefault = true;

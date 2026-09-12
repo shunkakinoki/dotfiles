@@ -34,13 +34,11 @@ let
     "--ssh=true"
   ];
   pubkeys = import ../pubkeys.nix;
-  # Every client that drives a Kamino worker over SSH. galactica-ci is a
-  # separate passphrase-free key because Crabbox runs its transfers under a
-  # generated `ssh -F` config that excludes ~/.ssh/config, so a key the macOS
-  # Keychain unlocks can never be signed with there.
+  # Every client that drives a Kamino worker over SSH. Tailscale SSH authorizes
+  # them from the tailnet ACL, so these are the recovery path for turning it
+  # back off, not the live gate.
   authorizedClients = [
     "galactica"
-    "galactica-ci"
     "kyber"
     "matic"
   ];
