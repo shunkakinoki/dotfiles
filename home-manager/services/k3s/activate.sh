@@ -11,6 +11,8 @@ HEALTH_SERVICE_FILE="$5"
 HEALTH_TIMER_FILE="$6"
 SMARTD_SERVICE_FILE="$7"
 TMP_MOUNT_FILE="$8"
+RUNTIME_IO_FILE="$9"
+PODS_IO_FILE="${10}"
 SYSTEM_SERVICE="/etc/systemd/system/k3s.service"
 SYSTEM_MOUNT="/etc/systemd/system/var-lib-rancher-k3s-agent-containerd.mount"
 SYSTEM_JOURNALD="/etc/systemd/journald.conf.d/10-kyber-limits.conf"
@@ -18,6 +20,8 @@ SYSTEM_HEALTH_SERVICE="/etc/systemd/system/kyber-host-health.service"
 SYSTEM_HEALTH_TIMER="/etc/systemd/system/kyber-host-health.timer"
 SYSTEM_SMARTD_SERVICE="/etc/systemd/system/kyber-smartd.service"
 SYSTEM_TMP_MOUNT="/etc/systemd/system/tmp.mount"
+SYSTEM_RUNTIME_IO="/etc/systemd/system/k3s.service.d/50-kyber-io.conf"
+SYSTEM_PODS_IO="/etc/systemd/system/kubepods.slice.d/50-kyber-io.conf"
 SMARTCTL_LINK="/usr/local/bin/smartctl"
 MOUNT_POINT="/var/lib/rancher/k3s/agent/containerd"
 EXPECTED_CONTAINERD_UUID="90f29a7b-38ff-460b-b534-92a02f1412ec"
@@ -147,7 +151,9 @@ for systemd_file_pair in \
   "$HEALTH_SERVICE_FILE:$SYSTEM_HEALTH_SERVICE" \
   "$HEALTH_TIMER_FILE:$SYSTEM_HEALTH_TIMER" \
   "$SMARTD_SERVICE_FILE:$SYSTEM_SMARTD_SERVICE" \
-  "$TMP_MOUNT_FILE:$SYSTEM_TMP_MOUNT"; do
+  "$TMP_MOUNT_FILE:$SYSTEM_TMP_MOUNT" \
+  "$RUNTIME_IO_FILE:$SYSTEM_RUNTIME_IO" \
+  "$PODS_IO_FILE:$SYSTEM_PODS_IO"; do
   source_file="${systemd_file_pair%%:*}"
   target_file="${systemd_file_pair#*:}"
   if sync_root_file "$source_file" "$target_file"; then
