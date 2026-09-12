@@ -1,0 +1,85 @@
+{
+  "contextFileName": "AGENTS.md",
+  "hooks": {
+    "AfterTool": [
+      {
+        "command": "git-ai checkpoint gemini --hook-input stdin",
+        "matcher": "write_file|replace"
+      }
+    ],
+    "BeforeTool": [
+      {
+        "command": "git-ai checkpoint gemini --hook-input stdin",
+        "matcher": "write_file|replace"
+      },
+      {
+        "command": "command -v graphify >/dev/null 2>&1 && graphify hook-guard gemini",
+        "matcher": "read_file|list_directory"
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "command": "bd prime --hook-json",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ]
+  },
+  "mcpServers": {
+    "ChromeDevtools": {
+      "args": [
+        "--autoConnect",
+        "--channel=beta"
+      ],
+      "command": "chrome-devtools-mcp"
+    },
+    "Codex": {
+      "args": [
+        "mcp-server"
+      ],
+      "command": "codex"
+    },
+    "Context7": {
+      "args": [],
+      "command": "context7-mcp"
+    },
+    "GitHub": {
+      "args": [
+        "-c",
+        "exec mcp-remote 'https://api.githubcopilot.com/mcp/' --header \"Authorization:Bearer $(gh auth token)\""
+      ],
+      "command": "sh"
+    },
+    "MemPalace": {
+      "args": [
+        "-m",
+        "mempalace.mcp_server"
+      ],
+      "command": "python3-mempalace"
+    },
+    "Serena": {
+      "args": [
+        "start-mcp-server"
+      ],
+      "command": "serena"
+    },
+    "XcodeBuildMCP": {
+      "args": [
+        "mcp"
+      ],
+      "command": "xcodebuildmcp"
+    }
+  },
+  "security": {
+    "auth": {
+      "selectedType": "oauth-personal"
+    }
+  },
+  "tools": {
+    "enableHooks": true
+  }
+}
