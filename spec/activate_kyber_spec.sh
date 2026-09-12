@@ -415,13 +415,14 @@ The output should include 'clear:disk-wear-sda'
 The output should not include 'unexpected-alert:'
 End
 
-It 'runs CRI and freezer recovery before probing disk endurance'
+It 'runs disk-local freezer recovery before unrelated CRI and endurance probes'
 When run env HEALTH_CHECK="$SCRIPT" bash -c '
   source "$HEALTH_CHECK"
   install() { :; }
   check_io_pressure() { :; }
   check_d_state() { :; }
   check_orchestration_pressure() { :; }
+  check_orchestration_disk() { :; }
   check_node_filesystem() { :; }
   check_image_filesystem() { :; }
   check_cri() { printf "cri\n"; }
@@ -431,6 +432,6 @@ When run env HEALTH_CHECK="$SCRIPT" bash -c '
   main
 '
 The status should be success
-The output should equal "$(printf 'cri\nrecovery\ndns\nsmart')"
+The output should equal "$(printf 'recovery\ncri\ndns\nsmart')"
 End
 End

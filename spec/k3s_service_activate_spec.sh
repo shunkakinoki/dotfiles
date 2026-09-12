@@ -146,9 +146,11 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   state="$(mktemp -d)"
   export KYBER_HOST_HEALTH_STATE_DIR="$state"
   source "$HEALTH_CHECK"
+  ORCHESTRATION_DISK_KNOWN=1
   IO_PRESSURE_UNHEALTHY=1
   IO_PRESSURE_CURRENT_UNHEALTHY=1
   ORCHESTRATION_IMPLICATED=1
+  ORCHESTRATION_DISK_UNHEALTHY=1
   capture_orchestration_evidence() { printf "%s/evidence/test\n" "$STATE_DIR"; }
   orchestration_control() { test -e "$STATE_DIR/orchestration.frozen"; printf "control:%s\n" "$1"; }
   set_alert() { printf "alert:%s:%s\n" "$1" "$2"; }
@@ -168,6 +170,7 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   state="$(mktemp -d)"
   export KYBER_HOST_HEALTH_STATE_DIR="$state"
   source "$HEALTH_CHECK"
+  ORCHESTRATION_DISK_KNOWN=1
   IO_PRESSURE_UNHEALTHY=1
   IO_PRESSURE_CURRENT_UNHEALTHY=1
   D_STATE_UNHEALTHY=1
@@ -195,6 +198,7 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   state="$(mktemp -d)"
   export KYBER_HOST_HEALTH_STATE_DIR="$state"
   source "$HEALTH_CHECK"
+  ORCHESTRATION_DISK_KNOWN=1
   set_alert() { printf "alert:%s:%s\n" "$1" "$2"; }
   clear_alert() { printf "clear:%s\n" "$1"; }
   now="$(date +%s)"
@@ -215,9 +219,11 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   state="$(mktemp -d)"
   export KYBER_HOST_HEALTH_STATE_DIR="$state"
   source "$HEALTH_CHECK"
+  ORCHESTRATION_DISK_KNOWN=1
   IO_PRESSURE_UNHEALTHY=1
   IO_PRESSURE_CURRENT_UNHEALTHY=1
   ORCHESTRATION_IMPLICATED=1
+  ORCHESTRATION_DISK_UNHEALTHY=1
   capture_orchestration_evidence() { printf "%s/evidence/test\n" "$STATE_DIR"; }
   orchestration_control() { return 1; }
   set_alert() { printf "alert:%s:%s\n" "$1" "$2"; }
@@ -234,6 +240,7 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   state="$(mktemp -d)"
   export KYBER_HOST_HEALTH_STATE_DIR="$state"
   source "$HEALTH_CHECK"
+  ORCHESTRATION_DISK_KNOWN=1
   mkdir -p "$state/evidence"
   for stamp in 20260829T000001Z 20260829T000002Z 20260829T000003Z 20260829T000004Z 20260829T000005Z 20260829T000006Z 20260829T000007Z; do
     mkdir "$state/evidence/$stamp"
@@ -253,6 +260,7 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   state="$(mktemp -d)"
   export KYBER_HOST_HEALTH_STATE_DIR="$state"
   source "$HEALTH_CHECK"
+  ORCHESTRATION_DISK_KNOWN=1
   : >"$state/orchestration.frozen"
   printf "4\n" >"$state/orchestration.recovery-samples"
   orchestration_control() { printf "control:%s\n" "$1"; }
@@ -271,6 +279,7 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   state="$(mktemp -d)"
   export KYBER_HOST_HEALTH_STATE_DIR="$state"
   source "$HEALTH_CHECK"
+  ORCHESTRATION_DISK_KNOWN=1
   : >"$state/orchestration.frozen"
   printf "3\n" >"$state/orchestration.recovery-samples"
   orchestration_control() { printf "unexpected:%s\n" "$1"; }
@@ -283,21 +292,24 @@ The output should equal ''
 The status should be success
 End
 
-It 'keeps orchestration frozen while CRI remains unhealthy'
+It 'thaws on a healthy worktree disk even while the separate CRI is unhealthy'
 When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   state="$(mktemp -d)"
+  trap "rm -rf \"$state\"" EXIT
   export KYBER_HOST_HEALTH_STATE_DIR="$state"
   source "$HEALTH_CHECK"
-  CRI_UNHEALTHY=1
+  ORCHESTRATION_DISK_KNOWN=1
+  timeout() { return 1; }
+  set_alert() { printf "alert:%s\n" "$1"; }
+  check_cri
   : >"$state/orchestration.frozen"
   printf "4\n" >"$state/orchestration.recovery-samples"
-  orchestration_control() { printf "unexpected:%s\n" "$1"; }
+  orchestration_control() { printf "control:%s\n" "$1"; }
+  clear_alert() { :; }
   manage_orchestration_circuit_breaker
-  test "$(cat "$state/orchestration.recovery-samples")" = 0
-  test -e "$state/orchestration.frozen"
-  rm -rf "$state"
+  test ! -e "$state/orchestration.frozen"
 '
-The output should equal ''
+The output should equal "$(printf 'alert:cri-health\ncontrol:thaw')"
 The status should be success
 End
 
@@ -307,9 +319,11 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   trap "rm -rf \"$state\"" EXIT
   export KYBER_HOST_HEALTH_STATE_DIR="$state"
   source "$HEALTH_CHECK"
+  ORCHESTRATION_DISK_KNOWN=1
   IO_PRESSURE_UNHEALTHY=1
   IO_PRESSURE_CURRENT_UNHEALTHY=0
   ORCHESTRATION_IMPLICATED=1
+  ORCHESTRATION_DISK_UNHEALTHY=1
   orchestration_control() { printf "unexpected:%s\n" "$1"; }
   capture_orchestration_evidence() { printf "unexpected:capture\n"; }
   clear_alert() { :; }
@@ -326,8 +340,10 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   trap "rm -rf \"$state\"" EXIT
   export KYBER_HOST_HEALTH_STATE_DIR="$state"
   source "$HEALTH_CHECK"
+  ORCHESTRATION_DISK_KNOWN=1
   IO_PRESSURE_CURRENT_UNHEALTHY=1
   ORCHESTRATION_IMPLICATED=1
+  ORCHESTRATION_DISK_UNHEALTHY=1
   orchestration_control() { printf "unexpected:%s\n" "$1"; }
   clear_alert() { :; }
   manage_orchestration_circuit_breaker
@@ -343,8 +359,10 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   trap "rm -rf \"$state\"" EXIT
   export KYBER_HOST_HEALTH_STATE_DIR="$state"
   source "$HEALTH_CHECK"
+  ORCHESTRATION_DISK_KNOWN=1
   D_STATE_UNHEALTHY=1
   ORCHESTRATION_IMPLICATED=1
+  ORCHESTRATION_DISK_UNHEALTHY=1
   capture_orchestration_evidence() { printf "%s/evidence/test\n" "$STATE_DIR"; }
   orchestration_control() { printf "control:%s\n" "$1"; }
   set_alert() { :; }
@@ -356,18 +374,49 @@ The status should be success
 The output should equal 'control:freeze'
 End
 
-It 'resets recovery for current host PSI or sustained D-state outside orchestration'
+It 'does not let pressure on another disk block recovery'
 When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   state="$(mktemp -d)"
   trap "rm -rf \"$state\"" EXIT
   export KYBER_HOST_HEALTH_STATE_DIR="$state"
   source "$HEALTH_CHECK"
+  ORCHESTRATION_DISK_KNOWN=1
+  IO_PRESSURE_UNHEALTHY=1
+  IO_PRESSURE_CURRENT_UNHEALTHY=1
+  D_STATE_UNHEALTHY=1
+  ORCHESTRATION_IMPLICATED=1
   : >"$state/orchestration.frozen"
+  printf "4\n" >"$state/orchestration.recovery-samples"
+  orchestration_control() { printf "control:%s\n" "$1"; }
+  clear_alert() { :; }
+  manage_orchestration_circuit_breaker
+  test ! -e "$state/orchestration.frozen"
+'
+The status should be success
+The output should equal 'control:thaw'
+End
+
+It 'withholds freezing without disk attribution and recovery without a healthy disk'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  state="$(mktemp -d)"
+  trap "rm -rf \"$state\"" EXIT
+  export KYBER_HOST_HEALTH_STATE_DIR="$state"
+  source "$HEALTH_CHECK"
+  IO_PRESSURE_UNHEALTHY=1
+  IO_PRESSURE_CURRENT_UNHEALTHY=1
+  ORCHESTRATION_IMPLICATED=1
   orchestration_control() { printf "unexpected:%s\n" "$1"; }
-  for unhealthy in IO_PRESSURE_CURRENT_UNHEALTHY D_STATE_UNHEALTHY; do
-    IO_PRESSURE_CURRENT_UNHEALTHY=0
-    D_STATE_UNHEALTHY=0
-    printf -v "$unhealthy" %s 1
+  clear_alert() { :; }
+  for flags in "0 0" "1 0"; do
+    read -r ORCHESTRATION_DISK_KNOWN ORCHESTRATION_DISK_UNHEALTHY <<<"$flags"
+    manage_orchestration_circuit_breaker
+    test ! -e "$state/orchestration.frozen"
+  done
+  IO_PRESSURE_UNHEALTHY=0
+  IO_PRESSURE_CURRENT_UNHEALTHY=0
+  : >"$state/orchestration.frozen"
+  for flags in "0 0" "1 1"; do
+    read -r ORCHESTRATION_DISK_KNOWN ORCHESTRATION_DISK_UNHEALTHY <<<"$flags"
     printf "4\n" >"$state/orchestration.recovery-samples"
     manage_orchestration_circuit_breaker
     test "$(cat "$state/orchestration.recovery-samples")" = 0
@@ -384,6 +433,7 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   trap "rm -rf \"$state\"" EXIT
   export KYBER_HOST_HEALTH_STATE_DIR="$state"
   source "$HEALTH_CHECK"
+  ORCHESTRATION_DISK_KNOWN=1
   IO_PRESSURE_UNHEALTHY=1
   ORCHESTRATION_IMPLICATED=1
   : >"$state/orchestration.frozen"
@@ -403,6 +453,7 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   trap "rm -rf \"$state\"" EXIT
   export KYBER_HOST_HEALTH_STATE_DIR="$state"
   source "$HEALTH_CHECK"
+  ORCHESTRATION_DISK_KNOWN=1
   orchestration_cgroup_dir() { printf "%s\n" "$state"; }
   ps() { :; }
   printf "some avg10=1.00 avg60=10.00 avg300=30.00 total=0\n" >"$state/io.pressure"
@@ -426,6 +477,7 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   trap "rm -rf \"$state\"" EXIT
   export KYBER_HOST_HEALTH_STATE_DIR="$state"
   source "$HEALTH_CHECK"
+  ORCHESTRATION_DISK_KNOWN=1
   set_alert() { :; }
   clear_alert() { :; }
   awk() {
@@ -443,6 +495,77 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   printf "some avg10=0.00 avg60=0.00 avg300=0.00 total=0\nfull avg10=11.00 avg60=11.00 avg300=11.00 total=0\n" >"$state/io.pressure"
   check_io_pressure
   test "$IO_PRESSURE_UNHEALTHY:$IO_PRESSURE_CURRENT_UNHEALTHY" = 1:1
+'
+The status should be success
+The output should equal ''
+End
+
+It 'classifies disk latency from actual counter deltas, including outstanding I/O'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  state="$(mktemp -d)"
+  trap "rm -rf \"$state\"" EXIT
+  export KYBER_HOST_HEALTH_STATE_DIR="$state"
+  source "$HEALTH_CHECK"
+  orchestration_disk_path() { printf "%s\n" "$state"; }
+  set_alert() { printf "unexpected-alert:%s\n" "$1"; }
+  clear_alert() { :; }
+  sleep() { cp "$state/after" "$state/stat"; }
+  for row in \
+    "110 0 1000 110 110 0 1000 110 0 10000 10000 0 0 0 0 0 0:0" \
+    "110 0 1000 310 110 0 1000 110 0 10000 10000 0 0 0 0 0 0:1" \
+    "110 0 1000 110 110 0 1000 310 0 10000 10000 0 0 0 0 0 0:1" \
+    "100 0 1000 100 100 0 1000 100 1 10000 10000 0 0 0 0 0 0:1" \
+    "100 0 1000 100 100 0 1000 100 0 10000 10000 0 0 0 0 0 0:0" \
+    "110 0 1000 110 110 0 1000 110 0 10000 10000 0 0 0 0 1 21:1" \
+    "110 0 1000 110 110 0 1000 110 0 10000 10000 1 0 1 21 0 0:1"; do
+    printf "100 0 1000 100 100 0 1000 100 1 10000 10000 0 0 0 0 0 0\n" >"$state/stat"
+    printf "%s\n" "${row%:*}" >"$state/after"
+    check_orchestration_disk
+    test "$ORCHESTRATION_DISK_KNOWN:$ORCHESTRATION_DISK_UNHEALTHY" = "1:${row##*:}"
+  done
+'
+The status should be success
+The output should equal ''
+End
+
+It 'does not treat missing, reset or malformed disk counters as recovery'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  state="$(mktemp -d)"
+  trap "rm -rf \"$state\"" EXIT
+  export KYBER_HOST_HEALTH_STATE_DIR="$state"
+  source "$HEALTH_CHECK"
+  orchestration_disk_path() { printf "%s\n" "$state"; }
+  set_alert() { test "$1" = orchestration-disk-read; }
+  clear_alert() { printf "unexpected-clear:%s\n" "$1"; }
+  sleep() { cp "$state/after" "$state/stat"; }
+  for row in "99 0 1000 100 100 0 1000 100 0 10000 10000 0 0 0 0 0 0" "bad counters" ""; do
+    printf "100 0 1000 100 100 0 1000 100 0 10000 10000 0 0 0 0 0 0\n" >"$state/stat"
+    printf "%s\n" "$row" >"$state/after"
+    ORCHESTRATION_DISK_KNOWN=1
+    check_orchestration_disk
+    test "$ORCHESTRATION_DISK_KNOWN" = 0
+  done
+  orchestration_disk_path() { return 1; }
+  check_orchestration_disk
+  test "$ORCHESTRATION_DISK_KNOWN" = 0
+'
+The status should be success
+The output should equal ''
+End
+
+It 'resolves the physical root disk and refuses unsupported stacked devices'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  state="$(mktemp -d)"
+  trap "rm -rf \"$state\"" EXIT
+  source "$HEALTH_CHECK"
+  mkdir -p "$state/disk/partition"
+  : >"$state/disk/stat"
+  : >"$state/disk/partition/partition"
+  findmnt() { test "$*" = "--noheadings --output MAJ:MIN --target /"; printf "  8:18 \n"; }
+  readlink() { test "$*" = "-f /sys/dev/block/8:18"; printf "%s/disk/partition\n" "$state"; }
+  test "$(orchestration_disk_path)" = "$state/disk"
+  mkdir "$state/disk/dm"
+  if orchestration_disk_path; then exit 1; fi
 '
 The status should be success
 The output should equal ''
@@ -530,6 +653,7 @@ HEALTH_CHECK="$PWD/config/k3s/kyber-host-health.sh"
 It 'clears the alert after available space recovers above 200 GiB'
 When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   source "$HEALTH_CHECK"
+  ORCHESTRATION_DISK_KNOWN=1
   df() {
     case "$*" in
       *--output=avail*) printf "Avail\n%s\n" "$((201 * 1024 * 1024 * 1024))" ;;
@@ -547,6 +671,7 @@ End
 It 'alerts at the 200 GiB warning threshold'
 When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   source "$HEALTH_CHECK"
+  ORCHESTRATION_DISK_KNOWN=1
   df() {
     case "$*" in
       *--output=avail*) printf "Avail\n%s\n" "$((200 * 1024 * 1024 * 1024))" ;;
@@ -564,6 +689,7 @@ End
 It 'alerts at seventy percent root usage with ample absolute headroom'
 When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   source "$HEALTH_CHECK"
+  ORCHESTRATION_DISK_KNOWN=1
   df() {
     case "$*" in
       *--output=avail*) printf "Avail\n%s\n" "$((500 * 1024 * 1024 * 1024))" ;;
@@ -581,6 +707,7 @@ End
 It 'alerts without clearing on malformed available-space output'
 When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   source "$HEALTH_CHECK"
+  ORCHESTRATION_DISK_KNOWN=1
   df() { printf "Avail\nnot-a-number\n"; }
   set_alert() { printf "alert:%s:%s\n" "$1" "$2"; }
   clear_alert() { printf "clear:%s\n" "$1"; }
@@ -593,6 +720,7 @@ End
 It 'alerts without aborting when df fails'
 When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   source "$HEALTH_CHECK"
+  ORCHESTRATION_DISK_KNOWN=1
   df() { return 1; }
   set_alert() { printf "alert:%s:%s\n" "$1" "$2"; }
   clear_alert() { printf "clear:%s\n" "$1"; }
