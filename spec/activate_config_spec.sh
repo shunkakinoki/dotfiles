@@ -290,8 +290,35 @@ When run cat "$HERDR_DEFAULT_NIX"
 The output should include 'installHerdrIntegrations'
 The output should include 'codexConfig'
 The output should include 'installOpenCodePlugins'
+The output should include 'install-integrations.sh'
+The output should include 'llm-agents.herdr'
+End
+End
+
+Describe 'config/herdr/install-integrations.sh'
+HERDR_INSTALL_SCRIPT="$PWD/config/herdr/install-integrations.sh"
+
+It 'installs both native harness integrations through the supplied executable'
+TMP_HOME="$(mktemp -d)"
+MOCK_HERDR="$TMP_HOME/herdr"
+LOG_FILE="$TMP_HOME/integration.log"
+cat >"$MOCK_HERDR" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\n' "$*" >>"$HERDR_TEST_LOG"
+SH
+chmod +x "$MOCK_HERDR"
+
+When run bash -c 'HERDR_TEST_LOG="$1" bash "$2" "$3" && cat "$1"' _ "$LOG_FILE" "$HERDR_INSTALL_SCRIPT" "$MOCK_HERDR"
+The status should be success
 The output should include 'integration install codex'
 The output should include 'integration install opencode'
+End
+
+It 'requires an executable argument'
+When run bash "$HERDR_INSTALL_SCRIPT"
+The status should not be success
+The stderr should include 'Herdr executable required'
 End
 End
 

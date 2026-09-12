@@ -4,6 +4,9 @@
   ...
 }:
 
+let
+  installHerdrIntegrations = ./install-integrations.sh;
+in
 {
   home.file.".config/herdr/config.toml" = {
     source = ./config.toml;
@@ -21,7 +24,6 @@
         "installOpenCodePlugins"
       ]
       ''
-        $DRY_RUN_CMD ${pkgs.llm-agents.herdr}/bin/herdr integration install codex
-        $DRY_RUN_CMD ${pkgs.llm-agents.herdr}/bin/herdr integration install opencode
+        $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${installHerdrIntegrations}" "${pkgs.llm-agents.herdr}/bin/herdr"
       '';
 }

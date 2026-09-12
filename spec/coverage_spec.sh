@@ -340,6 +340,10 @@ It 'has spec file for config/codex/merge-orchestration-hooks.sh'
 The path "spec/activate_config_spec.sh" should be exist
 End
 
+It 'has spec file for config/herdr/install-integrations.sh'
+The path "spec/activate_config_spec.sh" should be exist
+End
+
 It 'has spec file for config/codex/sync-desktop-settings.sh'
 The path "spec/activate_config_spec.sh" should be exist
 End
@@ -525,6 +529,7 @@ config/codex/activate.sh
 config/codex/ensure-desktop-settings-agent.sh
 config/codex/merge-orchestration-hooks.sh
 config/codex/sync-desktop-settings.sh
+config/herdr/install-integrations.sh
 config/copilot/activate.sh
 config/codex/hooks/atuin-history.sh
 config/dcg/activate.sh
