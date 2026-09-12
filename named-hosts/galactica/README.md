@@ -59,6 +59,30 @@ make decrypt-key-galactica KEY_FILE=id_ed25519
 
 _Note: You only need to provide the base name of the key file, not the full path or `.age` extension._
 
+#### Restoring the Kamino CI key
+
+`keys/kamino_ci_ed25519.age` holds the passphrase-free key galactica presents to
+the Kamino workers. `CRABBOX_SSH_KEY` points at `~/.ssh/kamino_ci_ed25519`, so a
+rebuilt galactica needs that file back before delegated CI works again.
+
+galactica cannot decrypt it on its own: its only agenix identity is
+passphrase-protected and activation runs non-interactively. Restore it from a
+machine that holds a usable identity (kyber or matic):
+
+```bash
+rage -d -i ~/.ssh/id_ed25519 \
+  named-hosts/galactica/keys/kamino_ci_ed25519.age \
+  -o /tmp/kamino_ci_ed25519
+scp /tmp/kamino_ci_ed25519 galactica:.ssh/kamino_ci_ed25519
+ssh galactica 'chmod 600 ~/.ssh/kamino_ci_ed25519'
+rm /tmp/kamino_ci_ed25519
+```
+
+The restored key must fingerprint as `galactica-ci` in
+`named-hosts/pubkeys.nix`:
+`SHA256:Amp8g6UxTAnoFOIYS5jrW+gKtfKtxxgstFZ2NMunW7o`. That entry is what the
+workers authorize, so a freshly generated key would be rejected.
+
 #### Rekeying Secrets
 
 If you ever change `secrets.nix` to add a new person or machine, you must "rekey" the secrets so they can also decrypt them.
