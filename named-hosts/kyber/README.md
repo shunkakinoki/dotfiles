@@ -216,13 +216,14 @@ raise `orchestration-circuit-breaker-flapping`, which means the slice re-trips
 after every thaw and its top writers in the evidence captures need attention
 rather than another auto-thaw.
 
-Coding-agent hooks are the usual writer behind a flapping slice: every hook
-event goes through `config/shared/hooks/traces-agent-hook.sh`. On Kyber it
-queues and coalesces events for a single uploader in `traces-uploads.slice`,
-including final session uploads. The upload remains in its bounded cgroup until
-all detached children finish. Root I/O is capped at 5 MB/s reads, 2 MB/s writes,
-100 read IOPS, and 50 write IOPS. The queue's one-minute timer retries failed
-launches and timeouts without requiring another agent event (see
+Automatic agent trace uploads are currently disabled with
+`services.traces-agent-uploads.enable = false`. The shared hook dispatcher exits
+without scanning traces, enqueueing requests, or starting an uploader. The upload
+service and timer are not declared; existing queued requests and source traces
+remain on disk. Other hosts and manually invoked Traces commands are unchanged.
+
+When re-enabled, the queue serializes uploads in `traces-uploads.slice`, retaining
+final events and enforcing its bandwidth, IOPS, CPU, and memory limits (see
 [shared hooks](../../config/shared/hooks/README.md)).
 
 This containment does not isolate ext4 journals. Kyber has two physical SSDs:

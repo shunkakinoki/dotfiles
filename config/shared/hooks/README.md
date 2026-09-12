@@ -53,7 +53,13 @@ Claude Code, Cursor, GitHub Copilot, Grok, Devin, Antigravity, Pi, Hermes, and
 OpenClaw; the Pi, Hermes, and OpenClaw adapters spawn it directly and pass
 the binary they resolved as `TRACES_BIN`.
 
-On Kyber, the managed `traces-agent-uploads` helper writes hook requests into
+Automatic agent trace uploads are currently disabled on Kyber with
+`services.traces-agent-uploads.enable = false`. The managed dispatcher exits
+without reading the payload or starting Traces, and no upload service or timer
+is declared. Existing queued requests and trace data are retained. This setting
+does not remove agent-native transcripts or disable manually invoked Traces commands.
+
+When enabled on Kyber, the managed `traces-agent-uploads` helper writes hook requests into
 `~/.local/state/traces-agent-uploads` with private directory/file permissions
 (0700/0600). It preserves the resolved binary, working directory, arguments,
 stdin payload, and trace configuration environment overrides. Environment values
