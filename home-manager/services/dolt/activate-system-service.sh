@@ -38,9 +38,11 @@ fi
 
 # The former user unit binds the same port, so it must release 3307 before the
 # system unit starts. Home Manager removes its unit file after this step.
-if @systemctl@ --user is-active --quiet dolt.service 2>/dev/null; then
+# Nix's newer systemctl cannot connect to the distribution's user manager, so
+# user-scope calls use the host binary.
+if /usr/bin/systemctl --user is-active --quiet dolt.service; then
   echo "Stopping the Dolt user service..."
-  @systemctl@ --user stop dolt.service
+  /usr/bin/systemctl --user stop dolt.service
 fi
 
 run_root @systemctl@ enable dolt.service
