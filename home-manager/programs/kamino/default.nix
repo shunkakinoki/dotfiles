@@ -5,12 +5,12 @@ let
   shortcuts = lib.concatMap (machine: [
     {
       inherit (machine) name;
-      body = "ssh ${machine.name} $argv";
-      description = "SSH to ${machine.name} over Tailscale";
+      body = "tailscale ssh ${machine.name} $argv";
+      description = "SSH to ${machine.name} with Tailscale SSH";
     }
     {
       name = "${machine.name}d";
-      body = ''ssh -t ${machine.name} "tmux new-session -A -s desktop"'';
+      body = ''tailscale ssh ${machine.name} "tmux new-session -A -s desktop"'';
       description = "Attach to ${machine.name} tmux desktop session";
     }
     {
@@ -20,12 +20,12 @@ let
     }
     {
       name = "${machine.name}m";
-      body = ''ssh -t ${machine.name} "tmux new-session -A -s mobile"'';
+      body = ''tailscale ssh ${machine.name} "tmux new-session -A -s mobile"'';
       description = "Attach to ${machine.name} tmux mobile session";
     }
     {
       name = "${machine.name}z";
-      body = ''ssh -t ${machine.name} "zellij attach -c desktop"'';
+      body = ''tailscale ssh ${machine.name} "zellij attach -c desktop"'';
       description = "Attach to ${machine.name} Zellij desktop session";
     }
   ]) fleet.machines;
@@ -51,7 +51,9 @@ in
       value = {
         HostName = machine.hostname;
         User = machine.user;
-        StrictHostKeyChecking = "accept-new";
+        # Tailscale SSH performs identity and host-key verification through
+        # the tailnet; ordinary key-based SSH is not the managed default.
+        StrictHostKeyChecking = "yes";
       };
     }) fleet.machines
   );
@@ -62,6 +64,7 @@ in
       runtimeInputs = [
         pkgs.python3
         pkgs.openssh
+        pkgs.tailscale
       ];
       text = ''
         exec python3 ${../../../named-hosts/kamino/fleet.py} --inventory ${inventory} "$@"

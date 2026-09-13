@@ -40,20 +40,13 @@ class FleetTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             fleet.select_machines(inventory, "kamino2")
 
-    def test_strict_ssh_bound_to_observed_node_and_tools(self):
+    def test_tailscale_ssh_uses_tailnet_identity_and_tools(self):
         with patch.object(fleet, "run", return_value=self.probe) as run:
             result = fleet.verify_machines([self.machine], [self.node])[0]
         self.assertEqual(result["status"], "pass")
         self.assertEqual(result["node_id"], "node-1")
         command = run.call_args.args[0]
-        for option in [
-            "StrictHostKeyChecking=yes",
-            "BatchMode=yes",
-            "ControlPath=none",
-            "HostName=100.64.0.1",
-            "HostKeyAlias=kamino1.example.ts.net",
-        ]:
-            self.assertIn(option, command)
+        self.assertEqual(command[:3], ["tailscale", "ssh", "root@kamino1.example.ts.net"])
         for probe in [
             "herdr --version",
             "tmux -V",
