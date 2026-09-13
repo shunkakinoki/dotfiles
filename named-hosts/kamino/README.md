@@ -151,7 +151,7 @@ nix eval --impure --raw .#homeConfigurations.kamino100.config.home.username
 nix eval --impure --raw .#homeConfigurations.kamino100.config.home.homeDirectory
 # /root
 nix eval --impure --raw .#checks.x86_64-linux.eval-home-kamino100.drvPath
-python3 -m unittest discover -s tests -p 'test_kamino*.py'
+shellspec spec/kamino_fleet_spec.sh
 shellspec spec/install_spec.sh spec/make_build_host_resolution_spec.sh spec/ssh_config_spec.sh
 ```
 

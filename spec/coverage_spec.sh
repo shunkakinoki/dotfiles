@@ -412,6 +412,10 @@ It 'has behavior tests for named-hosts/kamino/activate.sh'
 The path "tests/test_kamino_activation.py" should be exist
 End
 
+It 'has spec file for named-hosts/kamino/fleet.sh'
+The path "spec/kamino_fleet_spec.sh" should be exist
+End
+
 It 'has spec file for named-hosts/kyber/activate-ip-forwarding.sh'
 The path "spec/activate_kyber_spec.sh" should be exist
 End
@@ -647,6 +651,7 @@ home-manager/services/docker-postgres/start-postgres.sh
 home-manager/services/docker/docker-setup.sh
 home-manager/services/docker/setup-docker.sh
 home-manager/services/dolt/start.sh
+home-manager/services/dolt/activate-system-service.sh
 home-manager/services/dolt/beads-linear-complete.sh
 home-manager/services/dolt/client-environment.sh
 home-manager/services/dolt/linear-sync.sh
@@ -665,6 +670,7 @@ hosts/darwin/activate-remove-backups.sh
 hosts/linux/activate-backup-files.sh
 install.sh
 named-hosts/kamino/activate.sh
+named-hosts/kamino/fleet.sh
 named-hosts/kyber/activate-backup-files.sh
 named-hosts/kyber/activate-fish-ssh-compat.sh
 named-hosts/kyber/activate-ip-forwarding.sh
