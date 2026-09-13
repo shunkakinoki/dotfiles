@@ -3,6 +3,7 @@
 
 Describe 'home-manager/modules/secure-dotenv/secure-dotenv.sh'
 SCRIPT="$PWD/home-manager/modules/secure-dotenv/secure-dotenv.sh"
+no_gnu_find() { ! find . -maxdepth 0 -readable >/dev/null 2>&1; }
 
 Describe 'script properties'
 It 'uses bash shebang'
@@ -41,6 +42,7 @@ End
 End
 
 Describe 'functional behavior'
+Skip if 'the script requires GNU find (activation substitutes pkgs.findutils)' no_gnu_find
 setup() {
   TEST_HOME="$(mktemp -d)"
   # Create .env files with non-600 permissions
@@ -121,6 +123,11 @@ It 'does not follow symlinks'
 When run bash -c "bash '$PROCESSED_SCRIPT' '$TEST_HOME' && test -L '$TEST_HOME/.env.link' && echo 'still-symlink'"
 The output should equal 'still-symlink'
 End
+
+It 'skips directories it cannot traverse and still secures other files'
+When run bash -c "mkdir '$TEST_HOME/locked' && chmod 000 '$TEST_HOME/locked'; bash '$PROCESSED_SCRIPT' '$TEST_HOME'; rc=\$?; chmod 700 '$TEST_HOME/locked'; [ \$rc -eq 0 ] && '$STAT_WRAPPER' -c '%a' '$TEST_HOME/app.env'"
+The output should equal '600'
+End
 End
 
 Describe 'depth limit'
@@ -137,6 +144,7 @@ The output should include '-prune'
 End
 
 It 'skips .env files under Library'
+Skip if 'the script requires GNU find (activation substitutes pkgs.findutils)' no_gnu_find
 TEST_HOME="$(mktemp -d)"
 mkdir -p "$TEST_HOME/Library/Group Containers/app"
 echo "SECRET=value" >"$TEST_HOME/Library/Group Containers/app/.env"

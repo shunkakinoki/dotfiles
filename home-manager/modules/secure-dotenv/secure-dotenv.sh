@@ -7,11 +7,15 @@ HOME_DIR="$1"
 # ~/Library is pruned: on macOS, opening app group containers blocks forever
 # on TCC app-data mediation, hanging activation. Dotenv files live in code
 # checkouts, never under Library.
+# Directories this user cannot traverse (root services write 0700 log
+# directories under home) are pruned: descending into them makes find exit
+# non-zero, and pipefail turns that into an activation failure.
 @find@ "${HOME_DIR}" \
   -maxdepth 4 \
   -path "${HOME_DIR}/Library" -prune -o \
-  \( -name '.env' -o -name '.env.*' -o -name '*.env' \) -print \
-  2>/dev/null | while IFS= read -r f; do
+  -type d \( ! -readable -o ! -executable \) -prune -o \
+  \( -name '.env' -o -name '.env.*' -o -name '*.env' \) -print |
+  while IFS= read -r f; do
   if [ -f "$f" ] && [ ! -L "$f" ]; then
     current=$(@stat@ -c '%a' "$f")
     if [ "$current" != "600" ]; then

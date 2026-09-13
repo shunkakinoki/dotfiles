@@ -58,6 +58,13 @@ home-manager.lib.homeManagerConfiguration {
 
         home.file.".local/bin/find".source = "${import ./find.nix { inherit pkgs; }}/bin/find";
 
+        # The user manager is the distro systemd. Nix systemctl (260+) reaches
+        # it only through the manager's private socket and reports the session
+        # as not running when that socket is unreachable, which makes
+        # reloadSystemd skip sd-switch. The host client matches the manager and
+        # falls back to the user D-Bus.
+        systemd.user.systemctlPath = "/usr/bin/systemctl";
+
         # Pause trace scans and uploads while storage contention is unresolved.
         services.traces-agent-uploads.enable = false;
 
