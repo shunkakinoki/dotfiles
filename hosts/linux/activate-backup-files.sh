@@ -11,15 +11,24 @@ home_files=${1:?Home Manager home-files path is required}
 while IFS= read -r -d '' link; do
   target_path=${link#"$home_files/"}
   target="$HOME/$target_path"
-  [ -L "$target" ] || continue
-  link_target=$(readlink -- "$target")
-  case "$link_target" in
-  /nix/store/*-home-manager-generation/* | /nix/store/*-home-manager-files/*)
-    relative=${target#"$HOME/"}
-    echo "Removing stale Home Manager link $relative"
-    rm -f -- "$target"
-    ;;
-  esac
+  if [ -L "$target" ]; then
+    link_target=$(readlink -- "$target")
+    case "$link_target" in
+    /nix/store/*-home-manager-generation/* | /nix/store/*-home-manager-files/*)
+      echo "Removing stale Home Manager link $target_path"
+      rm -f -- "$target"
+      ;;
+    esac
+  elif [ -f "$target" ] && ! cmp -s -- "$link" "$target"; then
+    # Tools such as atuin write their own config on first run, and Home
+    # Manager aborts the whole activation on any unmanaged file in its way.
+    # A path under a linked store directory is read-only and not ours to move.
+    case "$(readlink -f -- "$target")" in
+    /nix/store/*) continue ;;
+    esac
+    echo "Backing up existing $target_path to $target_path.hm-backup"
+    mv -f -- "$target" "$target.hm-backup"
+  fi
 done < <(find -L "$home_files" -type f -print0)
 
 for file in .bashrc .profile .bash_profile; do
