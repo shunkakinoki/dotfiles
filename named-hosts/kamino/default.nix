@@ -26,7 +26,9 @@ let
   tailscaleUpArgs = [
     "--hostname=${name}"
     "--accept-dns=true"
-    "--ssh=false"
+    # Use Tailscale SSH identity policy for host login; ordinary SSH keys are
+    # not the fleet authorization mechanism.
+    "--ssh=true"
   ];
   authorizedKey = pkgs.writeText "kamino-authorized-key.pub" (
     (import ../pubkeys.nix).galactica + "\n"
