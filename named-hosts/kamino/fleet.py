@@ -71,32 +71,17 @@ def verify_machine(machine, nodes, node_ids):
         return result
     addresses = node.get("TailscaleIPs")
     try:
-        address = str(ipaddress.ip_address(addresses[0]))
+        ipaddress.ip_address(addresses[0])
     except (ValueError, TypeError, IndexError, KeyError):
         result["reason"] = "missing or invalid Tailscale IP"
         return result
     try:
-        # Connect to the observed node IP, but authenticate its declared DNS name.
-        # Do not accept new keys or reuse a previously authenticated SSH socket.
+        # Use Tailscale SSH so identity and host-key verification come from the
+        # tailnet policy rather than a client SSH key or TCP/22 daemon.
         output = run(
             [
+                "tailscale",
                 "ssh",
-                "-o",
-                "BatchMode=yes",
-                "-o",
-                "StrictHostKeyChecking=yes",
-                "-o",
-                "UpdateHostKeys=no",
-                "-o",
-                "ConnectTimeout=10",
-                "-o",
-                "ConnectionAttempts=1",
-                "-o",
-                "ControlPath=none",
-                "-o",
-                f"HostName={address}",
-                "-o",
-                f"HostKeyAlias={machine['hostname']}",
                 f"{machine['user']}@{machine['hostname']}",
                 "/bin/sh -c 'export XDG_RUNTIME_DIR=/run/user/0; "
                 "id -un && hostname && "
