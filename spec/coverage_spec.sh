@@ -652,6 +652,7 @@ home-manager/services/docker-postgres/start-postgres.sh
 home-manager/services/docker/docker-setup.sh
 home-manager/services/docker/setup-docker.sh
 home-manager/services/dolt/start.sh
+home-manager/services/dolt/activate-system-service.sh
 home-manager/services/dolt/beads-linear-complete.sh
 home-manager/services/dolt/client-environment.sh
 home-manager/services/dolt/linear-sync.sh
