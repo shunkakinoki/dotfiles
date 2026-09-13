@@ -207,9 +207,10 @@ class WorkerAdmissionTests(unittest.TestCase):
         binary.write_text("#!/bin/sh\n")
         binary.chmod(0o755)
         result = subprocess.CompletedProcess([], 0, '{"result": {}}', "")
-        with patch.dict(os.environ, {"HERDR_BIN_PATH": str(binary)}), patch.object(
-            admission.subprocess, "run", return_value=result
-        ) as run:
+        with (
+            patch.dict(os.environ, {"HERDR_BIN_PATH": str(binary)}),
+            patch.object(admission.subprocess, "run", return_value=result) as run,
+        ):
             self.assertEqual(admission.probe(["status", "server"]), {})
         self.assertEqual(run.call_args.args[0][0], str(binary))
 

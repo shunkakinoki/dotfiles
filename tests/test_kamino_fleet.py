@@ -46,7 +46,9 @@ class FleetTests(unittest.TestCase):
         self.assertEqual(result["status"], "pass")
         self.assertEqual(result["node_id"], "node-1")
         command = run.call_args.args[0]
-        self.assertEqual(command[:3], ["tailscale", "ssh", "root@kamino1.example.ts.net"])
+        self.assertEqual(
+            command[:3], ["tailscale", "ssh", "root@kamino1.example.ts.net"]
+        )
         for probe in [
             "herdr --version",
             "tmux -V",
