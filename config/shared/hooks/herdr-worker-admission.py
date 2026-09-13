@@ -2,6 +2,7 @@
 """Check local Herdr worker starts without executing the submitted command."""
 
 import json
+import os
 import re
 import shlex
 import shutil
@@ -126,10 +127,24 @@ def starts(command, depth=0, environment_changed=False):
                 )
 
 
-def probe(args):
+def herdr_binary():
+    configured = os.environ.get("HERDR_BIN_PATH")
+    if configured:
+        path = Path(configured).expanduser()
+        try:
+            if path.is_absolute() and path.is_file() and os.access(path, os.X_OK):
+                return str(path)
+        except OSError as error:
+            raise AdmissionError("configured Herdr binary is unavailable") from error
+        raise AdmissionError("configured Herdr binary is unavailable")
     binary = shutil.which("herdr")
     if binary is None:
         raise AdmissionError("Herdr metadata is unavailable")
+    return binary
+
+
+def probe(args):
+    binary = herdr_binary()
     try:
         result = subprocess.run(
             [binary, *args],

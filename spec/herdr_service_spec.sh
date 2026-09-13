@@ -3,6 +3,7 @@ Describe 'Herdr server environment'
 SCRIPT="$PWD/home-manager/services/herdr/start.sh"
 PACKAGE_CONFIG="$PWD/home-manager/packages/default.nix"
 SERVICE_CONFIG="$PWD/home-manager/services/herdr/default.nix"
+HERDR_CONFIG="$PWD/config/herdr/default.nix"
 HOMEBREW_CONFIG="$PWD/nix-darwin/config/homebrew.nix"
 
 setup() {
@@ -48,8 +49,18 @@ The status should not be success
 End
 
 It 'launches the Nix-backed Herdr package on Darwin'
-When run grep -F '"${pkgs.llm-agents.herdr}/bin/herdr"' "$SERVICE_CONFIG"
-The output should include '"${pkgs.llm-agents.herdr}/bin/herdr"'
+When run grep -F 'herdrBin = "${pkgs.llm-agents.herdr}/bin/herdr";' "$SERVICE_CONFIG"
+The output should include 'herdrBin = "${pkgs.llm-agents.herdr}/bin/herdr";'
+End
+
+It 'exports the managed Herdr binary to hooks and services'
+When run grep -F 'HERDR_BIN_PATH = herdrBin;' "$SERVICE_CONFIG"
+The output should include 'HERDR_BIN_PATH = herdrBin;'
+End
+
+It 'exports the managed Herdr binary to interactive hooks'
+When run grep -F 'home.sessionVariables.HERDR_BIN_PATH = "${pkgs.llm-agents.herdr}/bin/herdr";' "$HERDR_CONFIG"
+The output should include 'home.sessionVariables.HERDR_BIN_PATH = "${pkgs.llm-agents.herdr}/bin/herdr";'
 End
 End
 End

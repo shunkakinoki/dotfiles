@@ -8,6 +8,11 @@ let
   installHerdrIntegrations = ./install-integrations.sh;
 in
 {
+  # Hooks and services must interrogate the same managed client. An explicit
+  # absolute selector prevents PATH precedence from selecting an older global
+  # Herdr binary after the package is upgraded.
+  home.sessionVariables.HERDR_BIN_PATH = "${pkgs.llm-agents.herdr}/bin/herdr";
+
   home.file.".config/herdr/config.toml" = {
     source = ./config.toml;
     force = true;
