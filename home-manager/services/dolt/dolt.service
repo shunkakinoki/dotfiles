@@ -1,0 +1,31 @@
+[Unit]
+Description=Authoritative Beads SQL server
+After=network.target
+# Beads has no standby authority, so systemd must never give up restarting it.
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=@user@
+WorkingDirectory=@repoDir@
+ExecStart=@bash@ @startScript@
+Restart=always
+RestartSec=2
+# Kyber's WAN firewall drops all new public-interface ingress. Binding all
+# addresses makes the SQL service reachable on tailscale0 while retaining the
+# public-ingress deny boundary.
+Environment=BEADS_DOLT_LISTEN_HOST=0.0.0.0
+Environment=DOLT_CLI_USER=root
+Environment=DOLT_CLI_PASSWORD=
+# A user manager can neither lower OOMScoreAdjust nor lift a unit out of
+# user.slice's write ceiling, which is why the server runs as a system unit.
+OOMScoreAdjust=-900
+CPUWeight=1000
+IOAccounting=yes
+# systemd maps IOWeight=10000 to the bfq maximum of 1000; IOWeight=1000 is only
+# bfq 181. The server gets no bandwidth cap: a throttled writer holds shared
+# ext4 journal locks and stalls every other writer on the root disk.
+IOWeight=10000
+
+[Install]
+WantedBy=multi-user.target
