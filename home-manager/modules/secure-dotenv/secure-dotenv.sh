@@ -16,10 +16,10 @@ HOME_DIR="$1"
   -type d \( ! -readable -o ! -executable \) -prune -o \
   \( -name '.env' -o -name '.env.*' -o -name '*.env' \) -print |
   while IFS= read -r f; do
-  if [ -f "$f" ] && [ ! -L "$f" ]; then
-    current=$(@stat@ -c '%a' "$f")
-    if [ "$current" != "600" ]; then
-      chmod 600 "$f"
+    if [ -f "$f" ] && [ ! -L "$f" ]; then
+      current=$(@stat@ -c '%a' "$f")
+      if [ "$current" != "600" ]; then
+        chmod 600 "$f"
+      fi
     fi
-  fi
-done
+  done

@@ -14,28 +14,28 @@ as_json=false
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
-    --inventory)
-      [ "$#" -ge 2 ] || usage
-      inventory=$2
-      shift 2
-      ;;
-    --json)
-      as_json=true
-      shift
-      ;;
-    list|verify)
-      [ -z "$command" ] || usage
-      command=$1
-      shift
-      ;;
-    --help|-h)
-      usage
-      ;;
-    *)
-      [ "$pattern" = 'kamino*' ] || usage
-      pattern=$1
-      shift
-      ;;
+  --inventory)
+    [ "$#" -ge 2 ] || usage
+    inventory=$2
+    shift 2
+    ;;
+  --json)
+    as_json=true
+    shift
+    ;;
+  list | verify)
+    [ -z "$command" ] || usage
+    command=$1
+    shift
+    ;;
+  --help | -h)
+    usage
+    ;;
+  *)
+    [ "$pattern" = 'kamino*' ] || usage
+    pattern=$1
+    shift
+    ;;
   esac
 done
 
@@ -54,7 +54,7 @@ while IFS= read -r machine; do
   name=$(jq -r '.name' <<<"$machine")
   # Pattern intentionally uses shell glob semantics for fnmatch-compatible selection.
   # shellcheck disable=SC2053
-  if [[ "$name" == $pattern ]]; then
+  if [[ $name == $pattern ]]; then
     printf '%s\n' "$machine" >>"$selected"
   fi
 done < <(jq -c '.machines[]' "$inventory" 2>/dev/null) || {

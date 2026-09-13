@@ -6,7 +6,7 @@ setup() {
   TEST_ROOT=$(mktemp -d)
   mkdir -p "$TEST_ROOT/bin"
   jq -n '{machines: [{name: "kamino1", hostname: "kamino1.example.ts.net", user: "root"}]}' >"$TEST_ROOT/inventory.json"
-cat >"$TEST_ROOT/bin/tailscale" <<'EOF'
+  cat >"$TEST_ROOT/bin/tailscale" <<'EOF'
 #!/usr/bin/env bash
 if [ "$1 $2" = "status --json" ]; then
   case "${FLEET_MODE:-healthy}" in
