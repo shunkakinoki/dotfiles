@@ -173,6 +173,10 @@ It 'has spec file for install.sh'
 The path "spec/install_spec.sh" should be exist
 End
 
+It 'has behavior tests for install.sh'
+The path "spec/install_behavior_spec.sh" should be exist
+End
+
 It 'has spec file for named-hosts/kyber/rekey-galactica.sh'
 The path "spec/kyber_rekey_spec.sh" should be exist
 End
@@ -409,7 +413,19 @@ The path "spec/activate_kyber_spec.sh" should be exist
 End
 
 It 'has behavior tests for named-hosts/kamino/activate.sh'
-The path "tests/test_kamino_activation.py" should be exist
+The path "spec/kamino_activation_spec.sh" should be exist
+End
+
+It 'has spec file for named-hosts/kamino/fleet.sh'
+The path "spec/kamino_fleet_spec.sh" should be exist
+End
+
+It 'has spec file for managed Codex config'
+The path "spec/codex_config_spec.sh" should be exist
+End
+
+It 'has spec file for optional service restart targets'
+The path "spec/make_optional_services_spec.sh" should be exist
 End
 
 It 'has spec file for named-hosts/kyber/activate-ip-forwarding.sh'
@@ -647,6 +663,7 @@ home-manager/services/docker-postgres/start-postgres.sh
 home-manager/services/docker/docker-setup.sh
 home-manager/services/docker/setup-docker.sh
 home-manager/services/dolt/start.sh
+home-manager/services/dolt/activate-system-service.sh
 home-manager/services/dolt/beads-linear-complete.sh
 home-manager/services/dolt/client-environment.sh
 home-manager/services/dolt/linear-sync.sh
@@ -665,6 +682,7 @@ hosts/darwin/activate-remove-backups.sh
 hosts/linux/activate-backup-files.sh
 install.sh
 named-hosts/kamino/activate.sh
+named-hosts/kamino/fleet.sh
 named-hosts/kyber/activate-backup-files.sh
 named-hosts/kyber/activate-fish-ssh-compat.sh
 named-hosts/kyber/activate-ip-forwarding.sh

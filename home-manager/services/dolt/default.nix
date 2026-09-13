@@ -96,13 +96,11 @@ in
     executable = true;
   };
 
-  home.activation.installDoltSystemService =
-    lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && isKyber)
-      (
-        lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${systemServiceScript}" "${systemServiceUnit}"
-        ''
-      );
+  home.activation.installDoltSystemService = lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && isKyber) (
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${systemServiceScript}" "${systemServiceUnit}"
+    ''
+  );
 
   # Persist the same client selection in the user manager so Herdr, OpenClaw,
   # and other systemd-launched agents do not inherit a stale shared-server mode.

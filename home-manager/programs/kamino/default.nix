@@ -62,12 +62,12 @@ in
     (pkgs.writeShellApplication {
       name = "kamino-fleet";
       runtimeInputs = [
-        pkgs.python3
+        pkgs.jq
         pkgs.openssh
         pkgs.tailscale
       ];
       text = ''
-        exec python3 ${../../../named-hosts/kamino/fleet.py} --inventory ${inventory} "$@"
+        exec ${../../../named-hosts/kamino/fleet.sh} --inventory ${inventory} "$@"
       '';
     })
   ];
