@@ -178,6 +178,24 @@ When run bash -c 'for run in 1 2; do HOME="$1" bash "$2" "$3" "$4" "$5" "$6" "$7
 The status should be success
 End
 
+It 'ignores trust-like headers inside multiline strings'
+TMP_HOME="$(mktemp -d)"
+mkdir -p "$TMP_HOME/.codex"
+cat >"$TMP_HOME/.codex/config.toml" <<'TOML'
+notes = """
+[projects."/basic"]
+"""
+literal = '''
+[hooks.state."/literal:pre_tool_use:0:0"]
+'''
+
+[projects."/repo"]
+trust_level = "trusted"
+TOML
+When run bash -c 'HOME="$1" bash "$2" "$3" "$4" "$5" "$6" "$7" "$8" && config="$1/.codex/config.toml" && [[ $(grep -cxF "[projects.\"/repo\"]" "$config") == 1 ]] && ! grep -q -e "/basic" -e "/literal" -e "^\"\"\"" -e "^'"'''"'" "$config"' _ "$TMP_HOME" "$SCRIPT" "$CONFIG_TOML" "$HOOKS_JSON" "$DESKTOP_SETTINGS_JSON" "$(command -v jq)" "$SYNC_SCRIPT" "$PROFILES_DIR"
+The status should be success
+End
+
 It 'restores managed atom-state Desktop settings after the app replaces its state'
 TMP_HOME="$(mktemp -d)"
 mkdir -p "$TMP_HOME/.codex"

@@ -16,13 +16,23 @@ MERGE_HOOKS_SCRIPT="${7:-$(dirname "${BASH_SOURCE[0]}")/merge-orchestration-hook
 # so activation does not revoke trust and stall every session at a prompt.
 TRUST_TABLE_PATTERN='^[[:space:]]*\[(projects\.|hooks\.state[].])'
 install_config() {
-  local source="$1" destination="$2" preserved="" keep=0 line
+  local source="$1" destination="$2" preserved="" keep=0 line delim="" quote rest
   if [[ -f $destination ]]; then
     while IFS= read -r line || [[ -n $line ]]; do
-      if [[ $line =~ ^[[:space:]]*\[ ]]; then
+      # A bracketed line inside a multiline string is string content, not a
+      # table header.
+      if [[ -z $delim && $line =~ ^[[:space:]]*\[ ]]; then
         if [[ $line =~ $TRUST_TABLE_PATTERN ]]; then keep=1; else keep=0; fi
       fi
       if ((keep)); then preserved+="$line"$'\n'; fi
+      for quote in '"""' "'''"; do
+        [[ -n $delim && $delim != "$quote" ]] && continue
+        rest=${line//"$quote"/}
+        if (((${#line} - ${#rest}) / 3 % 2)); then
+          if [[ -n $delim ]]; then delim=""; else delim=$quote; fi
+          break
+        fi
+      done
     done <"$destination"
   fi
   cp -f "$source" "$destination"
