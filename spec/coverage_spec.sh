@@ -173,6 +173,10 @@ It 'has spec file for install.sh'
 The path "spec/install_spec.sh" should be exist
 End
 
+It 'has behavior tests for install.sh'
+The path "spec/install_behavior_spec.sh" should be exist
+End
+
 It 'has spec file for named-hosts/kyber/rekey-galactica.sh'
 The path "spec/kyber_rekey_spec.sh" should be exist
 End
@@ -409,11 +413,19 @@ The path "spec/activate_kyber_spec.sh" should be exist
 End
 
 It 'has behavior tests for named-hosts/kamino/activate.sh'
-The path "tests/test_kamino_activation.py" should be exist
+The path "spec/kamino_activation_spec.sh" should be exist
 End
 
 It 'has spec file for named-hosts/kamino/fleet.sh'
 The path "spec/kamino_fleet_spec.sh" should be exist
+End
+
+It 'has spec file for managed Codex config'
+The path "spec/codex_config_spec.sh" should be exist
+End
+
+It 'has spec file for optional service restart targets'
+The path "spec/make_optional_services_spec.sh" should be exist
 End
 
 It 'has spec file for named-hosts/kyber/activate-ip-forwarding.sh'
