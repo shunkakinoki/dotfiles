@@ -196,6 +196,24 @@ When run bash -c 'HOME="$1" bash "$2" "$3" "$4" "$5" "$6" "$7" "$8" && config="$
 The status should be success
 End
 
+It 'keeps trust tables after nested, escaped, and commented delimiters'
+TMP_HOME="$(mktemp -d)"
+mkdir -p "$TMP_HOME/.codex"
+cat >"$TMP_HOME/.codex/config.toml" <<'TOML'
+escaped = """x\"""
+[projects."/escaped"]
+"""
+nested = """a'''b"""
+single = "'''"
+commented = 1 # """
+
+[projects."/repo"]
+trust_level = "trusted"
+TOML
+When run bash -c 'HOME="$1" bash "$2" "$3" "$4" "$5" "$6" "$7" "$8" && config="$1/.codex/config.toml" && [[ $(grep -cxF "[projects.\"/repo\"]" "$config") == 1 ]] && ! grep -q "/escaped" "$config"' _ "$TMP_HOME" "$SCRIPT" "$CONFIG_TOML" "$HOOKS_JSON" "$DESKTOP_SETTINGS_JSON" "$(command -v jq)" "$SYNC_SCRIPT" "$PROFILES_DIR"
+The status should be success
+End
+
 It 'restores managed atom-state Desktop settings after the app replaces its state'
 TMP_HOME="$(mktemp -d)"
 mkdir -p "$TMP_HOME/.codex"
