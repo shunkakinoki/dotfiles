@@ -38,6 +38,14 @@ let
     inherit beadsDir;
     inherit (pkgs) dolt;
   };
+  systemServiceUnit = pkgs.replaceVars ./dolt.service {
+    bash = "${pkgs.bash}/bin/bash";
+    user = config.home.username;
+    inherit repoDir startScript;
+  };
+  systemServiceScript = pkgs.replaceVars ./activate-system-service.sh {
+    systemctl = "${pkgs.systemd}/bin/systemctl";
+  };
   linearSyncScript = pkgs.replaceVars ./linear-sync.sh {
     bd = "${pkgs.beads}/bin/bd";
     linear = "${homeDir}/.bun/install/global/node_modules/.bin/linear";
@@ -88,37 +96,13 @@ in
     executable = true;
   };
 
-  systemd.user.services.dolt = lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && isKyber) {
-    Unit = {
-      Description = "Authoritative Beads SQL server";
-      After = [ "network.target" ];
-    };
-    Service = {
-      Type = "simple";
-      ExecStart = "${pkgs.bash}/bin/bash ${startScript}";
-      Restart = "always";
-      RestartSec = 5;
-      WorkingDirectory = repoDir;
-      # Kyber's WAN firewall drops all new public-interface ingress. Binding
-      # all addresses makes the SQL service reachable on
-      # tailscale0 while retaining the public-ingress deny boundary.
-      Environment = [
-        "BEADS_DOLT_LISTEN_HOST=0.0.0.0"
-        "DOLT_CLI_USER=root"
-        "DOLT_CLI_PASSWORD="
-      ];
-    }
-    // lib.optionalAttrs isKyber {
-      # DOLT_BACKUP performs the off-site snapshot inside the server process.
-      # Bound that bulk writer so it cannot starve Kine and PostgreSQL on the
-      # shared root disk; normal transactional writes remain far below 20 MB/s.
-      IOAccounting = true;
-      IOWriteBandwidthMax = "/ 20M";
-    };
-    Install = {
-      WantedBy = [ "default.target" ];
-    };
-  };
+  home.activation.installDoltSystemService =
+    lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && isKyber)
+      (
+        lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${systemServiceScript}" "${systemServiceUnit}"
+        ''
+      );
 
   # Persist the same client selection in the user manager so Herdr, OpenClaw,
   # and other systemd-launched agents do not inherit a stale shared-server mode.
@@ -136,14 +120,8 @@ in
         Unit = {
           Description = "Synchronize Beads with Linear";
           X-SwitchMethod = "restart";
-          After = [
-            "dolt.service"
-            "network-online.target"
-          ];
-          Wants = [
-            "dolt.service"
-            "network-online.target"
-          ];
+          After = [ "network-online.target" ];
+          Wants = [ "network-online.target" ];
         };
         Service = {
           Type = "oneshot";

@@ -329,7 +329,8 @@ let
             "--accept-dns=true"
             "--advertise-exit-node"
           ];
-        assert cfg.systemd.user.services ? dolt;
+        assert !(cfg.systemd.user.services ? dolt);
+        assert cfg.home.activation ? installDoltSystemService;
         assert cfg.systemd.user.services ? dolt-linear-sync;
         assert cfg.systemd.user.services.herdr-server.Service.Slice == "herdr.slice";
         assert !(lib.hasInfix "--slice=orchestration.slice" cfg.programs.fish.shellInit);

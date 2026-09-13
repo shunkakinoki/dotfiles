@@ -1405,11 +1405,10 @@ systemctl-docker-postgres: ## Restart docker-postgres systemd user service.
 	fi
 
 .PHONY: systemctl-dolt
-systemctl-dolt: ## Restart Dolt systemd user service.
+systemctl-dolt: ## Restart Dolt systemd system service.
 	@echo "🔄 Restarting dolt..."
 	@if [ "$(DETECTED_HOST)" = "kyber" ] || [ "$(HOST)" = "kyber" ]; then \
-		systemctl --user daemon-reload; \
-		systemctl --user restart dolt.service; \
+		sudo systemctl restart dolt.service; \
 	else \
 		echo "Skipping dolt.service (host not kyber)"; \
 	fi
