@@ -56,7 +56,8 @@ fi
 EOF
   chmod +x "$TEST_ROOT/bin/sudo" "$TEST_ROOT/bin/systemctl"
   printf '[Service]\nUser=ubuntu\n' >"$TEST_ROOT/dolt.service"
-  sed -e "s|@systemctl@|$TEST_ROOT/bin/systemctl|g" \
+  sed -e "s|/usr/bin/systemctl|$TEST_ROOT/bin/systemctl|g" \
+    -e "s|@systemctl@|$TEST_ROOT/bin/systemctl|g" \
     -e "s|/etc/systemd/system/dolt.service|$TEST_ROOT/etc/dolt.service|g" \
     home-manager/services/dolt/activate-system-service.sh >"$TEST_ROOT/activate.sh"
 }
