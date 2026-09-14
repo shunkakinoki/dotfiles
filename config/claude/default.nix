@@ -8,6 +8,10 @@ let
   caamClaudeSnapshot = pkgs.writeShellScriptBin "caam-claude-snapshot" (
     builtins.readFile ./hooks/caam-snapshot.sh
   );
+  mergeMoshiHooks = import ../shared/merge-moshi-hooks.nix { inherit pkgs; };
+  settings =
+    mergeMoshiHooks "claude-settings.json" ./settings.json
+      ../../generated/hooks/moshi/claude/settings.json;
 in
 {
   # CAAM isolates HOME for each profile, so hooks invoked by a CAAM-launched
@@ -17,7 +21,7 @@ in
   # Use activation script for settings.json instead of symlink
   # git-ai install-hooks needs write access, which breaks with Nix store symlinks
   home.activation.claudeConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${../../generated/hooks/moshi/claude/settings.json}"
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${settings}"
   '';
 
   home.file.".claude/hooks/auto-switch.sh" = {

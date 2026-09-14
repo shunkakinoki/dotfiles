@@ -73,8 +73,8 @@ It 'routes every tracked dcg hook through the wrapper'
 When run bash -c '
   commands="$(
   for config in \
-    generated/hooks/moshi/claude/settings.json \
-    generated/hooks/moshi/codex/hooks.json \
+    config/claude/settings.json \
+    config/codex/hooks.json \
     config/copilot/config.json; do
     jq -r ".. | objects | .command? // empty" "$config"
   done

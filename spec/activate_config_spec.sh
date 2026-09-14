@@ -6,7 +6,7 @@ SCRIPT="$PWD/config/codex/activate.sh"
 SYNC_SCRIPT="$PWD/config/codex/sync-desktop-settings.sh"
 ENSURE_AGENT_SCRIPT="$PWD/config/codex/ensure-desktop-settings-agent.sh"
 MERGE_SCRIPT="$PWD/config/codex/merge-orchestration-hooks.sh"
-HOOKS_JSON="$PWD/generated/hooks/moshi/codex/hooks.json"
+HOOKS_JSON="$PWD/config/codex/hooks.json"
 CONFIG_TOML="$PWD/config/codex/config.toml"
 DESKTOP_SETTINGS_JSON="$PWD/config/codex/desktop-settings.json"
 PROFILES_DIR="$PWD/config/codex/profiles"
@@ -517,7 +517,7 @@ End
 
 Describe 'config/grok/activate.sh'
 SCRIPT="$PWD/config/grok/activate.sh"
-HOOKS_JSON="$PWD/generated/hooks/moshi/grok/plugin/hooks/hooks.json"
+HOOKS_JSON="$PWD/config/grok/plugin/hooks/hooks.json"
 
 It 'uses bash shebang'
 When run bash -c "head -1 '$SCRIPT'"
