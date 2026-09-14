@@ -438,6 +438,7 @@ import ../../hosts/nixos {
           cups
           curl
           dbus
+          expat
           glibc
           gdk-pixbuf
           gtk3
