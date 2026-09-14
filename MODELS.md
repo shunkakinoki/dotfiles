@@ -111,6 +111,8 @@ Hermes also runs a Mixture-of-Agents preset: reference models
 | Codex | default | `gpt-5.6-sol` | [config.tpl.toml](config/codex/config.tpl.toml) |
 | Codex | subagents | `gpt-5.6-luna` | |
 | Codex | `qwen-local` profile | `qwen3.5-0.8b-optiq` (LM Studio) | |
+| Claude Code | subagents, `opus` alias | `claude-opus-5` | [settings.tpl.json](config/claude/settings.tpl.json) |
+| Claude Code | `sonnet`, `haiku` aliases | `claude-sonnet-5` | |
 | Antigravity | default | `gemini-3.8-flash` (native Antigravity provider) | [settings.tpl.json](config/antigravity/settings.tpl.json) |
 | Pi | `defaultModel` | `free` (provider `cliproxyapi`) | [settings.tpl.json](config/pi/settings.tpl.json) |
 | Factory (droid) | session default | `deepseek-v4-flash-0731` (Droid Core) | [settings.tpl.json](config/factory/settings.tpl.json) |

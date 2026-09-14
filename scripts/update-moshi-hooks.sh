@@ -84,15 +84,11 @@ cp ~/.pi/agent/extensions/moshi-hooks.ts "$GENERATED_ROOT/pi/moshi-hooks.ts"
 cp ~/.config/opencode/plugins/moshi-hooks.ts "$GENERATED_ROOT/opencode/moshi-hooks.ts"
 
 echo "Copying generated JSON hooks..."
-cp ~/.claude/settings.json "$GENERATED_ROOT/claude/settings.json"
-cp ~/.codex/hooks.json "$GENERATED_ROOT/codex/hooks.json"
-cp ~/.cursor/hooks.json "$GENERATED_ROOT/cursor/hooks.json"
-cp ~/.gemini/settings.json "$GENERATED_ROOT/gemini/settings.json"
-cp ~/.grok/hooks/moshi-hooks.json /tmp/moshi-grok-hooks.json
-jq -s '.[0].hooks * .[1].hooks | {hooks: .}' \
-  "$GENERATED_ROOT/grok/plugin/hooks/hooks.json" \
-  /tmp/moshi-grok-hooks.json >/tmp/moshi-grok-merged.json
-mv /tmp/moshi-grok-merged.json "$GENERATED_ROOT/grok/plugin/hooks/hooks.json"
+bash "$SCRIPT_DIR/extract-moshi-hooks.sh" ~/.claude/settings.json "$GENERATED_ROOT/claude/settings.json"
+bash "$SCRIPT_DIR/extract-moshi-hooks.sh" ~/.codex/hooks.json "$GENERATED_ROOT/codex/hooks.json"
+bash "$SCRIPT_DIR/extract-moshi-hooks.sh" ~/.cursor/hooks.json "$GENERATED_ROOT/cursor/hooks.json"
+bash "$SCRIPT_DIR/extract-moshi-hooks.sh" ~/.gemini/settings.json "$GENERATED_ROOT/gemini/settings.json"
+bash "$SCRIPT_DIR/extract-moshi-hooks.sh" ~/.grok/hooks/moshi-hooks.json "$GENERATED_ROOT/grok/plugin/hooks/hooks.json"
 
 # Generated files must remain portable and must not capture a machine-local
 # home directory. Moshi quotes absolute binaries in hook commands and embeds

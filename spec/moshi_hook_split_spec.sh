@@ -70,6 +70,16 @@ The status should be success
 The output should eq '{"hooks":{"SessionStart":[{"hooks":[{"command":"moshi-hook session-start","type":"command"}]}],"Stop":[{"hooks":[{"command":"moshi-hook stop","type":"command"}]}]}}'
 End
 
+It 'keeps every tracked generated JSON fragment Moshi-only'
+When run bash -c '
+  find generated/hooks/moshi -name "*.json" | while read -r f; do
+    jq -e "keys == [\"hooks\"] and ([.. | objects | .command? // empty] | length > 0 and all(test(\"moshi-hook\")))" "$f" >/dev/null || echo "$f"
+  done
+'
+The status should be success
+The output should eq ''
+End
+
 It 'fails when a single hook entry mixes moshi and non-moshi commands'
 When run bash "$EXTRACT" "$MIXED" "$FRAGMENT"
 The status should be failure

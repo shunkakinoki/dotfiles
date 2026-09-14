@@ -155,6 +155,11 @@ It 'includes OMP model registry in template mappings'
 When run bash -c "grep 'config/omp/models.tpl.yml' '$SCRIPT'"
 The output should include 'config/omp/models.tpl.yml'
 End
+
+It 'includes Claude model env in template mappings'
+When run bash -c "grep 'config/claude/settings.tpl.json' '$SCRIPT'"
+The output should include 'config/claude/settings.tpl.json'
+End
 End
 
 Describe 'generated fish wrapper outputs'
@@ -396,6 +401,23 @@ End
 It 'enables the max reasoning effort it defaults subagents to'
 When run bash -c "grep 'enabled-reasoning-efforts' config/codex/config.toml"
 The output should include 'max'
+End
+End
+
+Describe 'Claude model hydration'
+It 'keeps Claude model IDs as placeholders in the template'
+When run bash -c "grep -c '__CLAUDE_' config/claude/settings.tpl.json"
+The output should eq '4'
+End
+
+It 'hydrates the subagent and alias pins from models.json'
+When run jq -c '.env | [.CLAUDE_CODE_SUBAGENT_MODEL, .ANTHROPIC_DEFAULT_OPUS_MODEL, .ANTHROPIC_DEFAULT_SONNET_MODEL, .ANTHROPIC_DEFAULT_HAIKU_MODEL]' config/claude/settings.json
+The output should eq '["claude-opus-5","claude-opus-5","claude-sonnet-5","claude-sonnet-5"]'
+End
+
+It 'keeps model IDs out of the Moshi hook fragment'
+When run bash -c "! grep -Eq 'ANTHROPIC_DEFAULT_|CLAUDE_CODE_SUBAGENT_MODEL' generated/hooks/moshi/claude/settings.json"
+The status should be success
 End
 End
 

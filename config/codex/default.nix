@@ -10,6 +10,10 @@ let
   syncDesktopSettings = ./sync-desktop-settings.sh;
   ensureDesktopSettingsAgent = ./ensure-desktop-settings-agent.sh;
   mergeOrchestrationHooks = ./merge-orchestration-hooks.sh;
+  mergeMoshiHooks = import ../shared/merge-moshi-hooks.nix { inherit pkgs; };
+  hooks =
+    mergeMoshiHooks "codex-hooks.json" ./hooks.json
+      ../../generated/hooks/moshi/codex/hooks.json;
 in
 {
   # Use activation script instead of home.file symlink
@@ -17,7 +21,7 @@ in
   home.activation.codexConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" \
       "${./config.toml}" \
-      "${../../generated/hooks/moshi/codex/hooks.json}" \
+      "${hooks}" \
       "${./desktop-settings.json}" \
       "${pkgs.jq}/bin/jq" \
       "${syncDesktopSettings}" \

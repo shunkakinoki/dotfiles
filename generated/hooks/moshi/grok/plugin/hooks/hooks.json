@@ -4,9 +4,64 @@
       {
         "hooks": [
           {
-            "type": "command",
+            "async": false,
             "command": "moshi-hook grok-hook",
-            "async": false
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "moshi-hook grok-hook",
+            "type": "command"
+          }
+        ],
+        "matcher": "AskUserQuestion"
+      },
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "moshi-hook grok-hook",
+            "type": "command"
+          }
+        ],
+        "matcher": "ExitPlanMode"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "moshi-hook grok-hook",
+            "type": "command"
+          }
+        ],
+        "matcher": "AskUserQuestion"
+      },
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "moshi-hook grok-hook",
+            "type": "command"
+          }
+        ],
+        "matcher": "ExitPlanMode"
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "moshi-hook grok-hook",
+            "type": "command"
           }
         ]
       }
@@ -15,101 +70,9 @@
       {
         "hooks": [
           {
-            "type": "command",
+            "async": true,
             "command": "moshi-hook grok-hook",
-            "async": true
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-start --agent grok # traces hook agent",
-            "timeout": 30,
             "type": "command"
-          }
-        ],
-        "matcher": ""
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "moshi-hook grok-hook",
-            "async": true
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh prompt-submitted --agent grok # traces hook agent",
-            "timeout": 30,
-            "type": "command"
-          }
-        ],
-        "matcher": ""
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Bash|bash|shell",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/dotfiles/config/shared/hooks/security.sh"
-          },
-          {
-            "type": "command",
-            "command": "$HOME/dotfiles/config/shared/hooks/block-git-push.sh"
-          },
-          {
-            "type": "command",
-            "command": "$HOME/dotfiles/config/shared/hooks/block-gh-settings.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "AskUserQuestion",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "moshi-hook grok-hook",
-            "async": true
-          }
-        ]
-      },
-      {
-        "matcher": "ExitPlanMode",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "moshi-hook grok-hook",
-            "async": true
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "AskUserQuestion",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "moshi-hook grok-hook",
-            "async": true
-          }
-        ]
-      },
-      {
-        "matcher": "ExitPlanMode",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "moshi-hook grok-hook",
-            "async": true
           }
         ]
       }
@@ -118,42 +81,22 @@
       {
         "hooks": [
           {
-            "type": "command",
+            "async": true,
             "command": "moshi-hook grok-hook",
-            "async": true
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh agent-done --agent grok # traces hook agent",
-            "timeout": 30,
             "type": "command"
           }
-        ],
-        "matcher": ""
+        ]
       }
     ],
-    "SessionEnd": [
+    "UserPromptSubmit": [
       {
         "hooks": [
           {
-            "type": "command",
+            "async": true,
             "command": "moshi-hook grok-hook",
-            "async": true
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-end --agent grok # traces hook agent",
-            "timeout": 30,
             "type": "command"
           }
-        ],
-        "matcher": ""
+        ]
       }
     ]
   }
