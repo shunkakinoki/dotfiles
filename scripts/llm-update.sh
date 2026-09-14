@@ -87,6 +87,7 @@ add_model_override "deepseek-flash" "0731" "deepseek-v4-flash-0731"
 declare -A TEMPLATES=(
   ["config/aichat/config.tpl.yaml"]=config/aichat/config.yaml
   ["config/antigravity/settings.tpl.json"]=config/antigravity/settings.json
+  ["config/claude/settings.tpl.json"]=config/claude/settings.json
   ["config/llm/default_model.tpl.txt"]=config/llm/default_model.txt
   ["config/openclaw/openclaw.tpl.json"]=config/openclaw/openclaw.template.json
   ["config/opencode/opencode.tpl.jsonc"]=config/opencode/opencode.jsonc
