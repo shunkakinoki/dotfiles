@@ -79,9 +79,15 @@
     nixpkgs-darwin-legacy = {
       url = "github:NixOS/nixpkgs/nixpkgs-26.05-darwin";
     };
+    systems-linux = {
+      url = "github:nix-systems/default-linux";
+    };
     handy = {
       url = "github:cjpais/Handy";
       inputs.nixpkgs.follows = "nixpkgs-darwin-legacy";
+      # bun2nix's default systems include x86_64-darwin, which makes nixpkgs 26.05
+      # emit its x86_64-darwin deprecation warning on every Handy evaluation.
+      inputs.bun2nix.inputs.systems.follows = "systems-linux";
     };
     beads = {
       url = "github:gastownhall/beads";

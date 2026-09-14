@@ -19,6 +19,8 @@ import ../../hosts/nixos {
           git
           vim
         ];
+        # The installer profile enables ZFS; there is no ZFS root to force-import.
+        boot.zfs.forceImportRoot = false;
         image.fileName = "viper.iso";
         services.getty.helpLine = lib.mkForce "";
       }

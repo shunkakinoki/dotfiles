@@ -432,37 +432,37 @@ import ../../hosts/nixos {
         programs.nix-ld.enable = true;
         programs.nix-ld.libraries = with pkgs; [
           alsa-lib
-          atk
           at-spi2-atk
+          atk
           cairo
           cups
           curl
           dbus
           expat
-          glibc
           gdk-pixbuf
+          glibc
           gtk3
           libdrm
           libgbm
           libgcc
-          libxkbcommon
           libnl
+          libx11
+          libxcb
+          libxcomposite
+          libxdamage
+          libxext
+          libxfixes
+          libxi
+          libxkbcommon
+          libxrandr
+          libxrender
+          libxshmfence
+          libxtst
           mesa
           nspr
           nss
           openssl
           pango
-          xorg.libX11
-          xorg.libXcomposite
-          xorg.libXdamage
-          xorg.libXext
-          xorg.libXfixes
-          xorg.libXi
-          xorg.libXrandr
-          xorg.libXrender
-          xorg.libXtst
-          xorg.libxcb
-          xorg.libxshmfence
           zlib
         ];
 
