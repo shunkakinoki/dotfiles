@@ -30,7 +30,7 @@ toml_open_string() {
         ((i += ${#state}))
         continue
       fi
-    elif [[ $c == "\\" && ${state:0:1} == '"' ]]; then
+    elif [[ $c == '\' && ${state:0:1} == '"' ]]; then
       ((i += 2))
       continue
     elif [[ $c == "${state:0:1}" && (${#state} == 1 || ${line:i:3} == "$state") ]]; then
