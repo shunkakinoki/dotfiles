@@ -453,6 +453,7 @@ import ../../hosts/nixos {
           openssl
           pango
           libx11
+          libxcb
           libxcomposite
           libxdamage
           libxext
@@ -460,9 +461,8 @@ import ../../hosts/nixos {
           libxi
           libxrandr
           libxrender
-          libxtst
-          libxcb
           libxshmfence
+          libxtst
           zlib
         ];
 
