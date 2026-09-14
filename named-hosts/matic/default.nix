@@ -452,17 +452,17 @@ import ../../hosts/nixos {
           nss
           openssl
           pango
-          xorg.libX11
-          xorg.libXcomposite
-          xorg.libXdamage
-          xorg.libXext
-          xorg.libXfixes
-          xorg.libXi
-          xorg.libXrandr
-          xorg.libXrender
-          xorg.libXtst
-          xorg.libxcb
-          xorg.libxshmfence
+          libx11
+          libxcomposite
+          libxdamage
+          libxext
+          libxfixes
+          libxi
+          libxrandr
+          libxrender
+          libxtst
+          libxcb
+          libxshmfence
           zlib
         ];
 
