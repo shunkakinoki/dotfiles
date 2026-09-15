@@ -1,5 +1,17 @@
 {
   "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "moshi-hook claude-hook",
+            "type": "command"
+          }
+        ],
+        "matcher": "permission_prompt"
+      }
+    ],
     "PermissionRequest": [
       {
         "hooks": [
