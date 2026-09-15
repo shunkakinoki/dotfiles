@@ -67,6 +67,48 @@ rm -rf "$TEMP_DIR"
 End
 End
 
+Describe 'isolated install'
+setup() {
+  TEMP_DIR="$(mktemp -d)"
+  LIVE_HOME="$TEMP_DIR/home"
+  OUT_DIR="$TEMP_DIR/generated"
+  mkdir -p "$TEMP_DIR/bin" "$TEMP_DIR/tmp" "$LIVE_HOME"
+  # Mimics moshi-hook: writes adapters under $HOME and embeds its own path.
+  cat >"$TEMP_DIR/bin/moshi-hook" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+for ts in .omp/agent/extensions .pi/agent/extensions .config/opencode/plugins; do
+  mkdir -p "$HOME/$ts"
+  printf 'const helperBinary = "%s"\n' "$0" >"$HOME/$ts/moshi-hooks.ts"
+done
+for json in .claude/settings.json .codex/hooks.json .cursor/hooks.json .gemini/settings.json .grok/hooks/moshi-hooks.json; do
+  mkdir -p "$(dirname "$HOME/$json")"
+  printf '{"hooks":{"Stop":[{"hooks":[{"command":"%s agent-hook"}]}]}}\n' "'$0'" >"$HOME/$json"
+done
+EOF
+  printf '#!/usr/bin/env bash\n' >"$TEMP_DIR/bin/nix"
+  chmod +x "$TEMP_DIR/bin/moshi-hook" "$TEMP_DIR/bin/nix"
+}
+
+cleanup() {
+  rm -rf "$TEMP_DIR"
+}
+
+Before 'setup'
+After 'cleanup'
+
+It 'regenerates portable adapters without writing to the live HOME'
+When run env HOME="$LIVE_HOME" PATH="$TEMP_DIR/bin:$PATH" TMPDIR="$TEMP_DIR/tmp" GENERATED_ROOT="$OUT_DIR" bash "$SCRIPT"
+The status should be success
+The output should include 'Review changes and commit if needed'
+The contents of file "$OUT_DIR/omp/moshi-hooks.ts" should eq 'const helperBinary = "moshi-hook"'
+The contents of file "$OUT_DIR/claude/settings.json" should include '"command": "moshi-hook agent-hook"'
+The path "$LIVE_HOME/.claude" should not be exist
+The path "$LIVE_HOME/.omp" should not be exist
+The path "$TEMP_DIR/tmp" should be empty directory
+End
+End
+
 Describe 'error handling'
 setup() {
   TEMP_DIR=$(mktemp -d)

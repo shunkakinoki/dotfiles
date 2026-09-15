@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2016 # The generated hook command must contain literal $HOME.
-# Sync moshi-hook generated files into tracked dotfiles.
-# Runs `moshi-hook install` to ensure all agents are current,
-# then copies the generated TypeScript plugins back into the repo.
+# Regenerate the tracked moshi-hook adapters under generated/hooks/moshi.
+# `moshi-hook install` runs against a throwaway HOME: the live agent configs
+# are Home Manager symlinks, and letting moshi rewrite them leaves real files
+# that the next switch renames to *.hm-backup, plus strays HM never manages.
 
 set -euo pipefail
 
@@ -66,8 +67,24 @@ if (($# != 0)); then
   exit 1
 fi
 
-echo "Installing latest moshi-hook configs..."
-moshi-hook install
+echo "Installing latest moshi-hook configs into a throwaway HOME..."
+moshi_bin="$(command -v moshi-hook)"
+moshi_home="$(mktemp -d)"
+trap 'rm -rf "$moshi_home"' EXIT
+# moshi-hook only installs for agents whose config directory already exists.
+mkdir -p \
+  "$moshi_home/.claude" \
+  "$moshi_home/.codex" \
+  "$moshi_home/.config/opencode" \
+  "$moshi_home/.cursor" \
+  "$moshi_home/.gemini" \
+  "$moshi_home/.grok" \
+  "$moshi_home/.omp/agent" \
+  "$moshi_home/.pi/agent"
+# moshi-hook also resolves paths through XDG_CONFIG_HOME and XDG_DATA_HOME; an
+# empty environment keeps them from redirecting writes back into live configs.
+env -i HOME="$moshi_home" PATH="$PATH" \
+  moshi-hook install --target claude,codex,cursor,gemini,grok,omp,opencode,pi
 
 echo "Copying generated TypeScript plugins..."
 mkdir -p \
@@ -79,21 +96,21 @@ mkdir -p \
   "$GENERATED_ROOT/cursor" \
   "$GENERATED_ROOT/gemini" \
   "$GENERATED_ROOT/grok/plugin/hooks"
-cp ~/.omp/agent/extensions/moshi-hooks.ts "$GENERATED_ROOT/omp/moshi-hooks.ts"
-cp ~/.pi/agent/extensions/moshi-hooks.ts "$GENERATED_ROOT/pi/moshi-hooks.ts"
-cp ~/.config/opencode/plugins/moshi-hooks.ts "$GENERATED_ROOT/opencode/moshi-hooks.ts"
+cp -f "$moshi_home/.omp/agent/extensions/moshi-hooks.ts" "$GENERATED_ROOT/omp/moshi-hooks.ts"
+cp -f "$moshi_home/.pi/agent/extensions/moshi-hooks.ts" "$GENERATED_ROOT/pi/moshi-hooks.ts"
+cp -f "$moshi_home/.config/opencode/plugins/moshi-hooks.ts" "$GENERATED_ROOT/opencode/moshi-hooks.ts"
 
 echo "Copying generated JSON hooks..."
-bash "$SCRIPT_DIR/extract-moshi-hooks.sh" ~/.claude/settings.json "$GENERATED_ROOT/claude/settings.json"
-bash "$SCRIPT_DIR/extract-moshi-hooks.sh" ~/.codex/hooks.json "$GENERATED_ROOT/codex/hooks.json"
-bash "$SCRIPT_DIR/extract-moshi-hooks.sh" ~/.cursor/hooks.json "$GENERATED_ROOT/cursor/hooks.json"
-bash "$SCRIPT_DIR/extract-moshi-hooks.sh" ~/.gemini/settings.json "$GENERATED_ROOT/gemini/settings.json"
-bash "$SCRIPT_DIR/extract-moshi-hooks.sh" ~/.grok/hooks/moshi-hooks.json "$GENERATED_ROOT/grok/plugin/hooks/hooks.json"
+bash "$SCRIPT_DIR/extract-moshi-hooks.sh" "$moshi_home/.claude/settings.json" "$GENERATED_ROOT/claude/settings.json"
+bash "$SCRIPT_DIR/extract-moshi-hooks.sh" "$moshi_home/.codex/hooks.json" "$GENERATED_ROOT/codex/hooks.json"
+bash "$SCRIPT_DIR/extract-moshi-hooks.sh" "$moshi_home/.cursor/hooks.json" "$GENERATED_ROOT/cursor/hooks.json"
+bash "$SCRIPT_DIR/extract-moshi-hooks.sh" "$moshi_home/.gemini/settings.json" "$GENERATED_ROOT/gemini/settings.json"
+bash "$SCRIPT_DIR/extract-moshi-hooks.sh" "$moshi_home/.grok/hooks/moshi-hooks.json" "$GENERATED_ROOT/grok/plugin/hooks/hooks.json"
 
 # Generated files must remain portable and must not capture a machine-local
-# home directory. Moshi quotes absolute binaries in hook commands and embeds
-# the resolved helper path in TypeScript adapters, so normalize the user-local
-# bin prefix before copying these files into Git.
+# binary path. Moshi quotes its own absolute path in hook commands and embeds
+# it in TypeScript adapters, so rewrite it to a bare PATH lookup before
+# copying these files into Git.
 for generated_file in \
   "$GENERATED_ROOT/omp/moshi-hooks.ts" \
   "$GENERATED_ROOT/pi/moshi-hooks.ts" \
@@ -104,8 +121,8 @@ for generated_file in \
   "$GENERATED_ROOT/gemini/settings.json" \
   "$GENERATED_ROOT/grok/plugin/hooks/hooks.json"; do
   sed \
-    -e "s|'${HOME}/.local/bin/\([^']*\)'|\1|g" \
-    -e "s|${HOME}/.local/bin/||g" \
+    -e "s|'${moshi_bin}'|moshi-hook|g" \
+    -e "s|${moshi_bin}|moshi-hook|g" \
     "$generated_file" >"$generated_file.tmp"
   mv -f "$generated_file.tmp" "$generated_file"
 done
