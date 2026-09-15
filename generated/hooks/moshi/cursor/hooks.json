@@ -10,12 +10,17 @@
         "command": "moshi-hook cursor-hook"
       }
     ],
-    "beforeMCPExecution": [
+    "afterMCPExecution": [
       {
         "command": "moshi-hook cursor-hook"
       }
     ],
-    "beforeReadFile": [
+    "afterShellExecution": [
+      {
+        "command": "moshi-hook cursor-hook"
+      }
+    ],
+    "beforeMCPExecution": [
       {
         "command": "moshi-hook cursor-hook"
       }
@@ -26,6 +31,16 @@
       }
     ],
     "beforeSubmitPrompt": [
+      {
+        "command": "moshi-hook cursor-hook"
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": "moshi-hook cursor-hook"
+      }
+    ],
+    "sessionStart": [
       {
         "command": "moshi-hook cursor-hook"
       }

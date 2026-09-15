@@ -1,10 +1,10 @@
 {
   "hooks": {
-    "PermissionRequest": [
+    "PermissionDenied": [
       {
         "hooks": [
           {
-            "async": false,
+            "async": true,
             "command": "moshi-hook grok-hook",
             "type": "command"
           }
@@ -19,18 +19,7 @@
             "command": "moshi-hook grok-hook",
             "type": "command"
           }
-        ],
-        "matcher": "AskUserQuestion"
-      },
-      {
-        "hooks": [
-          {
-            "async": true,
-            "command": "moshi-hook grok-hook",
-            "type": "command"
-          }
-        ],
-        "matcher": "ExitPlanMode"
+        ]
       }
     ],
     "PreToolUse": [
@@ -41,18 +30,7 @@
             "command": "moshi-hook grok-hook",
             "type": "command"
           }
-        ],
-        "matcher": "AskUserQuestion"
-      },
-      {
-        "hooks": [
-          {
-            "async": true,
-            "command": "moshi-hook grok-hook",
-            "type": "command"
-          }
-        ],
-        "matcher": "ExitPlanMode"
+        ]
       }
     ],
     "SessionEnd": [
