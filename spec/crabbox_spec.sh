@@ -17,7 +17,7 @@ HEALTH_CHECK="$PWD/home-manager/services/crabbox/health-check.sh"
 
 It 'packages the CLI independently in the shared overlay'
 When run bash -c "sed -n '/crabbox = prev.stdenvNoCC.mkDerivation rec {/,/meta.mainProgram = \"crabbox\"/p' '$OVERLAY'"
-The output should include 'version = "0.55.0"'
+The output should include 'version = "0.59.0"'
 The output should include 'crabbox_${version}'
 The output should include 'crabbox-apple-vm-helper'
 The output should include 'meta.mainProgram = "crabbox"'
@@ -41,6 +41,7 @@ End
 It 'builds the Node coordinator through ulb'
 When run bash -c "cat '$LOCAL_BINARIES'; cat '$ULB'"
 The output should include 'openclaw/crabbox/worker/dist-node/crabbox-coordinator#node-build'
+The output should not include 'openclaw/crabbox/crabbox'
 The output should include 'npm ci 2>&1 && npm run build:node'
 The output should include 'dist-node/server.mjs'
 End
