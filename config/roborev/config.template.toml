@@ -1,6 +1,6 @@
-# Keep review concurrency bounded on every host. Kyber's orchestration slice
-# provides an additional host-level containment boundary.
-max_workers = 4
+# Keep review concurrency bounded on every host. A panel fans out child
+# agents, so two daemon workers are the safe default for a developer machine.
+max_workers = 2
 
 # Upstream falls back to codex when no workflow agent is set; codex is not
 # usable here, so pin the default to opencode.

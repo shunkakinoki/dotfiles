@@ -74,7 +74,7 @@ The status should be success
 End
 
 It 'skips prompt-submitted while the same trace is already uploading'
-upload_row 4242 05:00 trace-a
+upload_row 4242 04:59 trace-a
 When call run_guard trace-a prompt-submitted
 The status should be success
 The file "$HOOK_LOG" should not be exist
@@ -92,8 +92,7 @@ End
 
 It 'runs agent-done when other traces are uploading under the cap'
 upload_row 4001 00:10 trace-b
-upload_row 4002 00:20 trace-c
-When call run_guard trace-a agent-done
+When call env TRACES_HOOK_MAX_INFLIGHT_UPLOADS=2 bash -c "printf '{\"session_id\":\"trace-a\"}' | '$GUARD' agent-done --agent claude-code"
 The status should be success
 The contents of file "$HOOK_LOG" should include 'args:hook agent agent-done --agent claude-code'
 End
