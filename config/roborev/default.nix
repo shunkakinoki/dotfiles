@@ -10,7 +10,9 @@ let
     let
       vars = {
         ciEnabled = if inputs.host.isMatic then "true" else "false";
-        maxWorkers = if inputs.host.isKyber then "1" else "4";
+        # Keep every host to two review workers. A panel fans out child agents,
+        # so a higher daemon count multiplies CPU, memory, and git processes.
+        maxWorkers = "2";
         sed = "${pkgs.gnused}/bin/sed";
         template = "${./config.template.toml}";
       };

@@ -96,9 +96,9 @@ trace store, so a busy lane accumulates dozens of uploads of one trace that
 contend with each other for hours. The guard reads the hook payload, lists the
 current user's in-flight hook uploads, and then:
 
-- terminates uploads older than `TRACES_HOOK_STALE_UPLOAD_SECONDS` (900);
+- terminates uploads older than `TRACES_HOOK_STALE_UPLOAD_SECONDS` (300);
 - skips `prompt-submitted` and `agent-done` while the same trace is already
-  uploading or `TRACES_HOOK_MAX_INFLIGHT_UPLOADS` (4) uploads are in flight,
+uploading or `TRACES_HOOK_MAX_INFLIGHT_UPLOADS` (1) upload is in flight,
   because the running upload or the final `session-end` upload carries the
   trace anyway;
 - for `session-end`, terminates the in-flight upload of the same trace and

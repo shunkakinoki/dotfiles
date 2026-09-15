@@ -11,6 +11,7 @@
 # lets at most one upload per trace and a small number per user run at once,
 # terminates uploads that have clearly wedged, and otherwise defers to the
 # real hook. It always exits 0: telemetry must never block an agent.
+# shellcheck disable=SC2329
 set -u
 
 # Kyber's managed queue owns the hook and its detached uploader together.
@@ -27,8 +28,10 @@ shift || true
 traces_bin="${TRACES_BIN:-traces}"
 command -v "$traces_bin" >/dev/null 2>&1 || exit 0
 
-MAX_INFLIGHT_UPLOADS="${TRACES_HOOK_MAX_INFLIGHT_UPLOADS:-4}"
-STALE_UPLOAD_SECONDS="${TRACES_HOOK_STALE_UPLOAD_SECONDS:-900}"
+# A single upload is enough to preserve telemetry and prevents detached
+# uploaders from competing for the trace-store lock on developer machines.
+MAX_INFLIGHT_UPLOADS="${TRACES_HOOK_MAX_INFLIGHT_UPLOADS:-1}"
+STALE_UPLOAD_SECONDS="${TRACES_HOOK_STALE_UPLOAD_SECONDS:-300}"
 
 payload="$(cat)"
 
@@ -45,6 +48,63 @@ esac
 trace_id=""
 if command -v jq >/dev/null 2>&1; then
   trace_id="$(printf '%s' "$payload" | jq -r '.session_id // .sessionId // empty' 2>/dev/null || true)"
+fi
+
+# Hook commands are async and can enter this wrapper concurrently. Without an
+# atomic admission lock, every invocation can observe the same empty process
+# list before any detached `traces share` is visible, defeating the cap.
+STATE_DIR="${TRACES_HOOK_STATE_DIR:-${HOME}/.local/state/traces-agent-hook}"
+LOCK_DIR="$STATE_DIR/admission.lock"
+LOCK_HELD=0
+umask 077
+
+cleanup_lock() {
+  if [ "$LOCK_HELD" -eq 1 ]; then
+    rm -f "$LOCK_DIR/pid"
+    rmdir "$LOCK_DIR" 2>/dev/null || true
+  fi
+}
+trap cleanup_lock EXIT HUP INT TERM
+
+acquire_lock() {
+  mkdir -p "$STATE_DIR" 2>/dev/null || return 1
+  if mkdir "$LOCK_DIR" 2>/dev/null; then
+    printf '%s\n' "$$" >"$LOCK_DIR/pid"
+    LOCK_HELD=1
+    return 0
+  fi
+
+  # Recover only a lock whose owner has definitely exited. The directory
+  # creation remains the atomic operation that admits exactly one hook.
+  owner="$(cat "$LOCK_DIR/pid" 2>/dev/null || true)"
+  if [ -n "$owner" ] && ! kill -0 "$owner" 2>/dev/null; then
+    rm -f "$LOCK_DIR/pid"
+    rmdir "$LOCK_DIR" 2>/dev/null || true
+    if mkdir "$LOCK_DIR" 2>/dev/null; then
+      printf '%s\n' "$$" >"$LOCK_DIR/pid"
+      LOCK_HELD=1
+      return 0
+    fi
+  fi
+  return 1
+}
+
+if [ "$event" = "session-end" ]; then
+  # Give an in-flight lifecycle hook a short, bounded chance to finish so the
+  # final event can still be recorded without allowing indefinite buildup.
+  acquired=0
+  attempt=0
+  while [ "$attempt" -lt 20 ]; do
+    if acquire_lock; then
+      acquired=1
+      break
+    fi
+    attempt=$((attempt + 1))
+    sleep 0.1
+  done
+  [ "$acquired" -eq 1 ] || exit 0
+else
+  acquire_lock || exit 0
 fi
 
 # One line per hook-triggered upload owned by this user: pid, elapsed seconds,

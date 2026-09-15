@@ -29,6 +29,12 @@ lib.mkIf enabled {
       ];
       KeepAlive = true;
       RunAtLoad = true;
+      # Avoid launchd hot-looping a failed daemon and deprioritize review work
+      # relative to interactive shells and editor processes.
+      ThrottleInterval = 30;
+      ProcessType = "Background";
+      LowPriorityIO = true;
+      Nice = 10;
       EnvironmentVariables = {
         HOME = homeDir;
         ROBOREV_DATA_DIR = dataDir;
@@ -72,15 +78,15 @@ lib.mkIf enabled {
       TimeoutStopSec = 30;
       TasksMax = 2048;
       CPUQuota = "1600%";
-      # One review worker runs at a time, including queued panel members.
-      # Bound its child tools and daemon housekeeping together; small random
+      # At most two review workers run at a time, including queued panel members.
+      # Bound their child tools and daemon housekeeping together; small random
       # reads and writes need IOPS limits as well as bandwidth limits.
       IOAccounting = true;
       IOReadBandwidthMax = "/ 20M";
       IOWriteBandwidthMax = "/ 10M";
       IOReadIOPSMax = "/ 200";
       IOWriteIOPSMax = "/ 100";
-      # Kyber serializes review workers; desktop hosts retain four workers.
+      # The config template caps review workers at two on every host.
       # MemoryHigh throttles via reclaim before MemoryMax kills the cgroup.
       MemoryHigh = "24G";
       MemoryMax = "32G";

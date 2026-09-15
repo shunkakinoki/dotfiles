@@ -57,9 +57,9 @@ When run bash -c "grep 'ciEnabled = if inputs.host.isMatic then \"true\" else \"
 The output should include 'ciEnabled = if inputs.host.isMatic then "true" else "false";'
 End
 
-It 'serializes Kyber review workers'
-When run bash -c "grep 'maxWorkers = if inputs.host.isKyber then \"1\" else \"4\";' '$PWD/config/roborev/default.nix'"
-The output should include 'maxWorkers = if inputs.host.isKyber then "1" else "4";'
+It 'caps review workers on every host'
+When run bash -c "grep 'maxWorkers = \"2\";' '$PWD/config/roborev/default.nix'"
+The output should include 'maxWorkers = "2";'
 End
 
 It 'runs roborev daemon run'
@@ -81,6 +81,14 @@ End
 It 'includes Bun-installed agents in the launchd PATH'
 When run grep -F 'PATH = "${homeDir}/.local/bin:${homeDir}/.bun/bin:' "$PWD/home-manager/services/roborev/default.nix"
 The output should include '${homeDir}/.bun/bin'
+End
+
+It 'deprioritizes and throttles the Darwin daemon'
+When run grep -E 'ThrottleInterval = 30|ProcessType = "Background"|LowPriorityIO = true|Nice = 10' "$PWD/home-manager/services/roborev/default.nix"
+The output should include 'ThrottleInterval = 30'
+The output should include 'ProcessType = "Background"'
+The output should include 'LowPriorityIO = true'
+The output should include 'Nice = 10'
 End
 
 It 'includes Bun-installed agents in the systemd PATH'
