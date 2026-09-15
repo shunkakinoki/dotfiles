@@ -263,20 +263,20 @@
 
     crabbox = prev.stdenvNoCC.mkDerivation rec {
       pname = "crabbox";
-      version = "0.55.0";
+      version = "0.59.0";
       src = prev.fetchurl {
         url = "https://github.com/openclaw/crabbox/releases/download/v${version}/crabbox_${version}_${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}.tar.gz";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "883e9201c4b508077f092ea3ded99092ea34068e19e9d4dd4812cf50d2134e98"
+            "c561e943d361fcce81e3b2e66f33dc39d9c154fcae942130cf05b384e8ed7d9b"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "87711d0002f0a4d034f8a651052ea4244fdcc401aed5fd69759d966953d7c4fa"
+            "54342dd94f8708be1662957c8712618ae136a6a2a61a6da686a159c88104e32f"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "5c7c8faf98eb91d64b86b22f859735ae13777c8bdf759e0bd51f9456df5d018e"
+            "abbcce01d49046a890ecb66ef30d5359f538912e06ad3deccb1d6e0fdf2536a3"
           else
-            "607d62adda808be29bb9341071b5e7a895f4f1f45a7905d763870b91f56d3b57";
+            "2cf3d832b72e78dd36ebbfd44f68b3a2a7d1518ab12aadf32adbec0aaa0363b8";
       };
       sourceRoot = ".";
       dontConfigure = true;

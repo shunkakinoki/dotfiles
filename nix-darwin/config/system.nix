@@ -216,7 +216,9 @@
     activationScripts.extraActivation.text = builtins.toString (
       if !isRunner && (builtins.getEnv "NIX_OFFLINE" != "1") then
         ''
-          softwareupdate --all --install;
+          if ! softwareupdate --all --install; then
+            echo "⚠️ macOS software update failed; continuing activation" >&2
+          fi
         ''
       else
         ''
