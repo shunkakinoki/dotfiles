@@ -19,7 +19,7 @@ End
 Describe 'node version management'
 It 'pins an OpenClaw-compatible default Node version'
 When run cat "$PWD/home-manager/programs/fnm/default.nix"
-The output should include '"24.15.0"'
+The output should include '"24.21.0"'
 The output should include '"22.21.1"'
 The output should include '"20.19.0"'
 End
