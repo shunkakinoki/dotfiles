@@ -1,4 +1,5 @@
 [
+  ./agency-agents
   ./bin-shells
   ./cargo-globals
   ./dotenv
