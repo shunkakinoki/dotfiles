@@ -40,44 +40,22 @@ PYTHON_VERSION=${PYTHON_VERSION:-3.13}
 
 DEPS=$(tomlq -r '.["dependency-groups"].tools[]' "$PYPROJECT" 2>/dev/null)
 PRERELEASE_PKGS=$(tomlq -r '.tool["uv-globals"].prerelease[]?' "$PYPROJECT" 2>/dev/null || true)
+# name=url lines from [tool.uv-globals.git-tools] (git-only; not PyPI)
+GIT_TOOLS=$(tomlq -r '.tool["uv-globals"]["git-tools"] | to_entries[]? | "\(.key)=\(.value)"' "$PYPROJECT" 2>/dev/null || true)
 
-if [ -z "$DEPS" ]; then
+if [ -z "$DEPS" ] && [ -z "$GIT_TOOLS" ]; then
   echo "No dependencies found in pyproject.toml"
   exit 0
 fi
 
 INSTALLED=$(uv tool list 2>/dev/null || true)
 
-echo "$DEPS" | while read -r pkg; do
-  if [ -z "$pkg" ]; then
-    continue
-  fi
-  name=${pkg%%[><=!]*}
-  # Extract minimum version from spec (e.g. ">=0.86.2" -> "0.86.2")
-  req_version=$(echo "$pkg" | sed -n 's/.*>=\([0-9][0-9.]*\).*/\1/p')
-  installed_version=$(echo "$INSTALLED" | sed -n "s/^${name} v\([0-9][0-9.]*\).*/\1/p")
-
-  extra_flags=""
-  if echo "$PRERELEASE_PKGS" | grep -qx "$name"; then
-    extra_flags="--prerelease=allow"
-  fi
-
-  if [ -n "$installed_version" ] && [ -n "$req_version" ]; then
-    if printf '%s\n%s\n' "$req_version" "$installed_version" | sort -V | head -n1 | grep -qx "$req_version"; then
-      echo "$name $installed_version already installed, skipping"
-    else
-      echo "Installing $pkg..."
-      uv tool install "$pkg" --python "$PYTHON_VERSION" --force $extra_flags 2>/dev/null || echo "Failed to install $pkg, skipping..."
-    fi
-  else
-    echo "Installing $pkg..."
-    uv tool install "$pkg" --python "$PYTHON_VERSION" --force $extra_flags 2>/dev/null || echo "Failed to install $pkg, skipping..."
-  fi
-
-  # Create a wrapper so `python3-<tool> -m <tool>` uses the tool's venv python.
-  # A symlink won't work because Python resolves the real binary path and loses
-  # the venv's pyvenv.cfg, so site-packages aren't found.
-  tool_python="${HOME}/.local/share/uv/tools/${name}/bin/python3"
+# Create a wrapper so `python3-<tool> -m <tool>` uses the tool's venv python.
+# A symlink won't work because Python resolves the real binary path and loses
+# the venv's pyvenv.cfg, so site-packages aren't found.
+write_tool_python_wrapper() {
+  local name="$1"
+  local tool_python="${HOME}/.local/share/uv/tools/${name}/bin/python3"
   if [ -f "$tool_python" ]; then
     rm -f "${HOME}/.local/bin/python3-${name}"
     cat >"${HOME}/.local/bin/python3-${name}" <<WRAPPER
@@ -86,11 +64,66 @@ exec "${HOME}/.local/share/uv/tools/${name}/bin/python3" "\$@"
 WRAPPER
     chmod +x "${HOME}/.local/bin/python3-${name}"
   fi
-done
+}
+
+if [ -n "$DEPS" ]; then
+  echo "$DEPS" | while read -r pkg; do
+    if [ -z "$pkg" ]; then
+      continue
+    fi
+    name=${pkg%%[><=!]*}
+    # Extract minimum version from spec (e.g. ">=0.86.2" -> "0.86.2")
+    req_version=$(echo "$pkg" | sed -n 's/.*>=\([0-9][0-9.]*\).*/\1/p')
+    installed_version=$(echo "$INSTALLED" | sed -n "s/^${name} v\([0-9][0-9.]*\).*/\1/p")
+
+    extra_flags=""
+    if echo "$PRERELEASE_PKGS" | grep -qx "$name"; then
+      extra_flags="--prerelease=allow"
+    fi
+
+    if [ -n "$installed_version" ] && [ -n "$req_version" ]; then
+      if printf '%s\n%s\n' "$req_version" "$installed_version" | sort -V | head -n1 | grep -qx "$req_version"; then
+        echo "$name $installed_version already installed, skipping"
+      else
+        echo "Installing $pkg..."
+        uv tool install "$pkg" --python "$PYTHON_VERSION" --force $extra_flags 2>/dev/null || echo "Failed to install $pkg, skipping..."
+      fi
+    else
+      echo "Installing $pkg..."
+      uv tool install "$pkg" --python "$PYTHON_VERSION" --force $extra_flags 2>/dev/null || echo "Failed to install $pkg, skipping..."
+    fi
+
+    write_tool_python_wrapper "$name"
+  done
+fi
+
+# Git-sourced tools (e.g. Agent-Reach) — install from git URL, skip if already present
+if [ -n "$GIT_TOOLS" ]; then
+  echo "$GIT_TOOLS" | while IFS= read -r entry; do
+    if [ -z "$entry" ]; then
+      continue
+    fi
+    name="${entry%%=*}"
+    url="${entry#*=}"
+    if [ -z "$name" ] || [ -z "$url" ] || [ "$name" = "$entry" ]; then
+      echo "Skipping malformed git-tools entry: $entry"
+      continue
+    fi
+
+    if echo "$INSTALLED" | grep -qE "^${name}( |$)"; then
+      echo "$name already installed from git, skipping"
+    else
+      echo "Installing $name from $url..."
+      uv tool install "$url" --python "$PYTHON_VERSION" --force 2>/dev/null || echo "Failed to install $name from git, skipping..."
+    fi
+
+    write_tool_python_wrapper "$name"
+  done
+fi
 
 # Write a dispatcher so `python3 -m <tool>` uses that tool's isolated Python
 rm -f "${HOME}/.local/bin/python3"
-cat >"${HOME}/.local/bin/python3" <<'EOF'
+cat >"${HOME}/.local/bin/python3" <<'DISPATCHER'
 #!/usr/bin/env bash
 prev=""
 for arg in "$@"; do
@@ -113,7 +146,7 @@ for d in "${dirs[@]}"; do
 done
 echo "python3: no system python3 found in PATH" >&2
 exit 127
-EOF
+DISPATCHER
 chmod +x "${HOME}/.local/bin/python3"
 
 echo "uv globals installation complete"
