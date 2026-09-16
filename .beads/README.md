@@ -18,5 +18,5 @@ empty queue. There is no offline writable fallback or push/pull publication.
 
 Preserve old replica directories as recovery data. Activation requires an
 ordered snapshot, reconciliation, cutover, verification, and rollback operation;
-see the Beads section in the repository README. JSONL exports are not complete
-backups of leases, journals, or database history.
+see [BEADS.md](../BEADS.md). JSONL exports are not complete backups of leases,
+journals, or database history.
