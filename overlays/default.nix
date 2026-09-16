@@ -156,14 +156,14 @@
           });
         }
         // (
-          # t3code 0.0.36 pins one pnpm deps hash, but fetchPnpmDeps resolves
+          # t3code 0.0.40 pins one pnpm deps hash, but fetchPnpmDeps resolves
           # platform-specific optional packages, so it only reproduces on the
           # system upstream generated it from. Every x86_64-linux build fails on
           # the fixed-output mismatch; other systems keep the upstream hash.
           # https://github.com/numtide/llm-agents.nix
           let
             pnpmDepsHashes = {
-              x86_64-linux = "sha256-y/sJIluwbn65APmJ2p07FK1ScXpetCloTHtQzZMchDU=";
+              x86_64-linux = "sha256-+UsoURSM4VP+CgF1fWROBEB85EuH+iJJM/xDPFigCKk=";
             };
             hash = pnpmDepsHashes.${prev.stdenv.hostPlatform.system} or null;
             t3code = prev.llm-agents.t3code.overrideAttrs (
@@ -240,20 +240,20 @@
 
     blacksmith-testbox-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "blacksmith-testbox-cli";
-      version = "0.4.58";
+      version = "0.4.59";
       src = prev.fetchurl {
         url = "https://clireleases.blacksmith.sh/cli/v${version}/${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }/${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}/blacksmith";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "0b54a4398e9b35344d8fb32891703d8a393343f5001914d7482f93d068c76822"
+            "9dce4399134eff853e7ca778ae894fec9596ab9b1bb621d1bd8ea26e6413c124"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "2bf3e7246414e2fd113d3214577bb8951015aeda57579d1f36ec75dc5c05c716"
+            "292322811fccaadb429302c755688ce6df333f75e239732cf7b33adcf608667e"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "2384984fa9cdb943e9352b4ff6a4adf9e9ac61c194c255887413357fada27d88"
+            "fac5ffb57c838b41c887b136ad4190028bffafa71b82d9d7e28ecf50418d5bfd"
           else
-            "6dabf51a4e168d7ea1d9379f09fb8e08dc57a5f8c000932b1f9d507c44bc5450";
+            "5fcb2e7c748f24edeb5f4781c86eb54694703ccc9dbc9c236062296c04cba9f8";
       };
       dontUnpack = true;
       installPhase = ''
@@ -264,20 +264,20 @@
 
     crabbox = prev.stdenvNoCC.mkDerivation rec {
       pname = "crabbox";
-      version = "0.59.0";
+      version = "0.60.0";
       src = prev.fetchurl {
         url = "https://github.com/openclaw/crabbox/releases/download/v${version}/crabbox_${version}_${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}.tar.gz";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "c561e943d361fcce81e3b2e66f33dc39d9c154fcae942130cf05b384e8ed7d9b"
+            "778bf5c6569222390dbd8ae11da6f514cb579b5aea341f2d7acaba0644280e09"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "54342dd94f8708be1662957c8712618ae136a6a2a61a6da686a159c88104e32f"
+            "74427832987727ebc75b002d3af262065ce7a356c0f7e2be027d7ee8021b932c"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "abbcce01d49046a890ecb66ef30d5359f538912e06ad3deccb1d6e0fdf2536a3"
+            "2f69e9fb79843a6e5e933134bdf4aca85a66e2d97fdb1dde47a297d4f3f54e96"
           else
-            "2cf3d832b72e78dd36ebbfd44f68b3a2a7d1518ab12aadf32adbec0aaa0363b8";
+            "05b474ed2fa0a14f2cff6718aa8c4ef9abad326ddf2dc3457a0fe26d1416f5f9";
       };
       sourceRoot = ".";
       dontConfigure = true;
@@ -295,17 +295,17 @@
 
     devin = prev.stdenvNoCC.mkDerivation rec {
       pname = "devin";
-      version = "3000.10.21";
+      version = "3000.10.27";
       src = prev.fetchurl {
         url = "https://static.devin.ai/cli/${version}/devin-${version}-${
           if prev.stdenv.hostPlatform.isAarch64 then "aarch64" else "x86_64"
         }-${if prev.stdenv.hostPlatform.isDarwin then "apple-darwin" else "unknown-linux"}.tar.gz";
         sha256 =
           {
-            "aarch64-darwin" = "c0b97f8197bf3ce895ff14aa19257c511154b49a0a195bba4962acb5e475c68e";
-            "x86_64-darwin" = "4725d6b0dbbf6f71d833b5489469dc8b5c4a4f929926f94d500952a4cb7bbad8";
-            "aarch64-linux" = "a63124ed2f8406a5d44a162fa2eb05b9c0f218a6b131e2ca1335d4a335c70a6c";
-            "x86_64-linux" = "7cac6f5739ba3a3e5542f3b7fa07ed902d6dfb96ca22e4c63ae84c03bb7db47c";
+            "aarch64-darwin" = "d25e50086b3f84286b6ca1a69f890331436ef9b757c937fa18f716fbef384edd";
+            "x86_64-darwin" = "74bdc4cd0e99c52db6feb1aa947e235a50b957f398ae356b7f34ca372247e3e3";
+            "aarch64-linux" = "c59c813723a91553041cd284ed68a655eef5c49ed046cbdd86905101832e160c";
+            "x86_64-linux" = "f6516dc32b8c2d6739931e6727759bd33e731b25d3806c2f37b8fb395c205099";
           }
           .${prev.stdenv.hostPlatform.system};
       };
@@ -322,20 +322,20 @@
 
     moshi-hook = prev.stdenv.mkDerivation rec {
       pname = "moshi-hook";
-      version = "0.3.21";
+      version = "0.3.24";
       src = prev.fetchurl {
         url = "https://cdn.getmoshi.app/hook/v${version}/moshi-hook_${
           if prev.stdenv.hostPlatform.isDarwin then "Darwin" else "Linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x86_64"}.tar.gz";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "038431d47325ab91e455491873f074df8b804e877e742e22e6b54164dd0dd926"
+            "71a70e5260b7ff13e74fb9ad57a523f25b80294fa9be2bac14393160e963e74b"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "e4dec1da4692e7678df70629c27bdda4e620f379ac0f73c6060c0f35d62f8520"
+            "25b91132b8b5ac8e18da889806ab86f6b83965236d49a97c95e54f4bc4d7fffb"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "f70b3ee65a159e301c04dbf9528e0a484fd60d54daa2a203678a22a50f0e61a3"
+            "82f0fcfd28b00b005115cd27195b518d89a21126af0aee66f03ac4d892ed530c"
           else
-            "5a2883944e4e13584e4e5c6269e9d1b248a3f8e4437ded9d522dc3daa2c85ba6";
+            "59c37170b93d9648b4e903139187dfdc9782d5b0911206d35c415823027bcebb";
       };
       sourceRoot = ".";
       dontConfigure = true;
