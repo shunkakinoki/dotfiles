@@ -368,7 +368,9 @@ case "${1:-} ${2:-}" in
     printf '%s\n' closed >"$ISSUE_STATUS_FILE"
     ;;
   "list --all")
-    if [ -n "${FAKE_LIST_JSON:-}" ]; then
+    if [ -n "${FAKE_LIST_JSON_AFTER_PULL:-}" ] && grep -F -- '--pull' "$COMMAND_LOG" >/dev/null; then
+      printf '%s\n' "$FAKE_LIST_JSON_AFTER_PULL"
+    elif [ -n "${FAKE_LIST_JSON:-}" ]; then
       printf '%s\n' "$FAKE_LIST_JSON"
     else
       printf '%s\n' '[{"id":"df-test","status":"open","updated_at":"2099-01-01T00:00:00Z"}]'
@@ -641,6 +643,27 @@ The output should include 'terminal Beads batch 1/1'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-11,df-12 --no-wait'
 The file "$CHECKPOINT_FILE" should be exist
 The file "$progress_file" should not be exist
+End
+
+It 'restores assignees the pull overwrote on locally changed active Beads'
+before='[{"id":"df-released","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/released"},{"id":"df-claimed","status":"in_progress","assignee":"worker@example.com","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"},{"id":"df-stale","status":"open","assignee":"","updated_at":"2000-01-01T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-3/stale"}]'
+after='[{"id":"df-released","status":"open","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/released"},{"id":"df-claimed","status":"in_progress","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"},{"id":"df-stale","status":"open","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-3/stale"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Restoring locally changed assignees after pull'
+The contents of file "$COMMAND_LOG" should include 'unclaim df-released --force'
+The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee worker@example.com --force'
+The contents of file "$COMMAND_LOG" should not include 'df-stale --force'
+The contents of file "$COMMAND_LOG" should not include 'unclaim df-stale'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'leaves assignees alone when the pull agrees with local state'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should not include 'Restoring locally changed assignees after pull'
+The contents of file "$COMMAND_LOG" should not include 'unclaim'
+The file "$CHECKPOINT_FILE" should be exist
 End
 
 It 'handles a deferred push progress file larger than 128 KiB'

@@ -671,6 +671,37 @@ else
 fi
 
 all_issues="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0 --skip-labels)"
+
+# The cursor-free pull skips Beads' local-change guard and the push mapper
+# never sends assignees, so every run re-applied Linear's assignee over a
+# local claim or release. Active Beads changed locally in this window keep
+# their local assignee, matching the active delta push below.
+local_assignee_lines="$(printf '%s\n%s\n' "$issues_before_pull" "$all_issues" | @jq@/bin/jq -r -s --arg previous_sync "$previous_sync" '
+  def issues: if type == "object" and has("issues") then .issues else . end;
+  (.[0] | issues
+    | map(
+        select(.status != "closed" and ($previous_sync == "" or .updated_at >= $previous_sync))
+        | {key: .id, value: (.assignee // "")}
+      )
+    | from_entries) as $local
+  | .[1] | issues | .[]
+  | select($local[.id] != null and $local[.id] != (.assignee // ""))
+  | "\(.id)\t\($local[.id])"
+')"
+if [ -n "$local_assignee_lines" ]; then
+  log "Restoring locally changed assignees after pull"
+  restore_release_ids=()
+  while IFS=$'\t' read -r restore_id restore_assignee; do
+    if [ -z "$restore_assignee" ]; then
+      restore_release_ids+=("$restore_id")
+    else
+      "$bd_cli" -C "$repo_dir" update "$restore_id" --assignee "$restore_assignee" --force >/dev/null
+    fi
+  done <<<"$local_assignee_lines"
+  if [ "${#restore_release_ids[@]}" -gt 0 ]; then
+    "$bd_cli" -C "$repo_dir" unclaim "${restore_release_ids[@]}" --force >/dev/null
+  fi
+fi
 changed_active_ids="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" '
   (if type == "object" and has("issues") then .issues else . end)
   | [
