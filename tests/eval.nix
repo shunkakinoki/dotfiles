@@ -66,6 +66,11 @@ let
       assert !(lib.elem "herdr" (map (brew: brew.name) galactica.config.homebrew.brews));
       assert !(lib.elem "crabbox" (map (brew: brew.name) galactica.config.homebrew.brews));
       assert !(lib.elem "crabbox" (map (cask: cask.name) galactica.config.homebrew.casks));
+      # Homebrew activation runs with upgrade+autoUpdate, so a brew-managed opencode
+      # silently jumps to whatever upstream ships; 1.18.30 crashed on every prompt.
+      # Nix keeps the version pinned in flake.lock and revertable.
+      assert lib.elem "opencode" packageNames;
+      assert !(lib.elem "opencode" (map (brew: brew.name) galactica.config.homebrew.brews));
       assert lib.hasInfix "--accept-dns=true" activation;
       assert lib.hasInfix "--accept-routes=true" activation;
       assert lib.hasInfix "--ssh=false" activation;

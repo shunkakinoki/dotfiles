@@ -86,7 +86,6 @@
       "moshi-hook"
       "mlx-lm"
       "ollama"
-      "opencode"
       "pandoc"
       "planetscale/tap/pscale"
       "pnpm"
