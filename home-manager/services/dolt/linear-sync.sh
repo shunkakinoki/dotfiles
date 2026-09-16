@@ -427,6 +427,8 @@ ensure_config linear.state_map.canceled closed
 ensure_config linear.state_map.duplicate closed
 ensure_config linear.outbound_state_map.open Todo
 ensure_config linear.outbound_state_map.in_progress "In Progress"
+# The Linear workflow has no blocked state; a blocked Bead is unstarted work.
+ensure_config linear.outbound_state_map.blocked Todo
 ensure_config linear.outbound_state_map.closed Done
 "$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): configure Linear sync" >/dev/null 2>&1
 
