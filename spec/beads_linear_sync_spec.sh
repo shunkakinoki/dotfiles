@@ -385,6 +385,12 @@ case "${1:-} ${2:-}" in
   close\ *)
     printf '%s\n' closed >"$ISSUE_STATUS_FILE"
     ;;
+  unclaim\ *)
+    if [ "${FAKE_UNCLAIM_REFUSED:-}" = "$2" ]; then
+      echo "Error unclaiming $2: issue $2 is not assigned" >&2
+      exit 1
+    fi
+    ;;
   "list --all")
     if [ -n "${FAKE_LIST_JSON_AFTER_PULL:-}" ] && grep -F -- '--pull' "$COMMAND_LOG" >/dev/null; then
       printf '%s\n' "$FAKE_LIST_JSON_AFTER_PULL"
@@ -709,6 +715,18 @@ The contents of file "$COMMAND_LOG" should include 'unclaim df-released --force'
 The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee worker@example.com --force'
 The contents of file "$COMMAND_LOG" should not include 'df-stale --force'
 The contents of file "$COMMAND_LOG" should not include 'unclaim df-stale'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'keeps the cycle when Beads refuses one assignee restore'
+before='[{"id":"df-released","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/released"},{"id":"df-gone","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-4/gone"}]'
+after='[{"id":"df-released","status":"open","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/released"},{"id":"df-gone","status":"open","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-4/gone"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_UNCLAIM_REFUSED=df-gone FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Skipped 1 local assignee restore(s) that Beads refused'
+The output should not include 'is not assigned'
+The contents of file "$COMMAND_LOG" should include 'unclaim df-released --force'
+The contents of file "$COMMAND_LOG" should include 'unclaim df-gone --force'
 The file "$CHECKPOINT_FILE" should be exist
 End
 
