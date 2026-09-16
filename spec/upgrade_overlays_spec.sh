@@ -102,7 +102,7 @@ EOF
 { inputs }:
 [
   (_: prev: {
-    gh = prev.gh.overrideAttrs (_: {
+    gh = (prev.gh.override { buildGoModule = prev.buildGo127Module; }).overrideAttrs (_: {
       version = "2.98.0";
       src = prev.fetchFromGitHub {
         rev = "0000000000000000000000000000000000000000";
