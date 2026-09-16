@@ -104,7 +104,7 @@ The status should be success
 End
 
 It 'fails closed after ordinary Linear pull or push failures'
-When run bash -c "! grep -F 'continuing with outbound Beads reconciliation' '$SCRIPT' >/dev/null && ! grep -F 'continuing with local Beads state' '$SCRIPT' >/dev/null && grep -F 'log \"Linear pull failed with status \$status\"' '$SCRIPT' >/dev/null && grep -F 'log \"Linear push failed with status \$status\"' '$SCRIPT' >/dev/null"
+When run bash -c "! grep -F 'continuing with outbound Beads reconciliation' '$SCRIPT' >/dev/null && ! grep -F 'continuing with local Beads state' '$SCRIPT' >/dev/null && grep -F 'log \"Linear pull failed with status \$pull_status\"' '$SCRIPT' >/dev/null && grep -F 'log \"Linear push failed with status \$status\"' '$SCRIPT' >/dev/null"
 The status should be success
 End
 
@@ -656,6 +656,18 @@ The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee
 The contents of file "$COMMAND_LOG" should not include 'df-stale --force'
 The contents of file "$COMMAND_LOG" should not include 'unclaim df-stale'
 The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'restores local assignees before a rejected pull exits'
+before='[{"id":"df-released","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/released"}]'
+after='[{"id":"df-released","status":"open","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/released"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=partial-pull FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 65
+The output should include 'Restoring locally changed assignees after pull'
+The output should include 'Linear pull failed with status 65'
+The contents of file "$COMMAND_LOG" should include 'unclaim df-released --force'
+The contents of file "$DOLT_LOG" should include 'REPLACE INTO local_metadata'
+The file "$CHECKPOINT_FILE" should not be exist
 End
 
 It 'leaves assignees alone when the pull agrees with local state'

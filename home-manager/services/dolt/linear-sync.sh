@@ -653,29 +653,21 @@ run_dolt_sql "USE \`$linear_database\`; DELETE FROM local_metadata WHERE \`key\`
 # failure is deferred to the next scheduled run instead of making launchd
 # hot-loop a failed job.
 log "Pulling complete Linear state"
-if run_linear pull @coreutils@/bin/timeout 720 "$bd_cli" -C "$repo_dir" linear sync \
+pull_status=0
+run_linear pull @coreutils@/bin/timeout 720 "$bd_cli" -C "$repo_dir" linear sync \
   --pull \
   --state all \
   --relations \
-  --no-wait; then
-  :
-else
-  status=$?
-  restore_linear_last_sync
-  if [ "$status" -eq 75 ]; then
-    log "Linear pull deferred; the next 900-second run will retry"
-    exit 0
-  fi
-  log "Linear pull failed with status $status"
-  exit "$status"
-fi
+  --no-wait || pull_status=$?
 
 all_issues="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0 --skip-labels)"
 
 # The cursor-free pull skips Beads' local-change guard and the push mapper
 # never sends assignees, so every run re-applied Linear's assignee over a
 # local claim or release. Active Beads changed locally in this window keep
-# their local assignee, matching the active delta push below.
+# their local assignee, matching the active delta push below. Beads writes
+# pulled assignees before it reports the pull result, so this runs before a
+# deferred or rejected pull exits.
 local_assignee_lines="$(printf '%s\n%s\n' "$issues_before_pull" "$all_issues" | @jq@/bin/jq -r -s --arg previous_sync "$previous_sync" '
   def issues: if type == "object" and has("issues") then .issues else . end;
   (.[0] | issues
@@ -701,6 +693,16 @@ if [ -n "$local_assignee_lines" ]; then
   if [ "${#restore_release_ids[@]}" -gt 0 ]; then
     "$bd_cli" -C "$repo_dir" unclaim "${restore_release_ids[@]}" --force >/dev/null
   fi
+fi
+
+if [ "$pull_status" -ne 0 ]; then
+  restore_linear_last_sync
+  if [ "$pull_status" -eq 75 ]; then
+    log "Linear pull deferred; the next 900-second run will retry"
+    exit 0
+  fi
+  log "Linear pull failed with status $pull_status"
+  exit "$pull_status"
 fi
 changed_active_ids="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" '
   (if type == "object" and has("issues") then .issues else . end)
