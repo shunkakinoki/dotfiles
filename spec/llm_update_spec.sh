@@ -415,6 +415,11 @@ When run jq -c '.env | [.CLAUDE_CODE_SUBAGENT_MODEL, .ANTHROPIC_DEFAULT_OPUS_MOD
 The output should eq '["claude-opus-5","claude-opus-5","claude-sonnet-5","claude-sonnet-5"]'
 End
 
+It 'preserves the MemPalace chunk cap in the template and generated settings'
+When run bash -c "for file in config/claude/settings.tpl.json config/claude/settings.json; do jq -e '.env.MEMPALACE_MAX_CHUNKS_PER_FILE == \"300\"' \"\$file\" >/dev/null || exit 1; done"
+The status should be success
+End
+
 It 'keeps model IDs out of the Moshi hook fragment'
 When run bash -c "! grep -Eq 'ANTHROPIC_DEFAULT_|CLAUDE_CODE_SUBAGENT_MODEL' generated/hooks/moshi/claude/settings.json"
 The status should be success
