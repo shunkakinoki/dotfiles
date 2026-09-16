@@ -155,16 +155,22 @@ validate_sri_checksum() {
 
 github_cli_vendor_hash() {
   local version="$1" rev="$2" source_hash="$3"
-  local expression output
+  local expression output hash
 
   if [ -n "${GH_VENDOR_HASH:-}" ]; then
     printf '%s\n' "$GH_VENDOR_HASH"
     return 0
   fi
 
-  expression="let flake = builtins.getFlake (toString $REPO_ROOT); pkgs = flake.inputs.nixpkgs.legacyPackages.x86_64-linux; in pkgs.gh.overrideAttrs (_: { version = \"$version\"; src = pkgs.fetchFromGitHub { owner = \"cli\"; repo = \"cli\"; rev = \"$rev\"; hash = \"$source_hash\"; }; vendorHash = \"sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\"; })"
+  # The overlay builds gh with a newer Go than the nixpkgs default, so the probe
+  # has to use the same toolchain or it resolves a different module set.
+  expression="let flake = builtins.getFlake (toString $REPO_ROOT); pkgs = flake.inputs.nixpkgs.legacyPackages.\${builtins.currentSystem}; in (pkgs.gh.override { buildGoModule = pkgs.buildGo127Module; }).overrideAttrs (_: { version = \"$version\"; src = pkgs.fetchFromGitHub { owner = \"cli\"; repo = \"cli\"; rev = \"$rev\"; hash = \"$source_hash\"; }; vendorHash = \"sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\"; })"
   output="$(nix build --no-link --impure --print-build-logs --expr "$expression" 2>&1 || true)"
-  printf '%s\n' "$output" | sed -n 's/.*got:[[:space:]]*\(sha256-[[:alnum:]+/]*=[=]*\).*/\1/p' | tail -1
+  hash="$(printf '%s\n' "$output" | sed -n 's/.*got:[[:space:]]*\(sha256-[[:alnum:]+/]*=[=]*\).*/\1/p' | tail -1)"
+  if [ -z "$hash" ]; then
+    printf '%s\n' "$output" >&2
+  fi
+  printf '%s\n' "$hash"
 }
 
 upgrade_gh() {
@@ -200,14 +206,14 @@ upgrade_gh() {
 
   vendor_hash="$(github_cli_vendor_hash "$version" "$rev" "$source_hash")"
   validate_sri_checksum "gh-$version-vendor" "$vendor_hash"
-  current_version="$(sed -n '/gh = prev.gh.overrideAttrs/,/^[[:space:]]*});/p' "$OVERLAY_FILE" | sed -n 's/.*version = "\([^"]*\)";.*/\1/p' | head -1)"
+  current_version="$(sed -n '/gh = (prev.gh.override/,/^[[:space:]]*});/p' "$OVERLAY_FILE" | sed -n 's/.*version = "\([^"]*\)";.*/\1/p' | head -1)"
 
   awk \
     -v version="$version" \
     -v rev="$rev" \
     -v source_hash="$source_hash" \
     -v vendor_hash="$vendor_hash" '
-      /gh = prev\.gh\.overrideAttrs/ { in_gh = 1 }
+      /gh = \(prev\.gh\.override/ { in_gh = 1 }
       in_gh && /version = "[^"]*";/ {
         sub(/version = "[^"]*";/, "version = \"" version "\";")
       }
@@ -590,7 +596,7 @@ upgrade_devin() {
 }
 
 t3code_pnpm_hash() {
-  local expression output
+  local expression output hash
 
   if [ -n "${T3CODE_PNPM_HASH:-}" ]; then
     printf '%s\n' "$T3CODE_PNPM_HASH"

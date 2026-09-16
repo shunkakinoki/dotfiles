@@ -49,19 +49,20 @@
   })
   (_: prev: {
     # Use the first tagged release that includes --attach on issue and PR commands.
-    gh = prev.gh.overrideAttrs (_: {
+    # gh's go.mod requires Go 1.27, newer than the pinned nixpkgs default.
+    gh = (prev.gh.override { buildGoModule = prev.buildGo127Module; }).overrideAttrs (_: {
       pname = "gh";
-      version = "2.100.0";
+      version = "2.101.0";
       src = prev.fetchFromGitHub {
         owner = "cli";
         repo = "cli";
-        rev = "45437bc7eeeb3359bbfddd1742f79de7652fd3e2";
-        hash = "sha256-9tnSQPSqllE+Ke6LKyNbnOF1drzdEwesEuPdmWD1X5c=";
+        rev = "0cf1092493af067646fc5f3db9421c6a6ec9c938";
+        hash = "sha256-EoKF2m5sZP+uQ5AVOKkFqSCACfkeUc7vnH8PHWCO6FE=";
       };
-      vendorHash = "sha256-ZqUs2BnasF3QBX0I2Sxh2A/CnO61Vy6gRn1hkf0n9AY=";
+      vendorHash = "sha256-4KYQBgMNc/sI0mbcXSfJ7A/77VAS6NM8TOzQ3w7AlK8=";
       buildPhase = ''
         runHook preBuild
-        make GO_LDFLAGS="-s -w -X github.com/cli/cli/v2/internal/build.Date=nixpkgs" GH_VERSION=2.100.0 bin/gh manpages
+        make GO_LDFLAGS="-s -w -X github.com/cli/cli/v2/internal/build.Date=nixpkgs" GH_VERSION=2.101.0 bin/gh manpages
         runHook postBuild
       '';
     });
