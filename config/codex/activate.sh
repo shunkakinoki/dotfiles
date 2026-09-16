@@ -23,6 +23,8 @@ toml_open_string() {
   local line="$1" state="$2" i=0 c
   while ((i < ${#line})); do
     c=${line:i:1}
+    # shfmt normalizes the backslash literal to '\', which SC1003 misreads.
+    # shellcheck disable=SC1003
     if [[ -z $state ]]; then
       [[ $c == '#' ]] && break
       if [[ $c == '"' || $c == "'" ]]; then
@@ -30,7 +32,7 @@ toml_open_string() {
         ((i += ${#state}))
         continue
       fi
-    elif [[ $c == "\\" && ${state:0:1} == '"' ]]; then
+    elif [[ $c == '\' && ${state:0:1} == '"' ]]; then
       ((i += 2))
       continue
     elif [[ $c == "${state:0:1}" && (${#state} == 1 || ${line:i:3} == "$state") ]]; then
