@@ -707,18 +707,21 @@ local_assignee_lines="$(printf '%s\n%s\n' "$issues_before_pull" "$all_issues" | 
   | select($local[.id] != null and $local[.id] != (.assignee // ""))
   | "\(.id)\t\($local[.id])"
 ')"
+# Workers keep claiming and releasing while the pull runs, so a Bead can
+# already hold its restored state by the time bd is asked to write it. One
+# such refusal must not abort the cycle; the rest of the restore still runs.
 if [ -n "$local_assignee_lines" ]; then
   log "Restoring locally changed assignees after pull"
-  restore_release_ids=()
+  restore_failures=0
   while IFS=$'\t' read -r restore_id restore_assignee; do
     if [ -z "$restore_assignee" ]; then
-      restore_release_ids+=("$restore_id")
+      "$bd_cli" -C "$repo_dir" unclaim "$restore_id" --force >/dev/null 2>&1 || restore_failures=$((restore_failures + 1))
     else
-      "$bd_cli" -C "$repo_dir" update "$restore_id" --assignee "$restore_assignee" --force >/dev/null
+      "$bd_cli" -C "$repo_dir" update "$restore_id" --assignee "$restore_assignee" --force >/dev/null 2>&1 || restore_failures=$((restore_failures + 1))
     fi
   done <<<"$local_assignee_lines"
-  if [ "${#restore_release_ids[@]}" -gt 0 ]; then
-    "$bd_cli" -C "$repo_dir" unclaim "${restore_release_ids[@]}" --force >/dev/null
+  if [ "$restore_failures" -gt 0 ]; then
+    log "Skipped $restore_failures local assignee restore(s) that Beads refused"
   fi
 fi
 
