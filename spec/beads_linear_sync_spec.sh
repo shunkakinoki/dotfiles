@@ -730,6 +730,17 @@ The contents of file "$COMMAND_LOG" should include 'unclaim df-released --force'
 The file "$CHECKPOINT_FILE" should be exist
 End
 
+It 'holds back active Beads whose body exceeds the Linear issue limit'
+huge="$(printf '%*s' 250001 '' | tr ' ' x)"
+issues='[{"id":"df-small","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/small"},{"id":"df-huge","status":"open","assignee":"","description":"'"$huge"'","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/huge"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$issues" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Holding back 1 active Bead(s) whose body exceeds the Linear issue limit'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-small --no-wait'
+The contents of file "$COMMAND_LOG" should not include 'df-huge'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
 It 'maps blocked Beads to the Linear Todo state before syncing'
 When run grep -F 'linear.outbound_state_map.blocked Todo' "$SCRIPT"
 The status should be success

@@ -749,7 +749,12 @@ if [ "$pull_status" -ne 0 ]; then
   log "Linear pull failed with status $pull_status"
   exit "$pull_status"
 fi
-changed_active_ids="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" '
+changed_active_selection="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" '
+  def body_length:
+    ((.description // "") | length)
+    + ((.design // "") | length)
+    + ((.acceptance_criteria // "") | length)
+    + ((.notes // "") | length);
   (if type == "object" and has("issues") then .issues else . end)
   | [
     .[]
@@ -761,10 +766,19 @@ changed_active_ids="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" '
           or ((.external_ref // "") | contains("linear.app") | not)
         )
       )
-    | .id
+    | {id: .id, oversized: (body_length > $body_limit)}
   ]
-  | join(",")
+  | {
+    ids: (map(select(.oversized | not) | .id) | join(",")),
+    oversized: (map(select(.oversized)) | length),
+  }
+  | "\(.oversized)\n\(.ids)"
 ' <<<"$all_issues")"
+oversized_active_count="$(@coreutils@/bin/head -n 1 <<<"$changed_active_selection")"
+changed_active_ids="$(@coreutils@/bin/tail -n +2 <<<"$changed_active_selection")"
+if [ "$oversized_active_count" -gt 0 ]; then
+  log "Holding back $oversized_active_count active Bead(s) whose body exceeds the Linear issue limit"
+fi
 
 # Push only the active local delta after inbound reconciliation. Terminal
 # issues never enter this phase because they were made durable before pull.
