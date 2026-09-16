@@ -274,10 +274,9 @@ run_linear() {
 push_issue_batches() {
   local issue_ids="$1"
   local description="$2"
-  # Optional newline-delimited "id updated_at" lines aligned one-to-one with
+  # Optional newline-delimited "id closed_at" lines aligned one-to-one with
   # issue_ids. Each successfully pushed batch is appended to progress_file so
-  # a rate-limited (deferred) run resumes past those Beads instead of
-  # restarting the whole window and re-burning the API budget every retry.
+  # later runs skip those Beads instead of re-burning the API budget on them.
   local progress_entries="${3:-}"
   local progress_file="${4:-}"
   local batch_size=10
@@ -538,10 +537,12 @@ fi
 # Terminal Beads are authoritative after acceptance. Publish them before the
 # full inbound refresh so a stale active Linear record can never win during
 # the timer-latency window. On an initial run, publish every linked terminal
-# record once; later runs use the successful-cycle checkpoint. Beads whose
-# exact revision was already pushed by an earlier deferred run in this window
-# are skipped; without that, a window larger than the API budget re-pushes the
-# same batches forever and the checkpoint never advances.
+# record once; later runs use the successful-cycle checkpoint. The ledger of
+# pushed "id closed_at" pairs persists across cycles and is keyed by closed_at
+# because every push (and pull) bumps updated_at past the cycle start: keying
+# by updated_at re-selects the whole terminal set every run until the rate
+# limit defers it, so the checkpoint never advances. A pending completion
+# marker bypasses the ledger so its recovery push always happens.
 issues_before_pull="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0 --skip-labels)"
 pushed_progress_input=/dev/null
 if [ -s "$push_progress_file" ]; then
@@ -556,7 +557,7 @@ closed_push_selection="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --a
     + ((.acceptance_criteria // "") | length)
     + ((.notes // "") | length);
   (if type == "object" and has("issues") then .issues else . end)
-  | ($pushed | split("\n") | map(select(length > 0))) as $already_pushed
+  | ($pushed | split("\n") | map(select(length > 0) | {key: ., value: true}) | from_entries) as $already_pushed
   | [
     .[]
     | select(
@@ -570,8 +571,15 @@ closed_push_selection="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --a
           )
         )
       )
-    | {entry: "\(.id) \(.updated_at // "")", oversized: (body_length > $body_limit)}
-    | select(.entry as $entry | ($already_pushed | index($entry)) | not)
+    | {
+      entry: "\(.id) \(.closed_at // "")",
+      oversized: (body_length > $body_limit),
+      pending: (
+        (.metadata.linear_completion_pending // false) == true
+        or (.metadata.linear_completion_pending // false) == "true"
+      ),
+    }
+    | select(.pending or (.entry as $entry | ($already_pushed | has($entry)) | not))
   ]
   | {
     entries: (map(select(.oversized | not) | .entry) | join("\n")),
@@ -737,6 +745,5 @@ fi
 
 printf '%s\n' "$cycle_started" >"$sync_checkpoint_file.tmp"
 @coreutils@/bin/mv -f "$sync_checkpoint_file.tmp" "$sync_checkpoint_file"
-@coreutils@/bin/rm -f "$push_progress_file"
 
 "$bd_cli" -C "$repo_dir" linear status --json

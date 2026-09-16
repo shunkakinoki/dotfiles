@@ -118,13 +118,13 @@ When run bash -c "checkpoint=\$(grep -n '\"\$cycle_started\" >\"\$sync_checkpoin
 The status should be success
 End
 
-It 'skips terminal Beads already recorded in the deferred push progress'
-When run bash -c "grep -F 'push_progress_file=\"\$sync_state_dir/push-progress-\$repo_slug\"' '$SCRIPT' >/dev/null && grep -F '(\$already_pushed | index(\$entry)) | not' '$SCRIPT' >/dev/null"
+It 'skips terminal Beads already recorded in the push ledger'
+When run bash -c "grep -F 'push_progress_file=\"\$sync_state_dir/push-progress-\$repo_slug\"' '$SCRIPT' >/dev/null && grep -F '(\$already_pushed | has(\$entry)) | not' '$SCRIPT' >/dev/null"
 The status should be success
 End
 
-It 'clears push progress only after the cycle checkpoint is durable'
-When run bash -c "checkpoint=\$(grep -n '\"\$cycle_started\" >\"\$sync_checkpoint_file.tmp\"' '$SCRIPT' | cut -d: -f1); clear=\$(grep -n 'rm -f \"\$push_progress_file\"' '$SCRIPT' | cut -d: -f1); test \"\$clear\" -gt \"\$checkpoint\""
+It 'keeps the push ledger across cycles'
+When run bash -c "! grep -F 'rm -f \"\$push_progress_file\"' '$SCRIPT'"
 The status should be success
 End
 
@@ -642,7 +642,17 @@ The output should include 'next 900-second run will retry'
 The output should include 'terminal Beads batch 1/1'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-11,df-12 --no-wait'
 The file "$CHECKPOINT_FILE" should be exist
-The file "$progress_file" should not be exist
+The contents of file "$progress_file" should include 'df-12 '
+End
+
+It 'does not re-push a terminal Bead after its own push bumped updated_at'
+closed_json='[{"id":"df-closed","status":"closed","closed_at":"2099-01-01T00:00:00Z","updated_at":"2099-01-01T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/closed"}]'
+bumped_json='[{"id":"df-closed","status":"closed","closed_at":"2099-01-01T00:00:00Z","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/closed"}]'
+progress_file="$STATE_HOME/beads-linear-sync/push-progress-test%2Frepo-one"
+When run bash -c "env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$closed_json' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' >/dev/null && env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$bumped_json' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' && test \"\$(grep -c -- '--issues df-closed --no-wait' '$COMMAND_LOG')\" -eq 1"
+The status should be success
+The output should include 'No terminal Beads to push'
+The contents of file "$progress_file" should equal 'df-closed 2099-01-01T00:00:00Z'
 End
 
 It 'restores assignees the pull overwrote on locally changed active Beads'
@@ -688,7 +698,7 @@ progress_file="$STATE_HOME/beads-linear-sync/push-progress-test%2Frepo-one"
   printf '%s\n' 'df-closed 2099-01-01T00:00:00Z'
 } >"$progress_file"
 test "$(wc -c <"$progress_file")" -gt 131072
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LIST_JSON='[{"id":"df-closed","status":"closed","updated_at":"2099-01-01T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/closed"}]' XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LIST_JSON='[{"id":"df-closed","status":"closed","closed_at":"2099-01-01T00:00:00Z","updated_at":"2099-01-01T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/closed"}]' XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'No terminal Beads to push'
 The output should include 'Pulling complete Linear state'
