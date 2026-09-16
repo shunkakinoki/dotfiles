@@ -691,39 +691,52 @@ run_linear pull @coreutils@/bin/timeout 720 "$bd_cli" -C "$repo_dir" linear sync
 
 all_issues="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0 --skip-labels)"
 
-# The cursor-free pull skips Beads' local-change guard and the push mapper
-# never sends assignees, so every run re-applied Linear's assignee over a
-# local claim or release. Active Beads changed locally in this window keep
-# their local assignee, matching the active delta push below. Beads writes
-# pulled assignees before it reports the pull result, so this runs before a
-# deferred or rejected pull exits.
-local_assignee_lines="$(printf '%s\n%s\n' "$issues_before_pull" "$all_issues" | @jq@/bin/jq -r -s --arg previous_sync "$previous_sync" '
+# The cursor-free pull skips Beads' local-change guard, so every run wrote
+# Linear's assignee and workflow state over a local claim or release. A claim
+# made after the previous push still reads Todo in Linear, so the pull demoted
+# it to open and the restore below then left an open Bead that carried a
+# worker assignee, which no lane can claim and no worker will resume. Active
+# Beads changed locally in this window keep their local assignee and status,
+# matching the active delta push below. Beads writes pulled fields before it
+# reports the pull result, so this runs before a deferred or rejected pull
+# exits.
+local_claim_lines="$(printf '%s\n%s\n' "$issues_before_pull" "$all_issues" | @jq@/bin/jq -r -s --arg previous_sync "$previous_sync" '
   def issues: if type == "object" and has("issues") then .issues else . end;
   (.[0] | issues
     | map(
         select(.status != "closed" and ($previous_sync == "" or .updated_at >= $previous_sync))
-        | {key: .id, value: (.assignee // "")}
+        | {key: .id, value: {assignee: (.assignee // ""), status: .status}}
       )
     | from_entries) as $local
   | .[1] | issues | .[]
-  | select($local[.id] != null and $local[.id] != (.assignee // ""))
-  | "\(.id)\t\($local[.id])"
+  | select($local[.id] != null
+      and ($local[.id].assignee != (.assignee // "") or $local[.id].status != .status))
+  | [.id, $local[.id].assignee, $local[.id].status, (.assignee // ""), .status] | join("\u001f")
 ')"
 # Workers keep claiming and releasing while the pull runs, so a Bead can
 # already hold its restored state by the time bd is asked to write it. One
 # such refusal must not abort the cycle; the rest of the restore still runs.
-if [ -n "$local_assignee_lines" ]; then
-  log "Restoring locally changed assignees after pull"
+if [ -n "$local_claim_lines" ]; then
+  log "Restoring locally changed claims after pull"
   restore_failures=0
-  while IFS=$'\t' read -r restore_id restore_assignee; do
-    if [ -z "$restore_assignee" ]; then
-      "$bd_cli" -C "$repo_dir" unclaim "$restore_id" --force >/dev/null 2>&1 || restore_failures=$((restore_failures + 1))
-    else
-      "$bd_cli" -C "$repo_dir" update "$restore_id" --assignee "$restore_assignee" --force >/dev/null 2>&1 || restore_failures=$((restore_failures + 1))
+  # A tab separator would collapse an empty assignee field on read.
+  while IFS=$'\x1f' read -r restore_id restore_assignee restore_status pulled_assignee pulled_status; do
+    restore_args=()
+    if [ -n "$restore_assignee" ] && [ "$restore_assignee" != "$pulled_assignee" ]; then
+      restore_args+=(--assignee "$restore_assignee")
     fi
-  done <<<"$local_assignee_lines"
+    if [ "$restore_status" != "$pulled_status" ]; then
+      restore_args+=(--status "$restore_status")
+    fi
+    if [ "${#restore_args[@]}" -gt 0 ]; then
+      "$bd_cli" -C "$repo_dir" update "$restore_id" "${restore_args[@]}" --force >/dev/null 2>&1 || restore_failures=$((restore_failures + 1))
+    fi
+    if [ -z "$restore_assignee" ] && [ -n "$pulled_assignee" ]; then
+      "$bd_cli" -C "$repo_dir" unclaim "$restore_id" --force >/dev/null 2>&1 || restore_failures=$((restore_failures + 1))
+    fi
+  done <<<"$local_claim_lines"
   if [ "$restore_failures" -gt 0 ]; then
-    log "Skipped $restore_failures local assignee restore(s) that Beads refused"
+    log "Skipped $restore_failures local claim restore(s) that Beads refused"
   fi
 fi
 
