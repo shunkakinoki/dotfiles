@@ -151,6 +151,7 @@ with pkgs;
 ]
 ++ lib.optionals stdenv.hostPlatform.isDarwin [
   darwin.trash
+  opencode
 ]
 ++ lib.optionals stdenv.hostPlatform.isLinux [
   atop
