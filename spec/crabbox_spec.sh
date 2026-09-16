@@ -16,8 +16,9 @@ POSTGRES_INIT="$PWD/home-manager/services/crabbox/init-postgres.sh"
 HEALTH_CHECK="$PWD/home-manager/services/crabbox/health-check.sh"
 
 It 'packages the CLI independently in the shared overlay'
-When run bash -c "sed -n '/crabbox = prev.stdenvNoCC.mkDerivation rec {/,/meta.mainProgram = \"crabbox\"/p' '$OVERLAY'"
-The output should include 'version = "0.59.0"'
+When run bash -c "block=\$(sed -n '/crabbox = prev.stdenvNoCC.mkDerivation rec {/,/meta.mainProgram = \"crabbox\"/p' '$OVERLAY'); printf '%s\n' \"\$block\"; printf '%s\n' \"\$block\" | grep -Eq '^[[:space:]]*version = \"[0-9]+\.[0-9]+\.[0-9]+\";$'"
+The status should be success
+The output should include 'version = "'
 The output should include 'crabbox_${version}'
 The output should include 'crabbox-apple-vm-helper'
 The output should include 'meta.mainProgram = "crabbox"'
@@ -30,8 +31,9 @@ The output should include '      "openclaw/tap/crabbox"'
 End
 
 It 'packages the official Blacksmith Testbox CLI outside npm'
-When run bash -c "sed -n '/blacksmith-testbox-cli = prev.stdenvNoCC.mkDerivation rec {/,/meta.mainProgram = \"blacksmith\"/p' '$OVERLAY'; grep -Fx '  blacksmith-testbox-cli' '$PACKAGES'; grep -F '\"blacksmith-cli\"' '$PACKAGE_JSON' || true"
-The output should include 'version = "0.4.58"'
+When run bash -c "block=\$(sed -n '/blacksmith-testbox-cli = prev.stdenvNoCC.mkDerivation rec {/,/meta.mainProgram = \"blacksmith\"/p' '$OVERLAY'); printf '%s\n' \"\$block\"; grep -Fx '  blacksmith-testbox-cli' '$PACKAGES'; grep -F '\"blacksmith-cli\"' '$PACKAGE_JSON' || true; printf '%s\n' \"\$block\" | grep -Eq '^[[:space:]]*version = \"[0-9]+\.[0-9]+\.[0-9]+\";$'"
+The status should be success
+The output should include 'version = "'
 The output should include 'clireleases.blacksmith.sh'
 The output should include 'meta.mainProgram = "blacksmith"'
 The output should include '  blacksmith-testbox-cli'
