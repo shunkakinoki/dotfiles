@@ -284,6 +284,24 @@ case "${1:-} ${2:-}" in
         printf '%s\n' '{"success":true,"stats":{"errors":0},"warnings":["PRIVATE_LINEAR_PAYLOAD"]}'
         exit 0
         ;;
+      dependency-warnings)
+        if [[ " $* " != *" --push "* ]]; then
+          printf '%s\n' '{"success":true,"stats":{"errors":0},"warnings":["Failed to resolve dependency target PRIVATE_LINEAR_PAYLOAD","Failed to create dependency PRIVATE_LINEAR_PAYLOAD"]}'
+          exit 0
+        fi
+        ;;
+      dependency-warnings-on-push)
+        if [[ " $* " == *" --push "* ]]; then
+          printf '%s\n' '{"success":true,"stats":{"errors":0},"warnings":["Failed to resolve dependency target PRIVATE_LINEAR_PAYLOAD","Failed to create dependency PRIVATE_LINEAR_PAYLOAD"]}'
+          exit 0
+        fi
+        ;;
+      dependency-and-update-warnings)
+        if [[ " $* " != *" --push "* ]]; then
+          printf '%s\n' '{"success":true,"stats":{"errors":0},"warnings":["Failed to resolve dependency target PRIVATE_LINEAR_PAYLOAD","Failed to update PRIVATE_LINEAR_PAYLOAD"]}'
+          exit 0
+        fi
+        ;;
       invalid-json)
         printf '%s\n' 'not-json PRIVATE_LINEAR_PAYLOAD'
         exit 0
@@ -476,6 +494,32 @@ The output should include 'Linear pull failed with status 65'
 The output should include 'operation=pull shape=object success=true stats=object errors=1 warnings=null error=none'
 The contents of file "$DOLT_LOG" should include 'REPLACE INTO local_metadata'
 The contents of file "$DOLT_LOG" should include '2026-08-24T10:39:54Z'
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'accepts a pull whose only warnings are unresolved dependency relations'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=dependency-warnings FAKE_LAST_SYNC=2026-08-24T10:39:54Z XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Linear pull completed with 2 unresolved dependency relation warning(s)'
+The output should not include 'PRIVATE_LINEAR_PAYLOAD'
+The output should not include 'Linear result rejected'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'rejects a pull that mixes dependency warnings with other families'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=dependency-and-update-warnings FAKE_LAST_SYNC=2026-08-24T10:39:54Z XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 65
+The output should include 'operation=pull shape=object success=true stats=object errors=0 warnings=2 error=none families=dependency,update'
+The output should not include 'PRIVATE_LINEAR_PAYLOAD'
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'rejects a push with dependency warnings'
+closed_json='[{"id":"df-closed","status":"closed","closed_at":"2099-01-01T00:00:00Z","updated_at":"2099-01-01T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/closed"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=dependency-warnings-on-push FAKE_LIST_JSON="$closed_json" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 65
+The output should include 'operation=push shape=object success=true stats=object errors=0 warnings=2 error=none families=dependency'
+The output should not include 'PRIVATE_LINEAR_PAYLOAD'
 The file "$CHECKPOINT_FILE" should not be exist
 End
 
