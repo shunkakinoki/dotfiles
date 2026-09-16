@@ -211,6 +211,25 @@ run_linear() {
     return 0
   fi
 
+  # A pull whose only warnings are unresolved dependency relations is still a
+  # complete pull of the issues themselves: the relation target is not linked
+  # in Beads, and that never resolves on retry. Rejecting it would block every
+  # later cycle behind those same edges. Only the count is logged.
+  local unresolved_relations
+  if [ "$operation" = pull ] && [ "$status" -eq 0 ] && unresolved_relations="$(@jq@/bin/jq -e -r -s '
+    if length == 1 and (.[0] |
+      type == "object" and
+      .success == true and
+      .stats.errors == 0 and
+      (.error == null or .error == "") and
+      (.warnings | type == "array" and length > 0 and
+        all(type == "string" and test("^Failed to (build dependency resolver:|resolve dependency |create dependency )"))))
+    then (.[0].warnings | length) else empty end
+  ' <<<"$output" 2>/dev/null)"; then
+    log "Linear pull completed with $unresolved_relations unresolved dependency relation warning(s)"
+    return 0
+  fi
+
   # Only fixed categories leave this boundary, never source error strings.
   case "$output" in
   *"searching local issues"*) category="local-read" ;;
