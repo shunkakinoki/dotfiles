@@ -558,6 +558,7 @@ config/devin/hooks/atuin-history.sh
 config/devin/hooks/notify.sh
 config/devin/hooks/pushover.sh
 config/dsh/hydrate.sh
+home-manager/modules/agency-agents/install-agency-agents.sh
 config/codex/hooks/notify.sh
 config/codex/hooks/pushover.sh
 config/shared/hooks/block-gh-settings.sh
