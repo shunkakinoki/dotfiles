@@ -6258,9 +6258,9 @@ dependencies = [
 
 [[package]]
 name = "worktrunk"
-version = "0.76.0"
+version = "0.77.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bf4b840518d0f213bbf7d20b2ad7a96d43afa811f77a14a45d4f1248189f4105"
+checksum = "7e7bc2db7862690fe43f73f7c994c0deafee6accb90a187957e91fb4c65c89fb"
 dependencies = [
  "ansi-str",
  "ansi-to-tui",
