@@ -718,6 +718,12 @@ The contents of file "$COMMAND_LOG" should not include 'unclaim df-stale'
 The file "$CHECKPOINT_FILE" should be exist
 End
 
+It 'maps blocked Beads to the Linear Todo state before syncing'
+When run grep -F 'linear.outbound_state_map.blocked Todo' "$SCRIPT"
+The status should be success
+The output should include 'ensure_config linear.outbound_state_map.blocked Todo'
+End
+
 It 'keeps the cycle when Beads refuses one assignee restore'
 before='[{"id":"df-released","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/released"},{"id":"df-gone","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-4/gone"}]'
 after='[{"id":"df-released","status":"open","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/released"},{"id":"df-gone","status":"open","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-4/gone"}]'
