@@ -783,7 +783,19 @@ The contents of file "$COMMAND_LOG" should not include 'df-huge'
 The file "$CHECKPOINT_FILE" should be exist
 End
 
-It 'truncates a description that exceeds the Linear issue limit before pushing it'
+It 'keeps the description intact and holds back a Bead whose rendered sections leave no room for it'
+near="$(printf "%*s" 245000 "" | tr " " x)"
+body="$(printf "%*s" 6000 "" | tr " " y)"
+issues='[{"id":"df-near","status":"open","assignee":"","description":"'"$body"'","notes":"'"$near"'","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/near"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LIST_JSON="$issues" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Holding back 1 active Bead(s) whose body exceeds the Linear issue limit'
+The contents of file "$COMMAND_LOG" should not include 'update df-near'
+The contents of file "$COMMAND_LOG" should not include 'linear sync --push'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'cuts a description that exceeds the Linear issue limit before pushing it'
 long="$(printf '%*s' 250001 '' | tr ' ' x)"
 issues='[{"id":"df-long","status":"open","assignee":"","description":"'"$long"'","notes":"- note","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/long"}]'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_BODY_LOG="$TEST_ROOT/bodies.log" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$issues" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
@@ -850,14 +862,28 @@ The output should include 'Normalized 1 description(s) carrying rendered section
 The contents of file "$TEST_ROOT/bodies.log" should equal 'df-closed:Done body'
 End
 
-It 'pushes a description as-is when another actor wrote the Bead after the snapshot'
+It 'holds a Bead back from the push when another actor wrote it after the snapshot'
 before='[{"id":"df-grown","status":"in_progress","assignee":"kamino4_exec_grown-1","description":"Body text\n\n## Notes\n\n- note","notes":"- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/grown"}]'
 history='[{"actor":"kamino4_exec_grown-1","created_at":"2099-01-03T00:00:00Z","event_type":"updated"}]'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_HISTORY_ID=df-grown FAKE_HISTORY_JSON="$history" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'Normalized 0 description(s) carrying rendered sections before the changed active push; skipped 1'
+The output should include 'No changed active Beads to push'
 The contents of file "$COMMAND_LOG" should not include 'update df-grown'
-The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-grown --no-wait'
+The contents of file "$COMMAND_LOG" should not include 'linear sync --push'
+The contents of file "$STATE_HOME/beads-linear-sync/pushed-active-test%2Frepo-one" should not include 'df-grown'
+End
+
+It 'holds a terminal Bead back from the push when another actor wrote it after the snapshot'
+closed='[{"id":"df-late","status":"closed","closed_at":"2099-01-01T00:00:00Z","description":"Done body\n\n## Notes\n\n- note","notes":"- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/late"},{"id":"df-done","status":"closed","closed_at":"2099-01-01T00:00:00Z","description":"Done","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/done"}]'
+history='[{"actor":"kamino4_exec_late-1","created_at":"2099-01-03T00:00:00Z","event_type":"updated"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_HISTORY_ID=df-late FAKE_HISTORY_JSON="$history" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$closed" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Normalized 0 description(s) carrying rendered sections before the terminal push; skipped 1'
+The contents of file "$COMMAND_LOG" should not include 'update df-late'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-done --no-wait'
+The contents of file "$STATE_HOME/beads-linear-sync/push-progress-test%2Frepo-one" should include 'df-done'
+The contents of file "$STATE_HOME/beads-linear-sync/push-progress-test%2Frepo-one" should not include 'df-late'
 End
 
 It 'does not re-push an active Bead whose content its own push already sent'

@@ -10,8 +10,8 @@ linear_team_id="@linearTeamId@"
 linear_credentials_file="${XDG_CONFIG_HOME:-$HOME/.config}/linear/credentials.toml"
 # Linear rejects an issue body over 250,000 characters with a generic
 # "Argument Validation Error", which bd surfaces as a per-issue warning rather
-# than a failed run. The description is truncated to fit under the rendered
-# sections; a Bead whose sections alone exceed the limit is held back so one
+# than a failed run. The description is cut to fit under the rendered
+# sections; a Bead whose sections leave no room for it is held back so one
 # unpublishable record cannot keep failing every batch it lands in.
 linear_body_limit=250000
 sync_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/beads-linear-sync"
@@ -376,7 +376,7 @@ rendered_sections_jq='
     | (.description // "") as $description
     | $description[:(rendered_cut // ($description | length))]
     | sub("\\s+$"; "")
-    | .[:$cap];
+    | if $cap > 0 then .[:$cap] else . end;
   def fingerprint:
     {title, status, assignee, priority, issue_type, acceptance_criteria, design, notes, description: canonical_description}
     | tojson;
@@ -385,7 +385,7 @@ rendered_sections_jq='
 rendered_section_cuts='
   ($ids | split(",") | map(select(length > 0) | {key: ., value: true}) | from_entries) as $wanted
   | issues | .[]
-  | select($wanted[.id] != null and (rendered_cut != null or ((.description // "") | length) > description_cap))
+  | select($wanted[.id] != null and (rendered_cut != null or (description_cap > 0 and ((.description // "") | length) > description_cap)))
   | {id: .id, body: canonical_description}
 '
 
@@ -395,6 +395,10 @@ written_since_snapshot() {
       if type == "array" then any(.[]; .actor != $actor and .created_at >= $since) else false end
     ' 2>/dev/null || echo false
 }
+
+# Beads whose description still carries rendered sections after a normalize
+# pass; pushing them now would round-trip the sections or exceed the limit.
+normalize_skipped_ids=""
 
 normalize_rendered_sections() {
   local issues_json="$1"
@@ -407,6 +411,7 @@ normalize_rendered_sections() {
   local skipped=0
   local description_file="$sync_state_dir/description-$repo_slug"
 
+  normalize_skipped_ids=""
   if [ -z "$issue_ids" ]; then
     return 0
   fi
@@ -418,6 +423,7 @@ normalize_rendered_sections() {
     cut_id="$(@jq@/bin/jq -r '.id' <<<"$cut")"
     if [ "$(written_since_snapshot "$cut_id")" = "true" ]; then
       skipped=$((skipped + 1))
+      normalize_skipped_ids="${normalize_skipped_ids:+$normalize_skipped_ids,}$cut_id"
       continue
     fi
     @jq@/bin/jq -j '.body' <<<"$cut" >"$description_file"
@@ -425,10 +431,22 @@ normalize_rendered_sections() {
       normalized=$((normalized + 1))
     else
       skipped=$((skipped + 1))
+      normalize_skipped_ids="${normalize_skipped_ids:+$normalize_skipped_ids,}$cut_id"
     fi
   done <<<"$cuts"
   @coreutils@/bin/rm -f "$description_file"
   log "Normalized $normalized description(s) carrying rendered sections before the $description push; skipped $skipped"
+}
+
+# Filters "id ..." lines on stdin down to the Beads normalize did not skip.
+drop_skipped_lines() {
+  @gawk@/bin/awk -v skip="$normalize_skipped_ids" '
+    BEGIN {
+      count = split(skip, list, ",")
+      for (i = 1; i <= count; i++) skipped[list[i]] = 1
+    }
+    NF && !($1 in skipped)
+  '
 }
 
 run_dolt_sql() {
@@ -706,6 +724,10 @@ pending_completion_ids="$(@jq@/bin/jq -r '
 ' <<<"$issues_before_pull")"
 
 normalize_rendered_sections "$issues_before_pull" "$closed_ids" "terminal"
+if [ -n "$normalize_skipped_ids" ]; then
+  closed_push_entries="$(printf '%s\n' "$closed_push_entries" | drop_skipped_lines)"
+  closed_ids="$(printf '%s\n' "$closed_push_entries" | @gawk@/bin/awk 'NF { print $1 }' | @coreutils@/bin/paste -sd, -)"
+fi
 if push_issue_batches "$closed_ids" "terminal" "$closed_push_entries" "$push_progress_file"; then
   :
 else
@@ -916,6 +938,11 @@ fi
 # Push only the active local delta after inbound reconciliation. Terminal
 # issues never enter this phase because they were made durable before pull.
 normalize_rendered_sections "$all_issues" "$changed_active_ids" "changed active"
+if [ -n "$normalize_skipped_ids" ]; then
+  drop_skipped_lines <"$pushed_active_next" >"$pushed_active_next.tmp"
+  @coreutils@/bin/mv -f "$pushed_active_next.tmp" "$pushed_active_next"
+  changed_active_ids="$(@gawk@/bin/awk 'NF { print $1 }' "$pushed_active_next" | @coreutils@/bin/paste -sd, -)"
+fi
 if push_issue_batches "$changed_active_ids" "changed active"; then
   if [ -n "$changed_active_ids" ]; then
     {
