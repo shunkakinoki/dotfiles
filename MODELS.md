@@ -78,7 +78,7 @@ Rules:
 
 | Harness | Default | Fallback chain | Config |
 | --- | --- | --- | --- |
-| OpenCode | `shunkakinoki/deepseek-v4.1-flash` | shared chain, `shunkakinoki/` prefix, then `opencode/big-pickle` | [opencode-fallback.tpl.jsonc](config/opencode/opencode-fallback.tpl.jsonc) |
+| OpenCode | `shunkakinoki/deepseek-v4.1-flash` | shared chain, `shunkakinoki/` prefix | [opencode-fallback.tpl.jsonc](config/opencode/opencode-fallback.tpl.jsonc) |
 | OpenClaw | `cliproxy/deepseek-v4.1-flash` | shared chain, `cliproxy/` prefix | [openclaw.tpl.json](config/openclaw/openclaw.tpl.json) |
 | Hermes | `cliproxy/deepseek-v4.1-flash` | shared chain via `fallback_providers` | [config.tpl.yaml](config/hermes/config.tpl.yaml) |
 | OMP | `cliproxyapi/deepseek-v4.1-flash` | shared chain, `cliproxyapi/` prefix | [config.tpl.yml](config/omp/config.tpl.yml) |
