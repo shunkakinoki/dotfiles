@@ -49,6 +49,7 @@ in
             pkgs.curl
             pkgs.gawk
             pkgs.git
+            pkgs.gnugrep
             pkgs.gnumake
             pkgs.gnused
             pkgs.nix
