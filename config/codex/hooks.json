@@ -27,7 +27,7 @@
       {
         "hooks": [
           {
-            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
+            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh codex",
             "timeout": 10,
             "type": "command"
           }
@@ -103,7 +103,7 @@
       {
         "hooks": [
           {
-            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
+            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh codex",
             "timeout": 10,
             "type": "command"
           }
@@ -198,7 +198,7 @@
             "type": "command"
           },
           {
-            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
+            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh codex",
             "timeout": 10,
             "type": "command"
           }

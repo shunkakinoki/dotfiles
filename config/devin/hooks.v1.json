@@ -43,11 +43,6 @@
             "command": "$HOME/.config/devin/hooks/atuin-history.sh",
             "timeout": 5,
             "type": "command"
-          },
-          {
-            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
-            "timeout": 10,
-            "type": "command"
           }
         ]
       }
@@ -94,11 +89,6 @@
           {
             "command": "$HOME/.config/devin/hooks/pushover.sh",
             "timeout": 6,
-            "type": "command"
-          },
-          {
-            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
-            "timeout": 10,
             "type": "command"
           }
         ]
@@ -169,11 +159,6 @@
           {
             "command": "$HOME/.config/devin/hooks/pushover.sh",
             "timeout": 6,
-            "type": "command"
-          },
-          {
-            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
-            "timeout": 10,
             "type": "command"
           }
         ]
