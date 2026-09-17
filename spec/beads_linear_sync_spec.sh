@@ -397,6 +397,13 @@ case "${1:-} ${2:-}" in
       exit 1
     fi
     ;;
+  history\ *)
+    if [ "${FAKE_HISTORY_ID:-}" = "$2" ]; then
+      printf '%s\n' "$FAKE_HISTORY_JSON"
+    else
+      printf '%s\n' '[]'
+    fi
+    ;;
   "list --all")
     if [ -n "${FAKE_LIST_JSON_AFTER_PULL:-}" ] && grep -F -- '--pull' "$COMMAND_LOG" >/dev/null; then
       printf '%s\n' "$FAKE_LIST_JSON_AFTER_PULL"
@@ -718,9 +725,7 @@ When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=
 The status should be success
 The output should include 'Restoring locally changed claims after pull'
 The contents of file "$COMMAND_LOG" should include 'unclaim df-released --force'
-The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee worker@example.com --force'
-The contents of file "$COMMAND_LOG" should not include 'df-stale --force'
-The contents of file "$COMMAND_LOG" should not include 'unclaim df-stale'
+The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee worker@example.com --if-status=in_progress --force'
 The file "$CHECKPOINT_FILE" should be exist
 End
 
@@ -730,8 +735,8 @@ after='[{"id":"df-claimed","status":"open","assignee":"","updated_at":"2099-01-0
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'Restoring locally changed claims after pull'
-The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee kamino4_exec_claimed --status in_progress --force'
-The contents of file "$COMMAND_LOG" should include 'update df-released --status open --force'
+The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee kamino4_exec_claimed --status in_progress --if-status=open --force'
+The contents of file "$COMMAND_LOG" should include 'update df-released --status open --if-status=in_progress --force'
 The contents of file "$COMMAND_LOG" should include 'unclaim df-released --force'
 The file "$CHECKPOINT_FILE" should be exist
 End
@@ -742,7 +747,7 @@ after='[{"id":"df-done","status":"closed","assignee":"","closed_at":"2099-01-03T
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'Restoring locally changed claims after pull'
-The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee kamino4_exec_claimed --status in_progress --force'
+The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee kamino4_exec_claimed --status in_progress --if-status=open --force'
 The contents of file "$COMMAND_LOG" should not include 'update df-done'
 The contents of file "$COMMAND_LOG" should not include 'unclaim df-done'
 The file "$CHECKPOINT_FILE" should be exist
@@ -754,7 +759,7 @@ after='[{"id":"df-accepted","status":"in_progress","assignee":"operator@example.
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'Restoring locally changed claims after pull'
-The contents of file "$COMMAND_LOG" should include 'update df-accepted --status closed --force'
+The contents of file "$COMMAND_LOG" should include 'update df-accepted --status closed --if-status=in_progress --force'
 The contents of file "$COMMAND_LOG" should not include 'unclaim df-accepted'
 The contents of file "$COMMAND_LOG" should not include 'update df-old'
 The file "$CHECKPOINT_FILE" should be exist
@@ -782,11 +787,23 @@ before='[{"id":"df-released","status":"open","assignee":"","updated_at":"2099-01
 after='[{"id":"df-released","status":"open","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/released"},{"id":"df-gone","status":"open","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-4/gone"}]'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_UNCLAIM_REFUSED=df-gone FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
-The output should include 'Skipped 1 local claim restore(s) that Beads refused'
+The output should include 'Skipped 1 local claim restore(s) superseded by a newer write or refused by Beads'
 The output should not include 'is not assigned'
 The contents of file "$COMMAND_LOG" should include 'unclaim df-released --force'
 The contents of file "$COMMAND_LOG" should include 'unclaim df-gone --force'
 The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'leaves a claim another actor wrote after the snapshot for the next cycle'
+before='[{"id":"df-moved","status":"in_progress","assignee":"kamino4_exec_moved-1","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-5/moved"},{"id":"df-stale","status":"in_progress","assignee":"kamino4_exec_stale-1","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-6/stale"}]'
+after='[{"id":"df-moved","status":"in_progress","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-5/moved"},{"id":"df-stale","status":"in_progress","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-6/stale"}]'
+history='[{"actor":"kamino3_exec_moved-2","created_at":"2099-01-03T00:00:00Z","event_type":"updated"},{"actor":"beads-linear-reconciler","created_at":"2099-01-02T00:00:00Z","event_type":"updated"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_HISTORY_ID=df-moved FAKE_HISTORY_JSON="$history" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Skipped 1 local claim restore(s) superseded by a newer write or refused by Beads'
+The contents of file "$COMMAND_LOG" should include 'history df-moved --events --limit 20 --json'
+The contents of file "$COMMAND_LOG" should not include 'update df-moved'
+The contents of file "$COMMAND_LOG" should include 'update df-stale --assignee kamino4_exec_stale-1 --if-status=in_progress --force'
 End
 
 It 'reopens an unassigned in_progress Bead the pull left behind'
