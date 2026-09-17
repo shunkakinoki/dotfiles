@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2016
 
-Describe 'config/openfactor-hooks/install.sh'
-SCRIPT="$PWD/config/openfactor-hooks/install.sh"
+Describe 'config/openfactor/install.sh'
+SCRIPT="$PWD/config/openfactor/install.sh"
 BASH_BIN="$(command -v bash)"
 BASH_DIR="$(dirname "$BASH_BIN")"
 
@@ -12,7 +12,8 @@ The output should equal '#!/usr/bin/env bash'
 End
 
 It 'skips cleanly when the CLI is not installed'
-When run "$BASH_BIN" -c 'PATH="$2:/usr/bin:/bin" "$1"' _ "$SCRIPT" "$BASH_DIR"
+TMP_HOME="$(mktemp -d)"
+When run env -u OPENFACTOR_BIN HOME="$TMP_HOME" "$BASH_BIN" -c 'PATH="$2:/usr/bin:/bin" "$1"' _ "$SCRIPT" "$BASH_DIR"
 The status should be success
 The error should include 'OpenFactor CLI not found; skipping orchestration hook registration'
 End
@@ -27,7 +28,7 @@ printf '%s\n' "$*"
 SH
 chmod +x "$TMP_BIN/openfactor"
 
-When run "$BASH_BIN" -c 'PATH="$1:$3" "$2"' _ "$TMP_BIN" "$SCRIPT" "$BASH_DIR"
+When run env -u OPENFACTOR_BIN HOME="$TMP_HOME" "$BASH_BIN" -c 'PATH="$1:$3" "$2"' _ "$TMP_BIN" "$SCRIPT" "$BASH_DIR"
 The output should equal 'hooks install --scope host --json'
 The status should be success
 End
