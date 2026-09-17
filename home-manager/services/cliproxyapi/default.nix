@@ -53,6 +53,15 @@ let
   };
 
   cliWrapper = pkgs.writeShellScriptBin "cliproxyapi" (builtins.readFile wrapperScript);
+
+  kaminoTunnelScript = pkgs.replaceVars ./scripts/kamino-tunnel.sh {
+    common = commonScript;
+  };
+
+  # Declarative credential-to-kamino mapping (credential filename, kamino host, socks5 port)
+  kaminoTunnelMapping = pkgs.writeText "kamino-tunnels.json" (
+    builtins.readFile ./scripts/kamino-tunnels.json.tpl
+  );
 in
 {
   # Hydrate auth cache after home-manager switch
@@ -185,5 +194,33 @@ in
       Unit = "cliproxyapi-backup.service";
     };
     Install.WantedBy = [ "timers.target" ];
+  };
+
+  # Kamino SOCKS tunnel instances (1 per kamino fleet node)
+  systemd.user.services."kamino-tunnel@" = lib.mkIf (objectstoreEnabled && host.isKyber) {
+    Unit = {
+      Description = "Kamino SOCKS tunnel %i";
+      After = [ "network.target" ];
+      Wants = [ "network.target" ];
+      X-SwitchMethod = "restart";
+    };
+    Service = {
+      Type = "simple";
+      ExecStart = "${kaminoTunnelScript} %i";
+      Restart = "on-failure";
+      RestartSec = "5s";
+      Environment = [
+        "HOME=/root"
+        "XDG_RUNTIME_DIR=/run/user/0"
+        "PATH=/root/.nix-profile/bin:/etc/profiles/per-user/root/bin:/nix/var/nix/profiles/default/bin:/usr/local/bin:/usr/bin:/bin"
+      ];
+      EnvironmentFile = [ "-${config.home.homeDirectory}/dotfiles/.env" ];
+    };
+    Install.WantedBy = [ "default.target" ];
+  };
+
+  # Install kamino tunnel mapping template
+  xdg.configFile."cliproxyapi/kamino-tunnels.json" = lib.mkIf (objectstoreEnabled && host.isKyber) {
+    source = kaminoTunnelMapping;
   };
 }

@@ -16,6 +16,18 @@ MANAGEMENT_PASSWORD="${CLIPROXY_MANAGEMENT_PASSWORD:-}"
 MANAGEMENT_KEY="${CLIPROXY_MANAGEMENT_PASSWORD:-${CLIPROXY_MANAGEMENT_KEY:-}}"
 export OBJECTSTORE_ENDPOINT OBJECTSTORE_BUCKET OBJECTSTORE_ACCESS_KEY OBJECTSTORE_SECRET_KEY OBJECTSTORE_LOCAL_PATH MANAGEMENT_PASSWORD
 
+render_proxy_url() {
+  local line proxy_url
+  proxy_url=$(printf '%s' "${CLIPROXY_PROXY_URL:-}" | @jq@ -Rs .) || return
+  while IFS= read -r line || [ -n "$line" ]; do
+    if [ "$line" = 'proxy-url: "__CLIPROXY_PROXY_URL__"' ]; then
+      printf 'proxy-url: %s\n' "$proxy_url"
+    else
+      printf '%s\n' "$line"
+    fi
+  done
+}
+
 render_opencode_api_key_entries() {
   local template="$1"
   local key_source="${OPENCODE_API_KEYS:-${OPENCODE_API_KEY:-}}"
@@ -77,6 +89,30 @@ ensure_oauth_priority() {
   done
 }
 
+assign_proxy_urls() {
+  local auth_dir="$1"
+  local global_proxy_url
+
+  global_proxy_url=$(@jq@ -r '.proxy-url // ""' "$CONFIG" 2>/dev/null)
+  if [ -z "$global_proxy_url" ]; then
+    return 0
+  fi
+
+  for f in "$auth_dir"/*.json; do
+    [ -f "$f" ] || continue
+
+    # Skip auths that are already marked as "direct" or "none"
+    existing_proxy=$(@jq@ -r '.proxy_url // ""' "$f" 2>/dev/null)
+    if [ "$existing_proxy" = "direct" ] || [ "$existing_proxy" = "none" ]; then
+      continue
+    fi
+
+    # Set the proxy_url to the global proxy URL
+    # shellcheck disable=SC2016
+    @jq@ --arg p "$global_proxy_url" '.proxy_url = $p' "$f" >"$f.tmp" && mv "$f.tmp" "$f"
+  done
+}
+
 if cliproxy_has_objectstore_credentials; then
   mkdir -p "$AUTH_DIR"
 
@@ -86,6 +122,8 @@ if cliproxy_has_objectstore_credentials; then
   fi
 
   ensure_oauth_priority "$AUTH_DIR" 300
+
+  assign_proxy_urls "$AUTH_DIR"
 
   if [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
     cliproxy_sync_auth_to_s3 "$AUTH_DIR"
@@ -110,7 +148,7 @@ if [ -f "$TEMPLATE" ]; then
     -e "s|__SURPLUS_API_KEY__|${SURPLUS_API_KEY:-}|g" \
     -e "s|__COMMANDCODE_API_KEY__|${COMMANDCODE_API_KEY:-}|g" \
     -e "s|__AMP_UPSTREAM_API_KEY__|${AMP_UPSTREAM_API_KEY:-}|g" \
-    >"$CONFIG"
+    | render_proxy_url >"$CONFIG"
 
   if [ "$(uname)" = "Linux" ] && [ -n "${CLIPROXY_API_KEY:-}" ]; then
     @sed@ -i \

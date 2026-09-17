@@ -506,6 +506,49 @@ The status should be success
 End
 End
 
+Describe 'proxy URL hydration'
+render_proxy_fixture() (
+  set -eu
+  local temp_home expected actual
+  temp_home=$(mktemp -d)
+  trap 'rm -rf "$temp_home"' EXIT
+  expected="${CLIPROXY_PROXY_URL:-}"
+  mkdir -p "$temp_home/dotfiles" "$temp_home/.cli-proxy-api"
+  printf 'CLIPROXY_PROXY_URL=%q\n' "$expected" >"$temp_home/dotfiles/.env"
+  printf '%s\n' 'proxy-url: "__CLIPROXY_PROXY_URL__"' 'port: 8317' >"$temp_home/.cli-proxy-api/config.template.yaml"
+  {
+    printf '%s\n' 'set -eu' 'unset CLIPROXY_PROXY_URL CLIPROXY_API_KEY' \
+      '. "$1"' 'cliproxy_load_env' \
+      'TEMPLATE="$HOME/.cli-proxy-api/config.template.yaml"' \
+      'CONFIG="$HOME/.cli-proxy-api/config.yaml"'
+    sed -n '/^render_proxy_url() {/,/^}/p; /^render_opencode_api_key_entries() {/,/^}/p; /^if \[ -f "$TEMPLATE" \]; then/,/^fi/p' "$SCRIPT" | sed 's|@jq@|jq|g; s|@sed@|sed|g'
+  } >"$temp_home/render.sh"
+  HOME="$temp_home" bash "$temp_home/render.sh" "$PWD/home-manager/services/cliproxyapi/scripts/common.sh"
+  actual=$(sed -n 's/^proxy-url: //p' "$temp_home/.cli-proxy-api/config.yaml")
+  EXPECTED_PROXY="$expected" jq -en --argjson actual "$actual" '$actual == env.EXPECTED_PROXY' >/dev/null
+  grep -Fx 'port: 8317' "$temp_home/.cli-proxy-api/config.yaml" >/dev/null
+)
+
+It 'hydrates an unset proxy as an empty string'
+unset CLIPROXY_PROXY_URL
+When run render_proxy_fixture
+The status should be success
+End
+
+It 'preserves URL characters without sed or YAML injection'
+export CLIPROXY_PROXY_URL='https://user:p%40ss&word|test"\@rp.evomi-proxy.com:1001'
+When run render_proxy_fixture
+The status should be success
+End
+
+It 'uses the runtime placeholder in both templates'
+When run bash -c 'for file in config/cliproxyapi/config.tpl.yaml config/cliproxyapi/config.template.yaml; do
+  grep -Fx '\''proxy-url: "__CLIPROXY_PROXY_URL__"'\'' "$file" >/dev/null || exit 1
+done'
+The status should be success
+End
+End
+
 Describe 'OAuth credential priority enforcement'
 setup_oauth_priority() {
   TEMP_PRIORITY=$(mktemp -d)
