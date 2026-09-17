@@ -736,6 +736,18 @@ The contents of file "$COMMAND_LOG" should include 'unclaim df-released --force'
 The file "$CHECKPOINT_FILE" should be exist
 End
 
+It 'leaves a Bead closed after the snapshot alone'
+before='[{"id":"df-done","status":"in_progress","assignee":"kamino2_exec_done","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-5/done"},{"id":"df-claimed","status":"in_progress","assignee":"kamino4_exec_claimed","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
+after='[{"id":"df-done","status":"closed","assignee":"","closed_at":"2099-01-03T00:00:00Z","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-5/done"},{"id":"df-claimed","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Restoring locally changed claims after pull'
+The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee kamino4_exec_claimed --status in_progress --force'
+The contents of file "$COMMAND_LOG" should not include 'update df-done'
+The contents of file "$COMMAND_LOG" should not include 'unclaim df-done'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
 It 'holds back active Beads whose body exceeds the Linear issue limit'
 huge="$(printf '%*s' 250001 '' | tr ' ' x)"
 issues='[{"id":"df-small","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/small"},{"id":"df-huge","status":"open","assignee":"","description":"'"$huge"'","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/huge"}]'
