@@ -740,6 +740,29 @@ if [ -n "$local_claim_lines" ]; then
   fi
 fi
 
+# A claim made while the pull was running is absent from the pre-pull snapshot,
+# so the restore above cannot see it; a refused restore leaves the same shape.
+# Either way the Bead ends up in_progress with no assignee, which no worker
+# picks up and no lane owns. The guarded update skips any Bead a worker has
+# re-claimed since the snapshot.
+wedged_ids="$(@jq@/bin/jq -r '
+  (if type == "object" and has("issues") then .issues else . end)
+  | .[]
+  | select(.status == "in_progress" and (.assignee // "") == "")
+  | .id
+' <<<"$all_issues")"
+if [ -n "$wedged_ids" ]; then
+  reopened=0
+  while IFS= read -r wedged_id; do
+    if "$bd_cli" -C "$repo_dir" update "$wedged_id" --if-status=in_progress --if-assignee= --status=open >/dev/null 2>&1; then
+      reopened=$((reopened + 1))
+    fi
+  done <<<"$wedged_ids"
+  if [ "$reopened" -gt 0 ]; then
+    log "Reopened $reopened unassigned in_progress Bead(s) the pull left behind"
+  fi
+fi
+
 if [ "$pull_status" -ne 0 ]; then
   restore_linear_last_sync
   if [ "$pull_status" -eq 75 ]; then
