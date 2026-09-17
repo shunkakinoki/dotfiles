@@ -10,8 +10,9 @@ linear_team_id="@linearTeamId@"
 linear_credentials_file="${XDG_CONFIG_HOME:-$HOME/.config}/linear/credentials.toml"
 # Linear rejects an issue body over 250,000 characters with a generic
 # "Argument Validation Error", which bd surfaces as a per-issue warning rather
-# than a failed run. Hold the oversized Bead back so one unpublishable record
-# cannot keep failing every batch it lands in.
+# than a failed run. The description is truncated to fit under the rendered
+# sections; a Bead whose sections alone exceed the limit is held back so one
+# unpublishable record cannot keep failing every batch it lands in.
 linear_body_limit=250000
 sync_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/beads-linear-sync"
 reconciliation_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/beads-reconciliation"
@@ -366,10 +367,16 @@ rendered_sections_jq='
     (.description // "")
     | [match("(^|\\n\\n)## (Acceptance Criteria|Design|Notes)\\n\\n|\\n*<!-- bd-[a-z]+: [0-9a-z]+ -->"; "g")]
     | if length > 0 then .[0].offset else null end;
+  def rendered_sections_length:
+    ((.acceptance_criteria // "") | length) + ((.design // "") | length) + ((.notes // "") | length);
+  def description_cap:
+    [$body_limit - rendered_sections_length - 10000, 0] | max;
   def canonical_description:
-    (.description // "") as $description
+    description_cap as $cap
+    | (.description // "") as $description
     | $description[:(rendered_cut // ($description | length))]
-    | sub("\\s+$"; "");
+    | sub("\\s+$"; "")
+    | .[:$cap];
   def fingerprint:
     {title, status, assignee, priority, issue_type, acceptance_criteria, design, notes, description: canonical_description}
     | tojson;
@@ -378,7 +385,7 @@ rendered_sections_jq='
 rendered_section_cuts='
   ($ids | split(",") | map(select(length > 0) | {key: ., value: true}) | from_entries) as $wanted
   | issues | .[]
-  | select($wanted[.id] != null and rendered_cut != null)
+  | select($wanted[.id] != null and (rendered_cut != null or ((.description // "") | length) > description_cap))
   | {id: .id, body: canonical_description}
 '
 
@@ -403,7 +410,7 @@ normalize_rendered_sections() {
   if [ -z "$issue_ids" ]; then
     return 0
   fi
-  cuts="$(@jq@/bin/jq -c --arg ids "$issue_ids" "$rendered_sections_jq $rendered_section_cuts" <<<"$issues_json")"
+  cuts="$(@jq@/bin/jq -c --arg ids "$issue_ids" --argjson body_limit "$linear_body_limit" "$rendered_sections_jq $rendered_section_cuts" <<<"$issues_json")"
   if [ -z "$cuts" ]; then
     return 0
   fi
@@ -643,13 +650,9 @@ if [ -s "$push_progress_file" ]; then
 fi
 # Keep deferred progress content out of jq's argv. The file may contain many
 # batches, so passing it with --arg exceeds Linux's per-argument limit.
-closed_push_selection="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" --rawfile pushed "$pushed_progress_input" '
-  def body_length:
-    ((.description // "") | length)
-    + ((.design // "") | length)
-    + ((.acceptance_criteria // "") | length)
-    + ((.notes // "") | length);
-  (if type == "object" and has("issues") then .issues else . end)
+closed_push_selection="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" --rawfile pushed "$pushed_progress_input" "$rendered_sections_jq"'
+  def body_length: (canonical_description | length) + rendered_sections_length;
+  issues
   | ($pushed | split("\n") | map(select(length > 0) | {key: ., value: true}) | from_entries) as $already_pushed
   | [
     .[]
@@ -879,11 +882,7 @@ if [ -s "$pushed_active_file" ]; then
   pushed_active_input="$pushed_active_file"
 fi
 changed_active_candidates="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" "$rendered_sections_jq"'
-  def body_length:
-    ((.description // "") | length)
-    + ((.design // "") | length)
-    + ((.acceptance_criteria // "") | length)
-    + ((.notes // "") | length);
+  def body_length: (canonical_description | length) + rendered_sections_length;
   issues | .[]
   | select(.status != "closed")
   | ((.external_ref // "") | contains("linear.app") | not) as $unlinked
