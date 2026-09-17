@@ -4,16 +4,16 @@ set -euo pipefail
 . "@common@"
 
 # Usage: kamino-tunnel.sh <index>
-#   <index>: 1, 2, or 3 corresponding to kamino1/2/3 and ports 1081/1082/1083
+#   <index>: positive integer (1, 2, 3, ...) corresponding to kamino<index> and port 1080+<index>
 
 if [ $# -ne 1 ]; then
-  echo "Usage: $0 <index (1-3)>" >&2
+  echo "Usage: $0 <index (positive integer)>" >&2
   exit 1
 fi
 
 INDEX="$1"
-if ! [[ "$INDEX" =~ ^[1-3]$ ]]; then
-  echo "Index must be 1, 2, or 3" >&2
+if ! [[ "$INDEX" =~ ^[1-9][0-9]*$ ]]; then
+  echo "Index must be a positive integer" >&2
   exit 1
 fi
 
