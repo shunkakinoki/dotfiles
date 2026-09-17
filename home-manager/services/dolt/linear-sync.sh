@@ -723,9 +723,10 @@ local_claim_lines="$(printf '%s\n%s\n' "$issues_before_pull" "$all_issues" | @jq
 # Workers keep claiming and releasing while the pull runs, so a Bead can
 # already hold its restored state, or a claim newer than the listing above,
 # by the time bd is asked to write it. Each write applies only while the Bead
-# still carries what the listing read, so a claim written after it survives,
-# and a refused write must not abort the cycle; the rest of the restore still
-# runs.
+# still has the status the listing read, so a claim or closure written after
+# it survives. The assignee is not guarded: bd refuses an assignee guard next
+# to the force that overwriting the owner's in_progress claim needs. A refused
+# write must not abort the cycle; the rest of the restore still runs.
 if [ -n "$local_claim_lines" ]; then
   log "Restoring locally changed claims after pull"
   restore_failures=0
@@ -741,7 +742,7 @@ if [ -n "$local_claim_lines" ]; then
     restored=1
     if [ "${#restore_args[@]}" -gt 0 ]; then
       "$bd_cli" -C "$repo_dir" update "$restore_id" "${restore_args[@]}" \
-        --if-assignee="$pulled_assignee" --if-status="$pulled_status" --force >/dev/null 2>&1 || restored=0
+        --if-status="$pulled_status" --force >/dev/null 2>&1 || restored=0
     fi
     if [ "$restored" -eq 0 ]; then
       restore_failures=$((restore_failures + 1))
