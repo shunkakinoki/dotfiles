@@ -360,6 +360,7 @@ push_issue_batches() {
 # rendered heading when every section after it is a prefix of the field it was
 # rendered from; any other tail is a real edit and is pushed as-is. The cut
 # bumps updated_at, which the pushed-active ledger below absorbs.
+# shellcheck disable=SC2016 # jq program; $ names are jq variables.
 rendered_section_cuts='
   def issues: if type == "object" and has("issues") then .issues else . end;
   def field($name):
@@ -387,8 +388,8 @@ rendered_section_cuts='
 '
 
 written_since_snapshot() {
-  "$bd_cli" -C "$repo_dir" history "$1" --events --limit 20 --json 2>/dev/null </dev/null \
-    | @jq@/bin/jq -r --arg since "$snapshot_taken_at" --arg actor "$BEADS_ACTOR" '
+  "$bd_cli" -C "$repo_dir" history "$1" --events --limit 20 --json 2>/dev/null </dev/null |
+    @jq@/bin/jq -r --arg since "$snapshot_taken_at" --arg actor "$BEADS_ACTOR" '
       if type == "array" then any(.[]; .actor != $actor and .created_at >= $since) else false end
     ' 2>/dev/null || echo false
 }
