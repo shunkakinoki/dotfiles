@@ -2,6 +2,8 @@
 # Register OpenFactor's host-scoped orchestration hooks when the OpenFactor CLI
 # is installed. The CLI owns harness adapters and receipts; this wrapper only
 # provides the durable Home Manager activation boundary.
+# Hook registration is optional, so a missing, outdated, or failing CLI warns
+# instead of aborting the rest of Home Manager activation.
 set -euo pipefail
 
 OPENFACTOR_BIN="${OPENFACTOR_BIN:-}"
@@ -15,8 +17,10 @@ if [[ -z $OPENFACTOR_BIN ]]; then
 fi
 
 if [[ ! -x $OPENFACTOR_BIN ]]; then
-  echo "OpenFactor CLI is not executable: $OPENFACTOR_BIN" >&2
-  exit 1
+  echo "warning: OpenFactor CLI is not executable: $OPENFACTOR_BIN; skipping orchestration hook registration" >&2
+  exit 0
 fi
 
-exec "$OPENFACTOR_BIN" hooks install --scope host --json
+if ! "$OPENFACTOR_BIN" hooks install --scope host --json; then
+  echo "warning: OpenFactor hook registration failed; continuing activation" >&2
+fi

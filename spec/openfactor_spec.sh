@@ -32,4 +32,27 @@ When run env -u OPENFACTOR_BIN HOME="$TMP_HOME" "$BASH_BIN" -c 'PATH="$1:$3" "$2
 The output should equal 'hooks install --scope host --json'
 The status should be success
 End
+
+It 'warns and continues when the CLI cannot register hooks'
+TMP_HOME="$(mktemp -d)"
+TMP_BIN="$TMP_HOME/bin"
+mkdir -p "$TMP_BIN"
+cat >"$TMP_BIN/openfactor" <<'SH'
+#!/usr/bin/env bash
+echo 'Unknown command: hooks install' >&2
+exit 2
+SH
+chmod +x "$TMP_BIN/openfactor"
+
+When run env -u OPENFACTOR_BIN HOME="$TMP_HOME" "$BASH_BIN" -c 'PATH="$1:$3" "$2"' _ "$TMP_BIN" "$SCRIPT" "$BASH_DIR"
+The status should be success
+The error should include 'OpenFactor hook registration failed; continuing activation'
+End
+
+It 'warns and continues when OPENFACTOR_BIN is not executable'
+TMP_HOME="$(mktemp -d)"
+When run env HOME="$TMP_HOME" OPENFACTOR_BIN="$TMP_HOME/missing" "$BASH_BIN" "$SCRIPT"
+The status should be success
+The error should include 'OpenFactor CLI is not executable'
+End
 End
