@@ -89,25 +89,49 @@ ensure_oauth_priority() {
   done
 }
 
+# Path to the shared lock for credential proxy updates.
+LOCK_FILE="/tmp/cliproxyapi-tunnel-update.lock"
+
+# Get the credential files mapped to Kamino tunnels.
+get_tunnel_mapped_auth_files() {
+  local mapping_file="${HOME}/.config/cliproxyapi/kamino-tunnels.json"
+  if [ ! -f "$mapping_file" ]; then
+    return 0
+  fi
+  @jq@ -r '.[] | select(.credential) | .credential' "$mapping_file" 2>/dev/null | sort -u
+}
+
 assign_proxy_urls() {
   local auth_dir="$1"
   local global_proxy_url
+  local mapped_auth_files
+  local f existing_proxy
+
+  mapped_auth_files="$(get_tunnel_mapped_auth_files)"
 
   global_proxy_url=$(@jq@ -r '.proxy-url // ""' "$CONFIG" 2>/dev/null)
-  if [ -z "$global_proxy_url" ]; then
-    return 0
-  fi
+
+  # Acquire the shared lock for the entire credential update.
+  flock -n 200 || {
+    echo "⚠️  Could not acquire lock for proxy URL update" >&2
+    return 1
+  } 200>"$LOCK_FILE"
 
   for f in "$auth_dir"/*.json; do
     [ -f "$f" ] || continue
 
-    # Skip auths that are already marked as "direct" or "none"
+    # Skip auths that are already marked as "direct" or "none".
     existing_proxy=$(@jq@ -r '.proxy_url // ""' "$f" 2>/dev/null)
     if [ "$existing_proxy" = "direct" ] || [ "$existing_proxy" = "none" ]; then
       continue
     fi
 
-    # Set the proxy_url to the global proxy URL
+    # Skip auths that are mapped to Kamino tunnels.
+    if [ -n "$mapped_auth_files" ] && printf '%s\n' "$mapped_auth_files" | grep -Fx "$f" >/dev/null; then
+      continue
+    fi
+
+    # Set or clear the proxy_url based on the global proxy URL.
     # shellcheck disable=SC2016
     @jq@ --arg p "$global_proxy_url" '.proxy_url = $p' "$f" >"$f.tmp" && mv "$f.tmp" "$f"
   done
@@ -147,8 +171,8 @@ if [ -f "$TEMPLATE" ]; then
     -e "s|__VERBOO_API_KEY__|${VERBOO_API_KEY:-}|g" \
     -e "s|__SURPLUS_API_KEY__|${SURPLUS_API_KEY:-}|g" \
     -e "s|__COMMANDCODE_API_KEY__|${COMMANDCODE_API_KEY:-}|g" \
-    -e "s|__AMP_UPSTREAM_API_KEY__|${AMP_UPSTREAM_API_KEY:-}|g" \
-    | render_proxy_url >"$CONFIG"
+    -e "s|__AMP_UPSTREAM_API_KEY__|${AMP_UPSTREAM_API_KEY:-}|g" |
+    render_proxy_url >"$CONFIG"
 
   if [ "$(uname)" = "Linux" ] && [ -n "${CLIPROXY_API_KEY:-}" ]; then
     @sed@ -i \

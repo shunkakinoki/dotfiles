@@ -12,7 +12,7 @@ if [ $# -ne 1 ]; then
 fi
 
 INDEX="$1"
-if ! [[ "$INDEX" =~ ^[1-9][0-9]*$ ]]; then
+if ! [[ $INDEX =~ ^[1-9][0-9]*$ ]]; then
   echo "Index must be a positive integer" >&2
   exit 1
 fi
@@ -25,7 +25,7 @@ EXPECTED_HOST_PORT="${HOST}:${PORT}"
 MAPPING_FILE="${HOME}/.config/cliproxyapi/kamino-tunnels.json"
 if [ ! -f "$MAPPING_FILE" ]; then
   echo "⚠️  Kamino tunnel mapping not found: $MAPPING_FILE" >&2
-  exit 0  # fail closed: no tunnel
+  exit 0 # fail closed: no tunnel
 fi
 
 # Load and validate mapping
@@ -39,7 +39,7 @@ fi
 matches=$(echo "$map_json" | @jq@ -c --arg host "$HOST" --arg port "$PORT" '.[] | select(.host == $host and (.port|tostring) == $port)')
 if [ -z "$matches" ]; then
   echo "ℹ️  No credentials mapped to $EXPECTED_HOST_PORT" >&2
-  exit 0  # fail closed: no tunnel
+  exit 0 # fail closed: no tunnel
 fi
 
 # Extract credential filenames
@@ -68,7 +68,7 @@ update_auth_file() {
   fi
   # Update proxy_url field using jq
   local new_proxy="socks5://127.0.0.1:${PORT}"
-  if @jq@ --arg proxy "$new_proxy" '.proxy_url = $proxy' "$filepath" > "${filepath}.tmp" 2>/dev/null; then
+  if @jq@ --arg proxy "$new_proxy" '.proxy_url = $proxy' "$filepath" >"${filepath}.tmp" 2>/dev/null; then
     mv "${filepath}.tmp" "$filepath"
     echo "✅  Updated proxy_url in $filename to $new_proxy"
   else

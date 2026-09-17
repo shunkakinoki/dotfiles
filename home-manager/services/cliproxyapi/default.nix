@@ -56,6 +56,7 @@ let
 
   kaminoTunnelScript = pkgs.replaceVars ./scripts/kamino-tunnel.sh {
     common = commonScript;
+    jq = "${pkgs.jq}/bin/jq";
   };
 
   # Declarative credential-to-kamino mapping (credential filename, kamino host, socks5 port)
