@@ -691,25 +691,27 @@ run_linear pull @coreutils@/bin/timeout 720 "$bd_cli" -C "$repo_dir" linear sync
 
 all_issues="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0 --skip-labels)"
 
-# The cursor-free pull skips Beads' local-change guard, so every run wrote
-# Linear's assignee and workflow state over a local claim or release. A claim
-# made after the previous push still reads Todo in Linear, so the pull demoted
-# it to open and the restore below then left an open Bead that carried a
-# worker assignee, which no lane can claim and no worker will resume. Active
-# Beads changed locally in this window keep their local assignee and status,
-# matching the active delta push below. Beads writes pulled fields before it
-# reports the pull result, so this runs before a deferred or rejected pull
-# exits. A Bead the pull reports closed is left closed: a completion made
-# after the snapshot would otherwise be rewritten back to its old claim and
-# pushed to Linear as reopened. A Bead closed locally in the window is closed
+# The cursor-free pull skips Beads' local-change guard, so every run writes
+# Linear's assignee and workflow state over every local claim or release. A
+# lane identity is not a Linear user, so a pushed claim still reads as the
+# owner's Linear assignee, and a claim made after the previous push still
+# reads Todo: each pull rewrites the claim until it is restored here. Every
+# active Bead keeps its local assignee and status, matching the active delta
+# push below; a Bead claimed before the previous run is rewritten by the pull
+# exactly like a recent one. Beads writes pulled fields before it reports the
+# pull result, so this runs before a deferred or rejected pull exits. A Bead
+# the pull reports closed is left closed: a completion made after the
+# snapshot would otherwise be rewritten back to its old claim and pushed to
+# Linear as reopened. A Bead closed locally since the previous run is closed
 # again when the pull reopened it: Linear still carries the pre-close state
 # until the push below lands, and a resurrected Bead is re-dispatched to a
-# worker before that happens.
+# worker before that happens. An older local closure is not re-asserted, so
+# a Bead deliberately reopened in Linear stays open.
 local_claim_lines="$(printf '%s\n%s\n' "$issues_before_pull" "$all_issues" | @jq@/bin/jq -r -s --arg previous_sync "$previous_sync" '
   def issues: if type == "object" and has("issues") then .issues else . end;
   (.[0] | issues
     | map(
-        select($previous_sync == "" or .updated_at >= $previous_sync)
+        select(.status != "closed" or $previous_sync == "" or .updated_at >= $previous_sync)
         | {key: .id, value: {assignee: (.assignee // ""), status: .status}}
       )
     | from_entries) as $local
@@ -719,8 +721,11 @@ local_claim_lines="$(printf '%s\n%s\n' "$issues_before_pull" "$all_issues" | @jq
   | [.id, $local[.id].assignee, $local[.id].status, (.assignee // ""), .status] | join("\u001f")
 ')"
 # Workers keep claiming and releasing while the pull runs, so a Bead can
-# already hold its restored state by the time bd is asked to write it. One
-# such refusal must not abort the cycle; the rest of the restore still runs.
+# already hold its restored state, or a claim newer than the listing above,
+# by the time bd is asked to write it. Each write applies only while the Bead
+# still carries what the listing read, so a claim written after it survives,
+# and a refused write must not abort the cycle; the rest of the restore still
+# runs.
 if [ -n "$local_claim_lines" ]; then
   log "Restoring locally changed claims after pull"
   restore_failures=0
@@ -733,15 +738,19 @@ if [ -n "$local_claim_lines" ]; then
     if [ "$restore_status" != "$pulled_status" ]; then
       restore_args+=(--status "$restore_status")
     fi
+    restored=1
     if [ "${#restore_args[@]}" -gt 0 ]; then
-      "$bd_cli" -C "$repo_dir" update "$restore_id" "${restore_args[@]}" --force >/dev/null 2>&1 || restore_failures=$((restore_failures + 1))
+      "$bd_cli" -C "$repo_dir" update "$restore_id" "${restore_args[@]}" \
+        --if-assignee="$pulled_assignee" --if-status="$pulled_status" --force >/dev/null 2>&1 || restored=0
     fi
-    if [ -z "$restore_assignee" ] && [ -n "$pulled_assignee" ] && [ "$restore_status" != "closed" ]; then
+    if [ "$restored" -eq 0 ]; then
+      restore_failures=$((restore_failures + 1))
+    elif [ -z "$restore_assignee" ] && [ -n "$pulled_assignee" ] && [ "$restore_status" != "closed" ]; then
       "$bd_cli" -C "$repo_dir" unclaim "$restore_id" --force >/dev/null 2>&1 || restore_failures=$((restore_failures + 1))
     fi
   done <<<"$local_claim_lines"
   if [ "$restore_failures" -gt 0 ]; then
-    log "Skipped $restore_failures local claim restore(s) that Beads refused"
+    log "Skipped $restore_failures local claim restore(s) superseded by a newer write or refused by Beads"
   fi
 fi
 
