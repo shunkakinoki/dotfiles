@@ -92,6 +92,9 @@
         },
         "kimi-k3": {
           "name": "Kimi K3 (via local CLIProxyAPI)"
+        },
+        "free": {
+          "name": "Free router fallback (via local CLIProxyAPI)"
         }
       }
     },

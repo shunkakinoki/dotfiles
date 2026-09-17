@@ -92,6 +92,9 @@
         },
         "__KIMI__": {
           "name": "__KIMI_PRETTY__ (via local CLIProxyAPI)"
+        },
+        "free": {
+          "name": "Free router fallback (via local CLIProxyAPI)"
         }
       }
     },
