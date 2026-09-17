@@ -6,12 +6,12 @@ max_workers = 2
 # usable here, so pin the default to opencode.
 default_agent = 'opencode'
 
-# Pi review subagents: ox-alpha via OpenRouter first, cliproxy free as fallback.
-# Both are allow-failure; panels list pi-oxalpha before pi so ox-alpha runs first.
-[review.subagents.pi-oxalpha]
+# Pi review subagents: union-alpha via OpenRouter first, cliproxy free as fallback.
+# Both are allow-failure; panels list pi-unionalpha before pi so union-alpha runs first.
+[review.subagents.pi-unionalpha]
 agent = 'pi'
 provider = 'openrouter'
-model = 'stealth/ox-alpha'
+model = 'stealth/union-alpha'
 review_type = 'default'
 allow_failure = true
 
@@ -34,7 +34,7 @@ allow_failure = true
 
 [review.panels.full]
 # Droid is useful when available, but its Kyber launcher is currently flaky.
-members = ['opencode', 'droid', 'pi-oxalpha', 'pi']
+members = ['opencode', 'droid', 'pi-unionalpha', 'pi']
 synthesis_agent = 'opencode'
 
 [ci]

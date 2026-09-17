@@ -493,8 +493,8 @@ codex-header-defaults:
   beta-features: "multi_agent"
 # OpenAI compatibility providers
 openai-compatibility:
-  # Temporary campaign provider: serves stealth/ox-alpha under the same
-  # "free" alias so callers keep using "free" while ox-alpha is evaluated.
+  # Temporary campaign provider: serves stealth/union-alpha under the same
+  # "free" alias so callers keep using "free" while union-alpha is evaluated.
   # Same OpenRouter token; remove when the trial ends.
   # Note: with two providers serving "free", requests round-robin between
   # them per request (registry sorts by client count then provider name).
@@ -505,9 +505,9 @@ openai-compatibility:
     api-key-entries:
       - api-key: "__OPENROUTER_API_KEY__"
     models:
-      - name: "stealth/ox-alpha"
+      - name: "stealth/union-alpha"
         alias: "free"
-        display-name: "Free (ox-alpha via openrouter-campaign)"
+        display-name: "Free (union-alpha via openrouter-campaign)"
   - name: "openrouter"
     priority: 100
     base-url: "https://openrouter.ai/api/v1"
