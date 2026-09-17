@@ -159,7 +159,7 @@
             "type": "command"
           },
           {
-            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
+            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh claude",
             "type": "command"
           }
         ],
@@ -239,7 +239,7 @@
       {
         "hooks": [
           {
-            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
+            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh claude",
             "type": "command"
           }
         ],
@@ -365,7 +365,7 @@
             "type": "command"
           },
           {
-            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
+            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh claude",
             "type": "command"
           }
         ]
