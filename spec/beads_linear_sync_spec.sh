@@ -748,6 +748,18 @@ The contents of file "$COMMAND_LOG" should not include 'unclaim df-done'
 The file "$CHECKPOINT_FILE" should be exist
 End
 
+It 'closes again a Bead closed locally that the pull reopened'
+before='[{"id":"df-accepted","status":"closed","assignee":"","closed_at":"2099-01-02T00:00:00Z","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-6/accepted"},{"id":"df-old","status":"closed","assignee":"","closed_at":"2000-01-01T00:00:00Z","updated_at":"2000-01-01T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/old"}]'
+after='[{"id":"df-accepted","status":"in_progress","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-6/accepted"},{"id":"df-old","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/old"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Restoring locally changed claims after pull'
+The contents of file "$COMMAND_LOG" should include 'update df-accepted --status closed --force'
+The contents of file "$COMMAND_LOG" should not include 'unclaim df-accepted'
+The contents of file "$COMMAND_LOG" should not include 'update df-old'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
 It 'holds back active Beads whose body exceeds the Linear issue limit'
 huge="$(printf '%*s' 250001 '' | tr ' ' x)"
 issues='[{"id":"df-small","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/small"},{"id":"df-huge","status":"open","assignee":"","description":"'"$huge"'","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/huge"}]'
@@ -1041,7 +1053,7 @@ The status should be success
 End
 
 It 'installs the Kyber Linux systemd timer'
-When run bash -c "timer=\$(sed -n '/systemd.user.timers.dolt-linear-sync/,/^  };/p' '$MODULE'); grep -F 'OnBootSec = \"4min\";' <<<\"\$timer\" >/dev/null && grep -F 'OnCalendar = \"*-*-* *:02/15:00\";' <<<\"\$timer\" >/dev/null && ! grep -F 'OnUnitActiveSec' <<<\"\$timer\" >/dev/null && grep -F 'Persistent = true;' <<<\"\$timer\" >/dev/null && grep -F 'X-SwitchMethod = \"restart\";' '$MODULE' >/dev/null"
+When run bash -c "timer=\$(sed -n '/systemd.user.timers.dolt-linear-sync/,/^  };/p' '$MODULE'); grep -F 'OnBootSec = \"4min\";' <<<\"\$timer\" >/dev/null && grep -F 'OnCalendar = \"*-*-* *:02/15:00\";' <<<\"\$timer\" >/dev/null && ! grep -F 'OnUnitActiveSec' <<<\"\$timer\" >/dev/null && grep -F 'Persistent = true;' <<<\"\$timer\" >/dev/null && grep -F 'X-SwitchMethod = \"keep-old\";' '$MODULE' >/dev/null"
 The status should be success
 End
 End
