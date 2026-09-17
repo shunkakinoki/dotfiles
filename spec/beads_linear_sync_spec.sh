@@ -396,6 +396,13 @@ case "${1:-} ${2:-}" in
       echo "Error updating $2: assignee mismatch" >&2
       exit 1
     fi
+    update_id="$2"
+    while [ "$#" -gt 0 ]; do
+      if [ "$1" = "--body-file" ] && [ -n "${FAKE_BODY_LOG:-}" ]; then
+        { printf "%s:" "$update_id"; cat "$2"; printf "\n"; } >>"$FAKE_BODY_LOG"
+      fi
+      shift
+    done
     ;;
   history\ *)
     if [ "${FAKE_HISTORY_ID:-}" = "$2" ]; then
@@ -804,6 +811,30 @@ The output should include 'Skipped 1 local claim restore(s) superseded by a newe
 The contents of file "$COMMAND_LOG" should include 'history df-moved --events --limit 20 --json'
 The contents of file "$COMMAND_LOG" should not include 'update df-moved'
 The contents of file "$COMMAND_LOG" should include 'update df-stale --assignee kamino4_exec_stale-1 --if-status=in_progress --force'
+End
+
+It 'restores a description the pull extended with rendered sections'
+before='[{"id":"df-grown","status":"open","assignee":"","description":"Body text\n","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/grown"},{"id":"df-empty","status":"closed","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/empty"},{"id":"df-edited","status":"open","assignee":"","description":"Old body","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-3/edited"},{"id":"df-same","status":"open","assignee":"","description":"Same body","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-4/same"}]'
+after='[{"id":"df-grown","status":"open","assignee":"","description":"Body text\n\n## Acceptance Criteria\n\n- passes\n\n## Notes\n\n- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/grown"},{"id":"df-empty","status":"closed","assignee":"","description":"## Notes\n\n- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/empty"},{"id":"df-edited","status":"open","assignee":"","description":"Old body edited in Linear","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-3/edited"},{"id":"df-same","status":"open","assignee":"","description":"Same body","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-4/same"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_BODY_LOG="$TEST_ROOT/bodies.log" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Restored 2 description(s) the pull extended with rendered sections; skipped 0'
+The contents of file "$COMMAND_LOG" should include 'update df-grown --body-file'
+The contents of file "$COMMAND_LOG" should include 'update df-empty --body-file'
+The contents of file "$COMMAND_LOG" should not include 'update df-edited'
+The contents of file "$COMMAND_LOG" should not include 'update df-same'
+The contents of file "$TEST_ROOT/bodies.log" should equal "$(printf 'df-grown:Body text\n\ndf-empty:')"
+The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'leaves a description another actor wrote after the snapshot for the next cycle'
+before='[{"id":"df-grown","status":"in_progress","assignee":"kamino4_exec_grown-1","description":"Body text","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/grown"}]'
+after='[{"id":"df-grown","status":"in_progress","assignee":"kamino4_exec_grown-1","description":"Body text\n\n## Notes\n\n- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/grown"}]'
+history='[{"actor":"kamino4_exec_grown-1","created_at":"2099-01-03T00:00:00Z","event_type":"updated"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_HISTORY_ID=df-grown FAKE_HISTORY_JSON="$history" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Restored 0 description(s) the pull extended with rendered sections; skipped 1'
+The contents of file "$COMMAND_LOG" should not include 'update df-grown'
 End
 
 It 'reopens an unassigned in_progress Bead the pull left behind'
