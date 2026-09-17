@@ -353,38 +353,33 @@ push_issue_batches() {
   fi
 }
 
-# A push renders the acceptance criteria, design, and notes sections after the
-# description in the Linear body and then writes that rendered body back into
-# the Bead description, so pushing an unchanged Bead again appends a second
-# copy of every section. Before each push the description is cut at the first
-# rendered heading when every section after it is a prefix of the field it was
-# rendered from; any other tail is a real edit and is pushed as-is. The cut
-# bumps updated_at, which the pushed-active ledger below absorbs.
+# A push renders the acceptance criteria, design, and notes sections and a
+# bd marker comment after the description in the Linear body, and the pull
+# imports that rendered body back into the Bead description, so each cycle
+# appends another copy of every section. The description is cut at the first
+# rendered heading or marker before it is pushed; the fields stay the source
+# of those sections.
+# shellcheck disable=SC2016 # jq programs; $ names are jq variables.
+rendered_sections_jq='
+  def issues: if type == "object" and has("issues") then .issues else . end;
+  def rendered_cut:
+    (.description // "")
+    | [match("(^|\\n\\n)## (Acceptance Criteria|Design|Notes)\\n\\n|\\n*<!-- bd-[a-z]+: [0-9a-z]+ -->"; "g")]
+    | if length > 0 then .[0].offset else null end;
+  def canonical_description:
+    (.description // "") as $description
+    | $description[:(rendered_cut // ($description | length))]
+    | sub("\\s+$"; "");
+  def fingerprint:
+    {title, status, assignee, priority, issue_type, acceptance_criteria, design, notes, description: canonical_description}
+    | tojson;
+'
 # shellcheck disable=SC2016 # jq program; $ names are jq variables.
 rendered_section_cuts='
-  def issues: if type == "object" and has("issues") then .issues else . end;
-  def field($name):
-    if $name == "Acceptance Criteria" then (.acceptance_criteria // "")
-    elif $name == "Design" then (.design // "")
-    else (.notes // "") end;
   ($ids | split(",") | map(select(length > 0) | {key: ., value: true}) | from_entries) as $wanted
   | issues | .[]
-  | select($wanted[.id] != null)
-  | . as $issue
-  | (.description // "") as $description
-  | [$description | match("(^|\\n\\n)## (Acceptance Criteria|Design|Notes)\\n\\n"; "g")] as $headings
-  | select(($headings | length) > 0)
-  | select(
-      [range(0; $headings | length) as $i
-        | ($headings[$i]) as $heading
-        | ($heading.offset + $heading.length) as $start
-        | (if $i + 1 < ($headings | length) then $headings[$i + 1].offset else ($description | length) end) as $end
-        | ($description[$start:$end] | sub("\\s+$"; "")) as $body
-        | ($issue | field($heading.captures[1].string) | sub("\\s+$"; "")) | startswith($body)
-      ] | all
-    )
-  | ($headings[0].offset) as $cut
-  | {id: .id, body: $description[:$cut]}
+  | select($wanted[.id] != null and rendered_cut != null)
+  | {id: .id, body: canonical_description}
 '
 
 written_since_snapshot() {
@@ -408,7 +403,7 @@ normalize_rendered_sections() {
   if [ -z "$issue_ids" ]; then
     return 0
   fi
-  cuts="$(@jq@/bin/jq -c --arg ids "$issue_ids" "$rendered_section_cuts" <<<"$issues_json")"
+  cuts="$(@jq@/bin/jq -c --arg ids "$issue_ids" "$rendered_sections_jq $rendered_section_cuts" <<<"$issues_json")"
   if [ -z "$cuts" ]; then
     return 0
   fi
@@ -873,44 +868,48 @@ if [ "$pull_status" -ne 0 ]; then
   log "Linear pull failed with status $pull_status"
   exit "$pull_status"
 fi
-# The push writes the rendered body back and bumps updated_at past this
-# cycle's checkpoint, so a Bead pushed last cycle would be re-selected every
-# cycle. The ledger of "id updated_at" pairs recorded after the last
-# successful active push identifies those untouched Beads; any later write
-# changes updated_at and re-selects the Bead. Unlinked Beads always retry.
+# The push and the pull both bump updated_at, so by timestamp alone a Bead
+# pushed last cycle is re-selected every cycle. The ledger keeps a hash of
+# the content each push sent (title, state, fields, and the cut description);
+# a linked Bead whose hash is unchanged has nothing new to push. Unlinked
+# Beads always retry.
 pushed_active_file="$sync_state_dir/pushed-active-$repo_slug"
 pushed_active_input=/dev/null
 if [ -s "$pushed_active_file" ]; then
   pushed_active_input="$pushed_active_file"
 fi
-changed_active_selection="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" --rawfile pushed "$pushed_active_input" '
+changed_active_candidates="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" "$rendered_sections_jq"'
   def body_length:
     ((.description // "") | length)
     + ((.design // "") | length)
     + ((.acceptance_criteria // "") | length)
     + ((.notes // "") | length);
-  ($pushed | split("\n") | map(select(length > 0) | split(" ") | {key: .[0], value: .[1]}) | from_entries) as $already_pushed
-  | (if type == "object" and has("issues") then .issues else . end)
-  | [
-    .[]
-    | select(
-        .status != "closed"
-        and (
-          $previous_sync == ""
-          or (.updated_at >= $previous_sync and $already_pushed[.id] != .updated_at)
-          or ((.external_ref // "") | contains("linear.app") | not)
-        )
-      )
-    | {id: .id, oversized: (body_length > $body_limit)}
-  ]
-  | {
-    ids: (map(select(.oversized | not) | .id) | join(",")),
-    oversized: (map(select(.oversized)) | length),
-  }
-  | "\(.oversized)\n\(.ids)"
+  issues | .[]
+  | select(.status != "closed")
+  | ((.external_ref // "") | contains("linear.app") | not) as $unlinked
+  | select($previous_sync == "" or .updated_at >= $previous_sync or $unlinked)
+  | "\(.id) \(if body_length > $body_limit then "oversized" else "sized" end) \(if $unlinked then "unlinked" else "linked" end) \(fingerprint)"
 ' <<<"$all_issues")"
-oversized_active_count="$(@coreutils@/bin/head -n 1 <<<"$changed_active_selection")"
-changed_active_ids="$(@coreutils@/bin/tail -n +2 <<<"$changed_active_selection")"
+oversized_active_count=0
+changed_active_ids=""
+pushed_active_next="$pushed_active_file.next"
+: >"$pushed_active_next"
+while read -r candidate_id candidate_size candidate_link candidate_fingerprint; do
+  if [ -z "$candidate_id" ]; then
+    continue
+  fi
+  if [ "$candidate_size" = oversized ]; then
+    oversized_active_count=$((oversized_active_count + 1))
+    continue
+  fi
+  candidate_hash="$(printf '%s' "$candidate_fingerprint" | @coreutils@/bin/sha256sum)"
+  candidate_hash="${candidate_hash%% *}"
+  if [ "$candidate_link" = linked ] && @gawk@/bin/awk -v id="$candidate_id" -v hash="$candidate_hash" '$1 == id && $2 == hash { found = 1 } END { exit !found }' "$pushed_active_input"; then
+    continue
+  fi
+  changed_active_ids="${changed_active_ids:+$changed_active_ids,}$candidate_id"
+  printf '%s %s\n' "$candidate_id" "$candidate_hash" >>"$pushed_active_next"
+done <<<"$changed_active_candidates"
 if [ "$oversized_active_count" -gt 0 ]; then
   log "Holding back $oversized_active_count active Bead(s) whose body exceeds the Linear issue limit"
 fi
@@ -920,14 +919,10 @@ fi
 normalize_rendered_sections "$all_issues" "$changed_active_ids" "changed active"
 if push_issue_batches "$changed_active_ids" "changed active"; then
   if [ -n "$changed_active_ids" ]; then
-    "$bd_cli" -C "$repo_dir" list --all --json --limit 0 --skip-labels |
-      @jq@/bin/jq -r --arg ids "$changed_active_ids" --rawfile pushed "$pushed_active_input" '
-        ($ids | split(",") | map(select(length > 0) | {key: ., value: true}) | from_entries) as $pushed_now
-        | (if type == "object" and has("issues") then .issues else . end) as $issues
-        | ($pushed | split("\n") | map(select(length > 0) | select(split(" ")[0] as $id | $pushed_now[$id] == null)))
-          + ($issues | map(select($pushed_now[.id] != null) | "\(.id) \(.updated_at)"))
-        | .[]
-      ' >"$pushed_active_file.tmp"
+    {
+      @gawk@/bin/awk 'NR == FNR { pushed[$1] = 1; next } !($1 in pushed)' "$pushed_active_next" "$pushed_active_input"
+      @coreutils@/bin/cat "$pushed_active_next"
+    } >"$pushed_active_file.tmp"
     @coreutils@/bin/mv -f "$pushed_active_file.tmp" "$pushed_active_file"
   fi
 else

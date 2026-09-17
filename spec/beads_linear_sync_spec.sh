@@ -170,7 +170,7 @@ setup_reconciliation() {
   CHECKPOINT_FILE="$STATE_HOME/beads-linear-sync/last-success-$repo_slug"
   export DOTFILES_ENV_FILE="$ENV_FILE"
   export DOLT_LOG FSCK_TIMEOUT_LOG ISSUE_REF_FILE ISSUE_STATUS_FILE
-  for command in cat chmod date env head mkdir mv paste rm sleep tail timeout; do
+  for command in cat chmod date env head mkdir mv paste rm sha256sum sleep tail timeout; do
     ln -s "$(command -v "$command")" "$COREUTILS/bin/$command"
   done
   cat >"$UTIL_LINUX/bin/flock" <<'EOF'
@@ -814,18 +814,18 @@ The contents of file "$COMMAND_LOG" should include 'update df-stale --assignee k
 End
 
 It 'cuts rendered sections from a description before pushing it'
-before='[{"id":"df-grown","status":"open","assignee":"","description":"Body text\n\n## Acceptance Criteria\n\n- passes\n\n## Notes\n\n- note\n","acceptance_criteria":"- passes\n- later","notes":"- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/grown"},{"id":"df-edited","status":"open","assignee":"","description":"Old body\n\n## Notes\n\n- edited in Linear","notes":"- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-3/edited"},{"id":"df-empty","status":"open","assignee":"","description":"## Notes\n\n- note","notes":"- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/empty"},{"id":"df-plain","status":"open","assignee":"","description":"Plain body","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-4/plain"}]'
+before='[{"id":"df-grown","status":"open","assignee":"","description":"Body text\n\n## Acceptance Criteria\n\n- passes\n\n## Notes\n\n- note\n","acceptance_criteria":"- passes\n- later","notes":"- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/grown"},{"id":"df-edited","status":"open","assignee":"","description":"Old body\n\n## Notes\n\n- edited in Linear","notes":"- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-3/edited"},{"id":"df-empty","status":"open","assignee":"","description":"## Notes\n\n- note","notes":"- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/empty"},{"id":"df-marked","status":"open","assignee":"","description":"Marked body\n<!-- bd-fingerprint: 0123456789ab -->","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-5/marked"},{"id":"df-plain","status":"open","assignee":"","description":"Plain body","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-4/plain"}]'
 ledger="$STATE_HOME/beads-linear-sync/pushed-active-test%2Frepo-one"
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_BODY_LOG="$TEST_ROOT/bodies.log" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+When run bash -c "env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_BODY_LOG='$TEST_ROOT/bodies.log' FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON='$before' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' && test \"\$(grep -c -E '^df-[a-z]+ [0-9a-f]{64}$' '$ledger')\" -eq 5"
 The status should be success
-The output should include 'Normalized 2 description(s) carrying rendered sections before the changed active push; skipped 0'
+The output should include 'Normalized 4 description(s) carrying rendered sections before the changed active push; skipped 0'
 The contents of file "$COMMAND_LOG" should include 'update df-grown --body-file'
+The contents of file "$COMMAND_LOG" should include 'update df-edited --body-file'
 The contents of file "$COMMAND_LOG" should include 'update df-empty --body-file'
-The contents of file "$COMMAND_LOG" should not include 'update df-edited'
+The contents of file "$COMMAND_LOG" should include 'update df-marked --body-file'
 The contents of file "$COMMAND_LOG" should not include 'update df-plain'
-The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-grown,df-edited,df-empty,df-plain --no-wait'
-The contents of file "$TEST_ROOT/bodies.log" should equal "$(printf 'df-grown:Body text\ndf-empty:')"
-The contents of file "$ledger" should equal "$(printf 'df-grown 2099-01-03T00:00:00Z\ndf-edited 2099-01-03T00:00:00Z\ndf-empty 2099-01-03T00:00:00Z\ndf-plain 2099-01-03T00:00:00Z')"
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-grown,df-edited,df-empty,df-marked,df-plain --no-wait'
+The contents of file "$TEST_ROOT/bodies.log" should equal "$(printf 'df-grown:Body text\ndf-edited:Old body\ndf-empty:\ndf-marked:Marked body')"
 The file "$CHECKPOINT_FILE" should be exist
 End
 
@@ -847,15 +847,15 @@ The contents of file "$COMMAND_LOG" should not include 'update df-grown'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-grown --no-wait'
 End
 
-It 'does not re-push an active Bead whose updated_at its own push recorded'
-first='[{"id":"df-pushed","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/pushed"},{"id":"df-touched","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/touched"},{"id":"df-unlinked","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z"}]'
-second='[{"id":"df-pushed","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/pushed"},{"id":"df-touched","status":"open","assignee":"","updated_at":"2099-01-04T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/touched"},{"id":"df-unlinked","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z"}]'
+It 'does not re-push an active Bead whose content its own push already sent'
+first='[{"id":"df-pushed","status":"open","assignee":"","description":"Body","notes":"- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/pushed"},{"id":"df-touched","status":"open","assignee":"","notes":"- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/touched"},{"id":"df-unlinked","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z"}]'
+second='[{"id":"df-pushed","status":"open","assignee":"","description":"Body\n\n## Notes\n\n- note\n<!-- bd-fingerprint: 0123456789ab -->","notes":"- note","updated_at":"2099-01-04T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/pushed"},{"id":"df-touched","status":"open","assignee":"","notes":"- note\n- more","updated_at":"2099-01-04T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/touched"},{"id":"df-unlinked","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z"}]'
 ledger="$STATE_HOME/beads-linear-sync/pushed-active-test%2Frepo-one"
-When run bash -c "env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$first' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' >/dev/null && env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$second' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' && test \"\$(grep -c -- '--issues df-pushed,df-touched,df-unlinked --no-wait' '$COMMAND_LOG')\" -eq 1"
+When run bash -c "env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$first' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' >/dev/null && env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$second' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' && test \"\$(grep -c -- '--issues df-pushed,df-touched,df-unlinked --no-wait' '$COMMAND_LOG')\" -eq 1 && test \"\$(grep -c -E '^df-[a-z]+ [0-9a-f]{64}$' '$ledger')\" -eq 3 && grep -q -E '^df-pushed [0-9a-f]{64}$' '$ledger'"
 The status should be success
 The output should include 'Pushing changed active Beads batch 1/1'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-touched,df-unlinked --no-wait'
-The contents of file "$ledger" should equal "$(printf 'df-pushed 2099-01-03T00:00:00Z\ndf-touched 2099-01-04T00:00:00Z\ndf-unlinked 2099-01-03T00:00:00Z')"
+The contents of file "$COMMAND_LOG" should not include 'update df-pushed'
 End
 
 It 'does not record the pushed-active ledger when the push is rejected'
