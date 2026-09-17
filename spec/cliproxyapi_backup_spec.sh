@@ -16,6 +16,7 @@ sed \
   -e 's|@aws@|aws|g' \
   -e 's|@sqlite3@|sqlite3|g' \
   -e 's|@tar@|tar|g' \
+  -e 's|@objectstore_enabled@|true|g' \
   "$SCRIPTS_DIR/common.sh" >"$__COMMON_SCRIPT"
 chmod +x "$__COMMON_SCRIPT"
 
@@ -250,9 +251,8 @@ End
 
 Describe 'backup scheduling'
 It 'gives the auth-file watchers the auth-only entrypoint'
-When run bash -c "sed -n '/launchd.agents.cliproxyapi-backup-auth =/,/^  };/p' '$NIX_MODULE'; sed -n '/systemd.user.services.cliproxyapi-backup-auth =/,/^  };/p' '$NIX_MODULE'"
+When run bash -c "sed -n '/systemd.user.services.cliproxyapi-backup-auth =/,/^  };/p' '$NIX_MODULE'"
 The status should be success
-The output should include '"auth"'
 The output should include '${backupScript} auth'
 The output should not include 'pkgs.sqlite'
 The output should not include 'pkgs.gnutar'
@@ -266,13 +266,71 @@ The output should include 'cliproxyapi-backup-auth.service'
 End
 
 It 'keeps the analytics snapshot on wall-clock schedules only'
-When run bash -c "sed -n '/launchd.agents.cliproxyapi-backup =/,/^  };/p' '$NIX_MODULE'; sed -n '/systemd.user.services.cliproxyapi-backup =/,/^  };/p' '$NIX_MODULE'; sed -n '/systemd.user.timers.cliproxyapi-backup =/,/^  };/p' '$NIX_MODULE'"
+When run bash -c "sed -n '/systemd.user.services.cliproxyapi-backup =/,/^  };/p' '$NIX_MODULE'; sed -n '/systemd.user.timers.cliproxyapi-backup =/,/^  };/p' '$NIX_MODULE'"
 The status should be success
-The output should include 'StartCalendarInterval'
 The output should include 'OnCalendar = "hourly"'
 The output should include '${backupScript} full'
 The output should include 'Unit = "cliproxyapi-backup.service"'
-The output should not include 'WatchPaths'
+The output should not include 'PathChanged'
+End
+
+It 'keeps OAuth auth sync and backups on kyber only'
+When run bash -c "grep -E 'objectstoreEnabled =|lib.mkIf objectstoreEnabled|launchd.agents' '$NIX_MODULE'"
+The status should be success
+The output should include 'objectstoreEnabled = pkgs.stdenv.hostPlatform.isLinux && host.isKyber;'
+The output should include 'home.activation.hydrateCliproxyAuths = lib.mkIf objectstoreEnabled'
+The output should include 'systemd.user.paths.cliproxyapi-backup-auth = lib.mkIf objectstoreEnabled'
+The output should include 'systemd.user.services.cliproxyapi-backup-auth = lib.mkIf objectstoreEnabled'
+The output should include 'systemd.user.services.cliproxyapi-backup = lib.mkIf objectstoreEnabled'
+The output should include 'systemd.user.timers.cliproxyapi-backup = lib.mkIf objectstoreEnabled'
+The output should include 'launchd.agents.cliproxyapi ='
+The output should not include 'launchd.agents.cliproxyapi-'
+End
+End
+
+Describe 'objectstore host gate'
+setup() {
+  mock_bin_setup aws
+  TEMP_HOME=$(mktemp -d)
+  mkdir -p "$TEMP_HOME/.cli-proxy-api/objectstore/auths" "$TEMP_HOME/dotfiles"
+  cat >"$TEMP_HOME/dotfiles/.env" <<'ENV'
+OBJECTSTORE_ACCESS_KEY=test_key
+OBJECTSTORE_SECRET_KEY=test_secret
+OBJECTSTORE_ENDPOINT=https://test.endpoint.com
+ENV
+  touch "$TEMP_HOME/.cli-proxy-api/objectstore/auths/test-auth.json"
+  unset OBJECTSTORE_ACCESS_KEY OBJECTSTORE_SECRET_KEY OBJECTSTORE_ENDPOINT
+  DISABLED_DIR=$(mktemp -d)
+  sed \
+    -e 's|@aws@|aws|g' \
+    -e 's|@sqlite3@|sqlite3|g' \
+    -e 's|@tar@|tar|g' \
+    -e 's|@objectstore_enabled@|false|g' \
+    "$SCRIPTS_DIR/common.sh" >"$DISABLED_DIR/common.sh"
+  sed -e 's|@common@|'"$DISABLED_DIR/common.sh"'|g' "$SCRIPTS_DIR/hydrate.sh" >"$DISABLED_DIR/hydrate.sh"
+  sed -e 's|@common@|'"$DISABLED_DIR/common.sh"'|g' "$SCRIPTS_DIR/backup.sh" >"$DISABLED_DIR/backup.sh"
+}
+
+cleanup() {
+  rm -rf "$TEMP_HOME" "$DISABLED_DIR"
+  mock_bin_cleanup
+}
+
+Before 'setup'
+After 'cleanup'
+
+It 'ignores S3 credentials in hydrate on hosts without the objectstore'
+When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$DISABLED_DIR/hydrate.sh"'" 2>&1; cat "$MOCK_LOG" 2>/dev/null || true'
+The status should be success
+The output should include 'Missing S3 credentials'
+The output should not include 's3://'
+End
+
+It 'ignores S3 credentials in backup on hosts without the objectstore'
+When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$DISABLED_DIR/backup.sh"'" full 2>&1; cat "$MOCK_LOG" 2>/dev/null || true'
+The status should be success
+The output should include 'Missing S3 credentials'
+The output should not include 's3://'
 End
 End
 

@@ -6,9 +6,16 @@ This directory contains the Nix-based configuration for the cliproxyapi service 
 
 ### Services
 
-1. **cliproxyapi** - Main proxy server on port 8317
-2. **cliproxyapi-backup-auth** - File watcher that syncs only the auth cache to S3
-3. **cliproxyapi-backup** - Wall-clock hourly job that syncs auth files and CPA Manager Plus analytics to S3
+1. **cliproxyapi** - Main proxy server on port 8317 (every host)
+2. **cliproxyapi-backup-auth** - File watcher that syncs only the auth cache to S3 (kyber)
+3. **cliproxyapi-backup** - Wall-clock hourly job that syncs auth files and CPA Manager Plus analytics to S3 (kyber)
+
+### Kyber-only OAuth
+
+OAuth refresh tokens rotate on every refresh, so a copy refreshed on one host
+invalidates the copies on every other host. OAuth auth files and the S3 store
+live on kyber only. `common.sh` ignores `OBJECTSTORE_*` on every other host, so
+their CLIProxyAPI instances never hydrate, push, or refresh the shared auths.
 
 ### Scripts
 
@@ -86,12 +93,7 @@ to stage it on a filesystem other than `$TMPDIR`.
 The `cliproxyapi-backup-auth` service watches this directory:
 - `~/.cli-proxy-api/objectstore/auths` - main auth cache
 
-**How it works (macOS launchd):**
-- launchd monitors the directories for any file changes
-- When a file is created, modified, or deleted, launchd triggers `backup.sh auth`
-- Changes are detected within ~1 second
-
-**How it works (Linux systemd):**
+**How it works (kyber systemd):**
 - systemd path unit watches the directories
 - On change, triggers the `cliproxyapi-backup-auth.service` oneshot
 - Uses `PathChanged` directive for file monitoring

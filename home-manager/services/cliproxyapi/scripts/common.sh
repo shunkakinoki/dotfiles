@@ -19,6 +19,13 @@ cliproxy_strip_quotes() {
 
 cliproxy_init_objectstore_env() {
   cliproxy_load_env
+  # OAuth auth files rotate their refresh tokens on every refresh, so they live
+  # on one host only. Other hosts run CLIProxyAPI without the shared S3 store.
+  if [ "@objectstore_enabled@" != "true" ]; then
+    OBJECTSTORE_ENDPOINT=""
+    OBJECTSTORE_ACCESS_KEY=""
+    OBJECTSTORE_SECRET_KEY=""
+  fi
   OBJECTSTORE_ENDPOINT="$(cliproxy_strip_quotes "${OBJECTSTORE_ENDPOINT:-}")"
   OBJECTSTORE_BUCKET="$(cliproxy_strip_quotes "${OBJECTSTORE_BUCKET:-cliproxyapi}")"
   OBJECTSTORE_ACCESS_KEY="$(cliproxy_strip_quotes "${OBJECTSTORE_ACCESS_KEY:-}")"

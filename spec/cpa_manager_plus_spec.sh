@@ -67,7 +67,7 @@ The output should include 'cliproxy_backup_manager_data'
 End
 
 It 'is never snapshotted by the auth-file watcher'
-When run bash -c "sed -n '/launchd.agents.cliproxyapi-backup-auth =/,/^  };/p' '$CLIPROXY_NIX_MODULE'; sed -n '/systemd.user.services.cliproxyapi-backup-auth =/,/^  };/p' '$CLIPROXY_NIX_MODULE'"
+When run bash -c "sed -n '/systemd.user.services.cliproxyapi-backup-auth =/,/^  };/p' '$CLIPROXY_NIX_MODULE'"
 The output should include 'auth'
 The output should not include 'full'
 The output should not include 'pkgs.sqlite'
