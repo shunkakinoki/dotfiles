@@ -61,6 +61,8 @@ let
       assert !(beads.launchd.agents ? dolt);
       assert !(beads.launchd.agents ? dolt-backup-main);
       assert beads.launchd.agents.beads-dolt-client-environment.enable;
+      assert beads.launchd.agents.dotenv-gui-environment.config.RunAtLoad;
+      assert !(beads.home.activation ? exportGuiDotenv);
       assert lib.elem "herdr" packageNames;
       assert lib.elem "openclaw/tap/crabbox" (map (brew: brew.name) galactica.config.homebrew.brews);
       assert !(lib.elem "herdr" (map (brew: brew.name) galactica.config.homebrew.brews));

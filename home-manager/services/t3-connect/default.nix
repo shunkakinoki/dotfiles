@@ -38,9 +38,14 @@ let
     + "export T3_PREPARE_RUNTIME=${prepareRuntime}\n"
     + builtins.readFile ./runtime-npm.sh
   );
+  # systemd starts T3 without a login shell, so provider CLIs (OpenCode's
+  # `{env:CLIPROXY_API_KEY}`) would otherwise run without the .env secrets.
   launcher = pkgs.writeShellScript "t3-launch-service" (
     "export PATH=${runtimeNpm}/bin:${toolchain}:$PATH\n"
     + "export T3_PREPARE_RUNTIME=${prepareRuntime}\n"
+    + "export HM_PRINT_ENV_FILE=${../../modules/dotenv/print-env-file.sh}\n"
+    + ". ${../../modules/dotenv/load-env-file.sh}\n"
+    + "_hm_load_env_file\n"
     + builtins.readFile ./launch-service.sh
   );
   shellInstallerPath = ''

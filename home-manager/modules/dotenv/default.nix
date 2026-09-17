@@ -19,9 +19,20 @@ in
 
   home.file.".config/shell/load-env-file.sh".source = ./load-env-file.sh;
 
-  home.activation = lib.mkIf isDarwin {
-    exportGuiDotenv = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-      $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${exportGuiEnv}"
-    '';
+  # Activation runs under `launchctl asuser ... sudo`, whose `launchctl setenv`
+  # never reaches the GUI domain and would not survive a reboot anyway. A
+  # RunAtLoad agent runs inside the GUI session at every login, and WatchPaths
+  # re-exports whenever the .env file changes.
+  launchd.agents.dotenv-gui-environment = lib.mkIf isDarwin {
+    enable = true;
+    config = {
+      ProgramArguments = [
+        "${pkgs.bash}/bin/bash"
+        "${exportGuiEnv}"
+      ];
+      RunAtLoad = true;
+      WatchPaths = [ "${config.home.homeDirectory}/dotfiles/.env" ];
+      ProcessType = "Background";
+    };
   };
 }
