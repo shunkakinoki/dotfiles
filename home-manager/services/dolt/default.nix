@@ -130,6 +130,9 @@ in
               HOME = homeDir;
               PATH = linearSyncPath;
               LINEAR_TEAM_ID = linearTeamId;
+              # The fleet host shares a 32G tmpfs /tmp that other lanes fill up;
+              # bash here-documents and bd temp files must not depend on it.
+              TMPDIR = "${homeDir}/.local/state/beads-linear-sync";
             }
           );
         };
