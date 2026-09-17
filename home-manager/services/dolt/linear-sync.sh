@@ -353,6 +353,81 @@ push_issue_batches() {
   fi
 }
 
+# A push renders the acceptance criteria, design, and notes sections after the
+# description in the Linear body and then writes that rendered body back into
+# the Bead description, so pushing an unchanged Bead again appends a second
+# copy of every section. Before each push the description is cut at the first
+# rendered heading when every section after it is a prefix of the field it was
+# rendered from; any other tail is a real edit and is pushed as-is. The cut
+# bumps updated_at, which the pushed-active ledger below absorbs.
+rendered_section_cuts='
+  def issues: if type == "object" and has("issues") then .issues else . end;
+  def field($name):
+    if $name == "Acceptance Criteria" then (.acceptance_criteria // "")
+    elif $name == "Design" then (.design // "")
+    else (.notes // "") end;
+  ($ids | split(",") | map(select(length > 0) | {key: ., value: true}) | from_entries) as $wanted
+  | issues | .[]
+  | select($wanted[.id] != null)
+  | . as $issue
+  | (.description // "") as $description
+  | [$description | match("(^|\\n\\n)## (Acceptance Criteria|Design|Notes)\\n\\n"; "g")] as $headings
+  | select(($headings | length) > 0)
+  | select(
+      [range(0; $headings | length) as $i
+        | ($headings[$i]) as $heading
+        | ($heading.offset + $heading.length) as $start
+        | (if $i + 1 < ($headings | length) then $headings[$i + 1].offset else ($description | length) end) as $end
+        | ($description[$start:$end] | sub("\\s+$"; "")) as $body
+        | ($issue | field($heading.captures[1].string) | sub("\\s+$"; "")) | startswith($body)
+      ] | all
+    )
+  | ($headings[0].offset) as $cut
+  | {id: .id, body: $description[:$cut]}
+'
+
+written_since_snapshot() {
+  "$bd_cli" -C "$repo_dir" history "$1" --events --limit 20 --json 2>/dev/null </dev/null \
+    | @jq@/bin/jq -r --arg since "$snapshot_taken_at" --arg actor "$BEADS_ACTOR" '
+      if type == "array" then any(.[]; .actor != $actor and .created_at >= $since) else false end
+    ' 2>/dev/null || echo false
+}
+
+normalize_rendered_sections() {
+  local issues_json="$1"
+  local issue_ids="$2"
+  local description="$3"
+  local cuts
+  local cut
+  local cut_id
+  local normalized=0
+  local skipped=0
+  local description_file="$sync_state_dir/description-$repo_slug"
+
+  if [ -z "$issue_ids" ]; then
+    return 0
+  fi
+  cuts="$(@jq@/bin/jq -c --arg ids "$issue_ids" "$rendered_section_cuts" <<<"$issues_json")"
+  if [ -z "$cuts" ]; then
+    return 0
+  fi
+  while IFS= read -r cut; do
+    cut_id="$(@jq@/bin/jq -r '.id' <<<"$cut")"
+    if [ "$(written_since_snapshot "$cut_id")" = "true" ]; then
+      skipped=$((skipped + 1))
+      continue
+    fi
+    @jq@/bin/jq -j '.body' <<<"$cut" >"$description_file"
+    if "$bd_cli" -C "$repo_dir" update "$cut_id" --body-file "$description_file" --allow-empty-description >/dev/null 2>&1; then
+      normalized=$((normalized + 1))
+    else
+      skipped=$((skipped + 1))
+    fi
+  done <<<"$cuts"
+  @coreutils@/bin/rm -f "$description_file"
+  log "Normalized $normalized description(s) carrying rendered sections before the $description push; skipped $skipped"
+}
+
 run_dolt_sql() {
   local query="$1"
 
@@ -631,6 +706,7 @@ pending_completion_ids="$(@jq@/bin/jq -r '
   | join(",")
 ' <<<"$issues_before_pull")"
 
+normalize_rendered_sections "$issues_before_pull" "$closed_ids" "terminal"
 if push_issue_batches "$closed_ids" "terminal" "$closed_push_entries" "$push_progress_file"; then
   :
 else
@@ -732,12 +808,6 @@ local_claim_lines="$(printf '%s\n%s\n' "$issues_before_pull" "$all_issues" | @jq
 # journal closes that gap: any write by another actor since the snapshot means
 # the Bead moved on, and the pulled value is left for the next cycle to settle.
 # A refused write must not abort the cycle; the rest of the restore still runs.
-written_since_snapshot() {
-  "$bd_cli" -C "$repo_dir" history "$1" --events --limit 20 --json 2>/dev/null </dev/null \
-    | @jq@/bin/jq -r --arg since "$snapshot_taken_at" --arg actor "$BEADS_ACTOR" '
-      if type == "array" then any(.[]; .actor != $actor and .created_at >= $since) else false end
-    ' 2>/dev/null || echo false
-}
 if [ -n "$local_claim_lines" ]; then
   log "Restoring locally changed claims after pull"
   restore_failures=0
@@ -793,48 +863,6 @@ if [ -n "$wedged_ids" ]; then
   fi
 fi
 
-# A push renders the acceptance criteria, design, and notes sections into the
-# Linear description, and the cursor-free pull imports that rendered text back
-# into the Bead description, so each push/pull cycle appends another copy of
-# those sections until the body exceeds the Linear limit and the Bead is held
-# back from every later push. A pulled description that is the snapshot
-# description followed by a rendered section heading is put back to the
-# snapshot; any other change came from Linear and stays. The event journal
-# guard skips a Bead another actor wrote after the snapshot.
-grown_description_ids="$(printf '%s\n%s\n' "$issues_before_pull" "$all_issues" | @jq@/bin/jq -r -s '
-  def issues: if type == "object" and has("issues") then .issues else . end;
-  (.[0] | issues | map({key: .id, value: (.description // "")}) | from_entries) as $local
-  | .[1] | issues | .[]
-  | select($local[.id] != null)
-  | (.description // "") as $pulled
-  | ($local[.id] | sub("\\s+$"; "")) as $base
-  | select($pulled != $local[.id] and ($pulled | startswith($base)))
-  | select($pulled[($base | length):] | test("^\\s*## (Acceptance Criteria|Design|Notes)(\n|$)"))
-  | .id
-')"
-if [ -n "$grown_description_ids" ]; then
-  restored_descriptions=0
-  skipped_descriptions=0
-  description_file="$sync_state_dir/description-$repo_slug"
-  while IFS= read -r grown_id; do
-    if [ "$(written_since_snapshot "$grown_id")" = "true" ]; then
-      skipped_descriptions=$((skipped_descriptions + 1))
-      continue
-    fi
-    @jq@/bin/jq -j --arg id "$grown_id" '
-      (if type == "object" and has("issues") then .issues else . end)
-      | .[] | select(.id == $id) | .description // ""
-    ' <<<"$issues_before_pull" >"$description_file"
-    if "$bd_cli" -C "$repo_dir" update "$grown_id" --body-file "$description_file" --allow-empty-description >/dev/null 2>&1; then
-      restored_descriptions=$((restored_descriptions + 1))
-    else
-      skipped_descriptions=$((skipped_descriptions + 1))
-    fi
-  done <<<"$grown_description_ids"
-  @coreutils@/bin/rm -f "$description_file"
-  log "Restored $restored_descriptions description(s) the pull extended with rendered sections; skipped $skipped_descriptions"
-fi
-
 if [ "$pull_status" -ne 0 ]; then
   restore_linear_last_sync
   if [ "$pull_status" -eq 75 ]; then
@@ -844,20 +872,31 @@ if [ "$pull_status" -ne 0 ]; then
   log "Linear pull failed with status $pull_status"
   exit "$pull_status"
 fi
-changed_active_selection="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" '
+# The push writes the rendered body back and bumps updated_at past this
+# cycle's checkpoint, so a Bead pushed last cycle would be re-selected every
+# cycle. The ledger of "id updated_at" pairs recorded after the last
+# successful active push identifies those untouched Beads; any later write
+# changes updated_at and re-selects the Bead. Unlinked Beads always retry.
+pushed_active_file="$sync_state_dir/pushed-active-$repo_slug"
+pushed_active_input=/dev/null
+if [ -s "$pushed_active_file" ]; then
+  pushed_active_input="$pushed_active_file"
+fi
+changed_active_selection="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" --rawfile pushed "$pushed_active_input" '
   def body_length:
     ((.description // "") | length)
     + ((.design // "") | length)
     + ((.acceptance_criteria // "") | length)
     + ((.notes // "") | length);
-  (if type == "object" and has("issues") then .issues else . end)
+  ($pushed | split("\n") | map(select(length > 0) | split(" ") | {key: .[0], value: .[1]}) | from_entries) as $already_pushed
+  | (if type == "object" and has("issues") then .issues else . end)
   | [
     .[]
     | select(
         .status != "closed"
         and (
           $previous_sync == ""
-          or .updated_at >= $previous_sync
+          or (.updated_at >= $previous_sync and $already_pushed[.id] != .updated_at)
           or ((.external_ref // "") | contains("linear.app") | not)
         )
       )
@@ -877,8 +916,19 @@ fi
 
 # Push only the active local delta after inbound reconciliation. Terminal
 # issues never enter this phase because they were made durable before pull.
+normalize_rendered_sections "$all_issues" "$changed_active_ids" "changed active"
 if push_issue_batches "$changed_active_ids" "changed active"; then
-  :
+  if [ -n "$changed_active_ids" ]; then
+    "$bd_cli" -C "$repo_dir" list --all --json --limit 0 --skip-labels |
+      @jq@/bin/jq -r --arg ids "$changed_active_ids" --rawfile pushed "$pushed_active_input" '
+        ($ids | split(",") | map(select(length > 0) | {key: ., value: true}) | from_entries) as $pushed_now
+        | (if type == "object" and has("issues") then .issues else . end) as $issues
+        | ($pushed | split("\n") | map(select(length > 0) | select(split(" ")[0] as $id | $pushed_now[$id] == null)))
+          + ($issues | map(select($pushed_now[.id] != null) | "\(.id) \(.updated_at)"))
+        | .[]
+      ' >"$pushed_active_file.tmp"
+    @coreutils@/bin/mv -f "$pushed_active_file.tmp" "$pushed_active_file"
+  fi
 else
   status=$?
   if [ "$status" -eq 75 ]; then

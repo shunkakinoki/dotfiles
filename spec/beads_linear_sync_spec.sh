@@ -813,28 +813,60 @@ The contents of file "$COMMAND_LOG" should not include 'update df-moved'
 The contents of file "$COMMAND_LOG" should include 'update df-stale --assignee kamino4_exec_stale-1 --if-status=in_progress --force'
 End
 
-It 'restores a description the pull extended with rendered sections'
-before='[{"id":"df-grown","status":"open","assignee":"","description":"Body text\n","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/grown"},{"id":"df-empty","status":"closed","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/empty"},{"id":"df-edited","status":"open","assignee":"","description":"Old body","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-3/edited"},{"id":"df-same","status":"open","assignee":"","description":"Same body","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-4/same"}]'
-after='[{"id":"df-grown","status":"open","assignee":"","description":"Body text\n\n## Acceptance Criteria\n\n- passes\n\n## Notes\n\n- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/grown"},{"id":"df-empty","status":"closed","assignee":"","description":"## Notes\n\n- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/empty"},{"id":"df-edited","status":"open","assignee":"","description":"Old body edited in Linear","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-3/edited"},{"id":"df-same","status":"open","assignee":"","description":"Same body","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-4/same"}]'
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_BODY_LOG="$TEST_ROOT/bodies.log" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+It 'cuts rendered sections from a description before pushing it'
+before='[{"id":"df-grown","status":"open","assignee":"","description":"Body text\n\n## Acceptance Criteria\n\n- passes\n\n## Notes\n\n- note\n","acceptance_criteria":"- passes\n- later","notes":"- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/grown"},{"id":"df-edited","status":"open","assignee":"","description":"Old body\n\n## Notes\n\n- edited in Linear","notes":"- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-3/edited"},{"id":"df-empty","status":"open","assignee":"","description":"## Notes\n\n- note","notes":"- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/empty"},{"id":"df-plain","status":"open","assignee":"","description":"Plain body","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-4/plain"}]'
+ledger="$STATE_HOME/beads-linear-sync/pushed-active-test%2Frepo-one"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_BODY_LOG="$TEST_ROOT/bodies.log" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
-The output should include 'Restored 2 description(s) the pull extended with rendered sections; skipped 0'
+The output should include 'Normalized 2 description(s) carrying rendered sections before the changed active push; skipped 0'
 The contents of file "$COMMAND_LOG" should include 'update df-grown --body-file'
 The contents of file "$COMMAND_LOG" should include 'update df-empty --body-file'
 The contents of file "$COMMAND_LOG" should not include 'update df-edited'
-The contents of file "$COMMAND_LOG" should not include 'update df-same'
-The contents of file "$TEST_ROOT/bodies.log" should equal "$(printf 'df-grown:Body text\n\ndf-empty:')"
+The contents of file "$COMMAND_LOG" should not include 'update df-plain'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-grown,df-edited,df-empty,df-plain --no-wait'
+The contents of file "$TEST_ROOT/bodies.log" should equal "$(printf 'df-grown:Body text\ndf-empty:')"
+The contents of file "$ledger" should equal "$(printf 'df-grown 2099-01-03T00:00:00Z\ndf-edited 2099-01-03T00:00:00Z\ndf-empty 2099-01-03T00:00:00Z\ndf-plain 2099-01-03T00:00:00Z')"
 The file "$CHECKPOINT_FILE" should be exist
 End
 
-It 'leaves a description another actor wrote after the snapshot for the next cycle'
-before='[{"id":"df-grown","status":"in_progress","assignee":"kamino4_exec_grown-1","description":"Body text","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/grown"}]'
-after='[{"id":"df-grown","status":"in_progress","assignee":"kamino4_exec_grown-1","description":"Body text\n\n## Notes\n\n- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/grown"}]'
-history='[{"actor":"kamino4_exec_grown-1","created_at":"2099-01-03T00:00:00Z","event_type":"updated"}]'
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_HISTORY_ID=df-grown FAKE_HISTORY_JSON="$history" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+It 'cuts rendered sections before the terminal push and writes them before pushing'
+closed='[{"id":"df-closed","status":"closed","closed_at":"2099-01-01T00:00:00Z","description":"Done body\n\n## Notes\n\n- note","notes":"- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/closed"}]'
+When run bash -c "env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_BODY_LOG='$TEST_ROOT/bodies.log' FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON='$closed' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' && update_line=\$(grep -n 'update df-closed --body-file' '$COMMAND_LOG' | head -1 | cut -d: -f1) && push_line=\$(grep -n 'linear sync --push --issues df-closed' '$COMMAND_LOG' | head -1 | cut -d: -f1) && test \"\$update_line\" -lt \"\$push_line\""
 The status should be success
-The output should include 'Restored 0 description(s) the pull extended with rendered sections; skipped 1'
+The output should include 'Normalized 1 description(s) carrying rendered sections before the terminal push; skipped 0'
+The contents of file "$TEST_ROOT/bodies.log" should equal 'df-closed:Done body'
+End
+
+It 'pushes a description as-is when another actor wrote the Bead after the snapshot'
+before='[{"id":"df-grown","status":"in_progress","assignee":"kamino4_exec_grown-1","description":"Body text\n\n## Notes\n\n- note","notes":"- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/grown"}]'
+history='[{"actor":"kamino4_exec_grown-1","created_at":"2099-01-03T00:00:00Z","event_type":"updated"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_HISTORY_ID=df-grown FAKE_HISTORY_JSON="$history" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Normalized 0 description(s) carrying rendered sections before the changed active push; skipped 1'
 The contents of file "$COMMAND_LOG" should not include 'update df-grown'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-grown --no-wait'
+End
+
+It 'does not re-push an active Bead whose updated_at its own push recorded'
+first='[{"id":"df-pushed","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/pushed"},{"id":"df-touched","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/touched"},{"id":"df-unlinked","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z"}]'
+second='[{"id":"df-pushed","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/pushed"},{"id":"df-touched","status":"open","assignee":"","updated_at":"2099-01-04T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/touched"},{"id":"df-unlinked","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z"}]'
+ledger="$STATE_HOME/beads-linear-sync/pushed-active-test%2Frepo-one"
+When run bash -c "env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$first' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' >/dev/null && env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$second' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' && test \"\$(grep -c -- '--issues df-pushed,df-touched,df-unlinked --no-wait' '$COMMAND_LOG')\" -eq 1"
+The status should be success
+The output should include 'Pushing changed active Beads batch 1/1'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-touched,df-unlinked --no-wait'
+The contents of file "$ledger" should equal "$(printf 'df-pushed 2099-01-03T00:00:00Z\ndf-touched 2099-01-04T00:00:00Z\ndf-unlinked 2099-01-03T00:00:00Z')"
+End
+
+It 'does not record the pushed-active ledger when the push is rejected'
+before='[{"id":"df-open","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/open"}]'
+ledger="$STATE_HOME/beads-linear-sync/pushed-active-test%2Frepo-one"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=partial-push FAKE_LIST_JSON="$before" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be failure
+The output should include 'Linear push rejected 1 of 1 changed active batches'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-open --no-wait'
+The file "$ledger" should not be exist
+The file "$CHECKPOINT_FILE" should not be exist
 End
 
 It 'reopens an unassigned in_progress Bead the pull left behind'
