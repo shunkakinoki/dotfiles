@@ -793,6 +793,48 @@ if [ -n "$wedged_ids" ]; then
   fi
 fi
 
+# A push renders the acceptance criteria, design, and notes sections into the
+# Linear description, and the cursor-free pull imports that rendered text back
+# into the Bead description, so each push/pull cycle appends another copy of
+# those sections until the body exceeds the Linear limit and the Bead is held
+# back from every later push. A pulled description that is the snapshot
+# description followed by a rendered section heading is put back to the
+# snapshot; any other change came from Linear and stays. The event journal
+# guard skips a Bead another actor wrote after the snapshot.
+grown_description_ids="$(printf '%s\n%s\n' "$issues_before_pull" "$all_issues" | @jq@/bin/jq -r -s '
+  def issues: if type == "object" and has("issues") then .issues else . end;
+  (.[0] | issues | map({key: .id, value: (.description // "")}) | from_entries) as $local
+  | .[1] | issues | .[]
+  | select($local[.id] != null)
+  | (.description // "") as $pulled
+  | ($local[.id] | sub("\\s+$"; "")) as $base
+  | select($pulled != $local[.id] and ($pulled | startswith($base)))
+  | select($pulled[($base | length):] | test("^\\s*## (Acceptance Criteria|Design|Notes)(\n|$)"))
+  | .id
+')"
+if [ -n "$grown_description_ids" ]; then
+  restored_descriptions=0
+  skipped_descriptions=0
+  description_file="$sync_state_dir/description-$repo_slug"
+  while IFS= read -r grown_id; do
+    if [ "$(written_since_snapshot "$grown_id")" = "true" ]; then
+      skipped_descriptions=$((skipped_descriptions + 1))
+      continue
+    fi
+    @jq@/bin/jq -j --arg id "$grown_id" '
+      (if type == "object" and has("issues") then .issues else . end)
+      | .[] | select(.id == $id) | .description // ""
+    ' <<<"$issues_before_pull" >"$description_file"
+    if "$bd_cli" -C "$repo_dir" update "$grown_id" --body-file "$description_file" --allow-empty-description >/dev/null 2>&1; then
+      restored_descriptions=$((restored_descriptions + 1))
+    else
+      skipped_descriptions=$((skipped_descriptions + 1))
+    fi
+  done <<<"$grown_description_ids"
+  @coreutils@/bin/rm -f "$description_file"
+  log "Restored $restored_descriptions description(s) the pull extended with rendered sections; skipped $skipped_descriptions"
+fi
+
 if [ "$pull_status" -ne 0 ]; then
   restore_linear_last_sync
   if [ "$pull_status" -eq 75 ]; then
