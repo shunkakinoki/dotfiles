@@ -564,6 +564,7 @@ fi
 # by updated_at re-selects the whole terminal set every run until the rate
 # limit defers it, so the checkpoint never advances. A pending completion
 # marker bypasses the ledger so its recovery push always happens.
+snapshot_taken_at="$(@coreutils@/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')"
 issues_before_pull="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0 --skip-labels)"
 pushed_progress_input=/dev/null
 if [ -s "$push_progress_file" ]; then
@@ -723,10 +724,20 @@ local_claim_lines="$(printf '%s\n%s\n' "$issues_before_pull" "$all_issues" | @jq
 # Workers keep claiming and releasing while the pull runs, so a Bead can
 # already hold its restored state, or a claim newer than the listing above,
 # by the time bd is asked to write it. Each write applies only while the Bead
-# still has the status the listing read, so a claim or closure written after
-# it survives. The assignee is not guarded: bd refuses an assignee guard next
-# to the force that overwriting the owner's in_progress claim needs. A refused
-# write must not abort the cycle; the rest of the restore still runs.
+# still has the status the listing read. The assignee is not guarded: bd
+# refuses an assignee guard next to the force that overwriting the owner's
+# in_progress claim needs, so a claim that changed owner but not status still
+# matches the guard and would be rewritten to the stale snapshot; the pull
+# then re-snapshots that stale claim and re-asserts it every cycle. The event
+# journal closes that gap: any write by another actor since the snapshot means
+# the Bead moved on, and the pulled value is left for the next cycle to settle.
+# A refused write must not abort the cycle; the rest of the restore still runs.
+written_since_snapshot() {
+  "$bd_cli" -C "$repo_dir" history "$1" --events --limit 20 --json 2>/dev/null </dev/null \
+    | @jq@/bin/jq -r --arg since "$snapshot_taken_at" --arg actor "$BEADS_ACTOR" '
+      if type == "array" then any(.[]; .actor != $actor and .created_at >= $since) else false end
+    ' 2>/dev/null || echo false
+}
 if [ -n "$local_claim_lines" ]; then
   log "Restoring locally changed claims after pull"
   restore_failures=0
@@ -738,6 +749,10 @@ if [ -n "$local_claim_lines" ]; then
     fi
     if [ "$restore_status" != "$pulled_status" ]; then
       restore_args+=(--status "$restore_status")
+    fi
+    if [ "$(written_since_snapshot "$restore_id")" = "true" ]; then
+      restore_failures=$((restore_failures + 1))
+      continue
     fi
     restored=1
     if [ "${#restore_args[@]}" -gt 0 ]; then
