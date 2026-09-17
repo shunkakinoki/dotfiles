@@ -391,6 +391,12 @@ case "${1:-} ${2:-}" in
       exit 1
     fi
     ;;
+  update\ *)
+    if [ "${FAKE_UPDATE_REFUSED:-}" = "$2" ]; then
+      echo "Error updating $2: assignee mismatch" >&2
+      exit 1
+    fi
+    ;;
   "list --all")
     if [ -n "${FAKE_LIST_JSON_AFTER_PULL:-}" ] && grep -F -- '--pull' "$COMMAND_LOG" >/dev/null; then
       printf '%s\n' "$FAKE_LIST_JSON_AFTER_PULL"
@@ -757,6 +763,28 @@ The output should not include 'is not assigned'
 The contents of file "$COMMAND_LOG" should include 'unclaim df-released --force'
 The contents of file "$COMMAND_LOG" should include 'unclaim df-gone --force'
 The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'reopens an unassigned in_progress Bead the pull left behind'
+before='[{"id":"df-claimed","status":"in_progress","assignee":"kamino4_exec_claimed","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
+after='[{"id":"df-claimed","status":"in_progress","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"},{"id":"df-wedged","status":"in_progress","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-3/wedged"},{"id":"df-owned","status":"in_progress","assignee":"kamino2_exec_owned","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-4/owned"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_UPDATE_REFUSED=df-claimed FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Reopened 1 unassigned in_progress Bead(s) the pull left behind'
+The output should not include 'assignee mismatch'
+The contents of file "$COMMAND_LOG" should include 'update df-wedged --if-status=in_progress --if-assignee= --status=open'
+The contents of file "$COMMAND_LOG" should not include 'update df-owned'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'reopens a wedged Bead before a rejected pull exits'
+after='[{"id":"df-wedged","status":"in_progress","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-3/wedged"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=partial-pull FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 65
+The output should include 'Reopened 1 unassigned in_progress Bead(s) the pull left behind'
+The output should include 'Linear pull failed with status 65'
+The contents of file "$COMMAND_LOG" should include 'update df-wedged --if-status=in_progress --if-assignee= --status=open'
+The file "$CHECKPOINT_FILE" should not be exist
 End
 
 It 'restores local assignees before a rejected pull exits'
