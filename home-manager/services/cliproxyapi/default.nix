@@ -2,21 +2,22 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 let
-  homeDir =
-    config.home.homeDirectory or (
-      if pkgs.stdenv.hostPlatform.isDarwin then
-        builtins.getEnv "HOME"
-      else
-        "/home/${config.home.username}"
-    );
+  inherit (inputs) host;
+
+  # OAuth refresh tokens rotate on every refresh, so a copy refreshed on one
+  # host invalidates the copies on every other host. Only kyber holds the OAuth
+  # auth files and the S3 store they are backed up to.
+  objectstoreEnabled = pkgs.stdenv.hostPlatform.isLinux && host.isKyber;
 
   commonScript = pkgs.replaceVars ./scripts/common.sh {
     aws = "${pkgs.awscli2}/bin/aws";
     sqlite3 = "${pkgs.sqlite}/bin/sqlite3";
     tar = "${pkgs.gnutar}/bin/tar";
+    objectstore_enabled = lib.boolToString objectstoreEnabled;
   };
 
   hydrateScript = pkgs.replaceVars ./scripts/hydrate.sh {
@@ -47,12 +48,6 @@ let
     )
   );
 
-  keychainSyncScript = pkgs.replaceVars ./scripts/keychain-sync.sh {
-    email = "shunkakinoki@gmail.com";
-    keychain_account = "shunkakinoki";
-    jq = "${pkgs.jq}/bin/jq";
-  };
-
   wrapperScript = pkgs.replaceVars ./scripts/wrapper.sh {
     common = commonScript;
   };
@@ -61,9 +56,11 @@ let
 in
 {
   # Hydrate auth cache after home-manager switch
-  home.activation.hydrateCliproxyAuths = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    ${pkgs.bash}/bin/bash ${hydrateScript} || true
-  '';
+  home.activation.hydrateCliproxyAuths = lib.mkIf objectstoreEnabled (
+    config.lib.dag.entryAfter [ "writeBoundary" ] ''
+      ${pkgs.bash}/bin/bash ${hydrateScript} || true
+    ''
+  );
 
   home.packages = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin [ cliWrapper ];
 
@@ -88,110 +85,6 @@ in
       RunAtLoad = true;
       StandardOutPath = "/tmp/cliproxyapi.log";
       StandardErrorPath = "/tmp/cliproxyapi.error.log";
-    };
-  };
-
-  # Auth backup - watches auth dir for changes. CLIProxyAPI rewrites auth files
-  # on every token refresh, so this fires many times an hour and must stay cheap.
-  launchd.agents.cliproxyapi-backup-auth = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
-    enable = true;
-    config = {
-      ProgramArguments = [
-        "${pkgs.bash}/bin/bash"
-        "${backupScript}"
-        "auth"
-      ];
-      Environment = {
-        PATH = "${
-          lib.makeBinPath [
-            pkgs.bash
-            pkgs.coreutils
-            pkgs.awscli2
-          ]
-        }:/opt/homebrew/bin:/usr/local/bin:/usr/bin";
-      };
-      WatchPaths = [
-        "${homeDir}/.cli-proxy-api/objectstore/auths"
-      ];
-      RunAtLoad = true;
-      StandardOutPath = "/tmp/cliproxyapi-backup-auth.log";
-      StandardErrorPath = "/tmp/cliproxyapi-backup-auth.error.log";
-    };
-  };
-
-  # Full backup - auth files plus the multi-hundred-megabyte CPA Manager Plus
-  # analytics snapshot. Wall clock only; never wire this to a file watch.
-  launchd.agents.cliproxyapi-backup = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
-    enable = true;
-    config = {
-      ProgramArguments = [
-        "${pkgs.bash}/bin/bash"
-        "${backupScript}"
-        "full"
-      ];
-      Environment = {
-        PATH = "${
-          lib.makeBinPath [
-            pkgs.bash
-            pkgs.coreutils
-            pkgs.awscli2
-            pkgs.gnutar
-            pkgs.gzip
-            pkgs.sqlite
-          ]
-        }:/opt/homebrew/bin:/usr/local/bin:/usr/bin";
-      };
-      StartCalendarInterval = [ { Minute = 0; } ];
-      RunAtLoad = true;
-      StandardOutPath = "/tmp/cliproxyapi-backup.log";
-      StandardErrorPath = "/tmp/cliproxyapi-backup.error.log";
-    };
-  };
-
-  # Keychain sync - extract Claude/Codex OAuth from local stores into auth dir
-  launchd.agents.cliproxyapi-keychain-sync = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
-    enable = true;
-    config = {
-      ProgramArguments = [
-        "${pkgs.bash}/bin/bash"
-        "${keychainSyncScript}"
-      ];
-      Environment = {
-        PATH = "${
-          lib.makeBinPath [
-            pkgs.bash
-            pkgs.coreutils
-            pkgs.jq
-          ]
-        }:/usr/bin";
-      };
-      StartInterval = 300;
-      RunAtLoad = true;
-      StandardOutPath = "/tmp/cliproxyapi-keychain-sync.log";
-      StandardErrorPath = "/tmp/cliproxyapi-keychain-sync.error.log";
-    };
-  };
-
-  # Periodic sync - pull auth files from S3 every 5 minutes
-  launchd.agents.cliproxyapi-sync = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
-    enable = true;
-    config = {
-      ProgramArguments = [
-        "${pkgs.bash}/bin/bash"
-        "${hydrateScript}"
-      ];
-      Environment = {
-        PATH = "${
-          lib.makeBinPath [
-            pkgs.bash
-            pkgs.coreutils
-            pkgs.awscli2
-          ]
-        }:/opt/homebrew/bin:/usr/local/bin:/usr/bin";
-      };
-      StartInterval = 300;
-      StandardOutPath = "/tmp/cliproxyapi-sync.log";
-      StandardErrorPath = "/tmp/cliproxyapi-sync.error.log";
     };
   };
 
@@ -232,7 +125,7 @@ in
     Install.WantedBy = [ "default.target" ];
   };
 
-  systemd.user.paths.cliproxyapi-backup-auth = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+  systemd.user.paths.cliproxyapi-backup-auth = lib.mkIf objectstoreEnabled {
     Unit.Description = "Watch auth directories for changes";
     Path = {
       PathChanged = [
@@ -246,7 +139,7 @@ in
   # CLIProxyAPI rewrites auth files on every token refresh, so the path unit
   # fires many times an hour. It gets the auth-only entrypoint and a PATH
   # without sqlite/tar so the analytics snapshot cannot ride along.
-  systemd.user.services.cliproxyapi-backup-auth = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+  systemd.user.services.cliproxyapi-backup-auth = lib.mkIf objectstoreEnabled {
     Unit.Description = "CLIProxyAPI auth backup";
     Unit.X-SwitchMethod = "keep-old";
     Service = {
@@ -263,7 +156,7 @@ in
     };
   };
 
-  systemd.user.services.cliproxyapi-backup = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+  systemd.user.services.cliproxyapi-backup = lib.mkIf objectstoreEnabled {
     Unit.Description = "CLIProxyAPI auth and CPA Manager Plus analytics backup";
     Unit.X-SwitchMethod = "keep-old";
     Service = {
@@ -283,7 +176,7 @@ in
     };
   };
 
-  systemd.user.timers.cliproxyapi-backup = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+  systemd.user.timers.cliproxyapi-backup = lib.mkIf objectstoreEnabled {
     Unit.Description = "Periodically back up CLIProxyAPI and CPA Manager Plus data";
     Timer = {
       OnBootSec = "5min";
@@ -292,32 +185,5 @@ in
       Unit = "cliproxyapi-backup.service";
     };
     Install.WantedBy = [ "timers.target" ];
-  };
-
-  # Periodic sync - pull auth files from S3 every 5 minutes
-  systemd.user.timers.cliproxyapi-sync = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
-    Unit.Description = "Periodically sync auth files from S3";
-    Timer = {
-      OnBootSec = "1min";
-      OnUnitActiveSec = "5min";
-      Unit = "cliproxyapi-sync.service";
-    };
-    Install.WantedBy = [ "timers.target" ];
-  };
-
-  systemd.user.services.cliproxyapi-sync = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
-    Unit.Description = "CLIProxyAPI auth sync from S3";
-    Unit.X-SwitchMethod = "keep-old";
-    Service = {
-      Type = "oneshot";
-      ExecStart = "${pkgs.bash}/bin/bash ${hydrateScript}";
-      Environment = "PATH=${
-        lib.makeBinPath [
-          pkgs.bash
-          pkgs.awscli2
-          pkgs.coreutils
-        ]
-      }";
-    };
   };
 }

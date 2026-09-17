@@ -1192,7 +1192,7 @@ lua-check-hammerspoon-dev: ## Run the Hammerspoon Lua check inside the Nix dev s
 ##@ Launchd Services
 
 .PHONY: launchctl
-launchctl: launchctl-brew-upgrader launchctl-openclaw launchctl-cliproxyapi launchctl-cliproxyapi-backup launchctl-code-syncer launchctl-docker-postgres launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama launchctl-roborev launchctl-tmux-session-logger ## Restart all launchd agents.
+launchctl: launchctl-brew-upgrader launchctl-openclaw launchctl-cliproxyapi launchctl-code-syncer launchctl-docker-postgres launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama launchctl-roborev launchctl-tmux-session-logger ## Restart all launchd agents.
 
 .PHONY: launchctl-brew-upgrader
 launchctl-brew-upgrader: ## Restart brew-updater launchd agent.
@@ -1209,14 +1209,6 @@ launchctl-cliproxyapi: ## Restart cliproxyapi launchd agent.
 	@sleep 3
 	@launchctl load ~/Library/LaunchAgents/org.nix-community.home.cliproxyapi.plist
 	@echo "✅ cliproxyapi restarted"
-
-.PHONY: launchctl-cliproxyapi-backup
-launchctl-cliproxyapi-backup: ## Restart cliproxyapi backup launchd agent.
-	@echo "🔄 Restarting cliproxyapi-backup..."
-	@launchctl unload ~/Library/LaunchAgents/org.nix-community.home.cliproxyapi-backup.plist 2>/dev/null || true
-	@sleep 3
-	@launchctl load ~/Library/LaunchAgents/org.nix-community.home.cliproxyapi-backup.plist
-	@echo "✅ cliproxyapi-backup restarted"
 
 .PHONY: launchctl-code-syncer
 launchctl-code-syncer: ## Restart code-syncer launchd agent.
