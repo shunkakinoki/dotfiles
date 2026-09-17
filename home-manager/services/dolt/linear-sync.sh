@@ -699,7 +699,9 @@ all_issues="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0 --skip-labels
 # Beads changed locally in this window keep their local assignee and status,
 # matching the active delta push below. Beads writes pulled fields before it
 # reports the pull result, so this runs before a deferred or rejected pull
-# exits.
+# exits. A Bead the pull reports closed is left closed: a completion made
+# after the snapshot would otherwise be rewritten back to its old claim and
+# pushed to Linear as reopened.
 local_claim_lines="$(printf '%s\n%s\n' "$issues_before_pull" "$all_issues" | @jq@/bin/jq -r -s --arg previous_sync "$previous_sync" '
   def issues: if type == "object" and has("issues") then .issues else . end;
   (.[0] | issues
@@ -709,7 +711,7 @@ local_claim_lines="$(printf '%s\n%s\n' "$issues_before_pull" "$all_issues" | @jq
       )
     | from_entries) as $local
   | .[1] | issues | .[]
-  | select($local[.id] != null
+  | select(.status != "closed" and $local[.id] != null
       and ($local[.id].assignee != (.assignee // "") or $local[.id].status != .status))
   | [.id, $local[.id].assignee, $local[.id].status, (.assignee // ""), .status] | join("\u001f")
 ')"
