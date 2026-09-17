@@ -75,7 +75,7 @@ When run bash -c '
   for config in \
     config/claude/settings.json \
     config/codex/hooks.json \
-    config/copilot/config.json; do
+    config/copilot/hooks.json; do
     jq -r ".. | objects | .command? // empty" "$config"
   done
   )"

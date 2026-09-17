@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# Copy managed Copilot config into the mutable runtime location.
-# Usage: activate.sh <config_json>
+# Install managed Copilot hooks as a user hook file. Copilot rewrites
+# config.json and settings.json itself, but never touches ~/.copilot/hooks.
+# Usage: activate.sh <hooks_json>
 set -euo pipefail
 
-CONFIG_JSON="$1"
+HOOKS_JSON="$1"
 
-mkdir -p ~/.copilot
-cp -f "$CONFIG_JSON" ~/.copilot/config.json
-chmod 600 ~/.copilot/config.json
+mkdir -p ~/.copilot/hooks
+cp -f "$HOOKS_JSON" ~/.copilot/hooks/dotfiles.json
+chmod 644 ~/.copilot/hooks/dotfiles.json

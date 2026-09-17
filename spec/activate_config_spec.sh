@@ -387,55 +387,42 @@ End
 
 Describe 'config/copilot/activate.sh'
 SCRIPT="$PWD/config/copilot/activate.sh"
-CONFIG_JSON="$PWD/config/copilot/config.json"
+HOOKS_JSON="$PWD/config/copilot/hooks.json"
 
 It 'uses bash shebang'
 When run bash -c "head -1 '$SCRIPT'"
 The output should include '#!/usr/bin/env bash'
 End
 
-It 'creates .copilot directory'
+It 'creates the Copilot user hooks directory'
 When run bash -c "grep 'mkdir -p' '$SCRIPT'"
-The output should include '.copilot'
+The output should include '.copilot/hooks'
 End
 
 It 'registers dcg in the pre-tool hook chain'
-When run jq -r '.hooks.preToolUse[].command' "$CONFIG_JSON"
+When run jq -r '.hooks.preToolUse[].command' "$HOOKS_JSON"
 The output should include '$HOME/dotfiles/config/shared/hooks/dcg-guard.sh'
 End
 
 It 'registers rtk rewrite in the pre-tool hook chain'
-When run jq -r '.hooks.preToolUse[].command' "$CONFIG_JSON"
+When run jq -r '.hooks.preToolUse[].command' "$HOOKS_JSON"
 The output should include '$HOME/dotfiles/config/shared/hooks/rtk-rewrite.sh'
 End
 
 It 'registers security in the pre-tool hook chain'
-When run jq -r '.hooks.preToolUse[].command' "$CONFIG_JSON"
+When run jq -r '.hooks.preToolUse[].command' "$HOOKS_JSON"
 The output should include '$HOME/dotfiles/config/shared/hooks/security.sh'
 End
 
-It 'replaces existing config with the managed config'
+It 'installs the managed hook file without touching Copilot-managed config'
 TMP_HOME="$(mktemp -d)"
 mkdir -p "$TMP_HOME/.copilot"
-cat >"$TMP_HOME/.copilot/config.json" <<'JSON'
-{
-  "banner": "never",
-  "hooks": {
-    "preToolUse": [
-      {
-        "type": "command",
-        "command": "existing-hook",
-        "timeout": 1
-      }
-    ]
-  }
-}
-JSON
-
-When run bash -c 'HOME="$1" bash "$2" "$3" && jq -r ".disableAllHooks, (.hooks.preToolUse[].command)" "$1/.copilot/config.json"' _ "$TMP_HOME" "$SCRIPT" "$CONFIG_JSON"
+printf '%s\n' '// This file is managed automatically.' '{}' >"$TMP_HOME/.copilot/config.json"
+When run bash -c 'HOME="$1" bash "$2" "$3" && jq -r ".version, (.hooks.preToolUse[].command)" "$1/.copilot/hooks/dotfiles.json" && head -1 "$1/.copilot/config.json"' _ "$TMP_HOME" "$SCRIPT" "$HOOKS_JSON"
 The status should be success
-The output should include 'false'
+The output should include '1'
 The output should include '$HOME/dotfiles/config/shared/hooks/dcg-guard.sh'
+The output should include '// This file is managed automatically.'
 End
 End
 

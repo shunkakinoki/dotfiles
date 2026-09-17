@@ -144,7 +144,7 @@ When run bash -c "
     config/codex/hooks.json \
     config/cursor/hooks.json \
     config/grok/plugin/hooks/hooks.json \
-    config/copilot/config.json; do
+    config/copilot/hooks.json; do
     for event in session-start prompt-submitted agent-done session-end; do
       jq -r '.. | objects | .command? // empty' \"\$config\" | grep -Fq \"\\\$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh \$event --agent \" || { echo \"missing \$event in \$config\"; exit 1; }
     done
@@ -161,7 +161,7 @@ When run bash -c "
       echo \"unguarded traces hook in \$adapter\"; exit 1
     fi
   done
-  for config in config/claude/settings.json config/codex/hooks.json config/cursor/hooks.json config/grok/plugin/hooks/hooks.json config/copilot/config.json config/antigravity/hooks.json; do
+  for config in config/claude/settings.json config/codex/hooks.json config/cursor/hooks.json config/grok/plugin/hooks/hooks.json config/copilot/hooks.json config/antigravity/hooks.json; do
     if jq -r '.. | objects | .command? // empty' \"\$config\" | grep -Eq '(^|&& |; )traces hook agent'; then
       echo \"unguarded traces hook in \$config\"; exit 1
     fi

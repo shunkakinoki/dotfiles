@@ -1,5 +1,5 @@
 {
-  "disableAllHooks": false,
+  "version": 1,
   "hooks": {
     "preToolUse": [
       {
