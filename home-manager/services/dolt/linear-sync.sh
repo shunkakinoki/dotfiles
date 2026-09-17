@@ -701,12 +701,15 @@ all_issues="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0 --skip-labels
 # reports the pull result, so this runs before a deferred or rejected pull
 # exits. A Bead the pull reports closed is left closed: a completion made
 # after the snapshot would otherwise be rewritten back to its old claim and
-# pushed to Linear as reopened.
+# pushed to Linear as reopened. A Bead closed locally in the window is closed
+# again when the pull reopened it: Linear still carries the pre-close state
+# until the push below lands, and a resurrected Bead is re-dispatched to a
+# worker before that happens.
 local_claim_lines="$(printf '%s\n%s\n' "$issues_before_pull" "$all_issues" | @jq@/bin/jq -r -s --arg previous_sync "$previous_sync" '
   def issues: if type == "object" and has("issues") then .issues else . end;
   (.[0] | issues
     | map(
-        select(.status != "closed" and ($previous_sync == "" or .updated_at >= $previous_sync))
+        select($previous_sync == "" or .updated_at >= $previous_sync)
         | {key: .id, value: {assignee: (.assignee // ""), status: .status}}
       )
     | from_entries) as $local
@@ -733,7 +736,7 @@ if [ -n "$local_claim_lines" ]; then
     if [ "${#restore_args[@]}" -gt 0 ]; then
       "$bd_cli" -C "$repo_dir" update "$restore_id" "${restore_args[@]}" --force >/dev/null 2>&1 || restore_failures=$((restore_failures + 1))
     fi
-    if [ -z "$restore_assignee" ] && [ -n "$pulled_assignee" ]; then
+    if [ -z "$restore_assignee" ] && [ -n "$pulled_assignee" ] && [ "$restore_status" != "closed" ]; then
       "$bd_cli" -C "$repo_dir" unclaim "$restore_id" --force >/dev/null 2>&1 || restore_failures=$((restore_failures + 1))
     fi
   done <<<"$local_claim_lines"

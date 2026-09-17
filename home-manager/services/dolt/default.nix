@@ -117,7 +117,7 @@ in
       {
         Unit = {
           Description = "Synchronize Beads with Linear";
-          X-SwitchMethod = "restart";
+          X-SwitchMethod = "keep-old";
           After = [ "network-online.target" ];
           Wants = [ "network-online.target" ];
         };
