@@ -146,7 +146,7 @@ in
         Unit.Description = "Periodically synchronize Beads with Linear";
         Timer = {
           OnBootSec = "4min";
-          OnCalendar = "*-*-* *:02/15:00";
+          OnCalendar = "*-*-* *:02:00";
           Persistent = true;
           Unit = "dolt-linear-sync.service";
         };

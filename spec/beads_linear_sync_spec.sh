@@ -1165,8 +1165,8 @@ End
 End
 
 Describe 'Home Manager service ownership'
-It 'runs Linear every fifteen minutes on Kyber'
-When run bash -c "grep -F 'OnCalendar = \"*-*-* *:02/15:00\";' '$MODULE' >/dev/null"
+It 'runs Linear hourly on Kyber'
+When run bash -c "grep -F 'OnCalendar = \"*-*-* *:02:00\";' '$MODULE' >/dev/null"
 The status should be success
 End
 
@@ -1176,7 +1176,7 @@ The status should be success
 End
 
 It 'installs the Kyber Linux systemd timer'
-When run bash -c "timer=\$(sed -n '/systemd.user.timers.dolt-linear-sync/,/^  };/p' '$MODULE'); grep -F 'OnBootSec = \"4min\";' <<<\"\$timer\" >/dev/null && grep -F 'OnCalendar = \"*-*-* *:02/15:00\";' <<<\"\$timer\" >/dev/null && ! grep -F 'OnUnitActiveSec' <<<\"\$timer\" >/dev/null && grep -F 'Persistent = true;' <<<\"\$timer\" >/dev/null && grep -F 'X-SwitchMethod = \"keep-old\";' '$MODULE' >/dev/null"
+When run bash -c "timer=\$(sed -n '/systemd.user.timers.dolt-linear-sync/,/^  };/p' '$MODULE'); grep -F 'OnBootSec = \"4min\";' <<<\"\$timer\" >/dev/null && grep -F 'OnCalendar = \"*-*-* *:02:00\";' <<<\"\$timer\" >/dev/null && ! grep -F 'OnUnitActiveSec' <<<\"\$timer\" >/dev/null && grep -F 'Persistent = true;' <<<\"\$timer\" >/dev/null && grep -F 'X-SwitchMethod = \"keep-old\";' '$MODULE' >/dev/null"
 The status should be success
 End
 End
