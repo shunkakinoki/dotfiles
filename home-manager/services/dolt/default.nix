@@ -50,7 +50,9 @@ let
   linearSyncScript = pkgs.replaceVars ./linear-sync.sh {
     bd = "${pkgs.beads}/bin/bd";
     linear = "${homeDir}/.bun/install/global/node_modules/.bin/linear";
-    linearControlStateJq = ./linear-control-state.jq;
+    # toString of a flake-source path carries no store context, so the copy
+    # inside the flake checkout is garbage-collected under the running unit.
+    linearControlStateJq = "${./linear-control-state.jq}";
     inherit linearWorkspace linearTeamId;
     utilLinux = pkgs.util-linux;
     inherit (pkgs)
