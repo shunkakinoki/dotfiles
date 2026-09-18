@@ -309,12 +309,18 @@ The output should include 'SURPLUS_API_KEY'
 The status should be success
 End
 
+It 'renders a key with a trailing newline and sed metacharacters intact'
+When run bash -c "source <(sed -n '/^sed_value() {/,/^}/p' '$SCRIPT'); printf 'api-key: \"__K__\"\n' | sed -e \"s|__K__|\$(sed_value \$'ab|c&d\\\\\\\\e\\n')|g\""
+The output should equal 'api-key: "ab|c&d\\e"'
+The status should be success
+End
+
 It 'declares the OpenAI-compatible last-resort fallback upstream'
 When run bash -c "sed -n '/name: \"surplus\"/,/name: \"openai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'priority: 150'
 The output should include 'base-url: "https://api.surplusintelligence.ai/v1"'
 The output should include 'api-key: "__SURPLUS_API_KEY__"'
-The output should include 'name: "deepseek-v4-flash-0731"'
+The output should include 'name: "deepseek-v4.1-flash"'
 The output should include 'alias: "deepseek-v4.1-flash"'
 The status should be success
 End
@@ -631,7 +637,7 @@ render_proxy_fixture() (
       'TEMPLATE="$HOME/.cli-proxy-api/config.template.yaml"' \
       'CONFIG="$HOME/.cli-proxy-api/config.yaml"' \
       'KAMINO_MAPPING_FILE="$HOME/.config/cliproxyapi/kamino-tunnels.json"'
-    sed -n '/^render_proxy_url() {/,/^}/p; /^render_api_key_entries() {/,/^}/p; /^if \[ -f "$TEMPLATE" \]; then/,/^fi/p' "$SCRIPT" | sed 's|@jq@|jq|g; s|@sed@|sed|g'
+    sed -n '/^render_proxy_url() {/,/^}/p; /^render_api_key_entries() {/,/^}/p; /^sed_value() {/,/^}/p; /^if \[ -f "$TEMPLATE" \]; then/,/^fi/p' "$SCRIPT" | sed 's|@jq@|jq|g; s|@sed@|sed|g'
   } >"$temp_home/render.sh"
   HOME="$temp_home" bash "$temp_home/render.sh" "$PWD/home-manager/services/cliproxyapi/scripts/common.sh"
   actual=$(sed -n 's/^proxy-url: //p' "$temp_home/.cli-proxy-api/config.yaml")

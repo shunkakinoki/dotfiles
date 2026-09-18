@@ -182,20 +182,31 @@ if cliproxy_has_objectstore_credentials; then
   fi
 fi
 
+# A secret pasted with a trailing newline would split its sed expression and
+# abort the render, leaving an empty config that crash-loops the service.
+sed_value() {
+  local value="${1//$'\r'/}"
+  value="${value//$'\n'/}"
+  value="${value//\\/\\\\}"
+  value="${value//|/\\|}"
+  value="${value//&/\\&}"
+  printf '%s' "$value"
+}
+
 # Generate config from template
 if [ -f "$TEMPLATE" ]; then
   render_api_key_entries __OPENCODE_API_KEY_ENTRIES__ "${OPENCODE_API_KEYS:-${OPENCODE_API_KEY:-}}" <"$TEMPLATE" |
     render_api_key_entries __OLLAMA_API_KEY_ENTRIES__ "${OLLAMA_API_KEYS:-},${OLLAMA_API_KEY:-}" ollama-cloud | @sed@ \
-    -e "s|__OPENROUTER_API_KEY__|${OPENROUTER_API_KEY:-}|g" \
-    -e "s|__OPENAI_API_KEY__|${OPENAI_API_KEY:-}|g" \
-    -e "s|__CLIPROXY_MANAGEMENT_PASSWORD__|${CLIPROXY_MANAGEMENT_PASSWORD:-}|g" \
-    -e "s|__ZAI_API_KEY__|${ZAI_API_KEY:-}|g" \
-    -e "s|__QWEN_API_KEY__|${QWEN_API_KEY:-${DASHSCOPE_API_KEY:-}}|g" \
-    -e "s|__ALIYUN_TOKEN_PLAN_API_KEY__|${ALIYUN_TOKEN_PLAN_API_KEY:-}|g" \
-    -e "s|__VERBOO_API_KEY__|${VERBOO_API_KEY:-}|g" \
-    -e "s|__SURPLUS_API_KEY__|${SURPLUS_API_KEY:-}|g" \
-    -e "s|__COMMANDCODE_API_KEY__|${COMMANDCODE_API_KEY:-}|g" \
-    -e "s|__AMP_UPSTREAM_API_KEY__|${AMP_UPSTREAM_API_KEY:-}|g" |
+    -e "s|__OPENROUTER_API_KEY__|$(sed_value "${OPENROUTER_API_KEY:-}")|g" \
+    -e "s|__OPENAI_API_KEY__|$(sed_value "${OPENAI_API_KEY:-}")|g" \
+    -e "s|__CLIPROXY_MANAGEMENT_PASSWORD__|$(sed_value "${CLIPROXY_MANAGEMENT_PASSWORD:-}")|g" \
+    -e "s|__ZAI_API_KEY__|$(sed_value "${ZAI_API_KEY:-}")|g" \
+    -e "s|__QWEN_API_KEY__|$(sed_value "${QWEN_API_KEY:-${DASHSCOPE_API_KEY:-}}")|g" \
+    -e "s|__ALIYUN_TOKEN_PLAN_API_KEY__|$(sed_value "${ALIYUN_TOKEN_PLAN_API_KEY:-}")|g" \
+    -e "s|__VERBOO_API_KEY__|$(sed_value "${VERBOO_API_KEY:-}")|g" \
+    -e "s|__SURPLUS_API_KEY__|$(sed_value "${SURPLUS_API_KEY:-}")|g" \
+    -e "s|__COMMANDCODE_API_KEY__|$(sed_value "${COMMANDCODE_API_KEY:-}")|g" \
+    -e "s|__AMP_UPSTREAM_API_KEY__|$(sed_value "${AMP_UPSTREAM_API_KEY:-}")|g" |
     render_proxy_url >"$CONFIG"
 
   if [ "$(uname)" = "Linux" ] && [ -n "${CLIPROXY_API_KEY:-}" ]; then
