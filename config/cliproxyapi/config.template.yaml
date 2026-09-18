@@ -637,7 +637,6 @@ openai-compatibility:
     models:
       - name: "deepseek-v4.1-flash"
         alias: "deepseek-v4.1-flash"
-
 # Official OpenAI compatibility provider reference
 # OpenAI compatibility providers
 # openai-compatibility:
