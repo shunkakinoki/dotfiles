@@ -17,6 +17,7 @@ let
   # server or merge another writable copy into the authority.
   doltServerHost = "kyber.tail950b36.ts.net";
   beadsClientEnvironment = {
+    BD_EVENTS_JOURNAL = "1";
     BEADS_DOLT_AUTO_START = "0";
     BEADS_DOLT_SERVER_MODE = "1";
     BEADS_DOLT_SERVER_HOST = doltServerHost;
@@ -49,6 +50,7 @@ let
   linearSyncScript = pkgs.replaceVars ./linear-sync.sh {
     bd = "${pkgs.beads}/bin/bd";
     linear = "${homeDir}/.bun/install/global/node_modules/.bin/linear";
+    linearControlStateJq = ./linear-control-state.jq;
     inherit linearWorkspace linearTeamId;
     utilLinux = pkgs.util-linux;
     inherit (pkgs)
@@ -117,7 +119,7 @@ in
       {
         Unit = {
           Description = "Synchronize Beads with Linear";
-          X-SwitchMethod = "restart";
+          X-SwitchMethod = "keep-old";
           After = [ "network-online.target" ];
           Wants = [ "network-online.target" ];
         };
@@ -130,6 +132,9 @@ in
               HOME = homeDir;
               PATH = linearSyncPath;
               LINEAR_TEAM_ID = linearTeamId;
+              # The fleet host shares a 32G tmpfs /tmp that other lanes fill up;
+              # bash here-documents and bd temp files must not depend on it.
+              TMPDIR = "${homeDir}/.local/state/beads-linear-sync";
             }
           );
         };

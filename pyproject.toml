@@ -38,6 +38,14 @@ exclude-newer = "1 week"
 # Packages that require --prerelease=allow during uv tool install
 prerelease = ["serena-agent"]
 
+# Git-sourced uv tools (not Renovate-tracked PyPI pins).
+# Do NOT add PyPI agent-reach (jgalea/agent-reach 0.1.0) — wrong package.
+# After first install, optional post-setup (document only; do not auto-run --system):
+#   agent-reach install --env=auto   # read-only check
+#   agent-reach install --system     # needs explicit user approve
+[tool.uv-globals.git-tools]
+agent-reach = "git+https://github.com/Panniantong/Agent-Reach.git"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 

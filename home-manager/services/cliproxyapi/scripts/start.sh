@@ -28,9 +28,9 @@ render_proxy_url() {
   done
 }
 
-render_opencode_api_key_entries() {
-  local template="$1"
-  local key_source="${OPENCODE_API_KEYS:-${OPENCODE_API_KEY:-}}"
+render_api_key_entries() {
+  local placeholder="$1"
+  local key_source="$2"
   local candidate existing_key trimmed escaped line
   local -a candidates=()
   local -a api_keys=()
@@ -54,7 +54,7 @@ render_opencode_api_key_entries() {
   done
 
   while IFS= read -r line || [ -n "$line" ]; do
-    if [ "$line" != "    api-key-entries: __OPENCODE_API_KEY_ENTRIES__" ]; then
+    if [ "$line" != "    api-key-entries: $placeholder" ]; then
       printf '%s\n' "$line"
       continue
     fi
@@ -70,7 +70,7 @@ render_opencode_api_key_entries() {
       escaped="${escaped//\"/\\\"}"
       printf '      - api-key: "%s"\n' "$escaped"
     done
-  done <"$template"
+  done
 }
 
 # OAuth credentials default to priority 0, which loses to openai-compatibility
@@ -161,7 +161,8 @@ fi
 
 # Generate config from template
 if [ -f "$TEMPLATE" ]; then
-  render_opencode_api_key_entries "$TEMPLATE" | @sed@ \
+  render_api_key_entries __OPENCODE_API_KEY_ENTRIES__ "${OPENCODE_API_KEYS:-${OPENCODE_API_KEY:-}}" <"$TEMPLATE" |
+    render_api_key_entries __OLLAMA_API_KEY_ENTRIES__ "${OLLAMA_API_KEYS:-},${OLLAMA_API_KEY:-}" | @sed@ \
     -e "s|__OPENROUTER_API_KEY__|${OPENROUTER_API_KEY:-}|g" \
     -e "s|__OPENAI_API_KEY__|${OPENAI_API_KEY:-}|g" \
     -e "s|__CLIPROXY_MANAGEMENT_PASSWORD__|${CLIPROXY_MANAGEMENT_PASSWORD:-}|g" \

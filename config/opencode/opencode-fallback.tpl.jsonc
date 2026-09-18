@@ -7,6 +7,7 @@
   "timeout_seconds": 30,
   "notify_on_fallback": true,
   "fallback_models": [
-    "shunkakinoki/free"
+    "shunkakinoki/free",
+    "cliproxyapi/free"
   ]
 }

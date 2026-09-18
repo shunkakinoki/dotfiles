@@ -122,6 +122,7 @@ ALIYUN_TOKEN_PLAN_API_KEY="sk-sp-..."
 VERBOO_API_KEY="..."
 SURPLUS_API_KEY="..."
 COMMANDCODE_API_KEY="..."
+OLLAMA_API_KEY="..."
 ```
 
 For more than one OpenCode Go account behind the same upstream endpoint, set a
@@ -130,6 +131,14 @@ legacy singular value, and empty or duplicate entries are ignored:
 
 ```bash
 OPENCODE_API_KEYS="first-opencode-api-key,second-opencode-api-key"
+```
+
+For more than one Ollama Cloud account, set `OLLAMA_API_KEYS` to a
+comma-separated list. `OLLAMA_API_KEY` and `OLLAMA_API_KEYS` are merged into one
+pool, and empty or duplicate entries are ignored:
+
+```bash
+OLLAMA_API_KEYS="first-ollama-api-key,second-ollama-api-key"
 ```
 
 CLIProxyAPI selects from these entries using the configured routing strategy.

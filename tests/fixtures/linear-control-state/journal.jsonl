@@ -1,0 +1,4 @@
+{"seq":41,"op":"update","issue_id":"task-a","actor":"beads-linear-reconciler","issue":{"id":"task-a","status":"open","assignee":"owner@example.com","labels":["linear"]}}
+{"seq":42,"op":"update","issue_id":"task-c","actor":"kamino4_lane_1","issue":{"id":"task-c","status":"in_progress","assignee":"kamino4_lane_1","labels":["agent-plan"]}}
+{"seq":43,"op":"update","issue_id":"task-d","actor":"kamino3_lane_2","issue":{"id":"task-d","status":"open","assignee":"","labels":[]}}
+{"seq":44,"op":"update","issue_id":"task-b","actor":"host_orchestrator","issue":{"id":"task-b","status":"open","assignee":"","labels":[]}}

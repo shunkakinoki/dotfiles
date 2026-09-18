@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2016
+
+Describe 'config/openfactor/install.sh'
+SCRIPT="$PWD/config/openfactor/install.sh"
+BASH_BIN="$(command -v bash)"
+BASH_DIR="$(dirname "$BASH_BIN")"
+
+It 'uses the OpenFactor CLI as the single host hook installer'
+When run head -1 "$SCRIPT"
+The output should equal '#!/usr/bin/env bash'
+End
+
+It 'skips cleanly when the CLI is not installed'
+TMP_HOME="$(mktemp -d)"
+When run env -u OPENFACTOR_BIN HOME="$TMP_HOME" "$BASH_BIN" -c 'PATH="$2:/usr/bin:/bin" "$1"' _ "$SCRIPT" "$BASH_DIR"
+The status should be success
+The error should include 'OpenFactor CLI not found; skipping orchestration hook registration'
+End
+
+It 'delegates host registration to the CLI'
+TMP_HOME="$(mktemp -d)"
+TMP_BIN="$TMP_HOME/bin"
+mkdir -p "$TMP_BIN"
+cat >"$TMP_BIN/openfactor" <<'SH'
+#!/usr/bin/env bash
+printf '%s\n' "$*"
+SH
+chmod +x "$TMP_BIN/openfactor"
+
+When run env -u OPENFACTOR_BIN HOME="$TMP_HOME" "$BASH_BIN" -c 'PATH="$1:$3" "$2"' _ "$TMP_BIN" "$SCRIPT" "$BASH_DIR"
+The output should equal 'hooks install --scope host --json'
+The status should be success
+End
+
+It 'warns and continues when the CLI cannot register hooks'
+TMP_HOME="$(mktemp -d)"
+TMP_BIN="$TMP_HOME/bin"
+mkdir -p "$TMP_BIN"
+cat >"$TMP_BIN/openfactor" <<'SH'
+#!/usr/bin/env bash
+echo 'Unknown command: hooks install' >&2
+exit 2
+SH
+chmod +x "$TMP_BIN/openfactor"
+
+When run env -u OPENFACTOR_BIN HOME="$TMP_HOME" "$BASH_BIN" -c 'PATH="$1:$3" "$2"' _ "$TMP_BIN" "$SCRIPT" "$BASH_DIR"
+The status should be success
+The error should include 'OpenFactor hook registration failed; continuing activation'
+End
+
+It 'warns and continues when OPENFACTOR_BIN is not executable'
+TMP_HOME="$(mktemp -d)"
+When run env HOME="$TMP_HOME" OPENFACTOR_BIN="$TMP_HOME/missing" "$BASH_BIN" "$SCRIPT"
+The status should be success
+The error should include 'OpenFactor CLI is not executable'
+End
+End

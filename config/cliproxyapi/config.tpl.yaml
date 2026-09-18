@@ -608,6 +608,17 @@ openai-compatibility:
         alias: "__GPT_LUNA__"
       - name: "__DEEPSEEK_FLASH_0731__"
         alias: "__DEEPSEEK_FLASH__"
+  - name: "ollama-cloud"
+    priority: 150
+    base-url: "https://ollama.com/v1"
+    api-key-entries: __OLLAMA_API_KEY_ENTRIES__
+    models:
+      - name: "__DEEPSEEK_FLASH__"
+        alias: "__DEEPSEEK_FLASH__"
+      - name: "__MINIMAX__"
+        alias: "__MINIMAX__"
+      - name: "__KIMI__"
+        alias: "__KIMI__"
 
 # Official OpenAI compatibility provider reference
 # OpenAI compatibility providers

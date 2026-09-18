@@ -56,7 +56,7 @@
             "type": "command"
           },
           {
-            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
+            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh droid",
             "timeout": 10,
             "type": "command"
           }
@@ -81,7 +81,7 @@
         "matcher": "Execute",
         "hooks": [
           {
-            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
+            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh droid",
             "timeout": 10,
             "type": "command"
           }
@@ -101,7 +101,7 @@
       {
         "hooks": [
           {
-            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh",
+            "command": "$HOME/dotfiles/config/shared/hooks/roborev-agent.sh droid",
             "timeout": 10,
             "type": "command"
           }

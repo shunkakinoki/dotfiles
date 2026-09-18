@@ -92,6 +92,9 @@
         },
         "kimi-k3": {
           "name": "Kimi K3 (via local CLIProxyAPI)"
+        },
+        "free": {
+          "name": "Free router fallback (via local CLIProxyAPI)"
         }
       }
     },
@@ -114,6 +117,25 @@
         "baseURL": "http://localhost:11434/v1"
       },
       "models": {}
+    },
+    "ollama-cloud": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama Cloud",
+      "options": {
+        "baseURL": "https://ollama.com/v1",
+        "apiKey": "{env:OLLAMA_API_KEY}"
+      },
+      "models": {
+        "deepseek-v4.1-flash": {
+          "name": "Deepseek V4.1 Flash (via Ollama Cloud)"
+        },
+        "minimax-m3": {
+          "name": "Minimax M3 (via Ollama Cloud)"
+        },
+        "kimi-k3": {
+          "name": "Kimi K3 (via Ollama Cloud)"
+        }
+      }
     },
     "openai": {
       "options": {

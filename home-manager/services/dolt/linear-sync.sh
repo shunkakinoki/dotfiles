@@ -10,8 +10,9 @@ linear_team_id="@linearTeamId@"
 linear_credentials_file="${XDG_CONFIG_HOME:-$HOME/.config}/linear/credentials.toml"
 # Linear rejects an issue body over 250,000 characters with a generic
 # "Argument Validation Error", which bd surfaces as a per-issue warning rather
-# than a failed run. Hold the oversized Bead back so one unpublishable record
-# cannot keep failing every batch it lands in.
+# than a failed run. The description is cut to fit under the rendered
+# sections; a Bead whose sections leave no room for it is held back so one
+# unpublishable record cannot keep failing every batch it lands in.
 linear_body_limit=250000
 sync_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/beads-linear-sync"
 reconciliation_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/beads-reconciliation"
@@ -53,6 +54,7 @@ export BEADS_DOLT_SERVER_MODE="1"
 export BEADS_DOLT_AUTO_START="0"
 export BEADS_NODE_ID="kyber"
 export BEADS_ACTOR="beads-linear-reconciler"
+export BD_EVENTS_JOURNAL="1"
 export DOLT_CLI_USER="beads"
 export DOLT_CLI_PASSWORD=""
 
@@ -353,6 +355,101 @@ push_issue_batches() {
   fi
 }
 
+# A push renders the acceptance criteria, design, and notes sections and a
+# bd marker comment after the description in the Linear body, and the pull
+# imports that rendered body back into the Bead description, so each cycle
+# appends another copy of every section. The description is cut at the first
+# rendered heading or marker before it is pushed; the fields stay the source
+# of those sections.
+# shellcheck disable=SC2016 # jq programs; $ names are jq variables.
+rendered_sections_jq='
+  def issues: if type == "object" and has("issues") then .issues else . end;
+  def rendered_cut:
+    (.description // "")
+    | [match("(^|\\n\\n)## (Acceptance Criteria|Design|Notes)\\n\\n|\\n*<!-- bd-[a-z]+: [0-9a-z]+ -->"; "g")]
+    | if length > 0 then .[0].offset else null end;
+  def rendered_sections_length:
+    ((.acceptance_criteria // "") | length) + ((.design // "") | length) + ((.notes // "") | length);
+  def description_cap:
+    [$body_limit - rendered_sections_length - 10000, 0] | max;
+  def canonical_description:
+    description_cap as $cap
+    | (.description // "") as $description
+    | $description[:(rendered_cut // ($description | length))]
+    | sub("\\s+$"; "")
+    | if $cap > 0 then .[:$cap] else . end;
+  def fingerprint:
+    {title, status, assignee, priority, issue_type, acceptance_criteria, design, notes, description: canonical_description}
+    | tojson;
+'
+# shellcheck disable=SC2016 # jq program; $ names are jq variables.
+rendered_section_cuts='
+  ($ids | split(",") | map(select(length > 0) | {key: ., value: true}) | from_entries) as $wanted
+  | issues | .[]
+  | select($wanted[.id] != null and (rendered_cut != null or (description_cap > 0 and ((.description // "") | length) > description_cap)))
+  | {id: .id, body: canonical_description}
+'
+
+written_since_snapshot() {
+  "$bd_cli" -C "$repo_dir" history "$1" --events --limit 20 --json 2>/dev/null </dev/null |
+    @jq@/bin/jq -r --arg since "$snapshot_taken_at" --arg actor "$BEADS_ACTOR" '
+      if type == "array" then any(.[]; .actor != $actor and .created_at >= $since) else false end
+    ' 2>/dev/null || echo false
+}
+
+# Beads whose description still carries rendered sections after a normalize
+# pass; pushing them now would round-trip the sections or exceed the limit.
+normalize_skipped_ids=""
+
+normalize_rendered_sections() {
+  local issues_json="$1"
+  local issue_ids="$2"
+  local description="$3"
+  local cuts
+  local cut
+  local cut_id
+  local normalized=0
+  local skipped=0
+  local description_file="$sync_state_dir/description-$repo_slug"
+
+  normalize_skipped_ids=""
+  if [ -z "$issue_ids" ]; then
+    return 0
+  fi
+  cuts="$(@jq@/bin/jq -c --arg ids "$issue_ids" --argjson body_limit "$linear_body_limit" "$rendered_sections_jq $rendered_section_cuts" <<<"$issues_json")"
+  if [ -z "$cuts" ]; then
+    return 0
+  fi
+  while IFS= read -r cut; do
+    cut_id="$(@jq@/bin/jq -r '.id' <<<"$cut")"
+    if [ "$(written_since_snapshot "$cut_id")" = "true" ]; then
+      skipped=$((skipped + 1))
+      normalize_skipped_ids="${normalize_skipped_ids:+$normalize_skipped_ids,}$cut_id"
+      continue
+    fi
+    @jq@/bin/jq -j '.body' <<<"$cut" >"$description_file"
+    if "$bd_cli" -C "$repo_dir" update "$cut_id" --body-file "$description_file" --allow-empty-description >/dev/null 2>&1; then
+      normalized=$((normalized + 1))
+    else
+      skipped=$((skipped + 1))
+      normalize_skipped_ids="${normalize_skipped_ids:+$normalize_skipped_ids,}$cut_id"
+    fi
+  done <<<"$cuts"
+  @coreutils@/bin/rm -f "$description_file"
+  log "Normalized $normalized description(s) carrying rendered sections before the $description push; skipped $skipped"
+}
+
+# Filters "id ..." lines on stdin down to the Beads normalize did not skip.
+drop_skipped_lines() {
+  @gawk@/bin/awk -v skip="$normalize_skipped_ids" '
+    BEGIN {
+      count = split(skip, list, ",")
+      for (i = 1; i <= count; i++) skipped[list[i]] = 1
+    }
+    NF && !($1 in skipped)
+  '
+}
+
 run_dolt_sql() {
   local query="$1"
 
@@ -362,6 +459,17 @@ run_dolt_sql() {
     --user="${DOLT_CLI_USER:-beads}" \
     --no-tls \
     sql -q "$query" >/dev/null
+}
+
+query_dolt_json() {
+  local query="$1"
+
+  "$dolt_cli" \
+    --host="$BEADS_DOLT_SERVER_HOST" \
+    --port="${BEADS_DOLT_SERVER_PORT:-3307}" \
+    --user="${DOLT_CLI_USER:-beads}" \
+    --no-tls \
+    sql -r json -q "$query"
 }
 
 restore_linear_last_sync() {
@@ -549,6 +657,11 @@ fi
 # SQL mutations are shared immediately; there is no database push/pull phase.
 
 linear_status="$("$bd_cli" -C "$repo_dir" linear status --json)"
+linear_database="$(@jq@/bin/jq -r '.dolt_database // empty' "$repo_dir/.beads/metadata.json")"
+if [[ ! $linear_database =~ ^[A-Za-z0-9_]+$ ]]; then
+  log "Beads metadata does not contain a valid Dolt database name"
+  exit 1
+fi
 if [ -s "$sync_checkpoint_file" ]; then
   previous_sync="$(<"$sync_checkpoint_file")"
 else
@@ -563,21 +676,25 @@ fi
 # because every push (and pull) bumps updated_at past the cycle start: keying
 # by updated_at re-selects the whole terminal set every run until the rate
 # limit defers it, so the checkpoint never advances. A pending completion
-# marker bypasses the ledger so its recovery push always happens.
-issues_before_pull="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0 --skip-labels)"
+# marker bypasses the ledger so its recovery push always happens. Capture the
+# ordered mutation cursor before the snapshot: events that race the listing
+# may appear in both inputs, but replaying their full state is idempotent.
+linear_journal_head="$(query_dolt_json "USE \`$linear_database\`; SELECT COALESCE(MAX(next_seq), 0) AS head FROM bd_events_seq;" | @jq@/bin/jq -er '.rows[0].head // "0"')"
+if [[ ! $linear_journal_head =~ ^[0-9]+$ ]]; then
+  log "Beads events journal returned an invalid sequence"
+  exit 1
+fi
+snapshot_taken_at="$(@coreutils@/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')"
+issues_before_pull="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0)"
 pushed_progress_input=/dev/null
 if [ -s "$push_progress_file" ]; then
   pushed_progress_input="$push_progress_file"
 fi
 # Keep deferred progress content out of jq's argv. The file may contain many
 # batches, so passing it with --arg exceeds Linux's per-argument limit.
-closed_push_selection="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" --rawfile pushed "$pushed_progress_input" '
-  def body_length:
-    ((.description // "") | length)
-    + ((.design // "") | length)
-    + ((.acceptance_criteria // "") | length)
-    + ((.notes // "") | length);
-  (if type == "object" and has("issues") then .issues else . end)
+closed_push_selection="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" --rawfile pushed "$pushed_progress_input" "$rendered_sections_jq"'
+  def body_length: (canonical_description | length) + rendered_sections_length;
+  issues
   | ($pushed | split("\n") | map(select(length > 0) | {key: ., value: true}) | from_entries) as $already_pushed
   | [
     .[]
@@ -630,6 +747,11 @@ pending_completion_ids="$(@jq@/bin/jq -r '
   | join(",")
 ' <<<"$issues_before_pull")"
 
+normalize_rendered_sections "$issues_before_pull" "$closed_ids" "terminal"
+if [ -n "$normalize_skipped_ids" ]; then
+  closed_push_entries="$(printf '%s\n' "$closed_push_entries" | drop_skipped_lines)"
+  closed_ids="$(printf '%s\n' "$closed_push_entries" | @gawk@/bin/awk 'NF { print $1 }' | @coreutils@/bin/paste -sd, -)"
+fi
 if push_issue_batches "$closed_ids" "terminal" "$closed_push_entries" "$push_progress_file"; then
   :
 else
@@ -670,11 +792,6 @@ fi
 # bounded service window, while a complete tracker fetch finishes promptly.
 # Clear only Kyber's ignored clone-local cursor before pulling; the successful
 # pull writes a fresh cursor, and failures restore the prior value.
-linear_database="$(@jq@/bin/jq -r '.dolt_database // empty' "$repo_dir/.beads/metadata.json")"
-if [[ ! $linear_database =~ ^[A-Za-z0-9_]+$ ]]; then
-  log "Beads metadata does not contain a valid Dolt database name"
-  exit 1
-fi
 linear_last_sync_before_pull="$(@jq@/bin/jq -r '.last_sync // ""' <<<"$linear_status")"
 run_dolt_sql "USE \`$linear_database\`; DELETE FROM local_metadata WHERE \`key\` = 'linear.last_sync';"
 
@@ -689,62 +806,74 @@ run_linear pull @coreutils@/bin/timeout 720 "$bd_cli" -C "$repo_dir" linear sync
   --relations \
   --no-wait || pull_status=$?
 
-all_issues="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0 --skip-labels)"
+all_issues="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0)"
 
-# The cursor-free pull skips Beads' local-change guard, so every run wrote
-# Linear's assignee and workflow state over a local claim or release. A claim
-# made after the previous push still reads Todo in Linear, so the pull demoted
-# it to open and the restore below then left an open Bead that carried a
-# worker assignee, which no lane can claim and no worker will resume. Active
-# Beads changed locally in this window keep their local assignee and status,
-# matching the active delta push below. Beads writes pulled fields before it
-# reports the pull result, so this runs before a deferred or rejected pull
-# exits.
-local_claim_lines="$(printf '%s\n%s\n' "$issues_before_pull" "$all_issues" | @jq@/bin/jq -r -s --arg previous_sync "$previous_sync" '
-  def issues: if type == "object" and has("issues") then .issues else . end;
-  (.[0] | issues
-    | map(
-        select(.status != "closed" and ($previous_sync == "" or .updated_at >= $previous_sync))
-        | {key: .id, value: {assignee: (.assignee // ""), status: .status}}
-      )
-    | from_entries) as $local
-  | .[1] | issues | .[]
-  | select($local[.id] != null
-      and ($local[.id].assignee != (.assignee // "") or $local[.id].status != .status))
-  | [.id, $local[.id].assignee, $local[.id].status, (.assignee // ""), .status] | join("\u001f")
-')"
-# Workers keep claiming and releasing while the pull runs, so a Bead can
-# already hold its restored state by the time bd is asked to write it. One
-# such refusal must not abort the cycle; the rest of the restore still runs.
-if [ -n "$local_claim_lines" ]; then
-  log "Restoring locally changed claims after pull"
+# A cursor-free pull overwrites local assignment, workflow state, and labels.
+# The pre-pull snapshot protects existing machine claims and orchestration
+# labels. The durable journal then folds every non-reconciler mutation made
+# during the pull over that snapshot in commit order, so a concurrent claim,
+# release, completion, or label change wins. Each repair compares both fields
+# it observed after the pull; a newer claim makes the guarded write refuse
+# instead of transferring ownership from a live worker.
+linear_journal_file="$sync_state_dir/journal-$repo_slug.jsonl"
+linear_current_file="$sync_state_dir/current-$repo_slug.json"
+if ! "$bd_cli" -C "$repo_dir" events tail --since "$linear_journal_head" >"$linear_journal_file"; then
+  restore_linear_last_sync
+  log "Unable to read the Beads events journal after the Linear pull"
+  exit 1
+fi
+printf '%s\n' "$all_issues" >"$linear_current_file"
+control_state_repairs="$(@jq@/bin/jq -c \
+  --arg actor "$BEADS_ACTOR" \
+  --slurpfile journal "$linear_journal_file" \
+  --slurpfile current "$linear_current_file" \
+  -f @linearControlStateJq@ <<<"$issues_before_pull")"
+@coreutils@/bin/rm -f "$linear_journal_file" "$linear_current_file"
+
+if [ -n "$control_state_repairs" ]; then
+  log "Restoring locally authoritative control state after pull"
+  restored_control_state=0
   restore_failures=0
-  # A tab separator would collapse an empty assignee field on read.
-  while IFS=$'\x1f' read -r restore_id restore_assignee restore_status pulled_assignee pulled_status; do
+  while IFS= read -r repair; do
+    restore_id="$(@jq@/bin/jq -r '.id' <<<"$repair")"
+    restore_status="$(@jq@/bin/jq -r '.desired_status' <<<"$repair")"
+    restore_assignee="$(@jq@/bin/jq -r '.desired_assignee' <<<"$repair")"
+    pulled_status="$(@jq@/bin/jq -r '.current_status' <<<"$repair")"
+    pulled_assignee="$(@jq@/bin/jq -r '.current_assignee' <<<"$repair")"
     restore_args=()
-    if [ -n "$restore_assignee" ] && [ "$restore_assignee" != "$pulled_assignee" ]; then
+    if [ "$restore_assignee" != "$pulled_assignee" ]; then
       restore_args+=(--assignee "$restore_assignee")
     fi
     if [ "$restore_status" != "$pulled_status" ]; then
       restore_args+=(--status "$restore_status")
     fi
-    if [ "${#restore_args[@]}" -gt 0 ]; then
-      "$bd_cli" -C "$repo_dir" update "$restore_id" "${restore_args[@]}" --force >/dev/null 2>&1 || restore_failures=$((restore_failures + 1))
+    mapfile -t add_labels < <(@jq@/bin/jq -r '.add_labels[]' <<<"$repair")
+    for label in "${add_labels[@]}"; do
+      restore_args+=(--add-label "$label")
+    done
+    mapfile -t remove_labels < <(@jq@/bin/jq -r '.remove_labels[]' <<<"$repair")
+    for label in "${remove_labels[@]}"; do
+      restore_args+=(--remove-label "$label")
+    done
+    if [ "${#restore_args[@]}" -eq 0 ]; then
+      continue
     fi
-    if [ -z "$restore_assignee" ] && [ -n "$pulled_assignee" ]; then
-      "$bd_cli" -C "$repo_dir" unclaim "$restore_id" --force >/dev/null 2>&1 || restore_failures=$((restore_failures + 1))
+    # Label-only repairs need a no-op field update for the CAS guards to ride.
+    if [ "$restore_status" = "$pulled_status" ] && [ "$restore_assignee" = "$pulled_assignee" ]; then
+      restore_args+=(--status "$pulled_status")
     fi
-  done <<<"$local_claim_lines"
-  if [ "$restore_failures" -gt 0 ]; then
-    log "Skipped $restore_failures local claim restore(s) that Beads refused"
-  fi
+    if "$bd_cli" -C "$repo_dir" update "$restore_id" "${restore_args[@]}" \
+      --if-status="$pulled_status" --if-assignee="$pulled_assignee" >/dev/null 2>&1; then
+      restored_control_state=$((restored_control_state + 1))
+    else
+      restore_failures=$((restore_failures + 1))
+    fi
+  done <<<"$control_state_repairs"
+  log "Restored $restored_control_state control state record(s); skipped $restore_failures superseded or refused repair(s)"
 fi
 
-# A claim made while the pull was running is absent from the pre-pull snapshot,
-# so the restore above cannot see it; a refused restore leaves the same shape.
-# Either way the Bead ends up in_progress with no assignee, which no worker
-# picks up and no lane owns. The guarded update skips any Bead a worker has
-# re-claimed since the snapshot.
+# Keep the older invariant repair for malformed records that predate journal
+# coverage. The guarded update skips any Bead a worker has since re-claimed.
 wedged_ids="$(@jq@/bin/jq -r '
   (if type == "object" and has("issues") then .issues else . end)
   | .[]
@@ -772,41 +901,64 @@ if [ "$pull_status" -ne 0 ]; then
   log "Linear pull failed with status $pull_status"
   exit "$pull_status"
 fi
-changed_active_selection="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" '
-  def body_length:
-    ((.description // "") | length)
-    + ((.design // "") | length)
-    + ((.acceptance_criteria // "") | length)
-    + ((.notes // "") | length);
-  (if type == "object" and has("issues") then .issues else . end)
-  | [
-    .[]
-    | select(
-        .status != "closed"
-        and (
-          $previous_sync == ""
-          or .updated_at >= $previous_sync
-          or ((.external_ref // "") | contains("linear.app") | not)
-        )
-      )
-    | {id: .id, oversized: (body_length > $body_limit)}
-  ]
-  | {
-    ids: (map(select(.oversized | not) | .id) | join(",")),
-    oversized: (map(select(.oversized)) | length),
-  }
-  | "\(.oversized)\n\(.ids)"
+# The push and the pull both bump updated_at, so by timestamp alone a Bead
+# pushed last cycle is re-selected every cycle. The ledger keeps a hash of
+# the content each push sent (title, state, fields, and the cut description);
+# a linked Bead whose hash is unchanged has nothing new to push. Unlinked
+# Beads always retry.
+pushed_active_file="$sync_state_dir/pushed-active-$repo_slug"
+pushed_active_input=/dev/null
+if [ -s "$pushed_active_file" ]; then
+  pushed_active_input="$pushed_active_file"
+fi
+changed_active_candidates="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" "$rendered_sections_jq"'
+  def body_length: (canonical_description | length) + rendered_sections_length;
+  issues | .[]
+  | select(.status != "closed")
+  | ((.external_ref // "") | contains("linear.app") | not) as $unlinked
+  | select($previous_sync == "" or .updated_at >= $previous_sync or $unlinked)
+  | "\(.id) \(if body_length > $body_limit then "oversized" else "sized" end) \(if $unlinked then "unlinked" else "linked" end) \(fingerprint)"
 ' <<<"$all_issues")"
-oversized_active_count="$(@coreutils@/bin/head -n 1 <<<"$changed_active_selection")"
-changed_active_ids="$(@coreutils@/bin/tail -n +2 <<<"$changed_active_selection")"
+oversized_active_count=0
+changed_active_ids=""
+pushed_active_next="$pushed_active_file.next"
+: >"$pushed_active_next"
+while read -r candidate_id candidate_size candidate_link candidate_fingerprint; do
+  if [ -z "$candidate_id" ]; then
+    continue
+  fi
+  if [ "$candidate_size" = oversized ]; then
+    oversized_active_count=$((oversized_active_count + 1))
+    continue
+  fi
+  candidate_hash="$(printf '%s' "$candidate_fingerprint" | @coreutils@/bin/sha256sum)"
+  candidate_hash="${candidate_hash%% *}"
+  if [ "$candidate_link" = linked ] && @gawk@/bin/awk -v id="$candidate_id" -v hash="$candidate_hash" '$1 == id && $2 == hash { found = 1 } END { exit !found }' "$pushed_active_input"; then
+    continue
+  fi
+  changed_active_ids="${changed_active_ids:+$changed_active_ids,}$candidate_id"
+  printf '%s %s\n' "$candidate_id" "$candidate_hash" >>"$pushed_active_next"
+done <<<"$changed_active_candidates"
 if [ "$oversized_active_count" -gt 0 ]; then
   log "Holding back $oversized_active_count active Bead(s) whose body exceeds the Linear issue limit"
 fi
 
 # Push only the active local delta after inbound reconciliation. Terminal
 # issues never enter this phase because they were made durable before pull.
+normalize_rendered_sections "$all_issues" "$changed_active_ids" "changed active"
+if [ -n "$normalize_skipped_ids" ]; then
+  drop_skipped_lines <"$pushed_active_next" >"$pushed_active_next.tmp"
+  @coreutils@/bin/mv -f "$pushed_active_next.tmp" "$pushed_active_next"
+  changed_active_ids="$(@gawk@/bin/awk 'NF { print $1 }' "$pushed_active_next" | @coreutils@/bin/paste -sd, -)"
+fi
 if push_issue_batches "$changed_active_ids" "changed active"; then
-  :
+  if [ -n "$changed_active_ids" ]; then
+    {
+      @gawk@/bin/awk 'NR == FNR { pushed[$1] = 1; next } !($1 in pushed)' "$pushed_active_next" "$pushed_active_input"
+      @coreutils@/bin/cat "$pushed_active_next"
+    } >"$pushed_active_file.tmp"
+    @coreutils@/bin/mv -f "$pushed_active_file.tmp" "$pushed_active_file"
+  fi
 else
   status=$?
   if [ "$status" -eq 75 ]; then

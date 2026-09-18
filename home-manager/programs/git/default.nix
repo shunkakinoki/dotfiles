@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, pkgs, ... }:
 {
   programs = {
     git = {
@@ -23,7 +23,9 @@
           precomposeunicode = true;
           ignorecase = false;
           notesRef = "refs/notes/ai";
-          fsmonitor = true;
+          # Git ships its builtin fsmonitor daemon only for macOS and Windows; on
+          # Linux hosts the setting adds seconds to every git call instead.
+          fsmonitor = pkgs.stdenv.hostPlatform.isDarwin;
           untrackedcache = true;
         };
         feature = {
