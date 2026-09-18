@@ -149,9 +149,12 @@ CLIProxyAPI selects from these entries using the configured routing strategy.
 auth file on each start. Auth files whose `proxy_url` is `direct` or `none` are
 left alone.
 
-On kyber, `kamino-tunnel-{1,2,3}` open SOCKS tunnels to `kamino<N>` on
-`127.0.0.1:108<N>`. `kamino-tunnels.json` at the repository root maps
+On kyber, `kamino-tunnel-<N>` opens a SOCKS tunnel to `kamino<N>` on
+`127.0.0.1:<1080+N>`. `kamino-tunnels.json` at the repository root maps
 credentials to them and is installed to `~/.config/cliproxyapi/` on kyber only.
+One tunnel unit exists per distinct `kamino<N>` host in the mapping, so adding
+an entry for a new host adds its tunnel. Evaluation fails if an entry's `port`
+is not `1080+N`.
 `{credential, host, port}` entries give that auth file
 `socks5://127.0.0.1:<port>` instead of the global proxy.
 `{provider: "ollama-cloud", key_index: <N>, host, port}` entries do the same for
