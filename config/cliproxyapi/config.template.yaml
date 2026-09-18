@@ -628,7 +628,7 @@ openai-compatibility:
     models:
       - name: "gpt-5.6-luna"
         alias: "gpt-5.6-luna"
-      - name: "deepseek-v4-flash-0731"
+      - name: "deepseek-v4.1-flash"
         alias: "deepseek-v4.1-flash"
   - name: "ollama-cloud"
     priority: 150
