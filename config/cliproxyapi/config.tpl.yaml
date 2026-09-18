@@ -568,6 +568,13 @@ openai-compatibility:
     priority: 300
     base-url: "https://opencode.ai/zen/go/v1"
     support-prompt-cache-key: true
+    # OpenCode Go rejects requests without a conversation header; opencode sends
+    # X-Session-Affinity to custom providers, Claude Code and Codex send their own.
+    headers:
+      User-Agent: "$User-Agent"
+      X-Opencode-Session: "$X-Session-Affinity"
+      X-Claude-Code-Session-Id: "$X-Claude-Code-Session-Id"
+      Session_id: "$Session_id"
     api-key-entries: __OPENCODE_API_KEY_ENTRIES__
     models:
       - name: "__DEEPSEEK_FLASH__"
