@@ -365,8 +365,8 @@ When run bash -c "grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.templ
 The status should be success
 End
 
-It 'hydrates every free campaign model from models.json'
-When run bash -c "! grep -E 'name: \"(stealth/|[^_\"]*-free\")' config/cliproxyapi/config.tpl.yaml && jq -r 'to_entries[] | select(.key | startswith(\"free-\")) | .value' models.json | while IFS= read -r id; do grep -Fq \"name: \\\"\$id\\\"\" config/cliproxyapi/config.template.yaml || { echo \"missing: \$id\"; exit 1; }; done"
+It 'hydrates every free campaign model from models.free.json'
+When run bash -c "! grep -E 'name: \"(stealth/|[^_\"]*-free\")' config/cliproxyapi/config.tpl.yaml && jq -r '.[]' models.free.json | while IFS= read -r id; do grep -Fq \"name: \\\"\$id\\\"\" config/cliproxyapi/config.template.yaml || { echo \"missing: \$id\"; exit 1; }; done"
 The status should be success
 End
 
