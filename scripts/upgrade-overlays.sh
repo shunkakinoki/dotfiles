@@ -257,7 +257,7 @@ upgrade_ascii_box_cli() {
     chmod +x "$latest_dir/box"
     latest_output="$("$latest_dir/box" --version)"
     rm -rf "$latest_dir"
-    version="$(printf '%s\n' "$latest_output" | sed -n 's/^box \([0-9][0-9.]*\).*/\1/p')"
+    version="$(printf '%s\n' "$latest_output" | sed -n 's/^[a-z]* \([0-9][0-9.]*\).*/\1/p')"
   fi
 
   if [[ ! $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
