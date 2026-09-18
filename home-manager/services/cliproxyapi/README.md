@@ -152,8 +152,12 @@ left alone.
 On kyber, `kamino-tunnel-{1,2,3}` open SOCKS tunnels to `kamino<N>` on
 `127.0.0.1:108<N>`. Map credentials to them in the machine-local
 `~/.config/cliproxyapi/kamino-tunnels.json` (see `kamino-tunnels.example.json`).
-Mapped auth files get `socks5://127.0.0.1:<port>` instead of the global proxy. A
-tunnel with no mapped credentials exits without connecting. The `kamino<N>` SSH
+Mapped auth files get `socks5://127.0.0.1:<port>` instead of the global proxy.
+Entries with `provider: "ollama-cloud"` and `key_index: <N>` do the same for the
+Nth Ollama Cloud key, counted from 1 in the deduplicated `OLLAMA_API_KEYS` then
+`OLLAMA_API_KEY` pool. `start.sh` renders these into the config, so restart
+`cliproxyapi` after editing the mapping. A tunnel with nothing mapped to it exits
+without connecting. The `kamino<N>` SSH
 host aliases and their host keys must already be in `~/.ssh/config` and
 `~/.ssh/known_hosts`.
 

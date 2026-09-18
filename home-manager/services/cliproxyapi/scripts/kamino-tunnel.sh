@@ -19,8 +19,9 @@ HOST="kamino${INDEX}"
 PORT=$((1080 + INDEX))
 PROXY_URL="socks5://127.0.0.1:${PORT}"
 
-# Machine-local JSON array of {credential, host, port}; it names real OAuth
-# accounts, so it is not managed by Nix.
+# Machine-local JSON array of {credential, host, port} and
+# {provider, key_index, host, port}; it names real accounts, so it is not
+# managed by Nix. start.sh renders the API key entries into its config.
 MAPPING_FILE="${HOME}/.config/cliproxyapi/kamino-tunnels.json"
 AUTH_DIR="${HOME}/.cli-proxy-api/objectstore/auths"
 # Shared with start.sh, which rewrites proxy_url on every service start.
@@ -32,16 +33,18 @@ if [ ! -f "$MAPPING_FILE" ]; then
 fi
 
 # shellcheck disable=SC2016
-if ! credential_files="$(@jq@ -r --arg host "$HOST" --argjson port "$PORT" \
-  '.[] | select(.host == $host and .port == $port) | .credential' "$MAPPING_FILE")"; then
+if ! mapped="$(@jq@ -c --arg host "$HOST" --argjson port "$PORT" \
+  '[.[] | select(.host == $host and .port == $port)]' "$MAPPING_FILE")"; then
   echo "⚠️  Invalid JSON in kamino tunnel mapping: $MAPPING_FILE" >&2
   exit 1
 fi
 
-if [ -z "$credential_files" ]; then
-  echo "ℹ️  No credentials mapped to ${HOST}:${PORT}; not starting tunnel" >&2
+if [ "$mapped" = "[]" ]; then
+  echo "ℹ️  Nothing mapped to ${HOST}:${PORT}; not starting tunnel" >&2
   exit 0
 fi
+
+credential_files="$(@jq@ -r '.[].credential // empty' <<<"$mapped")"
 
 mkdir -p "$(dirname "$LOCK_FILE")"
 (

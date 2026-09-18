@@ -10,7 +10,8 @@
     "port": 1082
   },
   {
-    "credential": "oauth-3.json",
+    "provider": "ollama-cloud",
+    "key_index": 1,
     "host": "kamino3",
     "port": 1083
   }
