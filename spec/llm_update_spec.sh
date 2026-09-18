@@ -336,12 +336,12 @@ The status should be success
 End
 
 It 'generates the DeepSeek Flash route in CliProxy'
-When run bash -c "sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4.1-flash\"'"
+When run bash -c "sed -n '/name: \"opencode\"/,/name: \"verboo\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4-flash\"'"
 The status should be success
 End
 
 It 'routes the DeepSeek Flash preset through OpenRouter and OpenCode Go in CliProxy'
-When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"@preset/deepseek-v4.1-flash\"' && sed -n '/name: \"opencode\"/,/name: \"openai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"deepseek-v4.1-flash\"'"
+When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' config/cliproxyapi/config.template.yaml | grep -q 'name: \"@preset/deepseek-v4.1-flash\"' && sed -n '/name: \"opencode\"/,/name: \"verboo\"/p' config/cliproxyapi/config.template.yaml | grep -q 'alias: \"deepseek-v4.1-flash\"'"
 The status should be success
 End
 
@@ -495,6 +495,7 @@ The output should include 'gpt-image'
 The output should include 'openrouter'
 The output should include 'deepseek-flash'
 The output should include '0731'
+The output should include 'zen'
 End
 End
 

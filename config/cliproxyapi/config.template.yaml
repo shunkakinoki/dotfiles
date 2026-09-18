@@ -590,7 +590,7 @@ openai-compatibility:
       Session_id: "$Session_id"
     api-key-entries: __OPENCODE_API_KEY_ENTRIES__
     models:
-      - name: "deepseek-v4.1-flash"
+      - name: "deepseek-v4-flash"
         alias: "deepseek-v4.1-flash"
   - name: "verboo"
     priority: 150
