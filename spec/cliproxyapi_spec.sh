@@ -378,6 +378,43 @@ The output should include 'api-key-entries: []'
 The status should be success
 End
 
+It 'passes the provider name so mapped keys use their kamino tunnel'
+When run cat "$SCRIPT"
+The output should include '"${OLLAMA_API_KEYS:-},${OLLAMA_API_KEY:-}" ollama-cloud'
+The status should be success
+End
+
+render_mapped_ollama_keys() {
+  printf '%s\n' '[{"provider":"ollama-cloud","key_index":2,"host":"kamino2","port":1082},{"provider":"other","key_index":1,"host":"kamino1","port":1081},{"credential":"a.json","host":"kamino1","port":1081}]' >"$TEMP_OLLAMA/map.json"
+  sed -n '/^render_api_key_entries() {/,/^}/p' "$SCRIPT" | sed 's|@jq@|jq|g' >"$TEMP_OLLAMA/mapped.sh"
+  printf '%s\n' "KAMINO_MAPPING_FILE='$TEMP_OLLAMA/map.json'" 'render_api_key_entries __OLLAMA_API_KEY_ENTRIES__ "first-key,second-key" ollama-cloud <"$1"' >>"$TEMP_OLLAMA/mapped.sh"
+  bash "$TEMP_OLLAMA/mapped.sh" "$TEMP_OLLAMA/template.yaml"
+}
+
+It 'adds the tunnel proxy-url only to the mapped key'
+When call render_mapped_ollama_keys
+The output should equal '  - name: "ollama-cloud"
+    api-key-entries:
+      - api-key: "first-key"
+      - api-key: "second-key"
+        proxy-url: "socks5://127.0.0.1:1082"'
+The status should be success
+End
+
+render_with_invalid_mapping() {
+  printf '%s\n' 'not json' >"$TEMP_OLLAMA/map.json"
+  sed -n '/^render_api_key_entries() {/,/^}/p' "$SCRIPT" | sed 's|@jq@|jq|g' >"$TEMP_OLLAMA/mapped.sh"
+  printf '%s\n' "KAMINO_MAPPING_FILE='$TEMP_OLLAMA/map.json'" 'render_api_key_entries __OLLAMA_API_KEY_ENTRIES__ "first-key" ollama-cloud <"$1"' >>"$TEMP_OLLAMA/mapped.sh"
+  bash "$TEMP_OLLAMA/mapped.sh" "$TEMP_OLLAMA/template.yaml"
+}
+
+It 'fails instead of rendering keys without their tunnel on an invalid mapping'
+When call render_with_invalid_mapping
+The status should be failure
+The output should equal ''
+The stderr should include 'Invalid kamino tunnel mapping'
+End
+
 It 'declares the OpenAI-compatible fallback upstream'
 When run bash -c "sed -n '/name: \"ollama-cloud\"/,/^$/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'priority: 150'
@@ -590,7 +627,8 @@ render_proxy_fixture() (
     printf '%s\n' 'set -eu' 'unset CLIPROXY_PROXY_URL CLIPROXY_API_KEY' \
       '. "$1"' 'cliproxy_load_env' \
       'TEMPLATE="$HOME/.cli-proxy-api/config.template.yaml"' \
-      'CONFIG="$HOME/.cli-proxy-api/config.yaml"'
+      'CONFIG="$HOME/.cli-proxy-api/config.yaml"' \
+      'KAMINO_MAPPING_FILE="$HOME/.config/cliproxyapi/kamino-tunnels.json"'
     sed -n '/^render_proxy_url() {/,/^}/p; /^render_api_key_entries() {/,/^}/p; /^if \[ -f "$TEMPLATE" \]; then/,/^fi/p' "$SCRIPT" | sed 's|@jq@|jq|g; s|@sed@|sed|g'
   } >"$temp_home/render.sh"
   HOME="$temp_home" bash "$temp_home/render.sh" "$PWD/home-manager/services/cliproxyapi/scripts/common.sh"
@@ -624,7 +662,7 @@ setup_proxy_assign() {
   TEMP_ASSIGN=$(mktemp -d)
   mkdir -p "$TEMP_ASSIGN/.config/cliproxyapi" "$TEMP_ASSIGN/.cli-proxy-api/objectstore/auths"
   {
-    printf '%s\n' 'set -euo pipefail' 'CONFIG_DIR="$HOME/.cli-proxy-api"'
+    printf '%s\n' 'set -euo pipefail' 'CONFIG_DIR="$HOME/.cli-proxy-api"' 'KAMINO_MAPPING_FILE="$HOME/.config/cliproxyapi/kamino-tunnels.json"'
     sed -n '/^PROXY_URL_LOCK_FILE=/p; /^assign_proxy_urls() {/,/^}/p' "$SCRIPT" | sed 's|@jq@|jq|g; s|@flock@|:|g'
     printf '%s\n' 'assign_proxy_urls "$HOME/.cli-proxy-api/objectstore/auths"'
   } >"$TEMP_ASSIGN/assign.sh"
@@ -713,7 +751,15 @@ write_tunnel_mapping '[{"credential":"my account.json","host":"kamino2","port":1
 When run bash -c 'HOME="$1" bash "$1/tunnel.sh" 1' _ "$TEMP_TUNNEL"
 The status should be success
 The output should not include 'ssh'
-The stderr should include 'No credentials mapped to kamino1:1081'
+The stderr should include 'Nothing mapped to kamino1:1081'
+End
+
+It 'starts the tunnel for an API key mapping without touching auth files'
+write_tunnel_mapping '[{"provider":"ollama-cloud","key_index":1,"host":"kamino3","port":1083}]'
+When run bash -c 'HOME="$1" bash "$1/tunnel.sh" 3 && jq -r .proxy_url "$1/.cli-proxy-api/objectstore/auths/my account.json"' _ "$TEMP_TUNNEL"
+The status should be success
+The output should include 'ssh -N -D 127.0.0.1:1083'
+The output should not include 'socks5://'
 End
 
 It 'exits cleanly when the mapping file is missing'

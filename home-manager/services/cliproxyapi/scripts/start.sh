@@ -9,6 +9,7 @@ CONFIG="$CONFIG_DIR/config.yaml"
 AUTH_DIR="${CONFIG_DIR}/objectstore/auths"
 USAGE_EXPORT_FILE="${CONFIG_DIR}/usage-export.json"
 MANAGEMENT_URL="${CLIPROXY_MANAGEMENT_URL:-http://127.0.0.1:8317/v0/management}"
+KAMINO_MAPPING_FILE="${HOME}/.config/cliproxyapi/kamino-tunnels.json"
 
 cliproxy_init_objectstore_env
 OBJECTSTORE_LOCAL_PATH="$CONFIG_DIR"
@@ -28,12 +29,27 @@ render_proxy_url() {
   done
 }
 
+# Keys mapped to a kamino tunnel get that tunnel as their proxy-url. Pass the
+# provider name as the third argument to look up {provider, key_index, port}
+# entries, where key_index is the 1-based position in the deduplicated pool.
 render_api_key_entries() {
   local placeholder="$1"
   local key_source="$2"
-  local candidate existing_key trimmed escaped line
+  local provider="${3:-}"
+  local candidate existing_key trimmed escaped line index mapped_index mapped_proxy proxy
+  local key_proxies=''
   local -a candidates=()
   local -a api_keys=()
+
+  if [ -n "$provider" ] && [ -f "$KAMINO_MAPPING_FILE" ]; then
+    # shellcheck disable=SC2016
+    key_proxies="$(@jq@ -r --arg provider "$provider" \
+      '.[] | select(.provider == $provider and .key_index and .port) | "\(.key_index) socks5://127.0.0.1:\(.port)"' \
+      "$KAMINO_MAPPING_FILE")" || {
+      echo "⚠️  Invalid kamino tunnel mapping: $KAMINO_MAPPING_FILE" >&2
+      return 1
+    }
+  fi
 
   if [ -n "$key_source" ]; then
     IFS=',' read -r -a candidates <<<"$key_source"
@@ -65,10 +81,20 @@ render_api_key_entries() {
     fi
 
     printf '%s\n' '    api-key-entries:'
+    index=0
     for candidate in "${api_keys[@]}"; do
+      index=$((index + 1))
       escaped="${candidate//\\/\\\\}"
       escaped="${escaped//\"/\\\"}"
       printf '      - api-key: "%s"\n' "$escaped"
+      proxy=''
+      while read -r mapped_index mapped_proxy; do
+        if [ "$mapped_index" = "$index" ]; then
+          proxy="$mapped_proxy"
+          break
+        fi
+      done <<<"$key_proxies"
+      [ -z "$proxy" ] || printf '        proxy-url: "%s"\n' "$proxy"
     done
   done
 }
@@ -96,7 +122,7 @@ PROXY_URL_LOCK_FILE="${CONFIG_DIR}/proxy-url.lock"
 # tunnel, so whichever writer runs last leaves the same value behind.
 assign_proxy_urls() {
   local auth_dir="$1"
-  local mapping_file="${HOME}/.config/cliproxyapi/kamino-tunnels.json"
+  local mapping_file="$KAMINO_MAPPING_FILE"
   local mapping='[]'
   local f existing_proxy target_proxy
 
@@ -158,7 +184,7 @@ fi
 # Generate config from template
 if [ -f "$TEMPLATE" ]; then
   render_api_key_entries __OPENCODE_API_KEY_ENTRIES__ "${OPENCODE_API_KEYS:-${OPENCODE_API_KEY:-}}" <"$TEMPLATE" |
-    render_api_key_entries __OLLAMA_API_KEY_ENTRIES__ "${OLLAMA_API_KEYS:-},${OLLAMA_API_KEY:-}" | @sed@ \
+    render_api_key_entries __OLLAMA_API_KEY_ENTRIES__ "${OLLAMA_API_KEYS:-},${OLLAMA_API_KEY:-}" ollama-cloud | @sed@ \
     -e "s|__OPENROUTER_API_KEY__|${OPENROUTER_API_KEY:-}|g" \
     -e "s|__OPENAI_API_KEY__|${OPENAI_API_KEY:-}|g" \
     -e "s|__CLIPROXY_MANAGEMENT_PASSWORD__|${CLIPROXY_MANAGEMENT_PASSWORD:-}|g" \
