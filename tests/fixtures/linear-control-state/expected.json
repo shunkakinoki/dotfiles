@@ -1,0 +1,45 @@
+[
+  {
+    "add_labels": [
+      "agent-plan",
+      "reserved/fleet"
+    ],
+    "current_assignee": "owner@example.com",
+    "current_status": "open",
+    "desired_assignee": "kamino2_lane_1",
+    "desired_status": "in_progress",
+    "id": "task-a",
+    "remove_labels": []
+  },
+  {
+    "add_labels": [],
+    "current_assignee": "owner@example.com",
+    "current_status": "open",
+    "desired_assignee": "",
+    "desired_status": "open",
+    "id": "task-b",
+    "remove_labels": [
+      "human"
+    ]
+  },
+  {
+    "add_labels": [
+      "agent-plan"
+    ],
+    "current_assignee": "owner@example.com",
+    "current_status": "open",
+    "desired_assignee": "kamino4_lane_1",
+    "desired_status": "in_progress",
+    "id": "task-c",
+    "remove_labels": []
+  },
+  {
+    "add_labels": [],
+    "current_assignee": "owner@example.com",
+    "current_status": "open",
+    "desired_assignee": "",
+    "desired_status": "open",
+    "id": "task-d",
+    "remove_labels": []
+  }
+]

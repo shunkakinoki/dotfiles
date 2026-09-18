@@ -57,6 +57,7 @@ let
       assert !galactica.config.home-manager.users.shunkakinoki.nix.gc.automatic;
       assert beads.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "kyber.tail950b36.ts.net";
       assert beads.home.sessionVariables.BEADS_NODE_ID == "kyber";
+      assert beads.home.sessionVariables.BD_EVENTS_JOURNAL == "1";
       assert !(beads.home.sessionVariables ? BEADS_DOLT_DATA_DIR);
       assert !(beads.launchd.agents ? dolt);
       assert !(beads.launchd.agents ? dolt-backup-main);
@@ -126,6 +127,7 @@ let
       assert lib.hasInfix "tailscale set" cfg.system.activationScripts.tailscalePreferences.text;
       assert beads.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "kyber.tail950b36.ts.net";
       assert beads.home.sessionVariables.BEADS_NODE_ID == "kyber";
+      assert beads.home.sessionVariables.BD_EVENTS_JOURNAL == "1";
       assert !(beads.systemd.user.services ? dolt);
       assert !(beads.systemd.user.services ? dolt-federation-sync);
       assert
@@ -251,6 +253,7 @@ let
         assert lib.elem "BEADS_DOLT_SERVER_HOST=kyber.tail950b36.ts.net"
           cfg.systemd.user.services.herdr-server.Service.Environment;
         assert lib.elem "BEADS_NODE_ID=kyber" cfg.systemd.user.services.herdr-server.Service.Environment;
+        assert lib.elem "BD_EVENTS_JOURNAL=1" cfg.systemd.user.services.herdr-server.Service.Environment;
         assert !(cfg.home.sessionVariables ? BEADS_DOLT_DATA_DIR);
         assert !(cfg.systemd.user.services ? dolt);
         assert !(cfg.systemd.user.services ? dolt-federation-sync);
@@ -260,6 +263,7 @@ let
         assert !(cfg.systemd.user.services ? dolt-federation-hub);
         assert !(cfg.systemd.user.services ? dolt-federation-access);
         assert cfg.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "kyber.tail950b36.ts.net";
+        assert cfg.home.sessionVariables.BD_EVENTS_JOURNAL == "1";
         mkEvalCheck "home-kamino" kamino.activationPackage;
       eval-home-kamino100 =
         let
@@ -348,6 +352,7 @@ let
         assert !(cfg.systemd.user.services ? dolt-backup-main);
         assert cfg.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "kyber.tail950b36.ts.net";
         assert cfg.home.sessionVariables.BEADS_NODE_ID == "kyber";
+        assert cfg.home.sessionVariables.BD_EVENTS_JOURNAL == "1";
         assert cfg.home.sessionVariables.BEADS_DOLT_DATA_DIR == "/home/ubuntu/.beads/shared-server/dolt";
         assert lib.length tailscaleServeRoutes.kyber == 4;
         assert

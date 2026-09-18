@@ -3,6 +3,7 @@
 set -euo pipefail
 
 /bin/launchctl setenv BEADS_DOLT_AUTO_START 0
+/bin/launchctl setenv BD_EVENTS_JOURNAL 1
 /bin/launchctl unsetenv BEADS_DOLT_DATA_DIR
 /bin/launchctl unsetenv BEADS_FEDERATION_HUB
 /bin/launchctl setenv BEADS_DOLT_SERVER_MODE 1
