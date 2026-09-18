@@ -516,7 +516,7 @@ openai-compatibility:
       - api-key: "__OPENROUTER_API_KEY__"
         proxy-url: "direct"
     models:
-      - name: "@preset/__DEEPSEEK_FLASH_NONDOT__"
+      - name: "__DEEPSEEK_FLASH_OPENROUTER__"
         alias: "__DEEPSEEK_FLASH__"
       # Second provider for Luna: surplus is otherwise the only one that
       # serves it, so an empty surplus wallet takes the whole model down.
