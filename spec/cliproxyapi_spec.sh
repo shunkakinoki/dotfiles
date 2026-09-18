@@ -622,7 +622,7 @@ render_proxy_fixture() (
   expected="${CLIPROXY_PROXY_URL:-}"
   mkdir -p "$temp_home/dotfiles" "$temp_home/.cli-proxy-api"
   printf 'CLIPROXY_PROXY_URL=%q\n' "$expected" >"$temp_home/dotfiles/.env"
-  printf '%s\n' 'proxy-url: "__CLIPROXY_PROXY_URL__"' 'port: 8317' >"$temp_home/.cli-proxy-api/config.template.yaml"
+  printf '%s\n' 'proxy-url: "__CLIPROXY_PROXY_URL__"' '        proxy-url: "__CLIPROXY_PROXY_URL__"' 'port: 8317' >"$temp_home/.cli-proxy-api/config.template.yaml"
   {
     printf '%s\n' 'set -eu' 'unset CLIPROXY_PROXY_URL CLIPROXY_API_KEY' \
       '. "$1"' 'cliproxy_load_env' \
@@ -633,6 +633,8 @@ render_proxy_fixture() (
   } >"$temp_home/render.sh"
   HOME="$temp_home" bash "$temp_home/render.sh" "$PWD/home-manager/services/cliproxyapi/scripts/common.sh"
   actual=$(sed -n 's/^proxy-url: //p' "$temp_home/.cli-proxy-api/config.yaml")
+  EXPECTED_PROXY="$expected" jq -en --argjson actual "$actual" '$actual == env.EXPECTED_PROXY' >/dev/null
+  actual=$(sed -n 's/^        proxy-url: //p' "$temp_home/.cli-proxy-api/config.yaml")
   EXPECTED_PROXY="$expected" jq -en --argjson actual "$actual" '$actual == env.EXPECTED_PROXY' >/dev/null
   grep -Fx 'port: 8317' "$temp_home/.cli-proxy-api/config.yaml" >/dev/null
 )
@@ -649,9 +651,11 @@ When run render_proxy_fixture
 The status should be success
 End
 
-It 'uses the runtime placeholder in both templates'
+It 'proxies only the OpenRouter entries in both templates'
 When run bash -c 'for file in config/cliproxyapi/config.tpl.yaml config/cliproxyapi/config.template.yaml; do
-  grep -Fx '\''proxy-url: "__CLIPROXY_PROXY_URL__"'\'' "$file" >/dev/null || exit 1
+  grep -Fx '\''proxy-url: ""'\'' "$file" >/dev/null || exit 1
+  [ "$(grep -c __CLIPROXY_PROXY_URL__ "$file")" = 2 ] || exit 1
+  [ "$(grep -A1 __OPENROUTER_API_KEY__ "$file" | grep -c "^        proxy-url: \"__CLIPROXY_PROXY_URL__\"$")" = 2 ] || exit 1
 done'
 The status should be success
 End
@@ -688,14 +692,14 @@ assign_and_read() {
     done
 }
 
-It 'applies the global proxy, the mapped tunnel port, and keeps direct auths'
+It 'leaves unmapped auths direct, applies the mapped tunnel port, and keeps direct auths'
 When call assign_and_read 'http://global.example:8080'
-The line 1 of output should equal 'plain=http://global.example:8080'
+The line 1 of output should equal 'plain='
 The line 2 of output should equal 'mapped=socks5://127.0.0.1:1082'
 The line 3 of output should equal 'direct=direct'
 End
 
-It 'clears the global proxy but keeps the tunnel port when unset'
+It 'keeps the tunnel port when the proxy is unset'
 When call assign_and_read ''
 The line 1 of output should equal 'plain='
 The line 2 of output should equal 'mapped=socks5://127.0.0.1:1082'

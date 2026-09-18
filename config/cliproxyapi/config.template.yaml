@@ -116,7 +116,7 @@ usage-statistics-enabled: true
 redis-usage-queue-retention-seconds: 60
 # Proxy URL. Supports socks5/http/https protocols. Example: socks5://user:pass@192.168.1.1:1080/
 # Per-entry proxy-url also supports "direct" or "none" to bypass both the global proxy-url and environment proxies explicitly.
-proxy-url: "__CLIPROXY_PROXY_URL__"
+proxy-url: ""
 # When true, unprefixed model requests only use credentials without a prefix (except when prefix == model name).
 force-model-prefix: false
 # When true, forward filtered upstream response headers to downstream clients.
@@ -504,6 +504,7 @@ openai-compatibility:
     support-prompt-cache-key: true
     api-key-entries:
       - api-key: "__OPENROUTER_API_KEY__"
+        proxy-url: "__CLIPROXY_PROXY_URL__"
     models:
       - name: "stealth/union-alpha"
         alias: "free"
@@ -514,6 +515,7 @@ openai-compatibility:
     support-prompt-cache-key: true
     api-key-entries:
       - api-key: "__OPENROUTER_API_KEY__"
+        proxy-url: "__CLIPROXY_PROXY_URL__"
     models:
       - name: "openai/gpt-5.4-image-2"
         alias: "gpt-image-2"
@@ -603,7 +605,6 @@ openai-compatibility:
     support-prompt-cache-key: true
     api-key-entries:
       - api-key: "__SURPLUS_API_KEY__"
-        proxy-url: "direct"
     models:
       - name: "gpt-5.6-luna"
         alias: "gpt-5.6-luna"
