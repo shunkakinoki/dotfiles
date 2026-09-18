@@ -603,6 +603,7 @@ openai-compatibility:
     support-prompt-cache-key: true
     api-key-entries:
       - api-key: "__SURPLUS_API_KEY__"
+        proxy-url: "direct"
     models:
       - name: "gpt-5.6-luna"
         alias: "gpt-5.6-luna"
