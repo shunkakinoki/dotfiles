@@ -98,6 +98,8 @@ done <<<"$free_rows"
 add_model_override "gpt-image" "openrouter" "openai/gpt-5.4-image-2"
 add_model_override "gpt-luna" "openrouter" "openai/gpt-5.6-luna"
 add_model_override "deepseek-flash" "0731" "deepseek-v4-flash-0731"
+# OpenCode Zen has no v4.1 id; its flash model is served as deepseek-v4-flash.
+add_model_override "deepseek-flash" "zen" "deepseek-v4-flash"
 
 # Template → output pairs
 declare -A TEMPLATES=(

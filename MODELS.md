@@ -53,6 +53,7 @@ because the upstream ID differs from the canonical one:
 | --- | --- | --- |
 | `__GPT_IMAGE_OPENROUTER__` | `openai/gpt-5.4-image-2` | OpenRouter, aliased back to `gpt-image-2` |
 | `__DEEPSEEK_FLASH_0731__` | `deepseek-v4-flash-0731` | Aliyun, aliased back to `deepseek-v4.1-flash` |
+| `__DEEPSEEK_FLASH_ZEN__` | `deepseek-v4-flash` | OpenCode Zen, aliased back to `deepseek-v4.1-flash` |
 
 ## Free campaign models
 
@@ -183,7 +184,7 @@ Every one of them resolves through
 
 | Provider | Priority | DeepSeek models served |
 | --- | --- | --- |
-| `opencode` | 300 | `deepseek-v4.1-flash` |
+| `opencode` | 300 | `deepseek-v4-flash` aliased to `deepseek-v4.1-flash` |
 | `aliyun` | 200 | `deepseek-v4-flash-0731` aliased to `deepseek-v4.1-flash` |
 | `openrouter` | 100 | `@preset/deepseek-v4.1-flash` |
 
