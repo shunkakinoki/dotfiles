@@ -872,21 +872,42 @@ if [ -n "$control_state_repairs" ]; then
   log "Restored $restored_control_state control state record(s); skipped $restore_failures superseded or refused repair(s)"
 fi
 
-# Keep the older invariant repair for malformed records that predate journal
-# coverage. The guarded update skips any Bead a worker has since re-claimed.
-wedged_ids="$(@jq@/bin/jq -r '
+# A lane claim made while the pull was in flight is not in the pre-pull
+# snapshot, so the pull leaves it in_progress and unassigned. The claim's
+# guarded update also appends a `lane-claim:<lane>` note marker, which the
+# pull never touches, so an unreleased marker names the lane to restore.
+# Records without a marker are the older invariant repair for malformed
+# records that predate journal coverage; those reopen. Both guarded updates
+# skip any Bead a worker has since re-claimed.
+wedged_records="$(@jq@/bin/jq -r '
+  def claim_lane:
+    (.notes // "") as $notes
+    | ($notes | rindex("lane-claim:")) as $claim
+    | ($notes | rindex("lane-release:")) as $release
+    | if $claim == null or ($release != null and $release > $claim) then ""
+      else ($notes[$claim + 11:] | split("\n")[0] | split(" ")[0]) end
+    | if test("^[a-z][a-z0-9_-]{0,31}$") then . else "" end;
   (if type == "object" and has("issues") then .issues else . end)
   | .[]
   | select(.status == "in_progress" and (.assignee // "") == "")
-  | .id
+  | [.id, claim_lane]
+  | @tsv
 ' <<<"$all_issues")"
-if [ -n "$wedged_ids" ]; then
+if [ -n "$wedged_records" ]; then
   reopened=0
-  while IFS= read -r wedged_id; do
-    if "$bd_cli" -C "$repo_dir" update "$wedged_id" --if-status=in_progress --if-assignee= --status=open >/dev/null 2>&1; then
+  restored_claims=0
+  while IFS=$'\t' read -r wedged_id claim_lane; do
+    if [ -n "$claim_lane" ]; then
+      if "$bd_cli" -C "$repo_dir" update "$wedged_id" --if-status=in_progress --if-assignee= --assignee="$claim_lane" >/dev/null 2>&1; then
+        restored_claims=$((restored_claims + 1))
+      fi
+    elif "$bd_cli" -C "$repo_dir" update "$wedged_id" --if-status=in_progress --if-assignee= --status=open >/dev/null 2>&1; then
       reopened=$((reopened + 1))
     fi
-  done <<<"$wedged_ids"
+  done <<<"$wedged_records"
+  if [ "$restored_claims" -gt 0 ]; then
+    log "Restored $restored_claims lane claim(s) made while the pull was in flight"
+  fi
   if [ "$reopened" -gt 0 ]; then
     log "Reopened $reopened unassigned in_progress Bead(s) the pull left behind"
   fi
