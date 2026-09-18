@@ -345,7 +345,7 @@ The status should be success
 End
 
 It 'renders each non-empty plural key once'
-When run env OLLAMA_API_KEYS='first-key, second-key,first-key,' bash "$TEMP_OLLAMA/render.sh" "$TEMP_OLLAMA/template.yaml"
+When run env OLLAMA_API_KEYS='first-key, second-key,first-key,' OLLAMA_API_KEY='' bash "$TEMP_OLLAMA/render.sh" "$TEMP_OLLAMA/template.yaml"
 The output should include '      - api-key: "first-key"'
 The output should include '      - api-key: "second-key"'
 The output should not include '__OLLAMA_API_KEY_ENTRIES__'
