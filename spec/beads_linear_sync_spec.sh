@@ -413,6 +413,8 @@ case "${1:-} ${2:-}" in
   "list --all")
     if [ -n "${FAKE_LIST_JSON_AFTER_PULL:-}" ] && grep -F -- '--pull' "$COMMAND_LOG" >/dev/null; then
       printf '%s\n' "$FAKE_LIST_JSON_AFTER_PULL"
+    elif [ -n "${FAKE_LIST_JSON_FILE:-}" ]; then
+      cat "$FAKE_LIST_JSON_FILE"
     elif [ -n "${FAKE_LIST_JSON:-}" ]; then
       printf '%s\n' "$FAKE_LIST_JSON"
     else
@@ -780,7 +782,8 @@ End
 It 'holds back active Beads whose rendered sections alone exceed the Linear issue limit'
 huge="$(printf '%*s' 250001 '' | tr ' ' x)"
 issues='[{"id":"df-small","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/small"},{"id":"df-huge","status":"open","assignee":"","description":"Body","notes":"'"$huge"'","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/huge"}]'
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$issues" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+printf '%s\n' "$issues" >"$TEST_ROOT/list.json"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON_FILE="$TEST_ROOT/list.json" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'Holding back 1 active Bead(s) whose body exceeds the Linear issue limit'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-small --no-wait'
@@ -792,7 +795,8 @@ It 'keeps the description intact and holds back a Bead whose rendered sections l
 near="$(printf "%*s" 245000 "" | tr " " x)"
 body="$(printf "%*s" 6000 "" | tr " " y)"
 issues='[{"id":"df-near","status":"open","assignee":"","description":"'"$body"'","notes":"'"$near"'","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/near"}]'
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LIST_JSON="$issues" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+printf '%s\n' "$issues" >"$TEST_ROOT/list.json"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LIST_JSON_FILE="$TEST_ROOT/list.json" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'Holding back 1 active Bead(s) whose body exceeds the Linear issue limit'
 The contents of file "$COMMAND_LOG" should not include 'update df-near'
@@ -803,7 +807,8 @@ End
 It 'cuts a description that exceeds the Linear issue limit before pushing it'
 long="$(printf '%*s' 250001 '' | tr ' ' x)"
 issues='[{"id":"df-long","status":"open","assignee":"","description":"'"$long"'","notes":"- note","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/long"}]'
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_BODY_LOG="$TEST_ROOT/bodies.log" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$issues" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+printf '%s\n' "$issues" >"$TEST_ROOT/list.json"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_BODY_LOG="$TEST_ROOT/bodies.log" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON_FILE="$TEST_ROOT/list.json" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should not include 'Holding back'
 The output should include 'Normalized 1 description(s) carrying rendered sections before the changed active push; skipped 0'
