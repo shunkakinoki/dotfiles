@@ -89,52 +89,48 @@ ensure_oauth_priority() {
   done
 }
 
-# Path to the shared lock for credential proxy updates.
-LOCK_FILE="/tmp/cliproxyapi-tunnel-update.lock"
+# Kamino tunnels stamp the same auth files, so both writers take this lock.
+PROXY_URL_LOCK_FILE="${CONFIG_DIR}/proxy-url.lock"
 
-# Get the credential files mapped to Kamino tunnels.
-get_tunnel_mapped_auth_files() {
-  local mapping_file="${HOME}/.config/cliproxyapi/kamino-tunnels.json"
-  if [ ! -f "$mapping_file" ]; then
-    return 0
-  fi
-  @jq@ -r '.[] | select(.credential) | .credential' "$mapping_file" 2>/dev/null | sort -u
-}
-
+# Tunnel-mapped credentials get their SOCKS port here as well as from the
+# tunnel, so whichever writer runs last leaves the same value behind.
 assign_proxy_urls() {
   local auth_dir="$1"
-  local global_proxy_url
-  local mapped_auth_files
-  local f existing_proxy
+  local mapping_file="${HOME}/.config/cliproxyapi/kamino-tunnels.json"
+  local mapping='[]'
+  local f existing_proxy target_proxy
 
-  mapped_auth_files="$(get_tunnel_mapped_auth_files)"
+  if [ -f "$mapping_file" ]; then
+    mapping="$(@jq@ -c 'map(select(.credential and .port))' "$mapping_file")" || {
+      echo "⚠️  Invalid kamino tunnel mapping: $mapping_file" >&2
+      return 1
+    }
+  fi
 
-  global_proxy_url=$(@jq@ -r '.proxy-url // ""' "$CONFIG" 2>/dev/null)
+  (
+    @flock@ -w 30 200 || {
+      echo "⚠️  Timed out waiting for the proxy URL lock" >&2
+      exit 1
+    }
 
-  # Acquire the shared lock for the entire credential update.
-  flock -n 200 || {
-    echo "⚠️  Could not acquire lock for proxy URL update" >&2
-    return 1
-  } 200>"$LOCK_FILE"
+    for f in "$auth_dir"/*.json; do
+      [ -f "$f" ] || continue
 
-  for f in "$auth_dir"/*.json; do
-    [ -f "$f" ] || continue
+      existing_proxy="$(@jq@ -r '.proxy_url // ""' "$f" 2>/dev/null)" || continue
+      if [ "$existing_proxy" = "direct" ] || [ "$existing_proxy" = "none" ]; then
+        continue
+      fi
 
-    # Skip auths that are already marked as "direct" or "none".
-    existing_proxy=$(@jq@ -r '.proxy_url // ""' "$f" 2>/dev/null)
-    if [ "$existing_proxy" = "direct" ] || [ "$existing_proxy" = "none" ]; then
-      continue
-    fi
+      # shellcheck disable=SC2016
+      target_proxy="$(@jq@ -r --arg name "$(basename "$f")" --arg global "${CLIPROXY_PROXY_URL:-}" \
+        'first(.[] | select(.credential == $name) | "socks5://127.0.0.1:\(.port)") // $global' <<<"$mapping")"
 
-    # Skip auths that are mapped to Kamino tunnels.
-    if [ -n "$mapped_auth_files" ] && printf '%s\n' "$mapped_auth_files" | grep -Fx "$f" >/dev/null; then
-      continue
-    fi
-
-    # Set or clear the proxy_url based on the global proxy URL.
-    # shellcheck disable=SC2016
-    @jq@ --arg p "$global_proxy_url" '.proxy_url = $p' "$f" >"$f.tmp" && mv "$f.tmp" "$f"
-  done
+      if [ "$existing_proxy" != "$target_proxy" ]; then
+        # shellcheck disable=SC2016
+        @jq@ --arg p "$target_proxy" '.proxy_url = $p' "$f" >"$f.tmp" && mv "$f.tmp" "$f"
+      fi
+    done
+  ) 200>"$PROXY_URL_LOCK_FILE"
 }
 
 if cliproxy_has_objectstore_credentials; then
