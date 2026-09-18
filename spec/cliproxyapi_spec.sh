@@ -657,10 +657,26 @@ done'
 The status should be success
 End
 
-It 'connects every API key entry except OpenRouter directly'
+It 'connects every API key entry except the campaigns directly'
 When run bash -c 'for file in config/cliproxyapi/config.tpl.yaml config/cliproxyapi/config.template.yaml; do
-  awk '\''prev ~ /^      - api-key: "__/ { direct = ($0 == "        proxy-url: \"direct\""); openrouter = (prev ~ /OPENROUTER/); if (direct == openrouter) bad = 1 } { prev = $0 } END { exit bad }'\'' "$file" || exit 1
+  awk '\''/^  - name: "/ { campaign = ($3 ~ /-campaign"$/) } prev ~ /^      - api-key: "__/ { direct = ($0 == "        proxy-url: \"direct\""); if (direct == campaign) bad = 1 } { prev = $0 } END { exit bad }'\'' "$file" || exit 1
 done'
+The status should be success
+End
+
+It 'declares a keyless OpenCode Zen campaign over the global proxy'
+When run bash -c "sed -n '/name: \"opencode-campaign\"/,/name: \"opencode\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'base-url: "https://opencode.ai/zen/v1"'
+The output should include 'priority: 302'
+The output should include 'name: "mimo-v2.5-free"'
+The output should not include 'api-key'
+The output should not include 'proxy-url'
+The status should be success
+End
+
+It 'enables plugins'
+When run bash -c "sed -n '/^plugins:/,/^  dir:/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include '  enabled: true'
 The status should be success
 End
 End

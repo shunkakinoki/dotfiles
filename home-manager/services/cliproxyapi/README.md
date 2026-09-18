@@ -145,8 +145,9 @@ CLIProxyAPI selects from these entries using the configured routing strategy.
 
 ### Outbound proxies
 
-`CLIPROXY_PROXY_URL` sets the global `proxy-url`, which only OpenRouter uses.
-Every other API key entry sets `proxy-url: "direct"`, and on each start every
+`CLIPROXY_PROXY_URL` sets the global `proxy-url`, which only the campaign
+entries use: `openrouter-campaign` and the keyless `opencode-campaign`. Every
+other API key entry sets `proxy-url: "direct"`, and on each start every
 auth file not mapped to a tunnel gets `proxy_url: "direct"`. Auth files set to
 `none` are left alone.
 
