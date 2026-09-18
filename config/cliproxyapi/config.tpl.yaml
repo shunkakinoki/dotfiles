@@ -637,7 +637,6 @@ openai-compatibility:
     models:
       - name: "__DEEPSEEK_FLASH__"
         alias: "__DEEPSEEK_FLASH__"
-
 # Official OpenAI compatibility provider reference
 # OpenAI compatibility providers
 # openai-compatibility:
