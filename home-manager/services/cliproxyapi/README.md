@@ -147,7 +147,7 @@ CLIProxyAPI selects from these entries using the configured routing strategy.
 
 `CLIPROXY_PROXY_URL` sets the global `proxy-url` and the `proxy_url` of every
 auth file on each start. Auth files whose `proxy_url` is `direct` or `none` are
-left alone.
+left alone. Surplus connects directly regardless.
 
 On kyber, `kamino-tunnel-<N>` opens a SOCKS tunnel to `kamino<N>` on
 `127.0.0.1:<1080+N>`. `kamino-tunnels.json` at the repository root maps
