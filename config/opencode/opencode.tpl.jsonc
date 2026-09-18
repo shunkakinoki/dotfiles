@@ -118,6 +118,25 @@
       },
       "models": {}
     },
+    "ollama-cloud": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama Cloud",
+      "options": {
+        "baseURL": "https://ollama.com/v1",
+        "apiKey": "{env:OLLAMA_API_KEY}"
+      },
+      "models": {
+        "__DEEPSEEK_FLASH__": {
+          "name": "__DEEPSEEK_FLASH_PRETTY__ (via Ollama Cloud)"
+        },
+        "__MINIMAX__": {
+          "name": "__MINIMAX_PRETTY__ (via Ollama Cloud)"
+        },
+        "__KIMI__": {
+          "name": "__KIMI_PRETTY__ (via Ollama Cloud)"
+        }
+      }
+    },
     "openai": {
       "options": {
         "reasoningEffort": "medium",

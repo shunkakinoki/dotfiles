@@ -122,6 +122,7 @@ ALIYUN_TOKEN_PLAN_API_KEY="sk-sp-..."
 VERBOO_API_KEY="..."
 SURPLUS_API_KEY="..."
 COMMANDCODE_API_KEY="..."
+OLLAMA_API_KEY="..."
 ```
 
 For more than one OpenCode Go account behind the same upstream endpoint, set a
