@@ -109,6 +109,7 @@ if [ -f "$TEMPLATE" ]; then
     -e "s|__VERBOO_API_KEY__|${VERBOO_API_KEY:-}|g" \
     -e "s|__SURPLUS_API_KEY__|${SURPLUS_API_KEY:-}|g" \
     -e "s|__COMMANDCODE_API_KEY__|${COMMANDCODE_API_KEY:-}|g" \
+    -e "s|__OLLAMA_API_KEY__|${OLLAMA_API_KEY:-}|g" \
     -e "s|__AMP_UPSTREAM_API_KEY__|${AMP_UPSTREAM_API_KEY:-}|g" \
     >"$CONFIG"
 

@@ -320,6 +320,26 @@ The status should be success
 End
 End
 
+Describe 'Ollama Cloud provider'
+It 'hydrates the dedicated environment key into the runtime config'
+When run bash -c "grep 's|__OLLAMA_API_KEY__|.*OLLAMA_API_KEY' '$SCRIPT'"
+The output should include '__OLLAMA_API_KEY__'
+The output should include 'OLLAMA_API_KEY'
+The status should be success
+End
+
+It 'declares the OpenAI-compatible fallback upstream'
+When run bash -c "sed -n '/name: \"ollama-cloud\"/,/^$/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'priority: 150'
+The output should include 'base-url: "https://ollama.com/v1"'
+The output should include 'api-key: "__OLLAMA_API_KEY__"'
+The output should include 'name: "deepseek-v4.1-flash"'
+The output should include 'name: "minimax-m3"'
+The output should include 'name: "kimi-k3"'
+The status should be success
+End
+End
+
 Describe 'Docker image handling'
 It 'prioritizes the proxy container among Docker workloads'
 When run bash -c "grep -q -- '--cpu-shares 262144' '$SCRIPT' && grep -q -- '--blkio-weight 1000' '$SCRIPT'"
