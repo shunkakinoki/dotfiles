@@ -54,6 +54,26 @@ because the upstream ID differs from the canonical one:
 | `__GPT_IMAGE_OPENROUTER__` | `openai/gpt-5.4-image-2` | OpenRouter, aliased back to `gpt-image-2` |
 | `__DEEPSEEK_FLASH_0731__` | `deepseek-v4-flash-0731` | Aliyun, aliased back to `deepseek-v4.1-flash` |
 
+## Free campaign models
+
+[models.free.json](models.free.json) holds time-limited free models served by
+the CLIProxy campaign providers. Key `foo` fills `__FREE_FOO__`; there are no
+`_PRETTY` or `_NONDOT` forms. `union` is the upstream ID behind the reserved
+`free` alias on `openrouter-campaign`. The rest are exposed under their own IDs
+on the keyless `opencode-campaign`.
+
+When a campaign rotates its model, change the value and run `make llm-update`.
+When a campaign ends, delete the key and its `models:` entry in
+[config.tpl.yaml](config/cliproxyapi/config.tpl.yaml).
+
+## CLIProxy allowlist
+
+CLIProxy serves only `__GPT_LUNA__`, `__DEEPSEEK_FLASH__`, `free`, and the
+`models.free.json` models. The other `models.json` keys still hydrate harness
+configs, but CLIProxy does not route them. Codex OAuth models are removed with
+`oauth-excluded-models`, which matches upstream IDs and has no negation, so a
+new upstream Codex model is served until it is added there.
+
 ## The shared fallback chain
 
 Harnesses that support runtime fallback use one chain, in this order:

@@ -365,8 +365,13 @@ When run bash -c "grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.templ
 The status should be success
 End
 
-It 'only exposes selected model aliases plus the reserved free router alias'
-When run bash -c "allowed=\$(jq -r '.[]' models.json); while IFS= read -r alias; do [ \"\$alias\" = free ] || printf '%s\n' \"\$allowed\" | grep -Fxq \"\$alias\" || { echo \"unexpected alias: \$alias\"; exit 1; }; done < <(sed -n 's/^[[:space:]]*alias: \"\\(.*\\)\"/\\1/p' config/cliproxyapi/config.template.yaml)"
+It 'hydrates every free campaign model from models.free.json'
+When run bash -c "! grep -E 'name: \"(stealth/|[^_\"]*-free\")' config/cliproxyapi/config.tpl.yaml && jq -r '.[]' models.free.json | while IFS= read -r id; do grep -Fq \"name: \\\"\$id\\\"\" config/cliproxyapi/config.template.yaml || { echo \"missing: \$id\"; exit 1; }; done"
+The status should be success
+End
+
+It 'only exposes Luna, DeepSeek Flash, and the free models'
+When run bash -c "allowed=\$(jq -r '.[\"gpt-luna\"], .[\"deepseek-flash\"]' models.json; jq -r '.[]' models.free.json); while IFS= read -r alias; do [ \"\$alias\" = free ] || printf '%s\n' \"\$allowed\" | grep -Fxq \"\$alias\" || { echo \"unexpected alias: \$alias\"; exit 1; }; done < <(sed -n 's/^[[:space:]]*alias: \"\\(.*\\)\"/\\1/p' config/cliproxyapi/config.template.yaml)"
 The status should be success
 End
 End
@@ -445,6 +450,7 @@ mkdir -p "$FIXTURE/scripts" "$FIXTURE/config/codex/profiles"
 cp -f "$SCRIPT" "$FIXTURE/scripts/llm-update.sh"
 cp -f config/codex/profiles/*.tpl.toml "$FIXTURE/config/codex/profiles/"
 jq '.["gpt-astra"] = "astra-fixture" | .["gpt-sol"] = "sol-fixture" | .["gpt-luna"] = "luna-fixture"' models.json >"$FIXTURE/models.json"
+cp -f models.free.json "$FIXTURE/models.free.json"
 When run bash -c 'bash "$1/scripts/llm-update.sh" >/dev/null && for profile in cliproxy-astra cliproxy-sol cliproxy-luna cliproxy; do grep "^model = " "$1/config/codex/profiles/$profile.config.toml"; done' _ "$FIXTURE"
 The status should be success
 The line 1 should eq 'model = "astra-fixture"'
@@ -499,6 +505,7 @@ setup_provider_override_fixture() {
   mkdir -p "$TEMP_ROOT/scripts" "$TEMP_ROOT/config/cliproxyapi"
   cp -f "$SCRIPT" "$TEMP_ROOT/scripts/llm-update.sh"
   cp -f "$PWD/models.json" "$TEMP_ROOT/models.json"
+  cp -f "$PWD/models.free.json" "$TEMP_ROOT/models.free.json"
 
   cat >"$TEMP_ROOT/config/cliproxyapi/config.tpl.yaml" <<'EOF'
 openai-compatibility:
@@ -533,6 +540,7 @@ setup_failure_fixture() {
   mkdir -p "$TEMP_ROOT/scripts" "$(dirname "$TARGET")"
   cp -f "$SCRIPT" "$TEMP_ROOT/scripts/llm-update.sh"
   cp -f "$PWD/models.json" "$TEMP_ROOT/models.json"
+  cp -f "$PWD/models.free.json" "$TEMP_ROOT/models.free.json"
   cp -f "$PWD/home-manager/programs/fish/functions/_pixelh_function.tpl.fish" "$TEMP_ROOT/home-manager/programs/fish/functions/_pixelh_function.tpl.fish"
   printf 'sentinel\n' >"$TARGET"
 

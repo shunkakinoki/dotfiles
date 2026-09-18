@@ -505,7 +505,7 @@ openai-compatibility:
     api-key-entries:
       - api-key: "__OPENROUTER_API_KEY__"
     models:
-      - name: "stealth/union-alpha"
+      - name: "__FREE_UNION__"
         alias: "free"
         display-name: "Free (union-alpha via openrouter-campaign)"
   - name: "openrouter"
@@ -516,8 +516,6 @@ openai-compatibility:
       - api-key: "__OPENROUTER_API_KEY__"
         proxy-url: "direct"
     models:
-      - name: "__GPT_IMAGE_OPENROUTER__"
-        alias: "__GPT_IMAGE__"
       - name: "@preset/__DEEPSEEK_FLASH_NONDOT__"
         alias: "__DEEPSEEK_FLASH__"
       # Second provider for Luna: surplus is otherwise the only one that
@@ -540,18 +538,14 @@ openai-compatibility:
     api-key-entries:
       - api-key: "__KIMI_API_KEY__"
         proxy-url: "direct"
-    models:
-      - name: "__KIMI__"
-        alias: "__KIMI__"
+    models: []
   - name: "qwen"
     priority: 50
     base-url: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
     api-key-entries:
       - api-key: "__QWEN_API_KEY__"
         proxy-url: "direct"
-    models:
-      - name: "__QWEN__"
-        alias: "__QWEN__"
+    models: []
   - name: "aliyun"
     priority: 200
     prefix: "aliyun"
@@ -561,8 +555,6 @@ openai-compatibility:
       - api-key: "__ALIYUN_TOKEN_PLAN_API_KEY__"
         proxy-url: "direct"
     models:
-      - name: "__QWEN__"
-        alias: "__QWEN__"
       - name: "__DEEPSEEK_FLASH_0731__"
         alias: "__DEEPSEEK_FLASH__"
   # Keyless OpenCode Zen free models over the global proxy; remove when they end.
@@ -571,20 +563,20 @@ openai-compatibility:
     base-url: "https://opencode.ai/zen/v1"
     support-prompt-cache-key: true
     models:
-      - name: "big-pickle"
-        alias: "big-pickle"
-      - name: "mimo-v2.5-free"
-        alias: "mimo-v2.5-free"
-      - name: "nemotron-3-ultra-free"
-        alias: "nemotron-3-ultra-free"
-      - name: "nemotron-3.5-lightning-free"
-        alias: "nemotron-3.5-lightning-free"
-      - name: "ling-3.0-flash-fin-free"
-        alias: "ling-3.0-flash-fin-free"
-      - name: "muse-spark-1.3-contributor-free"
-        alias: "muse-spark-1.3-contributor-free"
-      - name: "jev-1.13-free"
-        alias: "jev-1.13-free"
+      - name: "__FREE_PICKLE__"
+        alias: "__FREE_PICKLE__"
+      - name: "__FREE_MIMO__"
+        alias: "__FREE_MIMO__"
+      - name: "__FREE_NEMOTRON_ULTRA__"
+        alias: "__FREE_NEMOTRON_ULTRA__"
+      - name: "__FREE_NEMOTRON_LIGHTNING__"
+        alias: "__FREE_NEMOTRON_LIGHTNING__"
+      - name: "__FREE_LING__"
+        alias: "__FREE_LING__"
+      - name: "__FREE_MUSE__"
+        alias: "__FREE_MUSE__"
+      - name: "__FREE_JEV__"
+        alias: "__FREE_JEV__"
   - name: "opencode"
     priority: 300
     base-url: "https://opencode.ai/zen/go/v1"
@@ -600,10 +592,6 @@ openai-compatibility:
     models:
       - name: "__DEEPSEEK_FLASH__"
         alias: "__DEEPSEEK_FLASH__"
-      - name: "__MINIMAX__"
-        alias: "__MINIMAX__"
-      - name: "__KIMI__"
-        alias: "__KIMI__"
   - name: "verboo"
     priority: 150
     base-url: "https://code.verboo.ai/router/v1"
@@ -629,9 +617,7 @@ openai-compatibility:
     api-key-entries:
       - api-key: "__OPENAI_API_KEY__"
         proxy-url: "direct"
-    models:
-      - name: "__GPT_IMAGE__"
-        alias: "__GPT_IMAGE__"
+    models: []
   - name: "surplus"
     priority: 150
     base-url: "https://api.surplusintelligence.ai/v1"
@@ -651,10 +637,6 @@ openai-compatibility:
     models:
       - name: "__DEEPSEEK_FLASH__"
         alias: "__DEEPSEEK_FLASH__"
-      - name: "__MINIMAX__"
-        alias: "__MINIMAX__"
-      - name: "__KIMI__"
-        alias: "__KIMI__"
 
 # Official OpenAI compatibility provider reference
 # OpenAI compatibility providers
@@ -760,6 +742,19 @@ openai-compatibility:
 #   sample-provider:                  # plugin provider keys are supported for OAuth plugins
 #     - name: "sample-model-latest"
 #       alias: "sample-latest"
+
+# Codex OAuth serves only __GPT_LUNA__. Exclusions match upstream IDs and have
+# no negation, so every other Codex model must be listed; new upstream models
+# are served until added here.
+oauth-excluded-models:
+  codex:
+    - "codex-*"
+    - "gpt-image*"
+    - "gpt-6*"
+    - "gpt-5.5*"
+    - "__GPT_SOL__*"
+    - "gpt-5.6-terra*"
+    - "__GPT_LUNA__-*"
 
 # OAuth provider excluded models
 # oauth-excluded-models:
