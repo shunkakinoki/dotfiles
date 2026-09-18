@@ -55,6 +55,8 @@ let
 
   cliWrapper = pkgs.writeShellScriptBin "cliproxyapi" (builtins.readFile wrapperScript);
 
+  kaminoMapping = ../../../kamino-tunnels.json;
+
   kaminoTunnelScript = pkgs.replaceVars ./scripts/kamino-tunnel.sh {
     jq = "${pkgs.jq}/bin/jq";
     flock = "${pkgs.flock}/bin/flock";
@@ -68,6 +70,7 @@ let
         Description = "Kamino SOCKS tunnel ${toString index}";
         After = [ "network-online.target" ];
         X-SwitchMethod = "restart";
+        X-Restart-Triggers = [ "${kaminoMapping}" ];
       };
       Service = {
         Type = "simple";
@@ -123,7 +126,8 @@ in
       Wants = [ "docker.service" ];
       X-Restart-Triggers = [
         "${config.home.file.".cli-proxy-api/config.template.yaml".source}"
-      ];
+      ]
+      ++ lib.optional objectstoreEnabled "${kaminoMapping}";
     };
     Service = {
       Type = "simple";
@@ -211,8 +215,13 @@ in
     Install.WantedBy = [ "timers.target" ];
   };
 
-  # One SOCKS tunnel per kamino node. Each exits cleanly unless the machine-local
-  # ~/.config/cliproxyapi/kamino-tunnels.json maps a credential to it.
+  # The tunnels only run on kyber, so other hosts must not route keys to them.
+  xdg.configFile."cliproxyapi/kamino-tunnels.json" = lib.mkIf objectstoreEnabled {
+    source = kaminoMapping;
+  };
+
+  # One SOCKS tunnel per kamino node. Each exits cleanly unless
+  # kamino-tunnels.json maps a credential or API key to it.
   systemd.user.services.kamino-tunnel-1 = kaminoTunnel 1;
   systemd.user.services.kamino-tunnel-2 = kaminoTunnel 2;
   systemd.user.services.kamino-tunnel-3 = kaminoTunnel 3;
