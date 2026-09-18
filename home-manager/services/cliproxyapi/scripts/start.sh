@@ -21,17 +21,18 @@ render_proxy_url() {
   local line proxy_url
   proxy_url=$(printf '%s' "${CLIPROXY_PROXY_URL:-}" | @jq@ -Rs .) || return
   while IFS= read -r line || [ -n "$line" ]; do
-    if [[ "$line" =~ ^([[:space:]]*)proxy-url:\ \"__CLIPROXY_PROXY_URL__\"$ ]]; then
-      printf '%sproxy-url: %s\n' "${BASH_REMATCH[1]}" "$proxy_url"
+    if [ "$line" = 'proxy-url: "__CLIPROXY_PROXY_URL__"' ]; then
+      printf 'proxy-url: %s\n' "$proxy_url"
     else
       printf '%s\n' "$line"
     fi
   done
 }
 
-# Keys mapped to a kamino tunnel get that tunnel as their proxy-url. Pass the
-# provider name as the third argument to look up {provider, key_index, port}
-# entries, where key_index is the 1-based position in the deduplicated pool.
+# Keys mapped to a kamino tunnel get that tunnel as their proxy-url and the rest
+# connect directly. Pass the provider name as the third argument to look up
+# {provider, key_index, port} entries, where key_index is the 1-based position
+# in the deduplicated pool.
 render_api_key_entries() {
   local placeholder="$1"
   local key_source="$2"
@@ -87,14 +88,14 @@ render_api_key_entries() {
       escaped="${candidate//\\/\\\\}"
       escaped="${escaped//\"/\\\"}"
       printf '      - api-key: "%s"\n' "$escaped"
-      proxy=''
+      proxy='direct'
       while read -r mapped_index mapped_proxy; do
         if [ "$mapped_index" = "$index" ]; then
           proxy="$mapped_proxy"
           break
         fi
       done <<<"$key_proxies"
-      [ -z "$proxy" ] || printf '        proxy-url: "%s"\n' "$proxy"
+      printf '        proxy-url: "%s"\n' "$proxy"
     done
   done
 }
@@ -143,13 +144,13 @@ assign_proxy_urls() {
       [ -f "$f" ] || continue
 
       existing_proxy="$(@jq@ -r '.proxy_url // ""' "$f" 2>/dev/null)" || continue
-      if [ "$existing_proxy" = "direct" ] || [ "$existing_proxy" = "none" ]; then
+      if [ "$existing_proxy" = "none" ]; then
         continue
       fi
 
       # shellcheck disable=SC2016
       target_proxy="$(@jq@ -r --arg name "$(basename "$f")" \
-        'first(.[] | select(.credential == $name) | "socks5://127.0.0.1:\(.port)") // ""' <<<"$mapping")"
+        'first(.[] | select(.credential == $name) | "socks5://127.0.0.1:\(.port)") // "direct"' <<<"$mapping")"
 
       if [ "$existing_proxy" != "$target_proxy" ]; then
         # shellcheck disable=SC2016

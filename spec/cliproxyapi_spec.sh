@@ -391,11 +391,12 @@ render_mapped_ollama_keys() {
   bash "$TEMP_OLLAMA/mapped.sh" "$TEMP_OLLAMA/template.yaml"
 }
 
-It 'adds the tunnel proxy-url only to the mapped key'
+It 'adds the tunnel proxy-url to the mapped key and direct to the rest'
 When call render_mapped_ollama_keys
 The output should equal '  - name: "ollama-cloud"
     api-key-entries:
       - api-key: "first-key"
+        proxy-url: "direct"
       - api-key: "second-key"
         proxy-url: "socks5://127.0.0.1:1082"'
 The status should be success
@@ -622,7 +623,7 @@ render_proxy_fixture() (
   expected="${CLIPROXY_PROXY_URL:-}"
   mkdir -p "$temp_home/dotfiles" "$temp_home/.cli-proxy-api"
   printf 'CLIPROXY_PROXY_URL=%q\n' "$expected" >"$temp_home/dotfiles/.env"
-  printf '%s\n' 'proxy-url: "__CLIPROXY_PROXY_URL__"' '        proxy-url: "__CLIPROXY_PROXY_URL__"' 'port: 8317' >"$temp_home/.cli-proxy-api/config.template.yaml"
+  printf '%s\n' 'proxy-url: "__CLIPROXY_PROXY_URL__"' 'port: 8317' >"$temp_home/.cli-proxy-api/config.template.yaml"
   {
     printf '%s\n' 'set -eu' 'unset CLIPROXY_PROXY_URL CLIPROXY_API_KEY' \
       '. "$1"' 'cliproxy_load_env' \
@@ -633,8 +634,6 @@ render_proxy_fixture() (
   } >"$temp_home/render.sh"
   HOME="$temp_home" bash "$temp_home/render.sh" "$PWD/home-manager/services/cliproxyapi/scripts/common.sh"
   actual=$(sed -n 's/^proxy-url: //p' "$temp_home/.cli-proxy-api/config.yaml")
-  EXPECTED_PROXY="$expected" jq -en --argjson actual "$actual" '$actual == env.EXPECTED_PROXY' >/dev/null
-  actual=$(sed -n 's/^        proxy-url: //p' "$temp_home/.cli-proxy-api/config.yaml")
   EXPECTED_PROXY="$expected" jq -en --argjson actual "$actual" '$actual == env.EXPECTED_PROXY' >/dev/null
   grep -Fx 'port: 8317' "$temp_home/.cli-proxy-api/config.yaml" >/dev/null
 )
@@ -651,11 +650,16 @@ When run render_proxy_fixture
 The status should be success
 End
 
-It 'proxies only the OpenRouter entries in both templates'
+It 'uses the runtime placeholder in both templates'
 When run bash -c 'for file in config/cliproxyapi/config.tpl.yaml config/cliproxyapi/config.template.yaml; do
-  grep -Fx '\''proxy-url: ""'\'' "$file" >/dev/null || exit 1
-  [ "$(grep -c __CLIPROXY_PROXY_URL__ "$file")" = 2 ] || exit 1
-  [ "$(grep -A1 __OPENROUTER_API_KEY__ "$file" | grep -c "^        proxy-url: \"__CLIPROXY_PROXY_URL__\"$")" = 2 ] || exit 1
+  grep -Fx '\''proxy-url: "__CLIPROXY_PROXY_URL__"'\'' "$file" >/dev/null || exit 1
+done'
+The status should be success
+End
+
+It 'connects every API key entry except OpenRouter directly'
+When run bash -c 'for file in config/cliproxyapi/config.tpl.yaml config/cliproxyapi/config.template.yaml; do
+  awk '\''prev ~ /^      - api-key: "__/ { direct = ($0 == "        proxy-url: \"direct\""); openrouter = (prev ~ /OPENROUTER/); if (direct == openrouter) bad = 1 } { prev = $0 } END { exit bad }'\'' "$file" || exit 1
 done'
 The status should be success
 End
@@ -692,16 +696,16 @@ assign_and_read() {
     done
 }
 
-It 'leaves unmapped auths direct, applies the mapped tunnel port, and keeps direct auths'
+It 'makes unmapped auths direct and applies the mapped tunnel port'
 When call assign_and_read 'http://global.example:8080'
-The line 1 of output should equal 'plain='
+The line 1 of output should equal 'plain=direct'
 The line 2 of output should equal 'mapped=socks5://127.0.0.1:1082'
 The line 3 of output should equal 'direct=direct'
 End
 
 It 'keeps the tunnel port when the proxy is unset'
 When call assign_and_read ''
-The line 1 of output should equal 'plain='
+The line 1 of output should equal 'plain=direct'
 The line 2 of output should equal 'mapped=socks5://127.0.0.1:1082'
 End
 
