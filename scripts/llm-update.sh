@@ -7,8 +7,14 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MODELS="$ROOT/models.json"
 
+FREE_MODELS="$ROOT/models.free.json"
+
 [[ -f $MODELS ]] || {
   echo "ERROR: models.json not found" >&2
+  exit 1
+}
+[[ -f $FREE_MODELS ]] || {
+  echo "ERROR: models.free.json not found" >&2
   exit 1
 }
 
@@ -76,6 +82,16 @@ while IFS=$'\t' read -r key value pretty nondot; do
   sed_args+=(-e "s|${placeholder%__}_NONDOT__|${nondot}|g")
   sed_args+=(-e "s|${placeholder}|${value}|g")
 done <<<"$model_rows"
+
+# Time-limited free campaign models: key "foo" fills __FREE_FOO__.
+free_rows="$(jq -r 'to_entries[] | [.key, .value] | @tsv' "$FREE_MODELS")" || {
+  echo "ERROR: failed to parse models.free.json" >&2
+  exit 1
+}
+while IFS=$'\t' read -r key value; do
+  [[ -n $key ]] || continue
+  sed_args+=(-e "s|__FREE_$(echo "$key" | tr 'a-z-' 'A-Z_')__|${value}|g")
+done <<<"$free_rows"
 
 # Provider-specific upstream slugs that intentionally differ from the canonical
 # alias stored in models.json.
