@@ -19,9 +19,9 @@ HOST="kamino${INDEX}"
 PORT=$((1080 + INDEX))
 PROXY_URL="socks5://127.0.0.1:${PORT}"
 
-# Machine-local JSON array of {credential, host, port} and
-# {provider, key_index, host, port}; it names real accounts, so it is not
-# managed by Nix. start.sh renders the API key entries into its config.
+# JSON array of {credential, host, port} and
+# {provider, key_index, host, port}, installed from the repository root on
+# kyber. start.sh renders the API key entries into its config.
 MAPPING_FILE="${HOME}/.config/cliproxyapi/kamino-tunnels.json"
 AUTH_DIR="${HOME}/.cli-proxy-api/objectstore/auths"
 # Shared with start.sh, which rewrites proxy_url on every service start.
