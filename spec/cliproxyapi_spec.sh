@@ -582,6 +582,7 @@ After 'cleanup_opencode_pool'
 It 'declares a generated credential pool for the existing OpenCode endpoint'
 When run bash -c "sed -n '/name: \"opencode\"/,/name: \"openai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'base-url: "https://opencode.ai/zen/go/v1"'
+The output should include 'X-Opencode-Session: "$X-Session-Affinity"'
 The output should include '__OPENCODE_API_KEY_ENTRIES__'
 The output should not include '__OPENCODE_API_KEY__'
 The status should be success
