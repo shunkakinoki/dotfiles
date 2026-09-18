@@ -231,6 +231,11 @@ case "${1:-} ${2:-}" in
     echo "Writable federation is retired" >&2
     exit 99
     ;;
+  "events tail")
+    if [ -n "${FAKE_EVENTS_JOURNAL:-}" ]; then
+      printf '%s\n' "$FAKE_EVENTS_JOURNAL"
+    fi
+    ;;
   "linear status")
     printf '{"last_sync":"%s"}\n' "${FAKE_LAST_SYNC:-}"
     ;;
@@ -385,12 +390,6 @@ case "${1:-} ${2:-}" in
   close\ *)
     printf '%s\n' closed >"$ISSUE_STATUS_FILE"
     ;;
-  unclaim\ *)
-    if [ "${FAKE_UNCLAIM_REFUSED:-}" = "$2" ]; then
-      echo "Error unclaiming $2: issue $2 is not assigned" >&2
-      exit 1
-    fi
-    ;;
   update\ *)
     if [ "${FAKE_UPDATE_REFUSED:-}" = "$2" ]; then
       echo "Error updating $2: assignee mismatch" >&2
@@ -423,7 +422,14 @@ case "${1:-} ${2:-}" in
 esac
 EOF
   chmod +x "$FAKE_BD"
-  printf '%s\n' '#!/usr/bin/env bash' 'printf '\''%s\n'\'' "$*" >>"$DOLT_LOG"' 'exit 0' >"$FAKE_DOLT_ROOT/bin/dolt"
+  cat >"$FAKE_DOLT_ROOT/bin/dolt" <<'EOF'
+#!/usr/bin/env bash
+printf '%s\n' "$*" >>"$DOLT_LOG"
+if [[ " $* " == *" sql -r json "* ]]; then
+  printf '%s\n' '{"rows":[{"head":0}]}'
+fi
+exit 0
+EOF
   chmod +x "$FAKE_DOLT_ROOT/bin/dolt"
   cat >"$FAKE_LINEAR" <<'EOF'
 #!/usr/bin/env bash
@@ -451,6 +457,7 @@ EOF
     -e "s|@curl@|$FAKE_CURL_ROOT|g" \
     -e 's|@gawk@|/usr|g' \
     -e "s|@jq@|$jq_prefix|g" \
+    -e "s|@linearControlStateJq@|${SCRIPT%/*}/linear-control-state.jq|g" \
     -e "s|@utilLinux@|$UTIL_LINUX|g" \
     "$SCRIPT" >"$RENDERED_SCRIPT"
 }
@@ -725,14 +732,13 @@ The output should include 'No terminal Beads to push'
 The contents of file "$progress_file" should equal 'df-closed 2099-01-01T00:00:00Z'
 End
 
-It 'restores assignees the pull overwrote on locally changed active Beads'
-before='[{"id":"df-released","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/released"},{"id":"df-claimed","status":"in_progress","assignee":"worker@example.com","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"},{"id":"df-stale","status":"open","assignee":"","updated_at":"2000-01-01T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-3/stale"}]'
-after='[{"id":"df-released","status":"open","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/released"},{"id":"df-claimed","status":"in_progress","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"},{"id":"df-stale","status":"open","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-3/stale"}]'
+It 'restores control labels the pull removed'
+before='[{"id":"df-held","status":"open","assignee":"","labels":["hold","other"],"updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/held"}]'
+after='[{"id":"df-held","status":"open","assignee":"","labels":["other"],"updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/held"}]'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
-The output should include 'Restoring locally changed claims after pull'
-The contents of file "$COMMAND_LOG" should include 'unclaim df-released --force'
-The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee worker@example.com --if-status=in_progress --force'
+The output should include 'Restoring locally authoritative control state after pull'
+The contents of file "$COMMAND_LOG" should include 'update df-held --add-label hold --status open --if-status=open --if-assignee='
 The file "$CHECKPOINT_FILE" should be exist
 End
 
@@ -741,34 +747,33 @@ before='[{"id":"df-claimed","status":"in_progress","assignee":"kamino4_exec_clai
 after='[{"id":"df-claimed","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"},{"id":"df-released","status":"in_progress","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/released"}]'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
-The output should include 'Restoring locally changed claims after pull'
-The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee kamino4_exec_claimed --status in_progress --if-status=open --force'
-The contents of file "$COMMAND_LOG" should include 'update df-released --status open --if-status=in_progress --force'
-The contents of file "$COMMAND_LOG" should include 'unclaim df-released --force'
+The output should include 'Restoring locally authoritative control state after pull'
+The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee kamino4_exec_claimed --status in_progress --if-status=open --if-assignee='
+The contents of file "$COMMAND_LOG" should not include 'update df-released'
 The file "$CHECKPOINT_FILE" should be exist
 End
 
-It 'leaves a Bead closed after the snapshot alone'
+It 'leaves a Bead a worker closed during the pull alone'
 before='[{"id":"df-done","status":"in_progress","assignee":"kamino2_exec_done","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-5/done"},{"id":"df-claimed","status":"in_progress","assignee":"kamino4_exec_claimed","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
 after='[{"id":"df-done","status":"closed","assignee":"","closed_at":"2099-01-03T00:00:00Z","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-5/done"},{"id":"df-claimed","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+journal='{"actor":"kamino2_exec_done","op":"close","issue_id":"df-done","issue":{"id":"df-done","status":"closed","assignee":""}}'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_EVENTS_JOURNAL="$journal" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
-The output should include 'Restoring locally changed claims after pull'
-The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee kamino4_exec_claimed --status in_progress --if-status=open --force'
+The output should include 'Restoring locally authoritative control state after pull'
+The contents of file "$COMMAND_LOG" should include 'events tail --since 0'
+The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee kamino4_exec_claimed --status in_progress --if-status=open --if-assignee='
 The contents of file "$COMMAND_LOG" should not include 'update df-done'
-The contents of file "$COMMAND_LOG" should not include 'unclaim df-done'
 The file "$CHECKPOINT_FILE" should be exist
 End
 
-It 'closes again a Bead closed locally that the pull reopened'
-before='[{"id":"df-accepted","status":"closed","assignee":"","closed_at":"2099-01-02T00:00:00Z","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-6/accepted"},{"id":"df-old","status":"closed","assignee":"","closed_at":"2000-01-01T00:00:00Z","updated_at":"2000-01-01T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/old"}]'
-after='[{"id":"df-accepted","status":"in_progress","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-6/accepted"},{"id":"df-old","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/old"}]'
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+It 'closes again a Bead a worker closed during the pull that the pull reopened'
+before='[{"id":"df-accepted","status":"in_progress","assignee":"kamino2_exec_accepted","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-6/accepted"}]'
+after='[{"id":"df-accepted","status":"in_progress","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-6/accepted"}]'
+journal='{"actor":"kamino2_exec_accepted","op":"close","issue_id":"df-accepted","issue":{"id":"df-accepted","status":"closed","assignee":"kamino2_exec_accepted"}}'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_EVENTS_JOURNAL="$journal" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
-The output should include 'Restoring locally changed claims after pull'
-The contents of file "$COMMAND_LOG" should include 'update df-accepted --status closed --if-status=in_progress --force'
-The contents of file "$COMMAND_LOG" should not include 'unclaim df-accepted'
-The contents of file "$COMMAND_LOG" should not include 'update df-old'
+The output should include 'Restoring locally authoritative control state after pull'
+The contents of file "$COMMAND_LOG" should include 'update df-accepted --assignee kamino2_exec_accepted --status closed --if-status=in_progress --if-assignee=operator@example.com'
 The file "$CHECKPOINT_FILE" should be exist
 End
 
@@ -814,28 +819,27 @@ The status should be success
 The output should include 'ensure_config linear.outbound_state_map.blocked Todo'
 End
 
-It 'keeps the cycle when Beads refuses one assignee restore'
-before='[{"id":"df-released","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/released"},{"id":"df-gone","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-4/gone"}]'
-after='[{"id":"df-released","status":"open","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/released"},{"id":"df-gone","status":"open","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-4/gone"}]'
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_UNCLAIM_REFUSED=df-gone FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+It 'keeps the cycle when Beads refuses one control state repair'
+before='[{"id":"df-claimed","status":"in_progress","assignee":"kamino4_exec_claimed","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/claimed"},{"id":"df-gone","status":"in_progress","assignee":"kamino4_exec_gone","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-4/gone"}]'
+after='[{"id":"df-claimed","status":"in_progress","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/claimed"},{"id":"df-gone","status":"in_progress","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-4/gone"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_UPDATE_REFUSED=df-gone FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
-The output should include 'Skipped 1 local claim restore(s) superseded by a newer write or refused by Beads'
-The output should not include 'is not assigned'
-The contents of file "$COMMAND_LOG" should include 'unclaim df-released --force'
-The contents of file "$COMMAND_LOG" should include 'unclaim df-gone --force'
+The output should include 'Restored 1 control state record(s); skipped 1 superseded or refused repair(s)'
+The output should not include 'assignee mismatch'
+The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee kamino4_exec_claimed --if-status=in_progress --if-assignee=operator@example.com'
+The contents of file "$COMMAND_LOG" should include 'update df-gone --assignee kamino4_exec_gone --if-status=in_progress --if-assignee=operator@example.com'
 The file "$CHECKPOINT_FILE" should be exist
 End
 
-It 'leaves a claim another actor wrote after the snapshot for the next cycle'
+It 'leaves a claim another actor wrote during the pull to that actor'
 before='[{"id":"df-moved","status":"in_progress","assignee":"kamino4_exec_moved-1","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-5/moved"},{"id":"df-stale","status":"in_progress","assignee":"kamino4_exec_stale-1","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-6/stale"}]'
-after='[{"id":"df-moved","status":"in_progress","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-5/moved"},{"id":"df-stale","status":"in_progress","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-6/stale"}]'
-history='[{"actor":"kamino3_exec_moved-2","created_at":"2099-01-03T00:00:00Z","event_type":"updated"},{"actor":"beads-linear-reconciler","created_at":"2099-01-02T00:00:00Z","event_type":"updated"}]'
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_HISTORY_ID=df-moved FAKE_HISTORY_JSON="$history" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+after='[{"id":"df-moved","status":"in_progress","assignee":"kamino3_exec_moved-2","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-5/moved"},{"id":"df-stale","status":"in_progress","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-6/stale"}]'
+journal='{"actor":"kamino3_exec_moved-2","op":"update","issue_id":"df-moved","issue":{"id":"df-moved","status":"in_progress","assignee":"kamino3_exec_moved-2"}}'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_EVENTS_JOURNAL="$journal" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
-The output should include 'Skipped 1 local claim restore(s) superseded by a newer write or refused by Beads'
-The contents of file "$COMMAND_LOG" should include 'history df-moved --events --limit 20 --json'
+The output should include 'Restored 1 control state record(s); skipped 0 superseded or refused repair(s)'
 The contents of file "$COMMAND_LOG" should not include 'update df-moved'
-The contents of file "$COMMAND_LOG" should include 'update df-stale --assignee kamino4_exec_stale-1 --if-status=in_progress --force'
+The contents of file "$COMMAND_LOG" should include 'update df-stale --assignee kamino4_exec_stale-1 --if-status=in_progress --if-assignee='
 End
 
 It 'cuts rendered sections from a description before pushing it'
@@ -930,14 +934,14 @@ The contents of file "$COMMAND_LOG" should include 'update df-wedged --if-status
 The file "$CHECKPOINT_FILE" should not be exist
 End
 
-It 'restores local assignees before a rejected pull exits'
-before='[{"id":"df-released","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/released"}]'
-after='[{"id":"df-released","status":"open","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/released"}]'
+It 'restores machine claims before a rejected pull exits'
+before='[{"id":"df-claimed","status":"in_progress","assignee":"kamino4_exec_claimed","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/claimed"}]'
+after='[{"id":"df-claimed","status":"in_progress","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/claimed"}]'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=partial-pull FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should equal 65
-The output should include 'Restoring locally changed claims after pull'
+The output should include 'Restoring locally authoritative control state after pull'
 The output should include 'Linear pull failed with status 65'
-The contents of file "$COMMAND_LOG" should include 'unclaim df-released --force'
+The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee kamino4_exec_claimed --if-status=in_progress --if-assignee=operator@example.com'
 The contents of file "$DOLT_LOG" should include 'REPLACE INTO local_metadata'
 The file "$CHECKPOINT_FILE" should not be exist
 End
@@ -945,7 +949,7 @@ End
 It 'leaves assignees alone when the pull agrees with local state'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
-The output should not include 'Restoring locally changed claims after pull'
+The output should not include 'Restoring locally authoritative control state after pull'
 The contents of file "$COMMAND_LOG" should not include 'unclaim'
 The file "$CHECKPOINT_FILE" should be exist
 End
