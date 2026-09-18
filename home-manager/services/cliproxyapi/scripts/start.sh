@@ -16,6 +16,18 @@ MANAGEMENT_PASSWORD="${CLIPROXY_MANAGEMENT_PASSWORD:-}"
 MANAGEMENT_KEY="${CLIPROXY_MANAGEMENT_PASSWORD:-${CLIPROXY_MANAGEMENT_KEY:-}}"
 export OBJECTSTORE_ENDPOINT OBJECTSTORE_BUCKET OBJECTSTORE_ACCESS_KEY OBJECTSTORE_SECRET_KEY OBJECTSTORE_LOCAL_PATH MANAGEMENT_PASSWORD
 
+render_proxy_url() {
+  local line proxy_url
+  proxy_url=$(printf '%s' "${CLIPROXY_PROXY_URL:-}" | @jq@ -Rs .) || return
+  while IFS= read -r line || [ -n "$line" ]; do
+    if [ "$line" = 'proxy-url: "__CLIPROXY_PROXY_URL__"' ]; then
+      printf 'proxy-url: %s\n' "$proxy_url"
+    else
+      printf '%s\n' "$line"
+    fi
+  done
+}
+
 render_api_key_entries() {
   local placeholder="$1"
   local key_source="$2"
@@ -77,6 +89,50 @@ ensure_oauth_priority() {
   done
 }
 
+# Kamino tunnels stamp the same auth files, so both writers take this lock.
+PROXY_URL_LOCK_FILE="${CONFIG_DIR}/proxy-url.lock"
+
+# Tunnel-mapped credentials get their SOCKS port here as well as from the
+# tunnel, so whichever writer runs last leaves the same value behind.
+assign_proxy_urls() {
+  local auth_dir="$1"
+  local mapping_file="${HOME}/.config/cliproxyapi/kamino-tunnels.json"
+  local mapping='[]'
+  local f existing_proxy target_proxy
+
+  if [ -f "$mapping_file" ]; then
+    mapping="$(@jq@ -c 'map(select(.credential and .port))' "$mapping_file")" || {
+      echo "⚠️  Invalid kamino tunnel mapping: $mapping_file" >&2
+      return 1
+    }
+  fi
+
+  (
+    @flock@ -w 30 200 || {
+      echo "⚠️  Timed out waiting for the proxy URL lock" >&2
+      exit 1
+    }
+
+    for f in "$auth_dir"/*.json; do
+      [ -f "$f" ] || continue
+
+      existing_proxy="$(@jq@ -r '.proxy_url // ""' "$f" 2>/dev/null)" || continue
+      if [ "$existing_proxy" = "direct" ] || [ "$existing_proxy" = "none" ]; then
+        continue
+      fi
+
+      # shellcheck disable=SC2016
+      target_proxy="$(@jq@ -r --arg name "$(basename "$f")" --arg global "${CLIPROXY_PROXY_URL:-}" \
+        'first(.[] | select(.credential == $name) | "socks5://127.0.0.1:\(.port)") // $global' <<<"$mapping")"
+
+      if [ "$existing_proxy" != "$target_proxy" ]; then
+        # shellcheck disable=SC2016
+        @jq@ --arg p "$target_proxy" '.proxy_url = $p' "$f" >"$f.tmp" && mv "$f.tmp" "$f"
+      fi
+    done
+  ) 200>"$PROXY_URL_LOCK_FILE"
+}
+
 if cliproxy_has_objectstore_credentials; then
   mkdir -p "$AUTH_DIR"
 
@@ -86,6 +142,8 @@ if cliproxy_has_objectstore_credentials; then
   fi
 
   ensure_oauth_priority "$AUTH_DIR" 300
+
+  assign_proxy_urls "$AUTH_DIR"
 
   if [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
     cliproxy_sync_auth_to_s3 "$AUTH_DIR"
@@ -110,8 +168,8 @@ if [ -f "$TEMPLATE" ]; then
     -e "s|__VERBOO_API_KEY__|${VERBOO_API_KEY:-}|g" \
     -e "s|__SURPLUS_API_KEY__|${SURPLUS_API_KEY:-}|g" \
     -e "s|__COMMANDCODE_API_KEY__|${COMMANDCODE_API_KEY:-}|g" \
-    -e "s|__AMP_UPSTREAM_API_KEY__|${AMP_UPSTREAM_API_KEY:-}|g" \
-    >"$CONFIG"
+    -e "s|__AMP_UPSTREAM_API_KEY__|${AMP_UPSTREAM_API_KEY:-}|g" |
+    render_proxy_url >"$CONFIG"
 
   if [ "$(uname)" = "Linux" ] && [ -n "${CLIPROXY_API_KEY:-}" ]; then
     @sed@ -i \

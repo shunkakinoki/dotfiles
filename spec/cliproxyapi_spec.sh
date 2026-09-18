@@ -576,6 +576,167 @@ The status should be success
 End
 End
 
+Describe 'proxy URL hydration'
+render_proxy_fixture() (
+  set -eu
+  local temp_home expected actual
+  temp_home=$(mktemp -d)
+  trap 'rm -rf "$temp_home"' EXIT
+  expected="${CLIPROXY_PROXY_URL:-}"
+  mkdir -p "$temp_home/dotfiles" "$temp_home/.cli-proxy-api"
+  printf 'CLIPROXY_PROXY_URL=%q\n' "$expected" >"$temp_home/dotfiles/.env"
+  printf '%s\n' 'proxy-url: "__CLIPROXY_PROXY_URL__"' 'port: 8317' >"$temp_home/.cli-proxy-api/config.template.yaml"
+  {
+    printf '%s\n' 'set -eu' 'unset CLIPROXY_PROXY_URL CLIPROXY_API_KEY' \
+      '. "$1"' 'cliproxy_load_env' \
+      'TEMPLATE="$HOME/.cli-proxy-api/config.template.yaml"' \
+      'CONFIG="$HOME/.cli-proxy-api/config.yaml"'
+    sed -n '/^render_proxy_url() {/,/^}/p; /^render_api_key_entries() {/,/^}/p; /^if \[ -f "$TEMPLATE" \]; then/,/^fi/p' "$SCRIPT" | sed 's|@jq@|jq|g; s|@sed@|sed|g'
+  } >"$temp_home/render.sh"
+  HOME="$temp_home" bash "$temp_home/render.sh" "$PWD/home-manager/services/cliproxyapi/scripts/common.sh"
+  actual=$(sed -n 's/^proxy-url: //p' "$temp_home/.cli-proxy-api/config.yaml")
+  EXPECTED_PROXY="$expected" jq -en --argjson actual "$actual" '$actual == env.EXPECTED_PROXY' >/dev/null
+  grep -Fx 'port: 8317' "$temp_home/.cli-proxy-api/config.yaml" >/dev/null
+)
+
+It 'hydrates an unset proxy as an empty string'
+unset CLIPROXY_PROXY_URL
+When run render_proxy_fixture
+The status should be success
+End
+
+It 'preserves URL characters without sed or YAML injection'
+export CLIPROXY_PROXY_URL='https://user:p%40ss&word|test"\@rp.evomi-proxy.com:1001'
+When run render_proxy_fixture
+The status should be success
+End
+
+It 'uses the runtime placeholder in both templates'
+When run bash -c 'for file in config/cliproxyapi/config.tpl.yaml config/cliproxyapi/config.template.yaml; do
+  grep -Fx '\''proxy-url: "__CLIPROXY_PROXY_URL__"'\'' "$file" >/dev/null || exit 1
+done'
+The status should be success
+End
+End
+
+Describe 'per-credential proxy assignment'
+setup_proxy_assign() {
+  TEMP_ASSIGN=$(mktemp -d)
+  mkdir -p "$TEMP_ASSIGN/.config/cliproxyapi" "$TEMP_ASSIGN/.cli-proxy-api/objectstore/auths"
+  {
+    printf '%s\n' 'set -euo pipefail' 'CONFIG_DIR="$HOME/.cli-proxy-api"'
+    sed -n '/^PROXY_URL_LOCK_FILE=/p; /^assign_proxy_urls() {/,/^}/p' "$SCRIPT" | sed 's|@jq@|jq|g; s|@flock@|:|g'
+    printf '%s\n' 'assign_proxy_urls "$HOME/.cli-proxy-api/objectstore/auths"'
+  } >"$TEMP_ASSIGN/assign.sh"
+  for name in plain mapped direct; do
+    printf '{"type":"codex","proxy_url":"%s"}\n' "$([ "$name" = direct ] && echo direct)" \
+      >"$TEMP_ASSIGN/.cli-proxy-api/objectstore/auths/$name.json"
+  done
+  printf '%s\n' '[{"credential":"mapped.json","host":"kamino2","port":1082}]' \
+    >"$TEMP_ASSIGN/.config/cliproxyapi/kamino-tunnels.json"
+}
+
+cleanup_proxy_assign() {
+  rm -rf "$TEMP_ASSIGN"
+}
+
+Before 'setup_proxy_assign'
+After 'cleanup_proxy_assign'
+
+assign_and_read() {
+  HOME="$TEMP_ASSIGN" CLIPROXY_PROXY_URL="$1" bash "$TEMP_ASSIGN/assign.sh" &&
+    for name in plain mapped direct; do
+      printf '%s=%s\n' "$name" "$(jq -r .proxy_url "$TEMP_ASSIGN/.cli-proxy-api/objectstore/auths/$name.json")"
+    done
+}
+
+It 'applies the global proxy, the mapped tunnel port, and keeps direct auths'
+When call assign_and_read 'http://global.example:8080'
+The line 1 of output should equal 'plain=http://global.example:8080'
+The line 2 of output should equal 'mapped=socks5://127.0.0.1:1082'
+The line 3 of output should equal 'direct=direct'
+End
+
+It 'clears the global proxy but keeps the tunnel port when unset'
+When call assign_and_read ''
+The line 1 of output should equal 'plain='
+The line 2 of output should equal 'mapped=socks5://127.0.0.1:1082'
+End
+
+It 'fails on an invalid tunnel mapping'
+setup_invalid_mapping() { printf 'not json' >"$TEMP_ASSIGN/.config/cliproxyapi/kamino-tunnels.json"; }
+BeforeCall 'setup_invalid_mapping'
+When call assign_and_read ''
+The status should be failure
+The stderr should include 'Invalid kamino tunnel mapping'
+End
+
+It 'waits on the lock shared with the kamino tunnels'
+When run bash -c "grep -F '@flock@ -w 30 200' '$SCRIPT' && grep -F '@flock@ -w 30 200' '$PWD/home-manager/services/cliproxyapi/scripts/kamino-tunnel.sh'"
+The status should be success
+The output should include 'flock'
+End
+End
+
+Describe 'kamino-tunnel.sh'
+TUNNEL_SCRIPT="$PWD/home-manager/services/cliproxyapi/scripts/kamino-tunnel.sh"
+
+setup_tunnel() {
+  TEMP_TUNNEL=$(mktemp -d)
+  mkdir -p "$TEMP_TUNNEL/.config/cliproxyapi" "$TEMP_TUNNEL/.cli-proxy-api/objectstore/auths"
+  sed 's|@jq@|jq|g; s|@flock@|:|g; s|@ssh@|echo ssh|g' "$TUNNEL_SCRIPT" >"$TEMP_TUNNEL/tunnel.sh"
+  printf '%s\n' '{"type":"claude","proxy_url":""}' >"$TEMP_TUNNEL/.cli-proxy-api/objectstore/auths/my account.json"
+}
+
+cleanup_tunnel() {
+  rm -rf "$TEMP_TUNNEL"
+}
+
+Before 'setup_tunnel'
+After 'cleanup_tunnel'
+
+write_tunnel_mapping() {
+  printf '%s\n' "$1" >"$TEMP_TUNNEL/.config/cliproxyapi/kamino-tunnels.json"
+}
+
+It 'stamps mapped credentials, including names with spaces, then starts ssh'
+write_tunnel_mapping '[{"credential":"my account.json","host":"kamino2","port":1082}]'
+When run bash -c 'HOME="$1" bash "$1/tunnel.sh" 2 && jq -r .proxy_url "$1/.cli-proxy-api/objectstore/auths/my account.json"' _ "$TEMP_TUNNEL"
+The status should be success
+The output should include 'ssh -N -D 127.0.0.1:1082'
+The output should include 'StrictHostKeyChecking=yes'
+The output should include 'socks5://127.0.0.1:1082'
+End
+
+It 'exits cleanly without a tunnel when nothing is mapped to the index'
+write_tunnel_mapping '[{"credential":"my account.json","host":"kamino2","port":1082}]'
+When run bash -c 'HOME="$1" bash "$1/tunnel.sh" 1' _ "$TEMP_TUNNEL"
+The status should be success
+The output should not include 'ssh'
+The stderr should include 'No credentials mapped to kamino1:1081'
+End
+
+It 'exits cleanly when the mapping file is missing'
+When run bash -c 'HOME="$1" bash "$1/tunnel.sh" 1' _ "$TEMP_TUNNEL"
+The status should be success
+The output should not include 'ssh'
+The stderr should include 'No kamino tunnel mapping'
+End
+
+It 'fails on an invalid mapping'
+write_tunnel_mapping 'not json'
+When run bash -c 'HOME="$1" bash "$1/tunnel.sh" 1' _ "$TEMP_TUNNEL"
+The status should be failure
+The stderr should include 'Invalid JSON'
+End
+
+It 'rejects a non-numeric index'
+When run bash "$TUNNEL_SCRIPT" abc
+The status should be failure
+The stderr should include 'positive integer'
+End
+End
+
 Describe 'OAuth credential priority enforcement'
 setup_oauth_priority() {
   TEMP_PRIORITY=$(mktemp -d)

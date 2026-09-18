@@ -32,6 +32,7 @@ let
     sed = "${pkgs.gnused}/bin/sed";
     aws = "${pkgs.awscli2}/bin/aws";
     jq = "${pkgs.jq}/bin/jq";
+    flock = "${pkgs.flock}/bin/flock";
     common = commonScript;
   };
 
@@ -53,6 +54,29 @@ let
   };
 
   cliWrapper = pkgs.writeShellScriptBin "cliproxyapi" (builtins.readFile wrapperScript);
+
+  kaminoTunnelScript = pkgs.replaceVars ./scripts/kamino-tunnel.sh {
+    jq = "${pkgs.jq}/bin/jq";
+    flock = "${pkgs.flock}/bin/flock";
+    ssh = "${pkgs.openssh}/bin/ssh";
+  };
+
+  kaminoTunnel =
+    index:
+    lib.mkIf objectstoreEnabled {
+      Unit = {
+        Description = "Kamino SOCKS tunnel ${toString index}";
+        After = [ "network-online.target" ];
+        X-SwitchMethod = "restart";
+      };
+      Service = {
+        Type = "simple";
+        ExecStart = "${pkgs.bash}/bin/bash ${kaminoTunnelScript} ${toString index}";
+        Restart = "on-failure";
+        RestartSec = "5s";
+      };
+      Install.WantedBy = [ "default.target" ];
+    };
 in
 {
   # Hydrate auth cache after home-manager switch
@@ -186,4 +210,10 @@ in
     };
     Install.WantedBy = [ "timers.target" ];
   };
+
+  # One SOCKS tunnel per kamino node. Each exits cleanly unless the machine-local
+  # ~/.config/cliproxyapi/kamino-tunnels.json maps a credential to it.
+  systemd.user.services.kamino-tunnel-1 = kaminoTunnel 1;
+  systemd.user.services.kamino-tunnel-2 = kaminoTunnel 2;
+  systemd.user.services.kamino-tunnel-3 = kaminoTunnel 3;
 }

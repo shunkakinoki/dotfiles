@@ -143,6 +143,20 @@ OLLAMA_API_KEYS="first-ollama-api-key,second-ollama-api-key"
 
 CLIProxyAPI selects from these entries using the configured routing strategy.
 
+### Outbound proxies
+
+`CLIPROXY_PROXY_URL` sets the global `proxy-url` and the `proxy_url` of every
+auth file on each start. Auth files whose `proxy_url` is `direct` or `none` are
+left alone.
+
+On kyber, `kamino-tunnel-{1,2,3}` open SOCKS tunnels to `kamino<N>` on
+`127.0.0.1:108<N>`. Map credentials to them in the machine-local
+`~/.config/cliproxyapi/kamino-tunnels.json` (see `kamino-tunnels.example.json`).
+Mapped auth files get `socks5://127.0.0.1:<port>` instead of the global proxy. A
+tunnel with no mapped credentials exits without connecting. The `kamino<N>` SSH
+host aliases and their host keys must already be in `~/.ssh/config` and
+`~/.ssh/known_hosts`.
+
 ## Usage
 
 ```bash

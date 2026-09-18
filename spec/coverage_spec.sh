@@ -656,6 +656,7 @@ home-manager/services/cliproxyapi/scripts/docker-start.sh
 home-manager/services/cliproxyapi/scripts/hydrate.sh
 home-manager/services/cliproxyapi/scripts/start.sh
 home-manager/services/cliproxyapi/scripts/wrapper.sh
+home-manager/services/cliproxyapi/scripts/kamino-tunnel.sh
 home-manager/services/code-syncer/sync.sh
 home-manager/services/screenshot-clipboard/watch.sh
 home-manager/services/docker-postgres/start-postgres-wrapper.sh
