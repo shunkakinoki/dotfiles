@@ -21,8 +21,8 @@ render_proxy_url() {
   local line proxy_url
   proxy_url=$(printf '%s' "${CLIPROXY_PROXY_URL:-}" | @jq@ -Rs .) || return
   while IFS= read -r line || [ -n "$line" ]; do
-    if [ "$line" = 'proxy-url: "__CLIPROXY_PROXY_URL__"' ]; then
-      printf 'proxy-url: %s\n' "$proxy_url"
+    if [[ "$line" =~ ^([[:space:]]*)proxy-url:\ \"__CLIPROXY_PROXY_URL__\"$ ]]; then
+      printf '%sproxy-url: %s\n' "${BASH_REMATCH[1]}" "$proxy_url"
     else
       printf '%s\n' "$line"
     fi
@@ -148,8 +148,8 @@ assign_proxy_urls() {
       fi
 
       # shellcheck disable=SC2016
-      target_proxy="$(@jq@ -r --arg name "$(basename "$f")" --arg global "${CLIPROXY_PROXY_URL:-}" \
-        'first(.[] | select(.credential == $name) | "socks5://127.0.0.1:\(.port)") // $global' <<<"$mapping")"
+      target_proxy="$(@jq@ -r --arg name "$(basename "$f")" \
+        'first(.[] | select(.credential == $name) | "socks5://127.0.0.1:\(.port)") // ""' <<<"$mapping")"
 
       if [ "$existing_proxy" != "$target_proxy" ]; then
         # shellcheck disable=SC2016
