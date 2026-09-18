@@ -54,6 +54,7 @@ export BEADS_DOLT_SERVER_MODE="1"
 export BEADS_DOLT_AUTO_START="0"
 export BEADS_NODE_ID="kyber"
 export BEADS_ACTOR="beads-linear-reconciler"
+export BD_EVENTS_JOURNAL="1"
 export DOLT_CLI_USER="beads"
 export DOLT_CLI_PASSWORD=""
 
@@ -460,6 +461,17 @@ run_dolt_sql() {
     sql -q "$query" >/dev/null
 }
 
+query_dolt_json() {
+  local query="$1"
+
+  "$dolt_cli" \
+    --host="$BEADS_DOLT_SERVER_HOST" \
+    --port="${BEADS_DOLT_SERVER_PORT:-3307}" \
+    --user="${DOLT_CLI_USER:-beads}" \
+    --no-tls \
+    sql -r json -q "$query"
+}
+
 restore_linear_last_sync() {
   if [ -z "${linear_last_sync_before_pull:-}" ]; then
     return 0
@@ -645,6 +657,11 @@ fi
 # SQL mutations are shared immediately; there is no database push/pull phase.
 
 linear_status="$("$bd_cli" -C "$repo_dir" linear status --json)"
+linear_database="$(@jq@/bin/jq -r '.dolt_database // empty' "$repo_dir/.beads/metadata.json")"
+if [[ ! $linear_database =~ ^[A-Za-z0-9_]+$ ]]; then
+  log "Beads metadata does not contain a valid Dolt database name"
+  exit 1
+fi
 if [ -s "$sync_checkpoint_file" ]; then
   previous_sync="$(<"$sync_checkpoint_file")"
 else
@@ -659,9 +676,16 @@ fi
 # because every push (and pull) bumps updated_at past the cycle start: keying
 # by updated_at re-selects the whole terminal set every run until the rate
 # limit defers it, so the checkpoint never advances. A pending completion
-# marker bypasses the ledger so its recovery push always happens.
+# marker bypasses the ledger so its recovery push always happens. Capture the
+# ordered mutation cursor before the snapshot: events that race the listing
+# may appear in both inputs, but replaying their full state is idempotent.
+linear_journal_head="$(query_dolt_json "USE \`$linear_database\`; SELECT COALESCE(MAX(next_seq), 0) AS head FROM bd_events_seq;" | @jq@/bin/jq -er '.rows[0].head // "0"')"
+if [[ ! $linear_journal_head =~ ^[0-9]+$ ]]; then
+  log "Beads events journal returned an invalid sequence"
+  exit 1
+fi
 snapshot_taken_at="$(@coreutils@/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')"
-issues_before_pull="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0 --skip-labels)"
+issues_before_pull="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0)"
 pushed_progress_input=/dev/null
 if [ -s "$push_progress_file" ]; then
   pushed_progress_input="$push_progress_file"
@@ -768,11 +792,6 @@ fi
 # bounded service window, while a complete tracker fetch finishes promptly.
 # Clear only Kyber's ignored clone-local cursor before pulling; the successful
 # pull writes a fresh cursor, and failures restore the prior value.
-linear_database="$(@jq@/bin/jq -r '.dolt_database // empty' "$repo_dir/.beads/metadata.json")"
-if [[ ! $linear_database =~ ^[A-Za-z0-9_]+$ ]]; then
-  log "Beads metadata does not contain a valid Dolt database name"
-  exit 1
-fi
 linear_last_sync_before_pull="$(@jq@/bin/jq -r '.last_sync // ""' <<<"$linear_status")"
 run_dolt_sql "USE \`$linear_database\`; DELETE FROM local_metadata WHERE \`key\` = 'linear.last_sync';"
 
@@ -787,85 +806,74 @@ run_linear pull @coreutils@/bin/timeout 720 "$bd_cli" -C "$repo_dir" linear sync
   --relations \
   --no-wait || pull_status=$?
 
-all_issues="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0 --skip-labels)"
+all_issues="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0)"
 
-# The cursor-free pull skips Beads' local-change guard, so every run writes
-# Linear's assignee and workflow state over every local claim or release. A
-# lane identity is not a Linear user, so a pushed claim still reads as the
-# owner's Linear assignee, and a claim made after the previous push still
-# reads Todo: each pull rewrites the claim until it is restored here. Every
-# active Bead keeps its local assignee and status, matching the active delta
-# push below; a Bead claimed before the previous run is rewritten by the pull
-# exactly like a recent one. Beads writes pulled fields before it reports the
-# pull result, so this runs before a deferred or rejected pull exits. A Bead
-# the pull reports closed is left closed: a completion made after the
-# snapshot would otherwise be rewritten back to its old claim and pushed to
-# Linear as reopened. A Bead closed locally since the previous run is closed
-# again when the pull reopened it: Linear still carries the pre-close state
-# until the push below lands, and a resurrected Bead is re-dispatched to a
-# worker before that happens. An older local closure is not re-asserted, so
-# a Bead deliberately reopened in Linear stays open.
-local_claim_lines="$(printf '%s\n%s\n' "$issues_before_pull" "$all_issues" | @jq@/bin/jq -r -s --arg previous_sync "$previous_sync" '
-  def issues: if type == "object" and has("issues") then .issues else . end;
-  (.[0] | issues
-    | map(
-        select(.status != "closed" or $previous_sync == "" or .updated_at >= $previous_sync)
-        | {key: .id, value: {assignee: (.assignee // ""), status: .status}}
-      )
-    | from_entries) as $local
-  | .[1] | issues | .[]
-  | select(.status != "closed" and $local[.id] != null
-      and ($local[.id].assignee != (.assignee // "") or $local[.id].status != .status))
-  | [.id, $local[.id].assignee, $local[.id].status, (.assignee // ""), .status] | join("\u001f")
-')"
-# Workers keep claiming and releasing while the pull runs, so a Bead can
-# already hold its restored state, or a claim newer than the listing above,
-# by the time bd is asked to write it. Each write applies only while the Bead
-# still has the status the listing read. The assignee is not guarded: bd
-# refuses an assignee guard next to the force that overwriting the owner's
-# in_progress claim needs, so a claim that changed owner but not status still
-# matches the guard and would be rewritten to the stale snapshot; the pull
-# then re-snapshots that stale claim and re-asserts it every cycle. The event
-# journal closes that gap: any write by another actor since the snapshot means
-# the Bead moved on, and the pulled value is left for the next cycle to settle.
-# A refused write must not abort the cycle; the rest of the restore still runs.
-if [ -n "$local_claim_lines" ]; then
-  log "Restoring locally changed claims after pull"
+# A cursor-free pull overwrites local assignment, workflow state, and labels.
+# The pre-pull snapshot protects existing machine claims and orchestration
+# labels. The durable journal then folds every non-reconciler mutation made
+# during the pull over that snapshot in commit order, so a concurrent claim,
+# release, completion, or label change wins. Each repair compares both fields
+# it observed after the pull; a newer claim makes the guarded write refuse
+# instead of transferring ownership from a live worker.
+linear_journal_file="$sync_state_dir/journal-$repo_slug.jsonl"
+linear_current_file="$sync_state_dir/current-$repo_slug.json"
+if ! "$bd_cli" -C "$repo_dir" events tail --since "$linear_journal_head" >"$linear_journal_file"; then
+  restore_linear_last_sync
+  log "Unable to read the Beads events journal after the Linear pull"
+  exit 1
+fi
+printf '%s\n' "$all_issues" >"$linear_current_file"
+control_state_repairs="$(@jq@/bin/jq -c \
+  --arg actor "$BEADS_ACTOR" \
+  --slurpfile journal "$linear_journal_file" \
+  --slurpfile current "$linear_current_file" \
+  -f @linearControlStateJq@ <<<"$issues_before_pull")"
+@coreutils@/bin/rm -f "$linear_journal_file" "$linear_current_file"
+
+if [ -n "$control_state_repairs" ]; then
+  log "Restoring locally authoritative control state after pull"
+  restored_control_state=0
   restore_failures=0
-  # A tab separator would collapse an empty assignee field on read.
-  while IFS=$'\x1f' read -r restore_id restore_assignee restore_status pulled_assignee pulled_status; do
+  while IFS= read -r repair; do
+    restore_id="$(@jq@/bin/jq -r '.id' <<<"$repair")"
+    restore_status="$(@jq@/bin/jq -r '.desired_status' <<<"$repair")"
+    restore_assignee="$(@jq@/bin/jq -r '.desired_assignee' <<<"$repair")"
+    pulled_status="$(@jq@/bin/jq -r '.current_status' <<<"$repair")"
+    pulled_assignee="$(@jq@/bin/jq -r '.current_assignee' <<<"$repair")"
     restore_args=()
-    if [ -n "$restore_assignee" ] && [ "$restore_assignee" != "$pulled_assignee" ]; then
+    if [ "$restore_assignee" != "$pulled_assignee" ]; then
       restore_args+=(--assignee "$restore_assignee")
     fi
     if [ "$restore_status" != "$pulled_status" ]; then
       restore_args+=(--status "$restore_status")
     fi
-    if [ "$(written_since_snapshot "$restore_id")" = "true" ]; then
-      restore_failures=$((restore_failures + 1))
+    mapfile -t add_labels < <(@jq@/bin/jq -r '.add_labels[]' <<<"$repair")
+    for label in "${add_labels[@]}"; do
+      restore_args+=(--add-label "$label")
+    done
+    mapfile -t remove_labels < <(@jq@/bin/jq -r '.remove_labels[]' <<<"$repair")
+    for label in "${remove_labels[@]}"; do
+      restore_args+=(--remove-label "$label")
+    done
+    if [ "${#restore_args[@]}" -eq 0 ]; then
       continue
     fi
-    restored=1
-    if [ "${#restore_args[@]}" -gt 0 ]; then
-      "$bd_cli" -C "$repo_dir" update "$restore_id" "${restore_args[@]}" \
-        --if-status="$pulled_status" --force >/dev/null 2>&1 || restored=0
+    # Label-only repairs need a no-op field update for the CAS guards to ride.
+    if [ "$restore_status" = "$pulled_status" ] && [ "$restore_assignee" = "$pulled_assignee" ]; then
+      restore_args+=(--status "$pulled_status")
     fi
-    if [ "$restored" -eq 0 ]; then
+    if "$bd_cli" -C "$repo_dir" update "$restore_id" "${restore_args[@]}" \
+      --if-status="$pulled_status" --if-assignee="$pulled_assignee" >/dev/null 2>&1; then
+      restored_control_state=$((restored_control_state + 1))
+    else
       restore_failures=$((restore_failures + 1))
-    elif [ -z "$restore_assignee" ] && [ -n "$pulled_assignee" ] && [ "$restore_status" != "closed" ]; then
-      "$bd_cli" -C "$repo_dir" unclaim "$restore_id" --force >/dev/null 2>&1 || restore_failures=$((restore_failures + 1))
     fi
-  done <<<"$local_claim_lines"
-  if [ "$restore_failures" -gt 0 ]; then
-    log "Skipped $restore_failures local claim restore(s) superseded by a newer write or refused by Beads"
-  fi
+  done <<<"$control_state_repairs"
+  log "Restored $restored_control_state control state record(s); skipped $restore_failures superseded or refused repair(s)"
 fi
 
-# A claim made while the pull was running is absent from the pre-pull snapshot,
-# so the restore above cannot see it; a refused restore leaves the same shape.
-# Either way the Bead ends up in_progress with no assignee, which no worker
-# picks up and no lane owns. The guarded update skips any Bead a worker has
-# re-claimed since the snapshot.
+# Keep the older invariant repair for malformed records that predate journal
+# coverage. The guarded update skips any Bead a worker has since re-claimed.
 wedged_ids="$(@jq@/bin/jq -r '
   (if type == "object" and has("issues") then .issues else . end)
   | .[]

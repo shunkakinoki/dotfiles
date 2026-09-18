@@ -1,0 +1,35 @@
+[
+  {
+    "id": "task-a",
+    "status": "open",
+    "assignee": "owner@example.com",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-b",
+    "status": "open",
+    "assignee": "owner@example.com",
+    "labels": [
+      "linear",
+      "human"
+    ]
+  },
+  {
+    "id": "task-c",
+    "status": "open",
+    "assignee": "owner@example.com",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-d",
+    "status": "open",
+    "assignee": "owner@example.com",
+    "labels": [
+      "linear"
+    ]
+  }
+]

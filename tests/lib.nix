@@ -15,6 +15,23 @@ let
   };
 in
 {
+  linear-control-state =
+    let
+      fixtures = ./fixtures/linear-control-state;
+    in
+    pkgs.runCommand "linear-control-state" { nativeBuildInputs = [ pkgs.jq ]; } ''
+      jq -c \
+        --arg actor beads-linear-reconciler \
+        --slurpfile journal ${fixtures}/journal.jsonl \
+        --slurpfile current ${fixtures}/current.json \
+        -f ${../home-manager/services/dolt/linear-control-state.jq} \
+        ${fixtures}/snapshot.json \
+        | jq -S -s 'sort_by(.id)' > actual.json
+      jq -S . ${fixtures}/expected.json > expected.json
+      diff -u expected.json actual.json
+      touch "$out"
+    '';
+
   lib-kamino-shortcuts =
     let
       kamino = import ../home-manager/programs/kamino { inherit lib pkgs; };
