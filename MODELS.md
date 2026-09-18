@@ -52,6 +52,7 @@ because the upstream ID differs from the canonical one:
 | Placeholder | Value | Used by |
 | --- | --- | --- |
 | `__GPT_IMAGE_OPENROUTER__` | `openai/gpt-5.4-image-2` | OpenRouter, aliased back to `gpt-image-2` |
+| `__DEEPSEEK_FLASH_OPENROUTER__` | `deepseek/deepseek-v4.1-flash` | OpenRouter, aliased back to `deepseek-v4.1-flash` |
 | `__DEEPSEEK_FLASH_0731__` | `deepseek-v4-flash-0731` | Aliyun, aliased back to `deepseek-v4.1-flash` |
 | `__DEEPSEEK_FLASH_ZEN__` | `deepseek-v4-flash` | OpenCode Zen, aliased back to `deepseek-v4.1-flash` |
 
@@ -186,7 +187,7 @@ Every one of them resolves through
 | --- | --- | --- |
 | `opencode` | 300 | `deepseek-v4-flash` aliased to `deepseek-v4.1-flash` |
 | `aliyun` | 200 | `deepseek-v4-flash-0731` aliased to `deepseek-v4.1-flash` |
-| `openrouter` | 100 | `@preset/deepseek-v4.1-flash` |
+| `openrouter` | 100 | `deepseek/deepseek-v4.1-flash` aliased to `deepseek-v4.1-flash` |
 
 So a single `deepseek-v4.1-flash` request tries OpenCode Zen, then Aliyun, then
 OpenRouter before the harness-level fallback chain sees a failure.
