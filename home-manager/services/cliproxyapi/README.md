@@ -133,6 +133,14 @@ legacy singular value, and empty or duplicate entries are ignored:
 OPENCODE_API_KEYS="first-opencode-api-key,second-opencode-api-key"
 ```
 
+For more than one Ollama Cloud account, set `OLLAMA_API_KEYS` to a
+comma-separated list. `OLLAMA_API_KEY` and `OLLAMA_API_KEYS` are merged into one
+pool, and empty or duplicate entries are ignored:
+
+```bash
+OLLAMA_API_KEYS="first-ollama-api-key,second-ollama-api-key"
+```
+
 CLIProxyAPI selects from these entries using the configured routing strategy.
 
 ## Usage

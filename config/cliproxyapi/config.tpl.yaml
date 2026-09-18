@@ -611,8 +611,7 @@ openai-compatibility:
   - name: "ollama-cloud"
     priority: 150
     base-url: "https://ollama.com/v1"
-    api-key-entries:
-      - api-key: "__OLLAMA_API_KEY__"
+    api-key-entries: __OLLAMA_API_KEY_ENTRIES__
     models:
       - name: "__DEEPSEEK_FLASH__"
         alias: "__DEEPSEEK_FLASH__"

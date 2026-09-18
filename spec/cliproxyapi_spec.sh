@@ -321,10 +321,60 @@ End
 End
 
 Describe 'Ollama Cloud provider'
-It 'hydrates the dedicated environment key into the runtime config'
-When run bash -c "grep 's|__OLLAMA_API_KEY__|.*OLLAMA_API_KEY' '$SCRIPT'"
-The output should include '__OLLAMA_API_KEY__'
-The output should include 'OLLAMA_API_KEY'
+setup_ollama_pool() {
+  TEMP_OLLAMA=$(mktemp -d)
+  printf '%s\n' '  - name: "ollama-cloud"' '    api-key-entries: __OLLAMA_API_KEY_ENTRIES__' >"$TEMP_OLLAMA/template.yaml"
+  sed -n '/^render_api_key_entries() {/,/^}/p' "$SCRIPT" >"$TEMP_OLLAMA/render.sh"
+  cat >>"$TEMP_OLLAMA/render.sh" <<'BASH'
+render_api_key_entries __OLLAMA_API_KEY_ENTRIES__ "${OLLAMA_API_KEYS:-},${OLLAMA_API_KEY:-}" <"$1"
+BASH
+}
+
+cleanup_ollama_pool() {
+  rm -rf "$TEMP_OLLAMA"
+}
+
+Before 'setup_ollama_pool'
+After 'cleanup_ollama_pool'
+
+It 'renders the key pool from both plural and singular keys'
+When run cat "$SCRIPT"
+The output should include 'render_api_key_entries __OLLAMA_API_KEY_ENTRIES__ "${OLLAMA_API_KEYS:-},${OLLAMA_API_KEY:-}"'
+The output should not include '__OLLAMA_API_KEY__'
+The status should be success
+End
+
+It 'renders each non-empty plural key once'
+When run env OLLAMA_API_KEYS='first-key, second-key,first-key,' bash "$TEMP_OLLAMA/render.sh" "$TEMP_OLLAMA/template.yaml"
+The output should include '      - api-key: "first-key"'
+The output should include '      - api-key: "second-key"'
+The output should not include '__OLLAMA_API_KEY_ENTRIES__'
+The status should be success
+End
+
+It 'uses the singular key alone'
+When run env OLLAMA_API_KEYS='' OLLAMA_API_KEY='single-key' bash "$TEMP_OLLAMA/render.sh" "$TEMP_OLLAMA/template.yaml"
+The output should include '      - api-key: "single-key"'
+The output should not include 'api-key-entries: []'
+The status should be success
+End
+
+It 'merges singular and plural keys without duplicates'
+When run env OLLAMA_API_KEYS='first-key,second-key' OLLAMA_API_KEY='first-key' bash -c "bash '$TEMP_OLLAMA/render.sh' '$TEMP_OLLAMA/template.yaml' | grep -c 'api-key: '"
+The output should equal '2'
+The status should be success
+End
+
+It 'merges a distinct singular key into the pool'
+When run env OLLAMA_API_KEYS='first-key' OLLAMA_API_KEY='third-key' bash "$TEMP_OLLAMA/render.sh" "$TEMP_OLLAMA/template.yaml"
+The output should include '      - api-key: "first-key"'
+The output should include '      - api-key: "third-key"'
+The status should be success
+End
+
+It 'renders an empty pool when no key is set'
+When run env OLLAMA_API_KEYS='' OLLAMA_API_KEY='' bash "$TEMP_OLLAMA/render.sh" "$TEMP_OLLAMA/template.yaml"
+The output should include 'api-key-entries: []'
 The status should be success
 End
 
@@ -332,7 +382,7 @@ It 'declares the OpenAI-compatible fallback upstream'
 When run bash -c "sed -n '/name: \"ollama-cloud\"/,/^$/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'priority: 150'
 The output should include 'base-url: "https://ollama.com/v1"'
-The output should include 'api-key: "__OLLAMA_API_KEY__"'
+The output should include 'api-key-entries: __OLLAMA_API_KEY_ENTRIES__'
 The output should include 'name: "deepseek-v4.1-flash"'
 The output should include 'name: "minimax-m3"'
 The output should include 'name: "kimi-k3"'
@@ -478,9 +528,9 @@ openai-compatibility:
   - name: "opencode"
     api-key-entries: __OPENCODE_API_KEY_ENTRIES__
 YAML
-  sed -n '/^render_opencode_api_key_entries() {/,/^}/p' "$SCRIPT" >"$TEMP_POOL/render.sh"
+  sed -n '/^render_api_key_entries() {/,/^}/p' "$SCRIPT" >"$TEMP_POOL/render.sh"
   cat >>"$TEMP_POOL/render.sh" <<'BASH'
-render_opencode_api_key_entries "$1"
+render_api_key_entries __OPENCODE_API_KEY_ENTRIES__ "${OPENCODE_API_KEYS:-${OPENCODE_API_KEY:-}}" <"$1"
 BASH
 }
 
@@ -504,7 +554,7 @@ When run cat "$SCRIPT"
 The output should include 'OPENCODE_API_KEYS:-${OPENCODE_API_KEY:-}'
 The output should include 'api-key-entries: []'
 The output should include 'api_keys+=("$trimmed")'
-The output should include 'render_opencode_api_key_entries "$TEMPLATE" | @sed@'
+The output should include 'render_api_key_entries __OPENCODE_API_KEY_ENTRIES__ "${OPENCODE_API_KEYS:-${OPENCODE_API_KEY:-}}" <"$TEMPLATE" |'
 The output should not include 'SED_CONFIG='
 The status should be success
 End
