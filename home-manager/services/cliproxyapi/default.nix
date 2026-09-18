@@ -57,6 +57,24 @@ let
 
   kaminoMapping = ../../../kamino-tunnels.json;
 
+  # kamino-tunnel.sh listens for kamino<N> on 1080+N and ignores entries whose
+  # port disagrees, so reject those at evaluation time instead.
+  kaminoIndices = lib.unique (
+    map (
+      entry:
+      let
+        match = builtins.match "kamino([1-9][0-9]*)" entry.host;
+        index = lib.toInt (builtins.head match);
+      in
+      if match == null then
+        throw "kamino-tunnels.json: host must be kamino<N>, got ${entry.host}"
+      else if entry.port != 1080 + index then
+        throw "kamino-tunnels.json: ${entry.host} must use port ${toString (1080 + index)}"
+      else
+        index
+    ) (lib.importJSON kaminoMapping)
+  );
+
   kaminoTunnelScript = pkgs.replaceVars ./scripts/kamino-tunnel.sh {
     jq = "${pkgs.jq}/bin/jq";
     flock = "${pkgs.flock}/bin/flock";
@@ -220,9 +238,13 @@ in
     source = kaminoMapping;
   };
 
-  # One SOCKS tunnel per kamino node. Each exits cleanly unless
-  # kamino-tunnels.json maps a credential or API key to it.
-  systemd.user.services.kamino-tunnel-1 = kaminoTunnel 1;
-  systemd.user.services.kamino-tunnel-2 = kaminoTunnel 2;
-  systemd.user.services.kamino-tunnel-3 = kaminoTunnel 3;
+  # One SOCKS tunnel per kamino node named in kamino-tunnels.json. Nix rejects
+  # a literal systemd.user.services next to the generated set, hence the import.
+  imports = [
+    {
+      systemd.user.services = lib.listToAttrs (
+        map (index: lib.nameValuePair "kamino-tunnel-${toString index}" (kaminoTunnel index)) kaminoIndices
+      );
+    }
+  ];
 }
