@@ -16,13 +16,14 @@ setup() {
   export T3_PREPARE_RUNTIME="$MOCK_BIN/prepare"
   export T3_REAL_NPM="$MOCK_BIN/npm"
   export T3_PTY_PROBE=pty-probe.cjs
+  export T3_CONNECT_PROJECT="$T3_TEST_ROOT/dotfiles"
   mkdir -p "$T3CODE_HOME/runtime/versions/.staging-test" "$npm_config_cache/_npx"
 }
 
 cleanup() {
   mock_bin_cleanup
   rm -rf "$T3_TEST_ROOT"
-  unset T3_TEST_ROOT T3CODE_HOME npm_config_cache T3_PREPARE_RUNTIME T3_REAL_NPM T3_PTY_PROBE
+  unset T3_TEST_ROOT T3CODE_HOME npm_config_cache T3_PREPARE_RUNTIME T3_REAL_NPM T3_PTY_PROBE T3_CONNECT_PROJECT
 }
 
 Before 'setup'
@@ -222,6 +223,56 @@ printf '#!/usr/bin/env bash\nexit 23\n' >"$MOCK_BIN/prepare"
 When run bash "$LAUNCHER"
 The status should equal 23
 The contents of file "$MOCK_LOG" should not include 'launcher'
+End
+End
+
+Describe 'project registration'
+Before 'mock_registry'
+make_checkout() {
+  mkdir -p "$T3_CONNECT_PROJECT/.git"
+}
+Before 'make_checkout'
+
+mock_npx_project() {
+  cat >"$MOCK_BIN/npx" <<'MOCK'
+#!/usr/bin/env bash
+printf '%s\n' "$0 $*" >>"$MOCK_LOG"
+case " $* " in
+*" project add "*)
+  printf '%s\n' "${MOCK_NPX_ERROR:-}" >&2
+  exit 1
+  ;;
+esac
+exit 0
+MOCK
+}
+
+It 'registers the local checkout as a T3 project'
+When run bash "$SCRIPT"
+The status should be success
+The contents of file "$MOCK_LOG" should include "npx --yes t3@1.2.3 project add $T3_CONNECT_PROJECT --title dotfiles"
+End
+
+It 'skips project registration when the checkout is absent'
+rm -rf "$T3_CONNECT_PROJECT"
+When run bash "$SCRIPT"
+The status should be success
+The contents of file "$MOCK_LOG" should not include 'project add'
+End
+
+It 'treats an already-registered project as the steady state'
+export MOCK_NPX_ERROR='ProjectAlreadyExistsError: An active project already exists.'
+mock_npx_project
+When run bash "$SCRIPT"
+The status should be success
+End
+
+It 'propagates other project registration failures'
+export MOCK_NPX_ERROR='network unavailable'
+mock_npx_project
+When run bash "$SCRIPT"
+The status should be failure
+The stderr should include 'network unavailable'
 End
 End
 End

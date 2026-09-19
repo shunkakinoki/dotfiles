@@ -26,6 +26,23 @@ spec="t3@${version:-$TAG}"
 
 npx --yes "$spec" --version >/dev/null
 
+# The desktop's per-project "Run on" list only offers environments that hold
+# the project in their own T3 store. A machine with the checkout on disk but no
+# project row stays invisible, so register it on every pass and treat the CLI's
+# duplicate error as the steady state.
+project="${T3_CONNECT_PROJECT:-${HOME}/dotfiles}"
+if [ -e "$project/.git" ]; then
+  if ! output="$(npx --yes "$spec" project add "$project" --title "$(basename "$project")" 2>&1)"; then
+    case "$output" in
+    *ProjectAlreadyExistsError*) ;;
+    *)
+      printf '%s\n' "$output" >&2
+      exit 1
+      ;;
+    esac
+  fi
+fi
+
 # Two independent trees need the native module: the npx cache used by the
 # client's SSH launch, and the runtime `t3 service` installs for its systemd
 # unit.
