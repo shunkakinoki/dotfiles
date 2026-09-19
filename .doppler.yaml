@@ -1,0 +1,3 @@
+setup:
+  - project: dotfiles
+    config: prd
