@@ -34,6 +34,14 @@ exit 0
 EOF
     fi
   done
+  cat >"$TEST_ROOT/bin/t3" <<'EOF'
+#!/usr/bin/env bash
+printf 't3 %s\n' "$*" >>"$COMMAND_LOG"
+if [ "$1 $2" = "service install" ] && [ "${T3_INSTALL_EXIT:-0}" != 0 ]; then
+  exit "$T3_INSTALL_EXIT"
+fi
+exit 0
+EOF
   chmod +x "$TEST_ROOT/bin"/*
   printf 'kamino100\n' >"$TEST_ROOT/identity"
   printf 'ssh-ed25519 AAAAexample\n' >"$TEST_ROOT/client.pub"
@@ -81,6 +89,37 @@ It 'authorizes a public key without duplicating it'
 When run bash -c "PATH='$TEST_ROOT/bin:/usr/bin:/bin' COMMAND_LOG='$TEST_ROOT/commands' bash '$SCRIPT' authorize-ssh '$TEST_ROOT/client.pub' '$TEST_ROOT/ssh' '$TEST_ROOT/bin/ssh-keygen'"
 The status should be success
 The contents of file "$TEST_ROOT/ssh/authorized_keys" should include 'ssh-ed25519 AAAAexample'
+End
+
+It 'provisions publish-only T3 Connect with the device flow on first run'
+When run env T3CODE_HOME="$TEST_ROOT/fresh-t3" PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" t3-connect "$TEST_ROOT/bin/t3"
+The status should be success
+The contents of file "$TEST_ROOT/commands" should include 't3 service install'
+The contents of file "$TEST_ROOT/commands" should include 't3 connect link --headless --publish-only'
+The contents of file "$TEST_ROOT/commands" should include 'systemctl --user restart t3code.service'
+End
+
+It 'falls back to the service update path when install fails'
+When run env T3_INSTALL_EXIT=1 PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" t3-connect "$TEST_ROOT/bin/t3"
+The status should be success
+The contents of file "$TEST_ROOT/commands" should include 't3 service install'
+The contents of file "$TEST_ROOT/commands" should include 't3 service update'
+End
+
+It 'links without the device flow when a credential already exists'
+mkdir -p "$TEST_ROOT/t3/userdata/secrets"
+: >"$TEST_ROOT/t3/userdata/secrets/cloud-cli-oauth-token.bin"
+When run env T3CODE_HOME="$TEST_ROOT/t3" PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" t3-connect "$TEST_ROOT/bin/t3"
+The status should be success
+The contents of file "$TEST_ROOT/commands" should include 't3 connect link --publish-only'
+The contents of file "$TEST_ROOT/commands" should not include '--headless'
+End
+
+It 'skips T3 Connect provisioning when t3 is not installed'
+When run run_phase t3-connect "$TEST_ROOT/missing-t3"
+The status should be success
+The error should include 'skipping T3 Connect'
+The path "$TEST_ROOT/commands" should not be exist
 End
 
 It 'rejects an unknown activation phase'

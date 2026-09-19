@@ -96,6 +96,17 @@ inputs.home-manager.lib.homeManagerConfiguration {
               $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} tailscale ${lib.escapeShellArg name} ${pkgs.tailscale}/bin/tailscale ${lib.escapeShellArgs tailscaleUpArgs}
             '';
 
+        # T3 Connect is provisioned per worker after the npm globals install
+        # puts `t3` on PATH. The first activation authorizes with the OAuth
+        # device flow; later activations reuse the stored credential.
+        home.activation.provisionKaminoT3Connect =
+          config.lib.dag.entryAfter [ "installNpmGlobals" "startKaminoUserManager" ]
+            ''
+              export PATH=${config.home.homeDirectory}/.bun/bin:$PATH
+              export XDG_RUNTIME_DIR=/run/user/0
+              $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} t3-connect ${config.home.homeDirectory}/.bun/bin/t3
+            '';
+
         systemd.user.services.herdr-server = {
           Unit = {
             Description = "Herdr headless server";
