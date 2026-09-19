@@ -28,6 +28,21 @@ let
     pkgs.util-linux
     pkgs.which
   ];
+  # The T3 binary links libatomic from the Nix GCC runtime and node-pty needs
+  # the same toolchain libraries. systemd units do not inherit the interactive
+  # shell's LD_LIBRARY_PATH, so without this the pre-warm aborts with
+  # "libatomic.so.1: cannot open shared object file".
+  libraryPath = lib.makeLibraryPath (
+    lib.optionals pkgs.stdenv.hostPlatform.isLinux [ pkgs.alsa-lib ]
+    ++ [
+      pkgs.glib.out
+      pkgs.libsecret
+      pkgs.nspr
+      pkgs.nss
+      pkgs.stdenv.cc.cc.lib
+      pkgs.zlib
+    ]
+  );
   prepareRuntime = pkgs.writeShellScript "t3-prepare-runtime" (
     "export PATH=${toolchain}:$PATH\n"
     + "export T3_PTY_PROBE=${./pty-probe.cjs}\n"
@@ -85,6 +100,7 @@ in
           [Service]
           ExecStart=
           ExecStart=${launcher}
+          Environment=LD_LIBRARY_PATH=${libraryPath}
           ${lib.optionalString (t3ServeRoute != null) ''
             Environment=T3CODE_TAILSCALE_SERVE=true
             Environment=T3CODE_TAILSCALE_SERVE_PORT=${toString t3ServeRoute.httpsPort}
@@ -112,6 +128,7 @@ in
       Environment = [
         "PATH=${toolchain}"
         "T3_PREPARE_RUNTIME=${prepareRuntime}"
+        "LD_LIBRARY_PATH=${libraryPath}"
       ];
       Nice = 19;
       IOSchedulingPriority = 7;
