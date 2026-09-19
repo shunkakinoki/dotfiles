@@ -116,6 +116,36 @@ zellij --version
 Live deployment/SSH/session verification must be performed once the VPS and
 machines exist; evaluating or building a profile is not runtime proof.
 
+## T3 Connect
+
+Each worker is provisioned for T3 Connect during `make nix-switch`. Activation
+installs or repairs the T3 background service, then requests a publish-only
+link. Publish-only is correct for Kamino because workers are reached over
+Tailscale; it never provisions a relay-managed Cloudflare tunnel.
+
+The first activation on a machine without a stored credential adds `--headless`,
+so the OAuth device-flow URL is printed in the switch output and waits for
+approval. Approve it once per machine. Later switches reuse the stored
+credential:
+
+```sh
+t3 connect link --headless --publish-only   # first run, interactive approval
+t3 connect link --publish-only              # later runs, no prompt
+```
+
+Confirm the persisted state as root:
+
+```sh
+t3 connect status
+t3 service status
+```
+
+`t3 connect status` reports enabled exposure and a stored credential; the link
+itself is provisioned by the background server on start, so restart
+`t3code.service` if it was already running when the link was requested.
+Provisioning needs `t3` from the npm globals in `package.json`; when it is
+absent the activation step skips with a message.
+
 ## GPG signing
 
 The shared Home Manager GPG module imports the existing agenix-encrypted signing

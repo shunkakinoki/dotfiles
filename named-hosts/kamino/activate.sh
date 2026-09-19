@@ -45,6 +45,33 @@ tailscale)
   "$tailscale_bin" up "$@"
   echo "Tailscale enrollment and preferences applied for $name."
   ;;
+t3-connect)
+  # Provision T3 Connect for this worker. The background server reconciles the
+  # link on start, so install/repair it first. Kamino hosts are reached over
+  # Tailscale, so request publish-only linking and never provision a
+  # relay-managed tunnel. Authorization uses the OAuth device flow on the first
+  # run and is skipped once a credential is stored.
+  t3_bin="${2:-}"
+  if [ -z "$t3_bin" ]; then
+    t3_bin="$(command -v t3 || true)"
+  fi
+  if [ -z "$t3_bin" ] || [ ! -x "$t3_bin" ]; then
+    echo "t3 is not installed; skipping T3 Connect provisioning." >&2
+    exit 0
+  fi
+  "$t3_bin" service install || "$t3_bin" service update ||
+    echo "Warning: could not install the T3 background service." >&2
+  base="${T3CODE_HOME:-$HOME/.t3}"
+  if [ -f "$base/userdata/secrets/cloud-cli-oauth-token.bin" ]; then
+    "$t3_bin" connect link --publish-only
+  else
+    "$t3_bin" connect link --headless --publish-only
+  fi
+  systemctl --user daemon-reload || true
+  systemctl --user enable --now t3code.service || true
+  systemctl --user restart t3code.service || true
+  echo "T3 Connect publish-only link requested."
+  ;;
 *)
   echo "Unknown Kamino activation phase" >&2
   exit 1

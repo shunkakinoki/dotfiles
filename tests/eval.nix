@@ -303,6 +303,9 @@ let
         assert lib.hasInfix "--hostname=kamino100" cfg.home.activation.configureKaminoTailscale.data;
         assert lib.hasInfix "--accept-dns=true" cfg.home.activation.configureKaminoTailscale.data;
         assert lib.hasInfix "--ssh=true" cfg.home.activation.configureKaminoTailscale.data;
+        assert activationPosition "installNpmGlobals" < activationPosition "provisionKaminoT3Connect";
+        assert lib.hasInfix "t3-connect" cfg.home.activation.provisionKaminoT3Connect.data;
+        assert lib.hasInfix ".bun/bin/t3" cfg.home.activation.provisionKaminoT3Connect.data;
         assert !(cfg.systemd.user.services ? dolt);
         assert !(cfg.systemd.user.services ? dolt-federation-sync);
         assert !(cfg.systemd.user.services ? dolt-linear-sync);
