@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329
+# shellcheck disable=SC2329,SC2016
 
 Describe 'T3 native runtime preparation'
 SCRIPT="$PWD/home-manager/services/t3-connect/connect.sh"
