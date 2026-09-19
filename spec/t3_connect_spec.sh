@@ -218,6 +218,17 @@ The contents of file "$MOCK_LOG" should include "prepare $T3CODE_HOME/runtime/ve
 The contents of file "$MOCK_LOG" should include "launcher $T3CODE_HOME/runtime/service-launcher.mjs"
 End
 
+It 'starts the launcher bundled in a standalone runtime'
+mkdir -p "$T3CODE_HOME/runtime/versions/1.2.3"
+printf '#!/usr/bin/env bash\nprintf "%%s\\n" "t3 $*" >>"$MOCK_LOG"\n' >"$T3CODE_HOME/runtime/versions/1.2.3/t3"
+chmod +x "$T3CODE_HOME/runtime/versions/1.2.3/t3"
+When run bash "$LAUNCHER"
+The status should be success
+The contents of file "$MOCK_LOG" should include "prepare $T3CODE_HOME/runtime/versions/1.2.3"
+The contents of file "$MOCK_LOG" should include 't3 __service-launcher'
+The contents of file "$MOCK_LOG" should not include 'service-launcher.mjs'
+End
+
 It 'does not launch a broken active runtime'
 printf '#!/usr/bin/env bash\nexit 23\n' >"$MOCK_BIN/prepare"
 When run bash "$LAUNCHER"

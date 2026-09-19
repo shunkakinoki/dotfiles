@@ -9,6 +9,12 @@ version="$(node -e '
   }
   process.stdout.write(state.activeVersion);
 ' "$base/runtime/service-state.json")"
+runtime="$base/runtime/versions/$version"
 
-"${T3_PREPARE_RUNTIME:?}" "$base/runtime/versions/$version"
+"${T3_PREPARE_RUNTIME:?}" "$runtime"
+# Standalone releases (launcher protocol 3) host the launcher in their own
+# executable; npm-installed runtimes still use the Node launcher script.
+if [ -x "$runtime/t3" ]; then
+  exec "$runtime/t3" __service-launcher
+fi
 exec node "$base/runtime/service-launcher.mjs"
