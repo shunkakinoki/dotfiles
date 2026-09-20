@@ -221,12 +221,9 @@
         "agentId": "main"
       }
     },
-    "list": [
-      {
-        "id": "main"
-      },
-      {
-        "id": "amp",
+    "entries": {
+      "main": {},
+      "amp": {
         "name": "AMP (Sourcegraph)",
         "workspace": "__HOME__/.openclaw/workspace/agents/amp",
         "runtime": {
@@ -238,8 +235,7 @@
           }
         }
       },
-      {
-        "id": "factory",
+      "factory": {
         "name": "Factory Droid",
         "workspace": "__HOME__/.openclaw/workspace/agents/factory",
         "runtime": {
@@ -251,8 +247,7 @@
           }
         }
       },
-      {
-        "id": "codex",
+      "codex": {
         "name": "Codex (GPT)",
         "workspace": "__HOME__/.openclaw/workspace/agents/codex",
         "runtime": {
@@ -264,7 +259,7 @@
           }
         }
       }
-    ]
+    }
   },
   "acp": {
     "enabled": true,

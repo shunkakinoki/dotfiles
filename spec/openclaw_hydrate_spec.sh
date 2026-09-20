@@ -313,6 +313,18 @@ When run bash -c "jq -e '.acp.enabled == true and .acp.backend == \"acpx\" and .
 The status should be success
 End
 
+It 'keys agents by id instead of the retired agents.list array'
+When run bash -c "jq -e '(has(\"list\") | not) and (.entries | type == \"object\") and (.entries | has(\"main\"))' <(jq '.agents' '$PWD/config/openclaw/openclaw.tpl.json') <(jq '.agents' '$PWD/config/openclaw/openclaw.template.json') >/dev/null"
+The status should be success
+End
+
+# The generated template is rendered from the .tpl source, so a state-bounding
+# key edited only in the generated file is silently reverted by llm-update.
+It 'bounds session and cron state in both the source and the generated template'
+When run bash -c "jq -e '.session.maintenance.mode == \"enforce\" and .session.maintenance.pruneAfter == \"7d\" and .session.maintenance.maxDiskBytes == \"2gb\" and .cron.sessionRetention == \"6h\"' '$PWD/config/openclaw/openclaw.tpl.json' '$PWD/config/openclaw/openclaw.template.json' >/dev/null"
+The status should be success
+End
+
 It 'caps the skills catalog injected above the cache boundary'
 When run bash -c "jq -c '.skills.limits' '$PWD/config/openclaw/openclaw.tpl.json' '$PWD/config/openclaw/openclaw.template.json'"
 The output should include '"maxSkillsInPrompt":20'
