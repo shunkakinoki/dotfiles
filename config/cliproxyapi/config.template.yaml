@@ -493,6 +493,91 @@ codex-header-defaults:
   beta-features: "multi_agent"
 # OpenAI compatibility providers
 openai-compatibility:
+  # Keyless OpenCode Zen free models over the global proxy; remove when they end.
+  - name: "opencode-campaign"
+    priority: 302
+    base-url: "https://opencode.ai/zen/v1"
+    support-prompt-cache-key: true
+    models:
+      - name: "big-pickle"
+        alias: "big-pickle"
+      - name: "mimo-v2.5-free"
+        alias: "mimo-v2.5-free"
+      - name: "nemotron-3-ultra-free"
+        alias: "nemotron-3-ultra-free"
+      - name: "nemotron-3.5-lightning-free"
+        alias: "nemotron-3.5-lightning-free"
+      - name: "ling-3.0-flash-fin-free"
+        alias: "ling-3.0-flash-fin-free"
+      - name: "muse-spark-1.3-contributor-free"
+        alias: "muse-spark-1.3-contributor-free"
+      - name: "jev-1.13-free"
+        alias: "jev-1.13-free"
+  - name: "opencode"
+    priority: 300
+    base-url: "https://opencode.ai/zen/go/v1"
+    support-prompt-cache-key: true
+    # OpenCode Go rejects requests without a conversation header; opencode sends
+    # X-Session-Affinity to custom providers, Claude Code and Codex send their own.
+    headers:
+      User-Agent: "$User-Agent"
+      X-Opencode-Session: "$X-Session-Affinity"
+      X-Claude-Code-Session-Id: "$X-Claude-Code-Session-Id"
+      Session_id: "$Session_id"
+    api-key-entries: __OPENCODE_API_KEY_ENTRIES__
+    models:
+      - name: "deepseek-v4-flash"
+        alias: "deepseek-v4.1-flash"
+  - name: "ollama-cloud"
+    priority: 300
+    base-url: "https://ollama.com/v1"
+    api-key-entries: __OLLAMA_API_KEY_ENTRIES__
+    models:
+      - name: "deepseek-v4.1-flash"
+        alias: "deepseek-v4.1-flash"
+  - name: "aliyun"
+    priority: 200
+    prefix: "aliyun"
+    base-url: "https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1"
+    support-prompt-cache-key: true
+    api-key-entries:
+      - api-key: "__ALIYUN_TOKEN_PLAN_API_KEY__"
+        proxy-url: "direct"
+    models:
+      - name: "deepseek-v4-flash-0731"
+        alias: "deepseek-v4.1-flash"
+  - name: "verboo"
+    priority: 150
+    base-url: "https://code.verboo.ai/router/v1"
+    support-prompt-cache-key: true
+    api-key-entries:
+      - api-key: "__VERBOO_API_KEY__"
+        proxy-url: "direct"
+    models:
+      - name: "deepseek-v4-flash-0731"
+        alias: "deepseek-v4.1-flash"
+  - name: "commandcode"
+    priority: 150
+    base-url: "https://api.commandcode.ai/provider/v1"
+    support-prompt-cache-key: true
+    api-key-entries:
+      - api-key: "__COMMANDCODE_API_KEY__"
+        proxy-url: "direct"
+    models:
+      - name: "deepseek-v4-flash-0731"
+        alias: "deepseek-v4.1-flash"
+  - name: "surplus"
+    priority: 150
+    base-url: "https://api.surplusintelligence.ai/v1"
+    support-prompt-cache-key: true
+    api-key-entries:
+      - api-key: "__SURPLUS_API_KEY__"
+        proxy-url: "direct"
+    models:
+      - name: "gpt-5.6-luna"
+        alias: "gpt-5.6-luna"
+      - name: "deepseek-v4.1-flash"
+        alias: "deepseek-v4.1-flash"
   # Temporary campaign provider: serves stealth/union-alpha under the same
   # "free" alias so callers keep using "free" while union-alpha is evaluated.
   # Same OpenRouter token; remove when the trial ends.
@@ -546,97 +631,12 @@ openai-compatibility:
       - api-key: "__QWEN_API_KEY__"
         proxy-url: "direct"
     models: []
-  - name: "aliyun"
-    priority: 200
-    prefix: "aliyun"
-    base-url: "https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1"
-    support-prompt-cache-key: true
-    api-key-entries:
-      - api-key: "__ALIYUN_TOKEN_PLAN_API_KEY__"
-        proxy-url: "direct"
-    models:
-      - name: "deepseek-v4-flash-0731"
-        alias: "deepseek-v4.1-flash"
-  # Keyless OpenCode Zen free models over the global proxy; remove when they end.
-  - name: "opencode-campaign"
-    priority: 302
-    base-url: "https://opencode.ai/zen/v1"
-    support-prompt-cache-key: true
-    models:
-      - name: "big-pickle"
-        alias: "big-pickle"
-      - name: "mimo-v2.5-free"
-        alias: "mimo-v2.5-free"
-      - name: "nemotron-3-ultra-free"
-        alias: "nemotron-3-ultra-free"
-      - name: "nemotron-3.5-lightning-free"
-        alias: "nemotron-3.5-lightning-free"
-      - name: "ling-3.0-flash-fin-free"
-        alias: "ling-3.0-flash-fin-free"
-      - name: "muse-spark-1.3-contributor-free"
-        alias: "muse-spark-1.3-contributor-free"
-      - name: "jev-1.13-free"
-        alias: "jev-1.13-free"
-  - name: "opencode"
-    priority: 300
-    base-url: "https://opencode.ai/zen/go/v1"
-    support-prompt-cache-key: true
-    # OpenCode Go rejects requests without a conversation header; opencode sends
-    # X-Session-Affinity to custom providers, Claude Code and Codex send their own.
-    headers:
-      User-Agent: "$User-Agent"
-      X-Opencode-Session: "$X-Session-Affinity"
-      X-Claude-Code-Session-Id: "$X-Claude-Code-Session-Id"
-      Session_id: "$Session_id"
-    api-key-entries: __OPENCODE_API_KEY_ENTRIES__
-    models:
-      - name: "deepseek-v4-flash"
-        alias: "deepseek-v4.1-flash"
-  - name: "ollama-cloud"
-    priority: 300
-    base-url: "https://ollama.com/v1"
-    api-key-entries: __OLLAMA_API_KEY_ENTRIES__
-    models:
-      - name: "deepseek-v4.1-flash"
-        alias: "deepseek-v4.1-flash"
-  - name: "verboo"
-    priority: 150
-    base-url: "https://code.verboo.ai/router/v1"
-    support-prompt-cache-key: true
-    api-key-entries:
-      - api-key: "__VERBOO_API_KEY__"
-        proxy-url: "direct"
-    models:
-      - name: "deepseek-v4-flash-0731"
-        alias: "deepseek-v4.1-flash"
-  - name: "commandcode"
-    priority: 150
-    base-url: "https://api.commandcode.ai/provider/v1"
-    support-prompt-cache-key: true
-    api-key-entries:
-      - api-key: "__COMMANDCODE_API_KEY__"
-        proxy-url: "direct"
-    models:
-      - name: "deepseek-v4-flash-0731"
-        alias: "deepseek-v4.1-flash"
   - name: "openai"
     base-url: "https://api.openai.com/v1"
     api-key-entries:
       - api-key: "__OPENAI_API_KEY__"
         proxy-url: "direct"
     models: []
-  - name: "surplus"
-    priority: 150
-    base-url: "https://api.surplusintelligence.ai/v1"
-    support-prompt-cache-key: true
-    api-key-entries:
-      - api-key: "__SURPLUS_API_KEY__"
-        proxy-url: "direct"
-    models:
-      - name: "gpt-5.6-luna"
-        alias: "gpt-5.6-luna"
-      - name: "deepseek-v4.1-flash"
-        alias: "deepseek-v4.1-flash"
 # Official OpenAI compatibility provider reference
 # OpenAI compatibility providers
 # openai-compatibility:
