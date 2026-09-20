@@ -597,8 +597,8 @@ openai-compatibility:
     base-url: "https://ollama.com/v1"
     api-key-entries: __OLLAMA_API_KEY_ENTRIES__
     models:
-      - name: "__DEEPSEEK_FLASH__"
-        alias: "__DEEPSEEK_FLASH__"
+      - name: "deepseek-v4.1-flash"
+        alias: "deepseek-v4.1-flash"
   - name: "verboo"
     priority: 150
     base-url: "https://code.verboo.ai/router/v1"
