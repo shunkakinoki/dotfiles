@@ -18,6 +18,14 @@ let
     ];
     text = builtins.readFile ./k3s-proxy.sh;
   };
+  stateMaintenance = pkgs.writeShellApplication {
+    name = "openclaw-state-maintenance";
+    runtimeInputs = [
+      pkgs.coreutils
+      pkgs.systemd
+    ];
+    text = builtins.readFile ./state-maintenance.sh;
+  };
 in
 # Only enable on kyber (gateway host)
 lib.mkIf host.isKyber {
@@ -80,5 +88,35 @@ lib.mkIf host.isKyber {
     Install = {
       WantedBy = [ "default.target" ];
     };
+  };
+
+  systemd.user.services.openclaw-state-maintenance = {
+    Unit = {
+      Description = "Prune and compact the OpenClaw shared state database";
+      X-SwitchMethod = "keep-old";
+    };
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${stateMaintenance}/bin/openclaw-state-maintenance";
+      EnvironmentFile = [ "-${homeDir}/dotfiles/.env" ];
+      Environment = [
+        "HOME=${homeDir}"
+        "PATH=${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin"
+      ];
+      WorkingDirectory = "${homeDir}/.openclaw";
+      StandardOutput = "append:/tmp/openclaw/openclaw-state-maintenance.log";
+      StandardError = "append:/tmp/openclaw/openclaw-state-maintenance.log";
+    };
+  };
+
+  systemd.user.timers.openclaw-state-maintenance = {
+    Unit.Description = "Periodically bound the OpenClaw shared state database";
+    Timer = {
+      OnCalendar = "*-*-* 09:20:00 UTC";
+      Persistent = true;
+      RandomizedDelaySec = "5m";
+      Unit = "openclaw-state-maintenance.service";
+    };
+    Install.WantedBy = [ "timers.target" ];
   };
 }
