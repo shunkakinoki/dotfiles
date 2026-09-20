@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329
 # Bound the shared state database. CLI commands open a read-only snapshot whose
 # time budget scales with file size, so an unbounded openclaw.sqlite eventually
 # makes every state-backed command (including `openclaw message send`, which the
@@ -32,6 +31,7 @@ if systemctl --user is-active --quiet openclaw-gateway.service; then
   gateway_was_active=1
 fi
 
+# shellcheck disable=SC2329 # invoked via the EXIT trap below
 restore_gateway() {
   if [ "${gateway_was_active}" -eq 1 ]; then
     systemctl --user start openclaw-gateway.service || log "gateway restart failed"
