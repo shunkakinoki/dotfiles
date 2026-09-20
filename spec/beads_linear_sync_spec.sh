@@ -279,6 +279,20 @@ case "${1:-} ${2:-}" in
           exit 0
         fi
         ;;
+      partial-push-after-one)
+        if [[ " $* " == *" --push "* ]]; then
+          push_count=0
+          if [ -s "${PUSH_COUNT:?}" ]; then
+            push_count=$(<"$PUSH_COUNT")
+          fi
+          push_count=$((push_count + 1))
+          printf '%s\n' "$push_count" >"$PUSH_COUNT"
+          if [ "$push_count" -gt 1 ]; then
+            printf '%s\n' '{"success":true,"stats":{"errors":1}}'
+            exit 0
+          fi
+        fi
+        ;;
       partial-pull)
         if [[ " $* " != *" --push "* ]]; then
           printf '%s\n' '{"success":true,"stats":{"errors":1}}'
@@ -915,6 +929,18 @@ The output should include 'Linear push rejected 1 of 1 changed active batches'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-open --no-wait'
 The file "$ledger" should not be exist
 The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'keeps the pushed-active ledger for the batches a rejected push already sent'
+open_json="$(jq -nc '[range(1;13) | {id:("df-" + tostring),status:"open",assignee:"",updated_at:"2099-01-03T00:00:00Z",external_ref:("https://linear.app/test/issue/TEST-" + tostring + "/x")}]')"
+ledger="$STATE_HOME/beads-linear-sync/pushed-active-test%2Frepo-one"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" PUSH_COUNT="$PUSH_COUNT" FAKE_LINEAR_MODE=partial-push-after-one FAKE_LIST_JSON="$open_json" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 65
+The output should include 'Linear push rejected 1 of 2 changed active batches'
+The contents of file "$ledger" should include 'df-1 '
+The contents of file "$ledger" should include 'df-10 '
+The contents of file "$ledger" should not include 'df-11 '
+The contents of file "$ledger" should not include 'df-12 '
 End
 
 It 'reopens an unassigned in_progress Bead the pull left behind'
