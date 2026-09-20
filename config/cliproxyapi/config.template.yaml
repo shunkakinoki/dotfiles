@@ -592,6 +592,13 @@ openai-compatibility:
     models:
       - name: "deepseek-v4-flash"
         alias: "deepseek-v4.1-flash"
+  - name: "ollama-cloud"
+    priority: 300
+    base-url: "https://ollama.com/v1"
+    api-key-entries: __OLLAMA_API_KEY_ENTRIES__
+    models:
+      - name: "__DEEPSEEK_FLASH__"
+        alias: "__DEEPSEEK_FLASH__"
   - name: "verboo"
     priority: 150
     base-url: "https://code.verboo.ai/router/v1"
@@ -628,13 +635,6 @@ openai-compatibility:
     models:
       - name: "gpt-5.6-luna"
         alias: "gpt-5.6-luna"
-      - name: "deepseek-v4.1-flash"
-        alias: "deepseek-v4.1-flash"
-  - name: "ollama-cloud"
-    priority: 150
-    base-url: "https://ollama.com/v1"
-    api-key-entries: __OLLAMA_API_KEY_ENTRIES__
-    models:
       - name: "deepseek-v4.1-flash"
         alias: "deepseek-v4.1-flash"
 # Official OpenAI compatibility provider reference
