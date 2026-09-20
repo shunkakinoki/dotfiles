@@ -1,0 +1,7 @@
+model = "gpt-5.6-sol"
+model_provider = "cliproxyapi"
+
+[model_providers.cliproxyapi]
+name = "CLIProxyAPI"
+base_url = "https://cliproxy.shunkakinoki.com/v1"
+env_key = "CLIPROXY_API_KEY"

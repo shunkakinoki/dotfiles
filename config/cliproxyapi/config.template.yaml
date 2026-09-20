@@ -742,17 +742,13 @@ openai-compatibility:
 #     - name: "sample-model-latest"
 #       alias: "sample-latest"
 
-# Codex OAuth serves only gpt-5.6-luna. Exclusions match upstream IDs and have
-# no negation, so every other Codex model must be listed; new upstream models
-# are served until added here.
+# Codex OAuth serves every current model, so only the names it cannot serve are
+# excluded. Exclusions match upstream IDs and have no negation, so a new
+# upstream model is served until it is added here.
 oauth-excluded-models:
   codex:
     - "codex-*"
     - "gpt-image*"
-    - "gpt-6*"
-    - "gpt-5.5*"
-    - "gpt-5.6-sol*"
-    - "gpt-5.6-terra*"
     - "gpt-5.6-luna-*"
 
 # OAuth provider excluded models

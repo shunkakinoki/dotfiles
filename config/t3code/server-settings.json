@@ -1,0 +1,53 @@
+{
+  "providers": {
+    "claudeAgent": {
+      "enabled": true
+    },
+    "codex": {
+      "enabled": true
+    }
+  },
+  "providerInstances": {
+    "claude-cliproxy": {
+      "driver": "claudeAgent",
+      "displayName": "Claude (CLIProxy)",
+      "enabled": true,
+      "homePath": "~/.claude-cliproxy",
+      "environment": [
+        {
+          "name": "ANTHROPIC_BASE_URL",
+          "value": "__CLIPROXY_BASE_URL__"
+        },
+        {
+          "name": "ANTHROPIC_AUTH_TOKEN",
+          "value": "__CLIPROXY_API_KEY__",
+          "sensitive": true
+        },
+        {
+          "name": "ANTHROPIC_API_KEY",
+          "value": ""
+        }
+      ],
+      "config": {
+        "launchArgs": "",
+        "autoCompactWindow": ""
+      }
+    },
+    "codex-cliproxy": {
+      "driver": "codex",
+      "displayName": "Codex (CLIProxy)",
+      "enabled": true,
+      "homePath": "~/.codex-t3/cliproxy",
+      "environment": [
+        {
+          "name": "CLIPROXY_API_KEY",
+          "value": "__CLIPROXY_API_KEY__",
+          "sensitive": true
+        }
+      ],
+      "config": {
+        "launchArgs": ""
+      }
+    }
+  }
+}
