@@ -48,6 +48,7 @@ in
   ./roborev
   ./serena
   ./starship
+  ./t3code
   ./tmuxinator
   ./worktrunk
   ./zellij
