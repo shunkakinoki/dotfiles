@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2329
 # Bound the shared state database. CLI commands open a read-only snapshot whose
 # time budget scales with file size, so an unbounded openclaw.sqlite eventually
 # makes every state-backed command (including `openclaw message send`, which the
