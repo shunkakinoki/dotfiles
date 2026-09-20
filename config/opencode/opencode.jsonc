@@ -209,8 +209,8 @@
         "apiKey": "{env:XAI_API_KEY}"
       },
       "models": {
-        "grok-4.5": {
-          "name": "Grok 4.5 (via xAI subscription)"
+        "grok-4.6": {
+          "name": "Grok 4.6 (via xAI subscription)"
         }
       }
     }
