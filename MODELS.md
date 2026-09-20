@@ -71,12 +71,11 @@ When a campaign ends, delete the key and its `models:` entry in
 ## CLIProxy allowlist
 
 CLIProxy serves the Codex OAuth models (`__GPT_LUNA__`, `__GPT_SOL__`,
-`__GPT_ASTRA__`, `gpt-5.6-terra`, `gpt-5.5`), the Claude OAuth models
-(`__CLAUDE_OPUS__`, `__CLAUDE_SONNET__`, `__CLAUDE_HAIKU__`), the DeepSeek
-compatibility aliases, `free`, and the `models.free.json` models. Models that
-Codex OAuth cannot serve are removed with `oauth-excluded-models`, which matches
-upstream IDs and has no negation, so a new upstream Codex model is served until
-it is added there.
+`__GPT_ASTRA__`, `gpt-5.6-terra`, `gpt-5.5`), the DeepSeek compatibility
+aliases, `free`, and the `models.free.json` models. Models that Codex OAuth
+cannot serve are removed with `oauth-excluded-models`, which matches upstream
+IDs and has no negation, so a new upstream Codex model is served until it is
+added there.
 
 ## The shared fallback chain
 

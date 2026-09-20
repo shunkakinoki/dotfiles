@@ -34,7 +34,7 @@ It 'creates settings.json with the managed instances when absent'
 cat >"$TEMP_DIR/.env" <<'ENV'
 CLIPROXY_API_KEY=test_cliproxy_key
 ENV
-When run bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '.providerInstances[\"claude-cliproxy\"].driver == \"claudeAgent\" and .providerInstances[\"codex-cliproxy\"].driver == \"codex\"' '$STATE_DIR/settings.json' >/dev/null"
+When run bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '.providerInstances[\"codex-cliproxy\"].driver == \"codex\"' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 End
 
@@ -42,15 +42,7 @@ It 'injects the CLIProxy key from the dotenv'
 cat >"$TEMP_DIR/.env" <<'ENV'
 CLIPROXY_API_KEY=test_cliproxy_key
 ENV
-When run bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '[.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ANTHROPIC_AUTH_TOKEN\") | .value == \"test_cliproxy_key\" and .sensitive == true] | all' '$STATE_DIR/settings.json' >/dev/null"
-The status should be success
-End
-
-It 'renders the host-only base URL Claude Code expects'
-cat >"$TEMP_DIR/.env" <<'ENV'
-CLIPROXY_API_KEY=test_cliproxy_key
-ENV
-When run bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '[.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ANTHROPIC_BASE_URL\") | .value] | first == \"https://cliproxy.shunkakinoki.com\"' '$STATE_DIR/settings.json' >/dev/null"
+When run bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '[.providerInstances[\"codex-cliproxy\"].environment[] | select(.name == \"CLIPROXY_API_KEY\") | .value == \"test_cliproxy_key\" and .sensitive == true] | all' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 End
 
@@ -95,15 +87,15 @@ The status should be success
 End
 
 It 'creates client-settings.json with the managed favorites'
-When run bash -c "bash '$CLIENT_SCRIPT' '$MANAGED_CLIENT' \"\$(command -v jq)\" '$STATE_DIR' && jq -e '.favorites | map(.provider) | index(\"claude-cliproxy\") != null' '$STATE_DIR/client-settings.json' >/dev/null"
+When run bash -c "bash '$CLIENT_SCRIPT' '$MANAGED_CLIENT' \"\$(command -v jq)\" '$STATE_DIR' && jq -e '.favorites | map(.provider) | index(\"codex-cliproxy\") != null' '$STATE_DIR/client-settings.json' >/dev/null"
 The status should be success
 End
 
 It 'replaces managed favorites without duplicating them'
 cat >"$STATE_DIR/client-settings.json" <<'JSON'
-{"favorites": [{"provider": "opencode", "model": "opencode/free"}, {"provider": "claude-cliproxy", "model": "claude-opus-5"}]}
+{"favorites": [{"provider": "opencode", "model": "opencode/free"}, {"provider": "codex-cliproxy", "model": "gpt-5.6-sol"}]}
 JSON
-When run bash -c "bash '$CLIENT_SCRIPT' '$MANAGED_CLIENT' \"\$(command -v jq)\" '$STATE_DIR' && jq -e '([.favorites[] | select(.provider == \"claude-cliproxy\")] | length == 1) and (.favorites | map(.provider) | index(\"opencode\") != null)' '$STATE_DIR/client-settings.json' >/dev/null"
+When run bash -c "bash '$CLIENT_SCRIPT' '$MANAGED_CLIENT' \"\$(command -v jq)\" '$STATE_DIR' && jq -e '([.favorites[] | select(.provider == \"codex-cliproxy\")] | length == 1) and (.favorites | map(.provider) | index(\"opencode\") != null)' '$STATE_DIR/client-settings.json' >/dev/null"
 The status should be success
 End
 End
