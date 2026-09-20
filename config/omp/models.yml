@@ -60,8 +60,8 @@ providers:
           output: 0
           cacheRead: 0
           cacheWrite: 0
-      - id: grok-4.5
-        name: Grok 4.5 (via shunkakinoki's CLIProxy)
+      - id: grok-4.6
+        name: Grok 4.6 (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text

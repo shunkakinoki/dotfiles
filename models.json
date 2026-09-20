@@ -9,7 +9,7 @@
   "gpt-luna": "gpt-5.6-luna",
   "gemini-flash": "gemini-3.8-flash",
   "deepseek-flash": "deepseek-v4.1-flash",
-  "grok": "grok-4.5",
+  "grok": "grok-4.6",
   "minimax": "minimax-m3",
   "gemma-local": "gemma3:4b",
   "kimi": "kimi-k3",
