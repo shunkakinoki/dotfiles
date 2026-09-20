@@ -94,6 +94,7 @@ End
 It 'provisions publish-only T3 Connect with the device flow on first run'
 When run env T3CODE_HOME="$TEST_ROOT/fresh-t3" PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" t3-connect "$TEST_ROOT/bin/t3"
 The status should be success
+The output should include 'T3 Connect publish-only link requested.'
 The contents of file "$TEST_ROOT/commands" should include 't3 service install'
 The contents of file "$TEST_ROOT/commands" should include 't3 connect link --headless --publish-only'
 The contents of file "$TEST_ROOT/commands" should include 'systemctl --user restart t3code.service'
@@ -102,6 +103,7 @@ End
 It 'falls back to the service update path when install fails'
 When run env T3_INSTALL_EXIT=1 PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" t3-connect "$TEST_ROOT/bin/t3"
 The status should be success
+The output should include 'T3 Connect publish-only link requested.'
 The contents of file "$TEST_ROOT/commands" should include 't3 service install'
 The contents of file "$TEST_ROOT/commands" should include 't3 service update'
 End
@@ -111,6 +113,7 @@ mkdir -p "$TEST_ROOT/t3/userdata/secrets"
 : >"$TEST_ROOT/t3/userdata/secrets/cloud-cli-oauth-token.bin"
 When run env T3CODE_HOME="$TEST_ROOT/t3" PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" t3-connect "$TEST_ROOT/bin/t3"
 The status should be success
+The output should include 'T3 Connect publish-only link requested.'
 The contents of file "$TEST_ROOT/commands" should include 't3 connect link --publish-only'
 The contents of file "$TEST_ROOT/commands" should not include '--headless'
 End
