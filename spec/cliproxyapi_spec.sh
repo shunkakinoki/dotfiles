@@ -518,6 +518,24 @@ The output should include 'priority: 300'
 The status should be success
 End
 
+It 'lists providers in descending priority order'
+When run bash -c "awk '/^openai-compatibility:/{p=1; next} p && /^# Official/{exit} p && /^  - name: /{print}' '$PWD/config/cliproxyapi/config.template.yaml' | sed 's/^  - name: //; s/\"//g'"
+The output should equal 'opencode-campaign
+opencode
+ollama-cloud
+aliyun
+verboo
+commandcode
+surplus
+openrouter-campaign
+openrouter
+z-ai
+kimi
+qwen
+openai'
+The status should be success
+End
+
 It 'preserves prompt cache keys for OpenRouter, Aliyun, and OpenCode'
 When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'; sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' '$PWD/config/cliproxyapi/config.template.yaml'; sed -n '/name: \"opencode\"/,/name: \"openai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'support-prompt-cache-key: true'
