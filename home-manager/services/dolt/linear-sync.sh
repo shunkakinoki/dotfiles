@@ -972,20 +972,29 @@ if [ -n "$normalize_skipped_ids" ]; then
   @coreutils@/bin/mv -f "$pushed_active_next.tmp" "$pushed_active_next"
   changed_active_ids="$(@gawk@/bin/awk 'NF { print $1 }' "$pushed_active_next" | @coreutils@/bin/paste -sd, -)"
 fi
-if push_issue_batches "$changed_active_ids" "changed active"; then
-  if [ -n "$changed_active_ids" ]; then
-    {
-      @gawk@/bin/awk 'NR == FNR { pushed[$1] = 1; next } !($1 in pushed)' "$pushed_active_next" "$pushed_active_input"
-      @coreutils@/bin/cat "$pushed_active_next"
-    } >"$pushed_active_file.tmp"
-    @coreutils@/bin/mv -f "$pushed_active_file.tmp" "$pushed_active_file"
-  fi
-else
-  status=$?
-  if [ "$status" -eq 75 ]; then
+# A rejection is scoped to the Beads in its own batch, so the ledger has to
+# keep the batches that did publish. Discarding it whenever any batch fails
+# re-pushes every changed Bead next cycle, which holds the shared Dolt write
+# transaction open for the whole run and fails unrelated claims with a
+# serialization conflict.
+pushed_active_progress="$pushed_active_file.progress"
+: >"$pushed_active_progress"
+push_status=0
+push_issue_batches "$changed_active_ids" "changed active" \
+  "$(@coreutils@/bin/cat "$pushed_active_next")" "$pushed_active_progress" || push_status=$?
+if [ -s "$pushed_active_progress" ]; then
+  {
+    @gawk@/bin/awk 'NR == FNR { pushed[$1] = 1; next } !($1 in pushed)' "$pushed_active_progress" "$pushed_active_input"
+    @coreutils@/bin/cat "$pushed_active_progress"
+  } >"$pushed_active_file.tmp"
+  @coreutils@/bin/mv -f "$pushed_active_file.tmp" "$pushed_active_file"
+fi
+@coreutils@/bin/rm -f "$pushed_active_progress"
+if [ "$push_status" -ne 0 ]; then
+  if [ "$push_status" -eq 75 ]; then
     exit 0
   fi
-  exit "$status"
+  exit "$push_status"
 fi
 
 "$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): sync Linear" >/dev/null 2>&1
