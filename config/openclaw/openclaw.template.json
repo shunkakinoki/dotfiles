@@ -272,7 +272,17 @@
     "defaultAgent": "codex"
   },
   "session": {
-    "dmScope": "per-channel-peer"
+    "dmScope": "per-channel-peer",
+    "maintenance": {
+      "mode": "enforce",
+      "pruneAfter": "7d",
+      "archiveDashboardAfter": "2d",
+      "maxEntries": 1000,
+      "maxDiskBytes": "2gb"
+    }
+  },
+  "cron": {
+    "sessionRetention": "6h"
   },
   "messages": {
     "queue": {
@@ -301,7 +311,7 @@
   },
   "logging": {
     "audit": {
-      "messages": "all"
+      "messages": "direct"
     }
   },
   "commands": {
