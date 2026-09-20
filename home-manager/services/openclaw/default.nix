@@ -102,6 +102,11 @@ lib.mkIf host.isKyber {
       Environment = [
         "HOME=${homeDir}"
         "PATH=${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin"
+        # Without these the unit's own `systemctl --user` calls cannot reach the
+        # session bus, so stopping the gateway silently fails and every
+        # state-owning step is refused.
+        "XDG_RUNTIME_DIR=%t"
+        "DBUS_SESSION_BUS_ADDRESS=unix:path=%t/bus"
       ];
       WorkingDirectory = "${homeDir}/.openclaw";
       StandardOutput = "append:/tmp/openclaw/openclaw-state-maintenance.log";
