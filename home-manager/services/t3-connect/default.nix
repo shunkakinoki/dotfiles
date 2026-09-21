@@ -140,6 +140,9 @@ in
         "PATH=${toolchain}"
         "T3_PREPARE_RUNTIME=${prepareRuntime}"
         "LD_LIBRARY_PATH=${libraryPath}"
+        "T3_SYSTEMCTL=${pkgs.systemd}/bin/systemctl"
+        "XDG_RUNTIME_DIR=%t"
+        "DBUS_SESSION_BUS_ADDRESS=unix:path=%t/bus"
       ];
       Nice = 19;
       IOSchedulingPriority = 7;
