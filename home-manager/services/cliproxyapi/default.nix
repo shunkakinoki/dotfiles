@@ -142,7 +142,10 @@ in
         "docker.service"
       ];
       Wants = [ "docker.service" ];
-      X-Restart-Triggers = [
+      # Config and auth changes hot-reload in the running server. Changes to
+      # the start script or image apply on the next explicit restart.
+      X-SwitchMethod = "reload";
+      X-Reload-Triggers = [
         "${config.home.file.".cli-proxy-api/config.template.yaml".source}"
       ]
       ++ lib.optional objectstoreEnabled "${kaminoMapping}";
@@ -162,6 +165,7 @@ in
         ]
       }:/usr/bin:/usr/sbin";
       ExecStart = "${dockerStartScript}";
+      ExecReload = "${pkgs.bash}/bin/bash ${startScript} render";
       # Give the start wrapper's TERM trap time to flush usage + docker stop
       # the container cleanly before systemd escalates to SIGKILL.
       TimeoutStopSec = 45;

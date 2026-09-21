@@ -1348,11 +1348,11 @@ systemctl-docker: ## Start Docker daemon.
 	@echo "✅ Docker started"
 
 .PHONY: systemctl-cliproxyapi
-systemctl-cliproxyapi: ## Restart cliproxyapi systemd user service.
-	@echo "🔄 Restarting cliproxyapi..."
+systemctl-cliproxyapi: ## Reload cliproxyapi config in place (starts it if stopped).
+	@echo "🔄 Reloading cliproxyapi..."
 	@systemctl --user daemon-reload
-	@systemctl --user restart cliproxyapi.service || true
-	@echo "✅ cliproxyapi restarted"
+	@systemctl --user reload-or-restart cliproxyapi.service || true
+	@echo "✅ cliproxyapi reloaded"
 
 .PHONY: systemctl-cliproxyapi-backup
 systemctl-cliproxyapi-backup: ## Restart cliproxyapi-backup systemd user service.
