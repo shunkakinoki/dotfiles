@@ -49,6 +49,28 @@ The status should be success
 The error should include 'OpenFactor hook registration failed; continuing activation'
 End
 
+It 'hands the pi extension payload over as a file instead of a pipe'
+TMP_HOME="$(mktemp -d)"
+EXT="$TMP_HOME/.pi/agent/extensions/openfactor-hooks.ts"
+mkdir -p "$(dirname "$EXT")"
+cat >"$EXT" <<'TS'
+import { spawn } from "node:child_process";
+
+function send(event: string, payload: unknown): void {
+  try {
+    const child = spawn(client, ["pi-hook", event], { stdio: ["pipe", "ignore", "ignore"] });
+    child.stdin.end(JSON.stringify(payload ?? {}));
+  } catch {}
+}
+TS
+
+When run env HOME="$TMP_HOME" OPENFACTOR_BIN=/usr/bin/true "$BASH_BIN" "$SCRIPT"
+The status should be success
+The contents of file "$EXT" should include 'stdio: [fd, "ignore", "ignore"], detached: true'
+The contents of file "$EXT" should include 'import { closeSync, openSync, unlinkSync, writeFileSync } from "node:fs";'
+The contents of file "$EXT" should not include '"pipe"'
+End
+
 It 'warns and continues when OPENFACTOR_BIN is not executable'
 TMP_HOME="$(mktemp -d)"
 When run env HOME="$TMP_HOME" OPENFACTOR_BIN="$TMP_HOME/missing" "$BASH_BIN" "$SCRIPT"

@@ -23,6 +23,6 @@
         "ompConfig"
       ]
       ''
-        $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./install.sh}"
+        OPENFACTOR_PERL=${pkgs.perl}/bin/perl $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./install.sh}"
       '';
 }
