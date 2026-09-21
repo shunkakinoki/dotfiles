@@ -18,6 +18,12 @@
     "port": 1083
   },
   {
+    "provider": "ollama-cloud",
+    "key_index": 4,
+    "host": "kamino4",
+    "port": 1084
+  },
+  {
     "credential": "codex-6a006fd3-frisk-peccary.05@icloud.com-pro.json",
     "host": "kamino1",
     "port": 1081
