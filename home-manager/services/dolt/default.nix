@@ -73,7 +73,7 @@ in
   assertions = [
     {
       assertion = lib.versionAtLeast pkgs.dolt.version doltMinVersion;
-      message = "pkgs.dolt is ${pkgs.dolt.version}; needs >= ${doltMinVersion} for the managed Beads SQL server. Update the dedicated nixpkgs-dolt pin.";
+      message = "pkgs.dolt is ${pkgs.dolt.version}; needs >= ${doltMinVersion} for the managed Beads SQL server. Update nixpkgs-unstable.";
     }
   ];
 
