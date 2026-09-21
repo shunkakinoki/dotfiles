@@ -238,6 +238,10 @@ let
         assert cfg.modules.tailscale.installSystemService;
         assert cfg.modules.tailscale.extraUpArgs == [ ];
         assert cfg.xdg.configFile."kamino/name".text == "kamino\n";
+        assert lib.hasInfix "Environment=T3CODE_TAILSCALE_SERVE=true"
+          cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text;
+        assert lib.hasInfix "Environment=T3CODE_TAILSCALE_SERVE_PORT=443"
+          cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text;
         assert cfg.programs.ssh.settings.kamino.data.User == "root";
         assert cfg.programs.ssh.settings.kamino.data.HostName == "kamino.tail950b36.ts.net";
         assert cfg.programs.ssh.settings.kamino1.data.HostName == "kamino1.tail950b36.ts.net";

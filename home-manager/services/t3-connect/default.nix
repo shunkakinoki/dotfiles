@@ -7,7 +7,18 @@ let
     else
       pkgs.findutils;
   serveRoutes = import ../../modules/tailscale/routes.nix;
-  hostServeRoutes = serveRoutes.${inputs.host.nodeName} or [ ];
+  # Kamino workers are linked publish-only because the relay's managed tunnel
+  # quota is too small for the fleet, so clients pair with the T3 server over
+  # its tailnet URL instead.
+  kaminoT3ServeRoute = {
+    name = "t3";
+    httpsPort = 443;
+    localPort = 3773;
+    manager = "t3-service";
+  };
+  hostServeRoutes =
+    serveRoutes.${inputs.host.nodeName}
+      or (lib.optional (inputs.host.isKamino or false) kaminoT3ServeRoute);
   t3ServeRoutes = lib.filter (
     route: route.name == "t3" && route.manager == "t3-service"
   ) hostServeRoutes;
