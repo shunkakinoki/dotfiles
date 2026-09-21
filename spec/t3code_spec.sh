@@ -38,6 +38,20 @@ When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER'
 The status should be success
 End
 
+# T3 Code's ProviderInstanceConfig schema has no top-level homePath; the
+# drivers read it from the opaque `config` blob. Keeping it at the top level
+# makes T3 drop it on rewrite, so the instance falls back to the login-backed
+# default home and reports the stale credential as logged out.
+It 'carries the instance home path inside the config blob'
+When run bash -c "jq -e '.providerInstances[\"claude-cliproxy\"].config.homePath == \"~/.claude-cliproxy\" and .providerInstances[\"codex-cliproxy\"].config.homePath == \"~/.codex-t3/cliproxy\"' '$MANAGED_SERVER' >/dev/null"
+The status should be success
+End
+
+It 'declares no top-level home path on the managed instances'
+When run bash -c "jq -e '[.providerInstances[] | select(has(\"homePath\"))] | length == 0' '$MANAGED_SERVER' >/dev/null"
+The status should be success
+End
+
 It 'injects the CLIProxy key from the dotenv'
 cat >"$TEMP_DIR/.env" <<'ENV'
 CLIPROXY_API_KEY=test_cliproxy_key
