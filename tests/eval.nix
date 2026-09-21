@@ -310,6 +310,8 @@ let
         assert activationPosition "installNpmGlobals" < activationPosition "provisionKaminoT3Connect";
         assert lib.hasInfix "t3-connect" cfg.home.activation.provisionKaminoT3Connect.data;
         assert lib.hasInfix ".bun/bin/t3" cfg.home.activation.provisionKaminoT3Connect.data;
+        assert lib.hasInfix "${pkgs.nodejs}/bin" cfg.home.activation.provisionKaminoT3Connect.data;
+        assert lib.hasInfix "LD_LIBRARY_PATH=" cfg.home.activation.provisionKaminoT3Connect.data;
         assert !(cfg.systemd.user.services ? dolt);
         assert !(cfg.systemd.user.services ? dolt-federation-sync);
         assert !(cfg.systemd.user.services ? dolt-linear-sync);
