@@ -98,13 +98,16 @@ inputs.home-manager.lib.homeManagerConfiguration {
 
         # T3 Connect is provisioned per worker after the npm globals install
         # puts `t3` on PATH. The first activation authorizes with the OAuth
-        # device flow; later activations reuse the stored credential.
+        # device flow; later activations reuse the stored credential. The
+        # `t3` shim runs under `#!/usr/bin/env node` and its native binary
+        # links libatomic, neither of which the unattended updater provides.
         home.activation.provisionKaminoT3Connect =
           config.lib.dag.entryAfter [ "installNpmGlobals" "startKaminoUserManager" ]
             ''
-              export PATH=${config.home.homeDirectory}/.bun/bin:$PATH
+              export PATH=${config.home.homeDirectory}/.bun/bin:${pkgs.nodejs}/bin:$PATH
               export XDG_RUNTIME_DIR=/run/user/0
-              $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} t3-connect ${config.home.homeDirectory}/.bun/bin/t3
+              LD_LIBRARY_PATH=${pkgs.stdenv.cc.cc.lib}/lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH} \
+                $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} t3-connect ${config.home.homeDirectory}/.bun/bin/t3
             '';
 
         systemd.user.services.herdr-server = {
