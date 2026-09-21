@@ -1332,14 +1332,20 @@ t3-service: t3-linger ## Install/repair the T3 background server so the client n
 	else \
 		echo "   no nix node found; leaving the service on the default node"; \
 	fi; \
-	PATH="$${NIX_NODE_BIN:+$$NIX_NODE_BIN:}$$PATH" "$$T3_BIN" service install \
-		|| PATH="$${NIX_NODE_BIN:+$$NIX_NODE_BIN:}$$PATH" "$$T3_BIN" service update; \
+	STATE="$${T3CODE_HOME:-$$HOME/.t3}/runtime/service-state.json"; \
+	if [ -f "$$STATE" ] && grep -q '"protocol": 3' "$$STATE"; then \
+		echo "✅ T3 launcher already supports protocol 3; leaving the service to the desktop client"; \
+	else \
+		echo "🔧 Bootstrapping a protocol-3 T3 launcher..."; \
+		npx --yes t3@nightly service install \
+			|| npx --yes t3@nightly service update; \
+	fi; \
 	systemctl --user daemon-reload; \
 	systemctl --user enable --now t3code.service || true; \
 	echo "🔧 Building native modules for the service runtime..."; \
 	$(MAKE) systemctl-t3-connect; \
 	systemctl --user restart t3code.service || true; \
-	"$$T3_BIN" service status || true
+	PATH="$${NIX_NODE_BIN:+$$NIX_NODE_BIN:}$$PATH" "$$T3_BIN" service status || true
 
 .PHONY: systemctl-docker
 systemctl-docker: ## Start Docker daemon.
