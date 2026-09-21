@@ -34,7 +34,7 @@ It 'creates settings.json with the managed instances when absent'
 cat >"$TEMP_DIR/.env" <<'ENV'
 CLIPROXY_API_KEY=test_cliproxy_key
 ENV
-When run bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '.providerInstances[\"codex-cliproxy\"].driver == \"codex\"' '$STATE_DIR/settings.json' >/dev/null"
+When run bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '.providerInstances[\"claude-cliproxy\"].driver == \"claudeAgent\" and .providerInstances[\"codex-cliproxy\"].driver == \"codex\"' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 End
 
@@ -42,7 +42,15 @@ It 'injects the CLIProxy key from the dotenv'
 cat >"$TEMP_DIR/.env" <<'ENV'
 CLIPROXY_API_KEY=test_cliproxy_key
 ENV
-When run bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '[.providerInstances[\"codex-cliproxy\"].environment[] | select(.name == \"CLIPROXY_API_KEY\") | .value == \"test_cliproxy_key\" and .sensitive == true] | all' '$STATE_DIR/settings.json' >/dev/null"
+When run bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '[.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ANTHROPIC_AUTH_TOKEN\") | .value == \"test_cliproxy_key\" and .sensitive == true] | all' '$STATE_DIR/settings.json' >/dev/null"
+The status should be success
+End
+
+It 'renders the host-only base URL Claude Code expects'
+cat >"$TEMP_DIR/.env" <<'ENV'
+CLIPROXY_API_KEY=test_cliproxy_key
+ENV
+When run bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '[.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ANTHROPIC_BASE_URL\") | .value] | first == \"https://cliproxy.shunkakinoki.com\"' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 End
 
