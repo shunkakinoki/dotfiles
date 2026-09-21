@@ -89,6 +89,18 @@ When run env HOME="$TEMP_DIR" CLIPROXY_API_KEY=test bash -c "mkdir -p '$TEMP_DIR
 The status should be success
 End
 
+It 'seeds the Codex auth record so the instance is not reported as logged out'
+When run env HOME="$TEMP_DIR" CLIPROXY_API_KEY=test bash -c "mkdir -p '$TEMP_DIR/.codex-t3/cliproxy' && bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '.OPENAI_API_KEY == \"test\"' '$TEMP_DIR/.codex-t3/cliproxy/auth.json' >/dev/null"
+The status should be success
+End
+
+It 'writes no Codex auth record when the key is missing'
+: >"$TEMP_DIR/.env"
+When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "mkdir -p '$TEMP_DIR/.codex-t3/cliproxy' && bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && [ ! -e '$TEMP_DIR/.codex-t3/cliproxy/auth.json' ]"
+The status should be success
+The stderr should include 'CLIPROXY_API_KEY not found'
+End
+
 It 'does not carry a committed credential in the managed template'
 When run bash -c "! grep -qE 'sk-|sk_' '$MANAGED_SERVER'"
 The status should be success

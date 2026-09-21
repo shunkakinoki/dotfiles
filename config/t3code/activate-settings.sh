@@ -15,10 +15,14 @@ CODEX_HOME_DIR="${HOME}/.codex-t3/cliproxy"
 
 SETTINGS="${STATE_DIR}/settings.json"
 TEMP_SETTINGS=""
+TEMP_CODEX_AUTH=""
 
 cleanup() {
   if [ -n "$TEMP_SETTINGS" ]; then
     rm -f "$TEMP_SETTINGS"
+  fi
+  if [ -n "$TEMP_CODEX_AUTH" ]; then
+    rm -f "$TEMP_CODEX_AUTH"
   fi
 }
 trap cleanup EXIT
@@ -53,6 +57,22 @@ CLIPROXY_BASE_URL="${CLIPROXY_BASE_URL:-https://cliproxy.shunkakinoki.com}"
 if [ -n "$CODEX_HOME_CONFIG" ] && [ -f "$CODEX_HOME_CONFIG" ]; then
   mkdir -p "$CODEX_HOME_DIR"
   cp -f "$CODEX_HOME_CONFIG" "${CODEX_HOME_DIR}/config.toml"
+
+  # Codex refuses to start a session unless CODEX_HOME holds an auth record, and
+  # that check runs before model_provider resolves, so the cliproxyapi provider's
+  # env_key alone leaves the instance reported as logged out. This value is never
+  # sent upstream: requests authenticate with CLIPROXY_API_KEY from the instance
+  # environment.
+  if [ -n "$CLIPROXY_API_KEY" ]; then
+    CODEX_AUTH="${CODEX_HOME_DIR}/auth.json"
+    TEMP_CODEX_AUTH="$(mktemp "${CODEX_AUTH}.XXXXXX")"
+    # shellcheck disable=SC2016
+    "$JQ_BIN" -n --arg key "$CLIPROXY_API_KEY" \
+      '{OPENAI_API_KEY: $key, tokens: null, last_refresh: null}' >"$TEMP_CODEX_AUTH"
+    chmod 600 "$TEMP_CODEX_AUTH"
+    mv -f "$TEMP_CODEX_AUTH" "$CODEX_AUTH"
+    TEMP_CODEX_AUTH=""
+  fi
 fi
 
 if [ -f "$SETTINGS" ] && ! "$JQ_BIN" empty "$SETTINGS" >/dev/null 2>&1; then
