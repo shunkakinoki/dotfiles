@@ -182,7 +182,12 @@ in particular means different endpoints in different harnesses.
 | `cliproxyapi/` | Pi | `https://cliproxy.shunkakinoki.com/v1` (remote) |
 
 Every one of them resolves through
-[config.tpl.yaml](config/cliproxyapi/config.tpl.yaml). Higher `priority` wins.
+[config.tpl.yaml](config/cliproxyapi/config.tpl.yaml).
+
+`routing.strategy` is `round-robin`: within the highest ready priority tier,
+credentials rotate one at a time. `priority` still decides which tier is
+eligible at all, so a request only reaches a lower tier once every credential
+above it is cooling down or unavailable.
 
 | Provider | Priority | DeepSeek models served |
 | --- | --- | --- |
@@ -190,8 +195,9 @@ Every one of them resolves through
 | `aliyun` | 200 | `deepseek-v4-flash-0731` aliased to `deepseek-v4.1-flash` |
 | `openrouter` | 100 | `deepseek/deepseek-v4.1-flash` aliased to `deepseek-v4.1-flash` |
 
-So a single `deepseek-v4.1-flash` request tries OpenCode Zen, then Aliyun, then
-OpenRouter before the harness-level fallback chain sees a failure.
+So `deepseek-v4.1-flash` requests rotate across the priority-300 credentials
+first; Aliyun and OpenRouter only serve once the tier above them is
+unavailable.
 
 ## Changing a model
 

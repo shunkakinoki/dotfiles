@@ -481,7 +481,7 @@ It 'keeps provider selection sticky for eight hours per client session'
 When run bash -c "sed -n '/^routing:/,/^[a-z]/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'session-affinity: true'
 The output should include 'session-affinity-ttl: "8h"'
-The output should include 'strategy: "fill-first"'
+The output should include 'strategy: "round-robin"'
 The status should be success
 End
 
