@@ -554,10 +554,55 @@ The output should include 'support-prompt-cache-key: true'
 The status should be success
 End
 
-It 'restarts the Linux service when the managed template changes'
+It 'reloads the Linux service in place when the managed template changes'
 When run bash -c "sed -n '/systemd.user.services.cliproxyapi =/,/systemd.user.paths.cliproxyapi-backup-auth =/p' '$PWD/home-manager/services/cliproxyapi/default.nix'"
-The output should include 'X-Restart-Triggers'
+The output should include 'X-SwitchMethod = "reload"'
+The output should include 'X-Reload-Triggers'
+The output should include 'ExecReload = "${pkgs.bash}/bin/bash ${startScript} render"'
 The output should include 'config.home.file.".cli-proxy-api/config.template.yaml".source'
+The status should be success
+End
+
+It 'reloads instead of restarting from make switch'
+When run bash -c "sed -n '/^systemctl-cliproxyapi:/,/^$/p' '$PWD/Makefile'"
+The output should include 'systemctl --user reload-or-restart cliproxyapi.service'
+The output should not include 'systemctl --user restart cliproxyapi.service'
+The status should be success
+End
+End
+
+Describe 'render mode'
+setup_render() {
+  TEMP_HOME=$(mktemp -d)
+  mkdir -p "$TEMP_HOME/.cli-proxy-api" "$TEMP_HOME/dotfiles"
+  printf 'marker: __VERBOO_API_KEY__\n' >"$TEMP_HOME/.cli-proxy-api/config.template.yaml"
+  printf 'VERBOO_API_KEY=DUMMY_ONE\n' >"$TEMP_HOME/dotfiles/.env"
+  sed -e 's|@objectstore_enabled@|false|' -e 's|@aws@|false|g' \
+    "$PWD/home-manager/services/cliproxyapi/scripts/common.sh" >"$TEMP_HOME/common.sh"
+  sed -e "s|@common@|$TEMP_HOME/common.sh|" -e 's|@sed@|sed|g' -e 's|@jq@|jq|g' \
+    -e 's|@flock@|flock|g' -e 's|@aws@|false|g' "$SCRIPT" >"$TEMP_HOME/start.sh"
+}
+cleanup_render() { rm -rf "$TEMP_HOME"; }
+Before 'setup_render'
+After 'cleanup_render'
+
+It 'rewrites the bind-mounted config in place and exits without starting the server'
+When run bash -c '
+  cd "$1"
+  config="$1/.cli-proxy-api/config.yaml"
+  HOME="$1" bash "$1/start.sh" render
+  before=$(ls -i "$config" | cut -d" " -f1)
+  printf "VERBOO_API_KEY=DUMMY_TWO\n" >"$1/dotfiles/.env"
+  HOME="$1" bash "$1/start.sh" render
+  after=$(ls -i "$config" | cut -d" " -f1)
+  cat "$config"
+  [ "$before" = "$after" ] && echo same-inode
+  [ ! -e "$config.rendered" ] && echo no-temp-file
+' _ "$TEMP_HOME"
+The output should include 'marker: DUMMY_TWO'
+The output should include 'same-inode'
+The output should include 'no-temp-file'
+The output should not include 'cliproxyapi not found'
 The status should be success
 End
 End

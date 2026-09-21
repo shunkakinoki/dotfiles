@@ -172,10 +172,6 @@ if cliproxy_has_objectstore_credentials; then
 
   assign_proxy_urls "$AUTH_DIR"
 
-  if [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
-    cliproxy_sync_auth_to_s3 "$AUTH_DIR"
-  fi
-
   if [ ! -f "$USAGE_EXPORT_FILE" ]; then
     echo "⚠️  Usage export missing locally; hydrating from S3" >&2
     cliproxy_download_usage_from_s3 "$USAGE_EXPORT_FILE"
@@ -195,6 +191,7 @@ sed_value() {
 
 # Generate config from template
 if [ -f "$TEMPLATE" ]; then
+  RENDERED_CONFIG="$CONFIG.rendered"
   render_api_key_entries __OPENCODE_API_KEY_ENTRIES__ "${OPENCODE_API_KEYS:-${OPENCODE_API_KEY:-}}" <"$TEMPLATE" |
     render_api_key_entries __OLLAMA_API_KEY_ENTRIES__ "${OLLAMA_API_KEYS:-},${OLLAMA_API_KEY:-}" ollama-cloud | @sed@ \
     -e "s|__OPENROUTER_API_KEY__|$(sed_value "${OPENROUTER_API_KEY:-}")|g" \
@@ -207,13 +204,13 @@ if [ -f "$TEMPLATE" ]; then
     -e "s|__SURPLUS_API_KEY__|$(sed_value "${SURPLUS_API_KEY:-}")|g" \
     -e "s|__COMMANDCODE_API_KEY__|$(sed_value "${COMMANDCODE_API_KEY:-}")|g" \
     -e "s|__AMP_UPSTREAM_API_KEY__|$(sed_value "${AMP_UPSTREAM_API_KEY:-}")|g" |
-    render_proxy_url >"$CONFIG"
+    render_proxy_url >"$RENDERED_CONFIG"
 
   if [ "$(uname)" = "Linux" ] && [ -n "${CLIPROXY_API_KEY:-}" ]; then
     @sed@ -i \
       -e "s|^# api-keys:|api-keys:|" \
       -e "s|^#   - \"__CLIPROXY_API_KEY__\"|  - \"${CLIPROXY_API_KEY}\"|" \
-      "$CONFIG"
+      "$RENDERED_CONFIG"
   fi
 
   # Disable AMP on Linux (causes routing issues with antigravity provider)
@@ -227,8 +224,16 @@ if [ -f "$TEMPLATE" ]; then
       -e "s|^  model-mappings:|#   model-mappings:|" \
       -e "s|^    - from:|#     - from:|" \
       -e "s|^      to:|#       to:|" \
-      "$CONFIG"
+      "$RENDERED_CONFIG"
   fi
+
+  # The container bind-mounts this single file, so replacing its inode would
+  # hide the new config from the running server. Rewrite it in place so the
+  # server's file watcher hot-reloads it, and skip unchanged renders.
+  if [ ! -f "$CONFIG" ] || [ "$(<"$RENDERED_CONFIG")" != "$(<"$CONFIG")" ]; then
+    cat "$RENDERED_CONFIG" >"$CONFIG"
+  fi
+  rm -f "$RENDERED_CONFIG"
 fi
 
 # Keep objectstore-backed config in sync for management UI
@@ -241,8 +246,15 @@ rm -f "$OBJECTSTORE_CONFIG" "$BACKUP_CONFIG"
 cp "$CONFIG" "$OBJECTSTORE_CONFIG"
 cp "$CONFIG" "$BACKUP_CONFIG"
 
-# Push config to objectstore so remote-backed config doesn't revert locally
-if [ -n "$OBJECTSTORE_ENDPOINT" ] && [ -n "$OBJECTSTORE_ACCESS_KEY" ] && [ -n "$OBJECTSTORE_SECRET_KEY" ]; then
+# Push auths and config to objectstore so remote-backed config doesn't revert
+# locally. Nothing here gates startup, so it runs alongside the server.
+push_to_objectstore() {
+  cliproxy_has_objectstore_credentials || return 0
+
+  if [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
+    cliproxy_sync_auth_to_s3 "$AUTH_DIR"
+  fi
+
   AWS_ACCESS_KEY_ID="$OBJECTSTORE_ACCESS_KEY" \
     AWS_SECRET_ACCESS_KEY="$OBJECTSTORE_SECRET_KEY" \
     @aws@ s3 sync \
@@ -258,6 +270,13 @@ if [ -n "$OBJECTSTORE_ENDPOINT" ] && [ -n "$OBJECTSTORE_ACCESS_KEY" ] && [ -n "$
     --no-progress \
     "$BACKUP_CONFIG_DIR/" \
     "s3://${OBJECTSTORE_BUCKET}/backup/config/" || true
+}
+
+# systemd ExecReload: the running server hot-reloads the re-rendered config and
+# auth files, so a home-manager switch does not have to restart it.
+if [ "${1:-}" = "render" ]; then
+  push_to_objectstore
+  exit 0
 fi
 
 cd "$CONFIG_DIR"
@@ -373,14 +392,19 @@ trap '
 
 if [ "$(uname)" = "Linux" ] && command -v docker >/dev/null 2>&1; then
   docker_image="${CLIPROXYAPI_IMAGE:-eceasy/cli-proxy-api:latest}"
-  if docker info >/dev/null 2>&1; then
-    if [ "${CLIPROXYAPI_SKIP_PULL:-false}" != "true" ]; then
-      echo "🔄 Pulling cliproxyapi image ${docker_image}..."
-      docker pull "$docker_image" || true
+
+  # Pulling before docker run kept the port closed for the whole download, so
+  # pull alongside the server and let the next restart pick up the new image.
+  pull_image() {
+    if docker info >/dev/null 2>&1; then
+      if [ "${CLIPROXYAPI_SKIP_PULL:-false}" != "true" ]; then
+        echo "🔄 Pulling cliproxyapi image ${docker_image} for the next restart..."
+        docker pull "$docker_image" || true
+      fi
+    else
+      echo "⏭️ Skipping docker pull (docker not accessible)"
     fi
-  else
-    echo "⏭️ Skipping docker pull (docker not accessible)"
-  fi
+  }
 
   if ! ensure_container_removed cliproxyapi; then
     echo "⚠️  Failed to remove stale cliproxyapi container; aborting" >&2
@@ -409,6 +433,10 @@ if [ "$(uname)" = "Linux" ] && command -v docker >/dev/null 2>&1; then
     "$docker_image" &
   child_pid=$!
   apply_systemd_cgroup_weights
+  push_to_objectstore &
+
+  pull_image &
+
   wait "$child_pid"
   exit $?
 fi
