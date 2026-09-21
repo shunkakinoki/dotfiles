@@ -12,7 +12,6 @@
       "driver": "claudeAgent",
       "displayName": "Claude (CLIProxy)",
       "enabled": true,
-      "homePath": "~/.claude-cliproxy",
       "environment": [
         {
           "name": "ANTHROPIC_BASE_URL",
@@ -29,6 +28,7 @@
         }
       ],
       "config": {
+        "homePath": "~/.claude-cliproxy",
         "launchArgs": "",
         "autoCompactWindow": ""
       }
@@ -37,7 +37,6 @@
       "driver": "codex",
       "displayName": "Codex (CLIProxy)",
       "enabled": true,
-      "homePath": "~/.codex-t3/cliproxy",
       "environment": [
         {
           "name": "CLIPROXY_API_KEY",
@@ -46,6 +45,7 @@
         }
       ],
       "config": {
+        "homePath": "~/.codex-t3/cliproxy",
         "launchArgs": ""
       }
     }
