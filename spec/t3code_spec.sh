@@ -38,6 +38,16 @@ When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER'
 The status should be success
 End
 
+It 'carries each Codex and Claude home inside the instance config'
+When run env HOME="$TEMP_DIR" bash -c "jq -e '.providerInstances[\"codex-cliproxy\"].config.homePath == \"~/.codex-t3/cliproxy\" and .providerInstances[\"claude-cliproxy\"].config.homePath == \"~/.claude-cliproxy\"' '$MANAGED_SERVER' >/dev/null"
+The status should be success
+End
+
+It 'keeps homePath out of the instance envelope T3 would drop it from'
+When run bash -c "jq -e '[.providerInstances[] | has(\"homePath\")] | any | not' '$MANAGED_SERVER' >/dev/null"
+The status should be success
+End
+
 It 'injects the CLIProxy key from the dotenv'
 cat >"$TEMP_DIR/.env" <<'ENV'
 CLIPROXY_API_KEY=test_cliproxy_key
