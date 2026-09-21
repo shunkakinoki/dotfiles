@@ -312,6 +312,13 @@ let
         assert lib.hasInfix ".bun/bin/t3" cfg.home.activation.provisionKaminoT3Connect.data;
         assert lib.hasInfix "${pkgs.nodejs}/bin" cfg.home.activation.provisionKaminoT3Connect.data;
         assert lib.hasInfix "LD_LIBRARY_PATH=" cfg.home.activation.provisionKaminoT3Connect.data;
+        # T3 Connect provisioning must bootstrap a protocol-3 launcher; a
+        # protocol-2 `service install` would downgrade it and break desktop updates.
+        assert lib.hasInfix "t3@nightly service install" (
+          builtins.readFile ../named-hosts/kamino/activate.sh
+        );
+        assert
+          !(lib.hasInfix "\"$t3_bin\" service install" (builtins.readFile ../named-hosts/kamino/activate.sh));
         assert !(cfg.systemd.user.services ? dolt);
         assert !(cfg.systemd.user.services ? dolt-federation-sync);
         assert !(cfg.systemd.user.services ? dolt-linear-sync);

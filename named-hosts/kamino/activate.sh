@@ -59,9 +59,24 @@ t3-connect)
     echo "t3 is not installed; skipping T3 Connect provisioning." >&2
     exit 0
   fi
-  "$t3_bin" service install || "$t3_bin" service update ||
-    echo "Warning: could not install the T3 background service." >&2
+
   base="${T3CODE_HOME:-$HOME/.t3}"
+  state="$base/runtime/service-state.json"
+
+  # A release that requires launcher protocol 3 cannot be activated by a
+  # protocol-2 launcher, and the desktop client hands off exactly such updates.
+  # A protocol-3 launcher is only produced by a protocol-3 release, so
+  # bootstrapping one needs a nightly CLI rather than the pinned global. After
+  # that the service is left alone: the desktop owns version upgrades, and
+  # running a protocol-2 `service install` here would downgrade the launcher
+  # and break the client's update path again.
+  if [ ! -f "$state" ] || ! grep -q '"protocol": 3' "$state"; then
+    echo "T3 launcher needs a protocol-3 release; bootstrapping with t3@nightly." >&2
+    npx --yes t3@nightly service install ||
+      npx --yes t3@nightly service update ||
+      echo "Warning: could not install the T3 background service." >&2
+  fi
+
   if [ -f "$base/userdata/secrets/cloud-cli-oauth-token.bin" ]; then
     "$t3_bin" connect link --publish-only
   else
