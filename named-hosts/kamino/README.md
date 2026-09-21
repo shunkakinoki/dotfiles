@@ -146,6 +146,21 @@ itself is provisioned by the background server on start, so restart
 Provisioning needs `t3` from the npm globals in `package.json`; when it is
 absent the activation step skips with a message.
 
+### Connect a client to the T3 server
+
+A publish-only environment has no relay endpoint, so a "T3 Connect" entry for
+a Kamino worker fails with `endpoint_provider_not_managed`. The relay also caps
+managed tunnels at 3 per account. Instead, `t3code.service` publishes itself
+over Tailscale Serve at `https://<name>.tail950b36.ts.net`
+(`T3CODE_TAILSCALE_SERVE`). Mint a pairing link on the worker:
+
+```sh
+t3 pair --tailscale --ttl 1h
+```
+
+In the client, remove any "T3 Connect" entry for the worker, then add an
+environment with that pairing link.
+
 ## GPG signing
 
 The shared Home Manager GPG module imports the existing agenix-encrypted signing
