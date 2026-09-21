@@ -34,7 +34,7 @@ It 'creates settings.json with the managed instances when absent'
 cat >"$TEMP_DIR/.env" <<'ENV'
 CLIPROXY_API_KEY=test_cliproxy_key
 ENV
-When run bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '.providerInstances[\"claude-cliproxy\"].driver == \"claudeAgent\" and .providerInstances[\"codex-cliproxy\"].driver == \"codex\"' '$STATE_DIR/settings.json' >/dev/null"
+When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '.providerInstances[\"claude-cliproxy\"].driver == \"claudeAgent\" and .providerInstances[\"codex-cliproxy\"].driver == \"codex\"' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 End
 
@@ -42,7 +42,7 @@ It 'injects the CLIProxy key from the dotenv'
 cat >"$TEMP_DIR/.env" <<'ENV'
 CLIPROXY_API_KEY=test_cliproxy_key
 ENV
-When run bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '[.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ANTHROPIC_AUTH_TOKEN\") | .value == \"test_cliproxy_key\" and .sensitive == true] | all' '$STATE_DIR/settings.json' >/dev/null"
+When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '[.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ANTHROPIC_AUTH_TOKEN\") | .value == \"test_cliproxy_key\" and .sensitive == true] | all' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 End
 
@@ -50,13 +50,13 @@ It 'renders the host-only base URL Claude Code expects'
 cat >"$TEMP_DIR/.env" <<'ENV'
 CLIPROXY_API_KEY=test_cliproxy_key
 ENV
-When run bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '[.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ANTHROPIC_BASE_URL\") | .value] | first == \"https://cliproxy.shunkakinoki.com\"' '$STATE_DIR/settings.json' >/dev/null"
+When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '[.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ANTHROPIC_BASE_URL\") | .value] | first == \"https://cliproxy.shunkakinoki.com\"' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 End
 
 It 'leaves the placeholder unresolved when the dotenv has no key'
 : >"$TEMP_DIR/.env"
-When run env -u CLIPROXY_API_KEY bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '([.providerInstances[\"codex-cliproxy\"].environment[].value] | index(\"__CLIPROXY_API_KEY__\")) != null' '$STATE_DIR/settings.json' >/dev/null"
+When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '([.providerInstances[\"codex-cliproxy\"].environment[].value] | index(\"__CLIPROXY_API_KEY__\")) != null' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 The stderr should include 'CLIPROXY_API_KEY not found'
 End
@@ -72,13 +72,13 @@ cat >"$STATE_DIR/settings.json" <<'JSON'
   "providerInstances": {"opencode": {"driver": "opencode", "config": {"binaryPath": "opencode"}}}
 }
 JSON
-When run bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '.pullRequestMergeMethod == \"squash\" and .defaultModelSelection.instanceId == \"opencode\" and .providerInstances.opencode.config.binaryPath == \"opencode\" and (.providerInstances[\"codex-cliproxy\"] != null)' '$STATE_DIR/settings.json' >/dev/null"
+When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '.pullRequestMergeMethod == \"squash\" and .defaultModelSelection.instanceId == \"opencode\" and .providerInstances.opencode.config.binaryPath == \"opencode\" and (.providerInstances[\"codex-cliproxy\"] != null)' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 End
 
 It 'leaves a malformed settings.json untouched'
 echo 'not json' >"$STATE_DIR/settings.json"
-When run bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && grep -q 'not json' '$STATE_DIR/settings.json'"
+When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && grep -q 'not json' '$STATE_DIR/settings.json'"
 The status should be success
 The stderr should include 'malformed, leaving them unchanged'
 End
@@ -107,7 +107,7 @@ The status should be success
 End
 
 It 'creates client-settings.json with the managed favorites'
-When run bash -c "bash '$CLIENT_SCRIPT' '$MANAGED_CLIENT' \"\$(command -v jq)\" '$STATE_DIR' && jq -e '.favorites | map(.provider) | index(\"codex-cliproxy\") != null' '$STATE_DIR/client-settings.json' >/dev/null"
+When run env HOME="$TEMP_DIR" bash -c "bash '$CLIENT_SCRIPT' '$MANAGED_CLIENT' \"\$(command -v jq)\" '$STATE_DIR' && jq -e '.favorites | map(.provider) | index(\"codex-cliproxy\") != null' '$STATE_DIR/client-settings.json' >/dev/null"
 The status should be success
 End
 
@@ -115,7 +115,7 @@ It 'replaces managed favorites without duplicating them'
 cat >"$STATE_DIR/client-settings.json" <<'JSON'
 {"favorites": [{"provider": "opencode", "model": "opencode/free"}, {"provider": "codex-cliproxy", "model": "gpt-5.6-sol"}]}
 JSON
-When run bash -c "bash '$CLIENT_SCRIPT' '$MANAGED_CLIENT' \"\$(command -v jq)\" '$STATE_DIR' && jq -e '([.favorites[] | select(.provider == \"codex-cliproxy\")] | length == 1) and (.favorites | map(.provider) | index(\"opencode\") != null)' '$STATE_DIR/client-settings.json' >/dev/null"
+When run env HOME="$TEMP_DIR" bash -c "bash '$CLIENT_SCRIPT' '$MANAGED_CLIENT' \"\$(command -v jq)\" '$STATE_DIR' && jq -e '([.favorites[] | select(.provider == \"codex-cliproxy\")] | length == 1) and (.favorites | map(.provider) | index(\"opencode\") != null)' '$STATE_DIR/client-settings.json' >/dev/null"
 The status should be success
 End
 End
