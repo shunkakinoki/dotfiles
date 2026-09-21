@@ -40,8 +40,13 @@ if [ -z "$CLIPROXY_API_KEY" ] && [ -f "$ENV_FILE" ]; then
   )"
 fi
 if [ -z "$CLIPROXY_API_KEY" ]; then
-  echo "Warning: CLIPROXY_API_KEY not found; the T3 Code CLIProxy instance stays unauthenticated" >&2
+  echo "Warning: CLIPROXY_API_KEY not found; the T3 Code CLIProxy instances stay unauthenticated" >&2
 fi
+
+# The base URL is host-only: Claude Code appends /v1/messages, so a trailing /v1
+# would produce /v1/v1/messages. Remote by default; a host running its own proxy
+# overrides it.
+CLIPROXY_BASE_URL="${CLIPROXY_BASE_URL:-https://cliproxy.shunkakinoki.com}"
 
 # The Codex instance uses its own CODEX_HOME so its provider config and model
 # list stay independent of the login-backed ~/.codex home.
@@ -57,7 +62,7 @@ fi
 
 if [ -f "$SETTINGS" ]; then
   # shellcheck disable=SC2016
-  "$JQ_BIN" --slurpfile managed "$MANAGED_SETTINGS" --arg key "$CLIPROXY_API_KEY" '
+  "$JQ_BIN" --slurpfile managed "$MANAGED_SETTINGS" --arg key "$CLIPROXY_API_KEY" --arg base "$CLIPROXY_BASE_URL" '
     ($managed[0]) as $managed_settings
     | .providers = ((.providers // {}) * ($managed_settings.providers // {}))
     | .providerInstances =
@@ -65,18 +70,22 @@ if [ -f "$SETTINGS" ]; then
          * ($managed_settings.providerInstances
             | walk(
                 if type == "string" then
-                  if . == "__CLIPROXY_API_KEY__" and $key != "" then $key else . end
+                  if . == "__CLIPROXY_API_KEY__" and $key != "" then $key
+                  elif . == "__CLIPROXY_BASE_URL__" then $base
+                  else . end
                 else . end
               )))
   ' "$SETTINGS" >"$TEMP_SETTINGS"
 else
   # shellcheck disable=SC2016
-  "$JQ_BIN" --slurpfile managed "$MANAGED_SETTINGS" --arg key "$CLIPROXY_API_KEY" '
+  "$JQ_BIN" --slurpfile managed "$MANAGED_SETTINGS" --arg key "$CLIPROXY_API_KEY" --arg base "$CLIPROXY_BASE_URL" '
     ($managed[0]) as $managed_settings
     | $managed_settings
     | .providerInstances |= walk(
         if type == "string" then
-          if . == "__CLIPROXY_API_KEY__" and $key != "" then $key else . end
+          if . == "__CLIPROXY_API_KEY__" and $key != "" then $key
+          elif . == "__CLIPROXY_BASE_URL__" then $base
+          else . end
         else . end
       )
   ' -n >"$TEMP_SETTINGS"
