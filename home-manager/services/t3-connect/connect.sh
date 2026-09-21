@@ -53,3 +53,11 @@ for dir in "${npm_config_cache:-$HOME/.npm}"/_npx/*/ "${T3CODE_HOME:-$HOME/.t3}"
   [ -d "$pty" ] || continue
   "${T3_PREPARE_RUNTIME:?}" "$dir"
 done
+
+# A crash loop (e.g. a full disk) trips systemd's start limit, and the unit
+# then stays failed forever while clients sit on "reconnecting". Revive it
+# once the runtime is warm so a transient cause heals on the next pass.
+if "${T3_SYSTEMCTL:-systemctl}" --user is-failed --quiet t3code.service; then
+  "${T3_SYSTEMCTL:-systemctl}" --user reset-failed t3code.service
+  "${T3_SYSTEMCTL:-systemctl}" --user start t3code.service || true
+fi
