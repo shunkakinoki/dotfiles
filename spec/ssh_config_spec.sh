@@ -58,5 +58,10 @@ It 'pins the current native OpenSSH host key'
 When run bash -c "grep '^matic.tail950b36.ts.net ssh-ed25519 ' home-manager/programs/ssh/known_hosts | ssh-keygen -lf -"
 The output should include 'SHA256:5oy61cZd6zSF6vrEcSRG6olYvfogp+qkJB14sOPaTVY'
 End
+
+It 'pins the tailnet address to the same key, so IP-reached fleet commands verify'
+When run bash -c "grep '^100.76.48.66 ssh-ed25519 ' home-manager/programs/ssh/known_hosts | ssh-keygen -lf -"
+The output should include 'SHA256:5oy61cZd6zSF6vrEcSRG6olYvfogp+qkJB14sOPaTVY'
+End
 End
 End
