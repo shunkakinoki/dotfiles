@@ -574,8 +574,8 @@ openai-compatibility:
       - api-key: "__SURPLUS_API_KEY__"
         proxy-url: "direct"
     models:
-      - name: "gpt-5.6-luna"
-        alias: "gpt-5.6-luna"
+      - name: "gpt-6-luna"
+        alias: "gpt-6-luna"
       - name: "deepseek-v4.1-flash"
         alias: "deepseek-v4.1-flash"
   # Temporary campaign provider: serves stealth/union-alpha under the same
@@ -605,8 +605,8 @@ openai-compatibility:
         alias: "deepseek-v4.1-flash"
       # Second provider for Luna: surplus is otherwise the only one that
       # serves it, so an empty surplus wallet takes the whole model down.
-      - name: "openai/gpt-5.6-luna"
-        alias: "gpt-5.6-luna"
+      - name: "openai/gpt-6-luna"
+        alias: "gpt-6-luna"
       - name: "openrouter/free"
         alias: "free"
   - name: "z-ai"
@@ -749,7 +749,7 @@ oauth-excluded-models:
   codex:
     - "codex-*"
     - "gpt-image*"
-    - "gpt-5.6-luna-*"
+    - "gpt-6-luna-*"
 
 # OAuth provider excluded models
 # oauth-excluded-models:

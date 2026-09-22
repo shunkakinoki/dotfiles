@@ -19,13 +19,13 @@ Never hand-edit a generated config. Edit the `.tpl.*` file, regenerate, and comm
 
 | Placeholder | Model ID |
 | --- | --- |
-| `__CLAUDE_OPUS__` | `claude-opus-5` |
+| `__CLAUDE_OPUS__` | `claude-opus-5-5` |
 | `__CLAUDE_SONNET__` | `claude-sonnet-5` |
 | `__CLAUDE_HAIKU__` | `claude-haiku-4-5-20251001` |
-| `__GPT__` | `gpt-5.6-sol` |
+| `__GPT__` | `gpt-6-sol` |
 | `__GPT_ASTRA__` | `gpt-6-astra` |
-| `__GPT_SOL__` | `gpt-5.6-sol` |
-| `__GPT_LUNA__` | `gpt-5.6-luna` |
+| `__GPT_SOL__` | `gpt-6-sol` |
+| `__GPT_LUNA__` | `gpt-6-luna` |
 | `__GPT_IMAGE__` | `gpt-image-2` |
 | `__GEMINI_FLASH__` | `gemini-3.8-flash` |
 | `__DEEPSEEK_FLASH__` | `deepseek-v4.1-flash` |
@@ -52,6 +52,7 @@ because the upstream ID differs from the canonical one:
 | Placeholder | Value | Used by |
 | --- | --- | --- |
 | `__GPT_IMAGE_OPENROUTER__` | `openai/gpt-5.4-image-2` | OpenRouter, aliased back to `gpt-image-2` |
+| `__GPT_LUNA_OPENROUTER__` | `openai/gpt-6-luna` | OpenRouter, aliased back to `gpt-6-luna` |
 | `__DEEPSEEK_FLASH_OPENROUTER__` | `deepseek/deepseek-v4.1-flash` | OpenRouter, aliased back to `deepseek-v4.1-flash` |
 | `__DEEPSEEK_FLASH_0731__` | `deepseek-v4-flash-0731` | Aliyun, aliased back to `deepseek-v4.1-flash` |
 | `__DEEPSEEK_FLASH_ZEN__` | `deepseek-v4-flash` | OpenCode Zen, aliased back to `deepseek-v4.1-flash` |
@@ -131,10 +132,10 @@ Hermes also runs a Mixture-of-Agents preset: reference models
 | OpenCode | `code-reviewer` agent | `shunkakinoki/deepseek-v4.1-flash` | [opencode.tpl.jsonc](config/opencode/opencode.tpl.jsonc) |
 | OMP | `smol`, `commit`, `task` | `cliproxyapi/free` | [config.tpl.yml](config/omp/config.tpl.yml) |
 | OMP | `slow`, `vision`, `plan` | `cliproxyapi/deepseek-v4.1-flash` | |
-| Codex | default | `gpt-5.6-sol` | [config.tpl.toml](config/codex/config.tpl.toml) |
-| Codex | subagents | `gpt-5.6-luna` | |
+| Codex | default | `gpt-6-sol` | [config.tpl.toml](config/codex/config.tpl.toml) |
+| Codex | subagents | `gpt-6-luna` | |
 | Codex | `qwen-local` profile | `qwen3.5-0.8b-optiq` (LM Studio) | |
-| Claude Code | subagents, `opus` alias | `claude-opus-5` | [settings.tpl.json](config/claude/settings.tpl.json) |
+| Claude Code | subagents, `opus` alias | `claude-opus-5-5` | [settings.tpl.json](config/claude/settings.tpl.json) |
 | Claude Code | `sonnet`, `haiku` aliases | `claude-sonnet-5` | |
 | Antigravity | default | `gemini-3.8-flash` (native Antigravity provider) | [settings.tpl.json](config/antigravity/settings.tpl.json) |
 | Pi | `defaultModel` | `free` (provider `cliproxyapi`) | [settings.tpl.json](config/pi/settings.tpl.json) |
@@ -161,8 +162,8 @@ headless.
 | --- | --- |
 | `ocxe`, `ocxeh` | `cliproxyapi/deepseek-v4.1-flash` |
 | `ocxel`, `ocxelh` | `lmstudio/qwen3.5-0.8b-optiq` |
-| `coxe`, `coxeh` | `gpt-5.6-sol` |
-| `coxec`, `coxech` | `gpt-5.6-luna` (`--profile cliproxy`) |
+| `coxe`, `coxeh` | `gpt-6-sol` |
+| `coxec`, `coxech` | `gpt-6-luna` (`--profile cliproxy`) |
 | `coxel`, `coxelh` | `qwen3.5-0.8b-optiq` (`--oss --local-provider lmstudio`) |
 | `pixe`, `pixeh` | `cliproxyapi/deepseek-v4.1-flash` |
 | `pixel`, `pixelh` | `lmstudio/qwen3.5-0.8b-optiq` |

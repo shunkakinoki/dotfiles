@@ -384,7 +384,7 @@ End
 
 It 'hydrates the subagent model from models.json'
 When run bash -c "sed -n '/^\[agents\]/,/^\[/p' config/codex/config.toml | grep 'default_subagent_model'"
-The output should include 'gpt-5.6-luna'
+The output should include 'gpt-6-luna'
 The output should not include '__GPT_LUNA__'
 End
 
@@ -417,7 +417,7 @@ End
 
 It 'hydrates the subagent and alias pins from models.json'
 When run jq -c '.env | [.CLAUDE_CODE_SUBAGENT_MODEL, .ANTHROPIC_DEFAULT_OPUS_MODEL, .ANTHROPIC_DEFAULT_SONNET_MODEL, .ANTHROPIC_DEFAULT_HAIKU_MODEL]' config/claude/settings.json
-The output should eq '["claude-opus-5","claude-opus-5","claude-sonnet-5","claude-sonnet-5"]'
+The output should eq '["claude-opus-5-5","claude-opus-5-5","claude-sonnet-5","claude-sonnet-5"]'
 End
 
 It 'preserves the MemPalace chunk cap in the template and generated settings'
