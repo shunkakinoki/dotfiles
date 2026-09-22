@@ -32,6 +32,11 @@ It 'references @stat@'
 When run bash -c "grep '@stat@' '$SCRIPT'"
 The output should include '@stat@'
 End
+
+It 'references bounded low-priority scan commands'
+When run bash -c "grep '@timeout@' '$SCRIPT' && grep '@nice@' '$SCRIPT'"
+The output should include '@nice@'
+End
 End
 
 Describe 'requires HOME_DIR argument'
@@ -86,7 +91,9 @@ WRAPPER
   PROCESSED_SCRIPT="$TEST_HOME/secure-dotenv-test.sh"
   sed \
     -e "s|@find@|$(command -v find)|g" \
+    -e "s|@nice@|$(command -v nice)|g" \
     -e "s|@stat@|$STAT_WRAPPER|g" \
+    -e "s|@timeout@|$(command -v timeout)|g" \
     "$SCRIPT" >"$PROCESSED_SCRIPT"
   chmod +x "$PROCESSED_SCRIPT"
 
@@ -124,6 +131,28 @@ When run bash -c "bash '$PROCESSED_SCRIPT' '$TEST_HOME' && test -L '$TEST_HOME/.
 The output should equal 'still-symlink'
 End
 
+
+It 'bounds a stalled scan without leaving the scanner running'
+SLOW_FIND="$TEST_HOME/slow-find.sh"
+SLOW_PID="$TEST_HOME/slow-find.pid"
+cat >"$SLOW_FIND" <<'SLOW'
+#!/usr/bin/env bash
+echo "$$" >"$SLOW_FIND_PID_FILE"
+sleep 30
+SLOW
+chmod +x "$SLOW_FIND"
+SLOW_SCRIPT="$TEST_HOME/secure-dotenv-slow-test.sh"
+sed \
+  -e "s|@find@|$SLOW_FIND|g" \
+  -e "s|@nice@|$(command -v nice)|g" \
+  -e "s|@stat@|$STAT_WRAPPER|g" \
+  -e "s|@timeout@|$(command -v timeout)|g" \
+  "$SCRIPT" >"$SLOW_SCRIPT"
+When run bash -c "SLOW_FIND_PID_FILE='$SLOW_PID' SECURE_DOTENV_SCAN_TIMEOUT_SECONDS=0.1 bash '$SLOW_SCRIPT' '$TEST_HOME'; pid=\$(cat '$SLOW_PID'); ! kill -0 \"\$pid\" 2>/dev/null"
+The status should be success
+The stderr should include 'dotenv permission scan exceeded 0.1s'
+End
+
 It 'skips directories it cannot traverse and still secures other files'
 When run bash -c "mkdir '$TEST_HOME/locked' && chmod 000 '$TEST_HOME/locked'; bash '$PROCESSED_SCRIPT' '$TEST_HOME'; rc=\$?; chmod 700 '$TEST_HOME/locked'; [ \$rc -eq 0 ] && '$STAT_WRAPPER' -c '%a' '$TEST_HOME/app.env'"
 The output should equal '600'
@@ -139,8 +168,8 @@ End
 
 Describe 'Library pruning'
 It 'prunes the macOS Library directory'
-When run bash -c "grep -F -- '-path \"\${HOME_DIR}/Library\" -prune' '$SCRIPT'"
-The output should include '-prune'
+When run bash -c "grep -F -- '-path \"\${HOME_DIR}/Library\"' '$SCRIPT'"
+The output should include 'Library'
 End
 
 It 'skips .env files under Library'
@@ -152,10 +181,20 @@ chmod 644 "$TEST_HOME/Library/Group Containers/app/.env"
 PROCESSED_SCRIPT="$TEST_HOME/secure-dotenv-test.sh"
 sed \
   -e "s|@find@|$(command -v find)|g" \
+  -e "s|@nice@|$(command -v nice)|g" \
   -e "s|@stat@|$(command -v stat)|g" \
+  -e "s|@timeout@|$(command -v timeout)|g" \
   "$SCRIPT" >"$PROCESSED_SCRIPT"
 When run bash -c "bash '$PROCESSED_SCRIPT' '$TEST_HOME'; ls -l '$TEST_HOME/Library/Group Containers/app/.env' | cut -c1-10; rm -rf '$TEST_HOME'"
 The output should include 'rw-r--r--'
+End
+End
+
+
+Describe 'large-tree pruning'
+It 'prunes cache, package, runtime, and build-artifact directories'
+When run bash -c "grep -Fq -- '-path \"\${HOME_DIR}/.cache\"' '$SCRIPT' && grep -Fq -- '-name node_modules' '$SCRIPT' && grep -Fq -- '-name target' '$SCRIPT'"
+The status should be success
 End
 End
 

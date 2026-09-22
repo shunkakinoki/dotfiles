@@ -8,7 +8,9 @@ let
   homeDir = config.home.homeDirectory;
   script = pkgs.replaceVars ./secure-dotenv.sh {
     find = "${pkgs.findutils}/bin/find";
+    nice = "${pkgs.coreutils}/bin/nice";
     stat = "${pkgs.coreutils}/bin/stat";
+    timeout = "${pkgs.coreutils}/bin/timeout";
   };
 in
 {
