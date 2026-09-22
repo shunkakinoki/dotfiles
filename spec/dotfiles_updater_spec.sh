@@ -147,6 +147,30 @@ It 'skips the install once the fetched commit was installed'
 When run bash -c "bash '$SCRIPT' >/dev/null 2>&1 && bash '$SCRIPT' 2>/dev/null"
 The output should include 'No changes detected'
 End
+
+# The dotenv is placed out of band, so it can land after the switch that needed
+# it. Commit equality alone would skip activation forever and strand the host on
+# whatever it rendered without the file.
+It 'reinstalls when the dotenv lands after the commit was installed'
+When run bash -c "bash '$SCRIPT' >/dev/null 2>&1 && rm -f '$HOME/installed' && printf 'K=v\n' >'$HOME/dotfiles/.env' && bash '$SCRIPT' 2>/dev/null && test -f '$HOME/installed' && echo reinstalled"
+The output should include 'Dotenv changed'
+The output should include 'reinstalled'
+End
+
+It 'reinstalls when the dotenv contents change'
+When run bash -c "printf 'K=v\n' >'$HOME/dotfiles/.env' && bash '$SCRIPT' >/dev/null 2>&1 && rm -f '$HOME/installed' && printf 'K=w\n' >'$HOME/dotfiles/.env' && bash '$SCRIPT' 2>/dev/null && test -f '$HOME/installed' && echo reinstalled"
+The output should include 'reinstalled'
+End
+
+It 'skips when neither the commit nor the dotenv changed'
+When run bash -c "printf 'K=v\n' >'$HOME/dotfiles/.env' && bash '$SCRIPT' >/dev/null 2>&1 && bash '$SCRIPT' 2>/dev/null"
+The output should include 'No changes detected'
+End
+
+It 'records a digest of the dotenv rather than its contents'
+When run bash -c "printf 'SECRET=topsecretvalue\n' >'$HOME/dotfiles/.env' && bash '$SCRIPT' >/dev/null 2>&1 && ! grep -q topsecretvalue \"\$XDG_STATE_HOME/dotfiles-updater/installed-dotenv\" && echo redacted"
+The output should include 'redacted'
+End
 End
 
 End
