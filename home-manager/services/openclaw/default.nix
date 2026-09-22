@@ -137,4 +137,35 @@ lib.mkIf host.isKyber {
     };
     Install.WantedBy = [ "timers.target" ];
   };
+
+  systemd.user.services.openclaw-snapshot-cache-cleanup = {
+    Unit = {
+      Description = "Reclaim abandoned OpenClaw SQLite snapshots";
+      X-SwitchMethod = "keep-old";
+    };
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.python3}/bin/python3 ${./snapshot-cache-cleanup.py}";
+      TimeoutStartSec = "2m";
+      Nice = 19;
+      IOSchedulingClass = "idle";
+      IOAccounting = true;
+      IOReadBandwidthMax = "/ 2M";
+      IOWriteBandwidthMax = "/ 2M";
+      IOReadIOPSMax = "/ 10";
+      IOWriteIOPSMax = "/ 10";
+      Environment = [ "HOME=${homeDir}" ];
+    };
+  };
+
+  systemd.user.timers.openclaw-snapshot-cache-cleanup = {
+    Unit.Description = "Pace OpenClaw snapshot cache cleanup";
+    Timer = {
+      OnStartupSec = "10min";
+      OnUnitInactiveSec = "5min";
+      RandomizedDelaySec = "30s";
+      Unit = "openclaw-snapshot-cache-cleanup.service";
+    };
+    Install.WantedBy = [ "timers.target" ];
+  };
 }
