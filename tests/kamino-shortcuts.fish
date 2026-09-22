@@ -36,11 +36,11 @@ set -g command_status 0
 for host in $argv
     set -l shortcut _{$host}_function
     $shortcut 'printf hello' 'two words'
-    expect_call tailscale ssh $host 'printf hello' 'two words'
+    expect_call tailscale ssh root@$host 'printf hello' 'two words'
 
     set shortcut _{$host}d_function
     $shortcut
-    expect_call tailscale ssh $host 'tmux new-session -A -s desktop'
+    expect_call tailscale ssh root@$host -t 'tmux new-session -A -s desktop'
 
     set shortcut _{$host}h_function
     $shortcut --help 'two words'
@@ -48,11 +48,11 @@ for host in $argv
 
     set shortcut _{$host}m_function
     $shortcut
-    expect_call tailscale ssh $host 'tmux new-session -A -s mobile'
+    expect_call tailscale ssh root@$host -t 'tmux new-session -A -s mobile'
 
     set shortcut _{$host}z_function
     $shortcut
-    expect_call tailscale ssh $host 'zellij attach -c desktop'
+    expect_call tailscale ssh root@$host -t 'zellij attach -c desktop'
 
     set -g command_status 23
     for suffix in '' d h m z
