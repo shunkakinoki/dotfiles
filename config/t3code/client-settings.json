@@ -1,4 +1,16 @@
 {
+  "loadBalancingEnabled": true,
+  "loadBalancingWeights": {
+    "f517e50f-e16d-448c-8ba1-b1f32c97f6a3": 0,
+    "4dc26984-7b97-484d-989a-6f51098dec27": 0,
+    "df67cbf5-ef55-405a-91ca-d5b506c339bc": 25,
+    "e39ebc73-d7cf-41d7-a7ed-014154d14b44": 100,
+    "18291035-ebd6-4bcf-8634-aa9e861fb49e": 100,
+    "b6955590-1500-4505-b304-d0baf0b8c779": 100,
+    "c06d148c-a326-4f30-bf5e-e77e314cc502": 100,
+    "dcb51e01-8f87-422d-a901-232a0f1bfdba": 100,
+    "bbfacffa-9b18-44fe-979a-07fd80cd0bab": 100
+  },
   "favorites": [
     {
       "provider": "claude-cliproxy",

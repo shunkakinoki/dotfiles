@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Merge managed T3 Code client preferences (favorites, model visibility) into
-# the device-local client settings file. T3 owns this file and rewrites it as
-# the app evolves, so merge only the managed keys.
+# Merge managed T3 Code client preferences (load balancing, favorites) into the
+# device-local client settings file. T3 owns this file and rewrites it as the
+# app evolves, so merge only the managed keys.
 #
 # Usage: activate-client-settings.sh <managed_client_json> <jq_bin> <state_dir>
 set -euo pipefail
@@ -40,6 +40,13 @@ if [ -f "$SETTINGS" ]; then
            )))
         + ($managed_settings.favorites // [])
       )
+    | .loadBalancingEnabled =
+        (if $managed_settings | has("loadBalancingEnabled")
+         then $managed_settings.loadBalancingEnabled
+         else .loadBalancingEnabled end)
+    | .loadBalancingWeights =
+        ((.loadBalancingWeights // {})
+         * ($managed_settings.loadBalancingWeights // {}))
   ' "$SETTINGS" >"$TEMP_SETTINGS"
 else
   # shellcheck disable=SC2016
