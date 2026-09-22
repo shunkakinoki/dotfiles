@@ -122,9 +122,17 @@ let
           "--accept-dns=true"
           "--accept-routes=false"
           "--operator=shunkakinoki"
-          "--ssh"
+          "--ssh=true"
         ];
       assert lib.hasInfix "tailscale set" cfg.system.activationScripts.tailscalePreferences.text;
+      assert cfg.services.openssh.enable;
+      assert !cfg.services.openssh.openFirewall;
+      assert cfg.services.openssh.settings.PasswordAuthentication == false;
+      assert cfg.services.openssh.settings.KbdInteractiveAuthentication == false;
+      assert cfg.services.openssh.settings.PermitRootLogin == "no";
+      assert
+        cfg.users.users.shunkakinoki.openssh.authorizedKeys.keys
+        == [ (import ../named-hosts/pubkeys.nix).galactica ];
       assert beads.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "kyber.tail950b36.ts.net";
       assert beads.home.sessionVariables.BEADS_NODE_ID == "kyber";
       assert beads.home.sessionVariables.BD_EVENTS_JOURNAL == "1";

@@ -38,8 +38,9 @@ import ../../hosts/nixos {
           "--accept-dns=true"
           "--accept-routes=false"
           "--operator=${username}"
-          "--ssh"
+          "--ssh=true"
         ];
+        hostPublicKeys = import ../pubkeys.nix;
       in
       {
         # Boot loader (EFI/systemd-boot)
@@ -109,6 +110,20 @@ import ../../hosts/nixos {
           useRoutingFeatures = "client";
           extraSetFlags = tailscaleSetFlags;
         };
+
+        # Keep an independent, key-only recovery path when the Tailscale SSH
+        # preference drifts. The firewall trusts tailscale0 but opens no public
+        # TCP ports, so this sshd is reachable only through the tailnet.
+        services.openssh = {
+          enable = true;
+          openFirewall = false;
+          settings = {
+            KbdInteractiveAuthentication = false;
+            PasswordAuthentication = false;
+            PermitRootLogin = "no";
+          };
+        };
+        users.users.${username}.openssh.authorizedKeys.keys = [ hostPublicKeys.galactica ];
 
         # nixos-rebuild starts tailscaled-set at boot or when its unit changes.
         # Reapply the same declared preferences during every switch as well.
