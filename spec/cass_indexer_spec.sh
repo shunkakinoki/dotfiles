@@ -54,6 +54,15 @@ The output should include 'CASS_SEARCH_MODE = "lexical"'
 End
 End
 
+Describe 'cass daily service'
+MODULE="$PWD/home-manager/services/cass/default.nix"
+
+It 'bounds root-disk reads and writes on Linux'
+When run bash -c "grep -q 'IOAccounting = true' '$MODULE' && grep -q 'IOReadBandwidthMax = \"/ 10M\"' '$MODULE' && grep -q 'IOWriteBandwidthMax = \"/ 10M\"' '$MODULE' && grep -q 'IOReadIOPSMax = \"/ 50\"' '$MODULE' && grep -q 'IOWriteIOPSMax = \"/ 25\"' '$MODULE'"
+The status should be success
+End
+End
+
 Describe 'cass/hydrate.sh'
 HYDRATE="$PWD/home-manager/programs/cass/hydrate.sh"
 
