@@ -25,14 +25,14 @@ The installer runs the host-specific Tailscale enrollment command during its
 `make nix-switch` phase:
 
 ```sh
-tailscale up --hostname=kamino1 --accept-dns=true --ssh=false
+tailscale up --hostname=kamino1 --accept-dns=true --ssh=true
 ```
 
 On a fresh machine, follow the login URL printed during activation and choose
 the intended tailnet. On an enrolled machine, the command reapplies the declared
 name and preferences without creating a new device.
 
-This keeps the existing OpenSSH server/login policy, not Tailscale SSH. Activation
+Host login uses Tailscale SSH, authorized by the tailnet policy as root. Activation
 adds the declared Galactica public key from `named-hosts/pubkeys.nix` to root's
 `authorized_keys`, preserving provider keys and other existing entries. It sets
 the SSH directory/file permissions to `700`/`600` and does not copy private keys.
@@ -56,7 +56,7 @@ every numbered host through `kamino100`:
 
 | Shortcut | Action |
 | --- | --- |
-| `kamino1` | OpenSSH login as root over Tailscale |
+| `kamino1` | Tailscale SSH login as root |
 | `kamino1d` | Attach/create the tmux `desktop` session |
 | `kamino1h` | Attach to Herdr (`herdr --remote kamino1`) |
 | `kamino1m` | Attach/create the tmux `mobile` session |
@@ -65,16 +65,14 @@ every numbered host through `kamino100`:
 Replace `kamino1` with any declared fleet name. SSH and Herdr shortcuts forward
 additional arguments. Apply your **client's** normal dotfiles profile and open a
 new Fish shell to load these abbreviations; do not activate a Kamino server
-profile on your laptop. Every SSH shortcut uses the generated host configuration
-so the root login, hostname, local overrides and host-key checks stay consistent.
+profile on your laptop. Every SSH shortcut runs `tailscale ssh root@<name>`:
+the tailnet policy only grants root, so omitting the user fails with
+`tailnet policy does not permit you to SSH as user "<local user>"`. Session
+shortcuts pass `-t` so tmux and Zellij get a terminal.
 
-Kamino client aliases use OpenSSH's `StrictHostKeyChecking=accept-new`: the first
-connection records a new host key without prompting. This is trust on first use;
-later connections still reject changed keys. The fleet verifier remains strict,
-so make the first SSH connection before running it. For an independently verified
-first connection, compare and preinstall the host key using the provider console.
-Reinstallations should preserve `/etc/ssh`; a replacement machine reusing a name
-with a different key still needs an explicitly verified known-hosts update.
+`tailscale ssh` checks the host key against the one the node advertises to the
+coordination server, so no trust-on-first-use prompt is needed. The generated
+`ssh kamino1` alias keeps `StrictHostKeyChecking=yes`.
 
 ```sh
 kamino-fleet list 'kamino*'                 # declared names, not running machines
@@ -120,8 +118,8 @@ machines exist; evaluating or building a profile is not runtime proof.
 
 Each worker is provisioned for T3 Connect during `make nix-switch`. Activation
 installs or repairs the T3 background service, then requests a publish-only
-link. Publish-only is correct for Kamino because workers are reached over
-Tailscale; it never provisions a relay-managed Cloudflare tunnel.
+link by default. Publish-only workers are reached over Tailscale and get no
+relay-managed Cloudflare tunnel.
 
 The first activation on a machine without a stored credential adds `--headless`,
 so the OAuth device-flow URL is printed in the switch output and waits for
@@ -160,6 +158,20 @@ t3 pair --tailscale --ttl 1h
 
 In the client, remove any "T3 Connect" entry for the worker, then add an
 environment with that pairing link.
+
+### Sign in with T3 Connect instead
+
+Workers listed in `t3ManagedTunnelHosts` in `default.nix` (currently `kamino5`)
+link with a relay-managed tunnel instead of `--publish-only`, so they appear
+under T3 Connect after signing in. Each one uses one of the account's 3 managed
+tunnels. After adding a host, run `make nix-switch` on it; if it was linked
+publish-only before, relink it once:
+
+```sh
+t3 connect unlink
+t3 connect link
+systemctl --user restart t3code.service
+```
 
 ## GPG signing
 
@@ -231,10 +243,10 @@ and applies the named service configuration. Its Tailscale phase runs
 `tailscale up` directly, so a fresh node prompts for authentication as part of
 `make nix-switch` instead of requiring a separate command afterward.
 
-MagicDNS must be enabled in the tailnet and client access rules must permit TCP
-22. Managed servers and clients both keep DNS acceptance enabled.
-The profile uses OpenSSH over Tailscale, not Tailscale SSH. Root on the parent VPS
-controls the whole VPS, not an isolated worker.
+MagicDNS must be enabled in the tailnet and the tailnet policy must grant
+Tailscale SSH as `root` to your clients. Managed servers and clients both keep
+DNS acceptance enabled. Root on the parent VPS controls the whole VPS, not an
+isolated worker.
 
 ## Join the tailnet and publish the machine name
 
@@ -244,7 +256,7 @@ The final command below is run automatically by `make nix-switch`:
 ```sh
 hostname                          # must print kamino1
 systemctl is-active tailscaled    # must print active
-tailscale up --hostname=kamino1 --accept-dns=true --ssh=false
+tailscale up --hostname=kamino1 --accept-dns=true --ssh=true
 ```
 
 Open the login URL printed by the switch in your browser and choose the intended
@@ -317,47 +329,24 @@ tailscale ping kamino1
 ```
 
 `ssh -G` only checks local configuration. Without these dotfiles, use
-`ssh root@kamino1` with working MagicDNS, or the explicit full name
-`ssh root@kamino1.tail950b36.ts.net`. DNS does not select the remote username.
+`tailscale ssh root@kamino1`. DNS does not select the remote username.
 Inspect `~/.ssh/config.local` if a local override changes the generated target.
 
-### 3. Authorize the client key and verify the server key
+### 3. Verify the login
 
-Kamino activation already installs the Galactica public key declared in
-`named-hosts/pubkeys.nix`. For a different client, use the provider's SSH-key
-provisioning facility or existing console/admin access to append its **public**
-key to `/root/.ssh/authorized_keys`. Preserve existing keys; keep `/root/.ssh` mode `700` and
-`authorized_keys` mode `600`, owned by root. Keep the private key on the client.
-Managed clients select `~/.ssh/id_ed25519` by default; authorize its `.pub` file
-or use an explicit, locally configured key.
-The existing OpenSSH daemon must permit root public-key login; do not enable
-password login or disable host-key checking to make verification pass.
-
-Obtain the server's public host-key fingerprint through the trusted console:
+Tailscale SSH authorizes by tailnet identity, not client keys. Activation still
+installs the Galactica public key from `named-hosts/pubkeys.nix` into
+`/root/.ssh/authorized_keys` as a fallback.
 
 ```sh
-ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub
-```
-
-For independent first-use verification, compare that fingerprint on the client
-before connecting. The default client policy automatically records unknown keys.
-If the server presents a different key type, compare the matching
-public host key through the console. A changed key needs investigation, not an
-automatic known-hosts reset.
-
-```sh
-ssh kamino1
+tailscale ssh root@kamino1
 # In that session: id -un must print root; hostname must print kamino1.
 exit
 kamino-fleet verify kamino1
 herdr --remote kamino1
-ssh -t kamino1 'tmux new-session -A -s work'
-ssh -t kamino1 'zellij attach -c work'
+tailscale ssh root@kamino1 -t 'tmux new-session -A -s work'
+tailscale ssh root@kamino1 -t 'zellij attach -c work'
 ```
-
-OpenSSH over Tailscale uses ordinary authorized keys and host-key trust. It does
-not require enabling [Tailscale SSH](https://tailscale.com/docs/features/tailscale-ssh),
-which is a separate authentication mode and remains disabled by this profile.
 
 ### Troubleshooting by layer
 
@@ -365,9 +354,9 @@ which is a separate authentication mode and remains disabled by this profile.
 | --- | --- |
 | No device named `kamino1` | Enrollment, approval, correct tailnet, exact device name and online status. |
 | Name does not resolve | MagicDNS, client DNS acceptance/split DNS, and the fleet's tailnet suffix. On macOS use SSH or `ping`, not `nslookup`, to test the system resolver. |
-| SSH timeout or refused connection | Tailnet TCP-22 policy, host firewall, and the existing OpenSSH listener. |
-| `Permission denied (publickey)` | Client key/agent, root authorized key, file ownership/modes and root public-key login policy. |
-| Unknown or changed host key | Compare against the provider console before trusting it. |
+| `tailnet policy does not permit you to SSH as user` | Connect as `root@kamino1`; the policy only grants root. |
+| SSH timeout or refused connection | Device online status, `--ssh=true` on the node, and the tailnet SSH policy. |
+| Changed host key | The node was re-enrolled or its state cloned; investigate before trusting it. |
 | SSH works but fleet verification fails | Exact root/hostname identity, Herdr service, tool versions and duplicate Tailscale IDs. |
 
 ## Runtime and persistence proof

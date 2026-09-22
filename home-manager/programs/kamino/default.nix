@@ -2,33 +2,41 @@
 let
   fleet = import ../../../named-hosts/kamino/fleet.nix { };
   inventory = pkgs.writeText "kamino-fleet.json" (builtins.toJSON fleet);
-  shortcuts = lib.concatMap (machine: [
-    {
-      inherit (machine) name;
-      body = "tailscale ssh ${machine.name} $argv";
-      description = "SSH to ${machine.name} with Tailscale SSH";
-    }
-    {
-      name = "${machine.name}d";
-      body = ''tailscale ssh ${machine.name} "tmux new-session -A -s desktop"'';
-      description = "Attach to ${machine.name} tmux desktop session";
-    }
-    {
-      name = "${machine.name}h";
-      body = "herdr --remote ${machine.name} $argv";
-      description = "Attach to Herdr on ${machine.name}";
-    }
-    {
-      name = "${machine.name}m";
-      body = ''tailscale ssh ${machine.name} "tmux new-session -A -s mobile"'';
-      description = "Attach to ${machine.name} tmux mobile session";
-    }
-    {
-      name = "${machine.name}z";
-      body = ''tailscale ssh ${machine.name} "zellij attach -c desktop"'';
-      description = "Attach to ${machine.name} Zellij desktop session";
-    }
-  ]) fleet.machines;
+  shortcuts = lib.concatMap (
+    machine:
+    let
+      # Tailscale SSH defaults to the local username, which the tailnet policy
+      # rejects; the fleet only grants root.
+      target = "${machine.user}@${machine.name}";
+    in
+    [
+      {
+        inherit (machine) name;
+        body = "tailscale ssh ${target} $argv";
+        description = "SSH to ${machine.name} with Tailscale SSH";
+      }
+      {
+        name = "${machine.name}d";
+        body = ''tailscale ssh ${target} -t "tmux new-session -A -s desktop"'';
+        description = "Attach to ${machine.name} tmux desktop session";
+      }
+      {
+        name = "${machine.name}h";
+        body = "herdr --remote ${machine.name} $argv";
+        description = "Attach to Herdr on ${machine.name}";
+      }
+      {
+        name = "${machine.name}m";
+        body = ''tailscale ssh ${target} -t "tmux new-session -A -s mobile"'';
+        description = "Attach to ${machine.name} tmux mobile session";
+      }
+      {
+        name = "${machine.name}z";
+        body = ''tailscale ssh ${target} -t "zellij attach -c desktop"'';
+        description = "Attach to ${machine.name} Zellij desktop session";
+      }
+    ]
+  ) fleet.machines;
 in
 {
   programs.fish = {
