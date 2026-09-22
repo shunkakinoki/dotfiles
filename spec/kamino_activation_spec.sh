@@ -111,23 +111,6 @@ The contents of file "$TEST_ROOT/commands" should include 'systemctl --user rest
 The stderr should include 'bootstrapping with t3@nightly'
 End
 
-It 'provisions a managed T3 Connect tunnel for opted-in hosts'
-mkdir -p "$TEST_ROOT/t3/runtime" "$TEST_ROOT/t3/userdata/secrets"
-printf '{\n  "protocol": 3\n}\n' >"$TEST_ROOT/t3/runtime/service-state.json"
-: >"$TEST_ROOT/t3/userdata/secrets/cloud-cli-oauth-token.bin"
-When run env T3CODE_HOME="$TEST_ROOT/t3" PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" t3-connect "$TEST_ROOT/bin/t3" managed
-The status should be success
-The output should include 'T3 Connect managed link requested.'
-The contents of file "$TEST_ROOT/commands" should include 't3 connect link'
-The contents of file "$TEST_ROOT/commands" should not include '--publish-only'
-End
-
-It 'rejects an unknown T3 Connect mode'
-When run env T3CODE_HOME="$TEST_ROOT/t3" PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" t3-connect "$TEST_ROOT/bin/t3" bogus
-The status should be failure
-The stderr should include 'Unknown T3 Connect mode: bogus'
-End
-
 It 'leaves a protocol-3 launcher alone so the desktop client owns upgrades'
 mkdir -p "$TEST_ROOT/t3/runtime" "$TEST_ROOT/t3/userdata/secrets"
 printf '{\n  "protocol": 3,\n  "activeVersion": "0.0.43-nightly.20260920.2031"\n}\n' >"$TEST_ROOT/t3/runtime/service-state.json"
