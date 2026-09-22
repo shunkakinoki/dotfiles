@@ -47,11 +47,21 @@ tailscale)
   ;;
 t3-connect)
   # Provision T3 Connect for this worker. The background server reconciles the
-  # link on start, so install/repair it first. Kamino hosts are reached over
-  # Tailscale, so request publish-only linking and never provision a
-  # relay-managed tunnel. Authorization uses the OAuth device flow on the first
-  # run and is skipped once a credential is stored.
+  # link on start, so install/repair it first. Workers default to publish-only
+  # because the relay caps managed tunnels per account; `managed` opts a host
+  # into a relay tunnel so clients can sign in with T3 Connect. Authorization
+  # uses the OAuth device flow on the first run and is skipped once a
+  # credential is stored.
   t3_bin="${2:-}"
+  t3_mode="${3:-publish-only}"
+  case "$t3_mode" in
+  managed) link_flags=() ;;
+  publish-only) link_flags=(--publish-only) ;;
+  *)
+    echo "Unknown T3 Connect mode: $t3_mode" >&2
+    exit 1
+    ;;
+  esac
   if [ -z "$t3_bin" ]; then
     t3_bin="$(command -v t3 || true)"
   fi
@@ -78,14 +88,14 @@ t3-connect)
   fi
 
   if [ -f "$base/userdata/secrets/cloud-cli-oauth-token.bin" ]; then
-    "$t3_bin" connect link --publish-only
+    "$t3_bin" connect link ${link_flags[@]+"${link_flags[@]}"}
   else
-    "$t3_bin" connect link --headless --publish-only
+    "$t3_bin" connect link --headless ${link_flags[@]+"${link_flags[@]}"}
   fi
   systemctl --user daemon-reload || true
   systemctl --user enable --now t3code.service || true
   systemctl --user restart t3code.service || true
-  echo "T3 Connect publish-only link requested."
+  echo "T3 Connect $t3_mode link requested."
   ;;
 *)
   echo "Unknown Kamino activation phase" >&2

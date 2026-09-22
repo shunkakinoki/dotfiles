@@ -30,6 +30,10 @@ let
     # not the fleet authorization mechanism.
     "--ssh=true"
   ];
+  # The relay caps managed T3 Connect tunnels per account, so only these
+  # workers get one; the rest stay publish-only and pair over Tailscale.
+  t3ManagedTunnelHosts = [ "kamino5" ];
+  t3ConnectMode = if builtins.elem name t3ManagedTunnelHosts then "managed" else "publish-only";
   authorizedKey = pkgs.writeText "kamino-authorized-key.pub" (
     (import ../pubkeys.nix).galactica + "\n"
   );
@@ -107,7 +111,7 @@ inputs.home-manager.lib.homeManagerConfiguration {
               export PATH=${config.home.homeDirectory}/.bun/bin:${pkgs.nodejs}/bin:$PATH
               export XDG_RUNTIME_DIR=/run/user/0
               LD_LIBRARY_PATH=${pkgs.stdenv.cc.cc.lib}/lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH} \
-                $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} t3-connect ${config.home.homeDirectory}/.bun/bin/t3
+                $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} t3-connect ${config.home.homeDirectory}/.bun/bin/t3 ${t3ConnectMode}
             '';
 
         systemd.user.services.herdr-server = {
