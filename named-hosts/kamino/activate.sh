@@ -59,6 +59,10 @@ t3-connect)
     echo "t3 is not installed; skipping T3 Connect provisioning." >&2
     exit 0
   fi
+  # The t3 native binary links libatomic, which Kamino hosts do not ship.
+  if [ -n "${3:-}" ]; then
+    export LD_LIBRARY_PATH="$3${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+  fi
 
   base="${T3CODE_HOME:-$HOME/.t3}"
   state="$base/runtime/service-state.json"

@@ -106,8 +106,7 @@ inputs.home-manager.lib.homeManagerConfiguration {
             ''
               export PATH=${config.home.homeDirectory}/.bun/bin:${pkgs.nodejs}/bin:$PATH
               export XDG_RUNTIME_DIR=/run/user/0
-              LD_LIBRARY_PATH=${pkgs.stdenv.cc.cc.lib}/lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH} \
-                $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} t3-connect ${config.home.homeDirectory}/.bun/bin/t3
+              $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} t3-connect ${config.home.homeDirectory}/.bun/bin/t3 ${pkgs.stdenv.cc.cc.lib}/lib
             '';
 
         systemd.user.services.herdr-server = {
