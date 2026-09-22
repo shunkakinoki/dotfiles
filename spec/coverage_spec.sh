@@ -597,6 +597,8 @@ config/openclaw/hydrate.sh
 config/opencode/activate.sh
 config/roborev/hydrate.sh
 config/serena/activate.sh
+config/t3code/activate-client-settings.sh
+config/t3code/activate-settings.sh
 home-manager/activation/deploy-agenix-secret.sh
 home-manager/activation/ensure-directory.sh
 home-manager/activation/ensure-tailscale-serve.sh
@@ -624,6 +626,7 @@ home-manager/services/obsidian/obsidian-git-trigger.sh
 home-manager/services/obsidian/obsidian-headless.sh
 home-manager/services/openclaw/activate.sh
 home-manager/services/openclaw/k3s-proxy.sh
+home-manager/services/openclaw/state-maintenance.sh
 home-manager/services/qmd/activate.sh
 home-manager/services/roborev/activate.sh
 home-manager/services/roborev/start.sh
