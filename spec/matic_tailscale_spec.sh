@@ -24,6 +24,11 @@ When run bash -c "grep -F '\"--accept-dns=true\"' '$CONFIG'"
 The output should include '--accept-dns=true'
 End
 
+It 'enables tailscale SSH explicitly'
+When run bash -c "grep -F '\"--ssh=true\"' '$CONFIG'"
+The output should include '--ssh=true'
+End
+
 It 'preserves its live hostname and route policy'
 When run bash -c "grep -F '\"--hostname=matic\"' '$CONFIG' && grep -F '\"--accept-routes=false\"' '$CONFIG'"
 The output should include '--hostname=matic'
@@ -60,6 +65,20 @@ End
 It 'trusts the tailscale interface in the firewall'
 When run bash -c "grep -F 'trustedInterfaces = [ \"tailscale0\" ];' '$CONFIG'"
 The output should include 'tailscale0'
+End
+
+It 'keeps a key-only OpenSSH recovery path behind the tailnet firewall'
+When run bash -c "grep -F 'services.openssh = {' '$CONFIG' && grep -F 'openFirewall = false;' '$CONFIG' && grep -F 'PasswordAuthentication = false;' '$CONFIG' && grep -F 'PermitRootLogin = \"no\";' '$CONFIG'"
+The output should include 'services.openssh'
+The output should include 'openFirewall = false'
+The output should include 'PasswordAuthentication = false'
+The output should include 'PermitRootLogin = "no"'
+End
+
+It 'authorizes the Galactica host key for recovery'
+When run bash -c "grep -F 'hostPublicKeys = import ../pubkeys.nix;' '$CONFIG' && grep -F 'hostPublicKeys.galactica' '$CONFIG'"
+The output should include 'hostPublicKeys'
+The output should include 'hostPublicKeys.galactica'
 End
 
 End

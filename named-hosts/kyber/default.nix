@@ -22,6 +22,10 @@ let
     "--accept-dns=true"
     "--advertise-exit-node"
   ];
+  sshAuthorizedKeys = import ../ssh-authorized-keys.nix;
+  authorizedKeysFile = pkgs.writeText "kyber-authorized-keys" (
+    pkgs.lib.concatStringsSep "\n" sshAuthorizedKeys.kyber + "\n"
+  );
 in
 home-manager.lib.homeManagerConfiguration {
   inherit pkgs;
@@ -90,6 +94,10 @@ home-manager.lib.homeManagerConfiguration {
         # Ensure SSH directory exists before agenix tries to deploy secrets
         home.activation.ensureSshDirectory = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-directory.sh}" "700" "${config.home.homeDirectory}/.ssh"
+        '';
+
+        home.activation.authorizeFleetSsh = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/authorize-ssh-keys.sh}" ${authorizedKeysFile} "${config.home.homeDirectory}/.ssh" ${pkgs.openssh}/bin/ssh-keygen
         '';
 
         # Ensure agenix config directory exists

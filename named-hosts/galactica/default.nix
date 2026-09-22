@@ -9,6 +9,7 @@ let
     "--accept-routes=true"
     "--ssh=false"
   ];
+  sshAuthorizedKeys = import ../ssh-authorized-keys.nix;
   darwin-modules = import ../../hosts/darwin {
     inherit inputs username tailscaleSetFlags;
     hostname = "galactica";
@@ -33,6 +34,7 @@ inputs.nix-darwin.lib.darwinSystem {
       # The standalone macOS Tailscale app cannot host Tailscale SSH. Enable
       # Apple's SSH server so Galactica remains reachable over its tailnet IP.
       services.openssh.enable = true;
+      users.users.${username}.openssh.authorizedKeys.keys = sshAuthorizedKeys.galactica;
 
       home-manager.users.${username} =
         { pkgs, ... }:

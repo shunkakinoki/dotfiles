@@ -33,7 +33,7 @@ the intended tailnet. On an enrolled machine, the command reapplies the declared
 name and preferences without creating a new device.
 
 Host login uses Tailscale SSH, authorized by the tailnet policy as root. Activation
-adds the declared Galactica public key from `named-hosts/pubkeys.nix` to root's
+adds the declared Galactica, Kyber, and Matic public keys to root's
 `authorized_keys`, preserving provider keys and other existing entries. It sets
 the SSH directory/file permissions to `700`/`600` and does not copy private keys.
 Clients with a different key still need that public key provisioned separately.
@@ -222,7 +222,7 @@ neither is live activation proof.
 
 Use the provider console or supplied IP first. Keep console access and an
 existing SSH session open until a second connection works over Tailscale.
-The declared Galactica public key is installed during activation. Provision any
+The declared core-host public keys are installed during activation. Provision any
 additional administrator public key without replacing existing entries. For
 independent first-use verification, obtain the SSH host-key fingerprint through
 the console before connecting.
@@ -335,7 +335,7 @@ Inspect `~/.ssh/config.local` if a local override changes the generated target.
 ### 3. Verify the login
 
 Tailscale SSH authorizes by tailnet identity, not client keys. Activation still
-installs the Galactica public key from `named-hosts/pubkeys.nix` into
+installs the core-host keys declared by `named-hosts/ssh-authorized-keys.nix` into
 `/root/.ssh/authorized_keys` as a fallback.
 
 ```sh

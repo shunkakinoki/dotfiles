@@ -88,17 +88,17 @@ The status should be success
 The contents of file "$TEST_ROOT/commands" should equal $'hostnamectl set-hostname kamino100\nloginctl enable-linger root\nsystemctl start user@0.service'
 End
 
+It 'starts the Herdr server after reloading user units'
+When run run_phase start-herdr "$TEST_ROOT/bin/systemctl"
+The status should be success
+The contents of file "$TEST_ROOT/commands" should equal $'systemctl --user daemon-reload\nsystemctl --user enable --now herdr-server.service'
+End
+
 It 'enrolls Tailscale with the supplied arguments'
 When run bash -c "PATH='$TEST_ROOT/bin:/usr/bin:/bin' COMMAND_LOG='$TEST_ROOT/commands' bash '$SCRIPT' tailscale kamino100 '$TEST_ROOT/bin/tailscale' --hostname=kamino100 --accept-dns=true --ssh=true"
 The status should be success
 The output should include 'Tailscale enrollment'
 The contents of file "$TEST_ROOT/commands" should include 'tailscale up --hostname=kamino100 --accept-dns=true --ssh=true'
-End
-
-It 'authorizes a public key without duplicating it'
-When run bash -c "PATH='$TEST_ROOT/bin:/usr/bin:/bin' COMMAND_LOG='$TEST_ROOT/commands' bash '$SCRIPT' authorize-ssh '$TEST_ROOT/client.pub' '$TEST_ROOT/ssh' '$TEST_ROOT/bin/ssh-keygen'"
-The status should be success
-The contents of file "$TEST_ROOT/ssh/authorized_keys" should include 'ssh-ed25519 AAAAexample'
 End
 
 It 'provisions publish-only T3 Connect with the device flow on first run'
