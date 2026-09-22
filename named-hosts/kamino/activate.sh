@@ -23,6 +23,12 @@ user-manager)
   loginctl enable-linger root
   systemctl start user@0.service
   ;;
+start-herdr)
+  systemctl_bin="${2:?systemctl binary required}"
+  export XDG_RUNTIME_DIR=/run/user/0
+  "$systemctl_bin" --user daemon-reload || true
+  "$systemctl_bin" --user enable --now herdr-server.service || true
+  ;;
 tailscale)
   name="${2:?name required}"
   tailscale_bin="${3:?tailscale binary required}"

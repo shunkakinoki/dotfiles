@@ -74,10 +74,7 @@ inputs.home-manager.lib.homeManagerConfiguration {
           ${pkgs.bash}/bin/bash ${./activate.sh} check ${lib.escapeShellArg name} "${config.xdg.configHome}/kamino/name"
         '';
         home.activation.authorizeKaminoSsh = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/authorize-ssh-keys.sh}" \
-            ${authorizedKeysFile} \
-            "${config.home.homeDirectory}/.ssh" \
-            ${pkgs.openssh}/bin/ssh-keygen
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/authorize-ssh-keys.sh}" ${authorizedKeysFile} "${config.home.homeDirectory}/.ssh" ${pkgs.openssh}/bin/ssh-keygen
         '';
         home.activation.startKaminoUserManager =
           config.lib.dag.entryBetween [ "reloadSystemd" ] [ "writeBoundary" ]
@@ -124,8 +121,7 @@ inputs.home-manager.lib.homeManagerConfiguration {
         # like the T3 phase does so a worker always answers after activation.
         home.activation.startKaminoHerdrServer = config.lib.dag.entryAfter [ "startKaminoUserManager" ] ''
           export XDG_RUNTIME_DIR=/run/user/0
-          $DRY_RUN_CMD ${pkgs.systemd}/bin/systemctl --user daemon-reload || true
-          $DRY_RUN_CMD ${pkgs.systemd}/bin/systemctl --user enable --now herdr-server.service || true
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} start-herdr ${pkgs.systemd}/bin/systemctl
         '';
 
         systemd.user.services.herdr-server = {

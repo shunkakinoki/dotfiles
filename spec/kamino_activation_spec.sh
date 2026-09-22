@@ -88,6 +88,12 @@ The status should be success
 The contents of file "$TEST_ROOT/commands" should equal $'hostnamectl set-hostname kamino100\nloginctl enable-linger root\nsystemctl start user@0.service'
 End
 
+It 'starts the Herdr server after reloading user units'
+When run run_phase start-herdr "$TEST_ROOT/bin/systemctl"
+The status should be success
+The contents of file "$TEST_ROOT/commands" should equal $'systemctl --user daemon-reload\nsystemctl --user enable --now herdr-server.service'
+End
+
 It 'enrolls Tailscale with the supplied arguments'
 When run bash -c "PATH='$TEST_ROOT/bin:/usr/bin:/bin' COMMAND_LOG='$TEST_ROOT/commands' bash '$SCRIPT' tailscale kamino100 '$TEST_ROOT/bin/tailscale' --hostname=kamino100 --accept-dns=true --ssh=true"
 The status should be success

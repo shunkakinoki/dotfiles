@@ -97,10 +97,7 @@ home-manager.lib.homeManagerConfiguration {
         '';
 
         home.activation.authorizeFleetSsh = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/authorize-ssh-keys.sh}" \
-            ${authorizedKeysFile} \
-            "${config.home.homeDirectory}/.ssh" \
-            ${pkgs.openssh}/bin/ssh-keygen
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/authorize-ssh-keys.sh}" ${authorizedKeysFile} "${config.home.homeDirectory}/.ssh" ${pkgs.openssh}/bin/ssh-keygen
         '';
 
         # Ensure agenix config directory exists
