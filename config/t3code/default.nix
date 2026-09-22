@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }:
@@ -7,6 +8,8 @@ let
   activateSettings = ./activate-settings.sh;
   activateClientSettings = ./activate-client-settings.sh;
   stateDir = "${config.home.homeDirectory}/.t3/userdata";
+  # T3 owns t3code.service on Linux; Darwin has no unit to reload.
+  systemctlBin = lib.optionalString pkgs.stdenv.hostPlatform.isLinux "${pkgs.systemd}/bin/systemctl";
 in
 {
   # T3 Code owns ~/.t3/userdata/settings.json and rewrites it as provider state
@@ -19,7 +22,8 @@ in
       "${pkgs.jq}/bin/jq" \
       "${config.home.homeDirectory}/dotfiles/.env" \
       "${stateDir}" \
-      "${./codex-home/config.toml}"
+      "${./codex-home/config.toml}" \
+      "${systemctlBin}"
   '';
 
   # Favorites and model visibility are device-local; T3 rewrites this file too.

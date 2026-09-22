@@ -3,7 +3,7 @@
 # settings file. T3 rewrites this file on every load and setting change, so this
 # only ever adds or updates the managed instances and leaves the rest alone.
 #
-# Usage: activate-settings.sh <managed_settings_json> <jq_bin> <env_file> <state_dir> <codex_home_config>
+# Usage: activate-settings.sh <managed_settings_json> <jq_bin> <env_file> <state_dir> <codex_home_config> [systemctl_bin]
 set -euo pipefail
 
 MANAGED_SETTINGS="$1"
@@ -11,9 +11,12 @@ JQ_BIN="$2"
 ENV_FILE="$3"
 STATE_DIR="$4"
 CODEX_HOME_CONFIG="${5:-}"
+SYSTEMCTL_BIN="${6:-}"
 CODEX_HOME_DIR="${HOME}/.codex-t3/cliproxy"
 
 SETTINGS="${STATE_DIR}/settings.json"
+SECRETS_DIR="${STATE_DIR}/secrets"
+KEY_PLACEHOLDER='__CLIPROXY_API_KEY__'
 TEMP_SETTINGS=""
 TEMP_CODEX_AUTH=""
 
@@ -43,6 +46,38 @@ if [ -z "$CLIPROXY_API_KEY" ] && [ -f "$ENV_FILE" ]; then
     printf '%s' "${CLIPROXY_API_KEY:-}"
   )"
 fi
+
+# T3 Code copies a `sensitive` instance value into its own secret store, so a
+# render that left the placeholder behind is kept as if it were a credential and
+# every CLIProxy request fails. Drop those files; the server re-reads the value
+# from the settings below.
+purged_secret=false
+if [ -d "$SECRETS_DIR" ]; then
+  for secret in "$SECRETS_DIR"/provider-env-*.bin; do
+    [ -f "$secret" ] || continue
+    [ "$(cat "$secret")" = "$KEY_PLACEHOLDER" ] || continue
+    rm -f "$secret"
+    purged_secret=true
+  done
+fi
+
+# The dotenv is hydrated out of band, so a host can activate before it lands.
+# Reuse the credential T3 already holds rather than blanking a working instance.
+previous_key=''
+if [ -f "$SETTINGS" ] && "$JQ_BIN" empty "$SETTINGS" >/dev/null 2>&1; then
+  # shellcheck disable=SC2016
+  previous_key="$("$JQ_BIN" -r --arg placeholder "$KEY_PLACEHOLDER" '
+    [.providerInstances[]?.environment[]?
+     | select(.name == "ANTHROPIC_AUTH_TOKEN" or .name == "CLIPROXY_API_KEY")
+     | .value
+     | select(type == "string" and . != "" and . != $placeholder)]
+    | first // ""
+  ' "$SETTINGS")"
+fi
+if [ -z "$CLIPROXY_API_KEY" ]; then
+  CLIPROXY_API_KEY="$previous_key"
+fi
+
 if [ -z "$CLIPROXY_API_KEY" ]; then
   echo "Warning: CLIPROXY_API_KEY not found; the T3 Code CLIProxy instances stay unauthenticated" >&2
 fi
@@ -90,7 +125,7 @@ if [ -f "$SETTINGS" ]; then
          * ($managed_settings.providerInstances
             | walk(
                 if type == "string" then
-                  if . == "__CLIPROXY_API_KEY__" and $key != "" then $key
+                  if . == "__CLIPROXY_API_KEY__" then $key
                   elif . == "__CLIPROXY_BASE_URL__" then $base
                   else . end
                 else . end
@@ -103,7 +138,7 @@ else
     | $managed_settings
     | .providerInstances |= walk(
         if type == "string" then
-          if . == "__CLIPROXY_API_KEY__" and $key != "" then $key
+          if . == "__CLIPROXY_API_KEY__" then $key
           elif . == "__CLIPROXY_BASE_URL__" then $base
           else . end
         else . end
@@ -114,3 +149,13 @@ fi
 mv -f "$TEMP_SETTINGS" "$SETTINGS"
 chmod 600 "$SETTINGS"
 trap - EXIT
+
+# T3 Code reads the instance environment when it loads, so a credential that
+# only became resolvable on this pass reaches the providers at the next restart.
+# Steady-state activations change neither value and leave running sessions be.
+if [ -n "$SYSTEMCTL_BIN" ] && [ -x "$SYSTEMCTL_BIN" ] &&
+  { [ "$purged_secret" = true ] ||
+    { [ -n "$CLIPROXY_API_KEY" ] && [ "$CLIPROXY_API_KEY" != "$previous_key" ]; }; }; then
+  "$SYSTEMCTL_BIN" --user restart t3code.service >/dev/null 2>&1 ||
+    echo "Warning: could not restart t3code.service to pick up the CLIProxy credential" >&2
+fi
