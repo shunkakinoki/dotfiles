@@ -48,6 +48,36 @@
     inherit (prev.stdenv.hostPlatform) system;
   })
   (_: prev: {
+    # The orchestration repo pins `bun@1.4.2` and its bootstrap
+    # (`scripts/orchestration-bootstrap.ts`) refuses to run without
+    # `process.execve`, which the locked nixpkgs-unstable bun (1.3.13) lacks.
+    # Every fleet lane shells out to `$HOME/.bun/bin/bun`, so a stale bun fails
+    # `beads:verify` and lane dispatch fleet-wide. Pin the release the repo
+    # declares; the derivation only installs the released binary.
+    bun = prev.bun.overrideAttrs (
+      finalAttrs: old: {
+        version = "1.4.2";
+        __intentionallyOverridingVersion = true;
+        passthru = old.passthru // {
+          sources = {
+            "aarch64-darwin" = prev.fetchurl {
+              url = "https://github.com/oven-sh/bun/releases/download/bun-v${finalAttrs.version}/bun-darwin-aarch64.zip";
+              hash = "sha256-kJh6OhbX21VtiGrD1VHnttPt8KHPQ6yu1iLoZ2vh0S8=";
+            };
+            "aarch64-linux" = prev.fetchurl {
+              url = "https://github.com/oven-sh/bun/releases/download/bun-v${finalAttrs.version}/bun-linux-aarch64.zip";
+              hash = "sha256-VDKLvC2cjgyfiSxUTWbFeoO4QTnjSQnl7oF1jxrI/ac=";
+            };
+            "x86_64-linux" = prev.fetchurl {
+              url = "https://github.com/oven-sh/bun/releases/download/bun-v${finalAttrs.version}/bun-linux-x64-baseline.zip";
+              hash = "sha256-xngEDxT+BEDrg503y9DOTAUaMtpygGrJfeamqra/co8=";
+            };
+          };
+        };
+      }
+    );
+  })
+  (_: prev: {
     # Use the first tagged release that includes --attach on issue and PR commands.
     # gh's go.mod requires Go 1.27, newer than the pinned nixpkgs default.
     gh = (prev.gh.override { buildGoModule = prev.buildGo127Module; }).overrideAttrs (_: {
