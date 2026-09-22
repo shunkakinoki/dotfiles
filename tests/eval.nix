@@ -222,6 +222,11 @@ let
         let
           kamino = import ../named-hosts/kamino { inherit inputs; };
           cfg = kamino.config;
+          kamino1 = import ../named-hosts/kamino {
+            inherit inputs;
+            name = "kamino1";
+          };
+          kamino1Cfg = kamino1.config;
         in
         assert cfg.home.username == "root";
         assert cfg.home.homeDirectory == "/root";
@@ -250,6 +255,20 @@ let
         assert cfg.systemd.user.services.herdr-server.Install.WantedBy == [ "default.target" ];
         assert cfg.systemd.user.services.herdr-server.Unit.X-SwitchMethod == "restart";
         assert cfg.systemd.user.services.herdr-server.Service.EnvironmentFile == [ "-/root/dotfiles/.env" ];
+        assert kamino1Cfg.age.identityPaths == [ "/etc/ssh/ssh_host_ed25519_key" ];
+        assert kamino1Cfg.age.secrets."agents-prd.env".path == "/root/.config/agenix/agents-prd.env";
+        assert kamino1Cfg.age.secrets."agents-prd.env".mode == "0400";
+        assert lib.hasInfix "DOTFILES_ENV_FILE /root/.config/agenix/agents-prd.env"
+          kamino1Cfg.programs.fish.shellInit;
+        assert lib.hasInfix "DOTFILES_ENV_FILE=/root/.config/agenix/agents-prd.env"
+          kamino1Cfg.programs.bash.bashrcExtra;
+        assert lib.hasInfix "DOTFILES_ENV_FILE=/root/.config/agenix/agents-prd.env"
+          kamino1Cfg.programs.zsh.initContent;
+        assert
+          kamino1Cfg.systemd.user.services.herdr-server.Service.EnvironmentFile == [
+            "-/root/dotfiles/.env"
+            "-/root/.config/agenix/agents-prd.env"
+          ];
         assert lib.elem "BEADS_DOLT_AUTO_START=0"
           cfg.systemd.user.services.herdr-server.Service.Environment;
         assert lib.elem "BEADS_DOLT_SERVER_MODE=1"

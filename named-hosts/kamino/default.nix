@@ -34,6 +34,21 @@ let
   # workers get one; the rest stay publish-only and pair over Tailscale.
   t3ManagedTunnelHosts = [ "kamino5" ];
   t3ConnectMode = if builtins.elem name t3ManagedTunnelHosts then "managed" else "publish-only";
+  dopplerSecretFile = ./keys + "/agents-prd-${name}.age";
+  hasDopplerSecret = builtins.pathExists dopplerSecretFile;
+  dopplerEnvironmentFile = "/root/.config/agenix/agents-prd.env";
+  dopplerPosixShellInit = ''
+    _hm_agents_prd_previous_env_file="''${DOTFILES_ENV_FILE-}"
+    _hm_agents_prd_had_env_file="''${DOTFILES_ENV_FILE+x}"
+    DOTFILES_ENV_FILE=${dopplerEnvironmentFile}
+    _hm_load_env_file
+    if [ "$_hm_agents_prd_had_env_file" = x ]; then
+      export DOTFILES_ENV_FILE="$_hm_agents_prd_previous_env_file"
+    else
+      unset DOTFILES_ENV_FILE
+    fi
+    unset _hm_agents_prd_previous_env_file _hm_agents_prd_had_env_file
+  '';
   authorizedKey = pkgs.writeText "kamino-authorized-key.pub" (
     (import ../pubkeys.nix).galactica + "\n"
   );
@@ -68,6 +83,31 @@ inputs.home-manager.lib.homeManagerConfiguration {
         xdg.enable = true;
         systemd.user.startServices = true;
         xdg.configFile."kamino/name".text = "${name}\n";
+
+        # Every active worker receives a separately encrypted read-only token
+        # for the fleet-only agents/prd config. The SSH host key decrypts only
+        # this machine's token; Galactica remains an operator recovery recipient.
+        age.identityPaths = lib.mkIf hasDopplerSecret [ "/etc/ssh/ssh_host_ed25519_key" ];
+        age.secrets."agents-prd.env" = lib.mkIf hasDopplerSecret {
+          file = dopplerSecretFile;
+          path = dopplerEnvironmentFile;
+          mode = "0400";
+        };
+
+        # Remote planner dispatch enters through the host's login shell. Load
+        # the scoped token after the ordinary dotenv so a stale local value
+        # cannot override the per-host identity, including on a worker that has
+        # not switched its default shell to Fish yet.
+        programs.bash.bashrcExtra = lib.mkIf hasDopplerSecret (lib.mkAfter dopplerPosixShellInit);
+        programs.zsh.initContent = lib.mkIf hasDopplerSecret (lib.mkAfter dopplerPosixShellInit);
+        programs.fish.shellInit = lib.mkIf hasDopplerSecret (
+          lib.mkAfter ''
+            begin
+              set -lx DOTFILES_ENV_FILE ${lib.escapeShellArg dopplerEnvironmentFile}
+              _hm_load_env_file
+            end
+          ''
+        );
 
         home.activation.checkKaminoIdentity = config.lib.dag.entryBefore [ "writeBoundary" ] ''
           ${pkgs.bash}/bin/bash ${./activate.sh} check ${lib.escapeShellArg name} "${config.xdg.configHome}/kamino/name"
@@ -129,7 +169,10 @@ inputs.home-manager.lib.homeManagerConfiguration {
               "SHELL=${pkgs.fish}/bin/fish"
               "PATH=/root/.nix-profile/bin:/etc/profiles/per-user/root/bin:/nix/var/nix/profiles/default/bin:/usr/local/bin:/usr/bin:/bin"
             ];
-            EnvironmentFile = [ "-${config.home.homeDirectory}/dotfiles/.env" ];
+            EnvironmentFile = [
+              "-${config.home.homeDirectory}/dotfiles/.env"
+            ]
+            ++ lib.optionals hasDopplerSecret [ "-${dopplerEnvironmentFile}" ];
           };
           Install.WantedBy = [ "default.target" ];
         };
