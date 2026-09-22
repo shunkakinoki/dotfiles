@@ -46,5 +46,10 @@ It 'uses the shunkakinoki login'
 When run bash -c "grep -A2 '\"matic\" = {' '$SSH_CONFIG_NIX'"
 The output should include 'User = "shunkakinoki"'
 End
+
+It 'pins the current native OpenSSH host key'
+When run bash -c "grep '^matic.tail950b36.ts.net ssh-ed25519 ' home-manager/programs/ssh/known_hosts | ssh-keygen -lf -"
+The output should include 'SHA256:5oy61cZd6zSF6vrEcSRG6olYvfogp+qkJB14sOPaTVY'
+End
 End
 End
