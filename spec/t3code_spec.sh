@@ -131,4 +131,28 @@ JSON
 When run env HOME="$TEMP_DIR" bash -c "bash '$CLIENT_SCRIPT' '$MANAGED_CLIENT' \"\$(command -v jq)\" '$STATE_DIR' && jq -e '([.favorites[] | select(.provider == \"codex-cliproxy\")] | length == 1) and (.favorites | map(.provider) | index(\"opencode\") != null)' '$STATE_DIR/client-settings.json' >/dev/null"
 The status should be success
 End
+
+It 'merges the managed load-balancing toggle over an existing value'
+cat >"$STATE_DIR/client-settings.json" <<'JSON'
+{"loadBalancingEnabled": false, "loadBalancingWeights": {"env-a": 0}}
+JSON
+When run env HOME="$TEMP_DIR" bash -c "bash '$CLIENT_SCRIPT' '$MANAGED_CLIENT' \"\$(command -v jq)\" '$STATE_DIR' && jq -e '.loadBalancingEnabled == true and .loadBalancingWeights[\"env-a\"] == 0' '$STATE_DIR/client-settings.json' >/dev/null"
+The status should be success
+End
+
+It 'overrides a managed weight, keeps a device-local one, and adds the rest'
+cat >"$STATE_DIR/client-settings.json" <<'JSON'
+{"loadBalancingWeights": {"env-a": 0, "df67cbf5-ef55-405a-91ca-d5b506c339bc": 50}}
+JSON
+When run env HOME="$TEMP_DIR" bash -c "bash '$CLIENT_SCRIPT' '$MANAGED_CLIENT' \"\$(command -v jq)\" '$STATE_DIR' && jq -e '.loadBalancingWeights[\"df67cbf5-ef55-405a-91ca-d5b506c339bc\"] == 25 and .loadBalancingWeights[\"env-a\"] == 0 and ([.loadBalancingWeights[] | select(. == 100)] | length) == 6' '$STATE_DIR/client-settings.json' >/dev/null"
+The status should be success
+End
+
+It 'leaves the load-balancing toggle alone when the template omits it'
+cat >"$STATE_DIR/client-settings.json" <<'JSON'
+{"loadBalancingEnabled": false}
+JSON
+When run env HOME="$TEMP_DIR" bash -c "jq 'del(.loadBalancingEnabled)' '$MANAGED_CLIENT' >'$TEMP_DIR/managed-without-toggle.json' && bash '$CLIENT_SCRIPT' '$TEMP_DIR/managed-without-toggle.json' \"\$(command -v jq)\" '$STATE_DIR' && jq -e '.loadBalancingEnabled == false' '$STATE_DIR/client-settings.json' >/dev/null"
+The status should be success
+End
 End
