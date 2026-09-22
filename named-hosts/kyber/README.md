@@ -52,6 +52,8 @@ kyber  # Fish abbreviation that runs: ssh kyber
 Remote SSH should go through Tailscale. Latitude project firewall restricts
 TCP/22 to `100.64.0.0/10`, and host activation drops new WAN ingress on the
 public NIC (IPv4 + IPv6). Prefer keeping provider SG and host firewall aligned.
+Home Manager activation also adds the Kamino1 through Kamino6 keys declared by
+`named-hosts/ssh-authorized-keys.nix`, preserving provider and bootstrap keys.
 
 ## Security Posture
 

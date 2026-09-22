@@ -95,12 +95,6 @@ The output should include 'Tailscale enrollment'
 The contents of file "$TEST_ROOT/commands" should include 'tailscale up --hostname=kamino100 --accept-dns=true --ssh=true'
 End
 
-It 'authorizes a public key without duplicating it'
-When run bash -c "PATH='$TEST_ROOT/bin:/usr/bin:/bin' COMMAND_LOG='$TEST_ROOT/commands' bash '$SCRIPT' authorize-ssh '$TEST_ROOT/client.pub' '$TEST_ROOT/ssh' '$TEST_ROOT/bin/ssh-keygen'"
-The status should be success
-The contents of file "$TEST_ROOT/ssh/authorized_keys" should include 'ssh-ed25519 AAAAexample'
-End
-
 It 'provisions publish-only T3 Connect with the device flow on first run'
 When run env T3CODE_HOME="$TEST_ROOT/fresh-t3" PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" t3-connect "$TEST_ROOT/bin/t3"
 The status should be success

@@ -41,6 +41,7 @@ import ../../hosts/nixos {
           "--ssh=true"
         ];
         hostPublicKeys = import ../pubkeys.nix;
+        sshAuthorizedKeys = import ../ssh-authorized-keys.nix;
       in
       {
         # Boot loader (EFI/systemd-boot)
@@ -123,7 +124,10 @@ import ../../hosts/nixos {
             PermitRootLogin = "no";
           };
         };
-        users.users.${username}.openssh.authorizedKeys.keys = [ hostPublicKeys.galactica ];
+        users.users.${username}.openssh.authorizedKeys.keys = [
+          hostPublicKeys.galactica
+        ]
+        ++ sshAuthorizedKeys.matic;
 
         # nixos-rebuild starts tailscaled-set at boot or when its unit changes.
         # Reapply the same declared preferences during every switch as well.

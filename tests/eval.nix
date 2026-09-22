@@ -7,6 +7,16 @@
 let
   isDarwin = lib.hasSuffix "darwin" system;
   tailscaleServeRoutes = import ../home-manager/modules/tailscale/routes.nix;
+  publicKeys = import ../named-hosts/pubkeys.nix;
+  sshAuthorizedKeys = import ../named-hosts/ssh-authorized-keys.nix;
+  kaminoPublicKeys = [
+    publicKeys.kamino1
+    publicKeys.kamino2
+    publicKeys.kamino3
+    publicKeys.kamino4
+    publicKeys.kamino5
+    publicKeys.kamino6
+  ];
 
   # Helper: reconstruct a darwin configuration from hosts/darwin
   mkDarwinConfig =
@@ -77,6 +87,8 @@ let
       assert lib.hasInfix "--accept-dns=true" activation;
       assert lib.hasInfix "--accept-routes=true" activation;
       assert lib.hasInfix "--ssh=false" activation;
+      assert galactica.config.users.users.shunkakinoki.openssh.authorizedKeys.keys == kaminoPublicKeys;
+      assert sshAuthorizedKeys.galactica == kaminoPublicKeys;
       mkEvalCheck "darwin-galactica" galactica.system;
   };
 
@@ -132,7 +144,8 @@ let
       assert cfg.services.openssh.settings.PermitRootLogin == "no";
       assert
         cfg.users.users.shunkakinoki.openssh.authorizedKeys.keys
-        == [ (import ../named-hosts/pubkeys.nix).galactica ];
+        == [ publicKeys.galactica ] ++ kaminoPublicKeys;
+      assert sshAuthorizedKeys.matic == kaminoPublicKeys;
       assert beads.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "kyber.tail950b36.ts.net";
       assert beads.home.sessionVariables.BEADS_NODE_ID == "kyber";
       assert beads.home.sessionVariables.BD_EVENTS_JOURNAL == "1";
@@ -239,6 +252,13 @@ let
         assert !cfg.nix.gc.automatic;
         assert !(cfg.xdg.configFile ? "nix/nix.conf");
         assert lib.hasInfix "/bin/ssh-keygen" cfg.home.activation.authorizeKaminoSsh.data;
+        assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeKaminoSsh.data;
+        assert
+          sshAuthorizedKeys.kamino == [
+            publicKeys.galactica
+            publicKeys.kyber
+            publicKeys.matic
+          ];
         assert !(cfg.home.activation ? hardenSshd);
         assert !(cfg.home.activation ? setupK3s);
         assert !(cfg.systemd.user.services ? openclaw-gateway);
@@ -367,6 +387,9 @@ let
             "--advertise-exit-node"
           ];
         assert cfg.systemd.user.systemctlPath == "/usr/bin/systemctl";
+        assert lib.hasInfix "/bin/ssh-keygen" cfg.home.activation.authorizeFleetSsh.data;
+        assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeFleetSsh.data;
+        assert sshAuthorizedKeys.kyber == kaminoPublicKeys;
         assert !(cfg.systemd.user.services ? dolt);
         assert cfg.home.activation ? installDoltSystemService;
         assert cfg.systemd.user.services ? dolt-linear-sync;
