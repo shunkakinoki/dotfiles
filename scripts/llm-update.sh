@@ -96,7 +96,7 @@ done <<<"$free_rows"
 # Provider-specific upstream slugs that intentionally differ from the canonical
 # alias stored in models.json.
 add_model_override "gpt-image" "openrouter" "openai/gpt-5.4-image-2"
-add_model_override "gpt-luna" "openrouter" "openai/gpt-5.6-luna"
+add_model_override "gpt-luna" "openrouter" "openai/gpt-6-luna"
 # The OpenRouter account has no deepseek preset; call the public model id.
 add_model_override "deepseek-flash" "openrouter" "deepseek/deepseek-v4.1-flash"
 add_model_override "deepseek-flash" "0731" "deepseek-v4-flash-0731"

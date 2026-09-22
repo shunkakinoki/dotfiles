@@ -4,7 +4,7 @@
   api_base: https://cliproxy.shunkakinoki.com/v1
   api_key_name: cliproxyapi
 - model_id: claude-opus
-  model_name: claude-opus-5
+  model_name: claude-opus-5-5
   api_base: https://cliproxy.shunkakinoki.com/v1
   api_key_name: cliproxyapi
 - model_id: claude-haiku
@@ -16,6 +16,6 @@
   api_base: https://cliproxy.shunkakinoki.com/v1
   api_key_name: cliproxyapi
 - model_id: gpt-luna
-  model_name: gpt-5.6-luna
+  model_name: gpt-6-luna
   api_base: https://cliproxy.shunkakinoki.com/v1
   api_key_name: cliproxyapi
