@@ -105,6 +105,12 @@ lib.mkIf host.isKyber {
     Service = {
       Type = "oneshot";
       ExecStart = "${stateMaintenance}/bin/openclaw-state-maintenance";
+      TimeoutStartSec = "30m";
+      IOAccounting = true;
+      IOReadBandwidthMax = "/ 20M";
+      IOWriteBandwidthMax = "/ 10M";
+      IOReadIOPSMax = "/ 100";
+      IOWriteIOPSMax = "/ 50";
       EnvironmentFile = [ "-${homeDir}/dotfiles/.env" ];
       Environment = [
         "HOME=${homeDir}"

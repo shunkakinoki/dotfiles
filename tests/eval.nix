@@ -366,6 +366,12 @@ let
         assert cfg.systemd.user.services.openclaw-gateway.Service.IOWriteBandwidthMax == "/ 10M";
         assert cfg.systemd.user.services.openclaw-gateway.Service.IOReadIOPSMax == "/ 100";
         assert cfg.systemd.user.services.openclaw-gateway.Service.IOWriteIOPSMax == "/ 50";
+        assert cfg.systemd.user.services.openclaw-state-maintenance.Service.TimeoutStartSec == "30m";
+        assert cfg.systemd.user.services.openclaw-state-maintenance.Service.IOAccounting;
+        assert cfg.systemd.user.services.openclaw-state-maintenance.Service.IOReadBandwidthMax == "/ 20M";
+        assert cfg.systemd.user.services.openclaw-state-maintenance.Service.IOWriteBandwidthMax == "/ 10M";
+        assert cfg.systemd.user.services.openclaw-state-maintenance.Service.IOReadIOPSMax == "/ 100";
+        assert cfg.systemd.user.services.openclaw-state-maintenance.Service.IOWriteIOPSMax == "/ 50";
         assert cfg.systemd.user.services.cass-daily.Service.IOAccounting;
         assert cfg.systemd.user.services.cass-daily.Service.IOReadBandwidthMax == "/ 10M";
         assert cfg.systemd.user.services.cass-daily.Service.IOWriteBandwidthMax == "/ 10M";
