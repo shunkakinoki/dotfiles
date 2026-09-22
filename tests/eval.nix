@@ -342,6 +342,16 @@ let
           cfg.home.activation.provisionKaminoT3Connect.data;
         assert lib.hasInfix (builtins.unsafeDiscardStringContext "${pkgs.stdenv.cc.cc.lib}/lib")
           cfg.home.activation.provisionKaminoT3Connect.data;
+        # A fresh worker can come up with herdr-server enabled yet dead, so
+        # activation must start it after the user manager is up.
+        assert activationPosition "startKaminoUserManager" < activationPosition "startKaminoHerdrServer";
+        assert lib.hasInfix "enable --now herdr-server.service"
+          cfg.home.activation.startKaminoHerdrServer.data;
+        # The orchestration repo requires bun >= 1.4 (`process.execve`), so the
+        # fleet-wide bun must not fall back to the locked nixpkgs 1.3.13.
+        assert lib.elem "bun" packageNames;
+        assert
+          (builtins.head (builtins.filter (p: lib.getName p == "bun") cfg.home.packages)).version == "1.4.2";
         # T3 Connect provisioning must bootstrap a protocol-3 launcher; a
         # protocol-2 `service install` would downgrade it and break desktop updates.
         assert lib.hasInfix "t3@nightly service install" (
