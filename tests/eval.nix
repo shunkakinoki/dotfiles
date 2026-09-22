@@ -9,6 +9,7 @@ let
   tailscaleServeRoutes = import ../home-manager/modules/tailscale/routes.nix;
   publicKeys = import ../named-hosts/pubkeys.nix;
   sshAuthorizedKeys = import ../named-hosts/ssh-authorized-keys.nix;
+  managedKnownHosts = import ../home-manager/programs/ssh/known-hosts.nix;
   kaminoPublicKeys = [
     publicKeys.kamino1
     publicKeys.kamino2
@@ -253,6 +254,16 @@ let
         assert !(cfg.xdg.configFile ? "nix/nix.conf");
         assert lib.hasInfix "/bin/ssh-keygen" cfg.home.activation.authorizeKaminoSsh.data;
         assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeKaminoSsh.data;
+        assert builtins.all
+          (name: lib.hasInfix "${name}.tail950b36.ts.net ${publicKeys.${name}}" managedKnownHosts)
+          [
+            "kamino1"
+            "kamino2"
+            "kamino3"
+            "kamino4"
+            "kamino5"
+            "kamino6"
+          ];
         assert
           sshAuthorizedKeys.kamino == [
             publicKeys.galactica
