@@ -36,6 +36,13 @@ The output should include 'IdentitiesOnly = "yes"'
 End
 End
 
+Describe 'galactica host'
+It 'pins the current native OpenSSH host key'
+When run bash -c "grep '^galactica.tail950b36.ts.net ssh-ed25519 ' home-manager/programs/ssh/known_hosts | ssh-keygen -lf -"
+The output should include 'SHA256:1W+X5BCZQYDQnlZp/9bAg+hkGbps27w04wies+BJTb8'
+End
+End
+
 Describe 'matic host'
 It 'resolves the bare matic alias so herdr --remote matic works'
 When run bash -c "grep 'HostName =' '$SSH_CONFIG_NIX' | grep matic"
