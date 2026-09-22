@@ -131,7 +131,6 @@ When run bash -c "bash '$PROCESSED_SCRIPT' '$TEST_HOME' && test -L '$TEST_HOME/.
 The output should equal 'still-symlink'
 End
 
-
 It 'bounds a stalled scan without leaving the scanner running'
 SLOW_FIND="$TEST_HOME/slow-find.sh"
 SLOW_PID="$TEST_HOME/slow-find.pid"
@@ -189,7 +188,6 @@ When run bash -c "bash '$PROCESSED_SCRIPT' '$TEST_HOME'; ls -l '$TEST_HOME/Libra
 The output should include 'rw-r--r--'
 End
 End
-
 
 Describe 'large-tree pruning'
 It 'prunes cache, package, runtime, and build-artifact directories'
