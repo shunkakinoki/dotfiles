@@ -373,8 +373,10 @@ let
         # A fresh worker can come up with herdr-server enabled yet dead, so
         # activation must start it after the user manager is up.
         assert activationPosition "startKaminoUserManager" < activationPosition "startKaminoHerdrServer";
-        assert lib.hasInfix "enable --now herdr-server.service"
-          cfg.home.activation.startKaminoHerdrServer.data;
+        assert lib.hasInfix "start-herdr" cfg.home.activation.startKaminoHerdrServer.data;
+        assert lib.hasInfix "enable --now herdr-server.service" (
+          builtins.readFile ../named-hosts/kamino/activate.sh
+        );
         # The orchestration repo requires bun >= 1.4 (`process.execve`), so the
         # fleet-wide bun must not fall back to the locked nixpkgs 1.3.13.
         assert lib.elem "bun" packageNames;
