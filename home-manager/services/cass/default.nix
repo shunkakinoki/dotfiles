@@ -42,6 +42,13 @@ in
     Service = {
       Type = "oneshot";
       ExecStart = "${pkgs.bash}/bin/bash ${./daily.sh}";
+      # Remote-session indexing reads the full CASS database. Keep the daily
+      # maintenance lane from saturating Kyber's root disk and starving K3s.
+      IOAccounting = true;
+      IOReadBandwidthMax = "/ 10M";
+      IOWriteBandwidthMax = "/ 10M";
+      IOReadIOPSMax = "/ 50";
+      IOWriteIOPSMax = "/ 25";
       Environment = [
         "CASS_DAILY_TIMEOUT_BIN=${timeoutBin}"
         "CASS_DAILY_SYNC_TIMEOUT=${syncTimeout}"
