@@ -62,6 +62,22 @@ inputs.home-manager.lib.homeManagerConfiguration {
           '';
         };
         programs.home-manager.enable = true;
+        programs.ssh.settings = {
+          galactica = {
+            HostName = "galactica.tail950b36.ts.net";
+            User = "shunkakinoki";
+            IdentityFile = lib.mkForce [ "/etc/ssh/ssh_host_ed25519_key" ];
+            IdentitiesOnly = "yes";
+          };
+          kyber = {
+            IdentityFile = lib.mkForce [ "/etc/ssh/ssh_host_ed25519_key" ];
+            IdentitiesOnly = "yes";
+          };
+          matic = {
+            IdentityFile = lib.mkForce [ "/etc/ssh/ssh_host_ed25519_key" ];
+            IdentitiesOnly = "yes";
+          };
+        };
         # The installer manages Determinate Nix and garbage collection. Reuse its
         # client during activation instead of mixing Lix with its configuration.
         nix.enable = lib.mkForce false;

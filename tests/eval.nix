@@ -259,6 +259,23 @@ let
             publicKeys.kyber
             publicKeys.matic
           ];
+        assert cfg.programs.ssh.settings.galactica.data.HostName == "galactica.tail950b36.ts.net";
+        assert cfg.programs.ssh.settings.galactica.data.User == "shunkakinoki";
+        assert
+          cfg.programs.ssh.settings.galactica.data.IdentityFile == [
+            "/etc/ssh/ssh_host_ed25519_key"
+          ];
+        assert cfg.programs.ssh.settings.galactica.data.IdentitiesOnly == "yes";
+        assert
+          cfg.programs.ssh.settings.kyber.data.IdentityFile == [
+            "/etc/ssh/ssh_host_ed25519_key"
+          ];
+        assert cfg.programs.ssh.settings.kyber.data.IdentitiesOnly == "yes";
+        assert
+          cfg.programs.ssh.settings.matic.data.IdentityFile == [
+            "/etc/ssh/ssh_host_ed25519_key"
+          ];
+        assert cfg.programs.ssh.settings.matic.data.IdentitiesOnly == "yes";
         assert !(cfg.home.activation ? hardenSshd);
         assert !(cfg.home.activation ? setupK3s);
         assert !(cfg.systemd.user.services ? openclaw-gateway);
