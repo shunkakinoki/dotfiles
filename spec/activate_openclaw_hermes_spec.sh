@@ -47,6 +47,11 @@ When run bash -c "gateway=\$(sed -n '/systemd.user.services.openclaw-gateway =/,
 The status should be success
 End
 
+It 'bounds scheduled state maintenance time and disk I/O'
+When run bash -c "maintenance=\$(sed -n '/systemd.user.services.openclaw-state-maintenance =/,/systemd.user.timers.openclaw-state-maintenance =/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -q 'TimeoutStartSec = \"30m\"' <<<\"\$maintenance\" && grep -q 'IOAccounting = true' <<<\"\$maintenance\" && grep -q 'IOReadBandwidthMax = \"/ 20M\"' <<<\"\$maintenance\" && grep -q 'IOWriteBandwidthMax = \"/ 10M\"' <<<\"\$maintenance\" && grep -q 'IOReadIOPSMax = \"/ 100\"' <<<\"\$maintenance\" && grep -q 'IOWriteIOPSMax = \"/ 50\"' <<<\"\$maintenance\""
+The status should be success
+End
+
 It 'loads the optional dotenv only into the gateway service'
 When run bash -c "gateway=\$(sed -n '/systemd.user.services.openclaw-gateway =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix'); proxy=\$(sed -n '/systemd.user.services.openclaw-k3s-proxy =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -qF 'EnvironmentFile = [ \"-\${homeDir}/dotfiles/.env\" ];' <<<\"\$gateway\" && ! grep -qF 'EnvironmentFile' <<<\"\$proxy\" && ! grep -R -q 'ASCII_BOX_API_KEY=' '$PWD/config/openclaw'"
 The status should be success
