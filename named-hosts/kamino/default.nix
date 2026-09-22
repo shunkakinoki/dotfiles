@@ -113,6 +113,17 @@ inputs.home-manager.lib.homeManagerConfiguration {
               $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} t3-connect ${config.home.homeDirectory}/.bun/bin/t3 ${t3ConnectMode} ${pkgs.stdenv.cc.cc.lib}/lib
             '';
 
+        # Home Manager links the unit into default.target.wants but does not
+        # start a pre-existing unit whose definition did not change, and a
+        # fresh host can come up with herdr-server enabled yet dead, leaving
+        # `herdr agent list` with `server_not_running`. Start it explicitly
+        # like the T3 phase does so a worker always answers after activation.
+        home.activation.startKaminoHerdrServer = config.lib.dag.entryAfter [ "startKaminoUserManager" ] ''
+          export XDG_RUNTIME_DIR=/run/user/0
+          $DRY_RUN_CMD ${pkgs.systemd}/bin/systemctl --user daemon-reload || true
+          $DRY_RUN_CMD ${pkgs.systemd}/bin/systemctl --user enable --now herdr-server.service || true
+        '';
+
         systemd.user.services.herdr-server = {
           Unit = {
             Description = "Herdr headless server";
