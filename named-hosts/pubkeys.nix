@@ -9,4 +9,6 @@
   kamino2 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA3VU0CIet9SStRUdhVKR3SFxGwK9fAyRiX6WIOts6TD root@kamino2";
   kamino3 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH9Vi2pvLR8j52bHJlZ3ghT1n+c5QugN3TQuqBIHJCOG root@kamino3";
   kamino4 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGXNZvPW1xedam57pTusOs1Pwsfbcs6OiAweb7f7TGr4 root@kamino4";
+  kamino5 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICtqqndnmPZKn3l6bNo34GutU4eCQMDn4AC57lh15TTR root@kamino5";
+  kamino6 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK2F6w6n8+6PxxukjZfvWL3Fnozhq7PXJJXI1D1C4Dkm root@kamino6";
 }
