@@ -361,6 +361,11 @@ let
         assert cfg.home.activation ? installDoltSystemService;
         assert cfg.systemd.user.services ? dolt-linear-sync;
         assert cfg.systemd.user.services.herdr-server.Service.Slice == "herdr.slice";
+        assert cfg.systemd.user.services.openclaw-gateway.Service.IOAccounting;
+        assert cfg.systemd.user.services.openclaw-gateway.Service.IOReadBandwidthMax == "/ 20M";
+        assert cfg.systemd.user.services.openclaw-gateway.Service.IOWriteBandwidthMax == "/ 10M";
+        assert cfg.systemd.user.services.openclaw-gateway.Service.IOReadIOPSMax == "/ 100";
+        assert cfg.systemd.user.services.openclaw-gateway.Service.IOWriteIOPSMax == "/ 50";
         assert cfg.systemd.user.services.cass-daily.Service.IOAccounting;
         assert cfg.systemd.user.services.cass-daily.Service.IOReadBandwidthMax == "/ 10M";
         assert cfg.systemd.user.services.cass-daily.Service.IOWriteBandwidthMax == "/ 10M";

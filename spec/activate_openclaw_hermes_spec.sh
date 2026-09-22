@@ -42,6 +42,11 @@ When run bash -c "grep -F 'gateway run --port 18789 --bind loopback' '$PWD/home-
 The output should include 'gateway run --port 18789 --bind loopback'
 End
 
+It 'bounds gateway root-disk reads and writes'
+When run bash -c "gateway=\$(sed -n '/systemd.user.services.openclaw-gateway =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -q 'IOAccounting = true' <<<\"\$gateway\" && grep -q 'IOReadBandwidthMax = \"/ 20M\"' <<<\"\$gateway\" && grep -q 'IOWriteBandwidthMax = \"/ 10M\"' <<<\"\$gateway\" && grep -q 'IOReadIOPSMax = \"/ 100\"' <<<\"\$gateway\" && grep -q 'IOWriteIOPSMax = \"/ 50\"' <<<\"\$gateway\""
+The status should be success
+End
+
 It 'loads the optional dotenv only into the gateway service'
 When run bash -c "gateway=\$(sed -n '/systemd.user.services.openclaw-gateway =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix'); proxy=\$(sed -n '/systemd.user.services.openclaw-k3s-proxy =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -qF 'EnvironmentFile = [ \"-\${homeDir}/dotfiles/.env\" ];' <<<\"\$gateway\" && ! grep -qF 'EnvironmentFile' <<<\"\$proxy\" && ! grep -R -q 'ASCII_BOX_API_KEY=' '$PWD/config/openclaw'"
 The status should be success

@@ -52,6 +52,13 @@ lib.mkIf host.isKyber {
       ExecStart = "${homeDir}/.bun/bin/openclaw gateway run --port 18789 --bind loopback";
       Restart = "always";
       RestartSec = "5s";
+      # OpenClaw creates read-only SQLite snapshots for concurrent requests.
+      # Bound that work so the gateway cannot starve K3s on Kyber's root disk.
+      IOAccounting = true;
+      IOReadBandwidthMax = "/ 20M";
+      IOWriteBandwidthMax = "/ 10M";
+      IOReadIOPSMax = "/ 100";
+      IOWriteIOPSMax = "/ 50";
       EnvironmentFile = [ "-${homeDir}/dotfiles/.env" ];
       Environment = [
         "HOME=${homeDir}"
