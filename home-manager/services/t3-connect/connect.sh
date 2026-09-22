@@ -28,31 +28,20 @@ npx --yes "$spec" --version >/dev/null
 
 # The desktop's per-project "Run on" list only offers environments that hold
 # the project in their own T3 store. A machine with the checkout on disk but no
-# project row stays invisible, so register each orchestration checkout on every
-# pass and treat the CLI's duplicate error as the steady state.
-#
-# This checkout plus the ghq checkouts that carry an `orchestration/` tree --
-# the workspaces orchestration lanes run from. Matching on that marker keeps
-# repository scope out of this public file; `ghq` is not on the service PATH,
-# so its default root is assumed rather than resolved through the binary.
-projects=("${T3_CONNECT_PROJECT:-${HOME}/dotfiles}")
-for repo in "${GHQ_ROOT:-${HOME}/ghq}"/github.com/*/*; do
-  [ -d "$repo/.git" ] && [ -d "$repo/orchestration" ] || continue
-  projects+=("$repo")
-done
-for project in "${projects[@]}"; do
-  if [ -e "$project/.git" ]; then
-    if ! output="$(npx --yes "$spec" project add "$project" --title "$(basename "$project")" 2>&1)"; then
-      case "$output" in
-      *ProjectAlreadyExistsError*) ;;
-      *)
-        printf '%s\n' "$output" >&2
-        exit 1
-        ;;
-      esac
-    fi
+# project row stays invisible, so register it on every pass and treat the CLI's
+# duplicate error as the steady state.
+project="${T3_CONNECT_PROJECT:-${HOME}/dotfiles}"
+if [ -e "$project/.git" ]; then
+  if ! output="$(npx --yes "$spec" project add "$project" --title "$(basename "$project")" 2>&1)"; then
+    case "$output" in
+    *ProjectAlreadyExistsError*) ;;
+    *)
+      printf '%s\n' "$output" >&2
+      exit 1
+      ;;
+    esac
   fi
-done
+fi
 
 # Two independent trees need the native module: the npx cache used by the
 # client's SSH launch, and the runtime `t3 service` installs for its systemd

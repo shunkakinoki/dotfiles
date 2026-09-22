@@ -17,15 +17,13 @@ setup() {
   export T3_REAL_NPM="$MOCK_BIN/npm"
   export T3_PTY_PROBE=pty-probe.cjs
   export T3_CONNECT_PROJECT="$T3_TEST_ROOT/dotfiles"
-  export GHQ_ROOT="$T3_TEST_ROOT/ghq"
-  export T3_CONNECT_WORKER_PROJECT="$GHQ_ROOT/github.com/owner/worker-repo"
   mkdir -p "$T3CODE_HOME/runtime/versions/.staging-test" "$npm_config_cache/_npx"
 }
 
 cleanup() {
   mock_bin_cleanup
   rm -rf "$T3_TEST_ROOT"
-  unset T3_TEST_ROOT T3CODE_HOME npm_config_cache T3_PREPARE_RUNTIME T3_REAL_NPM T3_PTY_PROBE T3_CONNECT_PROJECT GHQ_ROOT T3_CONNECT_WORKER_PROJECT
+  unset T3_TEST_ROOT T3CODE_HOME npm_config_cache T3_PREPARE_RUNTIME T3_REAL_NPM T3_PTY_PROBE T3_CONNECT_PROJECT
 }
 
 Before 'setup'
@@ -243,9 +241,6 @@ Describe 'project registration'
 Before 'mock_registry'
 make_checkout() {
   mkdir -p "$T3_CONNECT_PROJECT/.git"
-  # Only a ghq checkout carrying an `orchestration/` tree is registered.
-  mkdir -p "$T3_CONNECT_WORKER_PROJECT/.git" "$T3_CONNECT_WORKER_PROJECT/orchestration"
-  mkdir -p "$GHQ_ROOT/github.com/owner/plain-repo/.git"
 }
 Before 'make_checkout'
 
@@ -263,24 +258,14 @@ exit 0
 MOCK
 }
 
-It 'registers dotfiles and the orchestration checkout, not plain ghq repos'
+It 'registers the local checkout as a T3 project'
 When run bash "$SCRIPT"
 The status should be success
 The contents of file "$MOCK_LOG" should include "npx --yes t3@1.2.3 project add $T3_CONNECT_PROJECT --title dotfiles"
-The contents of file "$MOCK_LOG" should include "npx --yes t3@1.2.3 project add $T3_CONNECT_WORKER_PROJECT --title worker-repo"
-The contents of file "$MOCK_LOG" should not include 'plain-repo'
 End
 
-It 'registers the worker checkout even when dotfiles is absent'
+It 'skips project registration when the checkout is absent'
 rm -rf "$T3_CONNECT_PROJECT"
-When run bash "$SCRIPT"
-The status should be success
-The contents of file "$MOCK_LOG" should include "npx --yes t3@1.2.3 project add $T3_CONNECT_WORKER_PROJECT --title worker-repo"
-The contents of file "$MOCK_LOG" should not include "project add $T3_CONNECT_PROJECT"
-End
-
-It 'skips project registration when both checkouts are absent'
-rm -rf "$T3_CONNECT_PROJECT" "$T3_CONNECT_WORKER_PROJECT"
 When run bash "$SCRIPT"
 The status should be success
 The contents of file "$MOCK_LOG" should not include 'project add'
