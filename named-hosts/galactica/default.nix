@@ -62,8 +62,8 @@ inputs.nix-darwin.lib.darwinSystem {
             enable = true;
             enableSshSupport = false;
             pinentry.package = pkgs.pinentry_mac;
-            defaultCacheTtl = 1800;
-            maxCacheTtl = 7200;
+            defaultCacheTtl = 2147483647;
+            maxCacheTtl = 2147483647;
           };
 
         };
