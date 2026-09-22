@@ -56,7 +56,7 @@ It 'injects the CLIProxy key from the dotenv'
 cat >"$TEMP_DIR/.env" <<'ENV'
 CLIPROXY_API_KEY=test_cliproxy_key
 ENV
-When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '[.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ANTHROPIC_AUTH_TOKEN\") | .value == \"test_cliproxy_key\" and .sensitive == true] | all' '$STATE_DIR/settings.json' >/dev/null"
+When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '[.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ANTHROPIC_AUTH_TOKEN\") | .value == \"test_cliproxy_key\" and .sensitive == true] | all' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 End
 
@@ -68,11 +68,112 @@ When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER'
 The status should be success
 End
 
-It 'leaves the placeholder unresolved when the dotenv has no key'
+# T3 Code copies a sensitive instance value into its own secret store, so a
+# persisted placeholder is kept as if it were a credential and every CLIProxy
+# request fails until someone clears the store by hand.
+It 'never persists the placeholder when the dotenv has no key'
 : >"$TEMP_DIR/.env"
-When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '([.providerInstances[\"codex-cliproxy\"].environment[].value] | index(\"__CLIPROXY_API_KEY__\")) != null' '$STATE_DIR/settings.json' >/dev/null"
+When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '[.. | strings | select(. == \"__CLIPROXY_API_KEY__\")] | length == 0' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 The stderr should include 'CLIPROXY_API_KEY not found'
+End
+
+# The dotenv is hydrated out of band, so an activation that races it must not
+# blank a credential T3 Code is already using.
+It 'keeps the credential T3 already holds when the dotenv has no key'
+: >"$TEMP_DIR/.env"
+cat >"$STATE_DIR/settings.json" <<'JSON'
+{
+  "providerInstances": {
+    "claude-cliproxy": {
+      "driver": "claudeAgent",
+      "environment": [{"name": "ANTHROPIC_AUTH_TOKEN", "value": "existing_key", "sensitive": true}]
+    }
+  }
+}
+JSON
+When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '([.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ANTHROPIC_AUTH_TOKEN\") | .value] | first == \"existing_key\") and (.providerInstances[\"codex-cliproxy\"].environment[0].value == \"existing_key\")' '$STATE_DIR/settings.json' >/dev/null"
+The status should be success
+End
+
+It 'purges a secret-store entry that holds the placeholder'
+cat >"$TEMP_DIR/.env" <<'ENV'
+CLIPROXY_API_KEY=test_cliproxy_key
+ENV
+mkdir -p "$STATE_DIR/secrets"
+printf '%s' '__CLIPROXY_API_KEY__' >"$STATE_DIR/secrets/provider-env-poisoned.bin"
+printf '%s' 'real_key' >"$STATE_DIR/secrets/provider-env-healthy.bin"
+When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && [ ! -e '$STATE_DIR/secrets/provider-env-poisoned.bin' ] && [ -e '$STATE_DIR/secrets/provider-env-healthy.bin' ]"
+The status should be success
+End
+
+# T3 Code serves the provider from its secret store, not from the settings
+# value, so a render that only writes settings.json leaves the instance running
+# on whatever the store already held.
+It 'writes the credential into the T3 secret store'
+cat >"$TEMP_DIR/.env" <<'ENV'
+CLIPROXY_API_KEY=test_cliproxy_key
+ENV
+CLAUDE_SECRET="$STATE_DIR/secrets/provider-env-Y2xhdWRlLWNsaXByb3h5-QU5USFJPUElDX0FVVEhfVE9LRU4.bin"
+CODEX_SECRET="$STATE_DIR/secrets/provider-env-Y29kZXgtY2xpcHJveHk-Q0xJUFJPWFlfQVBJX0tFWQ.bin"
+When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && [ \"\$(cat '$CLAUDE_SECRET')\" = test_cliproxy_key ] && [ \"\$(cat '$CODEX_SECRET')\" = test_cliproxy_key ] && [ \"\$(stat -c %a '$CLAUDE_SECRET')\" = 600 ]"
+The status should be success
+End
+
+# T3 strips the value from the settings once it owns the secret, so the store is
+# the only remaining copy on a host whose dotenv has since gone missing.
+# T3 Code watches its settings and reloads provider state when they change, so
+# an activation that renders the same content must touch nothing.
+It 'rewrites nothing when the render is unchanged'
+cat >"$TEMP_DIR/.env" <<'ENV'
+CLIPROXY_API_KEY=test_cliproxy_key
+ENV
+RENDER="bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG'"
+TOUCHED="'$STATE_DIR/settings.json' '$TEMP_DIR/.codex-t3/cliproxy/auth.json' '$TEMP_DIR/.codex-t3/cliproxy/config.toml' '$STATE_DIR/secrets/provider-env-Y2xhdWRlLWNsaXByb3h5-QU5USFJPUElDX0FVVEhfVE9LRU4.bin'"
+When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "$RENDER && before=\$(stat -c %y $TOUCHED) && $RENDER && [ \"\$before\" = \"\$(stat -c %y $TOUCHED)\" ]"
+The status should be success
+End
+
+It 'leaves no temporary render behind'
+cat >"$TEMP_DIR/.env" <<'ENV'
+CLIPROXY_API_KEY=test_cliproxy_key
+ENV
+When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && [ \"\$(find '$STATE_DIR' -name 'settings.json.*' | wc -l)\" -eq 0 ]"
+The status should be success
+End
+
+It 'recovers the credential from the secret store'
+: >"$TEMP_DIR/.env"
+mkdir -p "$STATE_DIR/secrets"
+printf '%s' 'stored_key' >"$STATE_DIR/secrets/provider-env-Y2xhdWRlLWNsaXByb3h5-QU5USFJPUElDX0FVVEhfVE9LRU4.bin"
+When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '([.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ANTHROPIC_AUTH_TOKEN\") | .value] | first == \"stored_key\")' '$STATE_DIR/settings.json' >/dev/null"
+The status should be success
+End
+
+It 'restarts t3code when the credential first becomes resolvable'
+cat >"$TEMP_DIR/.env" <<'ENV'
+CLIPROXY_API_KEY=test_cliproxy_key
+ENV
+cat >"$TEMP_DIR/systemctl" <<SYSTEMCTL
+#!/usr/bin/env bash
+printf '%s\n' "\$*" >>"$TEMP_DIR/systemctl.log"
+SYSTEMCTL
+chmod +x "$TEMP_DIR/systemctl"
+When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' '$TEMP_DIR/systemctl' && grep -q 'restart t3code.service' '$TEMP_DIR/systemctl.log'"
+The status should be success
+End
+
+It 'leaves t3code alone when the credential is unchanged'
+cat >"$TEMP_DIR/.env" <<'ENV'
+CLIPROXY_API_KEY=test_cliproxy_key
+ENV
+cat >"$TEMP_DIR/systemctl" <<SYSTEMCTL
+#!/usr/bin/env bash
+printf '%s\n' "\$*" >>"$TEMP_DIR/systemctl.log"
+SYSTEMCTL
+chmod +x "$TEMP_DIR/systemctl"
+When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' '$TEMP_DIR/systemctl' && bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' '$TEMP_DIR/systemctl' && [ \"\$(wc -l <'$TEMP_DIR/systemctl.log')\" -eq 1 ]"
+The status should be success
 End
 
 It 'preserves app-owned settings and unrelated instances'
