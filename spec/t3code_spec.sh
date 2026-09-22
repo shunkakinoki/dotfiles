@@ -98,7 +98,6 @@ The stderr should include 'malformed, leaving them unchanged'
 End
 
 It 'provisions the Codex CLIProxy home from the managed config'
-CODEX_HOME_DIR="$TEMP_DIR/codex-home"
 When run env HOME="$TEMP_DIR" CLIPROXY_API_KEY=test bash -c "mkdir -p '$TEMP_DIR/.codex-t3/cliproxy' && bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && grep -q 'model_provider = \"cliproxyapi\"' '$TEMP_DIR/.codex-t3/cliproxy/config.toml'"
 The status should be success
 End
