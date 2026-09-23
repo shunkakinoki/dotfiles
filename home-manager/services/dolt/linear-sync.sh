@@ -232,6 +232,26 @@ run_linear() {
     return 0
   fi
 
+  # A push whose only warnings are labels the tracker team does not define
+  # still published every issue: bd drops those labels from the payload.
+  # Local-only control labels never exist on the tracker, so rejecting the
+  # result would fail every batch that carries one on every cycle. Only the
+  # count is logged.
+  local skipped_labels
+  if [ "$operation" = push ] && [ "$status" -eq 0 ] && skipped_labels="$(@jq@/bin/jq -e -r -s '
+    if length == 1 and (.[0] |
+      type == "object" and
+      .success == true and
+      .stats.errors == 0 and
+      (.error == null or .error == "") and
+      (.warnings | type == "array" and length > 0 and
+        all(type == "string" and test("^linear: bead \\S+: label \".*\" not found on Linear team \\(skipped\\)"))))
+    then (.[0].warnings | length) else empty end
+  ' <<<"$output" 2>/dev/null)"; then
+    log "Linear push completed with $skipped_labels skipped label warning(s)"
+    return 0
+  fi
+
   # Only fixed categories leave this boundary, never source error strings.
   case "$output" in
   *"searching local issues"*) category="local-read" ;;
@@ -262,6 +282,7 @@ run_linear() {
     def family:
       if type != "string" then "invalid"
       elif test("^Failed to (build dependency resolver:|resolve dependency |create dependency )") then "dependency"
+      elif test("^linear: bead \\S+: label \".*\" not found on Linear team \\(skipped\\)") then "skipped-label"
       elif startswith("Failed to update last_sync:") then "cursor"
       elif startswith("Failed to update external_ref ") then "external-ref"
       elif startswith("Failed to record push hash ") then "push-hash"
@@ -830,6 +851,10 @@ control_state_repairs="$(@jq@/bin/jq -c \
   -f @linearControlStateJq@ <<<"$issues_before_pull")"
 @coreutils@/bin/rm -f "$linear_journal_file" "$linear_current_file"
 
+# Beads whose status or assignee a repair below changed back from what the
+# pull wrote. The tracker still holds the pulled state, so the pushed-active
+# ledger's record of what the tracker last received is stale for them.
+repaired_ids=""
 if [ -n "$control_state_repairs" ]; then
   log "Restoring locally authoritative control state after pull"
   restored_control_state=0
@@ -865,6 +890,9 @@ if [ -n "$control_state_repairs" ]; then
     if "$bd_cli" -C "$repo_dir" update "$restore_id" "${restore_args[@]}" \
       --if-status="$pulled_status" --if-assignee="$pulled_assignee" >/dev/null 2>&1; then
       restored_control_state=$((restored_control_state + 1))
+      if [ "$restore_status" != "$pulled_status" ] || [ "$restore_assignee" != "$pulled_assignee" ]; then
+        repaired_ids="${repaired_ids:+$repaired_ids,}$restore_id"
+      fi
     else
       restore_failures=$((restore_failures + 1))
     fi
@@ -900,9 +928,11 @@ if [ -n "$wedged_records" ]; then
     if [ -n "$claim_lane" ]; then
       if "$bd_cli" -C "$repo_dir" update "$wedged_id" --if-status=in_progress --if-assignee= --assignee="$claim_lane" >/dev/null 2>&1; then
         restored_claims=$((restored_claims + 1))
+        repaired_ids="${repaired_ids:+$repaired_ids,}$wedged_id"
       fi
     elif "$bd_cli" -C "$repo_dir" update "$wedged_id" --if-status=in_progress --if-assignee= --status=open >/dev/null 2>&1; then
       reopened=$((reopened + 1))
+      repaired_ids="${repaired_ids:+$repaired_ids,}$wedged_id"
     fi
   done <<<"$wedged_records"
   if [ "$restored_claims" -gt 0 ]; then
@@ -922,12 +952,27 @@ if [ "$pull_status" -ne 0 ]; then
   log "Linear pull failed with status $pull_status"
   exit "$pull_status"
 fi
+
+# Select the active push from the repaired state. The post-pull listing still
+# shows a restored claim as the tracker's close, so it would never be pushed
+# and the next pull would close it again.
+all_issues="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0)"
 # The push and the pull both bump updated_at, so by timestamp alone a Bead
 # pushed last cycle is re-selected every cycle. The ledger keeps a hash of
 # the content each push sent (title, state, fields, and the cut description);
 # a linked Bead whose hash is unchanged has nothing new to push. Unlinked
 # Beads always retry.
 pushed_active_file="$sync_state_dir/pushed-active-$repo_slug"
+if [ -n "$repaired_ids" ] && [ -s "$pushed_active_file" ]; then
+  @gawk@/bin/awk -v repaired="$repaired_ids" '
+    BEGIN {
+      count = split(repaired, list, ",")
+      for (i = 1; i <= count; i++) dropped[list[i]] = 1
+    }
+    !($1 in dropped)
+  ' "$pushed_active_file" >"$pushed_active_file.tmp"
+  @coreutils@/bin/mv -f "$pushed_active_file.tmp" "$pushed_active_file"
+fi
 pushed_active_input=/dev/null
 if [ -s "$pushed_active_file" ]; then
   pushed_active_input="$pushed_active_file"
@@ -935,7 +980,9 @@ fi
 changed_active_candidates="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" "$rendered_sections_jq"'
   def body_length: (canonical_description | length) + rendered_sections_length;
   issues | .[]
-  | select(.status != "closed")
+  # Deferred has no outbound state mapping, so bd rejects every batch that
+  # carries one.
+  | select(.status != "closed" and .status != "deferred")
   | ((.external_ref // "") | contains("linear.app") | not) as $unlinked
   | select($previous_sync == "" or .updated_at >= $previous_sync or $unlinked)
   | "\(.id) \(if body_length > $body_limit then "oversized" else "sized" end) \(if $unlinked then "unlinked" else "linked" end) \(fingerprint)"

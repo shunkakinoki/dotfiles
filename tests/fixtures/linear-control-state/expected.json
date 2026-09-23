@@ -41,5 +41,16 @@
     "desired_status": "open",
     "id": "task-d",
     "remove_labels": []
+  },
+  {
+    "add_labels": [
+      "hold"
+    ],
+    "current_assignee": "owner@example.com",
+    "current_status": "closed",
+    "desired_assignee": "owner@example.com",
+    "desired_status": "closed",
+    "id": "task-e",
+    "remove_labels": []
   }
 ]

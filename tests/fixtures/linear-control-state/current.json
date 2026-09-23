@@ -31,5 +31,13 @@
     "labels": [
       "linear"
     ]
+  },
+  {
+    "id": "task-e",
+    "status": "closed",
+    "assignee": "owner@example.com",
+    "labels": [
+      "linear"
+    ]
   }
 ]

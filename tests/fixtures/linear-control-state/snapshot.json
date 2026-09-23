@@ -28,5 +28,13 @@
     "status": "in_progress",
     "assignee": "kamino3_lane_2",
     "labels": []
+  },
+  {
+    "id": "task-e",
+    "status": "open",
+    "assignee": "",
+    "labels": [
+      "hold"
+    ]
   }
 ]

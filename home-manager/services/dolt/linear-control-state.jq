@@ -38,10 +38,19 @@ def active_machine_claim:
   .status == "in_progress"
   and ((.assignee // "") | test("^[a-z][a-z0-9]*(?:[_-][a-z0-9]+)+$"));
 
+# Only a live machine claim outranks the tracker's workflow state. A Bead that
+# carries control labels alone takes the pulled status and assignee, so a close
+# made in the tracker stands, and only gets its labels back.
 (issues
   | map(
       select(active_machine_claim or ((control_labels | length) > 0))
-      | { key: .id, value: control_state }
+      | {
+          key: .id,
+          value: (
+            if active_machine_claim then control_state
+            else control_state | .status = null | .assignee = null end
+          ),
+        }
     )
   | from_entries) as $desired_before_pull
 | reduce (
@@ -69,8 +78,8 @@ def active_machine_claim:
 | select($have != null)
 | {
     id: $id,
-    desired_status: $want.status,
-    desired_assignee: $want.assignee,
+    desired_status: ($want.status // $have.status),
+    desired_assignee: ($want.assignee // $have.assignee),
     current_status: $have.status,
     current_assignee: $have.assignee,
     add_labels: [
