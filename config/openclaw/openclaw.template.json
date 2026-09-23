@@ -347,10 +347,6 @@
       "groupPolicy": "disabled",
       "sendReadReceipts": true,
       "mediaMaxMb": 50,
-      "ackReaction": {
-        "emoji": "\ud83d\udc40",
-        "direct": true
-      },
       "debounceMs": 300
     }
   },
