@@ -257,8 +257,8 @@ It 'has spec file for home-manager/modules/uv-globals/install-uv-globals.sh'
 The path "spec/uv_globals_spec.sh" should be exist
 End
 
-It 'has spec file for named-hosts/matic/pam-gnome-keyring-tpm-unlock.sh'
-The path "spec/pam_gnome_keyring_tpm_unlock_spec.sh" should be exist
+It 'has spec file for named-hosts/matic/gnome-keyring-tpm-unlock.sh'
+The path "spec/gnome_keyring_tpm_unlock_spec.sh" should be exist
 End
 
 It 'has spec file for scripts/fishtape-wrapper.sh'
@@ -702,7 +702,7 @@ named-hosts/kyber/find.sh
 named-hosts/kyber/prepare-containerd-disk.sh
 named-hosts/kyber/rekey-galactica.sh
 named-hosts/kyber/setup.sh
-named-hosts/matic/pam-gnome-keyring-tpm-unlock.sh
+named-hosts/matic/gnome-keyring-tpm-unlock.sh
 nix-darwin/config/keyboard/apply-hid-user-key-mappings.sh
 nix-darwin/services/pmset-battery-policy/power-policy.sh
 scripts/build-neovim-plugins.sh

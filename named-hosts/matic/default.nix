@@ -42,6 +42,40 @@ import ../../hosts/nixos {
         ];
         hostPublicKeys = import ../pubkeys.nix;
         sshAuthorizedKeys = import ../ssh-authorized-keys.nix;
+
+        # Speaks the gnome-keyring control socket protocol directly.
+        # gnome-keyring-daemon --unlock (v48) ignores GNOME_KEYRING_CONTROL
+        # and always starts a new instance, so we bypass it entirely.
+        #
+        # Protocol (all big-endian):
+        #   1. connect to $XDG_RUNTIME_DIR/keyring/control (UNIX stream)
+        #   2. send \x00 - daemon reads our UID via SO_PEERCRED
+        #   3. send [oplen:4][op=1:4][pwlen:4][password bytes]
+        #          where oplen = 8 + 4 + len(password)
+        #   4. read [8:4][result:4] - result 0 = OK
+        keyringUnlockPy = pkgs.writeScript "unlock-gnome-keyring.py" (
+          builtins.readFile (
+            pkgs.replaceVars ./unlock-gnome-keyring.py {
+              inherit (pkgs) python3;
+            }
+          )
+        );
+
+        # Runs as root, decrypts the TPM credential, then uses runuser to run
+        # the Python unlock as the target user.
+        keyringUnlockScript = pkgs.writeShellScript "gnome-keyring-tpm-unlock" (
+          builtins.readFile (
+            pkgs.replaceVars ./gnome-keyring-tpm-unlock.sh {
+              logger = "${pkgs.util-linux}/bin/logger";
+              systemd_creds = "${pkgs.systemd}/bin/systemd-creds";
+              id = "${pkgs.coreutils}/bin/id";
+              sleep = "${pkgs.coreutils}/bin/sleep";
+              env = "${pkgs.coreutils}/bin/env";
+              runuser = "${pkgs.util-linux}/bin/runuser";
+              unlock_py = keyringUnlockPy;
+            }
+          )
+        );
       in
       {
         # Boot loader (EFI/systemd-boot)
@@ -190,19 +224,43 @@ import ../../hosts/nixos {
         # Thunderbolt support
         services.hardware.bolt.enable = true;
 
-        # GNOME Keyring - auto-unlocks GPG key on login via PAM
+        # GNOME Keyring - unlocked from a TPM2 credential, never from a password prompt
         services.gnome.gnome-keyring.enable = true;
 
-        # Unlock GNOME Keyring via TPM2 credential at login (PAM exec).
-        # Runs in the PAM session stack right after pam_gnome_keyring starts the daemon,
-        # so there are no timing/retry issues. Runs as root (can access TPM), then uses
-        # runuser to speak the control socket protocol as the target user (SO_PEERCRED).
+        # Unlock the keyring every time a daemon publishes a control socket, not
+        # only at login: pam_gnome_keyring starts one when the session opens, and
+        # D-Bus activation starts another whenever the user session services are
+        # restarted (a NixOS activation does that), which otherwise leaves a
+        # locked secret service behind for the rest of the session.
         #
         # Credential stored at /etc/credstore.encrypted/gnome-keyring.cred - create once with:
         #   sudo bash -c 'mkdir -p /etc/credstore.encrypted && \
         #     systemd-ask-password "Keyring password:" | \
         #     systemd-creds encrypt --name=gnome-keyring --with-key=tpm2+host \
         #     - /etc/credstore.encrypted/gnome-keyring.cred'
+        systemd.paths."gnome-keyring-tpm-unlock@" = {
+          description = "Watch for a GNOME Keyring control socket for UID %i";
+          partOf = [ "user@%i.service" ];
+          pathConfig = {
+            PathExists = "/run/user/%i/keyring/control";
+            Unit = "gnome-keyring-tpm-unlock@%i.service";
+          };
+        };
+
+        systemd.services."gnome-keyring-tpm-unlock@" = {
+          description = "Unlock the GNOME Keyring for UID %i from the TPM2 credential";
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${keyringUnlockScript} %i";
+          };
+        };
+
+        # logind starts user@<uid>.service for every user session, so this is what
+        # instantiates the watch for each logged-in UID without naming one here.
+        systemd.services."user@" = {
+          overrideStrategy = "asDropin";
+          wants = [ "gnome-keyring-tpm-unlock@%i.path" ];
+        };
 
         # YubiKey support
         services.pcscd.enable = true;
@@ -213,57 +271,6 @@ import ../../hosts/nixos {
         security.pam.services.greetd = {
           fprintAuth = true;
           enableGnomeKeyring = true;
-          rules.session = {
-            # Run after greetd's login include, whose session stack runs
-            # pam_gnome_keyring (which starts the daemon but can't unlock on
-            # fingerprint login). Decrypts the TPM2 credential and sends the
-            # password to the running daemon via the control socket protocol.
-            gnome_keyring_tpm_unlock =
-              let
-                # Speaks the gnome-keyring control socket protocol directly.
-                # gnome-keyring-daemon --unlock (v48) ignores GNOME_KEYRING_CONTROL
-                # and always starts a new instance, so we bypass it entirely.
-                #
-                # Protocol (all big-endian):
-                #   1. connect to $XDG_RUNTIME_DIR/keyring/control (UNIX stream)
-                #   2. send \x00 - daemon reads our UID via SO_PEERCRED
-                #   3. send [oplen:4][op=1:4][pwlen:4][password bytes]
-                #          where oplen = 8 + 4 + len(password)
-                #   4. read [8:4][result:4] - result 0 = OK
-                unlockPy = pkgs.writeScript "unlock-gnome-keyring.py" (
-                  builtins.readFile (
-                    pkgs.replaceVars ./unlock-gnome-keyring.py {
-                      inherit (pkgs) python3;
-                    }
-                  )
-                );
-
-                # PAM exec script: runs as root, decrypts TPM credential, then
-                # uses runuser to run the Python unlock as the target user.
-                pamScript = pkgs.writeShellScript "pam-gnome-keyring-tpm-unlock" (
-                  builtins.readFile (
-                    pkgs.replaceVars ./pam-gnome-keyring-tpm-unlock.sh {
-                      logger = "${pkgs.util-linux}/bin/logger";
-                      systemd_creds = "${pkgs.systemd}/bin/systemd-creds";
-                      id = "${pkgs.coreutils}/bin/id";
-                      sleep = "${pkgs.coreutils}/bin/sleep";
-                      env = "${pkgs.coreutils}/bin/env";
-                      runuser = "${pkgs.util-linux}/bin/runuser";
-                      unlock_py = unlockPy;
-                    }
-                  )
-                );
-              in
-              {
-                order = config.security.pam.services.greetd.rules.session.login.order + 10;
-                control = "optional";
-                modulePath = "${pkgs.pam}/lib/security/pam_exec.so";
-                args = [
-                  "type=open_session"
-                  "${pamScript}"
-                ];
-              };
-          };
         };
         security.pam.services.noctalia = {
           fprintAuth = true;
