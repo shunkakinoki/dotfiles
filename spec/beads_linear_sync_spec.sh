@@ -315,6 +315,18 @@ case "${1:-} ${2:-}" in
           exit 0
         fi
         ;;
+      skipped-label-warnings-on-push)
+        if [[ " $* " == *" --push "* ]]; then
+          printf '%s\n' '{"success":true,"stats":{"errors":0},"warnings":["linear: bead df-test: label \"PRIVATE_LINEAR_PAYLOAD\" not found on Linear team (skipped)","linear: bead df-test: label \"hold\" not found on Linear team (skipped)"]}'
+          exit 0
+        fi
+        ;;
+      skipped-label-and-update-warnings-on-push)
+        if [[ " $* " == *" --push "* ]]; then
+          printf '%s\n' '{"success":true,"stats":{"errors":0},"warnings":["linear: bead df-test: label \"PRIVATE_LINEAR_PAYLOAD\" not found on Linear team (skipped)","Failed to update PRIVATE_LINEAR_PAYLOAD"]}'
+          exit 0
+        fi
+        ;;
       dependency-and-update-warnings)
         if [[ " $* " != *" --push "* ]]; then
           printf '%s\n' '{"success":true,"stats":{"errors":0},"warnings":["Failed to resolve dependency target PRIVATE_LINEAR_PAYLOAD","Failed to update PRIVATE_LINEAR_PAYLOAD"]}'
@@ -425,7 +437,9 @@ case "${1:-} ${2:-}" in
     fi
     ;;
   "list --all")
-    if [ -n "${FAKE_LIST_JSON_AFTER_PULL:-}" ] && grep -F -- '--pull' "$COMMAND_LOG" >/dev/null; then
+    if [ -n "${FAKE_LIST_JSON_AFTER_REPAIR:-}" ] && grep -F -- '--if-status' "$COMMAND_LOG" >/dev/null; then
+      printf '%s\n' "$FAKE_LIST_JSON_AFTER_REPAIR"
+    elif [ -n "${FAKE_LIST_JSON_AFTER_PULL:-}" ] && grep -F -- '--pull' "$COMMAND_LOG" >/dev/null; then
       printf '%s\n' "$FAKE_LIST_JSON_AFTER_PULL"
     elif [ -n "${FAKE_LIST_JSON_FILE:-}" ]; then
       cat "$FAKE_LIST_JSON_FILE"
@@ -568,6 +582,24 @@ closed_json='[{"id":"df-closed","status":"closed","closed_at":"2099-01-01T00:00:
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=dependency-warnings-on-push FAKE_LIST_JSON="$closed_json" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should equal 65
 The output should include 'operation=push shape=object success=true stats=object errors=0 warnings=2 error=none families=dependency'
+The output should not include 'PRIVATE_LINEAR_PAYLOAD'
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'accepts a push whose only warnings are labels the tracker team does not define'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=skipped-label-warnings-on-push XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Linear push completed with 2 skipped label warning(s)'
+The output should not include 'PRIVATE_LINEAR_PAYLOAD'
+The output should not include 'Linear result rejected'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-test --no-wait'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'rejects a push that mixes skipped labels with other warning families'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=skipped-label-and-update-warnings-on-push XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 65
+The output should include 'operation=push shape=object success=true stats=object errors=0 warnings=2 error=none families=skipped-label,update'
 The output should not include 'PRIVATE_LINEAR_PAYLOAD'
 The file "$CHECKPOINT_FILE" should not be exist
 End
@@ -790,6 +822,40 @@ When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_EVENTS_JOU
 The status should be success
 The output should include 'Restoring locally authoritative control state after pull'
 The contents of file "$COMMAND_LOG" should include 'update df-accepted --assignee kamino2_exec_accepted --status closed --if-status=in_progress --if-assignee=operator@example.com'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'accepts a tracker close on a Bead that carries control labels alone'
+before='[{"id":"df-held","status":"open","assignee":"","labels":["hold"],"updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/held"}]'
+after='[{"id":"df-held","status":"closed","assignee":"","labels":[],"closed_at":"2099-01-03T00:00:00Z","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/held"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Restored 1 control state record(s); skipped 0 superseded or refused repair(s)'
+The contents of file "$COMMAND_LOG" should include 'update df-held --add-label hold --status closed --if-status=closed --if-assignee='
+The contents of file "$COMMAND_LOG" should not include '--status open'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'pushes a machine claim the repair restored even when the ledger recorded its content'
+claimed='[{"id":"df-claimed","status":"in_progress","assignee":"kamino4_exec_claimed","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
+after='[{"id":"df-claimed","status":"closed","assignee":"","closed_at":"2099-01-03T00:00:00Z","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
+repaired='[{"id":"df-claimed","status":"in_progress","assignee":"kamino4_exec_claimed","updated_at":"2099-01-04T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
+ledger="$STATE_HOME/beads-linear-sync/pushed-active-test%2Frepo-one"
+When run bash -c "env COMMAND_LOG='$TEST_ROOT/first.log' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$claimed' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' >/dev/null && grep -q -E '^df-claimed [0-9a-f]{64}$' '$ledger' && env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$claimed' FAKE_LIST_JSON_AFTER_PULL='$after' FAKE_LIST_JSON_AFTER_REPAIR='$repaired' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' && test \"\$(grep -c -E '^df-claimed [0-9a-f]{64}$' '$ledger')\" -eq 1"
+The status should be success
+The output should include 'Restored 1 control state record(s); skipped 0 superseded or refused repair(s)'
+The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee kamino4_exec_claimed --status in_progress --if-status=closed --if-assignee='
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-claimed --no-wait'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'keeps deferred Beads out of the active push'
+issues='[{"id":"df-open","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/open"},{"id":"df-later","status":"deferred","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/later"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$issues" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Pushing changed active Beads batch 1/1'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-open --no-wait'
+The contents of file "$COMMAND_LOG" should not include 'df-later'
 The file "$CHECKPOINT_FILE" should be exist
 End
 
