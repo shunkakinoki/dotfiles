@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2329
 
-Describe 'named-hosts/matic/pam-gnome-keyring-tpm-unlock.sh'
-SCRIPT="$PWD/named-hosts/matic/pam-gnome-keyring-tpm-unlock.sh"
+Describe 'named-hosts/matic/gnome-keyring-tpm-unlock.sh'
+SCRIPT="$PWD/named-hosts/matic/gnome-keyring-tpm-unlock.sh"
+CONFIG="$PWD/named-hosts/matic/default.nix"
 
 Describe 'script properties'
 It 'uses bash shebang'
@@ -59,9 +60,9 @@ When run bash -c "grep '|| exit 0' '$SCRIPT'"
 The output should include '|| exit 0'
 End
 
-It 'checks PAM_USER is set'
-When run bash -c "grep 'PAM_USER' '$SCRIPT'"
-The output should include 'PAM_USER'
+It 'takes the target UID as the first argument'
+When run bash -c "grep 'TARGET_UID=\"\\\$1\"' '$SCRIPT'"
+The output should include 'TARGET_UID='
 End
 
 It 'skips system users below uid 1000'
@@ -69,14 +70,39 @@ When run bash -c "grep '1000' '$SCRIPT'"
 The output should include '1000'
 End
 
-It 'runs unlock in background subshell'
-When run bash -c "grep -c ') &' '$SCRIPT'"
-The output should include '1'
-End
-
 It 'retries unlock up to 8 times'
 When run bash -c "grep '1 2 3 4 5 6 7 8' '$SCRIPT'"
 The output should include '1 2 3 4 5 6 7 8'
+End
+
+It 'fails when every attempt is exhausted'
+When run bash -c "tail -2 '$SCRIPT'"
+The output should include 'exit 1'
+End
+End
+
+Describe 'systemd wiring in named-hosts/matic/default.nix'
+It 'watches the keyring control socket per UID'
+When run bash -c "awk '/systemd.paths.\"gnome-keyring-tpm-unlock@\" = \\{/{in_unit=1} in_unit{print} in_unit && /^        \\};/{exit}' '$CONFIG'"
+The output should include 'PathExists = "/run/user/%i/keyring/control";'
+The output should include 'Unit = "gnome-keyring-tpm-unlock@%i.service";'
+End
+
+It 'runs the unlock script with the UID as a oneshot'
+When run bash -c "awk '/systemd.services.\"gnome-keyring-tpm-unlock@\" = \\{/{in_unit=1} in_unit{print} in_unit && /^        \\};/{exit}' '$CONFIG'"
+The output should include 'Type = "oneshot";'
+The output should include '%i'
+End
+
+It 'instantiates the watch from user@.service'
+When run bash -c "awk '/systemd.services.\"user@\" = \\{/{in_unit=1} in_unit{print} in_unit && /^        \\};/{exit}' '$CONFIG'"
+The output should include 'overrideStrategy = "asDropin";'
+The output should include 'gnome-keyring-tpm-unlock@%i.path'
+End
+
+It 'no longer unlocks from the PAM session stack'
+When run bash -c "grep -c 'pam_exec' '$CONFIG' || true"
+The output should equal '0'
 End
 End
 
