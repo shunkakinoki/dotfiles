@@ -43,7 +43,7 @@ The output should include 'gateway run --port 18789 --bind loopback'
 End
 
 It 'bounds gateway root-disk reads and writes'
-When run bash -c "gateway=\$(sed -n '/systemd.user.services.openclaw-gateway =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -q 'IOAccounting = true' <<<\"\$gateway\" && grep -q 'IOReadBandwidthMax = \"/ 20M\"' <<<\"\$gateway\" && grep -q 'IOWriteBandwidthMax = \"/ 10M\"' <<<\"\$gateway\" && grep -q 'IOReadIOPSMax = \"/ 100\"' <<<\"\$gateway\" && grep -q 'IOWriteIOPSMax = \"/ 50\"' <<<\"\$gateway\""
+When run bash -c "gateway=\$(sed -n '/systemd.user.services.openclaw-gateway =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -q 'IOAccounting = true' <<<\"\$gateway\" && grep -q 'IOReadBandwidthMax = \"/ 20M\"' <<<\"\$gateway\" && grep -q 'IOWriteBandwidthMax = \"/ 20M\"' <<<\"\$gateway\" && grep -q 'IOReadIOPSMax = \"/ 100\"' <<<\"\$gateway\" && grep -q 'IOWriteIOPSMax = \"/ 100\"' <<<\"\$gateway\""
 The status should be success
 End
 
@@ -169,6 +169,11 @@ End
 It 'orders the k3s bridge proxy after the loopback gateway'
 When run bash -c "grep -F 'After = [ \"openclaw-gateway.service\" ]' '$PWD/home-manager/services/openclaw/default.nix'"
 The output should include 'openclaw-gateway.service'
+End
+
+It 'clears leaked build directories from a gateway-private TMPDIR before start'
+When run bash -c "gateway=\$(sed -n '/systemd.user.services.openclaw-gateway =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -qF 'ExecStartPre = \"-\${tmpCleanup}/bin/openclaw-gateway-tmp-cleanup\";' <<<\"\$gateway\" && grep -qF '\"TMPDIR=%t/openclaw-gateway\"' <<<\"\$gateway\""
+The status should be success
 End
 
 It 'restarts the gateway when Home Manager changes the unit'

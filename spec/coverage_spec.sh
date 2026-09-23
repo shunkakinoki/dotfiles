@@ -629,6 +629,7 @@ home-manager/services/hermes/activate-cleanup-units.sh
 home-manager/services/hermes/activate.sh
 home-manager/services/obsidian/obsidian-git-trigger.sh
 home-manager/services/obsidian/obsidian-headless.sh
+home-manager/services/openclaw/gateway-tmp-cleanup.sh
 home-manager/services/openclaw/activate.sh
 home-manager/services/openclaw/k3s-proxy.sh
 home-manager/services/openclaw/state-maintenance.sh

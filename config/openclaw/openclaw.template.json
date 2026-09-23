@@ -282,6 +282,11 @@
   "messages": {
     "queue": {
       "mode": "interrupt"
+    },
+    "inbound": {
+      "byChannel": {
+        "whatsapp": 300
+      }
     }
   },
   "tools": {
@@ -346,8 +351,7 @@
       ],
       "groupPolicy": "disabled",
       "sendReadReceipts": true,
-      "mediaMaxMb": 50,
-      "debounceMs": 300
+      "mediaMaxMb": 50
     }
   },
   "hooks": {
