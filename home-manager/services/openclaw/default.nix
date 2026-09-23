@@ -72,7 +72,7 @@ lib.mkIf host.isKyber {
       Environment = [
         "HOME=${homeDir}"
         "PATH=${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:${homeDir}/.local/share/pnpm:${homeDir}/.local/share/fnm/current/bin:${homeDir}/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
-        "TMPDIR=%t/openclaw-gateway"
+        "TMPDIR=${homeDir}/.local/state/openclaw-gateway/tmp"
       ];
       WorkingDirectory = "${homeDir}/.openclaw";
       StandardOutput = "append:/tmp/openclaw/openclaw-gateway.log";
