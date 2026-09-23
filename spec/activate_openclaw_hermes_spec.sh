@@ -172,7 +172,7 @@ The output should include 'openclaw-gateway.service'
 End
 
 It 'clears leaked build directories from a gateway-private TMPDIR before start'
-When run bash -c "gateway=\$(sed -n '/systemd.user.services.openclaw-gateway =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -qF 'ExecStartPre = \"-\${tmpCleanup}/bin/openclaw-gateway-tmp-cleanup\";' <<<\"\$gateway\" && grep -qF '\"TMPDIR=%t/openclaw-gateway\"' <<<\"\$gateway\""
+When run bash -c "gateway=\$(sed -n '/systemd.user.services.openclaw-gateway =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -qF 'ExecStartPre = \"-\${tmpCleanup}/bin/openclaw-gateway-tmp-cleanup\";' <<<\"\$gateway\" && grep -qF '\"TMPDIR=\${homeDir}/.local/state/openclaw-gateway/tmp\"' <<<\"\$gateway\""
 The status should be success
 End
 
