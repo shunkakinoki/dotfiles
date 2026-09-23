@@ -72,7 +72,9 @@ lib.mkIf host.isKyber {
       Environment = [
         "HOME=${homeDir}"
         "PATH=${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:${homeDir}/.local/share/pnpm:${homeDir}/.local/share/fnm/current/bin:${homeDir}/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
-        "TMPDIR=${homeDir}/.local/state/openclaw-gateway/tmp"
+        # Plugin captures exceed the user runtime tmpfs and stall under the
+        # root-disk I/O cap during startup.
+        "TMPDIR=/dev/shm/openclaw-gateway"
       ];
       WorkingDirectory = "${homeDir}/.openclaw";
       StandardOutput = "append:/tmp/openclaw/openclaw-gateway.log";
