@@ -56,9 +56,9 @@ lib.mkIf host.isKyber {
       # Bound that work so the gateway cannot starve K3s on Kyber's root disk.
       IOAccounting = true;
       IOReadBandwidthMax = "/ 20M";
-      IOWriteBandwidthMax = "/ 10M";
+      IOWriteBandwidthMax = "/ 20M";
       IOReadIOPSMax = "/ 100";
-      IOWriteIOPSMax = "/ 50";
+      IOWriteIOPSMax = "/ 100";
       EnvironmentFile = [ "-${homeDir}/dotfiles/.env" ];
       Environment = [
         "HOME=${homeDir}"
