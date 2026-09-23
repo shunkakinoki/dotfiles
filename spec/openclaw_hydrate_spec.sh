@@ -32,7 +32,7 @@ template_disables_groups() {
     (.channels.telegram.groupPolicy == "disabled") and
     (.channels.whatsapp.groups? == null) and
     (.channels.whatsapp.groupPolicy == "disabled") and
-    (.channels.whatsapp.ackReaction.group? == null) and
+    (.channels.whatsapp.ackReaction? == null) and
     (.messages.ackReactionScope? == null) and
     (.hooks.mappings | all(
       (.deliver? == null) and (.channel? == null) and (.to? == null)
