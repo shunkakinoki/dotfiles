@@ -26,6 +26,14 @@ let
     ];
     text = builtins.readFile ./state-maintenance.sh;
   };
+  tmpCleanup = pkgs.writeShellApplication {
+    name = "openclaw-gateway-tmp-cleanup";
+    runtimeInputs = [
+      pkgs.coreutils
+      pkgs.findutils
+    ];
+    text = builtins.readFile ./gateway-tmp-cleanup.sh;
+  };
 in
 # Only enable on kyber (gateway host)
 lib.mkIf host.isKyber {
@@ -49,6 +57,7 @@ lib.mkIf host.isKyber {
     };
     Service = {
       Type = "simple";
+      ExecStartPre = "-${tmpCleanup}/bin/openclaw-gateway-tmp-cleanup";
       ExecStart = "${homeDir}/.bun/bin/openclaw gateway run --port 18789 --bind loopback";
       Restart = "always";
       RestartSec = "5s";
@@ -63,6 +72,7 @@ lib.mkIf host.isKyber {
       Environment = [
         "HOME=${homeDir}"
         "PATH=${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:${homeDir}/.local/share/pnpm:${homeDir}/.local/share/fnm/current/bin:${homeDir}/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
+        "TMPDIR=%t/openclaw-gateway"
       ];
       WorkingDirectory = "${homeDir}/.openclaw";
       StandardOutput = "append:/tmp/openclaw/openclaw-gateway.log";
