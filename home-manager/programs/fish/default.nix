@@ -206,6 +206,7 @@
       pixeh = "_pixeh_function";
       sag = "_ssh_add_github";
       ssxe = "_ssxe_function";
+      rxgoal = "_rxgoal_function";
       lmu = "_llm_update_function";
       slb = "_sync_local_binaries_function";
       shortcuts = "_fish_shortcuts";
@@ -328,6 +329,7 @@
         "_kyberm_function"
         "_kyberz_function"
         "_llm_update_function"
+        "_rxgoal_function"
         "_matic_function"
         "_maticd_function"
         "_matich_function"
