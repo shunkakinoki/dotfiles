@@ -22,6 +22,11 @@ in
     pkgs.runCommand "linear-control-state" { nativeBuildInputs = [ pkgs.jq ]; } ''
       jq -c \
         --arg actor beads-linear-reconciler \
+        --arg local_labels ${
+          lib.escapeShellArg (
+            lib.concatStringsSep "," (import ../home-manager/services/dolt/linear-local-labels.nix)
+          )
+        } \
         --slurpfile journal ${fixtures}/journal.jsonl \
         --slurpfile current ${fixtures}/current.json \
         -f ${../home-manager/services/dolt/linear-control-state.jq} \

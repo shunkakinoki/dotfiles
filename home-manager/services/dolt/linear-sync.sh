@@ -57,6 +57,9 @@ export BEADS_ACTOR="beads-linear-reconciler"
 export BD_EVENTS_JOURNAL="1"
 export DOLT_CLI_USER="beads"
 export DOLT_CLI_PASSWORD=""
+# A pull keeps these local labels instead of taking Linear's set, so an issue
+# unchanged in Linear is not rewritten on every cursor-free pull.
+export LINEAR_LOCAL_LABELS="@linearLocalLabels@"
 
 # An accepted issue completes through the same repository lock and credential
 # boundary as the periodic reconciler. The close reason is read from stdin so
@@ -829,9 +832,10 @@ run_linear pull @coreutils@/bin/timeout 720 "$bd_cli" -C "$repo_dir" linear sync
 
 all_issues="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0)"
 
-# A cursor-free pull overwrites local assignment, workflow state, and labels.
-# The pre-pull snapshot protects existing machine claims and orchestration
-# labels. The durable journal then folds every non-reconciler mutation made
+# A cursor-free pull overwrites local assignment and workflow state. It keeps
+# the orchestration labels it read, so it can still drop one added while it was
+# rewriting that issue. The pre-pull snapshot protects existing machine claims
+# and orchestration labels. The durable journal then folds every non-reconciler mutation made
 # during the pull over that snapshot in commit order, so a concurrent claim,
 # release, completion, or label change wins. Each repair compares both fields
 # it observed after the pull; a newer claim makes the guarded write refuse
@@ -846,6 +850,7 @@ fi
 printf '%s\n' "$all_issues" >"$linear_current_file"
 control_state_repairs="$(@jq@/bin/jq -c \
   --arg actor "$BEADS_ACTOR" \
+  --arg local_labels "$LINEAR_LOCAL_LABELS" \
   --slurpfile journal "$linear_journal_file" \
   --slurpfile current "$linear_current_file" \
   -f @linearControlStateJq@ <<<"$issues_before_pull")"

@@ -1,0 +1,148 @@
+cmd/bd/linear.go                   | 74 ++++++++++++++++++++++++++++++++++++++
+ cmd/bd/linear_local_labels_test.go | 51 ++++++++++++++++++++++++++
+ 2 files changed, 125 insertions(+)
+
+--- Changes ---
+
+cmd/bd/linear.go
+  @@ -560,9 +560,81 @@
+  +	localLabels, _ := getLinearConfig(ctx, "linear.local_labels")
+  +	if owned := parseLinearLocalLabels(localLabels); !owned.empty() {
+  +		convert := hooks.AfterConvert
+  +		hooks.AfterConvert = func(ctx context.Context, extIssue *tracker.TrackerIssue, conv *tracker.IssueConversion, ref string, existing *types.Issue, syncOpts tracker.SyncOptions) error {
+  +			if existing != nil {
+  +				conv.Issue.Labels = owned.merge(existing.Labels, conv.Issue.Labels)
+  +			}
+  +			if convert == nil {
+  +				return nil
+  +			}
+  +			return convert(ctx, extIssue, conv, ref, existing, syncOpts)
+  +		}
+  +	}
+  +
+   	return hooks
+   }
+   
+  +// linearLocalLabels names the labels Beads owns outright. Linear never carries
+  +// them, so a pull that took Linear's label set would strip every one of them
+  +// from each linked issue and rewrite that issue on every full pull. Entries
+  +// ending in "/" match as prefixes; matching ignores case.
+  +type linearLocalLabels struct {
+  +	names    map[string]struct{}
+  +	prefixes []string
+  +}
+  +
+  +func parseLinearLocalLabels(raw string) linearLocalLabels {
+  +	owned := linearLocalLabels{names: map[string]struct{}{}}
+  +	for _, entry := range strings.Split(raw, ",") {
+  +		entry = strings.ToLower(strings.TrimSpace(entry))
+  +		switch {
+  +		case entry == "":
+  +		case strings.HasSuffix(entry, "/"):
+  +			owned.prefixes = append(owned.prefixes, entry)
+  +		default:
+  +			owned.names[entry] = struct{}{}
+  +		}
+  +	}
+  +	return owned
+  +}
+  +
+  +func (o linearLocalLabels) empty() bool {
+  +	return len(o.names) == 0 && len(o.prefixes) == 0
+  +}
+  +
+  +func (o linearLocalLabels) owns(label string) bool {
+  +	label = strings.ToLower(strings.TrimSpace(label))
+  +	if _, ok := o.names[label]; ok {
+  +		return true
+  +	}
+  +	for _, prefix := range o.prefixes {
+  +		if strings.HasPrefix(label, prefix) {
+  +			return true
+  +		}
+  +	}
+  +	return false
+  +}
+  +
+  +// merge takes the pulled labels Linear owns and the local labels Beads owns,
+  +// so a pull neither strips nor adds a Beads-owned label.
+  +func (o linearLocalLabels) merge(local, pulled []string) []string {
+  +	merged := make([]string, 0, len(local)+len(pulled))
+  +	for _, label := range pulled {
+  +		if !o.owns(label) {
+  +			merged = append(merged, label)
+  +		}
+  +	}
+  +	for _, label := range local {
+  +		if o.owns(label) {
+  +			merged = append(merged, label)
+  +		}
+  +	}
+  +	return merged
+  +}
+  +
+   const linearMilestoneExternalRefPrefix = "linear:project-milestone:"
+   
+   func linearMilestoneExternalRef(id string) string {
+  @@ -1107,6 +1179,8 @@
+  +	case "linear.local_labels":
+  +		return "LINEAR_LOCAL_LABELS"
+   	default:
+   		return ""
+   	}
+  +74 -0
+
+cmd/bd/linear_local_labels_test.go
+  @@ -0,0 +1,51 @@
+  +package main
+  +
+  +import (
+  +	"context"
+  +	"reflect"
+  +	"testing"
+  +
+  +	"github.com/steveyegge/beads/internal/tracker"
+  +	"github.com/steveyegge/beads/internal/types"
+  +)
+  +
+  +func TestLinearLocalLabelsPullKeepsBeadsOwnedLabels(t *testing.T) {
+  +	t.Setenv("LINEAR_LOCAL_LABELS", " Hold, reserved/ ,,agent-plan")
+  +	hooks := buildLinearPullHooksForStore(context.Background(), nil, linearPullHookOptions{})
+  +	if hooks.AfterConvert == nil {
+  +		t.Fatal("AfterConvert is nil with linear.local_labels set")
+  +	}
+  +
+  +	conv := &tracker.IssueConversion{Issue: &types.Issue{Labels: []string{"Bug", "hold", "Refactor"}}}
+  +	existing := &types.Issue{Labels: []string{"HOLD", "reserved/lane-a", "agent-plan", "stale-linear"}}
+  +	if err := hooks.AfterConvert(context.Background(), &tracker.TrackerIssue{}, conv, "ref", existing, tracker.SyncOptions{}); err != nil {
+  +		t.Fatalf("AfterConvert: %v", err)
+  +	}
+  +
+  +	want := []string{"Bug", "Refactor", "HOLD", "reserved/lane-a", "agent-plan"}
+  +	if !reflect.DeepEqual(conv.Issue.Labels, want) {
+  +		t.Fatalf("labels = %v, want %v", conv.Issue.Labels, want)
+  +	}
+  +}
+  +
+  +func TestLinearLocalLabelsPullLeavesCreatesToLinear(t *testing.T) {
+  +	t.Setenv("LINEAR_LOCAL_LABELS", "hold")
+  +	hooks := buildLinearPullHooksForStore(context.Background(), nil, linearPullHookOptions{})
+  +
+  +	conv := &tracker.IssueConversion{Issue: &types.Issue{Labels: []string{"Bug", "hold"}}}
+  +	if err := hooks.AfterConvert(context.Background(), &tracker.TrackerIssue{}, conv, "ref", nil, tracker.SyncOptions{}); err != nil {
+  +		t.Fatalf("AfterConvert: %v", err)
+  +	}
+  +
+  +	if want := []string{"Bug", "hold"}; !reflect.DeepEqual(conv.Issue.Labels, want) {
+  +		t.Fatalf("labels = %v, want %v", conv.Issue.Labels, want)
+  +	}
+  +}
+  +
+  +func TestLinearLocalLabelsUnsetKeepsLinearLabelSet(t *testing.T) {
+  +	t.Setenv("LINEAR_LOCAL_LABELS", "")
+  +	hooks := buildLinearPullHooksForStore(context.Background(), nil, linearPullHookOptions{})
+  +	if hooks.AfterConvert != nil {
+  +		t.Fatal("AfterConvert is set without linear.local_labels")
+  +	}
+  +}
+  +51 -0

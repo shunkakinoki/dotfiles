@@ -47,8 +47,14 @@ let
   systemServiceScript = pkgs.replaceVars ./activate-system-service.sh {
     systemctl = "${pkgs.systemd}/bin/systemctl";
   };
+  # Only the Kyber reconciler pulls from Linear, so only it carries the patch
+  # that keeps local labels through a pull; every other client keeps pkgs.beads.
+  beadsLinearSync = pkgs.beads.overrideAttrs (old: {
+    patches = (old.patches or [ ]) ++ [ ./beads-linear-local-labels.patch ];
+  });
   linearSyncScript = pkgs.replaceVars ./linear-sync.sh {
-    bd = "${pkgs.beads}/bin/bd";
+    bd = "${beadsLinearSync}/bin/bd";
+    linearLocalLabels = lib.concatStringsSep "," (import ./linear-local-labels.nix);
     linear = "${homeDir}/.bun/install/global/node_modules/.bin/linear";
     # toString of a flake-source path carries no store context, so the copy
     # inside the flake checkout is garbage-collected under the running unit.

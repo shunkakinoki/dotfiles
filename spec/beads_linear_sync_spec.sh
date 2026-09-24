@@ -4,6 +4,7 @@
 Describe 'Beads Linear synchronization'
 SCRIPT="$PWD/home-manager/services/dolt/linear-sync.sh"
 MODULE="$PWD/home-manager/services/dolt/default.nix"
+LINEAR_LOCAL_LABELS_FIXTURE="$(sed -n 's/^ *"\(.*\)"$/\1/p' "$PWD/home-manager/services/dolt/linear-local-labels.nix" | paste -sd, -)"
 
 Describe 'script properties'
 It 'uses strict bash mode'
@@ -73,6 +74,11 @@ End
 
 It 'invokes jq through the Nix package binary path'
 When run bash -c "grep -F '@jq@/bin/jq' '$SCRIPT' >/dev/null"
+The status should be success
+End
+
+It 'pulls with the patched bd that keeps the shared local label list'
+When run bash -c "grep -F 'export LINEAR_LOCAL_LABELS=\"@linearLocalLabels@\"' '$SCRIPT' >/dev/null && grep -F -- '--arg local_labels \"\$LINEAR_LOCAL_LABELS\"' '$SCRIPT' >/dev/null && grep -F 'bd = \"\${beadsLinearSync}/bin/bd\";' '$MODULE' >/dev/null && grep -F 'import ./linear-local-labels.nix' '$MODULE' >/dev/null"
 The status should be success
 End
 
@@ -488,6 +494,7 @@ EOF
     -e 's|@gawk@|/usr|g' \
     -e "s|@jq@|$jq_prefix|g" \
     -e "s|@linearControlStateJq@|${SCRIPT%/*}/linear-control-state.jq|g" \
+    -e "s|@linearLocalLabels@|$LINEAR_LOCAL_LABELS_FIXTURE|g" \
     -e "s|@utilLinux@|$UTIL_LINUX|g" \
     "$SCRIPT" >"$RENDERED_SCRIPT"
 }

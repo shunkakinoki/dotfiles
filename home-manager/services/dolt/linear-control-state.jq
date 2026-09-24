@@ -3,23 +3,11 @@ def issues:
 
 def is_control_label:
   ascii_downcase as $label
-  | $label == "agent-plan"
-    or $label == "agent-plan-stale"
-    or $label == "awaiting-human"
-    or $label == "awaiting-operator"
-    or $label == "coordinator"
-    or $label == "foreign"
-    or $label == "hold"
-    or $label == "human"
-    or $label == "operator-hold"
-    or $label == "planner-intake"
-    or $label == "product"
-    or $label == "recovery-incident"
-    or $label == "reserved"
-    or $label == "stall"
-    or ($label | startswith("foreign/"))
-    or ($label | startswith("product/"))
-    or ($label | startswith("reserved/"));
+  | any(
+      $local_labels | split(",")[];
+      . as $owned
+      | if $owned | endswith("/") then $label | startswith($owned) else $owned == $label end
+    );
 
 def control_labels:
   reduce ((.labels // [])[] | select(is_control_label)) as $label (
