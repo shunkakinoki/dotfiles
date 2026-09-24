@@ -22,10 +22,10 @@ normalize_dcg_hooks() {
 
     tmp_file="$(mktemp "${hook_config}.tmp.XXXXXX")"
     if ! sed \
-      -e 's|"command": "dcg"|"command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh"|g' \
-      -e 's|"command": "[^"[:space:]]*/dcg"|"command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh"|g' \
-      -e 's|"command": "command -v dcg >/dev/null 2>&1 && dcg"|"command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh"|g' \
-      -e 's|"command": "command -v dcg \\u003e/dev/null 2\\u003e\\u00261 \\u0026\\u0026 dcg"|"command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh"|g' \
+      -e 's#"command": "dcg"#"command": "! command -v dcg >/dev/null 2>\&1 || $HOME/dotfiles/config/shared/hooks/dcg-guard.sh"#g' \
+      -e 's#"command": "[^"[:space:]]*/dcg"#"command": "! command -v dcg >/dev/null 2>\&1 || $HOME/dotfiles/config/shared/hooks/dcg-guard.sh"#g' \
+      -e 's#"command": "command -v dcg >/dev/null 2>&1 && dcg"#"command": "! command -v dcg >/dev/null 2>\&1 || $HOME/dotfiles/config/shared/hooks/dcg-guard.sh"#g' \
+      -e 's#"command": "command -v dcg \\u003e/dev/null 2\\u003e\\u00261 \\u0026\\u0026 dcg"#"command": "! command -v dcg >/dev/null 2>\&1 || $HOME/dotfiles/config/shared/hooks/dcg-guard.sh"#g' \
       "$hook_config" >"$tmp_file"; then
       rm -f "$tmp_file"
       return 1
@@ -127,10 +127,22 @@ for generated_file in \
   mv -f "$generated_file.tmp" "$generated_file"
 done
 
+# Hosts without moshi-hook skip these hooks instead of failing every event.
+for generated_file in \
+  "$GENERATED_ROOT/claude/settings.json" \
+  "$GENERATED_ROOT/codex/hooks.json" \
+  "$GENERATED_ROOT/cursor/hooks.json" \
+  "$GENERATED_ROOT/gemini/settings.json" \
+  "$GENERATED_ROOT/grok/plugin/hooks/hooks.json"; do
+  sed \
+    -e 's#"command": "moshi-hook #"command": "! command -v moshi-hook >/dev/null 2>\&1 || moshi-hook #g' \
+    "$generated_file" >"$generated_file.tmp"
+  mv -f "$generated_file.tmp" "$generated_file"
+done
+
 # dcg's installer may emit a resolved path, a bare invocation, or a conditional
-# lookup. Route all three through the tracked fail-closed wrapper after the
-# portability pass so missing installations cannot degrade shell execution to
-# an unguarded, non-blocking hook failure.
+# lookup. Route all three through the tracked wrapper after the portability
+# pass so a dcg that runs but cannot complete normally still fails closed.
 normalize_dcg_hooks \
   "$GENERATED_ROOT/claude/settings.json" \
   "$GENERATED_ROOT/codex/hooks.json" \

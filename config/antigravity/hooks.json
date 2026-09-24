@@ -4,14 +4,14 @@
     "PreInvocation": [
       {
         "type": "command",
-        "command": "moshi-hook antigravity-hook PreInvocation",
+        "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook antigravity-hook PreInvocation",
         "timeout": 5
       }
     ],
     "Stop": [
       {
         "type": "command",
-        "command": "moshi-hook antigravity-hook Stop",
+        "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook antigravity-hook Stop",
         "timeout": 5
       }
     ]

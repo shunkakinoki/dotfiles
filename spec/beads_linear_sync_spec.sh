@@ -477,8 +477,22 @@ printf '%s\n' "$*" >>"$DOLT_LOG"
 if [ -n "${FAKE_DOLT_FAIL:-}" ] && [[ $* == *"$FAKE_DOLT_FAIL"* ]]; then
   exit 1
 fi
+query="${*: -1}"
+trigger_file="${DOLT_LOG%/*}/dolt-trigger"
+if [[ $query == *"CREATE TRIGGER "* ]]; then
+  trigger="CREATE TRIGGER ${query#*CREATE TRIGGER }"
+  printf '%s' "${trigger%;}" >"$trigger_file"
+fi
 if [[ " $* " == *" sql -r json "* ]]; then
-  printf '%s\n' '{"rows":[{"head":0}]}'
+  if [[ $query == *dolt_schemas* ]]; then
+    if [ -f "$trigger_file" ]; then
+      jq -Rs '{rows: [{fragment: .}]}' "$trigger_file"
+    else
+      printf '%s\n' '{}'
+    fi
+  else
+    printf '%s\n' '{"rows":[{"head":0}]}'
+  fi
 fi
 exit 0
 EOF
@@ -510,6 +524,7 @@ EOF
     -e 's|@gawk@|/usr|g' \
     -e "s|@jq@|$jq_prefix|g" \
     -e "s|@linearControlStateJq@|${SCRIPT%/*}/linear-control-state.jq|g" \
+    -e "s|@machineClaimTriggerSql@|${SCRIPT%/*}/machine-claim-trigger.sql|g" \
     -e "s|@utilLinux@|$UTIL_LINUX|g" \
     "$SCRIPT" >"$RENDERED_SCRIPT"
 }
@@ -1098,6 +1113,17 @@ The output should not include 'Pushing changed active Beads'
 The file "$CHECKPOINT_FILE" should not be exist
 The contents of file "$DOLT_LOG" should include "DELETE FROM local_metadata"
 The contents of file "$DOLT_LOG" should include "REPLACE INTO local_metadata"
+End
+
+It 'installs the machine-claim guard before clearing the cursor for the pull'
+When run bash -c "env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LAST_SYNC=2099-01-01T12:00:00Z XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' >/dev/null && trigger_line=\$(grep -n 'DROP TRIGGER IF EXISTS beads_keep_machine_claim; CREATE TRIGGER beads_keep_machine_claim BEFORE UPDATE ON issues' '$DOLT_LOG' | cut -d: -f1) && cursor_line=\$(grep -n 'DELETE FROM local_metadata' '$DOLT_LOG' | cut -d: -f1) && test \"\$trigger_line\" -lt \"\$cursor_line\" && grep -F 'USE \`test_beads\`; DROP TRIGGER' '$DOLT_LOG' >/dev/null"
+The status should be success
+End
+
+It 'leaves an unchanged machine-claim guard in place'
+When run bash -c "for run in 1 2; do env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LAST_SYNC=2099-01-01T12:00:00Z XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' >/dev/null || exit; done; grep -c 'CREATE TRIGGER' '$DOLT_LOG'"
+The status should be success
+The output should equal 1
 End
 
 It 'restores a lane claim once and keeps the status of a timed-out pull'

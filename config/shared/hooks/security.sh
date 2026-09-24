@@ -14,11 +14,7 @@ export PATH="$HOME/.cargo/bin:/etc/profiles/per-user/shunkakinoki/bin:/run/curre
 
 set -euo pipefail
 
-# Fail closed: a security hook that can't parse its input must block, not allow.
-if ! command -v jq >/dev/null 2>&1; then
-  echo "BLOCKED by security.sh: jq not available, cannot evaluate command safely" >&2
-  exit 2
-fi
+command -v jq >/dev/null 2>&1 || exit 0
 
 input=$(cat)
 

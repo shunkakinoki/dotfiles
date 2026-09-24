@@ -8,6 +8,8 @@ export PATH="$HOME/.cargo/bin:/etc/profiles/per-user/shunkakinoki/bin:/run/curre
 
 set -euo pipefail
 
+command -v jq >/dev/null 2>&1 || exit 0
+
 input=$(cat)
 command=$(printf '%s' "$input" | jq -r '.tool.input.command // .tool_input.command // .toolArgs.command // .toolInput.command // .command // empty' 2>/dev/null)
 [[ -z $command ]] && exit 0

@@ -2,19 +2,19 @@
   "hooks": {
     "afterFileEdit": [
       {
-        "command": "$HOME/.cargo/bin/git-ai checkpoint cursor --hook-input stdin",
+        "command": "! command -v $HOME/.cargo/bin/git-ai >/dev/null 2>&1 || $HOME/.cargo/bin/git-ai checkpoint cursor --hook-input stdin",
         "timeout": 15
       }
     ],
     "beforeReadFile": [
       {
-        "command": "command -v graphify >/dev/null 2>&1 && graphify hook-guard read",
+        "command": "! command -v graphify >/dev/null 2>&1 || graphify hook-guard read",
         "timeout": 5
       }
     ],
     "beforeShellExecution": [
       {
-        "command": "command -v graphify >/dev/null 2>&1 && graphify hook-guard search",
+        "command": "! command -v graphify >/dev/null 2>&1 || graphify hook-guard search",
         "timeout": 5
       },
       {
@@ -40,7 +40,7 @@
     ],
     "beforeSubmitPrompt": [
       {
-        "command": "$HOME/.cargo/bin/git-ai checkpoint cursor --hook-input stdin",
+        "command": "! command -v $HOME/.cargo/bin/git-ai >/dev/null 2>&1 || $HOME/.cargo/bin/git-ai checkpoint cursor --hook-input stdin",
         "timeout": 15
       },
       {
@@ -49,12 +49,12 @@
     ],
     "postToolUse": [
       {
-        "command": "bd cursor-hook postToolUse"
+        "command": "! command -v bd >/dev/null 2>&1 || bd cursor-hook postToolUse"
       }
     ],
     "preCompact": [
       {
-        "command": "bd cursor-hook preCompact"
+        "command": "! command -v bd >/dev/null 2>&1 || bd cursor-hook preCompact"
       }
     ],
     "sessionEnd": [
@@ -64,7 +64,7 @@
     ],
     "sessionStart": [
       {
-        "command": "bd cursor-hook sessionStart"
+        "command": "! command -v bd >/dev/null 2>&1 || bd cursor-hook sessionStart"
       },
       {
         "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-start --agent cursor # traces hook agent"

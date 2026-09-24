@@ -8,7 +8,7 @@ CURSOR_HOOKS="$PWD/config/cursor/hooks.json"
 GEMINI_SETTINGS="$PWD/config/gemini/settings.json"
 
 has_session_start_hook() {
-  jq -e '[.hooks.SessionStart[]?.hooks[]?.command] | any(. == "bd prime --hook-json")' "$1" >/dev/null
+  jq -e '[.hooks.SessionStart[]?.hooks[]?.command] | any(. == "! command -v bd >/dev/null 2>&1 || bd prime --hook-json")' "$1" >/dev/null
 }
 
 has_codex_hook() {
@@ -30,37 +30,37 @@ The status should be success
 End
 
 It 'installs the Codex compaction recovery lifecycle'
-When call has_codex_hook 'SessionStart' 'bd codex-hook SessionStart'
+When call has_codex_hook 'SessionStart' '! command -v bd >/dev/null 2>&1 || bd codex-hook SessionStart'
 The status should be success
 End
 
 It 'checks Beads context before Codex compaction'
-When call has_codex_hook 'PreCompact' 'bd codex-hook PreCompact'
+When call has_codex_hook 'PreCompact' '! command -v bd >/dev/null 2>&1 || bd codex-hook PreCompact'
 The status should be success
 End
 
 It 'refreshes Beads context after Codex compaction'
-When call has_codex_hook 'PostCompact' 'bd codex-hook PostCompact'
+When call has_codex_hook 'PostCompact' '! command -v bd >/dev/null 2>&1 || bd codex-hook PostCompact'
 The status should be success
 End
 
 It 'injects Beads context on the first Codex prompt after compaction'
-When call has_codex_hook 'UserPromptSubmit' 'bd codex-hook UserPromptSubmit'
+When call has_codex_hook 'UserPromptSubmit' '! command -v bd >/dev/null 2>&1 || bd codex-hook UserPromptSubmit'
 The status should be success
 End
 
 It 'installs the Cursor session context hook'
-When call has_cursor_hook 'sessionStart' 'bd cursor-hook sessionStart'
+When call has_cursor_hook 'sessionStart' '! command -v bd >/dev/null 2>&1 || bd cursor-hook sessionStart'
 The status should be success
 End
 
 It 'installs the Cursor compaction recovery hooks'
-When call has_cursor_hook 'preCompact' 'bd cursor-hook preCompact'
+When call has_cursor_hook 'preCompact' '! command -v bd >/dev/null 2>&1 || bd cursor-hook preCompact'
 The status should be success
 End
 
 It 're-injects Cursor context after compaction'
-When call has_cursor_hook 'postToolUse' 'bd cursor-hook postToolUse'
+When call has_cursor_hook 'postToolUse' '! command -v bd >/dev/null 2>&1 || bd cursor-hook postToolUse'
 The status should be success
 End
 
