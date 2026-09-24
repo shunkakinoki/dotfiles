@@ -981,6 +981,21 @@ if [ -n "$pending_completion_ids" ]; then
   fi
 fi
 
+# The pull writes Linear's assignee, which is empty for a machine claim, over
+# every linked Bead. The repair below runs only after the whole pull, and a
+# fleet wake in that window releases any lane it finds unassigned, so the
+# server keeps a live claim's assignee through each write instead. The trigger
+# mirrors active_machine_claim in linear-control-state.jq and holds only writes
+# that stay in progress, so unclaim and lease reclaim, which reopen, still
+# clear it. Dolt stores the statement verbatim; reinstall only on a change so
+# an unchanged trigger adds no schema history.
+machine_claim_trigger="$(<"@machineClaimTriggerSql@")"
+installed_machine_claim_trigger="$(query_dolt_json "USE \`$linear_database\`; SELECT fragment FROM dolt_schemas WHERE type = 'trigger' AND name = 'beads_keep_machine_claim';" | @jq@/bin/jq -r '.rows[0].fragment // ""')"
+if [ "$installed_machine_claim_trigger" != "$machine_claim_trigger" ]; then
+  log "Installing the machine-claim assignee guard"
+  run_dolt_sql "USE \`$linear_database\`; DROP TRIGGER IF EXISTS beads_keep_machine_claim; $machine_claim_trigger;"
+fi
+
 # Beads' incremental pull currently performs one dolt_history_issues query for
 # every pre-linked issue. At this repository's scale that path exceeds the
 # bounded service window, while a complete tracker fetch finishes promptly.
