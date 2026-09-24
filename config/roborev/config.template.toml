@@ -1,5 +1,5 @@
-# Keep review concurrency bounded on every host. A panel fans out child
-# agents, so two daemon workers are the safe default for a developer machine.
+# Hydration overrides this per host. A panel fans out child agents, so two
+# daemon workers are the safe default for a developer machine.
 max_workers = 2
 
 # Upstream falls back to codex when no workflow agent is set; codex is not
@@ -27,14 +27,8 @@ agent = 'opencode'
 review_type = 'default'
 allow_failure = true
 
-[review.subagents.droid]
-agent = 'droid'
-review_type = 'default'
-allow_failure = true
-
 [review.panels.full]
-# Droid is useful when available, but its Kyber launcher is currently flaky.
-members = ['opencode', 'droid', 'pi-unionalpha', 'pi']
+members = ['opencode', 'pi-unionalpha', 'pi']
 synthesis_agent = 'opencode'
 
 [ci]

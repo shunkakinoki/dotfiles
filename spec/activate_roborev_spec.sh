@@ -57,9 +57,17 @@ When run bash -c "grep 'ciEnabled = if inputs.host.isMatic then \"true\" else \"
 The output should include 'ciEnabled = if inputs.host.isMatic then "true" else "false";'
 End
 
-It 'caps review workers on every host'
-When run bash -c "grep 'maxWorkers = \"2\";' '$PWD/config/roborev/default.nix'"
-The output should include 'maxWorkers = "2";'
+It 'scales review workers on matic only'
+When run bash -c "grep 'maxWorkers = if inputs.host.isMatic then \"6\" else \"2\";' '$PWD/config/roborev/default.nix'"
+The output should include 'maxWorkers = if inputs.host.isMatic then "6" else "2";'
+End
+
+It 'bounds matic worker memory'
+When run grep -E 'optionalAttrs isMatic|MemoryHigh = "48G"|MemoryMax = "64G"|TasksMax = 4096' "$PWD/home-manager/services/roborev/default.nix"
+The output should include 'optionalAttrs isMatic'
+The output should include 'MemoryHigh = "48G"'
+The output should include 'MemoryMax = "64G"'
+The output should include 'TasksMax = 4096'
 End
 
 It 'runs roborev daemon run'

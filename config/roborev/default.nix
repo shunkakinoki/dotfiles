@@ -10,9 +10,10 @@ let
     let
       vars = {
         ciEnabled = if inputs.host.isMatic then "true" else "false";
-        # Keep every host to two review workers. A panel fans out child agents,
-        # so a higher daemon count multiplies CPU, memory, and git processes.
-        maxWorkers = "2";
+        # Matic polls CI for every PR, and pushes arrive in bursts that fan out
+        # into panel members; two workers left those bursts queued for hours.
+        # Other hosts only review their own commits, so two stays enough.
+        maxWorkers = if inputs.host.isMatic then "6" else "2";
         sed = "${pkgs.gnused}/bin/sed";
         template = "${./config.template.toml}";
       };

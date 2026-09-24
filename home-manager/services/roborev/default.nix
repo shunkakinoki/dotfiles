@@ -86,10 +86,17 @@ lib.mkIf enabled {
       IOWriteBandwidthMax = "/ 10M";
       IOReadIOPSMax = "/ 200";
       IOWriteIOPSMax = "/ 100";
-      # The config template caps review workers at two on every host.
+      # Hydration caps review workers at two on Kyber.
       # MemoryHigh throttles via reclaim before MemoryMax kills the cgroup.
       MemoryHigh = "24G";
       MemoryMax = "32G";
+    }
+    // lib.optionalAttrs isMatic {
+      # Six CI workers share one cgroup, which peaked above 30G with two
+      # workers; throttle before the daemon can starve the rest of the host.
+      MemoryHigh = "48G";
+      MemoryMax = "64G";
+      TasksMax = 4096;
     };
     Install = {
       WantedBy = [ "default.target" ];
