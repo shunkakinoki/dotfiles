@@ -49,7 +49,8 @@ let
   };
   # Only the Kyber reconciler pulls from Linear, so only it carries the patch
   # that keeps local labels through a pull; every other client keeps pkgs.beads.
-  beadsLinearSync = pkgs.beads.overrideAttrs (old: {
+  # pkgs.beads only copies this build's binary, so the patch goes here.
+  beadsLinearSync = pkgs.beads-unwrapped.overrideAttrs (old: {
     patches = (old.patches or [ ]) ++ [ ./beads-linear-local-labels.patch ];
   });
   linearSyncScript = pkgs.replaceVars ./linear-sync.sh {
