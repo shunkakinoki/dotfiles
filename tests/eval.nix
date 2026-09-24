@@ -436,9 +436,9 @@ let
         assert cfg.systemd.user.services.herdr-server.Service.Slice == "herdr.slice";
         assert cfg.systemd.user.services.openclaw-gateway.Service.IOAccounting;
         assert cfg.systemd.user.services.openclaw-gateway.Service.IOReadBandwidthMax == "/ 20M";
-        assert cfg.systemd.user.services.openclaw-gateway.Service.IOWriteBandwidthMax == "/ 20M";
+        assert !(cfg.systemd.user.services.openclaw-gateway.Service ? IOWriteBandwidthMax);
         assert cfg.systemd.user.services.openclaw-gateway.Service.IOReadIOPSMax == "/ 100";
-        assert cfg.systemd.user.services.openclaw-gateway.Service.IOWriteIOPSMax == "/ 100";
+        assert !(cfg.systemd.user.services.openclaw-gateway.Service ? IOWriteIOPSMax);
         assert lib.elem "TMPDIR=/dev/shm/openclaw-gateway"
           cfg.systemd.user.services.openclaw-gateway.Service.Environment;
         assert cfg.systemd.user.services.openclaw-state-maintenance.Service.TimeoutStartSec == "30m";

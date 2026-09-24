@@ -62,12 +62,12 @@ lib.mkIf host.isKyber {
       Restart = "always";
       RestartSec = "5s";
       # OpenClaw creates read-only SQLite snapshots for concurrent requests.
-      # Bound that work so the gateway cannot starve K3s on Kyber's root disk.
+      # Bound their reads so the gateway cannot starve K3s on Kyber's root disk.
+      # Writes stay under the user.slice ceiling instead: agent children share
+      # this cgroup, so a per-unit write cap stalls every one of them at once.
       IOAccounting = true;
       IOReadBandwidthMax = "/ 20M";
-      IOWriteBandwidthMax = "/ 20M";
       IOReadIOPSMax = "/ 100";
-      IOWriteIOPSMax = "/ 100";
       EnvironmentFile = [ "-${homeDir}/dotfiles/.env" ];
       Environment = [
         "HOME=${homeDir}"
