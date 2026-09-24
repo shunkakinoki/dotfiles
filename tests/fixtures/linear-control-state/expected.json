@@ -52,5 +52,14 @@
     "desired_status": "closed",
     "id": "task-e",
     "remove_labels": []
+  },
+  {
+    "add_labels": [],
+    "current_assignee": "owner@example.com",
+    "current_status": "open",
+    "desired_assignee": "exec",
+    "desired_status": "in_progress",
+    "id": "task-f",
+    "remove_labels": []
   }
 ]

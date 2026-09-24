@@ -232,6 +232,9 @@ case "${1:-} ${2:-}" in
     exit 99
     ;;
   "events tail")
+    if [ "${FAKE_EVENTS_FAIL:-}" = 1 ]; then
+      exit 1
+    fi
     if [ -n "${FAKE_EVENTS_JOURNAL:-}" ]; then
       printf '%s\n' "$FAKE_EVENTS_JOURNAL"
     fi
@@ -385,6 +388,22 @@ case "${1:-} ${2:-}" in
           exit 23
         fi
         ;;
+      pull-sigterm)
+        if [[ " $* " != *" --push "* ]]; then
+          # BSD pkill never matches its own ancestors, so walk them instead.
+          # The highest match is the repository process, not a subshell of it.
+          sigterm_target=""
+          ancestor="$PPID"
+          while [ "${ancestor:-1}" -gt 1 ]; do
+            if [[ "$(ps -o args= -p "$ancestor")" == *"${FAKE_SIGTERM_TARGET:?}"* ]]; then
+              sigterm_target="$ancestor"
+            fi
+            ancestor="$(ps -o ppid= -p "$ancestor" | tr -d ' ')"
+          done
+          kill -TERM "${sigterm_target:?}"
+          exit 143
+        fi
+        ;;
       push-failure)
         if [[ " $* " == *" --push "* ]]; then
           exit 24
@@ -455,6 +474,9 @@ EOF
   cat >"$FAKE_DOLT_ROOT/bin/dolt" <<'EOF'
 #!/usr/bin/env bash
 printf '%s\n' "$*" >>"$DOLT_LOG"
+if [ -n "${FAKE_DOLT_FAIL:-}" ] && [[ $* == *"$FAKE_DOLT_FAIL"* ]]; then
+  exit 1
+fi
 if [[ " $* " == *" sql -r json "* ]]; then
   printf '%s\n' '{"rows":[{"head":0}]}'
 fi
@@ -1079,6 +1101,107 @@ The contents of file "$DOLT_LOG" should include "DELETE FROM local_metadata"
 The contents of file "$DOLT_LOG" should include "REPLACE INTO local_metadata"
 End
 
+It 'restores a lane claim once and keeps the status of a timed-out pull'
+before='[{"id":"df-lane","status":"in_progress","assignee":"exec","notes":"lane-claim:exec","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/lane"}]'
+after='[{"id":"df-lane","status":"open","assignee":"owner@example.com","notes":"lane-claim:exec","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/lane"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=command-timeout FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 124
+The output should include 'Restoring locally authoritative control state after pull'
+The output should include 'Linear pull failed with status 124'
+The contents of file "$COMMAND_LOG" should include 'update df-lane --assignee exec --status in_progress --if-status=open --if-assignee=owner@example.com'
+The value "$(grep -c 'events tail' "$COMMAND_LOG")" should equal 1
+The value "$(grep -c 'REPLACE INTO local_metadata' "$DOLT_LOG")" should equal 1
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'restores a lane claim once and keeps the status of a failed pull'
+before='[{"id":"df-lane","status":"in_progress","assignee":"exec","notes":"lane-claim:exec","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/lane"}]'
+after='[{"id":"df-lane","status":"open","assignee":"owner@example.com","notes":"lane-claim:exec","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/lane"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=pull-failure FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 23
+The output should include 'Restoring locally authoritative control state after pull'
+The output should include 'Linear pull failed with status 23'
+The contents of file "$COMMAND_LOG" should include 'update df-lane --assignee exec --status in_progress --if-status=open --if-assignee=owner@example.com'
+The value "$(grep -c 'events tail' "$COMMAND_LOG")" should equal 1
+The value "$(grep -c 'REPLACE INTO local_metadata' "$DOLT_LOG")" should equal 1
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'restores control state exactly once after a successful pull'
+before='[{"id":"df-lane","status":"in_progress","assignee":"exec","notes":"lane-claim:exec","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/lane"}]'
+after='[{"id":"df-lane","status":"open","assignee":"owner@example.com","notes":"lane-claim:exec","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/lane"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Restoring locally authoritative control state after pull'
+The value "$(grep -c 'update df-lane --assignee exec' "$COMMAND_LOG")" should equal 1
+The value "$(grep -c 'events tail' "$COMMAND_LOG")" should equal 1
+The contents of file "$DOLT_LOG" should not include 'REPLACE INTO local_metadata'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'does not restore when the run fails before the pre-pull snapshot'
+printf '%s\n' '{"dolt_database":"invalid-name"}' >"$TEST_REPO/.beads/metadata.json"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 1
+The output should include 'Beads metadata does not contain a valid Dolt database name'
+The contents of file "$COMMAND_LOG" should not include 'events tail'
+The contents of file "$COMMAND_LOG" should not include 'linear sync --pull'
+The value "$(cat "$DOLT_LOG" 2>/dev/null)" should not include 'local_metadata'
+End
+
+It 'restores once when the run aborts after clearing the cursor'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_DOLT_FAIL='DELETE FROM local_metadata' FAKE_LAST_SYNC=2099-01-01T12:00:00Z XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 1
+The output should include 'Repository sync failed with status 1'
+The contents of file "$COMMAND_LOG" should not include 'linear sync --pull'
+The value "$(grep -c 'events tail' "$COMMAND_LOG")" should equal 1
+The value "$(grep -c 'REPLACE INTO local_metadata' "$DOLT_LOG")" should equal 1
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'restores once and re-raises a stop signal that arrives during the pull'
+before='[{"id":"df-lane","status":"in_progress","assignee":"exec","notes":"lane-claim:exec","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/lane"}]'
+after='[{"id":"df-lane","status":"open","assignee":"owner@example.com","notes":"lane-claim:exec","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/lane"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=pull-sigterm FAKE_SIGTERM_TARGET="$RENDERED_SCRIPT --repo" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 143
+The output should include 'Restoring locally authoritative control state after pull'
+The output should not include 'Linear pull failed'
+The stderr should include 'Terminated'
+The contents of file "$COMMAND_LOG" should include 'update df-lane --assignee exec --status in_progress --if-status=open --if-assignee=owner@example.com'
+The value "$(grep -c 'events tail' "$COMMAND_LOG")" should equal 1
+The value "$(grep -c 'REPLACE INTO local_metadata' "$DOLT_LOG")" should equal 1
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'keeps the failed pull status when the restore also fails'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=pull-failure FAKE_EVENTS_FAIL=1 FAKE_LAST_SYNC=2026-08-24T10:39:54Z XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 23
+The output should include 'Unable to read the Beads events journal after the Linear pull'
+The output should include 'Linear pull failed with status 23'
+The contents of file "$DOLT_LOG" should include 'REPLACE INTO local_metadata'
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'fails a successful pull whose restore fails'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_EVENTS_FAIL=1 FAKE_LAST_SYNC=2026-08-24T10:39:54Z XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 1
+The output should include 'Unable to read the Beads events journal after the Linear pull'
+The output should not include 'Pushing changed active Beads'
+The contents of file "$DOLT_LOG" should include 'REPLACE INTO local_metadata'
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'leaves a lane claim a foreign owner took after the snapshot'
+before='[{"id":"df-lane","status":"in_progress","assignee":"exec","notes":"lane-claim:exec","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/lane"}]'
+after='[{"id":"df-lane","status":"in_progress","assignee":"operator@example.com","notes":"lane-claim:exec","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/lane"}]'
+journal='{"actor":"operator@example.com","op":"update","issue_id":"df-lane","issue":{"id":"df-lane","status":"in_progress","assignee":"operator@example.com"}}'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=command-timeout FAKE_EVENTS_JOURNAL="$journal" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 124
+The output should include 'Linear pull failed with status 124'
+The contents of file "$COMMAND_LOG" should include 'events tail --since 0'
+The contents of file "$COMMAND_LOG" should not include 'update df-lane'
+End
+
 It 'propagates a Linear push failure without advancing the checkpoint'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=push-failure XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should equal 24
@@ -1109,6 +1232,8 @@ When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MOD
 The status should equal 24
 The output should include 'Linear push failed with status 24'
 The contents of file "$COMMAND_LOG" should not include 'linear sync --pull'
+The contents of file "$COMMAND_LOG" should not include 'events tail'
+The contents of file "$DOLT_LOG" should not include 'local_metadata'
 The contents of file "$CHECKPOINT_FILE" should equal '2026-01-01T00:00:00Z'
 End
 

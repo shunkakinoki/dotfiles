@@ -36,5 +36,19 @@
     "labels": [
       "hold"
     ]
+  },
+  {
+    "id": "task-f",
+    "status": "in_progress",
+    "assignee": "exec",
+    "notes": "lane-claim:exec",
+    "labels": []
+  },
+  {
+    "id": "task-g",
+    "status": "in_progress",
+    "assignee": "exec",
+    "notes": "lane-claim:exec\nlane-release:exec",
+    "labels": []
   }
 ]
