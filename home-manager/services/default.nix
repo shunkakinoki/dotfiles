@@ -31,6 +31,7 @@ let
   ollama = ./ollama;
   qmd = ./qmd;
   openclaw = ./openclaw;
+  reasonix = ./reasonix;
   roborev = ./roborev;
   screenshotClipboard = import ./screenshot-clipboard { inherit pkgs; };
   sshAgent = ./ssh-agent;
@@ -65,6 +66,7 @@ in
   ollama
   qmd
   openclaw
+  reasonix
   roborev
   screenshotClipboard
   sshAgent
