@@ -564,7 +564,6 @@ config/devin/hooks/pushover.sh
 config/dsh/hydrate.sh
 config/reasonix/hydrate.sh
 home-manager/services/reasonix/start.sh
-home-manager/modules/local-scripts/reasonix-threads.sh
 config/codex/hooks/notify.sh
 config/codex/hooks/pushover.sh
 config/openfactor/install.sh
