@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pin declared host keys into ~/.ssh/known_hosts (append-if-missing).
+# Pin declared host keys into ~/.ssh/known_hosts.
 set -euo pipefail
 
 KNOWN_HOSTS_FILE="${1:?usage: pin-known-hosts.sh <source-file>}"
@@ -9,7 +9,22 @@ mkdir -p "$HOME/.ssh"
 touch "$kh"
 chmod 600 "$kh"
 
-while IFS= read -r line; do
-  [ -z "$line" ] && continue
-  grep -qxF "$line" "$kh" || echo "$line" >>"$kh"
-done <"$KNOWN_HOSTS_FILE"
+pinned=$(mktemp)
+trap 'rm -f "$pinned"' EXIT
+
+# Appending alone leaves a rotated host's superseded key trusted for as long as
+# the file lives, because OpenSSH accepts either key while both are present.
+# Drop every line that carries a declared host, then write the declared set
+# back, so a switch restores exactly the trust this repository declares. Lines
+# for hosts this repository does not declare are left alone.
+awk 'NR == FNR { if (NF >= 3) declared[$1] = 1; next }
+     NF < 3 { print; next }
+     {
+       count = split($1, patterns, ",")
+       for (index_ = 1; index_ <= count; index_++)
+         if (patterns[index_] in declared) next
+       print
+     }' "$KNOWN_HOSTS_FILE" "$kh" >"$pinned"
+cat "$KNOWN_HOSTS_FILE" >>"$pinned"
+
+cmp -s "$pinned" "$kh" || cat "$pinned" >"$kh"
