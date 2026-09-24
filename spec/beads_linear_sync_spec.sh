@@ -802,13 +802,13 @@ The output should include 'No terminal Beads to push'
 The contents of file "$progress_file" should equal 'df-closed 2099-01-01T00:00:00Z'
 End
 
-It 'restores control labels the pull removed'
+It 'keeps the labels the pull wrote'
 before='[{"id":"df-held","status":"open","assignee":"","labels":["hold","other"],"updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/held"}]'
 after='[{"id":"df-held","status":"open","assignee":"","labels":["other"],"updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/held"}]'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
-The output should include 'Restoring locally authoritative control state after pull'
-The contents of file "$COMMAND_LOG" should include 'update df-held --add-label hold --status open --if-status=open --if-assignee='
+The output should not include 'Restoring locally authoritative control state after pull'
+The contents of file "$COMMAND_LOG" should not include 'update df-held'
 The file "$CHECKPOINT_FILE" should be exist
 End
 
@@ -847,14 +847,13 @@ The contents of file "$COMMAND_LOG" should include 'update df-accepted --assigne
 The file "$CHECKPOINT_FILE" should be exist
 End
 
-It 'accepts a tracker close on a Bead that carries control labels alone'
+It 'accepts a tracker close on a Bead no machine holds'
 before='[{"id":"df-held","status":"open","assignee":"","labels":["hold"],"updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/held"}]'
 after='[{"id":"df-held","status":"closed","assignee":"","labels":[],"closed_at":"2099-01-03T00:00:00Z","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/held"}]'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
-The output should include 'Restored 1 control state record(s); skipped 0 superseded or refused repair(s)'
-The contents of file "$COMMAND_LOG" should include 'update df-held --add-label hold --status closed --if-status=closed --if-assignee='
-The contents of file "$COMMAND_LOG" should not include '--status open'
+The output should not include 'Restoring locally authoritative control state after pull'
+The contents of file "$COMMAND_LOG" should not include 'update df-held'
 The file "$CHECKPOINT_FILE" should be exist
 End
 

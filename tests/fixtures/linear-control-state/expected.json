@@ -1,65 +1,37 @@
 [
   {
-    "add_labels": [
-      "agent-plan",
-      "reserved/fleet"
-    ],
     "current_assignee": "owner@example.com",
     "current_status": "open",
     "desired_assignee": "kamino2_lane_1",
     "desired_status": "in_progress",
-    "id": "task-a",
-    "remove_labels": []
+    "id": "task-a"
   },
   {
-    "add_labels": [],
     "current_assignee": "owner@example.com",
     "current_status": "open",
     "desired_assignee": "",
     "desired_status": "open",
-    "id": "task-b",
-    "remove_labels": [
-      "human"
-    ]
+    "id": "task-b"
   },
   {
-    "add_labels": [
-      "agent-plan"
-    ],
     "current_assignee": "owner@example.com",
     "current_status": "open",
     "desired_assignee": "kamino4_lane_1",
     "desired_status": "in_progress",
-    "id": "task-c",
-    "remove_labels": []
+    "id": "task-c"
   },
   {
-    "add_labels": [],
     "current_assignee": "owner@example.com",
     "current_status": "open",
     "desired_assignee": "",
     "desired_status": "open",
-    "id": "task-d",
-    "remove_labels": []
+    "id": "task-d"
   },
   {
-    "add_labels": [
-      "hold"
-    ],
-    "current_assignee": "owner@example.com",
-    "current_status": "closed",
-    "desired_assignee": "owner@example.com",
-    "desired_status": "closed",
-    "id": "task-e",
-    "remove_labels": []
-  },
-  {
-    "add_labels": [],
     "current_assignee": "owner@example.com",
     "current_status": "open",
     "desired_assignee": "exec",
     "desired_status": "in_progress",
-    "id": "task-f",
-    "remove_labels": []
+    "id": "task-f"
   }
 ]
