@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Pin declared host keys into ~/.ssh/known_hosts.
+# The awk path is substituted by pkgs.replaceVars so activation does not depend
+# on awk being on the generated activation PATH.
 set -euo pipefail
 
 KNOWN_HOSTS_FILE="${1:?usage: pin-known-hosts.sh <source-file>}"
@@ -17,7 +19,8 @@ trap 'rm -f "$pinned"' EXIT
 # Drop every line that carries a declared host, then write the declared set
 # back, so a switch restores exactly the trust this repository declares. Lines
 # for hosts this repository does not declare are left alone.
-awk 'NR == FNR { if (NF >= 3) declared[$1] = 1; next }
+# shellcheck disable=SC2016
+@awk@ 'NR == FNR { if (NF >= 3) declared[$1] = 1; next }
      NF < 3 { print; next }
      {
        count = split($1, patterns, ",")
