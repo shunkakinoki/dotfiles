@@ -88,9 +88,9 @@ hour slot, retaining up to 24 hourly rollback points without unbounded growth.
 The snapshot is as large as the live database. Set `CLIPROXY_BACKUP_STAGING_DIR`
 to stage it on a filesystem other than `$TMPDIR`.
 On kyber, the hourly unit limits reads from the root disk to 5 MB/s and 50
-operations/s, gives the backup low I/O weight, and stops a run after 40 minutes.
-The snapshot currently stages in RAM-backed `/tmp`; the cap protects the live
-database's source disk while retaining hourly backup attempts.
+operations/s and gives the backup low I/O weight. The snapshot currently stages
+in RAM-backed `/tmp`; the cap protects the live database's source disk without
+imposing a fixed maximum database size on backups.
 
 ### WatchPaths (file watchers)
 

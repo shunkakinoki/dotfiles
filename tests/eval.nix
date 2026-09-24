@@ -465,7 +465,6 @@ let
         assert cfg.systemd.user.services.cliproxyapi-backup.Service.IOWeight == 10;
         assert cfg.systemd.user.services.cliproxyapi-backup.Service.IOReadBandwidthMax == "/ 5M";
         assert cfg.systemd.user.services.cliproxyapi-backup.Service.IOReadIOPSMax == "/ 50";
-        assert cfg.systemd.user.services.cliproxyapi-backup.Service.TimeoutStartSec == "40m";
         assert !(lib.hasInfix "--slice=orchestration.slice" cfg.programs.fish.shellInit);
         assert !(cfg.systemd.user.services ? dolt-federation-sync);
         assert !(cfg.systemd.user.services ? dolt-federation-hub);

@@ -217,7 +217,6 @@ in
       IOWeight = 10;
       IOReadBandwidthMax = "/ 5M";
       IOReadIOPSMax = "/ 50";
-      TimeoutStartSec = "40m";
       ExecStart = "${pkgs.bash}/bin/bash ${backupScript} full";
       Environment = "PATH=${
         lib.makeBinPath [
