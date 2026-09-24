@@ -506,14 +506,15 @@ restore_linear_last_sync() {
 }
 
 # A cursor-free pull overwrites local assignment, workflow state, and labels.
-# The pre-pull snapshot protects existing machine claims; labels keep the
-# tracker's value. The durable journal then folds every non-reconciler mutation
-# made during the pull over that snapshot in commit order, so a concurrent
-# claim, release, or completion wins. Each repair compares both fields
-# it observed after the pull; a newer claim makes the guarded write refuse
-# instead of transferring ownership from a live worker. Every caller runs this
-# as a tested command, where errexit does not apply, so each step checks its
-# own status.
+# The pre-pull snapshot protects the status of every Bead a lane holds through
+# an unreleased `lane-claim:` note marker, which the pull never writes; the
+# assignee and labels keep the tracker's value. The durable journal then folds
+# every non-reconciler mutation made during the pull over that snapshot in
+# commit order, so a concurrent claim, release, or completion wins. Each repair
+# is guarded by the status it observed after the pull, so a newer write makes
+# it refuse instead of overriding a live worker. Every caller runs this as a
+# tested command, where errexit does not apply, so each step checks its own
+# status.
 repair_control_state_after_pull() {
   local linear_journal_file="$sync_state_dir/journal-$repo_slug.jsonl"
   local linear_current_file="$sync_state_dir/current-$repo_slug.json"
@@ -523,15 +524,7 @@ repair_control_state_after_pull() {
   local repair
   local restore_id
   local restore_status
-  local restore_assignee
   local pulled_status
-  local pulled_assignee
-  local restore_args
-  local wedged_records
-  local wedged_id
-  local claim_lane
-  local reopened
-  local restored_claims
 
   if ! all_issues="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0)"; then
     log "Unable to list Beads after the Linear pull"
@@ -552,9 +545,9 @@ repair_control_state_after_pull() {
   fi
   @coreutils@/bin/rm -f "$linear_journal_file" "$linear_current_file"
 
-  # Beads whose status or assignee a repair below changed back from what the
-  # pull wrote. The tracker still holds the pulled state, so the pushed-active
-  # ledger's record of what the tracker last received is stale for them.
+  # Beads whose status a repair below changed back from what the pull wrote.
+  # The tracker still holds the pulled state, so the pushed-active ledger's
+  # record of what the tracker last received is stale for them.
   repaired_ids=""
   if [ -n "$control_state_repairs" ]; then
     log "Restoring locally authoritative control state after pull"
@@ -563,18 +556,9 @@ repair_control_state_after_pull() {
     while IFS= read -r repair; do
       restore_id="$(@jq@/bin/jq -r '.id' <<<"$repair")"
       restore_status="$(@jq@/bin/jq -r '.desired_status' <<<"$repair")"
-      restore_assignee="$(@jq@/bin/jq -r '.desired_assignee' <<<"$repair")"
       pulled_status="$(@jq@/bin/jq -r '.current_status' <<<"$repair")"
-      pulled_assignee="$(@jq@/bin/jq -r '.current_assignee' <<<"$repair")"
-      restore_args=()
-      if [ "$restore_assignee" != "$pulled_assignee" ]; then
-        restore_args+=(--assignee "$restore_assignee")
-      fi
-      if [ "$restore_status" != "$pulled_status" ]; then
-        restore_args+=(--status "$restore_status")
-      fi
-      if "$bd_cli" -C "$repo_dir" update "$restore_id" "${restore_args[@]}" \
-        --if-status="$pulled_status" --if-assignee="$pulled_assignee" >/dev/null 2>&1; then
+      if "$bd_cli" -C "$repo_dir" update "$restore_id" --status "$restore_status" \
+        --if-status="$pulled_status" >/dev/null 2>&1; then
         restored_control_state=$((restored_control_state + 1))
         repaired_ids="${repaired_ids:+$repaired_ids,}$restore_id"
       else
@@ -582,52 +566,6 @@ repair_control_state_after_pull() {
       fi
     done <<<"$control_state_repairs"
     log "Restored $restored_control_state control state record(s); skipped $restore_failures superseded or refused repair(s)"
-  fi
-
-  # A lane claim made while the pull was in flight is not in the pre-pull
-  # snapshot, so the pull leaves it in_progress and unassigned. The claim's
-  # guarded update also appends a `lane-claim:<lane>` note marker, which the
-  # pull never touches, so an unreleased marker names the lane to restore.
-  # Records without a marker are the older invariant repair for malformed
-  # records that predate journal coverage; those reopen. Both guarded updates
-  # skip any Bead a worker has since re-claimed.
-  if ! wedged_records="$(@jq@/bin/jq -r '
-    def claim_lane:
-      (.notes // "") as $notes
-      | ($notes | rindex("lane-claim:")) as $claim
-      | ($notes | rindex("lane-release:")) as $release
-      | if $claim == null or ($release != null and $release > $claim) then ""
-        else ($notes[$claim + 11:] | split("\n")[0] | split(" ")[0]) end
-      | if test("^[a-z][a-z0-9_-]{0,31}$") then . else "" end;
-    (if type == "object" and has("issues") then .issues else . end)
-    | .[]
-    | select(.status == "in_progress" and (.assignee // "") == "")
-    | [.id, claim_lane]
-    | @tsv
-  ' <<<"$all_issues")"; then
-    log "Unable to select unassigned in_progress Beads after the Linear pull"
-    return 1
-  fi
-  if [ -n "$wedged_records" ]; then
-    reopened=0
-    restored_claims=0
-    while IFS=$'\t' read -r wedged_id claim_lane; do
-      if [ -n "$claim_lane" ]; then
-        if "$bd_cli" -C "$repo_dir" update "$wedged_id" --if-status=in_progress --if-assignee= --assignee="$claim_lane" >/dev/null 2>&1; then
-          restored_claims=$((restored_claims + 1))
-          repaired_ids="${repaired_ids:+$repaired_ids,}$wedged_id"
-        fi
-      elif "$bd_cli" -C "$repo_dir" update "$wedged_id" --if-status=in_progress --if-assignee= --status=open >/dev/null 2>&1; then
-        reopened=$((reopened + 1))
-        repaired_ids="${repaired_ids:+$repaired_ids,}$wedged_id"
-      fi
-    done <<<"$wedged_records"
-    if [ "$restored_claims" -gt 0 ]; then
-      log "Restored $restored_claims lane claim(s) made while the pull was in flight"
-    fi
-    if [ "$reopened" -gt 0 ]; then
-      log "Reopened $reopened unassigned in_progress Bead(s) the pull left behind"
-    fi
   fi
 }
 

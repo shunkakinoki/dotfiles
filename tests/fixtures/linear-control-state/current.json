@@ -26,7 +26,7 @@
   },
   {
     "id": "task-d",
-    "status": "open",
+    "status": "in_progress",
     "assignee": "owner@example.com",
     "labels": [
       "linear"
@@ -52,6 +52,14 @@
     "id": "task-g",
     "status": "open",
     "assignee": "owner@example.com",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-h",
+    "status": "in_progress",
+    "assignee": "other@example.com",
     "labels": [
       "linear"
     ]

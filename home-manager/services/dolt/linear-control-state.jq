@@ -1,15 +1,10 @@
 def issues:
   if type == "object" and has("issues") then .issues else . end;
 
-def control_state:
-  {
-    status,
-    assignee: (.assignee // ""),
-  };
-
-# A lane claim's guarded update assigns the lane and appends a
-# `lane-claim:<lane>` note marker. A lane name need not look like a host-scoped
-# agent identity, so the unreleased marker is what proves the claim.
+# A lane claim's guarded status update appends a `lane-claim:<lane>` note
+# marker, and its release appends `lane-release:<lane>`. Lanes never write the
+# assignee, and the tracker pull never writes notes, so the unreleased marker
+# is what proves the claim.
 def claim_lane:
   (.notes // "") as $notes
   | ($notes | rindex("lane-claim:")) as $claim
@@ -19,17 +14,13 @@ def claim_lane:
   | if test("^[a-z][a-z0-9_-]{0,31}$") then . else "" end;
 
 def active_machine_claim:
-  .status == "in_progress"
-  and (
-    ((.assignee // "") | test("^[a-z][a-z0-9]*(?:[_-][a-z0-9]+)+$"))
-    or (claim_lane as $lane | $lane != "" and .assignee == $lane)
-  );
+  .status == "in_progress" and claim_lane != "";
 
 # Only a live machine claim outranks the tracker's workflow state, so a close
-# made in the tracker stands on any Bead no machine holds. Labels take the
-# tracker's value: Beads keeps no control state in them.
+# made in the tracker stands on any Bead no machine holds. Assignee and labels
+# take the tracker's value: Beads keeps no control state in them.
 (issues
-  | map(select(active_machine_claim) | { key: .id, value: control_state })
+  | map(select(active_machine_claim) | { key: .id, value: .status })
   | from_entries) as $desired_before_pull
 | reduce (
     $journal[]
@@ -41,27 +32,18 @@ def active_machine_claim:
       )
   ) as $event (
     $desired_before_pull;
-    .[$event.issue_id] = ($event.issue | control_state)
+    .[$event.issue_id] = $event.issue.status
   )
 | . as $desired
 | ($current[0]
   | issues
-  | map({ key: .id, value: control_state })
+  | map({ key: .id, value: .status })
   | from_entries) as $actual
 | $desired
 | to_entries[]
-| .key as $id
-| .value as $want
-| $actual[$id] as $have
-| select($have != null)
+| select($actual[.key] != null and $actual[.key] != .value)
 | {
-    id: $id,
-    desired_status: $want.status,
-    desired_assignee: $want.assignee,
-    current_status: $have.status,
-    current_assignee: $have.assignee,
+    id: .key,
+    desired_status: .value,
+    current_status: $actual[.key],
   }
-| select(
-    .desired_status != .current_status
-    or .desired_assignee != .current_assignee
-  )

@@ -2,7 +2,8 @@
   {
     "id": "task-a",
     "status": "in_progress",
-    "assignee": "kamino2_lane_1",
+    "assignee": "",
+    "notes": "lane-claim:kamino2_lane_1",
     "labels": [
       "agent-plan",
       "ordinary-local",
@@ -26,7 +27,8 @@
   {
     "id": "task-d",
     "status": "in_progress",
-    "assignee": "kamino3_lane_2",
+    "assignee": "",
+    "notes": "lane-claim:kamino3_lane_2",
     "labels": []
   },
   {
@@ -40,15 +42,22 @@
   {
     "id": "task-f",
     "status": "in_progress",
-    "assignee": "exec",
+    "assignee": "",
     "notes": "lane-claim:exec",
     "labels": []
   },
   {
     "id": "task-g",
     "status": "in_progress",
-    "assignee": "exec",
+    "assignee": "",
     "notes": "lane-claim:exec\nlane-release:exec",
+    "labels": []
+  },
+  {
+    "id": "task-h",
+    "status": "in_progress",
+    "assignee": "owner@example.com",
+    "notes": "lane-claim:exec",
     "labels": []
   }
 ]
