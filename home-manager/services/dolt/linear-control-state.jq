@@ -34,9 +34,23 @@ def control_state:
     control_labels: control_labels,
   };
 
+# A lane claim's guarded update assigns the lane and appends a
+# `lane-claim:<lane>` note marker. A lane name need not look like a host-scoped
+# agent identity, so the unreleased marker is what proves the claim.
+def claim_lane:
+  (.notes // "") as $notes
+  | ($notes | rindex("lane-claim:")) as $claim
+  | ($notes | rindex("lane-release:")) as $release
+  | if $claim == null or ($release != null and $release > $claim) then ""
+    else ($notes[$claim + 11:] | split("\n")[0] | split(" ")[0]) end
+  | if test("^[a-z][a-z0-9_-]{0,31}$") then . else "" end;
+
 def active_machine_claim:
   .status == "in_progress"
-  and ((.assignee // "") | test("^[a-z][a-z0-9]*(?:[_-][a-z0-9]+)+$"));
+  and (
+    ((.assignee // "") | test("^[a-z][a-z0-9]*(?:[_-][a-z0-9]+)+$"))
+    or (claim_lane as $lane | $lane != "" and .assignee == $lane)
+  );
 
 # Only a live machine claim outranks the tracker's workflow state. A Bead that
 # carries control labels alone takes the pulled status and assignee, so a close
