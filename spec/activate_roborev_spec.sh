@@ -62,11 +62,12 @@ When run bash -c "grep 'maxWorkers = if inputs.host.isMatic then \"6\" else \"2\
 The output should include 'maxWorkers = if inputs.host.isMatic then "6" else "2";'
 End
 
-It 'bounds matic worker memory'
-When run grep -E 'optionalAttrs isMatic|MemoryHigh = "48G"|MemoryMax = "64G"|TasksMax = 4096' "$PWD/home-manager/services/roborev/default.nix"
+It 'bounds matic worker memory and restart loops'
+When run grep -E 'optionalAttrs \(isKyber \|\| isMatic\)|optionalAttrs isMatic|MemoryHigh = "56G"|MemoryMax = "76G"|TasksMax = 4096' "$PWD/home-manager/services/roborev/default.nix"
 The output should include 'optionalAttrs isMatic'
-The output should include 'MemoryHigh = "48G"'
-The output should include 'MemoryMax = "64G"'
+The output should include 'optionalAttrs (isKyber || isMatic)'
+The output should include 'MemoryHigh = "56G"'
+The output should include 'MemoryMax = "76G"'
 The output should include 'TasksMax = 4096'
 End
 

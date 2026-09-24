@@ -51,7 +51,7 @@ lib.mkIf enabled {
       Documentation = [ "https://github.com/roborev-dev/roborev" ];
       After = [ "network.target" ];
     }
-    // lib.optionalAttrs isKyber {
+    // lib.optionalAttrs (isKyber || isMatic) {
       StartLimitIntervalSec = 300;
       StartLimitBurst = 3;
     };
@@ -93,9 +93,10 @@ lib.mkIf enabled {
     }
     // lib.optionalAttrs isMatic {
       # Six CI workers share one cgroup, which peaked above 30G with two
-      # workers; throttle before the daemon can starve the rest of the host.
-      MemoryHigh = "48G";
-      MemoryMax = "64G";
+      # workers. The wide High-to-Max gap gives reclaim room to throttle a
+      # burst before an OOM kill, while Max still leaves ~17G for the host.
+      MemoryHigh = "56G";
+      MemoryMax = "76G";
       TasksMax = 4096;
     };
     Install = {
