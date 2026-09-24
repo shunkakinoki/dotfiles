@@ -66,11 +66,13 @@ if ! @tomlq@ '.' "$CONFIG_FILE" >/dev/null 2>&1; then
 fi
 
 # Managed providers replace same-named entries; everything else stays user-owned.
+# The desktop model picker only lists providers named in desktop.provider_access.
 # shellcheck disable=SC2016
 MERGE='.[0] as $c | .[1] as $t | ($t.providers | map(.name)) as $managed
   | $c
   | .default_model = $t.default_model
-  | .providers = ([($c.providers // [])[] | select(.name as $n | $managed | index($n) | not)] + $t.providers)'
+  | .providers = ([($c.providers // [])[] | select(.name as $n | $managed | index($n) | not)] + $t.providers)
+  | .desktop.provider_access = ((($c.desktop.provider_access // []) - $managed) + $managed)'
 
 # Rewriting drops Reasonix's inline comments, so only write on drift.
 current="$(@tomlq@ -S -c '.' "$CONFIG_FILE")"

@@ -50,6 +50,9 @@ default_model = "mine"   # user choice
 [ui]
 theme = "dark"
 
+[desktop]
+provider_access = ["mine"]
+
 [[providers]]
 name = "mine"
 kind = "openai"
@@ -78,10 +81,10 @@ It 'upserts the managed provider and keeps user settings'
 check() {
   seed_user_config
   hydrate 2>/dev/null
-  tomlq -c '[.default_model, .ui.theme, [.providers[] | [.name, .model]]]' "$TEST_HOME/.reasonix/config.toml"
+  tomlq -c '[.default_model, .ui.theme, [.providers[] | [.name, .model]], .desktop.provider_access]' "$TEST_HOME/.reasonix/config.toml"
 }
 When call check
-The output should equal '["cliproxy-deepseek-flash","dark",[["mine","local"],["cliproxy-deepseek-flash","deepseek-v4.1-flash"]]]'
+The output should equal '["cliproxy-deepseek-flash","dark",[["mine","local"],["cliproxy-deepseek-flash","deepseek-v4.1-flash"]],["mine","cliproxy-deepseek-flash"]]'
 End
 
 It 'leaves an already hydrated config untouched'
