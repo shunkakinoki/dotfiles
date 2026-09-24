@@ -79,6 +79,28 @@ The status should be success
 The output should include 'session-id:'
 End
 
+It 'selects a thread by sessionId for /resume, which does not read sessionPath'
+When run bash -c "grep -c -F 'api POST /resume' '$CLIENT'"
+The status should be success
+# open and send both select the target thread first.
+The output should equal '2'
+End
+
+It 'never passes sessionPath to /inbox/items, which has no such field'
+# grep -c exits non-zero on a zero count, so read the number instead.
+check() {
+  grep -A3 -F 'api POST /inbox/items' "$CLIENT" | grep -c -F 'sessionPath' || true
+}
+When call check
+The output should equal '0'
+End
+
+It 'selects the target thread before enqueuing, so send cannot land on the wrong one'
+When run bash -c "grep -B5 -F 'api POST /inbox/items' '$CLIENT' | grep -c -F 'api POST /resume'"
+The status should be success
+The output should equal '1'
+End
+
 It 'steers through the turn-scoped queue operation'
 When run bash -c "grep -F 'enqueue_steer' '$CLIENT'"
 The status should be success
