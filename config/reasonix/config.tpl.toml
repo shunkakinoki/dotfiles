@@ -1,5 +1,8 @@
 default_model = "cliproxy-deepseek-flash"
 
+[desktop]
+provider_access = ["cliproxy-deepseek-flash"]
+
 [[providers]]
 name = "cliproxy-deepseek-flash"
 kind = "openai"
