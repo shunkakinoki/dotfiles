@@ -18,7 +18,7 @@ usage: reasonix-threads <command> [args]
   list                   list every resident thread
   open <sessionId>       switch the worker's foreground thread to <sessionId>
   new                    start a new thread and make it current
-  send <sessionId> <msg> queue <msg> on <sessionId> as a follow-up
+  send <sessionId> <msg>  select <sessionId>, then queue <msg> on it
   steer <sessionId> <msg> steer <msg> into <sessionId>'s running turn
   tail                   stream the worker's event log (SSE)
 USAGE
@@ -53,7 +53,13 @@ api() {
   curl -sS -c "$COOKIE_JAR" -b "$COOKIE_JAR" -X "$method" "$@" "${base}${path}"
 }
 
-# The queue API addresses a thread by sessionPath, not sessionId.
+# Encode one JSON string. Every call that carries user text goes through this so
+# quoting and escapes stay correct.
+json_str() {
+  printf '%s' "$1" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))'
+}
+
+# The queue API addresses a thread by sessionPath; /resume uses sessionId.
 session_path() {
   echo "session-id:$1"
 }
@@ -67,7 +73,8 @@ list)
   ;;
 open)
   [ "$#" -ge 1 ] || usage
-  api POST /resume -H 'Content-Type: application/json' -d "{\"sessionPath\":\"$(session_path "$1")\"}"
+  # /resume selects by sessionId; only the inbox queue uses sessionPath.
+  api POST /resume -H 'Content-Type: application/json' -d "{\"sessionId\":$(json_str "$1")}"
   ;;
 new)
   api POST /new -H 'Content-Type: application/json' -d '{}'
@@ -76,10 +83,16 @@ send)
   [ "$#" -ge 2 ] || usage
   session_id=$1
   shift
+  # /inbox/items has no sessionPath field, so it queues to whichever thread is
+  # foreground. /inbox/queue only exposes steer/move/delete kinds, none of which
+  # enqueue fresh work. So select the target thread first, then enqueue: the
+  # worker has exactly one foreground slot, and this makes the addressing
+  # explicit rather than silently landing on the wrong thread.
+  api POST /resume -H 'Content-Type: application/json' -d "{\"sessionId\":$(json_str "$session_id")}" >/dev/null
   api POST /inbox/items -H 'Content-Type: application/json' \
-    -d "$(printf '{"input":%s,"intent":"followup","sessionPath":%s}' \
-      "$(printf '%s' "$*" | python3 -c 'import json,sys;print(json.dumps(sys.stdin.read()))')" \
-      "$(printf '%s' "$(session_path "$session_id")" | python3 -c 'import json,sys;print(json.dumps(sys.stdin.read()))')")"
+    -d "$(printf '{"input":%s,"intent":"followup","idempotencyKey":%s}' \
+      "$(json_str "$*")" \
+      "$(json_str "send-$(date +%s%N)")")"
   ;;
 steer)
   [ "$#" -ge 2 ] || usage
@@ -100,10 +113,10 @@ for s in d.get("sessions",[]):
   }
   api POST /inbox/queue -H 'Content-Type: application/json' \
     -d "$(printf '{"sessionPath":%s,"request":{"kind":"enqueue_steer","turnId":%s,"idempotencyKey":%s,"text":%s}}' \
-      "$(printf '%s' "$(session_path "$session_id")" | python3 -c 'import json,sys;print(json.dumps(sys.stdin.read()))')" \
-      "$(printf '%s' "$turn_id" | python3 -c 'import json,sys;print(json.dumps(sys.stdin.read()))')" \
-      "$(printf 'steer-%s' "$(date +%s%N)" | python3 -c 'import json,sys;print(json.dumps(sys.stdin.read()))')" \
-      "$(printf '%s' "$*" | python3 -c 'import json,sys;print(json.dumps(sys.stdin.read()))')")"
+      "$(json_str "$(session_path "$session_id")")" \
+      "$(json_str "$turn_id")" \
+      "$(json_str "steer-$(date +%s%N)")" \
+      "$(json_str "$*")")"
   ;;
 tail)
   auth
