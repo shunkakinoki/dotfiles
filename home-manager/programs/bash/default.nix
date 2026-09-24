@@ -1,4 +1,9 @@
-{ lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   home.packages = with pkgs; [
     bash-language-server
@@ -53,6 +58,10 @@
     };
 
     bashrcExtra = ''
+      # Non-login shells (e.g. `ssh host cmd`) read only .bashrc, never .profile, so load
+      # session variables here first; .env and the PATH exports below keep login-shell precedence.
+      . "${config.home.sessionVariablesPackage}/etc/profile.d/hm-session-vars.sh"
+
       # Allow aliases defined in the managed bashrc to expand in non-interactive shells.
       shopt -s expand_aliases
 

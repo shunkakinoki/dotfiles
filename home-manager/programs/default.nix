@@ -1,11 +1,10 @@
 {
-  lib,
   pkgs,
   ...
 }:
 let
   atuin = import ./atuin;
-  bash = import ./bash { inherit lib pkgs; };
+  bash = import ./bash;
   bat = import ./bat;
   btop = import ./btop;
   cass = import ./cass;

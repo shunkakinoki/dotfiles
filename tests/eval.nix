@@ -244,6 +244,8 @@ let
         let
           kamino = import ../named-hosts/kamino { inherit inputs; };
           cfg = kamino.config;
+          sessionVarsSource = builtins.unsafeDiscardStringContext ". \"${cfg.home.sessionVariablesPackage}/etc/profile.d/hm-session-vars.sh\"";
+          bashrcBefore = marker: builtins.head (lib.splitString marker cfg.home.file.".bashrc".source.text);
         in
         assert cfg.home.username == "root";
         assert cfg.home.homeDirectory == "/root";
@@ -324,6 +326,10 @@ let
         assert !(cfg.systemd.user.services ? dolt-federation-access);
         assert cfg.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "kyber.tail950b36.ts.net";
         assert cfg.home.sessionVariables.BD_EVENTS_JOURNAL == "1";
+        assert cfg.home.sessionVariables.BEADS_NODE_ID == "kyber";
+        assert lib.hasInfix sessionVarsSource (bashrcBefore "[[ $- == *i* ]] || return");
+        assert lib.hasInfix sessionVarsSource (bashrcBefore "load-env-file.sh");
+        assert lib.hasInfix sessionVarsSource (bashrcBefore "export PATH=");
         mkEvalCheck "home-kamino" kamino.activationPackage;
       eval-home-kamino100 =
         let
