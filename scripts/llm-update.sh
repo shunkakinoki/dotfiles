@@ -121,6 +121,7 @@ declare -A TEMPLATES=(
   ["config/codex/profiles/qwen-local.config.tpl.toml"]=config/codex/profiles/qwen-local.config.toml
   ["config/cliproxyapi/config.tpl.yaml"]=config/cliproxyapi/config.template.yaml
   ["config/dsh/settings.tpl.yaml"]=config/dsh/settings.yaml
+  ["config/reasonix/config.tpl.toml"]=config/reasonix/config.toml
   ["config/handy/settings_store.tpl.json"]=config/handy/settings_store.template.json
   ["config/factory/settings.tpl.json"]=config/factory/settings.json
   ["config/hermes/config.tpl.yaml"]=config/hermes/config.template.yaml

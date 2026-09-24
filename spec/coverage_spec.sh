@@ -562,6 +562,7 @@ config/devin/hooks/atuin-history.sh
 config/devin/hooks/notify.sh
 config/devin/hooks/pushover.sh
 config/dsh/hydrate.sh
+config/reasonix/hydrate.sh
 config/codex/hooks/notify.sh
 config/codex/hooks/pushover.sh
 config/openfactor/install.sh
