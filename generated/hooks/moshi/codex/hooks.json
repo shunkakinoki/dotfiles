@@ -4,7 +4,7 @@
       {
         "hooks": [
           {
-            "command": "moshi-hook codex-hook",
+            "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook codex-hook",
             "type": "command"
           }
         ]
@@ -14,7 +14,7 @@
       {
         "hooks": [
           {
-            "command": "moshi-hook codex-hook",
+            "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook codex-hook",
             "type": "command"
           }
         ]
@@ -24,7 +24,7 @@
       {
         "hooks": [
           {
-            "command": "moshi-hook codex-hook",
+            "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook codex-hook",
             "type": "command"
           }
         ]
@@ -34,7 +34,7 @@
       {
         "hooks": [
           {
-            "command": "moshi-hook codex-hook",
+            "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook codex-hook",
             "type": "command"
           }
         ]

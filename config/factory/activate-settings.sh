@@ -32,7 +32,8 @@ if [ -f "$SETTINGS" ]; then
           and ($command == ((env.HOME // "") + "/" + $relative)));
 
     def is_managed_hook_command($matcher):
-      tostring as $command
+      tostring
+      | sub("^! command -v [^ ]+ >/dev/null 2>&1 \\|\\| "; "") as $command
       | (($matcher == "Execute")
          and (is_home_command($command; "dotfiles/config/shared/hooks/security.sh")
               or is_home_command($command; "dotfiles/config/shared/hooks/block-git-push.sh")

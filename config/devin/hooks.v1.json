@@ -62,7 +62,7 @@
         "matcher": "^exec$",
         "hooks": [
           {
-            "command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh",
+            "command": "! command -v dcg >/dev/null 2>&1 || $HOME/dotfiles/config/shared/hooks/dcg-guard.sh",
             "timeout": 5,
             "type": "command"
           },
@@ -97,7 +97,7 @@
         "matcher": "^(read|grep|glob)$",
         "hooks": [
           {
-            "command": "command -v graphify >/dev/null 2>&1 && graphify hook-guard read",
+            "command": "! command -v graphify >/dev/null 2>&1 || graphify hook-guard read",
             "timeout": 5,
             "type": "command"
           }
@@ -133,7 +133,7 @@
       {
         "hooks": [
           {
-            "command": "bd prime --hook-json",
+            "command": "! command -v bd >/dev/null 2>&1 || bd prime --hook-json",
             "type": "command"
           }
         ]

@@ -10,7 +10,7 @@
       },
       {
         "type": "command",
-        "command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh",
+        "command": "! command -v dcg >/dev/null 2>&1 || $HOME/dotfiles/config/shared/hooks/dcg-guard.sh",
         "timeout": 5
       },
       {

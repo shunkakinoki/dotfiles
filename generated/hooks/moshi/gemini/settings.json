@@ -4,7 +4,7 @@
       {
         "hooks": [
           {
-            "command": "moshi-hook gemini-hook",
+            "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook gemini-hook",
             "name": "Moshi",
             "type": "command"
           }
@@ -16,7 +16,7 @@
       {
         "hooks": [
           {
-            "command": "moshi-hook gemini-hook",
+            "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook gemini-hook",
             "name": "Moshi",
             "type": "command"
           }
@@ -28,7 +28,7 @@
       {
         "hooks": [
           {
-            "command": "moshi-hook gemini-hook",
+            "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook gemini-hook",
             "name": "Moshi",
             "type": "command"
           }
@@ -40,7 +40,7 @@
       {
         "hooks": [
           {
-            "command": "moshi-hook gemini-hook",
+            "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook gemini-hook",
             "name": "Moshi",
             "type": "command"
           }
@@ -52,7 +52,7 @@
       {
         "hooks": [
           {
-            "command": "moshi-hook gemini-hook",
+            "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook gemini-hook",
             "name": "Moshi",
             "type": "command"
           }

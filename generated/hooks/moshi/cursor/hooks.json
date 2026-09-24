@@ -2,52 +2,52 @@
   "hooks": {
     "afterAgentResponse": [
       {
-        "command": "moshi-hook cursor-hook"
+        "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook cursor-hook"
       }
     ],
     "afterFileEdit": [
       {
-        "command": "moshi-hook cursor-hook"
+        "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook cursor-hook"
       }
     ],
     "afterMCPExecution": [
       {
-        "command": "moshi-hook cursor-hook"
+        "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook cursor-hook"
       }
     ],
     "afterShellExecution": [
       {
-        "command": "moshi-hook cursor-hook"
+        "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook cursor-hook"
       }
     ],
     "beforeMCPExecution": [
       {
-        "command": "moshi-hook cursor-hook"
+        "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook cursor-hook"
       }
     ],
     "beforeShellExecution": [
       {
-        "command": "moshi-hook cursor-hook"
+        "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook cursor-hook"
       }
     ],
     "beforeSubmitPrompt": [
       {
-        "command": "moshi-hook cursor-hook"
+        "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook cursor-hook"
       }
     ],
     "sessionEnd": [
       {
-        "command": "moshi-hook cursor-hook"
+        "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook cursor-hook"
       }
     ],
     "sessionStart": [
       {
-        "command": "moshi-hook cursor-hook"
+        "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook cursor-hook"
       }
     ],
     "stop": [
       {
-        "command": "moshi-hook cursor-hook"
+        "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook cursor-hook"
       }
     ]
   }

@@ -128,5 +128,12 @@ Data '{"tool": {"name": "Bash", "input": {}}}'
 When run bash -c "HOME='$TEMP_HOME' bash '$SCRIPT'"
 The status should be success
 End
+
+It 'skips when jq is not installed'
+Data '{"tool": {"name": "Bash", "input": {"command": "sudo rm -rf /"}}}'
+When run env -i HOME="$TEMP_HOME" PATH="$TEMP_HOME/.claude" "$(command -v bash)" --noprofile --norc "$SCRIPT"
+The status should be success
+The stderr should eq ''
+End
 End
 End

@@ -18,18 +18,26 @@ cleanup() {
 BeforeEach 'setup'
 AfterEach 'cleanup'
 
-It 'blocks when dcg is missing'
+It 'exits 0 when dcg is not installed'
 When run env -i PATH="$MOCK_BIN" "$BASH_BIN" --noprofile --norc "$SCRIPT"
-The status should eq 2
-The stderr should include 'BLOCKED by dcg-guard.sh: dcg is unavailable'
+The status should eq 0
+The output should eq ''
+The stderr should eq ''
 End
 
-It 'blocks when dcg is present but not executable'
+It 'exits 0 when dcg is present but not executable'
 printf '%s\n' '#!/bin/sh' 'exit 0' >"$MOCK_BIN/dcg"
 chmod 644 "$MOCK_BIN/dcg"
 When run env -i PATH="$MOCK_BIN" "$BASH_BIN" --noprofile --norc "$SCRIPT"
-The status should eq 2
-The stderr should include 'BLOCKED by dcg-guard.sh: dcg is unavailable'
+The status should eq 0
+The stderr should eq ''
+End
+
+It 'skips the tracked hook command with exit 0 when dcg is not installed'
+hook_command="$(jq -r '[.. | objects | .command? // empty | select(test("dcg-guard"))][0]' config/copilot/config.json)"
+When run env -i HOME="$TEMP_DIR" PATH="$MOCK_BIN" /bin/sh -c "$hook_command"
+The status should eq 0
+The stderr should eq ''
 End
 
 It 'preserves successful dcg output and enables fail-closed parsing'
@@ -84,7 +92,7 @@ When run bash -c '
   printf "%s\n" "$commands"
 '
 The status should be success
-The output should include '$HOME/dotfiles/config/shared/hooks/dcg-guard.sh'
+The output should include '! command -v dcg >/dev/null 2>&1 || $HOME/dotfiles/config/shared/hooks/dcg-guard.sh'
 End
 
 End
