@@ -461,6 +461,10 @@ let
         assert cfg.systemd.user.services.cass-daily.Service.IOWriteBandwidthMax == "/ 10M";
         assert cfg.systemd.user.services.cass-daily.Service.IOReadIOPSMax == "/ 50";
         assert cfg.systemd.user.services.cass-daily.Service.IOWriteIOPSMax == "/ 25";
+        assert cfg.systemd.user.services.cliproxyapi-backup.Service.IOAccounting;
+        assert cfg.systemd.user.services.cliproxyapi-backup.Service.IOWeight == 10;
+        assert cfg.systemd.user.services.cliproxyapi-backup.Service.IOReadBandwidthMax == "/ 5M";
+        assert cfg.systemd.user.services.cliproxyapi-backup.Service.IOReadIOPSMax == "/ 50";
         assert !(lib.hasInfix "--slice=orchestration.slice" cfg.programs.fish.shellInit);
         assert !(cfg.systemd.user.services ? dolt-federation-sync);
         assert !(cfg.systemd.user.services ? dolt-federation-hub);

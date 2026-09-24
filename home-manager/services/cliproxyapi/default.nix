@@ -211,6 +211,12 @@ in
     Unit.X-SwitchMethod = "keep-old";
     Service = {
       Type = "oneshot";
+      # The SQLite snapshot reads the full analytics database from Kyber's
+      # root disk. Keep that read behind interactive management traffic.
+      IOAccounting = true;
+      IOWeight = 10;
+      IOReadBandwidthMax = "/ 5M";
+      IOReadIOPSMax = "/ 50";
       ExecStart = "${pkgs.bash}/bin/bash ${backupScript} full";
       Environment = "PATH=${
         lib.makeBinPath [
