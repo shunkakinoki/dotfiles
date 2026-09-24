@@ -42,8 +42,8 @@ When run bash -c "grep -F 'gateway run --port 18789 --bind loopback' '$PWD/home-
 The output should include 'gateway run --port 18789 --bind loopback'
 End
 
-It 'bounds gateway root-disk reads and writes'
-When run bash -c "gateway=\$(sed -n '/systemd.user.services.openclaw-gateway =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -q 'IOAccounting = true' <<<\"\$gateway\" && grep -q 'IOReadBandwidthMax = \"/ 20M\"' <<<\"\$gateway\" && grep -q 'IOWriteBandwidthMax = \"/ 20M\"' <<<\"\$gateway\" && grep -q 'IOReadIOPSMax = \"/ 100\"' <<<\"\$gateway\" && grep -q 'IOWriteIOPSMax = \"/ 100\"' <<<\"\$gateway\""
+It 'bounds gateway root-disk reads and leaves writes to the user slice'
+When run bash -c "gateway=\$(sed -n '/systemd.user.services.openclaw-gateway =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -q 'IOAccounting = true' <<<\"\$gateway\" && grep -q 'IOReadBandwidthMax = \"/ 20M\"' <<<\"\$gateway\" && grep -q 'IOReadIOPSMax = \"/ 100\"' <<<\"\$gateway\" && ! grep -q 'IOWrite' <<<\"\$gateway\""
 The status should be success
 End
 
