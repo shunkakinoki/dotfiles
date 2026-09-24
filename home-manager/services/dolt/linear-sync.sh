@@ -234,8 +234,8 @@ run_linear() {
 
   # A push whose only warnings are labels the tracker team does not define
   # still published every issue: bd drops those labels from the payload.
-  # Local-only control labels never exist on the tracker, so rejecting the
-  # result would fail every batch that carries one on every cycle. Only the
+  # A label added locally since the last pull need not exist on the tracker,
+  # so rejecting the result would fail every batch that carries one. Only the
   # count is logged.
   local skipped_labels
   if [ "$operation" = push ] && [ "$status" -eq 0 ] && skipped_labels="$(@jq@/bin/jq -e -r -s '
@@ -506,10 +506,10 @@ restore_linear_last_sync() {
 }
 
 # A cursor-free pull overwrites local assignment, workflow state, and labels.
-# The pre-pull snapshot protects existing machine claims and orchestration
-# labels. The durable journal then folds every non-reconciler mutation made
-# during the pull over that snapshot in commit order, so a concurrent claim,
-# release, completion, or label change wins. Each repair compares both fields
+# The pre-pull snapshot protects existing machine claims; labels keep the
+# tracker's value. The durable journal then folds every non-reconciler mutation
+# made during the pull over that snapshot in commit order, so a concurrent
+# claim, release, or completion wins. Each repair compares both fields
 # it observed after the pull; a newer claim makes the guarded write refuse
 # instead of transferring ownership from a live worker. Every caller runs this
 # as a tested command, where errexit does not apply, so each step checks its
@@ -527,9 +527,6 @@ repair_control_state_after_pull() {
   local pulled_status
   local pulled_assignee
   local restore_args
-  local add_labels
-  local remove_labels
-  local label
   local wedged_records
   local wedged_id
   local claim_lane
@@ -576,27 +573,10 @@ repair_control_state_after_pull() {
       if [ "$restore_status" != "$pulled_status" ]; then
         restore_args+=(--status "$restore_status")
       fi
-      mapfile -t add_labels < <(@jq@/bin/jq -r '.add_labels[]' <<<"$repair")
-      for label in "${add_labels[@]}"; do
-        restore_args+=(--add-label "$label")
-      done
-      mapfile -t remove_labels < <(@jq@/bin/jq -r '.remove_labels[]' <<<"$repair")
-      for label in "${remove_labels[@]}"; do
-        restore_args+=(--remove-label "$label")
-      done
-      if [ "${#restore_args[@]}" -eq 0 ]; then
-        continue
-      fi
-      # Label-only repairs need a no-op field update for the CAS guards to ride.
-      if [ "$restore_status" = "$pulled_status" ] && [ "$restore_assignee" = "$pulled_assignee" ]; then
-        restore_args+=(--status "$pulled_status")
-      fi
       if "$bd_cli" -C "$repo_dir" update "$restore_id" "${restore_args[@]}" \
         --if-status="$pulled_status" --if-assignee="$pulled_assignee" >/dev/null 2>&1; then
         restored_control_state=$((restored_control_state + 1))
-        if [ "$restore_status" != "$pulled_status" ] || [ "$restore_assignee" != "$pulled_assignee" ]; then
-          repaired_ids="${repaired_ids:+$repaired_ids,}$restore_id"
-        fi
+        repaired_ids="${repaired_ids:+$repaired_ids,}$restore_id"
       else
         restore_failures=$((restore_failures + 1))
       fi
