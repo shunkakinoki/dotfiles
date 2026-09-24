@@ -6,6 +6,9 @@
 }:
 let
   knownHosts = pkgs.writeText "ssh-known-hosts" (import ./known-hosts.nix);
+  pinKnownHostsScript = pkgs.replaceVars ./pin-known-hosts.sh {
+    awk = "${pkgs.gawk}/bin/awk";
+  };
 in
 {
   home.file.".ssh/rc" = {
@@ -13,7 +16,7 @@ in
     force = true;
   };
   home.activation.caamKnownHosts = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    ${pkgs.bash}/bin/bash ${./pin-known-hosts.sh} ${knownHosts}
+    ${pkgs.bash}/bin/bash ${pinKnownHostsScript} ${knownHosts}
   '';
 
   programs.ssh = {

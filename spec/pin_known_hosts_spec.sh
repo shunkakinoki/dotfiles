@@ -10,6 +10,8 @@ setup() {
   export HOME
   mkdir -p "$HOME/.ssh"
   DECLARED="$WORK/declared"
+  sed 's|@awk@|awk|g' "$SCRIPT" >"$WORK/pin-known-hosts.sh"
+  RUN="$WORK/pin-known-hosts.sh"
 }
 
 cleanup() {
@@ -22,7 +24,7 @@ AfterEach 'cleanup'
 pin() {
   printf '%s\n' "$1" >"$HOME/.ssh/known_hosts"
   printf '%s\n' "$2" >"$DECLARED"
-  bash "$SCRIPT" "$DECLARED"
+  bash "$RUN" "$DECLARED"
   cat "$HOME/.ssh/known_hosts"
 }
 
@@ -50,8 +52,8 @@ End
 pin_twice() {
   printf '%s\n' "$1" >"$HOME/.ssh/known_hosts"
   printf '%s\n' "$2" >"$DECLARED"
-  bash "$SCRIPT" "$DECLARED"
-  bash "$SCRIPT" "$DECLARED"
+  bash "$RUN" "$DECLARED"
+  bash "$RUN" "$DECLARED"
   cat "$HOME/.ssh/known_hosts"
 }
 
