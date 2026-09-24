@@ -42,7 +42,7 @@ The output should include 'nix fmt'
 The status should be success
 End
 
-It 'normalizes dcg hooks through the fail-closed wrapper without installing'
+It 'normalizes dcg hooks through the guarded wrapper without installing'
 TEMP_DIR="$(mktemp -d)"
 HOOKS_JSON="$TEMP_DIR/hooks.json"
 cat >"$HOOKS_JSON" <<'JSON'
@@ -58,10 +58,10 @@ cat >"$HOOKS_JSON" <<'JSON'
 JSON
 When run bash -c 'bash "$1" --normalize-only "$2" && jq -r ".hooks[].command" "$2"' _ "$SCRIPT" "$HOOKS_JSON"
 The status should be success
-The output should eq '$HOME/dotfiles/config/shared/hooks/dcg-guard.sh
-$HOME/dotfiles/config/shared/hooks/dcg-guard.sh
-$HOME/dotfiles/config/shared/hooks/dcg-guard.sh
-$HOME/dotfiles/config/shared/hooks/dcg-guard.sh
+The output should eq '! command -v dcg >/dev/null 2>&1 || $HOME/dotfiles/config/shared/hooks/dcg-guard.sh
+! command -v dcg >/dev/null 2>&1 || $HOME/dotfiles/config/shared/hooks/dcg-guard.sh
+! command -v dcg >/dev/null 2>&1 || $HOME/dotfiles/config/shared/hooks/dcg-guard.sh
+! command -v dcg >/dev/null 2>&1 || $HOME/dotfiles/config/shared/hooks/dcg-guard.sh
 unrelated-hook'
 rm -rf "$TEMP_DIR"
 End
@@ -102,7 +102,7 @@ When run env HOME="$LIVE_HOME" PATH="$TEMP_DIR/bin:$PATH" TMPDIR="$TEMP_DIR/tmp"
 The status should be success
 The output should include 'Review changes and commit if needed'
 The contents of file "$OUT_DIR/omp/moshi-hooks.ts" should eq 'const helperBinary = "moshi-hook"'
-The contents of file "$OUT_DIR/claude/settings.json" should include '"command": "moshi-hook agent-hook"'
+The contents of file "$OUT_DIR/claude/settings.json" should include '"command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook agent-hook"'
 The path "$LIVE_HOME/.claude" should not be exist
 The path "$LIVE_HOME/.omp" should not be exist
 The path "$TEMP_DIR/tmp" should be empty directory

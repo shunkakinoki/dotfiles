@@ -143,7 +143,7 @@
         "hooks": [
           {
             "async": true,
-            "command": "git-ai checkpoint claude --hook-input stdin",
+            "command": "! command -v git-ai >/dev/null 2>&1 || git-ai checkpoint claude --hook-input stdin",
             "timeout": 15,
             "type": "command"
           }
@@ -188,7 +188,7 @@
       {
         "hooks": [
           {
-            "command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh",
+            "command": "! command -v dcg >/dev/null 2>&1 || $HOME/dotfiles/config/shared/hooks/dcg-guard.sh",
             "type": "command"
           }
         ],
@@ -202,7 +202,7 @@
             "type": "command"
           },
           {
-            "command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh",
+            "command": "! command -v dcg >/dev/null 2>&1 || $HOME/dotfiles/config/shared/hooks/dcg-guard.sh",
             "timeout": 5,
             "type": "command"
           },
@@ -254,7 +254,7 @@
           },
           {
             "async": true,
-            "command": "git-ai checkpoint claude --hook-input stdin",
+            "command": "! command -v git-ai >/dev/null 2>&1 || git-ai checkpoint claude --hook-input stdin",
             "timeout": 15,
             "type": "command"
           }
@@ -264,7 +264,7 @@
       {
         "hooks": [
           {
-            "command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh",
+            "command": "! command -v dcg >/dev/null 2>&1 || $HOME/dotfiles/config/shared/hooks/dcg-guard.sh",
             "timeout": 5,
             "type": "command"
           }
@@ -274,7 +274,7 @@
       {
         "hooks": [
           {
-            "command": "command -v graphify >/dev/null 2>&1 && graphify hook-guard search",
+            "command": "! command -v graphify >/dev/null 2>&1 || graphify hook-guard search",
             "timeout": 5,
             "type": "command"
           }
@@ -284,7 +284,7 @@
       {
         "hooks": [
           {
-            "command": "command -v graphify >/dev/null 2>&1 && graphify hook-guard read",
+            "command": "! command -v graphify >/dev/null 2>&1 || graphify hook-guard read",
             "timeout": 5,
             "type": "command"
           }
@@ -297,7 +297,7 @@
         "hooks": [
           {
             "async": false,
-            "command": "caam-claude-snapshot",
+            "command": "! command -v caam-claude-snapshot >/dev/null 2>&1 || caam-claude-snapshot",
             "timeout": 10,
             "type": "command"
           }
@@ -333,7 +333,7 @@
       {
         "hooks": [
           {
-            "command": "bd prime --hook-json",
+            "command": "! command -v bd >/dev/null 2>&1 || bd prime --hook-json",
             "type": "command"
           }
         ],
@@ -414,7 +414,7 @@
         "hooks": [
           {
             "async": true,
-            "command": "jq -c '{timestamp: (now | todate), prompt: .prompt[0:500]}' >> ~/.claude/prompt-history.jsonl",
+            "command": "! command -v jq >/dev/null 2>&1 || jq -c '{timestamp: (now | todate), prompt: .prompt[0:500]}' >> ~/.claude/prompt-history.jsonl",
             "timeout": 3,
             "type": "command"
           }

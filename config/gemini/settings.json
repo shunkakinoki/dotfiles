@@ -3,17 +3,17 @@
   "hooks": {
     "AfterTool": [
       {
-        "command": "git-ai checkpoint gemini --hook-input stdin",
+        "command": "! command -v git-ai >/dev/null 2>&1 || git-ai checkpoint gemini --hook-input stdin",
         "matcher": "write_file|replace"
       }
     ],
     "BeforeTool": [
       {
-        "command": "git-ai checkpoint gemini --hook-input stdin",
+        "command": "! command -v git-ai >/dev/null 2>&1 || git-ai checkpoint gemini --hook-input stdin",
         "matcher": "write_file|replace"
       },
       {
-        "command": "command -v graphify >/dev/null 2>&1 && graphify hook-guard gemini",
+        "command": "! command -v graphify >/dev/null 2>&1 || graphify hook-guard gemini",
         "matcher": "read_file|list_directory"
       }
     ],
@@ -21,7 +21,7 @@
       {
         "hooks": [
           {
-            "command": "bd prime --hook-json",
+            "command": "! command -v bd >/dev/null 2>&1 || bd prime --hook-json",
             "type": "command"
           }
         ],

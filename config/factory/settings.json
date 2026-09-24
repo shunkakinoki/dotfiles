@@ -70,7 +70,7 @@
             "type": "command"
           },
           {
-            "command": "$HOME/.cargo/bin/git-ai checkpoint droid --hook-input stdin",
+            "command": "! command -v $HOME/.cargo/bin/git-ai >/dev/null 2>&1 || $HOME/.cargo/bin/git-ai checkpoint droid --hook-input stdin",
             "type": "command"
           }
         ]
@@ -91,7 +91,7 @@
         "matcher": "^(Edit|Write|Create|ApplyPatch)$",
         "hooks": [
           {
-            "command": "$HOME/.cargo/bin/git-ai checkpoint droid --hook-input stdin",
+            "command": "! command -v $HOME/.cargo/bin/git-ai >/dev/null 2>&1 || $HOME/.cargo/bin/git-ai checkpoint droid --hook-input stdin",
             "type": "command"
           }
         ]

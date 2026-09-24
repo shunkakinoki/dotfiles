@@ -8,6 +8,8 @@ export PATH="$HOME/.cargo/bin:/etc/profiles/per-user/shunkakinoki/bin:/run/curre
 
 set -euo pipefail
 
+command -v jq >/dev/null 2>&1 || exit 0
+
 ALLOWED_REPOS=(
   "shunkakinoki/wiki"
   "shunkakinoki/gthq"

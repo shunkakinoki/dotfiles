@@ -93,7 +93,7 @@ The status should be success
 End
 
 It 'is registered as a synchronous SessionEnd hook'
-When run bash -c 'jq -e '\''.hooks.SessionEnd[]?.hooks[]? | select(.command == "caam-claude-snapshot" and .async == false)'\'' "$1" >/dev/null' _ "$SETTINGS"
+When run bash -c 'jq -e '\''.hooks.SessionEnd[]?.hooks[]? | select(.command == "! command -v caam-claude-snapshot >/dev/null 2>&1 || caam-claude-snapshot" and .async == false)'\'' "$1" >/dev/null' _ "$SETTINGS"
 The status should be success
 End
 

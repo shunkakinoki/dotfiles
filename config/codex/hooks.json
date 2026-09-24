@@ -4,7 +4,7 @@
       {
         "hooks": [
           {
-            "command": "bd codex-hook PostCompact",
+            "command": "! command -v bd >/dev/null 2>&1 || bd codex-hook PostCompact",
             "statusMessage": "Scheduling Beads context refresh",
             "type": "command"
           }
@@ -39,7 +39,7 @@
       {
         "hooks": [
           {
-            "command": "bd codex-hook PreCompact",
+            "command": "! command -v bd >/dev/null 2>&1 || bd codex-hook PreCompact",
             "statusMessage": "Checking Beads context",
             "type": "command"
           }
@@ -66,7 +66,7 @@
             "type": "command"
           },
           {
-            "command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh",
+            "command": "! command -v dcg >/dev/null 2>&1 || $HOME/dotfiles/config/shared/hooks/dcg-guard.sh",
             "timeout": 5,
             "type": "command"
           },
@@ -113,7 +113,7 @@
       {
         "hooks": [
           {
-            "command": "command -v graphify >/dev/null 2>&1 && graphify hook-guard search",
+            "command": "! command -v graphify >/dev/null 2>&1 || graphify hook-guard search",
             "timeout": 5,
             "type": "command"
           }
@@ -123,7 +123,7 @@
       {
         "hooks": [
           {
-            "command": "command -v graphify >/dev/null 2>&1 && graphify hook-guard read",
+            "command": "! command -v graphify >/dev/null 2>&1 || graphify hook-guard read",
             "timeout": 5,
             "type": "command"
           }
@@ -164,7 +164,7 @@
       {
         "hooks": [
           {
-            "command": "bd codex-hook SessionStart",
+            "command": "! command -v bd >/dev/null 2>&1 || bd codex-hook SessionStart",
             "statusMessage": "Loading Beads context",
             "type": "command"
           }
@@ -220,7 +220,7 @@
         "hooks": [
           {
             "async": true,
-            "command": "jq -c '{timestamp: (now | todate), prompt: .prompt[0:500]}' >> ~/.codex/prompt-history.jsonl",
+            "command": "! command -v jq >/dev/null 2>&1 || jq -c '{timestamp: (now | todate), prompt: .prompt[0:500]}' >> ~/.codex/prompt-history.jsonl",
             "timeout": 3,
             "type": "command"
           }
@@ -229,7 +229,7 @@
       {
         "hooks": [
           {
-            "command": "bd codex-hook UserPromptSubmit",
+            "command": "! command -v bd >/dev/null 2>&1 || bd codex-hook UserPromptSubmit",
             "statusMessage": "Refreshing Beads context",
             "type": "command"
           }

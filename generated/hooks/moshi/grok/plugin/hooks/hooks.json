@@ -5,7 +5,7 @@
         "hooks": [
           {
             "async": true,
-            "command": "moshi-hook grok-hook",
+            "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook grok-hook",
             "type": "command"
           }
         ]
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "async": true,
-            "command": "moshi-hook grok-hook",
+            "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook grok-hook",
             "type": "command"
           }
         ]
@@ -27,7 +27,7 @@
         "hooks": [
           {
             "async": true,
-            "command": "moshi-hook grok-hook",
+            "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook grok-hook",
             "type": "command"
           }
         ]
@@ -38,7 +38,7 @@
         "hooks": [
           {
             "async": true,
-            "command": "moshi-hook grok-hook",
+            "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook grok-hook",
             "type": "command"
           }
         ]
@@ -49,7 +49,7 @@
         "hooks": [
           {
             "async": true,
-            "command": "moshi-hook grok-hook",
+            "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook grok-hook",
             "type": "command"
           }
         ]
@@ -60,7 +60,7 @@
         "hooks": [
           {
             "async": true,
-            "command": "moshi-hook grok-hook",
+            "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook grok-hook",
             "type": "command"
           }
         ]
@@ -71,7 +71,7 @@
         "hooks": [
           {
             "async": true,
-            "command": "moshi-hook grok-hook",
+            "command": "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook grok-hook",
             "type": "command"
           }
         ]

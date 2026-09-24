@@ -10,6 +10,8 @@
 
 set -euo pipefail
 
+command -v jq >/dev/null 2>&1 || exit 0
+
 # Read JSON input from stdin
 input=$(cat)
 

@@ -112,7 +112,7 @@ cat >"$TEMP_HOME/.gemini/config/hooks.json" <<'JSON'
   }
 }
 JSON
-When run bash -c 'HOME="$1" bash "$2" "$3" "$4" jq && jq -e '\''(has("orca-status") | not) and (.["moshi-hook"].Stop[0].command == "moshi-hook antigravity-hook Stop")'\'' "$1/.gemini/config/hooks.json" >/dev/null' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS" "$HOOKS"
+When run bash -c 'HOME="$1" bash "$2" "$3" "$4" jq && jq -e '\''(has("orca-status") | not) and (.["moshi-hook"].Stop[0].command == "! command -v moshi-hook >/dev/null 2>&1 || moshi-hook antigravity-hook Stop")'\'' "$1/.gemini/config/hooks.json" >/dev/null' _ "$TEMP_HOME" "$SCRIPT" "$SETTINGS" "$HOOKS"
 The status should be success
 End
 

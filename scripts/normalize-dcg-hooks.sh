@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2016 # The generated hook command must contain literal $HOME.
 # Route every dcg hook command in an agent config through the tracked
-# fail-closed wrapper.
+# config/shared/hooks/dcg-guard.sh wrapper, skipped when dcg is not installed.
 #
 # dcg's installer may emit a resolved path, a bare invocation, or a conditional
-# lookup. All three degrade to an unguarded, non-blocking hook when dcg is
-# missing, so rewrite them to config/shared/hooks/dcg-guard.sh instead.
+# lookup. None of them fail closed when dcg runs but cannot complete normally;
+# the wrapper does.
 #
 # Usage: normalize-dcg-hooks.sh <hook_config> [hook_config ...]
 set -euo pipefail
@@ -23,10 +23,10 @@ for hook_config in "$@"; do
 
   tmp_file="$(mktemp "${hook_config}.tmp.XXXXXX")"
   if ! sed \
-    -e 's|"command": "dcg"|"command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh"|g' \
-    -e 's|"command": "[^"[:space:]]*/dcg"|"command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh"|g' \
-    -e 's|"command": "command -v dcg >/dev/null 2>&1 && dcg"|"command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh"|g' \
-    -e 's|"command": "command -v dcg \\u003e/dev/null 2\\u003e\\u00261 \\u0026\\u0026 dcg"|"command": "$HOME/dotfiles/config/shared/hooks/dcg-guard.sh"|g' \
+    -e 's#"command": "dcg"#"command": "! command -v dcg >/dev/null 2>\&1 || $HOME/dotfiles/config/shared/hooks/dcg-guard.sh"#g' \
+    -e 's#"command": "[^"[:space:]]*/dcg"#"command": "! command -v dcg >/dev/null 2>\&1 || $HOME/dotfiles/config/shared/hooks/dcg-guard.sh"#g' \
+    -e 's#"command": "command -v dcg >/dev/null 2>&1 && dcg"#"command": "! command -v dcg >/dev/null 2>\&1 || $HOME/dotfiles/config/shared/hooks/dcg-guard.sh"#g' \
+    -e 's#"command": "command -v dcg \\u003e/dev/null 2\\u003e\\u00261 \\u0026\\u0026 dcg"#"command": "! command -v dcg >/dev/null 2>\&1 || $HOME/dotfiles/config/shared/hooks/dcg-guard.sh"#g' \
     "$hook_config" >"$tmp_file"; then
     rm -f "$tmp_file"
     exit 1
