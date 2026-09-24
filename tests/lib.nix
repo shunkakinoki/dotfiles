@@ -32,6 +32,23 @@ in
       touch "$out"
     '';
 
+  machine-claim-trigger =
+    let
+      fixtures = ./fixtures/machine-claim-trigger;
+    in
+    pkgs.runCommand "machine-claim-trigger" { nativeBuildInputs = [ pkgs.dolt ]; } ''
+      export HOME="$TMPDIR" DOLT_DISABLE_EVENT_FLUSH=1
+      mkdir db
+      cd db
+      dolt init --name test --email test@example.com
+      dolt sql < ${fixtures}/issues.sql
+      dolt sql -q "$(< ${../home-manager/services/dolt/machine-claim-trigger.sql})"
+      dolt sql < ${fixtures}/writes.sql
+      dolt sql -r csv -q "SELECT id, status, CONCAT('<', COALESCE(assignee, 'NULL'), '>') AS assignee FROM issues ORDER BY id" > actual.csv
+      diff -u ${fixtures}/expected.csv actual.csv
+      touch "$out"
+    '';
+
   lib-kamino-shortcuts =
     let
       kamino = import ../home-manager/programs/kamino { inherit lib pkgs; };
