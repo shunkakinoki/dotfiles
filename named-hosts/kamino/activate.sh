@@ -29,6 +29,23 @@ start-herdr)
   "$systemctl_bin" --user daemon-reload || true
   "$systemctl_bin" --user enable --now herdr-server.service || true
   ;;
+login-shell)
+  fish_bin="${2:?fish binary required}"
+  shells="${3:?shells file required}"
+  # Pointing root at a missing shell would break root logins, so refuse before writing.
+  if [ ! -f "$fish_bin" ] || [ ! -x "$fish_bin" ]; then
+    echo "Refusing to change root's login shell: $fish_bin is not an executable file." >&2
+    exit 1
+  fi
+  if ! grep -qxF -- "$fish_bin" "$shells"; then
+    printf '%s\n' "$fish_bin" >>"$shells"
+    echo "Added $fish_bin to $shells."
+  fi
+  if [ "$(getent passwd root | cut -d: -f7)" != "$fish_bin" ]; then
+    chsh -s "$fish_bin" root
+    echo "Set root's login shell to $fish_bin."
+  fi
+  ;;
 tailscale)
   name="${2:?name required}"
   tailscale_bin="${3:?tailscale binary required}"

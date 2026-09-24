@@ -383,6 +383,9 @@ let
         assert lib.hasInfix "enable --now herdr-server.service" (
           builtins.readFile ../named-hosts/kamino/activate.sh
         );
+        assert activationPosition "installPackages" < activationPosition "setKaminoRootLoginShell";
+        assert lib.hasInfix "login-shell /root/.nix-profile/bin/fish /etc/shells"
+          cfg.home.activation.setKaminoRootLoginShell.data;
         # The orchestration repo requires bun >= 1.4 (`process.execve`), so the
         # fleet-wide bun must not fall back to the locked nixpkgs 1.3.13.
         assert lib.elem "bun" packageNames;

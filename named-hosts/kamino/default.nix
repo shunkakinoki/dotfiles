@@ -140,6 +140,13 @@ inputs.home-manager.lib.homeManagerConfiguration {
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} start-herdr ${pkgs.systemd}/bin/systemctl
         '';
 
+        # The profile path survives fish upgrades and garbage collection, unlike
+        # a store path, so root's passwd entry stays valid.
+        home.activation.setKaminoRootLoginShell = config.lib.dag.entryAfter [ "installPackages" ] ''
+          export PATH=/usr/bin:$PATH
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} login-shell ${config.home.profileDirectory}/bin/fish /etc/shells
+        '';
+
         systemd.user.services.herdr-server = {
           Unit = {
             Description = "Herdr headless server";

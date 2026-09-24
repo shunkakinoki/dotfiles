@@ -21,6 +21,8 @@ and keeps its named profile in the automatic dotfiles upgrade path. Reinstallati
 refuses to change an already-installed Kamino identity. Plain Docker containers
 without systemd are rejected; this is not a container deployment command.
 
+Activation idempotently makes the Home Manager fish (`/root/.nix-profile/bin/fish`) root's login shell, adding it to `/etc/shells` if absent, and refuses without changes if fish is missing.
+
 The installer runs the host-specific Tailscale enrollment command during its
 `make nix-switch` phase:
 

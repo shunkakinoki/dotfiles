@@ -52,7 +52,19 @@ case "$*" in
 esac
 exit 0
 EOF
+  printf '/bin/bash\n' >"$TEST_ROOT/root-shell"
+  cat >"$TEST_ROOT/bin/getent" <<EOF
+#!/usr/bin/env bash
+[ "\$*" = 'passwd root' ] && printf 'root:x:0:0:root:/root:%s\\n' "\$(/bin/cat '$TEST_ROOT/root-shell')"
+EOF
+  cat >"$TEST_ROOT/bin/chsh" <<EOF
+#!/usr/bin/env bash
+printf 'chsh %s\\n' "\$*" >>"\$COMMAND_LOG"
+printf '%s\\n' "\$2" >'$TEST_ROOT/root-shell'
+EOF
   chmod +x "$TEST_ROOT/bin"/*
+  printf '#!/bin/sh\n' >"$TEST_ROOT/fish"
+  chmod +x "$TEST_ROOT/fish"
   printf 'kamino100\n' >"$TEST_ROOT/identity"
   printf 'ssh-ed25519 AAAAexample\n' >"$TEST_ROOT/client.pub"
 }
@@ -92,6 +104,54 @@ It 'starts the Herdr server after reloading user units'
 When run run_phase start-herdr "$TEST_ROOT/bin/systemctl"
 The status should be success
 The contents of file "$TEST_ROOT/commands" should equal $'systemctl --user daemon-reload\nsystemctl --user enable --now herdr-server.service'
+End
+
+It 'lists fish and makes it the root login shell when root is on bash'
+printf '/bin/sh\n/bin/bash\n%s\n' "$TEST_ROOT/fish-lsp" >"$TEST_ROOT/shells"
+When run run_phase login-shell "$TEST_ROOT/fish" "$TEST_ROOT/shells"
+The status should be success
+The line 1 of output should equal "Added $TEST_ROOT/fish to $TEST_ROOT/shells."
+The line 2 of output should equal "Set root's login shell to $TEST_ROOT/fish."
+The contents of file "$TEST_ROOT/shells" should equal "$(printf '/bin/sh\n/bin/bash\n%s\n%s' "$TEST_ROOT/fish-lsp" "$TEST_ROOT/fish")"
+The contents of file "$TEST_ROOT/commands" should equal "chsh -s $TEST_ROOT/fish root"
+End
+
+It 'changes only the login shell when fish is already listed'
+printf '/bin/bash\n%s\n' "$TEST_ROOT/fish" >"$TEST_ROOT/shells"
+When run run_phase login-shell "$TEST_ROOT/fish" "$TEST_ROOT/shells"
+The status should be success
+The output should equal "Set root's login shell to $TEST_ROOT/fish."
+The contents of file "$TEST_ROOT/shells" should equal "$(printf '/bin/bash\n%s' "$TEST_ROOT/fish")"
+The contents of file "$TEST_ROOT/commands" should equal "chsh -s $TEST_ROOT/fish root"
+End
+
+It 'makes no changes once fish is listed and is the root login shell'
+printf '/bin/bash\n%s\n' "$TEST_ROOT/fish" >"$TEST_ROOT/shells"
+printf '%s\n' "$TEST_ROOT/fish" >"$TEST_ROOT/root-shell"
+When run run_phase login-shell "$TEST_ROOT/fish" "$TEST_ROOT/shells"
+The status should be success
+The output should be blank
+The contents of file "$TEST_ROOT/shells" should equal "$(printf '/bin/bash\n%s' "$TEST_ROOT/fish")"
+The path "$TEST_ROOT/commands" should not be exist
+End
+
+It 'refuses a missing fish without changing the login shell'
+printf '/bin/bash\n' >"$TEST_ROOT/shells"
+When run run_phase login-shell "$TEST_ROOT/missing-fish" "$TEST_ROOT/shells"
+The status should be failure
+The error should include "Refusing to change root's login shell: $TEST_ROOT/missing-fish"
+The contents of file "$TEST_ROOT/shells" should equal '/bin/bash'
+The path "$TEST_ROOT/commands" should not be exist
+End
+
+It 'refuses a non-executable fish without changing the login shell'
+printf '/bin/bash\n' >"$TEST_ROOT/shells"
+: >"$TEST_ROOT/plain-fish"
+When run run_phase login-shell "$TEST_ROOT/plain-fish" "$TEST_ROOT/shells"
+The status should be failure
+The error should include "Refusing to change root's login shell: $TEST_ROOT/plain-fish"
+The contents of file "$TEST_ROOT/shells" should equal '/bin/bash'
+The path "$TEST_ROOT/commands" should not be exist
 End
 
 It 'enrolls Tailscale with the supplied arguments'
