@@ -1,0 +1,164 @@
+diff --git a/internal/tracker/engine.go b/internal/tracker/engine.go
+index f6a5dadc..75f02a3c 100644
+--- a/internal/tracker/engine.go
++++ b/internal/tracker/engine.go
+@@ -18,6 +18,7 @@ import (
+ 	"github.com/steveyegge/beads/internal/storage/issueops"
+ 	"github.com/steveyegge/beads/internal/types"
+ 	"github.com/steveyegge/beads/internal/ui"
++	publicops "github.com/steveyegge/beads/issueops"
+ )
+ 
+ // syncTracer is the OTel tracer for tracker sync spans.
+@@ -1325,6 +1326,8 @@ func (e *Engine) createDependencies(ctx context.Context, deps []DependencyInfo)
+ 	}
+ 
+ 	errCount := 0
++	resolved := make([]*types.Dependency, 0, len(deps))
++	sources := make([]string, 0, len(deps))
+ 	for _, dep := range deps {
+ 		fromIssue, err := resolveIssue(ctx, dep.FromExternalID)
+ 		if err != nil {
+@@ -1343,19 +1346,65 @@ func (e *Engine) createDependencies(ctx context.Context, deps []DependencyInfo)
+ 			continue // Not found (no error) — expected if issue wasn't imported
+ 		}
+ 
+-		d := &types.Dependency{
++		resolved = append(resolved, &types.Dependency{
+ 			IssueID:     fromIssue.ID,
+ 			DependsOnID: toIssue.ID,
+ 			Type:        types.DependencyType(dep.Type),
++		})
++		sources = append(sources, fromIssue.ID)
++	}
++
++	stored := e.unchangedDependencyKeys(ctx, sources)
++	for _, d := range resolved {
++		key := pendingDependencyPreviewKey(d.IssueID, d.DependsOnID, string(d.Type))
++		if _, ok := stored[key]; ok {
++			continue
+ 		}
+ 		if err := e.Store.AddDependency(ctx, d, e.Actor); err != nil {
+-			e.warn("Failed to create dependency %s -> %s: %v", fromIssue.ID, toIssue.ID, err)
++			e.warn("Failed to create dependency %s -> %s: %v", d.IssueID, d.DependsOnID, err)
+ 			errCount++
++			continue
+ 		}
++		stored[key] = struct{}{}
+ 	}
+ 	return errCount
+ }
+ 
++// unchangedDependencyKeys returns the stored edges of sources that a re-add
++// would leave unchanged, keyed like pendingDependencyPreviewKey. A pull
++// re-reads every relation of every issue, and each AddDependency of an edge
++// that already exists still runs a full write transaction, a journal event and
++// a Dolt commit, so a large tracker spends the pull re-writing edges it already
++// has. A re-add replaces metadata with "{}", so only edges already carrying
++// empty metadata are unchanged by it. A failed read leaves the set empty and
++// every edge goes through AddDependency; the warning keeps the prefix the
++// dependency resolution warnings share.
++func (e *Engine) unchangedDependencyKeys(ctx context.Context, sources []string) map[string]struct{} {
++	keys := make(map[string]struct{})
++	if len(sources) == 0 {
++		return keys
++	}
++	reader, err := e.Store.EdgeReader()
++	if err != nil {
++		e.warn("Failed to build dependency resolver: stored edge reader: %v", err)
++		return keys
++	}
++	result, err := reader.ReadEdges(ctx, publicops.EdgeReadRequest{IDs: sources})
++	if err != nil {
++		e.warn("Failed to build dependency resolver: read stored edges: %v", err)
++		return keys
++	}
++	for _, anchor := range result.Anchors {
++		for _, edge := range anchor.Edges {
++			if metadata := strings.TrimSpace(edge.Metadata); metadata != "" && metadata != "{}" {
++				continue
++			}
++			keys[pendingDependencyPreviewKey(anchor.ID, edge.DependsOnID, string(edge.Type))] = struct{}{}
++		}
++	}
++	return keys
++}
++
+ func (e *Engine) previewDependencies(ctx context.Context, deps []DependencyInfo, dryRunIssues []*types.Issue) int {
+ 	if len(deps) == 0 {
+ 		return 0
+diff --git a/internal/tracker/engine_test.go b/internal/tracker/engine_test.go
+index 7b62f967..17204302 100644
+--- a/internal/tracker/engine_test.go
++++ b/internal/tracker/engine_test.go
+@@ -3073,6 +3073,70 @@ func TestEngineCreateDependencies_Empty(t *testing.T) {
+ 	}
+ }
+ 
++type addDependencyCountingStore struct {
++	*dolt.DoltStore
++	adds []string
++}
++
++func (s *addDependencyCountingStore) AddDependency(ctx context.Context, dep *types.Dependency, actor string) error {
++	s.adds = append(s.adds, fmt.Sprintf("%s->%s:%s", dep.IssueID, dep.DependsOnID, dep.Type))
++	return s.DoltStore.AddDependency(ctx, dep, actor)
++}
++
++func TestEngineCreateDependenciesSkipsUnchangedEdges(t *testing.T) {
++	ctx := context.Background()
++	base := newTestStore(t)
++	defer base.Close()
++
++	for _, id := range []string{"bd-skip-a", "bd-skip-b", "bd-skip-c"} {
++		issue := &types.Issue{ID: id, Title: id, Status: types.StatusOpen, IssueType: types.TypeTask, Priority: 2}
++		if err := base.CreateIssue(ctx, issue, "test-actor"); err != nil {
++			t.Fatalf("CreateIssue %s: %v", id, err)
++		}
++		if err := base.UpdateIssue(ctx, id, map[string]interface{}{"external_ref": "https://test.test/" + id}, "test-actor"); err != nil {
++			t.Fatalf("UpdateIssue %s external_ref: %v", id, err)
++		}
++	}
++	if err := base.AddDependency(ctx, &types.Dependency{IssueID: "bd-skip-a", DependsOnID: "bd-skip-b", Type: types.DepBlocks}, "test-actor"); err != nil {
++		t.Fatalf("seed a->b: %v", err)
++	}
++	if err := base.AddDependency(ctx, &types.Dependency{IssueID: "bd-skip-c", DependsOnID: "bd-skip-b", Type: types.DepRelated, Metadata: `{"note":"kept"}`}, "test-actor"); err != nil {
++		t.Fatalf("seed c->b: %v", err)
++	}
++
++	store := &addDependencyCountingStore{DoltStore: base}
++	engine := NewEngine(newMockTracker("test"), store, "test-actor")
++	errCount := engine.createDependencies(ctx, []DependencyInfo{
++		{FromExternalID: "https://test.test/bd-skip-a", ToExternalID: "https://test.test/bd-skip-b", Type: string(types.DepBlocks)},
++		{FromExternalID: "https://test.test/bd-skip-a", ToExternalID: "https://test.test/bd-skip-c", Type: string(types.DepBlocks)},
++		{FromExternalID: "https://test.test/bd-skip-a", ToExternalID: "https://test.test/bd-skip-c", Type: string(types.DepBlocks)},
++		{FromExternalID: "https://test.test/bd-skip-c", ToExternalID: "https://test.test/bd-skip-b", Type: string(types.DepRelated)},
++	})
++	if errCount != 0 {
++		t.Fatalf("createDependencies returned errCount=%d, warnings=%v", errCount, engine.warnings)
++	}
++
++	want := []string{
++		"bd-skip-a->bd-skip-c:blocks",
++		"bd-skip-c->bd-skip-b:related",
++	}
++	if strings.Join(store.adds, ",") != strings.Join(want, ",") {
++		t.Fatalf("AddDependency calls = %v, want %v", store.adds, want)
++	}
++
++	records, err := base.GetDependencyRecords(ctx, "bd-skip-a")
++	if err != nil {
++		t.Fatalf("GetDependencyRecords a: %v", err)
++	}
++	var got []string
++	for _, record := range records {
++		got = append(got, fmt.Sprintf("%s:%s", record.DependsOnID, record.Type))
++	}
++	if strings.Join(got, ",") != "bd-skip-b:blocks,bd-skip-c:blocks" {
++		t.Fatalf("a edges = %v, want [bd-skip-b:blocks bd-skip-c:blocks]", got)
++	}
++}
++
+ func TestEngineWarnCollectsMessages(t *testing.T) {
+ 	tracker := newMockTracker("test")
+ 	engine := &Engine{
