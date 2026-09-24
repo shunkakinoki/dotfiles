@@ -266,6 +266,8 @@ let
             "kamino5"
             "kamino6"
           ];
+        assert lib.hasInfix "100.127.59.11 ${publicKeys.kamino5}" managedKnownHosts;
+        assert lib.hasInfix "100.65.213.115 ${publicKeys.kamino6}" managedKnownHosts;
         assert
           sshAuthorizedKeys.kamino == [
             publicKeys.galactica
