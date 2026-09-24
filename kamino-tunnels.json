@@ -24,11 +24,6 @@
     "port": 1084
   },
   {
-    "credential": "codex-6a006fd3-frisk-peccary.05@icloud.com-pro.json",
-    "host": "kamino1",
-    "port": 1081
-  },
-  {
     "credential": "codex-a9b90dd5-inkiest_cloche7h@icloud.com-prolite.json",
     "host": "kamino2",
     "port": 1082
@@ -42,5 +37,15 @@
     "credential": "codex-9c05e492-69-scrappy.corpus@icloud.com-pro.json",
     "host": "kamino4",
     "port": 1084
+  },
+  {
+    "credential": "claude-2738f2fb-jangly-bears6h@icloud.com.json",
+    "host": "kamino1",
+    "port": 1081
+  },
+  {
+    "credential": "claude-b3cd641c-3_hive_tangy@icloud.com.json",
+    "host": "kamino2",
+    "port": 1082
   }
 ]
