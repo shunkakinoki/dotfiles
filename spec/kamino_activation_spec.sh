@@ -171,6 +171,15 @@ The contents of file "$TEST_ROOT/commands" should include 'systemctl --user rest
 The stderr should include 'bootstrapping with t3@nightly'
 End
 
+It 'lets a piped first switch finish before T3 device authorization'
+When run env KAMINO_T3_CONNECT_DEFER=1 T3CODE_HOME="$TEST_ROOT/fresh-t3" PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" t3-connect "$TEST_ROOT/bin/t3"
+The status should be success
+The stderr should include 'T3 Connect authorization deferred'
+The contents of file "$TEST_ROOT/commands" should include 't3@nightly service install'
+The contents of file "$TEST_ROOT/commands" should include 'systemctl --user enable --now t3code.service'
+The contents of file "$TEST_ROOT/commands" should not include 't3 connect link'
+End
+
 It 'provisions a managed T3 Connect tunnel for opted-in hosts'
 mkdir -p "$TEST_ROOT/t3/runtime" "$TEST_ROOT/t3/userdata/secrets"
 printf '{\n  "protocol": 3\n}\n' >"$TEST_ROOT/t3/runtime/service-state.json"
