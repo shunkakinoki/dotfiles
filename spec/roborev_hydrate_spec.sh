@@ -101,6 +101,7 @@ BASH
   sed \
     -e 's|@sed@|sed|g' \
     -e 's|@template@|'"$TEMP_HOME"'/template.toml|g' \
+    -e 's|@ciEnabled@|true|g' \
     -e 's|@maxWorkers@|2|g' \
     "$SCRIPT" >"$PREPROCESSED_SCRIPT"
   chmod +x "$PREPROCESSED_SCRIPT"
@@ -109,6 +110,7 @@ BASH
   sed \
     -e 's|@sed@|sed|g' \
     -e 's|@template@|'"$TEMP_HOME"'/template.toml|g' \
+    -e 's|@ciEnabled@|false|g' \
     -e 's|@maxWorkers@|2|g' \
     "$SCRIPT" >"$PREPROCESSED_DESKTOP_SCRIPT"
   chmod +x "$PREPROCESSED_DESKTOP_SCRIPT"
@@ -141,6 +143,8 @@ It 'hydrates the desktop worker limit'
 When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_DESKTOP_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/.roborev/config.toml"'
 The status should be success
 The output should include 'max_workers = 2'
+The output should include 'enabled = false'
+The output should include 'repos = []'
 End
 
 It 'hydrates the review trigger without overriding RoboRev instructions'
@@ -182,9 +186,19 @@ TOML
   sed \
     -e 's|@sed@|sed|g' \
     -e 's|@template@|'"$TEMP_HOME"'/template.toml|g' \
+    -e 's|@ciEnabled@|true|g' \
     -e 's|@maxWorkers@|1|g' \
     "$SCRIPT" >"$PREPROCESSED_SCRIPT"
   chmod +x "$PREPROCESSED_SCRIPT"
+
+  PREPROCESSED_LOCAL_SCRIPT="$TEMP_HOME/hydrate-local.sh"
+  sed \
+    -e 's|@sed@|sed|g' \
+    -e 's|@template@|'"$TEMP_HOME"'/template.toml|g' \
+    -e 's|@ciEnabled@|false|g' \
+    -e 's|@maxWorkers@|1|g' \
+    "$SCRIPT" >"$PREPROCESSED_LOCAL_SCRIPT"
+  chmod +x "$PREPROCESSED_LOCAL_SCRIPT"
 }
 
 cleanup_no_repos() {
@@ -199,6 +213,13 @@ When run bash -c 'unset ROBOREV_REPOS ROBOREV_CI_REPOS; HOME="'"$TEMP_HOME"'" ba
 The status should be success
 The error should include 'ROBOREV_REPOS not set'
 The path "$TEMP_HOME/.roborev/config.toml" should not be exist
+End
+
+It 'clears CI repositories even without a repo list on a local-only host'
+When run bash -c 'unset ROBOREV_REPOS ROBOREV_CI_REPOS; HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_LOCAL_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/.roborev/config.toml"'
+The status should be success
+The output should include 'enabled = false'
+The output should include 'repos = []'
 End
 End
 
