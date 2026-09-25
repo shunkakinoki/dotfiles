@@ -77,7 +77,7 @@ ensure_route() {
   local local_port="$2"
   local target="http://127.0.0.1:${local_port}"
 
-  if printf '%s\n' "$SERVE_STATUS" | awk -v port="$https_port" -v target="$target" '
+  if printf '%s\n' "$SERVE_STATUS" | @awk@ -v port="$https_port" -v target="$target" '
     /^https:\/\// {
       if (port == "443") {
         active = ($0 !~ /:[0-9]+ \(tailnet only\)$/)

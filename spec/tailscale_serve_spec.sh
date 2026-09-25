@@ -73,9 +73,19 @@ The status should be success
 End
 End
 
+Describe 'pinned tools'
+# Activation PATH lacks awk on Linux home-manager hosts.
+It 'references awk through a Nix placeholder'
+When run grep -F '| @awk@ ' "$SCRIPT"
+The output should include '@awk@'
+End
+End
+
 Describe 'idempotence'
 setup() {
   mock_bin_setup sudo
+  RENDERED="$MOCK_BIN/ensure-tailscale-serve.sh"
+  sed 's|@awk@|awk|g' "$SCRIPT" >"$RENDERED"
   cat >"$MOCK_BIN/tailscale" <<'SH'
 #!/usr/bin/env bash
 printf '%s\n' "$0 $*" >>"$MOCK_LOG"
@@ -122,31 +132,31 @@ After 'cleanup'
 # tailscale serve persists in tailscaled state, so re-running activation must
 # not re-issue the command.
 It 'does nothing when the target is already served'
-When run bash -c "bash '$SCRIPT' 443 3773 >/dev/null 2>&1; cat '$MOCK_LOG'"
+When run bash -c "bash '$RENDERED' 443 3773 >/dev/null 2>&1; cat '$MOCK_LOG'"
 The output should not include 'serve --yes --bg'
 The status should be success
 End
 
 It 'publishes when the target is served on a different HTTPS port'
-When run bash -c "bash '$SCRIPT' 8443 3773 >/dev/null 2>&1; cat '$MOCK_LOG'"
+When run bash -c "bash '$RENDERED' 8443 3773 >/dev/null 2>&1; cat '$MOCK_LOG'"
 The output should include 'serve --yes --bg --https=8443 http://127.0.0.1:3773'
 The status should be success
 End
 
 It 'publishes when only a non-root handler has the target'
-When run bash -c "MOCK_SERVE_STATUS=non-root bash '$SCRIPT' 443 3773 >/dev/null 2>&1; cat '$MOCK_LOG'"
+When run bash -c "MOCK_SERVE_STATUS=non-root bash '$RENDERED' 443 3773 >/dev/null 2>&1; cat '$MOCK_LOG'"
 The output should include 'serve --yes --bg --https=443 http://127.0.0.1:3773'
 The status should be success
 End
 
 It 'publishes when the configured target only shares the port prefix'
-When run bash -c "MOCK_SERVE_STATUS=port-prefix bash '$SCRIPT' 443 3773 >/dev/null 2>&1; cat '$MOCK_LOG'"
+When run bash -c "MOCK_SERVE_STATUS=port-prefix bash '$RENDERED' 443 3773 >/dev/null 2>&1; cat '$MOCK_LOG'"
 The output should include 'serve --yes --bg --https=443 http://127.0.0.1:3773'
 The status should be success
 End
 
 It 'publishes every missing route in one invocation'
-When run bash -c "bash '$SCRIPT' 8443 3773 9443 9120 >/dev/null 2>&1; cat '$MOCK_LOG'"
+When run bash -c "bash '$RENDERED' 8443 3773 9443 9120 >/dev/null 2>&1; cat '$MOCK_LOG'"
 The output should include 'serve --yes --bg --https=8443 http://127.0.0.1:3773'
 The output should include 'serve --yes --bg --https=9443 http://127.0.0.1:9120'
 The status should be success

@@ -16,6 +16,9 @@ let
   ]) activationServeRoutes;
   routeNames = map (route: route.name) hostServeRoutes;
   routePorts = map (route: route.httpsPort) hostServeRoutes;
+  ensureServeScript = pkgs.replaceVars ../../activation/ensure-tailscale-serve.sh {
+    awk = "${pkgs.gawk}/bin/awk";
+  };
   supportedManagers = [
     "activation"
     "t3-service"
@@ -54,7 +57,7 @@ in
 
     home.activation.tailscaleServeRoutes = lib.mkIf (activationServeRoutes != [ ]) (
       config.lib.dag.entryAfter [ "writeBoundary" ] ''
-        $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../activation/ensure-tailscale-serve.sh}" ${lib.escapeShellArgs activationServeRouteArgs}
+        $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${ensureServeScript} ${lib.escapeShellArgs activationServeRouteArgs}
       ''
     );
   };
