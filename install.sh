@@ -46,6 +46,13 @@ kamino*)
   ;;
 esac
 
+# A piped installer cannot complete the first T3 device authorization on its
+# own. Let the Home Manager switch finish and link T3 from an interactive shell.
+if [ "$KAMINO_INSTALL" = true ] && [ ! -t 0 ]; then
+  KAMINO_T3_CONNECT_DEFER=1
+  export KAMINO_T3_CONNECT_DEFER
+fi
+
 run_root() {
   if [ "$(id -u)" = 0 ]; then
     "$@"

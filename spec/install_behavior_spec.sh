@@ -49,7 +49,7 @@ exit 99
 EOF
   cat >"$TEST_ROOT/bin/make" <<'EOF'
 #!/usr/bin/env bash
-printf 'INSTALL_HOST=%s INSTALL_USER=%s\n' "$HOST" "$USER"
+printf 'INSTALL_HOST=%s INSTALL_USER=%s T3_DEFER=%s\n' "$HOST" "$USER" "${KAMINO_T3_CONNECT_DEFER:-}"
 EOF
   chmod +x "$TEST_ROOT/bin"/*
 
@@ -85,6 +85,12 @@ It 'keeps the installed identity on repeat installs'
 When run env MOCK_SAVED=kamino1 "$TEST_ROOT/run-installer" KAMINO1
 The status should be success
 The output should include 'INSTALL_HOST=kamino1 INSTALL_USER=root'
+End
+
+It 'defers first T3 authorization for the piped Kamino installer'
+When run bash -c 'printf "" | "$1" kamino7' _ "$TEST_ROOT/run-installer"
+The status should be success
+The output should include 'INSTALL_HOST=kamino7 INSTALL_USER=root T3_DEFER=1'
 End
 
 It 'rejects invalid Kamino names before installation'
