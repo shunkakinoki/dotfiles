@@ -8,7 +8,8 @@ def control_state:
   };
 
 # The tracker owns workflow state, assignment, and labels, so only a mutation
-# another actor made while the pull was in flight outranks what it wrote.
+# another actor made that the tracker has not yet received outranks what the
+# pull wrote.
 reduce (
     $journal[]
     | select(

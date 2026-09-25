@@ -149,6 +149,7 @@ repo_dir="$(cd "$repo_dir" && pwd -P)"
 # injective even when either repository segment contains underscores.
 repo_slug="${repo_name//\//%2F}"
 sync_checkpoint_file="$sync_state_dir/last-success-$repo_slug"
+journal_checkpoint_file="$sync_state_dir/journal-head-$repo_slug"
 reconciliation_lock_file="$reconciliation_state_dir/reconcile-$repo_slug.lock"
 push_progress_file="$sync_state_dir/push-progress-$repo_slug"
 
@@ -594,6 +595,17 @@ query_dolt_json() {
     sql -r json -q "$query"
 }
 
+read_journal_head() {
+  local head
+
+  head="$(query_dolt_json "USE \`$linear_database\`; SELECT COALESCE(MAX(next_seq), 0) AS head FROM bd_events_seq;" | @jq@/bin/jq -er '.rows[0].head // "0"')"
+  if [[ ! $head =~ ^[0-9]+$ ]]; then
+    log "Beads events journal returned an invalid sequence" >&2
+    return 1
+  fi
+  printf '%s\n' "$head"
+}
+
 restore_linear_last_sync() {
   if [ -z "${linear_last_sync_before_pull:-}" ]; then
     return 0
@@ -609,12 +621,15 @@ restore_linear_last_sync() {
 # A cursor-free pull overwrites local assignment, workflow state, and labels
 # with the tracker's values, including clearing a machine claim's assignee:
 # claim custody lives in the Bead's notes, not its assignee. The durable
-# journal folds every non-reconciler mutation made during the pull in commit
-# order, so a concurrent claim, release, or completion wins over what the pull
-# wrote. Each repair compares both fields it observed after the pull; a newer
-# claim makes the guarded write refuse instead of transferring ownership from a
-# live worker. Every caller runs this as a tested command, where errexit does
-# not apply, so each step checks its own status.
+# journal folds every non-reconciler mutation the tracker has not yet received
+# in commit order: those since the last successful cycle listed Beads for its
+# active push, plus those made during this pull. So an unpushed claim, release,
+# or completion wins over what the pull wrote; without the earlier events, a
+# lane release made between runs reverts to the tracker's In Progress and
+# strands the Bead with no lane. Each repair compares both fields it observed
+# after the pull; a newer claim makes the guarded write refuse instead of
+# transferring ownership from a live worker. Every caller runs this as a tested
+# command, where errexit does not apply, so each step checks its own status.
 repair_control_state_after_pull() {
   local linear_journal_file="$sync_state_dir/journal-$repo_slug.jsonl"
   local linear_current_file="$sync_state_dir/current-$repo_slug.json"
@@ -633,7 +648,7 @@ repair_control_state_after_pull() {
     log "Unable to list Beads after the Linear pull"
     return 1
   fi
-  if ! "$bd_cli" -C "$repo_dir" events tail --since "$linear_journal_head" >"$linear_journal_file"; then
+  if ! "$bd_cli" -C "$repo_dir" events tail --since "$linear_fold_since" >"$linear_journal_file"; then
     log "Unable to read the Beads events journal after the Linear pull"
     return 1
   fi
@@ -923,11 +938,16 @@ fi
 # limit defers it, so the checkpoint never advances. A pending completion
 # marker bypasses the ledger so its recovery push always happens. Capture the
 # ordered mutation cursor before the snapshot: events that race the listing
-# may appear in both inputs, but replaying their full state is idempotent.
-linear_journal_head="$(query_dolt_json "USE \`$linear_database\`; SELECT COALESCE(MAX(next_seq), 0) AS head FROM bd_events_seq;" | @jq@/bin/jq -er '.rows[0].head // "0"')"
-if [[ ! $linear_journal_head =~ ^[0-9]+$ ]]; then
-  log "Beads events journal returned an invalid sequence"
-  exit 1
+# may appear in both inputs, but replaying their full state is idempotent. The
+# fold starts at the prior cycle's push cursor when one is recorded; a cursor
+# ahead of the journal cannot belong to it, so the current head replaces it.
+linear_journal_head="$(read_journal_head)" || exit 1
+linear_fold_since="$linear_journal_head"
+if [ -s "$journal_checkpoint_file" ]; then
+  previous_journal_head="$(<"$journal_checkpoint_file")"
+  if [[ $previous_journal_head =~ ^[0-9]+$ ]] && [ "$previous_journal_head" -le "$linear_journal_head" ]; then
+    linear_fold_since="$previous_journal_head"
+  fi
 fi
 snapshot_taken_at="$(@coreutils@/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')"
 issues_before_pull="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0)"
@@ -1098,7 +1118,9 @@ fi
 
 # Select the active push from the repaired state. The post-pull listing still
 # shows a restored claim as the tracker's close, so it would never be pushed
-# and the next pull would close it again.
+# and the next pull would close it again. Events after this cursor may miss the
+# listing, so the next cycle folds from it.
+push_journal_head="$(read_journal_head)" || exit 1
 all_issues="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0)"
 # The push and the pull both bump updated_at, so by timestamp alone a Bead
 # pushed last cycle is re-selected every cycle. The ledger keeps a hash of
@@ -1191,5 +1213,7 @@ fi
 
 printf '%s\n' "$cycle_started" >"$sync_checkpoint_file.tmp"
 @coreutils@/bin/mv -f "$sync_checkpoint_file.tmp" "$sync_checkpoint_file"
+printf '%s\n' "$push_journal_head" >"$journal_checkpoint_file.tmp"
+@coreutils@/bin/mv -f "$journal_checkpoint_file.tmp" "$journal_checkpoint_file"
 
 "$bd_cli" -C "$repo_dir" linear status --json

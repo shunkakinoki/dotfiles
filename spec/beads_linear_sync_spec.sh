@@ -513,7 +513,7 @@ if [ -n "${FAKE_DOLT_FAIL:-}" ] && [[ $* == *"$FAKE_DOLT_FAIL"* ]]; then
 fi
 query="${*: -1}"
 if [[ " $* " == *" sql -r json "* ]]; then
-  printf '%s\n' '{"rows":[{"head":0}]}'
+  printf '{"rows":[{"head":%s}]}\n' "${FAKE_JOURNAL_HEAD:-0}"
 fi
 exit 0
 EOF
@@ -901,6 +901,31 @@ The status should be success
 The output should include 'Restoring locally authoritative control state after pull'
 The contents of file "$COMMAND_LOG" should include 'update df-accepted --assignee kamino2_exec_accepted --status closed --if-status=in_progress --if-assignee=operator@example.com'
 The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'restores a lane release made after the last cycle listed its push'
+before='[{"id":"df-released","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/released"}]'
+after='[{"id":"df-released","status":"in_progress","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/released"}]'
+journal='{"actor":"kamino6_exec_released","op":"update","issue_id":"df-released","issue":{"id":"df-released","status":"open","assignee":""}}'
+mkdir -p "$STATE_HOME/beads-linear-sync"
+printf '5\n' >"$STATE_HOME/beads-linear-sync/journal-head-$repo_slug"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_JOURNAL_HEAD=9 FAKE_EVENTS_JOURNAL="$journal" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Restored 1 control state record(s); skipped 0 superseded or refused repair(s)'
+The contents of file "$COMMAND_LOG" should include 'events tail --since 5'
+The contents of file "$COMMAND_LOG" should include 'update df-released --status open --if-status=in_progress --if-assignee='
+The contents of file "$STATE_HOME/beads-linear-sync/journal-head-$repo_slug" should equal '9'
+End
+
+It 'folds from the current journal head when the recorded cursor is ahead of it'
+issues='[{"id":"df-open","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/open"}]'
+mkdir -p "$STATE_HOME/beads-linear-sync"
+printf '50\n' >"$STATE_HOME/beads-linear-sync/journal-head-$repo_slug"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_JOURNAL_HEAD=9 FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$issues" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Pushing changed active Beads batch 1/1'
+The contents of file "$COMMAND_LOG" should include 'events tail --since 9'
+The contents of file "$STATE_HOME/beads-linear-sync/journal-head-$repo_slug" should equal '9'
 End
 
 It 'accepts a tracker close on a Bead no machine holds'
