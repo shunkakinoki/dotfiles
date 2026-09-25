@@ -47,19 +47,19 @@ End
 End
 
 Describe 'home-manager/services/roborev/default.nix'
-It 'enables on galactica, kyber, and matic'
-When run bash -c "grep 'isGalactica || isKyber || isMatic' '$PWD/home-manager/services/roborev/default.nix'"
-The output should include 'isGalactica || isKyber || isMatic'
+It 'enables on galactica, kyber, matic, and kamino7'
+When run bash -c "grep 'isGalactica || isKyber || isMatic || isKamino7' '$PWD/home-manager/services/roborev/default.nix'"
+The output should include 'isGalactica || isKyber || isMatic || isKamino7'
 End
 
 It 'selects CI polling by host'
-When run bash -c "grep 'ciEnabled = if inputs.host.isMatic then \"true\" else \"false\";' '$PWD/config/roborev/default.nix'"
-The output should include 'ciEnabled = if inputs.host.isMatic then "true" else "false";'
+When run grep -F 'ciEnabled = if inputs.host.isKamino && inputs.host.nodeName == "kamino7" then "true" else "false";' "$PWD/config/roborev/default.nix"
+The output should include 'ciEnabled = if inputs.host.isKamino && inputs.host.nodeName == "kamino7" then "true" else "false";'
 End
 
-It 'caps review workers on every host'
-When run bash -c "grep 'maxWorkers = \"2\";' '$PWD/config/roborev/default.nix'"
-The output should include 'maxWorkers = "2";'
+It 'allocates eight review workers on kamino7 and two elsewhere'
+When run grep -F 'maxWorkers = if inputs.host.isKamino && inputs.host.nodeName == "kamino7" then "8" else "2";' "$PWD/config/roborev/default.nix"
+The output should include 'maxWorkers = if inputs.host.isKamino && inputs.host.nodeName == "kamino7" then "8" else "2";'
 End
 
 It 'runs roborev daemon run'
@@ -113,6 +113,15 @@ The output should include 'TasksMax = 2048'
 The output should include 'CPUQuota = "1600%"'
 The output should include 'MemoryHigh = "24G"'
 The output should include 'MemoryMax = "32G"'
+End
+
+It 'bounds kamino7 review workers while leaving host capacity for other services'
+When run grep -E 'ConditionPathIsExecutable = roborevBin|CPUQuota = "1000%"|MemoryHigh = "36G"|MemoryMax = "42G"|TasksMax = 4096' "$PWD/home-manager/services/roborev/default.nix"
+The output should include 'ConditionPathIsExecutable = roborevBin'
+The output should include 'CPUQuota = "1000%"'
+The output should include 'MemoryHigh = "36G"'
+The output should include 'MemoryMax = "42G"'
+The output should include 'TasksMax = 4096'
 End
 
 It 'reclaims the Kyber daemon port from escaped RoboRev processes'

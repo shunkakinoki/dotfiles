@@ -330,7 +330,23 @@ let
         assert lib.hasInfix sessionVarsSource (bashrcBefore "[[ $- == *i* ]] || return");
         assert lib.hasInfix sessionVarsSource (bashrcBefore "load-env-file.sh");
         assert lib.hasInfix sessionVarsSource (bashrcBefore "export PATH=");
+        assert !(cfg.systemd.user.services ? roborev);
         mkEvalCheck "home-kamino" kamino.activationPackage;
+      eval-home-kamino7 =
+        let
+          kamino = import ../named-hosts/kamino {
+            inherit inputs;
+            name = "kamino7";
+          };
+          cfg = kamino.config;
+          roborev = cfg.systemd.user.services.roborev;
+        in
+        assert roborev.Unit.ConditionPathIsExecutable == "/root/.local/bin/roborev";
+        assert roborev.Service.CPUQuota == "1000%";
+        assert roborev.Service.MemoryHigh == "36G";
+        assert roborev.Service.MemoryMax == "42G";
+        assert roborev.Service.TasksMax == 4096;
+        mkEvalCheck "home-kamino7" kamino.activationPackage;
       eval-home-kamino100 =
         let
           kamino = import ../named-hosts/kamino {
@@ -357,6 +373,7 @@ let
         assert cfg.xdg.configFile ? "zellij/config.kdl";
         assert cfg.home.file ? ".config/herdr/config.toml";
         assert cfg.systemd.user.startServices;
+        assert !(cfg.systemd.user.services ? roborev);
         assert activationPosition "checkKaminoIdentity" < activationPosition "writeBoundary";
         assert activationPosition "startKaminoUserManager" < activationPosition "reloadSystemd";
         assert

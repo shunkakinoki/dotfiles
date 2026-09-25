@@ -1503,11 +1503,11 @@ systemctl-openclaw: ## Restart OpenClaw gateway systemd user service.
 .PHONY: systemctl-roborev
 systemctl-roborev: ## Restart roborev systemd user service.
 	@echo "🔄 Restarting roborev..."
-	@if [ "$(DETECTED_HOST)" = "matic" ] || [ "$(HOST)" = "matic" ] || [ "$(DETECTED_HOST)" = "kyber" ] || [ "$(HOST)" = "kyber" ]; then \
+	@if [ "$(DETECTED_HOST)" = "matic" ] || [ "$(HOST)" = "matic" ] || [ "$(DETECTED_HOST)" = "kyber" ] || [ "$(HOST)" = "kyber" ] || [ "$(DETECTED_HOST)" = "kamino7" ] || [ "$(HOST)" = "kamino7" ]; then \
 		systemctl --user daemon-reload; \
 		systemctl --user restart roborev.service; \
 	else \
-		echo "Skipping roborev.service (host not matic or kyber)"; \
+		echo "Skipping roborev.service (host not matic, kyber, or kamino7)"; \
 	fi
 	@echo "✅ roborev restarted"
 
