@@ -282,7 +282,6 @@ run_linear() {
     def family:
       if type != "string" then "invalid"
       elif test("^Failed to (build dependency resolver:|resolve dependency |create dependency )") then "dependency"
-      elif startswith("Failed to read stored dependencies:") then "dependency-read"
       elif test("^linear: bead \\S+: label \".*\" not found on Linear team \\(skipped\\)") then "skipped-label"
       elif startswith("Failed to update last_sync:") then "cursor"
       elif startswith("Failed to update external_ref ") then "external-ref"
