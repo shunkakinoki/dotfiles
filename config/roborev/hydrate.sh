@@ -18,6 +18,7 @@ fi
 ROBOREV_REPOS="${ROBOREV_REPOS:-}"
 ROBOREV_CI_ENABLED="@ciEnabled@"
 ROBOREV_MAX_WORKERS="@maxWorkers@"
+ROBOREV_PANEL_MEMBERS="@panelMembers@"
 if [ -z "$ROBOREV_REPOS" ] && [ -n "${ROBOREV_CI_REPOS:-}" ]; then
   ROBOREV_REPOS="$ROBOREV_CI_REPOS"
   echo "Warning: ROBOREV_CI_REPOS is deprecated; rename it to ROBOREV_REPOS" >&2
@@ -59,6 +60,7 @@ mkdir -p "$CONFIG_DIR"
 @sed@ \
   -e "s/^max_workers = .*$/max_workers = ${ROBOREV_MAX_WORKERS}/" \
   -e "s/^enabled = true$/enabled = ${ROBOREV_CI_ENABLED}/" \
+  -e "s|__ROBOREV_PANEL_MEMBERS__|${ROBOREV_PANEL_MEMBERS}|g" \
   -e "s|\"__ROBOREV_REPOS__\"|${TOML_REPOS}|g" \
   "$TEMPLATE" >"$CONFIG"
 chmod 600 "$CONFIG"

@@ -13,6 +13,11 @@ let
         # Kamino7 is the dedicated CI runner: eight review workers leave CPU and memory
         # headroom on its 12-vCPU, 47-GiB VPS. Other hosts keep two local workers.
         maxWorkers = if inputs.host.isKamino && inputs.host.nodeName == "kamino7" then "8" else "2";
+        panelMembers =
+          if inputs.host.isKamino && inputs.host.nodeName == "kamino7" then
+            "['opencode', 'pi-unionalpha', 'pi']"
+          else
+            "['opencode', 'droid', 'pi-unionalpha', 'pi']";
         sed = "${pkgs.gnused}/bin/sed";
         template = "${./config.template.toml}";
       };

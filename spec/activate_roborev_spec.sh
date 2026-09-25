@@ -62,6 +62,11 @@ When run grep -F 'maxWorkers = if inputs.host.isKamino && inputs.host.nodeName =
 The output should include 'maxWorkers = if inputs.host.isKamino && inputs.host.nodeName == "kamino7" then "8" else "2";'
 End
 
+It 'keeps the unauthenticated Droid out of the kamino7 CI panel'
+When run grep -F "['opencode', 'pi-unionalpha', 'pi']" "$PWD/config/roborev/default.nix"
+The output should include "['opencode', 'pi-unionalpha', 'pi']"
+End
+
 It 'runs roborev daemon run'
 When run bash -c "grep 'start.sh' '$PWD/home-manager/services/roborev/default.nix'"
 The output should include 'start.sh'
