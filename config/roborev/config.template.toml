@@ -34,7 +34,7 @@ allow_failure = true
 
 [review.panels.full]
 # Droid is useful when available, but its Kyber launcher is currently flaky.
-members = __ROBOREV_PANEL_MEMBERS__
+members = ['opencode', 'droid', 'pi-unionalpha', 'pi']
 synthesis_agent = 'opencode'
 
 [ci]

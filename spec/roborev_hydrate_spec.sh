@@ -81,9 +81,6 @@ enabled = true
 poll_interval = "5m"
 repos = ["__ROBOREV_REPOS__"]
 
-[review.panels.full]
-members = __ROBOREV_PANEL_MEMBERS__
-
 [agent_hook]
 turn_threshold = 0
 commit_threshold = 0
@@ -104,9 +101,7 @@ BASH
   sed \
     -e 's|@sed@|sed|g' \
     -e 's|@template@|'"$TEMP_HOME"'/template.toml|g' \
-    -e 's|@ciEnabled@|true|g' \
     -e 's|@maxWorkers@|2|g' \
-    -e "s|@panelMembers@|['opencode', 'pi-unionalpha', 'pi']|g" \
     "$SCRIPT" >"$PREPROCESSED_SCRIPT"
   chmod +x "$PREPROCESSED_SCRIPT"
 
@@ -114,9 +109,7 @@ BASH
   sed \
     -e 's|@sed@|sed|g' \
     -e 's|@template@|'"$TEMP_HOME"'/template.toml|g' \
-    -e 's|@ciEnabled@|false|g' \
     -e 's|@maxWorkers@|2|g' \
-    -e "s|@panelMembers@|['opencode', 'droid', 'pi-unionalpha', 'pi']|g" \
     "$SCRIPT" >"$PREPROCESSED_DESKTOP_SCRIPT"
   chmod +x "$PREPROCESSED_DESKTOP_SCRIPT"
 }
@@ -144,18 +137,10 @@ The status should be success
 The output should include 'max_workers = 2'
 End
 
-It 'uses only working panel members on the CI runner'
-When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/.roborev/config.toml"'
-The status should be success
-The output should include "members = ['opencode', 'pi-unionalpha', 'pi']"
-The output should not include '__ROBOREV_PANEL_MEMBERS__'
-End
-
 It 'hydrates the desktop worker limit'
 When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_DESKTOP_SCRIPT"'" >/dev/null 2>&1; cat "'"$TEMP_HOME"'/.roborev/config.toml"'
 The status should be success
 The output should include 'max_workers = 2'
-The output should include "members = ['opencode', 'droid', 'pi-unionalpha', 'pi']"
 End
 
 It 'hydrates the review trigger without overriding RoboRev instructions'
