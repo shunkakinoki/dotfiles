@@ -99,6 +99,15 @@ t3-connect)
       echo "Warning: could not install the T3 background service." >&2
   fi
 
+  if [ ! -f "$base/userdata/secrets/cloud-cli-oauth-token.bin" ] &&
+    [ "${KAMINO_T3_CONNECT_DEFER:-}" = 1 ]; then
+    systemctl --user daemon-reload || true
+    systemctl --user enable --now t3code.service || true
+    systemctl --user restart t3code.service || true
+    echo "T3 Connect authorization deferred; run t3 connect link --headless ${link_flags[*]} as root in an interactive shell." >&2
+    exit 0
+  fi
+
   if [ -f "$base/userdata/secrets/cloud-cli-oauth-token.bin" ]; then
     "$t3_bin" connect link ${link_flags[@]+"${link_flags[@]}"}
   else

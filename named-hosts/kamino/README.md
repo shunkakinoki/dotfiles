@@ -123,10 +123,11 @@ installs or repairs the T3 background service, then requests a publish-only
 link by default. Publish-only workers are reached over Tailscale and get no
 relay-managed Cloudflare tunnel.
 
-The first activation on a machine without a stored credential adds `--headless`,
-so the OAuth device-flow URL is printed in the switch output and waits for
-approval. Approve it once per machine. Later switches reuse the stored
-credential:
+The piped curl installer finishes the first build and switch without waiting
+for OAuth approval. It installs the T3 service and prints the follow-up link
+command. Run that command as root in an interactive shell to approve the
+device flow once per machine. An interactive `make nix-switch` also requests
+approval when no credential exists. Later switches reuse the stored credential:
 
 ```sh
 t3 connect link --headless --publish-only   # first run, interactive approval
