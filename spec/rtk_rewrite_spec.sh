@@ -107,6 +107,20 @@ When run run_hook
 The status should be success
 The output should eq ''
 End
+
+It 'skips --help so filters do not hide flags'
+Data '{"tool_input": {"command": "gh pr edit --help"}}'
+When run run_hook
+The status should be success
+The output should eq ''
+End
+
+It 'skips help subcommands'
+Data '{"tool_input": {"command": "gh help pr edit"}}'
+When run run_hook
+The status should be success
+The output should eq ''
+End
 End
 
 Describe 'rewrites'
