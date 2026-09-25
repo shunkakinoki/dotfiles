@@ -1281,7 +1281,7 @@ launchctl-tmux-session-logger: ## Restart tmux-session-logger launchd agent.
 ##@ Systemd Services (Linux)
 
 .PHONY: systemctl
-systemctl: systemctl-docker systemctl-cliproxyapi systemctl-cliproxyapi-backup systemctl-cpa-manager-plus systemctl-crabbox systemctl-code-syncer systemctl-docker-postgres systemctl-dolt systemctl-dotfiles-updater systemctl-hermes systemctl-make-updater systemctl-neverssl-keepalive systemctl-noctalia-shell systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-roborev systemctl-t3-connect systemctl-tmux-session-logger ## Restart all systemd user services.
+systemctl: systemctl-docker systemctl-cliproxyapi systemctl-cpa-manager-plus systemctl-crabbox systemctl-code-syncer systemctl-docker-postgres systemctl-dolt systemctl-dotfiles-updater systemctl-hermes systemctl-make-updater systemctl-neverssl-keepalive systemctl-noctalia-shell systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-roborev systemctl-t3-connect systemctl-tmux-session-logger ## Restart all systemd user services.
 
 .PHONY: systemctl-t3-connect
 systemctl-t3-connect: t3-linger ## Restart the t3-connect timer and run it once.
@@ -1359,12 +1359,6 @@ systemctl-cliproxyapi: ## Reload cliproxyapi config in place (starts it if stopp
 	@systemctl --user daemon-reload
 	@systemctl --user reload-or-restart cliproxyapi.service || true
 	@echo "✅ cliproxyapi reloaded"
-
-.PHONY: systemctl-cliproxyapi-backup
-systemctl-cliproxyapi-backup: ## Restart cliproxyapi-backup systemd user service.
-	@echo "🔄 Restarting cliproxyapi-backup..."
-	@systemctl --user restart cliproxyapi-backup.service || true
-	@echo "✅ cliproxyapi-backup restarted"
 
 .PHONY: systemctl-cpa-manager-plus
 systemctl-cpa-manager-plus: ## Restart CPA Manager Plus systemd user service.
