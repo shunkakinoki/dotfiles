@@ -198,7 +198,9 @@ fi
 # T3 Code watches this file and reloads provider state when it changes, so an
 # activation that renders the same content must leave it alone. A switch that
 # changes nothing then writes nothing and restarts nothing.
+settings_changed=false
 if [ ! -f "$SETTINGS" ] || [ "$(<"$TEMP_SETTINGS")" != "$(<"$SETTINGS")" ]; then
+  settings_changed=true
   mv -f "$TEMP_SETTINGS" "$SETTINGS"
   chmod 600 "$SETTINGS"
 else
@@ -225,11 +227,13 @@ if [ -n "$CLIPROXY_API_KEY" ]; then
   done
 fi
 
-# T3 Code reads the instance environment when it loads, so a credential that
-# only became resolvable on this pass reaches the providers at the next restart.
-# Steady-state activations change nothing and leave running sessions be.
+# T3 Code reads the instance environment and provider config when it loads a
+# provider instance. A launchArg change (for example the root permission mode)
+# only reaches a session after the server reloads it, so a settings change has
+# to restart the unit the same way a credential change does. Steady-state
+# activations change nothing and leave running sessions be.
 if [ -n "$SYSTEMCTL_BIN" ] && [ -x "$SYSTEMCTL_BIN" ] &&
-  { [ "$purged_secret" = true ] || [ "$secrets_changed" = true ]; }; then
+  { [ "$purged_secret" = true ] || [ "$secrets_changed" = true ] || [ "$settings_changed" = true ]; }; then
   "$SYSTEMCTL_BIN" --user restart t3code.service >/dev/null 2>&1 ||
     echo "Warning: could not restart t3code.service to pick up the CLIProxy credential" >&2
 fi
