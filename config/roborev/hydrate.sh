@@ -23,7 +23,7 @@ if [ -z "$ROBOREV_REPOS" ] && [ -n "${ROBOREV_CI_REPOS:-}" ]; then
   echo "Warning: ROBOREV_CI_REPOS is deprecated; rename it to ROBOREV_REPOS" >&2
 fi
 
-if [ -z "$ROBOREV_REPOS" ]; then
+if [ -z "$ROBOREV_REPOS" ] && [ "$ROBOREV_CI_ENABLED" = "true" ]; then
   echo "Warning: ROBOREV_REPOS not set, skipping roborev hydration" >&2
   exit 0
 fi
@@ -49,9 +49,16 @@ for value in "${REPOS[@]}"; do
   VALID_REPOS+=("$repo")
 done
 
-if [ "${#VALID_REPOS[@]}" -eq 0 ]; then
+if [ "${#VALID_REPOS[@]}" -eq 0 ] && [ "$ROBOREV_CI_ENABLED" = "true" ]; then
   echo "Warning: ROBOREV_REPOS contains no valid repositories, skipping roborev hydration" >&2
   exit 0
+fi
+
+# A running daemon may retain its poller after a config reload. Keep its repo
+# list empty on hosts that only process local reviews.
+CI_TOML_REPOS=""
+if [ "$ROBOREV_CI_ENABLED" = "true" ]; then
+  CI_TOML_REPOS="$TOML_REPOS"
 fi
 
 mkdir -p "$CONFIG_DIR"
@@ -59,7 +66,7 @@ mkdir -p "$CONFIG_DIR"
 @sed@ \
   -e "s/^max_workers = .*$/max_workers = ${ROBOREV_MAX_WORKERS}/" \
   -e "s/^enabled = true$/enabled = ${ROBOREV_CI_ENABLED}/" \
-  -e "s|\"__ROBOREV_REPOS__\"|${TOML_REPOS}|g" \
+  -e "s|\"__ROBOREV_REPOS__\"|${CI_TOML_REPOS}|g" \
   "$TEMPLATE" >"$CONFIG"
 chmod 600 "$CONFIG"
 
