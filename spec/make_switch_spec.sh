@@ -20,9 +20,16 @@ The output should include 'DOTAGENTS_SKIP_SYNC=1'
 End
 
 It 'serializes Linux switches with the dotfiles-updater lock'
-When run bash -c "grep -A8 '^switch:' '$MAKEFILE'"
+When run bash -c "sed -n '/^switch:/,/^else\$/p' '$MAKEFILE'"
+The output should include '/run/user/$$(id -u)'
 The output should include 'dotfiles-switch.lock'
 The output should include 'flock "$$lock" $(MAKE) apply-switch'
+End
+
+It 'runs Darwin switches without the lock'
+When run bash -c "sed -n '/^switch:/,/^endif\$/p' '$MAKEFILE' | sed -n '/^else\$/,/^endif\$/p'"
+The output should include '$(MAKE) apply-switch'
+The output should not include 'flock'
 End
 
 It 'keeps the switch steps behind the lock'

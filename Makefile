@@ -249,12 +249,18 @@ nvim-plugins-install: ## Download/build missing Neovim native plugin binaries (f
 		echo "fff.nvim plugin directory not found, skipping"; \
 	fi
 
-# The Linux dotfiles-updater timer takes the same lock. Overlapping Home Manager
-# activations drop every unit file mid-switch, so systemctl calls here fail.
+# The Linux dotfiles-updater timer takes the same lock in the systemd user runtime
+# directory (%t). Overlapping Home Manager activations drop every unit file
+# mid-switch, so systemctl calls here fail. Without a runtime directory there is
+# no user manager to run the updater, so no lock is needed.
 .PHONY: switch
 switch: ## Apply Nix config, refresh services/plugins, and refresh agent daemons.
 ifeq ($(OS),Linux)
-	@lock="$${XDG_RUNTIME_DIR:-/tmp}/dotfiles-switch.lock"; \
+	@runtime="$${XDG_RUNTIME_DIR:-/run/user/$$(id -u)}"; \
+	if [ ! -d "$$runtime" ]; then \
+		exec $(MAKE) apply-switch; \
+	fi; \
+	lock="$$runtime/dotfiles-switch.lock"; \
 	if ! flock -n "$$lock" true; then \
 		echo "Waiting for the running dotfiles update to release $$lock..."; \
 	fi; \
