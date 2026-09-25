@@ -56,6 +56,12 @@ case "$CMD" in
   *'<<'*) _rtk_audit_log "skip:heredoc" "$CMD"; exit 0 ;;
 esac
 
+# RTK output filters summarize by subcommand (e.g. `gh pr edit` -> "ok edited")
+# even for help text, which hides flags from capability checks.
+case " $CMD " in
+  *' --help '*|*' -h '*|*' help '*) _rtk_audit_log "skip:help" "$CMD"; exit 0 ;;
+esac
+
 # Rewrite via rtk — single source of truth for all command mappings and permission checks.
 # Use "|| EXIT_CODE=$?" to capture non-zero exit codes without triggering set -e.
 EXIT_CODE=0
