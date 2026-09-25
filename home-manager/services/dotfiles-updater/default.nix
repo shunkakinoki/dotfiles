@@ -62,7 +62,8 @@ in
       ++ lib.optional (canonicalHost != null) "HOST=${canonicalHost}";
       Nice = 19;
       IOSchedulingPriority = 7;
-      ExecStart = "${./update.sh}";
+      # %t matches the XDG_RUNTIME_DIR lock that `make switch` holds; skip this run instead of racing it.
+      ExecStart = "${pkgs.util-linux}/bin/flock -n -E 0 %t/dotfiles-switch.lock ${./update.sh}";
     };
   };
 

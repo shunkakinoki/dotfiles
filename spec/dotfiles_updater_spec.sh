@@ -35,6 +35,13 @@ The output should include 'inputs.host.isMatic'
 End
 End
 
+Describe 'switch serialization'
+It 'skips the run while make switch holds the shared lock'
+When run bash -c "grep 'ExecStart' '$MODULE'"
+The output should include 'flock -n -E 0 %t/dotfiles-switch.lock'
+End
+End
+
 Describe 'branch detection'
 It 'checks current branch name'
 When run bash -c "grep 'rev-parse --abbrev-ref HEAD' '$SCRIPT'"
