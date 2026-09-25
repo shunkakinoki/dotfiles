@@ -27,8 +27,8 @@ When run bash -c "grep -- '! -L' '$SCRIPT'"
 The output should include '! -L'
 End
 
-It 'removes stale Home Manager generation links'
-When run bash -c "grep -F 'home-manager-generation' '$SCRIPT' >/dev/null && grep -F 'home-manager-files' '$SCRIPT' >/dev/null && grep -F 'rm -f --' '$SCRIPT' >/dev/null"
+It 'repoints stale Home Manager generation links'
+When run bash -c "grep -F 'home-manager-generation' '$SCRIPT' >/dev/null && grep -F 'home-manager-files' '$SCRIPT' >/dev/null && grep -F 'ln -sfn --' '$SCRIPT' >/dev/null"
 The status should be success
 End
 

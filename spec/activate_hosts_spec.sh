@@ -71,8 +71,8 @@ When run bash -c "grep 'codex' '$SCRIPT'"
 The output should include 'hm-backup'
 End
 
-It 'removes stale Home Manager generation links'
-When run bash -c "grep -F 'home-manager-generation' '$SCRIPT' >/dev/null && grep -F 'home-manager-files' '$SCRIPT' >/dev/null && grep -F 'rm -f --' '$SCRIPT' >/dev/null"
+It 'repoints stale Home Manager generation links'
+When run bash -c "grep -F 'home-manager-generation' '$SCRIPT' >/dev/null && grep -F 'home-manager-files' '$SCRIPT' >/dev/null && grep -F 'ln -sfn --' '$SCRIPT' >/dev/null"
 The status should be success
 End
 
@@ -97,6 +97,14 @@ It 'backs up an unmanaged file that differs from the managed one'
 printf 'written by atuin\n' >"$TEMP_DIR/home/.config/atuin/config.toml"
 When run bash -c 'HOME="$1/home" bash "$2" "$1/files" && [ ! -e "$1/home/.config/atuin/config.toml" ] && cat "$1/home/.config/atuin/config.toml.hm-backup"' _ "$TEMP_DIR" "$SCRIPT"
 The output should include 'written by atuin'
+End
+
+It 'repoints a stale Home Manager link at the new generation without a gap'
+mkdir -p "$TEMP_DIR/home/.ssh" "$TEMP_DIR/files/.ssh"
+printf 'managed\n' >"$TEMP_DIR/files/.ssh/config"
+ln -s /nix/store/old-home-manager-files/.ssh/config "$TEMP_DIR/home/.ssh/config"
+When run bash -c 'HOME="$1/home" bash "$2" "$1/files" >/dev/null && [ "$(readlink "$1/home/.ssh/config")" = "$(readlink -f "$1/files")/.ssh/config" ]' _ "$TEMP_DIR" "$SCRIPT"
+The status should be success
 End
 
 It 'leaves an identical unmanaged file in place'
