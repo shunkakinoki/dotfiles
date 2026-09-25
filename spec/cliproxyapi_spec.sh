@@ -569,6 +569,11 @@ The output should include 'systemctl --user reload-or-restart cliproxyapi.servic
 The output should not include 'systemctl --user restart cliproxyapi.service'
 The status should be success
 End
+
+It 'leaves the hourly backup to its timer during make switch'
+When run bash -c "test -r '$PWD/Makefile' && ! grep -q 'cliproxyapi-backup' '$PWD/Makefile'"
+The status should be success
+End
 End
 
 Describe 'render mode'
