@@ -614,16 +614,6 @@ The output should not include 'PRIVATE_LINEAR_PAYLOAD'
 The file "$CHECKPOINT_FILE" should not be exist
 End
 
-It 'rejects a pull whose stored dependency read failed'
-linear_result='{"success":true,"stats":{"errors":0},"warnings":["Failed to read stored dependencies: PRIVATE_LINEAR_PAYLOAD"]}'
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_RESULT="$linear_result" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
-The status should equal 65
-The output should include 'operation=pull shape=object success=true stats=object errors=0 warnings=1 error=none families=dependency-read'
-The output should not include 'unresolved dependency relation'
-The output should not include 'PRIVATE_LINEAR_PAYLOAD'
-The file "$CHECKPOINT_FILE" should not be exist
-End
-
 It 'rejects a push with dependency warnings'
 closed_json='[{"id":"df-closed","status":"closed","closed_at":"2099-01-01T00:00:00Z","updated_at":"2099-01-01T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/closed"}]'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=dependency-warnings-on-push FAKE_LIST_JSON="$closed_json" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"

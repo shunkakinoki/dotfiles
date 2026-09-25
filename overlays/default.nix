@@ -241,17 +241,6 @@
   inputs.noctalia-shell.overlays.default
   inputs.beads.overlays.default
   (_: prev: {
-    # A Linear pull re-adds every relation it reads, and bd writes each edge it
-    # already stores through a full transaction, journal event and Dolt commit.
-    # With roughly 1,900 relations that phase alone outruns the hourly pull's
-    # timeout on the shared server. The patch skips re-adds that would leave an
-    # edge unchanged; it is cut against the locked beads rev, so a beads input
-    # bump must re-cut or drop it.
-    beads-unwrapped = prev.beads-unwrapped.overrideAttrs (old: {
-      patches = (old.patches or [ ]) ++ [ ./patches/beads-skip-unchanged-dependencies.patch ];
-    });
-  })
-  (_: prev: {
     ascii-box-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "ascii-box-cli";
       version = "0.1.228";
