@@ -53,7 +53,6 @@ let
     # toString of a flake-source path carries no store context, so the copy
     # inside the flake checkout is garbage-collected under the running unit.
     linearControlStateJq = "${./linear-control-state.jq}";
-    machineClaimTriggerSql = "${./machine-claim-trigger.sql}";
     inherit linearWorkspace linearTeamId;
     utilLinux = pkgs.util-linux;
     inherit (pkgs)

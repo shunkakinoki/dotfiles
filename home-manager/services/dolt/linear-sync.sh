@@ -505,15 +505,15 @@ restore_linear_last_sync() {
   run_dolt_sql "USE \`$linear_database\`; REPLACE INTO local_metadata (\`key\`, value) VALUES ('linear.last_sync', '$linear_last_sync_before_pull');"
 }
 
-# A cursor-free pull overwrites local assignment, workflow state, and labels.
-# The pre-pull snapshot protects existing machine claims; labels keep the
-# tracker's value. The durable journal then folds every non-reconciler mutation
-# made during the pull over that snapshot in commit order, so a concurrent
-# claim, release, or completion wins. Each repair compares both fields
-# it observed after the pull; a newer claim makes the guarded write refuse
-# instead of transferring ownership from a live worker. Every caller runs this
-# as a tested command, where errexit does not apply, so each step checks its
-# own status.
+# A cursor-free pull overwrites local assignment, workflow state, and labels
+# with the tracker's values, including clearing a machine claim's assignee:
+# claim custody lives in the Bead's notes, not its assignee. The durable
+# journal folds every non-reconciler mutation made during the pull in commit
+# order, so a concurrent claim, release, or completion wins over what the pull
+# wrote. Each repair compares both fields it observed after the pull; a newer
+# claim makes the guarded write refuse instead of transferring ownership from a
+# live worker. Every caller runs this as a tested command, where errexit does
+# not apply, so each step checks its own status.
 repair_control_state_after_pull() {
   local linear_journal_file="$sync_state_dir/journal-$repo_slug.jsonl"
   local linear_current_file="$sync_state_dir/current-$repo_slug.json"
@@ -527,11 +527,6 @@ repair_control_state_after_pull() {
   local pulled_status
   local pulled_assignee
   local restore_args
-  local wedged_records
-  local wedged_id
-  local claim_lane
-  local reopened
-  local restored_claims
 
   if ! all_issues="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0)"; then
     log "Unable to list Beads after the Linear pull"
@@ -546,8 +541,8 @@ repair_control_state_after_pull() {
       --arg actor "$BEADS_ACTOR" \
       --slurpfile journal "$linear_journal_file" \
       --slurpfile current "$linear_current_file" \
-      -f @linearControlStateJq@ <<<"$issues_before_pull")"; then
-    log "Unable to fold the Beads events journal over the pre-pull snapshot"
+      -n -f @linearControlStateJq@)"; then
+    log "Unable to fold the Beads events journal over the pulled state"
     return 1
   fi
   @coreutils@/bin/rm -f "$linear_journal_file" "$linear_current_file"
@@ -582,52 +577,6 @@ repair_control_state_after_pull() {
       fi
     done <<<"$control_state_repairs"
     log "Restored $restored_control_state control state record(s); skipped $restore_failures superseded or refused repair(s)"
-  fi
-
-  # A lane claim made while the pull was in flight is not in the pre-pull
-  # snapshot, so the pull leaves it in_progress and unassigned. The claim's
-  # guarded update also appends a `lane-claim:<lane>` note marker, which the
-  # pull never touches, so an unreleased marker names the lane to restore.
-  # Records without a marker are the older invariant repair for malformed
-  # records that predate journal coverage; those reopen. Both guarded updates
-  # skip any Bead a worker has since re-claimed.
-  if ! wedged_records="$(@jq@/bin/jq -r '
-    def claim_lane:
-      (.notes // "") as $notes
-      | ($notes | rindex("lane-claim:")) as $claim
-      | ($notes | rindex("lane-release:")) as $release
-      | if $claim == null or ($release != null and $release > $claim) then ""
-        else ($notes[$claim + 11:] | split("\n")[0] | split(" ")[0]) end
-      | if test("^[a-z][a-z0-9_-]{0,31}$") then . else "" end;
-    (if type == "object" and has("issues") then .issues else . end)
-    | .[]
-    | select(.status == "in_progress" and (.assignee // "") == "")
-    | [.id, claim_lane]
-    | @tsv
-  ' <<<"$all_issues")"; then
-    log "Unable to select unassigned in_progress Beads after the Linear pull"
-    return 1
-  fi
-  if [ -n "$wedged_records" ]; then
-    reopened=0
-    restored_claims=0
-    while IFS=$'\t' read -r wedged_id claim_lane; do
-      if [ -n "$claim_lane" ]; then
-        if "$bd_cli" -C "$repo_dir" update "$wedged_id" --if-status=in_progress --if-assignee= --assignee="$claim_lane" >/dev/null 2>&1; then
-          restored_claims=$((restored_claims + 1))
-          repaired_ids="${repaired_ids:+$repaired_ids,}$wedged_id"
-        fi
-      elif "$bd_cli" -C "$repo_dir" update "$wedged_id" --if-status=in_progress --if-assignee= --status=open >/dev/null 2>&1; then
-        reopened=$((reopened + 1))
-        repaired_ids="${repaired_ids:+$repaired_ids,}$wedged_id"
-      fi
-    done <<<"$wedged_records"
-    if [ "$restored_claims" -gt 0 ]; then
-      log "Restored $restored_claims lane claim(s) made while the pull was in flight"
-    fi
-    if [ "$reopened" -gt 0 ]; then
-      log "Reopened $reopened unassigned in_progress Bead(s) the pull left behind"
-    fi
   fi
 }
 
@@ -979,21 +928,6 @@ if [ -n "$pending_completion_ids" ]; then
   if [ "$unresolved_pending_completion" -eq 1 ]; then
     exit 65
   fi
-fi
-
-# The pull writes Linear's assignee, which is empty for a machine claim, over
-# every linked Bead. The repair below runs only after the whole pull, and a
-# fleet wake in that window releases any lane it finds unassigned, so the
-# server keeps a live claim's assignee through each write instead. The trigger
-# mirrors active_machine_claim in linear-control-state.jq and holds only writes
-# that stay in progress, so unclaim and lease reclaim, which reopen, still
-# clear it. Dolt stores the statement verbatim; reinstall only on a change so
-# an unchanged trigger adds no schema history.
-machine_claim_trigger="$(<"@machineClaimTriggerSql@")"
-installed_machine_claim_trigger="$(query_dolt_json "USE \`$linear_database\`; SELECT fragment FROM dolt_schemas WHERE type = 'trigger' AND name = 'beads_keep_machine_claim';" | @jq@/bin/jq -r '.rows[0].fragment // ""')"
-if [ "$installed_machine_claim_trigger" != "$machine_claim_trigger" ]; then
-  log "Installing the machine-claim assignee guard"
-  run_dolt_sql "USE \`$linear_database\`; DROP TRIGGER IF EXISTS beads_keep_machine_claim; $machine_claim_trigger;"
 fi
 
 # Beads' incremental pull currently performs one dolt_history_issues query for
