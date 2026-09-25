@@ -947,6 +947,8 @@ if [ -s "$journal_checkpoint_file" ]; then
   previous_journal_head="$(<"$journal_checkpoint_file")"
   if [[ $previous_journal_head =~ ^[0-9]+$ ]] && [ "$previous_journal_head" -le "$linear_journal_head" ]; then
     linear_fold_since="$previous_journal_head"
+  else
+    log "Ignoring a recorded journal cursor the events journal does not reach; folding from the current head"
   fi
 fi
 snapshot_taken_at="$(@coreutils@/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')"
@@ -1211,9 +1213,9 @@ fi
 
 "$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): sync Linear" >/dev/null 2>&1
 
-printf '%s\n' "$cycle_started" >"$sync_checkpoint_file.tmp"
-@coreutils@/bin/mv -f "$sync_checkpoint_file.tmp" "$sync_checkpoint_file"
 printf '%s\n' "$push_journal_head" >"$journal_checkpoint_file.tmp"
 @coreutils@/bin/mv -f "$journal_checkpoint_file.tmp" "$journal_checkpoint_file"
+printf '%s\n' "$cycle_started" >"$sync_checkpoint_file.tmp"
+@coreutils@/bin/mv -f "$sync_checkpoint_file.tmp" "$sync_checkpoint_file"
 
 "$bd_cli" -C "$repo_dir" linear status --json

@@ -923,6 +923,7 @@ mkdir -p "$STATE_HOME/beads-linear-sync"
 printf '50\n' >"$STATE_HOME/beads-linear-sync/journal-head-$repo_slug"
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_JOURNAL_HEAD=9 FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$issues" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
+The output should include 'Ignoring a recorded journal cursor the events journal does not reach'
 The output should include 'Pushing changed active Beads batch 1/1'
 The contents of file "$COMMAND_LOG" should include 'events tail --since 9'
 The contents of file "$STATE_HOME/beads-linear-sync/journal-head-$repo_slug" should equal '9'
