@@ -310,6 +310,17 @@ run_linear() {
   if [ "$status" -ne 0 ]; then
     return "$status"
   fi
+  # A failed external_ref write-back follows a successful Linear create, so
+  # the Bead is unlinked while its issue exists. It is not scoped to its batch
+  # like a rejection: later batches must not publish until the next run has
+  # adopted that issue.
+  if @jq@/bin/jq -e -s '
+    length == 1 and (.[0] | type == "object") and
+    any(.[0].warnings[]?, .[0].error; type == "string" and startswith("Failed to update external_ref "))
+  ' <<<"$output" >/dev/null 2>&1; then
+    log "Linear created an issue whose Beads external_ref write-back failed"
+    return 76
+  fi
   return 65
 }
 
@@ -469,6 +480,96 @@ drop_skipped_lines() {
     }
     NF && !($1 in skipped)
   '
+}
+
+# bd's batch create embeds a deterministic idempotency marker in every new
+# Linear issue but never searches for it before creating. When the create
+# succeeds and the external_ref write-back fails, the Bead stays unlinked and
+# the next push creates a second issue. Link each unlinked Bead to the issue
+# that already carries its marker so the push updates it instead.
+adopted_issue_count=0
+
+adopt_linear_issues() {
+  local issues_json="$1"
+  local issue_ids="$2"
+  local candidates
+  local candidate_id
+  local candidate_creator
+  local candidate_nanos
+  local marker
+  local lookup_query
+  local lookup_result
+  local adopted_ref
+
+  adopted_issue_count=0
+  if [ -z "$issue_ids" ]; then
+    return 0
+  fi
+  # Upstream hashes the decimal UnixNano of created_at. Build that string
+  # from the RFC3339 text because jq's float arithmetic loses nanoseconds.
+  if ! candidates="$(@jq@/bin/jq -r --arg ids "$issue_ids" '
+    def unix_nanos:
+      capture("^(?<base>[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2})(\\.(?<frac>[0-9]{1,9}))?(?<zone>Z|[+-][0-9]{2}:[0-9]{2})$")
+      | ((.base + "Z") | fromdateiso8601) as $local
+      | (if .zone == "Z" then 0
+         else ((.zone[1:3] | tonumber) * 3600 + (.zone[4:6] | tonumber) * 60)
+           * (if .zone[0:1] == "-" then -1 else 1 end)
+         end) as $offset
+      | "\($local - $offset)\((.frac // "") + "000000000" | .[0:9])";
+    ($ids | split(",") | map(select(length > 0) | {key: ., value: true}) | from_entries) as $wanted
+    | (if type == "object" and has("issues") then .issues else . end)
+    | .[]
+    | select($wanted[.id] != null and ((.external_ref // "") | contains("linear.app") | not))
+    | "\(.id)\u001f\(.created_by // "")\u001f\(.created_at | unix_nanos)"
+  ' <<<"$issues_json")"; then
+    log "Unable to derive Linear idempotency markers for unlinked Beads"
+    return 65
+  fi
+
+  while IFS=$'\x1f' read -r candidate_id candidate_creator candidate_nanos; do
+    if [ -z "$candidate_id" ]; then
+      continue
+    fi
+    marker="$(printf '%s%s%s' "$candidate_id" "$candidate_creator" "$candidate_nanos" | @coreutils@/bin/sha256sum)"
+    marker="<!-- bd-idempotency: ${marker:0:12} -->"
+    lookup_query="$(@jq@/bin/jq -nc --arg team "$LINEAR_TEAM_ID" --arg marker "$marker" '{
+      query: "query AdoptIssue($filter: IssueFilter!) { issues(filter: $filter, first: 50) { nodes { url createdAt } } }",
+      variables: {filter: {team: {id: {eq: $team}}, description: {contains: $marker}}}
+    }')"
+    if ! lookup_result="$(@coreutils@/bin/timeout 30 @curl@/bin/curl \
+      --silent \
+      --show-error \
+      --fail-with-body \
+      --config <(
+        printf 'url = "https://api.linear.app/graphql"\n'
+        printf 'header = "Authorization: %s"\n' "$LINEAR_API_KEY"
+        printf 'header = "Content-Type: application/json"\n'
+      ) \
+      --data-binary @- <<<"$lookup_query")"; then
+      log "Unable to look up existing Linear issues for unlinked Beads"
+      return 69
+    fi
+    if ! adopted_ref="$(@jq@/bin/jq -er '
+      if ((.errors // []) | length) == 0 and (.data.issues.nodes | type) == "array" then
+        .data.issues.nodes | sort_by(.createdAt) | .[0].url // ""
+      else
+        error
+      end
+    ' <<<"$lookup_result" 2>/dev/null)"; then
+      log "Linear issue lookup for unlinked Beads returned no result"
+      return 69
+    fi
+    if [ -z "$adopted_ref" ]; then
+      continue
+    fi
+    "$bd_cli" -C "$repo_dir" update "$candidate_id" --external-ref "$adopted_ref" >/dev/null
+    adopted_issue_count=$((adopted_issue_count + 1))
+  done <<<"$candidates"
+
+  if [ "$adopted_issue_count" -gt 0 ]; then
+    "$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): adopt existing Linear issues" >/dev/null 2>&1
+    log "Adopted $adopted_issue_count existing Linear issue(s) for unlinked Beads"
+  fi
 }
 
 run_dolt_sql() {
@@ -728,6 +829,7 @@ if [ "$operation" = "--complete" ]; then
   # inbound pull ever reviving the issue.
   "$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): record accepted completion" >/dev/null 2>&1
 
+  adopt_linear_issues "$completion_issue" "$completion_bead_id" || exit $?
   if push_issue_batches "$completion_bead_id" "accepted"; then
     :
   else
@@ -829,6 +931,27 @@ if [[ ! $linear_journal_head =~ ^[0-9]+$ ]]; then
 fi
 snapshot_taken_at="$(@coreutils@/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')"
 issues_before_pull="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0)"
+# Adopt before the pull, which does not match an unlinked Linear issue to its
+# Bead. Deferred Beads are never pushed, and a closed Bead is
+# pushed unlinked only while its completion is pending.
+unlinked_ids="$(@jq@/bin/jq -r '
+  (if type == "object" and has("issues") then .issues else . end)
+  | [
+    .[]
+    | select((.external_ref // "") | contains("linear.app") | not)
+    | select(
+        (.status != "closed" and .status != "deferred")
+        or (.metadata.linear_completion_pending // false) == true
+        or (.metadata.linear_completion_pending // false) == "true"
+      )
+    | .id
+  ]
+  | join(",")
+' <<<"$issues_before_pull")"
+adopt_linear_issues "$issues_before_pull" "$unlinked_ids" || exit $?
+if [ "$adopted_issue_count" -gt 0 ]; then
+  issues_before_pull="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0)"
+fi
 pushed_progress_input=/dev/null
 if [ -s "$push_progress_file" ]; then
   pushed_progress_input="$push_progress_file"
