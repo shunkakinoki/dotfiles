@@ -116,6 +116,17 @@ fi
 # overrides it.
 CLIPROXY_BASE_URL="${CLIPROXY_BASE_URL:-https://cliproxy.shunkakinoki.com}"
 
+# T3 maps its "full-access" runtime mode to Claude's --dangerously-skip-permissions,
+# which the CLI refuses under uid 0; every Kamino worker runs as root, so the
+# provider there would fail every turn before its first message. Root hosts fall
+# back to the `auto` mode the orchestration lanes already use; every other host
+# keeps T3's unrestricted default.
+if [ "$(id -u)" = "0" ]; then
+  CLAUDE_PERMISSION_ARGS="--permission-mode auto"
+else
+  CLAUDE_PERMISSION_ARGS=""
+fi
+
 # The Codex instance uses its own CODEX_HOME so its provider config and model
 # list stay independent of the login-backed ~/.codex home.
 if [ -n "$CODEX_HOME_CONFIG" ] && [ -f "$CODEX_HOME_CONFIG" ]; then
@@ -153,7 +164,7 @@ fi
 
 if [ -f "$SETTINGS" ]; then
   # shellcheck disable=SC2016
-  "$JQ_BIN" --slurpfile managed "$MANAGED_SETTINGS" --arg key "$CLIPROXY_API_KEY" --arg base "$CLIPROXY_BASE_URL" '
+  "$JQ_BIN" --slurpfile managed "$MANAGED_SETTINGS" --arg key "$CLIPROXY_API_KEY" --arg base "$CLIPROXY_BASE_URL" --arg perm "$CLAUDE_PERMISSION_ARGS" '
     ($managed[0]) as $managed_settings
     | .providers = ((.providers // {}) * ($managed_settings.providers // {}))
     | .providerInstances =
@@ -163,19 +174,21 @@ if [ -f "$SETTINGS" ]; then
                 if type == "string" then
                   if . == "__CLIPROXY_API_KEY__" then $key
                   elif . == "__CLIPROXY_BASE_URL__" then $base
+                  elif . == "__CLAUDE_PERMISSION_ARGS__" then $perm
                   else . end
                 else . end
               )))
   ' "$SETTINGS" >"$TEMP_SETTINGS"
 else
   # shellcheck disable=SC2016
-  "$JQ_BIN" --slurpfile managed "$MANAGED_SETTINGS" --arg key "$CLIPROXY_API_KEY" --arg base "$CLIPROXY_BASE_URL" '
+  "$JQ_BIN" --slurpfile managed "$MANAGED_SETTINGS" --arg key "$CLIPROXY_API_KEY" --arg base "$CLIPROXY_BASE_URL" --arg perm "$CLAUDE_PERMISSION_ARGS" '
     ($managed[0]) as $managed_settings
     | $managed_settings
     | .providerInstances |= walk(
         if type == "string" then
           if . == "__CLIPROXY_API_KEY__" then $key
           elif . == "__CLIPROXY_BASE_URL__" then $base
+          elif . == "__CLAUDE_PERMISSION_ARGS__" then $perm
           else . end
         else . end
       )

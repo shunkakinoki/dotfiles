@@ -29,7 +29,7 @@
       ],
       "config": {
         "homePath": "~/.claude-cliproxy",
-        "launchArgs": "",
+        "launchArgs": "__CLAUDE_PERMISSION_ARGS__",
         "autoCompactWindow": ""
       }
     },

@@ -124,6 +124,7 @@ with pkgs;
   sqlite
   tealdeer
   termshark
+  tesseract
   tig
   tmuxinator
   tokei
