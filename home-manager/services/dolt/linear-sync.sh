@@ -313,6 +313,105 @@ run_linear() {
   return 65
 }
 
+# A push that creates a Linear issue but loses the external_ref write-back
+# leaves the Bead unlinked and the next cycle would create a duplicate. bd
+# stamps every created issue with a deterministic marker built from the
+# Bead's immutable fields (bd-idempotency: sha256 of id + created_by +
+# created-at nanoseconds, truncated to 12 hex characters). Each unlinked
+# Bead about to be pushed is matched against Linear by that marker first;
+# a found issue is adopted by writing its URL back as the external_ref. A
+# Bead whose lookup or adoption write-back cannot complete is held out of
+# the push, because pushing it would create the duplicate this pass exists
+# to prevent, and the run reports failure so the lost link is retried.
+# Echoes the comma-separated ids that may be pushed; returns 65 when any
+# Bead was held back.
+adopt_unlinked_linear_issues() {
+  local candidate_ids="$1"
+  local issues_json="$2"
+  local -a candidate_array
+  local candidate_id
+  local bead_fields
+  local bead_ref
+  local bead_created_at
+  local bead_created_by
+  local created_nanos
+  local adoption_marker
+  local adoption_config
+  local adoption_query
+  local adoption_response
+  local adoption_status
+  local adoption_url
+  local safe_ids=""
+  local held=0
+
+  IFS=',' read -r -a candidate_array <<<"$candidate_ids"
+  for candidate_id in "${candidate_array[@]}"; do
+    bead_fields="$(@jq@/bin/jq -c --arg id "$candidate_id" '
+      (if type == "object" and has("issues") then .issues else . end)
+      | .[] | select(.id == $id)
+      | {
+          created_at: (.created_at // ""),
+          created_by: (.created_by // ""),
+          external_ref: (.external_ref // ""),
+        }
+    ' <<<"$issues_json" 2>/dev/null | @coreutils@/bin/head -n 1)"
+    bead_ref="$(@jq@/bin/jq -r '.external_ref // ""' <<<"$bead_fields" 2>/dev/null)"
+    if [[ $bead_ref == *linear.app* ]]; then
+      safe_ids="${safe_ids:+$safe_ids,}$candidate_id"
+      continue
+    fi
+    bead_created_at="$(@jq@/bin/jq -r '.created_at // ""' <<<"$bead_fields" 2>/dev/null)"
+    bead_created_by="$(@jq@/bin/jq -r '.created_by // ""' <<<"$bead_fields" 2>/dev/null)"
+    created_nanos="$(@coreutils@/bin/date -d "$bead_created_at" +%s%N 2>/dev/null)" || created_nanos=""
+    if [ -z "$created_nanos" ]; then
+      log "Holding an unlinked Bead out of the Linear push: its idempotency marker cannot be computed" >&2
+      held=$((held + 1))
+      continue
+    fi
+    adoption_marker="<!-- bd-idempotency: $(printf '%s%s%s' "$candidate_id" "$bead_created_by" "$created_nanos" |
+      @coreutils@/bin/sha256sum | @coreutils@/bin/cut -c1-12) -->"
+    adoption_query="$(@jq@/bin/jq -nc --arg marker "$adoption_marker" --arg team "$LINEAR_TEAM_ID" '{
+      query: "query BeadIdempotency($filter: IssueFilter!) { issues(filter: $filter, first: 1) { nodes { url } } }",
+      variables: {filter: {team: {id: {eq: $team}}, description: {contains: $marker}}}
+    }')"
+    adoption_config="$(@coreutils@/bin/mktemp)"
+    @coreutils@/bin/chmod 600 "$adoption_config"
+    printf 'header = "Authorization: %s"\n' "$LINEAR_API_KEY" >"$adoption_config"
+    adoption_response="$(@coreutils@/bin/timeout 30 @curl@/bin/curl --silent --show-error --max-time 25 \
+      --config "$adoption_config" --data-binary @- https://api.linear.app/graphql <<<"$adoption_query" 2>/dev/null)"
+    adoption_status=$?
+    @coreutils@/bin/rm -f "$adoption_config"
+    if [ "$adoption_status" -ne 0 ] ||
+      ! @jq@/bin/jq -e '(.data.issues.nodes | type) == "array"' >/dev/null <<<"$adoption_response" 2>/dev/null; then
+      log "Holding an unlinked Bead out of the Linear push: the idempotency lookup did not answer" >&2
+      held=$((held + 1))
+      continue
+    fi
+    adoption_url="$(@jq@/bin/jq -r '.data.issues.nodes[0].url // ""' <<<"$adoption_response" 2>/dev/null)"
+    if [ -z "$adoption_url" ]; then
+      safe_ids="${safe_ids:+$safe_ids,}$candidate_id"
+      continue
+    fi
+    if [[ ! $adoption_url =~ ^https://linear\.app/[^/]+/issue/ ]]; then
+      log "Holding an unlinked Bead out of the Linear push: the idempotency lookup returned an invalid reference" >&2
+      held=$((held + 1))
+      continue
+    fi
+    if "$bd_cli" -C "$repo_dir" update "$candidate_id" --external-ref "$adoption_url" >/dev/null 2>&1; then
+      log "Adopted an existing Linear issue for an unlinked Bead by idempotency marker" >&2
+      safe_ids="${safe_ids:+$safe_ids,}$candidate_id"
+    else
+      log "Holding an unlinked Bead out of the Linear push: adopting its existing Linear issue failed" >&2
+      held=$((held + 1))
+    fi
+  done
+  printf '%s' "$safe_ids"
+  if [ "$held" -eq 0 ]; then
+    return 0
+  fi
+  return 65
+}
+
 push_issue_batches() {
   local issue_ids="$1"
   local description="$2"
@@ -321,12 +420,17 @@ push_issue_batches() {
   # later runs skip those Beads instead of re-burning the API budget on them.
   local progress_entries="${3:-}"
   local progress_file="${4:-}"
+  # The Beads' listing the push is built from. Unlinked Beads are matched
+  # against Linear by idempotency marker before their batch is pushed.
+  local issues_json="${5:-}"
   local batch_size=10
   local batch_count
   local batch_ids
   local batch_number
   local batch_start
   local status
+  local adoption_result
+  local adoption_failed=0
   local rejected_status=0
   local rejected_batches=0
   local -a issue_id_array
@@ -346,11 +450,27 @@ push_issue_batches() {
     )"
     log "Pushing $description Beads batch $batch_number/$batch_count"
 
+    if ! adoption_result="$(adopt_unlinked_linear_issues "$batch_ids" "$issues_json")"; then
+      adoption_failed=1
+    fi
+    if [ "$adoption_result" != "$batch_ids" ]; then
+      adoption_failed=1
+      batch_ids="$adoption_result"
+    fi
+    if [ -z "$batch_ids" ]; then
+      continue
+    fi
+
     if run_linear push @coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" linear sync --push --issues "$batch_ids" --no-wait; then
       if [ -n "$progress_file" ] && [ -n "$progress_entries" ]; then
         printf '%s\n' "$progress_entries" |
-          @coreutils@/bin/tail -n +"$((batch_start + 1))" |
-          @coreutils@/bin/head -n "$batch_size" >>"$progress_file"
+          @gawk@/bin/awk -v pushed_ids="$batch_ids" '
+            BEGIN {
+              count = split(pushed_ids, list, ",")
+              for (i = 1; i <= count; i++) pushed[list[i]] = 1
+            }
+            $1 in pushed
+          ' >>"$progress_file"
       fi
     else
       status=$?
@@ -370,10 +490,17 @@ push_issue_batches() {
     fi
   done
 
-  if [ "$rejected_status" -ne 0 ]; then
+  if [ "$rejected_batches" -gt 0 ]; then
     log "Linear push rejected $rejected_batches of $batch_count $description batches"
-    return "$rejected_status"
   fi
+  # A held-back Bead means a Linear create could already exist without the
+  # local link, so the run reports failure and the next cycle retries the
+  # adoption instead of recording silent progress.
+  if [ "$adoption_failed" -ne 0 ]; then
+    log "Linear push held back unlinked $description Beads whose existing issue could not be confirmed"
+    rejected_status=65
+  fi
+  return "$rejected_status"
 }
 
 # A push renders the acceptance criteria, design, and notes sections and a
@@ -728,7 +855,7 @@ if [ "$operation" = "--complete" ]; then
   # inbound pull ever reviving the issue.
   "$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): record accepted completion" >/dev/null 2>&1
 
-  if push_issue_batches "$completion_bead_id" "accepted"; then
+  if push_issue_batches "$completion_bead_id" "accepted" "" "" "$completion_issue"; then
     :
   else
     status=$?
@@ -895,7 +1022,7 @@ if [ -n "$normalize_skipped_ids" ]; then
   closed_push_entries="$(printf '%s\n' "$closed_push_entries" | drop_skipped_lines)"
   closed_ids="$(printf '%s\n' "$closed_push_entries" | @gawk@/bin/awk 'NF { print $1 }' | @coreutils@/bin/paste -sd, -)"
 fi
-if push_issue_batches "$closed_ids" "terminal" "$closed_push_entries" "$push_progress_file"; then
+if push_issue_batches "$closed_ids" "terminal" "$closed_push_entries" "$push_progress_file" "$issues_before_pull"; then
   :
 else
   status=$?
@@ -1048,7 +1175,7 @@ pushed_active_progress="$pushed_active_file.progress"
 : >"$pushed_active_progress"
 push_status=0
 push_issue_batches "$changed_active_ids" "changed active" \
-  "$(@coreutils@/bin/cat "$pushed_active_next")" "$pushed_active_progress" || push_status=$?
+  "$(@coreutils@/bin/cat "$pushed_active_next")" "$pushed_active_progress" "$all_issues" || push_status=$?
 if [ -s "$pushed_active_progress" ]; then
   {
     @gawk@/bin/awk 'NR == FNR { pushed[$1] = 1; next } !($1 in pushed)' "$pushed_active_progress" "$pushed_active_input"

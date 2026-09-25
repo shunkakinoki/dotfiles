@@ -170,7 +170,7 @@ setup_reconciliation() {
   CHECKPOINT_FILE="$STATE_HOME/beads-linear-sync/last-success-$repo_slug"
   export DOTFILES_ENV_FILE="$ENV_FILE"
   export DOLT_LOG FSCK_TIMEOUT_LOG ISSUE_REF_FILE ISSUE_STATUS_FILE
-  for command in cat chmod date env head mkdir mv paste rm sha256sum sleep tail timeout; do
+  for command in cat chmod cut date env head mkdir mktemp mv paste rm sha256sum sleep tail timeout; do
     ln -s "$(command -v "$command")" "$COREUTILS/bin/$command"
   done
   cat >"$UTIL_LINUX/bin/flock" <<'EOF'
@@ -246,6 +246,35 @@ case "${1:-} ${2:-}" in
     linear_result="${FAKE_LINEAR_RESULT:-}"
     if [ -z "$linear_result" ]; then
       linear_result='{"success":true,"stats":{"errors":0}}'
+    fi
+    if [[ " $* " == *" --push "* ]] && [ -n "${FAKE_LINEAR_ISSUES_FILE:-}" ]; then
+      pushed_args="$*"
+      pushed_targets="${pushed_args#* --issues }"
+      pushed_targets="${pushed_targets%% --*}"
+      IFS=',' read -r -a pushed_id_array <<<"$pushed_targets"
+      for pushed_id in "${pushed_id_array[@]}"; do
+        pushed_ref=""
+        if [ -n "${FAKE_ISSUE_REFS_DIR:-}" ] && [ -f "$FAKE_ISSUE_REFS_DIR/$pushed_id" ]; then
+          pushed_ref=$(<"$FAKE_ISSUE_REFS_DIR/$pushed_id")
+        elif [ "$pushed_id" = df-accepted ] && [ -s "$ISSUE_REF_FILE" ]; then
+          pushed_ref=$(<"$ISSUE_REF_FILE")
+        fi
+        if [[ "$pushed_ref" != *linear.app* ]]; then
+          created_total=0
+          if [ -s "${FAKE_LINEAR_CREATED_COUNT:-}" ]; then
+            created_total=$(<"$FAKE_LINEAR_CREATED_COUNT")
+          fi
+          created_total=$((created_total + 1))
+          printf '%s\n' "$created_total" >"$FAKE_LINEAR_CREATED_COUNT"
+          pushed_marker=""
+          for marker_pair in ${FAKE_IDEMPOTENCY_MARKERS//,/ }; do
+            if [ "${marker_pair%%:*}" = "$pushed_id" ]; then
+              pushed_marker="${marker_pair#*:}"
+            fi
+          done
+          printf 'https://linear.app/test/issue/TEST-%s/%s\tbd-idempotency: %s\n' "$((6000 + created_total))" "$pushed_id" "$pushed_marker" >>"$FAKE_LINEAR_ISSUES_FILE"
+        fi
+      done
     fi
     case "${FAKE_LINEAR_MODE:-success}" in
       rate-limit)
@@ -336,6 +365,12 @@ case "${1:-} ${2:-}" in
           exit 0
         fi
         ;;
+      external-ref-warning-on-push)
+        if [[ " $* " == *" --push "* ]]; then
+          printf '%s\n' '{"success":true,"stats":{"errors":0},"warnings":["Failed to update external_ref for df-orphan: PRIVATE_LINEAR_PAYLOAD"]}'
+          exit 0
+        fi
+        ;;
       invalid-json)
         printf '%s\n' 'not-json PRIVATE_LINEAR_PAYLOAD'
         exit 0
@@ -419,18 +454,24 @@ case "${1:-} ${2:-}" in
     fi
     ;;
   show\ *)
+    show_id="$2"
     issue_status=in_progress
     if [ -s "$ISSUE_STATUS_FILE" ]; then
       issue_status=$(<"$ISSUE_STATUS_FILE")
     fi
-    issue_ref='https://linear.app/test/issue/TEST-999/example'
-    if [ "${FAKE_ISSUE_REF_MISSING:-0}" = "1" ]; then
-      issue_ref=""
+    issue_ref=""
+    if [ -n "${FAKE_ISSUE_REFS_DIR:-}" ] && [ -f "$FAKE_ISSUE_REFS_DIR/$show_id" ]; then
+      issue_ref=$(<"$FAKE_ISSUE_REFS_DIR/$show_id")
+    elif [ "$show_id" = df-accepted ]; then
+      issue_ref='https://linear.app/test/issue/TEST-999/example'
+      if [ "${FAKE_ISSUE_REF_MISSING:-0}" = "1" ]; then
+        issue_ref=""
+      fi
+      if [ -s "$ISSUE_REF_FILE" ]; then
+        issue_ref=$(<"$ISSUE_REF_FILE")
+      fi
     fi
-    if [ -s "$ISSUE_REF_FILE" ]; then
-      issue_ref=$(<"$ISSUE_REF_FILE")
-    fi
-    printf '[{"id":"df-accepted","status":"%s","assignee":"test@example.com","external_ref":"%s"}]\n' "$issue_status" "$issue_ref"
+    printf '[{"id":"%s","status":"%s","assignee":"test@example.com","created_at":"2026-01-01T00:00:00Z","created_by":"spec-author","external_ref":"%s"}]\n' "$show_id" "$issue_status" "$issue_ref"
     ;;
   close\ *)
     printf '%s\n' closed >"$ISSUE_STATUS_FILE"
@@ -444,6 +485,10 @@ case "${1:-} ${2:-}" in
     while [ "$#" -gt 0 ]; do
       if [ "$1" = "--body-file" ] && [ -n "${FAKE_BODY_LOG:-}" ]; then
         { printf "%s:" "$update_id"; cat "$2"; printf "\n"; } >>"$FAKE_BODY_LOG"
+      fi
+      if [ "$1" = "--external-ref" ] && [ -n "${FAKE_ISSUE_REFS_DIR:-}" ]; then
+        mkdir -p "$FAKE_ISSUE_REFS_DIR"
+        printf '%s\n' "$2" >"$FAKE_ISSUE_REFS_DIR/$update_id"
       fi
       shift
     done
@@ -465,7 +510,7 @@ case "${1:-} ${2:-}" in
     elif [ -n "${FAKE_LIST_JSON:-}" ]; then
       printf '%s\n' "$FAKE_LIST_JSON"
     else
-      printf '%s\n' '[{"id":"df-test","status":"open","updated_at":"2099-01-01T00:00:00Z"}]'
+      printf '%s\n' '[{"id":"df-test","status":"open","created_at":"2026-01-01T00:00:00Z","updated_at":"2099-01-01T00:00:00Z"}]'
     fi
     ;;
 esac
@@ -496,6 +541,20 @@ EOF
 #!/usr/bin/env bash
 if [ "${FAKE_LINEAR_STATE:-completed}" = "failure" ]; then
   exit 29
+fi
+payload="$(cat)"
+if [[ "$payload" == *"issues(filter"* ]]; then
+  marker="$(printf '%s' "$payload" | grep -o 'bd-idempotency: [0-9a-f]*' | head -1)"
+  adoption_url=""
+  if [ -n "${FAKE_LINEAR_ISSUES_FILE:-}" ] && [ -f "$FAKE_LINEAR_ISSUES_FILE" ] && [ -n "$marker" ]; then
+    adoption_url="$(grep -F "$marker" "$FAKE_LINEAR_ISSUES_FILE" | head -1 | cut -f1)"
+  fi
+  if [ -n "$adoption_url" ]; then
+    printf '{"data":{"issues":{"nodes":[{"url":"%s"}]}}}\n' "$adoption_url"
+  else
+    printf '%s\n' '{"data":{"issues":{"nodes":[]}}}'
+  fi
+  exit 0
 fi
 printf '{"data":{"issue":{"identifier":"TEST-999","state":{"type":"%s"}}}}\n' "${FAKE_LINEAR_STATE:-completed}"
 EOF
@@ -764,7 +823,7 @@ The output should not include 'PRIVATE_LINEAR_PAYLOAD'
 End
 
 It 'splits a large outbound delta into bounded batches'
-batch_json="$(jq -nc '[range(1;13) | {id:("df-" + tostring),status:"open",updated_at:"2099-01-01T00:00:00Z"}]')"
+batch_json="$(jq -nc '[range(1;13) | {id:("df-" + tostring),status:"open",created_at:"2026-01-01T00:00:00Z",updated_at:"2099-01-01T00:00:00Z"}]')"
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LIST_JSON="$batch_json" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'batch 1/2'
@@ -1001,8 +1060,8 @@ The contents of file "$STATE_HOME/beads-linear-sync/push-progress-test%2Frepo-on
 End
 
 It 'does not re-push an active Bead whose content its own push already sent'
-first='[{"id":"df-pushed","status":"open","assignee":"","description":"Body","notes":"- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/pushed"},{"id":"df-touched","status":"open","assignee":"","notes":"- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/touched"},{"id":"df-unlinked","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z"}]'
-second='[{"id":"df-pushed","status":"open","assignee":"","description":"Body\n\n## Notes\n\n- note\n<!-- bd-fingerprint: 0123456789ab -->","notes":"- note","updated_at":"2099-01-04T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/pushed"},{"id":"df-touched","status":"open","assignee":"","notes":"- note\n- more","updated_at":"2099-01-04T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/touched"},{"id":"df-unlinked","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z"}]'
+first='[{"id":"df-pushed","status":"open","assignee":"","description":"Body","notes":"- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/pushed"},{"id":"df-touched","status":"open","assignee":"","notes":"- note","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/touched"},{"id":"df-unlinked","status":"open","assignee":"","created_at":"2026-01-01T00:00:00Z","updated_at":"2099-01-03T00:00:00Z"}]'
+second='[{"id":"df-pushed","status":"open","assignee":"","description":"Body\n\n## Notes\n\n- note\n<!-- bd-fingerprint: 0123456789ab -->","notes":"- note","updated_at":"2099-01-04T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/pushed"},{"id":"df-touched","status":"open","assignee":"","notes":"- note\n- more","updated_at":"2099-01-04T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/touched"},{"id":"df-unlinked","status":"open","assignee":"","created_at":"2026-01-01T00:00:00Z","updated_at":"2099-01-03T00:00:00Z"}]'
 ledger="$STATE_HOME/beads-linear-sync/pushed-active-test%2Frepo-one"
 When run bash -c "env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$first' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' >/dev/null && env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$second' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' && test \"\$(grep -c -- '--issues df-pushed,df-touched,df-unlinked --no-wait' '$COMMAND_LOG')\" -eq 1 && test \"\$(grep -c -E '^df-[a-z]+ [0-9a-f]{64}$' '$ledger')\" -eq 3 && grep -q -E '^df-pushed [0-9a-f]{64}$' '$ledger'"
 The status should be success
@@ -1032,6 +1091,39 @@ The contents of file "$ledger" should include 'df-1 '
 The contents of file "$ledger" should include 'df-10 '
 The contents of file "$ledger" should not include 'df-11 '
 The contents of file "$ledger" should not include 'df-12 '
+End
+
+It 'reports an external_ref write-back failure as a failed push, not a success'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=external-ref-warning-on-push XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 65
+The output should include 'Linear result rejected'
+The output should include 'families=external-ref'
+The output should not include 'PRIVATE_LINEAR_PAYLOAD'
+The file "$CHECKPOINT_FILE" should not be exist
+End
+
+It 'adopts the orphaned Linear issue on the next cycle instead of creating a duplicate'
+orphan_json='[{"id":"df-orphan","status":"open","assignee":"","created_at":"2026-09-20T13:44:08Z","created_by":"spec-author","updated_at":"2099-01-03T00:00:00Z"}]'
+# The marker bd wrote into the orphan's Linear description:
+# sha256("df-orphan" + "spec-author" + "1789911848000000000")[:12].
+When run bash -c "env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LINEAR_MODE=external-ref-warning-on-push FAKE_LINEAR_ISSUES_FILE='$TEST_ROOT/linear-issues' FAKE_LINEAR_CREATED_COUNT='$TEST_ROOT/create-count' FAKE_ISSUE_REFS_DIR='$TEST_ROOT/refs' FAKE_IDEMPOTENCY_MARKERS='df-orphan:c5607e717169' FAKE_LIST_JSON='$orphan_json' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' >/dev/null 2>&1; test \$? -eq 65 && env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LINEAR_ISSUES_FILE='$TEST_ROOT/linear-issues' FAKE_LINEAR_CREATED_COUNT='$TEST_ROOT/create-count' FAKE_ISSUE_REFS_DIR='$TEST_ROOT/refs' FAKE_IDEMPOTENCY_MARKERS='df-orphan:c5607e717169' FAKE_LIST_JSON='$orphan_json' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' && test \"\$(cat '$TEST_ROOT/create-count')\" -eq 1 && test \"\$(wc -l <'$TEST_ROOT/linear-issues')\" -eq 1"
+The status should be success
+The output should include 'Pushing changed active Beads batch 1/1'
+The error should include 'Adopted an existing Linear issue for an unlinked Bead by idempotency marker'
+The contents of file "$COMMAND_LOG" should include 'update df-orphan --external-ref https://linear.app/test/issue/TEST-6001/df-orphan'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-orphan --no-wait'
+The contents of file "$TEST_ROOT/linear-issues" should include 'TEST-6001'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'holds an unlinked Bead out of the push when the idempotency lookup fails'
+orphan_json='[{"id":"df-orphan","status":"open","assignee":"","created_at":"2026-09-20T13:44:08Z","created_by":"spec-author","updated_at":"2099-01-03T00:00:00Z"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_STATE=failure FAKE_LIST_JSON="$orphan_json" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 65
+The error should include 'the idempotency lookup did not answer'
+The output should include 'Linear push held back unlinked changed active Beads'
+The contents of file "$COMMAND_LOG" should not include 'linear sync --push'
+The file "$CHECKPOINT_FILE" should not be exist
 End
 
 It 'keeps the assignee the pull cleared from an in_progress machine or lane claim'
@@ -1320,7 +1412,7 @@ It 'recovers pending completion despite a newer checkpoint without selecting sta
 printf '%s\n' closed >"$ISSUE_STATUS_FILE"
 mkdir -p "$(dirname "$CHECKPOINT_FILE")"
 printf '%s\n' '2099-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
-pending_json='[{"id":"df-accepted","status":"closed","updated_at":"2020-01-01T00:00:00Z","metadata":{"linear_completion_pending":true}},{"id":"stale-linked","status":"closed","updated_at":"2020-01-01T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-998/example"}]'
+pending_json='[{"id":"df-accepted","status":"closed","created_at":"2026-01-01T00:00:00Z","updated_at":"2020-01-01T00:00:00Z","metadata":{"linear_completion_pending":true}},{"id":"stale-linked","status":"closed","updated_at":"2020-01-01T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-998/example"}]'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_ISSUE_REF_MISSING=1 FAKE_LIST_JSON="$pending_json" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'Pushing terminal Beads'
@@ -1335,7 +1427,7 @@ printf '%s\n' closed >"$ISSUE_STATUS_FILE"
 printf '%s\n' 'https://linear.app/test/issue/TEST-999' >"$ISSUE_REF_FILE"
 mkdir -p "$(dirname "$CHECKPOINT_FILE")"
 printf '%s\n' '2099-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
-pending_json='[{"id":"df-accepted","status":"closed","updated_at":"2020-01-01T00:00:00Z","metadata":{"linear_completion_pending":true}}]'
+pending_json='[{"id":"df-accepted","status":"closed","created_at":"2026-01-01T00:00:00Z","updated_at":"2020-01-01T00:00:00Z","metadata":{"linear_completion_pending":true}}]'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=push-no-reference FAKE_LIST_JSON="$pending_json" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'Pulling complete Linear state'
@@ -1346,7 +1438,7 @@ It 'keeps the retry marker when a successful push does not persist a Linear refe
 printf '%s\n' closed >"$ISSUE_STATUS_FILE"
 mkdir -p "$(dirname "$CHECKPOINT_FILE")"
 printf '%s\n' '2099-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
-pending_json='[{"id":"df-accepted","status":"closed","updated_at":"2020-01-01T00:00:00Z","metadata":{"linear_completion_pending":true}}]'
+pending_json='[{"id":"df-accepted","status":"closed","created_at":"2026-01-01T00:00:00Z","updated_at":"2020-01-01T00:00:00Z","metadata":{"linear_completion_pending":true}}]'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_ISSUE_REF_MISSING=1 FAKE_LINEAR_MODE=push-no-reference FAKE_LIST_JSON="$pending_json" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should equal 65
 The output should include 'does not have a Linear issue reference after push'
