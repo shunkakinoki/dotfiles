@@ -571,9 +571,8 @@ The status should be success
 End
 
 It 'leaves the hourly backup to its timer during make switch'
-When run grep -n 'cliproxyapi-backup' "$PWD/Makefile"
-The output should equal ''
-The status should be failure
+When run bash -c "test -r '$PWD/Makefile' && ! grep -q 'cliproxyapi-backup' '$PWD/Makefile'"
+The status should be success
 End
 End
 
