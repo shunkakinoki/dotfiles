@@ -241,6 +241,16 @@
   inputs.noctalia-shell.overlays.default
   inputs.beads.overlays.default
   (_: prev: {
+    # Upstream postPatch rewrites the go directive to our Go (1.26.7), which then
+    # equals go.mod's toolchain line, so Go rejects go.mod as untidy. Remove once
+    # gastownhall/beads#6752 merges and the beads input is bumped past it.
+    beads-unwrapped = prev.beads-unwrapped.overrideAttrs (old: {
+      postPatch = old.postPatch + ''
+        go mod edit -toolchain=none
+      '';
+    });
+  })
+  (_: prev: {
     ascii-box-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "ascii-box-cli";
       version = "0.1.228";
