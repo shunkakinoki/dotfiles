@@ -415,6 +415,20 @@ rendered_sections_jq='
     {title, status, assignee, priority, issue_type, acceptance_criteria, design, notes, description: canonical_description}
     | tojson;
 '
+# A plan-number reservation is the plan number's allocation record, not work,
+# so an unlinked one is never created in or adopted from Linear. Linked ones
+# keep syncing so settling the reservation moves its issue to Done.
+# Recognized the way its owner does: by the reservation key ref, the first
+# description line, or the planner-intake title, because a synced
+# reservation's ref was already rewritten to the issue URL.
+# shellcheck disable=SC2016 # jq program; $ anchors are regex syntax.
+plan_number_reservation_jq='
+  def plan_number_reservation:
+    ((.external_ref // "") | startswith("plan:number:"))
+    or ((.description // "") | (split("\n")[0] // "") | test("Atomic plan-number reservation for .+\\.$"))
+    or ((.title // "") | sub("^\\s+"; "") | sub("\\s+$"; "") | ascii_downcase
+      | test("^plan [0-9]+ planner intake: number reservation$"));
+'
 # shellcheck disable=SC2016 # jq program; $ names are jq variables.
 rendered_section_cuts='
   ($ids | split(",") | map(select(length > 0) | {key: ., value: true}) | from_entries) as $wanted
@@ -957,10 +971,11 @@ issues_before_pull="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0)"
 # Adopt before the pull, which does not match an unlinked Linear issue to its
 # Bead. Deferred Beads are never pushed, and a closed Bead is
 # pushed unlinked only while its completion is pending.
-unlinked_ids="$(@jq@/bin/jq -r '
+unlinked_ids="$(@jq@/bin/jq -r "$plan_number_reservation_jq"'
   (if type == "object" and has("issues") then .issues else . end)
   | [
     .[]
+    | select(plan_number_reservation | not)
     | select((.external_ref // "") | contains("linear.app") | not)
     | select(
         (.status != "closed" and .status != "deferred")
@@ -1145,13 +1160,14 @@ pushed_active_input=/dev/null
 if [ -s "$pushed_active_file" ]; then
   pushed_active_input="$pushed_active_file"
 fi
-changed_active_candidates="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" "$rendered_sections_jq"'
+changed_active_candidates="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" "$rendered_sections_jq$plan_number_reservation_jq"'
   def body_length: (canonical_description | length) + rendered_sections_length;
   issues | .[]
   # Deferred has no outbound state mapping, so bd rejects every batch that
   # carries one.
   | select(.status != "closed" and .status != "deferred")
   | ((.external_ref // "") | contains("linear.app") | not) as $unlinked
+  | select(($unlinked and plan_number_reservation) | not)
   | select($previous_sync == "" or .updated_at >= $previous_sync or $unlinked)
   | "\(.id) \(if body_length > $body_limit then "oversized" else "sized" end) \(if $unlinked then "unlinked" else "linked" end) \(fingerprint)"
 ' <<<"$all_issues")"
