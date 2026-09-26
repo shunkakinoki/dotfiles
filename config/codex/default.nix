@@ -9,7 +9,6 @@ let
   desktopSettingsAgentLabel = "org.nix-community.home.codex-desktop-settings-sync";
   syncDesktopSettings = ./sync-desktop-settings.sh;
   ensureDesktopSettingsAgent = ./ensure-desktop-settings-agent.sh;
-  mergeOrchestrationHooks = ./merge-orchestration-hooks.sh;
   mergeMoshiHooks = import ../shared/merge-moshi-hooks.nix { inherit pkgs; };
   hooks =
     mergeMoshiHooks "codex-hooks.json" ./hooks.json
@@ -25,8 +24,7 @@ in
       "${./desktop-settings.json}" \
       "${pkgs.jq}/bin/jq" \
       "${syncDesktopSettings}" \
-      "${./profiles}" \
-      "${mergeOrchestrationHooks}"
+      "${./profiles}"
   '';
 
   # Codex caches Desktop preferences in its persisted atom state and replaces
