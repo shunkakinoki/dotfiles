@@ -11,11 +11,46 @@ When run head -1 "$SCRIPT"
 The output should equal '#!/usr/bin/env bash'
 End
 
-It 'skips cleanly when the CLI is not installed'
+It 'skips cleanly when the published CLI cannot be installed'
 TMP_HOME="$(mktemp -d)"
+When run env -u OPENFACTOR_BIN HOME="$TMP_HOME" OPENFACTOR_RELEASE_ROOT="file://$TMP_HOME/missing" "$BASH_BIN" -c 'PATH="$2:/usr/bin:/bin" "$1"' _ "$SCRIPT" "$BASH_DIR"
+The status should be success
+The error should include 'OpenFactor CLI install failed; skipping orchestration hook registration'
+End
+
+It 'installs the published CLI for the openfactor tenant before registering hooks'
+TMP_HOME="$(mktemp -d)"
+RELEASES="$TMP_HOME/releases"
+mkdir -p "$RELEASES"
+cat >"$RELEASES/install.sh" <<'SH'
+#!/bin/sh
+printf 'tenant=%s root=%s\n' "$1" "$CLI_RELEASE_ROOT" >&2
+mkdir -p "$CLI_INSTALL_DIR"
+printf '#!/bin/sh\nprintf "%%s\\n" "$*"\n' >"$CLI_INSTALL_DIR/$1"
+chmod +x "$CLI_INSTALL_DIR/$1"
+SH
+
+When run env -u OPENFACTOR_BIN HOME="$TMP_HOME" OPENFACTOR_RELEASE_ROOT="file://$RELEASES" "$BASH_BIN" -c 'PATH="$2:/usr/bin:/bin" "$1"' _ "$SCRIPT" "$BASH_DIR"
+The status should be success
+The output should equal 'hooks install --scope host --json'
+The error should include "tenant=openfactor root=file://$RELEASES"
+The path "$TMP_HOME/.local/bin/openfactor" should be executable
+End
+
+It 'upgrades the managed CLI through its own release channel'
+TMP_HOME="$(mktemp -d)"
+TMP_BIN="$TMP_HOME/.local/bin"
+mkdir -p "$TMP_BIN"
+cat >"$TMP_BIN/openfactor" <<'SH'
+#!/usr/bin/env bash
+printf '%s\n' "$*"
+SH
+chmod +x "$TMP_BIN/openfactor"
+
 When run env -u OPENFACTOR_BIN HOME="$TMP_HOME" "$BASH_BIN" -c 'PATH="$2:/usr/bin:/bin" "$1"' _ "$SCRIPT" "$BASH_DIR"
 The status should be success
-The error should include 'OpenFactor CLI not found; skipping orchestration hook registration'
+The output should equal 'hooks install --scope host --json'
+The error should equal 'upgrade'
 End
 
 It 'delegates host registration to the CLI'
