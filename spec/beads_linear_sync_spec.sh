@@ -939,16 +939,27 @@ The contents of file "$COMMAND_LOG" should not include 'update df-held'
 The file "$CHECKPOINT_FILE" should be exist
 End
 
-It 'pushes a claim the repair restored even when the ledger recorded its content'
+It 'keeps a tracker close over an unpushed lane claim'
 claimed='[{"id":"df-claimed","status":"in_progress","assignee":"kamino4_exec_claimed","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
 after='[{"id":"df-claimed","status":"closed","assignee":"","closed_at":"2099-01-03T00:00:00Z","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
+journal='{"actor":"kamino4_exec_claimed","op":"update","issue_id":"df-claimed","issue":{"id":"df-claimed","status":"in_progress","assignee":"kamino4_exec_claimed"}}'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_EVENTS_JOURNAL="$journal" FAKE_LIST_JSON="$claimed" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should not include 'Restoring locally authoritative control state after pull'
+The contents of file "$COMMAND_LOG" should not include 'update df-claimed'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'pushes a claim the repair restored even when the ledger recorded its content'
+claimed='[{"id":"df-claimed","status":"in_progress","assignee":"kamino4_exec_claimed","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
+after='[{"id":"df-claimed","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
 repaired='[{"id":"df-claimed","status":"in_progress","assignee":"kamino4_exec_claimed","updated_at":"2099-01-04T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
 journal='{"actor":"kamino4_exec_claimed","op":"update","issue_id":"df-claimed","issue":{"id":"df-claimed","status":"in_progress","assignee":"kamino4_exec_claimed"}}'
 ledger="$STATE_HOME/beads-linear-sync/pushed-active-test%2Frepo-one"
 When run bash -c "env COMMAND_LOG='$TEST_ROOT/first.log' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$claimed' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' >/dev/null && grep -q -E '^df-claimed [0-9a-f]{64}$' '$ledger' && env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_EVENTS_JOURNAL='$journal' FAKE_LIST_JSON='$claimed' FAKE_LIST_JSON_AFTER_PULL='$after' FAKE_LIST_JSON_AFTER_REPAIR='$repaired' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' && test \"\$(grep -c -E '^df-claimed [0-9a-f]{64}$' '$ledger')\" -eq 1"
 The status should be success
 The output should include 'Restored 1 control state record(s); skipped 0 superseded or refused repair(s)'
-The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee kamino4_exec_claimed --status in_progress --if-status=closed --if-assignee='
+The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee kamino4_exec_claimed --status in_progress --if-status=open --if-assignee='
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-claimed --no-wait'
 The file "$CHECKPOINT_FILE" should be exist
 End
