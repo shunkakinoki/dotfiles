@@ -19,5 +19,12 @@
     "desired_assignee": "",
     "desired_status": "open",
     "id": "task-d"
+  },
+  {
+    "current_assignee": "owner@example.com",
+    "current_status": "open",
+    "desired_assignee": "kamino4_lane_2",
+    "desired_status": "closed",
+    "id": "task-i"
   }
 ]

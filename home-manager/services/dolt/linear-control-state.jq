@@ -33,6 +33,10 @@ reduce (
 | .value as $want
 | $actual[$id] as $have
 | select($have != null)
+# A closed Bead stays closed: a pulled close came from the tracker, and the
+# journal's newer local event can be the claim that preceded it, so restoring it
+# would hand delivered work back to the lane that already finished it.
+| select($have.status != "closed")
 | {
     id: $id,
     desired_status: $want.status,

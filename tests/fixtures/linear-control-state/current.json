@@ -55,5 +55,21 @@
     "labels": [
       "linear"
     ]
+  },
+  {
+    "id": "task-h",
+    "status": "closed",
+    "assignee": "owner@example.com",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-i",
+    "status": "open",
+    "assignee": "owner@example.com",
+    "labels": [
+      "linear"
+    ]
   }
 ]

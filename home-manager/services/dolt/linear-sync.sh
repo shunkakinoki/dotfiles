@@ -624,7 +624,8 @@ restore_linear_last_sync() {
 # journal folds every non-reconciler mutation the tracker has not yet received
 # in commit order: those since the last successful cycle listed Beads for its
 # active push, plus those made during this pull. So an unpushed claim, release,
-# or completion wins over what the pull wrote; without the earlier events, a
+# or completion wins over what the pull wrote, except that a Bead the pull left
+# closed is never reopened; without the earlier events, a
 # lane release made between runs reverts to the tracker's In Progress and
 # strands the Bead with no lane. Each repair compares both fields it observed
 # after the pull; a newer claim makes the guarded write refuse instead of
