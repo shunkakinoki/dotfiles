@@ -6,6 +6,11 @@
 # failing CLI warns instead of aborting the rest of Home Manager activation.
 set -euo pipefail
 
+# Activation runs with a minimal PATH; the release installer needs these tools.
+if [[ -n ${OPENFACTOR_INSTALL_PATH:-} ]]; then
+  PATH="$OPENFACTOR_INSTALL_PATH:${PATH:-}"
+fi
+
 OPENFACTOR_RELEASE_ROOT="${OPENFACTOR_RELEASE_ROOT:-https://assets.openfactor.ai/cli/releases}"
 managed_bin="$HOME/.local/bin/openfactor"
 
