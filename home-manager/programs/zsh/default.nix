@@ -1,7 +1,6 @@
 # From: https://github.com/nix-community/home-manager/blob/master/modules/programs/zsh.nix
 {
   config,
-  lib,
   pkgs,
   ...
 }:
@@ -51,9 +50,6 @@
           export CGO_CFLAGS="-I${pkgs.icu.dev}/include''${CGO_CFLAGS:+ $CGO_CFLAGS}"
           export CGO_CXXFLAGS="-I${pkgs.icu.dev}/include''${CGO_CXXFLAGS:+ $CGO_CXXFLAGS}"
           export CGO_LDFLAGS="-L${pkgs.icu.out}/lib''${CGO_LDFLAGS:+ $CGO_LDFLAGS}"
-
-          # Native libraries for bun-installed packages (e.g. @oh-my-pi/pi-natives, sharp, keytar)
-          export LD_LIBRARY_PATH="${lib.optionalString pkgs.stdenv.hostPlatform.isLinux "${pkgs.alsa-lib}/lib:"}${pkgs.glib.out}/lib:${pkgs.libsecret}/lib:${pkgs.nspr}/lib:${pkgs.nss}/lib:${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
       fi
 
       # Define aliases in .zshenv so non-interactive zsh invocations can use them.
