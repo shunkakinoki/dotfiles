@@ -57,9 +57,9 @@ When run grep -F 'ciEnabled = if inputs.host.isKamino && inputs.host.nodeName ==
 The output should include 'ciEnabled = if inputs.host.isKamino && inputs.host.nodeName == "kamino7" then "true" else "false";'
 End
 
-It 'allocates eight review workers on kamino7 and two elsewhere'
-When run grep -F 'maxWorkers = if inputs.host.isKamino && inputs.host.nodeName == "kamino7" then "8" else "2";' "$PWD/config/roborev/default.nix"
-The output should include 'maxWorkers = if inputs.host.isKamino && inputs.host.nodeName == "kamino7" then "8" else "2";'
+It 'allocates twelve review workers on kamino7 and two elsewhere'
+When run grep -F 'maxWorkers = if inputs.host.isKamino && inputs.host.nodeName == "kamino7" then "12" else "2";' "$PWD/config/roborev/default.nix"
+The output should include 'maxWorkers = if inputs.host.isKamino && inputs.host.nodeName == "kamino7" then "12" else "2";'
 End
 
 It 'runs roborev daemon run'
