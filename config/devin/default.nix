@@ -5,6 +5,7 @@
 }:
 let
   activate = ./activate.sh;
+  mergeOrchestrationHooks = ../shared/merge-orchestration-hooks.sh;
 in
 {
   # Devin owns the rest of config.json (model, theme, and session preferences),
@@ -13,6 +14,10 @@ in
   home.activation.devinConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${activate}" \
       "${./hooks.v1.json}" \
+      "${pkgs.jq}/bin/jq"
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${mergeOrchestrationHooks}" \
+      devin \
+      "$HOME/.config/devin/config.json" \
       "${pkgs.jq}/bin/jq"
   '';
 

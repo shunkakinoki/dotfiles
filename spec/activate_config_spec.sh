@@ -5,7 +5,6 @@ Describe 'config/codex/activate.sh'
 SCRIPT="$PWD/config/codex/activate.sh"
 SYNC_SCRIPT="$PWD/config/codex/sync-desktop-settings.sh"
 ENSURE_AGENT_SCRIPT="$PWD/config/codex/ensure-desktop-settings-agent.sh"
-MERGE_SCRIPT="$PWD/config/codex/merge-orchestration-hooks.sh"
 HOOKS_JSON="$PWD/config/codex/hooks.json"
 CONFIG_TOML="$PWD/config/codex/config.toml"
 DESKTOP_SETTINGS_JSON="$PWD/config/codex/desktop-settings.json"
@@ -84,29 +83,6 @@ SH
 chmod +x "$TMP_SYNC"
 
 When run bash -c 'HOME="$1" PATH="$1/bin:/usr/bin:/bin" bash "$2" "$3" "$4" "$5" "$6" "$7" "$8" && cmp -s "$9" "$1/.codex/hooks.json"' _ "$TMP_HOME" "$SCRIPT" "$CONFIG_TOML" "$HOOKS_JSON" "$DESKTOP_SETTINGS_JSON" "$(command -v jq)" "$TMP_SYNC" "$PROFILES_DIR" "$HOOKS_JSON"
-The status should be success
-End
-
-It 'runs the live merge helper without recopying Codex configuration'
-TMP_HOME="$(mktemp -d)"
-TMP_BIN="$TMP_HOME/bin"
-TMP_HOOKS="$TMP_HOME/hooks.json"
-TMP_RENDERED="$TMP_HOME/rendered.json"
-mkdir -p "$TMP_BIN"
-cat >"$TMP_HOOKS" <<'JSON'
-{"model":"preserved","hooks":{"UserPromptSubmit":[{"hooks":[{"type":"command","command":"existing"}]}]}}
-JSON
-cat >"$TMP_RENDERED" <<'JSON'
-{"description":"orchestration","hooks":{"UserPromptSubmit":[{"hooks":[{"type":"command","command":"receipt","timeout":5}]}]}}
-JSON
-cat >"$TMP_BIN/orchestration" <<'SH'
-#!/usr/bin/env bash
-set -euo pipefail
-cat "$ORCHESTRATION_RENDERED"
-SH
-chmod +x "$TMP_BIN/orchestration"
-
-When run bash -c 'HOME="$1" PATH="$2:$PATH" ORCHESTRATION_RENDERED="$3" bash "$4" "$5" "$6" && cp "$5" "$1/first.json" && HOME="$1" PATH="$2:$PATH" ORCHESTRATION_RENDERED="$3" bash "$4" "$5" "$6" && cmp -s "$1/first.json" "$5" && jq -e '\''.model == "preserved" and (.hooks.UserPromptSubmit | length == 2)'\'' "$5" >/dev/null' _ "$TMP_HOME" "$TMP_BIN" "$TMP_RENDERED" "$MERGE_SCRIPT" "$TMP_HOOKS" "$(command -v jq)"
 The status should be success
 End
 

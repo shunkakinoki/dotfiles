@@ -35,6 +35,13 @@
     force = true;
   };
 
+  home.activation.orchestrationOpenCodePlugin = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../shared/merge-orchestration-hooks.sh}" \
+      opencode \
+      "$HOME/.config/opencode/plugins/orchestration-prompt-receipt.js" \
+      "${pkgs.jq}/bin/jq"
+  '';
+
   home.activation.installOpenCodePlugins = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${pkgs.opencode}/bin/opencode" "${pkgs.jq}/bin/jq" "${pkgs.bun}/bin/bun"
   '';

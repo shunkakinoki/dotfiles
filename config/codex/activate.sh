@@ -9,7 +9,7 @@ DESKTOP_SETTINGS_JSON="$3"
 JQ_BIN="$4"
 SYNC_SCRIPT="$5"
 PROFILES_DIR="$6"
-MERGE_HOOKS_SCRIPT="${7:-$(dirname "${BASH_SOURCE[0]}")/merge-orchestration-hooks.sh}"
+MERGE_HOOKS_SCRIPT="${7:-$(dirname "${BASH_SOURCE[0]}")/../shared/merge-orchestration-hooks.sh}"
 
 # Codex records directory trust ([projects.*]) and hook trust ([hooks.state.*])
 # in the same files this script replaces. Carry those tables into the new copy
@@ -75,6 +75,6 @@ install_config "$CONFIG_TOML" ~/.codex/config.toml
 cp -f "$HOOKS_JSON" ~/.codex/hooks.json
 chmod 644 ~/.codex/hooks.json
 
-"$MERGE_HOOKS_SCRIPT" "$HOME/.codex/hooks.json" "$JQ_BIN"
+"$MERGE_HOOKS_SCRIPT" codex "$HOME/.codex/hooks.json" "$JQ_BIN"
 
 "$SYNC_SCRIPT" "$DESKTOP_SETTINGS_JSON" "$JQ_BIN"

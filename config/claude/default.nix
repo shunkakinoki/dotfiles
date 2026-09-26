@@ -9,6 +9,7 @@ let
     builtins.readFile ./hooks/caam-snapshot.sh
   );
   mergeMoshiHooks = import ../shared/merge-moshi-hooks.nix { inherit pkgs; };
+  mergeOrchestrationHooks = ../shared/merge-orchestration-hooks.sh;
   settings =
     mergeMoshiHooks "claude-settings.json" ./settings.json
       ../../generated/hooks/moshi/claude/settings.json;
@@ -22,6 +23,10 @@ in
   # git-ai install-hooks needs write access, which breaks with Nix store symlinks
   home.activation.claudeConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${settings}"
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${mergeOrchestrationHooks}" \
+      claude \
+      "$HOME/.claude/settings.json" \
+      "${pkgs.jq}/bin/jq"
   '';
 
   home.file.".claude/hooks/auto-switch.sh" = {
