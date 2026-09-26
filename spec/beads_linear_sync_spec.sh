@@ -974,6 +974,20 @@ The contents of file "$COMMAND_LOG" should not include 'df-later'
 The file "$CHECKPOINT_FILE" should be exist
 End
 
+It 'keeps unlinked plan-number reservations out of Linear and settles linked ones'
+issues='[{"id":"df-open","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/open"},{"id":"df-reserved-linked","title":"Plan 5714 planner intake: number reservation","status":"in_progress","assignee":"lane_plan_intake","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/reserved"},{"id":"df-reserved-keyed","title":"Reserved","status":"in_progress","assignee":"lane_plan_intake","created_by":"creator@example.com","created_at":"2099-01-01T00:00:00Z","updated_at":"2099-01-02T00:00:00Z","external_ref":"plan:number:5715"},{"id":"df-reserved-described","title":"Reserved","description":"Atomic plan-number reservation for plan:number:5716.\n\n## Notes","status":"in_progress","assignee":"lane_plan_intake","created_by":"creator@example.com","created_at":"2099-01-01T00:00:00Z","updated_at":"2099-01-02T00:00:00Z"},{"id":"df-reserved-closed","title":"  PLAN 5717 Planner Intake: Number Reservation ","status":"closed","closed_at":"2099-01-02T00:00:00Z","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-3/reserved"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$issues" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Pushing terminal Beads batch 1/1'
+The output should include 'Pushing changed active Beads batch 1/1'
+The output should not include 'Adopted'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-reserved-closed --no-wait'
+The contents of file "$COMMAND_LOG" should include 'df-open'
+The contents of file "$COMMAND_LOG" should not include 'df-reserved-keyed'
+The contents of file "$COMMAND_LOG" should not include 'df-reserved-described'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
 It 'holds back active Beads whose rendered sections alone exceed the Linear issue limit'
 huge="$(printf '%*s' 250001 '' | tr ' ' x)"
 issues='[{"id":"df-small","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/small"},{"id":"df-huge","status":"open","assignee":"","description":"Body","notes":"'"$huge"'","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/huge"}]'
