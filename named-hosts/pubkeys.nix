@@ -12,4 +12,7 @@
   kamino5 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICtqqndnmPZKn3l6bNo34GutU4eCQMDn4AC57lh15TTR root@kamino5";
   kamino6 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK2F6w6n8+6PxxukjZfvWL3Fnozhq7PXJJXI1D1C4Dkm root@kamino6";
   kamino7 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAurx8K6kgs4Z11raw3DG55MYxGuSufQaEzr8VlpOEg3 root@kamino7";
+  kamino8 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA4mNWFWnMhc0z5rULdyFRAO23Tv1ZJnoPJZ0h5hzDA4 root@kamino8";
+  kamino9 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOsllS0QFdgTWxKPAlbeEC92hjGY8cED919xhv+rzBDw root@kamino9";
+  kamino10 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKMKpMengL6AHImgSjHZkt8ixgt7oypj/FOaKQWF4rOD root@kamino10";
 }
