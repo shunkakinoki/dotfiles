@@ -466,12 +466,14 @@ import ../../hosts/nixos {
           dbus
           expat
           gdk-pixbuf
+          glib
           glibc
           gtk3
           libdrm
           libgbm
           libgcc
           libnl
+          libsecret
           libx11
           libxcb
           libxcomposite
