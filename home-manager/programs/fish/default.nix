@@ -47,8 +47,15 @@
           set -gx CGO_CXXFLAGS "-I${pkgs.icu.dev}/include $CGO_CXXFLAGS"
           set -gx CGO_LDFLAGS "-L${pkgs.icu.out}/lib $CGO_LDFLAGS"
 
-          # Native libraries for bun-installed packages (e.g. @oh-my-pi/pi-natives, sharp, keytar)
-          set -gx LD_LIBRARY_PATH ${lib.optionalString pkgs.stdenv.hostPlatform.isLinux ''"${pkgs.alsa-lib}/lib"''} "${pkgs.glib.out}/lib" "${pkgs.libsecret}/lib" "${pkgs.nspr}/lib" "${pkgs.nss}/lib" "${pkgs.stdenv.cc.cc.lib}/lib" "${pkgs.zlib}/lib" $LD_LIBRARY_PATH
+          # NixOS has no FHS /usr/lib, so bun-installed native addons (e.g. @oh-my-pi/pi-natives,
+          # sharp, keytar) and Playwright's Chromium need these libraries on the loader path.
+          # Other distros ship them, and Nix builds link a newer glibc that breaks system binaries
+          # (e.g. Playwright's Chromium); expose only the GCC runtime there for the t3 binary's libatomic.
+          if test -f /etc/NIXOS
+              set -gx LD_LIBRARY_PATH ${lib.optionalString pkgs.stdenv.hostPlatform.isLinux ''"${pkgs.alsa-lib}/lib"''} "${pkgs.glib.out}/lib" "${pkgs.libsecret}/lib" "${pkgs.nspr}/lib" "${pkgs.nss}/lib" "${pkgs.stdenv.cc.cc.lib}/lib" "${pkgs.zlib}/lib" $LD_LIBRARY_PATH
+          else
+              set -gx LD_LIBRARY_PATH "${pkgs.stdenv.cc.cc.lib}/lib" $LD_LIBRARY_PATH
+          end
       end
 
       # Go configuration
