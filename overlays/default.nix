@@ -74,6 +74,17 @@
             };
           };
         };
+        # autoPatchelf points bun at the Nix loader, which never searches the
+        # host's /usr/lib. Prebuilt native addons (sharp, for one) then fail to
+        # dlopen libstdc++.so.6 in any shell without LD_LIBRARY_PATH, such as a
+        # plain SSH command. Expose only the GCC runtime, as the T3 launcher
+        # does on non-NixOS hosts; a Nix glibc here would break system binaries.
+        postFixup =
+          (old.postFixup or "")
+          + prev.lib.optionalString prev.stdenvNoCC.hostPlatform.isLinux ''
+            wrapProgram $out/bin/bun \
+              --suffix LD_LIBRARY_PATH : ${prev.lib.makeLibraryPath [ prev.stdenv.cc.cc.lib ]}
+          '';
       }
     );
   })

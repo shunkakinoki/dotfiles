@@ -420,6 +420,10 @@ let
         assert lib.elem "bun" packageNames;
         assert
           (builtins.head (builtins.filter (p: lib.getName p == "bun") cfg.home.packages)).version == "1.4.2";
+        # Native addons loaded by the Nix-patched bun need the GCC runtime even
+        # when the calling shell sets no LD_LIBRARY_PATH.
+        assert lib.hasInfix (builtins.unsafeDiscardStringContext "${pkgs.stdenv.cc.cc.lib}/lib")
+          (builtins.head (builtins.filter (p: lib.getName p == "bun") cfg.home.packages)).postFixup;
         # T3 Connect provisioning must bootstrap a protocol-3 launcher; a
         # protocol-2 `service install` would downgrade it and break desktop updates.
         assert lib.hasInfix "t3@nightly service install" (
