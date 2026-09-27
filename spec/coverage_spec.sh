@@ -129,6 +129,10 @@ It 'has spec file for home-manager/services/docker-postgres/start-postgres-wrapp
 The path "spec/start_postgres_wrapper_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/disk-cleanup/cleanup.sh'
+The path "spec/disk_cleanup_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/dotfiles-updater/update.sh'
 The path "spec/dotfiles_updater_spec.sh" should be exist
 End
@@ -667,6 +671,7 @@ home-manager/services/cliproxyapi/scripts/wrapper.sh
 home-manager/services/cliproxyapi/scripts/kamino-tunnel.sh
 home-manager/services/code-syncer/sync.sh
 home-manager/services/screenshot-clipboard/watch.sh
+home-manager/services/disk-cleanup/cleanup.sh
 home-manager/services/docker-postgres/start-postgres-wrapper.sh
 home-manager/services/docker-postgres/start-postgres.sh
 home-manager/services/docker/docker-setup.sh
