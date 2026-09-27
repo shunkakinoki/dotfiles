@@ -12,12 +12,12 @@ let
     isKyber
     isMatic
     ;
-  isKamino8 = isKamino && inputs.host.nodeName == "kamino8";
+  isKamino7 = isKamino && inputs.host.nodeName == "kamino7";
   homeDir = config.home.homeDirectory;
   roborevBin = "${homeDir}/.local/bin/roborev";
   dataDir = "${homeDir}/.roborev";
   serverAddr = "127.0.0.1:7373";
-  enabled = isGalactica || isKyber || isMatic || isKamino8;
+  enabled = isGalactica || isKyber || isMatic || isKamino7;
 in
 lib.mkIf enabled {
   home.activation.roborevSetup = config.lib.dag.entryAfter [ "writeBoundary" ] ''
@@ -57,7 +57,7 @@ lib.mkIf enabled {
       Documentation = [ "https://github.com/roborev-dev/roborev" ];
       After = [ "network.target" ];
     }
-    // lib.optionalAttrs isKamino8 {
+    // lib.optionalAttrs isKamino7 {
       ConditionPathIsExecutable = roborevBin;
       StartLimitIntervalSec = 300;
       StartLimitBurst = 3;
@@ -77,7 +77,7 @@ lib.mkIf enabled {
         "PATH=${homeDir}/.local/bin:${homeDir}/.bun/bin:/etc/profiles/per-user/${config.home.username}/bin:${homeDir}/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin"
       ];
     }
-    // lib.optionalAttrs isKamino8 {
+    // lib.optionalAttrs isKamino7 {
       RestartSec = 30;
       KillMode = "control-group";
       TimeoutStopSec = 60;

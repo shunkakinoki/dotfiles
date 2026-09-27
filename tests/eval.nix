@@ -344,11 +344,11 @@ let
         assert lib.hasInfix sessionVarsSource (bashrcBefore "export PATH=");
         assert !(cfg.systemd.user.services ? roborev);
         mkEvalCheck "home-kamino" kamino.activationPackage;
-      eval-home-kamino8 =
+      eval-home-kamino7 =
         let
           kamino = import ../named-hosts/kamino {
             inherit inputs;
-            name = "kamino8";
+            name = "kamino7";
           };
           cfg = kamino.config;
           roborev = cfg.systemd.user.services.roborev;
@@ -358,7 +358,7 @@ let
         assert roborev.Service.MemoryHigh == "36G";
         assert roborev.Service.MemoryMax == "42G";
         assert roborev.Service.TasksMax == 4096;
-        mkEvalCheck "home-kamino8" kamino.activationPackage;
+        mkEvalCheck "home-kamino7" kamino.activationPackage;
       eval-home-kamino100 =
         let
           kamino = import ../named-hosts/kamino {
