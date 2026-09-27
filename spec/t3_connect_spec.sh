@@ -302,3 +302,28 @@ The stderr should include 'network unavailable'
 End
 End
 End
+
+Describe 'service library path scoping'
+MODULE="$PWD/home-manager/services/t3-connect/default.nix"
+SELECT="$PWD/home-manager/services/t3-connect/select-library-path.sh"
+
+It 'does not pin LD_LIBRARY_PATH in the t3code unit drop-in'
+When run bash -c "grep -c 'Environment=LD_LIBRARY_PATH' '$MODULE' || true"
+The output should eq '0'
+End
+
+It 'selects the library path at runtime from /etc/NIXOS'
+When run bash -c "grep -F 'if [ -e /etc/NIXOS ]; then' '$SELECT'"
+The output should include 'if [ -e /etc/NIXOS ]; then'
+End
+
+It 'exposes only the GCC runtime for non-NixOS hosts'
+When run bash -c "grep -F 'lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib ]' '$MODULE'"
+The output should include 'lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib ]'
+End
+
+It 'scopes the selection to the launcher and the connect oneshot'
+When run bash -c "grep -c 'setLibraryPath' '$MODULE'"
+The output should eq '3'
+End
+End

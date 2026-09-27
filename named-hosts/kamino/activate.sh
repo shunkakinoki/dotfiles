@@ -77,9 +77,11 @@ t3-connect)
     echo "t3 is not installed; skipping T3 Connect provisioning." >&2
     exit 0
   fi
-  # The t3 native binary links libatomic, which Kamino hosts do not ship.
+  # The t3 native binary links libatomic, which Kamino hosts do not ship. Replace
+  # rather than append the ambient path: a polluted value would leak Nix
+  # libraries built against a newer glibc into the provisioning run.
   if [ -n "${4:-}" ]; then
-    export LD_LIBRARY_PATH="$4${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    export LD_LIBRARY_PATH="$4"
   fi
 
   base="${T3CODE_HOME:-$HOME/.t3}"

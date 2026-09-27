@@ -39,11 +39,13 @@ let
     pkgs.util-linux
     pkgs.which
   ];
-  # The T3 binary links libatomic from the Nix GCC runtime and node-pty needs
-  # the same toolchain libraries. systemd units do not inherit the interactive
-  # shell's LD_LIBRARY_PATH, so without this the pre-warm aborts with
-  # "libatomic.so.1: cannot open shared object file".
-  libraryPath = lib.makeLibraryPath (
+  # The T3 binary links libatomic from the Nix GCC runtime and node-pty links
+  # libstdc++/libgcc. NixOS has no FHS /usr/lib, so its runtime also exposes the
+  # desktop library set. Other distros ship those libraries, and a Nix-built copy
+  # links a newer glibc than the system, so system binaries and the agents T3
+  # spawns abort with "GLIBC_ABI_GNU2_TLS not found". Match the shell policy in
+  # home-manager/programs/{bash,zsh,fish} and expose only the GCC runtime there.
+  nixosLibraryPath = lib.makeLibraryPath (
     lib.optionals pkgs.stdenv.hostPlatform.isLinux [ pkgs.alsa-lib ]
     ++ [
       pkgs.glib.out
@@ -53,6 +55,15 @@ let
       pkgs.stdenv.cc.cc.lib
       pkgs.zlib
     ]
+  );
+  systemLibraryPath = lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib ];
+  # A systemd `Environment=` value cannot branch on the target, and the host
+  # flags are unreliable for generic Linux profiles, so select at runtime. The
+  # launcher and the connect oneshot consult this before starting the runtime.
+  selectLibraryPath = pkgs.writeShellScript "t3-select-library-path" (
+    "export T3_NIXOS_LIBRARY_PATH=${lib.escapeShellArg nixosLibraryPath}\n"
+    + "export T3_SYSTEM_LIBRARY_PATH=${lib.escapeShellArg systemLibraryPath}\n"
+    + builtins.readFile ./select-library-path.sh
   );
   prepareRuntime = pkgs.writeShellScript "t3-prepare-runtime" (
     "export PATH=${toolchain}:$PATH\n"
@@ -64,15 +75,20 @@ let
     + "export T3_PREPARE_RUNTIME=${prepareRuntime}\n"
     + builtins.readFile ./runtime-npm.sh
   );
+  setLibraryPath = ''export LD_LIBRARY_PATH="$(${selectLibraryPath})"'' + "\n";
   # systemd starts T3 without a login shell, so provider CLIs (OpenCode's
   # `{env:CLIPROXY_API_KEY}`) would otherwise run without the .env secrets.
   launcher = pkgs.writeShellScript "t3-launch-service" (
     "export PATH=${runtimeNpm}/bin:${toolchain}:$PATH\n"
+    + setLibraryPath
     + "export T3_PREPARE_RUNTIME=${prepareRuntime}\n"
     + "export HM_PRINT_ENV_FILE=${../../modules/dotenv/print-env-file.sh}\n"
     + ". ${../../modules/dotenv/load-env-file.sh}\n"
     + "_hm_load_env_file\n"
     + builtins.readFile ./launch-service.sh
+  );
+  connectService = pkgs.writeShellScript "t3-connect-service" (
+    setLibraryPath + builtins.readFile ./connect.sh
   );
   shellInstallerPath = ''
     if [ "''${T3_BOOT_SERVICE_UNIT:-}" = t3code.service ]; then
@@ -111,7 +127,6 @@ in
           [Service]
           ExecStart=
           ExecStart=${launcher}
-          Environment=LD_LIBRARY_PATH=${libraryPath}
           ${lib.optionalString (t3ServeRoute != null) ''
             Environment=T3CODE_TAILSCALE_SERVE=true
             Environment=T3CODE_TAILSCALE_SERVE_PORT=${toString t3ServeRoute.httpsPort}
@@ -139,14 +154,13 @@ in
       Environment = [
         "PATH=${toolchain}"
         "T3_PREPARE_RUNTIME=${prepareRuntime}"
-        "LD_LIBRARY_PATH=${libraryPath}"
         "T3_SYSTEMCTL=${pkgs.systemd}/bin/systemctl"
         "XDG_RUNTIME_DIR=%t"
         "DBUS_SESSION_BUS_ADDRESS=unix:path=%t/bus"
       ];
       Nice = 19;
       IOSchedulingPriority = 7;
-      ExecStart = "${pkgs.bash}/bin/bash ${./connect.sh}";
+      ExecStart = "${pkgs.bash}/bin/bash ${connectService}";
     };
   };
 
