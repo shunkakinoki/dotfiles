@@ -74,6 +74,21 @@
             };
           };
         };
+        # Nix's glibc loader never searches the host's /usr/lib, so a native
+        # Node addon bun dlopens (prebuilt image libraries, for example) cannot
+        # find libstdc++ on a non-NixOS host unless the caller exports it, as
+        # a non-interactive SSH command does not. Append only the gcc runtime:
+        # the full Nix library set would shadow the host glibc for system
+        # binaries bun spawns, such as browsers.
+        nativeBuildInputs =
+          (old.nativeBuildInputs or [ ])
+          ++ prev.lib.optionals prev.stdenv.hostPlatform.isLinux [ prev.makeBinaryWrapper ];
+        postFixup =
+          (old.postFixup or "")
+          + prev.lib.optionalString prev.stdenv.hostPlatform.isLinux ''
+            wrapProgram $out/bin/bun \
+              --suffix LD_LIBRARY_PATH : ${prev.lib.makeLibraryPath [ prev.stdenv.cc.cc.lib ]}
+          '';
       }
     );
   })
