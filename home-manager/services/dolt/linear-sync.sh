@@ -835,6 +835,10 @@ if [ "$operation" = "--complete" ]; then
     log "Completion Bead was not found"
     exit 66
   fi
+  if @jq@/bin/jq -e "$plan_number_reservation_jq"'.[0] | plan_number_reservation' <<<"$completion_issue" >/dev/null; then
+    log "Plan-number reservations are never synced to Linear"
+    exit 64
+  fi
 
   completion_reference_pending=0
   if [[ ! $completion_ref =~ /issue/([A-Z][A-Z0-9]*-[0-9]+)(/|$) ]]; then

@@ -1403,6 +1403,16 @@ The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues 
 The path "$SYNC_COUNT" should not be exist
 End
 
+It 'refuses acceptance completion of a plan-number reservation'
+printf '%s\n' 'plan:number:5720' >"$ISSUE_REF_FILE"
+When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted"
+The status should equal 64
+The output should include 'Plan-number reservations are never synced to Linear'
+The contents of file "$COMMAND_LOG" should not include 'close df-accepted'
+The contents of file "$COMMAND_LOG" should not include 'linear_completion_pending'
+The contents of file "$COMMAND_LOG" should not include 'linear sync --push'
+End
+
 It 'keeps the accepted Bead durably closed when the Linear push fails'
 When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LINEAR_MODE=push-failure XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted"
 The status should equal 24
