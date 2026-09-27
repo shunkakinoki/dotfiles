@@ -7,6 +7,10 @@ let
     4
     5
     6
+    7
+    8
+    9
+    10
   ];
   kaminoKnownHosts = builtins.concatStringsSep "\n" (
     map (name: "${name}.tail950b36.ts.net ${publicKeys.${name}}") kaminoHosts
