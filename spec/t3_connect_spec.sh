@@ -56,6 +56,32 @@ The output should include "prepare $npm_config_cache/_npx/cache/"
 The output should include "prepare $T3CODE_HOME/runtime/versions/1.2.3/"
 End
 
+prune_cache() {
+  mock_registry
+  for n in 1 2 3 4 5 6; do
+    mkdir -p "$npm_config_cache/_npx/old$n"
+    printf '{"dependencies":{"t3":"0.0.%s"}}\n' "$n" >"$npm_config_cache/_npx/old$n/package.json"
+    touch -d "2026-01-0$n" "$npm_config_cache/_npx/old$n"
+  done
+  mkdir -p "$npm_config_cache/_npx/current" "$npm_config_cache/_npx/other"
+  printf '{"_npx":{"packages":["t3@1.2.3"]},"dependencies":{"t3":"1.2.3"}}\n' >"$npm_config_cache/_npx/current/package.json"
+  touch -d 2025-01-01 "$npm_config_cache/_npx/current"
+  printf '{"dependencies":{"cowsay":"1.0.0"}}\n' >"$npm_config_cache/_npx/other/package.json"
+  touch -d 2025-01-01 "$npm_config_cache/_npx/other"
+  bash -c 'sleep 30; :' live "$npm_config_cache/_npx/old1/" &
+  live=$!
+  bash "$SCRIPT"
+  kill "$live"
+  ls "$npm_config_cache/_npx"
+}
+
+It 'prunes stale t3 npx dirs but keeps the warmed spec, the newest, live dirs and other packages'
+Skip if 'no /proc' test ! -d /proc/self
+When call prune_cache
+The status should be success
+The output should equal "$(printf 'current\nold1\nold4\nold5\nold6\nother')"
+End
+
 It 'honors the release channel override'
 export T3_CONNECT_TAG=latest
 When call warm_cache

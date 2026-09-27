@@ -54,6 +54,24 @@ for project in "${projects[@]}"; do
   fi
 done
 
+# npx never evicts its cache, and every nightly lands in a new 200-400MB dir, so
+# a worker gathered 90 of them (33GB). Keep the warmed spec plus the newest
+# few a lagging client may still request, and any dir a running process uses.
+# Without /proc liveness is unknown, so nothing is removed. The pattern is read
+# from a file so grep's own command line never matches it.
+npx_cache="${npm_config_cache:-$HOME/.npm}/_npx"
+if [ -d /proc/self ] && [ -d "$npx_cache" ]; then
+  others=0
+  while IFS= read -r dir; do
+    grep -qs '"t3":' "${dir}package.json" || continue
+    grep -qF "\"$spec\"" "${dir}package.json" && continue
+    others=$((others + 1))
+    [ "$others" -le 3 ] && continue
+    grep -qsF -f <(printf '%s\n' "$dir") /proc/[0-9]*/cmdline && continue
+    rm -rf "$dir"
+  done < <(ls -dt "$npx_cache"/*/ 2>/dev/null)
+fi
+
 # Two independent trees need the native module: the npx cache used by the
 # client's SSH launch, and the runtime `t3 service` installs for its systemd
 # unit.
