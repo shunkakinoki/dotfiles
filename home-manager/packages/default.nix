@@ -166,6 +166,7 @@ with pkgs;
   crabbox
   moshi-hook
   collectd
+  ffmpeg
   fwupd
   gcc
   glib
@@ -214,7 +215,6 @@ with pkgs;
   eog
   evince
   eww
-  ffmpeg
   file-roller
   gedit
   ghostscript
