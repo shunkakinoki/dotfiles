@@ -265,6 +265,10 @@ let
             "kamino4"
             "kamino5"
             "kamino6"
+            "kamino7"
+            "kamino8"
+            "kamino9"
+            "kamino10"
           ];
         assert
           sshAuthorizedKeys.kamino == [
