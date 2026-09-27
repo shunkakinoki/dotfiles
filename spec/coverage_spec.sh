@@ -161,6 +161,10 @@ It 'has spec file for home-manager/services/t3-connect/runtime-npm.sh'
 The path "spec/t3_connect_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/t3-connect/select-library-path.sh'
+The path "spec/t3_connect_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/night-shift/apply-night-shift.sh'
 The path "spec/night_shift_spec.sh" should be exist
 End
@@ -682,6 +686,7 @@ home-manager/services/t3-connect/connect.sh
 home-manager/services/t3-connect/launch-service.sh
 home-manager/services/t3-connect/prepare-runtime.sh
 home-manager/services/t3-connect/runtime-npm.sh
+home-manager/services/t3-connect/select-library-path.sh
 home-manager/services/tokscale/submit.sh
 hosts/darwin/activate-remove-backups.sh
 hosts/linux/activate-backup-files.sh

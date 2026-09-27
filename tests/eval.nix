@@ -304,6 +304,13 @@ let
           cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text;
         assert lib.hasInfix "Environment=T3CODE_TAILSCALE_SERVE_PORT=443"
           cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text;
+        # Ubuntu ships the desktop libraries; a Nix-built copy would break every
+        # agent the service spawns with GLIBC_ABI_GNU2_TLS, so the unit must not
+        # pin LD_LIBRARY_PATH and the launcher selects at runtime.
+        assert
+          !(lib.hasInfix "Environment=LD_LIBRARY_PATH"
+            cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text
+          );
         assert cfg.programs.ssh.settings.kamino.data.User == "root";
         assert cfg.programs.ssh.settings.kamino.data.HostName == "kamino.tail950b36.ts.net";
         assert cfg.programs.ssh.settings.kamino1.data.HostName == "kamino1.tail950b36.ts.net";
