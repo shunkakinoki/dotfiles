@@ -17,6 +17,7 @@ let
     publicKeys.kamino4
     publicKeys.kamino5
     publicKeys.kamino6
+    publicKeys.kamino7
   ];
 
   # Helper: reconstruct a darwin configuration from hosts/darwin
