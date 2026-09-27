@@ -416,11 +416,12 @@ rendered_sections_jq='
     | tojson;
 '
 # A plan-number reservation is the plan number's allocation record, not work,
-# so an unlinked one is never created in or adopted from Linear. Linked ones
-# keep syncing so settling the reservation moves its issue to Done.
+# so it is never created in, adopted from, or pushed to Linear, whatever its
+# state or link. With no reservation on Linear, the pull, which only writes to
+# Beads linked to a live issue, never changes one either: a Linear state copied
+# back would close a live reservation early.
 # Recognized the way its owner does: by the reservation key ref, the first
-# description line, or the planner-intake title, because a synced
-# reservation's ref was already rewritten to the issue URL.
+# description line, or the planner-intake title.
 # shellcheck disable=SC2016 # jq program; $ anchors are regex syntax.
 plan_number_reservation_jq='
   def plan_number_reservation:
@@ -834,6 +835,10 @@ if [ "$operation" = "--complete" ]; then
     log "Completion Bead was not found"
     exit 66
   fi
+  if @jq@/bin/jq -e "$plan_number_reservation_jq"'.[0] | plan_number_reservation' <<<"$completion_issue" >/dev/null; then
+    log "Plan-number reservations are never synced to Linear"
+    exit 64
+  fi
 
   completion_reference_pending=0
   if [[ ! $completion_ref =~ /issue/([A-Z][A-Z0-9]*-[0-9]+)(/|$) ]]; then
@@ -996,12 +1001,13 @@ if [ -s "$push_progress_file" ]; then
 fi
 # Keep deferred progress content out of jq's argv. The file may contain many
 # batches, so passing it with --arg exceeds Linux's per-argument limit.
-closed_push_selection="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" --rawfile pushed "$pushed_progress_input" "$rendered_sections_jq"'
+closed_push_selection="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" --rawfile pushed "$pushed_progress_input" "$rendered_sections_jq$plan_number_reservation_jq"'
   def body_length: (canonical_description | length) + rendered_sections_length;
   issues
   | ($pushed | split("\n") | map(select(length > 0) | {key: ., value: true}) | from_entries) as $already_pushed
   | [
     .[]
+    | select(plan_number_reservation | not)
     | select(
         .status == "closed"
         and (
@@ -1035,10 +1041,11 @@ if [ "$oversized_push_count" -gt 0 ]; then
   log "Holding back $oversized_push_count terminal Bead(s) whose body exceeds the Linear issue limit"
 fi
 closed_ids="$(printf '%s\n' "$closed_push_entries" | @gawk@/bin/awk 'NF { print $1 }' | @coreutils@/bin/paste -sd, -)"
-pending_completion_ids="$(@jq@/bin/jq -r '
+pending_completion_ids="$(@jq@/bin/jq -r "$plan_number_reservation_jq"'
   (if type == "object" and has("issues") then .issues else . end)
   | [
     .[]
+    | select(plan_number_reservation | not)
     | select(
         .status == "closed"
         and (
@@ -1166,8 +1173,8 @@ changed_active_candidates="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync"
   # Deferred has no outbound state mapping, so bd rejects every batch that
   # carries one.
   | select(.status != "closed" and .status != "deferred")
+  | select(plan_number_reservation | not)
   | ((.external_ref // "") | contains("linear.app") | not) as $unlinked
-  | select(($unlinked and plan_number_reservation) | not)
   | select($previous_sync == "" or .updated_at >= $previous_sync or $unlinked)
   | "\(.id) \(if body_length > $body_limit then "oversized" else "sized" end) \(if $unlinked then "unlinked" else "linked" end) \(fingerprint)"
 ' <<<"$all_issues")"
