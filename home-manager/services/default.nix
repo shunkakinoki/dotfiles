@@ -13,6 +13,7 @@ let
   cpaManagerPlus = ./cpa-manager-plus;
   codeSyncer = import ./code-syncer { inherit pkgs; };
   crabbox = ./crabbox;
+  diskCleanup = ./disk-cleanup;
   dolt = ./dolt;
   docker = import ./docker { inherit lib pkgs; };
   firewall = ./firewall;
@@ -47,6 +48,7 @@ in
   cpaManagerPlus
   codeSyncer
   crabbox
+  diskCleanup
   dolt
   docker
   dockerPostgres
