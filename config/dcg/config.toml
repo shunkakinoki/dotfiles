@@ -1,5 +1,9 @@
 [general]
 hook_timeout_ms = 3000
+# Home Manager activation owns hook registration through dcg-guard.sh. Self-heal
+# does not recognize the wrapper and appends a second direct dcg hook, which
+# consumes single-use allow-once grants before the wrapper sees them.
+self_heal_hook = false
 
 [packs]
 custom_paths = ["~/.config/dcg/packs/*.yaml"]
