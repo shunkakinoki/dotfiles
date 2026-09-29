@@ -192,17 +192,12 @@
             "type": "command"
           }
         ],
-        "matcher": "Bash"
+        "matcher": "Bash|PowerShell"
       },
       {
         "hooks": [
           {
             "command": "$HOME/dotfiles/config/shared/hooks/rtk-rewrite.sh",
-            "timeout": 5,
-            "type": "command"
-          },
-          {
-            "command": "! command -v dcg >/dev/null 2>&1 || $HOME/dotfiles/config/shared/hooks/dcg-guard.sh",
             "timeout": 5,
             "type": "command"
           },
@@ -260,16 +255,6 @@
           }
         ],
         "matcher": "Write|Edit|MultiEdit"
-      },
-      {
-        "hooks": [
-          {
-            "command": "! command -v dcg >/dev/null 2>&1 || $HOME/dotfiles/config/shared/hooks/dcg-guard.sh",
-            "timeout": 5,
-            "type": "command"
-          }
-        ],
-        "matcher": "Bash"
       },
       {
         "hooks": [
