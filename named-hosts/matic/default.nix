@@ -172,7 +172,16 @@ import ../../hosts/nixos {
         '';
 
         # Audit logging
-        security.auditd.enable = true;
+        security.auditd = {
+          enable = true;
+          # The execve rules below log every process start; without rotation
+          # auditd appends to one audit.log until the disk fills.
+          settings = {
+            max_log_file = 1024;
+            num_logs = 5;
+            max_log_file_action = "rotate";
+          };
+        };
         security.audit = {
           enable = true;
           rules = [
