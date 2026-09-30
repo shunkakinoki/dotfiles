@@ -18,13 +18,13 @@ run_statusline_plain() {
 
 statusline_payload() {
   local current_dir="$1"
-  printf '{"model": {"display_name": "claude-sonnet-4"}, "workspace": {"current_dir": "%s"}}' "$current_dir"
+  printf '{"model": {"display_name": "claude-sonnet-5-5"}, "workspace": {"current_dir": "%s"}}' "$current_dir"
 }
 
 statusline_payload_with_cost() {
   local current_dir="$1"
   local total_cost_usd="$2"
-  printf '{"model": {"display_name": "claude-sonnet-4"}, "workspace": {"current_dir": "%s"}, "cost": {"total_cost_usd": %s}}' "$current_dir" "$total_cost_usd"
+  printf '{"model": {"display_name": "claude-sonnet-5-5"}, "workspace": {"current_dir": "%s"}, "cost": {"total_cost_usd": %s}}' "$current_dir" "$total_cost_usd"
 }
 
 run_statusline_plain_json() {
@@ -33,11 +33,11 @@ run_statusline_plain_json() {
 
 Describe 'basic output'
 It 'outputs directory and model name'
-Data '{"model": {"display_name": "claude-sonnet-4"}, "workspace": {"current_dir": "/tmp/myproject"}}'
+Data '{"model": {"display_name": "claude-sonnet-5-5"}, "workspace": {"current_dir": "/tmp/myproject"}}'
 When run run_statusline_plain
 The status should be success
 The output should include 'myproject'
-The output should include 'claude-sonnet-4'
+The output should include 'claude-sonnet-5-5'
 End
 
 It 'handles missing model gracefully'
@@ -57,21 +57,21 @@ End
 
 Describe 'context window display'
 It 'shows context percentage when usage is provided'
-Data '{"model": {"display_name": "claude-sonnet-4"}, "workspace": {"current_dir": "/tmp/test"}, "context_window": {"context_window_size": 200000, "current_usage": {"input_tokens": 50000, "cache_creation_input_tokens": 0, "cache_read_input_tokens": 0}}}'
+Data '{"model": {"display_name": "claude-sonnet-5-5"}, "workspace": {"current_dir": "/tmp/test"}, "context_window": {"context_window_size": 200000, "current_usage": {"input_tokens": 50000, "cache_creation_input_tokens": 0, "cache_read_input_tokens": 0}}}'
 When run run_statusline_plain
 The status should be success
 The output should include '25%'
 End
 
 It 'shows 0% when no usage data'
-Data '{"model": {"display_name": "claude-sonnet-4"}, "workspace": {"current_dir": "/tmp/test"}, "context_window": {"context_window_size": 200000}}'
+Data '{"model": {"display_name": "claude-sonnet-5-5"}, "workspace": {"current_dir": "/tmp/test"}, "context_window": {"context_window_size": 200000}}'
 When run run_statusline_plain
 The status should be success
 The output should include '0%'
 End
 
 It 'includes progress bar characters'
-Data '{"model": {"display_name": "claude-sonnet-4"}, "workspace": {"current_dir": "/tmp/test"}, "context_window": {"context_window_size": 200000, "current_usage": {"input_tokens": 100000, "cache_creation_input_tokens": 0, "cache_read_input_tokens": 0}}}'
+Data '{"model": {"display_name": "claude-sonnet-5-5"}, "workspace": {"current_dir": "/tmp/test"}, "context_window": {"context_window_size": 200000, "current_usage": {"input_tokens": 100000, "cache_creation_input_tokens": 0, "cache_read_input_tokens": 0}}}'
 When run run_statusline_plain
 The status should be success
 The output should include '%'

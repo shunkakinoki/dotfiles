@@ -73,8 +73,8 @@ providers:
           output: 0
           cacheRead: 0
           cacheWrite: 0
-      - id: gpt-6-sol
-        name: GPT 6 Sol (via shunkakinoki's CLIProxy)
+      - id: gpt-6.1-sol
+        name: GPT 6.1 Sol (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text
@@ -129,8 +129,8 @@ providers:
           output: 0
           cacheRead: 0
           cacheWrite: 0
-      - id: claude-sonnet-5
-        name: Claude Sonnet 5 (via shunkakinoki's CLIProxy)
+      - id: claude-sonnet-5-5
+        name: Claude Sonnet 5.5 (via shunkakinoki's CLIProxy)
         reasoning: false
         input:
           - text
