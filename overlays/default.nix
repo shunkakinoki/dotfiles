@@ -266,26 +266,26 @@
     });
   })
   (_: prev: {
-    ascii-box-cli = prev.stdenvNoCC.mkDerivation rec {
-      pname = "ascii-box-cli";
-      version = "0.1.259";
+    boat-cli = prev.stdenvNoCC.mkDerivation rec {
+      pname = "boat-cli";
+      version = "1.0.36";
       src = prev.fetchurl {
-        url = "https://github.com/ariana-dot-dev/agent-server/releases/download/box-cli-v${version}-ascii-prod1/box-${
+        url = "https://github.com/ariana-dot-dev/agent-server/releases/download/boat-cli-v${version}/boat-${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }-${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x64"}";
         sha256 =
           {
-            "aarch64-darwin" = "1clicbx7rk24l30gv16pn6g3ipfzix167q1kfk1n6km0j09lnw5w";
-            "aarch64-linux" = "12yyrf39la1k2s0d4k5smdf0yh8fprzfg7gcg0mkn4qk457vaw6l";
-            "x86_64-linux" = "0p352vy1qmmd4nmdhxvhsdggk5l1lac8lb6ry4xi35g3alnjgx61";
+            "aarch64-darwin" = "1hs53568qq9f9b4icapwkv4j66c3xv9ickwpshw6kj28px75f2al";
+            "aarch64-linux" = "1mf8h795p2rrfzfrj8j65w1syzagfk31kczrcd2a6d3b7cw8s6xp";
+            "x86_64-linux" = "1g40y0lx5d6ny8kp2jjpg5xlg6ijvjbnsn6gq7ajbfj24kj2pjs7";
           }
           .${prev.stdenv.hostPlatform.system};
       };
       dontUnpack = true;
       installPhase = ''
-        install -Dm755 "$src" "$out/bin/box"
+        install -Dm755 "$src" "$out/bin/boat"
       '';
-      meta.mainProgram = "box";
+      meta.mainProgram = "boat";
     };
 
     blacksmith-testbox-cli = prev.stdenvNoCC.mkDerivation rec {

@@ -9,10 +9,9 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 OVERLAY_FILE="${OVERLAY_FILE:-$REPO_ROOT/overlays/default.nix}"
 MOSHI_HOOK_CDN="${MOSHI_HOOK_CDN:-https://cdn.getmoshi.app}"
 BLACKSMITH_CLI_CDN="${BLACKSMITH_CLI_CDN:-https://clireleases.blacksmith.sh/cli}"
-ASCII_BOX_CLI_URL="${ASCII_BOX_CLI_URL:-https://ascii.dev/api/box/cli/download}"
-ASCII_BOX_CLI_CHANNEL="${ASCII_BOX_CLI_CHANNEL:-ascii-prod}"
-ASCII_BOX_CLI_RELEASE_URL="${ASCII_BOX_CLI_RELEASE_URL:-https://github.com/ariana-dot-dev/agent-server/releases/download}"
-ASCII_BOX_CLI_RELEASE_CHANNEL="${ASCII_BOX_CLI_RELEASE_CHANNEL:-ascii-prod1}"
+BOAT_CLI_URL="${BOAT_CLI_URL:-https://boat.dev/api/boat/cli/download}"
+BOAT_CLI_CHANNEL="${BOAT_CLI_CHANNEL:-prod}"
+BOAT_CLI_RELEASE_URL="${BOAT_CLI_RELEASE_URL:-https://github.com/ariana-dot-dev/agent-server/releases/download}"
 CRABBOX_RELEASE_API="${CRABBOX_RELEASE_API:-https://api.github.com/repos/openclaw/crabbox/releases/latest}"
 CRABBOX_RELEASE_CDN="${CRABBOX_RELEASE_CDN:-https://github.com/openclaw/crabbox/releases/download}"
 DEVIN_CLI_CDN="${DEVIN_CLI_CDN:-https://static.devin.ai/cli}"
@@ -40,7 +39,7 @@ usage() {
   echo "Usage: $0 <overlay|all>"
   echo ""
   echo "Available overlays:"
-  echo "  ascii-box-cli - Upgrade the pinned ASCII Box CLI binaries"
+  echo "  boat-cli - Upgrade the pinned Boat CLI binaries"
   echo "  blacksmith-testbox-cli - Upgrade the pinned Blacksmith Testbox CLI binaries"
   echo "  crabbox - Upgrade the pinned Crabbox binaries"
   echo "  devin - Upgrade the pinned Devin CLI binaries"
@@ -93,46 +92,20 @@ checksum_for_file() {
   fi
 }
 
-ascii_box_cli_platform() {
-  local os arch
-
-  case "$(uname -s)" in
-  Darwin) os="darwin" ;;
-  Linux) os="linux" ;;
-  *)
-    log_error "Unsupported host OS for ASCII Box CLI version probe: $(uname -s)"
-    exit 1
-    ;;
-  esac
-
-  case "$(uname -m)" in
-  arm64 | aarch64) arch="arm64" ;;
-  x86_64 | amd64) arch="x64" ;;
-  *)
-    log_error "Unsupported host architecture for ASCII Box CLI version probe: $(uname -m)"
-    exit 1
-    ;;
-  esac
-
-  printf '%s-%s' "$os" "$arch"
+boat_cli_url() {
+  printf '%s?platform=darwin-arm64&channel=%s' "$BOAT_CLI_URL" "$BOAT_CLI_CHANNEL"
 }
 
-ascii_box_cli_url() {
-  local platform="${1:-$(ascii_box_cli_platform)}"
-  printf '%s?platform=%s&channel=%s' "$ASCII_BOX_CLI_URL" "$platform" "$ASCII_BOX_CLI_CHANNEL"
-}
-
-ascii_box_cli_release_url() {
+boat_cli_release_url() {
   local platform="$1"
   local version="$2"
-  printf '%s/box-cli-v%s-%s/box-%s' \
-    "$ASCII_BOX_CLI_RELEASE_URL" "$version" "$ASCII_BOX_CLI_RELEASE_CHANNEL" "$platform"
+  printf '%s/boat-cli-v%s/boat-%s' "$BOAT_CLI_RELEASE_URL" "$version" "$platform"
 }
 
-ascii_box_cli_checksum() {
+boat_cli_checksum() {
   local platform="$1"
   local version="$2"
-  nix-prefetch-url --type sha256 "$(ascii_box_cli_release_url "$platform" "$version")" | sed -n '1p'
+  nix-prefetch-url --type sha256 "$(boat_cli_release_url "$platform" "$version")" | sed -n '1p'
 }
 
 validate_nix_checksum() {
@@ -245,64 +218,60 @@ upgrade_gh() {
   log_info "✅ gh upgraded from ${current_version:-unknown} to $version"
 }
 
-upgrade_ascii_box_cli() {
-  local version current_version latest_dir latest_output probe_url
+upgrade_boat_cli() {
+  local version current_version release_url
   local darwin_arm64 linux_arm64 linux_x86_64
 
-  version="${ASCII_BOX_CLI_VERSION:-}"
+  version="${BOAT_CLI_VERSION:-}"
   if [ -z "$version" ]; then
-    latest_dir="$(mktemp -d)"
-    probe_url="$(ascii_box_cli_url)"
-    curl -fsSL "$probe_url" -o "$latest_dir/box"
-    chmod +x "$latest_dir/box"
-    latest_output="$("$latest_dir/box" --version)"
-    rm -rf "$latest_dir"
-    version="$(printf '%s\n' "$latest_output" | sed -n 's/^[a-z]* \([0-9][0-9.]*\).*/\1/p')"
+    # The download endpoint redirects to the current release asset, whose tag carries the version.
+    release_url="$(curl -fsS -o /dev/null -w '%{redirect_url}' "$(boat_cli_url)")"
+    version="$(printf '%s\n' "$release_url" | sed -n 's#.*/boat-cli-v\([0-9][0-9.]*\)/.*#\1#p')"
   fi
 
   if [[ ! $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    log_error "Invalid ASCII Box CLI version: ${version:-unknown}"
+    log_error "Invalid Boat CLI version: ${version:-unknown}"
     exit 1
   fi
 
-  current_version="$(sed -n '/ascii-box-cli = prev.stdenvNoCC.mkDerivation rec {/,/meta.mainProgram = "box"/p' "$OVERLAY_FILE" | sed -n 's/.*version = "\([^"]*\)";.*/\1/p' | head -1)"
+  current_version="$(sed -n '/boat-cli = prev.stdenvNoCC.mkDerivation rec {/,/meta.mainProgram = "boat"/p' "$OVERLAY_FILE" | sed -n 's/.*version = "\([^"]*\)";.*/\1/p' | head -1)"
   echo "  Current version: ${current_version:-unknown}"
   echo "  Latest version:  $version"
 
-  darwin_arm64="$(ascii_box_cli_checksum darwin-arm64 "$version")"
-  linux_arm64="$(ascii_box_cli_checksum linux-arm64 "$version")"
-  linux_x86_64="$(ascii_box_cli_checksum linux-x64 "$version")"
-  validate_nix_checksum ascii-box-darwin-arm64 "$darwin_arm64"
-  validate_nix_checksum ascii-box-linux-arm64 "$linux_arm64"
-  validate_nix_checksum ascii-box-linux-x64 "$linux_x86_64"
+  darwin_arm64="$(boat_cli_checksum darwin-arm64 "$version")"
+  linux_arm64="$(boat_cli_checksum linux-arm64 "$version")"
+  linux_x86_64="$(boat_cli_checksum linux-x64 "$version")"
+  validate_nix_checksum boat-darwin-arm64 "$darwin_arm64"
+  validate_nix_checksum boat-linux-arm64 "$linux_arm64"
+  validate_nix_checksum boat-linux-x64 "$linux_x86_64"
 
   awk \
     -v version="$version" \
     -v darwin_arm64="$darwin_arm64" \
     -v linux_arm64="$linux_arm64" \
     -v linux_x86_64="$linux_x86_64" '
-      /ascii-box-cli = prev.stdenvNoCC.mkDerivation rec \{/ { in_ascii_box = 1 }
-      in_ascii_box && /version = "[^"]*";/ {
+      /boat-cli = prev.stdenvNoCC.mkDerivation rec \{/ { in_boat = 1 }
+      in_boat && /version = "[^"]*";/ {
         sub(/version = "[^"]*";/, "version = \"" version "\";")
       }
-      in_ascii_box && /"aarch64-darwin" =/ {
+      in_boat && /"aarch64-darwin" =/ {
         sub(/"[^"]*";$/, "\"" darwin_arm64 "\";")
       }
-      in_ascii_box && /"aarch64-linux" =/ {
+      in_boat && /"aarch64-linux" =/ {
         sub(/"[^"]*";$/, "\"" linux_arm64 "\";")
       }
-      in_ascii_box && /"x86_64-linux" =/ {
+      in_boat && /"x86_64-linux" =/ {
         sub(/"[^"]*";$/, "\"" linux_x86_64 "\";")
       }
-      in_ascii_box && /meta.mainProgram = "box"/ { in_ascii_box = 0 }
+      in_boat && /meta.mainProgram = "boat"/ { in_boat = 0 }
       { print }
     ' "$OVERLAY_FILE" >"$OVERLAY_FILE.tmp"
   mv -f "$OVERLAY_FILE.tmp" "$OVERLAY_FILE"
 
   if [[ $current_version == "$version" ]]; then
-    log_info "✅ ascii-box-cli hashes refreshed for $version"
+    log_info "✅ boat-cli hashes refreshed for $version"
   else
-    log_info "✅ ascii-box-cli upgraded from ${current_version:-unknown} to $version"
+    log_info "✅ boat-cli upgraded from ${current_version:-unknown} to $version"
   fi
 }
 
@@ -653,12 +622,12 @@ main() {
   fi
 
   case "$target" in
-  ascii-box-cli)
+  boat-cli)
     require_command awk
     require_command curl
     require_command nix-prefetch-url
     require_command sed
-    upgrade_ascii_box_cli
+    upgrade_boat_cli
     ;;
   blacksmith-testbox-cli)
     require_command awk
@@ -707,7 +676,7 @@ main() {
     require_command nix
     require_command sed
     require_command tr
-    upgrade_ascii_box_cli
+    upgrade_boat_cli
     upgrade_blacksmith_testbox_cli
     upgrade_crabbox
     upgrade_devin
