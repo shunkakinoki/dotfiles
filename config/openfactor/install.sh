@@ -58,6 +58,28 @@ if [[ -f $opencode_plugin && ! -L $opencode_plugin ]]; then
   rm -f "$opencode_plugin.bak"
 fi
 
+# The OpenCode plugin pipes each payload to the hook the same way, and the
+# Bun-built CLI can block on that stdin after the write end closes. Every
+# message.updated then strands a hook; one busy host held 700 of them in 35 GB.
+# Give it the same unlinked-file handoff as the pi extension below.
+if [[ -f $opencode_plugin && ! -L $opencode_plugin ]] && grep -q 'stdin: "pipe"' "$opencode_plugin"; then
+  # shellcheck disable=SC2016
+  "${OPENFACTOR_PERL:-perl}" -0pi -e '
+    s{(import type \{ Plugin \} from "\@opencode-ai/plugin";\n)}{$1import { closeSync, openSync, unlinkSync, writeFileSync } from "node:fs";\nimport { tmpdir } from "node:os";\nimport { join } from "node:path";\n};
+    s{function send\(.*?\n\}\n}{function send(name: string, payload: unknown): void {
+  try {
+    const file = join(tmpdir(), `openfactor-opencode-\${process.pid}-\${Date.now()}-\${Math.random().toString(36).slice(2)}.json`);
+    writeFileSync(file, JSON.stringify(payload ?? {}), { flag: "wx", mode: 0o600 });
+    const fd = openSync(file, "r");
+    unlinkSync(file);
+    Bun.spawn([client, "opencode-hook", name], { stdin: fd, stdout: "ignore", stderr: "ignore" });
+    closeSync(fd);
+  } catch {}
+}
+}s;
+  ' "$opencode_plugin"
+fi
+
 # The generated pi extension writes each payload to the hook over a socketpair.
 # pi exits right after session_shutdown, and the Bun-built CLI then blocks on
 # that stdin forever, so every pi run strands a few hooks. Hand the payload
