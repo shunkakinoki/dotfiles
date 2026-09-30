@@ -23,7 +23,7 @@ with pkgs;
   argocd
   ast-grep
   atk
-  ascii-box-cli
+  boat-cli
   awscli
   azure-cli
   bandwhich

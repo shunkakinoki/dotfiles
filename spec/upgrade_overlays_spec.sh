@@ -129,8 +129,8 @@ EOF
       };
       sourceRoot = ".";
     };
-    ascii-box-cli = prev.stdenvNoCC.mkDerivation rec {
-      pname = "ascii-box-cli";
+    boat-cli = prev.stdenvNoCC.mkDerivation rec {
+      pname = "boat-cli";
       version = "0.1.208";
       src = prev.fetchurl {
         sha256 = {
@@ -139,7 +139,7 @@ EOF
           "x86_64-linux" = "old-linux-x86";
         };
       };
-      meta.mainProgram = "box";
+      meta.mainProgram = "boat";
     };
     blacksmith-testbox-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "blacksmith-testbox-cli";
@@ -247,7 +247,7 @@ The status should be success
 End
 
 It 'updates every overlay hash from the all target'
-When run bash -c "env OVERLAY_FILE='$TEMP_DIR/overlays/default.nix' ASCII_BOX_CLI_VERSION='0.1.208' MOSHI_HOOK_CDN='file://$TEMP_DIR/cdn' BLACKSMITH_CLI_CDN='file://$TEMP_DIR/cdn/blacksmith' BLACKSMITH_CLI_VERSION='0.4.57' CRABBOX_RELEASE_CDN='file://$TEMP_DIR/cdn/crabbox' CRABBOX_VERSION='0.55.0' DEVIN_CLI_CDN='file://$TEMP_DIR/cdn/devin' DEVIN_CLI_VERSION='3000.10.21' GH_VERSION='2.100.0' GH_REV='45437bc7eeeb3359bbfddd1742f79de7652fd3e2' GH_SOURCE_HASH='sha256-9tnSQPSqllE+Ke6LKyNbnOF1drzdEwesEuPdmWD1X5c=' GH_VENDOR_HASH='sha256-ZqUs2BnasF3QBX0I2Sxh2A/CnO61Vy6gRn1hkf0n9AY=' T3CODE_VERSION='0.0.36' T3CODE_PNPM_HASH='sha256-y/sJIluwbn65APmJ2p07FK1ScXpetCloTHtQzZMchDU=' bash '$SCRIPT' all && cat '$TEMP_DIR/overlays/default.nix'"
+When run bash -c "env OVERLAY_FILE='$TEMP_DIR/overlays/default.nix' BOAT_CLI_VERSION='0.1.208' MOSHI_HOOK_CDN='file://$TEMP_DIR/cdn' BLACKSMITH_CLI_CDN='file://$TEMP_DIR/cdn/blacksmith' BLACKSMITH_CLI_VERSION='0.4.57' CRABBOX_RELEASE_CDN='file://$TEMP_DIR/cdn/crabbox' CRABBOX_VERSION='0.55.0' DEVIN_CLI_CDN='file://$TEMP_DIR/cdn/devin' DEVIN_CLI_VERSION='3000.10.21' GH_VERSION='2.100.0' GH_REV='45437bc7eeeb3359bbfddd1742f79de7652fd3e2' GH_SOURCE_HASH='sha256-9tnSQPSqllE+Ke6LKyNbnOF1drzdEwesEuPdmWD1X5c=' GH_VENDOR_HASH='sha256-ZqUs2BnasF3QBX0I2Sxh2A/CnO61Vy6gRn1hkf0n9AY=' T3CODE_VERSION='0.0.36' T3CODE_PNPM_HASH='sha256-y/sJIluwbn65APmJ2p07FK1ScXpetCloTHtQzZMchDU=' bash '$SCRIPT' all && cat '$TEMP_DIR/overlays/default.nix'"
 The output should include 'moshi-hook upgraded from 0.2.55 to 0.2.69'
 The output should include 'crabbox upgraded from 0.46.0 to 0.55.0'
 The output should include 'devin upgraded from 3000.10.20 to 3000.10.21'
@@ -288,7 +288,7 @@ The status should be success
 End
 
 It 'refreshes hashes when the version is unchanged'
-When run bash -c "env OVERLAY_FILE='$TEMP_DIR/overlays/default.nix' ASCII_BOX_CLI_VERSION='0.1.208' bash '$SCRIPT' ascii-box-cli >/dev/null && cat '$TEMP_DIR/overlays/default.nix'"
+When run bash -c "env OVERLAY_FILE='$TEMP_DIR/overlays/default.nix' BOAT_CLI_VERSION='0.1.208' bash '$SCRIPT' boat-cli >/dev/null && cat '$TEMP_DIR/overlays/default.nix'"
 The output should include '0jmp1xvzsnxpgakrd69fiqp2fd8rzcr57s80djlzbdgfs3jr2z60'
 The status should be success
 End
