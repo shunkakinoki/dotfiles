@@ -285,6 +285,10 @@ It 'has spec file for home-manager/services/cliproxyapi/scripts/docker-start.sh'
 The path "spec/cliproxyapi_docker_start_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/cliproxyapi/scripts/quota.sh'
+The path "spec/cliproxyapi_quota_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/cpa-manager-plus/start.sh'
 The path "spec/cpa_manager_plus_spec.sh" should be exist
 End
@@ -669,6 +673,7 @@ home-manager/services/cliproxyapi/scripts/hydrate.sh
 home-manager/services/cliproxyapi/scripts/start.sh
 home-manager/services/cliproxyapi/scripts/wrapper.sh
 home-manager/services/cliproxyapi/scripts/kamino-tunnel.sh
+home-manager/services/cliproxyapi/scripts/quota.sh
 home-manager/services/code-syncer/sync.sh
 home-manager/services/screenshot-clipboard/watch.sh
 home-manager/services/disk-cleanup/cleanup.sh
