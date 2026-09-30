@@ -23,7 +23,9 @@ lib.mkIf (inputs.host.isGalactica && pkgs.stdenv.hostPlatform.isDarwin) {
       RunAtLoad = true;
       KeepAlive = true;
       ThrottleInterval = 30;
-      ProcessType = "Background";
+      # Background QoS stretches each CoreAudio device enumeration from ~0.1s
+      # to minutes, so the 2s poll would take minutes to react.
+      ProcessType = "Standard";
       StandardOutPath = "/tmp/audio-priority.log";
       StandardErrorPath = "/tmp/audio-priority.error.log";
     };
