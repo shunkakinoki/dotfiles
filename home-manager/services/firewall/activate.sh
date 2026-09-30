@@ -92,6 +92,8 @@ ensure_chain() {
 
   # Established/related only. No public SSH: Tailscale + Latitude SG own remote access.
   $ipt_cmd -A "$CHAIN" -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+  # Tailscale direct UDP: without it peers behind NAT fall back to DERP relays.
+  $ipt_cmd -A "$CHAIN" -p udp --dport 41641 -j ACCEPT
   $ipt_cmd -A "$CHAIN" -j DROP
 }
 
@@ -105,5 +107,5 @@ resync_input_jump ipt "$PUBLIC_IF"
 ensure_chain ip6t
 resync_input_jump ip6t "$PUBLIC_IF"
 
-echo "Firewall enabled: WAN $PUBLIC_IF drops all new ingress (SSH via Tailscale only)."
+echo "Firewall enabled: WAN $PUBLIC_IF drops new ingress except Tailscale UDP 41641 (SSH via Tailscale only)."
 echo "Tailscale, k3s, and container traffic on other interfaces are unaffected."

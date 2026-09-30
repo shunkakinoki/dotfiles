@@ -54,6 +54,11 @@ When run bash -c "grep -E 'dport[[:space:]]+22' '$SCRIPT' || true"
 The output should equal ''
 End
 
+It 'allows Tailscale direct UDP on the WAN chain'
+When run bash -c "grep -- '-p udp --dport 41641 -j ACCEPT' '$SCRIPT'"
+The output should include 'dport 41641'
+End
+
 It 'drops other traffic'
 When run bash -c "grep -- '-j DROP' '$SCRIPT'"
 The output should include 'DROP'
