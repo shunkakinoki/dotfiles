@@ -7,7 +7,8 @@
 let
   enforceScript = pkgs.replaceVars ./enforce.sh {
     switchAudioBin = "${pkgs.switchaudio-osx}/bin/SwitchAudioSource";
-    device = "EarPods";
+    outputDevice = "EarPods";
+    inputDevice = "EarPods Microphone";
   };
 in
 lib.mkIf (inputs.host.isGalactica && pkgs.stdenv.hostPlatform.isDarwin) {
