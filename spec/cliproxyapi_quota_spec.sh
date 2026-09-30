@@ -53,8 +53,8 @@ JSON
   */wham/usage)
     jq -nc '{status_code: 200, body: ({plan_type: "pro",
       rate_limit: {limit_reached: true,
-        primary_window: {used_percent: 100, reset_after_seconds: 5400},
-        secondary_window: {used_percent: 41.6, reset_after_seconds: 190800}},
+        primary_window: {used_percent: 41.6, limit_window_seconds: 604800, reset_after_seconds: 190800},
+        secondary_window: {used_percent: 100, limit_window_seconds: 18000, reset_after_seconds: 5400}},
       credits: {has_credits: true, unlimited: false, balance: "12.50"},
       rate_limit_reset_credits: {available_count: 2}} | tojson)}'
     ;;

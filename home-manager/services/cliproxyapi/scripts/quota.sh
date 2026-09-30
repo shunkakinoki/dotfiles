@@ -183,6 +183,12 @@ RENDER_TABLE='
       elif $s < 86400 then "\($s / 3600 | floor)h\($s % 3600 / 60 | floor)m"
       else "\($s / 86400 | floor)d\($s % 86400 / 3600 | floor)h" end end;
   def pct: if . == null then "-" else "\(tonumber | round)%" end;
+  def lws: (.limit_window_seconds // .limitWindowSeconds) | if . == null then null else tonumber end;
+  # Codex reports windows by length, not position: a plan can have only a
+  # weekly primary window. Windows without a length fall back to position.
+  def codex_pick($short): [.primary_window, .secondary_window] as $w
+    | ([$w[] | select(. != null and lws != null and ((lws <= 86400) == $short))] | first)
+      // (if $short then $w[0] else $w[1] end | if . != null and lws == null then . else null end);
   def codex_window: if . == null then "-"
     else "\((.used_percent // .usedPercent) | pct) \((.reset_after_seconds // .resetAfterSeconds
       // ((.reset_at // .resetAt) | epoch | if . == null then null else . - now end)) | left)" end;
@@ -191,8 +197,8 @@ RENDER_TABLE='
   def row:
     .usage as $u
     | (if .provider == "codex" then
-        [($u.rate_limit.primary_window | codex_window),
-         ($u.rate_limit.secondary_window | codex_window),
+        [($u.rate_limit | codex_pick(true) | codex_window),
+         ($u.rate_limit | codex_pick(false) | codex_window),
          ($u.credits | if . == null then "-"
            elif .unlimited then "unlimited"
            elif .has_credits then "bal \(.balance)"

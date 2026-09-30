@@ -199,9 +199,10 @@ cliproxyapi --claude-login
 
 `cliproxy-quota` (fish abbreviation `clq`) is installed on every host and reads
 kyber's management API: `http://127.0.0.1:8317` on kyber and
-`https://cliproxy.shunkakinoki.com` elsewhere, overridable with
-`CLIPROXY_QUOTA_URL`. It needs `CLIPROXY_MANAGEMENT_PASSWORD` in
-`~/dotfiles/.env`.
+`http://kyber.tail950b36.ts.net:8317` over the tailnet elsewhere, overridable
+with `CLIPROXY_QUOTA_URL`. The public hostname is not used because it routes
+`/v0/management` through CPA Manager Plus, which takes its own admin key. It
+needs `CLIPROXY_MANAGEMENT_PASSWORD` in `~/dotfiles/.env`.
 
 ```bash
 clq                            # every account: 5h/weekly usage, resets, credits, cooldowns

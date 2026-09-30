@@ -75,8 +75,9 @@ let
     ) (lib.importJSON kaminoMapping)
   );
 
-  # Every host reads quota through kyber, the only host with OAuth auth files;
-  # kyber itself uses its local listener.
+  # Every host reads quota from kyber, the only host with OAuth auth files, over
+  # the tailnet with the CLIProxyAPI management password. The public hostname
+  # routes /v0/management to CPA Manager Plus, which takes a different key.
   quotaScript = pkgs.replaceVars ./scripts/quota.sh {
     jq = "${pkgs.jq}/bin/jq";
     curl = "${pkgs.curl}/bin/curl";
@@ -85,7 +86,7 @@ let
       if objectstoreEnabled then
         "http://127.0.0.1:8317/v0/management"
       else
-        "https://cliproxy.shunkakinoki.com/v0/management";
+        "http://kyber.tail950b36.ts.net:8317/v0/management";
   };
 
   quotaCli = pkgs.writeShellScriptBin "cliproxy-quota" (builtins.readFile quotaScript);
