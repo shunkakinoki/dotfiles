@@ -23,7 +23,7 @@ in
       # client and the system make, curl, and sudo; without them it tries to
       # reinstall Nix and fails. AUTOMATED_UPDATE keeps an unattended run from
       # rewriting flake.lock, as on Linux.
-      Environment = {
+      EnvironmentVariables = {
         PATH = "${
           lib.makeBinPath [
             pkgs.git

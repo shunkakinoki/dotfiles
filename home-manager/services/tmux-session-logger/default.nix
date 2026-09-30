@@ -16,7 +16,7 @@ in
         "${pkgs.bash}/bin/bash"
         "${sessionLoggerScript}"
       ];
-      Environment = {
+      EnvironmentVariables = {
         PATH = "${servicePath}:/usr/bin:/bin:/usr/sbin:/sbin";
       };
       RunAtLoad = true;

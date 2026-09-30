@@ -119,6 +119,7 @@ When run bash -c "sed -n '/launchd.agents.dotfiles-updater/,/StartInterval/p' '$
 The output should include ':/nix/var/nix/profiles/default/bin:'
 The output should include ':/usr/bin:/bin:/usr/sbin:/sbin'
 The output should include 'AUTOMATED_UPDATE = "true";'
+The output should include 'EnvironmentVariables = {'
 End
 End
 

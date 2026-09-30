@@ -133,7 +133,7 @@ in
         "${pkgs.bash}/bin/bash"
         "${startScript}"
       ];
-      Environment = {
+      EnvironmentVariables = {
         PATH = "${
           lib.makeBinPath [
             pkgs.gnused
