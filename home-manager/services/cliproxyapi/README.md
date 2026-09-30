@@ -195,6 +195,33 @@ cliproxyapi --claude-login
 # Usage statistics backup/restore happens automatically on start/exit
 ```
 
+## Quota, resets, and credits
+
+`cliproxy-quota` (fish abbreviation `clq`) is installed on every host and reads
+kyber's management API: `http://127.0.0.1:8317` on kyber and
+`https://cliproxy.shunkakinoki.com` elsewhere, overridable with
+`CLIPROXY_QUOTA_URL`. It needs `CLIPROXY_MANAGEMENT_PASSWORD` in
+`~/dotfiles/.env`.
+
+```bash
+clq                            # every account: 5h/weekly usage, resets, credits, cooldowns
+clq status --json codex        # raw records, filtered by name
+clq reset <credential|all>     # clear CLIProxyAPI's local quota cooldown
+clq redeem <credential> --yes  # spend one Codex rate-limit reset credit upstream
+```
+
+Codex rows come from `wham/usage` (usage windows, credit balance, and available
+rate-limit reset credits) and Claude rows from `api/oauth/usage` (usage windows
+and extra-usage credits). OpenRouter credits are shown when
+`OPENROUTER_API_KEY` is set.
+
+Upstream calls go through the management `api-call` endpoint, so access tokens
+never leave kyber. A credential mapped in `kamino-tunnels.json` always passes
+its tunnel, `socks5://127.0.0.1:<1080+N>`, as the request's `proxy_url`; when
+that tunnel is down the row reports an error instead of falling back to
+kyber's own IP. Management calls, local cooldown resets, the OpenRouter lookup,
+and unmapped credentials connect directly.
+
 ## Dependencies
 
 This configuration includes a local guard to mitigate the upstream race condition

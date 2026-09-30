@@ -75,6 +75,21 @@ let
     ) (lib.importJSON kaminoMapping)
   );
 
+  # Every host reads quota through kyber, the only host with OAuth auth files;
+  # kyber itself uses its local listener.
+  quotaScript = pkgs.replaceVars ./scripts/quota.sh {
+    jq = "${pkgs.jq}/bin/jq";
+    curl = "${pkgs.curl}/bin/curl";
+    mapping = "${kaminoMapping}";
+    management_url =
+      if objectstoreEnabled then
+        "http://127.0.0.1:8317/v0/management"
+      else
+        "https://cliproxy.shunkakinoki.com/v0/management";
+  };
+
+  quotaCli = pkgs.writeShellScriptBin "cliproxy-quota" (builtins.readFile quotaScript);
+
   kaminoTunnelScript = pkgs.replaceVars ./scripts/kamino-tunnel.sh {
     jq = "${pkgs.jq}/bin/jq";
     flock = "${pkgs.flock}/bin/flock";
@@ -107,7 +122,7 @@ in
     ''
   );
 
-  home.packages = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin [ cliWrapper ];
+  home.packages = [ quotaCli ] ++ lib.optional pkgs.stdenv.hostPlatform.isDarwin cliWrapper;
 
   # Main service
   launchd.agents.cliproxyapi = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
