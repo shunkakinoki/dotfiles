@@ -10,7 +10,7 @@ in
         "${pkgs.bash}/bin/bash"
         "${./update.sh}"
       ];
-      Environment = {
+      EnvironmentVariables = {
         PATH = "${
           lib.makeBinPath [
             pkgs.git

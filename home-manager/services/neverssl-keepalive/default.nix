@@ -11,7 +11,7 @@ in
         "${pkgs.bash}/bin/bash"
         "${./keepalive.sh}"
       ];
-      Environment = {
+      EnvironmentVariables = {
         PATH = lib.makeBinPath [ pkgs.curl ] + ":/usr/bin:/bin:/usr/sbin:/sbin";
       };
       StartInterval = 30;

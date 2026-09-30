@@ -15,7 +15,7 @@ in
         "${pkgs.bash}/bin/bash"
         "${./export.sh}"
       ];
-      Environment = {
+      EnvironmentVariables = {
         PATH = "${path}:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin";
       };
       StartInterval = 21600;
