@@ -14,6 +14,19 @@ if [ "$(git rev-parse --abbrev-ref HEAD)" != "main" ]; then
   exit 0
 fi
 
+# Upstream images move independently of this repository, so check them on every
+# run, before the no-changes exit. A systemd user session on a non-NixOS host
+# can lack the docker group, which the service's own start wrapper also handles.
+if [ "$HOST" = "kyber" ]; then
+  if docker info >/dev/null 2>&1; then
+    make cliproxy-update || echo "⚠️  cliproxy-update failed" >&2
+  elif [ -x /usr/bin/sg ]; then
+    /usr/bin/sg docker -c "make cliproxy-update" || echo "⚠️  cliproxy-update failed" >&2
+  else
+    echo "⚠️  Skipping cliproxy-update (docker not accessible)" >&2
+  fi
+fi
+
 # The marker records the last commit whose install succeeded. HEAD cannot serve
 # as that record, not even as a fallback: the reset below moves HEAD before
 # install.sh runs, so a failed install would be skipped as "no changes" forever.

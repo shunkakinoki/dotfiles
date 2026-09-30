@@ -184,6 +184,11 @@ tail -f /tmp/cliproxyapi.log
 tail -f /tmp/cliproxyapi-backup.log
 tail -f /tmp/cliproxyapi-backup-auth.log
 
+# Update CLIProxyAPI and CPA Manager Plus images on kyber; only changed
+# containers restart, each after its new image is already pulled. Also runs
+# from `make refresh` and every 3-hour dotfiles-updater run.
+make cliproxy-update
+
 # OAuth login
 cliproxyapi --claude-login
 

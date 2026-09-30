@@ -47,6 +47,7 @@ in
             pkgs.bash
             pkgs.coreutils
             pkgs.curl
+            pkgs.docker
             pkgs.gawk
             pkgs.git
             pkgs.gnugrep
@@ -54,6 +55,7 @@ in
             pkgs.gnused
             pkgs.nix
             pkgs.sudo
+            pkgs.systemd
             pkgs.which
           ]
         }"
