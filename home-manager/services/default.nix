@@ -6,6 +6,7 @@
   ...
 }:
 let
+  audioPriority = ./audio-priority;
   brewUpgrader = import ./brew-upgrader { inherit pkgs; };
   caam = import ./caam;
   cass = import ./cass { inherit pkgs; };
@@ -41,6 +42,7 @@ let
   tracesAgentUploads = ./traces-agent-uploads;
 in
 [
+  audioPriority
   brewUpgrader
   caam
   cass
