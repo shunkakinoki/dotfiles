@@ -15,7 +15,8 @@ MAPPING_FILE="@mapping@"
 DEFAULT_MANAGEMENT_URL="@management_url@"
 
 CODEX_USAGE_URL="https://chatgpt.com/backend-api/wham/usage"
-CODEX_REDEEM_URL="https://chatgpt.com/backend-api/wham/rate-limit-reset-credits/consume"
+CODEX_RESET_CREDITS_URL="https://chatgpt.com/backend-api/wham/rate-limit-reset-credits"
+CODEX_REDEEM_URL="${CODEX_RESET_CREDITS_URL}/consume"
 CODEX_USER_AGENT="codex-tui/0.149.1 (Mac OS 26.5.2; arm64) iTerm.app/3.6.11 (codex-tui; 0.149.1)"
 CLAUDE_USAGE_URL="https://api.anthropic.com/api/oauth/usage"
 OPENROUTER_CREDITS_URL="https://openrouter.ai/api/v1/credits"
@@ -23,10 +24,12 @@ OPENROUTER_CREDITS_URL="https://openrouter.ai/api/v1/credits"
 usage() {
   cat <<'EOF'
 Usage: cliproxy-quota [status] [--json] [filter]
+       cliproxy-quota resets [--json] [filter]
        cliproxy-quota reset <credential|all>
        cliproxy-quota redeem <credential> --yes
 
   status  Usage windows, reset times, and credits for every account (default).
+  resets  Upcoming window resets and Codex reset-credit expiries, soonest first.
   reset   Clear CLIProxyAPI's local quota cooldown so routing retries the account.
   redeem  Spend one Codex rate-limit reset credit upstream, then clear the cooldown.
 
@@ -172,7 +175,7 @@ openrouter_record() {
   fi
 }
 
-RENDER_TABLE='
+JQ_LIB='
   def epoch: try (if type == "number" then .
     elif type == "string" then (sub("\\.[0-9]+"; "") | sub("(\\+00:00|Z)$"; "Z") | fromdateiso8601)
     else null end) catch null;
@@ -184,6 +187,13 @@ RENDER_TABLE='
       else "\($s / 86400 | floor)d\($s % 86400 / 3600 | floor)h" end end;
   def pct: if . == null then "-" else "\(tonumber | round)%" end;
   def lws: (.limit_window_seconds // .limitWindowSeconds) | if . == null then null else tonumber end;
+  def table: (transpose | map(map(tostring | length) | max)) as $w
+    | .[] | [to_entries[] | (.value | tostring) as $s
+      | $s + ([range(0; $w[.key] - ($s | length))] | map(" ") | join(""))]
+    | join("  ") | sub(" +$"; "");
+'
+
+STATUS_TABLE='
   # Codex reports windows by length, not position: a plan can have only a
   # weekly primary window. Windows without a length fall back to position.
   def codex_pick($short): [.primary_window, .secondary_window] as $w
@@ -217,18 +227,96 @@ RENDER_TABLE='
              (.next_retry_after | epoch | if . == null then empty else "cooldown \(. - now | left)" end)]
             | join(", ") end) as $state
     | [.name, .tunnel, ($u.plan_type // .plan // "-"), $cols[0], $cols[1], $cols[2], $cols[3], $state];
-  def table: (transpose | map(map(tostring | length) | max)) as $w
-    | .[] | [to_entries[] | (.value | tostring) as $s
-      | $s + ([range(0; $w[.key] - ($s | length))] | map(" ") | join(""))]
-    | join("  ") | sub(" +$"; "");
+  def table_rows:
   [["CREDENTIAL", "TUNNEL", "PLAN", "5H", "WEEK", "CREDITS", "RESETS", "STATE"]]
   + [.accounts[] | row]
   + (if .openrouter == null then []
      elif .openrouter.error != null then [["openrouter (api key)", "direct", "-", "-", "-", "-", "-", "error: \(.openrouter.error)"]]
      else [["openrouter (api key)", "direct", "-", "-", "-",
             "$\((.openrouter.total_credits - .openrouter.total_usage) * 100 | round / 100) left", "-", "-"]] end)
-  | table
+  | table;
 '
+
+# One row per upcoming reset: every Codex and Claude usage window, and each
+# available Codex rate-limit reset credit by its expiry.
+RESET_ROWS='
+  def body: if . == null or (.status_code // 0) < 200 or .status_code >= 300 then null
+    else (.body | fromjson? // null) end;
+  def row($what; $detail; $at): {name: $name, tunnel: $tunnel, what: $what, detail: $detail, at: ($at | epoch)};
+  ($usage | body) as $u
+  | ($credits | body) as $c
+  | if $u == null and $provider != "" then
+      {name: $name, tunnel: $tunnel, what: "error", detail: "usage \($usage.error // "HTTP \($usage.status_code)")", at: null}
+    elif $provider == "codex" then
+      ([$u.rate_limit.primary_window, $u.rate_limit.secondary_window][] | select(. != null)
+        | row((if lws == null then "window" elif lws > 86400 then "week window" else "5h window" end) + " resets";
+            "\((.used_percent // .usedPercent) | pct) used";
+            ((.reset_at // .resetAt) // (now + (.reset_after_seconds // .resetAfterSeconds // 0))))),
+      ($c.credits // [] | .[]
+        | select((.reset_type // .resetType) == "codex_rate_limits" and .status == "available")
+        | row("reset credit expires"; "granted \((.granted_at // .grantedAt // "?")[0:10])"; (.expires_at // .expiresAt)))
+    else
+      ([["five_hour", "5h"], ["seven_day", "7d"], ["seven_day_opus", "7d opus"],
+        ["seven_day_sonnet", "7d sonnet"], ["iguana_necktie", "7d fable"],
+        ["seven_day_oauth_apps", "7d oauth apps"], ["seven_day_cowork", "7d cowork"]][]
+        | .[1] as $label | $u[.[0]]
+        | select(. != null and .resets_at != null)
+        | row("\($label) window resets"; "\(.utilization | pct) used"; .resets_at))
+    end
+'
+
+RESETS_TABLE='
+  def table_rows:
+    [["CREDENTIAL", "TUNNEL", "RESET", "IN", "AT (UTC)", "DETAIL"]]
+    + [sort_by(.at == null, .at)[]
+       | [.name, .tunnel, .what, (if .at == null then "-" else .at - now | left end),
+          (if .at == null then "-" else .at | floor | todate end), .detail]]
+    | table;
+'
+
+reset_rows() {
+  local file="$1" name provider index tunnel header usage="" credits=null
+  name="$("$JQ" -r '.name' <<<"$file")"
+  provider="$("$JQ" -r '.provider // .type // ""' <<<"$file")"
+  index="$("$JQ" -r '.auth_index // ""' <<<"$file")"
+  tunnel="$(tunnel_host "$name")"
+
+  case "$provider" in
+  codex)
+    header="$(codex_header "$file")"
+    usage="$(api_call "$index" "$name" GET "$CODEX_USAGE_URL" "$header" 2>&1)" ||
+      usage="$("$JQ" -nc --arg error "${usage##*failed: }" '{error: $error}')"
+    credits="$(api_call "$index" "$name" GET "$CODEX_RESET_CREDITS_URL" \
+      "$("$JQ" -c '. + {"Accept": "application/json", "OpenAI-Beta": "codex-1", "Originator": "Codex Desktop"}' <<<"$header")" 2>/dev/null)" ||
+      credits=null
+    ;;
+  claude)
+    usage="$(api_call "$index" "$name" GET "$CLAUDE_USAGE_URL" "$CLAUDE_HEADER" 2>&1)" ||
+      usage="$("$JQ" -nc --arg error "${usage##*failed: }" '{error: $error}')"
+    ;;
+  *) return 0 ;;
+  esac
+
+  "$JQ" -nc --arg name "$name" --arg tunnel "$tunnel" --arg provider "$provider" \
+    --argjson usage "$usage" --argjson credits "$credits" "$JQ_LIB $RESET_ROWS"
+}
+
+resets() {
+  local as_json="$1" filter="$2" rows
+  rows="$(
+    management GET /auth-files |
+      "$JQ" -c --arg filter "$filter" \
+        '.files[] | select(((.disabled // false) | not) and ($filter == "" or (.name | contains($filter))))' |
+      while IFS= read -r file; do
+        reset_rows "$file"
+      done | "$JQ" -sc '.'
+  )"
+  if [ "$as_json" = "true" ]; then
+    "$JQ" --argjson rows "$rows" -n '$rows | sort_by(.at == null, .at)'
+  else
+    "$JQ" -rn --argjson rows "$rows" "$JQ_LIB $RESETS_TABLE \$rows | table_rows"
+  fi
+}
 
 status() {
   local as_json="$1" filter="$2" files file records openrouter
@@ -249,7 +337,7 @@ status() {
       '{accounts: $accounts, openrouter: $openrouter}'
   else
     "$JQ" -rn --argjson accounts "$records" --argjson openrouter "$openrouter" \
-      "{accounts: \$accounts, openrouter: \$openrouter} | $RENDER_TABLE"
+      "$JQ_LIB $STATUS_TABLE {accounts: \$accounts, openrouter: \$openrouter} | table_rows"
   fi
 }
 
@@ -316,7 +404,7 @@ case "${1:-}" in
   usage
   exit 0
   ;;
-status | reset | redeem)
+status | resets | reset | redeem)
   command="$1"
   shift
   ;;
@@ -325,7 +413,7 @@ esac
 [ -n "$MANAGEMENT_KEY" ] || die "CLIPROXY_MANAGEMENT_PASSWORD is not set in ~/dotfiles/.env"
 
 case "$command" in
-status)
+status | resets)
   as_json=false
   filter=""
   for arg in "$@"; do
@@ -335,7 +423,7 @@ status)
     *) filter="$arg" ;;
     esac
   done
-  status "$as_json" "$filter"
+  "$command" "$as_json" "$filter"
   ;;
 reset)
   [ "$#" -eq 1 ] || {

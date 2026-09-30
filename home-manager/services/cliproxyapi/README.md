@@ -197,23 +197,26 @@ cliproxyapi --claude-login
 
 ## Quota, resets, and credits
 
-`cliproxy-quota` (fish abbreviation `clq`) is installed on every host and reads
-kyber's management API: `http://127.0.0.1:8317` on kyber and
-`http://kyber.tail950b36.ts.net:8317` over the tailnet elsewhere, overridable
-with `CLIPROXY_QUOTA_URL`. The public hostname is not used because it routes
+`cliproxy-quota` is installed on every host (fish abbreviation `clq`, through
+`_cliproxyapi_quota_function`) and reads kyber's management API:
+`http://127.0.0.1:8317` on kyber and `http://kyber.tail950b36.ts.net:8317` over
+the tailnet elsewhere, overridable with `CLIPROXY_QUOTA_URL`. The public hostname is not used because it routes
 `/v0/management` through CPA Manager Plus, which takes its own admin key. It
 needs `CLIPROXY_MANAGEMENT_PASSWORD` in `~/dotfiles/.env`.
 
 ```bash
 clq                            # every account: 5h/weekly usage, resets, credits, cooldowns
 clq status --json codex        # raw records, filtered by name
+clq resets                     # upcoming window resets and reset-credit expiries, soonest first
 clq reset <credential|all>     # clear CLIProxyAPI's local quota cooldown
 clq redeem <credential> --yes  # spend one Codex rate-limit reset credit upstream
 ```
 
 Codex rows come from `wham/usage` (usage windows, credit balance, and available
 rate-limit reset credits) and Claude rows from `api/oauth/usage` (usage windows
-and extra-usage credits). OpenRouter credits are shown when
+and extra-usage credits). `resets` also lists each available Codex rate-limit
+reset credit by its expiry from `wham/rate-limit-reset-credits`; Claude has no
+reset credits, so its rows are window resets. OpenRouter credits are shown when
 `OPENROUTER_API_KEY` is set.
 
 Upstream calls go through the management `api-call` endpoint, so access tokens

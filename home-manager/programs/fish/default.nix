@@ -134,7 +134,7 @@
       caxeh = "_caxeh_function";
       cliproxyapi = "_cliproxyapi_function";
       clpri = "_cliproxyapi_priority_function";
-      clq = "cliproxy-quota";
+      clq = "_cliproxyapi_quota_function";
       clrc = "_clrc_function";
       cltxe = "_cltxe_function";
       cltxeh = "_cltxeh_function";
@@ -274,6 +274,7 @@
         "_caxeh_function"
         "_cliproxyapi_function"
         "_cliproxyapi_priority_function"
+        "_cliproxyapi_quota_function"
         "_clrc_function"
         "_cltxe_function"
         "_cltxeh_function"

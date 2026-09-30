@@ -64,6 +64,17 @@ JSON
       extra_usage: {is_enabled: true, used_credits: 300, monthly_limit: 5000}} | tojson)}'
     ;;
   */rate-limit-reset-credits/consume) echo '{"status_code":200,"body":"{}"}' ;;
+  */rate-limit-reset-credits)
+    jq -nc '{status_code: 200, body: ({available_count: 2, credits: [
+      {id: "late", reset_type: "codex_rate_limits", status: "available",
+       granted_at: "2099-01-01T00:00:00Z", expires_at: "2099-02-01T00:00:00.5Z"},
+      {id: "early", reset_type: "codex_rate_limits", status: "available",
+       granted_at: "2098-12-15T00:00:00Z", expires_at: "2099-01-15T00:00:00Z"},
+      {id: "spent", reset_type: "codex_rate_limits", status: "redeemed",
+       granted_at: "2098-12-01T00:00:00Z", expires_at: "2099-01-02T00:00:00Z"},
+      {id: "other", reset_type: "something_else", status: "available",
+       granted_at: "2098-12-01T00:00:00Z", expires_at: "2099-01-03T00:00:00Z"}]} | tojson)}'
+    ;;
   *) echo '{"status_code":404,"body":""}' ;;
   esac
   ;;
@@ -96,6 +107,7 @@ codex_usage_call() { api_call_body 'https://chatgpt.com/backend-api/wham/usage';
 claude_usage_call() { api_call_body 'https://api.anthropic.com/api/oauth/usage'; }
 redeem_call() { api_call_body 'https://chatgpt.com/backend-api/wham/rate-limit-reset-credits/consume'; }
 wham_usage_calls() { codex_usage_call | wc -l | tr -d ' '; }
+reset_credits_call() { api_call_body 'https://chatgpt.com/backend-api/wham/rate-limit-reset-credits'; }
 
 Describe 'status'
 It 'reports usage windows, resets, credits, and cooldowns for every account'
@@ -160,6 +172,42 @@ It 'fails without a management key'
 When run bash -c 'printf "" >"$1/dotfiles/.env" && HOME="$1" CLIPROXY_MANAGEMENT_PASSWORD= bash "$1/quota.sh"' _ "$TEMP_QUOTA"
 The status should be failure
 The stderr should include 'CLIPROXY_MANAGEMENT_PASSWORD is not set'
+End
+End
+
+Describe 'resets'
+It 'lists window resets and reset-credit expiries, soonest first'
+When call quota resets
+The status should be success
+The line 1 of output should match pattern 'CREDENTIAL*TUNNEL*RESET*IN*AT (UTC)*DETAIL'
+The line 2 of output should match pattern 'claude-direct.json*direct*5h window resets*now*2000-01-01T00:00:00Z*12% used'
+The line 3 of output should match pattern 'codex-mapped.json*kamino2*5h window resets*1h*100% used'
+The line 4 of output should match pattern 'codex-mapped.json*kamino2*week window resets*2d*42% used'
+The line 5 of output should match pattern 'codex-mapped.json*kamino2*reset credit expires*2099-01-15T00:00:00Z*granted 2098-12-15'
+The line 6 of output should match pattern 'codex-mapped.json*kamino2*reset credit expires*2099-02-01T00:00:00Z*granted 2099-01-01'
+The lines of output should equal 6
+End
+
+It 'fetches reset credits through the credential tunnel'
+When call quota resets
+The output should include 'reset credit expires'
+The result of function reset_credits_call should include '"proxy_url":"socks5://127.0.0.1:1082"'
+The result of function reset_credits_call should include '"Originator":"Codex Desktop"'
+End
+
+It 'emits sorted rows with --json and narrows by filter'
+When call quota resets --json codex
+The status should be success
+The output should include '"what": "reset credit expires"'
+The output should not include 'claude-direct.json'
+End
+
+It 'reports a down tunnel as an error row'
+export FAKE_TUNNEL_DOWN=1
+When call quota resets
+The status should be success
+The output should match pattern '*codex-mapped.json*kamino2*error*-*-*usage {"error":"request failed"}*'
+The output should include 'claude-direct.json'
 End
 End
 
