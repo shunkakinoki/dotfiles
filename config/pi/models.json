@@ -6,8 +6,8 @@
       "api": "openai-responses",
       "models": [
         {
-          "id": "gpt-6-sol",
-          "name": "GPT 6 Sol [ChatGPT Pro]",
+          "id": "gpt-6.1-sol",
+          "name": "GPT 6.1 Sol [ChatGPT Pro]",
           "reasoning": true,
           "input": [
             "text",
@@ -57,8 +57,8 @@
           "maxTokens": 32000
         },
         {
-          "id": "claude-sonnet-5",
-          "name": "Claude Sonnet 5",
+          "id": "claude-sonnet-5-5",
+          "name": "Claude Sonnet 5.5",
           "reasoning": false,
           "input": [
             "text",
