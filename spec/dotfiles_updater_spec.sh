@@ -113,6 +113,13 @@ It 'provides grep to install.sh'
 When run bash -c "grep 'pkgs.gnugrep' '$MODULE'"
 The output should include 'pkgs.gnugrep'
 End
+
+It 'gives the Darwin agent the Nix daemon client and system tools'
+When run bash -c "sed -n '/launchd.agents.dotfiles-updater/,/StartInterval/p' '$MODULE'"
+The output should include ':/nix/var/nix/profiles/default/bin:'
+The output should include ':/usr/bin:/bin:/usr/sbin:/sbin'
+The output should include 'AUTOMATED_UPDATE = "true";'
+End
 End
 
 Describe 'failed install retry'

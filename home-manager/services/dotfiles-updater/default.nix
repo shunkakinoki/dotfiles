@@ -19,6 +19,10 @@ in
         "${pkgs.bash}/bin/bash"
         "${./update.sh}"
       ];
+      # launchd starts agents with a bare PATH. install.sh needs the Nix daemon's
+      # client and the system make, curl, and sudo; without them it tries to
+      # reinstall Nix and fails. AUTOMATED_UPDATE keeps an unattended run from
+      # rewriting flake.lock, as on Linux.
       Environment = {
         PATH = "${
           lib.makeBinPath [
@@ -26,7 +30,8 @@ in
             pkgs.bash
             pkgs.coreutils
           ]
-        }:/opt/homebrew/bin:/usr/local/bin";
+        }:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin";
+        AUTOMATED_UPDATE = "true";
       };
       StartInterval = 10800;
       StandardOutPath = "/tmp/dotfiles-updater.log";
