@@ -274,7 +274,7 @@ apply-switch: nix-switch services nvim-plugins-install dotagents-switch-sync
 	@$(MAKE) refresh
 
 .PHONY: refresh
-refresh: refresh-codex-daemon refresh-claude-daemon ## Refresh the Codex and Claude daemons.
+refresh: refresh-codex-daemon refresh-claude-daemon cliproxy-update ## Refresh the Codex and Claude daemons and CLIProxyAPI images.
 
 .PHONY: refresh-codex-daemon
 refresh-codex-daemon: ## Restart the managed Codex app-server daemon on Kyber.
@@ -1390,6 +1390,38 @@ systemctl-cpa-manager-plus: ## Restart CPA Manager Plus systemd user service.
 		echo "Skipping cpa-manager-plus.service (host not kyber)"; \
 	fi
 	@echo "✅ CPA Manager Plus restarted"
+
+# Pulling while the old containers still serve keeps each outage to the
+# container swap. CPA Manager Plus reads from CLIProxyAPI, so it goes second.
+.PHONY: cliproxy-update
+cliproxy-update: ## Pull CLIProxyAPI and CPA Manager Plus images and restart whichever changed (kyber).
+	@if [ "$(DETECTED_HOST)" != "kyber" ] && [ "$(HOST)" != "kyber" ]; then \
+		echo "⏭️ Skipping cliproxy-update (host not kyber)"; \
+		exit 0; \
+	fi; \
+	if [ -f "$$HOME/dotfiles/.env" ]; then set -a; . "$$HOME/dotfiles/.env"; set +a; fi; \
+	restart_if_changed() { \
+		name="$$1"; image="$$2"; port="$$3"; \
+		echo "📥 Pulling $$image..."; \
+		docker pull -q "$$image" >/dev/null || return 1; \
+		if [ "$$(docker inspect -f '{{.Image}}' "$$name" 2>/dev/null)" = "$$(docker image inspect -f '{{.Id}}' "$$image")" ]; then \
+			echo "✅ $$name already runs the latest $$image"; \
+			return 0; \
+		fi; \
+		echo "🔄 Restarting $$name..."; \
+		systemctl --user restart "$$name.service" || return 1; \
+		for _ in $$(seq 1 60); do \
+			if curl -s -o /dev/null --max-time 2 "http://127.0.0.1:$$port/"; then \
+				echo "✅ $$name is serving on :$$port"; \
+				return 0; \
+			fi; \
+			sleep 1; \
+		done; \
+		echo "❌ $$name did not come back on :$$port" >&2; \
+		return 1; \
+	}; \
+	restart_if_changed cliproxyapi "$${CLIPROXYAPI_IMAGE:-eceasy/cli-proxy-api:latest}" 8317 && \
+	restart_if_changed cpa-manager-plus "$${CPA_MANAGER_PLUS_IMAGE:-seakee/cpa-manager-plus:latest}" 18317
 
 .PHONY: systemctl-crabbox
 systemctl-crabbox: ## Restart Crabbox PostgreSQL and coordinator systemd user services.

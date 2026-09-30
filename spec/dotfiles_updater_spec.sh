@@ -154,6 +154,33 @@ It 'skips the install once the fetched commit was installed'
 When run bash -c "bash '$SCRIPT' >/dev/null 2>&1 && bash '$SCRIPT' 2>/dev/null"
 The output should include 'No changes detected'
 End
+
+It 'updates cliproxy images on kyber even when nothing changed'
+mkdir -p "$WORK/bin"
+printf '#!/usr/bin/env bash\nexit 0\n' >"$WORK/bin/docker"
+printf '#!/usr/bin/env bash\necho "make $*"\nexit 1\n' >"$WORK/bin/make"
+chmod +x "$WORK/bin/docker" "$WORK/bin/make"
+When run bash -c "bash '$SCRIPT' >/dev/null 2>&1; PATH='$WORK/bin':\$PATH HOST=kyber bash '$SCRIPT'"
+The output should include 'make cliproxy-update'
+The output should include 'No changes detected'
+The error should include 'cliproxy-update failed'
+End
+
+It 'leaves cliproxy images alone on other hosts'
+mkdir -p "$WORK/bin"
+printf '#!/usr/bin/env bash\necho "make $*"\n' >"$WORK/bin/make"
+chmod +x "$WORK/bin/make"
+When run bash -c "PATH='$WORK/bin':\$PATH HOST=galactica bash '$SCRIPT' 2>/dev/null"
+The output should not include 'cliproxy-update'
+End
+End
+
+Describe 'cliproxy service PATH'
+It 'provides docker and systemctl to make cliproxy-update'
+When run bash -c "grep -E 'pkgs\.(docker|systemd)$' '$MODULE'"
+The output should include 'pkgs.docker'
+The output should include 'pkgs.systemd'
+End
 End
 
 End
