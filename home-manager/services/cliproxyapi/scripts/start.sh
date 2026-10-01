@@ -204,7 +204,7 @@ remove_listed_models() {
     function unquote(s, prefix) { sub(prefix, "", s); sub(/".*/, "", s); return s }
     BEGIN {
       while ((getline line < list) > 0) {
-        sub(/#.*/, "", line); gsub(/^[ \t]+|[ \t]+$/, "", line)
+        sub(/\r$/, "", line); sub(/#.*/, "", line); gsub(/^[ \t]+|[ \t]+$/, "", line)
         if (line == "") continue
         split(line, f, /[ \t]+/)
         drop[f[1] SUBSEP f[2]] = 1
