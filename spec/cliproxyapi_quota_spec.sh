@@ -65,6 +65,10 @@ JSON
     ;;
   */rate-limit-reset-credits/consume) echo '{"status_code":200,"body":"{}"}' ;;
   */rate-limit-reset-credits)
+    if [ -n "${FAKE_CREDITS_STATUS:-}" ]; then
+      jq -nc --argjson code "$FAKE_CREDITS_STATUS" '{status_code: $code, body: "{}"}'
+      exit 0
+    fi
     jq -nc '{status_code: 200, body: ({available_count: 2, credits: [
       {id: "late", reset_type: "codex_rate_limits", status: "available",
        granted_at: "2099-01-01T00:00:00Z", expires_at: "2099-02-01T00:00:00.5Z"},
@@ -200,6 +204,15 @@ When call quota resets --json codex
 The status should be success
 The output should include '"what": "reset credit expires"'
 The output should not include 'claude-direct.json'
+End
+
+It 'reports a failed reset-credit lookup instead of dropping it'
+export FAKE_CREDITS_STATUS=429
+When call quota resets
+The status should be success
+The output should match pattern '*codex-mapped.json*kamino2*error*-*-*reset credits HTTP 429*'
+The output should include 'week window resets'
+The output should not include 'reset credit expires'
 End
 
 It 'reports a down tunnel as an error row'
