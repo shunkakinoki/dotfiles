@@ -24,6 +24,7 @@ in
         --arg actor beads-linear-reconciler \
         --slurpfile journal ${fixtures}/journal.jsonl \
         --slurpfile current ${fixtures}/current.json \
+        --slurpfile before ${fixtures}/before.json \
         -n -f ${../home-manager/services/dolt/linear-control-state.jq} \
         | jq -S -s 'sort_by(.id)' > actual.json
       jq -S . ${fixtures}/expected.json > expected.json

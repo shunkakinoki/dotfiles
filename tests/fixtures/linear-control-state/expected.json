@@ -4,27 +4,39 @@
     "current_status": "open",
     "desired_assignee": "",
     "desired_status": "open",
-    "id": "task-b"
+    "id": "task-b",
+    "kept": false
   },
   {
     "current_assignee": "owner@example.com",
     "current_status": "open",
     "desired_assignee": "kamino4_lane_1",
     "desired_status": "in_progress",
-    "id": "task-c"
+    "id": "task-c",
+    "kept": false
   },
   {
     "current_assignee": "owner@example.com",
     "current_status": "open",
     "desired_assignee": "",
     "desired_status": "open",
-    "id": "task-d"
+    "id": "task-d",
+    "kept": false
   },
   {
     "current_assignee": "owner@example.com",
     "current_status": "open",
     "desired_assignee": "kamino4_lane_2",
     "desired_status": "closed",
-    "id": "task-i"
+    "id": "task-i",
+    "kept": false
+  },
+  {
+    "current_assignee": "",
+    "current_status": "in_progress",
+    "desired_assignee": "operator-session",
+    "desired_status": "in_progress",
+    "id": "task-j",
+    "kept": true
   }
 ]

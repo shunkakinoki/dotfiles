@@ -634,8 +634,9 @@ restore_linear_last_sync() {
 }
 
 # A cursor-free pull overwrites local assignment, workflow state, and labels
-# with the tracker's values, including clearing a machine claim's assignee:
-# claim custody lives in the Bead's notes, not its assignee. The durable
+# with the tracker's values. An in-progress Bead the pull only unassigned keeps
+# its pre-pull assignee: Beads owns custody, and a claim whose journal event an
+# earlier cycle already folded has nothing newer to restore it. The durable
 # journal folds every non-reconciler mutation the tracker has not yet received
 # in commit order: those since the last successful cycle listed Beads for its
 # active push, plus those made during this pull. So an unpushed claim, release,
@@ -649,6 +650,7 @@ restore_linear_last_sync() {
 repair_control_state_after_pull() {
   local linear_journal_file="$sync_state_dir/journal-$repo_slug.jsonl"
   local linear_current_file="$sync_state_dir/current-$repo_slug.json"
+  local linear_before_file="$sync_state_dir/before-$repo_slug.json"
   local control_state_repairs
   local restored_control_state
   local restore_failures
@@ -669,19 +671,22 @@ repair_control_state_after_pull() {
     return 1
   fi
   if ! printf '%s\n' "$all_issues" >"$linear_current_file" ||
+    ! printf '%s\n' "$issues_before_pull" >"$linear_before_file" ||
     ! control_state_repairs="$(@jq@/bin/jq -c \
       --arg actor "$BEADS_ACTOR" \
       --slurpfile journal "$linear_journal_file" \
       --slurpfile current "$linear_current_file" \
+      --slurpfile before "$linear_before_file" \
       -n -f @linearControlStateJq@)"; then
     log "Unable to fold the Beads events journal over the pulled state"
     return 1
   fi
-  @coreutils@/bin/rm -f "$linear_journal_file" "$linear_current_file"
+  @coreutils@/bin/rm -f "$linear_journal_file" "$linear_current_file" "$linear_before_file"
 
   # Beads whose status or assignee a repair below changed back from what the
   # pull wrote. The tracker still holds the pulled state, so the pushed-active
-  # ledger's record of what the tracker last received is stale for them.
+  # ledger's record of what the tracker last received is stale for them. A kept
+  # assignee is not: re-pushing it cannot change the tracker's empty value.
   repaired_ids=""
   if [ -n "$control_state_repairs" ]; then
     log "Restoring locally authoritative control state after pull"
@@ -703,7 +708,9 @@ repair_control_state_after_pull() {
       if "$bd_cli" -C "$repo_dir" update "$restore_id" "${restore_args[@]}" \
         --if-status="$pulled_status" --if-assignee="$pulled_assignee" >/dev/null 2>&1; then
         restored_control_state=$((restored_control_state + 1))
-        repaired_ids="${repaired_ids:+$repaired_ids,}$restore_id"
+        if [ "$(@jq@/bin/jq -r '.kept' <<<"$repair")" != true ]; then
+          repaired_ids="${repaired_ids:+$repaired_ids,}$restore_id"
+        fi
       else
         restore_failures=$((restore_failures + 1))
       fi
