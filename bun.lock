@@ -65,6 +65,7 @@
         "playwright-chromium": "^1.63.0",
         "portless": "^0.15.6",
         "ralph-tui": "^0.12.0",
+        "reasonix": "^1.38.9",
         "t3": "^0.0.42",
         "takt": "^0.64.1",
         "tokscale": "^4.17.0",
@@ -108,6 +109,7 @@
     "vite",
     "portless",
     "get-shit-done-cc",
+    "reasonix",
     "betterwright",
     "mcp-remote",
     "@steipete/bird",
@@ -1778,6 +1780,18 @@
     "@puppeteer/browsers": ["@puppeteer/browsers@3.0.6", "", { "dependencies": { "modern-tar": "^0.7.6", "yargs": "^18.0.0" }, "peerDependencies": { "proxy-agent": ">=8.0.1", "yauzl": "^2.10.0 || ^3.4.0" }, "optionalPeers": ["proxy-agent", "yauzl"], "bin": { "browsers": "lib/main-cli.js" } }, "sha512-B/gKoqlFkzhvzsI6jo9K1cZz9o5ypviVv/xu8CwA4grZzyVwN+XfkT+tu8T1zrauuEXv6VhS2oGX+6NL95WcKA=="],
 
     "@railway/cli": ["@railway/cli@5.57.2", "", { "dependencies": { "node-fetch": "^3.1.0", "tar": "^6.1.11" }, "bin": { "railway": "bin/railway.js" } }, "sha512-rV1CTc/o7VmbDCsjEJeDIONNuWSStxJSEA4uQyhz1/Cz/K+Xp0VAqJpXW2hdQmSSJyEBnZakoG4ablQd8xgWQg=="],
+
+    "@reasonix/cli-darwin-arm64": ["@reasonix/cli-darwin-arm64@1.38.9", "", { "os": "darwin", "cpu": "arm64" }, "sha512-r2MyBTad5AIX7VcMZDi9XQv2qaqKMoxEqUQjFtnMRBETo/Y9+2L+Y/fqWbGkpyYnCYLqPv7Jb3rbsbTy2w+Ltw=="],
+
+    "@reasonix/cli-darwin-x64": ["@reasonix/cli-darwin-x64@1.38.9", "", { "os": "darwin", "cpu": "x64" }, "sha512-jJUMo0MyYaAqfIJg6sw22oGWEWc+DUYkkamx6icKP1CWCZSGQyptDwmnhRVOqSU/m8dKw1a+kj9c60oaFmMVxw=="],
+
+    "@reasonix/cli-linux-arm64": ["@reasonix/cli-linux-arm64@1.38.9", "", { "os": "linux", "cpu": "arm64" }, "sha512-j+uqjKjQc+OAVWd10ovwYJbzy2hkdIO3z+OnzDJsZTE3kWCEJxchUYU4qXcC8e9AAWNxhSzwHrwkdABvdPi9ZA=="],
+
+    "@reasonix/cli-linux-x64": ["@reasonix/cli-linux-x64@1.38.9", "", { "os": "linux", "cpu": "x64" }, "sha512-D1KtcztkunwGR7sssVaRNTqN8O5dLJrhXAIrKwpKYaPGhXcYSbh3h+SEnPzrtJ8TQyh37fmH3DZS+OyR47+olQ=="],
+
+    "@reasonix/cli-win32-arm64": ["@reasonix/cli-win32-arm64@1.38.9", "", { "os": "win32", "cpu": "arm64" }, "sha512-18HrLJ5rdoq6AWwn/1pPEdhTDO1xn4mFxrvroQNjwQGgvfCGMBZ2ATrdRz3jxXFoe7JlL4lEG6FGWtaIN07Y9A=="],
+
+    "@reasonix/cli-win32-x64": ["@reasonix/cli-win32-x64@1.38.9", "", { "os": "win32", "cpu": "x64" }, "sha512-Rp6GaI8sXbXuepTca/o8v087Mewr3vb4kxkMElYCvLzAG8HPvWhcKzgIPqyjtgk6+61r4wJfI3WekzsI8BKpmA=="],
 
     "@redwoodjs/agent-ci": ["@redwoodjs/agent-ci@0.18.1", "", { "dependencies": { "run-local-ci": "0.18.1" }, "bin": { "agent-ci": "bin/agent-ci.mjs" } }, "sha512-S2wIJJNldt7TMsj7Zf5WGF40Nk5kY1/tT5LCaaFTiZs+trGZEfqJowIN7Gx2+sUK1Hnffy2/5wPAZJO/HvH4ng=="],
 
@@ -3746,6 +3760,8 @@
     "readdirp": ["readdirp@5.1.1", "", {}, "sha512-Kko+Y5XQ6fM+Ce3dq3m9YGxnacYZYl9cA1wZjaF3Vbry2L3i1qVg8+CAgNPsXRArPMUMCaOR7oa9Nqntc43JKA=="],
 
     "real-require": ["real-require@0.2.0", "", {}, "sha512-57frrGM/OCTLqLOAh0mhVA9VBMHd+9U7Zb2THMGdBUoZVOtGbJzjxsYGDJ3A9AYYCP4hn6y1TVbaOfzWtm5GFg=="],
+
+    "reasonix": ["reasonix@1.38.9", "", { "optionalDependencies": { "@reasonix/cli-darwin-arm64": "1.38.9", "@reasonix/cli-darwin-x64": "1.38.9", "@reasonix/cli-linux-arm64": "1.38.9", "@reasonix/cli-linux-x64": "1.38.9", "@reasonix/cli-win32-arm64": "1.38.9", "@reasonix/cli-win32-x64": "1.38.9" }, "bin": { "reasonix": "bin/reasonix.js" } }, "sha512-y5xeccUbO3uUZ+SQYnGda5IDN3R+igy6gXmZz4WPJHFEN3Ed3mgBuOXIWrWZaw2TMYf56jvNersI3sDcu0jXPA=="],
 
     "registry-auth-token": ["registry-auth-token@5.1.1", "", { "dependencies": { "@pnpm/npm-conf": "^3.0.2" } }, "sha512-P7B4+jq8DeD2nMsAcdfaqHbssgHtZ7Z5+++a5ask90fvmJ8p5je4mOa+wzu+DB4vQ5tdJV/xywY+UnVFeQLV5Q=="],
 

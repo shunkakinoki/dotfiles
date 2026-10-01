@@ -143,6 +143,7 @@ Hermes also runs a Mixture-of-Agents preset: reference models
 | Factory (droid) | custom models | `custom:deepseek-v4.1-flash-0`, `custom:free-1` via `https://cliproxy.shunkakinoki.com/v1` | [settings.tpl.json](config/factory/settings.tpl.json) |
 | aichat | default | `cliproxy:deepseek-v4.1-flash` | [config.tpl.yaml](config/aichat/config.tpl.yaml) |
 | DSH web | default | `deepseek-v4.1-flash` via `https://cliproxy.shunkakinoki.com/v1` (native DeepSeek adapter) | [settings.tpl.yaml](config/dsh/settings.tpl.yaml) |
+| Reasonix | `default_model` | `cliproxy-deepseek-flash` -> `deepseek-v4.1-flash` via `https://cliproxy.shunkakinoki.com/v1` | [config.tpl.toml](config/reasonix/config.tpl.toml) |
 | llm | default | `deepseek-v4.1-flash` | [default_model.tpl.txt](config/llm/default_model.tpl.txt) |
 | Handy | transcript post-process | `@preset/deepseek-v4.1-flash` (OpenRouter) | [settings_store.tpl.json](config/handy/settings_store.tpl.json) |
 
