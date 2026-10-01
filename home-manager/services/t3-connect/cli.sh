@@ -15,9 +15,11 @@ if [ -f "$state" ]; then
     process.stdout.write(state.activeVersion);
   ' "$state")"
   runtime="$base/runtime/versions/$version/t3"
-  if [ -x "$runtime" ]; then
-    cli="$runtime"
+  if [ ! -x "$runtime" ]; then
+    printf 'Active T3 runtime is unavailable: %s\n' "$runtime" >&2
+    exit 1
   fi
+  cli="$runtime"
 fi
 if [ ! -x "$cli" ]; then
   printf 'T3 CLI is missing; activate the managed npm packages first.\n' >&2
@@ -29,10 +31,10 @@ fi
 # lets the initiating turn finish before the update interrupts the server.
 disruptive=false
 case "${1:-}" in
-update) disruptive=true ;;
+update | uninstall) disruptive=true ;;
 service)
   case "${2:-}" in
-  install | restart | uninstall) disruptive=true ;;
+  install | update | restart | uninstall) disruptive=true ;;
   esac
   ;;
 esac
@@ -48,7 +50,7 @@ if "$disruptive" && "$inside_service"; then
   fi
   unit="t3-cli-$(date +%s)-$$"
   "${T3_SYSTEMD_RUN:-systemd-run}" --user --collect --no-block \
-    --unit="$unit" --property=Type=exec \
+    --unit="$unit" --property=Type=exec --working-directory="$PWD" \
     --setenv="HOME=$HOME" --setenv="T3CODE_HOME=$base" \
     --setenv=T3_BOOT_SERVICE_UNIT= \
     "$0" "$@"

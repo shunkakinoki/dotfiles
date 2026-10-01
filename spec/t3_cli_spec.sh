@@ -59,6 +59,39 @@ The stderr should include 'Invalid active T3 runtime version'
 The contents of file "$MOCK_LOG" should equal ''
 End
 
+It 'fails closed when the recorded runtime is missing'
+rm -f "$T3CODE_HOME/runtime/versions/1.2.3/t3"
+When run bash "$SCRIPT" service install
+The status should be failure
+The stderr should include 'Active T3 runtime is unavailable'
+The contents of file "$MOCK_LOG" should equal ''
+End
+
+It 'preserves the working directory for a delegated relative T3 home'
+export T3_BOOT_SERVICE_UNIT=t3code.service
+When run bash "$SCRIPT" service install --base-dir ./t3-home
+The status should be success
+The output should include 'T3 service operation queued'
+The contents of file "$MOCK_LOG" should include "--working-directory=$PWD"
+The contents of file "$MOCK_LOG" should include 'service install --base-dir ./t3-home'
+End
+
+It 'delegates the legacy service update command'
+export T3_BOOT_SERVICE_UNIT=t3code.service
+When run bash "$SCRIPT" service update
+The status should be success
+The output should include 'T3 service operation queued'
+The contents of file "$MOCK_LOG" should include 'service update'
+End
+
+It 'preserves the explicit consent requirement for top-level uninstall'
+export T3_BOOT_SERVICE_UNIT=t3code.service
+When run bash "$SCRIPT" uninstall
+The status should be success
+The output should include 'T3 service operation queued'
+The contents of file "$MOCK_LOG" should not include '--yes'
+End
+
 It 'runs an external updater synchronously'
 When run bash "$SCRIPT" update 1.2.4 --yes
 The status should be success
@@ -83,6 +116,7 @@ When run bash "$SCRIPT" service restart
 The status should be success
 The output should include 'T3 service operation queued'
 The contents of file "$MOCK_LOG" should include 'service restart'
+The contents of file "$MOCK_LOG" should not include '--yes'
 The contents of file "$MOCK_LOG" should not include 'runtime'
 End
 

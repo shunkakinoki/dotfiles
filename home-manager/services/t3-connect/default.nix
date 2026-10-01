@@ -94,6 +94,7 @@ let
     + builtins.readFile ./cli.sh
   );
   cliFunction = ''
+    export PATH="$HOME/.config/t3/bin:$PATH"
     t3() { ${runtimeCli} "$@"; }
   '';
   connectService = pkgs.writeShellScript "t3-connect-service" (
@@ -115,6 +116,16 @@ in
     source = runtimeCli;
   };
 
+  xdg.configFile."t3/bin/t3" = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+    source = runtimeCli;
+  };
+  programs.fish.shellInit = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (
+    lib.mkOrder 2100 "set -gx PATH $HOME/.config/t3/bin $PATH"
+  );
+  programs.fish.loginShellInit = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (
+    lib.mkOrder 2100 "set -gx PATH $HOME/.config/t3/bin $PATH"
+  );
+
   # The service runtime can advance beyond the globally installed CLI. Always
   # use its bundled CLI so a legacy installer cannot downgrade launcher state.
   # Functions take precedence over Bun's global shims in all login shells.
@@ -131,6 +142,7 @@ in
       if test "$T3_BOOT_SERVICE_UNIT" = t3code.service
         set -gx PATH ${runtimeNpm}/bin $PATH
       end
+      set -gx PATH $HOME/.config/t3/bin $PATH
     ''
   );
   programs.bash.profileExtra = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (
