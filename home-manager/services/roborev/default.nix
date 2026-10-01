@@ -110,6 +110,18 @@ lib.mkIf enabled {
       # MemoryHigh throttles via reclaim before MemoryMax kills the cgroup.
       MemoryHigh = "24G";
       MemoryMax = "32G";
+    }
+    // lib.optionalAttrs isMatic {
+      # The token-cost reconciler spawns `agentsview serve` in this cgroup; it
+      # keeps several threads runnable re-syncing watched session dirs. Load
+      # average counts runnable threads regardless of weight, so only a quota
+      # (throttled tasks leave the run queue) keeps it below the executor
+      # floor's load5 <= nproc gate. Review workers mostly wait on model APIs
+      # and fit in the headroom above agentsview's ~2 cores.
+      Nice = 10;
+      CPUWeight = 20;
+      IOWeight = 20;
+      CPUQuota = "250%";
     };
     Install = {
       WantedBy = [ "default.target" ];
