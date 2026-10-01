@@ -697,6 +697,7 @@ home-manager/services/make-updater/update.sh
 home-manager/services/mempalace-exporter/export.sh
 home-manager/services/neverssl-keepalive/keepalive.sh
 home-manager/services/night-shift/apply-night-shift.sh
+home-manager/services/t3-connect/cli.sh
 home-manager/services/t3-connect/connect.sh
 home-manager/services/t3-connect/launch-service.sh
 home-manager/services/t3-connect/prepare-runtime.sh
