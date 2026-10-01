@@ -4,6 +4,34 @@
 Describe 'npm-globals/install-npm-globals.sh'
 SCRIPT="$PWD/home-manager/modules/npm-globals/install-npm-globals.sh"
 
+Describe 'self-hosted upgrade delegation'
+setup_delegation() {
+  mock_bin_setup systemctl
+  export SYSTEMCTL_BIN="$MOCK_BIN/systemctl"
+  export T3_BOOT_SERVICE_UNIT=t3code.service
+}
+cleanup_delegation() {
+  mock_bin_cleanup
+  unset SYSTEMCTL_BIN T3_BOOT_SERVICE_UNIT
+}
+Before 'setup_delegation'
+After 'cleanup_delegation'
+
+It 'moves provider package installation to the independent managed service'
+When run bash "$SCRIPT"
+The status should be success
+The output should include 'Managed package installation requested'
+The contents of file "$MOCK_LOG" should include '--user start --no-block install-npm-globals.service'
+End
+
+It 'propagates a dispatch failure without starting an inline installation'
+printf '#!/usr/bin/env bash\nexit 23\n' >"$SYSTEMCTL_BIN"
+When run bash "$SCRIPT"
+The status should equal 23
+The output should equal ''
+End
+End
+
 Describe 'systemd activation skip'
 It 'checks systemctl is-system-running to detect boot'
 When run bash -c "grep 'is-system-running' '$SCRIPT'"
