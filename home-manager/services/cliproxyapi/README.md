@@ -9,6 +9,7 @@ This directory contains the Nix-based configuration for the cliproxyapi service 
 1. **cliproxyapi** - Main proxy server on port 8317 (every host)
 2. **cliproxyapi-backup-auth** - File watcher that syncs only the auth cache to S3 (kyber)
 3. **cliproxyapi-backup** - Wall-clock hourly job that syncs auth files and CPA Manager Plus analytics to S3 (kyber)
+4. **cliproxyapi-env-reload** - Path unit that re-renders and hot-reloads the config when `~/dotfiles/.env` or `~/.config/cliproxyapi/removed-models` changes (every Linux host)
 
 ### Kyber-only OAuth
 
@@ -169,6 +170,42 @@ then `OLLAMA_API_KEY` pool. A switch that changes the mapping restarts the
 tunnels and `cliproxyapi`. A tunnel with nothing mapped to it exits without
 connecting. The `kamino<N>` SSH host aliases and their host keys must already be
 in `~/.ssh/config` and `~/.ssh/known_hosts`.
+
+### Regenerating after `.env` changes
+
+`config.yaml` is rendered from the template and `~/dotfiles/.env`. On Linux,
+the `cliproxyapi-env-reload` path unit watches `.env` and the host-local
+`removed-models` file. When either changes it runs
+`systemctl --user try-reload-or-restart cliproxyapi.service`. That calls
+`start.sh render`, which rewrites `config.yaml` in place, and the running server
+hot-reloads it without a restart. A rotated, added or removed key therefore
+takes effect within seconds. Before this unit existed, a stale key stayed in
+place until the next home-manager switch.
+
+Runbook, for macOS or if the path unit is not active:
+
+```bash
+systemctl --user reload cliproxyapi   # Linux: re-render and hot-reload
+make services                         # macOS: restart the launchd agent
+grep -c 'api-key: ""' ~/.cli-proxy-api/config.yaml   # empty keys left in the render
+```
+
+### Host-local model removals
+
+Some upstreams cannot answer on a particular host, for example because the host
+has no key for them or their billing is exhausted. To keep such an entry out of
+every render on that host, list it in `~/.config/cliproxyapi/removed-models`:
+
+```text
+# <openai-compatibility provider> <model alias or name>   # reason
+aliyun deepseek-v4.1-flash   # 401 "No API-key provided.": no token-plan key on this host
+openrouter gpt-6-luna        # "You have no credits remaining": billing exhausted
+```
+
+The render drops each listed model from that provider. A provider left with no
+models renders `models: []`. Because the file is host-local, other hosts are
+unaffected. Saving the file triggers a re-render through
+`cliproxyapi-env-reload`.
 
 ## Usage
 
