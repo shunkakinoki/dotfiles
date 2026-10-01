@@ -23,3 +23,8 @@ case ":$PATH:" in
 *":$HOME/.bun/install/global/node_modules/.bin:"*) ;;
 *) export PATH="$HOME/.bun/install/global/node_modules/.bin:$PATH" ;;
 esac
+
+# Use the managed T3 dispatcher even in non-interactive provider subprocesses.
+if [ -x "$HOME/.config/t3/cli.sh" ]; then
+  t3() { "$HOME/.config/t3/cli.sh" "$@"; }
+fi
