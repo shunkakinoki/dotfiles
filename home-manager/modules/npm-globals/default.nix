@@ -29,6 +29,7 @@ in
           "PATH=${pkgs.bun}/bin:${pkgs.jq}/bin:${pkgs.findutils}/bin:${pkgs.gnugrep}/bin:${pkgs.gnused}/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin"
           "BUN_INSTALL=%h/.bun"
           "HOME=%h"
+          "T3_BOOT_SERVICE_UNIT="
         ];
         ExecStart = "${pkgs.bash}/bin/bash ${./install-npm-globals.sh}";
       };

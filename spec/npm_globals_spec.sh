@@ -4,6 +4,58 @@
 Describe 'npm-globals/install-npm-globals.sh'
 SCRIPT="$PWD/home-manager/modules/npm-globals/install-npm-globals.sh"
 
+Describe 'self-hosted upgrade delegation'
+setup_delegation() {
+  mock_bin_setup systemctl timeout bun jq
+  NPM_TEST_HOME="$(mktemp -d)"
+  export NPM_TEST_HOME
+  export SYSTEMCTL_BIN="$MOCK_BIN/systemctl"
+  export T3_BOOT_SERVICE_UNIT=t3code.service
+  export T3_PROC_CGROUP="$NPM_TEST_HOME/cgroup"
+  printf '0::/user.slice/independent.service\n' >"$T3_PROC_CGROUP"
+  printf '#!/usr/bin/env bash\nexit 1\n' >"$MOCK_BIN/timeout"
+}
+cleanup_delegation() {
+  mock_bin_cleanup
+  rm -rf "$NPM_TEST_HOME"
+  unset NPM_TEST_HOME SYSTEMCTL_BIN T3_BOOT_SERVICE_UNIT T3_PROC_CGROUP
+}
+Before 'setup_delegation'
+After 'cleanup_delegation'
+
+It 'moves provider package installation to the independent managed service'
+When run env HOME="$NPM_TEST_HOME" bash "$SCRIPT"
+The status should be success
+The output should include 'Managed package installation requested'
+The contents of file "$MOCK_LOG" should include '--user start --no-block install-npm-globals.service'
+End
+
+It 'detects the service cgroup when the caller marker is absent'
+unset T3_BOOT_SERVICE_UNIT
+printf '0::/user.slice/t3code.service/provider-session\n' >"$T3_PROC_CGROUP"
+When run env HOME="$NPM_TEST_HOME" bash "$SCRIPT"
+The status should be success
+The output should include 'Managed package installation requested'
+The contents of file "$MOCK_LOG" should include '--user start --no-block install-npm-globals.service'
+End
+
+It 'propagates a dispatch failure without starting an inline installation'
+printf '#!/usr/bin/env bash\nexit 23\n' >"$SYSTEMCTL_BIN"
+When run env HOME="$NPM_TEST_HOME" bash "$SCRIPT"
+The status should equal 23
+The output should equal ''
+The contents of file "$MOCK_LOG" should equal ''
+End
+
+It 'executes inline in the independent service after the marker is cleared'
+export T3_BOOT_SERVICE_UNIT=
+When run env HOME="$NPM_TEST_HOME" bash "$SCRIPT"
+The status should be success
+The output should include 'Network unavailable'
+The contents of file "$MOCK_LOG" should not include '--user start --no-block install-npm-globals.service'
+End
+End
+
 Describe 'systemd activation skip'
 It 'checks systemctl is-system-running to detect boot'
 When run bash -c "grep 'is-system-running' '$SCRIPT'"

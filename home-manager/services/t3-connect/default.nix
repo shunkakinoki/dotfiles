@@ -132,7 +132,11 @@ in
   programs.fish.functions.t3 = lib.mkIf pkgs.stdenv.hostPlatform.isLinux ''
     command ${runtimeCli} $argv
   '';
-  programs.bash.initExtra = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (lib.mkOrder 2100 cliFunction);
+  # bashrcExtra runs before Home Manager's noninteractive return, including
+  # Bash's SSH startup path, which reads .bashrc instead of BASH_ENV.
+  programs.bash.bashrcExtra = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (
+    lib.mkOrder 2100 cliFunction
+  );
   programs.zsh.envExtra = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (lib.mkOrder 2100 cliFunction);
 
   # T3 prefers PATH read from an interactive login shell to its inherited PATH.

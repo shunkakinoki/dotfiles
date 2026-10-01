@@ -2,6 +2,15 @@
 
 set -euo pipefail
 
+# An upgrade invoked by a provider session must outlive that session and any
+# later T3 restart. The existing user service also deduplicates managed installs.
+if [ "${T3_BOOT_SERVICE_UNIT:-}" = t3code.service ] ||
+  grep -qsE '/t3code\.service(/|$)' "${T3_PROC_CGROUP:-/proc/self/cgroup}"; then
+  "${SYSTEMCTL_BIN:-systemctl}" --user start --no-block install-npm-globals.service
+  printf 'Managed package installation requested through install-npm-globals.service.\n'
+  exit 0
+fi
+
 # Skip during boot on Linux (SYSTEMCTL_BIN set by nix activation)
 if [ -n "${SYSTEMCTL_BIN:-}" ] && [ "$("$SYSTEMCTL_BIN" is-system-running 2>/dev/null)" = "starting" ]; then
   echo "System is booting, skipping npm globals install"
