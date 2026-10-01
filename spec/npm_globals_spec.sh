@@ -30,6 +30,15 @@ The output should include 'Managed package installation requested'
 The contents of file "$MOCK_LOG" should include '--user start --no-block install-npm-globals.service'
 End
 
+It 'detects the service cgroup when the caller marker is absent'
+unset T3_BOOT_SERVICE_UNIT
+printf '0::/user.slice/t3code.service/provider-session\n' >"$T3_PROC_CGROUP"
+When run env HOME="$NPM_TEST_HOME" bash "$SCRIPT"
+The status should be success
+The output should include 'Managed package installation requested'
+The contents of file "$MOCK_LOG" should include '--user start --no-block install-npm-globals.service'
+End
+
 It 'propagates a dispatch failure without starting an inline installation'
 printf '#!/usr/bin/env bash\nexit 23\n' >"$SYSTEMCTL_BIN"
 When run env HOME="$NPM_TEST_HOME" bash "$SCRIPT"
