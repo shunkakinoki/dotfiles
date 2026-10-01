@@ -936,4 +936,75 @@ The status should be success
 End
 End
 
+Describe 'host-local model removals'
+setup_removals() {
+  TEMP_REMOVE=$(mktemp -d)
+  cat >"$TEMP_REMOVE/config.yaml" <<'YAML'
+port: 8317
+openai-compatibility:
+  - name: "aliyun"
+    priority: 200
+    api-key-entries:
+      - api-key: ""
+    models:
+      - name: "deepseek-v4-flash-0731"
+        alias: "deepseek-v4.1-flash"
+  - name: "openrouter"
+    priority: 100
+    models:
+      - name: "deepseek/deepseek-v4.1-flash"
+        alias: "deepseek-v4.1-flash"
+      # Second provider for Luna
+      - name: "openai/gpt-6-luna"
+        alias: "gpt-6-luna"
+      - name: "openrouter/free"
+        alias: "free"
+        display-name: "Free"
+oauth-excluded-models:
+  codex:
+    - "gpt-6-luna-*"
+YAML
+  printf '%s\n' '# reason header' 'aliyun deepseek-v4.1-flash   # 401 no key' '  openrouter   gpt-6-luna # billing' >"$TEMP_REMOVE/removed-models"
+  : >"$TEMP_REMOVE/empty"
+  sed -n '/^remove_listed_models() {/,/^}/p' "$SCRIPT" | sed 's|@awk@|awk|g' >"$TEMP_REMOVE/remove.sh"
+  printf '%s\n' 'remove_listed_models "$1" <"$2"' >>"$TEMP_REMOVE/remove.sh"
+}
+
+cleanup_removals() {
+  rm -rf "$TEMP_REMOVE"
+}
+
+Before 'setup_removals'
+After 'cleanup_removals'
+
+It 'drops listed models and their attached comments'
+When run bash "$TEMP_REMOVE/remove.sh" "$TEMP_REMOVE/removed-models" "$TEMP_REMOVE/config.yaml"
+The output should not include 'deepseek-v4-flash-0731'
+The output should not include 'openai/gpt-6-luna'
+The output should not include 'Second provider for Luna'
+The output should include '      - name: "deepseek/deepseek-v4.1-flash"'
+The output should include '        display-name: "Free"'
+The output should include '    - "gpt-6-luna-*"'
+The status should be success
+End
+
+It 'renders an empty model list for a provider left without models'
+When run bash -c "bash '$TEMP_REMOVE/remove.sh' '$TEMP_REMOVE/removed-models' '$TEMP_REMOVE/config.yaml' | sed -n '/name: \"aliyun\"/,/name: \"openrouter\"/p'"
+The output should include '    models: []'
+The status should be success
+End
+
+It 'leaves the config unchanged when nothing is listed'
+When run bash -c "bash '$TEMP_REMOVE/remove.sh' '$TEMP_REMOVE/empty' '$TEMP_REMOVE/config.yaml' | cmp - '$TEMP_REMOVE/config.yaml'"
+The status should be success
+End
+
+It 'applies the host-local list during render'
+When run cat "$SCRIPT"
+The output should include 'REMOVED_MODELS_FILE="${HOME}/.config/cliproxyapi/removed-models"'
+The output should include 'remove_listed_models "$REMOVED_MODELS_FILE" <"$RENDERED_CONFIG"'
+The status should be success
+End
+End
+
 End

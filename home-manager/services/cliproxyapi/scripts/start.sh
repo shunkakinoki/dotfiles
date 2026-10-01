@@ -10,6 +10,7 @@ AUTH_DIR="${CONFIG_DIR}/objectstore/auths"
 USAGE_EXPORT_FILE="${CONFIG_DIR}/usage-export.json"
 MANAGEMENT_URL="${CLIPROXY_MANAGEMENT_URL:-http://127.0.0.1:8317/v0/management}"
 KAMINO_MAPPING_FILE="${HOME}/.config/cliproxyapi/kamino-tunnels.json"
+REMOVED_MODELS_FILE="${HOME}/.config/cliproxyapi/removed-models"
 
 cliproxy_init_objectstore_env
 OBJECTSTORE_LOCAL_PATH="$CONFIG_DIR"
@@ -178,6 +179,53 @@ if cliproxy_has_objectstore_credentials; then
   fi
 fi
 
+# Drop the "<provider> <model alias or name>" pairs listed in a host-local file
+# from the openai-compatibility block, so an upstream that cannot answer on this
+# host stays out of every later render. Text after # is a comment; record the
+# reason there. Indented template comments travel with the model entry below
+# them, and a provider left with no models renders "models: []".
+remove_listed_models() {
+  local list="$1"
+  # shellcheck disable=SC2016
+  @awk@ -v list="$list" '
+    function flush_entry() {
+      if (entry == "") return
+      if (!((provider SUBSEP alias) in drop) && !((provider SUBSEP name) in drop)) {
+        if (models_pending) { print "    models:"; models_pending = 0 }
+        printf "%s", entry
+      }
+      entry = ""; alias = ""; name = ""
+    }
+    function close_models() {
+      flush_entry()
+      if (models_pending) { print "    models: []"; models_pending = 0 }
+      if (comments != "") { printf "%s", comments; comments = "" }
+    }
+    function unquote(s, prefix) { sub(prefix, "", s); sub(/".*/, "", s); return s }
+    BEGIN {
+      while ((getline line < list) > 0) {
+        sub(/#.*/, "", line); gsub(/^[ \t]+|[ \t]+$/, "", line)
+        if (line == "") continue
+        split(line, f, /[ \t]+/)
+        drop[f[1] SUBSEP f[2]] = 1
+      }
+    }
+    /^[^ #]/ { close_models(); in_block = ($0 ~ /^openai-compatibility:/); print; next }
+    !in_block { print; next }
+    (models_pending || entry != "") && /^[ \t]+#/ { flush_entry(); comments = comments $0 "\n"; next }
+    /^  - name: "/ { close_models(); provider = unquote($0, "^  - name: \""); print; next }
+    /^    models:[ \t]*$/ { close_models(); models_pending = 1; next }
+    /^      - name: "/ { flush_entry(); entry = comments $0 "\n"; comments = ""; name = unquote($0, "^      - name: \""); next }
+    entry != "" && /^        / {
+      entry = entry $0 "\n"
+      if ($0 ~ /^        alias: "/) alias = unquote($0, "^        alias: \"")
+      next
+    }
+    { close_models(); print }
+    END { close_models() }
+  '
+}
+
 # A secret pasted with a trailing newline would split its sed expression and
 # abort the render, leaving an empty config that crash-loops the service.
 sed_value() {
@@ -225,6 +273,11 @@ if [ -f "$TEMPLATE" ]; then
       -e "s|^    - from:|#     - from:|" \
       -e "s|^      to:|#       to:|" \
       "$RENDERED_CONFIG"
+  fi
+
+  if [ -n "${REMOVED_MODELS_FILE:-}" ] && [ -s "$REMOVED_MODELS_FILE" ]; then
+    remove_listed_models "$REMOVED_MODELS_FILE" <"$RENDERED_CONFIG" >"$RENDERED_CONFIG.filtered"
+    mv "$RENDERED_CONFIG.filtered" "$RENDERED_CONFIG"
   fi
 
   # The container bind-mounts this single file, so replacing its inode would

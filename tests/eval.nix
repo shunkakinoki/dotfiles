@@ -498,6 +498,14 @@ let
         assert cfg.systemd.user.services.cliproxyapi-backup.Service.IOWeight == 10;
         assert cfg.systemd.user.services.cliproxyapi-backup.Service.IOReadBandwidthMax == "/ 5M";
         assert cfg.systemd.user.services.cliproxyapi-backup.Service.IOReadIOPSMax == "/ 50";
+        assert
+          cfg.systemd.user.paths.cliproxyapi-env-reload.Path.PathChanged == [
+            "%h/dotfiles/.env"
+            "%h/.config/cliproxyapi/removed-models"
+          ];
+        assert lib.hasInfix "try-reload-or-restart cliproxyapi.service" (
+          toString cfg.systemd.user.services.cliproxyapi-env-reload.Service.ExecStart
+        );
         assert !(lib.hasInfix "--slice=orchestration.slice" cfg.programs.fish.shellInit);
         assert !(cfg.systemd.user.services ? dolt-federation-sync);
         assert !(cfg.systemd.user.services ? dolt-federation-hub);
