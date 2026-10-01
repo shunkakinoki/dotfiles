@@ -999,10 +999,29 @@ When run bash -c "bash '$TEMP_REMOVE/remove.sh' '$TEMP_REMOVE/empty' '$TEMP_REMO
 The status should be success
 End
 
-It 'applies the host-local list during render'
-When run cat "$SCRIPT"
-The output should include 'REMOVED_MODELS_FILE="${HOME}/.config/cliproxyapi/removed-models"'
-The output should include 'remove_listed_models "$REMOVED_MODELS_FILE" <"$RENDERED_CONFIG"'
+It 'applies the host-local list during render, by alias or name, with CRLF lines'
+When run bash -c '
+  home="$1"
+  script="$2"
+  mkdir -p "$home/.cli-proxy-api" "$home/dotfiles" "$home/.config/cliproxyapi"
+  cp "$3/config.yaml" "$home/.cli-proxy-api/config.template.yaml"
+  : >"$home/dotfiles/.env"
+  printf "%s\r\n" "aliyun deepseek-v4-flash-0731" "openrouter gpt-6-luna" >"$home/.config/cliproxyapi/removed-models"
+  sed -e "s|@objectstore_enabled@|false|" -e "s|@aws@|false|g" \
+    "$PWD/home-manager/services/cliproxyapi/scripts/common.sh" >"$home/common.sh"
+  sed -e "s|@common@|$home/common.sh|" -e "s|@sed@|sed|g" -e "s|@jq@|jq|g" -e "s|@awk@|awk|g" \
+    -e "s|@flock@|flock|g" -e "s|@aws@|false|g" "$script" >"$home/start.sh"
+  cd "$home"
+  HOME="$home" bash "$home/start.sh" render
+  cat "$home/.cli-proxy-api/config.yaml"
+' _ "$TEMP_REMOVE/home" "$SCRIPT" "$TEMP_REMOVE"
+The output should not include 'deepseek-v4-flash-0731'
+The output should not include 'openai/gpt-6-luna'
+The output should not include 'Second provider for Luna'
+The output should include '    models: []'
+The output should include '      - name: "deepseek/deepseek-v4.1-flash"'
+The output should include '      - name: "openrouter/free"'
+The output should include '    - "gpt-6-luna-*"'
 The status should be success
 End
 End
