@@ -153,6 +153,10 @@ let
       assert beads.home.sessionVariables.BD_EVENTS_JOURNAL == "1";
       assert !(beads.systemd.user.services ? dolt);
       assert !(beads.systemd.user.services ? dolt-federation-sync);
+      assert beads.systemd.user.services.roborev.Service.CPUQuota == "250%";
+      assert beads.systemd.user.services.roborev.Service.CPUWeight == 20;
+      assert beads.systemd.user.services.roborev.Service.IOWeight == 20;
+      assert beads.systemd.user.services.roborev.Service.Nice == 10;
       assert
         tailscaleServeRoutes.matic == [
           {
