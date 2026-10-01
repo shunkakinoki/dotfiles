@@ -8,9 +8,13 @@ WRAPPER="$PWD/home-manager/services/t3-connect/runtime-npm.sh"
 LAUNCHER="$PWD/home-manager/services/t3-connect/launch-service.sh"
 
 setup() {
-  mock_bin_setup npm npx prepare node
+  mock_bin_setup npm npx prepare node systemctl
   T3_TEST_ROOT="$(mktemp -d)"
   export T3_TEST_ROOT
+  cat >"$MOCK_BIN/systemctl" <<'MOCK'
+#!/usr/bin/env bash
+[ "${2:-}" != is-failed ]
+MOCK
   export T3CODE_HOME="$T3_TEST_ROOT/t3"
   export npm_config_cache="$T3_TEST_ROOT/npm-cache"
   export T3_PREPARE_RUNTIME="$MOCK_BIN/prepare"
@@ -348,8 +352,8 @@ When run bash -c "grep -F 'lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib ]' '$MODU
 The output should include 'lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib ]'
 End
 
-It 'scopes the selection to the launcher and the connect oneshot'
+It 'scopes the selection to the launcher, CLI, and connect oneshot'
 When run bash -c "grep -c 'setLibraryPath' '$MODULE'"
-The output should eq '3'
+The output should eq '4'
 End
 End

@@ -87,6 +87,16 @@ let
     + "_hm_load_env_file\n"
     + builtins.readFile ./launch-service.sh
   );
+  runtimeCli = pkgs.writeShellScript "t3-cli" (
+    "export PATH=${toolchain}:$PATH\n"
+    + setLibraryPath
+    + "export T3_SYSTEMD_RUN=${pkgs.systemd}/bin/systemd-run\n"
+    + builtins.readFile ./cli.sh
+  );
+  cliFunction = ''
+    export PATH="$HOME/.config/t3/bin:$PATH"
+    t3() { ${runtimeCli} "$@"; }
+  '';
   connectService = pkgs.writeShellScript "t3-connect-service" (
     setLibraryPath + builtins.readFile ./connect.sh
   );
@@ -102,6 +112,29 @@ in
     message = "Kyber must declare exactly one T3 service-owned Tailscale Serve route";
   };
 
+  xdg.configFile."t3/cli.sh" = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+    source = runtimeCli;
+  };
+
+  xdg.configFile."t3/bin/t3" = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+    source = runtimeCli;
+  };
+  programs.fish.shellInit = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (
+    lib.mkOrder 2100 "set -gx PATH $HOME/.config/t3/bin $PATH"
+  );
+  programs.fish.loginShellInit = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (
+    lib.mkOrder 2100 "set -gx PATH $HOME/.config/t3/bin $PATH"
+  );
+
+  # The service runtime can advance beyond the globally installed CLI. Always
+  # use its bundled CLI so a legacy installer cannot downgrade launcher state.
+  # Functions take precedence over Bun's global shims in all login shells.
+  programs.fish.functions.t3 = lib.mkIf pkgs.stdenv.hostPlatform.isLinux ''
+    command ${runtimeCli} $argv
+  '';
+  programs.bash.initExtra = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (lib.mkOrder 2100 cliFunction);
+  programs.zsh.envExtra = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (lib.mkOrder 2100 cliFunction);
+
   # T3 prefers PATH read from an interactive login shell to its inherited PATH.
   # Run after fnm's shell setup so that hydration retains the scoped installer.
   programs.fish.interactiveShellInit = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (
@@ -109,13 +142,14 @@ in
       if test "$T3_BOOT_SERVICE_UNIT" = t3code.service
         set -gx PATH ${runtimeNpm}/bin $PATH
       end
+      set -gx PATH $HOME/.config/t3/bin $PATH
     ''
   );
   programs.bash.profileExtra = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (
-    lib.mkOrder 2000 shellInstallerPath
+    lib.mkOrder 2000 (shellInstallerPath + cliFunction)
   );
   programs.zsh.initContent = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (
-    lib.mkOrder 2000 shellInstallerPath
+    lib.mkOrder 2000 (shellInstallerPath + cliFunction)
   );
 
   # T3 owns the main unit. A drop-in survives `t3 service install/update` and

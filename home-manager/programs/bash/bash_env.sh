@@ -23,3 +23,12 @@ case ":$PATH:" in
 *":$HOME/.bun/install/global/node_modules/.bin:"*) ;;
 *) export PATH="$HOME/.bun/install/global/node_modules/.bin:$PATH" ;;
 esac
+
+# Managed T3 dispatch also applies to non-interactive Bash and its child shells.
+if [ -x "$HOME/.config/t3/bin/t3" ]; then
+  export PATH="$HOME/.config/t3/bin:$PATH"
+fi
+if [ -x "$HOME/.config/t3/cli.sh" ] &&
+  [ -r "${T3CODE_HOME:-$HOME/.t3}/runtime/service-state.json" ]; then
+  t3() { "$HOME/.config/t3/cli.sh" "$@"; }
+fi
