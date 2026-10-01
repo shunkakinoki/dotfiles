@@ -252,9 +252,14 @@ RESET_ROWS='
         | row((if lws == null then "window" elif lws > 86400 then "week window" else "5h window" end) + " resets";
             "\((.used_percent // .usedPercent) | pct) used";
             ((.reset_at // .resetAt) // (now + (.reset_after_seconds // .resetAfterSeconds // 0))))),
-      ($c.credits // [] | .[]
+      (if $c == null then
+        {name: $name, tunnel: $tunnel, what: "error",
+         detail: "reset credits \($credits.error // "HTTP \($credits.status_code)")", at: null}
+      else
+        $c.credits // [] | .[]
         | select((.reset_type // .resetType) == "codex_rate_limits" and .status == "available")
-        | row("reset credit expires"; "granted \((.granted_at // .grantedAt // "?")[0:10])"; (.expires_at // .expiresAt)))
+        | row("reset credit expires"; "granted \((.granted_at // .grantedAt // "?")[0:10])"; (.expires_at // .expiresAt))
+      end)
     else
       ([["five_hour", "5h"], ["seven_day", "7d"], ["seven_day_opus", "7d opus"],
         ["seven_day_sonnet", "7d sonnet"], ["iguana_necktie", "7d fable"],
@@ -286,9 +291,10 @@ reset_rows() {
     header="$(codex_header "$file")"
     usage="$(api_call "$index" "$name" GET "$CODEX_USAGE_URL" "$header" 2>&1)" ||
       usage="$("$JQ" -nc --arg error "${usage##*failed: }" '{error: $error}')"
+    # A failed lookup becomes an error row; dropping it would undercount credits.
     credits="$(api_call "$index" "$name" GET "$CODEX_RESET_CREDITS_URL" \
-      "$("$JQ" -c '. + {"Accept": "application/json", "OpenAI-Beta": "codex-1", "Originator": "Codex Desktop"}' <<<"$header")" 2>/dev/null)" ||
-      credits=null
+      "$("$JQ" -c '. + {"Accept": "application/json", "OpenAI-Beta": "codex-1", "Originator": "Codex Desktop"}' <<<"$header")" 2>&1)" ||
+      credits="$("$JQ" -nc --arg error "${credits##*failed: }" '{error: $error}')"
     ;;
   claude)
     usage="$(api_call "$index" "$name" GET "$CLAUDE_USAGE_URL" "$CLAUDE_HEADER" 2>&1)" ||
