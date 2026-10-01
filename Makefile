@@ -1301,7 +1301,7 @@ launchctl-tmux-session-logger: ## Restart tmux-session-logger launchd agent.
 ##@ Systemd Services (Linux)
 
 .PHONY: systemctl
-systemctl: systemctl-docker systemctl-cliproxyapi systemctl-cpa-manager-plus systemctl-crabbox systemctl-code-syncer systemctl-docker-postgres systemctl-dolt systemctl-dotfiles-updater systemctl-hermes systemctl-make-updater systemctl-neverssl-keepalive systemctl-noctalia-shell systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-roborev systemctl-t3-connect systemctl-tmux-session-logger ## Restart all systemd user services.
+systemctl: systemctl-docker systemctl-cliproxyapi systemctl-cpa-manager-plus systemctl-crabbox systemctl-code-syncer systemctl-docker-postgres systemctl-dotfiles-updater systemctl-hermes systemctl-make-updater systemctl-neverssl-keepalive systemctl-noctalia-shell systemctl-obsidian systemctl-ollama systemctl-openclaw systemctl-roborev systemctl-t3-connect systemctl-tmux-session-logger ## Restart all systemd user services.
 
 .PHONY: systemctl-t3-connect
 systemctl-t3-connect: t3-linger ## Restart the t3-connect timer and run it once.
@@ -1447,16 +1447,6 @@ systemctl-docker-postgres: ## Restart docker-postgres systemd user service.
 	else \
 		systemctl --user restart docker-postgres.service && echo "✅ docker-postgres restarted"; \
 	fi
-
-.PHONY: systemctl-dolt
-systemctl-dolt: ## Restart Dolt systemd system service.
-	@echo "🔄 Restarting dolt..."
-	@if [ "$(DETECTED_HOST)" = "kyber" ] || [ "$(HOST)" = "kyber" ]; then \
-		sudo systemctl restart dolt.service; \
-	else \
-		echo "Skipping dolt.service (host not kyber)"; \
-	fi
-	@echo "✅ dolt restarted"
 
 .PHONY: systemctl-dotfiles-updater
 systemctl-dotfiles-updater: ## Restart dotfiles-updater systemd user service.
