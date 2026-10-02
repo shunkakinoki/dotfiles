@@ -25,7 +25,9 @@ def control_state:
   | from_entries) as $kept
 # A survey lease is local-only, so the tracker's copy of it is stale whatever it
 # says: every lease keeps the control state it had before the pull, closed or
-# not, and the journal still layers newer lane mutations over it.
+# not. Lease writes skip the events journal, so a pass that took or released
+# its lease during the pull is invisible here; `lease` marks the repair for the
+# caller to check the lease's own history first.
 | ($before[0]
   | issues
   | map(
@@ -64,6 +66,7 @@ def control_state:
     current_status: $have.status,
     current_assignee: $have.assignee,
     kept: ($want.kept // false),
+    lease: ($leases[$id] != null),
   }
 | select(
     .desired_status != .current_status

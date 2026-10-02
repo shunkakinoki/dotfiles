@@ -422,7 +422,8 @@ rendered_sections_jq='
 # Linear state copied back would close a live reservation early, or close a
 # lease a running survey pass still heartbeats and hand its lane to a second
 # host. Leases linked before this rule keep their Linear copy, so the
-# control-state repair puts back whatever the pull writes over one.
+# control-state repair puts back whatever the pull writes over one, unless the
+# lease's pass wrote it during the pull.
 # Each is recognized the way its owner does: a reservation by its key
 # ref, first description line, or planner-intake title; a lease by its title.
 # shellcheck disable=SC2016 # jq program; $ anchors are regex syntax.
@@ -699,6 +700,14 @@ repair_control_state_after_pull() {
     restore_failures=0
     while IFS= read -r repair; do
       restore_id="$(@jq@/bin/jq -r '.id' <<<"$repair")"
+      # A pass that released or retook its lease during the pull wrote the
+      # lease's current state itself; restoring the snapshot would hand a
+      # released lease back to a pass that no longer heartbeats it.
+      if [ "$(@jq@/bin/jq -r '.lease' <<<"$repair")" = true ] &&
+        [ "$(written_since_snapshot "$restore_id")" = "true" ]; then
+        restore_failures=$((restore_failures + 1))
+        continue
+      fi
       restore_status="$(@jq@/bin/jq -r '.desired_status' <<<"$repair")"
       restore_assignee="$(@jq@/bin/jq -r '.desired_assignee' <<<"$repair")"
       pulled_status="$(@jq@/bin/jq -r '.current_status' <<<"$repair")"
