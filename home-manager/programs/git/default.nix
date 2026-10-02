@@ -13,7 +13,7 @@
       settings = {
         user = {
           name = "Shun Kakinoki";
-          email = "shunkakinoki@gmail.com";
+          email = "39187513+shunkakinoki@users.noreply.github.com";
         };
         core = {
           editor = "nvim -c \"stopinsert\"";

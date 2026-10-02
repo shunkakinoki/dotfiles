@@ -415,15 +415,16 @@ rendered_sections_jq='
     {title, status, assignee, priority, issue_type, acceptance_criteria, design, notes, description: canonical_description}
     | tojson;
 '
-# A plan-number reservation is the plan number's allocation record, not work,
-# and a survey lease is a survey pass's mutex, so neither is ever created in,
-# adopted from, or pushed to Linear, whatever its state or link. With no
-# reservation on Linear, the pull, which only writes to Beads linked to a live
-# issue, never changes one either: a Linear state copied back would close a
-# live reservation early. Survey leases were linked before this rule, so the
+# Plan-number reservations and survey leases are fleet coordination records,
+# not work, so they are never created in, adopted from, or pushed to Linear,
+# whatever their state or link. With no copy on Linear, the pull, which only
+# writes to Beads linked to a live issue, never changes one either: a stale
+# Linear state copied back would close a live reservation early, or close a
+# lease a running survey pass still heartbeats and hand its lane to a second
+# host. Leases linked before this rule keep their Linear copy, so the
 # control-state repair puts back whatever the pull writes over one.
-# Each is recognized the way its owner does: a reservation by its key ref,
-# first description line, or planner-intake title; a lease by its title.
+# Each is recognized the way its owner does: a reservation by its key
+# ref, first description line, or planner-intake title; a lease by its title.
 # shellcheck disable=SC2016 # jq program; $ anchors are regex syntax.
 local_only_jq='
   def plan_number_reservation:
@@ -431,10 +432,8 @@ local_only_jq='
     or ((.description // "") | (split("\n")[0] // "") | test("Atomic plan-number reservation for .+\\.$"))
     or ((.title // "") | sub("^\\s+"; "") | sub("\\s+$"; "") | ascii_downcase
       | test("^plan [0-9]+ planner intake: number reservation$"));
-  def survey_lease:
-    (.title // "") | test("^Survey lease: ");
-  def local_only:
-    plan_number_reservation or survey_lease;
+  def survey_lease: (.title // "") | startswith("Survey lease: ");
+  def local_only: plan_number_reservation or survey_lease;
 '
 # shellcheck disable=SC2016 # jq program; $ names are jq variables.
 rendered_section_cuts='
