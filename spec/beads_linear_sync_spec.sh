@@ -460,7 +460,7 @@ case "${1:-} ${2:-}" in
     if [ -s "$ISSUE_REF_FILE" ]; then
       issue_ref=$(<"$ISSUE_REF_FILE")
     fi
-    printf '[{"id":"df-accepted","status":"%s","assignee":"test@example.com","created_at":"2099-01-01T00:00:00Z","external_ref":"%s"}]\n' "$issue_status" "$issue_ref"
+    printf '[{"id":"df-accepted","title":"%s","status":"%s","assignee":"test@example.com","created_at":"2099-01-01T00:00:00Z","external_ref":"%s"}]\n' "${FAKE_ISSUE_TITLE:-Accepted work}" "$issue_status" "$issue_ref"
     ;;
   close\ *)
     printf '%s\n' closed >"$ISSUE_STATUS_FILE"
@@ -1445,6 +1445,14 @@ The status should equal 64
 The output should include 'Plan-number reservations and survey leases are never synced to Linear'
 The contents of file "$COMMAND_LOG" should not include 'close df-accepted'
 The contents of file "$COMMAND_LOG" should not include 'linear_completion_pending'
+The contents of file "$COMMAND_LOG" should not include 'linear sync --push'
+End
+
+It 'refuses acceptance completion of a survey lease'
+When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_ISSUE_TITLE='Survey lease: survey-a' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted"
+The status should equal 64
+The output should include 'Plan-number reservations and survey leases are never synced to Linear'
+The contents of file "$COMMAND_LOG" should not include 'close df-accepted'
 The contents of file "$COMMAND_LOG" should not include 'linear sync --push'
 End
 
