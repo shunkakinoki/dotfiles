@@ -30,7 +30,8 @@
     "assignee": "kamino2_survey_ci",
     "labels": [
       "linear"
-    ]
+    ],
+    "lease_expires_at": "2099-01-02T00:05:00Z"
   },
   {
     "id": "task-n",
@@ -46,6 +47,16 @@
     "title": "Survey lease: survey-c",
     "status": "in_progress",
     "assignee": "kamino5_survey_docs",
+    "labels": [
+      "linear"
+    ],
+    "lease_expires_at": "2099-01-02T00:05:00Z"
+  },
+  {
+    "id": "task-p",
+    "title": "Survey lease: survey-d",
+    "status": "in_progress",
+    "assignee": "kamino6_survey_dead-code",
     "labels": [
       "linear"
     ]

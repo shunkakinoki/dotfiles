@@ -122,5 +122,14 @@
     "labels": [
       "linear"
     ]
+  },
+  {
+    "id": "task-p",
+    "title": "Survey lease: survey-d",
+    "status": "closed",
+    "assignee": "",
+    "labels": [
+      "linear"
+    ]
   }
 ]
