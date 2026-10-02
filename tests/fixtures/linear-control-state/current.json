@@ -122,5 +122,29 @@
     "labels": [
       "linear"
     ]
+  },
+  {
+    "id": "task-p",
+    "status": "in_progress",
+    "assignee": "owner@example.com",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-q",
+    "status": "in_progress",
+    "assignee": "owner@example.com",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-r",
+    "status": "open",
+    "assignee": "owner@example.com",
+    "labels": [
+      "linear"
+    ]
   }
 ]
