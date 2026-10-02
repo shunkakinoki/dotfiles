@@ -22,6 +22,7 @@ in
     pkgs.runCommand "linear-control-state" { nativeBuildInputs = [ pkgs.jq ]; } ''
       jq -c \
         --arg actor beads-linear-reconciler \
+        --arg snapshot 2099-01-02T00:00:00Z \
         --slurpfile journal ${fixtures}/journal.jsonl \
         --slurpfile current ${fixtures}/current.json \
         --slurpfile before ${fixtures}/before.json \

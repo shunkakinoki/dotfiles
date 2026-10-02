@@ -25,17 +25,17 @@ def control_state:
   | from_entries) as $kept
 # A survey lease is local-only, so the tracker's copy of it is stale whatever it
 # says: a lease keeps the control state it had before the pull. One held in
-# progress keeps it only while a pass's bd lease stood behind it: one without
-# had no live pass, and putting it back would leave a holder that never
-# heartbeats and that `bd reclaim` cannot reap. Lease writes skip the events
-# journal, so a pass that took or released its lease during the pull is
-# invisible here; `lease` marks the repair for the caller to check the lease's
-# own history first.
+# progress keeps it only while a pass's unexpired bd lease stood behind it at
+# the snapshot: one without had no live pass, and the pull's close drops the
+# bd lease, so putting it back would leave a holder that never heartbeats and
+# that `bd reclaim` cannot reap. Lease writes skip the events journal, so a pass
+# that took or released its lease during the pull is invisible here; `lease`
+# marks the repair for the caller to check the lease's own history first.
 | ($before[0]
   | issues
   | map(
       select((.title // "") | startswith("Survey lease: "))
-      | select(.status != "in_progress" or .lease_expires_at != null)
+      | select(.status != "in_progress" or (.lease_expires_at // "") > $snapshot)
       | { key: .id, value: (control_state + { kept: true }) }
     )
   | from_entries) as $leases

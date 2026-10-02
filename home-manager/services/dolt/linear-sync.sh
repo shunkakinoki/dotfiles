@@ -680,6 +680,7 @@ repair_control_state_after_pull() {
     ! printf '%s\n' "$issues_before_pull" >"$linear_before_file" ||
     ! control_state_repairs="$(@jq@/bin/jq -c \
       --arg actor "$BEADS_ACTOR" \
+      --arg snapshot "$snapshot_taken_at" \
       --slurpfile journal "$linear_journal_file" \
       --slurpfile current "$linear_current_file" \
       --slurpfile before "$linear_before_file" \

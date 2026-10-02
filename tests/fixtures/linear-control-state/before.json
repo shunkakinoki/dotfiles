@@ -60,5 +60,15 @@
     "labels": [
       "linear"
     ]
+  },
+  {
+    "id": "task-q",
+    "title": "Survey lease: survey-e",
+    "status": "in_progress",
+    "assignee": "kamino1_survey_web-vitals",
+    "lease_expires_at": "2099-01-01T23:55:00Z",
+    "labels": [
+      "linear"
+    ]
   }
 ]
