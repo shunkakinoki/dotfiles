@@ -97,7 +97,20 @@ import ../../hosts/nixos {
           "fs.protected_fifos" = 2;
           "fs.protected_symlinks" = 1;
           "fs.protected_hardlinks" = 1;
+
+          # A hang otherwise leaves the machine frozen until someone power
+          # cycles it, with nothing in the journal. Panicking lets efi_pstore
+          # keep the dmesg, which systemd-pstore copies to
+          # /var/lib/systemd/pstore on the next boot.
+          "kernel.panic" = 10;
+          "kernel.panic_on_oops" = 1;
+          "kernel.softlockup_panic" = 1;
         };
+
+        # powertop auto-tune turns the NMI watchdog off, so hard lockups are
+        # never detected in-kernel. The SP5100 TCO hardware timer resets the
+        # board when the kernel stops petting it.
+        systemd.settings.Manager.RuntimeWatchdogSec = "30s";
 
         # AMD power management kernel params
         boot.kernelParams = [
