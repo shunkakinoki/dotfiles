@@ -191,6 +191,18 @@ The contents of file "$TEST_ROOT/commands" should include 't3 connect link'
 The contents of file "$TEST_ROOT/commands" should not include '--publish-only'
 End
 
+It 'removes T3 Connect from Crabbox-only hosts'
+mkdir -p "$TEST_ROOT/t3/runtime" "$TEST_ROOT/t3/userdata/secrets"
+printf '{\n  "protocol": 3\n}\n' >"$TEST_ROOT/t3/runtime/service-state.json"
+: >"$TEST_ROOT/t3/userdata/secrets/cloud-cli-oauth-token.bin"
+When run env T3CODE_HOME="$TEST_ROOT/t3" PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" t3-connect "$TEST_ROOT/bin/t3" disabled
+The status should be success
+The output should include 'T3 Connect disabled and service removed.'
+The contents of file "$TEST_ROOT/commands" should include 't3 connect logout'
+The contents of file "$TEST_ROOT/commands" should include 't3 service uninstall'
+The contents of file "$TEST_ROOT/commands" should not include 't3 connect link'
+End
+
 It 'rejects an unknown T3 Connect mode'
 When run env T3CODE_HOME="$TEST_ROOT/t3" PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" t3-connect "$TEST_ROOT/bin/t3" bogus
 The status should be failure

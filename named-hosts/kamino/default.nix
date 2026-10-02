@@ -22,6 +22,7 @@ let
     isK3sServer = false;
     k3s = null;
     nodeName = name;
+    t3ConnectDisabled = builtins.elem name t3ConnectDisabledHosts;
   };
   tailscaleUpArgs = [
     "--hostname=${name}"
@@ -30,10 +31,24 @@ let
     # not the fleet authorization mechanism.
     "--ssh=true"
   ];
+  # Crabbox-only CI workers. Activation removes any T3 link and service here
+  # and the keepalive timer is not installed, so nothing recreates them.
+  t3ConnectDisabledHosts = [
+    "kamino7"
+    "kamino8"
+    "kamino9"
+    "kamino10"
+  ];
   # The relay caps managed T3 Connect tunnels per account, so only these
   # workers get one; the rest stay publish-only and pair over Tailscale.
   t3ManagedTunnelHosts = [ "kamino5" ];
-  t3ConnectMode = if builtins.elem name t3ManagedTunnelHosts then "managed" else "publish-only";
+  t3ConnectMode =
+    if host.t3ConnectDisabled then
+      "disabled"
+    else if builtins.elem name t3ManagedTunnelHosts then
+      "managed"
+    else
+      "publish-only";
   sshAuthorizedKeys = import ../ssh-authorized-keys.nix;
   authorizedKeysFile = pkgs.writeText "kamino-authorized-keys" (
     pkgs.lib.concatStringsSep "\n" sshAuthorizedKeys.kamino + "\n"

@@ -23,6 +23,7 @@ let
     route: route.name == "t3" && route.manager == "t3-service"
   ) hostServeRoutes;
   t3ServeRoute = if lib.length t3ServeRoutes == 1 then lib.head t3ServeRoutes else null;
+  t3Enabled = pkgs.stdenv.hostPlatform.isLinux && !(inputs.host.t3ConnectDisabled or false);
   # Compile and load native addons with one libc/Node toolchain. Keep the
   # caller's remaining PATH available to provider CLIs in the server.
   toolchain = lib.makeBinPath [
@@ -158,19 +159,17 @@ in
 
   # T3 owns the main unit. A drop-in survives `t3 service install/update` and
   # prevents the interactive shell's fnm Node from changing the runtime ABI.
-  xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf" =
-    lib.mkIf pkgs.stdenv.hostPlatform.isLinux
-      {
-        text = ''
-          [Service]
-          ExecStart=
-          ExecStart=${launcher}
-          ${lib.optionalString (t3ServeRoute != null) ''
-            Environment=T3CODE_TAILSCALE_SERVE=true
-            Environment=T3CODE_TAILSCALE_SERVE_PORT=${toString t3ServeRoute.httpsPort}
-          ''}
-        '';
-      };
+  xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf" = lib.mkIf t3Enabled {
+    text = ''
+      [Service]
+      ExecStart=
+      ExecStart=${launcher}
+      ${lib.optionalString (t3ServeRoute != null) ''
+        Environment=T3CODE_TAILSCALE_SERVE=true
+        Environment=T3CODE_TAILSCALE_SERVE_PORT=${toString t3ServeRoute.httpsPort}
+      ''}
+    '';
+  };
 
   # Provider subprocesses inherit T3's cgroup. Bound their reads without
   # freezing the server or throttling other managed user services.
@@ -183,7 +182,7 @@ in
     '';
   };
 
-  systemd.user.services.t3-connect = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+  systemd.user.services.t3-connect = lib.mkIf t3Enabled {
     Unit = {
       Description = "Keep the T3 remote server ready to accept connections";
     };
@@ -193,6 +192,7 @@ in
         "PATH=${toolchain}"
         "T3_PREPARE_RUNTIME=${prepareRuntime}"
         "T3_SYSTEMCTL=${pkgs.systemd}/bin/systemctl"
+        "T3_ENSURE_SERVICE=${if inputs.host.isKamino or false then "1" else "0"}"
         "XDG_RUNTIME_DIR=%t"
         "DBUS_SESSION_BUS_ADDRESS=unix:path=%t/bus"
       ];
@@ -202,7 +202,7 @@ in
     };
   };
 
-  systemd.user.timers.t3-connect = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+  systemd.user.timers.t3-connect = lib.mkIf t3Enabled {
     Unit = {
       Description = "Timer to keep the T3 remote server ready to accept connections";
     };

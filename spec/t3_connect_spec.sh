@@ -93,6 +93,34 @@ The status should be success
 The output should include 'npm view t3@latest version'
 End
 
+missing_unit() {
+  cat >"$MOCK_BIN/systemctl" <<'MOCK'
+#!/usr/bin/env bash
+case "${2:-}" in cat | is-failed) exit 1 ;; esac
+MOCK
+  warm_cache
+}
+
+It 'reinstalls a missing t3code unit on hosts that own one'
+export T3_ENSURE_SERVICE=1
+When call missing_unit
+The status should be success
+The output should include 'npx --yes t3@1.2.3 service install'
+End
+
+It 'leaves a missing t3code unit alone elsewhere'
+When call missing_unit
+The status should be success
+The output should not include 'service install'
+End
+
+It 'does not reinstall an existing t3code unit'
+export T3_ENSURE_SERVICE=1
+When call warm_cache
+The status should be success
+The output should not include 'service install'
+End
+
 It 'does not mask preparation failures'
 mkdir -p "$T3CODE_HOME/runtime/versions/1.2.3/node_modules/node-pty"
 printf '#!/usr/bin/env bash\nexit 23\n' >"$MOCK_BIN/prepare"
