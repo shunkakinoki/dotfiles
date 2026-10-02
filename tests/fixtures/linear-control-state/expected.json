@@ -38,5 +38,21 @@
     "desired_status": "in_progress",
     "id": "task-j",
     "kept": true
+  },
+  {
+    "current_assignee": "owner@example.com",
+    "current_status": "in_progress",
+    "desired_assignee": "operator-session",
+    "desired_status": "in_progress",
+    "id": "task-k",
+    "kept": true
+  },
+  {
+    "current_assignee": "",
+    "current_status": "open",
+    "desired_assignee": "operator-session",
+    "desired_status": "in_progress",
+    "id": "task-l",
+    "kept": false
   }
 ]

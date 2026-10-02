@@ -637,9 +637,10 @@ restore_linear_last_sync() {
 }
 
 # A cursor-free pull overwrites local assignment, workflow state, and labels
-# with the tracker's values. An in-progress Bead the pull only unassigned keeps
-# its pre-pull assignee: Beads owns custody, and a claim whose journal event an
-# earlier cycle already folded has nothing newer to restore it. The durable
+# with the tracker's values. A Bead that was a fleet claim before the pull keeps
+# its status and assignee unless the tracker closed it: Beads owns custody, and
+# a claim whose journal event an earlier cycle already folded has nothing newer
+# to restore it. The durable
 # journal folds every non-reconciler mutation the tracker has not yet received
 # in commit order: those since the last successful cycle listed Beads for its
 # active push, plus those made during this pull. So an unpushed claim, release,
@@ -648,9 +649,12 @@ restore_linear_last_sync() {
 # lane release made between runs reverts to the tracker's In Progress and
 # strands the Bead with no lane. Each repair compares both fields it observed
 # after the pull; a newer claim makes the guarded write refuse instead of
-# transferring ownership from a live worker. Every caller runs this as a tested
-# command, where errexit does not apply, so each step checks its own status.
-repair_control_state_after_pull() {
+# transferring ownership from a live worker. The phase, "during" or "after",
+# names when the pull is relative to the repair. Every caller runs this as a
+# tested command, where errexit does not apply, so each step checks its own
+# status.
+repair_control_state() {
+  local phase="$1"
   local linear_journal_file="$sync_state_dir/journal-$repo_slug.jsonl"
   local linear_current_file="$sync_state_dir/current-$repo_slug.json"
   local linear_before_file="$sync_state_dir/before-$repo_slug.json"
@@ -666,11 +670,11 @@ repair_control_state_after_pull() {
   local restore_args
 
   if ! all_issues="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0)"; then
-    log "Unable to list Beads after the Linear pull"
+    log "Unable to list Beads $phase the Linear pull"
     return 1
   fi
   if ! "$bd_cli" -C "$repo_dir" events tail --since "$linear_fold_since" >"$linear_journal_file"; then
-    log "Unable to read the Beads events journal after the Linear pull"
+    log "Unable to read the Beads events journal $phase the Linear pull"
     return 1
   fi
   if ! printf '%s\n' "$all_issues" >"$linear_current_file" ||
@@ -692,7 +696,7 @@ repair_control_state_after_pull() {
   # assignee is not: re-pushing it cannot change the tracker's empty value.
   repaired_ids=""
   if [ -n "$control_state_repairs" ]; then
-    log "Restoring locally authoritative control state after pull"
+    log "Restoring locally authoritative control state $phase pull"
     restored_control_state=0
     restore_failures=0
     while IFS= read -r repair; do
@@ -722,6 +726,43 @@ repair_control_state_after_pull() {
   fi
 }
 
+# The pull writes every linked Bead in a burst about a minute in, then runs for
+# minutes more, and a floor that finds its lane's claim blanked, stamped, or
+# reopened in that window releases the lane before any repair after the pull.
+# The same repair therefore also runs while the pull is in flight. A stop lets
+# the pass in progress finish, so its guarded writes and the ids it records
+# agree, and repaired ids reach the parent through a file because the guard is
+# a subshell.
+start_pull_guard() {
+  : >"$pull_guard_repaired_file"
+  (
+    pull_guard_stopping=0
+    pull_guard_sleep=""
+    trap 'pull_guard_stopping=1; if [ -n "$pull_guard_sleep" ]; then kill "$pull_guard_sleep" 2>/dev/null || true; fi' TERM
+    while [ "$pull_guard_stopping" = 0 ]; do
+      @coreutils@/bin/sleep 10 >/dev/null 2>&1 &
+      pull_guard_sleep=$!
+      wait "$pull_guard_sleep" || true
+      pull_guard_sleep=""
+      if [ "$pull_guard_stopping" != 0 ]; then
+        break
+      fi
+      if repair_control_state during && [ -n "$repaired_ids" ]; then
+        printf '%s\n' "${repaired_ids//,/$'\n'}" >>"$pull_guard_repaired_file"
+      fi
+    done
+  ) &
+  pull_guard_pid=$!
+}
+
+stop_pull_guard() {
+  if [ -n "$pull_guard_pid" ]; then
+    kill -TERM "$pull_guard_pid" 2>/dev/null || true
+    wait "$pull_guard_pid" 2>/dev/null || true
+    pull_guard_pid=""
+  fi
+}
+
 # Once the cursor is cleared, the pull can leave local state overwritten
 # however the run ends: success, a failed or timed-out pull, a stop signal, or
 # an errexit abort. Each of those paths calls this, and it runs once. A failed
@@ -733,7 +774,12 @@ restore_after_pull() {
     return 0
   fi
   restore_state=running
-  repair_control_state_after_pull || status=$?
+  stop_pull_guard
+  repair_control_state after || status=$?
+  if [ -s "$pull_guard_repaired_file" ]; then
+    repaired_ids="${repaired_ids:+$repaired_ids,}$(@coreutils@/bin/paste -sd, "$pull_guard_repaired_file")"
+  fi
+  @coreutils@/bin/rm -f "$pull_guard_repaired_file"
   if [ "$pull_status" != 0 ] || [ "$status" -ne 0 ]; then
     restore_linear_last_sync || status=1
   fi
@@ -1116,6 +1162,8 @@ fi
 linear_last_sync_before_pull="$(@jq@/bin/jq -r '.last_sync // ""' <<<"$linear_status")"
 pull_status=""
 deferred_signal=""
+pull_guard_pid=""
+pull_guard_repaired_file="$sync_state_dir/pull-guard-repaired-$repo_slug"
 restore_state=pending
 trap on_restore_exit EXIT
 trap 'on_restore_signal TERM' TERM
@@ -1127,6 +1175,7 @@ run_dolt_sql "USE \`$linear_database\`; DELETE FROM local_metadata WHERE \`key\`
 # failure is deferred to the next scheduled run instead of making launchd
 # hot-loop a failed job.
 log "Pulling complete Linear state"
+start_pull_guard
 if run_linear pull @coreutils@/bin/timeout 720 "$bd_cli" -C "$repo_dir" linear sync \
   --pull \
   --state all \

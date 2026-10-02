@@ -7,20 +7,29 @@ def control_state:
     assignee: (.assignee // ""),
   };
 
+# Fleet actors are host-scoped lane or session names; a tracker user is an
+# email address, and Linear can hold nothing else.
+def fleet_claim:
+  .status == "in_progress"
+  and (.assignee // "") != ""
+  and ((.assignee // "") | contains("@") | not);
+
 ($current[0]
   | issues
   | map({ key: .id, value: control_state })
   | from_entries) as $actual
-# Beads owns custody: Linear cannot hold an agent or session assignee, so the
-# pull blanks every in-progress claim it did not see change. A Bead the pull
-# left in progress with no assignee keeps the one it had before the pull. The
-# tracker still holds what the ledger recorded, so `kept` spares a re-push.
+# Beads owns custody: Linear cannot hold a fleet assignee, so the pull blanks
+# every fleet claim, stamps a person on it, or moves it back to a tracker state
+# the claim has not reached yet. A Bead that was a fleet claim before the pull
+# keeps that claim whatever the pull wrote. When the pull left its status alone,
+# the tracker already holds that status and cannot hold the assignee, so `kept`
+# spares a re-push.
 | ($before[0]
   | issues
   | map(
-      select(.status == "in_progress" and (.assignee // "") != "")
-      | select($actual[.id] == { status: "in_progress", assignee: "" })
-      | { key: .id, value: (control_state + { kept: true }) }
+      select(fleet_claim)
+      | select($actual[.id] != null and $actual[.id] != control_state)
+      | { key: .id, value: (control_state + { kept: ($actual[.id].status == .status) }) }
     )
   | from_entries) as $kept
 # The tracker owns workflow state and labels, so only a mutation another actor

@@ -388,6 +388,19 @@ case "${1:-} ${2:-}" in
           exit 23
         fi
         ;;
+      pull-awaits-guard)
+        # Stays in flight until the expected repair lands, or ten seconds,
+        # then marks its exit so an example can order the two.
+        if [[ " $* " != *" --push "* ]]; then
+          for _ in $(seq 1 100); do
+            if grep -F -- "${FAKE_GUARD_REPAIR:?}" "$COMMAND_LOG" >/dev/null; then
+              break
+            fi
+            sleep 0.1
+          done
+          printf '%s\n' 'pull-exited' >>"$COMMAND_LOG"
+        fi
+        ;;
       pull-sigterm)
         if [[ " $* " != *" --push "* ]]; then
           # BSD pkill never matches its own ancestors, so walk them instead.
@@ -868,13 +881,13 @@ The contents of file "$COMMAND_LOG" should not include 'update df-held'
 The file "$CHECKPOINT_FILE" should be exist
 End
 
-It 'lets the pull demote a machine claim that no worker touched during the pull'
+It 'keeps a fleet claim the pull reopened and accepts a tracker user on an unclaimed Bead'
 before='[{"id":"df-claimed","status":"in_progress","assignee":"kamino4_exec_claimed","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"},{"id":"df-released","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/released"}]'
 after='[{"id":"df-claimed","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"},{"id":"df-released","status":"in_progress","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/released"}]'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
-The output should not include 'Restoring locally authoritative control state after pull'
-The contents of file "$COMMAND_LOG" should not include 'update df-claimed'
+The output should include 'Restored 1 control state record(s); skipped 0 superseded or refused repair(s)'
+The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee kamino4_exec_claimed --status in_progress --if-status=open --if-assignee='
 The contents of file "$COMMAND_LOG" should not include 'update df-released'
 The file "$CHECKPOINT_FILE" should be exist
 End
@@ -885,9 +898,9 @@ after='[{"id":"df-done","status":"closed","assignee":"","closed_at":"2099-01-03T
 journal='{"actor":"kamino2_exec_done","op":"close","issue_id":"df-done","issue":{"id":"df-done","status":"closed","assignee":""}}'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_EVENTS_JOURNAL="$journal" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
-The output should not include 'Restoring locally authoritative control state after pull'
+The output should include 'Restored 1 control state record(s); skipped 0 superseded or refused repair(s)'
 The contents of file "$COMMAND_LOG" should include 'events tail --since 0'
-The contents of file "$COMMAND_LOG" should not include 'update df-claimed'
+The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee kamino4_exec_claimed --status in_progress --if-status=open --if-assignee='
 The contents of file "$COMMAND_LOG" should not include 'update df-done'
 The file "$CHECKPOINT_FILE" should be exist
 End
@@ -1139,15 +1152,15 @@ The contents of file "$ledger" should not include 'df-11 '
 The contents of file "$ledger" should not include 'df-12 '
 End
 
-It 'keeps the Beads assignee of an in_progress claim the pull only unassigned'
+It 'keeps the Beads assignee of a fleet claim the pull unassigned or stamped with a tracker user'
 before='[{"id":"df-session","status":"in_progress","assignee":"operator-session","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/session"},{"id":"df-lane","status":"in_progress","assignee":"exec","notes":"lane-claim:exec","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/lane"},{"id":"df-reassigned","status":"in_progress","assignee":"exec","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-8/reassigned"}]'
 after='[{"id":"df-session","status":"in_progress","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/session"},{"id":"df-lane","status":"in_progress","assignee":"","notes":"lane-claim:exec","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/lane"},{"id":"df-reassigned","status":"in_progress","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-8/reassigned"}]'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
-The output should include 'Restored 2 control state record(s); skipped 0 superseded or refused repair(s)'
+The output should include 'Restored 3 control state record(s); skipped 0 superseded or refused repair(s)'
 The contents of file "$COMMAND_LOG" should include 'update df-session --assignee operator-session --if-status=in_progress --if-assignee='
 The contents of file "$COMMAND_LOG" should include 'update df-lane --assignee exec --if-status=in_progress --if-assignee='
-The contents of file "$COMMAND_LOG" should not include 'update df-reassigned'
+The contents of file "$COMMAND_LOG" should include 'update df-reassigned --assignee exec --if-status=in_progress --if-assignee=operator@example.com'
 The file "$CHECKPOINT_FILE" should be exist
 End
 
@@ -1161,6 +1174,61 @@ The status should be success
 The output should include 'Restored 1 control state record(s); skipped 0 superseded or refused repair(s)'
 The output should include 'No changed active Beads to push'
 The contents of file "$COMMAND_LOG" should include 'update df-session --assignee operator-session --if-status=in_progress --if-assignee='
+End
+
+use_fast_pull_guard() {
+  real_sleep="$(command -v sleep)"
+  rm -f "$COREUTILS/bin/sleep"
+  printf '#!/usr/bin/env bash\nexec %q 0.1\n' "$real_sleep" >"$COREUTILS/bin/sleep"
+  chmod +x "$COREUTILS/bin/sleep"
+}
+
+repair_order() {
+  awk -v repair="$1" 'index($0, repair) { print "repaired"; exit } $0 == "pull-exited" { print "pull-exited"; exit }' "$COMMAND_LOG"
+}
+
+It 'restores a fleet claim the pull reopened while the pull is still in flight'
+before='[{"id":"df-claimed","status":"in_progress","assignee":"kamino6_exec_claimed","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
+after='[{"id":"df-claimed","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
+repaired='[{"id":"df-claimed","status":"in_progress","assignee":"kamino6_exec_claimed","updated_at":"2099-01-04T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
+repair='update df-claimed --assignee kamino6_exec_claimed --status in_progress --if-status=open --if-assignee='
+use_fast_pull_guard
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=pull-awaits-guard FAKE_GUARD_REPAIR="$repair" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" FAKE_LIST_JSON_AFTER_REPAIR="$repaired" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Restoring locally authoritative control state during pull'
+The output should not include 'Restoring locally authoritative control state after pull'
+The value "$(repair_order "$repair")" should equal 'repaired'
+The value "$(grep -c -F -- "$repair" "$COMMAND_LOG")" should equal 1
+The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'keeps a lane release over the stale claim the pull wrote back while the pull is still in flight'
+before='[{"id":"df-released","status":"in_progress","assignee":"kamino6_exec_released","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/released"}]'
+after='[{"id":"df-released","status":"in_progress","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/released"}]'
+repaired='[{"id":"df-released","status":"open","assignee":"","updated_at":"2099-01-04T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/released"}]'
+journal='{"seq":3,"actor":"kamino6_exec_released","op":"update","issue_id":"df-released","issue":{"id":"df-released","status":"open","assignee":""}}'
+repair='update df-released --status open --if-status=in_progress --if-assignee='
+use_fast_pull_guard
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=pull-awaits-guard FAKE_GUARD_REPAIR="$repair" FAKE_EVENTS_JOURNAL="$journal" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" FAKE_LIST_JSON_AFTER_REPAIR="$repaired" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Restoring locally authoritative control state during pull'
+The value "$(repair_order "$repair")" should equal 'repaired'
+The contents of file "$COMMAND_LOG" should not include 'update df-released --assignee kamino6_exec_released'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'pushes a claim restored while the pull was in flight even when the ledger recorded its content'
+claimed='[{"id":"df-claimed","status":"in_progress","assignee":"kamino6_exec_claimed","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
+after='[{"id":"df-claimed","status":"open","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
+repaired='[{"id":"df-claimed","status":"in_progress","assignee":"kamino6_exec_claimed","updated_at":"2099-01-04T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
+repair='update df-claimed --assignee kamino6_exec_claimed --status in_progress --if-status=open --if-assignee='
+ledger="$STATE_HOME/beads-linear-sync/pushed-active-test%2Frepo-one"
+use_fast_pull_guard
+When run bash -c "env COMMAND_LOG='$TEST_ROOT/first.log' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$claimed' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' >/dev/null && grep -q -E '^df-claimed [0-9a-f]{64}$' '$ledger' && env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LINEAR_MODE=pull-awaits-guard FAKE_GUARD_REPAIR='$repair' FAKE_LIST_JSON='$claimed' FAKE_LIST_JSON_AFTER_PULL='$after' FAKE_LIST_JSON_AFTER_REPAIR='$repaired' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT'"
+The status should be success
+The output should include 'Restoring locally authoritative control state during pull'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-claimed --no-wait'
+The file "$STATE_HOME/beads-linear-sync/pull-guard-repaired-test%2Frepo-one" should not be exist
 End
 
 It 'restores a claim made during the pull before a rejected pull exits'
