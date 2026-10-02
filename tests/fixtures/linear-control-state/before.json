@@ -22,5 +22,32 @@
     "labels": [
       "linear"
     ]
+  },
+  {
+    "id": "task-m",
+    "title": "Survey lease: survey-a",
+    "status": "in_progress",
+    "assignee": "kamino2_survey_ci",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-n",
+    "title": "Survey lease: survey-b",
+    "status": "closed",
+    "assignee": "kamino3_survey_locales",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-o",
+    "title": "Survey lease: survey-c",
+    "status": "in_progress",
+    "assignee": "kamino5_survey_docs",
+    "labels": [
+      "linear"
+    ]
   }
 ]

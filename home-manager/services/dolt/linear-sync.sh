@@ -421,7 +421,9 @@ rendered_sections_jq='
 # writes to Beads linked to a live issue, never changes one either: a stale
 # Linear state copied back would close a live reservation early, or close a
 # lease a running survey pass still heartbeats and hand its lane to a second
-# host. Each is recognized the way its owner does: a reservation by its key
+# host. Leases linked before this rule keep their Linear copy, so the
+# control-state repair puts back whatever the pull writes over one.
+# Each is recognized the way its owner does: a reservation by its key
 # ref, first description line, or planner-intake title; a lease by its title.
 # shellcheck disable=SC2016 # jq program; $ anchors are regex syntax.
 local_only_jq='

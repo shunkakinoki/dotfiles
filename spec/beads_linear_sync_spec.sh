@@ -987,6 +987,17 @@ The contents of file "$COMMAND_LOG" should not include 'df-lease'
 The file "$CHECKPOINT_FILE" should be exist
 End
 
+It 'puts back a survey lease the pull closed without pushing it'
+before='[{"id":"df-lease","title":"Survey lease: survey-a","status":"in_progress","assignee":"kamino2_survey_ci","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/lease"}]'
+after='[{"id":"df-lease","title":"Survey lease: survey-a","status":"closed","assignee":"operator@example.com","closed_at":"2099-01-03T00:00:00Z","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/lease"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Restored 1 control state record(s); skipped 0 superseded or refused repair(s)'
+The contents of file "$COMMAND_LOG" should include 'update df-lease --assignee kamino2_survey_ci --status in_progress --if-status=closed --if-assignee=operator@example.com'
+The contents of file "$COMMAND_LOG" should not include 'linear sync --push --issues df-lease'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
 It 'holds back active Beads whose rendered sections alone exceed the Linear issue limit'
 huge="$(printf '%*s' 250001 '' | tr ' ' x)"
 issues='[{"id":"df-small","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/small"},{"id":"df-huge","status":"open","assignee":"","description":"Body","notes":"'"$huge"'","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/huge"}]'
