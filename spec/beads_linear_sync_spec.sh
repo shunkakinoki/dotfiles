@@ -483,7 +483,9 @@ case "${1:-} ${2:-}" in
     done
     ;;
   history\ *)
-    if [ "${FAKE_HISTORY_ID:-}" = "$2" ]; then
+    if [ "${FAKE_HISTORY_FAIL_ID:-}" = "$2" ]; then
+      exit 1
+    elif [ "${FAKE_HISTORY_ID:-}" = "$2" ]; then
       printf '%s\n' "$FAKE_HISTORY_JSON"
     else
       printf '%s\n' '[]'
@@ -1013,6 +1015,16 @@ before='[{"id":"df-lease","title":"Survey lease: survey-a","status":"in_progress
 after='[{"id":"df-lease","title":"Survey lease: survey-a","status":"closed","assignee":"","closed_at":"2099-01-03T00:00:00Z","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/lease"}]'
 history='[{"actor":"kamino2_survey_ci","created_at":"2099-01-03T00:00:00Z","event_type":"closed"}]'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_HISTORY_ID=df-lease FAKE_HISTORY_JSON="$history" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Restored 0 control state record(s); skipped 1 superseded or refused repair(s)'
+The contents of file "$COMMAND_LOG" should not include 'update df-lease'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'leaves a survey lease closed when its history cannot be read'
+before='[{"id":"df-lease","title":"Survey lease: survey-a","status":"in_progress","assignee":"kamino2_survey_ci","lease_expires_at":"2099-01-02T00:05:00Z","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/lease"}]'
+after='[{"id":"df-lease","title":"Survey lease: survey-a","status":"closed","assignee":"","closed_at":"2099-01-03T00:00:00Z","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/lease"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_HISTORY_FAIL_ID=df-lease FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'Restored 0 control state record(s); skipped 1 superseded or refused repair(s)'
 The contents of file "$COMMAND_LOG" should not include 'update df-lease'

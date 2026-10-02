@@ -448,7 +448,7 @@ written_since_snapshot() {
   "$bd_cli" -C "$repo_dir" history "$1" --events --limit 20 --json 2>/dev/null </dev/null |
     @jq@/bin/jq -r --arg since "$snapshot_taken_at" --arg actor "$BEADS_ACTOR" '
       if type == "array" then any(.[]; .actor != $actor and .created_at >= $since) else false end
-    ' 2>/dev/null || echo false
+    ' 2>/dev/null || echo unknown
 }
 
 # Beads whose description still carries rendered sections after a normalize
@@ -703,9 +703,11 @@ repair_control_state_after_pull() {
       restore_id="$(@jq@/bin/jq -r '.id' <<<"$repair")"
       # A pass that released or retook its lease during the pull wrote the
       # lease's current state itself; restoring the snapshot would hand a
-      # released lease back to a pass that no longer heartbeats it.
+      # released lease back to a pass that no longer heartbeats it. An unread
+      # history skips the repair too: a live pass retakes a lease the pull
+      # closed on its next heartbeat.
       if [ "$(@jq@/bin/jq -r '.lease' <<<"$repair")" = true ] &&
-        [ "$(written_since_snapshot "$restore_id")" = "true" ]; then
+        [ "$(written_since_snapshot "$restore_id")" != "false" ]; then
         restore_failures=$((restore_failures + 1))
         continue
       fi
