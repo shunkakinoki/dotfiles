@@ -593,6 +593,27 @@ import ../../hosts/nixos {
 
             modules.tailscale.manageServeRoutes = true;
 
+            # Fleet executor seats wake through this server's socket, so the
+            # lingering user manager owns it and brings it back after a reboot.
+            systemd.user.services.herdr-server = {
+              Unit = {
+                Description = "Herdr headless server";
+                X-SwitchMethod = "restart";
+              };
+              Service = {
+                ExecStart = "${pkgs.llm-agents.herdr}/bin/herdr server";
+                Restart = "on-failure";
+                RestartSec = "5s";
+                Environment = [
+                  "HERDR_ENV=1"
+                  "SHELL=${pkgs.fish}/bin/fish"
+                  "PATH=/run/wrappers/bin:${config.home.homeDirectory}/.nix-profile/bin:/etc/profiles/per-user/${username}/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin"
+                ];
+                EnvironmentFile = [ "-${config.home.homeDirectory}/dotfiles/.env" ];
+              };
+              Install.WantedBy = [ "default.target" ];
+            };
+
             # Animated wallpaper via Wallpaper Engine
             services.linux-wallpaperengine = {
               enable = true;
