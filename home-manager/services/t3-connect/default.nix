@@ -159,9 +159,13 @@ in
 
   # T3 owns the main unit. A drop-in survives `t3 service install/update` and
   # prevents the interactive shell's fnm Node from changing the runtime ABI.
+  # Agent fleets in sibling units (herdr, roborev) can saturate every core.
+  # At the default weight the server's event loop then stalls for seconds,
+  # relay and websocket heartbeats lapse, and clients show "reconnecting".
   xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf" = lib.mkIf t3Enabled {
     text = ''
       [Service]
+      CPUWeight=1000
       ExecStart=
       ExecStart=${launcher}
       ${lib.optionalString (t3ServeRoute != null) ''

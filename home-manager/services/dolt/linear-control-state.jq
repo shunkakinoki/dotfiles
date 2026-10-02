@@ -42,7 +42,7 @@ def control_state:
 | ($before[0]
   | issues
   | map(
-      select((.title // "") | test("^Survey lease: "))
+      select((.title // "") | startswith("Survey lease: "))
       | { key: .id, value: (control_state + { kept: true }) }
     )
   | from_entries) as $leases

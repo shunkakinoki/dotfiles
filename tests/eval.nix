@@ -531,6 +531,8 @@ let
           cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text;
         assert lib.hasInfix "Environment=T3CODE_TAILSCALE_SERVE_PORT=8443"
           cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text;
+        assert lib.hasInfix "CPUWeight=1000"
+          cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text;
         mkEvalCheck "home-kyber" kyber.activationPackage;
     };
 in

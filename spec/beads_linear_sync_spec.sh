@@ -460,7 +460,7 @@ case "${1:-} ${2:-}" in
     if [ -s "$ISSUE_REF_FILE" ]; then
       issue_ref=$(<"$ISSUE_REF_FILE")
     fi
-    printf '[{"id":"df-accepted","status":"%s","assignee":"test@example.com","created_at":"2099-01-01T00:00:00Z","external_ref":"%s"}]\n' "$issue_status" "$issue_ref"
+    printf '[{"id":"df-accepted","title":"%s","status":"%s","assignee":"test@example.com","created_at":"2099-01-01T00:00:00Z","external_ref":"%s"}]\n' "${FAKE_ISSUE_TITLE:-Accepted work}" "$issue_status" "$issue_ref"
     ;;
   close\ *)
     printf '%s\n' closed >"$ISSUE_STATUS_FILE"
@@ -984,8 +984,8 @@ The contents of file "$COMMAND_LOG" should not include 'df-later'
 The file "$CHECKPOINT_FILE" should be exist
 End
 
-It 'never pushes plan-number reservations, linked or not'
-issues='[{"id":"df-open","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/open"},{"id":"df-reserved-linked","title":"Plan 5714 planner intake: number reservation","status":"in_progress","assignee":"lane_plan_intake","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/reserved"},{"id":"df-reserved-keyed","title":"Reserved","status":"in_progress","assignee":"lane_plan_intake","created_by":"creator@example.com","created_at":"2099-01-01T00:00:00Z","updated_at":"2099-01-02T00:00:00Z","external_ref":"plan:number:5715"},{"id":"df-reserved-described","title":"Reserved","description":"Atomic plan-number reservation for plan:number:5716.\n\n## Notes","status":"in_progress","assignee":"lane_plan_intake","created_by":"creator@example.com","created_at":"2099-01-01T00:00:00Z","updated_at":"2099-01-02T00:00:00Z"},{"id":"df-reserved-closed","title":"  PLAN 5717 Planner Intake: Number Reservation ","status":"closed","closed_at":"2099-01-02T00:00:00Z","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-3/reserved"}]'
+It 'never pushes plan-number reservations or survey leases, linked or not'
+issues='[{"id":"df-open","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/open"},{"id":"df-reserved-linked","title":"Plan 5714 planner intake: number reservation","status":"in_progress","assignee":"lane_plan_intake","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/reserved"},{"id":"df-reserved-keyed","title":"Reserved","status":"in_progress","assignee":"lane_plan_intake","created_by":"creator@example.com","created_at":"2099-01-01T00:00:00Z","updated_at":"2099-01-02T00:00:00Z","external_ref":"plan:number:5715"},{"id":"df-reserved-described","title":"Reserved","description":"Atomic plan-number reservation for plan:number:5716.\n\n## Notes","status":"in_progress","assignee":"lane_plan_intake","created_by":"creator@example.com","created_at":"2099-01-01T00:00:00Z","updated_at":"2099-01-02T00:00:00Z"},{"id":"df-reserved-closed","title":"  PLAN 5717 Planner Intake: Number Reservation ","status":"closed","closed_at":"2099-01-02T00:00:00Z","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-3/reserved"},{"id":"df-lease-held","title":"Survey lease: architecture.infra","notes":"route:planner auto:kamino1_survey","status":"in_progress","assignee":"kamino1_survey","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-4/lease"},{"id":"df-lease-released","title":"Survey lease: dead-code.packages","status":"closed","closed_at":"2099-01-02T00:00:00Z","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-5/lease"},{"id":"df-lease-new","title":"Survey lease: tests.coverage","status":"open","assignee":"","created_by":"creator@example.com","created_at":"2099-01-01T00:00:00Z","updated_at":"2099-01-02T00:00:00Z"}]'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$issues" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'No terminal Beads to push'
@@ -993,17 +993,6 @@ The output should include 'Pushing changed active Beads batch 1/1'
 The output should not include 'Adopted'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-open --no-wait'
 The contents of file "$COMMAND_LOG" should not include 'df-reserved'
-The file "$CHECKPOINT_FILE" should be exist
-End
-
-It 'never pushes survey leases, linked or not'
-issues='[{"id":"df-open","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/open"},{"id":"df-lease-linked","title":"Survey lease: survey-a","status":"in_progress","assignee":"kamino2_survey_ci","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/lease"},{"id":"df-lease-unlinked","title":"Survey lease: survey-c","status":"open","assignee":"","created_by":"creator@example.com","created_at":"2099-01-01T00:00:00Z","updated_at":"2099-01-02T00:00:00Z"},{"id":"df-lease-closed","title":"Survey lease: survey-b","status":"closed","closed_at":"2099-01-02T00:00:00Z","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-3/lease"}]'
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$issues" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
-The status should be success
-The output should include 'No terminal Beads to push'
-The output should include 'Pushing changed active Beads batch 1/1'
-The output should not include 'Adopted'
-The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-open --no-wait'
 The contents of file "$COMMAND_LOG" should not include 'df-lease'
 The file "$CHECKPOINT_FILE" should be exist
 End
@@ -1456,6 +1445,14 @@ The status should equal 64
 The output should include 'Plan-number reservations and survey leases are never synced to Linear'
 The contents of file "$COMMAND_LOG" should not include 'close df-accepted'
 The contents of file "$COMMAND_LOG" should not include 'linear_completion_pending'
+The contents of file "$COMMAND_LOG" should not include 'linear sync --push'
+End
+
+It 'refuses acceptance completion of a survey lease'
+When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_ISSUE_TITLE='Survey lease: architecture.infra' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted"
+The status should equal 64
+The output should include 'Plan-number reservations and survey leases are never synced to Linear'
+The contents of file "$COMMAND_LOG" should not include 'close df-accepted'
 The contents of file "$COMMAND_LOG" should not include 'linear sync --push'
 End
 
