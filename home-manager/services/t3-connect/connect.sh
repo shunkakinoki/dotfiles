@@ -83,6 +83,13 @@ for dir in "${npm_config_cache:-$HOME/.npm}"/_npx/*/ "${T3CODE_HOME:-$HOME/.t3}"
   "${T3_PREPARE_RUNTIME:?}" "$dir"
 done
 
+# `t3 service install` owns the unit and Home Manager only ships drop-ins, so a
+# stray `t3 service uninstall` would otherwise leave a worker dark for good.
+if [ "${T3_ENSURE_SERVICE:-0}" = 1 ] &&
+  ! "${T3_SYSTEMCTL:-systemctl}" --user cat t3code.service >/dev/null 2>&1; then
+  npx --yes "$spec" service install
+fi
+
 # A crash loop (e.g. a full disk) trips systemd's start limit, and the unit
 # then stays failed forever while clients sit on "reconnecting". Revive it
 # once the runtime is warm so a transient cause heals on the next pass.

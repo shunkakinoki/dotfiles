@@ -102,6 +102,7 @@ t3-connect)
   t3_bin="${2:-}"
   t3_mode="${3:-publish-only}"
   case "$t3_mode" in
+  disabled) link_flags=() ;;
   managed) link_flags=() ;;
   publish-only) link_flags=(--publish-only) ;;
   *)
@@ -121,6 +122,13 @@ t3-connect)
   # libraries built against a newer glibc into the provisioning run.
   if [ -n "${4:-}" ]; then
     export LD_LIBRARY_PATH="$4"
+  fi
+
+  if [ "$t3_mode" = disabled ]; then
+    "$t3_bin" connect logout || true
+    "$t3_bin" service uninstall || true
+    echo "T3 Connect disabled and service removed."
+    exit 0
   fi
 
   base="${T3CODE_HOME:-$HOME/.t3}"
