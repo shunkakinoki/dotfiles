@@ -112,6 +112,10 @@ import ../../hosts/nixos {
         # board when the kernel stops petting it.
         systemd.settings.Manager.RuntimeWatchdogSec = "30s";
 
+        # Agent fleets push this host into kernel OOM kills; with no swap at
+        # all, reclaim has nothing to fall back on but page cache thrash.
+        zramSwap.enable = true;
+
         # AMD power management kernel params
         boot.kernelParams = [
           "amdgpu.abmlevel=3" # auto backlight management
