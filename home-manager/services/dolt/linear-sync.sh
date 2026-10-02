@@ -416,19 +416,25 @@ rendered_sections_jq='
     | tojson;
 '
 # A plan-number reservation is the plan number's allocation record, not work,
-# so it is never created in, adopted from, or pushed to Linear, whatever its
-# state or link. With no reservation on Linear, the pull, which only writes to
-# Beads linked to a live issue, never changes one either: a Linear state copied
-# back would close a live reservation early.
-# Recognized the way its owner does: by the reservation key ref, the first
-# description line, or the planner-intake title.
+# and a survey lease is a survey pass's mutex, so neither is ever created in,
+# adopted from, or pushed to Linear, whatever its state or link. With no
+# reservation on Linear, the pull, which only writes to Beads linked to a live
+# issue, never changes one either: a Linear state copied back would close a
+# live reservation early. Survey leases were linked before this rule, so the
+# control-state repair puts back whatever the pull writes over one.
+# Each is recognized the way its owner does: a reservation by its key ref,
+# first description line, or planner-intake title; a lease by its title.
 # shellcheck disable=SC2016 # jq program; $ anchors are regex syntax.
-plan_number_reservation_jq='
+local_only_jq='
   def plan_number_reservation:
     ((.external_ref // "") | startswith("plan:number:"))
     or ((.description // "") | (split("\n")[0] // "") | test("Atomic plan-number reservation for .+\\.$"))
     or ((.title // "") | sub("^\\s+"; "") | sub("\\s+$"; "") | ascii_downcase
       | test("^plan [0-9]+ planner intake: number reservation$"));
+  def survey_lease:
+    (.title // "") | test("^Survey lease: ");
+  def local_only:
+    plan_number_reservation or survey_lease;
 '
 # shellcheck disable=SC2016 # jq program; $ names are jq variables.
 rendered_section_cuts='
@@ -842,8 +848,8 @@ if [ "$operation" = "--complete" ]; then
     log "Completion Bead was not found"
     exit 66
   fi
-  if @jq@/bin/jq -e "$plan_number_reservation_jq"'.[0] | plan_number_reservation' <<<"$completion_issue" >/dev/null; then
-    log "Plan-number reservations are never synced to Linear"
+  if @jq@/bin/jq -e "$local_only_jq"'.[0] | local_only' <<<"$completion_issue" >/dev/null; then
+    log "Plan-number reservations and survey leases are never synced to Linear"
     exit 64
   fi
 
@@ -983,11 +989,11 @@ issues_before_pull="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0)"
 # Adopt before the pull, which does not match an unlinked Linear issue to its
 # Bead. Deferred Beads are never pushed, and a closed Bead is
 # pushed unlinked only while its completion is pending.
-unlinked_ids="$(@jq@/bin/jq -r "$plan_number_reservation_jq"'
+unlinked_ids="$(@jq@/bin/jq -r "$local_only_jq"'
   (if type == "object" and has("issues") then .issues else . end)
   | [
     .[]
-    | select(plan_number_reservation | not)
+    | select(local_only | not)
     | select((.external_ref // "") | contains("linear.app") | not)
     | select(
         (.status != "closed" and .status != "deferred")
@@ -1008,13 +1014,13 @@ if [ -s "$push_progress_file" ]; then
 fi
 # Keep deferred progress content out of jq's argv. The file may contain many
 # batches, so passing it with --arg exceeds Linux's per-argument limit.
-closed_push_selection="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" --rawfile pushed "$pushed_progress_input" "$rendered_sections_jq$plan_number_reservation_jq"'
+closed_push_selection="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" --rawfile pushed "$pushed_progress_input" "$rendered_sections_jq$local_only_jq"'
   def body_length: (canonical_description | length) + rendered_sections_length;
   issues
   | ($pushed | split("\n") | map(select(length > 0) | {key: ., value: true}) | from_entries) as $already_pushed
   | [
     .[]
-    | select(plan_number_reservation | not)
+    | select(local_only | not)
     | select(
         .status == "closed"
         and (
@@ -1048,11 +1054,11 @@ if [ "$oversized_push_count" -gt 0 ]; then
   log "Holding back $oversized_push_count terminal Bead(s) whose body exceeds the Linear issue limit"
 fi
 closed_ids="$(printf '%s\n' "$closed_push_entries" | @gawk@/bin/awk 'NF { print $1 }' | @coreutils@/bin/paste -sd, -)"
-pending_completion_ids="$(@jq@/bin/jq -r "$plan_number_reservation_jq"'
+pending_completion_ids="$(@jq@/bin/jq -r "$local_only_jq"'
   (if type == "object" and has("issues") then .issues else . end)
   | [
     .[]
-    | select(plan_number_reservation | not)
+    | select(local_only | not)
     | select(
         .status == "closed"
         and (
@@ -1174,13 +1180,13 @@ pushed_active_input=/dev/null
 if [ -s "$pushed_active_file" ]; then
   pushed_active_input="$pushed_active_file"
 fi
-changed_active_candidates="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" "$rendered_sections_jq$plan_number_reservation_jq"'
+changed_active_candidates="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" "$rendered_sections_jq$local_only_jq"'
   def body_length: (canonical_description | length) + rendered_sections_length;
   issues | .[]
   # Deferred has no outbound state mapping, so bd rejects every batch that
   # carries one.
   | select(.status != "closed" and .status != "deferred")
-  | select(plan_number_reservation | not)
+  | select(local_only | not)
   | ((.external_ref // "") | contains("linear.app") | not) as $unlinked
   | select($previous_sync == "" or .updated_at >= $previous_sync or $unlinked)
   | "\(.id) \(if body_length > $body_limit then "oversized" else "sized" end) \(if $unlinked then "unlinked" else "linked" end) \(fingerprint)"

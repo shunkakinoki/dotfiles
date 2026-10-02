@@ -986,6 +986,29 @@ The contents of file "$COMMAND_LOG" should not include 'df-reserved'
 The file "$CHECKPOINT_FILE" should be exist
 End
 
+It 'never pushes survey leases, linked or not'
+issues='[{"id":"df-open","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/open"},{"id":"df-lease-linked","title":"Survey lease: survey-a","status":"in_progress","assignee":"kamino2_survey_ci","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/lease"},{"id":"df-lease-unlinked","title":"Survey lease: survey-c","status":"open","assignee":"","created_by":"creator@example.com","created_at":"2099-01-01T00:00:00Z","updated_at":"2099-01-02T00:00:00Z"},{"id":"df-lease-closed","title":"Survey lease: survey-b","status":"closed","closed_at":"2099-01-02T00:00:00Z","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-3/lease"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$issues" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'No terminal Beads to push'
+The output should include 'Pushing changed active Beads batch 1/1'
+The output should not include 'Adopted'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-open --no-wait'
+The contents of file "$COMMAND_LOG" should not include 'df-lease'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'puts back a survey lease the pull closed without pushing it'
+before='[{"id":"df-lease","title":"Survey lease: survey-a","status":"in_progress","assignee":"kamino2_survey_ci","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/lease"}]'
+after='[{"id":"df-lease","title":"Survey lease: survey-a","status":"closed","assignee":"operator@example.com","closed_at":"2099-01-03T00:00:00Z","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/lease"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Restored 1 control state record(s); skipped 0 superseded or refused repair(s)'
+The contents of file "$COMMAND_LOG" should include 'update df-lease --assignee kamino2_survey_ci --status in_progress --if-status=closed --if-assignee=operator@example.com'
+The contents of file "$COMMAND_LOG" should not include 'linear sync --push --issues df-lease'
+The file "$CHECKPOINT_FILE" should be exist
+End
+
 It 'holds back active Beads whose rendered sections alone exceed the Linear issue limit'
 huge="$(printf '%*s' 250001 '' | tr ' ' x)"
 issues='[{"id":"df-small","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/small"},{"id":"df-huge","status":"open","assignee":"","description":"Body","notes":"'"$huge"'","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/huge"}]'
@@ -1419,7 +1442,7 @@ It 'refuses acceptance completion of a plan-number reservation'
 printf '%s\n' 'plan:number:5720' >"$ISSUE_REF_FILE"
 When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted"
 The status should equal 64
-The output should include 'Plan-number reservations are never synced to Linear'
+The output should include 'Plan-number reservations and survey leases are never synced to Linear'
 The contents of file "$COMMAND_LOG" should not include 'close df-accepted'
 The contents of file "$COMMAND_LOG" should not include 'linear_completion_pending'
 The contents of file "$COMMAND_LOG" should not include 'linear sync --push'
