@@ -46,6 +46,45 @@ login-shell)
     echo "Set root's login shell to $fish_bin."
   fi
   ;;
+browser-deps)
+  # Playwright's bundled Chromium is linked against the distro's GTK/X11/NSS
+  # stack, not Nix, so CI checkouts on these workers need the Ubuntu packages
+  # `playwright install-deps chromium` would install. The names are Ubuntu
+  # 24.04's t64 variants; other releases are skipped rather than failing.
+  os_release="${2:?os-release file required}"
+  release=$(
+    # shellcheck disable=SC1090
+    . "$os_release"
+    printf '%s-%s' "${ID:-}" "${VERSION_ID:-}"
+  )
+  if [ "$release" != ubuntu-24.04 ]; then
+    echo "Chromium runtime libraries are declared for ubuntu-24.04, not $release; skipping." >&2
+    exit 0
+  fi
+  packages=(
+    fonts-liberation fonts-noto-color-emoji libasound2t64 libatk-bridge2.0-0t64
+    libatk1.0-0t64 libatspi2.0-0t64 libcairo2 libcups2t64 libdbus-1-3 libdrm2
+    libfontconfig1 libfreetype6 libgbm1 libglib2.0-0t64 libnspr4 libnss3
+    libpango-1.0-0 libx11-6 libxcb1 libxcomposite1 libxdamage1 libxext6
+    libxfixes3 libxkbcommon0 libxrandr2
+  )
+  missing=()
+  for package in "${packages[@]}"; do
+    if [ "$(dpkg-query -W -f='${db:Status-Status}' "$package" 2>/dev/null)" != installed ]; then
+      missing+=("$package")
+    fi
+  done
+  [ "${#missing[@]}" -eq 0 ] && exit 0
+  # A transient apt failure must not block the unattended dotfiles upgrade;
+  # the next activation retries the still-missing packages.
+  export DEBIAN_FRONTEND=noninteractive
+  if apt-get -o DPkg::Lock::Timeout=300 update -qq &&
+    apt-get -o DPkg::Lock::Timeout=300 install -y -qq --no-install-recommends "${missing[@]}"; then
+    echo "Installed Chromium runtime libraries: ${missing[*]}"
+  else
+    echo "Warning: could not install Chromium runtime libraries: ${missing[*]}" >&2
+  fi
+  ;;
 tailscale)
   name="${2:?name required}"
   tailscale_bin="${3:?tailscale binary required}"

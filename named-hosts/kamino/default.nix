@@ -106,6 +106,10 @@ inputs.home-manager.lib.homeManagerConfiguration {
           # Enrollment is explicit; an unattended install must not wait for login.
           extraUpArgs = [ ];
         };
+        home.activation.installKaminoBrowserLibraries = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+          export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} browser-deps /etc/os-release
+        '';
         home.activation.prepareKaminoServiceDirectories =
           config.lib.dag.entryBetween [ "installTailscaleService" ] [ "writeBoundary" ]
             ''

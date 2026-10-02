@@ -21,6 +21,19 @@ and keeps its named profile in the automatic dotfiles upgrade path. Reinstallati
 refuses to change an already-installed Kamino identity. Plain Docker containers
 without systemd are rejected; this is not a container deployment command.
 
+Activation installs the Ubuntu 24.04 runtime libraries and fonts that
+Playwright's bundled Chromium links against, so browser checks run on any
+worker used as a CI box. Only missing packages are installed; an apt failure
+prints a warning and is retried on the next activation. Verify with:
+
+```sh
+/usr/bin/ldd ~/.cache/ms-playwright/chromium-*/chrome-linux64/chrome | grep 'not found'
+~/.cache/ms-playwright/chromium_headless_shell-*/chrome-headless-shell-linux64/chrome-headless-shell --no-sandbox --dump-dom about:blank
+```
+
+Use `/usr/bin/ldd`: the Nix `ldd` on root's PATH does not search the system
+library directories and reports every distro library as missing.
+
 Activation idempotently makes the Home Manager fish (`/root/.nix-profile/bin/fish`) root's login shell, adding it to `/etc/shells` if absent, and refuses without changes if fish is missing.
 
 The installer runs the host-specific Tailscale enrollment command during its

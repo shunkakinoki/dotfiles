@@ -246,6 +246,55 @@ The error should include 'skipping T3 Connect'
 The path "$TEST_ROOT/commands" should not be exist
 End
 
+browser_deps_setup() {
+  printf 'ID=ubuntu\nVERSION_ID="24.04"\n' >"$TEST_ROOT/os-release"
+  cat >"$TEST_ROOT/bin/dpkg-query" <<'EOF'
+#!/usr/bin/env bash
+case " ${MOCK_MISSING:-} " in
+  *" ${!#} "*) exit 1 ;;
+esac
+printf installed
+EOF
+  cat >"$TEST_ROOT/bin/apt-get" <<'EOF'
+#!/usr/bin/env bash
+printf 'apt-get %s\n' "$*" >>"$COMMAND_LOG"
+exit "${MOCK_APT_EXIT:-0}"
+EOF
+  chmod +x "$TEST_ROOT/bin/dpkg-query" "$TEST_ROOT/bin/apt-get"
+}
+
+It 'installs only the missing Chromium runtime libraries'
+browser_deps_setup
+When run env MOCK_MISSING='libatk1.0-0t64 libgbm1' PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" browser-deps "$TEST_ROOT/os-release"
+The status should be success
+The output should equal 'Installed Chromium runtime libraries: libatk1.0-0t64 libgbm1'
+The contents of file "$TEST_ROOT/commands" should equal $'apt-get -o DPkg::Lock::Timeout=300 update -qq\napt-get -o DPkg::Lock::Timeout=300 install -y -qq --no-install-recommends libatk1.0-0t64 libgbm1'
+End
+
+It 'skips apt when every Chromium runtime library is installed'
+browser_deps_setup
+When run run_phase browser-deps "$TEST_ROOT/os-release"
+The status should be success
+The output should be blank
+The path "$TEST_ROOT/commands" should not be exist
+End
+
+It 'warns without failing activation when apt fails'
+browser_deps_setup
+When run env MOCK_MISSING=libnss3 MOCK_APT_EXIT=100 PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" browser-deps "$TEST_ROOT/os-release"
+The status should be success
+The error should equal 'Warning: could not install Chromium runtime libraries: libnss3'
+End
+
+It 'skips Chromium runtime libraries on other releases'
+browser_deps_setup
+printf 'ID=ubuntu\nVERSION_ID="22.04"\n' >"$TEST_ROOT/os-release"
+When run env MOCK_MISSING=libnss3 PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" browser-deps "$TEST_ROOT/os-release"
+The status should be success
+The error should include 'not ubuntu-22.04; skipping'
+The path "$TEST_ROOT/commands" should not be exist
+End
+
 It 'rejects an unknown activation phase'
 When run run_phase unknown
 The status should be failure
