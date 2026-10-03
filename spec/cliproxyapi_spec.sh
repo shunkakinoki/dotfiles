@@ -632,6 +632,15 @@ The status should be success
 End
 End
 
+Describe 'idle-timeout keep-alives'
+It 'emits non-streaming keep-alives inside the reverse proxy idle timeout'
+When run bash -c 'for file in config/cliproxyapi/config.tpl.yaml config/cliproxyapi/config.template.yaml; do
+  grep -Fxq "nonstream-keepalive-interval: 15" "$file" || exit 1
+done'
+The status should be success
+End
+End
+
 Describe 'OpenCode API key pool'
 setup_opencode_pool() {
   TEMP_POOL=$(mktemp -d)
