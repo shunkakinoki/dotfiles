@@ -12,15 +12,28 @@ def control_state:
   | map({ key: .id, value: control_state })
   | from_entries) as $actual
 # Beads owns custody: Linear cannot hold an agent or session assignee, so the
-# pull blanks every in-progress claim it did not see change. A Bead the pull
-# left in progress with no assignee keeps the one it had before the pull. The
-# tracker still holds what the ledger recorded, so `kept` spares a re-push.
+# pull writes either no assignee or the tracker user's email over every claim
+# the tracker shows In Progress. Neither is a handoff: a claim the pull left in
+# progress keeps the assignee it had before, unless the tracker moved it from
+# one tracker user to another. The tracker still holds what the ledger
+# recorded, so `kept` spares a re-push.
+# A release the tracker never received comes back the same way, as In Progress
+# under no one or the tracker user, and nothing else would release it again,
+# so it is restored and re-pushed. A tracker demotion or close still stands.
 | ($before[0]
   | issues
   | map(
-      select(.status == "in_progress" and (.assignee // "") != "")
-      | select($actual[.id] == { status: "in_progress", assignee: "" })
-      | { key: .id, value: (control_state + { kept: true }) }
+      control_state as $was
+      | $actual[.id] as $now
+      | select($now != null and $now.status == "in_progress")
+      | select($now.assignee == "" or ($now.assignee | contains("@")))
+      | if $was.status == "in_progress" and $was.assignee != ""
+          and ($now.assignee == "" or ($was.assignee | contains("@") | not))
+        then { key: .id, value: ($was + { kept: true }) }
+        elif $was == { status: "open", assignee: "" }
+        then { key: .id, value: $was }
+        else empty
+        end
     )
   | from_entries) as $kept
 # A survey lease is local-only, so the tracker's copy of it is stale whatever it
