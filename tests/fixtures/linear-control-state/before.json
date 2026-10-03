@@ -54,6 +54,30 @@
   },
   {
     "id": "task-p",
+    "status": "open",
+    "assignee": "",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-q",
+    "status": "in_progress",
+    "assignee": "other@example.com",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-r",
+    "status": "in_progress",
+    "assignee": "kamino1_exec_r",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-s",
     "title": "Survey lease: survey-d",
     "status": "in_progress",
     "assignee": "kamino6_survey_dead-code",
@@ -62,7 +86,7 @@
     ]
   },
   {
-    "id": "task-q",
+    "id": "task-t",
     "title": "Survey lease: survey-e",
     "status": "in_progress",
     "assignee": "kamino1_survey_web-vitals",

@@ -693,7 +693,7 @@ repair_control_state_after_pull() {
   # Beads whose status or assignee a repair below changed back from what the
   # pull wrote. The tracker still holds the pulled state, so the pushed-active
   # ledger's record of what the tracker last received is stale for them. A kept
-  # assignee is not: re-pushing it cannot change the tracker's empty value.
+  # assignee is not: the push never sends an assignee.
   repaired_ids=""
   if [ -n "$control_state_repairs" ]; then
     log "Restoring locally authoritative control state after pull"

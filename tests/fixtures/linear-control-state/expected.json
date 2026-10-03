@@ -46,6 +46,15 @@
   },
   {
     "current_assignee": "owner@example.com",
+    "current_status": "in_progress",
+    "desired_assignee": "operator-session",
+    "desired_status": "in_progress",
+    "id": "task-k",
+    "kept": true,
+    "lease": false
+  },
+  {
+    "current_assignee": "owner@example.com",
     "current_status": "closed",
     "desired_assignee": "kamino2_survey_ci",
     "desired_status": "in_progress",
@@ -70,5 +79,14 @@
     "id": "task-o",
     "kept": false,
     "lease": true
+  },
+  {
+    "current_assignee": "owner@example.com",
+    "current_status": "in_progress",
+    "desired_assignee": "",
+    "desired_status": "open",
+    "id": "task-p",
+    "kept": false,
+    "lease": false
   }
 ]
