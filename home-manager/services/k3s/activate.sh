@@ -13,6 +13,7 @@ SMARTD_SERVICE_FILE="$7"
 TMP_MOUNT_FILE="$8"
 RUNTIME_IO_FILE="$9"
 PODS_IO_FILE="${10}"
+OPENCLAW_CACHE_MOUNT_FILE="${11}"
 SYSTEM_SERVICE="/etc/systemd/system/k3s.service"
 SYSTEM_MOUNT="/etc/systemd/system/var-lib-rancher-k3s-agent-containerd.mount"
 SYSTEM_JOURNALD="/etc/systemd/journald.conf.d/10-kyber-limits.conf"
@@ -20,6 +21,7 @@ SYSTEM_HEALTH_SERVICE="/etc/systemd/system/kyber-host-health.service"
 SYSTEM_HEALTH_TIMER="/etc/systemd/system/kyber-host-health.timer"
 SYSTEM_SMARTD_SERVICE="/etc/systemd/system/kyber-smartd.service"
 SYSTEM_TMP_MOUNT="/etc/systemd/system/tmp.mount"
+SYSTEM_OPENCLAW_CACHE_MOUNT="/etc/systemd/system/home-ubuntu-.cache-openclaw.mount"
 SYSTEM_RUNTIME_IO="/etc/systemd/system/k3s.service.d/50-kyber-io.conf"
 SYSTEM_PODS_IO="/etc/systemd/system/kubepods.slice.d/50-kyber-io.conf"
 SMARTCTL_LINK="/usr/local/bin/smartctl"
@@ -152,6 +154,7 @@ for systemd_file_pair in \
   "$HEALTH_TIMER_FILE:$SYSTEM_HEALTH_TIMER" \
   "$SMARTD_SERVICE_FILE:$SYSTEM_SMARTD_SERVICE" \
   "$TMP_MOUNT_FILE:$SYSTEM_TMP_MOUNT" \
+  "$OPENCLAW_CACHE_MOUNT_FILE:$SYSTEM_OPENCLAW_CACHE_MOUNT" \
   "$RUNTIME_IO_FILE:$SYSTEM_RUNTIME_IO" \
   "$PODS_IO_FILE:$SYSTEM_PODS_IO"; do
   source_file="${systemd_file_pair%%:*}"
@@ -201,6 +204,16 @@ if [ -f "$TMP_MOUNT_FILE" ]; then
     run_sudo @systemctl@ enable tmp.mount
     if ! @findmnt@ --types tmpfs --mountpoint /tmp >/dev/null 2>&1; then
       echo "tmp.mount is enabled; /tmp moves to tmpfs on the next reboot"
+    fi
+  fi
+fi
+
+# Never `--now` for the same reason: the gateway holds snapshot files open there.
+if [ -f "$OPENCLAW_CACHE_MOUNT_FILE" ]; then
+  if require_sudo; then
+    run_sudo @systemctl@ enable home-ubuntu-.cache-openclaw.mount
+    if ! @findmnt@ --types tmpfs --mountpoint /home/ubuntu/.cache/openclaw >/dev/null 2>&1; then
+      echo "home-ubuntu-.cache-openclaw.mount is enabled; the OpenClaw cache moves to tmpfs on the next reboot"
     fi
   fi
 fi

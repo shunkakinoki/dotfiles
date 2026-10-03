@@ -1,0 +1,15 @@
+[Unit]
+Description=OpenClaw cache on tmpfs
+
+[Mount]
+What=tmpfs
+Where=/home/ubuntu/.cache/openclaw
+Type=tmpfs
+# OpenClaw stages every read-only SQLite snapshot here as a full copy of the
+# shared state database, retried whenever its WAL moves mid-copy. On the root
+# disk that is tens of MB/s of writes; nothing here must survive a reboot.
+# The size is a ceiling for a few concurrent snapshots, not a reservation.
+Options=mode=0700,uid=1000,gid=1000,nosuid,nodev,size=4G,nr_inodes=64k
+
+[Install]
+WantedBy=local-fs.target

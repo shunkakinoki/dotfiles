@@ -311,8 +311,39 @@ The output should include 'local-fs.target'
 End
 End
 
+Describe 'config/k3s/kyber-openclaw-cache.mount'
+UNIT="$PWD/config/k3s/kyber-openclaw-cache.mount"
+
+It 'moves the OpenClaw snapshot staging root onto tmpfs'
+When run bash -c "grep -qxF 'What=tmpfs' '$UNIT' && grep -qxF 'Where=/home/ubuntu/.cache/openclaw' '$UNIT'"
+The status should be success
+End
+
+It 'keeps the directory private to the gateway user and bounded'
+When run grep '^Options=' "$UNIT"
+The output should include 'mode=0700'
+The output should include 'uid=1000'
+The output should include 'size=4G'
+End
+
+It 'is installed under the unit name systemd derives from its mount point'
+When run bash -c "test \"\$(systemd-escape -p --suffix=mount /home/ubuntu/.cache/openclaw)\" = home-ubuntu-.cache-openclaw.mount && grep -q 'home.file.\".config/k3s/home-ubuntu-.cache-openclaw.mount\"' '$PWD/config/k3s/default.nix'"
+The status should be success
+End
+End
+
 Describe 'home-manager/services/k3s/activate.sh'
 SCRIPT="$PWD/home-manager/services/k3s/activate.sh"
+
+It 'installs the OpenClaw cache mount unit'
+When run bash -c "grep -q 'OPENCLAW_CACHE_MOUNT_FILE=\"\${11}\"' '$SCRIPT' && grep -q 'OPENCLAW_CACHE_MOUNT_FILE:.SYSTEM_OPENCLAW_CACHE_MOUNT' '$SCRIPT' && grep -q 'openclawCacheMountFile' '$PWD/home-manager/services/k3s/default.nix'"
+The status should be success
+End
+
+It 'enables the OpenClaw cache mount without hiding live snapshot files'
+When run bash -c "grep -q 'enable home-ubuntu-.cache-openclaw.mount' '$SCRIPT' && ! grep -q 'enable --now home-ubuntu-.cache-openclaw.mount' '$SCRIPT'"
+The status should be success
+End
 
 It 'installs the tmpfs mount unit'
 When run bash -c "grep -q 'SYSTEM_TMP_MOUNT=' '$SCRIPT' && grep -q 'TMP_MOUNT_FILE:.SYSTEM_TMP_MOUNT' '$SCRIPT'"

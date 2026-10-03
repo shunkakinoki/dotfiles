@@ -118,6 +118,11 @@ in
     force = true;
   };
 
+  home.file.".config/k3s/home-ubuntu-.cache-openclaw.mount" = lib.mkIf isKyber {
+    source = ./kyber-openclaw-cache.mount;
+    force = true;
+  };
+
   home.file.".config/k3s/kyber-host-health.service" = lib.mkIf isKyber {
     source = healthCheckService;
     force = true;
