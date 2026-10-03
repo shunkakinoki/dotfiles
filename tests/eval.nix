@@ -129,6 +129,7 @@ let
         };
         cfg = matic.config;
         beads = cfg.home-manager.users.shunkakinoki;
+        herdr = beads.systemd.user.services.herdr-server;
       in
       assert
         cfg.services.tailscale.extraSetFlags == [
@@ -157,6 +158,19 @@ let
       assert beads.systemd.user.services.roborev.Service.CPUWeight == 20;
       assert beads.systemd.user.services.roborev.Service.IOWeight == 20;
       assert beads.systemd.user.services.roborev.Service.Nice == 10;
+      # Executor seats need the server back after an unattended reboot.
+      assert cfg.users.users.shunkakinoki.linger;
+      assert herdr.Install.WantedBy == [ "default.target" ];
+      assert herdr.Unit.X-SwitchMethod == "restart";
+      assert lib.hasSuffix "/bin/herdr server" (builtins.head (lib.toList herdr.Service.ExecStart));
+      assert herdr.Service.Restart == "on-failure";
+      assert herdr.Service.EnvironmentFile == [ "-/home/shunkakinoki/dotfiles/.env" ];
+      assert lib.elem "HERDR_ENV=1" herdr.Service.Environment;
+      assert lib.elem "BEADS_DOLT_AUTO_START=0" herdr.Service.Environment;
+      assert lib.elem "BEADS_DOLT_SERVER_MODE=1" herdr.Service.Environment;
+      assert lib.elem "BEADS_DOLT_SERVER_HOST=kyber.tail950b36.ts.net" herdr.Service.Environment;
+      assert lib.elem "BEADS_NODE_ID=kyber" herdr.Service.Environment;
+      assert lib.elem "BD_EVENTS_JOURNAL=1" herdr.Service.Environment;
       assert
         tailscaleServeRoutes.matic == [
           {
