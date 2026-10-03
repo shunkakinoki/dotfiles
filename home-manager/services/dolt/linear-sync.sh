@@ -445,7 +445,7 @@ rendered_section_cuts='
 '
 
 written_since_snapshot() {
-  "$bd_cli" -C "$repo_dir" history "$1" --events --limit 20 --json 2>/dev/null </dev/null |
+  @coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" history "$1" --events --limit 20 --json 2>/dev/null </dev/null |
     @jq@/bin/jq -r --arg since "$snapshot_taken_at" --arg actor "$BEADS_ACTOR" '
       if type == "array" then any(.[]; .actor != $actor and .created_at >= $since) else false end
     ' 2>/dev/null || echo unknown
@@ -671,11 +671,13 @@ repair_control_state() {
   local pulled_assignee
   local restore_args
 
-  if ! all_issues="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0)"; then
+  # Each call is bounded: the guard's TERM trap runs only between commands, so
+  # one stalled call would hold back the repair after the pull.
+  if ! all_issues="$(@coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" list --all --json --limit 0)"; then
     log "Unable to list Beads $phase the Linear pull"
     return 1
   fi
-  if ! "$bd_cli" -C "$repo_dir" events tail --since "$linear_fold_since" >"$linear_journal_file"; then
+  if ! @coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" events tail --since "$linear_fold_since" >"$linear_journal_file"; then
     log "Unable to read the Beads events journal $phase the Linear pull"
     return 1
   fi
@@ -725,7 +727,7 @@ repair_control_state() {
       if [ "$restore_status" != "$pulled_status" ]; then
         restore_args+=(--status "$restore_status")
       fi
-      if "$bd_cli" -C "$repo_dir" update "$restore_id" "${restore_args[@]}" \
+      if @coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" update "$restore_id" "${restore_args[@]}" \
         --if-status="$pulled_status" --if-assignee="$pulled_assignee" >/dev/null 2>&1; then
         restored_control_state=$((restored_control_state + 1))
         if [ "$(@jq@/bin/jq -r '.kept' <<<"$repair")" != true ]; then
@@ -769,10 +771,15 @@ start_pull_guard() {
   pull_guard_pid=$!
 }
 
+# A signal trapped by this shell returns `wait` early, so keep waiting until
+# the guard is gone; otherwise the repair after the pull would share its
+# temporary files and miss the ids it records.
 stop_pull_guard() {
   if [ -n "$pull_guard_pid" ]; then
     kill -TERM "$pull_guard_pid" 2>/dev/null || true
-    wait "$pull_guard_pid" 2>/dev/null || true
+    while kill -0 "$pull_guard_pid" 2>/dev/null; do
+      wait "$pull_guard_pid" 2>/dev/null || true
+    done
     pull_guard_pid=""
   fi
 }

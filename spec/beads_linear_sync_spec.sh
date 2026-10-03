@@ -113,6 +113,11 @@ When run bash -c "grep -F 'run_linear pull @coreutils@/bin/timeout 720 \"\$bd_cl
 The status should be success
 End
 
+It 'bounds every Beads call the control-state repair makes'
+When run bash -c "for call in 'history \"\$1\"' 'list --all --json --limit 0)\"; then' 'events tail --since' 'update \"\$restore_id\"'; do grep -F \"@coreutils@/bin/timeout 120 \\\"\\\$bd_cli\\\" -C \\\"\\\$repo_dir\\\" \$call\" '$SCRIPT' >/dev/null || exit 1; done; grep -F 'while kill -0 \"\$pull_guard_pid\"' '$SCRIPT' >/dev/null"
+The status should be success
+End
+
 It 'checkpoints a successful cycle for delta selection'
 When run bash -c "checkpoint=\$(grep -n '\"\$cycle_started\" >\"\$sync_checkpoint_file.tmp\"' '$SCRIPT' | cut -d: -f1); final_sync=\$(grep -n 'dolt commit -m \"chore(beads): sync Linear\"' '$SCRIPT' | cut -d: -f1); test \"\$checkpoint\" -gt \"\$final_sync\""
 The status should be success
@@ -202,6 +207,7 @@ EOF
   cat >"$FAKE_BD" <<'EOF'
 #!/usr/bin/env bash
 printf '%s\n' "$*" >>"$COMMAND_LOG"
+invocation="$*"
 if [ "${FAKE_VERIFY_AUTHORITY:-}" = 1 ]; then
   test "${BEADS_DOLT_SERVER_HOST:-}" = kyber.tail950b36.ts.net || exit 98
   test "${BEADS_DOLT_SERVER_PORT:-}" = 3307 || exit 98
@@ -389,11 +395,11 @@ case "${1:-} ${2:-}" in
         fi
         ;;
       pull-awaits-guard)
-        # Stays in flight until the expected repair lands, or ten seconds,
-        # then marks its exit so an example can order the two.
+        # Stays in flight until the expected repair has finished, or ten
+        # seconds, then marks its exit so an example can order the two.
         if [[ " $* " != *" --push "* ]]; then
           for _ in $(seq 1 100); do
-            if grep -F -- "${FAKE_GUARD_REPAIR:?}" "$COMMAND_LOG" >/dev/null; then
+            if grep -F -- "repair-finished ${FAKE_GUARD_REPAIR:?}" "$COMMAND_LOG" >/dev/null; then
               break
             fi
             sleep 0.1
@@ -494,6 +500,9 @@ case "${1:-} ${2:-}" in
       fi
       shift
     done
+    if [ -n "${FAKE_GUARD_REPAIR:-}" ] && [[ $invocation == *"$FAKE_GUARD_REPAIR"* ]]; then
+      printf 'repair-finished %s\n' "$FAKE_GUARD_REPAIR" >>"$COMMAND_LOG"
+    fi
     ;;
   history\ *)
     if [ "${FAKE_HISTORY_FAIL_ID:-}" = "$2" ]; then
@@ -1239,7 +1248,7 @@ use_fast_pull_guard() {
 }
 
 repair_order() {
-  awk -v repair="$1" 'index($0, repair) { print "repaired"; exit } $0 == "pull-exited" { print "pull-exited"; exit }' "$COMMAND_LOG"
+  awk -v repair="repair-finished $1" '$0 == repair { print "repaired"; exit } $0 == "pull-exited" { print "pull-exited"; exit }' "$COMMAND_LOG"
 }
 
 It 'keeps the assignee of a fleet claim the pull unassigned while the pull is still in flight'
@@ -1253,7 +1262,7 @@ The status should be success
 The output should include 'Restoring locally authoritative control state during pull'
 The output should not include 'Restoring locally authoritative control state after pull'
 The value "$(repair_order "$repair")" should equal 'repaired'
-The value "$(grep -c -F -- "$repair" "$COMMAND_LOG")" should equal 1
+The value "$(grep -F -- "$repair" "$COMMAND_LOG" | grep -c -v '^repair-finished ')" should equal 1
 The file "$CHECKPOINT_FILE" should be exist
 End
 
