@@ -20,6 +20,11 @@ The output should include 'HostName = machine.hostname'
 The output should include 'User = machine.user'
 The output should include 'fleet.machines'
 End
+
+It 'pins each tailnet address to the same key as its DNS name'
+When run bash -c "nix eval --raw --file home-manager/programs/ssh/known-hosts.nix | grep -E '^(kamino5.tail950b36.ts.net|100.127.59.11) ' | cut -d' ' -f3 | sort -u | grep -c ."
+The output should equal '1'
+End
 End
 
 Describe 'kyber host'
