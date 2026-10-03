@@ -98,6 +98,67 @@
   },
   {
     "id": "task-m",
+    "title": "Survey lease: survey-a",
+    "status": "closed",
+    "assignee": "owner@example.com",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-n",
+    "title": "Survey lease: survey-b",
+    "status": "in_progress",
+    "assignee": "owner@example.com",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-o",
+    "title": "Survey lease: survey-c",
+    "status": "in_progress",
+    "assignee": "owner@example.com",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-p",
+    "status": "in_progress",
+    "assignee": "owner@example.com",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-q",
+    "status": "in_progress",
+    "assignee": "owner@example.com",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-r",
+    "status": "open",
+    "assignee": "owner@example.com",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-s",
+    "title": "Survey lease: survey-d",
+    "status": "closed",
+    "assignee": "",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-t",
+    "title": "Survey lease: survey-e",
     "status": "closed",
     "assignee": "",
     "labels": [

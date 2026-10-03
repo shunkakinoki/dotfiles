@@ -4,3 +4,4 @@
 {"seq":44,"op":"update","issue_id":"task-b","actor":"host_orchestrator","issue":{"id":"task-b","status":"open","assignee":"","labels":[]}}
 {"seq":45,"op":"update","issue_id":"task-h","actor":"kamino4_lane_1","issue":{"id":"task-h","status":"in_progress","assignee":"kamino4_lane_1","labels":["agent-plan"]}}
 {"seq":46,"op":"close","issue_id":"task-i","actor":"kamino4_lane_2","issue":{"id":"task-i","status":"closed","assignee":"kamino4_lane_2","labels":["agent-plan"]}}
+{"seq":47,"op":"close","issue_id":"task-o","actor":"kamino5_survey_docs","issue":{"id":"task-o","status":"closed","assignee":"kamino5_survey_docs","labels":["linear"]}}

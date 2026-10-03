@@ -421,7 +421,10 @@ rendered_sections_jq='
 # writes to Beads linked to a live issue, never changes one either: a stale
 # Linear state copied back would close a live reservation early, or close a
 # lease a running survey pass still heartbeats and hand its lane to a second
-# host. Each is recognized the way its owner does: a reservation by its key
+# host. Leases linked before this rule keep their Linear copy, so the
+# control-state repair puts back whatever the pull writes over one, unless the
+# lease's pass wrote it during the pull.
+# Each is recognized the way its owner does: a reservation by its key
 # ref, first description line, or planner-intake title; a lease by its title.
 # shellcheck disable=SC2016 # jq program; $ anchors are regex syntax.
 local_only_jq='
@@ -445,7 +448,7 @@ written_since_snapshot() {
   "$bd_cli" -C "$repo_dir" history "$1" --events --limit 20 --json 2>/dev/null </dev/null |
     @jq@/bin/jq -r --arg since "$snapshot_taken_at" --arg actor "$BEADS_ACTOR" '
       if type == "array" then any(.[]; .actor != $actor and .created_at >= $since) else false end
-    ' 2>/dev/null || echo false
+    ' 2>/dev/null || echo unknown
 }
 
 # Beads whose description still carries rendered sections after a normalize
@@ -637,10 +640,9 @@ restore_linear_last_sync() {
 }
 
 # A cursor-free pull overwrites local assignment, workflow state, and labels
-# with the tracker's values. A Bead that was a fleet claim before the pull keeps
-# its status and assignee unless the tracker closed it: Beads owns custody, and
-# a claim whose journal event an earlier cycle already folded has nothing newer
-# to restore it. The durable
+# with the tracker's values. An in-progress Bead the pull only unassigned keeps
+# its pre-pull assignee: Beads owns custody, and a claim whose journal event an
+# earlier cycle already folded has nothing newer to restore it. The durable
 # journal folds every non-reconciler mutation the tracker has not yet received
 # in commit order: those since the last successful cycle listed Beads for its
 # active push, plus those made during this pull. So an unpushed claim, release,
@@ -681,6 +683,7 @@ repair_control_state() {
     ! printf '%s\n' "$issues_before_pull" >"$linear_before_file" ||
     ! control_state_repairs="$(@jq@/bin/jq -c \
       --arg actor "$BEADS_ACTOR" \
+      --arg snapshot "$snapshot_taken_at" \
       --slurpfile journal "$linear_journal_file" \
       --slurpfile current "$linear_current_file" \
       --slurpfile before "$linear_before_file" \
@@ -693,7 +696,7 @@ repair_control_state() {
   # Beads whose status or assignee a repair below changed back from what the
   # pull wrote. The tracker still holds the pulled state, so the pushed-active
   # ledger's record of what the tracker last received is stale for them. A kept
-  # assignee is not: re-pushing it cannot change the tracker's empty value.
+  # assignee is not: the push never sends an assignee.
   repaired_ids=""
   if [ -n "$control_state_repairs" ]; then
     log "Restoring locally authoritative control state $phase pull"
@@ -701,6 +704,16 @@ repair_control_state() {
     restore_failures=0
     while IFS= read -r repair; do
       restore_id="$(@jq@/bin/jq -r '.id' <<<"$repair")"
+      # A pass that released or retook its lease during the pull wrote the
+      # lease's current state itself; restoring the snapshot would hand a
+      # released lease back to a pass that no longer heartbeats it. An unread
+      # history skips the repair too: a live pass retakes a lease the pull
+      # closed on its next heartbeat.
+      if [ "$(@jq@/bin/jq -r '.lease' <<<"$repair")" = true ] &&
+        [ "$(written_since_snapshot "$restore_id")" != "false" ]; then
+        restore_failures=$((restore_failures + 1))
+        continue
+      fi
       restore_status="$(@jq@/bin/jq -r '.desired_status' <<<"$repair")"
       restore_assignee="$(@jq@/bin/jq -r '.desired_assignee' <<<"$repair")"
       pulled_status="$(@jq@/bin/jq -r '.current_status' <<<"$repair")"
@@ -727,8 +740,9 @@ repair_control_state() {
 }
 
 # The pull writes every linked Bead in a burst about a minute in, then runs for
-# minutes more, and a floor that finds its lane's claim blanked, stamped, or
-# reopened in that window releases the lane before any repair after the pull.
+# minutes more, and a floor that finds its lane's claim blanked or stamped, or a
+# release written back in progress, in that window releases the lane again
+# before any repair after the pull.
 # The same repair therefore also runs while the pull is in flight. A stop lets
 # the pass in progress finish, so its guarded writes and the ids it records
 # agree, and repaired ids reach the parent through a file because the guard is

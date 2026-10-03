@@ -25,8 +25,72 @@
   },
   {
     "id": "task-m",
+    "title": "Survey lease: survey-a",
     "status": "in_progress",
-    "assignee": "kamino6_exec_m",
+    "assignee": "kamino2_survey_ci",
+    "labels": [
+      "linear"
+    ],
+    "lease_expires_at": "2099-01-02T00:05:00Z"
+  },
+  {
+    "id": "task-n",
+    "title": "Survey lease: survey-b",
+    "status": "closed",
+    "assignee": "kamino3_survey_locales",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-o",
+    "title": "Survey lease: survey-c",
+    "status": "in_progress",
+    "assignee": "kamino5_survey_docs",
+    "labels": [
+      "linear"
+    ],
+    "lease_expires_at": "2099-01-02T00:05:00Z"
+  },
+  {
+    "id": "task-p",
+    "status": "open",
+    "assignee": "",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-q",
+    "status": "in_progress",
+    "assignee": "other@example.com",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-r",
+    "status": "in_progress",
+    "assignee": "kamino1_exec_r",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-s",
+    "title": "Survey lease: survey-d",
+    "status": "in_progress",
+    "assignee": "kamino6_survey_dead-code",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-t",
+    "title": "Survey lease: survey-e",
+    "status": "in_progress",
+    "assignee": "kamino1_survey_web-vitals",
+    "lease_expires_at": "2099-01-01T23:55:00Z",
     "labels": [
       "linear"
     ]
