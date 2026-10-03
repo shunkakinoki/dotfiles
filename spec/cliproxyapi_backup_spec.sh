@@ -14,6 +14,7 @@ __BACKUP_SCRIPT="$__PREPROCESSED_DIR/backup.sh"
 # Preprocess common.sh
 sed \
   -e 's|@aws@|aws|g' \
+  -e 's|@jq@|jq|g' \
   -e 's|@sqlite3@|sqlite3|g' \
   -e 's|@tar@|tar|g' \
   -e 's|@objectstore_enabled@|true|g' \
@@ -167,6 +168,26 @@ The status should be success
 The output should include 's3://cliproxyapi/auths/'
 End
 
+It 'pins OAuth priority before the auth files reach S3'
+cat >"$TEMP_HOME/.cli-proxy-api/objectstore/auths/codex-new.json" <<'JSON'
+{"provider":"codex","account":"new@example.com","priority":0}
+JSON
+# Record the priority S3 would receive, read at upload time.
+cat >"$MOCK_BIN/aws" <<'EOF'
+#!/usr/bin/env bash
+: "${MOCK_LOG:?MOCK_LOG must be set}"
+for arg in "$@"; do
+  if [ -d "$arg" ]; then
+    printf 'uploaded priority %s\n' "$(jq -r .priority "$arg/codex-new.json")" >>"$MOCK_LOG"
+  fi
+done
+EOF
+chmod +x "$MOCK_BIN/aws"
+When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$__BACKUP_SCRIPT"'" auth 2>&1; status=$?; cat "$MOCK_LOG" 2>/dev/null || true; exit "$status"'
+The status should be success
+The output should include 'uploaded priority 300'
+End
+
 It 'uses OBJECTSTORE_BUCKET for backup paths'
 cat >"$TEMP_HOME/dotfiles/.env" <<'ENV'
 OBJECTSTORE_ACCESS_KEY=test_key
@@ -262,7 +283,14 @@ It 'points the Linux path unit at the auth-only service'
 When run bash -c "sed -n '/systemd.user.paths.cliproxyapi-backup-auth =/,/^  };/p' '$NIX_MODULE'"
 The status should be success
 The output should include 'PathChanged'
+The output should include '"%h/.cli-proxy-api/objectstore/auths"'
 The output should include 'cliproxyapi-backup-auth.service'
+End
+
+It 'substitutes jq into the shared script that pins OAuth priority'
+When run bash -c "sed -n '/commonScript = pkgs.replaceVars/,/};/p' '$NIX_MODULE'"
+The status should be success
+The output should include 'jq = "${pkgs.jq}/bin/jq";'
 End
 
 It 'keeps the analytics snapshot on wall-clock schedules only'
@@ -303,6 +331,7 @@ ENV
   DISABLED_DIR=$(mktemp -d)
   sed \
     -e 's|@aws@|aws|g' \
+    -e 's|@jq@|jq|g' \
     -e 's|@sqlite3@|sqlite3|g' \
     -e 's|@tar@|tar|g' \
     -e 's|@objectstore_enabled@|false|g' \

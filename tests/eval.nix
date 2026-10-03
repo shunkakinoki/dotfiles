@@ -499,6 +499,15 @@ let
         assert cfg.systemd.user.services.cliproxyapi-backup.Service.IOReadBandwidthMax == "/ 5M";
         assert cfg.systemd.user.services.cliproxyapi-backup.Service.IOReadIOPSMax == "/ 50";
         assert
+          cfg.systemd.user.paths.cliproxyapi-backup-auth.Path.PathChanged == [
+            "%h/.cli-proxy-api/objectstore/auths"
+          ];
+        assert
+          cfg.systemd.user.paths.cliproxyapi-backup-auth.Path.Unit == "cliproxyapi-backup-auth.service";
+        assert lib.hasSuffix " auth" (
+          toString cfg.systemd.user.services.cliproxyapi-backup-auth.Service.ExecStart
+        );
+        assert
           cfg.systemd.user.paths.cliproxyapi-env-reload.Path.PathChanged == [
             "%h/dotfiles/.env"
             "%h/.config/cliproxyapi/removed-models"

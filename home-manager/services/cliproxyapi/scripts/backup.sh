@@ -30,6 +30,7 @@ fi
 if [ -d "$AUTH_DIR" ] && [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
   echo "[$(date)] Backing up auth files..." >&2
 
+  cliproxy_ensure_oauth_priority "$AUTH_DIR"
   cliproxy_sync_auth_to_s3 "$AUTH_DIR"
 else
   echo "⚠️  No auth files to backup" >&2

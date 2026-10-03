@@ -883,9 +883,11 @@ End
 End
 
 Describe 'OAuth credential priority enforcement'
+COMMON_SCRIPT="$PWD/home-manager/services/cliproxyapi/scripts/common.sh"
+
 setup_oauth_priority() {
   TEMP_PRIORITY=$(mktemp -d)
-  sed -n '/^ensure_oauth_priority() {/,/^}/p' "$SCRIPT" | sed 's|@jq@|jq|g' >"$TEMP_PRIORITY/fn.sh"
+  sed -n '/^cliproxy_ensure_oauth_priority() {/,/^}/p' "$COMMON_SCRIPT" | sed 's|@jq@|jq|g' >"$TEMP_PRIORITY/fn.sh"
 }
 
 cleanup_oauth_priority() {
@@ -899,7 +901,7 @@ It 'bumps priority 0 auth files to the target'
 cat >"$TEMP_PRIORITY/codex-test-user.json" <<'JSON'
 {"provider":"codex","account":"test@example.com","priority":0}
 JSON
-When run bash -c '. "$1/fn.sh"; ensure_oauth_priority "$1" 300; cat "$1/codex-test-user.json"' _ "$TEMP_PRIORITY"
+When run bash -c '. "$1/fn.sh"; cliproxy_ensure_oauth_priority "$1"; cat "$1/codex-test-user.json"' _ "$TEMP_PRIORITY"
 The output should include '"priority": 300'
 The status should be success
 End
@@ -909,7 +911,7 @@ cat >"$TEMP_PRIORITY/codex-already-set.json" <<'JSON'
 {"provider":"codex","account":"test@example.com","priority":300}
 JSON
 cp "$TEMP_PRIORITY/codex-already-set.json" "$TEMP_PRIORITY/codex-already-set.json.orig"
-When run bash -c '. "$1/fn.sh"; ensure_oauth_priority "$1" 300; diff "$1/codex-already-set.json.orig" "$1/codex-already-set.json"' _ "$TEMP_PRIORITY"
+When run bash -c '. "$1/fn.sh"; cliproxy_ensure_oauth_priority "$1"; diff "$1/codex-already-set.json.orig" "$1/codex-already-set.json"' _ "$TEMP_PRIORITY"
 The status should be success
 End
 
@@ -920,7 +922,7 @@ JSON
 cat >"$TEMP_PRIORITY/gemini-user.json" <<'JSON'
 {"provider":"gemini","account":"test@example.com","priority":0}
 JSON
-When run bash -c '. "$1/fn.sh"; ensure_oauth_priority "$1" 300; jq -r .priority "$1/claude-user.json"; jq -r .priority "$1/gemini-user.json"' _ "$TEMP_PRIORITY"
+When run bash -c '. "$1/fn.sh"; cliproxy_ensure_oauth_priority "$1"; jq -r .priority "$1/claude-user.json"; jq -r .priority "$1/gemini-user.json"' _ "$TEMP_PRIORITY"
 The first line of output should eq '300'
 The second line of output should eq '300'
 The status should be success
@@ -930,8 +932,61 @@ It 'adds priority field when missing'
 cat >"$TEMP_PRIORITY/codex-no-priority.json" <<'JSON'
 {"provider":"codex","account":"new@example.com"}
 JSON
-When run bash -c '. "$1/fn.sh"; ensure_oauth_priority "$1" 300; jq -r .priority "$1/codex-no-priority.json"' _ "$TEMP_PRIORITY"
+When run bash -c '. "$1/fn.sh"; cliproxy_ensure_oauth_priority "$1"; jq -r .priority "$1/codex-no-priority.json"' _ "$TEMP_PRIORITY"
 The output should eq '300'
+The status should be success
+End
+
+It 'preserves the other credential fields'
+cat >"$TEMP_PRIORITY/codex-fields.json" <<'JSON'
+{"provider":"codex","account":"new@example.com","proxy_url":"direct","priority":0}
+JSON
+When run bash -c '. "$1/fn.sh"; cliproxy_ensure_oauth_priority "$1"; jq -c "{provider, proxy_url, priority}" "$1/codex-fields.json"' _ "$TEMP_PRIORITY"
+The output should eq '{"provider":"codex","proxy_url":"direct","priority":300}'
+The status should be success
+End
+
+It 'converges so the auth directory watch stops after one rewrite'
+cat >"$TEMP_PRIORITY/codex-new.json" <<'JSON'
+{"provider":"codex","account":"new@example.com","priority":0}
+JSON
+When run bash -c '
+  . "$1/fn.sh"
+  cliproxy_ensure_oauth_priority "$1"
+  first=$(stat -c "%i %Y" "$1/codex-new.json")
+  sleep 1
+  cliproxy_ensure_oauth_priority "$1"
+  second=$(stat -c "%i %Y" "$1/codex-new.json")
+  [ "$first" = "$second" ] && echo unchanged
+  ls -A "$1" | grep -c "\.tmp$" || true
+' _ "$TEMP_PRIORITY"
+The first line of output should eq 'unchanged'
+The second line of output should eq '0'
+The status should be success
+End
+
+It 'skips empty and non-object files instead of rewriting them on every trigger'
+: >"$TEMP_PRIORITY/empty.json"
+printf '[]\n' >"$TEMP_PRIORITY/array.json"
+printf '{"provider":"codex"\n' >"$TEMP_PRIORITY/partial.json"
+When run bash -c '
+  . "$1/fn.sh"
+  before=$(stat -c "%i %Y" "$1/empty.json" "$1/array.json" "$1/partial.json")
+  sleep 1
+  cliproxy_ensure_oauth_priority "$1"
+  after=$(stat -c "%i %Y" "$1/empty.json" "$1/array.json" "$1/partial.json")
+  [ "$before" = "$after" ] && echo unchanged
+' _ "$TEMP_PRIORITY"
+The output should eq 'unchanged'
+The status should be success
+End
+
+It 'is the only definition, and start.sh calls it before starting the server'
+When run bash -c 'grep -c "ensure_oauth_priority() {" "$1" "$2"; grep -F "cliproxy_ensure_oauth_priority \"\$AUTH_DIR\"" "$1"; grep -n "local target_priority=" "$2"' _ "$SCRIPT" "$COMMON_SCRIPT"
+The line 1 of output should eq "$SCRIPT:0"
+The line 2 of output should eq "$COMMON_SCRIPT:1"
+The line 3 of output should include 'cliproxy_ensure_oauth_priority "$AUTH_DIR"'
+The line 4 of output should include 'local target_priority=300'
 The status should be success
 End
 End

@@ -101,22 +101,6 @@ render_api_key_entries() {
   done
 }
 
-# OAuth credentials default to priority 0, which loses to openai-compatibility
-# providers like surplus (150). Pin all auth files to the given priority so native
-# executors are selected first for cold bindings.
-ensure_oauth_priority() {
-  local auth_dir="$1" target_priority="$2"
-  local f current
-  for f in "$auth_dir"/*.json; do
-    [ -f "$f" ] || continue
-    current="$(@jq@ -r '.priority // 0' "$f" 2>/dev/null)" || continue
-    if [ "$current" != "$target_priority" ]; then
-      # shellcheck disable=SC2016
-      @jq@ --argjson p "$target_priority" '.priority = $p' "$f" >"$f.tmp" && mv "$f.tmp" "$f"
-    fi
-  done
-}
-
 # Kamino tunnels stamp the same auth files, so both writers take this lock.
 PROXY_URL_LOCK_FILE="${CONFIG_DIR}/proxy-url.lock"
 
@@ -169,7 +153,7 @@ if cliproxy_has_objectstore_credentials; then
     cliproxy_sync_auth_from_s3 "$AUTH_DIR"
   fi
 
-  ensure_oauth_priority "$AUTH_DIR" 300
+  cliproxy_ensure_oauth_priority "$AUTH_DIR"
 
   assign_proxy_urls "$AUTH_DIR"
 

@@ -15,6 +15,7 @@ let
 
   commonScript = pkgs.replaceVars ./scripts/common.sh {
     aws = "${pkgs.awscli2}/bin/aws";
+    jq = "${pkgs.jq}/bin/jq";
     sqlite3 = "${pkgs.sqlite}/bin/sqlite3";
     tar = "${pkgs.gnutar}/bin/tar";
     objectstore_enabled = lib.boolToString objectstoreEnabled;

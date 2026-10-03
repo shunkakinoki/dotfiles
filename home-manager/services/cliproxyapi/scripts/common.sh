@@ -67,6 +67,30 @@ cliproxy_sync_auth_to_s3() {
   cliproxy_s3_sync "$auth_dir/" "$(cliproxy_auth_s3_uri)"
 }
 
+# OAuth credentials default to priority 0, which loses to openai-compatibility
+# providers like surplus (150). Pin every auth file to one priority so native
+# executors are selected first for cold bindings. CLIProxyAPI also writes new
+# credentials at runtime (management UI logins, S3 hydrates), so the auth
+# directory watch runs this too, not only server start. It writes only when the
+# value differs, so the rewrite it causes converges on the next watch trigger.
+cliproxy_ensure_oauth_priority() {
+  local auth_dir="$1"
+  local target_priority=300
+  local f current
+  for f in "$auth_dir"/*.json; do
+    [ -f "$f" ] || continue
+    # Skip empty and non-object files: rewriting them never converges, so each
+    # rewrite would retrigger the auth directory watch.
+    current="$(@jq@ -er 'select(type == "object") | .priority // 0' "$f" 2>/dev/null)" || continue
+    [ "$current" != "$target_priority" ] || continue
+    # shellcheck disable=SC2016
+    if ! { @jq@ --argjson p "$target_priority" '.priority = $p' "$f" >"$f.tmp" && mv "$f.tmp" "$f"; }; then
+      rm -f "$f.tmp"
+      echo "⚠️  Could not pin an OAuth credential priority" >&2
+    fi
+  done
+}
+
 cliproxy_usage_s3_uri() {
   printf 's3://%s/usage-export.json' "${OBJECTSTORE_BUCKET:?OBJECTSTORE_BUCKET is required}"
 }
