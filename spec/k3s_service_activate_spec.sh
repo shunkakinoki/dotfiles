@@ -150,6 +150,7 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   IO_PRESSURE_UNHEALTHY=1
   IO_PRESSURE_CURRENT_UNHEALTHY=1
   ORCHESTRATION_IMPLICATED=1
+  ORCHESTRATION_IO_ATTRIBUTED=1
   ORCHESTRATION_DISK_UNHEALTHY=1
   capture_orchestration_evidence() { printf "%s/evidence/test\n" "$STATE_DIR"; }
   orchestration_control() { test -e "$STATE_DIR/orchestration.frozen"; printf "control:%s\n" "$1"; }
@@ -223,6 +224,7 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   IO_PRESSURE_UNHEALTHY=1
   IO_PRESSURE_CURRENT_UNHEALTHY=1
   ORCHESTRATION_IMPLICATED=1
+  ORCHESTRATION_IO_ATTRIBUTED=1
   ORCHESTRATION_DISK_UNHEALTHY=1
   capture_orchestration_evidence() { printf "%s/evidence/test\n" "$STATE_DIR"; }
   orchestration_control() { return 1; }
@@ -362,6 +364,7 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   ORCHESTRATION_DISK_KNOWN=1
   D_STATE_UNHEALTHY=1
   ORCHESTRATION_IMPLICATED=1
+  ORCHESTRATION_IO_ATTRIBUTED=1
   ORCHESTRATION_DISK_UNHEALTHY=1
   capture_orchestration_evidence() { printf "%s/evidence/test\n" "$STATE_DIR"; }
   orchestration_control() { printf "control:%s\n" "$1"; }
@@ -405,6 +408,7 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   IO_PRESSURE_UNHEALTHY=1
   IO_PRESSURE_CURRENT_UNHEALTHY=1
   ORCHESTRATION_IMPLICATED=1
+  ORCHESTRATION_IO_ATTRIBUTED=1
   orchestration_control() { printf "unexpected:%s\n" "$1"; }
   clear_alert() { :; }
   for flags in "0 0" "1 0"; do
@@ -422,6 +426,83 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
     test "$(cat "$state/orchestration.recovery-samples")" = 0
     test -e "$state/orchestration.frozen"
   done
+'
+The status should be success
+The output should equal ''
+End
+
+It 'leaves orchestration running when another cgroup owns the worktree-disk I/O'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  state="$(mktemp -d)"
+  trap "rm -rf \"$state\"" EXIT
+  export KYBER_HOST_HEALTH_STATE_DIR="$state"
+  source "$HEALTH_CHECK"
+  ORCHESTRATION_DISK_KNOWN=1
+  IO_PRESSURE_UNHEALTHY=1
+  IO_PRESSURE_CURRENT_UNHEALTHY=1
+  D_STATE_UNHEALTHY=1
+  ORCHESTRATION_IMPLICATED=1
+  ORCHESTRATION_IO_ATTRIBUTED=0
+  ORCHESTRATION_DISK_UNHEALTHY=1
+  orchestration_control() { printf "unexpected:%s\n" "$1"; }
+  capture_orchestration_evidence() { printf "unexpected:capture\n"; }
+  clear_alert() { :; }
+  manage_orchestration_circuit_breaker
+  test ! -e "$state/orchestration.frozen"
+'
+The status should be success
+The output should equal ''
+End
+
+It 'thaws when congestion persists without the frozen slice contributing'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  state="$(mktemp -d)"
+  trap "rm -rf \"$state\"" EXIT
+  export KYBER_HOST_HEALTH_STATE_DIR="$state"
+  source "$HEALTH_CHECK"
+  ORCHESTRATION_DISK_KNOWN=1
+  ORCHESTRATION_DISK_UNHEALTHY=1
+  ORCHESTRATION_IO_ATTRIBUTED=0
+  : >"$state/orchestration.frozen"
+  printf "4\n" >"$state/orchestration.recovery-samples"
+  orchestration_control() { printf "control:%s\n" "$1"; }
+  clear_alert() { :; }
+  manage_orchestration_circuit_breaker
+  test ! -e "$state/orchestration.frozen"
+'
+The status should be success
+The output should equal 'control:thaw'
+End
+
+It 'attributes the slice share of worktree-disk bytes from its cgroup io.stat'
+When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
+  state="$(mktemp -d)"
+  trap "rm -rf \"$state\"" EXIT
+  export KYBER_HOST_HEALTH_STATE_DIR="$state"
+  source "$HEALTH_CHECK"
+  mkdir -p "$state/disk" "$state/cg"
+  printf "8:16\n" >"$state/disk/dev"
+  orchestration_disk_path() { printf "%s/disk\n" "$state"; }
+  orchestration_cgroup_dir() { printf "%s/cg\n" "$state"; }
+  set_alert() { printf "unexpected-alert:%s\n" "$1"; }
+  clear_alert() { :; }
+  sleep() { cp "$state/after" "$state/disk/stat"; cp "$state/io.after" "$state/cg/io.stat"; }
+  for row in "102400 102400:1:50%" "0 40960:0:10%"; do
+    printf "100 0 1000 100 100 0 1000 100 0 10000 10000 0 0 0 0 0 0\n" >"$state/disk/stat"
+    printf "110 0 1400 110 110 0 1400 110 0 10000 10000 0 0 0 0 0 0\n" >"$state/after"
+    printf "8:0 rbytes=0 wbytes=0\n8:16 rbytes=0 wbytes=0 rios=0 wios=0 dbytes=0 dios=0\n" >"$state/cg/io.stat"
+    read -r rbytes wbytes <<<"${row%%:*}"
+    printf "8:0 rbytes=999999999 wbytes=999999999\n8:16 rbytes=%s wbytes=%s rios=1 wios=1 dbytes=0 dios=0\n" "$rbytes" "$wbytes" >"$state/io.after"
+    check_orchestration_disk
+    expected="${row#*:}"
+    test "$ORCHESTRATION_DISK_KNOWN:$ORCHESTRATION_DISK_UNHEALTHY:$ORCHESTRATION_IO_ATTRIBUTED" = "1:0:${expected%%:*}"
+    case "$ORCHESTRATION_DISK_SUMMARY" in *"slice_io_share=${expected#*:}") ;; *) exit 1 ;; esac
+  done
+  rm "$state/disk/dev"
+  cp "$state/disk/stat" "$state/after"
+  check_orchestration_disk
+  test "$ORCHESTRATION_DISK_KNOWN:$ORCHESTRATION_IO_ATTRIBUTED" = 1:0
+  case "$ORCHESTRATION_DISK_SUMMARY" in *"slice_io_share=unknown") ;; *) exit 1 ;; esac
 '
 The status should be success
 The output should equal ''
