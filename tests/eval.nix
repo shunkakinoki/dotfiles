@@ -158,6 +158,8 @@ let
       assert beads.systemd.user.services.roborev.Service.CPUWeight == 20;
       assert beads.systemd.user.services.roborev.Service.IOWeight == 20;
       assert beads.systemd.user.services.roborev.Service.Nice == 10;
+      assert beads.home.file.".bun/bin/bun".force;
+      assert lib.hasSuffix "-bun-1.4.2/bin/bun" (toString beads.home.file.".bun/bin/bun".source);
       # Executor seats need the server back after an unattended reboot.
       assert cfg.users.users.shunkakinoki.linger;
       assert herdr.Install.WantedBy == [ "default.target" ];
@@ -438,6 +440,10 @@ let
         assert lib.elem "bun" packageNames;
         assert
           (builtins.head (builtins.filter (p: lib.getName p == "bun") cfg.home.packages)).version == "1.4.2";
+        # Fleet wakes exec `$HOME/.bun/bin/bun` by absolute path; the link must
+        # be managed, pinned, and able to replace hand-made relinks.
+        assert cfg.home.file.".bun/bin/bun".force;
+        assert lib.hasSuffix "-bun-1.4.2/bin/bun" (toString cfg.home.file.".bun/bin/bun".source);
         # T3 Connect provisioning must bootstrap a protocol-3 launcher; a
         # protocol-2 `service install` would downgrade it and break desktop updates.
         assert lib.hasInfix "t3@nightly service install" (
