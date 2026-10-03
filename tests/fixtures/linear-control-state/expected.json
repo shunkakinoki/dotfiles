@@ -5,7 +5,8 @@
     "desired_assignee": "",
     "desired_status": "open",
     "id": "task-b",
-    "kept": false
+    "kept": false,
+    "lease": false
   },
   {
     "current_assignee": "owner@example.com",
@@ -13,7 +14,8 @@
     "desired_assignee": "kamino4_lane_1",
     "desired_status": "in_progress",
     "id": "task-c",
-    "kept": false
+    "kept": false,
+    "lease": false
   },
   {
     "current_assignee": "owner@example.com",
@@ -21,7 +23,8 @@
     "desired_assignee": "",
     "desired_status": "open",
     "id": "task-d",
-    "kept": false
+    "kept": false,
+    "lease": false
   },
   {
     "current_assignee": "owner@example.com",
@@ -29,7 +32,8 @@
     "desired_assignee": "kamino4_lane_2",
     "desired_status": "closed",
     "id": "task-i",
-    "kept": false
+    "kept": false,
+    "lease": false
   },
   {
     "current_assignee": "",
@@ -37,7 +41,8 @@
     "desired_assignee": "operator-session",
     "desired_status": "in_progress",
     "id": "task-j",
-    "kept": true
+    "kept": true,
+    "lease": false
   },
   {
     "current_assignee": "owner@example.com",
@@ -45,7 +50,8 @@
     "desired_assignee": "operator-session",
     "desired_status": "in_progress",
     "id": "task-k",
-    "kept": true
+    "kept": true,
+    "lease": false
   },
   {
     "current_assignee": "owner@example.com",
@@ -53,7 +59,8 @@
     "desired_assignee": "kamino2_survey_ci",
     "desired_status": "in_progress",
     "id": "task-m",
-    "kept": true
+    "kept": true,
+    "lease": true
   },
   {
     "current_assignee": "owner@example.com",
@@ -61,7 +68,8 @@
     "desired_assignee": "kamino3_survey_locales",
     "desired_status": "closed",
     "id": "task-n",
-    "kept": true
+    "kept": true,
+    "lease": true
   },
   {
     "current_assignee": "owner@example.com",
@@ -69,7 +77,8 @@
     "desired_assignee": "kamino5_survey_docs",
     "desired_status": "closed",
     "id": "task-o",
-    "kept": false
+    "kept": false,
+    "lease": true
   },
   {
     "current_assignee": "owner@example.com",
@@ -77,6 +86,7 @@
     "desired_assignee": "",
     "desired_status": "open",
     "id": "task-p",
-    "kept": false
+    "kept": false,
+    "lease": false
   }
 ]

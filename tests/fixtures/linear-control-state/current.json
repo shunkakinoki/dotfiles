@@ -146,5 +146,23 @@
     "labels": [
       "linear"
     ]
+  },
+  {
+    "id": "task-s",
+    "title": "Survey lease: survey-d",
+    "status": "closed",
+    "assignee": "",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-t",
+    "title": "Survey lease: survey-e",
+    "status": "closed",
+    "assignee": "",
+    "labels": [
+      "linear"
+    ]
   }
 ]

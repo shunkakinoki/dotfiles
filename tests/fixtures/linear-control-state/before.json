@@ -30,7 +30,8 @@
     "assignee": "kamino2_survey_ci",
     "labels": [
       "linear"
-    ]
+    ],
+    "lease_expires_at": "2099-01-02T00:05:00Z"
   },
   {
     "id": "task-n",
@@ -48,7 +49,8 @@
     "assignee": "kamino5_survey_docs",
     "labels": [
       "linear"
-    ]
+    ],
+    "lease_expires_at": "2099-01-02T00:05:00Z"
   },
   {
     "id": "task-p",
@@ -70,6 +72,25 @@
     "id": "task-r",
     "status": "in_progress",
     "assignee": "kamino1_exec_r",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-s",
+    "title": "Survey lease: survey-d",
+    "status": "in_progress",
+    "assignee": "kamino6_survey_dead-code",
+    "labels": [
+      "linear"
+    ]
+  },
+  {
+    "id": "task-t",
+    "title": "Survey lease: survey-e",
+    "status": "in_progress",
+    "assignee": "kamino1_survey_web-vitals",
+    "lease_expires_at": "2099-01-01T23:55:00Z",
     "labels": [
       "linear"
     ]

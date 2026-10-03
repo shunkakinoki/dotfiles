@@ -422,7 +422,8 @@ rendered_sections_jq='
 # Linear state copied back would close a live reservation early, or close a
 # lease a running survey pass still heartbeats and hand its lane to a second
 # host. Leases linked before this rule keep their Linear copy, so the
-# control-state repair puts back whatever the pull writes over one.
+# control-state repair puts back whatever the pull writes over one, unless the
+# lease's pass wrote it during the pull.
 # Each is recognized the way its owner does: a reservation by its key
 # ref, first description line, or planner-intake title; a lease by its title.
 # shellcheck disable=SC2016 # jq program; $ anchors are regex syntax.
@@ -447,7 +448,7 @@ written_since_snapshot() {
   "$bd_cli" -C "$repo_dir" history "$1" --events --limit 20 --json 2>/dev/null </dev/null |
     @jq@/bin/jq -r --arg since "$snapshot_taken_at" --arg actor "$BEADS_ACTOR" '
       if type == "array" then any(.[]; .actor != $actor and .created_at >= $since) else false end
-    ' 2>/dev/null || echo false
+    ' 2>/dev/null || echo unknown
 }
 
 # Beads whose description still carries rendered sections after a normalize
@@ -679,6 +680,7 @@ repair_control_state_after_pull() {
     ! printf '%s\n' "$issues_before_pull" >"$linear_before_file" ||
     ! control_state_repairs="$(@jq@/bin/jq -c \
       --arg actor "$BEADS_ACTOR" \
+      --arg snapshot "$snapshot_taken_at" \
       --slurpfile journal "$linear_journal_file" \
       --slurpfile current "$linear_current_file" \
       --slurpfile before "$linear_before_file" \
@@ -699,6 +701,16 @@ repair_control_state_after_pull() {
     restore_failures=0
     while IFS= read -r repair; do
       restore_id="$(@jq@/bin/jq -r '.id' <<<"$repair")"
+      # A pass that released or retook its lease during the pull wrote the
+      # lease's current state itself; restoring the snapshot would hand a
+      # released lease back to a pass that no longer heartbeats it. An unread
+      # history skips the repair too: a live pass retakes a lease the pull
+      # closed on its next heartbeat.
+      if [ "$(@jq@/bin/jq -r '.lease' <<<"$repair")" = true ] &&
+        [ "$(written_since_snapshot "$restore_id")" != "false" ]; then
+        restore_failures=$((restore_failures + 1))
+        continue
+      fi
       restore_status="$(@jq@/bin/jq -r '.desired_status' <<<"$repair")"
       restore_assignee="$(@jq@/bin/jq -r '.desired_assignee' <<<"$repair")"
       pulled_status="$(@jq@/bin/jq -r '.current_status' <<<"$repair")"
