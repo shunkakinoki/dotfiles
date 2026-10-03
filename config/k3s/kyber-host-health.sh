@@ -15,6 +15,7 @@ readonly IO_FULL_AVG300_THRESHOLD=10
 readonly ORCHESTRATION_IO_SOME_AVG300_THRESHOLD=10
 readonly ORCHESTRATION_D_STATE_THRESHOLD=3
 readonly ORCHESTRATION_DISK_LATENCY_THRESHOLD_MS=20
+readonly ORCHESTRATION_IO_SHARE_THRESHOLD=25
 readonly ORCHESTRATION_FLAP_WINDOW_SECONDS=3600
 readonly ORCHESTRATION_FLAP_THRESHOLD=3
 readonly NODEFS_USAGE_THRESHOLD=70
@@ -37,6 +38,7 @@ ORCHESTRATION_D_STATE_COUNT=0
 ORCHESTRATION_DISK_KNOWN=0
 ORCHESTRATION_DISK_UNHEALTHY=0
 ORCHESTRATION_DISK_SUMMARY="not measured"
+ORCHESTRATION_IO_ATTRIBUTED=0
 
 set_alert() {
   local key="$1"
@@ -288,24 +290,48 @@ read_orchestration_disk_stat() {
   awk '
     NF < 17 { exit 1 }
     { for (i = 1; i <= 17; i++) if ($i !~ /^[0-9]+$/) exit 1 }
-    { print $1, $4, $5, $8, $12, $15, $16, $17, $9; found = 1 }
+    { print $1, $4, $5, $8, $12, $15, $16, $17, $9, $3, $7; found = 1 }
     END { if (!found) exit 1 }
   ' "$1/stat"
 }
 
+read_orchestration_slice_io_bytes() {
+  local device="$1" cgroup_dir
+  cgroup_dir="$(orchestration_cgroup_dir)" || return 1
+  # io.stat omits a device the slice has never touched.
+  if [ ! -r "$cgroup_dir/io.stat" ]; then
+    printf '0\n'
+    return
+  fi
+  awk -v device="$device" '
+    $1 == device { for (i = 2; i <= NF; i++) if ($i ~ /^[rw]bytes=[0-9]+$/) { sub(/^[rw]bytes=/, "", $i); total += $i } }
+    END { print total + 0 }
+  ' "$cgroup_dir/io.stat"
+}
+
 check_orchestration_disk() {
-  local disk before after result
+  local disk device before after result slice_before="" slice_after=""
   ORCHESTRATION_DISK_KNOWN=0
   ORCHESTRATION_DISK_UNHEALTHY=0
+  ORCHESTRATION_IO_ATTRIBUTED=0
   ORCHESTRATION_DISK_SUMMARY="measurement unavailable"
   if ! disk="$(orchestration_disk_path)" ||
     ! before="$(read_orchestration_disk_stat "$disk")"; then
     set_alert "orchestration-disk-read" "unable to read the worktree disk; automatic freeze and thaw withheld"
     return
   fi
+  # Slice PSI and D-state also rise for processes that are only waiting behind
+  # another cgroup's I/O. Its byte share of this disk shows whether it is a cause.
+  if read -r device 2>/dev/null <"$disk/dev" && [[ $device =~ ^[0-9]+:[0-9]+$ ]]; then
+    slice_before="$(read_orchestration_slice_io_bytes "$device")" || slice_before=""
+  fi
   sleep 2
+  if [ -n "$slice_before" ]; then
+    slice_after="$(read_orchestration_slice_io_bytes "$device")" || slice_after=""
+  fi
   if ! after="$(read_orchestration_disk_stat "$disk")" ||
-    ! result="$(awk -v before="$before" -v after="$after" -v limit="$ORCHESTRATION_DISK_LATENCY_THRESHOLD_MS" '
+    ! result="$(awk -v before="$before" -v after="$after" -v limit="$ORCHESTRATION_DISK_LATENCY_THRESHOLD_MS" \
+      -v slice_before="$slice_before" -v slice_after="$slice_after" -v share_limit="$ORCHESTRATION_IO_SHARE_THRESHOLD" '
       BEGIN {
         split(before, a); split(after, b)
         for (i = 1; i <= 8; i++) if (b[i] < a[i]) exit 1
@@ -316,17 +342,25 @@ check_orchestration_disk() {
         discard_ms = discards ? (b[6] - a[6]) / discards : 0
         flush_ms = flushes ? (b[8] - a[8]) / flushes : 0
         stuck = !reads && !writes && !discards && !flushes && a[9] > 0 && b[9] > 0
-        printf "%d read_await=%.2fms write_await=%.2fms discard_await=%.2fms flush_await=%.2fms outstanding=%d", \
-          (read_ms >= limit || write_ms >= limit || discard_ms >= limit || flush_ms >= limit || stuck), \
-          read_ms, write_ms, discard_ms, flush_ms, b[9]
+        disk_bytes = (b[10] - a[10] + b[11] - a[11]) * 512
+        share = "unknown"; attributed = 0
+        if (slice_before != "" && slice_after != "" && slice_after + 0 >= slice_before + 0 && b[10] >= a[10] && b[11] >= a[11]) {
+          share = disk_bytes ? 100 * (slice_after - slice_before) / disk_bytes : 0
+          if (share > 100) share = 100
+          attributed = share >= share_limit
+          share = sprintf("%d%%", share)
+        }
+        printf "%d %d read_await=%.2fms write_await=%.2fms discard_await=%.2fms flush_await=%.2fms outstanding=%d slice_io_share=%s", \
+          (read_ms >= limit || write_ms >= limit || discard_ms >= limit || flush_ms >= limit || stuck), attributed, \
+          read_ms, write_ms, discard_ms, flush_ms, b[9], share
       }
     ')"; then
     set_alert "orchestration-disk-read" "worktree disk counters unavailable or reset; automatic freeze and thaw withheld"
     return
   fi
   ORCHESTRATION_DISK_KNOWN=1
-  ORCHESTRATION_DISK_UNHEALTHY="${result%% *}"
-  ORCHESTRATION_DISK_SUMMARY="$(basename "$disk") ${result#* }"
+  read -r ORCHESTRATION_DISK_UNHEALTHY ORCHESTRATION_IO_ATTRIBUTED result <<<"$result"
+  ORCHESTRATION_DISK_SUMMARY="$(basename "$disk") $result"
   clear_alert "orchestration-disk-read"
 }
 
@@ -402,7 +436,7 @@ manage_orchestration_circuit_breaker() {
   local thaw_failure_alert="orchestration-thaw-failed"
   local evidence_dir recovery_samples=0 newly_frozen=0
 
-  if [ "$ORCHESTRATION_DISK_KNOWN" -eq 1 ] && [ "$ORCHESTRATION_DISK_UNHEALTHY" -eq 1 ] && { { [ "$IO_PRESSURE_UNHEALTHY" -eq 1 ] && [ "$IO_PRESSURE_CURRENT_UNHEALTHY" -eq 1 ]; } || [ "$D_STATE_UNHEALTHY" -eq 1 ]; } && [ "$ORCHESTRATION_IMPLICATED" -eq 1 ]; then
+  if [ "$ORCHESTRATION_DISK_KNOWN" -eq 1 ] && [ "$ORCHESTRATION_DISK_UNHEALTHY" -eq 1 ] && { { [ "$IO_PRESSURE_UNHEALTHY" -eq 1 ] && [ "$IO_PRESSURE_CURRENT_UNHEALTHY" -eq 1 ]; } || [ "$D_STATE_UNHEALTHY" -eq 1 ]; } && [ "$ORCHESTRATION_IMPLICATED" -eq 1 ] && [ "$ORCHESTRATION_IO_ATTRIBUTED" -eq 1 ]; then
     printf '0\n' >"$recovery_file"
     if [ ! -s "$capture_file" ]; then
       evidence_dir="$(capture_orchestration_evidence)"
@@ -443,7 +477,9 @@ manage_orchestration_circuit_breaker() {
 
   # Recovery belongs to the worktree disk. A fault on the separate container
   # disk remains an alert, but cannot indefinitely suspend unrelated agents.
-  if [ "$ORCHESTRATION_DISK_KNOWN" -ne 1 ] || [ "$ORCHESTRATION_DISK_UNHEALTHY" -eq 1 ]; then
+  # A frozen slice issues no I/O, so congestion that persists without its share
+  # belongs to another writer and the freeze only stalls agents.
+  if [ "$ORCHESTRATION_DISK_KNOWN" -ne 1 ] || { [ "$ORCHESTRATION_DISK_UNHEALTHY" -eq 1 ] && [ "$ORCHESTRATION_IO_ATTRIBUTED" -eq 1 ]; }; then
     printf '0\n' >"$recovery_file"
     return
   fi
