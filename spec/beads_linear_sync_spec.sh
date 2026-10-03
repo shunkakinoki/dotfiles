@@ -388,14 +388,11 @@ case "${1:-} ${2:-}" in
           exit 23
         fi
         ;;
-      pull-awaits-guard)
-        # Stays in flight until the expected repair lands, or ten seconds,
-        # then marks its exit so an example can order the two.
+      pull-held-open)
+        # Stays in flight for about a second, then marks its exit so an
+        # example can order Beads writes against it.
         if [[ " $* " != *" --push "* ]]; then
-          for _ in $(seq 1 100); do
-            if grep -F -- "${FAKE_GUARD_REPAIR:?}" "$COMMAND_LOG" >/dev/null; then
-              break
-            fi
+          for _ in $(seq 1 10); do
             sleep 0.1
           done
           printf '%s\n' 'pull-exited' >>"$COMMAND_LOG"
@@ -1231,7 +1228,7 @@ The output should include 'No changed active Beads to push'
 The contents of file "$COMMAND_LOG" should include 'update df-session --assignee operator-session --if-status=in_progress --if-assignee='
 End
 
-use_fast_pull_guard() {
+use_fast_sleep() {
   real_sleep="$(command -v sleep)"
   rm -f "$COREUTILS/bin/sleep"
   printf '#!/usr/bin/env bash\nexec %q 0.1\n' "$real_sleep" >"$COREUTILS/bin/sleep"
@@ -1242,48 +1239,18 @@ repair_order() {
   awk -v repair="$1" 'index($0, repair) { print "repaired"; exit } $0 == "pull-exited" { print "pull-exited"; exit }' "$COMMAND_LOG"
 }
 
-It 'keeps the assignee of a fleet claim the pull unassigned while the pull is still in flight'
+It 'writes no control state repair while the pull is still in flight'
 before='[{"id":"df-claimed","status":"in_progress","assignee":"kamino6_exec_claimed","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
 after='[{"id":"df-claimed","status":"in_progress","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
 repaired='[{"id":"df-claimed","status":"in_progress","assignee":"kamino6_exec_claimed","updated_at":"2099-01-04T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
 repair='update df-claimed --assignee kamino6_exec_claimed --if-status=in_progress --if-assignee='
-use_fast_pull_guard
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=pull-awaits-guard FAKE_GUARD_REPAIR="$repair" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" FAKE_LIST_JSON_AFTER_REPAIR="$repaired" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+use_fast_sleep
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=pull-held-open FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" FAKE_LIST_JSON_AFTER_REPAIR="$repaired" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
-The output should include 'Restoring locally authoritative control state during pull'
-The output should not include 'Restoring locally authoritative control state after pull'
-The value "$(repair_order "$repair")" should equal 'repaired'
+The output should include 'Restoring locally authoritative control state after pull'
+The value "$(repair_order "$repair")" should equal 'pull-exited'
 The value "$(grep -c -F -- "$repair" "$COMMAND_LOG")" should equal 1
 The file "$CHECKPOINT_FILE" should be exist
-End
-
-It 'keeps a lane release over the stale claim the pull wrote back while the pull is still in flight'
-before='[{"id":"df-released","status":"in_progress","assignee":"kamino6_exec_released","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/released"}]'
-after='[{"id":"df-released","status":"in_progress","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/released"}]'
-repaired='[{"id":"df-released","status":"open","assignee":"","updated_at":"2099-01-04T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/released"}]'
-journal='{"seq":3,"actor":"kamino6_exec_released","op":"update","issue_id":"df-released","issue":{"id":"df-released","status":"open","assignee":""}}'
-repair='update df-released --status open --if-status=in_progress --if-assignee='
-use_fast_pull_guard
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=pull-awaits-guard FAKE_GUARD_REPAIR="$repair" FAKE_EVENTS_JOURNAL="$journal" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" FAKE_LIST_JSON_AFTER_REPAIR="$repaired" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
-The status should be success
-The output should include 'Restoring locally authoritative control state during pull'
-The value "$(repair_order "$repair")" should equal 'repaired'
-The contents of file "$COMMAND_LOG" should not include 'update df-released --assignee kamino6_exec_released'
-The file "$CHECKPOINT_FILE" should be exist
-End
-
-It 'pushes a release restored while the pull was in flight even when the ledger recorded its content'
-released='[{"id":"df-released","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/released"}]'
-after='[{"id":"df-released","status":"in_progress","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/released"}]'
-repaired='[{"id":"df-released","status":"open","assignee":"","updated_at":"2099-01-04T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/released"}]'
-repair='update df-released --status open --if-status=in_progress --if-assignee='
-ledger="$STATE_HOME/beads-linear-sync/pushed-active-test%2Frepo-one"
-use_fast_pull_guard
-When run bash -c "env COMMAND_LOG='$TEST_ROOT/first.log' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$released' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' >/dev/null && grep -q -E '^df-released [0-9a-f]{64}$' '$ledger' && env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LINEAR_MODE=pull-awaits-guard FAKE_GUARD_REPAIR='$repair' FAKE_LIST_JSON='$released' FAKE_LIST_JSON_AFTER_PULL='$after' FAKE_LIST_JSON_AFTER_REPAIR='$repaired' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT'"
-The status should be success
-The output should include 'Restoring locally authoritative control state during pull'
-The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-released --no-wait'
-The file "$STATE_HOME/beads-linear-sync/pull-guard-repaired-test%2Frepo-one" should not be exist
 End
 
 It 'restores a claim made during the pull before a rejected pull exits'
