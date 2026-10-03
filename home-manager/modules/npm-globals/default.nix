@@ -39,6 +39,14 @@ in
     };
   };
 
+  # Fleet wakes exec `$HOME/.bun/bin/bun` by absolute path, so an unmanaged
+  # link there can vanish or drift off the pinned release. `force` replaces the
+  # plain files and hand-made relinks hosts already carry at this path.
+  home.file.".bun/bin/bun" = {
+    source = lib.getExe pkgs.bun;
+    force = true;
+  };
+
   home.sessionVariables = {
     BUN_INSTALL = "$HOME/.bun";
   };
