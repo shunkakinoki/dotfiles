@@ -25,6 +25,7 @@ let
   healthTimerFile = "${homeDir}/.config/k3s/kyber-host-health.timer";
   smartdServiceFile = "${homeDir}/.config/k3s/kyber-smartd.service";
   tmpMountFile = "${homeDir}/.config/k3s/tmp.mount";
+  openclawCacheMountFile = "${homeDir}/.config/k3s/home-ubuntu-.cache-openclaw.mount";
   runtimeIoFile = "${homeDir}/.config/k3s/k3s-io.conf";
   podsIoFile = "${homeDir}/.config/k3s/kubepods-io.conf";
 in
@@ -40,6 +41,7 @@ lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && host.isK3sServer) {
       "${smartdServiceFile}" \
       "${tmpMountFile}" \
       "${runtimeIoFile}" \
-      "${podsIoFile}"
+      "${podsIoFile}" \
+      "${openclawCacheMountFile}"
   '';
 }

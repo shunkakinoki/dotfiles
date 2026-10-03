@@ -175,6 +175,11 @@ cleaner:
 - journald stores at most 2 GiB persistently and 256 MiB at runtime, retains no
   entry longer than seven days, and keeps 10 GiB free;
 - kubelet rotates each container log at 10 MiB and retains three files;
+- `~/.cache/openclaw` is a 4 GiB tmpfs, so the gateway's read-only SQLite
+  snapshots (full copies of the shared state database) never reach the root
+  disk. Activation only enables the mount; it applies at the next boot, or
+  after stopping `openclaw-gateway.service`, starting
+  `home-ubuntu-.cache-openclaw.mount`, and starting the gateway again;
 - `kyber-smartd.service` uses `smartd` to monitor all SMART-capable physical
   disks, including wear, reallocation, error trends, and the containerd SSD,
   and runs short and long self-tests;
