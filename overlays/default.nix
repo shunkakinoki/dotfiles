@@ -395,6 +395,33 @@
         ln -s moshi-hook $out/bin/moshi
       '';
     };
+
+    # Namespace's devbox CLI, not the unrelated Jetify devbox in nixpkgs.
+    namespace-devbox = prev.stdenvNoCC.mkDerivation rec {
+      pname = "namespace-devbox";
+      version = "0.0.195";
+      src = prev.fetchurl {
+        url = "https://get.namespace.so/packages/devbox/v${version}/devbox_${version}_${
+          if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
+        }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}.tar.gz";
+        sha256 =
+          if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
+            "6cf18d67925b43ea75bcf0cdebc25d4f5db53907ff8c710e78b5406145faced9"
+          else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
+            "c543033496a0b19294731977205c1fe1998c2323df296e87b4a76b596b022019"
+          else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
+            "a78cdf91d4d692c07707d33ca3552c5b09faf554986e4bbccc3ef4bc2973628c"
+          else
+            "537eecaf55a90289c53be6966979b6d20d9be9ca98cfc6fafd8107493d13c7dc";
+      };
+      sourceRoot = ".";
+      dontConfigure = true;
+      dontBuild = true;
+      installPhase = ''
+        install -Dm755 devbox $out/bin/devbox
+      '';
+      meta.mainProgram = "devbox";
+    };
   })
   (final: prev: {
     nightlyPkgs = import inputs.nixpkgs-nightly {

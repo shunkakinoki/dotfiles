@@ -102,6 +102,7 @@ with pkgs;
   mkcert
   mosh
   mtr
+  namespace-devbox
   navi
   ncdu
   nmap

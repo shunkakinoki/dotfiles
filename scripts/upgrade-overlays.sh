@@ -15,6 +15,8 @@ BOAT_CLI_RELEASE_URL="${BOAT_CLI_RELEASE_URL:-https://github.com/ariana-dot-dev/
 CRABBOX_RELEASE_API="${CRABBOX_RELEASE_API:-https://api.github.com/repos/openclaw/crabbox/releases/latest}"
 CRABBOX_RELEASE_CDN="${CRABBOX_RELEASE_CDN:-https://github.com/openclaw/crabbox/releases/download}"
 DEVIN_CLI_CDN="${DEVIN_CLI_CDN:-https://static.devin.ai/cli}"
+NAMESPACE_DEVBOX_VERSIONS_URL="${NAMESPACE_DEVBOX_VERSIONS_URL:-https://private-api.global.namespaceapis.com/nsl.versions.VersionsService/GetLatest}"
+NAMESPACE_DEVBOX_RELEASE_CDN="${NAMESPACE_DEVBOX_RELEASE_CDN:-https://nsl-public-assets.t3.tigrisfiles.io/devbox/releases}"
 GH_RELEASE_API="${GH_RELEASE_API:-repos/cli/cli/releases/latest}"
 
 # Colors for output
@@ -45,6 +47,7 @@ usage() {
   echo "  devin - Upgrade the pinned Devin CLI binaries"
   echo "  gh - Upgrade the pinned GitHub CLI release and Go vendor hash"
   echo "  moshi-hook - Upgrade the pinned moshi-hook binaries"
+  echo "  namespace-devbox - Upgrade the pinned Namespace devbox CLI binaries"
   echo "  t3code - Refresh the platform-specific t3code pnpm dependency hash"
   echo "  all        - Upgrade all overlays"
   echo ""
@@ -564,6 +567,73 @@ upgrade_devin() {
   fi
 }
 
+upgrade_namespace_devbox() {
+  local version current_version checksums_file
+  local linux_x86_64 linux_arm64 darwin_arm64 darwin_x86_64
+
+  version="${NAMESPACE_DEVBOX_VERSION:-}"
+  if [ -z "$version" ]; then
+    version="$(curl -fsSL -X POST -H 'Content-Type: application/json' -d '{"devbox":{}}' "$NAMESPACE_DEVBOX_VERSIONS_URL" | jq -r '.version' | sed 's/^v//')"
+  fi
+
+  if [[ ! $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    log_error "Invalid Namespace devbox version: ${version:-unknown}"
+    exit 1
+  fi
+
+  current_version="$(sed -n '/namespace-devbox = prev.stdenvNoCC.mkDerivation rec {/,/meta.mainProgram = "devbox"/p' "$OVERLAY_FILE" | sed -n 's/.*version = "\([^"]*\)";.*/\1/p' | head -1)"
+  echo "  Current version: ${current_version:-unknown}"
+  echo "  Latest version:  $version"
+
+  checksums_file="$(mktemp)"
+  curl -fsSL "$NAMESPACE_DEVBOX_RELEASE_CDN/v$version/checksums.txt" -o "$checksums_file"
+  linux_x86_64="$(checksum_for "$checksums_file" "devbox_${version}_linux_amd64.tar.gz")"
+  linux_arm64="$(checksum_for "$checksums_file" "devbox_${version}_linux_arm64.tar.gz")"
+  darwin_arm64="$(checksum_for "$checksums_file" "devbox_${version}_darwin_arm64.tar.gz")"
+  darwin_x86_64="$(checksum_for "$checksums_file" "devbox_${version}_darwin_amd64.tar.gz")"
+  rm -f "$checksums_file"
+  validate_checksum "devbox_${version}_linux_amd64.tar.gz" "$linux_x86_64"
+  validate_checksum "devbox_${version}_linux_arm64.tar.gz" "$linux_arm64"
+  validate_checksum "devbox_${version}_darwin_arm64.tar.gz" "$darwin_arm64"
+  validate_checksum "devbox_${version}_darwin_amd64.tar.gz" "$darwin_x86_64"
+
+  awk \
+    -v version="$version" \
+    -v linux_x86_64="$linux_x86_64" \
+    -v linux_arm64="$linux_arm64" \
+    -v darwin_arm64="$darwin_arm64" \
+    -v darwin_x86_64="$darwin_x86_64" '
+      /namespace-devbox = prev.stdenvNoCC.mkDerivation rec \{/ { in_devbox = 1 }
+      in_devbox && /version = "[^"]*";/ {
+        sub(/version = "[^"]*";/, "version = \"" version "\";")
+      }
+      in_devbox && /isLinux && prev.stdenv.hostPlatform.isx86_64 then/ { pending_hash = linux_x86_64 }
+      in_devbox && /isLinux && prev.stdenv.hostPlatform.isAarch64 then/ { pending_hash = linux_arm64 }
+      in_devbox && /isDarwin && prev.stdenv.hostPlatform.isAarch64 then/ { pending_hash = darwin_arm64 }
+      in_devbox && /^          else$/ { pending_hash = darwin_x86_64 }
+      in_devbox && pending_hash != "" && $0 ~ /^[[:space:]]*"[^"]*";?$/ {
+        sub(/"[^"]*"/, "\"" pending_hash "\"")
+        pending_hash = ""
+        updated_hashes++
+      }
+      in_devbox && /meta.mainProgram = "devbox"/ { in_devbox = 0 }
+      { print }
+      END {
+        if (updated_hashes != 4) {
+          print "expected four namespace-devbox checksums in " FILENAME > "/dev/stderr"
+          exit 1
+        }
+      }
+    ' "$OVERLAY_FILE" >"$OVERLAY_FILE.tmp"
+  mv -f "$OVERLAY_FILE.tmp" "$OVERLAY_FILE"
+
+  if [[ $current_version == "$version" ]]; then
+    log_info "✅ namespace-devbox hashes refreshed for $version"
+  else
+    log_info "✅ namespace-devbox upgraded from ${current_version:-unknown} to $version"
+  fi
+}
+
 t3code_pnpm_hash() {
   local expression output hash
 
@@ -662,6 +732,13 @@ main() {
     require_command tr
     upgrade_moshi_hook
     ;;
+  namespace-devbox)
+    require_command awk
+    require_command curl
+    require_command jq
+    require_command sed
+    upgrade_namespace_devbox
+    ;;
   t3code)
     require_command awk
     require_command nix
@@ -682,6 +759,7 @@ main() {
     upgrade_devin
     upgrade_gh
     upgrade_moshi_hook
+    upgrade_namespace_devbox
     upgrade_t3code
     ;;
   -h | --help)

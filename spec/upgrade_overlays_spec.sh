@@ -13,6 +13,7 @@ The output should include 'blacksmith-testbox-cli'
 The output should include 'crabbox'
 The output should include 'devin'
 The output should include 'moshi-hook'
+The output should include 'namespace-devbox'
 The output should include 't3code'
 The output should include 'all'
 The status should be failure
@@ -54,6 +55,7 @@ setup() {
     "$TEMP_DIR/cdn/blacksmith/v0.4.57/darwin/arm64" \
     "$TEMP_DIR/cdn/crabbox/v0.55.0" \
     "$TEMP_DIR/cdn/devin/3000.10.21" \
+    "$TEMP_DIR/cdn/namespace-devbox/v0.0.196" \
     "$TEMP_DIR/overlays"
   cat >"$TEMP_DIR/bin/nix-prefetch-url" <<'EOF'
 #!/usr/bin/env bash
@@ -87,6 +89,14 @@ bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb  crabbox_0.55.0
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc  crabbox_0.55.0_darwin_arm64.tar.gz
 dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd  crabbox_0.55.0_darwin_amd64.tar.gz
 EOF
+  cat >"$TEMP_DIR/cdn/namespace-devbox/v0.0.196/checksums.txt" <<'EOF'
+5555555555555555555555555555555555555555555555555555555555555555  devbox_0.0.196_linux_amd64
+6666666666666666666666666666666666666666666666666666666666666666  devbox_0.0.196_linux_amd64.tar.gz
+7777777777777777777777777777777777777777777777777777777777777777  devbox_0.0.196_linux_arm64.tar.gz
+8888888888888888888888888888888888888888888888888888888888888888  devbox_0.0.196_darwin_arm64.tar.gz
+9999999999999999999999999999999999999999999999999999999999999999  devbox_0.0.196_darwin_amd64.tar.gz
+EOF
+  printf '%s\n' '{"version":"v0.0.196","tarballs":[]}' >"$TEMP_DIR/cdn/namespace-devbox/latest.json"
   cat >"$TEMP_DIR/cdn/devin/3000.10.21/manifest.json" <<'EOF'
 {
   "version": "3000.10.21",
@@ -186,6 +196,22 @@ EOF
       };
       meta.mainProgram = "devin";
     };
+    namespace-devbox = prev.stdenvNoCC.mkDerivation rec {
+      pname = "namespace-devbox";
+      version = "0.0.195";
+      src = prev.fetchurl {
+        sha256 =
+          if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
+            "old-linux-x86"
+          else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
+            "old-linux-arm"
+          else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
+            "old-darwin-arm"
+          else
+            "old-darwin-x86";
+      };
+      meta.mainProgram = "devbox";
+    };
     # t3code 0.0.33 pins one pnpm deps hash
     t3code-test = let
       pnpmDepsHashes = {
@@ -247,10 +273,11 @@ The status should be success
 End
 
 It 'updates every overlay hash from the all target'
-When run bash -c "env OVERLAY_FILE='$TEMP_DIR/overlays/default.nix' BOAT_CLI_VERSION='0.1.208' MOSHI_HOOK_CDN='file://$TEMP_DIR/cdn' BLACKSMITH_CLI_CDN='file://$TEMP_DIR/cdn/blacksmith' BLACKSMITH_CLI_VERSION='0.4.57' CRABBOX_RELEASE_CDN='file://$TEMP_DIR/cdn/crabbox' CRABBOX_VERSION='0.55.0' DEVIN_CLI_CDN='file://$TEMP_DIR/cdn/devin' DEVIN_CLI_VERSION='3000.10.21' GH_VERSION='2.100.0' GH_REV='45437bc7eeeb3359bbfddd1742f79de7652fd3e2' GH_SOURCE_HASH='sha256-9tnSQPSqllE+Ke6LKyNbnOF1drzdEwesEuPdmWD1X5c=' GH_VENDOR_HASH='sha256-ZqUs2BnasF3QBX0I2Sxh2A/CnO61Vy6gRn1hkf0n9AY=' T3CODE_VERSION='0.0.36' T3CODE_PNPM_HASH='sha256-y/sJIluwbn65APmJ2p07FK1ScXpetCloTHtQzZMchDU=' bash '$SCRIPT' all && cat '$TEMP_DIR/overlays/default.nix'"
+When run bash -c "env OVERLAY_FILE='$TEMP_DIR/overlays/default.nix' BOAT_CLI_VERSION='0.1.208' MOSHI_HOOK_CDN='file://$TEMP_DIR/cdn' BLACKSMITH_CLI_CDN='file://$TEMP_DIR/cdn/blacksmith' BLACKSMITH_CLI_VERSION='0.4.57' CRABBOX_RELEASE_CDN='file://$TEMP_DIR/cdn/crabbox' CRABBOX_VERSION='0.55.0' DEVIN_CLI_CDN='file://$TEMP_DIR/cdn/devin' DEVIN_CLI_VERSION='3000.10.21' NAMESPACE_DEVBOX_RELEASE_CDN='file://$TEMP_DIR/cdn/namespace-devbox' NAMESPACE_DEVBOX_VERSION='0.0.196' GH_VERSION='2.100.0' GH_REV='45437bc7eeeb3359bbfddd1742f79de7652fd3e2' GH_SOURCE_HASH='sha256-9tnSQPSqllE+Ke6LKyNbnOF1drzdEwesEuPdmWD1X5c=' GH_VENDOR_HASH='sha256-ZqUs2BnasF3QBX0I2Sxh2A/CnO61Vy6gRn1hkf0n9AY=' T3CODE_VERSION='0.0.36' T3CODE_PNPM_HASH='sha256-y/sJIluwbn65APmJ2p07FK1ScXpetCloTHtQzZMchDU=' bash '$SCRIPT' all && cat '$TEMP_DIR/overlays/default.nix'"
 The output should include 'moshi-hook upgraded from 0.2.55 to 0.2.69'
 The output should include 'crabbox upgraded from 0.46.0 to 0.55.0'
 The output should include 'devin upgraded from 3000.10.20 to 3000.10.21'
+The output should include 'namespace-devbox upgraded from 0.0.195 to 0.0.196'
 The output should include 't3code pnpm hash refreshed for 0.0.36'
 The output should include 'gh upgraded from 2.98.0 to 2.100.0'
 The output should include '45437bc7eeeb3359bbfddd1742f79de7652fd3e2'
@@ -284,6 +311,24 @@ It 'reads the Devin CLI version from the manifest when unpinned'
 When run bash -c "env OVERLAY_FILE='$TEMP_DIR/overlays/default.nix' DEVIN_CLI_CDN='file://$TEMP_DIR/cdn/devin' bash -c \"ln -s 3000.10.21 '$TEMP_DIR/cdn/devin/current' && bash '$SCRIPT' devin\""
 The output should include 'Latest version:  3000.10.21'
 The output should include 'devin upgraded from 3000.10.20 to 3000.10.21'
+The status should be success
+End
+
+It 'updates the pinned Namespace devbox version and only the tarball checksums'
+When run bash -c "env OVERLAY_FILE='$TEMP_DIR/overlays/default.nix' NAMESPACE_DEVBOX_RELEASE_CDN='file://$TEMP_DIR/cdn/namespace-devbox' NAMESPACE_DEVBOX_VERSION='0.0.196' bash '$SCRIPT' namespace-devbox >/dev/null && sed -n '/namespace-devbox = /,/meta.mainProgram = \"devbox\"/p' '$TEMP_DIR/overlays/default.nix'"
+The output should include 'version = "0.0.196"'
+The output should include '6666666666666666666666666666666666666666666666666666666666666666'
+The output should include '7777777777777777777777777777777777777777777777777777777777777777'
+The output should include '8888888888888888888888888888888888888888888888888888888888888888'
+The output should include '9999999999999999999999999999999999999999999999999999999999999999'
+The output should not include '5555555555555555555555555555555555555555555555555555555555555555'
+The status should be success
+End
+
+It 'reads the Namespace devbox version from the versions service when unpinned'
+When run bash -c "env OVERLAY_FILE='$TEMP_DIR/overlays/default.nix' NAMESPACE_DEVBOX_VERSIONS_URL='file://$TEMP_DIR/cdn/namespace-devbox/latest.json' NAMESPACE_DEVBOX_RELEASE_CDN='file://$TEMP_DIR/cdn/namespace-devbox' bash '$SCRIPT' namespace-devbox"
+The output should include 'Latest version:  0.0.196'
+The output should include 'namespace-devbox upgraded from 0.0.195 to 0.0.196'
 The status should be success
 End
 
