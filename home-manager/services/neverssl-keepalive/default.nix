@@ -12,8 +12,14 @@ in
         "${./keepalive.sh}"
       ];
       EnvironmentVariables = {
-        PATH = lib.makeBinPath [ pkgs.curl ] + ":/usr/bin:/bin:/usr/sbin:/sbin";
+        PATH =
+          lib.makeBinPath [
+            pkgs.curl
+            pkgs.coreutils
+          ]
+          + ":/usr/bin:/bin:/usr/sbin:/sbin";
       };
+      RunAtLoad = true;
       StartInterval = 30;
       StandardOutPath = "/tmp/neverssl-keepalive.log";
       StandardErrorPath = "/tmp/neverssl-keepalive.error.log";
@@ -23,7 +29,7 @@ in
   # Linux (systemd)
   systemd.user.services.neverssl-keepalive = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
-      Description = "Keep captive portal alive via neverssl.com";
+      Description = "Detect captive portals with validated connectivity probes";
       Wants = [ "network-online.target" ];
       After = [ "network-online.target" ];
       X-SwitchMethod = "keep-old";
@@ -34,6 +40,7 @@ in
         lib.makeBinPath [
           pkgs.curl
           pkgs.bash
+          pkgs.coreutils
         ]
       }";
       ExecStart = "${pkgs.bash}/bin/bash ${./keepalive.sh}";
@@ -42,7 +49,7 @@ in
 
   systemd.user.timers.neverssl-keepalive = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
-      Description = "Timer for neverssl captive portal keepalive";
+      Description = "Timer for captive portal detection";
     };
     Timer = {
       OnBootSec = "30s";

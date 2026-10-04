@@ -13,14 +13,30 @@ After running these commands, you may need to re-add your desired applications t
 
 For more details, see [nix-darwin issue #789](https://github.com/LnL7/nix-darwin/issues/789).
 
-## Auto renew neverssl on private wifi
+## Captive Wi-Fi login detection
 
-Send a lightweight HTTP GET to `http://neverssl.com` on a short cadence to keep the captive portal session alive.
+The bundled `home-manager/services/neverssl-keepalive` service checks Apple,
+Google, and Microsoft HTTP connectivity probes every 30 seconds. It validates
+the expected response body or empty `204`, rather than treating any successful
+HTTP request as internet access. NeverSSL availability is no longer required.
 
-**Systemd (Linux):** define a `neverssl-keepalive.service` oneshot that runs curl, then pair it with a timer using `OnBootSec=3s` and `OnUnitActiveSec=3s`, finally `systemctl enable --now neverssl-keepalive.timer`.
+On macOS, the detector discovers the Wi-Fi interface without relying on the
+SSID, and probes through that interface. Redirects, HTTP `511`, or substituted
+login pages report `CAPTIVE` and open a browser to the intercepted probe URL.
+Browser openings are limited to once per ten minutes per network, including
+across temporary connectivity changes. It never switches Wi-Fi off and on.
 
-**Cron or launchd:** schedule the same curl command (`curl -fsS --max-time 10 http://neverssl.com >/dev/null 2>&1 || true`) at your preferred interval.
+Timeouts and DNS or server failures report `OFFLINE` without opening a browser.
+A validated response reports `ONLINE` unless another probe was intercepted;
+some captive networks allow individual probe hosts before login. Linux uses the
+same detection and reports the result in the systemd user journal.
 
-**NixOS/Home Manager:** use the bundled `home-manager/services/neverssl-keepalive` module to install a 3-second systemd user timer.
+For a check without opening a browser or changing the cooldown state, run:
 
-If the network still expires sessions, the captive portal may require additional headers, JavaScript heartbeats, or manual sign-ins.
+```bash
+bash home-manager/services/neverssl-keepalive/keepalive.sh --check
+```
+
+On macOS, logs are in `/tmp/neverssl-keepalive.log` and
+`/tmp/neverssl-keepalive.error.log`. Detection helps surface manual login; it
+does not renew sessions that require accepting terms or submitting credentials.
