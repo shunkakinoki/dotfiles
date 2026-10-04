@@ -212,9 +212,12 @@ time and disk pressure before tuning them. Desktop review concurrency and limits
 are unchanged. The dedicated containerd disk and K3s remain outside these limits.
 
 The host-health check freezes `orchestration.slice` only when sustained host
-pressure, the slice's own stalls, and congestion on the physical worktree disk
-coincide. It resolves the root filesystem to its physical disk and samples the
-kernel's completion counters over two seconds. Average read, write, flush, or
+pressure, the slice's own stalls, congestion on the physical worktree disk, and
+the slice's own I/O coincide. It resolves the root filesystem to its physical
+disk and samples the kernel's completion counters over two seconds. Over the
+same window it compares the slice's `io.stat` bytes for that disk with the
+disk's total; the slice must account for at least 25% before it can be frozen,
+because processes waiting behind another cgroup's writes also stall. Average read, write, flush, or
 discard latency of at least 20 ms, or outstanding I/O with no completions throughout
 the sample, prevents recovery. This latency budget distinguishes storage stalls
 from waiting for the slice's own I/O limits; it is not a service latency promise.
@@ -226,7 +229,10 @@ both five-minute and current ten-second pressure, including current pressure
 inside orchestration. The sustained D-state trigger also requires congestion on
 the worktree disk. Three freezes within an hour raise a flapping alert.
 
-Automatic thaw requires five consecutive healthy worktree-disk samples. Host
+Automatic thaw requires five consecutive worktree-disk samples that are either
+healthy or congested below the slice's 25% share. A frozen slice issues no I/O,
+so congestion that persists comes from another writer and keeps no agents
+frozen; the slice re-trips if it resumes as a material writer. Host
 pressure or CRI failures on the separate containerd disk remain health alerts;
 they cannot keep unrelated root-disk agents frozen. Recovery runs before CRI
 checks. Missing, malformed, reset, or unsupported stacked-device measurements
