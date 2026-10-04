@@ -20,6 +20,9 @@ while [ "$#" -gt 0 ]; do
   esac
   shift
 done
+if [ -n "${MOCK_FAILURE:-}" ] && [ "$mode" = "$MOCK_FAILURE" ]; then
+  exit 1
+fi
 if [ -n "$set_to" ]; then
   printf '%s=%s\n' "$type" "$set_to" >>"$WORK/switched"
 elif [ "$mode" = current ]; then
@@ -31,10 +34,10 @@ STUB
   chmod +x "$WORK/switch-audio"
   {
     printf '%s\n' 'set -uo pipefail'
-    sed -n '/^switch_audio=/p; /^grace_seconds=/p; /^declare -A/p; /^prefer() {/,/^}/p' "$SCRIPT" |
+    sed -n '/^switch_audio=/p; /^prefer() {/,/^}/p' "$SCRIPT" |
       sed "s|@switchAudioBin@|$WORK/switch-audio|"
     printf '%s\n' 'for TICK in $(ls "$WORK/ticks" | sort -n); do'
-    printf '%s\n' '  export TICK; SECONDS=$(cat "$WORK/ticks/$TICK/seconds")'
+    printf '%s\n' '  export TICK'
     printf '%s\n' '  prefer "$@"'
     printf '%s\n' 'done'
   } >"$WORK/prefer.sh"
@@ -43,22 +46,23 @@ STUB
 }
 
 cleanup() {
+  unset MOCK_FAILURE
   rm -rf "$WORK"
 }
 
 Before 'setup'
 After 'cleanup'
 
-# tick <n> <seconds> <current> <devices>
+# tick <n> <current> <devices> [type]
 tick() {
+  local type="${4:-output}"
   mkdir -p "$WORK/ticks/$1"
-  printf '%s\n' "$2" >"$WORK/ticks/$1/seconds"
-  printf '%s\n' "$3" >"$WORK/ticks/$1/current-output"
-  printf '%s\n' "$4" >"$WORK/ticks/$1/devices-output"
+  printf '%s\n' "$2" >"$WORK/ticks/$1/current-$type"
+  printf '%s\n' "$3" >"$WORK/ticks/$1/devices-$type"
 }
 
 use_devices() {
-  tick 1 0 "$1" "$2"
+  tick 1 "$1" "$2"
 }
 
 It 'switches to the preferred device when it is connected but not current'
@@ -86,34 +90,60 @@ When run bash "$WORK/prefer.sh" output EarPods
 The contents of file "$WORK/switched" should equal ''
 End
 
-It 'reverts a newly connected device that grabs the default route'
-tick 1 0 'MacBook Speakers' 'MacBook Speakers'
-tick 2 100 'AirPods' "$(printf 'MacBook Speakers\nAirPods')"
+It 'keeps newly connected AirPods when wired EarPods are absent'
+tick 1 'MacBook Speakers' 'MacBook Speakers'
+tick 2 'AirPods' "$(printf 'MacBook Speakers\nAirPods')"
 When run bash "$WORK/prefer.sh" output EarPods
-The contents of file "$WORK/switched" should equal 'output=MacBook Speakers'
+The contents of file "$WORK/switched" should equal ''
 End
 
-It 'reverts when the route switches a tick after the device appears'
-tick 1 0 'MacBook Speakers' 'MacBook Speakers'
-tick 2 100 'MacBook Speakers' "$(printf 'MacBook Speakers\nAirPods')"
-tick 3 102 'AirPods' "$(printf 'MacBook Speakers\nAirPods')"
+It 'keeps AirPods selected on the poll after they appear'
+tick 1 'MacBook Speakers' 'MacBook Speakers'
+tick 2 'MacBook Speakers' "$(printf 'MacBook Speakers\nAirPods')"
+tick 3 'AirPods' "$(printf 'MacBook Speakers\nAirPods')"
 When run bash "$WORK/prefer.sh" output EarPods
-The contents of file "$WORK/switched" should equal 'output=MacBook Speakers'
+The contents of file "$WORK/switched" should equal ''
 End
 
-It 'keeps a device picked manually after the grace window'
-tick 1 0 'MacBook Speakers' 'MacBook Speakers'
-tick 2 100 'MacBook Speakers' "$(printf 'MacBook Speakers\nAirPods')"
-tick 3 200 'AirPods' "$(printf 'MacBook Speakers\nAirPods')"
+It 'keeps a selection of another already connected device'
+tick 1 'MacBook Speakers' "$(printf 'MacBook Speakers\nAirPods')"
+tick 2 'AirPods' "$(printf 'MacBook Speakers\nAirPods')"
 When run bash "$WORK/prefer.sh" output EarPods
 The contents of file "$WORK/switched" should equal ''
 End
 
 It 'keeps the new device when the previous one disconnected'
-tick 1 0 'EarPods' 'EarPods'
-tick 2 100 'AirPods' 'AirPods'
+tick 1 'EarPods' 'EarPods'
+tick 2 'AirPods' 'AirPods'
 When run bash "$WORK/prefer.sh" output EarPods
 The contents of file "$WORK/switched" should equal ''
+End
+
+It 'prefers the wired microphone while it is connected'
+tick 1 'AirPods' "$(printf 'AirPods\nEarPods Microphone')" input
+When run bash "$WORK/prefer.sh" input 'EarPods Microphone'
+The contents of file "$WORK/switched" should equal 'input=EarPods Microphone'
+End
+
+It 'keeps a newly selected AirPods microphone when the wired microphone is absent'
+tick 1 'MacBook Microphone' 'MacBook Microphone' input
+tick 2 'AirPods' "$(printf 'MacBook Microphone\nAirPods')" input
+When run bash "$WORK/prefer.sh" input 'EarPods Microphone'
+The contents of file "$WORK/switched" should equal ''
+End
+
+Describe 'unavailable CoreAudio queries'
+Parameters
+  all
+  current
+End
+It 'does not switch devices on a failed query'
+use_devices 'AirPods' "$(printf 'AirPods\nEarPods')"
+export MOCK_FAILURE="$1"
+When run bash "$WORK/prefer.sh" output EarPods
+The status should be success
+The contents of file "$WORK/switched" should equal ''
+End
 End
 
 It 'polls both output and input'
