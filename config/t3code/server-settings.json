@@ -25,6 +25,10 @@
         {
           "name": "ANTHROPIC_API_KEY",
           "value": ""
+        },
+        {
+          "name": "IS_SANDBOX",
+          "value": "1"
         }
       ],
       "config": {
