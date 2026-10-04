@@ -830,13 +830,14 @@ cycle_started="$(@coreutils@/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')"
 # "In Progress" and "In Review"). Commit this contract before pulling because
 # Beads deliberately refuses to auto-commit internal config keys during sync.
 ensure_config linear.state_map.triage open
-ensure_config linear.state_map.backlog open
+ensure_config linear.state_map.backlog deferred
 ensure_config linear.state_map.unstarted open
 ensure_config linear.state_map.started in_progress
 ensure_config linear.state_map.completed closed
 ensure_config linear.state_map.canceled closed
 ensure_config linear.state_map.duplicate closed
 ensure_config linear.outbound_state_map.open Todo
+ensure_config linear.outbound_state_map.deferred Backlog
 ensure_config linear.outbound_state_map.in_progress "In Progress"
 # The Linear workflow has no blocked state; a blocked Bead is unstarted work.
 ensure_config linear.outbound_state_map.blocked Todo
@@ -1002,8 +1003,8 @@ fi
 snapshot_taken_at="$(@coreutils@/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')"
 issues_before_pull="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0)"
 # Adopt before the pull, which does not match an unlinked Linear issue to its
-# Bead. Deferred Beads are never pushed, and a closed Bead is
-# pushed unlinked only while its completion is pending.
+# Bead. Deferred work publishes to Backlog, and a closed Bead is pushed
+# unlinked only while its completion is pending.
 unlinked_ids="$(@jq@/bin/jq -r "$local_only_jq"'
   (if type == "object" and has("issues") then .issues else . end)
   | [
@@ -1011,7 +1012,7 @@ unlinked_ids="$(@jq@/bin/jq -r "$local_only_jq"'
     | select(local_only | not)
     | select((.external_ref // "") | contains("linear.app") | not)
     | select(
-        (.status != "closed" and .status != "deferred")
+        .status != "closed"
         or (.metadata.linear_completion_pending // false) == true
         or (.metadata.linear_completion_pending // false) == "true"
       )
@@ -1198,9 +1199,7 @@ fi
 changed_active_candidates="$(@jq@/bin/jq -r --arg previous_sync "$previous_sync" --argjson body_limit "$linear_body_limit" "$rendered_sections_jq$local_only_jq"'
   def body_length: (canonical_description | length) + rendered_sections_length;
   issues | .[]
-  # Deferred has no outbound state mapping, so bd rejects every batch that
-  # carries one.
-  | select(.status != "closed" and .status != "deferred")
+  | select(.status != "closed")
   | select(local_only | not)
   | ((.external_ref // "") | contains("linear.app") | not) as $unlinked
   | select($previous_sync == "" or .updated_at >= $previous_sync or $unlinked)

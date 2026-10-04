@@ -986,14 +986,25 @@ The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues 
 The file "$CHECKPOINT_FILE" should be exist
 End
 
-It 'keeps deferred Beads out of the active push'
+It 'publishes deferred Beads to Backlog alongside other active work'
 issues='[{"id":"df-open","status":"open","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-1/open"},{"id":"df-later","status":"deferred","assignee":"","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/later"}]'
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$issues" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'Pushing changed active Beads batch 1/1'
-The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-open --no-wait'
-The contents of file "$COMMAND_LOG" should not include 'df-later'
+The contents of file "$COMMAND_LOG" should include 'config set linear.state_map.backlog deferred'
+The contents of file "$COMMAND_LOG" should include 'config set linear.outbound_state_map.deferred Backlog'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-open,df-later --no-wait'
 The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'adopts a deferred issue left by a failed write-back before publishing it'
+printf '%s\n' '[{"id":"df-later","status":"deferred","assignee":"","created_by":"creator@example.com","created_at":"2099-01-01T00:00:00Z","updated_at":"2099-01-01T00:00:00Z"}]' >"$TEST_ROOT/list.json"
+When run bash -c "env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LINEAR_MODE=linear-store FAKE_WRITEBACK_FAILS=1 FAKE_LINEAR_ISSUES='$TEST_ROOT/linear-issues' FAKE_LIST_JSON_FILE='$TEST_ROOT/list.json' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT'; test \$? -eq 76 && env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LINEAR_MODE=linear-store FAKE_LINEAR_ISSUES='$TEST_ROOT/linear-issues' FAKE_LIST_JSON_FILE='$TEST_ROOT/list.json' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT'"
+The status should be success
+The output should include 'Adopted 1 existing Linear issue(s) for unlinked Beads'
+The lines of contents of file "$TEST_ROOT/linear-issues" should equal 1
+The contents of file "$COMMAND_LOG" should include 'update df-later --external-ref https://linear.app/test/issue/TEST-1/created'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-later --no-wait'
 End
 
 It 'never pushes plan-number reservations or survey leases, linked or not'
