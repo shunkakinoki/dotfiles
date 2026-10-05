@@ -8,6 +8,5 @@ in
 {
   home.file.".mempalace/config.json" = {
     text = configText;
-    force = true;
   };
 }

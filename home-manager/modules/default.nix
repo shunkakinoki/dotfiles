@@ -2,6 +2,7 @@
   ./bin-shells
   ./cargo-globals
   ./dotenv
+  ./force-files
   ./local-binaries
   ./local-scripts
   ./npm-globals

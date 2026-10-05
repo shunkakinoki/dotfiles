@@ -75,24 +75,20 @@ in
 {
   home.file.".config/k3s/config.yaml" = lib.mkIf isK3sServer {
     source = k3sConfig;
-    force = true;
   };
 
   home.file.".config/k3s/kubelet.conf.d/${kubeletConfigName}" = lib.mkIf isK3sServer {
     source = ./kubelet.conf;
-    force = true;
   };
 
   home.file.".config/k3s/resolv.conf" = lib.mkIf isK3sServer {
     source = ./resolv.conf;
-    force = true;
   };
 
   home.file.".config/k3s/k3s.service" = lib.mkIf isK3sServer {
     source = pkgs.replaceVars ./k3s.service {
       inherit (pkgs) coreutils k3s;
     };
-    force = true;
   };
 
   home.file.".config/k3s/k3s-io.conf" = lib.mkIf isKyber {
@@ -105,37 +101,30 @@ in
 
   home.file.".config/k3s/var-lib-rancher-k3s-agent-containerd.mount" = lib.mkIf isKyber {
     source = ./containerd.mount;
-    force = true;
   };
 
   home.file.".config/k3s/journald.conf.d/10-kyber-limits.conf" = lib.mkIf isKyber {
     source = ./journald.conf;
-    force = true;
   };
 
   home.file.".config/k3s/tmp.mount" = lib.mkIf isKyber {
     source = ./kyber-tmp.mount;
-    force = true;
   };
 
   home.file.".config/k3s/home-ubuntu-.cache-openclaw.mount" = lib.mkIf isKyber {
     source = ./kyber-openclaw-cache.mount;
-    force = true;
   };
 
   home.file.".config/k3s/kyber-host-health.service" = lib.mkIf isKyber {
     source = healthCheckService;
-    force = true;
   };
 
   home.file.".config/k3s/kyber-host-health.timer" = lib.mkIf isKyber {
     source = ./kyber-host-health.timer;
-    force = true;
   };
 
   home.file.".config/k3s/kyber-smartd.service" = lib.mkIf isKyber {
     source = smartdService;
-    force = true;
   };
 
   home.sessionVariables = lib.mkIf (isK3sServer || isGalactica) {

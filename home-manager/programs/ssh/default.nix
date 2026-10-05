@@ -13,7 +13,6 @@ in
 {
   home.file.".ssh/rc" = {
     source = ./rc;
-    force = true;
   };
   home.activation.caamKnownHosts = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.bash}/bin/bash ${pinKnownHostsScript} ${knownHosts}

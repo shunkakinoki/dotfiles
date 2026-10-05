@@ -19,18 +19,15 @@ in
   home.file.".config/devin/hooks/notify.sh" = {
     source = ./hooks/notify.sh;
     executable = true;
-    force = true;
   };
 
   home.file.".config/devin/hooks/pushover.sh" = {
     source = ./hooks/pushover.sh;
     executable = true;
-    force = true;
   };
 
   home.file.".config/devin/hooks/atuin-history.sh" = {
     source = ./hooks/atuin-history.sh;
     executable = true;
-    force = true;
   };
 }
