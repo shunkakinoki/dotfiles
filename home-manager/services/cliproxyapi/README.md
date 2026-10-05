@@ -256,9 +256,17 @@ reset credit by its expiry from `wham/rate-limit-reset-credits`; Claude has no
 reset credits, so its rows are window resets. OpenRouter credits are shown when
 `OPENROUTER_API_KEY` is set.
 
+Each live `ollama-cloud` API key entry gets an `ollama-cloud key <N>` row from
+Ollama's undocumented `GET https://ollama.com/api/usage`. That endpoint reports
+each window as a fraction of the plan's cap: `session` (5H) and `weekly` on
+older plans, `monthly` (CREDITS) on the monthly credit-pool plans. It gives no
+reset times, so Ollama keys have no rows in `resets`. Any window at 100% marks
+the row `limit reached`.
+
 Upstream calls go through the management `api-call` endpoint, so access tokens
 never leave kyber. A credential mapped in `kamino-tunnels.json` always passes
-its tunnel, `socks5://127.0.0.1:<1080+N>`, as the request's `proxy_url`; when
+its tunnel, `socks5://127.0.0.1:<1080+N>`, as the request's `proxy_url`, and an
+Ollama Cloud key passes the `proxy-url` of its live config entry; when
 that tunnel is down the row reports an error instead of falling back to
 kyber's own IP. Management calls, local cooldown resets, the OpenRouter lookup,
 and unmapped credentials connect directly.
