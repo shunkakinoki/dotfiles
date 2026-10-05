@@ -23,6 +23,10 @@ in
     enable = true;
     enableDefaultConfig = false;
     includes = [ "~/.ssh/config.local" ];
+    # Namespace `devbox create` rewrites ~/.ssh/config, and fails on this
+    # read-only file, unless this exact line is already present on its own;
+    # `includes` would merge it into one shared Include line.
+    extraOptionOverrides.Include = "~/.namespace/ssh/*.ssh";
     settings = {
       "*" = {
         ServerAliveInterval = 60;
