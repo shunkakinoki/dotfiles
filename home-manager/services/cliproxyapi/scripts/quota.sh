@@ -183,7 +183,7 @@ account_record() {
 ollama_records() {
   local filter="$1" entries entry index proxy name tunnel response error
   entries="$(management GET /openai-compatibility | "$JQ" -c --arg filter "$filter" '
-    [.["openai-compatibility"][]? | select((.["base-url"] // "") | test("//(www\\.)?ollama\\.com"))
+    [.["openai-compatibility"][]? | select((.["base-url"] // "") | test("^https://(www\\.)?ollama\\.com(:443)?(/|$)"))
       | (.disabled // false) as $off | .["api-key-entries"] // [] | .[]
       | {index: .["auth-index"], proxy: (.["proxy-url"] // ""), disabled: $off}]
     | to_entries[] | .value + {name: "ollama-cloud key \(.key + 1)"}

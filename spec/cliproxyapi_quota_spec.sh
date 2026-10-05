@@ -48,6 +48,7 @@ JSON
   cat <<'JSON'
 {"openai-compatibility":[
   {"name":"other","base-url":"https://example.test/v1","api-key-entries":[{"api-key":"other-secret","auth-index":"x9"}]},
+  {"name":"lookalike","base-url":"https://ollama.com.attacker.example/v1","api-key-entries":[{"api-key":"lookalike-secret","auth-index":"x8"}]},
   {"name":"ollama-cloud","base-url":"https://ollama.com/v1","api-key-entries":[
     {"api-key":"ollama-secret-1","proxy-url":"socks5://127.0.0.1:1081","auth-index":"o1"},
     {"api-key":"ollama-secret-2","proxy-url":"direct","auth-index":"o2"}]}
@@ -169,6 +170,7 @@ The result of function ollama_usage_calls should include '{"auth_index":"o1","me
 The result of function ollama_usage_calls should include '{"auth_index":"o2","method":"GET","url":"https://ollama.com/api/usage","header":{"Authorization":"Bearer $TOKEN$","Accept":"application/json"}}'
 The contents of file "$CURL_LOG" should not include 'ollama-secret'
 The contents of file "$CURL_LOG" should not include '"auth_index":"x9"'
+The contents of file "$CURL_LOG" should not include '"auth_index":"x8"'
 End
 
 It 'narrows Ollama Cloud keys by filter'
