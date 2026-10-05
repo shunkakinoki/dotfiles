@@ -3,7 +3,8 @@
 # through the management API of the kyber server that holds the OAuth files.
 # Upstream calls for a credential mapped in kamino-tunnels.json pass that
 # credential's kamino SOCKS tunnel explicitly, so they fail rather than leave
-# from another IP. The management API itself, local cooldown resets, API key
+# from another IP. Ollama Cloud API keys use the proxy-url of their live config
+# entry, which is the tunnel their traffic already takes. The management API itself, local cooldown resets, API key
 # credit lookups, and unmapped credentials connect directly.
 # jq programs and the server-side $TOKEN$ placeholder stay single-quoted.
 # shellcheck disable=SC2016
@@ -20,6 +21,8 @@ CODEX_REDEEM_URL="${CODEX_RESET_CREDITS_URL}/consume"
 CODEX_USER_AGENT="codex-tui/0.149.1 (Mac OS 26.5.2; arm64) iTerm.app/3.6.11 (codex-tui; 0.149.1)"
 CLAUDE_USAGE_URL="https://api.anthropic.com/api/oauth/usage"
 OPENROUTER_CREDITS_URL="https://openrouter.ai/api/v1/credits"
+# Undocumented; returns usage fractions per window but no reset times.
+OLLAMA_USAGE_URL="https://ollama.com/api/usage"
 
 usage() {
   cat <<'EOF'
@@ -28,7 +31,8 @@ Usage: cliproxy-quota [status] [--json] [filter]
        cliproxy-quota reset <credential|all>
        cliproxy-quota redeem <credential> --yes
 
-  status  Usage windows, reset times, and credits for every account (default).
+  status  Usage windows, reset times, and credits for every account and
+          Ollama Cloud API key (default).
   resets  Upcoming window resets and Codex reset-credit expiries, soonest first.
   reset   Clear CLIProxyAPI's local quota cooldown so routing retries the account.
   redeem  Spend one Codex rate-limit reset credit upstream, then clear the cooldown.
@@ -94,11 +98,24 @@ tunnel_host() {
     "$MAPPING_FILE"
 }
 
+proxy_host() {
+  "$JQ" -r --arg proxy "$1" \
+    'first(.[] | select($proxy == "socks5://127.0.0.1:\(.port)") | .host)
+      // (if $proxy == "" or $proxy == "direct" then "direct" else $proxy end)' \
+    "$MAPPING_FILE"
+}
+
 # The server substitutes $TOKEN$ with the credential's access token, so tokens
 # never reach this shell. A mapped credential always names its tunnel.
 api_call() {
-  local auth_index="$1" name="$2" method="$3" url="$4" header="$5" data="${6:-}" proxy body
-  proxy="$(tunnel_proxy "$name")"
+  local auth_index="$1" name="$2"
+  shift 2
+  api_call_via "$(tunnel_proxy "$name")" "$auth_index" "$@"
+}
+
+api_call_via() {
+  local proxy="$1" auth_index="$2" method="$3" url="$4" header="$5" data="${6:-}" body
+  [ "$proxy" != "direct" ] || proxy=""
   body="$("$JQ" -nc --arg index "$auth_index" --arg method "$method" --arg url "$url" \
     --argjson header "$header" --arg data "$data" --arg proxy "$proxy" \
     '{auth_index: $index, method: $method, url: $url, header: $header}
@@ -161,6 +178,50 @@ account_record() {
       }'
 }
 
+# Config API key entries carry an auth index too, so the server substitutes the
+# key for $TOKEN$; keys are dropped from the listing before it is stored.
+ollama_records() {
+  local filter="$1" entries entry index proxy name tunnel response error
+  entries="$(management GET /openai-compatibility | "$JQ" -c --arg filter "$filter" '
+    [.["openai-compatibility"][]? | select((.["base-url"] // "") | test("//(www\\.)?ollama\\.com"))
+      | (.disabled // false) as $off | .["api-key-entries"] // [] | .[]
+      | {index: .["auth-index"], proxy: (.["proxy-url"] // ""), disabled: $off}]
+    | to_entries[] | .value + {name: "ollama-cloud key \(.key + 1)"}
+    | select($filter == "" or (.name | contains($filter)))')" || return 0
+  while IFS= read -r entry; do
+    [ -n "$entry" ] || continue
+    index="$("$JQ" -r '.index // ""' <<<"$entry")"
+    proxy="$("$JQ" -r '.proxy' <<<"$entry")"
+    name="$("$JQ" -r '.name' <<<"$entry")"
+    tunnel="$(proxy_host "$proxy")"
+    response="" error=""
+    if [ -n "$index" ] && [ "$("$JQ" -r '.disabled' <<<"$entry")" != "true" ]; then
+      if ! response="$(api_call_via "$proxy" "$index" GET "$OLLAMA_USAGE_URL" \
+        '{"Authorization":"Bearer $TOKEN$","Accept":"application/json"}' 2>&1)"; then
+        error="${response##*failed: }"
+        response=""
+      fi
+    fi
+    "$JQ" -nc --argjson entry "$entry" --arg tunnel "$tunnel" --arg response "$response" --arg error "$error" '
+      ($response | if . == "" then null else (fromjson? // null) end) as $r
+      | (($r.status_code // 0) >= 200 and ($r.status_code // 0) < 300) as $ok
+      | {
+          name: $entry.name,
+          provider: "ollama-cloud",
+          auth_index: $entry.index,
+          tunnel: $tunnel,
+          plan: null,
+          status: "active",
+          disabled: $entry.disabled,
+          next_retry_after: null,
+          usage: (if $ok then ($r.body | fromjson? // null) else null end),
+          error: (if $error != "" then $error
+            elif $r != null and ($ok | not) then "HTTP \($r.status_code)"
+            else null end)
+        }'
+  done <<<"$entries"
+}
+
 openrouter_record() {
   local out
   [ -n "${OPENROUTER_API_KEY:-}" ] || {
@@ -204,6 +265,9 @@ STATUS_TABLE='
       // ((.reset_at // .resetAt) | epoch | if . == null then null else . - now end)) | left)" end;
   def claude_window: if . == null then "-"
     else "\(.utilization | pct) \(.resets_at | epoch | if . == null then null else . - now end | left)" end;
+  # Ollama reports each window as a 0..1 fraction of the cap, with no reset time.
+  def ollama_pct: if . == null then null else . * 100 | pct end;
+  def ollama_maxed: [.limits[]?.usage | select(. != null and . >= 1)] | length > 0;
   def row:
     .usage as $u
     | (if .provider == "codex" then
@@ -219,11 +283,17 @@ STATUS_TABLE='
          ($u.seven_day | claude_window),
          ($u.extra_usage | if . != null and .is_enabled then "extra \(.used_credits)/\(.monthly_limit)" else "-" end),
          "-"]
+      elif .provider == "ollama-cloud" then
+        [($u.limits.session.usage | ollama_pct // "-"),
+         ($u.limits.weekly.usage | ollama_pct // "-"),
+         ($u.limits.monthly.usage | if . == null then "-" else "month \(ollama_pct)" end),
+         "-"]
       else ["-", "-", "-", "-"] end) as $cols
     | (if .disabled then "disabled"
        elif .error != null then "error: \(.error)"
        else [(.status // "-"),
-             (if $u.rate_limit.limit_reached then "limit reached" else empty end),
+             (if $u.rate_limit.limit_reached or (.provider == "ollama-cloud" and ($u | ollama_maxed))
+              then "limit reached" else empty end),
              (.next_retry_after | epoch | if . == null then empty else "cooldown \(. - now | left)" end)]
             | join(", ") end) as $state
     | [.name, .tunnel, ($u.plan_type // .plan // "-"), $cols[0], $cols[1], $cols[2], $cols[3], $state];
@@ -327,12 +397,13 @@ resets() {
 status() {
   local as_json="$1" filter="$2" files file records openrouter
   files="$(management GET /auth-files)"
-  records="$(
+  records="$( (
     "$JQ" -c --arg filter "$filter" '.files[] | select($filter == "" or (.name | contains($filter)))' <<<"$files" |
       while IFS= read -r file; do
         account_record "$file"
-      done | "$JQ" -sc '.'
-  )"
+      done
+    ollama_records "$filter"
+  ) | "$JQ" -sc '.')"
   if [ -z "$filter" ]; then
     openrouter="$(openrouter_record)"
   else

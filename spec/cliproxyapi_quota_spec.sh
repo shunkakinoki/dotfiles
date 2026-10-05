@@ -44,6 +44,16 @@ case "$url" in
 ]}
 JSON
   ;;
+*/openai-compatibility)
+  cat <<'JSON'
+{"openai-compatibility":[
+  {"name":"other","base-url":"https://example.test/v1","api-key-entries":[{"api-key":"other-secret","auth-index":"x9"}]},
+  {"name":"ollama-cloud","base-url":"https://ollama.com/v1","api-key-entries":[
+    {"api-key":"ollama-secret-1","proxy-url":"socks5://127.0.0.1:1081","auth-index":"o1"},
+    {"api-key":"ollama-secret-2","proxy-url":"direct","auth-index":"o2"}]}
+]}
+JSON
+  ;;
 */api-call)
   if [ -n "${FAKE_TUNNEL_DOWN:-}" ] && jq -e 'has("proxy_url")' <<<"$body" >/dev/null; then
     echo '{"error":"request failed"}'
@@ -62,6 +72,14 @@ JSON
     jq -nc '{status_code: 200, body: ({five_hour: {utilization: 12, resets_at: "2000-01-01T00:00:00.123+00:00"},
       seven_day: {utilization: 55.4, resets_at: null},
       extra_usage: {is_enabled: true, used_credits: 300, monthly_limit: 5000}} | tojson)}'
+    ;;
+  */api/usage)
+    if [ "$(jq -r .auth_index <<<"$body")" = "o1" ]; then
+      jq -nc '{status_code: 200, body: ({limits: {monthly: {usage: 1,
+        models: [{name: "deepseek-v4.1-flash", request_count: 141129}]}}} | tojson)}'
+    else
+      jq -nc '{status_code: 200, body: ({limits: {session: {usage: 0.25}, weekly: {usage: 0.6}}} | tojson)}'
+    fi
     ;;
   */rate-limit-reset-credits/consume) echo '{"status_code":200,"body":"{}"}' ;;
   */rate-limit-reset-credits)
@@ -111,6 +129,7 @@ codex_usage_call() { api_call_body 'https://chatgpt.com/backend-api/wham/usage';
 claude_usage_call() { api_call_body 'https://api.anthropic.com/api/oauth/usage'; }
 redeem_call() { api_call_body 'https://chatgpt.com/backend-api/wham/rate-limit-reset-credits/consume'; }
 wham_usage_calls() { codex_usage_call | wc -l | tr -d ' '; }
+ollama_usage_calls() { api_call_body 'https://ollama.com/api/usage'; }
 reset_credits_call() { api_call_body 'https://chatgpt.com/backend-api/wham/rate-limit-reset-credits'; }
 
 Describe 'status'
@@ -138,6 +157,27 @@ When call quota
 The output should include 'claude-direct.json'
 The result of function claude_usage_call should not include 'proxy_url'
 The result of function claude_usage_call should include '"anthropic-beta":"oauth-2025-04-20"'
+End
+
+It 'reports Ollama Cloud API key usage through each key tunnel'
+When call quota
+The status should be success
+The output should match pattern '*ollama-cloud key 1*kamino1*-*-*-*month 100%*-*active, limit reached*'
+The output should match pattern '*ollama-cloud key 2*direct*-*25%*60%*-*-*active*'
+The output should not include 'ollama-cloud key 3'
+The result of function ollama_usage_calls should include '{"auth_index":"o1","method":"GET","url":"https://ollama.com/api/usage","header":{"Authorization":"Bearer $TOKEN$","Accept":"application/json"},"proxy_url":"socks5://127.0.0.1:1081"}'
+The result of function ollama_usage_calls should include '{"auth_index":"o2","method":"GET","url":"https://ollama.com/api/usage","header":{"Authorization":"Bearer $TOKEN$","Accept":"application/json"}}'
+The contents of file "$CURL_LOG" should not include 'ollama-secret'
+The contents of file "$CURL_LOG" should not include '"auth_index":"x9"'
+End
+
+It 'narrows Ollama Cloud keys by filter'
+When call quota status --json 'key 2'
+The status should be success
+The output should include '"name": "ollama-cloud key 2"'
+The output should include '"usage": 0.6'
+The output should not include 'ollama-cloud key 1'
+The output should not include 'codex-mapped.json'
 End
 
 It 'skips upstream calls for disabled and non-usage providers'
