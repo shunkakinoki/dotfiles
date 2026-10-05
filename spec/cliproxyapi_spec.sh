@@ -1035,4 +1035,12 @@ The status should be success
 End
 End
 
+Describe 'DeepSeek Flash aliases'
+It 'serves the deepseek-v4-flash client alias on every DeepSeek Flash upstream'
+When run bash -c "awk '/^      - name: \"/ { name = \$0 } /^        alias: \"deepseek-v4.1-flash\"\$/ { want[name]++ } /^        alias: \"deepseek-v4-flash\"\$/ { have[name]++ } END { for (n in want) if (have[n] < want[n]) { print \"missing v4 alias for \" n; bad = 1 } exit bad }' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should equal ''
+The status should be success
+End
+End
+
 End
