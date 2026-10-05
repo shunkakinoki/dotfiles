@@ -6,33 +6,27 @@
 {
   home.file.".config/opencode/opencode.jsonc" = {
     source = ./opencode.jsonc;
-    force = true;
   };
 
   home.file.".config/opencode/opencode-fallback.jsonc" = {
     source = ./opencode-fallback.jsonc;
-    force = true;
   };
 
   # OpenCode reports lowercase bash; Claude's Bash matcher is case-sensitive.
   home.file.".config/opencode/hooks.json" = {
     source = ./hooks.json;
-    force = true;
   };
 
   home.file.".config/opencode/tui.json" = {
     source = ./tui.json;
-    force = true;
   };
 
   home.file.".config/opencode/themes/transparent.json" = {
     source = ./themes/transparent.json;
-    force = true;
   };
 
   home.file.".config/opencode/plugins/moshi-hooks.ts" = {
     source = ../../generated/hooks/moshi/opencode/moshi-hooks.ts;
-    force = true;
   };
 
   home.activation.installOpenCodePlugins = config.lib.dag.entryAfter [ "writeBoundary" ] ''

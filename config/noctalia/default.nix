@@ -129,12 +129,10 @@ in
   xdg.configFile."noctalia/scripts/quit-active-app.sh" = {
     source = ./quit-active-app.sh;
     executable = true;
-    force = true;
   };
   xdg.configFile."noctalia/scripts/quit-all-apps.sh" = {
     source = ./quit-all-apps.sh;
     executable = true;
-    force = true;
   };
 
   xdg.desktopEntries.logout = {

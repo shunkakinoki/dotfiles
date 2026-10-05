@@ -27,36 +27,30 @@ in
   home.file.".claude/hooks/auto-switch.sh" = {
     source = ./hooks/auto-switch.sh;
     executable = true;
-    force = true;
   };
 
   home.file.".claude/hooks/pushover.sh" = {
     source = ./hooks/pushover.sh;
     executable = true;
-    force = true;
   };
 
   home.file.".claude/hooks/notify.sh" = {
     source = ./hooks/notify.sh;
     executable = true;
-    force = true;
   };
 
   home.file.".claude/hooks/security.sh" = {
     source = ./hooks/security.sh;
     executable = true;
-    force = true;
   };
 
   home.file.".claude/hooks/statusline.sh" = {
     source = ./hooks/statusline.sh;
     executable = true;
-    force = true;
   };
 
   home.file.".claude/hooks/atuin-history.sh" = {
     source = ./hooks/atuin-history.sh;
     executable = true;
-    force = true;
   };
 }

@@ -8,6 +8,5 @@
   # ~/.commandcode/auth.json after `cmd login` and must not be managed here.
   home.file.".commandcode/settings.json" = {
     source = ./settings.json;
-    force = true;
   };
 }

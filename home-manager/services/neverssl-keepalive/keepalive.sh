@@ -5,9 +5,12 @@ set -euo pipefail
 
 check_only=false
 case ${1:-} in
-  --check) check_only=true ;;
-  '') ;;
-  *) echo "Usage: $0 [--check]" >&2; exit 2 ;;
+--check) check_only=true ;;
+'') ;;
+*)
+  echo "Usage: $0 [--check]" >&2
+  exit 2
+  ;;
 esac
 
 curl_interface=()
@@ -47,23 +50,23 @@ probe() {
   fi
   body=$(cat "$probe_dir/body")
   case $status in
-    200)
-      if [[ $expected != 204 && $body == "$expected" ]]; then
-        online=true
-      else
-        captive=true
-        portal_probe=$url
-      fi
-      ;;
-    204)
-      if [[ $expected == 204 && ! -s $probe_dir/body ]]; then
-        online=true
-      fi
-      ;;
-    301|302|303|307|308|511)
+  200)
+    if [[ $expected != 204 && $body == "$expected" ]]; then
+      online=true
+    else
       captive=true
       portal_probe=$url
-      ;;
+    fi
+    ;;
+  204)
+    if [[ $expected == 204 && ! -s $probe_dir/body ]]; then
+      online=true
+    fi
+    ;;
+  301 | 302 | 303 | 307 | 308 | 511)
+    captive=true
+    portal_probe=$url
+    ;;
   esac
 }
 
@@ -103,7 +106,7 @@ if [[ ! $last_opened =~ ^[0-9]{1,12}$ ]]; then
   last_opened=0
 fi
 last_opened=$((10#$last_opened))
-if (( now >= last_opened && now - last_opened < 600 )); then
+if ((now >= last_opened && now - last_opened < 600)); then
   exit 0
 fi
 

@@ -159,7 +159,6 @@ in
     # Declare directories and files for home-manager
     home.file.".local/share/tailscale/tailscaled.state" = {
       source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.local/state/tailscale/tailscaled.state";
-      force = true;
     };
 
     # Tailscaled service

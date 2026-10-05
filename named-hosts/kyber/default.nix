@@ -136,8 +136,6 @@ home-manager.lib.homeManagerConfiguration {
         home.file.".config/systemd/user/herdr.slice".source = ./herdr.slice;
         home.file.".config/systemd/user/roborev.service.d/10-orchestration.conf".source =
           ./orchestration-service.conf;
-        xdg.configFile."systemd/user/herdr-server.service".force = true;
-        xdg.configFile."systemd/user/default.target.wants/herdr-server.service".force = true;
         systemd.user.services.herdr-server = {
           Unit = {
             Description = "Herdr headless server (coding-agent multiplexer)";

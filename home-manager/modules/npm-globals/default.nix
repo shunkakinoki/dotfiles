@@ -44,7 +44,6 @@ in
   # plain files and hand-made relinks hosts already carry at this path.
   home.file.".bun/bin/bun" = {
     source = lib.getExe pkgs.bun;
-    force = true;
   };
 
   home.sessionVariables = {

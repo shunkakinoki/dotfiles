@@ -15,7 +15,6 @@ in
   # Pi/OpenCode/OMP plugins spawn this exact path; PATH is not consulted.
   home.file.".local/bin/moshi-hook" = {
     source = moshiHookBin;
-    force = true;
   };
 
   systemd.user.services.moshi-hook = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
