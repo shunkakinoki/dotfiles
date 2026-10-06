@@ -50,6 +50,14 @@
           "NSStatusItem VisibleCC Clock" = true;
           "NSStatusItem VisibleCC WiFi" = true;
         };
+        # The screenshot-clipboard agent copies files saved to ~/Desktop, so
+        # captures must land on disk. The Screenshot app's Options menu writes
+        # target-screenshot, which overrides target, so both are pinned.
+        "com.apple.screencapture" = {
+          location = "/Users/${username}/Desktop";
+          target = "file";
+          "target-screenshot" = "file";
+        };
       };
       NSGlobalDomain = {
         AppleEnableMouseSwipeNavigateWithScrolls = null;
