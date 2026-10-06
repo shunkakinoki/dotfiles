@@ -63,7 +63,9 @@ fi
 #   - "Screenshot ..." / "Screen Shot ..." : macOS defaults (current / legacy)
 #   - "*_hyprshot.png"                     : hyprshot default name on Linux
 #     (HYPRSHOT_DIR is set to $HOME/Desktop in config/hyprland/hyprland.conf)
-fswatch -0 "${fswatch_args[@]}" "$DESKTOP_DIR" |
+# The default 1s latency batches events and is the bulk of the capture-to-
+# clipboard delay.
+fswatch -0 --latency 0.1 "${fswatch_args[@]}" "$DESKTOP_DIR" |
   while IFS= read -r -d '' path; do
     case "$path" in
     "$DESKTOP_DIR/Screenshot "*.png | \
