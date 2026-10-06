@@ -5,29 +5,21 @@ let
   logDir = "${config.home.homeDirectory}/Library/Logs";
 in
 {
+  # A long-lived fswatch stream on ~/Desktop silently stops delivering events
+  # after a while on macOS, so launchd's own WatchPaths triggers a one-shot
+  # copy instead.
   launchd.agents.screenshot-clipboard = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [
         "${pkgs.bash}/bin/bash"
-        "${./watch.sh}"
+        "${./copy-latest.sh}"
       ];
       EnvironmentVariables = {
-        PATH = "${
-          lib.makeBinPath [
-            pkgs.fswatch
-          ]
-        }:/usr/bin:/bin";
+        PATH = "/usr/bin:/bin";
       };
-      RunAtLoad = true;
-      # Restart on crash/non-zero exit, but throttle to avoid a tight loop if
-      # a prereq (fswatch, helper script) is missing during early activation.
-      KeepAlive = {
-        SuccessfulExit = false;
-      };
-      ThrottleInterval = 30;
-      # Background throttling delays FSEvents delivery by seconds, so the
-      # clipboard lags well behind the capture.
+      WatchPaths = [ "${config.home.homeDirectory}/Desktop" ];
+      ThrottleInterval = 1;
       ProcessType = "Interactive";
       StandardOutPath = "${logDir}/screenshot-clipboard.log";
       StandardErrorPath = "${logDir}/screenshot-clipboard.error.log";
