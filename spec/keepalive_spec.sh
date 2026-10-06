@@ -116,11 +116,11 @@ End
 
 Describe 'unavailable probes'
 Parameters
-  timeout
-  dns
-  server-error
-  truncated
-  invalid-204
+timeout
+dns
+server-error
+truncated
+invalid-204
 End
 It 'reports unavailable probes without opening a browser or restarting Wi-Fi'
 export PROBE_SCENARIO="$1"
@@ -135,10 +135,10 @@ End
 
 Describe 'portal responses'
 Parameters
-  redirect
-  login
-  network-auth
-  partial-login
+redirect
+login
+network-auth
+partial-login
 End
 It 'opens a known HTTP probe when login is required, including whitelisted probes'
 export PROBE_SCENARIO="$1"

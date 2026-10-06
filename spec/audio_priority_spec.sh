@@ -134,8 +134,8 @@ End
 
 Describe 'unavailable CoreAudio queries'
 Parameters
-  all
-  current
+all
+current
 End
 It 'does not switch devices on a failed query'
 use_devices 'AirPods' "$(printf 'AirPods\nEarPods')"
