@@ -516,11 +516,12 @@ openai-compatibility:
     priority: 300
     base-url: "https://opencode.ai/zen/go/v1"
     support-prompt-cache-key: true
-    # OpenCode Go rejects requests without a conversation header; opencode sends
-    # X-Session-Affinity to custom providers, Claude Code and Codex send their own.
+    # OpenCode Go rejects requests without a conversation header. Resolve the
+    # canonical session from every client (opencode, Claude Code, Codex, ...)
+    # instead of only opencode's X-Session-Affinity, which other callers omit.
     headers:
       User-Agent: "$User-Agent"
-      X-Opencode-Session: "$X-Session-Affinity"
+      X-Opencode-Session: "$CPA-SESSION-ID"
       X-Claude-Code-Session-Id: "$X-Claude-Code-Session-Id"
       Session_id: "$Session_id"
     api-key-entries: __OPENCODE_API_KEY_ENTRIES__
