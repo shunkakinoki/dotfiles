@@ -26,7 +26,9 @@ in
         SuccessfulExit = false;
       };
       ThrottleInterval = 30;
-      ProcessType = "Background";
+      # Background throttling delays FSEvents delivery by seconds, so the
+      # clipboard lags well behind the capture.
+      ProcessType = "Interactive";
       StandardOutPath = "${logDir}/screenshot-clipboard.log";
       StandardErrorPath = "${logDir}/screenshot-clipboard.error.log";
     };
