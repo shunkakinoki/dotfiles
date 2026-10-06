@@ -290,20 +290,20 @@
 
     blacksmith-testbox-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "blacksmith-testbox-cli";
-      version = "0.4.64";
+      version = "0.4.65";
       src = prev.fetchurl {
         url = "https://clireleases.blacksmith.sh/cli/v${version}/${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }/${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}/blacksmith";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "261d2e792ca5ab3b5538f2f102fef82f75ae8349ba08a36d1979c078d391697c"
+            "5908140e555208622bd3caa35eabd5593dd520bbe6ecab9bce8fa2f5958e12b0"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "bad4b23a7206558ec981e65c011792b989c8b23beeca5f23b5400e147c01aea2"
+            "c6b251ce64903ed7c8a90adde3858327dc5909accf105ad6d56965a382021bfc"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "643fd5a47cb618c68ad324e19cbb556cb1a02654006d78bd765612d8960b0c85"
+            "731cdb91377b84d3e28bc78f07a7348b5516e762e83fe973d033a307f7fbe78a"
           else
-            "a5b7c8b9a8d0707cbf785876f27884f6e84bd3a6cbb7ba030ebc6b4cffef1332";
+            "f4e006f1f2ff544c4026e5eb5a51ef261e306c67f2905b3005ec90773700a752";
       };
       dontUnpack = true;
       installPhase = ''
@@ -314,20 +314,20 @@
 
     crabbox = prev.stdenvNoCC.mkDerivation rec {
       pname = "crabbox";
-      version = "0.70.0";
+      version = "0.71.0";
       src = prev.fetchurl {
         url = "https://github.com/openclaw/crabbox/releases/download/v${version}/crabbox_${version}_${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}.tar.gz";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "3fe2cbaf9b6b6573b8416b285fb2eb8755a466b7f1c42a387266fc79304c7892"
+            "118c9239a565f1fa1581973ca51f45d173252d219105061c0772d8cd8ff41646"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "75820218b2d7c12c88a3bfa5dd610973577953e529386f7ee84d19ad9d749b85"
+            "63a4089e7d04a9165a9718ff98e24a91d2ad2c77416c540f6dbf77b93143526f"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "4f70e5ae4fe16f7f3562b5b4cdf137dadbdfb763ed6ff94404e67e91b9d8ada0"
+            "96a1c4a469177b407cd831a9bf9b5fc51aa637e0170da0119aa137612190f387"
           else
-            "9184ce858f507662c1e97fb164d45ce7d973d50962cc84b1c3c9e1ebe7f71654";
+            "3b577c16b8c17e7e1b5e0de967fe6380eb12de7a3fc893ac1131bb70050eb3f9";
       };
       sourceRoot = ".";
       dontConfigure = true;
@@ -372,20 +372,20 @@
 
     moshi-hook = prev.stdenv.mkDerivation rec {
       pname = "moshi-hook";
-      version = "0.4.16";
+      version = "0.4.17";
       src = prev.fetchurl {
         url = "https://cdn.getmoshi.app/hook/v${version}/moshi-hook_${
           if prev.stdenv.hostPlatform.isDarwin then "Darwin" else "Linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x86_64"}.tar.gz";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "60b15cd8323c792fac00e35c727cdf93ddc6f118b8178e272ba4d879a540cbf7"
+            "10c657ad2e84eda85632dfa3c8c85b00a5145e312c607c03b8082dee3ecee614"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "a57e9d53f786119b5e962c9767c9e1a5af5d4e850ce6e421ddb0ce78dcf52564"
+            "32677a195d08f309519b91585edee43d1824370c83fa2b57a7592ba78b33fd81"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "29b350f45c4d211fee813333325262205b3b28de59bda814d03afbf4e1e071cb"
+            "99658e391866461afb11f359dd77ca428ad9a688864aa4c6a034b43055b6ec7b"
           else
-            "9ff580c0f930813ff264d2c775be45943e72f2fbe4416e3bb9ee3c9815323899";
+            "f8cbbf611f59d142144b547ba092fce33f8ac91bc448b86f84b206db20b314a7";
       };
       sourceRoot = ".";
       dontConfigure = true;
@@ -399,20 +399,20 @@
     # Namespace's devbox CLI, not the unrelated Jetify devbox in nixpkgs.
     namespace-devbox = prev.stdenvNoCC.mkDerivation rec {
       pname = "namespace-devbox";
-      version = "0.0.195";
+      version = "0.0.196";
       src = prev.fetchurl {
         url = "https://get.namespace.so/packages/devbox/v${version}/devbox_${version}_${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}.tar.gz";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "6cf18d67925b43ea75bcf0cdebc25d4f5db53907ff8c710e78b5406145faced9"
+            "a33e0a7a716d2fb0bfd4c39ce9fd785f0e4efd5e92e05483599c0c2b23840897"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "c543033496a0b19294731977205c1fe1998c2323df296e87b4a76b596b022019"
+            "89d72d239059ded638bcb64da8c2ee164097b7faac1840e31f2186f0aa155555"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "a78cdf91d4d692c07707d33ca3552c5b09faf554986e4bbccc3ef4bc2973628c"
+            "865ff1f64fb33d6773e00f23cc941f15e67d8a6797438c00ff9b8e0aa9632db2"
           else
-            "537eecaf55a90289c53be6966979b6d20d9be9ca98cfc6fafd8107493d13c7dc";
+            "cfa0c997bec598fdd1b9d28bfdac755457f670b6d11fc1b87dee2fb069a82c4b";
       };
       sourceRoot = ".";
       dontConfigure = true;

@@ -527,8 +527,6 @@ openai-compatibility:
     models:
       - name: "deepseek-v4-flash"
         alias: "deepseek-v4.1-flash"
-      - name: "deepseek-v4-flash"
-        alias: "deepseek-v4-flash"
   - name: "ollama-cloud"
     priority: 300
     base-url: "https://ollama.com/v1"
@@ -536,8 +534,6 @@ openai-compatibility:
     models:
       - name: "deepseek-v4.1-flash"
         alias: "deepseek-v4.1-flash"
-      - name: "deepseek-v4.1-flash"
-        alias: "deepseek-v4-flash"
   - name: "aliyun"
     priority: 200
     prefix: "aliyun"
@@ -549,8 +545,6 @@ openai-compatibility:
     models:
       - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4.1-flash"
-      - name: "deepseek-v4-flash-0731"
-        alias: "deepseek-v4-flash"
   - name: "verboo"
     priority: 150
     base-url: "https://code.verboo.ai/router/v1"
@@ -561,8 +555,6 @@ openai-compatibility:
     models:
       - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4.1-flash"
-      - name: "deepseek-v4-flash-0731"
-        alias: "deepseek-v4-flash"
   - name: "commandcode"
     priority: 150
     base-url: "https://api.commandcode.ai/provider/v1"
@@ -573,8 +565,6 @@ openai-compatibility:
     models:
       - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4.1-flash"
-      - name: "deepseek-v4-flash-0731"
-        alias: "deepseek-v4-flash"
   - name: "surplus"
     priority: 150
     base-url: "https://api.surplusintelligence.ai/v1"
@@ -587,8 +577,6 @@ openai-compatibility:
         alias: "gpt-6-luna"
       - name: "deepseek-v4.1-flash"
         alias: "deepseek-v4.1-flash"
-      - name: "deepseek-v4.1-flash"
-        alias: "deepseek-v4-flash"
   # Temporary campaign provider: serves stealth/union-alpha under the same
   # "free" alias so callers keep using "free" while union-alpha is evaluated.
   # Same OpenRouter token; remove when the trial ends.
@@ -614,8 +602,6 @@ openai-compatibility:
     models:
       - name: "deepseek/deepseek-v4.1-flash"
         alias: "deepseek-v4.1-flash"
-      - name: "deepseek/deepseek-v4.1-flash"
-        alias: "deepseek-v4-flash"
       # Second provider for Luna: surplus is otherwise the only one that
       # serves it, so an empty surplus wallet takes the whole model down.
       - name: "openai/gpt-6-luna"
