@@ -77,7 +77,7 @@
     "turbo": "^2.10.12",
     "typescript": "^7.0.2",
     "vite": "^8.2.2",
-    "vite-plus": "^0.3.1",
+    "vite-plus": "^1.0.0",
     "xcodebuildmcp": "^2.7.0"
   },
   "optionalDependencies": {
