@@ -5,21 +5,25 @@ let
   logDir = "${config.home.homeDirectory}/Library/Logs";
 in
 {
-  # A long-lived fswatch stream on ~/Desktop silently stops delivering events
-  # after a while on macOS, so launchd's own WatchPaths triggers a one-shot
-  # copy instead.
+  # A long-lived fswatch (FSEvents) stream on ~/Desktop silently stops
+  # delivering events after a while, and launchd WatchPaths is throttled to
+  # seconds and drops triggers. A kqueue vnode watch on the directory itself
+  # fires within milliseconds and does not go through FSEvents.
   launchd.agents.screenshot-clipboard = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [
+        "${pkgs.python3}/bin/python3"
+        "${./kqueue-watch.py}"
         "${pkgs.bash}/bin/bash"
         "${./copy-latest.sh}"
       ];
       EnvironmentVariables = {
         PATH = "/usr/bin:/bin";
       };
-      WatchPaths = [ "${config.home.homeDirectory}/Desktop" ];
-      ThrottleInterval = 1;
+      RunAtLoad = true;
+      KeepAlive = true;
+      ThrottleInterval = 10;
       ProcessType = "Interactive";
       StandardOutPath = "${logDir}/screenshot-clipboard.log";
       StandardErrorPath = "${logDir}/screenshot-clipboard.error.log";

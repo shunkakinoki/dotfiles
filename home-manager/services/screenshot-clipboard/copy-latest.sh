@@ -11,8 +11,8 @@ if [ ! -x "$CLIPBOARD_COPY_IMAGE" ]; then
   exit 1
 fi
 
-# launchd WatchPaths fires on any Desktop change (including sync clients
-# touching the folder), so only a screenshot written in the last few seconds
+# The watcher fires on any Desktop change (including sync clients touching
+# the folder), so only a screenshot written in the last few seconds
 # counts as a fresh capture. macOS writes a hidden temp file and renames it
 # into place, so the visible file is already complete.
 shopt -s nullglob
