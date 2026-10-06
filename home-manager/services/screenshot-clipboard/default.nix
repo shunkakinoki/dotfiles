@@ -5,29 +5,25 @@ let
   logDir = "${config.home.homeDirectory}/Library/Logs";
 in
 {
+  # A long-lived fswatch (FSEvents) stream on ~/Desktop silently stops
+  # delivering events after a while, and launchd WatchPaths is throttled to
+  # seconds and drops triggers. A kqueue vnode watch on the directory itself
+  # fires within milliseconds and does not go through FSEvents.
   launchd.agents.screenshot-clipboard = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     config = {
       ProgramArguments = [
+        "${pkgs.python3}/bin/python3"
+        "${./kqueue-watch.py}"
         "${pkgs.bash}/bin/bash"
-        "${./watch.sh}"
+        "${./copy-latest.sh}"
       ];
       EnvironmentVariables = {
-        PATH = "${
-          lib.makeBinPath [
-            pkgs.fswatch
-          ]
-        }:/usr/bin:/bin";
+        PATH = "/usr/bin:/bin";
       };
       RunAtLoad = true;
-      # Restart on crash/non-zero exit, but throttle to avoid a tight loop if
-      # a prereq (fswatch, helper script) is missing during early activation.
-      KeepAlive = {
-        SuccessfulExit = false;
-      };
-      ThrottleInterval = 30;
-      # Background throttling delays FSEvents delivery by seconds, so the
-      # clipboard lags well behind the capture.
+      KeepAlive = true;
+      ThrottleInterval = 10;
       ProcessType = "Interactive";
       StandardOutPath = "${logDir}/screenshot-clipboard.log";
       StandardErrorPath = "${logDir}/screenshot-clipboard.error.log";

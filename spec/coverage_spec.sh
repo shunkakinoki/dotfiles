@@ -125,6 +125,10 @@ It 'has spec file for home-manager/services/screenshot-clipboard/watch.sh'
 The path "spec/screenshot_clipboard_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/screenshot-clipboard/copy-latest.sh'
+The path "spec/screenshot_clipboard_copy_latest_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/docker-postgres/start-postgres.sh'
 The path "spec/docker_postgres_spec.sh" should be exist
 End
@@ -680,6 +684,7 @@ home-manager/services/cliproxyapi/scripts/wrapper.sh
 home-manager/services/cliproxyapi/scripts/kamino-tunnel.sh
 home-manager/services/cliproxyapi/scripts/quota.sh
 home-manager/services/code-syncer/sync.sh
+home-manager/services/screenshot-clipboard/copy-latest.sh
 home-manager/services/screenshot-clipboard/watch.sh
 home-manager/services/disk-cleanup/cleanup.sh
 home-manager/services/docker-postgres/start-postgres-wrapper.sh
