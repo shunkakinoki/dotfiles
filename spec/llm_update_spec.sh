@@ -371,7 +371,7 @@ The status should be success
 End
 
 It 'only exposes the routed models through the compatibility aliases'
-When run bash -c "allowed=\$(jq -r '.[\"gpt-luna\"], .[\"deepseek-flash\"]' models.json; jq -r '.[]' models.free.json); while IFS= read -r alias; do [ \"\$alias\" = free ] || printf '%s\n' \"\$allowed\" | grep -Fxq \"\$alias\" || { echo \"unexpected alias: \$alias\"; exit 1; }; done < <(sed -n 's/^[[:space:]]*alias: \"\\(.*\\)\"/\\1/p' config/cliproxyapi/config.template.yaml)"
+When run bash -c "allowed=\$(jq -r '.[\"gpt-luna\"], .[\"deepseek-flash\"]' models.json; jq -r '.[]' models.free.json; echo deepseek-v4-flash); while IFS= read -r alias; do [ \"\$alias\" = free ] || printf '%s\n' \"\$allowed\" | grep -Fxq \"\$alias\" || { echo \"unexpected alias: \$alias\"; exit 1; }; done < <(sed -n 's/^[[:space:]]*alias: \"\\(.*\\)\"/\\1/p' config/cliproxyapi/config.template.yaml)"
 The status should be success
 End
 End

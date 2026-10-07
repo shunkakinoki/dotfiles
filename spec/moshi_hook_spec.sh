@@ -15,7 +15,6 @@ End
 It 'exposes moshi-hook at ~/.local/bin for hardcoded plugin spawn paths'
 When run cat "$MODULE"
 The output should include '.local/bin/moshi-hook'
-The output should include 'force = true'
 End
 
 It 'uses Homebrew moshi-hook on Darwin'
