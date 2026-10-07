@@ -35,6 +35,12 @@
 
       export CAAM_ROTATION_ENABLED=1
 
+      # Non-interactive `zsh -c` reads only .zshenv, so .env must load here.
+      if [ -f "$HOME/.config/shell/load-env-file.sh" ]; then
+          . "$HOME/.config/shell/load-env-file.sh"
+          _hm_load_env_file
+      fi
+
       # Set XDG_RUNTIME_DIR on Linux for consistent socket paths (e.g., zellij)
       if [ "$(uname)" = "Linux" ]; then
           export XDG_RUNTIME_DIR="/run/user/$(id -u)"
@@ -59,11 +65,6 @@
     '';
 
     initContent = ''
-      if [ -f "$HOME/.config/shell/load-env-file.sh" ]; then
-          . "$HOME/.config/shell/load-env-file.sh"
-          _hm_load_env_file
-      fi
-
       # Go configuration
       export GOPATH="$HOME/go"
 
