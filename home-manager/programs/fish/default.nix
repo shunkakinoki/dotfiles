@@ -57,6 +57,11 @@
       set -gx GPG_TTY (tty)
 
       direnv hook fish | source
+
+      # Agents and wake jobs run through non-interactive `fish -c`; loading .env
+      # only for interactive shells left them without provider keys.
+      source ${config.home.homeDirectory}/.config/fish/functions/_hm_load_env_file.fish
+      _hm_load_env_file
     '';
     loginShellInit = ''
       if test -f /opt/homebrew/bin/brew
@@ -79,8 +84,6 @@
       fish_add_path -p -m ~/.bun/bin
     '';
     interactiveShellInit = ''
-      source ${config.home.homeDirectory}/.config/fish/functions/_hm_load_env_file.fish
-      _hm_load_env_file
       set fish_greeting
       set fish_theme dracula
 
