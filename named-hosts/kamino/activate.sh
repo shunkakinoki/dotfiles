@@ -96,9 +96,9 @@ t3-connect)
   # Provision T3 Connect for this worker. The background server reconciles the
   # link on start, so install/repair it first. Workers default to publish-only
   # because the relay caps managed tunnels per account; `managed` opts a host
-  # into a relay tunnel so clients can sign in with T3 Connect. Authorization
-  # uses the OAuth device flow on the first run and is skipped once a
-  # credential is stored.
+  # into a relay tunnel so clients can sign in with T3 Connect. The first
+  # authorization is an operator's interactive device flow; activation only
+  # links hosts that already hold a credential.
   t3_bin="${2:-}"
   t3_mode="${3:-publish-only}"
   case "$t3_mode" in
@@ -148,20 +148,17 @@ t3-connect)
       echo "Warning: could not install the T3 background service." >&2
   fi
 
-  if [ ! -f "$base/userdata/secrets/cloud-cli-oauth-token.bin" ] &&
-    [ "${KAMINO_T3_CONNECT_DEFER:-}" = 1 ]; then
+  # Without a credential, `connect link` starts a device flow that blocks the
+  # switch until it times out, so leave authorization to the operator.
+  if [ ! -f "$base/userdata/secrets/cloud-cli-oauth-token.bin" ]; then
     systemctl --user daemon-reload || true
     systemctl --user enable --now t3code.service || true
     systemctl --user restart t3code.service || true
-    echo "T3 Connect authorization deferred; run t3 connect link --headless ${link_flags[*]} as root in an interactive shell." >&2
+    echo "T3 Connect not authorized; skipping link. Run t3 connect link --headless ${link_flags[*]} as root in an interactive shell." >&2
     exit 0
   fi
 
-  if [ -f "$base/userdata/secrets/cloud-cli-oauth-token.bin" ]; then
-    "$t3_bin" connect link ${link_flags[@]+"${link_flags[@]}"}
-  else
-    "$t3_bin" connect link --headless ${link_flags[@]+"${link_flags[@]}"}
-  fi
+  "$t3_bin" connect link ${link_flags[@]+"${link_flags[@]}"}
   systemctl --user daemon-reload || true
   systemctl --user enable --now t3code.service || true
   systemctl --user restart t3code.service || true

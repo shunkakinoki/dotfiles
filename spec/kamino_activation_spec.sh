@@ -40,6 +40,9 @@ printf 't3 %s\n' "$*" >>"$COMMAND_LOG"
 if [ "$1 $2" = "service install" ] && [ "${T3_INSTALL_EXIT:-0}" != 0 ]; then
   exit "$T3_INSTALL_EXIT"
 fi
+if [ "$1 $2" = "connect link" ] && [ "${T3_LINK_EXIT:-0}" != 0 ]; then
+  exit "$T3_LINK_EXIT"
+fi
 exit 0
 EOF
   cat >"$TEST_ROOT/bin/npx" <<'EOF'
@@ -161,23 +164,24 @@ The output should include 'Tailscale enrollment'
 The contents of file "$TEST_ROOT/commands" should include 'tailscale up --hostname=kamino100 --accept-dns=true --ssh=true'
 End
 
-It 'provisions publish-only T3 Connect with the device flow on first run'
+It 'skips the link without starting a device flow when T3 Connect is not authorized'
 When run env T3CODE_HOME="$TEST_ROOT/fresh-t3" PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" t3-connect "$TEST_ROOT/bin/t3"
 The status should be success
-The output should include 'T3 Connect publish-only link requested.'
-The contents of file "$TEST_ROOT/commands" should include 't3@nightly service install'
-The contents of file "$TEST_ROOT/commands" should include 't3 connect link --headless --publish-only'
-The contents of file "$TEST_ROOT/commands" should include 'systemctl --user restart t3code.service'
+The stderr should include 'T3 Connect not authorized; skipping link. Run t3 connect link --headless --publish-only'
 The stderr should include 'bootstrapping with t3@nightly'
+The contents of file "$TEST_ROOT/commands" should include 't3@nightly service install'
+The contents of file "$TEST_ROOT/commands" should include 'systemctl --user restart t3code.service'
+The contents of file "$TEST_ROOT/commands" should not include 't3 connect link'
 End
 
-It 'lets a piped first switch finish before T3 device authorization'
-When run env KAMINO_T3_CONNECT_DEFER=1 T3CODE_HOME="$TEST_ROOT/fresh-t3" PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" t3-connect "$TEST_ROOT/bin/t3"
-The status should be success
-The stderr should include 'T3 Connect authorization deferred'
-The contents of file "$TEST_ROOT/commands" should include 't3@nightly service install'
-The contents of file "$TEST_ROOT/commands" should include 'systemctl --user enable --now t3code.service'
-The contents of file "$TEST_ROOT/commands" should not include 't3 connect link'
+It 'fails the activation when an authorized link fails'
+mkdir -p "$TEST_ROOT/t3/runtime" "$TEST_ROOT/t3/userdata/secrets"
+printf '{\n  "protocol": 3\n}\n' >"$TEST_ROOT/t3/runtime/service-state.json"
+: >"$TEST_ROOT/t3/userdata/secrets/cloud-cli-oauth-token.bin"
+When run env T3_LINK_EXIT=1 T3CODE_HOME="$TEST_ROOT/t3" PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" t3-connect "$TEST_ROOT/bin/t3"
+The status should be failure
+The output should not include 'link requested'
+The contents of file "$TEST_ROOT/commands" should include 't3 connect link --publish-only'
 End
 
 It 'provisions a managed T3 Connect tunnel for opted-in hosts'
@@ -226,18 +230,18 @@ mkdir -p "$TEST_ROOT/t3/runtime"
 printf '{\n  "protocol": 2,\n  "activeVersion": "0.0.42"\n}\n' >"$TEST_ROOT/t3/runtime/service-state.json"
 When run env T3CODE_HOME="$TEST_ROOT/t3" PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" t3-connect "$TEST_ROOT/bin/t3"
 The status should be success
-The output should include 'T3 Connect publish-only link requested.'
 The contents of file "$TEST_ROOT/commands" should include 't3@nightly service install'
 The stderr should include 'bootstrapping with t3@nightly'
+The stderr should include 'T3 Connect not authorized; skipping link.'
 End
 
 It 'falls back to the nightly service update path when install fails'
 When run env T3_INSTALL_EXIT=1 PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" t3-connect "$TEST_ROOT/bin/t3"
 The status should be success
-The output should include 'T3 Connect publish-only link requested.'
 The contents of file "$TEST_ROOT/commands" should include 't3@nightly service install'
 The contents of file "$TEST_ROOT/commands" should include 't3@nightly service update'
 The stderr should include 'bootstrapping with t3@nightly'
+The stderr should include 'T3 Connect not authorized; skipping link.'
 End
 
 It 'links without the device flow when a credential already exists'

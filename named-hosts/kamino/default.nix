@@ -137,8 +137,8 @@ inputs.home-manager.lib.homeManagerConfiguration {
             '';
 
         # T3 Connect is provisioned per worker after the npm globals install
-        # puts `t3` on PATH. The first activation authorizes with the OAuth
-        # device flow; later activations reuse the stored credential. The
+        # puts `t3` on PATH. Activation links only hosts that already hold a
+        # credential; the first authorization is a manual operator step. The
         # `t3` shim runs under `#!/usr/bin/env node` and its native binary
         # links libatomic, neither of which the unattended updater provides.
         home.activation.provisionKaminoT3Connect =
