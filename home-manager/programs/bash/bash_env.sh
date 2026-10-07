@@ -39,6 +39,7 @@ fi
 if [ -z "${_HM_BASH_ENV_DOTENV_LOADED:-}" ] &&
   [ -f "$HOME/.config/shell/load-env-file.sh" ]; then
   export _HM_BASH_ENV_DOTENV_LOADED=1
+  # shellcheck source=/dev/null
   . "$HOME/.config/shell/load-env-file.sh"
   _hm_load_env_file
 fi
