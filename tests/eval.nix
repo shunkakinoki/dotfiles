@@ -318,6 +318,7 @@ let
         assert !(cfg.home.activation ? setupK3s);
         assert !(cfg.systemd.user.services ? openclaw-gateway);
         assert !(cfg.systemd.user.services ? roborev);
+        assert !(cfg.systemd.user.services ? ci-box-warm);
         assert cfg.modules.tailscale.installSystemService;
         assert cfg.modules.tailscale.extraUpArgs == [ ];
         assert cfg.xdg.configFile."kamino/name".text == "kamino\n";
@@ -379,6 +380,25 @@ let
         assert roborev.Service.MemoryMax == "42G";
         assert roborev.Service.TasksMax == 4096;
         mkEvalCheck "home-kamino7" kamino.activationPackage;
+      eval-home-kamino8 =
+        let
+          kamino = import ../named-hosts/kamino {
+            inherit inputs;
+            name = "kamino8";
+          };
+          cfg = kamino.config;
+          warmService = cfg.systemd.user.services.ci-box-warm;
+          warmTimer = cfg.systemd.user.timers.ci-box-warm;
+        in
+        assert warmService.Unit.Description == "Warm the CI box Turbo cache from origin/main";
+        assert warmService.Service.Type == "oneshot";
+        assert warmService.Service.WorkingDirectory == "/root";
+        assert builtins.match ".*/bin/bash .*" (builtins.head warmService.Service.ExecStart) != null;
+        assert warmService.Service.Nice == 10;
+        assert warmTimer.Timer.OnBootSec == "5min";
+        assert warmTimer.Timer.OnUnitInactiveSec == "5min";
+        assert warmTimer.Install.WantedBy == [ "timers.target" ];
+        mkEvalCheck "home-kamino8" kamino.activationPackage;
       eval-home-kamino100 =
         let
           kamino = import ../named-hosts/kamino {
@@ -405,6 +425,7 @@ let
         assert cfg.xdg.configFile ? "zellij/config.kdl";
         assert cfg.home.file ? ".config/herdr/config.toml";
         assert cfg.systemd.user.startServices;
+        assert !(cfg.systemd.user.services ? ci-box-warm);
         assert !(cfg.systemd.user.services ? roborev);
         assert activationPosition "checkKaminoIdentity" < activationPosition "writeBoundary";
         assert activationPosition "startKaminoUserManager" < activationPosition "reloadSystemd";
