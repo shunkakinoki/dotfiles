@@ -85,6 +85,12 @@
     '';
     interactiveShellInit = ''
       set fish_greeting
+
+      # grc wraps ps/ls/etc. in a python process per call. Home Manager plugins
+      # load from conf.d in every shell, so `ssh host cmd` and `fish -c` monitors
+      # paid that cost too; loading it here keeps it interactive-only.
+      set -a fish_function_path ${pkgs.fishPlugins.grc.src}/functions
+      source ${pkgs.fishPlugins.grc.src}/conf.d/grc.fish
       set fish_theme dracula
 
       if test -f /opt/homebrew/bin/brew
@@ -235,10 +241,6 @@
       {
         name = "fzf-fish";
         inherit (pkgs.fishPlugins.fzf-fish) src;
-      }
-      {
-        name = "grc";
-        inherit (pkgs.fishPlugins.grc) src;
       }
       {
         name = "puffer";
