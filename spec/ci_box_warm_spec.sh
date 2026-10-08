@@ -6,10 +6,14 @@ setup() {
   TEST_ROOT=$(mktemp -d)
   mkdir -p "$TEST_ROOT/bin" "$TEST_ROOT/home/ghq/github.com/org/a-first" "$TEST_ROOT/home/ghq/github.com/org/b-second"
   jq_root=$(dirname "$(dirname "$(command -v jq)")")
-  find_root=$(dirname "$(dirname "$(command -v find)")")
+  cat >"$TEST_ROOT/bin/find" <<'FIND'
+#!/usr/bin/env bash
+/usr/bin/find "$@" | sort -z
+FIND
+  chmod +x "$TEST_ROOT/bin/find"
   sed \
     -e "s#@jq@#$jq_root#g" \
-    -e "s#@findutils@#$find_root#g" \
+    -e "s#@findutils@#$TEST_ROOT#g" \
     -e "s#@bunBin@#$TEST_ROOT/bin/bun#g" \
     "$PWD/home-manager/services/ci-box-warm/run.sh" >"$TEST_ROOT/run.sh"
   chmod +x "$TEST_ROOT/run.sh"
