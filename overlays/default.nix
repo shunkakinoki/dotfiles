@@ -234,16 +234,6 @@
           )
         );
     }
-    // prev.lib.optionalAttrs (prev ? mise) {
-      # mise's Cargo test suite asserts setuid bits survive OCI layer extraction,
-      # which the nix build sandbox does not preserve on darwin/linux runners.
-      # mise 2026.8.6 also builds libz-ng-sys from source, whose Rust build
-      # script invokes CMake without declaring it in the upstream derivation.
-      mise = prev.mise.overrideAttrs (old: {
-        doCheck = false;
-        nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ prev.cmake ];
-      });
-    }
     // prev.lib.optionalAttrs (prev ? vector && prev.stdenv.hostPlatform.isDarwin) {
       # Vector 0.58.0's timing-sensitive check suite is unstable under the
       # Darwin Nix sandbox (exec shutdown, file rotation, and adaptive
