@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329
+# shellcheck disable=SC2016,SC2329
 
 Describe 'home-manager/programs/ssh/default.nix'
 SSH_CONFIG_NIX="$PWD/home-manager/programs/ssh/default.nix"
