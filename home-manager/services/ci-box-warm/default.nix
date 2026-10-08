@@ -16,7 +16,7 @@ let
       "kamino10"
     ];
   runWarm = pkgs.replaceVars ./run.sh {
-    inherit (pkgs) bash findutils jq;
+    inherit (pkgs) findutils jq;
     bunBin = "${homeDir}/.bun/bin/bun";
   };
 in

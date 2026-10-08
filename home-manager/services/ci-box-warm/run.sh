@@ -9,7 +9,7 @@ while IFS= read -r -d '' package_json; do
   [ -n "$warm_command" ] || continue
   found_checkout=true
   repository_dir=${package_json%/package.json}
-  cd "$repository_dir"
+  cd "$repository_dir" || continue
   if "@bunBin@" run ci:box-warm; then
     exit 0
   fi
