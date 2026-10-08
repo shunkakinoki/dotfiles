@@ -20,6 +20,13 @@ The output should include 'HostName = machine.hostname'
 The output should include 'User = machine.user'
 The output should include 'fleet.machines'
 End
+
+It 'pins each host key under its tailnet address, so IP-reached fleet commands verify'
+When run bash -c "cat home-manager/programs/ssh/known-hosts.nix; grep -c '^    kamino[0-9]* = \"100[.]' home-manager/programs/ssh/known-hosts.nix"
+The output should include '${name}.tail950b36.ts.net ${publicKeys.${name}}'
+The output should include '${kaminoAddresses.${name}} ${publicKeys.${name}}'
+The output should end with '10'
+End
 End
 
 Describe 'kyber host'
