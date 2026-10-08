@@ -10,6 +10,7 @@ let
   brewUpgrader = import ./brew-upgrader { inherit pkgs; };
   caam = import ./caam;
   cass = import ./cass { inherit pkgs; };
+  ciBoxWarm = ./ci-box-warm;
   cliproxyapi = import ./cliproxyapi;
   cpaManagerPlus = ./cpa-manager-plus;
   codeSyncer = import ./code-syncer { inherit pkgs; };
@@ -46,6 +47,7 @@ in
   brewUpgrader
   caam
   cass
+  ciBoxWarm
   cliproxyapi
   cpaManagerPlus
   codeSyncer
