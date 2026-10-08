@@ -16,7 +16,7 @@ let
       "kamino10"
     ];
   runWarm = pkgs.replaceVars ./run.sh {
-    inherit (pkgs) bash gnugrep findutils;
+    inherit (pkgs) bash findutils jq;
     bunBin = "${homeDir}/.bun/bin/bun";
   };
 in
@@ -24,7 +24,7 @@ lib.mkIf enabled {
   systemd.user.services.ci-box-warm = {
     Unit = {
       Description = "Warm the CI box Turbo cache from origin/main";
-      X-SwitchMethod = "keep-old";
+      X-SwitchMethod = "restart";
     };
     Service = {
       Type = "oneshot";
@@ -44,6 +44,7 @@ lib.mkIf enabled {
     Timer = {
       OnBootSec = "5min";
       OnUnitInactiveSec = "5min";
+      RandomizedDelaySec = "2min";
     };
     Install.WantedBy = [ "timers.target" ];
   };

@@ -670,6 +670,7 @@ home-manager/services/brew-upgrader/upgrade.sh
 home-manager/services/caam/setup.sh
 home-manager/services/caam/sync.sh
 home-manager/services/cass/daily.sh
+home-manager/services/ci-box-warm/run.sh
 home-manager/services/cpa-manager-plus/docker-start.sh
 home-manager/services/cpa-manager-plus/start.sh
 home-manager/services/crabbox/health-check.sh

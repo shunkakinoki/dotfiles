@@ -389,15 +389,31 @@ let
           cfg = kamino.config;
           warmService = cfg.systemd.user.services.ci-box-warm;
           warmTimer = cfg.systemd.user.timers.ci-box-warm;
+          otherWarmConfigs =
+            map
+              (
+                name:
+                (import ../named-hosts/kamino {
+                  inherit inputs;
+                  inherit name;
+                }).config
+              )
+              [
+                "kamino9"
+                "kamino10"
+              ];
         in
         assert warmService.Unit.Description == "Warm the CI box Turbo cache from origin/main";
+        assert warmService.Unit.X-SwitchMethod == "restart";
         assert warmService.Service.Type == "oneshot";
         assert warmService.Service.WorkingDirectory == "/root";
         assert builtins.match ".*/bin/bash .*" (builtins.head warmService.Service.ExecStart) != null;
         assert warmService.Service.Nice == 10;
         assert warmTimer.Timer.OnBootSec == "5min";
         assert warmTimer.Timer.OnUnitInactiveSec == "5min";
+        assert warmTimer.Timer.RandomizedDelaySec == "2min";
         assert warmTimer.Install.WantedBy == [ "timers.target" ];
+        assert builtins.all (candidate: candidate.systemd.user.services ? ci-box-warm) otherWarmConfigs;
         mkEvalCheck "home-kamino8" kamino.activationPackage;
       eval-home-kamino100 =
         let
