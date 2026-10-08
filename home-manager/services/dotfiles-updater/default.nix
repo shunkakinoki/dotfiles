@@ -46,6 +46,8 @@ in
     };
     Service = {
       Type = "oneshot";
+      # systemctl comes from the host: a Nix systemd newer than the host's user
+      # manager (Ubuntu on kyber) gets "Connection refused" on the user bus.
       Environment = [
         "PATH=${
           lib.makeBinPath [
@@ -60,10 +62,9 @@ in
             pkgs.gnused
             pkgs.nix
             pkgs.sudo
-            pkgs.systemd
             pkgs.which
           ]
-        }"
+        }:/run/current-system/sw/bin:/usr/bin:/bin"
         "AUTOMATED_UPDATE=true"
       ]
       ++ lib.optional (canonicalHost != null) "HOST=${canonicalHost}";
