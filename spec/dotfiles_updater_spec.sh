@@ -184,10 +184,15 @@ End
 End
 
 Describe 'cliproxy service PATH'
-It 'provides docker and systemctl to make cliproxy-update'
-When run bash -c "grep -E 'pkgs\.(docker|systemd)$' '$MODULE'"
+It 'provides docker to make cliproxy-update'
+When run bash -c "grep -E 'pkgs\.docker$' '$MODULE'"
 The output should include 'pkgs.docker'
-The output should include 'pkgs.systemd'
+End
+
+It 'takes systemctl from the host, not Nix'
+When run bash -c "grep -E 'pkgs\.systemd$|/usr/bin:/bin\"' '$MODULE'"
+The output should not include 'pkgs.systemd'
+The output should include '/run/current-system/sw/bin:/usr/bin:/bin'
 End
 End
 
