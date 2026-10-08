@@ -6,22 +6,21 @@ setup() {
   TEST_ROOT=$(mktemp -d)
   mkdir -p "$TEST_ROOT/bin" "$TEST_ROOT/home/ghq/github.com/org/a-first" "$TEST_ROOT/home/ghq/github.com/org/b-second"
   jq_root=$(dirname "$(dirname "$(command -v jq)")")
-  cat >"$TEST_ROOT/bin/find" <<'FIND'
-#!/usr/bin/env bash
-/usr/bin/find "$@" | sort -z
-FIND
-  chmod +x "$TEST_ROOT/bin/find"
+  find_root=$(dirname "$(dirname "$(command -v find)")")
   sed \
     -e "s#@jq@#$jq_root#g" \
-    -e "s#@findutils@#$TEST_ROOT#g" \
+    -e "s#@findutils@#$find_root#g" \
     -e "s#@bunBin@#$TEST_ROOT/bin/bun#g" \
     "$PWD/home-manager/services/ci-box-warm/run.sh" >"$TEST_ROOT/run.sh"
   chmod +x "$TEST_ROOT/run.sh"
   cat >"$TEST_ROOT/bin/bun" <<'BUN'
 #!/usr/bin/env bash
 printf '%s|%s\n' "$PWD" "$*" >>"$BUN_LOG"
-if [ "${FAIL_FIRST:-0}" = 1 ] && [ "$PWD" = "$HOME/ghq/github.com/org/a-first" ]; then
-  exit 1
+if [ "${FAIL_FIRST:-0}" = 1 ]; then
+  count=$(wc -l <"$BUN_LOG")
+  if [ "$count" -eq 1 ]; then
+    exit 1
+  fi
 fi
 if [ "${FAIL_ALL:-0}" = 1 ]; then
   exit 1
@@ -56,8 +55,8 @@ cat >"$TEST_ROOT/home/ghq/github.com/org/b-second/package.json" <<'JSON'
 JSON
 When run env HOME="$TEST_ROOT/home" BUN_LOG="$TEST_ROOT/bun.log" FAIL_FIRST=1 "$TEST_ROOT/run.sh"
 The status should be success
-The contents of file "$TEST_ROOT/bun.log" should include "$TEST_ROOT/home/ghq/github.com/org/a-first|run ci:box-warm"
 The contents of file "$TEST_ROOT/bun.log" should include "$TEST_ROOT/home/ghq/github.com/org/b-second|run ci:box-warm"
+The contents of file "$TEST_ROOT/bun.log" should include "$TEST_ROOT/home/ghq/github.com/org/a-first|run ci:box-warm"
 End
 
 It 'fails clearly when no checkout exposes the command'
