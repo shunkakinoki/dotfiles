@@ -149,10 +149,12 @@ inputs.home-manager.lib.homeManagerConfiguration {
         # credential; the first authorization is a manual operator step. The
         # `t3` shim runs under `#!/usr/bin/env node` and its native binary
         # links libatomic, neither of which the unattended updater provides.
+        # `connect link` also needs the cloudflared relay client on PATH, or it
+        # prompts to download one and exits without a TTY.
         home.activation.provisionKaminoT3Connect =
           config.lib.dag.entryAfter [ "installNpmGlobals" "startKaminoUserManager" ]
             ''
-              export PATH=${config.home.homeDirectory}/.bun/bin:${pkgs.nodejs}/bin:$PATH
+              export PATH=${config.home.homeDirectory}/.bun/bin:${pkgs.nodejs}/bin:${pkgs.cloudflared}/bin:$PATH
               export XDG_RUNTIME_DIR=/run/user/0
               $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} t3-connect ${config.home.homeDirectory}/.bun/bin/t3 ${t3ConnectMode} ${pkgs.stdenv.cc.cc.lib}/lib
             '';
