@@ -4,7 +4,7 @@
   "effortLevel": "high",
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true,
-    "claude-mem@claude-mem": true,
+    "claude-mem@thedotmack": true,
     "code-review@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
     "codex@openai-codex": true,
@@ -19,14 +19,13 @@
     "lua-lsp@claude-plugins-official": true,
     "mempalace@mempalace": true,
     "php-lsp@claude-plugins-official": true,
-    "plan-export@cc-marketplace": true,
     "pr-review-toolkit@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true,
     "qmd@qmd": true,
     "ralph-loop@claude-plugins-official": true,
     "ruby-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
-    "safety-net@cc-marketplace": true,
+    "cc-safety-net@cc-marketplace": true,
     "security-guidance@claude-plugins-official": true,
     "serena@claude-plugins-official": true,
     "skill-codex@skill-codex": true,
@@ -58,7 +57,7 @@
         "source": "github"
       }
     },
-    "claude-mem": {
+    "thedotmack": {
       "source": {
         "repo": "thedotmack/claude-mem",
         "source": "github"
