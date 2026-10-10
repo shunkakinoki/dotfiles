@@ -380,6 +380,23 @@ let
         assert roborev.Service.MemoryMax == "42G";
         assert roborev.Service.TasksMax == 4096;
         mkEvalCheck "home-kamino7" kamino.activationPackage;
+      eval-home-kamino4-t3-managed =
+        let
+          managedNames = [ "kamino1" "kamino2" "kamino3" "kamino4" "kamino5" "kamino6" ];
+          managedConfigs = map (name: (import ../named-hosts/kamino {
+            inherit inputs name;
+          }).config) managedNames;
+          kamino = import ../named-hosts/kamino {
+            inherit inputs;
+            name = "kamino4";
+          };
+          cfg = kamino.config;
+        in
+        assert builtins.all
+          (managedCfg: lib.hasInfix " managed " managedCfg.home.activation.provisionKaminoT3Connect.data)
+          managedConfigs;
+        assert lib.hasInfix "t3-connect" cfg.home.activation.provisionKaminoT3Connect.data;
+        mkEvalCheck "home-kamino4-t3-managed" kamino.activationPackage;
       eval-home-kamino8 =
         let
           kamino = import ../named-hosts/kamino {
