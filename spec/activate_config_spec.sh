@@ -419,8 +419,10 @@ The status should be success
 The output should include 'HOSTNAME:-unknown'
 End
 
+# Claude Code turns tool search off for non-Anthropic base URLs such as
+# CLIProxy; without it every MCP schema loads up front and auto-compact thrashes.
 It 'writes the same settings into the T3 Code Claude config dir'
-When run bash -c "temp_home=\$(mktemp -d); HOME=\"\$temp_home\" bash '$SCRIPT' '$PWD/config/claude/settings.json' && jq -e '.env.CLAUDE_CODE_SUBAGENT_MODEL' \"\$temp_home/.claude-cliproxy/settings.json\" >/dev/null && cmp -s \"\$temp_home/.claude/settings.json\" \"\$temp_home/.claude-cliproxy/settings.json\""
+When run bash -c "temp_home=\$(mktemp -d); HOME=\"\$temp_home\" bash '$SCRIPT' '$PWD/config/claude/settings.json' && jq -e '.env.CLAUDE_CODE_SUBAGENT_MODEL and .env.ENABLE_TOOL_SEARCH == \"auto\"' \"\$temp_home/.claude-cliproxy/settings.json\" >/dev/null && cmp -s \"\$temp_home/.claude/settings.json\" \"\$temp_home/.claude-cliproxy/settings.json\""
 The status should be success
 End
 End

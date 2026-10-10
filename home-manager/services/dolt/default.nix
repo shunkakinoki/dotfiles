@@ -106,10 +106,6 @@ in
     ''
   );
 
-  # Persist the same client selection in the user manager so Herdr, OpenClaw,
-  # and other systemd-launched agents do not inherit a stale shared-server mode.
-  systemd.user.sessionVariables = lib.mkIf pkgs.stdenv.hostPlatform.isLinux beadsClientEnvironment;
-
   # Herdr launches workers without a login shell. Give its child processes the
   # managed server policy directly so they cannot start a competing Dolt server.
   systemd.user.services.herdr-server = lib.mkIf (isKamino || isMatic) {

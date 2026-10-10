@@ -50,6 +50,13 @@ in
   home.packages = packages;
   home.stateVersion = "24.11";
 
+  # Agents launched by the user manager (T3 Code, Herdr, OpenClaw) never source
+  # a login shell, so give them the same session environment. environment.d
+  # cannot run command substitutions, so those shell-only values stay behind.
+  systemd.user.sessionVariables = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (
+    lib.filterAttrs (_: value: !(lib.hasInfix "$(" (toString value))) config.home.sessionVariables
+  );
+
   # Suppress home-manager manual options.json generation warning.
   manual.manpages.enable = false;
 
