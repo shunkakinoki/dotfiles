@@ -1,4 +1,9 @@
-{ inputs, pkgs, ... }:
+{
+  config,
+  inputs,
+  pkgs,
+  ...
+}:
 let
   inherit (pkgs) lib;
   findPackage =
@@ -93,6 +98,16 @@ let
     + "export T3_SYSTEMD_RUN=${pkgs.systemd}/bin/systemd-run\n"
     + builtins.readFile ./cli.sh
   );
+  setupBrowser = pkgs.writeShellScript "t3-setup-browser" (
+    "export PATH=${
+      lib.makeBinPath [
+        pkgs.coreutils
+        pkgs.bash
+      ]
+    }:/run/wrappers/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH\n"
+    + "export T3_BROWSER_CLI=${runtimeCli}\n"
+    + builtins.readFile ./setup-browser.sh
+  );
   cliFunction = ''
     export PATH="$HOME/.config/t3/bin:$PATH"
     t3() { ${runtimeCli} "$@"; }
@@ -110,6 +125,12 @@ in
   assertions = lib.optional inputs.host.isKyber {
     assertion = lib.length t3ServeRoutes == 1;
     message = "Kyber must declare exactly one T3 service-owned Tailscale Serve route";
+  };
+
+  home.activation = lib.mkIf t3Enabled {
+    setupT3Browser = config.lib.dag.entryAfter [ "installNpmGlobals" ] ''
+      $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${setupBrowser}
+    '';
   };
 
   xdg.configFile."t3/cli.sh" = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
@@ -194,6 +215,7 @@ in
       Environment = [
         "PATH=${toolchain}"
         "T3_PREPARE_RUNTIME=${prepareRuntime}"
+        "T3_SETUP_BROWSER=${setupBrowser}"
         "T3_SYSTEMCTL=${pkgs.systemd}/bin/systemctl"
         "T3_ENSURE_SERVICE=${if inputs.host.isKamino or false then "1" else "0"}"
         "XDG_RUNTIME_DIR=%t"

@@ -90,6 +90,10 @@ if [ "${T3_ENSURE_SERVICE:-0}" = 1 ] &&
   npx --yes "$spec" service install
 fi
 
+# The browser may be downloaded after activation; repeat the upstream
+# idempotent setup so its sandbox and newly required libraries are ready.
+"${T3_SETUP_BROWSER:?}"
+
 # A crash loop (e.g. a full disk) trips systemd's start limit, and the unit
 # then stays failed forever while clients sit on "reconnecting". Revive it
 # once the runtime is warm so a transient cause heals on the next pass.
