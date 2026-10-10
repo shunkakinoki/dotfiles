@@ -477,6 +477,8 @@ let
         assert lib.hasInfix ".bun/bin/t3" cfg.home.activation.provisionKaminoT3Connect.data;
         assert lib.hasInfix (builtins.unsafeDiscardStringContext "${pkgs.nodejs}/bin")
           cfg.home.activation.provisionKaminoT3Connect.data;
+        assert lib.hasInfix (builtins.unsafeDiscardStringContext "${pkgs.cloudflared}/bin")
+          cfg.home.activation.provisionKaminoT3Connect.data;
         assert lib.hasInfix (builtins.unsafeDiscardStringContext "${pkgs.stdenv.cc.cc.lib}/lib")
           cfg.home.activation.provisionKaminoT3Connect.data;
         # A fresh worker can come up with herdr-server enabled yet dead, so
