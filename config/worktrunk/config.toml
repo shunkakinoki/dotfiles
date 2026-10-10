@@ -4,7 +4,9 @@ worktree-path = "{{ repo_path }}/.worktrees/{{ branch | sanitize }}"
 copy = "wt step copy-ignored"
 
 [step.copy-ignored]
-exclude = [".cache/", ".devenv/", ".serena/"]
+# .worktrees/ lives inside the repo and is gitignored, so without this every new
+# worktree recursively copies all sibling worktrees.
+exclude = [".cache/", ".devenv/", ".serena/", ".worktrees/", ".claude/worktrees/", "node_modules/"]
 
 [commit]
 stage = "all"
