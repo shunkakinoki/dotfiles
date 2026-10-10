@@ -176,11 +176,13 @@ environment with that pairing link.
 
 ### Sign in with T3 Connect instead
 
-Workers listed in `t3ManagedTunnelHosts` in `default.nix` (currently `kamino5`)
+Workers listed in `t3ManagedTunnelHosts` in `default.nix` (currently
+`kamino1` through `kamino6`)
 link with a relay-managed tunnel instead of `--publish-only`, so they appear
-under T3 Connect after signing in. Each one uses one of the account's 3 managed
-tunnels. After adding a host, run `make nix-switch` on it; if it was linked
-publish-only before, relink it once:
+under T3 Connect after signing in. After adding a host, run `make nix-switch`
+on it. If it was linked
+publish-only before, relink it once so the relay-managed endpoint replaces the
+old link:
 
 ```sh
 t3 connect unlink
