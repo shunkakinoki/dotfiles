@@ -53,6 +53,12 @@ The output should include 'caam-sync'
 The status should be success
 End
 
+It 'skips the linux daemon when caam binary is missing'
+When run bash -c "grep -F 'ConditionPathIsExecutable = caamBin' '$NIX'"
+The output should include 'ConditionPathIsExecutable'
+The status should be success
+End
+
 It 'bootstraps the pool on home-manager activation'
 When run bash -c "grep -F 'caamSyncSetup' '$NIX'"
 The output should include 'caamSyncSetup'
