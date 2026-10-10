@@ -29,6 +29,10 @@
         {
           "name": "IS_SANDBOX",
           "value": "1"
+        },
+        {
+          "name": "ENABLE_TOOL_SEARCH",
+          "value": "auto"
         }
       ],
       "config": {
