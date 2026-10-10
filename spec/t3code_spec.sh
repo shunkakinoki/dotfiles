@@ -6,7 +6,6 @@ SETTINGS_SCRIPT="$PWD/config/t3code/activate-settings.sh"
 CLIENT_SCRIPT="$PWD/config/t3code/activate-client-settings.sh"
 MANAGED_SERVER="$PWD/config/t3code/server-settings.json"
 MANAGED_CLIENT="$PWD/config/t3code/client-settings.json"
-CODEX_HOME_CONFIG="$PWD/config/t3code/codex-home/config.toml"
 
 setup() {
   TEMP_DIR=$(mktemp -d)
@@ -20,7 +19,7 @@ cleanup() {
 
 run_settings() {
   bash "$SETTINGS_SCRIPT" "$MANAGED_SERVER" "$(command -v jq)" "$TEMP_DIR/.env" \
-    "$STATE_DIR" "$CODEX_HOME_CONFIG"
+    "$STATE_DIR"
 }
 
 run_client() {
@@ -34,7 +33,7 @@ It 'creates settings.json with the managed instances when absent'
 cat >"$TEMP_DIR/.env" <<'ENV'
 CLIPROXY_API_KEY=test_cliproxy_key
 ENV
-When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '.providerInstances[\"claude-cliproxy\"].driver == \"claudeAgent\" and .providerInstances[\"codex-cliproxy\"].driver == \"codex\"' '$STATE_DIR/settings.json' >/dev/null"
+When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && jq -e '.providerInstances[\"claude-cliproxy\"].driver == \"claudeAgent\" and .providerInstances[\"codex-cliproxy\"].driver == \"codex\"' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 End
 
@@ -56,7 +55,7 @@ It 'injects the CLIProxy key from the dotenv'
 cat >"$TEMP_DIR/.env" <<'ENV'
 CLIPROXY_API_KEY=test_cliproxy_key
 ENV
-When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '[.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ANTHROPIC_AUTH_TOKEN\") | .value == \"test_cliproxy_key\" and .sensitive == true] | all' '$STATE_DIR/settings.json' >/dev/null"
+When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && jq -e '[.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ANTHROPIC_AUTH_TOKEN\") | .value == \"test_cliproxy_key\" and .sensitive == true] | all' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 End
 
@@ -64,7 +63,7 @@ It 'renders the host-only base URL Claude Code expects'
 cat >"$TEMP_DIR/.env" <<'ENV'
 CLIPROXY_API_KEY=test_cliproxy_key
 ENV
-When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '[.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ANTHROPIC_BASE_URL\") | .value] | first == \"https://cliproxy.shunkakinoki.com\"' '$STATE_DIR/settings.json' >/dev/null"
+When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && jq -e '[.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ANTHROPIC_BASE_URL\") | .value] | first == \"https://cliproxy.shunkakinoki.com\"' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 End
 
@@ -75,7 +74,7 @@ It 'keeps tool search on behind CLIProxy'
 cat >"$TEMP_DIR/.env" <<'ENV'
 CLIPROXY_API_KEY=test_cliproxy_key
 ENV
-When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '[.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ENABLE_TOOL_SEARCH\") | .value] | first == \"auto\"' '$STATE_DIR/settings.json' >/dev/null"
+When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && jq -e '[.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ENABLE_TOOL_SEARCH\") | .value] | first == \"auto\"' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 End
 
@@ -84,7 +83,7 @@ End
 # request fails until someone clears the store by hand.
 It 'never persists the placeholder when the dotenv has no key'
 : >"$TEMP_DIR/.env"
-When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '[.. | strings | select(. == \"__CLIPROXY_API_KEY__\")] | length == 0' '$STATE_DIR/settings.json' >/dev/null"
+When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && jq -e '[.. | strings | select(. == \"__CLIPROXY_API_KEY__\")] | length == 0' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 The stderr should include 'CLIPROXY_API_KEY not found'
 End
@@ -103,7 +102,7 @@ cat >"$STATE_DIR/settings.json" <<'JSON'
   }
 }
 JSON
-When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '([.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ANTHROPIC_AUTH_TOKEN\") | .value] | first == \"existing_key\") and (.providerInstances[\"codex-cliproxy\"].environment[0].value == \"existing_key\")' '$STATE_DIR/settings.json' >/dev/null"
+When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && jq -e '([.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ANTHROPIC_AUTH_TOKEN\") | .value] | first == \"existing_key\") and (.providerInstances[\"codex-cliproxy\"].environment[0].value == \"existing_key\")' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 End
 
@@ -114,7 +113,7 @@ ENV
 mkdir -p "$STATE_DIR/secrets"
 printf '%s' '__CLIPROXY_API_KEY__' >"$STATE_DIR/secrets/provider-env-poisoned.bin"
 printf '%s' 'real_key' >"$STATE_DIR/secrets/provider-env-healthy.bin"
-When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && [ ! -e '$STATE_DIR/secrets/provider-env-poisoned.bin' ] && [ -e '$STATE_DIR/secrets/provider-env-healthy.bin' ]"
+When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && [ ! -e '$STATE_DIR/secrets/provider-env-poisoned.bin' ] && [ -e '$STATE_DIR/secrets/provider-env-healthy.bin' ]"
 The status should be success
 End
 
@@ -127,7 +126,7 @@ CLIPROXY_API_KEY=test_cliproxy_key
 ENV
 CLAUDE_SECRET="$STATE_DIR/secrets/provider-env-Y2xhdWRlLWNsaXByb3h5-QU5USFJPUElDX0FVVEhfVE9LRU4.bin"
 CODEX_SECRET="$STATE_DIR/secrets/provider-env-Y29kZXgtY2xpcHJveHk-Q0xJUFJPWFlfQVBJX0tFWQ.bin"
-When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && [ \"\$(cat '$CLAUDE_SECRET')\" = test_cliproxy_key ] && [ \"\$(cat '$CODEX_SECRET')\" = test_cliproxy_key ] && [ \"\$(stat -c %a '$CLAUDE_SECRET')\" = 600 ]"
+When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && [ \"\$(cat '$CLAUDE_SECRET')\" = test_cliproxy_key ] && [ \"\$(cat '$CODEX_SECRET')\" = test_cliproxy_key ] && [ \"\$(stat -c %a '$CLAUDE_SECRET')\" = 600 ]"
 The status should be success
 End
 
@@ -139,8 +138,8 @@ It 'rewrites nothing when the render is unchanged'
 cat >"$TEMP_DIR/.env" <<'ENV'
 CLIPROXY_API_KEY=test_cliproxy_key
 ENV
-RENDER="bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG'"
-TOUCHED="'$STATE_DIR/settings.json' '$TEMP_DIR/.codex-t3/cliproxy/auth.json' '$TEMP_DIR/.codex-t3/cliproxy/config.toml' '$STATE_DIR/secrets/provider-env-Y2xhdWRlLWNsaXByb3h5-QU5USFJPUElDX0FVVEhfVE9LRU4.bin'"
+RENDER="bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR'"
+TOUCHED="'$STATE_DIR/settings.json' '$TEMP_DIR/.codex-t3/cliproxy/auth.json' '$STATE_DIR/secrets/provider-env-Y2xhdWRlLWNsaXByb3h5-QU5USFJPUElDX0FVVEhfVE9LRU4.bin'"
 When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "$RENDER && before=\$(stat -c %y $TOUCHED) && $RENDER && [ \"\$before\" = \"\$(stat -c %y $TOUCHED)\" ]"
 The status should be success
 End
@@ -149,7 +148,7 @@ It 'leaves no temporary render behind'
 cat >"$TEMP_DIR/.env" <<'ENV'
 CLIPROXY_API_KEY=test_cliproxy_key
 ENV
-When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && [ \"\$(find '$STATE_DIR' -name 'settings.json.*' | wc -l)\" -eq 0 ]"
+When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && [ \"\$(find '$STATE_DIR' -name 'settings.json.*' | wc -l)\" -eq 0 ]"
 The status should be success
 End
 
@@ -157,7 +156,7 @@ It 'recovers the credential from the secret store'
 : >"$TEMP_DIR/.env"
 mkdir -p "$STATE_DIR/secrets"
 printf '%s' 'stored_key' >"$STATE_DIR/secrets/provider-env-Y2xhdWRlLWNsaXByb3h5-QU5USFJPUElDX0FVVEhfVE9LRU4.bin"
-When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '([.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ANTHROPIC_AUTH_TOKEN\") | .value] | first == \"stored_key\")' '$STATE_DIR/settings.json' >/dev/null"
+When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && jq -e '([.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ANTHROPIC_AUTH_TOKEN\") | .value] | first == \"stored_key\")' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 End
 
@@ -170,7 +169,7 @@ cat >"$TEMP_DIR/systemctl" <<SYSTEMCTL
 printf '%s\n' "\$*" >>"$TEMP_DIR/systemctl.log"
 SYSTEMCTL
 chmod +x "$TEMP_DIR/systemctl"
-When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' '$TEMP_DIR/systemctl' && grep -q 'restart t3code.service' '$TEMP_DIR/systemctl.log'"
+When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$TEMP_DIR/systemctl' && grep -q 'restart t3code.service' '$TEMP_DIR/systemctl.log'"
 The status should be success
 End
 
@@ -183,7 +182,7 @@ cat >"$TEMP_DIR/systemctl" <<SYSTEMCTL
 printf '%s\n' "\$*" >>"$TEMP_DIR/systemctl.log"
 SYSTEMCTL
 chmod +x "$TEMP_DIR/systemctl"
-When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' '$TEMP_DIR/systemctl' && bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' '$TEMP_DIR/systemctl' && [ \"\$(wc -l <'$TEMP_DIR/systemctl.log')\" -eq 1 ]"
+When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$TEMP_DIR/systemctl' && bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$TEMP_DIR/systemctl' && [ \"\$(wc -l <'$TEMP_DIR/systemctl.log')\" -eq 1 ]"
 The status should be success
 End
 
@@ -198,30 +197,25 @@ cat >"$STATE_DIR/settings.json" <<'JSON'
   "providerInstances": {"opencode": {"driver": "opencode", "config": {"binaryPath": "opencode"}}}
 }
 JSON
-When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '.pullRequestMergeMethod == \"squash\" and .defaultModelSelection.instanceId == \"opencode\" and .providerInstances.opencode.config.binaryPath == \"opencode\" and (.providerInstances[\"codex-cliproxy\"] != null)' '$STATE_DIR/settings.json' >/dev/null"
+When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && jq -e '.pullRequestMergeMethod == \"squash\" and .defaultModelSelection.instanceId == \"opencode\" and .providerInstances.opencode.config.binaryPath == \"opencode\" and (.providerInstances[\"codex-cliproxy\"] != null)' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 End
 
 It 'leaves a malformed settings.json untouched'
 echo 'not json' >"$STATE_DIR/settings.json"
-When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && grep -q 'not json' '$STATE_DIR/settings.json'"
+When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && grep -q 'not json' '$STATE_DIR/settings.json'"
 The status should be success
 The stderr should include 'malformed, leaving them unchanged'
 End
 
-It 'provisions the Codex CLIProxy home from the managed config'
-When run env HOME="$TEMP_DIR" CLIPROXY_API_KEY=test bash -c "mkdir -p '$TEMP_DIR/.codex-t3/cliproxy' && bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && grep -q 'model_provider = \"cliproxyapi\"' '$TEMP_DIR/.codex-t3/cliproxy/config.toml'"
-The status should be success
-End
-
 It 'seeds the Codex auth record so the instance is not reported as logged out'
-When run env HOME="$TEMP_DIR" CLIPROXY_API_KEY=test bash -c "mkdir -p '$TEMP_DIR/.codex-t3/cliproxy' && bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '.OPENAI_API_KEY == \"test\"' '$TEMP_DIR/.codex-t3/cliproxy/auth.json' >/dev/null"
+When run env HOME="$TEMP_DIR" CLIPROXY_API_KEY=test bash -c "mkdir -p '$TEMP_DIR/.codex-t3/cliproxy' && bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && jq -e '.OPENAI_API_KEY == \"test\"' '$TEMP_DIR/.codex-t3/cliproxy/auth.json' >/dev/null"
 The status should be success
 End
 
 It 'writes no Codex auth record when the key is missing'
 : >"$TEMP_DIR/.env"
-When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "mkdir -p '$TEMP_DIR/.codex-t3/cliproxy' && bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && [ ! -e '$TEMP_DIR/.codex-t3/cliproxy/auth.json' ]"
+When run env -u CLIPROXY_API_KEY HOME="$TEMP_DIR" bash -c "mkdir -p '$TEMP_DIR/.codex-t3/cliproxy' && bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && [ ! -e '$TEMP_DIR/.codex-t3/cliproxy/auth.json' ]"
 The status should be success
 The stderr should include 'CLIPROXY_API_KEY not found'
 End

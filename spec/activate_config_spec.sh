@@ -44,6 +44,18 @@ When run bash -c 'HOME="$1" PATH="$1/bin:/usr/bin:/bin" bash "$2" "$3" "$4" "$5"
 The status should be success
 End
 
+It 'gives the T3 Code CLIProxy home the managed config routed through CLIProxy'
+TMP_HOME="$(mktemp -d)"
+TMP_SYNC="$TMP_HOME/sync.sh"
+printf '#!/usr/bin/env bash\n' >"$TMP_SYNC"
+chmod +x "$TMP_SYNC"
+mkdir -p "$TMP_HOME/.codex-t3/cliproxy"
+printf '[projects."/kept"]\ntrust_level = "trusted"\n' >"$TMP_HOME/.codex-t3/cliproxy/config.toml"
+
+When run bash -c 'HOME="$1" bash "$2" "$3" "$4" "$5" "$6" "$7" "$8" && t3="$1/.codex-t3/cliproxy" && head -1 "$t3/config.toml" | grep -qx "model_provider = \"cliproxyapi\"" && grep -q "default_subagent_model" "$t3/config.toml" && grep -qF "[projects.\"/kept\"]" "$t3/config.toml" && cmp -s "$4" "$t3/hooks.json"' _ "$TMP_HOME" "$SCRIPT" "$CONFIG_TOML" "$HOOKS_JSON" "$DESKTOP_SETTINGS_JSON" "$(command -v jq)" "$TMP_SYNC" "$PROFILES_DIR"
+The status should be success
+End
+
 It 'declares the Codex Desktop Git and worktree preferences'
 When run jq -r '[.["git-branch-prefix"], .["git-pull-request-merge-method"], .["git-always-force-push"], .["git-create-pull-request-as-draft"], .["worktree-auto-cleanup-enabled"], .["worktree-keep-count"]] | @tsv' "$DESKTOP_SETTINGS_JSON"
 The output should eq 'codex/	squash	true	true	true	300'
@@ -392,8 +404,8 @@ The output should include '#!/usr/bin/env bash'
 End
 
 It 'creates .claude directory'
-When run bash -c "grep 'mkdir -p' '$SCRIPT'"
-The output should include '.claude'
+When run bash -c "temp_home=\$(mktemp -d); HOME=\"\$temp_home\" bash '$SCRIPT' '$PWD/config/claude/settings.json' && test -f \"\$temp_home/.claude/settings.json\""
+The status should be success
 End
 
 It 'copies settings.json'
@@ -405,6 +417,11 @@ It 'uses the Bash hostname without requiring the hostname executable'
 When run bash -c "grep 'HOSTNAME:-unknown' '$SCRIPT' && ! grep -q '\$(hostname)' '$SCRIPT'"
 The status should be success
 The output should include 'HOSTNAME:-unknown'
+End
+
+It 'writes the same settings into the T3 Code Claude config dir'
+When run bash -c "temp_home=\$(mktemp -d); HOME=\"\$temp_home\" bash '$SCRIPT' '$PWD/config/claude/settings.json' && jq -e '.env.CLAUDE_CODE_SUBAGENT_MODEL' \"\$temp_home/.claude-cliproxy/settings.json\" >/dev/null && cmp -s \"\$temp_home/.claude/settings.json\" \"\$temp_home/.claude-cliproxy/settings.json\""
+The status should be success
 End
 End
 

@@ -73,4 +73,19 @@ install_config "$CONFIG_TOML" ~/.codex/config.toml
 cp -f "$HOOKS_JSON" ~/.codex/hooks.json
 chmod 644 ~/.codex/hooks.json
 
+# T3 Code's codex-cliproxy instance runs with CODEX_HOME=~/.codex-t3/cliproxy, so
+# it reads nothing from ~/.codex. Give it the same config, routed through the
+# CLIProxy provider; a root-level key must precede the first table.
+T3_CODEX_HOME="$HOME/.codex-t3/cliproxy"
+mkdir -p "$T3_CODEX_HOME"
+T3_CODEX_CONFIG=$(mktemp)
+{
+  printf 'model_provider = "cliproxyapi"\n'
+  cat "$CONFIG_TOML"
+} >"$T3_CODEX_CONFIG"
+install_config "$T3_CODEX_CONFIG" "$T3_CODEX_HOME/config.toml"
+rm -f "$T3_CODEX_CONFIG"
+cp -f "$HOOKS_JSON" "$T3_CODEX_HOME/hooks.json"
+chmod 644 "$T3_CODEX_HOME/hooks.json"
+
 "$SYNC_SCRIPT" "$DESKTOP_SETTINGS_JSON" "$JQ_BIN"

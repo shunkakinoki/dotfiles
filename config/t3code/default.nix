@@ -22,7 +22,6 @@ in
       "${pkgs.jq}/bin/jq" \
       "${config.home.homeDirectory}/dotfiles/.env" \
       "${stateDir}" \
-      "${./codex-home/config.toml}" \
       "${systemctlBin}"
   '';
 
