@@ -9,7 +9,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "bun@1.4.2",
+  "packageManager": "bun@1.4.3",
   "dependencies": {
     "@0xsequence/codegenie": "^0.5.6",
     "@ampcode/cli": "^0.0.1788595248-g1c7a80",
