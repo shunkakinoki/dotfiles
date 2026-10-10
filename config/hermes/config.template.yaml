@@ -308,7 +308,7 @@ security:
     domains: []
     shared_files: []
 cron:
-  wrap_response: true
+  wrap_response: false
   max_parallel_jobs: null
 code_execution:
   mode: project
