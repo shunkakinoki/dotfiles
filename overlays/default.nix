@@ -48,7 +48,7 @@
     inherit (prev.stdenv.hostPlatform) system;
   })
   (_: prev: {
-    # The orchestration repo pins `bun@1.4.2` and its bootstrap
+    # The orchestration repo pins `bun@1.4.3` and its bootstrap
     # (`scripts/orchestration-bootstrap.ts`) refuses to run without
     # `process.execve`, which the locked nixpkgs-unstable bun (1.3.13) lacks.
     # Every fleet lane shells out to `$HOME/.bun/bin/bun`, so a stale bun fails
@@ -56,21 +56,21 @@
     # declares; the derivation only installs the released binary.
     bun = prev.bun.overrideAttrs (
       finalAttrs: old: {
-        version = "1.4.2";
+        version = "1.4.3";
         __intentionallyOverridingVersion = true;
         passthru = old.passthru // {
           sources = {
             "aarch64-darwin" = prev.fetchurl {
               url = "https://github.com/oven-sh/bun/releases/download/bun-v${finalAttrs.version}/bun-darwin-aarch64.zip";
-              hash = "sha256-kJh6OhbX21VtiGrD1VHnttPt8KHPQ6yu1iLoZ2vh0S8=";
+              hash = "sha256-gK/UwGm0am+o8+xSC+vHUKeEPkqNW5WD0prUNsAKNAM=";
             };
             "aarch64-linux" = prev.fetchurl {
               url = "https://github.com/oven-sh/bun/releases/download/bun-v${finalAttrs.version}/bun-linux-aarch64.zip";
-              hash = "sha256-VDKLvC2cjgyfiSxUTWbFeoO4QTnjSQnl7oF1jxrI/ac=";
+              hash = "sha256-76mBPaXtckI7+Ef5FujSxHwNd2rdlyNUAmp14Q2pqiE=";
             };
             "x86_64-linux" = prev.fetchurl {
               url = "https://github.com/oven-sh/bun/releases/download/bun-v${finalAttrs.version}/bun-linux-x64-baseline.zip";
-              hash = "sha256-xngEDxT+BEDrg503y9DOTAUaMtpygGrJfeamqra/co8=";
+              hash = "sha256-H8LtrIQxApCeOhvh2NmALMYHHPB05n6IIx9P/g+LOXs=";
             };
           };
         };
