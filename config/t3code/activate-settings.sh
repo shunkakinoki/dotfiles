@@ -3,15 +3,14 @@
 # settings file. T3 rewrites this file on every load and setting change, so this
 # only ever adds or updates the managed instances and leaves the rest alone.
 #
-# Usage: activate-settings.sh <managed_settings_json> <jq_bin> <env_file> <state_dir> <codex_home_config> [systemctl_bin]
+# Usage: activate-settings.sh <managed_settings_json> <jq_bin> <env_file> <state_dir> [systemctl_bin]
 set -euo pipefail
 
 MANAGED_SETTINGS="$1"
 JQ_BIN="$2"
 ENV_FILE="$3"
 STATE_DIR="$4"
-CODEX_HOME_CONFIG="${5:-}"
-SYSTEMCTL_BIN="${6:-}"
+SYSTEMCTL_BIN="${5:-}"
 CODEX_HOME_DIR="${HOME}/.codex-t3/cliproxy"
 
 SETTINGS="${STATE_DIR}/settings.json"
@@ -127,34 +126,25 @@ else
   CLAUDE_PERMISSION_ARGS=""
 fi
 
-# The Codex instance uses its own CODEX_HOME so its provider config and model
-# list stay independent of the login-backed ~/.codex home.
-if [ -n "$CODEX_HOME_CONFIG" ] && [ -f "$CODEX_HOME_CONFIG" ]; then
+# Codex refuses to start a session unless CODEX_HOME holds an auth record, and
+# that check runs before model_provider resolves, so the cliproxyapi provider's
+# env_key alone leaves the instance reported as logged out. This value is never
+# sent upstream: requests authenticate with CLIPROXY_API_KEY from the instance
+# environment. config/codex/activate.sh owns the config.toml beside it.
+if [ -n "$CLIPROXY_API_KEY" ]; then
   mkdir -p "$CODEX_HOME_DIR"
-  if [ ! -f "${CODEX_HOME_DIR}/config.toml" ] ||
-    [ "$(<"$CODEX_HOME_CONFIG")" != "$(<"${CODEX_HOME_DIR}/config.toml")" ]; then
-    cp -f "$CODEX_HOME_CONFIG" "${CODEX_HOME_DIR}/config.toml"
+  CODEX_AUTH="${CODEX_HOME_DIR}/auth.json"
+  TEMP_CODEX_AUTH="$(mktemp "${CODEX_AUTH}.XXXXXX")"
+  # shellcheck disable=SC2016
+  "$JQ_BIN" -n --arg key "$CLIPROXY_API_KEY" \
+    '{OPENAI_API_KEY: $key, tokens: null, last_refresh: null}' >"$TEMP_CODEX_AUTH"
+  chmod 600 "$TEMP_CODEX_AUTH"
+  if [ ! -f "$CODEX_AUTH" ] || [ "$(<"$TEMP_CODEX_AUTH")" != "$(<"$CODEX_AUTH")" ]; then
+    mv -f "$TEMP_CODEX_AUTH" "$CODEX_AUTH"
+  else
+    rm -f "$TEMP_CODEX_AUTH"
   fi
-
-  # Codex refuses to start a session unless CODEX_HOME holds an auth record, and
-  # that check runs before model_provider resolves, so the cliproxyapi provider's
-  # env_key alone leaves the instance reported as logged out. This value is never
-  # sent upstream: requests authenticate with CLIPROXY_API_KEY from the instance
-  # environment.
-  if [ -n "$CLIPROXY_API_KEY" ]; then
-    CODEX_AUTH="${CODEX_HOME_DIR}/auth.json"
-    TEMP_CODEX_AUTH="$(mktemp "${CODEX_AUTH}.XXXXXX")"
-    # shellcheck disable=SC2016
-    "$JQ_BIN" -n --arg key "$CLIPROXY_API_KEY" \
-      '{OPENAI_API_KEY: $key, tokens: null, last_refresh: null}' >"$TEMP_CODEX_AUTH"
-    chmod 600 "$TEMP_CODEX_AUTH"
-    if [ ! -f "$CODEX_AUTH" ] || [ "$(<"$TEMP_CODEX_AUTH")" != "$(<"$CODEX_AUTH")" ]; then
-      mv -f "$TEMP_CODEX_AUTH" "$CODEX_AUTH"
-    else
-      rm -f "$TEMP_CODEX_AUTH"
-    fi
-    TEMP_CODEX_AUTH=""
-  fi
+  TEMP_CODEX_AUTH=""
 fi
 
 if [ -f "$SETTINGS" ] && ! "$JQ_BIN" empty "$SETTINGS" >/dev/null 2>&1; then
