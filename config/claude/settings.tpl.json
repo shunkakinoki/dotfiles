@@ -555,5 +555,6 @@
   "statusLine": {
     "command": "$HOME/.claude/hooks/statusline.sh",
     "type": "command"
-  }
+  },
+  "subagentPromptCacheTtl": "1h"
 }

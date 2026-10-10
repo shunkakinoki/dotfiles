@@ -425,6 +425,11 @@ When run bash -c "for file in config/claude/settings.tpl.json config/claude/sett
 The status should be success
 End
 
+It 'keeps the subagent prompt cache TTL at one hour in the template and generated settings'
+When run bash -c "for file in config/claude/settings.tpl.json config/claude/settings.json; do jq -e '.subagentPromptCacheTtl == \"1h\"' \"\$file\" >/dev/null || exit 1; done"
+The status should be success
+End
+
 It 'keeps model IDs out of the Moshi hook fragment'
 When run bash -c "! grep -Eq 'ANTHROPIC_DEFAULT_|CLAUDE_CODE_SUBAGENT_MODEL' generated/hooks/moshi/claude/settings.json"
 The status should be success
