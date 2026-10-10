@@ -78,6 +78,17 @@ When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER'
 The status should be success
 End
 
+# Claude Code disables tool search for non-Anthropic base URLs, so every MCP
+# tool schema loads up front and the fixed context leaves auto-compact too
+# little headroom to recover. CLIProxy forwards tool_reference blocks.
+It 'keeps tool search on behind CLIProxy'
+cat >"$TEMP_DIR/.env" <<'ENV'
+CLIPROXY_API_KEY=test_cliproxy_key
+ENV
+When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '$CODEX_HOME_CONFIG' && jq -e '[.providerInstances[\"claude-cliproxy\"].environment[] | select(.name == \"ENABLE_TOOL_SEARCH\") | .value] | first == \"auto\"' '$STATE_DIR/settings.json' >/dev/null"
+The status should be success
+End
+
 # T3 Code copies a sensitive instance value into its own secret store, so a
 # persisted placeholder is kept as if it were a credential and every CLIProxy
 # request fails until someone clears the store by hand.
