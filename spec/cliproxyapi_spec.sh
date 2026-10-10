@@ -125,8 +125,8 @@ cleanup_apikeys() {
 Before 'setup_apikeys'
 After 'cleanup_apikeys'
 
-It 'uncomments api-keys section on Linux'
-# Create test script that simulates Linux behavior
+It 'uncomments api-keys section when CLIPROXY_API_KEY is set'
+# Create test script that simulates the render
 cat >"$TEMP_HOME/test_linux_apikeys.sh" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
@@ -138,7 +138,6 @@ CLIPROXY_API_KEY="my_secret_key"
 # Copy template to config
 cp "$TEMPLATE" "$CONFIG"
 
-# Simulate Linux behavior (uname = Linux)
 # Use temp file approach for cross-platform sed -i compatibility
 sed \
   -e "s|^# api-keys:|api-keys:|" \
@@ -156,38 +155,17 @@ The output should not include '# api-keys:'
 The status should be success
 End
 
-It 'keeps api-keys commented on macOS'
-# Create test script that simulates macOS behavior (no uncommenting)
-cat >"$TEMP_HOME/test_macos_apikeys.sh" <<'EOF'
-#!/usr/bin/env bash
-set -euo pipefail
-CONFIG_DIR="$HOME/.cli-proxy-api"
-TEMPLATE="$CONFIG_DIR/config.template.yaml"
-CONFIG="$CONFIG_DIR/config.yaml"
-
-# Copy template to config (macOS behavior - no api-keys uncommenting)
-cp "$TEMPLATE" "$CONFIG"
-
-cat "$CONFIG"
-EOF
-chmod +x "$TEMP_HOME/test_macos_apikeys.sh"
-
-When run bash -c "HOME='$TEMP_HOME' bash '$TEMP_HOME/test_macos_apikeys.sh'"
-The output should include '# api-keys:'
-The output should include '#   - "__CLIPROXY_API_KEY__"'
-The status should be success
-End
-
-It 'script has Linux-specific api-keys uncommenting logic'
-When run bash -c "grep -A 5 'uname.*Linux.*CLIPROXY_API_KEY' '$SCRIPT'"
+It 'script uncomments api-keys on every platform'
+When run bash -c "grep -A 6 'require the client key on every host' '$SCRIPT'"
 # shellcheck disable=SC2016
-The output should include 'if [ "$(uname)" = "Linux" ] && [ -n "${CLIPROXY_API_KEY:-}" ]'
+The output should include 'if [ -n "${CLIPROXY_API_KEY:-}" ]; then'
+The output should not include 'uname'
 The output should include 's|^# api-keys:|api-keys:|'
 The output should include 'CLIPROXY_API_KEY'
 End
 
-It 'keeps api-keys commented on Linux when CLIPROXY_API_KEY is empty'
-# Create test script that simulates Linux behavior with empty key
+It 'keeps api-keys commented when CLIPROXY_API_KEY is empty'
+# Create test script that simulates the render with an empty key
 cat >"$TEMP_HOME/test_linux_empty_apikey.sh" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
@@ -199,7 +177,6 @@ CLIPROXY_API_KEY=""
 # Copy template to config
 cp "$TEMPLATE" "$CONFIG"
 
-# Simulate Linux behavior with empty key (should NOT uncomment)
 if [ -n "${CLIPROXY_API_KEY:-}" ]; then
   sed \
     -e "s|^# api-keys:|api-keys:|" \

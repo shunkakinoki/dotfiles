@@ -240,6 +240,14 @@ sed_value() {
 # Generate config from template
 if [ -f "$TEMPLATE" ]; then
   RENDERED_CONFIG="$CONFIG.rendered"
+  # The server binds every interface, so require the client key on every host.
+  api_key_args=()
+  if [ -n "${CLIPROXY_API_KEY:-}" ]; then
+    api_key_args=(
+      -e "s|^# api-keys:|api-keys:|"
+      -e "s|^#   - \"__CLIPROXY_API_KEY__\"|  - \"$(sed_value "$CLIPROXY_API_KEY")\"|"
+    )
+  fi
   render_api_key_entries __OPENCODE_API_KEY_ENTRIES__ "${OPENCODE_API_KEYS:-${OPENCODE_API_KEY:-}}" <"$TEMPLATE" |
     render_api_key_entries __OLLAMA_API_KEY_ENTRIES__ "${OLLAMA_API_KEYS:-},${OLLAMA_API_KEY:-}" ollama-cloud | @sed@ \
     -e "s|__OPENROUTER_API_KEY__|$(sed_value "${OPENROUTER_API_KEY:-}")|g" \
@@ -251,15 +259,9 @@ if [ -f "$TEMPLATE" ]; then
     -e "s|__VERBOO_API_KEY__|$(sed_value "${VERBOO_API_KEY:-}")|g" \
     -e "s|__SURPLUS_API_KEY__|$(sed_value "${SURPLUS_API_KEY:-}")|g" \
     -e "s|__COMMANDCODE_API_KEY__|$(sed_value "${COMMANDCODE_API_KEY:-}")|g" \
-    -e "s|__AMP_UPSTREAM_API_KEY__|$(sed_value "${AMP_UPSTREAM_API_KEY:-}")|g" |
+    -e "s|__AMP_UPSTREAM_API_KEY__|$(sed_value "${AMP_UPSTREAM_API_KEY:-}")|g" \
+    ${api_key_args[@]+"${api_key_args[@]}"} |
     render_proxy_url >"$RENDERED_CONFIG"
-
-  if [ "$(uname)" = "Linux" ] && [ -n "${CLIPROXY_API_KEY:-}" ]; then
-    @sed@ -i \
-      -e "s|^# api-keys:|api-keys:|" \
-      -e "s|^#   - \"__CLIPROXY_API_KEY__\"|  - \"${CLIPROXY_API_KEY}\"|" \
-      "$RENDERED_CONFIG"
-  fi
 
   # Disable AMP on Linux (causes routing issues with antigravity provider)
   if [ "$(uname)" = "Linux" ]; then
