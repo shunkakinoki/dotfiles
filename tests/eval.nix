@@ -474,6 +474,11 @@ let
         assert lib.hasInfix "--ssh=true" cfg.home.activation.configureKaminoTailscale.data;
         assert activationPosition "installNpmGlobals" < activationPosition "provisionKaminoT3Connect";
         assert lib.hasInfix "t3-connect" cfg.home.activation.provisionKaminoT3Connect.data;
+        # T3 Code runs under the user manager, so its agents need the shell's
+        # session environment there; command substitutions cannot be expressed.
+        assert cfg.systemd.user.sessionVariables.BASH_ENV == "$HOME/.bash_env";
+        assert cfg.systemd.user.sessionVariables.DOLT_CLI_PASSWORD == "";
+        assert !(cfg.systemd.user.sessionVariables ? TMUX_TMPDIR);
         assert lib.hasInfix ".bun/bin/t3" cfg.home.activation.provisionKaminoT3Connect.data;
         assert lib.hasInfix (builtins.unsafeDiscardStringContext "${pkgs.nodejs}/bin")
           cfg.home.activation.provisionKaminoT3Connect.data;
