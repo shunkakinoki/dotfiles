@@ -1,10 +1,13 @@
 {
   "cleanupPeriodDays": 99999,
   "defaultMode": "bypassPermissions",
+  "disabledMcpjsonServers": [
+    "mobbin"
+  ],
   "effortLevel": "high",
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true,
-    "claude-mem@thedotmack": true,
+    "claude-mem@thedotmack": false,
     "code-review@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
     "codex@openai-codex": true,
