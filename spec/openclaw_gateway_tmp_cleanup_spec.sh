@@ -33,6 +33,33 @@ The output should include 'openclaw-plugin-build-file'
 The output should include 'openclaw-gateway.log'
 End
 
+It 'with an idle age keeps trees that have any recent entry'
+When run env TMPDIR="$TEMP_DIR/tmp" bash -c "
+  find '$TEMP_DIR/tmp' -mindepth 1 -exec touch -d '7 hours ago' {} +
+  mkdir -p '$TEMP_DIR/tmp/openclaw-plugin-build-live/nested'
+  touch -d '7 hours ago' '$TEMP_DIR/tmp/openclaw-plugin-build-live' '$TEMP_DIR/tmp/openclaw-plugin-build-live/nested'
+  touch '$TEMP_DIR/tmp/openclaw-plugin-build-live/nested/chunk.mjs'
+  bash '$SCRIPT' 360 && ls -1 '$TEMP_DIR/tmp'"
+The status should be success
+The output should include 'openclaw-plugin-build-live'
+The output should not include 'openclaw-plugin-build-abc123'
+The output should not include 'openclaw-model-catalog-def456'
+The output should include 'openclaw-other-dir'
+End
+
+It 'with an idle age keeps recently modified trees'
+When run env TMPDIR="$TEMP_DIR/tmp" bash -c "bash '$SCRIPT' 360 && ls -1 '$TEMP_DIR/tmp'"
+The status should be success
+The output should include 'openclaw-plugin-build-abc123'
+The output should include 'openclaw-model-catalog-def456'
+End
+
+It 'rejects a non-numeric idle age without removing anything'
+When run env TMPDIR="$TEMP_DIR/tmp" bash -c "bash '$SCRIPT' 6h; ls -1 '$TEMP_DIR/tmp'"
+The output should include 'openclaw-plugin-build-abc123'
+The error should include 'invalid idle minutes'
+End
+
 It 'creates a missing TMPDIR'
 When run env TMPDIR="$TEMP_DIR/missing/openclaw-gateway" bash -c "bash '$SCRIPT' && test -d '$TEMP_DIR/missing/openclaw-gateway'"
 The status should be success

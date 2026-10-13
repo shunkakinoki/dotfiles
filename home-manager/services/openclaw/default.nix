@@ -8,6 +8,7 @@
 let
   inherit (inputs) host;
   homeDir = config.home.homeDirectory;
+  gatewayTmpDir = "/dev/shm/openclaw-gateway";
   k3sProxy = pkgs.writeShellApplication {
     name = "openclaw-k3s-proxy";
     runtimeInputs = [
@@ -74,7 +75,7 @@ lib.mkIf host.isKyber {
         "PATH=${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:${homeDir}/.local/share/pnpm:${homeDir}/.local/share/fnm/current/bin:${homeDir}/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
         # Plugin captures exceed the user runtime tmpfs and stall under the
         # root-disk I/O cap during startup.
-        "TMPDIR=/dev/shm/openclaw-gateway"
+        "TMPDIR=${gatewayTmpDir}"
       ];
       WorkingDirectory = "${homeDir}/.openclaw";
       StandardOutput = "append:/tmp/openclaw/openclaw-gateway.log";
@@ -137,6 +138,30 @@ lib.mkIf host.isKyber {
       StandardOutput = "append:/tmp/openclaw/openclaw-state-maintenance.log";
       StandardError = "append:/tmp/openclaw/openclaw-state-maintenance.log";
     };
+  };
+
+  systemd.user.services.openclaw-gateway-tmp-cleanup = {
+    Unit = {
+      Description = "Remove idle OpenClaw gateway temp directories";
+      X-SwitchMethod = "keep-old";
+    };
+    Service = {
+      Type = "oneshot";
+      # Argument is the idle age in minutes (6h).
+      ExecStart = "${tmpCleanup}/bin/openclaw-gateway-tmp-cleanup 360";
+      Environment = [ "TMPDIR=${gatewayTmpDir}" ];
+    };
+  };
+
+  systemd.user.timers.openclaw-gateway-tmp-cleanup = {
+    Unit.Description = "Periodically reclaim idle OpenClaw gateway temp directories";
+    Timer = {
+      OnCalendar = "hourly";
+      Persistent = true;
+      RandomizedDelaySec = "5m";
+      Unit = "openclaw-gateway-tmp-cleanup.service";
+    };
+    Install.WantedBy = [ "timers.target" ];
   };
 
   systemd.user.timers.openclaw-state-maintenance = {
