@@ -78,6 +78,13 @@ The status should be success
 The output should include 's3://custom-bucket/auths/'
 End
 
+It 'leaves a populated auth cache untouched'
+echo '{}' >"$TEMP_HOME/.cli-proxy-api/objectstore/auths/claude-test.json"
+When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$__HYDRATE_SCRIPT"'" 2>&1; status=$?; cat "$MOCK_LOG" 2>/dev/null || true; exit "$status"'
+The status should be success
+The output should not include 's3 sync'
+End
+
 It 'skips when credentials are missing'
 rm -f "$TEMP_HOME/dotfiles/.env"
 When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$__HYDRATE_SCRIPT"'" 2>&1'
