@@ -2,6 +2,13 @@
   "cleanupPeriodDays": 99999,
   "defaultMode": "bypassPermissions",
   "disabledMcpjsonServers": [
+    "Codex",
+    "GitHub",
+    "OpenRouter",
+    "Paybox",
+    "PlanetScale",
+    "Sentry",
+    "Stripe",
     "mobbin"
   ],
   "effortLevel": "high",
