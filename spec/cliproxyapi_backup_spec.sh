@@ -32,6 +32,12 @@ sed \
   "$SCRIPTS_DIR/backup.sh" >"$__BACKUP_SCRIPT"
 chmod +x "$__BACKUP_SCRIPT"
 
+__BACKUP_CHECK_SCRIPT="$__PREPROCESSED_DIR/backup-check.sh"
+sed \
+  -e 's|@common@|'"$__COMMON_SCRIPT"'|g' \
+  "$SCRIPTS_DIR/backup-check.sh" >"$__BACKUP_CHECK_SCRIPT"
+chmod +x "$__BACKUP_CHECK_SCRIPT"
+
 Describe 'hydrate.sh'
 
 setup() {
@@ -174,6 +180,20 @@ The status should be success
 The output should include 's3://cliproxyapi/auths/'
 End
 
+It 'hands container-owned auth files back to the backup user before syncing'
+touch "$TEMP_HOME/.cli-proxy-api/objectstore/auths/test-auth.json"
+cat >"$MOCK_BIN/docker" <<'EOF'
+#!/usr/bin/env bash
+printf '%s\n' "docker $*" >>"$MOCK_LOG"
+EOF
+chmod +x "$MOCK_BIN/docker"
+When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$__BACKUP_SCRIPT"'" auth 2>&1; status=$?; cat "$MOCK_LOG" 2>/dev/null || true; exit "$status"'
+The status should be success
+The output should include 'docker exec cliproxyapi find /root/.cli-proxy-api/objectstore/auths'
+The output should include "! -uid $(id -u)"
+The output should include "-exec chown $(id -u):$(id -g)"
+End
+
 It 'uses OBJECTSTORE_BUCKET for backup paths'
 cat >"$TEMP_HOME/dotfiles/.env" <<'ENV'
 OBJECTSTORE_ACCESS_KEY=test_key
@@ -256,7 +276,130 @@ The output should include 'Missing S3 credentials'
 End
 End
 
+Describe 'backup-check.sh'
+setup() {
+  mock_bin_setup systemctl
+  S3_DIR=$(mktemp -d)
+  export S3_DIR
+  cat >"$MOCK_BIN/aws" <<'EOF'
+#!/usr/bin/env bash
+printf '%s\n' "aws $*" >>"$MOCK_LOG"
+for arg in "$@"; do
+  case "$arg" in
+    s3://*) object="${arg##*/}" ;;
+  esac
+done
+[ -f "$S3_DIR/$object" ] || exit 1
+cat "$S3_DIR/$object"
+EOF
+  chmod +x "$MOCK_BIN/aws"
+  cat >"$MOCK_BIN/systemctl" <<'EOF'
+#!/usr/bin/env bash
+printf '%s\n' "systemctl $*" >>"$MOCK_LOG"
+[ "${*: -1}" = "${FAILED_UNIT:-}" ]
+EOF
+  chmod +x "$MOCK_BIN/systemctl"
+  cat >"$MOCK_BIN/notify" <<'EOF'
+#!/usr/bin/env bash
+printf '%s\n' "notify $1 | $2" >>"$MOCK_LOG"
+EOF
+  chmod +x "$MOCK_BIN/notify"
+  TEMP_HOME=$(mktemp -d)
+  AUTH="$TEMP_HOME/.cli-proxy-api/objectstore/auths"
+  mkdir -p "$AUTH" "$TEMP_HOME/dotfiles"
+  cat >"$TEMP_HOME/dotfiles/.env" <<'ENV'
+OBJECTSTORE_ACCESS_KEY=test_key
+OBJECTSTORE_SECRET_KEY=test_secret
+OBJECTSTORE_ENDPOINT=https://test.endpoint.com
+ENV
+  unset OBJECTSTORE_ACCESS_KEY OBJECTSTORE_SECRET_KEY OBJECTSTORE_ENDPOINT
+}
+
+cleanup() {
+  rm -rf "$TEMP_HOME" "$S3_DIR"
+  mock_bin_cleanup
+}
+
+seed_auth() {
+  printf '%s' "$2" >"$AUTH/$1"
+  touch -t 202601010000 "$AUTH/$1"
+}
+
+run_check() {
+  bash -c 'HOME="'"$TEMP_HOME"'" CLIPROXY_NOTIFY="'"$MOCK_BIN"'/notify" bash "'"$__BACKUP_CHECK_SCRIPT"'" 2>&1; status=$?; cat "$MOCK_LOG"; exit "$status"'
+}
+
+Before 'setup'
+After 'cleanup'
+
+It 'passes when every settled auth file matches S3'
+seed_auth a.json live
+printf '%s' live >"$S3_DIR/a.json"
+When call run_check
+The status should be success
+The output should include 'S3 auth backup is current'
+The output should not include 'notify'
+End
+
+It 'alerts when the S3 copy differs'
+seed_auth a.json live
+printf '%s' revoked >"$S3_DIR/a.json"
+When call run_check
+The status should be failure
+The output should include 'notify cliproxy S3 backup stale | a.json: S3 copy differs'
+End
+
+It 'alerts when a file never reached S3'
+seed_auth a.json live
+When call run_check
+The status should be failure
+The output should include 'a.json: missing from S3'
+End
+
+It 'gives freshly written files time to upload'
+printf '%s' live >"$AUTH/a.json"
+When call run_check
+The status should be success
+The output should include 'S3 auth backup is current'
+End
+
+It 'alerts when a backup unit has failed'
+FAILED_UNIT=cliproxyapi-backup-auth.path
+export FAILED_UNIT
+When call run_check
+The status should be failure
+The output should include 'cliproxyapi-backup-auth.path failed'
+End
+
+It 'never downloads into the auth directory'
+seed_auth a.json live
+printf '%s' revoked >"$S3_DIR/a.json"
+When call run_check
+The status should be failure
+The output should not include 's3 sync'
+The output should include 's3://cliproxyapi/auths/a.json -'
+The contents of file "$AUTH/a.json" should equal 'live'
+End
+End
+
 Describe 'backup scheduling'
+It 'keeps the auth backup running through token refresh bursts'
+When run bash -c "sed -n '/systemd.user.services.cliproxyapi-backup-auth =/,/^  };/p' '$NIX_MODULE'; sed -n '/systemd.user.timers.cliproxyapi-backup-auth =/,/^  };/p' '$NIX_MODULE'"
+The status should be success
+The output should include 'StartLimitIntervalSec = 0;'
+The output should include 'OnUnitActiveSec = "15min"'
+The output should include 'pkgs.docker'
+End
+
+It 'runs the drift check hourly on kyber only'
+When run bash -c "sed -n '/systemd.user.timers.cliproxyapi-backup-check =/,/^  };/p' '$NIX_MODULE'; grep 'cliproxyapi-backup-check = lib.mkIf objectstoreEnabled' '$NIX_MODULE'"
+The status should be success
+The output should include 'OnCalendar = "*:30"'
+The output should include 'Unit = "cliproxyapi-backup-check.service"'
+The output should include 'systemd.user.services.cliproxyapi-backup-check = lib.mkIf objectstoreEnabled'
+The output should include 'systemd.user.timers.cliproxyapi-backup-check = lib.mkIf objectstoreEnabled'
+End
+
 It 'gives the auth-file watchers the auth-only entrypoint'
 When run bash -c "sed -n '/systemd.user.services.cliproxyapi-backup-auth =/,/^  };/p' '$NIX_MODULE'"
 The status should be success

@@ -28,6 +28,10 @@ let
     common = commonScript;
   };
 
+  backupCheckScript = pkgs.replaceVars ./scripts/backup-check.sh {
+    common = commonScript;
+  };
+
   startScript = pkgs.replaceVars ./scripts/start.sh {
     sed = "${pkgs.gnused}/bin/sed";
     awk = "${pkgs.gawk}/bin/awk";
@@ -236,9 +240,13 @@ in
   # CLIProxyAPI rewrites auth files on every token refresh, so the path unit
   # fires many times an hour. It gets the auth-only entrypoint and a PATH
   # without sqlite/tar so the analytics snapshot cannot ride along.
+  # Token refreshes arrive in bursts, and the default start limit then stops
+  # both this service and its path unit until someone resets them, which
+  # silently leaves S3 behind.
   systemd.user.services.cliproxyapi-backup-auth = lib.mkIf objectstoreEnabled {
     Unit.Description = "CLIProxyAPI auth backup";
     Unit.X-SwitchMethod = "keep-old";
+    Unit.StartLimitIntervalSec = 0;
     Service = {
       Type = "oneshot";
       ExecStart = "${pkgs.bash}/bin/bash ${backupScript} auth";
@@ -247,6 +255,7 @@ in
           pkgs.bash
           pkgs.awscli2
           pkgs.coreutils
+          pkgs.docker
         ]
       }";
       UMask = "0077";
@@ -273,6 +282,7 @@ in
           pkgs.gnutar
           pkgs.gzip
           pkgs.sqlite
+          pkgs.docker
         ]
       }";
       UMask = "0077";
@@ -286,6 +296,48 @@ in
       OnCalendar = "hourly";
       Persistent = true;
       Unit = "cliproxyapi-backup.service";
+    };
+    Install.WantedBy = [ "timers.target" ];
+  };
+
+  # The path unit can miss events, so push the auth cache on a clock as well.
+  systemd.user.timers.cliproxyapi-backup-auth = lib.mkIf objectstoreEnabled {
+    Unit.Description = "Periodically back up CLIProxyAPI auth files";
+    Timer = {
+      OnBootSec = "2min";
+      OnUnitActiveSec = "15min";
+      Unit = "cliproxyapi-backup-auth.service";
+    };
+    Install.WantedBy = [ "timers.target" ];
+  };
+
+  systemd.user.services.cliproxyapi-backup-check = lib.mkIf objectstoreEnabled {
+    Unit.Description = "Alert when the CLIProxyAPI S3 auth backup is stale";
+    Unit.X-SwitchMethod = "keep-old";
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.bash}/bin/bash ${backupCheckScript}";
+      Environment = "PATH=${
+        lib.makeBinPath [
+          pkgs.bash
+          pkgs.awscli2
+          pkgs.coreutils
+          pkgs.findutils
+          pkgs.curl
+          pkgs.systemd
+        ]
+      }";
+      UMask = "0077";
+    };
+  };
+
+  systemd.user.timers.cliproxyapi-backup-check = lib.mkIf objectstoreEnabled {
+    Unit.Description = "Hourly CLIProxyAPI S3 auth backup drift check";
+    Timer = {
+      OnBootSec = "20min";
+      OnCalendar = "*:30";
+      Persistent = true;
+      Unit = "cliproxyapi-backup-check.service";
     };
     Install.WantedBy = [ "timers.target" ];
   };
