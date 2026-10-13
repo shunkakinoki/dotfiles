@@ -31,6 +31,7 @@
     "skill-codex@skill-codex": true,
     "superpowers@claude-plugins-official": true,
     "swift-lsp@claude-plugins-official": true,
+    "t3-pstack@t3-pstack": true,
     "typescript-lsp@claude-plugins-official": true,
     "worktrunk@worktrunk": true
   },
@@ -91,6 +92,12 @@
     "skill-codex": {
       "source": {
         "repo": "skills-directory/skill-codex",
+        "source": "github"
+      }
+    },
+    "t3-pstack": {
+      "source": {
+        "repo": "chhoumann/t3-pstack",
         "source": "github"
       }
     },
