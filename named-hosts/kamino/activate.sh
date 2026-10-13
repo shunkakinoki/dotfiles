@@ -18,6 +18,22 @@ check)
 prepare)
   mkdir -p /etc/sudoers.d
   ;;
+root-nodiscard)
+  # Online discard issues a TRIM on every delete, so worktree and scratch-tree
+  # churn stalls the root disk; the distro's periodic fstrim reclaims the same
+  # blocks in batches instead.
+  fstab="${2:?fstab file required}"
+  root_line='^[^#[:space:]]+[[:space:]]+/[[:space:]]'
+  if grep -Eq "$root_line.*[[:space:],]discard([,[:space:]]|$)" "$fstab"; then
+    updated=$(sed -E "\\%$root_line% s/([[:space:],])discard([,[:space:]]|$)/\1nodiscard\2/" "$fstab")
+    printf '%s\n' "$updated" >"$fstab"
+    echo "Set nodiscard on the root filesystem in $fstab."
+  fi
+  if findmnt -no OPTIONS / | tr , '\n' | grep -qx discard; then
+    mount -o remount,nodiscard /
+    echo "Remounted the root filesystem with nodiscard."
+  fi
+  ;;
 user-manager)
   hostnamectl set-hostname "${2:?name required}"
   loginctl enable-linger root

@@ -311,6 +311,38 @@ The error should include 'not ubuntu-22.04; skipping'
 The path "$TEST_ROOT/commands" should not be exist
 End
 
+root_nodiscard_setup() {
+  printf 'LABEL=cloudimg-rootfs\t/\t ext4\tdiscard,commit=30,errors=remount-ro\t0 1\nLABEL=UEFI\t/boot/efi\tvfat\tumask=0077,discard\t0 1\n' >"$TEST_ROOT/fstab"
+  cat >"$TEST_ROOT/bin/findmnt" <<'EOF'
+#!/usr/bin/env bash
+printf '%s\n' "${MOCK_ROOT_OPTIONS:-rw,relatime,discard,errors=remount-ro,commit=30}"
+EOF
+  cat >"$TEST_ROOT/bin/mount" <<'EOF'
+#!/usr/bin/env bash
+printf 'mount %s\n' "$*" >>"$COMMAND_LOG"
+EOF
+  chmod +x "$TEST_ROOT/bin/findmnt" "$TEST_ROOT/bin/mount"
+}
+
+It 'switches only the root filesystem to nodiscard and remounts it'
+root_nodiscard_setup
+When run run_phase root-nodiscard "$TEST_ROOT/fstab"
+The status should be success
+The output should include 'Remounted the root filesystem with nodiscard.'
+The contents of file "$TEST_ROOT/fstab" should equal $'LABEL=cloudimg-rootfs\t/\t ext4\tnodiscard,commit=30,errors=remount-ro\t0 1\nLABEL=UEFI\t/boot/efi\tvfat\tumask=0077,discard\t0 1'
+The contents of file "$TEST_ROOT/commands" should equal 'mount -o remount,nodiscard /'
+End
+
+It 'leaves an already nodiscard root untouched'
+root_nodiscard_setup
+printf 'LABEL=cloudimg-rootfs / ext4 nodiscard,errors=remount-ro 0 1\n' >"$TEST_ROOT/fstab"
+When run env MOCK_ROOT_OPTIONS=rw,relatime,errors=remount-ro PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" root-nodiscard "$TEST_ROOT/fstab"
+The status should be success
+The output should be blank
+The contents of file "$TEST_ROOT/fstab" should equal 'LABEL=cloudimg-rootfs / ext4 nodiscard,errors=remount-ro 0 1'
+The path "$TEST_ROOT/commands" should not be exist
+End
+
 It 'rejects an unknown activation phase'
 When run run_phase unknown
 The status should be failure
