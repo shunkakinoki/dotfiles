@@ -273,6 +273,9 @@ in
       IOWeight = 10;
       IOReadBandwidthMax = "/ 5M";
       IOReadIOPSMax = "/ 50";
+      # A hung snapshot holds the unit in "activating", which stops the hourly
+      # timer without ever failing, so the drift check cannot see it.
+      TimeoutStartSec = "2h";
       ExecStart = "${pkgs.bash}/bin/bash ${backupScript} full";
       Environment = "PATH=${
         lib.makeBinPath [
