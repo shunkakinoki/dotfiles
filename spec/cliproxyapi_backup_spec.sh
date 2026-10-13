@@ -296,7 +296,15 @@ EOF
   cat >"$MOCK_BIN/systemctl" <<'EOF'
 #!/usr/bin/env bash
 printf '%s\n' "systemctl $*" >>"$MOCK_LOG"
-[ "${*: -1}" = "${FAILED_UNIT:-}" ]
+if [ -n "${SYSTEMCTL_ERROR:-}" ]; then
+  echo "$SYSTEMCTL_ERROR" >&2
+  exit 1
+fi
+if [ "${*: -1}" = "${FAILED_UNIT:-}" ]; then
+  echo failed
+else
+  echo active
+fi
 EOF
   chmod +x "$MOCK_BIN/systemctl"
   cat >"$MOCK_BIN/notify" <<'EOF'
@@ -371,6 +379,14 @@ The status should be failure
 The output should include 'cliproxyapi-backup-auth.path failed'
 End
 
+It 'alerts when systemd cannot be queried instead of assuming units are healthy'
+SYSTEMCTL_ERROR='Failed to connect to user scope bus'
+export SYSTEMCTL_ERROR
+When call run_check
+The status should be failure
+The output should include 'cliproxyapi-backup.service: cannot query systemd: Failed to connect to user scope bus'
+End
+
 It 'never downloads into the auth directory'
 seed_auth a.json live
 printf '%s' revoked >"$S3_DIR/a.json"
@@ -398,6 +414,13 @@ The output should include 'OnCalendar = "*:30"'
 The output should include 'Unit = "cliproxyapi-backup-check.service"'
 The output should include 'systemd.user.services.cliproxyapi-backup-check = lib.mkIf objectstoreEnabled'
 The output should include 'systemd.user.timers.cliproxyapi-backup-check = lib.mkIf objectstoreEnabled'
+End
+
+It 'gives the drift check the host systemctl'
+When run bash -c "sed -n '/systemd.user.services.cliproxyapi-backup-check =/,/^  };/p' '$NIX_MODULE'"
+The status should be success
+The output should include '}:/usr/bin";'
+The output should not include 'pkgs.systemd'
 End
 
 It 'gives the auth-file watchers the auth-only entrypoint'

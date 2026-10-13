@@ -314,6 +314,8 @@ in
     Install.WantedBy = [ "timers.target" ];
   };
 
+  # systemctl comes from the host: a newer Nix client cannot reach kyber's
+  # older user manager, and its failed queries read as "unit not failed".
   systemd.user.services.cliproxyapi-backup-check = lib.mkIf objectstoreEnabled {
     Unit.Description = "Alert when the CLIProxyAPI S3 auth backup is stale";
     Unit.X-SwitchMethod = "keep-old";
@@ -327,9 +329,8 @@ in
           pkgs.coreutils
           pkgs.findutils
           pkgs.curl
-          pkgs.systemd
         ]
-      }";
+      }:/usr/bin";
       UMask = "0077";
     };
   };
