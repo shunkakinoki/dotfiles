@@ -67,6 +67,17 @@ cliproxy_sync_auth_to_s3() {
   cliproxy_s3_sync "$auth_dir/" "$(cliproxy_auth_s3_uri)"
 }
 
+cliproxy_read_auth_from_s3() {
+  local name="$1"
+  AWS_ACCESS_KEY_ID="$OBJECTSTORE_ACCESS_KEY" \
+    AWS_SECRET_ACCESS_KEY="$OBJECTSTORE_SECRET_KEY" \
+    @aws@ s3 cp \
+    --endpoint-url="$OBJECTSTORE_ENDPOINT" \
+    --only-show-errors \
+    "$(cliproxy_auth_s3_uri)${name}" \
+    -
+}
+
 cliproxy_usage_s3_uri() {
   printf 's3://%s/usage-export.json' "${OBJECTSTORE_BUCKET:?OBJECTSTORE_BUCKET is required}"
 }

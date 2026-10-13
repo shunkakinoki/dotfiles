@@ -30,6 +30,15 @@ fi
 if [ -d "$AUTH_DIR" ] && [ -n "$(ls -A "$AUTH_DIR" 2>/dev/null)" ]; then
   echo "[$(date)] Backing up auth files..." >&2
 
+  # The container runs as root and writes new auth files as root:0600, which
+  # this user cannot read, so `s3 sync` would skip them forever. Only files
+  # with the wrong owner are touched because every chown fires the watcher.
+  if command -v docker >/dev/null 2>&1; then
+    docker exec cliproxyapi find /root/.cli-proxy-api/objectstore/auths \
+      -maxdepth 1 -type f ! -uid "$(id -u)" \
+      -exec chown "$(id -u):$(id -g)" {} + 2>/dev/null || true
+  fi
+
   cliproxy_sync_auth_to_s3 "$AUTH_DIR"
 else
   echo "⚠️  No auth files to backup" >&2
