@@ -6,7 +6,13 @@ copy = "wt step copy-ignored"
 [step.copy-ignored]
 # Reflink copies still cost one fs op per file, so node_modules/ floods
 # fseventsd; repos reinstall deps in their own post-start hooks.
-exclude = [".cache/", ".devenv/", ".serena/", ".claude/worktrees/", "node_modules/"]
+exclude = [
+  ".cache/",
+  ".devenv/",
+  ".serena/",
+  ".claude/worktrees/",
+  "node_modules/",
+]
 
 [commit]
 stage = "all"
