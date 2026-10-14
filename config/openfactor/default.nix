@@ -9,6 +9,7 @@ let
     pkgs.curl
     pkgs.gnutar
     pkgs.gzip
+    pkgs.jq
   ];
 in
 {
