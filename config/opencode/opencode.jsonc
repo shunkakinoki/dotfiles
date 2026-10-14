@@ -3,6 +3,10 @@
   "model": "shunkakinoki/deepseek-v4.1-flash",
   "small_model": "shunkakinoki/deepseek-v4.1-flash",
   "autoupdate": true,
+  // Snapshots re-hash the whole worktree with git after every step, which on a
+  // large monorepo checkout costs a core per session; sessions run in git
+  // worktrees, so git already records their changes.
+  "snapshot": false,
   "agent": {
     "code-reviewer": {
       "description": "Reviews code for best practices and potential issues",
