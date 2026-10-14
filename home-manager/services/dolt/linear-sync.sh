@@ -152,6 +152,7 @@ sync_checkpoint_file="$sync_state_dir/last-success-$repo_slug"
 journal_checkpoint_file="$sync_state_dir/journal-head-$repo_slug"
 reconciliation_lock_file="$reconciliation_state_dir/reconcile-$repo_slug.lock"
 push_progress_file="$sync_state_dir/push-progress-$repo_slug"
+full_pull_file="$sync_state_dir/full-pull-$repo_slug"
 
 ensure_config() {
   local key="$1"
@@ -571,9 +572,12 @@ adopt_linear_issues() {
       log "Unable to look up existing Linear issues for unlinked Beads"
       return 69
     fi
+    # The pull stores the slugless issue URL, so a slugged ref would be
+    # rewritten by the next pull.
     if ! adopted_ref="$(@jq@/bin/jq -er '
       if ((.errors // []) | length) == 0 and (.data.issues.nodes | type) == "array" then
         .data.issues.nodes | sort_by(.createdAt) | .[0].url // ""
+        | sub("(?<issue>/issue/[^/]+)/.*$"; "\(.issue)")
       else
         error
       end
@@ -591,6 +595,67 @@ adopt_linear_issues() {
   if [ "$adopted_issue_count" -gt 0 ]; then
     "$bd_cli" -C "$repo_dir" dolt commit -m "chore(beads): adopt existing Linear issues" >/dev/null 2>&1
     log "Adopted $adopted_issue_count existing Linear issue(s) for unlinked Beads"
+  fi
+}
+
+changed_linear_identifiers=""
+changed_linear_count=0
+
+list_changed_linear_issues() {
+  local since="$1"
+  local after=""
+  local has_next
+  local page_ids
+  local page_query
+  local page_result
+  local page
+
+  changed_linear_identifiers=""
+  changed_linear_count=0
+  while :; do
+    page_query="$(@jq@/bin/jq -nc --arg team "$LINEAR_TEAM_ID" --arg since "$since" --arg after "$after" '{
+      query: "query ChangedIssues($filter: IssueFilter!, $after: String) { issues(filter: $filter, first: 250, after: $after) { nodes { identifier } pageInfo { hasNextPage endCursor } } }",
+      variables: {
+        filter: {team: {id: {eq: $team}}, updatedAt: {gt: $since}},
+        after: (if $after == "" then null else $after end)
+      }
+    }')"
+    if ! page_result="$(@coreutils@/bin/timeout 30 @curl@/bin/curl \
+      --silent \
+      --show-error \
+      --fail-with-body \
+      --config <(
+        printf 'url = "https://api.linear.app/graphql"\n'
+        printf 'header = "Authorization: %s"\n' "$LINEAR_API_KEY"
+        printf 'header = "Content-Type: application/json"\n'
+      ) \
+      --data-binary @- <<<"$page_query")"; then
+      log "Unable to list Linear issues changed since the last cycle"
+      return 69
+    fi
+    if ! page="$(@jq@/bin/jq -er '
+      if ((.errors // []) | length) == 0
+        and (.data.issues.nodes | type) == "array"
+        and all(.data.issues.nodes[]; .identifier | type == "string" and test("^[A-Z][A-Z0-9]*-[0-9]+$"))
+      then
+        "\(.data.issues.pageInfo.hasNextPage == true)\u001f\(.data.issues.pageInfo.endCursor // "")\u001f\(.data.issues.nodes | map(.identifier) | join(","))"
+      else
+        error
+      end
+    ' <<<"$page_result" 2>/dev/null)"; then
+      log "Linear changed-issue listing returned no valid result"
+      return 69
+    fi
+    IFS=$'\x1f' read -r has_next after page_ids <<<"$page"
+    if [ -n "$page_ids" ]; then
+      changed_linear_identifiers="${changed_linear_identifiers:+$changed_linear_identifiers,}$page_ids"
+    fi
+    if [ "$has_next" != true ] || [ -z "$after" ]; then
+      break
+    fi
+  done
+  if [ -n "$changed_linear_identifiers" ]; then
+    changed_linear_count="$(@gawk@/bin/awk -F, '{ print NF }' <<<"$changed_linear_identifiers")"
   fi
 }
 
@@ -1132,42 +1197,88 @@ fi
 # bounded service window, while a complete tracker fetch finishes promptly.
 # Clear only Kyber's ignored clone-local cursor before pulling; the successful
 # pull writes a fresh cursor, and failures restore the prior value.
-linear_last_sync_before_pull="$(@jq@/bin/jq -r '.last_sync // ""' <<<"$linear_status")"
-pull_status=""
-deferred_signal=""
-restore_state=pending
-trap on_restore_exit EXIT
-trap 'on_restore_signal TERM' TERM
-trap 'on_restore_signal INT' INT
-trap 'on_restore_signal HUP' HUP
-run_dolt_sql "USE \`$linear_database\`; DELETE FROM local_metadata WHERE \`key\` = 'linear.last_sync';"
-
-# Pull open and closed Linear work so cancels/Done land in Beads. A rate-limit
-# failure is deferred to the next scheduled run instead of making launchd
-# hot-loop a failed job.
-log "Pulling complete Linear state"
-if run_linear pull @coreutils@/bin/timeout 720 "$bd_cli" -C "$repo_dir" linear sync \
-  --pull \
-  --state all \
-  --relations \
-  --no-wait; then
-  pull_status=0
-else
-  pull_status=$?
+#
+# Every pull write lands in the single-row events journal sequence, so pulling
+# issues the tracker never changed makes concurrent Beads writers fail with
+# serialization conflicts. Between daily full pulls, pull only the issues
+# Linear changed since the last successful cycle, with ten minutes of overlap
+# for clock skew. The selective fetch omits relations, so the full pull stays
+# daily, and a failed selective pull forces the next cycle to pull in full.
+pull_mode=full
+full_pull_started="$(@coreutils@/bin/date -u '+%s')"
+if [ -s "$sync_checkpoint_file" ] && [ -s "$full_pull_file" ]; then
+  last_full_pull="$(<"$full_pull_file")"
+  if [[ $last_full_pull =~ ^[0-9]+$ ]] && [ $((full_pull_started - last_full_pull)) -lt 86400 ]; then
+    pull_mode=selective
+  fi
+fi
+if [ "$pull_mode" = selective ]; then
+  if ! changed_since="$(@jq@/bin/jq -nr --arg since "$previous_sync" '$since | fromdateiso8601 - 600 | todate' 2>/dev/null)"; then
+    log "Last successful cycle checkpoint is not a valid timestamp; pulling in full"
+    pull_mode=full
+  else
+    list_changed_linear_issues "$changed_since" || exit $?
+    # Each selective issue is its own tracker request.
+    if [ "$changed_linear_count" -gt 100 ]; then
+      pull_mode=full
+    fi
+  fi
 fi
 
-repair_status=0
-restore_after_pull || repair_status=$?
-if [ "$pull_status" -ne 0 ]; then
-  if [ "$pull_status" -eq 75 ]; then
-    log "Linear pull deferred; the next 900-second run will retry"
+repaired_ids=""
+if [ "$pull_mode" = selective ] && [ "$changed_linear_count" -eq 0 ]; then
+  log "No Linear issues changed since the last cycle; skipping the pull"
+else
+  linear_last_sync_before_pull="$(@jq@/bin/jq -r '.last_sync // ""' <<<"$linear_status")"
+  pull_status=""
+  deferred_signal=""
+  restore_state=pending
+  trap on_restore_exit EXIT
+  trap 'on_restore_signal TERM' TERM
+  trap 'on_restore_signal INT' INT
+  trap 'on_restore_signal HUP' HUP
+  run_dolt_sql "USE \`$linear_database\`; DELETE FROM local_metadata WHERE \`key\` = 'linear.last_sync';"
+
+  # Pull open and closed Linear work so cancels/Done land in Beads. A
+  # rate-limit failure is deferred to the next scheduled run instead of making
+  # launchd hot-loop a failed job.
+  if [ "$pull_mode" = selective ]; then
+    log "Pulling $changed_linear_count changed Linear issue(s)"
+    if run_linear pull @coreutils@/bin/timeout 720 "$bd_cli" -C "$repo_dir" linear sync \
+      --pull \
+      --issues "$changed_linear_identifiers" \
+      --no-wait; then
+      pull_status=0
+    else
+      pull_status=$?
+    fi
+  else
+    log "Pulling complete Linear state"
+    if run_linear pull @coreutils@/bin/timeout 720 "$bd_cli" -C "$repo_dir" linear sync \
+      --pull \
+      --state all \
+      --relations \
+      --no-wait; then
+      pull_status=0
+    else
+      pull_status=$?
+    fi
+  fi
+
+  repair_status=0
+  restore_after_pull || repair_status=$?
+  if [ "$pull_status" -ne 0 ]; then
+    if [ "$pull_status" -eq 75 ]; then
+      log "Linear pull deferred; the next 900-second run will retry"
+      exit "$repair_status"
+    fi
+    log "Linear pull failed with status $pull_status"
+    @coreutils@/bin/rm -f "$full_pull_file"
+    exit "$pull_status"
+  fi
+  if [ "$repair_status" -ne 0 ]; then
     exit "$repair_status"
   fi
-  log "Linear pull failed with status $pull_status"
-  exit "$pull_status"
-fi
-if [ "$repair_status" -ne 0 ]; then
-  exit "$repair_status"
 fi
 
 # Select the active push from the repaired state. The post-pull listing still
@@ -1268,5 +1379,9 @@ printf '%s\n' "$push_journal_head" >"$journal_checkpoint_file.tmp"
 @coreutils@/bin/mv -f "$journal_checkpoint_file.tmp" "$journal_checkpoint_file"
 printf '%s\n' "$cycle_started" >"$sync_checkpoint_file.tmp"
 @coreutils@/bin/mv -f "$sync_checkpoint_file.tmp" "$sync_checkpoint_file"
+if [ "$pull_mode" = full ]; then
+  printf '%s\n' "$full_pull_started" >"$full_pull_file.tmp"
+  @coreutils@/bin/mv -f "$full_pull_file.tmp" "$full_pull_file"
+fi
 
 "$bd_cli" -C "$repo_dir" linear status --json
