@@ -7,6 +7,58 @@ When run grep -F '127.0.0.1:7373' "$PWD/config/shared/hooks/roborev-agent.sh"
 The output should include '127.0.0.1:7373'
 End
 
+Describe 'outside a branch checkout'
+HOOK="$PWD/config/shared/hooks/roborev-agent.sh"
+setup_detached() {
+  FAKE_HOME="$(mktemp -d)"
+  REPO="$(mktemp -d)"
+  mkdir -p "$FAKE_HOME/.local/bin"
+  printf '#!/bin/sh\necho called\n' >"$FAKE_HOME/.local/bin/roborev"
+  chmod +x "$FAKE_HOME/.local/bin/roborev"
+  git -C "$REPO" init -q -b main
+  git -C "$REPO" -c user.email=t@t -c user.name=t commit -q --allow-empty -m init
+}
+cleanup_detached() { rm -rf "$FAKE_HOME" "$REPO"; }
+BeforeEach 'setup_detached'
+AfterEach 'cleanup_detached'
+
+run_hook() {
+  cd "$REPO" && HOME="$FAKE_HOME" bash "$HOOK" claude </dev/null
+}
+
+It 'calls the daemon on a branch'
+When run run_hook
+The output should equal 'called'
+End
+
+It 'skips the daemon on a detached HEAD'
+detach_and_run() {
+  git -C "$REPO" checkout -q --detach && run_hook
+}
+When run detach_and_run
+The status should be success
+The output should equal ''
+End
+
+It 'skips the daemon outside a git repository'
+run_outside() {
+  cd "$FAKE_HOME" && HOME="$FAKE_HOME" GIT_CEILING_DIRECTORIES="$FAKE_HOME/.." bash "$HOOK" claude </dev/null
+}
+When run run_outside
+The status should be success
+The output should equal ''
+End
+
+It 'skips the daemon inside a bare repository'
+run_bare() {
+  git init -q --bare -b main "$REPO/bare.git" && cd "$REPO/bare.git" && HOME="$FAKE_HOME" bash "$HOOK" claude </dev/null
+}
+When run run_bare
+The status should be success
+The output should equal ''
+End
+End
+
 Describe 'config/factory/activate-settings.sh'
 SCRIPT="$PWD/config/factory/activate-settings.sh"
 SETTINGS="$PWD/config/factory/settings.json"
