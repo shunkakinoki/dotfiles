@@ -39,6 +39,24 @@ When run detach_and_run
 The status should be success
 The output should equal ''
 End
+
+It 'skips the daemon outside a git repository'
+run_outside() {
+  cd "$FAKE_HOME" && HOME="$FAKE_HOME" GIT_CEILING_DIRECTORIES="$FAKE_HOME/.." bash "$HOOK" claude </dev/null
+}
+When run run_outside
+The status should be success
+The output should equal ''
+End
+
+It 'skips the daemon inside a bare repository'
+run_bare() {
+  git init -q --bare -b main "$REPO/bare.git" && cd "$REPO/bare.git" && HOME="$FAKE_HOME" bash "$HOOK" claude </dev/null
+}
+When run run_bare
+The status should be success
+The output should equal ''
+End
 End
 
 Describe 'config/factory/activate-settings.sh'

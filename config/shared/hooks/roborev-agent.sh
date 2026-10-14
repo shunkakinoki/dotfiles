@@ -15,7 +15,9 @@ fi
 # with one `git merge-base --is-ancestor` each, per tool call, and keeps going
 # after the client gives up. With thousands of open CI reviews that saturates
 # the daemon and every hook times out, so only branch checkouts are tracked.
-if ! git symbolic-ref -q HEAD >/dev/null 2>&1; then
+# A bare repository has a symbolic HEAD but no checkout, so require a work tree.
+if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" != true ] ||
+  ! git symbolic-ref -q HEAD >/dev/null 2>&1; then
   exit 0
 fi
 
