@@ -25,7 +25,6 @@ with pkgs;
   atk
   boat-cli
   awscli
-  azure-cli
   bandwhich
   bat
   beads

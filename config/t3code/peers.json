@@ -1,0 +1,9 @@
+{
+  "environments": [
+    {
+      "label": "kamino2",
+      "host": "kamino2.tail950b36.ts.net",
+      "bearerTokenEnv": "T3_PEER_KAMINO2_TOKEN"
+    }
+  ]
+}

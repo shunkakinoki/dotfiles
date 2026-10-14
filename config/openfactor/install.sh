@@ -48,6 +48,34 @@ if ! "$OPENFACTOR_BIN" hooks install --scope host --json; then
   echo "warning: OpenFactor hook registration failed; continuing activation" >&2
 fi
 
+# Each hook boots the ~90 MB Bun CLI (~0.7 CPU-seconds) only to POST the event
+# to the orchestration daemon socket, and drops it when no daemon listens there.
+# Check the socket first so tool-call hooks cost nothing outside orchestrated
+# lanes. Prompt events stay ungated: the CLI records lane prompt receipts from
+# them without a daemon. The gated command still names openfactor, so later
+# `hooks install` runs keep it instead of appending a second entry.
+# shellcheck disable=SC2016
+socket_gate='test -S "${OPENFACTOR_ORCHESTRATION_SOCKET:-${OPENFACTOR_ORCHESTRATION_STATE:-.orchestration-state}/daemon.sock}" || exit 0; exec '
+receipts="${XDG_STATE_HOME:-$HOME/.local/state}/openfactor/hooks"
+for receipt in "$receipts"/*.json; do
+  [[ -f $receipt ]] || continue
+  config="$(jq -r '.configPath // empty' "$receipt" 2>/dev/null || true)"
+  [[ $config == *.json && -f $config && ! -L $config ]] || continue
+  gated="$(mktemp "$config.XXXXXX")"
+  if jq --arg gate "$socket_gate" '
+    walk(
+      if type == "string"
+        and test("^openfactor [a-z]+-hook [A-Za-z.]+$")
+        and (test("[Pp]rompt") | not)
+      then "sh -c '\''" + $gate + . + "'\''"
+      else . end
+    )' "$config" >"$gated" && ! cmp -s "$gated" "$config"; then
+    mv "$gated" "$config"
+  else
+    rm -f "$gated"
+  fi
+done
+
 # The generated OpenCode plugin spawns one CLI process per event, and the
 # message part events fire on every streamed token. Under a busy T3 server that
 # forks hundreds of hooks per second and drives the host load into the
@@ -77,6 +105,15 @@ if [[ -f $opencode_plugin && ! -L $opencode_plugin ]] && grep -q 'stdin: "pipe"'
   } catch {}
 }
 }s;
+  ' "$opencode_plugin"
+fi
+
+# Same socket gate as the JSON hooks, applied before the plugin spawns the CLI.
+if [[ -f $opencode_plugin && ! -L $opencode_plugin ]] && ! grep -q 'daemon\.sock' "$opencode_plugin"; then
+  # shellcheck disable=SC2016
+  "${OPENFACTOR_PERL:-perl}" -0pi -e '
+    s{closeSync, openSync, unlinkSync}{closeSync, existsSync, openSync, unlinkSync};
+    s{(function send\(name: string, payload: unknown\): void \{\n)}{$1  if (name !== "chat.message" && !existsSync(process.env.OPENFACTOR_ORCHESTRATION_SOCKET || join(process.env.OPENFACTOR_ORCHESTRATION_STATE || ".orchestration-state", "daemon.sock"))) return;\n};
   ' "$opencode_plugin"
 fi
 
