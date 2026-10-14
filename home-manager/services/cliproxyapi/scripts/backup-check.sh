@@ -33,7 +33,9 @@ fi
 
 if command -v systemctl >/dev/null 2>&1; then
   for unit in cliproxyapi-backup-auth.path cliproxyapi-backup-auth.service cliproxyapi-backup.service; do
-    if systemctl --user is-failed --quiet "$unit"; then
+    if ! state="$(systemctl --user show -p ActiveState --value "$unit" 2>&1)"; then
+      problems+=("${unit}: cannot query systemd: ${state}")
+    elif [ "$state" = "failed" ]; then
       problems+=("${unit} failed")
     fi
   done

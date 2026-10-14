@@ -126,8 +126,8 @@ printf '%s\n' "$0 $*" >>"$MOCK_LOG"
 
 command="${*: -1}"
 case "$command" in
-  ".backup '"*)
-    snapshot_path="${command#.backup \'}"
+  "VACUUM INTO '"*)
+    snapshot_path="${command#VACUUM INTO \'}"
     snapshot_path="${snapshot_path%\'}"
     : >"$snapshot_path"
     ;;
@@ -214,7 +214,7 @@ When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$__BACKUP_SCRIPT"'" auth 2>&1; s
 The status should be success
 The output should include 's3://cliproxyapi/auths/'
 The output should not include 'CPA Manager Plus analytics'
-The output should not include '.backup'
+The output should not include 'VACUUM INTO'
 The output should not include 'cpa-manager-plus/'
 End
 
@@ -237,7 +237,7 @@ It 'uploads a consistent CPA Manager Plus archive in full mode'
 seed_manager_data
 When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$__BACKUP_SCRIPT"'" full 2>&1; status=$?; cat "$MOCK_LOG" 2>/dev/null || true; exit "$status"'
 The status should be success
-The output should include ".backup '"
+The output should include "VACUUM INTO '"
 The output should include 'PRAGMA integrity_check;'
 The output should match pattern '*s3://cliproxyapi/cpa-manager-plus/analytics-backup-??.tar.gz*'
 The output should include 'cpa-manager-plus/analytics-backup.tar.gz'
@@ -296,7 +296,15 @@ EOF
   cat >"$MOCK_BIN/systemctl" <<'EOF'
 #!/usr/bin/env bash
 printf '%s\n' "systemctl $*" >>"$MOCK_LOG"
-[ "${*: -1}" = "${FAILED_UNIT:-}" ]
+if [ -n "${SYSTEMCTL_ERROR:-}" ]; then
+  echo "$SYSTEMCTL_ERROR" >&2
+  exit 1
+fi
+if [ "${*: -1}" = "${FAILED_UNIT:-}" ]; then
+  echo failed
+else
+  echo active
+fi
 EOF
   chmod +x "$MOCK_BIN/systemctl"
   cat >"$MOCK_BIN/notify" <<'EOF'
@@ -371,6 +379,14 @@ The status should be failure
 The output should include 'cliproxyapi-backup-auth.path failed'
 End
 
+It 'alerts when systemd cannot be queried instead of assuming units are healthy'
+SYSTEMCTL_ERROR='Failed to connect to user scope bus'
+export SYSTEMCTL_ERROR
+When call run_check
+The status should be failure
+The output should include 'cliproxyapi-backup.service: cannot query systemd: Failed to connect to user scope bus'
+End
+
 It 'never downloads into the auth directory'
 seed_auth a.json live
 printf '%s' revoked >"$S3_DIR/a.json"
@@ -400,6 +416,13 @@ The output should include 'systemd.user.services.cliproxyapi-backup-check = lib.
 The output should include 'systemd.user.timers.cliproxyapi-backup-check = lib.mkIf objectstoreEnabled'
 End
 
+It 'gives the drift check the host systemctl'
+When run bash -c "sed -n '/systemd.user.services.cliproxyapi-backup-check =/,/^  };/p' '$NIX_MODULE'"
+The status should be success
+The output should include '}:/usr/bin";'
+The output should not include 'pkgs.systemd'
+End
+
 It 'gives the auth-file watchers the auth-only entrypoint'
 When run bash -c "sed -n '/systemd.user.services.cliproxyapi-backup-auth =/,/^  };/p' '$NIX_MODULE'"
 The status should be success
@@ -413,6 +436,12 @@ When run bash -c "sed -n '/systemd.user.paths.cliproxyapi-backup-auth =/,/^  };/
 The status should be success
 The output should include 'PathChanged'
 The output should include 'cliproxyapi-backup-auth.service'
+End
+
+It 'bounds the analytics backup so a stuck snapshot surfaces as a failure'
+When run bash -c "sed -n '/systemd.user.services.cliproxyapi-backup =/,/^  };/p' '$NIX_MODULE'"
+The status should be success
+The output should include 'TimeoutStartSec = "2h";'
 End
 
 It 'keeps the analytics snapshot on wall-clock schedules only'

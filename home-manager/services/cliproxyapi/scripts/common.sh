@@ -151,9 +151,11 @@ cliproxy_backup_manager_data() (
   snapshot_path="${snapshot_dir}/usage.sqlite"
   mkdir -p "$snapshot_dir"
 
-  # The live database uses WAL mode. SQLite's online backup command produces a
-  # consistent standalone database without copying transient -wal/-shm files.
-  @sqlite3@ "$database_path" ".timeout 5000" ".backup '${snapshot_path}'"
+  # VACUUM INTO copies from one read transaction, so it produces a consistent
+  # standalone database without -wal/-shm files. The CLI's .backup restarts
+  # whenever another process writes, and on this large, constantly written,
+  # IO-throttled database it never finished.
+  @sqlite3@ "$database_path" ".timeout 5000" "VACUUM INTO '${snapshot_path}'"
 
   integrity="$(@sqlite3@ "$snapshot_path" "PRAGMA integrity_check;")"
   if [ "$integrity" != "ok" ]; then
