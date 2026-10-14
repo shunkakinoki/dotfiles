@@ -137,6 +137,10 @@ inputs.home-manager.lib.homeManagerConfiguration {
           export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} root-nodiscard /etc/fstab
         '';
+        home.activation.setKaminoVmCompaction = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+          export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} vm-compaction /etc/sysctl.d/60-kamino-compaction.conf /etc/tmpfiles.d/60-kamino-thp.conf /sys/kernel/mm/transparent_hugepage/defrag
+        '';
         home.activation.prepareKaminoServiceDirectories =
           config.lib.dag.entryBetween [ "installTailscaleService" ] [ "writeBoundary" ]
             ''

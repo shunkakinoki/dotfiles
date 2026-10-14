@@ -343,6 +343,37 @@ The contents of file "$TEST_ROOT/fstab" should equal 'LABEL=cloudimg-rootfs / ex
 The path "$TEST_ROOT/commands" should not be exist
 End
 
+vm_compaction_setup() {
+  printf 'always defer defer+madvise [madvise] never\n' >"$TEST_ROOT/defrag"
+  cat >"$TEST_ROOT/bin/sysctl" <<'EOF'
+#!/usr/bin/env bash
+printf 'sysctl %s\n' "$*" >>"$COMMAND_LOG"
+EOF
+  chmod +x "$TEST_ROOT/bin/sysctl"
+}
+
+It 'persists and applies the compaction settings and THP defrag'
+vm_compaction_setup
+When run run_phase vm-compaction "$TEST_ROOT/sysctl.conf" "$TEST_ROOT/tmpfiles.conf" "$TEST_ROOT/defrag"
+The status should be success
+The output should include 'Set THP defrag to never.'
+The contents of file "$TEST_ROOT/sysctl.conf" should equal $'vm.compaction_proactiveness = 0\nvm.watermark_boost_factor = 0'
+The contents of file "$TEST_ROOT/tmpfiles.conf" should equal "w $TEST_ROOT/defrag - - - - never"
+The contents of file "$TEST_ROOT/defrag" should equal 'never'
+The contents of file "$TEST_ROOT/commands" should equal "sysctl -q -p $TEST_ROOT/sysctl.conf"
+End
+
+It 'leaves already-applied compaction settings untouched'
+vm_compaction_setup
+printf 'vm.compaction_proactiveness = 0\nvm.watermark_boost_factor = 0\n' >"$TEST_ROOT/sysctl.conf"
+printf 'w %s - - - - never\n' "$TEST_ROOT/defrag" >"$TEST_ROOT/tmpfiles.conf"
+printf 'always defer defer+madvise madvise [never]\n' >"$TEST_ROOT/defrag"
+When run run_phase vm-compaction "$TEST_ROOT/sysctl.conf" "$TEST_ROOT/tmpfiles.conf" "$TEST_ROOT/defrag"
+The status should be success
+The output should be blank
+The contents of file "$TEST_ROOT/defrag" should equal 'always defer defer+madvise madvise [never]'
+End
+
 It 'rejects an unknown activation phase'
 When run run_phase unknown
 The status should be failure
