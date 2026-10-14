@@ -11,5 +11,13 @@ if [ ! -x "$ROBOREV_BIN" ]; then
   exit 0
 fi
 
+# On a detached HEAD the daemon matches every open failed review in the repo
+# with one `git merge-base --is-ancestor` each, per tool call, and keeps going
+# after the client gives up. With thousands of open CI reviews that saturates
+# the daemon and every hook times out, so only branch checkouts are tracked.
+if ! git symbolic-ref -q HEAD >/dev/null 2>&1; then
+  exit 0
+fi
+
 exec "$ROBOREV_BIN" --server "127.0.0.1:7373" agent-hook run \
   --agent "$AGENT" --source=roborev-agent-hook
