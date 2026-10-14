@@ -548,6 +548,14 @@ if [[ $request == *AdoptIssue* ]]; then
     jq -R -s -c 'split("\n") | map(select(length > 0)) | {data: {issues: {nodes: map({url: ., createdAt: "2099-01-01T00:00:00Z"})}}}'
   exit 0
 fi
+if [[ $request == *ChangedIssues* ]]; then
+  printf '%s\n' "$request" >>"${FAKE_CHANGED_LOG:-/dev/null}"
+  if [ "${FAKE_CHANGED_FAILS:-}" = 1 ]; then
+    exit 22
+  fi
+  jq -nc --arg ids "${FAKE_CHANGED_ISSUES:-}" '{data: {issues: {nodes: ($ids | split(",") | map(select(length > 0) | {identifier: .})), pageInfo: {hasNextPage: false, endCursor: null}}}}'
+  exit 0
+fi
 if [ "${FAKE_LINEAR_STATE:-completed}" = "failure" ]; then
   exit 29
 fi
@@ -590,6 +598,63 @@ The contents of file "$COMMAND_LOG" should not include 'dolt push'
 The contents of file "$COMMAND_LOG" should include 'linear sync --pull --state all --relations --no-wait --json'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-test --no-wait --json'
 The path "$FSCK_TIMEOUT_LOG" should not be exist
+The file "$STATE_HOME/beads-linear-sync/full-pull-test%2Frepo-one" should be exist
+End
+
+It 'pulls only the issues Linear changed since the last cycle between full pulls'
+mkdir -p "$STATE_HOME/beads-linear-sync"
+printf '%s\n' '2026-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
+date -u '+%s' >"$STATE_HOME/beads-linear-sync/full-pull-test%2Frepo-one"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_CHANGED_ISSUES=TEST-1,TEST-2 FAKE_CHANGED_LOG="$TEST_ROOT/changed.log" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Pulling 2 changed Linear issue(s)'
+The contents of file "$COMMAND_LOG" should include 'linear sync --pull --issues TEST-1,TEST-2 --no-wait --json'
+The contents of file "$COMMAND_LOG" should not include '--state all'
+The contents of file "$TEST_ROOT/changed.log" should include '"updatedAt":{"gt":"2025-12-31T23:50:00Z"}'
+End
+
+It 'skips the pull and its cursor reset when Linear changed nothing since the last cycle'
+mkdir -p "$STATE_HOME/beads-linear-sync"
+printf '%s\n' '2026-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
+date -u '+%s' >"$STATE_HOME/beads-linear-sync/full-pull-test%2Frepo-one"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'No Linear issues changed since the last cycle; skipping the pull'
+The contents of file "$COMMAND_LOG" should not include 'linear sync --pull'
+The contents of file "$DOLT_LOG" should not include 'DELETE FROM local_metadata'
+The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-test --no-wait'
+End
+
+It 'pulls in full once the last full pull is a day old'
+mkdir -p "$STATE_HOME/beads-linear-sync"
+printf '%s\n' '2026-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
+printf '%s\n' "$(($(date -u '+%s') - 86400))" >"$STATE_HOME/beads-linear-sync/full-pull-test%2Frepo-one"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_CHANGED_ISSUES=TEST-1 XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Pulling complete Linear state'
+The contents of file "$COMMAND_LOG" should include 'linear sync --pull --state all --relations --no-wait'
+The contents of file "$COMMAND_LOG" should not include '--pull --issues'
+End
+
+It 'forces a full pull on the next cycle after a failed selective pull'
+mkdir -p "$STATE_HOME/beads-linear-sync"
+printf '%s\n' '2026-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
+date -u '+%s' >"$STATE_HOME/beads-linear-sync/full-pull-test%2Frepo-one"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=pull-failure FAKE_CHANGED_ISSUES=TEST-1 XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 23
+The output should include 'Linear pull failed with status 23'
+The contents of file "$COMMAND_LOG" should include 'linear sync --pull --issues TEST-1 --no-wait'
+The file "$STATE_HOME/beads-linear-sync/full-pull-test%2Frepo-one" should not be exist
+End
+
+It 'fails without pulling when Linear cannot list changed issues'
+mkdir -p "$STATE_HOME/beads-linear-sync"
+printf '%s\n' '2026-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
+date -u '+%s' >"$STATE_HOME/beads-linear-sync/full-pull-test%2Frepo-one"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_CHANGED_FAILS=1 XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 69
+The output should include 'Unable to list Linear issues changed since the last cycle'
+The contents of file "$COMMAND_LOG" should not include 'linear sync --pull'
 End
 
 It 'keeps managed authority when local settings contain retired routing'
@@ -769,7 +834,8 @@ The output should include 'Linear created an issue whose Beads external_ref writ
 The output should include 'Adopted 1 existing Linear issue(s) for unlinked Beads'
 The output should not include 'PRIVATE_LINEAR_PAYLOAD'
 The lines of contents of file "$TEST_ROOT/linear-issues" should equal 1
-The contents of file "$COMMAND_LOG" should include 'update df-new --external-ref https://linear.app/test/issue/TEST-1/created'
+The contents of file "$COMMAND_LOG" should include 'update df-new --external-ref https://linear.app/test/issue/TEST-1'
+The contents of file "$COMMAND_LOG" should not include 'update df-new --external-ref https://linear.app/test/issue/TEST-1/created'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-new --no-wait'
 End
 
@@ -978,7 +1044,7 @@ after='[{"id":"df-claimed","status":"open","assignee":"","updated_at":"2099-01-0
 repaired='[{"id":"df-claimed","status":"in_progress","assignee":"kamino4_exec_claimed","updated_at":"2099-01-04T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/claimed"}]'
 journal='{"actor":"kamino4_exec_claimed","op":"update","issue_id":"df-claimed","issue":{"id":"df-claimed","status":"in_progress","assignee":"kamino4_exec_claimed"}}'
 ledger="$STATE_HOME/beads-linear-sync/pushed-active-test%2Frepo-one"
-When run bash -c "env COMMAND_LOG='$TEST_ROOT/first.log' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$claimed' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' >/dev/null && grep -q -E '^df-claimed [0-9a-f]{64}$' '$ledger' && env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_EVENTS_JOURNAL='$journal' FAKE_LIST_JSON='$claimed' FAKE_LIST_JSON_AFTER_PULL='$after' FAKE_LIST_JSON_AFTER_REPAIR='$repaired' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' && test \"\$(grep -c -E '^df-claimed [0-9a-f]{64}$' '$ledger')\" -eq 1"
+When run bash -c "env COMMAND_LOG='$TEST_ROOT/first.log' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$claimed' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' >/dev/null && grep -q -E '^df-claimed [0-9a-f]{64}$' '$ledger' && env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_CHANGED_ISSUES=TEST-2 FAKE_EVENTS_JOURNAL='$journal' FAKE_LIST_JSON='$claimed' FAKE_LIST_JSON_AFTER_PULL='$after' FAKE_LIST_JSON_AFTER_REPAIR='$repaired' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' && test \"\$(grep -c -E '^df-claimed [0-9a-f]{64}$' '$ledger')\" -eq 1"
 The status should be success
 The output should include 'Restored 1 control state record(s); skipped 0 superseded or refused repair(s)'
 The contents of file "$COMMAND_LOG" should include 'update df-claimed --assignee kamino4_exec_claimed --status in_progress --if-status=open --if-assignee='
@@ -1003,7 +1069,8 @@ When run bash -c "env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_L
 The status should be success
 The output should include 'Adopted 1 existing Linear issue(s) for unlinked Beads'
 The lines of contents of file "$TEST_ROOT/linear-issues" should equal 1
-The contents of file "$COMMAND_LOG" should include 'update df-later --external-ref https://linear.app/test/issue/TEST-1/created'
+The contents of file "$COMMAND_LOG" should include 'update df-later --external-ref https://linear.app/test/issue/TEST-1'
+The contents of file "$COMMAND_LOG" should not include 'update df-later --external-ref https://linear.app/test/issue/TEST-1/created'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-later --no-wait'
 End
 
@@ -1232,7 +1299,7 @@ claimed='[{"id":"df-session","status":"in_progress","assignee":"operator-session
 after='[{"id":"df-session","status":"in_progress","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/session"}]'
 repaired='[{"id":"df-session","status":"in_progress","assignee":"operator-session","updated_at":"2099-01-04T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/session"}]'
 ledger="$STATE_HOME/beads-linear-sync/pushed-active-test%2Frepo-one"
-When run bash -c "env COMMAND_LOG='$TEST_ROOT/first.log' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$claimed' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' >/dev/null && grep -q -E '^df-session [0-9a-f]{64}$' '$ledger' && env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$claimed' FAKE_LIST_JSON_AFTER_PULL='$after' FAKE_LIST_JSON_AFTER_REPAIR='$repaired' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT'"
+When run bash -c "env COMMAND_LOG='$TEST_ROOT/first.log' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$claimed' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' >/dev/null && grep -q -E '^df-session [0-9a-f]{64}$' '$ledger' && env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_CHANGED_ISSUES=TEST-2 FAKE_LIST_JSON='$claimed' FAKE_LIST_JSON_AFTER_PULL='$after' FAKE_LIST_JSON_AFTER_REPAIR='$repaired' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT'"
 The status should be success
 The output should include 'Restored 1 control state record(s); skipped 0 superseded or refused repair(s)'
 The output should include 'No changed active Beads to push'
