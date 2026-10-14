@@ -32,7 +32,6 @@ in
         "ompConfig"
       ]
       ''
-        export OPENFACTOR_PERL=${pkgs.perl}/bin/perl
         export OPENFACTOR_INSTALL_PATH=${installPath}
         $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./install.sh}"
       '';
