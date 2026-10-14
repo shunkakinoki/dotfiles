@@ -128,10 +128,61 @@ TS
 When run env -u XDG_CONFIG_HOME HOME="$TMP_HOME" OPENFACTOR_BIN=/usr/bin/true "$BASH_BIN" "$SCRIPT"
 The status should be success
 The contents of file "$PLUGIN" should include '{ stdin: fd, stdout: "ignore", stderr: "ignore" }'
-The contents of file "$PLUGIN" should include 'import { closeSync, openSync, unlinkSync, writeFileSync } from "node:fs";'
+The contents of file "$PLUGIN" should include 'import { closeSync, existsSync, openSync, unlinkSync, writeFileSync } from "node:fs";'
+The contents of file "$PLUGIN" should include 'if (name !== "chat.message" && !existsSync('
 The contents of file "$PLUGIN" should include '"message.updated"'
 The contents of file "$PLUGIN" should not include '"pipe"'
 The contents of file "$PLUGIN" should not include 'message.part'
+End
+
+Describe 'daemon socket gate'
+setup_gate() {
+  TMP_HOME="$(mktemp -d)"
+  CONFIG="$TMP_HOME/.claude/settings.json"
+  mkdir -p "$TMP_HOME/.claude" "$TMP_HOME/.local/state/openfactor/hooks" "$TMP_HOME/bin"
+  printf '{"configPath":"%s"}\n' "$CONFIG" >"$TMP_HOME/.local/state/openfactor/hooks/claude-host.json"
+  cat >"$CONFIG" <<'JSON'
+{"hooks":{
+  "PreToolUse":[{"hooks":[{"type":"command","command":"openfactor claude-hook PreToolUse"}]}],
+  "UserPromptSubmit":[{"hooks":[{"type":"command","command":"openfactor claude-hook UserPromptSubmit"}]}],
+  "Stop":[{"hooks":[{"type":"command","command":"other-tool openfactor claude-hook Stop"}]}]
+}}
+JSON
+  printf '#!/bin/sh\necho "ran $*"\n' >"$TMP_HOME/bin/openfactor"
+  chmod +x "$TMP_HOME/bin/openfactor"
+}
+cleanup_gate() { rm -rf "$TMP_HOME"; }
+BeforeEach 'setup_gate'
+AfterEach 'cleanup_gate'
+
+install_twice() {
+  env -u XDG_STATE_HOME HOME="$TMP_HOME" OPENFACTOR_BIN=/usr/bin/true bash "$SCRIPT" &&
+    env -u XDG_STATE_HOME HOME="$TMP_HOME" OPENFACTOR_BIN=/usr/bin/true bash "$SCRIPT" &&
+    jq -r '.hooks | .PreToolUse[0].hooks[0].command, .UserPromptSubmit[0].hooks[0].command, .Stop[0].hooks[0].command' "$CONFIG"
+}
+
+It 'gates tool hooks on the daemon socket and leaves prompt hooks alone'
+When run install_twice
+The status should be success
+The line 1 of output should equal "sh -c 'test -S \"\${OPENFACTOR_ORCHESTRATION_SOCKET:-\${OPENFACTOR_ORCHESTRATION_STATE:-.orchestration-state}/daemon.sock}\" || exit 0; exec openfactor claude-hook PreToolUse'"
+The line 2 of output should equal 'openfactor claude-hook UserPromptSubmit'
+The line 3 of output should equal 'other-tool openfactor claude-hook Stop'
+End
+
+run_gated() {
+  env -u XDG_STATE_HOME HOME="$TMP_HOME" OPENFACTOR_BIN=/usr/bin/true bash "$SCRIPT" &&
+    cd "$TMP_HOME" &&
+    PATH="$TMP_HOME/bin:$PATH" sh -c "$(jq -r '.hooks.PreToolUse[0].hooks[0].command' "$CONFIG")" &&
+    mkdir -p .orchestration-state &&
+    python3 -c 'import socket,sys; socket.socket(socket.AF_UNIX).bind(sys.argv[1])' .orchestration-state/daemon.sock &&
+    PATH="$TMP_HOME/bin:$PATH" sh -c "$(jq -r '.hooks.PreToolUse[0].hooks[0].command' "$CONFIG")"
+}
+
+It 'runs the CLI only when the daemon socket exists'
+When run run_gated
+The status should be success
+The output should equal 'ran claude-hook PreToolUse'
+End
 End
 
 It 'warns and continues when OPENFACTOR_BIN is not executable'
