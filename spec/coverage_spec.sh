@@ -105,6 +105,10 @@ It 'has spec file for home-manager/services/cliproxyapi/scripts/backup-auth.sh'
 The path "spec/cliproxyapi_backup_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/cliproxyapi/scripts/backup-check.sh'
+The path "spec/cliproxyapi_backup_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/cliproxyapi/scripts/common.sh'
 The path "spec/cliproxyapi_backup_spec.sh" should be exist
 End
@@ -681,6 +685,7 @@ home-manager/services/crabbox/health-check.sh
 home-manager/services/crabbox/init-postgres.sh
 home-manager/services/crabbox/start.sh
 home-manager/services/cliproxyapi/scripts/backup.sh
+home-manager/services/cliproxyapi/scripts/backup-check.sh
 home-manager/services/cliproxyapi/scripts/common.sh
 home-manager/services/cliproxyapi/scripts/docker-start.sh
 home-manager/services/cliproxyapi/scripts/hydrate.sh
