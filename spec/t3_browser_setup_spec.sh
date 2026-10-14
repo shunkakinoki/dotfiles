@@ -28,6 +28,11 @@ exec "$@"
 MOCK
   cat >"$MOCK_BIN/browser-cli" <<'MOCK'
 #!/usr/bin/env bash
+if [ "$1" = --help ]; then
+  printf 'SUBCOMMANDS\n  start        Run the T3 Code server.\n'
+  [ -n "${MOCK_NO_BROWSER:-}" ] || printf '  browser      Manage the headless browser.\n'
+  exit 0
+fi
 printf 'args=%s\nhome=%s\nbase=%s\npath=%s\nfrontend=%s\n' "$*" "$HOME" "$T3CODE_HOME" "$PATH" "$DEBIAN_FRONTEND" >>"$MOCK_LOG"
 exit "${MOCK_BROWSER_EXIT:-0}"
 MOCK
@@ -36,7 +41,7 @@ MOCK
 cleanup() {
   mock_bin_cleanup
   rm -rf "$T3_BROWSER_TEST_ROOT"
-  unset T3_BROWSER_TEST_ROOT T3_REAL_CLI T3_BROWSER_CLI T3CODE_HOME MOCK_UID MOCK_PRIVILEGE_EXIT MOCK_BROWSER_EXIT
+  unset T3_BROWSER_TEST_ROOT T3_REAL_CLI T3_BROWSER_CLI T3CODE_HOME MOCK_UID MOCK_PRIVILEGE_EXIT MOCK_BROWSER_EXIT MOCK_NO_BROWSER
 }
 
 Before 'setup'
@@ -76,6 +81,14 @@ rm -f "$T3_REAL_CLI"
 When run bash "$SCRIPT"
 The status should be success
 The output should include 'deferring browser setup'
+The contents of file "$MOCK_LOG" should eq ''
+End
+
+It 'defers setup when the installed CLI has no browser command'
+export MOCK_NO_BROWSER=1
+When run bash "$SCRIPT"
+The status should be success
+The output should include 'no browser command'
 The contents of file "$MOCK_LOG" should eq ''
 End
 
