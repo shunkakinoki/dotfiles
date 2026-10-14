@@ -34,6 +34,30 @@ root-nodiscard)
     echo "Remounted the root filesystem with nodiscard."
   fi
   ;;
+vm-compaction)
+  # CI waves madvise huge pages, and with defrag=madvise those faults enter
+  # direct compaction that almost never succeeds on these hosts, while
+  # proactive compaction adds futile kcompactd scans on top. Faults fall back
+  # to small pages instead; enabled=madvise stays so khugepaged still collapses.
+  sysctl_conf="${2:?sysctl.d file required}"
+  tmpfiles_conf="${3:?tmpfiles.d file required}"
+  defrag="${4:?THP defrag file required}"
+  sysctl_content=$'vm.compaction_proactiveness = 0\nvm.watermark_boost_factor = 0'
+  tmpfiles_content="w $defrag - - - - never"
+  if [ ! -f "$sysctl_conf" ] || [ "$(cat "$sysctl_conf")" != "$sysctl_content" ]; then
+    printf '%s\n' "$sysctl_content" >"$sysctl_conf"
+    echo "Wrote $sysctl_conf."
+  fi
+  sysctl -q -p "$sysctl_conf"
+  if [ ! -f "$tmpfiles_conf" ] || [ "$(cat "$tmpfiles_conf")" != "$tmpfiles_content" ]; then
+    printf '%s\n' "$tmpfiles_content" >"$tmpfiles_conf"
+    echo "Wrote $tmpfiles_conf."
+  fi
+  if ! grep -qF '[never]' "$defrag"; then
+    printf 'never\n' >"$defrag"
+    echo "Set THP defrag to never."
+  fi
+  ;;
 user-manager)
   hostnamectl set-hostname "${2:?name required}"
   loginctl enable-linger root
