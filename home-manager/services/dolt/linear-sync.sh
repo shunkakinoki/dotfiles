@@ -729,9 +729,11 @@ list_changed_linear_issues() {
   done
 
   # The listing window never moves backwards, so a recorded version older
-  # than its start can no longer match and is dropped.
+  # than its start can no longer match and is dropped. Both sides are UTC, and
+  # comparing whole seconds keeps Linear's fractional ".000Z" from sorting
+  # before the window's "Z" in the same second.
   if [ -s "$linear_echo_file" ]; then
-    @gawk@/bin/awk -v since="$since" '$2 >= since' "$linear_echo_file" >"$linear_echo_file.tmp"
+    @gawk@/bin/awk -v since="$since" 'substr($2, 1, 19) >= substr(since, 1, 19)' "$linear_echo_file" >"$linear_echo_file.tmp"
     @coreutils@/bin/mv -f "$linear_echo_file.tmp" "$linear_echo_file"
   fi
   echo_skipped=0

@@ -674,7 +674,7 @@ It 'does not pull issues whose only Linear change is its own push'
 mkdir -p "$STATE_HOME/beads-linear-sync"
 printf '%s\n' '2026-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
 date -u '+%s' >"$STATE_HOME/beads-linear-sync/full-pull-test%2Frepo-one"
-printf '%s\n' 'TEST-1 2026-01-01T00:05:00.000Z' 'TEST-2 2026-01-01T00:05:00.000Z' 'TEST-3 2025-12-31T23:00:00.000Z' >"$STATE_HOME/beads-linear-sync/linear-echo-test%2Frepo-one"
+printf '%s\n' 'TEST-1 2026-01-01T00:05:00.000Z' 'TEST-2 2026-01-01T00:05:00.000Z' 'TEST-3 2025-12-31T23:00:00.000Z' 'TEST-4 2025-12-31T23:50:00.000Z' >"$STATE_HOME/beads-linear-sync/linear-echo-test%2Frepo-one"
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_CHANGED_ISSUES=TEST-1,TEST-2 FAKE_CHANGED_UPDATED_AT=2026-01-01T00:05:00.000Z FAKE_PUSHED_UPDATED_AT=2026-01-01T00:06:00.000Z XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include "Skipped 2 Linear issue(s) changed only by this reconciler's push"
@@ -682,6 +682,7 @@ The output should include 'No Linear issues changed since the last cycle; skippi
 The contents of file "$COMMAND_LOG" should not include 'linear sync --pull'
 The contents of file "$DOLT_LOG" should not include 'DELETE FROM local_metadata'
 The contents of file "$STATE_HOME/beads-linear-sync/linear-echo-test%2Frepo-one" should not include 'TEST-3'
+The contents of file "$STATE_HOME/beads-linear-sync/linear-echo-test%2Frepo-one" should include 'TEST-4 2025-12-31T23:50:00.000Z'
 End
 
 It 'pulls an issue Linear changed again after its own push'
