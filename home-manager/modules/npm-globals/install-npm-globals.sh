@@ -381,6 +381,26 @@ if [ -n "$OVERRIDES" ]; then
   fi
 fi
 
+# Apply package patches to the global install. Bun resolves patchedDependencies
+# paths against the global dir, so each patch file is copied there first.
+PATCHES=$(jq -c '.patchedDependencies // empty' "$PACKAGE_JSON" 2>/dev/null || true)
+if [ -n "$PATCHES" ] && [ -f "$GLOBAL_PKG" ]; then
+  GLOBAL_DIR="${HOME}/.bun/install/global"
+  while IFS= read -r patch; do
+    [ -z "$patch" ] && continue
+    mkdir -p "$(dirname "${GLOBAL_DIR}/${patch}")"
+    cp -f "${HOME}/dotfiles/${patch}" "${GLOBAL_DIR}/${patch}"
+  done < <(jq -r '.[]' <<<"$PATCHES")
+  jq --argjson patches "$PATCHES" '.patchedDependencies = $patches' "$GLOBAL_PKG" >"${GLOBAL_PKG}.tmp" &&
+    mv "${GLOBAL_PKG}.tmp" "$GLOBAL_PKG"
+  if (cd "$GLOBAL_DIR" && timeout 600 bun install); then
+    echo "Applied package patches to global install"
+  else
+    echo "Warning: applying package patches to global install failed" >&2
+  fi
+  purge_bun_npm_shim
+fi
+
 # Install platform-matching optionalDependencies (e.g. claude-code-darwin-arm64).
 # Bun's transitive-optional resolution silently drops these when the parent's
 # postinstall is blocked by ignoreScripts, so we install the matching variant

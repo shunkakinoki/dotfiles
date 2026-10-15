@@ -1,0 +1,145 @@
+diff --git a/dist/Git.d.ts b/dist/Git.d.ts
+index 3b2cb263937633c9f0dd4e50f1c172d25628bee0..ad501430e0c4168d2d48e1619a071e4b4665a649 100644
+--- a/dist/Git.d.ts
++++ b/dist/Git.d.ts
+@@ -70,7 +70,11 @@ export declare function provenance(file: string, options?: Options): Promise<Pro
+  */
+ export declare function changedSince(ref: string, dir: string, options?: Options): Promise<readonly string[]>;
+ /**
+- * Stages paths.
++ * Stages paths, skipping the ones git ignores.
++ *
++ * A friction log kept in an ignored directory is still a complete publish: the entries are filed
++ * and marked linked, and there is nothing left to commit. Staging them would fail the whole command
++ * over paths the repository has deliberately excluded.
+  *
+  * @param files - Repository-relative paths. An empty list is a no-op.
+  */
+diff --git a/dist/Git.js b/dist/Git.js
+index ce631c23f46522090813d5e09d4d935b0b258cb3..88dd5bf0a1fb07e909e20ef28076af0a26803841 100644
+--- a/dist/Git.js
++++ b/dist/Git.js
+@@ -93,14 +93,40 @@ export async function changedSince(ref, dir, options = {}) {
+     return output ? output.split('\n') : [];
+ }
+ /**
+- * Stages paths.
++ * Paths the repository's ignore rules exclude.
++ *
++ * `--no-index` matches how `git add` traverses the working tree: it refuses a path under an
++ * excluded directory even when that path is tracked. The index-aware default disagrees there, so it
++ * would leave the very failure this guards against. The cost is a tracked file matching a
++ * file-level rule, which `git add` would accept and this reports as excluded - a contradictory
++ * configuration, and one worth skipping rather than failing over.
++ *
++ * @param files - Repository-relative paths.
++ * @returns The subset the ignore rules exclude. Empty when git cannot answer.
++ */
++async function ignored(files, options = {}) {
++    // Exit 1 means nothing matched; any other failure is treated the same way, leaving `add` to
++    // surface the real error.
++    const output = await git(['check-ignore', '--no-index', '--', ...files], options).catch(() => '');
++    return new Set(output ? output.split('\n') : []);
++}
++/**
++ * Stages paths, skipping the ones git ignores.
++ *
++ * A friction log kept in an ignored directory is still a complete publish: the entries are filed
++ * and marked linked, and there is nothing left to commit. Staging them would fail the whole command
++ * over paths the repository has deliberately excluded.
+  *
+  * @param files - Repository-relative paths. An empty list is a no-op.
+  */
+ export async function add(files, options = {}) {
+     if (files.length === 0)
+         return;
+-    await git(['add', '--', ...files], options);
++    const excluded = await ignored(files, options);
++    const staged = files.filter((file) => !excluded.has(file));
++    if (staged.length === 0)
++        return;
++    await git(['add', '--', ...staged], options);
+ }
+ /**
+  * Stages the removal of paths, deleting them from the working tree.
+diff --git a/dist/cli/commands/log.js b/dist/cli/commands/log.js
+index 404f91e3e87b381ee53af4e5afd1226ea2fb8da6..3c3e994967b0a66ca714ff50238e3150414c1686 100644
+--- a/dist/cli/commands/log.js
++++ b/dist/cli/commands/log.js
+@@ -129,7 +129,11 @@ export const log = Cli.create('log', {
+         const piped = c.args.title && c.options.body ? undefined : await attempt(stdin.read());
+         if (piped && !piped.ok)
+             return c.error({ code: piped.code, message: piped.message });
+-        const input = piped?.ok && piped.value ? stdin.parse(piped.value) : undefined;
++        const input = piped?.ok && piped.value
++            ? c.args.title
++                ? { title: c.args.title, body: piped.value.trim() }
++                : stdin.parse(piped.value)
++            : undefined;
+         // Every `c.error` below is returned straight from `run`. See `internal/attempt.ts` for why that
+         // matters.
+         const needsTitle = !c.args.title && !input;
+diff --git a/src/Git.ts b/src/Git.ts
+index e395e6a399e3f38efe537509ac421680bb8da18b..0612d749cf3375ab5f1ea404b15889fbee5aaf1c 100644
+--- a/src/Git.ts
++++ b/src/Git.ts
+@@ -137,13 +137,39 @@ export async function changedSince(
+ }
+ 
+ /**
+- * Stages paths.
++ * Paths the repository's ignore rules exclude.
++ *
++ * `--no-index` matches how `git add` traverses the working tree: it refuses a path under an
++ * excluded directory even when that path is tracked. The index-aware default disagrees there, so it
++ * would leave the very failure this guards against. The cost is a tracked file matching a
++ * file-level rule, which `git add` would accept and this reports as excluded - a contradictory
++ * configuration, and one worth skipping rather than failing over.
++ *
++ * @param files - Repository-relative paths.
++ * @returns The subset the ignore rules exclude. Empty when git cannot answer.
++ */
++async function ignored(files: readonly string[], options: Options = {}): Promise<Set<string>> {
++  // Exit 1 means nothing matched; any other failure is treated the same way, leaving `add` to
++  // surface the real error.
++  const output = await git(['check-ignore', '--no-index', '--', ...files], options).catch(() => '')
++  return new Set(output ? output.split('\n') : [])
++}
++
++/**
++ * Stages paths, skipping the ones git ignores.
++ *
++ * A friction log kept in an ignored directory is still a complete publish: the entries are filed
++ * and marked linked, and there is nothing left to commit. Staging them would fail the whole command
++ * over paths the repository has deliberately excluded.
+  *
+  * @param files - Repository-relative paths. An empty list is a no-op.
+  */
+ export async function add(files: readonly string[], options: Options = {}): Promise<void> {
+   if (files.length === 0) return
+-  await git(['add', '--', ...files], options)
++  const excluded = await ignored(files, options)
++  const staged = files.filter((file) => !excluded.has(file))
++  if (staged.length === 0) return
++  await git(['add', '--', ...staged], options)
+ }
+ 
+ /**
+diff --git a/src/cli/commands/log.ts b/src/cli/commands/log.ts
+index 46b0050f5d6acc389f3be89cd157ef32363512e7..ea0d4179b8b4b47334b232eb81efeed41780e05b 100644
+--- a/src/cli/commands/log.ts
++++ b/src/cli/commands/log.ts
+@@ -141,7 +141,12 @@ export const log = Cli.create('log', {
+     // Skipped once the arguments cover both parts. Reading it then only costs the wait.
+     const piped = c.args.title && c.options.body ? undefined : await attempt(stdin.read())
+     if (piped && !piped.ok) return c.error({ code: piped.code, message: piped.message })
+-    const input = piped?.ok && piped.value ? stdin.parse(piped.value) : undefined
++    const input =
++      piped?.ok && piped.value
++        ? c.args.title
++          ? { title: c.args.title, body: piped.value.trim() }
++          : stdin.parse(piped.value)
++        : undefined
+ 
+     // Every `c.error` below is returned straight from `run`. See `internal/attempt.ts` for why that
+     // matters.
