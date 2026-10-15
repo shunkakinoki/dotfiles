@@ -247,6 +247,7 @@ The line 2 of output should include 'patchedDependencies'
 End
 
 It 'pins every patched package to the exact version its patch targets'
+# shellcheck disable=SC2016
 When run jq -r '. as $r | $r.patchedDependencies | keys[] | capture("^(?<n>.+)@(?<v>[^@]+)$") | select($r.dependencies[.n] != .v) | .n' package.json
 The output should equal ''
 End
