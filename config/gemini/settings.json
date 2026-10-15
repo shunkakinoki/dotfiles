@@ -37,22 +37,9 @@
       ],
       "command": "chrome-devtools-mcp"
     },
-    "Codex": {
-      "args": [
-        "mcp-server"
-      ],
-      "command": "codex"
-    },
     "Context7": {
       "args": [],
       "command": "context7-mcp"
-    },
-    "GitHub": {
-      "args": [
-        "-c",
-        "exec mcp-remote 'https://api.githubcopilot.com/mcp/' --header \"Authorization:Bearer $(gh auth token)\""
-      ],
-      "command": "sh"
     },
     "MemPalace": {
       "args": [
