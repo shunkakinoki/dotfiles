@@ -28,7 +28,7 @@ verify_wiring() {
     config/cursor/hooks.json \
     config/copilot/config.json \
     config/grok/plugin/hooks/hooks.json; do
-    for hook in block-git-push.sh block-gh-settings.sh; do
+    for hook in block-git-push.sh block-git-identity.sh block-gh-settings.sh; do
       if ! registered_hook_commands "$config" | grep -Fqx "\$HOME/dotfiles/config/shared/hooks/$hook"; then
         printf 'missing %s in %s\n' "$hook" "$config" >&2
         return 1
@@ -37,7 +37,7 @@ verify_wiring() {
   done
 }
 
-It 'keeps both hooks registered for Codex Claude Cursor Copilot and Grok'
+It 'keeps the shared hooks registered for Codex Claude Cursor Copilot and Grok'
 When call verify_wiring
 The status should be success
 End
