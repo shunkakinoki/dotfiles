@@ -6,7 +6,8 @@
     "desired_status": "open",
     "id": "task-b",
     "kept": false,
-    "lease": false
+    "lease": false,
+    "session": false
   },
   {
     "current_assignee": "owner@example.com",
@@ -15,7 +16,8 @@
     "desired_status": "in_progress",
     "id": "task-c",
     "kept": false,
-    "lease": false
+    "lease": false,
+    "session": false
   },
   {
     "current_assignee": "owner@example.com",
@@ -24,7 +26,8 @@
     "desired_status": "open",
     "id": "task-d",
     "kept": false,
-    "lease": false
+    "lease": false,
+    "session": false
   },
   {
     "current_assignee": "owner@example.com",
@@ -33,7 +36,8 @@
     "desired_status": "closed",
     "id": "task-i",
     "kept": false,
-    "lease": false
+    "lease": false,
+    "session": false
   },
   {
     "current_assignee": "",
@@ -42,7 +46,8 @@
     "desired_status": "in_progress",
     "id": "task-j",
     "kept": true,
-    "lease": false
+    "lease": false,
+    "session": true
   },
   {
     "current_assignee": "owner@example.com",
@@ -51,7 +56,8 @@
     "desired_status": "in_progress",
     "id": "task-k",
     "kept": true,
-    "lease": false
+    "lease": false,
+    "session": true
   },
   {
     "current_assignee": "owner@example.com",
@@ -60,7 +66,8 @@
     "desired_status": "in_progress",
     "id": "task-m",
     "kept": true,
-    "lease": true
+    "lease": true,
+    "session": false
   },
   {
     "current_assignee": "owner@example.com",
@@ -69,7 +76,8 @@
     "desired_status": "closed",
     "id": "task-n",
     "kept": true,
-    "lease": true
+    "lease": true,
+    "session": false
   },
   {
     "current_assignee": "owner@example.com",
@@ -78,7 +86,8 @@
     "desired_status": "closed",
     "id": "task-o",
     "kept": false,
-    "lease": true
+    "lease": true,
+    "session": false
   },
   {
     "current_assignee": "owner@example.com",
@@ -87,6 +96,17 @@
     "desired_status": "open",
     "id": "task-p",
     "kept": false,
-    "lease": false
+    "lease": false,
+    "session": false
+  },
+  {
+    "current_assignee": "",
+    "current_status": "in_progress",
+    "desired_assignee": "kamino1_exec_u",
+    "desired_status": "in_progress",
+    "id": "task-u",
+    "kept": true,
+    "lease": false,
+    "session": false
   }
 ]

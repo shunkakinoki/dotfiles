@@ -1282,16 +1282,27 @@ The contents of file "$ledger" should not include 'df-12 '
 End
 
 It 'keeps the Beads assignee of an in_progress claim the pull unassigned or gave the tracker user'
-before='[{"id":"df-session","status":"in_progress","assignee":"operator-session","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/session"},{"id":"df-lane","status":"in_progress","assignee":"exec","notes":"lane-claim:exec","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/lane"},{"id":"df-reassigned","status":"in_progress","assignee":"other@example.com","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-8/reassigned"},{"id":"df-emailed","status":"in_progress","assignee":"kamino3_exec_emailed","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-9/emailed"}]'
-after='[{"id":"df-session","status":"in_progress","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/session"},{"id":"df-lane","status":"in_progress","assignee":"","notes":"lane-claim:exec","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/lane"},{"id":"df-reassigned","status":"in_progress","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-8/reassigned"},{"id":"df-emailed","status":"in_progress","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-9/emailed"}]'
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+before='[{"id":"df-session","status":"in_progress","assignee":"operator-session","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/session"},{"id":"df-lane","status":"in_progress","assignee":"kamino1_exec_lane","notes":"lane-claim:kamino1_exec_lane","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/lane"},{"id":"df-reassigned","status":"in_progress","assignee":"other@example.com","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-8/reassigned"},{"id":"df-emailed","status":"in_progress","assignee":"kamino3_exec_emailed","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-9/emailed"}]'
+after='[{"id":"df-session","status":"in_progress","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/session"},{"id":"df-lane","status":"in_progress","assignee":"","notes":"lane-claim:kamino1_exec_lane","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/lane"},{"id":"df-reassigned","status":"in_progress","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-8/reassigned"},{"id":"df-emailed","status":"in_progress","assignee":"operator@example.com","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-9/emailed"}]'
+history='[{"actor":"operator-session","created_at":"2099-01-02T00:00:00Z","event_type":"updated"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_HISTORY_ID=df-session FAKE_HISTORY_JSON="$history" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'Restored 3 control state record(s); skipped 0 superseded or refused repair(s)'
 The contents of file "$COMMAND_LOG" should include 'update df-session --assignee operator-session --if-status=in_progress --if-assignee='
-The contents of file "$COMMAND_LOG" should include 'update df-lane --assignee exec --if-status=in_progress --if-assignee='
+The contents of file "$COMMAND_LOG" should include 'update df-lane --assignee kamino1_exec_lane --if-status=in_progress --if-assignee='
 The contents of file "$COMMAND_LOG" should include 'update df-emailed --assignee kamino3_exec_emailed --if-status=in_progress --if-assignee=operator@example.com'
 The contents of file "$COMMAND_LOG" should not include 'update df-reassigned'
 The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'leaves a session claim released when its holder has not written it for a day'
+before='[{"id":"df-session","status":"in_progress","assignee":"operator-session","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/session"}]'
+after='[{"id":"df-session","status":"in_progress","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/session"}]'
+history='[{"actor":"operator-session","created_at":"2000-01-01T00:00:00Z","event_type":"updated"},{"actor":"beads-linear-reconciler","created_at":"2099-01-02T00:00:00Z","event_type":"updated"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_HISTORY_ID=df-session FAKE_HISTORY_JSON="$history" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Restored 0 control state record(s); skipped 0 superseded or refused repair(s); left 1 idle session claim(s) released'
+The contents of file "$COMMAND_LOG" should not include 'update df-session'
 End
 
 It 'does not re-push an assignee it kept that the ledger already recorded'
@@ -1299,7 +1310,8 @@ claimed='[{"id":"df-session","status":"in_progress","assignee":"operator-session
 after='[{"id":"df-session","status":"in_progress","assignee":"","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/session"}]'
 repaired='[{"id":"df-session","status":"in_progress","assignee":"operator-session","updated_at":"2099-01-04T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-2/session"}]'
 ledger="$STATE_HOME/beads-linear-sync/pushed-active-test%2Frepo-one"
-When run bash -c "env COMMAND_LOG='$TEST_ROOT/first.log' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$claimed' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' >/dev/null && grep -q -E '^df-session [0-9a-f]{64}$' '$ledger' && env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_CHANGED_ISSUES=TEST-2 FAKE_LIST_JSON='$claimed' FAKE_LIST_JSON_AFTER_PULL='$after' FAKE_LIST_JSON_AFTER_REPAIR='$repaired' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT'"
+history='[{"actor":"operator-session","created_at":"2099-01-02T00:00:00Z","event_type":"updated"}]'
+When run bash -c "env COMMAND_LOG='$TEST_ROOT/first.log' SYNC_COUNT='$SYNC_COUNT' FAKE_LIST_JSON='$claimed' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' >/dev/null && grep -q -E '^df-session [0-9a-f]{64}$' '$ledger' && env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_HISTORY_ID=df-session FAKE_HISTORY_JSON='$history' FAKE_CHANGED_ISSUES=TEST-2 FAKE_LIST_JSON='$claimed' FAKE_LIST_JSON_AFTER_PULL='$after' FAKE_LIST_JSON_AFTER_REPAIR='$repaired' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT'"
 The status should be success
 The output should include 'Restored 1 control state record(s); skipped 0 superseded or refused repair(s)'
 The output should include 'No changed active Beads to push'
