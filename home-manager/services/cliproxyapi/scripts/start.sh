@@ -355,11 +355,20 @@ usage_export() {
     return 0
   fi
   mkdir -p "$(dirname "$USAGE_EXPORT_FILE")"
-  curl -sS --max-time 5 \
+  # Shutdown runs this from both the TERM and EXIT traps, and the second call
+  # finds the container stopped. Only a successful, non-empty export may
+  # replace the saved snapshot, or that failure would wipe it locally and in
+  # the object store.
+  local tmp="${USAGE_EXPORT_FILE}.tmp"
+  if curl -fsS --max-time 5 \
     -H "Authorization: Bearer ${MANAGEMENT_KEY}" \
     "${MANAGEMENT_URL}/usage/export" \
-    -o "$USAGE_EXPORT_FILE" || true
-  cliproxy_upload_usage_to_s3 "$USAGE_EXPORT_FILE"
+    -o "$tmp" && [ -s "$tmp" ]; then
+    mv -f "$tmp" "$USAGE_EXPORT_FILE"
+    cliproxy_upload_usage_to_s3 "$USAGE_EXPORT_FILE"
+  else
+    rm -f "$tmp"
+  fi
 }
 
 apply_systemd_cgroup_weights() {
