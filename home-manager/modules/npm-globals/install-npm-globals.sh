@@ -382,7 +382,10 @@ if [ -n "$OVERRIDES" ]; then
 fi
 
 # Apply package patches to the global install. Bun resolves patchedDependencies
-# paths against the global dir, so each patch file is copied there first.
+# paths against the global dir, so each patch file is copied there first. Each
+# patched package is also pinned in the global manifest: a copy left in
+# node_modules without a manifest entry passes the install check above, but
+# bun install never patches it.
 PATCHES=$(jq -c '.patchedDependencies // empty' "$PACKAGE_JSON" 2>/dev/null || true)
 if [ -n "$PATCHES" ] && [ -f "$GLOBAL_PKG" ]; then
   GLOBAL_DIR="${HOME}/.bun/install/global"
@@ -391,7 +394,10 @@ if [ -n "$PATCHES" ] && [ -f "$GLOBAL_PKG" ]; then
     mkdir -p "$(dirname "${GLOBAL_DIR}/${patch}")"
     cp -f "${HOME}/dotfiles/${patch}" "${GLOBAL_DIR}/${patch}"
   done < <(jq -r '.[]' <<<"$PATCHES")
-  jq --argjson patches "$PATCHES" '.patchedDependencies = $patches' "$GLOBAL_PKG" >"${GLOBAL_PKG}.tmp" &&
+  jq --argjson patches "$PATCHES" '
+    .patchedDependencies = $patches
+    | .dependencies += ($patches | keys | map(capture("^(?<name>.+)@(?<version>[^@]+)$") | {(.name): .version}) | add)
+  ' "$GLOBAL_PKG" >"${GLOBAL_PKG}.tmp" &&
     mv "${GLOBAL_PKG}.tmp" "$GLOBAL_PKG"
   if (cd "$GLOBAL_DIR" && timeout 600 bun install); then
     echo "Applied package patches to global install"

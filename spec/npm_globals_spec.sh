@@ -246,6 +246,11 @@ The line 1 of output should include 'cp -f'
 The line 2 of output should include 'patchedDependencies'
 End
 
+It 'pins patched packages in the global manifest so bun install patches them'
+When run bash -c "grep -A1 'patchedDependencies = \\\$patches' '$SCRIPT'"
+The line 2 of output should include '.dependencies += ('
+End
+
 It 'pins every patched package to the exact version its patch targets'
 When run jq -r '. as $r | $r.patchedDependencies | keys[] | capture("^(?<n>.+)@(?<v>[^@]+)$") | select($r.dependencies[.n] != .v) | .n' package.json
 The output should equal ''
