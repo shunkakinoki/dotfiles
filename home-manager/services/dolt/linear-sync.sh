@@ -445,9 +445,9 @@ rendered_section_cuts='
   | {id: .id, body: canonical_description}
 '
 
-written_since_snapshot() {
-  "$bd_cli" -C "$repo_dir" history "$1" --events --limit 20 --json 2>/dev/null </dev/null |
-    @jq@/bin/jq -r --arg since "$snapshot_taken_at" --arg actor "$BEADS_ACTOR" '
+written_since() {
+  "$bd_cli" -C "$repo_dir" history "$1" --events --limit 0 --json 2>/dev/null </dev/null |
+    @jq@/bin/jq -r --arg since "$2" --arg actor "$BEADS_ACTOR" '
       if type == "array" then any(.[]; .actor != $actor and .created_at >= $since) else false end
     ' 2>/dev/null || echo unknown
 }
@@ -477,7 +477,7 @@ normalize_rendered_sections() {
   fi
   while IFS= read -r cut; do
     cut_id="$(@jq@/bin/jq -r '.id' <<<"$cut")"
-    if [ "$(written_since_snapshot "$cut_id")" = "true" ]; then
+    if [ "$(written_since "$cut_id" "$snapshot_taken_at")" = "true" ]; then
       skipped=$((skipped + 1))
       normalize_skipped_ids="${normalize_skipped_ids:+$normalize_skipped_ids,}$cut_id"
       continue
@@ -707,7 +707,8 @@ restore_linear_last_sync() {
 # A cursor-free pull overwrites local assignment, workflow state, and labels
 # with the tracker's values. An in-progress Bead the pull only unassigned keeps
 # its pre-pull assignee: Beads owns custody, and a claim whose journal event an
-# earlier cycle already folded has nothing newer to restore it. The durable
+# earlier cycle already folded has nothing newer to restore it. A session claim
+# its holder has not written for a day stays released instead. The durable
 # journal folds every non-reconciler mutation the tracker has not yet received
 # in commit order: those since the last successful cycle listed Beads for its
 # active push, plus those made during this pull. So an unpushed claim, release,
@@ -736,6 +737,8 @@ repair_control_state_after_pull() {
   local pulled_status
   local pulled_assignee
   local restore_args
+  local released_idle_sessions
+  local session_idle_since
 
   if ! all_issues="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0)"; then
     log "Unable to list Beads after the Linear pull"
@@ -768,6 +771,11 @@ repair_control_state_after_pull() {
     log "Restoring locally authoritative control state after pull"
     restored_control_state=0
     restore_failures=0
+    released_idle_sessions=0
+    if ! session_idle_since="$(@jq@/bin/jq -nr --arg snapshot "$snapshot_taken_at" '$snapshot | fromdateiso8601 - 86400 | todate')"; then
+      log "Unable to derive the session idle cutoff from the snapshot time"
+      return 1
+    fi
     while IFS= read -r repair; do
       restore_id="$(@jq@/bin/jq -r '.id' <<<"$repair")"
       # A pass that released or retook its lease during the pull wrote the
@@ -776,8 +784,17 @@ repair_control_state_after_pull() {
       # history skips the repair too: a live pass retakes a lease the pull
       # closed on its next heartbeat.
       if [ "$(@jq@/bin/jq -r '.lease' <<<"$repair")" = true ] &&
-        [ "$(written_since_snapshot "$restore_id")" != "false" ]; then
+        [ "$(written_since "$restore_id" "$snapshot_taken_at")" != "false" ]; then
         restore_failures=$((restore_failures + 1))
+        continue
+      fi
+      # The pull and this restore each bump updated_at, the clock the floor's
+      # unowned sweep reads, so restoring a session claim whose holder went
+      # quiet would hold it forever. Its holder's own writes, not the
+      # reconciler's, decide: a day without one leaves the pull's release.
+      if [ "$(@jq@/bin/jq -r '.session' <<<"$repair")" = true ] &&
+        [ "$(written_since "$restore_id" "$session_idle_since")" = "false" ]; then
+        released_idle_sessions=$((released_idle_sessions + 1))
         continue
       fi
       restore_status="$(@jq@/bin/jq -r '.desired_status' <<<"$repair")"
@@ -801,7 +818,7 @@ repair_control_state_after_pull() {
         restore_failures=$((restore_failures + 1))
       fi
     done <<<"$control_state_repairs"
-    log "Restored $restored_control_state control state record(s); skipped $restore_failures superseded or refused repair(s)"
+    log "Restored $restored_control_state control state record(s); skipped $restore_failures superseded or refused repair(s); left $released_idle_sessions idle session claim(s) released"
   fi
 }
 
