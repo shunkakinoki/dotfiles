@@ -239,6 +239,26 @@ The output should include 'find'
 End
 End
 
+Describe 'package patches'
+It 'copies patch files into the global dir and records them there'
+When run bash -c "grep -E 'cp -f .*dotfiles|patchedDependencies = \\\$patches' '$SCRIPT'"
+The line 1 of output should include 'cp -f'
+The line 2 of output should include 'patchedDependencies'
+End
+
+It 'pins every patched package to the exact version its patch targets'
+# shellcheck disable=SC2016
+When run jq -r '. as $r | $r.patchedDependencies | keys[] | capture("^(?<n>.+)@(?<v>[^@]+)$") | select($r.dependencies[.n] != .v) | .n' package.json
+The output should equal ''
+End
+
+It 'ships every referenced patch file'
+When run bash -c "jq -r '.patchedDependencies[]' package.json | xargs ls"
+The status should be success
+The output should include '.patch'
+End
+End
+
 Describe 'bun npm shim purge'
 It 'defines a purge_bun_npm_shim function'
 When run bash -c "grep 'purge_bun_npm_shim()' '$SCRIPT'"
