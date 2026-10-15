@@ -576,7 +576,7 @@ let
           cfg.systemd.user.services.openclaw-gateway.Service.Environment;
         assert lib.elem "e /dev/shm/openclaw-gateway/openclaw-plugin-build-* - - - 1h"
           cfg.systemd.user.tmpfiles.rules;
-        assert lib.hasInfix "OnUnitActiveSec=1h"
+        assert lib.hasInfix "OnCalendar=hourly"
           cfg.xdg.configFile."systemd/user/systemd-tmpfiles-clean.timer.d/hourly.conf".text;
         assert cfg.systemd.user.services.openclaw-state-maintenance.Service.TimeoutStartSec == "30m";
         assert cfg.systemd.user.services.openclaw-state-maintenance.Service.IOAccounting;

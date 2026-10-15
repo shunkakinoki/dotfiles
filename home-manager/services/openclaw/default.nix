@@ -156,10 +156,12 @@ lib.mkIf host.isKyber {
   systemd.user.tmpfiles.rules = [
     "e /dev/shm/openclaw-gateway/openclaw-plugin-build-* - - - 1h"
   ];
-  # The stock user clean timer runs daily; a day of leaks fills /dev/shm.
+  # The stock user clean timer runs daily; a day of leaks fills /dev/shm. A
+  # wall-clock schedule is needed because OnUnitActiveSec never arms when the
+  # timer starts after OnStartupSec has passed and the service has not yet run.
   xdg.configFile."systemd/user/systemd-tmpfiles-clean.timer.d/hourly.conf".text = ''
     [Timer]
     OnUnitActiveSec=
-    OnUnitActiveSec=1h
+    OnCalendar=hourly
   '';
 }
