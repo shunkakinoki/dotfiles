@@ -7,6 +7,12 @@
 # wall-clock schedule; running it per token refresh saturated kyber's disk.
 # shellcheck source=/dev/null
 set -euo pipefail
+# When TimeoutStartSec expires, systemd SIGTERMs the whole cgroup and reaps it
+# as soon as this main process is gone. Dying on the untrapped signal would
+# take the snapshot subshell down before its EXIT trap removes the
+# multi-gigabyte staging directory from tmpfs; exiting through the trap waits
+# for that cleanup first.
+trap 'exit 143' TERM INT HUP
 . "@common@"
 
 MODE="${1:-auth}"
