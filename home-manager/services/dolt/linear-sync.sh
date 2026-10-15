@@ -154,6 +154,7 @@ reconciliation_lock_file="$reconciliation_state_dir/reconcile-$repo_slug.lock"
 push_progress_file="$sync_state_dir/push-progress-$repo_slug"
 full_pull_file="$sync_state_dir/full-pull-$repo_slug"
 linear_echo_file="$sync_state_dir/linear-echo-$repo_slug"
+pull_carry_file="$sync_state_dir/pull-carry-$repo_slug"
 
 ensure_config() {
   local key="$1"
@@ -1320,6 +1321,16 @@ fi
 # Linear changed since the last successful cycle, with ten minutes of overlap
 # for clock skew. The selective fetch omits relations, so the full pull stays
 # daily, and a failed selective pull forces the next cycle to pull in full.
+#
+# bd fetches each selected issue with its own Linear request (about 70
+# complexity points), and Linear allows an API key 2,500 requests an hour
+# shared with every other client of that user, so the request count binds,
+# not complexity. A cycle pulls at most 300 issues, in chunks of 100 that
+# each finish in about two minutes against their 720-second timeout. Issues
+# past the cycle limit carry to the next cycle ahead of its new changes; the
+# carry is recorded only when the cycle succeeds, and a failed cycle keeps
+# both the checkpoint and the earlier carry, so its listing window covers
+# them again.
 pull_mode=full
 full_pull_started="$(@coreutils@/bin/date -u '+%s')"
 if [ -s "$sync_checkpoint_file" ] && [ -s "$full_pull_file" ]; then
@@ -1334,16 +1345,31 @@ if [ "$pull_mode" = selective ]; then
     pull_mode=full
   else
     list_changed_linear_issues "$changed_since" || exit $?
-    # Each selective issue is its own tracker request.
-    if [ "$changed_linear_count" -gt 100 ]; then
-      log "$changed_linear_count Linear issues changed since the last cycle; pulling in full"
-      pull_mode=full
-    fi
+  fi
+fi
+
+selective_pull_limit=300
+selective_pull_chunk=100
+selective_pull_ids=()
+pull_carry_ids=()
+if [ "$pull_mode" = selective ]; then
+  mapfile -t selective_pull_ids < <(
+    {
+      if [ -s "$pull_carry_file" ]; then
+        @coreutils@/bin/cat "$pull_carry_file"
+      fi
+      @coreutils@/bin/tr ',' '\n' <<<"$changed_linear_identifiers"
+    } | @gawk@/bin/awk 'NF && !seen[$1]++ { print $1 }'
+  )
+  if [ "${#selective_pull_ids[@]}" -gt "$selective_pull_limit" ]; then
+    pull_carry_ids=("${selective_pull_ids[@]:selective_pull_limit}")
+    selective_pull_ids=("${selective_pull_ids[@]:0:selective_pull_limit}")
+    log "Carrying ${#pull_carry_ids[@]} changed Linear issue(s) past the $selective_pull_limit-issue cycle limit to the next cycle"
   fi
 fi
 
 repaired_ids=""
-if [ "$pull_mode" = selective ] && [ "$changed_linear_count" -eq 0 ]; then
+if [ "$pull_mode" = selective ] && [ "${#selective_pull_ids[@]}" -eq 0 ]; then
   log "No Linear issues changed since the last cycle; skipping the pull"
 else
   linear_last_sync_before_pull="$(@jq@/bin/jq -r '.last_sync // ""' <<<"$linear_status")"
@@ -1360,15 +1386,24 @@ else
   # rate-limit failure is deferred to the next scheduled run instead of making
   # launchd hot-loop a failed job.
   if [ "$pull_mode" = selective ]; then
-    log "Pulling $changed_linear_count changed Linear issue(s)"
-    if run_linear pull @coreutils@/bin/timeout 720 "$bd_cli" -C "$repo_dir" linear sync \
-      --pull \
-      --issues "$changed_linear_identifiers" \
-      --no-wait; then
-      pull_status=0
-    else
-      pull_status=$?
-    fi
+    chunk_count=$(((${#selective_pull_ids[@]} + selective_pull_chunk - 1) / selective_pull_chunk))
+    log "Pulling ${#selective_pull_ids[@]} changed Linear issue(s) in $chunk_count chunk(s)"
+    chunk_status=0
+    for ((chunk_start = 0; chunk_start < ${#selective_pull_ids[@]}; chunk_start += selective_pull_chunk)); do
+      chunk_ids="$(
+        IFS=,
+        printf '%s' "${selective_pull_ids[*]:chunk_start:selective_pull_chunk}"
+      )"
+      run_linear pull @coreutils@/bin/timeout 720 "$bd_cli" -C "$repo_dir" linear sync \
+        --pull \
+        --issues "$chunk_ids" \
+        --no-wait || chunk_status=$?
+      if [ "$chunk_status" -ne 0 ]; then
+        log "Linear pull chunk $((chunk_start / selective_pull_chunk + 1))/$chunk_count did not complete"
+        break
+      fi
+    done
+    pull_status="$chunk_status"
   else
     log "Pulling complete Linear state"
     if run_linear pull @coreutils@/bin/timeout 720 "$bd_cli" -C "$repo_dir" linear sync \
@@ -1496,6 +1531,12 @@ printf '%s\n' "$push_journal_head" >"$journal_checkpoint_file.tmp"
 @coreutils@/bin/mv -f "$journal_checkpoint_file.tmp" "$journal_checkpoint_file"
 printf '%s\n' "$cycle_started" >"$sync_checkpoint_file.tmp"
 @coreutils@/bin/mv -f "$sync_checkpoint_file.tmp" "$sync_checkpoint_file"
+if [ "${#pull_carry_ids[@]}" -gt 0 ]; then
+  printf '%s\n' "${pull_carry_ids[@]}" >"$pull_carry_file.tmp"
+  @coreutils@/bin/mv -f "$pull_carry_file.tmp" "$pull_carry_file"
+else
+  @coreutils@/bin/rm -f "$pull_carry_file"
+fi
 if [ "$pull_mode" = full ]; then
   printf '%s\n' "$full_pull_started" >"$full_pull_file.tmp"
   @coreutils@/bin/mv -f "$full_pull_file.tmp" "$full_pull_file"
