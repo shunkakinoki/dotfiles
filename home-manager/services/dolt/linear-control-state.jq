@@ -85,6 +85,13 @@ def control_state:
     kept: ($want.kept // false),
     lease: ($leases[$id] != null),
   }
+# A kept session claim is one the floor's unowned sweep releases once its holder
+# has been idle for a day. Lane names start with their host and the pull writes
+# a person's name or email, so neither is a session's own actor.
+| .session = (
+    .kept and (.lease | not)
+    and (.desired_assignee | test("^[A-Za-z0-9-]+_|[\\s@]") | not)
+  )
 | select(
     .desired_status != .current_status
     or .desired_assignee != .current_assignee

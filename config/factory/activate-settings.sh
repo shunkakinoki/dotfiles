@@ -37,6 +37,7 @@ if [ -f "$SETTINGS" ]; then
       | (($matcher == "Execute")
          and (is_home_command($command; "dotfiles/config/shared/hooks/security.sh")
               or is_home_command($command; "dotfiles/config/shared/hooks/block-git-push.sh")
+              or is_home_command($command; "dotfiles/config/shared/hooks/block-git-identity.sh")
               or is_home_command($command; "dotfiles/config/shared/hooks/block-gh-settings.sh")
               or is_home_command($command; "dotfiles/config/shared/hooks/roborev-agent.sh droid")))
       or (($matcher == "^(Edit|Write|Create|ApplyPatch)$")

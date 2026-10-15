@@ -94,5 +94,13 @@
     "labels": [
       "linear"
     ]
+  },
+  {
+    "id": "task-u",
+    "status": "in_progress",
+    "assignee": "kamino1_exec_u",
+    "labels": [
+      "linear"
+    ]
   }
 ]
