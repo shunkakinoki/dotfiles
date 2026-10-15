@@ -59,6 +59,12 @@ The output should include 'ConditionPathIsExecutable'
 The status should be success
 End
 
+It 'stops restarting the linux daemon after the caam binary disappears'
+When run bash -c "grep -F 'RestartPreventExitStatus = 203' '$NIX'"
+The output should include 'RestartPreventExitStatus'
+The status should be success
+End
+
 It 'bootstraps the pool on home-manager activation'
 When run bash -c "grep -F 'caamSyncSetup' '$NIX'"
 The output should include 'caamSyncSetup'
