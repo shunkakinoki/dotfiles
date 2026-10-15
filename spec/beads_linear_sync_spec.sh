@@ -170,7 +170,7 @@ setup_reconciliation() {
   CHECKPOINT_FILE="$STATE_HOME/beads-linear-sync/last-success-$repo_slug"
   export DOTFILES_ENV_FILE="$ENV_FILE"
   export DOLT_LOG FSCK_TIMEOUT_LOG ISSUE_REF_FILE ISSUE_STATUS_FILE
-  for command in cat chmod date env head mkdir mv paste rm sha256sum sleep tail timeout; do
+  for command in cat chmod date env head mkdir mv paste rm sha256sum sleep tail timeout tr; do
     ln -s "$(command -v "$command")" "$COREUTILS/bin/$command"
   done
   cat >"$UTIL_LINUX/bin/flock" <<'EOF'
@@ -553,7 +553,12 @@ if [[ $request == *ChangedIssues* ]]; then
   if [ "${FAKE_CHANGED_FAILS:-}" = 1 ]; then
     exit 22
   fi
-  jq -nc --arg ids "${FAKE_CHANGED_ISSUES:-}" '{data: {issues: {nodes: ($ids | split(",") | map(select(length > 0) | {identifier: .})), pageInfo: {hasNextPage: false, endCursor: null}}}}'
+  jq -nc --arg ids "${FAKE_CHANGED_ISSUES:-}" --arg updated "${FAKE_CHANGED_UPDATED_AT:-2099-01-01T00:00:00.000Z}" '{data: {issues: {nodes: ($ids | split(",") | map(select(length > 0) | {identifier: ., updatedAt: $updated})), pageInfo: {hasNextPage: false, endCursor: null}}}}'
+  exit 0
+fi
+if [[ $request == *PushedIssues* ]]; then
+  printf '%s\n' "$request" >>"${FAKE_PUSHED_LOG:-/dev/null}"
+  jq -c --arg updated "${FAKE_PUSHED_UPDATED_AT:-2099-01-01T00:00:00.000Z}" '{data: {issues: {nodes: (.variables.filter.number.in | map({identifier: "TEST-\(.)", updatedAt: $updated}))}}}' <<<"$request"
   exit 0
 fi
 if [ "${FAKE_LINEAR_STATE:-completed}" = "failure" ]; then
@@ -655,6 +660,41 @@ When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_CHANGED_FA
 The status should equal 69
 The output should include 'Unable to list Linear issues changed since the last cycle'
 The contents of file "$COMMAND_LOG" should not include 'linear sync --pull'
+End
+
+It 'records the Linear version each push produced'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_PUSHED_LOG="$TEST_ROOT/pushed.log" FAKE_PUSHED_UPDATED_AT=2026-01-01T00:05:00.000Z XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Pushing changed active Beads'
+The contents of file "$TEST_ROOT/pushed.log" should include '"number":{"in":[999]}'
+The contents of file "$STATE_HOME/beads-linear-sync/linear-echo-test%2Frepo-one" should equal 'TEST-999 2026-01-01T00:05:00.000Z'
+End
+
+It 'does not pull issues whose only Linear change is its own push'
+mkdir -p "$STATE_HOME/beads-linear-sync"
+printf '%s\n' '2026-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
+date -u '+%s' >"$STATE_HOME/beads-linear-sync/full-pull-test%2Frepo-one"
+printf '%s\n' 'TEST-1 2026-01-01T00:05:00.000Z' 'TEST-2 2026-01-01T00:05:00.000Z' 'TEST-3 2025-12-31T23:00:00.000Z' 'TEST-4 2025-12-31T23:50:00.000Z' >"$STATE_HOME/beads-linear-sync/linear-echo-test%2Frepo-one"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_CHANGED_ISSUES=TEST-1,TEST-2 FAKE_CHANGED_UPDATED_AT=2026-01-01T00:05:00.000Z FAKE_PUSHED_UPDATED_AT=2026-01-01T00:06:00.000Z XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include "Skipped 2 Linear issue(s) changed only by this reconciler's push"
+The output should include 'No Linear issues changed since the last cycle; skipping the pull'
+The contents of file "$COMMAND_LOG" should not include 'linear sync --pull'
+The contents of file "$DOLT_LOG" should not include 'DELETE FROM local_metadata'
+The contents of file "$STATE_HOME/beads-linear-sync/linear-echo-test%2Frepo-one" should not include 'TEST-3'
+The contents of file "$STATE_HOME/beads-linear-sync/linear-echo-test%2Frepo-one" should include 'TEST-4 2025-12-31T23:50:00.000Z'
+End
+
+It 'pulls an issue Linear changed again after its own push'
+mkdir -p "$STATE_HOME/beads-linear-sync"
+printf '%s\n' '2026-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
+date -u '+%s' >"$STATE_HOME/beads-linear-sync/full-pull-test%2Frepo-one"
+printf '%s\n' 'TEST-1 2026-01-01T00:05:00.000Z' >"$STATE_HOME/beads-linear-sync/linear-echo-test%2Frepo-one"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_CHANGED_ISSUES=TEST-1,TEST-2 FAKE_CHANGED_UPDATED_AT=2026-01-01T00:07:00.000Z XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should not include 'changed only by this reconciler'
+The output should include 'Pulling 2 changed Linear issue(s)'
+The contents of file "$COMMAND_LOG" should include 'linear sync --pull --issues TEST-1,TEST-2 --no-wait'
 End
 
 It 'keeps managed authority when local settings contain retired routing'

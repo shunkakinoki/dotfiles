@@ -153,6 +153,7 @@ journal_checkpoint_file="$sync_state_dir/journal-head-$repo_slug"
 reconciliation_lock_file="$reconciliation_state_dir/reconcile-$repo_slug.lock"
 push_progress_file="$sync_state_dir/push-progress-$repo_slug"
 full_pull_file="$sync_state_dir/full-pull-$repo_slug"
+linear_echo_file="$sync_state_dir/linear-echo-$repo_slug"
 
 ensure_config() {
   local key="$1"
@@ -326,6 +327,74 @@ run_linear() {
   return 65
 }
 
+# Each push bumps the Linear updatedAt of every issue it sends, so the next
+# cycle's changed-issue listing would return this reconciler's own writes,
+# exceed the selective cap, and force a full pull that rewrites unchanged
+# Beads. Record the updatedAt each push produced; the listing skips an issue
+# whose updatedAt still matches. A failed lookup only leaves the issue to be
+# pulled, so it never fails the push.
+record_linear_echoes() {
+  local batch_ids="$1"
+  local shown
+  local numbers
+  local echo_query
+  local echo_result
+  local echoes
+  local -a batch_id_array
+
+  IFS=',' read -r -a batch_id_array <<<"$batch_ids"
+  if ! shown="$("$bd_cli" -C "$repo_dir" show "${batch_id_array[@]}" --json 2>/dev/null)" ||
+    ! numbers="$(@jq@/bin/jq -c '
+      [(if type == "array" then .[] else . end)
+        | (.external_ref // "")
+        | capture("/issue/[A-Z][A-Z0-9]*-(?<n>[0-9]+)(/|$)")?
+        | .n | tonumber]
+      | unique
+    ' <<<"$shown" 2>/dev/null)"; then
+    log "Unable to read pushed Linear issue references; the next cycle pulls them"
+    return 0
+  fi
+  if [ "$numbers" = "[]" ]; then
+    return 0
+  fi
+  echo_query="$(@jq@/bin/jq -nc --arg team "$LINEAR_TEAM_ID" --argjson numbers "$numbers" '{
+    query: "query PushedIssues($filter: IssueFilter!) { issues(filter: $filter, first: 250) { nodes { identifier updatedAt } } }",
+    variables: {filter: {team: {id: {eq: $team}}, number: {in: $numbers}}}
+  }')"
+  if ! echo_result="$(@coreutils@/bin/timeout 30 @curl@/bin/curl \
+    --silent \
+    --show-error \
+    --fail-with-body \
+    --config <(
+      printf 'url = "https://api.linear.app/graphql"\n'
+      printf 'header = "Authorization: %s"\n' "$LINEAR_API_KEY"
+      printf 'header = "Content-Type: application/json"\n'
+    ) \
+    --data-binary @- <<<"$echo_query" 2>/dev/null)" ||
+    ! echoes="$(@jq@/bin/jq -er '
+      if ((.errors // []) | length) == 0 and (.data.issues.nodes | type) == "array" then
+        .data.issues.nodes[]
+        | select((.identifier | type == "string") and (.updatedAt | type == "string"))
+        | "\(.identifier) \(.updatedAt)"
+      else
+        error
+      end
+    ' <<<"$echo_result" 2>/dev/null)"; then
+    log "Unable to record pushed Linear issue versions; the next cycle pulls them"
+    return 0
+  fi
+  if [ -z "$echoes" ]; then
+    return 0
+  fi
+  {
+    if [ -s "$linear_echo_file" ]; then
+      @gawk@/bin/awk 'NR == FNR { recorded[$1] = 1; next } !($1 in recorded)' <(printf '%s\n' "$echoes") "$linear_echo_file"
+    fi
+    printf '%s\n' "$echoes"
+  } >"$linear_echo_file.tmp"
+  @coreutils@/bin/mv -f "$linear_echo_file.tmp" "$linear_echo_file"
+}
+
 push_issue_batches() {
   local issue_ids="$1"
   local description="$2"
@@ -360,6 +429,7 @@ push_issue_batches() {
     log "Pushing $description Beads batch $batch_number/$batch_count"
 
     if run_linear push @coreutils@/bin/timeout 120 "$bd_cli" -C "$repo_dir" linear sync --push --issues "$batch_ids" --no-wait; then
+      record_linear_echoes "$batch_ids"
       if [ -n "$progress_file" ] && [ -n "$progress_entries" ]; then
         printf '%s\n' "$progress_entries" |
           @coreutils@/bin/tail -n +"$((batch_start + 1))" |
@@ -605,16 +675,18 @@ list_changed_linear_issues() {
   local since="$1"
   local after=""
   local has_next
-  local page_ids
+  local page_nodes
   local page_query
   local page_result
   local page
+  local changed_nodes=""
+  local echo_skipped
 
   changed_linear_identifiers=""
   changed_linear_count=0
   while :; do
     page_query="$(@jq@/bin/jq -nc --arg team "$LINEAR_TEAM_ID" --arg since "$since" --arg after "$after" '{
-      query: "query ChangedIssues($filter: IssueFilter!, $after: String) { issues(filter: $filter, first: 250, after: $after) { nodes { identifier } pageInfo { hasNextPage endCursor } } }",
+      query: "query ChangedIssues($filter: IssueFilter!, $after: String) { issues(filter: $filter, first: 250, after: $after) { nodes { identifier updatedAt } pageInfo { hasNextPage endCursor } } }",
       variables: {
         filter: {team: {id: {eq: $team}}, updatedAt: {gt: $since}},
         after: (if $after == "" then null else $after end)
@@ -637,8 +709,9 @@ list_changed_linear_issues() {
       if ((.errors // []) | length) == 0
         and (.data.issues.nodes | type) == "array"
         and all(.data.issues.nodes[]; .identifier | type == "string" and test("^[A-Z][A-Z0-9]*-[0-9]+$"))
+        and all(.data.issues.nodes[]; .updatedAt | type == "string" and test("^[0-9TZ:.+-]+$"))
       then
-        "\(.data.issues.pageInfo.hasNextPage == true)\u001f\(.data.issues.pageInfo.endCursor // "")\u001f\(.data.issues.nodes | map(.identifier) | join(","))"
+        "\(.data.issues.pageInfo.hasNextPage == true)\u001f\(.data.issues.pageInfo.endCursor // "")\u001f\(.data.issues.nodes | map("\(.identifier) \(.updatedAt)") | join(","))"
       else
         error
       end
@@ -646,16 +719,42 @@ list_changed_linear_issues() {
       log "Linear changed-issue listing returned no valid result"
       return 69
     fi
-    IFS=$'\x1f' read -r has_next after page_ids <<<"$page"
-    if [ -n "$page_ids" ]; then
-      changed_linear_identifiers="${changed_linear_identifiers:+$changed_linear_identifiers,}$page_ids"
+    IFS=$'\x1f' read -r has_next after page_nodes <<<"$page"
+    if [ -n "$page_nodes" ]; then
+      changed_nodes="${changed_nodes:+$changed_nodes,}$page_nodes"
     fi
     if [ "$has_next" != true ] || [ -z "$after" ]; then
       break
     fi
   done
+
+  # The listing window never moves backwards, so a recorded version older
+  # than its start can no longer match and is dropped. Both sides are UTC, and
+  # comparing whole seconds keeps Linear's fractional ".000Z" from sorting
+  # before the window's "Z" in the same second.
+  if [ -s "$linear_echo_file" ]; then
+    @gawk@/bin/awk -v since="$since" 'substr($2, 1, 19) >= substr(since, 1, 19)' "$linear_echo_file" >"$linear_echo_file.tmp"
+    @coreutils@/bin/mv -f "$linear_echo_file.tmp" "$linear_echo_file"
+  fi
+  echo_skipped=0
+  if [ -n "$changed_nodes" ]; then
+    if [ -s "$linear_echo_file" ]; then
+      changed_linear_identifiers="$(
+        @coreutils@/bin/tr ',' '\n' <<<"$changed_nodes" |
+          @gawk@/bin/awk 'NR == FNR { recorded[$1] = $2; next } NF && recorded[$1] != $2 { print $1 }' "$linear_echo_file" - |
+          @coreutils@/bin/paste -sd, -
+      )"
+    else
+      changed_linear_identifiers="$(@coreutils@/bin/tr ',' '\n' <<<"$changed_nodes" | @gawk@/bin/awk 'NF { print $1 }' | @coreutils@/bin/paste -sd, -)"
+    fi
+    echo_skipped="$(@gawk@/bin/awk -F, '{ print NF }' <<<"$changed_nodes")"
+  fi
   if [ -n "$changed_linear_identifiers" ]; then
     changed_linear_count="$(@gawk@/bin/awk -F, '{ print NF }' <<<"$changed_linear_identifiers")"
+  fi
+  echo_skipped=$((echo_skipped - changed_linear_count))
+  if [ "$echo_skipped" -gt 0 ]; then
+    log "Skipped $echo_skipped Linear issue(s) changed only by this reconciler's push"
   fi
 }
 
@@ -1237,6 +1336,7 @@ if [ "$pull_mode" = selective ]; then
     list_changed_linear_issues "$changed_since" || exit $?
     # Each selective issue is its own tracker request.
     if [ "$changed_linear_count" -gt 100 ]; then
+      log "$changed_linear_count Linear issues changed since the last cycle; pulling in full"
       pull_mode=full
     fi
   fi
