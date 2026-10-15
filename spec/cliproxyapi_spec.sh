@@ -1028,4 +1028,58 @@ The status should be success
 End
 End
 
+Describe 'usage_export'
+setup_usage() {
+  TEMP_USAGE=$(mktemp -d)
+  printf '{"saved":true}' >"$TEMP_USAGE/usage-export.json"
+  sed -n '/^usage_export() {/,/^}/p' "$SCRIPT" >"$TEMP_USAGE/export.sh"
+}
+cleanup_usage() {
+  rm -rf "$TEMP_USAGE"
+}
+Before 'setup_usage'
+After 'cleanup_usage'
+
+# $1 is the body of a curl stub; it receives curl's argv.
+run_export() {
+  cat >"$TEMP_USAGE/run.sh" <<EOF
+MANAGEMENT_KEY=k
+MANAGEMENT_URL=http://127.0.0.1:1
+USAGE_EXPORT_FILE='$TEMP_USAGE/usage-export.json'
+curl() { $1; }
+cliproxy_upload_usage_to_s3() { printf 'uploaded %s\n' "\$(cat "\$1")"; }
+source '$TEMP_USAGE/export.sh'
+usage_export
+cat '$TEMP_USAGE/usage-export.json'
+echo
+ls '$TEMP_USAGE'
+EOF
+  bash "$TEMP_USAGE/run.sh"
+}
+
+It 'keeps the saved snapshot and skips upload when the server is down'
+When call run_export 'return 7'
+The line 1 of output should equal '{"saved":true}'
+The output should not include 'uploaded'
+The output should not include 'usage-export.json.tmp'
+The status should be success
+End
+
+It 'keeps the saved snapshot when the export is empty'
+When call run_export 'while [ $# -gt 0 ]; do [ "$1" = -o ] && : >"$2"; shift; done'
+The line 1 of output should equal '{"saved":true}'
+The output should not include 'uploaded'
+The output should not include 'usage-export.json.tmp'
+The status should be success
+End
+
+It 'replaces and uploads the snapshot on a successful export'
+When call run_export 'while [ $# -gt 0 ]; do [ "$1" = -o ] && printf new >"$2"; shift; done'
+The line 1 of output should equal 'uploaded new'
+The line 2 of output should equal 'new'
+The output should not include 'usage-export.json.tmp'
+The status should be success
+End
+End
+
 End
