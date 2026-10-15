@@ -149,4 +149,17 @@ lib.mkIf host.isKyber {
     };
     Install.WantedBy = [ "timers.target" ];
   };
+
+  # The running gateway leaks its multi-GB plugin build captures into the
+  # RAM-backed TMPDIR without ever disposing them, and ExecStartPre only runs on
+  # restart. OpenClaw owns that lifecycle, so age the captures out instead.
+  systemd.user.tmpfiles.rules = [
+    "e /dev/shm/openclaw-gateway/openclaw-plugin-build-* - - - 1h"
+  ];
+  # The stock user clean timer runs daily; a day of leaks fills /dev/shm.
+  xdg.configFile."systemd/user/systemd-tmpfiles-clean.timer.d/hourly.conf".text = ''
+    [Timer]
+    OnUnitActiveSec=
+    OnUnitActiveSec=1h
+  '';
 }

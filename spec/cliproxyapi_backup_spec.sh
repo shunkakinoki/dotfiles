@@ -259,6 +259,23 @@ The status should be success
 The output should include "$STAGING_DIR/cpa-manager-plus-backup."
 End
 
+It 'removes the staging directory when terminated mid-snapshot'
+seed_manager_data
+STAGING_DIR="$TEMP_HOME/staging"
+mkdir -p "$STAGING_DIR"
+cat >"$MOCK_BIN/sqlite3" <<'EOF'
+#!/usr/bin/env bash
+touch "$SQLITE_STARTED"
+exec sleep 30
+EOF
+chmod +x "$MOCK_BIN/sqlite3"
+# Mirror a systemd start timeout: SIGTERM the whole process group, then
+# SIGKILL whatever is left once the main process has exited.
+When run bash -c 'set -m; export HOME="'"$TEMP_HOME"'" CLIPROXY_BACKUP_STAGING_DIR="'"$STAGING_DIR"'" SQLITE_STARTED="'"$TEMP_HOME"'/started"; bash "'"$__BACKUP_SCRIPT"'" full >/dev/null 2>&1 & pid=$!; for _ in $(seq 100); do [ -f "$SQLITE_STARTED" ] && break; sleep 0.1; done; kill -TERM -- "-$pid"; wait "$pid"; status=$?; kill -KILL -- "-$pid" 2>/dev/null; ls -A "'"$STAGING_DIR"'"; exit "$status"'
+The status should eq 143
+The output should eq ''
+End
+
 It 'fails closed and skips analytics uploads when the snapshot is corrupt'
 seed_manager_data
 When run bash -c 'HOME="'"$TEMP_HOME"'" SQLITE_INTEGRITY_RESULT=corrupt bash "'"$__BACKUP_SCRIPT"'" full 2>&1; status=$?; cat "$MOCK_LOG" 2>/dev/null || true; exit "$status"'
