@@ -81,11 +81,6 @@
             "type": "command"
           },
           {
-            "command": "$HOME/dotfiles/config/shared/hooks/block-git-identity.sh",
-            "timeout": 5,
-            "type": "command"
-          },
-          {
             "command": "$HOME/dotfiles/config/shared/hooks/block-gh-settings.sh",
             "timeout": 5,
             "type": "command"
