@@ -50,7 +50,7 @@
         "command-code": "^1.50.1",
         "deepsec": "^2.3.9",
         "droid": "^0.213.0",
-        "frog": "^1.1.0",
+        "frog": "1.1.0",
         "get-shit-done-cc": "^1.42.3",
         "gh-axi": "^0.1.35",
         "hunkdiff": "^0.21.1",
@@ -157,6 +157,9 @@
     "@googleworkspace/cli",
     "@posthog/cli",
   ],
+  "patchedDependencies": {
+    "frog@1.1.0": "patches/frog@1.1.0.patch",
+  },
   "overrides": {
     "pino": "^9.14.0",
   },
