@@ -72,6 +72,9 @@ in
       ExecStart = "${caamBin} daemon start --fg";
       Restart = "always";
       RestartSec = 10;
+      # Auto-restarts do not re-check Condition*, so a binary removed after the
+      # unit started loops on 203/EXEC forever. Stop restarting on that status.
+      RestartPreventExitStatus = 203;
       Environment = [
         "HOME=${homeDir}"
         "PATH=${pathEnv}"
