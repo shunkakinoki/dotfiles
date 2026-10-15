@@ -52,6 +52,10 @@
             "type": "command"
           },
           {
+            "command": "$HOME/dotfiles/config/shared/hooks/block-git-identity.sh",
+            "type": "command"
+          },
+          {
             "command": "$HOME/dotfiles/config/shared/hooks/block-gh-settings.sh",
             "type": "command"
           },

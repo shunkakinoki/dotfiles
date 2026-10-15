@@ -1,6 +1,6 @@
 # Shared agent GitHub guardrails
 
-`block-git-push.sh` and `block-gh-settings.sh` are shared `PreToolUse` hooks for Codex, Claude Code, Cursor, GitHub Copilot, Grok, and Devin. They accept the command from each client's supported JSON shape:
+`block-git-push.sh`, `block-git-identity.sh`, and `block-gh-settings.sh` are shared `PreToolUse` hooks for Codex, Claude Code, Cursor, GitHub Copilot, Grok, Factory Droid, and Devin; OpenCode runs `block-git-identity.sh` beside `security.sh`. They accept the command from each client's supported JSON shape:
 
 - `.tool.input.command`
 - `.tool_input.command`
@@ -8,7 +8,7 @@
 - `.toolInput.command`
 - `.command`
 
-Both hooks exit `0` when a command may proceed and exit `2` with a `BLOCKED by ...` diagnostic when it must stop.
+The hooks exit `0` when a command may proceed and exit `2` with a `BLOCKED by ...` diagnostic when it must stop.
 
 Factory Droid uses the Execute matcher for shell commands and the standard edit
 matcher for file writes with these shared guardrails.
@@ -18,6 +18,8 @@ matcher for file writes with these shared guardrails.
 The push hook blocks explicit and implicit updates or deletions of `main`, `master`, and the cached remote default branch. It resolves upstream and push configuration, bulk pushes, force variants, and Git aliases without executing alias bodies. Direct pushes remain allowed for `shunkakinoki/wiki` and `shunkakinoki/gthq`.
 
 The settings hook blocks repository control-plane mutations through settings-oriented `gh` commands, REST or GraphQL API calls, and common direct HTTP clients. It splits the command line into individual invocations and judges each one by its own arguments, so quoted text that merely names a command is not matched. GraphQL is judged by the root mutation fields the document invokes, and a document the hook cannot read is treated as a settings mutation. Read-only API calls and ordinary pull request, issue, review, and comment operations remain available.
+
+The identity hook blocks `git config` writes, unsets, and edits of `user.name` or `user.email` at every scope. A repository-local identity overrides the Home Manager identity for every worktree sharing that repository. Reads and per-command `git -c user.name=...` overrides remain available.
 
 ## Herdr worker starts
 
