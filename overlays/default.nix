@@ -425,7 +425,12 @@
       deno
       codex
       claude-code
-      opencode
       ;
+    # The TUI posts its first RPC calls before the server worker listens, and Bun
+    # drops them, so the TUI sometimes never draws. Drop once
+    # https://github.com/anomalyco/opencode/pull/55950 ships in nightly.
+    opencode = final.nightlyPkgs.opencode.overrideAttrs (old: {
+      patches = (old.patches or [ ]) ++ [ ../patches/opencode-rpc-ready.patch ];
+    });
   })
 ]
