@@ -304,20 +304,21 @@
 
     crabbox = prev.stdenvNoCC.mkDerivation rec {
       pname = "crabbox";
-      version = "0.78.1";
+      # crabbox hold: 0.72+ static-host sync fails with rsync exit 127 (staged --rsync-path receiver); unpin once fixed upstream
+      version = "0.70.0";
       src = prev.fetchurl {
         url = "https://github.com/openclaw/crabbox/releases/download/v${version}/crabbox_${version}_${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}.tar.gz";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "f84913c3963367d3ac3fbf3c5a228941aeab164a6942b30dfe5654c50f8f42d5"
+            "3fe2cbaf9b6b6573b8416b285fb2eb8755a466b7f1c42a387266fc79304c7892"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "4668d389e920dc2f8cbb16f3db05ddf5b1d864fbe67c307f08c4df27aacdfaad"
+            "75820218b2d7c12c88a3bfa5dd610973577953e529386f7ee84d19ad9d749b85"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "4557be9151d43ea95ae77a4830a0c796e3577d065cdfbd092947deec0eb57b21"
+            "4f70e5ae4fe16f7f3562b5b4cdf137dadbdfb763ed6ff94404e67e91b9d8ada0"
           else
-            "df173b335e86dd5cd03c1e30e38cc007695ab034ff126d1cfaba7d4ece970a22";
+            "9184ce858f507662c1e97fb164d45ce7d973d50962cc84b1c3c9e1ebe7f71654";
       };
       sourceRoot = ".";
       dontConfigure = true;

@@ -439,6 +439,10 @@ upgrade_crabbox() {
   local linux_x86_64 linux_arm64 darwin_arm64 darwin_x86_64
 
   version="${CRABBOX_VERSION:-}"
+  if [ -z "$version" ] && sed -n '/crabbox = prev.stdenvNoCC.mkDerivation rec {/,/meta.mainProgram = "crabbox"/p' "$OVERLAY_FILE" | grep -q '# crabbox hold:'; then
+    log_info "Crabbox is held; set CRABBOX_VERSION to upgrade"
+    return 0
+  fi
   if [ -z "$version" ]; then
     require_command gh
     version="$(gh api "$CRABBOX_RELEASE_API" --jq '.tag_name' | sed 's/^v//' | head -1)"
