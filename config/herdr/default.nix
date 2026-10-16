@@ -25,7 +25,7 @@ in
     config.lib.dag.entryAfter
       [
         "codexConfig"
-        "installOpenCodePlugins"
+        "linkGeneration"
       ]
       ''
         $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${installHerdrIntegrations}" "${pkgs.llm-agents.herdr}/bin/herdr"

@@ -11,7 +11,7 @@ The output should include '  pkgs.llm-agents.cursor-agent'
 End
 
 It 'installs OpenCode and Grok as npm globals so T3 Code can upgrade them'
-When run bash -c "jq -e '.dependencies[\"opencode-ai\"] and .dependencies[\"@xai-official/grok\"]' \"$PWD/package.json\" >/dev/null && ! grep -Eq '^  (pkgs\.llm-agents\.grok|opencode)\$' \"$PACKAGES\" && ! grep -Eq '^ +(opencode|linuxGrokOverrides|// linuxGrokOverrides)\$' \"$OVERLAY\""
+When run bash -c "jq -e '.dependencies[\"@opencode/cli\"] and (.dependencies[\"opencode-ai\"] | not) and .dependencies[\"@xai-official/grok\"]' \"$PWD/package.json\" >/dev/null && ! grep -Eq '^  (pkgs\.llm-agents\.grok|opencode)\$' \"$PACKAGES\" && ! grep -Eq '^ +(opencode|linuxGrokOverrides|// linuxGrokOverrides)\$' \"$OVERLAY\""
 The status should be success
 End
 

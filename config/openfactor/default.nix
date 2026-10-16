@@ -28,7 +28,7 @@ in
         "factorySettings"
         "geminiSettings"
         "grokConfig"
-        "installOpenCodePlugins"
+        "linkGeneration"
         "ompConfig"
       ]
       ''

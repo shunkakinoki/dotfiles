@@ -1,15 +1,19 @@
 {
-  config,
+  lib,
   pkgs,
   ...
 }:
 {
-  home.packages = [
-    (pkgs.writeShellApplication {
-      name = "opencode-lane";
-      text = builtins.readFile ./opencode-lane.sh;
-    })
-  ];
+  # Off PATH on purpose: install-npm-globals links ~/.bun/bin/opencode here
+  # after every bun install, since bun rewrites that shim to the raw binary.
+  home.file.".local/libexec/opencode" = {
+    source = lib.getExe (
+      pkgs.writeShellApplication {
+        name = "opencode";
+        text = builtins.readFile ./opencode.sh;
+      }
+    );
+  };
 
   home.file.".config/opencode/opencode.jsonc" = {
     source = ./opencode.jsonc;
@@ -39,14 +43,4 @@
   home.file.".config/opencode/plugins/claude-hooks.ts" = {
     source = ./plugins/claude-hooks.ts;
   };
-
-  home.activation.installOpenCodePlugins =
-    config.lib.dag.entryAfter
-      [
-        "writeBoundary"
-        "installNpmGlobals"
-      ]
-      ''
-        $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "$HOME/.bun/bin/opencode" "${pkgs.jq}/bin/jq" "${pkgs.bun}/bin/bun"
-      '';
 }
