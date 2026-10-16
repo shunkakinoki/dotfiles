@@ -163,7 +163,7 @@ let
       # Executor seats need the server back after an unattended reboot.
       assert cfg.users.users.shunkakinoki.linger;
       assert herdr.Install.WantedBy == [ "default.target" ];
-      assert herdr.Unit.X-SwitchMethod == "restart";
+      assert herdr.Unit.X-SwitchMethod == "keep-old";
       assert lib.hasSuffix "/bin/herdr server" (builtins.head (lib.toList herdr.Service.ExecStart));
       assert herdr.Service.Restart == "on-failure";
       assert herdr.Service.EnvironmentFile == [ "-/home/shunkakinoki/dotfiles/.env" ];
@@ -348,7 +348,7 @@ let
             "/etc/ssh/ssh_host_ed25519_key"
           ];
         assert cfg.systemd.user.services.herdr-server.Install.WantedBy == [ "default.target" ];
-        assert cfg.systemd.user.services.herdr-server.Unit.X-SwitchMethod == "restart";
+        assert cfg.systemd.user.services.herdr-server.Unit.X-SwitchMethod == "keep-old";
         assert cfg.systemd.user.services.herdr-server.Service.EnvironmentFile == [ "-/root/dotfiles/.env" ];
         assert lib.elem "BEADS_DOLT_AUTO_START=0"
           cfg.systemd.user.services.herdr-server.Service.Environment;

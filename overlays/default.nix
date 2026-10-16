@@ -175,7 +175,7 @@
           # Keep every managed client and server on the same released protocol.
           # The upstream recipe retains native Linux/Darwin build dependencies.
           herdr = prev.llm-agents.herdr.overrideAttrs (
-            finalAttrs: _: {
+            finalAttrs: prevAttrs: {
               version = "0.9.2";
               src = prev.fetchFromGitHub {
                 owner = "herdrdev";
@@ -187,6 +187,9 @@
                 inherit (finalAttrs) src;
                 name = "herdr-${finalAttrs.version}-vendor";
                 hash = "sha256-+g+iZV5xraP9tyZeauysbdt2g/3e6TRbvkFNpikFCHs=";
+              };
+              zigDeps = prevAttrs.zigDeps.overrideAttrs {
+                outputHash = "sha256-9n18CdoV1pxrLFPcRd+h6HESmrAqucORlz3klFf/gyk=";
               };
             }
           );
