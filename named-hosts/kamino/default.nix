@@ -216,7 +216,10 @@ inputs.home-manager.lib.homeManagerConfiguration {
         systemd.user.services.herdr-server = {
           Unit = {
             Description = "Herdr headless server";
-            X-SwitchMethod = "restart";
+            # Pane shells and agents live in this unit's cgroup, so restarting it
+            # on switch kills every lane. A new herdr binary applies on the next
+            # natural server restart instead.
+            X-SwitchMethod = "keep-old";
           };
           Service = {
             ExecStart = "${pkgs.llm-agents.herdr}/bin/herdr server";
