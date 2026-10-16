@@ -652,6 +652,51 @@ The contents of file "$COMMAND_LOG" should include 'linear sync --pull --issues 
 The file "$STATE_HOME/beads-linear-sync/full-pull-test%2Frepo-one" should not be exist
 End
 
+It 'pulls a large changed set in chunks and carries the remainder instead of pulling in full'
+mkdir -p "$STATE_HOME/beads-linear-sync"
+printf '%s\n' '2026-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
+date -u '+%s' >"$STATE_HOME/beads-linear-sync/full-pull-test%2Frepo-one"
+changed="$(seq 1 350 | sed 's/^/TEST-/' | paste -sd, -)"
+carried="$(seq 301 350 | sed 's/^/TEST-/')"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_CHANGED_ISSUES="$changed" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Carrying 50 changed Linear issue(s) past the 300-issue cycle limit to the next cycle'
+The output should include 'Pulling 300 changed Linear issue(s) in 3 chunk(s)'
+The output should not include 'Pulling complete Linear state'
+The contents of file "$COMMAND_LOG" should include 'linear sync --pull --issues TEST-1,TEST-2,'
+The contents of file "$COMMAND_LOG" should include 'TEST-100 --no-wait'
+The contents of file "$COMMAND_LOG" should include 'linear sync --pull --issues TEST-101,'
+The contents of file "$COMMAND_LOG" should include 'linear sync --pull --issues TEST-201,'
+The contents of file "$COMMAND_LOG" should include 'TEST-300 --no-wait'
+The contents of file "$COMMAND_LOG" should not include 'TEST-301'
+The contents of file "$COMMAND_LOG" should not include '--state all'
+The contents of file "$STATE_HOME/beads-linear-sync/pull-carry-test%2Frepo-one" should equal "$carried"
+End
+
+It 'pulls carried issues ahead of new changes and clears the carry'
+mkdir -p "$STATE_HOME/beads-linear-sync"
+printf '%s\n' '2026-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
+date -u '+%s' >"$STATE_HOME/beads-linear-sync/full-pull-test%2Frepo-one"
+printf '%s\n' TEST-9 TEST-1 >"$STATE_HOME/beads-linear-sync/pull-carry-test%2Frepo-one"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_CHANGED_ISSUES=TEST-1,TEST-2 XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Pulling 3 changed Linear issue(s) in 1 chunk(s)'
+The contents of file "$COMMAND_LOG" should include 'linear sync --pull --issues TEST-9,TEST-1,TEST-2 --no-wait'
+The path "$STATE_HOME/beads-linear-sync/pull-carry-test%2Frepo-one" should not be exist
+End
+
+It 'keeps the carry and the checkpoint when a chunk fails'
+mkdir -p "$STATE_HOME/beads-linear-sync"
+printf '%s\n' '2026-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
+date -u '+%s' >"$STATE_HOME/beads-linear-sync/full-pull-test%2Frepo-one"
+printf '%s\n' TEST-9 >"$STATE_HOME/beads-linear-sync/pull-carry-test%2Frepo-one"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=pull-failure FAKE_CHANGED_ISSUES=TEST-1 XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should equal 23
+The output should include 'Linear pull chunk 1/1 did not complete'
+The contents of file "$CHECKPOINT_FILE" should equal '2026-01-01T00:00:00Z'
+The contents of file "$STATE_HOME/beads-linear-sync/pull-carry-test%2Frepo-one" should equal 'TEST-9'
+End
+
 It 'fails without pulling when Linear cannot list changed issues'
 mkdir -p "$STATE_HOME/beads-linear-sync"
 printf '%s\n' '2026-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
