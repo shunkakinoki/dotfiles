@@ -316,6 +316,7 @@ let
         assert cfg.programs.ssh.settings.matic.data.IdentitiesOnly == "yes";
         assert !(cfg.home.activation ? hardenSshd);
         assert !(cfg.home.activation ? setKaminoSshdKeyOnly);
+        assert lib.hasInfix "key: /etc/ssh/ssh_host_ed25519_key" cfg.xdg.configFile."crabbox/config.yaml".text;
         assert !(cfg.home.activation ? setupK3s);
         assert !(cfg.systemd.user.services ? openclaw-gateway);
         assert !(cfg.systemd.user.services ? roborev);
