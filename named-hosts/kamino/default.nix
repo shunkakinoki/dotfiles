@@ -158,6 +158,12 @@ inputs.home-manager.lib.homeManagerConfiguration {
           export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} vm-compaction /etc/sysctl.d/60-kamino-compaction.conf /etc/tmpfiles.d/60-kamino-thp.conf /sys/kernel/mm/transparent_hugepage/defrag
         '';
+        home.activation.setKaminoSshdKeyOnly = lib.mkIf isCiBox (
+          config.lib.dag.entryAfter [ "writeBoundary" ] ''
+            export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
+            $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} sshd-key-only /etc/ssh/sshd_config.d/10-kamino-key-only.conf
+          ''
+        );
         home.activation.prepareKaminoServiceDirectories =
           config.lib.dag.entryBetween [ "installTailscaleService" ] [ "writeBoundary" ]
             ''

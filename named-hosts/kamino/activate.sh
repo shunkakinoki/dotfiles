@@ -58,6 +58,22 @@ vm-compaction)
     echo "Set THP defrag to never."
   fi
   ;;
+sshd-key-only)
+  # sshd keeps the first value it reads, and cloud-init's 50-cloud-init.conf
+  # enables passwords, so this drop-in must sort before it.
+  dropin="${2:?sshd_config.d file required}"
+  content=$'PasswordAuthentication no\nKbdInteractiveAuthentication no'
+  if [ ! -f "$dropin" ] || [ "$(cat "$dropin")" != "$content" ]; then
+    printf '%s\n' "$content" >"$dropin"
+    echo "Wrote $dropin."
+  fi
+  if ! sshd -t; then
+    rm -f "$dropin"
+    echo "sshd -t rejected $dropin; removed it." >&2
+    exit 1
+  fi
+  systemctl reload ssh
+  ;;
 user-manager)
   hostnamectl set-hostname "${2:?name required}"
   loginctl enable-linger root
