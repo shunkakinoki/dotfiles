@@ -3,11 +3,12 @@ source $fn/_ocxel_function.tpl.fish
 
 # ── no args: interactive mode ─────────────────────────────
 set log1 (mktemp)
-function opencode; echo $argv >> $log1; end
+function opencode; echo $argv >> $log1; echo "config=$OPENCODE_CONFIG_CONTENT" >> $log1; end
 
 _ocxel_function
 
-@test "no args calls opencode with templated local Qwen model" (grep -c "lmstudio/__QWEN_LOCAL__" $log1) -ge 1
+@test "no args selects templated local Qwen model through the config overlay" (grep -c '^config={"model":"lmstudio/__QWEN_LOCAL__"}$' $log1) -eq 1
+@test "no args runs a standalone TUI" (grep -c "^--standalone\$" $log1) -eq 1
 @test "no args skips run subcommand" (grep -c "^run " $log1) -eq 0
 
 # ── with args: run mode ──────────────────────────────────

@@ -298,7 +298,7 @@ It 'installs native Codex and OpenCode integrations after harness activation'
 When run cat "$HERDR_DEFAULT_NIX"
 The output should include 'installHerdrIntegrations'
 The output should include 'codexConfig'
-The output should include 'installOpenCodePlugins'
+The output should include 'linkGeneration'
 The output should include 'install-integrations.sh'
 The output should include 'llm-agents.herdr'
 End

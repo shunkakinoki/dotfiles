@@ -2,14 +2,17 @@ function _ocxel_function --description "Run OpenCode with a free-form prompt usi
   # Run OpenCode with a free-form prompt (spaces allowed) using the local Qwen model
   # Usage: ocxel [<prompt words...>]
 
+  # The OpenCode 2 TUI takes no model flag; its private server reads the model from this config overlay.
+  set -lx OPENCODE_CONFIG_CONTENT '{"model":"lmstudio/__QWEN_LOCAL__"}'
+
   if test (count $argv) -gt 0; and contains -- "$argv[1]" --resume -r --continue -c
     if test (count $argv) -gt 1
-      opencode -m 'lmstudio/__QWEN_LOCAL__' --session "$argv[2]"
+      opencode --standalone --session "$argv[2]"
     else
-      opencode -m 'lmstudio/__QWEN_LOCAL__' --continue
+      opencode --standalone --continue
     end
   else if test (count $argv) -eq 0
-    opencode -m 'lmstudio/__QWEN_LOCAL__'
+    opencode --standalone
   else
     set -l prompt (string join " " -- $argv)
     opencode run "$prompt" -m 'lmstudio/__QWEN_LOCAL__'

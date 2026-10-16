@@ -589,6 +589,7 @@ config/codex/hooks/notify.sh
 config/codex/hooks/pushover.sh
 config/openfactor/install.sh
 config/shared/hooks/block-gh-settings.sh
+config/shared/hooks/block-git-identity.sh
 config/shared/hooks/block-git-push.sh
 config/shared/hooks/dcg-guard.sh
 config/shared/hooks/traces-agent-hook.sh
@@ -621,7 +622,6 @@ config/noctalia/quit-all-apps.sh
 config/obsidian/activate.sh
 config/omp/activate.sh
 config/openclaw/hydrate.sh
-config/opencode/activate.sh
 config/roborev/hydrate.sh
 config/serena/activate.sh
 config/t3code/activate-client-settings.sh
@@ -631,6 +631,7 @@ home-manager/activation/deploy-agenix-secret.sh
 home-manager/activation/ensure-directory.sh
 home-manager/activation/ensure-tailscale-serve.sh
 home-manager/activation/import-gpg-key.sh
+home-manager/activation/remove-stale-gh-credential-helpers.sh
 home-manager/modules/bin-shells/activate.sh
 home-manager/modules/cargo-globals/install-cargo-globals.sh
 home-manager/modules/local-binaries/sync-local-binaries.sh
