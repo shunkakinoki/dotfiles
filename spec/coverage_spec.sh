@@ -621,7 +621,6 @@ config/noctalia/quit-all-apps.sh
 config/obsidian/activate.sh
 config/omp/activate.sh
 config/openclaw/hydrate.sh
-config/opencode/opencode.sh
 config/roborev/hydrate.sh
 config/serena/activate.sh
 config/t3code/activate-client-settings.sh
