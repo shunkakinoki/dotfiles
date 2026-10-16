@@ -1,0 +1,27 @@
+diff --git a/packages/cli/src/commands/commands.ts b/packages/cli/src/commands/commands.ts
+index ba3454b..093665e 100644
+--- a/packages/cli/src/commands/commands.ts
++++ b/packages/cli/src/commands/commands.ts
+@@ -54,6 +54,10 @@ const Root = Spec.make(typeof OPENCODE_CLI_NAME === "string" ? OPENCODE_CLI_NAME
+       Flag.withDescription("Session ID to continue, or to create if it does not exist"),
+       Flag.optional,
+     ),
++    model: Flag.String("model").pipe(
++      Flag.withDescription("Model to use in the format provider/model"),
++      Flag.optional,
++    ),
+     prompt: Flag.String("prompt").pipe(Flag.withDescription("Prompt to use"), Flag.optional),
+   },
+   commands: [
+diff --git a/packages/cli/src/commands/handlers/default.ts b/packages/cli/src/commands/handlers/default.ts
+index cbf9d43..5fe5b9f 100644
+--- a/packages/cli/src/commands/handlers/default.ts
++++ b/packages/cli/src/commands/handlers/default.ts
+@@ -113,6 +113,7 @@ export default Runtime.handler(Commands, (input) =>
+         continue: input.continue,
+         sessionID: sessionExists ? session : undefined,
+         newSessionID: sessionExists ? undefined : session,
++        model: Option.getOrUndefined(input.model),
+         prompt: Option.getOrUndefined(input.prompt),
+         auto: input.auto || input.yolo || input.dangerouslySkipPermissions,
+       },

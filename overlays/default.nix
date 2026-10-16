@@ -428,8 +428,10 @@
       ;
     # Upstream's fileset-filtered src drops the root script/ dir that
     # packages/cli/script/build.ts imports (native-arch), so build from the full tree.
-    opencode = inputs.opencode.packages.${prev.stdenv.hostPlatform.system}.opencode.overrideAttrs (_: {
+    # The patch lets the root TUI take --model; lanes seat their model through it.
+    opencode = inputs.opencode.packages.${prev.stdenv.hostPlatform.system}.opencode.overrideAttrs (old: {
       src = inputs.opencode;
+      patches = (old.patches or [ ]) ++ [ ./opencode-tui-model.patch ];
     });
   })
 ]
