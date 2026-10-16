@@ -173,26 +173,7 @@
         (prev.llm-agents or { })
         // {
           # Keep every managed client and server on the same released protocol.
-          # The upstream recipe retains native Linux/Darwin build dependencies.
-          herdr = prev.llm-agents.herdr.overrideAttrs (
-            finalAttrs: prevAttrs: {
-              version = "0.9.2";
-              src = prev.fetchFromGitHub {
-                owner = "herdrdev";
-                repo = "herdr";
-                tag = "v${finalAttrs.version}";
-                hash = "sha256-sqi7i9J4zGYQ4eL8jf82w0SSdAgLt6zjadWGtiO56GU=";
-              };
-              cargoDeps = prev.rustPlatform.fetchCargoVendor {
-                inherit (finalAttrs) src;
-                name = "herdr-${finalAttrs.version}-vendor";
-                hash = "sha256-+g+iZV5xraP9tyZeauysbdt2g/3e6TRbvkFNpikFCHs=";
-              };
-              zigDeps = prevAttrs.zigDeps.overrideAttrs {
-                outputHash = "sha256-9n18CdoV1pxrLFPcRd+h6HESmrAqucORlz3klFf/gyk=";
-              };
-            }
-          );
+          herdr = inputs.herdr.packages.${prev.stdenv.hostPlatform.system}.default;
         }
         // linuxGrokOverrides
         // prev.lib.optionalAttrs (prev.llm-agents ? bernstein) {

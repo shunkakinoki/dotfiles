@@ -73,6 +73,12 @@
       url = "github:numtide/llm-agents.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # herdr 0.9.2 builds its vendored libghostty-vt with zig 0.16 from a
+    # different build script, which the llm-agents recipe cannot override.
+    # Its own nixpkgs pin is kept so that zig toolchain matches upstream.
+    herdr = {
+      url = "github:herdrdev/herdr/v0.9.2";
+    };
     nixpkgs-darwin-legacy = {
       url = "github:NixOS/nixpkgs/nixpkgs-26.05-darwin";
     };
