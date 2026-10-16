@@ -4,12 +4,12 @@ function _ocxe_function --description "Run OpenCode with a free-form prompt"
 
   if test (count $argv) -gt 0; and contains -- "$argv[1]" --resume -r --continue -c
     if test (count $argv) -gt 1
-      _caam_exec_function opencode -m 'shunkakinoki/deepseek-v4.1-flash' --session "$argv[2]"
+      OPENCODE_CONFIG_CONTENT='{"model":"shunkakinoki/deepseek-v4.1-flash"}' _caam_exec_function opencode --session "$argv[2]"
     else
-      _caam_exec_function opencode -m 'shunkakinoki/deepseek-v4.1-flash' --continue
+      OPENCODE_CONFIG_CONTENT='{"model":"shunkakinoki/deepseek-v4.1-flash"}' _caam_exec_function opencode --continue
     end
   else if test (count $argv) -eq 0
-    _caam_exec_function opencode -m 'shunkakinoki/deepseek-v4.1-flash'
+    OPENCODE_CONFIG_CONTENT='{"model":"shunkakinoki/deepseek-v4.1-flash"}' _caam_exec_function opencode
   else
     set -l prompt (string join " " -- $argv)
     _caam_exec_function opencode run "$prompt" -m 'shunkakinoki/deepseek-v4.1-flash'

@@ -552,4 +552,15 @@ if ! verify_posthog_api_cli; then
   echo "Warning: PostHog API CLI bundle verification failed" >&2
 fi
 
+# Every `bun add` of @opencode/cli relinks its raw binary into ~/.bun/bin, which
+# is first on PATH, so this runs after all installs: the managed wrapper must own
+# both names or a caller opens the 1.x database or a shared server.
+OPENCODE_WRAPPER="${HOME}/.local/libexec/opencode"
+if [ -x "$OPENCODE_WRAPPER" ]; then
+  mkdir -p "$BUN_BIN"
+  for name in opencode opencode2; do
+    ln -sfn "$OPENCODE_WRAPPER" "${BUN_BIN}/${name}"
+  done
+fi
+
 echo "npm globals installation complete"
