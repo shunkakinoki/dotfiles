@@ -1,19 +1,6 @@
-{
-  lib,
-  pkgs,
-  ...
-}:
-{
-  # Off PATH on purpose: install-npm-globals links ~/.bun/bin/opencode here
-  # after every bun install, since bun rewrites that shim to the raw binary.
-  home.file.".local/libexec/opencode" = {
-    source = lib.getExe (
-      pkgs.writeShellApplication {
-        name = "opencode";
-        text = builtins.readFile ./opencode.sh;
-      }
-    );
-  };
+_: {
+  # Keeps v2 off the 1.x opencode.db so 1.x history is never read or rewritten.
+  home.sessionVariables.OPENCODE_DB = "opencode-v2.db";
 
   home.file.".config/opencode/opencode.jsonc" = {
     source = ./opencode.jsonc;

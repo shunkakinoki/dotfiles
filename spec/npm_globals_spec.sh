@@ -625,17 +625,6 @@ It 'removes dangling bun shims for stale packages'
 When run bash -c "HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT' >/dev/null 2>&1; test -e '$TEMP_HOME/.bun/bin/bd' && echo present || echo missing"
 The output should eq 'missing'
 End
-
-It 'points both opencode bun shims at the managed wrapper'
-When run bash -c "mkdir -p '$TEMP_HOME/.local/libexec' && printf '#!/bin/sh\n' >'$TEMP_HOME/.local/libexec/opencode' && chmod +x '$TEMP_HOME/.local/libexec/opencode' && ln -sf ../install/global/node_modules/@opencode/cli/bin/opencode.exe '$TEMP_HOME/.bun/bin/opencode' && HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT' >/dev/null 2>&1; readlink '$TEMP_HOME/.bun/bin/opencode'; readlink '$TEMP_HOME/.bun/bin/opencode2'"
-The output should eq "$TEMP_HOME/.local/libexec/opencode
-$TEMP_HOME/.local/libexec/opencode"
-End
-
-It 'leaves bun shims alone when the managed wrapper is absent'
-When run bash -c "HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT' >/dev/null 2>&1; test -e '$TEMP_HOME/.bun/bin/opencode' && echo present || echo missing"
-The output should eq 'missing'
-End
 End
 
 Describe 'aliased native binary (codex pattern)'
