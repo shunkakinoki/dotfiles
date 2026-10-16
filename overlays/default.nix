@@ -425,7 +425,11 @@
       deno
       codex
       claude-code
-      opencode
       ;
+    # Upstream's fileset-filtered src drops the root script/ dir that
+    # packages/cli/script/build.ts imports (native-arch), so build from the full tree.
+    opencode = inputs.opencode.packages.${prev.stdenv.hostPlatform.system}.opencode.overrideAttrs (_: {
+      src = inputs.opencode;
+    });
   })
 ]

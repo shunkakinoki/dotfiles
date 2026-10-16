@@ -90,6 +90,9 @@
       url = "github:gastownhall/beads";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Not following nixpkgs: the node_modules output hash is pinned to the bun in
+    # upstream's own lock.
+    opencode.url = "github:anomalyco/opencode/v2.0.30";
   };
 
   outputs =
