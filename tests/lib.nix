@@ -101,6 +101,7 @@ in
         test "$(git config --file kept credential.https://github.com.helper)" = "!gh auth git-credential"
 
         bash ${../home-manager/activation/remove-stale-gh-credential-helpers.sh} "$(command -v git)" "$PWD/missing"
+        test ! -e missing
         touch "$out"
       '';
 

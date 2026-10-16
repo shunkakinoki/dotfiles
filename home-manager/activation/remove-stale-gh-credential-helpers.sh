@@ -13,7 +13,8 @@ fi
 
 for URL in https://github.com https://gist.github.com; do
   SECTION="credential.$URL"
-  if "$GIT_BIN" config --file "$GITCONFIG" --get-all "$SECTION.helper" 2>/dev/null | grep -q '/nix/store/'; then
+  HELPERS=$("$GIT_BIN" config --file "$GITCONFIG" --get-all "$SECTION.helper" || true)
+  if [[ $HELPERS == */nix/store/* ]]; then
     "$GIT_BIN" config --file "$GITCONFIG" --remove-section "$SECTION"
     echo "Removed stale $SECTION from $GITCONFIG"
   fi
