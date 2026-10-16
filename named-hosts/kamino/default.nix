@@ -24,12 +24,20 @@ let
     nodeName = name;
     t3ConnectDisabled = builtins.elem name t3ConnectDisabledHosts;
   };
+  # Crabbox static-SSH CI boxes. Tailnet port 22 reaches OpenSSH here because
+  # Tailscale SSH sometimes closes a multiplexed session without sending
+  # `exit-status`, which fails Crabbox workspace-owner calls closed.
+  ciBoxHosts = [
+    "kamino8"
+    "kamino9"
+    "kamino10"
+  ];
+  isCiBox = builtins.elem name ciBoxHosts;
   tailscaleUpArgs = [
     "--hostname=${name}"
     "--accept-dns=true"
-    # Use Tailscale SSH identity policy for host login; ordinary SSH keys are
-    # not the fleet authorization mechanism.
-    "--ssh=true"
+    # Other workers use Tailscale SSH identity policy for host login.
+    "--ssh=${if isCiBox then "false" else "true"}"
   ];
   # Crabbox-only CI workers. Activation removes any T3 link and service here
   # and the keepalive timer is not installed, so nothing recreates them.
@@ -59,7 +67,10 @@ let
       "publish-only";
   sshAuthorizedKeys = import ../ssh-authorized-keys.nix;
   authorizedKeysFile = pkgs.writeText "kamino-authorized-keys" (
-    pkgs.lib.concatStringsSep "\n" sshAuthorizedKeys.kamino + "\n"
+    pkgs.lib.concatStringsSep "\n" (
+      if isCiBox then sshAuthorizedKeys.kaminoCiBox else sshAuthorizedKeys.kamino
+    )
+    + "\n"
   );
 in
 inputs.home-manager.lib.homeManagerConfiguration {
@@ -99,6 +110,12 @@ inputs.home-manager.lib.homeManagerConfiguration {
           matic = {
             IdentityFile = lib.mkForce [ "/etc/ssh/ssh_host_ed25519_key" ];
             IdentitiesOnly = "yes";
+          };
+          # The CI boxes authorize each worker's host key. Crabbox passes its
+          # own `-i`, and OpenSSH still tries this identity after it.
+          kamino-ci-boxes = {
+            header = "Host ${lib.concatMapStringsSep " " (box: "${box} ${box}.tail950b36.ts.net") ciBoxHosts}";
+            IdentityFile = [ "/etc/ssh/ssh_host_ed25519_key" ];
           };
         };
         # The installer manages Determinate Nix and garbage collection. Reuse its

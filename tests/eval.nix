@@ -338,6 +338,13 @@ let
         assert cfg.programs.ssh.settings.kamino1.data.HostName == "kamino1.tail950b36.ts.net";
         assert cfg.programs.ssh.settings.kamino2.data.User == "root";
         assert cfg.programs.ssh.settings.kamino10.data.HostName == "kamino10.tail950b36.ts.net";
+        assert
+          cfg.programs.ssh.settings.kamino-ci-boxes.data.header
+          == "Host kamino8 kamino8.tail950b36.ts.net kamino9 kamino9.tail950b36.ts.net kamino10 kamino10.tail950b36.ts.net";
+        assert
+          cfg.programs.ssh.settings.kamino-ci-boxes.data.IdentityFile == [
+            "/etc/ssh/ssh_host_ed25519_key"
+          ];
         assert cfg.systemd.user.services.herdr-server.Install.WantedBy == [ "default.target" ];
         assert cfg.systemd.user.services.herdr-server.Unit.X-SwitchMethod == "restart";
         assert cfg.systemd.user.services.herdr-server.Service.EnvironmentFile == [ "-/root/dotfiles/.env" ];
@@ -441,6 +448,12 @@ let
         assert warmTimer.Timer.RandomizedDelaySec == "2min";
         assert warmTimer.Install.WantedBy == [ "timers.target" ];
         assert builtins.all (candidate: candidate.systemd.user.services ? ci-box-warm) otherWarmConfigs;
+        assert builtins.all (
+          candidate:
+          lib.hasInfix "--ssh=false" candidate.home.activation.configureKaminoTailscale.data
+          && !(lib.hasInfix "--ssh=true" candidate.home.activation.configureKaminoTailscale.data)
+        ) ([ cfg ] ++ otherWarmConfigs);
+        assert sshAuthorizedKeys.kaminoCiBox == sshAuthorizedKeys.kamino ++ kaminoPublicKeys;
         mkEvalCheck "home-kamino8" kamino.activationPackage;
       eval-home-kamino100 =
         let
