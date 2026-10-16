@@ -73,6 +73,37 @@ in
       touch $out
     '';
 
+  remove-stale-gh-credential-helpers =
+    pkgs.runCommand "remove-stale-gh-credential-helpers" { nativeBuildInputs = [ pkgs.git ]; }
+      ''
+        cfg=$PWD/gitconfig
+        git config --file "$cfg" user.name tester
+        git config --file "$cfg" --add credential.https://github.com.helper ""
+        git config --file "$cfg" --add credential.https://github.com.helper \
+          "!/nix/store/0000-gh-2.101.0/bin/.gh-wrapped auth git-credential"
+        git config --file "$cfg" --add credential.https://gist.github.com.helper ""
+        git config --file "$cfg" --add credential.https://gist.github.com.helper \
+          "!/nix/store/0000-gh-2.101.0/bin/.gh-wrapped auth git-credential"
+        git config --file "$cfg" credential.https://example.com.helper store
+
+        for _ in 1 2; do
+          bash ${../home-manager/activation/remove-stale-gh-credential-helpers.sh} "$(command -v git)" "$cfg"
+        done
+
+        test "$(git config --file "$cfg" user.name)" = tester
+        test "$(git config --file "$cfg" credential.https://example.com.helper)" = store
+        if grep -q 'github.com' "$cfg"; then
+          echo "FAIL: stale gh credential sections remain" && exit 1
+        fi
+
+        printf '[credential "https://github.com"]\n\thelper = !gh auth git-credential\n' > kept
+        bash ${../home-manager/activation/remove-stale-gh-credential-helpers.sh} "$(command -v git)" "$PWD/kept"
+        test "$(git config --file kept credential.https://github.com.helper)" = "!gh auth git-credential"
+
+        bash ${../home-manager/activation/remove-stale-gh-credential-helpers.sh} "$(command -v git)" "$PWD/missing"
+        touch "$out"
+      '';
+
   lib-env = pkgs.runCommand "lib-env" { } ''
     ${
       if env ? isCI && builtins.isBool env.isCI then
