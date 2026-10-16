@@ -258,16 +258,16 @@
   (_: prev: {
     boat-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "boat-cli";
-      version = "1.0.38";
+      version = "1.0.52";
       src = prev.fetchurl {
         url = "https://github.com/ariana-dot-dev/agent-server/releases/download/boat-cli-v${version}/boat-${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }-${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x64"}";
         sha256 =
           {
-            "aarch64-darwin" = "1jdhv6qsczba1nwcw06v01xnvzx5r115ys5f402wnvandd5idvb4";
-            "aarch64-linux" = "03zlzc4w18lf841ss35gk1dqahlmlssrlgvfnmra9a28klfmgm94";
-            "x86_64-linux" = "130zkblp950f20nj2s31sw5ic8jb6gz99l4wyxc7v2b0yhzaap3m";
+            "aarch64-darwin" = "18y6j33g94w50dbhfs0ah04xgya3npa5kr6pz2hvcvm0xlg9wl1m";
+            "aarch64-linux" = "1lqd47far3mmgqgscpa8mcb809b7x4lrx3jjrphjbjsag5f20n71";
+            "x86_64-linux" = "0m8ckhwwa6fl08fg9gpbfdyylzd2001vw294b4vjr29p1xmdryyj";
           }
           .${prev.stdenv.hostPlatform.system};
       };
@@ -280,20 +280,20 @@
 
     blacksmith-testbox-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "blacksmith-testbox-cli";
-      version = "0.4.64";
+      version = "0.5.0";
       src = prev.fetchurl {
         url = "https://clireleases.blacksmith.sh/cli/v${version}/${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }/${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}/blacksmith";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "261d2e792ca5ab3b5538f2f102fef82f75ae8349ba08a36d1979c078d391697c"
+            "58f8ed81af86b3cf2dccce2db4fd4321117748adac91ef63bb505249dcab33c7"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "bad4b23a7206558ec981e65c011792b989c8b23beeca5f23b5400e147c01aea2"
+            "231db5fe06951ee115291f4336bf8cd027e91831030649f486bb74601b11561d"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "643fd5a47cb618c68ad324e19cbb556cb1a02654006d78bd765612d8960b0c85"
+            "ff8b0fe2deaf7c07c584d3b311ced4a26e01649ccfd0a9c3055368dc978fb6ec"
           else
-            "a5b7c8b9a8d0707cbf785876f27884f6e84bd3a6cbb7ba030ebc6b4cffef1332";
+            "f2aff3debb3eb07bd846c1db9a3191f56793a186cdf7825b4d589998e6448951";
       };
       dontUnpack = true;
       installPhase = ''
@@ -304,20 +304,20 @@
 
     crabbox = prev.stdenvNoCC.mkDerivation rec {
       pname = "crabbox";
-      version = "0.70.0";
+      version = "0.78.1";
       src = prev.fetchurl {
         url = "https://github.com/openclaw/crabbox/releases/download/v${version}/crabbox_${version}_${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}.tar.gz";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "3fe2cbaf9b6b6573b8416b285fb2eb8755a466b7f1c42a387266fc79304c7892"
+            "f84913c3963367d3ac3fbf3c5a228941aeab164a6942b30dfe5654c50f8f42d5"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "75820218b2d7c12c88a3bfa5dd610973577953e529386f7ee84d19ad9d749b85"
+            "4668d389e920dc2f8cbb16f3db05ddf5b1d864fbe67c307f08c4df27aacdfaad"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "4f70e5ae4fe16f7f3562b5b4cdf137dadbdfb763ed6ff94404e67e91b9d8ada0"
+            "4557be9151d43ea95ae77a4830a0c796e3577d065cdfbd092947deec0eb57b21"
           else
-            "9184ce858f507662c1e97fb164d45ce7d973d50962cc84b1c3c9e1ebe7f71654";
+            "df173b335e86dd5cd03c1e30e38cc007695ab034ff126d1cfaba7d4ece970a22";
       };
       sourceRoot = ".";
       dontConfigure = true;
@@ -335,17 +335,17 @@
 
     devin = prev.stdenvNoCC.mkDerivation rec {
       pname = "devin";
-      version = "3000.11.3";
+      version = "3000.11.92";
       src = prev.fetchurl {
         url = "https://static.devin.ai/cli/${version}/devin-${version}-${
           if prev.stdenv.hostPlatform.isAarch64 then "aarch64" else "x86_64"
         }-${if prev.stdenv.hostPlatform.isDarwin then "apple-darwin" else "unknown-linux"}.tar.gz";
         sha256 =
           {
-            "aarch64-darwin" = "c08cc3f3507d103246b8c601a584fcc719fd77f6cc10f26cc90e9f4186640df2";
-            "x86_64-darwin" = "594f89b6b0d03dffec4eabc754104e4471cc43a014a2164e2fdd7d0d752d0100";
-            "aarch64-linux" = "21a2d7a8dea67987067cde7eb3fe7193a48daa8f8c3d50d414c603c4a2b67f15";
-            "x86_64-linux" = "83b3b113c01bf2a3e9e100db08d77e6b086806a7754f091e20831bdfe215157e";
+            "aarch64-darwin" = "6047392212ce073ede2724d84246cc04dd47811a1d1e2084eee7252703940ac1";
+            "x86_64-darwin" = "59cf4576f0b345f89db248f99a82562d2ed7a189f7ce2a3273fb5374a749e7ac";
+            "aarch64-linux" = "881e83b0df06dd57a307004e299407c2c3745f288546e0a339a67fbebe7cb6c0";
+            "x86_64-linux" = "2d829139682e038cf122510f1170eee3d7060bcc7ebf92445cbc5d28c9fbcfa0";
           }
           .${prev.stdenv.hostPlatform.system};
       };
@@ -362,20 +362,20 @@
 
     moshi-hook = prev.stdenv.mkDerivation rec {
       pname = "moshi-hook";
-      version = "0.4.16";
+      version = "0.4.30";
       src = prev.fetchurl {
         url = "https://cdn.getmoshi.app/hook/v${version}/moshi-hook_${
           if prev.stdenv.hostPlatform.isDarwin then "Darwin" else "Linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x86_64"}.tar.gz";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "60b15cd8323c792fac00e35c727cdf93ddc6f118b8178e272ba4d879a540cbf7"
+            "54564d8dcb29cd7c6b6aa73c10a823ff5b719a5faeee31d3cfaec6ca47e97968"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "a57e9d53f786119b5e962c9767c9e1a5af5d4e850ce6e421ddb0ce78dcf52564"
+            "a76296868e230bcccdf98569f74fdd8779d2aa911811c39157d72776f0a35a6d"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "29b350f45c4d211fee813333325262205b3b28de59bda814d03afbf4e1e071cb"
+            "aa565dba94720e97662988cfb126d0623c6a42df63f1abc57cfc47e868609e90"
           else
-            "9ff580c0f930813ff264d2c775be45943e72f2fbe4416e3bb9ee3c9815323899";
+            "3b90d16a2fdfca67154bf9f973ece5df2ac5d5022ea3c3804d43dbd1acc4061b";
       };
       sourceRoot = ".";
       dontConfigure = true;
@@ -389,20 +389,20 @@
     # Namespace's devbox CLI, not the unrelated Jetify devbox in nixpkgs.
     namespace-devbox = prev.stdenvNoCC.mkDerivation rec {
       pname = "namespace-devbox";
-      version = "0.0.195";
+      version = "0.0.202";
       src = prev.fetchurl {
         url = "https://get.namespace.so/packages/devbox/v${version}/devbox_${version}_${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}.tar.gz";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "6cf18d67925b43ea75bcf0cdebc25d4f5db53907ff8c710e78b5406145faced9"
+            "38cb0ea33444068f324207975bd30613099c6050028018c239f98dee28182896"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "c543033496a0b19294731977205c1fe1998c2323df296e87b4a76b596b022019"
+            "99084b36dc80993834c312e50d713971302c6e4a952be5ee57041778fa9a7561"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "a78cdf91d4d692c07707d33ca3552c5b09faf554986e4bbccc3ef4bc2973628c"
+            "37d0b12ce04929829d7536b8cd0415d73ec5a65cc7902b1aefde408526d227c9"
           else
-            "537eecaf55a90289c53be6966979b6d20d9be9ca98cfc6fafd8107493d13c7dc";
+            "a783e231304abc92c6d62459a3f5105cd38c5b23c99150466f9a4705607e2ff5";
       };
       sourceRoot = ".";
       dontConfigure = true;
