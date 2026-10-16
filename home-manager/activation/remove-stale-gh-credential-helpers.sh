@@ -2,6 +2,7 @@
 # Remove gh credential sections from ~/.gitconfig that pin a /nix/store gh path.
 # A hand-run `gh auth setup-git` writes an empty `helper =` reset plus a store
 # path that Nix GC later deletes; the reset also masks the Home Manager helper.
+# Also remove a generic [credential] section whose only key is an empty helper.
 # Usage: remove-stale-gh-credential-helpers.sh <git_bin> <gitconfig>
 set -euo pipefail
 GIT_BIN="$1"
@@ -19,3 +20,11 @@ for URL in https://github.com https://gist.github.com; do
     echo "Removed stale $SECTION from $GITCONFIG"
   fi
 done
+
+# ~/.gitconfig is read after ~/.config/git/config, so a lone generic
+# `[credential] helper =` reset clears the Home Manager gh helper.
+GENERIC_KEYS=$("$GIT_BIN" config --file "$GITCONFIG" --name-only --get-regexp '^credential\.[^.]+$' || true)
+if [[ $GENERIC_KEYS == credential.helper && -z $("$GIT_BIN" config --file "$GITCONFIG" --get credential.helper) ]]; then
+  "$GIT_BIN" config --file "$GITCONFIG" --remove-section credential
+  echo "Removed empty credential helper reset from $GITCONFIG"
+fi
