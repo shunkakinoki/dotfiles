@@ -315,6 +315,8 @@ let
           ];
         assert cfg.programs.ssh.settings.matic.data.IdentitiesOnly == "yes";
         assert !(cfg.home.activation ? hardenSshd);
+        assert !(cfg.home.activation ? setKaminoSshdKeyOnly);
+        assert lib.hasInfix "key: /etc/ssh/ssh_host_ed25519_key" cfg.xdg.configFile."crabbox/config.yaml".text;
         assert !(cfg.home.activation ? setupK3s);
         assert !(cfg.systemd.user.services ? openclaw-gateway);
         assert !(cfg.systemd.user.services ? roborev);
@@ -452,6 +454,10 @@ let
           candidate:
           lib.hasInfix "--ssh=false" candidate.home.activation.configureKaminoTailscale.data
           && !(lib.hasInfix "--ssh=true" candidate.home.activation.configureKaminoTailscale.data)
+        ) ([ cfg ] ++ otherWarmConfigs);
+        assert builtins.all (
+          candidate:
+          lib.hasInfix "sshd-key-only /etc/ssh/sshd_config.d/10-kamino-key-only.conf" candidate.home.activation.setKaminoSshdKeyOnly.data
         ) ([ cfg ] ++ otherWarmConfigs);
         assert sshAuthorizedKeys.kaminoCiBox == sshAuthorizedKeys.kamino ++ kaminoPublicKeys;
         mkEvalCheck "home-kamino8" kamino.activationPackage;

@@ -374,6 +374,35 @@ The output should be blank
 The contents of file "$TEST_ROOT/defrag" should equal 'always defer defer+madvise madvise [never]'
 End
 
+sshd_setup() {
+  cat >"$TEST_ROOT/bin/sshd" <<'EOF'
+#!/usr/bin/env bash
+printf 'sshd %s\n' "$*" >>"$COMMAND_LOG"
+[ "${MOCK_SSHD_FAIL:-0}" = 1 ] && exit 1
+exit 0
+EOF
+  chmod +x "$TEST_ROOT/bin/sshd"
+}
+
+It 'writes the key-only sshd drop-in and reloads ssh'
+sshd_setup
+When run run_phase sshd-key-only "$TEST_ROOT/10-kamino-key-only.conf"
+The status should be success
+The output should include "Wrote $TEST_ROOT/10-kamino-key-only.conf."
+The contents of file "$TEST_ROOT/10-kamino-key-only.conf" should equal $'PasswordAuthentication no\nKbdInteractiveAuthentication no'
+The contents of file "$TEST_ROOT/commands" should equal $'sshd -t\nsystemctl reload ssh'
+End
+
+It 'removes the drop-in when sshd rejects the config'
+sshd_setup
+export MOCK_SSHD_FAIL=1
+When run run_phase sshd-key-only "$TEST_ROOT/10-kamino-key-only.conf"
+The status should be failure
+The output should include 'Wrote'
+The error should include 'sshd -t rejected'
+The path "$TEST_ROOT/10-kamino-key-only.conf" should not be exist
+End
+
 It 'rejects an unknown activation phase'
 When run run_phase unknown
 The status should be failure

@@ -111,8 +111,7 @@ inputs.home-manager.lib.homeManagerConfiguration {
             IdentityFile = lib.mkForce [ "/etc/ssh/ssh_host_ed25519_key" ];
             IdentitiesOnly = "yes";
           };
-          # The CI boxes authorize each worker's host key. Crabbox passes its
-          # own `-i`, and OpenSSH still tries this identity after it.
+          # The CI boxes authorize each worker's host key.
           kamino-ci-boxes = {
             header = "Host ${lib.concatMapStringsSep " " (box: "${box} ${box}.tail950b36.ts.net") ciBoxHosts}";
             IdentityFile = [ "/etc/ssh/ssh_host_ed25519_key" ];
@@ -125,6 +124,13 @@ inputs.home-manager.lib.homeManagerConfiguration {
         xdg.enable = true;
         systemd.user.startServices = true;
         xdg.configFile."kamino/name".text = "${name}\n";
+        # Crabbox's rsync transport uses only its configured key (default
+        # ~/.ssh/id_ed25519, absent on some workers) and ignores ssh_config, so
+        # OpenSSH CI boxes reject it unless the authorized host key is set here.
+        xdg.configFile."crabbox/config.yaml".text = ''
+          ssh:
+            key: /etc/ssh/ssh_host_ed25519_key
+        '';
 
         home.activation.checkKaminoIdentity = config.lib.dag.entryBefore [ "writeBoundary" ] ''
           ${pkgs.bash}/bin/bash ${./activate.sh} check ${lib.escapeShellArg name} "${config.xdg.configHome}/kamino/name"
@@ -158,6 +164,12 @@ inputs.home-manager.lib.homeManagerConfiguration {
           export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} vm-compaction /etc/sysctl.d/60-kamino-compaction.conf /etc/tmpfiles.d/60-kamino-thp.conf /sys/kernel/mm/transparent_hugepage/defrag
         '';
+        home.activation.setKaminoSshdKeyOnly = lib.mkIf isCiBox (
+          config.lib.dag.entryAfter [ "writeBoundary" ] ''
+            export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
+            $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} sshd-key-only /etc/ssh/sshd_config.d/10-kamino-key-only.conf
+          ''
+        );
         home.activation.prepareKaminoServiceDirectories =
           config.lib.dag.entryBetween [ "installTailscaleService" ] [ "writeBoundary" ]
             ''
