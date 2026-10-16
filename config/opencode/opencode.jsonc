@@ -222,7 +222,6 @@
   "plugin": [
     "cc-safety-net",
     "opencode-atuin-history",
-    "opencode-claude-hooks",
     "opencode-runtime-fallback@0.2.3"
   ]
 }

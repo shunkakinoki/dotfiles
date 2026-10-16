@@ -29,6 +29,10 @@
     source = ../../generated/hooks/moshi/opencode/moshi-hooks.ts;
   };
 
+  home.file.".config/opencode/plugins/claude-hooks.ts" = {
+    source = ./plugins/claude-hooks.ts;
+  };
+
   home.activation.installOpenCodePlugins = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${pkgs.opencode}/bin/opencode" "${pkgs.jq}/bin/jq" "${pkgs.bun}/bin/bun"
   '';
