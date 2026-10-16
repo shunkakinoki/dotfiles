@@ -78,7 +78,6 @@ with pkgs;
   grc
   gron
   pkgs.llm-agents.herdr
-  pkgs.llm-agents.grok
   pkgs.llm-agents.muse-code
   hexyl
   htop
@@ -152,7 +151,6 @@ with pkgs;
 ]
 ++ lib.optionals stdenv.hostPlatform.isDarwin [
   darwin.trash
-  opencode
 ]
 ++ lib.optionals stdenv.hostPlatform.isLinux [
   atop
@@ -177,7 +175,6 @@ with pkgs;
   lld
   nspr
   nss
-  opencode
   openssl
   openssl.dev
   pkg-config

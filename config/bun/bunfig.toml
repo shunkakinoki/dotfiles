@@ -16,6 +16,21 @@ minimumReleaseAgeExcludes = [
   "@anthropic-ai/claude-code-linux-x64",
   "@anthropic-ai/claude-code-linux-x64-musl",
   "@openai/codex",
+  "@xai-official/grok",
+  "@xai-official/grok-darwin-arm64",
+  "@xai-official/grok-darwin-x64",
+  "@xai-official/grok-linux-arm64",
+  "@xai-official/grok-linux-x64",
+  "opencode-ai",
+  "opencode-darwin-arm64",
+  "opencode-darwin-x64",
+  "opencode-darwin-x64-baseline",
+  "opencode-linux-arm64",
+  "opencode-linux-arm64-musl",
+  "opencode-linux-x64",
+  "opencode-linux-x64-baseline",
+  "opencode-linux-x64-baseline-musl",
+  "opencode-linux-x64-musl",
 ]
 # Use caret ranges when adding deps.
 exact = false

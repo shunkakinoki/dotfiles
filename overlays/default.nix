@@ -128,54 +128,13 @@
   inputs.llm-agents.overlays.shared-nixpkgs
   (
     _: prev:
-    let
-      linuxGrokOverrides =
-        prev.lib.optionalAttrs
-          (prev.stdenv.hostPlatform.isLinux && prev.llm-agents ? grok && prev.llm-agents ? wrapBuddy)
-          (
-            let
-              wrapBuddy = prev.llm-agents.wrapBuddy;
-              wrapBuddyBinary = builtins.head wrapBuddy.propagatedBuildInputs;
-              fixedWrapBuddy = wrapBuddy.overrideAttrs (_: {
-                propagatedBuildInputs = [
-                  (wrapBuddyBinary.overrideAttrs (old: {
-                    postPatch = (old.postPatch or "") + ''
-                      # grep -q exits as soon as it finds the match. With pipefail, the
-                      # upstream echo producer can then receive SIGPIPE and fail the
-                      # otherwise-successful install check under loaded CI runners.
-                      substituteInPlace tests/test.sh \
-                        --replace-fail 'echo "$output" | grep -q "Hello from patched binary!" ||' \
-                        'grep -q "Hello from patched binary!" <<< "$output" ||' \
-                        --replace-fail 'echo "$output" | grep -q "NEEDED_LOADED=yes" ||' \
-                        'grep -q "NEEDED_LOADED=yes" <<< "$output" ||'
-                    '';
-                  }))
-                ];
-              });
-            in
-            {
-              # wrap-buddy-hook is Linux-only; keep its fix off Darwin evaluation.
-              grok = prev.llm-agents.grok.overrideAttrs (old: {
-                doInstallCheck = false;
-                nativeBuildInputs = map (
-                  input: if (input.outPath or "") == wrapBuddy.outPath then fixedWrapBuddy else input
-                ) (old.nativeBuildInputs or [ ]);
-              });
-              wrapBuddy = fixedWrapBuddy;
-            }
-          );
-    in
     {
-      # Upstream grok 0.1.218 fails versionCheckHook because `grok --version`/`--help`
-      # do not emit the version string. Disable install check until upstream fixes it.
-      # https://github.com/numtide/llm-agents.nix
       llm-agents =
         (prev.llm-agents or { })
         // {
           # Keep every managed client and server on the same released protocol.
           herdr = inputs.herdr.packages.${prev.stdenv.hostPlatform.system}.default;
         }
-        // linuxGrokOverrides
         // prev.lib.optionalAttrs (prev.llm-agents ? bernstein) {
           # bernstein 2.8.2 requires reportlab<5,>=4.0 but nixpkgs now provides
           # reportlab 5.0.0, failing pythonRuntimeDepsCheckHook.
@@ -409,7 +368,6 @@
       deno
       codex
       claude-code
-      opencode
       ;
   })
 ]
