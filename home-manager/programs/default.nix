@@ -1,7 +1,4 @@
-{
-  pkgs,
-  ...
-}:
+_:
 let
   atuin = import ./atuin;
   bash = import ./bash;
@@ -18,7 +15,7 @@ let
   fish = import ./fish;
   fnm = import ./fnm;
   fzf = import ./fzf;
-  gh = import ./gh { inherit pkgs; };
+  gh = import ./gh;
   ghq = import ./ghq;
   git = import ./git;
   gpg = import ./gpg;

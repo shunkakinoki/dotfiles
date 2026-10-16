@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 {
   programs.gh = {
     enable = true;
@@ -13,4 +13,12 @@
       prompt = "enabled";
     };
   };
+
+  # Hand-run `gh auth setup-git` pins a GC-able store path in ~/.gitconfig and
+  # resets the Home Manager helper; drop those sections on every switch.
+  home.activation.removeStaleGhCredentialHelpers = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../activation/remove-stale-gh-credential-helpers.sh}" \
+      "${pkgs.git}/bin/git" \
+      "${config.home.homeDirectory}/.gitconfig"
+  '';
 }
