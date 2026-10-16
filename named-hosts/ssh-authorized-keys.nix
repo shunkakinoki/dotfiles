@@ -21,4 +21,5 @@ in
   kyber = keysFor kaminoHosts;
   matic = keysFor kaminoHosts;
   kamino = keysFor coreHosts;
+  kaminoCiBox = keysFor (coreHosts ++ kaminoHosts);
 }
