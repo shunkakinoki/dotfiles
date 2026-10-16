@@ -100,6 +100,24 @@ in
         bash ${../home-manager/activation/remove-stale-gh-credential-helpers.sh} "$(command -v git)" "$PWD/kept"
         test "$(git config --file kept credential.https://github.com.helper)" = "!gh auth git-credential"
 
+        printf '[user]\n\tname = tester\n[credential]\n\thelper =\n' > reset
+        for _ in 1 2; do
+          bash ${../home-manager/activation/remove-stale-gh-credential-helpers.sh} "$(command -v git)" "$PWD/reset"
+        done
+        test "$(git config --file reset user.name)" = tester
+        if git config --file reset --get-all credential.helper >/dev/null; then
+          echo "FAIL: empty generic credential reset remains" && exit 1
+        fi
+
+        printf '[credential]\n\thelper = osxkeychain\n' > generic
+        bash ${../home-manager/activation/remove-stale-gh-credential-helpers.sh} "$(command -v git)" "$PWD/generic"
+        test "$(git config --file generic credential.helper)" = osxkeychain
+
+        printf '[credential]\n\thelper =\n\tuseHttpPath = true\n' > mixed
+        bash ${../home-manager/activation/remove-stale-gh-credential-helpers.sh} "$(command -v git)" "$PWD/mixed"
+        test "$(git config --file mixed credential.usehttppath)" = true
+        test "$(git config --file mixed --get-all credential.helper | wc -l)" -eq 1
+
         bash ${../home-manager/activation/remove-stale-gh-credential-helpers.sh} "$(command -v git)" "$PWD/missing"
         test ! -e missing
         touch "$out"
