@@ -10,19 +10,14 @@ When run grep -Fx '  pkgs.llm-agents.cursor-agent' "$PACKAGES"
 The output should include '  pkgs.llm-agents.cursor-agent'
 End
 
-It 'keeps Grok in the shared package set'
-When run bash -c "line=\$(grep -nF 'pkgs.llm-agents.grok' \"$PACKAGES\" | cut -d: -f1); boundary=\$(grep -nF '++ lib.optionals stdenv.hostPlatform.isDarwin' \"$PACKAGES\" | cut -d: -f1); test -n \"\$line\" -a -n \"\$boundary\" -a \"\$line\" -lt \"\$boundary\""
+It 'installs OpenCode and Grok as npm globals so T3 Code can upgrade them'
+When run bash -c "jq -e '.dependencies[\"opencode-ai\"] and .dependencies[\"@xai-official/grok\"]' \"$PWD/package.json\" >/dev/null && ! grep -Eq '^  (pkgs\.llm-agents\.grok|opencode)\$' \"$PACKAGES\" && ! grep -Eq '^ +(opencode|linuxGrokOverrides|// linuxGrokOverrides)\$' \"$OVERLAY\""
 The status should be success
 End
 
 It 'includes Muse Code in the shared package set'
 When run grep -Fx '  pkgs.llm-agents.muse-code' "$PACKAGES"
 The output should include '  pkgs.llm-agents.muse-code'
-End
-
-It 'guards the Linux-only Grok wrapBuddy override'
-When run bash -c "grep -F 'linuxGrokOverrides' \"$OVERLAY\" >/dev/null && grep -F 'prev.stdenv.hostPlatform.isLinux' \"$OVERLAY\" >/dev/null"
-The status should be success
 End
 
 It 'does not retain the separate nixpkgs Cursor CLI'

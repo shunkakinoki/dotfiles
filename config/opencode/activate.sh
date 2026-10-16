@@ -6,9 +6,12 @@ JQ_BIN="${2:-jq}"
 BUN_BIN="${3:-bun}"
 CONFIG_ROOT="${XDG_CONFIG_HOME:-${HOME}/.config}/opencode"
 
+# OpenCode is an npm global; under T3 Code the install runs in the
+# install-npm-globals service after this activation, so a first switch may not
+# have it yet. Plugins are installed on the next activation.
 if [[ ! -x $OPENCODE_BIN ]]; then
-  echo "ERROR: OpenCode executable not found: ${OPENCODE_BIN}" >&2
-  exit 1
+  echo "OpenCode not installed yet, skipping plugin install: ${OPENCODE_BIN}"
+  exit 0
 fi
 
 if [[ ! -x $JQ_BIN ]]; then

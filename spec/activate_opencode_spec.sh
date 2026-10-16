@@ -114,4 +114,11 @@ The status should be failure
 The output should include 'OpenCode plugin ready: cc-safety-net'
 The file "$TEMP_HOME/.config/opencode/node_modules/opencode-atuin-history/package.json" should not be exist
 End
+
+It 'skips plugin install until the npm OpenCode is installed'
+When run env HOME="$TEMP_HOME" XDG_CONFIG_HOME="$TEMP_HOME/.config" bash "$SCRIPT" "$TEMP_HOME/missing/opencode" "$(command -v jq)" "$FAKE_BUN"
+The status should be success
+The output should include 'OpenCode not installed yet, skipping plugin install'
+The file "$TEMP_HOME/bun-invocations" should not be exist
+End
 End

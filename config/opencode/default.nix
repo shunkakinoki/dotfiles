@@ -4,6 +4,13 @@
   ...
 }:
 {
+  home.packages = [
+    (pkgs.writeShellApplication {
+      name = "opencode-lane";
+      text = builtins.readFile ./opencode-lane.sh;
+    })
+  ];
+
   home.file.".config/opencode/opencode.jsonc" = {
     source = ./opencode.jsonc;
   };
@@ -33,7 +40,13 @@
     source = ./plugins/claude-hooks.ts;
   };
 
-  home.activation.installOpenCodePlugins = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${pkgs.opencode}/bin/opencode" "${pkgs.jq}/bin/jq" "${pkgs.bun}/bin/bun"
-  '';
+  home.activation.installOpenCodePlugins =
+    config.lib.dag.entryAfter
+      [
+        "writeBoundary"
+        "installNpmGlobals"
+      ]
+      ''
+        $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "$HOME/.bun/bin/opencode" "${pkgs.jq}/bin/jq" "${pkgs.bun}/bin/bun"
+      '';
 }
