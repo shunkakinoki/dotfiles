@@ -572,6 +572,16 @@ while IFS= read -r dep; do
   fi
 done < <(jq -r '.dependencies // {} | keys[]' "$PACKAGE_JSON" 2>/dev/null)
 
+# grok's node bin launches $GROK_HOME/bin/grok, which only its postinstall
+# repoints at the installed version, so a skipped postinstall keeps the old one.
+GROK_PKG="${GLOBAL_MODULES}/@xai-official/grok/package.json"
+if [ -f "$GROK_PKG" ]; then
+  grok_version=$(jq -r '.version' "$GROK_PKG")
+  if [ "$(readlink "${GROK_HOME:-$HOME/.grok}/bin/grok" 2>/dev/null)" != "grok-${grok_version}" ]; then
+    (cd "$(dirname "$GROK_PKG")" && node bin/postinstall.js) || echo "Postinstall failed for @xai-official/grok" >&2
+  fi
+fi
+
 if ! repair_sqlite3_native_binding; then
   echo "Warning: sqlite3 native binding repair failed" >&2
 fi
