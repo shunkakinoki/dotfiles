@@ -17,8 +17,9 @@ if [ -n "${SYSTEMCTL_BIN:-}" ] && [ "$("$SYSTEMCTL_BIN" is-system-running 2>/dev
   exit 0
 fi
 
-# Skip if offline
-if ! timeout 3 bash -c 'exec 3<>/dev/tcp/1.1.1.1/53' 2>/dev/null; then
+# Probe the registry itself: nix bash's /dev/tcp never connects on Darwin, which
+# made every macOS run report offline and skip the install.
+if ! curl -fsS -m 5 -o /dev/null https://registry.npmjs.org/ 2>/dev/null; then
   echo "Network unavailable, skipping npm globals install"
   exit 0
 fi

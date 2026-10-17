@@ -6,14 +6,14 @@ SCRIPT="$PWD/home-manager/modules/npm-globals/install-npm-globals.sh"
 
 Describe 'self-hosted upgrade delegation'
 setup_delegation() {
-  mock_bin_setup systemctl timeout bun jq
+  mock_bin_setup systemctl timeout bun jq curl
   NPM_TEST_HOME="$(mktemp -d)"
   export NPM_TEST_HOME
   export SYSTEMCTL_BIN="$MOCK_BIN/systemctl"
   export T3_BOOT_SERVICE_UNIT=t3code.service
   export T3_PROC_CGROUP="$NPM_TEST_HOME/cgroup"
   printf '0::/user.slice/independent.service\n' >"$T3_PROC_CGROUP"
-  printf '#!/usr/bin/env bash\nexit 1\n' >"$MOCK_BIN/timeout"
+  printf '#!/usr/bin/env bash\nexit 1\n' >"$MOCK_BIN/curl"
 }
 cleanup_delegation() {
   mock_bin_cleanup
@@ -108,8 +108,8 @@ End
 
 Describe 'offline skip'
 It 'checks network connectivity before installing'
-When run bash -c "grep 'timeout 3 bash' '$SCRIPT'"
-The output should include 'timeout 3 bash'
+When run bash -c "grep 'curl' '$SCRIPT'"
+The output should include 'registry.npmjs.org'
 End
 
 It 'exits gracefully when offline'
@@ -434,12 +434,11 @@ EOF
 #!/usr/bin/env bash
 set -euo pipefail
 shift
-if [ "${1:-}" = "bash" ] && [ "${2:-}" = "-c" ] && [ "${3:-}" = "exec 3<>/dev/tcp/1.1.1.1/53" ]; then
-  exit 0
-fi
 exec "$@"
 EOF
   chmod +x "$MOCK_BIN/timeout"
+  printf '#!/usr/bin/env bash\nexit 0\n' >"$MOCK_BIN/curl"
+  chmod +x "$MOCK_BIN/curl"
 
   cat >"$MOCK_BIN/bun" <<'EOF'
 #!/usr/bin/env bash
@@ -525,12 +524,11 @@ EOF
 #!/usr/bin/env bash
 set -euo pipefail
 shift
-if [ "${1:-}" = "bash" ] && [ "${2:-}" = "-c" ] && [ "${3:-}" = "exec 3<>/dev/tcp/1.1.1.1/53" ]; then
-  exit 0
-fi
 exec "$@"
 EOF
   chmod +x "$MOCK_BIN/timeout"
+  printf '#!/usr/bin/env bash\nexit 0\n' >"$MOCK_BIN/curl"
+  chmod +x "$MOCK_BIN/curl"
 
   cat >"$MOCK_BIN/bun" <<'EOF'
 #!/usr/bin/env bash
@@ -584,12 +582,11 @@ EOF
 #!/usr/bin/env bash
 set -euo pipefail
 shift
-if [ "${1:-}" = "bash" ] && [ "${2:-}" = "-c" ] && [ "${3:-}" = "exec 3<>/dev/tcp/1.1.1.1/53" ]; then
-  exit 0
-fi
 exec "$@"
 EOF
   chmod +x "$MOCK_BIN/timeout"
+  printf '#!/usr/bin/env bash\nexit 0\n' >"$MOCK_BIN/curl"
+  chmod +x "$MOCK_BIN/curl"
 
   cat >"$MOCK_BIN/bun" <<'EOF'
 #!/usr/bin/env bash
@@ -690,12 +687,11 @@ EOF
 #!/usr/bin/env bash
 set -euo pipefail
 shift
-if [ "${1:-}" = "bash" ] && [ "${2:-}" = "-c" ] && [ "${3:-}" = "exec 3<>/dev/tcp/1.1.1.1/53" ]; then
-  exit 0
-fi
 exec "$@"
 EOF
   chmod +x "$MOCK_BIN/timeout"
+  printf '#!/usr/bin/env bash\nexit 0\n' >"$MOCK_BIN/curl"
+  chmod +x "$MOCK_BIN/curl"
 
   cat >"$MOCK_BIN/bun" <<'EOF'
 #!/usr/bin/env bash
