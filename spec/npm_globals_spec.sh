@@ -308,6 +308,48 @@ The output should include 'run_postinstall_if_needed'
 End
 End
 
+Describe 'postinstall stub repair for installed packages'
+setup() {
+  TEMP_HOME=$(mktemp -d)
+  MOCK_BIN=$(mktemp -d)
+  MOCK_LOG="$TEMP_HOME/mock.log"
+  REAL_BIN_DIR="$(dirname "$(command -v jq)")"
+  REAL_NODE_DIR="$(dirname "$(command -v node)")"
+  REAL_SYSTEM_BIN_DIR="$(dirname "$(command -v mv)")"
+  : >"$MOCK_LOG"
+  PKG_DIR="$TEMP_HOME/.bun/install/global/node_modules/@opencode/cli"
+
+  mkdir -p "$TEMP_HOME/dotfiles" "$PKG_DIR/bin"
+  printf '{"dependencies":{"@opencode/cli":"^2.0.31"}}\n' >"$TEMP_HOME/dotfiles/package.json"
+  printf '{"dependencies":{"@opencode/cli":"2.0.32"}}\n' >"$TEMP_HOME/.bun/install/global/package.json"
+  printf '{"version":"2.0.32","scripts":{"postinstall":"node ./postinstall.mjs"}}\n' >"$PKG_DIR/package.json"
+  printf 'import {writeFileSync} from "node:fs";\nwriteFileSync("bin/opencode.exe", "#!/bin/sh\\necho opencode v2.0.32\\n");\n' >"$PKG_DIR/postinstall.mjs"
+  printf 'echo "Error: postinstall script was not run." >&2\n' >"$PKG_DIR/bin/opencode.exe"
+
+  printf '#!/usr/bin/env bash\nshift\nexec "$@"\n' >"$MOCK_BIN/timeout"
+  printf '#!/usr/bin/env bash\nexit 0\n' >"$MOCK_BIN/curl"
+  printf '#!/usr/bin/env bash\nprintf "bun %%s\\n" "$*" >>"$MOCK_LOG"\n' >"$MOCK_BIN/bun"
+  chmod +x "$MOCK_BIN/timeout" "$MOCK_BIN/curl" "$MOCK_BIN/bun"
+}
+
+cleanup() {
+  rm -rf "$TEMP_HOME" "$MOCK_BIN"
+}
+
+Before 'setup'
+After 'cleanup'
+
+It 'runs postinstall when an up-to-date package still has its bin stub'
+When run bash -c "HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_NODE_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT' >/dev/null 2>&1; head -n 1 '$PKG_DIR/bin/opencode.exe'"
+The output should equal '#!/bin/sh'
+End
+
+It 'leaves a package alone once postinstall has replaced its stub'
+When run bash -c "printf '#!/bin/sh\n' >'$PKG_DIR/bin/opencode.exe'; HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_NODE_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT'"
+The output should include '@opencode/cli@2.0.32 already installed, skipping'
+End
+End
+
 Describe 'native addon repair'
 It 'has a sqlite3 native binding repair step'
 When run bash -c "grep 'repair_sqlite3_native_binding' '$SCRIPT'"

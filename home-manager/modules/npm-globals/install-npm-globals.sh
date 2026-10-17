@@ -220,6 +220,26 @@ purge_bun_npm_shim() {
   fi
 }
 
+# Some CLIs ship a bin that postinstall replaces with the real binary, as a
+# shebang-less text stub (e.g. @opencode/cli's bin/opencode.exe). ignoreScripts
+# leaves the stub in place, and exec then fails with ENOEXEC.
+is_postinstall_stub() {
+  local f="$1"
+  case "$f" in *.js | *.cjs | *.mjs) return 1 ;; esac
+  [ "$(head -c 2 "$f")" != "#!" ] || return 1
+  # Native binaries carry NUL bytes in their header; text stubs do not.
+  [ "$(head -c 4096 "$f" | LC_ALL=C tr -d '\000' | wc -c)" -eq "$(head -c 4096 "$f" | wc -c)" ]
+}
+
+has_postinstall_stub() {
+  local bin_dir="${GLOBAL_MODULES}/$1/bin" f
+  [ -d "$bin_dir" ] || return 1
+  for f in "$bin_dir"/*; do
+    [ -f "$f" ] && is_postinstall_stub "$f" && return 0
+  done
+  return 1
+}
+
 run_postinstall_if_needed() {
   local dep="$1"
   local dep_dir="${GLOBAL_MODULES}/${dep}"
@@ -233,9 +253,12 @@ run_postinstall_if_needed() {
     local has_native=false
     for f in "$bin_dir"/*; do
       [ -f "$f" ] || continue
-      case "$f" in *.js | *.cjs | *.mjs | *.exe) continue ;; esac
+      case "$f" in *.js | *.cjs | *.mjs) continue ;; esac
+      if is_postinstall_stub "$f"; then
+        has_native=false
+        break
+      fi
       has_native=true
-      break
     done
     if $has_native; then
       return 0
@@ -322,6 +345,13 @@ if [ -n "$DEPS" ]; then
           echo "$dep native binary repair failed, reinstalling wrapper"
           rm -rf "${GLOBAL_MODULES:?}/${dep}"
           MISSING+=("$dep")
+          continue
+        fi
+        # Out-of-band upgrades (e.g. T3 Code's `bun i -g <pkg>@latest`) run
+        # under ignoreScripts and can leave the postinstall stub in place.
+        if has_postinstall_stub "$dep"; then
+          echo "$dep@$installed_ver installed but postinstall never replaced its bin stub"
+          run_postinstall_if_needed "$dep"
           continue
         fi
         echo "$dep@$installed_ver already installed, skipping"
