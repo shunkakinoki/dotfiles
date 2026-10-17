@@ -2,13 +2,6 @@ _: {
   # Keeps v2 off the 1.x opencode.db so 1.x history is never read or rewritten.
   home.sessionVariables.OPENCODE_DB = "opencode-v2.db";
 
-  # v2 clients share one host service whose env comes from whichever process
-  # spawns it first, so a systemd unit or stale shell would open opencode.db.
-  home.file.".config/opencode/service.json" = {
-    text = builtins.toJSON { env.OPENCODE_DB = "opencode-v2.db"; };
-    force = true;
-  };
-
   home.file.".config/opencode/opencode.jsonc" = {
     source = ./opencode.jsonc;
   };
