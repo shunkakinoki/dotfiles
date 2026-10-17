@@ -481,6 +481,55 @@ The output should not include 'Installing missing native binary'
 End
 End
 
+Describe 'unexecutable bin self-heal'
+setup() {
+  TEMP_HOME=$(mktemp -d)
+  MOCK_BIN=$(mktemp -d)
+  MOCK_LOG="$TEMP_HOME/mock.log"
+  REAL_BIN_DIR="$(dirname "$(command -v jq)")"
+  REAL_NODE_DIR="$(dirname "$(command -v node)")"
+  REAL_SYSTEM_BIN_DIR="$(dirname "$(command -v mv)")"
+  : >"$MOCK_LOG"
+
+  GM="$TEMP_HOME/.bun/install/global/node_modules"
+  mkdir -p "$TEMP_HOME/dotfiles" "$TEMP_HOME/.bun/bin" "$GM/stubcli/bin"
+  printf '{"dependencies":{"stubcli":"^1.0.0"}}\n' >"$TEMP_HOME/dotfiles/package.json"
+  cat >"$GM/stubcli/package.json" <<'EOF'
+{
+  "name": "stubcli",
+  "version": "1.0.0",
+  "bin": { "stubcli": "bin/stubcli.exe" },
+  "scripts": { "postinstall": "printf '#!/bin/sh\\n' > bin/stubcli.exe" }
+}
+EOF
+  printf 'echo "Error: postinstall was not run" >&2\nexit 1\n' >"$GM/stubcli/bin/stubcli.exe"
+
+  printf '#!/usr/bin/env bash\nshift\nexec "$@"\n' >"$MOCK_BIN/timeout"
+  printf '#!/usr/bin/env bash\nexit 0\n' >"$MOCK_BIN/curl"
+  printf '#!/usr/bin/env bash\nprintf "bun %%s\\n" "$*" >>"$MOCK_LOG"\n' >"$MOCK_BIN/bun"
+  chmod +x "$MOCK_BIN/timeout" "$MOCK_BIN/curl" "$MOCK_BIN/bun"
+}
+
+cleanup() {
+  rm -rf "$TEMP_HOME" "$MOCK_BIN"
+}
+
+Before 'setup'
+After 'cleanup'
+
+It 'runs the postinstall of an installed package whose bin is a placeholder'
+When run bash -c "HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_NODE_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT' >/dev/null 2>&1; head -c2 '$GM/stubcli/bin/stubcli.exe'"
+The output should eq '#!'
+End
+
+It 'leaves a package with a script bin alone'
+printf '#!/bin/sh\n' >"$GM/stubcli/bin/stubcli.exe"
+When run bash -c "HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_NODE_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT'"
+The status should be success
+The output should not include 'Running postinstall for stubcli'
+End
+End
+
 Describe 'wrapper-indirection native binary self-heal (tokscale pattern)'
 setup() {
   TEMP_HOME=$(mktemp -d)

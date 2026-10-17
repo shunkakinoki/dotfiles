@@ -220,6 +220,23 @@ purge_bun_npm_shim() {
   fi
 }
 
+# Succeeds when a declared bin is neither a script (#!) nor an ELF/Mach-O
+# binary, e.g. a placeholder that the package's postinstall replaces.
+unexecutable_bin() {
+  local dep_dir="${GLOBAL_MODULES}/$1"
+  [ -f "${dep_dir}/package.json" ] || return 1
+  local target magic
+  while IFS= read -r target; do
+    [ -n "$target" ] && [ -f "${dep_dir}/${target}" ] || continue
+    magic=$(head -c4 "${dep_dir}/${target}" | od -An -tx1 | tr -d ' \n')
+    case "$magic" in
+    2321* | 7f454c46 | cffaedfe | cefaedfe | cafebabe) ;;
+    *) return 0 ;;
+    esac
+  done < <(jq -r '.bin | if type == "string" then . elif type == "object" then .[] else empty end' "${dep_dir}/package.json" 2>/dev/null)
+  return 1
+}
+
 run_postinstall_if_needed() {
   local dep="$1"
   local dep_dir="${GLOBAL_MODULES}/${dep}"
@@ -229,7 +246,7 @@ run_postinstall_if_needed() {
   postinstall=$(jq -r '.scripts.postinstall // empty' "$pj" 2>/dev/null || true)
   [ -n "$postinstall" ] || return 0
   local bin_dir="${dep_dir}/bin"
-  if [ -d "$bin_dir" ]; then
+  if [ -d "$bin_dir" ] && ! unexecutable_bin "$dep"; then
     local has_native=false
     for f in "$bin_dir"/*; do
       [ -f "$f" ] || continue
@@ -544,6 +561,16 @@ for pkg in $(echo "$OVERRIDES" | jq -r 'keys[]' 2>/dev/null); do
     echo "Deduplicated nested $pkg: $nested"
   done
 done
+
+# Bun global installs skip some trusted postinstalls, and the overrides and
+# patches `bun install` above re-resolve caret ranges, so an upgraded package
+# can be left with its placeholder bin (spawn ENOEXEC).
+while IFS= read -r dep; do
+  [ -z "$dep" ] && continue
+  if unexecutable_bin "$dep"; then
+    run_postinstall_if_needed "$dep"
+  fi
+done < <(jq -r '.dependencies // {} | keys[]' "$PACKAGE_JSON" 2>/dev/null)
 
 if ! repair_sqlite3_native_binding; then
   echo "Warning: sqlite3 native binding repair failed" >&2
