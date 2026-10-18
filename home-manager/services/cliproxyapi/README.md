@@ -171,9 +171,10 @@ tunnels and `cliproxyapi`. A tunnel with nothing mapped to it exits without
 connecting. The `kamino<N>` SSH host aliases and their host keys must already be
 in `~/.ssh/config` and `~/.ssh/known_hosts`.
 
-Each OAuth credential names a different kamino host. That host's public address
-is the account's egress. The four `ollama-cloud` keys share kamino7. kamino8,
-kamino9, and kamino10 are not egress hosts.
+Each mapped OAuth credential names a different kamino host. That host's public
+address is the account's egress. Credentials not mapped in `kamino-tunnels.json`
+leave from kyber. The four `ollama-cloud` keys share kamino7. kamino8, kamino9,
+and kamino10 are not egress hosts.
 
 | Account | Host |
 | --- | --- |
