@@ -12,8 +12,9 @@ let
     else
       pkgs.findutils;
   serveRoutes = import ../../modules/tailscale/routes.nix;
-  # Kamino1 through Kamino6 use managed tunnels; later Kamino workers are
-  # publish-only and pair with the T3 server over its tailnet URL instead.
+  # Kamino workers are publish-only and pair with the T3 server over its
+  # tailnet URL. Managed relay tunnels are account-quota limited and are not
+  # required when Tailscale Serve is available.
   kaminoT3ServeRoute = {
     name = "t3";
     httpsPort = 443;
