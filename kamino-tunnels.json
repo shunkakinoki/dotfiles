@@ -1,29 +1,5 @@
 [
   {
-    "provider": "ollama-cloud",
-    "key_index": 1,
-    "host": "kamino1",
-    "port": 1081
-  },
-  {
-    "provider": "ollama-cloud",
-    "key_index": 2,
-    "host": "kamino2",
-    "port": 1082
-  },
-  {
-    "provider": "ollama-cloud",
-    "key_index": 3,
-    "host": "kamino3",
-    "port": 1083
-  },
-  {
-    "provider": "ollama-cloud",
-    "key_index": 4,
-    "host": "kamino4",
-    "port": 1084
-  },
-  {
     "credential": "codex-406a3ac1-dosages_01chortle@icloud.com-prolite.json",
     "host": "kamino1",
     "port": 1081
@@ -34,18 +10,47 @@
     "port": 1082
   },
   {
+    "credential": "codex-286cfba9-shunkakinoki@shunkakinoki.com-pro.json",
+    "host": "kamino3",
+    "port": 1083
+  },
+  {
     "credential": "codex-9c05e492-69-scrappy.corpus@icloud.com-prolite.json",
     "host": "kamino4",
     "port": 1084
   },
   {
     "credential": "claude-2738f2fb-jangly-bears6h@icloud.com.json",
-    "host": "kamino1",
-    "port": 1081
+    "host": "kamino5",
+    "port": 1085
   },
   {
     "credential": "claude-b3cd641c-3_hive_tangy@icloud.com.json",
-    "host": "kamino2",
-    "port": 1082
+    "host": "kamino6",
+    "port": 1086
+  },
+  {
+    "provider": "ollama-cloud",
+    "key_index": 1,
+    "host": "kamino7",
+    "port": 1087
+  },
+  {
+    "provider": "ollama-cloud",
+    "key_index": 2,
+    "host": "kamino7",
+    "port": 1087
+  },
+  {
+    "provider": "ollama-cloud",
+    "key_index": 3,
+    "host": "kamino7",
+    "port": 1087
+  },
+  {
+    "provider": "ollama-cloud",
+    "key_index": 4,
+    "host": "kamino7",
+    "port": 1087
   }
 ]
