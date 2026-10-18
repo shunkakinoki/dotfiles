@@ -313,6 +313,10 @@ It 'has spec file for home-manager/services/cpa-manager-plus/docker-start.sh'
 The path "spec/cpa_manager_plus_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/paperclip/start.sh'
+The path "spec/paperclip_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/docker/setup-docker.sh'
 The path "spec/docker_setup_spec.sh" should be exist
 End
@@ -655,6 +659,7 @@ home-manager/services/openclaw/gateway-tmp-cleanup.sh
 home-manager/services/openclaw/activate.sh
 home-manager/services/openclaw/k3s-proxy.sh
 home-manager/services/openclaw/state-maintenance.sh
+home-manager/services/paperclip/start.sh
 home-manager/services/qmd/activate.sh
 home-manager/services/roborev/activate.sh
 home-manager/services/roborev/start.sh
