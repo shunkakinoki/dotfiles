@@ -184,15 +184,15 @@ The output should not include 'link requested'
 The contents of file "$TEST_ROOT/commands" should include 't3 connect link --publish-only'
 End
 
-It 'provisions a managed T3 Connect tunnel for opted-in hosts'
+It 'provisions a publish-only T3 Connect link for workers'
 mkdir -p "$TEST_ROOT/t3/runtime" "$TEST_ROOT/t3/userdata/secrets"
 printf '{\n  "protocol": 3\n}\n' >"$TEST_ROOT/t3/runtime/service-state.json"
 : >"$TEST_ROOT/t3/userdata/secrets/cloud-cli-oauth-token.bin"
-When run env T3CODE_HOME="$TEST_ROOT/t3" PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" t3-connect "$TEST_ROOT/bin/t3" managed
+When run env T3CODE_HOME="$TEST_ROOT/t3" PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$SCRIPT" t3-connect "$TEST_ROOT/bin/t3" publish-only
 The status should be success
-The output should include 'T3 Connect managed link requested.'
+The output should include 'T3 Connect publish-only link requested.'
 The contents of file "$TEST_ROOT/commands" should include 't3 connect link'
-The contents of file "$TEST_ROOT/commands" should not include '--publish-only'
+The contents of file "$TEST_ROOT/commands" should include '--publish-only'
 End
 
 It 'removes T3 Connect from Crabbox-only hosts'

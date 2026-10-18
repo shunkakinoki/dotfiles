@@ -47,22 +47,9 @@ let
     "kamino9"
     "kamino10"
   ];
-  # Kamino1 through Kamino6 use relay-managed T3 Connect tunnels so their
-  # environments support the same update flow. Later workers remain
-  # publish-only and pair over Tailscale.
-  t3ManagedTunnelHosts = [
-    "kamino1"
-    "kamino2"
-    "kamino3"
-    "kamino4"
-    "kamino5"
-    "kamino6"
-  ];
   t3ConnectMode =
     if host.t3ConnectDisabled then
       "disabled"
-    else if builtins.elem name t3ManagedTunnelHosts then
-      "managed"
     else
       "publish-only";
   sshAuthorizedKeys = import ../ssh-authorized-keys.nix;
