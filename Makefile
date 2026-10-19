@@ -385,7 +385,7 @@ sync: dotagents-sync codex-security-sync rtk-rewrite-sync ## Sync all components
 dotagents-sync: dotagents-prepare ## Sync dotagents (commands, skills, MCP configuration).
 	@if [ "$$CI" = "true" ]; then \
 		echo "⏭️ Skipping external dotagents skill installation in CI"; \
-		$(MAKE) -C dotagents DOTAGENTS_SKIP_SYNC=1 ruler-prepare commands-sync skills-sync mcp-sync ruler-dotdirs-sync; \
+		$(MAKE) -C dotagents DOTAGENTS_SKIP_SYNC=1 ruler-prepare ruler-dotdirs-sync commands-sync skills-sync mcp-sync; \
 	else \
 		$(MAKE) -C dotagents DOTAGENTS_SKIP_SYNC= sync; \
 	fi
@@ -404,7 +404,7 @@ dotagents-prepare: ## Initialize the dotagents submodule when needed.
 .PHONY: dotagents-switch-sync
 dotagents-switch-sync: dotagents-prepare ## Sync checked-in dotagents content during switch.
 	@echo "🔄 Syncing checked-in dotagents content..."
-	@$(MAKE) -C dotagents DOTAGENTS_SKIP_SYNC=1 ruler-prepare commands-sync skills-sync mcp-sync ruler-dotdirs-sync
+	@$(MAKE) -C dotagents DOTAGENTS_SKIP_SYNC=1 ruler-prepare ruler-dotdirs-sync commands-sync skills-sync mcp-sync ruler-apply-global
 
 .PHONY: codex-security-sync
 codex-security-sync: ## Sync Codex security deny patterns from Claude settings.
