@@ -1215,7 +1215,11 @@ lua-check-hammerspoon-dev: ## Run the Hammerspoon Lua check inside the Nix dev s
 ##@ Launchd Services
 
 .PHONY: launchctl
-launchctl: launchctl-brew-upgrader launchctl-openclaw launchctl-cliproxyapi launchctl-code-syncer launchctl-docker-postgres launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama launchctl-roborev launchctl-tmux-session-logger ## Restart all launchd agents.
+launchctl: launchctl-screenshot-clipboard launchctl-brew-upgrader launchctl-openclaw launchctl-cliproxyapi launchctl-code-syncer launchctl-docker-postgres launchctl-dotfiles-updater launchctl-neverssl-keepalive launchctl-ollama launchctl-roborev launchctl-tmux-session-logger ## Restart all launchd agents.
+
+.PHONY: launchctl-screenshot-clipboard
+launchctl-screenshot-clipboard: ## Restore and verify screenshot clipboard auto-copy.
+	@bash home-manager/services/screenshot-clipboard/ensure-loaded.sh
 
 .PHONY: launchctl-brew-upgrader
 launchctl-brew-upgrader: ## Restart brew-updater launchd agent.
