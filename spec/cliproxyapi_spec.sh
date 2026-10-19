@@ -497,7 +497,8 @@ End
 
 It 'lists providers in descending priority order'
 When run bash -c "awk '/^openai-compatibility:/{p=1; next} p && /^# Official/{exit} p && /^  - name: /{print}' '$PWD/config/cliproxyapi/config.template.yaml' | sed 's/^  - name: //; s/\"//g'"
-The output should equal 'opencode-campaign
+The output should equal 'openrouter-priority-free
+opencode-campaign
 nvidia
 opencode
 ollama-cloud
@@ -586,6 +587,38 @@ The output should include 'marker: DUMMY_TWO'
 The output should include 'same-inode'
 The output should include 'no-temp-file'
 The output should not include 'cliproxyapi not found'
+The status should be success
+End
+
+check_priority_free_render() {
+cp "$PWD/config/cliproxyapi/config.template.yaml" "$TEMP_HOME/.cli-proxy-api/config.template.yaml"
+printf '%s\n' 'OPENROUTER_API_KEY=free-test-key' >"$TEMP_HOME/dotfiles/.env"
+HOME="$TEMP_HOME" bash "$TEMP_HOME/start.sh" render || return
+python3 - "$TEMP_HOME/.cli-proxy-api/config.yaml" <<'PY'
+import re
+import sys
+
+text = open(sys.argv[1]).read()
+block = re.search(r"^  - name: \"openrouter-priority-free\"\n(.*?)(?=^  - name: )", text, re.M | re.S).group(1)
+names = re.findall(r"^      - name: \"([^\"]+)\"", block, re.M)
+aliases = re.findall(r"^        alias: \"([^\"]+)\"", block, re.M)
+assert names == ["minimax/minimax-m3.1-flash:free"] * 2
+assert aliases == ["priority:free", "minimax-m3.1-flash-free"]
+assert "priority: 303" in block
+assert "proxy-url: \"direct\"" in block
+assert "api-key: \"free-test-key\"" in block
+assert text.count("alias: \"priority:free\"") == 1
+assert "\"provider.max_price.prompt\": 0" in text
+assert "\"provider.max_price.completion\": 0" in text
+assert "models: *priority-free-models" in text
+assert "- \"models\"" in text and "- \"plugins\"" in text
+print("free-only alias and zero-price boundary verified")
+PY
+}
+
+It 'renders a free-only alias with a zero-price guard and no generic router'
+When call check_priority_free_render
+The output should include 'free-only alias and zero-price boundary verified'
 The status should be success
 End
 

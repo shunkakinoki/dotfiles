@@ -1,4 +1,6 @@
 {
+  "minimax-flash": "minimax-m3.1-flash-free",
+  "minimax-flash-openrouter": "minimax/minimax-m3.1-flash:free",
   "union": "stealth/union-alpha",
   "pickle": "big-pickle",
   "deepseek-flash": "deepseek-v4.1-flash-free",
