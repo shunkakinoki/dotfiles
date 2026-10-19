@@ -411,12 +411,12 @@ The status should be success
 End
 
 It 'hydrates every free campaign model from models.free.json'
-When run bash -c "! grep -E 'name: \"(stealth/|[^_\"]*-free\")' config/cliproxyapi/config.tpl.yaml && jq -r '.[]' models.free.json | while IFS= read -r id; do grep -Fq \"name: \\\"\$id\\\"\" config/cliproxyapi/config.template.yaml || { echo \"missing: \$id\"; exit 1; }; done"
+When run bash -c "! grep -E '^      - name: \"(stealth/|[^_\"]*-free\")' config/cliproxyapi/config.tpl.yaml && jq -r '.[]' models.free.json | while IFS= read -r id; do grep -Fq \"name: \\\"\$id\\\"\" config/cliproxyapi/config.template.yaml || grep -Fq \"alias: \\\"\$id\\\"\" config/cliproxyapi/config.template.yaml || { echo \"missing: \$id\"; exit 1; }; done"
 The status should be success
 End
 
 It 'only exposes the routed models through the compatibility aliases'
-When run bash -c "allowed=\$(jq -r '.[\"gpt-luna\"], .[\"deepseek-flash\"]' models.json; jq -r '.[]' models.free.json; echo deepseek-v4-flash); while IFS= read -r alias; do [ \"\$alias\" = free ] || printf '%s\n' \"\$allowed\" | grep -Fxq \"\$alias\" || { echo \"unexpected alias: \$alias\"; exit 1; }; done < <(sed -n 's/^[[:space:]]*alias: \"\\(.*\\)\"/\\1/p' config/cliproxyapi/config.template.yaml)"
+When run bash -c "allowed=\$(jq -r '.[\"gpt-luna\"], .[\"deepseek-flash\"]' models.json; jq -r '.[]' models.free.json; printf '%s\n' deepseek-v4-flash priority:free); while IFS= read -r alias; do [ \"\$alias\" = free ] || printf '%s\n' \"\$allowed\" | grep -Fxq \"\$alias\" || { echo \"unexpected alias: \$alias\"; exit 1; }; done < <(sed -n 's/^[[:space:]]*alias: \"\\(.*\\)\"/\\1/p' config/cliproxyapi/config.template.yaml)"
 The status should be success
 End
 End

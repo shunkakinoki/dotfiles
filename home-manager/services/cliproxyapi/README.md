@@ -156,6 +156,29 @@ OLLAMA_API_KEYS="first-ollama-api-key,second-ollama-api-key"
 
 CLIProxyAPI selects from these entries using the configured routing strategy.
 
+### Curated free-only models
+
+Request the literal model ID `priority:free` for the curated OpenRouter pool.
+The `openrouter-priority-free` provider has priority 303 and currently contains
+`minimax/minimax-m3.1-flash:free`, also exposed individually as
+`minimax-m3.1-flash-free`. OpenCode clients select
+`shunkakinoki/priority:free` or `shunkakinoki/minimax-m3.1-flash-free`.
+
+Only catalog-listed, zero-input-price, zero-output-price models with tool
+support belong in this pool. Add their IDs to `models.free.json` and the
+provider's models list, repeating `priority:free` to extend its alias pool.
+Include each public and upstream ID in the shared payload matcher. Payload
+rules force OpenRouter's prompt and completion price ceilings to zero and
+remove caller-supplied fallback models and plugins. When no free endpoint is
+available or the account's shared free quota is exhausted, the request fails;
+no paid provider serves this alias. The existing `free` alias is separate.
+
+OpenCode's native `opencode/minimax-m3.1-flash-free` promotion cannot back this
+HTTP pool: the free HTTP endpoint rejects non-OpenCode clients. A successful
+native CLI probe does not establish proxy access. Recheck catalog eligibility,
+tool calls and generation before activating new pool members, and remove
+expired promotions rather than mapping them to paid replacements.
+
 ### Outbound proxies
 
 `CLIPROXY_PROXY_URL` sets the global `proxy-url`, which only the campaign

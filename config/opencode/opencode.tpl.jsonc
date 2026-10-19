@@ -58,6 +58,12 @@
         },
         "free": {
           "name": "Free router fallback (via shunkakinoki's CLIProxy)"
+        },
+        "priority:free": {
+          "name": "Curated free-only pool (via CLIProxy)"
+        },
+        "__FREE_MINIMAX_FLASH__": {
+          "name": "MiniMax M3.1 Flash Free (via CLIProxy)"
         }
       }
     },
@@ -99,6 +105,12 @@
         },
         "free": {
           "name": "Free router fallback (via local CLIProxyAPI)"
+        },
+        "priority:free": {
+          "name": "Curated free-only pool (via local CLIProxyAPI)"
+        },
+        "__FREE_MINIMAX_FLASH__": {
+          "name": "MiniMax M3.1 Flash Free (via local CLIProxyAPI)"
         }
       }
     },

@@ -492,6 +492,20 @@ codex-header-defaults:
   beta-features: "multi_agent"
 # OpenAI compatibility providers
 openai-compatibility:
+  # Explicit free-only pool; never map this alias to a paid variant or router.
+  # Repeat priority:free for additional catalog-verified free models.
+  - name: "openrouter-priority-free"
+    priority: 303
+    base-url: "https://openrouter.ai/api/v1"
+    support-prompt-cache-key: true
+    api-key-entries:
+      - api-key: "__OPENROUTER_API_KEY__"
+        proxy-url: "direct"
+    models:
+      - name: "minimax/minimax-m3.1-flash:free"
+        alias: "priority:free"
+      - name: "minimax/minimax-m3.1-flash:free"
+        alias: "minimax-m3.1-flash-free"
   # Keyless OpenCode Zen free models over the global proxy; remove when they end.
   - name: "opencode-campaign"
     priority: 302
@@ -793,6 +807,27 @@ oauth-excluded-models:
 #     - "kimi-k2-thinking"
 #   xai:
 #     - "grok-3-mini"
+
+# Free-only aliases retain a zero price ceiling even if the caller supplies
+# provider preferences; caller-supplied fallback models and plugins cannot add
+# a paid route or paid server-side feature. Match upstream and public IDs.
+payload:
+  override:
+    - models: &priority-free-models
+        - name: "priority:free"
+          protocol: "openai"
+        - name: "minimax-m3.1-flash-free"
+          protocol: "openai"
+        - name: "minimax/minimax-m3.1-flash:free"
+          protocol: "openai"
+      params:
+        "provider.max_price.prompt": 0
+        "provider.max_price.completion": 0
+  filter:
+    - models: *priority-free-models
+      params:
+        - "models"
+        - "plugins"
 
 # Optional payload configuration
 # payload:
