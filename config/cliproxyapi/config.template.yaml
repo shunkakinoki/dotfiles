@@ -500,6 +500,8 @@ openai-compatibility:
     models:
       - name: "big-pickle"
         alias: "big-pickle"
+      - name: "deepseek-v4.1-flash-free"
+        alias: "deepseek-v4.1-flash-free"
       - name: "mimo-v2.5-free"
         alias: "mimo-v2.5-free"
       - name: "nemotron-3-ultra-free"

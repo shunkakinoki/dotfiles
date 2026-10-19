@@ -1,6 +1,7 @@
 {
   "union": "stealth/union-alpha",
   "pickle": "big-pickle",
+  "deepseek-flash": "deepseek-v4.1-flash-free",
   "mimo": "mimo-v2.5-free",
   "nemotron-ultra": "nemotron-3-ultra-free",
   "nemotron-lightning": "nemotron-3.5-lightning-free",
