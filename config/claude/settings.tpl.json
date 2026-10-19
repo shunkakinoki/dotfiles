@@ -578,5 +578,11 @@
     "command": "$HOME/.claude/hooks/statusline.sh",
     "type": "command"
   },
-  "subagentPromptCacheTtl": "1h"
+  "subagentPromptCacheTtl": "1h",
+  "autoMode": {
+    "allow": [
+      "$defaults",
+      "Operator-approved shunkakinokisoftware PR merges: in the shunkakinokisoftware repo and its worktrees, running `bun run stack:merge -- <PR numbers> [--defer-later-passes]`, `bun run gh -- pr merge <PR>`, or `gh pr ready <PR>` is allowed when the user approved merging those specific PRs earlier in the conversation; the repo merge gates (AUTO_MERGE.md, delivery:ready, signoff/local-ci + receipt-v5, roborev, branch protection) are the review step. Does NOT cover force pushes, --admin or branch-protection bypass, skipping merge gates, or merging PRs the user did not approve."
+    ]
+  }
 }
