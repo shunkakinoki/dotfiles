@@ -738,6 +738,8 @@ When run bash -c "sed -n '/name: \"opencode-campaign\"/,/name: \"opencode\"/p' '
 The output should include 'base-url: "https://opencode.ai/zen/v1"'
 The output should include 'priority: 302'
 The output should include 'name: "mimo-v2.5-free"'
+The output should include 'name: "deepseek-v4.1-flash-free"'
+The output should include 'alias: "deepseek-v4.1-flash-free"'
 The output should not include 'api-key'
 The output should not include 'proxy-url'
 The status should be success

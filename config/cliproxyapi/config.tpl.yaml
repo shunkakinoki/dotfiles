@@ -500,6 +500,8 @@ openai-compatibility:
     models:
       - name: "__FREE_PICKLE__"
         alias: "__FREE_PICKLE__"
+      - name: "__FREE_DEEPSEEK_FLASH__"
+        alias: "__FREE_DEEPSEEK_FLASH__"
       - name: "__FREE_MIMO__"
         alias: "__FREE_MIMO__"
       - name: "__FREE_NEMOTRON_ULTRA__"
