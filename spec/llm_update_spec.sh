@@ -47,6 +47,38 @@ if stranded:
 PY
 }
 
+# Every t3-pstack role must resolve to the approved Opus or GPT Sol target,
+# and every panel must span both families.
+t3_pstack_sheet_ok() {
+  python3 - "$1" <<'PY'
+import re, sys
+
+allowed = {
+    "claude": re.compile(r"^claude-cliproxy/claude-opus-5-5 effort=(high|xhigh)$"),
+    "gpt": re.compile(r"^codex-cliproxy/gpt-6\.1-sol reasoningEffort=xhigh$"),
+}
+problems, roles = [], 0
+for line in open(sys.argv[1]).read().splitlines():
+    if not line or line.startswith("#") or line.startswith("session hook:"):
+        continue
+    role, entries = line.split(": ", 1)
+    roles += 1
+    families = set()
+    for entry in entries.split(", "):
+        family = next((name for name, rx in allowed.items() if rx.match(entry)), None)
+        if family is None:
+            problems.append(f"unapproved {role}: {entry}")
+        families.add(family)
+    if re.search(r"runners|pool|reviewers", role) and not {"claude", "gpt"} <= families:
+        problems.append(f"single-family panel: {role}")
+if roles != 17:
+    problems.append(f"expected 17 roles, got {roles}")
+if problems:
+    print("\n".join(problems))
+    sys.exit(1)
+PY
+}
+
 Describe 'script properties'
 It 'uses bash shebang'
 When run bash -c "head -1 '$SCRIPT'"
@@ -157,7 +189,7 @@ The output should include 'config/omp/models.tpl.yml'
 End
 
 It 'routes every t3-pstack role to an approved model'
-When run bash -c "grep -q 't3-pstack-models.tpl.md' scripts/llm-update.sh && ! grep -q '__' config/claude/t3-pstack-models.md && ! grep -E -i 'fable|astra|claudeAgent/|[[:space:]]codex/|grok/' config/claude/t3-pstack-models.md && grep -q '^interrogate reviewers: claude-cliproxy/claude-opus-5-5 effort=high, codex-cliproxy/gpt-6.1-sol reasoningEffort=xhigh$' config/claude/t3-pstack-models.md"
+When call t3_pstack_sheet_ok config/claude/t3-pstack-models.md
 The status should be success
 End
 
