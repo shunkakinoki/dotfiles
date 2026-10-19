@@ -40,7 +40,7 @@ let
   sshAgent = ./ssh-agent;
   t3Connect = import ./t3-connect { inherit config inputs pkgs; };
   tmuxSessionLogger = import ./tmux-session-logger { inherit pkgs; };
-  tokscale = import ./tokscale { inherit config lib pkgs; };
+  tokscale = ./tokscale;
   tracesAgentUploads = ./traces-agent-uploads;
 in
 [
