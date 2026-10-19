@@ -12,6 +12,20 @@ let
     pkgs.curl
     pkgs.jq
   ];
+  # T3 Code runs each provider instance from its own home, outside the default
+  # ~/.claude and ~/.codex that Tokscale scans.
+  t3SessionDirs = {
+    claudeAgent = home: "claude:${home}/projects";
+    codex = home: "codex:${home}/sessions";
+  };
+  t3ExtraDirs = lib.concatStringsSep "," (
+    lib.mapAttrsToList (
+      _: instance:
+      t3SessionDirs.${instance.driver} (
+        lib.replaceStrings [ "~" ] [ config.home.homeDirectory ] instance.config.homePath
+      )
+    ) (lib.importJSON ../../../config/t3code/server-settings.json).providerInstances
+  );
   # Every 3 hours, aligned to the wall clock.
   calendarHours = [
     0
@@ -35,6 +49,7 @@ in
       ];
       EnvironmentVariables = {
         PATH = binPath + ":/usr/bin:/bin:/usr/sbin:/sbin";
+        TOKSCALE_EXTRA_DIRS = t3ExtraDirs;
       };
       StartCalendarInterval = map (hour: {
         Hour = hour;
@@ -59,6 +74,7 @@ in
       Environment = [
         "HOME=${config.home.homeDirectory}"
         "PATH=${binPath}:/usr/bin:/bin:/usr/sbin:/sbin"
+        "TOKSCALE_EXTRA_DIRS=${t3ExtraDirs}"
       ];
       ExecStart = "${pkgs.bash}/bin/bash ${./submit.sh}";
       StandardOutput = "append:/tmp/tokscale.log";
