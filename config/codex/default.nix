@@ -63,6 +63,10 @@ in
     ''
   );
 
+  # Codex sessions read the same t3-pstack sheet from CODEX_HOME.
+  home.file.".codex/t3-pstack-models.md".source = ../claude/t3-pstack-models.md;
+  home.file.".codex-t3/cliproxy/t3-pstack-models.md".source = ../claude/t3-pstack-models.md;
+
   home.file.".codex/hooks/notify.sh" = {
     source = ./hooks/notify.sh;
     executable = true;

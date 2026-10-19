@@ -108,6 +108,7 @@ declare -A TEMPLATES=(
   ["config/aichat/config.tpl.yaml"]=config/aichat/config.yaml
   ["config/antigravity/settings.tpl.json"]=config/antigravity/settings.json
   ["config/claude/settings.tpl.json"]=config/claude/settings.json
+  ["config/claude/t3-pstack-models.tpl.md"]=config/claude/t3-pstack-models.md
   ["config/llm/default_model.tpl.txt"]=config/llm/default_model.txt
   ["config/openclaw/openclaw.tpl.json"]=config/openclaw/openclaw.template.json
   ["config/opencode/opencode.tpl.jsonc"]=config/opencode/opencode.jsonc

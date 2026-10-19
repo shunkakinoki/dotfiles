@@ -47,6 +47,46 @@ if stranded:
 PY
 }
 
+# Every t3-pstack role must resolve to the approved Opus or GPT Sol target,
+# and every panel must span both families.
+t3_pstack_sheet_ok() {
+  python3 - "$1" <<'PY'
+import re, sys
+
+allowed = {
+    "claude": re.compile(r"^claude-cliproxy/claude-opus-5-5 effort=(high|xhigh)$"),
+    "gpt": re.compile(r"^codex-cliproxy/gpt-6\.1-sol reasoningEffort=xhigh$"),
+}
+expected = {
+    "feature, refactoring", "bug-fix", "perf-issue", "hillclimb",
+    "judgment and prose", "strongest judgment", "how explorer", "how explainer",
+    "why investigators", "why synthesizer", "reflect tooling",
+    "reflect judgment, divergent, synthesizer", "arena runners",
+    "arena cross-judge pool", "swarm workers", "architect runners",
+    "interrogate reviewers",
+}
+problems, roles = [], []
+for line in open(sys.argv[1]).read().splitlines():
+    if not line or line.startswith("#") or line.startswith("session hook:"):
+        continue
+    role, entries = line.split(": ", 1)
+    roles.append(role)
+    families = set()
+    for entry in entries.split(", "):
+        family = next((name for name, rx in allowed.items() if rx.match(entry)), None)
+        if family is None:
+            problems.append(f"unapproved {role}: {entry}")
+        families.add(family)
+    if re.search(r"runners|pool|reviewers", role) and not {"claude", "gpt"} <= families:
+        problems.append(f"single-family panel: {role}")
+if sorted(roles) != sorted(expected):
+    problems.append(f"roles differ: missing {sorted(expected - set(roles))}, extra or duplicate {sorted(set(r for r in roles if roles.count(r) > 1 or r not in expected))}")
+if problems:
+    print("\n".join(problems))
+    sys.exit(1)
+PY
+}
+
 Describe 'script properties'
 It 'uses bash shebang'
 When run bash -c "head -1 '$SCRIPT'"
@@ -154,6 +194,11 @@ End
 It 'includes OMP model registry in template mappings'
 When run bash -c "grep 'config/omp/models.tpl.yml' '$SCRIPT'"
 The output should include 'config/omp/models.tpl.yml'
+End
+
+It 'routes every t3-pstack role to an approved model'
+When call t3_pstack_sheet_ok config/claude/t3-pstack-models.md
+The status should be success
 End
 
 It 'includes Claude model env in template mappings'
