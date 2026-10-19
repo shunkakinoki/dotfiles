@@ -55,6 +55,18 @@ The status should be success
 The output should include '.#homeConfigurations.andor.activationPackage'
 End
 
+It 'builds beskar through its named Home Manager configuration'
+When run bash -c 'make build HOST=beskar OS=Linux ARCH=x86_64 NIX_SYSTEM=x86_64-linux NIX_CONFIG_TYPE=homeConfigurations NIX_EXEC=nix NIX_ENV=ok NIX_FLAGS= NIX_USER_TRUSTED=yes 2>/dev/null; cat "$MOCK_LOG"'
+The status should be success
+The output should include '.#homeConfigurations.beskar.activationPackage'
+End
+
+It 'detects beskar from Tailscale MagicDNS when the physical hostname is generic'
+When run bash -c 'make build HOST= OS=Linux ARCH=x86_64 NIX_SYSTEM=x86_64-linux NIX_CONFIG_TYPE=homeConfigurations MACHINE_HOSTNAME=generic-linux TAILSCALE_DNS_NAME=beskar.tail950b36.ts.net DMI_SYS_VENDOR=generic DMI_PRODUCT_NAME=generic NIX_EXEC=nix NIX_ENV=ok NIX_FLAGS= NIX_USER_TRUSTED=yes 2>/dev/null; cat "$MOCK_LOG"'
+The status should be success
+The output should include '.#homeConfigurations.beskar.activationPackage'
+End
+
 It 'builds kamino through its named root Home Manager configuration'
 When run bash -c 'make build HOST=kamino OS=Linux ARCH=x86_64 NIX_SYSTEM=x86_64-linux NIX_CONFIG_TYPE=homeConfigurations NIX_USERNAME=root NIX_EXEC=nix NIX_ENV=ok NIX_FLAGS= NIX_USER_TRUSTED=yes 2>/dev/null && cat "$MOCK_LOG"'
 The status should be success

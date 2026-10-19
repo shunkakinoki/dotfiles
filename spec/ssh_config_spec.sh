@@ -12,6 +12,14 @@ The output should include 'User = "ubuntu"'
 End
 End
 
+Describe 'beskar host'
+It 'uses the Beskar Tailscale DNS name'
+When run bash -c "grep -A2 '\"beskar\" = {' '$SSH_CONFIG_NIX'"
+The output should include 'beskar.tail950b36.ts.net'
+The output should include 'User = "ubuntu"'
+End
+End
+
 Describe 'kamino family'
 It 'derives SSH hosts from the generated family rather than per-host stanzas'
 When run cat home-manager/programs/kamino/default.nix
