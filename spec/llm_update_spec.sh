@@ -57,12 +57,20 @@ allowed = {
     "claude": re.compile(r"^claude-cliproxy/claude-opus-5-5 effort=(high|xhigh)$"),
     "gpt": re.compile(r"^codex-cliproxy/gpt-6\.1-sol reasoningEffort=xhigh$"),
 }
-problems, roles = [], 0
+expected = {
+    "feature, refactoring", "bug-fix", "perf-issue", "hillclimb",
+    "judgment and prose", "strongest judgment", "how explorer", "how explainer",
+    "why investigators", "why synthesizer", "reflect tooling",
+    "reflect judgment, divergent, synthesizer", "arena runners",
+    "arena cross-judge pool", "swarm workers", "architect runners",
+    "interrogate reviewers",
+}
+problems, roles = [], []
 for line in open(sys.argv[1]).read().splitlines():
     if not line or line.startswith("#") or line.startswith("session hook:"):
         continue
     role, entries = line.split(": ", 1)
-    roles += 1
+    roles.append(role)
     families = set()
     for entry in entries.split(", "):
         family = next((name for name, rx in allowed.items() if rx.match(entry)), None)
@@ -71,8 +79,8 @@ for line in open(sys.argv[1]).read().splitlines():
         families.add(family)
     if re.search(r"runners|pool|reviewers", role) and not {"claude", "gpt"} <= families:
         problems.append(f"single-family panel: {role}")
-if roles != 17:
-    problems.append(f"expected 17 roles, got {roles}")
+if sorted(roles) != sorted(expected):
+    problems.append(f"roles differ: missing {sorted(expected - set(roles))}, extra or duplicate {sorted(set(r for r in roles if roles.count(r) > 1 or r not in expected))}")
 if problems:
     print("\n".join(problems))
     sys.exit(1)
