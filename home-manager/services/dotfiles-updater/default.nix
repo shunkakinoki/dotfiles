@@ -28,7 +28,10 @@ in
           lib.makeBinPath [
             pkgs.git
             pkgs.bash
+            pkgs.bun
             pkgs.coreutils
+            pkgs.jq
+            pkgs.rsync
           ]
         }:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin";
         AUTOMATED_UPDATE = "true";
@@ -52,6 +55,7 @@ in
         "PATH=${
           lib.makeBinPath [
             pkgs.bash
+            pkgs.bun
             pkgs.coreutils
             pkgs.curl
             pkgs.docker
@@ -60,7 +64,9 @@ in
             pkgs.gnugrep
             pkgs.gnumake
             pkgs.gnused
+            pkgs.jq
             pkgs.nix
+            pkgs.rsync
             pkgs.sudo
             pkgs.which
           ]

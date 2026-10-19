@@ -174,6 +174,16 @@ The output should include 'No changes detected'
 The error should include 'cliproxy-update failed'
 End
 
+It 'syncs dotagents after install without blocking the marker'
+mkdir -p "$WORK/bin"
+printf '#!/usr/bin/env bash\necho "make $*"\nexit 1\n' >"$WORK/bin/make"
+chmod +x "$WORK/bin/make"
+When run bash -c "PATH='$WORK/bin':\$PATH HOST=galactica bash '$SCRIPT' && test -f '$XDG_STATE_HOME/dotfiles-updater/installed-commit' && echo marked"
+The output should include 'make dotagents-switch-sync'
+The output should include 'marked'
+The error should include 'dotagents-switch-sync failed'
+End
+
 It 'leaves cliproxy images alone on other hosts'
 mkdir -p "$WORK/bin"
 printf '#!/usr/bin/env bash\necho "make $*"\n' >"$WORK/bin/make"

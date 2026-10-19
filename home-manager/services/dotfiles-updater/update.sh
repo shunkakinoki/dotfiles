@@ -54,5 +54,9 @@ git reset --hard origin/main
 # Run the install script
 ./install.sh
 
+# `make install` never touches agent rules, skills, or MCP configs, so without
+# this every host keeps the dotagents output it was provisioned with.
+make dotagents-switch-sync || echo "⚠️  dotagents-switch-sync failed" >&2
+
 mkdir -p "$(dirname "$INSTALLED_MARKER")"
 printf '%s\n' "$REMOTE_COMMIT" >"$INSTALLED_MARKER"
