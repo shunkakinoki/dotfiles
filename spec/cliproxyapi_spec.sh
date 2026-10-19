@@ -626,7 +626,7 @@ It 'renders the NVIDIA pool from the host dotenv with both DeepSeek aliases'
 cp "$PWD/config/cliproxyapi/config.template.yaml" "$TEMP_HOME/.cli-proxy-api/config.template.yaml"
 printf '%s\n' 'NVIDIA_API_KEYS="first-key, second-key,first-key,,"' 'NVIDIA_API_KEY=unused-key' >"$TEMP_HOME/dotfiles/.env"
 When run bash -c 'HOME="$1" bash "$1/start.sh" render && sed -n '\''/name: "nvidia"/,/name: "opencode"/p'\'' "$1/.cli-proxy-api/config.yaml"' _ "$TEMP_HOME"
-The output should include 'priority: 301'
+The output should include 'priority: 120'
 The output should include 'prefix: "nvidia"'
 The output should include 'base-url: "https://integrate.api.nvidia.com/v1"'
 The output should include 'name: "deepseek-ai/deepseek-v4.1-flash"'

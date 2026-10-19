@@ -529,7 +529,7 @@ openai-compatibility:
       - name: "__FREE_JEV__"
         alias: "__FREE_JEV__"
   - name: "nvidia"
-    priority: 301
+    priority: 120
     prefix: "nvidia"
     base-url: "https://integrate.api.nvidia.com/v1"
     api-key-entries: __NVIDIA_API_KEY_ENTRIES__
