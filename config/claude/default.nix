@@ -24,6 +24,12 @@ in
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate.sh}" "${settings}"
   '';
 
+  # t3-pstack reads its role-to-model sheet from the Claude config dir. The
+  # plugin's built-in defaults name provider instances this fleet does not run,
+  # so its fallbacks land on unapproved models.
+  home.file.".claude/t3-pstack-models.md".source = ./t3-pstack-models.md;
+  home.file.".claude-cliproxy/t3-pstack-models.md".source = ./t3-pstack-models.md;
+
   home.file.".claude/hooks/auto-switch.sh" = {
     source = ./hooks/auto-switch.sh;
     executable = true;

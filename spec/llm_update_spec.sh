@@ -156,6 +156,11 @@ When run bash -c "grep 'config/omp/models.tpl.yml' '$SCRIPT'"
 The output should include 'config/omp/models.tpl.yml'
 End
 
+It 'routes every t3-pstack role to an approved model'
+When run bash -c "grep -q 't3-pstack-models.tpl.md' scripts/llm-update.sh && ! grep -q '__' config/claude/t3-pstack-models.md && ! grep -E -i 'fable|astra|claudeAgent/|[[:space:]]codex/|grok/' config/claude/t3-pstack-models.md && grep -q '^interrogate reviewers: claude-cliproxy/claude-opus-5-5 effort=high, codex-cliproxy/gpt-6.1-sol reasoningEffort=xhigh$' config/claude/t3-pstack-models.md"
+The status should be success
+End
+
 It 'includes Claude model env in template mappings'
 When run bash -c "grep 'config/claude/settings.tpl.json' '$SCRIPT'"
 The output should include 'config/claude/settings.tpl.json'
