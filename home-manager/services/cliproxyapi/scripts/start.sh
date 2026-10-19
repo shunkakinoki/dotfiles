@@ -249,6 +249,7 @@ if [ -f "$TEMPLATE" ]; then
     )
   fi
   render_api_key_entries __OPENCODE_API_KEY_ENTRIES__ "${OPENCODE_API_KEYS:-${OPENCODE_API_KEY:-}}" <"$TEMPLATE" |
+    render_api_key_entries __NVIDIA_API_KEY_ENTRIES__ "${NVIDIA_API_KEYS:-${NVIDIA_API_KEY:-}}" |
     render_api_key_entries __OLLAMA_API_KEY_ENTRIES__ "${OLLAMA_API_KEYS:-},${OLLAMA_API_KEY:-}" ollama-cloud | @sed@ \
     -e "s|__OPENROUTER_API_KEY__|$(sed_value "${OPENROUTER_API_KEY:-}")|g" \
     -e "s|__OPENAI_API_KEY__|$(sed_value "${OPENAI_API_KEY:-}")|g" \

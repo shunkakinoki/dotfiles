@@ -514,6 +514,16 @@ openai-compatibility:
         alias: "__FREE_MUSE__"
       - name: "__FREE_JEV__"
         alias: "__FREE_JEV__"
+  - name: "nvidia"
+    priority: 301
+    prefix: "nvidia"
+    base-url: "https://integrate.api.nvidia.com/v1"
+    api-key-entries: __NVIDIA_API_KEY_ENTRIES__
+    models:
+      - name: "deepseek-ai/__DEEPSEEK_FLASH__"
+        alias: "__DEEPSEEK_FLASH__"
+      - name: "deepseek-ai/__DEEPSEEK_FLASH__"
+        alias: "deepseek-v4-flash"
   - name: "opencode"
     priority: 300
     base-url: "https://opencode.ai/zen/go/v1"

@@ -514,6 +514,16 @@ openai-compatibility:
         alias: "muse-spark-1.3-contributor-free"
       - name: "jev-1.13-free"
         alias: "jev-1.13-free"
+  - name: "nvidia"
+    priority: 301
+    prefix: "nvidia"
+    base-url: "https://integrate.api.nvidia.com/v1"
+    api-key-entries: __NVIDIA_API_KEY_ENTRIES__
+    models:
+      - name: "deepseek-ai/deepseek-v4.1-flash"
+        alias: "deepseek-v4.1-flash"
+      - name: "deepseek-ai/deepseek-v4.1-flash"
+        alias: "deepseek-v4-flash"
   - name: "opencode"
     priority: 300
     base-url: "https://opencode.ai/zen/go/v1"

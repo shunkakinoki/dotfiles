@@ -128,7 +128,15 @@ VERBOO_API_KEY="..."
 SURPLUS_API_KEY="..."
 COMMANDCODE_API_KEY="..."
 OLLAMA_API_KEY="..."
+NVIDIA_API_KEY="..."
 ```
+
+NVIDIA serves `deepseek-v4.1-flash` and `deepseek-v4-flash` at priority 301,
+ahead of the priority-300 providers. The `nvidia/` prefix selects only NVIDIA
+for an isolated probe. Set `NVIDIA_API_KEY` in the host's dotenv; for a pool,
+set comma-separated `NVIDIA_API_KEYS`, which takes precedence over the singular
+value. Empty and duplicate entries are ignored, and each key connects directly
+to `https://integrate.api.nvidia.com/v1`.
 
 For more than one OpenCode Go account behind the same upstream endpoint, set a
 comma-separated credential pool. The plural value takes precedence over the
