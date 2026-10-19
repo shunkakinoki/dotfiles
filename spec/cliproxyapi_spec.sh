@@ -498,6 +498,7 @@ End
 It 'lists providers in descending priority order'
 When run bash -c "awk '/^openai-compatibility:/{p=1; next} p && /^# Official/{exit} p && /^  - name: /{print}' '$PWD/config/cliproxyapi/config.template.yaml' | sed 's/^  - name: //; s/\"//g'"
 The output should equal 'opencode-campaign
+nvidia
 opencode
 ollama-cloud
 aliyun
@@ -585,6 +586,43 @@ The output should include 'marker: DUMMY_TWO'
 The output should include 'same-inode'
 The output should include 'no-temp-file'
 The output should not include 'cliproxyapi not found'
+The status should be success
+End
+
+It 'renders the NVIDIA pool from the host dotenv with both DeepSeek aliases'
+cp "$PWD/config/cliproxyapi/config.template.yaml" "$TEMP_HOME/.cli-proxy-api/config.template.yaml"
+printf '%s\n' 'NVIDIA_API_KEYS="first-key, second-key,first-key,,"' 'NVIDIA_API_KEY=unused-key' >"$TEMP_HOME/dotfiles/.env"
+When run bash -c 'HOME="$1" bash "$1/start.sh" render && sed -n '\''/name: "nvidia"/,/name: "opencode"/p'\'' "$1/.cli-proxy-api/config.yaml"' _ "$TEMP_HOME"
+The output should include 'priority: 301'
+The output should include 'prefix: "nvidia"'
+The output should include 'base-url: "https://integrate.api.nvidia.com/v1"'
+The output should include 'name: "deepseek-ai/deepseek-v4.1-flash"'
+The output should include 'alias: "deepseek-v4.1-flash"'
+The output should include 'alias: "deepseek-v4-flash"'
+The output should include '      - api-key: "first-key"'
+The output should include '      - api-key: "second-key"'
+The output should include '        proxy-url: "direct"'
+The output should not include 'unused-key'
+The output should not include '__NVIDIA_API_KEY_ENTRIES__'
+The status should be success
+End
+
+It 'renders a singular NVIDIA credential through the same pool'
+cp "$PWD/config/cliproxyapi/config.template.yaml" "$TEMP_HOME/.cli-proxy-api/config.template.yaml"
+printf '%s\n' 'NVIDIA_API_KEYS=' 'NVIDIA_API_KEY=single-key' >"$TEMP_HOME/dotfiles/.env"
+When run bash -c 'HOME="$1" bash "$1/start.sh" render && sed -n '\''/name: "nvidia"/,/name: "opencode"/p'\'' "$1/.cli-proxy-api/config.yaml"' _ "$TEMP_HOME"
+The output should include '      - api-key: "single-key"'
+The output should include '        proxy-url: "direct"'
+The output should not include '__NVIDIA_API_KEY_ENTRIES__'
+The status should be success
+End
+
+It 'renders no NVIDIA credential when the host has no key'
+cp "$PWD/config/cliproxyapi/config.template.yaml" "$TEMP_HOME/.cli-proxy-api/config.template.yaml"
+printf '%s\n' 'NVIDIA_API_KEYS=' 'NVIDIA_API_KEY=' >"$TEMP_HOME/dotfiles/.env"
+When run bash -c 'HOME="$1" bash "$1/start.sh" render && sed -n '\''/name: "nvidia"/,/name: "opencode"/p'\'' "$1/.cli-proxy-api/config.yaml"' _ "$TEMP_HOME"
+The output should include 'api-key-entries: []'
+The output should not include '__NVIDIA_API_KEY_ENTRIES__'
 The status should be success
 End
 End
@@ -734,7 +772,7 @@ The status should be success
 End
 
 It 'declares a keyless OpenCode Zen campaign over the global proxy'
-When run bash -c "sed -n '/name: \"opencode-campaign\"/,/name: \"opencode\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+When run bash -c "sed -n '/name: \"opencode-campaign\"/,/name: \"nvidia\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'base-url: "https://opencode.ai/zen/v1"'
 The output should include 'priority: 302'
 The output should include 'name: "mimo-v2.5-free"'
