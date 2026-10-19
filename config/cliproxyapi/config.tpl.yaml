@@ -538,6 +538,8 @@ openai-compatibility:
         alias: "__DEEPSEEK_FLASH__"
       - name: "deepseek-ai/__DEEPSEEK_FLASH__"
         alias: "deepseek-v4-flash"
+      - name: "google/gemma-4-31b-it"
+        alias: "gemma-4-31b-it"
   - name: "opencode"
     priority: 300
     base-url: "https://opencode.ai/zen/go/v1"
@@ -647,6 +649,8 @@ openai-compatibility:
       # serves it, so an empty surplus wallet takes the whole model down.
       - name: "__GPT_LUNA_OPENROUTER__"
         alias: "__GPT_LUNA__"
+      - name: "google/gemma-4-31b-it"
+        alias: "gemma-4-31b-it"
       - name: "openrouter/free"
         alias: "free"
   - name: "z-ai"

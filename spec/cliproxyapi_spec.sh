@@ -640,6 +640,15 @@ The output should not include '__NVIDIA_API_KEY_ENTRIES__'
 The status should be success
 End
 
+It 'serves gemma-4-31b-it from NVIDIA and OpenRouter'
+When run bash -c "sed -n '/name: \"nvidia\"/,/name: \"opencode\"/p;/name: \"openrouter\"\$/,/name: \"z-ai\"/p' '$PWD/config/cliproxyapi/config.template.yaml' | grep -A1 'name: \"google/gemma-4-31b-it\"'"
+The line 1 of output should equal '      - name: "google/gemma-4-31b-it"'
+The line 2 of output should equal '        alias: "gemma-4-31b-it"'
+The line 4 of output should equal '      - name: "google/gemma-4-31b-it"'
+The line 5 of output should equal '        alias: "gemma-4-31b-it"'
+The status should be success
+End
+
 It 'renders a singular NVIDIA credential through the same pool'
 cp "$PWD/config/cliproxyapi/config.template.yaml" "$TEMP_HOME/.cli-proxy-api/config.template.yaml"
 printf '%s\n' 'NVIDIA_API_KEYS=' 'NVIDIA_API_KEY=single-key' >"$TEMP_HOME/dotfiles/.env"
