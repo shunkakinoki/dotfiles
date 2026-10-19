@@ -316,7 +316,8 @@ let
         assert cfg.programs.ssh.settings.matic.data.IdentitiesOnly == "yes";
         assert !(cfg.home.activation ? hardenSshd);
         assert !(cfg.home.activation ? setKaminoSshdKeyOnly);
-        assert lib.hasInfix "key: /etc/ssh/ssh_host_ed25519_key" cfg.xdg.configFile."crabbox/config.yaml".text;
+        assert lib.hasInfix "key: /etc/ssh/ssh_host_ed25519_key"
+          cfg.xdg.configFile."crabbox/config.yaml".text;
         assert !(cfg.home.activation ? setupK3s);
         assert !(cfg.systemd.user.services ? openclaw-gateway);
         assert !(cfg.systemd.user.services ? roborev);
@@ -562,6 +563,23 @@ let
             "--ssh"
           ];
         mkEvalCheck "home-andor" andor.activationPackage;
+      eval-home-beskar =
+        let
+          beskar = import ../named-hosts/beskar {
+            inherit inputs;
+            username = "ubuntu";
+            system = "x86_64-linux";
+          };
+          cfg = beskar.config;
+        in
+        assert
+          cfg.modules.tailscale.extraUpArgs == [
+            "--reset"
+            "--accept-dns=true"
+            "--ssh"
+          ];
+        assert cfg.home.homeDirectory == "/home/ubuntu";
+        mkEvalCheck "home-beskar" beskar.activationPackage;
       eval-home-kyber =
         let
           kyber = import ../named-hosts/kyber {

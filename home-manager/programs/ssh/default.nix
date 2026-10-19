@@ -48,6 +48,10 @@ in
         HostName = "andor.tail950b36.ts.net";
         User = "ubuntu";
       };
+      "beskar" = {
+        HostName = "beskar.tail950b36.ts.net";
+        User = "ubuntu";
+      };
       "kyber" = {
         HostName = "kyber.tail950b36.ts.net";
         User = "ubuntu";
