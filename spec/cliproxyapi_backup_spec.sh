@@ -103,6 +103,21 @@ Describe 'backup.sh'
 
 setup() {
   mock_bin_setup aws
+  # The analytics snapshot pauses the manager so the WAL can be truncated.
+  # Default to "not running" so a spec host never touches a real unit.
+  cat >"$MOCK_BIN/systemctl" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+: "${MOCK_LOG:?MOCK_LOG must be set}"
+printf '%s\n' "$0 $*" >>"$MOCK_LOG"
+case "$*" in
+  *is-active*)
+    [ "${MANAGER_ACTIVE:-0}" = "1" ]
+    ;;
+esac
+exit 0
+EOF
+  chmod +x "$MOCK_BIN/systemctl"
   # The analytics archive is streamed into `aws s3 cp -`, so the mock has to
   # drain stdin or the producing tar dies on SIGPIPE.
   cat >"$MOCK_BIN/aws" <<'EOF'
@@ -126,10 +141,8 @@ printf '%s\n' "$0 $*" >>"$MOCK_LOG"
 
 command="${*: -1}"
 case "$command" in
-  "VACUUM INTO '"*)
-    snapshot_path="${command#VACUUM INTO \'}"
-    snapshot_path="${snapshot_path%\'}"
-    : >"$snapshot_path"
+  'PRAGMA wal_checkpoint(TRUNCATE);')
+    printf '%s\n' '0|0|0'
     ;;
   'PRAGMA integrity_check;')
     printf '%s\n' "${SQLITE_INTEGRITY_RESULT:-ok}"
@@ -214,7 +227,7 @@ When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$__BACKUP_SCRIPT"'" auth 2>&1; s
 The status should be success
 The output should include 's3://cliproxyapi/auths/'
 The output should not include 'CPA Manager Plus analytics'
-The output should not include 'VACUUM INTO'
+The output should not include 'PRAGMA wal_checkpoint'
 The output should not include 'cpa-manager-plus/'
 End
 
@@ -237,10 +250,26 @@ It 'uploads a consistent CPA Manager Plus archive in full mode'
 seed_manager_data
 When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$__BACKUP_SCRIPT"'" full 2>&1; status=$?; cat "$MOCK_LOG" 2>/dev/null || true; exit "$status"'
 The status should be success
-The output should include "VACUUM INTO '"
+The output should include 'PRAGMA wal_checkpoint(TRUNCATE);'
 The output should include 'PRAGMA integrity_check;'
 The output should match pattern '*s3://cliproxyapi/cpa-manager-plus/analytics-backup-??.tar.gz*'
 The output should include 'cpa-manager-plus/analytics-backup.tar.gz'
+End
+
+It 'pauses the manager so the WAL can be truncated, then brings it back'
+seed_manager_data
+When run bash -c 'HOME="'"$TEMP_HOME"'" MANAGER_ACTIVE=1 bash "'"$__BACKUP_SCRIPT"'" full 2>&1; status=$?; cat "$MOCK_LOG" 2>/dev/null || true; exit "$status"'
+The status should be success
+The output should include 'systemctl --user stop cpa-manager-plus.service'
+The output should include 'systemctl --user start cpa-manager-plus.service'
+The output should include 'PRAGMA wal_checkpoint(TRUNCATE);'
+End
+
+It 'leaves a stopped manager stopped'
+seed_manager_data
+When run bash -c 'HOME="'"$TEMP_HOME"'" MANAGER_ACTIVE=0 bash "'"$__BACKUP_SCRIPT"'" full 2>&1; status=$?; cat "$MOCK_LOG" 2>/dev/null || true; exit "$status"'
+The status should be success
+The output should not include 'systemctl --user start'
 End
 
 It 'promotes the archive with the low-level S3 copy API'
@@ -464,10 +493,18 @@ End
 It 'keeps the analytics snapshot on wall-clock schedules only'
 When run bash -c "sed -n '/systemd.user.services.cliproxyapi-backup =/,/^  };/p' '$NIX_MODULE'; sed -n '/systemd.user.timers.cliproxyapi-backup =/,/^  };/p' '$NIX_MODULE'"
 The status should be success
-The output should include 'OnCalendar = "hourly"'
+The output should include 'OnCalendar = "*-*-* 04:00:00 UTC"'
 The output should include '${backupScript} full'
 The output should include 'Unit = "cliproxyapi-backup.service"'
 The output should not include 'PathChanged'
+End
+
+It 'does not throttle the analytics snapshot below its own interval'
+When run bash -c "sed -n '/systemd.user.services.cliproxyapi-backup =/,/^  };/p' '$NIX_MODULE'"
+The status should be success
+The output should not include 'IOReadBandwidthMax'
+The output should not include 'IOReadIOPSMax'
+The output should include ':/usr/bin:/usr/sbin'
 End
 
 It 'keeps OAuth auth sync and backups on kyber only'
