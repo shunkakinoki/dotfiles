@@ -135,6 +135,8 @@ cliproxy_backup_manager_data() (
   local database_path="${data_dir}/usage.sqlite"
   local data_key_path="${data_dir}/data.key"
   local staging_root backup_root snapshot_dir snapshot_path integrity hourly_object
+  local manager_unit="cpa-manager-plus.service"
+  local manager_stopped=0
 
   if [ ! -f "$database_path" ] || [ ! -f "$data_key_path" ]; then
     echo "⚠️  CPA Manager Plus database or data key is missing; skipping analytics backup" >&2
@@ -146,16 +148,35 @@ cliproxy_backup_manager_data() (
   staging_root="${CLIPROXY_BACKUP_STAGING_DIR:-${TMPDIR:-/tmp}}"
   mkdir -p "$staging_root"
   backup_root="$(mktemp -d "${staging_root%/}/cpa-manager-plus-backup.XXXXXX")"
-  trap 'rm -rf -- "$backup_root"' EXIT
   snapshot_dir="${backup_root}/cpa-manager-plus"
   snapshot_path="${snapshot_dir}/usage.sqlite"
   mkdir -p "$snapshot_dir"
 
-  # VACUUM INTO copies from one read transaction, so it produces a consistent
-  # standalone database without -wal/-shm files. The CLI's .backup restarts
-  # whenever another process writes, and on this large, constantly written,
-  # IO-throttled database it never finished.
-  @sqlite3@ "$database_path" ".timeout 5000" "VACUUM INTO '${snapshot_path}'"
+  restore_manager() {
+    if [ "$manager_stopped" -eq 1 ]; then
+      manager_stopped=0
+      systemctl --user start "$manager_unit" || true
+    fi
+  }
+  trap 'restore_manager; rm -rf -- "$backup_root"' EXIT
+
+  # Snapshotting with a read transaction that stays open for the whole copy
+  # (VACUUM INTO, .backup) pins the WAL: SQLite cannot reset it while a reader
+  # holds a snapshot, and the manager writes every 500 ms. On 2026-10-19 that
+  # left an 84 GB -wal against a 28 GB database and put kyber's root disk at
+  # 76%. Pause the manager instead: with no writer the WAL folds back into the
+  # database, and a plain file copy of a fully checkpointed database is
+  # consistent. Downtime is the copy itself (tens of seconds to a few
+  # minutes), not the throttled 90-minute read the old path needed.
+  if systemctl --user is-active --quiet "$manager_unit"; then
+    manager_stopped=1
+    systemctl --user stop "$manager_unit"
+  fi
+
+  @sqlite3@ "$database_path" ".timeout 30000" "PRAGMA wal_checkpoint(TRUNCATE);" >/dev/null
+
+  cp --sparse=always -- "$database_path" "$snapshot_path"
+  restore_manager
 
   integrity="$(@sqlite3@ "$snapshot_path" "PRAGMA integrity_check;")"
   if [ "$integrity" != "ok" ]; then

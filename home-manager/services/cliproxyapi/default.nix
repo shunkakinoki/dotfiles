@@ -267,12 +267,14 @@ in
     Unit.X-SwitchMethod = "keep-old";
     Service = {
       Type = "oneshot";
-      # The SQLite snapshot reads the full analytics database from Kyber's
-      # root disk. Keep that read behind interactive management traffic.
+      # The analytics snapshot now stops cpa-manager-plus, folds the WAL back
+      # and copies the database file, so it is a short burst instead of a
+      # throttled 90-minute read. Throttling it to 5 MB/s made the hourly run
+      # outlive its own interval, which pinned the WAL permanently and left an
+      # 84 GB -wal on kyber's root disk (2026-10-19). Keep a low IO weight and
+      # let the copy finish quickly.
       IOAccounting = true;
       IOWeight = 10;
-      IOReadBandwidthMax = "/ 5M";
-      IOReadIOPSMax = "/ 50";
       # A hung snapshot holds the unit in "activating", which stops the hourly
       # timer without ever failing, so the drift check cannot see it.
       TimeoutStartSec = "2h";
@@ -287,16 +289,19 @@ in
           pkgs.sqlite
           pkgs.docker
         ]
-      }";
+      }:/usr/bin:/usr/sbin";
       UMask = "0077";
     };
   };
 
   systemd.user.timers.cliproxyapi-backup = lib.mkIf objectstoreEnabled {
-    Unit.Description = "Periodically back up CLIProxyAPI and CPA Manager Plus data";
+    Unit.Description = "Daily CLIProxyAPI and CPA Manager Plus backup";
     Timer = {
       OnBootSec = "5min";
-      OnCalendar = "hourly";
+      # Daily, not hourly: the analytics snapshot copies a ~29 GB database and
+      # pauses the manager while it does, so it belongs in a quiet window
+      # rather than 24 times a day.
+      OnCalendar = "*-*-* 04:00:00 UTC";
       Persistent = true;
       Unit = "cliproxyapi-backup.service";
     };
