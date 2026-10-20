@@ -563,6 +563,8 @@ openai-compatibility:
     base-url: "https://ollama.com/v1"
     api-key-entries: __OLLAMA_API_KEY_ENTRIES__
     models:
+      - name: "__FREE_MINIMAX_FLASH_OLLAMA__"
+        alias: "__FREE_MINIMAX_FLASH__"
       - name: "__DEEPSEEK_FLASH__"
         alias: "__DEEPSEEK_FLASH__"
       - name: "__DEEPSEEK_FLASH__"
@@ -823,6 +825,8 @@ payload:
         - name: "__FREE_MINIMAX_FLASH__"
           protocol: "openai"
         - name: "__FREE_MINIMAX_FLASH_OPENROUTER__"
+          protocol: "openai"
+        - name: "__FREE_MINIMAX_FLASH_OLLAMA__"
           protocol: "openai"
       params:
         "provider.max_price.prompt": 0
