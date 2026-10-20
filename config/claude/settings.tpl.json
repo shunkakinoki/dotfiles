@@ -439,28 +439,6 @@
         ],
         "matcher": ""
       }
-    ],
-    "WorktreeCreate": [
-      {
-        "hooks": [
-          {
-            "command": "bash -c 'NAME=$(jq -r .name); REPO=$(git rev-parse --show-toplevel); DIR=\"$REPO/.worktrees/$NAME\"; (wt switch --create \"$NAME\" --no-cd -y || wt switch \"$NAME\" --no-cd -y) >&2 && echo \"$DIR\"'",
-            "timeout": 30,
-            "type": "command"
-          }
-        ]
-      }
-    ],
-    "WorktreeRemove": [
-      {
-        "hooks": [
-          {
-            "command": "bash -c 'WORKTREE_PATH=$(jq -r .worktree_path); BRANCH=$(basename \"$WORKTREE_PATH\"); wt remove \"$BRANCH\" -y >&2'",
-            "timeout": 30,
-            "type": "command"
-          }
-        ]
-      }
     ]
   },
   "outputStyle": "Concise",
