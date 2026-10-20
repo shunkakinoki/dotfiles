@@ -1,4 +1,12 @@
 {
+  "backgroundActivity": {
+    "schemaVersion": 1,
+    "profile": "custom",
+    "baseProfile": "balanced",
+    "overrides": {
+      "providerHealthRefreshInterval": 60000
+    }
+  },
   "providers": {
     "claudeAgent": {
       "enabled": true
