@@ -333,6 +333,33 @@ node conditions, session cgroups, and the Cloudflare tunnel pods before
 restarting CLIProxy. An `active` unit plus a fast local response indicates an
 origin-path or host-pressure incident, not a proxy daemon crash.
 
+## October 2026 CLIProxy Management UI Outage
+
+From 04:00 to 05:35 UTC on 2026-10-20,
+`https://cliproxy.shunkakinoki.com/management.html` and `/v0/management`
+returned 502. Ingress routes those paths to `cpa-manager-plus` on `:18317`;
+everything else goes to `cliproxyapi` on `:8317`, which stayed healthy.
+
+The daily `cliproxyapi-backup` run stops `cpa-manager-plus`, checkpoints the
+WAL and copies the ~30 GB `usage.sqlite` before restarting the manager. The
+unit file no longer throttles that read, but `systemctl --user set-property`
+drop-ins from September still lived in
+`/run/user/1000/systemd/user.control/cliproxyapi-backup.service.d/`
+(`IOReadBandwidthMax=/ 5000000`, `IOReadIOPSMax=/ 50`). Runtime drop-ins
+override the Home Manager unit until reboot or `systemctl --user revert`, so
+the copy crawled at 5 MB/s with the manager down. The copy also staged into the
+32 GB `/tmp` tmpfs, which could not hold the snapshot.
+
+Recovery killed the stuck `cp`; the backup's EXIT trap restarted the manager
+and removed its staging directory. `systemctl --user revert
+cliproxyapi-backup.service` cleared the stale drop-ins. The backup now bounds
+the paused copy with `CLIPROXY_BACKUP_COPY_TIMEOUT` (default 15 minutes) and
+stages under `~/.local/state/cliproxyapi-backup` on the root disk.
+
+During a recurrence, check `systemctl --user is-active cpa-manager-plus
+cliproxyapi-backup` and `systemctl --user cat cliproxyapi-backup.service` for
+`user.control` drop-ins before restarting anything.
+
 ## SSH Key Management
 
 ### Automated Setup

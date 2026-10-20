@@ -279,17 +279,22 @@ in
       # timer without ever failing, so the drift check cannot see it.
       TimeoutStartSec = "2h";
       ExecStart = "${pkgs.bash}/bin/bash ${backupScript} full";
-      Environment = "PATH=${
-        lib.makeBinPath [
-          pkgs.bash
-          pkgs.awscli2
-          pkgs.coreutils
-          pkgs.gnutar
-          pkgs.gzip
-          pkgs.sqlite
-          pkgs.docker
-        ]
-      }:/usr/bin:/usr/sbin";
+      # kyber's /tmp is a 32 GB tmpfs, smaller than the ~30 GB snapshot plus
+      # everything else living there, so stage on the root disk.
+      Environment = [
+        "PATH=${
+          lib.makeBinPath [
+            pkgs.bash
+            pkgs.awscli2
+            pkgs.coreutils
+            pkgs.gnutar
+            pkgs.gzip
+            pkgs.sqlite
+            pkgs.docker
+          ]
+        }:/usr/bin:/usr/sbin"
+        "CLIPROXY_BACKUP_STAGING_DIR=%h/.local/state/cliproxyapi-backup"
+      ];
       UMask = "0077";
     };
   };

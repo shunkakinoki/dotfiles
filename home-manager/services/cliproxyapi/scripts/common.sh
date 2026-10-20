@@ -175,7 +175,14 @@ cliproxy_backup_manager_data() (
 
   @sqlite3@ "$database_path" ".timeout 30000" "PRAGMA wal_checkpoint(TRUNCATE);" >/dev/null
 
-  cp --sparse=always -- "$database_path" "$snapshot_path"
+  # The manager also serves the public management UI, so the pause must stay
+  # bounded no matter how slow the copy is. On 2026-10-20 leftover runtime
+  # IOReadBandwidthMax=5M drop-ins turned this copy into a 100-minute outage.
+  if ! timeout "${CLIPROXY_BACKUP_COPY_TIMEOUT:-15m}" \
+    cp --sparse=always -- "$database_path" "$snapshot_path"; then
+    echo "CPA Manager Plus database copy failed or exceeded ${CLIPROXY_BACKUP_COPY_TIMEOUT:-15m}" >&2
+    return 1
+  fi
   restore_manager
 
   integrity="$(@sqlite3@ "$snapshot_path" "PRAGMA integrity_check;")"
