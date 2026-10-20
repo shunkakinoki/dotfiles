@@ -265,6 +265,26 @@ The output should include 'systemctl --user start cpa-manager-plus.service'
 The output should include 'PRAGMA wal_checkpoint(TRUNCATE);'
 End
 
+It 'brings the manager back when the paused copy runs too long'
+seed_manager_data
+cat >"$MOCK_BIN/cp" <<'EOF'
+#!/usr/bin/env bash
+exec sleep 30
+EOF
+chmod +x "$MOCK_BIN/cp"
+When run bash -c 'HOME="'"$TEMP_HOME"'" MANAGER_ACTIVE=1 CLIPROXY_BACKUP_COPY_TIMEOUT=1 bash "'"$__BACKUP_SCRIPT"'" full 2>&1; status=$?; cat "$MOCK_LOG" 2>/dev/null || true; exit "$status"'
+The status should be failure
+The output should include 'database copy failed or exceeded 1'
+The output should include 'systemctl --user start cpa-manager-plus.service'
+The output should not include 's3://cliproxyapi/cpa-manager-plus/'
+End
+
+It 'stages the analytics snapshot on disk instead of the /tmp tmpfs'
+When run bash -c "sed -n '/systemd.user.services.cliproxyapi-backup =/,/^  };/p' '$NIX_MODULE'"
+The status should be success
+The output should include 'CLIPROXY_BACKUP_STAGING_DIR=%h/.local/state/cliproxyapi-backup'
+End
+
 It 'leaves a stopped manager stopped'
 seed_manager_data
 When run bash -c 'HOME="'"$TEMP_HOME"'" MANAGER_ACTIVE=0 bash "'"$__BACKUP_SCRIPT"'" full 2>&1; status=$?; cat "$MOCK_LOG" 2>/dev/null || true; exit "$status"'
