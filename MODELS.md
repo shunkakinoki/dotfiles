@@ -69,7 +69,9 @@ OpenRouter (`minimax-flash-openrouter`) and Ollama Cloud (`minimax-flash-ollama`
 
 When a campaign rotates its model, change the value and run `make llm-update`.
 When a campaign ends, delete the key and its `models:` entry in
-[config.tpl.yaml](config/cliproxyapi/config.tpl.yaml).
+[config.tpl.yaml](config/cliproxyapi/config.tpl.yaml). For a key with
+`foo-<provider>` siblings, also delete each sibling key, its `models:` entry,
+and its `payload` matcher entry.
 
 ## CLIProxy allowlist
 

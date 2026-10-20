@@ -172,7 +172,12 @@ Include each public and upstream ID in the shared payload matcher. Payload
 rules force OpenRouter's prompt and completion price ceilings to zero and
 remove caller-supplied fallback models and plugins. When no free endpoint is
 available or the account's shared free quota is exhausted, the request fails;
-no paid provider serves this alias. The existing `free` alias is separate.
+no paid provider serves `priority:free`. The existing `free` alias is separate.
+
+`minimax-m3.1-flash-free` also falls back to `ollama-cloud` (priority 300),
+which serves `minimax-m3.1-flash` free during Ollama's MiniMax campaign. The
+price ceiling is OpenRouter-only and does not cover this route, so remove the
+`ollama-cloud` entry and the `minimax-flash-ollama` key when the campaign ends.
 
 OpenCode's native `opencode/minimax-m3.1-flash-free` promotion cannot back this
 HTTP pool: the free HTTP endpoint rejects non-OpenCode clients. A successful

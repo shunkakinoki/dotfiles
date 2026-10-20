@@ -826,8 +826,6 @@ payload:
           protocol: "openai"
         - name: "__FREE_MINIMAX_FLASH_OPENROUTER__"
           protocol: "openai"
-        - name: "__FREE_MINIMAX_FLASH_OLLAMA__"
-          protocol: "openai"
       params:
         "provider.max_price.prompt": 0
         "provider.max_price.completion": 0

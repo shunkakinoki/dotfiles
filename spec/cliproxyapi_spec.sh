@@ -400,8 +400,8 @@ The stderr should include 'Invalid kamino tunnel mapping'
 End
 
 It 'declares the OpenAI-compatible fallback upstream'
-When run bash -c "sed -n '/name: \"ollama-cloud\"/,/^$/p' '$PWD/config/cliproxyapi/config.template.yaml'"
-The output should include 'priority: 150'
+When run bash -c "sed -n '/name: \"ollama-cloud\"/,/name: \"aliyun\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'priority: 300'
 The output should include 'base-url: "https://ollama.com/v1"'
 The output should include 'api-key-entries: __OLLAMA_API_KEY_ENTRIES__'
 The output should include 'name: "deepseek-v4.1-flash"'
