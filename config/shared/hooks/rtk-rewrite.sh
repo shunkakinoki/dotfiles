@@ -14,7 +14,8 @@
 #
 # LOCAL DIVERGENCE FROM UPSTREAM (rtk-ai/rtk @ master): this copy also reads
 # commands from Copilot's `.toolArgs` (object or string) and emits a top-level
-# `modifiedArgs` alongside `hookSpecificOutput`. scripts/sync-rtk-rewrite.sh
+# `modifiedArgs` alongside `hookSpecificOutput`, and leaves git rewrites out of
+# Claude subagent calls. scripts/sync-rtk-rewrite.sh
 # only prints upstream diff — port non-Copilot changes manually.
 
 # --- Audit logging (opt-in via RTK_HOOK_AUDIT=1) ---
@@ -99,6 +100,14 @@ case $EXIT_CODE in
     exit 0
     ;;
 esac
+
+# Claude Code refuses `rtk git ...` in a worktree-isolated subagent: it cannot
+# prove which checkout the wrapped git targets, so every rewritten git command
+# fails there. `agent_id` is present only on subagent tool calls.
+if [[ "$REWRITTEN" == *'rtk git'* ]] && jq -e '.agent_id' >/dev/null <<<"$INPUT"; then
+  _rtk_audit_log "skip:subagent_git" "$CMD"
+  exit 0
+fi
 
 _rtk_audit_log "rewrite" "$CMD" "$REWRITTEN"
 
