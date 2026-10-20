@@ -63,7 +63,9 @@ because the upstream ID differs from the canonical one:
 the CLIProxy campaign providers. Key `foo` fills `__FREE_FOO__`; there are no
 `_PRETTY` or `_NONDOT` forms. `union` is the upstream ID behind the reserved
 `free` alias on `openrouter-campaign`. The rest are exposed under their own IDs
-on the keyless `opencode-campaign`.
+on the keyless `opencode-campaign`. A `foo-<provider>` key holds the upstream ID
+another provider serves under the `foo` alias: `minimax-flash` routes through
+OpenRouter (`minimax-flash-openrouter`) and Ollama Cloud (`minimax-flash-ollama`).
 
 When a campaign rotates its model, change the value and run `make llm-update`.
 When a campaign ends, delete the key and its `models:` entry in

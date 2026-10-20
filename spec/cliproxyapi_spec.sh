@@ -405,6 +405,8 @@ The output should include 'priority: 150'
 The output should include 'base-url: "https://ollama.com/v1"'
 The output should include 'api-key-entries: __OLLAMA_API_KEY_ENTRIES__'
 The output should include 'name: "deepseek-v4.1-flash"'
+The output should include 'name: "minimax-m3.1-flash"'
+The output should include 'alias: "minimax-m3.1-flash-free"'
 The output should not include 'name: "minimax-m3"'
 The output should not include 'name: "kimi-k3"'
 The status should be success
