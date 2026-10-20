@@ -139,6 +139,20 @@ The status should be success
 The output should include 'rtk'
 End
 
+It 'leaves git commands unrewritten in Claude subagent calls'
+Data '{"agent_id": "agent-1", "tool_input": {"command": "git status"}}'
+When run run_hook
+The status should be success
+The output should eq ''
+End
+
+It 'still rewrites non-git commands in Claude subagent calls'
+Data '{"agent_id": "agent-1", "tool_input": {"command": "ls -la"}}'
+When run run_hook_jq
+The status should be success
+The output should include 'rtk'
+End
+
 It 'passes non-matching commands through'
 Data '{"tool_input": {"command": "echo hello"}}'
 When run run_hook
