@@ -1,0 +1,7 @@
+[install]
+# `bun i -g` reads this from the global install dir on top of ~/.bunfig.toml.
+# T3 Code updates agent CLIs that way, and with scripts ignored the trusted
+# postinstalls that fetch native binaries (e.g. @opencode/cli) never run,
+# leaving placeholder bins. Scripts still run only for the global package.json
+# trustedDependencies; project installs keep ignoring them.
+ignoreScripts = false
