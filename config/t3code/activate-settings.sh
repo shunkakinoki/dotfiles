@@ -3,6 +3,10 @@
 # settings file. T3 rewrites this file on every load and setting change, so this
 # only ever adds or updates the managed instances and leaves the rest alone.
 #
+# Provider health also refreshes every minute instead of every five: T3 gives
+# OpenCode 2 five seconds, cold start included, to list its models, and a busy
+# host that misses it leaves the provider "Limited" until the next refresh.
+#
 # Usage: activate-settings.sh <managed_settings_json> <jq_bin> <env_file> <state_dir> [systemctl_bin]
 set -euo pipefail
 
@@ -156,6 +160,7 @@ if [ -f "$SETTINGS" ]; then
   # shellcheck disable=SC2016
   "$JQ_BIN" --slurpfile managed "$MANAGED_SETTINGS" --arg key "$CLIPROXY_API_KEY" --arg base "$CLIPROXY_BASE_URL" --arg perm "$CLAUDE_PERMISSION_ARGS" '
     ($managed[0]) as $managed_settings
+    | .backgroundActivity = ((.backgroundActivity // {}) * ($managed_settings.backgroundActivity // {}))
     | .providers = ((.providers // {}) * ($managed_settings.providers // {}))
     | .providerInstances =
         ((.providerInstances // {})

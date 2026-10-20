@@ -190,6 +190,15 @@ When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER'
 The status should be success
 End
 
+It 'refreshes provider health every minute without dropping app-owned overrides'
+printf 'CLIPROXY_API_KEY=%s\n' DUMMY >"$TEMP_DIR/.env"
+cat >"$STATE_DIR/settings.json" <<'JSON'
+{"backgroundActivity": {"schemaVersion": 1, "profile": "custom", "baseProfile": "balanced", "overrides": {"idleClientTtl": 120000}}}
+JSON
+When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && jq -e '.backgroundActivity.overrides.providerHealthRefreshInterval == 60000 and .backgroundActivity.overrides.idleClientTtl == 120000 and .backgroundActivity.profile == \"custom\"' '$STATE_DIR/settings.json' >/dev/null"
+The status should be success
+End
+
 It 'leaves a malformed settings.json untouched'
 echo 'not json' >"$STATE_DIR/settings.json"
 When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && grep -q 'not json' '$STATE_DIR/settings.json'"
