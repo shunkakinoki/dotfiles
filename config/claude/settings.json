@@ -1,4 +1,7 @@
 {
+  "attribution": {
+    "commit": ""
+  },
   "cleanupPeriodDays": 99999,
   "defaultMode": "bypassPermissions",
   "disabledMcpjsonServers": [
