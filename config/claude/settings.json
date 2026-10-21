@@ -5,11 +5,11 @@
   "autoMode": {
     "environment": [
       "$defaults",
-      "**Repository checkouts**: Every git worktree of `shunkakinokisoftware/shunkakinokisoftware` on this host (under `~/.t3/worktrees/`, `~/ghq/github.com/shunkakinokisoftware/shunkakinokisoftware`, or a scratch directory) is the same trusted repo as the session's working directory, with the same remote."
+      "**Repository worktrees**: Another git worktree of the session's repository on this host, including one in a scratch directory, is the same trusted repo with the same remote."
     ],
     "allow": [
       "$defaults",
-      "Delivery Checkout at origin/main: Fetching `origin` and creating a git worktree of the trusted repo detached at `origin/main` (`git worktree add --detach <dir> origin/main`, including `git -C <repo> ...` forms and `&&` chains of these steps), then running `bun install --frozen-lockfile` or `make setup` in that worktree, so the repository's delivery scripts run from current tooling. This checks out the already-merged default branch and installs only dependencies its lockfile declares; it is not Auto-Mode Bypass. It does not cover other branches or refs, running other code from that worktree, or the merge itself: Merge Without Review still judges any merge run from there."
+      "Delivery Checkout at origin/main: Fetching `origin` and creating a git worktree of the trusted repo detached at `origin/main` (`git worktree add --detach <dir> origin/main`, including `git -C <repo> ...` forms and `&&` chains of these steps), then running `bun install --frozen-lockfile` in that worktree, so the repository's delivery scripts run from current tooling. This checks out the already-merged default branch and installs the dependencies its lockfile pins, including their install scripts; it is not Auto-Mode Bypass. It does not cover other branches or refs, other commands in that worktree, or the merge itself: Merge Without Review still judges any merge run from there."
     ]
   },
   "cleanupPeriodDays": 99999,
