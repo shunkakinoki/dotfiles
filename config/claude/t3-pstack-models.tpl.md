@@ -18,4 +18,4 @@ swarm workers: claude-cliproxy/__CLAUDE_OPUS__ effort=high
 architect runners: claude-cliproxy/__CLAUDE_OPUS__ effort=high, codex-cliproxy/__GPT_SOL__ reasoningEffort=xhigh
 interrogate reviewers: claude-cliproxy/__CLAUDE_OPUS__ effort=high, codex-cliproxy/__GPT_SOL__ reasoningEffort=xhigh
 
-session hook: on
+session hook: off
