@@ -804,6 +804,111 @@ restore_linear_last_sync() {
   run_dolt_sql "USE \`$linear_database\`; REPLACE INTO local_metadata (\`key\`, value) VALUES ('linear.last_sync', '$linear_last_sync_before_pull');"
 }
 
+# A lane holds a Bead while the last notes line that starts with a custody
+# marker is its `lane-claim:` line. This mirrors `retainedClaimLane` in the
+# orchestration beads markers module: a marker counts only at the start of a
+# line, and a claim line with no lane token still holds, under the empty lane.
+# shellcheck disable=SC2016 # jq program; $ names are jq variables.
+lane_custody_jq='
+  def held_lane:
+    [
+      (.notes // "")
+      | split("\n")[]
+      | select(startswith("lane-claim:") or startswith("lane-release:"))
+    ]
+    | last
+    | if . == null or startswith("lane-release:") then null
+      else ltrimstr("lane-claim:") | [splits("\\s")][0]
+      end;
+  def held_beads:
+    (if type == "object" and has("issues") then .issues else . end)
+    | map(
+        select(.status != "closed")
+        | held_lane as $lane
+        | select($lane != null)
+        | { id, lane: $lane, status, assignee: (.assignee // "") }
+      );
+'
+
+# The pull copies the tracker's assignee and workflow state onto every paired
+# Bead, which resets a live lane claim to open or hands it to the tracker user.
+# The journal fold below cannot see a claim an earlier cycle already folded, so
+# a Bead still under the same lane claim gets back the status and assignee it
+# had just before the pull. A tracker close still stands. A Bead another actor
+# wrote during the pull is left to the journal fold, which orders that write
+# against the pull's, and the guarded write refuses when one lands after it.
+restore_lane_custody_after_pull() {
+  local custody_repairs
+  local repair
+  local restore_id
+  local restore_status
+  local restore_assignee
+  local pulled_status
+  local pulled_assignee
+  local restore_args
+  local restored=0
+  local deferred=0
+  local refused=0
+
+  custody_restored_ids=""
+  if [ "$lane_custody_before_pull" = "[]" ]; then
+    return 0
+  fi
+  if ! custody_repairs="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0 |
+    @jq@/bin/jq -c --slurpfile before <(printf '%s\n' "$lane_custody_before_pull") "$lane_custody_jq"'
+      (held_beads | map({ key: .id, value: . }) | from_entries) as $held
+      | (if type == "object" and has("issues") then .issues else . end
+        | map({ key: .id, value: { status, assignee: (.assignee // "") } })
+        | from_entries) as $now
+      | $before[0][]
+      | select($held[.id].lane == .lane)
+      | {
+          id,
+          status,
+          assignee,
+          pulled_status: $now[.id].status,
+          pulled_assignee: $now[.id].assignee,
+        }
+      | select(.status != .pulled_status or .assignee != .pulled_assignee)
+    ')"; then
+    log "Unable to read lane custody after the Linear pull"
+    return 1
+  fi
+  if [ -z "$custody_repairs" ]; then
+    return 0
+  fi
+  while IFS= read -r repair; do
+    restore_id="$(@jq@/bin/jq -r '.id' <<<"$repair")"
+    if [ "$(written_since "$restore_id" "$lane_custody_taken_at")" != "false" ]; then
+      deferred=$((deferred + 1))
+      continue
+    fi
+    restore_status="$(@jq@/bin/jq -r '.status' <<<"$repair")"
+    restore_assignee="$(@jq@/bin/jq -r '.assignee' <<<"$repair")"
+    pulled_status="$(@jq@/bin/jq -r '.pulled_status' <<<"$repair")"
+    pulled_assignee="$(@jq@/bin/jq -r '.pulled_assignee' <<<"$repair")"
+    restore_args=()
+    if [ "$restore_assignee" != "$pulled_assignee" ]; then
+      restore_args+=(--assignee "$restore_assignee")
+    fi
+    if [ "$restore_status" != "$pulled_status" ]; then
+      restore_args+=(--status "$restore_status")
+    fi
+    if "$bd_cli" -C "$repo_dir" update "$restore_id" "${restore_args[@]}" \
+      --if-status="$pulled_status" --if-assignee="$pulled_assignee" >/dev/null 2>&1; then
+      restored=$((restored + 1))
+      # The tracker still holds the pulled state; the push never sends an
+      # assignee, so only a restored status needs a re-push.
+      if [ "$restore_status" != "$pulled_status" ]; then
+        custody_restored_ids="${custody_restored_ids:+$custody_restored_ids,}$restore_id"
+      fi
+    else
+      refused=$((refused + 1))
+    fi
+  done <<<"$custody_repairs"
+  log "Restored lane custody on $restored claimed Bead(s); deferred $deferred written during the pull; $refused refused after a newer write"
+}
+
 # A cursor-free pull overwrites local assignment, workflow state, and labels
 # with the tracker's values. An in-progress Bead the pull only unassigned keeps
 # its pre-pull assignee: Beads owns custody, and a claim whose journal event an
@@ -933,7 +1038,11 @@ restore_after_pull() {
     return 0
   fi
   restore_state=running
+  restore_lane_custody_after_pull || status=$?
   repair_control_state_after_pull || status=$?
+  if [ -n "${custody_restored_ids:-}" ]; then
+    repaired_ids="${repaired_ids:+$repaired_ids,}$custody_restored_ids"
+  fi
   if [ "$pull_status" != 0 ] || [ "$status" -ne 0 ]; then
     restore_linear_last_sync || status=1
   fi
@@ -1320,7 +1429,8 @@ fi
 # serialization conflicts. Between daily full pulls, pull only the issues
 # Linear changed since the last successful cycle, with ten minutes of overlap
 # for clock skew. The selective fetch omits relations, so the full pull stays
-# daily, and a failed selective pull forces the next cycle to pull in full.
+# daily. A failed selective pull keeps the checkpoint, so the next selective
+# listing covers its window again.
 #
 # bd fetches each selected issue with its own Linear request (about 70
 # complexity points), and Linear allows an API key 2,500 requests an hour
@@ -1373,6 +1483,8 @@ if [ "$pull_mode" = selective ] && [ "${#selective_pull_ids[@]}" -eq 0 ]; then
   log "No Linear issues changed since the last cycle; skipping the pull"
 else
   linear_last_sync_before_pull="$(@jq@/bin/jq -r '.last_sync // ""' <<<"$linear_status")"
+  lane_custody_taken_at="$(@coreutils@/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')"
+  lane_custody_before_pull="$("$bd_cli" -C "$repo_dir" list --all --json --limit 0 | @jq@/bin/jq -c "$lane_custody_jq"'held_beads')"
   pull_status=""
   deferred_signal=""
   restore_state=pending
@@ -1415,6 +1527,13 @@ else
     else
       pull_status=$?
     fi
+    # The full pull can outlast its timeout every time, so a failed attempt
+    # also starts the daily window: retrying it each cycle would replace every
+    # selective pull with another full pull that never finishes.
+    if [ "$pull_status" -ne 75 ]; then
+      printf '%s\n' "$full_pull_started" >"$full_pull_file.tmp"
+      @coreutils@/bin/mv -f "$full_pull_file.tmp" "$full_pull_file"
+    fi
   fi
 
   repair_status=0
@@ -1425,7 +1544,6 @@ else
       exit "$repair_status"
     fi
     log "Linear pull failed with status $pull_status"
-    @coreutils@/bin/rm -f "$full_pull_file"
     exit "$pull_status"
   fi
   if [ "$repair_status" -ne 0 ]; then
@@ -1536,10 +1654,6 @@ if [ "${#pull_carry_ids[@]}" -gt 0 ]; then
   @coreutils@/bin/mv -f "$pull_carry_file.tmp" "$pull_carry_file"
 else
   @coreutils@/bin/rm -f "$pull_carry_file"
-fi
-if [ "$pull_mode" = full ]; then
-  printf '%s\n' "$full_pull_started" >"$full_pull_file.tmp"
-  @coreutils@/bin/mv -f "$full_pull_file.tmp" "$full_pull_file"
 fi
 
 "$bd_cli" -C "$repo_dir" linear status --json

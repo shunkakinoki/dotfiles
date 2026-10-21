@@ -641,15 +641,27 @@ The contents of file "$COMMAND_LOG" should include 'linear sync --pull --state a
 The contents of file "$COMMAND_LOG" should not include '--pull --issues'
 End
 
-It 'forces a full pull on the next cycle after a failed selective pull'
+It 'keeps pulling selectively after a failed selective pull'
 mkdir -p "$STATE_HOME/beads-linear-sync"
 printf '%s\n' '2026-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
-date -u '+%s' >"$STATE_HOME/beads-linear-sync/full-pull-test%2Frepo-one"
+full_pull_at="$(date -u '+%s')"
+printf '%s\n' "$full_pull_at" >"$STATE_HOME/beads-linear-sync/full-pull-test%2Frepo-one"
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=pull-failure FAKE_CHANGED_ISSUES=TEST-1 XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should equal 23
 The output should include 'Linear pull failed with status 23'
 The contents of file "$COMMAND_LOG" should include 'linear sync --pull --issues TEST-1 --no-wait'
-The file "$STATE_HOME/beads-linear-sync/full-pull-test%2Frepo-one" should not be exist
+The contents of file "$STATE_HOME/beads-linear-sync/full-pull-test%2Frepo-one" should equal "$full_pull_at"
+End
+
+It 'pulls selectively for a day after a timed-out full pull'
+mkdir -p "$STATE_HOME/beads-linear-sync"
+printf '%s\n' '2026-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
+When run bash -c "env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_LINEAR_MODE=command-timeout XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT'; test \"\$?\" -eq 124 || exit 1; env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_CHANGED_ISSUES=TEST-1 XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT'"
+The status should be success
+The output should include 'Linear pull failed with status 124'
+The output should include 'Pulling 1 changed Linear issue(s)'
+The value "$(grep -c -- '--state all' "$COMMAND_LOG")" should equal 1
+The contents of file "$COMMAND_LOG" should include 'linear sync --pull --issues TEST-1 --no-wait'
 End
 
 It 'pulls a large changed set in chunks and carries the remainder instead of pulling in full'
@@ -1509,13 +1521,30 @@ It 'restores control state exactly once after a successful pull'
 before='[{"id":"df-lane","status":"in_progress","assignee":"exec","notes":"lane-claim:exec","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/lane"}]'
 after='[{"id":"df-lane","status":"open","assignee":"owner@example.com","notes":"lane-claim:exec","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/lane"}]'
 journal='{"actor":"exec","op":"update","issue_id":"df-lane","issue":{"id":"df-lane","status":"in_progress","assignee":"exec"}}'
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_EVENTS_JOURNAL="$journal" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_EVENTS_JOURNAL="$journal" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" FAKE_LIST_JSON_AFTER_REPAIR="$before" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
-The output should include 'Restoring locally authoritative control state after pull'
+The output should include 'Restored lane custody on 1 claimed Bead(s); deferred 0 written during the pull; 0 refused after a newer write'
+The output should not include 'Restoring locally authoritative control state after pull'
 The value "$(grep -c 'update df-lane --assignee exec' "$COMMAND_LOG")" should equal 1
 The value "$(grep -c 'events tail' "$COMMAND_LOG")" should equal 1
 The contents of file "$DOLT_LOG" should not include 'REPLACE INTO local_metadata'
 The file "$CHECKPOINT_FILE" should be exist
+End
+
+It 'restores live lane custody the pull wiped and leaves released, quoted, and closed claims alone'
+ref='"external_ref":"https://linear.app/test/issue/TEST-8/lane"'
+before="[{\"id\":\"df-lane\",\"status\":\"in_progress\",\"assignee\":\"exec\",\"notes\":\"plan\\nlane-claim:exec\",$ref},{\"id\":\"df-assignee\",\"status\":\"in_progress\",\"assignee\":\"exec2\",\"notes\":\"lane-claim:exec2\",$ref},{\"id\":\"df-released\",\"status\":\"in_progress\",\"assignee\":\"exec3\",\"notes\":\"lane-claim:exec3\\nlane-release:exec3 outcome:delivered\",$ref},{\"id\":\"df-quoted\",\"status\":\"in_progress\",\"assignee\":\"exec4\",\"notes\":\"see  lane-claim:exec4\",$ref},{\"id\":\"df-handoff\",\"status\":\"in_progress\",\"assignee\":\"exec5\",\"notes\":\"lane-claim:exec5\",$ref},{\"id\":\"df-done\",\"status\":\"in_progress\",\"assignee\":\"exec6\",\"notes\":\"lane-claim:exec6\",$ref},{\"id\":\"df-refused\",\"status\":\"in_progress\",\"assignee\":\"exec7\",\"notes\":\"lane-claim:exec7\",$ref}]"
+after="[{\"id\":\"df-lane\",\"status\":\"open\",\"assignee\":\"owner@example.com\",\"notes\":\"plan\\nlane-claim:exec\",$ref},{\"id\":\"df-assignee\",\"status\":\"in_progress\",\"assignee\":\"\",\"notes\":\"lane-claim:exec2\",$ref},{\"id\":\"df-released\",\"status\":\"open\",\"assignee\":\"\",\"notes\":\"lane-claim:exec3\\nlane-release:exec3 outcome:delivered\",$ref},{\"id\":\"df-quoted\",\"status\":\"open\",\"assignee\":\"\",\"notes\":\"see  lane-claim:exec4\",$ref},{\"id\":\"df-handoff\",\"status\":\"open\",\"assignee\":\"\",\"notes\":\"lane-claim:exec5\\nlane-release:exec5 outcome:handed-off\",$ref},{\"id\":\"df-done\",\"status\":\"closed\",\"assignee\":\"\",\"notes\":\"lane-claim:exec6\",$ref},{\"id\":\"df-refused\",\"status\":\"open\",\"assignee\":\"\",\"notes\":\"lane-claim:exec7\",$ref}]"
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_UPDATE_REFUSED=df-refused FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" FAKE_LIST_JSON_AFTER_REPAIR="$before" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Restored lane custody on 2 claimed Bead(s); deferred 0 written during the pull; 1 refused after a newer write'
+The contents of file "$COMMAND_LOG" should include 'update df-lane --assignee exec --status in_progress --if-status=open --if-assignee=owner@example.com'
+The contents of file "$COMMAND_LOG" should include 'update df-assignee --assignee exec2 --if-status=in_progress --if-assignee='
+The contents of file "$COMMAND_LOG" should include 'update df-refused --assignee exec7 --status in_progress --if-status=open --if-assignee='
+The contents of file "$COMMAND_LOG" should not include 'update df-released'
+The contents of file "$COMMAND_LOG" should not include 'update df-quoted'
+The contents of file "$COMMAND_LOG" should not include 'update df-handoff'
+The contents of file "$COMMAND_LOG" should not include 'update df-done'
 End
 
 It 'does not restore when the run fails before the pre-pull snapshot'
@@ -1575,9 +1604,11 @@ It 'leaves a lane claim a foreign owner took during the pull'
 before='[{"id":"df-lane","status":"in_progress","assignee":"exec","notes":"lane-claim:exec","updated_at":"2099-01-02T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/lane"}]'
 after='[{"id":"df-lane","status":"in_progress","assignee":"operator@example.com","notes":"lane-claim:exec","updated_at":"2099-01-03T00:00:00Z","external_ref":"https://linear.app/test/issue/TEST-7/lane"}]'
 journal='{"actor":"operator@example.com","op":"update","issue_id":"df-lane","issue":{"id":"df-lane","status":"in_progress","assignee":"operator@example.com"}}'
-When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=command-timeout FAKE_EVENTS_JOURNAL="$journal" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+history='[{"actor":"operator@example.com","created_at":"2999-01-01T00:00:00Z"}]'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_LINEAR_MODE=command-timeout FAKE_EVENTS_JOURNAL="$journal" FAKE_HISTORY_ID=df-lane FAKE_HISTORY_JSON="$history" FAKE_LAST_SYNC=2099-01-01T12:00:00Z FAKE_LIST_JSON="$before" FAKE_LIST_JSON_AFTER_PULL="$after" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should equal 124
 The output should include 'Linear pull failed with status 124'
+The output should include 'Restored lane custody on 0 claimed Bead(s); deferred 1 written during the pull; 0 refused after a newer write'
 The contents of file "$COMMAND_LOG" should include 'events tail --since 0'
 The contents of file "$COMMAND_LOG" should not include 'update df-lane'
 End
