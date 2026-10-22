@@ -24,6 +24,10 @@
       }
       "homebrew/cask"
       {
+        name = "kitlangton/tap";
+        trusted = true;
+      }
+      {
         name = "kurtosis-tech/tap";
         trusted = true;
       }
@@ -161,6 +165,7 @@
       "raycast"
       "repobar"
       "rescuetime"
+      "kitlangton/tap/scrawl"
       "screen-studio"
       "sf-symbols"
       "slack"
