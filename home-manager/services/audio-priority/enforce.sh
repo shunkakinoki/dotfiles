@@ -22,8 +22,13 @@ prefer() {
 
 # Prefer the configured wired devices while connected. Otherwise leave the
 # selected route alone; connection timing cannot identify a manual selection.
+# With any Bluetooth output connected, output stays on it but the mic stays
+# wired, which also keeps it on A2DP instead of the low-quality headset
+# profile. CoreAudio gives Bluetooth devices MAC-address UIDs.
 while true; do
-  prefer output "$output_device"
+  if ! "$switch_audio" -a -t output -f json | grep -Eq '"uid": "([0-9A-F]{2}-){5}[0-9A-F]{2}:'; then
+    prefer output "$output_device"
+  fi
   prefer input "$input_device"
   sleep 2
 done
