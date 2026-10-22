@@ -2,6 +2,16 @@
   "attribution": {
     "commit": ""
   },
+  "autoMode": {
+    "environment": [
+      "$defaults",
+      "**Repository worktrees**: Another git worktree of the session's repository on this host, including one in a scratch directory, is the same trusted repo with the same remote."
+    ],
+    "allow": [
+      "$defaults",
+      "Delivery Checkout at origin/main: Fetching `origin` and creating a git worktree of the trusted repo detached at `origin/main` (`git worktree add --detach <dir> origin/main`, including `git -C <repo> ...` forms and `&&` chains of these steps), then running `bun install --frozen-lockfile` in that worktree, so the repository's delivery scripts run from current tooling. This checks out the already-merged default branch and installs the dependencies its lockfile pins, including their install scripts; it is not Auto-Mode Bypass. It does not cover other branches or refs, other commands in that worktree, or the merge itself: Merge Without Review still judges any merge run from there."
+    ]
+  },
   "cleanupPeriodDays": 99999,
   "defaultMode": "bypassPermissions",
   "disabledMcpjsonServers": [
