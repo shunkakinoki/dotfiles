@@ -13,6 +13,8 @@ setup() {
   export T3_BROWSER_CLI="$MOCK_BIN/browser-cli"
   export T3CODE_HOME="$T3_BROWSER_TEST_ROOT/custom home"
   export MOCK_UID=0
+  export T3_APPARMOR_DIR="$T3_BROWSER_TEST_ROOT/apparmor.d"
+  mkdir -p "$T3_APPARMOR_DIR"
   touch "$T3_REAL_CLI"
   chmod +x "$T3_REAL_CLI"
   cat >"$MOCK_BIN/id" <<'MOCK'
@@ -41,7 +43,7 @@ MOCK
 cleanup() {
   mock_bin_cleanup
   rm -rf "$T3_BROWSER_TEST_ROOT"
-  unset T3_BROWSER_TEST_ROOT T3_REAL_CLI T3_BROWSER_CLI T3CODE_HOME MOCK_UID MOCK_PRIVILEGE_EXIT MOCK_BROWSER_EXIT MOCK_NO_BROWSER
+  unset T3_BROWSER_TEST_ROOT T3_REAL_CLI T3_BROWSER_CLI T3CODE_HOME T3_APPARMOR_DIR MOCK_UID MOCK_PRIVILEGE_EXIT MOCK_BROWSER_EXIT MOCK_NO_BROWSER
 }
 
 Before 'setup'
@@ -89,6 +91,14 @@ export MOCK_NO_BROWSER=1
 When run bash "$SCRIPT"
 The status should be success
 The output should include 'no browser command'
+The contents of file "$MOCK_LOG" should eq ''
+End
+
+It 'skips setup on hosts without AppArmor'
+rmdir "$T3_APPARMOR_DIR"
+When run bash "$SCRIPT"
+The status should be success
+The output should include 'AppArmor is not available'
 The contents of file "$MOCK_LOG" should eq ''
 End
 
