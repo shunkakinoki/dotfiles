@@ -147,7 +147,7 @@ End
 End
 
 It 'polls both output and input'
-When run bash -c "grep -E '^  prefer (output|input) ' '$SCRIPT'"
+When run bash -c "grep -E '^ +prefer (output|input) ' '$SCRIPT'"
 The line 1 of output should include 'prefer output "$output_device"'
 The line 2 of output should include 'prefer input "$input_device"'
 End

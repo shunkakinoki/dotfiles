@@ -320,7 +320,7 @@ EOF
 chmod +x "$MOCK_BIN/sqlite3"
 # Mirror a systemd start timeout: SIGTERM the whole process group, then
 # SIGKILL whatever is left once the main process has exited.
-When run bash -c 'set -m; export HOME="'"$TEMP_HOME"'" CLIPROXY_BACKUP_STAGING_DIR="'"$STAGING_DIR"'" SQLITE_STARTED="'"$TEMP_HOME"'/started"; bash "'"$__BACKUP_SCRIPT"'" full >/dev/null 2>&1 & pid=$!; for _ in $(seq 100); do [ -f "$SQLITE_STARTED" ] && break; sleep 0.1; done; kill -TERM -- "-$pid"; wait "$pid"; status=$?; kill -KILL -- "-$pid" 2>/dev/null; ls -A "'"$STAGING_DIR"'"; exit "$status"'
+When run bash -c 'set -m; export HOME="'"$TEMP_HOME"'" CLIPROXY_BACKUP_STAGING_DIR="'"$STAGING_DIR"'" SQLITE_STARTED="'"$TEMP_HOME"'/started"; bash "'"$__BACKUP_SCRIPT"'" full >/dev/null 2>&1 & pid=$!; for _ in $(seq 100); do [ -f "$SQLITE_STARTED" ] && break; sleep 0.1; done; kill -TERM -- "-$pid"; { wait "$pid"; } 2>/dev/null; status=$?; kill -KILL -- "-$pid" 2>/dev/null; ls -A "'"$STAGING_DIR"'"; exit "$status"'
 The status should eq 143
 The output should eq ''
 End

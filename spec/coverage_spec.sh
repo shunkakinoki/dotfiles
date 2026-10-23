@@ -596,8 +596,10 @@ config/dsh/hydrate.sh
 config/codex/hooks/notify.sh
 config/codex/hooks/pushover.sh
 config/openfactor/install.sh
+config/opencode/service-env.sh
 config/shared/hooks/block-gh-settings.sh
 config/shared/hooks/block-git-push.sh
+config/shared/hooks/block-git-identity.sh
 config/shared/hooks/dcg-guard.sh
 config/shared/hooks/traces-agent-hook.sh
 config/shared/hooks/secret-guard.sh
@@ -638,6 +640,7 @@ home-manager/activation/deploy-agenix-secret.sh
 home-manager/activation/ensure-directory.sh
 home-manager/activation/ensure-tailscale-serve.sh
 home-manager/activation/import-gpg-key.sh
+home-manager/activation/remove-stale-gh-credential-helpers.sh
 home-manager/modules/bin-shells/activate.sh
 home-manager/modules/cargo-globals/install-cargo-globals.sh
 home-manager/modules/local-binaries/sync-local-binaries.sh
