@@ -223,7 +223,12 @@ import ../../hosts/nixos {
         };
 
         # Docker
-        virtualisation.docker.enable = true;
+        virtualisation.docker = {
+          enable = true;
+          daemon.settings = builtins.fromJSON (
+            builtins.readFile ../../home-manager/services/docker/daemon.json
+          );
+        };
 
         # Home Manager activation can take a long time (npm globals, cargo installs, etc.)
         systemd.services."home-manager-${username}".serviceConfig.TimeoutStartSec = lib.mkForce "30m";
