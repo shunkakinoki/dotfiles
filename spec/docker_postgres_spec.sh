@@ -1,92 +1,116 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329
+# shellcheck disable=SC2016,SC2329
 
-Describe 'docker-postgres/start-postgres.sh'
+Describe 'Postgres private bootstrap'
 SCRIPT="$PWD/home-manager/services/docker-postgres/start-postgres.sh"
+setup() {
+  WORK=$(mktemp -d)
+  export POSTGRES_PASSWORD_FILE="$WORK/password" DOCKER_LOG="$WORK/docker.log"
+  export PATH="$WORK/bin:$PATH" SCENARIO=new
+  mkdir -p "$WORK/bin"
+  cat >"$WORK/bin/docker" <<'MOCK'
+#!/usr/bin/env bash
+printf '%s\n' "$*" >>"$DOCKER_LOG"
+case "$1 $2" in
+  'info ') exit 0 ;;
+  'container inspect')
+    [ "$SCENARIO" = new ] && exit 1
+    case "$*" in
+      *State.Status*) printf '%s\n' "${CONTAINER_STATE:-running}" ;;
+      *PortBindings*) printf '%s\n' "${BINDING:-127.0.0.1:5432}" ;;
+      *Config.Env*) [ "$SCENARIO" != trust-env ] || printf 'trust\n' ;;
+    esac
+    exit 0 ;;
+  'exec postgres')
+    if [ "$3" = pg_isready ]; then [ "$SCENARIO" != unhealthy ]; exit; fi
+    [ "$SCENARIO" != query-error ] || exit 1
+    if [ "$SCENARIO" = trust-hba ]; then printf '1\n'; else printf '0\n'; fi ;;
+esac
+MOCK
+  printf '#!/usr/bin/env bash\nexit 0\n' >"$WORK/bin/sleep"
+  chmod +x "$WORK/bin/docker" "$WORK/bin/sleep"
+}
+cleanup() {
+  rm -f "$WORK/password" "$WORK/docker.log" "$WORK/bin/docker" "$WORK/bin/sleep"
+  rmdir "$WORK/bin" "$WORK"
+}
+Before 'setup'
+After 'cleanup'
 
-Describe 'script properties'
-It 'uses strict mode'
-When run bash -c "head -5 '$SCRIPT'"
-The output should include 'set -euo pipefail'
-End
-
-It 'uses bash shebang'
-When run bash -c "head -1 '$SCRIPT'"
-The output should include '#!/usr/bin/env bash'
-End
-End
-
-Describe 'container configuration'
-It 'uses postgres:18 image'
-When run bash -c "cat '$SCRIPT'"
-The output should include 'IMAGE="postgres:18"'
-End
-
-It 'uses container name postgres'
-When run bash -c "cat '$SCRIPT'"
-The output should include 'CONTAINER_NAME="postgres"'
-End
-
-It 'maps port 5432'
-When run bash -c "cat '$SCRIPT'"
-The output should include 'HOST_PORT="5432"'
-End
-
-It 'sets POSTGRES_DB=trails_api'
-When run bash -c "cat '$SCRIPT'"
-The output should include 'POSTGRES_DB=trails_api'
-End
-
-It 'sets POSTGRES_PASSWORD=postgres'
-When run bash -c "cat '$SCRIPT'"
-The output should include 'POSTGRES_PASSWORD=postgres'
-End
-End
-
-Describe 'docker daemon wait logic'
-It 'defines wait_for_docker function'
-When run bash -c "cat '$SCRIPT'"
-The output should include 'wait_for_docker'
-End
-
-It 'checks docker info for readiness'
-When run bash -c "cat '$SCRIPT'"
-The output should include 'docker info'
+It 'creates an isolated authenticated database'
+When run bash "$SCRIPT"
+The status should be success
+The output should include 'Done'
+The contents of file "$DOCKER_LOG" should include '127.0.0.1:5432:5432'
+The contents of file "$DOCKER_LOG" should include 'POSTGRES_HOST_AUTH_METHOD=scram-sha-256'
+The contents of file "$DOCKER_LOG" should include 'POSTGRES_PASSWORD_FILE=/run/secrets/postgres-password'
+The contents of file "$DOCKER_LOG" should include 'type=volume,src=postgres-data,dst=/var/lib/postgresql'
+The file "$POSTGRES_PASSWORD_FILE" should be exist
 End
 
-It 'has configurable retry settings'
-When run bash -c "cat '$SCRIPT'"
-The output should include 'MAX_RETRIES='
-End
-End
-
-Describe 'container management'
-It 'inspects container state before acting'
-When run bash -c "cat '$SCRIPT'"
-The output should include 'docker container inspect'
-End
-
-It 'starts existing stopped containers'
-When run bash -c "cat '$SCRIPT'"
-The output should include 'docker start'
+verify_secret() {
+  bash "$SCRIPT" >/dev/null &&
+    test "$(wc -c <"$POSTGRES_PASSWORD_FILE" | tr -d ' ')" = 64 &&
+    test "$(portable_stat_perms "$POSTGRES_PASSWORD_FILE")" = 600 &&
+    ! grep -qF "$(cat "$POSTGRES_PASSWORD_FILE")" "$DOCKER_LOG"
+}
+It 'keeps its generated credential private and out of command arguments'
+When call verify_secret
+The status should be success
 End
 
-It 'creates new container with docker run'
-When run bash -c "cat '$SCRIPT'"
-The output should include 'docker run -d'
+It 'can explicitly reuse a preserved data volume'
+export POSTGRES_DATA_VOLUME=preserved-volume
+When run bash "$SCRIPT"
+The status should be success
+The output should include 'Done'
+The contents of file "$DOCKER_LOG" should include 'type=volume,src=preserved-volume,dst=/var/lib/postgresql'
 End
 
-It 'sets restart policy to unless-stopped'
-When run bash -c "cat '$SCRIPT'"
-The output should include '--restart=unless-stopped'
-End
-End
-
-Describe 'health verification'
-It 'verifies postgres with pg_isready'
-When run bash -c "cat '$SCRIPT'"
-The output should include 'pg_isready'
-End
+It 'refuses an existing wildcard publication without changing the container'
+export SCENARIO=existing BINDING=0.0.0.0:5432
+When run bash "$SCRIPT"
+The status should be failure
+The output should include 'storage-preserving security migration'
+The contents of file "$DOCKER_LOG" should not include 'run -d'
+The contents of file "$DOCKER_LOG" should not include 'start postgres'
+The contents of file "$DOCKER_LOG" should not include 'rm '
 End
 
+It 'refuses a stopped container initialized with trust authentication'
+export SCENARIO=trust-env CONTAINER_STATE=exited
+When run bash "$SCRIPT"
+The status should be failure
+The output should include 'storage-preserving security migration'
+The contents of file "$DOCKER_LOG" should not include 'start postgres'
+End
+
+It 'rejects trust rules in an otherwise correctly bound running database'
+export SCENARIO=trust-hba
+When run bash "$SCRIPT"
+The status should be failure
+The output should include 'unsafe or invalid network authentication'
+End
+
+It 'reports authentication inspection failure instead of success'
+export SCENARIO=query-error
+When run bash "$SCRIPT"
+The status should be failure
+The output should not include 'Done'
+End
+
+It 'fails when the database never becomes ready'
+export SCENARIO=unhealthy
+When run bash "$SCRIPT"
+The status should be failure
+The output should include 'did not become ready'
+End
+
+It 'starts a safely configured stopped container'
+export SCENARIO=existing CONTAINER_STATE=exited
+When run bash "$SCRIPT"
+The status should be success
+The output should include 'Done'
+The contents of file "$DOCKER_LOG" should include 'start postgres'
+End
 End
