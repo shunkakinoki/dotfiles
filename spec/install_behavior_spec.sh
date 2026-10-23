@@ -34,8 +34,47 @@ printf '%s\n' "${MOCK_HOSTNAME:-generic-linux}"
 EOF
   cat >"$TEST_ROOT/bin/getent" <<'EOF'
 #!/usr/bin/env bash
-if [ "${MOCK_MISSING_UBUNTU:-}" = true ]; then exit 2; fi
-printf 'ubuntu:x:1000:1000::%s:/bin/bash\n' "$MOCK_UBUNTU_HOME"
+if [ "${MOCK_MISSING_UBUNTU:-}" = true ] && [ ! -f "$MOCK_UBUNTU_HOME/account-created" ]; then exit 2; fi
+printf 'ubuntu:x:%s:1000::%s:/bin/bash\n' "${MOCK_UBUNTU_UID:-1000}" "$MOCK_UBUNTU_HOME"
+EOF
+  cat >"$TEST_ROOT/bin/useradd" <<'EOF'
+#!/usr/bin/env bash
+printf 'USERADD_ARGS=%s\n' "$*"
+if [ "${MOCK_USERADD_RESULT:-0}" != 0 ]; then exit "$MOCK_USERADD_RESULT"; fi
+mkdir -p "$MOCK_UBUNTU_HOME"
+printf '%s\n' created >>"$MOCK_UBUNTU_HOME/account-created"
+EOF
+  cat >"$TEST_ROOT/bin/sudo" <<'EOF'
+#!/usr/bin/env bash
+if [ "${MOCK_MISSING_UBUNTU:-}" = true ] && [ ! -f "$MOCK_UBUNTU_HOME/admin-policy" ]; then exit 1; fi
+exit 0
+EOF
+  cat >"$TEST_ROOT/bin/visudo" <<'EOF'
+#!/usr/bin/env bash
+printf 'VALIDATED_RULE=%s\n' "$(/bin/cat "$2")"
+exit "${MOCK_VISUDO_RESULT:-0}"
+EOF
+  cat >"$TEST_ROOT/bin/install" <<'EOF'
+#!/usr/bin/env bash
+if [ "$*" != '-d -m 0755 /etc/sudoers.d' ]; then exit 97; fi
+EOF
+  cat >"$TEST_ROOT/bin/mktemp" <<'EOF'
+#!/usr/bin/env bash
+if [ "$1" != /etc/sudoers.d/.dotfiles-beskar-ubuntu.XXXXXX ]; then exit 96; fi
+exec /usr/bin/mktemp "$MOCK_UBUNTU_HOME/policy.XXXXXX"
+EOF
+  cat >"$TEST_ROOT/bin/mv" <<'EOF'
+#!/usr/bin/env bash
+if [ "$1" != -f ] || [ "$3" != /etc/sudoers.d/dotfiles-beskar-ubuntu ]; then exit 95; fi
+exec /bin/mv -f "$2" "$MOCK_UBUNTU_HOME/admin-policy"
+EOF
+  cat >"$TEST_ROOT/bin/loginctl" <<'EOF'
+#!/usr/bin/env bash
+printf 'LOGINCTL_ARGS=%s\n' "$*"
+EOF
+  cat >"$TEST_ROOT/bin/systemctl" <<'EOF'
+#!/usr/bin/env bash
+printf 'SYSTEMCTL_ARGS=%s\n' "$*"
 EOF
   cat >"$TEST_ROOT/bin/runuser" <<'EOF'
 #!/usr/bin/env bash
@@ -158,12 +197,61 @@ The output should include 'GIT_USER=ubuntu GIT_UID=1000'
 The output should include 'INSTALL_HOST=beskar INSTALL_USER=ubuntu'
 End
 
-It 'fails before installation when the required ubuntu account is missing'
+It 'creates the missing ubuntu account and administrative policy before activation'
 When run env MOCK_MISSING_UBUNTU=true "$TEST_ROOT/run-installer" beskar
-The status should be failure
-The stderr should include 'Beskar requires an existing ubuntu account'
+The status should be success
+The output should include 'USERADD_ARGS=--create-home --shell /bin/bash ubuntu'
+The output should include 'VALIDATED_RULE=ubuntu ALL=(ALL:ALL) NOPASSWD: ALL'
+The output should include 'LOGINCTL_ARGS=enable-linger ubuntu'
+The output should include 'SYSTEMCTL_ARGS=start user@1000.service'
+The output should include 'INSTALL_HOST=beskar INSTALL_USER=ubuntu'
+The output should include 'INSTALL_UID=1000'
+End
+
+It 'retains an existing account with working administrative access'
+When run "$TEST_ROOT/run-installer" beskar
+The status should be success
+The output should not include 'USERADD_ARGS='
+The output should not include 'VALIDATED_RULE='
+The output should include 'INSTALL_HOST=beskar INSTALL_USER=ubuntu'
+End
+
+It 'provisions a fresh account only once across repeated installs'
+When run bash -c 'export MOCK_MISSING_UBUNTU=true; "$1/run-installer" beskar && "$1/run-installer" beskar && printf "CREATION_COUNT=%s\n" "$(wc -l < "$1/ubuntu/account-created" | tr -d " ")"' _ "$TEST_ROOT"
+The status should be success
+The output should include 'CREATION_COUNT=1'
+The output should include 'INSTALL_HOST=beskar INSTALL_USER=ubuntu'
+End
+
+It 'stops when account creation fails'
+When run env MOCK_MISSING_UBUNTU=true MOCK_USERADD_RESULT=18 "$TEST_ROOT/run-installer" beskar
+The status should eq 18
+The output should not include 'VALIDATED_RULE='
 The output should not include 'INSTALL_HOST='
 The output should not include 'GIT_USER='
+End
+
+It 'rejects an invalid administrative rule before activation'
+When run env MOCK_MISSING_UBUNTU=true MOCK_VISUDO_RESULT=20 "$TEST_ROOT/run-installer" beskar
+The status should eq 20
+The output should include 'VALIDATED_RULE='
+The output should not include 'INSTALL_HOST='
+The output should not include 'GIT_USER='
+End
+
+It 'can resume after account creation succeeded but rule validation failed'
+When run bash -c 'export MOCK_MISSING_UBUNTU=true; MOCK_VISUDO_RESULT=20 "$1/run-installer" beskar >/dev/null; [ "$?" = 20 ] && "$1/run-installer" beskar' _ "$TEST_ROOT"
+The status should be success
+The output should not include 'USERADD_ARGS='
+The output should include 'VALIDATED_RULE='
+The output should include 'INSTALL_HOST=beskar INSTALL_USER=ubuntu'
+End
+
+It 'rejects an ubuntu account that aliases uid zero'
+When run env MOCK_UBUNTU_UID=0 "$TEST_ROOT/run-installer" beskar
+The status should be failure
+The stderr should include 'must have a non-root uid'
+The output should not include 'INSTALL_HOST='
 End
 
 It 'corrects a stale USER when already running as ubuntu'
