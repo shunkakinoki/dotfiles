@@ -1,5 +1,10 @@
 {
   "ip": "127.0.0.1",
+  "default-network-opts": {
+    "bridge": {
+      "com.docker.network.bridge.host_binding_ipv4": "127.0.0.1"
+    }
+  },
   "log-driver": "json-file",
   "log-opts": {
     "max-size": "100m",
