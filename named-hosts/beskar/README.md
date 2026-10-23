@@ -20,14 +20,18 @@ cd ~/dotfiles
 make switch HOST=beskar
 ```
 
-The one-line installer also supports a root SSH session when the `ubuntu`
-account already exists with a home directory and administrative access:
+The one-line installer also supports a root SSH session on a fresh Ubuntu image:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/main/install.sh | HOST=beskar sh
 ```
 
-It installs system prerequisites as root, then fetches `~/dotfiles` and runs
+It creates the `ubuntu` account with a home directory if needed, installs the
+account and D-Bus prerequisites, and ensures passwordless sudo for system service
+installation. Existing working sudo access is retained. On systemd hosts it enables
+lingering and starts Ubuntu's user manager before activation.
+
+It then installs Nix as root, fetches `~/dotfiles` and runs
 `make install` (including build and activation) as `ubuntu`. On a machine already
 named `beskar`, `HOST=beskar` can be omitted. A previous checkout in `/root` is
 left in place; installation uses the Ubuntu account's home directory.

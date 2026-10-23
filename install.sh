@@ -18,6 +18,58 @@ Linux)
   ;;
 esac
 
+# Fresh Ubuntu images may only provide root. Provision the account used by the
+# Beskar profile before handing off checkout and activation to that account.
+prepare_beskar_user() {
+  if ! command -v runuser >/dev/null 2>&1 \
+    || ! command -v useradd >/dev/null 2>&1 \
+    || ! command -v sudo >/dev/null 2>&1 \
+    || ! command -v visudo >/dev/null 2>&1 \
+    || [ ! -f /usr/lib/systemd/user/dbus.socket ]; then
+    if ! command -v apt-get >/dev/null 2>&1; then
+      echo "Beskar root bootstrap requires apt-get to install account and user-session prerequisites." >&2
+      exit 1
+    fi
+    apt-get update -qq
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
+      sudo passwd util-linux dbus-user-session
+  fi
+
+  if ! getent passwd ubuntu >/dev/null; then
+    echo "Creating the ubuntu account and home directory for Beskar..."
+    useradd --create-home --shell /bin/bash ubuntu
+  fi
+  _ubuntu_entry=$(getent passwd ubuntu)
+  INSTALL_HOME=$(printf '%s\n' "$_ubuntu_entry" | cut -d: -f6)
+  INSTALL_UID=$(printf '%s\n' "$_ubuntu_entry" | cut -d: -f3)
+  if [ -z "$INSTALL_HOME" ] || [ "$INSTALL_HOME" = /root ] || [ "$INSTALL_UID" = 0 ] || [ ! -d "$INSTALL_HOME" ]; then
+    echo "Beskar's ubuntu account must have a non-root uid and an existing home directory outside /root." >&2
+    exit 1
+  fi
+
+  # Activation installs system services non-interactively. Retain existing
+  # working sudo access; otherwise install one validated account-specific rule.
+  if ! runuser -u ubuntu -- sudo -n true 2>/dev/null; then
+    echo "Configuring passwordless administrative access for ubuntu on Beskar..."
+    (
+      umask 077
+      install -d -m 0755 /etc/sudoers.d
+      _sudoers_tmp=$(mktemp /etc/sudoers.d/.dotfiles-beskar-ubuntu.XXXXXX)
+      trap 'rm -f "$_sudoers_tmp"' 0
+      printf '%s\n' 'ubuntu ALL=(ALL:ALL) NOPASSWD: ALL' >"$_sudoers_tmp"
+      visudo -cf "$_sudoers_tmp"
+      chmod 0440 "$_sudoers_tmp"
+      mv -f "$_sudoers_tmp" /etc/sudoers.d/dotfiles-beskar-ubuntu
+    )
+    runuser -u ubuntu -- sudo -n true
+  fi
+
+  if [ "$(cat /proc/1/comm 2>/dev/null)" = systemd ]; then
+    loginctl enable-linger ubuntu
+    systemctl start "user@$INSTALL_UID.service"
+  fi
+}
+
 # Beskar's Home Manager profile belongs to ubuntu even when bootstrap is
 # launched from a root SSH session. Do not merely change USER: activation must
 # run with ubuntu's real uid, home directory, and user-service environment.
@@ -29,20 +81,7 @@ if [ "$OS" = linux ] && [ "${_install_host%%.*}" = beskar ]; then
   export HOST
   _current_user=$(id -un)
   if [ "$(id -u)" = 0 ]; then
-    if ! command -v runuser >/dev/null 2>&1; then
-      echo "Beskar bootstrap requires runuser (provided by util-linux)." >&2
-      exit 1
-    fi
-    _ubuntu_entry=$(getent passwd ubuntu) || {
-      echo "Beskar requires an existing ubuntu account. Create it with a home directory and administrative access, then rerun this installer." >&2
-      exit 1
-    }
-    INSTALL_HOME=$(printf '%s\n' "$_ubuntu_entry" | cut -d: -f6)
-    INSTALL_UID=$(printf '%s\n' "$_ubuntu_entry" | cut -d: -f3)
-    if [ -z "$INSTALL_HOME" ] || [ "$INSTALL_HOME" = /root ] || [ ! -d "$INSTALL_HOME" ]; then
-      echo "Beskar's ubuntu account must have an existing home directory outside /root." >&2
-      exit 1
-    fi
+    prepare_beskar_user
     INSTALL_AS_UBUNTU=true
   elif [ "$_current_user" != ubuntu ]; then
     echo "Run Beskar bootstrap as ubuntu or root." >&2
