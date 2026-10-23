@@ -39,6 +39,13 @@ let
   ) fleet.machines;
 in
 {
+  home.shellAliases = builtins.listToAttrs (
+    map (machine: {
+      inherit (machine) name;
+      value = "tailscale ssh ${machine.user}@${machine.name}";
+    }) fleet.machines
+  );
+
   programs.fish = {
     shellAbbrs = builtins.listToAttrs (
       map (shortcut: lib.nameValuePair shortcut.name "_${shortcut.name}_function") shortcuts
