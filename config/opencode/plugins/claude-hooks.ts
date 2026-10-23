@@ -33,7 +33,7 @@ function toolName(tool: string): string {
 async function runHook(
   hook: Hook,
   payload: string,
-  directory: string,
+  directory: string
 ): Promise<void> {
   const timeout = hook.timeout ?? DEFAULT_TIMEOUT_MS;
   const child = Bun.spawn(["sh", "-c", hook.command!], {
@@ -58,7 +58,9 @@ async function runHook(
   ]);
   clearTimeout(timer);
   if (timedOut) {
-    throw new Error(`BLOCKED: hook timed out after ${timeout}ms: ${hook.command}`);
+    throw new Error(
+      `BLOCKED: hook timed out after ${timeout}ms: ${hook.command}`
+    );
   }
   if (code === 2) {
     throw new Error(stderr.trim() || `BLOCKED by hook: ${hook.command}`);
@@ -69,7 +71,7 @@ async function gate(
   tool: string,
   input: unknown,
   sessionID: string | undefined,
-  directory: string,
+  directory: string
 ): Promise<void> {
   const name = toolName(tool);
   for (const entry of preToolUse()) {
@@ -93,7 +95,7 @@ export default {
   server: async ({ directory }: { directory: string }) => ({
     "tool.execute.before": async (
       input: { tool: string; sessionID?: string },
-      output: { args: unknown },
+      output: { args: unknown }
     ) => {
       await gate(input.tool, output.args, input.sessionID, directory);
     },
@@ -107,12 +109,17 @@ export default {
           tool: string;
           sessionID: string;
           input: unknown;
-        }) => Promise<void>,
+        }) => Promise<void>
       ) => Promise<unknown>;
     };
   }) => {
     await ctx.tool.hook("execute.before", async (event) => {
-      await gate(event.tool, event.input, event.sessionID, ctx.location.directory);
+      await gate(
+        event.tool,
+        event.input,
+        event.sessionID,
+        ctx.location.directory
+      );
     });
   },
 };

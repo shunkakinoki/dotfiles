@@ -47,11 +47,7 @@ let
     "kamino9"
     "kamino10"
   ];
-  t3ConnectMode =
-    if host.t3ConnectDisabled then
-      "disabled"
-    else
-      "publish-only";
+  t3ConnectMode = if host.t3ConnectDisabled then "disabled" else "publish-only";
   sshAuthorizedKeys = import ../ssh-authorized-keys.nix;
   authorizedKeysFile = pkgs.writeText "kamino-authorized-keys" (
     pkgs.lib.concatStringsSep "\n" (

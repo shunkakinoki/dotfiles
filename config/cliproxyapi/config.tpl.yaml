@@ -796,7 +796,6 @@ oauth-excluded-models:
     - "codex-*"
     - "gpt-image*"
     - "__GPT_LUNA__-*"
-
 # OAuth provider excluded models
 # oauth-excluded-models:
 #   vertex:
