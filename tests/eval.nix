@@ -600,7 +600,13 @@ let
         assert cfg.systemd.user.systemctlPath == "/usr/bin/systemctl";
         assert lib.hasInfix "/bin/ssh-keygen" cfg.home.activation.authorizeFleetSsh.data;
         assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeFleetSsh.data;
-        assert sshAuthorizedKeys.kyber == kaminoPublicKeys;
+        assert
+          sshAuthorizedKeys.kyber == kaminoPublicKeys
+          ++ [
+            publicKeys.kamino8
+            publicKeys.kamino9
+            publicKeys.kamino10
+          ];
         assert !(cfg.systemd.user.services ? dolt);
         assert cfg.home.activation ? installDoltSystemService;
         assert cfg.systemd.user.services ? dolt-linear-sync;
