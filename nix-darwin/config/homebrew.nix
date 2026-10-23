@@ -156,6 +156,7 @@
       "karabiner-elements"
       "linear"
       "lm-studio"
+      "muse"
       "notion"
       "obsidian"
       "openclaw"
