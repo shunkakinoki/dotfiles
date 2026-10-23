@@ -115,6 +115,8 @@
       "watchexec"
       "yt-dlp"
     ];
+    # Meta Muse is installed from its vendor download: the Homebrew cask is
+    # disabled because the installer requires a signed download URL.
     casks = [
       "antigravity"
       "atuin-desktop"
@@ -156,7 +158,6 @@
       "karabiner-elements"
       "linear"
       "lm-studio"
-      "muse"
       "notion"
       "obsidian"
       "openclaw"
