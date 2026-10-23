@@ -18,6 +18,41 @@ Linux)
   ;;
 esac
 
+# Beskar's Home Manager profile belongs to ubuntu even when bootstrap is
+# launched from a root SSH session. Do not merely change USER: activation must
+# run with ubuntu's real uid, home directory, and user-service environment.
+INSTALL_AS_UBUNTU=false
+INSTALL_HOME=$HOME
+_install_host=$(printf '%s' "${HOST:-$(hostname)}" | tr '[:upper:]' '[:lower:]')
+if [ "$OS" = linux ] && [ "${_install_host%%.*}" = beskar ]; then
+  HOST=beskar
+  export HOST
+  _current_user=$(id -un)
+  if [ "$(id -u)" = 0 ]; then
+    if ! command -v runuser >/dev/null 2>&1; then
+      echo "Beskar bootstrap requires runuser (provided by util-linux)." >&2
+      exit 1
+    fi
+    _ubuntu_entry=$(getent passwd ubuntu) || {
+      echo "Beskar requires an existing ubuntu account. Create it with a home directory and administrative access, then rerun this installer." >&2
+      exit 1
+    }
+    INSTALL_HOME=$(printf '%s\n' "$_ubuntu_entry" | cut -d: -f6)
+    INSTALL_UID=$(printf '%s\n' "$_ubuntu_entry" | cut -d: -f3)
+    if [ -z "$INSTALL_HOME" ] || [ "$INSTALL_HOME" = /root ] || [ ! -d "$INSTALL_HOME" ]; then
+      echo "Beskar's ubuntu account must have an existing home directory outside /root." >&2
+      exit 1
+    fi
+    INSTALL_AS_UBUNTU=true
+  elif [ "$_current_user" != ubuntu ]; then
+    echo "Run Beskar bootstrap as ubuntu or root." >&2
+    exit 1
+  else
+    USER=ubuntu
+    export USER
+  fi
+fi
+
 # Named Kamino machines share one generated Linux/root profile family.
 KAMINO_INSTALL=false
 _normalized_host=$(printf '%s' "${HOST:-}" | tr '[:upper:]' '[:lower:]')
@@ -165,8 +200,31 @@ if ! command -v git >/dev/null 2>&1; then
   fi
 fi
 
-# Clone the dotfiles repository
-DOTFILES_DIR="$HOME/dotfiles"
+# Run checkout and Home Manager commands with the profile owner's real uid.
+# Keep root's XDG, D-Bus, SSH agent, and Nix profile paths out of that session.
+run_install_user() {
+  if [ "$INSTALL_AS_UBUNTU" = true ]; then
+    _install_path="$INSTALL_HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    if [ -d "/run/user/$INSTALL_UID" ]; then
+      set -- env XDG_RUNTIME_DIR="/run/user/$INSTALL_UID" "$@"
+      if [ -S "/run/user/$INSTALL_UID/bus" ]; then
+        set -- env DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$INSTALL_UID/bus" "$@"
+      fi
+    fi
+    set -- env -u XDG_RUNTIME_DIR -u DBUS_SESSION_BUS_ADDRESS \
+      -u XDG_CONFIG_HOME -u XDG_DATA_HOME -u XDG_STATE_HOME -u XDG_CACHE_HOME \
+      -u SSH_AUTH_SOCK -u NIX_PROFILES -u NIX_USER_PROFILE_DIR \
+      HOME="$INSTALL_HOME" USER=ubuntu LOGNAME=ubuntu PATH="$_install_path" \
+      "$@"
+    runuser -u ubuntu -- "$@"
+  else
+    "$@"
+  fi
+}
+
+# Clone into the profile owner's home; leave any previous root checkout alone.
+DOTFILES_DIR="$INSTALL_HOME/dotfiles"
+cd "$INSTALL_HOME"
 echo "Fetching the dotfiles repository..."
 
 # If GITHUB_PR is set, handle checkout for the PR branch
@@ -178,25 +236,25 @@ if [ -n "$GITHUB_PR" ]; then
   if [ -d "$DOTFILES_DIR" ]; then
     echo "Dotfiles repository already exists. Using git fetch to retrieve PR ref..."
     cd "$DOTFILES_DIR"
-    git fetch origin "$PR_REF":pr-"$GITHUB_PR"
-    git checkout pr-"$GITHUB_PR"
-    git pull
+    run_install_user git fetch origin "$PR_REF":pr-"$GITHUB_PR"
+    run_install_user git checkout pr-"$GITHUB_PR"
+    run_install_user git pull
   else
     echo "Cloning dotfiles repository..."
-    git clone https://github.com/shunkakinoki/dotfiles.git "$DOTFILES_DIR"
+    run_install_user git clone https://github.com/shunkakinoki/dotfiles.git "$DOTFILES_DIR"
     cd "$DOTFILES_DIR"
-    git fetch origin "$PR_REF":pr-"$GITHUB_PR"
-    git checkout pr-"$GITHUB_PR"
+    run_install_user git fetch origin "$PR_REF":pr-"$GITHUB_PR"
+    run_install_user git checkout pr-"$GITHUB_PR"
   fi
 else
   if [ -d "$DOTFILES_DIR" ]; then
     echo "Dotfiles repository already exists. Fetching latest changes..."
     cd "$DOTFILES_DIR"
-    git fetch origin
-    git pull
+    run_install_user git fetch origin
+    run_install_user git pull
   else
     echo "Cloning dotfiles repository into $DOTFILES_DIR..."
-    git clone https://github.com/shunkakinoki/dotfiles.git "$DOTFILES_DIR"
+    run_install_user git clone https://github.com/shunkakinoki/dotfiles.git "$DOTFILES_DIR"
     cd "$DOTFILES_DIR"
   fi
 fi
@@ -217,9 +275,9 @@ fi
 
 run_make_install() {
   if command -v make >/dev/null 2>&1; then
-    HOST="$HOST" make install
+    HOST="$HOST" run_install_user make install
   else
-    HOST="$HOST" nix --extra-experimental-features "nix-command flakes" \
+    HOST="$HOST" run_install_user nix --extra-experimental-features "nix-command flakes" \
       shell nixpkgs#gnumake --command make install
   fi
 }
