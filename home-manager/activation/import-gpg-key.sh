@@ -17,6 +17,11 @@ if "$GPG_BIN" --list-secret-keys 2>/dev/null | grep -q "$KEY_FINGERPRINT"; then
   exit 0
 fi
 
+if [[ ! -f $IDENTITY_KEY || ! -r $IDENTITY_KEY ]]; then
+  echo "Warning: GPG decryption identity unavailable at $IDENTITY_KEY; skipping optional GPG key import" >&2
+  exit 0
+fi
+
 echo "Importing GPG key from agenix..."
 "$RAGE_BIN" -d -i "$IDENTITY_KEY" "$GPG_SECRET_FILE" | "$GPG_BIN" --batch --import
 echo "GPG key imported successfully"
