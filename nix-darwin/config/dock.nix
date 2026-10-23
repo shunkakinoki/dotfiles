@@ -25,6 +25,7 @@
       "/Applications/Claude.app"
       "/Applications/Cursor.app"
       "/Applications/Grok Bot.app"
+      "/Applications/Muse.app"
       "/Applications/Antigravity.app"
       "/Applications/Conductor.app"
       "/Applications/OpenCode.app"
