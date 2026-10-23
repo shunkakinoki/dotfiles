@@ -139,6 +139,7 @@ let
           "--ssh=true"
         ];
       assert lib.hasInfix "tailscale set" cfg.system.activationScripts.tailscalePreferences.text;
+      assert cfg.systemd.slices.user.sliceConfig.MemoryMax == "80%";
       assert cfg.services.openssh.enable;
       assert !cfg.services.openssh.openFirewall;
       assert cfg.services.openssh.settings.PasswordAuthentication == false;

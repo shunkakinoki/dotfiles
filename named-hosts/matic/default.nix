@@ -116,6 +116,16 @@ import ../../hosts/nixos {
         # all, reclaim has nothing to fall back on but page cache thrash.
         zramSwap.enable = true;
 
+        # A single runaway user process (a language server reached 72G RSS)
+        # drove the whole host into global OOM; reclaim stalled tailscaled
+        # until its deadlock watchdog exited and the host dropped off the
+        # tailnet. Capping user.slice keeps the OOM kill inside that cgroup and
+        # leaves system services room to run.
+        systemd.slices.user = {
+          overrideStrategy = "asDropin";
+          sliceConfig.MemoryMax = "80%";
+        };
+
         # AMD power management kernel params
         boot.kernelParams = [
           "amdgpu.abmlevel=3" # auto backlight management
