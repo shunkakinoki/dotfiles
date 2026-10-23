@@ -83,9 +83,9 @@ When run bash -c "grep 'refs/pull' '$SCRIPT'"
 The output should include 'refs/pull'
 End
 
-It 'defines DOTFILES_DIR as HOME/dotfiles'
+It 'defines DOTFILES_DIR in the install user home'
 When run bash -c "grep 'DOTFILES_DIR=' '$SCRIPT'"
-The output should include '$HOME/dotfiles'
+The output should include '$INSTALL_HOME/dotfiles'
 End
 End
 
@@ -111,8 +111,8 @@ The output should include 'make install'
 End
 
 It 'forwards HOST env var to make install'
-When run bash -c "grep 'HOST=\"\$HOST\" make install' '$SCRIPT'"
-The output should include 'HOST="$HOST" make install'
+When run bash -c "grep 'HOST=\"\$HOST\" run_install_user make install' '$SCRIPT'"
+The output should include 'HOST="$HOST" run_install_user make install'
 End
 End
 

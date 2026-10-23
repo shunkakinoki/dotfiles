@@ -20,6 +20,18 @@ cd ~/dotfiles
 make switch HOST=beskar
 ```
 
+The one-line installer also supports a root SSH session when the `ubuntu`
+account already exists with a home directory and administrative access:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/main/install.sh | HOST=beskar sh
+```
+
+It installs system prerequisites as root, then fetches `~/dotfiles` and runs
+`make install` (including build and activation) as `ubuntu`. On a machine already
+named `beskar`, `HOST=beskar` can be omitted. A previous checkout in `/root` is
+left in place; installation uses the Ubuntu account's home directory.
+
 ## GitHub access
 
 GitHub's OAuth device flow allows ten tokens per user and app, so Beskar
