@@ -15,10 +15,16 @@ let
     6
     7
   ];
+  # kamino8-10 reach kyber only, for conductor status during lane reconcile.
+  conductorOnlyKaminoHosts = map (number: "kamino${toString number}") [
+    8
+    9
+    10
+  ];
 in
 {
   galactica = keysFor kaminoHosts;
-  kyber = keysFor kaminoHosts;
+  kyber = keysFor (kaminoHosts ++ conductorOnlyKaminoHosts);
   matic = keysFor kaminoHosts;
   kamino = keysFor coreHosts;
   kaminoCiBox = keysFor (coreHosts ++ kaminoHosts);
