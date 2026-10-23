@@ -1,0 +1,280 @@
+diff --git a/dist/infra/sqlite-readonly-location.worker.js b/dist/infra/sqlite-readonly-location.worker.js
+index 427fc41..c524d9f 100644
+--- a/dist/infra/sqlite-readonly-location.worker.js
++++ b/dist/infra/sqlite-readonly-location.worker.js
+@@ -46537,7 +46537,7 @@ function createWorkerTaskHost(owner = {}, workerClass) {
+ 			if (boundedHeap) {
+ 				const limits = workerOptions.resourceLimits;
+ 				workerOptions.resourceLimits = {
+-					maxOldGenerationSizeMb: limits?.maxOldGenerationSizeMb ?? 512,
++					maxOldGenerationSizeMb: limits?.maxOldGenerationSizeMb ?? 4096,
+ 					maxYoungGenerationSizeMb: limits?.maxYoungGenerationSizeMb,
+ 					codeRangeSizeMb: limits?.codeRangeSizeMb,
+ 					stackSizeMb: limits?.stackSizeMb
+@@ -55807,7 +55807,7 @@ function createSqliteWorkerLifecycle({ explicitSqliteCloseReleasesNativeResource
+ 		const { worker, exited } = runInDetachedAsyncContext(() => ({
+ 			worker: createCpuTrackedWorker(carrierUrl, {
+ 				resourceLimits: {
+-					maxOldGenerationSizeMb: 512,
++					maxOldGenerationSizeMb: 4096,
+ 					maxYoungGenerationSizeMb: 32
+ 				},
+ 				env: resolveNodeCompileCacheEnv(),
+@@ -61336,7 +61336,7 @@ function readPool(state, admitted) {
+ 		ensureSqliteLibrarySelected();
+ 		state.pool = createOwnedWorkerTaskPool({
+ 			workerUrl: state.workerUrl,
+-			workerOptions: { resourceLimits: { maxOldGenerationSizeMb: 512 } },
++			workerOptions: { resourceLimits: { maxOldGenerationSizeMb: 4096 } },
+ 			maxWorkers: resolveStateReadWorkerCount(),
+ 			idleTimeoutMs: SQLITE_IDLE_HANDLE_TTL_MS,
+ 			maxPendingTasks: 128,
+diff --git a/dist/managed-handoff-runtime.mjs b/dist/managed-handoff-runtime.mjs
+index 703c02c..74d4127 100644
+--- a/dist/managed-handoff-runtime.mjs
++++ b/dist/managed-handoff-runtime.mjs
+@@ -75110,7 +75110,7 @@ function createWorkerTaskHost(owner = {}, workerClass) {
+ 			if (boundedHeap) {
+ 				const limits = workerOptions.resourceLimits;
+ 				workerOptions.resourceLimits = {
+-					maxOldGenerationSizeMb: limits?.maxOldGenerationSizeMb ?? 512,
++					maxOldGenerationSizeMb: limits?.maxOldGenerationSizeMb ?? 4096,
+ 					maxYoungGenerationSizeMb: limits?.maxYoungGenerationSizeMb,
+ 					codeRangeSizeMb: limits?.codeRangeSizeMb,
+ 					stackSizeMb: limits?.stackSizeMb
+@@ -81958,7 +81958,7 @@ function createSqliteWorkerLifecycle({ explicitSqliteCloseReleasesNativeResource
+ 		const { worker, exited } = runInDetachedAsyncContext(() => ({
+ 			worker: createCpuTrackedWorker(carrierUrl, {
+ 				resourceLimits: {
+-					maxOldGenerationSizeMb: 512,
++					maxOldGenerationSizeMb: 4096,
+ 					maxYoungGenerationSizeMb: 32
+ 				},
+ 				env: resolveNodeCompileCacheEnv(),
+@@ -88088,7 +88088,7 @@ function readPool(state, admitted) {
+ 		ensureSqliteLibrarySelected();
+ 		state.pool = createOwnedWorkerTaskPool({
+ 			workerUrl: state.workerUrl,
+-			workerOptions: { resourceLimits: { maxOldGenerationSizeMb: 512 } },
++			workerOptions: { resourceLimits: { maxOldGenerationSizeMb: 4096 } },
+ 			maxWorkers: resolveStateReadWorkerCount(),
+ 			idleTimeoutMs: SQLITE_IDLE_HANDLE_TTL_MS,
+ 			maxPendingTasks: 128,
+diff --git a/dist/native-hook-relay/openclaw-state-db-U2AVOsoF.mjs b/dist/native-hook-relay/openclaw-state-db-U2AVOsoF.mjs
+index 0ca1f41..e4511e2 100644
+--- a/dist/native-hook-relay/openclaw-state-db-U2AVOsoF.mjs
++++ b/dist/native-hook-relay/openclaw-state-db-U2AVOsoF.mjs
+@@ -3770,7 +3770,7 @@ function readPool(state, admitted) {
+ 		ensureSqliteLibrarySelected();
+ 		state.pool = createOwnedWorkerTaskPool({
+ 			workerUrl: state.workerUrl,
+-			workerOptions: { resourceLimits: { maxOldGenerationSizeMb: 512 } },
++			workerOptions: { resourceLimits: { maxOldGenerationSizeMb: 4096 } },
+ 			maxWorkers: resolveStateReadWorkerCount(),
+ 			idleTimeoutMs: SQLITE_IDLE_HANDLE_TTL_MS,
+ 			maxPendingTasks: 128,
+diff --git a/dist/native-hook-relay/openclaw-state-worker-store-oV4g9XVi.mjs b/dist/native-hook-relay/openclaw-state-worker-store-oV4g9XVi.mjs
+index 85a9918..07501c8 100644
+--- a/dist/native-hook-relay/openclaw-state-worker-store-oV4g9XVi.mjs
++++ b/dist/native-hook-relay/openclaw-state-worker-store-oV4g9XVi.mjs
+@@ -664,7 +664,7 @@ function createSqliteWorkerLifecycle({ explicitSqliteCloseReleasesNativeResource
+ 		const { worker, exited } = runInDetachedAsyncContext(() => ({
+ 			worker: createCpuTrackedWorker(carrierUrl, {
+ 				resourceLimits: {
+-					maxOldGenerationSizeMb: 512,
++					maxOldGenerationSizeMb: 4096,
+ 					maxYoungGenerationSizeMb: 32
+ 				},
+ 				env: resolveNodeCompileCacheEnv(),
+diff --git a/dist/native-hook-relay/worker-task-pool-8Q62d6HK.mjs b/dist/native-hook-relay/worker-task-pool-8Q62d6HK.mjs
+index b0b018d..7438847 100644
+--- a/dist/native-hook-relay/worker-task-pool-8Q62d6HK.mjs
++++ b/dist/native-hook-relay/worker-task-pool-8Q62d6HK.mjs
+@@ -3092,7 +3092,7 @@ function createWorkerTaskHost(owner = {}, workerClass) {
+ 			if (boundedHeap) {
+ 				const limits = workerOptions.resourceLimits;
+ 				workerOptions.resourceLimits = {
+-					maxOldGenerationSizeMb: limits?.maxOldGenerationSizeMb ?? 512,
++					maxOldGenerationSizeMb: limits?.maxOldGenerationSizeMb ?? 4096,
+ 					maxYoungGenerationSizeMb: limits?.maxYoungGenerationSizeMb,
+ 					codeRangeSizeMb: limits?.codeRangeSizeMb,
+ 					stackSizeMb: limits?.stackSizeMb
+diff --git a/dist/openclaw-state-read-worker-Dr5RWiIU.mjs b/dist/openclaw-state-read-worker-Dr5RWiIU.mjs
+index 82f3513..ea86791 100644
+--- a/dist/openclaw-state-read-worker-Dr5RWiIU.mjs
++++ b/dist/openclaw-state-read-worker-Dr5RWiIU.mjs
+@@ -385,7 +385,7 @@ function readPool(state, admitted) {
+ 		ensureSqliteLibrarySelected();
+ 		state.pool = createOwnedWorkerTaskPool({
+ 			workerUrl: state.workerUrl,
+-			workerOptions: { resourceLimits: { maxOldGenerationSizeMb: 512 } },
++			workerOptions: { resourceLimits: { maxOldGenerationSizeMb: 4096 } },
+ 			maxWorkers: resolveStateReadWorkerCount(),
+ 			idleTimeoutMs: SQLITE_IDLE_HANDLE_TTL_MS,
+ 			maxPendingTasks: 128,
+diff --git a/dist/package-update-activation-recovery.mjs b/dist/package-update-activation-recovery.mjs
+index ae4446a..d80395a 100644
+--- a/dist/package-update-activation-recovery.mjs
++++ b/dist/package-update-activation-recovery.mjs
+@@ -77402,7 +77402,7 @@ function createWorkerTaskHost(owner = {}, workerClass) {
+ 			if (boundedHeap) {
+ 				const limits = workerOptions.resourceLimits;
+ 				workerOptions.resourceLimits = {
+-					maxOldGenerationSizeMb: limits?.maxOldGenerationSizeMb ?? 512,
++					maxOldGenerationSizeMb: limits?.maxOldGenerationSizeMb ?? 4096,
+ 					maxYoungGenerationSizeMb: limits?.maxYoungGenerationSizeMb,
+ 					codeRangeSizeMb: limits?.codeRangeSizeMb,
+ 					stackSizeMb: limits?.stackSizeMb
+@@ -85790,7 +85790,7 @@ function createSqliteWorkerLifecycle({ explicitSqliteCloseReleasesNativeResource
+ 		const { worker, exited } = runInDetachedAsyncContext(() => ({
+ 			worker: createCpuTrackedWorker(carrierUrl, {
+ 				resourceLimits: {
+-					maxOldGenerationSizeMb: 512,
++					maxOldGenerationSizeMb: 4096,
+ 					maxYoungGenerationSizeMb: 32
+ 				},
+ 				env: resolveNodeCompileCacheEnv(),
+@@ -92034,7 +92034,7 @@ function readPool(state, admitted) {
+ 		ensureSqliteLibrarySelected();
+ 		state.pool = createOwnedWorkerTaskPool({
+ 			workerUrl: state.workerUrl,
+-			workerOptions: { resourceLimits: { maxOldGenerationSizeMb: 512 } },
++			workerOptions: { resourceLimits: { maxOldGenerationSizeMb: 4096 } },
+ 			maxWorkers: resolveStateReadWorkerCount(),
+ 			idleTimeoutMs: SQLITE_IDLE_HANDLE_TTL_MS,
+ 			maxPendingTasks: 128,
+diff --git a/dist/prepared-model-catalog-worker-V_90gTEp.mjs b/dist/prepared-model-catalog-worker-V_90gTEp.mjs
+index 7f13f95..00e7a99 100644
+--- a/dist/prepared-model-catalog-worker-V_90gTEp.mjs
++++ b/dist/prepared-model-catalog-worker-V_90gTEp.mjs
+@@ -89,7 +89,7 @@ function fingerprintPreparedModelCatalogPluginContext(value) {
+ /** Builds model-catalog worker pools that report their first close to the pool owner. */
+ const GATEWAY_CATALOG_WORKERS = resolveWorkerPoolSize("singleton");
+ const CATALOG_WORKER_HEAP_LIMITS = {
+-	maxOldGenerationSizeMb: 512,
++	maxOldGenerationSizeMb: 4096,
+ 	maxYoungGenerationSizeMb: 32
+ };
+ /**
+diff --git a/dist/process/supervisor/service-child-group-anchor.js b/dist/process/supervisor/service-child-group-anchor.js
+index b610adb..ad39b95 100644
+--- a/dist/process/supervisor/service-child-group-anchor.js
++++ b/dist/process/supervisor/service-child-group-anchor.js
+@@ -43004,7 +43004,7 @@ function createSqliteWorkerLifecycle({ explicitSqliteCloseReleasesNativeResource
+ 		const { worker, exited } = runInDetachedAsyncContext(() => ({
+ 			worker: createCpuTrackedWorker(carrierUrl, {
+ 				resourceLimits: {
+-					maxOldGenerationSizeMb: 512,
++					maxOldGenerationSizeMb: 4096,
+ 					maxYoungGenerationSizeMb: 32
+ 				},
+ 				env: resolveNodeCompileCacheEnv(),
+diff --git a/dist/session-accessor.sqlite-archive-DuqY0Jwj.mjs b/dist/session-accessor.sqlite-archive-DuqY0Jwj.mjs
+index d7a6ce3..1c696ae 100644
+--- a/dist/session-accessor.sqlite-archive-DuqY0Jwj.mjs
++++ b/dist/session-accessor.sqlite-archive-DuqY0Jwj.mjs
+@@ -427,7 +427,7 @@ function runSqliteMutationWorkerRequest(params) {
+ function createSqliteTranscriptArchiveWorker(workerData) {
+ 	const workerUrl = resolveRuntimeWorkerUrl(runtimeProcessEntrypoints.sessionTranscriptArchive);
+ 	return createCpuTrackedWorker(workerUrl, {
+-		resourceLimits: { maxOldGenerationSizeMb: 512 },
++		resourceLimits: { maxOldGenerationSizeMb: 4096 },
+ 		workerData,
+ 		execArgv: resolveRuntimeWorkerThreadExecArgv(workerUrl)
+ 	});
+diff --git a/dist/session-accessor.sqlite-canonical-worker-pool-WyQR6-B7.mjs b/dist/session-accessor.sqlite-canonical-worker-pool-WyQR6-B7.mjs
+index ca2e094..2d9fd90 100644
+--- a/dist/session-accessor.sqlite-canonical-worker-pool-WyQR6-B7.mjs
++++ b/dist/session-accessor.sqlite-canonical-worker-pool-WyQR6-B7.mjs
+@@ -33,7 +33,7 @@ async function withSqliteCanonicalValidationWorkerPool(env, run) {
+ 		pool: new WorkerTaskPool({
+ 			workerUrl: resolveRuntimeWorkerUrl(runtimeProcessEntrypoints.sessionTranscriptArchive),
+ 			workerOptions: {
+-				resourceLimits: { maxOldGenerationSizeMb: 512 },
++				resourceLimits: { maxOldGenerationSizeMb: 4096 },
+ 				workerData: {
+ 					type: "sqlite-transcript-archive-v2",
+ 					operation: "canonical-validation-pool"
+diff --git a/dist/session-transcript-read-pools-CZvCzjUY.mjs b/dist/session-transcript-read-pools-CZvCzjUY.mjs
+index 57cce7d..7fad1cf 100644
+--- a/dist/session-transcript-read-pools-CZvCzjUY.mjs
++++ b/dist/session-transcript-read-pools-CZvCzjUY.mjs
+@@ -6,7 +6,7 @@ import { n as createOwnedWorkerTaskPool, t as WorkerTaskPool } from "./worker-ta
+ //#region src/config/sessions/session-transcript-read-pools.ts
+ const workerUrl = resolveRuntimeWorkerUrl(runtimeProcessEntrypoints.sessionTranscript);
+ const SESSION_TRANSCRIPT_WORKER_LIMITS = {
+-	maxOldGenerationSizeMb: 512,
++	maxOldGenerationSizeMb: 4096,
+ 	maxYoungGenerationSizeMb: 32
+ };
+ function createSessionTranscriptReadPool(maxWorkers, sharedCompute = false) {
+diff --git a/dist/session-transcript-reconcile-pool-D3_NXVp7.mjs b/dist/session-transcript-reconcile-pool-D3_NXVp7.mjs
+index fe41e26..edd6e0b 100644
+--- a/dist/session-transcript-reconcile-pool-D3_NXVp7.mjs
++++ b/dist/session-transcript-reconcile-pool-D3_NXVp7.mjs
+@@ -268,7 +268,7 @@ async function startReconcileWorkerTask(input, signal) {
+ 	signal?.throwIfAborted();
+ 	const pool = runtime.pool ??= new WorkerTaskPool({
+ 		workerUrl: resolveRuntimeWorkerUrl(runtimeProcessEntrypoints.sessionTranscriptReconcile),
+-		workerOptions: { resourceLimits: { maxOldGenerationSizeMb: 512 } },
++		workerOptions: { resourceLimits: { maxOldGenerationSizeMb: 4096 } },
+ 		maxWorkers: MAX_WORKERS,
+ 		maxPendingTasks: Number.MAX_SAFE_INTEGER
+ 	});
+diff --git a/dist/sqlite-worker-store-BEWKhC9u.mjs b/dist/sqlite-worker-store-BEWKhC9u.mjs
+index a4d2590..58dbc4c 100644
+--- a/dist/sqlite-worker-store-BEWKhC9u.mjs
++++ b/dist/sqlite-worker-store-BEWKhC9u.mjs
+@@ -640,7 +640,7 @@ function createSqliteWorkerLifecycle({ explicitSqliteCloseReleasesNativeResource
+ 		const { worker, exited } = runInDetachedAsyncContext(() => ({
+ 			worker: createCpuTrackedWorker(carrierUrl, {
+ 				resourceLimits: {
+-					maxOldGenerationSizeMb: 512,
++					maxOldGenerationSizeMb: 4096,
+ 					maxYoungGenerationSizeMb: 32
+ 				},
+ 				env: resolveNodeCompileCacheEnv(),
+diff --git a/dist/state/openclaw-state-read.worker.js b/dist/state/openclaw-state-read.worker.js
+index b9372e5..84dcb6f 100644
+--- a/dist/state/openclaw-state-read.worker.js
++++ b/dist/state/openclaw-state-read.worker.js
+@@ -55788,7 +55788,7 @@ function createWorkerTaskHost(owner = {}, workerClass) {
+ 			if (boundedHeap) {
+ 				const limits = workerOptions.resourceLimits;
+ 				workerOptions.resourceLimits = {
+-					maxOldGenerationSizeMb: limits?.maxOldGenerationSizeMb ?? 512,
++					maxOldGenerationSizeMb: limits?.maxOldGenerationSizeMb ?? 4096,
+ 					maxYoungGenerationSizeMb: limits?.maxYoungGenerationSizeMb,
+ 					codeRangeSizeMb: limits?.codeRangeSizeMb,
+ 					stackSizeMb: limits?.stackSizeMb
+@@ -62361,7 +62361,7 @@ function createSqliteWorkerLifecycle({ explicitSqliteCloseReleasesNativeResource
+ 		const { worker, exited } = runInDetachedAsyncContext(() => ({
+ 			worker: createCpuTrackedWorker(carrierUrl, {
+ 				resourceLimits: {
+-					maxOldGenerationSizeMb: 512,
++					maxOldGenerationSizeMb: 4096,
+ 					maxYoungGenerationSizeMb: 32
+ 				},
+ 				env: resolveNodeCompileCacheEnv(),
+@@ -69953,7 +69953,7 @@ function readPool(state, admitted) {
+ 		ensureSqliteLibrarySelected();
+ 		state.pool = createOwnedWorkerTaskPool({
+ 			workerUrl: state.workerUrl,
+-			workerOptions: { resourceLimits: { maxOldGenerationSizeMb: 512 } },
++			workerOptions: { resourceLimits: { maxOldGenerationSizeMb: 4096 } },
+ 			maxWorkers: resolveStateReadWorkerCount(),
+ 			idleTimeoutMs: SQLITE_IDLE_HANDLE_TTL_MS,
+ 			maxPendingTasks: 128,
+diff --git a/dist/worker-task-pool-D48_8n2m.mjs b/dist/worker-task-pool-D48_8n2m.mjs
+index 227468b..22ccce0 100644
+--- a/dist/worker-task-pool-D48_8n2m.mjs
++++ b/dist/worker-task-pool-D48_8n2m.mjs
+@@ -52,7 +52,7 @@ function createWorkerTaskHost(owner = {}, workerClass) {
+ 			if (boundedHeap) {
+ 				const limits = workerOptions.resourceLimits;
+ 				workerOptions.resourceLimits = {
+-					maxOldGenerationSizeMb: limits?.maxOldGenerationSizeMb ?? 512,
++					maxOldGenerationSizeMb: limits?.maxOldGenerationSizeMb ?? 4096,
+ 					maxYoungGenerationSizeMb: limits?.maxYoungGenerationSizeMb,
+ 					codeRangeSizeMb: limits?.codeRangeSizeMb,
+ 					stackSizeMb: limits?.stackSizeMb
