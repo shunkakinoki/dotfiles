@@ -58,7 +58,11 @@ let
     eval-darwin-galactica =
       let
         galactica = import ../named-hosts/galactica {
-          inherit inputs;
+          inputs = inputs // {
+            host = inputs.host // {
+              isGalactica = true;
+            };
+          };
           username = "shunkakinoki";
         };
         activation = galactica.config.system.activationScripts.tailscaleDns.text;
@@ -67,6 +71,15 @@ let
       in
       assert !galactica.config.home-manager.users.shunkakinoki.nix.enable;
       assert !galactica.config.home-manager.users.shunkakinoki.nix.gc.automatic;
+      assert galactica.config.networking.applicationFirewall.enable;
+      assert galactica.config.homebrew.onActivation.cleanup == "uninstall";
+      assert lib.elem "ollama" packageNames;
+      assert !(lib.elem "ollama" (map (brew: brew.name) galactica.config.homebrew.brews));
+      assert !(lib.elem "ollama-app" (map (cask: cask.name) galactica.config.homebrew.casks));
+      assert beads.launchd.agents.ollama.config.EnvironmentVariables.OLLAMA_HOST == "127.0.0.1";
+      assert lib.hasPrefix "/nix/store/" (
+        builtins.head beads.launchd.agents.ollama.config.ProgramArguments
+      );
       assert beads.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "kyber.tail950b36.ts.net";
       assert beads.home.sessionVariables.BEADS_NODE_ID == "kyber";
       assert beads.home.sessionVariables.BD_EVENTS_JOURNAL == "1";

@@ -10,7 +10,7 @@
       allowSigned = true;
       allowSignedApp = true;
       blockAllIncoming = false;
-      enable = false;
+      enable = true;
       enableStealthMode = false;
     };
     knownNetworkServices = [

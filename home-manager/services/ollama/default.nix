@@ -39,7 +39,7 @@ lib.mkIf enabled {
     enable = true;
     config = {
       ProgramArguments = [
-        "/opt/homebrew/bin/ollama"
+        "${ollamaPackage}/bin/ollama"
         "serve"
       ];
       KeepAlive = true;
