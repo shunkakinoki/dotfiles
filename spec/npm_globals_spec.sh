@@ -506,6 +506,7 @@ EOF
 
   printf '#!/usr/bin/env bash\nshift\nexec "$@"\n' >"$MOCK_BIN/timeout"
   printf '#!/usr/bin/env bash\nexit 0\n' >"$MOCK_BIN/curl"
+  # shellcheck disable=SC2016
   printf '#!/usr/bin/env bash\nprintf "bun %%s\\n" "$*" >>"$MOCK_LOG"\n' >"$MOCK_BIN/bun"
   chmod +x "$MOCK_BIN/timeout" "$MOCK_BIN/curl" "$MOCK_BIN/bun"
 }
@@ -550,6 +551,7 @@ setup() {
 
   printf '#!/usr/bin/env bash\nshift\nexec "$@"\n' >"$MOCK_BIN/timeout"
   printf '#!/usr/bin/env bash\nexit 0\n' >"$MOCK_BIN/curl"
+  # shellcheck disable=SC2016
   printf '#!/usr/bin/env bash\nprintf "bun %%s\\n" "$*" >>"$MOCK_LOG"\n' >"$MOCK_BIN/bun"
   chmod +x "$MOCK_BIN/timeout" "$MOCK_BIN/curl" "$MOCK_BIN/bun"
 }

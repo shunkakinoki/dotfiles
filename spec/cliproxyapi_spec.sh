@@ -593,10 +593,10 @@ The status should be success
 End
 
 check_priority_free_render() {
-cp "$PWD/config/cliproxyapi/config.template.yaml" "$TEMP_HOME/.cli-proxy-api/config.template.yaml"
-printf '%s\n' 'OPENROUTER_API_KEY=free-test-key' >"$TEMP_HOME/dotfiles/.env"
-HOME="$TEMP_HOME" bash "$TEMP_HOME/start.sh" render || return
-python3 - "$TEMP_HOME/.cli-proxy-api/config.yaml" <<'PY'
+  cp "$PWD/config/cliproxyapi/config.template.yaml" "$TEMP_HOME/.cli-proxy-api/config.template.yaml"
+  printf '%s\n' 'OPENROUTER_API_KEY=free-test-key' >"$TEMP_HOME/dotfiles/.env"
+  HOME="$TEMP_HOME" bash "$TEMP_HOME/start.sh" render || return
+  python3 - "$TEMP_HOME/.cli-proxy-api/config.yaml" <<'PY'
 import re
 import sys
 

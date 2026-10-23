@@ -86,7 +86,9 @@ while IFS= read -r nix_file; do
       body = ""
       next
     }
-    body_started && /^[[:space:]]*'"''"';/ {
+    # nixfmt closes a wrapped body (lib.mkIf cond ( ... )) with a bare
+    # delimiter line, so the closer is not always followed by a semicolon.
+    body_started && /^[[:space:]]*'"''"'([;)]|[[:space:]]*$)/ {
       if (block_has_violation()) {
         printf "%s: inline shell in home.activation block\n", FILENAME
       }

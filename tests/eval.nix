@@ -83,8 +83,7 @@ let
       assert !(lib.elem "crabbox" (map (cask: cask.name) galactica.config.homebrew.casks));
       # Homebrew activation runs with upgrade+autoUpdate, so a brew-managed opencode
       # silently jumps to whatever upstream ships; 1.18.30 crashed on every prompt.
-      # Nix keeps the version pinned in flake.lock and revertable.
-      assert lib.elem "opencode" packageNames;
+      # opencode ships as the @opencode/cli bun global, pinned in package.json.
       assert !(lib.elem "opencode" (map (brew: brew.name) galactica.config.homebrew.brews));
       assert lib.hasInfix "--accept-dns=true" activation;
       assert lib.hasInfix "--accept-routes=true" activation;
@@ -635,8 +634,8 @@ let
         assert cfg.systemd.user.services.cass-daily.Service.IOWriteIOPSMax == "/ 25";
         assert cfg.systemd.user.services.cliproxyapi-backup.Service.IOAccounting;
         assert cfg.systemd.user.services.cliproxyapi-backup.Service.IOWeight == 10;
-        assert cfg.systemd.user.services.cliproxyapi-backup.Service.IOReadBandwidthMax == "/ 5M";
-        assert cfg.systemd.user.services.cliproxyapi-backup.Service.IOReadIOPSMax == "/ 50";
+        assert !(cfg.systemd.user.services.cliproxyapi-backup.Service ? IOReadBandwidthMax);
+        assert !(cfg.systemd.user.services.cliproxyapi-backup.Service ? IOReadIOPSMax);
         assert
           cfg.systemd.user.paths.cliproxyapi-env-reload.Path.PathChanged == [
             "%h/dotfiles/.env"
