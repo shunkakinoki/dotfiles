@@ -9,8 +9,24 @@ let
   pinKnownHostsScript = pkgs.replaceVars ./pin-known-hosts.sh {
     awk = "${pkgs.gawk}/bin/awk";
   };
+  hostAliases = import ./host-aliases.nix config.programs.ssh.settings;
 in
 {
+  home.shellAliases = (lib.mapAttrs (_: command: lib.mkDefault command) hostAliases) // {
+    # These nodes run Tailscale SSH, which verifies their current host key via
+    # the coordination server even after a host has been rebuilt.
+    beskar = "tailscale ssh ${config.programs.ssh.settings.beskar.data.User}@beskar";
+    matic = "tailscale ssh ${config.programs.ssh.settings.matic.data.User}@matic";
+  };
+
+  # Home Manager's Fish shellAliases are interactive-only. Load these host
+  # commands in conf.d as well so `fish -c 'beskar ...'` works consistently.
+  xdg.configFile."fish/conf.d/ssh-host-commands.fish".text = lib.concatStringsSep "\n" (
+    lib.mapAttrsToList (
+      name: _: "alias ${name} ${lib.escapeShellArg config.home.shellAliases.${name}}"
+    ) hostAliases
+  );
+
   home.file.".ssh/rc" = {
     source = ./rc;
   };
@@ -51,6 +67,10 @@ in
       "beskar" = {
         HostName = "beskar.tail950b36.ts.net";
         User = "ubuntu";
+      };
+      "galactica" = {
+        HostName = "galactica.tail950b36.ts.net";
+        User = "shunkakinoki";
       };
       "kyber" = {
         HostName = "kyber.tail950b36.ts.net";
