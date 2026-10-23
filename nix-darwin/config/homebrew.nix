@@ -11,7 +11,8 @@
     onActivation = {
       autoUpdate = builtins.getEnv "NIX_OFFLINE" != "1";
       upgrade = builtins.getEnv "NIX_OFFLINE" != "1";
-      cleanup = "zap";
+      # Removed GUI apps must not take shared model data or user settings with them.
+      cleanup = "uninstall";
       extraFlags = [ "--force" ];
     };
     taps = [
@@ -89,7 +90,6 @@
       "mas"
       "moshi-hook"
       "mlx-lm"
-      "ollama"
       "pandoc"
       "planetscale/tap/pscale"
       "pnpm"
@@ -158,7 +158,6 @@
       "lm-studio"
       "notion"
       "obsidian"
-      "ollama-app"
       "openclaw"
       "opencode-desktop"
       "orca"
