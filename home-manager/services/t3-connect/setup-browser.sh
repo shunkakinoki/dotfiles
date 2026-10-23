@@ -18,6 +18,13 @@ if ! grep -qE '^ +browser ' <<<"$help"; then
   exit 0
 fi
 
+# Upstream setup unconditionally writes an AppArmor profile; containers and
+# hosts without AppArmor have no profile directory, so the write fails.
+if [ ! -d "${T3_APPARMOR_DIR:-/etc/apparmor.d}" ]; then
+  echo "AppArmor is not available; skipping T3 browser setup."
+  exit 0
+fi
+
 # Keep the caller's T3 home under privilege escalation; the dispatcher selects
 # the active service CLI and its matching libraries instead of root's install.
 command=(env "PATH=$PATH" "HOME=$HOME" "T3CODE_HOME=$base" DEBIAN_FRONTEND=noninteractive "${T3_BROWSER_CLI:?}" browser setup)
