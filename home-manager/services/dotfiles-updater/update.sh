@@ -8,10 +8,14 @@ export HOST="${HOST:-$(/usr/bin/hostname 2>/dev/null || hostname 2>/dev/null || 
 
 cd ~/dotfiles
 
-# Skip if the current branch is not main
 if [ "$(git rev-parse --abbrev-ref HEAD)" != "main" ]; then
-  echo "Skipping update as current branch is not main"
-  exit 0
+  echo "ERROR: Deployment checkout is not main; preserve its work before restoring automatic updates." >&2
+  exit 1
+fi
+
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  echo "ERROR: Deployment checkout has uncommitted changes; leaving them intact." >&2
+  exit 1
 fi
 
 # Upstream images move independently of this repository, so check them on every
@@ -28,8 +32,8 @@ if [ "$HOST" = "kyber" ]; then
 fi
 
 # The marker records the last commit whose install succeeded. HEAD cannot serve
-# as that record, not even as a fallback: the reset below moves HEAD before
-# install.sh runs, so a failed install would be skipped as "no changes" forever.
+# as that record, not even as a fallback: the fast-forward below moves HEAD before
+# installation runs, so a failed install would be skipped as "no changes" forever.
 INSTALLED_MARKER="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles-updater/installed-commit"
 CURRENT_COMMIT=$(git rev-parse HEAD)
 INSTALLED_COMMIT=$(cat "$INSTALLED_MARKER" 2>/dev/null || true)
@@ -40,6 +44,13 @@ git fetch origin main
 # Get the latest remote commit
 REMOTE_COMMIT=$(git rev-parse origin/main)
 
+if ! git merge-base --is-ancestor HEAD origin/main; then
+  echo "ERROR: Local main has unpublished or divergent commits; refusing to replace them." >&2
+  exit 1
+fi
+
+git merge --ff-only origin/main
+
 # Check if there are any changes
 if [ "$INSTALLED_COMMIT" = "$REMOTE_COMMIT" ]; then
   echo "No changes detected (current: ${CURRENT_COMMIT:0:8}). Skipping build and switch."
@@ -48,15 +59,17 @@ fi
 
 echo "Changes detected: ${CURRENT_COMMIT:0:8} -> ${REMOTE_COMMIT:0:8} (installed: ${INSTALLED_COMMIT:0:8})"
 
-# Reset to latest
-git reset --hard origin/main
-
-# Run the install script
-./install.sh
+# Bootstrap's install.sh fetches again; install the revision already checked above.
+make install
 
 # `make install` never touches agent rules, skills, or MCP configs, so without
 # this every host keeps the dotagents output it was provisioned with.
-make dotagents-switch-sync || echo "⚠️  dotagents-switch-sync failed" >&2
+make dotagents-switch-sync
+
+if [ "$(git rev-parse HEAD)" != "$REMOTE_COMMIT" ]; then
+  echo "ERROR: Checkout changed during installation; refusing to mark it installed." >&2
+  exit 1
+fi
 
 mkdir -p "$(dirname "$INSTALLED_MARKER")"
 printf '%s\n' "$REMOTE_COMMIT" >"$INSTALLED_MARKER"

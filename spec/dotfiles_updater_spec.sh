@@ -48,14 +48,14 @@ When run bash -c "grep 'rev-parse --abbrev-ref HEAD' '$SCRIPT'"
 The output should include 'rev-parse --abbrev-ref HEAD'
 End
 
-It 'skips update when not on main'
+It 'reports deployment blockage when not on main'
 When run bash -c "grep 'not main' '$SCRIPT'"
 The output should include 'not main'
 End
 
-It 'exits cleanly when skipping'
+It 'fails instead of reporting a skipped deployment as success'
 When run bash -c "grep -A 1 'not main' '$SCRIPT'"
-The output should include 'exit 0'
+The output should include 'exit 1'
 End
 End
 
@@ -65,9 +65,9 @@ When run bash -c "grep 'git fetch origin main' '$SCRIPT'"
 The output should include 'git fetch origin main'
 End
 
-It 'resets to origin/main'
-When run bash -c "grep 'git reset --hard origin/main' '$SCRIPT'"
-The output should include 'git reset --hard origin/main'
+It 'fast-forwards to origin/main'
+When run bash -c "grep 'git merge --ff-only origin/main' '$SCRIPT'"
+The output should include 'git merge --ff-only origin/main'
 End
 End
 
@@ -102,9 +102,9 @@ End
 End
 
 Describe 'installation'
-It 'runs install.sh after update'
-When run bash -c "grep './install.sh' '$SCRIPT'"
-The output should include './install.sh'
+It 'installs the already selected checkout without bootstrap fetching again'
+When run bash -c "grep '^make install' '$SCRIPT'"
+The output should include 'make install'
 End
 End
 
@@ -138,7 +138,8 @@ setup() {
 touch "$HOME/installed"
 INSTALL
   chmod +x "$WORK/src/install.sh"
-  git -C "$WORK/src" add install.sh
+  printf '.PHONY: install dotagents-switch-sync\ninstall:\n\t@./install.sh\ndotagents-switch-sync:\n\t@:\n' >"$WORK/src/Makefile"
+  git -C "$WORK/src" add install.sh Makefile
   git -C "$WORK/src" commit -q -m base
   git clone -q "$WORK/src" "$HOME/dotfiles" 2>/dev/null
   git -C "$WORK/src" commit -q --allow-empty -m update
@@ -174,14 +175,15 @@ The output should include 'No changes detected'
 The error should include 'cliproxy-update failed'
 End
 
-It 'syncs dotagents after install without blocking the marker'
+It 'does not advance the installed marker when dotagents sync fails'
 mkdir -p "$WORK/bin"
-printf '#!/usr/bin/env bash\necho "make $*"\nexit 1\n' >"$WORK/bin/make"
+printf '#!/usr/bin/env bash\nif [ "$1" = install ]; then exec ./install.sh; fi\necho "dotagents-switch-sync failed" >&2\nexit 1\n' >"$WORK/bin/make"
 chmod +x "$WORK/bin/make"
-When run bash -c "PATH='$WORK/bin':\$PATH HOST=galactica bash '$SCRIPT' && test -f '$XDG_STATE_HOME/dotfiles-updater/installed-commit' && echo marked"
-The output should include 'make dotagents-switch-sync'
-The output should include 'marked'
+When run bash -c "PATH='$WORK/bin':\$PATH HOST=galactica bash '$SCRIPT'"
+The status should be failure
+The output should include 'Changes detected'
 The error should include 'dotagents-switch-sync failed'
+The file "$XDG_STATE_HOME/dotfiles-updater/installed-commit" should not be exist
 End
 
 It 'leaves cliproxy images alone on other hosts'
@@ -190,6 +192,51 @@ printf '#!/usr/bin/env bash\necho "make $*"\n' >"$WORK/bin/make"
 chmod +x "$WORK/bin/make"
 When run bash -c "PATH='$WORK/bin':\$PATH HOST=galactica bash '$SCRIPT' 2>/dev/null"
 The output should not include 'cliproxy-update'
+End
+
+It 'preserves a feature branch and reports failure'
+git -C "$HOME/dotfiles" switch -q -c feature
+When run bash "$SCRIPT"
+The status should be failure
+The error should include 'not main'
+The file "$HOME/installed" should not be exist
+End
+
+It 'preserves tracked edits instead of resetting them'
+printf '\nedited\n' >>"$HOME/dotfiles/install.sh"
+When run bash "$SCRIPT"
+The status should be failure
+The error should include 'uncommitted changes'
+The contents of file "$HOME/dotfiles/install.sh" should include 'edited'
+The file "$HOME/installed" should not be exist
+End
+
+It 'preserves staged edits instead of resetting them'
+printf '\nstaged\n' >>"$HOME/dotfiles/install.sh"
+git -C "$HOME/dotfiles" add install.sh
+When run bash "$SCRIPT"
+The status should be failure
+The error should include 'uncommitted changes'
+The contents of file "$HOME/dotfiles/install.sh" should include 'staged'
+End
+
+It 'refuses unpublished commits on main'
+git -C "$HOME/dotfiles" commit -q --allow-empty -m unpublished
+When run bash "$SCRIPT"
+The status should be failure
+The error should include 'unpublished or divergent commits'
+The file "$HOME/installed" should not be exist
+End
+
+It 'does not mark a checkout changed during installation as installed'
+printf '\ngit commit -q --allow-empty -m moved\n' >>"$WORK/src/install.sh"
+git -C "$WORK/src" add install.sh
+git -C "$WORK/src" commit -q -m change-installer
+When run bash "$SCRIPT"
+The status should be failure
+The output should include 'Changes detected'
+The error should include 'Checkout changed during installation'
+The file "$XDG_STATE_HOME/dotfiles-updater/installed-commit" should not be exist
 End
 End
 
