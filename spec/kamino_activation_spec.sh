@@ -95,8 +95,19 @@ The path "$TEST_ROOT/fstrim" should not be executable
 The contents of file "$TEST_ROOT/service/worker-idle.conf" should include 'IOSchedulingClass=idle'
 The contents of file "$TEST_ROOT/service/worker-idle.conf" should include 'ExecCondition=/bin/bash /nix/store/fixture/trim-idle.sh'
 The contents of file "$TEST_ROOT/timer/worker-weekly.conf" should include 'OnCalendar=weekly'
+The contents of file "$TEST_ROOT/timer/worker-weekly.conf" should include 'RandomizedDelaySec=6h'
 The contents of file "$TEST_ROOT/timer/worker-weekly.conf" should include 'Persistent=false'
 The contents of file "$TEST_ROOT/commands" should include 'systemctl restart fstrim.timer'
+End
+
+It 'preserves the scheduled deadline on repeated activation'
+run_phase trim-schedule "$TEST_ROOT/fstrim" "$TEST_ROOT/service/worker-idle.conf" "$TEST_ROOT/timer/worker-weekly.conf" /nix/store/fixture/trim-idle.sh
+: >"$TEST_ROOT/commands"
+When run run_phase trim-schedule "$TEST_ROOT/fstrim" "$TEST_ROOT/service/worker-idle.conf" "$TEST_ROOT/timer/worker-weekly.conf" /nix/store/fixture/trim-idle.sh
+The status should be success
+The output should equal ''
+The contents of file "$TEST_ROOT/commands" should include 'systemctl start fstrim.timer'
+The contents of file "$TEST_ROOT/commands" should not include 'systemctl restart fstrim.timer'
 End
 
 It 'runs trim only when the measured disk is idle'
@@ -107,7 +118,7 @@ The output should equal ''
 End
 
 It 'skips trim during disk pressure'
-printf 'some avg10=10.00 avg60=1.00 avg300=4.00 total=100\n' >"$TEST_ROOT/io.pressure"
+printf 'some avg10=0.00 avg60=1.00 avg300=4.00 total=100\n' >"$TEST_ROOT/io.pressure"
 When run bash "$PWD/named-hosts/kamino/trim-idle.sh" "$TEST_ROOT/io.pressure"
 The status should be failure
 The output should equal ''
@@ -118,6 +129,13 @@ printf 'malformed\n' >"$TEST_ROOT/io.pressure"
 When run bash "$PWD/named-hosts/kamino/trim-idle.sh" "$TEST_ROOT/io.pressure"
 The status should be failure
 The output should equal ''
+End
+
+It 'skips trim when disk pressure is unavailable'
+When run bash "$PWD/named-hosts/kamino/trim-idle.sh" "$TEST_ROOT/missing-pressure"
+The status should be failure
+The output should equal ''
+The error should include 'missing-pressure'
 End
 
 It 'rejects a non-root install'

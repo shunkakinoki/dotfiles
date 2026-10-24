@@ -460,7 +460,7 @@ It 'has spec file for named-hosts/kamino/fleet.sh'
 The path "spec/kamino_fleet_spec.sh" should be exist
 End
 
-It 'has behavior tests for named-hosts/kamino/trim-idle.sh'
+It 'tests named-hosts/kamino/trim-idle.sh through the activation spec'
 The path "spec/kamino_activation_spec.sh" should be exist
 End
 
