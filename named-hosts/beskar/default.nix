@@ -17,6 +17,7 @@ let
   baseHost = import ../../lib/host.nix;
   tailscaleUpArgs = [
     "--reset"
+    "--operator=${username}"
     "--accept-dns=true"
     "--ssh"
   ];
