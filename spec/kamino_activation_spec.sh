@@ -96,6 +96,7 @@ The contents of file "$TEST_ROOT/service/worker-idle.conf" should include 'IOSch
 The contents of file "$TEST_ROOT/service/worker-idle.conf" should include 'ExecCondition=/bin/bash /nix/store/fixture/trim-idle.sh'
 The contents of file "$TEST_ROOT/timer/worker-weekly.conf" should include 'OnCalendar=weekly'
 The contents of file "$TEST_ROOT/timer/worker-weekly.conf" should include 'RandomizedDelaySec=6h'
+The contents of file "$TEST_ROOT/timer/worker-weekly.conf" should include 'FixedRandomDelay=true'
 The contents of file "$TEST_ROOT/timer/worker-weekly.conf" should include 'Persistent=false'
 The contents of file "$TEST_ROOT/commands" should include 'systemctl restart fstrim.timer'
 End
@@ -108,6 +109,7 @@ The status should be success
 The output should equal ''
 The contents of file "$TEST_ROOT/commands" should include 'systemctl start fstrim.timer'
 The contents of file "$TEST_ROOT/commands" should not include 'systemctl restart fstrim.timer'
+The contents of file "$TEST_ROOT/commands" should not include 'systemctl daemon-reload'
 End
 
 It 'runs trim only when the measured disk is idle'

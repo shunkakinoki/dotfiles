@@ -42,18 +42,20 @@ trim-schedule)
   # Keep the file for package ownership, but run-parts must no longer execute it.
   if [ -f "$hourly" ]; then chmod a-x "$hourly"; fi
   mkdir -p "$(dirname "$service_dropin")" "$(dirname "$timer_dropin")"
+  service_changed=false
   service_content=$(printf '[Service]\nNice=19\nIOSchedulingClass=idle\nIOWeight=1\nExecCondition=/bin/bash %s\n' "$idle_script")
   if [ ! -f "$service_dropin" ] || [ "$(cat "$service_dropin")" != "$service_content" ]; then
     printf '%s\n' "$service_content" >"$service_dropin"
+    service_changed=true
   fi
   # An offline worker does not run catch-up trim when its fleet work resumes.
-  timer_content=$'[Timer]\nOnCalendar=\nOnCalendar=weekly\nRandomizedDelaySec=6h\nPersistent=false'
+  timer_content=$'[Timer]\nOnCalendar=\nOnCalendar=weekly\nRandomizedDelaySec=6h\nFixedRandomDelay=true\nPersistent=false'
   timer_changed=false
   if [ ! -f "$timer_dropin" ] || [ "$(cat "$timer_dropin")" != "$timer_content" ]; then
     printf '%s\n' "$timer_content" >"$timer_dropin"
     timer_changed=true
   fi
-  systemctl daemon-reload
+  if "$service_changed" || "$timer_changed"; then systemctl daemon-reload; fi
   systemctl enable fstrim.timer
   # Preserve an already scheduled randomized deadline across routine activation.
   if "$timer_changed"; then systemctl restart fstrim.timer; else systemctl start fstrim.timer; fi
