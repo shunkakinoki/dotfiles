@@ -30,7 +30,8 @@ let
   t3ServeRoute = if lib.length t3ServeRoutes == 1 then lib.head t3ServeRoutes else null;
   t3Enabled = pkgs.stdenv.hostPlatform.isLinux && !(inputs.host.t3ConnectDisabled or false);
   # Compile and load native addons with one libc/Node toolchain. Keep the
-  # caller's remaining PATH available to provider CLIs in the server.
+  # caller's remaining PATH available to provider CLIs in the server. The npm
+  # `t3` shim unpacks its native release archive with `tar`.
   toolchain = lib.makeBinPath [
     pkgs.bash
     pkgs.coreutils
@@ -40,6 +41,8 @@ let
     pkgs.gnugrep
     pkgs.gnumake
     pkgs.gnused
+    pkgs.gnutar
+    pkgs.gzip
     pkgs.nodejs
     pkgs.python3
     pkgs.util-linux

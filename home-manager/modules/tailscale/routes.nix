@@ -1,4 +1,13 @@
 {
+  beskar = [
+    {
+      name = "t3";
+      httpsPort = 443;
+      localPort = 3773;
+      manager = "t3-service";
+    }
+  ];
+
   kyber = [
     {
       name = "openclaw";

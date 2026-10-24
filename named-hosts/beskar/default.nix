@@ -39,7 +39,7 @@ home-manager.lib.homeManagerConfiguration {
   modules = [
     ../../home-manager/default.nix
     (
-      { lib, ... }:
+      { config, lib, ... }:
       {
         home = {
           inherit username;
@@ -51,6 +51,9 @@ home-manager.lib.homeManagerConfiguration {
               ${pkgs.bash}/bin/bash "${../../hosts/linux/activate-backup-files.sh}" "$newGenPath/home-files"
             '';
           };
+          activation.installT3RuntimeLibs = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+            $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate-t3-runtime-libs.sh}
+          '';
         };
 
         programs.home-manager.enable = true;
