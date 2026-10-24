@@ -103,6 +103,8 @@ BASH
     -e 's|@template@|'"$TEMP_HOME"'/template.toml|g' \
     -e 's|@ciEnabled@|true|g' \
     -e 's|@maxWorkers@|2|g' \
+    -e 's|@githubApp@||g' \
+    -e 's|@base64@|base64|g' \
     "$SCRIPT" >"$PREPROCESSED_SCRIPT"
   chmod +x "$PREPROCESSED_SCRIPT"
 
@@ -112,6 +114,8 @@ BASH
     -e 's|@template@|'"$TEMP_HOME"'/template.toml|g' \
     -e 's|@ciEnabled@|false|g' \
     -e 's|@maxWorkers@|2|g' \
+    -e 's|@githubApp@||g' \
+    -e 's|@base64@|base64|g' \
     "$SCRIPT" >"$PREPROCESSED_DESKTOP_SCRIPT"
   chmod +x "$PREPROCESSED_DESKTOP_SCRIPT"
 }
@@ -188,6 +192,8 @@ TOML
     -e 's|@template@|'"$TEMP_HOME"'/template.toml|g' \
     -e 's|@ciEnabled@|true|g' \
     -e 's|@maxWorkers@|1|g' \
+    -e 's|@githubApp@||g' \
+    -e 's|@base64@|base64|g' \
     "$SCRIPT" >"$PREPROCESSED_SCRIPT"
   chmod +x "$PREPROCESSED_SCRIPT"
 
@@ -197,6 +203,8 @@ TOML
     -e 's|@template@|'"$TEMP_HOME"'/template.toml|g' \
     -e 's|@ciEnabled@|false|g' \
     -e 's|@maxWorkers@|1|g' \
+    -e 's|@githubApp@||g' \
+    -e 's|@base64@|base64|g' \
     "$SCRIPT" >"$PREPROCESSED_LOCAL_SCRIPT"
   chmod +x "$PREPROCESSED_LOCAL_SCRIPT"
 }
@@ -220,6 +228,68 @@ When run bash -c 'unset ROBOREV_REPOS ROBOREV_CI_REPOS; HOME="'"$TEMP_HOME"'" ba
 The status should be success
 The output should include 'enabled = false'
 The output should include 'repos = []'
+End
+End
+
+Describe 'GitHub App credentials'
+setup_github_app() {
+  TEMP_HOME=$(mktemp -d)
+  mkdir -p "$TEMP_HOME/dotfiles"
+  cat >"$TEMP_HOME/template.toml" <<'TOML'
+[ci]
+enabled = true
+repos = ["__ROBOREV_REPOS__"]
+
+[agent_hook]
+turn_threshold = 0
+TOML
+
+  FAKE_KEY_B64=$(printf 'fixture-pem\n' | base64 | tr -d '\n')
+  cat >"$TEMP_HOME/dotfiles/.env" <<ENV
+ROBOREV_REPOS=org/repo1
+GH_FLEET_APP_11_ID=1234
+GH_FLEET_APP_11_INSTALLATION_ID=5678
+GH_FLEET_APP_11_PRIVATE_KEY_B64=$FAKE_KEY_B64
+ENV
+
+  PREPROCESSED_SCRIPT="$TEMP_HOME/hydrate.sh"
+  sed \
+    -e 's|@sed@|sed|g' \
+    -e 's|@template@|'"$TEMP_HOME"'/template.toml|g' \
+    -e 's|@ciEnabled@|true|g' \
+    -e 's|@maxWorkers@|2|g' \
+    -e 's|@githubApp@|11|g' \
+    -e 's|@base64@|base64|g' \
+    "$SCRIPT" >"$PREPROCESSED_SCRIPT"
+}
+
+cleanup_github_app() {
+  rm -rf "$TEMP_HOME"
+}
+
+Before 'setup_github_app'
+After 'cleanup_github_app'
+
+It 'writes the App keys into the [ci] section'
+When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; sed -n "/^\[ci\]/,/^\[agent_hook\]/p" "'"$TEMP_HOME"'/.roborev/config.toml"'
+The status should be success
+The output should include 'github_app_id = 1234'
+The output should include 'github_app_installation_id = 5678'
+The output should include "github_app_private_key = \"$TEMP_HOME/.roborev/github-app.pem\""
+End
+
+It 'decodes the private key to an owner-only file'
+When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; f="'"$TEMP_HOME"'/.roborev/github-app.pem"; cat "$f"; stat -c "%a" "$f" 2>/dev/null || stat -f "%OLp" "$f"'
+The status should be success
+The line 1 of output should eq 'fixture-pem'
+The line 2 of output should eq '600'
+End
+
+It 'warns and leaves the App keys out when credentials are missing'
+When run bash -c ': >"'"$TEMP_HOME"'/dotfiles/.env"; HOME="'"$TEMP_HOME"'" ROBOREV_REPOS=org/repo1 bash "'"$PREPROCESSED_SCRIPT"'" 2>&1 >/dev/null; cat "'"$TEMP_HOME"'/.roborev/config.toml"'
+The status should be success
+The output should include 'GitHub App 11 credentials missing'
+The output should not include 'github_app_id'
 End
 End
 
