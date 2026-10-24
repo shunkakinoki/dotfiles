@@ -61,6 +61,12 @@ lib.mkIf host.isKyber {
       ExecStart = "${homeDir}/.bun/bin/openclaw gateway run --port 18789 --bind loopback";
       Restart = "always";
       RestartSec = "5s";
+      # The gateway drains in-flight runs and closes its SQLite handles on
+      # SIGTERM; the default 90s timeout SIGKILLs it mid-drain and the restart
+      # then opens a locked agent database. Mixed mode sends SIGTERM to the
+      # main process only, so it shuts down its agent children itself.
+      TimeoutStopSec = "330s";
+      KillMode = "mixed";
       # OpenClaw creates read-only SQLite snapshots for concurrent requests.
       # Bound their reads so the gateway cannot starve K3s on Kyber's root disk.
       # Writes stay under the user.slice ceiling instead: agent children share
@@ -71,7 +77,7 @@ lib.mkIf host.isKyber {
       EnvironmentFile = [ "-${homeDir}/dotfiles/.env" ];
       Environment = [
         "HOME=${homeDir}"
-        "PATH=${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:${homeDir}/.local/share/pnpm:${homeDir}/.local/share/fnm/current/bin:${homeDir}/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
+        "PATH=${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:${homeDir}/.local/share/pnpm/bin:${homeDir}/.local/share/fnm/aliases/default/bin:${homeDir}/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
         # Plugin captures exceed the user runtime tmpfs and stall under the
         # root-disk I/O cap during startup.
         "TMPDIR=/dev/shm/openclaw-gateway"
