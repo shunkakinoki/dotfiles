@@ -3,6 +3,7 @@
 # activation script that needs to authorize cross-host access.
 {
   galactica = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEKze2jlpV7SyTKA2ezqbumpCiDn+5Sj4z5SxrqfzesX shunkakinoki@gmail.com";
+  beskar = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE8GxsOIPLgsM8LJnVFP9cM07SxU78W9+dtEBMzwXUfX ubuntu@beskar-fleet-20261024";
   kyber = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICbJMYUWpV2mQhfRnKWLaxRATS7+yvE7u2IYXic6/rIZ ubuntu@kyber";
   matic = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOsMGpqklcznrSAH/TiGvcJoHEF4hyf5yiRz9MDjVVUj skakinoki@matic";
   kamino1 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJnhdnehXGjNR+zRORaap4JYCwnRJtUgKgkTLbZ5x+1I root@kamino1";
