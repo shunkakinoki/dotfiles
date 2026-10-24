@@ -260,3 +260,93 @@ When run env HOME="$TEMP_DIR" bash -c "jq 'del(.loadBalancingEnabled)' '$MANAGED
 The status should be success
 End
 End
+
+Describe 'config/t3code grok binary path'
+SETTINGS_SCRIPT="$PWD/config/t3code/activate-settings.sh"
+MANAGED_SERVER="$PWD/config/t3code/server-settings.json"
+
+setup() {
+  TEMP_DIR=$(mktemp -d)
+  STATE_DIR="$TEMP_DIR/userdata"
+  mkdir -p "$STATE_DIR"
+  : >"$TEMP_DIR/.env"
+}
+
+cleanup() {
+  rm -rf "$TEMP_DIR"
+}
+
+Before 'setup'
+After 'cleanup'
+
+It 'points the grok instance at the wrapper'
+When run env CLIPROXY_API_KEY=k HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '' /store/grok.sh && jq -e '.providerInstances.grok.driver == \"grok\" and .providerInstances.grok.config.binaryPath == \"/store/grok.sh\"' '$STATE_DIR/settings.json' >/dev/null"
+The status should be success
+End
+
+It 'keeps the user grok instance settings when overriding the binary path'
+cat >"$STATE_DIR/settings.json" <<'JSON'
+{"providerInstances":{"grok":{"driver":"grok","enabled":false,"config":{"binaryPath":"grok","customModels":["m"]}}}}
+JSON
+When run env CLIPROXY_API_KEY=k HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '' /store/grok.sh && jq -e '.providerInstances.grok == {driver: \"grok\", enabled: false, config: {binaryPath: \"/store/grok.sh\", customModels: [\"m\"]}}' '$STATE_DIR/settings.json' >/dev/null"
+The status should be success
+End
+
+It 'falls back to grok on PATH without a wrapper argument'
+When run env CLIPROXY_API_KEY=k HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && jq -e '.providerInstances.grok.config.binaryPath == \"grok\"' '$STATE_DIR/settings.json' >/dev/null"
+The status should be success
+End
+End
+
+Describe 'config/t3code/grok.sh'
+WRAPPER="$PWD/config/t3code/grok.sh"
+
+# Mirrors the npm layout: the package's bin/grok launches $HOME/.grok/bin/grok,
+# and bin/postinstall.js repoints that symlink at grok-<version>.
+setup() {
+  TEMP_DIR=$(mktemp -d)
+  PKG="$TEMP_DIR/lib/node_modules/@xai-official/grok"
+  mkdir -p "$PKG/bin" "$TEMP_DIR/bin" "$TEMP_DIR/.grok/bin"
+  printf '{\n  "name": "@xai-official/grok",\n  "version": "1.0.70"\n}\n' >"$PKG/package.json"
+  printf '#!/usr/bin/env bash\nexec "$HOME/.grok/bin/grok" "$@"\n' >"$PKG/bin/grok"
+  printf '%s\n' \
+    'const fs = require("fs");' \
+    'const link = `${process.env.HOME}/.grok/bin/grok`;' \
+    'fs.rmSync(link, { force: true });' \
+    'fs.symlinkSync("grok-1.0.70", link);' \
+    'console.log("repointed");' >"$PKG/bin/postinstall.js"
+  printf '#!/usr/bin/env bash\necho "grok 1.0.67 $*"\n' >"$TEMP_DIR/.grok/bin/grok-1.0.67"
+  printf '#!/usr/bin/env bash\necho "grok 1.0.70 $*"\n' >"$TEMP_DIR/.grok/bin/grok-1.0.70"
+  chmod +x "$PKG/bin/grok" "$TEMP_DIR/.grok/bin/grok-1.0.67" "$TEMP_DIR/.grok/bin/grok-1.0.70"
+  ln -s grok-1.0.67 "$TEMP_DIR/.grok/bin/grok"
+  ln -s ../lib/node_modules/@xai-official/grok/bin/grok "$TEMP_DIR/bin/grok"
+}
+
+cleanup() {
+  rm -rf "$TEMP_DIR"
+}
+
+Before 'setup'
+After 'cleanup'
+
+It 'repoints a stale launcher before running grok'
+When run env -u GROK_HOME HOME="$TEMP_DIR" PATH="$TEMP_DIR/bin:$PATH" bash "$WRAPPER" --version
+The status should be success
+The output should equal 'grok 1.0.70 --version'
+The stderr should include 'repointed'
+End
+
+It 'leaves a current launcher alone'
+ln -sfn grok-1.0.70 "$TEMP_DIR/.grok/bin/grok"
+When run env -u GROK_HOME HOME="$TEMP_DIR" PATH="$TEMP_DIR/bin:$PATH" bash "$WRAPPER" --version
+The status should be success
+The output should equal 'grok 1.0.70 --version'
+The stderr should equal ''
+End
+
+It 'fails when grok is not on PATH'
+When run env HOME="$TEMP_DIR" PATH="/usr/bin:/bin" bash "$WRAPPER" --version
+The status should equal 127
+The stderr should include 'grok: not found on PATH'
+End
+End

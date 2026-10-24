@@ -60,6 +60,12 @@
         "homePath": "~/.codex-t3/cliproxy",
         "launchArgs": ""
       }
+    },
+    "grok": {
+      "driver": "grok",
+      "config": {
+        "binaryPath": "__GROK_BINARY_PATH__"
+      }
     }
   }
 }

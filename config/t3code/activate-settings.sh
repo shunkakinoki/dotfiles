@@ -7,7 +7,7 @@
 # OpenCode 2 five seconds, cold start included, to list its models, and a busy
 # host that misses it leaves the provider "Limited" until the next refresh.
 #
-# Usage: activate-settings.sh <managed_settings_json> <jq_bin> <env_file> <state_dir> [systemctl_bin]
+# Usage: activate-settings.sh <managed_settings_json> <jq_bin> <env_file> <state_dir> [systemctl_bin] [grok_bin]
 set -euo pipefail
 
 MANAGED_SETTINGS="$1"
@@ -15,6 +15,7 @@ JQ_BIN="$2"
 ENV_FILE="$3"
 STATE_DIR="$4"
 SYSTEMCTL_BIN="${5:-}"
+GROK_BIN="${6:-grok}"
 CODEX_HOME_DIR="${HOME}/.codex-t3/cliproxy"
 
 SETTINGS="${STATE_DIR}/settings.json"
@@ -158,7 +159,7 @@ fi
 
 if [ -f "$SETTINGS" ]; then
   # shellcheck disable=SC2016
-  "$JQ_BIN" --slurpfile managed "$MANAGED_SETTINGS" --arg key "$CLIPROXY_API_KEY" --arg base "$CLIPROXY_BASE_URL" --arg perm "$CLAUDE_PERMISSION_ARGS" '
+  "$JQ_BIN" --slurpfile managed "$MANAGED_SETTINGS" --arg key "$CLIPROXY_API_KEY" --arg base "$CLIPROXY_BASE_URL" --arg perm "$CLAUDE_PERMISSION_ARGS" --arg grok "$GROK_BIN" '
     ($managed[0]) as $managed_settings
     | .backgroundActivity = ((.backgroundActivity // {}) * ($managed_settings.backgroundActivity // {}))
     | .providers = ((.providers // {}) * ($managed_settings.providers // {}))
@@ -170,13 +171,14 @@ if [ -f "$SETTINGS" ]; then
                   if . == "__CLIPROXY_API_KEY__" then $key
                   elif . == "__CLIPROXY_BASE_URL__" then $base
                   elif . == "__CLAUDE_PERMISSION_ARGS__" then $perm
+                  elif . == "__GROK_BINARY_PATH__" then $grok
                   else . end
                 else . end
               )))
   ' "$SETTINGS" >"$TEMP_SETTINGS"
 else
   # shellcheck disable=SC2016
-  "$JQ_BIN" --slurpfile managed "$MANAGED_SETTINGS" --arg key "$CLIPROXY_API_KEY" --arg base "$CLIPROXY_BASE_URL" --arg perm "$CLAUDE_PERMISSION_ARGS" '
+  "$JQ_BIN" --slurpfile managed "$MANAGED_SETTINGS" --arg key "$CLIPROXY_API_KEY" --arg base "$CLIPROXY_BASE_URL" --arg perm "$CLAUDE_PERMISSION_ARGS" --arg grok "$GROK_BIN" '
     ($managed[0]) as $managed_settings
     | $managed_settings
     | .providerInstances |= walk(
@@ -184,6 +186,7 @@ else
           if . == "__CLIPROXY_API_KEY__" then $key
           elif . == "__CLIPROXY_BASE_URL__" then $base
           elif . == "__CLAUDE_PERMISSION_ARGS__" then $perm
+          elif . == "__GROK_BINARY_PATH__" then $grok
           else . end
         else . end
       )
