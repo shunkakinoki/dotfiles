@@ -633,6 +633,8 @@ let
         assert !(cfg.systemd.user.services.openclaw-gateway.Service ? IOWriteBandwidthMax);
         assert cfg.systemd.user.services.openclaw-gateway.Service.IOReadIOPSMax == "/ 100";
         assert !(cfg.systemd.user.services.openclaw-gateway.Service ? IOWriteIOPSMax);
+        assert cfg.systemd.user.services.openclaw-gateway.Service.TimeoutStopSec == "330s";
+        assert cfg.systemd.user.services.openclaw-gateway.Service.KillMode == "mixed";
         assert lib.elem "TMPDIR=/dev/shm/openclaw-gateway"
           cfg.systemd.user.services.openclaw-gateway.Service.Environment;
         assert lib.elem "e /dev/shm/openclaw-gateway/openclaw-plugin-build-* - - - 1h"
