@@ -4,6 +4,9 @@
 # The Nix GCC runtime cannot stand in: its libstdc++ needs a newer glibc than
 # Ubuntu 22.04 ships.
 set -euo pipefail
+# Home Manager activation runs with a Nix-only PATH; dpkg, apt, and sudo live
+# in the system directories.
+export PATH="$PATH:/usr/sbin:/usr/bin:/sbin:/bin"
 
 if dpkg-query -W -f='${Status}' libatomic1 2>/dev/null | grep -q 'install ok installed'; then
   exit 0
