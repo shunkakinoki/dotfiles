@@ -22,7 +22,8 @@ in
       "${pkgs.jq}/bin/jq" \
       "${config.home.homeDirectory}/dotfiles/.env" \
       "${stateDir}" \
-      "${systemctlBin}"
+      "${systemctlBin}" \
+      "${./grok.sh}"
   '';
 
   # Favorites and model visibility are device-local; T3 rewrites this file too.
