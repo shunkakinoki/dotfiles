@@ -40,6 +40,12 @@ run_script() {
   PATH="$TEST_ROOT/bin:$PATH" bash "$SCRIPT"
 }
 
+It 'appends the system tool directories to the activation PATH'
+When run bash -c "grep -F 'export PATH=\"\$PATH:/usr/sbin:/usr/bin:/sbin:/bin\"' '$SCRIPT'"
+The status should be success
+The output should include '/usr/bin'
+End
+
 It 'skips the install when libatomic1 is present'
 export MOCK_STATUS='install ok installed'
 When call run_script
