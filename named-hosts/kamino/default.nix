@@ -143,6 +143,10 @@ inputs.home-manager.lib.homeManagerConfiguration {
           export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} root-nodiscard /etc/fstab
         '';
+        home.activation.setKaminoTrimSchedule = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+          export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} trim-schedule /etc/cron.hourly/fstrim /etc/systemd/system/fstrim.service.d/worker-idle.conf /etc/systemd/system/fstrim.timer.d/worker-weekly.conf ${./trim-idle.sh}
+        '';
         home.activation.setKaminoVmCompaction = config.lib.dag.entryAfter [ "writeBoundary" ] ''
           export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} vm-compaction /etc/sysctl.d/60-kamino-compaction.conf /etc/tmpfiles.d/60-kamino-thp.conf /sys/kernel/mm/transparent_hugepage/defrag

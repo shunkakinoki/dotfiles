@@ -34,6 +34,21 @@ root-nodiscard)
     echo "Remounted the root filesystem with nodiscard."
   fi
   ;;
+trim-schedule)
+  hourly="${2:?hourly trim path required}"
+  service_dropin="${3:?fstrim service drop-in required}"
+  timer_dropin="${4:?fstrim timer drop-in required}"
+  idle_script="${5:?trim pressure condition required}"
+  # Keep the file for package ownership, but run-parts must no longer execute it.
+  if [ -f "$hourly" ]; then chmod a-x "$hourly"; fi
+  mkdir -p "$(dirname "$service_dropin")" "$(dirname "$timer_dropin")"
+  printf '[Service]\nNice=19\nIOSchedulingClass=idle\nIOWeight=1\nExecCondition=/bin/bash %s\n' "$idle_script" >"$service_dropin"
+  # An offline worker does not run catch-up trim when its fleet work resumes.
+  printf '[Timer]\nOnCalendar=\nOnCalendar=weekly\nRandomizedDelaySec=6h\nPersistent=false\n' >"$timer_dropin"
+  systemctl daemon-reload
+  systemctl enable fstrim.timer
+  systemctl restart fstrim.timer
+  ;;
 vm-compaction)
   # CI waves madvise huge pages, and with defrag=madvise those faults enter
   # direct compaction that almost never succeeds on these hosts, while
