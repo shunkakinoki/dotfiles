@@ -18,6 +18,7 @@ fi
 ROBOREV_REPOS="${ROBOREV_REPOS:-}"
 ROBOREV_CI_ENABLED="@ciEnabled@"
 ROBOREV_MAX_WORKERS="@maxWorkers@"
+ROBOREV_GITHUB_APP="@githubApp@"
 if [ -z "$ROBOREV_REPOS" ] && [ -n "${ROBOREV_CI_REPOS:-}" ]; then
   ROBOREV_REPOS="$ROBOREV_CI_REPOS"
   echo "Warning: ROBOREV_CI_REPOS is deprecated; rename it to ROBOREV_REPOS" >&2
@@ -69,6 +70,36 @@ mkdir -p "$CONFIG_DIR"
   -e "s|\"__ROBOREV_REPOS__\"|${CI_TOML_REPOS}|g" \
   "$TEMPLATE" >"$CONFIG"
 chmod 600 "$CONFIG"
+
+# The fleet provides no ambient gh or git credentials, so without its App the
+# CI poller cannot read pull requests or post reviews.
+if [ "$ROBOREV_CI_ENABLED" = "true" ] && [ -n "$ROBOREV_GITHUB_APP" ]; then
+  app_id_var="GH_FLEET_APP_${ROBOREV_GITHUB_APP}_ID"
+  installation_id_var="GH_FLEET_APP_${ROBOREV_GITHUB_APP}_INSTALLATION_ID"
+  private_key_var="GH_FLEET_APP_${ROBOREV_GITHUB_APP}_PRIVATE_KEY_B64"
+  app_id="${!app_id_var:-}"
+  installation_id="${!installation_id_var:-}"
+  if [[ $app_id =~ ^[0-9]+$ ]] && [[ $installation_id =~ ^[0-9]+$ ]] && [ -n "${!private_key_var:-}" ]; then
+    KEY_FILE="${CONFIG_DIR}/github-app.pem"
+    (
+      umask 077
+      printf '%s' "${!private_key_var}" | @base64@ -d >"$KEY_FILE"
+    )
+    hydrated="$(
+      while IFS= read -r line; do
+        printf '%s\n' "$line"
+        if [ "$line" = "[ci]" ]; then
+          printf 'github_app_id = %s\n' "$app_id"
+          printf 'github_app_installation_id = %s\n' "$installation_id"
+          printf 'github_app_private_key = "%s"\n' "$KEY_FILE"
+        fi
+      done <"$CONFIG"
+    )"
+    printf '%s\n' "$hydrated" >"$CONFIG"
+  else
+    echo "Warning: GitHub App ${ROBOREV_GITHUB_APP} credentials missing from .env; RoboRev CI has no GitHub auth" >&2
+  fi
+fi
 
 echo "Generated roborev config at $CONFIG" >&2
 

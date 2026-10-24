@@ -13,6 +13,9 @@ let
         # Kamino7 is the dedicated CI runner. Its systemd CPU quota bounds bursts
         # from twelve review workers; other hosts keep two local workers.
         maxWorkers = if inputs.host.isKamino && inputs.host.nodeName == "kamino7" then "12" else "2";
+        # The CI runner posts reviews as its own fleet GitHub App.
+        githubApp = if inputs.host.isKamino && inputs.host.nodeName == "kamino7" then "11" else "";
+        base64 = "${pkgs.coreutils}/bin/base64";
         sed = "${pkgs.gnused}/bin/sed";
         template = "${./config.template.toml}";
       };
