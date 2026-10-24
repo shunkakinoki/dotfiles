@@ -50,6 +50,13 @@ The output should include 'IdentitiesOnly = "yes"'
 End
 End
 
+Describe 'beskar host'
+It 'pins the current Tailscale SSH host key'
+When run bash -c "grep '^beskar.tail950b36.ts.net ssh-ed25519 ' home-manager/programs/ssh/known_hosts | ssh-keygen -lf -"
+The output should include 'SHA256:zojBlO3Obgdf2RqonwYEBkaXFVNeDH52Cx6EDId0xDA'
+End
+End
+
 Describe 'galactica host'
 It 'pins the current native OpenSSH host key'
 When run bash -c "grep '^galactica.tail950b36.ts.net ssh-ed25519 ' home-manager/programs/ssh/known_hosts | ssh-keygen -lf -"
