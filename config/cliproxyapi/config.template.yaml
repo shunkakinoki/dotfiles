@@ -34,7 +34,7 @@ auth-dir: "~/.cli-proxy-api/objectstore/auths"
 #   - "__CLIPROXY_API_KEY__"
 
 # Enable debug logging
-debug: true
+debug: false
 # Enable pprof HTTP debug server (host:port). Keep it bound to localhost for safety.
 pprof:
   enable: false
@@ -104,10 +104,10 @@ commercial-mode: false
 logging-to-file: true
 # Maximum total size (MB) of log files under the logs directory. When exceeded, the oldest log
 # files are deleted until within the limit. Set to 0 to disable.
-logs-max-total-size-mb: 0
+logs-max-total-size-mb: 512
 # Maximum number of error log files retained when request logging is disabled.
 # When exceeded, the oldest error log files are deleted. Default is 10. Set to 0 to disable cleanup.
-error-logs-max-files: 10
+error-logs-max-files: 50
 # When false, disable in-memory usage statistics aggregation
 usage-statistics-enabled: true
 # How long (in seconds) usage queue items are retained in memory for the Management API.
@@ -127,22 +127,22 @@ passthrough-headers: true
 # whose effective request-retry is at least r. Explicit non-negative credential/provider
 # overrides take precedence; omitted or negative overrides inherit this global value.
 # Additional rounds apply to HTTP 403, 408, 429, 500, 502, 503, and 504 failures.
-request-retry: 3
+request-retry: 1
 # Maximum number of different credentials to try in each credential retry round after
 # per-credential round filtering. Set to 0 to try all available credentials. Credentials
 # skipped by this cap still age with the global round.
 max-retry-credentials: 0
 # Maximum cooldown wait in seconds between retry rounds.
 # Set to 0 or below to never wait for credential cooldown.
-max-retry-interval: 30
+max-retry-interval: 15
 # When true, disable auth/model cooldown scheduling globally (prevents blackout windows after failure states).
 disable-cooling: false
 # When true, persist per-auth cooldown status as .cds files next to auth files.
 # Default is false; when false, cooldown status is kept in memory only.
-save-cooldown-status: false
+save-cooldown-status: true
 # Cooldown duration in seconds for transient upstream errors (408/500/502/503/504).
 # Set to 0 to keep the legacy 60-second cooldown; set to -1 to disable transient error cooldowns.
-transient-error-cooldown-seconds: 0
+transient-error-cooldown-seconds: 300
 # When true, globally disable Claude request cloaking (the Claude Code CLI disguise and
 # system prompt replacement), so the original system prompt is passed through to Claude as-is.
 # Individual credentials can still override this: a claude-api-key entry via its "cloak.mode",
@@ -192,10 +192,11 @@ routing:
   # still decides cold bindings, requests without a session, and post-failover rebinding.
   session-affinity: true # default: false
   # How long session-to-auth bindings are retained. Default: 1h
-  # 8h covers the 0/8/16 UTC cron gap. Cold requests still hop
-  # OpenCode (300) -> Aliyun (200) -> OpenRouter (100). Failover
-  # still rebinds when the bound plan 429s.
-  session-affinity-ttl: "8h"
+  # Cold requests still hop
+  # Cold bindings prefer OpenCode/Ollama (300), then Aliyun (200),
+  # Verboo/CommandCode/Surplus (150), OpenRouter (100), and lower tiers.
+  # Failover still rebinds when the bound plan 429s.
+  session-affinity-ttl: "1h"
   # When true (default), subagents (child sessions with parent references) inherit and bind
   # to the parent's upstream credential across all providers, maximizing Prompt/KV Cache
   # reuse and minimizing TTFT. Ignored when routing.session-affinity is false.
