@@ -15,55 +15,16 @@ if [ ! -f "$TOKSCALE_BIN" ]; then
   exit 0
 fi
 
-# tokscale 4.13.0 hardcodes a 15s Cursor HTTP timeout, so `cursor sync` aborts
-# while reading the usage CSV (junhoyeo/tokscale#1175). Prefetch into
-# cursor-cache so submit's "using cached data" path still has a fresh export.
-prefetch_cursor_usage() {
-  local creds cache_dir token tmp out first
-  creds="${HOME}/.config/tokscale/cursor-credentials.json"
-  cache_dir="${HOME}/.config/tokscale/cursor-cache"
-
-  if [ ! -f "$creds" ]; then
-    echo "no Cursor credentials, skipping prefetch"
-    return 0
-  fi
-
-  token="$(jq -r '.accounts[.activeAccountId].sessionToken // empty' "$creds" 2>/dev/null || true)"
-  if [ -z "$token" ]; then
-    echo "Cursor session token missing, skipping prefetch"
-    return 0
-  fi
-
-  mkdir -p "$cache_dir"
-  tmp="${cache_dir}/.tmp-usage.csv"
-  out="${cache_dir}/usage.csv"
-
-  echo "prefetching Cursor usage CSV"
-  if ! curl -fsSL --connect-timeout 20 --max-time 180 \
-    -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
-    -H "Accept: */*" \
-    -H "Referer: https://www.cursor.com/settings" \
-    -H "Cookie: WorkosCursorSessionToken=${token}" \
-    -o "$tmp" \
-    "https://cursor.com/api/dashboard/export-usage-events-csv?strategy=tokens"; then
-    echo "Cursor usage prefetch failed; submit will use cached data if any" >&2
-    rm -f "$tmp"
-    return 0
-  fi
-
-  IFS= read -r first <"$tmp" || true
-  if [[ $first != Date,* ]]; then
-    echo "Cursor usage prefetch returned non-CSV; keeping previous cache" >&2
-    rm -f "$tmp"
-    return 0
-  fi
-
-  chmod 600 "$tmp"
-  mv -f "$tmp" "$out"
-  echo "wrote ${out}"
-}
-
-prefetch_cursor_usage
+# Native sync handles ordinary increments. The managed helper bootstraps missing
+# or over-limit caches through verified date chunks without changing Tokscale.
+CURSOR_SYNC_SCRIPT="${1:-$(dirname "${BASH_SOURCE[0]}")/sync-cursor.py}"
+cursor_status=0
+if timeout 900 python3 "$CURSOR_SYNC_SCRIPT" "$TOKSCALE_BIN" </dev/null; then
+  :
+else
+  cursor_status=$?
+  echo "Cursor sync incomplete; uploading available data before reporting failure" >&2
+fi
 
 # Antigravity IDE usage is pull-based: `submit` only reads the local
 # antigravity-cache, which stays empty unless this sync runs while an
@@ -81,4 +42,5 @@ fi
 # pressure. Keep a finite ceiling so a genuinely wedged scan cannot overlap the
 # next three-hour timer slot, but allow the observed cold scan more than the
 # previous four-minute budget.
-timeout 900 bun "$TOKSCALE_BIN" submit </dev/null
+timeout 900 bun "$TOKSCALE_BIN" --no-spinner submit </dev/null
+exit "$cursor_status"

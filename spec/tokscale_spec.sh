@@ -36,11 +36,10 @@ When run bash -c "cat '$SCRIPT'"
 The output should include '.bun/install/global/node_modules/tokscale/bin.js'
 End
 
-It 'prefetches Cursor usage CSV before submit'
+It 'runs the managed Cursor sync helper before submit'
 When run bash -c "cat '$SCRIPT'"
-The output should include 'prefetch_cursor_usage'
-The output should include 'export-usage-events-csv'
-The output should include 'junhoyeo/tokscale#1175'
+The output should include 'sync-cursor.py'
+The output should not include 'export-usage-events-csv'
 End
 
 It 'syncs the Antigravity cache before submit'
@@ -110,13 +109,13 @@ After 'cleanup'
 
 It 'propagates the real Tokscale exit status'
 When run env HOME="$FAKE_HOME" bash "$SCRIPT"
-The output should include 'no Cursor credentials, skipping prefetch'
+The output should include 'No saved Cursor credentials; skipping Cursor sync'
 The stderr should include 'actual Tokscale failure'
 The status should be failure
 End
 End
 
-Describe 'cursor usage prefetch'
+Describe 'managed Cursor sync'
 SCRIPT="$PWD/home-manager/services/tokscale/submit.sh"
 
 install_common_mocks() {
@@ -133,17 +132,17 @@ exec "$@"
 EOF
   cat >"$MOCK_BIN/bun" <<'EOF'
 #!/usr/bin/env bash
-echo submitted
-exit 0
+case "$*" in
+  *"antigravity sync"*) exit "${ANTIGRAVITY_FIXTURE_STATUS:-0}" ;;
+  *) echo submitted; exit "${SUBMIT_FIXTURE_STATUS:-0}" ;;
+esac
 EOF
-  chmod +x "$MOCK_BIN/timeout" "$MOCK_BIN/bun"
-}
-
-write_cursor_creds() {
-  mkdir -p "$FAKE_HOME/.config/tokscale"
-  cat >"$FAKE_HOME/.config/tokscale/cursor-credentials.json" <<'EOF'
-{"version":1,"activeAccountId":"user_test","accounts":{"user_test":{"sessionToken":"user_test%3A%3AeyJ"}}}
+  cat >"$MOCK_BIN/python3" <<'EOF'
+#!/usr/bin/env bash
+echo 'Cursor helper called'
+exit "${CURSOR_FIXTURE_STATUS:-0}"
 EOF
+  chmod +x "$MOCK_BIN/timeout" "$MOCK_BIN/bun" "$MOCK_BIN/python3"
 }
 
 cleanup_prefetch() {
@@ -151,130 +150,35 @@ cleanup_prefetch() {
   rm -rf "$MOCK_BIN" "$FAKE_HOME"
 }
 
-Describe 'successful CSV download'
-setup() {
-  install_common_mocks
-  write_cursor_creds
-  cat >"$MOCK_BIN/curl" <<'EOF'
-#!/usr/bin/env bash
-out=""
-while [ $# -gt 0 ]; do
-  case "$1" in
-    -o) out="$2"; shift 2 ;;
-    *) shift ;;
-  esac
-done
-printf '%s\n' 'Date,Cloud Agent ID' '"2026-08-22T00:00:00.000Z","","","Included","test","No","0","1","0","1","2","Included"' >"$out"
-EOF
-  chmod +x "$MOCK_BIN/curl"
-}
-
-Before 'setup'
+Before 'install_common_mocks'
 After 'cleanup_prefetch'
 
-It 'writes the Cursor usage CSV then submits'
+It 'runs the Cursor helper and uploads available data'
 When run env HOME="$FAKE_HOME" bash "$SCRIPT"
-The output should include 'prefetching Cursor usage CSV'
-The output should include 'wrote'
-The output should include 'submitted'
-The status should be success
-The file "$FAKE_HOME/.config/tokscale/cursor-cache/usage.csv" should be exist
-The contents of file "$FAKE_HOME/.config/tokscale/cursor-cache/usage.csv" should start with 'Date,'
-End
-End
-
-Describe 'download failure'
-setup() {
-  install_common_mocks
-  write_cursor_creds
-  cat >"$MOCK_BIN/curl" <<'EOF'
-#!/usr/bin/env bash
-exit 22
-EOF
-  chmod +x "$MOCK_BIN/curl"
-}
-
-Before 'setup'
-After 'cleanup_prefetch'
-
-It 'still submits when prefetch fails'
-When run env HOME="$FAKE_HOME" bash "$SCRIPT"
-The stderr should include 'Cursor usage prefetch failed'
+The output should include 'Cursor helper called'
 The output should include 'submitted'
 The status should be success
 End
-End
 
-Describe 'invalid CSV'
-setup() {
-  install_common_mocks
-  write_cursor_creds
-  mkdir -p "$FAKE_HOME/.config/tokscale/cursor-cache"
-  printf '%s\n' 'Date,previous' >"$FAKE_HOME/.config/tokscale/cursor-cache/usage.csv"
-  cat >"$MOCK_BIN/curl" <<'EOF'
-#!/usr/bin/env bash
-out=""
-while [ $# -gt 0 ]; do
-  case "$1" in
-    -o) out="$2"; shift 2 ;;
-    *) shift ;;
-  esac
-done
-printf '%s\n' '{"error":"nope"}' >"$out"
-EOF
-  chmod +x "$MOCK_BIN/curl"
-}
-
-Before 'setup'
-After 'cleanup_prefetch'
-
-It 'keeps the previous cache when the response is not CSV'
-When run env HOME="$FAKE_HOME" bash "$SCRIPT"
-The stderr should include 'non-CSV'
+It 'uploads existing data but reports a failed Cursor refresh'
+When run env HOME="$FAKE_HOME" CURSOR_FIXTURE_STATUS=17 bash "$SCRIPT"
 The output should include 'submitted'
-The status should be success
-The contents of file "$FAKE_HOME/.config/tokscale/cursor-cache/usage.csv" should equal 'Date,previous'
+The stderr should include 'Cursor sync incomplete'
+The status should equal 17
 End
-End
 
-Describe 'missing credentials'
-setup() {
-  install_common_mocks
-}
-
-Before 'setup'
-After 'cleanup_prefetch'
-
-It 'skips prefetch and still submits'
-When run env HOME="$FAKE_HOME" bash "$SCRIPT"
-The output should include 'no Cursor credentials, skipping prefetch'
+It 'preserves the real upload failure when Cursor refresh also fails'
+When run env HOME="$FAKE_HOME" CURSOR_FIXTURE_STATUS=17 SUBMIT_FIXTURE_STATUS=42 bash "$SCRIPT"
 The output should include 'submitted'
-The status should be success
+The stderr should include 'Cursor sync incomplete'
+The status should equal 42
 End
-End
 
-Describe 'antigravity sync failure'
-setup() {
-  install_common_mocks
-  cat >"$MOCK_BIN/bun" <<'EOF'
-#!/usr/bin/env bash
-case "$*" in
-  *"antigravity sync"*) echo 'no antigravity language server' >&2; exit 1 ;;
-  *) echo submitted; exit 0 ;;
-esac
-EOF
-  chmod +x "$MOCK_BIN/bun"
-}
-
-Before 'setup'
-After 'cleanup_prefetch'
-
-It 'still submits when the Antigravity sync fails'
-When run env HOME="$FAKE_HOME" bash "$SCRIPT"
+It 'uploads when Antigravity is unavailable'
+When run env HOME="$FAKE_HOME" ANTIGRAVITY_FIXTURE_STATUS=1 bash "$SCRIPT"
+The output should include 'submitted'
 The stderr should include 'Antigravity sync failed'
-The output should include 'submitted'
 The status should be success
-End
 End
 End
 
@@ -327,10 +231,10 @@ The output should include 'PATH='
 The output should include 'binPath'
 End
 
-It 'puts curl and jq on the service PATH for Cursor prefetch'
+It 'provides the managed Python runtime and Cursor helper'
 When run bash -c "cat '$CONFIG'"
-The output should include 'pkgs.curl'
-The output should include 'pkgs.jq'
+The output should include 'pkgs.python3'
+The output should include './sync-cursor.py'
 End
 
 It 'runs the Linux timer on fixed three-hour wall-clock slots'
