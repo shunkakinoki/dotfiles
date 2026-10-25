@@ -89,7 +89,7 @@ End
 
 Describe 'sync scope'
 It 'pulls all Linear states with the bounded full-refresh workaround'
-When run bash -c "grep -F 'DELETE FROM local_metadata' '$SCRIPT' >/dev/null && grep -F -- '--pull' '$SCRIPT' >/dev/null && grep -F -- '--state all' '$SCRIPT' >/dev/null && ! grep -F -- '--pull-if-stale' '$SCRIPT' >/dev/null"
+When run bash -c "grep -F 'DELETE FROM local_metadata' '$SCRIPT' >/dev/null && grep -F -- '--pull' '$SCRIPT' >/dev/null && grep -F -- '--state \"\$full_pull_state\"' '$SCRIPT' >/dev/null && ! grep -F -- '--pull-if-stale' '$SCRIPT' >/dev/null"
 The status should be success
 End
 
@@ -202,6 +202,9 @@ EOF
   cat >"$FAKE_BD" <<'EOF'
 #!/usr/bin/env bash
 printf '%s\n' "$*" >>"$COMMAND_LOG"
+if [ -n "${JOURNAL_LOG:-}" ]; then
+  printf 'journal=%s %s\n' "${BD_EVENTS_JOURNAL:-unset}" "$*" >>"$JOURNAL_LOG"
+fi
 if [ "${FAKE_VERIFY_AUTHORITY:-}" = 1 ]; then
   test "${BEADS_DOLT_SERVER_HOST:-}" = kyber.tail950b36.ts.net || exit 98
   test "${BEADS_DOLT_SERVER_PORT:-}" = 3307 || exit 98
@@ -630,15 +633,32 @@ The contents of file "$DOLT_LOG" should not include 'DELETE FROM local_metadata'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-test --no-wait'
 End
 
-It 'pulls in full once the last full pull is a day old'
+It 'refreshes only open Linear work once the last full pull is a day old'
 mkdir -p "$STATE_HOME/beads-linear-sync"
 printf '%s\n' '2026-01-01T00:00:00Z' >"$CHECKPOINT_FILE"
 printf '%s\n' "$(($(date -u '+%s') - 86400))" >"$STATE_HOME/beads-linear-sync/full-pull-test%2Frepo-one"
 When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" FAKE_CHANGED_ISSUES=TEST-1 XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
 The status should be success
 The output should include 'Pulling complete Linear state'
-The contents of file "$COMMAND_LOG" should include 'linear sync --pull --state all --relations --no-wait'
+The contents of file "$COMMAND_LOG" should include 'linear sync --pull --state open --relations --no-wait'
+The contents of file "$COMMAND_LOG" should not include '--state all'
 The contents of file "$COMMAND_LOG" should not include '--pull --issues'
+End
+
+It 'seeds closed Linear work only before the first successful cycle'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Pulling complete Linear state'
+The contents of file "$COMMAND_LOG" should include 'linear sync --pull --state all --relations --no-wait'
+The contents of file "$COMMAND_LOG" should not include '--state open'
+End
+
+It 'keeps periodic reconciler writes out of the events journal'
+When run env COMMAND_LOG="$COMMAND_LOG" SYNC_COUNT="$SYNC_COUNT" JOURNAL_LOG="$TEST_ROOT/journal.log" XDG_STATE_HOME="$STATE_HOME" HOME="$TEST_ROOT" LINEAR_API_KEY=test bash "$RENDERED_SCRIPT"
+The status should be success
+The output should include 'Pushing changed active Beads'
+The contents of file "$TEST_ROOT/journal.log" should include 'journal=0 -C'
+The contents of file "$TEST_ROOT/journal.log" should not include 'journal=1'
 End
 
 It 'keeps pulling selectively after a failed selective pull'
@@ -660,7 +680,7 @@ When run bash -c "env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' FAKE_L
 The status should be success
 The output should include 'Linear pull failed with status 124'
 The output should include 'Pulling 1 changed Linear issue(s)'
-The value "$(grep -c -- '--state all' "$COMMAND_LOG")" should equal 1
+The value "$(grep -c -- '--pull --state open' "$COMMAND_LOG")" should equal 1
 The contents of file "$COMMAND_LOG" should include 'linear sync --pull --issues TEST-1 --no-wait'
 End
 
@@ -1703,11 +1723,12 @@ The file "$CHECKPOINT_FILE" should be exist
 End
 
 It 'completes acceptance under the shared lock and verifies Linear terminal state'
-When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted"
+When run bash -c "printf '%s\n' 'Accepted on current main' | env COMMAND_LOG='$COMMAND_LOG' SYNC_COUNT='$SYNC_COUNT' JOURNAL_LOG='$TEST_ROOT/journal.log' XDG_STATE_HOME='$STATE_HOME' HOME='$TEST_ROOT' LINEAR_API_KEY=test bash '$RENDERED_SCRIPT' --complete '$TEST_REPO_ID' df-accepted"
 The status should be success
 The output should include 'Accepted Bead and Linear issue are both terminal'
 The contents of file "$ISSUE_STATUS_FILE" should equal closed
 The contents of file "$COMMAND_LOG" should include 'close df-accepted --reason-file -'
+The value "$(grep '^journal=1 ' "$TEST_ROOT/journal.log")" should end with ' close df-accepted --reason-file -'
 The contents of file "$COMMAND_LOG" should include 'linear sync --push --issues df-accepted --no-wait'
 The path "$SYNC_COUNT" should not be exist
 End

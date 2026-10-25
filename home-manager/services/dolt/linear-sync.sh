@@ -54,7 +54,10 @@ export BEADS_DOLT_SERVER_MODE="1"
 export BEADS_DOLT_AUTO_START="0"
 export BEADS_NODE_ID="kyber"
 export BEADS_ACTOR="beads-linear-reconciler"
-export BD_EVENTS_JOURNAL="1"
+# The control-state fold skips this actor's journal events and nothing else
+# reads them, while each journaled write bumps the one bd_events_seq row that
+# concurrent fleet writes deadlock on.
+export BD_EVENTS_JOURNAL="0"
 export DOLT_CLI_USER="beads"
 export DOLT_CLI_PASSWORD=""
 
@@ -1176,7 +1179,8 @@ if [ "$operation" = "--complete" ]; then
       close_command+=(--actor "$completion_assignee")
     fi
     close_command+=(close "$completion_bead_id" --reason-file -)
-    printf '%s\n' "$completion_reason" | "${close_command[@]}" >/dev/null
+    # The close is recorded as the assignee, so the fold must see it.
+    printf '%s\n' "$completion_reason" | BD_EVENTS_JOURNAL=1 "${close_command[@]}" >/dev/null
   fi
 
   # Commit the terminal Bead on the authority before any Linear request. If the API
@@ -1494,8 +1498,7 @@ else
   trap 'on_restore_signal HUP' HUP
   run_dolt_sql "USE \`$linear_database\`; DELETE FROM local_metadata WHERE \`key\` = 'linear.last_sync';"
 
-  # Pull open and closed Linear work so cancels/Done land in Beads. A
-  # rate-limit failure is deferred to the next scheduled run instead of making
+  # A rate-limit failure is deferred to the next scheduled run instead of making
   # launchd hot-loop a failed job.
   if [ "$pull_mode" = selective ]; then
     chunk_count=$(((${#selective_pull_ids[@]} + selective_pull_chunk - 1) / selective_pull_chunk))
@@ -1517,10 +1520,18 @@ else
     done
     pull_status="$chunk_status"
   else
+    # Only the first cycle seeds closed Linear work. Afterwards a Linear
+    # close bumps updatedAt and lands through the selective pull, while a
+    # daily closed refresh rewrites every recently closed Bead with Linear's
+    # reformatted echo of the body the terminal push sent.
+    full_pull_state=all
+    if [ -s "$sync_checkpoint_file" ]; then
+      full_pull_state=open
+    fi
     log "Pulling complete Linear state"
     if run_linear pull @coreutils@/bin/timeout 720 "$bd_cli" -C "$repo_dir" linear sync \
       --pull \
-      --state all \
+      --state "$full_pull_state" \
       --relations \
       --no-wait; then
       pull_status=0
