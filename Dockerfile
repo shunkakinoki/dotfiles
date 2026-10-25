@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.25
+# syntax=docker/dockerfile:1.28
 
 # Stage 1: download actions/runner agent + container hooks + docker CLI/buildx
 # so the final image can be used as a custom ARC runner image with the
