@@ -416,7 +416,7 @@ The status should be success
 End
 
 It 'only exposes the routed models through the compatibility aliases'
-When run bash -c "allowed=\$(jq -r '.[\"gpt-luna\"], .[\"deepseek-flash\"]' models.json; jq -r '.[]' models.free.json; printf '%s\n' deepseek-v4-flash gemma-4-31b-it priority:free); while IFS= read -r alias; do [ \"\$alias\" = free ] || printf '%s\n' \"\$allowed\" | grep -Fxq \"\$alias\" || { echo \"unexpected alias: \$alias\"; exit 1; }; done < <(sed -n 's/^[[:space:]]*alias: \"\\(.*\\)\"/\\1/p' config/cliproxyapi/config.template.yaml)"
+When run bash -c "allowed=\$(jq -r '.[\"gpt-luna\"], .[\"deepseek-flash\"], .[\"deepseek-flash-uncensored\"]' models.json; jq -r '.[]' models.free.json; printf '%s\n' deepseek-v4-flash gemma-4-31b-it priority:free); while IFS= read -r alias; do [ \"\$alias\" = free ] || printf '%s\n' \"\$allowed\" | grep -Fxq \"\$alias\" || { echo \"unexpected alias: \$alias\"; exit 1; }; done < <(sed -n 's/^[[:space:]]*alias: \"\\(.*\\)\"/\\1/p' config/cliproxyapi/config.template.yaml)"
 The status should be success
 End
 End
