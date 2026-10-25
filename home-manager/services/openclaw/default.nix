@@ -20,10 +20,7 @@ let
   };
   stateMaintenance = pkgs.writeShellApplication {
     name = "openclaw-state-maintenance";
-    runtimeInputs = [
-      pkgs.coreutils
-      pkgs.systemd
-    ];
+    runtimeInputs = [ pkgs.coreutils ];
     text = builtins.readFile ./state-maintenance.sh;
   };
   tmpCleanup = pkgs.writeShellApplication {
