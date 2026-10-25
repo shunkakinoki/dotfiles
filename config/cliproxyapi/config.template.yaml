@@ -621,6 +621,8 @@ openai-compatibility:
         alias: "deepseek-v4.1-flash"
       - name: "deepseek-v4.1-flash"
         alias: "deepseek-v4-flash"
+      - name: "deepseek-v4.1-flash-uncensored"
+        alias: "deepseek-v4.1-flash-uncensored"
   # Temporary campaign provider: serves stealth/union-alpha under the same
   # "free" alias so callers keep using "free" while union-alpha is evaluated.
   # Same OpenRouter token; remove when the trial ends.
