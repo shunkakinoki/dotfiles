@@ -29,6 +29,7 @@ Never hand-edit a generated config. Edit the `.tpl.*` file, regenerate, and comm
 | `__GPT_IMAGE__` | `gpt-image-2` |
 | `__GEMINI_FLASH__` | `gemini-3.8-flash` |
 | `__DEEPSEEK_FLASH__` | `deepseek-v4.1-flash` |
+| `__DEEPSEEK_FLASH_UNCENSORED__` | `deepseek-v4.1-flash-uncensored` |
 | `__GEMMA_LOCAL__` | `gemma3:4b` |
 | `__MINIMAX__` | `minimax-m3` |
 | `__KIMI__` | `kimi-k3` |
