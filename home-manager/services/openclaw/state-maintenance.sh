@@ -4,11 +4,8 @@
 # makes every state-backed command (including `openclaw message send`, which the
 # orchestrator pages through) fail before it can do anything.
 #
-# The product's own pruner only removes task rows whose `cleanup_after` is
-# already due, and that column is stamped at a fixed created_at + 7d with no
-# config knob, so this job cannot tighten task retention. It stamps, prunes and
-# reclaims free pages; keeping the writers themselves bounded is a config
-# concern.
+# This job only reclaims free pages; keeping the writers themselves bounded is a
+# config concern.
 
 STATE_DB="${HOME}/.openclaw/state/openclaw.sqlite"
 SNAPSHOT_REPO="${HOME}/Backups/openclaw-sqlite"
@@ -26,28 +23,33 @@ if [ ! -x "${OPENCLAW}" ]; then
   exit 1
 fi
 
-gateway_was_active=0
-if systemctl --user is-active --quiet openclaw-gateway.service; then
-  gateway_was_active=1
-fi
+# Kyber's host user manager refuses the newer nixpkgs systemctl on its private
+# socket, so only the host client can reach it.
+SYSTEMCTL=/usr/bin/systemctl
+
+# Compaction needs the state ownership lock the running gateway holds. With the
+# gateway's state unknown, the snapshot would copy the whole database onto the
+# shared disk only for compaction to be refused.
+gateway_state=$("${SYSTEMCTL}" --user is-active openclaw-gateway.service || true)
+case "${gateway_state}" in
+  active) gateway_was_active=1 ;;
+  inactive | failed) gateway_was_active=0 ;;
+  *)
+    log "cannot read gateway state (${gateway_state:-no answer}); skipping"
+    exit 1
+    ;;
+esac
 
 # shellcheck disable=SC2329 # invoked via the EXIT trap below
 restore_gateway() {
   if [ "${gateway_was_active}" -eq 1 ]; then
-    systemctl --user start openclaw-gateway.service || log "gateway restart failed"
+    "${SYSTEMCTL}" --user start openclaw-gateway.service || log "gateway restart failed"
   fi
 }
 trap restore_gateway EXIT
 
-# Both the task pruner and the sqlite compactor need the state ownership lock,
-# which the running gateway holds.
 if [ "${gateway_was_active}" -eq 1 ]; then
-  systemctl --user stop openclaw-gateway.service
-fi
-
-if ! "${OPENCLAW}" tasks maintenance --apply; then
-  log "tasks maintenance failed"
-  exit_status=1
+  "${SYSTEMCTL}" --user stop openclaw-gateway.service
 fi
 
 size_bytes=0

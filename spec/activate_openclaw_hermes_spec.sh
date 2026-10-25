@@ -52,6 +52,11 @@ When run bash -c "maintenance=\$(sed -n '/systemd.user.services.openclaw-state-m
 The status should be success
 End
 
+It 'drives the gateway with the host systemctl and skips when its state is unknown'
+When run bash -c "script='$PWD/home-manager/services/openclaw/state-maintenance.sh'; grep -qF 'SYSTEMCTL=/usr/bin/systemctl' \"\$script\" && grep -qF 'cannot read gateway state' \"\$script\" && ! grep -qE '^[^#]*[^}\"]systemctl --user' \"\$script\" && ! grep -qF 'tasks maintenance' \"\$script\" && ! grep -qF 'pkgs.systemd' <<<\"\$(sed -n '/stateMaintenance = /,/};/p' '$PWD/home-manager/services/openclaw/default.nix')\""
+The status should be success
+End
+
 It 'loads the optional dotenv only into the gateway service'
 When run bash -c "gateway=\$(sed -n '/systemd.user.services.openclaw-gateway =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix'); proxy=\$(sed -n '/systemd.user.services.openclaw-k3s-proxy =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -qF 'EnvironmentFile = [ \"-\${homeDir}/dotfiles/.env\" ];' <<<\"\$gateway\" && ! grep -qF 'EnvironmentFile' <<<\"\$proxy\" && ! grep -R -q 'ASCII_BOX_API_KEY=' '$PWD/config/openclaw'"
 The status should be success
