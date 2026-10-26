@@ -1,0 +1,8 @@
+default_model = "cliproxy-deepseek-flash"
+
+[[providers]]
+name = "cliproxy-deepseek-flash"
+kind = "openai"
+base_url = "https://cliproxy.shunkakinoki.com/v1"
+model = "__DEEPSEEK_FLASH__"
+api_key_env = "CLIPROXY_API_KEY"
