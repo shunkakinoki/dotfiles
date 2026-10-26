@@ -94,8 +94,7 @@
   })
   (_: prev: {
     # Use the first tagged release that includes --attach on issue and PR commands.
-    # gh's go.mod requires Go 1.27, newer than the pinned nixpkgs default.
-    gh = (prev.gh.override { buildGoModule = prev.buildGo127Module; }).overrideAttrs (_: {
+    gh = prev.gh.overrideAttrs (_: {
       pname = "gh";
       version = "2.103.2";
       src = prev.fetchFromGitHub {
