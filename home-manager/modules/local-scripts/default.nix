@@ -31,4 +31,9 @@ _: {
     executable = true;
     source = ./tmux-bridge.sh;
   };
+  home.file.".local/scripts/reasonix-threads" = {
+    executable = true;
+    force = true;
+    source = ./reasonix-threads.sh;
+  };
 }
