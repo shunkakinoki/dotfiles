@@ -4,6 +4,11 @@
   inputs,
 }:
 {
+  overlay-beads-version-guard = pkgs.runCommand "overlay-beads-version-guard" { } ''
+    ${pkgs.beads-unwrapped}/bin/bd update --help | grep -F -- '--if-version string'
+    touch $out
+  '';
+
   overlay-neovim-lua = pkgs.runCommand "overlay-neovim-lua" { } ''
     ${
       if pkgs.neovim-unwrapped ? lua then
