@@ -7,9 +7,9 @@
 }:
 let
   homeDir = config.home.homeDirectory;
-  # The worker is only useful on hosts that carry a Reasonix state directory
-  # and a CLI on PATH; Galactica is the current proof-of-concept target.
-  enabled = inputs.host.isGalactica;
+  # The worker is useful on the Linux matic test host and the macOS galactica
+  # host; both carry the Reasonix state directory and CLI on PATH.
+  enabled = inputs.host.isGalactica || inputs.host.isMatic;
   stateDir = "${homeDir}/.local/state/reasonix";
   # The base commit installs reasonix as a bun global, which lands in ~/.bun/bin
   # rather than the Nix store, so resolve it from PATH at start time.
@@ -53,6 +53,10 @@ in
       ExecStart = "${pkgs.bash}/bin/bash ${./start.sh} reasonix ${stateDir}";
       Restart = "always";
       RestartSec = 10;
+      # Keep an idle resident worker cheap and bound runaway tool subprocesses.
+      CPUQuota = "200%";
+      MemoryMax = "2G";
+      TasksMax = 128;
       Environment = "PATH=${servicePath}";
     };
     Install.WantedBy = [ "default.target" ];
