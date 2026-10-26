@@ -10,6 +10,13 @@ let
     inherit (pkgs) system;
     config.allowUnfree = true;
   };
+  # Lean and Elixir LS both install a top-level LICENSE; strip Lean's copy so
+  # Home Manager's shared package environment can link both tools.
+  lean4WithoutTopLevelLicense = pkgs.symlinkJoin {
+    name = "lean4-without-top-level-license";
+    paths = [ pkgs.lean4 ];
+    postBuild = "rm -f $out/LICENSE";
+  };
 in
 with pkgs;
 [
@@ -90,7 +97,7 @@ with pkgs;
   jujutsu
   just
   k6
-  lean4
+  lean4WithoutTopLevelLicense
   lefthook
   llm
   lnav
