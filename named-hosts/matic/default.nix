@@ -86,7 +86,6 @@ import ../../hosts/nixos {
         boot.loader.timeout = 3;
 
         # TPM2 auto-unlock for LUKS disk encryption
-        boot.initrd.systemd.enable = true;
         boot.initrd.luks.devices."luks-eb20879c-a48d-4334-99a4-bf77a3ad289a".crypttabExtraOpts = [
           "tpm2-device=auto"
         ];
@@ -636,13 +635,13 @@ import ../../hosts/nixos {
             services.linux-wallpaperengine = {
               enable = true;
               assetsPath = "${config.home.homeDirectory}/.local/share/Steam/steamapps/common/wallpaper_engine/assets";
+              fps = 1;
+              audio.silent = true;
               wallpapers = [
                 {
                   monitor = "eDP-1";
                   wallpaperId = "2826529529";
                   scaling = "fill";
-                  fps = 1;
-                  audio.silent = true;
                   extraOptions = [
                     "--no-audio-processing"
                     "--disable-mouse"
