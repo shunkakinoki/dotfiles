@@ -24,7 +24,7 @@ with pkgs;
   ast-grep
   atk
   boat-cli
-  awscli
+  awscli2
   bandwhich
   bat
   beads
