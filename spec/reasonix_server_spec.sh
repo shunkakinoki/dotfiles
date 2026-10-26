@@ -54,10 +54,22 @@ The status should be success
 The output should equal '1'
 End
 
-It 'is gated to the host that carries the proof-of-concept worker'
-When run bash -c "grep -F 'inputs.host.isGalactica' '$UNIT'"
+It 'is enabled on the Linux test host and macOS workstation'
+When run bash -c "grep -F 'inputs.host.isGalactica || inputs.host.isMatic' '$UNIT'"
 The status should be success
-The output should include 'inputs.host.isGalactica'
+The output should include 'inputs.host.isGalactica || inputs.host.isMatic'
+End
+
+It 'bounds Linux worker resources'
+check() {
+  grep -F -c 'CPUQuota = "200%"' "$UNIT"
+  grep -F -c 'MemoryMax = "2G"' "$UNIT"
+  grep -F -c 'TasksMax = 128' "$UNIT"
+}
+When call check
+The line 1 of output should equal '1'
+The line 2 of output should equal '1'
+The line 3 of output should equal '1'
 End
 
 Describe 'thread client contract'
