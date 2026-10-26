@@ -78,6 +78,11 @@ import ../../hosts/nixos {
         );
       in
       {
+        # Reasonix's enforced Linux shell sandbox requires bubblewrap. Keep it
+        # in the host system profile so the sandbox backend is available even
+        # when Home Manager activation is interrupted or stale.
+        environment.systemPackages = [ pkgs.bubblewrap ];
+
         # Boot loader (EFI/systemd-boot)
         boot.loader.systemd-boot.enable = true;
         boot.loader.systemd-boot.configurationLimit = 10;
