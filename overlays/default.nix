@@ -193,7 +193,6 @@
     # equals go.mod's toolchain line, so Go rejects go.mod as untidy. Remove once
     # gastownhall/beads#6752 merges and the beads input is bumped past it.
     beads-unwrapped = prev.beads-unwrapped.overrideAttrs (old: {
-      patches = (old.patches or [ ]) ++ [ ../patches/beads-update-version-guard.patch ];
       postPatch = old.postPatch + ''
         go mod edit -toolchain=none
       '';
