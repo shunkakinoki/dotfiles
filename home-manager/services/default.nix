@@ -35,6 +35,7 @@ let
   qmd = ./qmd;
   openclaw = ./openclaw;
   paperclip = ./paperclip;
+  reasonix = ./reasonix;
   roborev = ./roborev;
   screenshotClipboard = import ./screenshot-clipboard { inherit pkgs; };
   sshAgent = ./ssh-agent;
@@ -73,6 +74,7 @@ in
   qmd
   openclaw
   paperclip
+  reasonix
   roborev
   screenshotClipboard
   sshAgent
