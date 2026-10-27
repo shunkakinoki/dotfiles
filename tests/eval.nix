@@ -181,9 +181,17 @@ let
       assert cfg.users.users.shunkakinoki.linger;
       assert herdr.Install.WantedBy == [ "default.target" ];
       assert herdr.Unit.X-SwitchMethod == "keep-old";
+      assert lib.elem "agenix.service" herdr.Unit.After;
+      assert lib.elem "agenix.service" herdr.Unit.Wants;
       assert lib.hasSuffix "/bin/herdr server" (builtins.head (lib.toList herdr.Service.ExecStart));
       assert herdr.Service.Restart == "on-failure";
-      assert herdr.Service.EnvironmentFile == [ "-/home/shunkakinoki/dotfiles/.env" ];
+      assert
+        herdr.Service.EnvironmentFile == [
+          "-/home/shunkakinoki/dotfiles/.env"
+          "-/home/shunkakinoki/.config/agenix/agents-prd.env"
+        ];
+      assert beads.age.secrets."agents-prd.env".mode == "0400";
+      assert beads.age.identityPaths == [ "/home/shunkakinoki/.ssh/id_ed25519" ];
       assert lib.elem "HERDR_ENV=1" herdr.Service.Environment;
       assert lib.elem "BEADS_DOLT_AUTO_START=0" herdr.Service.Environment;
       assert lib.elem "BEADS_DOLT_SERVER_MODE=1" herdr.Service.Environment;
@@ -367,7 +375,10 @@ let
           ];
         assert cfg.systemd.user.services.herdr-server.Install.WantedBy == [ "default.target" ];
         assert cfg.systemd.user.services.herdr-server.Unit.X-SwitchMethod == "keep-old";
+        assert lib.elem "agenix.service" cfg.systemd.user.services.herdr-server.Unit.After;
+        assert lib.elem "agenix.service" cfg.systemd.user.services.herdr-server.Unit.Wants;
         assert cfg.systemd.user.services.herdr-server.Service.EnvironmentFile == [ "-/root/dotfiles/.env" ];
+        assert !(cfg.age.secrets ? "agents-prd.env");
         assert lib.elem "BEADS_DOLT_AUTO_START=0"
           cfg.systemd.user.services.herdr-server.Service.Environment;
         assert lib.elem "BEADS_DOLT_SERVER_MODE=1"
@@ -392,6 +403,48 @@ let
         assert lib.hasInfix sessionVarsSource (bashrcBefore "export PATH=");
         assert !(cfg.systemd.user.services ? roborev);
         mkEvalCheck "home-kamino" kamino.activationPackage;
+      eval-home-kamino2-identity =
+        let
+          kamino = import ../named-hosts/kamino {
+            inherit inputs;
+            name = "kamino2";
+          };
+          cfg = kamino.config;
+          envFile = "/root/.config/agenix/agents-prd.env";
+          workerNames = [
+            "kamino1"
+            "kamino2"
+            "kamino3"
+            "kamino4"
+            "kamino5"
+            "kamino6"
+          ];
+          workerSecretMatches = builtins.map (
+            workerName:
+            let
+              worker = import ../named-hosts/kamino {
+                inherit inputs;
+                name = workerName;
+              };
+            in
+            lib.hasSuffix "/named-hosts/agents-prd/keys/${workerName}.age" (
+              toString worker.config.age.secrets."agents-prd.env".file
+            )
+          ) workerNames;
+        in
+        assert builtins.all (matches: matches) workerSecretMatches;
+        assert cfg.age.identityPaths == [ "/etc/ssh/ssh_host_ed25519_key" ];
+        assert cfg.age.secrets."agents-prd.env".path == envFile;
+        assert cfg.age.secrets."agents-prd.env".mode == "0400";
+        assert lib.hasSuffix "/named-hosts/agents-prd/keys/kamino2.age" (
+          toString cfg.age.secrets."agents-prd.env".file
+        );
+        assert
+          cfg.systemd.user.services.herdr-server.Service.EnvironmentFile == [
+            "-/root/dotfiles/.env"
+            "-${envFile}"
+          ];
+        mkEvalCheck "home-kamino2-identity" kamino.activationPackage;
       eval-home-kamino7 =
         let
           kamino = import ../named-hosts/kamino {
@@ -406,6 +459,7 @@ let
         assert roborev.Service.MemoryHigh == "36G";
         assert roborev.Service.MemoryMax == "42G";
         assert roborev.Service.TasksMax == 4096;
+        assert !(cfg.age.secrets ? "agents-prd.env");
         mkEvalCheck "home-kamino7" kamino.activationPackage;
       eval-home-kamino4-t3-publish-only =
         let
@@ -592,10 +646,13 @@ let
         assert
           cfg.modules.tailscale.extraUpArgs == [
             "--reset"
+            "--operator=ubuntu"
             "--accept-dns=true"
             "--ssh"
           ];
         assert cfg.home.homeDirectory == "/home/ubuntu";
+        assert cfg.age.identityPaths == [ "/home/ubuntu/.ssh/id_ed25519" ];
+        assert cfg.age.secrets."agents-prd.env".path == "/home/ubuntu/.config/agenix/agents-prd.env";
         mkEvalCheck "home-beskar" beskar.activationPackage;
       eval-home-kyber =
         let
@@ -628,6 +685,11 @@ let
         assert cfg.home.activation ? installDoltSystemService;
         assert cfg.systemd.user.services ? dolt-linear-sync;
         assert cfg.systemd.user.services.herdr-server.Service.Slice == "herdr.slice";
+        assert lib.elem "agenix.service" cfg.systemd.user.services.herdr-server.Unit.After;
+        assert lib.elem "agenix.service" cfg.systemd.user.services.herdr-server.Unit.Wants;
+        assert cfg.age.secrets."agents-prd.env".path == "/home/ubuntu/.config/agenix/agents-prd.env";
+        assert lib.elem "-/home/ubuntu/.config/agenix/agents-prd.env"
+          cfg.systemd.user.services.herdr-server.Service.EnvironmentFile;
         assert cfg.systemd.user.services.openclaw-gateway.Service.IOAccounting;
         assert cfg.systemd.user.services.openclaw-gateway.Service.IOReadBandwidthMax == "/ 20M";
         assert !(cfg.systemd.user.services.openclaw-gateway.Service ? IOWriteBandwidthMax);
