@@ -12,12 +12,15 @@ system_proxy="@systemProxy@"
 proxy_port="@proxyPort@"
 network_services="@networkServices@"
 bypass_domains="@bypassDomains@"
+ca_bundle="@caBundle@"
 
 pfctl_bin="${PFCTL_BIN:-/sbin/pfctl}"
 curl_bin="${CURL_BIN:-/usr/bin/curl}"
 route_bin="${ROUTE_BIN:-/sbin/route}"
 networksetup_bin="${NETWORKSETUP_BIN:-/usr/sbin/networksetup}"
 chown_bin="${CHOWN_BIN:-/usr/sbin/chown}"
+nc_bin="${NC_BIN:-/usr/bin/nc}"
+security_bin="${SECURITY_BIN:-/usr/bin/security}"
 now="${GUARD_NOW:-$(date +%s)}"
 window_file="$guard_state_dir/window"
 
@@ -35,6 +38,29 @@ ensure_ca() {
   chmod 755 "$state_dir"
   chmod 600 "$state_dir/ca.key"
   chmod 644 "$state_dir/ca.crt"
+}
+
+# Non-Keychain TLS clients (Nix curl, Python, Rust) read a PEM bundle, so the
+# local CA is appended to the public roots.
+ensure_bundle() {
+  cat "$ca_bundle" "$state_dir/ca.crt" >"$state_dir/ca-bundle.crt.tmp"
+  chmod 644 "$state_dir/ca-bundle.crt.tmp"
+  mv -f "$state_dir/ca-bundle.crt.tmp" "$state_dir/ca-bundle.crt"
+}
+
+# env-ready tells the per-user env agent it is safe to point clients at the
+# proxy: the tunnel answers and the CA is trusted in the System keychain.
+ensure_env_ready() {
+  if "$nc_bin" -z -G 2 127.0.0.1 "$proxy_port" >/dev/null 2>&1 &&
+    "$security_bin" verify-cert -q -c "$state_dir/ca.crt" >/dev/null 2>&1; then
+    if [ ! -e "$state_dir/env-ready" ]; then
+      touch "$state_dir/env-ready"
+      log "proxy env enabled"
+    fi
+  elif [ -e "$state_dir/env-ready" ]; then
+    rm -f "$state_dir/env-ready"
+    log "proxy env disabled"
+  fi
 }
 
 # macOS reloads /etc/pf.conf on some network and sharing changes, which drops
@@ -152,6 +178,8 @@ main() {
   mkdir -p "$guard_state_dir"
   chmod 700 "$guard_state_dir"
   ensure_ca
+  ensure_bundle
+  ensure_env_ready
   ensure_pf
   ensure_system_proxy
   reconcile_window

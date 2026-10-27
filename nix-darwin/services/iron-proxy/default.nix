@@ -98,6 +98,13 @@ let
     proxyPort = toString tunnelPort;
     networkServices = lib.concatStringsSep ":" config.networking.knownNetworkServices;
     bypassDomains = lib.concatStringsSep " " proxyBypassDomains;
+    caBundle = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
+  };
+
+  envScript = pkgs.replaceVars ./env.sh {
+    inherit stateDir;
+    proxyPort = toString tunnelPort;
+    noProxy = lib.concatStringsSep "," (map (lib.removePrefix "*") proxyBypassDomains ++ [ "::1" ]);
   };
 
   bypassScript = pkgs.writeShellApplication {
@@ -177,6 +184,19 @@ lib.mkIf (!isRunner) {
         StandardOutPath = "/var/log/iron-proxy-guard.log";
         StandardErrorPath = "/var/log/iron-proxy-guard.log";
       };
+    };
+  };
+
+  launchd.user.agents.iron-proxy-env = {
+    serviceConfig = {
+      ProgramArguments = [
+        "/bin/bash"
+        "${envScript}"
+      ];
+      RunAtLoad = true;
+      StartInterval = 60;
+      WatchPaths = [ stateDir ];
+      ProcessType = "Background";
     };
   };
 }
