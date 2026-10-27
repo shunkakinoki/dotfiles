@@ -48,7 +48,8 @@ let
     "kamino10"
   ];
   t3ConnectMode = if host.t3ConnectDisabled then "disabled" else "publish-only";
-  hasAgentsPrdIdentity = name == "kamino2";
+  agentsPrdSecretFile = ./keys + "/agents-prd-${name}.age";
+  hasAgentsPrdIdentity = builtins.pathExists agentsPrdSecretFile;
   agentsPrdEnvFile = "/root/.config/agenix/agents-prd.env";
   loadAgentsPrdPosix = ''
     _hm_previous_env_file="''${DOTFILES_ENV_FILE-}"
@@ -123,7 +124,7 @@ inputs.home-manager.lib.homeManagerConfiguration {
         xdg.configFile."kamino/name".text = "${name}\n";
         age.identityPaths = lib.mkIf hasAgentsPrdIdentity [ "/etc/ssh/ssh_host_ed25519_key" ];
         age.secrets."agents-prd.env" = lib.mkIf hasAgentsPrdIdentity {
-          file = ./keys/agents-prd-kamino2.age;
+          file = agentsPrdSecretFile;
           path = agentsPrdEnvFile;
           mode = "0400";
         };
