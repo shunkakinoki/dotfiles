@@ -460,6 +460,10 @@ It 'has spec file for named-hosts/kamino/fleet.sh'
 The path "spec/kamino_fleet_spec.sh" should be exist
 End
 
+It 'tests named-hosts/kamino/trim-idle.sh through the activation spec'
+The path "spec/kamino_activation_spec.sh" should be exist
+End
+
 It 'has spec file for managed Codex config'
 The path "spec/codex_config_spec.sh" should be exist
 End
@@ -597,6 +601,8 @@ config/devin/hooks/atuin-history.sh
 config/devin/hooks/notify.sh
 config/devin/hooks/pushover.sh
 config/dsh/hydrate.sh
+config/reasonix/hydrate.sh
+home-manager/services/reasonix/start.sh
 config/codex/hooks/notify.sh
 config/codex/hooks/pushover.sh
 config/openfactor/install.sh
@@ -743,6 +749,7 @@ install.sh
 named-hosts/beskar/activate-t3-runtime-libs.sh
 named-hosts/kamino/activate.sh
 named-hosts/kamino/fleet.sh
+named-hosts/kamino/trim-idle.sh
 named-hosts/kyber/activate-backup-files.sh
 named-hosts/kyber/activate-fish-ssh-compat.sh
 named-hosts/kyber/activate-ip-forwarding.sh

@@ -29,6 +29,7 @@ Never hand-edit a generated config. Edit the `.tpl.*` file, regenerate, and comm
 | `__GPT_IMAGE__` | `gpt-image-2` |
 | `__GEMINI_FLASH__` | `gemini-3.8-flash` |
 | `__DEEPSEEK_FLASH__` | `deepseek-v4.1-flash` |
+| `__DEEPSEEK_FLASH_UNCENSORED__` | `deepseek-v4.1-flash-uncensored` |
 | `__GEMMA_LOCAL__` | `gemma3:4b` |
 | `__MINIMAX__` | `minimax-m3` |
 | `__KIMI__` | `kimi-k3` |
@@ -75,7 +76,8 @@ When a campaign ends, delete the key and its `models:` entry in
 
 CLIProxy serves the Codex OAuth models (`__GPT_LUNA__`, `__GPT_SOL__`,
 `__GPT_ASTRA__`, `gpt-5.6-terra`, `gpt-5.5`), the DeepSeek compatibility
-aliases, `free`, and the `models.free.json` models. Models that Codex OAuth
+aliases (`deepseek-v4.1-flash` and `deepseek-v4.1-flash-uncensored`), `free`, and
+the `models.free.json` models. Models that Codex OAuth
 cannot serve are removed with `oauth-excluded-models`, which matches upstream
 IDs and has no negation, so a new upstream Codex model is served until it is
 added there.
@@ -145,6 +147,7 @@ Hermes also runs a Mixture-of-Agents preset: reference models
 | Factory (droid) | custom models | `custom:deepseek-v4.1-flash-0`, `custom:free-1` via `https://cliproxy.shunkakinoki.com/v1` | [settings.tpl.json](config/factory/settings.tpl.json) |
 | aichat | default | `cliproxy:deepseek-v4.1-flash` | [config.tpl.yaml](config/aichat/config.tpl.yaml) |
 | DSH web | default | `deepseek-v4.1-flash` via `https://cliproxy.shunkakinoki.com/v1` (native DeepSeek adapter) | [settings.tpl.yaml](config/dsh/settings.tpl.yaml) |
+| Reasonix | `default_model` | `cliproxy-deepseek-flash` -> `deepseek-v4.1-flash` via `https://cliproxy.shunkakinoki.com/v1` | [config.tpl.toml](config/reasonix/config.tpl.toml) |
 | llm | default | `deepseek-v4.1-flash` | [default_model.tpl.txt](config/llm/default_model.tpl.txt) |
 | Handy | transcript post-process | `@preset/deepseek-v4.1-flash` (OpenRouter) | [settings_store.tpl.json](config/handy/settings_store.tpl.json) |
 
@@ -197,10 +200,12 @@ above it is cooling down or unavailable.
 | `opencode` | 300 | `deepseek-v4-flash` aliased to `deepseek-v4.1-flash` |
 | `aliyun` | 200 | `deepseek-v4-flash-0731` aliased to `deepseek-v4.1-flash` |
 | `openrouter` | 100 | `deepseek/deepseek-v4.1-flash` aliased to `deepseek-v4.1-flash` |
+| `surplus` | 150 | `deepseek-v4.1-flash-uncensored` served under its own alias |
 
 So `deepseek-v4.1-flash` requests rotate across the priority-300 credentials
 first; Aliyun and OpenRouter only serve once the tier above them is
-unavailable.
+unavailable. `deepseek-v4.1-flash-uncensored` is served only by Surplus, its
+sole upstream.
 
 ## Changing a model
 

@@ -9,8 +9,7 @@ let
     pkgs.bun
     pkgs.bash
     pkgs.coreutils
-    pkgs.curl
-    pkgs.jq
+    pkgs.python3
   ];
   # T3 Code runs each provider instance from its own home, outside the default
   # ~/.claude and ~/.codex that Tokscale scans.
@@ -27,6 +26,8 @@ let
         )
       )
       (
+        # Instances without their own session home (Grok only overrides its binary)
+        # stay on the default dirs Tokscale already scans.
         lib.filterAttrs (
           _: instance: t3SessionDirs ? ${instance.driver}
         ) (lib.importJSON ../../../config/t3code/server-settings.json).providerInstances
@@ -52,6 +53,7 @@ in
       ProgramArguments = [
         "${pkgs.bash}/bin/bash"
         "${./submit.sh}"
+        "${./sync-cursor.py}"
       ];
       EnvironmentVariables = {
         PATH = binPath + ":/usr/bin:/bin:/usr/sbin:/sbin";
@@ -82,7 +84,7 @@ in
         "PATH=${binPath}:/usr/bin:/bin:/usr/sbin:/sbin"
         "TOKSCALE_EXTRA_DIRS=${t3ExtraDirs}"
       ];
-      ExecStart = "${pkgs.bash}/bin/bash ${./submit.sh}";
+      ExecStart = "${pkgs.bash}/bin/bash ${./submit.sh} ${./sync-cursor.py}";
       StandardOutput = "append:/tmp/tokscale.log";
       StandardError = "append:/tmp/tokscale.error.log";
     };

@@ -45,6 +45,7 @@ in
   ./opencode
   ./pi
   ./pnpm
+  ./reasonix
   ./roborev
   ./serena
   ./starship
