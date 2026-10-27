@@ -100,8 +100,15 @@ inputs.nix-darwin.lib.darwinSystem {
             ${pkgs.coreutils}/bin/chown ${username}:staff "$temp"
             ${pkgs.coreutils}/bin/chmod 0400 "$temp"
             ${pkgs.coreutils}/bin/mv -f "$temp" "$key_file"
+            echo "Kyber writer key installed"
           '';
-          serviceConfig.RunAtLoad = true;
+          serviceConfig = {
+            RunAtLoad = true;
+            KeepAlive.SuccessfulExit = false;
+            ThrottleInterval = 60;
+            StandardOutPath = "/var/log/kyber-writer-key.log";
+            StandardErrorPath = "/var/log/kyber-writer-key.log";
+          };
         };
       }
     )
