@@ -7,13 +7,27 @@ base="${T3CODE_HOME:-$HOME/.t3}"
 cli="${T3_REAL_CLI:-$HOME/.bun/bin/t3}"
 state="$base/runtime/service-state.json"
 if [ -f "$state" ]; then
+  # A running server can be newer than the recorded active version when an
+  # update did not commit its state, so prefer the version that is serving.
   version="$(node -e '
-    const state = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
-    if (!/^[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/.test(state.activeVersion)) {
+    const fs = require("fs");
+    const [state, serverRecord, versions] = process.argv.slice(1);
+    const release = /^[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/;
+    const active = JSON.parse(fs.readFileSync(state, "utf8")).activeVersion;
+    if (!release.test(active)) {
       throw new Error("Invalid active T3 runtime version");
     }
-    process.stdout.write(state.activeVersion);
-  ' "$state")"
+    let version = active;
+    try {
+      const server = JSON.parse(fs.readFileSync(serverRecord, "utf8"));
+      process.kill(server.pid, 0);
+      if (release.test(server.serverVersion)) {
+        fs.accessSync(versions + "/" + server.serverVersion + "/t3", fs.constants.X_OK);
+        version = server.serverVersion;
+      }
+    } catch {}
+    process.stdout.write(version);
+  ' "$state" "$base/userdata/server-runtime.json" "$base/runtime/versions")"
   runtime="$base/runtime/versions/$version/t3"
   if [ ! -x "$runtime" ]; then
     printf 'Active T3 runtime is unavailable: %s\n' "$runtime" >&2
