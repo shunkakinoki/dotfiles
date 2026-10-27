@@ -22,7 +22,11 @@ in
 {
   beskar = peersOf "beskar";
   galactica = peersOf "galactica";
-  kyber = peersOf "kyber" ++ keysFor ciWorkerHosts ++ [ galacticaKyberWriterKey ];
+  # galactica reaches kyber only through the restricted writer key.
+  kyber =
+    keysFor (builtins.filter (name: name != "kyber" && name != "galactica") fleetHosts)
+    ++ keysFor ciWorkerHosts
+    ++ [ galacticaKyberWriterKey ];
   matic = peersOf "matic";
   # One file serves every Kamino host, so it lists the whole fleet.
   kamino = keysFor fleetHosts;
