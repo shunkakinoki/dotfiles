@@ -93,7 +93,9 @@
       inputs.bun2nix.inputs.systems.follows = "systems-linux";
     };
     beads = {
-      url = "github:gastownhall/beads";
+      # Keep every client on the release compatible with the shared server's
+      # schema until a coordinated fleet migration can upgrade it.
+      url = "github:gastownhall/beads/f45b249ce6b40ba62aecc03949e6371e8f7c79d8";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
