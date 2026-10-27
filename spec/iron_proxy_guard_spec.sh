@@ -119,8 +119,15 @@ The output should equal '1'
 End
 
 It 'keeps the window marker when the pf reload fails'
-When run bash -c "$(declare -f run_guard); BIN='$BIN' PF_LOG='$PF_LOG' TEST_DIR='$TEST_DIR'; run_guard captive 1000; PF_DETACHED=1 PF_LOAD_STATUS=1 run_guard captive 1100; cat '$TEST_DIR/guard/applied'"
-The output should equal 'captive'
+When run bash -c "$(declare -f run_guard); BIN='$BIN' PF_LOG='$PF_LOG' TEST_DIR='$TEST_DIR'; run_guard captive 1000; : >'$PF_LOG'; PF_DETACHED=1 PF_LOAD_STATUS=1 run_guard captive 1100; grep -c -- '-q -f $TEST_DIR/pf.conf' '$PF_LOG'; grep -c -- 'ironproxy-captive' '$PF_LOG' || true"
+The line 1 of output should equal '1'
+The line 2 of output should equal '0'
+End
+
+It 'flushes the window anchor before dropping the marker on reload'
+When run bash -c "$(declare -f run_guard); BIN='$BIN' PF_LOG='$PF_LOG' TEST_DIR='$TEST_DIR'; run_guard captive 1000; : >'$PF_LOG'; PF_DETACHED=1 run_guard captive 1700; cat '$PF_LOG'; test -e '$TEST_DIR/guard/applied' || echo marker-gone"
+The output should include '-q -a ironproxy-captive -F rules'
+The output should include 'marker-gone'
 End
 
 It 'opens a web-only window on a captive network'

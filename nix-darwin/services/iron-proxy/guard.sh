@@ -87,11 +87,12 @@ ensure_pf() {
   if ! "$pfctl_bin" -s rules 2>/dev/null | grep -q '^anchor "ironproxy"' ||
     [ -z "$("$pfctl_bin" -a ironproxy -s rules 2>/dev/null)" ] ||
     [ "$sum" != "$(cat "$guard_state_dir/pf-loaded" 2>/dev/null)" ]; then
-    # The applied marker stays on failure so expiry still flushes a window
-    # that may remain loaded.
+    # A reload keeps the captive anchor's rules, so the applied marker is
+    # dropped only once that anchor is flushed too; reconcile_window then
+    # reapplies a window that is still valid.
     if "$pfctl_bin" -q -f "$pf_conf"; then
       printf '%s\n' "$sum" >"$guard_state_dir/pf-loaded"
-      rm -f "$guard_state_dir/applied"
+      "$pfctl_bin" -q -a ironproxy-captive -F rules && rm -f "$guard_state_dir/applied"
       log "loaded $pf_conf"
     else
       log "failed to load $pf_conf"
