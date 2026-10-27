@@ -644,9 +644,12 @@ let
             publicKeys.kamino9
             publicKeys.kamino10
           ];
-        assert lib.hasPrefix "restrict ssh-ed25519 " (lib.last sshAuthorizedKeys.kyber);
+        assert lib.hasPrefix
+          "restrict,command=\"/home/ubuntu/.local/bin/beads-linear-complete-ssh-guard\" ssh-ed25519 "
+          (lib.last sshAuthorizedKeys.kyber);
         assert !(lib.elem (lib.last sshAuthorizedKeys.kyber) sshAuthorizedKeys.galactica);
         assert !(cfg.age.secrets ? "keys/kyber-writer.age");
+        assert cfg.home.file.".local/bin/beads-linear-complete-ssh-guard".executable;
         assert !(cfg.systemd.user.services ? dolt);
         assert cfg.home.activation ? installDoltSystemService;
         assert cfg.systemd.user.services ? dolt-linear-sync;

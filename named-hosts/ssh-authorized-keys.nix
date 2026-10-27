@@ -21,7 +21,7 @@ let
     9
     10
   ];
-  galacticaKyberWriterKey = "restrict ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAY5u/jbnetfuqmXFw51/fjUOe96eUt3SDLvaCdqSL14 galactica-kyber-writer-20261027";
+  galacticaKyberWriterKey = "restrict,command=\"/home/ubuntu/.local/bin/beads-linear-complete-ssh-guard\" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAY5u/jbnetfuqmXFw51/fjUOe96eUt3SDLvaCdqSL14 galactica-kyber-writer-20261027";
 in
 {
   galactica = keysFor kaminoHosts;
