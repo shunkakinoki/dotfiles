@@ -682,6 +682,13 @@ let
             system = "x86_64-linux";
           };
           cfg = kyber.config;
+          activationNames = map (entry: entry.name) (cfg.lib.dag.topoSort cfg.home.activation).result;
+          activationPosition =
+            name:
+            let
+              find = index: if builtins.elemAt activationNames index == name then index else find (index + 1);
+            in
+            find 0;
         in
         assert
           kyber.config.modules.tailscale.extraUpArgs == [
@@ -692,6 +699,7 @@ let
             "--advertise-exit-node"
           ];
         assert cfg.systemd.user.systemctlPath == "/usr/bin/systemctl";
+        assert activationPosition "linkGeneration" < activationPosition "authorizeFleetSsh";
         assert lib.hasInfix "/bin/ssh-keygen" cfg.home.activation.authorizeFleetSsh.data;
         assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeFleetSsh.data;
         assert
