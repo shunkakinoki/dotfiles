@@ -101,6 +101,26 @@ let
       assert lib.hasInfix "--accept-dns=true" activation;
       assert lib.hasInfix "--accept-routes=true" activation;
       assert lib.hasInfix "--ssh=false" activation;
+      assert
+        galactica.config.age.identityPaths == [
+          "/etc/ssh/ssh_host_ed25519_key"
+          "/Users/shunkakinoki/.ssh/id_ed25519"
+        ];
+      assert
+        galactica.config.age.secrets."keys/kyber-writer.age".path
+        == "/Users/shunkakinoki/.ssh/id_ed25519_kyber_writer";
+      assert galactica.config.age.secrets."keys/kyber-writer.age".owner == "shunkakinoki";
+      assert galactica.config.age.secrets."keys/kyber-writer.age".mode == "0400";
+      assert
+        builtins.length (import ../named-hosts/galactica/secrets.nix)."keys/kyber-writer.age".publicKeys
+        == 1;
+      assert
+        beads.programs.ssh.settings.kyber.data.IdentityFile == [
+          "/Users/shunkakinoki/.ssh/id_ed25519_kyber_writer"
+        ];
+      assert beads.programs.ssh.settings.kyber.data.IdentityAgent == "none";
+      assert beads.programs.ssh.settings.kyber.data.UseKeychain == "no";
+      assert beads.programs.ssh.settings.kyber.data.AddKeysToAgent == "no";
       assert galactica.config.users.users.shunkakinoki.openssh.authorizedKeys.keys == kaminoPublicKeys;
       assert sshAuthorizedKeys.galactica == kaminoPublicKeys;
       mkEvalCheck "darwin-galactica" galactica.system;
@@ -618,12 +638,15 @@ let
         assert lib.hasInfix "/bin/ssh-keygen" cfg.home.activation.authorizeFleetSsh.data;
         assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeFleetSsh.data;
         assert
-          sshAuthorizedKeys.kyber == kaminoPublicKeys
+          lib.init sshAuthorizedKeys.kyber == kaminoPublicKeys
           ++ [
             publicKeys.kamino8
             publicKeys.kamino9
             publicKeys.kamino10
           ];
+        assert lib.hasPrefix "restrict ssh-ed25519 " (lib.last sshAuthorizedKeys.kyber);
+        assert !(lib.elem (lib.last sshAuthorizedKeys.kyber) sshAuthorizedKeys.galactica);
+        assert !(cfg.age.secrets ? "keys/kyber-writer.age");
         assert !(cfg.systemd.user.services ? dolt);
         assert cfg.home.activation ? installDoltSystemService;
         assert cfg.systemd.user.services ? dolt-linear-sync;
