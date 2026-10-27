@@ -28,6 +28,8 @@ let
   baseModule =
     { lib, ... }:
     {
+      imports = [ ./iron-proxy.nix ];
+
       networking.hostName = hostname;
       networking.enableIPv6 = false;
       networking.networkmanager.enable = true;

@@ -12,37 +12,19 @@ let
   # CA at /var/lib/iron-proxy/ca.crt to be trusted in the System keychain.
   systemProxy = false;
 
+  shared = import ../../../lib/iron-proxy.nix { inherit pkgs; };
+  inherit (shared)
+    proxyUser
+    proxyId
+    stateDir
+    tunnelPort
+    ;
+  ironProxyConfig = shared.configFile;
+
   agentUser = "shunkakinoki";
   agentUid = 501;
-  proxyUser = "iron-proxy";
-  proxyId = 450;
-  stateDir = "/var/lib/iron-proxy";
   guardStateDir = "/var/db/iron-proxy-guard";
-  tunnelPort = 8899;
   captiveWindowSeconds = 600;
-
-  ironProxyConfig = pkgs.writeText "iron-proxy.yaml" (
-    builtins.toJSON {
-      dns.enabled = false;
-      proxy = {
-        http_listen = "127.0.0.1:18080";
-        https_listen = "127.0.0.1:18443";
-        tunnel_listen = "127.0.0.1:${toString tunnelPort}";
-      };
-      tls = {
-        mode = "mitm";
-        ca_cert = "${stateDir}/ca.crt";
-        ca_key = "${stateDir}/ca.key";
-      };
-      transforms = [
-        {
-          name = "allowlist";
-          config.domains = [ "*" ];
-        }
-      ];
-      log.level = "info";
-    }
-  );
 
   # Apple's own /etc/pf.conf anchors are kept so macOS features that load
   # rules into com.apple/* keep working. The captive anchor is evaluated
@@ -60,9 +42,13 @@ let
     load anchor "ironproxy" from "/etc/pf.anchors/ironproxy"
   '';
 
-  # Tailnet, LAN, link-local, multicast and Apple (APNs, iCloud) stay direct.
+  # Apple (APNs, iCloud) also stays direct on macOS.
   pfAnchor = ''
-    table <ironproxy_direct> const { 100.64.0.0/10, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 169.254.0.0/16, 224.0.0.0/4, 255.255.255.255, 17.0.0.0/8, fe80::/10, ff00::/8, fd00::/8, 2620:149::/32 }
+    table <ironproxy_direct> const { ${
+      lib.concatStringsSep ", " (
+        shared.directIPv4 ++ [ "17.0.0.0/8" ] ++ shared.directIPv6 ++ [ "2620:149::/32" ]
+      )
+    } }
     pass out quick proto { tcp udp } to <ironproxy_direct> user ${toString agentUid}
     ${
       if mode == "enforce" then
