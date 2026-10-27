@@ -181,6 +181,8 @@ let
       assert cfg.users.users.shunkakinoki.linger;
       assert herdr.Install.WantedBy == [ "default.target" ];
       assert herdr.Unit.X-SwitchMethod == "keep-old";
+      assert lib.elem "agenix.service" herdr.Unit.After;
+      assert lib.elem "agenix.service" herdr.Unit.Wants;
       assert lib.hasSuffix "/bin/herdr server" (builtins.head (lib.toList herdr.Service.ExecStart));
       assert herdr.Service.Restart == "on-failure";
       assert
@@ -373,6 +375,8 @@ let
           ];
         assert cfg.systemd.user.services.herdr-server.Install.WantedBy == [ "default.target" ];
         assert cfg.systemd.user.services.herdr-server.Unit.X-SwitchMethod == "keep-old";
+        assert lib.elem "agenix.service" cfg.systemd.user.services.herdr-server.Unit.After;
+        assert lib.elem "agenix.service" cfg.systemd.user.services.herdr-server.Unit.Wants;
         assert cfg.systemd.user.services.herdr-server.Service.EnvironmentFile == [ "-/root/dotfiles/.env" ];
         assert !(cfg.age.secrets ? "agents-prd.env");
         assert lib.elem "BEADS_DOLT_AUTO_START=0"
@@ -435,9 +439,6 @@ let
         assert lib.hasSuffix "/named-hosts/agents-prd/keys/kamino2.age" (
           toString cfg.age.secrets."agents-prd.env".file
         );
-        assert lib.hasInfix "DOTFILES_ENV_FILE=${envFile}" cfg.programs.bash.bashrcExtra;
-        assert lib.hasInfix "DOTFILES_ENV_FILE=${envFile}" cfg.programs.zsh.envExtra;
-        assert lib.hasInfix "DOTFILES_ENV_FILE ${envFile}" cfg.programs.fish.shellInit;
         assert
           cfg.systemd.user.services.herdr-server.Service.EnvironmentFile == [
             "-/root/dotfiles/.env"
@@ -684,6 +685,8 @@ let
         assert cfg.home.activation ? installDoltSystemService;
         assert cfg.systemd.user.services ? dolt-linear-sync;
         assert cfg.systemd.user.services.herdr-server.Service.Slice == "herdr.slice";
+        assert lib.elem "agenix.service" cfg.systemd.user.services.herdr-server.Unit.After;
+        assert lib.elem "agenix.service" cfg.systemd.user.services.herdr-server.Unit.Wants;
         assert cfg.age.secrets."agents-prd.env".path == "/home/ubuntu/.config/agenix/agents-prd.env";
         assert lib.elem "-/home/ubuntu/.config/agenix/agents-prd.env"
           cfg.systemd.user.services.herdr-server.Service.EnvironmentFile;
