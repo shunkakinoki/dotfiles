@@ -53,9 +53,15 @@ done <"$env_file"
 
 # Printed last so they override: while iron-proxy listens, agent shells get a
 # placeholder that the proxy swaps for the real secret on the wire. Without
-# env-ready the real values stay, so a dead proxy never breaks auth.
+# env-ready the real values stay, so a dead proxy never breaks auth. Callers
+# without proxy env (systemd user services) would send the placeholder
+# straight upstream, so they keep the real values too.
 swap_keys="${IRON_PROXY_SWAP_DIR:-/var/lib/iron-proxy-secrets}/swap-keys"
-if [ -e "${IRON_PROXY_STATE_DIR:-/var/lib/iron-proxy}/env-ready" ] && [ -r "$swap_keys" ]; then
+case "${HTTPS_PROXY:-${https_proxy:-}}" in
+http://127.0.0.1:*) proxied=1 ;;
+*) proxied="" ;;
+esac
+if [ -n "$proxied" ] && [ -e "${IRON_PROXY_STATE_DIR:-/var/lib/iron-proxy}/env-ready" ] && [ -r "$swap_keys" ]; then
   while IFS= read -r key || [ -n "$key" ]; do
     case "$key" in
     '' | [0-9]* | *[!A-Za-z0-9_]*) continue ;;

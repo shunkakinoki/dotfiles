@@ -116,6 +116,12 @@ swap_ready() {
   mkdir -p "$IRON_PROXY_STATE_DIR" "$IRON_PROXY_SWAP_DIR"
   printf 'OPENROUTER_API_KEY\n' >"$IRON_PROXY_SWAP_DIR/swap-keys"
   [ "$1" = ready ] && touch "$IRON_PROXY_STATE_DIR/env-ready"
+  unset https_proxy
+  if [ "${2:-proxied}" = proxied ]; then
+    export HTTPS_PROXY=http://127.0.0.1:8899
+  else
+    unset HTTPS_PROXY
+  fi
   print_env 'OPENROUTER_API_KEY=real'
 }
 
@@ -127,6 +133,11 @@ End
 
 It 'keeps the real value when the proxy is not ready'
 When call swap_ready down
+The output should equal 'OPENROUTER_API_KEY=real'
+End
+
+It 'keeps the real value for callers without proxy env'
+When call swap_ready ready direct
 The output should equal 'OPENROUTER_API_KEY=real'
 End
 End

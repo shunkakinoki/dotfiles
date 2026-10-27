@@ -4,6 +4,8 @@ set -u
 state_dir="@stateDir@"
 proxy_url="http://127.0.0.1:@proxyPort@"
 no_proxy="@noProxy@"
+swap_keys="@secretsDir@/swap-keys"
+exporter_label="org.nix-community.home.dotenv-gui-environment"
 launchctl_bin="${LAUNCHCTL_BIN:-/bin/launchctl}"
 
 # Apps launched from the Dock inherit these, including terminals and the CLIs
@@ -34,3 +36,21 @@ for key in $proxy_keys $no_proxy_keys $bundle_keys NODE_USE_ENV_PROXY NODE_EXTRA
     "$launchctl_bin" unsetenv "$key"
   fi
 done
+
+# The dotenv exporter decides between real secrets and swap placeholders from
+# the proxy env set above, but only runs every few minutes. Rerun it as soon
+# as a swapped key disagrees with the current state, so a dead proxy never
+# leaves placeholders in the GUI session.
+if [ -r "$swap_keys" ]; then
+  while IFS= read -r key || [ -n "$key" ]; do
+    [ -n "$key" ] || continue
+    placeholder=""
+    [ "$("$launchctl_bin" getenv "$key")" = "iron-proxy-swap-$key" ] && placeholder=1
+    ready=""
+    [ -e "$state_dir/env-ready" ] && ready=1
+    if [ "$placeholder" != "$ready" ]; then
+      "$launchctl_bin" kickstart "gui/$(id -u)/$exporter_label" >/dev/null 2>&1 || true
+      break
+    fi
+  done <"$swap_keys"
+fi
