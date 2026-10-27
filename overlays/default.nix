@@ -186,8 +186,16 @@
     }
   )
   inputs.noctalia-shell.overlays.default
+  inputs.beads.overlays.default
   (_: prev: {
-    beads = inputs.beads.packages.${prev.stdenv.hostPlatform.system}.bd;
+    # Upstream postPatch rewrites the go directive to our Go (1.26.7), which then
+    # equals go.mod's toolchain line, so Go rejects go.mod as untidy. Remove once
+    # gastownhall/beads#6752 merges and the beads input is bumped past it.
+    beads-unwrapped = prev.beads-unwrapped.overrideAttrs (old: {
+      postPatch = old.postPatch + ''
+        go mod edit -toolchain=none
+      '';
+    });
   })
   (_: prev: {
     boat-cli = prev.stdenvNoCC.mkDerivation rec {
