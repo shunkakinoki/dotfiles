@@ -22,6 +22,8 @@ let
     publicKeys.kamino5
     publicKeys.kamino6
     publicKeys.kamino7
+  ];
+  ciWorkerPublicKeys = [
     publicKeys.kamino8
     publicKeys.kamino9
     publicKeys.kamino10
@@ -706,7 +708,7 @@ let
         assert activationPosition "linkGeneration" < activationPosition "authorizeFleetSsh";
         assert lib.hasInfix "/bin/ssh-keygen" cfg.home.activation.authorizeFleetSsh.data;
         assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeFleetSsh.data;
-        assert lib.init sshAuthorizedKeys.kyber == fleetPeerKeysOf "kyber";
+        assert lib.init sshAuthorizedKeys.kyber == fleetPeerKeysOf "kyber" ++ ciWorkerPublicKeys;
         assert lib.hasPrefix
           "restrict,command=\"/home/ubuntu/.local/bin/beads-linear-complete-ssh-guard\" ssh-ed25519 "
           (lib.last sshAuthorizedKeys.kyber);
