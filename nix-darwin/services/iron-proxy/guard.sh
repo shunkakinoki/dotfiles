@@ -78,17 +78,24 @@ ensure_env_ready() {
 # macOS reloads /etc/pf.conf on some network and sharing changes, which drops
 # our anchors, so the guard re-asserts them on every run. A rebuild that
 # changes the rules (log to enforce) leaves the old ones loaded, so the
-# checksum of the files last loaded is compared too.
+# checksum of the files last loaded is compared too. Such a reload can keep
+# the anchor's rules while detaching it from the main ruleset, so both are
+# checked.
 ensure_pf() {
   local sum
   sum="$(cat "$pf_conf" "$pf_anchor" 2>/dev/null | cksum)"
-  if [ -z "$("$pfctl_bin" -a ironproxy -s rules 2>/dev/null)" ] ||
+  if ! "$pfctl_bin" -s rules 2>/dev/null | grep -q '^anchor "ironproxy"' ||
+    [ -z "$("$pfctl_bin" -a ironproxy -s rules 2>/dev/null)" ] ||
     [ "$sum" != "$(cat "$guard_state_dir/pf-loaded" 2>/dev/null)" ]; then
+    # The applied marker stays on failure so expiry still flushes a window
+    # that may remain loaded.
     if "$pfctl_bin" -q -f "$pf_conf"; then
       printf '%s\n' "$sum" >"$guard_state_dir/pf-loaded"
+      rm -f "$guard_state_dir/applied"
       log "loaded $pf_conf"
+    else
+      log "failed to load $pf_conf"
     fi
-    rm -f "$guard_state_dir/applied"
   fi
   "$pfctl_bin" -q -e >/dev/null 2>&1 || true
 }

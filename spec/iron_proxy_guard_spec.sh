@@ -17,6 +17,10 @@ printf '%s\n' "$*" >>"$PF_LOG"
 if [ "$*" = "-a ironproxy -s rules" ]; then
   [ -n "${PF_LOADED:-}" ] && echo "pass out log quick"
 fi
+if [ "$*" = "-s rules" ] && [ -n "${PF_LOADED:-}" ] && [ -z "${PF_DETACHED:-}" ]; then
+  echo 'anchor "ironproxy" all'
+fi
+case "$*" in "-q -f "*) exit "${PF_LOAD_STATUS:-0}" ;; esac
 if [ "$*" = "-q -a ironproxy-captive -f -" ]; then
   cat >>"$PF_LOG"
 fi
@@ -80,7 +84,7 @@ cleanup_guard() {
 
 run_guard() {
   env PF_LOG="$PF_LOG" PFCTL_BIN="$BIN/pfctl" CURL_BIN="$BIN/curl" ROUTE_BIN="$BIN/route" \
-    CHOWN_BIN="$BIN/chown" NC_BIN="$BIN/nc" SECURITY_BIN="$BIN/security" NETWORKSETUP_BIN="$BIN/networksetup" NS_LOG="$TEST_DIR/ns.log" PF_STATUS="${PF_STATUS:-0}" PF_LOADED=1 GATEWAY="${GATEWAY:-192.168.1.1}" \
+    CHOWN_BIN="$BIN/chown" NC_BIN="$BIN/nc" SECURITY_BIN="$BIN/security" NETWORKSETUP_BIN="$BIN/networksetup" NS_LOG="$TEST_DIR/ns.log" PF_STATUS="${PF_STATUS:-0}" PF_LOADED=1 PF_DETACHED="${PF_DETACHED:-}" PF_LOAD_STATUS="${PF_LOAD_STATUS:-0}" GATEWAY="${GATEWAY:-192.168.1.1}" \
     PROBE="$1" GUARD_NOW="$2" bash "$TEST_DIR/guard.sh" >/dev/null
 }
 
@@ -107,6 +111,16 @@ It 'reloads pf only when the rules change'
 When run bash -c "$(declare -f run_guard); BIN='$BIN' PF_LOG='$PF_LOG' TEST_DIR='$TEST_DIR'; run_guard success 1000; : >'$PF_LOG'; run_guard success 1100; grep -c -- '-q -f' '$PF_LOG'; echo 'block return out log quick' >'$TEST_DIR/pf.anchor'; run_guard success 1200; grep -c -- '-q -f' '$PF_LOG'"
 The line 1 of output should equal '0'
 The line 2 of output should equal '1'
+End
+
+It 'reloads pf when the main ruleset drops the anchor'
+When run bash -c "$(declare -f run_guard); BIN='$BIN' PF_LOG='$PF_LOG' TEST_DIR='$TEST_DIR'; run_guard success 1000; : >'$PF_LOG'; PF_DETACHED=1 run_guard success 1100; grep -c -- '-q -f' '$PF_LOG'"
+The output should equal '1'
+End
+
+It 'keeps the window marker when the pf reload fails'
+When run bash -c "$(declare -f run_guard); BIN='$BIN' PF_LOG='$PF_LOG' TEST_DIR='$TEST_DIR'; run_guard captive 1000; PF_DETACHED=1 PF_LOAD_STATUS=1 run_guard captive 1100; cat '$TEST_DIR/guard/applied'"
+The output should equal 'captive'
 End
 
 It 'opens a web-only window on a captive network'
