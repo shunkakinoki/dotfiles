@@ -239,7 +239,7 @@ neither is live activation proof.
 
 Use the provider console or supplied IP first. Keep console access and an
 existing SSH session open until a second connection works over Tailscale.
-The declared core-host public keys are installed during activation. Provision any
+The declared fleet host public keys are installed during activation. Provision any
 additional administrator public key without replacing existing entries. For
 independent first-use verification, obtain the SSH host-key fingerprint through
 the console before connecting.
@@ -352,7 +352,7 @@ Inspect `~/.ssh/config.local` if a local override changes the generated target.
 ### 3. Verify the login
 
 Tailscale SSH authorizes by tailnet identity, not client keys. Activation still
-installs the core-host keys declared by `named-hosts/ssh-authorized-keys.nix` into
+installs the fleet host keys declared by `named-hosts/ssh-authorized-keys.nix` into
 `/root/.ssh/authorized_keys` as a fallback.
 
 ```sh
