@@ -77,6 +77,7 @@ let
         };
         activation = galactica.config.system.activationScripts.tailscaleDns.text;
         beads = galactica.config.home-manager.users.shunkakinoki;
+        writerKeyDaemon = galactica.config.launchd.daemons."com.shunkakinoki.kyber-writer-key";
         packageNames = map lib.getName beads.home.packages;
       in
       assert !galactica.config.home-manager.users.shunkakinoki.nix.enable;
@@ -116,11 +117,11 @@ let
           "/etc/ssh/ssh_host_ed25519_key"
           "/Users/shunkakinoki/.ssh/id_ed25519"
         ];
-      assert
-        galactica.config.age.secrets."keys/kyber-writer.age".path
-        == "/Users/shunkakinoki/.ssh/id_ed25519_kyber_writer";
-      assert galactica.config.age.secrets."keys/kyber-writer.age".owner == "shunkakinoki";
-      assert galactica.config.age.secrets."keys/kyber-writer.age".mode == "0400";
+      assert !(galactica.config.age.secrets ? "keys/kyber-writer.age");
+      assert writerKeyDaemon.serviceConfig.RunAtLoad;
+      assert writerKeyDaemon.serviceConfig.KeepAlive.SuccessfulExit == false;
+      assert writerKeyDaemon.serviceConfig.StandardErrorPath == "/var/log/kyber-writer-key.log";
+      assert lib.hasInfix "/etc/ssh/ssh_host_ed25519_key" writerKeyDaemon.script;
       assert
         builtins.length (import ../named-hosts/galactica/secrets.nix)."keys/kyber-writer.age".publicKeys
         == 1;
