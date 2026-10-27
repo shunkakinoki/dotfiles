@@ -92,8 +92,12 @@ ensure_pf() {
     # reapplies a window that is still valid.
     if "$pfctl_bin" -q -f "$pf_conf"; then
       printf '%s\n' "$sum" >"$guard_state_dir/pf-loaded"
-      "$pfctl_bin" -q -a ironproxy-captive -F rules && rm -f "$guard_state_dir/applied"
       log "loaded $pf_conf"
+      if "$pfctl_bin" -q -a ironproxy-captive -F rules; then
+        rm -f "$guard_state_dir/applied"
+      else
+        log "failed to flush the bypass window after reload"
+      fi
     else
       log "failed to load $pf_conf"
     fi
