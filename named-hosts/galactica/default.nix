@@ -28,8 +28,26 @@ inputs.nix-darwin.lib.darwinSystem {
           };
         };
       };
-      age.identityPaths = [ "/Users/${username}/.ssh/id_ed25519" ];
-      age.secrets = builtins.mapAttrs (_: value: { inherit (value) file; }) (import ./secrets.nix);
+      age.identityPaths = [
+        "/etc/ssh/ssh_host_ed25519_key"
+        "/Users/${username}/.ssh/id_ed25519"
+      ];
+      age.secrets = builtins.mapAttrs (
+        name: value:
+        {
+          inherit (value) file;
+        }
+        // (
+          if name == "keys/kyber-writer.age" then
+            {
+              path = "/Users/${username}/.ssh/id_ed25519_kyber_writer";
+              owner = username;
+              mode = "0400";
+            }
+          else
+            { }
+        )
+      ) (import ./secrets.nix);
 
       # The standalone macOS Tailscale app cannot host Tailscale SSH. Enable
       # Apple's SSH server so Galactica remains reachable over its tailnet IP.
@@ -37,7 +55,7 @@ inputs.nix-darwin.lib.darwinSystem {
       users.users.${username}.openssh.authorizedKeys.keys = sshAuthorizedKeys.galactica;
 
       home-manager.users.${username} =
-        { pkgs, ... }:
+        { pkgs, lib, ... }:
         {
           programs.ssh = {
             enable = true;
@@ -45,6 +63,13 @@ inputs.nix-darwin.lib.darwinSystem {
               "*" = {
                 AddKeysToAgent = "yes";
                 UseKeychain = "yes";
+              };
+              "kyber" = {
+                IdentityFile = lib.mkForce [ "/Users/${username}/.ssh/id_ed25519_kyber_writer" ];
+                IdentitiesOnly = "yes";
+                IdentityAgent = "none";
+                AddKeysToAgent = "no";
+                UseKeychain = "no";
               };
             };
           };
