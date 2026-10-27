@@ -197,17 +197,26 @@ End
 
 It 'keeps a foreign system proxy when the env is not ready'
 When run bash -c "$(declare -f run_guard); BIN='$BIN' PF_LOG='$PF_LOG' TEST_DIR='$TEST_DIR'; NS_ENABLED=Yes NS_PORT=3128 run_guard success 1000; cat '$TEST_DIR/ns.log'"
+The output should include '-getsecurewebproxy Wi-Fi'
 The output should not include '-set'
 End
 
 It 'keeps a foreign proxy on the same port when the env is not ready'
 When run bash -c "$(declare -f run_guard); BIN='$BIN' PF_LOG='$PF_LOG' TEST_DIR='$TEST_DIR'; NS_ENABLED=Yes NS_PORT=8899 NS_SERVER=10.0.0.5 run_guard success 1000; cat '$TEST_DIR/ns.log'"
+The output should include '-getsecurewebproxy Wi-Fi'
 The output should not include '-set'
 End
 
 It 'does not overwrite a foreign system proxy once the env is ready'
 When run bash -c "$(declare -f run_guard); BIN='$BIN' PF_LOG='$PF_LOG' TEST_DIR='$TEST_DIR'; NS_ENABLED=Yes NS_PORT=3128 NC_STATUS=0 TRUST_STATUS=0 run_guard success 1000; cat '$TEST_DIR/ns.log'"
+The output should include '-getsecurewebproxy Wi-Fi'
 The output should not include '-set'
+End
+
+It 'keeps the shared bypass list while one protocol is foreign'
+When run bash -c "$(declare -f run_guard); BIN='$BIN' PF_LOG='$PF_LOG' TEST_DIR='$TEST_DIR'; NS_ENABLED=Yes NS_PORT=3128 NS_WEB_ENABLED=No NC_STATUS=0 TRUST_STATUS=0 run_guard success 1000; cat '$TEST_DIR/ns.log'"
+The output should include '-setwebproxy Wi-Fi 127.0.0.1 8899'
+The output should not include '-setproxybypassdomains'
 End
 
 End
