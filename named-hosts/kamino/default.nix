@@ -48,21 +48,6 @@ let
     "kamino10"
   ];
   t3ConnectMode = if host.t3ConnectDisabled then "disabled" else "publish-only";
-  agentsPrdSecretFile = ./keys + "/agents-prd-${name}.age";
-  hasAgentsPrdIdentity = builtins.pathExists agentsPrdSecretFile;
-  agentsPrdEnvFile = "/root/.config/agenix/agents-prd.env";
-  loadAgentsPrdPosix = ''
-    _hm_previous_env_file="''${DOTFILES_ENV_FILE-}"
-    _hm_had_env_file="''${DOTFILES_ENV_FILE+x}"
-    DOTFILES_ENV_FILE=${agentsPrdEnvFile}
-    _hm_load_env_file
-    if [ "$_hm_had_env_file" = x ]; then
-      export DOTFILES_ENV_FILE="$_hm_previous_env_file"
-    else
-      unset DOTFILES_ENV_FILE
-    fi
-    unset _hm_previous_env_file _hm_had_env_file
-  '';
   sshAuthorizedKeys = import ../ssh-authorized-keys.nix;
   authorizedKeysFile = pkgs.writeText "kamino-authorized-keys" (
     pkgs.lib.concatStringsSep "\n" (
@@ -122,23 +107,6 @@ inputs.home-manager.lib.homeManagerConfiguration {
         xdg.enable = true;
         systemd.user.startServices = true;
         xdg.configFile."kamino/name".text = "${name}\n";
-        age.identityPaths = lib.mkIf hasAgentsPrdIdentity [ "/etc/ssh/ssh_host_ed25519_key" ];
-        age.secrets."agents-prd.env" = lib.mkIf hasAgentsPrdIdentity {
-          file = agentsPrdSecretFile;
-          path = agentsPrdEnvFile;
-          mode = "0400";
-        };
-        # Load the host identity after the shared dotenv in fresh shell sessions.
-        programs.bash.bashrcExtra = lib.mkIf hasAgentsPrdIdentity (lib.mkAfter loadAgentsPrdPosix);
-        programs.zsh.envExtra = lib.mkIf hasAgentsPrdIdentity (lib.mkAfter loadAgentsPrdPosix);
-        programs.fish.shellInit = lib.mkIf hasAgentsPrdIdentity (
-          lib.mkAfter ''
-            begin
-              set -lx DOTFILES_ENV_FILE ${lib.escapeShellArg agentsPrdEnvFile}
-              _hm_load_env_file
-            end
-          ''
-        );
         # Crabbox's rsync transport uses only its configured key (default
         # ~/.ssh/id_ed25519, absent on some workers) and ignores ssh_config, so
         # OpenSSH CI boxes reject it unless the authorized host key is set here.
@@ -251,10 +219,7 @@ inputs.home-manager.lib.homeManagerConfiguration {
               "SHELL=${pkgs.fish}/bin/fish"
               "PATH=/root/.nix-profile/bin:/etc/profiles/per-user/root/bin:/nix/var/nix/profiles/default/bin:/usr/local/bin:/usr/bin:/bin"
             ];
-            EnvironmentFile = [
-              "-${config.home.homeDirectory}/dotfiles/.env"
-            ]
-            ++ lib.optionals hasAgentsPrdIdentity [ "-${agentsPrdEnvFile}" ];
+            EnvironmentFile = [ "-${config.home.homeDirectory}/dotfiles/.env" ];
           };
           Install.WantedBy = [ "default.target" ];
         };
