@@ -53,6 +53,8 @@ EOF
   printf '#!/usr/bin/env bash\nexit "${NC_STATUS:-1}"\n' >"$BIN/nc"
   printf '#!/usr/bin/env bash\nexit "${TRUST_STATUS:-1}"\n' >"$BIN/security"
   echo roots >"$TEST_DIR/roots.crt"
+  echo conf >"$TEST_DIR/pf.conf"
+  echo 'pass out log quick' >"$TEST_DIR/pf.anchor"
   chmod +x "$BIN"/*
 
   sed \
@@ -61,7 +63,8 @@ EOF
     -e "s|@guardStateDir@|$TEST_DIR/guard|g" \
     -e 's|@proxyUser@|iron-proxy|g' \
     -e 's|@agentUid@|501|g' \
-    -e 's|@pfConf@|/etc/pf.ironproxy.conf|g' \
+    -e "s|@pfConf@|$TEST_DIR/pf.conf|g" \
+    -e "s|@pfAnchor@|$TEST_DIR/pf.anchor|g" \
     -e 's|@captiveWindowSeconds@|600|g' \
     -e "s|@systemProxy@|${SYSTEM_PROXY:-0}|g" \
     -e 's|@proxyPort@|8899|g' \
@@ -96,8 +99,14 @@ After 'cleanup_guard'
 
 It 'generates the CA and reloads pf when the anchor is missing'
 When run bash -c "env PF_LOG='$PF_LOG' PFCTL_BIN='$BIN/pfctl' CURL_BIN='$BIN/curl' ROUTE_BIN='$BIN/route' CHOWN_BIN='$BIN/chown' NC_BIN='$BIN/nc' SECURITY_BIN='$BIN/security' GATEWAY=10.0.0.1 PROBE=success GUARD_NOW=1000 bash '$TEST_DIR/guard.sh' >/dev/null; cat '$PF_LOG'; test -s '$TEST_DIR/state/ca.key' && echo ca-ok"
-The output should include '-q -f /etc/pf.ironproxy.conf'
+The output should include "-q -f $TEST_DIR/pf.conf"
 The output should include 'ca-ok'
+End
+
+It 'reloads pf only when the rules change'
+When run bash -c "$(declare -f run_guard); BIN='$BIN' PF_LOG='$PF_LOG' TEST_DIR='$TEST_DIR'; run_guard success 1000; : >'$PF_LOG'; run_guard success 1100; grep -c -- '-q -f' '$PF_LOG'; echo 'block return out log quick' >'$TEST_DIR/pf.anchor'; run_guard success 1200; grep -c -- '-q -f' '$PF_LOG'"
+The line 1 of output should equal '0'
+The line 2 of output should equal '1'
 End
 
 It 'opens a web-only window on a captive network'

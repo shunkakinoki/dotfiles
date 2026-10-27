@@ -67,6 +67,7 @@ let
       ;
     agentUid = toString agentUid;
     pfConf = "/etc/pf.ironproxy.conf";
+    pfAnchor = "/etc/pf.anchors/ironproxy";
     systemProxy = if systemProxy then "1" else "0";
     proxyPort = toString tunnelPort;
     networkServices = lib.concatStringsSep ":" config.networking.knownNetworkServices;
@@ -98,7 +99,8 @@ lib.mkIf (!isRunner) {
       message = "iron-proxy: enforce mode without systemProxy blocks all GUI egress";
     }
     {
-      assertion = mode != "enforce" || !(lib.hasInfix "NOPASSWD" config.security.sudo.extraConfig);
+      assertion =
+        mode != "enforce" || !(lib.hasInfix "NOPASSWD" (toString config.security.sudo.extraConfig));
       message = "iron-proxy: enforce mode is bypassable while security.sudo.extraConfig grants NOPASSWD";
     }
   ];

@@ -7,6 +7,7 @@ guard_state_dir="@guardStateDir@"
 proxy_user="@proxyUser@"
 agent_uid="@agentUid@"
 pf_conf="@pfConf@"
+pf_anchor="@pfAnchor@"
 captive_window_seconds=@captiveWindowSeconds@
 system_proxy="@systemProxy@"
 proxy_port="@proxyPort@"
@@ -75,10 +76,18 @@ ensure_env_ready() {
 }
 
 # macOS reloads /etc/pf.conf on some network and sharing changes, which drops
-# our anchors, so the guard re-asserts them on every run.
+# our anchors, so the guard re-asserts them on every run. A rebuild that
+# changes the rules (log to enforce) leaves the old ones loaded, so the
+# checksum of the files last loaded is compared too.
 ensure_pf() {
-  if [ -z "$("$pfctl_bin" -a ironproxy -s rules 2>/dev/null)" ]; then
-    "$pfctl_bin" -q -f "$pf_conf" && log "loaded $pf_conf"
+  local sum
+  sum="$(cat "$pf_conf" "$pf_anchor" 2>/dev/null | cksum)"
+  if [ -z "$("$pfctl_bin" -a ironproxy -s rules 2>/dev/null)" ] ||
+    [ "$sum" != "$(cat "$guard_state_dir/pf-loaded" 2>/dev/null)" ]; then
+    if "$pfctl_bin" -q -f "$pf_conf"; then
+      printf '%s\n' "$sum" >"$guard_state_dir/pf-loaded"
+      log "loaded $pf_conf"
+    fi
     rm -f "$guard_state_dir/applied"
   fi
   "$pfctl_bin" -q -e >/dev/null 2>&1 || true
