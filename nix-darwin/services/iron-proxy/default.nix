@@ -21,7 +21,6 @@ let
     ;
   ironProxyConfig = shared.configFile;
 
-  agentUser = "shunkakinoki";
   agentUid = 501;
   guardStateDir = "/var/db/iron-proxy-guard";
   captiveWindowSeconds = 600;
@@ -111,7 +110,7 @@ lib.mkIf (!isRunner) {
     }
     {
       assertion = mode != "enforce" || !(lib.hasInfix "NOPASSWD" config.security.sudo.extraConfig);
-      message = "iron-proxy: enforce mode is bypassable while ${agentUser} has NOPASSWD sudo";
+      message = "iron-proxy: enforce mode is bypassable while security.sudo.extraConfig grants NOPASSWD";
     }
   ];
 
@@ -157,7 +156,7 @@ lib.mkIf (!isRunner) {
       };
     };
 
-    # Root-only: agents running as ${agentUser} cannot open a bypass window.
+    # Root-only: agents running as the agent user cannot open a bypass window.
     "com.shunkakinoki.iron-proxy-guard" = {
       serviceConfig = {
         ProgramArguments = [

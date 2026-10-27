@@ -20,6 +20,7 @@ fi
 if [ "$*" = "-q -a ironproxy-captive -f -" ]; then
   cat >>"$PF_LOG"
 fi
+case "$*" in "-q -a ironproxy-captive -f -" | "-q -a ironproxy-captive -F rules") exit "${PF_STATUS:-0}" ;; esac
 exit 0
 EOF
   cat >"$BIN/curl" <<'EOF'
@@ -68,7 +69,7 @@ cleanup_guard() {
 
 run_guard() {
   env PF_LOG="$PF_LOG" PFCTL_BIN="$BIN/pfctl" CURL_BIN="$BIN/curl" ROUTE_BIN="$BIN/route" \
-    CHOWN_BIN="$BIN/chown" NC_BIN="$BIN/nc" SECURITY_BIN="$BIN/security" PF_LOADED=1 GATEWAY="${GATEWAY:-192.168.1.1}" \
+    CHOWN_BIN="$BIN/chown" NC_BIN="$BIN/nc" SECURITY_BIN="$BIN/security" PF_STATUS="${PF_STATUS:-0}" PF_LOADED=1 GATEWAY="${GATEWAY:-192.168.1.1}" \
     PROBE="$1" GUARD_NOW="$2" bash "$TEST_DIR/guard.sh" >/dev/null
 }
 
@@ -112,13 +113,19 @@ End
 It 'opens a fresh window when the gateway changes'
 When run bash -c "$(declare -f run_guard); BIN='$BIN' PF_LOG='$PF_LOG' TEST_DIR='$TEST_DIR'; run_guard captive 1000; run_guard captive 1700; GATEWAY=172.16.0.1 run_guard captive 1800; cat '$TEST_DIR/guard/window' '$TEST_DIR/guard/applied'"
 The output should include 'captive 2400 172.16.0.1'
-The output should include 'captive'
+The line 2 of output should equal 'captive'
 End
 
 It 'keeps a manual window open regardless of the probe until it expires'
 When run bash -c "$(declare -f run_guard); BIN='$BIN' PF_LOG='$PF_LOG' TEST_DIR='$TEST_DIR'; mkdir -p '$TEST_DIR/guard'; echo 'manual 2000 -' >'$TEST_DIR/guard/window'; run_guard success 1500; cat '$TEST_DIR/guard/applied'; run_guard success 2100; test -e '$TEST_DIR/guard/applied' || echo closed"
 The line 1 of output should equal 'manual'
 The line 2 of output should equal 'closed'
+End
+
+It 'keeps the applied marker when pfctl fails so the next run retries'
+When run bash -c "$(declare -f run_guard); BIN='$BIN' PF_LOG='$PF_LOG' TEST_DIR='$TEST_DIR'; PF_STATUS=1 run_guard captive 1000; test -e '$TEST_DIR/guard/applied' || echo not-applied; run_guard captive 1100; PF_STATUS=1 run_guard success 1200; cat '$TEST_DIR/guard/applied'"
+The line 1 of output should equal 'not-applied'
+The line 2 of output should equal 'captive'
 End
 End
 

@@ -28,15 +28,23 @@ log() {
   printf '%s iron-proxy-guard: %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"
 }
 
+# Root owns the directory and files so the proxy user, which only needs to
+# read the key, cannot plant symlinks that root later writes through.
 ensure_ca() {
+  local path
+  [ -L "$state_dir" ] && rm -f "$state_dir"
   mkdir -p "$state_dir"
+  for path in ca.key ca.crt ca-bundle.crt ca-bundle.crt.tmp env-ready; do
+    [ -L "$state_dir/$path" ] && rm -f "$state_dir/$path"
+  done
   if [ ! -s "$state_dir/ca.key" ]; then
-    "$iron_proxy_bin" generate-ca -outdir "$state_dir" -name "iron-proxy local CA" -expiry-hours 26280 >/dev/null
+    (umask 077 && "$iron_proxy_bin" generate-ca -outdir "$state_dir" -name "iron-proxy local CA" -expiry-hours 26280 >/dev/null)
     log "generated CA at $state_dir/ca.crt"
   fi
-  "$chown_bin" -R "$proxy_user:$proxy_user" "$state_dir"
+  "$chown_bin" root:wheel "$state_dir" "$state_dir/ca.crt"
+  "$chown_bin" "root:$proxy_user" "$state_dir/ca.key"
   chmod 755 "$state_dir"
-  chmod 600 "$state_dir/ca.key"
+  chmod 640 "$state_dir/ca.key"
   chmod 644 "$state_dir/ca.crt"
 }
 
@@ -99,17 +107,24 @@ window_rule() {
 apply_window() {
   local kind="$1"
   if [ "$(cat "$guard_state_dir/applied" 2>/dev/null)" != "$kind" ]; then
-    window_rule "$kind" | "$pfctl_bin" -q -a ironproxy-captive -f -
-    printf '%s\n' "$kind" >"$guard_state_dir/applied"
-    log "opened $kind window"
+    if window_rule "$kind" | "$pfctl_bin" -q -a ironproxy-captive -f -; then
+      printf '%s\n' "$kind" >"$guard_state_dir/applied"
+      log "opened $kind window"
+    else
+      log "failed to open $kind window"
+    fi
   fi
 }
 
+# The applied marker stays until the flush succeeds so the next run retries.
 close_window() {
   if [ -e "$guard_state_dir/applied" ]; then
-    "$pfctl_bin" -q -a ironproxy-captive -F rules
-    rm -f "$guard_state_dir/applied"
-    log "closed bypass window ($1)"
+    if "$pfctl_bin" -q -a ironproxy-captive -F rules; then
+      rm -f "$guard_state_dir/applied"
+      log "closed bypass window ($1)"
+    else
+      log "failed to close bypass window ($1)"
+    fi
   fi
 }
 

@@ -7,8 +7,8 @@
   ...
 }:
 let
-  # "log": nftables accepts and copies (nflog group 1) everything the agent
-  # user sends outside the proxy. "enforce": the same traffic is rejected.
+  # "log": nftables accepts and kernel-logs (journalctl -k) everything the
+  # agent user sends outside the proxy. "enforce": the same traffic is rejected.
   mode = "log";
 
   shared = import ../../lib/iron-proxy.nix { inherit pkgs; };
@@ -52,7 +52,7 @@ let
         ip daddr @direct4 return
         ip6 daddr @direct6 return
         ${dnsRule}
-        meta l4proto { tcp, udp } log group 1 counter ${
+        log prefix "iron-proxy-egress: " counter ${
           if mode == "enforce" then "reject with icmpx admin-prohibited" else "accept"
         }
       }
