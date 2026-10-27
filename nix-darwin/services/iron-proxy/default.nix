@@ -7,7 +7,7 @@
 let
   # "log": pf passes and logs (pflog0) everything the agent user sends outside
   # the proxy. "enforce": the same traffic is rejected.
-  mode = "log";
+  mode = "enforce";
   # Point macOS system HTTP/HTTPS proxy settings at iron-proxy while the proxy
   # listens and its CA is trusted in the System keychain.
   systemProxy = true;
