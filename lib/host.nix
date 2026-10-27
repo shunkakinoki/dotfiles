@@ -30,6 +30,9 @@ rec {
   # Root-managed Ubuntu worker host
   isKamino = isHost "kamino";
 
+  # Ubuntu T3 Code server that also runs fleet lanes
+  isBeskar = isHost "beskar";
+
   # Detect if running on galactica (macOS node)
   isGalactica = isHost "galactica";
 
