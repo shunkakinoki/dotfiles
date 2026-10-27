@@ -36,6 +36,24 @@ When run bash -c "test \"\$(grep -cxF 'ssh-ed25519 AAAAcore1 core1' '$TEST_ROOT/
 The status should be success
 End
 
+It 'revokes a key dropped from the declared list'
+printf '%s\n' 'ssh-ed25519 AAAAprovider provider' >"$TEST_ROOT/ssh/authorized_keys"
+bash "$SCRIPT" "$TEST_ROOT/keys" "$TEST_ROOT/ssh" "$TEST_ROOT/bin/ssh-keygen"
+printf '%s\n' 'ssh-ed25519 AAAAcore1 core1' >"$TEST_ROOT/keys"
+When run bash "$SCRIPT" "$TEST_ROOT/keys" "$TEST_ROOT/ssh" "$TEST_ROOT/bin/ssh-keygen"
+The status should be success
+The contents of file "$TEST_ROOT/ssh/authorized_keys" should include 'ssh-ed25519 AAAAprovider provider'
+The contents of file "$TEST_ROOT/ssh/authorized_keys" should include 'ssh-ed25519 AAAAcore1 core1'
+The contents of file "$TEST_ROOT/ssh/authorized_keys" should not include 'ssh-ed25519 AAAAcore2 core2'
+End
+
+It 'moves a previously appended declared key into the managed block'
+printf '%s\n' 'ssh-ed25519 AAAAcore1 core1' 'ssh-ed25519 AAAAprovider provider' >"$TEST_ROOT/ssh/authorized_keys"
+When run bash "$SCRIPT" "$TEST_ROOT/keys" "$TEST_ROOT/ssh" "$TEST_ROOT/bin/ssh-keygen"
+The status should be success
+The contents of file "$TEST_ROOT/ssh/authorized_keys" should equal "$(printf '%s\n' 'ssh-ed25519 AAAAprovider provider' '# BEGIN dotfiles managed keys' 'ssh-ed25519 AAAAcore1 core1' 'ssh-ed25519 AAAAcore2 core2' '# END dotfiles managed keys')"
+End
+
 It 'rejects an invalid declared key'
 printf '%s\n' 'ssh-ed25519 AAAAprovider provider' >"$TEST_ROOT/ssh/authorized_keys"
 printf '%s\n' 'INVALID key' >"$TEST_ROOT/keys"
