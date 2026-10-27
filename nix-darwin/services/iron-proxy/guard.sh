@@ -34,6 +34,10 @@ ensure_ca() {
   local path
   [ -L "$state_dir" ] && rm -f "$state_dir"
   mkdir -p "$state_dir"
+  # Taken first: older builds left the directory proxy-owned, so the proxy
+  # could otherwise race a symlink in between the cleanup and the chowns.
+  "$chown_bin" root:wheel "$state_dir"
+  chmod 755 "$state_dir"
   for path in ca.key ca.crt ca-bundle.crt ca-bundle.crt.tmp env-ready; do
     [ -L "$state_dir/$path" ] && rm -f "$state_dir/$path"
   done
@@ -41,9 +45,8 @@ ensure_ca() {
     (umask 077 && "$iron_proxy_bin" generate-ca -outdir "$state_dir" -name "iron-proxy local CA" -expiry-hours 26280 >/dev/null)
     log "generated CA at $state_dir/ca.crt"
   fi
-  "$chown_bin" root:wheel "$state_dir" "$state_dir/ca.crt"
+  "$chown_bin" root:wheel "$state_dir/ca.crt"
   "$chown_bin" "root:$proxy_user" "$state_dir/ca.key"
-  chmod 755 "$state_dir"
   chmod 640 "$state_dir/ca.key"
   chmod 644 "$state_dir/ca.crt"
 }
