@@ -44,8 +44,10 @@ elif [ "$(uname -s)" = Darwin ] && serving="$(node -e '
   } catch {}
 ' "$base/userdata/server-runtime.json")" && [ -n "$serving" ]; then
   # The macOS desktop app serves T3 without installing a service runtime, so
-  # run the CLI release that matches the server it talks to.
-  exec npx --yes "t3@$serving" "$@"
+  # run the CLI release that matches the server it talks to. The prefix keeps
+  # npx from resolving against a package.json in the caller's directory.
+  mkdir -p "$base/runtime/npx"
+  exec npx --yes --prefix "$base/runtime/npx" "t3@$serving" "$@"
 fi
 if [ ! -x "$cli" ]; then
   printf 'T3 CLI is missing; activate the managed npm packages first.\n' >&2
