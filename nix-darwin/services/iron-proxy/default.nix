@@ -124,6 +124,7 @@ lib.mkIf (!isRunner) {
   environment.systemPackages = [
     pkgs.iron-proxy
     bypassScript
+    shared.secretsScript
   ];
 
   launchd.daemons = {

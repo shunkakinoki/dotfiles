@@ -7,10 +7,11 @@ SCRIPT="$PWD/home-manager/modules/dotenv/print-env-file.sh"
 setup() {
   TEST_HOME="$(mktemp -d)"
   export TEST_HOME
+  export IRON_PROXY_STATE_DIR="$TEST_HOME/proxy" IRON_PROXY_SWAP_DIR="$TEST_HOME/secrets"
 }
 cleanup() {
   rm -rf "$TEST_HOME"
-  unset TEST_HOME
+  unset TEST_HOME IRON_PROXY_STATE_DIR IRON_PROXY_SWAP_DIR
 }
 Before 'setup'
 After 'cleanup'
@@ -107,6 +108,26 @@ It 'succeeds when no env file exists'
 When run bash -c "HOME='$TEST_HOME' sh '$SCRIPT'"
 The status should be success
 The output should equal ''
+End
+End
+
+Describe 'iron-proxy secret swap'
+swap_ready() {
+  mkdir -p "$IRON_PROXY_STATE_DIR" "$IRON_PROXY_SWAP_DIR"
+  printf 'OPENROUTER_API_KEY\n' >"$IRON_PROXY_SWAP_DIR/swap-keys"
+  [ "$1" = ready ] && touch "$IRON_PROXY_STATE_DIR/env-ready"
+  print_env 'OPENROUTER_API_KEY=real'
+}
+
+It 'overrides swapped keys with the placeholder while the proxy is ready'
+When call swap_ready ready
+The line 1 of output should equal 'OPENROUTER_API_KEY=real'
+The line 2 of output should equal 'OPENROUTER_API_KEY=iron-proxy-swap-OPENROUTER_API_KEY'
+End
+
+It 'keeps the real value when the proxy is not ready'
+When call swap_ready down
+The output should equal 'OPENROUTER_API_KEY=real'
 End
 End
 End
