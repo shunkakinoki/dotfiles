@@ -10,7 +10,11 @@ let
   publicKeys = import ../named-hosts/pubkeys.nix;
   sshAuthorizedKeys = import ../named-hosts/ssh-authorized-keys.nix;
   managedKnownHosts = import ../home-manager/programs/ssh/known-hosts.nix;
-  kaminoPublicKeys = [
+  fleetPublicKeys = [
+    publicKeys.beskar
+    publicKeys.galactica
+    publicKeys.kyber
+    publicKeys.matic
     publicKeys.kamino1
     publicKeys.kamino2
     publicKeys.kamino3
@@ -18,7 +22,11 @@ let
     publicKeys.kamino5
     publicKeys.kamino6
     publicKeys.kamino7
+    publicKeys.kamino8
+    publicKeys.kamino9
+    publicKeys.kamino10
   ];
+  fleetPeerKeysOf = host: builtins.filter (key: key != publicKeys.${host}) fleetPublicKeys;
 
   # Helper: reconstruct a darwin configuration from hosts/darwin
   mkDarwinConfig =
@@ -121,8 +129,10 @@ let
       assert beads.programs.ssh.settings.kyber.data.IdentityAgent == "none";
       assert beads.programs.ssh.settings.kyber.data.UseKeychain == "no";
       assert beads.programs.ssh.settings.kyber.data.AddKeysToAgent == "no";
-      assert galactica.config.users.users.shunkakinoki.openssh.authorizedKeys.keys == kaminoPublicKeys;
-      assert sshAuthorizedKeys.galactica == kaminoPublicKeys;
+      assert
+        galactica.config.users.users.shunkakinoki.openssh.authorizedKeys.keys
+        == fleetPeerKeysOf "galactica";
+      assert sshAuthorizedKeys.galactica == fleetPeerKeysOf "galactica";
       mkEvalCheck "darwin-galactica" galactica.system;
   };
 
@@ -182,10 +192,8 @@ let
       assert cfg.services.openssh.settings.PasswordAuthentication == false;
       assert cfg.services.openssh.settings.KbdInteractiveAuthentication == false;
       assert cfg.services.openssh.settings.PermitRootLogin == "no";
-      assert
-        cfg.users.users.shunkakinoki.openssh.authorizedKeys.keys
-        == [ publicKeys.galactica ] ++ kaminoPublicKeys;
-      assert sshAuthorizedKeys.matic == kaminoPublicKeys;
+      assert cfg.users.users.shunkakinoki.openssh.authorizedKeys.keys == fleetPeerKeysOf "matic";
+      assert sshAuthorizedKeys.matic == fleetPeerKeysOf "matic";
       assert beads.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "kyber.tail950b36.ts.net";
       assert beads.home.sessionVariables.BEADS_NODE_ID == "kyber";
       assert beads.home.sessionVariables.BD_EVENTS_JOURNAL == "1";
@@ -336,12 +344,7 @@ let
             "kamino9"
             "kamino10"
           ];
-        assert
-          sshAuthorizedKeys.kamino == [
-            publicKeys.galactica
-            publicKeys.kyber
-            publicKeys.matic
-          ];
+        assert sshAuthorizedKeys.kamino == fleetPublicKeys;
         assert cfg.programs.ssh.settings.galactica.data.HostName == "galactica.tail950b36.ts.net";
         assert cfg.programs.ssh.settings.galactica.data.User == "shunkakinoki";
         assert
@@ -552,7 +555,6 @@ let
           candidate:
           lib.hasInfix "sshd-key-only /etc/ssh/sshd_config.d/10-kamino-key-only.conf" candidate.home.activation.setKaminoSshdKeyOnly.data
         ) ([ cfg ] ++ otherWarmConfigs);
-        assert sshAuthorizedKeys.kaminoCiBox == sshAuthorizedKeys.kamino ++ kaminoPublicKeys;
         mkEvalCheck "home-kamino8" kamino.activationPackage;
       eval-home-kamino100 =
         let
@@ -673,6 +675,8 @@ let
         assert cfg.home.homeDirectory == "/home/ubuntu";
         assert cfg.age.identityPaths == [ "/home/ubuntu/.ssh/id_ed25519" ];
         assert cfg.age.secrets."agents-prd.env".path == "/home/ubuntu/.config/agenix/agents-prd.env";
+        assert sshAuthorizedKeys.beskar == fleetPeerKeysOf "beskar";
+        assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeFleetSsh.data;
         mkEvalCheck "home-beskar" beskar.activationPackage;
       eval-home-kyber =
         let
@@ -702,13 +706,7 @@ let
         assert activationPosition "linkGeneration" < activationPosition "authorizeFleetSsh";
         assert lib.hasInfix "/bin/ssh-keygen" cfg.home.activation.authorizeFleetSsh.data;
         assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeFleetSsh.data;
-        assert
-          lib.init sshAuthorizedKeys.kyber == kaminoPublicKeys
-          ++ [
-            publicKeys.kamino8
-            publicKeys.kamino9
-            publicKeys.kamino10
-          ];
+        assert lib.init sshAuthorizedKeys.kyber == fleetPeerKeysOf "kyber";
         assert lib.hasPrefix
           "restrict,command=\"/home/ubuntu/.local/bin/beads-linear-complete-ssh-guard\" ssh-ed25519 "
           (lib.last sshAuthorizedKeys.kyber);
