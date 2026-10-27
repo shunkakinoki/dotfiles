@@ -72,6 +72,7 @@ let
   '';
 
   # Never fails the unit: without the marker, sessions simply stay direct.
+  # Polls briefly at start; iron-proxy-ready re-checks after that.
   markReady = pkgs.writeShellScript "iron-proxy-mark-ready" ''
     for _ in $(seq 50); do
       if (exec 3<>/dev/tcp/127.0.0.1/${toString shared.tunnelPort}) 2>/dev/null; then
@@ -80,6 +81,7 @@ let
       fi
       sleep 0.2
     done
+    rm -f ${stateDir}/env-ready
   '';
 in
 lib.mkIf (!isRunner) {
@@ -106,7 +108,7 @@ lib.mkIf (!isRunner) {
   # rather than security.pki. systemd user services do not read this.
   environment.extraInit = ''
     if [ "$(id -un)" = "${username}" ] && [ -e ${stateDir}/env-ready ]; then
-      for _ip_key in HTTPS_PROXY HTTP_PROXY https_proxy http_proxy ALL_PROXY; do
+      for _ip_key in HTTPS_PROXY HTTP_PROXY https_proxy http_proxy ALL_PROXY all_proxy; do
         export "$_ip_key=http://127.0.0.1:${toString shared.tunnelPort}"
       done
       export NO_PROXY="${shared.noProxy}" no_proxy="${shared.noProxy}"
@@ -138,6 +140,27 @@ lib.mkIf (!isRunner) {
       ProtectSystem = "strict";
       ProtectHome = true;
       PrivateTmp = true;
+    };
+  };
+
+  # Catches a listener that came up after markReady gave up, and one that
+  # died without the unit stopping.
+  systemd.services.iron-proxy-ready = {
+    description = "Track iron-proxy readiness for agent shells";
+    requisite = [ "iron-proxy.service" ];
+    after = [ "iron-proxy.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      User = proxyUser;
+      Group = proxyUser;
+      ExecStart = markReady;
+    };
+  };
+  systemd.timers.iron-proxy-ready = {
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnBootSec = "1min";
+      OnUnitActiveSec = "30s";
     };
   };
 
