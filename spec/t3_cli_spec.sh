@@ -78,8 +78,21 @@ The status should be success
 The contents of file "$MOCK_LOG" should include 'runtime'
 End
 
+It 'runs the serving release through npx when only the desktop app serves'
+rm -f "$T3CODE_HOME/runtime/service-state.json"
+serving_runtime "$$"
+printf '#!/usr/bin/env bash\necho Darwin\n' >"$MOCK_BIN/uname"
+printf '#!/usr/bin/env bash\nprintf "npx %%s\\n" "$*" >>"$MOCK_LOG"\n' >"$MOCK_BIN/npx"
+chmod +x "$MOCK_BIN/uname" "$MOCK_BIN/npx"
+When run bash "$SCRIPT" thread show --json t1
+The status should be success
+The contents of file "$MOCK_LOG" should include 'npx --yes t3@1.3.0 thread show --json t1'
+The contents of file "$MOCK_LOG" should not include 'global'
+End
+
 It 'uses the managed package before any service runtime is installed'
 rm -f "$T3CODE_HOME/runtime/service-state.json"
+serving_runtime "$$"
 When run bash "$SCRIPT" --version
 The status should be success
 The contents of file "$MOCK_LOG" should include 'global'

@@ -34,6 +34,18 @@ if [ -f "$state" ]; then
     exit 1
   fi
   cli="$runtime"
+elif [ "$(uname -s)" = Darwin ] && serving="$(node -e '
+  const fs = require("fs");
+  const release = /^[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/;
+  try {
+    const server = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+    process.kill(server.pid, 0);
+    if (release.test(server.serverVersion)) process.stdout.write(server.serverVersion);
+  } catch {}
+' "$base/userdata/server-runtime.json")" && [ -n "$serving" ]; then
+  # The macOS desktop app serves T3 without installing a service runtime, so
+  # run the CLI release that matches the server it talks to.
+  exec npx --yes "t3@$serving" "$@"
 fi
 if [ ! -x "$cli" ]; then
   printf 'T3 CLI is missing; activate the managed npm packages first.\n' >&2

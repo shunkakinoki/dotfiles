@@ -102,6 +102,11 @@ let
     + "export T3_SYSTEMD_RUN=${pkgs.systemd}/bin/systemd-run\n"
     + builtins.readFile ./cli.sh
   );
+  # macOS hosts run the desktop app, which needs neither the Linux library path
+  # nor systemd delegation.
+  darwinCli = pkgs.writeShellScript "t3-cli" (
+    "export PATH=${lib.makeBinPath [ pkgs.nodejs ]}:$PATH\n" + builtins.readFile ./cli.sh
+  );
   setupBrowser = pkgs.writeShellScript "t3-setup-browser" (
     "export PATH=${
       lib.makeBinPath [
@@ -141,9 +146,8 @@ in
     source = runtimeCli;
   };
 
-  xdg.configFile."t3/bin/t3" = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
-    source = runtimeCli;
-  };
+  xdg.configFile."t3/bin/t3".source =
+    if pkgs.stdenv.hostPlatform.isLinux then runtimeCli else darwinCli;
   programs.fish.shellInit = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (
     lib.mkOrder 2100 "set -gx PATH $HOME/.config/t3/bin $PATH"
   );
