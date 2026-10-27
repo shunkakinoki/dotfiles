@@ -19,12 +19,18 @@ let
     codex = home: "codex:${home}/sessions";
   };
   t3ExtraDirs = lib.concatStringsSep "," (
-    lib.mapAttrsToList (
-      _: instance:
-      t3SessionDirs.${instance.driver} (
-        lib.replaceStrings [ "~" ] [ config.home.homeDirectory ] instance.config.homePath
+    lib.mapAttrsToList
+      (
+        _: instance:
+        t3SessionDirs.${instance.driver} (
+          lib.replaceStrings [ "~" ] [ config.home.homeDirectory ] instance.config.homePath
+        )
       )
-    ) (lib.importJSON ../../../config/t3code/server-settings.json).providerInstances
+      (
+        lib.filterAttrs (
+          _: instance: t3SessionDirs ? ${instance.driver}
+        ) (lib.importJSON ../../../config/t3code/server-settings.json).providerInstances
+      )
   );
   # Every 3 hours, aligned to the wall clock.
   calendarHours = [
