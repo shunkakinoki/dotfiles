@@ -41,6 +41,13 @@ outdir=$3
 echo cert >"$outdir/ca.crt"
 echo key >"$outdir/ca.key"
 EOF
+  cat >"$BIN/networksetup" <<'EOF'
+#!/usr/bin/env bash
+printf '%s\n' "$*" >>"$NS_LOG"
+if [ "$1" = "-getsecurewebproxy" ]; then
+  printf 'Enabled: %s\nServer: 127.0.0.1\nPort: %s\n' "${NS_ENABLED:-No}" "${NS_PORT:-0}"
+fi
+EOF
   printf '#!/usr/bin/env bash\nexit 0\n' >"$BIN/chown"
   printf '#!/usr/bin/env bash\nexit "${NC_STATUS:-1}"\n' >"$BIN/nc"
   printf '#!/usr/bin/env bash\nexit "${TRUST_STATUS:-1}"\n' >"$BIN/security"
@@ -55,7 +62,7 @@ EOF
     -e 's|@agentUid@|501|g' \
     -e 's|@pfConf@|/etc/pf.ironproxy.conf|g' \
     -e 's|@captiveWindowSeconds@|600|g' \
-    -e 's|@systemProxy@|0|g' \
+    -e "s|@systemProxy@|${SYSTEM_PROXY:-0}|g" \
     -e 's|@proxyPort@|8899|g' \
     -e 's|@networkServices@|Wi-Fi|g' \
     -e 's|@bypassDomains@|localhost|g' \
@@ -69,7 +76,7 @@ cleanup_guard() {
 
 run_guard() {
   env PF_LOG="$PF_LOG" PFCTL_BIN="$BIN/pfctl" CURL_BIN="$BIN/curl" ROUTE_BIN="$BIN/route" \
-    CHOWN_BIN="$BIN/chown" NC_BIN="$BIN/nc" SECURITY_BIN="$BIN/security" PF_STATUS="${PF_STATUS:-0}" PF_LOADED=1 GATEWAY="${GATEWAY:-192.168.1.1}" \
+    CHOWN_BIN="$BIN/chown" NC_BIN="$BIN/nc" SECURITY_BIN="$BIN/security" NETWORKSETUP_BIN="$BIN/networksetup" NS_LOG="$TEST_DIR/ns.log" PF_STATUS="${PF_STATUS:-0}" PF_LOADED=1 GATEWAY="${GATEWAY:-192.168.1.1}" \
     PROBE="$1" GUARD_NOW="$2" bash "$TEST_DIR/guard.sh" >/dev/null
 }
 
@@ -144,6 +151,36 @@ When run bash -c "$(declare -f run_guard); BIN='$BIN' PF_LOG='$PF_LOG' TEST_DIR=
 The line 1 of output should equal 'untrusted'
 The line 2 of output should equal 'ready'
 The line 3 of output should equal 'down'
+End
+End
+
+Describe 'system proxy'
+setup_system_proxy() {
+  SYSTEM_PROXY=1 setup_guard
+}
+Before 'setup_system_proxy'
+After 'cleanup_guard'
+
+It 'sets the system proxy once the env is ready'
+When run bash -c "$(declare -f run_guard); BIN='$BIN' PF_LOG='$PF_LOG' TEST_DIR='$TEST_DIR'; NC_STATUS=0 TRUST_STATUS=0 run_guard success 1000; cat '$TEST_DIR/ns.log'"
+The output should include '-setsecurewebproxy Wi-Fi 127.0.0.1 8899'
+The output should include '-setproxybypassdomains Wi-Fi localhost'
+End
+
+It 'leaves an already-set system proxy alone'
+When run bash -c "$(declare -f run_guard); BIN='$BIN' PF_LOG='$PF_LOG' TEST_DIR='$TEST_DIR'; NS_ENABLED=Yes NS_PORT=8899 NC_STATUS=0 TRUST_STATUS=0 run_guard success 1000; cat '$TEST_DIR/ns.log'"
+The output should equal '-getsecurewebproxy Wi-Fi'
+End
+
+It 'clears its own system proxy when the env is not ready'
+When run bash -c "$(declare -f run_guard); BIN='$BIN' PF_LOG='$PF_LOG' TEST_DIR='$TEST_DIR'; NS_ENABLED=Yes NS_PORT=8899 run_guard success 1000; cat '$TEST_DIR/ns.log'"
+The output should include '-setsecurewebproxystate Wi-Fi off'
+The output should include '-setwebproxystate Wi-Fi off'
+End
+
+It 'keeps a foreign system proxy when the env is not ready'
+When run bash -c "$(declare -f run_guard); BIN='$BIN' PF_LOG='$PF_LOG' TEST_DIR='$TEST_DIR'; NS_ENABLED=Yes NS_PORT=3128 run_guard success 1000; cat '$TEST_DIR/ns.log'"
+The output should equal '-getsecurewebproxy Wi-Fi'
 End
 End
 

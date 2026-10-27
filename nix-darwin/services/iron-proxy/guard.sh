@@ -84,18 +84,29 @@ ensure_pf() {
   "$pfctl_bin" -q -e >/dev/null 2>&1 || true
 }
 
+ours() {
+  printf '%s\n' "$1" | grep -q '^Enabled: Yes$' && printf '%s\n' "$1" | grep -q "^Port: $proxy_port$"
+}
+
+# Gated on env-ready like the env agent: with the proxy down or its CA
+# untrusted, a system proxy would cut every GUI app off, so it is cleared.
 ensure_system_proxy() {
   [ "$system_proxy" = "1" ] || return 0
-  local service
+  local service current
   local IFS=:
   for service in $network_services; do
-    "$networksetup_bin" -getwebproxy "$service" >/dev/null 2>&1 || continue
-    if ! "$networksetup_bin" -getsecurewebproxy "$service" | grep -q "^Port: $proxy_port$"; then
+    current="$("$networksetup_bin" -getsecurewebproxy "$service" 2>/dev/null)" || continue
+    if [ -e "$state_dir/env-ready" ]; then
+      ours "$current" && continue
       "$networksetup_bin" -setwebproxy "$service" 127.0.0.1 "$proxy_port"
       "$networksetup_bin" -setsecurewebproxy "$service" 127.0.0.1 "$proxy_port"
       IFS=' ' read -r -a domains <<<"$bypass_domains"
       "$networksetup_bin" -setproxybypassdomains "$service" "${domains[@]}"
       log "set system proxy on $service"
+    elif ours "$current"; then
+      "$networksetup_bin" -setwebproxystate "$service" off
+      "$networksetup_bin" -setsecurewebproxystate "$service" off
+      log "cleared system proxy on $service"
     fi
   done
 }
