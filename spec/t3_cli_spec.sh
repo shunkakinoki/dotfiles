@@ -86,7 +86,7 @@ printf '#!/usr/bin/env bash\nprintf "npx %%s\\n" "$*" >>"$MOCK_LOG"\n' >"$MOCK_B
 chmod +x "$MOCK_BIN/uname" "$MOCK_BIN/npx"
 When run bash "$SCRIPT" thread show --json t1
 The status should be success
-The contents of file "$MOCK_LOG" should include 'npx --yes t3@1.3.0 thread show --json t1'
+The contents of file "$MOCK_LOG" should include "npx --yes --prefix $T3CODE_HOME/runtime/npx t3@1.3.0 thread show --json t1"
 The contents of file "$MOCK_LOG" should not include 'global'
 End
 
