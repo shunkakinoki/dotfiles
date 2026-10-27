@@ -368,6 +368,7 @@ let
         assert cfg.systemd.user.services.herdr-server.Install.WantedBy == [ "default.target" ];
         assert cfg.systemd.user.services.herdr-server.Unit.X-SwitchMethod == "keep-old";
         assert cfg.systemd.user.services.herdr-server.Service.EnvironmentFile == [ "-/root/dotfiles/.env" ];
+        assert !(cfg.age.secrets ? "agents-prd.env");
         assert lib.elem "BEADS_DOLT_AUTO_START=0"
           cfg.systemd.user.services.herdr-server.Service.Environment;
         assert lib.elem "BEADS_DOLT_SERVER_MODE=1"
@@ -392,6 +393,27 @@ let
         assert lib.hasInfix sessionVarsSource (bashrcBefore "export PATH=");
         assert !(cfg.systemd.user.services ? roborev);
         mkEvalCheck "home-kamino" kamino.activationPackage;
+      eval-home-kamino2-identity =
+        let
+          kamino = import ../named-hosts/kamino {
+            inherit inputs;
+            name = "kamino2";
+          };
+          cfg = kamino.config;
+          envFile = "/root/.config/agenix/agents-prd.env";
+        in
+        assert cfg.age.identityPaths == [ "/etc/ssh/ssh_host_ed25519_key" ];
+        assert cfg.age.secrets."agents-prd.env".path == envFile;
+        assert cfg.age.secrets."agents-prd.env".mode == "0400";
+        assert lib.hasInfix "DOTFILES_ENV_FILE=${envFile}" cfg.programs.bash.bashrcExtra;
+        assert lib.hasInfix "DOTFILES_ENV_FILE=${envFile}" cfg.programs.zsh.envExtra;
+        assert lib.hasInfix "DOTFILES_ENV_FILE ${envFile}" cfg.programs.fish.shellInit;
+        assert
+          cfg.systemd.user.services.herdr-server.Service.EnvironmentFile == [
+            "-/root/dotfiles/.env"
+            "-${envFile}"
+          ];
+        mkEvalCheck "home-kamino2-identity" kamino.activationPackage;
       eval-home-kamino7 =
         let
           kamino = import ../named-hosts/kamino {
