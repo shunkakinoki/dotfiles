@@ -50,10 +50,7 @@ let
   t3ConnectMode = if host.t3ConnectDisabled then "disabled" else "publish-only";
   sshAuthorizedKeys = import ../ssh-authorized-keys.nix;
   authorizedKeysFile = pkgs.writeText "kamino-authorized-keys" (
-    pkgs.lib.concatStringsSep "\n" (
-      if isCiBox then sshAuthorizedKeys.kaminoCiBox else sshAuthorizedKeys.kamino
-    )
-    + "\n"
+    pkgs.lib.concatStringsSep "\n" sshAuthorizedKeys.kamino + "\n"
   );
 in
 inputs.home-manager.lib.homeManagerConfiguration {

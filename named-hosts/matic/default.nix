@@ -40,7 +40,6 @@ import ../../hosts/nixos {
           "--operator=${username}"
           "--ssh=true"
         ];
-        hostPublicKeys = import ../pubkeys.nix;
         sshAuthorizedKeys = import ../ssh-authorized-keys.nix;
 
         # Speaks the gnome-keyring control socket protocol directly.
@@ -189,10 +188,7 @@ import ../../hosts/nixos {
             PermitRootLogin = "no";
           };
         };
-        users.users.${username}.openssh.authorizedKeys.keys = [
-          hostPublicKeys.galactica
-        ]
-        ++ sshAuthorizedKeys.matic;
+        users.users.${username}.openssh.authorizedKeys.keys = sshAuthorizedKeys.matic;
 
         # nixos-rebuild starts tailscaled-set at boot or when its unit changes.
         # Reapply the same declared preferences during every switch as well.
