@@ -76,6 +76,7 @@ let
 
   envScript = pkgs.replaceVars ./env.sh {
     inherit stateDir;
+    inherit (shared) secretsDir;
     proxyPort = toString tunnelPort;
     inherit (shared) noProxy;
   };
