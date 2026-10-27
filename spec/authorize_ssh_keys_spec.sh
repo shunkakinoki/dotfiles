@@ -54,6 +54,17 @@ The status should be success
 The contents of file "$TEST_ROOT/ssh/authorized_keys" should equal "$(printf '%s\n' 'ssh-ed25519 AAAAprovider provider' '# BEGIN dotfiles managed keys' 'ssh-ed25519 AAAAcore1 core1' 'ssh-ed25519 AAAAcore2 core2' '# END dotfiles managed keys')"
 End
 
+It 'runs without awk on PATH'
+mkdir -p "$TEST_ROOT/path"
+for tool in bash chmod grep mkdir mktemp mv rm touch; do
+  ln -s "$(command -v "$tool")" "$TEST_ROOT/path/$tool"
+done
+printf '%s\n' 'ssh-ed25519 AAAAprovider provider' >"$TEST_ROOT/ssh/authorized_keys"
+When run env PATH="$TEST_ROOT/path" "$BASH" "$SCRIPT" "$TEST_ROOT/keys" "$TEST_ROOT/ssh" "$TEST_ROOT/bin/ssh-keygen"
+The status should be success
+The contents of file "$TEST_ROOT/ssh/authorized_keys" should equal "$(printf '%s\n' 'ssh-ed25519 AAAAprovider provider' '# BEGIN dotfiles managed keys' 'ssh-ed25519 AAAAcore1 core1' 'ssh-ed25519 AAAAcore2 core2' '# END dotfiles managed keys')"
+End
+
 It 'rejects an invalid declared key'
 printf '%s\n' 'ssh-ed25519 AAAAprovider provider' >"$TEST_ROOT/ssh/authorized_keys"
 printf '%s\n' 'INVALID key' >"$TEST_ROOT/keys"
