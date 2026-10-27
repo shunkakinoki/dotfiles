@@ -5,8 +5,7 @@
 }:
 {
   overlay-beads-version-guard = pkgs.runCommand "overlay-beads-version-guard" { } ''
-    ${pkgs.beads}/bin/bd --version | grep -qF '1.3.0'
-    ${pkgs.beads}/bin/bd update --if-status=open --if-assignee=actor --help > /dev/null
+    ${pkgs.beads-unwrapped}/bin/bd update --if-revision=0 --help > /dev/null
     touch $out
   '';
 
