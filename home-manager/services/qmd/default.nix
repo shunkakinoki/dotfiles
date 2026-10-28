@@ -26,6 +26,11 @@ lib.mkIf enabled {
         "mcp"
         "--http"
       ];
+      # qmd's shebang is `env node`; without an explicit PATH it crash-loops at
+      # login until another agent's `launchctl setenv PATH` happens to land.
+      EnvironmentVariables = {
+        PATH = "${pkgs.nodejs}/bin:${homeDir}/.bun/bin:/usr/bin:/bin";
+      };
       KeepAlive = true;
       RunAtLoad = true;
       StandardOutPath = "/tmp/qmd.log";
