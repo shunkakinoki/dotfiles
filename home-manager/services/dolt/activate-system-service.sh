@@ -47,9 +47,18 @@ fi
 
 run_root @systemctl@ enable dolt.service
 # Restart only for a changed unit; routine activations must not interrupt
-# Beads clients.
+# Beads clients. Kyber may guard the authoritative server against manual stops;
+# leave an active server running until an operator schedules its restart.
 if [ "$changed" -eq 1 ]; then
-  run_root @systemctl@ restart dolt.service
+  if run_root @systemctl@ is-active --quiet dolt.service; then
+    if [ "$(run_root @systemctl@ show -P RefuseManualStop dolt.service)" = yes ]; then
+      echo "Dolt unit changed; live restart deferred by RefuseManualStop."
+    else
+      run_root @systemctl@ restart dolt.service
+    fi
+  else
+    run_root @systemctl@ start dolt.service
+  fi
 else
   run_root @systemctl@ start dolt.service
 fi

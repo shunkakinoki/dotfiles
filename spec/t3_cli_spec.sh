@@ -44,8 +44,55 @@ The contents of file "$MOCK_LOG" should include '</tmp/project with spaces>'
 The contents of file "$MOCK_LOG" should not include 'global'
 End
 
+serving_runtime() {
+  mkdir -p "$T3CODE_HOME/runtime/versions/1.3.0" "$T3CODE_HOME/userdata"
+  cat >"$T3CODE_HOME/runtime/versions/1.3.0/t3" <<'MOCK'
+#!/usr/bin/env bash
+printf 'serving\n' >>"$MOCK_LOG"
+MOCK
+  chmod +x "$T3CODE_HOME/runtime/versions/1.3.0/t3"
+  printf '{"pid":%s,"serverVersion":"1.3.0"}\n' "$1" >"$T3CODE_HOME/userdata/server-runtime.json"
+}
+
+It 'uses the version the running server reports over a stale active version'
+serving_runtime "$$"
+When run bash "$SCRIPT" thread show --json t1
+The status should be success
+The contents of file "$MOCK_LOG" should include 'serving'
+The contents of file "$MOCK_LOG" should not include 'runtime'
+End
+
+It 'falls back to the active version when the recorded server is gone'
+serving_runtime 2147483646
+When run bash "$SCRIPT" --version
+The status should be success
+The contents of file "$MOCK_LOG" should include 'runtime'
+The contents of file "$MOCK_LOG" should not include 'serving'
+End
+
+It 'falls back to the active version when the serving runtime is not installed'
+serving_runtime "$$"
+rm -f "$T3CODE_HOME/runtime/versions/1.3.0/t3"
+When run bash "$SCRIPT" --version
+The status should be success
+The contents of file "$MOCK_LOG" should include 'runtime'
+End
+
+It 'runs the serving release through npx when only the desktop app serves'
+rm -f "$T3CODE_HOME/runtime/service-state.json"
+serving_runtime "$$"
+printf '#!/usr/bin/env bash\necho Darwin\n' >"$MOCK_BIN/uname"
+printf '#!/usr/bin/env bash\nprintf "npx %%s\\n" "$*" >>"$MOCK_LOG"\n' >"$MOCK_BIN/npx"
+chmod +x "$MOCK_BIN/uname" "$MOCK_BIN/npx"
+When run bash "$SCRIPT" thread show --json t1
+The status should be success
+The contents of file "$MOCK_LOG" should include "npx --yes --prefix $T3CODE_HOME/runtime/npx t3@1.3.0 thread show --json t1"
+The contents of file "$MOCK_LOG" should not include 'global'
+End
+
 It 'uses the managed package before any service runtime is installed'
 rm -f "$T3CODE_HOME/runtime/service-state.json"
+serving_runtime "$$"
 When run bash "$SCRIPT" --version
 The status should be success
 The contents of file "$MOCK_LOG" should include 'global'

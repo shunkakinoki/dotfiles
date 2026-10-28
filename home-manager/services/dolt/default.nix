@@ -6,7 +6,12 @@
   ...
 }:
 let
-  inherit (inputs.host) isKyber isKamino isMatic;
+  inherit (inputs.host)
+    isBeskar
+    isKamino
+    isKyber
+    isMatic
+    ;
   homeDir = config.home.homeDirectory;
   repoDir = "${homeDir}/dotfiles";
   beadsDir = "${homeDir}/.beads/shared-server/dolt";
@@ -108,7 +113,7 @@ in
 
   # Herdr launches workers without a login shell. Give its child processes the
   # managed server policy directly so they cannot start a competing Dolt server.
-  systemd.user.services.herdr-server = lib.mkIf (isKamino || isMatic) {
+  systemd.user.services.herdr-server = lib.mkIf (isKamino || isMatic || isBeskar) {
     Service.Environment = lib.mapAttrsToList (name: value: "${name}=${value}") beadsClientEnvironment;
   };
 

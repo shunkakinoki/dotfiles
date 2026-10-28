@@ -96,9 +96,14 @@ home-manager.lib.homeManagerConfiguration {
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/ensure-directory.sh}" "700" "${config.home.homeDirectory}/.ssh"
         '';
 
-        home.activation.authorizeFleetSsh = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        home.activation.authorizeFleetSsh = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/authorize-ssh-keys.sh}" ${authorizedKeysFile} "${config.home.homeDirectory}/.ssh" ${pkgs.openssh}/bin/ssh-keygen
         '';
+
+        home.file.".local/bin/beads-linear-complete-ssh-guard" = {
+          source = ./beads-linear-complete-ssh-guard.sh;
+          executable = true;
+        };
 
         # Ensure agenix config directory exists
         home.activation.ensureAgenixDirectory = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
