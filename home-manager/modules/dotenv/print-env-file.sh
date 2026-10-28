@@ -12,41 +12,56 @@ for candidate in "${DOTFILES_ENV_FILE:-}" "$HOME/dotfiles/.env" "$HOME/.env"; do
   fi
 done
 
-[ -n "$env_file" ] || exit 0
-
-# `|| [ -n "$line" ]` keeps a trailing line that has no newline.
-while IFS= read -r line || [ -n "$line" ]; do
-  line="${line#"${line%%[![:space:]]*}"}"
-  line="${line%"${line##*[![:space:]]}"}"
-
-  case "$line" in
-  '' | '#'*) continue ;;
-  export[[:space:]]*)
-    line="${line#export}"
+emit_file() {
+  source_file="$1"
+  only_key="$2"
+  # `|| [ -n "$line" ]` keeps a trailing line that has no newline.
+  while IFS= read -r line || [ -n "$line" ]; do
     line="${line#"${line%%[![:space:]]*}"}"
-    ;;
-  esac
+    line="${line%"${line##*[![:space:]]}"}"
 
-  case "$line" in
-  *=*) ;;
-  *) continue ;;
-  esac
+    case "$line" in
+    '' | '#'*) continue ;;
+    export[[:space:]]*)
+      line="${line#export}"
+      line="${line#"${line%%[![:space:]]*}"}"
+      ;;
+    esac
 
-  key="${line%%=*}"
-  value="${line#*=}"
+    case "$line" in
+    *=*) ;;
+    *) continue ;;
+    esac
 
-  key="${key%"${key##*[![:space:]]}"}"
-  value="${value#"${value%%[![:space:]]*}"}"
-  value="${value%"${value##*[![:space:]]}"}"
+    key="${line%%=*}"
+    value="${line#*=}"
 
-  case "$key" in
-  '' | [0-9]* | *[!A-Za-z0-9_]*) continue ;;
-  esac
+    key="${key%"${key##*[![:space:]]}"}"
+    value="${value#"${value%%[![:space:]]*}"}"
+    value="${value%"${value##*[![:space:]]}"}"
 
-  case "$value" in
-  \"*\") value="${value%\"}" && value="${value#\"}" ;;
-  \'*\') value="${value%\'}" && value="${value#\'}" ;;
-  esac
+    case "$key" in
+    '' | [0-9]* | *[!A-Za-z0-9_]*) continue ;;
+    esac
+    if [ -n "$only_key" ] && [ "$key" != "$only_key" ]; then
+      continue
+    fi
 
-  printf '%s=%s\n' "$key" "$value"
-done <"$env_file"
+    case "$value" in
+    \"*\") value="${value%\"}" && value="${value#\"}" ;;
+    \'*\') value="${value%\'}" && value="${value#\'}" ;;
+    esac
+
+    printf '%s=%s\n' "$key" "$value"
+  done <"$source_file"
+}
+
+if [ -n "$env_file" ]; then
+  emit_file "$env_file" ""
+fi
+
+# The host identity overrides a stale shared dotenv token on every shell path.
+# Explicit DOTFILES_ENV_FILE reads stay scoped to their requested file.
+if [ -z "${DOTFILES_ENV_FILE:-}" ] && [ -f "$HOME/.config/agenix/agents-prd.env" ]; then
+  emit_file "$HOME/.config/agenix/agents-prd.env" "DOPPLER_TOKEN"
+fi

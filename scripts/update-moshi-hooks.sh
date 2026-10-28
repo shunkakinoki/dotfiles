@@ -69,6 +69,8 @@ fi
 
 echo "Installing latest moshi-hook configs into a throwaway HOME..."
 moshi_bin="$(command -v moshi-hook)"
+# moshi-hook embeds its resolved path, not the PATH symlink found above.
+moshi_real="$(readlink -f "$moshi_bin")"
 moshi_home="$(mktemp -d)"
 trap 'rm -rf "$moshi_home"' EXIT
 # moshi-hook only installs for agents whose config directory already exists.
@@ -123,6 +125,8 @@ for generated_file in \
   sed \
     -e "s|'${moshi_bin}'|moshi-hook|g" \
     -e "s|${moshi_bin}|moshi-hook|g" \
+    -e "s|'${moshi_real}'|moshi-hook|g" \
+    -e "s|${moshi_real}|moshi-hook|g" \
     "$generated_file" >"$generated_file.tmp"
   mv -f "$generated_file.tmp" "$generated_file"
 done

@@ -75,10 +75,9 @@ The output should include 'PasswordAuthentication = false'
 The output should include 'PermitRootLogin = "no"'
 End
 
-It 'authorizes the Galactica host key for recovery'
-When run bash -c "grep -F 'hostPublicKeys = import ../pubkeys.nix;' '$CONFIG' && grep -F 'hostPublicKeys.galactica' '$CONFIG'"
-The output should include 'hostPublicKeys'
-The output should include 'hostPublicKeys.galactica'
+It 'authorizes the fleet host keys for recovery'
+When run grep -F 'authorizedKeys.keys = sshAuthorizedKeys.matic;' "$CONFIG"
+The output should include 'sshAuthorizedKeys.matic'
 End
 
 End
