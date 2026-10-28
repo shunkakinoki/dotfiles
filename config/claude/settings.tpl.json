@@ -537,8 +537,7 @@
       "Read(.env.*)",
       "Read(**/*credential*)",
       "Read(**/*.key)",
-      "Read(**/*.pem)",
-      "Read(**/secrets/*)"
+      "Read(**/*.pem)"
     ],
     "read": {
       "deny": [
@@ -546,7 +545,6 @@
         "**/.env.local",
         "**/*.pem",
         "**/*.key",
-        "**/secrets/**",
         "**/credentials/**",
         "**/.aws/**",
         "**/.ssh/**",
