@@ -3,6 +3,13 @@
 let
   inherit (pkgs) lib;
   logDir = "${config.home.homeDirectory}/Library/Logs";
+  # clipboard-copy-image goes through osascript, which reloads the AppleScript
+  # runtime and takes about a second on the first copy after the agent idles.
+  # A native NSPasteboard write stays in the low milliseconds.
+  pasteboardPng = pkgs.runCommandCC "pasteboard-png" { } ''
+    mkdir -p $out/bin
+    $CC -fobjc-arc -O2 -framework AppKit ${./pasteboard-png.m} -o $out/bin/pasteboard-png
+  '';
 in
 {
   # A long-lived fswatch (FSEvents) stream on ~/Desktop silently stops
@@ -20,6 +27,7 @@ in
       ];
       EnvironmentVariables = {
         PATH = "/usr/bin:/bin";
+        CLIPBOARD_COPY_IMAGE = "${pasteboardPng}/bin/pasteboard-png";
       };
       RunAtLoad = true;
       KeepAlive = true;

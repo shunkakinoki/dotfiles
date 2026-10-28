@@ -3,7 +3,7 @@
 set -euo pipefail
 
 DESKTOP_DIR="$HOME/Desktop"
-CLIPBOARD_COPY_IMAGE="$HOME/.local/scripts/clipboard-copy-image"
+CLIPBOARD_COPY_IMAGE="${CLIPBOARD_COPY_IMAGE:-$HOME/.local/scripts/clipboard-copy-image}"
 STATE_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/screenshot-clipboard/last-copied"
 
 if [ ! -x "$CLIPBOARD_COPY_IMAGE" ]; then

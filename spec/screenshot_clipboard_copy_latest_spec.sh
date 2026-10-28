@@ -57,6 +57,18 @@ The status should be success
 The result of function copied should eq ''
 End
 
+It 'uses the copier named by CLIPBOARD_COPY_IMAGE'
+cat >"$HOME/fast-copy" <<'EOF'
+#!/usr/bin/env bash
+printf 'fast %s\n' "$1" >>"$HOME/copied"
+EOF
+chmod +x "$HOME/fast-copy"
+touch "$HOME/Desktop/Screenshot new.png"
+When call env CLIPBOARD_COPY_IMAGE="$HOME/fast-copy" bash "$SCRIPT"
+The status should be success
+The result of function copied should eq "fast $HOME/Desktop/Screenshot new.png"
+End
+
 It 'fails when clipboard-copy-image is missing'
 rm "$HOME/.local/scripts/clipboard-copy-image"
 When call bash "$SCRIPT"
