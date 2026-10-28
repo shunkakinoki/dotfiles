@@ -24,13 +24,11 @@ in
   };
   # The shared dotenv printer loads this file in fresh Bash, Zsh, and Fish sessions.
   # The running Herdr process stays up; this file is picked up on its next start.
-  systemd.user.services.herdr-server.Unit.After = lib.mkIf herdrNeedsIdentity (
-    lib.mkAfter [ "agenix.service" ]
-  );
-  systemd.user.services.herdr-server.Unit.Wants = lib.mkIf herdrNeedsIdentity (
-    lib.mkAfter [ "agenix.service" ]
-  );
-  systemd.user.services.herdr-server.Service.EnvironmentFile = lib.mkIf herdrNeedsIdentity (
-    lib.mkAfter [ "-${envFile}" ]
-  );
+  # Guard the whole unit, not its fields: a field-level mkIf still declares the
+  # herdr-server key, and Home Manager renders it as an empty, masking unit.
+  systemd.user.services.herdr-server = lib.mkIf herdrNeedsIdentity {
+    Unit.After = lib.mkAfter [ "agenix.service" ];
+    Unit.Wants = lib.mkAfter [ "agenix.service" ];
+    Service.EnvironmentFile = lib.mkAfter [ "-${envFile}" ];
+  };
 }

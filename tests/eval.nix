@@ -309,6 +309,8 @@ let
         assert lib.hasInfix "lld-" cargoActivation;
         assert lib.hasInfix "lld-" cargoServicePath;
         assert lib.hasInfix "lld-" updaterPath;
+        assert !(cfg.systemd.user.services ? herdr-server);
+        assert !(cfg.xdg.configFile ? "systemd/user/herdr-server.service");
         assert
           !(lib.hasInfix "T3CODE_TAILSCALE_SERVE"
             cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text
@@ -667,6 +669,7 @@ let
             system = "x86_64-linux";
           };
           cfg = beskar.config;
+          herdr = cfg.systemd.user.services.herdr-server;
         in
         assert
           cfg.modules.tailscale.extraUpArgs == [
@@ -680,6 +683,12 @@ let
         assert cfg.age.secrets."agents-prd.env".path == "/home/ubuntu/.config/agenix/agents-prd.env";
         assert sshAuthorizedKeys.beskar == fleetPeerKeysOf "beskar";
         assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeFleetSsh.data;
+        assert herdr.Unit.X-SwitchMethod == "keep-old";
+        assert lib.length herdr.Service.ExecStart == 1;
+        assert lib.hasInfix "-start.sh " (lib.head herdr.Service.ExecStart);
+        assert lib.hasSuffix "/bin/herdr" (lib.head herdr.Service.ExecStart);
+        assert herdr.Install.WantedBy == [ "default.target" ];
+        assert lib.elem "BEADS_NODE_ID=kyber" herdr.Service.Environment;
         mkEvalCheck "home-beskar" beskar.activationPackage;
       eval-home-kyber =
         let
