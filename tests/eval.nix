@@ -10,7 +10,11 @@ let
   publicKeys = import ../named-hosts/pubkeys.nix;
   sshAuthorizedKeys = import ../named-hosts/ssh-authorized-keys.nix;
   managedKnownHosts = import ../home-manager/programs/ssh/known-hosts.nix;
-  kaminoPublicKeys = [
+  fleetPublicKeys = [
+    publicKeys.beskar
+    publicKeys.galactica
+    publicKeys.kyber
+    publicKeys.matic
     publicKeys.kamino1
     publicKeys.kamino2
     publicKeys.kamino3
@@ -19,6 +23,12 @@ let
     publicKeys.kamino6
     publicKeys.kamino7
   ];
+  ciWorkerPublicKeys = [
+    publicKeys.kamino8
+    publicKeys.kamino9
+    publicKeys.kamino10
+  ];
+  fleetPeerKeysOf = host: builtins.filter (key: key != publicKeys.${host}) fleetPublicKeys;
 
   # Helper: reconstruct a darwin configuration from hosts/darwin
   mkDarwinConfig =
@@ -67,6 +77,7 @@ let
         };
         activation = galactica.config.system.activationScripts.tailscaleDns.text;
         beads = galactica.config.home-manager.users.shunkakinoki;
+        writerKeyDaemon = galactica.config.launchd.daemons."com.shunkakinoki.kyber-writer-key";
         packageNames = map lib.getName beads.home.packages;
       in
       assert !galactica.config.home-manager.users.shunkakinoki.nix.enable;
@@ -101,8 +112,30 @@ let
       assert lib.hasInfix "--accept-dns=true" activation;
       assert lib.hasInfix "--accept-routes=true" activation;
       assert lib.hasInfix "--ssh=false" activation;
-      assert galactica.config.users.users.shunkakinoki.openssh.authorizedKeys.keys == kaminoPublicKeys;
-      assert sshAuthorizedKeys.galactica == kaminoPublicKeys;
+      assert
+        galactica.config.age.identityPaths == [
+          "/etc/ssh/ssh_host_ed25519_key"
+          "/Users/shunkakinoki/.ssh/id_ed25519"
+        ];
+      assert !(galactica.config.age.secrets ? "keys/kyber-writer.age");
+      assert writerKeyDaemon.serviceConfig.RunAtLoad;
+      assert writerKeyDaemon.serviceConfig.KeepAlive.SuccessfulExit == false;
+      assert writerKeyDaemon.serviceConfig.StandardErrorPath == "/var/log/kyber-writer-key.log";
+      assert lib.hasInfix "/etc/ssh/ssh_host_ed25519_key" writerKeyDaemon.script;
+      assert
+        builtins.length (import ../named-hosts/galactica/secrets.nix)."keys/kyber-writer.age".publicKeys
+        == 1;
+      assert
+        beads.programs.ssh.settings.kyber.data.IdentityFile == [
+          "/Users/shunkakinoki/.ssh/id_ed25519_kyber_writer"
+        ];
+      assert beads.programs.ssh.settings.kyber.data.IdentityAgent == "none";
+      assert beads.programs.ssh.settings.kyber.data.UseKeychain == "no";
+      assert beads.programs.ssh.settings.kyber.data.AddKeysToAgent == "no";
+      assert
+        galactica.config.users.users.shunkakinoki.openssh.authorizedKeys.keys
+        == fleetPeerKeysOf "galactica";
+      assert sshAuthorizedKeys.galactica == fleetPeerKeysOf "galactica";
       mkEvalCheck "darwin-galactica" galactica.system;
   };
 
@@ -162,10 +195,8 @@ let
       assert cfg.services.openssh.settings.PasswordAuthentication == false;
       assert cfg.services.openssh.settings.KbdInteractiveAuthentication == false;
       assert cfg.services.openssh.settings.PermitRootLogin == "no";
-      assert
-        cfg.users.users.shunkakinoki.openssh.authorizedKeys.keys
-        == [ publicKeys.galactica ] ++ kaminoPublicKeys;
-      assert sshAuthorizedKeys.matic == kaminoPublicKeys;
+      assert cfg.users.users.shunkakinoki.openssh.authorizedKeys.keys == fleetPeerKeysOf "matic";
+      assert sshAuthorizedKeys.matic == fleetPeerKeysOf "matic";
       assert beads.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "kyber.tail950b36.ts.net";
       assert beads.home.sessionVariables.BEADS_NODE_ID == "kyber";
       assert beads.home.sessionVariables.BD_EVENTS_JOURNAL == "1";
@@ -181,9 +212,17 @@ let
       assert cfg.users.users.shunkakinoki.linger;
       assert herdr.Install.WantedBy == [ "default.target" ];
       assert herdr.Unit.X-SwitchMethod == "keep-old";
+      assert lib.elem "agenix.service" herdr.Unit.After;
+      assert lib.elem "agenix.service" herdr.Unit.Wants;
       assert lib.hasSuffix "/bin/herdr server" (builtins.head (lib.toList herdr.Service.ExecStart));
       assert herdr.Service.Restart == "on-failure";
-      assert herdr.Service.EnvironmentFile == [ "-/home/shunkakinoki/dotfiles/.env" ];
+      assert
+        herdr.Service.EnvironmentFile == [
+          "-/home/shunkakinoki/dotfiles/.env"
+          "-/home/shunkakinoki/.config/agenix/agents-prd.env"
+        ];
+      assert beads.age.secrets."agents-prd.env".mode == "0400";
+      assert beads.age.identityPaths == [ "/home/shunkakinoki/.ssh/id_ed25519" ];
       assert lib.elem "HERDR_ENV=1" herdr.Service.Environment;
       assert lib.elem "BEADS_DOLT_AUTO_START=0" herdr.Service.Environment;
       assert lib.elem "BEADS_DOLT_SERVER_MODE=1" herdr.Service.Environment;
@@ -270,6 +309,8 @@ let
         assert lib.hasInfix "lld-" cargoActivation;
         assert lib.hasInfix "lld-" cargoServicePath;
         assert lib.hasInfix "lld-" updaterPath;
+        assert !(cfg.systemd.user.services ? herdr-server);
+        assert !(cfg.xdg.configFile ? "systemd/user/herdr-server.service");
         assert
           !(lib.hasInfix "T3CODE_TAILSCALE_SERVE"
             cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text
@@ -308,12 +349,7 @@ let
             "kamino9"
             "kamino10"
           ];
-        assert
-          sshAuthorizedKeys.kamino == [
-            publicKeys.galactica
-            publicKeys.kyber
-            publicKeys.matic
-          ];
+        assert sshAuthorizedKeys.kamino == fleetPublicKeys;
         assert cfg.programs.ssh.settings.galactica.data.HostName == "galactica.tail950b36.ts.net";
         assert cfg.programs.ssh.settings.galactica.data.User == "shunkakinoki";
         assert
@@ -367,7 +403,10 @@ let
           ];
         assert cfg.systemd.user.services.herdr-server.Install.WantedBy == [ "default.target" ];
         assert cfg.systemd.user.services.herdr-server.Unit.X-SwitchMethod == "keep-old";
+        assert lib.elem "agenix.service" cfg.systemd.user.services.herdr-server.Unit.After;
+        assert lib.elem "agenix.service" cfg.systemd.user.services.herdr-server.Unit.Wants;
         assert cfg.systemd.user.services.herdr-server.Service.EnvironmentFile == [ "-/root/dotfiles/.env" ];
+        assert !(cfg.age.secrets ? "agents-prd.env");
         assert lib.elem "BEADS_DOLT_AUTO_START=0"
           cfg.systemd.user.services.herdr-server.Service.Environment;
         assert lib.elem "BEADS_DOLT_SERVER_MODE=1"
@@ -392,6 +431,48 @@ let
         assert lib.hasInfix sessionVarsSource (bashrcBefore "export PATH=");
         assert !(cfg.systemd.user.services ? roborev);
         mkEvalCheck "home-kamino" kamino.activationPackage;
+      eval-home-kamino2-identity =
+        let
+          kamino = import ../named-hosts/kamino {
+            inherit inputs;
+            name = "kamino2";
+          };
+          cfg = kamino.config;
+          envFile = "/root/.config/agenix/agents-prd.env";
+          workerNames = [
+            "kamino1"
+            "kamino2"
+            "kamino3"
+            "kamino4"
+            "kamino5"
+            "kamino6"
+          ];
+          workerSecretMatches = builtins.map (
+            workerName:
+            let
+              worker = import ../named-hosts/kamino {
+                inherit inputs;
+                name = workerName;
+              };
+            in
+            lib.hasSuffix "/named-hosts/agents-prd/keys/${workerName}.age" (
+              toString worker.config.age.secrets."agents-prd.env".file
+            )
+          ) workerNames;
+        in
+        assert builtins.all (matches: matches) workerSecretMatches;
+        assert cfg.age.identityPaths == [ "/etc/ssh/ssh_host_ed25519_key" ];
+        assert cfg.age.secrets."agents-prd.env".path == envFile;
+        assert cfg.age.secrets."agents-prd.env".mode == "0400";
+        assert lib.hasSuffix "/named-hosts/agents-prd/keys/kamino2.age" (
+          toString cfg.age.secrets."agents-prd.env".file
+        );
+        assert
+          cfg.systemd.user.services.herdr-server.Service.EnvironmentFile == [
+            "-/root/dotfiles/.env"
+            "-${envFile}"
+          ];
+        mkEvalCheck "home-kamino2-identity" kamino.activationPackage;
       eval-home-kamino7 =
         let
           kamino = import ../named-hosts/kamino {
@@ -406,6 +487,7 @@ let
         assert roborev.Service.MemoryHigh == "36G";
         assert roborev.Service.MemoryMax == "42G";
         assert roborev.Service.TasksMax == 4096;
+        assert !(cfg.age.secrets ? "agents-prd.env");
         mkEvalCheck "home-kamino7" kamino.activationPackage;
       eval-home-kamino4-t3-publish-only =
         let
@@ -478,7 +560,6 @@ let
           candidate:
           lib.hasInfix "sshd-key-only /etc/ssh/sshd_config.d/10-kamino-key-only.conf" candidate.home.activation.setKaminoSshdKeyOnly.data
         ) ([ cfg ] ++ otherWarmConfigs);
-        assert sshAuthorizedKeys.kaminoCiBox == sshAuthorizedKeys.kamino ++ kaminoPublicKeys;
         mkEvalCheck "home-kamino8" kamino.activationPackage;
       eval-home-kamino100 =
         let
@@ -588,14 +669,26 @@ let
             system = "x86_64-linux";
           };
           cfg = beskar.config;
+          herdr = cfg.systemd.user.services.herdr-server;
         in
         assert
           cfg.modules.tailscale.extraUpArgs == [
             "--reset"
+            "--operator=ubuntu"
             "--accept-dns=true"
             "--ssh"
           ];
         assert cfg.home.homeDirectory == "/home/ubuntu";
+        assert cfg.age.identityPaths == [ "/home/ubuntu/.ssh/id_ed25519" ];
+        assert cfg.age.secrets."agents-prd.env".path == "/home/ubuntu/.config/agenix/agents-prd.env";
+        assert sshAuthorizedKeys.beskar == fleetPeerKeysOf "beskar";
+        assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeFleetSsh.data;
+        assert herdr.Unit.X-SwitchMethod == "keep-old";
+        assert lib.length herdr.Service.ExecStart == 1;
+        assert lib.hasInfix "-start.sh " (lib.head herdr.Service.ExecStart);
+        assert lib.hasSuffix "/bin/herdr" (lib.head herdr.Service.ExecStart);
+        assert herdr.Install.WantedBy == [ "default.target" ];
+        assert lib.elem "BEADS_NODE_ID=kyber" herdr.Service.Environment;
         mkEvalCheck "home-beskar" beskar.activationPackage;
       eval-home-kyber =
         let
@@ -605,6 +698,13 @@ let
             system = "x86_64-linux";
           };
           cfg = kyber.config;
+          activationNames = map (entry: entry.name) (cfg.lib.dag.topoSort cfg.home.activation).result;
+          activationPosition =
+            name:
+            let
+              find = index: if builtins.elemAt activationNames index == name then index else find (index + 1);
+            in
+            find 0;
         in
         assert
           kyber.config.modules.tailscale.extraUpArgs == [
@@ -615,19 +715,28 @@ let
             "--advertise-exit-node"
           ];
         assert cfg.systemd.user.systemctlPath == "/usr/bin/systemctl";
+        assert activationPosition "linkGeneration" < activationPosition "authorizeFleetSsh";
         assert lib.hasInfix "/bin/ssh-keygen" cfg.home.activation.authorizeFleetSsh.data;
         assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeFleetSsh.data;
         assert
-          sshAuthorizedKeys.kyber == kaminoPublicKeys
-          ++ [
-            publicKeys.kamino8
-            publicKeys.kamino9
-            publicKeys.kamino10
-          ];
+          lib.init sshAuthorizedKeys.kyber
+          == builtins.filter (key: key != publicKeys.galactica) (fleetPeerKeysOf "kyber")
+          ++ ciWorkerPublicKeys;
+        assert lib.hasPrefix
+          "restrict,command=\"/home/ubuntu/.local/bin/beads-linear-complete-ssh-guard\" ssh-ed25519 "
+          (lib.last sshAuthorizedKeys.kyber);
+        assert !(lib.elem (lib.last sshAuthorizedKeys.kyber) sshAuthorizedKeys.galactica);
+        assert !(cfg.age.secrets ? "keys/kyber-writer.age");
+        assert cfg.home.file.".local/bin/beads-linear-complete-ssh-guard".executable;
         assert !(cfg.systemd.user.services ? dolt);
         assert cfg.home.activation ? installDoltSystemService;
         assert cfg.systemd.user.services ? dolt-linear-sync;
         assert cfg.systemd.user.services.herdr-server.Service.Slice == "herdr.slice";
+        assert lib.elem "agenix.service" cfg.systemd.user.services.herdr-server.Unit.After;
+        assert lib.elem "agenix.service" cfg.systemd.user.services.herdr-server.Unit.Wants;
+        assert cfg.age.secrets."agents-prd.env".path == "/home/ubuntu/.config/agenix/agents-prd.env";
+        assert lib.elem "-/home/ubuntu/.config/agenix/agents-prd.env"
+          cfg.systemd.user.services.herdr-server.Service.EnvironmentFile;
         assert cfg.systemd.user.services.openclaw-gateway.Service.IOAccounting;
         assert cfg.systemd.user.services.openclaw-gateway.Service.IOReadBandwidthMax == "/ 20M";
         assert !(cfg.systemd.user.services.openclaw-gateway.Service ? IOWriteBandwidthMax);

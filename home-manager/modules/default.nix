@@ -1,4 +1,5 @@
 [
+  ./agents-prd
   ./bin-shells
   ./cargo-globals
   ./dotenv

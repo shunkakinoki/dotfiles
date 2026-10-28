@@ -450,7 +450,9 @@ gitalias-update: ## Download latest gitalias.txt from upstream.
 
 .PHONY: moshi-update
 moshi-update: ## Regenerate moshi-hook configs in dotfiles without touching live agent configs.
-	@if command -v moshi-hook >/dev/null 2>&1; then \
+	@if [ "$$AUTOMATED_UPDATE" = "true" ]; then \
+		echo "⏭️  Skipping moshi-hook regeneration in automated update (dirty tracked files block dotfiles-updater)"; \
+	elif command -v moshi-hook >/dev/null 2>&1; then \
 		echo "📥 Updating moshi-hook configs..."; \
 		./scripts/update-moshi-hooks.sh; \
 		echo "✅ moshi-hook configs updated"; \
