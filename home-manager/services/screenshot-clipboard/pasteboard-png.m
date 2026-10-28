@@ -7,7 +7,7 @@ int main(int argc, char *argv[]) {
       return 2;
     }
     NSData *data = [NSData dataWithContentsOfFile:@(argv[1])];
-    if (data == nil) {
+    if (data.length == 0) {
       fprintf(stderr, "pasteboard-png: cannot read %s\n", argv[1]);
       return 1;
     }
