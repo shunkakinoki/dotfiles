@@ -18,16 +18,16 @@ tools = [
   "mistral-vibe>=2.26.1",
   "nvitop>=1.7.1",
   "ruff>=0.17.1",
-  "serena-agent>=2.0.0",
+  "serena-agent>=2.1.0",
   "transformers>=5.20.2",
   "vllm>=0.32.0",
-  "vllm-mlx>=0.5.0",
+  "vllm-mlx>=0.6.0",
 ]
 # Hermes gateway runtime deps - installed into hermes venv via uv pip install
 hermes = [
   "python-telegram-bot[webhooks]>=22.8,<23",
   "croniter>=6.2.4,<7",
-  "fastapi[standard]>=0.146.0",
+  "fastapi[standard]>=0.156.4",
   "uvicorn>=0.54.0",
 ]
 
