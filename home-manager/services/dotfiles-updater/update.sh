@@ -13,6 +13,17 @@ if [ "$(git rev-parse --abbrev-ref HEAD)" != "main" ]; then
   exit 1
 fi
 
+# The Moshi adapters are moshi-hook output that hosts never edit by hand. A
+# regeneration on a host captures its own moshi-hook version and binary path,
+# and the dirty-checkout guard below would then block every future update.
+# Restore only when nothing else is dirty, so a blocked run leaves every edit.
+if [ -n "$(git ls-files generated/hooks/moshi)" ] &&
+  ! git diff --quiet HEAD -- generated/hooks/moshi &&
+  git diff --quiet HEAD -- . ':(exclude)generated/hooks/moshi'; then
+  echo "Restoring host-regenerated Moshi adapters under generated/hooks/moshi."
+  git restore --source=HEAD --staged --worktree -- generated/hooks/moshi
+fi
+
 if ! git diff --quiet || ! git diff --cached --quiet; then
   echo "ERROR: Deployment checkout has uncommitted changes; leaving them intact." >&2
   exit 1

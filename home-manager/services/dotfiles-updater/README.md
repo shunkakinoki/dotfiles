@@ -3,7 +3,9 @@
 The three-hour updater requires a clean `main` checkout that can fast-forward to
 `origin/main`. A feature branch, tracked edits, or unpublished/divergent commits
 produce a nonzero exit and remain intact. The updater never resets the checkout
-or resolves development work automatically.
+or resolves development work automatically. The one exception is
+`generated/hooks/moshi`: moshi-hook output that hosts never edit by hand. When
+it is the only changed path, the updater restores it to HEAD and continues.
 
 The updater installs its selected revision with `make install`, then syncs
 dotagents. Only successful completion of both steps, with the selected HEAD still
