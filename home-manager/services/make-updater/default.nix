@@ -10,6 +10,8 @@ in
         "${pkgs.bash}/bin/bash"
         "${./update.sh}"
       ];
+      # AUTOMATED_UPDATE keeps an unattended run from rewriting the generated
+      # Moshi adapters and flake.lock in the deployment checkout, as on Linux.
       EnvironmentVariables = {
         PATH = "${
           lib.makeBinPath [
@@ -20,6 +22,7 @@ in
             pkgs.jq
           ]
         }:/opt/homebrew/bin:/usr/local/bin";
+        AUTOMATED_UPDATE = "true";
       };
       StartInterval = 10800;
       StandardOutPath = "/tmp/make-updater.log";

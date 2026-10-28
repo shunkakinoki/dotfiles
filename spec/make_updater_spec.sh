@@ -26,6 +26,11 @@ It 'runs make update'
 When run bash -c "grep 'make update' '$SCRIPT'"
 The output should include 'make update'
 End
+
+It 'marks the Darwin agent run as automated'
+When run bash -c "sed -n '/launchd.agents.make-updater/,/StartInterval/p' '$PWD/home-manager/services/make-updater/default.nix'"
+The output should include 'AUTOMATED_UPDATE = "true";'
+End
 End
 
 End
