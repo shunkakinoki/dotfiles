@@ -217,22 +217,27 @@ It 'restores host-regenerated Moshi adapters and installs'
 MOSHI="$HOME/dotfiles/generated/hooks/moshi/claude/settings.json"
 printf '{"command":"/nix/store/x-moshi-hook/bin/moshi-hook claude-hook"}\n' >"$MOSHI"
 git -C "$HOME/dotfiles" add "$MOSHI"
+mkdir -p "$HOME/dotfiles/generated/hooks/moshi/new"
+printf '{}\n' >"$HOME/dotfiles/generated/hooks/moshi/new/hooks.json"
+git -C "$HOME/dotfiles" add generated/hooks/moshi/new
 When run bash -c "bash '$SCRIPT' 2>/dev/null"
 The status should be success
 The output should include 'Restoring host-regenerated Moshi adapters'
 The output should include 'Changes detected'
-The contents of file "$MOSHI" should not include 'nix/store'
+The contents of file "$MOSHI" should equal '{"command":"moshi-hook claude-hook"}'
+The file "$HOME/dotfiles/generated/hooks/moshi/new/hooks.json" should not be exist
 The file "$HOME/installed" should be exist
 End
 
-It 'still blocks on other edits alongside regenerated Moshi adapters'
+It 'leaves regenerated Moshi adapters intact when other edits block the run'
 printf 'drift\n' >>"$HOME/dotfiles/generated/hooks/moshi/claude/settings.json"
 printf '\nedited\n' >>"$HOME/dotfiles/install.sh"
 When run bash "$SCRIPT"
 The status should be failure
-The output should include 'Restoring host-regenerated Moshi adapters'
+The output should not include 'Restoring host-regenerated Moshi adapters'
 The error should include 'uncommitted changes'
 The contents of file "$HOME/dotfiles/install.sh" should include 'edited'
+The contents of file "$HOME/dotfiles/generated/hooks/moshi/claude/settings.json" should include 'drift'
 End
 
 It 'preserves staged edits instead of resetting them'
