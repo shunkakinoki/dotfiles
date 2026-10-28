@@ -139,7 +139,9 @@ touch "$HOME/installed"
 INSTALL
   chmod +x "$WORK/src/install.sh"
   printf '.PHONY: install dotagents-switch-sync\ninstall:\n\t@./install.sh\ndotagents-switch-sync:\n\t@:\n' >"$WORK/src/Makefile"
-  git -C "$WORK/src" add install.sh Makefile
+  mkdir -p "$WORK/src/generated/hooks/moshi/claude"
+  printf '{"command":"moshi-hook claude-hook"}\n' >"$WORK/src/generated/hooks/moshi/claude/settings.json"
+  git -C "$WORK/src" add install.sh Makefile generated
   git -C "$WORK/src" commit -q -m base
   git clone -q "$WORK/src" "$HOME/dotfiles" 2>/dev/null
   git -C "$WORK/src" commit -q --allow-empty -m update
@@ -209,6 +211,28 @@ The status should be failure
 The error should include 'uncommitted changes'
 The contents of file "$HOME/dotfiles/install.sh" should include 'edited'
 The file "$HOME/installed" should not be exist
+End
+
+It 'restores host-regenerated Moshi adapters and installs'
+MOSHI="$HOME/dotfiles/generated/hooks/moshi/claude/settings.json"
+printf '{"command":"/nix/store/x-moshi-hook/bin/moshi-hook claude-hook"}\n' >"$MOSHI"
+git -C "$HOME/dotfiles" add "$MOSHI"
+When run bash -c "bash '$SCRIPT' 2>/dev/null"
+The status should be success
+The output should include 'Restoring host-regenerated Moshi adapters'
+The output should include 'Changes detected'
+The contents of file "$MOSHI" should not include 'nix/store'
+The file "$HOME/installed" should be exist
+End
+
+It 'still blocks on other edits alongside regenerated Moshi adapters'
+printf 'drift\n' >>"$HOME/dotfiles/generated/hooks/moshi/claude/settings.json"
+printf '\nedited\n' >>"$HOME/dotfiles/install.sh"
+When run bash "$SCRIPT"
+The status should be failure
+The output should include 'Restoring host-regenerated Moshi adapters'
+The error should include 'uncommitted changes'
+The contents of file "$HOME/dotfiles/install.sh" should include 'edited'
 End
 
 It 'preserves staged edits instead of resetting them'
