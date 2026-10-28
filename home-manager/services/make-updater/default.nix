@@ -18,8 +18,9 @@ in
             pkgs.coreutils
             pkgs.gnumake
             pkgs.jq
+            pkgs.neovim
           ]
-        }:/opt/homebrew/bin:/usr/local/bin";
+        }:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin";
       };
       StartInterval = 10800;
       StandardOutPath = "/tmp/make-updater.log";
