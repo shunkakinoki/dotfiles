@@ -72,22 +72,25 @@ setup() {
   TEMP_DIR="$(mktemp -d)"
   LIVE_HOME="$TEMP_DIR/home"
   OUT_DIR="$TEMP_DIR/generated"
-  mkdir -p "$TEMP_DIR/bin" "$TEMP_DIR/tmp" "$LIVE_HOME"
-  # Mimics moshi-hook: writes adapters under $HOME and embeds its own path.
-  cat >"$TEMP_DIR/bin/moshi-hook" <<'EOF'
+  mkdir -p "$TEMP_DIR/bin" "$TEMP_DIR/store/bin" "$TEMP_DIR/tmp" "$LIVE_HOME"
+  # Mimics moshi-hook: writes adapters under $HOME and embeds its resolved
+  # path, reached through a PATH symlink as in a Home Manager profile.
+  cat >"$TEMP_DIR/store/bin/moshi-hook" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
+self="$(readlink -f "$0")"
 for ts in .omp/agent/extensions .pi/agent/extensions .config/opencode/plugins; do
   mkdir -p "$HOME/$ts"
-  printf 'const helperBinary = "%s"\n' "$0" >"$HOME/$ts/moshi-hooks.ts"
+  printf 'const helperBinary = "%s"\n' "$self" >"$HOME/$ts/moshi-hooks.ts"
 done
 for json in .claude/settings.json .codex/hooks.json .cursor/hooks.json .gemini/settings.json .grok/hooks/moshi-hooks.json; do
   mkdir -p "$(dirname "$HOME/$json")"
-  printf '{"hooks":{"Stop":[{"hooks":[{"command":"%s agent-hook"}]}]}}\n' "'$0'" >"$HOME/$json"
+  printf '{"hooks":{"Stop":[{"hooks":[{"command":"%s agent-hook"}]}]}}\n' "'$self'" >"$HOME/$json"
 done
 EOF
   printf '#!/usr/bin/env bash\n' >"$TEMP_DIR/bin/nix"
-  chmod +x "$TEMP_DIR/bin/moshi-hook" "$TEMP_DIR/bin/nix"
+  chmod +x "$TEMP_DIR/store/bin/moshi-hook" "$TEMP_DIR/bin/nix"
+  ln -s "$TEMP_DIR/store/bin/moshi-hook" "$TEMP_DIR/bin/moshi-hook"
 }
 
 cleanup() {
@@ -106,6 +109,13 @@ The contents of file "$OUT_DIR/claude/settings.json" should include '"command": 
 The path "$LIVE_HOME/.claude" should not be exist
 The path "$LIVE_HOME/.omp" should not be exist
 The path "$TEMP_DIR/tmp" should be empty directory
+End
+
+It 'leaves tracked adapters untouched in an automated make update'
+When run env AUTOMATED_UPDATE=true PATH="$TEMP_DIR/bin:$PATH" make -s moshi-update
+The status should be success
+The output should include 'Skipping moshi-hook regeneration in automated update'
+The path "$TEMP_DIR/home/.omp" should not be exist
 End
 End
 

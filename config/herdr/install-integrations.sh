@@ -5,5 +5,10 @@ set -euo pipefail
 
 HERDR_BIN="${1:?Herdr executable required}"
 
-"$HERDR_BIN" integration install codex
-"$HERDR_BIN" integration install opencode
+status="$("$HERDR_BIN" integration status)"
+for integration in codex opencode; do
+  if printf '%s\n' "$status" | grep -q "^${integration}: current "; then
+    continue
+  fi
+  "$HERDR_BIN" integration install "$integration"
+done
