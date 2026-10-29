@@ -437,6 +437,7 @@ When run bash -c '
   trap "rm -rf \"$temp\"" EXIT
   sed -n "/^model_policy_exclusions() {/,/^}/p" "$1" | sed "s|@jq@|jq|g; s|@flock@|flock|g" >"$temp/functions.sh"
   sed -n "/^model_family_exclusion() {/,/^}/p" "$1" | sed "s|@jq@|jq|g; s|@flock@|flock|g" >>"$temp/functions.sh"
+  sed -n "/^model_family_aliases() {/,/^}/p" "$1" | sed "s|@jq@|jq|g; s|@flock@|flock|g" >>"$temp/functions.sh"
   sed -n "/^apply_model_policies() {/,/^}/p" "$1" | sed "s|@jq@|jq|g; s|@flock@|flock|g" >>"$temp/functions.sh"
   mkdir -p "$temp/auth"
   printf "%s\n" "[{\"credential\":\"claude-haiku-a.json\",\"model_family\":\"Haiku\"},{\"credential\":\"claude-haiku-b.json\",\"model_family\":\"haiku\"}]" >"$temp/map.json"
@@ -447,10 +448,12 @@ When run bash -c '
   jq -r ".excluded_models | join(\",\")" "$temp/auth/claude-haiku-a.json"
   jq -r ".excluded_models | join(\",\")" "$temp/auth/claude-haiku-b.json"
   jq -r ".excluded_models | join(\",\")" "$temp/auth/claude-unassigned.json"
+  jq -c ".[\"model-aliases\"]" "$temp/auth/claude-haiku-a.json"
 ' _ "$SCRIPT"
 The output should equal '*fable*,*opus*,*sonnet*
 *fable*,*opus*,*sonnet*
-*haiku*'
+*haiku*
+[{"name":"claude-3-5-haiku-20241022","alias":"claude-haiku"}]'
 The status should be success
 End
 End
