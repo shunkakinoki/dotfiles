@@ -1,7 +1,34 @@
 { lib, pkgs, ... }:
 let
   fleet = import ../../../named-hosts/kamino/fleet.nix { };
-  inventory = pkgs.writeText "kamino-fleet.json" (builtins.toJSON fleet);
+  tunnelMappings = builtins.fromJSON (builtins.readFile ../../../kamino-tunnels.json);
+  allowedModelFamilies = [
+    "haiku"
+    "sonnet"
+    "opus"
+    "fable"
+  ];
+  validatedTunnelMappings =
+    assert builtins.all (
+      entry: !(entry ? model_family) || builtins.elem entry.model_family allowedModelFamilies
+    ) tunnelMappings;
+    tunnelMappings;
+  machineRouting =
+    machine:
+    let
+      matches = builtins.filter (
+        entry: entry ? host && entry.host == machine.name && entry ? model_family
+      ) validatedTunnelMappings;
+    in
+    if matches == [ ] then { } else { model_family = (builtins.head matches).model_family; };
+  inventory = pkgs.writeText "kamino-fleet.json" (
+    builtins.toJSON (
+      fleet
+      // {
+        machines = map (machine: machine // machineRouting machine) fleet.machines;
+      }
+    )
+  );
   shortcuts = lib.concatMap (
     machine:
     let
