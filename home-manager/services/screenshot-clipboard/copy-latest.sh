@@ -23,11 +23,15 @@ screenshots=("$DESKTOP_DIR"/Screenshot\ *.png "$DESKTOP_DIR"/Screen\ Shot\ *.png
 newest=$(
   {
     stat -c '%Y %n' "${screenshots[@]}" 2>/dev/null ||
-      stat -f '%m %N' "${screenshots[@]}"
+      stat -f '%m %N' "${screenshots[@]}" 2>/dev/null || true
   } | sort -n | tail -n 1
 )
+# Files can disappear between the glob and stat when screenshots are removed.
+# Keep any remaining stat results, or do nothing if every capture disappeared.
+[ -n "$newest" ] || exit 0
 latest_mtime=${newest%% *}
 latest=${newest#* }
+[ -f "$latest" ] || exit 0
 
 [ $(($(date +%s) - latest_mtime)) -le 10 ] || exit 0
 
