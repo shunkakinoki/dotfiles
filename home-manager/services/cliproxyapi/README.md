@@ -232,6 +232,10 @@ while another Haiku credential remains eligible. The generated `kamino-fleet.jso
 inventory exposes the same field for inspection. Unknown model families fail the
 render rather than silently widening the route.
 
+The Claude OAuth catalog exposes `claude-haiku` as an alias for the upstream
+`claude-haiku-5-5` model. Because non-Haiku credentials exclude `*haiku*`, this
+alias is eligible only for a credential marked `model_family: haiku`.
+
 ### Regenerating after `.env` changes
 
 `config.yaml` is rendered from the template and `~/dotfiles/.env`. On Linux,

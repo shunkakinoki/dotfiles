@@ -790,6 +790,10 @@ openai-compatibility:
 #   sample-provider:                  # plugin provider keys are supported for OAuth plugins
 #     - name: "sample-model-latest"
 #       alias: "sample-latest"
+oauth-model-alias:
+  claude:
+    - name: "claude-haiku-5-5"
+      alias: "claude-haiku"
 
 # Codex OAuth serves every current model, so only the names it cannot serve are
 # excluded. Exclusions match upstream IDs and have no negation, so a new
