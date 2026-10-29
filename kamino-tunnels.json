@@ -22,7 +22,12 @@
   {
     "credential": "claude-2738f2fb-jangly-bears6h@icloud.com.json",
     "host": "kamino5",
-    "port": 1085,
+    "port": 1085
+  },
+  {
+    "credential": "claude-6a96d514-cop.93.mistier@icloud.com.json",
+    "host": "kamino8",
+    "port": 1088,
     "model_family": "haiku"
   },
   {
