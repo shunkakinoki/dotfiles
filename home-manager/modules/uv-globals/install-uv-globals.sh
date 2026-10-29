@@ -48,7 +48,28 @@ if [ -z "$DEPS" ] && [ -z "$GIT_TOOLS" ]; then
   exit 0
 fi
 
+EXCLUDED=""
+if [ "${UV_GLOBALS_GPU:-0}" != "1" ]; then
+  EXCLUDED=$(tomlq -r '.tool["uv-globals"].gpu[]?' "$PYPROJECT" 2>/dev/null || true)
+fi
+if [ "$(uname -s)" != "Darwin" ]; then
+  EXCLUDED=$(printf '%s\n%s' "$EXCLUDED" "$(tomlq -r '.tool["uv-globals"].darwin[]?' "$PYPROJECT" 2>/dev/null || true)")
+fi
+
 INSTALLED=$(uv tool list 2>/dev/null || true)
+
+# Excluded tools are uninstalled, not just skipped, so hosts that installed
+# them before the exclusion get the disk back.
+echo "$EXCLUDED" | while read -r name; do
+  if [ -z "$name" ]; then
+    continue
+  fi
+  if echo "$INSTALLED" | grep -qE "^${name} "; then
+    echo "Uninstalling $name (excluded on this host)..."
+    uv tool uninstall "$name" || echo "Failed to uninstall $name"
+  fi
+  rm -f "${HOME}/.local/bin/python3-${name}"
+done
 
 # Create a wrapper so `python3-<tool> -m <tool>` uses the tool's venv python.
 # A symlink won't work because Python resolves the real binary path and loses
@@ -72,6 +93,9 @@ if [ -n "$DEPS" ]; then
       continue
     fi
     name=${pkg%%[><=!]*}
+    if echo "$EXCLUDED" | grep -qx "${name%%\[*}"; then
+      continue
+    fi
     # Extract minimum version from spec (e.g. ">=0.86.2" -> "0.86.2")
     req_version=$(echo "$pkg" | sed -n 's/.*>=\([0-9][0-9.]*\).*/\1/p')
     installed_version=$(echo "$INSTALLED" | sed -n "s/^${name} v\([0-9][0-9.]*\).*/\1/p")
