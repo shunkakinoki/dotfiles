@@ -123,7 +123,8 @@ PROXY_URL_LOCK_FILE="${CONFIG_DIR}/proxy-url.lock"
 # A model-family policy is an allow-list expressed as the complement of the
 # Claude families that must never use this credential. CLIProxy applies
 # `excluded_models` per OAuth auth file, so the restriction follows the
-# credential even when a session is rebound. Unknown policies fail closed.
+# credential even when a session is rebound. A claimed family is exclusive:
+# credentials without the same family are also excluded from it.
 model_policy_exclusions() {
   case "${1,,}" in
   haiku)
@@ -148,17 +149,34 @@ model_policy_exclusions() {
   esac
 }
 
+model_family_exclusion() {
+  case "${1,,}" in
+  haiku | sonnet | opus | fable) printf '*%s*\n' "${1,,}" ;;
+  *)
+    echo "⚠️  Unknown Kamino model family: $1" >&2
+    return 1
+    ;;
+  esac
+}
+
 # Apply model-family policies from kamino-tunnels.json to the matching OAuth
 # auth files. The fleet mapping owns the policy; generated fields are marked so
-# removing a policy later can clear only what this pass wrote.
+# removing a policy later can clear only what this pass wrote. A credential with
+# no family receives exclusions for every family claimed by another credential.
 apply_model_policies() {
-  local auth_dir="$1" mapping="$KAMINO_MAPPING_FILE" f credential policy exclusions_json
+  local auth_dir="$1" mapping="$KAMINO_MAPPING_FILE" f credential policy exclusions_json claimed_families
   [ -f "$mapping" ] || return 0
 
   @jq@ -e 'type == "array" and all(.[]; (.credential == null or (.credential | type == "string")) and (.model_family == null or (.model_family | type == "string")))' "$mapping" >/dev/null || {
     echo "⚠️  Invalid kamino tunnel mapping: $mapping" >&2
     return 1
   }
+
+  claimed_families="$(@jq@ -r '[.[] | .model_family? // empty | ascii_downcase] | unique | .[]' "$mapping")" || return 1
+  while IFS= read -r family; do
+    [ -n "$family" ] || continue
+    model_family_exclusion "$family" >/dev/null || return 1
+  done <<<"$claimed_families"
 
   (
     @flock@ -w 30 200 || {
@@ -171,8 +189,19 @@ apply_model_policies() {
       policy="$(@jq@ -r --arg credential "$credential" 'first(.[] | select(.credential == $credential) | .model_family // empty)' "$mapping")"
       if [ -n "$policy" ]; then
         exclusions_json="$(model_policy_exclusions "$policy" | @jq@ -Rsc 'split("\n") | map(select(length > 0))')" || exit 1
+        generated_policy="${policy,,}"
+      else
+        exclusions_json="$(while IFS= read -r family; do [ -n "$family" ] || continue; model_family_exclusion "$family" || exit 1; done <<<"$claimed_families" | @jq@ -Rsc 'split("\n") | map(select(length > 0))')" || exit 1
+        if [ "$exclusions_json" = '[]' ]; then
+          generated_policy=''
+        else
+          generated_policy='shared-exclusions'
+        fi
+      fi
+
+      if [ -n "${generated_policy:-}" ]; then
         # shellcheck disable=SC2016
-        @jq@ --arg policy "${policy,,}" --argjson exclusions "$exclusions_json" \
+        @jq@ --arg policy "$generated_policy" --argjson exclusions "$exclusions_json" \
           'if has("fleet_model_previous_excluded_models") then . elif has("excluded_models") then .fleet_model_previous_excluded_models = .excluded_models else . end | .excluded_models = ((.excluded_models // []) + $exclusions | unique) | .fleet_model_policy = $policy | .fleet_model_excluded_models = $exclusions' \
           "$f" >"$f.tmp" && mv "$f.tmp" "$f"
         continue
