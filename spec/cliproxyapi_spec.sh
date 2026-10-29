@@ -448,7 +448,7 @@ When run bash -c '
   jq -r ".excluded_models | sort | join(\",\")" "$temp/auth/claude-haiku-a.json"
   jq -r ".excluded_models | sort | join(\",\")" "$temp/auth/claude-haiku-b.json"
   jq -r ".excluded_models | sort | join(\",\")" "$temp/auth/claude-unassigned.json"
-  jq -c ".[\"model-aliases\"]" "$temp/auth/claude-haiku-a.json"
+  jq -c ".model_aliases" "$temp/auth/claude-haiku-a.json"
 ' _ "$SCRIPT"
 The output should equal '*fable*,*opus*,*sonnet*
 *fable*,*opus*,*sonnet*
