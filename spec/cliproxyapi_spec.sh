@@ -431,19 +431,26 @@ The output should include 'Unknown Kamino model policy'
 The status should be success
 End
 
-It 'applies a mapped policy to an OAuth auth file'
+It 'applies exclusive mapped policies to OAuth auth files'
 When run bash -c '
   temp=$(mktemp -d)
   trap "rm -rf \"$temp\"" EXIT
   sed -n "/^model_policy_exclusions() {/,/^}/p" "$1" | sed "s|@jq@|jq|g; s|@flock@|flock|g" >"$temp/functions.sh"
+  sed -n "/^model_family_exclusion() {/,/^}/p" "$1" | sed "s|@jq@|jq|g; s|@flock@|flock|g" >>"$temp/functions.sh"
   sed -n "/^apply_model_policies() {/,/^}/p" "$1" | sed "s|@jq@|jq|g; s|@flock@|flock|g" >>"$temp/functions.sh"
   mkdir -p "$temp/auth"
-  printf "%s\n" "[{\"credential\":\"claude-test.json\",\"model_family\":\"Haiku\"}]" >"$temp/map.json"
-  printf "%s\n" "{\"type\":\"claude\"}" >"$temp/auth/claude-test.json"
+  printf "%s\n" "[{\"credential\":\"claude-haiku-a.json\",\"model_family\":\"Haiku\"},{\"credential\":\"claude-haiku-b.json\",\"model_family\":\"haiku\"}]" >"$temp/map.json"
+  printf "%s\n" "{\"type\":\"claude\"}" >"$temp/auth/claude-haiku-a.json"
+  printf "%s\n" "{\"type\":\"claude\"}" >"$temp/auth/claude-haiku-b.json"
+  printf "%s\n" "{\"type\":\"claude\"}" >"$temp/auth/claude-unassigned.json"
   KAMINO_MAPPING_FILE="$temp/map.json" PROXY_URL_LOCK_FILE="$temp/lock" bash -c "source \"$temp/functions.sh\"; apply_model_policies \"$temp/auth\""
-  jq -r ".excluded_models | join(\",\")" "$temp/auth/claude-test.json"
+  jq -r ".excluded_models | join(\",\")" "$temp/auth/claude-haiku-a.json"
+  jq -r ".excluded_models | join(\",\")" "$temp/auth/claude-haiku-b.json"
+  jq -r ".excluded_models | join(\",\")" "$temp/auth/claude-unassigned.json"
 ' _ "$SCRIPT"
-The output should equal '*fable*,*opus*,*sonnet*'
+The output should equal '*fable*,*opus*,*sonnet*
+*fable*,*opus*,*sonnet*
+*haiku*'
 The status should be success
 End
 End

@@ -225,9 +225,11 @@ A credential row may also set `model_family` to `haiku`, `sonnet`, `opus`, or
 `fable`. The Kyber renderer writes the corresponding `excluded_models` rules to
 that OAuth auth file before CLIProxy starts. For example, a `model_family: haiku`
 credential excludes every Claude model containing `opus`, `sonnet`, or `fable`,
-so the credential can only register and route to Haiku models. The generated
-`kamino-fleet.json` inventory exposes the same field for inspection. Unknown
-model families fail the render rather than silently widening the route.
+so the credential can only register and route to Haiku models. That family is
+exclusive: every credential without `model_family: haiku` also excludes Haiku,
+while another Haiku credential remains eligible. The generated `kamino-fleet.json`
+inventory exposes the same field for inspection. Unknown model families fail the
+render rather than silently widening the route.
 
 ### Regenerating after `.env` changes
 
