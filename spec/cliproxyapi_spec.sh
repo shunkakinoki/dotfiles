@@ -420,6 +420,34 @@ The status should be success
 End
 End
 
+Describe 'Kamino credential model policies'
+It 'defines fail-closed Claude family exclusions'
+When run bash -c "sed -n '/^model_policy_exclusions() {/,/^}/p' '$SCRIPT'"
+The output should include "haiku)"
+The output should include "'*opus*'"
+The output should include "'*sonnet*'"
+The output should include "'*fable*'"
+The output should include 'Unknown Kamino model policy'
+The status should be success
+End
+
+It 'applies a mapped policy to an OAuth auth file'
+When run bash -c '
+  temp=$(mktemp -d)
+  trap "rm -rf \"$temp\"" EXIT
+  sed -n "/^model_policy_exclusions() {/,/^}/p" "$1" | sed "s|@jq@|jq|g; s|@flock@|flock|g" >"$temp/functions.sh"
+  sed -n "/^apply_model_policies() {/,/^}/p" "$1" | sed "s|@jq@|jq|g; s|@flock@|flock|g" >>"$temp/functions.sh"
+  mkdir -p "$temp/auth"
+  printf "%s\n" "[{\"credential\":\"claude-test.json\",\"model_family\":\"Haiku\"}]" >"$temp/map.json"
+  printf "%s\n" "{\"type\":\"claude\"}" >"$temp/auth/claude-test.json"
+  KAMINO_MAPPING_FILE="$temp/map.json" PROXY_URL_LOCK_FILE="$temp/lock" bash -c "source \"$temp/functions.sh\"; apply_model_policies \"$temp/auth\""
+  jq -r ".excluded_models | join(\",\")" "$temp/auth/claude-test.json"
+' _ "$SCRIPT"
+The output should equal '*fable*,*opus*,*sonnet*'
+The status should be success
+End
+End
+
 Describe 'Docker image handling'
 It 'prioritizes the proxy container among Docker workloads'
 When run bash -c "grep -q -- '--cpu-shares 262144' '$SCRIPT' && grep -q -- '--blkio-weight 1000' '$SCRIPT'"

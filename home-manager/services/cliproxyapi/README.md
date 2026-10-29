@@ -221,6 +221,14 @@ and kamino10 are not egress hosts.
 `claude-7e57bdb7-shunkakinoki@shunkakinoki.com.json` has no row, so it leaves
 from kyber. Filenames in `kamino-tunnels.json` are the match keys.
 
+A credential row may also set `model_family` to `haiku`, `sonnet`, `opus`, or
+`fable`. The Kyber renderer writes the corresponding `excluded_models` rules to
+that OAuth auth file before CLIProxy starts. For example, a `model_family: haiku`
+credential excludes every Claude model containing `opus`, `sonnet`, or `fable`,
+so the credential can only register and route to Haiku models. The generated
+`kamino-fleet.json` inventory exposes the same field for inspection. Unknown
+model families fail the render rather than silently widening the route.
+
 ### Regenerating after `.env` changes
 
 `config.yaml` is rendered from the template and `~/dotfiles/.env`. On Linux,
