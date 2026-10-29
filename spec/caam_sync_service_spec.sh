@@ -54,8 +54,8 @@ The status should be success
 End
 
 It 'skips the linux daemon when caam binary is missing'
-When run bash -c "grep -F 'ConditionPathIsExecutable = caamBin' '$NIX'"
-The output should include 'ConditionPathIsExecutable'
+When run bash -c "grep -F 'ConditionFileIsExecutable = caamBin' '$NIX'"
+The output should include 'ConditionFileIsExecutable'
 The status should be success
 End
 

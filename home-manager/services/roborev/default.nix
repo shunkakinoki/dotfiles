@@ -58,7 +58,7 @@ lib.mkIf enabled {
       After = [ "network.target" ];
     }
     // lib.optionalAttrs isKamino7 {
-      ConditionPathIsExecutable = roborevBin;
+      ConditionFileIsExecutable = roborevBin;
       StartLimitIntervalSec = 300;
       StartLimitBurst = 3;
     }
