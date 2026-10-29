@@ -453,7 +453,7 @@ When run bash -c '
 The output should equal '*fable*,*opus*,*sonnet*
 *fable*,*opus*,*sonnet*
 *haiku*
-[{"name":"claude-3-5-haiku-20241022","alias":"claude-haiku"}]'
+[{"name":"claude-haiku-4-5-20251001","alias":"claude-haiku"}]'
 The status should be success
 End
 End

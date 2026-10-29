@@ -143,8 +143,8 @@ providers:
           output: 0
           cacheRead: 0
           cacheWrite: 0
-      - id: claude-3-5-haiku-20241022
-        name: Claude 3.5 Haiku (via shunkakinoki's CLIProxy)
+      - id: claude-haiku-4-5-20251001
+        name: Claude Haiku 4.5 (via shunkakinoki's CLIProxy)
         reasoning: false
         input:
           - text
