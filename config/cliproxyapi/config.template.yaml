@@ -792,7 +792,7 @@ openai-compatibility:
 #       alias: "sample-latest"
 oauth-model-alias:
   claude:
-    - name: "claude-haiku-5-5"
+    - name: "claude-3-5-haiku-20241022"
       alias: "claude-haiku"
 
 # Codex OAuth serves every current model, so only the names it cannot serve are
