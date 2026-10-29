@@ -205,8 +205,8 @@ in `~/.ssh/config` and `~/.ssh/known_hosts`.
 
 Each mapped OAuth credential names a different kamino host. That host's public
 address is the account's egress. Credentials not mapped in `kamino-tunnels.json`
-leave from kyber. The four `ollama-cloud` keys share kamino7. kamino8, kamino9,
-and kamino10 are not egress hosts.
+leave from kyber. The four `ollama-cloud` keys share kamino7. The Haiku-only
+credential uses kamino8.
 
 | Account | Host |
 | --- | --- |
@@ -217,6 +217,7 @@ and kamino10 are not egress hosts.
 | jangly-bears6h Claude | kamino5 |
 | 3_hive_tangy Claude | kamino6 |
 | ollama-cloud keys 1-4 | kamino7 |
+| cop.93.mistier Claude (Haiku-only) | kamino8 |
 
 `claude-7e57bdb7-shunkakinoki@shunkakinoki.com.json` has no row, so it leaves
 from kyber. Filenames in `kamino-tunnels.json` are the match keys.
