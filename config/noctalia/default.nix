@@ -33,7 +33,8 @@ in
   xdg.configFile."hypr/hyprlock.conf".text = ''
     general {
         hide_cursor = true
-        immediate_render = true
+        # Avoid the Mesa/Wayland buffer path that has crashed hyprlock on Matic.
+        immediate_render = false
     }
 
     auth {
