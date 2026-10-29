@@ -171,7 +171,7 @@ model_family_aliases() {
 # removing a policy later can clear only what this pass wrote. A credential with
 # no family receives exclusions for every family claimed by another credential.
 apply_model_policies() {
-  local auth_dir="$1" mapping="$KAMINO_MAPPING_FILE" f credential policy exclusions_json claimed_families aliases_json
+  local auth_dir="$1" mapping="$KAMINO_MAPPING_FILE" f credential policy exclusions_json claimed_families aliases_json family_exclusion_json
   [ -f "$mapping" ] || return 0
 
   @jq@ -e 'type == "array" and all(.[]; (.credential == null or (.credential | type == "string")) and (.model_family == null or (.model_family | type == "string")))' "$mapping" >/dev/null || {
@@ -197,10 +197,12 @@ apply_model_policies() {
       if [ -n "$policy" ]; then
         exclusions_json="$(model_policy_exclusions "$policy" | @jq@ -Rsc 'split("\n") | map(select(length > 0))')" || exit 1
         aliases_json="$(model_family_aliases "$policy" | @jq@ -sc '.')" || exit 1
+        family_exclusion_json="$(model_family_exclusion "$policy" | @jq@ -Rsc 'split("\n") | map(select(length > 0))')" || exit 1
         generated_policy="${policy,,}"
       else
         exclusions_json="$(while IFS= read -r family; do [ -n "$family" ] || continue; model_family_exclusion "$family" || exit 1; done <<<"$claimed_families" | @jq@ -Rsc 'split("\n") | map(select(length > 0))')" || exit 1
         aliases_json='[]'
+        family_exclusion_json='[]'
         if [ "$exclusions_json" = '[]' ]; then
           generated_policy=''
         else
@@ -210,8 +212,8 @@ apply_model_policies() {
 
       if [ -n "${generated_policy:-}" ]; then
         # shellcheck disable=SC2016
-        @jq@ --arg policy "$generated_policy" --argjson exclusions "$exclusions_json" --argjson aliases "$aliases_json" \
-          'if has("fleet_model_previous_excluded_models") then .excluded_models = ((.fleet_model_previous_excluded_models // []) + $exclusions) elif has("fleet_model_excluded_models") then .excluded_models = (((.excluded_models // []) - (.fleet_model_excluded_models // [])) + $exclusions | unique) elif has("excluded_models") then .fleet_model_previous_excluded_models = .excluded_models | .excluded_models = ((.excluded_models // []) + $exclusions | unique) else .excluded_models = $exclusions end | if ($aliases | length) > 0 then (if has("fleet_model_previous_model_aliases") then .["model-aliases"] = ((.fleet_model_previous_model_aliases // []) + $aliases) elif has("fleet_model_model_aliases") then .["model-aliases"] = (((.["model-aliases"] // []) - (.fleet_model_model_aliases // [])) + $aliases | unique_by(.name, .alias)) elif has("model-aliases") then .fleet_model_previous_model_aliases = .["model-aliases"] | .["model-aliases"] = ((.["model-aliases"] // []) + $aliases | unique_by(.name, .alias)) else .["model-aliases"] = $aliases end | .fleet_model_model_aliases = $aliases) else . end | .fleet_model_policy = $policy | .fleet_model_excluded_models = $exclusions' \
+        @jq@ --arg policy "$generated_policy" --argjson exclusions "$exclusions_json" --argjson aliases "$aliases_json" --argjson family_exclusion "$family_exclusion_json" \
+          'if has("fleet_model_previous_excluded_models") then .excluded_models = (((.excluded_models // []) - (.fleet_model_excluded_models // []) - .fleet_model_previous_excluded_models - $family_exclusion) + $exclusions | unique) elif has("fleet_model_excluded_models") then .excluded_models = (((.excluded_models // []) - (.fleet_model_excluded_models // []) - $family_exclusion) + $exclusions | unique) elif has("excluded_models") then .fleet_model_previous_excluded_models = .excluded_models | .excluded_models = ((.excluded_models // []) + $exclusions | unique) else .excluded_models = $exclusions end | if ($aliases | length) > 0 then (if has("fleet_model_previous_model_aliases") then .["model-aliases"] = ((.fleet_model_previous_model_aliases // []) + $aliases) elif has("fleet_model_model_aliases") then .["model-aliases"] = (((.["model-aliases"] // []) - (.fleet_model_model_aliases // [])) + $aliases | unique_by(.name, .alias)) elif has("model-aliases") then .fleet_model_previous_model_aliases = .["model-aliases"] | .["model-aliases"] = ((.["model-aliases"] // []) + $aliases | unique_by(.name, .alias)) else .["model-aliases"] = $aliases end | .fleet_model_model_aliases = $aliases) else . end | .fleet_model_policy = $policy | .fleet_model_excluded_models = $exclusions' \
           "$f" >"$f.tmp" && mv "$f.tmp" "$f"
         continue
       fi
