@@ -14,10 +14,12 @@ The output should include 'name = "lock-screen";'
 The output should not include 'systemd.user.services.hyprlock'
 End
 
-It 'runs hyprlock as a transient unit with a clean library environment'
-When run bash -c "grep -F -- '--unit=hyprlock.service' '$LOCK_SCRIPT' && grep -F -- '--collect' '$LOCK_SCRIPT' && grep -F -- '--property=UnsetEnvironment=LD_LIBRARY_PATH' '$LOCK_SCRIPT'"
+It 'runs hyprlock as a transient unit with restart protection and a clean library environment'
+When run bash -c "grep -F -- '--unit=hyprlock.service' '$LOCK_SCRIPT' && grep -F -- '--collect' '$LOCK_SCRIPT' && grep -F -- '--property=Restart=on-failure' '$LOCK_SCRIPT' && grep -F -- '--property=StartLimitBurst=3' '$LOCK_SCRIPT' && grep -F -- '--property=UnsetEnvironment=LD_LIBRARY_PATH' '$LOCK_SCRIPT' && ! grep -F -- '--immediate-render' '$LOCK_SCRIPT'"
 The output should include '--unit=hyprlock.service'
 The output should include '--collect'
+The output should include '--property=Restart=on-failure'
+The output should include '--property=StartLimitBurst=3'
 The output should include 'UnsetEnvironment=LD_LIBRARY_PATH'
 End
 

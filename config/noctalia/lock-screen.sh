@@ -16,8 +16,12 @@ if systemd-run \
   --unit=hyprlock.service \
   --property='Description=Hyprland screen locker' \
   --property=PartOf=graphical-session.target \
+  --property=Restart=on-failure \
+  --property=RestartSec=1s \
+  --property=StartLimitIntervalSec=30s \
+  --property=StartLimitBurst=3 \
   --property=UnsetEnvironment=LD_LIBRARY_PATH \
-  "$HYPRLOCK" --immediate-render; then
+  "$HYPRLOCK"; then
   exit 0
 fi
 
