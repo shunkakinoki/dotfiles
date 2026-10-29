@@ -1,7 +1,6 @@
 { pkgs }:
-{ config, ... }:
+{ config, lib, ... }:
 let
-  inherit (pkgs) lib;
   logDir = "${config.home.homeDirectory}/Library/Logs";
   # clipboard-copy-image goes through osascript, which reloads the AppleScript
   # runtime and takes about a second on the first copy after the agent idles.
@@ -12,6 +11,14 @@ let
   '';
 in
 {
+  # Verify the watcher after Home Manager installs its plist, including switches
+  # that leave a registered but stopped job unchanged.
+  home.activation.screenshotClipboard = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin (
+    lib.hm.dag.entryAfter [ "setupLaunchAgents" ] ''
+      $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./ensure-loaded.sh}
+    ''
+  );
+
   # A long-lived fswatch (FSEvents) stream on ~/Desktop silently stops
   # delivering events after a while, and launchd WatchPaths is throttled to
   # seconds and drops triggers. A kqueue vnode watch on the directory itself

@@ -23,6 +23,15 @@ After 'cleanup'
 
 copied() { cat "$HOME/copied" 2>/dev/null || true; }
 
+scan_with_deletion() {
+  stat() {
+    rm -f "$HOME/Desktop/Screenshot deleted.png"
+    command stat "$@"
+  }
+  export -f stat
+  bash "$SCRIPT"
+}
+
 It 'is syntactically valid bash'
 When run bash -n "$SCRIPT"
 The status should be success
@@ -74,5 +83,26 @@ rm "$HOME/.local/scripts/clipboard-copy-image"
 When call bash "$SCRIPT"
 The status should be failure
 The stderr should include 'clipboard-copy-image not found'
+End
+
+It 'ignores a screenshot removed during the directory scan'
+touch "$HOME/Desktop/Screenshot deleted.png"
+When call scan_with_deletion
+The status should be success
+The result of function copied should eq ''
+End
+
+It 'copies remaining screenshots when another disappears during the scan'
+touch "$HOME/Desktop/Screenshot deleted.png" "$HOME/Desktop/Screenshot kept.png"
+When call scan_with_deletion
+The status should be success
+The result of function copied should eq "$HOME/Desktop/Screenshot kept.png"
+End
+
+It 'still reports clipboard copy failures'
+printf '#!/usr/bin/env bash\nexit 7\n' >"$HOME/.local/scripts/clipboard-copy-image"
+touch "$HOME/Desktop/Screenshot new.png"
+When call bash "$SCRIPT"
+The status should eq 7
 End
 End

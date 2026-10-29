@@ -28,7 +28,7 @@ kq.control(
 # Publish readiness only after the directory watch exists. launchd can report a
 # PID while the interpreter is still starting. Check once now for captures that
 # arrived during that window, before waiting for the next directory event.
-subprocess.run(command)
+subprocess.run(command, check=True)
 state_home = os.environ.get("XDG_STATE_HOME") or os.path.expanduser("~/.local/state")
 state_dir = os.path.join(state_home, "screenshot-clipboard")
 os.makedirs(state_dir, exist_ok=True)
@@ -43,4 +43,6 @@ while True:
         # restarts the watcher on the new directory.
         if event.fflags & ~select.KQ_NOTE_WRITE:
             sys.exit(1)
-        subprocess.run(command)
+        # A failed copy must not leave a healthy-looking process behind.
+        # launchd restarts us when a login-time dependency becomes available.
+        subprocess.run(command, check=True)
