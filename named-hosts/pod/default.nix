@@ -41,6 +41,7 @@ home-manager.lib.homeManagerConfiguration {
           };
         };
         programs.home-manager.enable = true;
+        modules.uvGlobals.gpuTools = true;
 
         # NVIDIA/CUDA paths for vLLM and PyTorch on RunPod
         home.sessionVariables = {

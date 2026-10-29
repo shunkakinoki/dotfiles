@@ -430,7 +430,17 @@ let
         assert lib.hasInfix sessionVarsSource (bashrcBefore "load-env-file.sh");
         assert lib.hasInfix sessionVarsSource (bashrcBefore "export PATH=");
         assert !(cfg.systemd.user.services ? roborev);
+        assert lib.hasInfix "export UV_GLOBALS_GPU=0" cfg.home.activation.installUvGlobals.data;
+        assert lib.elem "UV_GLOBALS_GPU=0" cfg.systemd.user.services.install-uv-globals.Service.Environment;
         mkEvalCheck "home-kamino" kamino.activationPackage;
+      eval-home-pod =
+        let
+          pod = import ../named-hosts/pod { inherit inputs; };
+          cfg = pod.config;
+        in
+        assert lib.hasInfix "export UV_GLOBALS_GPU=1" cfg.home.activation.installUvGlobals.data;
+        assert lib.elem "UV_GLOBALS_GPU=1" cfg.systemd.user.services.install-uv-globals.Service.Environment;
+        mkEvalCheck "home-pod" pod.activationPackage;
       eval-home-kamino2-identity =
         let
           kamino = import ../named-hosts/kamino {
