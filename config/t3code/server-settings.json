@@ -61,6 +61,14 @@
         "launchArgs": ""
       }
     },
+    "opencode": {
+      "driver": "opencode",
+      "displayName": "OpenCode",
+      "enabled": true,
+      "config": {
+        "binaryPath": "opencode"
+      }
+    },
     "grok": {
       "driver": "grok",
       "config": {
