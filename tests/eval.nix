@@ -482,7 +482,7 @@ let
           cfg = kamino.config;
           roborev = cfg.systemd.user.services.roborev;
         in
-        assert roborev.Unit.ConditionPathIsExecutable == "/root/.local/bin/roborev";
+        assert roborev.Unit.ConditionFileIsExecutable == "/root/.local/bin/roborev";
         assert roborev.Service.CPUQuota == "1000%";
         assert roborev.Service.MemoryHigh == "36G";
         assert roborev.Service.MemoryMax == "42G";

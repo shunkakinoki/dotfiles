@@ -116,8 +116,8 @@ The output should include 'MemoryMax = "32G"'
 End
 
 It 'bounds kamino7 review workers while leaving host capacity for other services'
-When run grep -E 'ConditionPathIsExecutable = roborevBin|CPUQuota = "1000%"|MemoryHigh = "36G"|MemoryMax = "42G"|TasksMax = 4096' "$PWD/home-manager/services/roborev/default.nix"
-The output should include 'ConditionPathIsExecutable = roborevBin'
+When run grep -E 'ConditionFileIsExecutable = roborevBin|CPUQuota = "1000%"|MemoryHigh = "36G"|MemoryMax = "42G"|TasksMax = 4096' "$PWD/home-manager/services/roborev/default.nix"
+The output should include 'ConditionFileIsExecutable = roborevBin'
 The output should include 'CPUQuota = "1000%"'
 The output should include 'MemoryHigh = "36G"'
 The output should include 'MemoryMax = "42G"'

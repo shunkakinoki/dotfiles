@@ -65,7 +65,7 @@ in
       Wants = [ "network-online.target" ];
       # caam is installed outside Nix; without this gate, hosts lacking the
       # binary crash-loop on 203/EXEC under Restart=always.
-      ConditionPathIsExecutable = caamBin;
+      ConditionFileIsExecutable = caamBin;
     };
     Service = {
       Type = "simple";
