@@ -292,9 +292,9 @@ The output should equal 'api-key: "ab|c&d\\e"'
 The status should be success
 End
 
-It 'declares the OpenAI-compatible last-resort fallback upstream'
+It 'declares the OpenAI-compatible primary DeepSeek upstream'
 When run bash -c "sed -n '/name: \"surplus\"/,/name: \"openai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
-The output should include 'priority: 150'
+The output should include 'priority: 301'
 The output should include 'base-url: "https://api.surplusintelligence.ai/v1"'
 The output should include 'api-key: "__SURPLUS_API_KEY__"'
 The output should include 'name: "deepseek-v4.1-flash"'
@@ -532,13 +532,13 @@ The output should include 'alias: "free"'
 The status should be success
 End
 
-It 'preserves the OpenCode then Aliyun then Verboo then OpenRouter then Surplus hop'
+It 'preserves the Surplus then Aliyun then Verboo then OpenCode then OpenRouter hop'
 When run bash -c "awk '/name: \"surplus\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"openrouter\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"verboo\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"aliyun\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"opencode\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'"
-The output should include 'priority: 150'
-The output should include 'priority: 100'
-The output should include 'priority: 150'
-The output should include 'priority: 200'
-The output should include 'priority: 300'
+The output should equal '    priority: 301
+    priority: 100
+    priority: 150
+    priority: 200
+    priority: 140'
 The status should be success
 End
 

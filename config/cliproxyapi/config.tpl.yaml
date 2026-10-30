@@ -193,8 +193,8 @@ routing:
   session-affinity: true # default: false
   # How long session-to-auth bindings are retained. Default: 1h
   # Cold requests still hop
-  # Cold bindings prefer OpenCode/Ollama (300), then Aliyun (200),
-  # Verboo/CommandCode/Surplus (150), OpenRouter (100), and lower tiers.
+  # Cold bindings prefer Surplus (301), then Ollama (300), Aliyun (200),
+  # Verboo/CommandCode (150), OpenCode Go (140), OpenRouter (100), and lower tiers.
   # Failover still rebinds when the bound plan 429s.
   session-affinity-ttl: "1h"
   # When true (default), subagents (child sessions with parent references) inherit and bind
@@ -541,8 +541,10 @@ openai-compatibility:
         alias: "deepseek-v4-flash"
       - name: "google/gemma-4-31b-it"
         alias: "gemma-4-31b-it"
+  # A lapsed OpenCode Go plan answers HTTP 400 "Model is unavailable", which
+  # CLIProxy does not fail over, so this tier must stay below every working one.
   - name: "opencode"
-    priority: 300
+    priority: 140
     base-url: "https://opencode.ai/zen/go/v1"
     support-prompt-cache-key: true
     # OpenCode Go rejects requests without a conversation header. Resolve the
@@ -608,7 +610,7 @@ openai-compatibility:
       - name: "__DEEPSEEK_FLASH_0731__"
         alias: "deepseek-v4-flash"
   - name: "surplus"
-    priority: 150
+    priority: 301
     base-url: "https://api.surplusintelligence.ai/v1"
     support-prompt-cache-key: true
     api-key-entries:

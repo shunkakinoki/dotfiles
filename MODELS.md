@@ -197,15 +197,17 @@ above it is cooling down or unavailable.
 
 | Provider | Priority | DeepSeek models served |
 | --- | --- | --- |
-| `opencode` | 300 | `deepseek-v4-flash` aliased to `deepseek-v4.1-flash` |
+| `surplus` | 301 | `deepseek-v4.1-flash`, plus `deepseek-v4.1-flash-uncensored` under its own alias |
+| `ollama-cloud` | 300 | `deepseek-v4.1-flash` |
 | `aliyun` | 200 | `deepseek-v4-flash-0731` aliased to `deepseek-v4.1-flash` |
+| `verboo`, `commandcode` | 150 | `deepseek-v4-flash-0731` aliased to `deepseek-v4.1-flash` |
+| `opencode` | 140 | `deepseek-v4-flash` aliased to `deepseek-v4.1-flash` |
 | `openrouter` | 100 | `deepseek/deepseek-v4.1-flash` aliased to `deepseek-v4.1-flash` |
-| `surplus` | 150 | `deepseek-v4.1-flash-uncensored` served under its own alias |
 
-So `deepseek-v4.1-flash` requests rotate across the priority-300 credentials
-first; Aliyun and OpenRouter only serve once the tier above them is
-unavailable. `deepseek-v4.1-flash-uncensored` is served only by Surplus, its
-sole upstream.
+So `deepseek-v4.1-flash` requests go to Surplus first; lower tiers only serve
+once the tier above them is unavailable. OpenCode Go sits below the working
+tiers because a lapsed plan answers HTTP 400, which does not fail over.
+`deepseek-v4.1-flash-uncensored` is served only by Surplus, its sole upstream.
 
 ## Changing a model
 
