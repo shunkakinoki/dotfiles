@@ -193,8 +193,8 @@ routing:
   session-affinity: true # default: false
   # How long session-to-auth bindings are retained. Default: 1h
   # Cold requests still hop
-  # Cold bindings prefer OpenCode/Ollama (300), then Aliyun (200),
-  # Verboo/CommandCode/Surplus (150), OpenRouter (100), and lower tiers.
+  # Cold bindings prefer Surplus DeepSeek (301), then OAuth/Ollama (300), Aliyun (200),
+  # Verboo/CommandCode/Surplus (150), OpenRouter (100), OpenCode Go (90), and lower tiers.
   # Failover still rebinds when the bound plan 429s.
   session-affinity-ttl: "1h"
   # When true (default), subagents (child sessions with parent references) inherit and bind
@@ -529,6 +529,20 @@ openai-compatibility:
         alias: "__FREE_MUSE__"
       - name: "__FREE_JEV__"
         alias: "__FREE_JEV__"
+  # Split from "surplus" so DeepSeek can outrank the OAuth tier (pinned to 300)
+  # without also moving gpt-6-luna off Codex OAuth.
+  - name: "surplus-deepseek"
+    priority: 301
+    base-url: "https://api.surplusintelligence.ai/v1"
+    support-prompt-cache-key: true
+    api-key-entries:
+      - api-key: "__SURPLUS_API_KEY__"
+        proxy-url: "direct"
+    models:
+      - name: "__DEEPSEEK_FLASH__"
+        alias: "__DEEPSEEK_FLASH__"
+      - name: "__DEEPSEEK_FLASH__"
+        alias: "deepseek-v4-flash"
   - name: "nvidia"
     priority: 120
     prefix: "nvidia"
@@ -541,8 +555,10 @@ openai-compatibility:
         alias: "deepseek-v4-flash"
       - name: "google/gemma-4-31b-it"
         alias: "gemma-4-31b-it"
+  # A lapsed OpenCode Go plan answers HTTP 400 "Model is unavailable", which
+  # CLIProxy does not fail over, so this tier must stay below every working one.
   - name: "opencode"
-    priority: 300
+    priority: 90
     base-url: "https://opencode.ai/zen/go/v1"
     support-prompt-cache-key: true
     # OpenCode Go rejects requests without a conversation header. Resolve the
@@ -617,10 +633,6 @@ openai-compatibility:
     models:
       - name: "__GPT_LUNA__"
         alias: "__GPT_LUNA__"
-      - name: "__DEEPSEEK_FLASH__"
-        alias: "__DEEPSEEK_FLASH__"
-      - name: "__DEEPSEEK_FLASH__"
-        alias: "deepseek-v4-flash"
       - name: "__DEEPSEEK_FLASH_UNCENSORED__"
         alias: "__DEEPSEEK_FLASH_UNCENSORED__"
   # Temporary campaign provider: serves stealth/union-alpha under the same
