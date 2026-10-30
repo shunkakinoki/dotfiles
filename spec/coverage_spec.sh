@@ -504,6 +504,10 @@ It 'has spec file for home-manager/modules/bin-shells/activate.sh'
 The path "spec/activate_bin_shells_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/bwrap-apparmor/activate.sh'
+The path "spec/activate_bwrap_apparmor_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/firewall/activate.sh'
 The path "spec/activate_firewall_spec.sh" should be exist
 End
@@ -668,6 +672,7 @@ home-manager/modules/dotenv/load-env-file.sh
 home-manager/modules/dotenv/print-env-file.sh
 home-manager/modules/npm-globals/install-npm-globals.sh
 home-manager/modules/secure-dotenv/secure-dotenv.sh
+home-manager/services/bwrap-apparmor/activate.sh
 home-manager/services/firewall/activate.sh
 home-manager/services/hermes/activate-cleanup-units.sh
 home-manager/services/hermes/activate.sh
