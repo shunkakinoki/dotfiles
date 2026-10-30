@@ -67,7 +67,7 @@
         "playwright-chromium": "^1.64.1",
         "portless": "^0.15.9",
         "ralph-tui": "^0.12.0",
-        "reasonix": "^1.39.10",
+        "reasonix": "^2.49.0",
         "t3": "^0.1.2",
         "takt": "0.72.0",
         "tokscale": "^4.20.0",
@@ -1974,17 +1974,17 @@
 
     "@railway/cli": ["@railway/cli@5.71.0", "", { "dependencies": { "node-fetch": "^3.1.0", "tar": "^6.1.11" }, "hasInstallScript": true, "bin": { "railway": "bin/railway.js" } }, "sha512-aLS50FAUwTENen3tBqBn9j3ID5OeYhdDcl+oSVv8mclntHD5yvF/Zh+2oD8emP/I4cUCEGDeDyJ8OVv4QBD9ww=="],
 
-    "@reasonix/cli-darwin-arm64": ["@reasonix/cli-darwin-arm64@1.39.10", "", { "os": "darwin", "cpu": "arm64" }, "sha512-QqQ5Kbic6bldpX/yO9tVZfVjz+EtBu6jVv5d+NSj7vtm1IfG9he1jcuN2Sfh2Zqwwsa6NVhlYoW+hQvRiHwN1A=="],
+    "@reasonix/cli-darwin-arm64": ["@reasonix/cli-darwin-arm64@2.56.0", "", { "os": "darwin", "cpu": "arm64" }, "sha512-9cuQTqL58IO6kyUH1qJopwprGr9M+qCXnBUGzciMoV32u1pm+4BpP/mqXdBchuusI1ktvdA8pdmryRYq8em91w=="],
 
-    "@reasonix/cli-darwin-x64": ["@reasonix/cli-darwin-x64@1.39.10", "", { "os": "darwin", "cpu": "x64" }, "sha512-Yeyu23//999WeWMNXPZYugTUPQQINuY7lRWxP+RrSvlb2CPWywf+cEo8CxUiDi2r0o61BsF3jexUohtD9Y7OLA=="],
+    "@reasonix/cli-darwin-x64": ["@reasonix/cli-darwin-x64@2.56.0", "", { "os": "darwin", "cpu": "x64" }, "sha512-s8xN7Mqlo+Q8Avi7xfmo2d5r1zOYZxHeJL1ZnAeZuciQMx5p0CXvVn3Dptg/+MIMeCpngNl/5KKlhzPLuNmJ0g=="],
 
-    "@reasonix/cli-linux-arm64": ["@reasonix/cli-linux-arm64@1.39.10", "", { "os": "linux", "cpu": "arm64" }, "sha512-KutjHgvFrveVDg3lcTGHEkP//8HvJV+Mk4xZptXxFZGx5NAvMswvjdG05pr2VmiEebHOgZyiKq17sVb9dpIdSg=="],
+    "@reasonix/cli-linux-arm64": ["@reasonix/cli-linux-arm64@2.56.0", "", { "os": "linux", "cpu": "arm64" }, "sha512-PhUvOuNTvftWmQqlpcJCRyfOznC27MpRNOukCu8AJPCprykL76oM+5MpI763MnFmtEjqNjKJmGZBxBCa0UcOQw=="],
 
-    "@reasonix/cli-linux-x64": ["@reasonix/cli-linux-x64@1.39.10", "", { "os": "linux", "cpu": "x64" }, "sha512-4Po7ELpreJlf04Qj/Pbkqh0gYIp8dGPhcDnvZEHHmmEv8lCBUI2jz3FSKHJOLS8kS5Xpbq6IP21NQ7eDRYBOxQ=="],
+    "@reasonix/cli-linux-x64": ["@reasonix/cli-linux-x64@2.56.0", "", { "os": "linux", "cpu": "x64" }, "sha512-rLz3MDchpx0ZExqxvLUrii7pBUf7bd/WOcseJJ630bbUT61+jdGacioYTzoNQd0f8dQc/Vi5x8nGFDSyN42bBw=="],
 
-    "@reasonix/cli-win32-arm64": ["@reasonix/cli-win32-arm64@1.39.10", "", { "os": "win32", "cpu": "arm64" }, "sha512-zJLGo7mRx3F8s3UdvXpTpIE/yW6mnG5i2lGh9fpYTjTgvfUX97FpEO11AEm8zUxxQ+8zCT3VEeTbcveLJ9cmOA=="],
+    "@reasonix/cli-win32-arm64": ["@reasonix/cli-win32-arm64@2.56.0", "", { "os": "win32", "cpu": "arm64" }, "sha512-v0HKes6FAqCQ0+t3R5U4cgWcOnz6V5m75u+4u+G9qfHKujk90QQQmYK806XhCV+dKjoc8jpVckbD8vpRYVuD3A=="],
 
-    "@reasonix/cli-win32-x64": ["@reasonix/cli-win32-x64@1.39.10", "", { "os": "win32", "cpu": "x64" }, "sha512-RlA55XiGsyTg95I4ds/OK8otslXJZDPbk2eUA7i6SyWPBbR3nYmjVjaZq1F3L9lblkdCgyTCqaFMrR1Pw2DxZg=="],
+    "@reasonix/cli-win32-x64": ["@reasonix/cli-win32-x64@2.56.0", "", { "os": "win32", "cpu": "x64" }, "sha512-QcUzRjJMetU8gVGi98aAgYOmaOxt2wOe3S1XV+D9OtdKf4GshHoe6Te7y7wWBkx4dOY4HIzg7CbdIohUiamBFQ=="],
 
     "@redwoodjs/agent-ci": ["@redwoodjs/agent-ci@0.18.1", "", { "dependencies": { "run-local-ci": "0.18.1" }, "bin": { "agent-ci": "bin/agent-ci.mjs" } }, "sha512-S2wIJJNldt7TMsj7Zf5WGF40Nk5kY1/tT5LCaaFTiZs+trGZEfqJowIN7Gx2+sUK1Hnffy2/5wPAZJO/HvH4ng=="],
 
@@ -3932,7 +3932,7 @@
 
     "real-require": ["real-require@0.2.0", "", {}, "sha512-57frrGM/OCTLqLOAh0mhVA9VBMHd+9U7Zb2THMGdBUoZVOtGbJzjxsYGDJ3A9AYYCP4hn6y1TVbaOfzWtm5GFg=="],
 
-    "reasonix": ["reasonix@1.39.10", "", { "optionalDependencies": { "@reasonix/cli-darwin-arm64": "1.39.10", "@reasonix/cli-darwin-x64": "1.39.10", "@reasonix/cli-linux-arm64": "1.39.10", "@reasonix/cli-linux-x64": "1.39.10", "@reasonix/cli-win32-arm64": "1.39.10", "@reasonix/cli-win32-x64": "1.39.10" }, "bin": { "reasonix": "bin/reasonix.js" } }, "sha512-FpuFIEwKAWNBz6KQbVFKDKV9YGkD+20ySYq7b3Lv0vW/mJv4+jegUoeI4tRyTfm1SY2ghHrV0xb0gf1vd4tm3g=="],
+    "reasonix": ["reasonix@2.56.0", "", { "optionalDependencies": { "@reasonix/cli-darwin-arm64": "2.56.0", "@reasonix/cli-darwin-x64": "2.56.0", "@reasonix/cli-linux-arm64": "2.56.0", "@reasonix/cli-linux-x64": "2.56.0", "@reasonix/cli-win32-arm64": "2.56.0", "@reasonix/cli-win32-x64": "2.56.0" }, "bin": { "reasonix": "bin/reasonix.js" } }, "sha512-nMVFgXj2WcH5bunSaALmdE4qpFmPrcWg1aD+oMD63IL4VhdxnGbXMVxmfvfp0yB0c1qJMO/T8NGPZ9PsCVzJ4Q=="],
 
     "require-directory": ["require-directory@2.1.1", "", {}, "sha512-fGxEI7+wsG9xrvdjsrlmL22OMTTiHRwAMroiEeMgq8gzoLC/PQr7RsRDSTLUg/bZAZtF+TVIkHc6/4RIKrui+Q=="],
 
