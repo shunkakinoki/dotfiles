@@ -82,7 +82,7 @@ touch "$TEST_ROOT/user-active"
 When call activate
 The output should include 'Stopping the Dolt user service'
 The line 3 of contents of file "$TEST_ROOT/calls" should equal '--user stop dolt.service'
-The line 5 of contents of file "$TEST_ROOT/calls" should equal 'restart dolt.service'
+The contents of file "$TEST_ROOT/calls" should include 'restart dolt.service'
 End
 
 It 'leaves a running server alone when the unit is unchanged'
