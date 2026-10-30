@@ -94,9 +94,9 @@ deepseek-v4.1-flash  (primary)
 Rules:
 
 - `deepseek-v4.1-flash` is the only DeepSeek model on any automatic path.
-- Every hop resolves through CLIProxy, so provider-level rotation (OpenCode ->
-  Aliyun -> OpenRouter) already happens inside a single hop. Do not add a hop
-  that repeats the primary model.
+- Every hop resolves through CLIProxy, so provider-level rotation (Surplus ->
+  Ollama -> Aliyun -> Verboo/CommandCode -> OpenCode -> OpenRouter) already
+  happens inside a single hop. Do not add a hop that repeats the primary model.
 - Keep the chain model-diverse. Each hop should be a different vendor family so
   a vendor-wide outage cannot exhaust the chain.
 
@@ -197,10 +197,11 @@ above it is cooling down or unavailable.
 
 | Provider | Priority | DeepSeek models served |
 | --- | --- | --- |
-| `surplus` | 301 | `deepseek-v4.1-flash`, plus `deepseek-v4.1-flash-uncensored` under its own alias |
+| `surplus-deepseek` | 301 | `deepseek-v4.1-flash` |
 | `ollama-cloud` | 300 | `deepseek-v4.1-flash` |
 | `aliyun` | 200 | `deepseek-v4-flash-0731` aliased to `deepseek-v4.1-flash` |
 | `verboo`, `commandcode` | 150 | `deepseek-v4-flash-0731` aliased to `deepseek-v4.1-flash` |
+| `surplus` | 150 | `deepseek-v4.1-flash-uncensored` served under its own alias |
 | `opencode` | 140 | `deepseek-v4-flash` aliased to `deepseek-v4.1-flash` |
 | `openrouter` | 100 | `deepseek/deepseek-v4.1-flash` aliased to `deepseek-v4.1-flash` |
 

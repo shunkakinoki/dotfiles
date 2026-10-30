@@ -293,7 +293,7 @@ The status should be success
 End
 
 It 'declares the OpenAI-compatible primary DeepSeek upstream'
-When run bash -c "sed -n '/name: \"surplus\"/,/name: \"openai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+When run bash -c "sed -n '/name: \"surplus-deepseek\"/,/name: \"nvidia\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'priority: 301'
 The output should include 'base-url: "https://api.surplusintelligence.ai/v1"'
 The output should include 'api-key: "__SURPLUS_API_KEY__"'
@@ -533,7 +533,7 @@ The status should be success
 End
 
 It 'preserves the Surplus then Aliyun then Verboo then OpenCode then OpenRouter hop'
-When run bash -c "awk '/name: \"surplus\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"openrouter\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"verboo\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"aliyun\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"opencode\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'"
+When run bash -c "awk '/name: \"surplus-deepseek\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"openrouter\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"verboo\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"aliyun\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"opencode\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should equal '    priority: 301
     priority: 100
     priority: 150
@@ -546,6 +546,7 @@ It 'lists providers in descending priority order'
 When run bash -c "awk '/^openai-compatibility:/{p=1; next} p && /^# Official/{exit} p && /^  - name: /{print}' '$PWD/config/cliproxyapi/config.template.yaml' | sed 's/^  - name: //; s/\"//g'"
 The output should equal 'openrouter-priority-free
 opencode-campaign
+surplus-deepseek
 nvidia
 opencode
 ollama-cloud
@@ -874,7 +875,7 @@ The status should be success
 End
 
 It 'declares a keyless OpenCode Zen campaign over the global proxy'
-When run bash -c "sed -n '/name: \"opencode-campaign\"/,/name: \"nvidia\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+When run bash -c "sed -n '/name: \"opencode-campaign\"/,/name: \"surplus-deepseek\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'base-url: "https://opencode.ai/zen/v1"'
 The output should include 'priority: 302'
 The output should include 'name: "mimo-v2.5-free"'
