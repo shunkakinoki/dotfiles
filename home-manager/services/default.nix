@@ -18,6 +18,7 @@ let
   diskCleanup = ./disk-cleanup;
   dolt = ./dolt;
   docker = import ./docker { inherit lib pkgs; };
+  bwrapApparmor = ./bwrap-apparmor;
   firewall = ./firewall;
   dockerPostgres = ./docker-postgres;
   dotfilesUpdater = import ./dotfiles-updater { inherit inputs pkgs; };
@@ -58,6 +59,7 @@ in
   dolt
   docker
   dockerPostgres
+  bwrapApparmor
   firewall
   dotfilesUpdater
   herdr
