@@ -194,7 +194,7 @@ routing:
   # How long session-to-auth bindings are retained. Default: 1h
   # Cold requests still hop
   # Cold bindings prefer Surplus DeepSeek (301), then OAuth/Ollama (300), Aliyun (200),
-  # Verboo/CommandCode/Surplus (150), OpenCode Go (140), OpenRouter (100), and lower tiers.
+  # Verboo/CommandCode/Surplus (150), OpenRouter (100), OpenCode Go (90), and lower tiers.
   # Failover still rebinds when the bound plan 429s.
   session-affinity-ttl: "1h"
   # When true (default), subagents (child sessions with parent references) inherit and bind
@@ -558,7 +558,7 @@ openai-compatibility:
   # A lapsed OpenCode Go plan answers HTTP 400 "Model is unavailable", which
   # CLIProxy does not fail over, so this tier must stay below every working one.
   - name: "opencode"
-    priority: 140
+    priority: 90
     base-url: "https://opencode.ai/zen/go/v1"
     support-prompt-cache-key: true
     # OpenCode Go rejects requests without a conversation header. Resolve the

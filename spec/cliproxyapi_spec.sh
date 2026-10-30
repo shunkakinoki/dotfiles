@@ -532,13 +532,13 @@ The output should include 'alias: "free"'
 The status should be success
 End
 
-It 'preserves the Surplus then Aliyun then Verboo then OpenCode then OpenRouter hop'
+It 'preserves the Surplus then Aliyun then Verboo then OpenRouter then OpenCode hop'
 When run bash -c "awk '/name: \"surplus-deepseek\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"openrouter\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"verboo\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"aliyun\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"opencode\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should equal '    priority: 301
     priority: 100
     priority: 150
     priority: 200
-    priority: 140'
+    priority: 90'
 The status should be success
 End
 

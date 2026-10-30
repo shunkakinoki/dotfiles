@@ -405,8 +405,8 @@ When run bash -c "section=\$(sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' c
 The status should be success
 End
 
-It 'orders DeepSeek providers as Surplus then Ollama then Aliyun then Verboo then OpenCode then OpenRouter'
-When run bash -c "grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 140' && grep -A 2 'name: \"aliyun\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 200' && grep -A 2 'name: \"verboo\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 150' && grep -A 2 'name: \"openrouter\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 100' && grep -A 2 'name: \"surplus-deepseek\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 301' && grep -A 2 'name: \"ollama-cloud\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 300'"
+It 'orders DeepSeek providers as Surplus then Ollama then Aliyun then Verboo then OpenRouter then OpenCode'
+When run bash -c "grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 90' && grep -A 2 'name: \"aliyun\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 200' && grep -A 2 'name: \"verboo\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 150' && grep -A 2 'name: \"openrouter\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 100' && grep -A 2 'name: \"surplus-deepseek\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 301' && grep -A 2 'name: \"ollama-cloud\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 300'"
 The status should be success
 End
 
