@@ -7,7 +7,7 @@
   overlay-dolt-version-guard =
     assert lib.versionAtLeast pkgs.dolt.version "2.6.0";
     pkgs.runCommand "overlay-dolt-version-guard" { } ''
-      ${pkgs.dolt}/bin/dolt version | grep -F 'dolt version 2.6.0'
+      DOLT_ROOT_PATH="$TMPDIR" ${pkgs.dolt}/bin/dolt version | grep -F 'dolt version 2.6.0'
       touch $out
     '';
 
