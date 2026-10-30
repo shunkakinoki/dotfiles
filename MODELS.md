@@ -95,7 +95,8 @@ Rules:
 
 - `deepseek-v4.1-flash` is the only DeepSeek model on any automatic path.
 - Every hop resolves through CLIProxy, so provider-level rotation (Surplus ->
-  Ollama -> Verboo/CommandCode -> OpenRouter -> OpenCode) already happens inside a single hop. Do not add a hop that repeats the primary model.
+  Ollama -> Verboo/CommandCode -> OpenRouter -> OpenCode) already happens
+  inside a single hop. Do not add a hop that repeats the primary model.
 - Keep the chain model-diverse. Each hop should be a different vendor family so
   a vendor-wide outage cannot exhaust the chain.
 
