@@ -207,8 +207,34 @@ above it is cooling down or unavailable.
 
 So `deepseek-v4.1-flash` requests go to Surplus first; lower tiers only serve
 once the tier above them is unavailable. OpenCode Go sits below every other
-tier because a lapsed plan answers HTTP 400, which does not fail over.
+tier because it answers HTTP 400 when its own DeepSeek upstream is down, which
+does not fail over.
 `deepseek-v4.1-flash-uncensored` is served only by Surplus, its sole upstream.
+
+### Failover by upstream status
+
+CLIProxy decides per error whether to try the next credential:
+
+| Upstream answer | Next credential in the round | Extra `request-retry` round |
+| --- | --- | --- |
+| 403, 408, 429, 500, 502, 503, 504 | yes; the failed credential cools down | yes |
+| 400, 404, or 422 whose message matches a model-support pattern (`model unavailable`, `requested model is unavailable`, `model not supported`, `not available for your plan`, ...) | yes | no |
+| `invalid_grant` | yes | no |
+| any other 400 | no; the request returns this 400 | no |
+
+The pattern match is a substring check, so `Model is unavailable` (OpenCode Go)
+matches none of them and stops the request. Order matters: if the top tier
+answers 429 and the next answers such a 400, the client gets the 400, and while
+the 429 credential cools down every request goes straight to the 400 tier. Keep
+any upstream known to answer a non-matching 400 at the lowest priority.
+
+Observed DeepSeek failures:
+
+| Tier | Failure | Status | Fails over |
+| --- | --- | --- | --- |
+| `opencode` (OpenCode Go) | `Upstream request failed: Model is unavailable.` | 400 | no |
+| `aliyun` | `AccessDenied.Unpurchased` | 403 | yes |
+| `opencode-campaign` | `FreeUsageLimitError` | 429 | yes |
 
 ## Changing a model
 
