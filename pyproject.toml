@@ -12,7 +12,7 @@ tools = [
   "claude-swap>=0.28.0",
   "git-remote-s3>=0.4.2",
   "graphifyy>=0.9.94",
-  "huggingface-hub[mcp]>=2.2.0",
+  "huggingface-hub[mcp]>=2.3.0",
   "marker-pdf>=2.0.0",
   "mempalace>=3.11.0",
   "mistral-vibe>=3.0.2",
@@ -27,7 +27,7 @@ tools = [
 hermes = [
   "python-telegram-bot[webhooks]>=22.8,<23",
   "croniter>=6.2.4,<7",
-  "fastapi[standard]>=0.161.1",
+  "fastapi[standard]>=0.162.0",
   "uvicorn>=0.54.0",
 ]
 
