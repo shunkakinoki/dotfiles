@@ -9,15 +9,15 @@ requires-python = ">=3.13"
 [dependency-groups]
 tools = [
   "aider-chat>=0.86.2",
-  "claude-swap>=0.27.2",
+  "claude-swap>=0.28.0",
   "git-remote-s3>=0.4.2",
-  "graphifyy>=0.9.93",
+  "graphifyy>=0.9.95",
   "huggingface-hub[mcp]>=2.2.0",
   "marker-pdf>=2.0.0",
   "mempalace>=3.11.0",
-  "mistral-vibe>=2.26.1",
+  "mistral-vibe>=3.0.2",
   "nvitop>=1.7.1",
-  "ruff>=0.17.1",
+  "ruff>=0.17.2",
   "serena-agent>=2.1.0",
   "transformers>=5.20.2",
   "vllm>=0.32.0",
@@ -27,7 +27,7 @@ tools = [
 hermes = [
   "python-telegram-bot[webhooks]>=22.8,<23",
   "croniter>=6.2.4,<7",
-  "fastapi[standard]>=0.156.8",
+  "fastapi[standard]>=0.161.1",
   "uvicorn>=0.54.0",
 ]
 
@@ -37,6 +37,10 @@ exclude-newer = "1 week"
 [tool.uv-globals]
 # Packages that require --prerelease=allow during uv tool install
 prerelease = ["serena-agent"]
+# Installed only where modules.uvGlobals.gpuTools is set; uninstalled elsewhere.
+gpu = ["huggingface-hub", "marker-pdf", "nvitop", "transformers", "vllm"]
+# Apple MLX: installed only on macOS; uninstalled elsewhere.
+darwin = ["vllm-mlx"]
 
 # Git-sourced uv tools (not Renovate-tracked PyPI pins).
 # Do NOT add PyPI agent-reach (jgalea/agent-reach 0.1.0) — wrong package.

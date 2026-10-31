@@ -39,7 +39,7 @@ let
     inherit doltServerHost;
   };
   linearSyncEnabled = isKyber;
-  doltMinVersion = "2.2.2";
+  doltMinVersion = "2.6.0";
   startScript = pkgs.replaceVars ./start.sh {
     inherit beadsDir;
     inherit (pkgs) dolt;

@@ -26,6 +26,9 @@ in
       sync_address = "https://api.atuin.sh";
       search_mode = "fuzzy";
       filter_mode = "global";
+      # Applying multi-million-record thread syncs runs queries for 15s+ on a
+      # large history.db; the 2s default aborts sync with "pool timed out".
+      local_timeout = 120;
       sync = {
         records = true;
       };

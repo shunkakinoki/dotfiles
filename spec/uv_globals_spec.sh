@@ -16,6 +16,71 @@ The output should include 'skipping uv globals install'
 End
 End
 
+Describe 'host tool exclusion'
+setup_exclusion() {
+  mock_bin_setup timeout uname
+  UV_TEST_HOME="$(mktemp -d)"
+  export UV_TEST_HOME
+  mkdir -p "$UV_TEST_HOME/dotfiles" "$UV_TEST_HOME/.local/bin"
+  : >"$UV_TEST_HOME/dotfiles/pyproject.toml"
+  : >"$UV_TEST_HOME/.local/bin/python3-vllm"
+  printf '#!/usr/bin/env bash\necho Linux\n' >"$MOCK_BIN/uname"
+  cat >"$MOCK_BIN/tomlq" <<'EOF'
+#!/usr/bin/env bash
+case "$2" in
+*requires-python*) echo '>=3.13' ;;
+*dependency-groups*) printf '%s\n' 'ruff>=0.1.0' 'huggingface-hub[mcp]>=2.2.0' 'vllm>=0.32.0' 'vllm-mlx>=0.6.0' ;;
+*'.gpu[]'*) printf '%s\n' huggingface-hub vllm ;;
+*'.darwin[]'*) echo vllm-mlx ;;
+esac
+EOF
+  cat >"$MOCK_BIN/uv" <<'EOF'
+#!/usr/bin/env bash
+printf '%s\n' "uv $*" >>"$MOCK_LOG"
+if [ "$1 $2" = "tool list" ]; then
+  printf '%s\n' 'ruff v0.1.0' '- ruff' 'vllm v0.32.0' '- vllm' 'vllm-mlx v0.6.0' '- vllm-mlx'
+fi
+EOF
+  chmod +x "$MOCK_BIN/tomlq" "$MOCK_BIN/uv"
+}
+cleanup_exclusion() {
+  mock_bin_cleanup
+  rm -rf "$UV_TEST_HOME"
+  unset UV_TEST_HOME
+}
+Before 'setup_exclusion'
+After 'cleanup_exclusion'
+
+It 'uninstalls GPU and MLX tools on CPU-only Linux instead of installing them'
+When run env HOME="$UV_TEST_HOME" UV_GLOBALS_GPU=0 bash "$SCRIPT"
+The status should be success
+The output should include 'Uninstalling vllm (excluded on this host)'
+The contents of file "$MOCK_LOG" should include 'uv tool uninstall vllm'
+The contents of file "$MOCK_LOG" should include 'uv tool uninstall vllm-mlx'
+The contents of file "$MOCK_LOG" should not include 'uninstall huggingface-hub'
+The contents of file "$MOCK_LOG" should not include 'uv tool install vllm'
+The contents of file "$MOCK_LOG" should not include 'uv tool install huggingface-hub'
+The path "$UV_TEST_HOME/.local/bin/python3-vllm" should not be exist
+End
+
+It 'keeps GPU tools on GPU Linux hosts and still drops MLX'
+When run env HOME="$UV_TEST_HOME" UV_GLOBALS_GPU=1 bash "$SCRIPT"
+The status should be success
+The output should include 'vllm 0.32.0 already installed, skipping'
+The contents of file "$MOCK_LOG" should include 'uv tool install huggingface-hub[mcp]>=2.2.0'
+The contents of file "$MOCK_LOG" should include 'uv tool uninstall vllm-mlx'
+The output should not include 'Uninstalling vllm ('
+End
+
+It 'keeps MLX tools on macOS'
+printf '#!/usr/bin/env bash\necho Darwin\n' >"$MOCK_BIN/uname"
+When run env HOME="$UV_TEST_HOME" UV_GLOBALS_GPU=1 bash "$SCRIPT"
+The status should be success
+The output should include 'vllm-mlx 0.6.0 already installed, skipping'
+The contents of file "$MOCK_LOG" should not include 'uninstall'
+End
+End
+
 Describe 'script properties'
 It 'uses bash shebang'
 When run bash -c "head -1 '$SCRIPT'"
