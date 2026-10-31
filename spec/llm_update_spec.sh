@@ -280,7 +280,7 @@ The status should be success
 End
 
 It 'generates the Flash OpenCode fallback convention'
-When run bash -c "jq -e '.model == null and .retry_on_errors == [401,404,429,500,502,503,504,524] and .retryable_error_patterns == [\"unknown provider for model\"] and .max_fallback_attempts == 5 and .fallback_models == [\"shunkakinoki/free\",\"cliproxyapi/free\"]' config/opencode/opencode-fallback.jsonc >/dev/null"
+When run bash -c "jq -e '.model == null and .retry_on_errors == [401,404,429,500,502,503,504,524] and .retryable_error_patterns == [\"unknown provider for model\",\"Model is unavailable\"] and .max_fallback_attempts == 5 and .fallback_models == [\"shunkakinoki/free\",\"cliproxyapi/free\"]' config/opencode/opencode-fallback.jsonc >/dev/null"
 The status should be success
 End
 
@@ -405,8 +405,8 @@ When run bash -c "section=\$(sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' c
 The status should be success
 End
 
-It 'orders DeepSeek providers as Surplus then Ollama then Aliyun then Verboo then OpenRouter then OpenCode'
-When run bash -c "grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 90' && grep -A 2 'name: \"aliyun\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 200' && grep -A 2 'name: \"verboo\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 150' && grep -A 2 'name: \"openrouter\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 100' && grep -A 2 'name: \"surplus-deepseek\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 301' && grep -A 2 'name: \"ollama-cloud\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 300'"
+It 'orders DeepSeek providers as OpenCode then Aliyun then Verboo then OpenRouter then Surplus'
+When run bash -c "grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 300' && grep -A 2 'name: \"aliyun\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 200' && grep -A 2 'name: \"verboo\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 150' && grep -A 2 'name: \"openrouter\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 100' && grep -A 2 'name: \"surplus\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 150'"
 The status should be success
 End
 

@@ -94,9 +94,9 @@ deepseek-v4.1-flash  (primary)
 Rules:
 
 - `deepseek-v4.1-flash` is the only DeepSeek model on any automatic path.
-- Every hop resolves through CLIProxy, so provider-level rotation (Surplus ->
-  Ollama -> Verboo/CommandCode -> OpenRouter -> OpenCode) already happens
-  inside a single hop. Do not add a hop that repeats the primary model.
+- Every hop resolves through CLIProxy, so provider-level rotation (OpenCode ->
+  Aliyun -> OpenRouter) already happens inside a single hop. Do not add a hop
+  that repeats the primary model.
 - Keep the chain model-diverse. Each hop should be a different vendor family so
   a vendor-wide outage cannot exhaust the chain.
 
@@ -116,7 +116,7 @@ OpenCode fallback is driven by the `opencode-runtime-fallback@0.2.3` plugin:
 | Setting | Value |
 | --- | --- |
 | `retry_on_errors` | `401, 404, 429, 500, 502, 503, 504, 524` |
-| `retryable_error_patterns` | `unknown provider for model` |
+| `retryable_error_patterns` | `unknown provider for model`, `Model is unavailable` |
 | `max_fallback_attempts` | `5` |
 | `cooldown_seconds` | `60` |
 | `timeout_seconds` | `30` |
@@ -197,44 +197,15 @@ above it is cooling down or unavailable.
 
 | Provider | Priority | DeepSeek models served |
 | --- | --- | --- |
-| `surplus-deepseek` | 301 | `deepseek-v4.1-flash` |
-| `ollama-cloud` | 300 | `deepseek-v4.1-flash` |
-| `aliyun` | 200 | `deepseek-v4-flash-0731` aliased to `aliyun/deepseek-v4.1-flash` (prefixed, not in the bare-alias rotation) |
-| `verboo`, `commandcode` | 150 | `deepseek-v4-flash-0731` aliased to `deepseek-v4.1-flash` |
-| `surplus` | 150 | `deepseek-v4.1-flash-uncensored` served under its own alias |
+| `opencode` | 300 | `deepseek-v4-flash` aliased to `deepseek-v4.1-flash` |
+| `aliyun` | 200 | `deepseek-v4-flash-0731` aliased to `deepseek-v4.1-flash` |
 | `openrouter` | 100 | `deepseek/deepseek-v4.1-flash` aliased to `deepseek-v4.1-flash` |
-| `opencode` | 90 | `deepseek-v4-flash` aliased to `deepseek-v4.1-flash` |
+| `surplus` | 150 | `deepseek-v4.1-flash-uncensored` served under its own alias |
 
-So `deepseek-v4.1-flash` requests go to Surplus first; lower tiers only serve
-once the tier above them is unavailable. OpenCode Go sits below every other
-tier because it answers HTTP 400 when its own DeepSeek upstream is down, which
-does not fail over.
-`deepseek-v4.1-flash-uncensored` is served only by Surplus, its sole upstream.
-
-### Failover by upstream status
-
-CLIProxy decides per error whether to try the next credential:
-
-| Upstream answer | Next credential in the round | Extra `request-retry` round |
-| --- | --- | --- |
-| 403, 408, 429, 500, 502, 503, 504 | yes; the failed credential cools down | yes |
-| 400, 404, or 422 whose message matches a model-support pattern (`model unavailable`, `requested model is unavailable`, `model not supported`, `not available for your plan`, ...) | yes | no |
-| `invalid_grant` | yes | no |
-| any other 400 | no; the request returns this 400 | no |
-
-The pattern match is a substring check, so `Model is unavailable` (OpenCode Go)
-matches none of them and stops the request. Order matters: if the top tier
-answers 429 and the next answers such a 400, the client gets the 400, and while
-the 429 credential cools down every request goes straight to the 400 tier. Keep
-any upstream known to answer a non-matching 400 at the lowest priority.
-
-Observed DeepSeek failures:
-
-| Tier | Failure | Status | Fails over |
-| --- | --- | --- | --- |
-| `opencode` (OpenCode Go) | `Upstream request failed: Model is unavailable.` | 400 | no |
-| `aliyun` | `AccessDenied.Unpurchased` | 403 | yes |
-| `opencode-campaign` | `FreeUsageLimitError` | 429 | yes |
+So `deepseek-v4.1-flash` requests rotate across the priority-300 credentials
+first; Aliyun and OpenRouter only serve once the tier above them is
+unavailable. `deepseek-v4.1-flash-uncensored` is served only by Surplus, its
+sole upstream.
 
 ## Changing a model
 
