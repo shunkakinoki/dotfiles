@@ -307,6 +307,31 @@
       meta.mainProgram = "crabbox";
     };
 
+    iron-proxy = prev.stdenvNoCC.mkDerivation rec {
+      pname = "iron-proxy";
+      version = "0.54.0";
+      src = prev.fetchurl {
+        url = "https://github.com/paradigmxyz/iron-proxy/releases/download/v${version}/iron-proxy_${version}_${
+          if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
+        }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}.tar.gz";
+        sha256 =
+          {
+            "aarch64-darwin" = "be5c3cd961a6e5274688ba6445c99eba588dfeed4ec65f74741ba2f12fb9cb42";
+            "x86_64-darwin" = "29fbffa5b16f5d4d1e646696c82507f699546b6adcf94fbcf01e562fdf0d0a66";
+            "aarch64-linux" = "867ebbb1a7ecd4ecdde978b6712dfb1321f20dbb0f49da39b6abd9a66a984473";
+            "x86_64-linux" = "54d745b6c6e4a6d6cad1f58644df59487a87d5f037a8ddb7159c0a8e5d57dd4d";
+          }
+          .${prev.stdenv.hostPlatform.system};
+      };
+      sourceRoot = ".";
+      dontConfigure = true;
+      dontBuild = true;
+      installPhase = ''
+        install -Dm755 iron-proxy $out/bin/iron-proxy
+      '';
+      meta.mainProgram = "iron-proxy";
+    };
+
     devin = prev.stdenvNoCC.mkDerivation rec {
       pname = "devin";
       version = "3000.11.205";
