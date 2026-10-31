@@ -76,6 +76,7 @@ let
 
   envScript = pkgs.replaceVars ./env.sh {
     inherit stateDir;
+    inherit (shared) secretsDir;
     proxyPort = toString tunnelPort;
     inherit (shared) noProxy;
   };
@@ -124,6 +125,7 @@ lib.mkIf (!isRunner) {
   environment.systemPackages = [
     pkgs.iron-proxy
     bypassScript
+    shared.secretsScript
   ];
 
   launchd.daemons = {
