@@ -57,18 +57,6 @@ let
     }
   '';
 
-  proxyBypassDomains = [
-    "localhost"
-    "127.0.0.1"
-    "*.local"
-    "*.ts.net"
-    "169.254.0.0/16"
-    "100.64.0.0/10"
-    "10.0.0.0/8"
-    "172.16.0.0/12"
-    "192.168.0.0/16"
-  ];
-
   guardScript = pkgs.replaceVars ./guard.sh {
     ironProxyBin = lib.getExe pkgs.iron-proxy;
     inherit
@@ -82,14 +70,14 @@ let
     systemProxy = if systemProxy then "1" else "0";
     proxyPort = toString tunnelPort;
     networkServices = lib.concatStringsSep ":" config.networking.knownNetworkServices;
-    bypassDomains = lib.concatStringsSep " " proxyBypassDomains;
+    bypassDomains = lib.concatStringsSep " " shared.bypassDomains;
     caBundle = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
   };
 
   envScript = pkgs.replaceVars ./env.sh {
     inherit stateDir;
     proxyPort = toString tunnelPort;
-    noProxy = lib.concatStringsSep "," (map (lib.removePrefix "*") proxyBypassDomains ++ [ "::1" ]);
+    inherit (shared) noProxy;
   };
 
   bypassScript = pkgs.writeShellApplication {

@@ -21,6 +21,21 @@ rec {
     "fd00::/8"
   ];
 
+  bypassDomains = [
+    "localhost"
+    "127.0.0.1"
+    "*.local"
+    "*.ts.net"
+    "169.254.0.0/16"
+    "100.64.0.0/10"
+    "10.0.0.0/8"
+    "172.16.0.0/12"
+    "192.168.0.0/16"
+  ];
+  noProxy = pkgs.lib.concatStringsSep "," (
+    map (pkgs.lib.removePrefix "*") bypassDomains ++ [ "::1" ]
+  );
+
   configFile = pkgs.writeText "iron-proxy.yaml" (
     builtins.toJSON {
       dns.enabled = false;
