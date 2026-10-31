@@ -116,7 +116,7 @@ OpenCode fallback is driven by the `opencode-runtime-fallback@0.2.3` plugin:
 | Setting | Value |
 | --- | --- |
 | `retry_on_errors` | `401, 404, 429, 500, 502, 503, 504, 524` |
-| `retryable_error_patterns` | `unknown provider for model` |
+| `retryable_error_patterns` | `unknown provider for model`, `Model is unavailable` |
 | `max_fallback_attempts` | `5` |
 | `cooldown_seconds` | `60` |
 | `timeout_seconds` | `30` |
