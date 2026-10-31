@@ -7,7 +7,7 @@
 let
   # "log": pf passes and logs (pflog0) everything the agent user sends outside
   # the proxy. "enforce": the same traffic is rejected.
-  mode = "log";
+  mode = "enforce";
   # Point macOS system HTTP/HTTPS proxy settings at iron-proxy while the proxy
   # listens and its CA is trusted in the System keychain.
   systemProxy = true;
@@ -67,6 +67,7 @@ let
       ;
     agentUid = toString agentUid;
     pfConf = "/etc/pf.ironproxy.conf";
+    pfAnchor = "/etc/pf.anchors/ironproxy";
     systemProxy = if systemProxy then "1" else "0";
     proxyPort = toString tunnelPort;
     networkServices = lib.concatStringsSep ":" config.networking.knownNetworkServices;
@@ -98,7 +99,8 @@ lib.mkIf (!isRunner) {
       message = "iron-proxy: enforce mode without systemProxy blocks all GUI egress";
     }
     {
-      assertion = mode != "enforce" || !(lib.hasInfix "NOPASSWD" config.security.sudo.extraConfig);
+      assertion =
+        mode != "enforce" || !(lib.hasInfix "NOPASSWD" (toString config.security.sudo.extraConfig));
       message = "iron-proxy: enforce mode is bypassable while security.sudo.extraConfig grants NOPASSWD";
     }
   ];
