@@ -52,6 +52,38 @@ The status should be success
 The path "$TMP/called" should not be exist
 End
 
+It 'skips hosts without an identity key'
+missing_identity() {
+  bash "$SCRIPT" "$TMP/secret" "$TMP/missing" "$TMP/rage" "$TMP/atuin" user "$TMP/session"
+}
+When call missing_identity
+The status should be success
+The path "$TMP/called" should not be exist
+End
+
+It 'backs up an existing local key before logging in'
+existing_key() {
+  echo local-key >"$TMP/key"
+  run_login
+}
+When call existing_key
+The status should be success
+The output should include 'Logged in'
+The contents of file "$TMP/key.pre-login" should equal 'local-key'
+End
+
+It 'keeps an earlier key backup'
+earlier_backup() {
+  echo newer-key >"$TMP/key"
+  echo first-key >"$TMP/key.pre-login"
+  run_login
+}
+When call earlier_backup
+The status should be success
+The output should include 'Logged in'
+The contents of file "$TMP/key.pre-login" should equal 'first-key'
+End
+
 It 'skips an incomplete secret'
 export RAGE_OUTPUT='only-password\n'
 When call run_login
