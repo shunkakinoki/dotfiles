@@ -19,14 +19,16 @@ in
   ];
 
   home.activation.atuinLogin = lib.mkIf (builtins.pathExists loginSecret) (
-    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    lib.hm.dag.entryAfter [ "linkGeneration" ] ''
       $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../activation/atuin-login.sh}" \
         "${loginSecret}" \
         "${config.home.homeDirectory}/.ssh/id_ed25519" \
         "${pkgs.rage}/bin/rage" \
         "${pkgs.atuin}/bin/atuin" \
+        "${pkgs.coreutils}/bin/timeout" \
+        "${pkgs.openssh}/bin/ssh-keygen" \
         "shunkakinoki" \
-        "${config.home.homeDirectory}/.local/share/atuin/session"
+        "${config.home.homeDirectory}/.local/share/atuin"
     ''
   );
 

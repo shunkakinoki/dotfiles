@@ -1,22 +1,27 @@
 #!/usr/bin/env bash
-# Log in to Atuin from an agenix secret when this host has no session yet.
+# Log in to Atuin from an agenix secret. `atuin login` is a no-op on a host that
+# already has a session, and only it can tell: sessions live in meta.db, and a
+# leftover plain-text session file survives logout.
 # The secret holds the password on line 1 and the encryption key on line 2.
-# Usage: atuin-login.sh <secret_file> <identity_key> <rage_bin> <atuin_bin> <username> <session_file>
+# Usage: atuin-login.sh <secret_file> <identity_key> <rage_bin> <atuin_bin> <timeout_bin> <ssh_keygen_bin> <username> <data_dir>
 set -euo pipefail
 SECRET_FILE="$1"
 IDENTITY_KEY="$2"
 RAGE_BIN="$3"
 ATUIN_BIN="$4"
-USERNAME="$5"
-SESSION_FILE="$6"
-
-if [[ -s $SESSION_FILE ]]; then
-  exit 0
-fi
+TIMEOUT_BIN="$5"
+SSH_KEYGEN_BIN="$6"
+USERNAME="$7"
+DATA_DIR="$8"
 
 # Hosts outside the secret's recipients stay logged out, like kamino workers
 # that should not download the whole fleet's thread store.
 if [[ ! -r $IDENTITY_KEY ]]; then
+  exit 0
+fi
+# rage asks for an SSH key's passphrase before checking recipients, which would
+# block unattended activation.
+if ! "$SSH_KEYGEN_BIN" -y -P "" -f "$IDENTITY_KEY" >/dev/null 2>&1; then
   exit 0
 fi
 if ! SECRET="$("$RAGE_BIN" -d -i "$IDENTITY_KEY" "$SECRET_FILE" 2>/dev/null)"; then
@@ -33,20 +38,17 @@ if [[ -z $ATUIN_PASSWORD || -z $ATUIN_ENCRYPTION_KEY ]]; then
   exit 0
 fi
 
-# Local records stay encrypted under the host's own key until they are re-keyed,
-# and that key is the only way to read them if login replaces it.
-KEY_FILE="$(dirname "$SESSION_FILE")/key"
-KEY_BACKUP="$KEY_FILE.pre-login"
-if [[ -f $KEY_FILE && ! -e $KEY_BACKUP ]] && ! cp -p "$KEY_FILE" "$KEY_BACKUP"; then
-  echo "Warning: could not back up $KEY_FILE; skipping login" >&2
+# A different key makes login re-encrypt the store before it authenticates, and
+# records the running daemon writes during that rewrite can be lost.
+if [[ -f "$DATA_DIR/key" ]] && [[ "$("$ATUIN_BIN" key 2>/dev/null || true)" != "$ATUIN_ENCRYPTION_KEY" ]]; then
+  echo "Warning: local Atuin key differs from the fleet key; stop the daemon, back up $DATA_DIR and run 'atuin login' by hand" >&2
   exit 0
 fi
 
 # Secrets go through the environment so they never appear in process arguments.
 export ATUIN_PASSWORD ATUIN_ENCRYPTION_KEY
-# A failed login must not fail activation on a host that is offline.
-if "$ATUIN_BIN" login -u "$USERNAME" </dev/null >/dev/null; then
-  echo "Logged in to Atuin as $USERNAME"
-else
+# A failed or stalled login must not hold up activation on an offline host. The
+# key check above means the timeout cannot interrupt a re-encryption.
+if ! "$TIMEOUT_BIN" 60 "$ATUIN_BIN" login -u "$USERNAME" </dev/null >/dev/null; then
   echo "Warning: Atuin login failed; sync stays off until the next activation" >&2
 fi
