@@ -404,7 +404,7 @@ The output should include '#!/usr/bin/env bash'
 End
 
 It 'creates .claude directory'
-When run bash -c "temp_home=\$(mktemp -d); HOME=\"\$temp_home\" bash '$SCRIPT' '$PWD/config/claude/settings.json' '$PWD/config/claude/state.json' && test -f \"\$temp_home/.claude/settings.json\""
+When run bash -c "temp_home=\$(mktemp -d); HOME=\"\$temp_home\" bash '$SCRIPT' '$PWD/config/claude/settings.json' '$PWD/config/claude/app-state.json' && test -f \"\$temp_home/.claude/settings.json\""
 The status should be success
 End
 
@@ -422,11 +422,11 @@ End
 # Claude Code turns tool search off for non-Anthropic base URLs such as
 # CLIProxy; without it every MCP schema loads up front and auto-compact thrashes.
 It 'writes the same settings into the T3 Code Claude config dir'
-When run bash -c "temp_home=\$(mktemp -d); HOME=\"\$temp_home\" bash '$SCRIPT' '$PWD/config/claude/settings.json' '$PWD/config/claude/state.json' && jq -e '.env.CLAUDE_CODE_SUBAGENT_MODEL and .env.ENABLE_TOOL_SEARCH == \"auto\"' \"\$temp_home/.claude-cliproxy/settings.json\" >/dev/null && cmp -s \"\$temp_home/.claude/settings.json\" \"\$temp_home/.claude-cliproxy/settings.json\""
+When run bash -c "temp_home=\$(mktemp -d); HOME=\"\$temp_home\" bash '$SCRIPT' '$PWD/config/claude/settings.json' '$PWD/config/claude/app-state.json' && jq -e '.env.CLAUDE_CODE_SUBAGENT_MODEL and .env.ENABLE_TOOL_SEARCH == \"auto\"' \"\$temp_home/.claude-cliproxy/settings.json\" >/dev/null && cmp -s \"\$temp_home/.claude/settings.json\" \"\$temp_home/.claude-cliproxy/settings.json\""
 The status should be success
 End
 It 'merges the declared state into existing and missing Claude state files'
-When run bash -c "temp_home=\$(mktemp -d); mkdir -p \"\$temp_home/.claude-cliproxy\"; echo '{\"numStartups\":3}' >\"\$temp_home/.claude-cliproxy/.claude.json\"; HOME=\"\$temp_home\" bash '$SCRIPT' '$PWD/config/claude/settings.json' '$PWD/config/claude/state.json' && jq -e '.hasSeenAutoModeOutsideReadPrompt == true and .numStartups == 3' \"\$temp_home/.claude-cliproxy/.claude.json\" >/dev/null && jq -e '.hasSeenAutoModeOutsideReadPrompt == true' \"\$temp_home/.claude.json\" >/dev/null"
+When run bash -c "temp_home=\$(mktemp -d); mkdir -p \"\$temp_home/.claude-cliproxy\"; echo '{\"numStartups\":3}' >\"\$temp_home/.claude-cliproxy/.claude.json\"; HOME=\"\$temp_home\" bash '$SCRIPT' '$PWD/config/claude/settings.json' '$PWD/config/claude/app-state.json' && jq -e '.hasSeenAutoModeOutsideReadPrompt == true and .numStartups == 3' \"\$temp_home/.claude-cliproxy/.claude.json\" >/dev/null && jq -e '.hasSeenAutoModeOutsideReadPrompt == true' \"\$temp_home/.claude.json\" >/dev/null"
 The status should be success
 End
 End
