@@ -9,7 +9,7 @@
         "@ampcode/cli": "^0.0.1792743733-g57207c",
         "@anthropic-ai/claude-code": "2.1.310",
         "@augmentcode/auggie": "^0.36.0",
-        "@biomejs/biome": "^2.6.2",
+        "@biomejs/biome": "^2.6.3",
         "@ccusage/mcp": "^18.0.11",
         "@deepseek-ai/dsh": "^0.2.1-rc.3",
         "@earendil-works/pi-coding-agent": "^1.4.0",
@@ -44,7 +44,7 @@
         "agentcash": "^0.17.1",
         "betterwright": "^2.9.0",
         "btca": "^2.0.5",
-        "ccusage": "20.0.42",
+        "ccusage": "20.0.44",
         "chrome-devtools-axi": "^0.1.44",
         "chrome-devtools-mcp": "^1.12.0",
         "clawdhub": "^0.3.0",
@@ -55,12 +55,12 @@
         "frog": "1.1.0",
         "get-shit-done-cc": "^1.42.3",
         "gh-axi": "^0.1.43",
-        "hunkdiff": "^0.24.0",
+        "hunkdiff": "^0.24.1",
         "mcp-remote": "^0.15.2",
         "mcporter": "^0.16.0",
         "obsidian-headless": "^0.0.14",
         "open-composer": "^0.8.23",
-        "openclaw": "2026.10.6",
+        "openclaw": "2026.10.7",
         "oxfmt": "^0.74.0",
         "oxlint": "^1.89.0",
         "pinchtab": "^0.15.2",
@@ -366,17 +366,17 @@
 
     "@borewit/text-codec": ["@borewit/text-codec@0.2.3", "", {}, "sha512-49CycTz1aAZmvFcwkeFyhud1HUmRIB5Tabf7ALV+VA4Iu85MTfz2cUwzPagMFAdVBvrWdkCxG67I30tUwwpKsw=="],
 
-    "@ccusage/ccusage-darwin-arm64": ["@ccusage/ccusage-darwin-arm64@20.0.42", "", { "os": "darwin", "cpu": "arm64" }, "sha512-MHWA/WQh/6AJ1xAeXZc5pnl5U2YgWcU18MtJDMe/RlYzRGdXJB/zMpc3Zxa/hnJu+LleIMSRU+yt7PT9BDzrhw=="],
+    "@ccusage/ccusage-darwin-arm64": ["@ccusage/ccusage-darwin-arm64@20.0.44", "", { "os": "darwin", "cpu": "arm64" }, "sha512-CWV6YHUFGXoJt1mKQxNBqQ20DXL9D5goj7tNCN+96p1zZMjIIeE3C3VmXlUBulEuKjOSMA7fDoCiu7TAaixyBg=="],
 
-    "@ccusage/ccusage-darwin-x64": ["@ccusage/ccusage-darwin-x64@20.0.42", "", { "os": "darwin", "cpu": "x64" }, "sha512-pnV1xBUuPrLpEC3IsXBF/aQNDcfkktq8XrFXTeDRx6jlnaWYFyCHITAFX7W840g5uGaorPS6c/oZQiRK2Gap+g=="],
+    "@ccusage/ccusage-darwin-x64": ["@ccusage/ccusage-darwin-x64@20.0.44", "", { "os": "darwin", "cpu": "x64" }, "sha512-n2zltYvnwtDRfsS4WT1OjbZ4CditkmkgXxPTj131ls9VGNnDRos3Ty3rseGVI/ZjHX+F1iZor6rjjS3Q/vyKrA=="],
 
-    "@ccusage/ccusage-linux-arm64": ["@ccusage/ccusage-linux-arm64@20.0.42", "", { "os": "linux", "cpu": "arm64" }, "sha512-JuzQrG54D3f1lLPrl7z6aWHkrBJLdX0pYGz10tS/CPrE9fwHJyqz7gru6CaXwKy96hFHqvXmqszB1Hr4SjGGWA=="],
+    "@ccusage/ccusage-linux-arm64": ["@ccusage/ccusage-linux-arm64@20.0.44", "", { "os": "linux", "cpu": "arm64" }, "sha512-RcqVNjsRJDwncKTTVFuqDd5EbffzeeUsQVXlOmUghSQaqbj3Ddy3EMalJWww0vDROfpZBIwcZxiezhZvE0Z69A=="],
 
-    "@ccusage/ccusage-linux-x64": ["@ccusage/ccusage-linux-x64@20.0.42", "", { "os": "linux", "cpu": "x64" }, "sha512-zyg+T1fv0lzTzAHfenptu8NaoDtohn0Kr//sXkkG8axaUPwui/U0IXwJG5kICNwj9RK10a1HGU0uG91MLa3vQA=="],
+    "@ccusage/ccusage-linux-x64": ["@ccusage/ccusage-linux-x64@20.0.44", "", { "os": "linux", "cpu": "x64" }, "sha512-rjYUrOIH1z4FR2WzhqLz/9xukwpLs1oQArz8Xv15I7W8pBoW1meo4suvcO7dvhbDzy7lbFvcJxmp6ywmsybElA=="],
 
-    "@ccusage/ccusage-win32-arm64": ["@ccusage/ccusage-win32-arm64@20.0.42", "", { "os": "win32", "cpu": "arm64" }, "sha512-ErY5dHh702bPHVTffXhTbaI1vmp25zSeGhytM9LRpAhLQlfr6tOdnG6CzLwpnFE54C9splh+PcC04GcLZARZng=="],
+    "@ccusage/ccusage-win32-arm64": ["@ccusage/ccusage-win32-arm64@20.0.44", "", { "os": "win32", "cpu": "arm64" }, "sha512-xMwdtHvX4KzIyjGU4bsYrM+I1gUAEK5WkTFu5/ZIrXdDm6Jhyc21HGNoZpNlBlDmwcDXuwlhQBjw6ZnIBddHHA=="],
 
-    "@ccusage/ccusage-win32-x64": ["@ccusage/ccusage-win32-x64@20.0.42", "", { "os": "win32", "cpu": "x64" }, "sha512-4dEkn8MeVeq28EwaHgeJa8pZ6orifq3qofpXg1VWaoZReNvaEIaCSuQl40mNihbA0mmWBkUOz/h9dWa3XgpKTQ=="],
+    "@ccusage/ccusage-win32-x64": ["@ccusage/ccusage-win32-x64@20.0.44", "", { "os": "win32", "cpu": "x64" }, "sha512-jbLjQx9ZQMGZHQ9yl1/Yk61IEV2YK0E7vfrLgqPMQdhXTwfhprI1M0K4jk6L0VzSu01gkrqnwVWNFn/qofDZxA=="],
 
     "@ccusage/codex": ["@ccusage/codex@18.0.11", "", { "bin": { "ccusage-codex": "dist/index.js" } }, "sha512-/S0dyaO3yDegtGXTaMhu1ZyT3JbSuHsiUiIu9uP6UmqIAtSd9DOko1qkM6K1roePbF/rlk596GDHW1f0664D3A=="],
 
@@ -1710,29 +1710,29 @@
 
     "@openai/codex-win32-x64": ["@openai/codex@0.164.0", "", { "optionalDependencies": { "@openai/codex-darwin-arm64": "npm:@openai/codex@0.164.0-darwin-arm64", "@openai/codex-darwin-x64": "npm:@openai/codex@0.164.0-darwin-x64", "@openai/codex-linux-arm64": "npm:@openai/codex@0.164.0-linux-arm64", "@openai/codex-linux-x64": "npm:@openai/codex@0.164.0-linux-x64", "@openai/codex-win32-arm64": "npm:@openai/codex@0.164.0-win32-arm64", "@openai/codex-win32-x64": "npm:@openai/codex@0.164.0-win32-x64" }, "bin": { "codex": "bin/codex.js" } }, "sha512-TWj7UGyPRe3Pj/A3ddNAxs1te3a/W/xAd+J0LHrrFTmsSfahGMOLF/vn88D3QCIgAT3B1rm1y/Z3NYE0rx6cZQ=="],
 
-    "@openclaw/ai": ["@openclaw/ai@2026.10.6", "", { "dependencies": { "@anthropic-ai/sdk": "0.131.0", "@google/genai": "2.27.0", "@mistralai/mistralai": "2.7.0", "openai": "7.27.0", "partial-json": "0.1.7", "typebox": "1.3.34" } }, "sha512-cSsfmzCkv3F3GLNkwZ9vL2QVLnrBSV0S4h3v5u48tgpUf6y/ivyhrv0hokPHpWNApQmLTGAAXChKkUTvzAg4tg=="],
+    "@openclaw/ai": ["@openclaw/ai@2026.10.7", "", { "dependencies": { "@anthropic-ai/sdk": "0.131.0", "@google/genai": "2.27.0", "@mistralai/mistralai": "2.7.0", "openai": "7.27.0", "partial-json": "0.1.7", "typebox": "1.3.34" } }, "sha512-iL8KLhz5eSnTx9cWkbbFEgje1Koy3+dvi8+fg9ZNo8PNDQvPDNk9mj8sGpqLGP7Knge3W2f+KMlUfT0AoImI9A=="],
 
     "@openclaw/fs-safe": ["@openclaw/fs-safe@0.26.15", "", { "optionalDependencies": { "@openclaw/fs-safe-darwin-arm64": "0.26.15", "@openclaw/fs-safe-darwin-x64": "0.26.15", "@openclaw/fs-safe-freebsd-arm64": "0.26.15", "@openclaw/fs-safe-freebsd-x64": "0.26.15", "@openclaw/fs-safe-linux-arm64-gnu": "0.26.15", "@openclaw/fs-safe-linux-arm64-musl": "0.26.15", "@openclaw/fs-safe-linux-x64-gnu": "0.26.15", "@openclaw/fs-safe-linux-x64-musl": "0.26.15", "@openclaw/fs-safe-win32-arm64-msvc": "0.26.15", "@openclaw/fs-safe-win32-x64-msvc": "0.26.15", "jszip": "^3.10.2" } }, "sha512-6O0NiLjrEeY8H5wBUmBy5qbIW0qu5ICw5jYvcIswduYkxnqxf+SDzpJMIJVC5L5IXvRlMh8ZZHQYkmjWxVy9DQ=="],
 
-    "@openclaw/fs-safe-darwin-arm64": ["@openclaw/fs-safe-darwin-arm64@0.25.0", "", { "os": "darwin", "cpu": "arm64" }, "sha512-ftwB6/cM4bdWXn2pBwUSEL4A5ZnX5jh6aEPBhS5Q3Yd/bQgJyWIFTNv4+kC+4QrufuX20/VF/kIjPyu17RcDMg=="],
+    "@openclaw/fs-safe-darwin-arm64": ["@openclaw/fs-safe-darwin-arm64@0.26.0", "", { "os": "darwin", "cpu": "arm64" }, "sha512-Lyt1rhoDUxCikH7CdkXzYqGdinKGZy3f8MC+D1/VAngXYIGUMSBu6AuR7pTo/vqrdyOI7vHpAW7QEDFobaG2ww=="],
 
-    "@openclaw/fs-safe-darwin-x64": ["@openclaw/fs-safe-darwin-x64@0.25.0", "", { "os": "darwin", "cpu": "x64" }, "sha512-HFAAytEr0MN4zZwoLiv3oLmDOJFchanUHl5gi5YQyPTqf7/C0AEuPcR1+gP0dWpuccCEmuxivKE30yriw+WUUw=="],
+    "@openclaw/fs-safe-darwin-x64": ["@openclaw/fs-safe-darwin-x64@0.26.0", "", { "os": "darwin", "cpu": "x64" }, "sha512-pX8E6FW9xF1INFXyp8rSv9PQyj7LFNovhgytmZD2/EdFlG2OXu1VZ6UQfcfDOwFARtoy0bwqqgEMkQZEBFH9PA=="],
 
-    "@openclaw/fs-safe-freebsd-arm64": ["@openclaw/fs-safe-freebsd-arm64@0.26.15", "", { "os": "freebsd", "cpu": "arm64" }, "sha512-Tb7XywhbsMCjh2U/c7U7c9ALFn9/xyftZ4rvgCJ3xdqqO7oWuwrDFuCA69m+aSi5zFh7LK3Tvrhpjrsw5FCDMw=="],
+    "@openclaw/fs-safe-freebsd-arm64": ["@openclaw/fs-safe-freebsd-arm64@0.26.0", "", { "os": "freebsd", "cpu": "arm64" }, "sha512-UNPfDJhOTArrNuKVG+a15UpKsQSH2m7ZnOl+KbKwGFHSHSrVqF0RUwBueooBbuuc+xzH1Y47HmUvQkM+T39K0Q=="],
 
-    "@openclaw/fs-safe-freebsd-x64": ["@openclaw/fs-safe-freebsd-x64@0.26.15", "", { "os": "freebsd", "cpu": "x64" }, "sha512-x95y1sQ+o12gTSkixCAb73ODu92nYfYV5mHempMl2P4PUIcltidd6mNN4tkjUozfj3hNejRAzO8rcNGF/z7jhQ=="],
+    "@openclaw/fs-safe-freebsd-x64": ["@openclaw/fs-safe-freebsd-x64@0.26.0", "", { "os": "freebsd", "cpu": "x64" }, "sha512-MSrO0yeScP6Gs2GvUTGeSAdTXJSGRtaDkwwM1LIxwc0Ja2lICUmSpAAsArOnvR7asEi+vAJ3KYlJgcHzcW3J4g=="],
 
-    "@openclaw/fs-safe-linux-arm64-gnu": ["@openclaw/fs-safe-linux-arm64-gnu@0.25.0", "", { "os": "linux", "cpu": "arm64", "libc": "glibc" }, "sha512-7Cpa7T7s53TpPMH3Uc5iB3SqzHmta/jsU+2xrdBxTk/Ztc2bKy21hPlaoEI/ITMdXL1L0bYxaRvlIzoJH+6XKw=="],
+    "@openclaw/fs-safe-linux-arm64-gnu": ["@openclaw/fs-safe-linux-arm64-gnu@0.26.0", "", { "os": "linux", "cpu": "arm64", "libc": "glibc" }, "sha512-P78xFe+KQ9z2Tqb8p7eou22CUNbywO5qyiUS6VlfOxo5Qwpj1O1RNw2xIoPWqxGpBnK+R0OEzTT0NXCu7Nz/8g=="],
 
-    "@openclaw/fs-safe-linux-arm64-musl": ["@openclaw/fs-safe-linux-arm64-musl@0.25.0", "", { "os": "linux", "cpu": "arm64", "libc": "musl" }, "sha512-9ZeTBNh1OKCSCZzc1Ne4SN96IlFA1qrHs1yclP8vxCXFXGgkTFyX2xwZ8qLuONodPDezifqVxzP66tGvyBQadw=="],
+    "@openclaw/fs-safe-linux-arm64-musl": ["@openclaw/fs-safe-linux-arm64-musl@0.26.0", "", { "os": "linux", "cpu": "arm64", "libc": "musl" }, "sha512-5ZHnjuW4vWZrSWI+6JDFrjc8QUcQ+1BnAjk+etnMeYhtJhnxau4Q9hJASWjvLsGcNrhHyNR4OmppRYvMxr5iwQ=="],
 
-    "@openclaw/fs-safe-linux-x64-gnu": ["@openclaw/fs-safe-linux-x64-gnu@0.25.0", "", { "os": "linux", "cpu": "x64", "libc": "glibc" }, "sha512-/OMLec2NpYuBRnDeexaKwJEkgIBrUO78AxSEBqoJpAzbZ9foLvtwxyEyOZfqnTrtrHwkY1PC+ebNMQbZDj6Z7g=="],
+    "@openclaw/fs-safe-linux-x64-gnu": ["@openclaw/fs-safe-linux-x64-gnu@0.26.0", "", { "os": "linux", "cpu": "x64", "libc": "glibc" }, "sha512-yZC6kP/EnTAFFLuws25nCy4iS4wy1l4bDGvJRFtAcdLBl+M9FOLIWM6p/TcliezYmaezWGb1i+VgxghJ3uB/mg=="],
 
-    "@openclaw/fs-safe-linux-x64-musl": ["@openclaw/fs-safe-linux-x64-musl@0.25.0", "", { "os": "linux", "cpu": "x64", "libc": "musl" }, "sha512-WQXl6zfqS4nbWwDsMx7cAH0jI8sD8DRLrgLv2pygM7lPgbX5zVC7mz8reI632qyYJBHYbg0l+FymNUk0YxocFg=="],
+    "@openclaw/fs-safe-linux-x64-musl": ["@openclaw/fs-safe-linux-x64-musl@0.26.0", "", { "os": "linux", "cpu": "x64", "libc": "musl" }, "sha512-kxcOv7ANmdpHXD5PdNrRFrbcesZ04x9T4JYNV55eKDbiIgK4Xe2Uo9GmaMcGouDeTrX0Oh+subsOZtUXZnFeFg=="],
 
-    "@openclaw/fs-safe-win32-arm64-msvc": ["@openclaw/fs-safe-win32-arm64-msvc@0.26.15", "", { "os": "win32", "cpu": "arm64" }, "sha512-Ry7aGopft+cD+TdkGGhjaO/1sfePN5mQ+IFdt8e0XRNGmhyjnKmboXQFD6gyB+lSN+7hnSbl2QAxvLApSRkwpw=="],
+    "@openclaw/fs-safe-win32-arm64-msvc": ["@openclaw/fs-safe-win32-arm64-msvc@0.26.0", "", { "os": "win32", "cpu": "arm64" }, "sha512-cKUMfA1rlsimftCZrbxc1UfZ2h9u9ktoPTxY9LQkSOsTlnANVO83XBurY79rv4wq9xl4SgAppOTArP18ET7A6Q=="],
 
-    "@openclaw/fs-safe-win32-x64-msvc": ["@openclaw/fs-safe-win32-x64-msvc@0.25.0", "", { "os": "win32", "cpu": "x64" }, "sha512-O4cDKqwownShG/LvhxrrQl5sa9D8WSCTT51vzmugi8dAdXGLwaEa+qtpSWJEfA2BY9rQW3ohipHEO92uO52Gbw=="],
+    "@openclaw/fs-safe-win32-x64-msvc": ["@openclaw/fs-safe-win32-x64-msvc@0.26.0", "", { "os": "win32", "cpu": "x64" }, "sha512-kNZIpWO7ydMpVS0rFGrmux89LYakG+i/rKuxUIUeB/zK8S35MMAJKmif4w0Px4WSG/FYlxPogav0MXkvgd0/yw=="],
 
     "@openclaw/proxyline": ["@openclaw/proxyline@0.4.0", "", { "peerDependencies": { "undici": ">=8.5.0 <9" } }, "sha512-Yd32LmKmu1kHrc7Wt8OHK0z+Tjc52fOfWYHl2znIGqskPrC/YaIKUgrhG4x7/oAemGMwBWHf3Eb3iaMKpZ/otg=="],
 
@@ -2754,7 +2754,7 @@
 
     "camelcase": ["camelcase@5.3.1", "", {}, "sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg=="],
 
-    "ccusage": ["ccusage@20.0.42", "", { "optionalDependencies": { "@ccusage/ccusage-darwin-arm64": "20.0.42", "@ccusage/ccusage-darwin-x64": "20.0.42", "@ccusage/ccusage-linux-arm64": "20.0.42", "@ccusage/ccusage-linux-x64": "20.0.42", "@ccusage/ccusage-win32-arm64": "20.0.42", "@ccusage/ccusage-win32-x64": "20.0.42" }, "bin": { "ccusage": "./src/cli.js" } }, "sha512-h6EnTi96/tqc2Ng5QMvWkt4DO+cHh1MC1QaZNqITxyNKGX5tEI9NO5K/fz3gGpoAFCLZHl+dNlrMiMJBezHlVA=="],
+    "ccusage": ["ccusage@20.0.44", "", { "optionalDependencies": { "@ccusage/ccusage-darwin-arm64": "20.0.44", "@ccusage/ccusage-darwin-x64": "20.0.44", "@ccusage/ccusage-linux-arm64": "20.0.44", "@ccusage/ccusage-linux-x64": "20.0.44", "@ccusage/ccusage-win32-arm64": "20.0.44", "@ccusage/ccusage-win32-x64": "20.0.44" }, "bin": { "ccusage": "./src/cli.js" } }, "sha512-eKGaWRYRIUa3bE5hPUIXawZUbLTRX0Fq+KTkK+gAP5xE65nghIM2vTzeOiVQy4RRqO0IdgOXCxtbp9BtbcR51g=="],
 
     "cfonts": ["cfonts@3.3.1", "", { "dependencies": { "supports-color": "^8", "window-size": "^1" }, "bin": { "cfonts": "bin/index.js" } }, "sha512-ZGEmN3W9mViWEDjsuPo4nK4h39sfh6YtoneFYp9WLPI/rw8BaSSrfQC6jkrGW3JMvV3ZnExJB/AEqXc/nHYxkw=="],
 
@@ -3720,7 +3720,7 @@
 
     "openai": ["openai@7.27.0", "", { "peerDependencies": { "@aws-sdk/credential-provider-node": ">=3.972.0 <4", "@smithy/hash-node": ">=4.3.0 <5", "@smithy/signature-v4": ">=5.4.0 <6", "undici": ">=5 <9", "ws": "^8.21.0", "zod": "^3.25 || ^4.0" }, "optionalPeers": ["@aws-sdk/credential-provider-node", "@smithy/hash-node", "@smithy/signature-v4", "undici", "ws", "zod"] }, "sha512-QDo1FvnRDZn15YwGVOhT9vpyypDiLphkd/7a4mcURWf5upMoEetgA6o4DJeII+ZZkC6m6DvlilCwii3+ynDcTw=="],
 
-    "openclaw": ["openclaw@2026.10.6", "", { "dependencies": { "@agentclientprotocol/sdk": "1.7.0", "@anthropic-ai/sdk": "0.131.0", "@babel/generator": "8.0.6", "@babel/parser": "8.0.6", "@babel/traverse": "8.0.6", "@clack/core": "1.5.1", "@clack/prompts": "1.8.1", "@earendil-works/pi-tui": "1.0.0", "@google/genai": "2.27.0", "@grammyjs/transformer-throttler": "1.2.1", "@homebridge/ciao": "1.3.12", "@lydell/node-pty": "1.2.0-beta.15", "@mistralai/mistralai": "2.7.0", "@modelcontextprotocol/sdk": "1.32.0", "@mozilla/readability": "0.6.0", "@openclaw/ai": "2026.10.6", "@openclaw/fs-safe": "0.25.0", "@openclaw/proxyline": "0.4.0", "@silvia-odwyer/photon-node": "0.3.4", "@trycua/cua-driver": "0.32.0", "acorn": "8.18.0", "chalk": "6.0.1", "chrome-devtools-mcp": "1.10.1", "clawpdf": "0.3.2", "commander": "15.0.0", "croner": "10.0.1", "diff": "9.0.0", "dotenv": "18.0.5", "entities": "8.1.0", "esbuild": "0.28.2", "execa": "10.0.1", "express": "5.2.1", "file-type": "22.1.1", "grammy": "1.46.0", "highlight.js": "11.12.0", "hosted-git-info": "10.1.1", "htmlparser2": "12.0.0", "iconv-lite": "0.7.3", "ignore": "7.0.12", "import-meta-resolve": "4.2.0", "jiti": "2.7.0", "json5": "2.2.3", "jszip": "3.10.2", "koffi": "3.3.2", "kysely": "0.29.6", "linkedom": "0.18.13", "minimatch": "10.2.6", "node-edge-tts": "1.2.10", "npm": "12.2.0", "openai": "7.27.0", "p-limit": "7.3.3", "p-map": "7.0.8", "partial-json": "0.1.7", "playwright-core": "1.63.0", "qrcode": "1.5.4", "rastermill": "0.4.0", "semver": "7.8.5", "tar": "7.5.22", "tslog": "5.2.0", "typebox": "1.3.34", "undici": "8.11.2", "web-push": "3.6.7", "web-tree-sitter": "0.27.0", "ws": "8.22.0", "yaml": "2.9.1", "zod": "4.6.5" }, "optionalDependencies": { "@esbuild/aix-ppc64": "0.28.2", "@esbuild/android-arm": "0.28.2", "@esbuild/android-arm64": "0.28.2", "@esbuild/android-x64": "0.28.2", "@esbuild/darwin-arm64": "0.28.2", "@esbuild/darwin-x64": "0.28.2", "@esbuild/freebsd-arm64": "0.28.2", "@esbuild/freebsd-x64": "0.28.2", "@esbuild/linux-arm": "0.28.2", "@esbuild/linux-arm64": "0.28.2", "@esbuild/linux-ia32": "0.28.2", "@esbuild/linux-loong64": "0.28.2", "@esbuild/linux-mips64el": "0.28.2", "@esbuild/linux-ppc64": "0.28.2", "@esbuild/linux-riscv64": "0.28.2", "@esbuild/linux-s390x": "0.28.2", "@esbuild/linux-x64": "0.28.2", "@esbuild/netbsd-arm64": "0.28.2", "@esbuild/netbsd-x64": "0.28.2", "@esbuild/openbsd-arm64": "0.28.2", "@esbuild/openbsd-x64": "0.28.2", "@esbuild/openharmony-arm64": "0.28.2", "@esbuild/sunos-x64": "0.28.2", "@esbuild/win32-arm64": "0.28.2", "@esbuild/win32-ia32": "0.28.2", "@esbuild/win32-x64": "0.28.2", "@koromix/koffi-android-arm64": "3.3.2", "@koromix/koffi-android-x64": "3.3.2", "@koromix/koffi-darwin-arm64": "3.3.2", "@koromix/koffi-darwin-x64": "3.3.2", "@koromix/koffi-freebsd-arm64": "3.3.2", "@koromix/koffi-freebsd-ia32": "3.3.2", "@koromix/koffi-freebsd-x64": "3.3.2", "@koromix/koffi-linux-arm": "3.3.2", "@koromix/koffi-linux-arm64": "3.3.2", "@koromix/koffi-linux-ia32": "3.3.2", "@koromix/koffi-linux-loong64": "3.3.2", "@koromix/koffi-linux-ppc64": "3.3.2", "@koromix/koffi-linux-riscv64": "3.3.2", "@koromix/koffi-linux-x64": "3.3.2", "@koromix/koffi-openbsd-arm64": "3.3.2", "@koromix/koffi-openbsd-ia32": "3.3.2", "@koromix/koffi-openbsd-x64": "3.3.2", "@koromix/koffi-win32-arm64": "3.3.2", "@koromix/koffi-win32-ia32": "3.3.2", "@koromix/koffi-win32-x64": "3.3.2", "@lydell/node-pty-darwin-arm64": "1.2.0-beta.15", "@lydell/node-pty-darwin-x64": "1.2.0-beta.15", "@lydell/node-pty-linux-arm64": "1.2.0-beta.15", "@lydell/node-pty-linux-x64": "1.2.0-beta.15", "@lydell/node-pty-win32-arm64": "1.2.0-beta.15", "@lydell/node-pty-win32-x64": "1.2.0-beta.15", "@openclaw/fs-safe-darwin-arm64": "0.25.0", "@openclaw/fs-safe-darwin-x64": "0.25.0", "@openclaw/fs-safe-linux-arm64-gnu": "0.25.0", "@openclaw/fs-safe-linux-arm64-musl": "0.25.0", "@openclaw/fs-safe-linux-x64-gnu": "0.25.0", "@openclaw/fs-safe-linux-x64-musl": "0.25.0", "@openclaw/fs-safe-win32-x64-msvc": "0.25.0", "@trycua/cua-driver-darwin-arm64": "0.32.0", "@trycua/cua-driver-darwin-x64": "0.32.0", "@trycua/cua-driver-linux-arm64-gnu": "0.32.0", "@trycua/cua-driver-linux-x64-gnu": "0.32.0", "@trycua/cua-driver-win32-arm64-msvc": "0.32.0", "@trycua/cua-driver-win32-x64-msvc": "0.32.0", "@ubjs/node-darwin-arm64": "0.31.0-3", "@ubjs/node-darwin-x64": "0.31.0-3", "@ubjs/node-linux-arm64-gnu": "0.31.0-3", "@ubjs/node-linux-arm64-musl": "0.31.0-3", "@ubjs/node-linux-x64-gnu": "0.31.0-3", "@ubjs/node-linux-x64-musl": "0.31.0-3", "@ubjs/node-win32-arm64-msvc": "0.31.0-3", "@ubjs/node-win32-x64-msvc": "0.31.0-3", "sqlite-vec": "0.1.9", "sqlite-vec-darwin-arm64": "0.1.9", "sqlite-vec-darwin-x64": "0.1.9", "sqlite-vec-linux-arm64": "0.1.9", "sqlite-vec-linux-x64": "0.1.9", "sqlite-vec-windows-x64": "0.1.9" }, "hasInstallScript": true, "bin": { "openclaw": "openclaw.mjs" } }, "sha512-jSpQPa2Jw5rG0J2GC07j9+qHtVYIuoHjgccU88JeS+p7188sBCnvIJeuaiNPHj1zsWkuHcBv443QiEUh7qrxwA=="],
+    "openclaw": ["openclaw@2026.10.7", "", { "dependencies": { "@agentclientprotocol/sdk": "1.7.0", "@anthropic-ai/sdk": "0.131.0", "@babel/generator": "8.0.6", "@babel/parser": "8.0.6", "@babel/traverse": "8.0.6", "@clack/core": "1.5.1", "@clack/prompts": "1.8.1", "@earendil-works/pi-tui": "1.0.0", "@google/genai": "2.27.0", "@grammyjs/transformer-throttler": "1.2.1", "@homebridge/ciao": "1.3.12", "@lydell/node-pty": "1.2.0-beta.15", "@mistralai/mistralai": "2.7.0", "@modelcontextprotocol/sdk": "1.32.0", "@mozilla/readability": "0.6.0", "@openclaw/ai": "2026.10.7", "@openclaw/fs-safe": "0.26.0", "@openclaw/proxyline": "0.4.0", "@silvia-odwyer/photon-node": "0.3.4", "@trycua/cua-driver": "0.32.0", "acorn": "8.18.0", "chalk": "6.0.1", "chrome-devtools-mcp": "1.10.1", "clawpdf": "0.3.2", "commander": "15.0.0", "croner": "10.0.1", "diff": "9.0.0", "dotenv": "18.0.5", "entities": "8.1.0", "esbuild": "0.28.2", "execa": "10.0.1", "express": "5.2.1", "file-type": "22.1.1", "grammy": "1.46.0", "highlight.js": "11.12.0", "hosted-git-info": "10.1.1", "htmlparser2": "12.0.0", "iconv-lite": "0.7.3", "ignore": "7.0.12", "import-meta-resolve": "4.2.0", "jiti": "2.7.0", "json5": "2.2.3", "jszip": "3.10.2", "koffi": "3.3.2", "kysely": "0.29.6", "linkedom": "0.18.13", "minimatch": "10.2.6", "node-edge-tts": "1.2.10", "npm": "12.2.0", "openai": "7.27.0", "p-limit": "7.3.3", "p-map": "7.0.8", "partial-json": "0.1.7", "playwright-core": "1.63.0", "qrcode": "1.5.4", "rastermill": "0.4.0", "semver": "7.8.5", "tar": "7.5.22", "tslog": "5.2.0", "typebox": "1.3.34", "undici": "8.11.2", "web-push": "3.6.7", "web-tree-sitter": "0.27.0", "ws": "8.22.0", "yaml": "2.9.1", "zod": "4.6.5" }, "optionalDependencies": { "@esbuild/aix-ppc64": "0.28.2", "@esbuild/android-arm": "0.28.2", "@esbuild/android-arm64": "0.28.2", "@esbuild/android-x64": "0.28.2", "@esbuild/darwin-arm64": "0.28.2", "@esbuild/darwin-x64": "0.28.2", "@esbuild/freebsd-arm64": "0.28.2", "@esbuild/freebsd-x64": "0.28.2", "@esbuild/linux-arm": "0.28.2", "@esbuild/linux-arm64": "0.28.2", "@esbuild/linux-ia32": "0.28.2", "@esbuild/linux-loong64": "0.28.2", "@esbuild/linux-mips64el": "0.28.2", "@esbuild/linux-ppc64": "0.28.2", "@esbuild/linux-riscv64": "0.28.2", "@esbuild/linux-s390x": "0.28.2", "@esbuild/linux-x64": "0.28.2", "@esbuild/netbsd-arm64": "0.28.2", "@esbuild/netbsd-x64": "0.28.2", "@esbuild/openbsd-arm64": "0.28.2", "@esbuild/openbsd-x64": "0.28.2", "@esbuild/openharmony-arm64": "0.28.2", "@esbuild/sunos-x64": "0.28.2", "@esbuild/win32-arm64": "0.28.2", "@esbuild/win32-ia32": "0.28.2", "@esbuild/win32-x64": "0.28.2", "@koromix/koffi-android-arm64": "3.3.2", "@koromix/koffi-android-x64": "3.3.2", "@koromix/koffi-darwin-arm64": "3.3.2", "@koromix/koffi-darwin-x64": "3.3.2", "@koromix/koffi-freebsd-arm64": "3.3.2", "@koromix/koffi-freebsd-ia32": "3.3.2", "@koromix/koffi-freebsd-x64": "3.3.2", "@koromix/koffi-linux-arm": "3.3.2", "@koromix/koffi-linux-arm64": "3.3.2", "@koromix/koffi-linux-ia32": "3.3.2", "@koromix/koffi-linux-loong64": "3.3.2", "@koromix/koffi-linux-ppc64": "3.3.2", "@koromix/koffi-linux-riscv64": "3.3.2", "@koromix/koffi-linux-x64": "3.3.2", "@koromix/koffi-openbsd-arm64": "3.3.2", "@koromix/koffi-openbsd-ia32": "3.3.2", "@koromix/koffi-openbsd-x64": "3.3.2", "@koromix/koffi-win32-arm64": "3.3.2", "@koromix/koffi-win32-ia32": "3.3.2", "@koromix/koffi-win32-x64": "3.3.2", "@lydell/node-pty-darwin-arm64": "1.2.0-beta.15", "@lydell/node-pty-darwin-x64": "1.2.0-beta.15", "@lydell/node-pty-linux-arm64": "1.2.0-beta.15", "@lydell/node-pty-linux-x64": "1.2.0-beta.15", "@lydell/node-pty-win32-arm64": "1.2.0-beta.15", "@lydell/node-pty-win32-x64": "1.2.0-beta.15", "@openclaw/fs-safe-darwin-arm64": "0.26.0", "@openclaw/fs-safe-darwin-x64": "0.26.0", "@openclaw/fs-safe-freebsd-arm64": "0.26.0", "@openclaw/fs-safe-freebsd-x64": "0.26.0", "@openclaw/fs-safe-linux-arm64-gnu": "0.26.0", "@openclaw/fs-safe-linux-arm64-musl": "0.26.0", "@openclaw/fs-safe-linux-x64-gnu": "0.26.0", "@openclaw/fs-safe-linux-x64-musl": "0.26.0", "@openclaw/fs-safe-win32-arm64-msvc": "0.26.0", "@openclaw/fs-safe-win32-x64-msvc": "0.26.0", "@trycua/cua-driver-darwin-arm64": "0.32.0", "@trycua/cua-driver-darwin-x64": "0.32.0", "@trycua/cua-driver-linux-arm64-gnu": "0.32.0", "@trycua/cua-driver-linux-x64-gnu": "0.32.0", "@trycua/cua-driver-win32-arm64-msvc": "0.32.0", "@trycua/cua-driver-win32-x64-msvc": "0.32.0", "@ubjs/node-darwin-arm64": "0.31.0-3", "@ubjs/node-darwin-x64": "0.31.0-3", "@ubjs/node-linux-arm64-gnu": "0.31.0-3", "@ubjs/node-linux-arm64-musl": "0.31.0-3", "@ubjs/node-linux-x64-gnu": "0.31.0-3", "@ubjs/node-linux-x64-musl": "0.31.0-3", "@ubjs/node-win32-arm64-msvc": "0.31.0-3", "@ubjs/node-win32-x64-msvc": "0.31.0-3", "sqlite-vec": "0.1.9", "sqlite-vec-darwin-arm64": "0.1.9", "sqlite-vec-darwin-x64": "0.1.9", "sqlite-vec-linux-arm64": "0.1.9", "sqlite-vec-linux-x64": "0.1.9", "sqlite-vec-windows-x64": "0.1.9" }, "hasInstallScript": true, "bin": { "openclaw": "openclaw.mjs" } }, "sha512-iiZO+kFFBgQvxm17wn3Sc/MSC/GQu01PubAFVNA2Nn736HOHUbR0ra7a9NeW9wpjq3kDkSJ1RB7dTP+qVJFXig=="],
 
     "opossum": ["opossum@10.0.0", "", {}, "sha512-sghtqL8Usj+et06Zui0nyn0R6FFsl7cyuoU+d7MctYU0nbS7Htzjleh+tWohFqk1Rp1srrFwbFa8Vxd0O64w6A=="],
 
@@ -4938,6 +4938,10 @@
 
     "@openclaw/fs-safe/@openclaw/fs-safe-darwin-x64": ["@openclaw/fs-safe-darwin-x64@0.26.15", "", { "os": "darwin", "cpu": "x64" }, "sha512-O6ZsGg/c7t1zZNSPoSbqRBKVXOGTLSQuM3vhn2ERSBR3qCXKC8VMfPKvtKbFf72TamIiAHa0mCx6gpEmEijaQg=="],
 
+    "@openclaw/fs-safe/@openclaw/fs-safe-freebsd-arm64": ["@openclaw/fs-safe-freebsd-arm64@0.26.15", "", { "os": "freebsd", "cpu": "arm64" }, "sha512-Tb7XywhbsMCjh2U/c7U7c9ALFn9/xyftZ4rvgCJ3xdqqO7oWuwrDFuCA69m+aSi5zFh7LK3Tvrhpjrsw5FCDMw=="],
+
+    "@openclaw/fs-safe/@openclaw/fs-safe-freebsd-x64": ["@openclaw/fs-safe-freebsd-x64@0.26.15", "", { "os": "freebsd", "cpu": "x64" }, "sha512-x95y1sQ+o12gTSkixCAb73ODu92nYfYV5mHempMl2P4PUIcltidd6mNN4tkjUozfj3hNejRAzO8rcNGF/z7jhQ=="],
+
     "@openclaw/fs-safe/@openclaw/fs-safe-linux-arm64-gnu": ["@openclaw/fs-safe-linux-arm64-gnu@0.26.15", "", { "os": "linux", "cpu": "arm64", "libc": "glibc" }, "sha512-e9ZVV6WjLC3DmnrsCp36htDm1svUnIrTnLuTZA+dU0IyEZeqcr67Jefsz0Ca+25xqT6YusVHcW4nbwewDG7Ybw=="],
 
     "@openclaw/fs-safe/@openclaw/fs-safe-linux-arm64-musl": ["@openclaw/fs-safe-linux-arm64-musl@0.26.15", "", { "os": "linux", "cpu": "arm64", "libc": "musl" }, "sha512-WZqEUGz/CSjqabU+2eyGPikbEQx95+ChC+lrv6ryctzPW8wpP9Z8we7ioFSmZD/N6sTYhqu95brwSAkhZjUMfw=="],
@@ -4945,6 +4949,8 @@
     "@openclaw/fs-safe/@openclaw/fs-safe-linux-x64-gnu": ["@openclaw/fs-safe-linux-x64-gnu@0.26.15", "", { "os": "linux", "cpu": "x64", "libc": "glibc" }, "sha512-OTB6W/PBHudoCdbrfV26F5vCRCjf5Yq/QrxRAb85Fk14RI/T/wJOrpAYkRcHb51DIZdSqjQQHxkAFNImwWKAFg=="],
 
     "@openclaw/fs-safe/@openclaw/fs-safe-linux-x64-musl": ["@openclaw/fs-safe-linux-x64-musl@0.26.15", "", { "os": "linux", "cpu": "x64", "libc": "musl" }, "sha512-XlkzrE7GvsYplQx3eCImdMg2TEvcttt6kkTpjrV1IbXYl1mk0cYblF5BNBEEOYhzvPSO6bsItfpH5+FEkcZODw=="],
+
+    "@openclaw/fs-safe/@openclaw/fs-safe-win32-arm64-msvc": ["@openclaw/fs-safe-win32-arm64-msvc@0.26.15", "", { "os": "win32", "cpu": "arm64" }, "sha512-Ry7aGopft+cD+TdkGGhjaO/1sfePN5mQ+IFdt8e0XRNGmhyjnKmboXQFD6gyB+lSN+7hnSbl2QAxvLApSRkwpw=="],
 
     "@openclaw/fs-safe/@openclaw/fs-safe-win32-x64-msvc": ["@openclaw/fs-safe-win32-x64-msvc@0.26.15", "", { "os": "win32", "cpu": "x64" }, "sha512-2mD/vqOFWol9Q9JAH17bnLKKl8cvQejEDEsyjfu/6OCVud8YQjSCocXCtJGWPQVRwL7XKRS8mJCeixQFsmCjQw=="],
 
@@ -5714,7 +5720,7 @@
 
     "openclaw/@lydell/node-pty-win32-x64": ["@lydell/node-pty-win32-x64@1.2.0-beta.15", "", { "os": "win32", "cpu": "x64" }, "sha512-2f8twEmDVxZ7drchAXjtevpmSPhFok0avAnzXro4t5gmz0xsPNKkoZvymwtuIS3xo7PzQqZOPQ/YzwEMb7oIzQ=="],
 
-    "openclaw/@openclaw/fs-safe": ["@openclaw/fs-safe@0.25.0", "", { "optionalDependencies": { "@openclaw/fs-safe-darwin-arm64": "0.25.0", "@openclaw/fs-safe-darwin-x64": "0.25.0", "@openclaw/fs-safe-linux-arm64-gnu": "0.25.0", "@openclaw/fs-safe-linux-arm64-musl": "0.25.0", "@openclaw/fs-safe-linux-x64-gnu": "0.25.0", "@openclaw/fs-safe-linux-x64-musl": "0.25.0", "@openclaw/fs-safe-win32-x64-msvc": "0.25.0", "jszip": "^3.10.2" } }, "sha512-/8XzfW0zulV1BPzjnkD7vRG12u0u517w00rIuAGmW4GU07fxatYSkLHc1GaFCSX/WuLwGPzoxjPSKuRloBprIQ=="],
+    "openclaw/@openclaw/fs-safe": ["@openclaw/fs-safe@0.26.0", "", { "optionalDependencies": { "@openclaw/fs-safe-darwin-arm64": "0.26.0", "@openclaw/fs-safe-darwin-x64": "0.26.0", "@openclaw/fs-safe-freebsd-arm64": "0.26.0", "@openclaw/fs-safe-freebsd-x64": "0.26.0", "@openclaw/fs-safe-linux-arm64-gnu": "0.26.0", "@openclaw/fs-safe-linux-arm64-musl": "0.26.0", "@openclaw/fs-safe-linux-x64-gnu": "0.26.0", "@openclaw/fs-safe-linux-x64-musl": "0.26.0", "@openclaw/fs-safe-win32-arm64-msvc": "0.26.0", "@openclaw/fs-safe-win32-x64-msvc": "0.26.0", "jszip": "^3.10.2" } }, "sha512-tLpVEBUEcFS4YtT43DwM4R8XqPNcJxJzIb23+v8Lyj0vElEHUox2t5+4buv0OiSZ3r3EsVXe5odI3FZDZWcHqg=="],
 
     "openclaw/acorn": ["acorn@8.18.0", "", { "bin": { "acorn": "bin/acorn" } }, "sha512-lGq+9yr1/GuAWaVYIHRjvvySG5/4VfKIvC8EWxStPdcDh/Ka7FG3twP6v4d5BkravUilhIAsG4Qj83t02LWUPQ=="],
 
