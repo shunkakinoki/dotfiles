@@ -36,6 +36,7 @@ let
   qmd = ./qmd;
   openclaw = ./openclaw;
   paperclip = ./paperclip;
+  photoBoothExport = import ./photo-booth-export { inherit pkgs; };
   reasonix = ./reasonix;
   roborev = ./roborev;
   screenshotClipboard = import ./screenshot-clipboard { inherit pkgs; };
@@ -76,6 +77,7 @@ in
   qmd
   openclaw
   paperclip
+  photoBoothExport
   reasonix
   roborev
   screenshotClipboard
