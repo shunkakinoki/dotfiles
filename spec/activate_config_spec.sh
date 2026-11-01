@@ -425,6 +425,10 @@ It 'writes the same settings into the T3 Code Claude config dir'
 When run bash -c "temp_home=\$(mktemp -d); HOME=\"\$temp_home\" bash '$SCRIPT' '$PWD/config/claude/settings.json' && jq -e '.env.CLAUDE_CODE_SUBAGENT_MODEL and .env.ENABLE_TOOL_SEARCH == \"auto\"' \"\$temp_home/.claude-cliproxy/settings.json\" >/dev/null && cmp -s \"\$temp_home/.claude/settings.json\" \"\$temp_home/.claude-cliproxy/settings.json\""
 The status should be success
 End
+It 'acknowledges the auto-mode outside-read notice in existing Claude state'
+When run bash -c "temp_home=\$(mktemp -d); mkdir -p \"\$temp_home/.claude-cliproxy\"; echo '{\"numStartups\":3}' >\"\$temp_home/.claude-cliproxy/.claude.json\"; HOME=\"\$temp_home\" bash '$SCRIPT' '$PWD/config/claude/settings.json' && jq -e '.hasSeenAutoModeOutsideReadPrompt == true and .numStartups == 3' \"\$temp_home/.claude-cliproxy/.claude.json\" >/dev/null && test ! -e \"\$temp_home/.claude.json\""
+The status should be success
+End
 End
 
 Describe 'config/dcg/activate.sh'

@@ -16,3 +16,14 @@ for dir in ~/.claude ~/.claude-cliproxy; do
   mv "$_TMP" "$dir/settings.json"
   chmod 644 "$dir/settings.json"
 done
+
+# Unattended fleet lanes read sibling worktrees; an unacknowledged auto-mode
+# outside-read notice blocks them on a modal no one answers. Only an existing
+# state file is patched: Claude Code writes the rest of it on first launch.
+for state in ~/.claude.json ~/.claude-cliproxy/.claude.json; do
+  [ -f "$state" ] || continue
+  _TMP=$(mktemp)
+  jq '.hasSeenAutoModeOutsideReadPrompt = true' "$state" >"$_TMP"
+  chmod 600 "$_TMP"
+  mv -f "$_TMP" "$state"
+done
