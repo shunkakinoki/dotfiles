@@ -569,6 +569,17 @@ The output should include 'support-prompt-cache-key: true'
 The status should be success
 End
 
+It 'fails over model-unavailable 400s without retrying arbitrary 400s'
+When run bash -c 'for provider in surplus-deepseek opencode ollama-cloud aliyun verboo commandcode openrouter; do
+  section=$(sed -n "/name: \"$provider\"/,/^  - name:/p" "$PWD/config/cliproxyapi/config.template.yaml")
+  printf "%s\n" "$section" | grep -Fq "status: 400" || exit 1
+  printf "%s\n" "$section" | grep -Fq "Model is unavailable" || exit 1
+  printf "%s\n" "$section" | grep -Fq "action: \"continue-and-cooldown\"" || exit 1
+done
+! grep -E "^[[:space:]]*retry_on_errors:.*400" "$PWD/config/opencode/opencode-fallback.jsonc"'
+The status should be success
+End
+
 It 'enables prompt cache keys on the Aliyun hop'
 When run bash -c "sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'support-prompt-cache-key: true'

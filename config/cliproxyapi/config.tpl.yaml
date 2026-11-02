@@ -535,6 +535,13 @@ openai-compatibility:
     priority: 301
     base-url: "https://api.surplusintelligence.ai/v1"
     support-prompt-cache-key: true
+    # A provider can report temporary model capacity as HTTP 400. Treat only
+    # this known response as provider failure; malformed client requests stay
+    # terminal 400s. Continue and cool down so the next DeepSeek provider is tried.
+    request-scoped-errors:
+      - status: 400
+        match: ["Model is unavailable"]
+        action: "continue-and-cooldown"
     api-key-entries:
       - api-key: "__SURPLUS_API_KEY__"
         proxy-url: "direct"
@@ -547,6 +554,10 @@ openai-compatibility:
     priority: 120
     prefix: "nvidia"
     base-url: "https://integrate.api.nvidia.com/v1"
+    request-scoped-errors:
+      - status: 400
+        match: ["Model is unavailable"]
+        action: "continue-and-cooldown"
     api-key-entries: __NVIDIA_API_KEY_ENTRIES__
     models:
       - name: "deepseek-ai/__DEEPSEEK_FLASH__"
@@ -557,12 +568,16 @@ openai-compatibility:
         alias: "gemma-4-31b-it"
   # When OpenCode Go's own DeepSeek upstream is down it answers HTTP 400
   # "Upstream request failed: Model is unavailable." regardless of key state.
-  # CLIProxy treats that 400 as a request fault and does not fail over, so this
-  # tier must stay below every working one.
+  # The scoped rule below turns that exact response into provider failover, so
+  # this tier remains a last resort without making arbitrary 400s retryable.
   - name: "opencode"
     priority: 90
     base-url: "https://opencode.ai/zen/go/v1"
     support-prompt-cache-key: true
+    request-scoped-errors:
+      - status: 400
+        match: ["Model is unavailable", "Upstream request failed: Model is unavailable"]
+        action: "continue-and-cooldown"
     # OpenCode Go rejects requests without a conversation header. Resolve the
     # canonical session from every client (opencode, Claude Code, Codex, ...)
     # instead of only opencode's X-Session-Affinity, which other callers omit.
@@ -580,6 +595,10 @@ openai-compatibility:
   - name: "ollama-cloud"
     priority: 300
     base-url: "https://ollama.com/v1"
+    request-scoped-errors:
+      - status: 400
+        match: ["Model is unavailable"]
+        action: "continue-and-cooldown"
     api-key-entries: __OLLAMA_API_KEY_ENTRIES__
     models:
       - name: "__FREE_MINIMAX_FLASH_OLLAMA__"
@@ -593,6 +612,10 @@ openai-compatibility:
     prefix: "aliyun"
     base-url: "https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1"
     support-prompt-cache-key: true
+    request-scoped-errors:
+      - status: 400
+        match: ["Model is unavailable"]
+        action: "continue-and-cooldown"
     api-key-entries:
       - api-key: "__ALIYUN_TOKEN_PLAN_API_KEY__"
         proxy-url: "direct"
@@ -605,6 +628,10 @@ openai-compatibility:
     priority: 150
     base-url: "https://code.verboo.ai/router/v1"
     support-prompt-cache-key: true
+    request-scoped-errors:
+      - status: 400
+        match: ["Model is unavailable"]
+        action: "continue-and-cooldown"
     api-key-entries:
       - api-key: "__VERBOO_API_KEY__"
         proxy-url: "direct"
@@ -617,6 +644,10 @@ openai-compatibility:
     priority: 150
     base-url: "https://api.commandcode.ai/provider/v1"
     support-prompt-cache-key: true
+    request-scoped-errors:
+      - status: 400
+        match: ["Model is unavailable"]
+        action: "continue-and-cooldown"
     api-key-entries:
       - api-key: "__COMMANDCODE_API_KEY__"
         proxy-url: "direct"
@@ -656,6 +687,10 @@ openai-compatibility:
     priority: 100
     base-url: "https://openrouter.ai/api/v1"
     support-prompt-cache-key: true
+    request-scoped-errors:
+      - status: 400
+        match: ["Model is unavailable"]
+        action: "continue-and-cooldown"
     api-key-entries:
       - api-key: "__OPENROUTER_API_KEY__"
         proxy-url: "direct"
