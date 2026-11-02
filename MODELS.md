@@ -207,6 +207,31 @@ first; Aliyun and OpenRouter only serve once the tier above them is
 unavailable. `deepseek-v4.1-flash-uncensored` is served only by Surplus, its
 sole upstream.
 
+### Provider failure classification
+
+CLIProxy retries a provider when it reports a rate limit or transient upstream
+failure. Some OpenAI-compatible providers report temporary model capacity as
+HTTP 400, so the DeepSeek providers carry a narrow `request-scoped-errors` rule
+for the exact `Model is unavailable` response. The rule uses
+`continue-and-cooldown`: the current provider is cooled down and the same model
+is tried at the next eligible priority. Other HTTP 400 responses remain
+terminal client errors.
+
+| Provider | Known model-unavailable response | 429 behavior | Failover action |
+| --- | --- | --- | --- |
+| `surplus-deepseek` | HTTP 400, `Model is unavailable` | provider rate limit | continue and cool down |
+| `nvidia` | HTTP 400, `Model is unavailable` | provider rate limit | continue and cool down |
+| `opencode` | HTTP 400, `Upstream request failed: Model is unavailable` | provider rate limit | continue and cool down |
+| `ollama-cloud` | HTTP 400, `Model is unavailable` | provider rate limit | continue and cool down |
+| `aliyun` | HTTP 400, `Model is unavailable` | provider rate limit | continue and cool down |
+| `verboo` | HTTP 400, `Model is unavailable` | provider rate limit | continue and cool down |
+| `commandcode` | HTTP 400, `Model is unavailable` | provider rate limit | continue and cool down |
+| `openrouter` | HTTP 400, `Model is unavailable` | provider rate limit | continue and cool down |
+
+The 400 entries are configuration contracts for observed or compatible
+provider responses; refresh them when a provider trace shows a different
+body. Do not add a blanket HTTP 400 retry rule.
+
 ## Changing a model
 
 1. To swap a model version everywhere: edit [models.json](models.json), run
