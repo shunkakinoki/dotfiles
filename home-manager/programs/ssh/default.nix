@@ -66,7 +66,7 @@ in
       };
       "beskar" = {
         HostName = "beskar.tail950b36.ts.net";
-        User = "ubuntu";
+        User = "root";
       };
       "galactica" = {
         HostName = "galactica.tail950b36.ts.net";

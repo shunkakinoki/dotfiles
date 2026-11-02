@@ -13,10 +13,10 @@ End
 End
 
 Describe 'beskar host'
-It 'uses the Beskar Tailscale DNS name'
+It 'uses the Beskar Tailscale DNS name and root login'
 When run bash -c "grep -A2 '\"beskar\" = {' '$SSH_CONFIG_NIX'"
 The output should include 'beskar.tail950b36.ts.net'
-The output should include 'User = "ubuntu"'
+The output should include 'User = "root"'
 End
 End
 
