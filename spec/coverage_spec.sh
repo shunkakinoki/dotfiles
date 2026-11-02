@@ -125,6 +125,10 @@ It 'has spec file for home-manager/modules/local-scripts/clipboard-copy-file.sh'
 The path "spec/clipboard_copy_file_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/photo-booth-export/export.sh'
+The path "spec/photo_booth_export_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/screenshot-clipboard/watch.sh'
 The path "spec/screenshot_clipboard_spec.sh" should be exist
 End
@@ -721,6 +725,7 @@ home-manager/services/cliproxyapi/scripts/wrapper.sh
 home-manager/services/cliproxyapi/scripts/kamino-tunnel.sh
 home-manager/services/cliproxyapi/scripts/quota.sh
 home-manager/services/code-syncer/sync.sh
+home-manager/services/photo-booth-export/export.sh
 home-manager/services/screenshot-clipboard/copy-latest.sh
 home-manager/services/screenshot-clipboard/ensure-loaded.sh
 home-manager/services/screenshot-clipboard/watch.sh

@@ -15,7 +15,7 @@ The output should include 'home.file.".claude/hooks/auto-switch.sh"'
 End
 
 It 'hydrates StopFailure on every host'
-When run bash -c 'temp_home=$(mktemp -d); HOME="$temp_home" bash "'"$ACTIVATE_SCRIPT"'" "'"$SETTINGS"'"; jq -e ".hooks.StopFailure | length > 0" "$temp_home/.claude/settings.json" >/dev/null'
+When run bash -c 'temp_home=$(mktemp -d); HOME="$temp_home" bash "'"$ACTIVATE_SCRIPT"'" "'"$SETTINGS"'" "'"$PWD/config/claude/app-state.json"'"; jq -e ".hooks.StopFailure | length > 0" "$temp_home/.claude/settings.json" >/dev/null'
 The status should be success
 End
 End

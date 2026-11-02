@@ -15,7 +15,7 @@
 | `Super + M` | Signal |
 | `Super + D` | Discord (focus or launch) |
 | `Super + F` | File manager (yazi) |
-| `Hyper + Space` | App launcher (rofi) |
+| `Hyper + Space` | App launcher (Noctalia) |
 
 ## Window Focus
 
@@ -91,7 +91,7 @@
 
 | Shortcut | Action |
 |---|---|
-| `Super + Shift + V` | Clipboard history (rofi, auto-paste) |
+| `Super + Shift + V` | Clipboard history (Noctalia, auto-paste) |
 | `Super + E` | Emoji picker (auto-paste) |
 
 ## System

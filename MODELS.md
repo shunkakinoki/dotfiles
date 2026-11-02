@@ -201,7 +201,6 @@ above it is cooling down or unavailable.
 | `aliyun` | 200 | `deepseek-v4-flash-0731` aliased to `deepseek-v4.1-flash` |
 | `openrouter` | 100 | `deepseek/deepseek-v4.1-flash` aliased to `deepseek-v4.1-flash` |
 | `surplus` | 150 | `deepseek-v4.1-flash-uncensored` served under its own alias |
-
 So `deepseek-v4.1-flash` requests rotate across the priority-300 credentials
 first; Aliyun and OpenRouter only serve once the tier above them is
 unavailable. `deepseek-v4.1-flash-uncensored` is served only by Surplus, its
@@ -231,7 +230,6 @@ terminal client errors.
 The 400 entries are configuration contracts for observed or compatible
 provider responses; refresh them when a provider trace shows a different
 body. Do not add a blanket HTTP 400 retry rule.
-
 ## Changing a model
 
 1. To swap a model version everywhere: edit [models.json](models.json), run
