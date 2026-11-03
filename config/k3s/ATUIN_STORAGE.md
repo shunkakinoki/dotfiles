@@ -60,6 +60,11 @@ file's bytes, modes and owners and checks that copied databases and tables open.
 It mounts that exact copy, restarts the named units, and records actual new-capture
 proof. It does not repeat the copy or create a backup. A mismatched copy is refused.
 
+Matching mount and drop-in declarations installed by activation are reused,
+including managed symlinks. Different existing declarations are refused before
+data verification. Rollback removes only declarations created by the operation;
+it preserves preexisting matching files and their ownership.
+
 The separate release checks the mount, application health, successful capture,
 original directory identity and absence of original open handles before freeing
 the old root duplicate. The retained data is then the mounted copy only. Full
