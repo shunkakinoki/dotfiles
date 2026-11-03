@@ -1,9 +1,25 @@
 import { afterEach, expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
-import { chmodSync, cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  chmodSync,
+  cpSync,
+  lstatSync,
+  mkdtempSync,
+  readFileSync,
+  readlinkSync,
+  rmSync,
+  statSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { compareCopies, databaseCounts, snapshot } from "../scripts/atuin-storage";
+import {
+  compareCopies,
+  databaseCounts,
+  ensureDeclaration,
+  snapshot,
+} from "../scripts/atuin-storage";
 
 const roots: string[] = [];
 function fixture(): string {
@@ -82,4 +98,33 @@ test("a readable database still needs the deferred full integrity check", () => 
   writeFileSync(path, bytes);
   databaseCounts(root, "readability");
   expect(() => databaseCounts(root)).toThrow("integrity check failed");
+});
+
+test("reuses a matching managed symlink without changing its target or permissions", () => {
+  const root = fixture();
+  const source = join(root, "template");
+  const stored = join(root, "managed-store-file");
+  const target = join(root, "managed-link");
+  writeFileSync(source, "[Unit]\nConditionPathIsMountPoint=/data\n");
+  cpSync(source, stored);
+  chmodSync(stored, 0o444);
+  symlinkSync(stored, target);
+  expect(ensureDeclaration(source, target, process.getuid!(), process.getgid!())).toBe(false);
+  expect(lstatSync(target).isSymbolicLink()).toBe(true);
+  expect(readlinkSync(target)).toBe(stored);
+  expect(statSync(stored).mode & 0o777).toBe(0o444);
+});
+
+test("installs a missing declaration and refuses existing drift without overwriting", () => {
+  const root = fixture();
+  const source = join(root, "template");
+  const target = join(root, "declaration");
+  writeFileSync(source, "[Mount]\nType=none\n");
+  expect(ensureDeclaration(source, target, process.getuid!(), process.getgid!())).toBe(true);
+  expect(readFileSync(target).equals(readFileSync(source))).toBe(true);
+  writeFileSync(target, "different existing declaration");
+  expect(() => ensureDeclaration(source, target, process.getuid!(), process.getgid!())).toThrow(
+    "differs",
+  );
+  expect(readFileSync(target, "utf8")).toBe("different existing declaration");
 });

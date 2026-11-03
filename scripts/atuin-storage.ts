@@ -76,6 +76,31 @@ function phase(name: string): void {
   console.log(`${new Date().toISOString()} phase=${name}`);
 }
 
+function matchingDeclaration(source: string, target: string): boolean {
+  if (!existsSync(target)) return false;
+  requireThat(statSync(target).isFile(), "Existing declaration is not a regular file");
+  requireThat(
+    readFileSync(source).equals(readFileSync(target)),
+    "Existing declaration differs; retain it and refuse cutover",
+  );
+  return true;
+}
+
+export function ensureDeclaration(
+  source: string,
+  target: string,
+  uid: number,
+  gid: number,
+): boolean {
+  // Activation can install these first. Preserve matching managed links rather
+  // than attempting to write through them into the immutable store.
+  if (matchingDeclaration(source, target)) return false;
+  copyFileSync(source, target, constants.COPYFILE_EXCL);
+  chmodSync(target, 0o644);
+  chownSync(target, uid, gid);
+  return true;
+}
+
 export type Entry = {
   path: string;
   mode: number;
@@ -369,11 +394,13 @@ function apply(recoverWithoutBackup = false): void {
       "A named unit changed state since the approved preflight",
     );
   requireThat(!mounted(), "Already mounted; use --verify instead");
-  for (const path of [BACKUP, ROOT_COPY, RECORD, UNIT_TARGET, DROPIN])
+  for (const path of [BACKUP, ROOT_COPY, RECORD])
     requireThat(
       !existsSync(path),
       "Migration output already exists; inspect it instead of overwriting",
     );
+  matchingDeclaration(join(CONFIG, UNIT), UNIT_TARGET);
+  matchingDeclaration(join(CONFIG, "atuin-storage.conf"), DROPIN);
   requireThat(lstatSync(SOURCE).isDirectory(), "Source is not a real directory");
   requireThat(
     recoverWithoutBackup === existsSync(DESTINATION),
@@ -390,7 +417,8 @@ function apply(recoverWithoutBackup = false): void {
   else requireThat(lstatSync(DESTINATION).isDirectory(), "Staging is not a real directory");
   let stopped = recoverWithoutBackup;
   let cutover = false;
-  let installed = false;
+  let mountInstalled = false;
+  let dropinInstalled = false;
   try {
     if (!recoverWithoutBackup) {
       phase("online-staging");
@@ -428,14 +456,12 @@ function apply(recoverWithoutBackup = false): void {
     run(["sync", "-f", DISK], true);
     assertQuiescent();
     phase("mount-cutover");
-    mkdirSync(dirname(DROPIN), { recursive: true, mode: 0o755 });
-    chownSync(dirname(DROPIN), 1000, 1000);
-    copyFileSync(join(CONFIG, "atuin-storage.conf"), DROPIN);
-    installed = true;
-    chmodSync(DROPIN, 0o644);
-    chownSync(DROPIN, 1000, 1000);
-    copyFileSync(join(CONFIG, UNIT), UNIT_TARGET);
-    chmodSync(UNIT_TARGET, 0o644);
+    if (!existsSync(dirname(DROPIN))) {
+      mkdirSync(dirname(DROPIN), { recursive: true, mode: 0o755 });
+      chownSync(dirname(DROPIN), 1000, 1000);
+    }
+    dropinInstalled = ensureDeclaration(join(CONFIG, "atuin-storage.conf"), DROPIN, 1000, 1000);
+    mountInstalled = ensureDeclaration(join(CONFIG, UNIT), UNIT_TARGET, 0, 0);
     renameSync(SOURCE, ROOT_COPY);
     mkdirSync(SOURCE, { mode: 0o700 });
     chownSync(SOURCE, 1000, 1000);
@@ -480,10 +506,12 @@ function apply(recoverWithoutBackup = false): void {
         if (existsSync(SOURCE)) rmdirSync(SOURCE);
         renameSync(ROOT_COPY, SOURCE);
       }
-      if (installed) {
-        run(["systemctl", "disable", UNIT], true);
-        if (existsSync(UNIT_TARGET)) rmSync(UNIT_TARGET);
-        if (existsSync(DROPIN)) rmSync(DROPIN);
+      if (mountInstalled || dropinInstalled) {
+        if (mountInstalled) {
+          run(["systemctl", "disable", UNIT], true);
+          rmSync(UNIT_TARGET);
+        }
+        if (dropinInstalled) rmSync(DROPIN);
         run(["systemctl", "daemon-reload"], true);
         user(["systemctl", "--user", "daemon-reload"], true);
       }
