@@ -217,7 +217,7 @@ mock_tailscale_state() {
   cat >"$TEST_ROOT/bin/tailscale" <<EOF
 #!/usr/bin/env bash
 printf 'tailscale %s\\n' "\$*" >>"\$COMMAND_LOG"
-[ "\$1" = status ] && printf '{\\n  "Version": "1.104.4",\\n  "BackendState": "$1",\\n}\\n'
+[ "\$1" = status ] && printf '{\\n  "Version": "1.104.4",\\n  "BackendState": "$1"\\n}\\n'
 exit 0
 EOF
 }
