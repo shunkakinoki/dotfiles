@@ -693,6 +693,7 @@ let
         assert cfg.age.secrets."agents-prd.env".path == "/home/ubuntu/.config/agenix/agents-prd.env";
         assert sshAuthorizedKeys.beskar == fleetPeerKeysOf "beskar";
         assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeFleetSsh.data;
+        assert lib.hasInfix "/root/.ssh" cfg.home.activation.authorizeFleetRootSsh.data;
         assert herdr.Unit.X-SwitchMethod == "keep-old";
         assert lib.length herdr.Service.ExecStart == 1;
         assert lib.hasInfix "-start.sh " (lib.head herdr.Service.ExecStart);
