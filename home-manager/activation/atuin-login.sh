@@ -14,8 +14,6 @@ SSH_KEYGEN_BIN="$6"
 USERNAME="$7"
 DATA_DIR="$8"
 
-# Hosts outside the secret's recipients stay logged out, like kamino workers
-# that should not download the whole fleet's thread store.
 if [[ ! -r $IDENTITY_KEY ]]; then
   exit 0
 fi

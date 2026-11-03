@@ -4,6 +4,13 @@ let
     matic
     kyber
     beskar
+    kamino1
+    kamino2
+    kamino3
+    kamino4
+    kamino5
+    kamino6
+    kamino7
     ;
 in
 {
@@ -12,5 +19,12 @@ in
     matic
     kyber
     beskar
+    kamino1
+    kamino2
+    kamino3
+    kamino4
+    kamino5
+    kamino6
+    kamino7
   ];
 }

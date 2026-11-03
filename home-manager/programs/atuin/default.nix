@@ -9,6 +9,13 @@ let
   # silently ignore the [threads] table and stop capturing.
   minVersion = "18.24.0";
   loginSecret = ../../../named-hosts/atuin/login.age;
+  # Kamino workers run as root and their agenix recipients are host keys; some
+  # have no ~/.ssh/id_ed25519 at all.
+  identityKey =
+    if config.home.username == "root" then
+      "/etc/ssh/ssh_host_ed25519_key"
+    else
+      "${config.home.homeDirectory}/.ssh/id_ed25519";
 in
 {
   assertions = [
@@ -22,7 +29,7 @@ in
     lib.hm.dag.entryAfter [ "linkGeneration" ] ''
       $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../activation/atuin-login.sh}" \
         "${loginSecret}" \
-        "${config.home.homeDirectory}/.ssh/id_ed25519" \
+        "${identityKey}" \
         "${pkgs.rage}/bin/rage" \
         "${pkgs.atuin}/bin/atuin" \
         "${pkgs.coreutils}/bin/timeout" \
