@@ -67,7 +67,8 @@ lib.mkIf enabled {
       StartLimitBurst = 3;
     };
     Service = {
-      Type = "notify";
+      # roborev daemon run does not emit systemd readiness notifications.
+      Type = "simple";
       ExecStart = "${pkgs.bash}/bin/bash ${./start.sh} ${roborevBin} ${serverAddr}";
       Restart = "on-failure";
       RestartSec = 5;
