@@ -171,7 +171,13 @@ tailscale)
   name="${2:?name required}"
   tailscale_bin="${3:?tailscale binary required}"
   shift 3
-  "$tailscale_bin" up "$@"
+  # `up` on an enrolled node rejects any omitted non-default setting, such as
+  # an exit node chosen with `vpn`; `set` changes only the given flags.
+  if "$tailscale_bin" status >/dev/null 2>&1; then
+    "$tailscale_bin" set "$@"
+  else
+    "$tailscale_bin" up "$@"
+  fi
   echo "Tailscale enrollment and preferences applied for $name."
   ;;
 t3-connect)

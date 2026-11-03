@@ -257,8 +257,10 @@ For an existing checkout, preserve its local changes and untracked dotenv.
 Fresh minimal Ubuntu also needs `dbus-user-session`; the installer bootstraps it.
 Activation sets the hostname, enables root lingering, starts the user manager
 and applies the named service configuration. Its Tailscale phase runs
-`tailscale up` directly, so a fresh node prompts for authentication as part of
-`make nix-switch` instead of requiring a separate command afterward.
+`tailscale up` on a logged-out node, so a fresh node prompts for authentication
+as part of `make nix-switch` instead of requiring a separate command afterward.
+An enrolled node gets `tailscale set` instead, which keeps settings such as an
+exit node chosen with `vpn`.
 
 MagicDNS must be enabled in the tailnet and the tailnet policy must grant
 Tailscale SSH as `root` to your clients. Managed servers and clients both keep
