@@ -372,6 +372,10 @@ It 'has spec file for home-manager/activation/deploy-agenix-secret.sh'
 The path "spec/activation_shared_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/activation/atuin-login.sh'
+The path "spec/atuin_login_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/activation/import-gpg-key.sh'
 The path "spec/activation_shared_spec.sh" should be exist
 End
@@ -658,6 +662,7 @@ home-manager/activation/authorize-ssh-keys.sh
 home-manager/activation/deploy-agenix-secret.sh
 home-manager/activation/ensure-directory.sh
 home-manager/activation/ensure-tailscale-serve.sh
+home-manager/activation/atuin-login.sh
 home-manager/activation/import-gpg-key.sh
 home-manager/activation/remove-stale-gh-credential-helpers.sh
 home-manager/modules/bin-shells/activate.sh

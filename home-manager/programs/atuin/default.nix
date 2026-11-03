@@ -1,8 +1,14 @@
-{ lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   # Threads (agent session capture/resume) shipped in 18.24; older builds
   # silently ignore the [threads] table and stop capturing.
   minVersion = "18.24.0";
+  loginSecret = ../../../named-hosts/atuin/login.age;
 in
 {
   assertions = [
@@ -11,6 +17,20 @@ in
       message = "atuin ${pkgs.atuin.version} < ${minVersion}: Threads capture needs a newer nixpkgs.";
     }
   ];
+
+  home.activation.atuinLogin = lib.mkIf (builtins.pathExists loginSecret) (
+    lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+      $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../activation/atuin-login.sh}" \
+        "${loginSecret}" \
+        "${config.home.homeDirectory}/.ssh/id_ed25519" \
+        "${pkgs.rage}/bin/rage" \
+        "${pkgs.atuin}/bin/atuin" \
+        "${pkgs.coreutils}/bin/timeout" \
+        "${pkgs.openssh}/bin/ssh-keygen" \
+        "shunkakinoki" \
+        "${config.home.homeDirectory}/.local/share/atuin"
+    ''
+  );
 
   programs.atuin = {
     enable = true;
