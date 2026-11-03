@@ -39,8 +39,11 @@ if [[ -z $ATUIN_PASSWORD || -z $ATUIN_ENCRYPTION_KEY ]]; then
 fi
 
 # A different key makes login re-encrypt the store before it authenticates, and
-# records the running daemon writes during that rewrite can be lost.
-if [[ -f "$DATA_DIR/key" ]] && [[ "$("$ATUIN_BIN" key 2>/dev/null || true)" != "$ATUIN_ENCRYPTION_KEY" ]]; then
+# records the running daemon writes during that rewrite can be lost. Atuin
+# accepts the key as a mnemonic or as base64, so either form counts as a match.
+if [[ -f "$DATA_DIR/key" ]] &&
+  [[ "$("$ATUIN_BIN" key 2>/dev/null || true)" != "$ATUIN_ENCRYPTION_KEY" ]] &&
+  [[ "$("$ATUIN_BIN" key --base64 2>/dev/null || true)" != "$ATUIN_ENCRYPTION_KEY" ]]; then
   echo "Warning: local Atuin key differs from the fleet key; stop the daemon, back up $DATA_DIR and run 'atuin login' by hand" >&2
   exit 0
 fi
@@ -49,6 +52,15 @@ fi
 export ATUIN_PASSWORD ATUIN_ENCRYPTION_KEY
 # A failed or stalled login must not hold up activation on an offline host. The
 # key check above means the timeout cannot interrupt a re-encryption.
-if ! "$TIMEOUT_BIN" 60 "$ATUIN_BIN" login -u "$USERNAME" </dev/null >/dev/null; then
-  echo "Warning: Atuin login failed; sync stays off until the next activation" >&2
+STATUS=0
+"$TIMEOUT_BIN" 60 "$ATUIN_BIN" login -u "$USERNAME" </dev/null >/dev/null || STATUS=$?
+# Login saves the session before it checks the key against the server, and a
+# later run sees that session and skips the check. A host that already had a
+# session returns before either step, so a timed-out run's session is always
+# its own and unverified. A wrong key logs itself out.
+if [[ $STATUS -eq 124 ]]; then
+  "$TIMEOUT_BIN" 10 "$ATUIN_BIN" logout </dev/null >/dev/null 2>&1 || true
+fi
+if [[ $STATUS -ne 0 ]]; then
+  echo "Warning: Atuin login failed; the next activation retries it" >&2
 fi

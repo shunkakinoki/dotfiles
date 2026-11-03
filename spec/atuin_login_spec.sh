@@ -15,7 +15,15 @@ EOF
   cat >"$TMP/atuin" <<'EOF'
 #!/usr/bin/env bash
 if [ "$1" = key ]; then
-  cat "$(dirname "$0")/key"
+  if [ "${2:-}" = --base64 ]; then
+    cat "$(dirname "$0")/key.b64"
+  else
+    cat "$(dirname "$0")/key"
+  fi
+  exit 0
+fi
+if [ "$1" = logout ]; then
+  touch "$(dirname "$0")/logged-out"
   exit 0
 fi
 printf '%s|%s|%s\n' "$*" "$ATUIN_PASSWORD" "$ATUIN_ENCRYPTION_KEY" >"$(dirname "$0")/called"
@@ -74,6 +82,17 @@ The status should be success
 The path "$TMP/called" should be exist
 End
 
+It 'logs in when the secret holds the local key in base64'
+base64_key() {
+  echo 'local key' >"$TMP/key"
+  echo 'a2V5' >"$TMP/key.b64"
+  RAGE_OUTPUT='pass word\na2V5\n' run_login
+}
+When call base64_key
+The status should be success
+The path "$TMP/called" should be exist
+End
+
 It 'skips login when the local key differs from the secret'
 different_key() {
   echo 'local key' >"$TMP/key"
@@ -123,5 +142,14 @@ export ATUIN_EXIT=1
 When call run_login
 The status should be success
 The error should include 'login failed'
+The path "$TMP/logged-out" should not be exist
+End
+
+It 'logs out the unverified session of a timed-out login'
+export ATUIN_EXIT=124
+When call run_login
+The status should be success
+The error should include 'login failed'
+The path "$TMP/logged-out" should be exist
 End
 End
