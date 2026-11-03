@@ -212,24 +212,31 @@ The contents of file "$TEST_ROOT/shells" should equal '/bin/bash'
 The path "$TEST_ROOT/commands" should not be exist
 End
 
-It 'enrolls a logged-out node with tailscale up'
-cat >"$TEST_ROOT/bin/tailscale" <<'EOF'
+Describe 'tailscale phase'
+mock_tailscale_state() {
+  cat >"$TEST_ROOT/bin/tailscale" <<EOF
 #!/usr/bin/env bash
-printf 'tailscale %s\n' "$*" >>"$COMMAND_LOG"
-[ "$1" != status ]
+printf 'tailscale %s\\n' "\$*" >>"\$COMMAND_LOG"
+[ "\$1" = status ] && printf '{\\n  "Version": "1.104.4",\\n  "BackendState": "$1",\\n}\\n'
+exit 0
 EOF
-When run bash -c "PATH='$TEST_ROOT/bin:/usr/bin:/bin' COMMAND_LOG='$TEST_ROOT/commands' bash '$SCRIPT' tailscale kamino100 '$TEST_ROOT/bin/tailscale' --hostname=kamino100 --accept-dns=true --ssh=true"
-The status should be success
-The output should include 'Tailscale enrollment'
-The contents of file "$TEST_ROOT/commands" should include 'tailscale up --hostname=kamino100 --accept-dns=true --ssh=true'
+}
+
+Parameters
+NeedsLogin up
+NoState up
+Running set
+Starting set
+Stopped set
 End
 
-It 'updates an enrolled node with tailscale set'
-When run bash -c "PATH='$TEST_ROOT/bin:/usr/bin:/bin' COMMAND_LOG='$TEST_ROOT/commands' bash '$SCRIPT' tailscale kamino100 '$TEST_ROOT/bin/tailscale' --hostname=kamino100 --accept-dns=true --ssh=true"
+It "runs tailscale $2 when the backend is $1"
+mock_tailscale_state "$1"
+When run run_phase tailscale kamino100 "$TEST_ROOT/bin/tailscale" --hostname=kamino100 --accept-dns=true --ssh=true
 The status should be success
 The output should include 'Tailscale enrollment'
-The contents of file "$TEST_ROOT/commands" should include 'tailscale set --hostname=kamino100 --accept-dns=true --ssh=true'
-The contents of file "$TEST_ROOT/commands" should not include 'tailscale up'
+The contents of file "$TEST_ROOT/commands" should include "tailscale $2 --hostname=kamino100 --accept-dns=true --ssh=true"
+End
 End
 
 It 'skips the link without starting a device flow when T3 Connect is not authorized'

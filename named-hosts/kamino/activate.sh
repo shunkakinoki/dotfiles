@@ -172,12 +172,16 @@ tailscale)
   tailscale_bin="${3:?tailscale binary required}"
   shift 3
   # `up` on an enrolled node rejects any omitted non-default setting, such as
-  # an exit node chosen with `vpn`; `set` changes only the given flags.
-  if "$tailscale_bin" status >/dev/null 2>&1; then
-    "$tailscale_bin" set "$@"
-  else
-    "$tailscale_bin" up "$@"
-  fi
+  # an exit node chosen with `vpn`; `set` changes only the given flags. The
+  # `status` exit code cannot tell a stopped node from a logged-out one, so
+  # read the backend state. A stopped node stays down: it was taken down
+  # deliberately.
+  state=$("$tailscale_bin" status --json 2>/dev/null |
+    sed -n 's/.*"BackendState": *"\([^"]*\)".*/\1/p' | head -n1)
+  case "$state" in
+  Running | Starting | Stopped) "$tailscale_bin" set "$@" ;;
+  *) "$tailscale_bin" up "$@" ;;
+  esac
   echo "Tailscale enrollment and preferences applied for $name."
   ;;
 t3-connect)
