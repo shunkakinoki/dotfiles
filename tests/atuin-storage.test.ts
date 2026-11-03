@@ -18,7 +18,9 @@ function fixture(): string {
   writeFileSync(join(root, "key"), "fixture-only-opaque-key", { mode: 0o600 });
   return root;
 }
-afterEach(() => { for (const root of roots.splice(0)) rmSync(root, { recursive: true }); });
+afterEach(() => {
+  for (const root of roots.splice(0)) rmSync(root, { recursive: true });
+});
 
 test("verifies all bytes, opaque key permissions and SQLite record counts", () => {
   const source = fixture();
@@ -55,7 +57,7 @@ test("preserves WAL data while excluding reconstructed shared memory from byte c
   db.run("INSERT INTO entries VALUES (?, ?)", ["second", new Uint8Array([4])]);
   expect(databaseCounts(root)["history.db"]!.entries).toBe("2");
   const before = snapshot(root);
-  expect(before.some(row => row.path === "history.db-wal")).toBe(true);
-  expect(before.some(row => row.path.endsWith("-shm"))).toBe(false);
+  expect(before.some((row) => row.path === "history.db-wal")).toBe(true);
+  expect(before.some((row) => row.path.endsWith("-shm"))).toBe(false);
   db.close();
 });
