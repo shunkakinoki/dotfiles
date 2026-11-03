@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 import { Database } from "bun:sqlite";
+import { randomUUID } from "node:crypto";
 import {
   chmodSync,
   chownSync,
@@ -37,6 +38,7 @@ const DROPIN = "/home/ubuntu/.config/systemd/user/atuin-daemon.service.d/20-stor
 const CONFIG = resolve(import.meta.dir, "../config/k3s");
 const UNITS = ["atuin-daemon.socket", "atuin-daemon.service"];
 const GIB = 1024 ** 3;
+const HISTORY_SESSION = randomUUID().replaceAll("-", "");
 
 function requireThat(ok: unknown, message: string): asserts ok {
   if (!ok) throw new Error(message);
@@ -62,6 +64,7 @@ function user(argv: string[], quiet = false): string {
       "HOME=/home/ubuntu",
       "XDG_RUNTIME_DIR=/run/user/1000",
       "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus",
+      `ATUIN_SESSION=${HISTORY_SESSION}`,
       ...argv,
     ],
     quiet,
@@ -547,10 +550,11 @@ function release(): void {
     verify();
     r = readRecord();
   } else verifyApplication();
-  requireThat(
-    readRecord().captureVerified,
-    "New capture has not been verified; retain the original",
-  );
+  if (!r.captureVerified) {
+    verifyCapture();
+    r = { ...r, captureVerified: true };
+    record(r);
+  }
   requireThat(!r.released, "Root duplicate already released");
   requireThat(
     statSync(ROOT_COPY).dev !== statSync(DESTINATION).dev,
