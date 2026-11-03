@@ -133,7 +133,10 @@ export function compareCopies(a: Entry[], b: Entry[]): void {
   );
 }
 
-export function databaseCounts(root: string): Record<string, Record<string, string>> {
+export function databaseCounts(
+  root: string,
+  scan: "full" | "readability" = "full",
+): Record<string, Record<string, string>> {
   const result: Record<string, Record<string, string>> = {};
   for (const name of readdirSync(root)
     .filter((name) => name.endsWith(".db"))
@@ -145,11 +148,13 @@ export function databaseCounts(root: string): Record<string, Record<string, stri
     const hadSharedMemory = existsSync(sharedMemory);
     const db = new Database(path, { readonly: true });
     try {
-      const integrity = db.query("PRAGMA quick_check").all() as Record<string, unknown>[];
-      requireThat(
-        integrity.length === 1 && Object.values(integrity[0]!)[0] === "ok",
-        `SQLite integrity check failed for ${name}`,
-      );
+      if (scan === "full") {
+        const integrity = db.query("PRAGMA quick_check").all() as Record<string, unknown>[];
+        requireThat(
+          integrity.length === 1 && Object.values(integrity[0]!)[0] === "ok",
+          `SQLite integrity check failed for ${name}`,
+        );
+      }
       const tables = db
         .query(
           "SELECT name FROM sqlite_schema WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name",
@@ -158,6 +163,10 @@ export function databaseCounts(root: string): Record<string, Record<string, stri
       result[name] = {};
       for (const table of tables) {
         const identifier = table.name.replaceAll('"', '""');
+        if (scan === "readability") {
+          db.query(`SELECT 1 FROM "${identifier}" LIMIT 1`).get();
+          continue;
+        }
         const row = db
           .query(`SELECT CAST(count(*) AS TEXT) AS count FROM "${identifier}"`)
           .get() as { count: string };
@@ -196,8 +205,8 @@ function mounted(): boolean {
   return Bun.spawnSync(["mountpoint", "-q", SOURCE]).exitCode === 0;
 }
 
-function assertQuiescent(): void {
-  const p = Bun.spawnSync(["/home/ubuntu/.nix-profile/bin/lsof", "-t", "+D", SOURCE], {
+function assertQuiescent(root = SOURCE): void {
+  const p = Bun.spawnSync(["/home/ubuntu/.nix-profile/bin/lsof", "-t", "+D", root], {
     stdout: "pipe",
     stderr: "pipe",
   });
@@ -230,24 +239,33 @@ function copy(source: string, target: string, staging = false): void {
 }
 
 type Migration = {
-  version: 1;
+  version: 2;
   source: string;
   destination: string;
   backup: string;
   rootCopy: string;
   appliedAt: string;
-  counts: Record<string, Record<string, string>>;
+  counts: Record<string, Record<string, string>> | null;
+  backupRetained: boolean;
+  originalDev: number;
+  originalIno: number;
+  captureVerified: boolean;
   released: boolean;
 };
 
 function readRecord(): Migration {
   const r = JSON.parse(readFileSync(RECORD, "utf8")) as Migration;
   requireThat(
-    r.version === 1 &&
+    r.version === 2 &&
       r.source === SOURCE &&
       r.destination === DESTINATION &&
       r.backup === BACKUP &&
-      r.rootCopy === ROOT_COPY,
+      r.rootCopy === ROOT_COPY &&
+      typeof r.backupRetained === "boolean" &&
+      typeof r.captureVerified === "boolean" &&
+      Number.isSafeInteger(r.originalDev) &&
+      Number.isSafeInteger(r.originalIno) &&
+      (!r.backupRetained || r.counts !== null),
     "Migration record does not match the approved paths",
   );
   return r;
@@ -318,15 +336,15 @@ function verifyCapture(): void {
   console.log("new-capture=verified");
 }
 
-function dryRun(): void {
+function dryRun(recoverWithoutBackup = false): void {
   verifyDisk();
   const size = Number(run(["du", "-sk", SOURCE]).split(/\s/)[0]) * 1024;
   const available = Number(run(["df", "-B1", "--output=avail", DISK]).split(/\s+/).at(-1));
   const source = statSync(SOURCE);
   requireThat(source.uid === 1000 && source.gid === 1000, "Unexpected source owner");
   requireThat(
-    available > size * 2 + 50 * GIB,
-    "Insufficient space for data, independent backup and destination reserve",
+    available > (recoverWithoutBackup ? 0 : size * 2) + 50 * GIB,
+    "Insufficient space for this operation and the destination reserve",
   );
   console.log(
     JSON.stringify({
@@ -342,20 +360,25 @@ function dryRun(): void {
   );
 }
 
-function apply(): void {
-  dryRun();
+function apply(recoverWithoutBackup = false): void {
+  dryRun(recoverWithoutBackup);
   for (const unit of UNITS)
     requireThat(
-      user(["systemctl", "--user", "is-active", unit]) === "active",
+      user(["systemctl", "--user", "show", unit, "--property=ActiveState", "--value"]) ===
+        (recoverWithoutBackup ? "inactive" : "active"),
       "A named unit changed state since the approved preflight",
     );
   requireThat(!mounted(), "Already mounted; use --verify instead");
-  for (const path of [DESTINATION, BACKUP, ROOT_COPY, RECORD, UNIT_TARGET, DROPIN])
+  for (const path of [BACKUP, ROOT_COPY, RECORD, UNIT_TARGET, DROPIN])
     requireThat(
       !existsSync(path),
       "Migration output already exists; inspect it instead of overwriting",
     );
   requireThat(lstatSync(SOURCE).isDirectory(), "Source is not a real directory");
+  requireThat(
+    recoverWithoutBackup === existsSync(DESTINATION),
+    "Recovery requires the completed staging copy; ordinary apply requires a fresh destination",
+  );
   mkdirSync(PARENT, { recursive: true, mode: 0o700 });
   requireThat(
     lstatSync(PARENT).isDirectory() &&
@@ -363,35 +386,45 @@ function apply(): void {
       (statSync(PARENT).mode & 0o077) === 0,
     "Destination parent owner or permissions differ",
   );
-  mkdirSync(DESTINATION, { mode: 0o700 });
-  let stopped = false;
+  if (!recoverWithoutBackup) mkdirSync(DESTINATION, { mode: 0o700 });
+  else requireThat(lstatSync(DESTINATION).isDirectory(), "Staging is not a real directory");
+  let stopped = recoverWithoutBackup;
   let cutover = false;
   let installed = false;
   try {
-    phase("online-staging");
-    copy(SOURCE, DESTINATION, true);
-    phase("quiescent-final-copy");
-    stopped = true;
-    service("stop");
+    if (!recoverWithoutBackup) {
+      phase("online-staging");
+      copy(SOURCE, DESTINATION, true);
+      phase("quiescent-final-copy");
+      stopped = true;
+      service("stop");
+      assertQuiescent();
+      copy(SOURCE, DESTINATION);
+    }
     assertQuiescent();
-    copy(SOURCE, DESTINATION);
     phase("verify-source-copy");
     const original = snapshot(SOURCE);
     compareCopies(original, snapshot(DESTINATION));
-    const counts = databaseCounts(SOURCE);
-    requireThat(
-      JSON.stringify(counts) === JSON.stringify(databaseCounts(DESTINATION)),
-      "Copied SQLite record counts differ",
-    );
-    compareCopies(snapshot(SOURCE), snapshot(DESTINATION));
-    phase("independent-backup");
-    mkdirSync(BACKUP, { mode: 0o700 });
-    copy(DESTINATION, BACKUP);
-    compareCopies(snapshot(SOURCE), snapshot(BACKUP));
-    requireThat(
-      JSON.stringify(counts) === JSON.stringify(databaseCounts(BACKUP)),
-      "Backup SQLite counts differ",
-    );
+    let counts: Migration["counts"] = null;
+    if (recoverWithoutBackup) {
+      phase("database-readability-full-scan-deferred");
+      databaseCounts(DESTINATION, "readability");
+    } else {
+      counts = databaseCounts(SOURCE);
+      requireThat(
+        JSON.stringify(counts) === JSON.stringify(databaseCounts(DESTINATION)),
+        "Copied SQLite record counts differ",
+      );
+      compareCopies(snapshot(SOURCE), snapshot(DESTINATION));
+      phase("independent-backup");
+      mkdirSync(BACKUP, { mode: 0o700 });
+      copy(DESTINATION, BACKUP);
+      compareCopies(snapshot(SOURCE), snapshot(BACKUP));
+      requireThat(
+        JSON.stringify(counts) === JSON.stringify(databaseCounts(BACKUP)),
+        "Backup SQLite counts differ",
+      );
+    }
     run(["sync", "-f", DISK], true);
     assertQuiescent();
     phase("mount-cutover");
@@ -410,13 +443,17 @@ function apply(): void {
     run(["systemctl", "enable", "--now", UNIT], true);
     cutover = true;
     record({
-      version: 1,
+      version: 2,
       source: SOURCE,
       destination: DESTINATION,
       backup: BACKUP,
       rootCopy: ROOT_COPY,
       appliedAt: new Date().toISOString(),
       counts,
+      backupRetained: !recoverWithoutBackup,
+      originalDev: statSync(ROOT_COPY).dev,
+      originalIno: statSync(ROOT_COPY).ino,
+      captureVerified: false,
       released: false,
     });
     user(["systemctl", "--user", "daemon-reload"], true);
@@ -424,9 +461,14 @@ function apply(): void {
     stopped = false;
     verifyApplication();
     verifyCapture();
+    record({ ...readRecord(), captureVerified: true });
     console.log(
-      "cutover=verified original-root-copy=retained; run --verify, then --release-root-copy",
+      recoverWithoutBackup
+        ? "cutover=verified original-root-copy=retained; run --release-root-copy, then --verify"
+        : "cutover=verified original-root-copy=retained; run --verify, then --release-root-copy",
     );
+    if (recoverWithoutBackup)
+      console.log("backup=waived release-root-copy-before-full-verify=true full-integrity=pending");
   } catch (error) {
     phase("rollback");
     if (cutover || mounted()) {
@@ -457,34 +499,53 @@ function verify(): void {
   const r = readRecord();
   verifyApplication();
   const current = databaseCounts(SOURCE);
-  for (const [file, tables] of Object.entries(r.counts))
+  for (const [file, tables] of Object.entries(r.counts ?? {}))
     for (const [table, count] of Object.entries(tables)) {
       requireThat(
         BigInt(current[file]?.[table] ?? "-1") >= BigInt(count),
         "A SQLite record count fell below the verified baseline",
       );
     }
-  console.log("sqlite-integrity=ok record-counts=preserved backup=retained");
+  if (!r.captureVerified) verifyCapture();
+  if (r.counts === null || !r.captureVerified)
+    record({ ...r, counts: r.counts ?? current, captureVerified: true });
+  console.log(`sqlite-integrity=ok backup=${r.backupRetained ? "retained" : "waived"}`);
 }
 
 function release(): void {
-  verify();
-  const r = readRecord();
+  verifyDisk();
+  let r = readRecord();
+  if (r.backupRetained) {
+    verify();
+    r = readRecord();
+  } else verifyApplication();
+  requireThat(
+    readRecord().captureVerified,
+    "New capture has not been verified; retain the original",
+  );
   requireThat(!r.released, "Root duplicate already released");
   requireThat(
     statSync(ROOT_COPY).dev !== statSync(DESTINATION).dev,
     "The duplicate is not on the old root filesystem",
   );
-  compareCopies(snapshot(ROOT_COPY), snapshot(BACKUP));
   requireThat(
-    JSON.stringify(databaseCounts(BACKUP)) === JSON.stringify(r.counts),
-    "Backup differs from the pre-cutover record counts",
+    statSync(ROOT_COPY).dev === r.originalDev && statSync(ROOT_COPY).ino === r.originalIno,
+    "The original root directory identity changed",
   );
+  if (r.backupRetained) {
+    compareCopies(snapshot(ROOT_COPY), snapshot(BACKUP));
+    requireThat(
+      JSON.stringify(databaseCounts(BACKUP)) === JSON.stringify(r.counts),
+      "Backup differs from the pre-cutover record counts",
+    );
+  } else assertQuiescent(ROOT_COPY);
   run(["sync", "-f", DISK], true);
   phase("release-verified-root-duplicate");
   rmSync(ROOT_COPY, { recursive: true });
   record({ ...r, released: true });
-  console.log(`released-root-duplicate=true backup=retained applied-at=${r.appliedAt}`);
+  console.log(
+    `released-root-duplicate=true backup=${r.backupRetained ? "retained" : "waived"} applied-at=${r.appliedAt}`,
+  );
   console.log(run(["df", "-Pk", "/", DISK]));
 }
 
@@ -493,8 +554,14 @@ if (import.meta.main) {
     const mode = process.argv[2] ?? "--dry-run";
     requireThat(
       process.argv.length <= 3 &&
-        ["--dry-run", "--apply", "--verify", "--release-root-copy"].includes(mode),
-      "Choose --dry-run, --apply, --verify or --release-root-copy",
+        [
+          "--dry-run",
+          "--apply",
+          "--recover-without-backup",
+          "--verify",
+          "--release-root-copy",
+        ].includes(mode),
+      "Choose --dry-run, --apply, --recover-without-backup, --verify or --release-root-copy",
     );
     if (mode !== "--dry-run") {
       requireThat(
@@ -522,6 +589,7 @@ if (import.meta.main) {
     }
     if (mode === "--dry-run") dryRun();
     else if (mode === "--apply") apply();
+    else if (mode === "--recover-without-backup") apply(true);
     else if (mode === "--verify") verify();
     else release();
   } catch (error) {

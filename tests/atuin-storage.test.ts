@@ -1,6 +1,6 @@
 import { afterEach, expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
-import { chmodSync, cpSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { compareCopies, databaseCounts, snapshot } from "../scripts/atuin-storage";
@@ -60,4 +60,26 @@ test("preserves WAL data while excluding reconstructed shared memory from byte c
   expect(before.some((row) => row.path === "history.db-wal")).toBe(true);
   expect(before.some((row) => row.path.endsWith("-shm"))).toBe(false);
   db.close();
+});
+
+test("recovery readability preserves bytes and still refuses an unreadable database", () => {
+  const root = fixture();
+  const before = snapshot(root);
+  databaseCounts(root, "readability");
+  compareCopies(before, snapshot(root));
+  writeFileSync(join(root, "threads.db"), "not a database");
+  expect(() => databaseCounts(root, "readability")).toThrow();
+});
+
+test("a readable database still needs the deferred full integrity check", () => {
+  const root = fixture();
+  const path = join(root, "threads.db");
+  const bytes = readFileSync(path);
+  // A bad freelist pointer leaves ordinary table reads intact, but the full
+  // SQLite checker must inspect and reject the corrupt allocation metadata.
+  bytes.writeUInt32BE(0x7fffffff, 32);
+  bytes.writeUInt32BE(1, 36);
+  writeFileSync(path, bytes);
+  databaseCounts(root, "readability");
+  expect(() => databaseCounts(root)).toThrow("integrity check failed");
 });

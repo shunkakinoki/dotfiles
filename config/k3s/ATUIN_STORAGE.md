@@ -40,3 +40,31 @@ copy and the original intact and recover the named units in place. To move back,
 quiesce the named units, copy the current data back with the same byte/database
 verification, remove only this mount and drop-in, and restore the same units.
 Never restore an older backup over newly captured records.
+
+## Recovery before an independent backup
+
+An operator can explicitly waive the independent backup and prioritize service
+recovery after the quiescent final staging copy has completed. First stop the
+previous operation through its authorized owner; never run concurrent migrations.
+Keep the two Atuin units inactive and retain both storage copies. Then run:
+
+```sh
+bun scripts/atuin-storage.ts --recover-without-backup
+bun scripts/atuin-storage.ts --release-root-copy
+bun scripts/atuin-storage.ts --verify
+```
+
+This mode requires an existing staging directory, no previous receipt or cutover,
+no backup, and no open source handles. It freshly compares every non-ephemeral
+file's bytes, modes and owners and checks that copied databases and tables open.
+It mounts that exact copy, restarts the named units, and records actual new-capture
+proof. It does not repeat the copy or create a backup. A mismatched copy is refused.
+
+The separate release checks the mount, application health, successful capture,
+original directory identity and absence of original open handles before freeing
+the old root duplicate. The retained data is then the mounted copy only. Full
+SQLite integrity and count scans are explicitly pending until the final verify
+finishes; readability is not a full integrity result. A later integrity failure
+must be reported and handled in place without pruning records or claiming a backup.
+Receipts are versioned; an older operation must be completed with its matching
+revision rather than overwriting its receipt or guessing a continuation state.
