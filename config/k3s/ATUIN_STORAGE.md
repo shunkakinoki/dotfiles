@@ -65,6 +65,11 @@ including managed symlinks. Different existing declarations are refused before
 data verification. Rollback removes only declarations created by the operation;
 it preserves preexisting matching files and their ownership.
 
+Noninteractive checks create a local history-session identifier for Atuin's
+required environment. If cutover mounted successfully but its capture check
+was interrupted, release completes that actual capture proof before removing
+the original; failed proof always retains it.
+
 The separate release checks the mount, application health, successful capture,
 original directory identity and absence of original open handles before freeing
 the old root duplicate. The retained data is then the mounted copy only. Full
