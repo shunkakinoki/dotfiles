@@ -17,5 +17,11 @@ let
   libChecks = import ./lib.nix { inherit pkgs lib inputs; };
   fishChecks = import ./fish.nix { inherit pkgs lib; };
   kyberWriterGuardChecks = import ./kyber-writer-guard.nix { inherit pkgs; };
+  atuinStorageChecks = import ./atuin-storage.nix { inherit pkgs; };
 in
-evalChecks // overlayChecks // libChecks // fishChecks // kyberWriterGuardChecks
+evalChecks
+// overlayChecks
+// libChecks
+// fishChecks
+// kyberWriterGuardChecks
+// atuinStorageChecks

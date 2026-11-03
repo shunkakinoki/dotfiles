@@ -1,0 +1,15 @@
+[Unit]
+Description=Atuin history on the dedicated data filesystem
+Requires=var-lib-rancher-k3s-agent-containerd.mount
+After=var-lib-rancher-k3s-agent-containerd.mount
+Before=user@1000.service
+ConditionPathIsDirectory=/var/lib/rancher/k3s/agent/containerd/host-state/atuin-ubuntu
+
+[Mount]
+What=/var/lib/rancher/k3s/agent/containerd/host-state/atuin-ubuntu
+Where=/home/ubuntu/.local/share/atuin
+Type=none
+Options=bind
+
+[Install]
+WantedBy=local-fs.target

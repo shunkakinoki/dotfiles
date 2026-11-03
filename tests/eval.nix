@@ -726,6 +726,12 @@ let
             "--advertise-exit-node"
           ];
         assert cfg.systemd.user.systemctlPath == "/usr/bin/systemctl";
+        assert
+          cfg.home.file.".config/k3s/home-ubuntu-.local-share-atuin.mount".source
+          == ../config/k3s/home-ubuntu-.local-share-atuin.mount;
+        assert
+          cfg.home.file.".config/systemd/user/atuin-daemon.service.d/20-storage.conf".source
+          == ../config/k3s/atuin-storage.conf;
         assert activationPosition "linkGeneration" < activationPosition "authorizeFleetSsh";
         assert lib.hasInfix "/bin/ssh-keygen" cfg.home.activation.authorizeFleetSsh.data;
         assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeFleetSsh.data;
