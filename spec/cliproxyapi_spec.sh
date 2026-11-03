@@ -525,6 +525,13 @@ The output should not include '@preset/glm-4-7'
 The status should be success
 End
 
+It 'routes Claude Haiku through OpenRouter under the canonical alias'
+When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'name: "anthropic/claude-haiku-4.5"'
+The output should include 'alias: "claude-haiku"'
+The status should be success
+End
+
 It 'maps the free router to OpenClaw canonical model alias'
 When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'name: "openrouter/free"'
