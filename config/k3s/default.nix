@@ -115,6 +115,14 @@ in
     source = ./kyber-openclaw-cache.mount;
   };
 
+  home.file.".config/k3s/home-ubuntu-.local-share-atuin.mount" = lib.mkIf isKyber {
+    source = ./home-ubuntu-.local-share-atuin.mount;
+  };
+
+  home.file.".config/systemd/user/atuin-daemon.service.d/20-storage.conf" = lib.mkIf isKyber {
+    source = ./atuin-storage.conf;
+  };
+
   home.file.".config/k3s/kyber-host-health.service" = lib.mkIf isKyber {
     source = healthCheckService;
   };
