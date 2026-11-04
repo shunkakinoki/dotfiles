@@ -119,6 +119,11 @@ in
     source = ./home-ubuntu-.local-share-atuin.mount;
   };
 
+  home.file.".config/k3s/atuin-storage-guard.sh" = lib.mkIf isKyber {
+    source = ./atuin-storage-guard.sh;
+    executable = true;
+  };
+
   home.file.".config/systemd/user/atuin-daemon.service.d/20-storage.conf" = lib.mkIf isKyber {
     source = ./atuin-storage.conf;
   };

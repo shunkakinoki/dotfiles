@@ -21,6 +21,7 @@ readonly ORCHESTRATION_FLAP_THRESHOLD=3
 readonly NODEFS_USAGE_THRESHOLD=70
 readonly NODEFS_AVAILABLE_WARNING_GIB=200
 readonly NODEFS_AVAILABLE_WARNING_BYTES=$((NODEFS_AVAILABLE_WARNING_GIB * 1024 * 1024 * 1024))
+readonly NODEFS_AVAILABLE_URGENT_BYTES=$((80 * 1024 * 1024 * 1024))
 readonly NODEFS_KUBELET_RESERVE_GIB=50
 readonly IMAGEFS_USAGE_THRESHOLD=70
 readonly CRI_LATENCY_THRESHOLD_SECONDS=5
@@ -131,6 +132,11 @@ check_node_filesystem() {
   fi
 
   available_gib=$((available_bytes / 1024 / 1024 / 1024))
+  if [ "$available_bytes" -le "$NODEFS_AVAILABLE_URGENT_BYTES" ]; then
+    set_alert "node-filesystem-urgent" "root nodefs has ${available_gib} GiB free (80 GiB urgent, 50 GiB kubelet emergency floor); run the bounded controller cache response, then verify actual headroom; preserve Atuin and CRI state"
+  else
+    clear_alert "node-filesystem-urgent"
+  fi
   if [ "$usage_percent" -ge "$NODEFS_USAGE_THRESHOLD" ]; then
     set_alert "node-filesystem" "root nodefs usage is ${usage_percent}% (threshold ${NODEFS_USAGE_THRESHOLD}%) with ${available_gib} GiB available"
   elif [ "$available_bytes" -le "$NODEFS_AVAILABLE_WARNING_BYTES" ]; then
@@ -156,11 +162,43 @@ check_image_filesystem() {
   fi
 
   usage_percent="$(df --output=pcent "$CONTAINERD_MOUNT" | tail -n 1 | tr -cd '0-9')"
+  if [ "$usage_percent" -ge 75 ]; then
+    set_alert "image-filesystem-urgent" "containerd + protected Atuin filesystem is ${usage_percent}% used (urgent 75%, kubelet floor 20% free); measure both owners; kubelet owns CRI reclamation"
+  else
+    clear_alert "image-filesystem-urgent"
+  fi
   if [ "$usage_percent" -ge "$IMAGEFS_USAGE_THRESHOLD" ]; then
     set_alert "image-filesystem" "containerd image filesystem usage is ${usage_percent}% (threshold ${IMAGEFS_USAGE_THRESHOLD}%)"
   else
     clear_alert "image-filesystem"
   fi
+}
+
+
+check_atuin_storage() {
+  local path="/home/ubuntu/.local/share/atuin" actual bytes=0 size file
+  if ! actual="$(findmnt --noheadings --raw --mountpoint "$path" --output UUID,FSROOT)" ||
+    [ "$actual" != "$EXPECTED_CONTAINERD_UUID /host-state/atuin-ubuntu" ]; then
+    set_alert "atuin-storage" "protected persistent Atuin history is missing its data-disk bind mount; owner: host account, dotfiles storage configuration; do not start the daemon on root or recreate/migrate history"
+    return
+  fi
+  for file in history.db records.db threads.db; do
+    if [ ! -r "$path/$file" ]; then
+      set_alert "atuin-storage" "protected Atuin $file is missing or unreadable; history measurement is unknown"
+      return
+    fi
+  done
+  for file in "$path"/*.db "$path"/*.db-wal; do
+    [ -e "$file" ] || continue
+    if ! size="$(stat --format=%s "$file")" || [[ ! $size =~ ^[0-9]+$ ]]; then
+      set_alert "atuin-storage" "cannot measure protected Atuin database/WAL bytes; mount ownership is known but history size is unverified"
+      return
+    fi
+    bytes=$((bytes + size))
+  done
+  printf '%s %s\n' "$(date +%s)" "$bytes" >"$STATE_DIR/atuin-storage.bytes"
+  logger --priority daemon.info --tag kyber-host-health -- "Atuin protected persistent history: owner=$ORCHESTRATION_USER bytes=$bytes (database/WAL logical bytes); shares data filesystem with containerd"
+  clear_alert "atuin-storage"
 }
 
 check_dns() {
@@ -560,6 +598,7 @@ main() {
   manage_orchestration_circuit_breaker
   check_node_filesystem
   check_image_filesystem
+  check_atuin_storage
   check_cri
   check_dns
   check_disk_wear

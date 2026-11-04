@@ -732,6 +732,7 @@ let
         assert
           cfg.home.file.".config/systemd/user/atuin-daemon.service.d/20-storage.conf".source
           == ../config/k3s/atuin-storage.conf;
+        assert cfg.home.file.".config/k3s/atuin-storage-guard.sh".executable;
         assert activationPosition "linkGeneration" < activationPosition "authorizeFleetSsh";
         assert lib.hasInfix "/bin/ssh-keygen" cfg.home.activation.authorizeFleetSsh.data;
         assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeFleetSsh.data;
