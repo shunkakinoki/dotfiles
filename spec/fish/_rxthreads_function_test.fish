@@ -1,4 +1,4 @@
-set fn (status dirname)/../../home-manager/programs/fish/functions
+set fn $current_dirname/../../home-manager/programs/fish/functions
 source $fn/_rxthreads_function.fish
 set original_home $HOME
 set -gx HOME (mktemp -d)
