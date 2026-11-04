@@ -9,6 +9,21 @@ let
   # silently ignore the [threads] table and stop capturing.
   minVersion = "18.24.0";
   loginSecret = ../../../named-hosts/atuin/login.age;
+  hookClient = pkgs.writeShellScriptBin "atuin" (
+    lib.replaceStrings
+      [ "@atuin@" "@timeout@" ]
+      [ "${pkgs.atuin}/bin/atuin" "${pkgs.coreutils}/bin/timeout" ]
+      (builtins.readFile ./hook-client.sh)
+  );
+  boundedAtuin = pkgs.symlinkJoin {
+    name = "atuin-${pkgs.atuin.version}";
+    paths = [
+      hookClient
+      pkgs.atuin
+    ];
+    passthru.version = pkgs.atuin.version;
+    meta = pkgs.atuin.meta;
+  };
 in
 {
   assertions = [
@@ -34,7 +49,7 @@ in
 
   programs.atuin = {
     enable = true;
-    package = pkgs.atuin;
+    package = boundedAtuin;
     enableBashIntegration = true;
     enableFishIntegration = true;
     enableZshIntegration = true;
