@@ -124,7 +124,8 @@ test("managed activation and the service provide Git for postimage checks", () =
     resolve(import.meta.dir, "../home-manager/modules/npm-globals/default.nix"),
     "utf8",
   );
-  expect(config.match(/\u0024\{pkgs.git\}\/bin/g)?.length).toBe(2);
+  expect(config.match(/^    export PATH=.*$/m)?.[0]).toContain("${pkgs.git}/bin");
+  expect(config.match(/"PATH=.*"/)?.[0]).toContain("${pkgs.git}/bin");
 });
 
 test("Renovate explicitly excludes every patched package", () => {
