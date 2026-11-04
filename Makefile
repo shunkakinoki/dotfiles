@@ -1370,11 +1370,11 @@ t3-service: t3-linger ## Install/repair the T3 background server so the client n
 			|| npx --yes t3@nightly service update; \
 	fi; \
 	systemctl --user daemon-reload; \
-	systemctl --user enable --now t3code.service || true; \
+	systemctl --user enable --now t3code.service; \
 	echo "🔧 Building native modules for the service runtime..."; \
 	$(MAKE) systemctl-t3-connect; \
-	systemctl --user restart t3code.service || true; \
-	PATH="$${NIX_NODE_BIN:+$$NIX_NODE_BIN:}$$PATH" "$$T3_BIN" service status || true
+	systemctl --user restart t3code.service; \
+	PATH="$${NIX_NODE_BIN:+$$NIX_NODE_BIN:}$$PATH" "$$T3_BIN" service status
 
 .PHONY: systemctl-docker
 systemctl-docker: ## Start Docker daemon.

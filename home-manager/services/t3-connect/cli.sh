@@ -6,6 +6,27 @@ set -euo pipefail
 base="${T3CODE_HOME:-$HOME/.t3}"
 cli="${T3_REAL_CLI:-$HOME/.bun/bin/t3}"
 state="$base/runtime/service-state.json"
+
+# On a service-managed Linux home, ordinary server starts must not compete
+# with the launcher for ownership. Keep help and all non-start CLI operations
+# unchanged; custom foreground servers require a separate T3CODE_HOME.
+if [ -n "${T3_CHECK_SERVICE:-}" ] && [ -f "$state" ] &&
+  { [ "$#" -eq 0 ] || [ "${1:-}" = serve ]; }; then
+  if [ "$#" -gt 1 ]; then
+    case "${2:-}" in
+    --help | -h) ;;
+    *)
+      printf '%s\n' 'This T3 home is service-managed. Configure its service instead of foreground serve flags, or use a separate T3CODE_HOME.' >&2
+      exit 1
+      ;;
+    esac
+  else
+    "${T3_SYSTEMCTL:-systemctl}" --user start t3code.service
+    T3CODE_HOME="$base" node "$T3_CHECK_SERVICE"
+    exit
+  fi
+fi
+
 if [ -f "$state" ]; then
   # A running server can be newer than the recorded active version when an
   # update did not commit its state, so prefer the version that is serving.

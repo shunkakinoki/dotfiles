@@ -13,12 +13,14 @@ setup() {
   export T3_TEST_ROOT
   cat >"$MOCK_BIN/systemctl" <<'MOCK'
 #!/usr/bin/env bash
+printf '%s\n' "systemctl $*" >>"$MOCK_LOG"
 [ "${2:-}" != is-failed ]
 MOCK
   export T3CODE_HOME="$T3_TEST_ROOT/t3"
   export npm_config_cache="$T3_TEST_ROOT/npm-cache"
   export T3_PREPARE_RUNTIME="$MOCK_BIN/prepare"
   export T3_SETUP_BROWSER="$MOCK_BIN/setup-browser"
+  export T3_CHECK_SERVICE="$T3_TEST_ROOT/check-service.cjs"
   export T3_REAL_NPM="$MOCK_BIN/npm"
   export T3_PTY_PROBE=pty-probe.cjs
   export T3_CONNECT_PROJECT="$T3_TEST_ROOT/dotfiles"
@@ -30,7 +32,7 @@ MOCK
 cleanup() {
   mock_bin_cleanup
   rm -rf "$T3_TEST_ROOT"
-  unset T3_TEST_ROOT T3CODE_HOME npm_config_cache T3_PREPARE_RUNTIME T3_SETUP_BROWSER T3_REAL_NPM T3_PTY_PROBE T3_CONNECT_PROJECT GHQ_ROOT T3_CONNECT_WORKER_PROJECT
+  unset T3_TEST_ROOT T3CODE_HOME npm_config_cache T3_PREPARE_RUNTIME T3_SETUP_BROWSER T3_REAL_NPM T3_PTY_PROBE T3_CONNECT_PROJECT GHQ_ROOT T3_CONNECT_WORKER_PROJECT T3_CHECK_SERVICE
 }
 
 Before 'setup'
@@ -127,6 +129,19 @@ export T3_ENSURE_SERVICE=1
 When call warm_cache
 The status should be success
 The output should not include 'service install'
+End
+
+It 'starts an installed inactive service and checks its serving process'
+When call warm_cache
+The status should be success
+The output should include 'node '
+The output should include 'systemctl --user start t3code.service'
+End
+
+It 'propagates ownership verification failures'
+printf '#!/usr/bin/env bash\nexit 37\n' >"$MOCK_BIN/node"
+When run bash "$SCRIPT"
+The status should equal 37
 End
 
 It 'does not mask preparation failures'
@@ -314,6 +329,22 @@ make_checkout() {
   mkdir -p "$GHQ_ROOT/github.com/owner/plain-repo/.git"
 }
 Before 'make_checkout'
+
+It 'does not register projects when managed ownership cannot be verified'
+printf '#!/usr/bin/env bash\nexit 37\n' >"$MOCK_BIN/node"
+When run bash "$SCRIPT"
+The status should equal 37
+The contents of file "$MOCK_LOG" should not include 'project add'
+End
+
+It 'verifies ownership before registering projects'
+register_after_ready() {
+  bash "$SCRIPT"
+  awk '/node .*check-service/ {ready=1} /project add/ {if (!ready) exit 1; registered=1} END {if (!registered) exit 1}' "$MOCK_LOG"
+}
+When call register_after_ready
+The status should be success
+End
 
 mock_npx_project() {
   cat >"$MOCK_BIN/npx" <<'MOCK'

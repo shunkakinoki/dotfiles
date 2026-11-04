@@ -31,7 +31,7 @@ MOCK
 cleanup() {
   mock_bin_cleanup
   rm -rf "$T3_TEST_ROOT"
-  unset T3_TEST_ROOT T3CODE_HOME T3_REAL_CLI T3_SYSTEMD_RUN T3_PROC_CGROUP T3_BOOT_SERVICE_UNIT
+  unset T3_TEST_ROOT T3CODE_HOME T3_REAL_CLI T3_SYSTEMD_RUN T3_PROC_CGROUP T3_BOOT_SERVICE_UNIT T3_CHECK_SERVICE T3_SYSTEMCTL
 }
 Before 'setup'
 After 'cleanup'
@@ -181,5 +181,60 @@ printf '#!/usr/bin/env bash\nexit 23\n' >"$T3_SYSTEMD_RUN"
 When run bash "$SCRIPT" service install
 The status should equal 23
 The output should equal ''
+End
+
+managed_start() {
+  export T3_CHECK_SERVICE="$T3_TEST_ROOT/check.cjs"
+  export T3_SYSTEMCTL="$MOCK_BIN/systemctl"
+  printf '#!/usr/bin/env bash\nprintf "systemctl %%s\\n" "$*" >>"$MOCK_LOG"\n' >"$T3_SYSTEMCTL"
+  chmod +x "$T3_SYSTEMCTL"
+  printf 'console.log("checked launcher ownership");\n' >"$T3_CHECK_SERVICE"
+  bash "$SCRIPT" "$@"
+}
+
+It 'routes a foreground start through the service and waits for ownership'
+When call managed_start serve
+The status should be success
+The output should equal 'checked launcher ownership'
+The contents of file "$MOCK_LOG" should include 'systemctl --user start t3code.service'
+The contents of file "$MOCK_LOG" should not include 'runtime'
+End
+
+It 'routes a bare CLI start through the service'
+When call managed_start
+The status should be success
+The output should equal 'checked launcher ownership'
+The contents of file "$MOCK_LOG" should include 'systemctl --user start t3code.service'
+End
+
+It 'rejects foreground flags instead of silently dropping them'
+When call managed_start serve --port 4000
+The status should be failure
+The stderr should include 'separate T3CODE_HOME'
+The contents of file "$MOCK_LOG" should equal ''
+End
+
+It 'preserves serve help without starting the service'
+When call managed_start serve --help
+The status should be success
+The contents of file "$MOCK_LOG" should include '<--help>'
+The contents of file "$MOCK_LOG" should not include 'systemctl'
+End
+
+It 'propagates a failed managed start without falling back to a foreground server'
+export T3_CHECK_SERVICE="$T3_TEST_ROOT/unused.cjs"
+export T3_SYSTEMCTL=false
+When run bash "$SCRIPT" serve
+The status should be failure
+The contents of file "$MOCK_LOG" should equal ''
+End
+
+It 'propagates ownership failure without falling back to a foreground server'
+export T3_CHECK_SERVICE="$T3_TEST_ROOT/rejected.cjs"
+export T3_SYSTEMCTL=true
+printf 'process.exitCode = 41;\n' >"$T3_CHECK_SERVICE"
+When run bash "$SCRIPT" serve
+The status should equal 41
+The contents of file "$MOCK_LOG" should equal ''
 End
 End
