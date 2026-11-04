@@ -173,6 +173,10 @@ It 'has spec file for home-manager/services/t3-connect/connect.sh'
 The path "spec/t3_connect_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/services/t3-connect/ensure-service.sh'
+The path "spec/t3_ensure_service_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/t3-connect/launch-service.sh'
 The path "spec/t3_connect_spec.sh" should be exist
 End
@@ -768,6 +772,7 @@ home-manager/services/neverssl-keepalive/keepalive.sh
 home-manager/services/night-shift/apply-night-shift.sh
 home-manager/services/t3-connect/cli.sh
 home-manager/services/t3-connect/connect.sh
+home-manager/services/t3-connect/ensure-service.sh
 home-manager/services/t3-connect/launch-service.sh
 home-manager/services/t3-connect/prepare-runtime.sh
 home-manager/services/t3-connect/runtime-npm.sh
