@@ -87,7 +87,7 @@ export function checkInstalled(root: string, installedRoot: string) {
       throw new Error(`Installed ${patch.name} does not match ${patch.version}`);
     // Reverse application proves every hunk's postimage exists in the installed package.
     run(
-      ["git", "apply", "--reverse", "--check", "--ignore-space-change", resolve(root, patch.path)],
+      ["git", "apply", "--reverse", "--check", resolve(root, patch.path)],
       directory,
     );
   }
