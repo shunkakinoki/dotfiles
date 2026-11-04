@@ -2,9 +2,13 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 let
+  # Kamino workers only upload their own records; pulling every other
+  # host's multi-GB thread store onto each worker wastes disk and sync time.
+  uploadOnly = inputs.host.isKamino;
   # Threads (agent session capture/resume) shipped in 18.24; older builds
   # silently ignore the [threads] table and stop capturing.
   minVersion = "18.24.0";
@@ -56,7 +60,7 @@ in
     # Threads are captured by the daemon, which also takes over syncing.
     daemon.enable = true;
     settings = {
-      auto_sync = true;
+      auto_sync = !uploadOnly;
       sync_frequency = "3m";
       sync_address = "https://api.atuin.sh";
       search_mode = "fuzzy";
@@ -72,5 +76,28 @@ in
         capture_tools = true;
       };
     };
+  };
+
+  systemd.user.services.atuin-push = lib.mkIf uploadOnly {
+    Unit = {
+      Description = "Push this host's atuin records (one-way)";
+      After = [ "network-online.target" ];
+      Wants = [ "network-online.target" ];
+    };
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.atuin}/bin/atuin store push";
+    };
+  };
+
+  systemd.user.timers.atuin-push = lib.mkIf uploadOnly {
+    Unit.Description = "Periodic one-way atuin push";
+    Timer = {
+      OnBootSec = "2min";
+      OnUnitActiveSec = "3min";
+      Persistent = true;
+      Unit = "atuin-push.service";
+    };
+    Install.WantedBy = [ "timers.target" ];
   };
 }
