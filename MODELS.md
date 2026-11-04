@@ -28,7 +28,7 @@ Never hand-edit a generated config. Edit the `.tpl.*` file, regenerate, and comm
 | `__GPT_LUNA__` | `gpt-6-luna` |
 | `__GPT_IMAGE__` | `gpt-image-2` |
 | `__GEMINI_FLASH__` | `gemini-3.8-flash` |
-| `__DEEPSEEK_FLASH__` | `deepseek-v4.1-flash` |
+| `__DEEPSEEK_FLASH__` | `deepseek-v4.1-flash-1017` |
 | `__DEEPSEEK_FLASH_UNCENSORED__` | `deepseek-v4.1-flash-uncensored` |
 | `__GEMMA_LOCAL__` | `gemma3:4b` |
 | `__MINIMAX__` | `minimax-m3` |
@@ -46,7 +46,7 @@ Provider-specific slugs remain separate even when they represent the same model
 family. `__GEMINI_FLASH__` is the Gemini ID verified through CLIProxy, while
 Antigravity's native model ID stays directly in its provider-owned template.
 
-Two provider-specific overrides are declared in
+Provider-specific overrides are declared in
 [scripts/llm-update.sh](scripts/llm-update.sh) rather than in `models.json`,
 because the upstream ID differs from the canonical one:
 
@@ -54,9 +54,10 @@ because the upstream ID differs from the canonical one:
 | --- | --- | --- |
 | `__GPT_IMAGE_OPENROUTER__` | `openai/gpt-5.4-image-2` | OpenRouter, aliased back to `gpt-image-2` |
 | `__GPT_LUNA_OPENROUTER__` | `openai/gpt-6-luna` | OpenRouter, aliased back to `gpt-6-luna` |
-| `__DEEPSEEK_FLASH_OPENROUTER__` | `deepseek/deepseek-v4.1-flash` | OpenRouter, aliased back to `deepseek-v4.1-flash` |
-| `__DEEPSEEK_FLASH_0731__` | `deepseek-v4-flash-0731` | Aliyun, aliased back to `deepseek-v4.1-flash` |
-| `__DEEPSEEK_FLASH_ZEN__` | `deepseek-v4-flash` | OpenCode Zen, aliased back to `deepseek-v4.1-flash` |
+| `__DEEPSEEK_FLASH_OPENROUTER__` | `deepseek/deepseek-v4.1-flash` | OpenRouter, aliased back to `deepseek-v4.1-flash-1017` |
+| `__DEEPSEEK_FLASH_UNVERSIONED__` | `deepseek-v4.1-flash` | Ollama and NVIDIA upstream IDs |
+| `__DEEPSEEK_FLASH_0731__` | `deepseek-v4-flash-0731` | Aliyun, aliased back to `deepseek-v4.1-flash-1017` |
+| `__DEEPSEEK_FLASH_ZEN__` | `deepseek-v4-flash` | OpenCode Zen, aliased back to `deepseek-v4.1-flash-1017` |
 
 ## Free campaign models
 
@@ -76,7 +77,7 @@ When a campaign ends, delete the key and its `models:` entry in
 
 CLIProxy serves the Codex OAuth models (`__GPT_LUNA__`, `__GPT_SOL__`,
 `__GPT_ASTRA__`, `gpt-5.6-terra`, `gpt-5.5`), the DeepSeek compatibility
-aliases (`deepseek-v4.1-flash` and `deepseek-v4.1-flash-uncensored`), `free`, and
+aliases (`deepseek-v4.1-flash-1017` and `deepseek-v4.1-flash-uncensored`), `free`, and
 the `models.free.json` models. Models that Codex OAuth
 cannot serve are removed with `oauth-excluded-models`, which matches upstream
 IDs and has no negation, so a new upstream Codex model is served until it is
@@ -87,15 +88,15 @@ added there.
 Harnesses that support runtime fallback use one chain, in this order:
 
 ```
-deepseek-v4.1-flash  (primary)
+deepseek-v4.1-flash-1017  (primary)
   -> free           (OpenRouter free router, last resort)
 ```
 
 Rules:
 
-- `deepseek-v4.1-flash` is the only DeepSeek model on any automatic path.
-- Every hop resolves through CLIProxy, so provider-level rotation (OpenCode ->
-  Aliyun -> OpenRouter) already happens inside a single hop. Do not add a hop
+- `deepseek-v4.1-flash-1017` is the only DeepSeek model on any automatic path.
+- Every hop resolves through CLIProxy, so provider-level rotation (Surplus ->
+  Ollama -> Aliyun -> Verboo/CommandCode -> NVIDIA -> OpenRouter -> OpenCode) already happens inside a single hop. Do not add a hop
   that repeats the primary model.
 - Keep the chain model-diverse. Each hop should be a different vendor family so
   a vendor-wide outage cannot exhaust the chain.
@@ -106,10 +107,10 @@ Rules:
 
 | Harness | Default | Fallback chain | Config |
 | --- | --- | --- | --- |
-| OpenCode | `shunkakinoki/deepseek-v4.1-flash` | shared chain, `shunkakinoki/` prefix | [opencode-fallback.tpl.jsonc](config/opencode/opencode-fallback.tpl.jsonc) |
-| OpenClaw | `cliproxy/deepseek-v4.1-flash` | shared chain, `cliproxy/` prefix | [openclaw.tpl.json](config/openclaw/openclaw.tpl.json) |
-| Hermes | `cliproxy/deepseek-v4.1-flash` | shared chain via `fallback_providers` | [config.tpl.yaml](config/hermes/config.tpl.yaml) |
-| OMP | `cliproxyapi/deepseek-v4.1-flash` | shared chain, `cliproxyapi/` prefix | [config.tpl.yml](config/omp/config.tpl.yml) |
+| OpenCode | `shunkakinoki/deepseek-v4.1-flash-1017` | shared chain, `shunkakinoki/` prefix | [opencode-fallback.tpl.jsonc](config/opencode/opencode-fallback.tpl.jsonc) |
+| OpenClaw | `cliproxy/deepseek-v4.1-flash-1017` | shared chain, `cliproxy/` prefix | [openclaw.tpl.json](config/openclaw/openclaw.tpl.json) |
+| Hermes | `cliproxy/deepseek-v4.1-flash-1017` | shared chain via `fallback_providers` | [config.tpl.yaml](config/hermes/config.tpl.yaml) |
+| OMP | `cliproxyapi/deepseek-v4.1-flash-1017` | shared chain, `cliproxyapi/` prefix | [config.tpl.yml](config/omp/config.tpl.yml) |
 
 OpenCode fallback is driven by the `opencode-runtime-fallback@0.2.3` plugin:
 
@@ -126,16 +127,16 @@ on the `unknown provider for model <prefixed-name>` 400 that OpenCode absorbs.
 OMP uses native `retry.fallbackChains` instead of a plugin.
 
 Hermes also runs a Mixture-of-Agents preset: reference models
-`deepseek-v4.1-flash` + `minimax-m3`, aggregator `deepseek-v4.1-flash`.
+`deepseek-v4.1-flash-1017` + `minimax-m3`, aggregator `deepseek-v4.1-flash-1017`.
 
 ### No fallback chain
 
 | Harness | Role | Model | Config |
 | --- | --- | --- | --- |
-| OpenCode | `small_model` | `shunkakinoki/deepseek-v4.1-flash` | [opencode.tpl.jsonc](config/opencode/opencode.tpl.jsonc) |
-| OpenCode | `code-reviewer` agent | `shunkakinoki/deepseek-v4.1-flash` | [opencode.tpl.jsonc](config/opencode/opencode.tpl.jsonc) |
+| OpenCode | `small_model` | `shunkakinoki/deepseek-v4.1-flash-1017` | [opencode.tpl.jsonc](config/opencode/opencode.tpl.jsonc) |
+| OpenCode | `code-reviewer` agent | `shunkakinoki/deepseek-v4.1-flash-1017` | [opencode.tpl.jsonc](config/opencode/opencode.tpl.jsonc) |
 | OMP | `smol`, `commit`, `task` | `cliproxyapi/free` | [config.tpl.yml](config/omp/config.tpl.yml) |
-| OMP | `slow`, `vision`, `plan` | `cliproxyapi/deepseek-v4.1-flash` | |
+| OMP | `slow`, `vision`, `plan` | `cliproxyapi/deepseek-v4.1-flash-1017` | |
 | Codex | default | `gpt-6.1-sol` | [config.tpl.toml](config/codex/config.tpl.toml) |
 | Codex | subagents | `gpt-6-luna` | |
 | Codex | `qwen-local` profile | `qwen3.5-0.8b-optiq` (LM Studio) | |
@@ -144,19 +145,19 @@ Hermes also runs a Mixture-of-Agents preset: reference models
 | Antigravity | default | `gemini-3.8-flash` (native Antigravity provider) | [settings.tpl.json](config/antigravity/settings.tpl.json) |
 | Pi | `defaultModel` | `free` (provider `cliproxyapi`) | [settings.tpl.json](config/pi/settings.tpl.json) |
 | Factory (droid) | session default | `deepseek-v4-flash-0731` (Droid Core) | [settings.tpl.json](config/factory/settings.tpl.json) |
-| Factory (droid) | custom models | `custom:deepseek-v4.1-flash-0`, `custom:free-1` via `https://cliproxy.shunkakinoki.com/v1` | [settings.tpl.json](config/factory/settings.tpl.json) |
-| aichat | default | `cliproxy:deepseek-v4.1-flash` | [config.tpl.yaml](config/aichat/config.tpl.yaml) |
-| DSH web | default | `deepseek-v4.1-flash` via `https://cliproxy.shunkakinoki.com/v1` (native DeepSeek adapter) | [settings.tpl.yaml](config/dsh/settings.tpl.yaml) |
-| Reasonix | `default_model` | `cliproxy-deepseek-flash` -> `deepseek-v4.1-flash` via `https://cliproxy.shunkakinoki.com/v1` | [config.tpl.toml](config/reasonix/config.tpl.toml) |
-| llm | default | `deepseek-v4.1-flash` | [default_model.tpl.txt](config/llm/default_model.tpl.txt) |
-| Handy | transcript post-process | `@preset/deepseek-v4.1-flash` (OpenRouter) | [settings_store.tpl.json](config/handy/settings_store.tpl.json) |
+| Factory (droid) | custom models | `custom:deepseek-v4.1-flash-1017-0`, `custom:free-1` via `https://cliproxy.shunkakinoki.com/v1` | [settings.tpl.json](config/factory/settings.tpl.json) |
+| aichat | default | `cliproxy:deepseek-v4.1-flash-1017` | [config.tpl.yaml](config/aichat/config.tpl.yaml) |
+| DSH web | default | `deepseek-v4.1-flash-1017` via `https://cliproxy.shunkakinoki.com/v1` (native DeepSeek adapter) | [settings.tpl.yaml](config/dsh/settings.tpl.yaml) |
+| Reasonix | `default_model` | `cliproxy-deepseek-flash` -> `deepseek-v4.1-flash-1017` via `https://cliproxy.shunkakinoki.com/v1` | [config.tpl.toml](config/reasonix/config.tpl.toml) |
+| llm | default | `deepseek-v4.1-flash-1017` | [default_model.tpl.txt](config/llm/default_model.tpl.txt) |
+| Handy | transcript post-process | `@preset/deepseek-v4.1-flash-1017` (OpenRouter) | [settings_store.tpl.json](config/handy/settings_store.tpl.json) |
 
 OMP selects only `cliproxyapi/*`. Subagent overrides use
-`deepseek-v4.1-flash` for the hard-task roles and `free` for the lightweight
+`deepseek-v4.1-flash-1017` for the hard-task roles and `free` for the lightweight
 roles.
 The registry in [models.tpl.yml](config/omp/models.tpl.yml) lists the
 CLIProxy aliases and discovers the rest from remote `/v1/models`.
-OMP fallback uses the shared chain (`deepseek-v4.1-flash` -> `free`).
+OMP fallback uses the shared chain (`deepseek-v4.1-flash-1017` -> `free`).
 
 ### Fish shortcuts
 
@@ -165,12 +166,12 @@ headless.
 
 | Function | Model |
 | --- | --- |
-| `ocxe`, `ocxeh` | `cliproxyapi/deepseek-v4.1-flash` |
+| `ocxe`, `ocxeh` | `cliproxyapi/deepseek-v4.1-flash-1017` |
 | `ocxel`, `ocxelh` | `lmstudio/qwen3.5-0.8b-optiq` |
 | `coxe`, `coxeh` | `gpt-6.1-sol` |
 | `coxec`, `coxech` | `gpt-6-luna` (`--profile cliproxy`) |
 | `coxel`, `coxelh` | `qwen3.5-0.8b-optiq` (`--oss --local-provider lmstudio`) |
-| `pixe`, `pixeh` | `cliproxyapi/deepseek-v4.1-flash` |
+| `pixe`, `pixeh` | `cliproxyapi/deepseek-v4.1-flash-1017` |
 | `pixel`, `pixelh` | `lmstudio/qwen3.5-0.8b-optiq` |
 
 ## CLIProxy routing
@@ -197,13 +198,18 @@ above it is cooling down or unavailable.
 
 | Provider | Priority | DeepSeek models served |
 | --- | --- | --- |
-| `opencode` | 300 | `deepseek-v4-flash` aliased to `deepseek-v4.1-flash` |
-| `aliyun` | 200 | `deepseek-v4-flash-0731` aliased to `deepseek-v4.1-flash` |
-| `openrouter` | 100 | `deepseek/deepseek-v4.1-flash` aliased to `deepseek-v4.1-flash` |
+| `surplus-deepseek` | 301 | `deepseek-v4.1-flash-1017` aliased to `deepseek-v4.1-flash-1017` |
+| `ollama-cloud` | 300 | `deepseek-v4.1-flash` aliased to `deepseek-v4.1-flash-1017` |
+| `aliyun` | 200 | `deepseek-v4-flash-0731` aliased to `deepseek-v4.1-flash-1017` |
+| `verboo`, `commandcode` | 150 | `deepseek-v4-flash-0731` aliased to `deepseek-v4.1-flash-1017` |
+| `nvidia` | 120 | `deepseek-ai/deepseek-v4.1-flash` aliased to `deepseek-v4.1-flash-1017` |
+| `openrouter` | 100 | `deepseek/deepseek-v4.1-flash` aliased to `deepseek-v4.1-flash-1017` |
+| `opencode` | 90 | `deepseek-v4-flash` aliased to `deepseek-v4.1-flash-1017` |
 | `surplus` | 150 | `deepseek-v4.1-flash-uncensored` served under its own alias |
-So `deepseek-v4.1-flash` requests rotate across the priority-300 credentials
-first; Aliyun and OpenRouter only serve once the tier above them is
-unavailable. `deepseek-v4.1-flash-uncensored` is served only by Surplus, its
+So `deepseek-v4.1-flash-1017` requests use Surplus revision 1017 at priority 301
+first; lower tiers only serve once the tier above them is unavailable. The
+legacy `deepseek-v4.1-flash` and `deepseek-v4-flash` aliases use the same chain.
+`deepseek-v4.1-flash-uncensored` is served only by Surplus, its
 sole upstream.
 
 ### Provider failure classification

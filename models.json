@@ -8,7 +8,7 @@
   "gpt-image": "gpt-image-2",
   "gpt-luna": "gpt-6-luna",
   "gemini-flash": "gemini-3.8-flash",
-  "deepseek-flash": "deepseek-v4.1-flash",
+  "deepseek-flash": "deepseek-v4.1-flash-1017",
   "deepseek-flash-uncensored": "deepseek-v4.1-flash-uncensored",
   "grok": "grok-4.6",
   "minimax": "minimax-m3",

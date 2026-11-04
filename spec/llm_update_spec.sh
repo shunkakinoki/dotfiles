@@ -260,8 +260,8 @@ End
 
 Describe 'OpenCode runtime fallback'
 It 'keeps DeepSeek Flash as the explicit default model'
-When run bash -c "grep '\"model\": \"shunkakinoki/deepseek-v4.1-flash\"' config/opencode/opencode.jsonc"
-The output should include 'shunkakinoki/deepseek-v4.1-flash'
+When run bash -c "grep '\"model\": \"shunkakinoki/deepseek-v4.1-flash-1017\"' config/opencode/opencode.jsonc"
+The output should include 'shunkakinoki/deepseek-v4.1-flash-1017'
 End
 
 It 'omits unsupported prompt cache keys for both CLIProxy providers'
@@ -270,8 +270,8 @@ The status should be success
 End
 
 It 'uses the DeepSeek Flash alias for the small model'
-When run bash -c "grep '\"small_model\": \"shunkakinoki/deepseek-v4.1-flash\"' config/opencode/opencode.jsonc"
-The output should include 'shunkakinoki/deepseek-v4.1-flash'
+When run bash -c "grep '\"small_model\": \"shunkakinoki/deepseek-v4.1-flash-1017\"' config/opencode/opencode.jsonc"
+The output should include 'shunkakinoki/deepseek-v4.1-flash-1017'
 End
 
 It 'pins the audited OpenCode runtime fallback plugin release'
@@ -312,7 +312,7 @@ End
 
 It 'uses the free-tier CLIProxy fallback chain for OMP'
 When run bash -c "sed -n '/^  fallbackChains:/,/^  fallbackRevertPolicy/p' config/omp/config.yml"
-The output should include 'cliproxyapi/deepseek-v4.1-flash'
+The output should include 'cliproxyapi/deepseek-v4.1-flash-1017'
 The output should include 'cliproxyapi/free'
 The output should not include 'openai-codex/'
 End
@@ -405,8 +405,8 @@ When run bash -c "section=\$(sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' c
 The status should be success
 End
 
-It 'orders DeepSeek providers as OpenCode then Aliyun then Verboo then OpenRouter then Surplus'
-When run bash -c "grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 300' && grep -A 2 'name: \"aliyun\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 200' && grep -A 2 'name: \"verboo\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 150' && grep -A 2 'name: \"openrouter\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 100' && grep -A 2 'name: \"surplus\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 150'"
+It 'keeps Surplus first and OpenCode last in the DeepSeek provider chain'
+When run bash -c "grep -A 2 'name: \"surplus-deepseek\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 301' && grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 90' && grep -A 2 'name: \"aliyun\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 200' && grep -A 2 'name: \"verboo\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 150' && grep -A 2 'name: \"openrouter\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 100' && grep -A 2 'name: \"surplus\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 150'"
 The status should be success
 End
 
@@ -416,7 +416,7 @@ The status should be success
 End
 
 It 'only exposes the routed models through the compatibility aliases'
-When run bash -c "allowed=\$(jq -r '.[\"gpt-luna\"], .[\"deepseek-flash\"], .[\"deepseek-flash-uncensored\"]' models.json; jq -r '.[]' models.free.json; printf '%s\n' deepseek-v4-flash gemma-4-31b-it priority:free); while IFS= read -r alias; do [ \"\$alias\" = free ] || printf '%s\n' \"\$allowed\" | grep -Fxq \"\$alias\" || { echo \"unexpected alias: \$alias\"; exit 1; }; done < <(sed -n 's/^[[:space:]]*alias: \"\\(.*\\)\"/\\1/p' config/cliproxyapi/config.template.yaml)"
+When run bash -c "allowed=\$(jq -r '.[\"gpt-luna\"], .[\"deepseek-flash\"], .[\"deepseek-flash-uncensored\"]' models.json; jq -r '.[]' models.free.json; printf '%s\n' deepseek-v4-flash deepseek-v4.1-flash gemma-4-31b-it priority:free claude-haiku); while IFS= read -r alias; do [ \"\$alias\" = free ] || printf '%s\n' \"\$allowed\" | grep -Fxq \"\$alias\" || { echo \"unexpected alias: \$alias\"; exit 1; }; done < <(sed -n 's/^[[:space:]]*alias: \"\\(.*\\)\"/\\1/p' config/cliproxyapi/config.template.yaml)"
 The status should be success
 End
 End

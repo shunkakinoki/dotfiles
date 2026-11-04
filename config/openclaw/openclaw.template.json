@@ -116,8 +116,8 @@
             "maxTokens": 40960
           },
           {
-            "id": "deepseek-v4.1-flash",
-            "name": "Deepseek V4.1 Flash",
+            "id": "deepseek-v4.1-flash-1017",
+            "name": "Deepseek V4.1 Flash 1017",
             "reasoning": true,
             "input": [
               "text"
@@ -204,7 +204,7 @@
       "model": {
         "primary": "openai/gpt-6-luna",
         "fallbacks": [
-          "cliproxy/deepseek-v4.1-flash",
+          "cliproxy/deepseek-v4.1-flash-1017",
           "cliproxy/free"
         ]
       },

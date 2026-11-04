@@ -546,9 +546,11 @@ openai-compatibility:
       - api-key: "__SURPLUS_API_KEY__"
         proxy-url: "direct"
     models:
-      - name: "deepseek-v4.1-flash"
+      - name: "deepseek-v4.1-flash-1017"
+        alias: "deepseek-v4.1-flash-1017"
+      - name: "deepseek-v4.1-flash-1017"
         alias: "deepseek-v4.1-flash"
-      - name: "deepseek-v4.1-flash"
+      - name: "deepseek-v4.1-flash-1017"
         alias: "deepseek-v4-flash"
   - name: "nvidia"
     priority: 120
@@ -560,6 +562,8 @@ openai-compatibility:
         action: "continue-and-cooldown"
     api-key-entries: __NVIDIA_API_KEY_ENTRIES__
     models:
+      - name: "deepseek-ai/deepseek-v4.1-flash"
+        alias: "deepseek-v4.1-flash-1017"
       - name: "deepseek-ai/deepseek-v4.1-flash"
         alias: "deepseek-v4.1-flash"
       - name: "deepseek-ai/deepseek-v4.1-flash"
@@ -589,6 +593,8 @@ openai-compatibility:
     api-key-entries: __OPENCODE_API_KEY_ENTRIES__
     models:
       - name: "deepseek-v4-flash"
+        alias: "deepseek-v4.1-flash-1017"
+      - name: "deepseek-v4-flash"
         alias: "deepseek-v4.1-flash"
       - name: "deepseek-v4-flash"
         alias: "deepseek-v4-flash"
@@ -603,6 +609,8 @@ openai-compatibility:
     models:
       - name: "minimax-m3.1-flash"
         alias: "minimax-m3.1-flash-free"
+      - name: "deepseek-v4.1-flash"
+        alias: "deepseek-v4.1-flash-1017"
       - name: "deepseek-v4.1-flash"
         alias: "deepseek-v4.1-flash"
       - name: "deepseek-v4.1-flash"
@@ -621,6 +629,8 @@ openai-compatibility:
         proxy-url: "direct"
     models:
       - name: "deepseek-v4-flash-0731"
+        alias: "deepseek-v4.1-flash-1017"
+      - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4.1-flash"
       - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4-flash"
@@ -637,6 +647,8 @@ openai-compatibility:
         proxy-url: "direct"
     models:
       - name: "deepseek-v4-flash-0731"
+        alias: "deepseek-v4.1-flash-1017"
+      - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4.1-flash"
       - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4-flash"
@@ -652,6 +664,8 @@ openai-compatibility:
       - api-key: "__COMMANDCODE_API_KEY__"
         proxy-url: "direct"
     models:
+      - name: "deepseek-v4-flash-0731"
+        alias: "deepseek-v4.1-flash-1017"
       - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4.1-flash"
       - name: "deepseek-v4-flash-0731"
@@ -695,6 +709,8 @@ openai-compatibility:
       - api-key: "__OPENROUTER_API_KEY__"
         proxy-url: "direct"
     models:
+      - name: "deepseek/deepseek-v4.1-flash"
+        alias: "deepseek-v4.1-flash-1017"
       - name: "deepseek/deepseek-v4.1-flash"
         alias: "deepseek-v4.1-flash"
       - name: "deepseek/deepseek-v4.1-flash"

@@ -182,7 +182,7 @@ ENV
 cat >"$STATE_DIR/settings.json" <<'JSON'
 {
   "pullRequestMergeMethod": "squash",
-  "defaultModelSelection": {"instanceId": "opencode", "model": "shunkakinoki/deepseek-v4.1-flash"},
+  "defaultModelSelection": {"instanceId": "opencode", "model": "shunkakinoki/deepseek-v4.1-flash-1017"},
   "providerInstances": {"opencode": {"driver": "opencode", "config": {"binaryPath": "opencode"}}}
 }
 JSON

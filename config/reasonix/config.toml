@@ -7,5 +7,5 @@ provider_access = ["cliproxy-deepseek-flash"]
 name = "cliproxy-deepseek-flash"
 kind = "openai"
 base_url = "https://cliproxy.shunkakinoki.com/v1"
-model = "deepseek-v4.1-flash"
+model = "deepseek-v4.1-flash-1017"
 api_key_env = "CLIPROXY_API_KEY"
