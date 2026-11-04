@@ -6,6 +6,8 @@ set -euo pipefail
 # This is needed because systemd doesn't inherit the shell environment
 export HOST="${HOST:-$(/usr/bin/hostname 2>/dev/null || hostname 2>/dev/null || echo '')}"
 
+bash "$HOME/dotfiles/home-manager/activation/check-host-identity.sh" "$HOST"
+
 cd ~/dotfiles
 
 if [ "$(git rev-parse --abbrev-ref HEAD)" != "main" ]; then

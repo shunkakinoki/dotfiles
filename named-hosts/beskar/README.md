@@ -1,22 +1,17 @@
 # Beskar Host Configuration
 
-Beskar is a dedicated Ubuntu server for interactive T3 Code sessions. It uses
-the same standalone Home Manager setup as Kyber, without Kyber's k3s cluster,
-Beads authority, or Tailscale exit node.
+Beskar uses a root-owned standalone Home Manager profile at `/root`. Its fleet
+checkout, Bun, Herdr state and per-host credentials belong to that account.
+It does not own Kyber's k3s cluster, Beads authority or exit-node configuration.
 
 ## Bootstrap
 
-Create the `ubuntu` user, set the hostname to `beskar`, install Tailscale and
-Nix, then apply the named Home Manager configuration as `ubuntu`:
+Run the named configuration as root with the hostname `beskar`. Build and
+inspect the generation before activating it:
 
 ```bash
-sudo hostnamectl set-hostname beskar
-curl -fsSL https://tailscale.com/install.sh | sh
-sudo systemctl enable --now tailscaled
-sudo tailscale up --accept-dns=true --ssh
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux
-git clone https://github.com/shunkakinoki/dotfiles ~/dotfiles
-cd ~/dotfiles
+cd /root/dotfiles
+make build HOST=beskar
 make switch HOST=beskar
 ```
 
@@ -26,15 +21,21 @@ The one-line installer also supports a root SSH session on a fresh Ubuntu image:
 curl -fsSL https://raw.githubusercontent.com/shunkakinoki/dotfiles/main/install.sh | HOST=beskar sh
 ```
 
-It creates the `ubuntu` account with a home directory if needed, installs the
-account and D-Bus prerequisites, and ensures passwordless sudo for system service
-installation. Existing working sudo access is retained. On systemd hosts it enables
-lingering and starts Ubuntu's user manager before activation.
+The installer refuses an unprivileged account before checkout or activation.
+It does not create an Ubuntu account or grant it administrative access. The
+activation checks machine and Tailscale identity before the write boundary;
+the updater uses that same guard before checkout or service actions and
+declares `HOST=beskar` explicitly.
 
-It then installs Nix as root, fetches `~/dotfiles` and runs
-`make install` (including build and activation) as `ubuntu`. On a machine already
-named `beskar`, `HOST=beskar` can be omitted. A previous checkout in `/root` is
-left in place; installation uses the Ubuntu account's home directory.
+The profile uses ordinary OpenSSH over the tailnet, with the declared host key
+and fleet peer authorization. Tailscale SSH is disabled; `tailscale ssh` needs
+a separately enabled server and advertised host keys.
+
+An existing Ubuntu-owned runtime needs an operator-approved preservation
+handoff before switching. Keep active sessions, worktrees, custody and history
+intact. Do not start a parallel root runtime, copy private keys or rotate
+credentials as a bootstrap shortcut. After the reviewed handoff, verify root's
+authenticated fleet access and an approved real provider probe.
 
 ## GitHub access
 
@@ -45,7 +46,7 @@ machine with Doppler access so the value never reaches shell history or an
 argument list:
 
 ```bash
-doppler secrets get GH_PAT_BESKAR --project dotfiles --config prd --plain \
+doppler --silent secrets get GH_PAT_BESKAR --project dotfiles --config prd --plain \
   | ssh beskar gh auth login --with-token
 ssh beskar gh auth status
 ```

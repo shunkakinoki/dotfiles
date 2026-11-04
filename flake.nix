@@ -195,7 +195,6 @@
               };
               beskar = import ./named-hosts/beskar {
                 inherit inputs;
-                username = "ubuntu";
                 system = "x86_64-linux";
               };
               "ubuntu@x86_64-linux" = import ./hosts/linux {

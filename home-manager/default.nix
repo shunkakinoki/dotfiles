@@ -50,6 +50,22 @@ in
   home.packages = packages;
   home.stateVersion = "24.11";
 
+  home.activation.verifyHostIdentity =
+    lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && inputs.host.nodeName != "unknown")
+      (
+        config.lib.dag.entryBefore [ "backupExistingFiles" "checkLinkTargets" "writeBoundary" ] ''
+          PATH=${
+            lib.makeBinPath [
+              pkgs.inetutils
+              pkgs.coreutils
+              pkgs.tailscale
+              pkgs.jq
+            ]
+          } \
+            ${pkgs.bash}/bin/bash ${./activation/check-host-identity.sh} ${lib.escapeShellArg inputs.host.nodeName}
+        ''
+      );
+
   # Agents launched by the user manager (T3 Code, Herdr, OpenClaw) never source
   # a login shell, so give them the same session environment. environment.d
   # cannot run command substitutions, so those shell-only values stay behind.
