@@ -6,8 +6,8 @@
   ...
 }:
 let
-  # Workers only upload their own records; pulling every other host's
-  # multi-GB thread store onto them wastes disk and sync time.
+  # Kamino workers and kyber only upload their own records; pulling every
+  # other host's multi-GB thread store onto them wastes disk and sync time.
   uploadOnly = inputs.host.isKamino || inputs.host.isKyber;
   # Threads (agent session capture/resume) shipped in 18.24; older builds
   # silently ignore the [threads] table and stop capturing.
