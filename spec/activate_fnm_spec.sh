@@ -71,4 +71,11 @@ When run cat "$PWD/home-manager/programs/fnm/default.nix"
 The output should include 'Library/Application Support/fnm'
 End
 End
+
+Describe 'activation ordering'
+It 'installs npm globals only after the fnm default Node is set'
+When run cat "$PWD/home-manager/modules/npm-globals/default.nix"
+The output should include '"fnmSetup"'
+End
+End
 End

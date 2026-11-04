@@ -9,13 +9,21 @@ let
 in
 {
   # Install npm global packages from package.json using home-manager activation
-  # After linkGeneration so the managed opencode wrapper exists to relink.
-  home.activation.installNpmGlobals = config.lib.dag.entryAfter [ "linkGeneration" ] ''
-    export PATH=${pkgs.bun}/bin:${pkgs.nodejs}/bin:${pkgs.jq}/bin:${pkgs.curl}/bin:${pkgs.git}/bin:$PATH
-    export BUN_INSTALL="$HOME/.bun"
-    ${lib.optionalString (!isDarwin) ''export SYSTEMCTL_BIN="${pkgs.systemd}/bin/systemctl"''}
-    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./install-npm-globals.sh}"
-  '';
+  # After linkGeneration so the managed opencode wrapper exists to relink, and
+  # after fnmSetup because package lifecycle scripts (openclaw preinstall) check
+  # the fnm default Node, which must already be the pinned version.
+  home.activation.installNpmGlobals =
+    config.lib.dag.entryAfter
+      [
+        "linkGeneration"
+        "fnmSetup"
+      ]
+      ''
+        export PATH=${pkgs.bun}/bin:${pkgs.nodejs}/bin:${pkgs.jq}/bin:${pkgs.curl}/bin:${pkgs.git}/bin:$PATH
+        export BUN_INSTALL="$HOME/.bun"
+        ${lib.optionalString (!isDarwin) ''export SYSTEMCTL_BIN="${pkgs.systemd}/bin/systemctl"''}
+        $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./install-npm-globals.sh}"
+      '';
 
   # Run npm globals install after login (Linux only - systemd)
   systemd.user.services = lib.mkIf (!isDarwin) {
