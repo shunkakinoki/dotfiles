@@ -431,10 +431,12 @@ update-lock: nix-flake-update bun-update cargo-update uv-update ## Update lock f
 .PHONY: bun-update
 bun-update: ## Update bun dependencies to latest and regenerate lock file.
 	@echo "📦 Updating bun dependencies..."
-	@bun update --latest --recursive
-	@git checkout bun.lock
-	@bun install
+	@bun scripts/package-patches.ts update
 	@echo "✅ bun dependencies updated"
+
+.PHONY: patches-check
+patches-check: ## Check patch versions and verify a clean patched installation.
+	@bun scripts/package-patches.ts verify
 
 .PHONY: cargo-update
 cargo-update: ## Update Rust dependencies to latest and regenerate lock file.

@@ -1,8 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "repositories": [
-    "shunkakinoki/dotfiles"
-  ],
+  "repositories": ["shunkakinoki/dotfiles"],
   "extends": [
     "config:recommended",
     "group:allNonMajor",
@@ -14,9 +12,7 @@
   ],
   "minimumReleaseAge": "7 days",
   "rangeStrategy": "bump",
-  "schedule": [
-    "at any time"
-  ],
+  "schedule": ["at any time"],
   "timezone": "UTC",
   "dependencyDashboard": true,
   "platformAutomerge": true,
@@ -24,9 +20,7 @@
   "prHourlyLimit": 3,
   "lockFileMaintenance": {
     "enabled": true,
-    "schedule": [
-      "at any time"
-    ],
+    "schedule": ["at any time"],
     "automerge": true,
     "platformAutomerge": true
   },
@@ -44,115 +38,80 @@
   },
   "packageRules": [
     {
-      "matchDepTypes": [
-        "overrides",
-        "resolutions"
-      ],
+      "matchDepTypes": ["overrides", "resolutions"],
       "enabled": false
     },
     {
       "groupName": "Nix Dependencies",
       "groupSlug": "nix",
-      "matchManagers": [
-        "nix"
-      ],
-      "matchDepTypes": [
-        "flake-inputs"
-      ],
+      "matchManagers": ["nix"],
+      "matchDepTypes": ["flake-inputs"],
       "automerge": true,
       "platformAutomerge": true,
-      "schedule": [
-        "at any time"
-      ]
+      "schedule": ["at any time"]
     },
     {
       "groupName": "Npm Dependencies",
       "groupSlug": "npm",
-      "matchManagers": [
-        "npm"
-      ],
+      "matchManagers": ["npm"],
       "automerge": true,
       "platformAutomerge": true,
-      "schedule": [
-        "at any time"
-      ]
+      "schedule": ["at any time"]
     },
     {
       "groupName": "GitHub Actions Dependencies",
       "groupSlug": "github-actions",
-      "matchManagers": [
-        "github-actions"
-      ],
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch"],
       "automerge": true,
       "platformAutomerge": true,
-      "schedule": [
-        "at any time"
-      ]
+      "schedule": ["at any time"]
     },
     {
       "groupName": "All Non-Major Dependencies",
       "groupSlug": "all-minor-patch",
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
+      "matchUpdateTypes": ["minor", "patch"],
       "automerge": true,
       "platformAutomerge": true,
-      "schedule": [
-        "at any time"
-      ]
+      "schedule": ["at any time"]
     },
     {
       "groupName": "Git Submodules",
       "groupSlug": "git-submodules",
-      "matchManagers": [
-        "git-submodules"
-      ],
+      "matchManagers": ["git-submodules"],
       "automerge": true,
       "platformAutomerge": true,
-      "schedule": [
-        "at any time"
-      ]
+      "schedule": ["at any time"]
     },
     {
       "groupName": "Cargo Dependencies",
       "groupSlug": "cargo",
-      "matchManagers": [
-        "cargo"
-      ],
+      "matchManagers": ["cargo"],
       "automerge": true,
       "platformAutomerge": true,
-      "schedule": [
-        "at any time"
-      ]
+      "schedule": ["at any time"]
     },
     {
       "groupName": "Python Dependencies",
       "groupSlug": "python",
-      "matchManagers": [
-        "pep621"
-      ],
+      "matchManagers": ["pep621"],
       "automerge": true,
       "platformAutomerge": true,
-      "schedule": [
-        "at any time"
-      ]
+      "schedule": ["at any time"]
     },
     {
       "groupName": "All Major Dependencies",
       "groupSlug": "all-major",
-      "matchUpdateTypes": [
-        "major"
-      ],
+      "matchUpdateTypes": ["major"],
       "automerge": true,
       "platformAutomerge": true,
-      "schedule": [
-        "at any time"
-      ]
+      "schedule": ["at any time"]
+    },
+    {
+      "description": "Patched packages require a manual patch port and clean-install verification",
+      "matchManagers": ["npm"],
+      "matchPackageNames": ["frog", "openclaw"],
+      "enabled": false
     }
   ]
 }
