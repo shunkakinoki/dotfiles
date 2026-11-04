@@ -546,9 +546,11 @@ openai-compatibility:
       - api-key: "__SURPLUS_API_KEY__"
         proxy-url: "direct"
     models:
-      - name: "__DEEPSEEK_FLASH_1017__"
+      - name: "__DEEPSEEK_FLASH__"
         alias: "__DEEPSEEK_FLASH__"
-      - name: "__DEEPSEEK_FLASH_1017__"
+      - name: "__DEEPSEEK_FLASH__"
+        alias: "deepseek-v4.1-flash"
+      - name: "__DEEPSEEK_FLASH__"
         alias: "deepseek-v4-flash"
   - name: "nvidia"
     priority: 120
@@ -560,9 +562,11 @@ openai-compatibility:
         action: "continue-and-cooldown"
     api-key-entries: __NVIDIA_API_KEY_ENTRIES__
     models:
-      - name: "deepseek-ai/__DEEPSEEK_FLASH__"
+      - name: "deepseek-ai/__DEEPSEEK_FLASH_UNVERSIONED__"
         alias: "__DEEPSEEK_FLASH__"
-      - name: "deepseek-ai/__DEEPSEEK_FLASH__"
+      - name: "deepseek-ai/__DEEPSEEK_FLASH_UNVERSIONED__"
+        alias: "deepseek-v4.1-flash"
+      - name: "deepseek-ai/__DEEPSEEK_FLASH_UNVERSIONED__"
         alias: "deepseek-v4-flash"
       - name: "google/gemma-4-31b-it"
         alias: "gemma-4-31b-it"
@@ -591,6 +595,8 @@ openai-compatibility:
       - name: "__DEEPSEEK_FLASH_ZEN__"
         alias: "__DEEPSEEK_FLASH__"
       - name: "__DEEPSEEK_FLASH_ZEN__"
+        alias: "deepseek-v4.1-flash"
+      - name: "__DEEPSEEK_FLASH_ZEN__"
         alias: "deepseek-v4-flash"
   - name: "ollama-cloud"
     priority: 300
@@ -603,9 +609,11 @@ openai-compatibility:
     models:
       - name: "__FREE_MINIMAX_FLASH_OLLAMA__"
         alias: "__FREE_MINIMAX_FLASH__"
-      - name: "__DEEPSEEK_FLASH__"
+      - name: "__DEEPSEEK_FLASH_UNVERSIONED__"
         alias: "__DEEPSEEK_FLASH__"
-      - name: "__DEEPSEEK_FLASH__"
+      - name: "__DEEPSEEK_FLASH_UNVERSIONED__"
+        alias: "deepseek-v4.1-flash"
+      - name: "__DEEPSEEK_FLASH_UNVERSIONED__"
         alias: "deepseek-v4-flash"
   - name: "aliyun"
     priority: 200
@@ -623,6 +631,8 @@ openai-compatibility:
       - name: "__DEEPSEEK_FLASH_0731__"
         alias: "__DEEPSEEK_FLASH__"
       - name: "__DEEPSEEK_FLASH_0731__"
+        alias: "deepseek-v4.1-flash"
+      - name: "__DEEPSEEK_FLASH_0731__"
         alias: "deepseek-v4-flash"
   - name: "verboo"
     priority: 150
@@ -639,6 +649,8 @@ openai-compatibility:
       - name: "__DEEPSEEK_FLASH_0731__"
         alias: "__DEEPSEEK_FLASH__"
       - name: "__DEEPSEEK_FLASH_0731__"
+        alias: "deepseek-v4.1-flash"
+      - name: "__DEEPSEEK_FLASH_0731__"
         alias: "deepseek-v4-flash"
   - name: "commandcode"
     priority: 150
@@ -654,6 +666,8 @@ openai-compatibility:
     models:
       - name: "__DEEPSEEK_FLASH_0731__"
         alias: "__DEEPSEEK_FLASH__"
+      - name: "__DEEPSEEK_FLASH_0731__"
+        alias: "deepseek-v4.1-flash"
       - name: "__DEEPSEEK_FLASH_0731__"
         alias: "deepseek-v4-flash"
   - name: "surplus"
@@ -697,6 +711,8 @@ openai-compatibility:
     models:
       - name: "__DEEPSEEK_FLASH_OPENROUTER__"
         alias: "__DEEPSEEK_FLASH__"
+      - name: "__DEEPSEEK_FLASH_OPENROUTER__"
+        alias: "deepseek-v4.1-flash"
       - name: "__DEEPSEEK_FLASH_OPENROUTER__"
         alias: "deepseek-v4-flash"
       # Second provider for Luna: surplus is otherwise the only one that

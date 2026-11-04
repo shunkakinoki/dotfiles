@@ -1,7 +1,7 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "shunkakinoki/deepseek-v4.1-flash",
-  "small_model": "shunkakinoki/deepseek-v4.1-flash",
+  "model": "shunkakinoki/deepseek-v4.1-flash-1017",
+  "small_model": "shunkakinoki/deepseek-v4.1-flash-1017",
   "autoupdate": false,
   // Snapshots re-hash the whole worktree with git after every step, which on a
   // large monorepo checkout costs a core per session; sessions run in git
@@ -10,7 +10,7 @@
   "agent": {
     "code-reviewer": {
       "description": "Reviews code for best practices and potential issues",
-      "model": "shunkakinoki/deepseek-v4.1-flash",
+      "model": "shunkakinoki/deepseek-v4.1-flash-1017",
       "prompt": "You are a code reviewer. Focus on security, performance, and maintainability.",
       "tools": {
         // Disable file modification tools for review-only agent
@@ -44,8 +44,8 @@
         "gemini-3.8-flash": {
           "name": "Gemini 3.8 Flash (via shunkakinoki's CLIProxy)"
         },
-        "deepseek-v4.1-flash": {
-          "name": "Deepseek V4.1 Flash (via shunkakinoki's CLIProxy)"
+        "deepseek-v4.1-flash-1017": {
+          "name": "Deepseek V4.1 Flash 1017 (via shunkakinoki's CLIProxy)"
         },
         "gpt-6-luna": {
           "name": "GPT 6 Luna (via shunkakinoki's CLIProxy)"
@@ -91,8 +91,8 @@
         "gemini-3.8-flash": {
           "name": "Gemini 3.8 Flash (via local CLIProxyAPI)"
         },
-        "deepseek-v4.1-flash": {
-          "name": "Deepseek V4.1 Flash (via local CLIProxyAPI)"
+        "deepseek-v4.1-flash-1017": {
+          "name": "Deepseek V4.1 Flash 1017 (via local CLIProxyAPI)"
         },
         "gpt-6-luna": {
           "name": "GPT 6 Luna (via local CLIProxyAPI)"
@@ -142,8 +142,8 @@
         "apiKey": "{env:OLLAMA_API_KEY}"
       },
       "models": {
-        "deepseek-v4.1-flash": {
-          "name": "Deepseek V4.1 Flash (via Ollama Cloud)"
+        "deepseek-v4.1-flash-1017": {
+          "name": "Deepseek V4.1 Flash 1017 (via Ollama Cloud)"
         },
         "minimax-m3": {
           "name": "Minimax M3 (via Ollama Cloud)"

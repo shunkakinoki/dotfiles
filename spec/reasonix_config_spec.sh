@@ -15,7 +15,7 @@ The output should include 'api_key_env = "CLIPROXY_API_KEY"'
 End
 
 It 'keeps the generated config aligned with its template'
-When run bash -c "diff -u <(sed 's/__DEEPSEEK_FLASH__/deepseek-v4.1-flash/g' '$TEMPLATE') '$CONFIG'"
+When run bash -c "diff -u <(sed 's/__DEEPSEEK_FLASH__/deepseek-v4.1-flash-1017/g' '$TEMPLATE') '$CONFIG'"
 The status should be success
 End
 
@@ -73,7 +73,7 @@ It 'seeds config and mirrors the key when Reasonix has no state'
 When call hydrate
 The status should be success
 The stderr should include 'Seeded Reasonix config'
-The contents of file "$TEST_HOME/.reasonix/config.toml" should include 'deepseek-v4.1-flash'
+The contents of file "$TEST_HOME/.reasonix/config.toml" should include 'deepseek-v4.1-flash-1017'
 The contents of file "$TEST_HOME/.reasonix/.env" should equal 'CLIPROXY_API_KEY=test-key'
 End
 
@@ -84,7 +84,7 @@ check() {
   tomlq -c '[.default_model, .ui.theme, [.providers[] | [.name, .model]], .desktop.provider_access]' "$TEST_HOME/.reasonix/config.toml"
 }
 When call check
-The output should equal '["cliproxy-deepseek-flash","dark",[["mine","local"],["cliproxy-deepseek-flash","deepseek-v4.1-flash"]],["mine","cliproxy-deepseek-flash"]]'
+The output should equal '["cliproxy-deepseek-flash","dark",[["mine","local"],["cliproxy-deepseek-flash","deepseek-v4.1-flash-1017"]],["mine","cliproxy-deepseek-flash"]]'
 End
 
 It 'leaves an already hydrated config untouched'
