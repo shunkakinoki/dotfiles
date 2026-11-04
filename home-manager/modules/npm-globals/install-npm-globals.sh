@@ -318,6 +318,10 @@ if [ -n "$DEPS" ]; then
   while IFS= read -r entry; do
     dep="${entry%%=*}"
     wanted="${entry#*=}"
+    # Only the patch-aware install below may change these packages.
+    if jq -e --arg dep "$dep" '(.patchedDependencies // {}) | keys | any(capture("^(?<name>.+)@[^@]+$").name == $dep)' "$PACKAGE_JSON" >/dev/null; then
+      continue
+    fi
     # Extract minimum version from semver spec (e.g. "^2.1.92" -> "2.1.92")
     wanted_ver="${wanted//[^0-9.]/}"
     installed_ver=""
@@ -407,7 +411,11 @@ fi
 # patched package is also pinned in the global manifest: a copy left in
 # node_modules without a manifest entry passes the install check above, but
 # bun install never patches it.
-PATCHES=$(jq -c '.patchedDependencies // empty' "$PACKAGE_JSON" 2>/dev/null || true)
+PATCHES=$(jq -c '(.patchedDependencies // {}) | select(length > 0)' "$PACKAGE_JSON")
+if [ -n "$PATCHES" ] && [ ! -f "$GLOBAL_PKG" ]; then
+  echo "Error: global package manifest missing; cannot apply package patches" >&2
+  exit 1
+fi
 if [ -n "$PATCHES" ] && [ -f "$GLOBAL_PKG" ]; then
   GLOBAL_DIR="${HOME}/.bun/install/global"
   while IFS= read -r patch; do
@@ -424,6 +432,7 @@ if [ -n "$PATCHES" ] && [ -f "$GLOBAL_PKG" ]; then
     echo "Applied package patches to global install"
   else
     echo "Error: applying package patches to global install failed" >&2
+    purge_bun_npm_shim
     exit 1
   fi
   bun "${HOME}/dotfiles/scripts/package-patches.ts" installed "$GLOBAL_DIR"
