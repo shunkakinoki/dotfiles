@@ -3,6 +3,7 @@ let
   inherit (pkgs) lib;
   configFile = pkgs.writeText "ghostty-config" (
     builtins.replaceStrings [ "@FISH@" ] [ "${pkgs.fish}/bin/fish" ] (builtins.readFile ./config)
+    + lib.optionalString pkgs.stdenv.hostPlatform.isLinux "\nasync-backend = epoll\n"
   );
 in
 {
