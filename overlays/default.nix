@@ -127,17 +127,17 @@
     # Use the first tagged release that includes --attach on issue and PR commands.
     gh = prev.gh.overrideAttrs (_: {
       pname = "gh";
-      version = "2.103.2";
+      version = "2.103.3";
       src = prev.fetchFromGitHub {
         owner = "cli";
         repo = "cli";
-        rev = "4f2cfe92e3499f8581bf39db77e0a1431fa7b55c";
-        hash = "sha256-GI6+/umymZvRJ/+p1ydhjM4PjrdhGnq6qsD6TeSLnE0=";
+        rev = "63837fb778d6a39f02be0ce76ff89f2bc8d74bdc";
+        hash = "sha256-L18wWb8cPWscylx3C+uqE7/2bJt2ApE3ldQh6tXwSKk=";
       };
       vendorHash = "sha256-e9E2iTwF8kYNgW7Vs5upQBD2VT2lJ4dZcUDUk+igq/Y=";
       buildPhase = ''
         runHook preBuild
-        make GO_LDFLAGS="-s -w -X github.com/cli/cli/v2/internal/build.Date=nixpkgs" GH_VERSION=2.103.2 bin/gh manpages
+        make GO_LDFLAGS="-s -w -X github.com/cli/cli/v2/internal/build.Date=nixpkgs" GH_VERSION=2.103.3 bin/gh manpages
         runHook postBuild
       '';
     });
@@ -174,14 +174,14 @@
           });
         }
         // (
-          # t3code 0.0.40 pins one pnpm deps hash, but fetchPnpmDeps resolves
+          # t3code 0.1.6 pins one pnpm deps hash, but fetchPnpmDeps resolves
           # platform-specific optional packages, so it only reproduces on the
           # system upstream generated it from. Every x86_64-linux build fails on
           # the fixed-output mismatch; other systems keep the upstream hash.
           # https://github.com/numtide/llm-agents.nix
           let
             pnpmDepsHashes = {
-              x86_64-linux = "sha256-+UsoURSM4VP+CgF1fWROBEB85EuH+iJJM/xDPFigCKk=";
+              x86_64-linux = "sha256-gPQ9D1g2wV9htQuvxDK4EJJihF6sbras7q2O3XfCVUE=";
             };
             hash = pnpmDepsHashes.${prev.stdenv.hostPlatform.system} or null;
             t3code = prev.llm-agents.t3code.overrideAttrs (
@@ -231,16 +231,16 @@
   (_: prev: {
     boat-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "boat-cli";
-      version = "1.0.69";
+      version = "1.0.89";
       src = prev.fetchurl {
         url = "https://github.com/ariana-dot-dev/agent-server/releases/download/boat-cli-v${version}/boat-${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }-${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x64"}";
         sha256 =
           {
-            "aarch64-darwin" = "1cijzw3va1jf324zaing1n3hk6nb9mg42yl76d3vwaif62177h4l";
-            "aarch64-linux" = "131l4bnb8zilimc4d0dz2vw6lp1k3v1k14w8xsg98dm9irqz1nbh";
-            "x86_64-linux" = "0v6v05nyrphh3miw1cbjdmd9h0g1fbw2sz3dxxgqvvrpnslrxdp2";
+            "aarch64-darwin" = "0yssij4cgncny5wp31mmrwlzpwflmfmzf4camlizkgk1xcyb85py";
+            "aarch64-linux" = "1590215ic3n6f089i73zb24shgz6vc4m7kv9zks008blkzrg5yiv";
+            "x86_64-linux" = "0ihmj4dzv6b7z8kf7jgaqn3lxgxiqisvsybvdjvnc4b1qpxliw0z";
           }
           .${prev.stdenv.hostPlatform.system};
       };
@@ -309,17 +309,17 @@
 
     devin = prev.stdenvNoCC.mkDerivation rec {
       pname = "devin";
-      version = "3000.11.205";
+      version = "3000.11.234";
       src = prev.fetchurl {
         url = "https://static.devin.ai/cli/${version}/devin-${version}-${
           if prev.stdenv.hostPlatform.isAarch64 then "aarch64" else "x86_64"
         }-${if prev.stdenv.hostPlatform.isDarwin then "apple-darwin" else "unknown-linux"}.tar.gz";
         sha256 =
           {
-            "aarch64-darwin" = "d80c39678dc3ac6b62c25c1864ba6881086b4eeaadf9a3e3a4e86a30b41423df";
-            "x86_64-darwin" = "7079733209e3aeb46ff1fd11a41f4eb7f49de6c7f597775f3a03cf33b159e992";
-            "aarch64-linux" = "a9b10d318319439446eb5204b0d147cac01cb0a639c77f8740de73206a3181a5";
-            "x86_64-linux" = "2e65c8b93682258fc91f5e4cead92e3698338cebf1b31dbc32a3201cb63705c4";
+            "aarch64-darwin" = "35f17a21e53a49435e42fb9627731726aa8ef7fa63e5c3d9d43d0cc5ca43edaf";
+            "x86_64-darwin" = "55ef4f2d2b2c82b5258b7516eb1126549e6f10d6b418035676237bcc18e93e46";
+            "aarch64-linux" = "438ca7f8280b3ef0747afc406e827d9e182156000277a1660358ac4fbd04156e";
+            "x86_64-linux" = "201370cddd2924294e3ca6b46fd8ece49b5763953b644a1dd823fce5490cb41a";
           }
           .${prev.stdenv.hostPlatform.system};
       };
@@ -336,20 +336,20 @@
 
     moshi-hook = prev.stdenv.mkDerivation rec {
       pname = "moshi-hook";
-      version = "0.4.37";
+      version = "0.4.48";
       src = prev.fetchurl {
         url = "https://cdn.getmoshi.app/hook/v${version}/moshi-hook_${
           if prev.stdenv.hostPlatform.isDarwin then "Darwin" else "Linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x86_64"}.tar.gz";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "c401ba0adeaa46d38558ff862a584c824d32e64dc8d79d44daa53e81a6aab4af"
+            "d04778890c546a62b8576a79ed3710bcafb401db64953ff020a66d61f0eabb8c"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "58a62cc524373b72b89226a471893bc7f176bb4b09ae66c96487c7106d39f6bb"
+            "ebe7a322fb2474186fa29e93c93e7429f0bf9bdbde87cc0f3d36b87d0d386942"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "b43328f6af3846968f9dec2f741fa05cf4001ff931267a91c240d03ea4600a2d"
+            "f4befce30c86cca215096ada11be1518b34809448bec65f839371f0d2e76b457"
           else
-            "3fa694307f8e458334f0fb8e8de6441400f9c62f3e34ded9def31e6d1bb59b96";
+            "34ec4a0a5d1a758859a7a4ab19df484c3286a1735c17e32c454c757c6b3c2cbe";
       };
       sourceRoot = ".";
       dontConfigure = true;
@@ -363,20 +363,20 @@
     # Namespace's devbox CLI, not the unrelated Jetify devbox in nixpkgs.
     namespace-devbox = prev.stdenvNoCC.mkDerivation rec {
       pname = "namespace-devbox";
-      version = "0.0.205";
+      version = "0.0.208";
       src = prev.fetchurl {
         url = "https://get.namespace.so/packages/devbox/v${version}/devbox_${version}_${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}.tar.gz";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "10083bc684e4c35af63b4218d1f6cef9b8ad97bf22373484d3182ae56b864c68"
+            "194ef1f521cae4763bf43505a125c380cfc5c473c34aaeb8092eeadbc7f25fd2"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "805ddd5c162928a07512f48f79c2efae66f0c9e7c0ed4c36513f74c4ce66d4c0"
+            "d7970532c5d333f1defde1030a0033f0f3d9157835893ae75bbcf677f24f473f"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "f6e069f96e0ff27f8c894e82646bf53cdc7659e0724652922e2f58a377df62ff"
+            "3704039306ba7b545f4ed268d5b97e246fa4617802af6c96e1b1a54f44982359"
           else
-            "c5dedc5771591c88cf915e5d3690a7b6911418d71eb0d15f094c3eb8c6e0a029";
+            "7d0c590e3c2f149cd89f7c9cf94f27dc554cb3bc83c99e763f24deed986a7a06";
       };
       sourceRoot = ".";
       dontConfigure = true;
