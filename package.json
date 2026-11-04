@@ -142,6 +142,7 @@
     "@xai-official/grok",
     "acpx",
     "agent-browser",
+    "agent-desktop",
     "agentcash",
     "better-sqlite3",
     "betterwright",
