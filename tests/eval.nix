@@ -164,6 +164,7 @@ let
         };
       in
       assert nixosRunner.config.fileSystems."/".device == "/dev/sda1";
+      assert nixosRunner.config.services.journald.settings.Journal.Storage == "volatile";
       mkEvalCheck "nixos-runner" nixosRunner.config.system.build.toplevel;
 
     eval-nixos-matic =

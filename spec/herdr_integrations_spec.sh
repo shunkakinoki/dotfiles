@@ -25,23 +25,23 @@ Before 'setup'
 After 'cleanup'
 
 It 'does not rewrite integrations that are already current'
-  printf 'codex: current (v8)\nopencode: current (v13)\n' >"$TEMP_DIR/status"
-  When run env HERDR_TEST_STATUS="$TEMP_DIR/status" bash "$SCRIPT" "$TEMP_DIR/herdr"
-  The status should be success
-  The output should equal ''
+printf 'codex: current (v8)\nopencode: current (v13)\n' >"$TEMP_DIR/status"
+When run env HERDR_TEST_STATUS="$TEMP_DIR/status" bash "$SCRIPT" "$TEMP_DIR/herdr"
+The status should be success
+The output should equal ''
 End
 
 It 'installs only an integration that is missing'
-  printf 'codex: current (v8)\nopencode: not installed\n' >"$TEMP_DIR/status"
-  When run env HERDR_TEST_STATUS="$TEMP_DIR/status" bash "$SCRIPT" "$TEMP_DIR/herdr"
-  The status should be success
-  The output should equal 'install:opencode'
+printf 'codex: current (v8)\nopencode: not installed\n' >"$TEMP_DIR/status"
+When run env HERDR_TEST_STATUS="$TEMP_DIR/status" bash "$SCRIPT" "$TEMP_DIR/herdr"
+The status should be success
+The output should equal 'install:opencode'
 End
 
 It 'stops when integration status is unavailable'
-  printf 'codex: current (v8)\nopencode: current (v13)\n' >"$TEMP_DIR/status"
-  When run env HERDR_TEST_STATUS="$TEMP_DIR/status" HERDR_TEST_STATUS_EXIT=1 bash "$SCRIPT" "$TEMP_DIR/herdr"
-  The status should not be success
-  The output should equal ''
+printf 'codex: current (v8)\nopencode: current (v13)\n' >"$TEMP_DIR/status"
+When run env HERDR_TEST_STATUS="$TEMP_DIR/status" HERDR_TEST_STATUS_EXIT=1 bash "$SCRIPT" "$TEMP_DIR/herdr"
+The status should not be success
+The output should equal ''
 End
 End

@@ -57,7 +57,10 @@ It 'waits for a runtime record published during service startup'
 rm -f "$T3CODE_HOME/userdata/server-runtime.json"
 export T3_SERVICE_READY_TIMEOUT_MS=3000
 publish_record() {
-  (sleep 0.3; printf '{"pid":%s}\n' "$$" >"$T3CODE_HOME/userdata/server-runtime.json") &
+  (
+    sleep 0.3
+    printf '{"pid":%s}\n' "$$" >"$T3CODE_HOME/userdata/server-runtime.json"
+  ) &
   publisher=$!
   node "$SCRIPT"
   result=$?

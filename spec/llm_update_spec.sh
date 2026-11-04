@@ -405,8 +405,8 @@ When run bash -c "section=\$(sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' c
 The status should be success
 End
 
-It 'orders DeepSeek providers as OpenCode then Aliyun then Verboo then OpenRouter then Surplus'
-When run bash -c "grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 300' && grep -A 2 'name: \"aliyun\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 200' && grep -A 2 'name: \"verboo\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 150' && grep -A 2 'name: \"openrouter\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 100' && grep -A 2 'name: \"surplus\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 150'"
+It 'prefers Aliyun, Verboo and Surplus over OpenRouter and OpenCode'
+When run bash -c "grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 90' && grep -A 2 'name: \"aliyun\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 200' && grep -A 2 'name: \"verboo\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 150' && grep -A 2 'name: \"openrouter\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 100' && grep -A 2 'name: \"surplus\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 150'"
 The status should be success
 End
 
@@ -416,7 +416,7 @@ The status should be success
 End
 
 It 'only exposes the routed models through the compatibility aliases'
-When run bash -c "allowed=\$(jq -r '.[\"gpt-luna\"], .[\"deepseek-flash\"], .[\"deepseek-flash-uncensored\"]' models.json; jq -r '.[]' models.free.json; printf '%s\n' deepseek-v4-flash gemma-4-31b-it priority:free); while IFS= read -r alias; do [ \"\$alias\" = free ] || printf '%s\n' \"\$allowed\" | grep -Fxq \"\$alias\" || { echo \"unexpected alias: \$alias\"; exit 1; }; done < <(sed -n 's/^[[:space:]]*alias: \"\\(.*\\)\"/\\1/p' config/cliproxyapi/config.template.yaml)"
+When run bash -c "allowed=\$(jq -r '.[\"gpt-luna\"], .[\"deepseek-flash\"], .[\"deepseek-flash-uncensored\"]' models.json; jq -r '.[]' models.free.json; printf '%s\n' deepseek-v4-flash gemma-4-31b-it claude-haiku priority:free); while IFS= read -r alias; do [ \"\$alias\" = free ] || printf '%s\n' \"\$allowed\" | grep -Fxq \"\$alias\" || { echo \"unexpected alias: \$alias\"; exit 1; }; done < <(sed -n 's/^[[:space:]]*alias: \"\\(.*\\)\"/\\1/p' config/cliproxyapi/config.template.yaml)"
 The status should be success
 End
 End

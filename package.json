@@ -105,7 +105,7 @@
   },
   "patchedDependencies": {
     "frog@1.1.0": "patches/frog@1.1.0.patch",
-    "openclaw@2026.10.5": "patches/openclaw@2026.10.5.patch"
+    "openclaw@2026.10.8": "patches/openclaw@2026.10.8.patch"
   },
   "trustedDependencies": [
     "@0xsequence/codegenie",

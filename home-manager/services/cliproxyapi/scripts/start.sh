@@ -193,6 +193,7 @@ apply_model_policies() {
     for f in "$auth_dir"/*.json; do
       [ -f "$f" ] || continue
       credential="$(basename "$f")"
+      # shellcheck disable=SC2016 # jq variables are evaluated by jq.
       policy="$(@jq@ -r --arg credential "$credential" 'first(.[] | select(.credential == $credential) | .model_family // empty)' "$mapping")"
       if [ -n "$policy" ]; then
         exclusions_json="$(model_policy_exclusions "$policy" | @jq@ -Rsc 'split("\n") | map(select(length > 0))')" || exit 1
@@ -200,7 +201,10 @@ apply_model_policies() {
         family_exclusion_json="$(model_family_exclusion "$policy" | @jq@ -Rsc 'split("\n") | map(select(length > 0))')" || exit 1
         generated_policy="${policy,,}"
       else
-        exclusions_json="$(while IFS= read -r family; do [ -n "$family" ] || continue; model_family_exclusion "$family" || exit 1; done <<<"$claimed_families" | @jq@ -Rsc 'split("\n") | map(select(length > 0))')" || exit 1
+        exclusions_json="$(while IFS= read -r family; do
+          [ -n "$family" ] || continue
+          model_family_exclusion "$family" || exit 1
+        done <<<"$claimed_families" | @jq@ -Rsc 'split("\n") | map(select(length > 0))')" || exit 1
         aliases_json='[]'
         family_exclusion_json='[]'
         if [ "$exclusions_json" = '[]' ]; then

@@ -112,7 +112,7 @@ EOF
 { inputs }:
 [
   (_: prev: {
-    gh = (prev.gh.override { buildGoModule = prev.buildGo127Module; }).overrideAttrs (_: {
+    gh = prev.gh.overrideAttrs (_: {
       version = "2.98.0";
       src = prev.fetchFromGitHub {
         rev = "0000000000000000000000000000000000000000";
@@ -266,6 +266,8 @@ EOF
 It 'uses resolved release values to calculate the GitHub CLI vendor hash'
 When run resolve_gh_release
 The output should include 'gh upgraded from 2.98.0 to 2.100.0'
+The output should include 'in pkgs.gh.overrideAttrs'
+The output should not include 'buildGoModule ='
 The output should include 'version = "2.100.0"; src = pkgs.fetchFromGitHub'
 The output should include 'rev = "45437bc7eeeb3359bbfddd1742f79de7652fd3e2"; hash = "sha256-9tnSQPSqllE+Ke6LKyNbnOF1drzdEwesEuPdmWD1X5c="'
 The output should include 'vendorHash = "sha256-ZqUs2BnasF3QBX0I2Sxh2A/CnO61Vy6gRn1hkf0n9AY=";'
@@ -280,6 +282,8 @@ The output should include 'devin upgraded from 3000.10.20 to 3000.10.21'
 The output should include 'namespace-devbox upgraded from 0.0.195 to 0.0.196'
 The output should include 't3code pnpm hash refreshed for 0.0.36'
 The output should include 'gh upgraded from 2.98.0 to 2.100.0'
+The output should include 'in pkgs.gh.overrideAttrs'
+The output should not include 'buildGoModule ='
 The output should include '45437bc7eeeb3359bbfddd1742f79de7652fd3e2'
 The output should include 'version = "0.55.0"'
 The output should include 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'

@@ -3,9 +3,9 @@ on:
   push:
     branches:
       - main
-  # pull_request:
-  #   branches:
-  #     - main
+  pull_request:
+    branches:
+      - main
   schedule:
     - cron: '0 4 * * *'
   workflow_dispatch:
@@ -44,7 +44,7 @@ jobs:
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run ShellSpec
-        run: nix shell nixpkgs#shellspec nixpkgs#ripgrep --command shellspec --format documentation --jobs 1
+        run: nix shell nixpkgs#shellspec nixpkgs#ripgrep nixpkgs#fish nixpkgs#zsh --command shellspec --format documentation --jobs 1
   shell-check:
     if: always()
     needs:

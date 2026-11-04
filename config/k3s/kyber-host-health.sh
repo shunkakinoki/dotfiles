@@ -174,7 +174,6 @@ check_image_filesystem() {
   fi
 }
 
-
 check_atuin_storage() {
   local path="/home/ubuntu/.local/share/atuin" actual bytes=0 size file
   if ! actual="$(findmnt --noheadings --raw --mountpoint "$path" --output UUID,FSROOT)" ||

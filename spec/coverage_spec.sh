@@ -618,6 +618,7 @@ config/devin/hooks/notify.sh
 config/devin/hooks/pushover.sh
 config/dsh/hydrate.sh
 config/reasonix/hydrate.sh
+home-manager/programs/atuin/hook-client.sh
 home-manager/services/reasonix/start.sh
 config/codex/hooks/notify.sh
 config/codex/hooks/pushover.sh
@@ -647,6 +648,7 @@ config/k3s/activate-client.sh
 config/k3s/activate.sh
 config/k3s/kyber-host-alert.sh
 config/k3s/kyber-host-health.sh
+config/k3s/atuin-storage-guard.sh
 config/llm/hydrate.sh
 config/noctalia/ac-idle-inhibit.sh
 config/noctalia/lock-before-sleep.sh
