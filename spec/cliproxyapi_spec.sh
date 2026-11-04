@@ -297,7 +297,7 @@ When run bash -c "sed -n '/name: \"surplus-deepseek\"/,/name: \"nvidia\"/p' '$PW
 The output should include 'priority: 301'
 The output should include 'base-url: "https://api.surplusintelligence.ai/v1"'
 The output should include 'api-key: "__SURPLUS_API_KEY__"'
-The output should include 'name: "deepseek-v4.1-flash"'
+The output should include 'name: "deepseek-v4.1-flash-1017"'
 The output should include 'alias: "deepseek-v4.1-flash"'
 The status should be success
 End

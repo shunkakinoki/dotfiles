@@ -546,9 +546,9 @@ openai-compatibility:
       - api-key: "__SURPLUS_API_KEY__"
         proxy-url: "direct"
     models:
-      - name: "__DEEPSEEK_FLASH__"
+      - name: "__DEEPSEEK_FLASH_1017__"
         alias: "__DEEPSEEK_FLASH__"
-      - name: "__DEEPSEEK_FLASH__"
+      - name: "__DEEPSEEK_FLASH_1017__"
         alias: "deepseek-v4-flash"
   - name: "nvidia"
     priority: 120

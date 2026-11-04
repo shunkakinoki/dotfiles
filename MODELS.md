@@ -55,6 +55,7 @@ because the upstream ID differs from the canonical one:
 | `__GPT_IMAGE_OPENROUTER__` | `openai/gpt-5.4-image-2` | OpenRouter, aliased back to `gpt-image-2` |
 | `__GPT_LUNA_OPENROUTER__` | `openai/gpt-6-luna` | OpenRouter, aliased back to `gpt-6-luna` |
 | `__DEEPSEEK_FLASH_OPENROUTER__` | `deepseek/deepseek-v4.1-flash` | OpenRouter, aliased back to `deepseek-v4.1-flash` |
+| `__DEEPSEEK_FLASH_1017__` | `deepseek-v4.1-flash-1017` | Surplus primary, aliased back to `deepseek-v4.1-flash` |
 | `__DEEPSEEK_FLASH_0731__` | `deepseek-v4-flash-0731` | Aliyun, aliased back to `deepseek-v4.1-flash` |
 | `__DEEPSEEK_FLASH_ZEN__` | `deepseek-v4-flash` | OpenCode Zen, aliased back to `deepseek-v4.1-flash` |
 
@@ -197,13 +198,14 @@ above it is cooling down or unavailable.
 
 | Provider | Priority | DeepSeek models served |
 | --- | --- | --- |
-| `opencode` | 300 | `deepseek-v4-flash` aliased to `deepseek-v4.1-flash` |
+| `surplus-deepseek` | 301 | `deepseek-v4.1-flash-1017` aliased to `deepseek-v4.1-flash` |
+| `ollama-cloud` | 300 | `deepseek-v4.1-flash` aliased to `deepseek-v4.1-flash` |
+| `opencode` | 90 | `deepseek-v4-flash` aliased to `deepseek-v4.1-flash` |
 | `aliyun` | 200 | `deepseek-v4-flash-0731` aliased to `deepseek-v4.1-flash` |
 | `openrouter` | 100 | `deepseek/deepseek-v4.1-flash` aliased to `deepseek-v4.1-flash` |
 | `surplus` | 150 | `deepseek-v4.1-flash-uncensored` served under its own alias |
-So `deepseek-v4.1-flash` requests rotate across the priority-300 credentials
-first; Aliyun and OpenRouter only serve once the tier above them is
-unavailable. `deepseek-v4.1-flash-uncensored` is served only by Surplus, its
+So `deepseek-v4.1-flash` requests use Surplus revision 1017 at priority 301
+first; lower tiers only serve once the tier above them is unavailable. `deepseek-v4.1-flash-uncensored` is served only by Surplus, its
 sole upstream.
 
 ### Provider failure classification
