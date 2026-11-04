@@ -100,6 +100,8 @@ let
     "export PATH=${toolchain}:$PATH\n"
     + setLibraryPath
     + "export T3_SYSTEMD_RUN=${pkgs.systemd}/bin/systemd-run\n"
+    + "export T3_SYSTEMCTL=${pkgs.systemd}/bin/systemctl\n"
+    + "export T3_CHECK_SERVICE=${./check-service.cjs}\n"
     + builtins.readFile ./cli.sh
   );
   # macOS hosts run the desktop app, which needs neither the Linux library path
@@ -196,6 +198,8 @@ in
       CPUWeight=1000
       ExecStart=
       ExecStart=${launcher}
+      # A live launcher with an unmanaged owner is not a healthy service.
+      ExecStartPost=${pkgs.nodejs}/bin/node ${./check-service.cjs}
       ${lib.optionalString (t3ServeRoute != null) ''
         Environment=T3CODE_TAILSCALE_SERVE=true
         Environment=T3CODE_TAILSCALE_SERVE_PORT=${toString t3ServeRoute.httpsPort}
@@ -225,6 +229,7 @@ in
         "T3_PREPARE_RUNTIME=${prepareRuntime}"
         "T3_SETUP_BROWSER=${setupBrowser}"
         "T3_SYSTEMCTL=${pkgs.systemd}/bin/systemctl"
+        "T3_CHECK_SERVICE=${./check-service.cjs}"
         "T3_ENSURE_SERVICE=${if inputs.host.isKamino or false then "1" else "0"}"
         "XDG_RUNTIME_DIR=%t"
         "DBUS_SESSION_BUS_ADDRESS=unix:path=%t/bus"
