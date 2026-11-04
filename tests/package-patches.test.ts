@@ -79,6 +79,55 @@ test("the updater excludes scoped and unscoped patches", () => {
   ).toEqual(["other"]);
 });
 
+test("accepts exact optional patch pins and rejects conflicting pins", () => {
+  const { root, manifest } = fixture();
+  writeFileSync(
+    join(root, "package.json"),
+    JSON.stringify({
+      optionalDependencies: manifest.dependencies,
+      patchedDependencies: manifest.patchedDependencies,
+    }),
+  );
+  expect(() => checkPatches(root)).not.toThrow();
+  writeFileSync(
+    join(root, "package.json"),
+    JSON.stringify({ ...manifest, optionalDependencies: { tool: "1.0.1" } }),
+  );
+  expect(() => checkPatches(root)).toThrow("must be pinned");
+});
+
+test("the global missing-package loop leaves patched packages to the patch install", () => {
+  const { root, manifest } = fixture();
+  writeFileSync(
+    join(root, "package.json"),
+    JSON.stringify({ ...manifest, dependencies: { ...manifest.dependencies, other: "1.0.0" } }),
+  );
+  const script = readFileSync(
+    resolve(import.meta.dir, "../home-manager/modules/npm-globals/install-npm-globals.sh"),
+    "utf8",
+  );
+  const loop = script.slice(
+    script.indexOf("# Build list of packages"),
+    script.indexOf("# Install missing packages one by one"),
+  );
+  const result = Bun.spawnSync(["bash", "-c", `${loop}\nprintf '%s\\n' "\u0024{MISSING[@]}"`], {
+    env: { ...process.env, HOME: root, PACKAGE_JSON: join(root, "package.json") },
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  expect(result.exitCode).toBe(0);
+  expect(result.stdout.toString().trim()).toBe("other");
+});
+
+test("managed activation and the service provide Git for postimage checks", () => {
+  const config = readFileSync(
+    resolve(import.meta.dir, "../home-manager/modules/npm-globals/default.nix"),
+    "utf8",
+  );
+  expect(config.match(/^    export PATH=.*$/m)?.[0]).toContain("${pkgs.git}/bin");
+  expect(config.match(/"PATH=.*"/)?.[0]).toContain("${pkgs.git}/bin");
+});
+
 test("Renovate explicitly excludes every patched package", () => {
   const root = resolve(import.meta.dir, "..");
   const manifest = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));

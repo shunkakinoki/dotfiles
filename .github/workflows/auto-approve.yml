@@ -40,7 +40,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
   auto-approve-check:
     name: ${{ github.event_name == 'pull_request_target' && 'auto-approve-target' || 'auto-approve-check' }}
-    if: always() && github.event_name != 'pull_request_target'
+    if: always()
     needs:
       - auto-approve-bot
       - package-patches
@@ -51,4 +51,4 @@ jobs:
         uses: re-actors/alls-green@release/v1
         with:
           jobs: ${{ toJSON(needs) }}
-          allowed-skips: auto-approve-bot
+          allowed-skips: ${{ github.event_name == 'pull_request_target' && 'package-patches' || 'auto-approve-bot' }}

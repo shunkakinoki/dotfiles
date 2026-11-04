@@ -51,7 +51,11 @@ export function checkPatches(root: string) {
     );
   }
   for (const patch of patches) {
-    if (manifest.dependencies?.[patch.name] !== patch.version) {
+    const pins = [
+      manifest.dependencies?.[patch.name],
+      manifest.optionalDependencies?.[patch.name],
+    ].filter((pin) => pin !== undefined);
+    if (pins.length === 0 || pins.some((pin) => pin !== patch.version)) {
       throw new Error(
         `${patch.name} must be pinned to its patch version ${patch.version}; port the patch before upgrading`,
       );
@@ -86,10 +90,7 @@ export function checkInstalled(root: string, installedRoot: string) {
     if (manifestAt(directory).version !== patch.version)
       throw new Error(`Installed ${patch.name} does not match ${patch.version}`);
     // Reverse application proves every hunk's postimage exists in the installed package.
-    run(
-      ["git", "apply", "--reverse", "--check", resolve(root, patch.path)],
-      directory,
-    );
+    run(["git", "apply", "--reverse", "--check", resolve(root, patch.path)], directory);
   }
 }
 
