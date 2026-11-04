@@ -100,7 +100,7 @@ let
     "export PATH=${toolchain}:$PATH\n"
     + setLibraryPath
     + "export T3_SYSTEMD_RUN=${pkgs.systemd}/bin/systemd-run\n"
-    + "export T3_SYSTEMCTL=${pkgs.systemd}/bin/systemctl\n"
+    + "export T3_SYSTEMCTL=${config.systemd.user.systemctlPath}\n"
     + "export T3_CHECK_SERVICE=${./check-service.cjs}\n"
     + builtins.readFile ./cli.sh
   );
@@ -126,7 +126,7 @@ let
   ensureService = pkgs.writeShellScript "t3-ensure-service" (
     "export PATH=${toolchain}:$PATH\n"
     + "export T3_SERVICE_CLI=${runtimeCli}\n"
-    + "export T3_SYSTEMCTL=${pkgs.systemd}/bin/systemctl\n"
+    + "export T3_SYSTEMCTL=${config.systemd.user.systemctlPath}\n"
     + "export T3_CHECK_SERVICE=${./check-service.cjs}\n"
     + builtins.readFile ./ensure-service.sh
   );

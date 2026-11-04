@@ -19,7 +19,7 @@ in
   home.activation.installNpmGlobals = config.lib.dag.entryAfter activationDeps ''
     export PATH=${pkgs.bun}/bin:${pkgs.jq}/bin:${pkgs.curl}/bin:${pkgs.git}/bin:${pkgs.gnutar}/bin:${pkgs.gzip}/bin:$HOME/.local/bin:${pkgs.nodejs}/bin:$PATH
     export BUN_INSTALL="$HOME/.bun"
-    ${lib.optionalString (!isDarwin) ''export SYSTEMCTL_BIN="${pkgs.systemd}/bin/systemctl"''}
+    ${lib.optionalString (!isDarwin) ''export SYSTEMCTL_BIN="${config.systemd.user.systemctlPath}"''}
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./install-npm-globals.sh}"
   '';
 
