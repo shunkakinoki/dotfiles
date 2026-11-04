@@ -153,6 +153,17 @@
       "schedule": [
         "at any time"
       ]
+    },
+    {
+      "description": "Patched packages require a manual patch port and clean-install verification",
+      "matchManagers": [
+        "npm"
+      ],
+      "matchPackageNames": [
+        "frog",
+        "openclaw"
+      ],
+      "enabled": false
     }
   ]
 }

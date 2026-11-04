@@ -46,6 +46,9 @@ if ! command -v jq &>/dev/null; then
   exit 0
 fi
 
+# Reject stale patch keys before any global package installation can run.
+bun "${HOME}/dotfiles/scripts/package-patches.ts" check
+
 repair_sqlite3_native_binding() {
   local sqlite3_dir="${GLOBAL_MODULES}/sqlite3"
   local global_install_dir="${HOME}/.bun/install/global"
@@ -420,8 +423,10 @@ if [ -n "$PATCHES" ] && [ -f "$GLOBAL_PKG" ]; then
   if (cd "$GLOBAL_DIR" && timeout 600 bun install); then
     echo "Applied package patches to global install"
   else
-    echo "Warning: applying package patches to global install failed" >&2
+    echo "Error: applying package patches to global install failed" >&2
+    exit 1
   fi
+  bun "${HOME}/dotfiles/scripts/package-patches.ts" installed "$GLOBAL_DIR"
   purge_bun_npm_shim
 fi
 
