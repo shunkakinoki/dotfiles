@@ -12,6 +12,12 @@ let
   modules = import ./modules;
   nix = import ./nix;
   packages = import ./packages { inherit pkgs inputs isRunner; };
+  hostIdentityPath = lib.makeBinPath [
+    pkgs.inetutils
+    pkgs.coreutils
+    pkgs.tailscale
+    pkgs.jq
+  ];
   programs = import ./programs {
     inherit config lib pkgs;
     sources = { };
@@ -54,15 +60,8 @@ in
     lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && inputs.host.nodeName != "unknown")
       (
         config.lib.dag.entryBefore [ "backupExistingFiles" "checkLinkTargets" "writeBoundary" ] ''
-          PATH=${
-            lib.makeBinPath [
-              pkgs.inetutils
-              pkgs.coreutils
-              pkgs.tailscale
-              pkgs.jq
-            ]
-          } \
-            ${pkgs.bash}/bin/bash ${./activation/check-host-identity.sh} ${lib.escapeShellArg inputs.host.nodeName}
+          export PATH=${hostIdentityPath}:$PATH
+          ${pkgs.bash}/bin/bash ${./activation/check-host-identity.sh} ${lib.escapeShellArg inputs.host.nodeName}
         ''
       );
 
