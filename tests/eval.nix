@@ -320,6 +320,8 @@ let
             cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text
           );
         assert !(cfg.home.activation ? tailscaleServeRoutes);
+        assert lib.hasInfix "Environment=T3CODE_HOST=127.0.0.1"
+          cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text;
         mkEvalCheck "home-linux-rust-linker" linux.activationPackage;
     }
     // lib.optionalAttrs (system == "x86_64-linux") {
@@ -385,6 +387,8 @@ let
         assert lib.hasInfix "Environment=T3CODE_TAILSCALE_SERVE=true"
           cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text;
         assert lib.hasInfix "Environment=T3CODE_TAILSCALE_SERVE_PORT=443"
+          cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text;
+        assert lib.hasInfix "Environment=T3CODE_HOST=127.0.0.1"
           cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text;
         # Ubuntu ships the desktop libraries; a Nix-built copy would break every
         # agent the service spawns with GLIBC_ABI_GNU2_TLS, so the unit must not
