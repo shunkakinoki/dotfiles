@@ -69,8 +69,6 @@ lib.mkIf host.isKyber {
       # Writes stay under the user.slice ceiling instead: agent children share
       # this cgroup, so a per-unit write cap stalls every one of them at once.
       IOAccounting = true;
-      IOReadBandwidthMax = "/ 20M";
-      IOReadIOPSMax = "/ 100";
       EnvironmentFile = [ "-${homeDir}/dotfiles/.env" ];
       Environment = [
         "HOME=${homeDir}"
@@ -114,7 +112,7 @@ lib.mkIf host.isKyber {
 
   systemd.user.services.openclaw-state-maintenance = {
     Unit = {
-      Description = "Prune and compact the OpenClaw shared state database";
+      Description = "Compact OpenClaw state while the gateway is already offline";
       X-SwitchMethod = "keep-old";
     };
     Service = {
@@ -122,17 +120,13 @@ lib.mkIf host.isKyber {
       ExecStart = "${stateMaintenance}/bin/openclaw-state-maintenance";
       TimeoutStartSec = "30m";
       IOAccounting = true;
-      IOReadBandwidthMax = "/ 20M";
-      IOWriteBandwidthMax = "/ 10M";
-      IOReadIOPSMax = "/ 100";
-      IOWriteIOPSMax = "/ 50";
       EnvironmentFile = [ "-${homeDir}/dotfiles/.env" ];
       Environment = [
         "HOME=${homeDir}"
         "PATH=${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin"
         # Without these the unit's own `systemctl --user` calls cannot reach the
-        # session bus, so stopping the gateway silently fails and every
-        # state-owning step is refused.
+        # session bus, so the gateway-state read is unknown and maintenance
+        # cannot establish that offline work is allowed.
         "XDG_RUNTIME_DIR=%t"
         "DBUS_SESSION_BUS_ADDRESS=unix:path=%t/bus"
       ];

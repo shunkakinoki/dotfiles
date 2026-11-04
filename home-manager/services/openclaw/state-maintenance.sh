@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
-# Bound the shared state database. CLI commands open a read-only snapshot whose
-# time budget scales with file size, so an unbounded openclaw.sqlite eventually
-# makes every state-backed command (including `openclaw message send`, which the
-# orchestrator pages through) fail before it can do anything.
+# Reclaim free pages only while the gateway is already offline. CLI snapshot
+# budgets scale with file size, so an unbounded openclaw.sqlite eventually
+# prevents state-backed commands, including orchestration paging, from working.
 #
-# This job only reclaims free pages; keeping the writers themselves bounded is a
-# config concern.
+# Automatic compaction must not interrupt the scheduler and its fleet refills.
+# This only reclaims free pages; keeping writers bounded is a config concern.
 
 STATE_DB="${HOME}/.openclaw/state/openclaw.sqlite"
 SNAPSHOT_REPO="${HOME}/Backups/openclaw-sqlite"
@@ -32,25 +31,16 @@ SYSTEMCTL=/usr/bin/systemctl
 # shared disk only for compaction to be refused.
 gateway_state=$("${SYSTEMCTL}" --user is-active openclaw-gateway.service || true)
 case "${gateway_state}" in
-active) gateway_was_active=1 ;;
-inactive | failed) gateway_was_active=0 ;;
+active)
+  log "gateway active; skipping offline maintenance"
+  exit 0
+  ;;
+inactive | failed) ;;
 *)
   log "cannot read gateway state (${gateway_state:-no answer}); skipping"
   exit 1
   ;;
 esac
-
-# shellcheck disable=SC2329 # invoked via the EXIT trap below
-restore_gateway() {
-  if [ "${gateway_was_active}" -eq 1 ]; then
-    "${SYSTEMCTL}" --user start openclaw-gateway.service || log "gateway restart failed"
-  fi
-}
-trap restore_gateway EXIT
-
-if [ "${gateway_was_active}" -eq 1 ]; then
-  "${SYSTEMCTL}" --user stop openclaw-gateway.service
-fi
 
 size_bytes=0
 if [ -f "${STATE_DB}" ]; then

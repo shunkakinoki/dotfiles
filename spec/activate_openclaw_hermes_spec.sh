@@ -42,13 +42,13 @@ When run bash -c "grep -F 'gateway run --port 18789 --bind loopback' '$PWD/home-
 The output should include 'gateway run --port 18789 --bind loopback'
 End
 
-It 'bounds gateway root-disk reads and leaves writes to the user slice'
-When run bash -c "gateway=\$(sed -n '/systemd.user.services.openclaw-gateway =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -q 'IOAccounting = true' <<<\"\$gateway\" && grep -q 'IOReadBandwidthMax = \"/ 20M\"' <<<\"\$gateway\" && grep -q 'IOReadIOPSMax = \"/ 100\"' <<<\"\$gateway\" && ! grep -q 'IOWrite' <<<\"\$gateway\""
+It 'accounts for gateway I/O without bandwidth or IOPS throttles'
+When run bash -c "gateway=\$(sed -n '/systemd.user.services.openclaw-gateway =/,/Install = {/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -q 'IOAccounting = true' <<<\"\$gateway\" && ! grep -qE 'IO(Read|Write)(Bandwidth|IOPS)Max' <<<\"\$gateway\""
 The status should be success
 End
 
-It 'bounds scheduled state maintenance time and disk I/O'
-When run bash -c "maintenance=\$(sed -n '/systemd.user.services.openclaw-state-maintenance =/,/systemd.user.timers.openclaw-state-maintenance =/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -q 'TimeoutStartSec = \"30m\"' <<<\"\$maintenance\" && grep -q 'IOAccounting = true' <<<\"\$maintenance\" && grep -q 'IOReadBandwidthMax = \"/ 20M\"' <<<\"\$maintenance\" && grep -q 'IOWriteBandwidthMax = \"/ 10M\"' <<<\"\$maintenance\" && grep -q 'IOReadIOPSMax = \"/ 100\"' <<<\"\$maintenance\" && grep -q 'IOWriteIOPSMax = \"/ 50\"' <<<\"\$maintenance\""
+It 'bounds offline maintenance time without bandwidth or IOPS throttles'
+When run bash -c "maintenance=\$(sed -n '/systemd.user.services.openclaw-state-maintenance =/,/systemd.user.timers.openclaw-state-maintenance =/p' '$PWD/home-manager/services/openclaw/default.nix'); grep -q 'TimeoutStartSec = \"30m\"' <<<\"\$maintenance\" && grep -q 'IOAccounting = true' <<<\"\$maintenance\" && ! grep -qE 'IO(Read|Write)(Bandwidth|IOPS)Max' <<<\"\$maintenance\""
 The status should be success
 End
 
