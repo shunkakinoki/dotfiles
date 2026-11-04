@@ -47,6 +47,7 @@
     "@xai-official/grok": "1.0.70",
     "acpx": "^0.21.1",
     "agent-browser": "^0.39.4",
+    "agent-desktop": "^1.0.1",
     "agentcash": "^0.17.1",
     "betterwright": "^2.9.0",
     "btca": "^2.0.5",
