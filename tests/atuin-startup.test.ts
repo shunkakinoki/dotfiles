@@ -2,6 +2,7 @@ import { afterEach, expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
 import {
   chmodSync,
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -23,7 +24,9 @@ function fixture() {
   return { root, bin };
 }
 function executable(path: string, text: string) {
-  writeFileSync(path, text);
+  const bash = Bun.which("bash");
+  if (!bash) throw new Error("Bash required");
+  writeFileSync(path, text.replace(/^#!\/usr\/bin\/env bash\n/, `#!${bash}\n`));
   chmodSync(path, 0o755);
 }
 function wrapper(bin: string, actual: string) {
@@ -194,7 +197,11 @@ test("host health escalates the urgent root band independently of the earlier wa
   expect(result.stdout.toString()).toContain("50 GiB kubelet emergency floor");
 });
 
-test.skipIf(process.platform !== "linux")(
+// Nix build sandboxes do not expose /proc's mount table. This live systemd
+// condition check needs that table; the mocked storage-guard test runs everywhere.
+test.skipIf(
+  process.platform !== "linux" || !existsSync("/proc/self/mountinfo")
+)(
   "systemd mount condition rejects an ordinary directory without starting services",
   () => {
     const { root } = fixture();
