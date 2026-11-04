@@ -6,24 +6,22 @@
 }:
 let
   inherit (pkgs.stdenv.hostPlatform) isDarwin;
+  activationDeps = [
+    "linkGeneration"
+    "fnmSetup"
+  ];
 in
 {
   # Install npm global packages from package.json using home-manager activation
   # After linkGeneration so the managed opencode wrapper exists to relink, and
   # after fnmSetup because package lifecycle scripts (openclaw preinstall) check
-  # the fnm default Node, which must already be the pinned version.
-  home.activation.installNpmGlobals =
-    config.lib.dag.entryAfter
-      [
-        "linkGeneration"
-        "fnmSetup"
-      ]
-      ''
-        export PATH=${pkgs.bun}/bin:${pkgs.nodejs}/bin:${pkgs.jq}/bin:${pkgs.curl}/bin:${pkgs.git}/bin:$PATH
-        export BUN_INSTALL="$HOME/.bun"
-        ${lib.optionalString (!isDarwin) ''export SYSTEMCTL_BIN="${pkgs.systemd}/bin/systemctl"''}
-        $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./install-npm-globals.sh}"
-      '';
+  # the Node version, so the pinned fnm default must exist and win on PATH.
+  home.activation.installNpmGlobals = config.lib.dag.entryAfter activationDeps ''
+    export PATH=${pkgs.bun}/bin:$HOME/.local/bin:${pkgs.nodejs}/bin:${pkgs.jq}/bin:${pkgs.curl}/bin:${pkgs.git}/bin:$PATH
+    export BUN_INSTALL="$HOME/.bun"
+    ${lib.optionalString (!isDarwin) ''export SYSTEMCTL_BIN="${pkgs.systemd}/bin/systemctl"''}
+    $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./install-npm-globals.sh}"
+  '';
 
   # Run npm globals install after login (Linux only - systemd)
   systemd.user.services = lib.mkIf (!isDarwin) {
@@ -35,7 +33,7 @@ in
       Service = {
         Type = "simple";
         Environment = [
-          "PATH=${pkgs.bun}/bin:${pkgs.nodejs}/bin:${pkgs.jq}/bin:${pkgs.curl}/bin:${pkgs.git}/bin:${pkgs.findutils}/bin:${pkgs.gnugrep}/bin:${pkgs.gnused}/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin"
+          "PATH=${pkgs.bun}/bin:%h/.local/bin:${pkgs.nodejs}/bin:${pkgs.jq}/bin:${pkgs.curl}/bin:${pkgs.git}/bin:${pkgs.findutils}/bin:${pkgs.gnugrep}/bin:${pkgs.gnused}/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin"
           "BUN_INSTALL=%h/.bun"
           "HOME=%h"
           "T3_BOOT_SERVICE_UNIT="

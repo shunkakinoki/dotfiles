@@ -615,6 +615,7 @@ let
         assert lib.hasInfix "--hostname=kamino100" cfg.home.activation.configureKaminoTailscale.data;
         assert lib.hasInfix "--accept-dns=true" cfg.home.activation.configureKaminoTailscale.data;
         assert lib.hasInfix "--ssh=true" cfg.home.activation.configureKaminoTailscale.data;
+        assert activationPosition "fnmSetup" < activationPosition "installNpmGlobals";
         assert activationPosition "installNpmGlobals" < activationPosition "provisionKaminoT3Connect";
         assert lib.hasInfix "t3-connect" cfg.home.activation.provisionKaminoT3Connect.data;
         # T3 Code runs under the user manager, so its agents need the shell's
