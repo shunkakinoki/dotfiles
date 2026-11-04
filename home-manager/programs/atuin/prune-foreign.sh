@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Rebuild records.db with only this host's records. Upload-only hosts never
 # read other hosts' records, but a past full sync left tens of GB of them.
 
