@@ -22,15 +22,25 @@ esac
 # mismatched account before checkout, package installation or activation.
 INSTALL_HOME=$HOME
 _install_host=$(printf '%s' "${HOST:-$(hostname)}" | tr '[:upper:]' '[:lower:]')
-if [ "$OS" = linux ] && [ "${_install_host%%.*}" = beskar ]; then
+_tailnet_host=
+if [ "$OS" = linux ] && command -v tailscale >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+  _tailnet_host=$(timeout 10 tailscale status --json 2>/dev/null | jq -r '.Self.DNSName // empty' | cut -d. -f1 | tr '[:upper:]' '[:lower:]') || _tailnet_host=
+fi
+if [ "$OS" = linux ] && { [ "${_install_host%%.*}" = beskar ] || [ "$_tailnet_host" = beskar ]; }; then
   if [ "$(id -u)" != 0 ]; then
     echo "Beskar installation requires root." >&2
     exit 1
   fi
+  INSTALL_HOME=$(getent passwd root | cut -d: -f6)
+  if [ -z "$INSTALL_HOME" ] || [ ! -d "$INSTALL_HOME" ]; then
+    echo "Beskar's root account must have an existing home directory." >&2
+    exit 1
+  fi
+  HOME=$INSTALL_HOME
   HOST=beskar
   USER=root
   LOGNAME=root
-  export HOST USER LOGNAME
+  export HOME HOST USER LOGNAME
 fi
 
 # Named Kamino machines share one generated Linux/root profile family.

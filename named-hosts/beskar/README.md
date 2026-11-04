@@ -10,6 +10,7 @@ Run the named configuration as root with the hostname `beskar`. Build and
 inspect the generation before activating it:
 
 ```bash
+git clone https://github.com/shunkakinoki/dotfiles /root/dotfiles
 cd /root/dotfiles
 make build HOST=beskar
 make switch HOST=beskar

@@ -4,10 +4,11 @@
 Describe 'named host identity guard'
 SCRIPT="$PWD/home-manager/activation/check-host-identity.sh"
 setup() {
+  unset PHYSICAL_HOST TAILNET_HOST TAILNET_UNAVAILABLE
   TEST_ROOT=$(mktemp -d)
   mkdir -p "$TEST_ROOT/bin"
   printf '#!/usr/bin/env bash\nprintf "%%s\\n" "${PHYSICAL_HOST:-beskar}"\n' >"$TEST_ROOT/bin/hostname"
-  printf '#!/usr/bin/env bash\nprintf "{\\"Self\\":{\\"DNSName\\":\\"%%s\\"}}\\n" "${TAILNET_HOST:-beskar.tailnet.example}"\n' >"$TEST_ROOT/bin/tailscale"
+  printf '#!/usr/bin/env bash\nif [ "${TAILNET_UNAVAILABLE:-}" = true ]; then exit 1; fi\nprintf "{\\"Self\\":{\\"DNSName\\":\\"%%s\\"}}\\n" "${TAILNET_HOST:-beskar.tailnet.example}"\n' >"$TEST_ROOT/bin/tailscale"
   chmod +x "$TEST_ROOT/bin"/*
   export PATH="$TEST_ROOT/bin:$PATH"
 }
@@ -46,5 +47,28 @@ End
 It 'allows generic profiles without claiming a named host identity'
 When run env PHYSICAL_HOST=generic-linux TAILNET_HOST=unknown.example bash "$SCRIPT" runner
 The status should be success
+End
+
+It 'normalizes a named profile before verifying its actual identity'
+When run bash "$SCRIPT" KYBER.tailnet.example
+The status should be failure
+The stderr should include 'Refusing profile kyber on host beskar'
+End
+
+It 'accepts the physical host when Tailscale is unavailable'
+When run env TAILNET_UNAVAILABLE=true bash "$SCRIPT" beskar
+The status should be success
+End
+
+It 'withholds activation when Tailscale is unavailable and the physical host is generic'
+When run env TAILNET_UNAVAILABLE=true PHYSICAL_HOST=generic-linux bash "$SCRIPT" beskar
+The status should be failure
+The stderr should include 'Cannot verify profile beskar'
+End
+
+It 'rejects a physical host mismatch even when Tailscale matches'
+When run env PHYSICAL_HOST=kyber bash "$SCRIPT" beskar
+The status should be failure
+The stderr should include 'Refusing profile beskar on host kyber'
 End
 End

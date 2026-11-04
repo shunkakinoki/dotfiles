@@ -679,6 +679,13 @@ let
           };
           cfg = beskar.config;
           herdr = cfg.systemd.user.services.herdr-server;
+          activationNames = map (entry: entry.name) (cfg.lib.dag.topoSort cfg.home.activation).result;
+          activationPosition =
+            name:
+            let
+              find = index: if builtins.elemAt activationNames index == name then index else find (index + 1);
+            in
+            find 0;
         in
         assert
           cfg.modules.tailscale.extraUpArgs == [
@@ -692,6 +699,9 @@ let
         assert cfg.age.identityPaths == [ "/root/.ssh/id_ed25519" ];
         assert cfg.age.secrets."agents-prd.env".path == "/root/.config/agenix/agents-prd.env";
         assert lib.hasInfix "check-host-identity.sh" cfg.home.activation.verifyHostIdentity.data;
+        assert activationPosition "verifyHostIdentity" < activationPosition "backupExistingFiles";
+        assert activationPosition "verifyHostIdentity" < activationPosition "checkLinkTargets";
+        assert activationPosition "verifyHostIdentity" < activationPosition "writeBoundary";
         assert !(cfg.home.activation ? authorizeFleetRootSsh);
         assert lib.elem "HOST=beskar" cfg.systemd.user.services.dotfiles-updater.Service.Environment;
         assert sshAuthorizedKeys.beskar == fleetPeerKeysOf "beskar";

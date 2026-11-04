@@ -156,11 +156,15 @@ cleanup() {
 Before 'setup'
 After 'cleanup'
 
+checkout_head() { git -C "$HOME/dotfiles" rev-parse HEAD; }
+
 It 'stops before checkout or service work when host identity is refused'
+BEFORE_REFUSAL=$(git -C "$HOME/dotfiles" rev-parse HEAD)
 When run env MOCK_HOST_GUARD_RESULT=55 HOST=kyber bash "$SCRIPT"
 The status should eq 55
 The output should eq ''
 The file "$HOME/installed" should not be exist
+The result of function checkout_head should eq "$BEFORE_REFUSAL"
 End
 
 It 'retries the install on the next run after install.sh fails'

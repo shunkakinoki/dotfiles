@@ -35,6 +35,10 @@ printf '%s\n' "${MOCK_HOSTNAME:-generic-linux}"
 EOF
   cat >"$TEST_ROOT/bin/getent" <<'EOF'
 #!/usr/bin/env bash
+if [ "$1 $2" = 'passwd root' ]; then
+  printf 'root:x:0:0::%s:/bin/bash\n' "$MOCK_ROOT_HOME"
+  exit 0
+fi
 if [ "${MOCK_MISSING_UBUNTU:-}" = true ] && [ ! -f "$MOCK_UBUNTU_HOME/account-created" ]; then exit 2; fi
 printf 'ubuntu:x:%s:1000::%s:/bin/bash\n' "${MOCK_UBUNTU_UID:-1000}" "$MOCK_UBUNTU_HOME"
 EOF
@@ -110,6 +114,21 @@ EOF
 #!/usr/bin/env bash
 exit 99
 EOF
+  cat >"$TEST_ROOT/bin/tailscale" <<'EOF'
+#!/usr/bin/env bash
+if [ -z "${MOCK_TAILNET_HOST:-}" ]; then exit 1; fi
+printf '{"Self":{"DNSName":"%s"}}\n' "$MOCK_TAILNET_HOST"
+EOF
+  cat >"$TEST_ROOT/bin/jq" <<'EOF'
+#!/usr/bin/env bash
+cat >/dev/null
+printf '%s\n' "${MOCK_TAILNET_HOST:-}"
+EOF
+  cat >"$TEST_ROOT/bin/timeout" <<'EOF'
+#!/usr/bin/env bash
+shift
+exec "$@"
+EOF
   cat >"$TEST_ROOT/bin/make" <<'EOF'
 #!/usr/bin/env bash
 printf 'INSTALL_HOST=%s INSTALL_USER=%s\n' "$HOST" "$USER"
@@ -129,9 +148,9 @@ if [ -n "\${MOCK_SAVED:-}" ]; then
 else
   /bin/rm -f "$TEST_ROOT/home/.config/kamino/name"
 fi
-env PATH="$TEST_ROOT/bin:/usr/bin:/bin" HOME="$TEST_ROOT/home" HOST="\$host" USER=stale-user GITHUB_PR= \\
+env PATH="$TEST_ROOT/bin:/usr/bin:/bin" HOME="\${MOCK_INHERITED_HOME:-$TEST_ROOT/home}" HOST="\$host" USER=stale-user GITHUB_PR= \\
   MOCK_OS="\${MOCK_OS:-Linux}" MOCK_UID="\${MOCK_UID:-0}" MOCK_INIT="\${MOCK_INIT:-systemd}" \\
-  MOCK_NIX_RESULT="\${MOCK_NIX_RESULT:-0}" MOCK_UBUNTU_HOME="$TEST_ROOT/ubuntu" \\
+  MOCK_NIX_RESULT="\${MOCK_NIX_RESULT:-0}" MOCK_UBUNTU_HOME="$TEST_ROOT/ubuntu" MOCK_ROOT_HOME="$TEST_ROOT/home" \\
   sh < "$SCRIPT"
 EOF
   chmod +x "$TEST_ROOT/run-installer"
@@ -188,6 +207,20 @@ When run env MOCK_HOSTNAME=beskar.example.test "$TEST_ROOT/run-installer" ''
 The status should be success
 The output should include 'INSTALL_HOST=beskar INSTALL_USER=root'
 The output should include 'INSTALL_UID=0'
+End
+
+It 'uses the root account home instead of an inherited Ubuntu home'
+When run env MOCK_INHERITED_HOME="$TEST_ROOT/ubuntu" "$TEST_ROOT/run-installer" beskar
+The status should be success
+The output should include "GIT_HOME=$TEST_ROOT/home"
+The output should include "INSTALL_UID=0 INSTALL_HOME=$TEST_ROOT/home INSTALL_LOGNAME=root"
+End
+
+It 'rejects an unprivileged Tailscale-identified Beskar before checkout'
+When run env MOCK_HOSTNAME=generic-linux MOCK_TAILNET_HOST=beskar.tailnet.example MOCK_UID=1000 "$TEST_ROOT/run-installer" ''
+The status should be failure
+The stderr should include 'Beskar installation requires root'
+The output should not include 'GIT_USER='
 End
 
 It 'clones a fresh checkout in the root home as root'
