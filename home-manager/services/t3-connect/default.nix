@@ -210,6 +210,11 @@ in
       ExecStart=${launcher}
       # A live launcher with an unmanaged owner is not a healthy service.
       ExecStartPost=${pkgs.nodejs}/bin/node ${./check-service.cjs}
+      # A managed launcher otherwise binds 0.0.0.0. The desktop SSH launcher
+      # adopts only a loopback origin, so it starts a rival server that takes
+      # the T3 home during the next update handoff. Tailscale Serve proxies
+      # loopback, so nothing needs the wider bind.
+      Environment=T3CODE_HOST=127.0.0.1
       ${lib.optionalString (t3ServeRoute != null) ''
         Environment=T3CODE_TAILSCALE_SERVE=true
         Environment=T3CODE_TAILSCALE_SERVE_PORT=${toString t3ServeRoute.httpsPort}
