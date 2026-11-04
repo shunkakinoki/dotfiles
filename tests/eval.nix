@@ -404,8 +404,8 @@ let
           ];
         assert cfg.systemd.user.services.herdr-server.Install.WantedBy == [ "default.target" ];
         assert cfg.systemd.user.services.herdr-server.Unit.X-SwitchMethod == "keep-old";
-        assert lib.elem "agenix.service" cfg.systemd.user.services.herdr-server.Unit.After;
-        assert lib.elem "agenix.service" cfg.systemd.user.services.herdr-server.Unit.Wants;
+        assert !(lib.elem "agenix.service" (cfg.systemd.user.services.herdr-server.Unit.After or [ ]));
+        assert !(lib.elem "agenix.service" (cfg.systemd.user.services.herdr-server.Unit.Wants or [ ]));
         assert cfg.systemd.user.services.herdr-server.Service.EnvironmentFile == [ "-/root/dotfiles/.env" ];
         assert !(cfg.age.secrets ? "agents-prd.env");
         assert lib.elem "BEADS_DOLT_AUTO_START=0"
