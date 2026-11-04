@@ -56,13 +56,25 @@ jobs:
           commit-message: 'chore: upgrade'
           title: 'chore: upgrade'
           body: Automated upgrade
+          base: main
           branch: chore/upgrade
           delete-branch: true
       - name: Enable Auto-Merge
         if: steps.cpr.outputs.pull-request-number
-        run: gh pr merge ${{ steps.cpr.outputs.pull-request-number }} --squash --auto
+        run: |
+          if ! result=$(gh pr merge "$UPGRADE_PR" --squash --auto 2>&1); then
+            if [[ "$result" != *"Pull request is in clean status"* ]]; then
+              printf '%s\n' "$result" >&2
+              exit 1
+            fi
+            # GitHub refuses auto-merge when the PR can already merge directly.
+            # Keep normal branch rules and require the exact generated head.
+            gh pr merge "$UPGRADE_PR" --squash --match-head-commit "$UPGRADE_HEAD"
+          fi
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+          UPGRADE_PR: ${{ steps.cpr.outputs.pull-request-number }}
+          UPGRADE_HEAD: ${{ steps.cpr.outputs.pull-request-head-sha }}
   upgrade-check:
     if: always()
     needs:
