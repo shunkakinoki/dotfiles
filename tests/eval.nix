@@ -311,6 +311,9 @@ let
         assert lib.hasInfix "lld-" cargoServicePath;
         assert lib.hasInfix "lld-" updaterPath;
         assert !(cfg.systemd.user.services ? herdr-server);
+        assert cfg.home.activation ? ensureT3Service;
+        assert lib.elem "T3_ENSURE_SERVICE=1" cfg.systemd.user.services.t3-connect.Service.Environment;
+        assert lib.hasInfix "$HOME/.config/t3/bin/t3" cfg.programs.fish.functions.t3;
         assert !(cfg.xdg.configFile ? "systemd/user/herdr-server.service");
         assert
           !(lib.hasInfix "T3CODE_TAILSCALE_SERVE"

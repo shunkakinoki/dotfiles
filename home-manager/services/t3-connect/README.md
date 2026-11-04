@@ -18,7 +18,13 @@ Direct invocations of downloaded binaries or `npx t3 ...` bypass the managed CLI
 wrapper; use the wrapper for routine starts. The service still detects such
 conflicts instead of reporting a healthy launcher.
 
-Deploy with the normal Home Manager activation and `make t3-service`. Verify
+Home Manager activation installs a missing service through the repository-managed
+CLI, enables it, and verifies launcher ownership on every enabled Linux host.
+The periodic connect check also restores missing units on all enabled hosts.
+Healthy services are not restarted by activation. Shell functions resolve the
+current managed wrapper rather than retaining an older generation's store path.
+
+Deploy with the normal Home Manager activation. Verify
 `systemctl --user status t3code.service` and the connect service's exit status.
 Future updates remain owned by T3's launcher; these checks neither pin a release
 nor perform scheduled restarts or upgrades.

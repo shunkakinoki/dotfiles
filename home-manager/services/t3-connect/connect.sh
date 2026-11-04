@@ -59,7 +59,7 @@ done
 # stray `t3 service uninstall` would otherwise leave a worker dark for good.
 if [ "${T3_ENSURE_SERVICE:-0}" = 1 ] &&
   ! "${T3_SYSTEMCTL:-systemctl}" --user cat t3code.service >/dev/null 2>&1; then
-  npx --yes "$spec" service install
+  "${T3_SERVICE_CLI:?}" service install
 fi
 
 # The browser may be downloaded after activation; repeat the upstream
