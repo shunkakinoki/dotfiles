@@ -132,6 +132,7 @@ with pkgs;
   termshark
   tesseract
   tig
+  tlaplus
   tmuxinator
   tokei
   tree
