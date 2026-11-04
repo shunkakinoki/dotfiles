@@ -99,7 +99,7 @@ let
   runtimeCli = pkgs.writeShellScript "t3-cli" (
     "export PATH=${toolchain}:$PATH\n"
     + setLibraryPath
-    + "export T3_SYSTEMD_RUN=${pkgs.systemd}/bin/systemd-run\n"
+    + "export T3_SYSTEMD_RUN=${dirOf config.systemd.user.systemctlPath}/systemd-run\n"
     + "export T3_SYSTEMCTL=${config.systemd.user.systemctlPath}\n"
     + "export T3_CHECK_SERVICE=${./check-service.cjs}\n"
     + builtins.readFile ./cli.sh
@@ -243,7 +243,7 @@ in
         "PATH=${toolchain}"
         "T3_PREPARE_RUNTIME=${prepareRuntime}"
         "T3_SETUP_BROWSER=${setupBrowser}"
-        "T3_SYSTEMCTL=${pkgs.systemd}/bin/systemctl"
+        "T3_SYSTEMCTL=${config.systemd.user.systemctlPath}"
         "T3_CHECK_SERVICE=${./check-service.cjs}"
         "T3_ENSURE_SERVICE=1"
         "T3_SERVICE_CLI=${runtimeCli}"
