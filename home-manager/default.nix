@@ -12,6 +12,12 @@ let
   modules = import ./modules;
   nix = import ./nix;
   packages = import ./packages { inherit pkgs inputs isRunner; };
+  hostIdentityPath = lib.makeBinPath [
+    pkgs.inetutils
+    pkgs.coreutils
+    pkgs.tailscale
+    pkgs.jq
+  ];
   programs = import ./programs {
     inherit config lib pkgs;
     sources = { };
@@ -49,6 +55,15 @@ in
   home.homeDirectory = lib.mkIf pkgs.stdenv.hostPlatform.isLinux "/home/${username}";
   home.packages = packages;
   home.stateVersion = "24.11";
+
+  home.activation.verifyHostIdentity =
+    lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && inputs.host.nodeName != "unknown")
+      (
+        config.lib.dag.entryBefore [ "backupExistingFiles" "checkLinkTargets" "writeBoundary" ] ''
+          export PATH=${hostIdentityPath}:$PATH
+          ${pkgs.bash}/bin/bash ${./activation/check-host-identity.sh} ${lib.escapeShellArg inputs.host.nodeName}
+        ''
+      );
 
   # Agents launched by the user manager (T3 Code, Herdr, OpenClaw) never source
   # a login shell, so give them the same session environment. environment.d

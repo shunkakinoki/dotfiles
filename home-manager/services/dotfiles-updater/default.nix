@@ -4,6 +4,8 @@ let
   canonicalHost =
     if inputs.host.isKyber then
       "kyber"
+    else if inputs.host.isBeskar then
+      "beskar"
     else if inputs.host.isMatic then
       "matic"
     else if inputs.host.isKamino then

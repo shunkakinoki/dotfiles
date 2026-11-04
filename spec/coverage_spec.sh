@@ -368,6 +368,10 @@ It 'has spec file for home-manager/activation/authorize-ssh-keys.sh'
 The path "spec/authorize_ssh_keys_spec.sh" should be exist
 End
 
+It 'has spec file for home-manager/activation/check-host-identity.sh'
+The path "spec/check_host_identity_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/activation/deploy-agenix-secret.sh'
 The path "spec/activation_shared_spec.sh" should be exist
 End
@@ -659,6 +663,7 @@ config/t3code/activate-client-settings.sh
 config/t3code/activate-settings.sh
 config/t3code/grok.sh
 home-manager/activation/authorize-ssh-keys.sh
+home-manager/activation/check-host-identity.sh
 home-manager/activation/deploy-agenix-secret.sh
 home-manager/activation/ensure-directory.sh
 home-manager/activation/ensure-tailscale-serve.sh
@@ -770,6 +775,7 @@ named-hosts/kyber/activate-fish-ssh-compat.sh
 named-hosts/kyber/activate-ip-forwarding.sh
 named-hosts/kyber/activate-sshd.sh
 named-hosts/kyber/activate-user-service-priority.sh
+named-hosts/kyber/beads-linear-complete-ssh-guard.sh
 named-hosts/kyber/find.sh
 named-hosts/kyber/prepare-containerd-disk.sh
 named-hosts/kyber/rekey-galactica.sh

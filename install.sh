@@ -18,78 +18,29 @@ Linux)
   ;;
 esac
 
-# Fresh Ubuntu images may only provide root. Provision the account used by the
-# Beskar profile before handing off checkout and activation to that account.
-prepare_beskar_user() {
-  if ! command -v runuser >/dev/null 2>&1 \
-    || ! command -v useradd >/dev/null 2>&1 \
-    || ! command -v sudo >/dev/null 2>&1 \
-    || ! command -v visudo >/dev/null 2>&1 \
-    || [ ! -f /usr/lib/systemd/user/dbus.socket ]; then
-    if ! command -v apt-get >/dev/null 2>&1; then
-      echo "Beskar root bootstrap requires apt-get to install account and user-session prerequisites." >&2
-      exit 1
-    fi
-    apt-get update -qq
-    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
-      sudo passwd util-linux dbus-user-session
-  fi
-
-  if ! getent passwd ubuntu >/dev/null; then
-    echo "Creating the ubuntu account and home directory for Beskar..."
-    useradd --create-home --shell /bin/bash ubuntu
-  fi
-  _ubuntu_entry=$(getent passwd ubuntu)
-  INSTALL_HOME=$(printf '%s\n' "$_ubuntu_entry" | cut -d: -f6)
-  INSTALL_UID=$(printf '%s\n' "$_ubuntu_entry" | cut -d: -f3)
-  if [ -z "$INSTALL_HOME" ] || [ "$INSTALL_HOME" = /root ] || [ "$INSTALL_UID" = 0 ] || [ ! -d "$INSTALL_HOME" ]; then
-    echo "Beskar's ubuntu account must have a non-root uid and an existing home directory outside /root." >&2
-    exit 1
-  fi
-
-  # Activation installs system services non-interactively. Retain existing
-  # working sudo access; otherwise install one validated account-specific rule.
-  if ! runuser -u ubuntu -- sudo -n true 2>/dev/null; then
-    echo "Configuring passwordless administrative access for ubuntu on Beskar..."
-    (
-      umask 077
-      install -d -m 0755 /etc/sudoers.d
-      _sudoers_tmp=$(mktemp /etc/sudoers.d/.dotfiles-beskar-ubuntu.XXXXXX)
-      trap 'rm -f "$_sudoers_tmp"' 0
-      printf '%s\n' 'ubuntu ALL=(ALL:ALL) NOPASSWD: ALL' >"$_sudoers_tmp"
-      visudo -cf "$_sudoers_tmp"
-      chmod 0440 "$_sudoers_tmp"
-      mv -f "$_sudoers_tmp" /etc/sudoers.d/dotfiles-beskar-ubuntu
-    )
-    runuser -u ubuntu -- sudo -n true
-  fi
-
-  if [ "$(cat /proc/1/comm 2>/dev/null)" = systemd ]; then
-    loginctl enable-linger ubuntu
-    systemctl start "user@$INSTALL_UID.service"
-  fi
-}
-
-# Beskar's Home Manager profile belongs to ubuntu even when bootstrap is
-# launched from a root SSH session. Do not merely change USER: activation must
-# run with ubuntu's real uid, home directory, and user-service environment.
-INSTALL_AS_UBUNTU=false
+# Beskar's declared profile and fleet runtime belong to root. Refuse a
+# mismatched account before checkout, package installation or activation.
 INSTALL_HOME=$HOME
 _install_host=$(printf '%s' "${HOST:-$(hostname)}" | tr '[:upper:]' '[:lower:]')
-if [ "$OS" = linux ] && [ "${_install_host%%.*}" = beskar ]; then
-  HOST=beskar
-  export HOST
-  _current_user=$(id -un)
-  if [ "$(id -u)" = 0 ]; then
-    prepare_beskar_user
-    INSTALL_AS_UBUNTU=true
-  elif [ "$_current_user" != ubuntu ]; then
-    echo "Run Beskar bootstrap as ubuntu or root." >&2
+_tailnet_host=
+if [ "$OS" = linux ] && command -v tailscale >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+  _tailnet_host=$(timeout 10 tailscale status --json 2>/dev/null | jq -r '.Self.DNSName // empty' | cut -d. -f1 | tr '[:upper:]' '[:lower:]') || _tailnet_host=
+fi
+if [ "$OS" = linux ] && { [ "${_install_host%%.*}" = beskar ] || [ "$_tailnet_host" = beskar ]; }; then
+  if [ "$(id -u)" != 0 ]; then
+    echo "Beskar installation requires root." >&2
     exit 1
-  else
-    USER=ubuntu
-    export USER
   fi
+  INSTALL_HOME=$(getent passwd root | cut -d: -f6)
+  if [ -z "$INSTALL_HOME" ] || [ ! -d "$INSTALL_HOME" ]; then
+    echo "Beskar's root account must have an existing home directory." >&2
+    exit 1
+  fi
+  HOME=$INSTALL_HOME
+  HOST=beskar
+  USER=root
+  LOGNAME=root
+  export HOME HOST USER LOGNAME
 fi
 
 # Named Kamino machines share one generated Linux/root profile family.
@@ -239,28 +190,6 @@ if ! command -v git >/dev/null 2>&1; then
   fi
 fi
 
-# Run checkout and Home Manager commands with the profile owner's real uid.
-# Keep root's XDG, D-Bus, SSH agent, and Nix profile paths out of that session.
-run_install_user() {
-  if [ "$INSTALL_AS_UBUNTU" = true ]; then
-    _install_path="$INSTALL_HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-    if [ -d "/run/user/$INSTALL_UID" ]; then
-      set -- env XDG_RUNTIME_DIR="/run/user/$INSTALL_UID" "$@"
-      if [ -S "/run/user/$INSTALL_UID/bus" ]; then
-        set -- env DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$INSTALL_UID/bus" "$@"
-      fi
-    fi
-    set -- env -u XDG_RUNTIME_DIR -u DBUS_SESSION_BUS_ADDRESS \
-      -u XDG_CONFIG_HOME -u XDG_DATA_HOME -u XDG_STATE_HOME -u XDG_CACHE_HOME \
-      -u SSH_AUTH_SOCK -u NIX_PROFILES -u NIX_USER_PROFILE_DIR \
-      HOME="$INSTALL_HOME" USER=ubuntu LOGNAME=ubuntu PATH="$_install_path" \
-      "$@"
-    runuser -u ubuntu -- "$@"
-  else
-    "$@"
-  fi
-}
-
 # Clone into the profile owner's home; leave any previous root checkout alone.
 DOTFILES_DIR="$INSTALL_HOME/dotfiles"
 cd "$INSTALL_HOME"
@@ -275,25 +204,25 @@ if [ -n "$GITHUB_PR" ]; then
   if [ -d "$DOTFILES_DIR" ]; then
     echo "Dotfiles repository already exists. Using git fetch to retrieve PR ref..."
     cd "$DOTFILES_DIR"
-    run_install_user git fetch origin "$PR_REF":pr-"$GITHUB_PR"
-    run_install_user git checkout pr-"$GITHUB_PR"
-    run_install_user git pull
+    git fetch origin "$PR_REF":pr-"$GITHUB_PR"
+    git checkout pr-"$GITHUB_PR"
+    git pull
   else
     echo "Cloning dotfiles repository..."
-    run_install_user git clone https://github.com/shunkakinoki/dotfiles.git "$DOTFILES_DIR"
+    git clone https://github.com/shunkakinoki/dotfiles.git "$DOTFILES_DIR"
     cd "$DOTFILES_DIR"
-    run_install_user git fetch origin "$PR_REF":pr-"$GITHUB_PR"
-    run_install_user git checkout pr-"$GITHUB_PR"
+    git fetch origin "$PR_REF":pr-"$GITHUB_PR"
+    git checkout pr-"$GITHUB_PR"
   fi
 else
   if [ -d "$DOTFILES_DIR" ]; then
     echo "Dotfiles repository already exists. Fetching latest changes..."
     cd "$DOTFILES_DIR"
-    run_install_user git fetch origin
-    run_install_user git pull
+    git fetch origin
+    git pull
   else
     echo "Cloning dotfiles repository into $DOTFILES_DIR..."
-    run_install_user git clone https://github.com/shunkakinoki/dotfiles.git "$DOTFILES_DIR"
+    git clone https://github.com/shunkakinoki/dotfiles.git "$DOTFILES_DIR"
     cd "$DOTFILES_DIR"
   fi
 fi
@@ -314,9 +243,9 @@ fi
 
 run_make_install() {
   if command -v make >/dev/null 2>&1; then
-    HOST="$HOST" run_install_user make install
+    HOST="$HOST" make install
   else
-    HOST="$HOST" run_install_user nix --extra-experimental-features "nix-command flakes" \
+    HOST="$HOST" nix --extra-experimental-features "nix-command flakes" \
       shell nixpkgs#gnumake --command make install
   fi
 }

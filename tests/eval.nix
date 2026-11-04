@@ -675,25 +675,38 @@ let
         let
           beskar = import ../named-hosts/beskar {
             inherit inputs;
-            username = "ubuntu";
             system = "x86_64-linux";
           };
           cfg = beskar.config;
           herdr = cfg.systemd.user.services.herdr-server;
+          activationNames = map (entry: entry.name) (cfg.lib.dag.topoSort cfg.home.activation).result;
+          activationPosition =
+            name:
+            let
+              find = index: if builtins.elemAt activationNames index == name then index else find (index + 1);
+            in
+            find 0;
         in
         assert
           cfg.modules.tailscale.extraUpArgs == [
             "--reset"
-            "--operator=ubuntu"
+            "--operator=root"
             "--accept-dns=true"
-            "--ssh"
+            "--ssh=false"
           ];
-        assert cfg.home.homeDirectory == "/home/ubuntu";
-        assert cfg.age.identityPaths == [ "/home/ubuntu/.ssh/id_ed25519" ];
-        assert cfg.age.secrets."agents-prd.env".path == "/home/ubuntu/.config/agenix/agents-prd.env";
+        assert cfg.home.username == "root";
+        assert cfg.home.homeDirectory == "/root";
+        assert cfg.age.identityPaths == [ "/root/.ssh/id_ed25519" ];
+        assert cfg.age.secrets."agents-prd.env".path == "/root/.config/agenix/agents-prd.env";
+        assert lib.hasInfix "check-host-identity.sh" cfg.home.activation.verifyHostIdentity.data;
+        assert activationPosition "verifyHostIdentity" < activationPosition "backupExistingFiles";
+        assert activationPosition "verifyHostIdentity" < activationPosition "checkLinkTargets";
+        assert activationPosition "verifyHostIdentity" < activationPosition "writeBoundary";
+        assert !(cfg.home.activation ? authorizeFleetRootSsh);
+        assert lib.elem "HOST=beskar" cfg.systemd.user.services.dotfiles-updater.Service.Environment;
         assert sshAuthorizedKeys.beskar == fleetPeerKeysOf "beskar";
         assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeFleetSsh.data;
-        assert lib.hasInfix "/root/.ssh" cfg.home.activation.authorizeFleetRootSsh.data;
+        assert lib.hasInfix "/root/.ssh" cfg.home.activation.authorizeFleetSsh.data;
         assert herdr.Unit.X-SwitchMethod == "keep-old";
         assert lib.length herdr.Service.ExecStart == 1;
         assert lib.hasInfix "-start.sh " (lib.head herdr.Service.ExecStart);

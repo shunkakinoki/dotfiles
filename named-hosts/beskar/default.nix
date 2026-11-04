@@ -1,10 +1,10 @@
 # Beskar - Ubuntu Linux dedicated T3 Code server
 {
   inputs,
-  username ? "ubuntu",
   system ? "x86_64-linux",
 }:
 let
+  username = "root";
   inherit (inputs) home-manager;
   overlays = import ../../overlays { inherit inputs; };
   nixpkgsConfig = import ../../lib/nixpkgs-config.nix {
@@ -19,7 +19,7 @@ let
     "--reset"
     "--operator=${username}"
     "--accept-dns=true"
-    "--ssh"
+    "--ssh=false"
   ];
   sshAuthorizedKeys = import ../ssh-authorized-keys.nix;
   authorizedKeysFile = pkgs.writeText "beskar-authorized-keys" (
@@ -49,7 +49,7 @@ home-manager.lib.homeManagerConfiguration {
       {
         home = {
           inherit username;
-          homeDirectory = lib.mkForce "/home/${username}";
+          homeDirectory = lib.mkForce "/root";
           activation.backupExistingFiles = lib.mkForce {
             before = [ "checkLinkTargets" ];
             after = [ ];
@@ -62,15 +62,6 @@ home-manager.lib.homeManagerConfiguration {
           '';
           activation.authorizeFleetSsh = config.lib.dag.entryAfter [ "linkGeneration" ] ''
             $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/authorize-ssh-keys.sh}" ${authorizedKeysFile} "${config.home.homeDirectory}/.ssh" ${pkgs.openssh}/bin/ssh-keygen
-          '';
-          # Fleet SSH config logs in to Beskar as root, while this profile
-          # belongs to ubuntu, so root's keys go through ubuntu's passwordless sudo.
-          activation.authorizeFleetRootSsh = config.lib.dag.entryAfter [ "authorizeFleetSsh" ] ''
-            if /usr/bin/sudo -n true 2>/dev/null; then
-              $DRY_RUN_CMD /usr/bin/sudo -n ${pkgs.bash}/bin/bash "${../../home-manager/activation/authorize-ssh-keys.sh}" ${authorizedKeysFile} /root/.ssh ${pkgs.openssh}/bin/ssh-keygen
-            else
-              echo "Skipping root SSH keys: passwordless sudo is unavailable." >&2
-            fi
           '';
         };
 

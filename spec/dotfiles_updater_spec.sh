@@ -132,6 +132,8 @@ setup() {
   export GIT_AUTHOR_NAME=t GIT_AUTHOR_EMAIL=t@t GIT_COMMITTER_NAME=t GIT_COMMITTER_EMAIL=t@t
   mkdir -p "$HOME" "$WORK/src"
   git -C "$WORK/src" init -q -b main
+  mkdir -p "$WORK/src/home-manager/activation"
+  printf '#!/usr/bin/env bash\nexit "${MOCK_HOST_GUARD_RESULT:-0}"\n' >"$WORK/src/home-manager/activation/check-host-identity.sh"
   cat >"$WORK/src/install.sh" <<'INSTALL'
 #!/usr/bin/env bash
 [ -f "$HOME/install-fails" ] && exit 1
@@ -141,7 +143,7 @@ INSTALL
   printf '.PHONY: install dotagents-switch-sync\ninstall:\n\t@./install.sh\ndotagents-switch-sync:\n\t@:\n' >"$WORK/src/Makefile"
   mkdir -p "$WORK/src/generated/hooks/moshi/claude"
   printf '{"command":"moshi-hook claude-hook"}\n' >"$WORK/src/generated/hooks/moshi/claude/settings.json"
-  git -C "$WORK/src" add install.sh Makefile generated
+  git -C "$WORK/src" add install.sh Makefile generated home-manager
   git -C "$WORK/src" commit -q -m base
   git clone -q "$WORK/src" "$HOME/dotfiles" 2>/dev/null
   git -C "$WORK/src" commit -q --allow-empty -m update
@@ -153,6 +155,17 @@ cleanup() {
 
 Before 'setup'
 After 'cleanup'
+
+checkout_head() { git -C "$HOME/dotfiles" rev-parse HEAD; }
+
+It 'stops before checkout or service work when host identity is refused'
+BEFORE_REFUSAL=$(git -C "$HOME/dotfiles" rev-parse HEAD)
+When run env MOCK_HOST_GUARD_RESULT=55 HOST=kyber bash "$SCRIPT"
+The status should eq 55
+The output should eq ''
+The file "$HOME/installed" should not be exist
+The result of function checkout_head should eq "$BEFORE_REFUSAL"
+End
 
 It 'retries the install on the next run after install.sh fails'
 touch "$HOME/install-fails"

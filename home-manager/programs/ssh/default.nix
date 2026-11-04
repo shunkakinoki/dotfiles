@@ -15,7 +15,6 @@ in
   home.shellAliases = (lib.mapAttrs (_: command: lib.mkDefault command) hostAliases) // {
     # These nodes run Tailscale SSH, which verifies their current host key via
     # the coordination server even after a host has been rebuilt.
-    beskar = "tailscale ssh ${config.programs.ssh.settings.beskar.data.User}@beskar";
     matic = "tailscale ssh ${config.programs.ssh.settings.matic.data.User}@matic";
   };
 
