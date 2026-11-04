@@ -32,12 +32,12 @@ SYSTEMCTL=/usr/bin/systemctl
 # shared disk only for compaction to be refused.
 gateway_state=$("${SYSTEMCTL}" --user is-active openclaw-gateway.service || true)
 case "${gateway_state}" in
-  active) gateway_was_active=1 ;;
-  inactive | failed) gateway_was_active=0 ;;
-  *)
-    log "cannot read gateway state (${gateway_state:-no answer}); skipping"
-    exit 1
-    ;;
+active) gateway_was_active=1 ;;
+inactive | failed) gateway_was_active=0 ;;
+*)
+  log "cannot read gateway state (${gateway_state:-no answer}); skipping"
+  exit 1
+  ;;
 esac
 
 # shellcheck disable=SC2329 # invoked via the EXIT trap below

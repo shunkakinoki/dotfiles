@@ -60,10 +60,10 @@ index 703c02c..74d4127 100644
  			maxWorkers: resolveStateReadWorkerCount(),
  			idleTimeoutMs: SQLITE_IDLE_HANDLE_TTL_MS,
  			maxPendingTasks: 128,
-diff --git a/dist/native-hook-relay/openclaw-state-db-U2AVOsoF.mjs b/dist/native-hook-relay/openclaw-state-db-U2AVOsoF.mjs
+diff --git a/dist/native-hook-relay/openclaw-state-db-CbqWy105.mjs b/dist/native-hook-relay/openclaw-state-db-CbqWy105.mjs
 index 0ca1f41..e4511e2 100644
---- a/dist/native-hook-relay/openclaw-state-db-U2AVOsoF.mjs
-+++ b/dist/native-hook-relay/openclaw-state-db-U2AVOsoF.mjs
+--- a/dist/native-hook-relay/openclaw-state-db-CbqWy105.mjs
++++ b/dist/native-hook-relay/openclaw-state-db-CbqWy105.mjs
 @@ -3770,7 +3770,7 @@ function readPool(state, admitted) {
  		ensureSqliteLibrarySelected();
  		state.pool = createOwnedWorkerTaskPool({
@@ -73,10 +73,10 @@ index 0ca1f41..e4511e2 100644
  			maxWorkers: resolveStateReadWorkerCount(),
  			idleTimeoutMs: SQLITE_IDLE_HANDLE_TTL_MS,
  			maxPendingTasks: 128,
-diff --git a/dist/native-hook-relay/openclaw-state-worker-store-oV4g9XVi.mjs b/dist/native-hook-relay/openclaw-state-worker-store-oV4g9XVi.mjs
+diff --git a/dist/native-hook-relay/openclaw-state-worker-store-BX8_Wg6Q.mjs b/dist/native-hook-relay/openclaw-state-worker-store-BX8_Wg6Q.mjs
 index 85a9918..07501c8 100644
---- a/dist/native-hook-relay/openclaw-state-worker-store-oV4g9XVi.mjs
-+++ b/dist/native-hook-relay/openclaw-state-worker-store-oV4g9XVi.mjs
+--- a/dist/native-hook-relay/openclaw-state-worker-store-BX8_Wg6Q.mjs
++++ b/dist/native-hook-relay/openclaw-state-worker-store-BX8_Wg6Q.mjs
 @@ -664,7 +664,7 @@ function createSqliteWorkerLifecycle({ explicitSqliteCloseReleasesNativeResource
  		const { worker, exited } = runInDetachedAsyncContext(() => ({
  			worker: createCpuTrackedWorker(carrierUrl, {
@@ -86,10 +86,10 @@ index 85a9918..07501c8 100644
  					maxYoungGenerationSizeMb: 32
  				},
  				env: resolveNodeCompileCacheEnv(),
-diff --git a/dist/native-hook-relay/worker-task-pool-8Q62d6HK.mjs b/dist/native-hook-relay/worker-task-pool-8Q62d6HK.mjs
+diff --git a/dist/native-hook-relay/worker-task-pool-CexBRnjb.mjs b/dist/native-hook-relay/worker-task-pool-CexBRnjb.mjs
 index b0b018d..7438847 100644
---- a/dist/native-hook-relay/worker-task-pool-8Q62d6HK.mjs
-+++ b/dist/native-hook-relay/worker-task-pool-8Q62d6HK.mjs
+--- a/dist/native-hook-relay/worker-task-pool-CexBRnjb.mjs
++++ b/dist/native-hook-relay/worker-task-pool-CexBRnjb.mjs
 @@ -3092,7 +3092,7 @@ function createWorkerTaskHost(owner = {}, workerClass) {
  			if (boundedHeap) {
  				const limits = workerOptions.resourceLimits;
@@ -99,10 +99,10 @@ index b0b018d..7438847 100644
  					maxYoungGenerationSizeMb: limits?.maxYoungGenerationSizeMb,
  					codeRangeSizeMb: limits?.codeRangeSizeMb,
  					stackSizeMb: limits?.stackSizeMb
-diff --git a/dist/openclaw-state-read-worker-Dr5RWiIU.mjs b/dist/openclaw-state-read-worker-Dr5RWiIU.mjs
+diff --git a/dist/openclaw-state-read-worker-DMgTU2mD.mjs b/dist/openclaw-state-read-worker-DMgTU2mD.mjs
 index 82f3513..ea86791 100644
---- a/dist/openclaw-state-read-worker-Dr5RWiIU.mjs
-+++ b/dist/openclaw-state-read-worker-Dr5RWiIU.mjs
+--- a/dist/openclaw-state-read-worker-DMgTU2mD.mjs
++++ b/dist/openclaw-state-read-worker-DMgTU2mD.mjs
 @@ -385,7 +385,7 @@ function readPool(state, admitted) {
  		ensureSqliteLibrarySelected();
  		state.pool = createOwnedWorkerTaskPool({
@@ -143,10 +143,10 @@ index ae4446a..d80395a 100644
  			maxWorkers: resolveStateReadWorkerCount(),
  			idleTimeoutMs: SQLITE_IDLE_HANDLE_TTL_MS,
  			maxPendingTasks: 128,
-diff --git a/dist/prepared-model-catalog-worker-V_90gTEp.mjs b/dist/prepared-model-catalog-worker-V_90gTEp.mjs
+diff --git a/dist/prepared-model-catalog-worker-D9_Oj4YK.mjs b/dist/prepared-model-catalog-worker-D9_Oj4YK.mjs
 index 7f13f95..00e7a99 100644
---- a/dist/prepared-model-catalog-worker-V_90gTEp.mjs
-+++ b/dist/prepared-model-catalog-worker-V_90gTEp.mjs
+--- a/dist/prepared-model-catalog-worker-D9_Oj4YK.mjs
++++ b/dist/prepared-model-catalog-worker-D9_Oj4YK.mjs
 @@ -89,7 +89,7 @@ function fingerprintPreparedModelCatalogPluginContext(value) {
  /** Builds model-catalog worker pools that report their first close to the pool owner. */
  const GATEWAY_CATALOG_WORKERS = resolveWorkerPoolSize("singleton");
@@ -169,10 +169,10 @@ index b610adb..ad39b95 100644
  					maxYoungGenerationSizeMb: 32
  				},
  				env: resolveNodeCompileCacheEnv(),
-diff --git a/dist/session-accessor.sqlite-archive-DuqY0Jwj.mjs b/dist/session-accessor.sqlite-archive-DuqY0Jwj.mjs
+diff --git a/dist/session-accessor.sqlite-archive-DCWMowAE.mjs b/dist/session-accessor.sqlite-archive-DCWMowAE.mjs
 index d7a6ce3..1c696ae 100644
---- a/dist/session-accessor.sqlite-archive-DuqY0Jwj.mjs
-+++ b/dist/session-accessor.sqlite-archive-DuqY0Jwj.mjs
+--- a/dist/session-accessor.sqlite-archive-DCWMowAE.mjs
++++ b/dist/session-accessor.sqlite-archive-DCWMowAE.mjs
 @@ -427,7 +427,7 @@ function runSqliteMutationWorkerRequest(params) {
  function createSqliteTranscriptArchiveWorker(workerData) {
  	const workerUrl = resolveRuntimeWorkerUrl(runtimeProcessEntrypoints.sessionTranscriptArchive);
@@ -182,10 +182,10 @@ index d7a6ce3..1c696ae 100644
  		workerData,
  		execArgv: resolveRuntimeWorkerThreadExecArgv(workerUrl)
  	});
-diff --git a/dist/session-accessor.sqlite-canonical-worker-pool-WyQR6-B7.mjs b/dist/session-accessor.sqlite-canonical-worker-pool-WyQR6-B7.mjs
+diff --git a/dist/session-accessor.sqlite-canonical-worker-pool-CFx6qAW_.mjs b/dist/session-accessor.sqlite-canonical-worker-pool-CFx6qAW_.mjs
 index ca2e094..2d9fd90 100644
---- a/dist/session-accessor.sqlite-canonical-worker-pool-WyQR6-B7.mjs
-+++ b/dist/session-accessor.sqlite-canonical-worker-pool-WyQR6-B7.mjs
+--- a/dist/session-accessor.sqlite-canonical-worker-pool-CFx6qAW_.mjs
++++ b/dist/session-accessor.sqlite-canonical-worker-pool-CFx6qAW_.mjs
 @@ -33,7 +33,7 @@ async function withSqliteCanonicalValidationWorkerPool(env, run) {
  		pool: new WorkerTaskPool({
  			workerUrl: resolveRuntimeWorkerUrl(runtimeProcessEntrypoints.sessionTranscriptArchive),
@@ -195,10 +195,10 @@ index ca2e094..2d9fd90 100644
  				workerData: {
  					type: "sqlite-transcript-archive-v2",
  					operation: "canonical-validation-pool"
-diff --git a/dist/session-transcript-read-pools-CZvCzjUY.mjs b/dist/session-transcript-read-pools-CZvCzjUY.mjs
+diff --git a/dist/session-transcript-read-pools--pYgg8Mv.mjs b/dist/session-transcript-read-pools--pYgg8Mv.mjs
 index 57cce7d..7fad1cf 100644
---- a/dist/session-transcript-read-pools-CZvCzjUY.mjs
-+++ b/dist/session-transcript-read-pools-CZvCzjUY.mjs
+--- a/dist/session-transcript-read-pools--pYgg8Mv.mjs
++++ b/dist/session-transcript-read-pools--pYgg8Mv.mjs
 @@ -6,7 +6,7 @@ import { n as createOwnedWorkerTaskPool, t as WorkerTaskPool } from "./worker-ta
  //#region src/config/sessions/session-transcript-read-pools.ts
  const workerUrl = resolveRuntimeWorkerUrl(runtimeProcessEntrypoints.sessionTranscript);
@@ -208,10 +208,10 @@ index 57cce7d..7fad1cf 100644
  	maxYoungGenerationSizeMb: 32
  };
  function createSessionTranscriptReadPool(maxWorkers, sharedCompute = false) {
-diff --git a/dist/session-transcript-reconcile-pool-D3_NXVp7.mjs b/dist/session-transcript-reconcile-pool-D3_NXVp7.mjs
+diff --git a/dist/session-transcript-reconcile-pool-DTL8A5Ew.mjs b/dist/session-transcript-reconcile-pool-DTL8A5Ew.mjs
 index fe41e26..edd6e0b 100644
---- a/dist/session-transcript-reconcile-pool-D3_NXVp7.mjs
-+++ b/dist/session-transcript-reconcile-pool-D3_NXVp7.mjs
+--- a/dist/session-transcript-reconcile-pool-DTL8A5Ew.mjs
++++ b/dist/session-transcript-reconcile-pool-DTL8A5Ew.mjs
 @@ -268,7 +268,7 @@ async function startReconcileWorkerTask(input, signal) {
  	signal?.throwIfAborted();
  	const pool = runtime.pool ??= new WorkerTaskPool({
@@ -221,10 +221,10 @@ index fe41e26..edd6e0b 100644
  		maxWorkers: MAX_WORKERS,
  		maxPendingTasks: Number.MAX_SAFE_INTEGER
  	});
-diff --git a/dist/sqlite-worker-store-BEWKhC9u.mjs b/dist/sqlite-worker-store-BEWKhC9u.mjs
+diff --git a/dist/sqlite-worker-store-ByP4_SWv.mjs b/dist/sqlite-worker-store-ByP4_SWv.mjs
 index a4d2590..58dbc4c 100644
---- a/dist/sqlite-worker-store-BEWKhC9u.mjs
-+++ b/dist/sqlite-worker-store-BEWKhC9u.mjs
+--- a/dist/sqlite-worker-store-ByP4_SWv.mjs
++++ b/dist/sqlite-worker-store-ByP4_SWv.mjs
 @@ -640,7 +640,7 @@ function createSqliteWorkerLifecycle({ explicitSqliteCloseReleasesNativeResource
  		const { worker, exited } = runInDetachedAsyncContext(() => ({
  			worker: createCpuTrackedWorker(carrierUrl, {
@@ -265,10 +265,10 @@ index b9372e5..84dcb6f 100644
  			maxWorkers: resolveStateReadWorkerCount(),
  			idleTimeoutMs: SQLITE_IDLE_HANDLE_TTL_MS,
  			maxPendingTasks: 128,
-diff --git a/dist/worker-task-pool-D48_8n2m.mjs b/dist/worker-task-pool-D48_8n2m.mjs
+diff --git a/dist/worker-task-pool-u4mUdwyn.mjs b/dist/worker-task-pool-u4mUdwyn.mjs
 index 227468b..22ccce0 100644
---- a/dist/worker-task-pool-D48_8n2m.mjs
-+++ b/dist/worker-task-pool-D48_8n2m.mjs
+--- a/dist/worker-task-pool-u4mUdwyn.mjs
++++ b/dist/worker-task-pool-u4mUdwyn.mjs
 @@ -52,7 +52,7 @@ function createWorkerTaskHost(owner = {}, workerClass) {
  			if (boundedHeap) {
  				const limits = workerOptions.resourceLimits;

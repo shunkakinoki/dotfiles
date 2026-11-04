@@ -1,6 +1,13 @@
 import { afterEach, expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
-import { chmodSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  chmodSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -24,9 +31,12 @@ function wrapper(bin: string, actual: string) {
   if (!timeout) throw new Error("GNU timeout required");
   executable(
     join(bin, "atuin"),
-    readFileSync(new URL("../home-manager/programs/atuin/hook-client.sh", import.meta.url), "utf8")
+    readFileSync(
+      new URL("../home-manager/programs/atuin/hook-client.sh", import.meta.url),
+      "utf8"
+    )
       .replaceAll("@timeout@", timeout)
-      .replaceAll("@atuin@", actual),
+      .replaceAll("@atuin@", actual)
   );
 }
 
@@ -41,7 +51,7 @@ test("actual generated fish preexec returns to the executor when the history cli
   const stub = join(root, "client");
   executable(
     stub,
-    '#!/usr/bin/env bash\nif [ "$1 $2" = "history start" ]; then touch "$HOOK_MARKER"; trap "" TERM; exec sleep 60; fi\nexit 0\n',
+    '#!/usr/bin/env bash\nif [ "$1 $2" = "history start" ]; then touch "$HOOK_MARKER"; trap "" TERM; exec sleep 60; fi\nexit 0\n'
   );
   wrapper(bin, stub);
   const started = Date.now();
@@ -65,7 +75,7 @@ test("actual generated fish preexec returns to the executor when the history cli
       },
       stdout: "pipe",
       stderr: "pipe",
-    },
+    }
   );
   const output = await new Response(child.stdout).text();
   expect(await child.exited).toBe(0);
@@ -80,13 +90,16 @@ test("failed storage and unavailable daemon fail promptly without changing non-h
   const stub = join(root, "client");
   executable(
     stub,
-    '#!/usr/bin/env bash\nif [ "$1" = history ]; then echo "daemon unavailable or storage read-only" >&2; exit 1; fi\nprintf "%s\\n" "$*"\n',
+    '#!/usr/bin/env bash\nif [ "$1" = history ]; then echo "daemon unavailable or storage read-only" >&2; exit 1; fi\nprintf "%s\\n" "$*"\n'
   );
   wrapper(bin, stub);
   for (const action of ["start", "end"]) {
-    const result = Bun.spawnSync([join(bin, "atuin"), "history", action, "--", "fixture"], {
-      env: { ...process.env, HOME: root },
-    });
+    const result = Bun.spawnSync(
+      [join(bin, "atuin"), "history", action, "--", "fixture"],
+      {
+        env: { ...process.env, HOME: root },
+      }
+    );
     expect(result.exitCode).toBe(1);
     expect(result.stderr.toString()).toContain("storage read-only");
   }
@@ -99,7 +112,7 @@ test("storage guard rejects missing, root-backed and wrong-directory mounts", ()
   const { root, bin } = fixture();
   executable(
     join(bin, "findmnt"),
-    '#!/usr/bin/env bash\n[ -n "${MOUNT_READING:-}" ] || exit 1\nprintf "%s\\n" "$MOUNT_READING"\n',
+    '#!/usr/bin/env bash\n[ -n "${MOUNT_READING:-}" ] || exit 1\nprintf "%s\\n" "$MOUNT_READING"\n'
   );
   for (const reading of [
     "",
@@ -107,15 +120,20 @@ test("storage guard rejects missing, root-backed and wrong-directory mounts", ()
     "90f29a7b-38ff-460b-b534-92a02f1412ec /wrong",
     "90f29a7b-38ff-460b-b534-92a02f1412ec /host-state/atuin-ubuntu",
   ]) {
-    const result = Bun.spawnSync(["bash", "config/k3s/atuin-storage-guard.sh"], {
-      env: {
-        ...process.env,
-        PATH: `${bin}:${process.env.PATH}`,
-        HOME: root,
-        MOUNT_READING: reading,
-      },
-    });
-    expect(result.exitCode === 0).toBe(reading.endsWith(" /host-state/atuin-ubuntu"));
+    const result = Bun.spawnSync(
+      ["bash", "config/k3s/atuin-storage-guard.sh"],
+      {
+        env: {
+          ...process.env,
+          PATH: `${bin}:${process.env.PATH}`,
+          HOME: root,
+          MOUNT_READING: reading,
+        },
+      }
+    );
+    expect(result.exitCode === 0).toBe(
+      reading.endsWith(" /host-state/atuin-ubuntu")
+    );
   }
 });
 
@@ -127,7 +145,7 @@ test("healthy real Atuin capture retains command text and exit status", () => {
   mkdirSync(config);
   writeFileSync(
     join(config, "config.toml"),
-    `db_path = "${root}/history.db"\nauto_sync = false\n[daemon]\nenabled = false\n[sync]\nrecords = false\n`,
+    `db_path = "${root}/history.db"\nauto_sync = false\n[daemon]\nenabled = false\n[sync]\nrecords = false\n`
   );
   wrapper(bin, atuin);
   const env = {
@@ -139,18 +157,23 @@ test("healthy real Atuin capture retains command text and exit status", () => {
   };
   const start = Bun.spawnSync(
     [join(bin, "atuin"), "history", "start", "--", "echo preserved-history"],
-    { env },
+    { env }
   );
   expect(start.exitCode).toBe(0);
   const id = start.stdout.toString().trim();
   expect(id.length).toBeGreaterThan(0);
-  const end = Bun.spawnSync([join(bin, "atuin"), "history", "end", "--exit", "7", "--", id], {
-    env,
-  });
+  const end = Bun.spawnSync(
+    [join(bin, "atuin"), "history", "end", "--exit", "7", "--", id],
+    {
+      env,
+    }
+  );
   expect(end.exitCode).toBe(0);
   const db = new Database(join(root, "history.db"), { readonly: true });
   try {
-    expect(db.query("SELECT command, exit FROM history WHERE id = ?").get(id)).toEqual({
+    expect(
+      db.query("SELECT command, exit FROM history WHERE id = ?").get(id)
+    ).toEqual({
       command: "echo preserved-history",
       exit: 7,
     });
@@ -181,7 +204,11 @@ test.skipIf(process.platform !== "linux")(
       `ConditionPathIsMountPoint=${root}`,
     ]);
     expect(missing.exitCode).not.toBe(0);
-    const mounted = Bun.spawnSync(["systemd-analyze", "condition", "ConditionPathIsMountPoint=/"]);
+    const mounted = Bun.spawnSync([
+      "systemd-analyze",
+      "condition",
+      "ConditionPathIsMountPoint=/",
+    ]);
     expect(mounted.exitCode).toBe(0);
-  },
+  }
 );

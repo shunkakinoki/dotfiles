@@ -10,6 +10,7 @@
     cat
     EOF
     chmod +x bin/beads-linear-complete
+    patchShebangs bin
 
     printf 'evidence\n' | SSH_ORIGINAL_COMMAND='beads-linear-complete org/repo bead-123' bin/beads-linear-complete-ssh-guard > actual
     printf 'org/repo\nbead-123\nevidence\n' > expected

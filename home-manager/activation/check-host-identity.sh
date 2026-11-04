@@ -3,7 +3,7 @@ set -euo pipefail
 
 expected=$(printf '%s' "${1:?expected host required}" | cut -d. -f1 | tr '[:upper:]' '[:lower:]')
 is_named_host() {
-  [[ "$1" =~ ^(andor|beskar|kyber|matic|viper|galactica|kamino([1-9][0-9]*)?)$ ]]
+  [[ $1 =~ ^(andor|beskar|kyber|matic|viper|galactica|kamino([1-9][0-9]*)?)$ ]]
 }
 # Generic profiles carry no named host policy.
 is_named_host "$expected" || exit 0

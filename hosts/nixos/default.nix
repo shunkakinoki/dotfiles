@@ -134,7 +134,7 @@ let
         boot.initrd.availableKernelModules = lib.optionals (!isRunner) [ "nvme" ];
 
         boot.consoleLogLevel = 7;
-        services.journald.extraConfig = "Storage=volatile";
+        services.journald.settings.Journal.Storage = "volatile";
 
         fileSystems."/" = {
           device = if isRunner then "/dev/sda1" else "/dev/disk/by-label/root";

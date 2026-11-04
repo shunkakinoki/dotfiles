@@ -34,7 +34,8 @@ const ROOT_COPY = `${SOURCE}.before-storage-migration`;
 const RECORD = `${PARENT}/atuin-storage-migration.json`;
 const UNIT = "home-ubuntu-.local-share-atuin.mount";
 const UNIT_TARGET = `/etc/systemd/system/${UNIT}`;
-const DROPIN = "/home/ubuntu/.config/systemd/user/atuin-daemon.service.d/20-storage.conf";
+const DROPIN =
+  "/home/ubuntu/.config/systemd/user/atuin-daemon.service.d/20-storage.conf";
 const CONFIG = resolve(import.meta.dir, "../config/k3s");
 const UNITS = ["atuin-daemon.socket", "atuin-daemon.service"];
 const GIB = 1024 ** 3;
@@ -48,7 +49,7 @@ function run(argv: string[], quiet = false): string {
   const child = Bun.spawnSync(argv, { stdout: "pipe", stderr: "pipe" });
   requireThat(
     child.exitCode === 0,
-    `${argv[0]} failed (exit ${child.exitCode}); no captured content is printed`,
+    `${argv[0]} failed (exit ${child.exitCode}); no captured content is printed`
   );
   return quiet ? "" : child.stdout.toString().trim();
 }
@@ -67,7 +68,7 @@ function user(argv: string[], quiet = false): string {
       `ATUIN_SESSION=${HISTORY_SESSION}`,
       ...argv,
     ],
-    quiet,
+    quiet
   );
 }
 
@@ -81,10 +82,13 @@ function phase(name: string): void {
 
 function matchingDeclaration(source: string, target: string): boolean {
   if (!existsSync(target)) return false;
-  requireThat(statSync(target).isFile(), "Existing declaration is not a regular file");
+  requireThat(
+    statSync(target).isFile(),
+    "Existing declaration is not a regular file"
+  );
   requireThat(
     readFileSync(source).equals(readFileSync(target)),
-    "Existing declaration differs; retain it and refuse cutover",
+    "Existing declaration differs; retain it and refuse cutover"
   );
   return true;
 }
@@ -93,7 +97,7 @@ export function ensureDeclaration(
   source: string,
   target: string,
   uid: number,
-  gid: number,
+  gid: number
 ): boolean {
   // Activation can install these first. Preserve matching managed links rather
   // than attempting to write through them into the immutable store.
@@ -120,7 +124,7 @@ export function snapshot(root: string): Entry[] {
     const s = lstatSync(path);
     requireThat(
       s.isDirectory() || s.isFile() || s.isSymbolicLink(),
-      "Unexpected special file in storage; refuse to omit it",
+      "Unexpected special file in storage; refuse to omit it"
     );
     // SQLite shared memory is reconstructed by read-only database connections.
     if (s.isFile() && relative.endsWith("-shm")) return;
@@ -148,7 +152,8 @@ export function snapshot(root: string): Entry[] {
       hash,
     });
     if (s.isDirectory())
-      for (const name of readdirSync(path).sort()) walk(relative ? `${relative}/${name}` : name);
+      for (const name of readdirSync(path).sort())
+        walk(relative ? `${relative}/${name}` : name);
   }
   walk("");
   return rows;
@@ -157,13 +162,13 @@ export function snapshot(root: string): Entry[] {
 export function compareCopies(a: Entry[], b: Entry[]): void {
   requireThat(
     JSON.stringify(a) === JSON.stringify(b),
-    "Storage copies differ; retain the original and refuse cutover/release",
+    "Storage copies differ; retain the original and refuse cutover/release"
   );
 }
 
 export function databaseCounts(
   root: string,
-  scan: "full" | "readability" = "full",
+  scan: "full" | "readability" = "full"
 ): Record<string, Record<string, string>> {
   const result: Record<string, Record<string, string>> = {};
   for (const name of readdirSync(root)
@@ -177,15 +182,18 @@ export function databaseCounts(
     const db = new Database(path, { readonly: true });
     try {
       if (scan === "full") {
-        const integrity = db.query("PRAGMA quick_check").all() as Record<string, unknown>[];
+        const integrity = db.query("PRAGMA quick_check").all() as Record<
+          string,
+          unknown
+        >[];
         requireThat(
           integrity.length === 1 && Object.values(integrity[0]!)[0] === "ok",
-          `SQLite integrity check failed for ${name}`,
+          `SQLite integrity check failed for ${name}`
         );
       }
       const tables = db
         .query(
-          "SELECT name FROM sqlite_schema WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name",
+          "SELECT name FROM sqlite_schema WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name"
         )
         .all() as { name: string }[];
       result[name] = {};
@@ -204,28 +212,38 @@ export function databaseCounts(
       db.close();
       // A privileged read-only WAL connection can create shared memory. Keep
       // that newly created transient file writable by the database's owner.
-      if (!hadSharedMemory && existsSync(sharedMemory) && process.getuid?.() === 0) {
-        requireThat(lstatSync(sharedMemory).isFile(), "Unexpected SQLite shared-memory file type");
+      if (
+        !hadSharedMemory &&
+        existsSync(sharedMemory) &&
+        process.getuid?.() === 0
+      ) {
+        requireThat(
+          lstatSync(sharedMemory).isFile(),
+          "Unexpected SQLite shared-memory file type"
+        );
         chownSync(sharedMemory, owner.uid, owner.gid);
       }
     }
   }
   requireThat(
     ["history.db", "records.db", "threads.db"].every((name) => name in result),
-    "A required Atuin database is missing",
+    "A required Atuin database is missing"
   );
   return result;
 }
 
 function verifyDisk(): void {
-  requireThat(hostname().split(".")[0] === "kyber", "This operation is restricted to Kyber");
+  requireThat(
+    hostname().split(".")[0] === "kyber",
+    "This operation is restricted to Kyber"
+  );
   requireThat(
     run(["findmnt", "-n", "-o", "UUID", "-T", DISK]) === UUID,
-    "Unexpected destination filesystem UUID",
+    "Unexpected destination filesystem UUID"
   );
   requireThat(
     run(["findmnt", "-n", "-o", "TARGET", "-T", DISK]) === DISK,
-    "Destination disk is not mounted at its declared path",
+    "Destination disk is not mounted at its declared path"
   );
 }
 
@@ -234,13 +252,16 @@ function mounted(): boolean {
 }
 
 function assertQuiescent(root = SOURCE): void {
-  const p = Bun.spawnSync(["/home/ubuntu/.nix-profile/bin/lsof", "-t", "+D", root], {
-    stdout: "pipe",
-    stderr: "pipe",
-  });
+  const p = Bun.spawnSync(
+    ["/home/ubuntu/.nix-profile/bin/lsof", "-t", "+D", root],
+    {
+      stdout: "pipe",
+      stderr: "pipe",
+    }
+  );
   requireThat(
     p.exitCode === 1 && p.stdout.length === 0 && p.stderr.length === 0,
-    "Atuin storage has open handles or liveness could not be proved; no foreign process will be killed",
+    "Atuin storage has open handles or liveness could not be proved; no foreign process will be killed"
   );
 }
 
@@ -256,13 +277,13 @@ function copy(source: string, target: string, staging = false): void {
       `${source}/`,
       `${target}/`,
     ],
-    { stdout: "inherit", stderr: "pipe" },
+    { stdout: "inherit", stderr: "pipe" }
   );
   // A live staging copy is not a consistency proof. Vanished files must be
   // resolved by the mandatory quiescent copy and byte/database checks.
   requireThat(
     p.exitCode === 0 || (staging && p.exitCode === 24),
-    "Storage copy failed; captured filenames are not printed",
+    "Storage copy failed; captured filenames are not printed"
   );
 }
 
@@ -294,7 +315,7 @@ function readRecord(): Migration {
       Number.isSafeInteger(r.originalDev) &&
       Number.isSafeInteger(r.originalIno) &&
       (!r.backupRetained || r.counts !== null),
-    "Migration record does not match the approved paths",
+    "Migration record does not match the approved paths"
   );
   return r;
 }
@@ -309,12 +330,12 @@ function verifyApplication(): void {
   requireThat(
     statSync(SOURCE).dev === statSync(DESTINATION).dev &&
       statSync(SOURCE).ino === statSync(DESTINATION).ino,
-    "The application path is not bound to the verified destination",
+    "The application path is not bound to the verified destination"
   );
   for (const unit of UNITS)
     requireThat(
       user(["systemctl", "--user", "is-active", unit]) === "active",
-      "A named Atuin unit is not active",
+      "A named Atuin unit is not active"
     );
   user(
     [
@@ -327,7 +348,7 @@ function verifyApplication(): void {
       "--filter-mode",
       "global",
     ],
-    true,
+    true
   );
   console.log("mount=verified units=active existing-history=readable");
 }
@@ -346,17 +367,20 @@ function verifyCapture(): void {
     "--",
     command.join(" "),
   ]);
-  requireThat(/^[0-9a-f-]+$/i.test(id), "Atuin did not return a capture identifier");
+  requireThat(
+    /^[0-9a-f-]+$/i.test(id),
+    "Atuin did not return a capture identifier"
+  );
   requireThat(
     user(command) === UUID,
-    "The actual capture-verification command resolved the wrong disk",
+    "The actual capture-verification command resolved the wrong disk"
   );
   user([atuin, "history", "end", "--exit", "0", id], true);
   const db = new Database(join(SOURCE, "history.db"), { readonly: true });
   try {
     requireThat(
       db.query("SELECT 1 FROM history WHERE id=? AND exit=0").get(id) !== null,
-      "The real verification command was not captured",
+      "The real verification command was not captured"
     );
   } finally {
     db.close();
@@ -367,12 +391,17 @@ function verifyCapture(): void {
 function dryRun(recoverWithoutBackup = false): void {
   verifyDisk();
   const size = Number(run(["du", "-sk", SOURCE]).split(/\s/)[0]) * 1024;
-  const available = Number(run(["df", "-B1", "--output=avail", DISK]).split(/\s+/).at(-1));
+  const available = Number(
+    run(["df", "-B1", "--output=avail", DISK]).split(/\s+/).at(-1)
+  );
   const source = statSync(SOURCE);
-  requireThat(source.uid === 1000 && source.gid === 1000, "Unexpected source owner");
+  requireThat(
+    source.uid === 1000 && source.gid === 1000,
+    "Unexpected source owner"
+  );
   requireThat(
     available > (recoverWithoutBackup ? 0 : size * 2) + 50 * GIB,
-    "Insufficient space for this operation and the destination reserve",
+    "Insufficient space for this operation and the destination reserve"
   );
   console.log(
     JSON.stringify({
@@ -384,7 +413,7 @@ function dryRun(recoverWithoutBackup = false): void {
       alreadyMounted: mounted(),
       stops: UNITS,
       uuid: UUID,
-    }),
+    })
   );
 }
 
@@ -392,32 +421,45 @@ function apply(recoverWithoutBackup = false): void {
   dryRun(recoverWithoutBackup);
   for (const unit of UNITS)
     requireThat(
-      user(["systemctl", "--user", "show", unit, "--property=ActiveState", "--value"]) ===
-        (recoverWithoutBackup ? "inactive" : "active"),
-      "A named unit changed state since the approved preflight",
+      user([
+        "systemctl",
+        "--user",
+        "show",
+        unit,
+        "--property=ActiveState",
+        "--value",
+      ]) === (recoverWithoutBackup ? "inactive" : "active"),
+      "A named unit changed state since the approved preflight"
     );
   requireThat(!mounted(), "Already mounted; use --verify instead");
   for (const path of [BACKUP, ROOT_COPY, RECORD])
     requireThat(
       !existsSync(path),
-      "Migration output already exists; inspect it instead of overwriting",
+      "Migration output already exists; inspect it instead of overwriting"
     );
   matchingDeclaration(join(CONFIG, UNIT), UNIT_TARGET);
   matchingDeclaration(join(CONFIG, "atuin-storage.conf"), DROPIN);
-  requireThat(lstatSync(SOURCE).isDirectory(), "Source is not a real directory");
+  requireThat(
+    lstatSync(SOURCE).isDirectory(),
+    "Source is not a real directory"
+  );
   requireThat(
     recoverWithoutBackup === existsSync(DESTINATION),
-    "Recovery requires the completed staging copy; ordinary apply requires a fresh destination",
+    "Recovery requires the completed staging copy; ordinary apply requires a fresh destination"
   );
   mkdirSync(PARENT, { recursive: true, mode: 0o700 });
   requireThat(
     lstatSync(PARENT).isDirectory() &&
       statSync(PARENT).uid === 0 &&
       (statSync(PARENT).mode & 0o077) === 0,
-    "Destination parent owner or permissions differ",
+    "Destination parent owner or permissions differ"
   );
   if (!recoverWithoutBackup) mkdirSync(DESTINATION, { mode: 0o700 });
-  else requireThat(lstatSync(DESTINATION).isDirectory(), "Staging is not a real directory");
+  else
+    requireThat(
+      lstatSync(DESTINATION).isDirectory(),
+      "Staging is not a real directory"
+    );
   let stopped = recoverWithoutBackup;
   let cutover = false;
   let mountInstalled = false;
@@ -444,7 +486,7 @@ function apply(recoverWithoutBackup = false): void {
       counts = databaseCounts(SOURCE);
       requireThat(
         JSON.stringify(counts) === JSON.stringify(databaseCounts(DESTINATION)),
-        "Copied SQLite record counts differ",
+        "Copied SQLite record counts differ"
       );
       compareCopies(snapshot(SOURCE), snapshot(DESTINATION));
       phase("independent-backup");
@@ -453,7 +495,7 @@ function apply(recoverWithoutBackup = false): void {
       compareCopies(snapshot(SOURCE), snapshot(BACKUP));
       requireThat(
         JSON.stringify(counts) === JSON.stringify(databaseCounts(BACKUP)),
-        "Backup SQLite counts differ",
+        "Backup SQLite counts differ"
       );
     }
     run(["sync", "-f", DISK], true);
@@ -463,7 +505,12 @@ function apply(recoverWithoutBackup = false): void {
       mkdirSync(dirname(DROPIN), { recursive: true, mode: 0o755 });
       chownSync(dirname(DROPIN), 1000, 1000);
     }
-    dropinInstalled = ensureDeclaration(join(CONFIG, "atuin-storage.conf"), DROPIN, 1000, 1000);
+    dropinInstalled = ensureDeclaration(
+      join(CONFIG, "atuin-storage.conf"),
+      DROPIN,
+      1000,
+      1000
+    );
     mountInstalled = ensureDeclaration(join(CONFIG, UNIT), UNIT_TARGET, 0, 0);
     renameSync(SOURCE, ROOT_COPY);
     mkdirSync(SOURCE, { mode: 0o700 });
@@ -494,16 +541,20 @@ function apply(recoverWithoutBackup = false): void {
     console.log(
       recoverWithoutBackup
         ? "cutover=verified original-root-copy=retained; run --release-root-copy, then --verify"
-        : "cutover=verified original-root-copy=retained; run --verify, then --release-root-copy",
+        : "cutover=verified original-root-copy=retained; run --verify, then --release-root-copy"
     );
     if (recoverWithoutBackup)
-      console.log("backup=waived release-root-copy-before-full-verify=true full-integrity=pending");
+      console.log(
+        "backup=waived release-root-copy-before-full-verify=true full-integrity=pending"
+      );
   } catch (error) {
     phase("rollback");
     if (cutover || mounted()) {
       // New records may exist on the mounted copy. Keep it live for recovery;
       // never overwrite it with the pre-cutover snapshot.
-      console.log("rollback=manual-required current-data=preserved original-root-copy=retained");
+      console.log(
+        "rollback=manual-required current-data=preserved original-root-copy=retained"
+      );
     } else {
       if (existsSync(ROOT_COPY)) {
         if (existsSync(SOURCE)) rmdirSync(SOURCE);
@@ -534,13 +585,15 @@ function verify(): void {
     for (const [table, count] of Object.entries(tables)) {
       requireThat(
         BigInt(current[file]?.[table] ?? "-1") >= BigInt(count),
-        "A SQLite record count fell below the verified baseline",
+        "A SQLite record count fell below the verified baseline"
       );
     }
   if (!r.captureVerified) verifyCapture();
   if (r.counts === null || !r.captureVerified)
     record({ ...r, counts: r.counts ?? current, captureVerified: true });
-  console.log(`sqlite-integrity=ok backup=${r.backupRetained ? "retained" : "waived"}`);
+  console.log(
+    `sqlite-integrity=ok backup=${r.backupRetained ? "retained" : "waived"}`
+  );
 }
 
 function release(): void {
@@ -558,17 +611,18 @@ function release(): void {
   requireThat(!r.released, "Root duplicate already released");
   requireThat(
     statSync(ROOT_COPY).dev !== statSync(DESTINATION).dev,
-    "The duplicate is not on the old root filesystem",
+    "The duplicate is not on the old root filesystem"
   );
   requireThat(
-    statSync(ROOT_COPY).dev === r.originalDev && statSync(ROOT_COPY).ino === r.originalIno,
-    "The original root directory identity changed",
+    statSync(ROOT_COPY).dev === r.originalDev &&
+      statSync(ROOT_COPY).ino === r.originalIno,
+    "The original root directory identity changed"
   );
   if (r.backupRetained) {
     compareCopies(snapshot(ROOT_COPY), snapshot(BACKUP));
     requireThat(
       JSON.stringify(databaseCounts(BACKUP)) === JSON.stringify(r.counts),
-      "Backup differs from the pre-cutover record counts",
+      "Backup differs from the pre-cutover record counts"
     );
   } else assertQuiescent(ROOT_COPY);
   run(["sync", "-f", DISK], true);
@@ -576,7 +630,7 @@ function release(): void {
   rmSync(ROOT_COPY, { recursive: true });
   record({ ...r, released: true });
   console.log(
-    `released-root-duplicate=true backup=${r.backupRetained ? "retained" : "waived"} applied-at=${r.appliedAt}`,
+    `released-root-duplicate=true backup=${r.backupRetained ? "retained" : "waived"} applied-at=${r.appliedAt}`
   );
   console.log(run(["df", "-Pk", "/", DISK]));
 }
@@ -593,12 +647,12 @@ if (import.meta.main) {
           "--verify",
           "--release-root-copy",
         ].includes(mode),
-      "Choose --dry-run, --apply, --recover-without-backup, --verify or --release-root-copy",
+      "Choose --dry-run, --apply, --recover-without-backup, --verify or --release-root-copy"
     );
     if (mode !== "--dry-run") {
       requireThat(
         process.getuid?.() === 0,
-        "Mutation and complete verification require the approved root execution route",
+        "Mutation and complete verification require the approved root execution route"
       );
       if (process.env.ATUIN_STORAGE_LOCKED !== "1") {
         const child = Bun.spawnSync(
@@ -614,7 +668,7 @@ if (import.meta.main) {
             env: { ...process.env, ATUIN_STORAGE_LOCKED: "1" },
             stdout: "inherit",
             stderr: "inherit",
-          },
+          }
         );
         process.exit(child.exitCode);
       }
@@ -625,7 +679,9 @@ if (import.meta.main) {
     else if (mode === "--verify") verify();
     else release();
   } catch (error) {
-    console.error(error instanceof Error ? error.message : "Storage migration refused");
+    console.error(
+      error instanceof Error ? error.message : "Storage migration refused"
+    );
     process.exitCode = 1;
   }
 }

@@ -28,7 +28,10 @@ function fixture(): string {
   for (const name of ["history.db", "records.db", "threads.db"]) {
     const db = new Database(join(root, name));
     db.run("CREATE TABLE entries(id TEXT PRIMARY KEY, value BLOB)");
-    db.run("INSERT INTO entries VALUES (?, ?)", ["id", new Uint8Array([1, 2, 3])]);
+    db.run("INSERT INTO entries VALUES (?, ?)", [
+      "id",
+      new Uint8Array([1, 2, 3]),
+    ]);
     db.close();
   }
   writeFileSync(join(root, "key"), "fixture-only-opaque-key", { mode: 0o600 });
@@ -52,10 +55,14 @@ test("refuses changed data or broader key permissions", () => {
   const source = fixture();
   const original = snapshot(source);
   chmodSync(join(source, "key"), 0o644);
-  expect(() => compareCopies(original, snapshot(source))).toThrow("copies differ");
+  expect(() => compareCopies(original, snapshot(source))).toThrow(
+    "copies differ"
+  );
   chmodSync(join(source, "key"), 0o600);
   writeFileSync(join(source, "key"), "different-opaque-key");
-  expect(() => compareCopies(original, snapshot(source))).toThrow("copies differ");
+  expect(() => compareCopies(original, snapshot(source))).toThrow(
+    "copies differ"
+  );
 });
 
 test("rejects corruption and a missing required database", () => {
@@ -109,7 +116,9 @@ test("reuses a matching managed symlink without changing its target or permissio
   cpSync(source, stored);
   chmodSync(stored, 0o444);
   symlinkSync(stored, target);
-  expect(ensureDeclaration(source, target, process.getuid!(), process.getgid!())).toBe(false);
+  expect(
+    ensureDeclaration(source, target, process.getuid!(), process.getgid!())
+  ).toBe(false);
   expect(lstatSync(target).isSymbolicLink()).toBe(true);
   expect(readlinkSync(target)).toBe(stored);
   expect(statSync(stored).mode & 0o777).toBe(0o444);
@@ -120,11 +129,13 @@ test("installs a missing declaration and refuses existing drift without overwrit
   const source = join(root, "template");
   const target = join(root, "declaration");
   writeFileSync(source, "[Mount]\nType=none\n");
-  expect(ensureDeclaration(source, target, process.getuid!(), process.getgid!())).toBe(true);
+  expect(
+    ensureDeclaration(source, target, process.getuid!(), process.getgid!())
+  ).toBe(true);
   expect(readFileSync(target).equals(readFileSync(source))).toBe(true);
   writeFileSync(target, "different existing declaration");
-  expect(() => ensureDeclaration(source, target, process.getuid!(), process.getgid!())).toThrow(
-    "differs",
-  );
+  expect(() =>
+    ensureDeclaration(source, target, process.getuid!(), process.getgid!())
+  ).toThrow("differs");
   expect(readFileSync(target, "utf8")).toBe("different existing declaration");
 });

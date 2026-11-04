@@ -23,8 +23,11 @@ run_activation() {
   }
   id() { printf '0\n'; }
   readlink() { printf '/run/systemd/resolve/stub-resolv.conf\n'; }
-  export -f tailscale_mock id readlink
-  bash home-manager/modules/tailscale/activate-up.sh tailscale_mock "$@"
+  # DNS routing assertions must never modify the runner resolver.
+  ln() { :; }
+  export -f tailscale_mock id readlink ln
+  bash home-manager/modules/tailscale/activate-up.sh tailscale_mock "$@" | grep -v '^Restoring systemd-resolved stub resolv.conf for Tailscale DNS$'
+  return "${PIPESTATUS[0]}"
 }
 
 Before 'setup'

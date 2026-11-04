@@ -20,7 +20,7 @@ let
         entry: entry ? host && entry.host == machine.name && entry ? model_family
       ) validatedTunnelMappings;
     in
-    if matches == [ ] then { } else { model_family = (builtins.head matches).model_family; };
+    if matches == [ ] then { } else { inherit (builtins.head matches) model_family; };
   inventory = pkgs.writeText "kamino-fleet.json" (
     builtins.toJSON (
       fleet

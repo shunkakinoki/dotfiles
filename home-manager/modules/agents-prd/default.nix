@@ -6,7 +6,7 @@
   ...
 }:
 let
-  host = inputs.host;
+  inherit (inputs) host;
   secretFile = ../../../named-hosts/agents-prd/keys + "/${host.nodeName}.age";
   enabled = pkgs.stdenv.hostPlatform.isLinux && builtins.pathExists secretFile;
   herdrNeedsIdentity = enabled && (host.isKamino || host.isMatic || host.isKyber);

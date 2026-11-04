@@ -456,6 +456,7 @@ When run env HEALTH_CHECK="$SCRIPT" bash -c '
   check_orchestration_disk() { :; }
   check_node_filesystem() { :; }
   check_image_filesystem() { :; }
+  check_atuin_storage() { :; }
   check_cri() { printf "cri\n"; }
   manage_orchestration_circuit_breaker() { printf "recovery\n"; }
   check_dns() { printf "dns\n"; }

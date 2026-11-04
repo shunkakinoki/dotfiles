@@ -279,6 +279,7 @@ The output should include "github_app_private_key = \"$TEMP_HOME/.roborev/github
 End
 
 It 'decodes the private key to an owner-only file'
+# shellcheck disable=SC2016 # Variables inside bash -c belong to the child shell.
 When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$PREPROCESSED_SCRIPT"'" >/dev/null 2>&1; f="'"$TEMP_HOME"'/.roborev/github-app.pem"; cat "$f"; stat -c "%a" "$f" 2>/dev/null || stat -f "%OLp" "$f"'
 The status should be success
 The line 1 of output should eq 'fixture-pem'

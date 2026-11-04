@@ -106,7 +106,6 @@
     "agent-desktop",
     "acpx",
     "pinchtab",
-    "agent-desktop",
     "agentcash",
     "frog",
     "oxfmt",
@@ -168,6 +167,7 @@
   ],
   "patchedDependencies": {
     "frog@1.1.0": "patches/frog@1.1.0.patch",
+    "openclaw@2026.10.8": "patches/openclaw@2026.10.8.patch",
   },
   "overrides": {
     "pino": "^9.14.0",

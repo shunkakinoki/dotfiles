@@ -745,7 +745,8 @@ When run env HEALTH_CHECK="$HEALTH_CHECK" bash -c '
   clear_alert() { printf "clear:%s\n" "$1"; }
   check_node_filesystem
 '
-The output should equal 'clear:node-filesystem'
+The output should equal 'clear:node-filesystem-urgent
+clear:node-filesystem'
 The status should be success
 End
 

@@ -16,6 +16,6 @@ The output should include 'system.activationScripts.homebrew.text = lib.mkBefore
 The output should include 'set +e'
 The output should include 'autoUpdate = builtins.getEnv "NIX_OFFLINE" != "1";'
 The output should include 'upgrade = builtins.getEnv "NIX_OFFLINE" != "1";'
-The output should include 'cleanup = "zap";'
+The output should include 'cleanup = "uninstall";'
 End
 End
