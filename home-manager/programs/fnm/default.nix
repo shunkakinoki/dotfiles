@@ -13,7 +13,7 @@ let
       "${homeDir}/.local/share/fnm";
   # Node versions to pre-install (first one is default)
   nodeVersions = [
-    "24.21.0"
+    "24.22.2"
     "22.21.1"
     "20.19.0"
   ];
