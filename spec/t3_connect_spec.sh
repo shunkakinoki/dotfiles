@@ -8,7 +8,7 @@ WRAPPER="$PWD/home-manager/services/t3-connect/runtime-npm.sh"
 LAUNCHER="$PWD/home-manager/services/t3-connect/launch-service.sh"
 
 setup() {
-  mock_bin_setup npm npx prepare node systemctl setup-browser
+  mock_bin_setup npm npx prepare node systemctl setup-browser service-cli
   T3_TEST_ROOT="$(mktemp -d)"
   export T3_TEST_ROOT
   cat >"$MOCK_BIN/systemctl" <<'MOCK'
@@ -21,6 +21,7 @@ MOCK
   export T3_PREPARE_RUNTIME="$MOCK_BIN/prepare"
   export T3_SETUP_BROWSER="$MOCK_BIN/setup-browser"
   export T3_CHECK_SERVICE="$T3_TEST_ROOT/check-service.cjs"
+  export T3_SERVICE_CLI="$MOCK_BIN/service-cli"
   export T3_REAL_NPM="$MOCK_BIN/npm"
   export T3_PTY_PROBE=pty-probe.cjs
   export T3_CONNECT_PROJECT="$T3_TEST_ROOT/dotfiles"
@@ -32,7 +33,7 @@ MOCK
 cleanup() {
   mock_bin_cleanup
   rm -rf "$T3_TEST_ROOT"
-  unset T3_TEST_ROOT T3CODE_HOME npm_config_cache T3_PREPARE_RUNTIME T3_SETUP_BROWSER T3_REAL_NPM T3_PTY_PROBE T3_CONNECT_PROJECT GHQ_ROOT T3_CONNECT_WORKER_PROJECT T3_CHECK_SERVICE
+  unset T3_TEST_ROOT T3CODE_HOME npm_config_cache T3_PREPARE_RUNTIME T3_SETUP_BROWSER T3_REAL_NPM T3_PTY_PROBE T3_CONNECT_PROJECT GHQ_ROOT T3_CONNECT_WORKER_PROJECT T3_CHECK_SERVICE T3_SERVICE_CLI T3_ENSURE_SERVICE
 }
 
 Before 'setup'
@@ -115,7 +116,7 @@ It 'reinstalls a missing t3code unit on hosts that own one'
 export T3_ENSURE_SERVICE=1
 When call missing_unit
 The status should be success
-The output should include 'npx --yes t3@1.2.3 service install'
+The output should include 'service-cli service install'
 End
 
 It 'leaves a missing t3code unit alone elsewhere'
