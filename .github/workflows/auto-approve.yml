@@ -13,6 +13,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.sha }}
   cancel-in-progress: true
 jobs:
+  package-patches:
+    if: github.event_name != 'pull_request_target'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/package-patches.yml
   auto-approve-bot:
     runs-on: ubuntu-latest
     timeout-minutes: 3
@@ -34,9 +39,11 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
   auto-approve-check:
-    if: always()
+    name: ${{ github.event_name == 'pull_request_target' && 'auto-approve-target' || 'auto-approve-check' }}
+    if: always() && github.event_name != 'pull_request_target'
     needs:
       - auto-approve-bot
+      - package-patches
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
