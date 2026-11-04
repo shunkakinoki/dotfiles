@@ -1,9 +1,32 @@
 # shellcheck shell=bash
 # Rebuild records.db with only this host's records. Upload-only hosts never
 # read other hosts' records, but a past full sync left tens of GB of them.
+set -euo pipefail
 
 D="${XDG_DATA_HOME:-$HOME/.local/share}/atuin"
 N="$D/records.slim.db"
+
+# history.db and threads.db are projections of records.db; rebuilding them
+# from the pruned store drops the other hosts' rows too. The .pre-prune
+# backups stay until this succeeds, so a failed run resumes here next time.
+finish() {
+  systemctl --user start atuin-daemon.socket atuin-daemon.service
+  sleep 5
+  atuin store rebuild history
+  atuin store rebuild threads
+  atuin store push
+  rm -f "$D"/*.pre-prune
+}
+
+if [ -e "$D/records.db.pre-prune" ]; then
+  if [ -f "$D/records.db" ]; then
+    finish
+    echo "resumed pending rebuild"
+    exit 0
+  fi
+  # Interrupted between the two renames: roll back and start over.
+  for f in "$D"/*.pre-prune; do mv "$f" "${f%.pre-prune}"; done
+fi
 
 [ -f "$D/records.db" ] || exit 0
 ME=$(sqlite3 -readonly "file:$D/meta.db?mode=ro" "select value from meta where key='host_id'" |
@@ -28,9 +51,15 @@ fi
 per_tag="select tag||':'||count(*)||':'||max(idx) from store"
 tables=$(sqlite3 -readonly "file:$D/records.db?mode=ro" "select sql||';' from sqlite_master where type='table' and name not like 'sqlite_%'")
 indexes=$(sqlite3 -readonly "file:$D/records.db?mode=ro" "select sql||';' from sqlite_master where type='index' and sql is not null")
+delta="attach '$D/%s' as old;
+insert or ignore into main.store
+  select s.* from old.store s
+  where s.host = '$ME'
+    and s.idx > coalesce((select max(m.idx) from main.store m where m.host = s.host and m.tag = s.tag), -1);"
 
 rm -f "$N" "$N-wal" "$N-shm"
-# The bulk copy runs while the daemon is live; the swap below only adds the delta.
+# The bulk copy runs while the daemon is live; only the delta is copied once
+# it is stopped, which keeps the stop window to seconds on a multi-GB store.
 sqlite3 "$N" <<SQL
 $tables
 attach '$D/records.db' as old;
@@ -49,18 +78,14 @@ if pgrep -f 'atuin (daemon|store)' >/dev/null; then
   exit 1
 fi
 
-sqlite3 "$N" <<SQL
-attach '$D/records.db' as old;
-insert or ignore into main.store
-  select s.* from old.store s
-  where s.host = '$ME'
-    and s.idx > coalesce((select max(m.idx) from main.store m where m.host = s.host and m.tag = s.tag), -1);
-SQL
+# shellcheck disable=SC2059
+sqlite3 "$N" "$(printf "$delta" records.db)"
 
 new=$(sqlite3 "$N" "$per_tag group by tag order by tag")
 old=$(sqlite3 -readonly "file:$D/records.db?mode=ro" "$per_tag where host='$ME' group by tag order by tag")
-integrity=$(sqlite3 "$N" "pragma wal_checkpoint(truncate); pragma integrity_check;" | tail -1)
-if [ "$new" != "$old" ] || [ "$integrity" != "ok" ]; then
+sqlite3 "$N" "pragma wal_checkpoint(truncate)" >/dev/null
+integrity=$(sqlite3 "$N" "pragma integrity_check")
+if [ -z "$new" ] || [ "$new" != "$old" ] || [ "$integrity" != "ok" ]; then
   echo "verification failed; not swapping"
   echo "new: $new"
   echo "old: $old"
@@ -69,8 +94,6 @@ if [ "$new" != "$old" ] || [ "$integrity" != "ok" ]; then
   exit 1
 fi
 
-# history.db and threads.db are projections of records.db; the rebuilds below
-# recreate them from this host's records alone.
 for db in records history threads; do
   for f in "$db.db" "$db.db-wal" "$db.db-shm"; do
     [ ! -e "$D/$f" ] || mv "$D/$f" "$D/$f.pre-prune"
@@ -79,11 +102,10 @@ done
 mv "$N" "$D/records.db"
 rm -f "$N-wal" "$N-shm"
 
-systemctl --user start atuin-daemon.socket atuin-daemon.service
-sleep 5
-atuin store rebuild history
-atuin store rebuild threads
-atuin store push
+# With the daemon down, shell hooks write records.db directly, so a command
+# that finished since the delta copy may only be in the backup.
+# shellcheck disable=SC2059
+sqlite3 "$D/records.db" "$(printf "$delta" records.db.pre-prune)"
 
-rm -f "$D"/*.pre-prune
+finish
 echo "pruned: $new"

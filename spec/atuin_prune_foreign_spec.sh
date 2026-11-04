@@ -86,6 +86,43 @@ The contents of file "$TMP/calls" should include 'atuin store push'
 The contents of file "$TMP/calls" should include 'systemctl --user start atuin-daemon.socket atuin-daemon.service atuin-push.timer'
 End
 
+It 'refuses to swap in an empty store'
+Skip if 'sqlite3 is not installed' no_sqlite
+seed
+sqlite3 "$D/records.db" "delete from store where host = '$ME'"
+When call run_script
+The status should be failure
+The output should include 'verification failed; not swapping'
+The value "$(sqlite3 "$D/records.db" 'select count(*) from store')" should equal 1
+End
+
+It 'resumes the rebuild after a failed run'
+seed_backup() {
+  echo new >"$D/records.db"
+  echo old >"$D/records.db.pre-prune"
+  echo old >"$D/threads.db.pre-prune"
+}
+seed_backup
+When call run_script
+The status should be success
+The output should equal 'resumed pending rebuild'
+The path "$D/records.db.pre-prune" should not be exist
+The path "$D/threads.db.pre-prune" should not be exist
+The contents of file "$TMP/calls" should include 'atuin store rebuild threads'
+End
+
+It 'rolls back an interrupted swap'
+Skip if 'sqlite3 is not installed' no_sqlite
+seed
+mv "$D/records.db" "$D/records.db.pre-prune"
+mv "$D/history.db" "$D/history.db.pre-prune"
+When call run_script
+The status should be success
+The output should equal 'pruned: history:2:1'
+The value "$(sqlite3 "$D/records.db" 'select group_concat(id) from store order by id')" should equal 'a,b'
+The path "$D/records.db.pre-prune" should not be exist
+End
+
 It 'aborts the swap while atuin is still running'
 Skip if 'sqlite3 is not installed' no_sqlite
 seed
