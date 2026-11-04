@@ -28,6 +28,18 @@ let
     passthru.version = pkgs.atuin.version;
     meta = pkgs.atuin.meta;
   };
+  pruneForeign = pkgs.writeShellApplication {
+    name = "atuin-prune-foreign";
+    runtimeInputs = with pkgs; [
+      atuin
+      sqlite
+      procps
+      gawk
+      gnused
+      coreutils
+    ];
+    text = builtins.readFile ./prune-foreign.sh;
+  };
 in
 {
   assertions = [
@@ -97,6 +109,28 @@ in
       OnUnitActiveSec = "3min";
       Persistent = true;
       Unit = "atuin-push.service";
+    };
+    Install.WantedBy = [ "timers.target" ];
+  };
+
+  systemd.user.services.atuin-prune-foreign = lib.mkIf uploadOnly {
+    Unit.Description = "Drop other hosts' records from the local atuin store";
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${pruneForeign}/bin/atuin-prune-foreign";
+      Nice = 19;
+      IOSchedulingClass = "idle";
+    };
+  };
+
+  systemd.user.timers.atuin-prune-foreign = lib.mkIf uploadOnly {
+    Unit.Description = "Daily atuin foreign-record prune";
+    Timer = {
+      OnBootSec = "15min";
+      OnCalendar = "daily";
+      RandomizedDelaySec = "1h";
+      Persistent = true;
+      Unit = "atuin-prune-foreign.service";
     };
     Install.WantedBy = [ "timers.target" ];
   };
