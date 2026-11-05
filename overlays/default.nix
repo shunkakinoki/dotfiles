@@ -174,14 +174,14 @@
           });
         }
         // (
-          # t3code 0.1.6 pins one pnpm deps hash, but fetchPnpmDeps resolves
+          # t3code 0.1.7 pins one pnpm deps hash, but fetchPnpmDeps resolves
           # platform-specific optional packages, so it only reproduces on the
           # system upstream generated it from. Every x86_64-linux build fails on
           # the fixed-output mismatch; other systems keep the upstream hash.
           # https://github.com/numtide/llm-agents.nix
           let
             pnpmDepsHashes = {
-              x86_64-linux = "sha256-gPQ9D1g2wV9htQuvxDK4EJJihF6sbras7q2O3XfCVUE=";
+              x86_64-linux = "sha256-hVpxbHZ5syedAc1Zc20TkxSgB6VA3XQGubQMx6e0njA=";
             };
             hash = pnpmDepsHashes.${prev.stdenv.hostPlatform.system} or null;
             t3code = prev.llm-agents.t3code.overrideAttrs (
