@@ -231,16 +231,16 @@
   (_: prev: {
     boat-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "boat-cli";
-      version = "1.0.89";
+      version = "1.0.92";
       src = prev.fetchurl {
         url = "https://github.com/ariana-dot-dev/agent-server/releases/download/boat-cli-v${version}/boat-${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }-${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x64"}";
         sha256 =
           {
-            "aarch64-darwin" = "0yssij4cgncny5wp31mmrwlzpwflmfmzf4camlizkgk1xcyb85py";
-            "aarch64-linux" = "1590215ic3n6f089i73zb24shgz6vc4m7kv9zks008blkzrg5yiv";
-            "x86_64-linux" = "0ihmj4dzv6b7z8kf7jgaqn3lxgxiqisvsybvdjvnc4b1qpxliw0z";
+            "aarch64-darwin" = "03pvhwg90frrwvcs3b2w6sd63l25x15vl0pc8jkiw2zwj4g40hkc";
+            "aarch64-linux" = "0df7r3qg86433dn8bdlms72c97cl8r646ywhybiimpj24n2pfw89";
+            "x86_64-linux" = "088phhj2l2100n8y60h0ljs7ch5qsvmq2m9n9mfl6cdzqvrghqkn";
           }
           .${prev.stdenv.hostPlatform.system};
       };
@@ -336,20 +336,20 @@
 
     moshi-hook = prev.stdenv.mkDerivation rec {
       pname = "moshi-hook";
-      version = "0.4.48";
+      version = "0.4.50";
       src = prev.fetchurl {
         url = "https://cdn.getmoshi.app/hook/v${version}/moshi-hook_${
           if prev.stdenv.hostPlatform.isDarwin then "Darwin" else "Linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x86_64"}.tar.gz";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "d04778890c546a62b8576a79ed3710bcafb401db64953ff020a66d61f0eabb8c"
+            "793c56b2f02c3e3436e2f82523bb6e1538bfff4de3ec98b6b1e9270d6f167da3"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "ebe7a322fb2474186fa29e93c93e7429f0bf9bdbde87cc0f3d36b87d0d386942"
+            "6819898a1135e5454b54d33eeff283265dd3a11257142863259dcf08ad20e77d"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "f4befce30c86cca215096ada11be1518b34809448bec65f839371f0d2e76b457"
+            "f40d3c5eb0a6bf85d938ec78675f7ba0446ddbe2eb273f63187a8bdbb85917a5"
           else
-            "34ec4a0a5d1a758859a7a4ab19df484c3286a1735c17e32c454c757c6b3c2cbe";
+            "ee7fe2f6d036fe9d6c032e889d156af8567edb5e5486a687dd0db82922c81462";
       };
       sourceRoot = ".";
       dontConfigure = true;
@@ -363,20 +363,20 @@
     # Namespace's devbox CLI, not the unrelated Jetify devbox in nixpkgs.
     namespace-devbox = prev.stdenvNoCC.mkDerivation rec {
       pname = "namespace-devbox";
-      version = "0.0.209";
+      version = "0.0.211";
       src = prev.fetchurl {
         url = "https://get.namespace.so/packages/devbox/v${version}/devbox_${version}_${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}.tar.gz";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "f273079b410dae807472382e40158108df163ec8c05de844f26aa0008e08519d"
+            "118a05c94e8997a3d55bac27f19f4e85845ee07cd0bbb8280c5e82863e3b3711"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "504ed012892a8141bd46d4f199cb81ea5651b0c73df867778c9234fab7fd69e4"
+            "e69fd25c046c8f1f5ed9c563f8fc32827564db4d76a74a35a03415c258e8b745"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "ef15d1eede18256675061d6c9a81adbeb647359c375f30d781fd89bbd0fe470f"
+            "d395c22c9e4c9dc3d77cd3274a0ce4ec9d866796b9260c9a4b92274a3024d363"
           else
-            "ca113b89c59505773967fd90f2025e76316fe1915d129a3295c1ce8b976986cd";
+            "ba162994020a4aea0f51705e2915c00754a3347ddf4ff2da85d70c1986ff67fc";
       };
       sourceRoot = ".";
       dontConfigure = true;
