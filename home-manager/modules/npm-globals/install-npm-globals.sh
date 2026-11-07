@@ -589,6 +589,15 @@ done < <(jq -r '.dependencies // {} | keys[]' "$PACKAGE_JSON" 2>/dev/null)
 # grok's node bin launches $GROK_HOME/bin/grok, which only its postinstall
 # repoints at the installed version, so a skipped postinstall keeps the old one.
 GROK_PKG="${GLOBAL_MODULES}/@xai-official/grok/package.json"
+# T3 Code advertises Grok as requiring a manual update when the managed global
+# package is behind npm. Keep this provider on its upstream release channel at
+# every managed activation; the command is idempotent and the existing
+# postinstall repair below realigns ~/.grok/bin/grok with the installed payload.
+if timeout 600 bun add --global "@xai-official/grok@latest" --minimum-release-age 0 2>/dev/null; then
+  purge_bun_npm_shim
+else
+  echo "Grok update failed; retaining the installed version" >&2
+fi
 if [ -f "$GROK_PKG" ]; then
   grok_version=$(jq -r '.version' "$GROK_PKG")
   if [ "$(readlink "${GROK_HOME:-$HOME/.grok}/bin/grok" 2>/dev/null)" != "grok-${grok_version}" ]; then

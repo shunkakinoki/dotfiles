@@ -191,6 +191,11 @@ When run bash -c "grep 'bun add --global' '$SCRIPT'"
 The output should include 'bun add --global'
 End
 
+It 'keeps Grok on the latest upstream release during managed activation'
+When run bash -c "grep -F 'bun add --global \"@xai-official/grok@latest\"' '$SCRIPT' >/dev/null"
+The status should be success
+End
+
 It 'installs one package at a time'
 When run bash -c "grep 'bun add --global \"\$dep\"' '$SCRIPT'"
 The output should include 'bun add --global'
