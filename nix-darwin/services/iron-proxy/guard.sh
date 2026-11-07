@@ -84,18 +84,47 @@ ensure_pf() {
   "$pfctl_bin" -q -e >/dev/null 2>&1 || true
 }
 
+ours() {
+  printf '%s\n' "$1" | grep -q '^Enabled: Yes$' &&
+    printf '%s\n' "$1" | grep -q '^Server: 127\.0\.0\.1$' &&
+    printf '%s\n' "$1" | grep -q "^Port: $proxy_port$"
+}
+
+# Gated on env-ready like the env agent: with the proxy down or its CA
+# untrusted, a system proxy would cut every GUI app off, so it is cleared.
+# An enabled proxy that is not ours is never touched, so nothing needs
+# restoring when the env goes down. The bypass list is per service and shared
+# by both protocols, so it is left alone while either one is foreign.
 ensure_system_proxy() {
   [ "$system_proxy" = "1" ] || return 0
-  local service
+  local service kind current set_any foreign
   local IFS=:
   for service in $network_services; do
-    "$networksetup_bin" -getwebproxy "$service" >/dev/null 2>&1 || continue
-    if ! "$networksetup_bin" -getsecurewebproxy "$service" | grep -q "^Port: $proxy_port$"; then
-      "$networksetup_bin" -setwebproxy "$service" 127.0.0.1 "$proxy_port"
-      "$networksetup_bin" -setsecurewebproxy "$service" 127.0.0.1 "$proxy_port"
+    set_any=""
+    foreign=""
+    for kind in web secureweb; do
+      current="$("$networksetup_bin" "-get${kind}proxy" "$service" 2>/dev/null)" || continue 2
+      if ours "$current"; then
+        [ -e "$state_dir/env-ready" ] && continue
+        if "$networksetup_bin" "-set${kind}proxystate" "$service" off; then
+          log "cleared $kind proxy on $service"
+        else
+          log "failed to clear $kind proxy on $service"
+        fi
+      elif printf '%s\n' "$current" | grep -q '^Enabled: Yes$'; then
+        foreign=1
+      elif [ -e "$state_dir/env-ready" ]; then
+        if "$networksetup_bin" "-set${kind}proxy" "$service" 127.0.0.1 "$proxy_port"; then
+          set_any=1
+          log "set $kind proxy on $service"
+        else
+          log "failed to set $kind proxy on $service"
+        fi
+      fi
+    done
+    if [ -n "$set_any" ] && [ -z "$foreign" ]; then
       IFS=' ' read -r -a domains <<<"$bypass_domains"
       "$networksetup_bin" -setproxybypassdomains "$service" "${domains[@]}"
-      log "set system proxy on $service"
     fi
   done
 }

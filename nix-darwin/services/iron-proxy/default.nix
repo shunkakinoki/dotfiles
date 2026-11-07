@@ -8,9 +8,9 @@ let
   # "log": pf passes and logs (pflog0) everything the agent user sends outside
   # the proxy. "enforce": the same traffic is rejected.
   mode = "log";
-  # Point macOS system HTTP/HTTPS proxy settings at iron-proxy. Requires the
-  # CA at /var/lib/iron-proxy/ca.crt to be trusted in the System keychain.
-  systemProxy = false;
+  # Point macOS system HTTP/HTTPS proxy settings at iron-proxy while the proxy
+  # listens and its CA is trusted in the System keychain.
+  systemProxy = true;
 
   shared = import ../../../lib/iron-proxy.nix { inherit pkgs; };
   inherit (shared)
