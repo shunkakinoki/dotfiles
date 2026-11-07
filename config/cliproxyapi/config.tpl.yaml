@@ -634,6 +634,22 @@ openai-compatibility:
         alias: "deepseek-v4.1-flash"
       - name: "__DEEPSEEK_FLASH_0731__"
         alias: "deepseek-v4-flash"
+  # Optional dedicated-key OpenRouter preset route. Its priority keeps preset
+  # traffic ahead of the shared Surplus/OpenRouter routes without changing them.
+  - name: "openrouter-presets"
+    priority: 200
+    base-url: "https://openrouter.ai/api/v1"
+    support-prompt-cache-key: true
+    request-scoped-errors:
+      - status: 400
+        match: ["Model is unavailable"]
+        action: "continue-and-cooldown"
+    api-key-entries:
+      - api-key: "__OPENROUTER_BYOK_API_KEY__"
+        proxy-url: "direct"
+    models:
+      - name: "@preset/gpt-6-luna"
+        alias: "gpt-6-luna"
   - name: "verboo"
     priority: 150
     base-url: "https://code.verboo.ai/router/v1"
