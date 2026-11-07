@@ -2,7 +2,7 @@
 # Unlocks the GNOME Keyring for the UID given as $1 with the TPM2 credential.
 # Runs as root (TPM access), then uses runuser to speak the control socket
 # protocol as that user, because the daemon identifies callers by SO_PEERCRED.
-# @logger@, @systemd_creds@, @id@, @sleep@, @env@, @runuser@, @unlock_py@
+# @logger@, @systemd_creds@, @busctl@, @id@, @sleep@, @env@, @runuser@, @unlock_py@
 # are substituted by pkgs.replaceVars.
 log() { echo "gnome-keyring-tpm: $*" | @logger@ -t gnome-keyring-tpm; }
 CRED="/etc/credstore.encrypted/gnome-keyring.cred"
@@ -22,6 +22,15 @@ if [ $? -ne 0 ]; then
   log "failed to resolve user for UID '$TARGET_UID': $TARGET_USER"
   exit 1
 fi
+
+# The timer runs this every few minutes; skip the TPM decrypt while the login
+# collection is already unlocked. Any lookup failure falls through to unlock.
+LOCKED=$(@runuser@ -u "$TARGET_USER" -- \
+  @env@ XDG_RUNTIME_DIR="/run/user/$TARGET_UID" \
+  @busctl@ --user get-property org.freedesktop.secrets \
+  /org/freedesktop/secrets/collection/login \
+  org.freedesktop.Secret.Collection Locked 2>/dev/null)
+[ "$LOCKED" = "b false" ] && exit 0
 
 PW=$(@systemd_creds@ decrypt --name=gnome-keyring "$CRED" - 2>/dev/null)
 # shellcheck disable=SC2181
