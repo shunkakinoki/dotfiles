@@ -4,10 +4,10 @@
   pkgs,
   ...
 }:
-lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && inputs.host.isKyber) {
+lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && (inputs.host.isKyber || inputs.host.isKamino)) {
   systemd.user.services.disk-cleanup = {
     Unit = {
-      Description = "Reclaim stale package and Docker build caches";
+      Description = "Reclaim stale caches, agent data, and Docker build state";
       X-SwitchMethod = "keep-old";
     };
     Service = {
