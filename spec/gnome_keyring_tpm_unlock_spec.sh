@@ -28,6 +28,11 @@ When run bash -c "grep '@systemd_creds@' '$SCRIPT'"
 The output should include '@systemd_creds@'
 End
 
+It 'references @busctl@'
+When run bash -c "grep '@busctl@' '$SCRIPT'"
+The output should include '@busctl@'
+End
+
 It 'references @id@'
 When run bash -c "grep '@id@' '$SCRIPT'"
 The output should include '@id@'
@@ -70,6 +75,12 @@ When run bash -c "grep '1000' '$SCRIPT'"
 The output should include '1000'
 End
 
+It 'skips the decrypt while the login collection is unlocked'
+When run bash -c "grep -B4 'b false' '$SCRIPT'"
+The output should include 'collection/login'
+The output should include '&& exit 0'
+End
+
 It 'retries unlock up to 8 times'
 When run bash -c "grep '1 2 3 4 5 6 7 8' '$SCRIPT'"
 The output should include '1 2 3 4 5 6 7 8'
@@ -94,10 +105,19 @@ The output should include 'Type = "oneshot";'
 The output should include '%i'
 End
 
-It 'instantiates the watch from user@.service'
+It 'runs a periodic unlock pass per UID'
+When run bash -c "awk '/systemd.timers.\"gnome-keyring-tpm-unlock@\" = \\{/{in_unit=1} in_unit{print} in_unit && /^        \\};/{exit}' '$CONFIG'"
+The output should include 'OnUnitInactiveSec = "5min";'
+The output should include 'Unit = "gnome-keyring-tpm-unlock@%i.service";'
+End
+
+It 'upholds the watch and timer from user@.service'
 When run bash -c "awk '/systemd.services.\"user@\" = \\{/{in_unit=1} in_unit{print} in_unit && /^        \\};/{exit}' '$CONFIG'"
 The output should include 'overrideStrategy = "asDropin";'
-The output should include 'gnome-keyring-tpm-unlock@%i.path'
+The output should include 'upholds = ['
+The output should include '"gnome-keyring-tpm-unlock@%i.path"'
+The output should include '"gnome-keyring-tpm-unlock@%i.timer"'
+The output should not include 'wants ='
 End
 
 It 'no longer unlocks from the PAM session stack'

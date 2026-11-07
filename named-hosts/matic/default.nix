@@ -67,6 +67,7 @@ import ../../hosts/nixos {
             pkgs.replaceVars ./gnome-keyring-tpm-unlock.sh {
               logger = "${pkgs.util-linux}/bin/logger";
               systemd_creds = "${pkgs.systemd}/bin/systemd-creds";
+              busctl = "${pkgs.systemd}/bin/busctl";
               id = "${pkgs.coreutils}/bin/id";
               sleep = "${pkgs.coreutils}/bin/sleep";
               env = "${pkgs.coreutils}/bin/env";
@@ -296,11 +297,28 @@ import ../../hosts/nixos {
           };
         };
 
+        # The socket watch alone misses a daemon that replaces the old one at the
+        # same control path, so a periodic pass catches any keyring left locked.
+        systemd.timers."gnome-keyring-tpm-unlock@" = {
+          description = "Periodically unlock a locked GNOME Keyring for UID %i";
+          partOf = [ "user@%i.service" ];
+          timerConfig = {
+            OnActiveSec = "1min";
+            OnUnitInactiveSec = "5min";
+            Unit = "gnome-keyring-tpm-unlock@%i.service";
+          };
+        };
+
         # logind starts user@<uid>.service for every user session, so this is what
         # instantiates the watch for each logged-in UID without naming one here.
+        # Upholds, not Wants: a NixOS switch can stop these instances without
+        # starting them again, leaving the keyring locked.
         systemd.services."user@" = {
           overrideStrategy = "asDropin";
-          wants = [ "gnome-keyring-tpm-unlock@%i.path" ];
+          upholds = [
+            "gnome-keyring-tpm-unlock@%i.path"
+            "gnome-keyring-tpm-unlock@%i.timer"
+          ];
         };
 
         # YubiKey support
