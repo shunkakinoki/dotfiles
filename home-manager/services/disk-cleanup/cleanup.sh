@@ -37,6 +37,7 @@ if [ -d "$HOME/.codex/sessions" ]; then
 fi
 
 if [ -d "$data" ]; then
+  # Manual pre-migration copies; atuin's live store is backed up by its sync server.
   find "$data" -maxdepth 1 -name 'atuin.bak*' -mtime +7 -exec rm -rf -- {} + || status=1
 fi
 
