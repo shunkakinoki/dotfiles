@@ -634,9 +634,9 @@ openai-compatibility:
         alias: "deepseek-v4.1-flash"
       - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4-flash"
-  # Optional bring-your-own-key Luna route. Its dedicated key and priority keep
-  # it ahead of the shared Surplus/OpenRouter routes without changing them.
-  - name: "openrouter-luna-byok"
+  # Optional dedicated-key OpenRouter preset route. Its priority keeps preset
+  # traffic ahead of the shared Surplus/OpenRouter routes without changing them.
+  - name: "openrouter-presets"
     priority: 200
     base-url: "https://openrouter.ai/api/v1"
     support-prompt-cache-key: true

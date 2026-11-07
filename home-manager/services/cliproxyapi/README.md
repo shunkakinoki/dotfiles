@@ -121,7 +121,7 @@ OBJECTSTORE_SECRET_KEY="..."
 # Service Config
 CLIPROXY_MANAGEMENT_PASSWORD="..."
 OPENROUTER_API_KEY="sk-or-v1-..."
-# Optional dedicated OpenRouter key for the priority-200 Luna route
+# Optional dedicated OpenRouter key for priority-200 preset routes
 OPENROUTER_BYOK_API_KEY="sk-or-v1-..."
 OPENAI_API_KEY="sk-..."
 QWEN_API_KEY="sk-..."

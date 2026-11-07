@@ -286,9 +286,9 @@ The output should include 'SURPLUS_API_KEY'
 The status should be success
 End
 
-Describe 'OpenRouter Luna BYOK provider'
+Describe 'OpenRouter preset provider'
 It 'declares the dedicated priority route and environment key'
-When run bash -c "sed -n '/name: \"openrouter-luna-byok\"/,/name: \"openrouter-campaign\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+When run bash -c "sed -n '/name: \"openrouter-presets\"/,/name: \"openrouter-campaign\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'priority: 200'
 The output should include 'api-key: "__OPENROUTER_BYOK_API_KEY__"'
 The output should include 'name: "@preset/gpt-6-luna"'
@@ -576,7 +576,7 @@ nvidia
 opencode
 ollama-cloud
 aliyun
-openrouter-luna-byok
+openrouter-presets
 verboo
 commandcode
 surplus
