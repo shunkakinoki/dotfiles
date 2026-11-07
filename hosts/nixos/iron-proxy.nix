@@ -101,7 +101,10 @@ lib.mkIf (!isRunner) {
   };
   users.groups.${proxyUser}.gid = shared.proxyId;
 
-  environment.systemPackages = [ pkgs.iron-proxy ];
+  environment.systemPackages = [
+    pkgs.iron-proxy
+    shared.secretsScript
+  ];
 
   # Login shells of the agent user route through the proxy while it listens.
   # The CA is generated at runtime, so clients get it from the state dir

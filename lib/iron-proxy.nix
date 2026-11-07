@@ -36,6 +36,29 @@ rec {
     map (pkgs.lib.removePrefix "*") bypassDomains ++ [ "::1" ]
   );
 
+  # Doppler secrets the proxy swaps in: once synced, agent shells only see
+  # "iron-proxy-swap-<name>" and the proxy replaces it on requests to hosts.
+  swapSecrets = [
+    {
+      name = "OPENROUTER_API_KEY";
+      hosts = [ "openrouter.ai" ];
+    }
+  ];
+  # Outside stateDir, which the proxy user owns on NixOS, so root never writes
+  # into a directory the proxy could plant symlinks in.
+  secretsDir = "/var/lib/iron-proxy-secrets";
+
+  secretsScript = pkgs.writeShellApplication {
+    name = "iron-proxy-secrets";
+    runtimeInputs = [ pkgs.doppler ];
+    text = builtins.readFile (
+      pkgs.replaceVars ./iron-proxy-secrets.sh {
+        inherit secretsDir proxyUser;
+        names = pkgs.lib.concatMapStringsSep " " (s: s.name) swapSecrets;
+      }
+    );
+  };
+
   configFile = pkgs.writeText "iron-proxy.yaml" (
     builtins.toJSON {
       dns.enabled = false;
@@ -53,6 +76,23 @@ rec {
         {
           name = "allowlist";
           config.domains = [ "*" ];
+        }
+        {
+          name = "secrets";
+          config.secrets = map (s: {
+            # Read lazily, so the proxy starts before the first sync and picks
+            # up rotations within the ttl.
+            source = {
+              type = "file";
+              path = "${secretsDir}/${s.name}";
+              ttl = "5m";
+            };
+            replace = {
+              proxy_value = "iron-proxy-swap-${s.name}";
+              match_headers = s.headers or [ "Authorization" ];
+            };
+            rules = map (host: { inherit host; }) s.hosts;
+          }) swapSecrets;
         }
       ];
       log.level = "info";
