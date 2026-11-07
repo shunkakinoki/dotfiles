@@ -16,7 +16,7 @@ let
     inherit lib pkgs tailscaleSetFlags;
   };
   nix = import ./config/nix.nix;
-  security = import ./config/security.nix { inherit username; };
+  security = import ./config/security.nix;
   serviceModules = import ./services { inherit lib isRunner pkgs; };
   system = import ./config/system.nix {
     inherit

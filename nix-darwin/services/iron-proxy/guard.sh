@@ -7,6 +7,7 @@ guard_state_dir="@guardStateDir@"
 proxy_user="@proxyUser@"
 agent_uid="@agentUid@"
 pf_conf="@pfConf@"
+pf_anchor="@pfAnchor@"
 captive_window_seconds=@captiveWindowSeconds@
 system_proxy="@systemProxy@"
 proxy_port="@proxyPort@"
@@ -75,11 +76,31 @@ ensure_env_ready() {
 }
 
 # macOS reloads /etc/pf.conf on some network and sharing changes, which drops
-# our anchors, so the guard re-asserts them on every run.
+# our anchors, so the guard re-asserts them on every run. A rebuild that
+# changes the rules (log to enforce) leaves the old ones loaded, so the
+# checksum of the files last loaded is compared too. Such a reload can keep
+# the anchor's rules while detaching it from the main ruleset, so both are
+# checked.
 ensure_pf() {
-  if [ -z "$("$pfctl_bin" -a ironproxy -s rules 2>/dev/null)" ]; then
-    "$pfctl_bin" -q -f "$pf_conf" && log "loaded $pf_conf"
-    rm -f "$guard_state_dir/applied"
+  local sum
+  sum="$(cat "$pf_conf" "$pf_anchor" 2>/dev/null | cksum)"
+  if ! "$pfctl_bin" -s rules 2>/dev/null | grep -q '^anchor "ironproxy"' ||
+    [ -z "$("$pfctl_bin" -a ironproxy -s rules 2>/dev/null)" ] ||
+    [ "$sum" != "$(cat "$guard_state_dir/pf-loaded" 2>/dev/null)" ]; then
+    # A reload keeps the captive anchor's rules, so the applied marker is
+    # dropped only once that anchor is flushed too; reconcile_window then
+    # reapplies a window that is still valid.
+    if "$pfctl_bin" -q -f "$pf_conf"; then
+      printf '%s\n' "$sum" >"$guard_state_dir/pf-loaded"
+      log "loaded $pf_conf"
+      if "$pfctl_bin" -q -a ironproxy-captive -F rules; then
+        rm -f "$guard_state_dir/applied"
+      else
+        log "failed to flush the bypass window after reload"
+      fi
+    else
+      log "failed to load $pf_conf"
+    fi
   fi
   "$pfctl_bin" -q -e >/dev/null 2>&1 || true
 }
