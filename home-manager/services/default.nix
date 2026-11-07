@@ -45,6 +45,7 @@ let
   tmuxSessionLogger = import ./tmux-session-logger { inherit pkgs; };
   tokscale = ./tokscale;
   tracesAgentUploads = ./traces-agent-uploads;
+  tracesR2Sync = ./traces-r2-sync;
 in
 [
   audioPriority
@@ -86,4 +87,5 @@ in
   tmuxSessionLogger
   tokscale
   tracesAgentUploads
+  tracesR2Sync
 ]

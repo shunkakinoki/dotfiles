@@ -438,6 +438,7 @@ let
         assert lib.hasInfix sessionVarsSource (bashrcBefore "load-env-file.sh");
         assert lib.hasInfix sessionVarsSource (bashrcBefore "export PATH=");
         assert !(cfg.systemd.user.services ? roborev);
+        assert !(cfg.systemd.user.services ? traces-r2-sync);
         assert lib.hasInfix "export UV_GLOBALS_GPU=0" cfg.home.activation.installUvGlobals.data;
         assert lib.elem "UV_GLOBALS_GPU=0" cfg.systemd.user.services.install-uv-globals.Service.Environment;
         mkEvalCheck "home-kamino" kamino.activationPackage;
@@ -482,6 +483,9 @@ let
         assert cfg.age.identityPaths == [ "/etc/ssh/ssh_host_ed25519_key" ];
         assert cfg.age.secrets."agents-prd.env".path == envFile;
         assert cfg.age.secrets."agents-prd.env".mode == "0400";
+        assert cfg.systemd.user.timers ? traces-r2-sync;
+        assert lib.elem "TRACES_R2_IDENTITY_FILE=${envFile}"
+          cfg.systemd.user.services.traces-r2-sync.Service.Environment;
         assert lib.hasSuffix "/named-hosts/agents-prd/keys/kamino2.age" (
           toString cfg.age.secrets."agents-prd.env".file
         );

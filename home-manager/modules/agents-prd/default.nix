@@ -16,8 +16,15 @@ let
     if host.isKamino then "/etc/ssh/ssh_host_ed25519_key" else "${homeDir}/.ssh/id_ed25519";
 in
 {
-  age.identityPaths = lib.mkIf enabled (lib.mkDefault [ identityPath ]);
-  age.secrets."agents-prd.env" = lib.mkIf enabled {
+  options.agentsPrd.envFile = lib.mkOption {
+    type = lib.types.nullOr lib.types.str;
+    readOnly = true;
+    default = if enabled then envFile else null;
+    description = "Decrypted agents-prd identity file, or null on hosts without one.";
+  };
+
+  config.age.identityPaths = lib.mkIf enabled (lib.mkDefault [ identityPath ]);
+  config.age.secrets."agents-prd.env" = lib.mkIf enabled {
     file = secretFile;
     path = envFile;
     mode = "0400";
@@ -26,7 +33,7 @@ in
   # The running Herdr process stays up; this file is picked up on its next start.
   # Guard the whole unit, not its fields: a field-level mkIf still declares the
   # herdr-server key, and Home Manager renders it as an empty, masking unit.
-  systemd.user.services.herdr-server = lib.mkIf herdrNeedsIdentity {
+  config.systemd.user.services.herdr-server = lib.mkIf herdrNeedsIdentity {
     Unit.After = lib.mkAfter [ "agenix.service" ];
     Unit.Wants = lib.mkAfter [ "agenix.service" ];
     Service.EnvironmentFile = lib.mkAfter [ "-${envFile}" ];
