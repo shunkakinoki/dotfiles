@@ -10,7 +10,7 @@ launchctl_bin="${LAUNCHCTL_BIN:-/bin/launchctl}"
 # that Claude Desktop and Codex spawn, which ignore the system proxy settings.
 # Fails open: until the guard marks the proxy listening and its CA trusted,
 # the variables are removed so TLS clients that read the Keychain keep working.
-proxy_keys="HTTPS_PROXY HTTP_PROXY https_proxy http_proxy ALL_PROXY"
+proxy_keys="HTTPS_PROXY HTTP_PROXY https_proxy http_proxy ALL_PROXY all_proxy"
 no_proxy_keys="NO_PROXY no_proxy"
 bundle_keys="SSL_CERT_FILE REQUESTS_CA_BUNDLE CURL_CA_BUNDLE"
 
