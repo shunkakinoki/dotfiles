@@ -302,6 +302,13 @@ The output should include '__OPENROUTER_BYOK_API_KEY__'
 The output should include 'OPENROUTER_BYOK_API_KEY'
 The status should be success
 End
+
+It 'routes Claude Haiku 5.5 through the dedicated OpenRouter preset route'
+When run bash -c "sed -n '/name: \"openrouter-presets\"/,/name: \"verboo\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'name: "@preset/anthropic/claude-haiku-5.5"'
+The output should include 'alias: "claude-haiku-5-5"'
+The status should be success
+End
 End
 
 It 'renders a key with a trailing newline and sed metacharacters intact'
@@ -547,6 +554,13 @@ It 'routes Claude Haiku through OpenRouter under the canonical alias'
 When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'name: "anthropic/claude-haiku-4.5"'
 The output should include 'alias: "claude-haiku"'
+The status should be success
+End
+
+It 'routes Claude Haiku 5.5 through OpenRouter under the fleet alias'
+When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'name: "anthropic/claude-haiku-5.5"'
+The output should include 'alias: "claude-haiku-5-5"'
 The status should be success
 End
 

@@ -650,6 +650,8 @@ openai-compatibility:
     models:
       - name: "@preset/gpt-6-luna"
         alias: "gpt-6-luna"
+      - name: "@preset/anthropic/claude-haiku-5.5"
+        alias: "claude-haiku-5-5"
   - name: "verboo"
     priority: 150
     base-url: "https://code.verboo.ai/router/v1"
@@ -739,6 +741,8 @@ openai-compatibility:
         alias: "gemma-4-31b-it"
       - name: "anthropic/claude-haiku-4.5"
         alias: "claude-haiku"
+      - name: "anthropic/claude-haiku-5.5"
+        alias: "claude-haiku-5-5"
       - name: "openrouter/free"
         alias: "free"
   - name: "z-ai"
