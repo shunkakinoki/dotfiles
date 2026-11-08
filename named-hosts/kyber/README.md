@@ -364,8 +364,8 @@ cliproxyapi-backup` and `systemctl --user cat cliproxyapi-backup.service` for
 
 Around 19:20 UTC on 2026-11-08, `cliproxy.shunkakinoki.com` began timing out.
 `cliproxyapi.service` stayed `active` and local `:8317` answered in 35 ms. Root
-(`/dev/sdb2`) had 43 GiB free and fell to 38 GiB, below the kubelet
-`nodefs.available: 50Gi` hard eviction threshold. Kubelet set `DiskPressure`,
+(`/dev/sdb2`) was already below the kubelet `nodefs.available: 50Gi` hard
+eviction threshold, at 43 GiB free and later 38 GiB. Kubelet set `DiskPressure`,
 evicted the `cloudflared` and `ingress-nginx` pods, and left their replacements
 `Pending` behind the disk-pressure taint, so Cloudflare had no origin.
 
@@ -376,16 +376,21 @@ closure. No process was actively writing; the store had grown until root
 crossed the reserve. Dozens of evicted ingress pods from five days earlier show
 the host had already hovered at the threshold.
 
-Recovery ran `nix-collect-garbage --delete-older-than 30d` as `ubuntu`, which
-freed 8.5 GiB of store paths and raised root to 77 GiB free. Kubelet cleared
-`DiskPressure`, rescheduled the tunnel and ingress, and the public endpoint
-returned without restarting CLIProxy or K3s. Kyber's `nix-gc` now runs daily
-with 7-day retention. Run user-level GC: the root profile pins almost nothing,
-so `sudo nix-collect-garbage` alone frees little.
+Recovery first ran `nix-collect-garbage --delete-older-than 30d` as `ubuntu`.
+Nix reported 8.5 GiB freed from unreferenced store paths, and root rose to
+77 GiB free; the rest was reclaimed outside Nix GC, most likely by kubelet image
+garbage collection under pressure. That cleared `DiskPressure`, kubelet
+rescheduled the tunnel and ingress, and the public endpoint returned without
+restarting CLIProxy or K3s. The 30-day pass could not remove the recent
+generations, so a second `nix-collect-garbage --delete-older-than 7d` as
+`ubuntu` cut profile links from 61 to 28 and raised root to 91 GiB free.
+Kyber's `nix-gc` now runs daily with 7-day retention. Run user-level GC: the
+root profile pins almost nothing, so `sudo nix-collect-garbage` alone frees
+little.
 
 Diagnosis was slow because SSH session read limits (10 MB/s) make a recursive
 `du` of root time out, even at idle I/O priority. Check `nix.gc` retention,
-`ls ~/.local/state/nix/profiles | wc -l`, and `nix-store --gc --print-roots`
+`home-manager generations | wc -l`, and `nix-store --gc --print-roots`
 before scanning the filesystem. Ad-hoc roots under
 `~/.local/state/t3-rollout`, `~/.local/state/fleet-recovery`, and `/tmp/*/result`
 also pin closures and are not removed by generation retention.
