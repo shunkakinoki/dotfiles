@@ -748,8 +748,13 @@ let
             "--advertise-exit-node"
           ];
         assert cfg.systemd.user.systemctlPath == "/usr/bin/systemctl";
-        assert lib.hasInfix ''SYSTEMCTL_BIN="/usr/bin/systemctl"'' cfg.home.activation.installNpmGlobals.data;
-        assert lib.elem "T3_SYSTEMCTL=/usr/bin/systemctl" cfg.systemd.user.services.t3-connect.Service.Environment;
+        assert cfg.nix.gc.automatic;
+        assert cfg.nix.gc.dates == [ "daily" ];
+        assert cfg.nix.gc.options == "--delete-older-than 7d";
+        assert lib.hasInfix ''SYSTEMCTL_BIN="/usr/bin/systemctl"''
+          cfg.home.activation.installNpmGlobals.data;
+        assert lib.elem "T3_SYSTEMCTL=/usr/bin/systemctl"
+          cfg.systemd.user.services.t3-connect.Service.Environment;
         assert
           cfg.home.file.".config/k3s/home-ubuntu-.local-share-atuin.mount".source
           == ../config/k3s/home-ubuntu-.local-share-atuin.mount;
