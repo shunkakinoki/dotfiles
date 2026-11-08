@@ -12,23 +12,33 @@ scratch_minutes=$((${DISK_CLEANUP_SCRATCH_HOURS:-6} * 60))
 status=0
 
 prune_stale_entries() {
-  local dir="$1" name="${2:-*}" minutes="${3:-$((age_days * 1440))}" entry
+  local dir="$1" name="${2:-*}" minutes="${3:-$((age_days * 1440))}" markers="${4:-}" entry recent
   [ -d "$dir" ] || return 0
   while IFS= read -r -d '' entry; do
     # A long-lived npx server lazily requires files from its cache directory.
     if pgrep -f -- "$entry" >/dev/null 2>&1; then
       continue
     fi
-    # A tool can keep writing inside a directory whose own mtime stays old.
-    if [ -d "$entry" ] && [ -n "$(find "$entry" -newermt "-$minutes minutes" -print -quit 2>/dev/null)" ]; then
+    # A build can run inside a tree without naming it on its command line.
+    if [ -n "$(find /proc -mindepth 2 -maxdepth 2 -name cwd \( -lname "$entry" -o -lname "$entry/*" \) -print -quit 2>/dev/null)" ]; then
       continue
     fi
+    # A tool can keep writing inside a directory whose own mtime stays old.
+    # A scan that fails partway cannot prove the tree is idle, so keep it.
+    if [ -d "$entry" ]; then
+      recent=$(find "$entry" -newermt "-$minutes minutes" -print -quit 2>/dev/null) || continue
+      [ -n "$recent" ] && continue
+    fi
     # Markers for a kept directory must stay, or its owner sees a missing build.
-    case "$entry" in
-    *.lock | *.ready) [ -d "${entry%.*}" ] && continue ;;
-    esac
+    if [ -n "$markers" ]; then
+      case "$entry" in
+      *.lock | *.ready) [ -d "${entry%.*}" ] && continue ;;
+      esac
+    fi
     rm -rf -- "$entry" || status=1
-    [ -d "$entry" ] || rm -f -- "$entry.lock" "$entry.ready"
+    if [ -n "$markers" ] && [ ! -d "$entry" ]; then
+      rm -f -- "$entry.lock" "$entry.ready"
+    fi
   done < <(find "$dir" -mindepth 1 -maxdepth 1 -name "$name" -mmin +"$minutes" -print0)
 }
 
@@ -37,7 +47,7 @@ prune_stale_entries "${BUN_INSTALL_CACHE_DIR:-$HOME/.bun/install/cache}"
 prune_stale_entries "${TMPDIR:-/tmp}/opencode"
 # Scratch trees from CI and stack-merge tooling are left behind when their
 # owner is killed, and each holds a full checkout.
-prune_stale_entries "${TMPDIR:-/tmp}/stack-merge-tooling" '*' "$scratch_minutes"
+prune_stale_entries "${TMPDIR:-/tmp}/stack-merge-tooling" '*' "$scratch_minutes" markers
 prune_stale_entries "$var_tmp" 'ci-ship-reference-*' "$scratch_minutes"
 prune_stale_entries "$var_tmp" 'merged-tree-*' "$scratch_minutes"
 

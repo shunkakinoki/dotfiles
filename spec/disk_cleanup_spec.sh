@@ -8,6 +8,7 @@ setup() {
   mock_bin_setup docker pgrep df
   CLEANUP_ROOT="$(mktemp -d)"
   export HOME="$CLEANUP_ROOT/home"
+  export TMPDIR="$CLEANUP_ROOT/tmp" DISK_CLEANUP_VAR_TMP="$CLEANUP_ROOT/var"
   unset npm_config_cache BUN_INSTALL_CACHE_DIR
   mkdir -p "$HOME/.npm/_npx/stale" "$HOME/.npm/_npx/fresh" "$HOME/.bun/install/cache/stale@1.0.0"
   touch -t 202001010000 "$HOME/.npm/_npx/stale" "$HOME/.bun/install/cache/stale@1.0.0"
@@ -66,7 +67,6 @@ seed_agent_data() {
 }
 
 It 'prunes stale agent data and keeps live data'
-export TMPDIR="$CLEANUP_ROOT/tmp"
 unset XDG_DATA_HOME
 When call seed_agent_data
 The status should be success
@@ -96,7 +96,6 @@ seed_scratch() {
 }
 
 It 'prunes stale scratch trees and keeps busy ones and their markers'
-export TMPDIR="$CLEANUP_ROOT/tmp" DISK_CLEANUP_VAR_TMP="$CLEANUP_ROOT/var"
 When call seed_scratch
 The status should be success
 The output should include 'stack-merge-tooling/busy'
