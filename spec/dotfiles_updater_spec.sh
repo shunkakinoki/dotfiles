@@ -130,7 +130,11 @@ setup() {
   export XDG_STATE_HOME="$WORK/state"
   export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null
   export GIT_AUTHOR_NAME=t GIT_AUTHOR_EMAIL=t@t GIT_COMMITTER_NAME=t GIT_COMMITTER_EMAIL=t@t
-  mkdir -p "$HOME" "$WORK/src"
+  mkdir -p "$HOME" "$WORK/src" "$WORK/stub"
+  # The EXIT trap starts timers; keep it off the host's systemd user manager.
+  printf '#!/usr/bin/env bash\nexit 0\n' >"$WORK/stub/systemctl"
+  chmod +x "$WORK/stub/systemctl"
+  export PATH="$WORK/stub:$PATH"
   git -C "$WORK/src" init -q -b main
   mkdir -p "$WORK/src/home-manager/activation"
   printf '#!/usr/bin/env bash\nexit "${MOCK_HOST_GUARD_RESULT:-0}"\n' >"$WORK/src/home-manager/activation/check-host-identity.sh"
