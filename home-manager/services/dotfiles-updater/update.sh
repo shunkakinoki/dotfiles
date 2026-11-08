@@ -10,6 +10,23 @@ bash "$HOME/dotfiles/home-manager/activation/check-host-identity.sh" "$HOST"
 
 cd ~/dotfiles
 
+# An activation that fails partway leaves newly added timers enabled but never
+# started, so their services stop running until a later switch succeeds. This
+# runs on every exit, including no-change runs, so a failed start is retried.
+start_enabled_timers() {
+  local units unit
+  command -v systemctl >/dev/null 2>&1 || return 0
+  if ! units=$(systemctl --user list-unit-files --type=timer --state=enabled --no-legend 2>&1); then
+    echo "WARNING: Could not list enabled timers: $units" >&2
+    return 0
+  fi
+  while read -r unit _; do
+    [ -n "$unit" ] || continue
+    systemctl --user start -- "$unit" || echo "WARNING: Could not start $unit" >&2
+  done <<<"$units"
+}
+trap start_enabled_timers EXIT
+
 if [ "$(git rev-parse --abbrev-ref HEAD)" != "main" ]; then
   echo "ERROR: Deployment checkout is not main; preserve its work before restoring automatic updates." >&2
   exit 1
@@ -71,15 +88,6 @@ if [ "$INSTALLED_COMMIT" = "$REMOTE_COMMIT" ]; then
 fi
 
 echo "Changes detected: ${CURRENT_COMMIT:0:8} -> ${REMOTE_COMMIT:0:8} (installed: ${INSTALLED_COMMIT:0:8})"
-
-# An activation that fails partway leaves newly added timers enabled but never
-# started, so their services stop running until a later switch succeeds.
-start_enabled_timers() {
-  command -v systemctl >/dev/null 2>&1 || return 0
-  systemctl --user list-unit-files --type=timer --state=enabled --no-legend 2>/dev/null |
-    awk '{print $1}' | xargs -r systemctl --user start || true
-}
-trap start_enabled_timers EXIT
 
 # Bootstrap's install.sh fetches again; install the revision already checked above.
 make install

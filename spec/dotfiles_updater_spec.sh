@@ -180,7 +180,16 @@ mkdir -p "$WORK/bin"
 printf '#!/usr/bin/env bash\ncase "$*" in *list-unit-files*) echo "disk-cleanup.timer enabled enabled" ;; *start*) echo "$*" >"$HOME/started" ;; esac\n' >"$WORK/bin/systemctl"
 chmod +x "$WORK/bin/systemctl"
 When run bash -c "PATH='$WORK/bin':\$PATH bash '$SCRIPT' >/dev/null 2>&1; cat '$HOME/started'"
-The output should eq '--user start disk-cleanup.timer'
+The output should eq '--user start -- disk-cleanup.timer'
+End
+
+It 'retries enabled timers on runs with no changes'
+mkdir -p "$WORK/bin"
+printf '#!/usr/bin/env bash\ncase "$*" in *list-unit-files*) echo "disk-cleanup.timer enabled enabled" ;; *start*) echo "$*" >>"$HOME/started" ;; esac\n' >"$WORK/bin/systemctl"
+chmod +x "$WORK/bin/systemctl"
+When run bash -c "export PATH='$WORK/bin':\$PATH; bash '$SCRIPT' >/dev/null 2>&1; bash '$SCRIPT' 2>/dev/null; wc -l <'$HOME/started' | tr -d ' '"
+The output should include 'No changes detected'
+The output should end with '2'
 End
 
 It 'skips the install once the fetched commit was installed'
