@@ -174,6 +174,15 @@ The output should include 'Changes detected'
 The output should include 'retried'
 End
 
+It 'starts enabled timers even when the install fails'
+touch "$HOME/install-fails"
+mkdir -p "$WORK/bin"
+printf '#!/usr/bin/env bash\ncase "$*" in *list-unit-files*) echo "disk-cleanup.timer enabled enabled" ;; *start*) echo "$*" >"$HOME/started" ;; esac\n' >"$WORK/bin/systemctl"
+chmod +x "$WORK/bin/systemctl"
+When run bash -c "PATH='$WORK/bin':\$PATH bash '$SCRIPT' >/dev/null 2>&1; cat '$HOME/started'"
+The output should eq '--user start disk-cleanup.timer'
+End
+
 It 'skips the install once the fetched commit was installed'
 When run bash -c "bash '$SCRIPT' >/dev/null 2>&1 && bash '$SCRIPT' 2>/dev/null"
 The output should include 'No changes detected'

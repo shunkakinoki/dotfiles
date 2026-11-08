@@ -72,6 +72,15 @@ fi
 
 echo "Changes detected: ${CURRENT_COMMIT:0:8} -> ${REMOTE_COMMIT:0:8} (installed: ${INSTALLED_COMMIT:0:8})"
 
+# An activation that fails partway leaves newly added timers enabled but never
+# started, so their services stop running until a later switch succeeds.
+start_enabled_timers() {
+  command -v systemctl >/dev/null 2>&1 || return 0
+  systemctl --user list-unit-files --type=timer --state=enabled --no-legend 2>/dev/null |
+    awk '{print $1}' | xargs -r systemctl --user start || true
+}
+trap start_enabled_timers EXIT
+
 # Bootstrap's install.sh fetches again; install the revision already checked above.
 make install
 
