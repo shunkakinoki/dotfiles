@@ -82,6 +82,33 @@ The output should not include 'atuin.bak'
 The output should not include 'stale'
 End
 
+seed_scratch() {
+  local tmp="$TMPDIR" var="$DISK_CLEANUP_VAR_TMP" old=202001010000
+  mkdir -p "$tmp/stack-merge-tooling/olddir" "$tmp/stack-merge-tooling/busy" \
+    "$var/ci-ship-reference-old" "$var/merged-tree-old" "$var/merged-tree-busy" "$var/unrelated-old"
+  touch "$tmp/stack-merge-tooling/busy/live" "$var/merged-tree-busy/live"
+  touch -t "$old" "$tmp/stack-merge-tooling/olddir" "$tmp/stack-merge-tooling/olddir.ready" \
+    "$tmp/stack-merge-tooling/orphan.lock" "$tmp/stack-merge-tooling/busy" \
+    "$tmp/stack-merge-tooling/busy.ready" "$var/ci-ship-reference-old" "$var/merged-tree-old" \
+    "$var/merged-tree-busy" "$var/unrelated-old"
+  bash "$SCRIPT" >/dev/null
+  find "$tmp/stack-merge-tooling" "$var" -mindepth 1 -maxdepth 1 | sort
+}
+
+It 'prunes stale scratch trees and keeps busy ones and their markers'
+export TMPDIR="$CLEANUP_ROOT/tmp" DISK_CLEANUP_VAR_TMP="$CLEANUP_ROOT/var"
+When call seed_scratch
+The status should be success
+The output should include 'stack-merge-tooling/busy'
+The output should include 'busy.ready'
+The output should include 'merged-tree-busy'
+The output should include 'unrelated-old'
+The output should not include 'olddir'
+The output should not include 'orphan.lock'
+The output should not include 'ci-ship-reference-old'
+The output should not include 'merged-tree-old'
+End
+
 It 'keeps an npx cache entry that a running process references'
 When call keep_in_use
 The status should be success
