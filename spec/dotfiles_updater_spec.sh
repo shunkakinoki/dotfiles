@@ -130,7 +130,11 @@ setup() {
   export XDG_STATE_HOME="$WORK/state"
   export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null
   export GIT_AUTHOR_NAME=t GIT_AUTHOR_EMAIL=t@t GIT_COMMITTER_NAME=t GIT_COMMITTER_EMAIL=t@t
-  mkdir -p "$HOME" "$WORK/src"
+  mkdir -p "$HOME" "$WORK/src" "$WORK/stub"
+  # The EXIT trap starts timers; keep it off the host's systemd user manager.
+  printf '#!/usr/bin/env bash\nexit 0\n' >"$WORK/stub/systemctl"
+  chmod +x "$WORK/stub/systemctl"
+  export PATH="$WORK/stub:$PATH"
   git -C "$WORK/src" init -q -b main
   mkdir -p "$WORK/src/home-manager/activation"
   printf '#!/usr/bin/env bash\nexit "${MOCK_HOST_GUARD_RESULT:-0}"\n' >"$WORK/src/home-manager/activation/check-host-identity.sh"
@@ -172,6 +176,24 @@ touch "$HOME/install-fails"
 When run bash -c "bash '$SCRIPT' >/dev/null 2>&1; rm -f '$HOME/install-fails'; bash '$SCRIPT' 2>/dev/null && test -f '$HOME/installed' && echo retried"
 The output should include 'Changes detected'
 The output should include 'retried'
+End
+
+It 'starts enabled timers even when the install fails'
+touch "$HOME/install-fails"
+mkdir -p "$WORK/bin"
+printf '#!/usr/bin/env bash\ncase "$*" in *list-unit-files*) echo "disk-cleanup.timer enabled enabled" ;; *start*) echo "$*" >"$HOME/started" ;; esac\n' >"$WORK/bin/systemctl"
+chmod +x "$WORK/bin/systemctl"
+When run bash -c "PATH='$WORK/bin':\$PATH bash '$SCRIPT' >/dev/null 2>&1; cat '$HOME/started'"
+The output should eq '--user start -- disk-cleanup.timer'
+End
+
+It 'retries enabled timers on runs with no changes'
+mkdir -p "$WORK/bin"
+printf '#!/usr/bin/env bash\ncase "$*" in *list-unit-files*) echo "disk-cleanup.timer enabled enabled" ;; *start*) echo "$*" >>"$HOME/started" ;; esac\n' >"$WORK/bin/systemctl"
+chmod +x "$WORK/bin/systemctl"
+When run bash -c "export PATH='$WORK/bin':\$PATH; bash '$SCRIPT' >/dev/null 2>&1; bash '$SCRIPT' 2>/dev/null; wc -l <'$HOME/started' | tr -d ' '"
+The output should include 'No changes detected'
+The output should end with '2'
 End
 
 It 'skips the install once the fetched commit was installed'

@@ -10,6 +10,23 @@ bash "$HOME/dotfiles/home-manager/activation/check-host-identity.sh" "$HOST"
 
 cd ~/dotfiles
 
+# An activation that fails partway leaves newly added timers enabled but never
+# started, so their services stop running until a later switch succeeds. This
+# runs on every exit, including no-change runs, so a failed start is retried.
+start_enabled_timers() {
+  local units unit
+  command -v systemctl >/dev/null 2>&1 || return 0
+  if ! units=$(systemctl --user list-unit-files --type=timer --state=enabled --no-legend 2>&1); then
+    echo "WARNING: Could not list enabled timers: $units" >&2
+    return 0
+  fi
+  while read -r unit _; do
+    [ -n "$unit" ] || continue
+    systemctl --user start -- "$unit" || echo "WARNING: Could not start $unit" >&2
+  done <<<"$units"
+}
+trap start_enabled_timers EXIT
+
 if [ "$(git rev-parse --abbrev-ref HEAD)" != "main" ]; then
   echo "ERROR: Deployment checkout is not main; preserve its work before restoring automatic updates." >&2
   exit 1
