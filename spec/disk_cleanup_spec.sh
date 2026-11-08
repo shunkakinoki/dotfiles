@@ -8,6 +8,7 @@ setup() {
   mock_bin_setup docker pgrep df
   CLEANUP_ROOT="$(mktemp -d)"
   export HOME="$CLEANUP_ROOT/home"
+  export TMPDIR="$CLEANUP_ROOT/tmp" DISK_CLEANUP_VAR_TMP="$CLEANUP_ROOT/var"
   unset npm_config_cache BUN_INSTALL_CACHE_DIR
   mkdir -p "$HOME/.npm/_npx/stale" "$HOME/.npm/_npx/fresh" "$HOME/.bun/install/cache/stale@1.0.0"
   touch -t 202001010000 "$HOME/.npm/_npx/stale" "$HOME/.bun/install/cache/stale@1.0.0"
@@ -66,7 +67,6 @@ seed_agent_data() {
 }
 
 It 'prunes stale agent data and keeps live data'
-export TMPDIR="$CLEANUP_ROOT/tmp"
 unset XDG_DATA_HOME
 When call seed_agent_data
 The status should be success
@@ -80,6 +80,65 @@ The output should not include 'old.jsonl'
 The output should not include 'sessions/2020'
 The output should not include 'atuin.bak'
 The output should not include 'stale'
+End
+
+seed_scratch() {
+  local tmp="$TMPDIR" var="$DISK_CLEANUP_VAR_TMP" old=202001010000
+  mkdir -p "$tmp/stack-merge-tooling/olddir" "$tmp/stack-merge-tooling/busy" \
+    "$var/ci-ship-reference-old" "$var/merged-tree-old" "$var/merged-tree-busy" "$var/unrelated-old"
+  touch "$tmp/stack-merge-tooling/busy/live" "$var/merged-tree-busy/live" "$tmp/stack-merge-tooling/orphan.ready"
+  touch -t "$old" "$tmp/stack-merge-tooling/olddir" "$tmp/stack-merge-tooling/olddir.ready" \
+    "$tmp/stack-merge-tooling/orphan.lock" "$tmp/stack-merge-tooling/busy" \
+    "$tmp/stack-merge-tooling/busy.ready" "$var/ci-ship-reference-old" "$var/merged-tree-old" \
+    "$var/merged-tree-busy" "$var/unrelated-old"
+  bash "$SCRIPT" >/dev/null
+  find "$tmp/stack-merge-tooling" "$var" -mindepth 1 -maxdepth 1 | sort
+}
+
+It 'prunes stale scratch trees and keeps busy ones and their markers'
+When call seed_scratch
+The status should be success
+The output should include 'stack-merge-tooling/busy'
+The output should include 'busy.ready'
+The output should include 'merged-tree-busy'
+The output should include 'unrelated-old'
+The output should not include 'olddir'
+The output should not include 'orphan.lock'
+The output should not include 'orphan.ready'
+The output should not include 'ci-ship-reference-old'
+The output should not include 'merged-tree-old'
+End
+
+seed_codex_worktrees() {
+  local repo="$CLEANUP_ROOT/repo" trees="$HOME/.codex/worktrees"
+  git init -q --bare "$CLEANUP_ROOT/origin.git"
+  git init -q "$repo"
+  git -C "$repo" -c user.name=t -c user.email=t@t commit -q --allow-empty -m init
+  git -C "$repo" remote add origin "$CLEANUP_ROOT/origin.git"
+  git -C "$repo" push -q origin HEAD:main
+  git -C "$repo" fetch -q origin
+  mkdir -p "$trees"
+  git -C "$repo" worktree add -q --detach "$trees/pushed" origin/main
+  git -C "$repo" worktree add -q --detach "$trees/untracked" origin/main
+  git -C "$repo" worktree add -q --detach "$trees/unpushed" origin/main
+  git -C "$repo" worktree add -q --detach "$trees/secret" origin/main
+  git -C "$repo" worktree add -q --detach "$trees/ignored" origin/main
+  touch "$trees/untracked/new.txt"
+  mkdir -p "$trees/secret/app" "$trees/ignored/dist" "$trees/pushed/dist"
+  printf '.env*\ndist/\n' >"$repo/.git/info/exclude"
+  touch "$trees/secret/app/.env.local" "$trees/ignored/dist/out.js" "$trees/pushed/dist/out.js"
+  git -C "$trees/unpushed" -c user.name=t -c user.email=t@t commit -q --allow-empty -m local
+  find "$trees" -exec touch -h -t 202001010000 {} +
+  bash "$SCRIPT" >/dev/null
+  find "$trees" -mindepth 1 -maxdepth 1 -exec basename {} \; | LC_ALL=C sort | paste -sd " " -
+  git -C "$repo" worktree list
+}
+
+It 'prunes idle pushed codex worktrees and keeps ones with local work'
+When call seed_codex_worktrees
+The status should be success
+The line 1 of output should equal 'secret unpushed untracked'
+The output should not match pattern '*worktrees/pushed *'
 End
 
 It 'keeps an npx cache entry that a running process references'

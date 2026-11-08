@@ -17,6 +17,8 @@ lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && (inputs.host.isKyber || inputs.hos
           lib.makeBinPath [
             pkgs.coreutils
             pkgs.findutils
+            pkgs.git
+            pkgs.gnused
             pkgs.procps
           ]
         }:/usr/bin:/bin"
