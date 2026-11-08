@@ -38,6 +38,8 @@ prune_stale_entries() {
       esac
     elif [ "$mode" = pushed ]; then
       [ -z "$(git -C "$entry" status --porcelain 2>/dev/null || echo dirty)" ] || continue
+      # Ignored files are build output except local secrets, which exist nowhere else.
+      [ -z "$(git -C "$entry" ls-files --others --ignored --exclude-standard -- ':(glob)**/.env*' 2>/dev/null || echo kept)" ] || continue
       [ -n "$(git -C "$entry" branch -r --contains HEAD 2>/dev/null)" ] || continue
       common=$(git -C "$entry" rev-parse --path-format=absolute --git-common-dir 2>/dev/null) || continue
     fi

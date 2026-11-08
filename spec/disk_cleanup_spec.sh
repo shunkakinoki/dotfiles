@@ -121,20 +121,23 @@ seed_codex_worktrees() {
   git -C "$repo" worktree add -q --detach "$trees/pushed" origin/main
   git -C "$repo" worktree add -q --detach "$trees/untracked" origin/main
   git -C "$repo" worktree add -q --detach "$trees/unpushed" origin/main
+  git -C "$repo" worktree add -q --detach "$trees/secret" origin/main
+  git -C "$repo" worktree add -q --detach "$trees/ignored" origin/main
   touch "$trees/untracked/new.txt"
+  mkdir -p "$trees/secret/app" "$trees/ignored/dist" "$trees/pushed/dist"
+  printf '.env*\ndist/\n' >"$repo/.git/info/exclude"
+  touch "$trees/secret/app/.env.local" "$trees/ignored/dist/out.js" "$trees/pushed/dist/out.js"
   git -C "$trees/unpushed" -c user.name=t -c user.email=t@t commit -q --allow-empty -m local
   find "$trees" -exec touch -h -t 202001010000 {} +
   bash "$SCRIPT" >/dev/null
-  ls "$trees"
+  find "$trees" -mindepth 1 -maxdepth 1 -exec basename {} \; | LC_ALL=C sort | paste -sd " " -
   git -C "$repo" worktree list
 }
 
 It 'prunes idle pushed codex worktrees and keeps ones with local work'
 When call seed_codex_worktrees
 The status should be success
-The output should include 'untracked'
-The output should include 'unpushed'
-The line 1 of output should not equal 'pushed'
+The line 1 of output should equal 'secret unpushed untracked'
 The output should not match pattern '*worktrees/pushed *'
 End
 
