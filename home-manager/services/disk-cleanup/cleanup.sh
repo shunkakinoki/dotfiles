@@ -17,7 +17,8 @@ prune_stale_entries() {
   [ -d "$dir" ] || return 0
   while IFS= read -r -d '' entry; do
     # A long-lived npx server lazily requires files from its cache directory.
-    if pgrep -f -- "$entry" >/dev/null 2>&1; then
+    # pgrep reads its pattern as a regex, so path characters like . and + must be literal.
+    if pgrep -f -- "$(printf '%s' "$entry" | sed 's/[][\.*^$+?(){}|]/\\&/g')" >/dev/null 2>&1; then
       continue
     fi
     # A build can run inside a tree without naming it on its command line.
