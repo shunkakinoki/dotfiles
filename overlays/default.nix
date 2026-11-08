@@ -231,16 +231,16 @@
   (_: prev: {
     boat-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "boat-cli";
-      version = "1.0.92";
+      version = "1.0.96";
       src = prev.fetchurl {
         url = "https://github.com/ariana-dot-dev/agent-server/releases/download/boat-cli-v${version}/boat-${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }-${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x64"}";
         sha256 =
           {
-            "aarch64-darwin" = "03pvhwg90frrwvcs3b2w6sd63l25x15vl0pc8jkiw2zwj4g40hkc";
-            "aarch64-linux" = "0df7r3qg86433dn8bdlms72c97cl8r646ywhybiimpj24n2pfw89";
-            "x86_64-linux" = "088phhj2l2100n8y60h0ljs7ch5qsvmq2m9n9mfl6cdzqvrghqkn";
+            "aarch64-darwin" = "1bvknxyjsd07ki4aw0brrfn1kfifrd251qdzrz2k6r23b3bvlinf";
+            "aarch64-linux" = "0rlsbvwyqhzlyfcsbvrvmnxgghh9ckang6zaqjf11rarjla0v0nr";
+            "x86_64-linux" = "0yfg998mppd3q76p3d4b74ligg92bafkcd0q8xv4x5xbyd9zj6kq";
           }
           .${prev.stdenv.hostPlatform.system};
       };
@@ -309,17 +309,17 @@
 
     devin = prev.stdenvNoCC.mkDerivation rec {
       pname = "devin";
-      version = "3000.12.17";
+      version = "3000.12.28";
       src = prev.fetchurl {
         url = "https://static.devin.ai/cli/${version}/devin-${version}-${
           if prev.stdenv.hostPlatform.isAarch64 then "aarch64" else "x86_64"
         }-${if prev.stdenv.hostPlatform.isDarwin then "apple-darwin" else "unknown-linux"}.tar.gz";
         sha256 =
           {
-            "aarch64-darwin" = "7331731afa01db2c4848b9435e395e4bda534db4b100c188a7efe95173e6ccac";
-            "x86_64-darwin" = "c854806bc12fc4b0969e21209f858cb4a6c580bfafcff062235a1db9031c2d5f";
-            "aarch64-linux" = "e98b39e71122c82a366fdaba99dc0b0531ab0fd6c95ec78031b57db7f9bd5093";
-            "x86_64-linux" = "16b1414dcb50450e654954f10cd38107f93e450d76b0dea63d0b5a65ca600d45";
+            "aarch64-darwin" = "8833a0537d9d05b7d754f4c195b20472b8680d97d6fab4cba7e349173a5f5b91";
+            "x86_64-darwin" = "45813a4a48363495d1cdeb8b4df9f960441ce0e912dd878a51d7ee5c38025884";
+            "aarch64-linux" = "b8e2f450744b994b1a4b8db137d4026c0e1e65b29526a04f780c6e1125888a61";
+            "x86_64-linux" = "8bc952667502ac1175997364500b0d24c15fe35c8ebfd915dc1712d4211166d6";
           }
           .${prev.stdenv.hostPlatform.system};
       };
