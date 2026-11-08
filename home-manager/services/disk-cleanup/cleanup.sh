@@ -12,7 +12,7 @@ scratch_minutes=$((${DISK_CLEANUP_SCRATCH_HOURS:-6} * 60))
 status=0
 
 prune_stale_entries() {
-  local dir="$1" name="${2:-*}" minutes="${3:-$((age_days * 1440))}" markers="${4:-}" entry recent
+  local dir="$1" name="${2:-*}" minutes="${3:-$((age_days * 1440))}" markers="${4:-}" entry recent base
   [ -d "$dir" ] || return 0
   while IFS= read -r -d '' entry; do
     # A long-lived npx server lazily requires files from its cache directory.
@@ -37,7 +37,9 @@ prune_stale_entries() {
     fi
     rm -rf -- "$entry" || status=1
     if [ -n "$markers" ] && [ ! -d "$entry" ]; then
-      rm -f -- "$entry.lock" "$entry.ready"
+      base="${entry%.lock}"
+      base="${base%.ready}"
+      rm -f -- "$base.lock" "$base.ready"
     fi
   done < <(find "$dir" -mindepth 1 -maxdepth 1 -name "$name" -mmin +"$minutes" -print0)
 }

@@ -86,7 +86,7 @@ seed_scratch() {
   local tmp="$TMPDIR" var="$DISK_CLEANUP_VAR_TMP" old=202001010000
   mkdir -p "$tmp/stack-merge-tooling/olddir" "$tmp/stack-merge-tooling/busy" \
     "$var/ci-ship-reference-old" "$var/merged-tree-old" "$var/merged-tree-busy" "$var/unrelated-old"
-  touch "$tmp/stack-merge-tooling/busy/live" "$var/merged-tree-busy/live"
+  touch "$tmp/stack-merge-tooling/busy/live" "$var/merged-tree-busy/live" "$tmp/stack-merge-tooling/orphan.ready"
   touch -t "$old" "$tmp/stack-merge-tooling/olddir" "$tmp/stack-merge-tooling/olddir.ready" \
     "$tmp/stack-merge-tooling/orphan.lock" "$tmp/stack-merge-tooling/busy" \
     "$tmp/stack-merge-tooling/busy.ready" "$var/ci-ship-reference-old" "$var/merged-tree-old" \
@@ -104,6 +104,7 @@ The output should include 'merged-tree-busy'
 The output should include 'unrelated-old'
 The output should not include 'olddir'
 The output should not include 'orphan.lock'
+The output should not include 'orphan.ready'
 The output should not include 'ci-ship-reference-old'
 The output should not include 'merged-tree-old'
 End
