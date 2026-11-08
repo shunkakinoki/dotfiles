@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Reclaims regenerable caches, stale agent data, scratch trees, and Docker build state.
-# Worktrees, volumes, tagged images, and running containers are never touched.
+# Volumes, tagged images, running containers, and worktrees with unpushed or
+# uncommitted work are never touched.
 set -uo pipefail
 
 age_days="${DISK_CLEANUP_AGE_DAYS:-2}"
@@ -12,7 +13,7 @@ scratch_minutes=$((${DISK_CLEANUP_SCRATCH_HOURS:-6} * 60))
 status=0
 
 prune_stale_entries() {
-  local dir="$1" name="${2:-*}" minutes="${3:-$((age_days * 1440))}" markers="${4:-}" entry recent base
+  local dir="$1" name="${2:-*}" minutes="${3:-$((age_days * 1440))}" mode="${4:-}" entry recent base common
   [ -d "$dir" ] || return 0
   while IFS= read -r -d '' entry; do
     # A long-lived npx server lazily requires files from its cache directory.
@@ -29,14 +30,23 @@ prune_stale_entries() {
       recent=$(find "$entry" -newermt "-$minutes minutes" -print -quit 2>/dev/null) || continue
       [ -n "$recent" ] && continue
     fi
+    common=
     # Markers for a kept directory must stay, or its owner sees a missing build.
-    if [ -n "$markers" ]; then
+    if [ "$mode" = markers ]; then
       case "$entry" in
       *.lock | *.ready) [ -d "${entry%.*}" ] && continue ;;
       esac
+    elif [ "$mode" = pushed ]; then
+      [ -z "$(git -C "$entry" status --porcelain 2>/dev/null || echo dirty)" ] || continue
+      [ -n "$(git -C "$entry" branch -r --contains HEAD 2>/dev/null)" ] || continue
+      common=$(git -C "$entry" rev-parse --path-format=absolute --git-common-dir 2>/dev/null) || continue
     fi
     rm -rf -- "$entry" || status=1
-    if [ -n "$markers" ] && [ ! -d "$entry" ]; then
+    # The main repository keeps the branch checked out until its stale worktree is pruned.
+    if [ -n "$common" ]; then
+      git --git-dir="$common" worktree prune || status=1
+    fi
+    if [ "$mode" = markers ] && [ ! -d "$entry" ]; then
       base="${entry%.lock}"
       base="${base%.ready}"
       rm -f -- "$base.lock" "$base.ready"
@@ -52,6 +62,8 @@ prune_stale_entries "${TMPDIR:-/tmp}/opencode"
 prune_stale_entries "${TMPDIR:-/tmp}/stack-merge-tooling" '*' "$scratch_minutes" markers
 prune_stale_entries "$var_tmp" 'ci-ship-reference-*' "$scratch_minutes"
 prune_stale_entries "$var_tmp" 'merged-tree-*' "$scratch_minutes"
+# Codex keeps a full checkout per task and never removes it.
+prune_stale_entries "$HOME/.codex/worktrees" '*' "$scratch_minutes" pushed
 
 if [ -d "$data/opencode" ]; then
   # opencode-stable.db was superseded by opencode-v2.db and is no longer

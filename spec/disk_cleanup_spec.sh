@@ -109,6 +109,35 @@ The output should not include 'ci-ship-reference-old'
 The output should not include 'merged-tree-old'
 End
 
+seed_codex_worktrees() {
+  local repo="$CLEANUP_ROOT/repo" trees="$HOME/.codex/worktrees"
+  git init -q --bare "$CLEANUP_ROOT/origin.git"
+  git init -q "$repo"
+  git -C "$repo" -c user.name=t -c user.email=t@t commit -q --allow-empty -m init
+  git -C "$repo" remote add origin "$CLEANUP_ROOT/origin.git"
+  git -C "$repo" push -q origin HEAD:main
+  git -C "$repo" fetch -q origin
+  mkdir -p "$trees"
+  git -C "$repo" worktree add -q --detach "$trees/pushed" origin/main
+  git -C "$repo" worktree add -q --detach "$trees/untracked" origin/main
+  git -C "$repo" worktree add -q --detach "$trees/unpushed" origin/main
+  touch "$trees/untracked/new.txt"
+  git -C "$trees/unpushed" -c user.name=t -c user.email=t@t commit -q --allow-empty -m local
+  find "$trees" -exec touch -h -t 202001010000 {} +
+  bash "$SCRIPT" >/dev/null
+  ls "$trees"
+  git -C "$repo" worktree list
+}
+
+It 'prunes idle pushed codex worktrees and keeps ones with local work'
+When call seed_codex_worktrees
+The status should be success
+The output should include 'untracked'
+The output should include 'unpushed'
+The line 1 of output should not equal 'pushed'
+The output should not match pattern '*worktrees/pushed *'
+End
+
 It 'keeps an npx cache entry that a running process references'
 When call keep_in_use
 The status should be success
