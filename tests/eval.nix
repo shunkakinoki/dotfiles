@@ -240,6 +240,9 @@ let
           }
         ];
       assert lib.hasInfix " 443 3773" beads.home.activation.tailscaleServeRoutes.data;
+      assert !beads.programs.atuin.settings.auto_sync;
+      assert beads.systemd.user.timers ? atuin-push;
+      assert beads.systemd.user.timers ? atuin-prune-foreign;
       mkEvalCheck "nixos-matic" cfg.system.build.toplevel;
 
     eval-nixos-viper =
