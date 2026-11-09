@@ -17,7 +17,7 @@ in
   # after fnmSetup because package lifecycle scripts (openclaw preinstall) check
   # the Node version, so the pinned fnm default must exist and win on PATH.
   home.activation.installNpmGlobals = config.lib.dag.entryAfter activationDeps ''
-    export PATH=${pkgs.bun}/bin:${pkgs.jq}/bin:${pkgs.curl}/bin:${pkgs.git}/bin:${pkgs.gnutar}/bin:${pkgs.gzip}/bin:$HOME/.local/bin:${pkgs.nodejs}/bin:$PATH
+    export PATH=${pkgs.bun}/bin:${pkgs.jq}/bin:${pkgs.curl}/bin:${pkgs.git}/bin:${pkgs.gnutar}/bin:${pkgs.gzip}/bin:${pkgs.xz}/bin:$HOME/.local/bin:${pkgs.nodejs}/bin:$PATH
     export BUN_INSTALL="$HOME/.bun"
     ${lib.optionalString (!isDarwin) ''export SYSTEMCTL_BIN="${config.systemd.user.systemctlPath}"''}
     $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./install-npm-globals.sh}"
@@ -33,7 +33,7 @@ in
       Service = {
         Type = "simple";
         Environment = [
-          "PATH=${pkgs.bun}/bin:${pkgs.jq}/bin:${pkgs.curl}/bin:${pkgs.git}/bin:${pkgs.gnutar}/bin:${pkgs.gzip}/bin:%h/.local/bin:${pkgs.nodejs}/bin:${pkgs.findutils}/bin:${pkgs.gnugrep}/bin:${pkgs.gnused}/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin"
+          "PATH=${pkgs.bun}/bin:${pkgs.jq}/bin:${pkgs.curl}/bin:${pkgs.git}/bin:${pkgs.gnutar}/bin:${pkgs.gzip}/bin:${pkgs.xz}/bin:%h/.local/bin:${pkgs.nodejs}/bin:${pkgs.findutils}/bin:${pkgs.gnugrep}/bin:${pkgs.gnused}/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin"
           "BUN_INSTALL=%h/.bun"
           "HOME=%h"
           "T3_BOOT_SERVICE_UNIT="
