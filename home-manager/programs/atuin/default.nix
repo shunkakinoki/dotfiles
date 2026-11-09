@@ -6,9 +6,9 @@
   ...
 }:
 let
-  # Kamino workers and kyber only upload their own records; pulling every
-  # other host's multi-GB thread store onto them wastes disk and sync time.
-  uploadOnly = inputs.host.isKamino || inputs.host.isKyber;
+  # Fleet hosts only upload their own records; pulling every other host's
+  # multi-GB thread store filled matic's disk past the lane admission floor.
+  uploadOnly = inputs.host.isKamino || inputs.host.isKyber || inputs.host.isMatic;
   # Threads (agent session capture/resume) shipped in 18.24; older builds
   # silently ignore the [threads] table and stop capturing.
   minVersion = "18.24.0";
