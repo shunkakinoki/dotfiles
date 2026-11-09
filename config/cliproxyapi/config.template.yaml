@@ -193,7 +193,8 @@ routing:
   session-affinity: true # default: false
   # How long session-to-auth bindings are retained. Default: 1h
   # Cold requests still hop
-  # Cold bindings prefer Surplus DeepSeek (301), then OAuth/Ollama (300), Aliyun (200),
+  # Cold bindings prefer Morph DeepSeek (304), then Surplus DeepSeek (301),
+  # OAuth/Ollama (300), Aliyun (200),
   # Verboo/CommandCode/Surplus (150), OpenRouter (100), OpenCode Go (90), and lower tiers.
   # Failover still rebinds when the bound plan 429s.
   session-affinity-ttl: "1h"
@@ -493,6 +494,27 @@ codex-header-defaults:
   beta-features: "multi_agent"
 # OpenAI compatibility providers
 openai-compatibility:
+  # Morph's DeepSeek V4.1 Flash 1017 endpoint is the highest-priority
+  # DeepSeek route. Keep it isolated from the campaign providers so its key
+  # and upstream model remain explicit in routing and quota reports.
+  - name: "morph-deepseek"
+    priority: 304
+    base-url: "https://api.morphllm.com/v1"
+    support-prompt-cache-key: true
+    request-scoped-errors:
+      - status: 400
+        match: ["Model is unavailable"]
+        action: "continue-and-cooldown"
+    api-key-entries:
+      - api-key: "__MORPH_API_KEY__"
+        proxy-url: "direct"
+    models:
+      - name: "morph-dsv41flash-1017"
+        alias: "deepseek-v4.1-flash-1017"
+      - name: "morph-dsv41flash-1017"
+        alias: "deepseek-v4.1-flash"
+      - name: "morph-dsv41flash-1017"
+        alias: "deepseek-v4-flash"
   # Explicit free-only pool; never map this alias to a paid variant or router.
   # Repeat priority:free for additional catalog-verified free models.
   - name: "openrouter-priority-free"

@@ -405,8 +405,8 @@ When run bash -c "section=\$(sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' c
 The status should be success
 End
 
-It 'keeps Surplus first and OpenCode last in the DeepSeek provider chain'
-When run bash -c "grep -A 2 'name: \"surplus-deepseek\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 301' && grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 90' && grep -A 2 'name: \"aliyun\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 200' && grep -A 2 'name: \"verboo\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 150' && grep -A 2 'name: \"openrouter\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 100' && grep -A 2 'name: \"surplus\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 150'"
+It 'keeps Morph first and OpenCode last in the DeepSeek provider chain'
+When run bash -c "grep -A 2 'name: \"morph-deepseek\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 304' && grep -A 2 'name: \"surplus-deepseek\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 301' && grep -A 2 'name: \"opencode\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 90' && grep -A 2 'name: \"aliyun\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 200' && grep -A 2 'name: \"verboo\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 150' && grep -A 2 'name: \"openrouter\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 100' && grep -A 2 'name: \"surplus\"' config/cliproxyapi/config.template.yaml | grep -q 'priority: 150'"
 The status should be success
 End
 

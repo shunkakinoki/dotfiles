@@ -198,6 +198,7 @@ above it is cooling down or unavailable.
 
 | Provider | Priority | DeepSeek models served |
 | --- | --- | --- |
+| `morph-deepseek` | 304 | `morph-dsv41flash-1017` aliased to `deepseek-v4.1-flash-1017` |
 | `surplus-deepseek` | 301 | `deepseek-v4.1-flash-1017` aliased to `deepseek-v4.1-flash-1017` |
 | `ollama-cloud` | 300 | `deepseek-v4.1-flash` aliased to `deepseek-v4.1-flash-1017` |
 | `aliyun` | 200 | `deepseek-v4-flash-0731` aliased to `deepseek-v4.1-flash-1017` |
@@ -206,8 +207,9 @@ above it is cooling down or unavailable.
 | `openrouter` | 100 | `deepseek/deepseek-v4.1-flash` aliased to `deepseek-v4.1-flash-1017` |
 | `opencode` | 90 | `deepseek-v4-flash` aliased to `deepseek-v4.1-flash-1017` |
 | `surplus` | 150 | `deepseek-v4.1-flash-uncensored` served under its own alias |
-So `deepseek-v4.1-flash-1017` requests use Surplus revision 1017 at priority 301
-first; lower tiers only serve once the tier above them is unavailable. The
+So `deepseek-v4.1-flash-1017` requests use Morph's `morph-dsv41flash-1017` at
+priority 304 first; Surplus revision 1017 at priority 301 is the next eligible
+tier, and lower tiers only serve once the tier above them is unavailable. The
 legacy `deepseek-v4.1-flash` and `deepseek-v4-flash` aliases use the same chain.
 `deepseek-v4.1-flash-uncensored` is served only by Surplus, its
 sole upstream.
@@ -224,6 +226,7 @@ terminal client errors.
 
 | Provider | Known model-unavailable response | 429 behavior | Failover action |
 | --- | --- | --- | --- |
+| `morph-deepseek` | HTTP 400, `Model is unavailable` | provider rate limit | continue and cool down |
 | `surplus-deepseek` | HTTP 400, `Model is unavailable` | provider rate limit | continue and cool down |
 | `nvidia` | HTTP 400, `Model is unavailable` | provider rate limit | continue and cool down |
 | `opencode` | HTTP 400, `Upstream request failed: Model is unavailable` | provider rate limit | continue and cool down |
