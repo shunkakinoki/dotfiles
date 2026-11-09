@@ -46,8 +46,12 @@ restore() {
 }
 
 mkdir -p "$DROP_IN_DIR"
-printf '%s\n' "$CONTENT" >"$DROP_IN_FILE"
-chmod 0644 "$DROP_IN_FILE"
+# Staged outside the *.conf glob sshd includes, then renamed, so a reload never
+# reads a half-written policy.
+STAGED="$DROP_IN_DIR/.beskar-hardening.tmp"
+printf '%s\n' "$CONTENT" >"$STAGED"
+chmod 0644 "$STAGED"
+mv -f "$STAGED" "$DROP_IN_FILE"
 rm -f "$LEGACY_FILE"
 
 if ! sshd -t; then
