@@ -126,6 +126,7 @@ OPENROUTER_BYOK_API_KEY="sk-or-v1-..."
 OPENAI_API_KEY="sk-..."
 QWEN_API_KEY="sk-..."
 ALIYUN_TOKEN_PLAN_API_KEY="sk-sp-..."
+MORPH_API_KEY="..."
 VERBOO_API_KEY="..."
 SURPLUS_API_KEY="..."
 COMMANDCODE_API_KEY="..."
@@ -158,6 +159,10 @@ OLLAMA_API_KEYS="first-ollama-api-key,second-ollama-api-key"
 ```
 
 CLIProxyAPI selects from these entries using the configured routing strategy.
+
+Morph's `morph-dsv41flash-1017` serves the canonical DeepSeek Flash aliases at
+priority 304, above Surplus at 301. Set `MORPH_API_KEY` to enable this route;
+when it is unavailable, CLIProxy continues through the existing DeepSeek tiers.
 
 ### Curated free-only models
 

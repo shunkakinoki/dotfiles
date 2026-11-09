@@ -240,6 +240,15 @@ The status should be success
 End
 End
 
+Describe 'Morph DeepSeek provider'
+It 'hydrates the dedicated environment key into the runtime config'
+When run bash -c "grep 's|__MORPH_API_KEY__|.*MORPH_API_KEY' '$SCRIPT'"
+The output should include '__MORPH_API_KEY__'
+The output should include 'MORPH_API_KEY'
+The status should be success
+End
+End
+
 Describe 'Verboo DeepSeek provider'
 It 'hydrates the dedicated environment key into the runtime config'
 When run bash -c "grep 's|__VERBOO_API_KEY__|.*VERBOO_API_KEY' '$SCRIPT'"
@@ -525,6 +534,16 @@ End
 End
 
 Describe 'provider fallback routing'
+It 'declares Morph as the highest-priority DeepSeek upstream'
+When run bash -c "sed -n '/name: \"morph-deepseek\"/,/name: \"openrouter-priority-free\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'priority: 304'
+The output should include 'base-url: "https://api.morphllm.com/v1"'
+The output should include 'api-key: "__MORPH_API_KEY__"'
+The output should include 'name: "morph-dsv41flash-1017"'
+The output should include 'alias: "deepseek-v4.1-flash"'
+The status should be success
+End
+
 
 It 'keeps provider selection sticky for one hour per client session'
 When run bash -c "sed -n '/^routing:/,/^[a-z]/p' '$PWD/config/cliproxyapi/config.template.yaml'"
@@ -571,9 +590,10 @@ The output should include 'alias: "free"'
 The status should be success
 End
 
-It 'preserves the Surplus then Aliyun then Verboo then OpenRouter then OpenCode hop'
-When run bash -c "awk '/name: \"surplus-deepseek\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"openrouter\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"verboo\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"aliyun\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"opencode\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'"
-The output should equal '    priority: 301
+It 'preserves the Morph then Surplus then Aliyun then Verboo then OpenRouter then OpenCode hop'
+When run bash -c "awk '/name: \"morph-deepseek\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"surplus-deepseek\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"openrouter\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"verboo\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"aliyun\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'; awk '/name: \"opencode\"/{p=1} p&&/priority:/{print; exit}' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should equal '    priority: 304
+    priority: 301
     priority: 100
     priority: 150
     priority: 200
@@ -583,7 +603,8 @@ End
 
 It 'lists providers in descending priority order'
 When run bash -c "awk '/^openai-compatibility:/{p=1; next} p && /^# Official/{exit} p && /^  - name: /{print}' '$PWD/config/cliproxyapi/config.template.yaml' | sed 's/^  - name: //; s/\"//g'"
-The output should equal 'openrouter-priority-free
+The output should equal 'morph-deepseek
+openrouter-priority-free
 opencode-campaign
 surplus-deepseek
 nvidia
@@ -610,7 +631,7 @@ The status should be success
 End
 
 It 'fails over model-unavailable 400s without retrying arbitrary 400s'
-When run bash -c 'for provider in surplus-deepseek opencode ollama-cloud aliyun verboo commandcode openrouter; do
+When run bash -c 'for provider in morph-deepseek surplus-deepseek opencode ollama-cloud aliyun verboo commandcode openrouter; do
   section=$(sed -n "/name: \"$provider\"/,/^  - name:/p" "$PWD/config/cliproxyapi/config.template.yaml")
   printf "%s\n" "$section" | grep -Fq "status: 400" || exit 1
   printf "%s\n" "$section" | grep -Fq "Model is unavailable" || exit 1

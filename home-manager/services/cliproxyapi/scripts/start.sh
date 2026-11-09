@@ -370,6 +370,7 @@ if [ -f "$TEMPLATE" ]; then
     -e "s|__ZAI_API_KEY__|$(sed_value "${ZAI_API_KEY:-}")|g" \
     -e "s|__QWEN_API_KEY__|$(sed_value "${QWEN_API_KEY:-${DASHSCOPE_API_KEY:-}}")|g" \
     -e "s|__ALIYUN_TOKEN_PLAN_API_KEY__|$(sed_value "${ALIYUN_TOKEN_PLAN_API_KEY:-}")|g" \
+    -e "s|__MORPH_API_KEY__|$(sed_value "${MORPH_API_KEY:-}")|g" \
     -e "s|__VERBOO_API_KEY__|$(sed_value "${VERBOO_API_KEY:-}")|g" \
     -e "s|__SURPLUS_API_KEY__|$(sed_value "${SURPLUS_API_KEY:-}")|g" \
     -e "s|__COMMANDCODE_API_KEY__|$(sed_value "${COMMANDCODE_API_KEY:-}")|g" \
