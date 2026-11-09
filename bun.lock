@@ -38,7 +38,7 @@
         "@traces-sh/traces": "^0.6.45",
         "@upstash/context7-mcp": "^4.5.0",
         "@vercel/before-and-after": "0.0.4",
-        "@xai-official/grok": "1.0.70",
+        "@xai-official/grok": "1.0.73",
         "acpx": "^0.21.1",
         "agent-browser": "^0.41.2",
         "agent-desktop": "^1.1.0",
@@ -2465,19 +2465,19 @@
 
     "@x402/svm": ["@x402/svm@2.17.0", "", { "dependencies": { "@solana-program/compute-budget": "^0.11.0", "@solana-program/token": "^0.9.0", "@solana-program/token-2022": "^0.6.1", "@x402/core": "~2.17.0" }, "peerDependencies": { "@solana/kit": ">=5.1.0" } }, "sha512-BXSaLBBoP8bfBAKDdwg7c2UYuTfbZOB7gZByCK3LWkROqmTnqxQlQ683urfpYwbvlK0EbZ3TIcqR/Rx42EuVzw=="],
 
-    "@xai-official/grok": ["@xai-official/grok@1.0.70", "", { "dependencies": { "@iarna/toml": "^3.0.0" }, "optionalDependencies": { "@xai-official/grok-darwin-arm64": "1.0.70", "@xai-official/grok-darwin-x64": "1.0.70", "@xai-official/grok-linux-arm64": "1.0.70", "@xai-official/grok-linux-x64": "1.0.70", "@xai-official/grok-win32-arm64": "1.0.70", "@xai-official/grok-win32-x64": "1.0.70" }, "os": [ "linux", "win32", "darwin", ], "cpu": [ "x64", "arm64", ], "hasInstallScript": true, "bin": { "grok": "bin/grok" } }, "sha512-Q2Ncoez//mk1Z9CNhgvp9eAYfZJZmshDAPxs0XAhhGnilH3abGAyTwqOSvqVnsFCUjjzT9TCYZIgAH2A2XL6CQ=="],
+    "@xai-official/grok": ["@xai-official/grok@1.0.73", "", { "dependencies": { "@iarna/toml": "^3.0.0" }, "optionalDependencies": { "@xai-official/grok-darwin-arm64": "1.0.73", "@xai-official/grok-darwin-x64": "1.0.73", "@xai-official/grok-linux-arm64": "1.0.73", "@xai-official/grok-linux-x64": "1.0.73", "@xai-official/grok-win32-arm64": "1.0.73", "@xai-official/grok-win32-x64": "1.0.73" }, "os": [ "linux", "win32", "darwin", ], "cpu": [ "x64", "arm64", ], "hasInstallScript": true, "bin": { "grok": "bin/grok" } }, "sha512-LqggP0ofLBjQKZcry13FbVSiVYesqfNn3xoMwS3SixBeqh11XUvzcwBsbbfedxZzclhlQFdUyR2Rgt46Yi/ZHg=="],
 
-    "@xai-official/grok-darwin-arm64": ["@xai-official/grok-darwin-arm64@1.0.70", "", { "os": "darwin", "cpu": "arm64" }, "sha512-TvzZ4b6YwpiK7UybJGJ4AXxAD7fz8Y912Q0tsY6VkoDFRgpxIUWBdbp6Ax8ICJn1REf7qnsLcRRuyiaOTwJbmg=="],
+    "@xai-official/grok-darwin-arm64": ["@xai-official/grok-darwin-arm64@1.0.73", "", { "os": "darwin", "cpu": "arm64" }, "sha512-uJNzP5ohTMbej6VPA7cjaos2Bhy7RfWk6/cJ1IVUl8lcMjWG2PteCLQTZyqFhkB4q34j16xYAHv9nHpwAbDVXQ=="],
 
-    "@xai-official/grok-darwin-x64": ["@xai-official/grok-darwin-x64@1.0.70", "", { "os": "darwin", "cpu": "x64" }, "sha512-DmLdw/UWbJsfEFXNq/moq974RICGTwD85tNlt9e8eGXw14B3WJ7XLklGvro4O7POGkotmJVw0pN1J+Ro2GoQFg=="],
+    "@xai-official/grok-darwin-x64": ["@xai-official/grok-darwin-x64@1.0.73", "", { "os": "darwin", "cpu": "x64" }, "sha512-xtJbMarvkhGfqDctLwKKLWcg4wCD04yDRQdkznIy5PnbxPhlkWiu5afVuCcJ1KYfetz7vpbgf2OJazQ3RZ9Hog=="],
 
-    "@xai-official/grok-linux-arm64": ["@xai-official/grok-linux-arm64@1.0.70", "", { "os": "linux", "cpu": "arm64" }, "sha512-rH0TfWOT/Ca/sBMtAJJ+GJ9UyZlr/TkTqIHq8FL7o+ZTzJMBWvCv40JC4T/XuwEZ3WMmxOHGiPap7H9B4SbDSw=="],
+    "@xai-official/grok-linux-arm64": ["@xai-official/grok-linux-arm64@1.0.73", "", { "os": "linux", "cpu": "arm64" }, "sha512-mb2/yx0qR5yeLhYGSaxtuwJsQ8KJ++nmjZyShA8PRAOujGq2Kk51ywc8YCb90ceDPcSjPh5dzEHqsPNI5+cUjQ=="],
 
-    "@xai-official/grok-linux-x64": ["@xai-official/grok-linux-x64@1.0.70", "", { "os": "linux", "cpu": "x64" }, "sha512-rElshycz/6SgPSkiFGtKHA4vSVOI8qQ6d0jFeu4I92hXCMfvxgMiOvNSzuBhm2P8Jd+4rNGAty2zW0VwmgHSeA=="],
+    "@xai-official/grok-linux-x64": ["@xai-official/grok-linux-x64@1.0.73", "", { "os": "linux", "cpu": "x64" }, "sha512-ls80svmxSTD3mgA6CrWcQGQnZs742JmX++Wy3K84FjQil2/sZz+FqJmzVKCN5NhBLJszMtvo0845v1plKAUwLw=="],
 
-    "@xai-official/grok-win32-arm64": ["@xai-official/grok-win32-arm64@1.0.70", "", { "os": "win32", "cpu": "arm64" }, "sha512-3W8ZmZ+MoqKfsqjAdm9ldbT7NfiTGOdAIEkOPyzEyyI9/qb4a13B11EL3ffqtiNPbadGWjYvwHsMirYZI8WHzg=="],
+    "@xai-official/grok-win32-arm64": ["@xai-official/grok-win32-arm64@1.0.73", "", { "os": "win32", "cpu": "arm64" }, "sha512-DaMBivj6d9DViLLi27Ny6FSk15P7qZM+V5osYdfVGVAiqHMv6AeNCWVtdUscM+ae5oXSdIBburOZRHYQblrM2A=="],
 
-    "@xai-official/grok-win32-x64": ["@xai-official/grok-win32-x64@1.0.70", "", { "os": "win32", "cpu": "x64" }, "sha512-CZLdwfihazTIX/jgSqm3kBQxCeIjHJxMSq8w2VIhLP3I+zcAFYgj7Viy4YJAK8cLt4lhICoRLhGGb8Lq/zYMYw=="],
+    "@xai-official/grok-win32-x64": ["@xai-official/grok-win32-x64@1.0.73", "", { "os": "win32", "cpu": "x64" }, "sha512-1BQWMPgUnup91rxIOyfquKqvtY8NUO1/5hZ4Xhcs/61WnYnS2LjynXH0m8mKIJdajGM8/RxHxbPzlbt+UuWZLA=="],
 
     "@xterm/addon-serialize": ["@xterm/addon-serialize@0.14.0", "", {}, "sha512-uteyTU1EkrQa2Ux6P/uFl2fzmXI46jy5uoQMKEOM0fKTyiW7cSn0WrFenHm5vO5uEXX/GpwW/FgILvv3r0WbkA=="],
 
