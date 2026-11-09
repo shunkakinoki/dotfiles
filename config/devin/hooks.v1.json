@@ -138,14 +138,6 @@
       {
         "hooks": [
           {
-            "command": "! command -v bd >/dev/null 2>&1 || bd prime --hook-json",
-            "type": "command"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
             "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-start --agent devin # traces hook agent",
             "timeout": 30,
             "type": "command"

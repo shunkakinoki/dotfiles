@@ -6,9 +6,12 @@ CLAUDE_SETTINGS="$PWD/config/claude/settings.json"
 CODEX_HOOKS="$PWD/config/codex/hooks.json"
 CURSOR_HOOKS="$PWD/config/cursor/hooks.json"
 GEMINI_SETTINGS="$PWD/config/gemini/settings.json"
+DEVIN_HOOKS="$PWD/config/devin/hooks.v1.json"
 
-has_session_start_hook() {
-  jq -e '[.hooks.SessionStart[]?.hooks[]?.command] | any(. == "! command -v bd >/dev/null 2>&1 || bd prime --hook-json")' "$1" >/dev/null
+# Beads context costs a storage open per call, so it stays off the session and
+# prompt paths and runs only around compaction.
+has_no_beads_hook() {
+  ! jq -e --arg event "$2" '[.hooks[$event][]? | (.command, (.hooks[]?.command)) | strings] | any(test("\\|\\| bd "))' "$1" >/dev/null
 }
 
 has_codex_hook() {
@@ -19,18 +22,38 @@ has_cursor_hook() {
   jq -e --arg event "$1" --arg command "$2" '[.hooks[$event][]?.command] | any(. == $command)' "$CURSOR_HOOKS" >/dev/null
 }
 
-It 'uses the JSON envelope for Claude session context'
-When call has_session_start_hook "$CLAUDE_SETTINGS"
+It 'keeps Beads off Claude session start'
+When call has_no_beads_hook "$CLAUDE_SETTINGS" 'SessionStart'
 The status should be success
 End
 
-It 'uses the JSON envelope for Gemini session context'
-When call has_session_start_hook "$GEMINI_SETTINGS"
+It 'keeps Beads off Gemini session start'
+When call has_no_beads_hook "$GEMINI_SETTINGS" 'SessionStart'
 The status should be success
 End
 
-It 'installs the Codex compaction recovery lifecycle'
-When call has_codex_hook 'SessionStart' '! command -v bd >/dev/null 2>&1 || bd codex-hook SessionStart'
+It 'keeps Beads off Devin session start'
+When call has_no_beads_hook "$DEVIN_HOOKS" 'SessionStart'
+The status should be success
+End
+
+It 'keeps Beads off Codex session start'
+When call has_no_beads_hook "$CODEX_HOOKS" 'SessionStart'
+The status should be success
+End
+
+It 'keeps Beads off every Codex prompt'
+When call has_no_beads_hook "$CODEX_HOOKS" 'UserPromptSubmit'
+The status should be success
+End
+
+It 'keeps Beads off Cursor session start'
+When call has_no_beads_hook "$CURSOR_HOOKS" 'sessionStart'
+The status should be success
+End
+
+It 'keeps Beads off every Cursor tool use'
+When call has_no_beads_hook "$CURSOR_HOOKS" 'postToolUse'
 The status should be success
 End
 
@@ -44,23 +67,8 @@ When call has_codex_hook 'PostCompact' '! command -v bd >/dev/null 2>&1 || bd co
 The status should be success
 End
 
-It 'injects Beads context on the first Codex prompt after compaction'
-When call has_codex_hook 'UserPromptSubmit' '! command -v bd >/dev/null 2>&1 || bd codex-hook UserPromptSubmit'
-The status should be success
-End
-
-It 'installs the Cursor session context hook'
-When call has_cursor_hook 'sessionStart' '! command -v bd >/dev/null 2>&1 || bd cursor-hook sessionStart'
-The status should be success
-End
-
 It 'installs the Cursor compaction recovery hooks'
 When call has_cursor_hook 'preCompact' '! command -v bd >/dev/null 2>&1 || bd cursor-hook preCompact'
-The status should be success
-End
-
-It 're-injects Cursor context after compaction'
-When call has_cursor_hook 'postToolUse' '! command -v bd >/dev/null 2>&1 || bd cursor-hook postToolUse'
 The status should be success
 End
 

@@ -353,15 +353,6 @@
       {
         "hooks": [
           {
-            "command": "! command -v bd >/dev/null 2>&1 || bd prime --hook-json",
-            "type": "command"
-          }
-        ],
-        "matcher": ""
-      },
-      {
-        "hooks": [
-          {
             "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-start --agent claude-code # traces hook agent",
             "type": "command"
           }
