@@ -60,6 +60,9 @@ home-manager.lib.homeManagerConfiguration {
           activation.installT3RuntimeLibs = config.lib.dag.entryAfter [ "writeBoundary" ] ''
             $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate-t3-runtime-libs.sh}
           '';
+          activation.hardenSshd = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+            $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate-sshd.sh}
+          '';
           activation.authorizeFleetSsh = config.lib.dag.entryAfter [ "linkGeneration" ] ''
             $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${../../home-manager/activation/authorize-ssh-keys.sh}" ${authorizedKeysFile} "${config.home.homeDirectory}/.ssh" ${pkgs.openssh}/bin/ssh-keygen
           '';

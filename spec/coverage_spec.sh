@@ -468,6 +468,10 @@ It 'has spec file for named-hosts/kyber/activate-backup-files.sh'
 The path "spec/activate_kyber_spec.sh" should be exist
 End
 
+It 'has behavior tests for named-hosts/beskar/activate-sshd.sh'
+The path "spec/activate_beskar_spec.sh" should be exist
+End
+
 It 'has behavior tests for named-hosts/beskar/activate-t3-runtime-libs.sh'
 The path "spec/activate_beskar_spec.sh" should be exist
 End
@@ -787,6 +791,7 @@ home-manager/services/tokscale/submit.sh
 hosts/darwin/activate-remove-backups.sh
 hosts/linux/activate-backup-files.sh
 install.sh
+named-hosts/beskar/activate-sshd.sh
 named-hosts/beskar/activate-t3-runtime-libs.sh
 named-hosts/kamino/activate.sh
 named-hosts/kamino/fleet.sh
