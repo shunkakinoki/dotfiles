@@ -92,6 +92,7 @@ EOF
   cat >"$TEST_ROOT/bin/systemctl" <<'EOF'
 #!/usr/bin/env bash
 printf 'systemctl %s\n' "$*" >>"$COMMAND_LOG"
+exit "${MOCK_SYSTEMCTL_STATUS:-0}"
 EOF
   chmod +x "$TEST_ROOT"/bin/*
   export COMMAND_LOG SSHD_CONFIG_DIR="$TEST_ROOT/sshd_config.d"
@@ -131,6 +132,29 @@ The path "$SSHD_CONFIG_DIR/99-beskar-hardening.conf" should not be exist
 The contents of file "$SSHD_CONFIG_DIR/99-kyber-hardening.conf" should eq 'PermitRootLogin no'
 End
 
+It 'keeps an existing Beskar drop-in when sshd -t fails'
+printf 'old beskar\n' >"$SSHD_CONFIG_DIR/99-beskar-hardening.conf"
+printf 'PermitRootLogin no\n' >"$SSHD_CONFIG_DIR/99-kyber-hardening.conf"
+export MOCK_SSHD_STATUS=1
+When call run_script
+The status should be failure
+The stderr should include 'restoring the previous drop-ins'
+The output should include 'Installing'
+The contents of file "$SSHD_CONFIG_DIR/99-beskar-hardening.conf" should eq 'old beskar'
+The contents of file "$SSHD_CONFIG_DIR/99-kyber-hardening.conf" should eq 'PermitRootLogin no'
+End
+
+It 'fails and restores when sshd cannot reload'
+printf 'PermitRootLogin no\n' >"$SSHD_CONFIG_DIR/99-kyber-hardening.conf"
+export MOCK_SYSTEMCTL_STATUS=1
+When call run_script
+The status should be failure
+The stderr should include 'Reloading sshd failed'
+The output should include 'Installing'
+The path "$SSHD_CONFIG_DIR/99-beskar-hardening.conf" should not be exist
+The contents of file "$SSHD_CONFIG_DIR/99-kyber-hardening.conf" should eq 'PermitRootLogin no'
+End
+
 It 'does nothing when already up to date'
 PATH="$TEST_ROOT/bin:$PATH" bash "$SCRIPT" >/dev/null
 : >"$COMMAND_LOG"
@@ -139,7 +163,8 @@ The status should be success
 The contents of file "$COMMAND_LOG" should eq ''
 End
 
-It 'refuses to change sshd without root'
+It 'refuses to run without root even when up to date'
+PATH="$TEST_ROOT/bin:$PATH" bash "$SCRIPT" >/dev/null
 export MOCK_UID=1000
 When call run_script
 The status should be failure

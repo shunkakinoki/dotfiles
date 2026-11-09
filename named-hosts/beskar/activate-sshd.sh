@@ -21,33 +21,46 @@ MaxAuthTries 3
 AuthenticationMethods publickey
 # END beskar-hardening'
 
-if [ ! -f "$LEGACY_FILE" ] && [ -f "$DROP_IN_FILE" ] &&
-  printf '%s\n' "$CONTENT" | cmp -s - "$DROP_IN_FILE"; then
-  exit 0
-fi
-
 if [ "$(id -u)" -ne 0 ]; then
   echo "Beskar sshd hardening requires root." >&2
   exit 1
 fi
 
-echo "Installing sshd hardening drop-in at $DROP_IN_FILE..."
-BACKUP=""
-if [ -f "$LEGACY_FILE" ]; then
-  BACKUP=$(mktemp)
-  cp "$LEGACY_FILE" "$BACKUP"
+if [ ! -f "$LEGACY_FILE" ] && [ -f "$DROP_IN_FILE" ] &&
+  printf '%s\n' "$CONTENT" | cmp -s - "$DROP_IN_FILE"; then
+  exit 0
 fi
+
+echo "Installing sshd hardening drop-in at $DROP_IN_FILE..."
+BACKUP_DIR=$(mktemp -d)
+trap 'rm -rf "$BACKUP_DIR"' EXIT
+for f in "$DROP_IN_FILE" "$LEGACY_FILE"; do
+  if [ -f "$f" ]; then
+    cp -p "$f" "$BACKUP_DIR/"
+  fi
+done
+
+restore() {
+  rm -f "$DROP_IN_FILE" "$LEGACY_FILE"
+  cp -p "$BACKUP_DIR"/* "$DROP_IN_DIR/" 2>/dev/null || true
+}
+
 mkdir -p "$DROP_IN_DIR"
 printf '%s\n' "$CONTENT" >"$DROP_IN_FILE"
 chmod 0644 "$DROP_IN_FILE"
 rm -f "$LEGACY_FILE"
 
 if ! sshd -t; then
-  echo "sshd -t failed; restoring the previous drop-in." >&2
-  rm -f "$DROP_IN_FILE"
-  [ -n "$BACKUP" ] && mv "$BACKUP" "$LEGACY_FILE"
+  echo "sshd -t failed; restoring the previous drop-ins." >&2
+  restore
   exit 1
 fi
-[ -n "$BACKUP" ] && rm -f "$BACKUP"
-systemctl reload ssh 2>/dev/null || systemctl reload sshd 2>/dev/null || true
+
+# sshd -t only checks the files; the running daemon keeps the old policy until
+# it reloads, so a failed reload must fail activation.
+if ! systemctl reload ssh 2>/dev/null && ! systemctl reload sshd 2>/dev/null; then
+  echo "Reloading sshd failed; restoring the previous drop-ins." >&2
+  restore
+  exit 1
+fi
 echo "sshd hardening applied."
