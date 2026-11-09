@@ -65,6 +65,12 @@ prune_stale_entries "${TMPDIR:-/tmp}/opencode"
 prune_stale_entries "${TMPDIR:-/tmp}/stack-merge-tooling" '*' "$scratch_minutes" markers
 prune_stale_entries "$var_tmp" 'ci-ship-reference-*' "$scratch_minutes"
 prune_stale_entries "$var_tmp" 'merged-tree-*' "$scratch_minutes"
+# PR follow-through and queue verification leave a full checkout per run, and
+# the worktree cache is rebuilt on demand.
+for pattern in 'pr-followthrough-*' 'queue-head-*' 'queue-base*' 'worktree-cache'; do
+  prune_stale_entries "${TMPDIR:-/tmp}" "$pattern" "$scratch_minutes"
+done
+prune_stale_entries "$var_tmp" 'worktree-cache' "$scratch_minutes"
 # Codex keeps a full checkout per task and never removes it.
 prune_stale_entries "$HOME/.codex/worktrees" '*' "$scratch_minutes" pushed
 
