@@ -75,7 +75,7 @@ let
     + builtins.readFile ./select-library-path.sh
   );
   prepareRuntime = pkgs.writeShellScript "t3-prepare-runtime" (
-    "export PATH=${toolchain}:$PATH\n"
+    "export PATH=${toolchain}:${dirOf config.systemd.user.systemctlPath}:$PATH\n"
     + "export T3_PTY_PROBE=${./pty-probe.cjs}\n"
     + builtins.readFile ./prepare-runtime.sh
   );
@@ -97,7 +97,7 @@ let
     + builtins.readFile ./launch-service.sh
   );
   runtimeCli = pkgs.writeShellScript "t3-cli" (
-    "export PATH=${toolchain}:$PATH\n"
+    "export PATH=${toolchain}:${dirOf config.systemd.user.systemctlPath}:$PATH\n"
     + setLibraryPath
     + "export T3_SYSTEMD_RUN=${dirOf config.systemd.user.systemctlPath}/systemd-run\n"
     + "export T3_SYSTEMCTL=${config.systemd.user.systemctlPath}\n"
@@ -124,7 +124,7 @@ let
     t3() { "$HOME/.config/t3/bin/t3" "$@"; }
   '';
   ensureService = pkgs.writeShellScript "t3-ensure-service" (
-    "export PATH=${toolchain}:$PATH\n"
+    "export PATH=${toolchain}:${dirOf config.systemd.user.systemctlPath}:$PATH\n"
     + "export T3_SERVICE_CLI=${runtimeCli}\n"
     + "export T3_SYSTEMCTL=${config.systemd.user.systemctlPath}\n"
     + "export T3_CHECK_SERVICE=${./check-service.cjs}\n"
