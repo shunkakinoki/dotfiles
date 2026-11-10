@@ -95,6 +95,7 @@ let
       assert beads.home.sessionVariables.BEADS_NODE_ID == "kyber";
       assert beads.home.sessionVariables.BD_EVENTS_JOURNAL == "1";
       assert !(beads.home.sessionVariables ? BEADS_DOLT_DATA_DIR);
+      assert !(beads.home.sessionVariables ? BEADS_AUTHORITY_ROUTE);
       assert !(beads.launchd.agents ? dolt);
       assert !(beads.launchd.agents ? dolt-backup-main);
       assert beads.launchd.agents.beads-dolt-client-environment.enable;
@@ -232,6 +233,8 @@ let
       assert lib.elem "BEADS_DOLT_SERVER_HOST=kyber.tail950b36.ts.net" herdr.Service.Environment;
       assert lib.elem "BEADS_NODE_ID=kyber" herdr.Service.Environment;
       assert lib.elem "BD_EVENTS_JOURNAL=1" herdr.Service.Environment;
+      assert beads.home.sessionVariables.BEADS_AUTHORITY_ROUTE == "shell";
+      assert lib.elem "BEADS_AUTHORITY_ROUTE=shell" herdr.Service.Environment;
       assert
         tailscaleServeRoutes.matic == [
           {

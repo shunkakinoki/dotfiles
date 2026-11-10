@@ -34,6 +34,11 @@ let
   }
   // lib.optionalAttrs isKyber {
     BEADS_DOLT_DATA_DIR = beadsDir;
+  }
+  # matic reaches kyber:3307 over a lossy path that answers too late but never
+  # faults, so the transport would never fall back to the authority shell.
+  // lib.optionalAttrs isMatic {
+    BEADS_AUTHORITY_ROUTE = "shell";
   };
   beadsLaunchctlEnvironmentScript = pkgs.replaceVars ./client-environment.sh {
     inherit doltServerHost;
