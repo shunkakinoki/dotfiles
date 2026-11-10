@@ -363,20 +363,20 @@
     # Namespace's devbox CLI, not the unrelated Jetify devbox in nixpkgs.
     namespace-devbox = prev.stdenvNoCC.mkDerivation rec {
       pname = "namespace-devbox";
-      version = "0.0.211";
+      version = "0.0.212";
       src = prev.fetchurl {
         url = "https://get.namespace.so/packages/devbox/v${version}/devbox_${version}_${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}.tar.gz";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "118a05c94e8997a3d55bac27f19f4e85845ee07cd0bbb8280c5e82863e3b3711"
+            "cef5e53e1cd63dc2f737b1287d9a92b91ef287dc9dc066a14b4b10f6e8d6ae0c"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "e69fd25c046c8f1f5ed9c563f8fc32827564db4d76a74a35a03415c258e8b745"
+            "48dffe2a5b9e6f3114ddc391145fc62c71fc7fc51446ce084ab6b97e1c50d08c"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "d395c22c9e4c9dc3d77cd3274a0ce4ec9d866796b9260c9a4b92274a3024d363"
+            "dafce2a72ff9483c4c6c2eead8774224a85f438939f4d452cdb54d235cc77ddf"
           else
-            "ba162994020a4aea0f51705e2915c00754a3347ddf4ff2da85d70c1986ff67fc";
+            "89feb3b4a8b7ae2412bec34911d188b4cd57e717e04255eebb6d0b7b3353e3f7";
       };
       sourceRoot = ".";
       dontConfigure = true;
