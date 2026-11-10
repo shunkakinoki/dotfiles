@@ -4,6 +4,14 @@
 # unpushed or uncommitted work are never touched.
 set -uo pipefail
 
+# A managed Linux checkout owns its storage policy, install leases, and lane
+# custody. Its machine-local adapter keeps repository scope out of dotfiles.
+platform=$(uname -s)
+reclaimer="${XDG_CONFIG_HOME:-$HOME/.config}/disk-cleanup/reclaim"
+if [ "$platform" = Linux ] && [ -x "$reclaimer" ]; then
+  exec "$reclaimer"
+fi
+
 age_days="${DISK_CLEANUP_AGE_DAYS:-1}"
 var_tmp="${DISK_CLEANUP_VAR_TMP:-/var/tmp}"
 # Orphaned scratch checkouts reach 8G each and pile up several per day.
@@ -11,16 +19,16 @@ scratch_minutes=$((${DISK_CLEANUP_SCRATCH_HOURS:-1} * 60))
 status=0
 
 # macOS has no /proc; a process can use a tree without naming it in argv.
-# If its cwd inventory cannot be read, leave all entries in place.
-platform=$(uname -s)
-process_cwds=
-if [ "$platform" = Darwin ]; then
-  process_cwds=$(lsof -nP -a -d cwd -Fn 2>/dev/null) || exit 1
-fi
+# Refresh it per entry: a process may enter a tree during a long cleanup pass.
 
 has_live_cwd() {
-  local entry="$1" cwd
+  local entry="$1" cwd process_cwds
   if [ "$platform" = Darwin ]; then
+    # An unreadable inventory cannot authorize deletion.
+    if ! process_cwds=$(lsof -nP -a -d cwd -Fn 2>/dev/null); then
+      status=1
+      return 0
+    fi
     while IFS= read -r cwd; do
       case "$cwd" in
       "n$entry" | "n$entry/"*) return 0 ;;

@@ -9,7 +9,7 @@ setup() {
   CLEANUP_ROOT="$(mktemp -d)"
   export HOME="$CLEANUP_ROOT/home"
   export TMPDIR="$CLEANUP_ROOT/tmp" DISK_CLEANUP_VAR_TMP="$CLEANUP_ROOT/var"
-  unset npm_config_cache BUN_INSTALL_CACHE_DIR
+  unset npm_config_cache BUN_INSTALL_CACHE_DIR XDG_CONFIG_HOME
   mkdir -p "$HOME/.npm/_npx/stale" "$HOME/.npm/_npx/fresh" "$HOME/.bun/install/cache/stale@1.0.0"
   touch -t 202001010000 "$HOME/.npm/_npx/stale" "$HOME/.bun/install/cache/stale@1.0.0"
   cat >"$MOCK_BIN/pgrep" <<'EOF'
@@ -61,6 +61,37 @@ PY
 It 'reclaims caches after one day and idle scratch trees after one hour'
 When call seed_retention_windows
 The status should be success
+End
+
+native_reclaimer() {
+  printf '#!/usr/bin/env bash\nprintf "Linux\\n"\n' >"$MOCK_BIN/uname"
+  chmod +x "$MOCK_BIN/uname"
+  mkdir -p "$HOME/.config/disk-cleanup"
+  cat >"$HOME/.config/disk-cleanup/reclaim" <<'EOF'
+#!/usr/bin/env bash
+echo native-reclaimer
+exit "${NATIVE_RECLAIMER_STATUS:-0}"
+EOF
+  chmod +x "$HOME/.config/disk-cleanup/reclaim"
+  NATIVE_RECLAIMER_STATUS="${1:-0}" bash "$SCRIPT"
+  result=$?
+  [ -d "$HOME/.bun/install/cache/stale@1.0.0" ] || return 99
+  cat "$MOCK_LOG"
+  return "$result"
+}
+
+It 'delegates managed Linux storage to its native owner without standalone pruning'
+When call native_reclaimer
+The status should be success
+The output should include 'native-reclaimer'
+The output should not include 'docker'
+End
+
+It 'propagates native cleanup failures without falling back to standalone pruning'
+When call native_reclaimer 7
+The status should equal 7
+The output should include 'native-reclaimer'
+The output should not include 'docker'
 End
 
 keep_in_use() {
@@ -189,6 +220,29 @@ When call macos_cwd
 The status should be success
 The output should include 'stale'
 The output should not include 'stale@1.0.0'
+End
+
+macos_later_cwd() {
+  printf '#!/usr/bin/env bash\nprintf "Darwin\\n"\n' >"$MOCK_BIN/uname"
+  cat >"$MOCK_BIN/lsof" <<'EOF'
+#!/usr/bin/env bash
+if [ -f "$MOCK_BIN/cwd-probed" ]; then
+  printf 'p123\nn%s/.bun/install/cache/stale@1.0.0/child\n' "$HOME"
+else
+  touch "$MOCK_BIN/cwd-probed"
+  printf 'p123\nn/unrelated\n'
+fi
+EOF
+  chmod +x "$MOCK_BIN/uname" "$MOCK_BIN/lsof"
+  bash "$SCRIPT" >/dev/null
+  [ ! -e "$HOME/.npm/_npx/stale" ] || return 1
+  ls "$HOME/.bun/install/cache"
+}
+
+It 'refreshes macOS cwd evidence when a process enters a later cache'
+When call macos_later_cwd
+The status should be success
+The output should include 'stale@1.0.0'
 End
 
 macos_unknown_cwd() {
