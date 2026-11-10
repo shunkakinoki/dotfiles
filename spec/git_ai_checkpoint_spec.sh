@@ -9,6 +9,7 @@ setup() {
   cat >"$FAKE_BIN/git-ai" <<'EOF'
 #!/usr/bin/env bash
 echo "args: $*"
+echo "flush worker: ${GIT_AI_FLUSH_LOGS_WORKER:-unset}"
 echo "stdin: $(cat)"
 exit "${FAKE_GIT_AI_STATUS:-0}"
 EOF
@@ -43,6 +44,13 @@ When run env PATH="$FAKE_BIN:$PATH" bash "$SCRIPT" claude
 The status should be success
 The output should include 'args: checkpoint claude --hook-input stdin'
 The output should include 'stdin: {"tool_input": {"file_path": "a.txt"}}'
+End
+
+It 'stops git-ai from spawning a detached flush'
+Data '{}'
+When run env PATH="$FAKE_BIN:$PATH" bash "$SCRIPT" claude
+The status should be success
+The output should include 'flush worker: 1'
 End
 
 It 'keeps the exit status of git-ai'
