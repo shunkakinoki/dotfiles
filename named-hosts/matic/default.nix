@@ -86,6 +86,13 @@ import ../../hosts/nixos {
         # Boot loader (EFI/systemd-boot)
         boot.loader.systemd-boot.enable = true;
         boot.loader.systemd-boot.configurationLimit = 10;
+        # The updater switches the system several times a day, and every system
+        # generation pins a full closure until it is collected.
+        nix.gc = {
+          automatic = true;
+          dates = "daily";
+          options = "--delete-older-than 7d";
+        };
         boot.loader.efi.canTouchEfiVariables = true;
         boot.loader.grub.enable = false;
         boot.loader.timeout = 3;

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Reclaims regenerable caches, stale agent data, scratch trees, and Docker build state.
-# Volumes, tagged images, running containers, and worktrees with unpushed or
-# uncommitted work are never touched.
+# Volumes, images used in the last week, running containers, and worktrees with
+# unpushed or uncommitted work are never touched.
 set -uo pipefail
 
 age_days="${DISK_CLEANUP_AGE_DAYS:-2}"
@@ -73,6 +73,13 @@ done
 prune_stale_entries "$var_tmp" 'worktree-cache' "$scratch_minutes"
 # Codex keeps a full checkout per task and never removes it.
 prune_stale_entries "$HOME/.codex/worktrees" '*' "$scratch_minutes" pushed
+# Herdr and T3 lanes leave one checkout per task under <root>/<repo>/<name>,
+# and paused lanes resume within days, so only pushed trees idle that long go.
+for root in "$HOME/.herdr/worktrees" "$HOME/.t3/worktrees"; do
+  for repo in "$root"/*/; do
+    prune_stale_entries "${repo%/}" '*' "$((age_days * 1440))" pushed
+  done
+done
 
 if [ -d "$data/opencode" ]; then
   # opencode-stable.db was superseded by opencode-v2.db and is no longer
@@ -92,7 +99,7 @@ fi
 
 if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
   docker builder prune --force --filter until=24h || status=1
-  docker image prune --force || status=1
+  docker image prune --all --force --filter until=168h || status=1
   docker container prune --force --filter until=24h || status=1
 fi
 
