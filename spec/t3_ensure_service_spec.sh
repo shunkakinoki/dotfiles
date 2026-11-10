@@ -56,10 +56,17 @@ The contents of file "$MOCK_LOG" should not include 'node'
 End
 
 It 'reports an unmanaged owner without attempting to terminate it'
+printf '#!/usr/bin/env bash\nexit 42\n' >"$MOCK_BIN/node"
+When run bash "$SCRIPT"
+The status should be success
+The error should include 'continuing activation without taking it over'
+The contents of file "$MOCK_LOG" should not include 'stop'
+The contents of file "$MOCK_LOG" should not include 'restart'
+End
+
+It 'propagates other readiness failures'
 printf '#!/usr/bin/env bash\nexit 41\n' >"$MOCK_BIN/node"
 When run bash "$SCRIPT"
 The status should equal 41
-The contents of file "$MOCK_LOG" should not include 'stop'
-The contents of file "$MOCK_LOG" should not include 'restart'
 End
 End

@@ -28,7 +28,7 @@ End
 It 'rejects an SSH-session server even when it inherited launcher context'
 printf '0::/user.slice/session-123.scope\n' >"$T3_PROC_ROOT/$$/cgroup"
 When run node "$SCRIPT"
-The status should be failure
+The status should equal 42
 The stderr should include 'outside the managed launcher'
 End
 
