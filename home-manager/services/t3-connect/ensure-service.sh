@@ -11,4 +11,14 @@ if "$systemctl" --user is-failed --quiet t3code.service; then
   "$systemctl" --user reset-failed t3code.service
 fi
 "$systemctl" --user enable --now t3code.service
+set +e
 node "${T3_CHECK_SERVICE:?}"
+status=$?
+set -e
+# check-service reserves status 42 for an unmanaged owner. Preserve that
+# process and let the rest of the Home Manager activation continue.
+if [ "$status" -eq 42 ]; then
+  echo "WARNING: T3 service ownership is unmanaged; continuing activation without taking it over." >&2
+elif [ "$status" -ne 0 ]; then
+  exit "$status"
+fi

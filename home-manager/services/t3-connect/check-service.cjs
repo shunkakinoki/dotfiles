@@ -3,6 +3,8 @@
 const fs = require("node:fs/promises");
 const path = require("node:path");
 
+const UNMANAGED_OWNER_EXIT_STATUS = 42;
+
 async function main() {
   const base = process.env.T3CODE_HOME || path.join(process.env.HOME, ".t3");
   const proc = process.env.T3_PROC_ROOT || "/proc";
@@ -33,9 +35,11 @@ async function main() {
               entry.length > "T3_SERVICE_LAUNCHER_CONTEXT=".length
           )
       ) {
-        throw new Error(
+        const error = new Error(
           "A server outside the managed launcher owns this T3 home; automatic updates are unavailable. Preserve its work and hand it over to t3code.service. No process was stopped."
         );
+        error.code = "T3_UNMANAGED_OWNER";
+        throw error;
       }
       console.log("T3 serving process belongs to the managed launcher.");
       return;
@@ -50,5 +54,8 @@ async function main() {
 
 main().catch((error) => {
   console.error(`T3 service readiness failed: ${error.message}`);
-  process.exitCode = 1;
+  process.exitCode =
+    error.code === "T3_UNMANAGED_OWNER"
+      ? UNMANAGED_OWNER_EXIT_STATUS
+      : 1;
 });
