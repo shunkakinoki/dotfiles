@@ -25,6 +25,10 @@ It 'has spec file for config/factory/activate-settings.sh'
 The path "spec/roborev_hooks_spec.sh" should be exist
 End
 
+It 'has spec file for config/shared/hooks/git-ai-checkpoint.sh'
+The path "spec/git_ai_checkpoint_spec.sh" should be exist
+End
+
 It 'has spec file for config/shared/hooks/roborev-agent.sh'
 The path "spec/roborev_hooks_spec.sh" should be exist
 End
@@ -650,6 +654,7 @@ config/shared/hooks/block-gh-settings.sh
 config/shared/hooks/block-git-push.sh
 config/shared/hooks/block-git-identity.sh
 config/shared/hooks/dcg-guard.sh
+config/shared/hooks/git-ai-checkpoint.sh
 config/shared/hooks/traces-agent-hook.sh
 config/shared/hooks/secret-guard.sh
 config/shared/hooks/security.sh

@@ -2,7 +2,7 @@
   "hooks": {
     "afterFileEdit": [
       {
-        "command": "! command -v $HOME/.cargo/bin/git-ai >/dev/null 2>&1 || $HOME/.cargo/bin/git-ai checkpoint cursor --hook-input stdin",
+        "command": "$HOME/dotfiles/config/shared/hooks/git-ai-checkpoint.sh cursor",
         "timeout": 15
       }
     ],
@@ -44,7 +44,7 @@
     ],
     "beforeSubmitPrompt": [
       {
-        "command": "! command -v $HOME/.cargo/bin/git-ai >/dev/null 2>&1 || $HOME/.cargo/bin/git-ai checkpoint cursor --hook-input stdin",
+        "command": "$HOME/dotfiles/config/shared/hooks/git-ai-checkpoint.sh cursor",
         "timeout": 15
       },
       {

@@ -173,7 +173,7 @@
         "hooks": [
           {
             "async": true,
-            "command": "! command -v git-ai >/dev/null 2>&1 || git-ai checkpoint claude --hook-input stdin",
+            "command": "$HOME/dotfiles/config/shared/hooks/git-ai-checkpoint.sh claude",
             "timeout": 15,
             "type": "command"
           }
@@ -284,7 +284,7 @@
           },
           {
             "async": true,
-            "command": "! command -v git-ai >/dev/null 2>&1 || git-ai checkpoint claude --hook-input stdin",
+            "command": "$HOME/dotfiles/config/shared/hooks/git-ai-checkpoint.sh claude",
             "timeout": 15,
             "type": "command"
           }

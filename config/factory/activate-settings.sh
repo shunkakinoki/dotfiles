@@ -42,6 +42,7 @@ if [ -f "$SETTINGS" ]; then
               or is_home_command($command; "dotfiles/config/shared/hooks/roborev-agent.sh droid")))
       or (($matcher == "^(Edit|Write|Create|ApplyPatch)$")
           and (is_home_command($command; "dotfiles/config/shared/hooks/secret-guard.sh")
+               or is_home_command($command; "dotfiles/config/shared/hooks/git-ai-checkpoint.sh droid")
                or is_home_command($command; ".cargo/bin/git-ai checkpoint droid --hook-input stdin")));
 
     def clean_hook_group:
@@ -85,7 +86,7 @@ if [ -f "$SETTINGS" ]; then
     | if ((.hooks.importedClaudeHooks? | type) == "array") then
         .hooks.importedClaudeHooks |= map(
           select(if type == "string"
-            then ((is_legacy_droid_command or contains("git-ai checkpoint droid")) | not)
+            then ((is_legacy_droid_command or contains("git-ai checkpoint droid") or contains("git-ai-checkpoint.sh droid")) | not)
             else true
             end)
         )
