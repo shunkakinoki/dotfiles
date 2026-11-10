@@ -169,16 +169,6 @@
       {
         "hooks": [
           {
-            "command": "! command -v bd >/dev/null 2>&1 || bd codex-hook SessionStart",
-            "statusMessage": "Loading Beads context",
-            "type": "command"
-          }
-        ],
-        "matcher": "startup|resume|clear"
-      },
-      {
-        "hooks": [
-          {
             "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-start --agent codex # traces hook agent",
             "timeout": 30,
             "type": "command"
@@ -227,15 +217,6 @@
             "async": true,
             "command": "! command -v jq >/dev/null 2>&1 || jq -c '{timestamp: (now | todate), prompt: .prompt[0:500]}' >> ~/.codex/prompt-history.jsonl",
             "timeout": 3,
-            "type": "command"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "command": "! command -v bd >/dev/null 2>&1 || bd codex-hook UserPromptSubmit",
-            "statusMessage": "Refreshing Beads context",
             "type": "command"
           }
         ]

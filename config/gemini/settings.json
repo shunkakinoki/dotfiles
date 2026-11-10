@@ -16,17 +16,6 @@
         "command": "! command -v graphify >/dev/null 2>&1 || graphify hook-guard gemini",
         "matcher": "read_file|list_directory"
       }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "command": "! command -v bd >/dev/null 2>&1 || bd prime --hook-json",
-            "type": "command"
-          }
-        ],
-        "matcher": ""
-      }
     ]
   },
   "mcpServers": {
