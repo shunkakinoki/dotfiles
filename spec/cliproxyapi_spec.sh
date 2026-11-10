@@ -487,7 +487,7 @@ When run bash -c '
 The output should equal '*fable*,*opus*,*sonnet*
 *fable*,*opus*,*sonnet*
 *haiku*
-[{"name":"claude-haiku-4-5-20251001","alias":"claude-haiku"}]'
+[{"name":"claude-haiku-5-5","alias":"claude-haiku"}]'
 The status should be success
 End
 End
@@ -569,9 +569,9 @@ The output should not include '@preset/glm-4-7'
 The status should be success
 End
 
-It 'routes Claude Haiku through OpenRouter under the canonical alias'
+It 'routes Claude Haiku 5.5 through OpenRouter under the canonical alias'
 When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
-The output should include 'name: "anthropic/claude-haiku-4.5"'
+The output should include 'name: "anthropic/claude-haiku-5.5"'
 The output should include 'alias: "claude-haiku"'
 The status should be success
 End
@@ -627,6 +627,35 @@ End
 It 'preserves prompt cache keys for OpenRouter, Aliyun, and OpenCode'
 When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'; sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' '$PWD/config/cliproxyapi/config.template.yaml'; sed -n '/name: \"opencode\"/,/name: \"openai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'support-prompt-cache-key: true'
+The status should be success
+End
+
+It 'forces OpenRouter Claude and OpenAI provider-only restrictions'
+When run bash -c "sed -n '/^payload:/,/^# Optional payload configuration/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'override-raw:'
+The output should include 'name: "@preset/anthropic/claude-haiku-5.5"'
+The output should include 'name: "anthropic/claude-haiku-5.5"'
+The output should include 'name: "@preset/gpt-6-luna"'
+The output should include 'name: "openai/gpt-6-luna"'
+The output should include 'provider.only'
+The output should include '["anthropic"]'
+The output should include '["openai"]'
+The output should include 'protocol: "openai"'
+The output should not include 'name: "gpt-6-luna"'
+The status should be success
+End
+
+It 'keeps provider-only restrictions scoped in both maintained templates'
+When run bash -c "for file in config/cliproxyapi/config.tpl.yaml config/cliproxyapi/config.template.yaml; do
+  grep -Fq 'provider.only' \"\$file\" || exit 1
+  grep -Fq '[\"anthropic\"]' \"\$file\" || exit 1
+  grep -Fq '[\"openai\"]' \"\$file\" || exit 1
+  grep -Fq 'protocol: \"openai\"' \"\$file\" || exit 1
+done
+grep -Fq 'name: \"__CLAUDE_HAIKU_OPENROUTER__\"' config/cliproxyapi/config.tpl.yaml
+grep -Fq 'name: \"anthropic/claude-haiku-5.5\"' config/cliproxyapi/config.template.yaml
+echo ok"
+The output should include 'ok'
 The status should be success
 End
 

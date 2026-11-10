@@ -672,7 +672,7 @@ openai-compatibility:
     models:
       - name: "@preset/gpt-6-luna"
         alias: "gpt-6-luna"
-      - name: "@preset/anthropic/claude-haiku-5.5"
+      - name: "@preset/__CLAUDE_HAIKU_OPENROUTER__"
         alias: "claude-haiku-5-5"
   - name: "verboo"
     priority: 150
@@ -761,9 +761,9 @@ openai-compatibility:
         alias: "__GPT_LUNA__"
       - name: "google/gemma-4-31b-it"
         alias: "gemma-4-31b-it"
-      - name: "anthropic/claude-haiku-4.5"
+      - name: "__CLAUDE_HAIKU_OPENROUTER__"
         alias: "claude-haiku"
-      - name: "anthropic/claude-haiku-5.5"
+      - name: "__CLAUDE_HAIKU_OPENROUTER__"
         alias: "claude-haiku-5-5"
       - name: "openrouter/free"
         alias: "free"
@@ -901,7 +901,7 @@ openai-compatibility:
 #       alias: "sample-latest"
 oauth-model-alias:
   claude:
-    - name: "claude-haiku-4-5-20251001"
+    - name: "__CLAUDE_HAIKU__"
       alias: "claude-haiku"
 # Codex OAuth serves every current model, so only the names it cannot serve are
 # excluded. Exclusions match upstream IDs and have no negation, so a new
@@ -945,6 +945,24 @@ payload:
       params:
         "provider.max_price.prompt": 0
         "provider.max_price.completion": 0
+  # OpenRouter's provider preference must stay scoped to the OpenRouter
+  # upstream model IDs. The public GPT alias is also served directly by
+  # Surplus, so matching aliases here would affect a non-OpenRouter route.
+  override-raw:
+    - models:
+        - name: "@preset/__CLAUDE_HAIKU_OPENROUTER__"
+          protocol: "openai"
+        - name: "__CLAUDE_HAIKU_OPENROUTER__"
+          protocol: "openai"
+      params:
+        "provider.only": '["anthropic"]'
+    - models:
+        - name: "@preset/gpt-6-luna"
+          protocol: "openai"
+        - name: "__GPT_LUNA_OPENROUTER__"
+          protocol: "openai"
+      params:
+        "provider.only": '["openai"]'
   filter:
     - models: *priority-free-models
       params:

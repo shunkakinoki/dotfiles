@@ -97,6 +97,7 @@ done <<<"$free_rows"
 # alias stored in models.json.
 add_model_override "gpt-image" "openrouter" "openai/gpt-5.4-image-2"
 add_model_override "gpt-luna" "openrouter" "openai/gpt-6-luna"
+add_model_override "claude-haiku" "openrouter" "anthropic/claude-haiku-5.5"
 # Ollama and NVIDIA still use their unversioned upstream IDs.
 add_model_override "deepseek-flash" "unversioned" "deepseek-v4.1-flash"
 # The OpenRouter account has no deepseek preset; call the public model id.
