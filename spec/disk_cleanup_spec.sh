@@ -43,6 +43,26 @@ The output should include 'docker container prune --force --filter until=24h'
 The output should not include 'volume'
 End
 
+seed_retention_windows() {
+  mkdir -p "$TMPDIR/queue-head-idle"
+  python3 - "$HOME/.bun/install/cache/stale@1.0.0" "$TMPDIR/queue-head-idle" <<'PY'
+import os
+import sys
+import time
+
+for path, hours in zip(sys.argv[1:], [26, 2]):
+    stamp = time.time() - hours * 3600
+    os.utime(path, (stamp, stamp))
+PY
+  bash "$SCRIPT" >/dev/null
+  [ ! -e "$HOME/.bun/install/cache/stale@1.0.0" ] && [ ! -e "$TMPDIR/queue-head-idle" ]
+}
+
+It 'reclaims caches after one day and idle scratch trees after one hour'
+When call seed_retention_windows
+The status should be success
+End
+
 keep_in_use() {
   cat >"$MOCK_BIN/pgrep" <<'EOF'
 #!/usr/bin/env bash
@@ -65,7 +85,7 @@ seed_agent_data() {
   find "$HOME/.local/share" "$HOME/.codex" "$TMPDIR" -mindepth 1 | sort
 }
 
-It 'prunes stale agent data and keeps live data'
+It 'preserves agent history regardless of age and prunes stale scratch data'
 unset XDG_DATA_HOME
 When call seed_agent_data
 The status should be success
@@ -73,11 +93,11 @@ The output should include 'opencode-v2.db'
 The output should include 'opencode-pass-new.db'
 The output should include 'new.jsonl'
 The output should include "$HOME/.local/share/atuin"
-The output should not include 'opencode-stable'
-The output should not include 'opencode-pass-old'
-The output should not include 'old.jsonl'
-The output should not include 'sessions/2020'
-The output should not include 'atuin.bak'
+The output should include 'opencode-stable'
+The output should include 'opencode-pass-old'
+The output should include 'old.jsonl'
+The output should include 'sessions/2020'
+The output should include 'atuin.bak'
 The output should not include 'stale'
 End
 
@@ -112,7 +132,7 @@ seed_worktrees() {
   local repo="$CLEANUP_ROOT/repo" trees="$HOME/$1"
   git init -q --bare "$CLEANUP_ROOT/origin.git"
   git init -q "$repo"
-  git -C "$repo" -c user.name=t -c user.email=t@t commit -q --allow-empty -m init
+  git -C "$repo" -c commit.gpgSign=false -c user.name=t -c user.email=t@t commit -q --allow-empty -m init
   git -C "$repo" remote add origin "$CLEANUP_ROOT/origin.git"
   git -C "$repo" push -q origin HEAD:main
   git -C "$repo" fetch -q origin
@@ -126,7 +146,7 @@ seed_worktrees() {
   mkdir -p "$trees/secret/app" "$trees/ignored/dist" "$trees/pushed/dist"
   printf '.env*\ndist/\n' >"$repo/.git/info/exclude"
   touch "$trees/secret/app/.env.local" "$trees/ignored/dist/out.js" "$trees/pushed/dist/out.js"
-  git -C "$trees/unpushed" -c user.name=t -c user.email=t@t commit -q --allow-empty -m local
+  git -C "$trees/unpushed" -c commit.gpgSign=false -c user.name=t -c user.email=t@t commit -q --allow-empty -m local
   find "$trees" -exec touch -h -t 202001010000 {} +
   bash "$SCRIPT" >/dev/null
   find "$trees" -mindepth 1 -maxdepth 1 -exec basename {} \; | LC_ALL=C sort | paste -sd " " -
@@ -151,5 +171,39 @@ It 'keeps an npx cache entry that a running process references'
 When call keep_in_use
 The status should be success
 The output should include 'stale'
+End
+
+macos_cwd() {
+  printf '#!/usr/bin/env bash\nprintf "Darwin\\n"\n' >"$MOCK_BIN/uname"
+  cat >"$MOCK_BIN/lsof" <<'EOF'
+#!/usr/bin/env bash
+printf 'p123\nn%s/.npm/_npx/stale/child\n' "$HOME"
+EOF
+  chmod +x "$MOCK_BIN/uname" "$MOCK_BIN/lsof"
+  bash "$SCRIPT" >/dev/null
+  ls "$HOME/.npm/_npx" "$HOME/.bun/install/cache"
+}
+
+It 'keeps a cache used as a process cwd on macOS while removing idle caches'
+When call macos_cwd
+The status should be success
+The output should include 'stale'
+The output should not include 'stale@1.0.0'
+End
+
+macos_unknown_cwd() {
+  printf '#!/usr/bin/env bash\nprintf "Darwin\\n"\n' >"$MOCK_BIN/uname"
+  printf '#!/usr/bin/env bash\nexit 1\n' >"$MOCK_BIN/lsof"
+  chmod +x "$MOCK_BIN/uname" "$MOCK_BIN/lsof"
+  bash "$SCRIPT" >/dev/null
+  result=$?
+  ls "$HOME/.npm/_npx" "$HOME/.bun/install/cache"
+  return "$result"
+}
+
+It 'keeps caches when the macOS process cwd inventory is unavailable'
+When call macos_unknown_cwd
+The status should equal 1
+The output should include 'stale@1.0.0'
 End
 End

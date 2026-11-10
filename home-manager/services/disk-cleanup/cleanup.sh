@@ -1,16 +1,35 @@
 #!/usr/bin/env bash
-# Reclaims regenerable caches, stale agent data, scratch trees, and Docker build state.
+# Reclaims regenerable caches, scratch trees, and Docker build state.
 # Volumes, images used in the last week, running containers, and worktrees with
 # unpushed or uncommitted work are never touched.
 set -uo pipefail
 
-age_days="${DISK_CLEANUP_AGE_DAYS:-2}"
-codex_days="${DISK_CLEANUP_CODEX_DAYS:-30}"
-data="${XDG_DATA_HOME:-$HOME/.local/share}"
+age_days="${DISK_CLEANUP_AGE_DAYS:-1}"
 var_tmp="${DISK_CLEANUP_VAR_TMP:-/var/tmp}"
 # Orphaned scratch checkouts reach 8G each and pile up several per day.
-scratch_minutes=$((${DISK_CLEANUP_SCRATCH_HOURS:-6} * 60))
+scratch_minutes=$((${DISK_CLEANUP_SCRATCH_HOURS:-1} * 60))
 status=0
+
+# macOS has no /proc; a process can use a tree without naming it in argv.
+# If its cwd inventory cannot be read, leave all entries in place.
+platform=$(uname -s)
+process_cwds=
+if [ "$platform" = Darwin ]; then
+  process_cwds=$(lsof -nP -a -d cwd -Fn 2>/dev/null) || exit 1
+fi
+
+has_live_cwd() {
+  local entry="$1" cwd
+  if [ "$platform" = Darwin ]; then
+    while IFS= read -r cwd; do
+      case "$cwd" in
+      "n$entry" | "n$entry/"*) return 0 ;;
+      esac
+    done <<<"$process_cwds"
+    return 1
+  fi
+  [ -n "$(find /proc -mindepth 2 -maxdepth 2 -name cwd \( -lname "$entry" -o -lname "$entry/*" \) -print -quit 2>/dev/null)" ]
+}
 
 prune_stale_entries() {
   local dir="$1" name="${2:-*}" minutes="${3:-$((age_days * 1440))}" mode="${4:-}" entry recent base common
@@ -22,7 +41,7 @@ prune_stale_entries() {
       continue
     fi
     # A build can run inside a tree without naming it on its command line.
-    if [ -n "$(find /proc -mindepth 2 -maxdepth 2 -name cwd \( -lname "$entry" -o -lname "$entry/*" \) -print -quit 2>/dev/null)" ]; then
+    if has_live_cwd "$entry"; then
       continue
     fi
     # A tool can keep writing inside a directory whose own mtime stays old.
@@ -80,21 +99,8 @@ for repo in "$HOME/.t3/worktrees"/*/; do
   prune_stale_entries "${repo%/}" '*' "$((age_days * 1440))" pushed
 done
 
-if [ -d "$data/opencode" ]; then
-  # opencode-stable.db was superseded by opencode-v2.db and is no longer
-  # written, so a fresh mtime means a host is still on the stable channel.
-  find "$data/opencode" -maxdepth 1 -type f -name 'opencode-pass-*' -mtime +7 -delete || status=1
-  find "$data/opencode" -maxdepth 1 -type f -name 'opencode-stable.db*' -mtime +14 -delete || status=1
-fi
-
-if [ -d "$HOME/.codex/sessions" ]; then
-  find "$HOME/.codex/sessions" -type f -mtime +"$codex_days" -delete || status=1
-  find "$HOME/.codex/sessions" -mindepth 1 -type d -empty -delete || status=1
-fi
-
-if [ -d "$data" ]; then
-  find "$data" -maxdepth 1 -name 'atuin.bak*' -mtime +7 -exec rm -rf -- {} + || status=1
-fi
+# Session databases, transcripts, and shell-history backups are durable data.
+# Their age never authorizes this cache cleaner to delete them.
 
 if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
   docker builder prune --force --filter until=24h || status=1
