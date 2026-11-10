@@ -3,13 +3,13 @@
   "hooks": {
     "AfterTool": [
       {
-        "command": "! command -v git-ai >/dev/null 2>&1 || git-ai checkpoint gemini --hook-input stdin",
+        "command": "$HOME/dotfiles/config/shared/hooks/git-ai-checkpoint.sh gemini",
         "matcher": "write_file|replace"
       }
     ],
     "BeforeTool": [
       {
-        "command": "! command -v git-ai >/dev/null 2>&1 || git-ai checkpoint gemini --hook-input stdin",
+        "command": "$HOME/dotfiles/config/shared/hooks/git-ai-checkpoint.sh gemini",
         "matcher": "write_file|replace"
       },
       {
