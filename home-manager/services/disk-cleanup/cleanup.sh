@@ -73,12 +73,11 @@ done
 prune_stale_entries "$var_tmp" 'worktree-cache' "$scratch_minutes"
 # Codex keeps a full checkout per task and never removes it.
 prune_stale_entries "$HOME/.codex/worktrees" '*' "$scratch_minutes" pushed
-# Herdr and T3 lanes leave one checkout per task under <root>/<repo>/<name>,
-# and paused lanes resume within days, so only pushed trees idle that long go.
-for root in "$HOME/.herdr/worktrees" "$HOME/.t3/worktrees"; do
-  for repo in "$root"/*/; do
-    prune_stale_entries "${repo%/}" '*' "$((age_days * 1440))" pushed
-  done
+# T3 leaves one checkout per task under <root>/<repo>/<name>, and paused tasks
+# resume within days, so only pushed trees idle that long go. Herdr worktrees
+# are left to the fleet's herdr-worktree-gc, which also checks open PRs.
+for repo in "$HOME/.t3/worktrees"/*/; do
+  prune_stale_entries "${repo%/}" '*' "$((age_days * 1440))" pushed
 done
 
 if [ -d "$data/opencode" ]; then

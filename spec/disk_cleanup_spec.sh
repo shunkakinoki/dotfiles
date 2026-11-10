@@ -140,8 +140,8 @@ The line 1 of output should equal 'secret unpushed untracked'
 The output should not match pattern '*worktrees/pushed *'
 End
 
-It 'prunes idle pushed herdr lane worktrees and keeps ones with local work'
-When call seed_worktrees .herdr/worktrees/repo
+It 'prunes idle pushed t3 worktrees and keeps ones with local work'
+When call seed_worktrees .t3/worktrees/repo
 The status should be success
 The line 1 of output should equal 'secret unpushed untracked'
 The output should not match pattern '*worktrees/repo/pushed *'
