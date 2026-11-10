@@ -75,6 +75,13 @@
     });
   })
   (_: prev: {
+    # gh-stack 0.3.0's cmd tests spawn git per rebase case and exceed Go's 600s
+    # test timeout on loaded hosts, failing every NixOS build that includes it.
+    gh-stack = prev.gh-stack.overrideAttrs (_: {
+      doCheck = false;
+    });
+  })
+  (_: prev: {
     # Provide non-deprecated alias so upstream modules using pkgs.system don't emit warnings.
     inherit (prev.stdenv.hostPlatform) system;
   })
