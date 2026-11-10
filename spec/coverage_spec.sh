@@ -440,6 +440,10 @@ It 'has spec file for config/git-ai/activate.sh'
 The path "spec/activate_config_spec.sh" should be exist
 End
 
+It 'has spec file for config/git-ai/maintain.sh'
+The path "spec/git_ai_maintain_spec.sh" should be exist
+End
+
 It 'has spec file for config/grok/activate.sh'
 The path "spec/activate_config_spec.sh" should be exist
 End
@@ -666,6 +670,7 @@ config/cursor/hooks/notify.sh
 config/cursor/hooks/pushover.sh
 config/gemini/activate.sh
 config/git-ai/activate.sh
+config/git-ai/maintain.sh
 config/grok/activate.sh
 config/handy/hydrate.sh
 config/hermes/hydrate.sh

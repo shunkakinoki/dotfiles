@@ -17,6 +17,12 @@ GIT_AI="$(command -v git-ai 2>/dev/null || true)"
 TIMEOUT="$(command -v timeout 2>/dev/null || command -v gtimeout 2>/dev/null || true)"
 [ -n "$TIMEOUT" ] || exit 0
 
+# A checkpoint otherwise spawns `git-ai flush-logs` without waiting on it. That
+# child outlives every timeout here and retries failed uploads for hours while
+# holding the flush lock. git-ai skips the spawn when it believes it is already
+# the flush worker, and the scheduled maintenance job flushes with a bound.
+export GIT_AI_FLUSH_LOGS_WORKER=1
+
 "$TIMEOUT" -k 2 "$LIMIT" "$GIT_AI" checkpoint "$PRESET" --hook-input stdin
 STATUS=$?
 case "$STATUS" in
