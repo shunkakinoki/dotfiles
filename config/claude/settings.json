@@ -354,6 +354,7 @@
         "hooks": [
           {
             "command": "! command -v bd >/dev/null 2>&1 || bd prime --hook-json",
+            "timeout": 20,
             "type": "command"
           }
         ],
