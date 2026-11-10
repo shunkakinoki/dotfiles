@@ -4,7 +4,7 @@
   pkgs,
   ...
 }:
-lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && (inputs.host.isKyber || inputs.host.isKamino)) {
+lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && (inputs.host.isKyber || inputs.host.isKamino || inputs.host.isMatic)) {
   systemd.user.services.disk-cleanup = {
     Unit = {
       Description = "Reclaim stale caches, agent data, and Docker build state";
