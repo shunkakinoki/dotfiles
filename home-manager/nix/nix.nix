@@ -31,8 +31,10 @@
     };
     gc = {
       automatic = !pkgs.stdenv.hostPlatform.isDarwin;
-      dates = "weekly";
-      options = "--delete-older-than 30d";
+      # Hosts activate several generations a day, and 30-day retention pinned
+      # enough closures to fill fleet disks.
+      dates = "daily";
+      options = "--delete-older-than 7d";
     };
   };
 }

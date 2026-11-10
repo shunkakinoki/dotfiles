@@ -69,14 +69,6 @@ home-manager.lib.homeManagerConfiguration {
         # falls back to the user D-Bus.
         systemd.user.systemctlPath = "/usr/bin/systemctl";
 
-        # The updater activates several generations a day; 30-day retention
-        # pinned enough closures to push root below kubelet's 50Gi nodefs
-        # reserve and evict the cloudflared tunnel.
-        nix.gc = {
-          dates = lib.mkForce "daily";
-          options = lib.mkForce "--delete-older-than 7d";
-        };
-
         # Pause trace scans and uploads while storage contention is unresolved.
         services.traces-agent-uploads.enable = false;
 

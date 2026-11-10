@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Reclaims regenerable caches, stale agent data, scratch trees, and Docker build state.
-# Volumes, tagged images, running containers, and worktrees with unpushed or
-# uncommitted work are never touched.
+# Volumes, images used in the last week, running containers, and worktrees with
+# unpushed or uncommitted work are never touched.
 set -uo pipefail
 
 age_days="${DISK_CLEANUP_AGE_DAYS:-2}"
@@ -65,8 +65,20 @@ prune_stale_entries "${TMPDIR:-/tmp}/opencode"
 prune_stale_entries "${TMPDIR:-/tmp}/stack-merge-tooling" '*' "$scratch_minutes" markers
 prune_stale_entries "$var_tmp" 'ci-ship-reference-*' "$scratch_minutes"
 prune_stale_entries "$var_tmp" 'merged-tree-*' "$scratch_minutes"
+# PR follow-through and queue verification leave a full checkout per run, and
+# the worktree cache is rebuilt on demand.
+for pattern in 'pr-followthrough-*' 'queue-head-*' 'queue-base*' 'worktree-cache'; do
+  prune_stale_entries "${TMPDIR:-/tmp}" "$pattern" "$scratch_minutes"
+done
+prune_stale_entries "$var_tmp" 'worktree-cache' "$scratch_minutes"
 # Codex keeps a full checkout per task and never removes it.
 prune_stale_entries "$HOME/.codex/worktrees" '*' "$scratch_minutes" pushed
+# T3 leaves one checkout per task under <root>/<repo>/<name>, and paused tasks
+# resume within days, so only pushed trees idle that long go. Herdr worktrees
+# are left to the fleet's herdr-worktree-gc, which also checks open PRs.
+for repo in "$HOME/.t3/worktrees"/*/; do
+  prune_stale_entries "${repo%/}" '*' "$((age_days * 1440))" pushed
+done
 
 if [ -d "$data/opencode" ]; then
   # opencode-stable.db was superseded by opencode-v2.db and is no longer
@@ -86,7 +98,7 @@ fi
 
 if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
   docker builder prune --force --filter until=24h || status=1
-  docker image prune --force || status=1
+  docker image prune --all --force --filter until=168h || status=1
   docker container prune --force --filter until=24h || status=1
 fi
 

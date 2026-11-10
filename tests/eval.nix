@@ -187,6 +187,8 @@ let
         ];
       assert lib.hasInfix "tailscale set" cfg.system.activationScripts.tailscalePreferences.text;
       assert cfg.systemd.slices.user.sliceConfig.MemoryMax == "80%";
+      assert cfg.nix.gc.automatic;
+      assert cfg.nix.gc.options == "--delete-older-than 7d";
       assert cfg.virtualisation.docker.daemon.settings.ip == "127.0.0.1";
       assert
         cfg.virtualisation.docker.daemon.settings.default-network-opts.bridge."com.docker.network.bridge.host_binding_ipv4"

@@ -38,10 +38,9 @@ The status should be success
 The output should include 'fresh'
 The output should not include 'stale'
 The output should include 'docker builder prune --force --filter until=24h'
-The output should include 'docker image prune --force'
+The output should include 'docker image prune --all --force --filter until=168h'
 The output should include 'docker container prune --force --filter until=24h'
 The output should not include 'volume'
-The output should not include 'prune --all'
 End
 
 keep_in_use() {
@@ -109,8 +108,8 @@ The output should not include 'ci-ship-reference-old'
 The output should not include 'merged-tree-old'
 End
 
-seed_codex_worktrees() {
-  local repo="$CLEANUP_ROOT/repo" trees="$HOME/.codex/worktrees"
+seed_worktrees() {
+  local repo="$CLEANUP_ROOT/repo" trees="$HOME/$1"
   git init -q --bare "$CLEANUP_ROOT/origin.git"
   git init -q "$repo"
   git -C "$repo" -c user.name=t -c user.email=t@t commit -q --allow-empty -m init
@@ -135,10 +134,17 @@ seed_codex_worktrees() {
 }
 
 It 'prunes idle pushed codex worktrees and keeps ones with local work'
-When call seed_codex_worktrees
+When call seed_worktrees .codex/worktrees
 The status should be success
 The line 1 of output should equal 'secret unpushed untracked'
 The output should not match pattern '*worktrees/pushed *'
+End
+
+It 'prunes idle pushed t3 worktrees and keeps ones with local work'
+When call seed_worktrees .t3/worktrees/repo
+The status should be success
+The line 1 of output should equal 'secret unpushed untracked'
+The output should not match pattern '*worktrees/repo/pushed *'
 End
 
 It 'keeps an npx cache entry that a running process references'
