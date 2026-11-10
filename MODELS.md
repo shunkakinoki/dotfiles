@@ -21,7 +21,7 @@ Never hand-edit a generated config. Edit the `.tpl.*` file, regenerate, and comm
 | --- | --- |
 | `__CLAUDE_OPUS__` | `claude-opus-5-5` |
 | `__CLAUDE_SONNET__` | `claude-sonnet-5-5` |
-| `__CLAUDE_HAIKU__` | `claude-haiku-4-5-20251001` |
+| `__CLAUDE_HAIKU__` | `claude-haiku-5-5` |
 | `__GPT__` | `gpt-6.1-sol` |
 | `__GPT_ASTRA__` | `gpt-6-astra` |
 | `__GPT_SOL__` | `gpt-6.1-sol` |
@@ -54,6 +54,7 @@ because the upstream ID differs from the canonical one:
 | --- | --- | --- |
 | `__GPT_IMAGE_OPENROUTER__` | `openai/gpt-5.4-image-2` | OpenRouter, aliased back to `gpt-image-2` |
 | `__GPT_LUNA_OPENROUTER__` | `openai/gpt-6-luna` | OpenRouter, aliased back to `gpt-6-luna` |
+| `__CLAUDE_HAIKU_OPENROUTER__` | `anthropic/claude-haiku-5.5` | OpenRouter, aliased back to `claude-haiku` / `claude-haiku-5-5` |
 | `__DEEPSEEK_FLASH_OPENROUTER__` | `deepseek/deepseek-v4.1-flash` | OpenRouter, aliased back to `deepseek-v4.1-flash-1017` |
 | `__DEEPSEEK_FLASH_UNVERSIONED__` | `deepseek-v4.1-flash` | Ollama and NVIDIA upstream IDs |
 | `__DEEPSEEK_FLASH_0731__` | `deepseek-v4-flash-0731` | Aliyun, aliased back to `deepseek-v4.1-flash-1017` |

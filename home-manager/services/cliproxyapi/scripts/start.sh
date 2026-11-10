@@ -161,7 +161,7 @@ model_family_exclusion() {
 
 model_family_aliases() {
   case "${1,,}" in
-  haiku) printf '%s\n' '{"name":"claude-haiku-4-5-20251001","alias":"claude-haiku"}' ;;
+  haiku) printf '%s\n' '{"name":"claude-haiku-5-5","alias":"claude-haiku"}' ;;
   *) : ;;
   esac
 }
