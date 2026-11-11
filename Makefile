@@ -1364,10 +1364,10 @@ t3-service: t3-linger ## Install/repair the T3 background server so the client n
 		echo "   no nix node found; leaving the service on the default node"; \
 	fi; \
 	STATE="$${T3CODE_HOME:-$$HOME/.t3}/runtime/service-state.json"; \
-	if [ -f "$$STATE" ] && grep -q '"protocol": 3' "$$STATE"; then \
-		echo "✅ T3 launcher already supports protocol 3; leaving the service to the desktop client"; \
+	if [ -f "$$STATE" ] && grep -qE '"protocol": ([4-9]|[1-9][0-9]+)[^0-9]' "$$STATE"; then \
+		echo "✅ T3 launcher already supports protocol 4+; leaving the service to the desktop client"; \
 	else \
-		echo "🔧 Bootstrapping a protocol-3 T3 launcher..."; \
+		echo "🔧 Bootstrapping a protocol-4 T3 launcher..."; \
 		npx --yes t3@nightly service install \
 			|| npx --yes t3@nightly service update; \
 	fi; \
