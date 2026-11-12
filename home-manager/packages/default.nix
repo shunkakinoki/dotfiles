@@ -112,7 +112,7 @@ with pkgs;
   ncdu
   nmap
   oha
-  opentelemetry-collector-contrib
+  # opentelemetry-collector-contrib # nixpkgs build fails under Go 1.27 (cockroachdb/swiss); re-enable once fixed upstream
   pingu
   pnpm
   postgresql_18
