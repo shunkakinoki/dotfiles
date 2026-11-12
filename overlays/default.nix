@@ -77,18 +77,20 @@
   (
     _: prev:
     let
-      # zstd-sys in these crates' lockfiles probes libzstd through pkg-config,
-      # which the nixpkgs derivations do not provide, so the build panics.
-      withSystemZstd =
-        pkg:
+      # These crates' -sys dependencies probe system libraries through
+      # pkg-config, which the nixpkgs derivations do not provide, so the build
+      # script panics.
+      withPkgConfigLibs =
+        libs: pkg:
         pkg.overrideAttrs (old: {
           nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ prev.pkg-config ];
-          buildInputs = (old.buildInputs or [ ]) ++ [ prev.zstd ];
+          buildInputs = (old.buildInputs or [ ]) ++ libs;
         });
     in
     {
-      fnm = withSystemZstd prev.fnm;
-      below = withSystemZstd prev.below;
+      fnm = withPkgConfigLibs [ prev.zstd ] prev.fnm;
+      below = withPkgConfigLibs [ prev.zstd ] prev.below;
+      aichat = withPkgConfigLibs [ prev.oniguruma ] prev.aichat;
     }
   )
   (_: prev: {
