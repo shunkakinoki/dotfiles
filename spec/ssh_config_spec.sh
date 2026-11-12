@@ -48,6 +48,14 @@ When run cat "$SSH_CONFIG_NIX"
 The output should include 'IdentityFile = [ "~/.ssh/id_rsa" ]'
 The output should include 'IdentitiesOnly = "yes"'
 End
+
+It 'multiplexes and compresses fleet sessions'
+When run bash -c "sed -n '/\"kyber\" = {/,/};/p' '$SSH_CONFIG_NIX'"
+The output should include 'Compression = "yes"'
+The output should include 'ControlMaster = "auto"'
+The output should include 'ControlPath = "~/.ssh/cm-%C"'
+The output should include 'ControlPersist = "10m"'
+End
 End
 
 Describe 'beskar host'

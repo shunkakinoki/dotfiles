@@ -98,6 +98,52 @@ The output should include '99-tailscale.conf'
 End
 End
 
+Describe 'named-hosts/kyber/activate-tcp-bbr.sh'
+SCRIPT="$PWD/named-hosts/kyber/activate-tcp-bbr.sh"
+
+It 'uses strict mode'
+When run bash -c "head -5 '$SCRIPT'"
+The output should include 'set -euo pipefail'
+End
+
+It 'switches congestion control to bbr with fq pacing'
+When run bash -c "grep -q '^ *run_root_cmd modprobe tcp_bbr' '$SCRIPT' && grep -q '^ *run_root_cmd sysctl -w net.ipv4.tcp_congestion_control=bbr' '$SCRIPT' && grep -q '^ *run_root_cmd sysctl -w net.core.default_qdisc=fq' '$SCRIPT'"
+The status should be success
+End
+
+It 'applies the qdisc independently of the congestion-control gate'
+When run bash -c "grep -q '^if .*/proc/sys/net/core/default_qdisc' '$SCRIPT'"
+The status should be success
+End
+
+It 'reconciles the module and sysctl persistence files on every run'
+When run bash -c "grep -q '^write_if_changed /etc/modules-load.d/tcp_bbr.conf' '$SCRIPT' && grep -q '^write_if_changed /etc/sysctl.d/99-tcp-bbr.conf' '$SCRIPT'"
+The status should be success
+End
+
+It 'rewrites a partial sysctl file and leaves a complete one untouched'
+When run bash -c "
+  dir=\$(mktemp -d)
+  sed -n '/^write_if_changed() {/,/^}/p' '$SCRIPT' > \"\$dir/fn.sh\"
+  run_root_cmd() { \"\$@\"; }
+  source \"\$dir/fn.sh\"
+  want=\$(printf '%s\n' 'net.core.default_qdisc=fq' 'net.ipv4.tcp_congestion_control=bbr')
+  printf 'net.core.default_qdisc=fq\n' > \"\$dir/c.conf\"
+  write_if_changed \"\$dir/c.conf\" \"\$want\"
+  test \"\$(cat \"\$dir/c.conf\")\" = \"\$want\" || exit 1
+  touch -d '2000-01-01' \"\$dir/c.conf\"
+  write_if_changed \"\$dir/c.conf\" \"\$want\"
+  test \"\$(stat -c %Y \"\$dir/c.conf\")\" = \"\$(date -d 2000-01-01 +%s)\"
+"
+The status should be success
+End
+
+It 'is activated by the Kyber Home Manager configuration'
+When run grep -F 'activate-tcp-bbr.sh' "$PWD/named-hosts/kyber/default.nix"
+The output should include 'activate-tcp-bbr.sh'
+End
+End
+
 Describe 'activation wrapper quoting'
 It 'quotes shared helper arguments that include the home directory'
 When run cat "$PWD/named-hosts/kyber/default.nix"
