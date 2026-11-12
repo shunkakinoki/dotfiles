@@ -8,7 +8,7 @@
         "@0xsequence/codegenie": "^0.7.0",
         "@ampcode/cli": "^0.0.1793782541-gd81f0f",
         "@anthropic-ai/claude-code": "2.1.318",
-        "@augmentcode/auggie": "^0.36.0",
+        "@augmentcode/auggie": "^0.37.0",
         "@biomejs/biome": "^2.6.4",
         "@ccusage/mcp": "^18.0.11",
         "@deepseek-ai/dsh": "^0.2.1-rc.5",
@@ -16,11 +16,11 @@
         "@fission-ai/openspec": "^1.16.0",
         "@getgrit/cli": "^0.1.0-alpha.1743007075",
         "@github/copilot": "^1.0.105",
-        "@google/gemini-cli": "^0.66.0",
+        "@google/gemini-cli": "^0.67.0",
         "@google/jules": "^0.1.42",
         "@googleworkspace/cli": "^0.22.5",
         "@higgsfield/cli": "^1.2.2",
-        "@nanocollective/nanocoder": "^1.31.0",
+        "@nanocollective/nanocoder": "^1.32.0",
         "@oh-my-pi/pi-coding-agent": "^18.16.0",
         "@oh-my-pi/pi-natives": "^18.16.0",
         "@oh-my-pi/swarm-extension": "^13.17.0",
@@ -28,7 +28,7 @@
         "@opencode/cli": "^2.2.5",
         "@pkieltyka/gitgenie": "^0.1.2",
         "@posthog/cli": "^0.19.0",
-        "@pulumi/pulumi": "^3.273.0",
+        "@pulumi/pulumi": "^3.274.0",
         "@railway/cli": "^5.71.0",
         "@redwoodjs/agent-ci": "^0.18.1",
         "@schpet/linear-cli": "^3.1.0",
@@ -267,7 +267,7 @@
 
     "@arr/every": ["@arr/every@1.0.1", "", {}, "sha512-UQFQ6SgyJ6LX42W8rHCs8KVc0JS0tzVL9ct4XYedJukskYVWTo49tNiMEK9C2HTyarbNiT/RVIRSY82vH+6sTg=="],
 
-    "@augmentcode/auggie": ["@augmentcode/auggie@0.36.0", "", { "optionalDependencies": { "node-pty": "1.2.0-beta.14" }, "bin": { "auggie": "augment.mjs" } }, "sha512-jb4kq97pGzG0i5UyISc//LjTVlFzIywwD+VfPemiSIl58KjLfxry3KDgxWYnr1vmV8yUkySVzjLnj4ewUEbT/Q=="],
+    "@augmentcode/auggie": ["@augmentcode/auggie@0.37.1", "", { "optionalDependencies": { "node-pty": "1.2.0-beta.14" }, "bin": { "auggie": "augment.mjs" } }, "sha512-TFnkuFUFR5U2xWXbsol8sbO9w0im9nyH+cI6AzJmSAjvkcAiTeLxAf4SX8TcwWq4S6HdhmgOdYfAHKXeF/DjnQ=="],
 
     "@aws-sdk/client-bedrock-runtime": ["@aws-sdk/client-bedrock-runtime@3.1127.0", "", { "dependencies": { "@aws-sdk/core": "^3.977.9", "@aws-sdk/credential-provider-node": "^3.972.82", "@aws-sdk/eventstream-handler-node": "^3.972.34", "@aws-sdk/middleware-eventstream": "^3.972.29", "@aws-sdk/middleware-websocket": "^3.972.52", "@aws-sdk/token-providers": "3.1127.0", "@aws-sdk/types": "^3.974.5", "@smithy/core": "^3.33.3", "@smithy/fetch-http-handler": "^5.7.2", "@smithy/node-http-handler": "^4.11.3", "@smithy/types": "^4.17.2", "tslib": "^2.6.2" } }, "sha512-IDl/lrPb90aH+pZFHGNDmgH9nAUQj5PlZH1sJ3w7RikctyjHSnY3oNjZhrLoaBoQn/rNK0zsP6OHEqEhj2tdLA=="],
 
@@ -1197,7 +1197,7 @@
 
     "@github/keytar": ["@github/keytar@7.10.6", "", { "dependencies": { "node-addon-api": "^8.3.0" }, "hasInstallScript": true }, "sha512-mRW6cUsSG+nj4jp5gp8e91zPySaT73r+2JM6VyMZfrEgksjPmjSMr+tPGNOK3HUHV+GUU9B1LAiiYy/wmAnIxA=="],
 
-    "@google/gemini-cli": ["@google/gemini-cli@0.66.0", "", { "optionalDependencies": { "@github/keytar": "7.10.6", "@lydell/node-pty": "1.1.0", "@lydell/node-pty-darwin-arm64": "1.1.0", "@lydell/node-pty-darwin-x64": "1.1.0", "@lydell/node-pty-linux-x64": "1.1.0", "@lydell/node-pty-win32-arm64": "1.1.0", "@lydell/node-pty-win32-x64": "1.1.0", "node-pty": "1.0.0" }, "bin": { "gemini": "bundle/gemini.js" } }, "sha512-EAtsJ9/JxiphHlduzvhoCkb7I0LdOxyugB5NpUtVqKVGZIWjV3JmurvK89ZrvMbV3kwk5SdWINz1M5ZN/2K/Lw=="],
+    "@google/gemini-cli": ["@google/gemini-cli@0.67.0", "", { "optionalDependencies": { "@github/keytar": "7.10.6", "@lydell/node-pty": "1.1.0", "@lydell/node-pty-darwin-arm64": "1.1.0", "@lydell/node-pty-darwin-x64": "1.1.0", "@lydell/node-pty-linux-x64": "1.1.0", "@lydell/node-pty-win32-arm64": "1.1.0", "@lydell/node-pty-win32-x64": "1.1.0", "node-pty": "1.0.0" }, "bin": { "gemini": "bundle/gemini.js" } }, "sha512-lDJfCcYem6/6QZdwZFiGfOu1ZxJJ+j4wsr4HlmcYBfqUHTDXLKDv1MPUXYL2Ok1ygdfMve0F5KrW/ORNZRSHIg=="],
 
     "@google/genai": ["@google/genai@2.27.0", "", { "dependencies": { "google-auth-library": "^10.3.0", "p-retry": "^4.6.2", "protobufjs": "^7.5.4", "ws": "^8.18.0" }, "peerDependencies": { "@modelcontextprotocol/sdk": "^1.25.2" }, "optionalPeers": ["@modelcontextprotocol/sdk"], "hasInstallScript": true }, "sha512-W6F9Y9d4h7cVQNa85IPCOVVP9PiUzve/ZQPBvQnBmnBJcLvxstEw+R2X/RyCH0SOe0HVDQzeKDpDUf6ZRtbmdQ=="],
 
