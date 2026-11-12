@@ -98,6 +98,30 @@ The output should include '99-tailscale.conf'
 End
 End
 
+Describe 'named-hosts/kyber/activate-tcp-bbr.sh'
+SCRIPT="$PWD/named-hosts/kyber/activate-tcp-bbr.sh"
+
+It 'uses strict mode'
+When run bash -c "head -5 '$SCRIPT'"
+The output should include 'set -euo pipefail'
+End
+
+It 'switches congestion control to bbr with fq pacing'
+When run bash -c "grep -q 'modprobe tcp_bbr' '$SCRIPT' && grep -q 'net.ipv4.tcp_congestion_control=bbr' '$SCRIPT' && grep -q 'net.core.default_qdisc=fq' '$SCRIPT'"
+The status should be success
+End
+
+It 'persists the module and sysctl across reboots'
+When run bash -c "grep -q '/etc/modules-load.d/tcp_bbr.conf' '$SCRIPT' && grep -q '/etc/sysctl.d/99-tcp-bbr.conf' '$SCRIPT'"
+The status should be success
+End
+
+It 'is activated by the Kyber Home Manager configuration'
+When run grep -F 'activate-tcp-bbr.sh' "$PWD/named-hosts/kyber/default.nix"
+The output should include 'activate-tcp-bbr.sh'
+End
+End
+
 Describe 'activation wrapper quoting'
 It 'quotes shared helper arguments that include the home directory'
 When run cat "$PWD/named-hosts/kyber/default.nix"

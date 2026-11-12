@@ -76,6 +76,12 @@ in
         User = "ubuntu";
         IdentityFile = [ "~/.ssh/id_rsa" ];
         IdentitiesOnly = "yes";
+        # Fleet controllers open many short sessions over a high-latency
+        # tailnet path; reuse one connection and compress the JSON replies.
+        Compression = "yes";
+        ControlMaster = "auto";
+        ControlPath = "~/.ssh/cm-%C";
+        ControlPersist = "10m";
       };
       "matic" = {
         HostName = "matic.tail950b36.ts.net";

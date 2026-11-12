@@ -184,6 +184,10 @@ home-manager.lib.homeManagerConfiguration {
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-ip-forwarding.sh}"
         '';
 
+        home.activation.enableTcpBbr = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${./activate-tcp-bbr.sh}"
+        '';
+
         # Keep Home Manager services responsive when a disconnected SSH/Herdr
         # session leaves CPU- or I/O-heavy validation processes behind.
         home.activation.prioritizeManagedUserServices = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
