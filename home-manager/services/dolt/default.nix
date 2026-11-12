@@ -45,8 +45,34 @@ let
   };
   linearSyncEnabled = isKyber;
   doltMinVersion = "2.6.0";
+  # sql-server ignores every CLI flag once --config is given, so the listener,
+  # data dir, and log level live here beside the replication settings.
+  doltServerConfig = pkgs.writeText "dolt-sql-server.yaml" (
+    builtins.toJSON {
+      log_level = "info";
+      data_dir = beadsDir;
+      # Kyber's WAN firewall drops all new public-interface ingress. Binding all
+      # addresses makes SQL (3307) and remotesapi (50051) reachable on
+      # tailscale0 while retaining the public-ingress deny boundary.
+      listener = {
+        host = "0.0.0.0";
+        port = 3307;
+      };
+      cluster = {
+        standby_remotes = [
+          {
+            name = "standby";
+            remote_url_template = "http://beads-dolt.tail950b36.ts.net:50051/{database}";
+          }
+        ];
+        bootstrap_role = "primary";
+        bootstrap_epoch = 1;
+        remotesapi.port = 50051;
+      };
+    }
+  );
   startScript = pkgs.replaceVars ./start.sh {
-    inherit beadsDir;
+    inherit beadsDir doltServerConfig;
     inherit (pkgs) dolt;
   };
   systemServiceUnit = pkgs.replaceVars ./dolt.service {
