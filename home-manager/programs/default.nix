@@ -44,7 +44,7 @@ let
   rust = import ./rust;
   ssh = import ./ssh;
   starship = import ./starship;
-  swift = import ./swift;
+  # swift = import ./swift;
   terraform = import ./terraform;
   tms = import ./tms;
   tmux = import ./tmux;
@@ -100,7 +100,7 @@ in
   rust
   ssh
   starship
-  swift
+  # swift # cache.nixos.org fails to serve swiftc-6.4.0; re-enable once it downloads
   terraform
   tms
   tmux
