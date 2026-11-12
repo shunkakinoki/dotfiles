@@ -91,7 +91,7 @@ let
       assert lib.hasPrefix "/nix/store/" (
         builtins.head beads.launchd.agents.ollama.config.ProgramArguments
       );
-      assert beads.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "kyber.tail950b36.ts.net";
+      assert beads.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "beads-dolt.tail950b36.ts.net";
       assert beads.home.sessionVariables.BEADS_NODE_ID == "kyber";
       assert beads.home.sessionVariables.BD_EVENTS_JOURNAL == "1";
       assert !(beads.home.sessionVariables ? BEADS_DOLT_DATA_DIR);
@@ -201,7 +201,7 @@ let
       assert cfg.services.openssh.settings.PermitRootLogin == "no";
       assert cfg.users.users.shunkakinoki.openssh.authorizedKeys.keys == fleetPeerKeysOf "matic";
       assert sshAuthorizedKeys.matic == fleetPeerKeysOf "matic";
-      assert beads.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "kyber.tail950b36.ts.net";
+      assert beads.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "beads-dolt.tail950b36.ts.net";
       assert beads.home.sessionVariables.BEADS_NODE_ID == "kyber";
       assert beads.home.sessionVariables.BD_EVENTS_JOURNAL == "1";
       assert !(beads.systemd.user.services ? dolt);
@@ -230,7 +230,7 @@ let
       assert lib.elem "HERDR_ENV=1" herdr.Service.Environment;
       assert lib.elem "BEADS_DOLT_AUTO_START=0" herdr.Service.Environment;
       assert lib.elem "BEADS_DOLT_SERVER_MODE=1" herdr.Service.Environment;
-      assert lib.elem "BEADS_DOLT_SERVER_HOST=kyber.tail950b36.ts.net" herdr.Service.Environment;
+      assert lib.elem "BEADS_DOLT_SERVER_HOST=beads-dolt.tail950b36.ts.net" herdr.Service.Environment;
       assert lib.elem "BEADS_NODE_ID=kyber" herdr.Service.Environment;
       assert lib.elem "BD_EVENTS_JOURNAL=1" herdr.Service.Environment;
       assert beads.home.sessionVariables.BEADS_AUTHORITY_ROUTE == "shell";
@@ -427,7 +427,7 @@ let
           cfg.systemd.user.services.herdr-server.Service.Environment;
         assert lib.elem "BEADS_DOLT_SERVER_MODE=1"
           cfg.systemd.user.services.herdr-server.Service.Environment;
-        assert lib.elem "BEADS_DOLT_SERVER_HOST=kyber.tail950b36.ts.net"
+        assert lib.elem "BEADS_DOLT_SERVER_HOST=beads-dolt.tail950b36.ts.net"
           cfg.systemd.user.services.herdr-server.Service.Environment;
         assert lib.elem "BEADS_NODE_ID=kyber" cfg.systemd.user.services.herdr-server.Service.Environment;
         assert lib.elem "BD_EVENTS_JOURNAL=1" cfg.systemd.user.services.herdr-server.Service.Environment;
@@ -439,7 +439,7 @@ let
         assert !(cfg.systemd.user.services ? dolt-backup-main);
         assert !(cfg.systemd.user.services ? dolt-federation-hub);
         assert !(cfg.systemd.user.services ? dolt-federation-access);
-        assert cfg.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "kyber.tail950b36.ts.net";
+        assert cfg.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "beads-dolt.tail950b36.ts.net";
         assert cfg.home.sessionVariables.BD_EVENTS_JOURNAL == "1";
         assert cfg.home.sessionVariables.BEADS_NODE_ID == "kyber";
         assert lib.hasInfix sessionVarsSource (bashrcBefore "[[ $- == *i* ]] || return");
@@ -833,10 +833,10 @@ let
         assert !(cfg.systemd.user.services ? dolt-federation-hub);
         assert !(cfg.systemd.user.services ? dolt-federation-access);
         assert !(cfg.systemd.user.services ? dolt-backup-main);
-        assert cfg.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "kyber.tail950b36.ts.net";
+        assert cfg.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "beads-dolt.tail950b36.ts.net";
         assert cfg.home.sessionVariables.BEADS_NODE_ID == "kyber";
         assert cfg.home.sessionVariables.BD_EVENTS_JOURNAL == "1";
-        assert cfg.home.sessionVariables.BEADS_DOLT_DATA_DIR == "/home/ubuntu/.beads/shared-server/dolt";
+        assert !(cfg.home.sessionVariables ? BEADS_DOLT_DATA_DIR);
         assert lib.length tailscaleServeRoutes.kyber == 4;
         assert
           map (route: route.name) tailscaleServeRoutes.kyber == [

@@ -206,7 +206,7 @@ if [ -n "${JOURNAL_LOG:-}" ]; then
   printf 'journal=%s %s\n' "${BD_EVENTS_JOURNAL:-unset}" "$*" >>"$JOURNAL_LOG"
 fi
 if [ "${FAKE_VERIFY_AUTHORITY:-}" = 1 ]; then
-  test "${BEADS_DOLT_SERVER_HOST:-}" = kyber.tail950b36.ts.net || exit 98
+  test "${BEADS_DOLT_SERVER_HOST:-}" = beads-dolt.tail950b36.ts.net || exit 98
   test "${BEADS_DOLT_SERVER_PORT:-}" = 3307 || exit 98
   test "${BEADS_DOLT_SERVER_USER:-}" = beads || exit 98
   test "${DOLT_CLI_USER:-}" = beads || exit 98

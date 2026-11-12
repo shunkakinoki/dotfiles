@@ -109,10 +109,11 @@ machine was replaced: the verifier does not maintain a device-ID registry.
 
 Local service checks on each machine:
 
-Beads clients connect directly to Kyber SQL on port 3307. Herdr workers receive
-that policy with local auto-start disabled and `BEADS_NODE_ID=kyber`. Kamino
-hosts run no local Beads server or federation jobs. Provisioning never replaces
-preserved stores; reconcile unpublished data into Kyber before changing routing.
+Beads clients connect directly to the GKE authority
+(`beads-dolt.tail950b36.ts.net`) on SQL port 3307. Herdr workers receive that
+policy with local auto-start disabled and `BEADS_NODE_ID=kyber`. Kamino hosts run
+no local Beads server or federation jobs. Provisioning never replaces preserved
+stores; reconcile unpublished data into the authority before changing routing.
 
 Confirm the effective endpoint with `bd context --json` and authoritative reads
 with `bd --readonly ready --json`. The existing fleet read monitor owns scheduled
