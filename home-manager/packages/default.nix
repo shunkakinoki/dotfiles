@@ -26,7 +26,7 @@ with pkgs;
   act
   age
   aichat
-  angle-grinder
+  # angle-grinder # nixpkgs build fails: JEMALLOC_OVERRIDE points at a missing libjemalloc; re-enable once fixed upstream
   argocd
   ast-grep
   atk
