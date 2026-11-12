@@ -162,7 +162,7 @@ with pkgs;
 ]
 ++ lib.optionals stdenv.hostPlatform.isLinux [
   atop
-  below
+  # below # nixpkgs build fails: zstd-sys cannot find libzstd; re-enable once fixed upstream
   binutils
   blueman
   bubblewrap
