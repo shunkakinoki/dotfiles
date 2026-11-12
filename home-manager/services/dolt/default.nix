@@ -62,7 +62,7 @@ let
         standby_remotes = [
           {
             name = "standby";
-            remote_url_template = "http://beads-dolt.tail950b36.ts.net:50051/{database}";
+            remote_url_template = "http://beads.tail950b36.ts.net:50051/{database}";
           }
         ];
         bootstrap_role = "primary";
