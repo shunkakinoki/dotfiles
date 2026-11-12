@@ -28,16 +28,20 @@ run_root_cmd() {
   fi
 }
 
+if [ "$(cat /proc/sys/net/core/default_qdisc)" != "fq" ]; then
+  run_root_cmd sysctl -w net.core.default_qdisc=fq
+fi
 if [ "$(cat /proc/sys/net/ipv4/tcp_congestion_control)" != "bbr" ]; then
   echo "Enabling TCP BBR congestion control..."
   run_root_cmd modprobe tcp_bbr
-  run_root_cmd sysctl -w net.core.default_qdisc=fq
   run_root_cmd sysctl -w net.ipv4.tcp_congestion_control=bbr
 fi
-if [ ! -f /etc/modules-load.d/tcp_bbr.conf ]; then
-  echo 'tcp_bbr' | run_root_cmd tee /etc/modules-load.d/tcp_bbr.conf
-fi
-if [ ! -f /etc/sysctl.d/99-tcp-bbr.conf ]; then
-  echo 'net.core.default_qdisc=fq' | run_root_cmd tee /etc/sysctl.d/99-tcp-bbr.conf
-  echo 'net.ipv4.tcp_congestion_control=bbr' | run_root_cmd tee -a /etc/sysctl.d/99-tcp-bbr.conf
-fi
+
+write_if_changed() {
+  local path="$1" content="$2"
+  if [ "$(cat "$path" 2>/dev/null)" != "$content" ]; then
+    printf '%s\n' "$content" | run_root_cmd tee "$path" >/dev/null
+  fi
+}
+write_if_changed /etc/modules-load.d/tcp_bbr.conf 'tcp_bbr'
+write_if_changed /etc/sysctl.d/99-tcp-bbr.conf "$(printf '%s\n' 'net.core.default_qdisc=fq' 'net.ipv4.tcp_congestion_control=bbr')"
