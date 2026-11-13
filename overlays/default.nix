@@ -74,6 +74,25 @@
       doInstallCheck = false;
     });
   })
+  (
+    _: prev:
+    let
+      # These crates' -sys dependencies probe system libraries through
+      # pkg-config, which the nixpkgs derivations do not provide, so the build
+      # script panics.
+      withPkgConfigLibs =
+        libs: pkg:
+        pkg.overrideAttrs (old: {
+          nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ prev.pkg-config ];
+          buildInputs = (old.buildInputs or [ ]) ++ libs;
+        });
+    in
+    {
+      fnm = withPkgConfigLibs [ prev.zstd ] prev.fnm;
+      below = withPkgConfigLibs [ prev.zstd ] prev.below;
+      aichat = withPkgConfigLibs [ prev.oniguruma ] prev.aichat;
+    }
+  )
   (_: prev: {
     # gh-stack 0.3.0's cmd tests spawn git per rebase case and exceed Go's 600s
     # test timeout on loaded hosts, failing every NixOS build that includes it.
