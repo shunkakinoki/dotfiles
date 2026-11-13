@@ -553,6 +553,22 @@ ensure_container_removed() {
   return 0
 }
 
+# Streams the container's logs into the journal until the server is gone. A
+# follow that ends while dockerd is unreachable is a daemon restart, which
+# live-restore survives, so it waits for dockerd and follows again.
+supervise_container() {
+  local name="$1" since=0
+  while :; do
+    docker logs -f --since "$since" "$name" 2>&1 || true
+    since="$(date +%s)"
+    if docker info >/dev/null 2>&1; then
+      [ "$(docker inspect --format '{{.State.Running}}' "$name" 2>/dev/null || true)" = true ] || return 1
+    else
+      sleep 2
+    fi
+  done
+}
+
 child_pid=""
 helper_pid=""
 trap 'usage_export' EXIT
@@ -599,7 +615,9 @@ if [ "$(uname)" = "Linux" ] && command -v docker >/dev/null 2>&1; then
   ) &
   helper_pid=$!
 
-  docker run --rm \
+  # Detached: an attached client dies with dockerd, and the restart that
+  # follows would replace a server that live-restore kept running.
+  docker run -d --rm \
     --name cliproxyapi \
     --network host \
     --cpu-shares 262144 \
@@ -609,7 +627,8 @@ if [ "$(uname)" = "Linux" ] && command -v docker >/dev/null 2>&1; then
     -v "$CONFIG_DIR:/root/.cli-proxy-api" \
     -v "$CONFIG_DIR/logs:/CLIProxyAPI/logs" \
     -e MANAGEMENT_PASSWORD="${MANAGEMENT_PASSWORD:-}" \
-    "$docker_image" &
+    "$docker_image" >/dev/null
+  supervise_container cliproxyapi &
   child_pid=$!
   apply_systemd_cgroup_weights
   push_to_objectstore &

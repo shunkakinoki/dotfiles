@@ -7,4 +7,10 @@ When run jq -e '.ip == "127.0.0.1" and ."default-network-opts".bridge."com.docke
 The status should be success
 The output should equal 'true'
 End
+
+It 'keeps containers running across a dockerd restart'
+When run bash -c "jq -e '.\"live-restore\" == true' home-manager/services/docker/daemon.json && grep -x 'KillMode=process' home-manager/services/docker/docker.service"
+The status should be success
+The output should include 'KillMode=process'
+End
 End

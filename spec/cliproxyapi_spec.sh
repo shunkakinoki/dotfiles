@@ -504,13 +504,37 @@ The status should be success
 End
 
 It 'supports a locally built canary image without pulling over it'
-When run bash -c "sed -n '/CLIPROXYAPI_IMAGE/,/\"\$docker_image\" \&/p' '$SCRIPT'"
+When run bash -c "sed -n '/CLIPROXYAPI_IMAGE/,/\"\$docker_image\" >\/dev\/null/p' '$SCRIPT'"
 The output should include 'CLIPROXYAPI_IMAGE:-eceasy/cli-proxy-api:latest'
 The output should include 'CLIPROXYAPI_SKIP_PULL:-false'
 The output should include '[ "${CLIPROXYAPI_SKIP_PULL:-false}" != "true" ]'
 The output should include 'docker pull "$docker_image"'
-The output should include '"$docker_image" &'
+The output should include '"$docker_image" >/dev/null'
 The status should be success
+End
+
+It 'runs the container detached so it outlives a dockerd restart'
+When run bash -c "grep -q 'docker run -d --rm' '$SCRIPT' && grep -q '^  supervise_container cliproxyapi &$' '$SCRIPT'"
+The status should be success
+End
+
+It 'keeps supervising while dockerd is unreachable and stops once the container is gone'
+When run bash -c '
+  eval "$(sed -n "/^supervise_container() {/,/^}/p" "$1")"
+  calls=0
+  docker() {
+    case "$1" in
+      logs) calls=$((calls + 1)); echo "follow $calls" ;;
+      info) [ "$calls" -ge 2 ] ;;
+      inspect) echo false ;;
+    esac
+  }
+  sleep() { :; }
+  supervise_container cliproxyapi
+' _ "$SCRIPT"
+The status should equal 1
+The output should equal "follow 1
+follow 2"
 End
 
 It 'pulls default and custom images but skips a local canary'

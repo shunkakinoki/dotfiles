@@ -48,10 +48,12 @@ if ! git diff --quiet || ! git diff --cached --quiet; then
   exit 1
 fi
 
-# Upstream images move independently of this repository, so check them on every
-# run, before the no-changes exit. A systemd user session on a non-NixOS host
-# can lack the docker group, which the service's own start wrapper also handles.
-if [ "$HOST" = "kyber" ]; then
+# Upstream images move independently of this repository, so check them before
+# the no-changes exit. Swapping the CLIProxyAPI container drops every fleet
+# model request for its restart, so only the 18:00 UTC run swaps images. A
+# systemd user session on a non-NixOS host can lack the docker group, which the
+# service's own start wrapper also handles.
+if [ "$HOST" = "kyber" ] && [ "$(date -u +%H)" = 18 ]; then
   if docker info >/dev/null 2>&1; then
     make cliproxy-update || echo "⚠️  cliproxy-update failed" >&2
   elif [ -x /usr/bin/sg ]; then
