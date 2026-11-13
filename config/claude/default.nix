@@ -55,6 +55,11 @@ in
     executable = true;
   };
 
+  home.file.".claude/hooks/worktree-create.sh" = {
+    source = ./hooks/worktree-create.sh;
+    executable = true;
+  };
+
   home.file.".claude/hooks/atuin-history.sh" = {
     source = ./hooks/atuin-history.sh;
     executable = true;
