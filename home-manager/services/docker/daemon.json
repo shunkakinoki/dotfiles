@@ -9,5 +9,6 @@
   "log-opts": {
     "max-size": "100m",
     "max-file": "3"
-  }
+  },
+  "live-restore": true
 }

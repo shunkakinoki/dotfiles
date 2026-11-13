@@ -10,6 +10,9 @@ ExecStart=@docker@/bin/dockerd
 ExecReload=@coreutils@/bin/kill -s HUP $MAINPID
 Restart=always
 RestartSec=10s
+# Stopping dockerd must leave containerd and the container shims running, or
+# live-restore has nothing to restore.
+KillMode=process
 
 [Install]
 WantedBy=multi-user.target

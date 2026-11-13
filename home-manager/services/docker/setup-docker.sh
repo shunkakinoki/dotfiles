@@ -97,6 +97,9 @@ if ! "$SYSTEMCTL" is-active --quiet docker 2>/dev/null; then
   echo "Docker daemon started"
 elif [ "$NEEDS_RESTART" = true ]; then
   echo "Restarting Docker daemon (configuration updated)..."
+  # live-restore is reloadable, so a reload first lets a newly enabled
+  # live-restore keep containers running through this restart.
+  sudo "$SYSTEMCTL" reload docker || true
   sudo "$SYSTEMCTL" restart docker
   echo "Docker daemon restarted"
 else
