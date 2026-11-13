@@ -19,8 +19,9 @@ let
   linearTeamId = "679ab4ed-3df3-458d-8574-4962f3ebbf31";
   linearSyncPath = "${homeDir}/.local/bin:${homeDir}/.bun/bin:${homeDir}/.nix-profile/bin:/etc/profiles/per-user/${config.home.username}/bin:/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin";
   # One live store owns reads, writes, and leases. Spokes never create a local
-  # server or merge another writable copy into the authority.
-  doltServerHost = "kyber.tail950b36.ts.net";
+  # server or merge another writable copy into the authority. Kyber's server is
+  # the replication standby, so Kyber routes here like every other client.
+  doltServerHost = "beads-dolt.tail950b36.ts.net";
   beadsClientEnvironment = {
     BD_EVENTS_JOURNAL = "1";
     BEADS_DOLT_AUTO_START = "0";
@@ -32,11 +33,8 @@ let
     DOLT_CLI_USER = "beads";
     DOLT_CLI_PASSWORD = "";
   }
-  // lib.optionalAttrs isKyber {
-    BEADS_DOLT_DATA_DIR = beadsDir;
-  }
-  # matic reaches kyber:3307 over a lossy path that answers too late but never
-  # faults, so the transport would never fall back to the authority shell.
+  # matic's SQL path is lossy: it answers too late but never faults, so the
+  # transport would never fall back to the authority shell on its own.
   // lib.optionalAttrs isMatic {
     BEADS_AUTHORITY_ROUTE = "shell";
   };

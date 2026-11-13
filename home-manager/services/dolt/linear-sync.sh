@@ -47,7 +47,7 @@ fi
 
 # Machine-local credentials must not override the managed database authority.
 unset BEADS_DOLT_DATA_DIR BEADS_FEDERATION_HUB BEADS_DIR BEADS_DB
-export BEADS_DOLT_SERVER_HOST="kyber.tail950b36.ts.net"
+export BEADS_DOLT_SERVER_HOST="beads-dolt.tail950b36.ts.net"
 export BEADS_DOLT_SERVER_PORT="3307"
 export BEADS_DOLT_SERVER_USER="beads"
 export BEADS_DOLT_SERVER_MODE="1"
@@ -1257,8 +1257,8 @@ if [ "$operation" != "--sync" ]; then
   exit 64
 fi
 
-# Kyber owns both the live Beads database and this Linear reconciliation.
-# SQL mutations are shared immediately; there is no database push/pull phase.
+# Kyber runs this Linear reconciliation against the GKE Beads authority over
+# the tailnet. SQL mutations are shared immediately; there is no database push/pull phase.
 
 linear_status="$("$bd_cli" -C "$repo_dir" linear status --json)"
 linear_database="$(@jq@/bin/jq -r '.dolt_database // empty' "$repo_dir/.beads/metadata.json")"

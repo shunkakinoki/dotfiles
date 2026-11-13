@@ -16,10 +16,12 @@ Use `bd ping` for routine connectivity checks. `bd doctor` is reserved for an
 explicit recovery owner because concurrent doctor runs can starve normal Beads
 transactions. Agents must not launch it as a generic timeout response.
 
-Kyber is the sole live Beads authority for fleet reads, writes, claims, and
-leases. Writable replicas and push/pull publication are retired. This contract
-supersedes earlier federation guidance and historical recovery notes. Clients
-use Kyber SQL port 3307 and store identity `BEADS_NODE_ID=kyber`; each execution
+The GKE Dolt server is the sole live Beads authority for fleet reads, writes,
+claims, and leases; Kyber runs its cluster-replication standby. Writable replicas
+and push/pull publication are retired. This contract supersedes earlier
+federation guidance and historical recovery notes. Clients use
+`beads-dolt.tail950b36.ts.net` SQL port 3307 and store identity
+`BEADS_NODE_ID=kyber`; each execution
 uses its own `BEADS_ACTOR`, stable on retry. Read mutations back before reporting
 or dispatching. An ambiguous write requires readback before retry; unavailable
 reads never mean an empty queue. Preserve the existing fleet read monitor.
