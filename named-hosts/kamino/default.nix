@@ -48,6 +48,16 @@ let
     "kamino10"
   ];
   t3ConnectMode = if host.t3ConnectDisabled then "disabled" else "publish-only";
+  isEgressHost = builtins.any (entry: entry.host == name) (
+    builtins.fromJSON (builtins.readFile ../../kamino-tunnels.json)
+  );
+  # Bound only to the tailnet address: the proxy has no auth, so the tailnet
+  # ACL is what limits it to the cliproxy pod.
+  tailnetSocks = pkgs.writeShellScript "kamino-tailnet-socks" ''
+    set -eu
+    ip=$(${pkgs.tailscale}/bin/tailscale ip -4)
+    exec ${pkgs.microsocks}/bin/microsocks -i "$ip" -p 1080
+  '';
   sshAuthorizedKeys = import ../ssh-authorized-keys.nix;
   authorizedKeysFile = pkgs.writeText "kamino-authorized-keys" (
     pkgs.lib.concatStringsSep "\n" sshAuthorizedKeys.kamino + "\n"
@@ -217,6 +227,18 @@ inputs.home-manager.lib.homeManagerConfiguration {
               "PATH=/root/.nix-profile/bin:/etc/profiles/per-user/root/bin:/nix/var/nix/profiles/default/bin:/usr/local/bin:/usr/bin:/bin"
             ];
             EnvironmentFile = [ "-${config.home.homeDirectory}/dotfiles/.env" ];
+          };
+          Install.WantedBy = [ "default.target" ];
+        };
+
+        # cliproxy egress for the credential this host's IP is pinned to.
+        systemd.user.services.kamino-tailnet-socks = lib.mkIf isEgressHost {
+          Unit.Description = "SOCKS5 egress for cliproxy on the tailnet";
+          Service = {
+            ExecStart = "${tailnetSocks}";
+            # Also covers boot before tailscaled has an address.
+            Restart = "always";
+            RestartSec = "5s";
           };
           Install.WantedBy = [ "default.target" ];
         };
