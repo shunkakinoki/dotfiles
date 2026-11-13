@@ -440,6 +440,17 @@
         ],
         "matcher": ""
       }
+    ],
+    "WorktreeCreate": [
+      {
+        "hooks": [
+          {
+            "command": "$HOME/.claude/hooks/worktree-create.sh",
+            "timeout": 900,
+            "type": "command"
+          }
+        ]
+      }
     ]
   },
   "outputStyle": "Concise",
