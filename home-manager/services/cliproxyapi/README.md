@@ -124,6 +124,7 @@ OPENROUTER_API_KEY="sk-or-v1-..."
 # Optional dedicated OpenRouter key for priority-200 preset routes
 OPENROUTER_BYOK_API_KEY="sk-or-v1-..."
 OPENAI_API_KEY="sk-..."
+KIMI_API_KEY="sk-..."
 QWEN_API_KEY="sk-..."
 ALIYUN_TOKEN_PLAN_API_KEY="sk-sp-..."
 MORPH_API_KEY="..."

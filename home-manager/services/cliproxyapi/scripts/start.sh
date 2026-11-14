@@ -366,6 +366,7 @@ if [ -f "$TEMPLATE" ]; then
     -e "s|__OPENROUTER_API_KEY__|$(sed_value "${OPENROUTER_API_KEY:-}")|g" \
     -e "s|__OPENROUTER_BYOK_API_KEY__|$(sed_value "${OPENROUTER_BYOK_API_KEY:-}")|g" \
     -e "s|__OPENAI_API_KEY__|$(sed_value "${OPENAI_API_KEY:-}")|g" \
+    -e "s|__KIMI_API_KEY__|$(sed_value "${KIMI_API_KEY:-}")|g" \
     -e "s|__CLIPROXY_MANAGEMENT_PASSWORD__|$(sed_value "${CLIPROXY_MANAGEMENT_PASSWORD:-}")|g" \
     -e "s|__ZAI_API_KEY__|$(sed_value "${ZAI_API_KEY:-}")|g" \
     -e "s|__QWEN_API_KEY__|$(sed_value "${QWEN_API_KEY:-${DASHSCOPE_API_KEY:-}}")|g" \

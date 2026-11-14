@@ -249,6 +249,15 @@ The status should be success
 End
 End
 
+Describe 'Kimi provider'
+It 'hydrates the dedicated environment key into the runtime config'
+When run bash -c "grep 's|__KIMI_API_KEY__|.*KIMI_API_KEY' '$SCRIPT'"
+The output should include '__KIMI_API_KEY__'
+The output should include 'KIMI_API_KEY'
+The status should be success
+End
+End
+
 Describe 'Verboo DeepSeek provider'
 It 'hydrates the dedicated environment key into the runtime config'
 When run bash -c "grep 's|__VERBOO_API_KEY__|.*VERBOO_API_KEY' '$SCRIPT'"
