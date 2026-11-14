@@ -489,9 +489,9 @@ setup() {
   CONFIG_FILE="$TEMP_DIR/.local-binaries.txt"
   cat >"$CONFIG_FILE" <<'CONFIG'
 # Test binaries
-~/ghq/github.com/owner/beads/bd
+~/ghq/github.com/owner/alpha/al
 ~/ghq/github.com/owner/other-tool/ot
-~/ghq/github.com/owner/beads-viewer/bv
+~/ghq/github.com/owner/alpha-viewer/av
 CONFIG
 
   TEMP_SCRIPT="$TEMP_DIR/test-filter.sh"
@@ -527,15 +527,15 @@ After 'cleanup'
 
 It 'processes all lines without filter'
 When run bash "$TEMP_SCRIPT"
-The output should include 'beads/bd'
+The output should include 'alpha/al'
 The output should include 'other-tool/ot'
-The output should include 'beads-viewer/bv'
+The output should include 'alpha-viewer/av'
 End
 
 It 'filters lines matching pattern'
-When run bash "$TEMP_SCRIPT" beads
-The output should include 'beads/bd'
-The output should include 'beads-viewer/bv'
+When run bash "$TEMP_SCRIPT" alpha
+The output should include 'alpha/al'
+The output should include 'alpha-viewer/av'
 The output should not include 'other-tool/ot'
 End
 End

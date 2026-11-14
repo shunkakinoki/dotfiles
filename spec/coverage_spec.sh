@@ -341,22 +341,6 @@ It 'has spec file for home-manager/services/docker/docker-setup.sh'
 The path "spec/docker_setup_wrapper_spec.sh" should be exist
 End
 
-It 'has spec file for home-manager/services/dolt/start.sh'
-The path "spec/dolt_start_spec.sh" should be exist
-End
-
-It 'has spec file for home-manager/services/dolt/linear-sync.sh'
-The path "spec/beads_linear_sync_spec.sh" should be exist
-End
-
-It 'has spec file for home-manager/services/dolt/beads-linear-complete.sh'
-The path "spec/beads_linear_sync_spec.sh" should be exist
-End
-
-It 'has spec file for home-manager/services/dolt/client-environment.sh'
-The path "spec/beads_authority_spec.sh" should be exist
-End
-
 It 'has spec file for home-manager/services/k3s/activate.sh'
 The path "spec/k3s_service_activate_spec.sh" should be exist
 End
@@ -782,11 +766,6 @@ home-manager/services/docker-postgres/start-postgres-wrapper.sh
 home-manager/services/docker-postgres/start-postgres.sh
 home-manager/services/docker/docker-setup.sh
 home-manager/services/docker/setup-docker.sh
-home-manager/services/dolt/start.sh
-home-manager/services/dolt/activate-system-service.sh
-home-manager/services/dolt/beads-linear-complete.sh
-home-manager/services/dolt/client-environment.sh
-home-manager/services/dolt/linear-sync.sh
 home-manager/services/dotfiles-updater/update.sh
 home-manager/services/k3s/activate.sh
 home-manager/services/make-updater/update.sh
@@ -816,7 +795,6 @@ named-hosts/kyber/activate-ip-forwarding.sh
 named-hosts/kyber/activate-sshd.sh
 named-hosts/kyber/activate-tcp-bbr.sh
 named-hosts/kyber/activate-user-service-priority.sh
-named-hosts/kyber/beads-linear-complete-ssh-guard.sh
 named-hosts/kyber/find.sh
 named-hosts/kyber/prepare-containerd-disk.sh
 named-hosts/kyber/rekey-galactica.sh

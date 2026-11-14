@@ -13,15 +13,9 @@ let
       system
       ;
   };
-  overlayChecks = import ./overlays.nix { inherit pkgs lib inputs; };
+  overlayChecks = import ./overlays.nix { inherit pkgs; };
   libChecks = import ./lib.nix { inherit pkgs lib inputs; };
   fishChecks = import ./fish.nix { inherit pkgs lib; };
-  kyberWriterGuardChecks = import ./kyber-writer-guard.nix { inherit pkgs; };
   atuinStorageChecks = import ./atuin-storage.nix { inherit pkgs; };
 in
-evalChecks
-// overlayChecks
-// libChecks
-// fishChecks
-// kyberWriterGuardChecks
-// atuinStorageChecks
+evalChecks // overlayChecks // libChecks // fishChecks // atuinStorageChecks

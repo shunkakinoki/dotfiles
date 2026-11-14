@@ -109,17 +109,6 @@ machine was replaced: the verifier does not maintain a device-ID registry.
 
 Local service checks on each machine:
 
-Beads clients connect directly to the GKE authority
-(`beads-dolt.tail950b36.ts.net`) on SQL port 3307. Herdr workers receive that
-policy with local auto-start disabled and `BEADS_NODE_ID=kyber`. Kamino hosts run
-no local Beads server or federation jobs. Provisioning never replaces preserved
-stores; reconcile unpublished data into the authority before changing routing.
-
-Confirm the effective endpoint with `bd context --json` and authoritative reads
-with `bd --readonly ready --json`. The existing fleet read monitor owns scheduled
-health checks. A passing local replica read does not prove authority access;
-unavailable or misrouted reads never mean an empty queue.
-
 ```sh
 hostname
 systemctl is-active tailscaled
@@ -233,8 +222,7 @@ shellspec spec/install_spec.sh spec/make_build_host_resolution_spec.sh spec/ssh_
 ```
 
 The evaluation checks cover root identity, common tools/configs, SSH aliases,
-upgrade targeting, direct Beads authority routing, and absence of local SQL,
-federation, and Linear reconciliation services. Linux CI builds the parent
+and upgrade targeting. Linux CI builds the parent
 and hundredth generated profile. Evaluation is not a successful Linux build;
 neither is live activation proof.
 

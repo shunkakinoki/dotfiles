@@ -32,9 +32,7 @@ inputs.nix-darwin.lib.darwinSystem {
         "/etc/ssh/ssh_host_ed25519_key"
         "/Users/${username}/.ssh/id_ed25519"
       ];
-      age.secrets = builtins.mapAttrs (_: value: { inherit (value) file; }) (
-        builtins.removeAttrs (import ./secrets.nix) [ "keys/kyber-writer.age" ]
-      );
+      age.secrets = builtins.mapAttrs (_: value: { inherit (value) file; }) (import ./secrets.nix);
 
       # The standalone macOS Tailscale app cannot host Tailscale SSH. Enable
       # Apple's SSH server so Galactica remains reachable over its tailnet IP.
@@ -42,7 +40,7 @@ inputs.nix-darwin.lib.darwinSystem {
       users.users.${username}.openssh.authorizedKeys.keys = sshAuthorizedKeys.galactica;
 
       home-manager.users.${username} =
-        { pkgs, lib, ... }:
+        { pkgs, ... }:
         {
           programs.ssh = {
             enable = true;
@@ -50,13 +48,6 @@ inputs.nix-darwin.lib.darwinSystem {
               "*" = {
                 AddKeysToAgent = "yes";
                 UseKeychain = "yes";
-              };
-              "kyber" = {
-                IdentityFile = lib.mkForce [ "/Users/${username}/.ssh/id_ed25519_kyber_writer" ];
-                IdentitiesOnly = "yes";
-                IdentityAgent = "none";
-                AddKeysToAgent = "no";
-                UseKeychain = "no";
               };
             };
           };
@@ -82,35 +73,5 @@ inputs.nix-darwin.lib.darwinSystem {
 
         };
     }
-    (
-      { pkgs, ... }:
-      {
-        # The existing user-key secrets need a passphrase and can stop agenix in
-        # a headless launchd session. Decrypt only this host-key-scoped identity
-        # independently so managed completion is available after reboot.
-        launchd.daemons."com.shunkakinoki.kyber-writer-key" = {
-          script = ''
-            set -euo pipefail
-            key_dir="/Users/${username}/.ssh"
-            key_file="$key_dir/id_ed25519_kyber_writer"
-            ${pkgs.coreutils}/bin/install -d -m 0700 -o ${username} -g staff "$key_dir"
-            temp=$(${pkgs.coreutils}/bin/mktemp "$key_file.XXXXXXXX")
-            trap '${pkgs.coreutils}/bin/rm -f "$temp"' EXIT
-            ${pkgs.age}/bin/age --decrypt -i /etc/ssh/ssh_host_ed25519_key ${./keys/kyber-writer.age} > "$temp"
-            ${pkgs.coreutils}/bin/chown ${username}:staff "$temp"
-            ${pkgs.coreutils}/bin/chmod 0400 "$temp"
-            ${pkgs.coreutils}/bin/mv -f "$temp" "$key_file"
-            echo "Kyber writer key installed"
-          '';
-          serviceConfig = {
-            RunAtLoad = true;
-            KeepAlive.SuccessfulExit = false;
-            ThrottleInterval = 60;
-            StandardOutPath = "/var/log/kyber-writer-key.log";
-            StandardErrorPath = "/var/log/kyber-writer-key.log";
-          };
-        };
-      }
-    )
   ];
 }
