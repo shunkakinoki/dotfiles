@@ -59,6 +59,10 @@ rec {
   # Install language server packages
   isDev = true;
 
+  # CLIProxyAPI remains enabled on hosts that use the shared service module;
+  # named-hosts/kyber overrides this after production moves to GKE.
+  cliproxyapiDisabled = false;
+
   # Get the node name for OpenClaw remote mode
   # Falls back to "unknown" if no hostname is detected
   nodeName =

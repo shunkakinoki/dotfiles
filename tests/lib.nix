@@ -147,6 +147,12 @@ in
         ''echo "FAIL: host.isKyber must exist and be a boolean" && exit 1''
     }
     ${
+      if host ? cliproxyapiDisabled && builtins.isBool host.cliproxyapiDisabled then
+        ''echo "lib/host.nix: cliproxyapiDisabled is a boolean"''
+      else
+        ''echo "FAIL: host.cliproxyapiDisabled must exist and be a boolean" && exit 1''
+    }
+    ${
       if host ? isGalactica && builtins.isBool host.isGalactica then
         ''echo "lib/host.nix: isGalactica is a boolean"''
       else

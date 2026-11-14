@@ -7,11 +7,12 @@
 }:
 let
   inherit (inputs) host;
+  enabled = !(host.cliproxyapiDisabled or false);
 
   # OAuth refresh tokens rotate on every refresh, so a copy refreshed on one
   # host invalidates the copies on every other host. Only kyber holds the OAuth
   # auth files and the S3 store they are backed up to.
-  objectstoreEnabled = pkgs.stdenv.hostPlatform.isLinux && host.isKyber;
+  objectstoreEnabled = enabled && pkgs.stdenv.hostPlatform.isLinux && host.isKyber;
 
   commonScript = pkgs.replaceVars ./scripts/common.sh {
     aws = "${pkgs.awscli2}/bin/aws";
@@ -128,10 +129,12 @@ in
     ''
   );
 
-  home.packages = [ quotaCli ] ++ lib.optional pkgs.stdenv.hostPlatform.isDarwin cliWrapper;
+  home.packages =
+    lib.optional enabled quotaCli
+    ++ lib.optional (enabled && pkgs.stdenv.hostPlatform.isDarwin) cliWrapper;
 
   # Main service
-  launchd.agents.cliproxyapi = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
+  launchd.agents.cliproxyapi = lib.mkIf (enabled && pkgs.stdenv.hostPlatform.isDarwin) {
     enable = true;
     config = {
       ProgramArguments = [
@@ -155,7 +158,7 @@ in
   };
 
   # Linux systemd
-  systemd.user.services.cliproxyapi = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+  systemd.user.services.cliproxyapi = lib.mkIf (enabled && pkgs.stdenv.hostPlatform.isLinux) {
     Unit = {
       Description = "CLI Proxy API server";
       After = [
@@ -200,7 +203,7 @@ in
   # removed-models list, so re-render and hot-reload whenever either changes.
   # Otherwise a rotated or newly added key keeps its stale value until the next
   # home-manager switch or manual reload.
-  systemd.user.paths.cliproxyapi-env-reload = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+  systemd.user.paths.cliproxyapi-env-reload = lib.mkIf (enabled && pkgs.stdenv.hostPlatform.isLinux) {
     Unit.Description = "Watch CLIProxyAPI render inputs (.env, removed-models)";
     Path = {
       PathChanged = [
@@ -215,16 +218,18 @@ in
   # try-reload-or-restart only acts on a running unit, and cliproxyapi defines
   # ExecReload, so this re-renders config.yaml and the server hot-reloads it
   # without dropping in-flight requests.
-  systemd.user.services.cliproxyapi-env-reload = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
-    Unit = {
-      Description = "Re-render and hot-reload CLIProxyAPI after a render input changes";
-      X-SwitchMethod = "keep-old";
-    };
-    Service = {
-      Type = "oneshot";
-      ExecStart = "${pkgs.systemd}/bin/systemctl --user try-reload-or-restart cliproxyapi.service";
-    };
-  };
+  systemd.user.services.cliproxyapi-env-reload =
+    lib.mkIf (enabled && pkgs.stdenv.hostPlatform.isLinux)
+      {
+        Unit = {
+          Description = "Re-render and hot-reload CLIProxyAPI after a render input changes";
+          X-SwitchMethod = "keep-old";
+        };
+        Service = {
+          Type = "oneshot";
+          ExecStart = "${pkgs.systemd}/bin/systemctl --user try-reload-or-restart cliproxyapi.service";
+        };
+      };
 
   systemd.user.paths.cliproxyapi-backup-auth = lib.mkIf objectstoreEnabled {
     Unit.Description = "Watch auth directories for changes";

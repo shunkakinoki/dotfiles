@@ -2,6 +2,16 @@
 
 Ubuntu Linux server managed via home-manager with Tailscale VPN.
 
+## CLIProxyAPI ownership after the GKE cutover
+
+Production CLIProxyAPI runs in GKE. Kyber's Home Manager configuration sets
+`cliproxyapiDisabled = true`, so it omits the proxy, CPA Manager Plus, auth
+backup, analytics backup, and reload units. This prevents a reboot or later
+`make switch` from starting a second OAuth token writer. Before applying this
+configuration, complete the final R2 backup and stop the existing units. A
+rollback must restore this flag only after GKE is stopped and the hostname has
+been moved back.
+
 ## Initial Setup
 
 On the Kyber server, run:

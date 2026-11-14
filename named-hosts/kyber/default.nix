@@ -37,6 +37,9 @@ home-manager.lib.homeManagerConfiguration {
         isAndor = false;
         isKyber = true;
         isK3sServer = true;
+        # Production CLIProxyAPI now runs on GKE. Keep Kyber's units absent so
+        # a reboot or Home Manager switch cannot create a second token writer.
+        cliproxyapiDisabled = true;
         k3s = baseHost.k3sHostConfigs.kyber;
         nodeName = "kyber";
       };
