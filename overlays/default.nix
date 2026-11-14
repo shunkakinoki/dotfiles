@@ -257,16 +257,16 @@
   (_: prev: {
     boat-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "boat-cli";
-      version = "1.0.97";
+      version = "1.0.100";
       src = prev.fetchurl {
         url = "https://github.com/ariana-dot-dev/agent-server/releases/download/boat-cli-v${version}/boat-${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }-${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x64"}";
         sha256 =
           {
-            "aarch64-darwin" = "01h06m8dnj8minb6idxahkqaxzk2xpi6gfy56k1b5dzri26x3g1c";
-            "aarch64-linux" = "0bzndnnjgj81bm3w879a3cksvisss8khcxjqg2zz1n3rfkkz7n4k";
-            "x86_64-linux" = "02c1yp81swfhdvn26gza66x8fnf6y3vp8hc9c17qq2zwvif1z7x2";
+            "aarch64-darwin" = "1cfv4nrf85pjvqjdfcs0cnwwgmnxrsxyvfsb42yyd4dsn384ld77";
+            "aarch64-linux" = "0vyfdqry6jf6ywai08via2c7vdn3fzqp0di5hcfggyqa7830rgid";
+            "x86_64-linux" = "0zfm14n2gk135z02a6fkrsk23vzgd0da94cba9h9k96s2g7flv7w";
           }
           .${prev.stdenv.hostPlatform.system};
       };
