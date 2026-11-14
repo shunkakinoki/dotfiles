@@ -4,37 +4,6 @@
   inputs.neovim-nightly-overlay.overlays.default
   inputs.foundry.overlay
   (_: prev: {
-    # Beads checks the live SQL server's engine version before opening a store.
-    # Keep the managed CLI and server on its upstream pin, ahead of nixpkgs.
-    dolt = prev.stdenvNoCC.mkDerivation rec {
-      pname = "dolt";
-      version = "2.6.0";
-      src = prev.fetchurl {
-        url = "https://github.com/dolthub/dolt/releases/download/v${version}/dolt-${
-          if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
-        }-${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}.tar.gz";
-        hash =
-          {
-            "aarch64-darwin" = "sha256-AY0UkEtaZEs/qIyixrW5QHVsrOWSxpsFqFh6lFh+F90=";
-            "x86_64-darwin" = "sha256-8g7R7JbQbWJ/YBF26Az2MBQKBj7eDr8SXCjPDtTniaI=";
-            "aarch64-linux" = "sha256-bKXLpq845rUqzWb6I0ceOS8FT2vRXAAESYxJG5um7N4=";
-            "x86_64-linux" = "sha256-qNTC4ulLhf01ksuAdIBE+EbM/QPSWlNu0fdUuvfaZAE=";
-          }
-          .${prev.stdenv.hostPlatform.system};
-      };
-      dontConfigure = true;
-      dontBuild = true;
-      dontStrip = true;
-      installPhase = ''
-        runHook preInstall
-        install -Dm755 bin/dolt $out/bin/dolt
-        install -Dm644 LICENSES $out/share/doc/dolt/LICENSES
-        runHook postInstall
-      '';
-      meta = prev.dolt.meta;
-    };
-  })
-  (_: prev: {
     # Current Foundry nightlies link forge and cast against libudev, which the
     # upstream binary derivation does not yet include in its Linux runtime.
     foundry-bin = prev.foundry-bin.overrideAttrs (old: {
@@ -109,7 +78,7 @@
     # (`scripts/orchestration-bootstrap.ts`) refuses to run without
     # `process.execve`, which the locked nixpkgs-unstable bun (1.3.13) lacks.
     # Every fleet lane shells out to `$HOME/.bun/bin/bun`, so a stale bun fails
-    # `beads:verify` and lane dispatch fleet-wide. Pin the release the repo
+    # lane dispatch fleet-wide. Pin the release the repo
     # declares; the derivation only installs the released binary.
     bun = prev.bun.overrideAttrs (
       finalAttrs: old: {
@@ -243,17 +212,6 @@
     }
   )
   inputs.noctalia-shell.overlays.default
-  inputs.beads.overlays.default
-  (_: prev: {
-    # Upstream postPatch rewrites the go directive to our Go (1.26.7), which then
-    # equals go.mod's toolchain line, so Go rejects go.mod as untidy. Remove once
-    # gastownhall/beads#6752 merges and the beads input is bumped past it.
-    beads-unwrapped = prev.beads-unwrapped.overrideAttrs (old: {
-      postPatch = old.postPatch + ''
-        go mod edit -toolchain=none
-      '';
-    });
-  })
   (_: prev: {
     boat-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "boat-cli";

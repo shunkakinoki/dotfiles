@@ -41,7 +41,7 @@
           set -gx OPENSSL_LIB_DIR "${pkgs.openssl.out}/lib"
           set -gx OPENSSL_INCLUDE_DIR "${pkgs.openssl.dev}/include"
 
-          # ICU for CGo builds (e.g. go-icu-regex used by beads)
+          # ICU for CGo builds (e.g. go-icu-regex)
           set -gx PKG_CONFIG_PATH "${pkgs.icu.dev}/lib/pkgconfig" $PKG_CONFIG_PATH
           set -gx CGO_CFLAGS "-I${pkgs.icu.dev}/include $CGO_CFLAGS"
           set -gx CGO_CXXFLAGS "-I${pkgs.icu.dev}/include $CGO_CXXFLAGS"

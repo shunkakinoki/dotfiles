@@ -2,7 +2,7 @@
 
 Beskar uses a root-owned standalone Home Manager profile at `/root`. Its fleet
 checkout, Bun, Herdr state and per-host credentials belong to that account.
-It does not own Kyber's k3s cluster, Beads authority or exit-node configuration.
+It does not own Kyber's k3s cluster or exit-node configuration.
 
 ## Bootstrap
 

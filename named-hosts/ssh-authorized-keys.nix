@@ -17,16 +17,14 @@ let
     "kamino10"
   ];
   peersOf = host: keysFor (builtins.filter (name: name != host) fleetHosts);
-  galacticaKyberWriterKey = "restrict,command=\"/home/ubuntu/.local/bin/beads-linear-complete-ssh-guard\" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAY5u/jbnetfuqmXFw51/fjUOe96eUt3SDLvaCdqSL14 galactica-kyber-writer-20261027";
 in
 {
   beskar = peersOf "beskar";
   galactica = peersOf "galactica";
-  # galactica reaches kyber only through the restricted writer key.
+  # galactica has no access to kyber.
   kyber =
     keysFor (builtins.filter (name: name != "kyber" && name != "galactica") fleetHosts)
-    ++ keysFor ciWorkerHosts
-    ++ [ galacticaKyberWriterKey ];
+    ++ keysFor ciWorkerHosts;
   matic = peersOf "matic";
   # One file serves every Kamino host, so it lists the whole fleet.
   kamino = keysFor fleetHosts;

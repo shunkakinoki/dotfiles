@@ -371,7 +371,7 @@ End
 Describe 'prose that names commands'
 
 It 'allows an issue description quoting settings commands'
-Data '{"tool_input": {"command": "bd create -t \"guard false positive\" -d \"gh repo edit and gh api graphql -f query=mutation are refused\""}}'
+Data '{"tool_input": {"command": "linear issue create --title \"guard false positive\" --description \"gh repo edit and gh api graphql -f query=mutation are refused\""}}'
 When run bash "$SCRIPT"
 The status should be success
 End
@@ -383,19 +383,19 @@ The status should be success
 End
 
 It 'allows a note quoting a direct HTTP mutation'
-Data '{"tool_input": {"command": "bd note issue-1 \"curl -X PATCH https://api.github.com/repos/owner/repo is refused\""}}'
+Data '{"tool_input": {"command": "linear issue comment add issue-1 --body \"curl -X PATCH https://api.github.com/repos/owner/repo is refused\""}}'
 When run bash "$SCRIPT"
 The status should be success
 End
 
 It 'allows a note quoting a REST method override'
-Data '{"tool_input": {"command": "bd note issue-1 \"gh api -X PATCH /repos/owner/repo is refused\""}}'
+Data '{"tool_input": {"command": "linear issue comment add issue-1 --body \"gh api -X PATCH /repos/owner/repo is refused\""}}'
 When run bash "$SCRIPT"
 The status should be success
 End
 
 It 'blocks a real command chained after prose'
-Data '{"tool_input": {"command": "bd note issue-1 \"gh repo edit is refused\" && gh repo edit --visibility private"}}'
+Data '{"tool_input": {"command": "linear issue comment add issue-1 --body \"gh repo edit is refused\" && gh repo edit --visibility private"}}'
 When run bash "$SCRIPT"
 The status should eq 2
 The stderr should include 'BLOCKED'

@@ -1,17 +1,5 @@
 {
   "hooks": {
-    "PostCompact": [
-      {
-        "hooks": [
-          {
-            "command": "! command -v bd >/dev/null 2>&1 || bd codex-hook PostCompact",
-            "statusMessage": "Scheduling Beads context refresh",
-            "type": "command"
-          }
-        ],
-        "matcher": "manual|auto"
-      }
-    ],
     "PostToolUse": [
       {
         "hooks": [
@@ -33,18 +21,6 @@
           }
         ],
         "matcher": "Bash"
-      }
-    ],
-    "PreCompact": [
-      {
-        "hooks": [
-          {
-            "command": "! command -v bd >/dev/null 2>&1 || bd codex-hook PreCompact",
-            "statusMessage": "Checking Beads context",
-            "type": "command"
-          }
-        ],
-        "matcher": "manual|auto"
       }
     ],
     "PreToolUse": [
