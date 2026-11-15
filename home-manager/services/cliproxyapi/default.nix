@@ -17,6 +17,7 @@ let
     aws = "${pkgs.awscli2}/bin/aws";
     sqlite3 = "${pkgs.sqlite}/bin/sqlite3";
     tar = "${pkgs.gnutar}/bin/tar";
+    pigz = "${pkgs.pigz}/bin/pigz";
     objectstore_enabled = lib.boolToString objectstoreEnabled;
   };
 
@@ -267,20 +268,18 @@ in
     Unit.X-SwitchMethod = "keep-old";
     Service = {
       Type = "oneshot";
-      # The analytics snapshot now stops cpa-manager-plus, folds the WAL back
-      # and copies the database file, so it is a short burst instead of a
-      # throttled 90-minute read. Throttling it to 5 MB/s made the hourly run
-      # outlive its own interval, which pinned the WAL permanently and left an
-      # 84 GB -wal on kyber's root disk (2026-10-19). Keep a low IO weight and
-      # let the copy finish quickly.
+      # The analytics snapshot pauses cpa-manager-plus while it reads the
+      # database once into a compressed archive. Throttling it to 5 MB/s made
+      # the hourly run outlive its own interval, which pinned the WAL
+      # permanently and left an 84 GB -wal on kyber's root disk (2026-10-19).
       IOAccounting = true;
       IOWeight = 10;
       # A hung snapshot holds the unit in "activating", which stops the hourly
       # timer without ever failing, so the drift check cannot see it.
       TimeoutStartSec = "2h";
       ExecStart = "${pkgs.bash}/bin/bash ${backupScript} full";
-      # kyber's /tmp is a 32 GB tmpfs, smaller than the ~30 GB snapshot plus
-      # everything else living there, so stage on the root disk.
+      # kyber's /tmp is a 32 GB tmpfs shared with everything else, too small
+      # for the archive, so stage on the root disk.
       Environment = [
         "PATH=${
           lib.makeBinPath [
@@ -303,7 +302,7 @@ in
     Unit.Description = "Daily CLIProxyAPI and CPA Manager Plus backup";
     Timer = {
       OnBootSec = "5min";
-      # Daily, not hourly: the analytics snapshot copies a ~29 GB database and
+      # Daily, not hourly: the analytics snapshot reads the whole database and
       # pauses the manager while it does, so it belongs in a quiet window
       # rather than 24 times a day.
       OnCalendar = "*-*-* 04:00:00 UTC";
