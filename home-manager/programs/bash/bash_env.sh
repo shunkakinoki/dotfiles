@@ -15,13 +15,13 @@ case ":$PATH:" in
 esac
 
 case ":$PATH:" in
-*":$HOME/.bun/bin:"*) ;;
-*) export PATH="$HOME/.bun/bin:$PATH" ;;
+*":$HOME/.bun/install/global/node_modules/.bin:"*) ;;
+*) export PATH="$HOME/.bun/install/global/node_modules/.bin:$PATH" ;;
 esac
 
 case ":$PATH:" in
-*":$HOME/.bun/install/global/node_modules/.bin:"*) ;;
-*) export PATH="$HOME/.bun/install/global/node_modules/.bin:$PATH" ;;
+*":$HOME/.bun/bin:"*) ;;
+*) export PATH="$HOME/.bun/bin:$PATH" ;;
 esac
 
 # Managed T3 dispatch also applies to non-interactive Bash and its child shells.

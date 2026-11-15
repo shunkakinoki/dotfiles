@@ -111,7 +111,7 @@ The output should include "gomi"
 End
 
 It 'adds local binaries to zsh envExtra for non-interactive commands'
-When run bash -c "grep -F 'export PATH=\"\$HOME/.bun/install/global/node_modules/.bin:\$HOME/.bun/bin:\$HOME/.cargo/bin:\$HOME/.local/bin:\$PATH\"' '$ZSH_CONFIG'"
+When run bash -c "grep -F 'export PATH=\"\$HOME/.bun/bin:\$HOME/.bun/install/global/node_modules/.bin:\$HOME/.cargo/bin:\$HOME/.local/bin:\$PATH\"' '$ZSH_CONFIG'"
 The status should be success
 The output should include '.local/bin'
 The output should include '.bun/bin'
@@ -120,7 +120,7 @@ The output should include '.cargo/bin'
 End
 
 It 'adds local binaries to bash profileExtra before bashrc'
-When run bash -c "grep -F 'export PATH=\"\$HOME/.bun/install/global/node_modules/.bin:\$HOME/.bun/bin:\$HOME/.cargo/bin:\$HOME/.local/bin:\$PATH\"' '$BASH_CONFIG'"
+When run bash -c "grep -F 'export PATH=\"\$HOME/.bun/bin:\$HOME/.bun/install/global/node_modules/.bin:\$HOME/.cargo/bin:\$HOME/.local/bin:\$PATH\"' '$BASH_CONFIG'"
 The status should be success
 The output should include '.local/bin'
 The output should include '.bun/bin'
