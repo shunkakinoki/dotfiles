@@ -51,11 +51,6 @@
         "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh prompt-submitted --agent cursor # traces hook agent"
       }
     ],
-    "preCompact": [
-      {
-        "command": "! command -v bd >/dev/null 2>&1 || bd cursor-hook preCompact"
-      }
-    ],
     "sessionEnd": [
       {
         "command": "$HOME/dotfiles/config/shared/hooks/traces-agent-hook.sh session-end --agent cursor # traces hook agent"

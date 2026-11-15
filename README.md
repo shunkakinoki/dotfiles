@@ -20,8 +20,6 @@ For default and fallback model assignments per harness, see [MODELS.md](./MODELS
 
 For Kamino setup and verification, see the [host runbook](named-hosts/kamino/README.md).
 
-For the Beads SQL authority and its activation checks, see [BEADS.md](./BEADS.md).
-
 For repository coding conventions, see [CODING_CONVENTIONS.md](./CODING_CONVENTIONS.md).
 
 ## Credits

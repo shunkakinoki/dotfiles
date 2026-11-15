@@ -242,8 +242,7 @@ caps continue to apply throughout.
 T3-launched tools and SSH sessions also have read limits outside
 `orchestration.slice`. T3 and its children share 20 MB/s and 200 read IOPS;
 each logind session scope gets 10 MB/s and 100 read IOPS, including commands
-run through `sudo`. These limits apply to reads only. Dolt and other managed
-user services keep their existing controls, and no service restart is needed.
+run through `sudo`. These limits apply to reads only. Managed user services keep their existing controls, and no service restart is needed.
 Session budgets are per session, so they do not impose a combined SSH ceiling.
 
 Kyber's managed `find` rejects recursive scans from `/`, `/home`, `/root`, the

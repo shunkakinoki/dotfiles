@@ -501,10 +501,11 @@ target
 # Gate locks
 *.gate.lock
 
-# Beads / Dolt files (added by bd init)
+# Hosts may still hold local tracker data in these directories; keep it out of
+# git so cleanups and commits never touch it.
+.beads/
 .dolt/
 *.db
-.beads-credential-key
 
 # Gas Town (added by gt)
 .runtime/
@@ -515,5 +516,3 @@ CLAUDE.local.md
 crew/
 mayor/
 settings/
-.beads/.gt-types-configured
-.beads/PRIME.md

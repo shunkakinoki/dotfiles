@@ -15,24 +15,6 @@ let
   };
 in
 {
-  linear-control-state =
-    let
-      fixtures = ./fixtures/linear-control-state;
-    in
-    pkgs.runCommand "linear-control-state" { nativeBuildInputs = [ pkgs.jq ]; } ''
-      jq -c \
-        --arg actor beads-linear-reconciler \
-        --arg snapshot 2099-01-02T00:00:00Z \
-        --slurpfile journal ${fixtures}/journal.jsonl \
-        --slurpfile current ${fixtures}/current.json \
-        --slurpfile before ${fixtures}/before.json \
-        -n -f ${../home-manager/services/dolt/linear-control-state.jq} \
-        | jq -S -s 'sort_by(.id)' > actual.json
-      jq -S . ${fixtures}/expected.json > expected.json
-      diff -u expected.json actual.json
-      touch "$out"
-    '';
-
   lib-kamino-shortcuts =
     let
       kamino = import ../home-manager/programs/kamino { inherit lib pkgs; };

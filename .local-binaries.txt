@@ -13,7 +13,6 @@
 ~/ghq/github.com/Dicklesworthstone/frankensearch/target/release/libfrankensearch.rlib
 ~/ghq/github.com/Dicklesworthstone/frankensqlite/target/release/libfsqlite.rlib
 
-~/ghq/github.com/Dicklesworthstone/beads_viewer/bv
 ~/ghq/github.com/Dicklesworthstone/coding_agent_account_manager/caam
 ~/ghq/github.com/Dicklesworthstone/coding_agent_session_search/target/release/cass
 ~/ghq/github.com/Dicklesworthstone/cross_agent_sessions_resumer/target/release/casr

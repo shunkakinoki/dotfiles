@@ -670,12 +670,12 @@ EOF
   cat >"$TEMP_HOME/.bun/install/global/package.json" <<'EOF'
 {
   "dependencies": {
-    "@beads/bd": "^0.63.3"
+    "@example/stale-cli": "^1.0.0"
   }
 }
 EOF
 
-  ln -sf ../install/global/node_modules/@beads/bd/bin/bd.js "$TEMP_HOME/.bun/bin/bd"
+  ln -sf ../install/global/node_modules/@example/stale-cli/bin/stale.js "$TEMP_HOME/.bun/bin/stale"
 
   cat >"$MOCK_BIN/timeout" <<'EOF'
 #!/usr/bin/env bash
@@ -691,10 +691,10 @@ EOF
 #!/usr/bin/env bash
 set -euo pipefail
 printf 'bun %s\n' "$*" >>"$MOCK_LOG"
-if [ "${1:-}" = "remove" ] && [ "${2:-}" = "--global" ] && [ "${3:-}" = "@beads/bd" ]; then
-  jq 'del(.dependencies["@beads/bd"])' "$HOME/.bun/install/global/package.json" >"$HOME/.bun/install/global/package.json.tmp"
+if [ "${1:-}" = "remove" ] && [ "${2:-}" = "--global" ] && [ "${3:-}" = "@example/stale-cli" ]; then
+  jq 'del(.dependencies["@example/stale-cli"])' "$HOME/.bun/install/global/package.json" >"$HOME/.bun/install/global/package.json.tmp"
   mv "$HOME/.bun/install/global/package.json.tmp" "$HOME/.bun/install/global/package.json"
-  rm -f "$HOME/.bun/bin/bd"
+  rm -f "$HOME/.bun/bin/stale"
 fi
 EOF
   chmod +x "$MOCK_BIN/bun"
@@ -709,16 +709,16 @@ After 'cleanup'
 
 It 'removes packages no longer declared in dotfiles package.json'
 When run bash -c "HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT' >/dev/null 2>&1; cat '$MOCK_LOG'"
-The output should include 'bun remove --global @beads/bd'
+The output should include 'bun remove --global @example/stale-cli'
 End
 
 It 'removes stale package entries from bun global package.json'
-When run bash -c "HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT' >/dev/null 2>&1; jq -r '.dependencies[\"@beads/bd\"] // \"missing\"' '$TEMP_HOME/.bun/install/global/package.json'"
+When run bash -c "HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT' >/dev/null 2>&1; jq -r '.dependencies[\"@example/stale-cli\"] // \"missing\"' '$TEMP_HOME/.bun/install/global/package.json'"
 The output should eq 'missing'
 End
 
 It 'removes dangling bun shims for stale packages'
-When run bash -c "HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT' >/dev/null 2>&1; test -e '$TEMP_HOME/.bun/bin/bd' && echo present || echo missing"
+When run bash -c "HOME='$TEMP_HOME' MOCK_LOG='$MOCK_LOG' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_SYSTEM_BIN_DIR:/usr/bin:/bin' bash '$SCRIPT' >/dev/null 2>&1; test -e '$TEMP_HOME/.bun/bin/stale' && echo present || echo missing"
 The output should eq 'missing'
 End
 End

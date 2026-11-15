@@ -92,10 +92,6 @@
       # emit its x86_64-darwin deprecation warning on every Handy evaluation.
       inputs.bun2nix.inputs.systems.follows = "systems-linux";
     };
-    beads = {
-      url = "github:gastownhall/beads";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =

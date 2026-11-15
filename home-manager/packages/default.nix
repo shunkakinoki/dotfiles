@@ -34,7 +34,6 @@ with pkgs;
   awscli2
   bandwhich
   bat
-  beads
   blacksmith-testbox-cli
   pkgs.llm-agents.bernstein
   broot
@@ -56,7 +55,6 @@ with pkgs;
   dnsutils
   direnv
   doggo
-  dolt
   doppler
   duf
   dust

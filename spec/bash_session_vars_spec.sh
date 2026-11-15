@@ -17,7 +17,7 @@ setup() {
   cat >"$TEST_HOME/pkg/etc/profile.d/hm-session-vars.sh" <<'EOF'
 if [ -n "$__HM_SESS_VARS_SOURCED" ]; then return; fi
 export __HM_SESS_VARS_SOURCED=1
-export BEADS_NODE_ID="kyber"
+export HM_SESSION_PROBE="present"
 EOF
   {
     grep -F 'hm-session-vars.sh"' "$BASH_CONFIG" |
@@ -30,9 +30,9 @@ Before 'setup'
 After 'cleanup'
 
 It 'exports session variables to a non-interactive, non-login shell'
-When run env -i HOME="$TEST_HOME" "$BASH_BIN" -c '. "$HOME/.bashrc"; printf "%s" "${BEADS_NODE_ID:-<unset>}"'
+When run env -i HOME="$TEST_HOME" "$BASH_BIN" -c '. "$HOME/.bashrc"; printf "%s" "${HM_SESSION_PROBE:-<unset>}"'
 The status should be success
-The output should eq 'kyber'
+The output should eq 'present'
 End
 End
 End

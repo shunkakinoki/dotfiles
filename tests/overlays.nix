@@ -1,21 +1,5 @@
+{ pkgs }:
 {
-  pkgs,
-  lib,
-  inputs,
-}:
-{
-  overlay-dolt-version-guard =
-    assert lib.versionAtLeast pkgs.dolt.version "2.6.0";
-    pkgs.runCommand "overlay-dolt-version-guard" { } ''
-      DOLT_ROOT_PATH="$TMPDIR" ${pkgs.dolt}/bin/dolt version | grep -F 'dolt version 2.6.0'
-      touch $out
-    '';
-
-  overlay-beads-version-guard = pkgs.runCommand "overlay-beads-version-guard" { } ''
-    ${pkgs.beads-unwrapped}/bin/bd update --if-revision=0 --help > /dev/null
-    touch $out
-  '';
-
   overlay-neovim-lua = pkgs.runCommand "overlay-neovim-lua" { } ''
     ${
       if pkgs.neovim-unwrapped ? lua then

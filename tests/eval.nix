@@ -76,9 +76,8 @@ let
           username = "shunkakinoki";
         };
         activation = galactica.config.system.activationScripts.tailscaleDns.text;
-        beads = galactica.config.home-manager.users.shunkakinoki;
-        writerKeyDaemon = galactica.config.launchd.daemons."com.shunkakinoki.kyber-writer-key";
-        packageNames = map lib.getName beads.home.packages;
+        hm = galactica.config.home-manager.users.shunkakinoki;
+        packageNames = map lib.getName hm.home.packages;
       in
       assert !galactica.config.home-manager.users.shunkakinoki.nix.enable;
       assert !galactica.config.home-manager.users.shunkakinoki.nix.gc.automatic;
@@ -87,20 +86,10 @@ let
       assert lib.elem "ollama" packageNames;
       assert !(lib.elem "ollama" (map (brew: brew.name) galactica.config.homebrew.brews));
       assert !(lib.elem "ollama-app" (map (cask: cask.name) galactica.config.homebrew.casks));
-      assert beads.launchd.agents.ollama.config.EnvironmentVariables.OLLAMA_HOST == "127.0.0.1";
-      assert lib.hasPrefix "/nix/store/" (
-        builtins.head beads.launchd.agents.ollama.config.ProgramArguments
-      );
-      assert beads.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "beads-dolt.tail950b36.ts.net";
-      assert beads.home.sessionVariables.BEADS_NODE_ID == "kyber";
-      assert beads.home.sessionVariables.BD_EVENTS_JOURNAL == "1";
-      assert !(beads.home.sessionVariables ? BEADS_DOLT_DATA_DIR);
-      assert !(beads.home.sessionVariables ? BEADS_AUTHORITY_ROUTE);
-      assert !(beads.launchd.agents ? dolt);
-      assert !(beads.launchd.agents ? dolt-backup-main);
-      assert beads.launchd.agents.beads-dolt-client-environment.enable;
-      assert beads.launchd.agents.dotenv-gui-environment.config.RunAtLoad;
-      assert !(beads.home.activation ? exportGuiDotenv);
+      assert hm.launchd.agents.ollama.config.EnvironmentVariables.OLLAMA_HOST == "127.0.0.1";
+      assert lib.hasPrefix "/nix/store/" (builtins.head hm.launchd.agents.ollama.config.ProgramArguments);
+      assert hm.launchd.agents.dotenv-gui-environment.config.RunAtLoad;
+      assert !(hm.home.activation ? exportGuiDotenv);
       assert lib.elem "herdr" packageNames;
       assert lib.elem "openclaw/tap/crabbox" (map (brew: brew.name) galactica.config.homebrew.brews);
       assert !(lib.elem "herdr" (map (brew: brew.name) galactica.config.homebrew.brews));
@@ -118,21 +107,6 @@ let
           "/etc/ssh/ssh_host_ed25519_key"
           "/Users/shunkakinoki/.ssh/id_ed25519"
         ];
-      assert !(galactica.config.age.secrets ? "keys/kyber-writer.age");
-      assert writerKeyDaemon.serviceConfig.RunAtLoad;
-      assert writerKeyDaemon.serviceConfig.KeepAlive.SuccessfulExit == false;
-      assert writerKeyDaemon.serviceConfig.StandardErrorPath == "/var/log/kyber-writer-key.log";
-      assert lib.hasInfix "/etc/ssh/ssh_host_ed25519_key" writerKeyDaemon.script;
-      assert
-        builtins.length (import ../named-hosts/galactica/secrets.nix)."keys/kyber-writer.age".publicKeys
-        == 1;
-      assert
-        beads.programs.ssh.settings.kyber.data.IdentityFile == [
-          "/Users/shunkakinoki/.ssh/id_ed25519_kyber_writer"
-        ];
-      assert beads.programs.ssh.settings.kyber.data.IdentityAgent == "none";
-      assert beads.programs.ssh.settings.kyber.data.UseKeychain == "no";
-      assert beads.programs.ssh.settings.kyber.data.AddKeysToAgent == "no";
       assert
         galactica.config.users.users.shunkakinoki.openssh.authorizedKeys.keys
         == fleetPeerKeysOf "galactica";
@@ -175,8 +149,8 @@ let
           username = "shunkakinoki";
         };
         cfg = matic.config;
-        beads = cfg.home-manager.users.shunkakinoki;
-        herdr = beads.systemd.user.services.herdr-server;
+        hm = cfg.home-manager.users.shunkakinoki;
+        herdr = hm.systemd.user.services.herdr-server;
       in
       assert
         cfg.services.tailscale.extraSetFlags == [
@@ -201,17 +175,12 @@ let
       assert cfg.services.openssh.settings.PermitRootLogin == "no";
       assert cfg.users.users.shunkakinoki.openssh.authorizedKeys.keys == fleetPeerKeysOf "matic";
       assert sshAuthorizedKeys.matic == fleetPeerKeysOf "matic";
-      assert beads.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "beads-dolt.tail950b36.ts.net";
-      assert beads.home.sessionVariables.BEADS_NODE_ID == "kyber";
-      assert beads.home.sessionVariables.BD_EVENTS_JOURNAL == "1";
-      assert !(beads.systemd.user.services ? dolt);
-      assert !(beads.systemd.user.services ? dolt-federation-sync);
-      assert beads.systemd.user.services.roborev.Service.CPUQuota == "250%";
-      assert beads.systemd.user.services.roborev.Service.CPUWeight == 20;
-      assert beads.systemd.user.services.roborev.Service.IOWeight == 20;
-      assert beads.systemd.user.services.roborev.Service.Nice == 10;
-      assert beads.home.file.".bun/bin/bun".force;
-      assert lib.hasSuffix "-bun-1.4.4/bin/bun" (toString beads.home.file.".bun/bin/bun".source);
+      assert hm.systemd.user.services.roborev.Service.CPUQuota == "250%";
+      assert hm.systemd.user.services.roborev.Service.CPUWeight == 20;
+      assert hm.systemd.user.services.roborev.Service.IOWeight == 20;
+      assert hm.systemd.user.services.roborev.Service.Nice == 10;
+      assert hm.home.file.".bun/bin/bun".force;
+      assert lib.hasSuffix "-bun-1.4.4/bin/bun" (toString hm.home.file.".bun/bin/bun".source);
       # Executor seats need the server back after an unattended reboot.
       assert cfg.users.users.shunkakinoki.linger;
       assert herdr.Install.WantedBy == [ "default.target" ];
@@ -225,16 +194,9 @@ let
           "-/home/shunkakinoki/dotfiles/.env"
           "-/home/shunkakinoki/.config/agenix/agents-prd.env"
         ];
-      assert beads.age.secrets."agents-prd.env".mode == "0400";
-      assert beads.age.identityPaths == [ "/home/shunkakinoki/.ssh/id_ed25519" ];
+      assert hm.age.secrets."agents-prd.env".mode == "0400";
+      assert hm.age.identityPaths == [ "/home/shunkakinoki/.ssh/id_ed25519" ];
       assert lib.elem "HERDR_ENV=1" herdr.Service.Environment;
-      assert lib.elem "BEADS_DOLT_AUTO_START=0" herdr.Service.Environment;
-      assert lib.elem "BEADS_DOLT_SERVER_MODE=1" herdr.Service.Environment;
-      assert lib.elem "BEADS_DOLT_SERVER_HOST=beads-dolt.tail950b36.ts.net" herdr.Service.Environment;
-      assert lib.elem "BEADS_NODE_ID=kyber" herdr.Service.Environment;
-      assert lib.elem "BD_EVENTS_JOURNAL=1" herdr.Service.Environment;
-      assert beads.home.sessionVariables.BEADS_AUTHORITY_ROUTE == "shell";
-      assert lib.elem "BEADS_AUTHORITY_ROUTE=shell" herdr.Service.Environment;
       assert
         tailscaleServeRoutes.matic == [
           {
@@ -244,10 +206,10 @@ let
             manager = "activation";
           }
         ];
-      assert lib.hasInfix " 443 3773" beads.home.activation.tailscaleServeRoutes.data;
-      assert !beads.programs.atuin.settings.auto_sync;
-      assert beads.systemd.user.timers ? atuin-push;
-      assert beads.systemd.user.timers ? atuin-prune-foreign;
+      assert lib.hasInfix " 443 3773" hm.home.activation.tailscaleServeRoutes.data;
+      assert !hm.programs.atuin.settings.auto_sync;
+      assert hm.systemd.user.timers ? atuin-push;
+      assert hm.systemd.user.timers ? atuin-prune-foreign;
       mkEvalCheck "nixos-matic" cfg.system.build.toplevel;
 
     eval-nixos-viper =
@@ -423,25 +385,6 @@ let
         assert !(lib.elem "agenix.service" (cfg.systemd.user.services.herdr-server.Unit.Wants or [ ]));
         assert cfg.systemd.user.services.herdr-server.Service.EnvironmentFile == [ "-/root/dotfiles/.env" ];
         assert !(cfg.age.secrets ? "agents-prd.env");
-        assert lib.elem "BEADS_DOLT_AUTO_START=0"
-          cfg.systemd.user.services.herdr-server.Service.Environment;
-        assert lib.elem "BEADS_DOLT_SERVER_MODE=1"
-          cfg.systemd.user.services.herdr-server.Service.Environment;
-        assert lib.elem "BEADS_DOLT_SERVER_HOST=beads-dolt.tail950b36.ts.net"
-          cfg.systemd.user.services.herdr-server.Service.Environment;
-        assert lib.elem "BEADS_NODE_ID=kyber" cfg.systemd.user.services.herdr-server.Service.Environment;
-        assert lib.elem "BD_EVENTS_JOURNAL=1" cfg.systemd.user.services.herdr-server.Service.Environment;
-        assert !(cfg.home.sessionVariables ? BEADS_DOLT_DATA_DIR);
-        assert !(cfg.systemd.user.services ? dolt);
-        assert !(cfg.systemd.user.services ? dolt-federation-sync);
-        assert !(cfg.systemd.user.timers ? dolt-federation-sync);
-        assert !(cfg.systemd.user.services ? dolt-linear-sync);
-        assert !(cfg.systemd.user.services ? dolt-backup-main);
-        assert !(cfg.systemd.user.services ? dolt-federation-hub);
-        assert !(cfg.systemd.user.services ? dolt-federation-access);
-        assert cfg.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "beads-dolt.tail950b36.ts.net";
-        assert cfg.home.sessionVariables.BD_EVENTS_JOURNAL == "1";
-        assert cfg.home.sessionVariables.BEADS_NODE_ID == "kyber";
         assert lib.hasInfix sessionVarsSource (bashrcBefore "[[ $- == *i* ]] || return");
         assert lib.hasInfix sessionVarsSource (bashrcBefore "load-env-file.sh");
         assert lib.hasInfix sessionVarsSource (bashrcBefore "export PATH=");
@@ -633,7 +576,6 @@ let
         # T3 Code runs under the user manager, so its agents need the shell's
         # session environment there; command substitutions cannot be expressed.
         assert cfg.systemd.user.sessionVariables.BASH_ENV == "$HOME/.bash_env";
-        assert cfg.systemd.user.sessionVariables.DOLT_CLI_PASSWORD == "";
         assert !(cfg.systemd.user.sessionVariables ? TMUX_TMPDIR);
         assert lib.hasInfix ".bun/bin/t3" cfg.home.activation.provisionKaminoT3Connect.data;
         assert lib.hasInfix (builtins.unsafeDiscardStringContext "${pkgs.nodejs}/bin")
@@ -668,10 +610,6 @@ let
         );
         assert
           !(lib.hasInfix "\"$t3_bin\" service install" (builtins.readFile ../named-hosts/kamino/activate.sh));
-        assert !(cfg.systemd.user.services ? dolt);
-        assert !(cfg.systemd.user.services ? dolt-federation-sync);
-        assert !(cfg.systemd.user.services ? dolt-linear-sync);
-        assert !(cfg.systemd.user.services ? dolt-backup-main);
         mkEvalCheck "home-kamino100" kamino.activationPackage;
       eval-home-andor =
         let
@@ -729,7 +667,6 @@ let
         assert lib.hasInfix "-start.sh " (lib.head herdr.Service.ExecStart);
         assert lib.hasSuffix "/bin/herdr" (lib.head herdr.Service.ExecStart);
         assert herdr.Install.WantedBy == [ "default.target" ];
-        assert lib.elem "BEADS_NODE_ID=kyber" herdr.Service.Environment;
         mkEvalCheck "home-beskar" beskar.activationPackage;
       eval-home-kyber =
         let
@@ -774,18 +711,9 @@ let
         assert lib.hasInfix "/bin/ssh-keygen" cfg.home.activation.authorizeFleetSsh.data;
         assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeFleetSsh.data;
         assert
-          lib.init sshAuthorizedKeys.kyber
+          sshAuthorizedKeys.kyber
           == builtins.filter (key: key != publicKeys.galactica) (fleetPeerKeysOf "kyber")
           ++ ciWorkerPublicKeys;
-        assert lib.hasPrefix
-          "restrict,command=\"/home/ubuntu/.local/bin/beads-linear-complete-ssh-guard\" ssh-ed25519 "
-          (lib.last sshAuthorizedKeys.kyber);
-        assert !(lib.elem (lib.last sshAuthorizedKeys.kyber) sshAuthorizedKeys.galactica);
-        assert !(cfg.age.secrets ? "keys/kyber-writer.age");
-        assert cfg.home.file.".local/bin/beads-linear-complete-ssh-guard".executable;
-        assert !(cfg.systemd.user.services ? dolt);
-        assert cfg.home.activation ? installDoltSystemService;
-        assert cfg.systemd.user.services ? dolt-linear-sync;
         assert cfg.systemd.user.services.herdr-server.Service.Slice == "herdr.slice";
         assert lib.elem "agenix.service" cfg.systemd.user.services.herdr-server.Unit.After;
         assert lib.elem "agenix.service" cfg.systemd.user.services.herdr-server.Unit.Wants;
@@ -829,14 +757,6 @@ let
           toString cfg.systemd.user.services.cliproxyapi-env-reload.Service.ExecStart
         );
         assert !(lib.hasInfix "--slice=orchestration.slice" cfg.programs.fish.shellInit);
-        assert !(cfg.systemd.user.services ? dolt-federation-sync);
-        assert !(cfg.systemd.user.services ? dolt-federation-hub);
-        assert !(cfg.systemd.user.services ? dolt-federation-access);
-        assert !(cfg.systemd.user.services ? dolt-backup-main);
-        assert cfg.home.sessionVariables.BEADS_DOLT_SERVER_HOST == "beads-dolt.tail950b36.ts.net";
-        assert cfg.home.sessionVariables.BEADS_NODE_ID == "kyber";
-        assert cfg.home.sessionVariables.BD_EVENTS_JOURNAL == "1";
-        assert !(cfg.home.sessionVariables ? BEADS_DOLT_DATA_DIR);
         assert lib.length tailscaleServeRoutes.kyber == 4;
         assert
           map (route: route.name) tailscaleServeRoutes.kyber == [

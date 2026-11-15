@@ -443,7 +443,7 @@ usage() {
   echo ""
   echo "Examples:"
   echo "  $0              # Update all"
-  echo "  $0 beads        # Update repos containing 'beads'"
+  echo "  $0 cass         # Update repos containing 'cass'"
 }
 
 main() {

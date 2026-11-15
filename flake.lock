@@ -20,26 +20,6 @@
         "type": "github"
       }
     },
-    "beads": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1794597403,
-        "narHash": "sha256-p9yjSutYzMFUVZPK2At99876GXoyVZOXE/BIjeJ9s0U=",
-        "owner": "gastownhall",
-        "repo": "beads",
-        "rev": "8cdfa796a8f571266f2687f8b80365cbe26a943d",
-        "type": "github"
-      },
-      "original": {
-        "owner": "gastownhall",
-        "repo": "beads",
-        "type": "github"
-      }
-    },
     "bun2nix": {
       "inputs": {
         "flake-parts": "flake-parts_3",
@@ -807,7 +787,6 @@
     "root": {
       "inputs": {
         "agenix": "agenix",
-        "beads": "beads",
         "devenv": "devenv",
         "flake-parts": "flake-parts_2",
         "foundry": "foundry",
