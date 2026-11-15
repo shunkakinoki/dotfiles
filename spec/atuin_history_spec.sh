@@ -150,6 +150,14 @@ The output should include '/h/.bun/bin:/h/.bun/install/global/node_modules/.bin:
 The output should not include ':/h/.bun/bin:/usr/bin'
 End
 
+It 'removes adjacent duplicate bun entries from an inherited PATH'
+When run env -i HOME=/h PATH=/h/.bun/bin:/h/.bun/bin:/usr/bin:/bin bash --norc --noprofile -c ". '$BASH_ENV_FILE' >/dev/null 2>&1; echo \"\$PATH\""
+The status should be success
+The output should include '/h/.bun/bin:/h/.bun/install/global/node_modules/.bin:'
+The output should not include '/h/.bun/bin:/h/.bun/bin'
+The output should not include ':/h/.bun/bin:/usr/bin'
+End
+
 It 'adds local binaries to fish shellInit before login-only setup'
 When run bash -c "grep -F 'set -gx PATH \$HOME/.bun/bin \$HOME/.bun/install/global/node_modules/.bin \$HOME/.cargo/bin \$HOME/.local/bin \$PATH' '$FISH_CONFIG'"
 The status should be success

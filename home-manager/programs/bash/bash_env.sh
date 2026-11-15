@@ -18,7 +18,10 @@ esac
 # first, and T3 offers in-app provider updates only for CLIs found via ~/.bun/bin.
 for dir in "$HOME/.bun/install/global/node_modules/.bin" "$HOME/.bun/bin"; do
   PATH=":$PATH:"
-  PATH="${PATH//:$dir:/:}"
+  # One pass misses adjacent duplicates because matches share a colon.
+  while [[ $PATH == *":$dir:"* ]]; do
+    PATH="${PATH//:$dir:/:}"
+  done
   PATH="${PATH#:}"
   PATH="${PATH%:}"
   export PATH="$dir${PATH:+:$PATH}"
