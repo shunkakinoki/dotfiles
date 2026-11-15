@@ -47,6 +47,12 @@ fi
 
 cleanup() {
   while sudo -n iptables -t nat -D "${redirect[@]}" 2>/dev/null; do :; done
+  # Removing the standby while a redirect still points at it would refuse every
+  # new connection, which is worse than leaving the standby serving.
+  if sudo -n iptables -t nat -C "${redirect[@]}" 2>/dev/null; then
+    echo "❌ Redirect to :$standby_port is still installed; leaving $standby running" >&2
+    return
+  fi
   docker rm -f "$standby" >/dev/null 2>&1 || true
   rm -f "$standby_config"
 }

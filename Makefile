@@ -1403,8 +1403,9 @@ systemctl-cpa-manager-plus: ## Restart CPA Manager Plus systemd user service.
 	@echo "✅ CPA Manager Plus restarted"
 
 # Pulling while the old containers still serve keeps each outage to the
-# container swap, and CLIProxyAPI swaps through a standby so its port never
-# closes. CPA Manager Plus reads from CLIProxyAPI, so it goes second.
+# container swap. CLIProxyAPI hands new ingress connections to a standby while
+# it restarts, falling back to an in-place restart without passwordless
+# iptables. CPA Manager Plus reads from CLIProxyAPI, so it goes second.
 .PHONY: cliproxy-update
 cliproxy-update: ## Pull CLIProxyAPI and CPA Manager Plus images and restart whichever changed (kyber).
 	@if [ "$(DETECTED_HOST)" != "kyber" ] && [ "$(HOST)" != "kyber" ]; then \

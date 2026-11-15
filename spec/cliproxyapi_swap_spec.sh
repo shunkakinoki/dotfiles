@@ -21,7 +21,9 @@ printf '%s\n' "sudo $*" >>"$MOCK_LOG"
 rules="$(cat "$RULES")"
 case " $* " in
   *" -I "*) echo $((rules + 1)) >"$RULES" ;;
+  *" -C "*) [ "$rules" -gt 0 ] ;;
   *" -D "*)
+    [ "${DELETE_FAILS:-0}" != 1 ] || exit 1
     [ "$rules" -gt 0 ] || exit 1
     echo $((rules - 1)) >"$RULES"
     ;;
@@ -104,7 +106,16 @@ When call run_swap
 The status should be failure
 The output should include 'cliproxyapi did not come back on :8317'
 The output should include 'rules=0'
-The output should include 'docker rm -f cliproxyapi-standby'
+The output should match pattern '*systemctl --user restart cliproxyapi.service*docker rm -f cliproxyapi-standby*'
+End
+
+It 'keeps the standby when the redirect cannot be removed'
+DELETE_FAILS=1
+export DELETE_FAILS
+When call run_swap
+The status should be failure
+The output should include 'leaving cliproxyapi-standby running'
+The output should not match pattern '*systemctl --user restart cliproxyapi.service*docker rm -f cliproxyapi-standby*'
 End
 
 It 'refuses a config without the expected port'
