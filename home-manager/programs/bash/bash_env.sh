@@ -16,17 +16,18 @@ esac
 
 # Move rather than skip: an inherited PATH may list the global node_modules/.bin
 # first, and T3 offers in-app provider updates only for CLIs found via ~/.bun/bin.
-for dir in "$HOME/.bun/install/global/node_modules/.bin" "$HOME/.bun/bin"; do
+# The quoted pattern keeps a HOME containing glob characters from never matching.
+for _bun_path_dir in "$HOME/.bun/install/global/node_modules/.bin" "$HOME/.bun/bin"; do
   PATH=":$PATH:"
   # One pass misses adjacent duplicates because matches share a colon.
-  while [[ $PATH == *":$dir:"* ]]; do
-    PATH="${PATH//:$dir:/:}"
+  while [[ $PATH == *":$_bun_path_dir:"* ]]; do
+    PATH="${PATH//":$_bun_path_dir:"/:}"
   done
   PATH="${PATH#:}"
   PATH="${PATH%:}"
-  export PATH="$dir${PATH:+:$PATH}"
+  export PATH="$_bun_path_dir${PATH:+:$PATH}"
 done
-unset dir
+unset _bun_path_dir
 
 # Managed T3 dispatch also applies to non-interactive Bash and its child shells.
 if [ -x "$HOME/.config/t3/bin/t3" ]; then
