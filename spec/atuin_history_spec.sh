@@ -136,11 +136,18 @@ The output should include 'bash_env.sh'
 End
 
 It 'loads cargo, local, and bun bins from the bash non-interactive env file'
-When run bash -c "grep -F 'export PATH=\"\$HOME/.cargo/bin:\$PATH\"' '$BASH_ENV_FILE' && grep -F 'export PATH=\"\$HOME/.bun/bin:\$PATH\"' '$BASH_ENV_FILE' && grep -F 'export PATH=\"\$HOME/.local/bin:\$PATH\"' '$BASH_ENV_FILE'"
+When run bash -c "grep -F 'export PATH=\"\$HOME/.cargo/bin:\$PATH\"' '$BASH_ENV_FILE' && grep -F '\"\$HOME/.bun/bin\"' '$BASH_ENV_FILE' && grep -F 'export PATH=\"\$HOME/.local/bin:\$PATH\"' '$BASH_ENV_FILE'"
 The status should be success
 The output should include '.cargo/bin'
 The output should include '.bun/bin'
 The output should include '.local/bin'
+End
+
+It 'moves ~/.bun/bin ahead of an inherited bun global node_modules/.bin'
+When run env -i HOME=/h PATH=/h/.bun/install/global/node_modules/.bin:/h/.bun/bin:/usr/bin:/bin bash --norc --noprofile -c ". '$BASH_ENV_FILE' >/dev/null 2>&1; echo \"\$PATH\""
+The status should be success
+The output should include '/h/.bun/bin:/h/.bun/install/global/node_modules/.bin:'
+The output should not include ':/h/.bun/bin:/usr/bin'
 End
 
 It 'adds local binaries to fish shellInit before login-only setup'
