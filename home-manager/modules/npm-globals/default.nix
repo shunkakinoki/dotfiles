@@ -60,7 +60,7 @@ in
   # Add local and bun bins to PATH
   home.sessionPath = [
     "$HOME/.local/bin"
-    "$HOME/.bun/install/global/node_modules/.bin"
     "$HOME/.bun/bin"
+    "$HOME/.bun/install/global/node_modules/.bin"
   ];
 }

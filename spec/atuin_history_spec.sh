@@ -111,7 +111,7 @@ The output should include "gomi"
 End
 
 It 'adds local binaries to zsh envExtra for non-interactive commands'
-When run bash -c "grep -F 'export PATH=\"\$HOME/.bun/install/global/node_modules/.bin:\$HOME/.bun/bin:\$HOME/.cargo/bin:\$HOME/.local/bin:\$PATH\"' '$ZSH_CONFIG'"
+When run bash -c "grep -F 'export PATH=\"\$HOME/.bun/bin:\$HOME/.bun/install/global/node_modules/.bin:\$HOME/.cargo/bin:\$HOME/.local/bin:\$PATH\"' '$ZSH_CONFIG'"
 The status should be success
 The output should include '.local/bin'
 The output should include '.bun/bin'
@@ -120,7 +120,7 @@ The output should include '.cargo/bin'
 End
 
 It 'adds local binaries to bash profileExtra before bashrc'
-When run bash -c "grep -F 'export PATH=\"\$HOME/.bun/install/global/node_modules/.bin:\$HOME/.bun/bin:\$HOME/.cargo/bin:\$HOME/.local/bin:\$PATH\"' '$BASH_CONFIG'"
+When run bash -c "grep -F 'export PATH=\"\$HOME/.bun/bin:\$HOME/.bun/install/global/node_modules/.bin:\$HOME/.cargo/bin:\$HOME/.local/bin:\$PATH\"' '$BASH_CONFIG'"
 The status should be success
 The output should include '.local/bin'
 The output should include '.bun/bin'
@@ -136,11 +136,26 @@ The output should include 'bash_env.sh'
 End
 
 It 'loads cargo, local, and bun bins from the bash non-interactive env file'
-When run bash -c "grep -F 'export PATH=\"\$HOME/.cargo/bin:\$PATH\"' '$BASH_ENV_FILE' && grep -F 'export PATH=\"\$HOME/.bun/bin:\$PATH\"' '$BASH_ENV_FILE' && grep -F 'export PATH=\"\$HOME/.local/bin:\$PATH\"' '$BASH_ENV_FILE'"
+When run bash -c "grep -F 'export PATH=\"\$HOME/.cargo/bin:\$PATH\"' '$BASH_ENV_FILE' && grep -F '\"\$HOME/.bun/bin\"' '$BASH_ENV_FILE' && grep -F 'export PATH=\"\$HOME/.local/bin:\$PATH\"' '$BASH_ENV_FILE'"
 The status should be success
 The output should include '.cargo/bin'
 The output should include '.bun/bin'
 The output should include '.local/bin'
+End
+
+It 'moves ~/.bun/bin ahead of an inherited bun global node_modules/.bin'
+When run env -i HOME=/h PATH=/h/.bun/install/global/node_modules/.bin:/h/.bun/bin:/usr/bin:/bin bash --norc --noprofile -c ". '$BASH_ENV_FILE' >/dev/null 2>&1; echo \"\$PATH\""
+The status should be success
+The output should include '/h/.bun/bin:/h/.bun/install/global/node_modules/.bin:'
+The output should not include ':/h/.bun/bin:/usr/bin'
+End
+
+It 'removes adjacent duplicate bun entries from an inherited PATH'
+When run env -i HOME=/h PATH=/h/.bun/bin:/h/.bun/bin:/usr/bin:/bin bash --norc --noprofile -c ". '$BASH_ENV_FILE' >/dev/null 2>&1; echo \"\$PATH\""
+The status should be success
+The output should include '/h/.bun/bin:/h/.bun/install/global/node_modules/.bin:'
+The output should not include '/h/.bun/bin:/h/.bun/bin'
+The output should not include ':/h/.bun/bin:/usr/bin'
 End
 
 It 'adds local binaries to fish shellInit before login-only setup'
