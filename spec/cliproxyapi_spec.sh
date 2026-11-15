@@ -487,7 +487,7 @@ When run bash -c '
 The output should equal '*fable*,*opus*,*sonnet*
 *fable*,*opus*,*sonnet*
 *haiku*
-[{"name":"claude-haiku-5-5","alias":"claude-haiku"}]'
+[{"name":"claude-haiku-5-5","alias":"claude-haiku","fork":true}]'
 The status should be success
 End
 End
@@ -590,6 +590,13 @@ It 'does not route the retired GLM model through OpenRouter'
 When run bash -c "sed -n '/name: \"openrouter\"/,/name: \"z-ai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should not include 'glm-4.7'
 The output should not include '@preset/glm-4-7'
+The status should be success
+End
+
+It 'keeps the native Claude Haiku 5.5 name beside its OAuth alias'
+When run bash -c "sed -n '/^oauth-model-alias:/,/^oauth-excluded-models:/p' '$PWD/config/cliproxyapi/config.template.yaml'"
+The output should include 'name: "claude-haiku-5-5"'
+The output should include 'fork: true'
 The status should be success
 End
 
