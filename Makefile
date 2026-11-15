@@ -1403,7 +1403,8 @@ systemctl-cpa-manager-plus: ## Restart CPA Manager Plus systemd user service.
 	@echo "✅ CPA Manager Plus restarted"
 
 # Pulling while the old containers still serve keeps each outage to the
-# container swap. CPA Manager Plus reads from CLIProxyAPI, so it goes second.
+# container swap, and CLIProxyAPI swaps through a standby so its port never
+# closes. CPA Manager Plus reads from CLIProxyAPI, so it goes second.
 .PHONY: cliproxy-update
 cliproxy-update: ## Pull CLIProxyAPI and CPA Manager Plus images and restart whichever changed (kyber).
 	@if [ "$(DETECTED_HOST)" != "kyber" ] && [ "$(HOST)" != "kyber" ]; then \
@@ -1418,6 +1419,10 @@ cliproxy-update: ## Pull CLIProxyAPI and CPA Manager Plus images and restart whi
 		if [ "$$(docker inspect -f '{{.Image}}' "$$name" 2>/dev/null)" = "$$(docker image inspect -f '{{.Id}}' "$$image")" ]; then \
 			echo "✅ $$name already runs the latest $$image"; \
 			return 0; \
+		fi; \
+		if [ "$$name" = cliproxyapi ]; then \
+			bash "$(CURDIR)/home-manager/services/cliproxyapi/scripts/swap.sh" "$$image"; \
+			return; \
 		fi; \
 		echo "🔄 Restarting $$name..."; \
 		systemctl --user restart "$$name.service" || return 1; \
