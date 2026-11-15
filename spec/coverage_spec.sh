@@ -5,6 +5,10 @@
 Describe 'shell script test coverage'
 
 Describe 'all required scripts have spec files'
+It 'has spec file for config/claude/hooks/worktree-create.sh'
+The path "spec/claude_worktree_create_spec.sh" should be exist
+End
+
 It 'has spec file for config/claude/hooks/notify.sh'
 The path "spec/notify_spec.sh" should be exist
 End
@@ -115,6 +119,10 @@ End
 
 It 'has spec file for home-manager/services/cliproxyapi/scripts/common.sh'
 The path "spec/cliproxyapi_backup_spec.sh" should be exist
+End
+
+It 'has spec file for home-manager/services/cliproxyapi/scripts/swap.sh'
+The path "spec/cliproxyapi_swap_spec.sh" should be exist
 End
 
 It 'has spec file for home-manager/services/code-syncer/sync.sh'
@@ -638,6 +646,7 @@ config/claude/hooks/caam-snapshot.sh
 config/claude/hooks/security.sh
 config/claude/hooks/atuin-history.sh
 config/claude/hooks/statusline.sh
+config/claude/hooks/worktree-create.sh
 config/codex/activate.sh
 config/codex/ensure-desktop-settings-agent.sh
 config/codex/sync-desktop-settings.sh
@@ -769,6 +778,7 @@ home-manager/services/cliproxyapi/scripts/common.sh
 home-manager/services/cliproxyapi/scripts/docker-start.sh
 home-manager/services/cliproxyapi/scripts/hydrate.sh
 home-manager/services/cliproxyapi/scripts/start.sh
+home-manager/services/cliproxyapi/scripts/swap.sh
 home-manager/services/cliproxyapi/scripts/wrapper.sh
 home-manager/services/cliproxyapi/scripts/kamino-tunnel.sh
 home-manager/services/cliproxyapi/scripts/quota.sh
@@ -809,6 +819,7 @@ named-hosts/beskar/activate-sshd.sh
 named-hosts/beskar/activate-t3-runtime-libs.sh
 named-hosts/kamino/activate.sh
 named-hosts/kamino/fleet.sh
+named-hosts/kamino/kamino-tailnet-socks.sh
 named-hosts/kamino/trim-idle.sh
 named-hosts/kyber/activate-backup-files.sh
 named-hosts/kyber/activate-fish-ssh-compat.sh
