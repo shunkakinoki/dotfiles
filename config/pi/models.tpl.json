@@ -122,6 +122,29 @@
           },
           "contextWindow": 131072,
           "maxTokens": 16384
+        },
+        {
+          "id": "__DEEPSEEK_FLASH_UNVERSIONED__",
+          "name": "DeepSeek Flash",
+          "api": "openai-completions",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.14,
+            "output": 0.28,
+            "cacheRead": 0.0028,
+            "cacheWrite": 0
+          },
+          "contextWindow": 1000000,
+          "maxTokens": 384000,
+          "compat": {
+            "supportsDeveloperRole": false,
+            "supportsReasoningEffort": false,
+            "supportsStore": false,
+            "maxTokensField": "max_tokens"
+          }
         }
       ]
     },
