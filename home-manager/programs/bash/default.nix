@@ -96,10 +96,12 @@
       export PATH="$HOME/.local/bin:$PATH"
       export PATH="$HOME/.cargo/bin:$PATH"
       export PATH="$HOME/.local/scripts:$PATH"
-      export PATH="$HOME/.bun/bin:$PATH"
       export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
       export PATH="/opt/homebrew/bin:$PATH"
       export PATH="$HOME/.bun/install/global/node_modules/.bin:$PATH"
+      # Last prepend wins: T3 only offers in-app provider updates when the CLI
+      # resolves through ~/.bun/bin, not through the global node_modules/.bin.
+      export PATH="$HOME/.bun/bin:$PATH"
 
       # Worktrunk shell init
       if command -v wt >/dev/null 2>&1; then
@@ -109,7 +111,7 @@
 
     profileExtra = ''
       # Local binaries should be present even before login shells source .bashrc.
-      export PATH="$HOME/.bun/install/global/node_modules/.bin:$HOME/.bun/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+      export PATH="$HOME/.bun/bin:$HOME/.bun/install/global/node_modules/.bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
 
       # Nix
       if [ -e ~/.nix-profile/etc/profile.d/nix.sh ]; then

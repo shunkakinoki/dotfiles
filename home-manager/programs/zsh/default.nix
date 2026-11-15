@@ -31,7 +31,7 @@
       fi
 
       # Local binaries must be available to non-interactive zsh commands too.
-      export PATH="$HOME/.bun/install/global/node_modules/.bin:$HOME/.bun/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+      export PATH="$HOME/.bun/bin:$HOME/.bun/install/global/node_modules/.bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
 
       export CAAM_ROTATION_ENABLED=1
 
@@ -75,10 +75,12 @@
       export PATH="$HOME/.local/bin:$PATH"
       export PATH="$HOME/.cargo/bin:$PATH"
       export PATH="$HOME/.local/scripts:$PATH"
-      export PATH="$HOME/.bun/bin:$PATH"
       export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
       export PATH="/opt/homebrew/bin:$PATH"
       export PATH="$HOME/.bun/install/global/node_modules/.bin:$PATH"
+      # Last prepend wins: T3 only offers in-app provider updates when the CLI
+      # resolves through ~/.bun/bin, not through the global node_modules/.bin.
+      export PATH="$HOME/.bun/bin:$PATH"
 
       # FNM (Fast Node Manager) configuration
       ${

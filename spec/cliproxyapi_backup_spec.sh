@@ -16,6 +16,7 @@ sed \
   -e 's|@aws@|aws|g' \
   -e 's|@sqlite3@|sqlite3|g' \
   -e 's|@tar@|tar|g' \
+  -e 's|@pigz@|gzip|g' \
   -e 's|@objectstore_enabled@|true|g' \
   "$SCRIPTS_DIR/common.sh" >"$__COMMON_SCRIPT"
 chmod +x "$__COMMON_SCRIPT"
@@ -118,21 +119,6 @@ esac
 exit 0
 EOF
   chmod +x "$MOCK_BIN/systemctl"
-  # The analytics archive is streamed into `aws s3 cp -`, so the mock has to
-  # drain stdin or the producing tar dies on SIGPIPE.
-  cat >"$MOCK_BIN/aws" <<'EOF'
-#!/usr/bin/env bash
-set -euo pipefail
-: "${MOCK_LOG:?MOCK_LOG must be set}"
-printf '%s\n' "$0 $*" >>"$MOCK_LOG"
-for arg in "$@"; do
-  if [ "$arg" = "-" ]; then
-    cat >/dev/null
-    break
-  fi
-done
-EOF
-  chmod +x "$MOCK_BIN/aws"
   cat >"$MOCK_BIN/sqlite3" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
@@ -142,10 +128,7 @@ printf '%s\n' "$0 $*" >>"$MOCK_LOG"
 command="${*: -1}"
 case "$command" in
   'PRAGMA wal_checkpoint(TRUNCATE);')
-    printf '%s\n' '0|0|0'
-    ;;
-  'PRAGMA integrity_check;')
-    printf '%s\n' "${SQLITE_INTEGRITY_RESULT:-ok}"
+    printf '%s\n' "${SQLITE_CHECKPOINT_RESULT:-0|0|0}"
     ;;
 esac
 EOF
@@ -251,8 +234,7 @@ seed_manager_data
 When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$__BACKUP_SCRIPT"'" full 2>&1; status=$?; cat "$MOCK_LOG" 2>/dev/null || true; exit "$status"'
 The status should be success
 The output should include 'PRAGMA wal_checkpoint(TRUNCATE);'
-The output should include 'PRAGMA integrity_check;'
-The output should match pattern '*s3://cliproxyapi/cpa-manager-plus/analytics-backup-??.tar.gz*'
+The output should match pattern '*aws s3 cp*--only-show-errors */cpa-manager-plus-backup.*/analytics-backup.tar.gz s3://cliproxyapi/cpa-manager-plus/analytics-backup-??.tar.gz*'
 The output should include 'cpa-manager-plus/analytics-backup.tar.gz'
 End
 
@@ -265,16 +247,16 @@ The output should include 'systemctl --user start cpa-manager-plus.service'
 The output should include 'PRAGMA wal_checkpoint(TRUNCATE);'
 End
 
-It 'brings the manager back when the paused copy runs too long'
+It 'brings the manager back when the paused archive runs too long'
 seed_manager_data
-cat >"$MOCK_BIN/cp" <<'EOF'
+cat >"$MOCK_BIN/tar" <<'EOF'
 #!/usr/bin/env bash
 exec sleep 30
 EOF
-chmod +x "$MOCK_BIN/cp"
+chmod +x "$MOCK_BIN/tar"
 When run bash -c 'HOME="'"$TEMP_HOME"'" MANAGER_ACTIVE=1 CLIPROXY_BACKUP_COPY_TIMEOUT=1 bash "'"$__BACKUP_SCRIPT"'" full 2>&1; status=$?; cat "$MOCK_LOG" 2>/dev/null || true; exit "$status"'
 The status should be failure
-The output should include 'database copy failed or exceeded 1'
+The output should include 'database archive failed or exceeded 1'
 The output should include 'systemctl --user start cpa-manager-plus.service'
 The output should not include 's3://cliproxyapi/cpa-manager-plus/'
 End
@@ -296,7 +278,7 @@ It 'promotes the archive with the low-level S3 copy API'
 seed_manager_data
 When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$__BACKUP_SCRIPT"'" full 2>&1; status=$?; cat "$MOCK_LOG" 2>/dev/null || true; exit "$status"'
 The status should be success
-The output should match pattern '*aws s3 cp*--only-show-errors - s3://cliproxyapi/cpa-manager-plus/analytics-backup-??.tar.gz*'
+The output should match pattern '*aws s3 cp*--only-show-errors */analytics-backup.tar.gz s3://cliproxyapi/cpa-manager-plus/analytics-backup-??.tar.gz*'
 The output should match pattern '*aws s3api copy-object*--bucket=cliproxyapi*--key=cpa-manager-plus/analytics-backup.tar.gz*--copy-source=cliproxyapi/cpa-manager-plus/analytics-backup-??.tar.gz*'
 End
 
@@ -325,12 +307,31 @@ The status should eq 143
 The output should eq ''
 End
 
-It 'fails closed and skips analytics uploads when the snapshot is corrupt'
+It 'fails closed and skips analytics uploads when the WAL checkpoint is busy'
 seed_manager_data
-When run bash -c 'HOME="'"$TEMP_HOME"'" SQLITE_INTEGRITY_RESULT=corrupt bash "'"$__BACKUP_SCRIPT"'" full 2>&1; status=$?; cat "$MOCK_LOG" 2>/dev/null || true; exit "$status"'
+When run bash -c 'HOME="'"$TEMP_HOME"'" MANAGER_ACTIVE=1 SQLITE_CHECKPOINT_RESULT="1|5|3" bash "'"$__BACKUP_SCRIPT"'" full 2>&1; status=$?; cat "$MOCK_LOG" 2>/dev/null || true; exit "$status"'
 The status should be failure
-The output should include 'SQLite snapshot failed its integrity check'
+The output should include 'WAL checkpoint did not complete (1|5|3)'
+The output should include 'systemctl --user start cpa-manager-plus.service'
 The output should not include 's3://cliproxyapi/cpa-manager-plus/'
+End
+
+It 'archives the database and data key together'
+seed_manager_data
+printf 'sqlite-bytes' >"$TEMP_HOME/.cpa-manager-plus/usage.sqlite"
+printf 'key-bytes' >"$TEMP_HOME/.cpa-manager-plus/data.key"
+cat >"$MOCK_BIN/aws" <<'EOF'
+#!/usr/bin/env bash
+printf '%s\n' "aws $*" >>"$MOCK_LOG"
+if [ "$1 $2" = "s3 cp" ] && [ -f "${*: -2:1}" ]; then
+  tar -tzf "${*: -2:1}" >>"$MOCK_LOG"
+fi
+EOF
+chmod +x "$MOCK_BIN/aws"
+When run bash -c 'HOME="'"$TEMP_HOME"'" bash "'"$__BACKUP_SCRIPT"'" full 2>&1; status=$?; cat "$MOCK_LOG" 2>/dev/null || true; exit "$status"'
+The status should be success
+The output should include 'usage.sqlite'
+The output should include 'data.key'
 End
 
 It 'skips when credentials are missing'
@@ -558,6 +559,7 @@ ENV
     -e 's|@aws@|aws|g' \
     -e 's|@sqlite3@|sqlite3|g' \
     -e 's|@tar@|tar|g' \
+    -e 's|@pigz@|gzip|g' \
     -e 's|@objectstore_enabled@|false|g' \
     "$SCRIPTS_DIR/common.sh" >"$DISABLED_DIR/common.sh"
   sed -e 's|@common@|'"$DISABLED_DIR/common.sh"'|g' "$SCRIPTS_DIR/hydrate.sh" >"$DISABLED_DIR/hydrate.sh"
