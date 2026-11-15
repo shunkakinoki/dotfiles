@@ -134,7 +134,8 @@ cliproxy_backup_manager_data() (
   local data_dir="$1"
   local database_path="${data_dir}/usage.sqlite"
   local data_key_path="${data_dir}/data.key"
-  local staging_root backup_root snapshot_dir snapshot_path integrity hourly_object
+  local staging_root backup_root archive_path checkpoint hourly_object
+  local copy_timeout="${CLIPROXY_BACKUP_COPY_TIMEOUT:-30m}"
   local manager_unit="cpa-manager-plus.service"
   local manager_stopped=0
 
@@ -143,14 +144,10 @@ cliproxy_backup_manager_data() (
     return 0
   fi
 
-  # The snapshot is as large as the live database, so let the caller stage it on
-  # a filesystem that is not the one the database itself is being written to.
   staging_root="${CLIPROXY_BACKUP_STAGING_DIR:-${TMPDIR:-/tmp}}"
   mkdir -p "$staging_root"
   backup_root="$(mktemp -d "${staging_root%/}/cpa-manager-plus-backup.XXXXXX")"
-  snapshot_dir="${backup_root}/cpa-manager-plus"
-  snapshot_path="${snapshot_dir}/usage.sqlite"
-  mkdir -p "$snapshot_dir"
+  archive_path="${backup_root}/analytics-backup.tar.gz"
 
   restore_manager() {
     if [ "$manager_stopped" -eq 1 ]; then
@@ -165,46 +162,48 @@ cliproxy_backup_manager_data() (
   # holds a snapshot, and the manager writes every 500 ms. On 2026-10-19 that
   # left an 84 GB -wal against a 28 GB database and put kyber's root disk at
   # 76%. Pause the manager instead: with no writer the WAL folds back into the
-  # database, and a plain file copy of a fully checkpointed database is
-  # consistent. Downtime is the copy itself (tens of seconds to a few
-  # minutes), not the throttled 90-minute read the old path needed.
+  # database, and archiving a fully checkpointed database file is consistent.
   if systemctl --user is-active --quiet "$manager_unit"; then
     manager_stopped=1
     systemctl --user stop "$manager_unit"
   fi
 
-  @sqlite3@ "$database_path" ".timeout 30000" "PRAGMA wal_checkpoint(TRUNCATE);" >/dev/null
+  # Result is busy|wal_frames|checkpointed_frames; a busy checkpoint leaves
+  # committed pages in the WAL, which the archive would not contain.
+  checkpoint="$(@sqlite3@ "$database_path" ".timeout 30000" "PRAGMA wal_checkpoint(TRUNCATE);")"
+  if [ "${checkpoint%%|*}" != "0" ]; then
+    echo "CPA Manager Plus WAL checkpoint did not complete (${checkpoint})" >&2
+    return 1
+  fi
 
-  # The manager also serves the public management UI, so the pause must stay
-  # bounded no matter how slow the copy is. On 2026-10-20 leftover runtime
-  # IOReadBandwidthMax=5M drop-ins turned this copy into a 100-minute outage.
-  if ! timeout "${CLIPROXY_BACKUP_COPY_TIMEOUT:-15m}" \
-    cp --sparse=always -- "$database_path" "$snapshot_path"; then
-    echo "CPA Manager Plus database copy failed or exceeded ${CLIPROXY_BACKUP_COPY_TIMEOUT:-15m}" >&2
+  # Compress while archiving instead of staging a raw copy: kyber's root disk
+  # is a nearly full QLC SSD, and writing a second 60+ GB file there is what
+  # kept blowing the pause budget. Reading the database is the only full-size
+  # I/O; the archive is about a fifth of it. The manager also serves the
+  # public management UI, so the pause stays bounded no matter how slow the
+  # disk is.
+  if ! timeout "$copy_timeout" @tar@ -cf - -C "$data_dir" usage.sqlite data.key |
+    @pigz@ -1 >"$archive_path"; then
+    echo "CPA Manager Plus database archive failed or exceeded ${copy_timeout}" >&2
     return 1
   fi
   restore_manager
 
-  integrity="$(@sqlite3@ "$snapshot_path" "PRAGMA integrity_check;")"
-  if [ "$integrity" != "ok" ]; then
-    echo "CPA Manager Plus SQLite snapshot failed its integrity check" >&2
+  if ! @pigz@ -t "$archive_path"; then
+    echo "CPA Manager Plus analytics archive failed its integrity check" >&2
     return 1
   fi
 
-  install -m 600 "$data_key_path" "${snapshot_dir}/data.key"
-
   # Keep one rollback point per UTC hour in addition to the convenient latest
-  # object. The archive is streamed rather than written next to the snapshot so
-  # the payload only hits the staging filesystem once.
+  # object.
   hourly_object="analytics-backup-$(date -u +%H).tar.gz"
-  @tar@ -czf - -C "$snapshot_dir" usage.sqlite data.key |
-    AWS_ACCESS_KEY_ID="$OBJECTSTORE_ACCESS_KEY" \
-      AWS_SECRET_ACCESS_KEY="$OBJECTSTORE_SECRET_KEY" \
-      @aws@ s3 cp \
-      --endpoint-url="$OBJECTSTORE_ENDPOINT" \
-      --only-show-errors \
-      - \
-      "$(cliproxy_manager_backup_s3_uri "$hourly_object")"
+  AWS_ACCESS_KEY_ID="$OBJECTSTORE_ACCESS_KEY" \
+    AWS_SECRET_ACCESS_KEY="$OBJECTSTORE_SECRET_KEY" \
+    @aws@ s3 cp \
+    --endpoint-url="$OBJECTSTORE_ENDPOINT" \
+    --only-show-errors \
+    "$archive_path" \
+    "$(cliproxy_manager_backup_s3_uri "$hourly_object")"
 
   # Server-side copy: use the low-level API because this S3-compatible backend
   # does not implement GetObjectTagging, which the high-level `s3 cp` command

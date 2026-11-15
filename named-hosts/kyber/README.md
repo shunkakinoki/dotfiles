@@ -353,8 +353,9 @@ the copy crawled at 5 MB/s with the manager down. The copy also staged into the
 Recovery killed the stuck `cp`; the backup's EXIT trap restarted the manager
 and removed its staging directory. `systemctl --user revert
 cliproxyapi-backup.service` cleared the stale drop-ins. The backup now bounds
-the paused copy with `CLIPROXY_BACKUP_COPY_TIMEOUT` (default 15 minutes) and
-stages under `~/.local/state/cliproxyapi-backup` on the root disk.
+the paused archive with `CLIPROXY_BACKUP_COPY_TIMEOUT` (default 30 minutes) and
+stages a compressed archive under `~/.local/state/cliproxyapi-backup` on the
+root disk.
 
 During a recurrence, check `systemctl --user is-active cpa-manager-plus
 cliproxyapi-backup` and `systemctl --user cat cliproxyapi-backup.service` for
