@@ -1,8 +1,9 @@
 # Disk cleanup
 
-Home Manager installs a five-minute user timer on Linux and a five-minute
-launchd agent on macOS. A scheduler never starts a second instance of its
-running cleanup service.
+Home Manager installs an hourly user timer on Linux, randomly delayed by up to
+15 minutes, and an hourly launchd agent on macOS. Both run the cleaner at idle
+CPU and I/O priority; on Linux it runs in `background.slice`. A scheduler never
+starts a second instance of its running cleanup service.
 
 ## Repository-owned storage
 
@@ -22,12 +23,12 @@ cleanup implementation.
 
 ```mermaid
 flowchart TD
-    H[Host timer: every 5 minutes] --> A{Linux native adapter installed?}
+    H[Host timer: hourly] --> A{Linux native adapter installed?}
     A -->|yes| N[Native reclaimer and host lock]
     E[Existing native schedule and pressure triggers] --> N
     N --> P[Native storage policy and lifecycle checks]
     A -->|no| S[Standalone cache and scratch cleaner]
-    M[macOS launchd: every 5 minutes] --> S
+    M[macOS launchd: hourly] --> S
 ```
 
 ## Standalone hosts

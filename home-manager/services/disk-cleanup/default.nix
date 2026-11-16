@@ -26,6 +26,10 @@ in
     Service = {
       Type = "oneshot";
       Environment = [ "PATH=${servicePath}" ];
+      # Outside app.slice: workload admission reads that slice's PSI, and an
+      # idle-weight pass waiting for CPU would otherwise register as its stall.
+      Slice = "background.slice";
+      CPUWeight = "idle";
       Nice = 19;
       IOSchedulingClass = "idle";
       ExecStart = "${pkgs.bash}/bin/bash ${./cleanup.sh}";
@@ -35,9 +39,9 @@ in
   systemd.user.timers.disk-cleanup = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit.Description = "Timer for stale cache cleanup";
     Timer = {
-      OnCalendar = "*:0/5";
+      OnCalendar = "hourly";
       Persistent = true;
-      RandomizedDelaySec = "30s";
+      RandomizedDelaySec = "15m";
     };
     Install.WantedBy = [ "timers.target" ];
   };
@@ -51,7 +55,7 @@ in
       ];
       EnvironmentVariables.PATH = servicePath;
       RunAtLoad = true;
-      StartInterval = 300;
+      StartInterval = 3600;
       LowPriorityIO = true;
       Nice = 19;
       StandardOutPath = "${config.home.homeDirectory}/Library/Logs/disk-cleanup.log";
