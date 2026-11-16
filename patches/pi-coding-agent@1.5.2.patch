@@ -1,0 +1,22 @@
+diff --git a/dist/bundle/cli.js b/dist/bundle/cli.js
+--- a/dist/bundle/cli.js
++++ b/dist/bundle/cli.js
+@@ -1,5 +1,18 @@
+ #!/usr/bin/env node
+ import { createRequire, enableCompileCache } from "node:module";
+ 
++// On Linux, Node's process.title setter erases the kernel's launch argv.
++// Keep cosmetic title changes in JavaScript so supervisors can still attest
++// the exact model, mode and session that this process was launched with.
++if (process.platform === "linux") {
++  let title = process.title;
++  Object.defineProperty(process, "title", {
++    get: () => title,
++    set: (value) => { title = value; },
++    configurable: true,
++    enumerable: true,
++  });
++}
++
+ enableCompileCache();
+ createRequire(import.meta.url)("./cli-runtime.js");
