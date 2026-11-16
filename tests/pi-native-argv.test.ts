@@ -31,6 +31,7 @@ test.skipIf(process.platform !== "linux")("Pi retains kernel argv after its runt
     process.title = "pi busy";
     console.log(JSON.stringify({
       title: process.title,
+      name: readFileSync("/proc/self/comm", "utf8").trim(),
       argv: readFileSync("/proc/self/cmdline", "utf8").split("\\0").filter(Boolean),
     }));
   `);
@@ -45,6 +46,6 @@ test.skipIf(process.platform !== "linux")("Pi retains kernel argv after its runt
   const apply = Bun.spawnSync(["git", "apply", "--unsafe-paths", "--directory", root, patch], { stdout: "pipe", stderr: "pipe" });
   expect(apply.stderr.toString()).toBe("");
   expect(apply.exitCode).toBe(0);
-  expect(observe()).toEqual({ title: "pi busy", argv: [node, ...args] });
+  expect(observe()).toEqual({ title: "pi busy", name: "pi busy", argv: [node, ...args] });
   expect(readFileSync(join(bundle, "cli.js"), "utf8")).toContain("process.platform === \"linux\"");
 });
