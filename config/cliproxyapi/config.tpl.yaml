@@ -899,10 +899,14 @@ openai-compatibility:
 #   sample-provider:                  # plugin provider keys are supported for OAuth plugins
 #     - name: "sample-model-latest"
 #       alias: "sample-latest"
+# The alias forks so the native Claude credential keeps serving the upstream
+# name too; a plain alias renames it, and requests for the full name then fall
+# through to OpenRouter, which rejects Claude Code's system prompt.
 oauth-model-alias:
   claude:
     - name: "__CLAUDE_HAIKU__"
       alias: "claude-haiku"
+      fork: true
 # Codex OAuth serves every current model, so only the names it cannot serve are
 # excluded. Exclusions match upstream IDs and have no negation, so a new
 # upstream model is served until it is added here.
