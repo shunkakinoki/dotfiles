@@ -161,7 +161,8 @@
       ],
       "matchPackageNames": [
         "frog",
-        "openclaw"
+        "openclaw",
+        "@earendil-works/pi-coding-agent"
       ],
       "enabled": false
     }

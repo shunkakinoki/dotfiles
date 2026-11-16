@@ -1,0 +1,25 @@
+diff --git a/dist/bundle/cli.js b/dist/bundle/cli.js
+--- a/dist/bundle/cli.js
++++ b/dist/bundle/cli.js
+@@ -4,2 +4,21 @@
++import { writeFileSync } from "node:fs";
++
++// On Linux, Node's process.title setter erases the kernel's launch argv.
++// Set the Linux process name directly so supervisors retain both the name
++// used for detection and the exact model, mode and session launch arguments.
++if (process.platform === "linux") {
++  let title = process.title;
++  Object.defineProperty(process, "title", {
++    get: () => title,
++    set: (value) => {
++      const name = String(value);
++      writeFileSync("/proc/self/comm", name);
++      title = name;
++    },
++    configurable: true,
++    enumerable: true,
++  });
++}
++
+ enableCompileCache();
+ createRequire(import.meta.url)("./cli-runtime.js");
