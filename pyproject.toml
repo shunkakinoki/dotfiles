@@ -41,6 +41,9 @@ prerelease = ["serena-agent"]
 gpu = ["huggingface-hub", "marker-pdf", "nvitop", "transformers", "vllm"]
 # Apple MLX: installed only on macOS; uninstalled elsewhere.
 darwin = ["vllm-mlx"]
+# Uninstalled everywhere. agentsview: roborev's token-cost reconciler runs
+# `agentsview usage` when it is on PATH, which autostarts a CPU-heavy `serve`.
+removed = ["agentsview"]
 
 # Git-sourced uv tools (not Renovate-tracked PyPI pins).
 # Do NOT add PyPI agent-reach (jgalea/agent-reach 0.1.0) — wrong package.

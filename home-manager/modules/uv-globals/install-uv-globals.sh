@@ -55,6 +55,7 @@ fi
 if [ "$(uname -s)" != "Darwin" ]; then
   EXCLUDED=$(printf '%s\n%s' "$EXCLUDED" "$(tomlq -r '.tool["uv-globals"].darwin[]?' "$PYPROJECT" 2>/dev/null || true)")
 fi
+EXCLUDED=$(printf '%s\n%s' "$EXCLUDED" "$(tomlq -r '.tool["uv-globals"].removed[]?' "$PYPROJECT" 2>/dev/null || true)")
 
 INSTALLED=$(uv tool list 2>/dev/null || true)
 
