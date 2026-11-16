@@ -13,5 +13,5 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version-file: package.json
-      - run: bun test ./tests/package-patches.test.ts
+      - run: bun test ./tests/package-patches.test.ts ./tests/pi-native-argv.test.ts
       - run: make patches-check

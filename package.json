@@ -18,7 +18,7 @@
     "@biomejs/biome": "^2.6.4",
     "@ccusage/mcp": "^18.0.11",
     "@deepseek-ai/dsh": "^0.2.1-rc.5",
-    "@earendil-works/pi-coding-agent": "^1.5.0",
+    "@earendil-works/pi-coding-agent": "1.5.2",
     "@fission-ai/openspec": "^1.16.0",
     "@getgrit/cli": "^0.1.0-alpha.1743007075",
     "@github/copilot": "^1.0.105",
@@ -105,7 +105,8 @@
   },
   "patchedDependencies": {
     "frog@1.1.0": "patches/frog@1.1.0.patch",
-    "openclaw@2026.10.8": "patches/openclaw@2026.10.8.patch"
+    "openclaw@2026.10.8": "patches/openclaw@2026.10.8.patch",
+    "@earendil-works/pi-coding-agent@1.5.2": "patches/pi-coding-agent@1.5.2.patch"
   },
   "trustedDependencies": [
     "@0xsequence/codegenie",
