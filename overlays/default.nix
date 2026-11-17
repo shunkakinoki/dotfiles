@@ -293,17 +293,17 @@
 
     devin = prev.stdenvNoCC.mkDerivation rec {
       pname = "devin";
-      version = "3000.12.57";
+      version = "3000.13.4";
       src = prev.fetchurl {
         url = "https://static.devin.ai/cli/${version}/devin-${version}-${
           if prev.stdenv.hostPlatform.isAarch64 then "aarch64" else "x86_64"
         }-${if prev.stdenv.hostPlatform.isDarwin then "apple-darwin" else "unknown-linux"}.tar.gz";
         sha256 =
           {
-            "aarch64-darwin" = "c0ec7f558f25a9e6b117743bd06781e1a24c78d8552727a9539601de94912f12";
-            "x86_64-darwin" = "18571f6f9596bd13894b35e1a3749ce6a0b65337c1ac5ccf07e7ecfbaa7828aa";
-            "aarch64-linux" = "e0f03ce263e30940122547f73e1c57d4f163391553fd37c6c856b366463d766f";
-            "x86_64-linux" = "0946784ef886d716e82a8026f76933bf0a6e4f0a804a23722bb62047e8c07d4a";
+            "aarch64-darwin" = "24b52c2bb312f8ab3d71545a173a69446901b27da5a44300bd03464ab066525b";
+            "x86_64-darwin" = "0e10437b40064dca09295d3d1f174ff4934aee9c98c54b833e55fa9841cf3598";
+            "aarch64-linux" = "725a7b1eb6d2a57dd99d6ab6e632330dc639f2382776241cf75a6c0b3e04d337";
+            "x86_64-linux" = "e1bd618ec61f4d21069335162cf6d854d8cd2e662f2395efb06edb5796ed16e9";
           }
           .${prev.stdenv.hostPlatform.system};
       };
