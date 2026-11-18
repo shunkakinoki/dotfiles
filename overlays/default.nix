@@ -122,17 +122,17 @@
     # Use the first tagged release that includes --attach on issue and PR commands.
     gh = prev.gh.overrideAttrs (_: {
       pname = "gh";
-      version = "2.104.0";
+      version = "2.105.0";
       src = prev.fetchFromGitHub {
         owner = "cli";
         repo = "cli";
-        rev = "3d5a9e355a837f2f5ee78d7484c118cc1342ad1a";
-        hash = "sha256-HrIk40AP5VT7lvBLZXzwTQFyJWexKfeYlLokar+2KOI=";
+        rev = "e1219499a578b69e3437adaa31cd60614e23c802";
+        hash = "sha256-8QOTVD/5rkzXpbOKozusjd1RnUd516exX3uPFy79j6s=";
       };
-      vendorHash = "sha256-ggv4DIkA25qacx65RZ2mPWpbTcbl4KaZoj+JEkfwPXI=";
+      vendorHash = "sha256-uCWXmiLubzBmBmhU1m8/t5kJbKHpseTNlPq7JE6HUvU=";
       buildPhase = ''
         runHook preBuild
-        make GO_LDFLAGS="-s -w -X github.com/cli/cli/v2/internal/build.Date=nixpkgs" GH_VERSION=2.104.0 bin/gh manpages
+        make GO_LDFLAGS="-s -w -X github.com/cli/cli/v2/internal/build.Date=nixpkgs" GH_VERSION=2.105.0 bin/gh manpages
         runHook postBuild
       '';
     });
@@ -293,17 +293,17 @@
 
     devin = prev.stdenvNoCC.mkDerivation rec {
       pname = "devin";
-      version = "3000.13.4";
+      version = "3000.14.30821";
       src = prev.fetchurl {
         url = "https://static.devin.ai/cli/${version}/devin-${version}-${
           if prev.stdenv.hostPlatform.isAarch64 then "aarch64" else "x86_64"
         }-${if prev.stdenv.hostPlatform.isDarwin then "apple-darwin" else "unknown-linux"}.tar.gz";
         sha256 =
           {
-            "aarch64-darwin" = "24b52c2bb312f8ab3d71545a173a69446901b27da5a44300bd03464ab066525b";
-            "x86_64-darwin" = "0e10437b40064dca09295d3d1f174ff4934aee9c98c54b833e55fa9841cf3598";
-            "aarch64-linux" = "725a7b1eb6d2a57dd99d6ab6e632330dc639f2382776241cf75a6c0b3e04d337";
-            "x86_64-linux" = "e1bd618ec61f4d21069335162cf6d854d8cd2e662f2395efb06edb5796ed16e9";
+            "aarch64-darwin" = "46ef1a75d8bd851665179e136b7e39ad597d3d7913b95d67fd2b88e9c8af0061";
+            "x86_64-darwin" = "e0ffc5fb0bc367270f20f15686bba74a2851959e782a37c016c68b91229ec0db";
+            "aarch64-linux" = "3deb8af6b026060e975ed371936e139818020e5dc5abbcba07cde039f473a5a5";
+            "x86_64-linux" = "4dc43e3e4388bace60fe2aa8010cbb399402e724892d7175845b1cdef00e7ddb";
           }
           .${prev.stdenv.hostPlatform.system};
       };
