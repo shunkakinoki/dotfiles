@@ -224,16 +224,16 @@
   (_: prev: {
     boat-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "boat-cli";
-      version = "1.0.100";
+      version = "1.0.103";
       src = prev.fetchurl {
         url = "https://github.com/ariana-dot-dev/agent-server/releases/download/boat-cli-v${version}/boat-${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }-${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x64"}";
         sha256 =
           {
-            "aarch64-darwin" = "1cfv4nrf85pjvqjdfcs0cnwwgmnxrsxyvfsb42yyd4dsn384ld77";
-            "aarch64-linux" = "0vyfdqry6jf6ywai08via2c7vdn3fzqp0di5hcfggyqa7830rgid";
-            "x86_64-linux" = "0zfm14n2gk135z02a6fkrsk23vzgd0da94cba9h9k96s2g7flv7w";
+            "aarch64-darwin" = "0dy780nsawfacjycjvxdsdj7gf7fab4l0wdjpaflzshiqkbsp87s";
+            "aarch64-linux" = "18x5a61mcx83f025xp2ljw4jr4agj230mjkmfqgz9wc4ln68djm1";
+            "x86_64-linux" = "1syx2a8znxjs0gbgc6ar0yw25n4c7sp990r4m3spvc9qgn9y7wgw";
           }
           .${prev.stdenv.hostPlatform.system};
       };
@@ -329,20 +329,20 @@
 
     moshi-hook = prev.stdenv.mkDerivation rec {
       pname = "moshi-hook";
-      version = "0.4.58";
+      version = "0.4.59";
       src = prev.fetchurl {
         url = "https://cdn.getmoshi.app/hook/v${version}/moshi-hook_${
           if prev.stdenv.hostPlatform.isDarwin then "Darwin" else "Linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x86_64"}.tar.gz";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "25a0e17b5413cafbee8582e2196a030f5fd51aecd76b170dc89ea1876cc58b97"
+            "dd664ef60b7afaa142d2688a16aa9a75962cbbac82c25d593a517f6c73d0d05c"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "11243608b3754c00558a17c2dd419aae93bdc158b82628abf80343c109b32e7b"
+            "ddb0dbcb7893e83356346176008fc6668ccf1f142f1cce60cf95d7e9d1c5cb3a"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "7db94e9dd9617f1b2c8bb27cd92ce33ee960c977f7a67de8820a6464ceabc790"
+            "1cf623105b3198f82563b738d56bfb80a5ae144abc157458807c20ad524655cf"
           else
-            "ad3d5b51c917df6f765a3b4e25a20f831ada856e37ad36f5a4f04e9ea7526192";
+            "abdc0292660c197852142236ad33cb3483769d48d979bc3a65890018bf20cc33";
       };
       sourceRoot = ".";
       dontConfigure = true;
