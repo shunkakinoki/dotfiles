@@ -23,6 +23,15 @@
     });
   })
   (_: prev: {
+    codex = prev.codex.overrideAttrs (old: {
+      nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ prev.pkg-config ];
+      buildInputs = (old.buildInputs or [ ]) ++ [ prev.openssl ];
+      env = (old.env or { }) // {
+        OPENSSL_DIR = "${prev.openssl.dev}";
+        OPENSSL_LIB_DIR = "${prev.openssl.out}/lib";
+        OPENSSL_INCLUDE_DIR = "${prev.openssl.dev}/include";
+      };
+    });
     # Ensure neovim-unwrapped exposes a lua attribute for wrapper consumers (e.g., home-manager)
     # Also disable checks on both neovim and neovim-unwrapped: neovim-nightly-overlay
     # sets them to distinct derivations, and programs.neovim / devenv use pkgs.neovim.
@@ -378,10 +387,15 @@
     };
     # deno 2.6.10 on nixpkgs-unstable has broken check phase (integration_tests vs integration_test)
     # Use nightly (master) which has the fix and is in the binary cache
-    inherit (final.nightlyPkgs)
-      deno
-      codex
-      claude-code
-      ;
+    inherit (final.nightlyPkgs) deno claude-code;
+    codex = final.nightlyPkgs.codex.overrideAttrs (old: {
+      nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ final.pkg-config ];
+      buildInputs = (old.buildInputs or [ ]) ++ [ final.openssl ];
+      env = (old.env or { }) // {
+        OPENSSL_DIR = "${final.openssl.dev}";
+        OPENSSL_LIB_DIR = "${final.openssl.out}/lib";
+        OPENSSL_INCLUDE_DIR = "${final.openssl.dev}/include";
+      };
+    });
   })
 ]
