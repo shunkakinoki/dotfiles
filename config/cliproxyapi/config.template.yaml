@@ -127,14 +127,14 @@ passthrough-headers: true
 # whose effective request-retry is at least r. Explicit non-negative credential/provider
 # overrides take precedence; omitted or negative overrides inherit this global value.
 # Additional rounds apply to HTTP 403, 408, 429, 500, 502, 503, and 504 failures.
-request-retry: 1
+request-retry: 3
 # Maximum number of different credentials to try in each credential retry round after
 # per-credential round filtering. Set to 0 to try all available credentials. Credentials
 # skipped by this cap still age with the global round.
 max-retry-credentials: 0
 # Maximum cooldown wait in seconds between retry rounds.
 # Set to 0 or below to never wait for credential cooldown.
-max-retry-interval: 15
+max-retry-interval: 30
 # When true, disable auth/model cooldown scheduling globally (prevents blackout windows after failure states).
 disable-cooling: false
 # When true, persist per-auth cooldown status as .cds files next to auth files.
@@ -555,6 +555,7 @@ openai-compatibility:
   # without also moving gpt-6-luna off Codex OAuth.
   - name: "surplus-deepseek"
     priority: 301
+    prefix: "surplus"
     base-url: "https://api.surplusintelligence.ai/v1"
     support-prompt-cache-key: true
     # A provider can report temporary model capacity as HTTP 400. Treat only
@@ -562,8 +563,18 @@ openai-compatibility:
     # terminal 400s. Continue and cool down so the next DeepSeek provider is tried.
     request-scoped-errors:
       - status: 400
-        match: ["Model is unavailable"]
-        action: "continue-and-cooldown"
+        match:
+          - "Model is unavailable"
+        action: "retry-and-cooldown"
+      - status: 404
+        match:
+          - "minimum_discount_not_met"
+          - "no_healthy_sellers"
+        action: "retry-and-cooldown"
+      - status: 502
+        action: "retry-and-cooldown"
+      - status: 503
+        action: "retry-and-cooldown"
     api-key-entries:
       - api-key: "__SURPLUS_API_KEY__"
         proxy-url: "direct"
