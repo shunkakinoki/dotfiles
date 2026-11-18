@@ -725,6 +725,20 @@ openai-compatibility:
     priority: 150
     base-url: "https://api.surplusintelligence.ai/v1"
     support-prompt-cache-key: true
+    request-scoped-errors:
+      - status: 400
+        match:
+          - "Model is unavailable"
+        action: "retry-and-cooldown"
+      - status: 404
+        match:
+          - "minimum_discount_not_met"
+          - "no_healthy_sellers"
+        action: "retry-and-cooldown"
+      - status: 502
+        action: "retry-and-cooldown"
+      - status: 503
+        action: "retry-and-cooldown"
     api-key-entries:
       - api-key: "__SURPLUS_API_KEY__"
         proxy-url: "direct"
