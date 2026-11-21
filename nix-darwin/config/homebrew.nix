@@ -136,6 +136,7 @@
       "docker-desktop"
       "droid"
       "dropbox"
+      "figma"
       "firefox"
       "flameshot"
       "font-hack-nerd-font"
