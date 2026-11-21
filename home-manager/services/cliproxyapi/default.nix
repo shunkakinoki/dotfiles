@@ -197,14 +197,16 @@ in
     Install.WantedBy = [ "default.target" ];
   };
 
-  # The rendered config is derived from ~/dotfiles/.env and the host-local
-  # removed-models list, so re-render and hot-reload whenever either changes.
-  # Otherwise a rotated or newly added key keeps its stale value until the next
-  # home-manager switch or manual reload.
+  # The rendered config is derived from config.template.yaml, ~/dotfiles/.env,
+  # and the host-local removed-models list, so re-render and hot-reload whenever
+  # any of them changes. Watching config.template.yaml directly guarantees that
+  # a template update still re-renders config.yaml even if activation or
+  # sd-switch skips X-Reload-Triggers.
   systemd.user.paths.cliproxyapi-env-reload = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
-    Unit.Description = "Watch CLIProxyAPI render inputs (.env, removed-models)";
+    Unit.Description = "Watch CLIProxyAPI render inputs (config.template.yaml, .env, removed-models)";
     Path = {
       PathChanged = [
+        "%h/.cli-proxy-api/config.template.yaml"
         "%h/dotfiles/.env"
         "%h/.config/cliproxyapi/removed-models"
       ];

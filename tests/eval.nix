@@ -768,6 +768,7 @@ let
         assert !(cfg.systemd.user.services.cliproxyapi-backup.Service ? IOReadIOPSMax);
         assert
           cfg.systemd.user.paths.cliproxyapi-env-reload.Path.PathChanged == [
+            "%h/.cli-proxy-api/config.template.yaml"
             "%h/dotfiles/.env"
             "%h/.config/cliproxyapi/removed-models"
           ];

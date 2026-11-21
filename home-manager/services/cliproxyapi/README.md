@@ -9,7 +9,7 @@ This directory contains the Nix-based configuration for the cliproxyapi service 
 1. **cliproxyapi** - Main proxy server on port 8317 (every host)
 2. **cliproxyapi-backup-auth** - File watcher that syncs only the auth cache to S3 (kyber)
 3. **cliproxyapi-backup** - Wall-clock hourly job that syncs auth files and CPA Manager Plus analytics to S3 (kyber)
-4. **cliproxyapi-env-reload** - Path unit that re-renders and hot-reloads the config when `~/dotfiles/.env` or `~/.config/cliproxyapi/removed-models` changes (every Linux host)
+4. **cliproxyapi-env-reload** - Path unit that re-renders and hot-reloads the config when `~/.cli-proxy-api/config.template.yaml`, `~/dotfiles/.env`, or `~/.config/cliproxyapi/removed-models` changes (every Linux host)
 
 ### Kyber-only OAuth
 
