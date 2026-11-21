@@ -511,7 +511,7 @@
       "Bash(pip3:*)",
       "Bash(pnpm:*)",
       "Bash(scutil:*)",
-      "Bash(ssh -o BatchMode=yes kamino3 *doppler:run-local -- --project=agents --config=prd --only-secrets=PLANETSCALE_READ_DATABASE_URL*)",
+      "Bash(ssh -o BatchMode=yes *doppler:run-local -- --project=agents --config=prd --only-secrets=PLANETSCALE_READ_DATABASE_URL*)",
       "Bash(timeout:*)",
       "Bash(uv:*)",
       "Bash(uvx:*)",
