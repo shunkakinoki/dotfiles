@@ -309,17 +309,17 @@
 
     devin = prev.stdenvNoCC.mkDerivation rec {
       pname = "devin";
-      version = "3000.11.234";
+      version = "3000.12.57";
       src = prev.fetchurl {
         url = "https://static.devin.ai/cli/${version}/devin-${version}-${
           if prev.stdenv.hostPlatform.isAarch64 then "aarch64" else "x86_64"
         }-${if prev.stdenv.hostPlatform.isDarwin then "apple-darwin" else "unknown-linux"}.tar.gz";
         sha256 =
           {
-            "aarch64-darwin" = "35f17a21e53a49435e42fb9627731726aa8ef7fa63e5c3d9d43d0cc5ca43edaf";
-            "x86_64-darwin" = "55ef4f2d2b2c82b5258b7516eb1126549e6f10d6b418035676237bcc18e93e46";
-            "aarch64-linux" = "438ca7f8280b3ef0747afc406e827d9e182156000277a1660358ac4fbd04156e";
-            "x86_64-linux" = "201370cddd2924294e3ca6b46fd8ece49b5763953b644a1dd823fce5490cb41a";
+            "aarch64-darwin" = "c0ec7f558f25a9e6b117743bd06781e1a24c78d8552727a9539601de94912f12";
+            "x86_64-darwin" = "18571f6f9596bd13894b35e1a3749ce6a0b65337c1ac5ccf07e7ecfbaa7828aa";
+            "aarch64-linux" = "e0f03ce263e30940122547f73e1c57d4f163391553fd37c6c856b366463d766f";
+            "x86_64-linux" = "0946784ef886d716e82a8026f76933bf0a6e4f0a804a23722bb62047e8c07d4a";
           }
           .${prev.stdenv.hostPlatform.system};
       };
@@ -336,20 +336,20 @@
 
     moshi-hook = prev.stdenv.mkDerivation rec {
       pname = "moshi-hook";
-      version = "0.4.48";
+      version = "0.4.56";
       src = prev.fetchurl {
         url = "https://cdn.getmoshi.app/hook/v${version}/moshi-hook_${
           if prev.stdenv.hostPlatform.isDarwin then "Darwin" else "Linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x86_64"}.tar.gz";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "d04778890c546a62b8576a79ed3710bcafb401db64953ff020a66d61f0eabb8c"
+            "715c009453688a9faff9222edc4769a99c4c04c4fd07a7577e8e50c07605551e"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "ebe7a322fb2474186fa29e93c93e7429f0bf9bdbde87cc0f3d36b87d0d386942"
+            "c83a206dc666d223e6285e2eb8e872132ed05427afcf8d7f37a0c076c6bdf30c"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "f4befce30c86cca215096ada11be1518b34809448bec65f839371f0d2e76b457"
+            "185d58ebab51d6efe1bca42d22130599fc8eb19ec0eac7091a2fe4a9af1597d2"
           else
-            "34ec4a0a5d1a758859a7a4ab19df484c3286a1735c17e32c454c757c6b3c2cbe";
+            "a256293445d45172bddd5bf7d79ee7f178052754d2c6c1bd5876979efa1f0866";
       };
       sourceRoot = ".";
       dontConfigure = true;
