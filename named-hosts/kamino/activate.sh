@@ -84,6 +84,22 @@ vm-compaction)
     echo "Set THP defrag to never."
   fi
   ;;
+journald-limits)
+  # Cap persistent journald storage so worker logs never consume multi-GB root space.
+  dropin="${2:?journald drop-in path required}"
+  mkdir -p "$(dirname "$dropin")"
+  content=$'[Journal]\nStorage=persistent\nSystemMaxUse=500M\nRuntimeMaxUse=128M\nMaxRetentionSec=7day\nMaxFileSec=1day'
+  if [ ! -f "$dropin" ] || [ "$(cat "$dropin")" != "$content" ]; then
+    printf '%s\n' "$content" >"$dropin"
+    echo "Wrote $dropin."
+    if ! systemctl try-restart systemd-journald.service; then
+      rm -f "$dropin"
+      echo "Failed to restart systemd-journald.service; removed $dropin for retry." >&2
+      exit 1
+    fi
+    journalctl --rotate --vacuum-size=500M >/dev/null 2>&1 || true
+  fi
+  ;;
 sshd-key-only)
   # sshd keeps the first value it reads, and cloud-init's 50-cloud-init.conf
   # enables passwords, so this drop-in must sort before it.
