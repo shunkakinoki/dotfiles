@@ -17,10 +17,8 @@ in
   # Install cargo global packages from Cargo.toml using home-manager activation
   home.activation.installCargoGlobals = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     export PATH=${pkgs.rustup}/bin:${pkgs.cargo}/bin:${pkgs.rustc}/bin:${pkgs.dasel}/bin:${pkgs.jq}/bin:${nativeCompiler}/bin:${pkgs.binutils}/bin:${pkgs.lld}/bin:${pkgs.pkg-config}/bin:${pkgs.perl}/bin:$PATH
-    ${lib.optionalString isDarwin ''
-      export CC="${pkgs.clang}/bin/clang"
-      export CXX="${pkgs.clang}/bin/clang++"
-    ''}
+    ${lib.optionalString isDarwin ''export CC="${pkgs.clang}/bin/clang"''}
+    ${lib.optionalString isDarwin ''export CXX="${pkgs.clang}/bin/clang++"''}
     export CARGO_HOME="$HOME/.cargo"
     export PKG_CONFIG_PATH="${pkgs.openssl.dev}/lib/pkgconfig${libiconvPkgConfigPath}''${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
     export OPENSSL_DIR="${pkgs.openssl.dev}"
