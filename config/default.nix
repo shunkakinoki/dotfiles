@@ -29,6 +29,7 @@ in
   ./handy
   ./herdr
   ./hermes
+  ./humans
   ./hunk
   ./iterm2
   ./hammerspoon
