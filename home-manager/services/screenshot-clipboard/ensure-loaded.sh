@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+# Home Manager activation may inherit only Nix paths; launchctl is a macOS tool.
+export PATH="${PATH:-}:/usr/bin:/bin:/usr/sbin:/sbin"
+
 label=org.nix-community.home.screenshot-clipboard
 plist="$HOME/Library/LaunchAgents/$label.plist"
 service="gui/$(id -u)/$label"

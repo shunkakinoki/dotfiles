@@ -25,6 +25,35 @@ End
 End
 
 Describe 'safe commands'
+galactica_switch="sudo -n env HOMEBREW_NO_AUTO_UPDATE=1 HOST=galactica HOSTNAME=galactica NIXPKGS_ALLOW_UNFREE=1 /run/current-system/sw/bin/darwin-rebuild switch --flake $HOME/dotfiles#galactica --impure --no-update-lock-file"
+
+check_command() {
+  jq -n --arg command "$1" '{tool_name: "Bash", tool_input: {command: $command}}' | bash "$SCRIPT"
+}
+
+It 'allows the exact noninteractive Galactica activation'
+When call check_command "$galactica_switch"
+The status should be success
+End
+
+It 'blocks extra root command arguments on the Galactica exception'
+When call check_command "$galactica_switch --help"
+The status should eq 2
+The stderr should include 'BLOCKED'
+End
+
+It 'blocks a different flake on the Galactica exception'
+When call check_command "${galactica_switch/dotfiles#galactica/other#galactica}"
+The status should eq 2
+The stderr should include 'BLOCKED'
+End
+
+It 'blocks chained privileged commands after the permitted activation'
+When call check_command "$galactica_switch && sudo rm -rf /"
+The status should eq 2
+The stderr should include 'BLOCKED'
+End
+
 It 'allows ls -la'
 Data '{"tool_name": "Bash", "tool_input": {"command": "ls -la"}}'
 When run bash "$SCRIPT"

@@ -65,6 +65,11 @@ deny_patterns=(
   "sudo"
 )
 
+# This host activation still goes through the runner's privilege approval.
+# Match the complete command so this does not permit other sudo invocations,
+# environment variables, flake paths, or rebuild arguments.
+galactica_switch="sudo -n env HOMEBREW_NO_AUTO_UPDATE=1 HOST=galactica HOSTNAME=galactica NIXPKGS_ALLOW_UNFREE=1 /run/current-system/sw/bin/darwin-rebuild switch --flake $HOME/dotfiles#galactica --impure --no-update-lock-file"
+
 # Split command at logical operators
 IFS=$'\n' read -r -d '' -a segments < <(echo "$command" | sed -E 's/[;&|]+/\n/g' && printf '\0') || true
 
@@ -76,6 +81,9 @@ for segment in "${segments[@]}"; do
 
   for pattern in "${deny_patterns[@]}"; do
     if [[ $segment == $pattern* ]]; then
+      if [[ $pattern == sudo && $segment == "$galactica_switch" ]]; then
+        continue
+      fi
       echo "BLOCKED by security.sh: Command '$segment' matches deny pattern '$pattern'" >&2
       exit 2
     fi
