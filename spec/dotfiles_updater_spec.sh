@@ -129,11 +129,13 @@ setup() {
   export HOME="$WORK/home"
   export XDG_STATE_HOME="$WORK/state"
   export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null
+  export GIT_ALLOW_PROTOCOL=file GIT_TERMINAL_PROMPT=0
   export GIT_AUTHOR_NAME=t GIT_AUTHOR_EMAIL=t@t GIT_COMMITTER_NAME=t GIT_COMMITTER_EMAIL=t@t
   mkdir -p "$HOME" "$WORK/src" "$WORK/stub"
   # The EXIT trap starts timers; keep it off the host's systemd user manager.
   printf '#!/usr/bin/env bash\nexit 0\n' >"$WORK/stub/systemctl"
-  chmod +x "$WORK/stub/systemctl"
+  printf '#!/usr/bin/env bash\necho "Filesystem 1024-blocks Used Available Capacity Mounted on"\necho "/dev/sda1 400000000 300000000 70000000 80%% /"\n' >"$WORK/stub/df"
+  chmod +x "$WORK/stub/systemctl" "$WORK/stub/df"
   export PATH="$WORK/stub:$PATH"
   git -C "$WORK/src" init -q -b main
   mkdir -p "$WORK/src/home-manager/activation"
@@ -313,6 +315,108 @@ The status should be failure
 The output should include 'Changes detected'
 The error should include 'Checkout changed during installation'
 The file "$XDG_STATE_HOME/dotfiles-updater/installed-commit" should not be exist
+End
+
+Describe 'automated Kamino disk headroom'
+It 'defers a local activation build below the required headroom without advancing the marker'
+printf '#!/usr/bin/env bash\necho "Filesystem 1024-blocks Used Available Capacity Mounted on"\necho "/dev/sda1 400000000 350000000 55000000 88%% /"\n' >"$WORK/stub/df"
+cat >"$WORK/stub/nix" <<'NIX'
+#!/usr/bin/env bash
+expected='--offline --extra-experimental-features nix-command flakes path-info --recursive --impure --no-update-lock-file .#homeConfigurations.kamino4.activationPackage'
+if [[ "$*" != "$expected" ]]; then
+  echo "unexpected nix arguments: $*" >&2
+  exit 2
+fi
+exit 1
+NIX
+printf '#!/usr/bin/env bash\ntouch "$HOME/make-called"\n' >"$WORK/stub/make"
+chmod +x "$WORK/stub/df" "$WORK/stub/nix"
+chmod +x "$WORK/stub/make"
+cat >"$WORK/retry.sh" <<'RETRY'
+#!/usr/bin/env bash
+set -euo pipefail
+script_path=$1
+workspace=$2
+export PATH="$workspace/stub:$PATH"
+export AUTOMATED_UPDATE=true HOST=kamino4
+bash "$script_path" >"$workspace/deferred.log" 2>&1
+test ! -f "$XDG_STATE_HOME/dotfiles-updater/installed-commit"
+test ! -f "$HOME/make-called"
+expected_commit=$(git -C "$HOME/dotfiles" rev-parse HEAD)
+printf '#!/usr/bin/env bash\necho "Filesystem 1024-blocks Used Available Capacity Mounted on"\necho "/dev/sda1 400000000 300000000 70000000 80%% /"\n' >"$workspace/stub/df"
+bash "$script_path" >"$workspace/retried.log" 2>&1
+test "$(cat "$XDG_STATE_HOME/dotfiles-updater/installed-commit")" = "$expected_commit"
+cat "$workspace/deferred.log" "$workspace/retried.log"
+echo retried-same-commit
+RETRY
+chmod +x "$WORK/retry.sh"
+When run bash "$WORK/retry.sh" "$SCRIPT" "$WORK"
+The status should be success
+The output should include 'Deferring automated Kamino install'
+The output should include 'Changes detected'
+The output should include 'retried-same-commit'
+End
+
+It 'defers below the executor reserve without querying or installing Nix paths'
+printf '#!/usr/bin/env bash\necho "Filesystem 1024-blocks Used Available Capacity Mounted on"\necho "/dev/sda1 400000000 360000000 40000000 90%% /"\n' >"$WORK/stub/df"
+printf '#!/usr/bin/env bash\ntouch "$HOME/nix-called"\nexit 0\n' >"$WORK/stub/nix"
+printf '#!/usr/bin/env bash\ntouch "$HOME/make-called"\n' >"$WORK/stub/make"
+chmod +x "$WORK/stub/df" "$WORK/stub/nix" "$WORK/stub/make"
+When run env PATH="$WORK/stub:$PATH" AUTOMATED_UPDATE=true HOST=kamino4 bash "$SCRIPT"
+The status should be success
+The output should include 'Changes detected'
+The error should include 'From '
+The error should include '38 GiB free is below the 42 GiB executor reserve'
+The file "$HOME/nix-called" should not be exist
+The file "$HOME/make-called" should not be exist
+The file "$XDG_STATE_HOME/dotfiles-updater/installed-commit" should not be exist
+End
+
+It 'applies a store-resident activation with local Nix builds disabled below the build threshold'
+printf '#!/usr/bin/env bash\necho "Filesystem 1024-blocks Used Available Capacity Mounted on"\necho "/dev/sda1 400000000 350000000 55000000 88%% /"\n' >"$WORK/stub/df"
+cat >"$WORK/stub/nix" <<'NIX'
+#!/usr/bin/env bash
+expected='--offline --extra-experimental-features nix-command flakes path-info --recursive --impure --no-update-lock-file .#homeConfigurations.kamino4.activationPackage'
+if [[ "$*" != "$expected" ]]; then
+  echo "unexpected nix arguments: $*" >&2
+  exit 2
+fi
+NIX
+cat >"$WORK/stub/make" <<'MAKE'
+#!/usr/bin/env bash
+if [ "$1" = install ]; then
+  last_config_line=${NIX_CONFIG##*$'\n'}
+  if [[ "$NIX_CONFIG" != *"trusted-users = root"* || "$last_config_line" != "max-jobs = 0" ]]; then
+    echo "expected cache-only build setting" >&2
+    exit 1
+  fi
+  touch "$HOME/installed"
+fi
+MAKE
+chmod +x "$WORK/stub/df" "$WORK/stub/nix" "$WORK/stub/make"
+When run env PATH="$WORK/stub:$PATH" AUTOMATED_UPDATE=true HOST=kamino4 NIX_CONFIG="$(printf 'trusted-users = root\nmax-jobs = 8')" bash "$SCRIPT"
+The status should be success
+The output should include 'Changes detected'
+The output should include 'Applying the store-resident Kamino activation with local Nix builds disabled'
+The error should include 'From '
+The file "$HOME/installed" should be exist
+The file "$XDG_STATE_HOME/dotfiles-updater/installed-commit" should be exist
+End
+
+It 'allows a manual updater run to build below the automated headroom threshold'
+printf '#!/usr/bin/env bash\necho "Filesystem 1024-blocks Used Available Capacity Mounted on"\necho "/dev/sda1 400000000 350000000 50000000 89%% /"\n' >"$WORK/stub/df"
+cat >"$WORK/stub/make" <<'MAKE'
+#!/usr/bin/env bash
+if [ "$1" = install ]; then touch "$HOME/installed"; fi
+MAKE
+chmod +x "$WORK/stub/df" "$WORK/stub/make"
+When run env PATH="$WORK/stub:$PATH" HOST=kamino4 bash "$SCRIPT"
+The status should be success
+The output should include 'Changes detected'
+The error should include 'From '
+The file "$HOME/installed" should be exist
+The file "$XDG_STATE_HOME/dotfiles-updater/installed-commit" should be exist
+End
 End
 End
 
