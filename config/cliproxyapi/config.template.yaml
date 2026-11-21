@@ -509,12 +509,16 @@ openai-compatibility:
       - api-key: "__MORPH_API_KEY__"
         proxy-url: "direct"
     models:
+      # Keep Morph's upstream response model under the public DeepSeek alias.
       - name: "morph-dsv41flash-1017"
         alias: "deepseek-v4.1-flash-1017"
+        force-mapping: true
       - name: "morph-dsv41flash-1017"
         alias: "deepseek-v4.1-flash"
+        force-mapping: true
       - name: "morph-dsv41flash-1017"
         alias: "deepseek-v4-flash"
+        force-mapping: true
   # Explicit free-only pool; never map this alias to a paid variant or router.
   # Repeat priority:free for additional catalog-verified free models.
   - name: "openrouter-priority-free"

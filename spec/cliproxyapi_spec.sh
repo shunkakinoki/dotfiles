@@ -565,6 +565,7 @@ The output should include 'base-url: "https://api.morphllm.com/v1"'
 The output should include 'api-key: "__MORPH_API_KEY__"'
 The output should include 'name: "morph-dsv41flash-1017"'
 The output should include 'alias: "deepseek-v4.1-flash"'
+The output should include 'force-mapping: true'
 The status should be success
 End
 
