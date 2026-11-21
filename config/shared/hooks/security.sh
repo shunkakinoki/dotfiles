@@ -65,6 +65,12 @@ deny_patterns=(
   "sudo"
 )
 
+# Workflow guardrail only: this evaluates the mutable checkout as root and still
+# requires the tool runner to approve the requested activation and its changes.
+# Require the literal absolute flake path below; shell variables and tilde forms
+# are intentionally excluded, along with other arguments or environment values.
+galactica_switch="sudo -n env HOMEBREW_NO_AUTO_UPDATE=1 HOST=galactica HOSTNAME=galactica NIXPKGS_ALLOW_UNFREE=1 /run/current-system/sw/bin/darwin-rebuild switch --flake $HOME/dotfiles#galactica --impure --no-update-lock-file"
+
 # Split command at logical operators
 IFS=$'\n' read -r -d '' -a segments < <(echo "$command" | sed -E 's/[;&|]+/\n/g' && printf '\0') || true
 
@@ -76,6 +82,10 @@ for segment in "${segments[@]}"; do
 
   for pattern in "${deny_patterns[@]}"; do
     if [[ $segment == $pattern* ]]; then
+      if [[ $pattern == sudo && $segment == "$galactica_switch" ]] &&
+        [[ $(uname -s) == Darwin && $(scutil --get LocalHostName 2>/dev/null) == galactica ]]; then
+        continue
+      fi
       echo "BLOCKED by security.sh: Command '$segment' matches deny pattern '$pattern'" >&2
       exit 2
     fi
