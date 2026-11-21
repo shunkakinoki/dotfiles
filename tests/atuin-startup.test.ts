@@ -6,6 +6,7 @@ import {
   mkdtempSync,
   readFileSync,
   rmSync,
+  statSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
@@ -56,7 +57,6 @@ test("actual generated fish preexec returns to the executor when the history cli
     '#!/usr/bin/env bash\nif [ "$1 $2" = "history start" ]; then touch "$HOOK_MARKER"; trap "" TERM; exec sleep 60; fi\nexit 0\n'
   );
   wrapper(bin, stub);
-  const started = Date.now();
   const child = Bun.spawn(
     [
       "fish",
@@ -81,10 +81,12 @@ test("actual generated fish preexec returns to the executor when the history cli
   );
   const output = await new Response(child.stdout).text();
   expect(await child.exited).toBe(0);
+  // Measure the hook itself, excluding fish startup on a busy build host.
+  const elapsed = Date.now() - statSync(join(root, "called")).mtimeMs;
   expect(readFileSync(join(root, "called"), "utf8")).toBe("");
-  expect(Date.now() - started).toBeGreaterThanOrEqual(1900);
+  expect(elapsed).toBeGreaterThanOrEqual(1900);
   expect(output).toContain("EXECUTOR_READY");
-  expect(Date.now() - started).toBeLessThan(4500);
+  expect(elapsed).toBeLessThan(4500);
 }, 6000);
 
 test("failed storage and unavailable daemon fail promptly without changing non-hook commands", () => {
