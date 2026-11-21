@@ -35,6 +35,10 @@
           "value": ""
         },
         {
+          "name": "PATH",
+          "value": "__CLAUDE_LAUNCH_PATH__"
+        },
+        {
           "name": "IS_SANDBOX",
           "value": "1"
         }
