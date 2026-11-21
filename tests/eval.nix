@@ -721,9 +721,9 @@ let
         assert lib.elem "-/home/ubuntu/.config/agenix/agents-prd.env"
           cfg.systemd.user.services.herdr-server.Service.EnvironmentFile;
         assert cfg.systemd.user.services.openclaw-gateway.Service.IOAccounting;
-        assert cfg.systemd.user.services.openclaw-gateway.Service.IOReadBandwidthMax == "/ 20M";
+        assert !(cfg.systemd.user.services.openclaw-gateway.Service ? IOReadBandwidthMax);
         assert !(cfg.systemd.user.services.openclaw-gateway.Service ? IOWriteBandwidthMax);
-        assert cfg.systemd.user.services.openclaw-gateway.Service.IOReadIOPSMax == "/ 100";
+        assert !(cfg.systemd.user.services.openclaw-gateway.Service ? IOReadIOPSMax);
         assert !(cfg.systemd.user.services.openclaw-gateway.Service ? IOWriteIOPSMax);
         assert cfg.systemd.user.services.openclaw-gateway.Service.TimeoutStopSec == "330s";
         assert cfg.systemd.user.services.openclaw-gateway.Service.KillMode == "mixed";
@@ -735,10 +735,10 @@ let
           cfg.xdg.configFile."systemd/user/systemd-tmpfiles-clean.timer.d/hourly.conf".text;
         assert cfg.systemd.user.services.openclaw-state-maintenance.Service.TimeoutStartSec == "30m";
         assert cfg.systemd.user.services.openclaw-state-maintenance.Service.IOAccounting;
-        assert cfg.systemd.user.services.openclaw-state-maintenance.Service.IOReadBandwidthMax == "/ 20M";
-        assert cfg.systemd.user.services.openclaw-state-maintenance.Service.IOWriteBandwidthMax == "/ 10M";
-        assert cfg.systemd.user.services.openclaw-state-maintenance.Service.IOReadIOPSMax == "/ 100";
-        assert cfg.systemd.user.services.openclaw-state-maintenance.Service.IOWriteIOPSMax == "/ 50";
+        assert !(cfg.systemd.user.services.openclaw-state-maintenance.Service ? IOReadBandwidthMax);
+        assert !(cfg.systemd.user.services.openclaw-state-maintenance.Service ? IOWriteBandwidthMax);
+        assert !(cfg.systemd.user.services.openclaw-state-maintenance.Service ? IOReadIOPSMax);
+        assert !(cfg.systemd.user.services.openclaw-state-maintenance.Service ? IOWriteIOPSMax);
         assert cfg.systemd.user.services.cass-daily.Service.IOAccounting;
         assert cfg.systemd.user.services.cass-daily.Service.IOReadBandwidthMax == "/ 10M";
         assert cfg.systemd.user.services.cass-daily.Service.IOWriteBandwidthMax == "/ 10M";

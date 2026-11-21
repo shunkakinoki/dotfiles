@@ -2,11 +2,11 @@ import { afterEach, expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
 import {
   chmodSync,
-  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
   rmSync,
+  statSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
@@ -57,7 +57,6 @@ test("actual generated fish preexec returns to the executor when the history cli
     '#!/usr/bin/env bash\nif [ "$1 $2" = "history start" ]; then touch "$HOOK_MARKER"; trap "" TERM; exec sleep 60; fi\nexit 0\n'
   );
   wrapper(bin, stub);
-  const started = Date.now();
   const child = Bun.spawn(
     [
       "fish",
@@ -82,10 +81,12 @@ test("actual generated fish preexec returns to the executor when the history cli
   );
   const output = await new Response(child.stdout).text();
   expect(await child.exited).toBe(0);
+  // Measure the hook itself, excluding fish startup on a busy build host.
+  const elapsed = Date.now() - statSync(join(root, "called")).mtimeMs;
   expect(readFileSync(join(root, "called"), "utf8")).toBe("");
-  expect(Date.now() - started).toBeGreaterThanOrEqual(1900);
+  expect(elapsed).toBeGreaterThanOrEqual(1900);
   expect(output).toContain("EXECUTOR_READY");
-  expect(Date.now() - started).toBeLessThan(4500);
+  expect(elapsed).toBeLessThan(4500);
 }, 6000);
 
 test("failed storage and unavailable daemon fail promptly without changing non-hook commands", () => {
@@ -197,25 +198,5 @@ test("host health escalates the urgent root band independently of the earlier wa
   expect(result.stdout.toString()).toContain("50 GiB kubelet emergency floor");
 });
 
-// Nix build sandboxes do not expose /proc's mount table. This live systemd
-// condition check needs that table; the mocked storage-guard test runs everywhere.
-test.skipIf(
-  process.platform !== "linux" || !existsSync("/proc/self/mountinfo")
-)(
-  "systemd mount condition rejects an ordinary directory without starting services",
-  () => {
-    const { root } = fixture();
-    const missing = Bun.spawnSync([
-      "systemd-analyze",
-      "condition",
-      `ConditionPathIsMountPoint=${root}`,
-    ]);
-    expect(missing.exitCode).not.toBe(0);
-    const mounted = Bun.spawnSync([
-      "systemd-analyze",
-      "condition",
-      "ConditionPathIsMountPoint=/",
-    ]);
-    expect(mounted.exitCode).toBe(0);
-  }
-);
+// Live systemd mount conditions run outside the Nix build sandbox in
+// spec/atuin_mount_condition_spec.sh; the storage guard is tested above.

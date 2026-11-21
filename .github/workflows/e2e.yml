@@ -46,7 +46,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils cpu-checker
+          sudo apt-get install -y qemu-system-x86 libvirt-daemon-system libvirt-clients bridge-utils cpu-checker
           kvm-ok || echo "KVM acceleration may not be available"
           sudo modprobe kvm
           sudo chmod 666 /dev/kvm
