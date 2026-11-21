@@ -8,3 +8,4 @@
 - bzh-social's [bzsh-systems](https://github.com/bzh-social/bzh-systems)
 - fplaotouer's [dotfiles](https://github.com/fplaotouer/dotfiles)
 - alyraffauf's [nixcfg](https://github.com/alyraffauf/nixcfg)
+- [Pritam Paul’s post on X](https://x.com/pritamux/status/2124157134212673722)
