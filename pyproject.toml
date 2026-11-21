@@ -11,15 +11,15 @@ tools = [
   "aider-chat>=0.86.2",
   "claude-swap>=1.0.0",
   "git-remote-s3>=0.4.2",
-  "graphifyy>=0.9.102",
+  "graphifyy>=0.9.108",
   "huggingface-hub[mcp]>=2.4.0",
   "marker-pdf>=2.1.0",
   "mempalace>=3.11.0",
-  "mistral-vibe>=3.1.0",
+  "mistral-vibe>=3.1.2",
   "nvitop>=1.7.2",
-  "ruff>=0.17.3",
+  "ruff>=0.17.5",
   "serena-agent>=2.1.0",
-  "transformers>=5.22.1",
+  "transformers>=5.22.2",
   "vllm>=0.33.0",
   "vllm-mlx>=0.6.0",
 ]
@@ -27,7 +27,7 @@ tools = [
 hermes = [
   "python-telegram-bot[webhooks]>=22.8,<23",
   "croniter>=7.0.0,<8",
-  "fastapi[standard]>=0.162.0",
+  "fastapi[standard]>=0.162.7",
   "uvicorn>=0.54.0",
 ]
 
