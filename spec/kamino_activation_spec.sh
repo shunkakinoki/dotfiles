@@ -18,7 +18,7 @@ EOF
 [ "${MOCK_KEYGEN_FAIL:-0}" = 1 ] && exit 1
 exit 0
 EOF
-  for name in hostnamectl loginctl systemctl tailscale mkdir chmod touch chown; do
+  for name in hostnamectl loginctl systemctl journalctl tailscale mkdir chmod touch chown; do
     if [ "$name" = mkdir ] || [ "$name" = chmod ] || [ "$name" = touch ]; then
       tool_path=$(command -v "$name")
       cat >"$TEST_ROOT/bin/$name" <<EOF
@@ -482,5 +482,56 @@ It 'rejects an unknown activation phase'
 When run run_phase unknown
 The status should be failure
 The error should include 'Unknown Kamino activation phase'
+End
+
+It 'writes the journald limits drop-in, restarts journald, and vacuums'
+When run run_phase journald-limits "$TEST_ROOT/journald.conf.d/10-kamino-limits.conf"
+The status should be success
+The output should include "Wrote $TEST_ROOT/journald.conf.d/10-kamino-limits.conf."
+The contents of file "$TEST_ROOT/journald.conf.d/10-kamino-limits.conf" should include 'SystemMaxUse=500M'
+The contents of file "$TEST_ROOT/journald.conf.d/10-kamino-limits.conf" should include 'MaxRetentionSec=7day'
+The contents of file "$TEST_ROOT/commands" should include 'systemctl try-restart systemd-journald.service'
+The contents of file "$TEST_ROOT/commands" should include 'journalctl --vacuum-size=500M'
+End
+
+It 'leaves an already-configured journald drop-in untouched'
+run_phase journald-limits "$TEST_ROOT/journald.conf.d/10-kamino-limits.conf" >/dev/null
+: >"$TEST_ROOT/commands"
+When run run_phase journald-limits "$TEST_ROOT/journald.conf.d/10-kamino-limits.conf"
+The status should be success
+The output should be blank
+The contents of file "$TEST_ROOT/commands" should not include 'systemctl try-restart systemd-journald.service'
+The contents of file "$TEST_ROOT/commands" should not include 'journalctl --vacuum-size=500M'
+End
+
+Describe 'named-hosts/kamino/nix-gc.sh'
+NIX_GC_SCRIPT="$PWD/named-hosts/kamino/nix-gc.sh"
+
+It 'prunes stale t3-rollout gcroots, preserves fresh ones, and runs bounded nix-collect-garbage'
+mkdir -p "$TEST_ROOT/state/t3-rollout/stale-run" "$TEST_ROOT/state/t3-rollout/fresh-run" "$TEST_ROOT/store-target"
+ln -s "$TEST_ROOT/store-target" "$TEST_ROOT/state/t3-rollout/stale-run/gcroot-1"
+ln -s "$TEST_ROOT/store-target" "$TEST_ROOT/state/t3-rollout/fresh-run/gcroot-1"
+ln -s "$TEST_ROOT/store-target" "$TEST_ROOT/state/t3-rollout/stale-link"
+touch -h -t 202501010000 "$TEST_ROOT/state/t3-rollout/stale-run/gcroot-1" "$TEST_ROOT/state/t3-rollout/stale-link"
+touch -t 202501010000 "$TEST_ROOT/state/t3-rollout/stale-run"
+cat >"$TEST_ROOT/bin/nix-collect-garbage" <<'EOF'
+#!/usr/bin/env bash
+printf 'nix-collect-garbage %s\n' "$*" >>"$COMMAND_LOG"
+EOF
+chmod +x "$TEST_ROOT/bin/nix-collect-garbage"
+When run env XDG_STATE_HOME="$TEST_ROOT/state" PATH="$TEST_ROOT/bin:/usr/bin:/bin" COMMAND_LOG="$TEST_ROOT/commands" bash "$NIX_GC_SCRIPT"
+The status should be success
+The path "$TEST_ROOT/state/t3-rollout/stale-run" should not be exist
+The path "$TEST_ROOT/state/t3-rollout/stale-link" should not be exist
+The path "$TEST_ROOT/state/t3-rollout/fresh-run" should be exist
+The path "$TEST_ROOT/store-target" should be exist
+The contents of file "$TEST_ROOT/commands" should equal 'nix-collect-garbage --delete-older-than 3d'
+End
+
+It 'skips cleanly when nix-collect-garbage is not on PATH'
+When run env XDG_STATE_HOME="$TEST_ROOT/empty-state" PATH="/usr/bin:/bin" bash "$NIX_GC_SCRIPT"
+The status should be success
+The error should include 'nix-collect-garbage not found on PATH'
+End
 End
 End

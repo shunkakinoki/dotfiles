@@ -313,6 +313,18 @@ let
         assert lib.hasInfix "/etc/ssh/ssh_host_ed25519_key" cfg.home.activation.importGpgKey.data;
         assert !cfg.nix.gc.automatic;
         assert !(cfg.xdg.configFile ? "nix/nix.conf");
+        assert !cfg.programs.atuin.enable;
+        assert !(cfg.home.activation ? atuinLogin);
+        assert !(cfg.systemd.user.timers ? atuin-push);
+        assert !(cfg.systemd.user.timers ? atuin-prune-foreign);
+        assert cfg.home.activation ? setKaminoJournaldLimits;
+        assert lib.hasInfix "journald-limits /etc/systemd/journald.conf.d/10-kamino-limits.conf"
+          cfg.home.activation.setKaminoJournaldLimits.data;
+        assert cfg.systemd.user.services ? kamino-nix-gc;
+        assert cfg.systemd.user.services.kamino-nix-gc.Unit.X-SwitchMethod == "keep-old";
+        assert cfg.systemd.user.services.kamino-nix-gc.Service.IOSchedulingClass == "idle";
+        assert cfg.systemd.user.timers ? kamino-nix-gc;
+        assert cfg.systemd.user.timers.kamino-nix-gc.Timer.OnCalendar == "daily";
         assert lib.hasInfix "/bin/ssh-keygen" cfg.home.activation.authorizeKaminoSsh.data;
         assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeKaminoSsh.data;
         assert builtins.all
