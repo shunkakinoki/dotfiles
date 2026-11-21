@@ -285,6 +285,10 @@ let
         assert lib.elem "T3_ENSURE_SERVICE=1" cfg.systemd.user.services.t3-connect.Service.Environment;
         assert lib.hasInfix "$HOME/.config/t3/bin/t3" cfg.programs.fish.functions.t3;
         assert !(cfg.xdg.configFile ? "systemd/user/herdr-server.service");
+        assert cfg.home.file ? ".config/tokscale/custom-pricing.json";
+        assert lib.hasSuffix "/config/tokscale/custom-pricing.json" (
+          toString cfg.home.file.".config/tokscale/custom-pricing.json".source
+        );
         assert
           !(lib.hasInfix "T3CODE_TAILSCALE_SERVE"
             cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text
