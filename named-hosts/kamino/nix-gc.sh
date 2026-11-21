@@ -5,6 +5,10 @@ set -euo pipefail
 state_home="${XDG_STATE_HOME:-$HOME/.local/state}"
 rollout_dir="${state_home}/t3-rollout"
 rollout_age_days="${KAMINO_NIX_GC_ROLLOUT_AGE_DAYS:-3}"
+if [[ ! "$rollout_age_days" =~ ^[1-9][0-9]*$ ]]; then
+  echo "Invalid KAMINO_NIX_GC_ROLLOUT_AGE_DAYS: $rollout_age_days" >&2
+  exit 1
+fi
 gc_age="${KAMINO_NIX_GC_DELETE_OLDER_THAN:-3d}"
 rollout_minutes=$((rollout_age_days * 1440))
 

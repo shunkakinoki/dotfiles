@@ -6,12 +6,12 @@
   ...
 }:
 let
-  # Headless Kamino workers run automated agent and cron shells continuously;
-  # recording every command and thread there grows multi-GB local SQLite DBs.
-  enabled = !inputs.host.isKamino;
   # Fleet hosts only upload their own records; pulling every other host's
   # multi-GB thread store filled matic's disk past the lane admission floor.
   uploadOnly = inputs.host.isKyber || inputs.host.isMatic;
+  # Headless Kamino workers run automated agent and cron shells continuously;
+  # recording every command and thread there grows multi-GB local SQLite DBs.
+  enabled = uploadOnly || !inputs.host.isKamino;
   # Threads (agent session capture/resume) shipped in 18.24; older builds
   # silently ignore the [threads] table and stop capturing.
   minVersion = "18.24.0";

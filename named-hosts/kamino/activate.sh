@@ -92,8 +92,12 @@ journald-limits)
   if [ ! -f "$dropin" ] || [ "$(cat "$dropin")" != "$content" ]; then
     printf '%s\n' "$content" >"$dropin"
     echo "Wrote $dropin."
-    systemctl try-restart systemd-journald.service
-    journalctl --vacuum-size=500M >/dev/null 2>&1 || true
+    if ! systemctl try-restart systemd-journald.service; then
+      rm -f "$dropin"
+      echo "Failed to restart systemd-journald.service; removed $dropin for retry." >&2
+      exit 1
+    fi
+    journalctl --rotate --vacuum-size=500M >/dev/null 2>&1 || true
   fi
   ;;
 sshd-key-only)

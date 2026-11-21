@@ -491,7 +491,7 @@ The output should include "Wrote $TEST_ROOT/journald.conf.d/10-kamino-limits.con
 The contents of file "$TEST_ROOT/journald.conf.d/10-kamino-limits.conf" should include 'SystemMaxUse=500M'
 The contents of file "$TEST_ROOT/journald.conf.d/10-kamino-limits.conf" should include 'MaxRetentionSec=7day'
 The contents of file "$TEST_ROOT/commands" should include 'systemctl try-restart systemd-journald.service'
-The contents of file "$TEST_ROOT/commands" should include 'journalctl --vacuum-size=500M'
+The contents of file "$TEST_ROOT/commands" should include 'journalctl --rotate --vacuum-size=500M'
 End
 
 It 'leaves an already-configured journald drop-in untouched'
@@ -501,7 +501,7 @@ When run run_phase journald-limits "$TEST_ROOT/journald.conf.d/10-kamino-limits.
 The status should be success
 The output should be blank
 The contents of file "$TEST_ROOT/commands" should not include 'systemctl try-restart systemd-journald.service'
-The contents of file "$TEST_ROOT/commands" should not include 'journalctl --vacuum-size=500M'
+The contents of file "$TEST_ROOT/commands" should not include 'journalctl --rotate --vacuum-size=500M'
 End
 
 Describe 'named-hosts/kamino/nix-gc.sh'
@@ -513,7 +513,7 @@ ln -s "$TEST_ROOT/store-target" "$TEST_ROOT/state/t3-rollout/stale-run/gcroot-1"
 ln -s "$TEST_ROOT/store-target" "$TEST_ROOT/state/t3-rollout/fresh-run/gcroot-1"
 ln -s "$TEST_ROOT/store-target" "$TEST_ROOT/state/t3-rollout/stale-link"
 touch -h -t 202501010000 "$TEST_ROOT/state/t3-rollout/stale-run/gcroot-1" "$TEST_ROOT/state/t3-rollout/stale-link"
-touch -t 202501010000 "$TEST_ROOT/state/t3-rollout/stale-run"
+touch -t 202501010000 "$TEST_ROOT/state/t3-rollout/stale-run" "$TEST_ROOT/state/t3-rollout/fresh-run"
 cat >"$TEST_ROOT/bin/nix-collect-garbage" <<'EOF'
 #!/usr/bin/env bash
 printf 'nix-collect-garbage %s\n' "$*" >>"$COMMAND_LOG"
@@ -532,6 +532,12 @@ It 'skips cleanly when nix-collect-garbage is not on PATH'
 When run env XDG_STATE_HOME="$TEST_ROOT/empty-state" PATH="/usr/bin:/bin" bash "$NIX_GC_SCRIPT"
 The status should be success
 The error should include 'nix-collect-garbage not found on PATH'
+End
+
+It 'rejects non-positive rollout age overrides'
+When run env KAMINO_NIX_GC_ROLLOUT_AGE_DAYS=0 XDG_STATE_HOME="$TEST_ROOT/empty-state" PATH="/usr/bin:/bin" bash "$NIX_GC_SCRIPT"
+The status should be failure
+The error should include 'Invalid KAMINO_NIX_GC_ROLLOUT_AGE_DAYS: 0'
 End
 End
 End
