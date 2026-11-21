@@ -27,7 +27,19 @@ start_enabled_timers() {
 }
 trap start_enabled_timers EXIT
 
-if [ "$(git rev-parse --abbrev-ref HEAD)" != "main" ]; then
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if [ "$BRANCH" = "HEAD" ]; then
+  if git diff --quiet && git diff --cached --quiet; then
+    git fetch origin main
+    if git merge-base --is-ancestor HEAD origin/main; then
+      echo "Recovering clean detached HEAD on origin/main back to branch main."
+      git checkout main
+      BRANCH="main"
+    fi
+  fi
+fi
+
+if [ "$BRANCH" != "main" ]; then
   echo "ERROR: Deployment checkout is not main; preserve its work before restoring automatic updates." >&2
   exit 1
 fi
