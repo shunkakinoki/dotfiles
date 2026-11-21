@@ -53,10 +53,6 @@
         trusted = true;
       }
       {
-        name = "stablyai/orca";
-        trusted = true;
-      }
-      {
         name = "openclaw/tap";
         trusted = true;
       }
@@ -140,7 +136,6 @@
       "docker-desktop"
       "droid"
       "dropbox"
-      "figma"
       "firefox"
       "flameshot"
       "font-hack-nerd-font"
@@ -151,6 +146,7 @@
       "github"
       "google-chrome"
       "google-drive"
+      "granola"
       "hammerspoon"
       "handy"
       "iina"
@@ -162,7 +158,6 @@
       "obsidian"
       "openclaw"
       "opencode-desktop"
-      "orca"
       "raycast"
       "repobar"
       "rescuetime"
