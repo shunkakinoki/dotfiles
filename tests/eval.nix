@@ -320,6 +320,8 @@ let
         assert cfg.home.activation ? setKaminoJournaldLimits;
         assert lib.hasInfix "journald-limits /etc/systemd/journald.conf.d/10-kamino-limits.conf"
           cfg.home.activation.setKaminoJournaldLimits.data;
+        assert lib.hasInfix "docker-egress /etc/systemd/system/kamino-docker-egress.service"
+          cfg.home.activation.setKaminoDockerEgress.data;
         assert cfg.systemd.user.services ? kamino-nix-gc;
         assert cfg.systemd.user.services.kamino-nix-gc.Unit.X-SwitchMethod == "keep-old";
         assert cfg.systemd.user.services.kamino-nix-gc.Service.IOSchedulingClass == "idle";

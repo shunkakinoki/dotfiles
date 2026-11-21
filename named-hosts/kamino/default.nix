@@ -159,6 +159,10 @@ inputs.home-manager.lib.homeManagerConfiguration {
           export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} journald-limits /etc/systemd/journald.conf.d/10-kamino-limits.conf
         '';
+        home.activation.setKaminoDockerEgress = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+          export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} docker-egress /etc/systemd/system/kamino-docker-egress.service ${pkgs.iproute2}/bin/ip
+        '';
         home.activation.setKaminoSshdKeyOnly = lib.mkIf isCiBox (
           config.lib.dag.entryAfter [ "writeBoundary" ] ''
             export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
