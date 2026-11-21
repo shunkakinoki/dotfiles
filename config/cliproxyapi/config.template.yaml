@@ -514,19 +514,10 @@ openai-compatibility:
         alias: "deepseek-v4.1-flash-1017"
         force-mapping: true
       - name: "morph-dsv41flash-1017"
-        alias: "shunkakinoki/deepseek-v4.1-flash-1017"
-        force-mapping: true
-      - name: "morph-dsv41flash-1017"
         alias: "deepseek-v4.1-flash"
         force-mapping: true
       - name: "morph-dsv41flash-1017"
-        alias: "shunkakinoki/deepseek-v4.1-flash"
-        force-mapping: true
-      - name: "morph-dsv41flash-1017"
         alias: "deepseek-v4-flash"
-        force-mapping: true
-      - name: "morph-dsv41flash-1017"
-        alias: "shunkakinoki/deepseek-v4-flash"
         force-mapping: true
   # Explicit free-only pool; never map this alias to a paid variant or router.
   # Repeat priority:free for additional catalog-verified free models.
@@ -602,7 +593,7 @@ openai-compatibility:
   # fleet-facing shunkakinoki/deepseek-v4.1-flash name while resolving to this
   # provider's Surplus credential and upstream model.
   - name: "shunkakinoki-deepseek-alias"
-    priority: 305
+    priority: 301
     prefix: "shunkakinoki"
     base-url: "https://api.surplusintelligence.ai/v1"
     support-prompt-cache-key: true
@@ -643,15 +634,9 @@ openai-compatibility:
       - name: "deepseek-ai/deepseek-v4.1-flash"
         alias: "deepseek-v4.1-flash-1017"
       - name: "deepseek-ai/deepseek-v4.1-flash"
-        alias: "shunkakinoki/deepseek-v4.1-flash-1017"
-      - name: "deepseek-ai/deepseek-v4.1-flash"
         alias: "deepseek-v4.1-flash"
       - name: "deepseek-ai/deepseek-v4.1-flash"
-        alias: "shunkakinoki/deepseek-v4.1-flash"
-      - name: "deepseek-ai/deepseek-v4.1-flash"
         alias: "deepseek-v4-flash"
-      - name: "deepseek-ai/deepseek-v4.1-flash"
-        alias: "shunkakinoki/deepseek-v4-flash"
       - name: "google/gemma-4-31b-it"
         alias: "gemma-4-31b-it"
   # When OpenCode Go's own DeepSeek upstream is down it answers HTTP 400
@@ -679,15 +664,9 @@ openai-compatibility:
       - name: "deepseek-v4-flash"
         alias: "deepseek-v4.1-flash-1017"
       - name: "deepseek-v4-flash"
-        alias: "shunkakinoki/deepseek-v4.1-flash-1017"
-      - name: "deepseek-v4-flash"
         alias: "deepseek-v4.1-flash"
       - name: "deepseek-v4-flash"
-        alias: "shunkakinoki/deepseek-v4.1-flash"
-      - name: "deepseek-v4-flash"
         alias: "deepseek-v4-flash"
-      - name: "deepseek-v4-flash"
-        alias: "shunkakinoki/deepseek-v4-flash"
   - name: "ollama-cloud"
     priority: 300
     base-url: "https://ollama.com/v1"
@@ -702,15 +681,9 @@ openai-compatibility:
       - name: "deepseek-v4.1-flash"
         alias: "deepseek-v4.1-flash-1017"
       - name: "deepseek-v4.1-flash"
-        alias: "shunkakinoki/deepseek-v4.1-flash-1017"
-      - name: "deepseek-v4.1-flash"
         alias: "deepseek-v4.1-flash"
       - name: "deepseek-v4.1-flash"
-        alias: "shunkakinoki/deepseek-v4.1-flash"
-      - name: "deepseek-v4.1-flash"
         alias: "deepseek-v4-flash"
-      - name: "deepseek-v4.1-flash"
-        alias: "shunkakinoki/deepseek-v4-flash"
   - name: "aliyun"
     priority: 200
     prefix: "aliyun"
@@ -727,15 +700,9 @@ openai-compatibility:
       - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4.1-flash-1017"
       - name: "deepseek-v4-flash-0731"
-        alias: "shunkakinoki/deepseek-v4.1-flash-1017"
-      - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4.1-flash"
       - name: "deepseek-v4-flash-0731"
-        alias: "shunkakinoki/deepseek-v4.1-flash"
-      - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4-flash"
-      - name: "deepseek-v4-flash-0731"
-        alias: "shunkakinoki/deepseek-v4-flash"
   # Optional dedicated-key OpenRouter preset route. Its priority keeps preset
   # traffic ahead of the shared Surplus/OpenRouter routes without changing them.
   - name: "openrouter-presets"
@@ -769,15 +736,9 @@ openai-compatibility:
       - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4.1-flash-1017"
       - name: "deepseek-v4-flash-0731"
-        alias: "shunkakinoki/deepseek-v4.1-flash-1017"
-      - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4.1-flash"
       - name: "deepseek-v4-flash-0731"
-        alias: "shunkakinoki/deepseek-v4.1-flash"
-      - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4-flash"
-      - name: "deepseek-v4-flash-0731"
-        alias: "shunkakinoki/deepseek-v4-flash"
   - name: "commandcode"
     priority: 150
     base-url: "https://api.commandcode.ai/provider/v1"
@@ -793,15 +754,9 @@ openai-compatibility:
       - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4.1-flash-1017"
       - name: "deepseek-v4-flash-0731"
-        alias: "shunkakinoki/deepseek-v4.1-flash-1017"
-      - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4.1-flash"
       - name: "deepseek-v4-flash-0731"
-        alias: "shunkakinoki/deepseek-v4.1-flash"
-      - name: "deepseek-v4-flash-0731"
         alias: "deepseek-v4-flash"
-      - name: "deepseek-v4-flash-0731"
-        alias: "shunkakinoki/deepseek-v4-flash"
   - name: "surplus"
     priority: 150
     base-url: "https://api.surplusintelligence.ai/v1"
