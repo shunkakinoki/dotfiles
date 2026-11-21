@@ -9,8 +9,7 @@
           pkgs.fish
           pkgs.coreutils
           pkgs.bash
-        ]
-        ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ pkgs.systemd ];
+        ];
       }
       ''
         export HOME="$TMPDIR"

@@ -285,6 +285,10 @@ let
         assert lib.elem "T3_ENSURE_SERVICE=1" cfg.systemd.user.services.t3-connect.Service.Environment;
         assert lib.hasInfix "$HOME/.config/t3/bin/t3" cfg.programs.fish.functions.t3;
         assert !(cfg.xdg.configFile ? "systemd/user/herdr-server.service");
+        assert cfg.home.file ? ".config/tokscale/custom-pricing.json";
+        assert lib.hasSuffix "/config/tokscale/custom-pricing.json" (
+          toString cfg.home.file.".config/tokscale/custom-pricing.json".source
+        );
         assert
           !(lib.hasInfix "T3CODE_TAILSCALE_SERVE"
             cfg.xdg.configFile."systemd/user/t3code.service.d/native-runtime.conf".text
@@ -309,6 +313,18 @@ let
         assert lib.hasInfix "/etc/ssh/ssh_host_ed25519_key" cfg.home.activation.importGpgKey.data;
         assert !cfg.nix.gc.automatic;
         assert !(cfg.xdg.configFile ? "nix/nix.conf");
+        assert !cfg.programs.atuin.enable;
+        assert !(cfg.home.activation ? atuinLogin);
+        assert !(cfg.systemd.user.timers ? atuin-push);
+        assert !(cfg.systemd.user.timers ? atuin-prune-foreign);
+        assert cfg.home.activation ? setKaminoJournaldLimits;
+        assert lib.hasInfix "journald-limits /etc/systemd/journald.conf.d/10-kamino-limits.conf"
+          cfg.home.activation.setKaminoJournaldLimits.data;
+        assert cfg.systemd.user.services ? kamino-nix-gc;
+        assert cfg.systemd.user.services.kamino-nix-gc.Unit.X-SwitchMethod == "keep-old";
+        assert cfg.systemd.user.services.kamino-nix-gc.Service.IOSchedulingClass == "idle";
+        assert cfg.systemd.user.timers ? kamino-nix-gc;
+        assert cfg.systemd.user.timers.kamino-nix-gc.Timer.OnCalendar == "daily";
         assert lib.hasInfix "/bin/ssh-keygen" cfg.home.activation.authorizeKaminoSsh.data;
         assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeKaminoSsh.data;
         assert builtins.all
@@ -558,6 +574,7 @@ let
         assert cfg.systemd.user.startServices;
         assert !(cfg.systemd.user.services ? ci-box-warm);
         assert !(cfg.systemd.user.services ? roborev);
+        assert cfg.systemd.user.services.dotfiles-updater.Service.CPUWeight == 20;
         assert activationPosition "checkKaminoIdentity" < activationPosition "writeBoundary";
         assert activationPosition "startKaminoUserManager" < activationPosition "reloadSystemd";
         assert
@@ -659,6 +676,7 @@ let
         assert activationPosition "verifyHostIdentity" < activationPosition "writeBoundary";
         assert !(cfg.home.activation ? authorizeFleetRootSsh);
         assert lib.elem "HOST=beskar" cfg.systemd.user.services.dotfiles-updater.Service.Environment;
+        assert !(cfg.systemd.user.services.dotfiles-updater.Service ? CPUWeight);
         assert sshAuthorizedKeys.beskar == fleetPeerKeysOf "beskar";
         assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeFleetSsh.data;
         assert lib.hasInfix "/root/.ssh" cfg.home.activation.authorizeFleetSsh.data;
@@ -721,9 +739,9 @@ let
         assert lib.elem "-/home/ubuntu/.config/agenix/agents-prd.env"
           cfg.systemd.user.services.herdr-server.Service.EnvironmentFile;
         assert cfg.systemd.user.services.openclaw-gateway.Service.IOAccounting;
-        assert cfg.systemd.user.services.openclaw-gateway.Service.IOReadBandwidthMax == "/ 20M";
+        assert !(cfg.systemd.user.services.openclaw-gateway.Service ? IOReadBandwidthMax);
         assert !(cfg.systemd.user.services.openclaw-gateway.Service ? IOWriteBandwidthMax);
-        assert cfg.systemd.user.services.openclaw-gateway.Service.IOReadIOPSMax == "/ 100";
+        assert !(cfg.systemd.user.services.openclaw-gateway.Service ? IOReadIOPSMax);
         assert !(cfg.systemd.user.services.openclaw-gateway.Service ? IOWriteIOPSMax);
         assert cfg.systemd.user.services.openclaw-gateway.Service.TimeoutStopSec == "330s";
         assert cfg.systemd.user.services.openclaw-gateway.Service.KillMode == "mixed";
@@ -735,10 +753,10 @@ let
           cfg.xdg.configFile."systemd/user/systemd-tmpfiles-clean.timer.d/hourly.conf".text;
         assert cfg.systemd.user.services.openclaw-state-maintenance.Service.TimeoutStartSec == "30m";
         assert cfg.systemd.user.services.openclaw-state-maintenance.Service.IOAccounting;
-        assert cfg.systemd.user.services.openclaw-state-maintenance.Service.IOReadBandwidthMax == "/ 20M";
-        assert cfg.systemd.user.services.openclaw-state-maintenance.Service.IOWriteBandwidthMax == "/ 10M";
-        assert cfg.systemd.user.services.openclaw-state-maintenance.Service.IOReadIOPSMax == "/ 100";
-        assert cfg.systemd.user.services.openclaw-state-maintenance.Service.IOWriteIOPSMax == "/ 50";
+        assert !(cfg.systemd.user.services.openclaw-state-maintenance.Service ? IOReadBandwidthMax);
+        assert !(cfg.systemd.user.services.openclaw-state-maintenance.Service ? IOWriteBandwidthMax);
+        assert !(cfg.systemd.user.services.openclaw-state-maintenance.Service ? IOReadIOPSMax);
+        assert !(cfg.systemd.user.services.openclaw-state-maintenance.Service ? IOWriteIOPSMax);
         assert cfg.systemd.user.services.cass-daily.Service.IOAccounting;
         assert cfg.systemd.user.services.cass-daily.Service.IOReadBandwidthMax == "/ 10M";
         assert cfg.systemd.user.services.cass-daily.Service.IOWriteBandwidthMax == "/ 10M";
@@ -750,6 +768,7 @@ let
         assert !(cfg.systemd.user.services.cliproxyapi-backup.Service ? IOReadIOPSMax);
         assert
           cfg.systemd.user.paths.cliproxyapi-env-reload.Path.PathChanged == [
+            "%h/.cli-proxy-api/config.template.yaml"
             "%h/dotfiles/.env"
             "%h/.config/cliproxyapi/removed-models"
           ];

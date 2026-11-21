@@ -27,7 +27,19 @@ start_enabled_timers() {
 }
 trap start_enabled_timers EXIT
 
-if [ "$(git rev-parse --abbrev-ref HEAD)" != "main" ]; then
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if [ "$BRANCH" = "HEAD" ]; then
+  if git diff --quiet && git diff --cached --quiet; then
+    git fetch origin main
+    if git merge-base --is-ancestor HEAD origin/main; then
+      echo "Recovering clean detached HEAD on origin/main back to branch main."
+      git checkout main
+      BRANCH="main"
+    fi
+  fi
+fi
+
+if [ "$BRANCH" != "main" ]; then
   echo "ERROR: Deployment checkout is not main; preserve its work before restoring automatic updates." >&2
   exit 1
 fi
@@ -90,6 +102,50 @@ if [ "$INSTALLED_COMMIT" = "$REMOTE_COMMIT" ]; then
 fi
 
 echo "Changes detected: ${CURRENT_COMMIT:0:8} -> ${REMOTE_COMMIT:0:8} (installed: ${INSTALLED_COMMIT:0:8})"
+
+# A local Home Manager activation can add substantial space to the Nix store
+# while compiling large Rust packages. Kamino executor admission requires 40
+# GiB free plus 2 GiB per new lane. Reserve 64 GiB before an automated local
+# build, based on the 42 GiB one-lane floor and roughly 20 GB of K4 store growth
+# observed during its updater run, plus margin. That growth is not a per-build
+# maximum. An already installed activation closure can still be applied with
+# local Nix builds disabled.
+MIN_FREE_FOR_LOCAL_BUILD_KIB=$((64 * 1024 * 1024))
+MIN_EXECUTOR_RESERVE_KIB=$((42 * 1024 * 1024))
+if [ "${AUTOMATED_UPDATE:-}" = true ] && [[ "$HOST" =~ ^kamino[0-9]+$ ]]; then
+  AVAILABLE_KIB=$(df -Pk / 2>/dev/null | awk 'NR == 2 { print $4 }')
+  if [[ ! "$AVAILABLE_KIB" =~ ^[0-9]+$ ]]; then
+    echo "Deferring automated Kamino install: root free space could not be read; installed marker is unchanged." >&2
+    exit 0
+  fi
+
+  if [ "$AVAILABLE_KIB" -lt "$MIN_EXECUTOR_RESERVE_KIB" ]; then
+    AVAILABLE_GIB=$((AVAILABLE_KIB / 1024 / 1024))
+    echo "Deferring automated Kamino install: ${AVAILABLE_GIB} GiB free is below the 42 GiB executor reserve; installed marker is unchanged." >&2
+    exit 0
+  fi
+
+  if [ "$AVAILABLE_KIB" -lt "$MIN_FREE_FOR_LOCAL_BUILD_KIB" ]; then
+    ACTIVATION=".#homeConfigurations.${HOST}.activationPackage"
+    if ! nix --offline --extra-experimental-features 'nix-command flakes' \
+      path-info --recursive --impure --no-update-lock-file "$ACTIVATION" >/dev/null 2>&1; then
+      AVAILABLE_GIB=$((AVAILABLE_KIB / 1024 / 1024))
+      echo "Deferring automated Kamino install: ${AVAILABLE_GIB} GiB free and the activation closure is not fully in the local Nix store. Free more disk or run an operator-managed build; installed marker is unchanged." >&2
+      exit 0
+    fi
+
+    # The entire activation closure is already in the local store, so applying
+    # it needs no compilation or cache download. Keep any other Nix operation
+    # in this automated install from starting a local build at low headroom.
+    NIX_CONFIG="${NIX_CONFIG:-}"
+    if [ -n "$NIX_CONFIG" ]; then
+      NIX_CONFIG+=$'\n'
+    fi
+    NIX_CONFIG+="max-jobs = 0"
+    export NIX_CONFIG
+    echo "Applying the store-resident Kamino activation with local Nix builds disabled (${AVAILABLE_KIB} KiB free)."
+  fi
+fi
 
 # Bootstrap's install.sh fetches again; install the revision already checked above.
 make install

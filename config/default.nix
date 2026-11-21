@@ -50,6 +50,7 @@ in
   ./serena
   ./starship
   ./t3code
+  ./tokscale
   ./tmuxinator
   ./worktrunk
   ./zellij

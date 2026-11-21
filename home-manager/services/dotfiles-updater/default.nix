@@ -83,6 +83,11 @@ in
       TimeoutStartSec = "2h";
       # %t matches the XDG_RUNTIME_DIR lock that `make switch` holds; skip this run instead of racing it.
       ExecStart = "${pkgs.util-linux}/bin/flock -n -E 0 %t/dotfiles-switch.lock ${./update.sh}";
+    }
+    // lib.optionalAttrs inputs.host.isKamino {
+      # Executor lanes share app.slice with this unit. Give foreground work the
+      # CPU share during contention while allowing activation to use idle cores.
+      CPUWeight = 20;
     };
   };
 

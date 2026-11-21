@@ -155,6 +155,10 @@ inputs.home-manager.lib.homeManagerConfiguration {
           export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} vm-compaction /etc/sysctl.d/60-kamino-compaction.conf /etc/tmpfiles.d/60-kamino-thp.conf /sys/kernel/mm/transparent_hugepage/defrag
         '';
+        home.activation.setKaminoJournaldLimits = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+          export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} journald-limits /etc/systemd/journald.conf.d/10-kamino-limits.conf
+        '';
         home.activation.setKaminoSshdKeyOnly = lib.mkIf isCiBox (
           config.lib.dag.entryAfter [ "writeBoundary" ] ''
             export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
@@ -238,6 +242,42 @@ inputs.home-manager.lib.homeManagerConfiguration {
             RestartSec = "5s";
           };
           Install.WantedBy = [ "default.target" ];
+        };
+
+        # Determinate Nix manages /etc/nix/nix.conf, so Home Manager's nix.gc is
+        # disabled above. Prune stale rollout gcroots and collect old store paths
+        # daily at idle priority so worker disks stay below admission limits.
+        systemd.user.services.kamino-nix-gc = {
+          Unit = {
+            Description = "Prune stale rollout gcroots and garbage-collect old Nix store paths";
+            X-SwitchMethod = "keep-old";
+          };
+          Service = {
+            Type = "oneshot";
+            Nice = 19;
+            IOSchedulingClass = "idle";
+            Environment = [
+              "HOME=/root"
+              "PATH=${
+                pkgs.lib.makeBinPath [
+                  pkgs.coreutils
+                  pkgs.findutils
+                ]
+              }:/nix/var/nix/profiles/default/bin:/usr/bin:/bin"
+            ];
+            ExecStart = "${pkgs.bash}/bin/bash ${./nix-gc.sh}";
+          };
+        };
+
+        systemd.user.timers.kamino-nix-gc = {
+          Unit.Description = "Daily Kamino Nix garbage collection";
+          Timer = {
+            OnCalendar = "daily";
+            RandomizedDelaySec = "1h";
+            Persistent = true;
+            Unit = "kamino-nix-gc.service";
+          };
+          Install.WantedBy = [ "timers.target" ];
         };
       }
     )

@@ -19,17 +19,19 @@ type Manifest = {
 };
 
 export function patchedPackages(manifest: Manifest) {
-  return Object.entries(manifest.patchedDependencies ?? {}).map(([specifier, path]) => {
-    const separator = specifier.lastIndexOf("@");
-    if (separator <= 0 || separator === specifier.length - 1)
-      throw new Error(`Invalid patch key: ${specifier}`);
-    return {
-      specifier,
-      path,
-      name: specifier.slice(0, separator),
-      version: specifier.slice(separator + 1),
-    };
-  });
+  return Object.entries(manifest.patchedDependencies ?? {}).map(
+    ([specifier, path]) => {
+      const separator = specifier.lastIndexOf("@");
+      if (separator <= 0 || separator === specifier.length - 1)
+        throw new Error(`Invalid patch key: ${specifier}`);
+      return {
+        specifier,
+        path,
+        name: specifier.slice(0, separator),
+        version: specifier.slice(separator + 1),
+      };
+    }
+  );
 }
 
 function manifestAt(root: string): Manifest {
@@ -47,7 +49,7 @@ export function checkPatches(root: string) {
     Object.entries(expected).some(([key, path]) => actual[key] !== path)
   ) {
     throw new Error(
-      "Patch declarations differ in package.json and bun.lock; run bun install after porting patches",
+      "Patch declarations differ in package.json and bun.lock; run bun install after porting patches"
     );
   }
   for (const patch of patches) {
@@ -57,10 +59,11 @@ export function checkPatches(root: string) {
     ].filter((pin) => pin !== undefined);
     if (pins.length === 0 || pins.some((pin) => pin !== patch.version)) {
       throw new Error(
-        `${patch.name} must be pinned to its patch version ${patch.version}; port the patch before upgrading`,
+        `${patch.name} must be pinned to its patch version ${patch.version}; port the patch before upgrading`
       );
     }
-    if (!existsSync(join(root, patch.path))) throw new Error(`Missing patch: ${patch.path}`);
+    if (!existsSync(join(root, patch.path)))
+      throw new Error(`Missing patch: ${patch.path}`);
     const entry = lock.packages?.[patch.name];
     if (entry?.[0] !== patch.specifier)
       throw new Error(`Lockfile does not resolve ${patch.specifier}`);
@@ -79,7 +82,11 @@ export function updateablePackages(manifest: Manifest): string[] {
 }
 
 function run(command: string[], cwd: string) {
-  const result = Bun.spawnSync(command, { cwd, stdout: "inherit", stderr: "inherit" });
+  const result = Bun.spawnSync(command, {
+    cwd,
+    stdout: "inherit",
+    stderr: "inherit",
+  });
   if (result.exitCode !== 0)
     throw new Error(`${command[0]} ${command[1]} failed (${result.exitCode})`);
 }
@@ -88,9 +95,14 @@ export function checkInstalled(root: string, installedRoot: string) {
   for (const patch of checkPatches(root)) {
     const directory = join(installedRoot, "node_modules", patch.name);
     if (manifestAt(directory).version !== patch.version)
-      throw new Error(`Installed ${patch.name} does not match ${patch.version}`);
+      throw new Error(
+        `Installed ${patch.name} does not match ${patch.version}`
+      );
     // Reverse application proves every hunk's postimage exists in the installed package.
-    run(["git", "apply", "--reverse", "--check", resolve(root, patch.path)], directory);
+    run(
+      ["git", "apply", "--reverse", "--check", resolve(root, patch.path)],
+      directory
+    );
   }
 }
 
@@ -107,14 +119,19 @@ export function verifyCleanInstall(root: string) {
       join(scratch, "package.json"),
       JSON.stringify({
         private: true,
-        dependencies: Object.fromEntries(patches.map((patch) => [patch.name, patch.version])),
+        dependencies: Object.fromEntries(
+          patches.map((patch) => [patch.name, patch.version])
+        ),
         patchedDependencies: manifest.patchedDependencies,
         overrides: manifest.overrides,
-      }),
+      })
     );
     run([process.execPath, "install", "--ignore-scripts"], scratch);
     checkInstalled(root, scratch);
-    run([process.execPath, "install", "--frozen-lockfile", "--ignore-scripts"], scratch);
+    run(
+      [process.execPath, "install", "--frozen-lockfile", "--ignore-scripts"],
+      scratch
+    );
   } finally {
     rmSync(scratch, { recursive: true, force: true });
   }
@@ -130,10 +147,11 @@ if (import.meta.main) {
   else if (command === "update") {
     checkPatches(root);
     const packages = updateablePackages(manifestAt(root));
-    if (packages.length > 0) run([process.execPath, "update", "--latest", ...packages], root);
+    if (packages.length > 0)
+      run([process.execPath, "update", "--latest", ...packages], root);
     checkPatches(root);
   } else
     throw new Error(
-      "Usage: bun scripts/package-patches.ts check|verify|update|installed <directory>",
+      "Usage: bun scripts/package-patches.ts check|verify|update|installed <directory>"
     );
 }

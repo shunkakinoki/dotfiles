@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "notes": "Client-visible CLIProxy DeepSeek aliases",
+  "models": {
+    "deepseek-v4.1-flash-1017": {
+      "input_cost_per_million_tokens": 0.12,
+      "output_cost_per_million_tokens": 0.8,
+      "cache_read_input_token_cost_per_million_tokens": 0.008,
+      "source": "https://models.dev/api.json"
+    },
+    "deepseek-v4.1-flash": {
+      "input_cost_per_million_tokens": 0.12,
+      "output_cost_per_million_tokens": 0.8,
+      "cache_read_input_token_cost_per_million_tokens": 0.008,
+      "source": "https://models.dev/api.json"
+    },
+    "deepseek-v4-flash": {
+      "input_cost_per_million_tokens": 0.12,
+      "output_cost_per_million_tokens": 0.8,
+      "cache_read_input_token_cost_per_million_tokens": 0.008,
+      "source": "https://models.dev/api.json"
+    },
+    "deepseek-v4.1-flash-free": {
+      "input_cost_per_million_tokens": 0,
+      "output_cost_per_million_tokens": 0,
+      "cache_read_input_token_cost_per_million_tokens": 0,
+      "cache_creation_input_token_cost_per_million_tokens": 0,
+      "source": "https://models.dev/api.json"
+    },
+    "free": {
+      "input_cost_per_million_tokens": 0,
+      "output_cost_per_million_tokens": 0,
+      "cache_read_input_token_cost_per_million_tokens": 0,
+      "cache_creation_input_token_cost_per_million_tokens": 0,
+      "source": "https://models.dev/api.json"
+    }
+  }
+}
