@@ -46,7 +46,7 @@ function _git_index_lock_wait --description "Wait for .git/index.lock to clear; 
   end
 
   if test (count $holders) -eq 0
-    set -l mtime (stat -f %m "$lock" 2>/dev/null; or stat -c %Y "$lock" 2>/dev/null)
+    set -l mtime (stat -c %Y "$lock" 2>/dev/null; or stat -f %m "$lock" 2>/dev/null)
     set -l age (math (date +%s) - $mtime)
     echo "git: removing stale index.lock (age $age s, no holder)" >&2
     rm -f -- "$lock"
