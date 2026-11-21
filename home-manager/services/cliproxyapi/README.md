@@ -164,6 +164,10 @@ Morph's `morph-dsv41flash-1017` serves the canonical DeepSeek Flash aliases at
 priority 304, above Surplus at 301. Set `MORPH_API_KEY` to enable this route;
 when it is unavailable, CLIProxy continues through the existing DeepSeek tiers.
 
+The legacy `shunkakinoki/deepseek-v4.1-flash` client name is pinned to the
+same Surplus route through the `shunkakinoki-deepseek-alias` provider. New
+callers can use `surplus/deepseek-v4.1-flash` when they need an explicit route.
+
 ### Curated free-only models
 
 Request the literal model ID `priority:free` for the curated OpenRouter pool.
