@@ -1,4 +1,15 @@
 { inputs }:
+let
+  awsLcPrefix =
+    pkgs:
+    pkgs.symlinkJoin {
+      name = "aws-lc-rust";
+      paths = [
+        pkgs.aws-lc.out
+        pkgs.aws-lc.dev
+      ];
+    };
+in
 [
   inputs.nur.overlays.default
   inputs.neovim-nightly-overlay.overlays.default
@@ -27,6 +38,8 @@
       nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ prev.pkg-config ];
       buildInputs = (old.buildInputs or [ ]) ++ [ prev.openssl ];
       env = (old.env or { }) // {
+        # AWS-LC needs its own headers, libraries and bindings in one prefix.
+        AWS_LC_SYS_SYSTEM_DIR = "${awsLcPrefix prev}";
         OPENSSL_DIR = "${prev.openssl.dev}";
         OPENSSL_LIB_DIR = "${prev.openssl.out}/lib";
         OPENSSL_INCLUDE_DIR = "${prev.openssl.dev}/include";
@@ -392,6 +405,7 @@
       nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ final.pkg-config ];
       buildInputs = (old.buildInputs or [ ]) ++ [ final.openssl ];
       env = (old.env or { }) // {
+        AWS_LC_SYS_SYSTEM_DIR = "${awsLcPrefix final}";
         OPENSSL_DIR = "${final.openssl.dev}";
         OPENSSL_LIB_DIR = "${final.openssl.out}/lib";
         OPENSSL_INCLUDE_DIR = "${final.openssl.dev}/include";

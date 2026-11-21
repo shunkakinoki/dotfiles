@@ -1,5 +1,16 @@
 { pkgs }:
 {
+  overlay-codex-crypto =
+    assert pkgs.codex.env.OPENSSL_LIB_DIR == "${pkgs.openssl.out}/lib";
+    assert pkgs.codex.env.OPENSSL_INCLUDE_DIR == "${pkgs.openssl.dev}/include";
+    pkgs.runCommand "overlay-codex-crypto" { } ''
+      prefix=${pkgs.codex.env.AWS_LC_SYS_SYSTEM_DIR}
+      test -f "$prefix/include/openssl/base.h" || test -f "$prefix/include/aws-lc/openssl/base.h"
+      test -f "$prefix/lib/libcrypto-awslc.so" || test -f "$prefix/lib/libcrypto-awslc.dylib"
+      test -f "$prefix/share/rust/aws_lc_bindings.rs"
+      touch $out
+    '';
+
   overlay-neovim-lua = pkgs.runCommand "overlay-neovim-lua" { } ''
     ${
       if pkgs.neovim-unwrapped ? lua then

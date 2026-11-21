@@ -568,7 +568,6 @@ The output should include 'alias: "deepseek-v4.1-flash"'
 The status should be success
 End
 
-
 It 'keeps provider selection sticky for one hour per client session'
 When run bash -c "sed -n '/^routing:/,/^[a-z]/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'session-affinity: true'
@@ -695,7 +694,9 @@ When run bash -c 'for provider in morph-deepseek surplus-deepseek opencode ollam
   section=$(sed -n "/name: \"$provider\"/,/^  - name:/p" "$PWD/config/cliproxyapi/config.template.yaml")
   printf "%s\n" "$section" | grep -Fq "status: 400" || exit 1
   printf "%s\n" "$section" | grep -Fq "Model is unavailable" || exit 1
-  printf "%s\n" "$section" | grep -Fq "action: \"continue-and-cooldown\"" || exit 1
+  action=continue-and-cooldown
+  [ "$provider" != surplus-deepseek ] || action=retry-and-cooldown
+  printf "%s\n" "$section" | grep -Fq "action: \"$action\"" || exit 1
 done
 ! grep -E "^[[:space:]]*retry_on_errors:.*400" "$PWD/config/opencode/opencode-fallback.jsonc"'
 The status should be success
@@ -739,8 +740,8 @@ When run bash -c 'for file in config/cliproxyapi/config.tpl.yaml config/cliproxy
   grep -Fxq "debug: false" "$file" || exit 1
   grep -Fxq "logs-max-total-size-mb: 512" "$file" || exit 1
   grep -Fxq "error-logs-max-files: 50" "$file" || exit 1
-  grep -Fxq "request-retry: 1" "$file" || exit 1
-  grep -Fxq "max-retry-interval: 15" "$file" || exit 1
+  grep -Fxq "request-retry: 3" "$file" || exit 1
+  grep -Fxq "max-retry-interval: 30" "$file" || exit 1
   grep -Fxq "save-cooldown-status: true" "$file" || exit 1
   grep -Fxq "transient-error-cooldown-seconds: 300" "$file" || exit 1
 done'
