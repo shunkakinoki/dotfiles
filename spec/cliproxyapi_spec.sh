@@ -338,12 +338,20 @@ End
 
 It 'keeps the legacy shunkakinoki DeepSeek alias on the Surplus route'
 When run bash -c "sed -n '/name: \"shunkakinoki-deepseek-alias\"/,/name: \"nvidia\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
-The output should include 'priority: 301'
+The output should include 'priority: 305'
 The output should include 'prefix: "shunkakinoki"'
 The output should include 'base-url: "https://api.surplusintelligence.ai/v1"'
 The output should include 'api-key: "__SURPLUS_API_KEY__"'
 The output should include 'name: "deepseek-v4.1-flash-1017"'
 The output should include 'alias: "deepseek-v4.1-flash"'
+The status should be success
+End
+
+It 'publishes the shunkakinoki DeepSeek aliases across fallback providers'
+When run bash -c 'for provider in morph-deepseek nvidia opencode ollama-cloud aliyun verboo commandcode; do
+  section=$(sed -n "/name: \"$provider\"/,/^  - name:/p" "$PWD/config/cliproxyapi/config.template.yaml")
+  printf "%s\n" "$section" | grep -Fq "alias: \"shunkakinoki/deepseek-v4.1-flash\"" || exit 1
+done'
 The status should be success
 End
 
