@@ -223,6 +223,114 @@ purge_bun_npm_shim() {
   fi
 }
 
+# Bun's global installer can leave replaced package trees and top-level
+# transitive packages behind after upgrades. Rebuild the reachable package
+# graph from the managed global roots and remove only unreachable top-level
+# packages. Native/platform payloads are deliberately preserved because some
+# wrappers load them dynamically without declaring a normal dependency edge.
+prune_unreachable_global_packages() {
+  [ -d "${GLOBAL_MODULES}" ] || return 0
+  [ -f "${GLOBAL_PKG}" ] || return 0
+  if ! command -v node &>/dev/null; then
+    echo "node not found, skipping unreachable global package cleanup" >&2
+    return 0
+  fi
+
+  if ! node - "${GLOBAL_MODULES}" "${GLOBAL_PKG}" <<'NODE'
+const fs = require("node:fs");
+const path = require("node:path");
+
+const [modules, manifestPath] = process.argv.slice(2);
+const globalRoot = path.dirname(modules);
+const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+const preserve = /linux|darwin|win32|musl|gnu|baseline|binding|native|node-addon|hashline|t3code|@oven/i;
+const readJson = (file) => {
+  try {
+    return JSON.parse(fs.readFileSync(file, "utf8"));
+  } catch {
+    return null;
+  }
+};
+const real = (directory) => {
+  try {
+    return fs.realpathSync.native(directory);
+  } catch {
+    return directory;
+  }
+};
+const packageDirectory = (base, name) => {
+  for (const candidate of [
+    path.join(base, "node_modules", name),
+    path.join(modules, name),
+  ]) {
+    if (fs.existsSync(path.join(candidate, "package.json"))) return candidate;
+  }
+  return null;
+};
+
+const reachable = new Set();
+const roots = {
+  ...(manifest.dependencies || {}),
+  ...(manifest.optionalDependencies || {}),
+};
+const queue = Object.keys(roots)
+  .map((name) => packageDirectory(globalRoot, name))
+  .filter(Boolean);
+while (queue.length > 0) {
+  const directory = queue.pop();
+  const identity = real(directory);
+  if (reachable.has(identity)) continue;
+  reachable.add(identity);
+  const packageJson = readJson(path.join(directory, "package.json"));
+  if (!packageJson) continue;
+  const dependencies = {
+    ...(packageJson.dependencies || {}),
+    ...(packageJson.optionalDependencies || {}),
+    ...(packageJson.peerDependencies || {}),
+  };
+  for (const name of Object.keys(dependencies)) {
+    const dependency = packageDirectory(directory, name);
+    if (dependency) queue.push(dependency);
+  }
+}
+
+const topLevel = [];
+for (const entry of fs.readdirSync(modules, { withFileTypes: true })) {
+  if (entry.name.startsWith(".")) continue;
+  const directory = path.join(modules, entry.name);
+  if (entry.name.startsWith("@") && entry.isDirectory()) {
+    for (const child of fs.readdirSync(directory, { withFileTypes: true })) {
+      const childDirectory = path.join(directory, child.name);
+      if (child.isDirectory() && fs.existsSync(path.join(childDirectory, "package.json"))) {
+        topLevel.push([`${entry.name}/${child.name}`, childDirectory]);
+      }
+    }
+  } else if (entry.isDirectory() && fs.existsSync(path.join(directory, "package.json"))) {
+    topLevel.push([entry.name, directory]);
+  }
+}
+
+let removed = 0;
+for (const [name, directory] of topLevel) {
+  if (reachable.has(real(directory)) || preserve.test(name)) continue;
+  fs.rmSync(directory, { recursive: true, force: true });
+  removed += 1;
+}
+
+let replaced = 0;
+for (const name of fs.readdirSync(modules)) {
+  if (!name.startsWith(".old-")) continue;
+  fs.rmSync(path.join(modules, name), { recursive: true, force: true });
+  replaced += 1;
+}
+
+console.log(`Pruned ${removed} unreachable global packages and ${replaced} stale Bun replacement trees`);
+NODE
+  then
+    echo "global package manifest could not be read, skipping unreachable package cleanup" >&2
+  fi
+}
+
 # Succeeds when a declared bin is neither a script (#!) nor an ELF/Mach-O
 # binary, e.g. a placeholder that the package's postinstall replaces.
 unexecutable_bin() {
@@ -612,5 +720,7 @@ fi
 if ! verify_posthog_api_cli; then
   echo "Warning: PostHog API CLI bundle verification failed" >&2
 fi
+
+prune_unreachable_global_packages
 
 echo "npm globals installation complete"

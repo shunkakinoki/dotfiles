@@ -56,6 +56,54 @@ The contents of file "$MOCK_LOG" should not include '--user start --no-block ins
 End
 End
 
+Describe 'unreachable global package cleanup'
+setup() {
+  TEMP_HOME=$(mktemp -d)
+  MOCK_BIN=$(mktemp -d)
+  REAL_BIN_DIR="$(dirname "$(command -v jq)")"
+  REAL_SYSTEM_BIN_DIR="$(dirname "$(command -v mv)")"
+  REAL_NODE_DIR="$(dirname "$(command -v node)")"
+  GM="$TEMP_HOME/.bun/install/global/node_modules"
+  mkdir -p "$TEMP_HOME/dotfiles" "$TEMP_HOME/.bun/install/global" "$TEMP_HOME/.bun/bin"
+  cat >"$TEMP_HOME/dotfiles/package.json" <<'EOF'
+{
+  "dependencies": { "rootcli": "1.0.0" }
+}
+EOF
+  printf '{"dependencies":{"rootcli":"1.0.0"}}\n' >"$TEMP_HOME/.bun/install/global/package.json"
+  mkdir -p "$GM/rootcli/node_modules/keptdep" "$GM/orphan" "$GM/@t3code/t3-linux-x64"
+  printf '{"name":"rootcli","version":"1.0.0","dependencies":{"keptdep":"1.0.0"}}\n' >"$GM/rootcli/package.json"
+  printf '{"name":"keptdep","version":"1.0.0"}\n' >"$GM/rootcli/node_modules/keptdep/package.json"
+  printf '{"name":"orphan","version":"1.0.0"}\n' >"$GM/orphan/package.json"
+  printf '{"name":"@t3code/t3-linux-x64","version":"1.0.0"}\n' >"$GM/@t3code/t3-linux-x64/package.json"
+  mkdir -p "$GM/.old-test"
+  printf 'stale\n' >"$GM/.old-test/file"
+  cat >"$MOCK_BIN/timeout" <<'EOF'
+#!/usr/bin/env bash
+shift
+exec "$@"
+EOF
+  chmod +x "$MOCK_BIN/timeout"
+  printf '#!/usr/bin/env bash\nexit 0\n' >"$MOCK_BIN/curl"
+  chmod +x "$MOCK_BIN/curl"
+  cat >"$MOCK_BIN/bun" <<'EOF'
+#!/usr/bin/env bash
+exit 0
+EOF
+  chmod +x "$MOCK_BIN/bun"
+}
+cleanup() {
+  rm -rf "$TEMP_HOME" "$MOCK_BIN"
+}
+Before 'setup'
+After 'cleanup'
+
+It 'removes unreachable packages and stale replacement trees but keeps reachable packages'
+When run bash -c "env -u T3_BOOT_SERVICE_UNIT -u T3_PROC_CGROUP -u SYSTEMCTL_BIN HOME='$TEMP_HOME' PATH='$MOCK_BIN:$REAL_BIN_DIR:$REAL_SYSTEM_BIN_DIR:$REAL_NODE_DIR:/usr/bin:/bin' bash '$SCRIPT' >/dev/null 2>&1; test ! -e '$GM/orphan' && test ! -e '$GM/.old-test' && test -e '$GM/rootcli' && test -e '$GM/rootcli/node_modules/keptdep' && test -e '$GM/@t3code/t3-linux-x64'"
+The status should be success
+End
+End
+
 Describe 'systemd activation skip'
 It 'checks systemctl is-system-running to detect boot'
 When run bash -c "grep 'is-system-running' '$SCRIPT'"
