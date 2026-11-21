@@ -8,6 +8,12 @@ let
         pkgs.aws-lc.out
         pkgs.aws-lc.dev
       ];
+      # aws-lc-sys 0.45 requires this layout for an explicit system prefix.
+      postBuild = ''
+        if [ ! -e "$out/include/openssl" ]; then
+          ln -s aws-lc/openssl "$out/include/openssl"
+        fi
+      '';
     };
 in
 [

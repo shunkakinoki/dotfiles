@@ -2,7 +2,6 @@ import { afterEach, expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
 import {
   chmodSync,
-  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -197,25 +196,5 @@ test("host health escalates the urgent root band independently of the earlier wa
   expect(result.stdout.toString()).toContain("50 GiB kubelet emergency floor");
 });
 
-// Nix build sandboxes do not expose /proc's mount table. This live systemd
-// condition check needs that table; the mocked storage-guard test runs everywhere.
-test.skipIf(
-  process.platform !== "linux" || !existsSync("/proc/self/mountinfo")
-)(
-  "systemd mount condition rejects an ordinary directory without starting services",
-  () => {
-    const { root } = fixture();
-    const missing = Bun.spawnSync([
-      "systemd-analyze",
-      "condition",
-      `ConditionPathIsMountPoint=${root}`,
-    ]);
-    expect(missing.exitCode).not.toBe(0);
-    const mounted = Bun.spawnSync([
-      "systemd-analyze",
-      "condition",
-      "ConditionPathIsMountPoint=/",
-    ]);
-    expect(mounted.exitCode).toBe(0);
-  }
-);
+// Live systemd mount conditions run outside the Nix build sandbox in
+// spec/atuin_mount_condition_spec.sh; the storage guard is tested above.

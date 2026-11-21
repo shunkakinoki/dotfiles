@@ -5,7 +5,7 @@
     assert pkgs.codex.env.OPENSSL_INCLUDE_DIR == "${pkgs.openssl.dev}/include";
     pkgs.runCommand "overlay-codex-crypto" { } ''
       prefix=${pkgs.codex.env.AWS_LC_SYS_SYSTEM_DIR}
-      test -f "$prefix/include/openssl/base.h" || test -f "$prefix/include/aws-lc/openssl/base.h"
+      test -f "$prefix/include/openssl/base.h"
       test -f "$prefix/lib/libcrypto-awslc.${if pkgs.stdenv.hostPlatform.isDarwin then "dylib" else "so"}"
       test -f "$prefix/share/rust/aws_lc_bindings.rs"
       touch $out
