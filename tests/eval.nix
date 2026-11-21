@@ -562,6 +562,7 @@ let
         assert cfg.systemd.user.startServices;
         assert !(cfg.systemd.user.services ? ci-box-warm);
         assert !(cfg.systemd.user.services ? roborev);
+        assert cfg.systemd.user.services.dotfiles-updater.Service.CPUWeight == 20;
         assert activationPosition "checkKaminoIdentity" < activationPosition "writeBoundary";
         assert activationPosition "startKaminoUserManager" < activationPosition "reloadSystemd";
         assert
@@ -663,6 +664,7 @@ let
         assert activationPosition "verifyHostIdentity" < activationPosition "writeBoundary";
         assert !(cfg.home.activation ? authorizeFleetRootSsh);
         assert lib.elem "HOST=beskar" cfg.systemd.user.services.dotfiles-updater.Service.Environment;
+        assert !(cfg.systemd.user.services.dotfiles-updater.Service ? CPUWeight);
         assert sshAuthorizedKeys.beskar == fleetPeerKeysOf "beskar";
         assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeFleetSsh.data;
         assert lib.hasInfix "/root/.ssh" cfg.home.activation.authorizeFleetSsh.data;
