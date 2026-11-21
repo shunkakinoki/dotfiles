@@ -16,8 +16,8 @@ ENV_FILE="$3"
 STATE_DIR="$4"
 SYSTEMCTL_BIN="${5:-}"
 GROK_BIN="${6:-grok}"
-# The T3 launcher can exec claude by name outside the login shell.
-CLAUDE_LAUNCH_PATH="${HOME}/.bun/bin:${HOME}/.nix-profile/bin:/etc/profiles/per-user/$(id -un)/bin:/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+# T3 agent launchers run outside the login shell and can resolve CLIs by name.
+AGENT_LAUNCH_PATH="${HOME}/.bun/bin:${HOME}/.nix-profile/bin:/etc/profiles/per-user/$(id -un)/bin:/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 CODEX_HOME_DIR="${HOME}/.codex-t3/cliproxy"
 
 SETTINGS="${STATE_DIR}/settings.json"
@@ -159,10 +159,18 @@ if [ -f "$SETTINGS" ] && ! "$JQ_BIN" empty "$SETTINGS" >/dev/null 2>&1; then
   exit 0
 fi
 
+settings_input=/dev/null
 if [ -f "$SETTINGS" ]; then
-  # shellcheck disable=SC2016
-  "$JQ_BIN" --slurpfile managed "$MANAGED_SETTINGS" --arg key "$CLIPROXY_API_KEY" --arg base "$CLIPROXY_BASE_URL" --arg perm "$CLAUDE_PERMISSION_ARGS" --arg grok "$GROK_BIN" --arg claude_path "$CLAUDE_LAUNCH_PATH" '
+  settings_input="$SETTINGS"
+fi
+
+# shellcheck disable=SC2016
+"$JQ_BIN" --slurp --slurpfile managed "$MANAGED_SETTINGS" \
+  --arg key "$CLIPROXY_API_KEY" --arg base "$CLIPROXY_BASE_URL" \
+  --arg perm "$CLAUDE_PERMISSION_ARGS" --arg grok "$GROK_BIN" \
+  --arg agent_path "$AGENT_LAUNCH_PATH" '
     ($managed[0]) as $managed_settings
+    | (.[0] // {})
     | .backgroundActivity = ((.backgroundActivity // {}) * ($managed_settings.backgroundActivity // {}))
     | .providers = ((.providers // {}) * ($managed_settings.providers // {}))
     | .providerInstances =
@@ -174,28 +182,16 @@ if [ -f "$SETTINGS" ]; then
                   elif . == "__CLIPROXY_BASE_URL__" then $base
                   elif . == "__CLAUDE_PERMISSION_ARGS__" then $perm
                   elif . == "__GROK_BINARY_PATH__" then $grok
-                  elif . == "__CLAUDE_LAUNCH_PATH__" then $claude_path
                   else . end
                 else . end
               )))
-  ' "$SETTINGS" >"$TEMP_SETTINGS"
-else
-  # shellcheck disable=SC2016
-  "$JQ_BIN" --slurpfile managed "$MANAGED_SETTINGS" --arg key "$CLIPROXY_API_KEY" --arg base "$CLIPROXY_BASE_URL" --arg perm "$CLAUDE_PERMISSION_ARGS" --arg grok "$GROK_BIN" --arg claude_path "$CLAUDE_LAUNCH_PATH" '
-    ($managed[0]) as $managed_settings
-    | $managed_settings
-    | .providerInstances |= walk(
-        if type == "string" then
-          if . == "__CLIPROXY_API_KEY__" then $key
-          elif . == "__CLIPROXY_BASE_URL__" then $base
-          elif . == "__CLAUDE_PERMISSION_ARGS__" then $perm
-          elif . == "__GROK_BINARY_PATH__" then $grok
-          elif . == "__CLAUDE_LAUNCH_PATH__" then $claude_path
-          else . end
-        else . end
+    | .providerInstances[] |= (
+        .environment = (
+          [.environment[]? | select(.name != "PATH")]
+          + [{name: "PATH", value: $agent_path}]
+        )
       )
-  ' -n >"$TEMP_SETTINGS"
-fi
+  ' "$settings_input" >"$TEMP_SETTINGS"
 
 # T3 Code watches this file and reloads provider state when it changes, so an
 # activation that renders the same content must leave it alone. A switch that

@@ -288,7 +288,7 @@ It 'keeps the user grok instance settings when overriding the binary path'
 cat >"$STATE_DIR/settings.json" <<'JSON'
 {"providerInstances":{"grok":{"driver":"grok","enabled":false,"config":{"binaryPath":"grok","customModels":["m"]}}}}
 JSON
-When run env CLIPROXY_API_KEY=k HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '' /store/grok.sh && jq -e '.providerInstances.grok == {driver: \"grok\", enabled: false, config: {binaryPath: \"/store/grok.sh\", customModels: [\"m\"]}}' '$STATE_DIR/settings.json' >/dev/null"
+When run env CLIPROXY_API_KEY=k HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' '' /store/grok.sh && jq -e '(.providerInstances.grok | del(.environment)) == {driver: \"grok\", enabled: false, config: {binaryPath: \"/store/grok.sh\", customModels: [\"m\"]}}' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 End
 
