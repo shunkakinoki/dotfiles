@@ -19,6 +19,16 @@ When run bash -c "grep -A2 '^dotagents-switch-sync:' '$MAKEFILE'"
 The output should include 'DOTAGENTS_SKIP_SYNC=1'
 End
 
+It 'syncs dotfiles-managed skills after the checked-in dotagents content'
+When run bash -c "grep -A3 '^dotagents-switch-sync:' '$MAKEFILE'"
+The output should include '$(MAKE) dotfiles-skills-sync'
+End
+
+It 'uses the dotfiles skill directory with the existing skill sync recipe'
+When run bash -c "grep -A1 '^dotfiles-skills-sync:' '$MAKEFILE'"
+The output should include 'SKILLS_SRC_DIR="$(CURDIR)/skills" skills-sync'
+End
+
 It 'serializes Linux switches with the dotfiles-updater lock'
 When run bash -c "sed -n '/^switch:/,/^else\$/p' '$MAKEFILE'"
 The output should include '/run/user/$$(id -u)'

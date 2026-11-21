@@ -389,6 +389,7 @@ dotagents-sync: dotagents-prepare ## Sync dotagents (commands, skills, MCP confi
 	else \
 		$(MAKE) -C dotagents DOTAGENTS_SKIP_SYNC= sync; \
 	fi
+	@$(MAKE) dotfiles-skills-sync
 
 .PHONY: dotagents-prepare
 dotagents-prepare: ## Initialize the dotagents submodule when needed.
@@ -405,6 +406,11 @@ dotagents-prepare: ## Initialize the dotagents submodule when needed.
 dotagents-switch-sync: dotagents-prepare ## Sync checked-in dotagents content during switch.
 	@echo "🔄 Syncing checked-in dotagents content..."
 	@$(MAKE) -C dotagents DOTAGENTS_SKIP_SYNC=1 ruler-prepare ruler-dotdirs-sync commands-sync skills-sync mcp-sync ruler-apply-global
+	@$(MAKE) dotfiles-skills-sync
+
+.PHONY: dotfiles-skills-sync
+dotfiles-skills-sync: dotagents-prepare ## Sync skills managed by dotfiles.
+	@$(MAKE) -C dotagents DOTAGENTS_SKIP_SYNC=1 SKILLS_SRC_DIR="$(CURDIR)/skills" skills-sync
 
 .PHONY: codex-security-sync
 codex-security-sync: ## Sync Codex security deny patterns from Claude settings.
