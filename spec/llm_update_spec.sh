@@ -448,9 +448,9 @@ When run bash -c "sed -n '/^\[agents\]/,/^\[/p' config/codex/config.toml | grep 
 The output should include 'max'
 End
 
-It 'enables the max reasoning effort it defaults subagents to'
-When run bash -c "grep 'enabled-reasoning-efforts' config/codex/config.toml"
-The output should include 'max'
+It 'omits the unrecognized reasoning effort allowlist'
+When run bash -c "for file in config/codex/config.tpl.toml config/codex/config.toml; do ! grep -q '^enabled-reasoning-efforts[[:space:]]*=' \"\$file\" || exit 1; done"
+The status should be success
 End
 End
 
@@ -482,13 +482,8 @@ End
 End
 
 Describe 'Codex feature flags'
-It 'enables remote compaction in the template and generated config'
-When run bash -c "for file in config/codex/config.tpl.toml config/codex/config.toml; do sed -n '/^\[features\]$/,/^\[/p' \"\$file\" | grep -qx 'remote_compaction_v2 = true' || exit 1; done"
-The status should be success
-End
-
-It 'omits feature flags removed by the current Codex CLI'
-When run bash -c "removed='apply_patch_freeform apps_mcp_path_override codex_git_commit enable_fanout external_migration js_repl js_repl_tools_only plugin_hooks remote_control skill_env_var_dependency_prompt terminal_resize_reflow tool_search tool_search_always_defer_mcp_tools unavailable_dummy_tools undo workspace_owner_usage_nudge'; for file in config/codex/config.tpl.toml config/codex/config.toml; do features=\$(sed -n '/^\[features\]$/,/^\[/p' \"\$file\"); for flag in \$removed; do ! printf '%s\n' \"\$features\" | grep -q \"^\${flag}[[:space:]]*=\" || exit 1; done; done"
+It 'omits unrecognized, deprecated, and removed feature flags'
+When run bash -c "removed='apply_patch_freeform apps_mcp_path_override builtin_mcp child_agents_md codex_git_commit enable_fanout external_migration general_analytics js_repl js_repl_tools_only multi_agent personality plugin_hooks realtime_conversation remote_compaction_v2 remote_control responses_websocket_response_processed shell_zsh_fork skill_env_var_dependency_prompt terminal_resize_reflow tool_search tool_search_always_defer_mcp_tools unavailable_dummy_tools undo voice_transcription workspace_owner_usage_nudge'; for file in config/codex/config.tpl.toml config/codex/config.toml; do features=\$(sed -n '/^\[features\]$/,/^\[/p' \"\$file\"); for flag in \$removed; do ! printf '%s\n' \"\$features\" | grep -q \"^\${flag}[[:space:]]*=\" || exit 1; done; done"
 The status should be success
 End
 End
