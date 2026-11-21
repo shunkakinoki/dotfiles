@@ -336,6 +336,11 @@ The output should include 'alias: "deepseek-v4.1-flash"'
 The status should be success
 End
 
+It 'keeps the shunkakinoki client namespace out of CLIProxy provider routing'
+When run bash -c "if grep -q 'name: \"shunkakinoki-deepseek-alias\"' '$PWD/config/cliproxyapi/config.template.yaml'; then exit 1; fi"
+The status should be success
+End
+
 It 'serves the uncensored DeepSeek Flash alias by its Surplus model id'
 When run bash -c "sed -n '/name: \"surplus\"/,/name: \"openai\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'name: "deepseek-v4.1-flash-uncensored"'

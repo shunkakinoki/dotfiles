@@ -172,7 +172,7 @@ headless.
 | `coxe`, `coxeh` | `gpt-6.1-sol` |
 | `coxec`, `coxech` | `gpt-6-luna` (`--profile cliproxy`) |
 | `coxel`, `coxelh` | `qwen3.5-0.8b-optiq` (`--oss --local-provider lmstudio`) |
-| `pixe`, `pixeh` | `cliproxyapi/deepseek-v4.1-flash-1017` |
+| `pixe`, `pixeh` | `cliproxyapi/deepseek-v4.1-flash` |
 | `pixel`, `pixelh` | `lmstudio/qwen3.5-0.8b-optiq` |
 
 ## CLIProxy routing

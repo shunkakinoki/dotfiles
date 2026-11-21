@@ -103,7 +103,7 @@ export function loadFallbackConfig(path: string): FallbackConfig {
   }
 }
 
-/** Model ids may contain slashes (cliproxyapi/deepseek-v4.1-flash), so split once. */
+/** Model refs use one provider slash followed by the Pi catalog model id. */
 export function splitModelRef(ref: string): { provider: string; id: string } {
   const index = ref.indexOf("/");
   return index === -1
