@@ -123,6 +123,13 @@ let
     export PATH="$HOME/.config/t3/bin:$PATH"
     t3() { ${runtimeCli} "$@"; }
   '';
+  ensureService = pkgs.writeShellScript "t3-ensure-service" (
+    "export PATH=${toolchain}:$PATH\n"
+    + "export T3_SERVICE_CLI=${runtimeCli}\n"
+    + "export T3_SYSTEMCTL=${pkgs.systemd}/bin/systemctl\n"
+    + "export T3_CHECK_SERVICE=${./check-service.cjs}\n"
+    + builtins.readFile ./ensure-service.sh
+  );
   connectService = pkgs.writeShellScript "t3-connect-service" (
     setLibraryPath + builtins.readFile ./connect.sh
   );
@@ -141,6 +148,9 @@ in
   home.activation = lib.mkIf t3Enabled {
     setupT3Browser = config.lib.dag.entryAfter [ "installNpmGlobals" ] ''
       $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${setupBrowser}
+    '';
+    ensureT3Service = config.lib.dag.entryAfter [ "setupT3Browser" ] ''
+      $DRY_RUN_CMD ${ensureService}
     '';
   };
 
@@ -200,6 +210,7 @@ in
       ExecStart=${launcher}
       # A live launcher with an unmanaged owner is not a healthy service.
       ExecStartPost=${pkgs.nodejs}/bin/node ${./check-service.cjs}
+      Environment=T3CODE_HOST=127.0.0.1
       ${lib.optionalString (t3ServeRoute != null) ''
         Environment=T3CODE_TAILSCALE_SERVE=true
         Environment=T3CODE_TAILSCALE_SERVE_PORT=${toString t3ServeRoute.httpsPort}
@@ -230,7 +241,8 @@ in
         "T3_SETUP_BROWSER=${setupBrowser}"
         "T3_SYSTEMCTL=${pkgs.systemd}/bin/systemctl"
         "T3_CHECK_SERVICE=${./check-service.cjs}"
-        "T3_ENSURE_SERVICE=${if inputs.host.isKamino or false then "1" else "0"}"
+        "T3_ENSURE_SERVICE=1"
+        "T3_SERVICE_CLI=${runtimeCli}"
         "XDG_RUNTIME_DIR=%t"
         "DBUS_SESSION_BUS_ADDRESS=unix:path=%t/bus"
       ];
