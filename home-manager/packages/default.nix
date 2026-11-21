@@ -51,7 +51,6 @@ with pkgs;
   pkgs.llm-agents.cursor-agent
   dasel
   delta
-  devin
   difftastic
   dnsutils
   direnv
@@ -157,6 +156,7 @@ with pkgs;
   vector
 ]
 ++ lib.optionals stdenv.hostPlatform.isDarwin [
+  devin
   darwin.trash
 ]
 ++ lib.optionals stdenv.hostPlatform.isLinux [
