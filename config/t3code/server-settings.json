@@ -66,7 +66,7 @@
       "displayName": "Antigravity",
       "enabled": true,
       "config": {
-        "binaryPath": "agy"
+        "binaryPath": "__AGY_BINARY_PATH__"
       }
     },
     "antigravity-cliproxy": {
@@ -81,7 +81,7 @@
         }
       ],
       "config": {
-        "binaryPath": "agy-cliproxy"
+        "binaryPath": "__AGY_CLIPROXY_BINARY_PATH__"
       }
     },
     "opencode": {
