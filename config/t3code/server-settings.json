@@ -61,6 +61,29 @@
         "launchArgs": ""
       }
     },
+    "antigravity": {
+      "driver": "antigravity",
+      "displayName": "Antigravity",
+      "enabled": true,
+      "config": {
+        "binaryPath": "agy"
+      }
+    },
+    "antigravity-cliproxy": {
+      "driver": "antigravity",
+      "displayName": "Antigravity (CLIProxy)",
+      "enabled": true,
+      "environment": [
+        {
+          "name": "CLIPROXY_API_KEY",
+          "value": "__CLIPROXY_API_KEY__",
+          "sensitive": true
+        }
+      ],
+      "config": {
+        "binaryPath": "agy-cliproxy"
+      }
+    },
     "opencode": {
       "driver": "opencode",
       "displayName": "OpenCode",
