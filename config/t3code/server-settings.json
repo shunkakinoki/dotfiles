@@ -78,10 +78,17 @@
           "name": "CLIPROXY_API_KEY",
           "value": "__CLIPROXY_API_KEY__",
           "sensitive": true
+        },
+        {
+          "name": "GEMINI_BASE_URL",
+          "value": "https://cliproxy.shunkakinoki.com/v1",
+          "sensitive": false
         }
       ],
       "config": {
-        "binaryPath": "__AGY_CLIPROXY_BINARY_PATH__"
+        "apiKey": "__CLIPROXY_API_KEY__",
+        "authMethod": "gemini-api-key",
+        "binaryPath": "__AGY_BINARY_PATH__"
       }
     },
     "opencode": {
