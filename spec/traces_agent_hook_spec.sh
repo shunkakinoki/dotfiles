@@ -74,7 +74,10 @@ The status should be success
 End
 
 It 'runs the hook and its detached uploads at the lowest CPU priority'
-printf '#!/usr/bin/env bash\nprintf "nice:%%s\\n" "$(nice)" >>"$TRACES_HOOK_TEST_LOG"\n' >"$TEMP_BIN/traces"
+cat >"$TEMP_BIN/traces" <<'STUB'
+#!/usr/bin/env bash
+printf 'nice:%s\n' "$(nice)" >>"$TRACES_HOOK_TEST_LOG"
+STUB
 When call run_guard trace-a agent-done
 The status should be success
 The contents of file "$HOOK_LOG" should include 'nice:19'
