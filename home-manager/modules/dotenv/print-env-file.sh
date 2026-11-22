@@ -65,3 +65,7 @@ fi
 if [ -z "${DOTFILES_ENV_FILE:-}" ] && [ -f "$HOME/.config/agenix/agents-prd.env" ]; then
   emit_file "$HOME/.config/agenix/agents-prd.env" "DOPPLER_TOKEN"
 fi
+
+if [ -z "${DOTFILES_ENV_FILE:-}" ] && [ -f "$HOME/.config/agenix/traces.env" ]; then
+  emit_file "$HOME/.config/agenix/traces.env" "TRACES_API_KEY"
+fi

@@ -10,5 +10,6 @@
   ./secure-dotenv
   ./tailscale
   ./tailscale/serve-routes.nix
+  ./traces
   ./uv-globals
 ]
