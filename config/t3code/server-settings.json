@@ -81,7 +81,7 @@
         }
       ],
       "config": {
-        "binaryPath": "__AGY_CLIPROXY_BINARY_PATH__"
+        "binaryPath": "__AGY_BINARY_PATH__"
       }
     },
     "opencode": {
