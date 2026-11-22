@@ -84,6 +84,22 @@ vm-compaction)
     echo "Set THP defrag to never."
   fi
   ;;
+docker-egress)
+  # A Tailscale exit node installs `from all lookup 52` with a default route on
+  # tailscale0, so replies to Docker bridge addresses leave through the tunnel
+  # and containers lose internet. Docker bridges resolve through main first.
+  unit="${2:?systemd unit path required}"
+  ip_bin="${3:?ip binary required}"
+  rule="to 172.16.0.0/12 lookup main priority 5200"
+  content=$(printf '[Unit]\nDescription=Route Docker bridge replies through the main table\nAfter=network-online.target\nWants=network-online.target\n\n[Service]\nType=oneshot\nRemainAfterExit=true\nExecStart=/bin/sh -c "%s rule show priority 5200 | grep -q 172.16.0.0/12 || %s rule add %s"\n\n[Install]\nWantedBy=multi-user.target' "$ip_bin" "$ip_bin" "$rule")
+  if [ ! -f "$unit" ] || [ "$(cat "$unit")" != "$content" ]; then
+    printf '%s\n' "$content" >"$unit"
+    echo "Wrote $unit."
+    systemctl daemon-reload
+  fi
+  systemctl enable "$(basename "$unit")"
+  systemctl start "$(basename "$unit")"
+  ;;
 journald-limits)
   # Cap persistent journald storage so worker logs never consume multi-GB root space.
   dropin="${2:?journald drop-in path required}"

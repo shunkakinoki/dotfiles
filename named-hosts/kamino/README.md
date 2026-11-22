@@ -49,6 +49,13 @@ flags instead, which reapplies the declared name and preferences without
 creating a new device or dropping other settings such as an exit node. A
 stopped machine stays down.
 
+Activation installs and starts `kamino-docker-egress.service`, a boot-time
+oneshot that adds `ip rule add to 172.16.0.0/12 lookup main priority 5200`.
+With a Tailscale exit node set, tailscaled's `from all lookup 52` rule sends
+replies to Docker bridge addresses out of `tailscale0`, so containers lose
+internet while the host keeps it. Verify with `ip rule show priority 5200` and
+`docker run --rm alpine wget -qO- https://example.com >/dev/null && echo ok`.
+
 Host login uses Tailscale SSH, authorized by the tailnet policy as root. Activation
 adds the declared Galactica, Kyber, and Matic public keys to root's
 `authorized_keys`, preserving provider keys and other existing entries. It sets
