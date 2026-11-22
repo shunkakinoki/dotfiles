@@ -30,6 +30,7 @@ require_command jq
 require_command sed
 require_command mktemp
 require_command mv
+require_command awk
 
 add_model_override() {
   local key="$1"
@@ -74,6 +75,42 @@ model_rows="$(
   echo "ERROR: no model rows generated from $MODELS" >&2
   exit 1
 }
+
+# Keep the shared registry canonical while deriving the CLIProxy Antigravity
+# thinking tiers from its one model entry. The upstream catalog uses the
+# `-low`, `-medium`, `-high`, and `-xhigh` suffixes; the family alias is an
+# additional entry pointing to the high tier so T3 requests for gemini-4-neon
+# remain valid.
+if ! neon_model="$(jq -er '."gemini-neon" // empty' "$MODELS")" || [[ -z $neon_model ]]; then
+  echo "ERROR: models.json must define a non-empty gemini-neon model" >&2
+  exit 1
+fi
+case "$neon_model" in
+  *[!A-Za-z0-9._-]*)
+    echo "ERROR: gemini-neon contains unsupported characters" >&2
+    exit 1
+    ;;
+esac
+
+neon_aliases_file="$(mktemp)"
+trap 'rm -f "$neon_aliases_file"' EXIT
+neon_display="$(printf '%s\n' "${neon_model#gemini-}" | awk -F- '{ for (i = 1; i <= NF; i++) $i = toupper(substr($i, 1, 1)) substr($i, 2); OFS = " "; print }')"
+neon_display="Gemini ${neon_display}"
+for tier in low medium high xhigh; do
+  tier_model="${neon_model}-${tier}"
+  tier_alias="$tier_model"
+  case "$tier" in
+    low) tier_title="Low" ;;
+    medium) tier_title="Medium" ;;
+    high) tier_title="High" ;;
+    xhigh) tier_title="XHigh" ;;
+  esac
+  tier_display="${neon_display} (${tier_title})"
+  printf '    - name: "%s"\n      alias: "%s"\n      display-name: "%s"\n      force-mapping: true\n' \
+    "$tier_model" "$tier_alias" "$tier_display" >>"$neon_aliases_file"
+done
+printf '    - name: "%s-high"\n      alias: "%s"\n      display-name: "%s"\n      force-mapping: true\n' \
+  "$neon_model" "$neon_model" "$neon_display" >>"$neon_aliases_file"
 
 while IFS=$'\t' read -r key value pretty nondot; do
   [[ -n $key ]] || continue
@@ -163,6 +200,18 @@ for src in "${!TEMPLATES[@]}"; do
     rm -f "$tmp"
     echo "ERROR: sed failed for $src" >&2
     exit 1
+  fi
+  if grep -Fq '__GEMINI_NEON_ANTIGRAVITY_ALIASES__' "$tmp"; then
+    expanded_tmp="$(mktemp "$ROOT/.llm-update.XXXXXX")"
+    awk -v marker='__GEMINI_NEON_ANTIGRAVITY_ALIASES__' -v block="$neon_aliases_file" '
+      index($0, marker) {
+        while ((getline line < block) > 0) print line
+        close(block)
+        next
+      }
+      { print }
+    ' "$tmp" >"$expanded_tmp"
+    mv -f "$expanded_tmp" "$tmp"
   fi
   if ! mv -f "$tmp" "$ROOT/$dst"; then
     rm -f "$tmp"
