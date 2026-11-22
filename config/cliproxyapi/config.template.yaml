@@ -927,8 +927,8 @@ openai-compatibility:
 # through to OpenRouter, which rejects Claude Code's system prompt.
 oauth-model-alias:
   antigravity:
-    # T3's Antigravity driver requests the family alias. Pin it to the
-    # concrete Neon tier exposed by the CLIProxy Antigravity catalog.
+    # llm-update.sh expands the canonical gemini-neon model into the
+    # thinking tiers exposed by the CLIProxy Antigravity catalog.
     - name: "gemini-4-neon-low"
       alias: "gemini-4-neon-low"
       display-name: "Gemini 4 Neon (Low)"
@@ -938,16 +938,16 @@ oauth-model-alias:
       display-name: "Gemini 4 Neon (Medium)"
       force-mapping: true
     - name: "gemini-4-neon-high"
-      alias: "gemini-4-neon"
-      display-name: "Gemini 4 Neon"
-      force-mapping: true
-    - name: "gemini-4-neon-high"
       alias: "gemini-4-neon-high"
       display-name: "Gemini 4 Neon (High)"
       force-mapping: true
     - name: "gemini-4-neon-xhigh"
       alias: "gemini-4-neon-xhigh"
       display-name: "Gemini 4 Neon (XHigh)"
+      force-mapping: true
+    - name: "gemini-4-neon-high"
+      alias: "gemini-4-neon"
+      display-name: "Gemini 4 Neon"
       force-mapping: true
   claude:
     - name: "claude-haiku-5-5"
