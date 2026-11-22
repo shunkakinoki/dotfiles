@@ -76,8 +76,16 @@ acquire_lock() {
 
   # Recover only a lock whose owner has definitely exited. The directory
   # creation remains the atomic operation that admits exactly one hook.
+  # A lock with no pid file is a holder killed between mkdir and the pid
+  # write; without the age check it would block every later event forever.
   owner="$(cat "$LOCK_DIR/pid" 2>/dev/null || true)"
-  if [ -n "$owner" ] && ! kill -0 "$owner" 2>/dev/null; then
+  stale=0
+  if [ -n "$owner" ]; then
+    kill -0 "$owner" 2>/dev/null || stale=1
+  elif [ -n "$(find "$LOCK_DIR" -maxdepth 0 -mmin +1 2>/dev/null)" ]; then
+    stale=1
+  fi
+  if [ "$stale" -eq 1 ]; then
     rm -f "$LOCK_DIR/pid"
     rmdir "$LOCK_DIR" 2>/dev/null || true
     if mkdir "$LOCK_DIR" 2>/dev/null; then
