@@ -35,10 +35,11 @@ STALE_UPLOAD_SECONDS="${TRACES_HOOK_STALE_UPLOAD_SECONDS:-300}"
 
 payload="$(cat)"
 
-# The detached `traces share` it spawns rescans every agent transcript (about
-# a core and 1 GB for up to 90s on a Mac) and inherits this niceness, so it
-# yields the CPU to agents. macOS background QoS (`taskpolicy -b`) is too
-# strong: the share then outlives STALE_UPLOAD_SECONDS and never completes.
+# The detached `traces share` it spawns inherits this niceness, so it yields
+# the CPU to agents. Sharing a trace that is not yet in the local index (a new
+# session) re-indexes every agent's sessions first: about a core and 1 GB for
+# up to 90s on a Mac. macOS background QoS (`taskpolicy -b`) is too strong:
+# the share then outlives STALE_UPLOAD_SECONDS and never completes.
 run_hook() {
   printf '%s' "$payload" | nice -n 19 "$traces_bin" hook agent "$event" "$@" || true
   exit 0
