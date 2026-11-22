@@ -27,3 +27,38 @@ for state in ~/.claude.json ~/.claude-cliproxy/.claude.json; do
   chmod 600 "$_TMP"
   mv -f "$_TMP" "$state"
 done
+
+# Traces indexes only ~/.claude/projects, so T3 Code sessions under
+# ~/.claude-cliproxy are never uploaded or linked to commits unless both config
+# dirs share one projects dir. Session files are UUID-named, so merging cannot
+# overwrite; mv -n keeps any file that does collide in the pending dir.
+shared=~/.claude/projects
+cliproxy=~/.claude-cliproxy/projects
+pending="$cliproxy.merging"
+mkdir -p "$shared"
+
+merge_into_shared() {
+  (
+    cd "$1"
+    find . ! -type d -print0 | while IFS= read -r -d '' file; do
+      mkdir -p "$shared/$(dirname "$file")"
+      mv -n "$file" "$shared/$file"
+    done
+  )
+  find "$1" -depth -type d -empty -delete
+  if [ -e "$1" ]; then
+    echo "claude activate: files left in $1 already exist in $shared" >&2
+  fi
+}
+
+if [ -d "$pending" ]; then
+  merge_into_shared "$pending"
+fi
+if [ -d "$cliproxy" ] && [ ! -L "$cliproxy" ] && [ ! -e "$pending" ]; then
+  mv "$cliproxy" "$pending"
+  ln -s "$shared" "$cliproxy"
+  merge_into_shared "$pending"
+fi
+if [ ! -e "$cliproxy" ] && [ ! -L "$cliproxy" ]; then
+  ln -s "$shared" "$cliproxy"
+fi

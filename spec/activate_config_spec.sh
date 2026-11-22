@@ -429,6 +429,12 @@ It 'merges the declared state into existing and missing Claude state files'
 When run bash -c "temp_home=\$(mktemp -d); mkdir -p \"\$temp_home/.claude-cliproxy\"; echo '{\"numStartups\":3}' >\"\$temp_home/.claude-cliproxy/.claude.json\"; HOME=\"\$temp_home\" bash '$SCRIPT' '$PWD/config/claude/settings.json' '$PWD/config/claude/app-state.json' && jq -e '.hasSeenAutoModeOutsideReadPrompt == true and .numStartups == 3' \"\$temp_home/.claude-cliproxy/.claude.json\" >/dev/null && jq -e '.hasSeenAutoModeOutsideReadPrompt == true' \"\$temp_home/.claude.json\" >/dev/null"
 The status should be success
 End
+
+# Traces indexes only ~/.claude/projects, so T3 Code sessions must land there.
+It 'merges T3 Code Claude sessions into the shared projects dir without overwriting'
+When run bash -c "temp_home=\$(mktemp -d); mkdir -p \"\$temp_home/.claude/projects/-repo\" \"\$temp_home/.claude-cliproxy/projects/-repo/s2/subagents\"; echo kept >\"\$temp_home/.claude/projects/-repo/s1.jsonl\"; echo t3 >\"\$temp_home/.claude-cliproxy/projects/-repo/s2.jsonl\"; echo sub >\"\$temp_home/.claude-cliproxy/projects/-repo/s2/subagents/a.jsonl\"; echo dup >\"\$temp_home/.claude-cliproxy/projects/-repo/s1.jsonl\"; HOME=\"\$temp_home\" bash '$SCRIPT' '$PWD/config/claude/settings.json' '$PWD/config/claude/app-state.json' 2>/dev/null; p=\"\$temp_home/.claude/projects/-repo\"; test -L \"\$temp_home/.claude-cliproxy/projects\" && grep -qx kept \"\$p/s1.jsonl\" && grep -qx t3 \"\$p/s2.jsonl\" && grep -qx sub \"\$p/s2/subagents/a.jsonl\" && grep -qx dup \"\$temp_home/.claude-cliproxy/projects.merging/-repo/s1.jsonl\" && HOME=\"\$temp_home\" bash '$SCRIPT' '$PWD/config/claude/settings.json' '$PWD/config/claude/app-state.json' 2>/dev/null && test -L \"\$temp_home/.claude-cliproxy/projects\""
+The status should be success
+End
 End
 
 Describe 'config/dcg/activate.sh'
