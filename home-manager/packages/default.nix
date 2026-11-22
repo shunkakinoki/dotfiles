@@ -70,6 +70,7 @@ with pkgs;
   gh-dash
   git
   git-absorb
+  git-annex
   gitleaks
   glance
   glow
