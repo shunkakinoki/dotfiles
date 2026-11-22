@@ -926,6 +926,27 @@ openai-compatibility:
 # name too; a plain alias renames it, and requests for the full name then fall
 # through to OpenRouter, which rejects Claude Code's system prompt.
 oauth-model-alias:
+  antigravity:
+    - name: "gemini-4-neon-low"
+      alias: "gemini-4-neon-low"
+      display-name: "Gemini 4 Neon (Low)"
+      force-mapping: true
+    - name: "gemini-4-neon-medium"
+      alias: "gemini-4-neon-medium"
+      display-name: "Gemini 4 Neon (Medium)"
+      force-mapping: true
+    - name: "gemini-4-neon-high"
+      alias: "gemini-4-neon"
+      display-name: "Gemini 4 Neon"
+      force-mapping: true
+    - name: "gemini-4-neon-high"
+      alias: "gemini-4-neon-high"
+      display-name: "Gemini 4 Neon (High)"
+      force-mapping: true
+    - name: "gemini-4-neon-xhigh"
+      alias: "gemini-4-neon-xhigh"
+      display-name: "Gemini 4 Neon (XHigh)"
+      force-mapping: true
   claude:
     - name: "claude-haiku-5-5"
       alias: "claude-haiku"

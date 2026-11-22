@@ -3,6 +3,17 @@ set -u
 
 ANTIGRAVITY_CLI_BIN="${ANTIGRAVITY_CLI_BIN:-${HOME}/.local/libexec/antigravity-cli/agy}"
 
+# T3 validates the basename as `agy` and invokes this launcher directly. The
+# CLIProxy instance is identified by its injected key; route that invocation
+# to the proxy endpoint without changing native OAuth sessions.
+CLIPROXY_KEY="${CLIPROXY_API_KEY:-${GEMINI_API_KEY:-}}"
+if [ -n "$CLIPROXY_KEY" ]; then
+  export CLIPROXY_API_KEY="$CLIPROXY_KEY"
+  export GEMINI_API_KEY="$CLIPROXY_KEY"
+  export GOOGLE_API_KEY="$CLIPROXY_KEY"
+  export GOOGLE_GEMINI_BASE_URL="${CLIPROXY_GEMINI_BASE_URL:-https://cliproxy.shunkakinoki.com/v1}"
+fi
+
 traces_hooks_installed() {
   hooks_dir="$1/hooks"
   for hook in \
