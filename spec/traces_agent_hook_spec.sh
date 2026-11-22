@@ -73,6 +73,29 @@ When call run_guard trace-a session-end
 The status should be success
 End
 
+It 'runs the hook and its detached uploads at the lowest CPU priority'
+printf '#!/usr/bin/env bash\nprintf "nice:%%s\\n" "$(nice)" >>"$TRACES_HOOK_TEST_LOG"\n' >"$TEMP_BIN/traces"
+When call run_guard trace-a agent-done
+The status should be success
+The contents of file "$HOOK_LOG" should include 'nice:19'
+End
+
+It 'recovers an admission lock left without an owner pid'
+mkdir -p "$HOME/.local/state/traces-agent-hook/admission.lock"
+touch -t 202001010000 "$HOME/.local/state/traces-agent-hook/admission.lock"
+When call run_guard trace-a agent-done
+The status should be success
+The contents of file "$HOOK_LOG" should include 'args:hook agent agent-done --agent claude-code'
+The path "$HOME/.local/state/traces-agent-hook/admission.lock" should not be exist
+End
+
+It 'respects a fresh admission lock whose owner has not written its pid yet'
+mkdir -p "$HOME/.local/state/traces-agent-hook/admission.lock"
+When call run_guard trace-a agent-done
+The status should be success
+The file "$HOOK_LOG" should not be exist
+End
+
 It 'skips prompt-submitted while the same trace is already uploading'
 upload_row 4242 04:59 trace-a
 When call run_guard trace-a prompt-submitted
