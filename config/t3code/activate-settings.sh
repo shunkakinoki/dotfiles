@@ -17,7 +17,7 @@ STATE_DIR="$4"
 SYSTEMCTL_BIN="${5:-}"
 GROK_BIN="${6:-grok}"
 # T3 agent launchers run outside the login shell and can resolve CLIs by name.
-AGENT_LAUNCH_PATH="${HOME}/.bun/bin:${HOME}/.nix-profile/bin:/etc/profiles/per-user/$(id -un)/bin:/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+AGENT_LAUNCH_PATH="${HOME}/.local/bin:${HOME}/.bun/bin:${HOME}/.nix-profile/bin:/etc/profiles/per-user/$(id -un)/bin:/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 CODEX_HOME_DIR="${HOME}/.codex-t3/cliproxy"
 
 SETTINGS="${STATE_DIR}/settings.json"
