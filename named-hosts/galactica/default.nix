@@ -28,17 +28,14 @@ inputs.nix-darwin.lib.darwinSystem {
           };
         };
       };
-      age.identityPaths = [
-        "/etc/ssh/ssh_host_ed25519_key"
-        "/Users/${username}/.ssh/id_ed25519"
-      ];
-      age.secrets = builtins.mapAttrs (_: value: { inherit (value) file; }) (import ./secrets.nix) // {
-        "traces.env" = {
-          file = ../traces/keys/traces.env.age;
-          path = "/Users/${username}/.config/agenix/traces.env";
-          owner = username;
-          mode = "0400";
-        };
+      # The user key has a passphrase the unattended activation job cannot
+      # enter, so system secrets must be encrypted to the host key.
+      age.identityPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+      age.secrets."traces.env" = {
+        file = ../traces/keys/traces.env.age;
+        path = "/Users/${username}/.config/agenix/traces.env";
+        owner = username;
+        mode = "0400";
       };
 
       # The standalone macOS Tailscale app cannot host Tailscale SSH. Enable
