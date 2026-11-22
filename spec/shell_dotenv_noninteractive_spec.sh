@@ -58,6 +58,15 @@ When call run_bash_env 'printf "%s" "${DOPPLER_TOKEN:-<unset>}"'
 The output should equal 'scoped-token'
 End
 
+It 'exports only the Traces API key from the shared agenix file'
+setup_traces_key() {
+  printf '%s\n' 'TRACES_API_KEY=traces-key' 'UNRELATED=ignored' >"$TEST_HOME/.config/agenix/traces.env"
+}
+BeforeCall 'setup_traces_key'
+When call run_bash_env 'printf "%s:%s" "${TRACES_API_KEY:-<unset>}" "${UNRELATED:-<unset>}"'
+The output should equal 'traces-key:<unset>'
+End
+
 It 'keeps an explicit env file as the sole source'
 setup_override() {
   printf '%s\n' 'DOPPLER_TOKEN=override-token' >"$TEST_HOME/override.env"
