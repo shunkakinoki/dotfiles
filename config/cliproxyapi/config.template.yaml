@@ -927,6 +927,8 @@ openai-compatibility:
 # through to OpenRouter, which rejects Claude Code's system prompt.
 oauth-model-alias:
   antigravity:
+    # T3's Antigravity driver requests the family alias. Pin it to the
+    # concrete Neon tier exposed by the CLIProxy Antigravity catalog.
     - name: "gemini-4-neon-low"
       alias: "gemini-4-neon-low"
       display-name: "Gemini 4 Neon (Low)"
