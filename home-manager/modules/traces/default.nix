@@ -2,15 +2,19 @@
   config,
   inputs,
   lib,
+  pkgs,
   ...
 }:
 let
   inherit (inputs) host;
   secretFile = ../../../named-hosts/traces/keys/traces.env.age;
   # Only hosts the ciphertext is encrypted to can decrypt it; any other host
-  # would fail agenix on every activation.
+  # would fail agenix on every activation. Galactica decrypts it through
+  # system agenix (named-hosts/galactica) because its user key has a passphrase.
   enabled =
-    builtins.pathExists secretFile && (import ../../../named-hosts/pubkeys.nix) ? ${host.nodeName};
+    pkgs.stdenv.hostPlatform.isLinux
+    && builtins.pathExists secretFile
+    && (import ../../../named-hosts/pubkeys.nix) ? ${host.nodeName};
   herdrNeedsKey = enabled && (host.isBeskar || host.isKamino || host.isMatic || host.isKyber);
   homeDir = config.home.homeDirectory;
   envFile = "${homeDir}/.config/agenix/traces.env";

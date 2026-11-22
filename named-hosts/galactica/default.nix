@@ -32,7 +32,14 @@ inputs.nix-darwin.lib.darwinSystem {
         "/etc/ssh/ssh_host_ed25519_key"
         "/Users/${username}/.ssh/id_ed25519"
       ];
-      age.secrets = builtins.mapAttrs (_: value: { inherit (value) file; }) (import ./secrets.nix);
+      age.secrets = builtins.mapAttrs (_: value: { inherit (value) file; }) (import ./secrets.nix) // {
+        "traces.env" = {
+          file = ../traces/keys/traces.env.age;
+          path = "/Users/${username}/.config/agenix/traces.env";
+          owner = username;
+          mode = "0400";
+        };
+      };
 
       # The standalone macOS Tailscale app cannot host Tailscale SSH. Enable
       # Apple's SSH server so Galactica remains reachable over its tailnet IP.
