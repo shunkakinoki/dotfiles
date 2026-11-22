@@ -19,6 +19,10 @@
     source = ./agy.sh;
     executable = true;
   };
+  home.file.".local/bin/agy-cliproxy" = {
+    source = ./agy-cliproxy.sh;
+    executable = true;
+  };
   home.file.".local/libexec/antigravity-cli/agy".source =
     "${pkgs.llm-agents.antigravity-cli}/bin/agy";
 }
