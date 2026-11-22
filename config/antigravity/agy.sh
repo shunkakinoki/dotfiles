@@ -10,7 +10,10 @@ CLIPROXY_KEY="${CLIPROXY_API_KEY:-${GEMINI_API_KEY:-}}"
 if [ -n "$CLIPROXY_KEY" ]; then
   export CLIPROXY_API_KEY="$CLIPROXY_KEY"
   export GEMINI_API_KEY="$CLIPROXY_KEY"
-  export GOOGLE_API_KEY="$CLIPROXY_KEY"
+  # T3's Antigravity ACP path treats GOOGLE_API_KEY as a native Google API
+  # credential and may bypass the configured proxy base URL. Keep only the
+  # Gemini API-key route for CLIProxy.
+  unset GOOGLE_API_KEY
   export GOOGLE_GEMINI_BASE_URL="${CLIPROXY_GEMINI_BASE_URL:-https://cliproxy.shunkakinoki.com/v1}"
 fi
 
