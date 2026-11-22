@@ -253,13 +253,15 @@ The error should include 'not main'
 The file "$HOME/installed" should not be exist
 End
 
-It 'preserves tracked edits instead of resetting them'
+It 'stashes tracked edits so updates keep pulling origin/main'
 printf '\nedited\n' >>"$HOME/dotfiles/install.sh"
-When run bash "$SCRIPT"
-The status should be failure
-The error should include 'uncommitted changes'
-The contents of file "$HOME/dotfiles/install.sh" should include 'edited'
-The file "$HOME/installed" should not be exist
+When run bash -c "bash '$SCRIPT' 2>/dev/null && git -C '$HOME/dotfiles' stash show -p stash@{0}"
+The status should be success
+The output should include 'Stashing uncommitted deployment checkout changes'
+The output should include 'Changes detected'
+The output should include '+edited'
+The contents of file "$HOME/dotfiles/install.sh" should not include 'edited'
+The file "$HOME/installed" should be exist
 End
 
 It 'restores host-regenerated Moshi adapters and installs'
@@ -278,24 +280,29 @@ The file "$HOME/dotfiles/generated/hooks/moshi/new/hooks.json" should not be exi
 The file "$HOME/installed" should be exist
 End
 
-It 'leaves regenerated Moshi adapters intact when other edits block the run'
+It 'stashes mixed Moshi and other tracked edits together and installs'
 printf 'drift\n' >>"$HOME/dotfiles/generated/hooks/moshi/claude/settings.json"
 printf '\nedited\n' >>"$HOME/dotfiles/install.sh"
-When run bash "$SCRIPT"
-The status should be failure
+When run bash -c "bash '$SCRIPT' 2>/dev/null && git -C '$HOME/dotfiles' stash show -p stash@{0}"
+The status should be success
 The output should not include 'Restoring host-regenerated Moshi adapters'
-The error should include 'uncommitted changes'
-The contents of file "$HOME/dotfiles/install.sh" should include 'edited'
-The contents of file "$HOME/dotfiles/generated/hooks/moshi/claude/settings.json" should include 'drift'
+The output should include 'Stashing uncommitted deployment checkout changes'
+The output should include '+edited'
+The output should include '+drift'
+The contents of file "$HOME/dotfiles/install.sh" should not include 'edited'
+The file "$HOME/installed" should be exist
 End
 
-It 'preserves staged edits instead of resetting them'
+It 'stashes staged edits so updates keep pulling origin/main'
 printf '\nstaged\n' >>"$HOME/dotfiles/install.sh"
 git -C "$HOME/dotfiles" add install.sh
-When run bash "$SCRIPT"
-The status should be failure
-The error should include 'uncommitted changes'
-The contents of file "$HOME/dotfiles/install.sh" should include 'staged'
+When run bash -c "bash '$SCRIPT' 2>/dev/null && git -C '$HOME/dotfiles' stash show -p stash@{0}"
+The status should be success
+The output should include 'Stashing uncommitted deployment checkout changes'
+The output should include 'Changes detected'
+The output should include '+staged'
+The contents of file "$HOME/dotfiles/install.sh" should not include 'staged'
+The file "$HOME/installed" should be exist
 End
 
 It 'refuses unpublished commits on main'
