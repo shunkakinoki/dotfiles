@@ -45,9 +45,8 @@ if [ "$BRANCH" != "main" ]; then
 fi
 
 # The Moshi adapters are moshi-hook output that hosts never edit by hand. A
-# regeneration on a host captures its own moshi-hook version and binary path,
-# and the dirty-checkout guard below would then block every future update.
-# Restore only when nothing else is dirty, so a blocked run leaves every edit.
+# regeneration on a host captures its own moshi-hook version and binary path;
+# restore them directly when nothing else is dirty to avoid creating stash noise.
 if [ -n "$(git ls-files generated/hooks/moshi)" ] &&
   ! git diff --quiet HEAD -- generated/hooks/moshi &&
   git diff --quiet HEAD -- . ':(exclude)generated/hooks/moshi'; then
@@ -55,9 +54,14 @@ if [ -n "$(git ls-files generated/hooks/moshi)" ] &&
   git restore --source=HEAD --staged --worktree -- generated/hooks/moshi
 fi
 
+# Uncommitted tracked edits on a deployment host must not block pulls forever
+# and leave the host behind origin/main. Preserve them in git stash, then
+# continue fast-forwarding and installing.
 if ! git diff --quiet || ! git diff --cached --quiet; then
-  echo "ERROR: Deployment checkout has uncommitted changes; leaving them intact." >&2
-  exit 1
+  STASH_MSG="dotfiles-updater auto-stash $(date -u +%Y%m%dT%H%M%SZ)"
+  echo "Stashing uncommitted deployment checkout changes ($STASH_MSG) before pulling origin/main."
+  git -c user.name="dotfiles-updater" -c user.email="dotfiles-updater@localhost" \
+    stash push -m "$STASH_MSG"
 fi
 
 # Upstream images move independently of this repository, so check them before
