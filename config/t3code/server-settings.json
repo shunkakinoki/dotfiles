@@ -81,6 +81,7 @@
         }
       ],
       "config": {
+        "authMethod": "gemini-api-key",
         "binaryPath": "__AGY_BINARY_PATH__"
       }
     },
