@@ -20,5 +20,5 @@ headers; it never passes the cookie through process arguments. It honors
 
 Cursor authentication still needs a valid saved session. Run
 `tokscale cursor status` to check it and `tokscale cursor login` to renew it.
-The job does not prompt for credentials. Logs are in `/tmp/tokscale.log` and
-`/tmp/tokscale.error.log`.
+The job does not prompt for credentials. On macOS, logs are in `/tmp/tokscale.log` and
+`/tmp/tokscale.error.log`; on Linux, `journalctl --user -u tokscale`.

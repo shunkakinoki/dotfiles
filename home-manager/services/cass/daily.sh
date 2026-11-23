@@ -13,9 +13,11 @@ fi
 SYNC_TIMEOUT="${CASS_DAILY_SYNC_TIMEOUT:-10m}"
 ANALYTICS_TIMEOUT="${CASS_DAILY_ANALYTICS_TIMEOUT:-15m}"
 
+# cass is an opt-in local build (.local-binaries.txt), so hosts without it
+# have nothing to sync.
 if [ ! -x "$CASS" ]; then
-  echo "cass binary not found at $CASS"
-  exit 1
+  echo "cass binary not found at $CASS; skipping"
+  exit 0
 fi
 
 echo "$(date): starting cass daily sync + analytics"

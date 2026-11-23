@@ -26,7 +26,9 @@ in
         if test (count $keys) -gt 0
           # Use --quiet to suppress most output, --eval to set environment variables
           # --confirm will skip keys that need a passphrase in non-interactive contexts
-          eval (keychain --eval --quiet --confirm $keys 2>/dev/null; or true)
+          # keychain picks its output syntax from $SHELL, which keeps the parent's
+          # value (often bash) when fish is started from another shell or a service.
+          eval (env SHELL=fish keychain --eval --quiet --confirm $keys 2>/dev/null; or true)
         end
       end
     ''
