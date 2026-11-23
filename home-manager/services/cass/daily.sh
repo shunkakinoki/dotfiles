@@ -2,6 +2,16 @@
 set -euo pipefail
 
 CASS="$HOME/.local/bin/cass"
+# cass is an opt-in local build (.local-binaries.txt), so hosts without it
+# have nothing to sync.
+if [ ! -e "$CASS" ]; then
+  echo "cass binary not found at $CASS; skipping"
+  exit 0
+fi
+if [ ! -x "$CASS" ]; then
+  echo "cass at $CASS is not executable" >&2
+  exit 1
+fi
 if [ -n "${CASS_DAILY_TIMEOUT_BIN:-}" ]; then
   TIMEOUT_BIN="$CASS_DAILY_TIMEOUT_BIN"
 elif command -v timeout >/dev/null 2>&1; then
@@ -12,13 +22,6 @@ else
 fi
 SYNC_TIMEOUT="${CASS_DAILY_SYNC_TIMEOUT:-10m}"
 ANALYTICS_TIMEOUT="${CASS_DAILY_ANALYTICS_TIMEOUT:-15m}"
-
-# cass is an opt-in local build (.local-binaries.txt), so hosts without it
-# have nothing to sync.
-if [ ! -x "$CASS" ]; then
-  echo "cass binary not found at $CASS; skipping"
-  exit 0
-fi
 
 echo "$(date): starting cass daily sync + analytics"
 
