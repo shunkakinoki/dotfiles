@@ -84,9 +84,10 @@ in
         "PATH=${binPath}:/usr/bin:/bin:/usr/sbin:/sbin"
         "TOKSCALE_EXTRA_DIRS=${t3ExtraDirs}"
       ];
+      # Logs go to the journal: on hosts with several users a shared /tmp log
+      # owned by another user cannot be opened (fs.protected_regular), and the
+      # unit fails before it starts.
       ExecStart = "${pkgs.bash}/bin/bash ${./submit.sh} ${./sync-cursor.py}";
-      StandardOutput = "append:/tmp/tokscale.log";
-      StandardError = "append:/tmp/tokscale.error.log";
     };
   };
 

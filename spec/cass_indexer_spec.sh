@@ -41,6 +41,18 @@ It 'checks cass binary exists before running'
 When run bash -c "cat '$SCRIPT'"
 The output should include '! -x'
 End
+
+It 'skips without failing on hosts that do not build cass'
+When run env HOME="$(mktemp -d)" bash "$SCRIPT"
+The status should be success
+The output should include 'skipping'
+End
+
+It 'fails when cass exists but is not executable'
+When run bash -c "h=\$(mktemp -d); mkdir -p \"\$h/.local/bin\"; touch \"\$h/.local/bin/cass\"; HOME=\"\$h\" bash '$SCRIPT'"
+The status should be failure
+The error should include 'not executable'
+End
 End
 
 End

@@ -26,7 +26,12 @@ in
         if test (count $keys) -gt 0
           # Use --quiet to suppress most output, --eval to set environment variables
           # --confirm will skip keys that need a passphrase in non-interactive contexts
-          eval (keychain --eval --quiet --confirm $keys 2>/dev/null; or true)
+          # keychain picks its output syntax from $SHELL, which keeps the parent's
+          # value (often bash) when fish is started from another shell or a service.
+          # keychain 3.0.4 emits universal (-U) variables, which outlive the agent and
+          # leave later shells with a stale socket, so scope them to this session.
+          set -eU SSH_AUTH_SOCK SSH_AGENT_PID 2>/dev/null
+          eval (env SHELL=fish keychain --eval --quiet --confirm $keys 2>/dev/null | string replace -a -- " -U " " -g "; or true)
         end
       end
     ''
