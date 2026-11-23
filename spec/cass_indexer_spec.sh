@@ -49,7 +49,7 @@ The output should include 'skipping'
 End
 
 It 'fails when cass exists but is not executable'
-When run bash -c 'h=$(mktemp -d); mkdir -p "$h/.local/bin"; touch "$h/.local/bin/cass"; HOME="$h" bash "$1"' _ "$SCRIPT"
+When run bash -c "h=\$(mktemp -d); mkdir -p \"\$h/.local/bin\"; touch \"\$h/.local/bin/cass\"; HOME=\"\$h\" bash '$SCRIPT'"
 The status should be failure
 The error should include 'not executable'
 End
