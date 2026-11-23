@@ -180,12 +180,15 @@ test("Renovate explicitly excludes every patched package", () => {
     readFileSync(join(root, "renovate.json"), "utf8")
   );
   for (const { name } of patchedPackages(manifest)) {
-    expect(
-      renovate.packageRules.some(
-        (rule: { enabled?: boolean; matchPackageNames?: string[] }) =>
-          rule.enabled === false && rule.matchPackageNames?.includes(name)
-      )
-    ).toBe(true);
+    const rule = renovate.packageRules.find(
+      (candidate: { enabled?: boolean; matchPackageNames?: string[] }) =>
+        candidate.enabled === false &&
+        candidate.matchPackageNames?.includes(name)
+    );
+    expect(rule).toBeDefined();
+    // Renovate extracts package.json with the bun manager, so a rule scoped to
+    // another manager never matches and silently lets the patch be bypassed.
+    expect(rule?.matchManagers ?? ["bun"]).toContain("bun");
   }
   expect(() => checkPatches(root)).not.toThrow();
 });

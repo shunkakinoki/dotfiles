@@ -157,7 +157,7 @@
     {
       "description": "Patched packages require a manual patch port and clean-install verification",
       "matchManagers": [
-        "npm"
+        "bun"
       ],
       "matchPackageNames": [
         "frog",
