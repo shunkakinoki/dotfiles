@@ -9,17 +9,17 @@ requires-python = ">=3.13"
 [dependency-groups]
 tools = [
   "aider-chat>=0.86.2",
-  "claude-swap>=1.0.0",
+  "claude-swap>=1.1.0",
   "git-remote-s3>=0.4.2",
   "graphifyy>=0.9.111",
   "huggingface-hub[mcp]>=2.4.0",
-  "marker-pdf>=2.1.0",
-  "mempalace>=3.11.0",
+  "marker-pdf>=2.2.0",
+  "mempalace>=3.12.0",
   "mistral-vibe>=3.1.2",
   "nvitop>=1.7.2",
   "ruff>=0.17.5",
   "serena-agent>=2.1.0",
-  "transformers>=5.22.2",
+  "transformers>=5.23.0",
   "vllm>=0.33.0",
   "vllm-mlx>=0.6.0",
 ]
@@ -27,7 +27,7 @@ tools = [
 hermes = [
   "python-telegram-bot[webhooks]>=22.8,<23",
   "croniter>=7.0.0,<8",
-  "fastapi[standard]>=0.162.7",
+  "fastapi[standard]>=0.163.1",
   "uvicorn>=0.54.0",
 ]
 
