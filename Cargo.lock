@@ -6486,9 +6486,9 @@ dependencies = [
 
 [[package]]
 name = "yek"
-version = "0.25.5"
+version = "0.26.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ba87c0a0ac1250990c8109fe376598734bc39e0d37d71338514cd58b593fa44e"
+checksum = "1deda9abaaed2c46bda02f174e5a27fb1be027fa13d590294a4d3711bdb188b6"
 dependencies = [
  "anyhow",
  "atty",
