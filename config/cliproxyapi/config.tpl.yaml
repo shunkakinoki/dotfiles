@@ -575,6 +575,10 @@ openai-compatibility:
           - "minimum_discount_not_met"
           - "no_healthy_sellers"
         action: "retry-and-cooldown"
+      - status: 500
+        match:
+          - "secret_masking_failed"
+        action: "stop"
       - status: 502
         action: "retry-and-cooldown"
       - status: 503
@@ -739,6 +743,10 @@ openai-compatibility:
           - "minimum_discount_not_met"
           - "no_healthy_sellers"
         action: "retry-and-cooldown"
+      - status: 500
+        match:
+          - "secret_masking_failed"
+        action: "stop"
       - status: 502
         action: "retry-and-cooldown"
       - status: 503
