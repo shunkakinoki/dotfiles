@@ -174,3 +174,19 @@ The output should include 'readlink -f'
 End
 End
 End
+
+Describe 'home-manager/modules/tailscale/default.nix'
+MODULE="$PWD/home-manager/modules/tailscale/default.nix"
+
+It 'protects tailscaled.service from CPU, I/O, and memory starvation'
+When run bash -c "sed -n '/tailscaledServiceFile =/,/tailscaleUpServiceFile =/p' '$MODULE'"
+The output should include 'Nice=-10'
+The output should include 'CPUWeight=1000'
+The output should include 'IOWeight=1000'
+The output should include 'OOMScoreAdjust=-900'
+The output should include 'MemoryMin=256M'
+The output should include 'TimeoutStartSec=180'
+The output should include 'TimeoutStopSec=180'
+The output should include 'RestartSec=5'
+End
+End

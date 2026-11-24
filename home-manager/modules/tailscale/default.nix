@@ -25,7 +25,15 @@ let
     ExecStartPre=${cfg.tailscaled.package}/bin/tailscaled --cleanup
     ExecStart=${cfg.tailscaled.package}/bin/tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/run/tailscale/tailscaled.sock --port ${toString cfg.port}
     ExecStopPost=${cfg.tailscaled.package}/bin/tailscaled --cleanup
+    Nice=-10
+    CPUWeight=1000
+    IOWeight=1000
+    OOMScoreAdjust=-900
+    MemoryMin=256M
+    TimeoutStartSec=180
+    TimeoutStopSec=180
     Restart=on-failure
+    RestartSec=5
     RuntimeDirectory=tailscale
     RuntimeDirectoryMode=0755
     StateDirectory=tailscale
