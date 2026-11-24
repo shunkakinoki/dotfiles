@@ -708,6 +708,18 @@ done
 The status should be success
 End
 
+It 'stops Surplus secret_masking_failed 500s without cooling down Surplus'
+When run bash -c 'for file in config/cliproxyapi/config.tpl.yaml config/cliproxyapi/config.template.yaml; do
+  for provider in surplus-deepseek surplus; do
+    section=$(sed -n "/name: \"$provider\"/,/^  - name:/p" "$PWD/$file")
+    printf "%s\n" "$section" | grep -Fq "status: 500" || exit 1
+    printf "%s\n" "$section" | grep -Fq "secret_masking_failed" || exit 1
+    printf "%s\n" "$section" | grep -Fq "action: \"stop\"" || exit 1
+  done
+done'
+The status should be success
+End
+
 It 'enables prompt cache keys on the Aliyun hop'
 When run bash -c "sed -n '/name: \"aliyun\"/,/name: \"opencode\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'support-prompt-cache-key: true'
