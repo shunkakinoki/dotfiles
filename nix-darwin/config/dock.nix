@@ -1,4 +1,5 @@
 { username }:
+{ config, lib, ... }:
 {
   system.defaults.dock = {
     appswitcher-all-displays = null;
@@ -29,6 +30,9 @@
       "/Applications/Antigravity.app"
       "/Applications/Conductor.app"
       "/Applications/OpenCode.app"
+    ]
+    ++ lib.optional (config.networking.hostName == "galactica") "/Applications/OpenFactor.app"
+    ++ [
       "/Applications/T3 Code (Nightly).app"
       "/Applications/OpenClaw.app"
       "/Applications/Hermes.app"
