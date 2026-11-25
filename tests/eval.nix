@@ -666,7 +666,7 @@ let
             "--reset"
             "--operator=root"
             "--accept-dns=true"
-            "--ssh=false"
+            "--ssh=true"
           ];
         assert cfg.home.username == "root";
         assert cfg.home.homeDirectory == "/root";
