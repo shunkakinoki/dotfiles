@@ -584,7 +584,7 @@ openai-compatibility:
       - status: 503
         action: "retry-and-cooldown"
     api-key-entries:
-      - api-key: "__SURPLUS_API_KEY__"
+      - api-key: "__SURPLUS_DEEPSEEK_API_KEY__"
         proxy-url: "direct"
     models:
       - name: "deepseek-v4.1-flash-1017"

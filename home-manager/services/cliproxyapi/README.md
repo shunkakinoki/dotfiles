@@ -129,10 +129,14 @@ ALIYUN_TOKEN_PLAN_API_KEY="sk-sp-..."
 MORPH_API_KEY="..."
 VERBOO_API_KEY="..."
 SURPLUS_API_KEY="..."
+SURPLUS_DEEPSEEK_API_KEY="..."
 COMMANDCODE_API_KEY="..."
 OLLAMA_API_KEY="..."
 NVIDIA_API_KEY="..."
 ```
+
+`SURPLUS_DEEPSEEK_API_KEY` is optional and feeds the priority-301
+`surplus-deepseek` route. When it is unset, the route uses `SURPLUS_API_KEY`.
 
 NVIDIA serves `deepseek-v4.1-flash`, `deepseek-v4-flash`, and `gemma-4-31b-it`
 at priority 120, after every other DeepSeek provider except OpenRouter. The

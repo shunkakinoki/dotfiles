@@ -18,6 +18,7 @@ qwen_api_key: __QWEN_API_KEY__
 aliyun_token_plan_api_key: __ALIYUN_TOKEN_PLAN_API_KEY__
 verboo_api_key: __VERBOO_API_KEY__
 surplus_api_key: __SURPLUS_API_KEY__
+surplus_deepseek_api_key: __SURPLUS_DEEPSEEK_API_KEY__
 management_password: __CLIPROXY_MANAGEMENT_PASSWORD__
 YAML
 
@@ -29,6 +30,7 @@ QWEN_API_KEY=test_qwen_key
 ALIYUN_TOKEN_PLAN_API_KEY=test_token_plan_key
 VERBOO_API_KEY=test_verboo_key
 SURPLUS_API_KEY=test_surplus_key
+SURPLUS_DEEPSEEK_API_KEY=test_surplus_deepseek_key
 CLIPROXY_MANAGEMENT_PASSWORD=test_mgmt_password
 ENV
 }
@@ -75,6 +77,7 @@ QWEN_API_KEY="test_qwen_key"
 ALIYUN_TOKEN_PLAN_API_KEY="test_token_plan_key"
 VERBOO_API_KEY="test_verboo_key"
 SURPLUS_API_KEY="test_surplus_key"
+SURPLUS_DEEPSEEK_API_KEY="test_surplus_deepseek_key"
 CLIPROXY_MANAGEMENT_PASSWORD="test_pass"
 
 if [ -f "$TEMPLATE" ]; then
@@ -84,6 +87,7 @@ if [ -f "$TEMPLATE" ]; then
     -e "s|__ALIYUN_TOKEN_PLAN_API_KEY__|${ALIYUN_TOKEN_PLAN_API_KEY:-}|g" \
     -e "s|__VERBOO_API_KEY__|${VERBOO_API_KEY:-}|g" \
     -e "s|__SURPLUS_API_KEY__|${SURPLUS_API_KEY:-}|g" \
+    -e "s|__SURPLUS_DEEPSEEK_API_KEY__|${SURPLUS_DEEPSEEK_API_KEY:-}|g" \
     -e "s|__CLIPROXY_MANAGEMENT_PASSWORD__|${CLIPROXY_MANAGEMENT_PASSWORD:-}|g" \
     "$TEMPLATE" >"$CONFIG"
 fi
@@ -98,6 +102,7 @@ The output should include 'qwen_api_key: test_qwen_key'
 The output should include 'aliyun_token_plan_api_key: test_token_plan_key'
 The output should include 'verboo_api_key: test_verboo_key'
 The output should include 'surplus_api_key: test_surplus_key'
+The output should include 'surplus_deepseek_api_key: test_surplus_deepseek_key'
 The output should include 'management_password: test_pass'
 The status should be success
 End
@@ -289,8 +294,21 @@ End
 
 Describe 'Surplus Intelligence marketplace provider'
 It 'hydrates the dedicated environment key into the runtime config'
+When run bash -c "grep 's|__SURPLUS_DEEPSEEK_API_KEY__|.*SURPLUS_DEEPSEEK_API_KEY' '$SCRIPT'"
+The output should include '__SURPLUS_DEEPSEEK_API_KEY__'
+The output should include 'SURPLUS_DEEPSEEK_API_KEY'
+The status should be success
+End
+
+It 'hydrates the shared Surplus key into the general Surplus route'
 When run bash -c "grep 's|__SURPLUS_API_KEY__|.*SURPLUS_API_KEY' '$SCRIPT'"
 The output should include '__SURPLUS_API_KEY__'
+The output should include 'SURPLUS_API_KEY'
+The status should be success
+End
+
+It 'falls back to the shared Surplus key for older dotenv files'
+When run bash -c "grep 'SURPLUS_DEEPSEEK_API_KEY:-.*SURPLUS_API_KEY' '$SCRIPT'"
 The output should include 'SURPLUS_API_KEY'
 The status should be success
 End
@@ -330,7 +348,7 @@ It 'declares the OpenAI-compatible primary DeepSeek upstream'
 When run bash -c "sed -n '/name: \"surplus-deepseek\"/,/name: \"nvidia\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'priority: 301'
 The output should include 'base-url: "https://api.surplusintelligence.ai/v1"'
-The output should include 'api-key: "__SURPLUS_API_KEY__"'
+The output should include 'api-key: "__SURPLUS_DEEPSEEK_API_KEY__"'
 The output should include 'name: "deepseek-v4.1-flash-1017"'
 The output should include 'alias: "deepseek-v4.1-flash"'
 The status should be success
@@ -771,7 +789,10 @@ Describe 'render mode'
 setup_render() {
   TEMP_HOME=$(mktemp -d)
   mkdir -p "$TEMP_HOME/.cli-proxy-api" "$TEMP_HOME/dotfiles"
-  printf 'marker: __VERBOO_API_KEY__\n' >"$TEMP_HOME/.cli-proxy-api/config.template.yaml"
+  printf '%s\n' \
+    'marker: __VERBOO_API_KEY__' \
+    'deepseek: __SURPLUS_DEEPSEEK_API_KEY__' \
+    'surplus: __SURPLUS_API_KEY__' >"$TEMP_HOME/.cli-proxy-api/config.template.yaml"
   printf 'VERBOO_API_KEY=DUMMY_ONE\n' >"$TEMP_HOME/dotfiles/.env"
   sed -e 's|@objectstore_enabled@|false|' -e 's|@aws@|false|g' \
     "$PWD/home-manager/services/cliproxyapi/scripts/common.sh" >"$TEMP_HOME/common.sh"
@@ -786,10 +807,10 @@ It 'rewrites the bind-mounted config in place and exits without starting the ser
 When run bash -c '
   cd "$1"
   config="$1/.cli-proxy-api/config.yaml"
-  HOME="$1" bash "$1/start.sh" render
+  env -u SURPLUS_DEEPSEEK_API_KEY -u SURPLUS_API_KEY HOME="$1" bash "$1/start.sh" render
   before=$(ls -i "$config" | cut -d" " -f1)
   printf "VERBOO_API_KEY=DUMMY_TWO\n" >"$1/dotfiles/.env"
-  HOME="$1" bash "$1/start.sh" render
+  env -u SURPLUS_DEEPSEEK_API_KEY -u SURPLUS_API_KEY HOME="$1" bash "$1/start.sh" render
   after=$(ls -i "$config" | cut -d" " -f1)
   cat "$config"
   [ "$before" = "$after" ] && echo same-inode
@@ -799,6 +820,27 @@ The output should include 'marker: DUMMY_TWO'
 The output should include 'same-inode'
 The output should include 'no-temp-file'
 The output should not include 'cliproxyapi not found'
+The status should be success
+End
+
+It 'hydrates dedicated and shared Surplus keys'
+When run bash -c '
+  printf "%s\\n" "SURPLUS_DEEPSEEK_API_KEY=DEDICATED" "SURPLUS_API_KEY=SHARED" >"$1/dotfiles/.env"
+  env -u SURPLUS_DEEPSEEK_API_KEY -u SURPLUS_API_KEY HOME="$1" bash "$1/start.sh" render
+  cat "$1/.cli-proxy-api/config.yaml"
+' _ "$TEMP_HOME"
+The output should include 'deepseek: DEDICATED'
+The output should include 'surplus: SHARED'
+The status should be success
+End
+
+It 'falls back to the shared Surplus key when the dedicated key is absent'
+When run bash -c '
+  printf "%s\\n" "SURPLUS_API_KEY=SHARED" >"$1/dotfiles/.env"
+  env -u SURPLUS_DEEPSEEK_API_KEY -u SURPLUS_API_KEY HOME="$1" bash "$1/start.sh" render
+  cat "$1/.cli-proxy-api/config.yaml"
+' _ "$TEMP_HOME"
+The output should include 'deepseek: SHARED'
 The status should be success
 End
 
