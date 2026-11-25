@@ -28,9 +28,17 @@ activation checks machine and Tailscale identity before the write boundary;
 the updater uses that same guard before checkout or service actions and
 declares `HOST=beskar` explicitly.
 
-The profile uses ordinary OpenSSH over the tailnet, with the declared host key
-and fleet peer authorization. Tailscale SSH is disabled; `tailscale ssh` needs
-a separately enabled server and advertised host keys.
+The profile enables Tailscale SSH, so tailnet connections to port 22 are
+authorized by the tailnet SSH policy, as on the Kamino workers. Hosted cloud
+sessions ship here through that route (`scripts/cloud-tailnet.sh` in the
+monorepo). OpenSSH keeps the hardened drop-in and fleet peer keys for
+connections outside the tailnet.
+
+To enable it on a running host before the next switch:
+
+```bash
+sudo tailscale set --ssh
+```
 
 An existing Ubuntu-owned runtime needs an operator-approved preservation
 handoff before switching. Keep active sessions, worktrees, custody and history

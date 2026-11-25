@@ -19,7 +19,9 @@ let
     "--reset"
     "--operator=${username}"
     "--accept-dns=true"
-    "--ssh=false"
+    # Tailscale SSH lets cloud sessions ship here under the tailnet SSH policy,
+    # as they do on Kamino workers; they hold no fleet OpenSSH key.
+    "--ssh=true"
   ];
   sshAuthorizedKeys = import ../ssh-authorized-keys.nix;
   authorizedKeysFile = pkgs.writeText "beskar-authorized-keys" (
