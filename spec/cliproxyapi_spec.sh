@@ -753,15 +753,15 @@ When run bash -c "test -r '$PWD/Makefile' && ! grep -q 'cliproxyapi-backup' '$PW
 The status should be success
 End
 
-It 'bounds retries, persists cooldowns, and caps log retention'
+It 'bounds retries, keeps cooldowns in memory, and caps log retention'
 When run bash -c 'for file in config/cliproxyapi/config.tpl.yaml config/cliproxyapi/config.template.yaml; do
   grep -Fxq "debug: false" "$file" || exit 1
   grep -Fxq "logs-max-total-size-mb: 512" "$file" || exit 1
   grep -Fxq "error-logs-max-files: 50" "$file" || exit 1
   grep -Fxq "request-retry: 3" "$file" || exit 1
   grep -Fxq "max-retry-interval: 30" "$file" || exit 1
-  grep -Fxq "save-cooldown-status: true" "$file" || exit 1
-  grep -Fxq "transient-error-cooldown-seconds: 300" "$file" || exit 1
+  grep -Fxq "save-cooldown-status: false" "$file" || exit 1
+  grep -Fxq "transient-error-cooldown-seconds: 60" "$file" || exit 1
 done'
 The status should be success
 End
