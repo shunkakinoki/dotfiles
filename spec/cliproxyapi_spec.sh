@@ -807,10 +807,10 @@ It 'rewrites the bind-mounted config in place and exits without starting the ser
 When run bash -c '
   cd "$1"
   config="$1/.cli-proxy-api/config.yaml"
-  HOME="$1" bash "$1/start.sh" render
+  env -u SURPLUS_DEEPSEEK_API_KEY -u SURPLUS_API_KEY HOME="$1" bash "$1/start.sh" render
   before=$(ls -i "$config" | cut -d" " -f1)
   printf "VERBOO_API_KEY=DUMMY_TWO\n" >"$1/dotfiles/.env"
-  HOME="$1" bash "$1/start.sh" render
+  env -u SURPLUS_DEEPSEEK_API_KEY -u SURPLUS_API_KEY HOME="$1" bash "$1/start.sh" render
   after=$(ls -i "$config" | cut -d" " -f1)
   cat "$config"
   [ "$before" = "$after" ] && echo same-inode
@@ -826,7 +826,7 @@ End
 It 'hydrates dedicated and shared Surplus keys'
 When run bash -c '
   printf "%s\\n" "SURPLUS_DEEPSEEK_API_KEY=DEDICATED" "SURPLUS_API_KEY=SHARED" >"$1/dotfiles/.env"
-  HOME="$1" bash "$1/start.sh" render
+  env -u SURPLUS_DEEPSEEK_API_KEY -u SURPLUS_API_KEY HOME="$1" bash "$1/start.sh" render
   cat "$1/.cli-proxy-api/config.yaml"
 ' _ "$TEMP_HOME"
 The output should include 'deepseek: DEDICATED'
@@ -837,7 +837,7 @@ End
 It 'falls back to the shared Surplus key when the dedicated key is absent'
 When run bash -c '
   printf "%s\\n" "SURPLUS_API_KEY=SHARED" >"$1/dotfiles/.env"
-  HOME="$1" bash "$1/start.sh" render
+  env -u SURPLUS_DEEPSEEK_API_KEY -u SURPLUS_API_KEY HOME="$1" bash "$1/start.sh" render
   cat "$1/.cli-proxy-api/config.yaml"
 ' _ "$TEMP_HOME"
 The output should include 'deepseek: SHARED'
