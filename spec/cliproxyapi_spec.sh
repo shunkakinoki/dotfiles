@@ -18,6 +18,7 @@ qwen_api_key: __QWEN_API_KEY__
 aliyun_token_plan_api_key: __ALIYUN_TOKEN_PLAN_API_KEY__
 verboo_api_key: __VERBOO_API_KEY__
 surplus_api_key: __SURPLUS_API_KEY__
+surplus_deepseek_api_key: __SURPLUS_DEEPSEEK_API_KEY__
 management_password: __CLIPROXY_MANAGEMENT_PASSWORD__
 YAML
 
@@ -29,6 +30,7 @@ QWEN_API_KEY=test_qwen_key
 ALIYUN_TOKEN_PLAN_API_KEY=test_token_plan_key
 VERBOO_API_KEY=test_verboo_key
 SURPLUS_API_KEY=test_surplus_key
+SURPLUS_DEEPSEEK_API_KEY=test_surplus_deepseek_key
 CLIPROXY_MANAGEMENT_PASSWORD=test_mgmt_password
 ENV
 }
@@ -75,6 +77,7 @@ QWEN_API_KEY="test_qwen_key"
 ALIYUN_TOKEN_PLAN_API_KEY="test_token_plan_key"
 VERBOO_API_KEY="test_verboo_key"
 SURPLUS_API_KEY="test_surplus_key"
+SURPLUS_DEEPSEEK_API_KEY="test_surplus_deepseek_key"
 CLIPROXY_MANAGEMENT_PASSWORD="test_pass"
 
 if [ -f "$TEMPLATE" ]; then
@@ -84,6 +87,7 @@ if [ -f "$TEMPLATE" ]; then
     -e "s|__ALIYUN_TOKEN_PLAN_API_KEY__|${ALIYUN_TOKEN_PLAN_API_KEY:-}|g" \
     -e "s|__VERBOO_API_KEY__|${VERBOO_API_KEY:-}|g" \
     -e "s|__SURPLUS_API_KEY__|${SURPLUS_API_KEY:-}|g" \
+    -e "s|__SURPLUS_DEEPSEEK_API_KEY__|${SURPLUS_DEEPSEEK_API_KEY:-}|g" \
     -e "s|__CLIPROXY_MANAGEMENT_PASSWORD__|${CLIPROXY_MANAGEMENT_PASSWORD:-}|g" \
     "$TEMPLATE" >"$CONFIG"
 fi
@@ -98,6 +102,7 @@ The output should include 'qwen_api_key: test_qwen_key'
 The output should include 'aliyun_token_plan_api_key: test_token_plan_key'
 The output should include 'verboo_api_key: test_verboo_key'
 The output should include 'surplus_api_key: test_surplus_key'
+The output should include 'surplus_deepseek_api_key: test_surplus_deepseek_key'
 The output should include 'management_password: test_pass'
 The status should be success
 End
@@ -289,8 +294,14 @@ End
 
 Describe 'Surplus Intelligence marketplace provider'
 It 'hydrates the dedicated environment key into the runtime config'
-When run bash -c "grep 's|__SURPLUS_API_KEY__|.*SURPLUS_API_KEY' '$SCRIPT'"
-The output should include '__SURPLUS_API_KEY__'
+When run bash -c "grep 's|__SURPLUS_DEEPSEEK_API_KEY__|.*SURPLUS_DEEPSEEK_API_KEY' '$SCRIPT'"
+The output should include '__SURPLUS_DEEPSEEK_API_KEY__'
+The output should include 'SURPLUS_DEEPSEEK_API_KEY'
+The status should be success
+End
+
+It 'falls back to the shared Surplus key for older dotenv files'
+When run bash -c "grep 'SURPLUS_DEEPSEEK_API_KEY:-.*SURPLUS_API_KEY' '$SCRIPT'"
 The output should include 'SURPLUS_API_KEY'
 The status should be success
 End
@@ -330,7 +341,7 @@ It 'declares the OpenAI-compatible primary DeepSeek upstream'
 When run bash -c "sed -n '/name: \"surplus-deepseek\"/,/name: \"nvidia\"/p' '$PWD/config/cliproxyapi/config.template.yaml'"
 The output should include 'priority: 301'
 The output should include 'base-url: "https://api.surplusintelligence.ai/v1"'
-The output should include 'api-key: "__SURPLUS_API_KEY__"'
+The output should include 'api-key: "__SURPLUS_DEEPSEEK_API_KEY__"'
 The output should include 'name: "deepseek-v4.1-flash-1017"'
 The output should include 'alias: "deepseek-v4.1-flash"'
 The status should be success

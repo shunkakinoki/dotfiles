@@ -372,6 +372,7 @@ if [ -f "$TEMPLATE" ]; then
     -e "s|__ALIYUN_TOKEN_PLAN_API_KEY__|$(sed_value "${ALIYUN_TOKEN_PLAN_API_KEY:-}")|g" \
     -e "s|__MORPH_API_KEY__|$(sed_value "${MORPH_API_KEY:-}")|g" \
     -e "s|__VERBOO_API_KEY__|$(sed_value "${VERBOO_API_KEY:-}")|g" \
+    -e "s|__SURPLUS_DEEPSEEK_API_KEY__|$(sed_value "${SURPLUS_DEEPSEEK_API_KEY:-${SURPLUS_API_KEY:-}}")|g" \
     -e "s|__SURPLUS_API_KEY__|$(sed_value "${SURPLUS_API_KEY:-}")|g" \
     -e "s|__COMMANDCODE_API_KEY__|$(sed_value "${COMMANDCODE_API_KEY:-}")|g" \
     -e "s|__AMP_UPSTREAM_API_KEY__|$(sed_value "${AMP_UPSTREAM_API_KEY:-}")|g" \
