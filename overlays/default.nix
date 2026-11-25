@@ -150,17 +150,17 @@ in
     # Use the first tagged release that includes --attach on issue and PR commands.
     gh = prev.gh.overrideAttrs (_: {
       pname = "gh";
-      version = "2.105.0";
+      version = "2.106.0";
       src = prev.fetchFromGitHub {
         owner = "cli";
         repo = "cli";
-        rev = "e1219499a578b69e3437adaa31cd60614e23c802";
-        hash = "sha256-8QOTVD/5rkzXpbOKozusjd1RnUd516exX3uPFy79j6s=";
+        rev = "529111a21612ff1e29dc45e567a157df24e0e243";
+        hash = "sha256-LssgKMOk1mnqHNkKijO5kkKxYqU6aGD1afNPPi0dQN0=";
       };
-      vendorHash = "sha256-uCWXmiLubzBmBmhU1m8/t5kJbKHpseTNlPq7JE6HUvU=";
+      vendorHash = "sha256-n2SJaKih74D/hos0aHrNokWopuF04uoGYlHCxQ/2IGw=";
       buildPhase = ''
         runHook preBuild
-        make GO_LDFLAGS="-s -w -X github.com/cli/cli/v2/internal/build.Date=nixpkgs" GH_VERSION=2.105.0 bin/gh manpages
+        make GO_LDFLAGS="-s -w -X github.com/cli/cli/v2/internal/build.Date=nixpkgs" GH_VERSION=2.106.0 bin/gh manpages
         runHook postBuild
       '';
     });
@@ -265,20 +265,20 @@ in
 
     blacksmith-testbox-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "blacksmith-testbox-cli";
-      version = "0.7.15";
+      version = "0.7.21";
       src = prev.fetchurl {
         url = "https://clireleases.blacksmith.sh/cli/v${version}/${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }/${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}/blacksmith";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "6d548c09a4a026f0bd4d6c30c86be066fee1c87f1d5e0492dc1717c5b6fe73f1"
+            "357482ba43130211bc587ae4ae4d1ad9167c382b997fd18256986f2fdd4de1d7"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "268be5e61cb6952ecfa28a3c2dd59640218b1b8b595266a9d81387144ac26804"
+            "f9a617ecf14b634f67d11f8a0b704f3ccc3cc35cdd3130afd0c2cea9d7be0388"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "9390c4dc89c3744b1d1c65d8c0722273b800ac4eb6a9077c4536e7ab9f8a8d09"
+            "c44a97e1f53c6ae1fe73c751fbccf225374cc77ead6720c09b5c06820bfc9b0f"
           else
-            "2553af4f9c045d140cfc796a743124897a40b5acc3a04ac3788cc89bbf96d973";
+            "16bae3571291aa4961a868f16f57e49c7e2fbb35ffdfb1ee6f5b094b15daf9eb";
       };
       dontUnpack = true;
       installPhase = ''
@@ -321,17 +321,17 @@ in
 
     devin = prev.stdenvNoCC.mkDerivation rec {
       pname = "devin";
-      version = "3000.14.30821";
+      version = "3000.15.14";
       src = prev.fetchurl {
         url = "https://static.devin.ai/cli/${version}/devin-${version}-${
           if prev.stdenv.hostPlatform.isAarch64 then "aarch64" else "x86_64"
         }-${if prev.stdenv.hostPlatform.isDarwin then "apple-darwin" else "unknown-linux"}.tar.gz";
         sha256 =
           {
-            "aarch64-darwin" = "46ef1a75d8bd851665179e136b7e39ad597d3d7913b95d67fd2b88e9c8af0061";
-            "x86_64-darwin" = "e0ffc5fb0bc367270f20f15686bba74a2851959e782a37c016c68b91229ec0db";
-            "aarch64-linux" = "3deb8af6b026060e975ed371936e139818020e5dc5abbcba07cde039f473a5a5";
-            "x86_64-linux" = "4dc43e3e4388bace60fe2aa8010cbb399402e724892d7175845b1cdef00e7ddb";
+            "aarch64-darwin" = "23911fdf9b5c45ebefa382e57ff1996e762c2b30a2fe1f4b536fa633e2fcbd1f";
+            "x86_64-darwin" = "5f9197bac49d90c1c213a9405326588503d7813942f347cdcc4a21bdab6b5189";
+            "aarch64-linux" = "66a84d89ffff16bb0c4acdd8597102d752b3f4bf4ab53ff249637ac6ec698f87";
+            "x86_64-linux" = "d219f885ed601d1424ae2ecdf5b37441cf60f15a38a4961d2a6f0b41ec913f28";
           }
           .${prev.stdenv.hostPlatform.system};
       };
