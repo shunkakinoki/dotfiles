@@ -300,6 +300,13 @@ The output should include 'SURPLUS_DEEPSEEK_API_KEY'
 The status should be success
 End
 
+It 'hydrates the shared Surplus key into the general Surplus route'
+When run bash -c "grep 's|__SURPLUS_API_KEY__|.*SURPLUS_API_KEY' '$SCRIPT'"
+The output should include '__SURPLUS_API_KEY__'
+The output should include 'SURPLUS_API_KEY'
+The status should be success
+End
+
 It 'falls back to the shared Surplus key for older dotenv files'
 When run bash -c "grep 'SURPLUS_DEEPSEEK_API_KEY:-.*SURPLUS_API_KEY' '$SCRIPT'"
 The output should include 'SURPLUS_API_KEY'
@@ -782,7 +789,10 @@ Describe 'render mode'
 setup_render() {
   TEMP_HOME=$(mktemp -d)
   mkdir -p "$TEMP_HOME/.cli-proxy-api" "$TEMP_HOME/dotfiles"
-  printf 'marker: __VERBOO_API_KEY__\n' >"$TEMP_HOME/.cli-proxy-api/config.template.yaml"
+  printf '%s\n' \
+    'marker: __VERBOO_API_KEY__' \
+    'deepseek: __SURPLUS_DEEPSEEK_API_KEY__' \
+    'surplus: __SURPLUS_API_KEY__' >"$TEMP_HOME/.cli-proxy-api/config.template.yaml"
   printf 'VERBOO_API_KEY=DUMMY_ONE\n' >"$TEMP_HOME/dotfiles/.env"
   sed -e 's|@objectstore_enabled@|false|' -e 's|@aws@|false|g' \
     "$PWD/home-manager/services/cliproxyapi/scripts/common.sh" >"$TEMP_HOME/common.sh"
@@ -810,6 +820,27 @@ The output should include 'marker: DUMMY_TWO'
 The output should include 'same-inode'
 The output should include 'no-temp-file'
 The output should not include 'cliproxyapi not found'
+The status should be success
+End
+
+It 'hydrates dedicated and shared Surplus keys'
+When run bash -c '
+  printf "%s\\n" "SURPLUS_DEEPSEEK_API_KEY=DEDICATED" "SURPLUS_API_KEY=SHARED" >"$1/dotfiles/.env"
+  HOME="$1" bash "$1/start.sh" render
+  cat "$1/.cli-proxy-api/config.yaml"
+' _ "$TEMP_HOME"
+The output should include 'deepseek: DEDICATED'
+The output should include 'surplus: SHARED'
+The status should be success
+End
+
+It 'falls back to the shared Surplus key when the dedicated key is absent'
+When run bash -c '
+  printf "%s\\n" "SURPLUS_API_KEY=SHARED" >"$1/dotfiles/.env"
+  HOME="$1" bash "$1/start.sh" render
+  cat "$1/.cli-proxy-api/config.yaml"
+' _ "$TEMP_HOME"
+The output should include 'deepseek: SHARED'
 The status should be success
 End
 
