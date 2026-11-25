@@ -26,8 +26,9 @@ in
     Service = {
       Type = "oneshot";
       Environment = [ "PATH=${servicePath}" ];
-      Nice = 19;
-      IOSchedulingClass = "idle";
+      Nice = 10;
+      IOSchedulingClass = "best-effort";
+      IOSchedulingPriority = 6;
       ExecStart = "${pkgs.bash}/bin/bash ${./cleanup.sh}";
     };
   };
