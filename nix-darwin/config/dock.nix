@@ -29,6 +29,7 @@
       "/Applications/Antigravity.app"
       "/Applications/Conductor.app"
       "/Applications/OpenCode.app"
+      "/Applications/OpenFactor.app"
       "/Applications/T3 Code (Nightly).app"
       "/Applications/OpenClaw.app"
       "/Applications/Hermes.app"
