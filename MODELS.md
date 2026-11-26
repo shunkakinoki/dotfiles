@@ -22,7 +22,6 @@ Never hand-edit a generated config. Edit the `.tpl.*` file, regenerate, and comm
 | `__CLAUDE_OPUS__` | `claude-opus-5-5` |
 | `__CLAUDE_SONNET__` | `claude-sonnet-5-5` |
 | `__CLAUDE_HAIKU__` | `claude-haiku-5-5` |
-| `__GPT__` | `gpt-6.2-sol` |
 | `__GPT_ASTRA__` | `gpt-6-astra` |
 | `__GPT_SOL__` | `gpt-6.2-sol` |
 | `__GPT_LUNA__` | `gpt-6-luna` |

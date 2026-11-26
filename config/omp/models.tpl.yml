@@ -86,8 +86,8 @@ providers:
           output: 0
           cacheRead: 0
           cacheWrite: 0
-      - id: __GPT__
-        name: __GPT_PRETTY__ (via shunkakinoki's CLIProxy)
+      - id: __GPT_SOL__
+        name: __GPT_SOL_PRETTY__ (via shunkakinoki's CLIProxy)
         reasoning: true
         input:
           - text

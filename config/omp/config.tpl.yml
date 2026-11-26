@@ -52,7 +52,7 @@ disabledExtensions: []
 #
 # Common providers:
 #   anthropic    — Claude models (__CLAUDE_SONNET__, __CLAUDE_OPUS__, etc.)
-#   openai       — OpenAI models (__GPT__, __GPT_LUNA__, etc.)
+#   openai       — OpenAI models (__GPT_SOL__, __GPT_LUNA__, etc.)
 #   openai-codex — OpenAI Codex models/providers used by OMP
 #   google       — Gemini models (__GEMINI_FLASH__, etc.)
 #   deepseek     — DeepSeek models

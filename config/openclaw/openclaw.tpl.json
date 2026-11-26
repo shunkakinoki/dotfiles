@@ -65,8 +65,8 @@
             "maxTokens": 32000
           },
           {
-            "id": "__GPT__",
-            "name": "__GPT_PRETTY__",
+            "id": "__GPT_SOL__",
+            "name": "__GPT_SOL_PRETTY__",
             "reasoning": false,
             "input": [
               "text",

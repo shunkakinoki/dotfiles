@@ -5,9 +5,9 @@ function _coxe_function --description "Run Codex with a free-form prompt"
   if test (count $argv) -gt 0; and contains -- "$argv[1]" --resume -r --continue -c
     _caam_exec_function codex --dangerously-bypass-approvals-and-sandbox resume $argv[2]
   else if test (count $argv) -eq 0
-    _caam_exec_function codex --dangerously-bypass-approvals-and-sandbox --model '__GPT__' -c model_reasoning_summary_format=experimental
+    _caam_exec_function codex --dangerously-bypass-approvals-and-sandbox --model '__GPT_SOL__' -c model_reasoning_summary_format=experimental
   else
     set -l prompt (string join " " -- $argv)
-    _caam_exec_function codex --dangerously-bypass-approvals-and-sandbox exec --model '__GPT__' -c model_reasoning_summary_format=experimental -- "$prompt"
+    _caam_exec_function codex --dangerously-bypass-approvals-and-sandbox exec --model '__GPT_SOL__' -c model_reasoning_summary_format=experimental -- "$prompt"
   end
 end

@@ -6,8 +6,8 @@
       "api": "openai-responses",
       "models": [
         {
-          "id": "__GPT__",
-          "name": "__GPT_PRETTY__ [ChatGPT Pro]",
+          "id": "__GPT_SOL__",
+          "name": "__GPT_SOL_PRETTY__ [ChatGPT Pro]",
           "reasoning": true,
           "input": [
             "text",
