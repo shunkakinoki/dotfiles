@@ -215,10 +215,14 @@ ENV
 cat >"$STATE_DIR/settings.json" <<'JSON'
 {
   "favorites": [{"provider": "opencode", "model": "opencode/custom"}],
-  "defaultModelSelection": {"instanceId": "opencode", "model": "opencode/custom"}
+  "providerModelPreferences": {"opencode": {"hiddenModels": ["opencode/old"], "modelOrder": ["opencode/custom"]}},
+  "defaultModelSelection": {"instanceId": "opencode", "model": "opencode/custom"},
+  "fallbackModelSelection": {"instanceId": "opencode", "model": "opencode/fallback"},
+  "textGenerationModelSelection": {"instanceId": "opencode", "model": "opencode/textgen"},
+  "reviewGuideModelSelection": {"instanceId": "opencode", "model": "opencode/review"}
 }
 JSON
-When run env HOME="$TEMP_DIR" bash -c "jq 'del(.favorites, .providerModelPreferences, .defaultModelSelection, .fallbackModelSelection, .textGenerationModelSelection, .reviewGuideModelSelection)' '$MANAGED_SERVER' >'$TEMP_DIR/minimal-server.json' && bash '$SETTINGS_SCRIPT' '$TEMP_DIR/minimal-server.json' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && jq -e '.favorites == [{\"provider\": \"opencode\", \"model\": \"opencode/custom\"}] and .defaultModelSelection == {\"instanceId\": \"opencode\", \"model\": \"opencode/custom\"}' '$STATE_DIR/settings.json' >/dev/null"
+When run env HOME="$TEMP_DIR" bash -c "jq 'del(.favorites, .providerModelPreferences, .defaultModelSelection, .fallbackModelSelection, .textGenerationModelSelection, .reviewGuideModelSelection)' '$MANAGED_SERVER' >'$TEMP_DIR/minimal-server.json' && bash '$SETTINGS_SCRIPT' '$TEMP_DIR/minimal-server.json' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && jq -e '.favorites == [{\"provider\": \"opencode\", \"model\": \"opencode/custom\"}] and .providerModelPreferences == {\"opencode\": {\"hiddenModels\": [\"opencode/old\"], \"modelOrder\": [\"opencode/custom\"]}} and .defaultModelSelection == {\"instanceId\": \"opencode\", \"model\": \"opencode/custom\"} and .fallbackModelSelection == {\"instanceId\": \"opencode\", \"model\": \"opencode/fallback\"} and .textGenerationModelSelection == {\"instanceId\": \"opencode\", \"model\": \"opencode/textgen\"} and .reviewGuideModelSelection == {\"instanceId\": \"opencode\", \"model\": \"opencode/review\"}' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 End
 

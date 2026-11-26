@@ -74,6 +74,39 @@ When run bash -c "bash '$SCRIPT' '$TEMP_DIR/settings.json' '$TEMP_DIR/server-set
 The status should be success
 End
 
+It 'maps provider-specific override IDs back to their llm-update placeholders'
+cat >"$TEMP_DIR/settings.json" <<'JSON'
+{
+  "favorites": [
+    {"provider": "openrouter", "model": "openai/gpt-5.4-image-2"},
+    {"provider": "openrouter", "model": "deepseek/deepseek-v4.1-flash"},
+    {"provider": "opencode", "model": "shunkakinoki/deepseek-v4-flash-0731"},
+    {"provider": "opencode", "model": "opencode/deepseek-v4-flash"}
+  ],
+  "providerModelPreferences": {}
+}
+JSON
+When run bash -c "bash '$SCRIPT' '$TEMP_DIR/settings.json' '$TEMP_DIR/server-settings.tpl.json' '$TEMP_DIR/models.json' >/dev/null && jq -e '.favorites == [{\"provider\": \"openrouter\", \"model\": \"__GPT_IMAGE_OPENROUTER__\"}, {\"provider\": \"openrouter\", \"model\": \"__DEEPSEEK_FLASH_OPENROUTER__\"}, {\"provider\": \"opencode\", \"model\": \"shunkakinoki/__DEEPSEEK_FLASH_0731__\"}, {\"provider\": \"opencode\", \"model\": \"opencode/__DEEPSEEK_FLASH_ZEN__\"}]' '$TEMP_DIR/server-settings.tpl.json' >/dev/null"
+The status should be success
+End
+
+It 'runs llm-update.sh when targeting the repo template via a relative path'
+mkdir -p "$TEMP_DIR/repo/scripts" "$TEMP_DIR/repo/config/t3code"
+cp "$SCRIPT" "$TEMP_DIR/repo/scripts/t3-export-prefs.sh"
+cp "$TEMP_DIR/models.json" "$TEMP_DIR/repo/models.json"
+cp "$TEMP_DIR/server-settings.tpl.json" "$TEMP_DIR/repo/config/t3code/server-settings.tpl.json"
+printf '#!/usr/bin/env bash\ncp "$PWD/config/t3code/server-settings.tpl.json" "$PWD/config/t3code/server-settings.json"\ntouch "$PWD/llm-updated"\n' >"$TEMP_DIR/repo/scripts/llm-update.sh"
+chmod +x "$TEMP_DIR/repo/scripts/llm-update.sh"
+cat >"$TEMP_DIR/settings.json" <<'JSON'
+{
+  "favorites": [{"provider": "claude-cliproxy", "model": "claude-opus-5-5"}],
+  "providerModelPreferences": {}
+}
+JSON
+When run bash -c "cd '$TEMP_DIR/repo' && bash ./scripts/t3-export-prefs.sh '$TEMP_DIR/settings.json' config/t3code/server-settings.tpl.json >/dev/null && [ -f '$TEMP_DIR/repo/llm-updated' ] && jq -e '.favorites == [{\"provider\": \"claude-cliproxy\", \"model\": \"__CLAUDE_OPUS__\"}]' '$TEMP_DIR/repo/config/t3code/server-settings.json' >/dev/null"
+The status should be success
+End
+
 It 'fails cleanly when settings.json is missing'
 When run bash "$SCRIPT" "$TEMP_DIR/missing.json" "$TEMP_DIR/server-settings.tpl.json" "$TEMP_DIR/models.json"
 The status should be failure

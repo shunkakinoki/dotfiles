@@ -42,27 +42,45 @@ cleanup() {
 }
 trap cleanup EXIT
 
+normalize_path() {
+  local dir
+  dir="$(cd "$(dirname "$1")" && pwd -P)"
+  printf '%s/%s\n' "$dir" "$(basename "$1")"
+}
+
 # shellcheck disable=SC2016
 jq --slurpfile live "$SETTINGS_FILE" --slurpfile models "$MODELS_FILE" '
   def placeholder_for($key):
     "__" + ($key | ascii_upcase | gsub("-"; "_")) + "__";
 
-  (
+  {
+    "openai/gpt-5.4-image-2": "__GPT_IMAGE_OPENROUTER__",
+    "openai/gpt-6-luna": "__GPT_LUNA_OPENROUTER__",
+    "anthropic/claude-haiku-5.5": "__CLAUDE_HAIKU_OPENROUTER__",
+    "deepseek/deepseek-v4.1-flash": "__DEEPSEEK_FLASH_OPENROUTER__"
+  } as $exact_map
+  | (
     ($models[0]
       | to_entries
       | sort_by([(.key | length), .key])
       | reduce .[] as $item ({}; if has($item.value) then . else . + {($item.value): placeholder_for($item.key)} end)
-    ) + {"deepseek-v4.1-flash": "__DEEPSEEK_FLASH_UNVERSIONED__"}
+    ) + {
+      "deepseek-v4.1-flash": "__DEEPSEEK_FLASH_UNVERSIONED__",
+      "deepseek-v4-flash-0731": "__DEEPSEEK_FLASH_0731__",
+      "deepseek-v4-flash": "__DEEPSEEK_FLASH_ZEN__"
+    }
   ) as $slug_map
   | def templatize_model:
-      if type != "string" then .
+      . as $m
+      | if ($m | type) != "string" then $m
+      elif ($exact_map | has($m)) then $exact_map[$m]
       else
-        split("/") as $parts
+        ($m | split("/")) as $parts
         | ($parts[-1]) as $slug
         | if ($slug_map | has($slug)) then
             ($parts[:-1] + [$slug_map[$slug]]) | join("/")
           else
-            .
+            $m
           end
       end;
   def templatize_selection:
@@ -95,6 +113,6 @@ trap - EXIT
 
 echo "Exported T3 Code model preferences from $SETTINGS_FILE -> $TEMPLATE_FILE"
 
-if [ "$TEMPLATE_FILE" = "$DEFAULT_TEMPLATE" ] && [ -f "$ROOT/scripts/llm-update.sh" ]; then
+if [ "$(normalize_path "$TEMPLATE_FILE")" = "$(normalize_path "$DEFAULT_TEMPLATE")" ] && [ -f "$ROOT/scripts/llm-update.sh" ]; then
   bash "$ROOT/scripts/llm-update.sh"
 fi
