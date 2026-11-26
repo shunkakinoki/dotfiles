@@ -181,17 +181,14 @@ headless.
 
 ## CLIProxy routing
 
-Three provider prefixes appear above. All three are CLIProxy. Each harness names
-its own, so the prefix alone does not tell you remote vs local. `cliproxyapi/`
-in particular means different endpoints in different harnesses.
+Three provider prefixes appear above. All three route through the shared remote
+CLIProxy endpoint (`https://cliproxy.shunkakinoki.com/v1`), regardless of host.
 
 | Prefix | Harness | Endpoint |
 | --- | --- | --- |
 | `shunkakinoki/` | OpenCode | `https://cliproxy.shunkakinoki.com/v1` (remote) |
 | `cliproxy/` | OpenClaw, Hermes | `https://cliproxy.shunkakinoki.com/v1` (remote) |
-| `cliproxyapi/` | OpenCode | `http://localhost:8317/v1` (local) |
-| `cliproxyapi/` | OMP | `https://cliproxy.shunkakinoki.com/v1` (remote) |
-| `cliproxyapi/` | Pi | `https://cliproxy.shunkakinoki.com/v1` (remote) |
+| `cliproxyapi/` | OpenCode, OMP, Pi | `https://cliproxy.shunkakinoki.com/v1` (remote) |
 
 Every one of them resolves through
 [config.tpl.yaml](config/cliproxyapi/config.tpl.yaml).

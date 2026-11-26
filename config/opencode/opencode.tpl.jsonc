@@ -75,54 +75,54 @@
     },
     "cliproxyapi": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "CLIProxyAPI (local)",
+      "name": "CLIProxyAPI",
       "options": {
-        "baseURL": "http://localhost:8317/v1",
+        "baseURL": "https://cliproxy.shunkakinoki.com/v1",
         "apiKey": "{env:CLIPROXY_API_KEY}",
         "setCacheKey": false
       },
       "models": {
         "__CLAUDE_OPUS__": {
-          "name": "__CLAUDE_OPUS_PRETTY__ (via local CLIProxyAPI)"
+          "name": "__CLAUDE_OPUS_PRETTY__ (via CLIProxyAPI)"
         },
         "__CLAUDE_SONNET__": {
-          "name": "__CLAUDE_SONNET_PRETTY__ (via local CLIProxyAPI)"
+          "name": "__CLAUDE_SONNET_PRETTY__ (via CLIProxyAPI)"
         },
         "__CLAUDE_HAIKU__": {
-          "name": "__CLAUDE_HAIKU_PRETTY__ (via local CLIProxyAPI)"
+          "name": "__CLAUDE_HAIKU_PRETTY__ (via CLIProxyAPI)"
         },
         "__GPT__": {
-          "name": "__GPT_PRETTY__ (via local CLIProxyAPI)"
+          "name": "__GPT_PRETTY__ (via CLIProxyAPI)"
         },
         "__GEMINI_FLASH__": {
-          "name": "__GEMINI_FLASH_PRETTY__ (via local CLIProxyAPI)"
+          "name": "__GEMINI_FLASH_PRETTY__ (via CLIProxyAPI)"
         },
         "__DEEPSEEK_FLASH__": {
-          "name": "__DEEPSEEK_FLASH_PRETTY__ (via local CLIProxyAPI)"
+          "name": "__DEEPSEEK_FLASH_PRETTY__ (via CLIProxyAPI)"
         },
         "__DEEPSEEK_FLASH_UNVERSIONED__": {
-          "name": "__DEEPSEEK_FLASH_PRETTY__ (via local CLIProxyAPI)"
+          "name": "__DEEPSEEK_FLASH_PRETTY__ (via CLIProxyAPI)"
         },
         "__DEEPSEEK_FLASH_UNCENSORED__": {
-          "name": "__DEEPSEEK_FLASH_UNCENSORED_PRETTY__ (via local CLIProxyAPI)"
+          "name": "__DEEPSEEK_FLASH_UNCENSORED_PRETTY__ (via CLIProxyAPI)"
         },
         "__GPT_LUNA__": {
-          "name": "__GPT_LUNA_PRETTY__ (via local CLIProxyAPI)"
+          "name": "__GPT_LUNA_PRETTY__ (via CLIProxyAPI)"
         },
         "__MINIMAX__": {
-          "name": "__MINIMAX_PRETTY__ (via local CLIProxyAPI)"
+          "name": "__MINIMAX_PRETTY__ (via CLIProxyAPI)"
         },
         "__KIMI__": {
-          "name": "__KIMI_PRETTY__ (via local CLIProxyAPI)"
+          "name": "__KIMI_PRETTY__ (via CLIProxyAPI)"
         },
         "free": {
-          "name": "Free router fallback (via local CLIProxyAPI)"
+          "name": "Free router fallback (via CLIProxyAPI)"
         },
         "priority:free": {
-          "name": "Curated free-only pool (via local CLIProxyAPI)"
+          "name": "Curated free-only pool (via CLIProxyAPI)"
         },
         "__FREE_MINIMAX_FLASH__": {
-          "name": "MiniMax M3.1 Flash Free (via local CLIProxyAPI)"
+          "name": "MiniMax M3.1 Flash Free (via CLIProxyAPI)"
         }
       }
     },

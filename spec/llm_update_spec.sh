@@ -289,6 +289,11 @@ When run bash -c "sed -n '/\"cliproxyapi\"/,/\"lmstudio\"/p' config/opencode/ope
 The status should be success
 End
 
+It 'routes the OpenCode cliproxyapi provider through remote CLIProxy'
+When run bash -c "sed -n '/\"cliproxyapi\"/,/\"lmstudio\"/p' config/opencode/opencode.jsonc | grep -q '\"baseURL\": \"https://cliproxy.shunkakinoki.com/v1\"' && ! grep -q 'localhost:8317' config/opencode/opencode.jsonc config/opencode/opencode.tpl.jsonc"
+The status should be success
+End
+
 It 'exposes the uncensored DeepSeek alias in the model catalogs'
 When run bash -c "grep -q 'deepseek-v4.1-flash-uncensored' config/opencode/opencode.jsonc && jq -e '.models.providers.cliproxy.models | any(.id == \"deepseek-v4.1-flash-uncensored\")' config/openclaw/openclaw.template.json >/dev/null && grep -q 'id: deepseek-v4.1-flash-uncensored' config/omp/models.yml && jq -e '.providers.cliproxyapi.models | any(.id == \"deepseek-v4.1-flash-uncensored\")' config/pi/models.json >/dev/null && jq -e '.customModels | any(.model == \"deepseek-v4.1-flash-uncensored\")' config/factory/settings.json >/dev/null && grep -q 'name: deepseek-v4.1-flash-uncensored' config/aichat/config.yaml && grep -q 'model_name: deepseek-v4.1-flash-uncensored' config/llm/extra-openai-models.yaml"
 The status should be success
