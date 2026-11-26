@@ -100,6 +100,36 @@ docker-egress)
   systemctl enable "$(basename "$unit")"
   systemctl start "$(basename "$unit")"
   ;;
+public-dns)
+  # Kamino sends all traffic through a Tailscale exit node, so queries to the
+  # provider's resolvers leave from the exit node's address and time out: they
+  # answer only the provider's own network. Containers and any lookup that
+  # misses MagicDNS fall through to those dead servers. Each generated link
+  # that names resolvers gets a drop-in replacing them with public resolvers;
+  # the drop-in survives netplan regeneration and reboots.
+  network_dir="${2:?generated networkd directory required}"
+  dropin_root="${3:?networkd drop-in root required}"
+  servers="1.1.1.1 8.8.8.8 1.0.0.1 8.8.4.4"
+  content=$(printf '[Network]\nDNS=\nDNS=%s\n\n[DHCPv4]\nUseDNS=no\n\n[IPv6AcceptRA]\nUseDNS=no' "$servers")
+  for network in "$network_dir"/*.network; do
+    [ -f "$network" ] || continue
+    grep -q '^DNS=' "$network" || continue
+    dropin="$dropin_root/$(basename "$network").d/60-kamino-public-dns.conf"
+    if [ ! -f "$dropin" ] || [ "$(cat "$dropin")" != "$content" ]; then
+      mkdir -p "$(dirname "$dropin")"
+      printf '%s\n' "$content" >"$dropin"
+      echo "Wrote $dropin."
+    fi
+    # Apply now without reconfiguring the link; networkd reads the drop-in on
+    # its next reload or boot.
+    link=$(sed -n 's/^Name=//p' "$network" | head -n1)
+    if [ -n "$link" ]; then
+      # shellcheck disable=SC2086
+      resolvectl dns "$link" $servers ||
+        echo "Warning: could not set resolvers on $link; the drop-in applies on next boot." >&2
+    fi
+  done
+  ;;
 journald-limits)
   # Cap persistent journald storage so worker logs never consume multi-GB root space.
   dropin="${2:?journald drop-in path required}"

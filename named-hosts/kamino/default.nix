@@ -163,6 +163,10 @@ inputs.home-manager.lib.homeManagerConfiguration {
           export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
           $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} docker-egress /etc/systemd/system/kamino-docker-egress.service ${pkgs.iproute2}/bin/ip
         '';
+        home.activation.setKaminoPublicDns = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+          export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
+          $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${./activate.sh} public-dns /run/systemd/network /etc/systemd/network
+        '';
         home.activation.setKaminoSshdKeyOnly = lib.mkIf isCiBox (
           config.lib.dag.entryAfter [ "writeBoundary" ] ''
             export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
