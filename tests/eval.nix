@@ -682,6 +682,7 @@ let
         assert sshAuthorizedKeys.beskar == fleetPeerKeysOf "beskar";
         assert lib.hasInfix "authorize-ssh-keys.sh" cfg.home.activation.authorizeFleetSsh.data;
         assert lib.hasInfix "/root/.ssh" cfg.home.activation.authorizeFleetSsh.data;
+        assert lib.hasInfix "setup-docker\" --non-interactive" cfg.home.activation.setupDocker.data;
         assert herdr.Unit.X-SwitchMethod == "keep-old";
         assert lib.length herdr.Service.ExecStart == 1;
         assert lib.hasInfix "-start.sh " (lib.head herdr.Service.ExecStart);

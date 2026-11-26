@@ -16,7 +16,7 @@ let
   codeSyncer = import ./code-syncer { inherit pkgs; };
   crabbox = ./crabbox;
   diskCleanup = ./disk-cleanup;
-  docker = import ./docker { inherit lib pkgs; };
+  docker = ./docker;
   bwrapApparmor = ./bwrap-apparmor;
   firewall = ./firewall;
   dockerPostgres = ./docker-postgres;
