@@ -50,6 +50,9 @@
         "deepseek-v4.1-flash": {
           "name": "Deepseek V4.1 Flash 1017 (via shunkakinoki's CLIProxy)"
         },
+        "deepseek-v4.1-flash-uncensored": {
+          "name": "Deepseek V4.1 Flash Uncensored (via shunkakinoki's CLIProxy)"
+        },
         "gpt-6-luna": {
           "name": "GPT 6 Luna (via shunkakinoki's CLIProxy)"
         },
@@ -99,6 +102,9 @@
         },
         "deepseek-v4.1-flash": {
           "name": "Deepseek V4.1 Flash 1017 (via local CLIProxyAPI)"
+        },
+        "deepseek-v4.1-flash-uncensored": {
+          "name": "Deepseek V4.1 Flash Uncensored (via local CLIProxyAPI)"
         },
         "gpt-6-luna": {
           "name": "GPT 6 Luna (via local CLIProxyAPI)"

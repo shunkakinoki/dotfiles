@@ -135,6 +135,25 @@
             }
           },
           {
+            "id": "deepseek-v4.1-flash-uncensored",
+            "name": "Deepseek V4.1 Flash Uncensored",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1000000,
+            "maxTokens": 384000,
+            "compat": {
+              "supportsPromptCacheKey": true
+            }
+          },
+          {
             "id": "gpt-6-luna",
             "name": "GPT 6 Luna",
             "reasoning": true,

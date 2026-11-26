@@ -15,6 +15,10 @@
   model_name: __DEEPSEEK_FLASH__
   api_base: https://cliproxy.shunkakinoki.com/v1
   api_key_name: cliproxyapi
+- model_id: deepseek-flash-uncensored
+  model_name: __DEEPSEEK_FLASH_UNCENSORED__
+  api_base: https://cliproxy.shunkakinoki.com/v1
+  api_key_name: cliproxyapi
 - model_id: gpt-luna
   model_name: __GPT_LUNA__
   api_base: https://cliproxy.shunkakinoki.com/v1
