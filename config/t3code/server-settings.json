@@ -7,6 +7,41 @@
       "providerHealthRefreshInterval": 60000
     }
   },
+  "favorites": [
+    {
+      "provider": "claude-cliproxy",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "provider": "codex-cliproxy",
+      "model": "gpt-6.1-sol"
+    },
+    {
+      "provider": "antigravity",
+      "model": "gemini-4-neon"
+    },
+    {
+      "provider": "opencode",
+      "model": "shunkakinoki/deepseek-v4.1-flash-uncensored"
+    }
+  ],
+  "providerModelPreferences": {},
+  "defaultModelSelection": {
+    "instanceId": "claude-cliproxy",
+    "model": "claude-opus-5-5"
+  },
+  "fallbackModelSelection": {
+    "instanceId": "codex-cliproxy",
+    "model": "gpt-6.1-sol"
+  },
+  "textGenerationModelSelection": {
+    "instanceId": "codex-cliproxy",
+    "model": "gpt-6-luna"
+  },
+  "reviewGuideModelSelection": {
+    "instanceId": "codex-cliproxy",
+    "model": "gpt-6.1-sol"
+  },
   "providers": {
     "claudeAgent": {
       "enabled": true

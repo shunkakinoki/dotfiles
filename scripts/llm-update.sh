@@ -171,6 +171,7 @@ declare -A TEMPLATES=(
   ["config/pi/models.tpl.json"]=config/pi/models.json
   ["config/pi/settings.tpl.json"]=config/pi/settings.json
   ["config/pi/fallback.tpl.json"]=config/pi/fallback.json
+  ["config/t3code/server-settings.tpl.json"]=config/t3code/server-settings.json
   ["home-manager/programs/fish/functions/_coxe_function.tpl.fish"]=home-manager/programs/fish/functions/_coxe_function.fish
   ["home-manager/programs/fish/functions/_coxeh_function.tpl.fish"]=home-manager/programs/fish/functions/_coxeh_function.fish
   ["home-manager/programs/fish/functions/_coxel_function.tpl.fish"]=home-manager/programs/fish/functions/_coxel_function.fish

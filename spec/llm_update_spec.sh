@@ -294,6 +294,11 @@ When run bash -c "grep -q 'deepseek-v4.1-flash-uncensored' config/opencode/openc
 The status should be success
 End
 
+It 'renders T3 Code favorites and model selections from models.json'
+When run bash -c "jq -e '([.favorites[].model, .defaultModelSelection.model, .fallbackModelSelection.model, .textGenerationModelSelection.model, .reviewGuideModelSelection.model] | all(test(\"__[A-Z0-9_]+__\")))' config/t3code/server-settings.tpl.json >/dev/null && jq -e --slurpfile m models.json '(.favorites | any(.provider == \"opencode\" and .model == (\"shunkakinoki/\" + \$m[0][\"deepseek-flash-uncensored\"]))) and (.favorites | any(.provider == \"claude-cliproxy\" and .model == \$m[0][\"claude-opus\"])) and (.favorites | any(.provider == \"codex-cliproxy\" and .model == \$m[0].gpt)) and (.favorites | any(.provider == \"antigravity\" and .model == \$m[0][\"gemini-neon\"])) and .defaultModelSelection.model == \$m[0][\"claude-opus\"] and .fallbackModelSelection.model == \$m[0].gpt and .textGenerationModelSelection.model == \$m[0][\"gpt-luna\"] and .reviewGuideModelSelection.model == \$m[0].gpt' config/t3code/server-settings.json >/dev/null"
+The status should be success
+End
+
 It 'generates the OMP free default role'
 When run bash -c "grep 'default: \"cliproxyapi/free\"' config/omp/config.yml"
 The output should include 'cliproxyapi/free'

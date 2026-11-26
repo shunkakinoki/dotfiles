@@ -1,0 +1,144 @@
+{
+  "backgroundActivity": {
+    "schemaVersion": 1,
+    "profile": "custom",
+    "baseProfile": "balanced",
+    "overrides": {
+      "providerHealthRefreshInterval": 60000
+    }
+  },
+  "favorites": [
+    {
+      "provider": "claude-cliproxy",
+      "model": "__CLAUDE_OPUS__"
+    },
+    {
+      "provider": "codex-cliproxy",
+      "model": "__GPT__"
+    },
+    {
+      "provider": "antigravity",
+      "model": "__GEMINI_NEON__"
+    },
+    {
+      "provider": "opencode",
+      "model": "shunkakinoki/__DEEPSEEK_FLASH_UNCENSORED__"
+    }
+  ],
+  "providerModelPreferences": {},
+  "defaultModelSelection": {
+    "instanceId": "claude-cliproxy",
+    "model": "__CLAUDE_OPUS__"
+  },
+  "fallbackModelSelection": {
+    "instanceId": "codex-cliproxy",
+    "model": "__GPT__"
+  },
+  "textGenerationModelSelection": {
+    "instanceId": "codex-cliproxy",
+    "model": "__GPT_LUNA__"
+  },
+  "reviewGuideModelSelection": {
+    "instanceId": "codex-cliproxy",
+    "model": "__GPT__"
+  },
+  "providers": {
+    "claudeAgent": {
+      "enabled": true
+    },
+    "codex": {
+      "enabled": true
+    }
+  },
+  "providerInstances": {
+    "claude-cliproxy": {
+      "driver": "claudeAgent",
+      "displayName": "Claude (CLIProxy)",
+      "enabled": true,
+      "environment": [
+        {
+          "name": "ANTHROPIC_BASE_URL",
+          "value": "__CLIPROXY_BASE_URL__"
+        },
+        {
+          "name": "ANTHROPIC_AUTH_TOKEN",
+          "value": "__CLIPROXY_API_KEY__",
+          "sensitive": true
+        },
+        {
+          "name": "ANTHROPIC_API_KEY",
+          "value": ""
+        },
+        {
+          "name": "IS_SANDBOX",
+          "value": "1"
+        }
+      ],
+      "config": {
+        "homePath": "~/.claude-cliproxy",
+        "launchArgs": "__CLAUDE_PERMISSION_ARGS__",
+        "autoCompactWindow": ""
+      }
+    },
+    "codex-cliproxy": {
+      "driver": "codex",
+      "displayName": "Codex (CLIProxy)",
+      "enabled": true,
+      "environment": [
+        {
+          "name": "CLIPROXY_API_KEY",
+          "value": "__CLIPROXY_API_KEY__",
+          "sensitive": true
+        }
+      ],
+      "config": {
+        "homePath": "~/.codex-t3/cliproxy",
+        "launchArgs": ""
+      }
+    },
+    "antigravity": {
+      "driver": "antigravity",
+      "displayName": "Antigravity",
+      "enabled": true,
+      "config": {
+        "binaryPath": "__AGY_BINARY_PATH__"
+      }
+    },
+    "antigravity-cliproxy": {
+      "driver": "antigravity",
+      "displayName": "Antigravity (CLIProxy)",
+      "enabled": true,
+      "environment": [
+        {
+          "name": "CLIPROXY_API_KEY",
+          "value": "__CLIPROXY_API_KEY__",
+          "sensitive": true
+        },
+        {
+          "name": "GEMINI_BASE_URL",
+          "value": "https://cliproxy.shunkakinoki.com/v1",
+          "sensitive": false
+        }
+      ],
+      "config": {
+        "apiKey": "__CLIPROXY_API_KEY__",
+        "authMethod": "gemini-api-key",
+        "binaryPath": "__AGY_BINARY_PATH__"
+      }
+    },
+    "opencode": {
+      "driver": "opencode",
+      "displayName": "OpenCode",
+      "enabled": true,
+      "config": {
+        "binaryPath": "opencode"
+      }
+    },
+    "grok": {
+      "driver": "grok",
+      "config": {
+        "binaryPath": "__GROK_BINARY_PATH__"
+      }
+    }
+  }
+}

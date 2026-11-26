@@ -175,6 +175,12 @@ fi
     ($managed[0]) as $managed_settings
     | (.[0] // {})
     | .backgroundActivity = ((.backgroundActivity // {}) * ($managed_settings.backgroundActivity // {}))
+    | (if $managed_settings | has("favorites") then .favorites = $managed_settings.favorites else . end)
+    | (if $managed_settings | has("providerModelPreferences") then .providerModelPreferences = $managed_settings.providerModelPreferences else . end)
+    | (if $managed_settings | has("defaultModelSelection") then .defaultModelSelection = $managed_settings.defaultModelSelection else . end)
+    | (if $managed_settings | has("fallbackModelSelection") then .fallbackModelSelection = $managed_settings.fallbackModelSelection else . end)
+    | (if $managed_settings | has("textGenerationModelSelection") then .textGenerationModelSelection = $managed_settings.textGenerationModelSelection else . end)
+    | (if $managed_settings | has("reviewGuideModelSelection") then .reviewGuideModelSelection = $managed_settings.reviewGuideModelSelection else . end)
     | .providers = ((.providers // {}) * ($managed_settings.providers // {}))
     | .providerInstances =
         ((.providerInstances // {})
