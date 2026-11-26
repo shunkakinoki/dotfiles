@@ -22,12 +22,12 @@ Never hand-edit a generated config. Edit the `.tpl.*` file, regenerate, and comm
 | `__CLAUDE_OPUS__` | `claude-opus-5-5` |
 | `__CLAUDE_SONNET__` | `claude-sonnet-5-5` |
 | `__CLAUDE_HAIKU__` | `claude-haiku-5-5` |
-| `__GPT__` | `gpt-6.1-sol` |
 | `__GPT_ASTRA__` | `gpt-6-astra` |
-| `__GPT_SOL__` | `gpt-6.1-sol` |
+| `__GPT_SOL__` | `gpt-6.2-sol` |
 | `__GPT_LUNA__` | `gpt-6-luna` |
 | `__GPT_IMAGE__` | `gpt-image-2` |
 | `__GEMINI_FLASH__` | `gemini-3.8-flash` |
+| `__GEMINI_NEON__` | `gemini-4-neon` |
 | `__DEEPSEEK_FLASH__` | `deepseek-v4.1-flash-1017` |
 | `__DEEPSEEK_FLASH_UNCENSORED__` | `deepseek-v4.1-flash-uncensored` |
 | `__GEMMA_LOCAL__` | `gemma3:4b` |
@@ -138,7 +138,7 @@ Hermes also runs a Mixture-of-Agents preset: reference models
 | OpenCode | `code-reviewer` agent | `shunkakinoki/deepseek-v4.1-flash-1017` | [opencode.tpl.jsonc](config/opencode/opencode.tpl.jsonc) |
 | OMP | `smol`, `commit`, `task` | `cliproxyapi/free` | [config.tpl.yml](config/omp/config.tpl.yml) |
 | OMP | `slow`, `vision`, `plan` | `cliproxyapi/deepseek-v4.1-flash-1017` | |
-| Codex | default | `gpt-6.1-sol` | [config.tpl.toml](config/codex/config.tpl.toml) |
+| Codex | default | `gpt-6.2-sol` | [config.tpl.toml](config/codex/config.tpl.toml) |
 | Codex | subagents | `gpt-6-luna` | |
 | Codex | `qwen-local` profile | `qwen3.5-0.8b-optiq` (LM Studio) | |
 | Claude Code | subagents, `opus` alias | `claude-opus-5-5` | [settings.tpl.json](config/claude/settings.tpl.json) |
@@ -173,7 +173,7 @@ headless.
 | --- | --- |
 | `ocxe`, `ocxeh` | `cliproxyapi/deepseek-v4.1-flash-1017` |
 | `ocxel`, `ocxelh` | `lmstudio/qwen3.5-0.8b-optiq` |
-| `coxe`, `coxeh` | `gpt-6.1-sol` |
+| `coxe`, `coxeh` | `gpt-6.2-sol` |
 | `coxec`, `coxech` | `gpt-6-luna` (`--profile cliproxy`) |
 | `coxel`, `coxelh` | `qwen3.5-0.8b-optiq` (`--oss --local-provider lmstudio`) |
 | `pixe`, `pixeh` | `cliproxyapi/deepseek-v4.1-flash` |

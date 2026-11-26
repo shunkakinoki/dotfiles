@@ -38,8 +38,8 @@
         "claude-haiku-5-5": {
           "name": "Claude Haiku 5.5 (via shunkakinoki's CLIProxy)"
         },
-        "gpt-6.1-sol": {
-          "name": "GPT 6.1 Sol (via shunkakinoki's CLIProxy)"
+        "gpt-6.2-sol": {
+          "name": "GPT 6.2 Sol (via shunkakinoki's CLIProxy)"
         },
         "gemini-3.8-flash": {
           "name": "Gemini 3.8 Flash (via shunkakinoki's CLIProxy)"
@@ -91,8 +91,8 @@
         "claude-haiku-5-5": {
           "name": "Claude Haiku 5.5 (via local CLIProxyAPI)"
         },
-        "gpt-6.1-sol": {
-          "name": "GPT 6.1 Sol (via local CLIProxyAPI)"
+        "gpt-6.2-sol": {
+          "name": "GPT 6.2 Sol (via local CLIProxyAPI)"
         },
         "gemini-3.8-flash": {
           "name": "Gemini 3.8 Flash (via local CLIProxyAPI)"

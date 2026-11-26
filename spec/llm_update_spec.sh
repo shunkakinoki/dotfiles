@@ -55,7 +55,7 @@ import re, sys
 
 allowed = {
     "claude": re.compile(r"^claude-cliproxy/claude-opus-5-5 effort=(high|xhigh)$"),
-    "gpt": re.compile(r"^codex-cliproxy/gpt-6\.1-sol reasoningEffort=xhigh$"),
+    "gpt": re.compile(r"^codex-cliproxy/gpt-6\.2-sol reasoningEffort=xhigh$"),
 }
 expected = {
     "feature, refactoring", "bug-fix", "perf-issue", "hillclimb",
@@ -295,7 +295,7 @@ The status should be success
 End
 
 It 'renders T3 Code favorites and model selections from models.json'
-When run bash -c "jq -e '([.favorites[].model, .defaultModelSelection.model, .fallbackModelSelection.model, .textGenerationModelSelection.model, .reviewGuideModelSelection.model] | all(test(\"__[A-Z0-9_]+__\")))' config/t3code/server-settings.tpl.json >/dev/null && jq -e --slurpfile m models.json '(.favorites | any(.provider == \"opencode\" and .model == (\"shunkakinoki/\" + \$m[0][\"deepseek-flash-uncensored\"]))) and (.favorites | any(.provider == \"claude-cliproxy\" and .model == \$m[0][\"claude-opus\"])) and (.favorites | any(.provider == \"codex-cliproxy\" and .model == \$m[0].gpt)) and (.favorites | any(.provider == \"antigravity\" and .model == \$m[0][\"gemini-neon\"])) and .defaultModelSelection.model == \$m[0][\"claude-opus\"] and .fallbackModelSelection.model == \$m[0].gpt and .textGenerationModelSelection.model == \$m[0][\"gpt-luna\"] and .reviewGuideModelSelection.model == \$m[0].gpt' config/t3code/server-settings.json >/dev/null"
+When run bash -c "jq -e '([.favorites[].model, .defaultModelSelection.model, .fallbackModelSelection.model, .textGenerationModelSelection.model, .reviewGuideModelSelection.model] | all(test(\"__[A-Z0-9_]+__\")))' config/t3code/server-settings.tpl.json >/dev/null && jq -e --slurpfile m models.json '(.favorites | any(.provider == \"opencode\" and .model == (\"shunkakinoki/\" + \$m[0][\"deepseek-flash-uncensored\"]))) and (.favorites | any(.provider == \"claude-cliproxy\" and .model == \$m[0][\"claude-opus\"])) and (.favorites | any(.provider == \"codex-cliproxy\" and .model == \$m[0][\"gpt-sol\"])) and (.favorites | any(.provider == \"antigravity\" and .model == \$m[0][\"gemini-neon\"])) and .defaultModelSelection.model == \$m[0][\"claude-opus\"] and .fallbackModelSelection.model == \$m[0][\"gpt-sol\"] and .textGenerationModelSelection.model == \$m[0][\"gpt-luna\"] and .reviewGuideModelSelection.model == \$m[0][\"gpt-sol\"]' config/t3code/server-settings.json >/dev/null"
 The status should be success
 End
 

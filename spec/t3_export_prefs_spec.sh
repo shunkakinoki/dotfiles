@@ -9,8 +9,7 @@ setup() {
   cat >"$TEMP_DIR/models.json" <<'JSON'
 {
   "claude-opus": "claude-opus-5-5",
-  "gpt": "gpt-6.1-sol",
-  "gpt-sol": "gpt-6.1-sol",
+  "gpt-sol": "gpt-6.2-sol",
   "gpt-luna": "gpt-6-luna",
   "gemini-neon": "gemini-4-neon",
   "deepseek-flash": "deepseek-v4.1-flash-1017",
@@ -56,10 +55,10 @@ cat >"$TEMP_DIR/settings.json" <<'JSON'
   "defaultModelSelection": {"instanceId": "claude-cliproxy", "model": "claude-opus-5-5"},
   "fallbackModelSelection": {"instanceId": "codex-cliproxy", "model": "gpt-6.2-sol"},
   "textGenerationModelSelection": {"instanceId": "codex-cliproxy", "model": "gpt-6-luna"},
-  "reviewGuideModelSelection": {"instanceId": "codex-cliproxy", "model": "gpt-6.1-sol"}
+  "reviewGuideModelSelection": {"instanceId": "codex-cliproxy", "model": "gpt-6.2-sol"}
 }
 JSON
-When run bash -c "bash '$SCRIPT' '$TEMP_DIR/settings.json' '$TEMP_DIR/server-settings.tpl.json' '$TEMP_DIR/models.json' >/dev/null && jq -e '.favorites == [{\"provider\": \"claude-cliproxy\", \"model\": \"__CLAUDE_OPUS__\"}, {\"provider\": \"codex-cliproxy\", \"model\": \"gpt-6.2-sol\"}, {\"provider\": \"codex\", \"model\": \"__GPT__\"}, {\"provider\": \"antigravity\", \"model\": \"__GEMINI_NEON__\"}, {\"provider\": \"opencode\", \"model\": \"shunkakinoki/__DEEPSEEK_FLASH_UNCENSORED__\"}, {\"provider\": \"opencode\", \"model\": \"shunkakinoki/__DEEPSEEK_FLASH_UNVERSIONED__\"}] and .providerModelPreferences[\"codex-cliproxy\"].hiddenModels == [\"__GPT_LUNA__\"] and .providerModelPreferences[\"codex-cliproxy\"].modelOrder == [\"gpt-6.2-sol\", \"__GPT__\"] and .defaultModelSelection == {\"instanceId\": \"claude-cliproxy\", \"model\": \"__CLAUDE_OPUS__\"} and .fallbackModelSelection == {\"instanceId\": \"codex-cliproxy\", \"model\": \"gpt-6.2-sol\"} and .textGenerationModelSelection == {\"instanceId\": \"codex-cliproxy\", \"model\": \"__GPT_LUNA__\"} and .reviewGuideModelSelection == {\"instanceId\": \"codex-cliproxy\", \"model\": \"__GPT__\"} and .providerInstances[\"claude-cliproxy\"].driver == \"claudeAgent\"' '$TEMP_DIR/server-settings.tpl.json' >/dev/null"
+When run bash -c "bash '$SCRIPT' '$TEMP_DIR/settings.json' '$TEMP_DIR/server-settings.tpl.json' '$TEMP_DIR/models.json' >/dev/null && jq -e '.favorites == [{\"provider\": \"claude-cliproxy\", \"model\": \"__CLAUDE_OPUS__\"}, {\"provider\": \"codex-cliproxy\", \"model\": \"__GPT_SOL__\"}, {\"provider\": \"codex\", \"model\": \"gpt-6.1-sol\"}, {\"provider\": \"antigravity\", \"model\": \"__GEMINI_NEON__\"}, {\"provider\": \"opencode\", \"model\": \"shunkakinoki/__DEEPSEEK_FLASH_UNCENSORED__\"}, {\"provider\": \"opencode\", \"model\": \"shunkakinoki/__DEEPSEEK_FLASH_UNVERSIONED__\"}] and .providerModelPreferences[\"codex-cliproxy\"].hiddenModels == [\"__GPT_LUNA__\"] and .providerModelPreferences[\"codex-cliproxy\"].modelOrder == [\"__GPT_SOL__\", \"gpt-6.1-sol\"] and .defaultModelSelection == {\"instanceId\": \"claude-cliproxy\", \"model\": \"__CLAUDE_OPUS__\"} and .fallbackModelSelection == {\"instanceId\": \"codex-cliproxy\", \"model\": \"__GPT_SOL__\"} and .textGenerationModelSelection == {\"instanceId\": \"codex-cliproxy\", \"model\": \"__GPT_LUNA__\"} and .reviewGuideModelSelection == {\"instanceId\": \"codex-cliproxy\", \"model\": \"__GPT_SOL__\"} and .providerInstances[\"claude-cliproxy\"].driver == \"claudeAgent\"' '$TEMP_DIR/server-settings.tpl.json' >/dev/null"
 The status should be success
 End
 
