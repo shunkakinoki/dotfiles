@@ -494,9 +494,9 @@ codex-header-defaults:
   beta-features: "multi_agent"
 # OpenAI compatibility providers
 openai-compatibility:
-  # Morph's DeepSeek V4.1 Flash 1017 endpoint is the highest-priority
-  # DeepSeek route. Keep it isolated from the campaign providers so its key
-  # and upstream model remain explicit in routing and quota reports.
+  # Morph's DeepSeek Flash endpoints are the highest-priority DeepSeek routes.
+  # Keep them isolated from campaign providers so their key and upstream
+  # models remain explicit in routing and quota reports.
   - name: "morph-deepseek"
     priority: 304
     base-url: "https://api.morphllm.com/v1"
@@ -509,7 +509,7 @@ openai-compatibility:
       - api-key: "__MORPH_API_KEY__"
         proxy-url: "direct"
     models:
-      # Keep Morph's upstream response model under the public DeepSeek alias.
+      # Keep Morph's upstream response models under the public DeepSeek aliases.
       - name: "morph-dsv41flash-1017"
         alias: "__DEEPSEEK_FLASH__"
         force-mapping: true
@@ -518,6 +518,15 @@ openai-compatibility:
         force-mapping: true
       - name: "morph-dsv41flash-1017"
         alias: "deepseek-v4-flash"
+        force-mapping: true
+      - name: "morph-dsv41flash"
+        alias: "deepseek-v4.1-flash"
+        force-mapping: true
+      - name: "morph-dsv41flash"
+        alias: "deepseek-v4-flash"
+        force-mapping: true
+      - name: "morph-dsv41flash-abliterated"
+        alias: "__DEEPSEEK_FLASH_UNCENSORED__"
         force-mapping: true
   # Explicit free-only pool; never map this alias to a paid variant or router.
   # Repeat priority:free for additional catalog-verified free models.

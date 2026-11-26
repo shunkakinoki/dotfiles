@@ -164,9 +164,12 @@ OLLAMA_API_KEYS="first-ollama-api-key,second-ollama-api-key"
 
 CLIProxyAPI selects from these entries using the configured routing strategy.
 
-Morph's `morph-dsv41flash-1017` serves the canonical DeepSeek Flash aliases at
-priority 304, above Surplus at 301. Set `MORPH_API_KEY` to enable this route;
-when it is unavailable, CLIProxy continues through the existing DeepSeek tiers.
+Morph's `morph-dsv41flash-1017` serves the versioned DeepSeek alias and remains
+in the ordinary and legacy alias pools alongside `morph-dsv41flash` at priority 304.
+Morph's `morph-dsv41flash-abliterated` serves
+`deepseek-v4.1-flash-uncensored` at the same priority, above the existing
+Surplus fallback. Set `MORPH_API_KEY` to enable these routes. When a Morph
+model is unavailable, CLIProxy continues through the configured DeepSeek tiers.
 
 Clients use `shunkakinoki/deepseek-v4.1-flash` as their provider-qualified
 model name. The client provider removes the `shunkakinoki/` namespace before
