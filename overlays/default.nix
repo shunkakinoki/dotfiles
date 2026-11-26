@@ -265,20 +265,20 @@ in
 
     blacksmith-testbox-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "blacksmith-testbox-cli";
-      version = "0.7.21";
+      version = "0.7.26";
       src = prev.fetchurl {
         url = "https://clireleases.blacksmith.sh/cli/v${version}/${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }/${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}/blacksmith";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "357482ba43130211bc587ae4ae4d1ad9167c382b997fd18256986f2fdd4de1d7"
+            "8a945ea4b61cb7086661e256e1182453ed41e31e925d281a780cc43104f67d18"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "f9a617ecf14b634f67d11f8a0b704f3ccc3cc35cdd3130afd0c2cea9d7be0388"
+            "11ef4cf1475f2e1d810398270334105e835a882465323bbe7719cff9c6ec2b9c"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "c44a97e1f53c6ae1fe73c751fbccf225374cc77ead6720c09b5c06820bfc9b0f"
+            "025c9438d7b3f54ff903a6a302769d26a0a4390e8085f018dc530e94f7e34c89"
           else
-            "16bae3571291aa4961a868f16f57e49c7e2fbb35ffdfb1ee6f5b094b15daf9eb";
+            "468d7e9acbdf517ee8ddaef18da3a645f86cd8ebb613898becf96ad5d085a68f";
       };
       dontUnpack = true;
       installPhase = ''
