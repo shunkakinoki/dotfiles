@@ -56,6 +56,15 @@ replies to Docker bridge addresses out of `tailscale0`, so containers lose
 internet while the host keeps it. Verify with `ip rule show priority 5200` and
 `docker run --rm alpine wget -qO- https://example.com >/dev/null && echo ok`.
 
+Activation also replaces the provider's resolvers on every netplan-generated
+link with public ones (1.1.1.1, 8.8.8.8, 1.0.0.1, 8.8.4.4) through a networkd
+drop-in under `/etc/systemd/network/<link>.network.d/60-kamino-public-dns.conf`,
+and applies them at once with `resolvectl dns`. Through the exit node, queries
+to the provider's resolvers leave from the exit node's address, and those
+resolvers answer only their own network, so lookups that miss MagicDNS
+(including Docker containers) time out. Verify with
+`resolvectl status eth0 | grep 'DNS Servers'` and `getent hosts github.com`.
+
 Host login uses Tailscale SSH, authorized by the tailnet policy as root. Activation
 adds the declared Galactica, Kyber, and Matic public keys to root's
 `authorized_keys`, preserving provider keys and other existing entries. It sets

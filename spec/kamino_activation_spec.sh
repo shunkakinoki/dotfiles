@@ -18,7 +18,7 @@ EOF
 [ "${MOCK_KEYGEN_FAIL:-0}" = 1 ] && exit 1
 exit 0
 EOF
-  for name in hostnamectl loginctl systemctl journalctl tailscale mkdir chmod touch chown; do
+  for name in hostnamectl loginctl systemctl journalctl resolvectl tailscale mkdir chmod touch chown; do
     if [ "$name" = mkdir ] || [ "$name" = chmod ] || [ "$name" = touch ]; then
       tool_path=$(command -v "$name")
       cat >"$TEST_ROOT/bin/$name" <<EOF
@@ -502,6 +502,28 @@ The status should be success
 The output should be blank
 The contents of file "$TEST_ROOT/commands" should not include 'systemctl try-restart systemd-journald.service'
 The contents of file "$TEST_ROOT/commands" should not include 'journalctl --rotate --vacuum-size=500M'
+End
+
+It 'replaces provider resolvers on generated links with public resolvers'
+mkdir -p "$TEST_ROOT/run-network"
+printf '[Match]\nName=eth0\n\n[Network]\nDNS=195.179.224.53\n' >"$TEST_ROOT/run-network/10-netplan-eth0.network"
+printf '[Match]\nName=eth1\n\n[Network]\nAddress=10.0.0.2/24\n' >"$TEST_ROOT/run-network/10-netplan-eth1.network"
+When run run_phase public-dns "$TEST_ROOT/run-network" "$TEST_ROOT/etc-network"
+The status should be success
+The output should include "Wrote $TEST_ROOT/etc-network/10-netplan-eth0.network.d/60-kamino-public-dns.conf."
+The contents of file "$TEST_ROOT/etc-network/10-netplan-eth0.network.d/60-kamino-public-dns.conf" should include 'DNS=1.1.1.1 8.8.8.8 1.0.0.1 8.8.4.4'
+The path "$TEST_ROOT/etc-network/10-netplan-eth1.network.d" should not be exist
+The contents of file "$TEST_ROOT/commands" should include 'resolvectl dns eth0 1.1.1.1 8.8.8.8 1.0.0.1 8.8.4.4'
+The contents of file "$TEST_ROOT/commands" should not include 'resolvectl dns eth1'
+End
+
+It 'rewrites nothing when the public resolver drop-in is current'
+mkdir -p "$TEST_ROOT/run-network"
+printf '[Match]\nName=eth0\n\n[Network]\nDNS=195.179.224.53\n' >"$TEST_ROOT/run-network/10-netplan-eth0.network"
+run_phase public-dns "$TEST_ROOT/run-network" "$TEST_ROOT/etc-network" >/dev/null
+When run run_phase public-dns "$TEST_ROOT/run-network" "$TEST_ROOT/etc-network"
+The status should be success
+The output should be blank
 End
 
 Describe 'named-hosts/kamino/nix-gc.sh'
