@@ -121,7 +121,7 @@ if [ "$1" = "true" ]; then
 fi
 exec "$@"
 EOF
-  chmod +x "$WORK/bin/"*
+  chmod +x "$WORK/bin/id" "$WORK/bin/groups" "$WORK/bin/groupadd" "$WORK/bin/usermod" "$WORK/bin/systemctl" "$WORK/bin/getent" "$WORK/bin/sudo"
   sed \
     -e "s|@coreutils@/bin|$WORK/bin|g" \
     -e "s|@shadow@/bin|$WORK/bin|g" \
