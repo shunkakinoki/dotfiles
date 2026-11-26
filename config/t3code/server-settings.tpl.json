@@ -13,20 +13,8 @@
       "model": "__CLAUDE_OPUS__"
     },
     {
-      "provider": "claude-cliproxy",
-      "model": "claude-fable-5-2"
-    },
-    {
       "provider": "codex-cliproxy",
-      "model": "gpt-6.2-sol"
-    },
-    {
-      "provider": "codex",
       "model": "__GPT__"
-    },
-    {
-      "provider": "codex",
-      "model": "gpt-6-sol"
     },
     {
       "provider": "antigravity",
@@ -35,14 +23,6 @@
     {
       "provider": "opencode",
       "model": "shunkakinoki/__DEEPSEEK_FLASH_UNCENSORED__"
-    },
-    {
-      "provider": "opencode",
-      "model": "opencode/x-preview-f-free"
-    },
-    {
-      "provider": "opencode",
-      "model": "opencode/union-alpha"
     }
   ],
   "providerModelPreferences": {},
@@ -52,7 +32,7 @@
   },
   "fallbackModelSelection": {
     "instanceId": "codex-cliproxy",
-    "model": "gpt-6.2-sol"
+    "model": "__GPT__"
   },
   "textGenerationModelSelection": {
     "instanceId": "codex-cliproxy",
