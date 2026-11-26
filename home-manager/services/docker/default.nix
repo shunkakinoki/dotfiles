@@ -1,4 +1,10 @@
-{ pkgs, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  isRunner ? false,
+  ...
+}:
 let
   # Systemd service file for Docker daemon
   dockerServiceFile = pkgs.writeText "docker.service" (
@@ -40,5 +46,15 @@ in
       )
     ))
   ];
+
+  # Keep /etc/systemd/system/docker.service and /etc/docker/daemon.json aligned
+  # with the active Nix store paths during automated switches (dotfiles-updater
+  # runs `make install`, not `make systemctl-docker`). Otherwise Nix GC removes
+  # the previous dockerd path and leaves docker.service failing with 203/EXEC.
+  home.activation.setupDocker = lib.mkIf (pkgs.stdenv.hostPlatform.isLinux && !isRunner) (
+    config.lib.dag.entryAfter [ "writeBoundary" ] ''
+      $DRY_RUN_CMD ${pkgs.bash}/bin/bash "${setupDockerScript}" --non-interactive
+    ''
+  );
 
 }
