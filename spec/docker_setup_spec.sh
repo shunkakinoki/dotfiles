@@ -80,7 +80,7 @@ End
 Describe 'activation behavior'
 setup_mock() {
   WORK=$(mktemp -d)
-  mkdir -p "$WORK/bin" "$WORK/systemd" "$WORK/etc/systemd/system" "$WORK/etc/docker" "$WORK/etc/sysctl.d"
+  mkdir -p "$WORK/bin" "$WORK/run/systemd/system" "$WORK/etc/systemd/system" "$WORK/etc/docker" "$WORK/etc/sysctl.d" "$WORK/proc/sys/fs/inotify" "$WORK/proc/sys/user"
   cat >"$WORK/docker.service.new" <<'EOF'
 [Service]
 ExecStart=/nix/store/new-docker/bin/dockerd
@@ -93,8 +93,17 @@ EOF
 fs.inotify.max_user_instances = 1024
 user.max_inotify_instances = 1024
 EOF
-  printf '#!/usr/bin/env bash\nif [ "$1" = -u ]; then echo "${MOCK_UID:-0}"; else echo "root"; fi\n' >"$WORK/bin/id"
-  printf '#!/usr/bin/env bash\necho "root : root docker"\n' >"$WORK/bin/groups"
+  echo "1024" >"$WORK/proc/sys/fs/inotify/max_user_instances"
+  echo "1024" >"$WORK/proc/sys/user/max_inotify_instances"
+  cat >"$WORK/bin/id" <<'EOF'
+#!/usr/bin/env bash
+case "$1" in
+-u) echo "${MOCK_UID:-0}" ;;
+-un) echo "${MOCK_USER:-root}" ;;
+-Gn) echo "${MOCK_GROUPS:-root docker}" ;;
+*) exit 1 ;;
+esac
+EOF
   printf '#!/usr/bin/env bash\necho "groupadd $*" >>"%s/calls.log"\n' "$WORK" >"$WORK/bin/groupadd"
   printf '#!/usr/bin/env bash\necho "usermod $*" >>"%s/calls.log"\n' "$WORK" >"$WORK/bin/usermod"
   cat >"$WORK/bin/systemctl" <<EOF
@@ -121,7 +130,7 @@ if [ "$1" = "true" ]; then
 fi
 exec "$@"
 EOF
-  chmod +x "$WORK/bin/id" "$WORK/bin/groups" "$WORK/bin/groupadd" "$WORK/bin/usermod" "$WORK/bin/systemctl" "$WORK/bin/getent" "$WORK/bin/sudo"
+  chmod +x "$WORK/bin/id" "$WORK/bin/groupadd" "$WORK/bin/usermod" "$WORK/bin/systemctl" "$WORK/bin/getent" "$WORK/bin/sudo"
   sed \
     -e "s|@coreutils@/bin|$WORK/bin|g" \
     -e "s|@shadow@/bin|$WORK/bin|g" \
@@ -130,6 +139,12 @@ EOF
     -e "s|@diffutils@/bin|$WORK/bin|g" \
     -e "s|@docker_service_file@|$WORK/docker.service.new|g" \
     -e "s|@docker_daemon_file@|$WORK/daemon.json.new|g" \
+    -e "s|/etc/NIXOS|$WORK/etc/NIXOS|g" \
+    -e "s|/run/systemd/system|$WORK/run/systemd/system|g" \
+    -e "s|/etc/systemd/system/docker.service|$WORK/etc/systemd/system/docker.service|g" \
+    -e "s|/etc/docker|$WORK/etc/docker|g" \
+    -e "s|/etc/sysctl.d/99-docker-inotify.conf|$WORK/etc/sysctl.d/99-docker-inotify.conf|g" \
+    -e "s|/proc/sys/|$WORK/proc/sys/|g" \
     "$SCRIPT" >"$WORK/setup-docker.sh"
   chmod +x "$WORK/setup-docker.sh"
 }
@@ -142,55 +157,39 @@ Before 'setup_mock'
 After 'cleanup_mock'
 
 It 'skips on NixOS hosts without modifying unit files'
-touch "$WORK/is-nixos"
-When run env PATH="$WORK/bin:$PATH" \
-  DOCKER_SETUP_NIXOS_MARKER="$WORK/is-nixos" \
-  DOCKER_SETUP_SYSTEMD_DIR="$WORK/systemd" \
-  DOCKER_SETUP_SYSTEM_SERVICE="$WORK/etc/systemd/system/docker.service" \
-  DOCKER_SETUP_CONFIG_DIR="$WORK/etc/docker" \
-  DOCKER_SETUP_SYSCTL_CONF="$WORK/etc/sysctl.d/99-docker-inotify.conf" \
-  bash "$WORK/setup-docker.sh" --non-interactive
+touch "$WORK/etc/NIXOS"
+When run env PATH="$WORK/bin:$PATH" bash "$WORK/setup-docker.sh" --non-interactive
 The status should be success
 The file "$WORK/etc/systemd/system/docker.service" should not be exist
 End
 
 It 'skips when systemd is not running'
-When run env PATH="$WORK/bin:$PATH" \
-  DOCKER_SETUP_NIXOS_MARKER="$WORK/no-nixos" \
-  DOCKER_SETUP_SYSTEMD_DIR="$WORK/no-systemd" \
-  DOCKER_SETUP_SYSTEM_SERVICE="$WORK/etc/systemd/system/docker.service" \
-  DOCKER_SETUP_CONFIG_DIR="$WORK/etc/docker" \
-  DOCKER_SETUP_SYSCTL_CONF="$WORK/etc/sysctl.d/99-docker-inotify.conf" \
-  bash "$WORK/setup-docker.sh" --non-interactive
+rmdir "$WORK/run/systemd/system"
+When run env PATH="$WORK/bin:$PATH" bash "$WORK/setup-docker.sh" --non-interactive
 The status should be success
 The file "$WORK/etc/systemd/system/docker.service" should not be exist
 End
 
 It 'skips cleanly in non-interactive mode when passwordless sudo is unavailable'
-When run env PATH="$WORK/bin:$PATH" \
-  MOCK_UID=1000 MOCK_SUDO_FAIL=1 \
-  DOCKER_SETUP_NIXOS_MARKER="$WORK/no-nixos" \
-  DOCKER_SETUP_SYSTEMD_DIR="$WORK/systemd" \
-  DOCKER_SETUP_SYSTEM_SERVICE="$WORK/etc/systemd/system/docker.service" \
-  DOCKER_SETUP_CONFIG_DIR="$WORK/etc/docker" \
-  DOCKER_SETUP_SYSCTL_CONF="$WORK/etc/sysctl.d/99-docker-inotify.conf" \
-  bash "$WORK/setup-docker.sh" --non-interactive
+When run env PATH="$WORK/bin:$PATH" MOCK_UID=1000 MOCK_SUDO_FAIL=1 bash "$WORK/setup-docker.sh" --non-interactive
 The status should be success
 The error should include 'non-interactive root access unavailable'
 The file "$WORK/etc/systemd/system/docker.service" should not be exist
 End
 
+It 'matches exact docker group name rather than hyphenated substrings'
+cp "$WORK/docker.service.new" "$WORK/etc/systemd/system/docker.service"
+cp "$WORK/daemon.json.new" "$WORK/etc/docker/daemon.json"
+When run env PATH="$WORK/bin:$PATH" USER=alice MOCK_UID=0 MOCK_GROUPS="alice docker-users" MOCK_DOCKER_ACTIVE=0 bash "$WORK/setup-docker.sh" --non-interactive
+The status should be success
+The output should include 'Adding user to docker group'
+The contents of file "$WORK/calls.log" should include 'usermod -aG docker alice'
+End
+
 It 'updates stale docker.service store paths and restarts docker during activation'
 printf '[Service]\nExecStart=/nix/store/old-docker/bin/dockerd\n' >"$WORK/etc/systemd/system/docker.service"
 cp "$WORK/daemon.json.new" "$WORK/etc/docker/daemon.json"
-When run env PATH="$WORK/bin:$PATH" \
-  MOCK_UID=0 MOCK_DOCKER_ACTIVE=0 \
-  DOCKER_SETUP_NIXOS_MARKER="$WORK/no-nixos" \
-  DOCKER_SETUP_SYSTEMD_DIR="$WORK/systemd" \
-  DOCKER_SETUP_SYSTEM_SERVICE="$WORK/etc/systemd/system/docker.service" \
-  DOCKER_SETUP_CONFIG_DIR="$WORK/etc/docker" \
-  DOCKER_SETUP_SYSCTL_CONF="$WORK/etc/sysctl.d/99-docker-inotify.conf" \
-  bash "$WORK/setup-docker.sh" --non-interactive
+When run env PATH="$WORK/bin:$PATH" MOCK_UID=0 MOCK_DOCKER_ACTIVE=0 bash "$WORK/setup-docker.sh" --non-interactive
 The status should be success
 The output should include 'Updating Docker systemd service'
 The output should include 'Docker daemon restarted'

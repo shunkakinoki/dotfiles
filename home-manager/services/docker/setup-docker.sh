@@ -15,20 +15,17 @@ for arg in "$@"; do
 done
 
 # Skip on NixOS - Docker is managed declaratively via virtualisation.docker.
-NIXOS_MARKER="${DOCKER_SETUP_NIXOS_MARKER:-/etc/NIXOS}"
-if [ -e "$NIXOS_MARKER" ]; then
+if [ -e /etc/NIXOS ]; then
   exit 0
 fi
 
-# Skip when systemd is not PID 1 (e.g. containers or CI runners).
-SYSTEMD_RUNTIME_DIR="${DOCKER_SETUP_SYSTEMD_DIR:-/run/systemd/system}"
-if [ ! -d "$SYSTEMD_RUNTIME_DIR" ]; then
+# Skip when not booted with systemd (sd_booted(3), e.g. containers or CI runners).
+if [ ! -d /run/systemd/system ]; then
   exit 0
 fi
 
 # Define paths
 ID_CMD=@coreutils@/bin/id
-GROUPS_CMD=@coreutils@/bin/groups
 GROUPADD=@shadow@/bin/groupadd
 GREP=@gnugrep@/bin/grep
 USERMOD=@shadow@/bin/usermod
@@ -39,10 +36,10 @@ INSTALL=@coreutils@/bin/install
 DIFF=@diffutils@/bin/diff
 DOCKER_SERVICE_FILE=@docker_service_file@
 DOCKER_DAEMON_FILE=@docker_daemon_file@
-SYSTEM_SERVICE="${DOCKER_SETUP_SYSTEM_SERVICE:-/etc/systemd/system/docker.service}"
-DOCKER_CONFIG_DIR="${DOCKER_SETUP_CONFIG_DIR:-/etc/docker}"
+SYSTEM_SERVICE=/etc/systemd/system/docker.service
+DOCKER_CONFIG_DIR=/etc/docker
 DOCKER_DAEMON_CONFIG="$DOCKER_CONFIG_DIR/daemon.json"
-SYSCTL_CONF="${DOCKER_SETUP_SYSCTL_CONF:-/etc/sysctl.d/99-docker-inotify.conf}"
+SYSCTL_CONF=/etc/sysctl.d/99-docker-inotify.conf
 TARGET_USER="${USER:-$("$ID_CMD" -un)}"
 
 run_root() {
@@ -69,7 +66,7 @@ if ! getent group docker >/dev/null 2>&1; then
 fi
 
 # Check if user is in docker group
-if ! "$GROUPS_CMD" "$TARGET_USER" 2>/dev/null | "$GREP" -qw docker; then
+if ! "$ID_CMD" -Gn "$TARGET_USER" 2>/dev/null | "$GREP" -qE '(^| )docker( |$)'; then
   echo "Adding user to docker group..."
   run_root "$USERMOD" -aG docker "$TARGET_USER"
   echo "Added to docker group. Please log out and back in, or run: newgrp docker"
