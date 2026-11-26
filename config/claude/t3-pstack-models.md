@@ -12,10 +12,10 @@ why investigators: claude-cliproxy/claude-opus-5-5 effort=high
 why synthesizer: claude-cliproxy/claude-opus-5-5 effort=high
 reflect tooling: claude-cliproxy/claude-opus-5-5 effort=high
 reflect judgment, divergent, synthesizer: claude-cliproxy/claude-opus-5-5 effort=high
-arena runners: claude-cliproxy/claude-opus-5-5 effort=high, codex-cliproxy/gpt-6.1-sol reasoningEffort=xhigh
-arena cross-judge pool: claude-cliproxy/claude-opus-5-5 effort=high, codex-cliproxy/gpt-6.1-sol reasoningEffort=xhigh
+arena runners: claude-cliproxy/claude-opus-5-5 effort=high, codex-cliproxy/gpt-6.2-sol reasoningEffort=xhigh
+arena cross-judge pool: claude-cliproxy/claude-opus-5-5 effort=high, codex-cliproxy/gpt-6.2-sol reasoningEffort=xhigh
 swarm workers: claude-cliproxy/claude-opus-5-5 effort=high
-architect runners: claude-cliproxy/claude-opus-5-5 effort=high, codex-cliproxy/gpt-6.1-sol reasoningEffort=xhigh
-interrogate reviewers: claude-cliproxy/claude-opus-5-5 effort=high, codex-cliproxy/gpt-6.1-sol reasoningEffort=xhigh
+architect runners: claude-cliproxy/claude-opus-5-5 effort=high, codex-cliproxy/gpt-6.2-sol reasoningEffort=xhigh
+interrogate reviewers: claude-cliproxy/claude-opus-5-5 effort=high, codex-cliproxy/gpt-6.2-sol reasoningEffort=xhigh
 
 session hook: off

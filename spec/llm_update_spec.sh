@@ -55,7 +55,7 @@ import re, sys
 
 allowed = {
     "claude": re.compile(r"^claude-cliproxy/claude-opus-5-5 effort=(high|xhigh)$"),
-    "gpt": re.compile(r"^codex-cliproxy/gpt-6\.1-sol reasoningEffort=xhigh$"),
+    "gpt": re.compile(r"^codex-cliproxy/gpt-6\.2-sol reasoningEffort=xhigh$"),
 }
 expected = {
     "feature, refactoring", "bug-fix", "perf-issue", "hillclimb",

@@ -14,7 +14,7 @@
     },
     {
       "provider": "codex-cliproxy",
-      "model": "gpt-6.1-sol"
+      "model": "gpt-6.2-sol"
     },
     {
       "provider": "antigravity",
@@ -32,7 +32,7 @@
   },
   "fallbackModelSelection": {
     "instanceId": "codex-cliproxy",
-    "model": "gpt-6.1-sol"
+    "model": "gpt-6.2-sol"
   },
   "textGenerationModelSelection": {
     "instanceId": "codex-cliproxy",
@@ -40,7 +40,7 @@
   },
   "reviewGuideModelSelection": {
     "instanceId": "codex-cliproxy",
-    "model": "gpt-6.1-sol"
+    "model": "gpt-6.2-sol"
   },
   "providers": {
     "claudeAgent": {
