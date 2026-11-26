@@ -199,7 +199,7 @@ above it is cooling down or unavailable.
 
 | Provider | Priority | DeepSeek models served |
 | --- | --- | --- |
-| `morph-deepseek` | 304 | `morph-dsv41flash-1017` aliased to `deepseek-v4.1-flash-1017` |
+| `morph-deepseek` | 304 | `morph-dsv41flash-1017` -> `deepseek-v4.1-flash-1017`, `deepseek-v4.1-flash`, `deepseek-v4-flash`; `morph-dsv41flash` -> `deepseek-v4.1-flash`, `deepseek-v4-flash`; `morph-dsv41flash-abliterated` -> `deepseek-v4.1-flash-uncensored` |
 | `surplus-deepseek` | 301 | `deepseek-v4.1-flash-1017` aliased to `deepseek-v4.1-flash-1017` |
 | `ollama-cloud` | 300 | `deepseek-v4.1-flash` aliased to `deepseek-v4.1-flash-1017` |
 | `aliyun` | 200 | `deepseek-v4-flash-0731` aliased to `deepseek-v4.1-flash-1017` |
@@ -207,13 +207,15 @@ above it is cooling down or unavailable.
 | `nvidia` | 120 | `deepseek-ai/deepseek-v4.1-flash` aliased to `deepseek-v4.1-flash-1017` |
 | `openrouter` | 100 | `deepseek/deepseek-v4.1-flash` aliased to `deepseek-v4.1-flash-1017` |
 | `opencode` | 90 | `deepseek-v4-flash` aliased to `deepseek-v4.1-flash-1017` |
-| `surplus` | 150 | `deepseek-v4.1-flash-uncensored` served under its own alias |
+| `surplus` | 150 | `deepseek-v4.1-flash-uncensored` served under its own alias as a lower-priority fallback |
 So `deepseek-v4.1-flash-1017` requests use Morph's `morph-dsv41flash-1017` at
 priority 304 first; Surplus revision 1017 at priority 301 is the next eligible
 tier, and lower tiers only serve once the tier above them is unavailable. The
-legacy `deepseek-v4.1-flash` and `deepseek-v4-flash` aliases use the same chain.
-`deepseek-v4.1-flash-uncensored` is served only by Surplus, its
-sole upstream.
+ordinary `deepseek-v4.1-flash` and legacy `deepseek-v4-flash` aliases use an
+internal Morph pool containing both `morph-dsv41flash` and the preserved
+`morph-dsv41flash-1017` mapping. `deepseek-v4.1-flash-uncensored` uses Morph's
+`morph-dsv41flash-abliterated` first, with the existing Surplus route as its
+lower-priority fallback.
 
 ### Provider failure classification
 
