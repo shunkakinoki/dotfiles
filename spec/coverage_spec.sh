@@ -321,6 +321,10 @@ It 'has spec file for scripts/find-built-iso.sh'
 The path "spec/find_built_iso_spec.sh" should be exist
 End
 
+It 'has spec file for scripts/t3-export-prefs.sh'
+The path "spec/t3_export_prefs_spec.sh" should be exist
+End
+
 It 'has spec file for home-manager/services/cliproxyapi/scripts/docker-start.sh'
 The path "spec/cliproxyapi_docker_start_spec.sh" should be exist
 End
@@ -829,6 +833,7 @@ scripts/llm-update.sh
 scripts/normalize-dcg-hooks.sh
 scripts/sync-codex-security.sh
 scripts/sync-rtk-rewrite.sh
+scripts/t3-export-prefs.sh
 scripts/update-gitalias.sh
 scripts/update-local-binaries.sh
 scripts/update-moshi-hooks.sh

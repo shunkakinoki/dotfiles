@@ -175,18 +175,50 @@ When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER'
 The status should be success
 End
 
-It 'preserves app-owned settings and unrelated instances'
+It 'preserves unmanaged app-owned settings and unrelated instances'
 cat >"$TEMP_DIR/.env" <<'ENV'
 CLIPROXY_API_KEY=test_cliproxy_key
 ENV
 cat >"$STATE_DIR/settings.json" <<'JSON'
 {
   "pullRequestMergeMethod": "squash",
-  "defaultModelSelection": {"instanceId": "opencode", "model": "shunkakinoki/deepseek-v4.1-flash-1017"},
+  "defaultAutoPull": true,
   "providerInstances": {"opencode": {"driver": "opencode", "config": {"binaryPath": "opencode"}}}
 }
 JSON
-When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && jq -e '.pullRequestMergeMethod == \"squash\" and .defaultModelSelection.instanceId == \"opencode\" and .providerInstances.opencode.config.binaryPath == \"opencode\" and (.providerInstances[\"codex-cliproxy\"] != null)' '$STATE_DIR/settings.json' >/dev/null"
+When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && jq -e '.pullRequestMergeMethod == \"squash\" and .defaultAutoPull == true and .providerInstances.opencode.config.binaryPath == \"opencode\" and (.providerInstances[\"codex-cliproxy\"] != null)' '$STATE_DIR/settings.json' >/dev/null"
+The status should be success
+End
+
+It 'strictly syncs favorites, providerModelPreferences, and model selections'
+cat >"$TEMP_DIR/.env" <<'ENV'
+CLIPROXY_API_KEY=test_cliproxy_key
+ENV
+cat >"$STATE_DIR/settings.json" <<'JSON'
+{
+  "favorites": [{"provider": "opencode", "model": "cliproxyapi/stale-local"}],
+  "providerModelPreferences": {"codex-cliproxy": {"hiddenModels": ["gpt-6.2-sol"], "modelOrder": []}},
+  "defaultModelSelection": {"instanceId": "opencode", "model": "opencode/old"},
+  "fallbackModelSelection": {"instanceId": "opencode", "model": "opencode/old"},
+  "textGenerationModelSelection": {"instanceId": "opencode", "model": "opencode/old"},
+  "reviewGuideModelSelection": {"instanceId": "opencode", "model": "opencode/old"}
+}
+JSON
+When run env HOME="$TEMP_DIR" bash -c "bash '$SETTINGS_SCRIPT' '$MANAGED_SERVER' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && jq -e --slurpfile managed '$MANAGED_SERVER' '.favorites == \$managed[0].favorites and .providerModelPreferences == \$managed[0].providerModelPreferences and .defaultModelSelection == \$managed[0].defaultModelSelection and .fallbackModelSelection == \$managed[0].fallbackModelSelection and .textGenerationModelSelection == \$managed[0].textGenerationModelSelection and .reviewGuideModelSelection == \$managed[0].reviewGuideModelSelection' '$STATE_DIR/settings.json' >/dev/null"
+The status should be success
+End
+
+It 'leaves model preferences untouched when omitted from the managed template'
+cat >"$TEMP_DIR/.env" <<'ENV'
+CLIPROXY_API_KEY=test_cliproxy_key
+ENV
+cat >"$STATE_DIR/settings.json" <<'JSON'
+{
+  "favorites": [{"provider": "opencode", "model": "opencode/custom"}],
+  "defaultModelSelection": {"instanceId": "opencode", "model": "opencode/custom"}
+}
+JSON
+When run env HOME="$TEMP_DIR" bash -c "jq 'del(.favorites, .providerModelPreferences, .defaultModelSelection, .fallbackModelSelection, .textGenerationModelSelection, .reviewGuideModelSelection)' '$MANAGED_SERVER' >'$TEMP_DIR/minimal-server.json' && bash '$SETTINGS_SCRIPT' '$TEMP_DIR/minimal-server.json' \"\$(command -v jq)\" '$TEMP_DIR/.env' '$STATE_DIR' && jq -e '.favorites == [{\"provider\": \"opencode\", \"model\": \"opencode/custom\"}] and .defaultModelSelection == {\"instanceId\": \"opencode\", \"model\": \"opencode/custom\"}' '$STATE_DIR/settings.json' >/dev/null"
 The status should be success
 End
 

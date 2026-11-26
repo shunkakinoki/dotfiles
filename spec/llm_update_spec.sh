@@ -294,6 +294,11 @@ When run bash -c "grep -q 'deepseek-v4.1-flash-uncensored' config/opencode/openc
 The status should be success
 End
 
+It 'renders T3 Code favorites and model selections from models.json'
+When run bash -c "jq -e '(.favorites | any(.provider == \"opencode\" and .model == \"shunkakinoki/deepseek-v4.1-flash-uncensored\")) and (.favorites | any(.provider == \"claude-cliproxy\" and .model == \"claude-opus-5-5\")) and .defaultModelSelection.model == \"claude-opus-5-5\" and .textGenerationModelSelection.model == \"gpt-6-luna\" and .reviewGuideModelSelection.model == \"gpt-6.1-sol\"' config/t3code/server-settings.json >/dev/null"
+The status should be success
+End
+
 It 'generates the OMP free default role'
 When run bash -c "grep 'default: \"cliproxyapi/free\"' config/omp/config.yml"
 The output should include 'cliproxyapi/free'

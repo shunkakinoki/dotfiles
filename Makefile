@@ -1322,6 +1322,10 @@ systemctl-t3-connect: t3-linger ## Restart the t3-connect timer and run it once.
 	@systemctl --user start t3-connect.service || true
 	@echo "✅ t3-connect restarted"
 
+.PHONY: t3-export-prefs
+t3-export-prefs: ## Export local T3 Code model preferences (favorites, hidden/ordered models, selections) into dotfiles.
+	@bash ./scripts/t3-export-prefs.sh
+
 .PHONY: t3-linger
 t3-linger: ## Enable systemd lingering so user timers survive reboot without a login session.
 	@set -eu; \
