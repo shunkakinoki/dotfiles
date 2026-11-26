@@ -50,6 +50,9 @@
         "__DEEPSEEK_FLASH_UNVERSIONED__": {
           "name": "__DEEPSEEK_FLASH_PRETTY__ (via shunkakinoki's CLIProxy)"
         },
+        "__DEEPSEEK_FLASH_UNCENSORED__": {
+          "name": "__DEEPSEEK_FLASH_UNCENSORED_PRETTY__ (via shunkakinoki's CLIProxy)"
+        },
         "__GPT_LUNA__": {
           "name": "__GPT_LUNA_PRETTY__ (via shunkakinoki's CLIProxy)"
         },
@@ -99,6 +102,9 @@
         },
         "__DEEPSEEK_FLASH_UNVERSIONED__": {
           "name": "__DEEPSEEK_FLASH_PRETTY__ (via local CLIProxyAPI)"
+        },
+        "__DEEPSEEK_FLASH_UNCENSORED__": {
+          "name": "__DEEPSEEK_FLASH_UNCENSORED_PRETTY__ (via local CLIProxyAPI)"
         },
         "__GPT_LUNA__": {
           "name": "__GPT_LUNA_PRETTY__ (via local CLIProxyAPI)"

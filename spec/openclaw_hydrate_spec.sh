@@ -14,10 +14,11 @@ template_uses_cliproxy_flash_default() {
       ]
     } and
     (.models.providers.cliproxy.models | any(.id == "deepseek-v4.1-flash-1017")) and
+    (.models.providers.cliproxy.models | any(.id == "deepseek-v4.1-flash-uncensored")) and
     (.models.providers.cliproxy.models | any(.id == "free")) and
     (.agents.defaults.model.fallbacks[-1] == "cliproxy/free") and
     (.models.providers.cliproxy.models | all(
-      if (.id == "deepseek-v4.1-flash-1017" or .id == "gpt-6-luna")
+      if (.id == "deepseek-v4.1-flash-1017" or .id == "deepseek-v4.1-flash-uncensored" or .id == "gpt-6-luna")
       then .compat.supportsPromptCacheKey == true
       else .compat.supportsPromptCacheKey? != true
       end

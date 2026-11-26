@@ -252,7 +252,7 @@ End
 
 Describe 'generated Factory settings'
 It 'pins Droid to its built-in DeepSeek Flash model and keeps CLIProxy customs'
-When run jq -e '.sessionDefaultSettings.model == "__DEEPSEEK_FLASH_0731__" and (.customModels | length) == 3 and any(.customModels[]; .id == "custom:__DEEPSEEK_FLASH__-0" and .baseUrl == "https://cliproxy.shunkakinoki.com/v1") and any(.customModels[]; .id == "custom:__GPT_LUNA__-1" and .model == "__GPT_LUNA__" and .baseUrl == "https://cliproxy.shunkakinoki.com/v1") and any(.customModels[]; .id == "custom:free-2" and .model == "free" and .baseUrl == "https://cliproxy.shunkakinoki.com/v1")' config/factory/settings.tpl.json
+When run jq -e '.sessionDefaultSettings.model == "__DEEPSEEK_FLASH_0731__" and (.customModels | length) == 4 and any(.customModels[]; .id == "custom:__DEEPSEEK_FLASH__-0" and .baseUrl == "https://cliproxy.shunkakinoki.com/v1") and any(.customModels[]; .id == "custom:__GPT_LUNA__-1" and .model == "__GPT_LUNA__" and .baseUrl == "https://cliproxy.shunkakinoki.com/v1") and any(.customModels[]; .id == "custom:free-2" and .model == "free" and .baseUrl == "https://cliproxy.shunkakinoki.com/v1") and any(.customModels[]; .id == "custom:__DEEPSEEK_FLASH_UNCENSORED__-3" and .model == "__DEEPSEEK_FLASH_UNCENSORED__" and .baseUrl == "https://cliproxy.shunkakinoki.com/v1")' config/factory/settings.tpl.json
 The status should be success
 The output should equal 'true'
 End
@@ -286,6 +286,11 @@ End
 
 It 'generates the CLIProxyAPI DeepSeek Flash model'
 When run bash -c "sed -n '/\"cliproxyapi\"/,/\"lmstudio\"/p' config/opencode/opencode.jsonc | grep -q 'deepseek-v4.1-flash'"
+The status should be success
+End
+
+It 'exposes the uncensored DeepSeek alias in the model catalogs'
+When run bash -c "grep -q 'deepseek-v4.1-flash-uncensored' config/opencode/opencode.jsonc && jq -e '.models.providers.cliproxy.models | any(.id == \"deepseek-v4.1-flash-uncensored\")' config/openclaw/openclaw.template.json >/dev/null && grep -q 'id: deepseek-v4.1-flash-uncensored' config/omp/models.yml && jq -e '.providers.cliproxyapi.models | any(.id == \"deepseek-v4.1-flash-uncensored\")' config/pi/models.json >/dev/null && jq -e '.customModels | any(.model == \"deepseek-v4.1-flash-uncensored\")' config/factory/settings.json >/dev/null && grep -q 'name: deepseek-v4.1-flash-uncensored' config/aichat/config.yaml && grep -q 'model_name: deepseek-v4.1-flash-uncensored' config/llm/extra-openai-models.yaml"
 The status should be success
 End
 

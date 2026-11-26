@@ -160,6 +160,10 @@ The registry in [models.tpl.yml](config/omp/models.tpl.yml) lists the
 CLIProxy aliases and discovers the rest from remote `/v1/models`.
 OMP fallback uses the shared chain (`deepseek-v4.1-flash-1017` -> `free`).
 
+The optional `deepseek-v4.1-flash-uncensored` alias is exposed in the explicit
+model catalogs for OpenCode, OpenClaw, OMP, Pi, Factory, aichat, and `llm`.
+It remains selectable by name without becoming a default or automatic fallback.
+
 ### Fish shortcuts
 
 The `l` suffix means local (LM Studio), `c` means CLIProxyAPI, `h` means

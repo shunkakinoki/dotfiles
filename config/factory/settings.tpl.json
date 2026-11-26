@@ -36,6 +36,17 @@
       "maxOutputTokens": 64000,
       "noImageSupport": true,
       "provider": "generic-chat-completion-api"
+    },
+    {
+      "model": "__DEEPSEEK_FLASH_UNCENSORED__",
+      "id": "custom:__DEEPSEEK_FLASH_UNCENSORED__-3",
+      "index": 3,
+      "baseUrl": "https://cliproxy.shunkakinoki.com/v1",
+      "apiKey": "CLIPROXY_API_KEY",
+      "displayName": "__DEEPSEEK_FLASH_UNCENSORED_PRETTY__",
+      "maxOutputTokens": 64000,
+      "noImageSupport": true,
+      "provider": "generic-chat-completion-api"
     }
   ],
   "hooks": {
