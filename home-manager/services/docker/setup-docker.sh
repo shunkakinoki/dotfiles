@@ -24,6 +24,10 @@ if [ ! -d /run/systemd/system ]; then
   exit 0
 fi
 
+# Home Manager activation runs with a Nix-only PATH; append host system dirs so
+# getent and sudo resolve on non-NixOS Linux hosts without overriding test mocks.
+export PATH="${PATH}:/run/wrappers/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
 # Define paths
 ID_CMD=@coreutils@/bin/id
 GROUPADD=@shadow@/bin/groupadd
@@ -42,20 +46,34 @@ DOCKER_DAEMON_CONFIG="$DOCKER_CONFIG_DIR/daemon.json"
 SYSCTL_CONF=/etc/sysctl.d/99-docker-inotify.conf
 TARGET_USER="${USER:-$("$ID_CMD" -un)}"
 
+SUDO_BIN=""
+if command -v sudo >/dev/null 2>&1; then
+  SUDO_BIN="$(command -v sudo)"
+elif [ -x /run/wrappers/bin/sudo ]; then
+  SUDO_BIN="/run/wrappers/bin/sudo"
+elif [ -x /usr/bin/sudo ]; then
+  SUDO_BIN="/usr/bin/sudo"
+fi
+
 run_root() {
   if [ "$("$ID_CMD" -u)" -eq 0 ]; then
     "$@"
   elif [ "$NON_INTERACTIVE" = true ]; then
-    sudo -n "$@"
+    "$SUDO_BIN" -n "$@"
   else
-    sudo "$@"
+    "$SUDO_BIN" "$@"
   fi
 }
 
-if [ "$("$ID_CMD" -u)" -ne 0 ] && [ "$NON_INTERACTIVE" = true ]; then
-  if ! command -v sudo >/dev/null 2>&1 || ! sudo -n true >/dev/null 2>&1; then
-    echo "Skipping Docker setup (non-interactive root access unavailable)" >&2
-    exit 0
+if [ "$("$ID_CMD" -u)" -ne 0 ]; then
+  if [ "$NON_INTERACTIVE" = true ]; then
+    if [ -z "$SUDO_BIN" ] || ! "$SUDO_BIN" -n true >/dev/null 2>&1; then
+      echo "Skipping Docker setup (non-interactive root access unavailable)" >&2
+      exit 0
+    fi
+  elif [ -z "$SUDO_BIN" ]; then
+    echo "Docker setup requires root privileges, but sudo is not available." >&2
+    exit 1
   fi
 fi
 
