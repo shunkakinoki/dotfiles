@@ -5,6 +5,7 @@ Describe 'Managed Tailscale DNS acceptance'
 setup() {
   TEST_ROOT=$(mktemp -d)
   export DNS_LOG="$TEST_ROOT/dns.log"
+  export TAILSCALE_GAI_CONF="$TEST_ROOT/gai.conf"
   touch "$DNS_LOG"
 }
 
@@ -26,7 +27,7 @@ run_activation() {
   # DNS routing assertions must never modify the runner resolver.
   ln() { :; }
   export -f tailscale_mock id readlink ln
-  bash home-manager/modules/tailscale/activate-up.sh tailscale_mock "$@" | grep -v '^Restoring systemd-resolved stub resolv.conf for Tailscale DNS$'
+  bash home-manager/modules/tailscale/activate-up.sh tailscale_mock "$@" | grep -vE '^(Restoring systemd-resolved stub resolv\.conf for Tailscale DNS|Configuring IPv4 precedence in )'
   return "${PIPESTATUS[0]}"
 }
 
@@ -81,5 +82,14 @@ export TAILSCALE_STATUS=42
 When call run_activation --hostname=kamino3 --ssh=false --accept-dns=true
 The status should equal 42
 The contents of file "$DNS_LOG" should eq 'up --hostname=kamino3 --ssh=false --accept-dns=true'
+End
+
+It 'writes IPv4 precedence to gai.conf once and stays idempotent on repeated activation'
+activate_twice_gai() {
+  run_activation && run_activation && grep -cE '^[[:space:]]*precedence[[:space:]]+::ffff:0:0/96[[:space:]]+100$' "$TAILSCALE_GAI_CONF"
+}
+When call activate_twice_gai
+The status should be success
+The output should eq '1'
 End
 End
