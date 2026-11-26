@@ -49,9 +49,19 @@ restore_resolved_stub() {
   run_root_cmd ln -sfn "$stub" "$resolv"
 }
 
+ensure_ipv4_precedence() {
+  local gai_conf="${TAILSCALE_GAI_CONF:-/etc/gai.conf}"
+  if [ -f "$gai_conf" ] && grep -qE '^[[:space:]]*precedence[[:space:]]+::ffff:0:0/96[[:space:]]+100' "$gai_conf"; then
+    return 0
+  fi
+  echo "Configuring IPv4 precedence in $gai_conf for Tailscale exit-node routing"
+  printf '\nprecedence ::ffff:0:0/96  100\n' | run_root_cmd tee -a "$gai_conf" >/dev/null
+}
+
 # Restore the resolved integration before enabling DNS acceptance. A stale
 # direct resolv.conf can otherwise feed Tailscale its own resolver as upstream.
 restore_resolved_stub
+ensure_ipv4_precedence
 if [ "$#" -gt 0 ]; then
   "$TAILSCALE_BIN" up "$@"
 else
