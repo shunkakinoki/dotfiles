@@ -243,16 +243,16 @@ in
   (_: prev: {
     boat-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "boat-cli";
-      version = "1.0.106";
+      version = "1.0.110";
       src = prev.fetchurl {
         url = "https://github.com/ariana-dot-dev/agent-server/releases/download/boat-cli-v${version}/boat-${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }-${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x64"}";
         sha256 =
           {
-            "aarch64-darwin" = "072bvxjkrvjrd8m6k6dyv4vz7z0ijnlm133y250d5r879wpr0ndq";
-            "aarch64-linux" = "1nzicyxwf0wxcdq58ar5qd6c32n5pid5aywcwwwkjg58nj3pnv2x";
-            "x86_64-linux" = "1512xp7m3aa11znfirid2cw6hrzizaa5xmi61kzwrnlgnc6cmgn2";
+            "aarch64-darwin" = "04qlfz9jj4zzg1q56z86dzvzs3m2s6mspzvwnvm0r5msglaxj9pd";
+            "aarch64-linux" = "0m6wg9g7h1kz772rr9yqvlfglcsd3zpf402nnagavgdypkirfikd";
+            "x86_64-linux" = "1gz205pyxifcc0r5j61gciy0dksqrhranp6wkf9iz671m79ds57x";
           }
           .${prev.stdenv.hostPlatform.system};
       };
@@ -265,20 +265,20 @@ in
 
     blacksmith-testbox-cli = prev.stdenvNoCC.mkDerivation rec {
       pname = "blacksmith-testbox-cli";
-      version = "0.7.30";
+      version = "0.7.33";
       src = prev.fetchurl {
         url = "https://clireleases.blacksmith.sh/cli/v${version}/${
           if prev.stdenv.hostPlatform.isDarwin then "darwin" else "linux"
         }/${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "amd64"}/blacksmith";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "52981a95537c040c7b352fb242381097cc0a33fdcf307eb928a758594c7feb0d"
+            "3654810941f6d8df4aa0b1e80ab174c2cfcf0fc42cc93e6c86af7dfac1333552"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "782bd47a43565602431185d1511185c388c730417be85886eebef95626f7b66c"
+            "05b5d87cbd313b042e2a820ff2f239c6c345bb8975bb969245bd10cce22a75f1"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "f3647d5cda3a920c376ec70c1adc5a6cfd21ad10e69df74e84b9b04430b67dfb"
+            "6dae917cb10658200b841d1e5bb511cfd0a8edad4ee0a43c20177a32941b0644"
           else
-            "e80dfaf247c1ff36540f310865e4776370d4c128f24b6299d267404c6aa24e87";
+            "83456e02c6a2526119bd03356756fbd5f180126e962cd38eedf631e670dcc4d2";
       };
       dontUnpack = true;
       installPhase = ''
@@ -348,20 +348,20 @@ in
 
     moshi-hook = prev.stdenv.mkDerivation rec {
       pname = "moshi-hook";
-      version = "0.4.66";
+      version = "0.4.67";
       src = prev.fetchurl {
         url = "https://cdn.getmoshi.app/hook/v${version}/moshi-hook_${
           if prev.stdenv.hostPlatform.isDarwin then "Darwin" else "Linux"
         }_${if prev.stdenv.hostPlatform.isAarch64 then "arm64" else "x86_64"}.tar.gz";
         sha256 =
           if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isx86_64 then
-            "0c0b7c832d39b6c3a6946daa1d0f9fff4f54b6b8480eecc83f7334d5d186930c"
+            "630f1af06c261db1bdae0c9d02d3b8c772bcde3442d1d029465ab8a472a90ea2"
           else if prev.stdenv.hostPlatform.isLinux && prev.stdenv.hostPlatform.isAarch64 then
-            "3d13a96d0416275b2e11c10c583ba4a9628de67de0077c3099d96cb3d65e58b2"
+            "e9a6e6b0160d862aecf907ee9c4b8e9d4edab556f88c09b967fb245c4103e5cc"
           else if prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPlatform.isAarch64 then
-            "11fd367e23e749367aa416415474a17a088007766b6aef398bfce92388358cd8"
+            "d5b9924e241c25f85871b8ec14ee9bc320df331c4225c094bd3ca5804eea4c24"
           else
-            "d48abc3f292f3aee4ccbd5b3f9a8aee7a027b02cc4ac2de6cda34c972be286b8";
+            "360ac1bdec76eb71296c1e3c48a1faf6f92b0a44f42dcf7dbc801447cde94558";
       };
       sourceRoot = ".";
       dontConfigure = true;
