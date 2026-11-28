@@ -766,6 +766,8 @@ openai-compatibility:
     models:
       - name: "gpt-6-luna"
         alias: "gpt-6-luna"
+      - name: "deepseek-v4.1-flash-uncensored"
+        alias: "deepseek-v4.1-flash-uncensored"
       - name: "deepseek-v4-1-flash-1017-uncensored"
         alias: "deepseek-v4.1-flash-uncensored"
   # Temporary campaign provider: serves stealth/union-alpha under the same
